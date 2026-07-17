@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data & AI-scan voor de directie | Volwassenheidsscore, businesscase & EU AI Act-deadlines — Bedrijfsgeheugen</title>
+<meta name="description" content="Gratis Data & AI-scan voor directie en CFO: volwassenheidsniveau per dimensie, doorgerekende businesscase (terugverdientijd, prijs van wachten), EU AI Act- en NIS2-deadlines en een concreet stappenplan. Rapport na een gepland adviesgesprek van 30 minuten.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/data-ai-cockpit.html">
+<meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Bedrijfsgeheugen">
+<meta property="og:title" content="Data & AI-scan — waar staat uw organisatie, en wat kost wachten?">
+<meta property="og:description" content="Volwassenheidsscore, businesscase en EU AI Act-deadlines in één gratis scan. Rapport na een gepland adviesgesprek.">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/data-ai-cockpit.html">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Data & AI-scan","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"description":"Gratis Data & AI-volwassenheidsscan met businesscase en EU AI Act-compliance-overzicht voor het mkb en middenbedrijf.","provider":{"@type":"Organization","name":"Bedrijfsgeheugen"}}</script>
+<style>
+:root{
+  --bg:#F3F6FA; --card:#FFFFFF;
+  --line:#DCE4EE; --line2:#B9C7D8;
+  --txt:#16273E; --mut:#4A5D77; --dim:#6E829C;
+  --amber:#B45309; --amberG:#F59E0B;
+  --green:#0E9F6E; --coral:#D6452B; --blue:#1D6FC4;
+  --r:16px;
+  --shadow:0 1px 3px rgba(22,39,62,.06),0 10px 30px rgba(22,39,62,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+/* ═══ resultaat-vergrendeling tot het gesprek is geboekt ═══ */
+#dash.locked .dashveil,#dash.locked .dashveil2{filter:blur(10px);pointer-events:none;user-select:none}
+#dash.summary .dashveil2{filter:blur(10px);pointer-events:none;user-select:none}
+.lockbar2{display:none;position:relative;z-index:30;background:#131A33;color:#fff;padding:.8rem 1.2rem;border-radius:12px;margin:18px 0 14px;align-items:center;gap:1rem;flex-wrap:wrap}
+#dash.summary .lockbar2{display:flex}
+.lockbar2 b{font-size:.95rem}.lockbar2 span{font-size:.8rem;color:#B9C4DE}
+.lockbar{display:none;position:sticky;top:0;z-index:40;background:#131A33;color:#fff;padding:.8rem 1.2rem;border-radius:12px;margin:0 0 14px;align-items:center;gap:1rem;flex-wrap:wrap}
+#dash.locked .lockbar{display:flex}
+.lockbar b{font-size:.95rem}
+.lockbar span{font-size:.8rem;color:#B9C4DE}
+.lockbar button{margin-left:auto;background:#F59E0B;color:#131A33;border:none;border-radius:9px;padding:.6rem 1.2rem;font-weight:700;cursor:pointer;font-size:.85rem}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--txt);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(640px 420px at 88% -6%, rgba(245,158,11,.13), transparent 60%),
+    radial-gradient(720px 520px at -12% 104%, rgba(29,111,196,.09), transparent 60%);
+}
+h1,h2,h3{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-weight:800;letter-spacing:-.015em;line-height:1.15;color:var(--txt)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+button{font-family:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--amberG);outline-offset:2px;border-radius:8px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.app{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:24px 20px 60px}
+.screen{display:none}
+.screen.on{display:block;animation:scrIn .45s ease}
+@keyframes scrIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ---- card ---- */
+.g{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.g.hov:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:0 4px 8px rgba(22,39,62,.08),0 18px 44px rgba(22,39,62,.12)}
+.eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.kpi-t{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:600}
+
+/* ================= LANDING ================= */
+#landing{min-height:82vh;display:none;flex-direction:column;justify-content:center}
+#landing.on{display:flex}
+#landing h1{font-size:clamp(1.9rem,5vw,3.1rem);max-width:780px;margin:14px 0 16px}
+#landing h1 em{font-style:normal;color:var(--amber)}
+#landing .sub{color:var(--mut);max-width:580px;font-size:1.03rem;margin-bottom:26px}
+.chiprow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px}
+.chip{
+  display:flex;align-items:baseline;gap:8px;padding:10px 16px;border-radius:999px;
+  background:var(--card);border:1px solid var(--line);font-size:.8rem;color:var(--mut);box-shadow:var(--shadow);
+}
+.chip .mono{color:var(--txt);font-weight:600;font-size:.95rem}
+.chip.hot .mono{color:var(--coral)}
+.cta{
+  display:inline-flex;align-items:center;gap:10px;border:none;border-radius:999px;padding:16px 34px;
+  font-weight:700;font-size:1.05rem;color:#231303;background:linear-gradient(95deg,#F59E0B,#FBBF24);
+  box-shadow:0 8px 26px rgba(245,158,11,.4);transition:transform .18s,box-shadow .18s;width:fit-content;
+}
+.cta:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 36px rgba(245,158,11,.55)}
+.cd{display:flex;gap:14px;margin-top:34px;align-items:center;flex-wrap:wrap}
+.cd .lbl{font-size:.74rem;color:var(--mut);max-width:220px;line-height:1.4}
+.cd .lbl b{color:var(--txt)}
+.cd-seg{display:flex;gap:8px}
+.cd-box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;text-align:center;min-width:58px;box-shadow:var(--shadow)}
+.cd-box .mono{font-size:1.25rem;font-weight:600;color:var(--amber);display:block;line-height:1}
+.cd-box span{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+
+/* ================= WIZARD ================= */
+#wizard{max-width:640px;margin:0 auto;padding-top:5vh}
+.wiz-top{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.ring{position:relative;width:56px;height:56px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .mono{position:absolute;inset:0;display:grid;place-items:center;font-size:.72rem;font-weight:600;color:var(--txt)}
+.wiz-dim{font-size:.76rem;color:var(--mut)}
+.wiz-dim b{color:var(--amber);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:2px}
+.qwrap{position:relative;min-height:380px}
+.qcard{position:absolute;inset:0}
+.qcard.out{animation:qOut .25s ease forwards}
+.qcard.in{animation:qIn .3s ease}
+@keyframes qOut{to{opacity:0;transform:translateX(-30px)}}
+@keyframes qIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.qcard h2{font-size:clamp(1.15rem,2.6vw,1.45rem);margin-bottom:18px}
+.opt{
+  display:flex;gap:12px;align-items:center;width:100%;text-align:left;
+  background:var(--card);border:1.5px solid var(--line);border-radius:14px;
+  padding:15px 16px;margin-bottom:10px;font-size:.94rem;color:var(--txt);box-shadow:var(--shadow);
+  transition:border-color .15s, background .15s, transform .12s;
+}
+.opt:hover{border-color:var(--amberG);transform:translateX(4px)}
+.opt.sel{border-color:var(--amberG);background:#FFF6E5}
+.opt .k{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.66rem;font-weight:600;color:var(--amber);
+  border:1px solid #F0C27A;background:#FFF6E5;border-radius:7px;padding:3px 7px;flex:none;
+}
+.wiz-back{background:none;border:none;color:var(--dim);font-size:.82rem;margin-top:6px;padding:8px}
+.wiz-back:hover{color:var(--txt)}
+
+/* ═══ vergrendeling: resultaten pas ná geboekt gesprek ═══ */
+let dashUnlocked=false;
+function lockDash(){
+  if(dashUnlocked)return;
+  $('dash').classList.add('locked');
+  setTimeout(()=>{ if(!dashUnlocked) openLead(); }, 900);
+}
+function unlockDash(){
+  dashUnlocked=true;
+  $('dash').classList.remove('locked');
+  $('dash').classList.add('summary');   /* kop = samenvatting; de rest blijft voor het gesprek */
+}
+
+/* ================= DASHBOARD ================= */
+.dash-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.dash-head h1{font-size:clamp(1.25rem,3vw,1.7rem)}
+.dash-head p{color:var(--mut);font-size:.84rem}
+.pillbtn{
+  background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 16px;
+  font-size:.8rem;font-weight:600;box-shadow:var(--shadow);transition:border-color .15s;
+}
+.pillbtn:hover{border-color:var(--amberG)}
+
+.bento{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+.b-level{grid-column:span 3;padding:20px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.b-fomo{grid-column:span 4;padding:20px}
+.b-curve{grid-column:span 5;padding:16px 18px 10px}
+.b-chart{grid-column:span 12;padding:20px}
+.b-dims{grid-column:span 5;padding:20px}
+.b-gov{grid-column:span 7;padding:20px}
+@media(max-width:900px){
+  .b-level{grid-column:span 6}.b-fomo{grid-column:span 6}
+  .b-curve,.b-dims,.b-gov{grid-column:span 12}
+}
+@media(max-width:560px){.b-level,.b-fomo{grid-column:span 12}}
+
+/* level card + donut */
+.donut{position:relative;width:96px;height:96px;margin:4px 0}
+.donut svg{transform:rotate(-90deg)}
+.donut .mono{position:absolute;inset:0;display:grid;place-items:center;font-size:1.35rem;font-weight:600;color:var(--txt)}
+.lvl-name{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-weight:800;font-size:1.05rem;font-weight:700}
+.lvl-seg{font-size:.74rem;color:var(--mut)}
+
+/* fomo card */
+.fomo-big{font-size:2.3rem;font-weight:600;color:var(--coral);line-height:1.05;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.fomo-big.ok{color:var(--green)}
+.b-fomo p{font-size:.8rem;color:var(--mut);margin-top:6px}
+.fomo-cd{display:flex;gap:6px;margin-top:14px;align-items:baseline;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.78rem;color:var(--mut)}
+.fomo-cd b{color:var(--amber);font-size:1.05rem}
+.cd-next{display:block;font-size:.66rem;color:var(--dim);margin-top:3px}
+.rsBtn{border:1px solid var(--line2);background:#fff;border-radius:99px;padding:2px 10px;font:600 .62rem ui-monospace,Menlo,monospace;color:var(--blue);cursor:pointer;vertical-align:1px}
+.rsBtn:disabled{opacity:.6;cursor:wait}
+.rsBtn:active{transform:scale(.96)}
+
+/* mini adoptiecurve */
+.b-curve h3{font-size:.84rem;margin-bottom:2px}
+.b-curve .hint{font-size:.66rem;color:var(--dim);font-weight:400}
+#miniCurve{width:100%;height:auto;display:block;margin-top:4px}
+.segz{fill:transparent;cursor:pointer}
+.seg-lbl{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:8.5px;fill:var(--dim)}
+@keyframes dotP{0%,100%{opacity:.95}50%{opacity:.35}}
+.cdot.ahead{animation:dotP 2.4s ease-in-out infinite}
+@keyframes mP{0%{r:6}50%{r:9}100%{r:6}}
+#mkYou circle{animation:mP 1.9s ease-in-out infinite}
+
+.verdict{font-size:.76rem;color:var(--mut);margin:6px 2px 8px;line-height:1.45}
+
+/* chart card */
+.b-chart .ch-top{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start;margin-bottom:12px}
+.b-chart h3{font-size:1rem}
+.b-chart .ch-sub{font-size:.76rem;color:var(--mut);max-width:540px}
+.b-chart .ch-sub b{font-weight:600}
+.inp-row{display:flex;gap:8px;flex-wrap:wrap}
+.inp{
+  display:flex;flex-direction:column;gap:2px;background:var(--bg);border:1px solid var(--line);
+  border-radius:12px;padding:7px 12px;
+}
+.inp label{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:600}
+.inp input{background:none;border:none;color:var(--txt);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9rem;font-weight:600;width:96px;outline:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer}
+.kpi .sub{display:block;font-size:.6rem;color:var(--dim);margin-top:4px;line-height:1.4}
+.kpi .v{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:1.25rem;font-weight:600;color:var(--green);display:block;line-height:1.15}
+.kpi.hot{border-color:#F3B7AA;background:#FDF0ED}
+.kpi.hot .v{color:var(--coral)}
+.kpi.amb .v{color:var(--amber)}
+.sliders{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:6px 0 14px}
+@media(max-width:640px){.sliders{grid-template-columns:1fr}}
+.sl label{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;display:block;margin-bottom:7px;font-weight:600}
+.sl label b{color:var(--amber)}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:8px;border-radius:99px;background:linear-gradient(90deg,#F59E0B,#0E9F6E);outline:none}
+input[type=range].delay{background:linear-gradient(90deg,#0E9F6E,#D6452B)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid #F59E0B;cursor:grab;box-shadow:0 2px 8px rgba(22,39,62,.3)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid #F59E0B;cursor:grab}
+.ticks{display:flex;justify-content:space-between;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.58rem;color:var(--dim);margin-top:5px}
+.sl-info{margin-top:8px;font-size:.76rem;color:var(--mut);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 11px;line-height:1.45}
+.sl-info b{color:var(--txt)}
+.sl-info .nm{color:var(--amber);font-weight:700}
+.ch-wrap{position:relative;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px}
+#ckSvg{width:100%;height:auto;display:block;cursor:crosshair}
+.ck-tip{
+  position:absolute;pointer-events:none;z-index:6;min-width:190px;
+  background:rgba(16,27,44,.96);border:1px solid rgba(245,158,11,.5);border-radius:12px;
+  padding:10px 12px;font-size:.74rem;color:#EDF2F9;box-shadow:0 10px 30px rgba(16,27,44,.4);transform:translate(-50%,0);
+}
+.ck-tip .tm{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#A9BAD1}
+.ck-tip .tr{display:flex;justify-content:space-between;gap:16px;margin-top:4px}
+.axis{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:9.5px;fill:#5F7189}
+.grid{stroke:rgba(22,39,62,.08)}
+.zero{stroke:rgba(22,39,62,.4);stroke-dasharray:2 3}
+@keyframes flagP{0%,100%{opacity:1}50%{opacity:.4}}
+.flag{animation:flagP 1.8s infinite}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.7rem;color:var(--mut);margin-top:8px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.legend b{color:var(--green)}
+
+/* dims card */
+.dimrow{display:grid;grid-template-columns:150px 1fr 40px;gap:10px;align-items:center;margin-bottom:9px}
+.dimrow .n{font-size:.78rem;font-weight:500}
+.dimrow .tr{height:8px;background:#E8EDF4;border-radius:99px;overflow:hidden}
+.dimrow .fl{height:100%;border-radius:99px;transition:width .9s ease}
+.dimrow .s{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.72rem;color:var(--mut);text-align:right;font-weight:600}
+.prio{margin-top:12px;font-size:.8rem;color:var(--mut);border-left:3px solid var(--amberG);padding-left:12px}
+.prio b{color:var(--txt)}
+
+/* gov card */
+.b-gov .gov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:10px}
+@media(max-width:640px){.b-gov .gov-grid{grid-template-columns:1fr}}
+.gov-box{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px}
+.gov-box h4{font-size:.82rem;margin:4px 0 6px}
+.gov-box p{font-size:.76rem;color:var(--mut)}
+.gov-box .mono{color:var(--coral);font-weight:600}
+
+/* action bar (drawers) */
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.act{
+  flex:1;min-width:170px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 18px;
+  font-size:.88rem;font-weight:600;box-shadow:var(--shadow);transition:all .18s;
+}
+.act:hover{border-color:var(--amberG);transform:translateY(-2px)}
+.act .ar{color:var(--amber);transition:transform .18s}
+.act:hover .ar{transform:translateX(4px)}
+
+.modal{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.97);opacity:0;pointer-events:none;
+  z-index:60;width:min(440px,92vw);background:#fff;border:1px solid var(--line2);border-radius:18px;
+  padding:24px;box-shadow:0 24px 70px rgba(16,27,44,.3);transition:opacity .22s,transform .22s;
+}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.fld{display:block;margin-bottom:10px}
+.fld span{display:block;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600;margin-bottom:4px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.fld input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.92rem;color:var(--txt);background:var(--bg)}
+.fld input:focus{outline:none;border-color:var(--amberG)}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:.74rem;color:var(--mut);margin-top:6px}
+.chk input{margin-top:2px}
+.fld-err{color:var(--coral);font-size:.76rem;font-weight:600;margin-top:8px}
+
+
+/* ---- 2026 interactie-laag ---- */
+:root{--spring:linear(0,.007,.026 2.8%,.104 6.1%,.542 18.9%,.723 25.3%,.85 31.5%,.939 38.1%,.992 45.7%,1.008 50.1%,1.016 55%,1.017 63.9%,1.004 76%,1)}
+.opt:active,.act:active,.cta:active,.pillbtn:active,.dr-x:active{transform:scale(.97)}
+.opt.sel{animation:optPop .35s var(--spring)}
+@keyframes optPop{0%{transform:scale(.985)}100%{transform:scale(1)}}
+.modal{transition:opacity .3s,transform .45s var(--spring)}
+.drawer{transition:transform .45s var(--spring)}
+
+/* analyse-loader (loading feedback) */
+.loader{position:fixed;inset:0;z-index:70;display:none;place-items:center;background:rgba(243,246,250,.92);backdrop-filter:blur(6px)}
+.loader.on{display:grid;animation:scrIn .25s ease}
+.loader .box{width:min(360px,88vw);background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 24px 70px rgba(16,27,44,.18)}
+.lstep{display:flex;gap:10px;align-items:center;font-size:.86rem;color:var(--dim);padding:7px 0;transition:color .3s}
+.lstep .ic{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.62rem;flex:none;transition:all .3s}
+.lstep.busy{color:var(--txt)}
+.lstep.busy .ic{border-color:var(--amberG);animation:spin 1s linear infinite}
+.lstep.done{color:var(--txt)}
+.lstep.done .ic{border-color:var(--green);background:var(--green);color:#fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lbar{height:6px;background:#E8EDF4;border-radius:99px;overflow:hidden;margin-top:14px}
+.lbar div{height:100%;width:0;background:linear-gradient(90deg,#F59E0B,#0E9F6E);border-radius:99px;transition:width .5s ease}
+
+/* gefaseerde dashboard-entree (één hero-moment) */
+#dash.dash-in .bento .g{animation:bIn .65s var(--spring) backwards}
+#dash.dash-in .bento .g:nth-child(1){animation-delay:.02s}
+#dash.dash-in .bento .g:nth-child(2){animation-delay:.1s}
+#dash.dash-in .bento .g:nth-child(3){animation-delay:.18s}
+#dash.dash-in .bento .g:nth-child(4){animation-delay:.28s}
+#dash.dash-in .bento .g:nth-child(5){animation-delay:.38s}
+#dash.dash-in .bento .g:nth-child(6){animation-delay:.46s}
+#dash.dash-in .actions .act{animation:bIn .6s var(--spring) backwards}
+#dash.dash-in .actions .act:nth-child(1){animation-delay:.55s}
+#dash.dash-in .actions .act:nth-child(2){animation-delay:.62s}
+#dash.dash-in .actions .act:nth-child(3){animation-delay:.69s}
+@keyframes bIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+
+/* motion markeert verandering: KPI-flash bij slider-input */
+.kpi{transition:box-shadow .3s}
+.kpi.flash{animation:kFlash .55s ease}
+@keyframes kFlash{0%{box-shadow:inset 0 0 0 99px rgba(245,158,11,.16)}100%{box-shadow:inset 0 0 0 99px rgba(245,158,11,0)}}
+
+/* waarde-bubbel boven slider-duim */
+.sl{position:relative}
+.sl-bub{position:absolute;top:14px;transform:translateX(-50%) translateY(-4px);background:#16273E;color:#fff;
+  font:600 .68rem ui-monospace,Menlo,monospace;padding:4px 9px;border-radius:8px;pointer-events:none;
+  opacity:0;transition:opacity .15s;white-space:nowrap;z-index:3}
+.sl-bub::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#16273E}
+.sl.dragging .sl-bub{opacity:1}
+
+/* transparantie: waarom dit advies? */
+details.why{margin-top:8px;font-size:.74rem;color:var(--mut)}
+details.why summary{cursor:pointer;color:var(--blue);font-weight:600;list-style:none;display:inline-flex;gap:5px;align-items:center}
+details.why summary::before{content:"\2139";font-size:.7rem}
+details.why[open] summary{margin-bottom:4px}
+details.why p{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;line-height:1.5}
+
+/* subtiele scroll-reveal voor onder-de-vouw kaarten (progressive enhancement) */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .b-gov,.actions{animation:rise both;animation-timeline:view();animation-range:entry 0% entry 55%}
+    @keyframes rise{from{opacity:.25;transform:translateY(14px)}to{opacity:1;transform:none}}
+  }
+}
+
+/* ---- drawer ---- */
+.ovl{position:fixed;inset:0;background:rgba(16,27,44,.42);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.ovl.on{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;height:100%;width:min(520px,94vw);z-index:50;
+  background:#FFFFFF;border-left:1px solid var(--line2);
+  transform:translateX(105%);transition:transform .32s cubic-bezier(.32,.72,.28,1);
+  display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(16,27,44,.25);
+}
+.drawer.on{transform:none}
+.dr-head{display:flex;justify-content:space-between;align-items:center;padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+.dr-head h3{font-size:1.05rem}
+.dr-x{background:var(--bg);border:1px solid var(--line);border-radius:10px;width:34px;height:34px;font-size:1rem}
+.dr-x:hover{border-color:var(--coral);color:var(--coral)}
+.dr-body{overflow-y:auto;padding:18px 22px 40px;flex:1}
+.dr-body h4{font-size:.9rem;margin:18px 0 6px}
+.dr-body p,.dr-body li{font-size:.86rem;color:#3B4E68}
+.dr-body ul{margin:6px 0 0 1.1rem}
+.dr-body li{margin-bottom:.4rem}
+.dr-body li b{color:var(--txt)}
+.ph{border-left:2px solid var(--amberG);padding:2px 0 2px 14px;margin:16px 0}
+.ph .w{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.ph h4{margin:2px 0 4px}
+.winl{background:#E9F8F1;border:1px solid #BCE5D2;border-radius:10px;padding:9px 12px;font-size:.78rem;color:#0B6B4F;margin-top:8px}
+.uc{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px}
+.uc h4{margin:0 0 3px;font-size:.84rem}
+.uc p{font-size:.78rem}
+.uc.afas{border-color:#F0C27A;background:#FFFAF0}
+.uc .tag{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.56rem;letter-spacing:.1em;color:var(--amber);text-transform:uppercase;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:8px}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+td .mono{color:var(--amber);font-weight:600}
+.dr-body a{color:var(--blue)}
+.footnote{font-size:.66rem;color:var(--dim);margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+</style>
+<script>
+(function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
+if(Object.keys(u).length)sessionStorage.setItem('bg_utm',JSON.stringify(u));
+if(!sessionStorage.getItem('bg_ref')&&document.referrer)sessionStorage.setItem('bg_ref',document.referrer);}catch(e){}})();
+function bgEvent(n){try{if(window.goatcounter&&goatcounter.count)goatcounter.count({path:n,event:true})}catch(e){}}
+function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}');u.referrer=sessionStorage.getItem('bg_ref')||'direct';return JSON.stringify(u)}catch(e){return'{}'}}
+</script>
+<script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div style="position:relative;z-index:5;background:#131A33;color:#fff;font-family:-apple-system,'Segoe UI',Roboto,sans-serif;font-size:.82rem">
+  <div style="max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:1.4rem;padding:.55rem 1.4rem">
+    <a href="index.html" style="color:#fff;text-decoration:none;font-weight:800;display:inline-flex;align-items:center;gap:.5rem"><svg viewBox="0 0 48 48" aria-hidden="true" style="width:24px;height:24px;transform:rotate(-5deg);flex-shrink:0"><path d="M10 4h28a6 6 0 0 1 6 6v22L32 44H10a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="#FFE86B"/><path d="M44 32 32 44v-8a4 4 0 0 1 4-4h8z" fill="#E2C73C"/><rect x="12" y="14" width="22" height="3.6" rx="1.8" fill="#14171A"/><rect x="12" y="22" width="16" height="3.6" rx="1.8" fill="#FF4F17"/><rect x="12" y="29.5" width="18" height="3.6" rx="1.8" fill="#14171A"/></svg><span>Bedrijfs<b style="color:#8FA3FF">geheugen</b></span></a>
+    <div style="margin-left:auto;display:flex;gap:1.2rem">
+      <a href="zelfscan.html" style="color:#C9D2E8;text-decoration:none;font-weight:600">Zelfscan</a>
+      <a href="connect.html" style="color:#C9D2E8;text-decoration:none;font-weight:600">Connect</a>
+      <a href="index.html#contact" style="color:#C9D2E8;text-decoration:none;font-weight:600">Contact</a>
+    </div>
+  </div>
+</div>
+
+<div class="app" role="main">
+
+  <!-- ============ LANDING ============ -->
+  <section class="screen" id="landing">
+    <span class="eyebrow">Data & AI Cockpit · voor CFO's · 2026</span>
+    <h1>Hoeveel winst laat jouw organisatie liggen?</h1>
+    <p class="sub">14 vragen → één dashboard: je niveau, je positie t.o.v. de concurrentie, en de businesscase in euro's — investering, besparing, marge en terugverdientijd.</p>
+    <div class="chiprow">
+      <div class="chip"><span class="mono">± 4 min</span> invullen</div>
+      <div class="chip"><span class="mono">29,8%</span> MKB gebruikt al AI (CBS '25)</div>
+      <div class="chip hot"><span class="mono">&lt; 5%</span> haalt het hoogste niveau (Gartner)</div>
+    </div>
+    <button class="cta" onclick="go('wizard')">Start de scan <span>→</span></button>
+    <div class="cd">
+      <div class="cd-seg" id="cdLand"></div>
+      <div class="lbl"><span id="cdTitle">Eerstvolgende compliance-deadline</span><br><span style="color:var(--dim)">Cijfers &amp; regelgeving per <b class="peil">6 juli 2026</b> <button class="rsBtn" onclick="researchNow()">↻ check nu live</button> <span id="liveBadge" hidden style="color:var(--green);font-weight:700">&#9679; live bijgewerkt</span></span><div id="rsStatusLand"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ WIZARD ============ -->
+  <section class="screen" id="wizard">
+    <div class="wiz-top">
+      <div class="ring">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="24" fill="none" stroke="#E3E9F0" stroke-width="5"/>
+          <circle id="ringFg" cx="28" cy="28" r="24" fill="none" stroke="#F59E0B" stroke-width="5"
+                  stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8"
+                  style="transition:stroke-dashoffset .4s ease"/>
+        </svg>
+        <span class="mono" id="ringTxt">1/13</span>
+      </div>
+      <div class="wiz-dim"><b id="qDim"></b>Kies wat het dichtst bij de dagelijkse praktijk ligt — niet bij de ambitie.</div>
+    </div>
+    <div class="qwrap"><div class="qcard in" id="qCard"></div></div>
+    <button class="wiz-back" id="btnBack" onclick="prevQ()">← vorige vraag</button>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="screen" id="dash">
+    <div class="lockbar" role="status">
+      <div><b>🔒 Resultaten vergrendeld</b><br><span>Plan uw adviesgesprek van 30 minuten — daarna is uw cockpit direct zichtbaar.</span></div>
+      <button onclick="openLead()">Plan gesprek & ontgrendel</button>
+    </div>
+    <div class="dashveil">
+    <div class="dash-head">
+      <div>
+        <span class="eyebrow">Jouw cockpit <span style="color:var(--dim);font-weight:400">v4.7</span></span>
+        <h1 id="dhTitle">—</h1>
+        <p id="dhSub"></p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="pillbtn" onclick="restart()">↻ Opnieuw</button>
+        <button class="pillbtn" id="btnRapport" onclick="openLead()" style="border-color:var(--amberG);background:#FFF6E5">⬇ Rapport downloaden</button>
+      </div>
+    </div>
+
+    <div class="bento">
+      <!-- niveau -->
+      <div class="g hov b-level">
+        <span class="kpi-t">Volwassenheid</span>
+        <div class="donut">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="40" fill="none" stroke="#E3E9F0" stroke-width="9"/>
+            <circle id="donutFg" cx="48" cy="48" r="40" fill="none" stroke="url(#dg)" stroke-width="9"
+                    stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3"
+                    style="transition:stroke-dashoffset 1.4s ease"/>
+            <defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#0E9F6E"/>
+            </linearGradient></defs>
+          </svg>
+          <span class="mono" id="donutTxt">0</span>
+        </div>
+        <div class="lvl-name" id="lvlName">—</div>
+        <div class="lvl-seg" id="lvlSeg">—</div>
+      </div>
+
+      <!-- fomo -->
+      <div class="g hov b-fomo">
+        <span class="kpi-t">Concurrentie</span>
+        <div class="fomo-big" id="fomoPct">—</div>
+        <p id="fomoTxt">van de markt staat al vóór jullie (Gartner-verdeling).</p>
+        <div class="fomo-cd" style="display:block">⏳ <span id="fomoCd">—</span></div>
+      </div>
+
+      <!-- mini curve -->
+      <div class="g hov b-curve">
+        <h3>Jij vs. je branche op de adoptiecurve <span class="hint">· hover voor niveau-info</span></h3>
+        <svg id="miniCurve" viewBox="0 0 760 200"></svg>
+        <p class="verdict" id="brVerdict"></p>
+      </div>
+
+    </div><!-- einde dashveil (kop-samenvatting) -->
+    <div class="lockbar2" role="status">
+      <div><b>🔒 Businesscase, stappenplan &amp; use-cases</b><br><span>Dit deel bespreken we samen in uw adviesgesprek — daarna ontvangt u het volledige rapport per e-mail.</span></div>
+    </div>
+    <div class="dashveil2">
+      <div class="bento">
+      <!-- chart -->
+      <div class="g b-chart">
+        <div class="ch-top">
+          <div>
+            <h3>De businesscase in één grafiek</h3>
+            <p class="ch-sub">Cumulatief nettoresultaat. <b style="color:var(--amber)">Amber</b> = nu starten · <b style="color:var(--mut)">stippel</b> = later starten · <b style="color:var(--coral)">rood vlak</b> = de prijs van wachten. Beweeg over de grafiek.</p>
+          </div>
+          <div class="inp-row">
+            <div class="inp"><label for="iFte">Medewerkers</label><input id="iFte" type="number" value="40" min="1"></div>
+            <div class="inp"><label for="iOmz">Jaaromzet €</label><input id="iOmz" type="number" value="6000000" step="100000" min="0"></div>
+            <div class="inp"><label for="iUur">€ / uur</label><input id="iUur" type="number" value="55" min="10"></div>
+          </div>
+        </div>
+        <div class="kpis">
+          <div class="kpi" onclick="kpiInfo(event,'net')"><span class="kpi-t">Netto na 3 jaar ⓘ</span><span class="v" id="kNet">—</span><span class="sub" id="kNetSub"></span></div>
+          <div class="kpi amb" onclick="kpiInfo(event,'break')"><span class="kpi-t">Terugverdiend in ⓘ</span><span class="v" id="kBreak">—</span><span class="sub" id="kBreakSub"></span></div>
+          <div class="kpi amb" onclick="kpiInfo(event,'inv')"><span class="kpi-t">Investering ⓘ</span><span class="v" id="kInv">—</span><span class="sub" id="kInvSub"></span></div>
+          <div class="kpi hot" onclick="kpiInfo(event,'wait')"><span class="kpi-t">Prijs van wachten ⓘ</span><span class="v" id="kWait">—</span><span class="sub" id="kWaitSub"></span></div>
+        </div>
+        <div class="sliders">
+          <div class="sl">
+            <label>Doelniveau: <b id="lblLvl">—</b></label>
+            <input type="range" id="slLvl" min="1" max="5" step="1" value="2">
+            <div class="ticks"><span>N1</span><span>N2</span><span>N3</span><span>N4</span><span>N5</span></div>
+            <p class="sl-info" id="lvlInfo"></p>
+          </div>
+          <div class="sl">
+            <label>Start over: <b id="lblDel">12 mnd</b></label>
+            <input type="range" class="delay" id="slDel" min="0" max="24" step="3" value="12">
+            <div class="ticks"><span>NU</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+          </div>
+        </div>
+        <div class="ch-wrap" id="chWrap">
+          <svg id="ckSvg" viewBox="0 0 760 330"></svg>
+          <div class="ck-tip" id="ckTip" hidden></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:linear-gradient(90deg,#F59E0B,#0E9F6E)"></i>nu starten</span>
+          <span><i style="background:#94A6BC"></i>uitgesteld</span>
+          <span>◆ niveau bereikt + % markt gepasseerd</span>
+          <span><b>⚑</b> break-even</span>
+        </div>
+      </div>
+
+      <!-- dims -->
+      <div class="g hov b-dims">
+        <span class="kpi-t">Score per dimensie</span>
+        <div id="dimList" style="margin-top:12px"></div>
+        <div class="prio" id="prioTxt"></div>
+      </div>
+
+      <!-- governance -->
+      <div class="g hov b-gov">
+        <span class="kpi-t">Governance = marge-bescherming</span>
+        <div class="gov-grid">
+          <div class="gov-box">
+            <span class="tag eyebrow" style="font-size:.56rem">Data · Purview</span>
+            <h4>Eén catalogus, lineage & beleid</h4>
+            <p>Minder zoek- en herstelwerk, snellere nieuwe use-cases, en AI die nooit méér ziet dan de gebruiker mag. De duurzame helft van het marge-effect.</p>
+          </div>
+          <div class="gov-box">
+            <span class="tag eyebrow" style="font-size:.56rem">AI · EU AI Act</span>
+            <h4>Hoog-risico: definitief uitgesteld naar 2 dec 2027 — transparantie niet</h4>
+            <p>De Digital Omnibus is <b>definitief aangenomen</b> (Raad, 29 juni 2026): hoog-risico AI (o.a. werving, kredietscoring) schuift van aug 2026 naar <b>2 dec 2027</b>. Wat wél gewoon op <b>2 aug 2026</b> ingaat: de transparantieplicht (art. 50 — chatbots melden, AI-content labelen), de NL-handhaving van AI-geletterdheid (art. 4) én volledige GPAI-handhaving door het AI Office. Op <b>2 aug 2027</b> volgen bestaande GPAI-modellen en de verplichte AI-sandboxes. Boete-exposure bij jullie omzet: <span class="mono" id="fine3">—</span> (3%) à <span class="mono" id="fine7">—</span> (7%).</p>
+          </div>
+          <div class="gov-box">
+            <span class="tag eyebrow" style="font-size:.56rem">Cyber · NIS2 / Cyberbeveiligingswet</span>
+            <h4>Zorg-, meld- &amp; registratieplicht — verwacht aug 2026</h4>
+            <p>De Cyberbeveiligingswet (NL-implementatie van NIS2) brengt zorgplicht, meldplicht bij incidenten, ketenverantwoordelijkheid richting leveranciers én persoonlijke bestuurdersaansprakelijkheid. Boetes tot <span class="mono" id="fineNis">—</span> (2% omzet) of € 10 mln. Ook als je er niet direct onder valt: grote klanten gaan het van je éisen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- drawers triggers -->
+    <div class="actions">
+      <button class="act" onclick="openDrawer('plan')">📋 Stappenplan & doorlooptijd <span class="ar">→</span></button>
+      <button class="act" onclick="openDrawer('uc')">⚡ Concrete use-cases <span class="ar">→</span></button>
+      <button class="act" onclick="openDrawer('bench')">📊 Benchmark & bronnen <span class="ar">→</span></button>
+    </div>
+    </div><!-- einde dashveil2 -->
+    </div><!-- einde dashveil -->
+  </section>
+</div>
+
+
+
+<!-- analyse-loader -->
+<div class="loader" id="loader" role="status" aria-live="polite">
+  <div class="box">
+    <span class="eyebrow">Analyse</span>
+    <h3 style="margin:.3rem 0 .6rem">Je cockpit wordt opgebouwd</h3>
+    <div class="lstep" id="ls1"><span class="ic">1</span> Scores per dimensie berekenen</div>
+    <div class="lstep" id="ls2"><span class="ic">2</span> Vergelijken met markt & branche (CBS/Gartner)</div>
+    <div class="lstep" id="ls3"><span class="ic">3</span> Businesscase doorrekenen</div>
+    <div class="lbar"><div id="lbarFill"></div></div>
+  </div>
+</div>
+<!-- lead-modal (gated download) -->
+<div class="ovl" id="ovl2" onclick="closeLead()"></div>
+<div class="modal" id="leadModal" role="dialog" aria-modal="true">
+  <div id="leadForm">
+    <span class="eyebrow">Nog 2 stappen</span>
+    <h3 style="margin:.3rem 0 .4rem">Ontgrendel uw resultaten</h3>
+    <div style="font-size:.82rem;color:var(--mut);margin-bottom:14px;line-height:1.6">
+      <div style="display:flex;gap:8px;margin-bottom:5px"><b style="color:var(--amberG)">1.</b><span><b>Vul uw gegevens in</b> — dan weten we voor wie het advies is.</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:5px"><b style="color:var(--amberG)">2.</b><span><b>Plan het adviesgesprek</b> (30 min, gratis) — direct daarna is uw cockpit met scores en businesscase zichtbaar.</span></div>
+      <div style="display:flex;gap:8px"><b style="color:var(--amberG)">3.</b><span><b>In het gesprek</b> lopen we het volledige adviesrapport samen door — daarna ontvangt u het per e-mail als presentatie (te bewaren als PDF).</span></div>
+    </div>
+    <label class="fld"><span>Naam *</span><input id="ldNaam" type="text" autocomplete="name"></label>
+    <label class="fld"><span>Zakelijke e-mail *</span><input id="ldMail" type="email" autocomplete="email"></label>
+    <label class="fld"><span>Bedrijf *</span><input id="ldBedrijf" type="text" autocomplete="organization"></label>
+    <label class="fld"><span>Klantrelatie-ID (indien bekend)</span><input id="ldRelatie" type="text" placeholder="bijv. KR-10234 — leeg laten mag"></label>
+    <label class="chk"><input type="checkbox" id="ldOk"> <span>Ik ga akkoord dat mijn gegevens worden gebruikt voor opvolging van deze scan.</span></label>
+    <p class="fld-err" id="ldErr" hidden>Vul naam, e-mail en bedrijf in en vink akkoord aan.</p>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <p style="font-size:.83rem;color:#64748B;margin:0 0 10px">📬 Je bespreekt de uitkomst in een gratis adviesgesprek; gegevens worden alleen daarvoor gebruikt — <a href="privacy.html" style="color:#2742D6" target="_blank">privacyverklaring</a>.</p>
+<button class="cta" style="padding:12px 22px;font-size:.92rem" onclick="submitLead()">Volgende: plan je adviesgesprek →</button>
+      <button class="pillbtn" onclick="closeLead()">Annuleren</button>
+    </div>
+  </div>
+  <div id="leadCal" hidden>
+    <span class="eyebrow">Stap 2 van 2</span>
+    <h3 style="margin:.3rem 0 .4rem">Plan je adviesgesprek</h3>
+    <p style="font-size:.8rem;color:var(--mut);margin-bottom:10px">Kies hieronder een moment (30 min, online of telefonisch). Zodra je gesprek is geboekt, wordt je scan verstuurd en staat het rapport direct klaar.</p>
+    <div id="calWidget" style="height:560px;border:1px solid var(--line,#DCE4EE);border-radius:12px;overflow:hidden"></div>
+  </div>
+  <div id="leadDone" hidden>
+    <span class="eyebrow" style="color:var(--green)">✓ Gelukt</span>
+    <h3 style="margin:.3rem 0 .5rem">Je adviesgesprek is geboekt</h3>
+    <p style="font-size:.84rem;color:var(--mut)" id="doneMsg"></p>
+    <ul style="font-size:.82rem;color:var(--mut);margin:12px 0 0 1.1rem;line-height:1.6">
+      <li id="doneDevops">De opvolging (feature + user story) is automatisch aangemaakt in ons systeem.</li>
+    </ul>
+    <button class="pillbtn" style="margin-top:16px" onclick="closeLead()">Sluiten</button>
+  </div>
+</div>
+<!-- drawer -->
+<div class="ovl" id="ovl" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true">
+  <div class="dr-head"><h3 id="drTitle">—</h3><button class="dr-x" onclick="closeDrawer()" aria-label="Sluiten">✕</button></div>
+  <div class="dr-body" id="drBody"></div>
+</aside>
+
+<script>
+/* v2.3 — cockpit, self-contained, slimme foutmelder */
+const APP_VERSION='4.7';
+/* ═══ CONTACT & GATING (niet zichtbaar op de pagina) ═══ */
+const CONTACT={
+  email:'arthur@bedrijfsgeheugen.nl',   // ontvangt scans & boekingen — staat nergens zichtbaar op de pagina
+  tel:'06-27483345',          // komt alleen in het gedownloade rapport
+  naam:'Arthur Prinsen',
+  calendly:'https://calendly.com/arthur-prinsen/adviesgesprek-slimmer-geregeld',                        // bijv. 'https://calendly.com/arthur-prinsen/adviesgesprek' — verplicht boeken vóór het rapport
+  web3formsKey:'5d2bad12-e036-4469-b83d-f6ef1ec68e07'                     // aanbevolen: gratis key via web3forms.com met bovenstaand e-mailadres
+};
+async function deliverToContact(subject,payload){
+  let ok=false;
+  if(CONTACT.web3formsKey){
+    try{const r=await fetch('https://api.web3forms.com/submit',{method:'POST',
+      headers:{'Content-Type':'application/json',Accept:'application/json'},
+      body:JSON.stringify({access_key:CONTACT.web3formsKey,subject,...payload})});
+      ok=r.ok&&(await r.json()).success!==false;}catch(e){}
+  }
+  if(!ok){
+    try{const r=await fetch('https://formsubmit.co/ajax/'+CONTACT.email,{method:'POST',
+      headers:{'Content-Type':'application/json',Accept:'application/json'},
+      body:JSON.stringify({_subject:subject,...payload})});ok=r.ok;}catch(e){}
+  }
+  return ok;
+}
+/* Webhook (Azure Function / Power Automate) die het lead + scan-payload ontvangt en in Azure DevOps een Epic/Feature/User Story aanmaakt. Leeg laten = alleen downloaden, geen registratie. */
+const WEBHOOK_URL='';
+/* ---- DIRECTE Azure DevOps-koppeling (zonder tussenlaag) ----
+   ⚠ WAARSCHUWING: dit token staat leesbaar in de HTML-bron. Gebruik ALLEEN:
+   - een PAT met uitsluitend scope "Work Items (Read & Write)" en korte looptijd,
+   - op een intern gehoste pagina of tijdens demo's — nooit publiek op internet.
+   Voor publieke inzet: laat pat leeg en gebruik WEBHOOK_URL (Azure Function). */
+/* ================= CENTRALE FEITEN & BRONNEN (één plek, altijd actueel) =================
+   Update dit blok — of host een JSON op CONTENT_URL om de cijfers te verversen ZONDER de
+   HTML opnieuw te bouwen. Remote JSON overschrijft de waarden hieronder bij het laden. */
+const CONTENT_URL='';   // bijv. 'https://jouwdomein.nl/cockpit-content.json'
+let CONTENT = {
+  peildatum: '6 juli 2026',
+  peildatumISO: '2026-07-06',
+  omnibusStatus: 'Digital Omnibus definitief aangenomen (EP 16 juni, Raad 29 juni 2026); publicatie in Publicatieblad volgt.',
+  reedsVanKracht: [
+    ['2 feb 2025','Verboden AI-praktijken (art. 5) \u2014 o.a. social scoring, manipulatieve AI'],
+    ['2 feb 2025','AI-geletterdheidsplicht (art. 4) voor aanbieders \u00e9n gebruikers'],
+    ['2 aug 2025','GPAI-modelverplichtingen voor nieuwe modellen (documentatie, copyright, transparantie)']
+  ],
+  deadlines: [
+    {date:'2026-08-02', label:'EU AI Act: transparantieplicht chatbots & AI-content (art. 50) + NL-handhaving AI-geletterdheid (art. 4) + AI Office krijgt volledige handhavingsbevoegdheid op GPAI-modellen (boetes tot 3% / \u20ac 15 mln) — NIET uitgesteld', kort:'AI-transparantie + GPAI-handhaving'},
+    {date:'2026-08-15', label:'Cyberbeveiligingswet (NIS2): zorg-, meld- en registratieplicht — verwachte inwerkingtreding (EK-stemming 7 juli)', kort:'NIS2 / Cbw'},
+    {date:'2026-12-02', label:'EU AI Act: watermerk-overgang bestaande generatieve AI verloopt + nieuw art. 5-verbod (nudifiers/AI-CSAM)', kort:'AI-watermerken & nieuw verbod'},
+    {date:'2027-08-02', label:'EU AI Act: bestaande GPAI-modellen (op de markt v\u00f3\u00f3r aug 2025) moeten volledig voldoen + lidstaten moeten AI regulatory sandboxes operationeel hebben', kort:'GPAI bestaand + sandboxes'},
+    {date:'2027-12-02', label:'EU AI Act: hoog-risico AI (Annex III — o.a. werving, kredietscoring) — DEFINITIEF uitgesteld van aug 2026 naar dec 2027 (Omnibus, aangenomen 29 juni 2026)', kort:'Hoog-risico AI (uitgesteld)'},
+    {date:'2028-08-02', label:'EU AI Act: hoog-risico AI in gereguleerde producten (Annex I) — was aug 2027', kort:'AI in producten'}
+  ],
+  fines: { aiActLow:3, aiActHigh:7, nis2:2 },   // % van (wereldwijde) jaaromzet
+  stats: {
+    mkbAI:'29,8%', grootAI:'66,2%', bedrijfAI2024:'22,7%', bedrijfAI2023:'14%',
+    afhaakErvaring:'74,6%', gartnerTop:'<5%'
+  },
+  bronnen: [
+    ['CBS — AI-monitor & ICT-gebruik bedrijven','https://www.cbs.nl'],
+    ['Gartner — Data & Analytics maturity (gids)','https://atlan.com/know/gartner/data-governance-maturity-model/'],
+    ['McKinsey — The State of AI','https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai'],
+    ['Harvard Business Review — data-driven decision making','https://hbr.org/topic/subject/data-and-analytics'],
+    ['Europa decentraal — AI-verordening & Digital Omnibus (uitstel hoog-risico)','https://europadecentraal.nl/nieuws/ai-verordening-aangescherpt-uitstel-verduidelijking-en-nieuwe-spelregels-in-de-praktijk/'],
+    ['AI Act deadlines 2026–2028 op een rij','https://www.aicompliancehub.nl/kennisbank/ai-act-deadlines'],
+    ['NCSC — Cyberbeveiligingswet (NIS2)','https://www.ncsc.nl/cyberbeveiligingswet-nis2'],
+    ['Microsoft Learn — Fabric Data Agents & Purview','https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent'],
+    ['Eurostat — Digital economy & society','https://ec.europa.eu/eurostat']
+  ]
+};
+/* ============ LIVE RESEARCH-TOOL: check regelgeving nú, in de pagina ============
+   Binnen een Claude.ai-artifact werkt dit direct (geen API-key nodig).
+   Zelf gehost? Zet RESEARCH_PROXY op je eigen endpoint (bijv. Azure Function die
+   de key server-side toevoegt) — zelfde request/response-formaat als de Anthropic API. */
+const RESEARCH_PROXY='';
+/* Automatisch actueel: bij het openen checkt de pagina zelf het web (via de research-tool)
+   zodra de cijfers ouder zijn dan AUTO_RESEARCH_DAYS. Alles zit in dit ene bestand —
+   geen aparte function of JSON-hosting nodig. (CONTENT_URL blijft optioneel als extra.) */
+const AUTO_RESEARCH=true;
+const AUTO_RESEARCH_DAYS=7;
+const RESEARCH_MODEL='claude-sonnet-4-6';
+function researchPrompt(){
+  const vandaag=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
+  return 'Je bent een compliance-onderzoeker. Zoek op internet de ACTUELE status (vandaag: '+vandaag+') van: '
+   +'(1) EU AI Act-deadlines incl. Digital Omnibus (hoog-risico Annex III/I, transparantie art. 50, watermerken, nieuwe verboden) \u2014 vermeld expliciet of wijzigingen definitief zijn aangenomen; '
+   +'(2) de Nederlandse Cyberbeveiligingswet (NIS2): parlementaire status en (verwachte) inwerkingtredingsdatum; '
+   +'(3) GPAI-verplichtingen en handhaving (incl. bestaande modellen, 2 aug 2027) en (4) actuele CBS-cijfers over AI-gebruik door Nederlandse bedrijven. '
+   +'Antwoord met UITSLUITEND geldige JSON (geen markdown) in exact dit schema: '
+   +'{"peildatum":"<d maand jjjj>","peildatumISO":"<jjjj-mm-dd>","omnibusStatus":"<\u00e9\u00e9n zin>",'
+   +'"deadlines":[{"date":"jjjj-mm-dd","label":"<omschrijving, vermeld uitgesteld waar van toepassing>","kort":"<max 4 woorden>"}],'
+   +'"fines":{"aiActLow":3,"aiActHigh":7,"nis2":2},'
+   +'"stats":{"mkbAI":"<x,x%>","grootAI":"<x,x%>","bedrijfAI2024":"<x,x%>","bedrijfAI2023":"<x%>","afhaakErvaring":"<x,x%>","gartnerTop":"<5%"}} '
+   +'Eisen: 5\u20139 deadlines, chronologisch, alleen met bronnen onderbouwde data; bij onzekerheid het woord verwacht in het label.';
+}
+function validContent(d){
+  try{
+    if(!d.peildatum||!d.peildatumISO||!Array.isArray(d.deadlines)) return false;
+    if(d.deadlines.length<4||d.deadlines.length>9) return false;
+    for(const x of d.deadlines){ if(isNaN(new Date(x.date))||!x.label||!x.kort) return false; }
+    if(!d.fines||!d.stats) return false;
+    return true;
+  }catch(_){ return false; }
+}
+async function researchNow(silent){
+  const btns=silent?[]:Array.from(document.querySelectorAll('.rsBtn'));
+  btns.forEach(b=>{b.disabled=true;b.dataset.t=b.textContent;b.textContent='\u23f3 Onderzoekt het web\u2026';});
+  const done=(msg,ok)=>{
+    btns.forEach(b=>{b.disabled=false;b.textContent=b.dataset.t;});
+    if(silent) return;
+    const s=$('rsStatus'); if(s){ s.hidden=false; s.style.color=ok?'var(--green)':'var(--coral)'; s.textContent=msg; }
+  };
+  try{
+    const res=await fetch(RESEARCH_PROXY||'https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:RESEARCH_MODEL,max_tokens:2500,
+        tools:[{type:'web_search_20250305',name:'web_search',max_uses:8}],
+        messages:[{role:'user',content:researchPrompt()}]})});
+    if(!res.ok) throw new Error('API '+res.status);
+    const data=await res.json();
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const clean=text.replace(/```json|```/g,'');
+    const j=JSON.parse(clean.slice(clean.indexOf('{'),clean.lastIndexOf('}')+1));
+    if(!validContent(j)) throw new Error('validatie');
+    const oud=JSON.stringify(CONTENT.deadlines), oudPeil=CONTENT.peildatum;
+    CONTENT=Object.assign({},CONTENT,j);
+    document.querySelectorAll('.peil').forEach(e=>{e.textContent=CONTENT.peildatum;e.style.color='';e.title='';});
+    const b=$('liveBadge'); if(b) b.hidden=false;
+    tick(); if(typeof renderCk==='function'&&$('kNet')&&$('kNet').textContent!=='\u2014'){try{renderCk();}catch(_){}}
+    const gewijzigd=JSON.stringify(CONTENT.deadlines)!==oud;
+    done(gewijzigd?'\u2713 Bijgewerkt naar '+CONTENT.peildatum+' \u2014 de tijdlijn is gewijzigd t.o.v. de vorige stand.'
+                  :'\u2713 Gecontroleerd ('+CONTENT.peildatum+'): alles was al actueel.', true);
+    if($('drTitle')&&$('drawer').classList.contains('on')&&$('drTitle').textContent.indexOf('Benchmark')===0) openDrawer('bench');
+  }catch(e){
+    done('\u26a0 Live check niet gelukt ('+(e.message||'netwerk')+'). De getoonde cijfers (peildatum '+CONTENT.peildatum+') blijven staan.', false);
+  }
+}
+
+function maybeAutoResearch(){
+  if(!AUTO_RESEARCH) return;
+  const m=CONTENT.peildatumISO?new Date(CONTENT.peildatumISO):null;
+  if(m && (Date.now()-m.getTime())/864e5>AUTO_RESEARCH_DAYS){
+    researchNow(true); // stil op de achtergrond; badge verschijnt bij succes
+  }
+}
+async function loadRemoteContent(){
+  if(!CONTENT_URL){ staleCheck(); maybeAutoResearch(); return; }
+  try{
+    const r=await fetch(CONTENT_URL,{cache:'no-store'});
+    if(r.ok){ const j=await r.json(); CONTENT=Object.assign({},CONTENT,j);
+      document.querySelectorAll('.peil').forEach(e=>e.textContent=CONTENT.peildatum);
+      const b=$('liveBadge'); if(b) b.hidden=false; tick(); }
+    else staleCheck();
+  }catch(_){ staleCheck(); maybeAutoResearch(); }
+}
+function staleCheck(){
+  // geen (werkende) live bron: waarschuw subtiel als de ingebakken peildatum veroudert
+  const m=CONTENT.peildatumISO?new Date(CONTENT.peildatumISO):null;
+  if(m && (Date.now()-m.getTime())/864e5>45){
+    document.querySelectorAll('.peil').forEach(e=>{e.style.color='#B45309';e.title='Deze cijfers zijn ouder dan 45 dagen — controleer de actuele regelgeving.';});
+  }
+}
+const nextDeadlines = n => CONTENT.deadlines
+  .filter(d=>new Date(d.date+'T23:59:59')>new Date()).slice(0,n||3);
+
+const ADO = {
+  org: '',            // bijv. 'irixs'
+  project: '',        // bijv. 'Producten'
+  pat: '',            // Personal Access Token — zie waarschuwing hierboven
+  areaPath: '',       // optioneel, bijv. 'Producten\\Sales'
+  consultants: [      // round-robin toewijzing
+    // {naam:'Consultant 1', email:'c1@irixs.nl'},
+    // {naam:'Consultant 2', email:'c2@irixs.nl'},
+  ]
+};
+window.addEventListener('error',function(e){
+  try{
+    // Negeer ruis van de omringende app/webview (cross-origin geeft 'Script error.' zonder details)
+    if(!e || !e.error || !e.message || e.message==='Script error.' ) return;
+    if(e.filename && e.filename.indexOf('http')===0 && e.filename.indexOf(location.host)===-1) return;
+    var b=document.getElementById('errBanner');
+    if(!b){b=document.createElement('div');b.id='errBanner';
+      b.style.cssText='position:fixed;bottom:12px;left:12px;right:12px;z-index:99;background:#FDECE8;border:1px solid #E8A093;color:#8C2E1B;border-radius:12px;padding:10px 14px;font:600 12px/1.4 ui-monospace,Menlo,Consolas,monospace;box-shadow:0 8px 24px rgba(0,0,0,.15)';
+      document.body.appendChild(b);}
+    b.textContent='\u26a0 Interne fout (v'+APP_VERSION+'): '+e.message;
+  }catch(_){}
+});
+/* ================= DATA ================= */
+const DIMS = {
+  analytics:{name:"Data & analytics",c:"#5EB9FF"},
+  quality:{name:"Datakwaliteit",c:"#4ADE9E"},
+  governance:{name:"Governance",c:"#FFB547"},
+  tech:{name:"Technologie & AI",c:"#C08BFF"},
+  culture:{name:"Organisatie & cultuur",c:"#FF6B5E"}
+};
+const QUESTIONS = [
+ {dim:"tech",ctx:true,t:"Welk kernsysteem (ERP) gebruiken jullie?",
+  o:["AFAS Profit","Ander ERP (Exact, Dynamics, SAP …)","Meerdere losse systemen","Weet ik niet"]},
+ {dim:"tech",ctx:true,t:"In welke branche opereren jullie?",
+  o:["ICT & software","Zakelijke dienstverlening / consultancy","Financiële dienstverlening","Handel & retail","Industrie & productie","Logistiek & transport","Zorg","Bouw","Horeca & recreatie","Anders"]},
+ {dim:"analytics",t:"Waar leeft jullie stuurinformatie nu vooral?",
+  o:["Losse Excel-bestanden en lijstjes","Standaardrapporten uit onze pakketten","BI-dashboards (bijv. Power BI)","BI + selfservice + voorspellende inzichten"]},
+ {dim:"analytics",t:"Hoe komt een managementrapport tot stand?",
+  o:["Handmatig: exporteren, knippen, plakken","Deels automatisch, met handmatige correcties","Geautomatiseerd vanuit een centraal platform","Volledig geautomatiseerd, gemonitord, met alerts"]},
+ {dim:"quality",t:"Hoe staat het met de datakwaliteit?",
+  o:["Regelmatig discussie over wiens cijfer klopt","We corrigeren fouten achteraf","Afspraken en eigenaren voor kernbronnen","Gemeten met KPI's en actief bewaakt"]},
+ {dim:"quality",t:"Is er één versie van de waarheid?",
+  o:["Nee — ieder eigen definities","Deels — een paar kerncijfers afgesproken","Ja — centrale KPI-definities","Ja — geborgd in semantische laag / catalogus"]},
+ {dim:"governance",t:"Hoe is data governance geregeld?",
+  o:["Niet — data 'is van IT' of van niemand","Impliciet — een paar mensen weten hoe het zit","Rollen benoemd: eigenaren en stewards","Beleid + catalogus + lineage (bijv. Purview)"]},
+ {dim:"governance",t:"Hoe ver zijn jullie met de EU AI Act?",
+  o:["Nooit serieus naar gekeken","Van gehoord, niets vastgelegd","AI-register en eerste afspraken gestart","Beleid, register én risicoclassificatie staan"]},
+ {dim:"tech",t:"Hoe gebruikt de organisatie AI vandaag?",
+  o:["Niet, of alleen privé-experimenten (schaduw-AI)","Individueel ChatGPT/Copilot-gebruik","Enkele teams met goedgekeurde tools","AI geborgd in processen, met eigenaar"]},
+ {dim:"tech",t:"Hoe verloopt de budget- en planningscyclus?",
+  o:["Volledig Excel, versies per e-mail","Excel + BI-rapportages voor realisatie","Planningstool met één centrale waarheid","Tool + scenario's en AI-forecasting"]},
+ {dim:"tech",t:"Hoe ziet het technologiefundament eruit?",
+  o:["Losse systemen, geen centrale opslag","Deels gekoppeld, exports en tussenbestanden","Modern platform (Azure/Fabric) met pipelines","Platform + governance + AI-ready"]},
+ {dim:"analytics",t:"Hoe worden belangrijke besluiten genomen?",
+  o:["Vooral op ervaring en onderbuik","Cijfers erbij als het zo uitkomt","KPI's sturen de agenda","Data, experimenten en voorspellingen sturen structureel"]},
+ {dim:"culture",t:"Hoe data-vaardig zijn de medewerkers?",
+  o:["Een klein clubje snapt het","Wisselend per afdeling, zonder plan","Trainingen en kartrekkers per team","Structureel programma met coaching en champions"]},
+ {dim:"culture",t:"Hoe staat de directie erin?",
+  o:["Data en AI zijn geen prioriteit","Mooie woorden, geen budget","Budget en aandacht voor initiatieven","Data & AI in de strategie, met KPI's"]}
+];
+const LEVELS = [
+ {n:1,name:"Ad-hoc & Excel",seg:"Achterblijvers",x:135,d:"Losse spreadsheets en handwerk. De winst is hier het grootst en het snelst zichtbaar."},
+ {n:2,name:"Reactief & rapporterend",seg:"Late majority",x:310,d:"Rapportage kijkt achteruit en kost handwerk. Sleutel: van repareren naar borgen."},
+ {n:3,name:"Gestuurd met BI",seg:"Early majority",x:442,d:"KPI's sturen het gesprek. Volgende sprong: voorspellen en governance formaliseren."},
+ {n:4,name:"Proactief & voorspellend",seg:"Early adopters",x:560,d:"Forecasting en eerste AI draaien. Nu opschalen met agents en AI-governance."},
+ {n:5,name:"Datagedreven & agentic",seg:"Innovators",x:670,d:"Bij de <5% koplopers. Voorsprong verzilveren en vasthouden."}
+];
+/* Branche-benchmark: indicatief gemiddeld niveau, afgeleid van CBS AI-adoptie per sector */
+const SECTORS = [
+ {name:"ICT & software",lvl:3.4,adopt:"58,0%"},
+ {name:"Zakelijke dienstverlening",lvl:2.9,adopt:"39,8%"},
+ {name:"Financiële dienstverlening",lvl:2.8,adopt:"37,4%"},
+ {name:"Handel & retail",lvl:2.3,adopt:"± 20%"},
+ {name:"Industrie & productie",lvl:2.3,adopt:"± 20%"},
+ {name:"Logistiek & transport",lvl:2.2,adopt:"± 19%"},
+ {name:"Zorg",lvl:2.1,adopt:"± 18%"},
+ {name:"Bouw",lvl:1.6,adopt:"8,9%"},
+ {name:"Horeca & recreatie",lvl:1.6,adopt:"9,0%"},
+ {name:"Gemiddeld NL-bedrijf",lvl:2.3,adopt:"22,7%"}
+];
+const lvlToX = v => {
+  v = Math.max(1,Math.min(5,v));
+  const lo = Math.floor(v), hi = Math.min(5,lo+1), f = v-lo;
+  return LEVELS[lo-1].x + (LEVELS[hi-1].x-LEVELS[lo-1].x)*f;
+};
+const MARKET_DIST = {1:5,2:21,3:34,4:31,5:9};
+const aheadPct = l => Object.keys(MARKET_DIST).reduce((a,k)=>a+(+k>l?MARKET_DIST[k]:0),0);
+const GAINS = {
+ 1:{share:.5,hrs:2.5,marge:[0.5,1.5]}, 2:{share:.6,hrs:2.0,marge:[0.5,1.5]},
+ 3:{share:.6,hrs:2.5,marge:[1,2]},   4:{share:.7,hrs:3.0,marge:[1,2]},
+ 5:{share:.7,hrs:1.5,marge:[0.5,1]}
+};
+const INVEST = {1:[15000,40000],2:[40000,90000],3:[60000,120000],4:[80000,150000],5:[30000,60000]};
+const sizeF = fte => Math.min(4, Math.max(.6, Math.pow(fte/40, .6)));  // 20 mdw ≈ 0,66× · 40 = 1× · 150 ≈ 2,2× · 400+ = 4×
+const investRange = (l,fte) => [Math.round(INVEST[l][0]*sizeF(fte)/1000)*1000, Math.round(INVEST[l][1]*sizeF(fte)/1000)*1000];
+const investMid = (l,fte) => { const r=investRange(l,fte||40); return (r[0]+r[1])/2; };
+const LEVEL_NEEDS = {
+ 2:["3–5 kern-KPI's met één definitie en eigenaar","Eerste geautomatiseerde Power BI-rapportage (met AFAS: standaard templates)","Directie-sponsor + één zichtbare quick win"],
+ 3:["Centraal dataplatform (Azure/Fabric) met pipelines","Semantische laag: één versie van de waarheid","Data-eigenaren + selfservice per team, met training"],
+ 4:["Datakwaliteit als KPI + catalogus met lineage (Purview)","Forecasting en scenario's in de budgetcyclus","AI-register + risicoclassificatie (EU AI Act), adoptie met coaching"],
+ 5:["AI-ready semantische laag + ontologieën (Fabric IQ)","Data agents op governed data, met evaluatie-routine","Aantoonbare AI-governance + mens-in-de-lus"]
+};
+const LEVEL_DANGERS = {
+ 1:"Handwerk vreet marge, talent vertrekt, elke AI-ambitie strandt op datachaos — 95% van de markt is al verder.",
+ 2:"Je rapporteert het verleden terwijl 74% vooruitkijkt. Schaduw-AI groeit — hoog-risico AI is uitgesteld naar dec 2027, maar de transparantieplicht en handhaving op AI-geletterdheid starten al 2 aug 2026.",
+ 3:"Wie voorspelt wint de deals die jij nacalculeert. Zonder AI-register: transparantie/geletterdheid per aug 2026, hoog-risico (uitgesteld) per dec 2027.",
+ 4:"De kopgroep doet met agents wat jij met analisten doet. Voorsprong zonder onderhoud is tijdelijk.",
+ 5:"Koplopers die stoppen met leren worden ingehaald door de snelste middenmoot — die verdubbelde in twee jaar."
+};
+const ROADMAPS = {
+ 1:[
+  {w:"Weken 1–6",t:"Fundament & bewustwording",win:"Eén maandrapport van dagen handwerk naar minuten; einde cijferdiscussies.",items:[
+   "<b>Nulmeting:</b> alle Excel-rapportages en (schaduw-)AI-gebruik in kaart",
+   "<b>3–5 kern-KPI's</b> met één definitie en één eigenaar",
+   "<b>Quick win:</b> pijnlijkste maandrapport automatiseren in Power BI"]},
+  {w:"Maand 2–6",t:"Van lijstjes naar één waarheid",win:"50–70% minder handmatig cijferwerk; sturen op cijfers van vandaag.",items:[
+   "Eenvoudig <b>centraal dataplatform</b> (Fabric/Azure), 2–3 bronnen gekoppeld",
+   "Excel-rapportages stap voor stap vervangen door <b>dashboards</b>",
+   "<b>AI-register light:</b> welke tools, wie, waarvoor, welke data"]},
+  {w:"Maand 6–12",t:"Borgen & vooruitkijken",win:"Verbeteringen blijven staan; schaduw-AI wordt gecontroleerd gebruik.",items:[
+   "<b>Data-eigenaren</b> per domein + kwartaalreview",
+   "<b>Goedgekeurde AI-tools</b> (M365 Copilot / Claude) met spelregels",
+   "Herhaal de scan en stel bij — adoptie is een programma"]}],
+ 2:[
+  {w:"Weken 1–6",t:"Van repareren naar borgen",win:"Fouten één keer bij de bron oplossen; maandafsluiting 30–50% korter.",items:[
+   "<b>Datakwaliteits-nulmeting</b> op de 5 belangrijkste bronnen",
+   "<b>Centrale KPI-definities</b> in een semantische laag",
+   "<b>AI-register</b> + grove risicoclassificatie (AI Act; hoog-risico definitief per dec 2027)"]},
+  {w:"Maand 2–6",t:"Platform & eigenaarschap",win:"Teams beantwoorden 60–80% van hun datavragen zelf; eerste meetbare AI-pilot.",items:[
+   "Bronnen consolideren op een <b>modern dataplatform</b> met monitoring",
+   "<b>Data-eigenaren en stewards</b> met licht mandaat",
+   "<b>Selfservice-BI</b> met gecertificeerde datasets + training",
+   "Eén <b>AI-pilot</b> op een herhalend proces, effect meten"]},
+  {w:"Maand 6–12",t:"Vooruitkijken & opschalen",win:"Forecasting verlaagt leegloop en overuren — hier start het marge-effect.",items:[
+   "<b>Forecasting</b> in de budget- en capaciteitscyclus",
+   "<b>AI-governance:</b> beleid + mens-in-de-lus, klaar vóór de transparantie- en geletterdheidsplicht (2 aug 2026); hoog-risico is uitgesteld naar dec 2027",
+   "<b>Data literacy-programma:</b> training + coaching + champions",
+   "<b>Purview-catalogus</b> zodra meerdere domeinen live staan"]}],
+ 3:[
+  {w:"Weken 1–6",t:"Meetbaar maken",win:"Kwaliteit wordt een getal; AI-register voorkomt herstelwerk richting de AI Act-deadlines (transparantie aug 2026, hoog-risico dec 2027).",items:[
+   "<b>Datakwaliteit als KPI</b> per domein, op een dashboard",
+   "<b>AI-inventarisatie + risicoclassificatie</b> conform AI Act",
+   "<b>2 voorspellende use-cases</b> kiezen met succescriteria vooraf"]},
+  {w:"Maand 2–6",t:"Voorspellen & verbreden",win:"Rolling forecasts maken de budgetcyclus weken korter, besluiten maanden eerder.",items:[
+   "<b>Rolling forecasts</b> en scenario's i.p.v. één jaarbudget",
+   "<b>Purview:</b> lineage, classificatie en toegangsbeleid",
+   "<b>AI-assistenten breed uitrollen</b> met adoptiebegeleiding",
+   "<b>Semantische laag versterken</b> — straks de context voor agents"]},
+  {w:"Maand 6–12",t:"Eerste agents, blijvende adoptie",win:"Antwoorden in minuten i.p.v. BI-tickets; analistencapaciteit vrij.",items:[
+   "Pilot <b>Fabric Data Agent</b> op governed data (read-only, rechten van de gebruiker)",
+   "<b>Coaching-routine:</b> office hours, showcases, adoptie-dashboard",
+   "<b>Data & AI in de strategie</b> met KPI's op directieniveau"]}],
+ 4:[
+  {w:"Weken 1–6",t:"Governance als versneller",win:"Geen bouwstop bij handhaving; agents kunnen veilig live.",items:[
+   "<b>AI-governance compleet:</b> register, classificatie, evaluatie, incidentproces (hoog-risico gereed vóór dec 2027)",
+   "<b>Audit van de AI-ready datalaag:</b> definities, RLS/OLS, semantiek",
+   "<b>2–3 agentic use-cases</b> met begrensde scope: eerst adviseren, later handelen"]},
+  {w:"Maand 2–6",t:"Van copilots naar agents",win:"Monitoring en uitzoekwerk naar agents — schalen zonder extra overhead.",items:[
+   "<b>Fabric Data Agents</b> live met Purview-beleid (DLP) actief",
+   "Agents in <b>werkprocessen:</b> Teams, budgetcyclus, afwijkingsanalyses",
+   "<b>Evaluatie-routine:</b> accuraatheid structureel meten",
+   "<b>AI literacy:</b> promptvaardigheid + kritisch omgaan met output"]},
+  {w:"Maand 6–12",t:"Opschalen met vertrouwen",win:"Elke volgende use-case heeft dalende meerkosten.",items:[
+   "Succesvolle agents naar meer domeinen; <b>context = infrastructuur</b>",
+   "<b>Mens-in-de-lus</b> voor agents die acties uitvoeren",
+   "Resultaten intern én extern delen"]}],
+ 5:[
+  {w:"Doorlopend",t:"Voorsprong verzilveren",win:"Compliance en datavolwassenheid worden verkoopargument.",items:[
+   "<b>Multi-agent workflows</b> met gedeelde businesscontext (ontologieën)",
+   "<b>Governance als productfeature</b> richting klanten en toezichthouders",
+   "Blijven investeren in <b>vakmanschap en kritisch denken</b>"]},
+  {w:"Doorlopend",t:"Innoveren & uitdragen",win:"Zichtbaar koploperschap trekt talent en klanten aan.",items:[
+   "Gecontroleerd experimenteren met <b>agents die handelen</b> (begrensd, gelogd, terugdraaibaar)",
+   "Jaarlijks benchmarken en <b>publiceren</b>",
+   "Scan per kwartaal per afdeling herhalen"]}]
+};
+const USECASES = {
+ 1:[["Standaard KPI-dashboard","Omzet, marge en debiteuren live — einde knip-en-plakwerk."],
+    ["Geautomatiseerde maandrapportage","Elke ochtend klaar, foutloos, zonder handwerk."],
+    ["Debiteuren-signalering","Te laat betalende klanten automatisch in beeld — direct cashflow-effect."],
+    ["AI-assistent met spelregels","Copilot/Claude voor mail en offertes — schaduw-AI verdwijnt."]],
+ 2:[["Selfservice-BI per team","Gecertificeerde datasets; finance is geen cijferfabriek meer."],
+    ["Datakwaliteits-dashboard","Volledigheid en juistheid als getal op het scherm."],
+    ["Projectmarge-monitor","Wekelijks zicht op uurdekking en rendement i.p.v. verrassingen."],
+    ["AI-pilot op één proces","Bijv. inkoopfacturen of eerstelijns klantvragen — klein en meetbaar."]],
+ 3:[["AI-forecasting","Omzet-, cashflow- en capaciteitsvoorspelling — basis onder rolling forecasts."],
+    ["Anomaly detection","Afwijkende boekingen, marges en uren automatisch gesignaleerd."],
+    ["Capaciteitsplanning + scenario's","Bezetting 3–6 mnd vooruit met wat-als-analyses."],
+    ["Copilot in Power BI","Rapporten bevragen in gewone taal."],
+    ["Purview-catalogus","Lineage en toegangsbeleid — de veiligheidslaag onder AI."]],
+ 4:[["Fabric Data Agents","Vragen in gewone taal aan governed data — read-only, met de rechten van de gebruiker."],
+    ["Fabric IQ / ontologieën","Businessbegrippen als gedeelde context voor elke agent."],
+    ["AI-gedreven budgetcyclus","Driver-based planning met AI-forecasts en scenario's."],
+    ["Automatische afwijkingsanalyse","Agents die signaleren, verklaren én een voorstel doen."],
+    ["Documentintelligentie","Contracten en facturen automatisch uitlezen en routeren."]],
+ 5:[["Multi-agent workflows","Signaleren → verklaren → voorstel → (na goedkeuring) uitvoeren."],
+    ["Agent-ondersteunde operatie","Continue bewaking; mensen sturen op uitzonderingen."],
+    ["Data & AI als product","Eigen datadiensten vermarkten — het fundament wordt omzetbron."],
+    ["Governance als versneller","Aantoonbare compliance als commercieel onderscheid."]],
+ afas:[["AFAS-versneller: standaard templates","Power BI-templates op AFAS Profit (financieel, HR, projecten) via GetConnectors — in weken live, zonder maatwerk."],
+    ["AFAS → dataplatform","GetConnectors als gecontroleerde bron naar Azure/Fabric — basis voor forecasting en agents."],
+    ["AFAS HR- & verzuimanalytics","Verloop, verzuim en bezetting, incl. voorspellende signalen."]]
+};
+const DIM_ADVICE = {
+ analytics:"<b>Data & analytics</b> is je zwakste schakel: automatiseer één pijnlijk maandrapport en maak KPI's de vaste opening van elk overleg.",
+ quality:"<b>Datakwaliteit</b> is je zwakste schakel: alles wat je erop bouwt versterkt de fouten. Meet eerst de 5 kernbronnen en los op bij de bron.",
+ governance:"<b>Governance</b> is je zwakste schakel \u2014 en dat wordt concreet: hoog-risico AI is definitief uitgesteld naar 2 dec 2027 (Omnibus), maar de transparantieplicht en handhaving op AI-geletterdheid starten 2 aug 2026 en de Cyberbeveiligingswet (NIS2) wordt rond aug 2026 verwacht. Start deze maand met een AI-register en data-eigenaren.",
+ tech:"<b>Technologie & AI</b> is je zwakste schakel: ambities lopen vast op losse systemen. Een modern platform is het fundament onder alles hierboven.",
+ culture:"<b>Organisatie & cultuur</b> is je zwakste schakel: gebrek aan ervaring is dé afhaakreden (CBS: 74,6%) — coaching en sponsorschap lossen dit op, geen extra tooling."
+};
+
+/* ================= STATE / HELPERS ================= */
+const $ = id => document.getElementById(id);
+const setTxt=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+const setHTML=(id,v)=>{const e=$(id);if(e)e.innerHTML=v;};
+const prefersReduced = (window.matchMedia? matchMedia('(prefers-reduced-motion: reduce)').matches : false);
+const fmtEUR = v => '€ '+Math.round(v).toLocaleString('nl-NL');
+const fmtShort = v => { const a=Math.abs(v);
+  if(a>=1e6) return (v/1e6).toLocaleString('nl-NL',{maximumFractionDigits:1})+' M€';
+  if(a>=1e3) return Math.round(v/1e3).toLocaleString('nl-NL')+' k€';
+  return '€ '+Math.round(v); };
+let cur=0, answers=new Array(QUESTIONS.length).fill(null), userLevel=1, hasAFAS=false, userSector=9;
+
+function go(id){
+  const swap=()=>{
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+    $(id).classList.add('on');
+  };
+  if(!prefersReduced && document.startViewTransition){ document.startViewTransition(swap); }
+  else swap();
+  window.scrollTo({top:0,behavior:prefersReduced?'auto':'smooth'});
+}
+const buzz=ms=>{try{if(navigator.vibrate)navigator.vibrate(ms);}catch(_){}};
+function restart(){ cur=0; answers.fill(null); renderQ(); go('wizard'); }
+
+/* countdown */
+function tick(){
+  const nxt=nextDeadlines(3);
+  if(!nxt.length) return;
+  const first=nxt[0];
+  let ms=Math.max(0,new Date(first.date+'T00:00:00+02:00')-new Date());
+  const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
+  const seg=(v,l)=>'<div class="cd-box"><span class="mono">'+v+'</span><span>'+l+'</span></div>';
+  if($('cdLand')) $('cdLand').innerHTML=seg(d,'dagen')+seg(h,'uur')+seg(m,'min')+seg(s,'sec');
+  if($('cdTitle')) $('cdTitle').textContent='\u23f3 Eerstvolgende deadline: '+first.label;
+  const f=$('fomoCd');
+  if(f) f.innerHTML='<b>'+d+'</b> dgn \u2192 '+esc(first.kort)
+    + nxt.slice(1).map(x=>{
+        const dd=Math.ceil((new Date(x.date)-new Date())/864e5);
+        return '<span class="cd-next">daarna: '+esc(x.kort)+' ('+dd+' dgn)</span>';
+      }).join('');
+}
+setInterval(tick,1000); tick();
+loadRemoteContent();
+
+/* ================= WIZARD (auto-advance) ================= */
+const DIMLBL={analytics:"Data & analytics",quality:"Datakwaliteit",governance:"Governance & AI Act",tech:"Technologie & AI",culture:"Organisatie & cultuur"};
+function renderQ(dir){
+  const q=QUESTIONS[cur];
+  $('qDim').textContent=(q.ctx?'Context':DIMLBL[q.dim])+' · vraag '+(cur+1)+' van '+QUESTIONS.length;
+  $('ringTxt').textContent=(cur+1)+'/'+QUESTIONS.length;
+  $('ringFg').style.strokeDashoffset=150.8*(1-cur/QUESTIONS.length);
+  const card=$('qCard');
+  const html='<h2>'+q.t+'</h2>'+q.o.map((o,i)=>
+    '<button class="opt'+(answers[cur]===i?' sel':'')+'" onclick="pick('+i+')"><span class="k">'+String.fromCharCode(65+i)+'</span>'+o+'</button>').join('');
+  if(dir&&!prefersReduced){
+    card.classList.remove('in');card.classList.add('out');
+    setTimeout(()=>{card.innerHTML=html;card.classList.remove('out');card.classList.add('in');},240);
+  } else { card.innerHTML=html; card.classList.add('in'); }
+  $('btnBack').style.visibility=cur===0?'hidden':'visible';
+}
+function pick(i){
+  buzz(8);
+  answers[cur]=i;
+  document.querySelectorAll('.opt').forEach((b,j)=>b.classList.toggle('sel',j===i));
+  setTimeout(()=>{ if(cur<QUESTIONS.length-1){cur++;renderQ(true);} else finish(); }, prefersReduced?0:300);
+}
+function prevQ(){ if(cur>0){cur--;renderQ(true);} }
+
+/* ================= SCORING ================= */
+function finish(){
+  const scored=QUESTIONS.map((q,i)=>({q,a:answers[i]})).filter(x=>!x.q.ctx);
+  const sums={},cnt={};Object.keys(DIMS).forEach(k=>{sums[k]=0;cnt[k]=0;});
+  scored.forEach(x=>{sums[x.q.dim]+=x.a+1;cnt[x.q.dim]++;});
+  const dimAvg={};Object.keys(DIMS).forEach(k=>dimAvg[k]=cnt[k]?sums[k]/cnt[k]:1);
+  const overall=scored.reduce((a,x)=>a+x.a+1,0)/scored.length;
+  const score=Math.round((overall-1)/3*100);
+  hasAFAS = answers[0]===0;
+  userSector = (answers[1]==null?9:answers[1]);
+  userLevel = overall<1.6?1:overall<2.2?2:overall<2.8?3:overall<3.5?4:5;
+  if(prefersReduced){ renderDash(score,dimAvg); go('dash'); lockDash(); return; }
+  // 2026-patroon: korte, eerlijke loading-feedback + één georkestreerde entree
+  $('loader').classList.add('on');
+  const steps=['ls1','ls2','ls3'];
+  steps.forEach((id,i)=>{
+    setTimeout(()=>{ $(id).classList.add('busy'); $('lbarFill').style.width=((i+.5)/3*100)+'%'; }, i*420);
+    setTimeout(()=>{ $(id).classList.remove('busy'); $(id).classList.add('done'); $(id).querySelector('.ic').textContent='\u2713'; }, i*420+380);
+  });
+  setTimeout(()=>{
+    $('lbarFill').style.width='100%';
+    renderDash(score,dimAvg);
+    $('loader').classList.remove('on');
+    $('dash').classList.add('dash-in');
+    go('dash'); buzz(12); lockDash();
+    setTimeout(()=>$('dash').classList.remove('dash-in'), 1600);
+  }, steps.length*420+320);
+}
+
+/* ═══ vergrendeling: resultaten pas ná geboekt gesprek ═══ */
+let dashUnlocked=false;
+function lockDash(){
+  if(dashUnlocked)return;
+  $('dash').classList.add('locked');
+  setTimeout(()=>{ if(!dashUnlocked) openLead(); }, 900);
+}
+function unlockDash(){
+  dashUnlocked=true;
+  $('dash').classList.remove('locked');
+  $('dash').classList.add('summary');   /* kop = samenvatting; de rest blijft voor het gesprek */
+}
+
+/* ================= DASHBOARD ================= */
+function renderDash(score,dimAvg){
+  const L=LEVELS[userLevel-1];
+  $('dhTitle').textContent='Niveau '+L.n+' — '+L.name;
+  $('dhSub').textContent=L.d;
+  // donut
+  requestAnimationFrame(()=>{ $('donutFg').style.strokeDashoffset=251.3*(1-score/100); });
+  countUp($('donutTxt'),score,'');
+  $('lvlName').textContent=L.name;
+  $('lvlSeg').textContent=L.seg+' · niveau '+L.n+' van 5';
+  // fomo
+  const ahead=aheadPct(userLevel);
+  const fb=$('fomoPct');
+  fb.classList.toggle('ok',ahead===0);
+  countUp(fb,ahead,'%');
+  $('fomoTxt').textContent=ahead===0?'van de markt staat vóór jullie — koploper. Nu vasthouden.':'van de markt staat al vóór jullie (Gartner-verdeling).';
+  // dims
+  const dl=$('dimList');dl.innerHTML='';let weak='analytics',weakV=99;
+  Object.keys(DIMS).forEach(k=>{
+    const pct=Math.round((dimAvg[k]-1)/3*100);
+    if(dimAvg[k]<weakV){weakV=dimAvg[k];weak=k;}
+    const r=document.createElement('div');r.className='dimrow';
+    r.innerHTML='<span class="n">'+DIMS[k].name+'</span><div class="tr"><div class="fl" style="width:0;background:'+DIMS[k].c+'"></div></div><span class="s">'+pct+'%</span>';
+    dl.appendChild(r);
+    requestAnimationFrame(()=>setTimeout(()=>r.querySelector('.fl').style.width=pct+'%',80));
+  });
+  const weakPct=Math.round((dimAvg[weak]-1)/3*100);
+  $('prioTxt').innerHTML='⚑ '+DIM_ADVICE[weak]
+   +'<details class="why"><summary>Waarom dit advies?</summary><p>Van je vijf dimensies scoort <b>'+DIMS[weak].name
+   +'</b> het laagst ('+weakPct+'%). De laagste dimensie bepaalt je tempo: verbeteringen elders lekken weg zolang deze achterblijft. '
+   +'De weging: elk antwoord telt 1\u20134 punten; het advies volgt de laagste gemiddelde score. Benchmarkbronnen: CBS AI-monitor, Gartner-volwassenheidsverdeling.</p></details>';
+  // mini curve + chart
+  buildMiniCurve();
+  const sl=$('slLvl');sl.min=userLevel;sl.value=Math.min(userLevel+1,5);
+  renderCk();
+}
+function countUp(el,to,suf){
+  if(prefersReduced){el.textContent=to+suf;return;}
+  const t0=performance.now();
+  (function st(t){const p=Math.min(1,(t-t0)/1300),e=1-Math.pow(1-p,3);
+   el.textContent=Math.round(to*e)+suf;if(p<1)requestAnimationFrame(st);})(t0);
+}
+
+/* ---- mini adoptiecurve ---- */
+const SEGMENTS=[{lvl:1,x0:30,x1:240},{lvl:2,x0:240,x1:380},{lvl:3,x0:380,x1:505},{lvl:4,x0:505,x1:615},{lvl:5,x0:615,x1:730}];
+const bellY=(()=>{const c=(a,b,d,e,t)=>{const u=1-t;return u*u*u*a+3*u*u*t*b+3*u*t*t*d+t*t*t*e;};
+ const p=[];for(let t=0;t<=1;t+=.02)p.push([c(30,160,230,380,t),c(165,165,30,30,t)]);
+ for(let t=.02;t<=1;t+=.02)p.push([c(380,530,600,730,t),c(30,30,165,165,t)]);
+ return x=>{let b=p[0];for(const q of p)if(Math.abs(q[0]-x)<Math.abs(b[0]-x))b=q;return b[1];};})();
+function buildMiniCurve(){
+  const svg=$('miniCurve');const NS='http://www.w3.org/2000/svg';svg.innerHTML='';
+  const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const defs=el('defs',{});defs.innerHTML='<linearGradient id="mg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#D6452B"/><stop offset="45%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#0E9F6E"/></linearGradient>';
+  svg.appendChild(defs);
+  svg.appendChild(el('path',{d:'M30,165 C160,165 230,30 380,30 C530,30 600,165 730,165',fill:'none',stroke:'url(#mg)','stroke-width':'2.5'}));
+  [240,380,505,615].forEach(x=>svg.appendChild(el('line',{x1:x,x2:x,y1:40,y2:165,stroke:'rgba(22,39,62,.14)','stroke-dasharray':'3 4'})));
+  const labels=[[70,'N1 · 5%'],[280,'N2 · 21%'],[415,'N3 · 34%'],[528,'N4 · 31%'],[645,'N5 · 9%']];
+  labels.forEach(([x,t])=>{const e=el('text',{x,y:182,class:'seg-lbl'});e.textContent=t;svg.appendChild(e);});
+  const arr=el('text',{x:730,y:196,'text-anchor':'end',class:'seg-lbl',fill:'#4A5D77'});arr.textContent='volwassenheid \u2192';svg.appendChild(arr);
+  // dots
+  SEGMENTS.forEach(s=>{for(let i=0;i<MARKET_DIST[s.lvl];i++){
+    const x=s.x0+6+Math.random()*(s.x1-s.x0-12),yT=bellY(x);
+    const y=Math.min(160,yT+7+Math.random()*Math.max(5,158-yT));
+    const c=el('circle',{cx:x.toFixed(1),cy:y.toFixed(1),r:2.4,class:'cdot'+(s.lvl>userLevel?' ahead':''),
+      fill:s.lvl>userLevel?'#F59E0B':'#C3CFDC'});
+    if(!prefersReduced&&s.lvl>userLevel)c.style.animationDelay=(Math.random()*2)+'s';
+    svg.appendChild(c);}});
+  // hover zones -> tooltip
+  SEGMENTS.forEach(s=>{
+    const z=el('rect',{x:s.x0,y:25,width:s.x1-s.x0,height:160,class:'segz',tabindex:'0',role:'button','aria-label':'Niveau '+s.lvl});
+    const show=ev=>{
+      const L=LEVELS[s.lvl-1];
+      const needs=s.lvl===1?'Startpunt — de vraag is hoe snel je eruit komt.':LEVEL_NEEDS[s.lvl].join(' · ');
+      const isYou=s.lvl===userLevel;
+      showTip(ev, '<div class="tm">Niveau '+s.lvl+' · '+L.seg+' · '+MARKET_DIST[s.lvl]+'% van de markt'+(isYou?' · <b style="color:#FFB547">JIJ</b>':'')+'</div>'
+        +'<div style="margin-top:5px;color:#8FE7C4"><b>✓ Nodig:</b> '+needs+'</div>'
+        +'<div style="margin-top:5px;color:#FFB3A6"><b>⚠ Gevaar:</b> '+LEVEL_DANGERS[s.lvl]+'</div>', $('miniCurve').closest('.b-curve'));
+    };
+    z.addEventListener('pointermove',show);
+    z.addEventListener('pointerleave',hideTip);
+    z.addEventListener('focus',e=>show({clientX:innerWidth/2,clientY:200}));
+    z.addEventListener('blur',hideTip);
+    svg.appendChild(z);
+  });
+  // BRANCHE-marker
+  const S = SECTORS[userSector] || SECTORS[SECTORS.length-1];
+  const bx = lvlToX(S.lvl), by = bellY(bx);
+  const bg = el('g',{});
+  bg.appendChild(el('line',{x1:bx,x2:bx,y1:by-4,y2:165,stroke:'#1D6FC4','stroke-width':'1.6','stroke-dasharray':'4 3'}));
+  bg.appendChild(el('rect',{x:bx-5,y:by-9,width:10,height:10,fill:'#1D6FC4',stroke:'#fff','stroke-width':'2',transform:'rotate(45 '+bx+' '+(by-4)+')'}));
+  const bt=el('text',{x:bx,y:by-16,'text-anchor':'middle',fill:'#1D6FC4','font-size':'10','font-weight':'700','font-family':"ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"});
+  bt.textContent='BRANCHE';bg.appendChild(bt);
+  const bz=el('rect',{x:bx-18,y:by-30,width:36,height:200,class:'segz'});
+  const bshow=ev=>showTip(ev,'<div class="tm">Branchegemiddelde \u00b7 '+S.name+'</div>'
+    +'<div style="margin-top:5px">Indicatief niveau <b class="mono" style="color:#7FC2FF">'+String(S.lvl).replace('.',',')+'</b> \u2014 AI-adoptie in deze sector: <b class="mono" style="color:#7FC2FF">'+S.adopt+'</b> (CBS).</div>');
+  bz.addEventListener('pointermove',bshow);bz.addEventListener('pointerleave',hideTip);
+  bg.appendChild(bz);
+  svg.appendChild(bg);
+  // JIJ
+  const L=LEVELS[userLevel-1];
+  const g=el('g',{id:'mkYou'});
+  g.appendChild(el('line',{x1:L.x,x2:L.x,y1:52,y2:165,stroke:'#16273E','stroke-width':'1.6'}));
+  g.appendChild(el('circle',{cx:L.x,cy:52,r:6,fill:'#F59E0B',stroke:'#FFFFFF','stroke-width':'2'}));
+  const t=el('text',{x:L.x,y:38,'text-anchor':'middle',fill:'#B45309','font-size':'11','font-weight':'700','font-family':"ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"});
+  t.textContent='JIJ';g.appendChild(t);svg.appendChild(g);
+  // verdict t.o.v. branche
+  const diff = userLevel - S.lvl;
+  let v;
+  if(diff <= -0.4) v = '<b style="color:var(--coral)">\u26a0 Je loopt achter op je eigen branche.</b> Het gemiddelde bedrijf in '+S.name.toLowerCase()+' zit al op niveau ~'+String(S.lvl).replace('.',',')+' \u2014 elke maand wachten vergroot de achterstand. Nu aan de slag.';
+  else if(diff < 0.6) v = '<b style="color:var(--amber)">\u2192 Je zit op het gemiddelde van je branche</b> ('+S.name+', ~niveau '+String(S.lvl).replace('.',',')+'). De middenmoot beweegt hard \u2014 wie nu doorpakt, komt in de kopgroep.';
+  else v = '<b style="color:var(--green)">\u2713 Je loopt voor op je branche</b> ('+S.name+', gemiddeld ~'+String(S.lvl).replace('.',',')+'). Voorsprong is tijdelijk: verzilver hem nu met de volgende stap.';
+  setHTML('brVerdict', v);
+}
+/* gedeelde tooltip (mini-curve gebruikt ck-tip stijl in eigen container) */
+let tipEl=null;
+function showTip(ev,html,container){
+  if(!tipEl){tipEl=document.createElement('div');tipEl.className='ck-tip';document.body.appendChild(tipEl);tipEl.style.position='fixed';}
+  tipEl.hidden=false;tipEl.innerHTML=html;tipEl.style.maxWidth='300px';
+  const x=Math.max(160,Math.min(innerWidth-160,ev.clientX));
+  tipEl.style.left=x+'px';tipEl.style.top=Math.max(8,ev.clientY-14-tipEl.offsetHeight)+'px';
+}
+function hideTip(){if(tipEl)tipEl.hidden=true;}
+
+/* ================= J-CURVE COCKPIT ================= */
+const CK={M:36,SD:9,pad:{l:70,r:14,t:14,b:36},W:760,H:330};
+const gainYear=(l,f,o,u)=>{const G=GAINS[l];return f*G.share*G.hrs*44*u*0.8+o*((G.marge[0]+G.marge[1])/2)/100;};
+function buildSeries(c,t,s0,f,o,u){
+  const cum=[0];let acc=0;const miles=[];
+  for(let m=1;m<=CK.M;m++){let fl=0;
+    for(let k=0;k<t-c;k++){const a=s0+k*CK.SD,b=a+CK.SD;
+      if(m>a&&m<=b)fl-=investMid(c+k,f)/CK.SD;
+      if(m>b)fl+=gainYear(c+k,f,o,u)/12;
+      if(m===b)miles.push({m,lvl:c+k+1});}
+    acc+=fl;cum.push(acc);}
+  return{cum,miles};
+}
+let ckState=null;
+function inputs(){return{
+  f:Math.max(1,parseFloat($('iFte').value)||40),
+  o:Math.max(0,parseFloat($('iOmz').value)||0),
+  u:Math.max(10,parseFloat($('iUur').value)||55)};}
+function renderCk(){
+  const {f,o,u}=inputs();
+  const target=parseInt($('slLvl').value), delay=parseInt($('slDel').value);
+  const TL = LEVELS[(target<=userLevel?userLevel:target)-1];
+  $('lblLvl').textContent = (target<=userLevel?'N'+userLevel+' (huidig)':'N'+target)+' \u00b7 '+TL.name;
+  var info;
+  if(target<=userLevel){
+    info = '<span class="nm">N'+userLevel+' \u00b7 '+TL.name+'</span> \u2014 hier sta je nu. '+TL.d+' Schuif naar rechts voor je ambitie.';
+  } else {
+    var firstNeed = (LEVEL_NEEDS[target]||[''])[0];
+    info = '<span class="nm">N'+target+' \u00b7 '+TL.name+'</span> ('+TL.seg+') \u2014 '+TL.d+' <b>Eerste stap:</b> '+firstNeed+'.';
+  }
+  setHTML('lvlInfo', info);
+  $('lblDel').textContent=delay===0?'NU':delay+' mnd';
+  // governance fines
+  $('fine3').textContent=fmtEUR(o*CONTENT.fines.aiActLow/100); $('fine7').textContent=fmtEUR(o*CONTENT.fines.aiActHigh/100);
+  const fn=$('fineNis'); if(fn) fn.textContent=fmtEUR(o*CONTENT.fines.nis2/100);
+
+  const A=buildSeries(userLevel,target,0,f,o,u), B=buildSeries(userLevel,target,delay,f,o,u);
+  const net3=A.cum[CK.M], wait=A.cum[CK.M]-B.cum[CK.M];
+  let be=null;for(let m=1;m<=CK.M;m++)if(A.cum[m]>=0&&A.cum[m-1]<0){be=m;break;}
+  let invL=0,invH=0;for(let l=userLevel;l<target;l++){const r=investRange(l,f);invL+=r[0];invH+=r[1];}
+  const off=target<=userLevel;
+  $('kNet').textContent=off?'€ 0':(net3>=0?'+ ':'− ')+fmtShort(Math.abs(net3));
+  $('kBreak').textContent=off?'—':(be?'mnd '+be:'> 36 mnd');
+  $('kInv').textContent=off?'—':fmtShort(invL)+' – '+fmtShort(invH);
+  $('kWait').textContent=off?'€ 0':'− '+fmtShort(Math.abs(wait));
+  setHTML('kNetSub', off?'':'wat het traject N'+userLevel+'\u2192N'+target+' na 3 jaar onder de streep oplevert (besparing + marge \u2212 investering)');
+  setHTML('kBreakSub', off?'':'de maand waarin de gouden lijn door \u20ac 0 gaat \u2014 daarna is elke maand winst');
+  setHTML('kInvSub', off?'':'eenmalige externe kosten (begeleiding + inrichting) voor N'+userLevel+'\u2192N'+target+', geschaald naar '+f+' medewerkers \u00b7 excl. licenties \u00b7 grotendeels OPEX');
+  setHTML('kWaitSub', off?'':'winst die verdampt door pas over '+delay+' mnd te starten (verschil tussen de twee lijnen na 36 mnd)');
+  ['kNet','kBreak','kInv','kWait'].forEach(id=>{
+    const e=$(id).parentElement;
+    e.classList.remove('flash'); void e.offsetWidth; e.classList.add('flash');
+  });
+  drawCk(A,B,be,target,delay);
+}
+function drawCk(A,B,be,target,delay){
+  const svg=$('ckSvg');svg.innerHTML='';const NS='http://www.w3.org/2000/svg';
+  const{l,r,t,b}=CK.pad,W=CK.W,H=CK.H,iw=W-l-r,ih=H-t-b;
+  const all=A.cum.concat(B.cum);
+  let yMin=Math.min(0,...all),yMax=Math.max(1,...all);const sp=(yMax-yMin)||1;yMin-=sp*.08;yMax+=sp*.1;
+  const X=m=>l+m/CK.M*iw, Y=v=>t+(yMax-v)/(yMax-yMin)*ih;
+  const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const defs=el('defs',{});
+  defs.innerHTML='<linearGradient id="ckl" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#0E9F6E"/></linearGradient>'
+   +'<linearGradient id="cka" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0E9F6E" stop-opacity=".18"/><stop offset="100%" stop-color="#0E9F6E" stop-opacity="0"/></linearGradient>'
+   +'<filter id="glow"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  svg.appendChild(defs);
+  for(let i=0;i<=4;i++){const v=yMin+(yMax-yMin)*i/4,y=Y(v);
+    svg.appendChild(el('line',{x1:l,x2:W-r,y1:y,y2:y,class:'grid'}));
+    const tx=el('text',{x:l-8,y:y+3,'text-anchor':'end',class:'axis'});tx.textContent=fmtShort(v);svg.appendChild(tx);}
+  for(let m=0;m<=CK.M;m+=6){const tx=el('text',{x:X(m),y:H-b+15,'text-anchor':'middle',class:'axis'});tx.textContent=m===0?'nu':m;svg.appendChild(tx);}
+  svg.appendChild(el('line',{x1:l,x2:W-r,y1:Y(0),y2:Y(0),class:'zero'}));
+  const pathOf=a=>a.map((v,m)=>(m?'L':'M')+X(m).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+  if(target>userLevel){
+    const dWait=pathOf(A.cum)+' '+B.cum.map((v,m)=>'L'+X(CK.M-m).toFixed(1)+','+Y(B.cum[CK.M-m]).toFixed(1)).join(' ')+' Z';
+    svg.appendChild(el('path',{d:dWait,fill:'#D6452B','fill-opacity':'.13'}));
+    svg.appendChild(el('path',{d:pathOf(A.cum)+' L'+X(CK.M)+','+Y(0)+' L'+X(0)+','+Y(0)+' Z',fill:'url(#cka)'}));
+    svg.appendChild(el('path',{d:pathOf(B.cum),fill:'none',stroke:'#7E93AC','stroke-width':'1.8','stroke-dasharray':'6 5'}));
+    const pA=el('path',{d:pathOf(A.cum),fill:'none',stroke:'url(#ckl)','stroke-width':'3.2','stroke-linecap':'round',filter:'url(#glow)'});
+    svg.appendChild(pA);
+    if(!prefersReduced&&pA.getTotalLength){const ln=pA.getTotalLength();pA.style.strokeDasharray=ln;pA.style.strokeDashoffset=ln;
+      pA.getBoundingClientRect();pA.style.transition='stroke-dashoffset 1.1s ease';pA.style.strokeDashoffset='0';}
+    A.miles.forEach(mi=>{
+      svg.appendChild(el('rect',{x:X(mi.m)-4.5,y:Y(A.cum[mi.m])-4.5,width:9,height:9,fill:'#FFFFFF',stroke:'#F59E0B','stroke-width':'2',
+        transform:'rotate(45 '+X(mi.m)+' '+Y(A.cum[mi.m])+')'}));
+      const passed=aheadPct(userLevel)-aheadPct(mi.lvl);
+      const tt=el('text',{x:X(mi.m),y:Y(A.cum[mi.m])-11,'text-anchor':'middle',class:'axis',fill:'#B45309','font-weight':'700'});
+      tt.textContent='N'+mi.lvl+' · +'+passed+'%';svg.appendChild(tt);});
+    if(be){const g=el('g',{class:'flag'});
+      g.appendChild(el('line',{x1:X(be),x2:X(be),y1:Y(0)-22,y2:Y(0),stroke:'#0E9F6E','stroke-width':'2'}));
+      g.appendChild(el('path',{d:'M'+X(be)+','+(Y(0)-22)+' l14,4.5 l-14,4.5 Z',fill:'#0E9F6E'}));
+      const tt=el('text',{x:X(be)+18,y:Y(0)-13,class:'axis',fill:'#0B7C55','font-weight':'700'});
+      tt.textContent='break-even';g.appendChild(tt);svg.appendChild(g);}
+  } else {
+    const tt=el('text',{x:W/2,y:H/2,'text-anchor':'middle',class:'axis','font-size':'12'});
+    tt.textContent=userLevel===5?'Top bereikt — schuif voor het onderhouds-scenario.':'Schuif het doelniveau omhoog om de curve te tekenen.';
+    svg.appendChild(tt);
+  }
+  const cr=el('g',{id:'cross',visibility:'hidden'});
+  cr.appendChild(el('line',{id:'crL',y1:t,y2:H-b,stroke:'#B45309','stroke-width':'1','stroke-dasharray':'3 3'}));
+  cr.appendChild(el('circle',{id:'crA',r:4.5,fill:'#F59E0B',stroke:'#FFFFFF','stroke-width':'2'}));
+  cr.appendChild(el('circle',{id:'crB',r:3.5,fill:'#7E93AC',stroke:'#FFFFFF','stroke-width':'2'}));
+  svg.appendChild(cr);
+  ckState={A,B,target,delay,X,Y};
+}
+/* KPI-toelichting (tikken/klikken) */
+const KPI_INFO={
+ net:['Netto na 3 jaar','Alle maandelijkse besparingen en marge-effecten van het traject opgeteld over 36 maanden, minus de volledige investering. Dit is het eindpunt van de gouden lijn in de grafiek.'],
+ break:['Terugverdiend in','Het moment waarop de opgetelde opbrengsten de investering inhalen: de gouden lijn kruist \u20ac 0 (het groene vlaggetje \u2691 in de grafiek). Daarna is elke maand netto winst.'],
+ inv:['Investering','Eenmalige externe kosten voor begeleiding en inrichting van alle tussenstappen naar je doelniveau. Schaalt mee met bedrijfsomvang (basis: 40 medewerkers; bij 150 mdw \u00d72,2, bij 400+ \u00d74). Exclusief licenties (\u00b1 \u20ac 10\u201320 p/gebruiker p/mnd) en eigen uren. Grotendeels OPEX, geen CAPEX-traject.'],
+ wait:['Prijs van wachten','Het verschil na 36 maanden tussen n\u00fa starten (gouden lijn) en starten na de gekozen uitstelperiode (stippellijn) \u2014 het rode vlak in de grafiek. Dit is winst die je nooit meer inhaalt: het plan wordt niet goedkoper door te wachten, je mist alleen maanden rendement.']
+};
+function kpiInfo(ev,k){
+  const i=KPI_INFO[k];
+  showTip(ev,'<div class="tm">'+i[0]+'</div><div style="margin-top:5px">'+i[1]+'</div>');
+  setTimeout(hideTip, 6000);
+}
+
+/* crosshair tooltip op de grote grafiek */
+(function(){
+  const svg=$('ckSvg'),wrap=$('chWrap'),tip=$('ckTip');
+  function mv(ev){
+    if(!ckState||ckState.target<=userLevel){tip.hidden=true;return;}
+    const pt=ev.touches?ev.touches[0]:ev, rc=svg.getBoundingClientRect();
+    let m=Math.round(((pt.clientX-rc.left)/rc.width*CK.W-CK.pad.l)/(CK.W-CK.pad.l-CK.pad.r)*CK.M);
+    m=Math.max(0,Math.min(CK.M,m));
+    const{A,B,target,delay,X,Y}=ckState;
+    const lvl=Math.min(target,userLevel+Math.floor(m/CK.SD));
+    $('cross').setAttribute('visibility','visible');
+    $('crL').setAttribute('x1',X(m));$('crL').setAttribute('x2',X(m));
+    $('crA').setAttribute('cx',X(m));$('crA').setAttribute('cy',Y(A.cum[m]));
+    $('crB').setAttribute('cx',X(m));$('crB').setAttribute('cy',Y(B.cum[m]));
+    tip.hidden=false;
+    tip.innerHTML='<div class="tm">Maand '+m+' · niveau ± '+lvl+'</div>'
+     +'<div class="tr"><span style="color:#FFB547">● Nu starten</span><b class="mono" style="color:#FFB547">'+fmtShort(A.cum[m])+'</b></div>'
+     +'<div class="tr"><span style="color:#8A9BB0">◌ Over '+delay+' mnd</span><b class="mono" style="color:#8A9BB0">'+fmtShort(B.cum[m])+'</b></div>'
+     +'<div class="tr"><span style="color:#FF6B5E">Verschil</span><b class="mono" style="color:#FF6B5E">'+fmtShort(A.cum[m]-B.cum[m])+'</b></div>';
+    const wr=wrap.getBoundingClientRect();
+    tip.style.left=Math.max(105,Math.min(wr.width-105,pt.clientX-wr.left))+'px';
+    tip.style.top=Math.max(4,pt.clientY-wr.top-96)+'px';
+  }
+  function lv(){tip.hidden=true;const c=$('cross');if(c)c.setAttribute('visibility','hidden');}
+  svg.addEventListener('pointermove',mv);
+  svg.addEventListener('touchmove',mv,{passive:true});
+  svg.addEventListener('pointerleave',lv);svg.addEventListener('touchend',lv);
+})();
+['iFte','iOmz','iUur'].forEach(id=>$(id).addEventListener('input',renderCk));
+$('slLvl').addEventListener('input',renderCk);
+$('slDel').addEventListener('input',renderCk);
+/* waarde-bubbel + haptic per stap */
+[['slLvl',v=>'N'+v],['slDel',v=>v==='0'?'NU':v+' mnd']].forEach(([id,fmt])=>{
+  const sl=$(id), wrap=sl.closest('.sl');
+  const bub=document.createElement('div'); bub.className='sl-bub'; wrap.appendChild(bub);
+  let last=sl.value;
+  const pos=()=>{
+    const min=+sl.min,max=+sl.max,p=(+sl.value-min)/(max-min);
+    const pad=12, w=sl.getBoundingClientRect().width;
+    bub.style.left=(pad+p*(w-2*pad))+'px';
+    bub.textContent=fmt(sl.value);
+  };
+  sl.addEventListener('input',()=>{ pos(); if(sl.value!==last){buzz(6);last=sl.value;} });
+  sl.addEventListener('pointerdown',()=>{wrap.classList.add('dragging');pos();});
+  ['pointerup','pointercancel','blur'].forEach(ev=>sl.addEventListener(ev,()=>wrap.classList.remove('dragging')));
+});
+
+
+
+/* ================= DIRECTE AZURE DEVOPS-KOPPELING ================= */
+const adoBase = ()=>'https://dev.azure.com/'+ADO.org+'/'+encodeURIComponent(ADO.project);
+const adoAuth = ()=>'Basic '+btoa(':'+ADO.pat);
+async function adoWiql(q){
+  const r=await fetch(adoBase()+'/_apis/wit/wiql?api-version=7.1',{method:'POST',
+    headers:{'Authorization':adoAuth(),'Content-Type':'application/json'},body:JSON.stringify({query:q})});
+  if(!r.ok) throw new Error('WIQL '+r.status);
+  return (await r.json()).workItems.map(w=>w.id);
+}
+async function adoCreate(type,ops){
+  const r=await fetch(adoBase()+'/_apis/wit/workitems/$'+encodeURIComponent(type)+'?api-version=7.1',{
+    method:'POST',headers:{'Authorization':adoAuth(),'Content-Type':'application/json-patch+json'},
+    body:JSON.stringify(ops)});
+  if(!r.ok) throw new Error(type+' '+r.status+': '+(await r.text()).slice(0,200));
+  return (await r.json()).id;
+}
+const F=(p,v)=>({op:'add',path:'/fields/'+p,value:v});
+const P=id=>({op:'add',path:'/relations/-',value:{rel:'System.LinkTypes.Hierarchy-Reverse',
+  url:'https://dev.azure.com/'+ADO.org+'/_apis/wit/workItems/'+id}});
+function pickConsultant(email){
+  if(!ADO.consultants.length) return {naam:null,email:null};
+  let h=0; email=email.toLowerCase();
+  for(let i=0;i<email.length;i++) h=(h*31+email.charCodeAt(i))>>>0;
+  return ADO.consultants[h%ADO.consultants.length];
+}
+
+/* ---- Feature-inhoud ---- */
+function featureBody(p){
+  const s=p.scan,b=p.businesscase,l=p.lead;
+  const fase1=ROADMAPS[s.niveau][0];
+  return '<h3>Doel</h3><p>'+esc(l.bedrijf)+' van volwassenheidsniveau '+s.niveau+' ('+esc(s.niveauNaam)
+   +') naar niveau '+esc(b.doelniveau)+' brengen: van de scan-uitkomst naar een lopend verbetertraject met meetbaar rendement.</p>'
+   +'<h3>Waarde (indicatieve businesscase)</h3><ul>'
+   +'<li>Netto resultaat na 3 jaar: <b>'+esc(b.nettoNa3Jaar)+'</b> · break-even: <b>'+esc(b.breakEven)+'</b></li>'
+   +'<li>Investering: <b>'+esc(b.investering)+'</b> · prijs van '+esc(b.uitstelMnd)+' mnd wachten: <b>'+esc(b.prijsVanWachten)+'</b></li>'
+   +'<li>Kengetallen klant: '+esc(b.medewerkers)+' medewerkers, € '+esc(b.omzet)+' omzet, € '+esc(b.uurtarief)+'/uur</li></ul>'
+   +'<h3>Scope fase 1 ('+esc(fase1.w)+' — '+esc(fase1.t)+')</h3><ul>'
+   +fase1.items.map(i=>'<li>'+i+'</li>').join('')
+   +(s.afas?'<li><b>AFAS-versneller:</b> standaard Power BI-templates via GetConnectors</li>':'')+'</ul>'
+   +'<h3>Risico / urgentie</h3><p>AI Act: hoog-risico definitief uitgesteld naar 2 dec 2027 (Omnibus 29 juni 2026), transparantie/geletterdheid per 2 aug 2026 + NIS2/Cbw verwacht aug 2026; branche ('+esc(s.branche)
+   +') zit gemiddeld op ~'+String(s.brancheNiveau).replace('.',',')+' — '
+   +(s.niveau<s.brancheNiveau?'klant loopt achter op de eigen branche.':'voorsprong verzilveren voordat de middenmoot aanhaakt.')+'</p>';
+}
+
+/* ---- User story: beschrijving + Definition of Done ---- */
+function storyBody(p){
+  const s=p.scan,b=p.businesscase,l=p.lead;
+  const dims=Object.keys(s.dims).map(k=>'<li>'+esc(k)+': <b>'+esc(s.dims[k])+'</b></li>').join('');
+  return '<h3>Context</h3>'
+   +'<p><b>Contact:</b> '+esc(l.naam)+' &lt;'+esc(l.email)+'&gt;'
+   +(l.relatieId?' · relatie <b>'+esc(l.relatieId)+'</b>':' · nieuwe prospect')
+   +' · scan v'+esc(p.versie)+' · '+esc(p.timestamp.slice(0,10))+'</p>'
+   +'<p><b>Uitkomst:</b> niveau '+s.niveau+' — '+esc(s.niveauNaam)+' ('+esc(s.segment)+'), score '
+   +esc(s.score)+'/100. '+s.aheadPct+'% van de markt staat voor. Branche: '+esc(s.branche)
+   +' (~'+String(s.brancheNiveau).replace('.',',')+'). ERP: '+(s.afas?'AFAS Profit':'geen AFAS')+'.</p>'
+   +'<h3>Score per dimensie</h3><ul>'+dims+'</ul>'
+   +'<h3>Businesscase (doel N'+esc(b.doelniveau)+')</h3>'
+   +'<p>Netto 3 jr: <b>'+esc(b.nettoNa3Jaar)+'</b> · break-even <b>'+esc(b.breakEven)
+   +'</b> · investering <b>'+esc(b.investering)+'</b> · prijs van wachten <b>'+esc(b.prijsVanWachten)+'</b></p>'
+   +'<h3>Definition of Done</h3><ul>'
+   +'<li>Intakegesprek gevoerd en verslag vastgelegd op deze user story</li>'
+   +'<li>Scanresultaten gevalideerd met de klant; kengetallen en businesscase herijkt op werkelijke cijfers</li>'
+   +'<li>Plan van aanpak fase 1 (incl. planning en investering) gedeeld met de klant</li>'
+   +'<li>Vervolgstap vastgelegd: offerte verstuurd \u00f3f onderbouwde no-go geregistreerd</li>'
+   +'<li>Scanrapport (HTML) als bijlage/link aan de feature gekoppeld</li>'
+   +'<li>Lead-status en klantrelatie bijgewerkt in CRM</li></ul>';
+}
+
+/* ---- Acceptatiecriteria (apart DevOps-veld) ---- */
+function storyAC(p){
+  const s=p.scan,l=p.lead;
+  const zwakste=Object.keys(s.dims).reduce((a,k)=>parseInt(s.dims[k])<parseInt(s.dims[a])?k:a,Object.keys(s.dims)[0]);
+  return '<ul>'
+   +'<li><b>Gegeven</b> de lead van '+esc(l.naam)+' ('+esc(l.bedrijf)+'), <b>wanneer</b> de story wordt opgepakt, <b>dan</b> is er binnen 1 werkdag contact geweest en een intake ingepland.</li>'
+   +'<li><b>Gegeven</b> de scan-uitkomst (niveau '+s.niveau+'), <b>wanneer</b> de intake plaatsvindt, <b>dan</b> zijn de resultaten per dimensie besproken en is de zwakste dimensie ('+esc(zwakste)+') vertaald naar minimaal 3 concrete verbeteracties.</li>'
+   +'<li><b>Gegeven</b> de indicatieve businesscase, <b>wanneer</b> de werkelijke kengetallen bekend zijn, <b>dan</b> is de businesscase herijkt en met de klant gedeeld (investering, besparing, terugverdientijd).</li>'
+   +(s.afas?'<li><b>Gegeven</b> dat de klant AFAS Profit gebruikt, <b>wanneer</b> de intake plaatsvindt, <b>dan</b> is een demo van de standaard AFAS Power BI-templates gegeven of ingepland.</li>':'')
+   +'<li><b>Gegeven</b> de actuele AI Act-deadlines (transparantie/geletterdheid: 2 aug 2026; hoog-risico definitief uitgesteld naar 2 dec 2027), <b>wanneer</b> AI-gebruik is vastgesteld, <b>dan</b> is een AI-register/risicoclassificatie als actiepunt opgenomen in het voorstel.</li>'
+   +'</ul>';
+}
+
+/* ---- Orkestratie: epic zoeken/maken -> feature -> user story ---- */
+async function createDevops(p){
+  const l=p.lead, relatie=(l.relatieId||'').trim();
+  const tag = relatie ? 'klant:'+relatie : 'prospect:'+l.bedrijf.slice(0,60);
+  let epicId, epicNieuw=false;
+  const epics=await adoWiql("SELECT [System.Id] FROM WorkItems WHERE [System.WorkItemType]='Epic' AND [System.Tags] CONTAINS '"+tag.replace(/'/g,'')+"' AND [System.TeamProject]=@project");
+  if(epics.length){ epicId=epics[0]; }
+  else{
+    const ops=[F('System.Title','Klant: '+l.bedrijf+(relatie?' ('+relatie+')':' (prospect)')),
+               F('System.Tags',tag+'; data-ai-scan'),
+               F('System.Description','<p>Klantrelatie aangemaakt vanuit de Data & AI Cockpit. Contact: '+esc(l.naam)+' &lt;'+esc(l.email)+'&gt;.</p>')];
+    if(ADO.areaPath) ops.push(F('System.AreaPath',ADO.areaPath));
+    epicId=await adoCreate('Epic',ops); epicNieuw=true;
+  }
+  const featOps=[F('System.Title','Data & AI verbetertraject \u2014 '+l.bedrijf+' \u2014 N'+p.scan.niveau+'\u2192N'+p.businesscase.doelniveau),
+                 F('System.Description',featureBody(p)),
+                 F('System.Tags',tag+'; data-ai-scan'), P(epicId)];
+  if(ADO.areaPath) featOps.push(F('System.AreaPath',ADO.areaPath));
+  const featureId=await adoCreate('Feature',featOps);
+  const c=pickConsultant(l.email);
+  const storyOps=[F('System.Title','Opvolging scan '+l.bedrijf+' \u2014 intake & plan fase 1'),
+                  F('System.Description',storyBody(p)),
+                  F('Microsoft.VSTS.Common.AcceptanceCriteria',storyAC(p)),
+                  F('System.Tags',tag+'; data-ai-scan; lead'), P(featureId)];
+  if(c.email) storyOps.push(F('System.AssignedTo',c.email));
+  if(ADO.areaPath) storyOps.push(F('System.AreaPath',ADO.areaPath));
+  const storyId=await adoCreate('User Story',storyOps);
+  return {consultant:c.naam, epicId, epicNieuw, featureId, storyId,
+    url:'https://dev.azure.com/'+ADO.org+'/'+encodeURIComponent(ADO.project)+'/_workitems/edit/'+storyId};
+}
+
+/* ================= GATED RAPPORT-DOWNLOAD ================= */
+function openLead(){ $('ovl2').classList.add('on'); $('leadModal').classList.add('on');
+  $('leadForm').hidden=false; $('leadDone').hidden=true; }
+function closeLead(){ $('ovl2').classList.remove('on'); $('leadModal').classList.remove('on'); }
+
+function scanPayload(lead){
+  const dims={}; document.querySelectorAll('.dimrow').forEach(r=>{
+    dims[r.querySelector('.n').textContent]=r.querySelector('.s').textContent;});
+  const S=SECTORS[userSector]||SECTORS[SECTORS.length-1];
+  return {
+    versie:APP_VERSION, timestamp:new Date().toISOString(), lead:lead,
+    scan:{ niveau:userLevel, niveauNaam:LEVELS[userLevel-1].name, score:$('donutTxt').textContent,
+      segment:LEVELS[userLevel-1].seg, dims:dims, branche:S.name, brancheNiveau:S.lvl,
+      afas:hasAFAS, aheadPct:aheadPct(userLevel) },
+    businesscase:{ medewerkers:$('iFte').value, omzet:$('iOmz').value, uurtarief:$('iUur').value,
+      doelniveau:$('slLvl').value, uitstelMnd:$('slDel').value,
+      nettoNa3Jaar:$('kNet').textContent, breakEven:$('kBreak').textContent,
+      investering:$('kInv').textContent, prijsVanWachten:$('kWait').textContent }
+  };
+}
+
+let _pending=null,_calReady=false;
+async function submitLead(){
+  const lead={ naam:$('ldNaam').value.trim(), email:$('ldMail').value.trim(),
+    bedrijf:$('ldBedrijf').value.trim(), relatieId:$('ldRelatie').value.trim() };
+  if(!lead.naam||!lead.email.includes('@')||!lead.bedrijf||!$('ldOk').checked){ $('ldErr').hidden=false; return; }
+  $('ldErr').hidden=true;
+  const payload=scanPayload(lead);
+  let consultant=null, devopsOk=false, devopsInfo=null, devopsErr=null;
+  if(ADO.pat && ADO.org && ADO.project){
+    try{ devopsInfo=await createDevops(payload); devopsOk=true; consultant=devopsInfo.consultant; }
+    catch(e){ devopsErr=e.message; }
+  } else if(WEBHOOK_URL){
+    try{
+      const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if(res.ok){ devopsOk=true; try{const j=await res.json(); consultant=j.consultant||null;}catch(_){}}
+    }catch(_){ /* registratie mag de flow nooit blokkeren */ }
+  }
+  _pending={lead,payload,consultant,devopsOk,devopsInfo,devopsErr};
+  if(CONTACT.calendly){ showCalStep(lead); } else { onBooked('geen-calendly-geconfigureerd'); }
+}
+function showCalStep(lead){
+  $('leadForm').hidden=true; $('leadCal').hidden=false;
+  if(!_calReady){
+    _calReady=true;
+    const s=document.createElement('script');s.src='https://assets.calendly.com/assets/external/widget.js';s.async=true;
+    s.onload=()=>initCal(lead);document.head.appendChild(s);
+    window.addEventListener('message',e=>{
+      if(e.data&&e.data.event==='calendly.event_scheduled') onBooked('calendly');
+    });
+  } else initCal(lead);
+}
+function initCal(lead){
+  if(window.Calendly)Calendly.initInlineWidget({
+    url:CONTACT.calendly+'?hide_gdpr_banner=1',
+    parentElement:$('calWidget'),
+    prefill:{name:lead.naam,email:lead.email}
+  });
+}
+async function onBooked(via){
+  const p=_pending; if(!p||p.done)return; p.done=true;
+  /* snapshot → volledige rapportlink, ALLEEN voor de adviseur (staat enkel in de mail) */
+  const dims=[...document.querySelectorAll('.dimrow')].map(r=>({n:r.querySelector('.n').textContent,
+    p:r.querySelector('.s').textContent, c:r.querySelector('.fl').style.background||'#F59E0B'}));
+  const snap={lead:p.lead, lvl:userLevel, sec:userSector, score:$('donutTxt').textContent, dims:dims,
+    verdict:$('brVerdict').textContent, kNet:$('kNet').textContent, kBreak:$('kBreak').textContent,
+    kInv:$('kInv').textContent, kWait:$('kWait').textContent, slLvl:$('slLvl').value, slDel:$('slDel').value,
+    iFte:$('iFte').value, iOmz:$('iOmz').value, iUur:$('iUur').value, afas:hasAFAS, ahead:aheadPct(userLevel)};
+  const rptLink=location.origin+location.pathname+'#rpt='+btoa(unescape(encodeURIComponent(JSON.stringify(snap))));
+  const flat={ naam:p.lead.naam, email:p.lead.email, bedrijf:p.lead.bedrijf, relatieId:p.lead.relatieId,
+    gesprek_geboekt_via:via, niveau:p.payload.scan.niveau+' — '+p.payload.scan.niveauNaam,
+    score:p.payload.scan.score, branche:p.payload.scan.branche, dimensies:JSON.stringify(p.payload.scan.dims),
+    businesscase_netto3jr:p.payload.businesscase.nettoNa3Jaar, breakeven:p.payload.businesscase.breakEven,
+    investering:p.payload.businesscase.investering, prijsVanWachten:p.payload.businesscase.prijsVanWachten,
+    VOLLEDIG_RAPPORT_alleen_voor_adviseur:rptLink };
+  await deliverToContact('DATA & AI-SCAN + GESPREK GEBOEKT: '+p.lead.bedrijf+' (niveau '+p.payload.scan.niveau+')',flat);
+  unlockDash();
+  $('leadCal').hidden=true; $('leadForm').hidden=true; $('leadDone').hidden=false;
+  const L=LEVELS[userLevel-1];
+  setHTML('doneMsg','Bedankt, '+esc(p.lead.naam.split(' ')[0])+'! '+(via==='calendly'?'Je adviesgesprek is geboekt. ':'')
+    +'<b>Je samenvatting:</b> '+esc(p.lead.bedrijf)+' staat op <b>niveau '+userLevel+' — '+esc(L.name)+'</b> met score <b>'+$('donutTxt').textContent+'/100</b>. Je samenvatting staat bovenin de cockpit.');
+  setHTML('doneDevops','Het <b>volledige adviesrapport</b> — met businesscase, stappenplan en use-cases — bespreken we samen in het gesprek. Daarna ontvang je het per e-mail als presentatie (te bewaren als PDF).'
+    +(p.devopsOk?' De opvolging is automatisch geregistreerd.':''));
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+/* ═══ Adviseursmodus: #rpt=<snapshot> (staat alleen in de mail aan de adviseur) rendert het volledige rapport ═══ */
+function renderRapportFromSnapshot(s){
+  const L=LEVELS[s.lvl-1], S=SECTORS[s.sec]||SECTORS[SECTORS.length-1];
+  const datum=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
+  const dimsHtml=s.dims.map(d=>'<div class="dr"><span>'+esc(d.n)+'</span><div class="tr"><div style="width:'+d.p+';background:'+d.c+'"></div></div><b>'+d.p+'</b></div>').join('');
+  const road=ROADMAPS[s.lvl].map((ph,i)=>{
+    let items=ph.items.slice();
+    if(s.afas&&i===0&&s.lvl<=3)items.unshift('<b>AFAS-versneller:</b> standaard Power BI-templates via GetConnectors');
+    return '<div class="ph"><span class="w">'+ph.w+'</span><h3>'+ph.t+'</h3><ul>'+items.map(x=>'<li>'+x+'</li>').join('')+'</ul><div class="wl">💶 '+ph.win+'</div></div>';
+  }).join('');
+  const ucs=((s.afas?USECASES.afas.map(u=>['AFAS',u]):[]).concat(USECASES[s.lvl].map(u=>['N'+s.lvl,u])))
+    .map(([tag,u])=>'<div class="uc"><i>'+tag+'</i><b>'+esc(u[0])+'</b><p>'+esc(u[1])+'</p></div>').join('');
+  return '<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+   +'<title>Data & AI Rapport — '+esc(s.lead.bedrijf)+'</title><style>'
+   +'body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#16273E;background:#F3F6FA;margin:0;line-height:1.55}'
+   +'.pg{max-width:860px;margin:0 auto;padding:36px 24px 60px}'
+   +'.card{background:#fff;border:1px solid #DCE4EE;border-radius:14px;padding:22px;margin:14px 0;box-shadow:0 2px 8px rgba(22,39,62,.06)}'
+   +'h1{font-size:1.7rem;margin:.2rem 0}h2{font-size:1.1rem;margin:1.6rem 0 .4rem}h3{font-size:.95rem;margin:.2rem 0 .3rem}'
+   +'.eb{font:600 .64rem ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B45309}'
+   +'.mut{color:#4A5D77;font-size:.88rem}'
+   +'.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:12px 0}'
+   +'.kpi{background:#F3F6FA;border:1px solid #DCE4EE;border-radius:10px;padding:10px 13px}'
+   +'.kpi i{font:600 .58rem ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#6E829C;font-style:normal;display:block}'
+   +'.kpi b{font:600 1.15rem ui-monospace,monospace;color:#0E9F6E}.kpi.hot b{color:#D6452B}.kpi.amb b{color:#B45309}'
+   +'.dr{display:grid;grid-template-columns:170px 1fr 46px;gap:10px;align-items:center;margin:7px 0;font-size:.86rem}'
+   +'.dr .tr{height:8px;background:#E8EDF4;border-radius:99px;overflow:hidden}.dr .tr div{height:100%;border-radius:99px}'
+   +'.ph{border-left:3px solid #F59E0B;padding-left:14px;margin:16px 0}.ph .w{font:600 .6rem ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B45309}'
+   +'.ph ul{margin:.4rem 0 0 1.1rem;font-size:.88rem}.ph li{margin-bottom:.3rem}'
+   +'.wl{background:#E9F8F1;border:1px solid #BCE5D2;border-radius:9px;padding:8px 12px;font-size:.8rem;color:#0B6B4F;margin-top:8px}'
+   +'.uc{background:#F3F6FA;border:1px solid #DCE4EE;border-radius:10px;padding:12px;margin:8px 0;font-size:.85rem}'
+   +'.uc i{font:600 .56rem ui-monospace,monospace;letter-spacing:.1em;color:#B45309;font-style:normal;text-transform:uppercase;display:block}'
+   +'.uc p{margin:.2rem 0 0;color:#4A5D77;font-size:.8rem}'
+   +'.ft{font-size:.66rem;color:#6E829C;border-top:1px solid #DCE4EE;padding-top:12px;margin-top:26px}'
+   +'@media print{.card{break-inside:avoid}}'
+   +'</style></head><body><div class="pg">'
+   +'<span class="eb">Data & AI Volwassenheidsrapport</span>'
+   +'<h1>'+esc(s.lead.bedrijf)+'</h1>'
+   +'<p class="mut">Opgesteld voor '+esc(s.lead.naam)+' · '+datum+' · scan v'+APP_VERSION+(s.lead.relatieId?' · relatie '+esc(s.lead.relatieId):'')+'</p>'
+   +'<div class="card"><span class="eb">Uitkomst</span>'
+   +'<h2 style="margin:.3rem 0">Niveau '+s.lvl+' — '+L.name+' <span class="mut">('+L.seg+')</span></h2>'
+   +'<p class="mut">'+L.d+' Score: <b>'+s.score+'/100</b>. '+s.ahead+'% van de markt staat vóór jullie; branchegemiddelde ('+esc(S.name)+'): niveau ~'+String(S.lvl).replace('.',',')+'.</p>'
+   +'<h3 style="margin-top:14px">Score per dimensie</h3>'+dimsHtml+'</div>'
+   +'<div class="card"><span class="eb">Positie op de adoptiecurve</span><p class="mut">'+esc(s.verdict)+'</p></div>'
+   +'<div class="card"><span class="eb">Businesscase — doelniveau N'+s.slLvl+'</span>'
+   +'<div class="kpis"><div class="kpi"><i>Netto na 3 jaar</i><b>'+s.kNet+'</b></div>'
+   +'<div class="kpi amb"><i>Terugverdiend in</i><b>'+s.kBreak+'</b></div>'
+   +'<div class="kpi amb"><i>Investering</i><b>'+s.kInv+'</b></div>'
+   +'<div class="kpi hot"><i>Prijs van '+s.slDel+' mnd wachten</i><b>'+s.kWait+'</b></div></div>'
+   +'<p class="mut">Kengetallen: '+s.iFte+' medewerkers · € '+Number(s.iOmz).toLocaleString('nl-NL')+' jaaromzet · € '+s.iUur+'/uur.</p></div>'
+   +'<div class="card"><span class="eb">Stappenplan vanaf niveau '+s.lvl+'</span>'+road+'</div>'
+   +'<div class="card"><span class="eb">Concrete use-cases</span>'+ucs+'</div>'
+   +'<div class="ft">Indicatieve bandbreedtes o.b.v. publieke benchmarks (CBS, Gartner, Microsoft-documentatie, EU AI Act). Geen juridisch of financieel advies.<br><b>Vragen over dit rapport?</b> '+esc(CONTACT.naam)+' · '+esc(CONTACT.email)+' · '+esc(CONTACT.tel)+'</div>'
+   +'</div></body></html>';
+}
+if(location.hash.indexOf('#rpt=')===0){
+  document.addEventListener('DOMContentLoaded',function(){
+    try{
+      const snap=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(5)))));
+      const html=renderRapportFromSnapshot(snap);
+      document.open();document.write(html);document.close();
+    }catch(e){/* ongeldige link → normale cockpit */}
+  });
+}
+
+/* ---- HTML-rapport (presentatie) genereren ---- */
+function downloadRapport(lead){
+  const L=LEVELS[userLevel-1], S=SECTORS[userSector]||SECTORS[SECTORS.length-1];
+  const d=new Date(), datum=d.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
+  const dimsHtml=[...document.querySelectorAll('.dimrow')].map(r=>{
+    const n=r.querySelector('.n').textContent, p=r.querySelector('.s').textContent,
+          c=r.querySelector('.fl').style.background||'#F59E0B';
+    return '<div class="dr"><span>'+esc(n)+'</span><div class="tr"><div style="width:'+p+';background:'+c+'"></div></div><b>'+p+'</b></div>';
+  }).join('');
+  const road=ROADMAPS[userLevel].map((ph,i)=>{
+    let items=ph.items.slice();
+    if(hasAFAS&&i===0&&userLevel<=3)items.unshift('<b>AFAS-versneller:</b> standaard Power BI-templates via GetConnectors');
+    return '<div class="ph"><span class="w">'+ph.w+'</span><h3>'+ph.t+'</h3><ul>'+items.map(x=>'<li>'+x+'</li>').join('')+'</ul><div class="wl">💶 '+ph.win+'</div></div>';
+  }).join('');
+  const ucs=((hasAFAS?USECASES.afas.map(u=>['AFAS',u]):[]).concat(USECASES[userLevel].map(u=>['N'+userLevel,u])))
+    .map(([tag,u])=>'<div class="uc"><i>'+tag+'</i><b>'+esc(u[0])+'</b><p>'+esc(u[1])+'</p></div>').join('');
+  const chart=$('ckSvg')?$('ckSvg').outerHTML:'', mini=$('miniCurve')?$('miniCurve').outerHTML:'';
+  const html='<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+   +'<title>Data & AI Rapport — '+esc(lead.bedrijf)+'</title><style>'
+   +'body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#16273E;background:#F3F6FA;margin:0;line-height:1.55}'
+   +'.pg{max-width:860px;margin:0 auto;padding:36px 24px 60px}'
+   +'.card{background:#fff;border:1px solid #DCE4EE;border-radius:14px;padding:22px;margin:14px 0;box-shadow:0 2px 8px rgba(22,39,62,.06)}'
+   +'h1{font-size:1.7rem;margin:.2rem 0}h2{font-size:1.1rem;margin:1.6rem 0 .4rem}h3{font-size:.95rem;margin:.2rem 0 .3rem}'
+   +'.eb{font:600 .64rem ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B45309}'
+   +'.mut{color:#4A5D77;font-size:.88rem}.big{font:600 1.5rem ui-monospace,Menlo,monospace}'
+   +'.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:12px 0}'
+   +'.kpi{background:#F3F6FA;border:1px solid #DCE4EE;border-radius:10px;padding:10px 13px}'
+   +'.kpi i{font:600 .58rem ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#6E829C;font-style:normal;display:block}'
+   +'.kpi b{font:600 1.15rem ui-monospace,monospace;color:#0E9F6E}.kpi.hot b{color:#D6452B}.kpi.amb b{color:#B45309}'
+   +'.dr{display:grid;grid-template-columns:170px 1fr 46px;gap:10px;align-items:center;margin:7px 0;font-size:.86rem}'
+   +'.dr .tr{height:8px;background:#E8EDF4;border-radius:99px;overflow:hidden}.dr .tr div{height:100%;border-radius:99px}'
+   +'.ph{border-left:3px solid #F59E0B;padding-left:14px;margin:16px 0}.ph .w{font:600 .6rem ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B45309}'
+   +'.ph ul{margin:.4rem 0 0 1.1rem;font-size:.88rem}.ph li{margin-bottom:.3rem}'
+   +'.wl{background:#E9F8F1;border:1px solid #BCE5D2;border-radius:9px;padding:8px 12px;font-size:.8rem;color:#0B6B4F;margin-top:8px}'
+   +'.uc{background:#F3F6FA;border:1px solid #DCE4EE;border-radius:10px;padding:12px;margin:8px 0;font-size:.85rem}'
+   +'.uc i{font:600 .56rem ui-monospace,monospace;letter-spacing:.1em;color:#B45309;font-style:normal;text-transform:uppercase;display:block}'
+   +'.uc p{margin:.2rem 0 0;color:#4A5D77;font-size:.8rem}'
+   +'svg{width:100%;height:auto;background:#fff;border:1px solid #DCE4EE;border-radius:10px}'
+   +'.ft{font-size:.66rem;color:#6E829C;border-top:1px solid #DCE4EE;padding-top:12px;margin-top:26px}'
+   +'@media print{.card{break-inside:avoid}}'
+   +'</style></head><body><div class="pg">'
+   +'<span class="eb">Data & AI Volwassenheidsrapport</span>'
+   +'<h1>'+esc(lead.bedrijf)+'</h1>'
+   +'<p class="mut">Opgesteld voor '+esc(lead.naam)+' · '+datum+' · scan v'+APP_VERSION+(lead.relatieId?' · relatie '+esc(lead.relatieId):'')+'</p>'
+   +'<div class="card"><span class="eb">Uitkomst</span>'
+   +'<h2 style="margin:.3rem 0">Niveau '+userLevel+' — '+L.name+' <span class="mut">('+L.seg+')</span></h2>'
+   +'<p class="mut">'+L.d+' Score: <b>'+$('donutTxt').textContent+'/100</b>. '
+   +aheadPct(userLevel)+'% van de markt staat vóór jullie; branchegemiddelde ('+esc(S.name)+'): niveau ~'+String(S.lvl).replace('.',',')+'.</p>'
+   +'<h3 style="margin-top:14px">Score per dimensie</h3>'+dimsHtml+'</div>'
+   +'<div class="card"><span class="eb">Positie op de adoptiecurve</span>'+mini+'<p class="mut" style="margin-top:8px">'+$('brVerdict').textContent+'</p></div>'
+   +'<div class="card"><span class="eb">Businesscase — doelniveau N'+$('slLvl').value+'</span>'
+   +'<div class="kpis"><div class="kpi"><i>Netto na 3 jaar</i><b>'+$('kNet').textContent+'</b></div>'
+   +'<div class="kpi amb"><i>Terugverdiend in</i><b>'+$('kBreak').textContent+'</b></div>'
+   +'<div class="kpi amb"><i>Investering</i><b>'+$('kInv').textContent+'</b></div>'
+   +'<div class="kpi hot"><i>Prijs van '+$('slDel').value+' mnd wachten</i><b>'+$('kWait').textContent+'</b></div></div>'
+   +chart
+   +'<p class="mut" style="margin-top:8px">Kengetallen: '+$('iFte').value+' medewerkers · € '+Number($('iOmz').value).toLocaleString('nl-NL')+' jaaromzet · € '+$('iUur').value+'/uur. Compliance (per '+esc(CONTENT.peildatum)+'): hoog-risico AI definitief uitgesteld naar 2 dec 2027; transparantie, AI-geletterdheid & GPAI-handhaving per 2 aug 2026; bestaande GPAI-modellen + sandboxes per 2 aug 2027; NIS2/Cbw verwacht aug 2026. AI Act boete-exposure: '+$('fine3').textContent+' (3%) tot '+$('fine7').textContent+' (7%); NIS2 tot 2% van de omzet.</p></div>'
+   +'<div class="card"><span class="eb">Stappenplan vanaf niveau '+userLevel+'</span>'+road+'</div>'
+   +'<div class="card"><span class="eb">Concrete use-cases</span>'+ucs+'</div>'
+   +'<div class="ft">Indicatieve bandbreedtes o.b.v. publieke benchmarks (CBS, Gartner, Microsoft-documentatie, EU AI Act). Geen juridisch of financieel advies.<br><b>Vragen over dit rapport?</b> '+esc(CONTACT.naam)+' · '+esc(CONTACT.email)+' · '+esc(CONTACT.tel)+' — je adviesgesprek is ingepland; tot dan is dit rapport je leidraad. Bewaar als PDF via afdrukken.</div>'
+   +'</div></body></html>';
+  try{
+    const blob=new Blob([html],{type:'text/html'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='Data-AI-Rapport-'+lead.bedrijf.replace(/[^a-z0-9]+/gi,'-')+'.html';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  }catch(e){
+    const w2=window.open('about:blank');
+    if(w2){w2.document.write(html);w2.document.close();}
+  }
+}
+
+/* ================= DRAWERS ================= */
+function openDrawer(kind){
+  const b=$('drBody'),h=$('drTitle');
+  if(kind==='plan'){
+    h.textContent='Stappenplan naar het volgende niveau';
+    /* Teaser: alleen fase 1 — het volledige plan hoort bij het adviesgesprek */
+    let html='<p>Vanaf <b>niveau '+userLevel+'</b>. Niveaus sla je niet over — dit plan brengt je gecontroleerd verder, met techniek én adoptie.</p>';
+    const ph=ROADMAPS[userLevel][0];
+    let items=ph.items.slice();
+    if(hasAFAS&&userLevel<=3)items.unshift('<b>AFAS-versneller:</b> standaard Power BI-templates via GetConnectors — in weken live, daarna doorbouwen op hetzelfde datamodel');
+    html+='<div class="ph"><span class="w">'+ph.w+'</span><h4>'+ph.t+'</h4><ul>'+items.map(x=>'<li>'+x+'</li>').join('')+'</ul>'
+      +'<div class="winl">💶 '+ph.win+'</div></div>';
+    const rest=ROADMAPS[userLevel].slice(1);
+    html+='<div style="border:1px dashed var(--line2);border-radius:12px;padding:14px;margin-top:12px;background:var(--bg)">'
+      +'<b>🔒 Fase '+(rest.length===1?'2':'2 t/m '+(rest.length+1))+':</b> '+rest.map(p=>p.t).join(' · ')
+      +'<p class="mut" style="font-size:.8rem;margin-top:6px">De volledige fasering — met doorlooptijden, weekindeling en besparingen per fase — lopen we door in het adviesgesprek. Daarna ontvang je alles per e-mail in het rapport.</p>'
+      +(dashUnlocked?'<p style="margin-top:8px;font-size:.82rem;color:var(--green);font-weight:600">✓ Je gesprek is ingepland — dit nemen we daar samen door.</p>':'<button class="cta" style="margin-top:10px;padding:10px 18px;font-size:.85rem" onclick="closeDrawer();openLead()">Plan het adviesgesprek →</button>')+'</div>';
+    b.innerHTML=html;
+  }
+  if(kind==='uc'){
+    h.textContent='Use-cases op jouw niveau';
+    /* Teaser: één use-case — de rest hoort bij het adviesgesprek */
+    let html='<p>Realistisch en rendabel op <b>niveau '+userLevel+'</b> — toepassingen die organisaties op dit niveau vandaag draaien.</p>';
+    const eerste=(hasAFAS?USECASES.afas[0]:USECASES[userLevel][0]);
+    html+='<div class="uc'+(hasAFAS?' afas':'')+'"><span class="tag">'+(hasAFAS?'AFAS':'Niveau '+userLevel)+'</span><h4>'+eerste[0]+'</h4><p>'+eerste[1]+'</p></div>';
+    const totaal=(hasAFAS?USECASES.afas.length:0)+USECASES[userLevel].length;
+    html+='<div style="border:1px dashed var(--line2);border-radius:12px;padding:14px;margin-top:12px;background:var(--bg)">'
+      +'<b>🔒 Nog '+(totaal-1)+' use-cases voor jouw situatie</b>'
+      +'<p class="mut" style="font-size:.8rem;margin-top:6px">Welke daarvan bij jullie het snelst rendeert, bepalen we in het adviesgesprek — daarna staan ze allemaal in je rapport.</p>'
+      +(dashUnlocked?'<p style="margin-top:8px;font-size:.82rem;color:var(--green);font-weight:600">✓ Je gesprek is ingepland — dit nemen we daar samen door.</p>':'<button class="cta" style="margin-top:10px;padding:10px 18px;font-size:.85rem" onclick="closeDrawer();openLead()">Plan het adviesgesprek →</button>')+'</div>';
+    b.innerHTML=html;
+  }
+  if(kind==='bench'){
+    h.textContent='Benchmark, regelgeving & bronnen';
+    const rvk=(CONTENT.reedsVanKracht||[]).map(r=>
+      '<tr style="opacity:.6"><td>'+esc(r[1])+'</td><td class="mono">sinds '+esc(r[0])+' \u2713</td></tr>').join('');
+    const dl=rvk+CONTENT.deadlines.map(d=>{
+      const dt=new Date(d.date), past=dt<new Date();
+      return '<tr'+(past?' style="opacity:.5"':'')+'><td>'+esc(d.label)+'</td><td class="mono">'
+        +dt.toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'})+(past?' \u2713':'')+'</td></tr>';
+    }).join('');
+    const br=CONTENT.bronnen.map((b,i)=>'<li><a href="'+b[1]+'" target="_blank" rel="noopener">'+esc(b[0])+'</a></li>').join('');
+    b.innerHTML=
+     '<p style="font-size:.72rem;color:var(--dim)">Cijfers &amp; regelgeving per <b class="peil">'+esc(CONTENT.peildatum)+'</b> \u00b7 '+esc(CONTENT.omnibusStatus||'')+' '+(CONTENT_URL?'Bron wordt automatisch ververst.':'\1')+' <button class=\"rsBtn\" onclick=\"researchNow()\">\u21bb check regelgeving nu live</button></p><p id=\"rsStatus\" hidden style=\"font-size:.72rem;font-weight:600\"></p>'
+    +'<h4>Compliance-tijdlijn</h4><table><tr><th>Verplichting</th><th>Datum</th></tr>'+dl+'</table>'
+    +'<h4>Waar staat Nederland?</h4><table>'
+    +'<tr><th>Kengetal</th><th>Waarde</th><th>Bron</th></tr>'
+    +'<tr><td>Bedrijven 10+ wn. met AI (2024)</td><td class="mono">'+CONTENT.stats.bedrijfAI2024+'</td><td>CBS</td></tr>'
+    +'<tr><td>Idem, een jaar eerder</td><td class="mono">'+CONTENT.stats.bedrijfAI2023+'</td><td>CBS</td></tr>'
+    +'<tr><td>MKB 10\u2013249 met AI (2025)</td><td class="mono">'+CONTENT.stats.mkbAI+'</td><td>CBS</td></tr>'
+    +'<tr><td>Grootbedrijf 250+ (2025)</td><td class="mono">'+CONTENT.stats.grootAI+'</td><td>CBS</td></tr>'
+    +'<tr><td>Afhaakreden: gebrek aan ervaring</td><td class="mono">'+CONTENT.stats.afhaakErvaring+'</td><td>CBS</td></tr>'
+    +'<tr><td>Hoogste volwassenheidsniveau</td><td class="mono">'+CONTENT.stats.gartnerTop+'</td><td>Gartner</td></tr></table>'
+    +'<p style="margin-top:10px">De grootste drempel is kennis, niet geld \u2014 precies wat coaching en kleine pilots oplossen.</p>'
+    +'<h4>Bronnen (gerenommeerd)</h4><ul>'+br+'</ul>'
+    +'<div class="footnote">Indicatieve bandbreedtes o.b.v. publieke benchmarks (CBS, Eurostat, Gartner, McKinsey, HBR) en officiële regelgevingsbronnen (Europa decentraal, NCSC). Digital Omnibus definitief aangenomen (EP 16 juni, Raad 29 juni 2026); publicatie in het Publicatieblad volgt. Geen juridisch of financieel advies; harde businesscase vraagt een korte intake.</div>';
+  }
+  $('ovl').classList.add('on');$('drawer').classList.add('on');
+  if($('drawer').focus)$('drawer').focus();
+}
+function closeDrawer(){$('ovl').classList.remove('on');$('drawer').classList.remove('on');}
+addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+
+/* init */
+go('landing');renderQ();
+</script>
+</body>
+</html>
