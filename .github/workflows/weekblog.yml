@@ -1,0 +1,49 @@
+name: Weekblog
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  weekblog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--max-turns 60 --allowedTools Bash,Read,Write,Edit,Glob,Grep,WebSearch"
+          prompt: |
+            Publiceer het wekelijkse blogartikel voor www.bedrijfsgeheugen.nl (statische site, Nederlands).
+            BEDRIJF: Bedrijfsgeheugen helpt mkb (3-250 medewerkers) met digitalisering zonder groot nieuw
+            systeem: koppelingen AFAS/Exact/Microsoft 365, één klantoverzicht, offerte-opvolging, dashboards,
+            AI-trainingen (Copilot, ChatGPT, Claude). Toon: praktische adviseur, geen jargon. Kernzinnen:
+            "Slimmer werken zonder groot nieuw systeem", "Uit de praktijk, niet uit de brochure".
+            Diensten: gratis zelfscan (/zelfscan.html), bedrijfsscan EUR 1.495 excl. btw (rapport is van de
+            klant, verrekend bij vervolg).
+            ONDERWERP: kijk welke slugs al bestaan onder blog/ en pak de eerstvolgende uit deze kalender:
+            1 wat-is-een-bedrijfsgeheugen (Wat is een bedrijfsgeheugen? Waarom mkb-bedrijven ongemerkt kennis
+            verliezen), 2 afas-exact-koppelen, 3 microsoft-copilot-mkb (7 taken automatiseren),
+            4 kennis-vastleggen-medewerker-vertrekt, 5 excel-schaduwadministratie,
+            6 exact-online-webshop-koppelen, 7 ai-assistent-kiezen (ChatGPT vs Copilot vs Claude),
+            8 offerte-opvolging-automatiseren, 9 bedrijfsopvolging-familiebedrijf,
+            10 klantoverzicht-zonder-crm, 11 ai-training-mkb, 12 digitaliseringsvalkuil.
+            Alles gepubliceerd? Bedenk zelf een passend nieuw onderwerp (pijlers: kennisborging,
+            koppelingen, AI voor mkb, digitalisering).
+            ARTIKEL: 1000-1500 woorden. H1, inleiding met herkenbaar praktijkprobleem, 3-5 H2-secties,
+            concreet stappenplan, FAQ met 3 vragen, CTA-blok naar /zelfscan.html en de bedrijfsscan.
+            SEO: title tag max 60 tekens, meta description 140-155 tekens, canonical
+            https://www.bedrijfsgeheugen.nl/blog/SLUG/, BlogPosting- en FAQPage-JSON-LD, minimaal 2 interne
+            links, 1 externe bron (CBS/KVK, verifieer via WebSearch dat de URL bestaat).
+            BOUW: maak blog/SLUG/index.html in exact de huisstijl van de site. Gebruik een bestaand artikel
+            onder blog/ als template; bestaat er nog geen, neem dan expertises.html als basis (volledige
+            head met fonts en style-blok, topbalk, np-merk-logobalk, navpill-navigatie en footer overnemen,
+            alleen main vervangen; paginalinks root-relatief zoals /expertises.html). Werk bij of maak aan:
+            blog/index.html (nieuwe artikelkaart bovenaan, pagina in dezelfde huisstijl met titel "Blog -
+            praktische inzichten voor het mkb"), blog/rss.xml en sitemap.xml (lastmod vandaag). Alleen bij
+            het allereerste artikel: voeg een Blog-link naar /blog/ toe in de navpill-navigatie en de
+            footerkolom Pagina's van index.html, expertises.html, over-ons.html, zelfscan.html en
+            privacy.html (zelfde markup als bestaande items). Wijzig verder niets aan bestaande pagina's,
+            verwijder nooit artikelen. Controleer dat de HTML geldig is.
+            PUBLICEER: git add -A, commit met bericht "weekblog: SLUG" en push naar main.
