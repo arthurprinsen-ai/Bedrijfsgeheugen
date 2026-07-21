@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bedrijfsgeheugen — Blog</title>
+    <link>https://www.bedrijfsgeheugen.nl/blog/</link>
+    <description>Praktische artikelen over kennisborging, koppelingen tussen AFAS, Exact en Microsoft 365, en AI voor het mkb. Uit de praktijk, niet uit de brochure.</description>
+    <language>nl-NL</language>
+    <atom:link href="https://www.bedrijfsgeheugen.nl/blog/rss.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>Tue, 21 Jul 2026 07:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Wat is een bedrijfsgeheugen? Waarom mkb-bedrijven ongemerkt kennis verliezen</title>
+      <link>https://www.bedrijfsgeheugen.nl/blog/wat-is-een-bedrijfsgeheugen/</link>
+      <guid isPermaLink="true">https://www.bedrijfsgeheugen.nl/blog/wat-is-een-bedrijfsgeheugen/</guid>
+      <pubDate>Tue, 21 Jul 2026 07:00:00 +0000</pubDate>
+      <description>Klantafspraken in één mailbox, de planning in één hoofd, offertes in een Excel-lijst. Wat een bedrijfsgeheugen is, waarom het stilletjes weglekt — en hoe u er in vijf stappen grip op krijgt.</description>
+    </item>
+  </channel>
+</rss>
