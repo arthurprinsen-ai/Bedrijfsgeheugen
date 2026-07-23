@@ -1,7 +1,15 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-912L0PB68G');
+</script><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gratis zelfscan — waar lekt jouw bedrijf kennis? | Bedrijfsgeheugen</title>
 <meta name="description" content="5 klikvragen, 2 minuten, direct je score. Ontdek waar jouw bedrijf kwetsbaar is: offertes, planning, klantkennis en systemen. Gratis, zonder verplichtingen.">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/zelfscan.html">
@@ -115,7 +123,7 @@ input[type=text],input[type=email],input[type=tel]{width:100%;border:2px solid v
 (function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
 if(Object.keys(u).length)sessionStorage.setItem('bg_utm',JSON.stringify(u));
 if(!sessionStorage.getItem('bg_ref')&&document.referrer)sessionStorage.setItem('bg_ref',document.referrer);}catch(e){}})();
-function bgEvent(n){try{if(window.goatcounter&&goatcounter.count)goatcounter.count({path:n,event:true})}catch(e){}}
+function bgEvent(n){try{if(window.goatcounter&&goatcounter.count)goatcounter.count({path:n,event:true})}catch(e){}try{if(typeof gtag==='function')gtag('event',String(n).replace(/-/g,'_'))}catch(e){}}
 function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}');u.referrer=sessionStorage.getItem('bg_ref')||'direct';return JSON.stringify(u)}catch(e){return'{}'}}
 </script>
 <script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>

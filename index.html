@@ -2,6 +2,14 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-912L0PB68G');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ═══════════ SEO ═══════════ -->
@@ -324,7 +332,7 @@ body{padding-bottom:92px}
 (function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
 if(Object.keys(u).length)sessionStorage.setItem('bg_utm',JSON.stringify(u));
 if(!sessionStorage.getItem('bg_ref')&&document.referrer)sessionStorage.setItem('bg_ref',document.referrer);}catch(e){}})();
-function bgEvent(n){try{if(window.goatcounter&&goatcounter.count)goatcounter.count({path:n,event:true})}catch(e){}}
+function bgEvent(n){try{if(window.goatcounter&&goatcounter.count)goatcounter.count({path:n,event:true})}catch(e){}try{if(typeof gtag==='function')gtag('event',String(n).replace(/-/g,'_'))}catch(e){}}
 function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}');u.referrer=sessionStorage.getItem('bg_ref')||'direct';return JSON.stringify(u)}catch(e){return'{}'}}
 </script>
 <script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -661,6 +669,7 @@ const Contact={
       telefoon:v('c_tel'),onderwerp:v('c_plan'),bericht:v('c_msg')};
     const subject='WEBSITE-LEAD: '+payload.naam+(payload.bedrijf?' ('+payload.bedrijf+')':'')+' — '+payload.onderwerp;
     const ok=await this.deliver(subject,payload);
+    if(ok){try{if(typeof gtag==='function'){gtag('event','generate_lead',{aanvraag_type:payload.onderwerp||'onbekend'});if(/scan/i.test(payload.onderwerp||''))gtag('event','scan_aanvraag',{aanvraag_type:payload.onderwerp});}}catch(e){}}
     document.getElementById('cOk').classList.toggle('hidden',!ok);
     document.getElementById('cErr').classList.toggle('hidden',ok);
     if(!ok){

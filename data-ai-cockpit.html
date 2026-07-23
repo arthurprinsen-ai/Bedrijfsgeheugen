@@ -2,6 +2,14 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-912L0PB68G');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data & AI-scan voor de directie | Volwassenheidsscore, businesscase & EU AI Act-deadlines — Bedrijfsgeheugen</title>
 <meta name="description" content="Gratis Data & AI-scan voor directie en CFO: volwassenheidsniveau per dimensie, doorgerekende businesscase (terugverdientijd, prijs van wachten), EU AI Act- en NIS2-deadlines en een concreet stappenplan. Rapport na een gepland adviesgesprek van 30 minuten.">
@@ -385,7 +393,7 @@ td .mono{color:var(--amber);font-weight:600}
 (function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
 if(Object.keys(u).length)sessionStorage.setItem('bg_utm',JSON.stringify(u));
 if(!sessionStorage.getItem('bg_ref')&&document.referrer)sessionStorage.setItem('bg_ref',document.referrer);}catch(e){}})();
-function bgEvent(n){try{if(window.goatcounter&&goatcounter.count)goatcounter.count({path:n,event:true})}catch(e){}}
+function bgEvent(n){try{if(window.goatcounter&&goatcounter.count)goatcounter.count({path:n,event:true})}catch(e){}try{if(typeof gtag==='function')gtag('event',String(n).replace(/-/g,'_'))}catch(e){}}
 function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}');u.referrer=sessionStorage.getItem('bg_ref')||'direct';return JSON.stringify(u)}catch(e){return'{}'}}
 </script>
 <script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
