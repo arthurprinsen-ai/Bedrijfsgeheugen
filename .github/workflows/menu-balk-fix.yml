@@ -1,0 +1,44 @@
+name: Menu-balk fix
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Balk aanpassen op alle paginas
+        run: |
+          python3 - <<'PY'
+          import glob
+          MERK_F="background:rgba(251,250,247,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:2px solid var(--inkt)"
+          MERK_R="background:#FBFAF7;border-bottom:2px solid var(--inkt)"
+          NAV_F=".navpill{position:fixed;top:auto;bottom:16px;height:auto;left:50%;transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:.35rem;background:rgba(20,23,26,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:.45rem .5rem .45rem .55rem;box-shadow:0 14px 40px rgba(20,23,26,.35)}"
+          NAV_R=".navpill{position:fixed;top:auto;bottom:16px;height:auto;left:50%;transform:translateX(-50%) translateY(160%);opacity:0;pointer-events:none;transition:opacity .3s ease,transform .4s cubic-bezier(.16,1,.3,1);z-index:80;display:flex;align-items:center;justify-content:center;gap:.4rem;background:#14171A;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:.45rem .5rem .45rem .55rem;box-shadow:0 14px 40px rgba(20,23,26,.35)}\n.navpill.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}"
+          CTA_F=".np-cta{display:flex;align-items:center;gap:.5rem;background:#fff;"
+          CTA_R=".np-cta{display:flex;align-items:center;justify-content:center;gap:.5rem;white-space:nowrap;background:#fff;"
+          SCR_F="nav.scrolled{box-shadow:0 6px 22px rgba(20,23,26,.10)}"
+          SCR_R="nav.scrolled{}"
+          SHOW='<script>(function(){var n=document.querySelector(".navpill");if(n){var s=function(){n.classList.toggle("show",(window.scrollY||0)>200)};addEventListener("scroll",s,{passive:true});s()}})();</script>'
+          for f in glob.glob("**/*.html", recursive=True):
+              h=open(f,encoding="utf-8").read()
+              if 'class="navpill"' not in h:
+                  print("skip (geen navpill):",f); continue
+              o=h
+              h=h.replace(MERK_F,MERK_R).replace(NAV_F,NAV_R).replace(CTA_F,CTA_R).replace(SCR_F,SCR_R)
+              if "toggle('show'" not in h and 'toggle("show"' not in h and ".navpill.show" in h:
+                  i=h.rfind("</body>")
+                  if i!=-1: h=h[:i]+SHOW+"\n"+h[i:]
+              if h!=o:
+                  open(f,"w",encoding="utf-8").write(h); print("gefixt:",f)
+              else:
+                  print("al goed:",f)
+          PY
+      - name: Commit en push
+        run: |
+          git config user.name "site-fix"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "menu-balk: een kleur, verschijnt bij scrollen, mobiel uitgelijnd" || echo "niets te committen"
+          git push
