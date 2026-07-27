@@ -6,7 +6,14 @@
     <description>Praktische artikelen over kennisborging, koppelingen tussen AFAS, Exact en Microsoft 365, en AI voor het mkb. Uit de praktijk, niet uit de brochure.</description>
     <language>nl-NL</language>
     <atom:link href="https://www.bedrijfsgeheugen.nl/blog/rss.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Tue, 21 Jul 2026 07:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 27 Jul 2026 07:00:00 +0000</lastBuildDate>
+    <item>
+      <title>AFAS en Exact koppelen: hoe u dubbel werk uit uw administratie haalt</title>
+      <link>https://www.bedrijfsgeheugen.nl/blog/afas-exact-koppelen/</link>
+      <guid isPermaLink="true">https://www.bedrijfsgeheugen.nl/blog/afas-exact-koppelen/</guid>
+      <pubDate>Mon, 27 Jul 2026 07:00:00 +0000</pubDate>
+      <description>Dezelfde klant in twee systemen invoeren kost meer dan tijd — het kost betrouwbaarheid. Wat koppelen echt betekent, welke drie routes er zijn en hoe u in vijf stappen begint.</description>
+    </item>
     <item>
       <title>Wat is een bedrijfsgeheugen? Waarom mkb-bedrijven ongemerkt kennis verliezen</title>
       <link>https://www.bedrijfsgeheugen.nl/blog/wat-is-een-bedrijfsgeheugen/</link>

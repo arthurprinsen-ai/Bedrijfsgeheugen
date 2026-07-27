@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  // Consent Mode v2 — standaard geen toestemming; analytics uit tot de bezoeker kiest
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    wait_for_update: 500
+  });
+  try{ if(localStorage.getItem('bg_consent')==='granted'){ gtag('consent','update',{analytics_storage:'granted'}); } }catch(e){}
+  gtag('js', new Date());
+  gtag('config', 'G-912L0PB68G');
+</script><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AFAS en Exact koppelen: zo werkt het in de praktijk</title>
+<meta name="description" content="AFAS of Exact koppelen aan uw andere systemen? Zo stopt u dubbel invoeren, kiest u de juiste soort koppeling en zet u het in vijf stappen goed neer.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/blog/afas-exact-koppelen/">
+<meta name="theme-color" content="#2742D6">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFAS en Exact koppelen: hoe u dubbel werk uit uw administratie haalt">
+<meta property="og:description" content="Dezelfde klant in drie systemen invoeren kost meer dan tijd — het kost betrouwbaarheid. Wat koppelen echt betekent, welke soorten er zijn en hoe u begint.">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/blog/afas-exact-koppelen/">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--oranje-t:#C2410C;--geel:#FFE86B;--lijn:#DCDFE6;--grijs:#5C646E}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--papier);color:var(--inkt);line-height:1.65;font-size:16.5px;padding-bottom:92px}
+h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;line-height:1.12}
+.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+.topbalk{background:var(--inkt);color:#fff;font-size:.78rem}
+.topbalk .wrap{display:flex;justify-content:space-between;align-items:center;padding:.45rem 1.5rem}
+.tb-status{display:flex;align-items:center;gap:.5rem;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase}
+.tb-status i{width:8px;height:8px;border-radius:50%;background:#2ECC71;flex-shrink:0;animation:pulsdot 2s infinite}
+@keyframes pulsdot{0%,100%{box-shadow:0 0 0 0 rgba(46,204,113,.5)}50%{box-shadow:0 0 0 6px rgba(46,204,113,0)}}
+@media(prefers-reduced-motion:reduce){.tb-status i{animation:none}}
+.tb-icons{display:flex;gap:.55rem}
+.tb-icons a{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;transition:background .15s,transform .15s}
+.tb-icons a:hover{background:rgba(255,255,255,.16);transform:scale(1.06)}
+.tb-icons svg{width:19px;height:19px}
+@media(max-width:640px){.tb-icons a{width:34px;height:34px}.tb-icons svg{width:16px;height:16px}}
+.btn{display:inline-block;border:2px solid var(--inkt);border-radius:10px;padding:.65rem 1.3rem;font-weight:700;text-decoration:none;color:var(--inkt);font-size:.95rem}
+.btn.blauw{background:var(--blauw);border-color:var(--blauw);color:#fff}
+.btn.oranje{background:var(--oranje);border-color:var(--oranje);color:var(--inkt)}
+.navpill{position:fixed;top:auto;bottom:16px;height:auto;left:50%;transform:translateX(-50%) translateY(160%);opacity:0;pointer-events:none;transition:opacity .3s ease,transform .4s cubic-bezier(.16,1,.3,1);z-index:80;display:flex;align-items:center;justify-content:center;gap:.4rem;background:#14171A;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:.45rem .5rem .45rem .55rem;box-shadow:0 14px 40px rgba(20,23,26,.35)}
+.navpill.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.np-home{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
+.np-home svg{width:20px;height:20px}
+.np-link{color:#D5D8DE;text-decoration:none;font-weight:600;font-size:.92rem;padding:.55rem .8rem;border-radius:999px}
+.np-link:hover,.np-home:hover{background:rgba(255,255,255,.12);color:#fff}
+.np-cta{display:flex;align-items:center;justify-content:center;gap:.5rem;white-space:nowrap;background:#fff;color:var(--inkt);text-decoration:none;font-weight:700;font-size:.92rem;padding:.6rem 1.15rem;border-radius:999px;margin-left:.25rem}
+.np-cta i{width:8px;height:8px;border-radius:50%;background:#1F9D55;animation:pulsdot 2s infinite}
+.np-cta:hover{background:var(--geel)}
+.np-wa{width:46px;height:46px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;color:#fff;margin-left:.15rem;transition:transform .15s}
+.np-wa:hover{transform:scale(1.07)}
+.np-wa svg{width:24px;height:24px}
+.np-merk{position:sticky;top:0;z-index:50;background:#FBFAF7;border-bottom:2px solid var(--inkt);padding:.75rem 1.5rem}
+@media(max-width:640px){.np-link{display:none}.navpill{gap:.25rem;bottom:12px}.np-cta{font-size:.85rem;padding:.55rem .95rem}}
+.logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.25rem;color:var(--inkt);text-decoration:none;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:.55rem}
+.logo b{color:var(--blauw)}
+.logo svg{width:26px;height:26px;transform:rotate(-5deg);flex-shrink:0}
+/* ── artikel ── */
+.kruimel{padding:1.6rem 0 0;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--grijs)}
+.kruimel a{color:var(--grijs);text-decoration:none}
+.kruimel a:hover{color:var(--blauw)}
+.artikelkop{padding:1.4rem 0 1.6rem}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--oranje-t);display:block;margin-bottom:1rem}
+.artikelkop h1{font-size:clamp(2rem,4.6vw,3rem);font-weight:800;max-width:20em}
+.artikelmeta{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--grijs);margin-top:1.1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.artikel{max-width:44rem}
+.artikel p{margin:1.1rem 0;color:#2A2E33}
+.artikel .lead{font-size:1.15rem;color:#3C424A}
+.artikel h2{font-size:clamp(1.5rem,3vw,1.85rem);font-weight:800;margin:2.6rem 0 .5rem}
+.artikel h3{font-size:1.2rem;font-weight:700;margin:1.8rem 0 .3rem}
+.artikel a{color:var(--blauw);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.artikel ul,.artikel ol{margin:1rem 0 1.2rem 1.3rem;color:#2A2E33}
+.artikel li{margin-bottom:.5rem}
+.artikel strong{font-weight:700;color:var(--inkt)}
+.callout{background:#fff;border:2px solid var(--inkt);border-radius:14px;padding:1.3rem 1.5rem;margin:1.8rem 0}
+.callout p{margin:.3rem 0}
+.stap{list-style:none;margin:1.4rem 0;padding:0;counter-reset:s}
+.stap>li{counter-increment:s;position:relative;padding:0 0 1.1rem 3rem;margin:0}
+.stap>li::before{content:counter(s);position:absolute;left:0;top:-.1rem;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--blauw);color:#fff;font-family:'Bricolage Grotesque';font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.stap>li strong{display:block;margin-bottom:.15rem}
+.cta-blok{background:var(--inkt);color:#fff;border-radius:18px;padding:2.4rem;margin:3rem 0}
+.cta-blok h2{color:#fff;font-size:1.6rem;margin:0 0 .6rem;max-width:18em}
+.cta-blok p{color:#C8CBD2;max-width:34em;margin:0 0 1.4rem}
+.cta-blok .knoppen{display:flex;gap:.8rem;flex-wrap:wrap}
+.cta-blok .btn{background:#fff}
+.faq{margin:1.4rem 0 0}
+.faq details{border-bottom:1px solid var(--lijn);padding:1rem 0}
+.faq summary{font-family:'Bricolage Grotesque';font-weight:700;font-size:1.1rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--blauw);font-weight:800}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin:.7rem 0 0;color:#2A2E33}
+.xfooter{background:var(--inkt);color:#C8CBD2;padding:3.5rem 0 1.5rem;margin-top:4rem;font-size:.92rem}
+.fgrid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.1fr;gap:2.5rem}
+@media(max-width:860px){.fgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.fgrid{grid-template-columns:1fr}}
+.flogo{font-family:'Bricolage Grotesque';font-weight:800;font-size:1.35rem;color:#fff}
+.flogo b{color:#8FA3FF}
+.fkol.merk p{margin-top:.9rem;font-size:.9rem;color:#9AA1AB;max-width:26em}
+.fkol h4{color:#fff;font-size:.95rem;margin-bottom:.9rem;font-family:'Bricolage Grotesque'}
+.fkol a{display:block;color:#C8CBD2;text-decoration:none;padding:.22rem 0}
+.fkol a:hover{color:var(--geel)}
+.fklein{display:block;margin-top:.9rem;font-size:.78rem;color:#7E8590}
+.fonder{border-top:1px solid rgba(255,255,255,.14);margin-top:2.5rem;padding-top:1.3rem;font-size:.8rem;color:#7E8590}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AFAS en Exact koppelen: hoe u dubbel werk uit uw administratie haalt",
+  "description": "AFAS of Exact koppelen aan uw andere systemen? Zo stopt u dubbel invoeren, kiest u de juiste soort koppeling en zet u het in vijf stappen goed neer.",
+  "datePublished": "2026-07-27",
+  "dateModified": "2026-07-27",
+  "inLanguage": "nl-NL",
+  "author": {"@type": "Organization", "name": "Bedrijfsgeheugen", "url": "https://www.bedrijfsgeheugen.nl/"},
+  "publisher": {"@type": "Organization", "name": "Bedrijfsgeheugen", "url": "https://www.bedrijfsgeheugen.nl/"},
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://www.bedrijfsgeheugen.nl/blog/afas-exact-koppelen/"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Moet ik overstappen van Exact naar AFAS (of andersom) om te kunnen koppelen?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Vrijwel nooit. Zowel AFAS als Exact Online hebben open koppelvlakken, dus u kunt beide pakketten verbinden met uw website, urenregistratie, webshop of Microsoft 365. Overstappen kost maanden en veel geld; een koppeling lost het dubbele werk meestal in weken op. Kijk pas naar migreren als het pakket zelf uw proces niet meer aankan, niet omdat het niet zou kunnen koppelen."}
+    },
+    {
+      "@type": "Question",
+      "name": "Wat kost een koppeling tussen AFAS of Exact en een ander systeem?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Dat hangt vooral af van de route. Een kant-en-klare koppeling uit de marktplaats van het pakket kost meestal een vast bedrag per maand en is in een dag ingeregeld. Een koppeling via een integratieplatform kost een maandbedrag plus eenmalig inrichtingswerk. Maatwerk via de API is het duurst en alleen verstandig als uw proces echt afwijkt. Reken bij elke route ook op beheer: een koppeling is geen eenmalig project."}
+    },
+    {
+      "@type": "Question",
+      "name": "Hoe voorkom ik dat een koppeling stiekem verkeerde gegevens doorzet?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Spreek per gegeven af welk systeem de baas is, en laat de koppeling maar één kant op schrijven waar dat kan. Zorg daarnaast dat fouten zichtbaar worden: een koppeling die stil faalt, is gevaarlijker dan geen koppeling. Laat mislukte regels landen bij iemand die er iets mee doet, en controleer de eerste weken dagelijks een steekproef."}
+    }
+  ]
+}
+</script>
+<script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div class="topbalk"><div class="wrap">
+  <span class="tb-status"><i></i>Beschikbaar — ruimte voor 2 bedrijfsscans in september</span>
+  <span class="tb-icons">
+      <a href="https://wa.me/31627483345" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg></a>
+      <a href="mailto:arthur@bedrijfsgeheugen.nl" aria-label="E-mail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+      <a href="tel:+31627483345" aria-label="Bel Arthur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a>
+      <a href="https://www.linkedin.com/company/bedrijfsgeheugen" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5v11H3.56v-11h3.38zM5.25 3.5a1.97 1.97 0 1 1 0 3.94 1.97 1.97 0 0 1 0-3.94zM20.44 13.28v6.22h-3.37v-5.83c0-1.47-.53-2.47-1.84-2.47-1 0-1.6.68-1.86 1.33-.1.24-.12.57-.12.9v6.07H9.87s.05-9.85 0-10.87h3.38v1.54c.45-.7 1.25-1.7 3.04-1.7 2.22 0 3.89 1.45 3.89 4.58z"/></svg></a>
+    </span>
+  </div>
+</div>
+<nav class="navpill" aria-label="Hoofdnavigatie">
+  <a class="np-home" href="/" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a>
+  <a class="np-link" href="/expertises.html">Expertises</a>
+  <a class="np-link" href="/over-ons.html">Over ons</a>
+  <a class="np-link" href="/blog/">Blog</a>
+  <a class="np-cta" href="/zelfscan.html"><i></i>Gratis zelfscan</a>
+  <a class="np-wa" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag%20over%20Bedrijfsgeheugen" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg></a>
+</nav>
+<div class="np-merk"><a class="logo" href="/"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 4h28a6 6 0 0 1 6 6v22L32 44H10a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="#FFE86B"/><path d="M44 32 32 44v-8a4 4 0 0 1 4-4h8z" fill="#E2C73C"/><rect x="12" y="14" width="22" height="3.6" rx="1.8" fill="#14171A"/><rect x="12" y="22" width="16" height="3.6" rx="1.8" fill="#FF4F17"/><rect x="12" y="29.5" width="18" height="3.6" rx="1.8" fill="#14171A"/></svg><span>Bedrijfs<b>geheugen</b></span></a></div>
+<main>
+<div class="wrap">
+  <nav class="kruimel" aria-label="Kruimelpad"><a href="/">Home</a> / <a href="/blog/">Blog</a> / AFAS en Exact koppelen</nav>
+  <header class="artikelkop">
+    <span class="eyebrow">Koppelingen</span>
+    <h1>AFAS en Exact koppelen: hoe u dubbel werk uit uw administratie haalt</h1>
+    <div class="artikelmeta"><span>27 juli 2026</span><span>·</span><span>± 7 min lezen</span><span>·</span><span>Uit de praktijk, niet uit de brochure</span></div>
+  </header>
+
+  <article class="artikel">
+    <p class="lead">Een nieuwe klant belt. Uw verkoper zet de gegevens in een Excel-lijst, want daar staat de offerte in. Gaat de opdracht door, dan tikt de administratie diezelfde naam, hetzelfde adres en hetzelfde btw-nummer nog een keer over in Exact of AFAS. Twee weken later blijkt het huisnummer verkeerd — in één van de twee. Niemand weet welke de juiste is. Dit is geen slordigheid van uw mensen. Dit is een ontbrekende koppeling.</p>
+
+    <p>In dit artikel leest u wat koppelen tussen AFAS of Exact en uw andere systemen precies inhoudt, welke drie routes u kunt kiezen, wat elke route in de praktijk kost aan geld en gedoe, en hoe u in vijf stappen een koppeling neerzet die over een jaar nog steeds werkt. Zonder groot nieuw systeem — want de gegevens die u wilt verbinden, staan al in de pakketten die u heeft.</p>
+
+    <h2>Wat dubbel invoeren u werkelijk kost</h2>
+    <p>De rekensom die iedereen maakt is de verkeerde. "Het overtikken van een klant duurt twee minuten, dat valt wel mee." Klopt — de minuten zijn niet het probleem. Het probleem is wat er daarna gebeurt.</p>
+    <p>Zodra dezelfde gegevens op twee plekken leven, ontstaat er een <strong>waarheidsprobleem</strong>. Welke van de twee klopt? Bij een adres merkt u het snel. Bij een gewijzigde prijsafspraak, een aangepaste betaaltermijn of een contactpersoon die niet meer werkt, merkt u het pas als er iets misgaat bij de klant. En dan bent u niet twee minuten kwijt, maar een middag uitzoekwerk plus een stuk geloofwaardigheid.</p>
+    <p>Daar komt bij dat mensen zich aanpassen aan systemen die niet met elkaar praten. Ze beginnen een eigen lijstje. Ze mailen "de laatste versie" rond. Ze onthouden dingen in plaats van ze vast te leggen. Zo verschuift de kennis van uw bedrijf naar de hoofden van uw medewerkers — precies het lek dat we beschreven in <a href="/blog/wat-is-een-bedrijfsgeheugen/">wat een bedrijfsgeheugen is en waarom het weglekt</a>.</p>
+    <p>Software is in het mkb allang geen uitzondering meer. Het CBS meet in de statistiek <a href="https://www.cbs.nl/nl-nl/cijfers/detail/86119NED" target="_blank" rel="noopener">ICT-gebruik bij bedrijven</a> jaarlijks hoeveel bedrijven ERP-, CRM- en BI-software inzetten, uitgesplitst naar bedrijfsgrootte. Wat zo'n tabel niet laat zien, is of die pakketten ook met elkaar praten. En daar zit in de meeste bedrijven die wij zien nu juist de winst.</p>
+
+    <div class="callout">
+      <p><strong>De praktijktest:</strong> vraag uw team waar het actuele mailadres van een vaste klant staat. Krijgt u drie verschillende antwoorden, dan heeft u geen datakwaliteitsprobleem — u heeft een koppelingsprobleem.</p>
+    </div>
+
+    <h2>Wat "koppelen" wel en niet betekent</h2>
+    <p>Koppelen betekent: twee systemen wisselen automatisch gegevens uit, zodat u ze maar op één plek hoeft in te voeren. Meer niet. Het is nadrukkelijk géén samenvoeging van uw pakketten, geen overstap en geen nieuw systeem erbovenop.</p>
+    <p>Wat u in het mkb het vaakst wilt verbinden met AFAS of Exact Online:</p>
+    <ul>
+      <li><strong>Website of offertetool → administratie.</strong> Een aanvraag wordt vanzelf een relatie, zonder overtikken.</li>
+      <li><strong>Urenregistratie → facturatie.</strong> Geschreven uren komen automatisch op de factuur, inclusief de juiste tarieven.</li>
+      <li><strong>Webshop of orderportaal → boekhouding.</strong> Orders en betalingen landen zonder tussenkomst in de administratie.</li>
+      <li><strong>Administratie → Microsoft 365.</strong> Klantgegevens en openstaande posten zichtbaar in Teams, Excel of een dashboard, zonder dat iedereen in het financiële pakket hoeft.</li>
+    </ul>
+    <p>Belangrijk begrip vooraf: het <strong>bronsysteem</strong>. Per gegeven bepaalt u welk systeem de baas is. Klantgegevens: de administratie. Projectstatus: de projecttool. Als u dat niet vooraf afspreekt, gaan twee systemen elkaar overschrijven en heeft u het waarheidsprobleem alleen maar sneller gemaakt.</p>
+
+    <h2>Drie routes om te koppelen — en wanneer welke past</h2>
+    <p>Er is niet één manier om AFAS of Exact te koppelen. Er zijn er grofweg drie, en de fout die het vaakst wordt gemaakt is meteen naar de duurste grijpen.</p>
+
+    <h3>1. De kant-en-klare koppeling</h3>
+    <p>Zowel AFAS als Exact Online heeft een marktplaats met bestaande koppelingen naar veelgebruikte software: urenregistratie, webshops, salaris, scan-en-herken. Vaak een vast bedrag per maand, in een dag aan te zetten, en onderhoud is niet uw probleem. <strong>Kies dit als</strong> uw proces standaard genoeg is. Dat is het vaker dan mensen denken.</p>
+
+    <h3>2. Het integratieplatform</h3>
+    <p>Een tussenlaag die twee systemen aan elkaar knoopt op basis van regels die u zelf instelt: als er een order binnenkomt, maak dan een verkoopfactuur aan. U betaalt een maandbedrag plus eenmalig inrichtingswerk. <strong>Kies dit als</strong> er geen standaardkoppeling bestaat, of als uw proces een paar eigen regels heeft die net niet in de standaard passen. Voor het mkb is dit meestal het beste midden.</p>
+
+    <h3>3. Maatwerk via de API</h3>
+    <p>Beide pakketten hebben een open koppelvlak waarmee een ontwikkelaar precies kan bouwen wat u wilt. Krachtig, maar u bent zelf eigenaar van het onderhoud: verandert er iets aan de kant van AFAS of Exact, dan moet iemand het aanpassen. <strong>Kies dit alleen als</strong> uw proces echt onderscheidend is en de eerste twee routes aantoonbaar niet volstaan.</p>
+    <p>Een eerlijk advies dat u zelden in een brochure leest: begin bovenaan dit lijstje en zak alleen als het echt moet. Elke stap naar beneden verdubbelt ongeveer de doorlooptijd en het beheer.</p>
+
+    <h2>In vijf stappen een koppeling die blijft werken</h2>
+    <p>De meeste koppelprojecten stranden niet op techniek, maar op onduidelijke afspraken. Deze volgorde voorkomt dat:</p>
+    <ol class="stap">
+      <li><strong>Kies één proces, niet uw hele bedrijf.</strong> Neem het proces waar het meeste wordt overgetikt — meestal offerte naar factuur, of uren naar factuur. Eén koppeling die werkt is meer waard dan een plan voor vijf.</li>
+      <li><strong>Leg vast welke gegevens meegaan en wie de baas is.</strong> Schrijf letterlijk op: klantnaam, adres, btw-nummer, contactpersoon — en welk systeem daarvan het bronsysteem is. Eén A4 is genoeg en voorkomt de meeste ellende.</li>
+      <li><strong>Ruim eerst op, koppel daarna.</strong> Een koppeling kopieert ook uw dubbele klantkaarten en oude debiteuren netjes door. Schoon uw bestand op vóór u aanzet, niet erna.</li>
+      <li><strong>Zet hem eerst in het klein aan.</strong> Laat een week lang één klantgroep of één type order meelopen en vergelijk handmatig. Klopt alles, dan pas de rest. Zo ontdekt u fouten terwijl ze nog klein zijn.</li>
+      <li><strong>Regel wie meldingen krijgt.</strong> Een koppeling die stil faalt, is erger dan geen koppeling. Spreek af wie de foutmeldingen ontvangt en wie er wat mee doet — en zet een kwartaalcheck in de agenda.</li>
+    </ol>
+    <p>Reken voor een eerste koppeling in het mkb op enkele weken van keuze tot draaien, waarvan het grootste deel gaat zitten in stap 2 en 3. De techniek is zelden het lange stuk.</p>
+
+    <div class="cta-blok">
+      <h2>Benieuwd welke koppeling u het meeste oplevert?</h2>
+      <p>Doe de gratis zelfscan en zie in twee minuten waar in uw bedrijf het meeste dubbele werk zit — van offerte-opvolging tot administratie. Wilt u het scherper in beeld, dan brengt de bedrijfsscan (€ 1.495 excl. btw, volledig verrekend als u verdergaat) uw hele proces in één dag op locatie in kaart, inclusief een concreet koppelvoorstel. Het rapport is van u, ook als u zelf verder wilt.</p>
+      <div class="knoppen">
+        <a class="btn oranje" href="/zelfscan.html">Doe de gratis zelfscan →</a>
+        <a class="btn" href="/expertises.html">Bekijk de bedrijfsscan →</a>
+      </div>
+    </div>
+
+    <h2>Veelgestelde vragen</h2>
+    <div class="faq">
+      <details>
+        <summary>Moet ik overstappen van Exact naar AFAS (of andersom) om te kunnen koppelen?</summary>
+        <p>Vrijwel nooit. Zowel AFAS als Exact Online hebben open koppelvlakken, dus u kunt beide pakketten verbinden met uw website, urenregistratie, webshop of Microsoft 365. Overstappen kost maanden en veel geld; een koppeling lost het dubbele werk meestal in weken op. Kijk pas naar migreren als het pakket zelf uw proces niet meer aankan, niet omdat het niet zou kunnen koppelen.</p>
+      </details>
+      <details>
+        <summary>Wat kost een koppeling tussen AFAS of Exact en een ander systeem?</summary>
+        <p>Dat hangt vooral af van de route. Een kant-en-klare koppeling uit de marktplaats van het pakket kost meestal een vast bedrag per maand en is in een dag ingeregeld. Een koppeling via een integratieplatform kost een maandbedrag plus eenmalig inrichtingswerk. Maatwerk via de API is het duurst en alleen verstandig als uw proces echt afwijkt. Reken bij elke route ook op beheer: een koppeling is geen eenmalig project.</p>
+      </details>
+      <details>
+        <summary>Hoe voorkom ik dat een koppeling stiekem verkeerde gegevens doorzet?</summary>
+        <p>Spreek per gegeven af welk systeem de baas is, en laat de koppeling maar één kant op schrijven waar dat kan. Zorg daarnaast dat fouten zichtbaar worden: een koppeling die stil faalt, is gevaarlijker dan geen koppeling. Laat mislukte regels landen bij iemand die er iets mee doet, en controleer de eerste weken dagelijks een steekproef. Hulp nodig bij het inrichten? Bekijk onze <a href="/expertises.html">koppelingen en automatisering</a> of <a href="/index.html#contact">neem contact op</a>.</p>
+      </details>
+    </div>
+  </article>
+</div>
+</main>
+<footer class="xfooter">
+  <div class="wrap fgrid">
+    <div class="fkol merk">
+      <span class="flogo">Bedrijfs<b>geheugen</b></span>
+      <p>Jij kunt je volledig richten op je bedrijf. Wij verbinden je kennis, klanten en systemen tot één geheel — zonder groot nieuw systeem. Praktisch, in gewone taal en altijd in jouw tempo.</p>
+    </div>
+    <div class="fkol">
+      <h4>Pagina's</h4>
+      <a href="/index.html">Home</a>
+      <a href="/expertises.html">Expertises</a>
+      <a href="/over-ons.html">Over ons</a>
+      <a href="/blog/">Blog</a>
+      <a href="/connect.html">Connect</a>
+      <a href="/data-ai-cockpit.html">Data &amp; AI-scan</a>
+      <a href="/zelfscan.html">Gratis zelfscan</a>
+    </div>
+    <div class="fkol">
+      <h4>Beginnen</h4>
+      <a href="/zelfscan.html">Doe de zelfscan (2 min)</a>
+      <a href="/index.html#contact">Plan een bedrijfsscan</a>
+      <a href="/index.html#contact">Vraag een AI-workshop aan</a>
+      <a href="/connect.html">Connect-wachtlijst</a>
+      <a href="/index.html#faq">Veelgestelde vragen</a>
+    </div>
+    <div class="fkol">
+      <h4>Neem direct contact op</h4>
+      <a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a>
+      <a href="tel:+31627483345">06 - 27 48 33 45</a>
+      <a href="https://wa.me/31627483345" target="_blank" rel="noopener">WhatsApp →</a>
+      <a href="https://www.linkedin.com/company/bedrijfsgeheugen" target="_blank" rel="noopener">LinkedIn →</a>
+      <a href="/privacy.html">Privacyverklaring</a>
+      <span class="fklein">Bedrijfsgeheugen · KvK 68765428</span>
+    </div>
+  </div>
+  <div class="wrap fonder">© <span class="jr"></span> Bedrijfsgeheugen — slimmer werken zonder groot nieuw systeem</div>
+</footer>
+<script>
+(function(){var j=document.querySelectorAll('.jr');var y=new Date().getFullYear();j.forEach(function(e){e.textContent=y});})();
+</script>
+<script>(function(){var n=document.querySelector(".navpill");if(n){var s=function(){n.classList.toggle("show",(window.scrollY||0)>200)};addEventListener("scroll",s,{passive:true});s()}})();</script>
+<!-- Cookiebanner (AVG/GDPR) — toestemming voor Google Analytics -->
+<style>
+#bgCookie{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:99999;max-width:660px;margin:0 auto;background:#fff;color:#16213e;border:1px solid #e4e4ec;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.20);padding:1.15rem 1.25rem;font:400 .92rem/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:none}
+#bgCookie.bgShow{display:block}
+#bgCookie h4{margin:0 0 .45rem;font-size:1.02rem;font-weight:700}
+#bgCookie p{margin:0}
+#bgCookie a{color:var(--blauw,#1a56db);text-decoration:underline}
+#bgCookie .bgBtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.95rem}
+#bgCookie button{flex:1 1 auto;min-width:140px;padding:.72rem 1rem;border-radius:9px;border:1.5px solid var(--blauw,#1a56db);font-weight:700;cursor:pointer;font-size:.92rem;font-family:inherit}
+#bgCookie .bgAccept{background:var(--blauw,#1a56db);color:#fff}
+#bgCookie .bgDeny{background:#fff;color:var(--blauw,#1a56db)}
+#bgCookie button:focus-visible{outline:3px solid rgba(26,86,219,.4);outline-offset:2px}
+@media(max-width:520px){#bgCookie .bgBtns{flex-direction:column-reverse}}
+</style>
+<div id="bgCookie" role="dialog" aria-label="Cookiemelding" aria-describedby="bgCookieTxt">
+  <h4>🍪 Cookies &amp; privacy</h4>
+  <p id="bgCookieTxt">Bedrijfsgeheugen gebruikt noodzakelijke cookies voor een goede werking van de site. Met jouw toestemming gebruiken we ook analytische cookies (Google Analytics) om te meten hoe de site wordt gebruikt en die te verbeteren. Je keuze wordt onthouden en je kunt 'm altijd wijzigen. Meer weten? Zie onze <a href="/privacy.html">privacyverklaring</a>.</p>
+  <div class="bgBtns">
+    <button type="button" class="bgDeny" id="bgCookieDeny">Alleen noodzakelijk</button>
+    <button type="button" class="bgAccept" id="bgCookieAccept">Accepteren</button>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='bg_consent';
+  function applyConsent(state){try{if(typeof gtag==='function'){gtag('consent','update',{analytics_storage:(state==='granted'?'granted':'denied'),ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});}}catch(e){}}
+  function el(){return document.getElementById('bgCookie');}
+  function show(){var b=el();if(b)b.classList.add('bgShow');}
+  function hide(){var b=el();if(b)b.classList.remove('bgShow');}
+  function choose(state){try{localStorage.setItem(KEY,state);localStorage.setItem(KEY+'_ts',new Date().toISOString());}catch(e){}applyConsent(state);hide();}
+  window.bgOpenCookies=function(){show();};
+  document.addEventListener('DOMContentLoaded',function(){
+    var a=document.getElementById('bgCookieAccept'),d=document.getElementById('bgCookieDeny');
+    if(a)a.addEventListener('click',function(){choose('granted');});
+    if(d)d.addEventListener('click',function(){choose('denied');});
+    var stored=null;try{stored=localStorage.getItem(KEY);}catch(e){}
+    if(stored!=='granted'&&stored!=='denied'){show();}
+  });
+})();
+</script>
+</body>
+</html>
