@@ -22,7 +22,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ═══════════ SEO ═══════════ -->
-<title>Bedrijfsscan voor kennisborging | Bedrijfsgeheugen</title>
+<title>Automatiseren zonder project | Bedrijfsgeheugen</title>
 <meta name="description" content="Ontdek in één dag waar kennis, klantafspraken en processen kwetsbaar zijn. Ontvang binnen een week de drie grootste risico's, quick wins en een concreet verbeterplan.">
 <meta name="keywords" content="digitalisering mkb, klantoverzicht mkb, offerte opvolging software, productieplanning excel vervangen, AFAS koppeling, Exact koppeling, webshop koppeling boekhouding, CRM klein bedrijf, bedrijfsprocessen automatiseren mkb, AI training mkb, Copilot training, ChatGPT workshop, AI adoptie, AI agents mkb">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/">
@@ -97,6 +97,22 @@ section{padding:5.5rem 0}
 a{color:var(--blauw)}
 :focus-visible{outline:3px solid var(--oranje);outline-offset:3px;border-radius:4px}
 
+.versus{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--inkt);margin-top:2.4rem;background:var(--wit)}
+.versus .kol{padding:1.9rem 1.6rem}
+.versus .kol.markt{border-right:2px solid var(--inkt)}
+.versus .kol.wij{background:var(--blauw);color:#fff}
+.versus .kop{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:1.4rem;opacity:.8}
+.versus .r{padding:.8rem 0;border-top:1px solid rgba(20,23,26,.13);font-size:1rem}
+.versus .kol.wij .r{border-top-color:rgba(255,255,255,.26);font-weight:600}
+.versus .r:first-of-type{border-top:none}
+.versus .kol.markt .r{color:var(--grijs);text-decoration:line-through;text-decoration-color:var(--oranje)}
+@media(max-width:760px){.versus{grid-template-columns:1fr}.versus .kol.markt{border-right:none;border-bottom:2px solid var(--inkt)}}
+.nietlijst{display:grid;grid-template-columns:1fr 1fr;gap:0 2.4rem;margin-top:2.4rem}
+.nietlijst div{padding:.75rem 0;border-bottom:1px solid var(--lijn);font-size:1rem}
+.nietlijst b{color:var(--oranje);font-family:'IBM Plex Mono',monospace;margin-right:.6rem}
+@media(max-width:700px){.nietlijst{grid-template-columns:1fr}}
+.verhaal p{max-width:44em;margin-bottom:1.05rem;color:var(--inkt)}
+.verhaal .slot{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(1.4rem,3vw,2rem);letter-spacing:-.02em;margin-top:1.6rem}
 .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blauw);font-weight:600;margin-bottom:1rem;display:inline-flex;align-items:center;gap:.55rem}
 .eyebrow::before{content:"";width:8px;height:8px;background:var(--oranje);border-radius:2px}
 h2{font-size:clamp(1.9rem,4vw,3rem);font-weight:800;margin-bottom:1.1rem;max-width:18em}
@@ -363,7 +379,8 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <a class="np-home" href="#top" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a>
   <a class="np-link" href="expertises.html">Expertises</a>
   <a class="np-link" href="over-ons.html">Over ons</a>
-  <a class="np-link" href="#faq">FAQ</a>
+  <a class="np-link" href="#anders">Wat we anders doen</a>
+      <a href="#faq">FAQ</a>
   <a class="np-link" href="blog/">Blog</a>
   <a class="np-cta" href="zelfscan.html"><i></i>Gratis zelfscan</a>
   <a class="np-wa" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag%20over%20Bedrijfsgeheugen" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg></a>
@@ -375,8 +392,8 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <div class="wrap">
     <div>
       <span class="eyebrow">Digitalisering voor het mkb · van 3 tot 250 medewerkers</span>
-      <h1>In <span class="u">één dag</span> weten waar jouw bedrijf kwetsbaar is.</h1>
-      <p>Je bedrijf draait op Excel, mail en het geheugen van een paar mensen. Wij verbinden wat je al hebt — AFAS, Exact, Microsoft 365 — tot één klantoverzicht met automatische offerte-opvolging en een gedeelde planning.</p>
+      <h1>Automatiseren <span class="u">zonder project</span>.</h1>
+      <p>Geen half jaar. Geen nieuw systeem. Geen uurtje-factuurtje. Wij pakken één handeling die elke week terugkomt en zorgen dat een computer hem doet — op de AFAS, Exact en Microsoft 365 die je al hebt.</p>
       <div class="row">
         <a class="btn oranje" href="#contact" onclick="bgEvent('bedrijfsscan-cta')">Vraag de bedrijfsscan aan →</a>
         <a class="btn" href="zelfscan.html">Eerst gratis zelf checken (2 min)</a>
@@ -433,6 +450,43 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 </section>
 
 <!-- ═══════════ DIENSTEN ═══════════ -->
+<!-- ═══════════ WAT WE ANDERS DOEN ═══════════ -->
+<section id="anders">
+  <div class="wrap">
+    <span class="eyebrow rv">Wat we anders doen</span>
+    <h2 class="rv">Wat je normaal krijgt aangeboden, en wat je bij ons krijgt.</h2>
+    <p class="lead rv">Een traject van zes maanden, een nieuw systeem, een implementatiepartner die zich vastbijt en een offerte zonder prijs. Duur, traag, en aan het eind gebruikt niemand het. Wij doen het omgekeerde.</p>
+    <div class="versus rv">
+      <div class="kol markt">
+        <div class="kop">Zoals het meestal gaat</div>
+        <div class="r">Traject van maanden</div>
+        <div class="r">Uurtje-factuurtje</div>
+        <div class="r">Prijs op aanvraag</div>
+        <div class="r">Nieuw systeem dat alles vervangt</div>
+        <div class="r">Vastzitten aan de leverancier</div>
+        <div class="r">Alleen de successen in de etalage</div>
+      </div>
+      <div class="kol wij">
+        <div class="kop">Bij Bedrijfsgeheugen</div>
+        <div class="r">Eerste resultaat binnen twee weken</div>
+        <div class="r">Vaste prijs per stap</div>
+        <div class="r">Prijzen gewoon op de site</div>
+        <div class="r">Werkt op wat je al hebt</div>
+        <div class="r">Je krijgt de sleutels</div>
+        <div class="r">Wij vertellen ook wat misging</div>
+      </div>
+    </div>
+    <div class="nietlijst rv">
+      <div><b>×</b>Geen implementatiepartner</div>
+      <div><b>×</b>Geen nieuw systeem dat je oude vervangt</div>
+      <div><b>×</b>Geen adviesbureau dat een rapport aflevert</div>
+      <div><b>×</b>Geen traject van zes maanden</div>
+      <div><b>×</b>Geen callcenter — je krijgt Arthur</div>
+      <div><b>×</b>Geen softwareleverancier: wij verdienen niets aan licenties</div>
+    </div>
+  </div>
+</section>
+
 <section id="diensten" style="background:var(--wit);border-top:2px solid var(--inkt);border-bottom:2px solid var(--inkt)">
   <div class="wrap">
     <span class="eyebrow rv">Kies je startpunt</span>
@@ -531,12 +585,16 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <!-- ═══════════ OVER ═══════════ -->
 <section id="over">
   <div class="wrap">
-    <span class="eyebrow rv">Wie je aan tafel krijgt</span>
-    <h2 class="rv">Uit de praktijk, niet uit de brochure</h2>
+    <span class="eyebrow rv">Het verhaal</span>
+    <h2 class="rv">Ik heb te vaak gezien hoe een bedrijf zijn geheugen kwijtraakt.</h2>
     <div class="over rv">
       <div class="av">AP</div>
-      <div>
-        <p>"Ik werk al vijftien jaar op het snijvlak van bedrijfsvoering en technologie: AFAS-koppelingen, Microsoft-omgevingen, planning en stuurinformatie. Bij elk gezond mkb-bedrijf zie ik hetzelfde lek: kennis die aan mensen hangt in plaats van aan het bedrijf. Ik geloof niet in grote systemen voor kleine teams — wel in het slim verbinden van wat er al staat. En ik ben niet gebonden aan één softwareleverancier, dus mijn advies heeft geen dubbele agenda."</p>
+      <div class="verhaal">
+        <p>Vijftien jaar op het snijvlak van bedrijfsvoering en technologie. Bij elk gezond mkb-bedrijf zag ik hetzelfde: de man die weet hoe de calculatie in elkaar zit, de vrouw die weet welke klant je nooit vooruit laat betalen. Nergens opgeschreven, want iedereen wist het toch.</p>
+        <p>En dan gaat zo iemand weg, en blijkt dat niemand het wist.</p>
+        <p>Wat me nog meer opviel: het antwoord dat dan wordt aangeboden is altijd hetzelfde. Een nieuw systeem, een traject van maanden, een partij die zich vastbijt. Ik heb zelf ooit drie weken aan een dashboard gebouwd dat daarna door niemand werd gebruikt. Mooi gemaakt, verkeerde vraag beantwoord.</p>
+        <p>Dat moet anders kunnen, dacht ik. Klein beginnen. Iets bouwen dat volgende week al werkt, op de systemen die er al staan. Laten zien dat het werkt, en dan pas de volgende stap. Ik ben niet gebonden aan één softwareleverancier, dus mijn advies heeft geen dubbele agenda.</p>
+        <p class="slot">Zo is Bedrijfsgeheugen ontstaan.</p>
         <div class="naam">Arthur Prinsen — oprichter Bedrijfsgeheugen</div>
       </div>
     </div>
@@ -548,6 +606,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <div class="wrap">
     <span class="eyebrow rv">Veelgestelde vragen</span>
     <h2 class="rv">Eerlijke antwoorden vooraf</h2>
+    <details class="rv" open><summary>Waarom automatiseren zonder project?</summary><p>Je weet wat er beter kan in je bedrijf.<br>Je hebt alleen geen zin in een traject van zes maanden.<br>Geen offerte met een nul te veel.<br>Geen consultant die je eigen proces komt uitleggen.<br>Geen systeem dat alles vervangt en niks oplost.<br><br><b>Welkom bij Bedrijfsgeheugen.</b><br><br>Wij pakken één handeling die elke week terugkomt en zorgen dat een computer hem doet.<br>Volgende week draait het.<br>Werkt het, dan pakken we de volgende.<br>Werkt het niet, dan stoppen we en heb je er niks aan verloren.<br><br>En als je belt, krijg je mij aan de lijn. Geen accountmanager.<br><br><b>Da's Bedrijfsgeheugen. Automatiseren zonder project.</b></p></details>
     <details class="rv"><summary>Moeten wij ons huidige boekhoudpakket vervangen?</summary><p>Nee. AFAS, Exact of je huidige pakket blijft de financiële kern, inclusief alle historie en koppelingen. Wij bouwen de verbindende laag eromheen. Alleen als je pakket aantoonbaar knelt, adviseren we eerlijk over alternatieven — wij verkopen zelf geen software en verdienen niets aan licenties.</p></details>
     <details class="rv"><summary>Wat kost de zelfscan?</summary><p>Niets. Vijf klikvragen, 2 minuten: je ziet direct je score en grootste risico, en ontvangt het volledige rapport gratis per e-mail. Daarna kun je — als jij dat wilt — een gratis adviesgesprek plannen.</p></details>
     <details class="rv"><summary>Voor welke bedrijven is dit geschikt?</summary><p>Voor mkb-bedrijven van 3 tot 250 medewerkers die draaien op Excel, mail en losse lijsten — van familiebedrijf in de bouwtoelevering tot maakbedrijf, installatiebedrijf, handelsonderneming of dienstverlener met meerdere vestigingen. Hoe kleiner het team, hoe directer de quick wins; hoe groter de organisatie, hoe zwaarder kennisborging en stuurinformatie wegen.</p></details>
