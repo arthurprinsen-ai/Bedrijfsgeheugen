@@ -238,8 +238,9 @@ html.js .rv.in{opacity:1;transform:none}
 .cijfers .src{color:#AAB8F0}
 .cijfers h2{color:#fff}
 .cijfers .lead{color:#D9DFFA}
-.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:2.5rem}
-@media(max-width:760px){.statgrid{grid-template-columns:1fr}}
+.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-top:2.5rem}
+@media(max-width:1040px){.statgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.statgrid{grid-template-columns:1fr}}
 .stat .n{font-family:'Bricolage Grotesque';font-weight:800;font-size:clamp(2.6rem,6vw,4rem);color:var(--geel);line-height:1}
 .stat .n em{font-style:normal;color:#fff}
 .stat p{font-size:.92rem;color:#D9DFFA;margin-top:.5rem;max-width:24em}
@@ -583,22 +584,6 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   </div>
 </section>
 
-<!-- ═══════════ DE TELLER — eigen KPI, maandelijks bijwerken ═══════════ -->
-<!-- LET OP: vul echte cijfers in voordat dit live gaat. Laat een cel weg als je het getal niet hebt. -->
-<section class="teller">
-  <div class="wrap">
-    <span class="eyebrow rv" style="color:var(--geel)">De teller</span>
-    <h2 class="rv">Wat we tot nu toe hebben teruggegeven.</h2>
-    <p class="lead rv">Eén getal dat telt: uren per week die niet meer aan overtypen opgaan. We werken het elke maand bij — ook in de maanden dat het tegenvalt.</p>
-    <div class="tgrid">
-      <div class="tcel rv"><div class="tn">VUL_IN</div><p>uren per week teruggegeven aan klanten, opgeteld over alle koppelingen die draaien.</p><span class="tsub">Bijgewerkt: VUL_MAAND</span></div>
-      <div class="tcel rv"><div class="tn">VUL_IN</div><p>koppelingen die vandaag draaien bij klanten, van webshop tot boekhouding.</p><span class="tsub">Bijgewerkt: VUL_MAAND</span></div>
-      <div class="tcel rv"><div class="tn">VUL_IN</div><p>handmatige handelingen per maand die een computer nu doet in plaats van een mens.</p><span class="tsub">Bijgewerkt: VUL_MAAND</span></div>
-    </div>
-    <p class="tvoet">Waarom we dit publiceren: als wij beweren dat automatiseren tijd oplevert, dan mag je vragen hoeveel. Ook als het antwoord tegenvalt.</p>
-  </div>
-</section>
-
 <!-- ═══════════ CIJFERS ═══════════ -->
 <section class="cijfers">
   <div class="wrap">
@@ -609,6 +594,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
       <div class="stat rv"><div class="n" data-count="81" data-suffix=",5%">0</div><p>van het Nederlandse mkb heeft het digitale basisniveau bereikt; kabinetsdoel is 95% in 2030. Het basisniveau wordt de norm.</p><span class="src">RIJKSOVERHEID, 2025</span></div>
       <div class="stat rv"><div class="n"><em data-count="1" data-suffix=" op 4">0</em></div><p>familiebedrijven overleeft de overdracht niet. Niet-geborgde kennis en klantrelaties zijn het kernrisico.</p><span class="src">KVK / NATIONAAL REGISTER</span></div>
       <div class="stat rv"><div class="n" data-count="42" data-suffix="%">0</div><p>van de bouwbedrijven werkt op de werf nog uitsluitend met eenvoudige tools zoals Excel — terwijl 95% gelooft dat overzicht tot meer omzet leidt.</p><span class="src">EXACT KMO BAROMETER BOUW, 2025</span></div>
+      <div class="stat rv"><div class="n" data-count="4" data-suffix="×">0</div><p>zo veel zwaarder drukt de administratieve last op een klein bedrijf: circa 2% van de bedrijfskosten bij minder dan 10 werknemers, tegen 0,5% bij 100 tot 250 werknemers.</p><span class="src">PANTEIA / EIM — ADMINISTRATIEVE LASTEN MKB</span></div>
     </div>
   </div>
 </section>
