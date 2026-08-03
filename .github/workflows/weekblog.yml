@@ -1,50 +1,221 @@
 name: Weekblog
+# Draait maandag, woensdag en vrijdag. Haalt het eerstvolgende artikel met
+# status "Gepland" uit de Notion-kalender, laat Claude het schrijven, pusht het
+# en zet de rij in Notion op "Gepubliceerd".
 on:
   schedule:
-    - cron: '0 5 * * 1'
-  workflow_dispatch: {}
+    - cron: '0 5 * * 1,3,5'
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Optioneel: forceer een specifieke slug uit de kalender'
+        required: false
+        default: ''
+
 permissions:
   contents: write
   id-token: write
+
+concurrency:
+  group: weekblog
+  cancel-in-progress: false
+
 jobs:
-  weekblog:
+  publiceren:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: anthropics/claude-code-action@v1
+
+      - name: Volgend artikel ophalen uit Notion
+        id: kalender
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB: ${{ secrets.NOTION_BLOG_DB }}
+          FORCE_SLUG: ${{ github.event.inputs.slug }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys, urllib.request, pathlib
+
+          token = os.environ.get("NOTION_TOKEN", "")
+          db    = os.environ.get("NOTION_DB", "")
+          force = (os.environ.get("FORCE_SLUG") or "").strip()
+          out   = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+
+          def tekst(props, naam):
+              v = props.get(naam) or {}
+              arr = v.get("rich_text") or v.get("title") or []
+              return "".join(x.get("plain_text", "") for x in arr).strip()
+
+          kandidaten = []
+
+          if token and db:
+              print("Bron: Notion-kalender")
+              req = urllib.request.Request(
+                  "https://api.notion.com/v1/databases/%s/query" % db,
+                  data=json.dumps({
+                      "filter": {"property": "Status", "select": {"equals": "Gepland"}},
+                      "sorts": [{"property": "Publicatiedatum", "direction": "ascending"}],
+                      "page_size": 50,
+                  }).encode(),
+                  headers={
+                      "Authorization": "Bearer " + token,
+                      "Notion-Version": "2022-06-28",
+                      "Content-Type": "application/json",
+                  },
+                  method="POST")
+              for r in json.load(urllib.request.urlopen(req))["results"]:
+                  p = r["properties"]
+                  kandidaten.append({
+                      "page_id": r["id"],
+                      "slug": tekst(p, "Slug"),
+                      "titel": tekst(p, "Titel"),
+                      "zoekwoord": tekst(p, "Focus-zoekwoord"),
+                      "pijler": ((p.get("Pijler") or {}).get("select") or {}).get("name", ""),
+                  })
+          else:
+              print("Bron: blog/kalender.json (geen NOTION_TOKEN/NOTION_BLOG_DB ingesteld)")
+              data = json.loads(pathlib.Path("blog/kalender.json").read_text(encoding="utf-8"))
+              for a in data["artikelen"]:
+                  kandidaten.append({
+                      "page_id": "",
+                      "slug": a["slug"],
+                      "titel": a["titel"],
+                      "zoekwoord": a.get("zoekwoord", ""),
+                      "pijler": a.get("pijler", ""),
+                  })
+
+          gekozen = None
+          for k in kandidaten:
+              if not k["slug"]:
+                  continue
+              if force and k["slug"] != force:
+                  continue
+              if pathlib.Path("blog", k["slug"]).exists():
+                  print("overslaan (bestaat al):", k["slug"])
+                  continue
+              gekozen = k
+              break
+
+          with out.open("a") as f:
+              if not gekozen:
+                  print("Geen gepland artikel gevonden dat nog niet bestaat.")
+                  f.write("gevonden=false\n")
+              else:
+                  print("Te schrijven:", gekozen["slug"])
+                  f.write("gevonden=true\n")
+                  for k, v in gekozen.items():
+                      f.write("%s=%s\n" % (k, v))
+          PY
+
+      - name: Artikel schrijven en publiceren
+        if: steps.kalender.outputs.gevonden == 'true'
+        uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: "--max-turns 60 --allowedTools Bash,Read,Write,Edit,Glob,Grep,WebSearch"
           prompt: |
-            Publiceer het wekelijkse blogartikel voor www.bedrijfsgeheugen.nl (statische site, Nederlands).
-            BEDRIJF: Bedrijfsgeheugen helpt mkb (3-250 medewerkers) met digitalisering zonder groot nieuw
-            systeem: koppelingen AFAS/Exact/Microsoft 365, één klantoverzicht, offerte-opvolging, dashboards,
-            AI-trainingen (Copilot, ChatGPT, Claude). Toon: praktische adviseur, geen jargon. Kernzinnen:
-            "Slimmer werken zonder groot nieuw systeem", "Uit de praktijk, niet uit de brochure".
-            Diensten: gratis zelfscan (/zelfscan.html), bedrijfsscan EUR 1.495 excl. btw (rapport is van de
-            klant, verrekend bij vervolg).
-            ONDERWERP: kijk welke slugs al bestaan onder blog/ en pak de eerstvolgende uit deze kalender:
-            1 wat-is-een-bedrijfsgeheugen (Wat is een bedrijfsgeheugen? Waarom mkb-bedrijven ongemerkt kennis
-            verliezen), 2 afas-exact-koppelen, 3 microsoft-copilot-mkb (7 taken automatiseren),
-            4 kennis-vastleggen-medewerker-vertrekt, 5 excel-schaduwadministratie,
-            6 exact-online-webshop-koppelen, 7 ai-assistent-kiezen (ChatGPT vs Copilot vs Claude),
-            8 offerte-opvolging-automatiseren, 9 bedrijfsopvolging-familiebedrijf,
-            10 klantoverzicht-zonder-crm, 11 ai-training-mkb, 12 digitaliseringsvalkuil.
-            Alles gepubliceerd? Bedenk zelf een passend nieuw onderwerp (pijlers: kennisborging,
-            koppelingen, AI voor mkb, digitalisering).
-            ARTIKEL: 1000-1500 woorden. H1, inleiding met herkenbaar praktijkprobleem, 3-5 H2-secties,
-            concreet stappenplan, FAQ met 3 vragen, CTA-blok naar /zelfscan.html en de bedrijfsscan.
-            SEO: title tag max 60 tekens, meta description 140-155 tekens, canonical
-            https://www.bedrijfsgeheugen.nl/blog/SLUG/, BlogPosting- en FAQPage-JSON-LD, minimaal 2 interne
-            links, 1 externe bron (CBS/KVK, verifieer via WebSearch dat de URL bestaat).
-            BOUW: maak blog/SLUG/index.html in exact de huisstijl van de site. Gebruik een bestaand artikel
-            onder blog/ als template; bestaat er nog geen, neem dan expertises.html als basis (volledige
-            head met fonts en style-blok, topbalk, np-merk-logobalk, navpill-navigatie en footer overnemen,
-            alleen main vervangen; paginalinks root-relatief zoals /expertises.html). Werk bij of maak aan:
-            blog/index.html (nieuwe artikelkaart bovenaan, pagina in dezelfde huisstijl met titel "Blog -
-            praktische inzichten voor het mkb"), blog/rss.xml en sitemap.xml (lastmod vandaag). Alleen bij
-            het allereerste artikel: voeg een Blog-link naar /blog/ toe in de navpill-navigatie en de
-            footerkolom Pagina's van index.html, expertises.html, over-ons.html, zelfscan.html en
-            privacy.html (zelfde markup als bestaande items). Wijzig verder niets aan bestaande pagina's,
-            verwijder nooit artikelen. Controleer dat de HTML geldig is.
-            PUBLICEER: git add -A, commit met bericht "weekblog: SLUG" en push naar main.
+            Schrijf en publiceer één blogartikel voor www.bedrijfsgeheugen.nl (statische HTML-site, Nederlands).
+
+            OPDRACHT UIT DE KALENDER
+            - Titel: ${{ steps.kalender.outputs.titel }}
+            - Slug: ${{ steps.kalender.outputs.slug }}
+            - Focus-zoekwoord: ${{ steps.kalender.outputs.zoekwoord }}
+            - Pijler: ${{ steps.kalender.outputs.pijler }}
+            Wijk niet af van deze slug. De titel mag je aanscherpen als dat de zoekvraag beter dekt.
+
+            BEDRIJF
+            Bedrijfsgeheugen helpt mkb-bedrijven (3-250 medewerkers) met digitalisering zonder groot
+            nieuw systeem: koppelingen tussen AFAS, Exact Online en Microsoft 365, één klantoverzicht,
+            offerte-opvolging, dashboards en AI-trainingen (Copilot, ChatGPT, Claude).
+            Payoff: "Strak geregeld. Zonder traject." De vijand in de positionering is het IT-project:
+            maanden doorlooptijd, uitloop, uurtje-factuurtje, een systeem dat niemand gebruikt.
+            Bedrijfsgeheugen verkoopt zelf geen software en verdient niets aan licenties.
+
+            AANSPREEKVORM: "je", niet "u". Toon: praktische adviseur, gewone taal, droge humor mag,
+            geen jargon en geen verkooppraat.
+
+            PRIJZEN (gebruik exact deze, verzin er nooit andere bij)
+            - Gratis zelfscan: /zelfscan
+            - Bedrijfsscan: EUR 2.900 excl. btw, één dag op locatie, rapport binnen een week,
+              volledig verrekend bij vervolg
+            - AFAS/Exact-koppeling: EUR 3.500 tot EUR 12.000, vaste prijs vooraf
+            - Connect (beheer en monitoring): vanaf EUR 29 per maand
+
+            URL'S: de site gebruikt SCHONE URL'S ZONDER .html. Gebruik /zelfscan, /expertises,
+            /afas-koppeling, /over-ons, /connect, /data-ai-cockpit, /blog/<slug>/.
+            Schrijf NOOIT /zelfscan.html of /expertises.html — dat levert een redirect op.
+
+            SCHRIJFREGELS (deze bepalen of AI-assistenten het artikel citeren)
+            1. Beantwoord de vraag uit de titel in de eerste twee zinnen. Alles daarna is onderbouwing.
+               Dit is het fragment dat ChatGPT en AI Overviews overnemen — verstop het niet.
+            2. Getallen in plaats van bijvoeglijke naamwoorden. Niet "aanzienlijke besparing" maar
+               "6 tot 9 uur per week bij een team van 12". Maak rekensommen expliciet en navolgbaar.
+            3. Noem systemen bij naam: AFAS, Exact Online, WooCommerce, Shopify, Microsoft 365, Copilot.
+            4. 900 tot 1400 woorden. Volledig beantwoorden telt, lengte niet.
+            5. Structuur: H1, lead-alinea met het antwoord, 4 tot 6 H2-secties waarvan de koppen
+               geformuleerd zijn zoals iemand ze intypt, een concreet stappenplan of tabel, een
+               FAQ-blok met 4 tot 5 vragen, en een afsluitend CTA-blok.
+            6. Minimaal drie interne links naar bestaande pagina's onder blog/ of naar /afas-koppeling,
+               /expertises of /zelfscan. Controleer met Glob welke slugs echt bestaan; verzin er geen.
+            7. Eén externe bron (CBS, KVK, Rijksoverheid, Europese Commissie). Verifieer met WebSearch
+               dat de URL bestaat. Bij twijfel: geen externe link.
+            8. Geen dubbel werk: als een bestaand artikel onder blog/ dezelfde vraag al beantwoordt,
+               link ernaar in plaats van het over te doen.
+
+            BOUWEN
+            Maak blog/${{ steps.kalender.outputs.slug }}/index.html in exact de huisstijl van de site.
+            Neem een bestaand artikel onder blog/ als template: kopieer de volledige head (fonts,
+            style-blok), de topbalk, de merkbalk, de navpill-navigatie en de footer, en vervang alleen
+            de inhoud van <main>. Precies één <h1> per pagina.
+
+            HEAD: title max 60 tekens, meta description 140-155 tekens, canonical
+            https://www.bedrijfsgeheugen.nl/blog/${{ steps.kalender.outputs.slug }}/, og:title,
+            og:description en og:url. Eén script van het type application/ld+json met een @graph dat
+            bevat: BlogPosting (headline, description, datePublished en dateModified op de datum van
+            vandaag, inLanguage nl-NL, author Person "Arthur Prinsen", publisher met @id
+            https://www.bedrijfsgeheugen.nl/#org), FAQPage met dezelfde vragen als in het artikel, en
+            BreadcrumbList Home > Blog > artikel. Valideer dat de JSON parseert.
+
+            BIJWERKEN: blog/index.html (nieuwe artikelkaart bovenaan, zelfde markup als de bestaande
+            kaarten), blog/rss.xml (nieuw item bovenaan) en sitemap.xml (nieuwe URL met lastmod vandaag,
+            schone URL zonder .html). Wijzig verder NIETS aan bestaande pagina's en verwijder nooit
+            bestaande artikelen.
+
+            CONTROLE VOOR PUBLICATIE: precies één h1, geldige JSON-LD, canonical zonder .html, geen
+            enkele interne link die op .html eindigt, en geen link naar een slug die niet bestaat.
+
+            PUBLICEREN: git add -A, commit met bericht "blog: ${{ steps.kalender.outputs.slug }}"
+            en push naar main.
+
+      - name: Notion bijwerken
+        if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != ''
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          PAGE_ID: ${{ steps.kalender.outputs.page_id }}
+          SLUG: ${{ steps.kalender.outputs.slug }}
+        run: |
+          python3 - <<'PY'
+          import json, os, datetime, urllib.request
+
+          vandaag = datetime.date.today().isoformat()
+          body = {"properties": {
+              "Status": {"select": {"name": "Gepubliceerd"}},
+              "Publicatiedatum": {"date": {"start": vandaag}},
+              "URL": {"url": "https://www.bedrijfsgeheugen.nl/blog/%s/" % os.environ["SLUG"]},
+          }}
+          req = urllib.request.Request(
+              "https://api.notion.com/v1/pages/" + os.environ["PAGE_ID"],
+              data=json.dumps(body).encode(),
+              headers={
+                  "Authorization": "Bearer " + os.environ["NOTION_TOKEN"],
+                  "Notion-Version": "2022-06-28",
+                  "Content-Type": "application/json",
+              },
+              method="PATCH")
+          urllib.request.urlopen(req)
+          print("Notion bijgewerkt:", os.environ["SLUG"])
+          PY
+
+      - name: Niets te doen
+        if: steps.kalender.outputs.gevonden != 'true'
+        run: echo "Geen artikel met status Gepland in de kalender. Vul de Notion-kalender aan."
