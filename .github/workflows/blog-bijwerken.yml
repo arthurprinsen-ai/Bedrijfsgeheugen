@@ -1,0 +1,228 @@
+name: Blog bijwerken
+# NIEUW. De weekblog-workflow schrijft alleen artikelen die nog niet bestaan.
+# Deze workflow doet het omgekeerde: hij werkt bestaande artikelen bij wanneer
+# het zoekwoord, de meta-omschrijving of de interne links in Notion zijn gewijzigd.
+#
+# Trigger in Notion: zet Herzien op "Voorstel klaar" bij een rij met status
+# "Gepubliceerd". BG 16 in Make doet dat automatisch na een zoekwoordwijziging.
+# Na afloop zet deze workflow Herzien op "Goedgekeurd", zodat hij niet blijft draaien.
+on:
+  schedule:
+    - cron: '30 6 * * 2,4'
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Optioneel: forceer een specifieke slug'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: blog-bijwerken
+  cancel-in-progress: false
+
+jobs:
+  bijwerken:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bij te werken artikel ophalen uit Notion
+        id: kalender
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB: ${{ secrets.NOTION_BLOG_DB }}
+          FORCE_SLUG: ${{ github.event.inputs.slug }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, pathlib, uuid
+
+          token = os.environ.get("NOTION_TOKEN", "")
+          db    = os.environ.get("NOTION_DB", "")
+          force = (os.environ.get("FORCE_SLUG") or "").strip()
+          out   = pathlib.Path(os.environ["GITHUB_OUTPUT"])
+
+          if not (token and db):
+              out.open("a").write("gevonden=false\n")
+              print("Geen NOTION_TOKEN/NOTION_BLOG_DB ingesteld.")
+              raise SystemExit(0)
+
+          def tekst(props, naam):
+              v = props.get(naam) or {}
+              arr = v.get("rich_text") or v.get("title") or []
+              return "".join(x.get("plain_text", "") for x in arr).strip()
+
+          def keuze(props, naam):
+              v = props.get(naam) or {}
+              return ((v.get("select") or {}) or {}).get("name", "")
+
+          def rollup_keuze(props, naam):
+              v = props.get(naam) or {}
+              for item in ((v.get("rollup") or {}).get("array") or []):
+                  s = item.get("select") or {}
+                  if s.get("name"):
+                      return s["name"]
+              return ""
+
+          def schrijf(f, sleutel, waarde):
+              waarde = waarde or ""
+              if "\n" in waarde:
+                  d = "EOF_" + uuid.uuid4().hex
+                  f.write("%s<<%s\n%s\n%s\n" % (sleutel, d, waarde, d))
+              else:
+                  f.write("%s=%s\n" % (sleutel, waarde))
+
+          req = urllib.request.Request(
+              "https://api.notion.com/v1/databases/%s/query" % db,
+              data=json.dumps({
+                  "filter": {"and": [
+                      {"property": "Status",  "select": {"equals": "Gepubliceerd"}},
+                      {"property": "Herzien", "select": {"equals": "Voorstel klaar"}},
+                  ]},
+                  "page_size": 25,
+              }).encode(),
+              headers={
+                  "Authorization": "Bearer " + token,
+                  "Notion-Version": "2022-06-28",
+                  "Content-Type": "application/json",
+              },
+              method="POST")
+
+          gekozen = None
+          for r in json.load(urllib.request.urlopen(req))["results"]:
+              p = r["properties"]
+              slug = tekst(p, "Slug")
+              if not slug:
+                  continue
+              if force and slug != force:
+                  continue
+              if not pathlib.Path("blog", slug, "index.html").exists():
+                  print("overslaan (artikel bestaat niet in de repo):", slug)
+                  continue
+              gekozen = {
+                  "page_id": r["id"],
+                  "slug": slug,
+                  "titel": tekst(p, "Titel"),
+                  "zoekwoord": tekst(p, "Focus-zoekwoord"),
+                  "meta": tekst(p, "Meta-omschrijving"),
+                  "interne_links": tekst(p, "Interne links"),
+                  "seo_blok": tekst(p, "SEO-blok"),
+                  "paginatype": keuze(p, "Paginatype"),
+                  "cluster": rollup_keuze(p, "Cluster"),
+              }
+              break
+
+          with out.open("a") as f:
+              if not gekozen:
+                  print("Niets te herzien.")
+                  f.write("gevonden=false\n")
+              else:
+                  print("Bij te werken:", gekozen["slug"])
+                  f.write("gevonden=true\n")
+                  for k, v in gekozen.items():
+                      schrijf(f, k, v)
+          PY
+
+      - name: Bestaande slugs verzamelen
+        id: slugs
+        if: steps.kalender.outputs.gevonden == 'true'
+        run: |
+          echo "lijst=$(ls -d blog/*/ 2>/dev/null | sed 's|blog/||;s|/||' | paste -sd', ')" >> "$GITHUB_OUTPUT"
+
+      - name: Artikel bijwerken
+        if: steps.kalender.outputs.gevonden == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--max-turns 40 --allowedTools Bash,Read,Write,Edit,Glob,Grep"
+          prompt: |
+            Werk één BESTAAND blogartikel bij op www.bedrijfsgeheugen.nl. Je schrijft geen nieuw
+            artikel: je past een bestaand bestand aan omdat de zoekwoordstrategie is gewijzigd.
+
+            BESTAND: blog/${{ steps.kalender.outputs.slug }}/index.html
+
+            WAT ER NU GELDT
+            - Focus-zoekwoord: ${{ steps.kalender.outputs.zoekwoord }}
+            - Titel in de kalender: ${{ steps.kalender.outputs.titel }}
+            - Cluster: ${{ steps.kalender.outputs.cluster }}
+            - Paginatype: ${{ steps.kalender.outputs.paginatype }}
+
+            VOORGESCHREVEN META-OMSCHRIJVING
+            ${{ steps.kalender.outputs.meta }}
+
+            VOORGESCHREVEN INTERNE LINKS
+            ${{ steps.kalender.outputs.interne_links }}
+
+            SEO-BLOK UIT DE ZOEKWOORDENSTRATEGIE
+            ${{ steps.kalender.outputs.seo_blok }}
+
+            BESTAANDE ARTIKELEN OM NAAR TE LINKEN
+            ${{ steps.slugs.outputs.lijst }}
+
+            DE BELANGRIJKSTE REGEL
+            Je herschrijft het artikel NIET. Je past alleen aan wat door de nieuwe zoekwoordkeuze
+            niet meer klopt. Elke alinea die niets met het zoekwoord of de links te maken heeft,
+            blijft woord voor woord staan. Een artikel dat na jouw bewerking onherkenbaar is, is
+            een fout resultaat. Bij twijfel: laat staan.
+
+            WAT JE WEL AANPAST
+            1. De <title> in de head, als het nieuwe zoekwoord er niet in staat. Maximaal 60 tekens.
+            2. De meta description en og:description: gebruik de voorgeschreven tekst letterlijk.
+               Is die leeg, pas de bestaande dan minimaal aan zodat het zoekwoord erin staat.
+            3. De H1 en de eerste honderd woorden: zorg dat het zoekwoord er exact in voorkomt,
+               op een manier die natuurlijk leest. Herschrijf hooguit twee zinnen.
+            4. Minstens één H2 moet het zoekwoord bevatten. Pas een bestaande kop aan; voeg er
+               geen nieuwe sectie bij.
+            5. De interne links uit het blok hierboven: voeg ze toe met de opgegeven anchortekst,
+               in de aangegeven alinea. Bestaat een genoemde slug niet in de lijst hierboven, sla
+               die link dan over en meld dat.
+            6. dateModified in de JSON-LD op de datum van vandaag. datePublished blijft ongewijzigd.
+            7. sitemap.xml: lastmod van deze URL op vandaag.
+
+            WAT JE NOOIT AANPAST
+            - De slug, de canonical-URL of de bestandsnaam. Een URL wijzigen kost je de ranking
+              die je al hebt.
+            - datePublished, de auteur, de prijzen of de FAQ-antwoorden.
+            - Andere artikelen, behalve de pijlerpagina van dit cluster als daar een link naar dit
+              artikel bij moet.
+            - De huisstijl, de head-structuur, de topbalk, de navigatie of de footer.
+
+            CONTROLE VOOR PUBLICATIE: precies één h1, geldige JSON-LD, canonical ongewijzigd, geen
+            interne link die op .html eindigt, geen link naar een niet-bestaande slug.
+
+            PUBLICEREN: git add -A, commit met bericht
+            "blog bijgewerkt: ${{ steps.kalender.outputs.slug }}" en push naar main.
+            Meld in je samenvatting welke regels je hebt gewijzigd en wat je hebt laten staan.
+
+      - name: Notion op Goedgekeurd zetten
+        if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != ''
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          PAGE_ID: ${{ steps.kalender.outputs.page_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, datetime, urllib.request
+
+          body = {"properties": {
+              "Herzien": {"select": {"name": "Goedgekeurd"}},
+              "SEO bijgewerkt": {"date": {"start": datetime.date.today().isoformat()}},
+          }}
+          req = urllib.request.Request(
+              "https://api.notion.com/v1/pages/" + os.environ["PAGE_ID"],
+              data=json.dumps(body).encode(),
+              headers={
+                  "Authorization": "Bearer " + os.environ["NOTION_TOKEN"],
+                  "Notion-Version": "2022-06-28",
+                  "Content-Type": "application/json",
+              },
+              method="PATCH")
+          urllib.request.urlopen(req)
+          print("Notion op Goedgekeurd gezet.")
+          PY
+
+      - name: Niets te doen
+        if: steps.kalender.outputs.gevonden != 'true'
+        run: echo "Geen gepubliceerd artikel met Herzien = Voorstel klaar."
