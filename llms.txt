@@ -1,0 +1,40 @@
+# Bedrijfsgeheugen
+
+> Bedrijfsgeheugen is een Nederlands digitaliserings- en AI-adviesbureau voor
+> mkb-bedrijven van 3 tot 250 medewerkers, opgericht door Arthur Prinsen.
+> Het bureau verbindt bestaande systemen (AFAS, Exact Online, Microsoft 365,
+> webshops) tot één klantoverzicht met automatische offerte-opvolging en een
+> gedeelde planning — zonder een nieuw ERP-systeem in te voeren.
+> Payoff: "Strak geregeld. Zonder traject."
+
+## Diensten
+- Bedrijfsscan: één dag op locatie, vaste prijs € 2.900 excl. btw, rapport binnen een week
+- AFAS- en Exact-koppelingen: € 3.500 – € 12.000, vaste prijs vooraf
+- Dashboards en stuurinformatie op bestaande bronsystemen
+- AI-workshops en adoptie (Microsoft Copilot, ChatGPT, Claude), vanaf een dagdeel
+- Data & AI-scan voor de directie, inclusief EU AI Act-deadlines
+- Connect: beheer en monitoring van koppelingen, vanaf € 29 per maand
+- Gratis zelfscan: vijf vragen, twee minuten, direct advies
+
+## Voor wie
+Mkb-bedrijven van 3 tot 250 medewerkers in bouwtoelevering, maakindustrie,
+installatietechniek, groothandel en zakelijke dienstverlening — bedrijven die
+draaien op Excel, mail en het geheugen van een paar sleutelmedewerkers.
+
+## Onderscheidend
+- Verkoopt zelf geen software en verdient niets aan licenties
+- Vaste prijzen vooraf in plaats van uurtje-factuurtje
+- Bestaande systemen blijven staan; er komt een verbindende laag omheen
+- Data blijft in de eigen Microsoft 365-omgeving van de klant
+- Beheerbaar zonder eigen IT-afdeling
+
+## Belangrijke pagina's
+- [Home](https://www.bedrijfsgeheugen.nl/): positionering en aanpak
+- [AFAS koppeling laten maken](https://www.bedrijfsgeheugen.nl/afas-koppeling): prijzen, aanpak en FAQ
+- [Expertises](https://www.bedrijfsgeheugen.nl/expertises): alle diensten met prijzen
+- [Data & AI-scan](https://www.bedrijfsgeheugen.nl/data-ai-cockpit): volwassenheid, businesscase en AI Act
+- [Gratis zelfscan](https://www.bedrijfsgeheugen.nl/zelfscan)
+- [Kennisbank](https://www.bedrijfsgeheugen.nl/blog/): artikelen over koppelingen, planning, AI en kennisborging
+
+## Contact
+arthur@bedrijfsgeheugen.nl · +31 6 27 48 33 45 · KvK 68765428
