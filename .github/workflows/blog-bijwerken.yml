@@ -9,6 +9,9 @@ name: Blog bijwerken
 on:
   schedule:
     - cron: '30 6 * * 2,4'
+  push:
+    paths:
+      - '.github/triggers/bijwerken/**'
   workflow_dispatch:
     inputs:
       slug:
