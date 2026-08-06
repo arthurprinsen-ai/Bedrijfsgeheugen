@@ -1066,67 +1066,83 @@ function tekenStrategie(){
 }
 
 function tekenFuncties(){
-  const g=k=>S.niveaus[k]||2, c=S.cijfers||{}, b=B(), m=S.mensen||{};
-  const n=x=>+(c[x])||0;
-  const omzet=n('cOmzet')*1000, klanten=n('cKlanten'), nieuw=n('cNieuw'), mark=n('cMarketing')*1000,
-        dso=n('cDso'), grootste=n('cGrootste'), verloop=+(m.mVerloop)||0, verzuim=+(m.mVerzuim)||0;
+  const g=k=>S.niveaus[k]||2, c=S.cijfers||{}, b=B(), m=S.mensen||{}, st=S.beleid||{};
+  const n=x=>+(c[x])||0, eur=v=>'€ '+Math.round(v).toLocaleString('nl-NL');
+  const omzet=n('cOmzet')*1000, klanten=n('cKlanten'), nieuw2=n('cNieuw'), mark=n('cMarketing')*1000,
+        dso=n('cDso'), grootste=n('cGrootste'), loon=n('cLoon')*1000, marge=n('cBrutomarge'),
+        verloop=+(m.mVerloop)||0, verzuim=+(m.mVerzuim)||0, enps=(m.mEnps===''||m.mEnps===undefined)?null:+m.mEnps;
+  const ontbreekt=t=>'<span class="sub">(nog niet ingevuld — zie Cijfers of Mensen)</span> '+t;
   const F=[];
 
-  F.push({n:'HR en mensen',h:'Ulrich · 9-box · lifecycle',inhoud:
-    '<p><b>Rol van HR (Ulrich).</b> Bij niveau '+g('mensen')+' op mensen en kennis is HR bij jullie vooral '
-    +(g('mensen')<3?'administratie: contracten en verzuim. De rol van partner — wie kan wat, en wie moet wat leren — ligt open.'
-                   :'meer dan administratie; er zijn vastgelegde werkwijzen om op te bouwen.')+'</p>'
-    +'<p><b>Kennismatrix in plaats van 9-box.</b> Voor dertig man werkt een prestatie-potentieelmatrix niet. Wat wél werkt: per taak invullen wie het kan. Elke rij met maar één naam is een risico.</p>'
-    +(verloop?'<p><b>Levenscyclus.</b> Met '+verloop+'% verloop vervang je ruwweg '+Math.round(S.mw*verloop/100)+' mensen per jaar. Bij een inwerktijd van drie maanden is dat '
-      +(S.mw*verloop/100*0.25).toFixed(1)+' fte die permanent aan het inwerken is.</p>':'')
-    +(verzuim>b.verzuim+1?'<p><b>Let op:</b> je verzuim ligt boven je branche. Kijk of het samenvalt met de afdelingen waar het werk zich opstapelt.</p>':'')});
+  F.push({n:'HR en mensen',h:'Ulrich · kennismatrix · levenscyclus',inhoud:
+    '<p><b>Rol van HR.</b> Bij niveau '+g('mensen')+' op mensen en kennis is HR hier vooral '
+    +(g('mensen')<3?'administratie. De rol van partner — wie kan wat, en wie moet wat leren — ligt open.':'meer dan administratie; er is iets om op te bouwen.')+'</p>'
+    +(verloop? '<p><b>Levenscyclus.</b> Met '+verloop+'% verloop vervang je ruwweg '+Math.round(S.mw*verloop/100)+' mensen per jaar. Bij drie maanden inwerken is dat '
+       +(S.mw*verloop/100*0.25).toFixed(1)+' fte die permanent inwerkt'+(S.uur?' — '+eur(S.mw*verloop/100*0.25*1600*S.uur)+' per jaar':'')+'.</p>'
+      : '<p>'+ontbreekt('Vul je verloop in bij Mensen, dan rekent dit blok de inwerkkosten door.')+'</p>')
+    +(verzuim? '<p><b>Verzuim.</b> '+verzuim.toFixed(1)+'% tegenover '+b.verzuim.toFixed(1)+'% in je branche.'
+       +(verzuim>b.verzuim+1?' Kijk of het samenvalt met de afdelingen waar het werk zich opstapelt.':'')+'</p>':'')
+    +(enps!==null?'<p><b>eNPS '+enps+'.</b> '+(enps<0?'Meer mensen raden je bedrijf af dan aan. Verandering kost hier twee keer zoveel energie.':'Voldoende draagvlak om verbeteringen te laten landen.')+'</p>':'')
+    +eigenVeld('hr','Welke drie rollen zijn onmisbaar, en wie kan ze overnemen?')});
 
   F.push({n:'Processen',h:'SIPOC · Theory of Constraints · Lean',inhoud:
     '<p><b>De smalste plek.</b> Operatie staat op '+g('operatie')+'. Zolang dat zo is, lopen verbeteringen elders daar alsnog vast.</p>'
-    +'<p><b>SIPOC per proces.</b> Leverancier, input, proces, output, klant — op één A4. Doe dit voor je drie belangrijkste processen; het legt bloot waar iets twee keer wordt aangeraakt.</p>'
-    +'<p><b>De acht verspillingen.</b> Wachten, overproductie, transport, voorraad, beweging, fouten, overbewerking en onbenut talent. In het mkb zitten de eerste en de laatste er bijna altijd in.</p>'});
+    +'<p><b>Verspilling.</b> '+(function(){const z=DIM.filter(d=>g(d.k)<3).map(d=>d.n.toLowerCase());
+        return z.length?'Wachten, overtypen en herstelwerk zitten vooral bij <b>'+z.slice(0,3).join('</b>, <b>')+'</b>.':'Geen zware verspilling zichtbaar.';})()+'</p>'
+    +'<p><b>SIPOC.</b> Leverancier, input, proces, output, klant — op één A4 per proces. Doe het voor je drie belangrijkste; het legt bloot waar iets twee keer wordt aangeraakt.</p>'
+    +eigenVeld('proces','Welke drie processen raken de meeste klanten of uren?')});
 
   F.push({n:'Structuur',h:'RACI · span of control · bus factor',inhoud:
-    '<p><b>RACI.</b> Wie doet, wie beslist, wie wordt gehoord, wie geïnformeerd. Dit legt de echte structuur bloot — die zelden gelijk is aan het organogram.</p>'
-    +'<p><b>Span of control.</b> Boven de acht directe rapportages wordt sturing symbolisch: dan gebeurt het toch weer via de wandelgang.</p>'
-    +'<p><b>Bus factor.</b> Hoeveel mensen moeten wegvallen voordat het stilstaat? Bij niveau '+g('mensen')+' op kennis is het antwoord hier waarschijnlijk '+(g('mensen')<3?'één of twee':'meer dan drie')+'.</p>'});
+    '<p><b>Span of control.</b> Bij '+S.mw+' medewerkers heb je ruwweg '+Math.max(1,Math.round(S.mw/8))+' leidinggevende'+(Math.round(S.mw/8)>1?'n':'')+' nodig om onder de acht directe rapportages te blijven. Daarboven wordt sturing symbolisch.</p>'
+    +'<p><b>Bus factor.</b> Bij niveau '+g('mensen')+' op kennis is het antwoord hier waarschijnlijk '+(g('mensen')<3?'één of twee mensen':'meer dan drie')+'.</p>'
+    +'<p><b>RACI.</b> Wie doet, wie beslist, wie wordt gehoord, wie geïnformeerd — dit legt de echte structuur bloot, die zelden gelijk is aan het organogram.</p>'
+    +eigenVeld('structuur','Bij welke beslissing loopt het vast omdat onduidelijk is wie beslist?')});
 
   F.push({n:'Cultuur',h:'OCAI (Cameron & Quinn) · ADKAR',inhoud:
-    '<p><b>Vier cultuurtypen.</b> Familie, adhocratie, markt, hiërarchie. De meeste mkb-bedrijven zijn familie met een marktrandje: loyaal en snel, maar zwak in vastleggen. Dat verklaart meer dan een reorganisatie oplost.</p>'
-    +'<p><b>ADKAR.</b> Bewustzijn en kennis zijn zelden het probleem; vermogen en verankering wel. Cultuur staat bij jullie op '+g('culture')+'.</p>'
-    +'<p>'+(g('culture')<3?'Bij dit niveau: één verbetering per kwartaal, met zichtbaar resultaat. Meer tegelijk landt niet.'
-                        :'Bij dit niveau kun je twee sporen tegelijk lopen.')+'</p>'});
+    '<p><b>Vier typen.</b> Familie, adhocratie, markt, hiërarchie. Cultuur staat bij jullie op '+g('culture')+'. '
+    +(g('culture')<3?'Dat wijst op familiecultuur: loyaal en snel, maar zwak in vastleggen — dat verklaart meer dan een reorganisatie oplost.':'Er is genoeg structuur om afspraken te laten beklijven.')+'</p>'
+    +'<p><b>Tempo.</b> '+(g('culture')<3?'Eén verbetering per kwartaal, met zichtbaar resultaat. Meer tegelijk landt niet.':'Twee sporen tegelijk is haalbaar.')+'</p>'
+    +eigenVeld('cultuur','Wat is de laatste verandering die níét beklijfde, en waarom?')});
 
   F.push({n:'Sales',h:'trechter · win/loss · MEDDIC',inhoud:
-    '<p><b>Trechterconversie per stap.</b> Niet één getal maar vier: contact → gesprek → offerte → opdracht. De stap met de grootste val is je enige verbeterpunt.</p>'
-    +(klanten&&omzet?'<p><b>Omzet per klant:</b> € '+Math.round(omzet/klanten).toLocaleString('nl-NL')+'. '
-      +(grootste>=25?'Met '+grootste+'% bij één klant is spreiding belangrijker dan groei.':'')+'</p>':'')
-    +'<p><b>Win/loss.</b> Vraag bij elke verloren offerte één ding: van wie hebben ze gekocht en waarom? Drie maanden bijhouden geeft meer dan elke marktanalyse.</p>'
-    +'<p><b>MEDDIC</b> — pas zinvol vanaf meerdere verkopers. Bij één verkoper is het overhead.</p>'});
+    (klanten&&omzet?'<p><b>Omzet per klant:</b> '+eur(omzet/klanten)+'.</p>':'<p>'+ontbreekt('Vul omzet en aantal klanten in bij Cijfers.')+'</p>')
+    +(grootste?'<p><b>Concentratie:</b> je grootste klant is '+grootste+'% van de omzet. '+(grootste>=25?'Boven de 20% telt dat als risico bij kopers en financiers.':'Dat is beheersbaar.')+'</p>':'')
+    +'<p><b>Trechter.</b> Meet vier stappen los: contact → gesprek → offerte → opdracht. De stap met de grootste val is je enige verbeterpunt.</p>'
+    +'<p><b>Win/loss.</b> Vraag bij elke verloren offerte: van wie hebben ze gekocht en waarom. Drie maanden bijhouden geeft meer dan elke marktanalyse.</p>'
+    +eigenVeld('sales','Van welke concurrent verlies je het vaakst, en waarop?')});
 
   F.push({n:'Marketing',h:'AARRR · STP · share of search',inhoud:
-    '<p><b>AARRR.</b> Bereik, activatie, behoud, aanbeveling, omzet — vijf getallen die samen het plaatje geven.</p>'
-    +(mark&&nieuw?'<p><b>Kosten per nieuwe klant:</b> € '+Math.round(mark/nieuw).toLocaleString('nl-NL')+'.'
-      +(klanten&&omzet?' Tegenover € '+Math.round(omzet/klanten).toLocaleString('nl-NL')+' omzet per klant.':'')+'</p>':'')
-    +'<p><b>STP.</b> Segmentatie, targeting, positionering. De vraag die het meeste oplevert: voor wie ben je duidelijk de beste keuze, en voor wie niet?</p>'
-    +'<p><b>Share of search.</b> Jouw aandeel in zoekopdrachten tegenover concurrenten voorspelt marktaandeel — en die data is gratis op te halen.</p>'});
+    (mark&&nieuw2?'<p><b>Kosten per nieuwe klant:</b> '+eur(mark/nieuw2)+
+      (klanten&&omzet?' tegenover '+eur(omzet/klanten)+' omzet per klant.':'')+'</p>'
+      :'<p>'+ontbreekt('Vul marketingbudget en nieuwe klanten in bij Cijfers.')+'</p>')
+    +(omzet&&mark?'<p><b>Marketing als deel van de omzet:</b> '+(mark/omzet*100).toFixed(1)+'% tegenover '+(b.norm&&b.norm.marketing)+'% in je branche.</p>':'')
+    +'<p><b>STP.</b> Voor wie ben je duidelijk de beste keuze — en voor wie niet? Dat tweede antwoord scheelt het meeste budget.</p>'
+    +eigenVeld('marketing','Voor welke klantsoort win je bijna altijd?')});
 
   F.push({n:'Inkoop',h:'Kraljic · TCO',inhoud:
-    '<p><b>Kraljic-matrix.</b> Zet leveranciers op twee assen: financieel belang en leveringsrisico. Vier kwadranten, vier aanpakken — routine automatiseren, knelpunten borgen, hefboom onderhandelen, strategisch samenwerken.</p>'
-    +'<p><b>Total Cost of Ownership.</b> Niet de prijs maar de last over de levensduur: inkoop, beheer, storingen, afscheid. Bij software is de prijs zelden het duurste deel.</p>'
-    +'<p><b>Leveranciersconcentratie.</b> Het spiegelbeeld van klantconcentratie — en even relevant bij een overname.</p>'});
+    '<p><b>Kraljic.</b> Zet leveranciers op financieel belang tegen leveringsrisico. Vier aanpakken: routine automatiseren, knelpunten borgen, hefboom onderhandelen, strategisch samenwerken.</p>'
+    +(marge?'<p><b>Hefboom.</b> Bij '+marge+'% brutomarge gaat '+(100-marge)+'% van elke euro omzet naar inkoop. Eén procent scherper inkopen weegt dan zwaarder dan één procent meer omzet.</p>':'<p>'+ontbreekt('Vul je brutomarge in bij Cijfers, dan rekent dit de inkoophefboom door.')+'</p>')
+    +'<p><b>TCO.</b> Bij software is de prijs zelden het duurste deel — beheer, storingen en afscheid nemen wel.</p>'
+    +eigenVeld('inkoop','Welke leverancier kun je niet missen, en wat gebeurt er als hij stopt?')});
 
-  F.push({n:'Administratie, debiteuren en crediteuren',h:'cash conversion cycle · Pareto',inhoud:
-    '<p><b>De kasconversiecyclus.</b> Debiteurendagen + voorraaddagen − crediteurendagen. Dit is het aantal dagen dat je je eigen groei voorfinanciert.</p>'
-    +(dso?'<p><b>Jouw debiteurendagen:</b> '+dso+' tegenover '+(b.norm&&b.norm.dso)+' in je branche.'
-      +(omzet&&dso>(b.norm&&b.norm.dso)?' Dat is ongeveer € '+Math.round(omzet/365*(dso-b.norm.dso)).toLocaleString('nl-NL')+' aan vastliggend werkkapitaal.':'')+'</p>':'')
-    +'<p><b>Pareto op debiteuren.</b> Meestal veroorzaakt 20% van de klanten 80% van het achterstallige bedrag. Bel die twintig procent, niet de hele lijst.</p>'
-    +'<p><b>Order-to-cash en purchase-to-pay.</b> Twee ketens waar in het mkb het meeste handwerk zit: factuur maken, versturen, herinneren, boeken, matchen. Finance staat bij jullie op '+g('finance')+'.</p>'});
+  F.push({n:'Administratie, debiteuren en crediteuren',h:'kasconversiecyclus · Pareto',inhoud:
+    (dso?'<p><b>Debiteurendagen:</b> '+dso+' tegenover '+(b.norm&&b.norm.dso)+' in je branche.'
+      +(omzet&&dso>(b.norm&&b.norm.dso)?' Dat is ongeveer '+eur(omzet/365*(dso-b.norm.dso))+' aan vastliggend werkkapitaal.':'')+'</p>'
+      :'<p>'+ontbreekt('Vul je debiteurendagen in bij Cijfers.')+'</p>')
+    +'<p><b>Kasconversiecyclus.</b> Debiteurendagen + voorraaddagen − crediteurendagen: het aantal dagen dat je je eigen groei voorfinanciert.</p>'
+    +'<p><b>Pareto.</b> Meestal veroorzaakt 20% van de klanten 80% van het achterstallige bedrag. Bel die twintig procent.</p>'
+    +'<p><b>Order-to-cash.</b> Finance staat op '+g('finance')+'. '+(st.rapport?'Er is een rapportagekalender.':'Zonder rapportagekalender blijft de maandafsluiting handwerk.')+'</p>'
+    +eigenVeld('admin','Welke stap in factureren kost de meeste tijd?')});
 
   document.getElementById('functieKaarten').innerHTML = F.map(f=>
     '<details class="mod"><summary><h3>'+f.n+'</h3><span class="herkomst">'+f.h+' ▾</span></summary>'
     +'<div class="inhoud">'+f.inhoud+'</div></details>').join('');
+  document.querySelectorAll('[data-eigen]').forEach(t=>{
+    if(t.dataset.aan)return; t.dataset.aan='1';
+    t.addEventListener('change',e=>{S.eigen=S.eigen||{};S.eigen[e.target.dataset.eigen]=e.target.value;bewaar();});
+  });
 }
+
 
 function tekenBusiness(){
   const bc=S.bc||{}, doelN=+(bc.bDoel)||4, uitstel=+(bc.bUitstel!==undefined?bc.bUitstel:12),
