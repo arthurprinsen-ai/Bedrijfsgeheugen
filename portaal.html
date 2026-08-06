@@ -174,7 +174,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <div id="bTekst" style="margin-top:.8rem;font-size:.9rem;line-height:1.6"></div>
         <p class="sub" style="margin-top:.8rem;border-top:1px solid var(--lijn);padding-top:.6rem">
           Bronnen: CBS Ziekteverzuimpercentage per bedrijfstak (2026 K1, voorlopig) · CBS Digitalisering en arbeidsproductiviteit 2015–2022 ·
-          CBS ICT-gebruik bedrijven. Bandbreedtes voor het mkb, geen normcijfers voor één bedrijf.</p>
+          CBS ICT-gebruik bedrijven · RaboResearch Sectorprognoses 2026 (toegevoegde waarde, volume) · brancheorganisaties per sector. Bandbreedtes voor het mkb, geen normcijfers voor één bedrijf.</p>
       </div>
     </section>
 
@@ -221,16 +221,36 @@ const NIV=['','in hoofden','in lijstjes','in systemen','verbonden','zelfsturend'
    digitale intensiteit: CBS. Verloop en eNPS: gangbare bandbreedtes uit
    HR-benchmarks, geen CBS-cijfer. */
 const BRANCHE={
- 'ICT & software':            {verzuim:3.4,verloop:14,enps:22,tw:118000,dig:3.4},
- 'Zakelijke dienstverlening': {verzuim:3.6,verloop:15,enps:18,tw: 96000,dig:2.9},
- 'Financiële dienstverlening':{verzuim:4.1,verloop:12,enps:15,tw:142000,dig:2.8},
- 'Handel & retail':           {verzuim:5.0,verloop:22,enps: 8,tw: 84000,dig:2.3},
- 'Industrie & productie':     {verzuim:5.4,verloop:11,enps:10,tw: 92000,dig:2.3},
- 'Logistiek & transport':     {verzuim:5.9,verloop:18,enps: 5,tw: 72000,dig:2.2},
- 'Zorg':                      {verzuim:8.2,verloop:16,enps: 6,tw: 68000,dig:2.1},
- 'Bouw':                      {verzuim:5.1,verloop:12,enps:12,tw: 78000,dig:1.6},
- 'Horeca & recreatie':        {verzuim:3.4,verloop:35,enps: 4,tw: 46000,dig:1.6},
- 'Gemiddeld NL-bedrijf':      {verzuim:5.4,verloop:17,enps:12,tw: 88000,dig:2.3}
+ 'ICT & software':            {verzuim:3.4,verloop:14,enps:22,tw:118000,dig:3.4,groei:2.6,
+   inst:'NLdigital',url:'https://www.nldigital.nl',
+   duiding:'Snelst groeiende sector: investeringen in AI en digitalisering trekken de toegevoegde waarde omhoog.'},
+ 'Zakelijke dienstverlening': {verzuim:3.6,verloop:15,enps:18,tw: 96000,dig:2.9,groei:1.2,
+   inst:'VZN / Nederland Adviseert',url:'https://www.vzn.nl',
+   duiding:'Groeit nauwelijks; de uitzend- en adviesbranche merkt de voorzichtigheid van opdrachtgevers het eerst.'},
+ 'Financiële dienstverlening':{verzuim:4.1,verloop:12,enps:15,tw:142000,dig:2.8,groei:1.4,
+   inst:'NVB / Adfiz',url:'https://www.adfiz.nl',
+   duiding:'Hoogste toegevoegde waarde per medewerker, maar ook de zwaarste nalevingslast.'},
+ 'Handel & retail':           {verzuim:5.0,verloop:22,enps: 8,tw: 84000,dig:2.3,groei:0.8,
+   inst:'INretail',url:'https://www.inretail.nl',
+   duiding:'Beperkte groei door een voorzichtige consument en hogere inkoopkosten.'},
+ 'Industrie & productie':     {verzuim:5.4,verloop:11,enps:10,tw: 92000,dig:2.3,groei:0.4,
+   inst:'Koninklijke Metaalunie · FME',url:'https://www.metaalunie.nl',
+   duiding:'Energie-intensieve bedrijven kunnen hogere kosten niet altijd doorberekenen; automatisering is hier de marge.'},
+ 'Logistiek & transport':     {verzuim:5.9,verloop:18,enps: 5,tw: 72000,dig:2.2,groei:0.2,
+   inst:'Transport en Logistiek Nederland',url:'https://www.tln.nl',
+   duiding:'Voelt de brandstof- en ketenkosten het meest rechtstreeks van alle sectoren.'},
+ 'Zorg':                      {verzuim:8.2,verloop:16,enps: 6,tw: 68000,dig:2.1,groei:2.8,
+   inst:'ActiZ · NVZ',url:'https://www.actiz.nl',
+   duiding:'Groeit hard in volume, maar het verzuim is het hoogst van alle sectoren — bezetting is hier het knelpunt.'},
+ 'Bouw':                      {verzuim:5.1,verloop:12,enps:12,tw: 78000,dig:1.6,groei:0.5,
+   inst:'Bouwend Nederland · EIB',url:'https://www.bouwendnederland.nl',
+   duiding:'Laagste digitale intensiteit van alle sectoren; stikstof, netcongestie en doorlooptijden drukken de productie.'},
+ 'Horeca & recreatie':        {verzuim:3.4,verloop:35,enps: 4,tw: 46000,dig:1.6,groei:0.9,
+   inst:'Koninklijke Horeca Nederland',url:'https://www.khn.nl',
+   duiding:'Laagste verzuim maar veruit het hoogste verloop — inwerken is hier een doorlopend proces.'},
+ 'Gemiddeld NL-bedrijf':      {verzuim:5.4,verloop:17,enps:12,tw: 88000,dig:2.3,groei:1.0,
+   inst:'MKB-Nederland',url:'https://www.mkb.nl',
+   duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
 let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{}};
@@ -488,11 +508,15 @@ function tekenBranche(){
    +'<text x="'+jx+'" y="'+(jy-16)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#14171A" font-family="Instrument Sans">jij</text>';
   document.getElementById('bGrafiek').innerHTML=g;
   const dv=gem-b.dig;
+  const bt=document.getElementById('bTekst');
+  const extra='<div style="margin-top:.9rem;padding:.75rem .9rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 3px 3px 0">'
+   +'<b>'+S.branche+'</b> — groeiverwachting toegevoegde waarde <b>'+(b.groei>=0?'+':'')+b.groei.toFixed(1)+'%</b> voor 2026.<br>'
+   +b.duiding+'<br><span class="sub">Brancheorganisatie: <a href="'+b.url+'" target="_blank" rel="noopener">'+b.inst+'</a> — daar vind je de cijfers en cao-ontwikkelingen voor jouw sector.</span></div>';
   document.getElementById('bTekst').innerHTML =
     (dv<-0.4?'<b>Je loopt achter op je eigen branche.</b> Het gemiddelde bedrijf in '+S.branche.toLowerCase()+' zit op ~'+b.dig.toFixed(1)+'. Elke maand wachten vergroot het gat.'
     :(dv>0.4?'<b>Je loopt voor op je branche.</b> Voorsprong is tijdelijk — verzilver hem nu je hem hebt.'
             :'<b>Je zit op het gemiddelde van je branche.</b> De middenmoot beweegt hard; wie nu doorpakt komt in de kopgroep.'))
-   +(perFte?' Je omzet per medewerker ligt '+(perFte>=norm?'boven':'onder')+' het richtgetal voor deze branche.':'');
+   +(perFte?' Je omzet per medewerker ligt '+(perFte>=norm?'boven':'onder')+' het richtgetal voor deze branche.':'')+extra;
 }
 
 </script>
