@@ -968,6 +968,22 @@ const SECTORS = [
  {name:"Horeca & recreatie",lvl:1.6,adopt:"9,0%"},
  {name:"Gemiddeld NL-bedrijf",lvl:2.3,adopt:"22,7%"}
 ];
+/* Branchenormen — toegevoegde waarde per vte (mkb) en het deel van de bezetting
+   dat doorgaans ondersteunend/administratief is. Bronnen: CBS Digitalisering en
+   arbeidsproductiviteit 2015-2022 (tabel 2.7/2.8, toegevoegde waarde per vte in het mkb)
+   en CBS ICT-gebruik bedrijven. Bandbreedtes, geen normcijfers. */
+const BRANCHE_FTE = {
+ "ICT & software":            {tw:118000, steun:.18, aiAdoptie:.70},
+ "Zakelijke dienstverlening": {tw: 96000, steun:.20, aiAdoptie:.55},
+ "Financiële dienstverlening":{tw:142000, steun:.24, aiAdoptie:.59},
+ "Handel & retail":           {tw: 84000, steun:.22, aiAdoptie:.24},
+ "Industrie & productie":     {tw: 92000, steun:.19, aiAdoptie:.26},
+ "Logistiek & transport":     {tw: 72000, steun:.21, aiAdoptie:.19},
+ "Zorg":                      {tw: 68000, steun:.23, aiAdoptie:.22},
+ "Bouw":                      {tw: 78000, steun:.17, aiAdoptie:.21},
+ "Horeca & recreatie":        {tw: 46000, steun:.15, aiAdoptie:.16},
+ "Gemiddeld NL-bedrijf":      {tw: 88000, steun:.20, aiAdoptie:.33}
+};
 const lvlToX = v => {
   v = Math.max(1,Math.min(5,v));
   const lo = Math.floor(v), hi = Math.min(5,lo+1), f = v-lo;
@@ -1259,6 +1275,8 @@ function renderDash(score,dimAvg){
    +'De weging: elk antwoord telt 1\u20134 punten; het advies volgt de laagste gemiddelde score. Benchmarkbronnen: CBS AI-monitor, Gartner-volwassenheidsverdeling.</p></details>';
   // --- wat remt je: doel, groei en veranderkracht, interactief ---
   window.__dimAvg = dimAvg;
+  try{ window.__branche = (SECTORS[userSector]&&SECTORS[userSector].name) || 'Gemiddeld NL-bedrijf'; }catch(e){}
+
   (function(){
     const rb=document.getElementById('remBlok'); if(!rb) return;
     rb.innerHTML =
@@ -2063,10 +2081,22 @@ function tekenRemmen(){
   const fteNodig = mw*(groei-1);                           // lineair meegroeien
   const fteTerug = fteKwijt*0.7;                            // haalbaar deel van het handwerk
   const netto = fteNodig - fteTerug;
+  // branchenorm
+  var brancheNaam=(typeof window.__branche==='string'&&window.__branche)||'Gemiddeld NL-bedrijf';
+  var B=BRANCHE_FTE[brancheNaam]||BRANCHE_FTE['Gemiddeld NL-bedrijf'];
+  var omzetEl=document.getElementById('remOmzet');
+  var omzet=+(omzetEl&&omzetEl.value)||0;                    // in duizenden euro's
+  var fteNorm = omzet>0 ? (omzet*1000*0.42)/B.tw : 0;        // ~42% van omzet is toegevoegde waarde
+  var steunNorm = mw*B.steun;
   let f='<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)">'
    +'<div style="display:grid;grid-template-columns:8.5rem 1fr;gap:10px;align-items:center;margin-bottom:8px">'
    +'<label for="remFte" style="font-size:.82rem">Medewerkers</label>'
    +'<input type="number" id="remFte" value="'+mw+'" min="1" max="250" '
+   +'style="width:6rem;padding:5px 8px;border:1px solid rgba(255,255,255,.25);border-radius:3px;'
+   +'background:transparent;color:inherit;font:inherit;font-size:.85rem"></div>'
+   +'<div style="display:grid;grid-template-columns:8.5rem 1fr;gap:10px;align-items:center;margin-bottom:10px">'
+   +'<label for="remOmzet" style="font-size:.82rem">Omzet (\u00d7 \u20ac1.000)</label>'
+   +'<input type="number" id="remOmzet" value="'+(omzet||'')+'" min="0" step="100" placeholder="bijv. 3200" '
    +'style="width:6rem;padding:5px 8px;border:1px solid rgba(255,255,255,.25);border-radius:3px;'
    +'background:transparent;color:inherit;font:inherit;font-size:.85rem"></div>'
    +'<div style="font-size:.86rem;line-height:1.6">'
@@ -2082,6 +2112,15 @@ function tekenRemmen(){
     f+='<span style="color:#D6452B;font-weight:600">Je komt '+netto.toFixed(1)+' fte tekort</span>, ook n\u00e1 het opruimen van het handwerk. '
       +'Dat is een aanname-vraagstuk \u00e9n een inrichtingsvraagstuk \u2014 in die volgorde kost het het minst.';
   }
+  if(fteNorm>0){
+    var afw=(mw-fteNorm)/fteNorm;
+    f+='<br><br><b>Tegenover je branche ('+brancheNaam+')</b><br>'
+     +'Bij deze omzet werkt een vergelijkbaar bedrijf met ongeveer <b>'+fteNorm.toFixed(0)+' fte</b>. Jullie hebben er '+mw+'.<br>';
+    if(afw>0.15) f+='<span style="color:#D6452B;font-weight:600">Dat is '+Math.round(afw*100)+'% meer.</span> Bij deze productiviteit is dat zelden luiheid \u2014 het is werk dat blijft hangen omdat het handmatig gaat.';
+    else if(afw<-0.15) f+='<span style="color:#B45309;font-weight:600">Dat is '+Math.round(-afw*100)+'% minder.</span> Hoge productiviteit, maar let op de rek: bij uitval of groei is er weinig marge.';
+    else f+='<span style="color:#0E9F6E;font-weight:600">Dat ligt in lijn met de branche.</span> De winst zit hier niet in minder mensen, maar in wat die mensen do\u00e9n.';
+    f+='<br><span style="opacity:.75">Ondersteunend werk is in deze branche gemiddeld '+Math.round(B.steun*100)+'% van de bezetting \u2014 dat is ongeveer '+steunNorm.toFixed(1)+' fte bij jullie omvang. Jij verliest er '+fteKwijt.toFixed(1)+' aan handwerk.</span>';
+  }
   if(doel==='exit'||doel==='kapitaal'){
     f+='<br><span style="opacity:.8">Een koper rekent overbezetting op handwerk mee als structurele kosten: '
       +fteKwijt.toFixed(1)+' fte drukt de winst en daarmee direct de prijs.</span>';
@@ -2089,8 +2128,10 @@ function tekenRemmen(){
   f+='</div></div>';
   h+=f;
   const l=document.getElementById('remLijst'); if(l) l.innerHTML=h;
-  const fe=document.getElementById('remFte');
-  if(fe&&!fe.dataset.aan){fe.dataset.aan='1';fe.addEventListener('input',()=>{setTimeout(tekenRemmen,200)});}
+  ['remFte','remOmzet'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&!el.dataset.aan){el.dataset.aan='1';el.addEventListener('input',function(){setTimeout(tekenRemmen,250)});}
+  });
 }
 
 </script>
