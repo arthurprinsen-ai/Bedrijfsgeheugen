@@ -172,9 +172,13 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <div class="kaarten k3" style="margin-top:1rem" id="bKpis"></div>
         <div style="margin-top:1.1rem"><svg id="bGrafiek" viewBox="0 0 900 240" role="img" aria-label="Positie tegenover de branche"></svg></div>
         <div id="bTekst" style="margin-top:.8rem;font-size:.9rem;line-height:1.6"></div>
+      </div>
+      <div class="kaarten k2">
+        <div class="kaart" id="bEco"></div>
+        <div class="kaart" id="bWet"></div>
         <p class="sub" style="margin-top:.8rem;border-top:1px solid var(--lijn);padding-top:.6rem">
           Bronnen: CBS Ziekteverzuimpercentage per bedrijfstak (2026 K1, voorlopig) · CBS Digitalisering en arbeidsproductiviteit 2015–2022 ·
-          CBS ICT-gebruik bedrijven · RaboResearch Sectorprognoses 2026 (toegevoegde waarde, volume) · brancheorganisaties per sector. Bandbreedtes voor het mkb, geen normcijfers voor één bedrijf.</p>
+          CBS ICT-gebruik bedrijven · RaboResearch Sectorprognoses 2026 · DNB Voorjaarsraming juni 2026 · brancheorganisaties per sector. Bandbreedtes voor het mkb, geen normcijfers voor één bedrijf.</p>
       </div>
     </section>
 
@@ -223,33 +227,43 @@ const NIV=['','in hoofden','in lijstjes','in systemen','verbonden','zelfsturend'
 const BRANCHE={
  'ICT & software':            {verzuim:3.4,verloop:14,enps:22,tw:118000,dig:3.4,groei:2.6,
    inst:'NLdigital',url:'https://www.nldigital.nl',
+   wet:['EU AI Act — vanaf augustus 2026 gelden de verplichtingen voor algemene AI-modellen','NIS2 — zorgplicht en meldplicht voor digitale dienstverleners','AVG — verwerkersovereenkomsten met elke klant'],
    duiding:'Snelst groeiende sector: investeringen in AI en digitalisering trekken de toegevoegde waarde omhoog.'},
  'Zakelijke dienstverlening': {verzuim:3.6,verloop:15,enps:18,tw: 96000,dig:2.9,groei:1.2,
    inst:'VZN / Nederland Adviseert',url:'https://www.vzn.nl',
+   wet:['EU AI Act bij AI in dienstverlening','AVG — verwerkersrol richting opdrachtgevers','Wet DBA en modelovereenkomsten bij inhuur'],
    duiding:'Groeit nauwelijks; de uitzend- en adviesbranche merkt de voorzichtigheid van opdrachtgevers het eerst.'},
  'Financiële dienstverlening':{verzuim:4.1,verloop:12,enps:15,tw:142000,dig:2.8,groei:1.4,
    inst:'NVB / Adfiz',url:'https://www.adfiz.nl',
+   wet:['DORA — digitale weerbaarheid, van kracht sinds 2025','Wwft — cliëntenonderzoek en meldplicht','AFM-vergunning en zorgplicht'],
    duiding:'Hoogste toegevoegde waarde per medewerker, maar ook de zwaarste nalevingslast.'},
  'Handel & retail':           {verzuim:5.0,verloop:22,enps: 8,tw: 84000,dig:2.3,groei:0.8,
    inst:'INretail',url:'https://www.inretail.nl',
+   wet:['UPV verpakkingen — uitgebreide producentenverantwoordelijkheid','Consumentenrecht en garantietermijnen','CSRD in de keten: grote klanten vragen jouw cijfers'],
    duiding:'Beperkte groei door een voorzichtige consument en hogere inkoopkosten.'},
  'Industrie & productie':     {verzuim:5.4,verloop:11,enps:10,tw: 92000,dig:2.3,groei:0.4,
    inst:'Koninklijke Metaalunie · FME',url:'https://www.metaalunie.nl',
+   wet:['CSRD — via de keten ook voor mkb-toeleveranciers','CBAM — koolstofheffing aan de grens','Machinerichtlijn en CE-markering','Energiebesparingsplicht en informatieplicht'],
    duiding:'Energie-intensieve bedrijven kunnen hogere kosten niet altijd doorberekenen; automatisering is hier de marge.'},
  'Logistiek & transport':     {verzuim:5.9,verloop:18,enps: 5,tw: 72000,dig:2.2,groei:0.2,
    inst:'Transport en Logistiek Nederland',url:'https://www.tln.nl',
+   wet:['Mobiliteitspakket EU — rij- en rusttijden, detachering','CSRD-ketenrapportage over emissies','Zero-emissiezones in ruim dertig steden'],
    duiding:'Voelt de brandstof- en ketenkosten het meest rechtstreeks van alle sectoren.'},
  'Zorg':                      {verzuim:8.2,verloop:16,enps: 6,tw: 68000,dig:2.1,groei:2.8,
    inst:'ActiZ · NVZ',url:'https://www.actiz.nl',
+   wet:['Wkkgz — kwaliteit en klachtenregeling','Wtza — toelatingsvergunning en intern toezicht','NEN 7510 — informatiebeveiliging in de zorg','EHDS — Europese ruimte voor gezondheidsdata'],
    duiding:'Groeit hard in volume, maar het verzuim is het hoogst van alle sectoren — bezetting is hier het knelpunt.'},
  'Bouw':                      {verzuim:5.1,verloop:12,enps:12,tw: 78000,dig:1.6,groei:0.5,
    inst:'Bouwend Nederland · EIB',url:'https://www.bouwendnederland.nl',
+   wet:['Wkb — Wet kwaliteitsborging, private toetsing','Omgevingswet — vergunningen en participatie','Stikstofregels en netcongestie bij aansluitingen','Digitaal paspoort voor materialen in aantocht'],
    duiding:'Laagste digitale intensiteit van alle sectoren; stikstof, netcongestie en doorlooptijden drukken de productie.'},
  'Horeca & recreatie':        {verzuim:3.4,verloop:35,enps: 4,tw: 46000,dig:1.6,groei:0.9,
    inst:'Koninklijke Horeca Nederland',url:'https://www.khn.nl',
+   wet:['HACCP — voedselveiligheid en registratie','Alcoholwet en leeftijdsverificatie','Arbeidstijdenwet bij piekbezetting'],
    duiding:'Laagste verzuim maar veruit het hoogste verloop — inwerken is hier een doorlopend proces.'},
  'Gemiddeld NL-bedrijf':      {verzuim:5.4,verloop:17,enps:12,tw: 88000,dig:2.3,groei:1.0,
    inst:'MKB-Nederland',url:'https://www.mkb.nl',
+   wet:['EU AI Act — verplichtingen vanaf augustus 2026','AVG','NIS2 voor bedrijven in kritieke ketens','CSRD via klanten en financiers'],
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
@@ -508,6 +522,23 @@ function tekenBranche(){
    +'<text x="'+jx+'" y="'+(jy-16)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#14171A" font-family="Instrument Sans">jij</text>';
   document.getElementById('bGrafiek').innerHTML=g;
   const dv=gem-b.dig;
+  // wet- en regelgeving + landelijke cijfers
+  document.getElementById('bWet').innerHTML =
+    '<h3>Wat er voor jouw sector geldt</h3>'
+   +'<ul style="margin:.5rem 0 0 1.05rem;font-size:.9rem;line-height:1.7">'
+   + (b.wet||[]).map(w=>'<li>'+w+'</li>').join('')
+   +'</ul>'
+   +'<div class="sub" style="margin-top:.7rem">Dit is een signaleringslijst, geen juridisch advies. Toets per onderwerp of het op jouw omvang van toepassing is.</div>';
+  document.getElementById('bEco').innerHTML =
+    '<h3>De cijfers waar je in opereert</h3>'
+   +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.9rem;margin-top:.6rem">'
+   +'<div><div class="kpi" style="font-size:1.6rem">0,8%</div><div class="sub">groei economie 2026</div></div>'
+   +'<div><div class="kpi" style="font-size:1.6rem">2,7%</div><div class="sub">inflatie 2026</div></div>'
+   +'<div><div class="kpi" style="font-size:1.6rem">4,0%</div><div class="sub">loonstijging bedrijven</div></div>'
+   +'<div><div class="kpi" style="font-size:1.6rem">'+(b.groei>=0?'+':'')+b.groei.toFixed(1)+'%</div><div class="sub">jouw sector</div></div>'
+   +'</div>'
+   +'<p style="font-size:.88rem;line-height:1.6;margin-top:.7rem">Lonen stijgen harder dan de economie groeit. Wie zijn tarieven niet evenredig verhoogt, verliest marge — tenzij er per medewerker meer werk uit dezelfde uren komt. Dat is precies wat dit dashboard meet.</p>'
+   +'<div class="sub" style="margin-top:.5rem">Bron: DNB Voorjaarsraming juni 2026 · RaboResearch Sectorprognoses.</div>';
   const bt=document.getElementById('bTekst');
   const extra='<div style="margin-top:.9rem;padding:.75rem .9rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 3px 3px 0">'
    +'<b>'+S.branche+'</b> — groeiverwachting toegevoegde waarde <b>'+(b.groei>=0?'+':'')+b.groei.toFixed(1)+'%</b> voor 2026.<br>'
