@@ -20,15 +20,15 @@
   gtag('config', 'G-912L0PB68G');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data & AI-scan voor de directie | Volwassenheidsscore, businesscase & EU AI Act-deadlines — Bedrijfsgeheugen</title>
-<meta name="description" content="Gratis Data & AI-scan voor directie en CFO: volwassenheidsniveau per dimensie, doorgerekende businesscase (terugverdientijd, prijs van wachten), EU AI Act- en NIS2-deadlines en een concreet stappenplan. Rapport na een gepland adviesgesprek van 30 minuten.">
+<title>Bedrijfsscan voor de directie | Volwassenheidsscore per onderdeel, benchmark en businesscase — Bedrijfsgeheugen</title>
+<meta name="description" content="Gratis Bedrijfsscan voor directie en CFO: volwassenheidsniveau per bedrijfsonderdeel, doorgerekende businesscase (terugverdientijd, prijs van wachten), EU AI Act- en NIS2-deadlines en een concreet stappenplan. Rapport na een gepland adviesgesprek van 30 minuten.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/data-ai-cockpit">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Bedrijfsgeheugen">
-<meta property="og:title" content="Data & AI-scan — waar staat uw organisatie, en wat kost wachten?">
+<meta property="og:title" content="Bedrijfsscan — waar staat uw organisatie, en wat kost wachten?">
 <meta property="og:description" content="Volwassenheidsscore, businesscase en EU AI Act-deadlines in één gratis scan. Rapport na een gepland adviesgesprek.">
 <meta property="og:url" content="https://www.bedrijfsgeheugen.nl/data-ai-cockpit.html">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Data & AI-scan","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"description":"Gratis Data & AI-volwassenheidsscan met businesscase en EU AI Act-compliance-overzicht voor het mkb en middenbedrijf.","provider":{"@type":"Organization","name":"Bedrijfsgeheugen"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Bedrijfsscan","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"description":"Gratis Data & AI-volwassenheidsscan met businesscase en EU AI Act-compliance-overzicht voor het mkb en middenbedrijf.","provider":{"@type":"Organization","name":"Bedrijfsgeheugen"}}</script>
 <style>
 :root{
   --bg:#F3F6FA; --card:#FFFFFF;
@@ -426,7 +426,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <!-- ============ LANDING ============ -->
   <section class="screen" id="landing">
     <span class="eyebrow">Data & AI Cockpit · voor CFO's · 2026</span>
-    <h1>Hoeveel winst laat jouw organisatie liggen?</h1>
+    <h1>Hoe volwassen is jouw bedrijf echt?</h1>
     <p class="sub">14 vragen → één dashboard: je niveau, je positie t.o.v. de concurrentie, en de businesscase in euro's — investering, besparing, marge en terugverdientijd.</p>
     <div class="chiprow">
       <div class="chip"><span class="mono">± 4 min</span> invullen</div>
@@ -564,7 +564,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
       <!-- dims -->
       <div class="g hov b-dims">
-        <span class="kpi-t">Score per dimensie</span>
+        <span class="kpi-t">Score per onderdeel</span>
         <div id="dimList" style="margin-top:12px"></div>
         <div class="prio" id="prioTxt"></div>
       </div>
@@ -610,7 +610,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <div class="box">
     <span class="eyebrow">Analyse</span>
     <h3 style="margin:.3rem 0 .6rem">Je cockpit wordt opgebouwd</h3>
-    <div class="lstep" id="ls1"><span class="ic">1</span> Scores per dimensie berekenen</div>
+    <div class="lstep" id="ls1"><span class="ic">1</span> Scores per onderdeel berekenen</div>
     <div class="lstep" id="ls2"><span class="ic">2</span> Vergelijken met markt & branche (CBS/Gartner)</div>
     <div class="lstep" id="ls3"><span class="ic">3</span> Businesscase doorrekenen</div>
     <div class="lbar"><div id="lbarFill"></div></div>
@@ -851,11 +851,16 @@ window.addEventListener('error',function(e){
 });
 /* ================= DATA ================= */
 const DIMS = {
-  analytics:{name:"Data & analytics",c:"#5EB9FF"},
-  quality:{name:"Datakwaliteit",c:"#4ADE9E"},
-  governance:{name:"Governance",c:"#FFB547"},
-  tech:{name:"Technologie & AI",c:"#C08BFF"},
-  culture:{name:"Organisatie & cultuur",c:"#FF6B5E"}
+  sturing:{name:"Strategie & sturing",c:"#1D6FC4"},
+  commercie:{name:"Commercie & klant",c:"#5EB9FF"},
+  operatie:{name:"Operatie & levering",c:"#4ADE9E"},
+  finance:{name:"Finance & administratie",c:"#7ED957"},
+  mensen:{name:"Mensen & kennisborging",c:"#FF6B5E"},
+  analytics:{name:"Stuurinformatie",c:"#9FD3FF"},
+  quality:{name:"Datakwaliteit",c:"#39C08A"},
+  governance:{name:"Governance & compliance",c:"#FFB547"},
+  tech:{name:"Systemen & AI",c:"#C08BFF"},
+  culture:{name:"Organisatie & cultuur",c:"#F58EA8"}
 };
 const QUESTIONS = [
  {dim:"tech",ctx:true,t:"Welk kernsysteem (ERP) gebruiken jullie?",
@@ -885,7 +890,31 @@ const QUESTIONS = [
  {dim:"culture",t:"Hoe data-vaardig zijn de medewerkers?",
   o:["Een klein clubje snapt het","Wisselend per afdeling, zonder plan","Trainingen en kartrekkers per team","Structureel programma met coaching en champions"]},
  {dim:"culture",t:"Hoe staat de directie erin?",
-  o:["Data en AI zijn geen prioriteit","Mooie woorden, geen budget","Budget en aandacht voor initiatieven","Data & AI in de strategie, met KPI's"]}
+  o:["Data en AI zijn geen prioriteit","Mooie woorden, geen budget","Budget en aandacht voor initiatieven","Data & AI in de strategie, met KPI's"]},
+ {dim:"sturing",t:"Waar sturen jullie de organisatie op?",
+  o:["Op gevoel en de bankstand","Op omzet en resultaat achteraf","Op een vaste set KPI's per maand","Op KPI's per team, wekelijks besproken"]},
+ {dim:"sturing",t:"Hoeveel beslissingen lopen nog via de directeur?",
+  o:["Vrijwel alles","De meeste","Alleen de grote","Teams beslissen binnen kaders"]},
+ {dim:"commercie",t:"Hoe voorspelbaar is jullie verkooppijplijn?",
+  o:["Niet — het komt of het komt niet","We hebben een gevoel bij het kwartaal","Pijplijn staat in een systeem, per fase","Pijplijn met kansen, waarde en conversie per fase"]},
+ {dim:"commercie",t:"Wat gebeurt er na een offerte?",
+  o:["We hopen dat ze bellen","Iemand belt na als hij eraan denkt","Vaste opvolging, handmatig bijgehouden","Opvolging is ingeregeld en wordt bewaakt"]},
+ {dim:"operatie",t:"Hoe vast liggen jullie kernprocessen?",
+  o:["In hoofden — iedereen doet het net anders","Op papier, maar verouderd","Vastgelegd en actueel voor de belangrijkste processen","Vastgelegd, gemeten en periodiek verbeterd"]},
+ {dim:"operatie",t:"Hoe vaak moet werk over of hersteld worden?",
+  o:["Regelmatig, dat hoort erbij","Soms, we weten niet hoe vaak","Zelden, en we registreren het","Zelden, en we sturen op de oorzaak"]},
+ {dim:"finance",t:"Hoe lang duurt het tot de maandcijfers er staan?",
+  o:["Weken, en dan nog met vraagtekens","Twee tot drie weken","Binnen tien werkdagen","Binnen vijf werkdagen, geautomatiseerd"]},
+ {dim:"finance",t:"Hoeveel handwerk zit er in facturatie, uren en inkoop?",
+  o:["Veel — elke maand een avondje puzzelen","Meerdere handmatige stappen","Eén stap is nog handmatig","Vrijwel niets, het loopt door"]},
+ {dim:"mensen",t:"Hoe leert een nieuwe medewerker hoe het werkt?",
+  o:["Door het steeds te vragen","Door mee te lopen met een collega","Uit een handboek dat er is, maar verouderd","Uit vastgelegde werkwijzen die actueel zijn"]},
+ {dim:"mensen",t:"Als jullie sleutelpersoon twee weken uitvalt…",
+  o:["…hebben we een serieus probleem","…ligt een deel van het werk stil","…kunnen we het meeste opvangen, met zoekwerk","…draait alles gewoon door"]},
+ {dim:"culture",t:"Hoe gaat de organisatie om met verandering in werkwijze?",
+  o:["Weerstand — zo doen we het nu eenmaal","Het lukt, met veel duwen","Mensen doen mee als het nut duidelijk is","Teams stellen zelf verbeteringen voor"]},
+ {dim:"governance",t:"Zou een koper of investeerder jullie bedrijf zonder jou kunnen runnen?",
+  o:["Nee — het draait op mij","Deels, met een lange overdracht","Grotendeels, met een goede opvolger","Ja — processen en kennis staan los van personen"]}
 ];
 const LEVELS = [
  {n:1,name:"Ad-hoc & Excel",seg:"Achterblijvers",x:135,d:"Losse spreadsheets en handwerk. De winst is hier het grootst en het snelst zichtbaar."},
@@ -1176,7 +1205,7 @@ function renderDash(score,dimAvg){
   });
   const weakPct=Math.round((dimAvg[weak]-1)/3*100);
   $('prioTxt').innerHTML='⚑ '+DIM_ADVICE[weak]
-   +'<details class="why"><summary>Waarom dit advies?</summary><p>Van je vijf dimensies scoort <b>'+DIMS[weak].name
+   +'<details class="why"><summary>Waarom dit advies?</summary><p>Van je dimensies scoort <b>'+DIMS[weak].name
    +'</b> het laagst ('+weakPct+'%). De laagste dimensie bepaalt je tempo: verbeteringen elders lekken weg zolang deze achterblijft. '
    +'De weging: elk antwoord telt 1\u20134 punten; het advies volgt de laagste gemiddelde score. Benchmarkbronnen: CBS AI-monitor, Gartner-volwassenheidsverdeling.</p></details>';
   // mini curve + chart
@@ -1493,7 +1522,7 @@ function storyBody(p){
    +'<p><b>Uitkomst:</b> niveau '+s.niveau+' — '+esc(s.niveauNaam)+' ('+esc(s.segment)+'), score '
    +esc(s.score)+'/100. '+s.aheadPct+'% van de markt staat voor. Branche: '+esc(s.branche)
    +' (~'+String(s.brancheNiveau).replace('.',',')+'). ERP: '+(s.afas?'AFAS Profit':'geen AFAS')+'.</p>'
-   +'<h3>Score per dimensie</h3><ul>'+dims+'</ul>'
+   +'<h3>Score per onderdeel</h3><ul>'+dims+'</ul>'
    +'<h3>Businesscase (doel N'+esc(b.doelniveau)+')</h3>'
    +'<p>Netto 3 jr: <b>'+esc(b.nettoNa3Jaar)+'</b> · break-even <b>'+esc(b.breakEven)
    +'</b> · investering <b>'+esc(b.investering)+'</b> · prijs van wachten <b>'+esc(b.prijsVanWachten)+'</b></p>'
@@ -1512,7 +1541,7 @@ function storyAC(p){
   const zwakste=Object.keys(s.dims).reduce((a,k)=>parseInt(s.dims[k])<parseInt(s.dims[a])?k:a,Object.keys(s.dims)[0]);
   return '<ul>'
    +'<li><b>Gegeven</b> de lead van '+esc(l.naam)+' ('+esc(l.bedrijf)+'), <b>wanneer</b> de story wordt opgepakt, <b>dan</b> is er binnen 1 werkdag contact geweest en een intake ingepland.</li>'
-   +'<li><b>Gegeven</b> de scan-uitkomst (niveau '+s.niveau+'), <b>wanneer</b> de intake plaatsvindt, <b>dan</b> zijn de resultaten per dimensie besproken en is de zwakste dimensie ('+esc(zwakste)+') vertaald naar minimaal 3 concrete verbeteracties.</li>'
+   +'<li><b>Gegeven</b> de scan-uitkomst (niveau '+s.niveau+'), <b>wanneer</b> de intake plaatsvindt, <b>dan</b> zijn de resultaten per onderdeel besproken en is het zwakste onderdeel ('+esc(zwakste)+') vertaald naar minimaal 3 concrete verbeteracties.</li>'
    +'<li><b>Gegeven</b> de indicatieve businesscase, <b>wanneer</b> de werkelijke kengetallen bekend zijn, <b>dan</b> is de businesscase herijkt en met de klant gedeeld (investering, besparing, terugverdientijd).</li>'
    +(s.afas?'<li><b>Gegeven</b> dat de klant AFAS Profit gebruikt, <b>wanneer</b> de intake plaatsvindt, <b>dan</b> is een demo van de standaard AFAS Power BI-templates gegeven of ingepland.</li>':'')
    +'<li><b>Gegeven</b> de actuele AI Act-deadlines (transparantie/geletterdheid: 2 aug 2026; hoog-risico definitief uitgesteld naar 2 dec 2027), <b>wanneer</b> AI-gebruik is vastgesteld, <b>dan</b> is een AI-register/risicoclassificatie als actiepunt opgenomen in het voorstel.</li>'
@@ -1649,7 +1678,7 @@ function renderRapportFromSnapshot(s){
   const ucs=((s.afas?USECASES.afas.map(u=>['AFAS',u]):[]).concat(USECASES[s.lvl].map(u=>['N'+s.lvl,u])))
     .map(([tag,u])=>'<div class="uc"><i>'+tag+'</i><b>'+esc(u[0])+'</b><p>'+esc(u[1])+'</p></div>').join('');
   return '<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-   +'<title>Data & AI Rapport — '+esc(s.lead.bedrijf)+'</title><style>'
+   +'<title>Bedrijfsrapport — '+esc(s.lead.bedrijf)+'</title><style>'
    +'body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#16273E;background:#F3F6FA;margin:0;line-height:1.55}'
    +'.pg{max-width:860px;margin:0 auto;padding:36px 24px 60px}'
    +'.card{background:#fff;border:1px solid #DCE4EE;border-radius:14px;padding:22px;margin:14px 0;box-shadow:0 2px 8px rgba(22,39,62,.06)}'
@@ -1677,7 +1706,7 @@ function renderRapportFromSnapshot(s){
    +'<div class="card"><span class="eb">Uitkomst</span>'
    +'<h2 style="margin:.3rem 0">Niveau '+s.lvl+' — '+L.name+' <span class="mut">('+L.seg+')</span></h2>'
    +'<p class="mut">'+L.d+' Score: <b>'+s.score+'/100</b>. '+s.ahead+'% van de markt staat vóór jullie; branchegemiddelde ('+esc(S.name)+'): niveau ~'+String(S.lvl).replace('.',',')+'.</p>'
-   +'<h3 style="margin-top:14px">Score per dimensie</h3>'+dimsHtml+'</div>'
+   +'<h3 style="margin-top:14px">Score per onderdeel</h3>'+dimsHtml+'</div>'
    +'<div class="card"><span class="eb">Positie op de adoptiecurve</span><p class="mut">'+esc(s.verdict)+'</p></div>'
    +'<div class="card"><span class="eb">Businesscase — doelniveau N'+s.slLvl+'</span>'
    +'<div class="kpis"><div class="kpi"><i>Netto na 3 jaar</i><b>'+s.kNet+'</b></div>'
@@ -1718,7 +1747,7 @@ function downloadRapport(lead){
     .map(([tag,u])=>'<div class="uc"><i>'+tag+'</i><b>'+esc(u[0])+'</b><p>'+esc(u[1])+'</p></div>').join('');
   const chart=$('ckSvg')?$('ckSvg').outerHTML:'', mini=$('miniCurve')?$('miniCurve').outerHTML:'';
   const html='<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-   +'<title>Data & AI Rapport — '+esc(lead.bedrijf)+'</title><style>'
+   +'<title>Bedrijfsrapport — '+esc(lead.bedrijf)+'</title><style>'
    +'body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#16273E;background:#F3F6FA;margin:0;line-height:1.55}'
    +'.pg{max-width:860px;margin:0 auto;padding:36px 24px 60px}'
    +'.card{background:#fff;border:1px solid #DCE4EE;border-radius:14px;padding:22px;margin:14px 0;box-shadow:0 2px 8px rgba(22,39,62,.06)}'
@@ -1748,7 +1777,7 @@ function downloadRapport(lead){
    +'<h2 style="margin:.3rem 0">Niveau '+userLevel+' — '+L.name+' <span class="mut">('+L.seg+')</span></h2>'
    +'<p class="mut">'+L.d+' Score: <b>'+$('donutTxt').textContent+'/100</b>. '
    +aheadPct(userLevel)+'% van de markt staat vóór jullie; branchegemiddelde ('+esc(S.name)+'): niveau ~'+String(S.lvl).replace('.',',')+'.</p>'
-   +'<h3 style="margin-top:14px">Score per dimensie</h3>'+dimsHtml+'</div>'
+   +'<h3 style="margin-top:14px">Score per onderdeel</h3>'+dimsHtml+'</div>'
    +'<div class="card"><span class="eb">Positie op de adoptiecurve</span>'+mini+'<p class="mut" style="margin-top:8px">'+$('brVerdict').textContent+'</p></div>'
    +'<div class="card"><span class="eb">Businesscase — doelniveau N'+$('slLvl').value+'</span>'
    +'<div class="kpis"><div class="kpi"><i>Netto na 3 jaar</i><b>'+$('kNet').textContent+'</b></div>'
