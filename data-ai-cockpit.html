@@ -534,6 +534,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
       <div><b>🔒 Businesscase, stappenplan &amp; use-cases</b><br><span>Dit deel bespreken we samen in uw adviesgesprek — daarna ontvangt u het volledige rapport per e-mail.</span></div>
     </div>
     <div class="g hov" id="remKaart" style="margin-bottom:14px"><div id="remBlok"></div></div>
+    <div class="g hov" id="modelKaart" style="margin-bottom:14px"><div id="modelBlok"></div></div>
     <div class="dashveil2">
       <div class="bento">
       <!-- chart -->
@@ -1314,6 +1315,7 @@ function renderDash(score,dimAvg){
     const eerste=rb.querySelector('.remdoel');
     if(eerste){eerste.style.background='#fff';eerste.style.color='#0B1220';}
     tekenRemmen();
+    if(typeof tekenModellen==='function') tekenModellen();
   })();
   // mini curve + chart
   buildMiniCurve();
@@ -2128,10 +2130,78 @@ function tekenRemmen(){
   f+='</div></div>';
   h+=f;
   const l=document.getElementById('remLijst'); if(l) l.innerHTML=h;
+  if(typeof tekenModellen==='function') tekenModellen();
   ['remFte','remOmzet'].forEach(function(id){
     var el=document.getElementById(id);
     if(el&&!el.dataset.aan){el.dataset.aan='1';el.addEventListener('input',function(){setTimeout(tekenRemmen,250)});}
   });
+}
+
+
+/* ================= DE MODELLEN =================
+   Zes gevestigde denkramen, toegepast op de antwoorden uit deze scan.
+   Elk model geeft één bevinding en één actie — geen theorie, wel de herkomst. */
+function tekenModellen(){
+  const d=window.__dimAvg; if(!d) return;
+  const doel=window.__remDoel||'grip';
+  const g=k=>+(d[k]||2);
+  const laagste=Object.keys(DIMS).sort((a,b)=>g(a)-g(b))[0];
+  const zacht=(g('culture')+g('mensen'))/2, hard=(g('tech')+g('analytics')+g('quality'))/3;
+  const M=[];
+
+  // 1. Theory of Constraints
+  M.push({n:'Theory of Constraints',b:'Goldratt',
+    bev:'Je doorstroom wordt bepaald door <b>'+DIMS[laagste].name.toLowerCase()+'</b>, je laagste onderdeel. '
+       +'Verbeteringen elders lopen daar alsnog vast.',
+    act:'Verbeter alleen dit onderdeel tot het niet langer de smalste plek is. Alles wat je elders doet, lekt weg.'});
+
+  // 2. Lean — waar de verspilling zit
+  const verspil=Object.keys(DIMS).filter(k=>g(k)<2.5).map(k=>DIMS[k].name.toLowerCase());
+  M.push({n:'Lean — de acht verspillingen',b:'Toyota Production System',
+    bev: verspil.length? 'Wachten, overtypen en herstelwerk zitten vooral bij <b>'+verspil.slice(0,3).join('</b>, <b>')+'</b>.'
+                       : 'Geen zware verspilling zichtbaar; de winst zit in fijnregeling, niet in opruimen.',
+    act:'Tel één week lang hoe vaak dezelfde gegevens opnieuw worden ingevoerd. Dat getal is je businesscase.'});
+
+  // 3. McKinsey 7S — harde en zachte kant
+  const kloof=hard-zacht;
+  M.push({n:'7S — hard tegen zacht',b:'McKinsey',
+    bev: kloof>0.7 ? 'Je systemen lopen <b>voor</b> op je mensen en cultuur. Dat is de klassieke reden dat invoeringen doodbloeden.'
+        : (kloof<-0.7? 'Je mensen kunnen meer aan dan je systemen toelaten. Hier ligt snelle winst.'
+                     : 'Hard en zacht lopen redelijk gelijk op. Verandering landt hier makkelijker dan gemiddeld.'),
+    act: kloof>0.7 ? 'Investeer een kwartaal in gebruik en gewoontes voordat je nieuwe techniek toevoegt.'
+        : 'Kies één werkproces en til systeem én werkwijze tegelijk op, niet na elkaar.'});
+
+  // 4. ADKAR — verandervermogen
+  M.push({n:'ADKAR — verandervermogen',b:'Prosci',
+    bev:'Bewustzijn en kennis zijn zelden het probleem; <b>vermogen en verankering</b> wel. Jullie cultuurscore is '
+       +g('culture').toFixed(1)+' van 4.',
+    act:'Wijs per verbetering één eigenaar aan die er ook na drie maanden nog op wordt bevraagd.'});
+
+  // 5. Value driver tree / EBITDA
+  M.push({n:'Waardeboom',b:'gangbaar in due diligence',
+    bev:'Elke bespaarde euro werkt door in de winst en daarmee in de waardering. Handwerk is dus geen kostenpost maar een waardeposten.',
+    act: (doel==='exit'||doel==='kapitaal')
+        ? 'Reken de besparing door in de multiple en neem die berekening op in je informatiememorandum.'
+        : 'Zet de besparing apart als investeringsbudget voor de volgende stap.'});
+
+  // 6. Key-person risk
+  M.push({n:'Key-person risk',b:'operational due diligence',
+    bev: g('mensen')<2.5 ? 'Kritieke kennis zit bij enkele mensen. De standaardtoets van kopers — dertig en negentig dagen zonder die persoon — haal je nu niet.'
+                         : 'De afhankelijkheid van personen is beheersbaar. Dat is een pluspunt in elk gesprek met een koper of financier.',
+    act:'Leg voor de drie belangrijkste rollen vast wat alleen zij weten. Begin bij degene die het langst zit.'});
+
+  let h='<span class="kpi-t">Door zes brillen bekeken</span>'
+   +'<p style="font-size:.83rem;opacity:.75;margin:6px 0 10px">Dezelfde antwoorden, gelezen zoals een strateeg, een operations-man en een koper ernaar kijken. Klik een model open voor de actie.</p>';
+  M.forEach((m,i)=>{
+    h+='<details style="border-bottom:1px solid rgba(255,255,255,.1);padding:9px 0">'
+     +'<summary style="cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px;align-items:baseline">'
+     +'<b style="font-size:.92rem">'+m.n+'</b>'
+     +'<span style="font-size:.72rem;opacity:.6;white-space:nowrap">'+m.b+' &nbsp;▾</span></summary>'
+     +'<div style="font-size:.85rem;line-height:1.6;margin-top:6px">'+m.bev
+     +'<div style="margin-top:6px;padding-left:10px;border-left:3px solid #FFE86B"><b>Doen:</b> '+m.act+'</div></div></details>';
+  });
+  h+='<p style="font-size:.75rem;opacity:.6;margin-top:10px">Bronnen: Goldratt (1984) · Toyota Production System · McKinsey 7S · Prosci ADKAR · CBS Digitalisering en arbeidsproductiviteit 2015–2022 · operational due diligence-praktijk. Bandbreedtes, geen normcijfers.</p>';
+  const mb=document.getElementById('modelBlok'); if(mb) mb.innerHTML=h;
 }
 
 </script>
