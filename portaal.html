@@ -110,6 +110,16 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
   .zijlijst.open{display:flex}
   .groep{width:100%;margin:.5rem 0 .1rem}
 }
+
+#tip{position:fixed;z-index:60;pointer-events:none;opacity:0;transform:translateY(4px);
+ transition:opacity .12s ease,transform .12s ease;background:var(--inkt);color:#fff;border-radius:4px;
+ padding:.5rem .65rem;font-size:.8rem;line-height:1.45;max-width:16rem;box-shadow:0 6px 22px rgba(20,23,26,.28)}
+#tip.aan{opacity:1;transform:translateY(0)}
+#tip b{color:var(--geel)}
+[data-tip]{cursor:pointer}
+[data-tip]:hover{filter:brightness(1.06)}
+.klikbaar{cursor:pointer}
+.klikbaar:hover{background:#FBFAF7}
 </style>
 </head>
 <body>
@@ -125,6 +135,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
 </div>
 
 <!-- portaal -->
+<div id="tip" role="status" aria-live="polite"></div>
 <div id="portaal" hidden>
   <div class="balk">
     <div class="merk">
@@ -672,7 +683,7 @@ function teken(){
   // remmen
   const top=DIM.slice().sort((a,b)=>kosten[b.k]-kosten[a.k]).slice(0,4);
   document.getElementById('remmen').innerHTML=top.map((d,i)=>
-    '<div style="display:flex;justify-content:space-between;gap:.6rem;padding:.42rem 0;border-bottom:1px solid var(--lijn)">'
+    '<div class="klikbaar" data-ga="business" data-tip="<b>'+d.n+'</b><br>Niveau '+S.niveaus[d.k]+' — '+(UITLEG[d.k]||'')+'<br>Klik om te zien wat verbeteren oplevert." style="display:flex;justify-content:space-between;gap:.6rem;padding:.42rem 0;border-bottom:1px solid var(--lijn)">'
     +'<span><b>'+(i+1)+'.</b> '+d.n+' <span class="sub">· '+NIV[S.niveaus[d.k]]+'</span></span>'
     +'<b>'+euro(kosten[d.k])+'</b></div>').join('')
     +'<div style="margin-top:.7rem;padding:.6rem .8rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
@@ -697,7 +708,8 @@ function teken(){
     const b=B(), VERD=[5,21,34,31,9]; let c='';
     VERD.forEach((v,i)=>{
       const h=v*3.4, x=28+i*84, eigen=Math.round(gem)===i+1;
-      c+='<rect x="'+x+'" y="'+(160-h)+'" width="66" height="'+h+'" rx="3" fill="'+(eigen?'#2742D6':'#E4E7EC')+'"/>'
+      c+='<rect x="'+x+'" y="'+(160-h)+'" width="66" height="'+h+'" rx="3" fill="'+(eigen?'#2742D6':'#E4E7EC')+'"'
+       +' data-tip="<b>Niveau '+(i+1)+' — '+NIV[i+1]+'</b><br>'+v+'% van de markt zit hier.'+(eigen?'<br>Dit is waar jullie staan.':'')+'"/>'
        +'<text x="'+(x+33)+'" y="'+(160-h-7)+'" text-anchor="middle" font-size="11.5" font-weight="600" fill="#14171A" font-family="Instrument Sans">'+v+'%</text>'
        +'<text x="'+(x+33)+'" y="178" text-anchor="middle" font-size="10.5" fill="'+(eigen?'#14171A':'#5C646E')+'" font-family="Instrument Sans">N'+(i+1)+'</text>';
     });
@@ -713,7 +725,7 @@ function teken(){
   DIM.forEach(d=>{
     const w=(S.niveaus[d.k]/5)*250, kl=S.niveaus[d.k]>=d.top?'#1F9D55':(S.niveaus[d.k]>=d.top-1?'#E8A200':'#D93025');
     g+='<text x="0" y="'+(y+12)+'" font-size="11.5" fill="#14171A" font-family="Instrument Sans">'+d.n+'</text>';
-    g+='<g><title>'+d.n+' — niveau '+S.niveaus[d.k]+' van 5. '+(UITLEG[d.k]||'')+' Streepje = doel voor het mkb.</title>';
+    g+='<g data-tip="<b>'+d.n+' — niveau '+S.niveaus[d.k]+' van 5</b><br>'+(UITLEG[d.k]||'')+'<br>Streepje is niveau '+d.top+', het doel voor het mkb." data-ga="profiel">';
     g+='<rect x="180" y="'+(y+2)+'" width="250" height="13" rx="6.5" fill="#EDEBE5"/>';
     g+='<rect x="180" y="'+(y+2)+'" width="'+Math.max(w,8)+'" height="13" rx="6.5" fill="'+kl+'"/>';
     g+='<rect x="'+(180+(d.top/5)*250-1.5)+'" y="'+(y-1)+'" width="3" height="21" fill="#14171A"/>';
@@ -786,11 +798,12 @@ function balk(x,y,w,eigen,norm,label,fmt,omgekeerd){
   const we=Math.max((eigen/max)*w,2), wn=(norm/max)*w;
   const goed = omgekeerd ? eigen<=norm : eigen>=norm;
   const kl = eigen===0?'#C9CEDA':(goed?'#1F9D55':'#D93025');
-  return '<text x="0" y="'+(y+11)+'" font-size="11.5" fill="#14171A" font-family="Instrument Sans">'+label+'</text>'
+  return '<g data-tip="<b>'+label+'</b><br>Jij: '+fmt(eigen)+' · branche: '+fmt(norm)+'" data-ga="mensen">'
+   +'<text x="0" y="'+(y+11)+'" font-size="11.5" fill="#14171A" font-family="Instrument Sans">'+label+'</text>'
    +'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="14" rx="7" fill="#EDEBE5"/>'
    +'<rect x="'+x+'" y="'+y+'" width="'+we+'" height="14" rx="7" fill="'+kl+'"/>'
    +'<rect x="'+(x+wn-1.5)+'" y="'+(y-3)+'" width="3" height="20" fill="#14171A"/>'
-   +'<text x="'+(x+w+8)+'" y="'+(y+11)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+fmt(eigen)+' · norm '+fmt(norm)+'</text>';
+   +'<text x="'+(x+w+8)+'" y="'+(y+11)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+fmt(eigen)+' · norm '+fmt(norm)+'</text></g>';
 }
 function tekenMensen(){
   const b=B(), m=S.mensen;
@@ -839,7 +852,8 @@ function tekenBranche(){
     const o=BRANCHE[naam]; if(naam==='Gemiddeld NL-bedrijf')return;
     const x=60+((o.dig-1)/4)*800, y=190-((o.tw-40000)/110000)*160;
     const eigen=naam===S.branche;
-    g+='<circle cx="'+x+'" cy="'+y+'" r="'+(eigen?7:5)+'" fill="'+(eigen?'#2742D6':'#C9CEDA')+'"/>'
+    g+='<circle cx="'+x+'" cy="'+y+'" r="'+(eigen?7:5)+'" fill="'+(eigen?'#2742D6':'#C9CEDA')+'"'
+     +' data-tip="<b>'+naam+'</b><br>Digitale intensiteit ~'+o.dig.toFixed(1)+'<br>Toegevoegde waarde per vte ca. € '+Math.round(o.tw/1000)+'k<br>Groei '+(o.groei>=0?'+':'')+o.groei.toFixed(1)+'%"/>'
      +'<text x="'+(x+10)+'" y="'+(y+4)+'" font-size="10.5" fill="'+(eigen?'#14171A':'#8A94A3')+'" font-family="Instrument Sans">'+naam+'</text>';
   });
   const jx=60+((gem-1)/4)*800, jy=perFte?190-((perFte*0.45-40000)/110000)*160:120;
@@ -912,11 +926,12 @@ function tekenCijfers(){
   let g='',y=18;
   paren.forEach(pr=>{
     const max=Math.max(pr[1],pr[2])*1.4||1, w=210;
-    g+='<text x="0" y="'+(y+11)+'" font-size="11.5" fill="#14171A" font-family="Instrument Sans">'+pr[0]+'</text>'
+    g+='<g data-tip="<b>'+pr[0]+'</b><br>Jij: '+pr[1].toFixed(1)+' · richtgetal '+pr[2]+' voor '+S.branche+'." data-ga="cijfers">'
+     +'<text x="0" y="'+(y+11)+'" font-size="11.5" fill="#14171A" font-family="Instrument Sans">'+pr[0]+'</text>'
      +'<rect x="150" y="'+y+'" width="'+w+'" height="14" rx="7" fill="#EDEBE5"/>'
      +'<rect x="150" y="'+y+'" width="'+Math.max(pr[1]/max*w,3)+'" height="14" rx="7" fill="#2742D6"/>'
      +'<rect x="'+(150+pr[2]/max*w-1.5)+'" y="'+(y-3)+'" width="3" height="20" fill="#14171A"/>'
-     +'<text x="'+(150+w+8)+'" y="'+(y+11)+'" font-size="10.5" fill="#5C646E" font-family="Instrument Sans">'+pr[1].toFixed(0)+' vs '+pr[2]+'</text>';
+     +'<text x="'+(150+w+8)+'" y="'+(y+11)+'" font-size="10.5" fill="#5C646E" font-family="Instrument Sans">'+pr[1].toFixed(0)+' vs '+pr[2]+'</text></g>';
     y+=42;
   });
   document.getElementById('cGrafiek').innerHTML = paren.length? g
@@ -1183,6 +1198,13 @@ function tekenBusiness(){
   g+='<path d="'+d2+' L'+px(maanden)+','+py(0)+' Z" fill="#FFE8E0"/>';
   g+='<path d="'+d1+'" fill="none" stroke="#2742D6" stroke-width="3"/>';
   g+='<path d="'+d2+'" fill="none" stroke="#8A94A3" stroke-width="2.5" stroke-dasharray="6 5"/>';
+  [6,12,18,24,30,36].forEach(mm=>{
+    const v=perMaand*mm-invest, vv=perMaand*Math.max(mm-uitstel,0)-invest;
+    g+='<circle cx="'+px(mm)+'" cy="'+py(v)+'" r="9" fill="transparent"'
+     +' data-tip="<b>Na '+mm+' maanden</b><br>Nu starten: '+eur(v)+'<br>'+uitstel+' mnd later: '+eur(mm>uitstel?vv:-invest)
+     +'<br>Verschil: '+eur(v-(mm>uitstel?vv:-invest))+'"/>';
+    g+='<circle cx="'+px(mm)+'" cy="'+py(v)+'" r="3.5" fill="#2742D6"/>';
+  });
   if(tvt<=maanden){
     g+='<rect x="'+(px(tvt)-1.5)+'" y="'+yTop+'" width="3" height="'+(y0-yTop)+'" fill="#FFE86B"/>'
      +'<text x="'+(px(tvt)+7)+'" y="'+(yTop+14)+'" font-size="11.5" font-weight="700" fill="#14171A" font-family="Instrument Sans">terugverdiend</text>';
@@ -1352,6 +1374,34 @@ function tekenBeleid(){
     +'Benoem per kernbron één eigenaar. Niet een afdeling, één naam — anders is niemand het.</p></div>'
     +'</div>';
 }
+
+/* Eén tooltip voor het hele portaal: werkt met muis én aanraking. */
+(function(){
+  const tip=document.getElementById('tip'); if(!tip) return;
+  function toon(e,tekst){
+    tip.innerHTML=tekst; tip.classList.add('aan');
+    const x=(e.touches?e.touches[0].clientX:e.clientX), y=(e.touches?e.touches[0].clientY:e.clientY);
+    const b=tip.getBoundingClientRect();
+    tip.style.left=Math.min(Math.max(10,x+14),window.innerWidth-b.width-10)+'px';
+    tip.style.top =Math.max(10,y-b.height-14)+'px';
+  }
+  function weg(){ tip.classList.remove('aan'); }
+  document.addEventListener('mouseover',e=>{
+    const el=e.target.closest('[data-tip]'); if(el) toon(e,el.getAttribute('data-tip'));
+  });
+  document.addEventListener('mousemove',e=>{
+    const el=e.target.closest('[data-tip]'); if(el) toon(e,el.getAttribute('data-tip')); else weg();
+  });
+  document.addEventListener('mouseout',e=>{ if(!e.relatedTarget||!e.relatedTarget.closest('[data-tip]')) weg(); });
+  document.addEventListener('touchstart',e=>{
+    const el=e.target.closest('[data-tip]'); if(el){ toon(e,el.getAttribute('data-tip')); setTimeout(weg,2600); }
+  },{passive:true});
+  // doorklikken naar een tabblad
+  document.addEventListener('click',e=>{
+    const el=e.target.closest('[data-ga]'); if(!el) return;
+    const b=document.querySelector('.tab[data-p="'+el.getAttribute('data-ga')+'"]'); if(b) b.click();
+  });
+})();
 </script>
 </body>
 </html>
