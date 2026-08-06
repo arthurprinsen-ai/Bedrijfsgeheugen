@@ -416,6 +416,10 @@ th{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.5
 td .mono{color:var(--amber);font-weight:600}
 .dr-body a{color:var(--blue)}
 .footnote{font-size:.66rem;color:var(--dim);margin-top:22px;border-top:1px solid var(--line);padding-top:12px}
+
+.doelrij{display:flex;gap:.4rem;flex-wrap:wrap;margin:.2rem 0 1.4rem}
+.doelrij span{border:1px solid rgba(201,210,232,.35);border-radius:20px;padding:.28rem .75rem;font-size:.78rem;color:#C9D2E8}
+.naderhand{margin-top:.9rem;font-size:.85rem;color:var(--dim,#6E829C);max-width:46ch}
 </style>
 <script>
 (function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
@@ -444,15 +448,21 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
   <!-- ============ LANDING ============ -->
   <section class="screen" id="landing">
-    <span class="eyebrow">Bedrijfsscan · tien onderdelen · voor directie en eigenaren</span>
+    <span class="eyebrow">Bedrijfsscan · dertien onderdelen · voor directie en eigenaren</span>
     <h1>Hoe volwassen is jouw bedrijf echt?</h1>
-    <p class="sub">14 vragen → één dashboard: je niveau, je positie t.o.v. de concurrentie, en de businesscase in euro's — investering, besparing, marge en terugverdientijd.</p>
+    <p class="sub">Je begint met één vraag: waarvoor gebruik je de scan? Daarna krijg je alleen de vragen die daarbij horen — en een dashboard met je niveau per onderdeel, je positie tegenover je branche, en de businesscase in euro's.</p>
     <div class="chiprow">
-      <div class="chip"><span class="mono">± 4 min</span> invullen</div>
-      <div class="chip"><span class="mono">29,8%</span> MKB gebruikt al AI (CBS '25)</div>
+      <div class="chip"><span class="mono">± 6 min</span> invullen</div>
+      <div class="chip"><span class="mono">7 doelen</span> van grip tot verkoop</div>
+      <div class="chip"><span class="mono">33 bronnen</span> en modellen achter het advies</div>
       <div class="chip hot"><span class="mono">&lt; 5%</span> haalt het hoogste niveau (Gartner)</div>
     </div>
+    <div class="doelrij">
+      <span>Grip en tijd</span><span>Groeien</span><span>Verkoop of exit</span><span>Kapitaal aantrekken</span>
+      <span>Overname doen</span><span>Opvolging</span><span>Naleving en risico</span>
+    </div>
     <button class="cta" onclick="go('wizard')">Start de scan <span>→</span></button>
+    <p class="naderhand">Na afloop kun je verder in je eigen portaal: cijfers ernaast leggen, modellen erop loslaten en je stappen plannen.</p>
     <div class="cd">
       <div class="cd-seg" id="cdLand"></div>
       <div class="lbl"><span id="cdTitle">Eerstvolgende compliance-deadline</span><br><span style="color:var(--dim)">Cijfers &amp; regelgeving per <b class="peil">6 juli 2026</b> <button class="rsBtn" onclick="researchNow()">↻ check nu live</button> <span id="liveBadge" hidden style="color:var(--green);font-weight:700">&#9679; live bijgewerkt</span></span><div id="rsStatusLand"></div></div>
@@ -1220,7 +1230,8 @@ function Q(){ return actief||QUESTIONS; }
 const DIMLBL={analytics:"Data & analytics",quality:"Datakwaliteit",governance:"Governance & AI Act",tech:"Technologie & AI",culture:"Organisatie & cultuur"};
 function renderQ(dir){
   const L=Q(), q=L[cur];
-  $('qDim').textContent=(q.ctx?'Context':(DIMLBL[q.dim]||(DIMS[q.dim]&&DIMS[q.dim].name)||''))+' · vraag '+(cur+1)+' van '+L.length;
+  $('qDim').textContent=(q.ctx?'Context':(DIMLBL[q.dim]||(DIMS[q.dim]&&DIMS[q.dim].name)||''))+' · vraag '+(cur+1)+' van '+L.length
+    +(actief?' · afgestemd op je doel':'');
   $('ringTxt').textContent=(cur+1)+'/'+L.length;
   $('ringFg').style.strokeDashoffset=150.8*(1-cur/L.length);
   const card=$('qCard');
