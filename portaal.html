@@ -186,6 +186,9 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
     <section class="paneel" id="p-strategie">
       <p class="sub" style="margin-top:1rem">Zes denkramen, ingevuld met jouw eigen scores en cijfers. Klik een kaart open.</p>
       <div class="kaarten k2" id="stratKaarten"></div>
+      <h3 style="margin:1.6rem 0 .2rem">Per functie</h3>
+      <p class="sub">Het model dat een consultant op deze afdeling zou leggen, met jouw cijfers erin.</p>
+      <div class="kaarten k2" id="functieKaarten" style="margin-top:.6rem"></div>
     </section>
 
     <!-- CIJFERS -->
@@ -519,7 +522,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie();
+  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -791,6 +794,69 @@ function tekenStrategie(){
   document.getElementById('stratKaarten').innerHTML = M.map((m,i)=>
     '<details class="mod"'+(i===0?' open':'')+'><summary><h3>'+m.n+'</h3><span class="herkomst">'+m.h+' ▾</span></summary>'
     +'<div class="inhoud">'+m.inhoud+'</div></details>').join('');
+}
+
+function tekenFuncties(){
+  const g=k=>S.niveaus[k]||2, c=S.cijfers||{}, b=B(), m=S.mensen||{};
+  const n=x=>+(c[x])||0;
+  const omzet=n('cOmzet')*1000, klanten=n('cKlanten'), nieuw=n('cNieuw'), mark=n('cMarketing')*1000,
+        dso=n('cDso'), grootste=n('cGrootste'), verloop=+(m.mVerloop)||0, verzuim=+(m.mVerzuim)||0;
+  const F=[];
+
+  F.push({n:'HR en mensen',h:'Ulrich · 9-box · lifecycle',inhoud:
+    '<p><b>Rol van HR (Ulrich).</b> Bij niveau '+g('mensen')+' op mensen en kennis is HR bij jullie vooral '
+    +(g('mensen')<3?'administratie: contracten en verzuim. De rol van partner — wie kan wat, en wie moet wat leren — ligt open.'
+                   :'meer dan administratie; er zijn vastgelegde werkwijzen om op te bouwen.')+'</p>'
+    +'<p><b>Kennismatrix in plaats van 9-box.</b> Voor dertig man werkt een prestatie-potentieelmatrix niet. Wat wél werkt: per taak invullen wie het kan. Elke rij met maar één naam is een risico.</p>'
+    +(verloop?'<p><b>Levenscyclus.</b> Met '+verloop+'% verloop vervang je ruwweg '+Math.round(S.mw*verloop/100)+' mensen per jaar. Bij een inwerktijd van drie maanden is dat '
+      +(S.mw*verloop/100*0.25).toFixed(1)+' fte die permanent aan het inwerken is.</p>':'')
+    +(verzuim>b.verzuim+1?'<p><b>Let op:</b> je verzuim ligt boven je branche. Kijk of het samenvalt met de afdelingen waar het werk zich opstapelt.</p>':'')});
+
+  F.push({n:'Processen',h:'SIPOC · Theory of Constraints · Lean',inhoud:
+    '<p><b>De smalste plek.</b> Operatie staat op '+g('operatie')+'. Zolang dat zo is, lopen verbeteringen elders daar alsnog vast.</p>'
+    +'<p><b>SIPOC per proces.</b> Leverancier, input, proces, output, klant — op één A4. Doe dit voor je drie belangrijkste processen; het legt bloot waar iets twee keer wordt aangeraakt.</p>'
+    +'<p><b>De acht verspillingen.</b> Wachten, overproductie, transport, voorraad, beweging, fouten, overbewerking en onbenut talent. In het mkb zitten de eerste en de laatste er bijna altijd in.</p>'});
+
+  F.push({n:'Structuur',h:'RACI · span of control · bus factor',inhoud:
+    '<p><b>RACI.</b> Wie doet, wie beslist, wie wordt gehoord, wie geïnformeerd. Dit legt de echte structuur bloot — die zelden gelijk is aan het organogram.</p>'
+    +'<p><b>Span of control.</b> Boven de acht directe rapportages wordt sturing symbolisch: dan gebeurt het toch weer via de wandelgang.</p>'
+    +'<p><b>Bus factor.</b> Hoeveel mensen moeten wegvallen voordat het stilstaat? Bij niveau '+g('mensen')+' op kennis is het antwoord hier waarschijnlijk '+(g('mensen')<3?'één of twee':'meer dan drie')+'.</p>'});
+
+  F.push({n:'Cultuur',h:'OCAI (Cameron & Quinn) · ADKAR',inhoud:
+    '<p><b>Vier cultuurtypen.</b> Familie, adhocratie, markt, hiërarchie. De meeste mkb-bedrijven zijn familie met een marktrandje: loyaal en snel, maar zwak in vastleggen. Dat verklaart meer dan een reorganisatie oplost.</p>'
+    +'<p><b>ADKAR.</b> Bewustzijn en kennis zijn zelden het probleem; vermogen en verankering wel. Cultuur staat bij jullie op '+g('culture')+'.</p>'
+    +'<p>'+(g('culture')<3?'Bij dit niveau: één verbetering per kwartaal, met zichtbaar resultaat. Meer tegelijk landt niet.'
+                        :'Bij dit niveau kun je twee sporen tegelijk lopen.')+'</p>'});
+
+  F.push({n:'Sales',h:'trechter · win/loss · MEDDIC',inhoud:
+    '<p><b>Trechterconversie per stap.</b> Niet één getal maar vier: contact → gesprek → offerte → opdracht. De stap met de grootste val is je enige verbeterpunt.</p>'
+    +(klanten&&omzet?'<p><b>Omzet per klant:</b> € '+Math.round(omzet/klanten).toLocaleString('nl-NL')+'. '
+      +(grootste>=25?'Met '+grootste+'% bij één klant is spreiding belangrijker dan groei.':'')+'</p>':'')
+    +'<p><b>Win/loss.</b> Vraag bij elke verloren offerte één ding: van wie hebben ze gekocht en waarom? Drie maanden bijhouden geeft meer dan elke marktanalyse.</p>'
+    +'<p><b>MEDDIC</b> — pas zinvol vanaf meerdere verkopers. Bij één verkoper is het overhead.</p>'});
+
+  F.push({n:'Marketing',h:'AARRR · STP · share of search',inhoud:
+    '<p><b>AARRR.</b> Bereik, activatie, behoud, aanbeveling, omzet — vijf getallen die samen het plaatje geven.</p>'
+    +(mark&&nieuw?'<p><b>Kosten per nieuwe klant:</b> € '+Math.round(mark/nieuw).toLocaleString('nl-NL')+'.'
+      +(klanten&&omzet?' Tegenover € '+Math.round(omzet/klanten).toLocaleString('nl-NL')+' omzet per klant.':'')+'</p>':'')
+    +'<p><b>STP.</b> Segmentatie, targeting, positionering. De vraag die het meeste oplevert: voor wie ben je duidelijk de beste keuze, en voor wie niet?</p>'
+    +'<p><b>Share of search.</b> Jouw aandeel in zoekopdrachten tegenover concurrenten voorspelt marktaandeel — en die data is gratis op te halen.</p>'});
+
+  F.push({n:'Inkoop',h:'Kraljic · TCO',inhoud:
+    '<p><b>Kraljic-matrix.</b> Zet leveranciers op twee assen: financieel belang en leveringsrisico. Vier kwadranten, vier aanpakken — routine automatiseren, knelpunten borgen, hefboom onderhandelen, strategisch samenwerken.</p>'
+    +'<p><b>Total Cost of Ownership.</b> Niet de prijs maar de last over de levensduur: inkoop, beheer, storingen, afscheid. Bij software is de prijs zelden het duurste deel.</p>'
+    +'<p><b>Leveranciersconcentratie.</b> Het spiegelbeeld van klantconcentratie — en even relevant bij een overname.</p>'});
+
+  F.push({n:'Administratie, debiteuren en crediteuren',h:'cash conversion cycle · Pareto',inhoud:
+    '<p><b>De kasconversiecyclus.</b> Debiteurendagen + voorraaddagen − crediteurendagen. Dit is het aantal dagen dat je je eigen groei voorfinanciert.</p>'
+    +(dso?'<p><b>Jouw debiteurendagen:</b> '+dso+' tegenover '+(b.norm&&b.norm.dso)+' in je branche.'
+      +(omzet&&dso>(b.norm&&b.norm.dso)?' Dat is ongeveer € '+Math.round(omzet/365*(dso-b.norm.dso)).toLocaleString('nl-NL')+' aan vastliggend werkkapitaal.':'')+'</p>':'')
+    +'<p><b>Pareto op debiteuren.</b> Meestal veroorzaakt 20% van de klanten 80% van het achterstallige bedrag. Bel die twintig procent, niet de hele lijst.</p>'
+    +'<p><b>Order-to-cash en purchase-to-pay.</b> Twee ketens waar in het mkb het meeste handwerk zit: factuur maken, versturen, herinneren, boeken, matchen. Finance staat bij jullie op '+g('finance')+'.</p>'});
+
+  document.getElementById('functieKaarten').innerHTML = F.map(f=>
+    '<details class="mod"><summary><h3>'+f.n+'</h3><span class="herkomst">'+f.h+' ▾</span></summary>'
+    +'<div class="inhoud">'+f.inhoud+'</div></details>').join('');
 }
 </script>
 </body>
