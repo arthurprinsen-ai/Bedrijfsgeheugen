@@ -168,6 +168,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <button class="tab" role="tab" aria-selected="false" data-p="business">↗ Businesscase</button>
         <span class="groep">Vergelijken</span>
         <button class="tab" role="tab" aria-selected="false" data-p="cijfers">€ Cijfers en maatstaven</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="waarde">◈ Waarde en financiering</button>
         <button class="tab" role="tab" aria-selected="false" data-p="mensen">☺ Mensen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="branche">▲ Branche en markt</button>
         <button class="tab" role="tab" aria-selected="false" data-p="onderzoek">◎ Onderzoek</button>
@@ -269,6 +270,34 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
       <div class="kaart"><h3>Waar je staat op de adoptiecurve</h3>
         <svg id="curveGraf" viewBox="0 0 900 240" role="img" aria-label="Adoptiecurve"></svg>
         <p class="sub" id="curveT"></p></div>
+    </section>
+
+    <!-- WAARDE -->
+    <section class="paneel" id="p-waarde">
+      <div class="kaart" style="margin-top:1rem">
+        <h3>De cijfers achter de waarde</h3>
+        <p class="sub">Vul aan wat je weet. Wat leeg blijft, wordt geschat uit je omzet — dat staat er dan bij.</p>
+        <div class="velden" style="margin-top:.7rem">
+          <div class="veld"><label for="wSchuld">Rentedragende schuld (× €1.000)</label><input type="number" id="wSchuld" min="0" step="10"></div>
+          <div class="veld"><label for="wCash">Liquide middelen (× €1.000)</label><input type="number" id="wCash" min="0" step="10"></div>
+          <div class="veld"><label for="wEV">Eigen vermogen (× €1.000)</label><input type="number" id="wEV" step="10"></div>
+          <div class="veld"><label for="wBalans">Balanstotaal (× €1.000)</label><input type="number" id="wBalans" min="0" step="10"></div>
+          <div class="veld"><label for="wVast">Vaste kosten per jaar (× €1.000)</label><input type="number" id="wVast" min="0" step="10"></div>
+          <div class="veld"><label for="wRente">Rente en aflossing p.j. (× €1.000)</label><input type="number" id="wRente" min="0" step="5"></div>
+          <div class="veld"><label for="wMultiple">EBITDA-multiple</label><input type="number" id="wMultiple" value="5" min="1" max="15" step="0.5"></div>
+          <div class="veld"><label for="wWacc">Vermogenskosten % (WACC)</label><input type="number" id="wWacc" value="10" min="3" max="30" step="0.5"></div>
+        </div>
+      </div>
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Wat is het bedrijf waard?</h3><div id="wWaarde"></div></div>
+        <div class="kaart"><h3>Gezondheid en financierbaarheid</h3><div id="wGezond"></div></div>
+      </div>
+      <div class="kaarten k2">
+        <div class="kaart"><h3>DuPont — waar komt het rendement vandaan?</h3><svg id="wDupont" viewBox="0 0 460 190" role="img" aria-label="DuPont"></svg><div class="sub" id="wDupontT"></div></div>
+        <div class="kaart"><h3>Gevoeligheid — wat doet een verbetering met de waarde?</h3><div id="wGevoel"></div></div>
+      </div>
+      <div class="kaart"><h3>Break-even en veiligheidsmarge</h3><div id="wBreak"></div>
+        <p class="sub" style="margin-top:.7rem">Modellen: EBITDA-multiple · DCF met eeuwigdurende groei · DuPont · Altman Z · rentedekking en DSCR · break-even. Indicatief — geen waardering of financieel advies.</p></div>
     </section>
 
     <!-- ONDERZOEK -->
@@ -477,7 +506,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -611,6 +640,11 @@ function bouw(){
   const mi=document.getElementById('mImport');
   if(mi&&!mi.dataset.aan){mi.dataset.aan='1';
     mi.addEventListener('change',e=>{ if(e.target.files[0]) importeer(e.target.files[0]); e.target.value=''; });}
+  ['wSchuld','wCash','wEV','wBalans','wVast','wRente','wMultiple','wWacc'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    if(S.fin&&S.fin[id]!==undefined&&S.fin[id]!=='') el.value=S.fin[id];
+    el.addEventListener('input',e=>{S.fin=S.fin||{};S.fin[id]=e.target.value;bewaar();teken();});
+  });
   const be=document.getElementById('btnExport');
   if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',exporteer);}
   const bi=document.getElementById('btnImport');
@@ -633,7 +667,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -657,6 +691,7 @@ function importeer(bestand){
       if(p.bc) S.bc=p.bc;
       if(p.eigen) S.eigen=p.eigen;
       if(p.beleid) S.beleid=p.beleid;
+      if(p.fin) S.fin=p.fin;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -755,7 +790,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenAdvies();
+  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -1463,6 +1498,22 @@ function verzamelAdvies(){
   if(mistDef) A.push({t:'Spreek af wat een klant, order en uur precies zijn',dim:'quality',duur:1,waarde:kosten.quality*0.4,
     waarom:'Zonder definities blijft elk dashboard betwistbaar en gaat de vergadering over wiens cijfer klopt.',bron:'Beleid'});
 
+  // --- uit de financiële modellen ---
+  const F=S.fin||{}, fn=x=>+(F[x])||0;
+  const omzet2=n('cOmzet')*1000, ebitda2=n('cEbitda')*1000, mult2=fn('wMultiple')||5;
+  if(omzet2&&fn('wBalans')&&fn('wEV')){
+    const solva=fn('wEV')/fn('wBalans')*100;
+    if(solva<25) A.push({t:'Versterk de solvabiliteit voordat je gaat financieren',dim:'finance',duur:6,waarde:0,
+      waarom:'Solvabiliteit '+solva.toFixed(0)+'% — banken hanteren doorgaans 25 à 30%. Dit bepaalt of je überhaupt kunt lenen.',bron:'Model solvabiliteit'});
+  }
+  if(omzet2){
+    const eb=ebitda2||omzet2*((b.norm&&b.norm.ebitda||10)/100);
+    A.push({t:'Reken je besparing door in bedrijfswaarde',dim:'finance',duur:1,waarde:0,
+      waarom:'Elke euro structurele besparing telt '+mult2+'× mee in de waarde. '+eur(20000)+' minder handwerk is '+eur(20000*mult2)+' aan waarde.',bron:'Model EBITDA-multiple'});
+    if(fn('wRente')&&eb/(fn('wRente')*1000)<1.3) A.push({t:'Verlaag de vaste lasten of verleng de aflossing',dim:'finance',duur:3,waarde:0,
+      waarom:'Rentedekking onder 1,3× — daar wordt een financier ongemakkelijk van, zeker bij tegenvallende maanden.',bron:'Model DSCR'});
+  }
+
   // --- uit de strategiemodellen ---
   const gemAll=DIM.reduce((a,d)=>a+g(d.k),0)/DIM.length;
   const hard=(g('tech')+g('analytics')+g('quality'))/3, zacht=(g('culture')+g('mensen'))/2;
@@ -1547,6 +1598,93 @@ function tekenAdvies(){
       btn.textContent='✓ staat erin'; btn.disabled=true;
     });
   });
+}
+
+function tekenWaarde(){
+  const c=S.cijfers||{}, F=S.fin||{}, b=B();
+  const n=x=>+(c[x])||0, fn=x=>+(F[x])||0;
+  const omzet=n('cOmzet')*1000, ebitda=n('cEbitda')*1000, marge=n('cBrutomarge'),
+        loon=n('cLoon')*1000, dso=n('cDso');
+  const schuld=fn('wSchuld')*1000, cash=fn('wCash')*1000, ev=fn('wEV')*1000,
+        balans=fn('wBalans')*1000, vast=fn('wVast')*1000, rente=fn('wRente')*1000,
+        mult=fn('wMultiple')||5, wacc=(fn('wWacc')||10)/100;
+  const eur=v=>'€ '+Math.round(v).toLocaleString('nl-NL');
+  const geschat='<span class="sub">geschat</span>';
+  const kpi=(t,v,s2)=>'<div style="display:grid;grid-template-columns:1fr auto;gap:.6rem;padding:.45rem 0;border-bottom:1px solid var(--lijn);align-items:baseline">'
+    +'<span style="font-size:.88rem">'+t+'</span><b>'+v+'</b></div>'+(s2?'<div class="sub" style="margin:-.25rem 0 .35rem">'+s2+'</div>':'');
+
+  if(!omzet){
+    document.getElementById('wWaarde').innerHTML='<p class="sub">Vul eerst je omzet in bij Cijfers.</p>';
+    document.getElementById('wGezond').innerHTML=''; document.getElementById('wGevoel').innerHTML='';
+    document.getElementById('wBreak').innerHTML=''; document.getElementById('wDupont').innerHTML='';
+    return;
+  }
+  const ebitdaGebruikt = ebitda || omzet*((b.norm&&b.norm.ebitda||10)/100);
+  const ondernemingswaarde = ebitdaGebruikt*mult;
+  const aandeelhouderswaarde = ondernemingswaarde - schuld + cash;
+  // DCF met eeuwigdurende groei: vrije kasstroom ~ 70% van EBITDA
+  const fcf = ebitdaGebruikt*0.7, groei=Math.min(b.groei/100,wacc-0.02);
+  const dcf = wacc>groei ? fcf*(1+groei)/(wacc-groei) : 0;
+
+  document.getElementById('wWaarde').innerHTML=
+     kpi('EBITDA'+(ebitda?'':' '+geschat),eur(ebitdaGebruikt), ebitda?'':'geschat op '+(b.norm&&b.norm.ebitda)+'% van de omzet — het branchegemiddelde')
+    +kpi('Ondernemingswaarde (× '+mult+')',eur(ondernemingswaarde),'EBITDA-multiple, de gangbare methode in het mkb')
+    +kpi('Waarde voor de aandeelhouder',eur(aandeelhouderswaarde), schuld||cash?'ondernemingswaarde − schuld + kas':'zonder schuld en kas ingevuld gelijk aan de ondernemingswaarde')
+    +kpi('DCF-toets bij '+(wacc*100).toFixed(0)+'% en '+b.groei.toFixed(1)+'% groei', dcf?eur(dcf):'—','tweede methode; ligt hij ver uit elkaar, dan zit het in de groeiverwachting')
+    +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
+    +'<b>Wat jouw werk hieraan doet:</b> elke euro structurele kostenbesparing telt '+mult+' keer mee in de waarde. '
+    +'Haal je '+eur(20000)+' aan handwerk weg, dan is dat '+eur(20000*mult)+' aan bedrijfswaarde.</div>';
+
+  // gezondheid
+  const solva = balans? ev/balans*100 : null;
+  const dekking = rente? ebitdaGebruikt/rente : null;
+  const schuldratio = ebitdaGebruikt? (schuld-cash)/ebitdaGebruikt : null;
+  // Altman Z (private, vereenvoudigd)
+  const z = balans? (0.717*((omzet*0.15)/balans) + 0.847*(ev*0.3/balans) + 3.107*(ebitdaGebruikt/balans) + 0.42*(ev/Math.max(schuld,1)) + 0.998*(omzet/balans)) : null;
+  document.getElementById('wGezond').innerHTML=
+     kpi('Solvabiliteit', solva!==null?solva.toFixed(0)+'%':'—', solva!==null?(solva>=30?'gezond — banken kijken meestal naar 25 à 30%':'onder de gangbare bankeis van 25 à 30%'):'vul eigen vermogen en balanstotaal in')
+    +kpi('Nettoschuld / EBITDA', schuldratio!==null?schuldratio.toFixed(1)+'×':'—', schuldratio!==null?(schuldratio<2.5?'ruimte voor financiering':'boven 2,5× wordt bijlenen lastig'):'')
+    +kpi('Rentedekking (DSCR)', dekking!==null?dekking.toFixed(1)+'×':'—', dekking!==null?(dekking>1.3?'voldoende ruimte':'krap — onder 1,3× wordt een bank ongemakkelijk'):'')
+    +kpi('Altman Z (indicatief)', z!==null?z.toFixed(1):'—', z!==null?(z>2.9?'lage faalkans':(z>1.23?'grijs gebied':'verhoogd risico')):'')
+    +(dso&&b.norm?kpi('Werkkapitaal vast in debiteuren', eur(omzet/365*dso), dso>b.norm.dso?'sneller factureren maakt dit direct vrij':'op brancheniveau'):'');
+
+  // DuPont
+  const nettomarge = ebitdaGebruikt*0.6/omzet, omloop = balans? omzet/balans : 0, hefboom = (balans&&ev)? balans/ev : 0;
+  const roe = nettomarge*omloop*hefboom*100;
+  let g='';
+  [['Nettomarge',(nettomarge*100).toFixed(1)+'%',nettomarge*100/12],
+   ['Omloopsnelheid',omloop?omloop.toFixed(2)+'×':'—',omloop*22],
+   ['Hefboom',hefboom?hefboom.toFixed(2)+'×':'—',hefboom*22]].forEach((r,i)=>{
+    const w=Math.min(Math.max(r[2],2),260);
+    g+='<text x="0" y="'+(30+i*52)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">'+r[0]+'</text>'
+     +'<rect x="150" y="'+(18+i*52)+'" width="260" height="15" rx="7.5" fill="#EDEBE5"/>'
+     +'<rect x="150" y="'+(18+i*52)+'" width="'+w+'" height="15" rx="7.5" fill="#2742D6"/>'
+     +'<text x="418" y="'+(30+i*52)+'" font-size="11.5" fill="#5C646E" font-family="Instrument Sans">'+r[1]+'</text>';
+  });
+  document.getElementById('wDupont').innerHTML=g;
+  document.getElementById('wDupontT').innerHTML = balans
+    ? 'Rendement op eigen vermogen ca. <b>'+roe.toFixed(0)+'%</b>. '+(nettomarge*omloop*100<8?'De winst komt eerder uit hefboom dan uit de operatie — dat is kwetsbaarder.':'De operatie draagt het rendement, niet de financiering.')
+    : 'Vul balanstotaal en eigen vermogen in om het rendement uit te splitsen.';
+
+  // gevoeligheid
+  const stappen=[10000,25000,50000];
+  document.getElementById('wGevoel').innerHTML=
+    '<table style="width:100%;font-size:.87rem;border-collapse:collapse">'
+    +'<tr><td class="sub" style="padding-bottom:.3rem">Structurele besparing</td><td class="sub" style="text-align:right">Effect op de waarde</td></tr>'
+    +stappen.map(v=>'<tr><td style="padding:.3rem 0;border-top:1px solid var(--lijn)">'+eur(v)+' per jaar</td>'
+      +'<td style="text-align:right;border-top:1px solid var(--lijn);font-weight:600">+ '+eur(v*mult)+'</td></tr>').join('')
+    +'</table>'
+    +'<p class="sub" style="margin-top:.6rem">Bij een multiple van '+mult+'. Dit is waarom handwerk wegnemen vóór een verkoop meer oplevert dan onderhandelen over de prijs.</p>';
+
+  // break-even
+  const bm=(marge||b.norm&&b.norm.marge||35)/100;
+  const vasteK = vast || (loon? loon*1.25 : omzet*0.35);
+  const be2 = vasteK/bm, veiligheid = omzet? (omzet-be2)/omzet*100 : 0;
+  document.getElementById('wBreak').innerHTML=
+    '<p style="font-size:.9rem;line-height:1.6"><b>Break-even omzet: '+eur(be2)+'</b>'+(vast?'':' '+geschat)+
+    ' bij een brutomarge van '+(bm*100).toFixed(0)+'%. Je huidige omzet is '+eur(omzet)+'.</p>'
+    +'<p style="font-size:.9rem;line-height:1.6"><b>Veiligheidsmarge: '+veiligheid.toFixed(0)+'%</b> — zoveel kan de omzet dalen voordat je verlies draait. '
+    +(veiligheid<20?'Onder de 20% is dat krap; vaste kosten verlagen weegt dan zwaarder dan omzet erbij.':'Dat geeft ruimte om te investeren.')+'</p>';
 }
 </script>
 </body>
