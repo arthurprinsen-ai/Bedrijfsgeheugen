@@ -150,6 +150,7 @@ function lockDash(){
 function unlockDash(){
   dashUnlocked=true;
   $('dash').classList.remove('locked');
+  if(typeof PREVIEW!=='undefined' && PREVIEW){ return; }
   $('dash').classList.add('summary');   /* kop = samenvatting; de rest blijft voor het gesprek */
 }
 /* Voorvertoning voor Arthur zelf: ?preview op de URL slaat het formulier over
@@ -532,6 +533,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <div class="lockbar2" role="status">
       <div><b>🔒 Businesscase, stappenplan &amp; use-cases</b><br><span>Dit deel bespreken we samen in uw adviesgesprek — daarna ontvangt u het volledige rapport per e-mail.</span></div>
     </div>
+    <div class="g hov" id="remKaart" style="margin-bottom:14px"><div id="remBlok"></div></div>
     <div class="dashveil2">
       <div class="bento">
       <!-- chart -->
@@ -583,7 +585,6 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
         <span class="kpi-t">Score per onderdeel</span>
         <div id="dimList" style="margin-top:12px"></div>
         <div class="prio" id="prioTxt"></div>
-        <div id="remBlok" style="margin-top:18px"></div>
       </div>
 
       <!-- governance -->
@@ -1206,6 +1207,7 @@ function lockDash(){
 function unlockDash(){
   dashUnlocked=true;
   $('dash').classList.remove('locked');
+  if(typeof PREVIEW!=='undefined' && PREVIEW){ return; }
   $('dash').classList.add('summary');   /* kop = samenvatting; de rest blijft voor het gesprek */
 }
 /* Voorvertoning voor Arthur zelf: ?preview op de URL slaat het formulier over
@@ -2046,7 +2048,49 @@ function tekenRemmen(){
    +' Jullie organisatie kan <b>'+perKwartaal+' verbetering'+(perKwartaal>1?'en':'')+' per kwartaal</b> aan'
    +(veranderkracht<0.45?' \u2014 meer tegelijk oppakken maakt het niet sneller, het maakt het stiller.':'.')
    +'</div>';
+  // --- FTE: hoeveel mensen gaan op aan handwerk, en wat vraagt de groei ---
+  const mwEl=document.getElementById('remFte');
+  const mw=+(mwEl&&mwEl.value)||24;
+  const UREN={sturing:1.6,commercie:2.8,operatie:3.4,finance:3.6,mensen:1.5,
+              analytics:2.2,quality:1.9,governance:1.2,tech:4.1,culture:1.1};
+  const factor=[0,1,.78,.5,.22,.06];
+  let urenWeek=0;
+  Object.keys(DIMS).forEach(k=>{
+    const n=Math.max(1,Math.min(5,Math.round(dimAvg[k])));
+    urenWeek += (UREN[k]||2) * factor[n] * (mw/24);
+  });
+  const fteKwijt = urenWeek*46/1600;                       // 1 fte = 1.600 productieve uren
+  const fteNodig = mw*(groei-1);                           // lineair meegroeien
+  const fteTerug = fteKwijt*0.7;                            // haalbaar deel van het handwerk
+  const netto = fteNodig - fteTerug;
+  let f='<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)">'
+   +'<div style="display:grid;grid-template-columns:8.5rem 1fr;gap:10px;align-items:center;margin-bottom:8px">'
+   +'<label for="remFte" style="font-size:.82rem">Medewerkers</label>'
+   +'<input type="number" id="remFte" value="'+mw+'" min="1" max="250" '
+   +'style="width:6rem;padding:5px 8px;border:1px solid rgba(255,255,255,.25);border-radius:3px;'
+   +'background:transparent;color:inherit;font:inherit;font-size:.85rem"></div>'
+   +'<div style="font-size:.86rem;line-height:1.6">'
+   +'<b>'+fteKwijt.toFixed(1)+' fte</b> gaat nu op aan handwerk dat niet hoeft \u2014 verdeeld over het hele team, niet \u00e9\u00e9n persoon.<br>'
+   +'Bij +'+Math.round((groei-1)*100)+'% groei heb je <b>'+fteNodig.toFixed(1)+' fte</b> extra nodig als je niets verandert.<br>';
+  if(netto<=0){
+    f+='<span style="color:#0E9F6E;font-weight:600">Je hebt genoeg mensen.</span> Door het handwerk eruit te halen komt '
+      +fteTerug.toFixed(1)+' fte vrij \u2014 meer dan de groei vraagt. Aannemen is hier niet de oplossing, ruimte maken wel.';
+  } else if(netto<1){
+    f+='<span style="color:#B45309;font-weight:600">Het scheelt weinig.</span> Haal je het handwerk eruit, dan blijft er '
+      +netto.toFixed(1)+' fte over om aan te nemen in plaats van '+fteNodig.toFixed(1)+'.';
+  } else {
+    f+='<span style="color:#D6452B;font-weight:600">Je komt '+netto.toFixed(1)+' fte tekort</span>, ook n\u00e1 het opruimen van het handwerk. '
+      +'Dat is een aanname-vraagstuk \u00e9n een inrichtingsvraagstuk \u2014 in die volgorde kost het het minst.';
+  }
+  if(doel==='exit'||doel==='kapitaal'){
+    f+='<br><span style="opacity:.8">Een koper rekent overbezetting op handwerk mee als structurele kosten: '
+      +fteKwijt.toFixed(1)+' fte drukt de winst en daarmee direct de prijs.</span>';
+  }
+  f+='</div></div>';
+  h+=f;
   const l=document.getElementById('remLijst'); if(l) l.innerHTML=h;
+  const fe=document.getElementById('remFte');
+  if(fe&&!fe.dataset.aan){fe.dataset.aan='1';fe.addEventListener('input',()=>{setTimeout(tekenRemmen,200)});}
 }
 
 </script>
