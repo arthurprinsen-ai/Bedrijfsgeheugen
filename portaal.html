@@ -61,6 +61,14 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
 .rij{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.8rem}
 .klaar{text-decoration:line-through;opacity:.5}
 .leeg{color:var(--grijs);font-size:.9rem;padding:1rem 0}
+
+@media print{
+  .balk,.tabs,.rij,.gtnaam input,#poort{display:none!important}
+  .paneel{display:block!important;break-inside:avoid}
+  body{background:#fff}
+  .kaart{break-inside:avoid;page-break-inside:avoid}
+  .wrap{max-width:100%;padding:0}
+}
 </style>
 </head>
 <body>
@@ -86,6 +94,10 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
     </div>
     <div style="display:flex;gap:.5rem;align-items:center">
       <span class="sub" id="wie"></span>
+      <button class="knop licht" id="btnExport" title="Bewaar alles als bestand op je eigen computer">Download</button>
+      <label class="knop licht" style="cursor:pointer;margin:0" title="Eerder gedownload bestand terugzetten">Openen
+        <input type="file" id="btnImport" accept="application/json" hidden></label>
+      <button class="knop licht" onclick="window.print()">Afdrukken</button>
       <button class="knop licht" onclick="netlifyIdentity.logout()">Uitloggen</button>
     </div>
   </div>
@@ -225,6 +237,11 @@ function bouw(){
       s:+document.getElementById('nStart').value||1,d:+document.getElementById('nDuur').value||2,klaar:false});
     document.getElementById('nTitel').value=''; bewaar(); teken();
   });
+  const be=document.getElementById('btnExport');
+  if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',exporteer);}
+  const bi=document.getElementById('btnImport');
+  if(bi&&!bi.dataset.aan){bi.dataset.aan='1';
+    bi.addEventListener('change',e=>{ if(e.target.files[0]) importeer(e.target.files[0]); e.target.value=''; });}
   document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));
     document.querySelectorAll('.paneel').forEach(p=>p.classList.remove('aan'));
@@ -234,6 +251,33 @@ function bouw(){
 
 const euro=n=>'€ '+Math.round(n).toLocaleString('nl-NL');
 
+function bestandsnaam(){
+  const d=new Date().toISOString().slice(0,10);
+  return 'bedrijfsgeheugen-portaal-'+d+'.json';
+}
+function exporteer(){
+  const pakket={versie:1, opgeslagen:new Date().toISOString(),
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken};
+  const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=bestandsnaam();
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function importeer(bestand){
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const p=JSON.parse(r.result);
+      if(p.niveaus) S.niveaus=Object.assign(S.niveaus,p.niveaus);
+      if(p.medewerkers) S.mw=+p.medewerkers;
+      if(p.uurkosten) S.uur=+p.uurkosten;
+      if(Array.isArray(p.taken)) S.taken=p.taken;
+      bewaar(); bouw(); teken();
+    }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
+  };
+  r.readAsText(bestand);
+}
 function teken(){
   const f=[0,1,.78,.5,.22,.06];
   let urenWeek=0, kosten={};
