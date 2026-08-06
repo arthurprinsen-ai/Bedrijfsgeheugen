@@ -363,6 +363,20 @@ body{padding-bottom:92px}
 .case p{font-size:.9rem;color:#3C424A;margin-bottom:.5rem}
 .case .resultaat{background:var(--geel);border-radius:8px;padding:.5rem .7rem;font-weight:600;color:#4A3D00}
 .bewijsregel{font-size:.82rem;color:var(--grijs);margin-top:.9rem;max-width:34em}
+
+#frisseblik .fbgrid{display:grid;gap:1.1rem;margin:2rem 0 1.4rem}
+@media(min-width:860px){#frisseblik .fbgrid{grid-template-columns:repeat(3,1fr)}}
+#frisseblik .fbkaart{border:1px solid rgba(251,250,247,.18);border-radius:4px;padding:1.2rem 1.3rem;background:rgba(251,250,247,.04)}
+#frisseblik .fbnr{font-family:var(--display,inherit);font-weight:800;font-size:.78rem;letter-spacing:.12em;color:var(--geel)}
+#frisseblik .fbkaart h3{margin:.5rem 0 .35rem;font-size:1.06rem;color:var(--papier)}
+#frisseblik .fbkaart p{font-size:.93rem;line-height:1.62;color:#C9CEDA;margin:0}
+#frisseblik .fbwaar{border-left:4px solid var(--geel);padding:.9rem 1.1rem;background:rgba(251,250,247,.05);
+  border-radius:0 3px 3px 0;font-size:.95rem;line-height:1.6;color:#DDE2EA;max-width:70ch}
+#frisseblik .fbwaar b{color:var(--papier)}
+#frisseblik .fbcta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:1.6rem}
+#frisseblik .knop.wit{background:var(--papier);color:var(--inkt);border:2px solid var(--papier)}
+#frisseblik .knop.wit:hover{background:var(--geel);border-color:var(--geel)}
+#frisseblik .fbmini{font-size:.85rem;color:#9AA6B6}
 </style>
 <script>
 (function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
@@ -500,6 +514,41 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
       <div><b>×</b>Geen traject van zes maanden</div>
       <div><b>×</b>Geen callcenter — je krijgt Arthur</div>
       <div><b>×</b>Geen softwareleverancier: wij verdienen niets aan licenties</div>
+    </div>
+  </div>
+</section>
+
+<section id="frisseblik" style="background:var(--inkt);color:var(--papier);border-top:2px solid var(--inkt)">
+  <div class="wrap">
+    <span class="eyebrow rv" style="color:var(--geel)">De frisse blik</span>
+    <h2 class="rv" style="color:var(--papier)">Een strategieconsultant kost <span style="text-decoration:line-through;opacity:.55">€ 2.400 per dag</span>.<br>Deze scan kost je twaalf minuten.</h2>
+    <p class="lead rv" style="color:#C9CEDA">Niet omdat die consultant te duur is. Omdat het grootste deel van zijn eerste week bestaat uit vragen stellen die je ook zelf kunt beantwoorden — en uit modellen die je op je eigen antwoorden kunt loslaten.</p>
+
+    <div class="fbgrid rv">
+      <div class="fbkaart">
+        <span class="fbnr">01</span>
+        <h3>Wat hij doet</h3>
+        <p>Een week meelopen, dertig mensen spreken, alles langs Lean, 7S en de waardeboom leggen. Daarna een rapport en een voorstel.</p>
+      </div>
+      <div class="fbkaart">
+        <span class="fbnr">02</span>
+        <h3>Wat de scan doet</h3>
+        <p>33 vragen, en dezelfde zes modellen worden op jouw antwoorden losgelaten. Je ziet meteen wat je remt, wat het kost in fte en euro's, en waar je staat tegenover je branche.</p>
+      </div>
+      <div class="fbkaart">
+        <span class="fbnr">03</span>
+        <h3>Wat jij overhoudt</h3>
+        <p>Eén eerste stap die binnen twee weken draait. Geen presentatie, geen offerte op maat, geen bureau dat blijft plakken.</p>
+      </div>
+    </div>
+
+    <div class="fbwaar rv">
+      <b>Waar de scan wél een mens nodig heeft:</b> het tellen van uren op de werkvloer, en het gesprek waarin blijkt wat er níét gezegd wordt. Daarvoor is de bedrijfsscan er — met een vaste prijs die op de site staat.
+    </div>
+
+    <div class="fbcta rv">
+      <a class="knop wit" href="/data-ai-cockpit">Doe de scan — 12 minuten →</a>
+      <span class="fbmini">Direct resultaat op je scherm. Geen verkoopgesprek, tenzij je erom vraagt.</span>
     </div>
   </div>
 </section>
