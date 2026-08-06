@@ -107,6 +107,8 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" aria-selected="true" data-p="overzicht">Overzicht</button>
       <button class="tab" role="tab" aria-selected="false" data-p="profiel">Profiel</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="mensen">Mensen</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="branche">Branche</button>
       <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
     </div>
 
@@ -137,6 +139,42 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         </div>
         <div class="kaart"><h3>Profiel tegenover de bovenste 25%</h3>
           <svg id="grafiek" viewBox="0 0 460 330" role="img" aria-label="Profiel per onderdeel"></svg></div>
+      </div>
+    </section>
+
+    <!-- MENSEN -->
+    <section class="paneel" id="p-mensen">
+      <div class="kaarten k2">
+        <div class="kaart">
+          <h3>Wat je van je mensen weet</h3>
+          <p class="sub">Vul in wat je hebt. Wat je niet weet, is zelf al een uitkomst.</p>
+          <div class="rij"><label class="sub">Ziekteverzuim % <input type="number" id="mVerzuim" step="0.1" min="0" max="25" style="width:5rem"></label>
+            <label class="sub">Verloop % per jaar <input type="number" id="mVerloop" step="1" min="0" max="60" style="width:5rem"></label>
+            <label class="sub">eNPS (−100 tot 100) <input type="number" id="mEnps" step="1" min="-100" max="100" style="width:5rem"></label></div>
+          <div class="rij"><label class="sub">Laatste MTO <select id="mMto">
+            <option value="0">nooit gedaan</option><option value="1">langer dan 2 jaar geleden</option>
+            <option value="2">binnen 2 jaar</option><option value="3">jaarlijks, met opvolging</option></select></label>
+            <label class="sub">Openstaande vacatures <input type="number" id="mVac" min="0" max="99" style="width:4rem"></label></div>
+          <div id="mUitleg" style="margin-top:1rem;font-size:.9rem;line-height:1.6"></div>
+        </div>
+        <div class="kaart"><h3>Tegenover je branche</h3>
+          <svg id="mGrafiek" viewBox="0 0 460 250" role="img" aria-label="Mensen tegenover de branche"></svg>
+          <p class="sub" id="mBron"></p></div>
+      </div>
+    </section>
+
+    <!-- BRANCHE -->
+    <section class="paneel" id="p-branche">
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Je branche en je concurrenten</h3>
+        <div class="rij"><label class="sub">Branche <select id="bKeuze"></select></label>
+          <label class="sub">Omzet (× €1.000) <input type="number" id="bOmzet" min="0" step="100" style="width:6rem"></label></div>
+        <div class="kaarten k3" style="margin-top:1rem" id="bKpis"></div>
+        <div style="margin-top:1.1rem"><svg id="bGrafiek" viewBox="0 0 900 240" role="img" aria-label="Positie tegenover de branche"></svg></div>
+        <div id="bTekst" style="margin-top:.8rem;font-size:.9rem;line-height:1.6"></div>
+        <p class="sub" style="margin-top:.8rem;border-top:1px solid var(--lijn);padding-top:.6rem">
+          Bronnen: CBS Ziekteverzuimpercentage per bedrijfstak (2026 K1, voorlopig) · CBS Digitalisering en arbeidsproductiviteit 2015–2022 ·
+          CBS ICT-gebruik bedrijven. Bandbreedtes voor het mkb, geen normcijfers voor één bedrijf.</p>
       </div>
     </section>
 
@@ -178,8 +216,24 @@ const DIM=[
  {k:'culture',n:'Organisatie en cultuur',u:1.1,top:3}
 ];
 const NIV=['','in hoofden','in lijstjes','in systemen','verbonden','zelfsturend'];
+/* Branchecijfers. Verzuim: CBS kwartaalenquête (2026 K1, voorlopig; landelijk 5,8%,
+   mkb-vestigingen liggen structureel lager). Toegevoegde waarde per vte en
+   digitale intensiteit: CBS. Verloop en eNPS: gangbare bandbreedtes uit
+   HR-benchmarks, geen CBS-cijfer. */
+const BRANCHE={
+ 'ICT & software':            {verzuim:3.4,verloop:14,enps:22,tw:118000,dig:3.4},
+ 'Zakelijke dienstverlening': {verzuim:3.6,verloop:15,enps:18,tw: 96000,dig:2.9},
+ 'Financiële dienstverlening':{verzuim:4.1,verloop:12,enps:15,tw:142000,dig:2.8},
+ 'Handel & retail':           {verzuim:5.0,verloop:22,enps: 8,tw: 84000,dig:2.3},
+ 'Industrie & productie':     {verzuim:5.4,verloop:11,enps:10,tw: 92000,dig:2.3},
+ 'Logistiek & transport':     {verzuim:5.9,verloop:18,enps: 5,tw: 72000,dig:2.2},
+ 'Zorg':                      {verzuim:8.2,verloop:16,enps: 6,tw: 68000,dig:2.1},
+ 'Bouw':                      {verzuim:5.1,verloop:12,enps:12,tw: 78000,dig:1.6},
+ 'Horeca & recreatie':        {verzuim:3.4,verloop:35,enps: 4,tw: 46000,dig:1.6},
+ 'Gemiddeld NL-bedrijf':      {verzuim:5.4,verloop:17,enps:12,tw: 88000,dig:2.3}
+};
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -237,6 +291,16 @@ function bouw(){
       s:+document.getElementById('nStart').value||1,d:+document.getElementById('nDuur').value||2,klaar:false});
     document.getElementById('nTitel').value=''; bewaar(); teken();
   });
+  const bk=document.getElementById('bKeuze');
+  bk.innerHTML=Object.keys(BRANCHE).map(b=>'<option'+(b===S.branche?' selected':'')+'>'+b+'</option>').join('');
+  bk.addEventListener('change',e=>{S.branche=e.target.value;bewaar();teken();});
+  document.getElementById('bOmzet').value=S.omzet||'';
+  document.getElementById('bOmzet').addEventListener('input',e=>{S.omzet=+e.target.value||0;bewaar();teken();});
+  ['mVerzuim','mVerloop','mEnps','mVac','mMto'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(S.mensen[id]!==undefined&&S.mensen[id]!=='') el.value=S.mensen[id];
+    el.addEventListener('input',e=>{S.mensen[id]=e.target.value;bewaar();teken();});
+  });
   const be=document.getElementById('btnExport');
   if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',exporteer);}
   const bi=document.getElementById('btnImport');
@@ -257,7 +321,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken};
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download=bestandsnaam();
@@ -273,6 +337,9 @@ function importeer(bestand){
       if(p.medewerkers) S.mw=+p.medewerkers;
       if(p.uurkosten) S.uur=+p.uurkosten;
       if(Array.isArray(p.taken)) S.taken=p.taken;
+      if(p.branche) S.branche=p.branche;
+      if(p.omzet) S.omzet=+p.omzet;
+      if(p.mensen) S.mensen=p.mensen;
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
   };
@@ -325,6 +392,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
+  tekenMensen(); tekenBranche();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -353,6 +421,80 @@ function teken(){
     });
   });
 }
+function B(){ return BRANCHE[S.branche]||BRANCHE['Gemiddeld NL-bedrijf']; }
+function balk(x,y,w,eigen,norm,label,fmt,omgekeerd){
+  const max=Math.max(eigen,norm)*1.35||1;
+  const we=Math.max((eigen/max)*w,2), wn=(norm/max)*w;
+  const goed = omgekeerd ? eigen<=norm : eigen>=norm;
+  const kl = eigen===0?'#C9CEDA':(goed?'#1F9D55':'#D93025');
+  return '<text x="0" y="'+(y+11)+'" font-size="11.5" fill="#14171A" font-family="Instrument Sans">'+label+'</text>'
+   +'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="14" rx="7" fill="#EDEBE5"/>'
+   +'<rect x="'+x+'" y="'+y+'" width="'+we+'" height="14" rx="7" fill="'+kl+'"/>'
+   +'<rect x="'+(x+wn-1.5)+'" y="'+(y-3)+'" width="3" height="20" fill="#14171A"/>'
+   +'<text x="'+(x+w+8)+'" y="'+(y+11)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+fmt(eigen)+' · norm '+fmt(norm)+'</text>';
+}
+function tekenMensen(){
+  const b=B(), m=S.mensen;
+  const verzuim=+m.mVerzuim||0, verloop=+m.mVerloop||0, enps=(m.mEnps===''||m.mEnps===undefined)?null:+m.mEnps;
+  let g='';
+  g+=balk(150,20,180,verzuim,b.verzuim,'Ziekteverzuim',v=>v.toFixed(1)+'%',true);
+  g+=balk(150,70,180,verloop,b.verloop,'Verloop',v=>Math.round(v)+'%',true);
+  g+=balk(150,120,180,(enps===null?0:enps+100)/2,(b.enps+100)/2,'eNPS',v=>Math.round(v*2-100),false);
+  document.getElementById('mGrafiek').innerHTML=g;
+  document.getElementById('mBron').textContent='Verzuim: CBS per bedrijfstak (2026 K1). Verloop en eNPS: HR-bandbreedtes, indicatief.';
+  const mto=+m.mMto||0;
+  let t='';
+  if(mto===0) t+='<b>Je hebt geen recent beeld van je mensen.</b> Dat is geen tekortkoming maar wel een blinde vlek: '
+    +'de dimensie die het vaakst voorspelt of een verbetering blijft hangen, meet je nu niet. Een korte vragenlijst van tien vragen is genoeg om te beginnen.<br><br>';
+  else if(mto===1) t+='<b>Je laatste meting is verouderd.</b> Wat je toen ophaalde, gaat over een organisatie die inmiddels anders werkt.<br><br>';
+  if(verzuim>0){
+    const d=verzuim-b.verzuim;
+    t+= d>1 ? '<b>Je verzuim ligt '+d.toFixed(1)+' punt boven je branche.</b> Bij '+S.mw+' mensen is dat ruwweg '
+        +((verzuim-b.verzuim)/100*S.mw).toFixed(1)+' fte die structureel niet inzetbaar is — vaak dezelfde plekken waar het werk zich opstapelt.<br>'
+      : (d<-1 ? '<b>Je verzuim ligt onder je branche.</b> Dat is winst, en het maakt de rest van dit dashboard geloofwaardiger.<br>'
+              : '<b>Je verzuim zit op brancheniveau.</b><br>');
+  }
+  if(verloop>0 && verloop>b.verloop+4)
+    t+='<b>Je verloop is hoger dan gebruikelijk.</b> Elke vertrekker neemt kennis mee die nergens staat — dat is precies het risico dat je in het profiel ziet bij Mensen en kennis.<br>';
+  if(enps!==null&&enps<0)
+    t+='<b>Een negatieve eNPS betekent dat meer mensen je bedrijf afraden dan aanbevelen.</b> Verbeteringen invoeren kost hier twee keer zoveel energie. Begin bij iets dat hún werk lichter maakt, niet bij iets dat het management beter uitkomt.<br>';
+  if(+m.mVac>0 && verloop>0)
+    t+='Met '+m.mVac+' openstaande vacature'+(+m.mVac>1?'s':'')+' en '+verloop+'% verloop vul je vooral gaten. '
+      +'Werk dat je automatiseert hoeft niet te worden ingevuld — dat is hier de snelste route.<br>';
+  document.getElementById('mUitleg').innerHTML=t||'Vul de velden in om te zien hoe je ervoor staat tegenover je branche.';
+}
+function tekenBranche(){
+  const b=B(), gem=DIM.reduce((a,d)=>a+S.niveaus[d.k],0)/DIM.length;
+  const perFte=S.omzet>0?S.omzet*1000/S.mw:0, norm=b.tw/0.45;
+  const kpi=(t,v,s2)=>'<div class="kaart"><h3>'+t+'</h3><div class="kpi">'+v+'</div><div class="sub">'+s2+'</div></div>';
+  document.getElementById('bKpis').innerHTML=
+    kpi('Jouw niveau',gem.toFixed(1),'branche ~'+b.dig.toFixed(1))
+   +kpi('Omzet per medewerker',perFte?('€ '+Math.round(perFte/1000)+'k'):'–','richtgetal € '+Math.round(norm/1000)+'k')
+   +kpi('Verzuim in je branche',b.verzuim.toFixed(1)+'%',S.mensen.mVerzuim?('jij '+(+S.mensen.mVerzuim).toFixed(1)+'%'):'vul in bij Mensen');
+  // positiegrafiek: digitalisering tegen productiviteit
+  let g='<line x1="60" y1="190" x2="860" y2="190" stroke="#DCDFE6" stroke-width="2"/>'
+   +'<line x1="60" y1="24" x2="60" y2="190" stroke="#DCDFE6" stroke-width="2"/>'
+   +'<text x="60" y="212" font-size="11" fill="#5C646E" font-family="Instrument Sans">minder gedigitaliseerd</text>'
+   +'<text x="860" y="212" text-anchor="end" font-size="11" fill="#5C646E" font-family="Instrument Sans">meer</text>';
+  Object.keys(BRANCHE).forEach(naam=>{
+    const o=BRANCHE[naam]; if(naam==='Gemiddeld NL-bedrijf')return;
+    const x=60+((o.dig-1)/4)*800, y=190-((o.tw-40000)/110000)*160;
+    const eigen=naam===S.branche;
+    g+='<circle cx="'+x+'" cy="'+y+'" r="'+(eigen?7:5)+'" fill="'+(eigen?'#2742D6':'#C9CEDA')+'"/>'
+     +'<text x="'+(x+10)+'" y="'+(y+4)+'" font-size="10.5" fill="'+(eigen?'#14171A':'#8A94A3')+'" font-family="Instrument Sans">'+naam+'</text>';
+  });
+  const jx=60+((gem-1)/4)*800, jy=perFte?190-((perFte*0.45-40000)/110000)*160:120;
+  g+='<circle cx="'+jx+'" cy="'+jy+'" r="9" fill="#FF4F17"/>'
+   +'<text x="'+jx+'" y="'+(jy-16)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#14171A" font-family="Instrument Sans">jij</text>';
+  document.getElementById('bGrafiek').innerHTML=g;
+  const dv=gem-b.dig;
+  document.getElementById('bTekst').innerHTML =
+    (dv<-0.4?'<b>Je loopt achter op je eigen branche.</b> Het gemiddelde bedrijf in '+S.branche.toLowerCase()+' zit op ~'+b.dig.toFixed(1)+'. Elke maand wachten vergroot het gat.'
+    :(dv>0.4?'<b>Je loopt voor op je branche.</b> Voorsprong is tijdelijk — verzilver hem nu je hem hebt.'
+            :'<b>Je zit op het gemiddelde van je branche.</b> De middenmoot beweegt hard; wie nu doorpakt komt in de kopgroep.'))
+   +(perFte?' Je omzet per medewerker ligt '+(perFte>=norm?'boven':'onder')+' het richtgetal voor deze branche.':'');
+}
+
 </script>
 </body>
 </html>
