@@ -396,7 +396,9 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
     <section class="paneel" id="p-advies">
       <div class="kaart" style="margin-top:1rem">
         <h3>Wat wij je zouden adviseren</h3>
-        <p class="sub">Samengesteld uit alles wat je hebt ingevuld: je scores, je cijfers, je mensen, je branche en je beleid. Op volgorde van wat het oplevert gedeeld door wat het kost.</p>
+        <p class="sub">Samengesteld uit alles wat je hebt ingevuld. Op volgorde van wat het oplevert gedeeld door wat het kost.</p>
+        <div id="modelKeuze" style="margin-top:.8rem"></div>
+        <div id="modelTeller" style="margin-top:.7rem"></div>
         <div id="adviesLijst" style="margin-top:.9rem"></div>
       </div>
     </section>
@@ -527,7 +529,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -688,7 +690,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -713,6 +715,7 @@ function importeer(bestand){
       if(p.eigen) S.eigen=p.eigen;
       if(p.beleid) S.beleid=p.beleid;
       if(p.fin) S.fin=p.fin;
+      if(p.modellen) S.modellen=p.modellen;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -1600,7 +1603,23 @@ function adviesRij(a,i,kort){
    +'</div>';
 }
 function tekenAdvies(){
-  const A=verzamelAdvies();
+  const alles=verzamelAdvies();
+  const A=alles.filter(a=>modelAan(a.bron));
+  tekenModelKeuze(alles);
+  const tel=document.getElementById('modelTeller');
+  if(tel){
+    const modellen=BRONNEN.filter(b=>b.soort!=='data');
+    const actief=BRONNEN.filter(b=>modelAan(b.k)).length;
+    const raakt=new Set(alles.filter(a=>modelAan(a.bron)).map(a=>a.dim)).size;
+    const dekking=Math.round(raakt/DIM.length*100);
+    tel.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.7rem;'
+     +'padding:.75rem .9rem;background:var(--papier);border:1px solid var(--lijn);border-radius:4px">'
+     +'<div data-tip="Hoe meer bronnen je aanzet, hoe breder het advies. Uitzetten kan handig zijn als je je op één ding wilt richten."><div class="kpi" style="font-size:1.5rem">'+actief+'/'+BRONNEN.length+'</div><div class="sub">bronnen actief</div></div>'
+     +'<div><div class="kpi" style="font-size:1.5rem">'+A.length+'</div><div class="sub">adviezen</div></div>'
+     +'<div data-tip="Het aandeel van je onderdelen waar minstens één advies over gaat."><div class="kpi" style="font-size:1.5rem">'+dekking+'%</div><div class="sub">van je onderdelen geraakt</div></div>'
+     +'<div><div class="kpi" style="font-size:1.5rem">'+alles.filter(a=>a.waarde>1000).length+'</div><div class="sub">met een bedrag erbij</div></div>'
+     +'</div>';
+  }
   const vol=document.getElementById('adviesLijst');
   if(vol){
     const uitData=A.filter(a=>!/^Model/.test(a.bron));
@@ -1806,6 +1825,53 @@ function tekenExtraGrafieken(){
     trap.innerHTML=g;
     document.getElementById('trapT').textContent='Elke staaf: wat je per jaar bespaart als álle onderdelen op dat niveau staan.';
   }
+}
+
+const BRONNEN=[
+ {k:'Profiel',n:'Je scores per onderdeel',soort:'data'},
+ {k:'Cijfers',n:'Je eigen cijfers',soort:'data'},
+ {k:'Mensen',n:'Verzuim, verloop en eNPS',soort:'data'},
+ {k:'Beleid',n:'Beleid en naleving',soort:'data'},
+ {k:'Branche',n:'Positie tegenover je branche',soort:'data'},
+ {k:'Model Theory of Constraints',n:'Theory of Constraints',soort:'model'},
+ {k:'Model 7S',n:'7S — hard tegen zacht',soort:'model'},
+ {k:'Model waardeketen',n:'Waardeketen',soort:'model'},
+ {k:'Model vijf krachten',n:'Vijf krachten',soort:'model'},
+ {k:'Model BCG',n:'BCG-matrix',soort:'model'},
+ {k:'Model Ansoff',n:'Ansoff',soort:'model'},
+ {k:'Model DESTEP',n:'DESTEP',soort:'model'},
+ {k:'Model ADKAR',n:'ADKAR',soort:'model'},
+ {k:'Model EBITDA-multiple',n:'EBITDA-multiple',soort:'finance'},
+ {k:'Model EBITDA-marge',n:'Margegat met de branche',soort:'finance'},
+ {k:'Model solvabiliteit',n:'Solvabiliteit',soort:'finance'},
+ {k:'Model DSCR',n:'Rentedekking (DSCR)',soort:'finance'}
+];
+function modelAan(k){ return !(S.modellen && S.modellen[k]===false); }
+function tekenModelKeuze(A){
+  const box=document.getElementById('modelKeuze'); if(!box) return;
+  const groepen=[['data','Uit je eigen gegevens'],['model','Strategiemodellen'],['finance','Financiële modellen']];
+  box.innerHTML=groepen.map(([g,titel])=>{
+    const items=BRONNEN.filter(b=>b.soort===g);
+    return '<div style="margin-bottom:.5rem"><div class="sub" style="margin-bottom:.2rem">'+titel+'</div>'
+     +'<div style="display:flex;gap:.35rem;flex-wrap:wrap">'
+     + items.map(b=>{
+         const aan=modelAan(b.k), n=A.filter(a=>a.bron===b.k).length;
+         return '<button type="button" data-model="'+b.k+'" aria-pressed="'+aan+'" '
+          +'style="border:1px solid '+(aan?'var(--inkt)':'var(--lijn)')+';background:'+(aan?'var(--inkt)':'transparent')
+          +';color:'+(aan?'#fff':'var(--grijs)')+';border-radius:3px;padding:.32rem .6rem;font:inherit;font-size:.78rem;cursor:pointer">'
+          +(aan?'✓ ':'')+b.n+(n?' <span style="opacity:.7">'+n+'</span>':'')+'</button>';
+       }).join('')
+     +'</div></div>';
+  }).join('');
+  box.querySelectorAll('[data-model]').forEach(b=>{
+    if(b.dataset.aan)return; b.dataset.aan='1';
+    b.addEventListener('click',()=>{
+      S.modellen=S.modellen||{};
+      const k=b.dataset.model;
+      S.modellen[k]= !modelAan(k);
+      bewaar(); teken();
+    });
+  });
 }
 </script>
 </body>
