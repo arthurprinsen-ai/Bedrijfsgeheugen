@@ -289,6 +289,7 @@ function toonPortaal(user){
   document.getElementById('wie').textContent=(user&&(user.user_metadata&&user.user_metadata.full_name||user.email))||'';
   sleutel='bg_portaal_'+((user&&user.email)||'anoniem');
   laad(); bouw(); teken();
+  haalCijfers().then(teken);
 }
 if(window.netlifyIdentity){
   netlifyIdentity.on('init',u=>{ if(u) toonPortaal(u); });
@@ -455,6 +456,25 @@ function teken(){
     });
   });
 }
+var CIJFERS={bijgewerkt:'ingebouwd',landelijk:{groei:0.8,inflatie:2.7,loonstijging:4.0,
+  bron:'DNB Voorjaarsraming juni 2026',url:'https://www.dnb.nl/publicaties/publicaties-dnb/eov/voorjaarsraming-2026/'}};
+var NL=CIJFERS.landelijk;
+/* Actuele cijfers uit assets/data/branche.json. Faalt dat, dan blijven de
+   ingebouwde waarden staan — het dashboard werkt altijd. */
+function haalCijfers(){
+  return fetch('/assets/data/branche.json',{cache:'no-cache'})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(j=>{
+      CIJFERS=j; NL=j.landelijk;
+      Object.keys(j.branches||{}).forEach(b=>{
+        if(BRANCHE[b]){
+          if(typeof j.branches[b].verzuim==='number') BRANCHE[b].verzuim=j.branches[b].verzuim;
+          if(typeof j.branches[b].groei==='number')   BRANCHE[b].groei=j.branches[b].groei;
+        }
+      });
+    })
+    .catch(()=>{});
+}
 function B(){ return BRANCHE[S.branche]||BRANCHE['Gemiddeld NL-bedrijf']; }
 function balk(x,y,w,eigen,norm,label,fmt,omgekeerd){
   const max=Math.max(eigen,norm)*1.35||1;
@@ -532,13 +552,14 @@ function tekenBranche(){
   document.getElementById('bEco').innerHTML =
     '<h3>De cijfers waar je in opereert</h3>'
    +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.9rem;margin-top:.6rem">'
-   +'<div><div class="kpi" style="font-size:1.6rem">0,8%</div><div class="sub">groei economie 2026</div></div>'
-   +'<div><div class="kpi" style="font-size:1.6rem">2,7%</div><div class="sub">inflatie 2026</div></div>'
-   +'<div><div class="kpi" style="font-size:1.6rem">4,0%</div><div class="sub">loonstijging bedrijven</div></div>'
+   +'<div><div class="kpi" style="font-size:1.6rem">'+NL.groei.toString().replace('.',',')+'%</div><div class="sub">groei economie</div></div>'
+   +'<div><div class="kpi" style="font-size:1.6rem">'+NL.inflatie.toString().replace('.',',')+'%</div><div class="sub">inflatie</div></div>'
+   +'<div><div class="kpi" style="font-size:1.6rem">'+NL.loonstijging.toString().replace('.',',')+'%</div><div class="sub">loonstijging bedrijven</div></div>'
    +'<div><div class="kpi" style="font-size:1.6rem">'+(b.groei>=0?'+':'')+b.groei.toFixed(1)+'%</div><div class="sub">jouw sector</div></div>'
    +'</div>'
    +'<p style="font-size:.88rem;line-height:1.6;margin-top:.7rem">Lonen stijgen harder dan de economie groeit. Wie zijn tarieven niet evenredig verhoogt, verliest marge — tenzij er per medewerker meer werk uit dezelfde uren komt. Dat is precies wat dit dashboard meet.</p>'
-   +'<div class="sub" style="margin-top:.5rem">Bron: DNB Voorjaarsraming juni 2026 · RaboResearch Sectorprognoses.</div>';
+   +'<div class="sub" style="margin-top:.5rem">Bron: '+NL.bron+' · RaboResearch Sectorprognoses. Cijfers bijgewerkt op '+CIJFERS.bijgewerkt+'.'
+   +' <a href="'+NL.url+'" target="_blank" rel="noopener">bekijk de bron</a></div>';
   const bt=document.getElementById('bTekst');
   const extra='<div style="margin-top:.9rem;padding:.75rem .9rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 3px 3px 0">'
    +'<b>'+S.branche+'</b> — groeiverwachting toegevoegde waarde <b>'+(b.groei>=0?'+':'')+b.groei.toFixed(1)+'%</b> voor 2026.<br>'
