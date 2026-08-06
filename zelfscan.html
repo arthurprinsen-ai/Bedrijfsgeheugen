@@ -127,6 +127,17 @@ input[type=text],input[type=email],input[type=tel]{width:100%;border:2px solid v
 .klaar{text-align:center}
 .klaar .vink{width:74px;height:74px;border-radius:50%;background:var(--groen);color:#fff;font-size:2.2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem}
 .foutje{color:#B3261E;font-size:.85rem;margin-top:.3rem;display:none}
+
+.profkop{font-size:1.05rem;font-weight:700;margin:1.4rem 0 .5rem}
+.prof{display:flex;align-items:center;gap:.7rem;margin:.42rem 0}
+.prof span{flex:0 0 9.5rem;font-size:.86rem;color:var(--inkt)}
+.prof .baan{flex:1;height:12px;background:#EDEBE5;border-radius:6px;overflow:hidden}
+.prof .vul{height:100%;border-radius:6px}
+.prof em{flex:0 0 2.6rem;text-align:right;font-style:normal;font-size:.8rem;color:var(--grijs)}
+.scanscope{margin:1.6rem 0 0;padding:1.1rem 1.2rem;border:1px solid var(--lijn);border-radius:6px;background:#fff}
+.scanscope h3{font-size:1.05rem;margin:0 0 .5rem}
+.scanscope ul{margin:.4rem 0 0;padding-left:1.1rem;font-size:.9rem;color:var(--inkt)}
+.scanscope li{margin:.22rem 0}
 </style>
 <script>
 (function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
@@ -167,13 +178,13 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
   <!-- INTRO -->
   <section class="stapje actief hero-scan" id="s-intro">
-    <span class="vraagnr">Gratis zelfscan · 5 vragen · 2 minuten</span>
+    <span class="vraagnr">Gratis zelfscan · 12 vragen · 3 minuten</span>
     <div class="introgrid">
       <div>
         <h1>Waar lekt jouw bedrijf kennis?</h1>
-        <p class="intro">Vijf klikvragen over offertes, planning, klantkennis en je systemen. Geen typwerk, geen gegevens vooraf.</p>
+        <p class="intro">Twaalf klikvragen langs de acht onderdelen die we bij een bedrijfsscan ook nalopen: verkoop, planning, klantkennis, systemen, administratie, inwerken, AI-gebruik en continuïteit. Geen typwerk, geen gegevens vooraf.</p>
         <ul class="bullets">
-          <li>Direct je score en grootste risico op het scherm</li>
+          <li>Direct je score <b>per onderdeel</b> op het scherm — je ziet meteen waar het scheef zit</li>
           <li>Het volledige rapport (risico's + quick wins) gratis in je mail</li>
           <li>Geen verplichtingen — en we bellen je niet ongevraagd</li>
         </ul>
@@ -203,6 +214,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <section class="stapje" id="s-score">
     <div class="scorecirkel" id="cirkel"><b id="scoregetal">–</b><span>van 100</span></div>
     <p class="duiding" id="duiding"></p>
+    <div id="profiel"></div>
     <div class="risico"><b>⚠ Jouw grootste risico</b><span id="risicotekst"></span></div>
     <div class="gesloten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Risico 2 en 3 + de quick wins per onderdeel → in het volledige rapport</div>
     <div class="gesloten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Wat bedrijven zoals het jouwe doen (benchmark) → in het volledige rapport</div>
@@ -227,7 +239,19 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <section class="stapje klaar" id="s-klaar">
     <div class="vink">✓</div>
     <h2>Het rapport komt eraan!</h2>
-    <p style="color:#3C424A;margin:.8rem 0 1.4rem">Je ontvangt het volledige rapport binnen één werkdag op het opgegeven adres. Wil je de uitkomst direct met Arthur bespreken — en de quick wins vertaald naar jouw situatie?</p>
+    <p style="color:#3C424A;margin:.8rem 0 1rem">Je ontvangt het volledige rapport binnen één werkdag op het opgegeven adres.</p>
+    <div class="scanscope" style="text-align:left">
+      <h3>En dan? De bedrijfsscan.</h3>
+      <p style="font-size:.9rem;margin:.2rem 0 .5rem">De zelfscan laat zien wáár het schuurt. De bedrijfsscan zoekt uit hoeveel het kost en wat eraan te doen is — in één dag, bij jullie, in jullie eigen systemen.</p>
+      <ul>
+        <li>Wat er alleen in één hoofd zit, per onderwerp en met wie het weet</li>
+        <li>Waar het handwerk zit, in uren per maand</li>
+        <li>Wat we die dag al hebben vastgelegd — in jullie eigen omgeving</li>
+        <li>Drie vervolgkeuzes met een vaste prijs erbij</li>
+      </ul>
+      <p style="font-size:.9rem;margin:.7rem 0 0"><b>€ 2.900</b> — vaste prijs, rapport binnen een week. Kies je binnen dertig dagen een vervolg, dan wordt het bedrag verrekend.</p>
+    </div>
+    <p style="color:#3C424A;margin:1rem 0 1.2rem">Eerst even sparren over de uitkomst? Dat kan, en het kost je niets.</p>
     <a class="knopvol" style="display:block;text-decoration:none;text-align:center" href="https://calendly.com/arthur-prinsen/adviesgesprek-slimmer-geregeld" target="_blank" rel="noopener">Plan een gratis adviesgesprek (30 min) →</a>
     <p style="font-size:.85rem;color:var(--grijs);margin-top:1rem">Liever appen? <a href="https://wa.me/31627483345" style="color:var(--blauw)">Stuur Arthur een WhatsApp</a>.</p>
   </section>
@@ -273,43 +297,86 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <div class="wrap fonder">© <span class="jr"></span> Bedrijfsgeheugen — strak geregeld, zonder traject</div>
 </footer>
 <script>
+var DOMEIN={verkoop:"Verkoop en offertes",planning:"Planning en capaciteit",klantkennis:"Klantkennis",systemen:"Systemen en koppelingen",administratie:"Administratie",inwerken:"Inwerken en overdracht",ai:"AI-gebruik",continuiteit:"Continuïteit"};
+
 var VRAGEN=[
- {t:"Hoe worden offertes bij jullie gemaakt en opgevolgd?",cat:"offertes",
+ {t:"Hoe worden offertes bij jullie gemaakt en opgevolgd?",cat:"verkoop",
   o:[["Ons systeem maakt én bewaakt ze — opvolging gaat automatisch",3],
      ["Offertes uit een systeem, maar opvolgen is handwerk",2],
      ["Word/Excel-sjabloon, opvolging als er tijd is",1],
      ["Elke offerte is maatwerk en opvolging schiet er vaak bij in",0]]},
+ {t:"Weet je op elk moment hoeveel offertes er openstaan en wat ze waard zijn?",cat:"verkoop",
+  o:[["Ja, dat staat op één scherm",3],
+     ["Met wat uitzoekwerk kom ik eruit",2],
+     ["Ik moet het aan iemand vragen",1],
+     ["Nee, dat weet niemand precies",0]]},
  {t:"Waar leeft de planning?",cat:"planning",
   o:[["In één gedeeld systeem dat iedereen gebruikt",3],
      ["In een gedeeld Excel-bestand (met af en toe versie-verwarring)",2],
      ["In meerdere lijsten en agenda's naast elkaar",1],
      ["Vooral in het hoofd van één persoon",0]]},
+ {t:"Als er morgen een spoedklus binnenkomt — weet je dan meteen of het past?",cat:"planning",
+  o:[["Ja, de bezetting is actueel zichtbaar",3],
+     ["Ongeveer, na een paar telefoontjes",2],
+     ["We schatten het in en zien wel",1],
+     ["Dat weet alleen de planner, als hij er is",0]]},
  {t:"Waar staat de kennis over klanten — afspraken, historie, bijzonderheden?",cat:"klantkennis",
   o:[["Centraal vastgelegd en voor het team toegankelijk",3],
      ["Deels in een systeem, deels in mailboxen",2],
      ["Verspreid over mailboxen en losse lijstjes",1],
      ["Vooral in de hoofden van een paar mensen",0]]},
- {t:"De uitval-test: als jullie sleutelpersoon morgen twee weken uitvalt…",cat:"uitval",
-  o:[["…draait alles gewoon door",3],
-     ["…kunnen we het meeste opvangen, met wat zoekwerk",2],
-     ["…ligt een deel van het werk stil",1],
-     ["…hebben we een serieus probleem",0]]},
+ {t:"Een klant belt over iets van vorig jaar. Hoeveel plekken moet iemand doorzoeken?",cat:"klantkennis",
+  o:[["Eén — alles staat bij de klant",3],
+     ["Twee, en dan heb je het meestal",2],
+     ["Drie of vier, en het duurt even",1],
+     ["Geen idee — dat vragen we aan een collega",0]]},
  {t:"Praten jullie systemen met elkaar (website, boekhouding, planning)?",cat:"systemen",
   o:[["Ja — gegevens stromen automatisch door",3],
      ["Enkele koppelingen, de rest is overtypen",2],
      ["Nauwelijks — er wordt veel overgetypt",1],
-     ["Onze systemen zijn eilanden",0]]}
+     ["Onze systemen zijn eilanden",0]]},
+ {t:"Hoeveel uur per week gaat er bij jullie op aan overtypen tussen schermen?",cat:"administratie",
+  o:[["Vrijwel niets, dat is geautomatiseerd",3],
+     ["Een paar uur, verdeeld over het team",2],
+     ["Een dagdeel of meer",1],
+     ["Dat hebben we nooit geteld — en dat zegt genoeg",0]]},
+ {t:"Facturen, urenregistratie en inkoop: hoeveel handwerk zit daar nog in?",cat:"administratie",
+  o:[["Bijna niets — het loopt door",3],
+     ["Één stap is nog handmatig",2],
+     ["Meerdere stappen, elke maand opnieuw",1],
+     ["Het is elke maand een avondje puzzelen",0]]},
+ {t:"Een nieuwe medewerker begint maandag. Waar leert hij hoe het werkt?",cat:"inwerken",
+  o:[["Uit vastgelegde werkwijzen die actueel zijn",3],
+     ["Uit een handboek dat er is, maar verouderd",2],
+     ["Door mee te lopen met een collega",1],
+     ["Door het te vragen, steeds opnieuw",0]]},
+ {t:"Gebruiken jullie AI, en is daar iets over afgesproken?",cat:"ai",
+  o:[["Ja, met duidelijke afspraken over wat er wel en niet in mag",3],
+     ["Ja, en we zijn erover in gesprek",2],
+     ["Vast wel, maar er is niets over afgesproken",1],
+     ["Geen idee wie het gebruikt of waarvoor",0]]},
+ {t:"De uitval-test: als jullie sleutelpersoon morgen twee weken uitvalt…",cat:"continuiteit",
+  o:[["…draait alles gewoon door",3],
+     ["…kunnen we het meeste opvangen, met wat zoekwerk",2],
+     ["…ligt een deel van het werk stil",1],
+     ["…hebben we een serieus probleem",0]]}
 ];
-var RISICO={offertes:"Offertes worden niet systematisch opgevolgd — daar verdampt stilletjes omzet. Dit is vrijwel altijd de snelste quick win.",
+
+var RISICO={
+ verkoop:"Offertes worden niet systematisch opgevolgd — daar verdampt stilletjes omzet. Dit is vrijwel altijd de snelste quick win.",
  planning:"De planning is niet één gedeelde waarheid. Dubbele boekingen en vergeten orders zijn een kwestie van tijd.",
  klantkennis:"Klantkennis hangt aan personen in plaats van aan het bedrijf. Bij vertrek of uitval vertrekt de kennis mee.",
- uitval:"Jullie continuïteit leunt op enkele mensen. Eén ziekmelding legt werk stil — dit is het kernrisico om eerst te borgen.",
- systemen:"Er wordt structureel overgetypt tussen systemen. Dat kost uren per week en elke overtypactie is een foutkans."};
+ systemen:"Er wordt structureel overgetypt tussen systemen. Dat kost uren per week en elke overtypactie is een foutkans.",
+ administratie:"De administratie leunt op handwerk dat elke maand terugkomt. Dat is precies het soort werk dat zich laat overnemen.",
+ inwerken:"Nieuwe mensen leren het vak van collega's in plaats van uit vastgelegde afspraken. Dat maakt inwerken traag en de kwaliteit wisselend.",
+ ai:"Er wordt AI gebruikt zonder afspraken over welke gegevens erin mogen. Verbieden werkt niet — vastleggen wel.",
+ continuiteit:"Jullie continuïteit leunt op enkele mensen. Eén ziekmelding legt werk stil — dit is het kernrisico om eerst te borgen."};
+
 var stap=0, antwoorden=[];
 function toon(id){document.querySelectorAll('.stapje').forEach(function(s){s.classList.remove('actief')});document.getElementById(id).classList.add('actief');window.scrollTo({top:0,behavior:'smooth'})}
 function ga(n){if(n===1)bgEvent('zelfscan-gestart');stap=n;renderVraag()}
 function renderVraag(){
- if(stap>VRAGEN.length){bgEvent('zelfscan-vraag5-af');toonScore();return}
+ if(stap>VRAGEN.length){bgEvent('zelfscan-afgerond');toonScore();return}
  var v=VRAGEN[stap-1];
  document.getElementById('vnr').textContent='Vraag '+stap+' van '+VRAGEN.length;
  document.getElementById('vbalk').style.width=((stap-1)/VRAGEN.length*100)+'%';
@@ -332,6 +399,18 @@ function toonScore(){
  if(score>=70){c.style.borderColor='#1F9D55';d.textContent='Sterke basis — met gerichte verbeteringen haal je er nog meer uit.'}
  else if(score>=40){c.style.borderColor='#E8A200';d.textContent='Gemiddeld — je bedrijf werkt, maar leunt op geheugen en handwerk.'}
  else{c.style.borderColor='#D93025';d.textContent='Kwetsbaar — de kennis van je bedrijf is onvoldoende geborgd.'}
+ // profiel per onderdeel
+ var per={};
+ antwoorden.forEach(function(a){ if(!per[a.cat])per[a.cat]={p:0,n:0}; per[a.cat].p+=a.punten; per[a.cat].n++; });
+ var rijen='<div class="profkop">Je profiel per onderdeel</div>';
+ Object.keys(DOMEIN).forEach(function(c){
+   if(!per[c])return;
+   var pct=Math.round(per[c].p/(per[c].n*3)*100);
+   var kleur = pct>=70?'#1F9D55':(pct>=40?'#E8A200':'#D93025');
+   rijen+='<div class="prof"><span>'+DOMEIN[c]+'</span><div class="baan"><div class="vul" style="width:'+pct+'%;background:'+kleur+'"></div></div><em>'+pct+'%</em></div>';
+ });
+ rijen+='<div class="scanscope"><h3>Dit is een twaalfde van wat de bedrijfsscan doet</h3><p style="font-size:.9rem;margin:.2rem 0 .4rem">Bij een bedrijfsscan lopen we deze acht onderdelen niet af met twaalf vragen, maar met ruim zestig — samen met de mensen die het werk doen, in jullie eigen systemen.</p><ul><li>Een ochtend meekijken bij de sleutelpersoon terwijl er echt gewerkt wordt</li><li>Een uur apart met de directeur</li><li>Een middag in de systemen: wat draait er, wat hangt aan elkaar, waar zit het handwerk</li><li>Rapport binnen een week, met per onderdeel het handwerk in uren per maand</li><li>Drie vervolgkeuzes met een vaste prijs erbij — geen offerte op maat</li></ul></div>';
+ document.getElementById('profiel').innerHTML=rijen;
  document.getElementById('risicotekst').textContent=RISICO[laag.cat];
  toon('s-score');
 }
