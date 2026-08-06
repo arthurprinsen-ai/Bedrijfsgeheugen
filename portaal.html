@@ -108,6 +108,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
       <button class="tab" role="tab" aria-selected="true" data-p="overzicht">Overzicht</button>
       <button class="tab" role="tab" aria-selected="false" data-p="profiel">Profiel</button>
       <button class="tab" role="tab" aria-selected="false" data-p="mensen">Mensen</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="cijfers">Cijfers</button>
       <button class="tab" role="tab" aria-selected="false" data-p="branche">Branche</button>
       <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
     </div>
@@ -161,6 +162,33 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
           <svg id="mGrafiek" viewBox="0 0 460 250" role="img" aria-label="Mensen tegenover de branche"></svg>
           <p class="sub" id="mBron"></p></div>
       </div>
+    </section>
+
+    <!-- CIJFERS -->
+    <section class="paneel" id="p-cijfers">
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Je eigen cijfers</h3>
+        <p class="sub">Vul in wat je weet. Elke ingevulde regel levert maatstaven op die je naast je branche kunt leggen.</p>
+        <div class="velden" style="margin-top:.7rem">
+          <div class="veld"><label for="cOmzet">Omzet (× €1.000)</label><input type="number" id="cOmzet" min="0" step="50"></div>
+          <div class="veld"><label for="cBrutomarge">Brutomarge %</label><input type="number" id="cBrutomarge" min="0" max="100" step="1"></div>
+          <div class="veld"><label for="cEbitda">EBITDA (× €1.000)</label><input type="number" id="cEbitda" step="10"></div>
+          <div class="veld"><label for="cLoon">Loonkosten (× €1.000)</label><input type="number" id="cLoon" min="0" step="10"></div>
+          <div class="veld"><label for="cKlanten">Aantal klanten</label><input type="number" id="cKlanten" min="0" step="1"></div>
+          <div class="veld"><label for="cGrootste">Grootste klant % omzet</label><input type="number" id="cGrootste" min="0" max="100" step="1"></div>
+          <div class="veld"><label for="cMarketing">Marketingbudget (× €1.000)</label><input type="number" id="cMarketing" min="0" step="5"></div>
+          <div class="veld"><label for="cNieuw">Nieuwe klanten per jaar</label><input type="number" id="cNieuw" min="0" step="1"></div>
+          <div class="veld"><label for="cDso">Debiteurendagen (DSO)</label><input type="number" id="cDso" min="0" max="180" step="1"></div>
+          <div class="veld"><label for="cIt">IT-budget (× €1.000)</label><input type="number" id="cIt" min="0" step="5"></div>
+        </div>
+      </div>
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Je maatstaven</h3><div id="cKpis"></div></div>
+        <div class="kaart"><h3>Tegenover je branche</h3>
+          <svg id="cGrafiek" viewBox="0 0 480 300" role="img" aria-label="Maatstaven tegenover de branche"></svg>
+          <p class="sub" id="cBron"></p></div>
+      </div>
+      <div class="kaart"><h3>Wat dit betekent</h3><div id="cDuiding" style="font-size:.9rem;line-height:1.65"></div></div>
     </section>
 
     <!-- BRANCHE -->
@@ -228,46 +256,56 @@ const BRANCHE={
  'ICT & software':            {verzuim:3.4,verloop:14,enps:22,tw:118000,dig:3.4,groei:2.6,
    inst:'NLdigital',url:'https://www.nldigital.nl',
    wet:['EU AI Act — vanaf augustus 2026 gelden de verplichtingen voor algemene AI-modellen','NIS2 — zorgplicht en meldplicht voor digitale dienstverleners','AVG — verwerkersovereenkomsten met elke klant'],
+   norm:{marge:62,ebitda:15,loonquote:52,marketing:8,it:5,dso:38,cac:14},
    duiding:'Snelst groeiende sector: investeringen in AI en digitalisering trekken de toegevoegde waarde omhoog.'},
  'Zakelijke dienstverlening': {verzuim:3.6,verloop:15,enps:18,tw: 96000,dig:2.9,groei:1.2,
    inst:'VZN / Nederland Adviseert',url:'https://www.vzn.nl',
    wet:['EU AI Act bij AI in dienstverlening','AVG — verwerkersrol richting opdrachtgevers','Wet DBA en modelovereenkomsten bij inhuur'],
+   norm:{marge:55,ebitda:12,loonquote:58,marketing:5,it:3.5,dso:36,cac:11},
    duiding:'Groeit nauwelijks; de uitzend- en adviesbranche merkt de voorzichtigheid van opdrachtgevers het eerst.'},
  'Financiële dienstverlening':{verzuim:4.1,verloop:12,enps:15,tw:142000,dig:2.8,groei:1.4,
    inst:'NVB / Adfiz',url:'https://www.adfiz.nl',
    wet:['DORA — digitale weerbaarheid, van kracht sinds 2025','Wwft — cliëntenonderzoek en meldplicht','AFM-vergunning en zorgplicht'],
+   norm:{marge:60,ebitda:18,loonquote:50,marketing:6,it:6,dso:30,cac:12},
    duiding:'Hoogste toegevoegde waarde per medewerker, maar ook de zwaarste nalevingslast.'},
  'Handel & retail':           {verzuim:5.0,verloop:22,enps: 8,tw: 84000,dig:2.3,groei:0.8,
    inst:'INretail',url:'https://www.inretail.nl',
    wet:['UPV verpakkingen — uitgebreide producentenverantwoordelijkheid','Consumentenrecht en garantietermijnen','CSRD in de keten: grote klanten vragen jouw cijfers'],
+   norm:{marge:28,ebitda:6,loonquote:18,marketing:3,it:1.5,dso:32,cac:8},
    duiding:'Beperkte groei door een voorzichtige consument en hogere inkoopkosten.'},
  'Industrie & productie':     {verzuim:5.4,verloop:11,enps:10,tw: 92000,dig:2.3,groei:0.4,
    inst:'Koninklijke Metaalunie · FME',url:'https://www.metaalunie.nl',
    wet:['CSRD — via de keten ook voor mkb-toeleveranciers','CBAM — koolstofheffing aan de grens','Machinerichtlijn en CE-markering','Energiebesparingsplicht en informatieplicht'],
+   norm:{marge:34,ebitda:10,loonquote:26,marketing:2,it:2,dso:45,cac:6},
    duiding:'Energie-intensieve bedrijven kunnen hogere kosten niet altijd doorberekenen; automatisering is hier de marge.'},
  'Logistiek & transport':     {verzuim:5.9,verloop:18,enps: 5,tw: 72000,dig:2.2,groei:0.2,
    inst:'Transport en Logistiek Nederland',url:'https://www.tln.nl',
    wet:['Mobiliteitspakket EU — rij- en rusttijden, detachering','CSRD-ketenrapportage over emissies','Zero-emissiezones in ruim dertig steden'],
+   norm:{marge:24,ebitda:8,loonquote:38,marketing:1.5,it:2,dso:42,cac:5},
    duiding:'Voelt de brandstof- en ketenkosten het meest rechtstreeks van alle sectoren.'},
  'Zorg':                      {verzuim:8.2,verloop:16,enps: 6,tw: 68000,dig:2.1,groei:2.8,
    inst:'ActiZ · NVZ',url:'https://www.actiz.nl',
    wet:['Wkkgz — kwaliteit en klachtenregeling','Wtza — toelatingsvergunning en intern toezicht','NEN 7510 — informatiebeveiliging in de zorg','EHDS — Europese ruimte voor gezondheidsdata'],
+   norm:{marge:40,ebitda:4,loonquote:70,marketing:1,it:3,dso:28,cac:4},
    duiding:'Groeit hard in volume, maar het verzuim is het hoogst van alle sectoren — bezetting is hier het knelpunt.'},
  'Bouw':                      {verzuim:5.1,verloop:12,enps:12,tw: 78000,dig:1.6,groei:0.5,
    inst:'Bouwend Nederland · EIB',url:'https://www.bouwendnederland.nl',
    wet:['Wkb — Wet kwaliteitsborging, private toetsing','Omgevingswet — vergunningen en participatie','Stikstofregels en netcongestie bij aansluitingen','Digitaal paspoort voor materialen in aantocht'],
+   norm:{marge:22,ebitda:7,loonquote:30,marketing:1.5,it:1.5,dso:48,cac:5},
    duiding:'Laagste digitale intensiteit van alle sectoren; stikstof, netcongestie en doorlooptijden drukken de productie.'},
  'Horeca & recreatie':        {verzuim:3.4,verloop:35,enps: 4,tw: 46000,dig:1.6,groei:0.9,
    inst:'Koninklijke Horeca Nederland',url:'https://www.khn.nl',
    wet:['HACCP — voedselveiligheid en registratie','Alcoholwet en leeftijdsverificatie','Arbeidstijdenwet bij piekbezetting'],
+   norm:{marge:68,ebitda:9,loonquote:36,marketing:3,it:1,dso:5,cac:6},
    duiding:'Laagste verzuim maar veruit het hoogste verloop — inwerken is hier een doorlopend proces.'},
  'Gemiddeld NL-bedrijf':      {verzuim:5.4,verloop:17,enps:12,tw: 88000,dig:2.3,groei:1.0,
    inst:'MKB-Nederland',url:'https://www.mkb.nl',
    wet:['EU AI Act — verplichtingen vanaf augustus 2026','AVG','NIS2 voor bedrijven in kritieke ketens','CSRD via klanten en financiers'],
+   norm:{marge:38,ebitda:10,loonquote:38,marketing:3,it:2.5,dso:38,cac:8},
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -336,6 +374,11 @@ function bouw(){
     if(S.mensen[id]!==undefined&&S.mensen[id]!=='') el.value=S.mensen[id];
     el.addEventListener('input',e=>{S.mensen[id]=e.target.value;bewaar();teken();});
   });
+  ['cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    if(S.cijfers&&S.cijfers[id]!==undefined) el.value=S.cijfers[id];
+    el.addEventListener('input',e=>{S.cijfers=S.cijfers||{};S.cijfers[id]=e.target.value;bewaar();teken();});
+  });
   const be=document.getElementById('btnExport');
   if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',exporteer);}
   const bi=document.getElementById('btnImport');
@@ -356,7 +399,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen};
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download=bestandsnaam();
@@ -375,6 +418,7 @@ function importeer(bestand){
       if(p.branche) S.branche=p.branche;
       if(p.omzet) S.omzet=+p.omzet;
       if(p.mensen) S.mensen=p.mensen;
+      if(p.cijfers) S.cijfers=p.cijfers;
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
   };
@@ -427,7 +471,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenMensen(); tekenBranche();
+  tekenMensen(); tekenBranche(); tekenCijfers();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -571,6 +615,71 @@ function tekenBranche(){
    +(perFte?' Je omzet per medewerker ligt '+(perFte>=norm?'boven':'onder')+' het richtgetal voor deze branche.':'')+extra;
 }
 
+
+function tekenCijfers(){
+  const c=S.cijfers||{}, b=B(), N=b.norm||{}, n=x=>+(c[x])||0;
+  const omzet=n('cOmzet')*1000, ebitda=n('cEbitda')*1000, loon=n('cLoon')*1000,
+        mark=n('cMarketing')*1000, it=n('cIt')*1000, klanten=n('cKlanten'),
+        nieuw=n('cNieuw'), dso=n('cDso'), marge=n('cBrutomarge'), grootste=n('cGrootste');
+  const M=[];
+  if(omzet&&S.mw) M.push(['Omzet per medewerker','€ '+Math.round(omzet/S.mw/1000)+'k',(b.tw/0.45/1000).toFixed(0)+'k',omzet/S.mw>=b.tw/0.45]);
+  if(marge)       M.push(['Brutomarge',marge+'%',N.marge+'%',marge>=N.marge]);
+  if(omzet&&ebitda)M.push(['EBITDA-marge',(ebitda/omzet*100).toFixed(1)+'%',N.ebitda+'%',ebitda/omzet*100>=N.ebitda]);
+  if(omzet&&loon) M.push(['Loonquote',(loon/omzet*100).toFixed(0)+'%',N.loonquote+'%',loon/omzet*100<=N.loonquote]);
+  if(omzet&&klanten)M.push(['Omzet per klant (ARPU)','€ '+Math.round(omzet/klanten/1000)+'k','—',null]);
+  if(grootste)    M.push(['Grootste klant',grootste+'%','< 20%',grootste<20]);
+  if(omzet&&mark) M.push(['Marketing als % omzet',(mark/omzet*100).toFixed(1)+'%',N.marketing+'%',null]);
+  if(mark&&nieuw) M.push(['Kosten per nieuwe klant (CAC)','€ '+Math.round(mark/nieuw).toLocaleString('nl-NL'),'—',null]);
+  if(omzet&&klanten&&mark&&nieuw){
+    const arpu=omzet/klanten, cac=mark/nieuw;
+    M.push(['Terugverdientijd klant',(cac/(arpu/12)).toFixed(1)+' mnd','< 12 mnd',cac/(arpu/12)<12]);
+  }
+  if(dso)         M.push(['Debiteurendagen',dso+' dgn',N.dso+' dgn',dso<=N.dso]);
+  if(omzet&&it)   M.push(['IT als % omzet',(it/omzet*100).toFixed(1)+'%',N.it+'%',null]);
+  document.getElementById('cKpis').innerHTML = M.length
+    ? M.map(r=>'<div style="display:grid;grid-template-columns:1fr auto auto;gap:.7rem;padding:.45rem 0;border-bottom:1px solid var(--lijn);align-items:baseline">'
+      +'<span style="font-size:.88rem">'+r[0]+'</span><b style="color:'+(r[3]===null?'var(--inkt)':(r[3]?'var(--groen)':'var(--rood)'))+'">'+r[1]+'</b>'
+      +'<span class="sub">norm '+r[2]+'</span></div>').join('')
+    : '<p class="sub">Vul hierboven je cijfers in — elke regel levert meteen een vergelijking op.</p>';
+  // grafiek: jij tegenover de norm
+  const paren=[];
+  if(marge) paren.push(['Brutomarge',marge,N.marge]);
+  if(omzet&&ebitda) paren.push(['EBITDA-marge',ebitda/omzet*100,N.ebitda]);
+  if(omzet&&loon) paren.push(['Loonquote',loon/omzet*100,N.loonquote]);
+  if(omzet&&mark) paren.push(['Marketing %',mark/omzet*100,N.marketing]);
+  if(dso) paren.push(['Debiteurendagen',dso,N.dso]);
+  let g='',y=18;
+  paren.forEach(pr=>{
+    const max=Math.max(pr[1],pr[2])*1.4||1, w=210;
+    g+='<text x="0" y="'+(y+11)+'" font-size="11.5" fill="#14171A" font-family="Instrument Sans">'+pr[0]+'</text>'
+     +'<rect x="150" y="'+y+'" width="'+w+'" height="14" rx="7" fill="#EDEBE5"/>'
+     +'<rect x="150" y="'+y+'" width="'+Math.max(pr[1]/max*w,3)+'" height="14" rx="7" fill="#2742D6"/>'
+     +'<rect x="'+(150+pr[2]/max*w-1.5)+'" y="'+(y-3)+'" width="3" height="20" fill="#14171A"/>'
+     +'<text x="'+(150+w+8)+'" y="'+(y+11)+'" font-size="10.5" fill="#5C646E" font-family="Instrument Sans">'+pr[1].toFixed(0)+' vs '+pr[2]+'</text>';
+    y+=42;
+  });
+  document.getElementById('cGrafiek').innerHTML = paren.length? g
+    : '<text x="0" y="30" font-size="12" fill="#5C646E" font-family="Instrument Sans">Nog niets ingevuld.</text>';
+  document.getElementById('cBron').textContent='Het streepje is het richtgetal voor '+S.branche.toLowerCase()+'. Bandbreedtes uit sectorpublicaties, geen normcijfers.';
+  // duiding
+  let d='';
+  if(omzet&&loon&&loon/omzet*100>N.loonquote+5)
+    d+='<b>Je loonquote ligt boven je branche.</b> Dat hoeft niet fout te zijn — het is fout als er tegelijk uren opgaan aan werk dat een systeem kan doen. Kijk naar het overzicht: daar staat hoeveel fte dat bij jou is.<br><br>';
+  if(grootste>=25)
+    d+='<b>Eén klant is goed voor '+grootste+'% van je omzet.</b> Boven de 20% wordt dit door kopers en financiers als risico gerekend, en het drukt de prijs bij verkoop.<br><br>';
+  if(dso&&dso>N.dso+8){
+    const vast=Math.round(omzet/365*(dso-N.dso));
+    d+='<b>Je debiteurendagen liggen '+(dso-N.dso)+' dagen boven de norm.</b> Dat is ongeveer € '+vast.toLocaleString('nl-NL')+' aan werkkapitaal dat vaststaat. Sneller factureren is hier het goedkoopste geld dat er ligt.<br><br>';
+  }
+  if(omzet&&mark&&nieuw&&klanten){
+    const arpu=omzet/klanten, cac=mark/nieuw;
+    d+= cac>arpu ? '<b>Een nieuwe klant kost je meer dan hij het eerste jaar opbrengt.</b> Dat kan kloppen bij langlopende relaties, maar dan moet je weten hoe lang klanten blijven.<br><br>'
+      : '<b>Een nieuwe klant verdient zichzelf binnen het jaar terug.</b> Dat is de plek om budget bij te zetten, niet om te bezuinigen.<br><br>';
+  }
+  if(omzet&&it&&it/omzet*100<N.it*0.6)
+    d+='<b>Je IT-uitgaven liggen ruim onder je branche.</b> Zuinig is niet hetzelfde als goedkoop: achterstallig onderhoud komt terug als handwerk en storingen.<br><br>';
+  document.getElementById('cDuiding').innerHTML = d || 'Vul je cijfers in — hier komt te staan wat ze betekenen, niet alleen hoe ze scoren.';
+}
 </script>
 </body>
 </html>
