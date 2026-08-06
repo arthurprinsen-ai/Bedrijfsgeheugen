@@ -1583,6 +1583,52 @@ function verzamelAdvies(){
   if(g('culture')<3&&A.length>4) A.push({t:'Beperk je tot één verbetering per kwartaal',dim:'culture',duur:1,waarde:0,
     waarom:'ADKAR: bij cultuur op '+g('culture')+' landt meer tegelijk niet. Kiezen is hier zelf de verbetering.',bron:'Model ADKAR'});
 
+  // --- overige strategiemodellen ---
+  const sterkste=DIM.slice().sort((x,y)=>g(y.k)-g(x.k))[0];
+  A.push({t:'Bouw je aanbod op '+sterkste.n.toLowerCase(),dim:sterkste.k,duur:2,waarde:0,
+    waarom:'SWOT: dit is je sterkste onderdeel (niveau '+g(sterkste.k)+'). Wat je goed doet, verkoopt makkelijker dan wat je nog moet leren.',bron:'Model SWOT'});
+  if(g('service')<3||g('commercie')<3) A.push({t:'Meet één klantcijfer maandelijks',dim:'service',duur:1,waarde:0,
+    waarom:'Balanced Scorecard: je stuurt nu vooral op geld en proces. Eén klantcijfer — reactietijd of aanbeveling — houdt de andere drie eerlijk.',bron:'Model Balanced Scorecard'});
+  A.push({t:'Schrap één ding dat de sector doet en niemand mist',dim:'commercie',duur:1,waarde:0,
+    waarom:'Blue Ocean: onderscheid ontstaat vaker door weglaten dan door toevoegen. Denk aan offertes op maat voor standaardwerk.',bron:'Model Blue Ocean'});
+  A.push({t:'Verdeel je aandacht over nu, straks en later',dim:'sturing',duur:1,waarde:0,
+    waarom:'Drie horizonten: zonder verdeling gaat alle tijd naar vandaag. Zet één dagdeel per maand vast voor de volgende horizon.',bron:'Model drie horizonten'});
+
+  // --- modellen per functie ---
+  if(g('mensen')<3) A.push({t:'Maak een kennismatrix: wie kan welke taak',dim:'mensen',duur:1,waarde:kosten.mensen*0.4,
+    waarom:'Ulrich: HR is hier vooral administratie. Een matrix per taak laat in één blik zien waar maar één naam staat.',bron:'Model Ulrich'});
+  if(g('operatie')<4) A.push({t:'Beschrijf je drie hoofdprocessen op één A4',dim:'operatie',duur:1,waarde:kosten.operatie*0.3,
+    waarom:'SIPOC: leverancier, input, proces, output, klant. Het legt bloot waar iets twee keer wordt aangeraakt.',bron:'Model SIPOC'});
+  if(S.mw>=16) A.push({t:'Leg vast wie beslist waarover',dim:'sturing',duur:1,waarde:0,
+    waarom:'RACI en span of control: bij '+S.mw+' medewerkers heb je ruwweg '+Math.max(1,Math.round(S.mw/8))+' leidinggevenden nodig. Zonder duidelijke beslissers gaat het via de wandelgang.',bron:'Model RACI'});
+  if(g('culture')<3) A.push({t:'Kies één verandering en maak het resultaat zichtbaar',dim:'culture',duur:2,waarde:0,
+    waarom:'OCAI: familiecultuur is loyaal en snel, maar zwak in vastleggen. Zichtbaar resultaat werkt hier beter dan een plan.',bron:'Model OCAI'});
+  if(g('commercie')<4) A.push({t:'Meet je offerteconversie per stap',dim:'commercie',duur:1,waarde:0,
+    waarom:'Salestrechter: contact → gesprek → offerte → opdracht. De stap met de grootste val is je enige verbeterpunt.',bron:'Model salestrechter'});
+  if(n('cMarketing')&&!n('cNieuw')) A.push({t:'Tel hoeveel nieuwe klanten je marketing oplevert',dim:'commercie',duur:1,waarde:0,
+    waarom:'AARRR: zonder dat getal weet je niet of je budget werkt. Eén cijfer per maand is genoeg om te beginnen.',bron:'Model AARRR'});
+  A.push({t:'Zet je leveranciers in vier vakken',dim:'operatie',duur:1,waarde:0,
+    waarom:'Kraljic: financieel belang tegen leveringsrisico. Routine automatiseren, knelpunten borgen — twee heel verschillende gesprekken.',bron:'Model Kraljic'});
+  if(n('cDso')>30) A.push({t:'Bel de twintig procent die tachtig procent veroorzaakt',dim:'finance',duur:1,waarde:0,
+    waarom:'Pareto: meestal komt het grootste deel van je achterstand van een handvol klanten. Bel die, niet de hele lijst.',bron:'Model Pareto'});
+
+  // --- overige financiële modellen ---
+  if(fn('wBalans')&&fn('wEV')&&omzet2){
+    const omloop=omzet2/(fn('wBalans')*1000);
+    if(omloop<1) A.push({t:'Kijk of er kapitaal vastzit dat niets doet',dim:'finance',duur:2,waarde:0,
+      waarom:'DuPont: je omloopsnelheid is '+omloop.toFixed(2)+'×. Rendement komt dan eerder uit marge of hefboom dan uit de operatie.',bron:'Model DuPont'});
+  }
+  if(fn('wBalans')&&fn('wEV')&&(fn('wEV')/fn('wBalans'))<0.2) A.push({t:'Bouw buffer op voor een tegenvaller',dim:'finance',duur:6,waarde:0,
+    waarom:'Altman Z: bij een dunne vermogensbuffer valt elke tegenvaller direct op de bank. Dat beperkt je manoeuvreerruimte.',bron:'Model Altman Z'});
+  if(omzet2&&n('cBrutomarge')){
+    const vasteK=(fn('wVast')*1000)||(n('cLoon')*1000*1.25)||omzet2*0.35;
+    const be=vasteK/(n('cBrutomarge')/100), veiligheid=(omzet2-be)/omzet2*100;
+    if(veiligheid<20) A.push({t:'Verlaag je vaste lasten',dim:'finance',duur:3,waarde:0,
+      waarom:'Break-even: je veiligheidsmarge is '+veiligheid.toFixed(0)+'%. Zoveel mag de omzet dalen voor je verlies draait — onder 20% is dat krap.',bron:'Model break-even'});
+  }
+  if(n('cDso')&&omzet2&&b.norm&&n('cDso')>b.norm.dso) A.push({t:'Verkort de kasconversiecyclus',dim:'finance',duur:2,waarde:0,
+    waarom:'Werkkapitaal: debiteuren + voorraad − crediteuren is het aantal dagen dat je je eigen groei voorfinanciert.',bron:'Model werkkapitaal'});
+
   // 7. branchepositie
   const gem=DIM.reduce((a,d)=>a+g(d.k),0)/DIM.length;
   if(gem<b.dig-0.3) A.push({t:'Sluit de achterstand op je branche',dim:'tech',duur:6,waarde:0,
@@ -1844,12 +1890,28 @@ const BRONNEN=[
  {k:'Model EBITDA-multiple',n:'EBITDA-multiple',soort:'finance'},
  {k:'Model EBITDA-marge',n:'Margegat met de branche',soort:'finance'},
  {k:'Model solvabiliteit',n:'Solvabiliteit',soort:'finance'},
- {k:'Model DSCR',n:'Rentedekking (DSCR)',soort:'finance'}
+ {k:'Model DSCR',n:'Rentedekking (DSCR)',soort:'finance'},
+ {k:'Model DuPont',n:'DuPont',soort:'finance'},
+ {k:'Model Altman Z',n:'Altman Z',soort:'finance'},
+ {k:'Model break-even',n:'Break-even',soort:'finance'},
+ {k:'Model werkkapitaal',n:'Werkkapitaalcyclus',soort:'finance'},
+ {k:'Model SWOT',n:'SWOT',soort:'model'},
+ {k:'Model Balanced Scorecard',n:'Balanced Scorecard',soort:'model'},
+ {k:'Model Blue Ocean',n:'Blue Ocean (ERRC)',soort:'model'},
+ {k:'Model drie horizonten',n:'Drie horizonten',soort:'model'},
+ {k:'Model Ulrich',n:'Ulrich — rol van HR',soort:'functie'},
+ {k:'Model SIPOC',n:'SIPOC en Lean',soort:'functie'},
+ {k:'Model RACI',n:'RACI en span of control',soort:'functie'},
+ {k:'Model OCAI',n:'OCAI — cultuurtypen',soort:'functie'},
+ {k:'Model salestrechter',n:'Salestrechter en win/loss',soort:'functie'},
+ {k:'Model AARRR',n:'AARRR en STP',soort:'functie'},
+ {k:'Model Kraljic',n:'Kraljic en TCO',soort:'functie'},
+ {k:'Model Pareto',n:'Pareto op debiteuren',soort:'functie'}
 ];
 function modelAan(k){ return !(S.modellen && S.modellen[k]===false); }
 function tekenModelKeuze(A){
   const box=document.getElementById('modelKeuze'); if(!box) return;
-  const groepen=[['data','Uit je eigen gegevens'],['model','Strategiemodellen'],['finance','Financiële modellen']];
+  const groepen=[['data','Uit je eigen gegevens'],['model','Strategiemodellen'],['functie','Modellen per functie'],['finance','Financiële modellen']];
   box.innerHTML=groepen.map(([g,titel])=>{
     const items=BRONNEN.filter(b=>b.soort===g);
     return '<div style="margin-bottom:.5rem"><div class="sub" style="margin-bottom:.2rem">'+titel+'</div>'
