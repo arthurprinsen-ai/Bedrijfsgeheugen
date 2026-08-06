@@ -1376,7 +1376,7 @@ function tekenBeleid(){
   // AI, BI en data
   document.getElementById('aibi').innerHTML=
     '<div class="kaarten k3">'
-    +'<div><b>AI</b><p style="font-size:.87rem;line-height:1.6">AI-gebruik staat op niveau '+(S.niveaus.ai||S.niveaus.tech||2)+'. '
+    +'<div><b>AI</b><p style="font-size:.87rem;line-height:1.6">AI-gebruik staat op niveau '+(S.niveaus.tech||2)+'. '
     +(st.aibeleid?'Er is beleid.':'Zonder afspraken over welke gegevens erin mogen, gaat het ondergronds — verbieden werkt niet, vastleggen wel.')
     +' Leg vast: welke tools, welke gegevens, wie controleert de uitkomst.</p></div>'
     +'<div><b>BI</b><p style="font-size:.87rem;line-height:1.6">Stuurinformatie staat op '+(S.niveaus.analytics||2)+', datakwaliteit op '+(S.niveaus.quality||2)+'. '
@@ -1458,7 +1458,7 @@ function verzamelAdvies(){
     waarom:'Bij een incident telt het eerste uur. Zonder plan belt iedereen jou.',bron:'Beleid'});
   if(mistBack) A.push({t:'Zet één keer een back-up terug',dim:'security',duur:1,waarde:0,
     waarom:'Een back-up die nooit is teruggezet, is een aanname.',bron:'Beleid'});
-  if(mistAI) A.push({t:'Leg vast wat wel en niet in een AI-tool mag',dim:'ai',duur:1,waarde:0,
+  if(mistAI) A.push({t:'Leg vast wat wel en niet in een AI-tool mag',dim:'tech',duur:1,waarde:0,
     waarom:'Verbieden werkt niet, vastleggen wel. Vanaf 2 augustus 2026 geldt bovendien de transparantieplicht.',bron:'Beleid'});
   if(mistDef) A.push({t:'Spreek af wat een klant, order en uur precies zijn',dim:'quality',duur:1,waarde:kosten.quality*0.4,
     waarom:'Zonder definities blijft elk dashboard betwistbaar en gaat de vergadering over wiens cijfer klopt.',bron:'Beleid'});
