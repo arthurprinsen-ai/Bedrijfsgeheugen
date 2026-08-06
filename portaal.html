@@ -1463,6 +1463,45 @@ function verzamelAdvies(){
   if(mistDef) A.push({t:'Spreek af wat een klant, order en uur precies zijn',dim:'quality',duur:1,waarde:kosten.quality*0.4,
     waarom:'Zonder definities blijft elk dashboard betwistbaar en gaat de vergadering over wiens cijfer klopt.',bron:'Beleid'});
 
+  // --- uit de strategiemodellen ---
+  const gemAll=DIM.reduce((a,d)=>a+g(d.k),0)/DIM.length;
+  const hard=(g('tech')+g('analytics')+g('quality'))/3, zacht=(g('culture')+g('mensen'))/2;
+
+  // 7S: scheefgroei tussen techniek en mensen
+  if(hard-zacht>0.7) A.push({t:'Zet een kwartaal in op gebruik in plaats van techniek',dim:'culture',duur:3,waarde:0,
+    waarom:'7S: je harde kant staat op '+hard.toFixed(1)+', je zachte op '+zacht.toFixed(1)+'. Dit is de klassieke reden dat invoeringen doodbloeden.',bron:'Model 7S'});
+  else if(zacht-hard>0.7) A.push({t:'Benut het draagvlak dat er al is',dim:'tech',duur:2,waarde:kosten.tech*0.5,
+    waarom:'7S: je mensen kunnen meer aan dan je systemen toelaten ('+zacht.toFixed(1)+' tegen '+hard.toFixed(1)+'). Hier ligt snelle winst.',bron:'Model 7S'});
+
+  // Theory of Constraints: de smalste schakel
+  const smalst=DIM.slice().sort((x,y)=>g(x.k)-g(y.k))[0];
+  if(g(smalst.k)<3) A.push({t:smalst.n+' van niveau '+g(smalst.k)+' naar '+(g(smalst.k)+1),dim:smalst.k,duur:3,waarde:kosten[smalst.k]*0.5,
+    waarom:'Theory of Constraints: dit is je smalste schakel. Verbeteringen elders lopen hier alsnog vast.',bron:'Model Theory of Constraints'});
+
+  // Waardeketen: de zwakste schakel die de klant merkt
+  if(g('service')<3) A.push({t:'Breng klantvragen naar één plek met een status',dim:'service',duur:2,waarde:kosten.service*0.6,
+    waarom:'Waardeketen: service is de schakel die de klant direct merkt, en die staat op '+g('service')+'.',bron:'Model waardeketen'});
+
+  // Vijf krachten: onderhandelingspositie
+  if(b.groei<1) A.push({t:'Kies waarop je wint in plaats van meer offertes maken',dim:'commercie',duur:3,waarde:0,
+    waarom:'Vijf krachten: je sector groeit met '+b.groei.toFixed(1)+'%. Onder de 1% is groei een verdeelspel — winnen doe je op onderscheid, niet op volume.',bron:'Model vijf krachten'});
+
+  // BCG: positie tegenover de markt
+  if(b.groei>1.5&&gemAll<b.dig) A.push({t:'Kiezen: investeren in dit onderdeel of het loslaten',dim:'tech',duur:6,waarde:0,
+    waarom:'BCG: groeiende markt maar achterstand op je branche ('+gemAll.toFixed(1)+' tegen '+b.dig.toFixed(1)+'). Een vraagteken blijft niet vanzelf een ster.',bron:'Model BCG'});
+
+  // Ansoff: waar groei vandaan moet komen
+  if(n('cGrootste')&&n('cGrootste')<20&&b.groei<1.5) A.push({t:'Haal meer omzet uit bestaande klanten',dim:'commercie',duur:3,waarde:0,
+    waarom:'Ansoff: in een trage markt met gespreide klanten is uitbreiden bij bestaande klanten de goedkoopste groei.',bron:'Model Ansoff'});
+
+  // DESTEP: economisch
+  if(NL.loonstijging>NL.groei+2) A.push({t:'Zet de besparing om in tarief of capaciteit',dim:'finance',duur:2,waarde:0,
+    waarom:'DESTEP: lonen stijgen met '+NL.loonstijging+'% terwijl de economie '+NL.groei+'% groeit. Wie niets doet, verliest marge.',bron:'Model DESTEP'});
+
+  // ADKAR: verandervermogen
+  if(g('culture')<3&&A.length>4) A.push({t:'Beperk je tot één verbetering per kwartaal',dim:'culture',duur:1,waarde:0,
+    waarom:'ADKAR: bij cultuur op '+g('culture')+' landt meer tegelijk niet. Kiezen is hier zelf de verbetering.',bron:'Model ADKAR'});
+
   // 7. branchepositie
   const gem=DIM.reduce((a,d)=>a+g(d.k),0)/DIM.length;
   if(gem<b.dig-0.3) A.push({t:'Sluit de achterstand op je branche',dim:'tech',duur:6,waarde:0,
@@ -1485,8 +1524,16 @@ function adviesRij(a,i,kort){
 function tekenAdvies(){
   const A=verzamelAdvies();
   const vol=document.getElementById('adviesLijst');
-  if(vol) vol.innerHTML=A.map((a,i)=>adviesRij(a,i,false)).join('')
-    +'<p class="sub" style="margin-top:.8rem">Hoe meer je invult bij Cijfers, Mensen en Beleid, hoe scherper deze lijst wordt.</p>';
+  if(vol){
+    const uitData=A.filter(a=>!/^Model/.test(a.bron));
+    const uitModel=A.filter(a=>/^Model/.test(a.bron));
+    vol.innerHTML='<div class="sub" style="margin-bottom:.3rem">Uit je cijfers en scores</div>'
+      +uitData.map((a,i)=>adviesRij(a,i,false)).join('')
+      +'<div class="sub" style="margin:1.1rem 0 .3rem">Uit de strategiemodellen</div>'
+      +uitModel.map((a,i)=>adviesRij(a,i,false)).join('')
+      +'<p class="sub" style="margin-top:.8rem">Hoe meer je invult bij Cijfers, Mensen en Beleid, hoe scherper deze lijst wordt. '
+      +A.length+' adviezen op basis van wat er nu staat.</p>';
+  }
   const kort=document.getElementById('adviesTop');
   if(kort) kort.innerHTML=A.slice(0,3).map((a,i)=>adviesRij(a,i,true)).join('')
     +'<div style="margin-top:.6rem"><button class="knop licht" data-ga="advies">Bekijk alle adviezen →</button></div>';
