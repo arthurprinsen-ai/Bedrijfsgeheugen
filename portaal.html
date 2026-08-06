@@ -326,6 +326,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
           <label class="sub">start maand <input type="number" id="nStart" value="1" min="1" max="12" style="width:4rem"></label>
           <label class="sub">duur <input type="number" id="nDuur" value="2" min="1" max="12" style="width:4rem"></label>
           <button class="knop" id="nToe">Toevoegen</button>
+          <button class="knop licht" id="nVoorstel">Stel een volgorde voor →</button>
         </div>
         <div class="gantt" style="margin-top:1.1rem">
           <div class="gt">
@@ -430,7 +431,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -512,6 +513,20 @@ function bouw(){
   const sel=document.getElementById('nDim');
   sel.innerHTML=DIM.map(d=>'<option value="'+d.k+'">'+d.n+'</option>').join('');
   document.getElementById('maanden').innerHTML=Array.from({length:12},(_,i)=>'<span>'+(i+1)+'</span>').join('');
+  const nv=document.getElementById('nVoorstel');
+  if(nv&&!nv.dataset.aan){nv.dataset.aan='1';nv.addEventListener('click',()=>{
+    const f=[0,1,.78,.5,.22,.06];
+    const rang=DIM.map(d=>({d,kosten:d.u*f[S.niveaus[d.k]]*(S.mw/24)*46*S.uur,niv:S.niveaus[d.k]}))
+      .sort((a,b)=>(b.kosten*(1+(4-b.niv)*0.3))-(a.kosten*(1+(4-a.niv)*0.3))).slice(0,4);
+    let start=1;
+    rang.forEach((r,i)=>{
+      const duur=i===0?1:(i===1?2:3);
+      S.taken.push({id:Date.now()+i,t:(i===0?'Quick win: ':'')+r.d.n+' naar niveau '+Math.min(r.niv+1,5),
+        dim:r.d.k,s:start,d:duur,klaar:false});
+      start=Math.min(start+duur,11);
+    });
+    bewaar(); teken();
+  });}
   document.getElementById('nToe').addEventListener('click',()=>{
     const t=document.getElementById('nTitel').value.trim(); if(!t)return;
     S.taken.push({id:Date.now(),t,dim:document.getElementById('nDim').value,
@@ -572,7 +587,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -594,6 +609,7 @@ function importeer(bestand){
       if(p.mensen) S.mensen=p.mensen;
       if(p.cijfers) S.cijfers=p.cijfers;
       if(p.bc) S.bc=p.bc;
+      if(p.eigen) S.eigen=p.eigen;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -872,6 +888,12 @@ function tekenCijfers(){
   document.getElementById('cDuiding').innerHTML = d || 'Vul je cijfers in — hier komt te staan wat ze betekenen, niet alleen hoe ze scoren.';
 }
 
+function eigenVeld(sleutel,vraag){
+  const w=(S.eigen&&S.eigen[sleutel])||'';
+  return '<div style="margin-top:.7rem"><label class="sub" for="e-'+sleutel+'">'+vraag+'</label>'
+   +'<textarea id="e-'+sleutel+'" data-eigen="'+sleutel+'" rows="2" style="width:100%;margin-top:.25rem;padding:.5rem .6rem;'
+   +'border:1px solid var(--lijn);border-radius:3px;font:inherit;font-size:.86rem;background:var(--papier)">'+w+'</textarea></div>';
+}
 function tekenStrategie(){
   const doel=(function(){try{return localStorage.getItem('bg_scan_doel')||'grip';}catch(e){return 'grip';}})();
   const g=k=>S.niveaus[k]||2, c=S.cijfers||{}, b=B();
@@ -931,9 +953,62 @@ function tekenStrategie(){
       :'werk dat zichzelf signaleert: het systeem meldt wat afwijkt, mensen beslissen.')+'</p>'
     +'<p class="sub">Verdeel je aandacht, niet je budget: horizon 1 verdient het geld waarmee 2 en 3 betaald worden.</p>'});
 
+  // ---- BCG-matrix ----
+  M.push({n:'BCG-matrix',h:'Boston Consulting Group',inhoud:
+    '<p>Twee assen: marktgroei en je eigen positie. Je sector groeit met <b>'+b.groei.toFixed(1)+'%</b>; jouw niveau is '+gem.toFixed(1)+' tegenover '+b.dig.toFixed(1)+' in de branche.</p>'
+    +'<div class="q4">'
+    +'<div'+(b.groei>1.5&&gem>=b.dig?' class="goed"':'')+'><b>Ster</b>Groeiende markt, sterke positie. Investeren zolang het duurt.</div>'
+    +'<div'+(b.groei<=1.5&&gem>=b.dig?' class="goed"':'')+'><b>Melkkoe</b>Trage markt, sterke positie. Hier haal je het geld voor de rest.</div>'
+    +'<div'+(b.groei>1.5&&gem<b.dig?' class="kans"':'')+'><b>Vraagteken</b>Groeiende markt, achterstand. Kiezen: investeren of loslaten.</div>'
+    +'<div'+(b.groei<=1.5&&gem<b.dig?' class="dreig"':'')+'><b>Hond</b>Trage markt, achterstand. Niet groeien maar opruimen.</div>'
+    +'</div>'
+    +'<p class="sub">Het gemarkeerde vak is waar je nu staat, afgeleid uit sectorgroei en je eigen niveau. Heb je meerdere diensten? Zet ze los in dit raster — dan zie je waar je aandacht heen moet.</p>'
+    +eigenVeld('bcg','Wat zijn je diensten, en welk vak past bij elk?')});
+
+  // ---- vijf krachten ----
+  const conc=grootste>=25?'hoog':'gemiddeld';
+  M.push({n:'Vijf krachten',h:'Porter',inhoud:
+    '<div class="q4">'
+    +'<div><b>Macht van klanten</b>'+(grootste?'Je grootste klant is '+grootste+'% van je omzet — macht is daarmee '+conc+'.':'Vul je klantconcentratie in bij Cijfers.')+'</div>'
+    +'<div><b>Macht van leveranciers</b>'+(g("tech")<3?'Je zit vast aan losse systemen; overstappen kost tijd. Dat versterkt je leveranciers.':'Je systemen praten met elkaar, dus overstappen is minder pijnlijk.')+'</div>'
+    +'<div><b>Nieuwe toetreders</b>'+(b.dig>2.8?'In een gedigitaliseerde sector is de drempel laag: een nieuwkomer bouwt in maanden wat jij in jaren opbouwde.':'De drempel is hier vooral vakkennis en netwerk — dat beschermt je, maar het vertraagt jou ook.')+'</div>'
+    +'<div><b>Vervanging</b>Wat doen klanten als ze jou niet inhuren? Zelf doen is bijna altijd het echte alternatief.</div>'
+    +'</div>'
+    +'<p><b>Onderlinge concurrentie:</b> je sector groeit met '+b.groei.toFixed(1)+'%. '+(b.groei<1?'Onder de 1% is groei een verdeelspel: wat jij wint, verliest een ander.':'Er is ruimte om te groeien zonder gevecht.')+'</p>'
+    +eigenVeld('porter','Wie zijn je drie concurrenten, en waarop win of verlies je van ze?')});
+
+  // ---- waardeketen ----
+  M.push({n:'Waardeketen',h:'Porter',inhoud:
+    '<p>Waar in je keten gaat het handwerk zitten? Elke schakel krijgt het niveau uit je scan.</p>'
+    +'<table style="width:100%;font-size:.85rem;border-collapse:collapse">'
+    +[['Inkoop en aanvoer','operatie'],['Uitvoering en levering','operatie'],['Verkoop en marketing','commercie'],
+      ['Service na levering','service'],['Administratie en finance','finance'],['Mensen en kennis','mensen'],
+      ['Systemen','tech'],['Sturing','sturing']]
+      .map(r=>{const n=g(r[1]);const kl=n>=4?'var(--groen)':(n>=3?'var(--amber)':'var(--rood)');
+        return '<tr><td style="padding:.32rem 0;border-bottom:1px solid var(--lijn)">'+r[0]+'</td>'
+        +'<td style="text-align:right;border-bottom:1px solid var(--lijn);color:'+kl+';font-weight:600">niveau '+n+'</td></tr>';}).join('')
+    +'</table>'
+    +'<p class="sub" style="margin-top:.5rem">De schakel met het laagste cijfer bepaalt wat de klant merkt — niet het gemiddelde.</p>'});
+
+  // ---- DESTEP ----
+  M.push({n:'DESTEP',h:'omgevingsanalyse',inhoud:
+    '<div class="q4">'
+    +'<div><b>Demografisch</b>Krappe arbeidsmarkt en vergrijzing. '+(g("mensen")<3?'Bij kennis in hoofden weegt elke vertrekker zwaar.':'Je kennis is grotendeels geborgd — dat scheelt bij verloop.')+'</div>'
+    +'<div><b>Economisch</b>Economie +'+NL.groei.toString().replace(".",",")+'%, inflatie '+NL.inflatie.toString().replace(".",",")+'%, lonen +'+NL.loonstijging.toString().replace(".",",")+'%. Lonen stijgen harder dan de economie groeit.</div>'
+    +'<div><b>Sociaal</b>Medewerkers verwachten flexibiliteit en zinvol werk; klanten verwachten direct antwoord.</div>'
+    +'<div><b>Technologisch</b>AI verlaagt de drempel voor wat eerder alleen grote bedrijven konden. Systemen op niveau '+g("tech")+'.</div>'
+    +'<div><b>Ecologisch</b>'+(g("duurzaam")<3?'CSRD komt via klanten en financiers op je af; je data is er nog niet klaar voor.':'Je duurzaamheidsdata is op orde genoeg om aan te leveren.')+'</div>'
+    +'<div><b>Politiek-juridisch</b>Zie het tabblad Branche voor wat er voor jouw sector geldt.</div>'
+    +'</div>'
+    +eigenVeld('destep','Welke ontwikkeling raakt jullie het hardst, en wanneer?')});
+
   document.getElementById('stratKaarten').innerHTML = M.map((m,i)=>
     '<details class="mod"'+(i===0?' open':'')+'><summary><h3>'+m.n+'</h3><span class="herkomst">'+m.h+' ▾</span></summary>'
     +'<div class="inhoud">'+m.inhoud+'</div></details>').join('');
+  document.querySelectorAll('[data-eigen]').forEach(t=>{
+    if(t.dataset.aan)return; t.dataset.aan='1';
+    t.addEventListener('change',e=>{S.eigen=S.eigen||{};S.eigen[e.target.dataset.eigen]=e.target.value;bewaar();});
+  });
 }
 
 function tekenFuncties(){
