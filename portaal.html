@@ -94,7 +94,9 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
 <div id="poort" class="poort">
   <h1>Jouw <span style="background:linear-gradient(transparent 52%,var(--geel) 52%)">bedrijfsgeheugen</span></h1>
   <p>Log in om je scan, je cijfers en je roadmap te zien. Alles wat we samen hebben vastgesteld staat hier — en blijft hier staan.</p>
-  <button class="knop" onclick="netlifyIdentity.open()">Inloggen of account maken</button>
+  <button class="knop" id="btnLogin">Inloggen of account maken</button>
+  <p style="margin-top:.9rem"><button class="knop licht" id="btnZonder">Verder zonder inloggen</button></p>
+  <p class="sub" id="poortUitleg" style="margin-top:.6rem"></p>
   <p class="sub" style="margin-top:1rem">Nog geen scan gedaan? <a href="/data-ai-cockpit">Begin met de bedrijfsscan</a>.</p>
 </div>
 
@@ -392,8 +394,25 @@ if(window.netlifyIdentity){
   netlifyIdentity.on('login',u=>{ netlifyIdentity.close(); toonPortaal(u); });
   netlifyIdentity.on('logout',()=>location.reload());
 }
-// zonder Identity (nog niet aangezet): open met ?demo
-if(/[?&]demo\b/.test(location.search)) setTimeout(()=>toonPortaal({email:'demo'}),200);
+// knoppen op de poort
+document.addEventListener('DOMContentLoaded',function(){
+  const bl=document.getElementById('btnLogin');
+  if(bl) bl.addEventListener('click',function(){
+    if(window.netlifyIdentity && netlifyIdentity.open){ netlifyIdentity.open(); }
+    else { toonPortaal({email:'lokaal'}); }
+  });
+  const bz=document.getElementById('btnZonder');
+  if(bz) bz.addEventListener('click',function(){ toonPortaal({email:'lokaal'}); });
+  // heb je net de scan gedaan? dan meteen door
+  try{
+    if(localStorage.getItem('bg_scan_pakket')){
+      const u=document.getElementById('poortUitleg');
+      if(u) u.innerHTML='We zien een recent scanresultaat in deze browser. Klik op <b>Verder zonder inloggen</b> om het te bekijken.';
+    }
+  }catch(e){}
+});
+// rechtstreeks binnen met ?demo of ?direct
+if(/[?&](demo|direct)\b/.test(location.search)) setTimeout(()=>toonPortaal({email:'demo'}),200);
 
 /* ---------- opbouw ---------- */
 function bouw(){
