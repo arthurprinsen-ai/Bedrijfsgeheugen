@@ -86,6 +86,30 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
 .erk{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem}
 .erk div{background:var(--papier);border-radius:3px;padding:.6rem .7rem;font-size:.83rem}
 .erk b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--grijs)}
+
+.lay{display:block}
+.inhoudkolom{min-width:0}
+.zij{margin:1.1rem 0 .4rem}
+.menuknop{display:none;border:1px solid var(--lijn);background:#fff;border-radius:3px;padding:.55rem .9rem;font:inherit;cursor:pointer}
+.zijlijst{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+.groep{font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--grijs);margin:0 .2rem 0 .5rem}
+.tab.licht{color:var(--grijs)}
+@media(min-width:1040px){
+  .lay{display:grid;grid-template-columns:15.5rem 1fr;gap:1.8rem;align-items:start}
+  .zij{position:sticky;top:74px;margin:1.4rem 0 0}
+  .zijlijst{display:block}
+  .zijlijst .tab{display:block;width:100%;text-align:left;margin:.16rem 0;border-color:transparent;background:transparent}
+  .zijlijst .tab:hover{background:#fff;border-color:var(--lijn)}
+  .zijlijst .tab[aria-selected=true]{background:var(--inkt);color:#fff;border-color:var(--inkt)}
+  .groep{display:block;margin:1rem 0 .25rem .55rem}
+  .tabs{display:none}
+}
+@media(max-width:1039px){
+  .menuknop{display:block;margin-bottom:.6rem}
+  .zijlijst{display:none}
+  .zijlijst.open{display:flex}
+  .groep{width:100%;margin:.5rem 0 .1rem}
+}
 </style>
 </head>
 <body>
@@ -123,16 +147,29 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
 
   <div class="wrap">
     <h1 style="font-size:clamp(1.7rem,4vw,2.4rem)">Waar je staat, en wat er nu speelt</h1>
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-p="overzicht">◧ Overzicht</button>
-      <button class="tab" role="tab" aria-selected="false" data-p="profiel">◑ Profiel</button>
-      <button class="tab" role="tab" aria-selected="false" data-p="business">↗ Businesscase</button>
-      <button class="tab" role="tab" aria-selected="false" data-p="mensen">☺ Mensen</button>
-      <button class="tab" role="tab" aria-selected="false" data-p="strategie">◆ Strategie</button>
-      <button class="tab" role="tab" aria-selected="false" data-p="cijfers">€ Cijfers</button>
-      <button class="tab" role="tab" aria-selected="false" data-p="branche">▲ Branche</button>
-      <button class="tab" role="tab" aria-selected="false" data-p="roadmap">▤ Roadmap</button>
-    </div>
+    <div class="lay">
+    <nav class="zij" aria-label="Onderdelen">
+      <button class="menuknop" id="menuKnop" aria-expanded="false">☰ Menu</button>
+      <div class="zijlijst" id="zijlijst" role="tablist">
+        <span class="groep">Inzicht</span>
+        <button class="tab" role="tab" aria-selected="true" data-p="overzicht">◧ Overzicht</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="profiel">◑ Profiel per onderdeel</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="business">↗ Businesscase</button>
+        <span class="groep">Vergelijken</span>
+        <button class="tab" role="tab" aria-selected="false" data-p="cijfers">€ Cijfers en maatstaven</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="mensen">☺ Mensen</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="branche">▲ Branche en markt</button>
+        <span class="groep">Denken</span>
+        <button class="tab" role="tab" aria-selected="false" data-p="strategie">◆ Strategiemodellen</button>
+        <span class="groep">Doen</span>
+        <button class="tab" role="tab" aria-selected="false" data-p="roadmap">▤ Roadmap</button>
+        <span class="groep">Beheer</span>
+        <button class="tab licht" id="mExport">⬇ Downloaden</button>
+        <label class="tab licht" style="cursor:pointer">⬆ Openen<input type="file" id="mImport" accept="application/json" hidden></label>
+        <button class="tab licht" onclick="window.print()">⎙ Afdrukken</button>
+      </div>
+    </nav>
+    <div class="inhoudkolom">
 
     <!-- OVERZICHT -->
     <section class="paneel aan" id="p-overzicht">
@@ -287,6 +324,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <div class="leeg" id="ganttLeeg" hidden>Nog niets gepland. Voeg je eerste stap toe — begin met de grootste rem.</div>
       </div>
     </section>
+    </div></div>
   </div>
 </div>
 
@@ -491,6 +529,15 @@ function bouw(){
       if(id==='bUitstel')document.getElementById('o-bUitstel').textContent=e.target.value+' mnd';
       bewaar();teken();});
   });
+  const mk=document.getElementById('menuKnop');
+  if(mk&&!mk.dataset.aan){mk.dataset.aan='1';mk.addEventListener('click',()=>{
+    const l=document.getElementById('zijlijst'); l.classList.toggle('open');
+    mk.setAttribute('aria-expanded',l.classList.contains('open'));});}
+  const me=document.getElementById('mExport');
+  if(me&&!me.dataset.aan){me.dataset.aan='1';me.addEventListener('click',exporteer);}
+  const mi=document.getElementById('mImport');
+  if(mi&&!mi.dataset.aan){mi.dataset.aan='1';
+    mi.addEventListener('change',e=>{ if(e.target.files[0]) importeer(e.target.files[0]); e.target.value=''; });}
   const be=document.getElementById('btnExport');
   if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',exporteer);}
   const bi=document.getElementById('btnImport');
@@ -500,6 +547,8 @@ function bouw(){
     document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));
     document.querySelectorAll('.paneel').forEach(p=>p.classList.remove('aan'));
     document.getElementById('p-'+b.dataset.p).classList.add('aan');
+    if(window.innerWidth<1040){ const l=document.getElementById('zijlijst'); if(l) l.classList.remove('open'); }
+    window.scrollTo({top:0,behavior:'smooth'});
   }));
 }
 
