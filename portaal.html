@@ -159,6 +159,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <button class="tab" role="tab" aria-selected="false" data-p="cijfers">€ Cijfers en maatstaven</button>
         <button class="tab" role="tab" aria-selected="false" data-p="mensen">☺ Mensen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="branche">▲ Branche en markt</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="onderzoek">◎ Onderzoek</button>
         <span class="groep">Denken</span>
         <button class="tab" role="tab" aria-selected="false" data-p="strategie">◆ Strategiemodellen</button>
         <span class="groep">Doen</span>
@@ -246,6 +247,17 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
       <div class="kaart"><h3>Waar je staat op de adoptiecurve</h3>
         <svg id="curveGraf" viewBox="0 0 900 240" role="img" aria-label="Adoptiecurve"></svg>
         <p class="sub" id="curveT"></p></div>
+    </section>
+
+    <!-- ONDERZOEK -->
+    <section class="paneel" id="p-onderzoek">
+      <p class="sub" style="margin-top:1rem">Wat grote onderzoeksbureaus meten, naast waar jij staat. Elk cijfer met de bron erbij — je kunt het nazoeken.</p>
+      <div id="ondBlok" class="kaarten k2" style="margin-top:.8rem"></div>
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Hoe je deze cijfers moet lezen</h3>
+        <p style="font-size:.89rem;line-height:1.65">Deze onderzoeken gaan grotendeels over grote ondernemingen — duizenden medewerkers, eigen IT-afdelingen, budgetten die het jouwe honderdvoudig overtreffen. Ze zijn nuttig als <b>richting</b>, niet als norm. Waar ze wél direct op jou slaan: het patroon dat bijna iedereen begint en bijna niemand doorpakt. Dat is in het mkb niet anders, alleen zichtbaarder.</p>
+        <p class="sub" style="margin-top:.6rem">Bronnen: McKinsey State of AI · BCG AI Radar · Gartner · MIT Project NANDA · Deloitte · PwC · Stanford AI Index · CBS · DNB · RaboResearch. Cijfers uit publieke samenvattingen, gecontroleerd augustus 2026.</p>
+      </div>
     </section>
 
     <!-- STRATEGIE -->
@@ -650,7 +662,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness();
+  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -1049,6 +1061,69 @@ function tekenBusiness(){
   document.getElementById('curveGraf').innerHTML=c;
   const voor=VERD.slice(Math.round(gem)).reduce((a,v)=>a+v,0);
   document.getElementById('curveT').textContent=voor+'% van de markt staat vóór jullie. Jouw gemiddelde: '+gem.toFixed(1)+' — branchegemiddelde '+b.dig.toFixed(1)+'.';
+}
+
+/* Publieke kerncijfers uit groot onderzoek, gekoppeld aan de onderdelen van de scan.
+   Elk item: bevinding, bron, en wat het voor dit bedrijf betekent. */
+const ONDERZOEK=[
+ {dim:'tech',t:'Bijna iedereen gebruikt AI, bijna niemand schaalt op',
+  cijfer:'88% / 23%',
+  bev:'88% van de organisaties gebruikt AI in minstens één functie, maar circa tweederde is nog niet begonnen met opschalen over de organisatie.',
+  bron:'McKinsey, State of AI',
+  advies:'Gebruik is geen voorsprong. De voorsprong zit in één werkproces dat er echt anders uitziet.'},
+ {dim:'analytics',t:'Pilots zonder resultaat zijn de regel, niet de uitzondering',
+  cijfer:'95%',
+  bev:'MIT vond dat 95% van de generatieve AI-pilots geen meetbaar effect op het resultaat had. De oorzaak lag zelden bij het model, meestal bij data en integratie.',
+  bron:'MIT Project NANDA · RAND',
+  advies:'Begin bij het proces, niet bij de techniek. Als de gegevens niet kloppen, versterkt AI alleen de rommel.'},
+ {dim:'sturing',t:'Uitgaven verdubbelen, rendement niet',
+  cijfer:'1,7% van de omzet',
+  bev:'Bedrijven begroten in 2026 gemiddeld 1,7% van hun omzet voor AI, meer dan het dubbele van vorig jaar. Slechts een kleine groep meldt substantieel rendement.',
+  bron:'BCG AI Radar · Forbes Research',
+  advies:'Zet geen percentage van je omzet opzij. Zet één bedrag tegenover één probleem met een terugverdientijd.'},
+ {dim:'operatie',t:'Vier op de tien agent-projecten worden gestopt',
+  cijfer:'40%',
+  bev:'Gartner verwacht dat meer dan 40% van de agentische AI-projecten vóór eind 2027 wordt geannuleerd — door oplopende kosten, onduidelijk rendement en zwakke beheersing.',
+  bron:'Gartner',
+  advies:'Kies iets kleins dat af kan. Een project dat je binnen twee weken afrondt, wordt nooit geannuleerd.'},
+ {dim:'quality',t:'Het knelpunt is data en integratie, niet het model',
+  cijfer:'80%+',
+  bev:'RAND meet een faalpercentage boven de 80% bij AI-projecten, doorgaans door ontbrekende of ontoegankelijke gegevens.',
+  bron:'RAND',
+  advies:'De saaie stap — afspreken wat een klant, order of uur precies is — bepaalt of de rest werkt.'},
+ {dim:'mensen',t:'Waarde ontstaat pas bij herontwerp van werk',
+  cijfer:'6%',
+  bev:'Ongeveer 6% van de organisaties haalt substantiële waarde uit AI. Wat hen onderscheidt is niet meer techniek maar het opnieuw inrichten van werkstromen.',
+  bron:'McKinsey',
+  advies:'Techniek naast bestaand werk leggen levert niets op. Het werk zelf moet veranderen — en dat vraagt om mensen die meebewegen.'},
+ {dim:'finance',t:'Kosten lopen structureel uit de hand',
+  cijfer:'79%',
+  bev:'79% van de ondernemingen had het afgelopen jaar te maken met hogere AI-kosten dan begroot; de gemiddelde overschrijding lag rond 30%.',
+  bron:'DoiT / Sapio Research',
+  advies:'Spreek vooraf een maximum af per toepassing, en meet het verbruik vanaf dag één.'},
+ {dim:'security',t:'AI verandert het dreigingsbeeld',
+  cijfer:'—',
+  bev:'Het Financieel Stabiliteitscomité constateerde in juni 2026 dat geavanceerde AI-modellen het cyberdreigingslandschap ingrijpend veranderen en de urgentie van weerbaarheid vergroten.',
+  bron:'DNB / FSC',
+  advies:'Begin bij het saaie deel: toegangsrechten, tweestapsverificatie en een back-up die je hebt teruggezet.'}
+];
+function tekenOnderzoek(){
+  const box=document.getElementById('ondBlok'); if(!box) return;
+  box.innerHTML=ONDERZOEK.map(o=>{
+    const eigen=S.niveaus[o.dim]||2;
+    const kl = eigen>=4?'var(--groen)':(eigen>=3?'var(--amber)':'var(--rood)');
+    const naam=(DIM.find(d=>d.k===o.dim)||{n:''}).n;
+    return '<div class="kaart">'
+     +'<div style="display:flex;justify-content:space-between;gap:.8rem;align-items:baseline">'
+     +'<h3 style="font-size:.97rem">'+o.t+'</h3>'
+     +'<span class="kpi" style="font-size:1.35rem;white-space:nowrap">'+o.cijfer+'</span></div>'
+     +'<p style="font-size:.87rem;line-height:1.6;margin-top:.4rem">'+o.bev+'</p>'
+     +'<p class="sub" style="margin-top:.35rem">Bron: '+o.bron+'</p>'
+     +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
+     +'<b>Voor jullie:</b> '+o.advies+'<br>'
+     +'<span style="color:'+kl+';font-weight:600">'+naam+' staat bij jullie op niveau '+eigen+'.</span></div>'
+     +'</div>';
+  }).join('');
 }
 </script>
 </body>
