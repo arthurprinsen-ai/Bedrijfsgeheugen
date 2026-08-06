@@ -1331,7 +1331,14 @@ function renderDash(score,dimAvg){
     window.__remDoel = DL[answers[0]] || 'grip';
     localStorage.setItem('bg_scan_doel', window.__remDoel);
   }catch(e){}
-  try{ localStorage.setItem('bg_scan_dimavg', JSON.stringify(dimAvg)); }catch(e){}
+  try{
+    localStorage.setItem('bg_scan_dimavg', JSON.stringify(dimAvg));
+    localStorage.setItem('bg_scan_pakket', JSON.stringify({
+      dimAvg:dimAvg, score:score, niveau:userLevel,
+      branche:(typeof window.__branche==='string'?window.__branche:''),
+      datum:new Date().toISOString().slice(0,10), stempel:Date.now()
+    }));
+  }catch(e){}
   try{ window.__branche = (SECTORS[userSector]&&SECTORS[userSector].name) || 'Gemiddeld NL-bedrijf'; }catch(e){}
 
   (function(){

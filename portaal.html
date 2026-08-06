@@ -133,6 +133,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
 
     <!-- OVERZICHT -->
     <section class="paneel aan" id="p-overzicht">
+      <div id="scanmelding" style="margin-top:1rem"></div>
       <div class="kaarten k3">
         <div class="kaart"><h3>Volwassenheid</h3><div class="kpi" id="kNiveau">–</div><div class="sub" id="kNiveauT">nog geen scan gekoppeld</div></div>
         <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">directe uren × uurkosten</div></div>
@@ -358,10 +359,21 @@ let sleutel='bg_portaal_anoniem';
 function laad(){
   try{const r=localStorage.getItem(sleutel); if(r) S=Object.assign(S,JSON.parse(r));}catch(e){}
   DIM.forEach(d=>{ if(!S.niveaus[d.k]) S.niveaus[d.k]=2; });
-  // scanresultaat overnemen als dat er is
+  // scanresultaat overnemen als het nieuwer is dan wat hier al staat
   try{
-    const scan=JSON.parse(localStorage.getItem('bg_scan_dimavg')||'null');
-    if(scan) DIM.forEach(d=>{ if(scan[d.k]) S.niveaus[d.k]=Math.max(1,Math.min(5,Math.round(scan[d.k]))); });
+    const pak=JSON.parse(localStorage.getItem('bg_scan_pakket')||'null');
+    const oud=JSON.parse(localStorage.getItem('bg_scan_dimavg')||'null');
+    const bron=pak?pak.dimAvg:oud;
+    const stempel=pak?pak.stempel:0;
+    if(bron && stempel>(S.scanStempel||0)){
+      DIM.forEach(d=>{ if(bron[d.k]) S.niveaus[d.k]=Math.max(1,Math.min(5,Math.round(bron[d.k]))); });
+      S.scanStempel=stempel; S.scanDatum=pak?pak.datum:''; S.scanScore=pak?pak.score:null;
+      if(pak&&pak.branche&&BRANCHE[pak.branche]) S.branche=pak.branche;
+      bewaar();
+    } else if(bron && !S.scanStempel){
+      DIM.forEach(d=>{ if(bron[d.k]) S.niveaus[d.k]=Math.max(1,Math.min(5,Math.round(bron[d.k]))); });
+      S.scanStempel=stempel||1; bewaar();
+    }
   }catch(e){}
 }
 function bewaar(){ try{ localStorage.setItem(sleutel, JSON.stringify(S)); }catch(e){} }
@@ -446,7 +458,8 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers};
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers,
+    scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob); a.download=bestandsnaam();
@@ -466,6 +479,7 @@ function importeer(bestand){
       if(p.omzet) S.omzet=+p.omzet;
       if(p.mensen) S.mensen=p.mensen;
       if(p.cijfers) S.cijfers=p.cijfers;
+      if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
   };
@@ -482,6 +496,17 @@ function teken(){
   const fte=urenWeek*46/1600;
   const gem=DIM.reduce((a,d)=>a+S.niveaus[d.k],0)/DIM.length;
 
+  const mel=document.getElementById('scanmelding');
+  if(mel){
+    mel.innerHTML = S.scanStempel
+      ? '<div style="padding:.7rem .95rem;border-left:4px solid var(--groen);background:#F1F9F4;border-radius:0 3px 3px 0;font-size:.88rem">'
+        +'<b>Je scanresultaat is geladen'+(S.scanDatum?' (scan van '+S.scanDatum+')':'')+'.</b> '
+        +(S.scanScore?'Score '+S.scanScore+'/100. ':'')
+        +'De schuiven onder Profiel staan op je eigen antwoorden — pas ze aan als er iets veranderd is.</div>'
+      : '<div style="padding:.7rem .95rem;border-left:4px solid var(--amber);background:#FFF8E8;border-radius:0 3px 3px 0;font-size:.88rem">'
+        +'<b>Nog geen scanresultaat gevonden.</b> Doe eerst de <a href="/data-ai-cockpit">bedrijfsscan</a> in deze browser, '
+        +'of open een eerder gedownload bestand met de knop <b>Openen</b> hierboven. Je kunt ook handmatig beginnen bij Profiel.</div>';
+  }
   document.getElementById('kNiveau').textContent=gem.toFixed(1);
   document.getElementById('kNiveauT').textContent='gemiddeld — '+NIV[Math.round(gem)];
   document.getElementById('kKosten').textContent=euro(totaal);
