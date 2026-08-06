@@ -69,6 +69,23 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
   .kaart{break-inside:avoid;page-break-inside:avoid}
   .wrap{max-width:100%;padding:0}
 }
+
+.mod{background:#fff;border:1px solid var(--lijn);border-radius:4px;overflow:hidden;transition:box-shadow .18s ease,transform .18s ease}
+.mod:hover{box-shadow:0 6px 20px rgba(20,23,26,.09);transform:translateY(-1px)}
+.mod summary{cursor:pointer;list-style:none;padding:1rem 1.15rem;display:flex;justify-content:space-between;align-items:baseline;gap:.8rem}
+.mod summary::-webkit-details-marker{display:none}
+.mod summary h3{font-size:1rem}
+.mod summary .herkomst{font-size:.72rem;color:var(--grijs);white-space:nowrap}
+.mod .inhoud{padding:0 1.15rem 1.15rem;font-size:.88rem;line-height:1.6}
+.mod[open] summary{border-bottom:1px solid var(--lijn);margin-bottom:.9rem}
+.q4{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin:.5rem 0}
+.q4 div{border:1px solid var(--lijn);border-radius:3px;padding:.6rem .7rem;font-size:.83rem;line-height:1.5}
+.q4 b{display:block;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.25rem;color:var(--grijs)}
+.q4 .goed{border-left:3px solid var(--groen)}.q4 .slecht{border-left:3px solid var(--rood)}
+.q4 .kans{border-left:3px solid var(--blauw)}.q4 .dreig{border-left:3px solid var(--oranje)}
+.erk{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem}
+.erk div{background:var(--papier);border-radius:3px;padding:.6rem .7rem;font-size:.83rem}
+.erk b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--grijs)}
 </style>
 </head>
 <body>
@@ -108,6 +125,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
       <button class="tab" role="tab" aria-selected="true" data-p="overzicht">Overzicht</button>
       <button class="tab" role="tab" aria-selected="false" data-p="profiel">Profiel</button>
       <button class="tab" role="tab" aria-selected="false" data-p="mensen">Mensen</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="strategie">Strategie</button>
       <button class="tab" role="tab" aria-selected="false" data-p="cijfers">Cijfers</button>
       <button class="tab" role="tab" aria-selected="false" data-p="branche">Branche</button>
       <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
@@ -162,6 +180,12 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
           <svg id="mGrafiek" viewBox="0 0 460 250" role="img" aria-label="Mensen tegenover de branche"></svg>
           <p class="sub" id="mBron"></p></div>
       </div>
+    </section>
+
+    <!-- STRATEGIE -->
+    <section class="paneel" id="p-strategie">
+      <p class="sub" style="margin-top:1rem">Zes denkramen, ingevuld met jouw eigen scores en cijfers. Klik een kaart open.</p>
+      <div class="kaarten k2" id="stratKaarten"></div>
     </section>
 
     <!-- CIJFERS -->
@@ -495,7 +519,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenMensen(); tekenBranche(); tekenCijfers();
+  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -703,6 +727,70 @@ function tekenCijfers(){
   if(omzet&&it&&it/omzet*100<N.it*0.6)
     d+='<b>Je IT-uitgaven liggen ruim onder je branche.</b> Zuinig is niet hetzelfde als goedkoop: achterstallig onderhoud komt terug als handwerk en storingen.<br><br>';
   document.getElementById('cDuiding').innerHTML = d || 'Vul je cijfers in — hier komt te staan wat ze betekenen, niet alleen hoe ze scoren.';
+}
+
+function tekenStrategie(){
+  const doel=(function(){try{return localStorage.getItem('bg_scan_doel')||'grip';}catch(e){return 'grip';}})();
+  const g=k=>S.niveaus[k]||2, c=S.cijfers||{}, b=B();
+  const gem=DIM.reduce((a,d)=>a+g(d.k),0)/DIM.length;
+  const sterk=DIM.slice().sort((x,y)=>g(y.k)-g(x.k)).slice(0,2).map(d=>d.n);
+  const zwak =DIM.slice().sort((x,y)=>g(x.k)-g(y.k)).slice(0,2).map(d=>d.n);
+  const grootste=+(c.cGrootste)||0, marge=+(c.cBrutomarge)||0;
+  const M=[];
+
+  M.push({n:'SWOT',h:'klassiek',inhoud:
+    '<div class="q4">'
+    +'<div class="goed"><b>Sterk</b>'+sterk.join(' en ')+' staan op niveau '+g(DIM.find(d=>d.n===sterk[0]).k)+'. Daar kun je op bouwen.</div>'
+    +'<div class="slecht"><b>Zwak</b>'+zwak.join(' en ')+' blijven achter. Dat bepaalt je tempo, niet je ambitie.</div>'
+    +'<div class="kans"><b>Kans</b>'+(b.groei>1.5?'Je sector groeit met '+b.groei.toFixed(1)+'% — meebewegen kost minder moeite dan marktaandeel afpakken.'
+        :'Je sector groeit nauwelijks ('+b.groei.toFixed(1)+'%). Groei komt uit productiviteit of van een concurrent.')+'</div>'
+    +'<div class="dreig"><b>Bedreiging</b>'+(grootste>=25?'Eén klant is '+grootste+'% van je omzet.':'Loonkosten stijgen met 4% terwijl de economie 0,8% groeit — marge staat onder druk.')+'</div>'
+    +'</div><p class="sub">Ingevuld uit je scores en cijfers. Vul aan met wat alleen jij weet: dat is het deel dat een model nooit ziet.</p>'});
+
+  M.push({n:'Balanced Scorecard',h:'Kaplan & Norton',inhoud:
+    '<div class="q4">'
+    +'<div><b>Financieel</b>'+(marge?'Brutomarge '+marge+'% tegenover '+(b.norm&&b.norm.marge)+'% in je branche.':'Nog geen cijfers ingevuld.')+'</div>'
+    +'<div><b>Klant</b>Klantenservice op niveau '+g('service')+'. '+(g('service')<3?'Vragen komen nog in mailboxen binnen.':'Er is één plek met status.')+'</div>'
+    +'<div><b>Proces</b>Operatie op niveau '+g('operatie')+'. '+(g('operatie')<3?'Het werk gaat rond op gevoel.':'Het proces is te volgen.')+'</div>'
+    +'<div><b>Leren</b>Mensen en kennis op niveau '+g('mensen')+'. Dit voorspelt of de rest beklijft.</div>'
+    +'</div><p class="sub">Vier invalshoeken — voorkomt dat sturing alleen over geld gaat.</p>'});
+
+  const hard=(g('tech')+g('analytics')+g('quality'))/3, zacht=(g('culture')+g('mensen'))/2;
+  M.push({n:'7S — hard tegen zacht',h:'McKinsey',inhoud:
+    '<p>Harde kant (systemen, data, kwaliteit): <b>'+hard.toFixed(1)+'</b> · zachte kant (mensen, cultuur): <b>'+zacht.toFixed(1)+'</b></p>'
+    +'<p>'+(hard-zacht>0.7?'<b>Je systemen lopen voor op je mensen.</b> Dit is de klassieke reden dat invoeringen doodbloeden: de techniek staat er, het gebruik niet.'
+      :(zacht-hard>0.7?'<b>Je mensen kunnen meer aan dan je systemen toelaten.</b> Hier ligt snelle winst — het draagvlak is er al.'
+                      :'Hard en zacht lopen gelijk op. Verandering landt hier makkelijker dan gemiddeld.'))+'</p>'
+    +'<p class="sub">De zeven S\'en: strategy, structure, systems, staff, skills, style, shared values.</p>'});
+
+  M.push({n:'Blue Ocean — ERRC',h:'Kim & Mauborgne',inhoud:
+    '<div class="erk">'
+    +'<div><b>Schrappen</b>Wat doet de sector dat niemand mist? Rapporten die niemand leest, offertes op maat voor standaardwerk.</div>'
+    +'<div><b>Verminderen</b>Doorlooptijd, aantal gesprekken vooraf, opties op de offerte.</div>'
+    +'<div><b>Verhogen</b>Zekerheid vooraf: prijs, datum, wat er precies komt.</div>'
+    +'<div><b>Creëren</b>'+(g('mensen')<3?'Kennis die van het bedrijf wordt in plaats van van personen — dat verkoopt niemand in jouw markt.'
+        :'Aantoonbare overdraagbaarheid: iets wat je aan een koper of financier kunt láten zien.')+'</div>'
+    +'</div><p class="sub">Niet beter concurreren, maar op een andere as spelen.</p>'});
+
+  const groeiPct=b.groei;
+  M.push({n:'Ansoff — waar komt groei vandaan',h:'Ansoff',inhoud:
+    '<div class="q4">'
+    +'<div><b>Meer bij bestaande klanten</b>'+(grootste>=25?'Riskant: je leunt al zwaar op één klant.':'Meestal de goedkoopste groei. Ken je de omzet per klant?')+'</div>'
+    +'<div><b>Nieuwe klanten, zelfde aanbod</b>'+(groeiPct<1?'In een sector die '+groeiPct.toFixed(1)+'% groeit betekent dit: afpakken van een concurrent.':'De markt groeit mee, dit is de logische route.')+'</div>'
+    +'<div><b>Nieuw aanbod, zelfde klanten</b>Vraagt capaciteit die nu opgaat aan handwerk.</div>'
+    +'<div><b>Beide nieuw</b>Alleen als de basis op niveau 4 staat. Jij zit op '+gem.toFixed(1)+'.</div>'
+    +'</div>'});
+
+  M.push({n:'Drie horizonten',h:'McKinsey',inhoud:
+    '<p><b>Nu (0–12 mnd):</b> '+zwak[0].toLowerCase()+' van niveau '+g(DIM.find(d=>d.n===zwak[0]).k)+' naar '+(g(DIM.find(d=>d.n===zwak[0]).k)+1)+'. Dat is je rem.</p>'
+    +'<p><b>Straks (1–2 jaar):</b> de kern naar verbonden — gegevens één keer invoeren, systemen die met elkaar praten.</p>'
+    +'<p><b>Later (2–3 jaar):</b> '+(doel==='exit'?'aantoonbaar overdraagbaar zijn, met cijfers die een koper zonder toelichting begrijpt.'
+      :'werk dat zichzelf signaleert: het systeem meldt wat afwijkt, mensen beslissen.')+'</p>'
+    +'<p class="sub">Verdeel je aandacht, niet je budget: horizon 1 verdient het geld waarmee 2 en 3 betaald worden.</p>'});
+
+  document.getElementById('stratKaarten').innerHTML = M.map((m,i)=>
+    '<details class="mod"'+(i===0?' open':'')+'><summary><h3>'+m.n+'</h3><span class="herkomst">'+m.h+' ▾</span></summary>'
+    +'<div class="inhoud">'+m.inhoud+'</div></details>').join('');
 }
 </script>
 </body>
