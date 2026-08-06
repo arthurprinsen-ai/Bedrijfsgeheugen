@@ -160,6 +160,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <button class="tab" role="tab" aria-selected="false" data-p="mensen">☺ Mensen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="branche">▲ Branche en markt</button>
         <button class="tab" role="tab" aria-selected="false" data-p="onderzoek">◎ Onderzoek</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="beleid">⛨ Beleid en naleving</button>
         <span class="groep">Denken</span>
         <button class="tab" role="tab" aria-selected="false" data-p="strategie">◆ Strategiemodellen</button>
         <span class="groep">Doen</span>
@@ -266,6 +267,21 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <p style="font-size:.89rem;line-height:1.65">Deze onderzoeken gaan grotendeels over grote ondernemingen — duizenden medewerkers, eigen IT-afdelingen, budgetten die het jouwe honderdvoudig overtreffen. Ze zijn nuttig als <b>richting</b>, niet als norm. Waar ze wél direct op jou slaan: het patroon dat bijna iedereen begint en bijna niemand doorpakt. Dat is in het mkb niet anders, alleen zichtbaarder.</p>
         <p class="sub" style="margin-top:.6rem">Bronnen: McKinsey State of AI · BCG AI Radar · Gartner · MIT Project NANDA · Deloitte · PwC · Stanford AI Index · CBS · DNB · RaboResearch. Cijfers uit publieke samenvattingen, gecontroleerd augustus 2026.</p>
       </div>
+    </section>
+
+    <!-- BELEID -->
+    <section class="paneel" id="p-beleid">
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Wat er op papier moet staan</h3>
+        <p class="sub">Zet per stuk waar je staat. Niet alles hoeft — maar je moet wél weten wat je mist.</p>
+        <div id="beleidLijst" style="margin-top:.8rem"></div>
+        <div id="beleidAdvies" style="margin-top:1rem"></div>
+      </div>
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Deadlines en boetes</h3><div id="naleving"></div></div>
+        <div class="kaart"><h3>Incident: wat is het plan?</h3><div id="incident"></div></div>
+      </div>
+      <div class="kaart"><h3>AI, BI en data — de afspraken eronder</h3><div id="aibi"></div></div>
     </section>
 
     <!-- STRATEGIE -->
@@ -439,7 +455,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -595,7 +611,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -618,6 +634,7 @@ function importeer(bestand){
       if(p.cijfers) S.cijfers=p.cijfers;
       if(p.bc) S.bc=p.bc;
       if(p.eigen) S.eigen=p.eigen;
+      if(p.beleid) S.beleid=p.beleid;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -715,7 +732,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek();
+  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -1236,6 +1253,88 @@ function tekenOnderzoek(){
      +'<span style="color:'+kl+';font-weight:600">'+naam+' staat bij jullie op niveau '+eigen+'.</span></div>'
      +'</div>';
   }).join('');
+}
+
+const BELEID=[
+ {k:'infosec',n:'Informatiebeveiligingsbeleid',u:'Wat mag wie, hoe ga je om met gegevens, wie is verantwoordelijk. Basis onder ISO 27001 en NEN 7510.'},
+ {k:'toegang',n:'Toegangsbeleid en rechten',u:'Rollen, tweestapsverificatie, en een vaste lijst bij in- en uitdiensttreding.'},
+ {k:'incident',n:'Incident-responseplan',u:'Wie doet wat in het eerste uur, wie belt de klant, wanneer meld je bij de toezichthouder.'},
+ {k:'backup',n:'Back-up en herstel — getest',u:'Een back-up die nooit is teruggezet, is een aanname.'},
+ {k:'avg',n:'Verwerkingsregister en bewaartermijnen',u:'Welke persoonsgegevens, waarom, hoe lang, en met wie gedeeld.'},
+ {k:'verwerker',n:'Verwerkersovereenkomsten',u:'Met elke partij die gegevens van jouw klanten verwerkt — ook je AI-leverancier.'},
+ {k:'aibeleid',n:'AI-gebruiksbeleid',u:'Wat mag er wel en niet in een AI-tool, wie controleert de uitkomst, en hoe leg je het vast.'},
+ {k:'datadef',n:'Datadefinities en eigenaren (BI)',u:'Wat is een klant, een order, een uur — en wie beslist dat. Zonder dit blijft elk dashboard betwistbaar.'},
+ {k:'rapport',n:'Rapportagekalender',u:'Welke cijfers wanneer, uit welke bron, door wie gecontroleerd.'},
+ {k:'leverancier',n:'Leveranciers- en ketenafspraken',u:'NIS2 legt verantwoordelijkheid ook bij je toeleveranciers.'},
+ {k:'csrd',n:'Duurzaamheidsgegevens (CSRD)',u:'Energie, afval, vervoer — herleidbaar en met dezelfde definities als vorig jaar.'},
+ {k:'continu',n:'Uitwijk en continuïteit',u:'Wat als een kernsysteem een week uitvalt. Meestal het enige dat echt getest moet worden.'}
+];
+const BSTAT=['ontbreekt','concept','vastgesteld','geoefend'];
+function tekenBeleid(){
+  const st=S.beleid||{}, c=S.cijfers||{}, omzet=(+(c.cOmzet)||0)*1000, b=B();
+  const lijst=document.getElementById('beleidLijst'); if(!lijst) return;
+  lijst.innerHTML=BELEID.map(x=>{
+    const v=st[x.k]||0;
+    const kl=['#D93025','#E8A200','#1F9D55','#0E9F6E'][v];
+    return '<div style="display:grid;grid-template-columns:1fr auto;gap:.7rem;align-items:start;padding:.55rem 0;border-bottom:1px solid var(--lijn)">'
+     +'<div><b style="font-size:.9rem">'+x.n+'</b><div class="sub" style="margin-top:.1rem">'+x.u+'</div></div>'
+     +'<select data-beleid="'+x.k+'" style="border:1px solid var(--lijn);border-radius:3px;padding:.3rem .45rem;font:inherit;font-size:.82rem;color:'+kl+';font-weight:600;background:var(--papier)">'
+     + BSTAT.map((n,i)=>'<option value="'+i+'"'+(i===v?' selected':'')+'>'+n+'</option>').join('')
+     +'</select></div>';
+  }).join('');
+  lijst.querySelectorAll('[data-beleid]').forEach(sel=>{
+    if(sel.dataset.aan)return; sel.dataset.aan='1';
+    sel.addEventListener('change',e=>{S.beleid=S.beleid||{};S.beleid[e.target.dataset.beleid]=+e.target.value;bewaar();teken();});
+  });
+  const ontbreekt=BELEID.filter(x=>!(st[x.k]>0));
+  const geoefend=BELEID.filter(x=>st[x.k]===3).length;
+  document.getElementById('beleidAdvies').innerHTML=
+    '<div style="padding:.75rem .9rem;border-left:4px solid '+(ontbreekt.length>6?'var(--rood)':(ontbreekt.length>2?'var(--amber)':'var(--groen)'))+';background:#FBFAF7;border-radius:0 3px 3px 0;font-size:.89rem;line-height:1.6">'
+    +'<b>'+(BELEID.length-ontbreekt.length)+' van de '+BELEID.length+' geregeld, '+geoefend+' daarvan ook geoefend.</b><br>'
+    +(ontbreekt.length? 'Begin bij: <b>'+ontbreekt.slice(0,3).map(x=>x.n.toLowerCase()).join('</b>, <b>')+'</b>. '
+        +'Papier is hier niet het doel — het doel is dat iemand weet wat te doen zonder jou te bellen.'
+      : 'Alles staat op papier. De volgende stap is oefenen: een plan dat nooit is gebruikt, werkt zelden zoals bedacht.')
+    +'</div>';
+
+  // deadlines en boetes
+  const boete=(pct)=>omzet?('€ '+Math.round(omzet*pct/100).toLocaleString('nl-NL')):'—';
+  document.getElementById('naleving').innerHTML=
+   [['EU AI Act — transparantie','2 aug 2026','Chatbots melden, AI-content labelen, AI-geletterdheid aantonen.','tot 3% omzet: '+boete(3)],
+    ['EU AI Act — hoog risico','2 dec 2027','Uitgesteld via de Digital Omnibus. Geldt o.a. bij werving en kredietbeoordeling.','tot 7% omzet: '+boete(7)],
+    ['Cyberbeveiligingswet (NIS2)','verwacht 2026','Zorgplicht, meldplicht, ketenverantwoordelijkheid, bestuurdersaansprakelijkheid.','tot 2% omzet: '+boete(2)],
+    ['CSRD via de keten','doorlopend','Grote klanten en financiers vragen jouw cijfers op, ook zonder eigen plicht.','geen boete — wel verlies van opdrachten'],
+    ['AVG','geldt al','Verwerkingsregister, bewaartermijnen, verwerkersovereenkomsten.','tot 4% omzet: '+boete(4)]]
+   .map(r=>'<div style="padding:.55rem 0;border-bottom:1px solid var(--lijn)">'
+     +'<div style="display:flex;justify-content:space-between;gap:.6rem"><b style="font-size:.88rem">'+r[0]+'</b><span class="sub">'+r[1]+'</span></div>'
+     +'<div style="font-size:.85rem;margin-top:.15rem">'+r[2]+'</div>'
+     +'<div class="sub" style="margin-top:.15rem">'+r[3]+'</div></div>').join('')
+   +'<p class="sub" style="margin-top:.6rem">Boetes zijn maxima uit de wetteksten, geen verwachting. Vul je omzet in bij Cijfers om ze door te rekenen.</p>';
+
+  // incidentplan
+  const sec=S.niveaus.security||2;
+  document.getElementById('incident').innerHTML=
+    '<p style="font-size:.89rem;line-height:1.6">Beveiliging staat bij jullie op niveau <b>'+sec+'</b>.'
+    +(st.incident?'' : ' Er is nog geen incident-responseplan vastgelegd.')+'</p>'
+    +'<ol style="font-size:.87rem;line-height:1.65;margin:.5rem 0 0 1.1rem">'
+    +'<li><b>Eerste uur:</b> wie beslist, wie legt vast, wie zet systemen af.</li>'
+    +'<li><b>Meldplicht:</b> datalek naar de Autoriteit Persoonsgegevens binnen 72 uur; onder NIS2 een eerste melding binnen 24 uur.</li>'
+    +'<li><b>Klanten:</b> wie belt ze, en met welk verhaal. Stilte is duurder dan slecht nieuws.</li>'
+    +'<li><b>Herstel:</b> welke back-up, hoe oud, en wie test of hij werkt.</li>'
+    +'<li><b>Daarna:</b> wat is er veranderd. Zonder die stap gebeurt het opnieuw.</li>'
+    +'</ol>'
+    +'<p class="sub" style="margin-top:.6rem">Eén A4 is genoeg. Een plan dat niemand leest, is geen plan.</p>';
+
+  // AI, BI en data
+  document.getElementById('aibi').innerHTML=
+    '<div class="kaarten k3">'
+    +'<div><b>AI</b><p style="font-size:.87rem;line-height:1.6">AI-gebruik staat op niveau '+(S.niveaus.ai||S.niveaus.tech||2)+'. '
+    +(st.aibeleid?'Er is beleid.':'Zonder afspraken over welke gegevens erin mogen, gaat het ondergronds — verbieden werkt niet, vastleggen wel.')
+    +' Leg vast: welke tools, welke gegevens, wie controleert de uitkomst.</p></div>'
+    +'<div><b>BI</b><p style="font-size:.87rem;line-height:1.6">Stuurinformatie staat op '+(S.niveaus.analytics||2)+', datakwaliteit op '+(S.niveaus.quality||2)+'. '
+    +(st.datadef?'Definities zijn vastgelegd.':'Zonder afgesproken definities blijft elk dashboard betwistbaar — dan gaat de vergadering over wiens cijfer klopt.')+'</p></div>'
+    +'<div><b>Data</b><p style="font-size:.87rem;line-height:1.6">Governance staat op '+(S.niveaus.governance||2)+'. '
+    +'Benoem per kernbron één eigenaar. Niet een afdeling, één naam — anders is niemand het.</p></div>'
+    +'</div>';
 }
 </script>
 </body>
