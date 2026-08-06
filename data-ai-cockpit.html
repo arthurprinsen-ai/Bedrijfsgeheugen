@@ -1276,6 +1276,7 @@ function renderDash(score,dimAvg){
    +'De weging: elk antwoord telt 1\u20134 punten; het advies volgt de laagste gemiddelde score. Benchmarkbronnen: CBS AI-monitor, Gartner-volwassenheidsverdeling.</p></details>';
   // --- wat remt je: doel, groei en veranderkracht, interactief ---
   window.__dimAvg = dimAvg;
+  try{ localStorage.setItem('bg_scan_dimavg', JSON.stringify(dimAvg)); }catch(e){}
   try{ window.__branche = (SECTORS[userSector]&&SECTORS[userSector].name) || 'Gemiddeld NL-bedrijf'; }catch(e){}
 
   (function(){

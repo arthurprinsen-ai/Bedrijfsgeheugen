@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portaal | Bedrijfsgeheugen</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--geel:#FFE86B;
+--grijs:#5C646E;--lijn:#DCDFE6;--groen:#1F9D55;--amber:#E8A200;--rood:#D93025}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--papier);color:var(--inkt);font-family:"Instrument Sans",system-ui,sans-serif;line-height:1.55}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;line-height:1}
+a{color:var(--blauw)}
+.balk{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 1.3rem;
+ border-bottom:1px solid var(--lijn);background:#fff;position:sticky;top:0;z-index:20}
+.merk{display:flex;align-items:center;gap:.55rem;font-family:"Bricolage Grotesque";font-weight:800}
+.merk i{font-style:normal;color:var(--blauw)}
+.knop{border:0;background:var(--inkt);color:#fff;border-radius:3px;padding:.5rem .95rem;font:inherit;font-size:.86rem;cursor:pointer}
+.knop.licht{background:transparent;color:var(--inkt);border:1px solid var(--lijn)}
+.wrap{max-width:1200px;margin:0 auto;padding:1.6rem 1.3rem 4rem}
+.poort{max-width:460px;margin:14vh auto;text-align:center;padding:0 1.3rem}
+.poort h1{font-size:2.1rem;margin-bottom:.7rem}
+.poort p{color:var(--grijs);margin-bottom:1.4rem}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:1.2rem 0 0}
+.tab{border:1px solid var(--lijn);background:#fff;border-radius:3px;padding:.45rem .9rem;font:inherit;font-size:.86rem;cursor:pointer}
+.tab[aria-selected=true]{background:var(--inkt);color:#fff;border-color:var(--inkt)}
+.paneel{display:none}.paneel.aan{display:block}
+.kaarten{display:grid;gap:1rem;margin-top:1.1rem}
+@media(min-width:900px){.k3{grid-template-columns:repeat(3,1fr)}.k2{grid-template-columns:1fr 1fr}}
+.kaart{background:#fff;border:1px solid var(--lijn);border-radius:4px;padding:1.15rem 1.25rem}
+.kaart h3{font-size:.98rem;margin-bottom:.5rem}
+.kpi{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.2rem;letter-spacing:-.02em;line-height:1}
+.sub{font-size:.83rem;color:var(--grijs)}
+.dim{display:grid;grid-template-columns:9.5rem 1fr 4.6rem;gap:.7rem;align-items:center;margin:.4rem 0}
+.dim label{font-size:.86rem;font-weight:600}
+.dim output{font-size:.78rem;color:var(--grijs);text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:24px;background:transparent;cursor:grab}
+input[type=range]::-webkit-slider-runnable-track{height:9px;border-radius:5px;background:#EDEBE5}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-6.5px;border-radius:50%;
+ background:var(--inkt);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+input[type=range]::-moz-range-track{height:9px;border-radius:5px;background:#EDEBE5}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--inkt);border:3px solid #fff}
+input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid var(--lijn);border-radius:3px;font:inherit;font-size:.9rem;background:var(--papier)}
+/* gantt */
+.gantt{overflow-x:auto}
+.gt{min-width:720px}
+.gtrij{display:grid;grid-template-columns:14rem 1fr;gap:.8rem;align-items:center;padding:.42rem 0;border-bottom:1px solid var(--lijn)}
+.gtrij:last-child{border:0}
+.gtnaam{font-size:.88rem;font-weight:600;display:flex;align-items:center;gap:.4rem}
+.gtnaam small{font-weight:400;color:var(--grijs)}
+.gtbaan{position:relative;height:26px;background:linear-gradient(90deg,#EDEBE5 1px,transparent 1px) 0 0/ calc(100%/12) 100%;border-radius:3px}
+.gtblok{position:absolute;top:3px;height:20px;border-radius:3px;color:#fff;font-size:.72rem;font-weight:600;
+ display:flex;align-items:center;padding:0 .45rem;cursor:grab;white-space:nowrap;overflow:hidden}
+.gtkop{display:grid;grid-template-columns:14rem 1fr;gap:.8rem;font-size:.72rem;color:var(--grijs);margin-bottom:.3rem}
+.gtmaanden{display:grid;grid-template-columns:repeat(12,1fr)}
+.rij{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.8rem}
+.klaar{text-decoration:line-through;opacity:.5}
+.leeg{color:var(--grijs);font-size:.9rem;padding:1rem 0}
+</style>
+</head>
+<body>
+
+<!-- poort -->
+<div id="poort" class="poort">
+  <h1>Jouw <span style="background:linear-gradient(transparent 52%,var(--geel) 52%)">bedrijfsgeheugen</span></h1>
+  <p>Log in om je scan, je cijfers en je roadmap te zien. Alles wat we samen hebben vastgesteld staat hier — en blijft hier staan.</p>
+  <button class="knop" onclick="netlifyIdentity.open()">Inloggen of account maken</button>
+  <p class="sub" style="margin-top:1rem">Nog geen scan gedaan? <a href="/data-ai-cockpit">Begin met de bedrijfsscan</a>.</p>
+</div>
+
+<!-- portaal -->
+<div id="portaal" hidden>
+  <div class="balk">
+    <div class="merk">
+      <svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M8 8h84v62L70 92H8z" fill="#FFE86B"/><path d="M92 70H70v22z" fill="#14171A"/>
+        <rect x="20" y="28" width="47" height="7" rx="3.5" fill="#14171A"/>
+        <rect x="20" y="44" width="34" height="7" rx="3.5" fill="#14171A"/>
+        <rect x="20" y="60" width="25" height="7" rx="3.5" fill="#14171A"/></svg>
+      Bedrijfs<i>geheugen</i>
+    </div>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <span class="sub" id="wie"></span>
+      <button class="knop licht" onclick="netlifyIdentity.logout()">Uitloggen</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <h1 style="font-size:clamp(1.7rem,4vw,2.4rem)">Waar je staat, en wat er nu speelt</h1>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-p="overzicht">Overzicht</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="profiel">Profiel</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
+    </div>
+
+    <!-- OVERZICHT -->
+    <section class="paneel aan" id="p-overzicht">
+      <div class="kaarten k3">
+        <div class="kaart"><h3>Volwassenheid</h3><div class="kpi" id="kNiveau">–</div><div class="sub" id="kNiveauT">nog geen scan gekoppeld</div></div>
+        <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">directe uren × uurkosten</div></div>
+        <div class="kaart"><h3>Bezetting</h3><div class="kpi" id="kFte">–</div><div class="sub" id="kFteT">fte aan vermijdbaar werk</div></div>
+      </div>
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Wat je nu remt</h3><div id="remmen"></div></div>
+        <div class="kaart"><h3>Voortgang</h3><svg id="voortgang" viewBox="0 0 460 200" role="img" aria-label="Voortgang"></svg>
+          <div class="sub" id="voortgangT"></div></div>
+      </div>
+    </section>
+
+    <!-- PROFIEL -->
+    <section class="paneel" id="p-profiel">
+      <div class="kaarten k2">
+        <div class="kaart">
+          <h3>Je onderdelen — schuif om bij te werken</h3>
+          <div id="schuiven"></div>
+          <div class="rij">
+            <label class="sub">Medewerkers <input type="number" id="mw" value="24" min="1" max="250" style="width:5rem"></label>
+            <label class="sub">Uurkosten € <input type="number" id="uur" value="52" min="20" max="200" style="width:5rem"></label>
+          </div>
+        </div>
+        <div class="kaart"><h3>Profiel tegenover de bovenste 25%</h3>
+          <svg id="grafiek" viewBox="0 0 460 330" role="img" aria-label="Profiel per onderdeel"></svg></div>
+      </div>
+    </section>
+
+    <!-- ROADMAP -->
+    <section class="paneel" id="p-roadmap">
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Wat je gaat verbeteren</h3>
+        <p class="sub">Sleep een blok om te verschuiven. Klik de naam om af te vinken.</p>
+        <div class="rij">
+          <input type="text" id="nTitel" placeholder="Wat ga je aanpakken?" style="min-width:15rem">
+          <select id="nDim"></select>
+          <label class="sub">start maand <input type="number" id="nStart" value="1" min="1" max="12" style="width:4rem"></label>
+          <label class="sub">duur <input type="number" id="nDuur" value="2" min="1" max="12" style="width:4rem"></label>
+          <button class="knop" id="nToe">Toevoegen</button>
+        </div>
+        <div class="gantt" style="margin-top:1.1rem">
+          <div class="gt">
+            <div class="gtkop"><span>Verbetering</span><div class="gtmaanden" id="maanden"></div></div>
+            <div id="ganttRijen"></div>
+          </div>
+        </div>
+        <div class="leeg" id="ganttLeeg" hidden>Nog niets gepland. Voeg je eerste stap toe — begin met de grootste rem.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const DIM=[
+ {k:'sturing',n:'Strategie en sturing',u:1.6,top:4},
+ {k:'commercie',n:'Commercie en klant',u:2.8,top:4},
+ {k:'operatie',n:'Operatie en levering',u:3.4,top:4},
+ {k:'finance',n:'Finance',u:3.6,top:4},
+ {k:'mensen',n:'Mensen en kennis',u:1.5,top:4},
+ {k:'analytics',n:'Stuurinformatie',u:2.2,top:4},
+ {k:'quality',n:'Datakwaliteit',u:1.9,top:4},
+ {k:'governance',n:'Governance',u:1.2,top:3},
+ {k:'tech',n:'Systemen en AI',u:4.1,top:4},
+ {k:'culture',n:'Organisatie en cultuur',u:1.1,top:3}
+];
+const NIV=['','in hoofden','in lijstjes','in systemen','verbonden','zelfsturend'];
+const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null};
+let sleutel='bg_portaal_anoniem';
+
+/* ---------- opslag ---------- */
+function laad(){
+  try{const r=localStorage.getItem(sleutel); if(r) S=Object.assign(S,JSON.parse(r));}catch(e){}
+  DIM.forEach(d=>{ if(!S.niveaus[d.k]) S.niveaus[d.k]=2; });
+  // scanresultaat overnemen als dat er is
+  try{
+    const scan=JSON.parse(localStorage.getItem('bg_scan_dimavg')||'null');
+    if(scan) DIM.forEach(d=>{ if(scan[d.k]) S.niveaus[d.k]=Math.max(1,Math.min(5,Math.round(scan[d.k]))); });
+  }catch(e){}
+}
+function bewaar(){ try{ localStorage.setItem(sleutel, JSON.stringify(S)); }catch(e){} }
+
+/* ---------- login ---------- */
+function toonPortaal(user){
+  document.getElementById('poort').hidden=true;
+  document.getElementById('portaal').hidden=false;
+  document.getElementById('wie').textContent=(user&&(user.user_metadata&&user.user_metadata.full_name||user.email))||'';
+  sleutel='bg_portaal_'+((user&&user.email)||'anoniem');
+  laad(); bouw(); teken();
+}
+if(window.netlifyIdentity){
+  netlifyIdentity.on('init',u=>{ if(u) toonPortaal(u); });
+  netlifyIdentity.on('login',u=>{ netlifyIdentity.close(); toonPortaal(u); });
+  netlifyIdentity.on('logout',()=>location.reload());
+}
+// zonder Identity (nog niet aangezet): open met ?demo
+if(/[?&]demo\b/.test(location.search)) setTimeout(()=>toonPortaal({email:'demo'}),200);
+
+/* ---------- opbouw ---------- */
+function bouw(){
+  const box=document.getElementById('schuiven'); box.innerHTML='';
+  DIM.forEach(d=>{
+    const r=document.createElement('div'); r.className='dim';
+    r.innerHTML='<label for="s-'+d.k+'">'+d.n+'</label>'
+      +'<input type="range" id="s-'+d.k+'" min="1" max="5" step="1" value="'+S.niveaus[d.k]+'">'
+      +'<output id="o-'+d.k+'">'+NIV[S.niveaus[d.k]]+'</output>';
+    box.appendChild(r);
+    r.querySelector('input').addEventListener('input',e=>{
+      S.niveaus[d.k]=+e.target.value;
+      document.getElementById('o-'+d.k).textContent=NIV[S.niveaus[d.k]];
+      bewaar(); teken();
+    });
+  });
+  document.getElementById('mw').value=S.mw; document.getElementById('uur').value=S.uur;
+  ['mw','uur'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{
+    S[id]=+e.target.value||S[id]; bewaar(); teken();}));
+  const sel=document.getElementById('nDim');
+  sel.innerHTML=DIM.map(d=>'<option value="'+d.k+'">'+d.n+'</option>').join('');
+  document.getElementById('maanden').innerHTML=Array.from({length:12},(_,i)=>'<span>'+(i+1)+'</span>').join('');
+  document.getElementById('nToe').addEventListener('click',()=>{
+    const t=document.getElementById('nTitel').value.trim(); if(!t)return;
+    S.taken.push({id:Date.now(),t,dim:document.getElementById('nDim').value,
+      s:+document.getElementById('nStart').value||1,d:+document.getElementById('nDuur').value||2,klaar:false});
+    document.getElementById('nTitel').value=''; bewaar(); teken();
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===b));
+    document.querySelectorAll('.paneel').forEach(p=>p.classList.remove('aan'));
+    document.getElementById('p-'+b.dataset.p).classList.add('aan');
+  }));
+}
+
+const euro=n=>'€ '+Math.round(n).toLocaleString('nl-NL');
+
+function teken(){
+  const f=[0,1,.78,.5,.22,.06];
+  let urenWeek=0, kosten={};
+  DIM.forEach(d=>{
+    const u=d.u*f[S.niveaus[d.k]]*(S.mw/24);
+    urenWeek+=u; kosten[d.k]=u*46*S.uur;
+  });
+  const totaal=Object.values(kosten).reduce((a,b)=>a+b,0);
+  const fte=urenWeek*46/1600;
+  const gem=DIM.reduce((a,d)=>a+S.niveaus[d.k],0)/DIM.length;
+
+  document.getElementById('kNiveau').textContent=gem.toFixed(1);
+  document.getElementById('kNiveauT').textContent='gemiddeld — '+NIV[Math.round(gem)];
+  document.getElementById('kKosten').textContent=euro(totaal);
+  document.getElementById('kFte').textContent=fte.toFixed(1);
+  document.getElementById('kFteT').textContent='fte aan vermijdbaar werk, van '+S.mw;
+
+  // remmen
+  const top=DIM.slice().sort((a,b)=>kosten[b.k]-kosten[a.k]).slice(0,4);
+  document.getElementById('remmen').innerHTML=top.map((d,i)=>
+    '<div style="display:flex;justify-content:space-between;gap:.6rem;padding:.42rem 0;border-bottom:1px solid var(--lijn)">'
+    +'<span><b>'+(i+1)+'.</b> '+d.n+' <span class="sub">· '+NIV[S.niveaus[d.k]]+'</span></span>'
+    +'<b>'+euro(kosten[d.k])+'</b></div>').join('');
+
+  // profielgrafiek
+  let g='',y=10;
+  DIM.forEach(d=>{
+    const w=(S.niveaus[d.k]/5)*250, kl=S.niveaus[d.k]>=d.top?'#1F9D55':(S.niveaus[d.k]>=d.top-1?'#E8A200':'#D93025');
+    g+='<text x="0" y="'+(y+12)+'" font-size="11.5" fill="#14171A" font-family="Instrument Sans">'+d.n+'</text>';
+    g+='<rect x="180" y="'+(y+2)+'" width="250" height="13" rx="6.5" fill="#EDEBE5"/>';
+    g+='<rect x="180" y="'+(y+2)+'" width="'+Math.max(w,8)+'" height="13" rx="6.5" fill="'+kl+'"/>';
+    g+='<rect x="'+(180+(d.top/5)*250-1.5)+'" y="'+(y-1)+'" width="3" height="21" fill="#14171A"/>';
+    g+='<text x="440" y="'+(y+12)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+S.niveaus[d.k]+'</text>';
+    y+=31;
+  });
+  document.getElementById('grafiek').innerHTML=g;
+
+  // voortgang
+  const klaar=S.taken.filter(t=>t.klaar).length, alles=S.taken.length;
+  const pct=alles?Math.round(klaar/alles*100):0;
+  document.getElementById('voortgang').innerHTML=
+    '<rect x="10" y="80" width="440" height="26" rx="13" fill="#EDEBE5"/>'
+   +'<rect x="10" y="80" width="'+(440*pct/100)+'" height="26" rx="13" fill="#2742D6"/>'
+   +'<text x="10" y="60" font-size="34" font-weight="800" fill="#14171A" font-family="Bricolage Grotesque">'+pct+'%</text>'
+   +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
+  document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
+
+  // gantt
+  const rijen=document.getElementById('ganttRijen');
+  document.getElementById('ganttLeeg').hidden = S.taken.length>0;
+  rijen.innerHTML=S.taken.map((t,i)=>{
+    const kl=KLEUR[i%KLEUR.length];
+    return '<div class="gtrij"><div class="gtnaam'+(t.klaar?' klaar':'')+'">'
+     +'<input type="checkbox" '+(t.klaar?'checked':'')+' data-vink="'+t.id+'">'
+     +'<span>'+t.t+'<br><small>'+(DIM.find(d=>d.k===t.dim)||{n:''}).n+'</small></span></div>'
+     +'<div class="gtbaan" data-baan="'+t.id+'">'
+     +'<div class="gtblok" data-blok="'+t.id+'" style="left:'+((t.s-1)/12*100)+'%;width:'+(t.d/12*100)+'%;background:'+(t.klaar?'#9AA6B6':kl)+'">'
+     +'M'+t.s+'–'+(t.s+t.d-1)+'</div></div></div>';
+  }).join('');
+  rijen.querySelectorAll('[data-vink]').forEach(c=>c.addEventListener('change',e=>{
+    const t=S.taken.find(x=>x.id==e.target.dataset.vink); t.klaar=e.target.checked; bewaar(); teken();}));
+  rijen.querySelectorAll('[data-blok]').forEach(b=>{
+    b.addEventListener('pointerdown',ev=>{
+      const t=S.taken.find(x=>x.id==b.dataset.blok);
+      const baan=b.parentElement, br=baan.getBoundingClientRect(), x0=ev.clientX, s0=t.s;
+      b.style.cursor='grabbing'; b.setPointerCapture(ev.pointerId);
+      const mv=e=>{ const dm=Math.round((e.clientX-x0)/(br.width/12));
+        t.s=Math.min(Math.max(1,s0+dm),13-t.d); b.style.left=((t.s-1)/12*100)+'%';
+        b.textContent='M'+t.s+'–'+(t.s+t.d-1); };
+      const up=()=>{ b.style.cursor='grab'; bewaar();
+        b.removeEventListener('pointermove',mv); b.removeEventListener('pointerup',up); };
+      b.addEventListener('pointermove',mv); b.addEventListener('pointerup',up);
+    });
+  });
+}
+</script>
+</body>
+</html>
