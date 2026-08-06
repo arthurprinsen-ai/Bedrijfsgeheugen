@@ -175,6 +175,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <span class="groep">Denken</span>
         <button class="tab" role="tab" aria-selected="false" data-p="strategie">◆ Strategiemodellen</button>
         <span class="groep">Doen</span>
+        <button class="tab" role="tab" aria-selected="false" data-p="advies">★ Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">▤ Roadmap</button>
         <span class="groep">Beheer</span>
         <button class="tab licht" id="mExport">⬇ Downloaden</button>
@@ -187,6 +188,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
     <!-- OVERZICHT -->
     <section class="paneel aan" id="p-overzicht">
       <div id="scanmelding" style="margin-top:1rem"></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Je drie belangrijkste stappen</h3><div id="adviesTop"></div></div>
       <div class="kaarten k3">
         <div class="kaart"><h3>Volwassenheid</h3><div class="kpi" id="kNiveau">–</div><div class="sub" id="kNiveauT">nog geen scan gekoppeld</div></div>
         <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">directe uren × uurkosten</div></div>
@@ -347,6 +349,15 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <p class="sub" style="margin-top:.8rem;border-top:1px solid var(--lijn);padding-top:.6rem">
           Bronnen: CBS Ziekteverzuimpercentage per bedrijfstak (2026 K1, voorlopig) · CBS Digitalisering en arbeidsproductiviteit 2015–2022 ·
           CBS ICT-gebruik bedrijven · RaboResearch Sectorprognoses 2026 · DNB Voorjaarsraming juni 2026 · brancheorganisaties per sector. Bandbreedtes voor het mkb, geen normcijfers voor één bedrijf.</p>
+      </div>
+    </section>
+
+    <!-- ADVIES -->
+    <section class="paneel" id="p-advies">
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Wat wij je zouden adviseren</h3>
+        <p class="sub">Samengesteld uit alles wat je hebt ingevuld: je scores, je cijfers, je mensen, je branche en je beleid. Op volgorde van wat het oplevert gedeeld door wat het kost.</p>
+        <div id="adviesLijst" style="margin-top:.9rem"></div>
       </div>
     </section>
 
@@ -744,7 +755,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid();
+  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -1402,6 +1413,94 @@ function tekenBeleid(){
     const b=document.querySelector('.tab[data-p="'+el.getAttribute('data-ga')+'"]'); if(b) b.click();
   });
 })();
+
+/* Alles wat is ingevuld wordt hier één lijst met adviezen.
+   Elk advies weet waar het vandaan komt en wat het oplevert. */
+function verzamelAdvies(){
+  const g=k=>S.niveaus[k]||2, c=S.cijfers||{}, m=S.mensen||{}, st=S.beleid||{}, b=B();
+  const n=x=>+(c[x])||0, A=[];
+  const f=[0,1,.78,.5,.22,.06];
+  const kosten={}; DIM.forEach(d=>{kosten[d.k]=d.u*f[g(d.k)]*(S.mw/24)*46*S.uur;});
+  const eur=v=>'€ '+Math.round(v).toLocaleString('nl-NL');
+
+  // 1. duurste handwerk
+  const top=DIM.slice().sort((x,y)=>kosten[y.k]-kosten[x.k])[0];
+  A.push({t:'Haal het handwerk uit '+top.n.toLowerCase(),dim:top.k,duur:2,waarde:kosten[top.k]*0.7,
+    waarom:'Grootste kostenpost: '+eur(kosten[top.k])+' per jaar. Op niveau '+g(top.k)+' gaat er structureel tijd verloren.',
+    bron:'Profiel'});
+
+  // 2. sleutelpersoon
+  if(g('mensen')<3) A.push({t:'Leg vast wat alleen één persoon weet',dim:'mensen',duur:2,waarde:kosten.mensen*0.5+8000,
+    waarom:'Mensen en kennis staat op '+g('mensen')+'. De dertig-dagentoets van kopers haal je hiermee niet, en bij verloop vertrekt de kennis mee.',bron:'Profiel'});
+
+  // 3. klantconcentratie
+  if(n('cGrootste')>=25) A.push({t:'Verklein de afhankelijkheid van je grootste klant',dim:'commercie',duur:6,waarde:0,
+    waarom:n('cGrootste')+'% van je omzet komt van één klant. Boven de 20% telt dat bij kopers en financiers als risico.',bron:'Cijfers'});
+
+  // 4. debiteuren
+  if(n('cDso')&&b.norm&&n('cDso')>b.norm.dso+8){
+    const vast=n('cOmzet')*1000/365*(n('cDso')-b.norm.dso);
+    A.push({t:'Factureer en herinner sneller',dim:'finance',duur:1,waarde:vast*0.3,
+      waarom:n('cDso')+' debiteurendagen tegenover '+b.norm.dso+' in je branche — ongeveer '+eur(vast)+' aan vastliggend werkkapitaal.',bron:'Cijfers'});
+  }
+  // 5. verzuim en verloop
+  if((+m.mVerzuim||0)>b.verzuim+1) A.push({t:'Zoek uit waar het verzuim vandaan komt',dim:'mensen',duur:3,waarde:0,
+    waarom:'Verzuim '+(+m.mVerzuim).toFixed(1)+'% tegenover '+b.verzuim.toFixed(1)+'% in je branche. Vaak dezelfde plek waar het werk zich opstapelt.',bron:'Mensen'});
+  if((+m.mVerloop||0)>b.verloop+4) A.push({t:'Verkort de inwerktijd met vastgelegde werkwijzen',dim:'mensen',duur:3,
+    waarde:S.mw*(+m.mVerloop)/100*0.25*1600*S.uur*0.4,
+    waarom:'Met '+(+m.mVerloop)+'% verloop ben je permanent aan het inwerken.',bron:'Mensen'});
+  if(!(+m.mMto)) A.push({t:'Meet één keer wat je mensen ervan vinden',dim:'culture',duur:1,waarde:0,
+    waarom:'Er is geen recent beeld. Dit is de dimensie die voorspelt of verbeteringen blijven hangen.',bron:'Mensen'});
+
+  // 6. beleid
+  const mistIncident=!(st.incident>0), mistAI=!(st.aibeleid>0), mistDef=!(st.datadef>0), mistBack=!(st.backup>1);
+  if(mistIncident) A.push({t:'Schrijf één A4 incident-responseplan',dim:'security',duur:1,waarde:0,
+    waarom:'Bij een incident telt het eerste uur. Zonder plan belt iedereen jou.',bron:'Beleid'});
+  if(mistBack) A.push({t:'Zet één keer een back-up terug',dim:'security',duur:1,waarde:0,
+    waarom:'Een back-up die nooit is teruggezet, is een aanname.',bron:'Beleid'});
+  if(mistAI) A.push({t:'Leg vast wat wel en niet in een AI-tool mag',dim:'ai',duur:1,waarde:0,
+    waarom:'Verbieden werkt niet, vastleggen wel. Vanaf 2 augustus 2026 geldt bovendien de transparantieplicht.',bron:'Beleid'});
+  if(mistDef) A.push({t:'Spreek af wat een klant, order en uur precies zijn',dim:'quality',duur:1,waarde:kosten.quality*0.4,
+    waarom:'Zonder definities blijft elk dashboard betwistbaar en gaat de vergadering over wiens cijfer klopt.',bron:'Beleid'});
+
+  // 7. branchepositie
+  const gem=DIM.reduce((a,d)=>a+g(d.k),0)/DIM.length;
+  if(gem<b.dig-0.3) A.push({t:'Sluit de achterstand op je branche',dim:'tech',duur:6,waarde:0,
+    waarom:'Jouw gemiddelde is '+gem.toFixed(1)+', je branche zit op '+b.dig.toFixed(1)+'.',bron:'Branche'});
+
+  // sorteren: waarde per maand, met een duw voor risico's zonder euro's
+  return A.map(a=>({...a,score:(a.waarde||6000)/Math.max(a.duur,1)})).sort((x,y)=>y.score-x.score);
+}
+function adviesRij(a,i,kort){
+  const eur=v=>'€ '+Math.round(v).toLocaleString('nl-NL');
+  return '<div style="display:grid;grid-template-columns:1.6rem 1fr auto;gap:.7rem;align-items:start;padding:.65rem 0;border-bottom:1px solid var(--lijn)">'
+   +'<b style="width:1.6rem;height:1.6rem;border-radius:50%;background:'+(i===0?'var(--oranje)':'var(--blauw)')+';color:#fff;display:grid;place-items:center;font-size:.78rem">'+(i+1)+'</b>'
+   +'<div><b style="font-size:.92rem">'+a.t+'</b>'
+   +'<div class="sub" style="margin-top:.1rem">'+a.waarom+'</div>'
+   +'<div class="sub" style="margin-top:.15rem">Bron: '+a.bron+' · '+a.duur+' maand'+(a.duur>1?'en':'')
+   +(a.waarde>1000?' · levert ca. '+eur(a.waarde)+' per jaar op':'')+'</div></div>'
+   +(kort?'':'<button class="knop licht" data-advies="'+encodeURIComponent(JSON.stringify({t:a.t,dim:a.dim,d:a.duur}))+'">+ roadmap</button>')
+   +'</div>';
+}
+function tekenAdvies(){
+  const A=verzamelAdvies();
+  const vol=document.getElementById('adviesLijst');
+  if(vol) vol.innerHTML=A.map((a,i)=>adviesRij(a,i,false)).join('')
+    +'<p class="sub" style="margin-top:.8rem">Hoe meer je invult bij Cijfers, Mensen en Beleid, hoe scherper deze lijst wordt.</p>';
+  const kort=document.getElementById('adviesTop');
+  if(kort) kort.innerHTML=A.slice(0,3).map((a,i)=>adviesRij(a,i,true)).join('')
+    +'<div style="margin-top:.6rem"><button class="knop licht" data-ga="advies">Bekijk alle adviezen →</button></div>';
+  document.querySelectorAll('[data-advies]').forEach(btn=>{
+    if(btn.dataset.aan)return; btn.dataset.aan='1';
+    btn.addEventListener('click',()=>{
+      const o=JSON.parse(decodeURIComponent(btn.dataset.advies));
+      const laatste=S.taken.reduce((mx,t)=>Math.max(mx,t.s+t.d-1),0);
+      S.taken.push({id:Date.now(),t:o.t,dim:o.dim,s:Math.min(laatste+1||1,12),d:o.d,klaar:false});
+      bewaar(); teken();
+      btn.textContent='✓ staat erin'; btn.disabled=true;
+    });
+  });
+}
 </script>
 </body>
 </html>
