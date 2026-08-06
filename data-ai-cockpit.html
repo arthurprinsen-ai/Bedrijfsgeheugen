@@ -1223,39 +1223,45 @@ function renderDash(score,dimAvg){
    +'<details class="why"><summary>Waarom dit advies?</summary><p>Van je dimensies scoort <b>'+DIMS[weak].name
    +'</b> het laagst ('+weakPct+'%). De laagste dimensie bepaalt je tempo: verbeteringen elders lekken weg zolang deze achterblijft. '
    +'De weging: elk antwoord telt 1\u20134 punten; het advies volgt de laagste gemiddelde score. Benchmarkbronnen: CBS AI-monitor, Gartner-volwassenheidsverdeling.</p></details>';
-  // --- wat remt je: groei, adoptie, haalbaarheid, flexibiliteit ---
+  // --- wat remt je: doel, groei en veranderkracht, interactief ---
+  window.__dimAvg = dimAvg;
   (function(){
-    const CAP={sturing:.7,commercie:1.2,operatie:1.4,finance:1.1,mensen:1.3,
-               analytics:.8,quality:.7,governance:.6,tech:1.3,culture:1.0};
-    const ADO={sturing:.4,commercie:.5,operatie:.6,finance:.4,mensen:1.4,
-               analytics:.5,quality:.4,governance:.5,tech:.7,culture:1.5};
-    const cultuur=dimAvg.culture||2, menselijk=dimAvg.mensen||2;
-    const groeidoel=1.5; // +50% als standaard toetspunt
-    const rijen=Object.keys(DIMS).map(k=>{
-      const n=dimAvg[k];                                   // 1..4
-      const capaciteit=1+(n-1)*(CAP[k]||1)*0.5;            // hoeveel groei dit onderdeel aankan
-      const groeirem=Math.max(groeidoel-capaciteit,0)*(CAP[k]||1);
-      const adoptierem=((4-cultuur)*0.16+(4-menselijk)*0.12)*(ADO[k]||1);
-      let soort,uitleg;
-      if(adoptierem>groeirem&&adoptierem>.45){soort='adoptie';uitleg='techniek kan wel, de organisatie nog niet';}
-      else if(groeirem>.35){soort='groei';uitleg='loopt vast rond +'+Math.round((capaciteit-1)*100)+'% groei';}
-      else if(n<2.2){soort='haalbaarheid';uitleg='te ver weg om in één stap te overbruggen';}
-      else {soort='flexibiliteit';uitleg='werkt nu, maar breekt bij elke verandering';}
-      return {k,n,soort,uitleg,last:groeirem*2.2+adoptierem*1.6+(4-n)*0.5};
-    }).sort((a,b)=>b.last-a.last).slice(0,4);
-    const KL={groei:'#FF4F17',adoptie:'#2742D6',haalbaarheid:'#E8A200',flexibiliteit:'#1F9D55'};
-    let h='<span class="kpi-t">Wat je remt</span><div style="margin-top:10px">';
-    rijen.forEach((r,i)=>{
-      h+='<div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">'
-       +'<span style="display:inline-block;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:3px;background:'+KL[r.soort]+';color:#fff;white-space:nowrap">'+r.soort+'</span>'
-       +'<div><b>'+DIMS[r.k].name+'</b><div style="font-size:.82rem;opacity:.72">'+r.uitleg+'</div></div></div>';
-    });
-    const eerste=rijen.find(r=>r.soort==='groei');
-    h+='</div><div class="why" style="margin-top:10px;font-size:.82rem;opacity:.8">'
-      +(eerste?'Bij +50% groei loopt <b>'+DIMS[eerste.k].name.toLowerCase()+'</b> als eerste vast. Eerst optuigen, dan groeien — anders koop je met groei alleen drukte.'
-              :'Bij +50% groei houdt het geheel stand. De rem zit niet in capaciteit maar in invoering.')
-      +' Volgorde bepaald door capaciteit per onderdeel en de veranderkracht die uit jullie cultuur- en mensenscore volgt.</div>';
-    const rb=document.getElementById('remBlok'); if(rb) rb.innerHTML=h;
+    const rb=document.getElementById('remBlok'); if(!rb) return;
+    rb.innerHTML =
+      '<span class="kpi-t">Wat je remt</span>'
+     +'<div id="remDoel" style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px">'
+     + [['grip','Grip en tijd'],['groei','Groeien'],['exit','Verkoop of exit'],
+        ['kapitaal','Kapitaal aantrekken'],['overname','Overname doen'],['opvolging','Opvolging']]
+        .map(([k,n],ix)=>'<button type="button" class="remdoel" data-d="'+k+'" aria-pressed="'+(ix===0)+'" '
+         +'style="border:1px solid rgba(255,255,255,.22);background:transparent;color:inherit;border-radius:3px;'
+         +'padding:5px 10px;font:inherit;font-size:.78rem;cursor:pointer">'+n+'</button>').join('')
+     +'</div>'
+     +'<div style="display:grid;grid-template-columns:8.5rem 1fr 4.2rem;gap:10px;align-items:center;margin:10px 0 2px">'
+     +'<label for="remGroei" style="font-size:.82rem">Groei komend jaar</label>'
+     +'<input type="range" id="remGroei" min="0" max="150" step="5" value="50" style="width:100%">'
+     +'<output id="remGroeiUit" style="font-size:.8rem;opacity:.75;text-align:right">+50%</output></div>'
+     +'<div style="display:grid;grid-template-columns:8.5rem 1fr 4.2rem;gap:10px;align-items:center;margin:2px 0 8px">'
+     +'<label for="remKracht" style="font-size:.82rem">Veranderkracht</label>'
+     +'<input type="range" id="remKracht" min="1" max="5" step="1" value="3" style="width:100%">'
+     +'<output id="remKrachtUit" style="font-size:.8rem;opacity:.75;text-align:right">gemiddeld</output></div>'
+     +'<div id="remLijst"></div>';
+    rb.querySelectorAll('.remdoel').forEach(b=>b.addEventListener('click',()=>{
+      rb.querySelectorAll('.remdoel').forEach(x=>{
+        const aan = x===b;
+        x.setAttribute('aria-pressed',aan);
+        x.style.background = aan ? '#fff' : 'transparent';
+        x.style.color = aan ? '#0B1220' : 'inherit';
+      });
+      window.__remDoel=b.dataset.d; tekenRemmen();
+    }));
+    document.getElementById('remGroei').addEventListener('input',e=>{
+      document.getElementById('remGroeiUit').textContent='+'+e.target.value+'%'; tekenRemmen();});
+    document.getElementById('remKracht').addEventListener('input',e=>{
+      document.getElementById('remKrachtUit').textContent=['','zeer laag','laag','gemiddeld','hoog','zeer hoog'][e.target.value];
+      tekenRemmen();});
+    const eerste=rb.querySelector('.remdoel');
+    if(eerste){eerste.style.background='#fff';eerste.style.color='#0B1220';}
+    tekenRemmen();
   })();
   // mini curve + chart
   buildMiniCurve();
@@ -1957,6 +1963,60 @@ go('landing');renderQ();
     if(stored!=='granted'&&stored!=='denied'){show();}
   });
 })();
+
+function tekenRemmen(){
+  const dimAvg=window.__dimAvg; if(!dimAvg) return;
+  const doel=window.__remDoel||'grip';
+  const groei=1+(+(document.getElementById('remGroei')||{}).value||50)/100;
+  const kracht=+(document.getElementById('remKracht')||{}).value||3;
+  const CAP={sturing:.7,commercie:1.2,operatie:1.4,finance:1.1,mensen:1.3,
+             analytics:.8,quality:.7,governance:.6,tech:1.3,culture:1.0};
+  const ADO={sturing:.4,commercie:.5,operatie:.6,finance:.4,mensen:1.4,
+             analytics:.5,quality:.4,governance:.5,tech:.7,culture:1.5};
+  const W={
+   grip:     {operatie:1.3,tech:1.3,finance:1.2,commercie:1,analytics:.9,mensen:.8,quality:.7,governance:.6,sturing:.7,culture:.7},
+   groei:    {operatie:1.4,mensen:1.3,commercie:1.3,tech:1.1,culture:1.1,sturing:1,finance:.8,analytics:.9,quality:.7,governance:.6},
+   exit:     {mensen:1.4,governance:1.3,commercie:1.3,finance:1.2,analytics:1.1,operatie:1,quality:.9,tech:.8,sturing:.8,culture:.8},
+   kapitaal: {analytics:1.4,finance:1.4,quality:1.2,operatie:1.1,commercie:1,governance:1,sturing:.9,tech:.8,mensen:.8,culture:.7},
+   overname: {tech:1.4,operatie:1.3,mensen:1.2,culture:1.2,quality:1,governance:1,commercie:.9,finance:.9,analytics:.8,sturing:.8},
+   opvolging:{mensen:1.5,operatie:1.2,governance:1.2,culture:1.1,commercie:1,finance:.9,analytics:.8,quality:.8,tech:.8,sturing:1}
+  };
+  const SLOT={grip:'kost je uren per week',groei:'houdt je omzetgroei tegen',
+    exit:'vindt een koper als eerste',kapitaal:'vraagt een investeerder als eerste op',
+    overname:'maakt de integratie duur',opvolging:'houdt je aan het bedrijf vast'};
+  const cultuur=dimAvg.culture||2, menselijk=dimAvg.mensen||2;
+  const veranderkracht=(kracht*0.5+cultuur*0.3+menselijk*0.2)/5;
+  const rijen=Object.keys(DIMS).map(k=>{
+    const n=dimAvg[k];
+    const capaciteit=1+(n-1)*(CAP[k]||1)*0.5;
+    const groeirem=Math.max(groei-capaciteit,0)*(CAP[k]||1);
+    const adoptierem=((4-cultuur)*0.16+(4-menselijk)*0.12)*(ADO[k]||1)*(1.6-veranderkracht);
+    const gewicht=(W[doel]||W.grip)[k]||1;
+    let soort,uitleg;
+    if(adoptierem>groeirem&&adoptierem>.45){soort='adoptie';uitleg='techniek kan wel, de organisatie nog niet';}
+    else if(groeirem>.35){soort='groei';uitleg='loopt vast rond +'+Math.round((capaciteit-1)*100)+'% groei';}
+    else if(n<2.2){soort='haalbaarheid';uitleg='te ver weg om in \u00e9\u00e9n stap te overbruggen';}
+    else {soort='flexibiliteit';uitleg='werkt nu, maar breekt bij elke verandering';}
+    return {k,n,soort,uitleg,last:(groeirem*2.2+adoptierem*1.6+(4-n)*0.5)*gewicht};
+  }).sort((a,b)=>b.last-a.last).slice(0,4);
+  const KL={groei:'#FF4F17',adoptie:'#2742D6',haalbaarheid:'#E8A200',flexibiliteit:'#1F9D55'};
+  let h='';
+  rijen.forEach(r=>{
+    h+='<div style="display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)">'
+     +'<span style="display:inline-block;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:3px;background:'+KL[r.soort]+';color:#fff;white-space:nowrap">'+r.soort+'</span>'
+     +'<div><b>'+DIMS[r.k].name+'</b><div style="font-size:.82rem;opacity:.72">'+r.uitleg+'</div></div></div>';
+  });
+  const eerste=rijen.find(r=>r.soort==='groei');
+  const perKwartaal=Math.max(1,Math.round(veranderkracht*3.2));
+  h+='<div style="margin-top:10px;font-size:.82rem;opacity:.82">'
+   +(eerste?'Bij +'+Math.round((groei-1)*100)+'% groei loopt <b>'+DIMS[eerste.k].name.toLowerCase()+'</b> als eerste vast. Dat '+SLOT[doel]+'. Eerst optuigen, dan groeien.'
+           :'Bij +'+Math.round((groei-1)*100)+'% groei houdt de capaciteit stand. De rem zit in de invoering, niet in de techniek.')
+   +' Jullie organisatie kan <b>'+perKwartaal+' verbetering'+(perKwartaal>1?'en':'')+' per kwartaal</b> aan'
+   +(veranderkracht<0.45?' \u2014 meer tegelijk oppakken maakt het niet sneller, het maakt het stiller.':'.')
+   +'</div>';
+  const l=document.getElementById('remLijst'); if(l) l.innerHTML=h;
+}
+
 </script>
 </body>
 </html>
