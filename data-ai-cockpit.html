@@ -425,7 +425,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
   <!-- ============ LANDING ============ -->
   <section class="screen" id="landing">
-    <span class="eyebrow">Data & AI Cockpit · voor CFO's · 2026</span>
+    <span class="eyebrow">Bedrijfsscan · tien onderdelen · voor directie en eigenaren</span>
     <h1>Hoe volwassen is jouw bedrijf echt?</h1>
     <p class="sub">14 vragen → één dashboard: je niveau, je positie t.o.v. de concurrentie, en de businesscase in euro's — investering, besparing, marge en terugverdientijd.</p>
     <div class="chiprow">
@@ -863,6 +863,8 @@ const DIMS = {
   culture:{name:"Organisatie & cultuur",c:"#F58EA8"}
 };
 const QUESTIONS = [
+ {dim:"sturing",ctx:true,t:"Waarvoor gebruik je deze scan?",
+  o:["Grip en tijd \u2014 waar lekt het?","Groeien zonder evenredig aan te nemen","Verkoop of exit binnen twee jaar","Kapitaal of investeerder aantrekken","Een overname doen","Opvolging regelen","Naleving en risico (AI Act, AVG)"]},
  {dim:"tech",ctx:true,t:"Welk kernsysteem (ERP) gebruiken jullie?",
   o:["AFAS Profit","Ander ERP (Exact, Dynamics, SAP …)","Meerdere losse systemen","Weet ik niet"]},
  {dim:"tech",ctx:true,t:"In welke branche opereren jullie?",
@@ -914,7 +916,19 @@ const QUESTIONS = [
  {dim:"culture",t:"Hoe gaat de organisatie om met verandering in werkwijze?",
   o:["Weerstand — zo doen we het nu eenmaal","Het lukt, met veel duwen","Mensen doen mee als het nut duidelijk is","Teams stellen zelf verbeteringen voor"]},
  {dim:"governance",t:"Zou een koper of investeerder jullie bedrijf zonder jou kunnen runnen?",
-  o:["Nee — het draait op mij","Deels, met een lange overdracht","Grotendeels, met een goede opvolger","Ja — processen en kennis staan los van personen"]}
+  o:["Nee — het draait op mij","Deels, met een lange overdracht","Grotendeels, met een goede opvolger","Ja — processen en kennis staan los van personen"]},
+ {dim:"commercie",t:"Welk deel van de omzet komt van jullie grootste klant?",
+  o:["Meer dan 40 procent","Tussen 20 en 40 procent","Tussen 10 en 20 procent","Minder dan 10 procent"]},
+ {dim:"commercie",t:"Liggen de afspraken met jullie grootste klanten vast?",
+  o:["Op vertrouwen, niets op papier","Een oude opdrachtbevestiging","Contracten, maar verlopen of onduidelijk","Actuele contracten met looptijd en opzegtermijn"]},
+ {dim:"governance",t:"Draait alles op accounts en licenties die van het bedrijf zijn?",
+  o:["Veel loopt via persoonlijke accounts","Deels \u2014 een paar dingen staan op naam van iemand","Grotendeels zakelijk geregeld","Ja, alles staat op het bedrijf en is overdraagbaar"]},
+ {dim:"finance",t:"Kan iemand anders jullie cijfers reproduceren zonder de boekhouder erbij?",
+  o:["Nee, dat zit in zijn hoofd en zijn bestanden","Met veel uitleg","Ja, met een korte toelichting","Ja \u2014 de weg van bron naar cijfer is vastgelegd"]},
+ {dim:"operatie",t:"Kan het bedrijf dertig dagen door zonder de belangrijkste persoon?",
+  o:["Nee, binnen een week loopt het vast","Deels, met flink schuiven","Ja, dertig dagen wel \u2014 negentig niet","Ja, ook negentig dagen"]},
+ {dim:"culture",t:"Als er iets misgaat, wat gebeurt er dan?",
+  o:["We lossen het op en gaan door","Iemand krijgt de schuld","We bespreken het, maar leggen niets vast","We passen de werkwijze aan en leggen dat vast"]}
 ];
 const LEVELS = [
  {n:1,name:"Ad-hoc & Excel",seg:"Achterblijvers",x:135,d:"Losse spreadsheets en handwerk. De winst is hier het grootst en het snelst zichtbaar."},
@@ -1700,7 +1714,7 @@ function renderRapportFromSnapshot(s){
    +'.ft{font-size:.66rem;color:#6E829C;border-top:1px solid #DCE4EE;padding-top:12px;margin-top:26px}'
    +'@media print{.card{break-inside:avoid}}'
    +'</style></head><body><div class="pg">'
-   +'<span class="eb">Data & AI Volwassenheidsrapport</span>'
+   +'<span class="eb">Bedrijfsscan — volwassenheidsrapport</span>'
    +'<h1>'+esc(s.lead.bedrijf)+'</h1>'
    +'<p class="mut">Opgesteld voor '+esc(s.lead.naam)+' · '+datum+' · scan v'+APP_VERSION+(s.lead.relatieId?' · relatie '+esc(s.lead.relatieId):'')+'</p>'
    +'<div class="card"><span class="eb">Uitkomst</span>'
