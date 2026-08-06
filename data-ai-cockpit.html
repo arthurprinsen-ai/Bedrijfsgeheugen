@@ -1186,13 +1186,36 @@ function tick(){
 setInterval(tick,1000); tick();
 loadRemoteContent();
 
+
+/* Per doel de dimensies die ertoe doen. Kies je een doel, dan krijg je alleen
+   die vragen — korter invullen, en het rapport gaat alleen over jouw vraag. */
+const DOELDIM={
+ 0:['operatie','tech','finance','commercie','analytics','service'],                 // grip en tijd
+ 1:['operatie','mensen','commercie','tech','culture','service'],                    // groeien
+ 2:['mensen','governance','commercie','finance','analytics','security','operatie'], // verkoop of exit
+ 3:['analytics','quality','finance','operatie','governance','duurzaam'],            // kapitaal aantrekken
+ 4:['tech','operatie','mensen','culture','quality','security'],                     // overname doen
+ 5:['mensen','operatie','governance','culture','commercie'],                        // opvolging
+ 6:['governance','security','duurzaam','quality','tech']                            // naleving en risico
+};
+const KERN=['sturing','operatie','mensen'];   // altijd meenemen
+let actief=null;                              // wordt gevuld zodra het doel gekozen is
+function bepaalVragen(doelIndex){
+  const wil=new Set((DOELDIM[doelIndex]||[]).concat(KERN));
+  actief=QUESTIONS.filter(q=>q.ctx||wil.has(q.dim));
+  answers=new Array(actief.length).fill(null);
+  // het al gegeven doelantwoord terugzetten
+  answers[0]=doelIndex;
+}
+function Q(){ return actief||QUESTIONS; }
+
 /* ================= WIZARD (auto-advance) ================= */
 const DIMLBL={analytics:"Data & analytics",quality:"Datakwaliteit",governance:"Governance & AI Act",tech:"Technologie & AI",culture:"Organisatie & cultuur"};
 function renderQ(dir){
-  const q=QUESTIONS[cur];
-  $('qDim').textContent=(q.ctx?'Context':DIMLBL[q.dim])+' · vraag '+(cur+1)+' van '+QUESTIONS.length;
-  $('ringTxt').textContent=(cur+1)+'/'+QUESTIONS.length;
-  $('ringFg').style.strokeDashoffset=150.8*(1-cur/QUESTIONS.length);
+  const L=Q(), q=L[cur];
+  $('qDim').textContent=(q.ctx?'Context':(DIMLBL[q.dim]||(DIMS[q.dim]&&DIMS[q.dim].name)||''))+' · vraag '+(cur+1)+' van '+L.length;
+  $('ringTxt').textContent=(cur+1)+'/'+L.length;
+  $('ringFg').style.strokeDashoffset=150.8*(1-cur/L.length);
   const card=$('qCard');
   const html='<h2>'+q.t+'</h2>'+q.o.map((o,i)=>
     '<button class="opt'+(answers[cur]===i?' sel':'')+'" onclick="pick('+i+')"><span class="k">'+String.fromCharCode(65+i)+'</span>'+o+'</button>').join('');
@@ -1205,14 +1228,15 @@ function renderQ(dir){
 function pick(i){
   buzz(8);
   answers[cur]=i;
+  if(cur===0 && Q()[0] && /Waarvoor gebruik je/.test(Q()[0].t)){ bepaalVragen(i); }
   document.querySelectorAll('.opt').forEach((b,j)=>b.classList.toggle('sel',j===i));
-  setTimeout(()=>{ if(cur<QUESTIONS.length-1){cur++;renderQ(true);} else finish(); }, prefersReduced?0:300);
+  setTimeout(()=>{ if(cur<Q().length-1){cur++;renderQ(true);} else finish(); }, prefersReduced?0:300);
 }
 function prevQ(){ if(cur>0){cur--;renderQ(true);} }
 
 /* ================= SCORING ================= */
 function finish(){
-  const scored=QUESTIONS.map((q,i)=>({q,a:answers[i]})).filter(x=>!x.q.ctx);
+  const scored=Q().map((q,i)=>({q,a:answers[i]})).filter(x=>!x.q.ctx);
   const sums={},cnt={};Object.keys(DIMS).forEach(k=>{sums[k]=0;cnt[k]=0;});
   scored.forEach(x=>{sums[x.q.dim]+=x.a+1;cnt[x.q.dim]++;});
   const dimAvg={};Object.keys(DIMS).forEach(k=>dimAvg[k]=cnt[k]?sums[k]/cnt[k]:1);
@@ -1302,6 +1326,11 @@ function renderDash(score,dimAvg){
    +'De weging: elk antwoord telt 1\u20134 punten; het advies volgt de laagste gemiddelde score. Benchmarkbronnen: CBS AI-monitor, Gartner-volwassenheidsverdeling.</p></details>';
   // --- wat remt je: doel, groei en veranderkracht, interactief ---
   window.__dimAvg = dimAvg;
+  try{
+    const DL=['grip','groei','exit','kapitaal','overname','opvolging','naleving'];
+    window.__remDoel = DL[answers[0]] || 'grip';
+    localStorage.setItem('bg_scan_doel', window.__remDoel);
+  }catch(e){}
   try{ localStorage.setItem('bg_scan_dimavg', JSON.stringify(dimAvg)); }catch(e){}
   try{ window.__branche = (SECTORS[userSector]&&SECTORS[userSector].name) || 'Gemiddeld NL-bedrijf'; }catch(e){}
 
