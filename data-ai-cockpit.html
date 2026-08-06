@@ -879,7 +879,10 @@ const DIMS = {
   quality:{name:"Datakwaliteit",c:"#39C08A"},
   governance:{name:"Governance & compliance",c:"#FFB547"},
   tech:{name:"Systemen & AI",c:"#C08BFF"},
-  culture:{name:"Organisatie & cultuur",c:"#F58EA8"}
+  culture:{name:"Organisatie & cultuur",c:"#F58EA8"},
+  service:{name:"Klantenservice",c:"#4CC9C0"},
+  security:{name:"Beveiliging",c:"#FF8A4C"},
+  duurzaam:{name:"Duurzaamheid & CSRD",c:"#8FBF5A"}
 };
 const QUESTIONS = [
  {dim:"sturing",ctx:true,t:"Waarvoor gebruik je deze scan?",
@@ -947,7 +950,30 @@ const QUESTIONS = [
  {dim:"operatie",t:"Kan het bedrijf dertig dagen door zonder de belangrijkste persoon?",
   o:["Nee, binnen een week loopt het vast","Deels, met flink schuiven","Ja, dertig dagen wel \u2014 negentig niet","Ja, ook negentig dagen"]},
  {dim:"culture",t:"Als er iets misgaat, wat gebeurt er dan?",
-  o:["We lossen het op en gaan door","Iemand krijgt de schuld","We bespreken het, maar leggen niets vast","We passen de werkwijze aan en leggen dat vast"]}
+  o:["We lossen het op en gaan door","Iemand krijgt de schuld","We bespreken het, maar leggen niets vast","We passen de werkwijze aan en leggen dat vast"]},
+
+ {dim:"service",t:"Waar komen klantvragen binnen?",
+  o:["In de mailboxen van individuele mensen","Op een gedeeld adres, verder handwerk","In een systeem met toewijzing en status","In een systeem, met zelfservice voor veelgestelde vragen"]},
+ {dim:"service",t:"Weet je hoe lang een klant gemiddeld op antwoord wacht?",
+  o:["Nee, dat meten we niet","Gevoelsmatig wel","Ja, we meten reactietijd","Ja, en we sturen op reactie- \u00e9n oplostijd"]},
+ {dim:"service",t:"Wat gebeurt er met klachten en meldingen?",
+  o:["Ze worden opgelost en daarna vergeten","We houden ze los bij","Ze staan bij de klant geregistreerd","Ze worden geanalyseerd en leiden tot aanpassingen"]},
+
+ {dim:"security",t:"Hoe is toegang tot systemen geregeld?",
+  o:["Gedeelde wachtwoorden en losse accounts","Ieder een eigen account, verder weinig beleid","Rollen en rechten, met tweestapsverificatie","Rollen, MFA, en toegang wordt periodiek nagelopen"]},
+ {dim:"security",t:"Wanneer is de back-up voor het laatst getest?",
+  o:["Geen idee of het werkt","Er is een back-up, nooit teruggezet","Getest, langer dan een jaar geleden","Getest binnen het afgelopen jaar"]},
+ {dim:"security",t:"Wat gebeurt er als iemand morgen uit dienst gaat?",
+  o:["Toegang blijft vaak maanden openstaan","Iemand denkt eraan, meestal","Er is een vaste uitdienstlijst","De lijst is er en wordt gecontroleerd"]},
+ {dim:"security",t:"Is er ooit een incident geweest \u2014 phishing, gijzelsoftware, datalek?",
+  o:["Ja, en er is weinig veranderd","Ja, en we hebben iets aangepast","Nee, en we hebben een plan als het gebeurt","Nee, en we oefenen het scenario"]},
+
+ {dim:"duurzaam",t:"Wordt er door klanten of financiers naar duurzaamheidscijfers gevraagd?",
+  o:["Nee, en we hebben ze ook niet","Soms, en dan zoeken we het bij elkaar","Ja, en we leveren ze aan","Ja, en ze komen uit onze eigen administratie"]},
+ {dim:"duurzaam",t:"Weet je wat CSRD voor jullie betekent?",
+  o:["Niet mee bezig","Gehoord van, niet uitgezocht","We weten dat het via de keten op ons afkomt","We hebben in beeld welke gegevens we moeten leveren"]},
+ {dim:"duurzaam",t:"Hoe komt jullie energie- en afvaldata tot stand?",
+  o:["Uit facturen, met de hand","In een spreadsheet","Uit een systeem, jaarlijks","Doorlopend geregistreerd en te herleiden"]}
 ];
 const LEVELS = [
  {n:1,name:"Ad-hoc & Excel",seg:"Achterblijvers",x:135,d:"Losse spreadsheets en handwerk. De winst is hier het grootst en het snelst zichtbaar."},
