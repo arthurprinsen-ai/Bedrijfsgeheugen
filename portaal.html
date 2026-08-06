@@ -204,6 +204,9 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
           <div class="sub" id="curveMiniT"></div></div>
       </div>
       <div class="kaarten k2">
+        <div class="kaart"><h3>Waar het geld weglekt</h3>
+          <svg id="taart" viewBox="0 0 460 230" role="img" aria-label="Kosten per onderdeel"></svg>
+          <div class="sub" id="taartT"></div></div>
         <div class="kaart"><h3>Wat je nu remt</h3><div id="remmen"></div></div>
         <div class="kaart"><h3>Voortgang</h3><svg id="voortgang" viewBox="0 0 460 200" role="img" aria-label="Voortgang"></svg>
           <div class="sub" id="voortgangT"></div></div>
@@ -223,6 +226,14 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         </div>
         <div class="kaart"><h3>Profiel tegenover de bovenste 25%</h3>
           <svg id="grafiek" viewBox="0 0 460 330" role="img" aria-label="Profiel per onderdeel"></svg></div>
+      </div>
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Alles in één beeld</h3>
+          <svg id="web" viewBox="0 0 420 380" role="img" aria-label="Spinnenweb"></svg>
+          <div class="sub">De binnenste vorm ben jij, de stippellijn is niveau 4 — het doel voor het mkb.</div></div>
+        <div class="kaart"><h3>Wat een niveau erbij oplevert</h3>
+          <svg id="trap" viewBox="0 0 460 260" role="img" aria-label="Opbrengst per niveau"></svg>
+          <div class="sub" id="trapT"></div></div>
       </div>
     </section>
 
@@ -800,7 +811,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
+  tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -1710,6 +1721,91 @@ function tekenWaarde(){
     ' bij een brutomarge van '+(bm*100).toFixed(0)+'%. Je huidige omzet is '+eur(omzet)+'.</p>'
     +'<p style="font-size:.9rem;line-height:1.6"><b>Veiligheidsmarge: '+veiligheid.toFixed(0)+'%</b> — zoveel kan de omzet dalen voordat je verlies draait. '
     +(veiligheid<20?'Onder de 20% is dat krap; vaste kosten verlagen weegt dan zwaarder dan omzet erbij.':'Dat geeft ruimte om te investeren.')+'</p>';
+}
+
+function tekenExtraGrafieken(){
+  const f=[0,1,.78,.5,.22,.06], eur=v=>'€ '+Math.round(v).toLocaleString('nl-NL');
+  const kosten={}; let tot=0;
+  DIM.forEach(d=>{kosten[d.k]=d.u*f[S.niveaus[d.k]]*(S.mw/24)*46*S.uur; tot+=kosten[d.k];});
+
+  // --- donut: kosten per onderdeel ---
+  const el=document.getElementById('taart');
+  if(el){
+    const rij=DIM.slice().sort((a,b)=>kosten[b.k]-kosten[a.k]);
+    const KL=['#FF4F17','#2742D6','#E8A200','#1F9D55','#7A5BD6','#4CC9C0','#C9CEDA'];
+    let hoek=-Math.PI/2, g='', cx=115, cy=115, r=88, ri=52, i=0, rest=0;
+    rij.forEach((d,idx)=>{
+      const deel=kosten[d.k]/(tot||1);
+      if(idx>=6){ rest+=kosten[d.k]; return; }
+      const eind=hoek+deel*Math.PI*2, groot=deel>0.5?1:0;
+      const x1=cx+r*Math.cos(hoek), y1=cy+r*Math.sin(hoek), x2=cx+r*Math.cos(eind), y2=cy+r*Math.sin(eind);
+      const x3=cx+ri*Math.cos(eind), y3=cy+ri*Math.sin(eind), x4=cx+ri*Math.cos(hoek), y4=cy+ri*Math.sin(hoek);
+      g+='<path d="M'+x1+','+y1+' A'+r+','+r+' 0 '+groot+' 1 '+x2+','+y2+' L'+x3+','+y3+' A'+ri+','+ri+' 0 '+groot+' 0 '+x4+','+y4+' Z" fill="'+KL[idx]+'"'
+       +' data-tip="<b>'+d.n+'</b><br>'+eur(kosten[d.k])+' per jaar ('+(deel*100).toFixed(0)+'%)<br>Niveau '+S.niveaus[d.k]+' — '+(UITLEG[d.k]||'')+'" data-ga="business"/>';
+      g+='<text x="250" y="'+(28+idx*30)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">'
+       +'<tspan font-size="14" fill="'+KL[idx]+'">■</tspan> '+d.n+'</text>'
+       +'<text x="446" y="'+(28+idx*30)+'" text-anchor="end" font-size="11.5" fill="#5C646E" font-family="Instrument Sans">'+eur(kosten[d.k])+'</text>';
+      hoek=eind; i++;
+    });
+    if(rest>0){
+      const deel=rest/(tot||1), eind=hoek+deel*Math.PI*2, groot=deel>0.5?1:0;
+      const x1=cx+r*Math.cos(hoek), y1=cy+r*Math.sin(hoek), x2=cx+r*Math.cos(eind), y2=cy+r*Math.sin(eind);
+      const x3=cx+ri*Math.cos(eind), y3=cy+ri*Math.sin(eind), x4=cx+ri*Math.cos(hoek), y4=cy+ri*Math.sin(hoek);
+      g+='<path d="M'+x1+','+y1+' A'+r+','+r+' 0 '+groot+' 1 '+x2+','+y2+' L'+x3+','+y3+' A'+ri+','+ri+' 0 '+groot+' 0 '+x4+','+y4+' Z" fill="#E4E7EC"'
+       +' data-tip="<b>Overige onderdelen</b><br>'+eur(rest)+' per jaar"/>';
+    }
+    g+='<text x="'+cx+'" y="'+(cy-2)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#14171A" font-family="Bricolage Grotesque">'+eur(tot).replace("€ ","€")+'</text>'
+     +'<text x="'+cx+'" y="'+(cy+16)+'" text-anchor="middle" font-size="10.5" fill="#5C646E" font-family="Instrument Sans">per jaar</text>';
+    el.innerHTML=g;
+    document.getElementById('taartT').textContent='Beweeg over een deel voor het bedrag en het niveau. Klikken brengt je naar de businesscase.';
+  }
+
+  // --- spinnenweb ---
+  const web=document.getElementById('web');
+  if(web){
+    const cx=210, cy=185, R=140, N=DIM.length;
+    let g='', punten=[], doel=[];
+    for(let ring=1;ring<=5;ring++){
+      let d='';
+      for(let i=0;i<N;i++){
+        const a=-Math.PI/2+i*2*Math.PI/N, r=R*ring/5;
+        d+=(i?' L':'M')+(cx+r*Math.cos(a))+','+(cy+r*Math.sin(a));
+      }
+      g+='<path d="'+d+' Z" fill="none" stroke="#EDEBE5" stroke-width="1"/>';
+    }
+    DIM.forEach((d,i)=>{
+      const a=-Math.PI/2+i*2*Math.PI/N;
+      const rr=R*S.niveaus[d.k]/5, rd=R*(d.top||4)/5;
+      punten.push([cx+rr*Math.cos(a),cy+rr*Math.sin(a)]);
+      doel.push([cx+rd*Math.cos(a),cy+rd*Math.sin(a)]);
+      const lx=cx+(R+16)*Math.cos(a), ly=cy+(R+16)*Math.sin(a);
+      g+='<circle cx="'+(cx+rr*Math.cos(a))+'" cy="'+(cy+rr*Math.sin(a))+'" r="11" fill="transparent"'
+       +' data-tip="<b>'+d.n+'</b><br>Niveau '+S.niveaus[d.k]+' van 5<br>'+(UITLEG[d.k]||'')+'" data-ga="profiel"/>';
+      g+='<text x="'+lx+'" y="'+(ly+3)+'" text-anchor="'+(Math.cos(a)>0.2?'start':(Math.cos(a)<-0.2?'end':'middle'))+'"'
+       +' font-size="9.5" fill="#5C646E" font-family="Instrument Sans">'+d.n.split(' ')[0]+'</text>';
+    });
+    g='<path d="M'+doel.map(p=>p.join(',')).join(' L')+' Z" fill="none" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>'+g;
+    g='<path d="M'+punten.map(p=>p.join(',')).join(' L')+' Z" fill="rgba(39,66,214,.16)" stroke="#2742D6" stroke-width="2.5"/>'+g;
+    web.innerHTML=g;
+  }
+
+  // --- trap: opbrengst per niveau erbij ---
+  const trap=document.getElementById('trap');
+  if(trap){
+    let g='', basis=tot;
+    for(let n=1;n<=5;n++){
+      let k=0; DIM.forEach(d=>{k+=d.u*f[Math.max(S.niveaus[d.k],n)]*(S.mw/24)*46*S.uur;});
+      const winst=Math.max(basis-k,0), h=Math.min(winst/(basis||1)*150,150);
+      const eigen=Math.round(DIM.reduce((a,d)=>a+S.niveaus[d.k],0)/DIM.length)===n;
+      g+='<rect x="'+(40+(n-1)*84)+'" y="'+(200-h)+'" width="62" height="'+Math.max(h,3)+'" rx="3" fill="'+(eigen?'#C9CEDA':'#2742D6')+'"'
+       +' data-tip="<b>Alles op niveau '+n+' — '+NIV[n]+'</b><br>Bespaart '+eur(winst)+' per jaar<br>'+(eigen?'Dit is ongeveer waar je nu staat.':'')+'" data-ga="business"/>'
+       +'<text x="'+(71+(n-1)*84)+'" y="'+(194-h)+'" text-anchor="middle" font-size="11" font-weight="600" fill="#14171A" font-family="Instrument Sans">'+(winst>999?eur(winst).replace("€ ","€").slice(0,-3)+"k":eur(winst))+'</text>'
+       +'<text x="'+(71+(n-1)*84)+'" y="218" text-anchor="middle" font-size="10.5" fill="#5C646E" font-family="Instrument Sans">N'+n+'</text>';
+    }
+    g+='<line x1="30" y1="201" x2="440" y2="201" stroke="#DCDFE6" stroke-width="2"/>';
+    trap.innerHTML=g;
+    document.getElementById('trapT').textContent='Elke staaf: wat je per jaar bespaart als álle onderdelen op dat niveau staan.';
+  }
 }
 </script>
 </body>
