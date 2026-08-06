@@ -155,7 +155,9 @@ function unlockDash(){
 }
 /* Voorvertoning voor Arthur zelf: ?preview op de URL slaat het formulier over
    en toont het volledige dashboard. Bezoekers zien dit niet. */
-var PREVIEW = /[?&]preview\b/.test(location.search);
+var PREVIEW = /[?&]preview\b/.test(location.search) || /preview/i.test(location.hash);
+try{ if(PREVIEW) sessionStorage.setItem('bg_preview','1');
+     else if(sessionStorage.getItem('bg_preview')==='1') PREVIEW=true; }catch(e){}
 if(PREVIEW){
   try{
     dashUnlocked = true;

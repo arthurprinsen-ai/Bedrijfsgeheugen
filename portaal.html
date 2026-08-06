@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }catch(e){}
 });
 // rechtstreeks binnen met ?demo of ?direct
-if(/[?&](demo|direct)\b/.test(location.search)) setTimeout(()=>toonPortaal({email:'demo'}),200);
+if(/[?&](demo|direct)\b/.test(location.search) || /(demo|direct)/i.test(location.hash)) setTimeout(()=>toonPortaal({email:'demo'}),200);
 
 /* ---------- opbouw ---------- */
 function bouw(){
