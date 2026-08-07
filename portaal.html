@@ -306,6 +306,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="false" data-p="beleid">Compliance, security en governance</button>
         <span class="groep">Denken</span>
         <button class="tab" role="tab" aria-selected="false" data-p="strategie">Strategiemodellen</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="canvassen">Canvassen</button>
         <span class="groep">Doen</span>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
@@ -614,6 +615,13 @@ input[type=range]{min-height:34px}
           Bronnen: CBS Ziekteverzuimpercentage per bedrijfstak (2026 K1, voorlopig) · CBS Digitalisering en arbeidsproductiviteit 2015–2022 ·
           CBS ICT-gebruik bedrijven · RaboResearch Sectorprognoses 2026 · DNB Voorjaarsraming juni 2026 · brancheorganisaties per sector. Bandbreedtes voor het mkb, geen normcijfers voor één bedrijf.</p>
       </div>
+    </section>
+
+    <!-- CANVASSEN -->
+    <section class="paneel" id="p-canvassen">
+      <p class="sub" style="margin-top:1rem">Zes canvassen, ingevuld met wat je in dit portaal hebt opgegeven. Wat de scan niet kan weten, vul je zelf aan — dat wordt bewaard en telt mee in de conclusie.</p>
+      <div class="kaart conclusie" id="canvasConclusie" style="margin-top:1rem"></div>
+      <div class="kaarten k2" id="canvasKaarten" style="margin-top:1rem"></div>
     </section>
 
     <!-- ADVIES -->
@@ -1153,7 +1161,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1625,6 +1633,102 @@ function tekenModelKaart(){
       bewaar(); teken();
     });
   });
+}
+
+function tekenCanvassen(){
+  const box=document.getElementById('canvasKaarten'); if(!box) return;
+  const g=k=>S.niveaus[k]||2, c=S.cijfers||{}, m=S.mensen||{}, F=S.fin||{}, b=B();
+  const n=x=>+(c[x])||0, fn=x=>+(F[x])||0, eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const omzet=n('cOmzet')*1000, klanten=n('cKlanten'), grootste=n('cGrootste'), marge=n('cBrutomarge');
+  const f=[0,1,.78,.5,.22,.06]; let tot=0, K={};
+  DIM.forEach(function(d){ K[d.k]=d.u*f[g(d.k)]*(S.mw/24)*46*S.uur; tot+=K[d.k]; });
+  const zwakste=DIM.slice().sort(function(a,x){return g(a.k)-g(x.k);})[0];
+  const duurste=DIM.slice().sort(function(a,x){return K[x.k]-K[a.k];})[0];
+  const onbekend='<span class="sub">nog niet ingevuld</span>';
+
+  const C=[
+   {n:'Business Model Canvas',h:'Osterwalder',v:[
+     ['Klantsegment', omzet&&klanten?('Ongeveer '+klanten+' klanten, gemiddeld '+eur(omzet/klanten)+' omzet per klant.'+(grootste?' De grootste is goed voor '+grootste+'%.':'')):onbekend],
+     ['Waardepropositie','Wat jullie leveren in '+S.branche.toLowerCase()+'. Onderscheid zit nu in '+(DIM.slice().sort(function(a,x){return g(x.k)-g(a.k);})[0].n.toLowerCase())+' — daar sta je het sterkst.'],
+     ['Kanalen', g('commercie')<3?'Verkoop loopt vooral op persoonlijk contact; opvolging is handwerk.':'Er is een werkende route van contact naar opdracht.'],
+     ['Klantrelaties', g('service')<3?'Vragen komen binnen in mailboxen; per klant verschilt wie antwoordt.':'Eén plek met status en reactietijd.'],
+     ['Inkomsten', omzet?eur(omzet)+' omzet'+(marge?', brutomarge '+marge+'%':'')+'.':onbekend],
+     ['Kernmiddelen', S.mw+' medewerkers. '+(g('mensen')<3?'Kritieke kennis zit bij enkele mensen — dat is hier je grootste middel én je grootste risico.':'Kennis is grotendeels geborgd.')],
+     ['Kernactiviteiten', 'Operatie staat op '+g('operatie')+', systemen op '+g('tech')+'.'],
+     ['Partners', 'Leveranciers en systemen: '+(g('tech')<3?'losse pakketten zonder koppeling — overstappen is duur.':'gekoppeld, dus je kunt wisselen.')],
+     ['Kosten', 'Handwerk kost '+eur(tot)+' per jaar; grootste post is '+duurste.n.toLowerCase()+'.']
+   ],vraag:['bmc','Welke klantgroep levert de meeste winst — niet de meeste omzet?']},
+
+   {n:'Value Proposition Canvas',h:'Osterwalder',v:[
+     ['Klanttaak','Zijn werk af krijgen zonder dubbel invoeren of nabellen.'],
+     ['Pijnpunten', g('service')<3?'Vragen blijven liggen; antwoorden verschillen per persoon.':'Kleine irritaties, geen structurele klachten.'],
+     ['Gewenste winst','Zekerheid: het klopt, het is op tijd, en het gaat niet mis als iemand ziek is.'],
+     ['Pijnverzachters', 'Het handwerk bij '+duurste.n.toLowerCase()+' weghalen ('+eur(K[duurste.k])+' per jaar).'],
+     ['Winstversterkers', g('mensen')<3?'Kennis van personen naar het bedrijf brengen.':'Aantoonbaar overdraagbaar zijn.'],
+     ['Producten en diensten','Wat jullie vandaag leveren — vul aan wat de klant er volgens hem aan heeft.']
+   ],vraag:['vpc2','Wat zegt je beste klant dat hij aan je heeft, in zijn woorden?']},
+
+   {n:'Lean Canvas',h:'Maurya',v:[
+     ['Probleem', zwakste.n+' staat op niveau '+g(zwakste.k)+' — dat is je smalste schakel.'],
+     ['Oplossing','Eerst vastleggen, dan koppelen, dan meten. In die volgorde.'],
+     ['Kernmetriek', g('analytics')<3?'Nog geen vaste maatstaf. Begin met één getal per maand.':'Er wordt gestuurd op cijfers.'],
+     ['Oneerlijk voordeel', g('mensen')>=3?'Kennis die van het bedrijf is in plaats van van personen — dat kopieert niemand snel.':'Nog geen voorsprong die moeilijk na te maken is.'],
+     ['Kostenstructuur', eur(tot)+' aan vermijdbaar handwerk per jaar.'],
+     ['Kanalen','Zie het Business Model Canvas hierboven.']
+   ],vraag:['lean','Welk probleem zou je oplossen als je maar één ding mocht doen dit jaar?']},
+
+   {n:'Merkcanvas',h:'positionering',v:[
+     ['Waar je voor staat','Vul in wat klanten over jullie zouden moeten zeggen als jullie er niet bij zijn.'],
+     ['De vijand', g('tech')<3?'Het grote systeemproject dat maanden duurt en niets oplost.':'Stilstand — goed genoeg blijven doen wat vorig jaar werkte.'],
+     ['Bewijs', omzet&&S.mw?'Omzet per medewerker: '+eur(omzet/S.mw)+'.':onbekend],
+     ['Toon','Hoe je klinkt in offertes, op je site en aan de telefoon — herkennen mensen dat als één bedrijf?']
+   ],vraag:['merk','Waarop kiezen klanten jullie in plaats van de concurrent?']},
+
+   {n:'Contentcanvas',h:'communicatie',v:[
+     ['Doel','Gesprekken met de juiste mensen, niet bereik.'],
+     ['Doelgroep', S.branche+', bedrijven rond '+S.mw+' medewerkers.'],
+     ['Pijlers', 'Waar jullie het meest van weten — en waar de klant wakker van ligt. Overlap daarvan is je onderwerp.'],
+     ['Ritme','Liever twee goede stukken per maand dan acht halve.'],
+     ['Bewijs','Cijfers uit je eigen bedrijf werken beter dan algemene wijsheden.']
+   ],vraag:['content','Welke vraag krijg je van klanten het vaakst?']},
+
+   {n:'Salescanvas',h:'commercie',v:[
+     ['Doelgroep', grootste>=25?'Let op: één klant is '+grootste+'% van de omzet. Spreiding is hier belangrijker dan groei.':'Verdeeld over meerdere klanten.'],
+     ['Opening','Begin met een situatie die de ander herkent, niet met wat je verkoopt.'],
+     ['Cadans','Vier stappen en dan stoppen. Geen zeven herinneringen.'],
+     ['Metriek','Aantal gesprekken, niet aantal verstuurde berichten.'],
+     ['Opvolging', g('commercie')<3?'Opvolgen is nu handwerk — daar lekt omzet weg.':'Opvolging is geregeld.']
+   ],vraag:['sales2','Van welke concurrent verlies je het vaakst, en waarop?']}
+  ];
+
+  box.innerHTML=C.map(function(k){
+    return '<details class="mod" open><summary><h3>'+k.n+'</h3><span class="herkomst">'+k.h+' \u25be</span></summary>'
+     +'<div class="inhoud"><div class="q4">'
+     + k.v.map(function(r){ return '<div><b>'+r[0]+'</b>'+r[1]+'</div>'; }).join('')
+     +'</div>'+eigenVeld(k.vraag[0],k.vraag[1])+'</div></details>';
+  }).join('');
+
+  document.querySelectorAll('[data-eigen]').forEach(function(t){
+    if(t.dataset.aan)return; t.dataset.aan='1';
+    t.addEventListener('change',function(e){S.eigen=S.eigen||{};S.eigen[e.target.dataset.eigen]=e.target.value;bewaar();});
+  });
+
+  // conclusie over de canvassen heen
+  const cc=document.getElementById('canvasConclusie');
+  if(cc){
+    const ingevuld=['bmc','vpc2','lean','merk','content','sales2'].filter(function(x){return (S.eigen||{})[x];}).length;
+    cc.innerHTML='<h2>Wat de zes canvassen samen zeggen</h2>'
+     +'<p class="kern">Je verdienmodel leunt op '+(grootste>=25?'één grote klant':'een verdeelde klantgroep')
+      +' en op mensen: <b>'+zwakste.n.toLowerCase()+'</b> is je smalste schakel en '+duurste.n.toLowerCase()+' je duurste post ('+eur(K[duurste.k])+' per jaar). '
+      +'Je onderscheid zit niet in wat je aanbiedt maar in of je het kunt waarmaken zonder de mensen die het nu dragen. '
+      +'Dat maakt één ding tegelijk urgent: het vastleggen van wat nu in hoofden zit — daar hangen je merkbelofte, je verkoop en je marge aan vast.</p>'
+     +'<div class="drie">'
+     +'<div class="stap"><span>Model</span><b>Business Model</b><p>Je kernmiddel is kennis van mensen. Zolang die niet van het bedrijf is, is je model kwetsbaar.</p></div>'
+     +'<div class="stap"><span>Waarde</span><b>Waardepropositie</b><p>Je belooft zekerheid; die kun je pas waarmaken als het werk niet aan personen hangt.</p></div>'
+     +'<div class="stap"><span>Sales</span><b>Verkoop</b><p>'+(g('commercie')<3?'Opvolging is handwerk — daar lekt omzet weg voordat je iets hoeft te verkopen.':'De route van contact naar opdracht staat.')+'</p></div>'
+     +'</div>'
+     +'<p class="sub" style="margin-top:.8rem">'+ingevuld+' van de 6 eigen antwoorden ingevuld. Hoe meer je aanvult, hoe scherper deze conclusie — en het advies onder Advies.</p>';
+  }
 }
 
 function tekenConclusie(){
@@ -2711,6 +2815,12 @@ function verzamelAdvies(){
     if(fn('wRente')&&eb/(fn('wRente')*1000)<1.3) A.push({t:'Verlaag de vaste lasten of verleng de aflossing',dim:'finance',duur:3,waarde:0,
       waarom:'Rentedekking onder 1,3× — daar wordt een financier ongemakkelijk van, zeker bij tegenvallende maanden.',bron:'Model DSCR'});
   }
+
+  // --- uit de canvassen ---
+  if(!(S.eigen||{}).merk) A.push({t:'Schrijf op waarop klanten jullie kiezen',dim:'commercie',duur:1,waarde:0,
+    waarom:'Merkcanvas: zonder \u00e9\u00e9n zin waarop je wint, verkoopt iedereen in je bedrijf iets anders.',bron:'Branche'});
+  if(!(S.eigen||{}).bmc) A.push({t:'Reken uit welke klantgroep het meest oplevert',dim:'finance',duur:1,waarde:0,
+    waarom:'Business Model Canvas: de grootste klant is zelden de winstgevendste. Zonder die uitsplitsing stuur je op omzet in plaats van op marge.',bron:'Cijfers'});
 
   // --- uit de strategiemodellen ---
   const gemAll=DIM.reduce((a,d)=>a+g(d.k),0)/DIM.length;
