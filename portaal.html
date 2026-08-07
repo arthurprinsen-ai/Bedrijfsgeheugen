@@ -223,6 +223,26 @@ input[type=range]{min-height:34px}
 .conclusie .stap p{font-size:.84rem;color:var(--grijs);line-height:1.5;margin:0}
 .q4 div{background:#FBFAF7}
 .erk div{border-left:3px solid var(--blauw)}
+
+/* bronvermelding onder grafieken */
+.bron{font-size:.72rem;color:#8A94A3;margin-top:.5rem;padding-top:.45rem;border-top:1px solid #EFEFEC;line-height:1.5}
+.bron b{color:var(--grijs);font-weight:600}
+/* kaarten even hoog en netjes uitgelijnd */
+.kaarten{align-items:stretch}
+.kaart{display:flex;flex-direction:column}
+.kaart > svg{margin-top:auto}
+.kaart .sub:last-child{margin-top:.5rem}
+/* onderzoek: filterbalk en tegels */
+.filterbalk{display:flex;gap:.35rem;flex-wrap:wrap;margin:.2rem 0 .9rem}
+.filterbalk button{border:1px solid var(--lijn);background:#fff;border-radius:20px;padding:.35rem .8rem;
+ font:inherit;font-size:.8rem;color:var(--grijs);cursor:pointer}
+.filterbalk button[aria-pressed=true]{background:var(--inkt);color:#fff;border-color:var(--inkt)}
+.ondtegel{background:#fff;border:1px solid var(--lijn);border-radius:10px;padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.5rem}
+.ondtegel .cijfer{font-family:"Bricolage Grotesque";font-weight:800;font-size:2rem;line-height:1;letter-spacing:-.02em;color:var(--inkt)}
+.ondtegel .titel{font-size:.98rem;font-weight:700;line-height:1.3}
+.ondtegel .tekst{font-size:.86rem;line-height:1.55;color:var(--inkt)}
+.ondtegel .doen{margin-top:auto;padding:.6rem .7rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.85rem;line-height:1.5}
+.ondtegel .herk{font-size:.74rem;color:#8A94A3}
 </style>
 </head>
 <body>
@@ -306,18 +326,18 @@ input[type=range]{min-height:34px}
         <div class="kaart" style="grid-column:1/-1"><h3>De staat van je bedrijf</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Vijf stadia. Waar jij staat, waar je branche staat, en waar de bovenste kwart zit.</p>
           <svg id="staat" viewBox="0 0 900 250" role="img" aria-label="De staat van je bedrijf"></svg>
-          <div class="sub" id="staatT"></div></div>
+          <div class="sub" id="staatT"></div><div class="bron"><b>Bron:</b> eigen scanantwoorden · CBS digitale intensiteit per bedrijfstak · branchegemiddelden uit assets/data/branche.json</div><div class="bron"><b>Bron:</b> eigen scanantwoorden · CBS digitale intensiteit per bedrijfstak · branchegemiddelden uit assets/data/branche.json</div><div class="bron"><b>Bron:</b> eigen scanantwoorden · CBS digitale intensiteit per bedrijfstak · branchegemiddelden uit assets/data/branche.json</div></div>
         <div class="kaart"><h3>Waar je staat op de adoptiecurve</h3>
           <svg id="curveMini" viewBox="0 0 780 250" role="img" aria-label="Adoptiecurve"></svg>
-          <div class="sub" id="curveMiniT"></div></div>
+          <div class="sub" id="curveMiniT"></div><div class="bron"><b>Bron:</b> marktverdeling naar volwassenheidsniveau (indicatief, o.b.v. CBS/Eurostat) · jouw positie uit de scan</div><div class="bron"><b>Bron:</b> marktverdeling naar volwassenheidsniveau (indicatief, o.b.v. CBS/Eurostat) · jouw positie uit de scan</div><div class="bron"><b>Bron:</b> marktverdeling naar volwassenheidsniveau (indicatief, o.b.v. CBS/Eurostat) · jouw positie uit de scan</div></div>
       </div>
       <div class="kaarten k2">
         <div class="kaart"><h3>Waar het geld weglekt</h3>
           <svg id="taart" viewBox="0 0 460 230" role="img" aria-label="Kosten per onderdeel"></svg>
-          <div class="sub" id="taartT"></div></div>
+          <div class="sub" id="taartT"></div><div class="bron"><b>Bron:</b> eigen scanantwoorden × medewerkers × uurkosten · 46 werkweken</div><div class="bron"><b>Bron:</b> eigen scanantwoorden × medewerkers × uurkosten · 46 werkweken</div><div class="bron"><b>Bron:</b> eigen scanantwoorden × medewerkers × uurkosten · 46 werkweken</div></div>
         <div class="kaart"><h3>Wat je nu remt</h3><div id="remmen"></div></div>
         <div class="kaart"><h3>Voortgang</h3><svg id="voortgang" viewBox="0 0 460 200" role="img" aria-label="Voortgang"></svg>
-          <div class="sub" id="voortgangT"></div></div>
+          <div class="sub" id="voortgangT"></div><div class="bron"><b>Bron:</b> je eigen roadmap in dit portaal</div><div class="bron"><b>Bron:</b> je eigen roadmap in dit portaal</div><div class="bron"><b>Bron:</b> je eigen roadmap in dit portaal</div></div>
       </div>
       <div class="kaart" style="margin-top:1rem">
         <h3>En dan?</h3>
@@ -342,14 +362,14 @@ input[type=range]{min-height:34px}
       <div class="kaarten k2">
         <div class="kaart"><h3>Wat mensen doen bij verandering</h3>
           <svg id="daiWeerstand" viewBox="0 0 480 280" role="img" aria-label="Verandercurve"></svg>
-          <div class="sub" id="daiWeerstandT"></div></div>
+          <div class="sub" id="daiWeerstandT"></div><div class="bron"><b>Bron:</b> Kübler-Ross verandercurve · Prosci ADKAR · Kotter</div><div class="bron"><b>Bron:</b> Kübler-Ross verandercurve · Prosci ADKAR · Kotter</div><div class="bron"><b>Bron:</b> Kübler-Ross verandercurve · Prosci ADKAR · Kotter</div></div>
         <div class="kaart"><h3>Hoe je het bestuurt</h3><div id="daiGov"></div></div>
       </div>
 
       <div class="kaart" style="margin-top:1rem"><h3>Kosten en opbrengsten over de tijd</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Wat je uitgeeft loopt vooruit, wat je terugkrijgt komt later — en wat je laat liggen loopt op.</p>
         <svg id="daiGeld" viewBox="0 0 900 300" role="img" aria-label="Kosten en opbrengsten"></svg>
-        <div class="sub" id="daiGeldT"></div></div>
+        <div class="sub" id="daiGeldT"></div><div class="bron"><b>Bron:</b> eigen scancijfers · opzet volgens Forrester Total Economic Impact (kosten, baten, flexibiliteit, risico)</div><div class="bron"><b>Bron:</b> eigen scancijfers · opzet volgens Forrester Total Economic Impact (kosten, baten, flexibiliteit, risico)</div><div class="bron"><b>Bron:</b> eigen scancijfers · opzet volgens Forrester Total Economic Impact (kosten, baten, flexibiliteit, risico)</div></div>
 
       <div class="kaarten k2">
         <div class="kaart"><h3>CMMI — procesvolwassenheid</h3><div id="daiCmmi"></div></div>
@@ -378,7 +398,7 @@ input[type=range]{min-height:34px}
           <div class="sub">De binnenste vorm ben jij, de stippellijn is niveau 4 — het doel voor het mkb.</div></div>
         <div class="kaart"><h3>Wat een niveau erbij oplevert</h3>
           <svg id="trap" viewBox="0 0 460 260" role="img" aria-label="Opbrengst per niveau"></svg>
-          <div class="sub" id="trapT"></div></div>
+          <div class="sub" id="trapT"></div><div class="bron"><b>Bron:</b> eigen scanantwoorden; besparingspercentages per niveau zijn richtgetallen uit de praktijk</div><div class="bron"><b>Bron:</b> eigen scanantwoorden; besparingspercentages per niveau zijn richtgetallen uit de praktijk</div><div class="bron"><b>Bron:</b> eigen scanantwoorden; besparingspercentages per niveau zijn richtgetallen uit de praktijk</div></div>
       </div>
     </section>
 
@@ -468,14 +488,15 @@ input[type=range]{min-height:34px}
     <!-- ONDERZOEK -->
     <section class="paneel" id="p-onderzoek">
       <p class="sub" style="margin-top:1rem">Wat grote onderzoeksbureaus meten, naast waar jij staat. Elk cijfer met de bron erbij — je kunt het nazoeken.</p>
+      <div class="filterbalk" id="ondFilter"></div>
       <div class="kaarten k2" style="margin-top:.8rem">
         <div class="kaart"><h3>Je onderdelen in vier vakken</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Volwassenheid tegen wat het kost om het te laten zoals het is. Rechtsboven is op orde, linksonder kost geld en levert niets op.</p>
-          <svg id="kwadrant" viewBox="0 0 480 400" role="img" aria-label="Onderdelen in vier vakken"></svg></div>
+          <svg id="kwadrant" viewBox="0 0 620 460" style="min-height:340px" role="img" aria-label="Onderdelen in vier vakken"></svg></div>
         <div class="kaart"><h3>Wat niets doen kost</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Je huidige kosten tegenover wat je overhoudt bij niveau 3, 4 en 5. Het verschil is wat je nu weggeeft.</p>
-          <svg id="kostenTrap" viewBox="0 0 480 340" role="img" aria-label="Kosten van niets doen"></svg>
-          <div class="sub" id="kostenTrapT"></div></div>
+          <svg id="kostenTrap" viewBox="0 0 620 360" style="min-height:280px" role="img" aria-label="Kosten van niets doen"></svg>
+          <div class="sub" id="kostenTrapT"></div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div></div>
       </div>
       <div id="ondBlok" class="kaarten k2" style="margin-top:1rem"></div>
       <div class="kaart" style="margin-top:1rem">
@@ -1885,21 +1906,36 @@ const ONDERZOEK=[
   bron:'DNB / FSC',
   advies:'Begin bij het saaie deel: toegangsrechten, tweestapsverificatie en een back-up die je hebt teruggezet.'}
 ];
+var ondKeuze='alles';
 function tekenOnderzoek(){
   const box=document.getElementById('ondBlok'); if(!box) return;
-  box.innerHTML=ONDERZOEK.map(o=>{
+  const fb=document.getElementById('ondFilter');
+  const dims=[...new Set(ONDERZOEK.map(o=>o.dim))];
+  if(fb){
+    fb.innerHTML='<button data-f="alles" aria-pressed="'+(ondKeuze==='alles')+'">Alles ('+ONDERZOEK.length+')</button>'
+     + dims.map(function(d){ const n=(DIM.find(x=>x.k===d)||{n:d}).n;
+        return '<button data-f="'+d+'" aria-pressed="'+(ondKeuze===d)+'">'+n+' ('+ONDERZOEK.filter(o=>o.dim===d).length+')</button>'; }).join('')
+     + '<button data-f="zwak" aria-pressed="'+(ondKeuze==='zwak')+'">Alleen waar jij laag scoort</button>';
+    fb.querySelectorAll('[data-f]').forEach(function(b){
+      if(b.dataset.aan)return; b.dataset.aan='1';
+      b.addEventListener('click',function(){ ondKeuze=b.dataset.f; tekenOnderzoek(); });
+    });
+  }
+  const lijst=ONDERZOEK.filter(function(o){
+    if(ondKeuze==='alles')return true;
+    if(ondKeuze==='zwak')return (S.niveaus[o.dim]||2)<3;
+    return o.dim===ondKeuze;
+  });
+  box.innerHTML=lijst.map(o=>{
     const eigen=S.niveaus[o.dim]||2;
     const kl = eigen>=4?'var(--groen)':(eigen>=3?'var(--amber)':'var(--rood)');
     const naam=(DIM.find(d=>d.k===o.dim)||{n:''}).n;
-    return '<div class="kaart">'
-     +'<div style="display:flex;justify-content:space-between;gap:.8rem;align-items:baseline">'
-     +'<h3 style="font-size:.97rem">'+o.t+'</h3>'
-     +'<span class="kpi" style="font-size:1.35rem;white-space:nowrap">'+o.cijfer+'</span></div>'
-     +'<p style="font-size:.87rem;line-height:1.6;margin-top:.4rem">'+o.bev+'</p>'
-     +'<p class="sub" style="margin-top:.35rem">Bron: '+o.bron+'</p>'
-     +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
-     +'<b>Voor jullie:</b> '+o.advies+'<br>'
-     +'<span style="color:'+kl+';font-weight:600">'+naam+' staat bij jullie op niveau '+eigen+'.</span></div>'
+    return '<div class="ondtegel">'
+     +'<div style="display:flex;justify-content:space-between;gap:.9rem;align-items:flex-start">'
+     +'<div class="titel">'+o.t+'</div><div class="cijfer">'+o.cijfer+'</div></div>'
+     +'<div class="tekst">'+o.bev+'</div>'
+     +'<div class="herk">'+o.bron+' \u00b7 '+naam+' bij jullie: <b style="color:'+kl+'">niveau '+eigen+'</b></div>'
+     +'<div class="doen"><b>Voor jullie:</b> '+o.advies+'</div>'
      +'</div>';
   }).join('');
 }
@@ -1957,7 +1993,7 @@ function tekenKwadrant(){
   const f=[0,1,.78,.5,.22,.06]; const kosten={}; let max=1;
   DIM.forEach(function(d){ kosten[d.k]=d.u*f[S.niveaus[d.k]]*(S.mw/24)*46*S.uur; if(kosten[d.k]>max)max=kosten[d.k]; });
   const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
-  const x0=60,x1=450,y0=340,y1=30;
+  const x0=70,x1=590,y0=400,y1=40;
   const px=n=>x0+((n-1)/4)*(x1-x0);          // volwassenheid 1..5
   const py=k=>y0-(k/max)*(y0-y1);            // kosten
   let g='';
@@ -1991,12 +2027,12 @@ function tekenKostenTrap(){
   const max=Math.max.apply(null,rijen.map(r=>r[1]))||1;
   let g='',y=24;
   rijen.forEach(function(r){
-    const w=(r[1]/max)*300;
+    const w=(r[1]/max)*420;
     g+='<g data-tip="<b>'+r[0]+'</b><br>'+eur(r[1])+' per jaar aan handwerk'+(r[1]<nu?'<br>Bespaart '+eur(nu-r[1])+' tegenover nu':'')+'">'
      +'<text x="0" y="'+(y+14)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">'+r[0]+'</text>'
-     +'<rect x="150" y="'+y+'" width="300" height="20" rx="10" fill="#EDEBE5"/>'
-     +'<rect x="150" y="'+y+'" width="'+Math.max(w,6)+'" height="20" rx="10" fill="'+r[2]+'"/>'
-     +'<text x="'+(150+Math.max(w,6)+8)+'" y="'+(y+15)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+eur(r[1])+'</text></g>';
+     +'<rect x="170" y="'+y+'" width="420" height="20" rx="10" fill="#EDEBE5"/>'
+     +'<rect x="170" y="'+y+'" width="'+Math.max(w,6)+'" height="20" rx="10" fill="'+r[2]+'"/>'
+     +'<text x="'+(170+Math.max(w,6)+8)+'" y="'+(y+15)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+eur(r[1])+'</text></g>';
     y+=62;
   });
   el.innerHTML=g;
@@ -2999,6 +3035,17 @@ function vraagToegang(daarna){
   };
 }
 
+/* zet onder elke grafiek met data-bron een bronregel */
+(function(){
+  function zet(){
+    document.querySelectorAll('svg[data-bron]').forEach(function(sv){
+      if(sv.dataset.bronGezet) return; sv.dataset.bronGezet='1';
+      const d=document.createElement('div'); d.className='bron'; d.innerHTML=sv.getAttribute('data-bron');
+      sv.parentNode.insertBefore(d, sv.nextSibling);
+    });
+  }
+  document.addEventListener('DOMContentLoaded',zet); setTimeout(zet,1200); setTimeout(zet,3000);
+})();
 </script>
 </body>
 </html>
