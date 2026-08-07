@@ -244,6 +244,13 @@ input[type=range]{min-height:34px}
 .ondtegel .tekst{font-size:.86rem;line-height:1.55;color:var(--inkt)}
 .ondtegel .doen{margin-top:auto;padding:.6rem .7rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.85rem;line-height:1.5}
 .ondtegel .herk{font-size:.74rem;color:#8A94A3}
+
+.detailvak{margin-top:.8rem;padding:.9rem 1.05rem;border:1px solid var(--lijn);border-radius:8px;background:#FBFAF7;position:relative}
+.detailvak h4{font-family:"Bricolage Grotesque";font-weight:800;font-size:1rem;margin:0 0 .3rem}
+.detailvak p{font-size:.88rem;line-height:1.6;margin:.25rem 0}
+.detailvak .doen{margin-top:.6rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55}
+.detailvak .sluit{position:absolute;top:.5rem;right:.6rem;border:0;background:none;color:var(--grijs);font-size:1.1rem;cursor:pointer;line-height:1}
+[data-detail]{cursor:pointer}
 </style>
 </head>
 <body>
@@ -2087,7 +2094,10 @@ function tekenKostenTrap(){
   let g='',y=24;
   rijen.forEach(function(r){
     const w=(r[1]/max)*420;
-    g+='<g data-tip="<b>'+r[0]+'</b><br>'+eur(r[1])+' per jaar aan handwerk'+(r[1]<nu?'<br>Bespaart '+eur(nu-r[1])+' tegenover nu':'')+'">'
+    g+='<g data-tip="<b>'+r[0]+'</b><br>'+eur(r[1])+' per jaar aan handwerk"'
+     +' data-detail="'+encodeURIComponent('<h4>'+r[0]+'</h4><p>Bij dit niveau kost het handwerk je <b>'+eur(r[1])+' per jaar</b>.'
+       +(r[1]<nu?' Dat is <b>'+eur(nu-r[1])+'</b> minder dan nu.':' Dit is je huidige situatie.')+'</p>'
+       +'<div class="doen"><b>Wat je hier doet:</b> '+(r[1]<nu?'kijk onder Advies welke stappen je hier brengen \u2014 begin bij de duurste post.':'begin bij \u00e9\u00e9n onderdeel; niveau 4 is het doel voor het mkb.')+'</div>')+'">'
      +'<text x="0" y="'+(y+14)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">'+r[0]+'</text>'
      +'<rect x="170" y="'+y+'" width="420" height="20" rx="10" fill="#EDEBE5"/>'
      +'<rect x="170" y="'+y+'" width="'+Math.max(w,6)+'" height="20" rx="10" fill="'+r[2]+'"/>'
@@ -2169,7 +2179,8 @@ function tekenDaiExtra(){
     F.forEach(function(f,i){
       const x=x0+i*(bw+gap), hier=Math.round(gemDai)===i+1, gehaald=i+1<=Math.round(gemDai);
       const kl=hier?'#2742D6':(gehaald?'#C9CEDA':'#EDEBE5');
-      sv+='<g data-tip="<b>Fase '+(i+1)+' — '+f[0]+'</b><br>'+f[1]+'<br><b>Wat je hier doet:</b> '+f[2]+'">'
+      sv+='<g data-tip="<b>Fase '+(i+1)+' — '+f[0]+'</b><br>'+f[1]+'"'
+       +' data-detail="'+encodeURIComponent('<h4>Fase '+(i+1)+' \u2014 '+f[0]+'</h4><p>'+f[1]+'</p><div class="doen"><b>Wat je hier doet:</b> '+f[2]+'</div>')+'">'
        +'<rect x="'+x+'" y="90" width="'+bw+'" height="54" rx="8" fill="'+kl+'"/>'
        +'<text x="'+(x+bw/2)+'" y="122" text-anchor="middle" font-size="13" font-weight="700" fill="'+(hier?'#fff':'#14171A')+'" font-family="Instrument Sans">'+f[0]+'</text>'
        +'<text x="'+(x+bw/2)+'" y="76" text-anchor="middle" font-size="11" fill="#5C646E" font-family="Instrument Sans">fase '+(i+1)+'</text>';
@@ -2198,7 +2209,8 @@ function tekenDaiExtra(){
     sv+='<path d="'+d+'" fill="none" stroke="#FF4F17" stroke-width="3"/>';
     P.forEach(function(p,i){
       const x=x0+(i+1)*((x1-x0)/4);
-      sv+='<circle cx="'+x+'" cy="'+y[i]+'" r="8" fill="#FF4F17" data-tip="<b>'+p[0]+'</b><br>'+p[1]+'<br><b>Wat werkt:</b> '+p[2]+'"/>'
+      sv+='<circle cx="'+x+'" cy="'+y[i]+'" r="9" fill="#FF4F17" data-tip="<b>'+p[0]+'</b><br>'+p[1]+'"'
+       +' data-detail="'+encodeURIComponent('<h4>'+p[0]+'</h4><p>Wat je hoort: '+p[1]+'</p><div class="doen"><b>Wat werkt:</b> '+p[2]+'</div>')+'"/>'
        +'<text x="'+x+'" y="255" text-anchor="middle" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+p[0]+'</text>';
     });
     sv+='<text x="'+x0+'" y="28" font-size="11.5" fill="#5C646E" font-family="Instrument Sans">stemming in het team → tijd</text>';
@@ -2276,7 +2288,7 @@ function tekenStaat(){
   S5.forEach(function(f,i){
     const x=x0+i*bw, hier=Math.round(gem)===i+1;
     const kl=['#FDE2DE','#FFEBD6','#FFF6D6','#E3F4E8','#D9F0E4'][i];
-    sv+='<g data-tip="<b>'+f[0]+'</b><br>'+f[1]+'<br><span style=\'opacity:.8\'>'+f[2]+'</span>">'
+    sv+='<g data-tip="<b>'+f[0]+'</b><br>'+f[1]+'" data-detail="'+encodeURIComponent('<h4>'+f[0]+' \u2014 niveau '+(i+1)+'</h4><p>'+f[1]+'</p><p><b>Wat dit betekent:</b> '+f[2]+'</p><div class="doen"><b>Wat je hier doet:</b> '+(i===0?'vastleggen wat alleen \u00e9\u00e9n iemand weet.':(i===1?'\u00e9\u00e9n plek aanwijzen waar de waarheid woont.':(i===2?'de twee systemen koppelen waartussen het meeste wordt overgetypt.':(i===3?'meten wat een proces kost en hoe lang het duurt.':'signalering inbouwen \u2014 zelden nodig in het mkb.'))))+'</div>')+'">'
      +'<rect x="'+(x+3)+'" y="'+y+'" width="'+(bw-6)+'" height="46" rx="6" fill="'+kl+'"'+(hier?' stroke="#14171A" stroke-width="2"':'')+'/>'
      +'<text x="'+(x+bw/2)+'" y="'+(y+29)+'" text-anchor="middle" font-size="13" font-weight="'+(hier?'700':'500')+'" fill="#14171A" font-family="Instrument Sans">'+f[0]+'</text>'
      +'<text x="'+(x+bw/2)+'" y="'+(y+62)+'" text-anchor="middle" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">niveau '+(i+1)+'</text></g>';
@@ -2946,7 +2958,8 @@ function tekenExtraGrafieken(){
       const x1=cx+r*Math.cos(hoek), y1=cy+r*Math.sin(hoek), x2=cx+r*Math.cos(eind), y2=cy+r*Math.sin(eind);
       const x3=cx+ri*Math.cos(eind), y3=cy+ri*Math.sin(eind), x4=cx+ri*Math.cos(hoek), y4=cy+ri*Math.sin(hoek);
       g+='<path d="M'+x1+','+y1+' A'+r+','+r+' 0 '+groot+' 1 '+x2+','+y2+' L'+x3+','+y3+' A'+ri+','+ri+' 0 '+groot+' 0 '+x4+','+y4+' Z" fill="'+KL[idx]+'"'
-       +' data-tip="<b>'+d.n+'</b><br>'+eur(kosten[d.k])+' per jaar ('+(deel*100).toFixed(0)+'%)<br>Niveau '+S.niveaus[d.k]+' — '+(UITLEG[d.k]||'')+'" data-ga="business"/>';
+       +' data-tip="<b>'+d.n+'</b><br>'+eur(kosten[d.k])+' per jaar ('+(deel*100).toFixed(0)+'%)"'
+       +' data-detail="'+encodeURIComponent('<h4>'+d.n+'</h4><p>Kost je <b>'+eur(kosten[d.k])+' per jaar</b> \u2014 '+(deel*100).toFixed(0)+'% van al het handwerk. Staat op niveau '+S.niveaus[d.k]+' van 5.</p><p>'+(UITLEG[d.k]||'')+'</p><div class="doen"><b>Wat je hier doet:</b> tel \u00e9\u00e9n week hoe vaak hier iets dubbel wordt ingevoerd. Dat getal is je businesscase.</div>')+'"/>';
       g+='<text x="250" y="'+(28+idx*30)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">'
        +'<tspan font-size="14" fill="'+KL[idx]+'">■</tspan> '+d.n+'</text>'
        +'<text x="446" y="'+(28+idx*30)+'" text-anchor="end" font-size="11.5" fill="#5C646E" font-family="Instrument Sans">'+eur(kosten[d.k])+'</text>';
@@ -3156,6 +3169,20 @@ function vraagToegang(daarna){
     });
   }
   document.addEventListener('DOMContentLoaded',zet); setTimeout(zet,1200); setTimeout(zet,3000);
+})();
+/* Klik op een onderdeel van een grafiek: toon de uitleg onder die kaart. */
+(function(){
+  document.addEventListener('click',function(e){
+    const el=e.target.closest('[data-detail]'); if(!el) return;
+    const kaart=el.closest('.kaart'); if(!kaart) return;
+    let vak=kaart.querySelector('.detailvak');
+    const inhoud=decodeURIComponent(el.getAttribute('data-detail'));
+    if(vak && vak.dataset.bron===el.getAttribute('data-detail')){ vak.remove(); return; }
+    if(!vak){ vak=document.createElement('div'); vak.className='detailvak'; kaart.appendChild(vak); }
+    vak.dataset.bron=el.getAttribute('data-detail');
+    vak.innerHTML='<button class="sluit" aria-label="Sluiten">\u00d7</button>'+inhoud;
+    vak.querySelector('.sluit').addEventListener('click',function(){ vak.remove(); });
+  });
 })();
 </script>
 </body>
