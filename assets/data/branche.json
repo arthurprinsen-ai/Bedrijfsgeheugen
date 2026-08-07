@@ -1,5 +1,5 @@
 {
-  "versie": 1,
+  "versie": 2,
   "bijgewerkt": "2026-08-06",
   "volgende_controle": "2026-11-01",
   "landelijk": {
@@ -10,21 +10,119 @@
     "url": "https://www.dnb.nl/publicaties/publicaties-dnb/eov/voorjaarsraming-2026/"
   },
   "bronnen": [
-    {"naam": "DNB Voorjaarsraming", "wat": "groei, inflatie, loonstijging", "cadans": "2x per jaar (juni en december)", "url": "https://www.dnb.nl/publicaties/publicaties-dnb/eov/voorjaarsraming-2026/"},
-    {"naam": "RaboResearch Sectorprognoses", "wat": "toegevoegde waarde per sector", "cadans": "elk kwartaal", "url": "https://www.rabobank.nl/bedrijven/groei/groeistrategie/sectorprognoses"},
-    {"naam": "CBS Ziekteverzuim per bedrijfstak", "wat": "verzuim", "cadans": "elk kwartaal", "url": "https://www.cbs.nl/nl-nl/cijfers/detail/80072ned"},
-    {"naam": "CBS Digitalisering en arbeidsproductiviteit", "wat": "digitale intensiteit, toegevoegde waarde per vte", "cadans": "jaarlijks", "url": "https://www.cbs.nl/nl-nl/cijfers/detail/81156ned"}
+    {
+      "naam": "DNB Voorjaarsraming",
+      "wat": "groei, inflatie, loonstijging",
+      "cadans": "2x per jaar (juni en december)",
+      "url": "https://www.dnb.nl/publicaties/publicaties-dnb/eov/voorjaarsraming-2026/"
+    },
+    {
+      "naam": "RaboResearch Sectorprognoses",
+      "wat": "toegevoegde waarde per sector",
+      "cadans": "elk kwartaal",
+      "url": "https://www.rabobank.nl/bedrijven/groei/groeistrategie/sectorprognoses"
+    },
+    {
+      "naam": "CBS Ziekteverzuim per bedrijfstak",
+      "wat": "verzuim",
+      "cadans": "elk kwartaal",
+      "url": "https://www.cbs.nl/nl-nl/cijfers/detail/80072ned"
+    },
+    {
+      "naam": "CBS Digitalisering en arbeidsproductiviteit",
+      "wat": "digitale intensiteit, toegevoegde waarde per vte",
+      "cadans": "jaarlijks",
+      "url": "https://www.cbs.nl/nl-nl/cijfers/detail/81156ned"
+    },
+    {
+      "naam": "UWV Arbeidsmarktprognose / spanningsindicator",
+      "wat": "krapte per beroepsgroep",
+      "cadans": "jaarlijks",
+      "url": "https://www.uwv.nl/nl/arbeidsmarktinformatie"
+    },
+    {
+      "naam": "KVK Handelsregister",
+      "wat": "SBI-code, grootteklasse en oprichtingsjaar op basis van het KVK-nummer",
+      "cadans": "live",
+      "url": "https://developers.kvk.nl"
+    }
   ],
   "branches": {
-    "ICT & software":             {"verzuim": 3.4, "groei": 2.6},
-    "Zakelijke dienstverlening":  {"verzuim": 3.6, "groei": 1.2},
-    "Financiële dienstverlening": {"verzuim": 4.1, "groei": 1.4},
-    "Handel & retail":            {"verzuim": 5.0, "groei": 0.8},
-    "Industrie & productie":      {"verzuim": 5.4, "groei": 0.4},
-    "Logistiek & transport":      {"verzuim": 5.9, "groei": 0.2},
-    "Zorg":                       {"verzuim": 8.2, "groei": 2.8},
-    "Bouw":                       {"verzuim": 5.1, "groei": 0.5},
-    "Horeca & recreatie":         {"verzuim": 3.4, "groei": 0.9},
-    "Gemiddeld NL-bedrijf":       {"verzuim": 5.4, "groei": 1.0}
+    "ICT & software": {
+      "verzuim": 3.4,
+      "groei": 2.6,
+      "spanning": "zeer krap",
+      "index": 4.1,
+      "beroep": "softwareontwikkelaar"
+    },
+    "Zakelijke dienstverlening": {
+      "verzuim": 3.6,
+      "groei": 1.2,
+      "spanning": "krap",
+      "index": 2.4,
+      "beroep": "administratief medewerker"
+    },
+    "Financiële dienstverlening": {
+      "verzuim": 4.1,
+      "groei": 1.4,
+      "spanning": "krap",
+      "index": 2.2,
+      "beroep": "financieel specialist"
+    },
+    "Handel & retail": {
+      "verzuim": 5.0,
+      "groei": 0.8,
+      "spanning": "gemiddeld",
+      "index": 1.4,
+      "beroep": "verkoopmedewerker"
+    },
+    "Industrie & productie": {
+      "verzuim": 5.4,
+      "groei": 0.4,
+      "spanning": "zeer krap",
+      "index": 3.6,
+      "beroep": "monteur / operator"
+    },
+    "Logistiek & transport": {
+      "verzuim": 5.9,
+      "groei": 0.2,
+      "spanning": "krap",
+      "index": 2.8,
+      "beroep": "chauffeur"
+    },
+    "Zorg": {
+      "verzuim": 8.2,
+      "groei": 2.8,
+      "spanning": "zeer krap",
+      "index": 4.6,
+      "beroep": "verzorgende / verpleegkundige"
+    },
+    "Bouw": {
+      "verzuim": 5.1,
+      "groei": 0.5,
+      "spanning": "zeer krap",
+      "index": 3.9,
+      "beroep": "timmerman / installateur"
+    },
+    "Horeca & recreatie": {
+      "verzuim": 3.4,
+      "groei": 0.9,
+      "spanning": "krap",
+      "index": 2.6,
+      "beroep": "kok / bediening"
+    },
+    "Gemiddeld NL-bedrijf": {
+      "verzuim": 5.4,
+      "groei": 1.0,
+      "spanning": "krap",
+      "index": 2.5,
+      "beroep": "—"
+    }
+  },
+  "cbs": {
+    "verzuim_tabel": "80072ned",
+    "productiviteit_tabel": "81156ned",
+    "odata": "https://opendata.cbs.nl/ODataApi/odata/",
+    "toelichting": "Het portaal probeert het landelijke verzuimcijfer live op te halen. Lukt dat niet, dan blijven de waarden uit dit bestand staan."
   }
 }

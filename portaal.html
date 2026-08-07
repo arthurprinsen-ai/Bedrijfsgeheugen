@@ -701,7 +701,7 @@ function toonPortaal(user){
   document.getElementById('wie').textContent=(user&&(user.user_metadata&&user.user_metadata.full_name||user.email))||'';
   sleutel='bg_portaal_'+((user&&user.email)||'anoniem');
   laad(); bouw(); teken();
-  haalCijfers().then(teken);
+  haalCijfers().then(function(){ return haalCBS(); }).then(teken);
 }
 if(window.netlifyIdentity){
   netlifyIdentity.on('init',u=>{ if(u) toonPortaal(u); });
@@ -780,7 +780,7 @@ function bouw(){
     if(S.mensen[id]!==undefined&&S.mensen[id]!=='') el.value=S.mensen[id];
     el.addEventListener('input',e=>{S.mensen[id]=e.target.value;bewaar();teken();});
   });
-  ['cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt'].forEach(id=>{
+  ['cKvk','cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt'].forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
     if(S.cijfers&&S.cijfers[id]!==undefined) el.value=S.cijfers[id];
     el.addEventListener('input',e=>{S.cijfers=S.cijfers||{};S.cijfers[id]=e.target.value;bewaar();teken();});
@@ -1057,6 +1057,21 @@ var CIJFERS={bijgewerkt:'ingebouwd',landelijk:{groei:0.8,inflatie:2.7,loonstijgi
 var NL=CIJFERS.landelijk;
 /* Actuele cijfers uit assets/data/branche.json. Faalt dat, dan blijven de
    ingebouwde waarden staan — het dashboard werkt altijd. */
+function haalCBS(){
+  /* Landelijk verzuimcijfer live uit CBS StatLine (tabel 80072ned).
+     Lukt het niet — offline, CORS, tabel gewijzigd — dan blijft het cijfer
+     uit branche.json staan en merkt de gebruiker niets. */
+  return fetch('https://opendata.cbs.nl/ODataApi/odata/80072ned/TypedDataSet?$top=1&$orderby=ID%20desc',{cache:'no-cache'})
+    .then(function(r){ return r.ok?r.json():Promise.reject(); })
+    .then(function(j){
+      const rij=(j.value||[])[0]||{};
+      const v=rij.Ziekteverzuimpercentage_1;
+      if(typeof v==='number'){
+        CIJFERS.cbs_live={verzuim:v, periode:rij.Perioden||''};
+        if(BRANCHE['Gemiddeld NL-bedrijf']) BRANCHE['Gemiddeld NL-bedrijf'].verzuim=v;
+      }
+    }).catch(function(){});
+}
 function haalCijfers(){
   return fetch('/assets/data/branche.json',{cache:'no-cache'})
     .then(r=>r.ok?r.json():Promise.reject())
@@ -1064,8 +1079,12 @@ function haalCijfers(){
       CIJFERS=j; NL=j.landelijk;
       Object.keys(j.branches||{}).forEach(b=>{
         if(BRANCHE[b]){
-          if(typeof j.branches[b].verzuim==='number') BRANCHE[b].verzuim=j.branches[b].verzuim;
-          if(typeof j.branches[b].groei==='number')   BRANCHE[b].groei=j.branches[b].groei;
+          const x=j.branches[b];
+          if(typeof x.verzuim==='number') BRANCHE[b].verzuim=x.verzuim;
+          if(typeof x.groei==='number')   BRANCHE[b].groei=x.groei;
+          if(x.spanning) BRANCHE[b].spanning=x.spanning;
+          if(typeof x.index==='number') BRANCHE[b].krapte=x.index;
+          if(x.beroep) BRANCHE[b].beroep=x.beroep;
         }
       });
     })
@@ -1092,7 +1111,13 @@ function tekenMensen(){
   g+=balk(150,70,180,verloop,b.verloop,'Verloop',v=>Math.round(v)+'%',true);
   g+=balk(150,120,180,(enps===null?0:enps+100)/2,(b.enps+100)/2,'eNPS',v=>Math.round(v*2-100),false);
   document.getElementById('mGrafiek').innerHTML=g;
-  document.getElementById('mBron').textContent='Verzuim: CBS per bedrijfstak (2026 K1). Verloop en eNPS: HR-bandbreedtes, indicatief.';
+  document.getElementById('mBron').innerHTML='Verzuim: CBS per bedrijfstak'
+   +(CIJFERS.cbs_live?' \u2014 landelijk cijfer live opgehaald ('+CIJFERS.cbs_live.verzuim+'% over '+CIJFERS.cbs_live.periode+')':'')
+   +'. Verloop en eNPS: HR-bandbreedtes, indicatief.'
+   +(b.spanning?'<br><b>Arbeidsmarkt:</b> in '+S.branche.toLowerCase()+' is de markt <b>'+b.spanning+'</b>'
+     +(b.krapte?' (spanningsindicator '+b.krapte.toFixed(1)+')':'')
+     +(b.beroep&&b.beroep!=='\u2014'?'; het krapste beroep is '+b.beroep:'')
+     +'. Bron: UWV Arbeidsmarktprognose.':'');
   const mto=+m.mMto||0;
   let t='';
   if(mto===0) t+='<b>Je hebt geen recent beeld van je mensen.</b> Dat is geen tekortkoming maar wel een blinde vlek: '
@@ -1865,6 +1890,11 @@ function verzamelAdvies(){
     waarom:'Verbieden werkt niet, vastleggen wel. Vanaf 2 augustus 2026 geldt bovendien de transparantieplicht.',bron:'Beleid'});
   if(mistDef) A.push({t:'Spreek af wat een klant, order en uur precies zijn',dim:'quality',duur:1,waarde:kosten.quality*0.4,
     waarom:'Zonder definities blijft elk dashboard betwistbaar en gaat de vergadering over wiens cijfer klopt.',bron:'Beleid'});
+
+  // --- arbeidsmarkt (UWV) ---
+  if(b.spanning==='zeer krap' && g('mensen')<4) A.push({t:'Maak werk dat je niet hoeft in te vullen',dim:'mensen',duur:2,waarde:0,
+    waarom:'UWV: de arbeidsmarkt in '+S.branche.toLowerCase()+' is zeer krap'+(b.beroep&&b.beroep!=='\u2014'?' (krapste beroep: '+b.beroep+')':'')
+      +'. Een vacature die je niet hoeft te openen, is sneller vervuld dan de beste wervingscampagne.',bron:'Branche'});
 
   // --- uit de financiële modellen ---
   const F=S.fin||{}, fn=x=>+(F[x])||0;
