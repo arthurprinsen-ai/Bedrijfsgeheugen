@@ -84,6 +84,11 @@ function toon(d){
   const bouw=K.filter(k=>k.status==='In aanbouw');
   const uren=K.reduce((a,k)=>a+(+k.uren||0),0);
   const bespaard=draait.reduce((a,k)=>a+(+k.besparing||0),0);
+  const tarief=+d.tarief||200;
+  const gefactureerd=K.reduce((a,k)=>a+(+k.gefactureerd||0),0);
+  const gewerkt=uren*tarief;
+  const open=Math.max(gewerkt-gefactureerd,0);
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
 
   el.innerHTML=
    '<div class="drie" style="margin-top:1rem">'
@@ -117,6 +122,22 @@ function toon(d){
        +'<div><b>'+k.titel+'</b><div class="sub">'+(k.middel||'\\u2014')+' \\u00b7 '+(+k.uren||0)+' uur</div></div>'
        +'<div>'+pil(k.status)+'</div></div>';
      }).join('')
+   +'</div>'
+
+   +'<div class="kaart"><h3>Uren en facturen</h3>'
+   +'<div class="drie" style="margin-bottom:.6rem">'
+   +'<div><div class="kpi">'+uren.toFixed(1)+'</div><div class="sub">uur gewerkt \u00d7 '+eur(tarief)+'</div></div>'
+   +'<div><div class="kpi">'+eur(gefactureerd)+'</div><div class="sub">al gefactureerd</div></div>'
+   +'<div><div class="kpi" style="color:'+(open>0?'var(--amber)':'var(--groen)')+'">'+eur(open)+'</div><div class="sub">'+(open>0?'gewerkt maar nog niet gefactureerd':'niets openstaand')+'</div></div>'
+   +'</div>'
+   + K.filter(function(k){return (+k.uren||0)>0;}).map(function(k){
+      const w=(+k.uren||0)*tarief, f=+k.gefactureerd||0;
+      return '<div class="rij"><span class="bol" style="background:'+(f>=w?'var(--groen)':'var(--amber)')+'"></span>'
+       +'<div><b>'+k.titel+'</b><div class="sub">'+(+k.uren||0)+' uur \u00b7 '+eur(w)+' aan werk</div></div>'
+       +'<div style="text-align:right"><b>'+eur(f)+'</b><div class="sub">gefactureerd</div></div></div>';
+     }).join('')
+   +'<p class="sub" style="margin-top:.7rem">Elke factuur komt met de urenlijst erbij: per dag, met wat er die dag gebeurde. '
+   +'Klopt er iets niet, zeg het \u2014 dan halen we het eraf. Werk onder twee uur brengen we niet in rekening.</p>'
    +'</div>'
 
    +'<div class="let"><b>Wat die uren betekenen.</b> De uren die vrijkomen zijn geen geld dat binnenkomt \\u2014 jullie mensen blijven. '
