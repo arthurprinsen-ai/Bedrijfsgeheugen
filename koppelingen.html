@@ -53,6 +53,16 @@ td{padding:.45rem 0;border-bottom:1px solid var(--lijn);font-size:.9rem;vertical
 td:first-child{color:var(--grijs);white-space:nowrap;padding-right:1rem;width:11rem}
 footer{border-top:2px solid var(--inkt);padding:1.5rem 0;font-size:.88rem;color:var(--grijs)}
 @media(max-width:640px){td:first-child{width:7.5rem}}
+
+pre{background:#14171A;color:#E8EAF0;border-radius:8px;padding:.9rem 1rem;overflow-x:auto;font-size:.8rem;line-height:1.55;margin:.6rem 0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+pre .c{color:#8A94A3}pre .s{color:#FFE86B}pre .k{color:#7FA7FF}
+details.bouw{border:1px solid var(--lijn);border-radius:8px;margin-top:.6rem;background:var(--wit)}
+details.bouw summary{cursor:pointer;list-style:none;padding:.75rem .9rem;font-weight:600;font-size:.95rem}
+details.bouw summary::-webkit-details-marker{display:none}
+details.bouw .in{padding:0 .9rem 1rem}
+.klik{display:grid;grid-template-columns:1.6rem 1fr;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--lijn);align-items:start;font-size:.9rem}
+.klik b.n{width:1.6rem;height:1.6rem;border-radius:50%;background:var(--inkt);color:#fff;display:grid;place-items:center;font-size:.7rem}
+kbd{background:#F1F0EC;border:1px solid var(--lijn);border-bottom-width:2px;border-radius:4px;padding:.05rem .35rem;font-size:.85em;font-family:inherit}
 </style>
 </head>
 <body>
@@ -159,6 +169,79 @@ const OPMERKING={
  'papier|factuur|exact':'Begin bij de bron: vraag leveranciers om pdf per mail. Elke scan die je niet hoeft te maken, is de goedkoopste automatisering die er is.'
 };
 
+
+/* Stap voor stap bouwen, per hulpmiddel, met code waar het nodig is. */
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function code(t){return '<pre>'+t+'</pre>';}
+
+const BOUW={
+ 'Power Automate':{
+  klik:[
+   ['Ga naar make.powerautomate.com','Log in met hetzelfde account als je Outlook. Kies <kbd>Nieuwe stroom</kbd> \u2192 <kbd>Geautomatiseerde cloudstroom</kbd>.'],
+   ['Kies de trigger','<kbd>Wanneer een nieuw e-mailbericht binnenkomt (V3)</kbd>. Zet <kbd>Alleen met bijlagen</kbd> op Ja en <kbd>Bijlagen opnemen</kbd> op Ja.'],
+   ['Filter de goede berichten','Vul bij <kbd>Onderwerpfilter</kbd> in waar je op wilt filteren, of gebruik een submap in Outlook. Filteren op een map is betrouwbaarder dan op onderwerp.'],
+   ['Loop door de bijlagen','Voeg <kbd>Toepassen op elk</kbd> toe met als invoer <kbd>Bijlagen</kbd>. Alles hierna gebeurt per bijlage.'],
+   ['Sluit rommel uit','Voorwaarde: <kbd>Bijlagenaam</kbd> eindigt op .pdf, .jpg of .png. Handtekeningafbeeldingen filter je zo weg (die heten meestal image001.png \u2014 sluit die expliciet uit).'],
+   ['Zoek het dossier','HTTP-actie naar de GetConnector van je pakket, met het klantnummer of e-mailadres als filter. Zie de code hieronder.'],
+   ['Zet het bestand erin','Tweede HTTP-actie naar de UpdateConnector, met de bijlage als base64. Zie de code hieronder.'],
+   ['Vang fouten op','Klik rechtsboven op de actie \u2192 <kbd>Uitvoeren na</kbd> \u2192 vink ook <kbd>is mislukt</kbd> aan, en stuur dan een mail naar jezelf. Zonder deze stap merk je een storing pas weken later.'],
+   ['Test met \u00e9\u00e9n bericht','Stuur jezelf een testmail met een pdf. Kijk in <kbd>Uitvoeringsgeschiedenis</kbd> wat er per stap gebeurde.']],
+  code:'<span class="c">// Stap 6 \u2014 dossier zoeken (HTTP-actie)</span>\nGET https://<span class="k">{omgeving}</span>.rest.afas.online/profitrestservices/connectors/Klanten\n  ?filterfieldids=<span class="s">Email</span>\n  &filtervalues=<span class="s">@{items(\'Toepassen_op_elk\')?[\'From\']}</span>\n  &operatortypes=<span class="s">1</span>\n\nHeaders:\n  Authorization: <span class="s">AfasToken {jouw base64-token}</span>\n\n<span class="c">// Stap 7 \u2014 bijlage in het dossier zetten</span>\nPOST https://<span class="k">{omgeving}</span>.rest.afas.online/profitrestservices/connectors/KnSubject\n\n{\n  <span class="s">"KnSubject"</span>: {\n    <span class="s">"Element"</span>: {\n      <span class="s">"Fields"</span>: {\n        <span class="s">"StId"</span>: 1,\n        <span class="s">"Ds"</span>: <span class="s">"@{items(\'Toepassen_op_elk\')?[\'Name\']}"</span>,\n        <span class="s">"SbTx"</span>: <span class="s">"Automatisch uit mailbox"</span>,\n        <span class="s">"Da"</span>: <span class="s">"@{utcNow()}"</span>\n      },\n      <span class="s">"Objects"</span>: [{\n        <span class="s">"KnSubjectAttachment"</span>: {\n          <span class="s">"Element"</span>: {\n            <span class="s">"Fields"</span>: {\n              <span class="s">"FileName"</span>: <span class="s">"@{items(\'Toepassen_op_elk\')?[\'Name\']}"</span>,\n              <span class="s">"FileStream"</span>: <span class="s">"@{items(\'Toepassen_op_elk\')?[\'ContentBytes\']}"</span>\n            }\n          }\n        }\n      }]\n    }\n  }\n}\n\n<span class="c">// ContentBytes is al base64 \u2014 niet nog een keer coderen.</span>',
+  wat:'Twee HTTP-acties en een lus. Geen echte code, wel precies weten welke velden je pakket verwacht.'},
+
+ 'Make of Zapier':{
+  klik:[
+   ['Maak een scenario','make.com \u2192 <kbd>Create a new scenario</kbd>.'],
+   ['Trigger: Watch emails','Kies je mailmodule, koppel je account en wijs \u00e9\u00e9n map aan. Zet <kbd>Max results</kbd> op 5 zodat een testfout niet meteen honderd berichten verwerkt.'],
+   ['Iterator op de bijlagen','Voeg <kbd>Iterator</kbd> toe met als bron <kbd>Attachments[]</kbd>. Zonder dit werkt hij alleen op de eerste bijlage.'],
+   ['Filter','Klik op de lijn tussen twee modules \u2192 <kbd>Set up a filter</kbd>. Voorwaarde: bestandsnaam bevat .pdf, en niet image001.'],
+   ['Zoek het dossier','HTTP-module <kbd>Make a request</kbd> naar de GetConnector van je pakket. Zie de code.'],
+   ['Zet het bestand erin','Tweede HTTP-module, methode POST. Bij AFAS gaat de inhoud als base64 mee \u2014 Make heeft daar de functie <kbd>toBase64()</kbd> voor.'],
+   ['Foutafhandeling','Rechtermuisknop op de module \u2192 <kbd>Add error handler</kbd> \u2192 <kbd>Break</kbd>. Mislukte berichten komen dan in de wachtrij in plaats van verloren te gaan.'],
+   ['Plan hem in','Onderaan links: elke 15 minuten is genoeg. Vaker kost bewerkingen en levert niets op.']],
+  code:'<span class="c">// Stap 5 \u2014 HTTP-module, dossier zoeken</span>\nURL:    https://<span class="k">{omgeving}</span>.rest.afas.online/profitrestservices/connectors/Klanten\nMethod: GET\nQuery:  filterfieldids = <span class="s">Email</span>\n        filtervalues   = <span class="s">{{1.from.address}}</span>\n        operatortypes  = <span class="s">1</span>\nHeader: Authorization = <span class="s">AfasToken {token}</span>\n\n<span class="c">// Stap 6 \u2014 bijlage plaatsen</span>\nURL:    https://<span class="k">{omgeving}</span>.rest.afas.online/profitrestservices/connectors/KnSubject\nMethod: POST\nBody type: Raw / JSON\n\n{\n  <span class="s">"KnSubject"</span>: { <span class="s">"Element"</span>: { <span class="s">"Fields"</span>: {\n      <span class="s">"StId"</span>: 1,\n      <span class="s">"Ds"</span>: <span class="s">"{{2.fileName}}"</span>,\n      <span class="s">"BcId"</span>: <span class="s">"{{5.body.rows[0].Nummer}}"</span>\n    },\n    <span class="s">"Objects"</span>: [{ <span class="s">"KnSubjectAttachment"</span>: { <span class="s">"Element"</span>: { <span class="s">"Fields"</span>: {\n      <span class="s">"FileName"</span>: <span class="s">"{{2.fileName}}"</span>,\n      <span class="s">"FileStream"</span>: <span class="s">"{{toBase64(2.data)}}"</span>\n    }}}}]\n  }}\n}\n\n<span class="c">// {{5.body.rows[0].Nummer}} verwijst naar het klantnummer uit stap 5.</span>\n<span class="c">// Vind hij niets? Zet er een filter voor: alleen doorgaan als rows[] gevuld is.</span>',
+  wat:'Zes modules. Je typt geen code, maar wel JSON met verwijzingen naar eerdere stappen.'},
+
+ 'Make met de API van je pakket':{
+  klik:[
+   ['Regel eerst de toegang','Vraag je pakketbeheerder om een app-connector of API-gebruiker met alleen de rechten die je nodig hebt. Bij AFAS: een token via Profit \u2192 Algemeen \u2192 Beheer \u2192 App connector.'],
+   ['Test de verbinding buiten Make','Doe eerst \u00e9\u00e9n GET-verzoek met Postman of curl. Werkt dat niet, dan ligt het aan rechten \u2014 niet aan je koppeling.'],
+   ['Bouw de trigger','Watch emails of Watch files, afhankelijk van waar het vandaan komt.'],
+   ['Zoek het doelrecord','GetConnector met een filter op iets unieks: e-mailadres, klantnummer of ordernummer. Nooit op naam.'],
+   ['Vang het geval af dat er niets gevonden wordt','Filter: alleen doorgaan als er een rij terugkomt. Anders naar een bakje "uitzoeken" met een mail naar jezelf.'],
+   ['Schrijf weg','UpdateConnector met de velden die het pakket verwacht. Begin met de minimale set; velden toevoegen kan altijd nog.'],
+   ['Log wat je deed','Schrijf per verwerking \u00e9\u00e9n regel weg \u2014 in een sheet of database. Zonder logboek kun je nooit bewijzen dat iets goed ging.']],
+  code:'<span class="c">// Eerst testen met curl, v\u00f3\u00f3r je iets bouwt</span>\ncurl -X GET \\\n  <span class="s">"https://{omgeving}.rest.afas.online/profitrestservices/connectors/Klanten?take=1"</span> \\\n  -H <span class="s">"Authorization: AfasToken {base64-token}"</span>\n\n<span class="c">// Krijg je 401? Dan klopt het token niet.</span>\n<span class="c">// Krijg je 403? Dan heeft de connector geen rechten op deze gegevens.</span>\n<span class="c">// Krijg je 200 met een lege rows[]? Dan werkt het \u2014 er is alleen niets gevonden.</span>\n\n<span class="c">// Exact Online werkt met OAuth in plaats van een token:</span>\nPOST https://start.exactonline.nl/api/oauth2/token\n  grant_type=<span class="s">refresh_token</span>\n  refresh_token=<span class="s">{jouw refresh token}</span>\n  client_id=<span class="s">{client id}</span>\n  client_secret=<span class="s">{secret}</span>\n\n<span class="c">// Het access token verloopt na 10 minuten, de refresh token na 30 dagen.</span>\n<span class="c">// Zet dat vernieuwen in een apart scenario dat elke 8 minuten draait.</span>',
+  wat:'Hier komt echt koppelvlakwerk bij kijken. Reken op een dagdeel voor de eerste verbinding, daarna gaat het snel.'},
+
+ 'Make of n8n':{
+  klik:[
+   ['Kies waar hij draait','Make in de cloud, of n8n op je eigen server (Docker, of n8n Cloud). Draai je hem zelf, reken dan op onderhoud.'],
+   ['Zet n8n op met Docker','E\u00e9n commando, zie hieronder. Zet er een reverse proxy met https voor als hij van buiten bereikbaar moet zijn.'],
+   ['Bouw de trigger','IMAP Email-node voor mail, Webhook-node voor formulieren, Schedule-node voor periodiek ophalen.'],
+   ['Splits de bijlagen','Item Lists-node \u2192 <kbd>Split Out Items</kbd> op het binary-veld. In n8n heten bijlagen <kbd>binary</kbd>, niet json.'],
+   ['Filter met een Code-node','Hier schrijf je wel echt JavaScript. Zie hieronder.'],
+   ['Schrijf weg met HTTP Request','Method POST, Body als JSON, Authentication via een Credential zodat je token niet in de flow staat.'],
+   ['Zet foutafhandeling aan','Settings van de node \u2192 <kbd>On Error</kbd> \u2192 <kbd>Continue (using error output)</kbd>, en hang daar een mail-node aan.'],
+   ['Activeer','Schuif rechtsboven op <kbd>Active</kbd>. Een n8n-workflow die niet actief staat, draait alleen als je zelf op uitvoeren drukt \u2014 daar loopt vrijwel iedereen \u00e9\u00e9n keer in.']],
+  code:'<span class="c"># n8n draaien op je eigen server</span>\ndocker run -d --restart unless-stopped \\\n  --name n8n -p 5678:5678 \\\n  -e <span class="s">GENERIC_TIMEZONE=<span class="s">"Europe/Amsterdam"</span></span> \\\n  -e <span class="s">N8N_BASIC_AUTH_ACTIVE=true</span> \\\n  -e <span class="s">N8N_BASIC_AUTH_USER=arthur</span> \\\n  -e <span class="s">N8N_BASIC_AUTH_PASSWORD=<span class="s">"kies-iets-langs"</span></span> \\\n  -v n8n_data:/home/node/.n8n \\\n  docker.n8n.io/n8nio/n8n\n\n<span class="c">// Code-node: bijlagen filteren en klaarzetten</span>\n<span class="k">const</span> uit = [];\n<span class="k">for</span> (<span class="k">const</span> item <span class="k">of</span> $input.all()) {\n  <span class="k">for</span> (<span class="k">const</span> [naam, best] <span class="k">of</span> Object.entries(item.binary || {})) {\n    <span class="k">const</span> bestandsnaam = best.fileName || <span class="s">\'\'</span>;\n\n    <span class="c">// alleen documenten, geen handtekeningplaatjes</span>\n    <span class="k">if</span> (!/\\.(pdf|jpe?g|png)$/i.test(bestandsnaam)) <span class="k">continue</span>;\n    <span class="k">if</span> (/^image\\d{3}\\./i.test(bestandsnaam)) <span class="k">continue</span>;\n    <span class="k">if</span> ((best.fileSize || 0) < 8000) <span class="k">continue</span>;  <span class="c">// mini-plaatje = logo</span>\n\n    <span class="c">// afzender eruit voor het zoeken van het dossier</span>\n    <span class="k">const</span> afzender = (item.json.from || <span class="s">\'\'</span>).match(/[\\w.+-]+@[\\w.-]+/);\n\n    uit.push({\n      json: {\n        bestandsnaam,\n        email: afzender ? afzender[0] : <span class="k">null</span>,\n        ontvangen: item.json.date,\n        onderwerp: item.json.subject\n      },\n      binary: { data: best }\n    });\n  }\n}\n<span class="k">return</span> uit;\n\n<span class="c">// Base64 voor het doelsysteem (in een tweede Code-node):</span>\n<span class="k">const</span> b = <span class="k">await</span> <span class="k">this</span>.helpers.getBinaryDataBuffer(0, <span class="s">\'data\'</span>);\n<span class="k">return</span> [{ json: { bestand: b.toString(<span class="s">\'base64\'</span>) } }];',
+  wat:'Bij n8n schrijf je wel JavaScript. Twee Code-nodes van vijftien regels, meer is het niet.'}
+};
+
+function bouwUit(mid, sleutel){
+  const b=BOUW[mid.n]; if(!b) return '';
+  return '<div class="kaart"><h2>Zo bouw je hem, klik voor klik</h2>'
+   +'<p class="sub">'+b.wat+'</p>'
+   + b.klik.map(function(k,i){
+      return '<div class="klik"><b class="n">'+(i+1)+'</b><div><b>'+k[0]+'</b><div class="sub">'+k[1]+'</div></div></div>';
+     }).join('')
+   +'<details class="bouw" style="margin-top:.9rem"><summary>De code en de instellingen \u25be</summary>'
+   +'<div class="in">'+code(b.code)
+   +'<p class="sub">Vervang alles tussen accolades door je eigen gegevens. Zet tokens nooit rechtstreeks in de flow \u2014 gebruik de bewaarplek voor inloggegevens van het platform zelf.</p></div></details>'
+   +'<div class="let"><b>De volgorde die tijd bespaart:</b> test eerst de verbinding met \u00e9\u00e9n verzoek, bouw dan pas de flow. '
+   +'Negen van de tien keer zit het probleem in rechten of in een veldnaam \u2014 en dat zie je in \u00e9\u00e9n verzoek, niet in een flow van acht stappen.</div></div>';
+}
+
 function teken(){
   const el=document.getElementById('uitkomst');
   const n=+document.getElementById('fAantal').value||0;
@@ -204,6 +287,7 @@ function teken(){
    + (OPMERKING[sleutel]?'<div class="let"><b>Voor jouw combinatie:</b> '+OPMERKING[sleutel]+'</div>':'')
    +'</div>'
 
+   + bouwUit(mid, sleutel)
    +'<div class="kaart"><h2>Voordat je begint</h2>'
    +'<table>'
    +'<tr><td>Wie beslist</td><td>Iemand met toegang tot '+NAAM(kd)+' \u00e9n mandaat om rechten te geven. Zonder die persoon sta je binnen een dag stil.</td></tr>'
