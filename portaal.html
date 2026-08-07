@@ -754,6 +754,9 @@ input[type=range]{min-height:34px}
         Kies hieronder één strategisch thema. Dit portaal rekent uit wat er dan geraakt wordt — en met welke volwassenheid je daaraan begint.</p>
         <div id="dnaKeuze" style="margin-top:.9rem"></div>
       </div>
+      <div class="kaart" style="margin-top:1rem"><h3>Waar alles zit</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Het Strategie-DNA bestaat uit zeven onderdelen. Dit is waar je ze in dit portaal vindt.</p>
+        <div id="dnaFamilie"></div></div>
       <div class="kaarten k3" id="dnaImpact" style="margin-top:1rem"></div>
       <div class="kaart" style="margin-top:1rem"><h3>Wat er geraakt wordt</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Van thema naar capability naar wat er in de organisatie moet veranderen. Klik een capability voor de details.</p>
@@ -789,6 +792,25 @@ input[type=range]{min-height:34px}
         <p class="sub" style="margin:-.3rem 0 .7rem">Alles wat het model kent. Zoek erin, of kijk welk thema een capability activeert.</p>
         <input type="text" id="dnaZoek" placeholder="zoek op capability, systeem, proces of maatstaf" style="width:100%;height:44px;padding:0 .8rem;border:1px solid #E3E4E8;border-radius:8px;font:inherit;margin-bottom:.7rem">
         <div id="dnaBieb"></div></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Je eigen capabilities</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Mist er iets wat in jouw bedrijf juist belangrijk is? Voeg het toe. Het telt meteen mee in de impact, de agenda en de bibliotheek — en gaat mee in je download.</p>
+        <div class="velden">
+          <div class="veld"><label for="ecNaam">Naam</label><input type="text" id="ecNaam" placeholder="bijv. Onderhoud op afstand"></div>
+          <div class="veld"><label for="ecDim">Hoort bij onderdeel</label><select id="ecDim"></select></div>
+          <div class="veld"><label for="ecAfd">Afdelingen</label><input type="text" id="ecAfd" placeholder="Operatie, Service"></div>
+          <div class="veld"><label for="ecProc">Processen</label><input type="text" id="ecProc" placeholder="Storing melden, Plannen"></div>
+          <div class="veld"><label for="ecData">Gegevens</label><input type="text" id="ecData" placeholder="Machinegegevens, Contracten"></div>
+          <div class="veld"><label for="ecSys">Systemen</label><input type="text" id="ecSys" placeholder="ERP, Portaal"></div>
+          <div class="veld"><label for="ecAi">AI-toepassingen</label><input type="text" id="ecAi" placeholder="Storing voorspellen"></div>
+          <div class="veld"><label for="ecGov">Afspraken</label><input type="text" id="ecGov" placeholder="Wie mag op afstand ingrijpen"></div>
+          <div class="veld"><label for="ecKpi">Maatstaven</label><input type="text" id="ecKpi" placeholder="Storingen per maand"></div>
+          <div class="veld"><label for="ecProj">Eerste project</label><input type="text" id="ecProj" placeholder="Machines aansluiten op het portaal"></div>
+          <div class="veld"><label for="ecThema">Activeer bij thema</label><select id="ecThema"></select></div>
+        </div>
+        <p class="sub" style="margin-top:.4rem">Meerdere waarden scheid je met een komma.</p>
+        <div style="margin-top:.7rem"><button class="knop" id="ecToe">Capability toevoegen</button></div>
+        <div id="ecLijst" style="margin-top:.9rem"></div></div>
 
       <p class="sub" style="margin-top:1rem;text-align:center">Strategie-DNA © 2026 Bedrijfsgeheugen · versie 3 — met impactmotor, kennisvragen, transformatieradar en capability-bibliotheek</p>
     </section>
@@ -956,7 +978,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[],esg:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[],esg:{},eigenCaps:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -1157,7 +1179,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen, esg:S.esg,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen, esg:S.esg, eigenCaps:S.eigenCaps,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -1187,6 +1209,7 @@ function importeer(bestand){
       if(p.kto) S.kto=p.kto;
       if(p.metingen) S.metingen=p.metingen;
       if(p.esg) S.esg=p.esg;
+      if(p.eigenCaps) S.eigenCaps=p.eigenCaps;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -2223,7 +2246,11 @@ function tekenDNA(){
     b.addEventListener('click',function(){ dnaThema=b.dataset.dna; dnaCap=null; tekenDNA(); });
   });
 
+  // eigen capabilities meenemen alsof ze in het model zitten
+  S.eigenCaps=S.eigenCaps||{};
+  Object.keys(S.eigenCaps).forEach(function(k){ CAP[k]=S.eigenCaps[k]; });
   let lijst=THEMA[dnaThema].caps.slice();
+  Object.keys(S.eigenCaps).forEach(function(k){ if(S.eigenCaps[k].thema===dnaThema && lijst.indexOf(k)<0) lijst.push(k); });
   (BRANCHECAP[S.branche]||[]).forEach(function(k){ if(lijst.indexOf(k)<0 && CAP[k]) lijst.push(k); });
   const caps=lijst.map(function(k){ return Object.assign({k:k},CAP[k]); });
 
@@ -2370,7 +2397,7 @@ function tekenDNA(){
     });
   });
 
-  tekenDNAv3(caps, K);
+  tekenDNAFamilie(); tekenEigenCaps(); tekenDNAv3(caps, K);
 }
 
 /* --- versie 3: vrije invoer, kennisvragen, radar en bibliotheek --- */
@@ -2391,6 +2418,65 @@ function dnaTrefwoorden(tekst){
   for(const r of R){ if(r[0].test(t)) return r[1]; }
   return null;
 }
+/* --- productfamilie en eigen capabilities --- */
+const DNAFAMILIE=[
+ ['Strategie-DNA','De methode zelf: van thema naar capability naar uitvoering','dna','dit tabblad, bovenaan'],
+ ['Impactmotor','Rekent uit wat een strategisch thema raakt in je organisatie','dna','de negen kerngetallen en de graaf'],
+ ['Capability-bibliotheek','Alle capabilities met hun processen, data, systemen en maatstaven','dna','onderaan dit tabblad, doorzoekbaar'],
+ ['Kennisgraaf','De verbanden, bevraagbaar: wat houdt ons tegen, wat draagt niets bij','dna','\u201cVragen aan je organisatie\u201d'],
+ ['Strategie-assistent','Vertaalt gewone taal naar een thema en de bijbehorende impact','dna','\u201cVertel het in je eigen woorden\u201d'],
+ ['Transformatieradar','Volwassenheid over de zeven lagen, met de diepste deuk','dna','de radar op dit tabblad'],
+ ['Uitvoeringsladder','Van capability naar vijf treden met wie, wanneer en klaar-als','uitvoering','eigen tabblad onder Doen']
+];
+function tekenDNAFamilie(){
+  const el=document.getElementById('dnaFamilie'); if(!el) return;
+  el.innerHTML='<div class="kaarten k2">'+DNAFAMILIE.map(function(r){
+    return '<div style="display:grid;grid-template-columns:auto 1fr;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--lijn);align-items:start">'
+     +'<span style="width:.55rem;height:.55rem;border-radius:50%;background:var(--blauw);margin-top:.45rem"></span>'
+     +'<div><b style="font-size:.9rem">'+r[0]+'</b><div class="sub">'+r[1]+'</div>'
+     +'<div class="sub" style="color:var(--blauw)">\u2192 '+r[3]+'</div></div></div>';
+  }).join('')+'</div>';
+}
+
+function tekenEigenCaps(){
+  S.eigenCaps=S.eigenCaps||{};
+  const dimSel=document.getElementById('ecDim'), themaSel=document.getElementById('ecThema');
+  if(dimSel && !dimSel.dataset.aan){
+    dimSel.dataset.aan='1';
+    dimSel.innerHTML=DIM.map(function(d){return '<option value="'+d.k+'">'+d.n+'</option>';}).join('');
+    themaSel.innerHTML=Object.keys(THEMA).map(function(k){return '<option value="'+k+'">'+THEMA[k].n+'</option>';}).join('');
+    document.getElementById('ecToe').addEventListener('click',function(){
+      const w=function(id){ return document.getElementById(id).value.trim(); };
+      const naam=w('ecNaam'); if(!naam){ document.getElementById('ecNaam').style.borderColor='var(--rood)'; return; }
+      const sp=function(id){ return w(id).split(',').map(function(x){return x.trim();}).filter(Boolean); };
+      const sleutel='eigen_'+Date.now();
+      S.eigenCaps[sleutel]={n:naam, dim:w('ecDim'), thema:w('ecThema'),
+        afd:sp('ecAfd').length?sp('ecAfd'):['Nog te bepalen'], proc:sp('ecProc'), data:sp('ecData'),
+        sys:sp('ecSys'), ai:sp('ecAi'), gov:sp('ecGov'), kpi:sp('ecKpi'),
+        proj:sp('ecProj').length?sp('ecProj'):['Eerste stap nog te bepalen']};
+      ['ecNaam','ecAfd','ecProc','ecData','ecSys','ecAi','ecGov','ecKpi','ecProj'].forEach(function(id){ document.getElementById(id).value=''; });
+      bewaar(); teken();
+    });
+  }
+  const lijst=document.getElementById('ecLijst'); if(!lijst) return;
+  const sleutels=Object.keys(S.eigenCaps);
+  lijst.innerHTML = sleutels.length
+    ? '<div class="sub" style="margin-bottom:.4rem">'+sleutels.length+' eigen capabilit'+(sleutels.length>1?'ies':'y')+':</div>'
+      + sleutels.map(function(k){ const c=S.eigenCaps[k];
+        return '<div style="display:grid;grid-template-columns:1fr auto;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--lijn);align-items:start">'
+         +'<div><b style="font-size:.9rem">'+c.n+'</b>'
+         +'<div class="sub">Onderdeel: '+((DIM.find(function(d){return d.k===c.dim;})||{n:c.dim}).n)
+         +' \u00b7 activeert bij: '+(THEMA[c.thema]?THEMA[c.thema].n.toLowerCase():'\u2014')+'</div>'
+         +'<div class="sub">'+[c.afd.length+' afdelingen',c.proc.length+' processen',c.sys.length+' systemen',c.ai.length+' AI'].join(' \u00b7 ')+'</div></div>'
+         +'<button class="knop licht" data-ecweg="'+k+'" style="padding:.25rem .55rem;min-height:0">verwijder</button></div>';
+      }).join('')
+    : '<p class="sub">Nog geen eigen capabilities. Wat je hier toevoegt telt overal mee \u2014 en is van jou, niet van het model.</p>';
+  lijst.querySelectorAll('[data-ecweg]').forEach(function(b){
+    if(b.dataset.aan)return; b.dataset.aan='1';
+    b.addEventListener('click',function(){ delete S.eigenCaps[b.dataset.ecweg]; bewaar(); teken(); });
+  });
+}
+
 function tekenDNAv3(caps, K){
   const g=k=>S.niveaus[k]||2, eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
 
