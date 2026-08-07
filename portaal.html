@@ -767,7 +767,30 @@ input[type=range]{min-height:34px}
         <p class="sub" style="margin:-.3rem 0 .7rem">Wat je al kunt en wat nog niet — uit je eigen scan. Dit bepaalt de volgorde van de veranderagenda.</p>
         <div id="dnaVolw"></div></div>
       <div class="kaart" style="margin-top:1rem"><h3>De veranderagenda</h3><div id="dnaAgenda"></div></div>
-      <p class="sub" style="margin-top:1rem;text-align:center">Strategie-DNA © 2026 Bedrijfsgeheugen · versie 1</p>
+      <div class="kaart" style="margin-top:1rem"><h3>Vertel het in je eigen woorden</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Typ waar jullie heen willen. Geen strategisch jargon nodig — gewoon zoals je het tegen je team zou zeggen.</p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <input type="text" id="dnaVrij" placeholder="bijv. we willen groeien zonder dat het hier vastloopt" style="flex:1;min-width:16rem;height:44px;padding:0 .8rem;border:1px solid #E3E4E8;border-radius:8px;font:inherit">
+          <button class="knop" id="dnaVrijOk">Vertaal naar mijn organisatie</button>
+        </div>
+        <div id="dnaVrijUit" style="margin-top:.8rem"></div></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Vragen aan je organisatie</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Het model kent de verbanden tussen thema, capability, proces, systeem, data en maatstaf. Stel er een vraag over.</p>
+        <div id="dnaVragen"></div>
+        <div id="dnaAntwoord" style="margin-top:.8rem"></div></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Transformatieradar</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Zeven lagen van het model, elk met je huidige volwassenheid. De vorm laat zien waar het scheef zit.</p>
+        <svg id="dnaRadar" viewBox="0 0 460 420" role="img" aria-label="Transformatieradar"></svg>
+        <div class="sub" id="dnaRadarT"></div></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>De capability-bibliotheek</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Alles wat het model kent. Zoek erin, of kijk welk thema een capability activeert.</p>
+        <input type="text" id="dnaZoek" placeholder="zoek op capability, systeem, proces of maatstaf" style="width:100%;height:44px;padding:0 .8rem;border:1px solid #E3E4E8;border-radius:8px;font:inherit;margin-bottom:.7rem">
+        <div id="dnaBieb"></div></div>
+
+      <p class="sub" style="margin-top:1rem;text-align:center">Strategie-DNA © 2026 Bedrijfsgeheugen · versie 3 — met impactmotor, kennisvragen, transformatieradar en capability-bibliotheek</p>
     </section>
 
     <!-- UITVOERING -->
@@ -2346,6 +2369,155 @@ function tekenDNA(){
       bewaar(); teken(); btn.textContent='\u2713 staat erin'; btn.disabled=true;
     });
   });
+
+  tekenDNAv3(caps, K);
+}
+
+/* --- versie 3: vrije invoer, kennisvragen, radar en bibliotheek --- */
+var dnaZoekterm='';
+function dnaTrefwoorden(tekst){
+  const t=(tekst||'').toLowerCase();
+  const R=[[/klant|service|tevreden|nps|relatie/,'klant'],
+           [/groei|omzet|meer werk|uitbreid|nieuwe markt/,'groei'],
+           [/effici|verspil|sneller|handwerk|overtyp|proces/,'excellence'],
+           [/ai|kunstmatig|automatis|copilot/,'ai'],
+           [/verkoop|overdracht|exit|stoppen|opvolg/,'exit'],
+           [/bank|financier|investeer|kapitaal|lening/,'kapitaal'],
+           [/wet|regel|naleving|compliance|veilig|csrd|nis2|avg/,'naleving'],
+           [/personeel|mensen|verloop|vacature|werven|krapte/,'werving'],
+           [/kosten|marge|goedkoper|besparen/,'kosten'],
+           [/leverancier|keten|inkoop|voorraad/,'keten'],
+           [/werkgever|cultuur|betrokken|tevredenheid medewerkers/,'mensen']];
+  for(const r of R){ if(r[0].test(t)) return r[1]; }
+  return null;
+}
+function tekenDNAv3(caps, K){
+  const g=k=>S.niveaus[k]||2, eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+
+  // ---- vrije invoer ----
+  const knop=document.getElementById('dnaVrijOk');
+  if(knop&&!knop.dataset.aan){ knop.dataset.aan='1';
+    knop.addEventListener('click',function(){
+      const tekst=document.getElementById('dnaVrij').value;
+      const th=dnaTrefwoorden(tekst);
+      const uit=document.getElementById('dnaVrijUit');
+      if(!th){ uit.innerHTML='<p class="sub">Dat herken ik niet als thema. Probeer woorden als groeien, kosten, klanten, mensen, verkoop, naleving of automatiseren.</p>'; return; }
+      dnaThema=th; dnaCap=null; tekenDNA();
+      uit.innerHTML='<div style="padding:.75rem .9rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 4px 4px 0;font-size:.89rem;line-height:1.6">'
+       +'Ik lees hierin het thema <b>'+THEMA[th].n+'</b>. Hierboven staat nu wat dat in jouw organisatie raakt \u2014 '
+       +'capabilities, afdelingen, processen, systemen, data, AI, afspraken en maatstaven.</div>';
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  }
+
+  // ---- kennisvragen ----
+  const vr=document.getElementById('dnaVragen');
+  if(vr){
+    const V=[['ai','Welke AI-toepassingen liggen voor de hand?'],
+             ['zwak','Welke capability houdt dit thema tegen?'],
+             ['buiten','Welke onderdelen dragen niets bij aan dit thema?'],
+             ['data','Welke gegevens zijn hiervoor kritisch?'],
+             ['kpi','Waarop moet ik dan sturen?'],
+             ['eigenaar','Wie moet hier eigenaar van zijn?']];
+    vr.innerHTML='<div class="filterbalk">'+V.map(function(v){return '<button data-dnav="'+v[0]+'">'+v[1]+'</button>';}).join('')+'</div>';
+    vr.querySelectorAll('[data-dnav]').forEach(function(b){
+      if(b.dataset.aan)return; b.dataset.aan='1';
+      b.addEventListener('click',function(){
+        const uit=document.getElementById('dnaAntwoord'); const w=b.dataset.dnav;
+        const bundel=function(veld){ const a=[]; caps.forEach(function(c){ (c[veld]||[]).forEach(function(x){ if(a.indexOf(x)<0) a.push(x); }); }); return a; };
+        let h='';
+        if(w==='ai'){
+          h='<p style="font-size:.9rem;line-height:1.65">Bij dit thema horen <b>'+bundel('ai').length+' AI-toepassingen</b>. '
+           +'Let op de volgorde: ze werken pas als de gegevens eronder kloppen \u2014 datakwaliteit staat bij jullie op '+g('quality')+'.</p>'
+           +caps.map(function(c){ return '<div style="padding:.4rem 0;border-bottom:1px solid var(--lijn);font-size:.87rem"><b>'+c.n+'</b><br>'
+             +c.ai.map(function(x){return '\u2022 '+x;}).join('<br>')+'</div>'; }).join('');
+        } else if(w==='zwak'){
+          const z=caps.slice().sort(function(a,c){return g(a.dim)-g(c.dim);})[0];
+          h='<p style="font-size:.9rem;line-height:1.65"><b>'+z.n+'</b> staat op niveau '+g(z.dim)+' van 5 en kost '+eur(K[z.dim]||0)+' per jaar. '
+           +'Dit is de rem: de andere capabilities in dit thema leunen erop. Begin hier, ook als iets anders urgenter voelt.</p>';
+        } else if(w==='buiten'){
+          const raakt=caps.map(function(c){return c.dim;});
+          const buiten=DIM.filter(function(d){return raakt.indexOf(d.k)<0;});
+          h='<p style="font-size:.9rem;line-height:1.65"><b>'+buiten.length+' onderdelen</b> dragen niet bij aan dit thema: '
+           +buiten.map(function(d){return d.n.toLowerCase();}).join(', ')+'.</p>'
+           +'<p class="sub">Dat betekent niet dat ze onbelangrijk zijn \u2014 wel dat verbeteringen daar dit thema niet dichterbij brengen. '
+           +'Zet er dit jaar geen budget of aandacht op tenzij er een ander thema speelt.</p>';
+        } else if(w==='data'){
+          h='<p style="font-size:.9rem;line-height:1.65">Deze <b>'+bundel('data').length+' gegevensbronnen</b> zijn kritisch:</p>'
+           +'<div style="font-size:.88rem;line-height:1.8">'+bundel('data').map(function(x){return '\u2022 '+x;}).join('<br>')+'</div>'
+           +'<p class="sub" style="margin-top:.5rem">Ontbreekt er \u00e9\u00e9n, dan valt de hele keten stil \u2014 dat is de reden dat AI-projecten stranden op data en niet op techniek.</p>';
+        } else if(w==='kpi'){
+          h='<p style="font-size:.9rem;line-height:1.65">Bij dit thema hoort dit setje maatstaven. Kies er <b>vijf</b>, niet meer:</p>'
+           +'<div style="font-size:.88rem;line-height:1.8">'+bundel('kpi').map(function(x){return '\u2022 '+x;}).join('<br>')+'</div>';
+        } else {
+          h='<p style="font-size:.9rem;line-height:1.65">Per capability \u00e9\u00e9n eigenaar. Dit zijn de afspraken die gemaakt moeten worden:</p>'
+           +caps.map(function(c){ return '<div style="padding:.4rem 0;border-bottom:1px solid var(--lijn);font-size:.87rem"><b>'+c.n+'</b> \u2014 '
+             +c.afd[0]+' <span class="sub">\u00b7 '+c.gov.join(', ')+'</span></div>'; }).join('');
+        }
+        uit.innerHTML='<div style="padding:.9rem 1rem;border:1px solid var(--lijn);border-radius:8px;background:#FBFAF7">'+h+'</div>';
+      });
+    });
+  }
+
+  // ---- transformatieradar ----
+  const rd=document.getElementById('dnaRadar');
+  if(rd){
+    const L=[['Strategie','sturing'],['Processen','operatie'],['Data','quality'],['Technologie','tech'],
+             ['AI','analytics'],['Mensen','mensen'],['Governance','governance']];
+    const cx=230, cy=210, R=150, N=L.length;
+    let g2='', punten=[], doel=[];
+    for(let ring=1;ring<=5;ring++){
+      let d=''; for(let i=0;i<N;i++){ const a=-Math.PI/2+i*2*Math.PI/N, r=R*ring/5;
+        d+=(i?' L':'M')+(cx+r*Math.cos(a))+','+(cy+r*Math.sin(a)); }
+      g2+='<path d="'+d+' Z" fill="none" stroke="#EDEBE5" stroke-width="1"/>';
+    }
+    L.forEach(function(l,i){
+      const a=-Math.PI/2+i*2*Math.PI/N, niv=g(l[1]);
+      const rr=R*niv/5, rd4=R*4/5;
+      punten.push([cx+rr*Math.cos(a),cy+rr*Math.sin(a)]);
+      doel.push([cx+rd4*Math.cos(a),cy+rd4*Math.sin(a)]);
+      const lx=cx+(R+26)*Math.cos(a), ly=cy+(R+26)*Math.sin(a);
+      g2+='<circle cx="'+(cx+rr*Math.cos(a))+'" cy="'+(cy+rr*Math.sin(a))+'" r="12" fill="transparent"'
+       +' data-tip="<b>'+l[0]+'</b><br>Niveau '+niv+' van 5"/>'
+       +'<text x="'+lx+'" y="'+(ly+4)+'" text-anchor="'+(Math.cos(a)>0.2?'start':(Math.cos(a)<-0.2?'end':'middle'))+'"'
+       +' font-size="11.5" fill="#5C646E" font-family="Instrument Sans">'+l[0]+' '+niv+'</text>';
+    });
+    g2='<path d="M'+doel.map(function(x){return x.join(',');}).join(' L')+' Z" fill="none" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>'+g2;
+    g2='<path d="M'+punten.map(function(x){return x.join(',');}).join(' L')+' Z" fill="rgba(39,66,214,.16)" stroke="#2742D6" stroke-width="2.5"/>'+g2;
+    rd.innerHTML=g2;
+    const laagste=L.slice().sort(function(a,c){return g(a[1])-g(c[1]);})[0];
+    document.getElementById('dnaRadarT').innerHTML='De stippellijn is niveau 4, het doel voor het mkb. '
+     +'De diepste deuk zit bij <b>'+laagste[0].toLowerCase()+'</b> (niveau '+g(laagste[1])+') \u2014 een transformatie beweegt niet sneller dan zijn diepste deuk.';
+  }
+
+  // ---- bibliotheek ----
+  const zk=document.getElementById('dnaZoek');
+  if(zk&&!zk.dataset.aan){ zk.dataset.aan='1';
+    zk.addEventListener('input',function(e){ dnaZoekterm=e.target.value.toLowerCase(); tekenDNA(); });
+  }
+  if(zk) zk.value=dnaZoekterm;
+  const bieb=document.getElementById('dnaBieb');
+  if(bieb){
+    const alles=Object.keys(CAP).map(function(k){ return Object.assign({k:k},CAP[k]); });
+    const gefilterd=alles.filter(function(c){
+      if(!dnaZoekterm) return true;
+      const bak=[c.n].concat(c.afd,c.proc,c.data,c.sys,c.ai,c.gov,c.kpi,c.proj).join(' ').toLowerCase();
+      return bak.indexOf(dnaZoekterm)>-1;
+    });
+    bieb.innerHTML='<p class="sub" style="margin-bottom:.5rem">'+gefilterd.length+' van de '+alles.length+' capabilities'+(dnaZoekterm?' met "'+dnaZoekterm+'"':'')+'.</p>'
+     + gefilterd.map(function(c){
+        const themas=Object.keys(THEMA).filter(function(t){return THEMA[t].caps.indexOf(c.k)>-1;});
+        const niv=g(c.dim);
+        const kl=niv>=4?'var(--groen)':(niv>=3?'var(--amber)':'var(--rood)');
+        return '<details class="mod" style="margin-bottom:.4rem"><summary><h3 style="font-size:.9rem;text-transform:none;letter-spacing:0;color:var(--inkt)">'+c.n+'</h3>'
+         +'<span class="herkomst" style="color:'+kl+'">niveau '+niv+' \u25be</span></summary>'
+         +'<div class="inhoud" style="font-size:.86rem;line-height:1.65">'
+         +'<p><b>Wordt geactiveerd door:</b> '+(themas.length?themas.map(function(t){return THEMA[t].n.toLowerCase();}).join(', '):'geen van de thema\'s')+'</p>'
+         +'<p><b>Afdelingen:</b> '+c.afd.join(', ')+'<br><b>Processen:</b> '+c.proc.join(', ')+'<br><b>Gegevens:</b> '+c.data.join(', ')
+         +'<br><b>Systemen:</b> '+c.sys.join(', ')+'<br><b>AI:</b> '+c.ai.join(', ')+'<br><b>Afspraken:</b> '+c.gov.join(', ')
+         +'<br><b>Maatstaven:</b> '+c.kpi.join(', ')+'<br><b>Eerste project:</b> '+c.proj[0]+'</p></div></details>';
+      }).join('');
+  }
 }
 
 function tekenUitvoering(){
