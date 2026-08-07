@@ -251,6 +251,21 @@ input[type=range]{min-height:34px}
 .detailvak .doen{margin-top:.6rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55}
 .detailvak .sluit{position:absolute;top:.5rem;right:.6rem;border:0;background:none;color:var(--grijs);font-size:1.1rem;cursor:pointer;line-height:1}
 [data-detail]{cursor:pointer}
+
+#fbKnop{position:fixed;right:1.1rem;bottom:1.1rem;z-index:40;background:var(--inkt);color:#fff;border:0;
+ border-radius:24px;padding:.7rem 1.1rem;font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;
+ box-shadow:0 6px 20px rgba(20,23,26,.22);display:flex;align-items:center;gap:.45rem}
+#fbKnop:hover{background:#000}
+@media(max-width:1039px){#fbKnop{bottom:5.2rem}}
+#fbLaag{position:fixed;inset:0;z-index:70;background:rgba(20,23,26,.45);display:grid;place-items:center;padding:1.2rem}
+#fbLaag .kaartje{background:#fff;border-radius:10px;padding:1.4rem 1.5rem;max-width:30rem;width:100%;max-height:88vh;overflow:auto}
+#fbLaag label{display:block;font-size:.74rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--grijs);margin:.8rem 0 .28rem}
+#fbLaag input,#fbLaag select,#fbLaag textarea{width:100%;padding:.6rem .7rem;border:1px solid #E3E4E8;border-radius:8px;font:inherit;font-size:.95rem;background:#fff}
+#fbLaag textarea{min-height:6.5rem;resize:vertical}
+#fbLaag input:focus,#fbLaag select:focus,#fbLaag textarea:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(39,66,214,.12)}
+.sterren{display:flex;gap:.3rem}
+.sterren button{border:1px solid var(--lijn);background:#fff;border-radius:8px;width:2.4rem;height:2.4rem;font:inherit;font-size:.95rem;cursor:pointer;color:var(--grijs)}
+.sterren button[aria-pressed=true]{background:var(--inkt);color:#fff;border-color:var(--inkt)}
 </style>
 </head>
 <body>
@@ -267,6 +282,7 @@ input[type=range]{min-height:34px}
 
 <!-- portaal -->
 <div id="tip" role="status" aria-live="polite"></div>
+<button id="fbKnop" hidden>Feedback geven</button>
 <div id="portaal" hidden>
   <div class="balk">
     <div class="merk"><a class="logo" href="/"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 4h28a6 6 0 0 1 6 6v22L32 44H10a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="#FFE86B"/><path d="M44 32 32 44v-8a4 4 0 0 1 4-4h8z" fill="#E2C73C"/><rect x="12" y="14" width="22" height="3.6" rx="1.8" fill="#14171A"/><rect x="12" y="22" width="16" height="3.6" rx="1.8" fill="#FF4F17"/><rect x="12" y="30" width="19" height="3.6" rx="1.8" fill="#14171A" transform="rotate(-4 12 30)" opacity="0"/><rect x="12" y="29.5" width="18" height="3.6" rx="1.8" fill="#14171A"/></svg><span>Bedrijfs<b>geheugen</b></span></a><nav class="sitenav">
@@ -3584,6 +3600,62 @@ function vraagToegang(daarna){
     vak.innerHTML='<button class="sluit" aria-label="Sluiten">\u00d7</button>'+inhoud;
     vak.querySelector('.sluit').addEventListener('click',function(){ vak.remove(); });
   });
+})();
+
+/* Feedback: gaat via Make naar Notion. */
+(function(){
+  const knop=document.getElementById('fbKnop'); if(!knop) return;
+  const HOOK='https://hook.eu1.make.com/l744eyrlaic9y4rqubj8mjzt6k353aw9';
+  const DEEL={overzicht:'Overzicht',profiel:'Profiel',dataai:'Data en AI',antwoorden:'Overzicht',business:'Overzicht',
+    cijfers:'Cijfers',waarde:'Waarde',mensen:'Mensen',branche:'Branche',onderzoek:'Onderzoek',beleid:'Compliance',
+    strategie:'Strategie',canvassen:'Canvassen',eindconclusie:'Eindconclusie',advies:'Advies',roadmap:'Roadmap'};
+  let cijfer=null;
+  knop.addEventListener('click',function(){
+    const huidig=(document.querySelector('.tab[aria-selected="true"]')||{}).dataset;
+    const nu=(huidig&&DEEL[huidig.p])||'Algemeen';
+    const laag=document.createElement('div'); laag.id='fbLaag';
+    laag.innerHTML='<div class="kaartje">'
+     +'<h3 style="font-family:\'Bricolage Grotesque\';font-weight:800;font-size:1.15rem;margin-bottom:.2rem">Wat vind je ervan?</h3>'
+     +'<p class="sub">Werkt er iets niet, is iets onduidelijk of mis je iets? Zeg het \u2014 dat is de snelste manier om dit portaal beter te maken.</p>'
+     +'<label for="fbSoort">Waar gaat het over</label>'
+     +'<select id="fbSoort"><option>Werkt niet</option><option>Onduidelijk</option><option>Mist iets</option><option>Compliment</option><option>Anders</option></select>'
+     +'<label for="fbDeel">Welk onderdeel</label>'
+     +'<select id="fbDeel">'+Object.keys(DEEL).map(function(k){return '<option'+(DEEL[k]===nu?' selected':'')+'>'+DEEL[k]+'</option>';}).filter(function(v,i,a){return a.indexOf(v)===i;}).join('')+'<option>Algemeen</option></select>'
+     +'<label for="fbTekst">Je bericht</label>'
+     +'<textarea id="fbTekst" placeholder="Bijvoorbeeld: de grafiek bij Cijfers laadt niet, of: ik zou hier graag zien wat een concurrent doet."></textarea>'
+     +'<label>Cijfer voor het portaal (niet verplicht)</label>'
+     +'<div class="sterren" id="fbSterren">'+[1,2,3,4,5].map(function(n){return '<button type="button" data-c="'+n+'" aria-pressed="false">'+n+'</button>';}).join('')+'</div>'
+     +'<label for="fbMail">E-mail (alleen als je antwoord wilt)</label><input type="email" id="fbMail" placeholder="naam@bedrijf.nl">'
+     +'<label for="fbBedrijf">Bedrijf</label><input type="text" id="fbBedrijf">'
+     +'<div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem">'
+     +'<button class="knop licht" id="fbAf">Annuleren</button><button class="knop" id="fbOk">Versturen</button></div>'
+     +'<p class="sub" id="fbStatus" style="margin-top:.6rem"></p></div>';
+    document.body.appendChild(laag);
+    // vooraf invullen met wat we al weten
+    try{ const l=JSON.parse(localStorage.getItem('bg_portaal_lead')||'null');
+         if(l){ document.getElementById('fbMail').value=l.mail||''; document.getElementById('fbBedrijf').value=l.bedrijf||''; } }catch(e){}
+    laag.querySelectorAll('#fbSterren button').forEach(function(b){
+      b.addEventListener('click',function(){ cijfer=+b.dataset.c;
+        laag.querySelectorAll('#fbSterren button').forEach(function(x){ x.setAttribute('aria-pressed', +x.dataset.c<=cijfer); }); });
+    });
+    document.getElementById('fbAf').onclick=function(){ laag.remove(); };
+    document.getElementById('fbOk').onclick=function(){
+      const tekst=document.getElementById('fbTekst').value.trim();
+      const st=document.getElementById('fbStatus');
+      if(tekst.length<3){ st.textContent='Schrijf even kort wat er aan de hand is.'; return; }
+      st.textContent='Versturen\u2026';
+      fetch(HOOK,{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,
+        body:JSON.stringify({feedback:tekst, soort:document.getElementById('fbSoort').value,
+          onderdeel:document.getElementById('fbDeel').value, cijfer:cijfer,
+          mail:document.getElementById('fbMail').value.trim(), bedrijf:document.getElementById('fbBedrijf').value.trim(),
+          niveau:(DIM.reduce(function(a,d){return a+(S.niveaus[d.k]||2);},0)/DIM.length).toFixed(1), branche:S.branche})
+      }).then(function(){ st.textContent='Dank je \u2014 het is binnen.'; setTimeout(function(){laag.remove();},1200); })
+       .catch(function(){ st.textContent='Versturen lukte niet. Probeer het zo nog eens.'; });
+    };
+  });
+  // knop pas tonen als het portaal open is
+  const aan=function(){ const pw=document.getElementById('portaal'); if(pw && !pw.hidden) knop.hidden=false; };
+  document.addEventListener('DOMContentLoaded',aan); setTimeout(aan,1500); setTimeout(aan,4000);
 })();
 </script>
 </body>
