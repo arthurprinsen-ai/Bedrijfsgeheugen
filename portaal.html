@@ -2069,8 +2069,8 @@ function tekenKwadrant(){
   let g='';
   g+='<rect x="'+x0+'" y="'+y1+'" width="'+(midX-x0)+'" height="'+(midY-y1)+'" fill="#FDECE8"/>';
   g+='<rect x="'+midX+'" y="'+midY+'" width="'+(x1-midX)+'" height="'+(y0-midY)+'" fill="#EEF7F1"/>';
-  g+='<text x="'+(x0+14)+'" y="'+(y1+24)+'" font-size="14" font-weight="700" fill="#C0392B" font-family="Instrument Sans">Kost veel, staat laag</text>';
-  g+='<text x="'+(x1-14)+'" y="'+(y0-16)+'" text-anchor="end" font-size="14" font-weight="700" fill="#0E9F6E" font-family="Instrument Sans">Op orde</text>';
+  g+='<text x="'+(x0+14)+'" y="'+(midY-14)+'" font-size="13.5" font-weight="700" fill="#C0392B" fill-opacity=".85" font-family="Instrument Sans">Kost veel, staat laag</text>';
+  g+='<text x="'+(x1-14)+'" y="'+(y0-14)+'" text-anchor="end" font-size="13.5" font-weight="700" fill="#0E9F6E" fill-opacity=".85" font-family="Instrument Sans">Op orde</text>';
   g+='<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
   g+='<line x1="'+x0+'" y1="'+y1+'" x2="'+x0+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
   for(let n=1;n<=5;n++){
@@ -2086,24 +2086,34 @@ function tekenKwadrant(){
   const perNiveau={};
   DIM.forEach(function(d){ (perNiveau[S.niveaus[d.k]]=perNiveau[S.niveaus[d.k]]||[]).push(d); });
   Object.keys(perNiveau).forEach(function(n){
-    const groep=perNiveau[n].sort(function(a,c){return K[c.k]-K[a.k];});
+    const groep=perNiveau[n].sort(function(a,c){return py(K[a.k])-py(K[c.k]);});   // van boven naar beneden
+    let vorigeLabelY=-999;
     groep.forEach(function(d,idx){
-      const ruimte=band*0.32;
-      const spreid = groep.length>1 ? (idx%2===0?-1:1)*Math.ceil((idx+1)/2)*(ruimte/Math.ceil(groep.length/2)) : 0;
-      const cx=Math.max(x0+22,Math.min(x1-22,px(+n)+spreid)), cy=py(K[d.k]);
-      const r=9+Math.min(K[d.k]/max,1)*9;
+      const cx=px(+n), cy=py(K[d.k]);
+      const r=9;                                   // alle stippen even groot
       const kl=+n>=4?'#1F9D55':(+n>=3?'#E8A200':'#D93025');
       const dim=(kwKeuze&&kwKeuze!==d.k);
-
-      g+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+kl+'" fill-opacity="'+(dim?'.15':'.9')+'" stroke="#fff" stroke-width="2"'
-       +' data-kw="'+d.k+'" style="cursor:pointer"'
-       +' data-tip="<b>'+d.n+'</b><br>Niveau '+n+' van 5<br>'+eur(K[d.k])+' per jaar<br>'+(UITLEG[d.k]||'')+'"/>';
-      const naarLinks = cx > (x0+x1)/2;
-      if(!dim) g+='<text x="'+(naarLinks?(cx-r-9):(cx+r+9)).toFixed(1)+'" y="'+(cy+4).toFixed(1)+'" text-anchor="'+(naarLinks?'end':'start')+'"'
-        +' font-size="13" fill="#14171A" font-family="Instrument Sans" paint-order="stroke" stroke="#fff" stroke-width="3">'+d.n+'</text>';
+      // labels stapelen zonder overlap
+      let ly=cy+4; if(ly-vorigeLabelY<19) ly=vorigeLabelY+19; vorigeLabelY=ly;
+      const naarLinks = cx > (x0+x1)*0.55;
+      const lx = naarLinks ? cx-r-10 : cx+r+10;
+      const uitleg='<h4>'+d.n+'</h4><p>Staat op <b>niveau '+n+' van 5</b> en kost je <b>'+eur(K[d.k])+' per jaar</b>. '
+        +'Je branche zit gemiddeld op '+b.dig.toFixed(1)+'.</p><p>'+(UITLEG[d.k]||'')+'</p>'
+        +'<div class="doen"><b>Wat je hier doet:</b> '+(+n<3?'leg vast hoe het nu gaat en wijs \u00e9\u00e9n eigenaar aan.'
+          :(+n<4?'haal het overtypen eruit door de twee systemen te koppelen.':'meten en fijnregelen \u2014 de basis staat.'))+'</div>';
+      g+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r+'" fill="'+kl+'" fill-opacity="'+(dim?'.15':'.92')+'" stroke="#fff" stroke-width="2.5"'
+       +' data-kw="'+d.k+'" data-detail="'+encodeURIComponent(uitleg)+'" style="cursor:pointer"'
+       +' data-tip="<b>'+d.n+'</b><br>Niveau '+n+' \u00b7 '+eur(K[d.k])+' per jaar"/>';
+      if(!dim){
+        if(Math.abs(ly-(cy+4))>3)
+          g+='<line x1="'+(naarLinks?cx-r-3:cx+r+3)+'" y1="'+cy.toFixed(1)+'" x2="'+(naarLinks?lx+3:lx-3)+'" y2="'+(ly-4).toFixed(1)+'" stroke="#C9CEDA" stroke-width="1"/>';
+        g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+(naarLinks?'end':'start')+'"'
+         +' font-size="12.5" fill="#14171A" font-family="Instrument Sans" paint-order="stroke" stroke="#fff" stroke-width="3.5">'+d.n
+         +' <tspan fill="#8A94A3" font-size="11.5">'+eur(K[d.k])+'</tspan></text>';
+      }
     });
   });
-  g+='<text x="'+x0+'" y="'+(y1-34)+'" font-size="12" fill="#8A94A3" font-family="Instrument Sans">grotere stip = hogere kosten \u00b7 klik een stip om erop in te zoomen</text>';
+  g+='<text x="'+x0+'" y="'+(y1-34)+'" font-size="12" fill="#8A94A3" font-family="Instrument Sans">klik een stip: je ziet wat het onderdeel inhoudt en wat je eraan doet</text>';
   el.innerHTML=g;
 
   el.querySelectorAll('[data-kw]').forEach(function(c){
