@@ -326,8 +326,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="false" data-p="canvassen">Canvassen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="eindconclusie">De eindconclusie</button>
         <span class="groep">Doen</span>
-        <button class="tab" role="tab" aria-selected="false" data-p="dna">Strategie-DNA</button>
-        <button class="tab" role="tab" aria-selected="false" data-p="uitvoering">Van strategie naar uitvoering</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="dna">Van strategie naar uitvoering</button>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
         <span class="groep">Beheer</span>
@@ -812,7 +811,7 @@ input[type=range]{min-height:34px}
         <div style="margin-top:.7rem"><button class="knop" id="ecToe">Capability toevoegen</button></div>
         <div id="ecLijst" style="margin-top:.9rem"></div></div>
 
-      <p class="sub" style="margin-top:1rem;text-align:center">Strategie-DNA © 2026 Bedrijfsgeheugen · versie 3 — met impactmotor, kennisvragen, transformatieradar en capability-bibliotheek</p>
+
     </section>
 
     <!-- UITVOERING -->
@@ -842,7 +841,7 @@ input[type=range]{min-height:34px}
       <div id="uvThemas"></div>
 
       <div class="kaart" style="margin-top:1rem"><h3>Wat Bedrijfsgeheugen hierin doet</h3><div id="s2oRol"></div></div>
-      <p class="sub" style="margin-top:1rem;text-align:center">De Uitvoeringsladder © 2026 Bedrijfsgeheugen. Vrij te gebruiken binnen je eigen bedrijf; niet door te verkopen of te verspreiden zonder bronvermelding.</p>
+      <p class="sub" style="margin-top:1.5rem;text-align:center">Strategie-DNA en de Uitvoeringsladder © 2026 Bedrijfsgeheugen · versie 3.<br>Vrij te gebruiken binnen je eigen bedrijf; niet door te verkopen of te verspreiden zonder bronvermelding.</p>
     </section>
 
     <!-- ROADMAP -->
@@ -2397,7 +2396,7 @@ function tekenDNA(){
     });
   });
 
-  tekenDNAFamilie(); tekenEigenCaps(); tekenDNAv3(caps, K);
+  voegUitvoeringSamen(); tekenDNAFamilie(); tekenEigenCaps(); tekenDNAv3(caps, K);
 }
 
 /* --- versie 3: vrije invoer, kennisvragen, radar en bibliotheek --- */
@@ -2426,8 +2425,27 @@ const DNAFAMILIE=[
  ['Kennisgraaf','De verbanden, bevraagbaar: wat houdt ons tegen, wat draagt niets bij','dna','\u201cVragen aan je organisatie\u201d'],
  ['Strategie-assistent','Vertaalt gewone taal naar een thema en de bijbehorende impact','dna','\u201cVertel het in je eigen woorden\u201d'],
  ['Transformatieradar','Volwassenheid over de zeven lagen, met de diepste deuk','dna','de radar op dit tabblad'],
- ['Uitvoeringsladder','Van capability naar vijf treden met wie, wanneer en klaar-als','uitvoering','eigen tabblad onder Doen']
+ ['Uitvoeringsladder','Van capability naar vijf treden met wie, wanneer en klaar-als','dna','onderaan dit tabblad, na de veranderagenda']
 ];
+/* Strategie-DNA en de Uitvoeringsladder zijn twee helften van \u00e9\u00e9n verhaal:
+   eerst wat er verandert, dan hoe je het doet. Hier voegen we ze samen tot
+   \u00e9\u00e9n tabblad, met een tussenkop zodat de overgang duidelijk is. */
+function voegUitvoeringSamen(){
+  const dna=document.getElementById('p-dna'), uit=document.getElementById('p-uitvoering');
+  if(!dna||!uit||dna.dataset.samen) return;
+  const streep=document.createElement('div');
+  streep.className='kaart conclusie';
+  streep.style.marginTop='2rem';
+  streep.innerHTML='<h2>En dan: de uitvoering</h2>'
+   +'<p class="kern">Hierboven staat <b>wat</b> er verandert. Hieronder staat <b>hoe</b> je het doet: '
+   +'per thema vijf treden in vaste volgorde, met wie ze oppakt, wanneer, en waaraan je ziet dat een trede af is. '
+   +'Vink je een trede af, dan telt de waarde meteen mee.</p>';
+  dna.appendChild(streep);
+  while(uit.firstChild) dna.appendChild(uit.firstChild);
+  uit.remove();
+  dna.dataset.samen='1';
+}
+
 function tekenDNAFamilie(){
   const el=document.getElementById('dnaFamilie'); if(!el) return;
   el.innerHTML='<div class="kaarten k2">'+DNAFAMILIE.map(function(r){
@@ -4036,7 +4054,7 @@ function tekenInvoer(){
    +'<b>Dat is geen rapportageprobleem maar een koppelingsprobleem.</b></div>'
    +'<div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">'
    +'<button class="knop" data-ga="eindconclusie">Wat dit betekent</button>'
-   +'<button class="knop licht" data-ga="uitvoering">Naar de uitvoeringsladder</button></div>';
+   +'<button class="knop licht" data-ga="dna">Naar de uitvoeringsladder</button></div>';
 }
 
 function tekenESG(){
