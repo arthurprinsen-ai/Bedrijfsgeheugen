@@ -228,10 +228,11 @@ input[type=range]{min-height:34px}
 .bron{font-size:.72rem;color:#8A94A3;margin-top:.5rem;padding-top:.45rem;border-top:1px solid #EFEFEC;line-height:1.5}
 .bron b{color:var(--grijs);font-weight:600}
 /* kaarten even hoog en netjes uitgelijnd */
-.kaarten{align-items:stretch}
+.kaarten{align-items:start}
 .kaart{display:flex;flex-direction:column}
-.kaart > svg{margin-top:auto}
+
 .kaart .sub:last-child{margin-top:.5rem}
+.kaart svg{width:100%;height:auto;display:block;margin:.2rem 0}
 /* onderzoek: filterbalk en tegels */
 .filterbalk{display:flex;gap:.35rem;flex-wrap:wrap;margin:.2rem 0 .9rem}
 .filterbalk button{border:1px solid var(--lijn);background:#fff;border-radius:20px;padding:.35rem .8rem;
@@ -328,7 +329,7 @@ input[type=range]{min-height:34px}
       <div class="kaarten k2">
         <div class="kaart"><h3>Procesvolwassenheid (CMMI)</h3><div id="ovCmmi"></div></div>
         <div class="kaart"><h3>Waar je staat op de adoptiecurve</h3>
-          <svg id="curveMini" viewBox="0 0 780 250" role="img" aria-label="Adoptiecurve"></svg>
+          <svg id="curveMini" viewBox="0 0 780 260" role="img" aria-label="Adoptiecurve"></svg>
           <div class="sub" id="curveMiniT"></div></div>
       </div>
 
