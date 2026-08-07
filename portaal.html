@@ -488,6 +488,9 @@ input[type=range]{min-height:34px}
       <div class="kaart" style="margin-top:1rem"><h3>Metingen toevoegen</h3>
         <p class="sub" style="margin:-.3rem 0 .3rem">NPS, tevredenheid en verzuim meet je een paar keer per jaar. Elke meting hier, het verloop zie je bij Cijfers.</p>
         <div id="inMetingen"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Beleid en documenten</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">Zet per stuk waar je staat. Niet alles hoeft — maar je moet wél weten wat je mist.</p>
+        <div id="inBeleid"></div></div>
       <div class="kaart" style="margin-top:1rem"><h3>Duurzaamheid en CSRD</h3>
         <p class="sub" style="margin:-.3rem 0 .3rem">Geef per onderwerp aan hoe de cijfers tot stand komen — vooral of het nog handwerk is.</p>
         <div id="inEsg"></div></div>
@@ -579,8 +582,8 @@ input[type=range]{min-height:34px}
     <!-- BELEID -->
     <section class="paneel" id="p-beleid">
       <div class="kaart" style="margin-top:1rem">
-        <h3>Wat er op papier moet staan</h3>
-        <p class="sub">Zet per stuk waar je staat. Niet alles hoeft — maar je moet wél weten wat je mist.</p>
+        <h3>Wat er op papier staat</h3>
+        <p class="sub">De stand van je beleidsstukken. Bijwerken doe je onder <b>Je gegevens invullen</b>.</p>
         <div id="beleidLijst" style="margin-top:.8rem"></div>
         <div id="beleidAdvies" style="margin-top:1rem"></div>
       </div>
@@ -3348,7 +3351,8 @@ function verhuisInvoer(){
     ['mVerzuim','.velden','inMensen'],
     ['kNps','.velden','inKlanten'],
     ['mtDatum','.velden','inMetingen'],
-    ['esgVelden',null,'inEsg']
+    ['esgVelden',null,'inEsg'],
+    ['beleidLijst',null,'inBeleid']
   ];
   paren.forEach(function(r){
     const veld=document.getElementById(r[0]); if(!veld) return;
