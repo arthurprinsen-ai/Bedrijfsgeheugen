@@ -120,6 +120,14 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
 [data-tip]:hover{filter:brightness(1.06)}
 .klikbaar{cursor:pointer}
 .klikbaar:hover{background:#FBFAF7}
+
+#poortlaag{position:fixed;inset:0;z-index:80;background:rgba(20,23,26,.45);display:grid;place-items:center;padding:1.2rem}
+#poortlaag .poortkaart{background:#fff;border-radius:6px;padding:1.4rem 1.5rem;max-width:26rem;width:100%;box-shadow:0 20px 60px rgba(20,23,26,.3)}
+@media print{
+  body:not(.open) .wrap{display:none!important}
+  body:not(.open)::after{content:"Log in en ontgrendel je rapport op bedrijfsgeheugen.nl/portaal";
+    display:block;font:600 16px/1.6 system-ui,sans-serif;padding:3rem}
+}
 </style>
 </head>
 <body>
@@ -151,7 +159,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
       <button class="knop licht" id="btnExport" title="Bewaar alles als bestand op je eigen computer">Download</button>
       <label class="knop licht" style="cursor:pointer;margin:0" title="Eerder gedownload bestand terugzetten">Openen
         <input type="file" id="btnImport" accept="application/json" hidden></label>
-      <button class="knop licht" onclick="window.print()">Afdrukken</button>
+      <button class="knop licht" onclick="vraagToegang(function(){window.print();})">Afdrukken</button>
       <button class="knop licht" onclick="netlifyIdentity.logout()">Uitloggen</button>
     </div>
   </div>
@@ -165,6 +173,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <span class="groep">Inzicht</span>
         <button class="tab" role="tab" aria-selected="true" data-p="overzicht">◧ Overzicht</button>
         <button class="tab" role="tab" aria-selected="false" data-p="profiel">◑ Profiel per onderdeel</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="antwoorden">✓ Wat je hebt ingevuld</button>
         <button class="tab" role="tab" aria-selected="false" data-p="business">↗ Businesscase</button>
         <span class="groep">Vergelijken</span>
         <button class="tab" role="tab" aria-selected="false" data-p="cijfers">€ Cijfers en maatstaven</button>
@@ -181,7 +190,7 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <span class="groep">Beheer</span>
         <button class="tab licht" id="mExport">⬇ Downloaden</button>
         <label class="tab licht" style="cursor:pointer">⬆ Openen<input type="file" id="mImport" accept="application/json" hidden></label>
-        <button class="tab licht" onclick="window.print()">⎙ Afdrukken</button>
+        <button class="tab licht" onclick="vraagToegang(function(){window.print();})">⎙ Afdrukken</button>
       </div>
     </nav>
     <div class="inhoudkolom">
@@ -255,6 +264,15 @@ input[type=text],input[type=number],select{padding:.44rem .6rem;border:1px solid
         <div class="kaart"><h3>Tegenover je branche</h3>
           <svg id="mGrafiek" viewBox="0 0 460 250" role="img" aria-label="Mensen tegenover de branche"></svg>
           <p class="sub" id="mBron"></p></div>
+      </div>
+    </section>
+
+    <!-- ANTWOORDEN -->
+    <section class="paneel" id="p-antwoorden">
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Wat je hebt ingevuld</h3>
+        <p class="sub">Alle vragen uit de Frisse blik met jouw antwoord. Klopt er iets niet meer? Pas het aan bij Profiel — de rest rekent mee.</p>
+        <div id="antwLijst" style="margin-top:.9rem"></div>
       </div>
     </section>
 
@@ -565,6 +583,7 @@ function bewaar(){ try{ localStorage.setItem(sleutel, JSON.stringify(S)); }catch
 
 /* ---------- login ---------- */
 function toonPortaal(user){
+  try{ if(localStorage.getItem('bg_portaal_open')==='1') document.body.classList.add('open'); }catch(e){}
   document.getElementById('poort').hidden=true;
   document.getElementById('portaal').hidden=false;
   document.getElementById('wie').textContent=(user&&(user.user_metadata&&user.user_metadata.full_name||user.email))||'';
@@ -667,7 +686,7 @@ function bouw(){
     const l=document.getElementById('zijlijst'); l.classList.toggle('open');
     mk.setAttribute('aria-expanded',l.classList.contains('open'));});}
   const me=document.getElementById('mExport');
-  if(me&&!me.dataset.aan){me.dataset.aan='1';me.addEventListener('click',exporteer);}
+  if(me&&!me.dataset.aan){me.dataset.aan='1';me.addEventListener('click',function(){vraagToegang(exporteer);});}
   const mi=document.getElementById('mImport');
   if(mi&&!mi.dataset.aan){mi.dataset.aan='1';
     mi.addEventListener('change',e=>{ if(e.target.files[0]) importeer(e.target.files[0]); e.target.value=''; });}
@@ -677,7 +696,7 @@ function bouw(){
     el.addEventListener('input',e=>{S.fin=S.fin||{};S.fin[id]=e.target.value;bewaar();teken();});
   });
   const be=document.getElementById('btnExport');
-  if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',exporteer);}
+  if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',function(){vraagToegang(exporteer);});}
   const bi=document.getElementById('btnImport');
   if(bi&&!bi.dataset.aan){bi.dataset.aan='1';
     bi.addEventListener('change',e=>{ if(e.target.files[0]) importeer(e.target.files[0]); e.target.value=''; });}
@@ -850,7 +869,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   document.getElementById('ganttLeeg').hidden = S.taken.length>0;
@@ -2010,6 +2029,59 @@ function tekenModelKeuze(A){
     });
   });
 }
+function tekenAntwoorden(){
+  const box=document.getElementById('antwLijst'); if(!box) return;
+  let pak=null;
+  try{ pak=JSON.parse(localStorage.getItem('bg_scan_pakket')||'null'); }catch(e){}
+  const A=(pak&&pak.antwoorden)||[];
+  if(!A.length){
+    box.innerHTML='<p class="sub">Nog geen antwoorden gevonden. Doe de <a href="/frisse-blik">Frisse blik</a> in deze browser, of open een eerder gedownload bestand.</p>';
+    return;
+  }
+  const groep={};
+  A.forEach(function(x){ const k=x.ctx?'Context':((DIM.find(function(d){return d.k===x.dim;})||{n:'Overig'}).n);
+    (groep[k]=groep[k]||[]).push(x); });
+  box.innerHTML='<p class="sub" style="margin-bottom:.6rem">'+A.length+' vragen beantwoord op '+(pak.datum||'')+'.</p>'
+   + Object.keys(groep).map(function(k){
+      return '<div style="margin-bottom:1rem"><div class="sub" style="margin-bottom:.25rem">'+k+'</div>'
+       + groep[k].map(function(x){
+           return '<div style="display:grid;grid-template-columns:1fr auto;gap:.8rem;padding:.45rem 0;border-bottom:1px solid var(--lijn);align-items:baseline">'
+            +'<span style="font-size:.88rem">'+x.vraag+'</span>'
+            +'<b style="font-size:.85rem;text-align:right;max-width:16rem">'+x.antwoord+'</b></div>';
+         }).join('')
+       +'</div>';
+     }).join('');
+}
+
+/* ---------- toegang tot downloaden en afdrukken ---------- */
+function magBewaren(){ try{ return localStorage.getItem('bg_portaal_open')==='1'; }catch(e){ return false; } }
+function vraagToegang(daarna){
+  if(magBewaren()){ daarna(); return; }
+  const laag=document.createElement('div');
+  laag.id='poortlaag';
+  laag.innerHTML='<div class="poortkaart">'
+   +'<h3 style="font-size:1.15rem;margin-bottom:.4rem">Nog één ding</h3>'
+   +'<p style="font-size:.9rem;line-height:1.6;color:var(--grijs);margin-bottom:.9rem">Je rapport meenemen? Laat je e-mailadres achter, dan sturen we het volledige overzicht mee en kun je hier downloaden en afdrukken.</p>'
+   +'<input type="email" id="poortMail" placeholder="naam@bedrijf.nl" style="width:100%;padding:.6rem .7rem;border:1px solid var(--lijn);border-radius:3px;font:inherit;margin-bottom:.5rem">'
+   +'<input type="text" id="poortBedrijf" placeholder="Bedrijfsnaam" style="width:100%;padding:.6rem .7rem;border:1px solid var(--lijn);border-radius:3px;font:inherit;margin-bottom:.8rem">'
+   +'<div style="display:flex;gap:.5rem;justify-content:flex-end">'
+   +'<button class="knop licht" id="poortAf">Later</button>'
+   +'<button class="knop" id="poortOk">Ontgrendelen</button></div>'
+   +'<p class="sub" style="margin-top:.7rem">Geen nieuwsbrief zonder dat je erom vraagt, en we bellen je niet ongevraagd.</p></div>';
+  document.body.appendChild(laag);
+  document.getElementById('poortAf').onclick=function(){ laag.remove(); };
+  document.getElementById('poortOk').onclick=function(){
+    const m=document.getElementById('poortMail').value.trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)){ document.getElementById('poortMail').style.borderColor='var(--rood)'; return; }
+    try{
+      localStorage.setItem('bg_portaal_open','1');
+      localStorage.setItem('bg_portaal_lead', JSON.stringify({mail:m, bedrijf:document.getElementById('poortBedrijf').value.trim(), datum:new Date().toISOString()}));
+    }catch(e){}
+    document.body.classList.add('open');
+    laag.remove(); daarna();
+  };
+}
+
 </script>
 </body>
 </html>
