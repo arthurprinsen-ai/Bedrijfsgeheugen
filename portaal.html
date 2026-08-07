@@ -314,31 +314,36 @@ input[type=range]{min-height:34px}
       <div class="samenvatting" id="samenvatting"></div>
       <div id="scanmelding" style="margin-top:.6rem"></div>
 
-      <div class="kaarten k3">
-        <div class="kaart"><h3>Volwassenheid</h3><div class="kpi" id="kNiveau">–</div><div class="sub" id="kNiveauT">nog geen scan gekoppeld</div></div>
+      <div class="kaarten k3" style="margin-top:1rem">
+        <div class="kaart"><h3>Volwassenheid</h3><div class="kpi" id="kNiveau">–</div><div class="sub" id="kNiveauT"></div></div>
         <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">directe uren × uurkosten</div></div>
-        <div class="kaart"><h3>Bezetting</h3><div class="kpi" id="kFte">–</div><div class="sub" id="kFteT">fte aan vermijdbaar werk</div></div>
+        <div class="kaart"><h3>Bezetting</h3><div class="kpi" id="kFte">–</div><div class="sub" id="kFteT"></div></div>
       </div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>De staat van je bedrijf</h3>
+        <p class="sub" style="margin:-.3rem 0 .6rem">Vijf stadia. Waar jij staat, waar je branche staat, en waar de bovenste kwart zit.</p>
+        <svg id="staat" viewBox="0 0 900 250" role="img" aria-label="De staat van je bedrijf"></svg>
+        <div class="sub" id="staatT"></div></div>
+
       <div class="kaarten k2">
-        <div class="kaart"><h3>Je niveau</h3>
-          <svg id="ring" viewBox="0 0 220 200" role="img" aria-label="Volwassenheidsniveau"></svg>
-          <div class="sub" id="ringT"></div></div>
-        <div class="kaart" style="grid-column:1/-1"><h3>De staat van je bedrijf</h3>
-          <p class="sub" style="margin:-.3rem 0 .6rem">Vijf stadia. Waar jij staat, waar je branche staat, en waar de bovenste kwart zit.</p>
-          <svg id="staat" viewBox="0 0 900 250" role="img" aria-label="De staat van je bedrijf"></svg>
-          <div class="sub" id="staatT"></div><div class="bron"><b>Bron:</b> eigen scanantwoorden · CBS digitale intensiteit per bedrijfstak · branchegemiddelden uit assets/data/branche.json</div><div class="bron"><b>Bron:</b> eigen scanantwoorden · CBS digitale intensiteit per bedrijfstak · branchegemiddelden uit assets/data/branche.json</div><div class="bron"><b>Bron:</b> eigen scanantwoorden · CBS digitale intensiteit per bedrijfstak · branchegemiddelden uit assets/data/branche.json</div></div>
+        <div class="kaart"><h3>Procesvolwassenheid (CMMI)</h3><div id="ovCmmi"></div></div>
         <div class="kaart"><h3>Waar je staat op de adoptiecurve</h3>
           <svg id="curveMini" viewBox="0 0 780 250" role="img" aria-label="Adoptiecurve"></svg>
-          <div class="sub" id="curveMiniT"></div><div class="bron"><b>Bron:</b> marktverdeling naar volwassenheidsniveau (indicatief, o.b.v. CBS/Eurostat) · jouw positie uit de scan</div><div class="bron"><b>Bron:</b> marktverdeling naar volwassenheidsniveau (indicatief, o.b.v. CBS/Eurostat) · jouw positie uit de scan</div><div class="bron"><b>Bron:</b> marktverdeling naar volwassenheidsniveau (indicatief, o.b.v. CBS/Eurostat) · jouw positie uit de scan</div></div>
+          <div class="sub" id="curveMiniT"></div></div>
       </div>
+
       <div class="kaarten k2">
         <div class="kaart"><h3>Waar het geld weglekt</h3>
           <svg id="taart" viewBox="0 0 460 230" role="img" aria-label="Kosten per onderdeel"></svg>
-          <div class="sub" id="taartT"></div><div class="bron"><b>Bron:</b> eigen scanantwoorden × medewerkers × uurkosten · 46 werkweken</div><div class="bron"><b>Bron:</b> eigen scanantwoorden × medewerkers × uurkosten · 46 werkweken</div><div class="bron"><b>Bron:</b> eigen scanantwoorden × medewerkers × uurkosten · 46 werkweken</div></div>
+          <div class="sub" id="taartT"></div></div>
         <div class="kaart"><h3>Wat je nu remt</h3><div id="remmen"></div></div>
-        <div class="kaart"><h3>Voortgang</h3><svg id="voortgang" viewBox="0 0 460 200" role="img" aria-label="Voortgang"></svg>
-          <div class="sub" id="voortgangT"></div><div class="bron"><b>Bron:</b> je eigen roadmap in dit portaal</div><div class="bron"><b>Bron:</b> je eigen roadmap in dit portaal</div><div class="bron"><b>Bron:</b> je eigen roadmap in dit portaal</div></div>
       </div>
+
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Je niveau</h3><svg id="ring" viewBox="0 0 220 200" role="img" aria-label="Volwassenheidsniveau"></svg><div class="sub" id="ringT"></div></div>
+        <div class="kaart"><h3>Voortgang</h3><svg id="voortgang" viewBox="0 0 460 200" role="img" aria-label="Voortgang"></svg><div class="sub" id="voortgangT"></div></div>
+      </div>
+
       <div class="kaart" style="margin-top:1rem">
         <h3>En dan?</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Dit is de stand van zaken. Wil je weten wat je ermee doet, dan staat dat onder Advies — op volgorde van wat het oplevert.</p>
@@ -362,14 +367,14 @@ input[type=range]{min-height:34px}
       <div class="kaarten k2">
         <div class="kaart"><h3>Wat mensen doen bij verandering</h3>
           <svg id="daiWeerstand" viewBox="0 0 480 280" role="img" aria-label="Verandercurve"></svg>
-          <div class="sub" id="daiWeerstandT"></div><div class="bron"><b>Bron:</b> Kübler-Ross verandercurve · Prosci ADKAR · Kotter</div><div class="bron"><b>Bron:</b> Kübler-Ross verandercurve · Prosci ADKAR · Kotter</div><div class="bron"><b>Bron:</b> Kübler-Ross verandercurve · Prosci ADKAR · Kotter</div></div>
+          <div class="sub" id="daiWeerstandT"></div><div class="bron"><b>Bron:</b> Kübler-Ross verandercurve · Prosci ADKAR · Kotter</div></div>
         <div class="kaart"><h3>Hoe je het bestuurt</h3><div id="daiGov"></div></div>
       </div>
 
       <div class="kaart" style="margin-top:1rem"><h3>Kosten en opbrengsten over de tijd</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Wat je uitgeeft loopt vooruit, wat je terugkrijgt komt later — en wat je laat liggen loopt op.</p>
         <svg id="daiGeld" viewBox="0 0 900 300" role="img" aria-label="Kosten en opbrengsten"></svg>
-        <div class="sub" id="daiGeldT"></div><div class="bron"><b>Bron:</b> eigen scancijfers · opzet volgens Forrester Total Economic Impact (kosten, baten, flexibiliteit, risico)</div><div class="bron"><b>Bron:</b> eigen scancijfers · opzet volgens Forrester Total Economic Impact (kosten, baten, flexibiliteit, risico)</div><div class="bron"><b>Bron:</b> eigen scancijfers · opzet volgens Forrester Total Economic Impact (kosten, baten, flexibiliteit, risico)</div></div>
+        <div class="sub" id="daiGeldT"></div><div class="bron"><b>Bron:</b> eigen scancijfers · opzet volgens Forrester Total Economic Impact (kosten, baten, flexibiliteit, risico)</div></div>
 
       <div class="kaarten k2">
         <div class="kaart"><h3>CMMI — procesvolwassenheid</h3><div id="daiCmmi"></div></div>
@@ -398,7 +403,7 @@ input[type=range]{min-height:34px}
           <div class="sub">De binnenste vorm ben jij, de stippellijn is niveau 4 — het doel voor het mkb.</div></div>
         <div class="kaart"><h3>Wat een niveau erbij oplevert</h3>
           <svg id="trap" viewBox="0 0 460 260" role="img" aria-label="Opbrengst per niveau"></svg>
-          <div class="sub" id="trapT"></div><div class="bron"><b>Bron:</b> eigen scanantwoorden; besparingspercentages per niveau zijn richtgetallen uit de praktijk</div><div class="bron"><b>Bron:</b> eigen scanantwoorden; besparingspercentages per niveau zijn richtgetallen uit de praktijk</div><div class="bron"><b>Bron:</b> eigen scanantwoorden; besparingspercentages per niveau zijn richtgetallen uit de praktijk</div></div>
+          <div class="sub" id="trapT"></div><div class="bron"><b>Bron:</b> eigen scanantwoorden; besparingspercentages per niveau zijn richtgetallen uit de praktijk</div></div>
       </div>
     </section>
 
@@ -496,7 +501,7 @@ input[type=range]{min-height:34px}
         <div class="kaart"><h3>Wat niets doen kost</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Je huidige kosten tegenover wat je overhoudt bij niveau 3, 4 en 5. Het verschil is wat je nu weggeeft.</p>
           <svg id="kostenTrap" viewBox="0 0 620 360" style="min-height:280px" role="img" aria-label="Kosten van niets doen"></svg>
-          <div class="sub" id="kostenTrapT"></div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div></div>
+          <div class="sub" id="kostenTrapT"></div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div></div>
       </div>
       <div id="ondBlok" class="kaarten k2" style="margin-top:1rem"></div>
       <div class="kaart" style="margin-top:1rem">
@@ -1089,7 +1094,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -2252,7 +2257,8 @@ function tekenVolwassenheid(){
            ['3 — Gedefinieerd','Er is één manier van werken die is vastgelegd en die iedereen volgt.'],
            ['4 — Gemeten','Je stuurt op cijfers: je weet wat een proces kost en hoe lang het duurt.'],
            ['5 — Optimaliserend','Verbeteren is routine; afwijkingen worden vanzelf gesignaleerd.']];
-  const el=document.getElementById('daiCmmi');
+  ['daiCmmi','ovCmmi'].forEach(function(idc){
+  const el=document.getElementById(idc);
   if(el){
     el.innerHTML='<p class="sub" style="margin:-.3rem 0 .6rem">Het model waar de vijf niveaus in deze scan op leunen. Oorspronkelijk voor softwarebouw, inmiddels de standaard voor procesvolwassenheid.</p>'
      + C.map(function(c,i){
@@ -2267,6 +2273,7 @@ function tekenVolwassenheid(){
      +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
      +'<b>Let op:</b> CMMI gaat over één stap tegelijk. Van 1 naar 3 springen lukt niet — zonder vastgelegde werkwijze valt er niets te meten, en zonder meting valt er niets te verbeteren.</div>';
   }
+  });
 
   /* Greiner */
   const G=[[0,10,'Groei door creativiteit','Alles loopt via de oprichter. Iedereen doet alles.','Leiderschapscrisis: de oprichter wordt het knelpunt.'],
