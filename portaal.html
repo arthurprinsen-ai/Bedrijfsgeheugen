@@ -426,7 +426,16 @@ input[type=range]{min-height:34px}
     <!-- ONDERZOEK -->
     <section class="paneel" id="p-onderzoek">
       <p class="sub" style="margin-top:1rem">Wat grote onderzoeksbureaus meten, naast waar jij staat. Elk cijfer met de bron erbij — je kunt het nazoeken.</p>
-      <div id="ondBlok" class="kaarten k2" style="margin-top:.8rem"></div>
+      <div class="kaarten k2" style="margin-top:.8rem">
+        <div class="kaart"><h3>Je onderdelen in vier vakken</h3>
+          <p class="sub" style="margin:-.3rem 0 .6rem">Volwassenheid tegen wat het kost om het te laten zoals het is. Rechtsboven is op orde, linksonder kost geld en levert niets op.</p>
+          <svg id="kwadrant" viewBox="0 0 480 400" role="img" aria-label="Onderdelen in vier vakken"></svg></div>
+        <div class="kaart"><h3>Wat niets doen kost</h3>
+          <p class="sub" style="margin:-.3rem 0 .6rem">Je huidige kosten tegenover wat je overhoudt bij niveau 3, 4 en 5. Het verschil is wat je nu weggeeft.</p>
+          <svg id="kostenTrap" viewBox="0 0 480 340" role="img" aria-label="Kosten van niets doen"></svg>
+          <div class="sub" id="kostenTrapT"></div></div>
+      </div>
+      <div id="ondBlok" class="kaarten k2" style="margin-top:1rem"></div>
       <div class="kaart" style="margin-top:1rem">
         <h3>Hoe je deze cijfers moet lezen</h3>
         <p style="font-size:.89rem;line-height:1.65">Deze onderzoeken gaan grotendeels over grote ondernemingen — duizenden medewerkers, eigen IT-afdelingen, budgetten die het jouwe honderdvoudig overtreffen. Ze zijn nuttig als <b>richting</b>, niet als norm. Waar ze wél direct op jou slaan: het patroon dat bijna iedereen begint en bijna niemand doorpakt. Dat is in het mkb niet anders, alleen zichtbaarder.</p>
@@ -1009,7 +1018,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1668,6 +1677,11 @@ const ONDERZOEK=[
   bev:'79% van de ondernemingen had het afgelopen jaar te maken met hogere AI-kosten dan begroot; de gemiddelde overschrijding lag rond 30%.',
   bron:'DoiT / Sapio Research',
   advies:'Spreek vooraf een maximum af per toepassing, en meet het verbruik vanaf dag één.'},
+ {dim:'finance',t:'Reken het rendement door zoals een investeerder dat doet',
+  cijfer:'TEI',
+  bev:'Forrester rekent bij zijn Total Economic Impact-aanpak niet alleen kosten en baten door, maar ook de flexibiliteit die je erbij koopt en het risico dat een aanname niet uitkomt \u2014 met een bandbreedte in plaats van \u00e9\u00e9n getal.',
+  bron:'Forrester (Total Economic Impact)',
+  advies:'Zet naast je besparing ook op wat er misgaat als het tegenvalt. Een businesscase met een ondergrens wordt eerder geloofd dan \u00e9\u00e9n mooi getal.'},
  {dim:'security',t:'AI verandert het dreigingsbeeld',
   cijfer:'—',
   bev:'Het Financieel Stabiliteitscomité constateerde in juni 2026 dat geavanceerde AI-modellen het cyberdreigingslandschap ingrijpend veranderen en de urgentie van weerbaarheid vergroten.',
@@ -1708,6 +1722,59 @@ const BELEID=[
  {k:'continu',n:'Uitwijk en continuïteit',u:'Wat als een kernsysteem een week uitvalt. Meestal het enige dat echt getest moet worden.'}
 ];
 const BSTAT=['ontbreekt','concept','vastgesteld','geoefend'];
+function tekenKwadrant(){
+  const el=document.getElementById('kwadrant'); if(!el) return;
+  const f=[0,1,.78,.5,.22,.06]; const kosten={}; let max=1;
+  DIM.forEach(function(d){ kosten[d.k]=d.u*f[S.niveaus[d.k]]*(S.mw/24)*46*S.uur; if(kosten[d.k]>max)max=kosten[d.k]; });
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const x0=60,x1=450,y0=340,y1=30;
+  const px=n=>x0+((n-1)/4)*(x1-x0);          // volwassenheid 1..5
+  const py=k=>y0-(k/max)*(y0-y1);            // kosten
+  let g='';
+  g+='<rect x="'+x0+'" y="'+y1+'" width="'+((x1-x0)/2)+'" height="'+((y0-y1)/2)+'" fill="#FFF1EC"/>';
+  g+='<rect x="'+(x0+(x1-x0)/2)+'" y="'+(y1+(y0-y1)/2)+'" width="'+((x1-x0)/2)+'" height="'+((y0-y1)/2)+'" fill="#F1F9F4"/>';
+  g+='<text x="'+(x0+8)+'" y="'+(y1+18)+'" font-size="11.5" font-weight="700" fill="#D6452B" font-family="Instrument Sans">Kost geld, staat laag \u2014 hier eerst</text>';
+  g+='<text x="'+(x1-8)+'" y="'+(y0-10)+'" text-anchor="end" font-size="11.5" font-weight="700" fill="#0E9F6E" font-family="Instrument Sans">Op orde</text>';
+  g+='<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="2"/>';
+  g+='<line x1="'+x0+'" y1="'+y1+'" x2="'+x0+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="2"/>';
+  [1,2,3,4,5].forEach(function(n){ g+='<text x="'+px(n)+'" y="'+(y0+20)+'" text-anchor="middle" font-size="11" fill="#5C646E" font-family="Instrument Sans">N'+n+'</text>'; });
+  g+='<text x="16" y="'+(y1+10)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans" transform="rotate(-90 16 '+(y1+10)+')">kosten per jaar</text>';
+  const b=B();
+  g+='<line x1="'+px(b.dig)+'" y1="'+y1+'" x2="'+px(b.dig)+'" y2="'+y0+'" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>';
+  g+='<text x="'+(px(b.dig)+6)+'" y="'+(y1+14)+'" font-size="10.5" fill="#14171A" font-family="Instrument Sans">branche</text>';
+  DIM.forEach(function(d){
+    const cx=px(S.niveaus[d.k]), cy=py(kosten[d.k]);
+    const r=7+Math.min(kosten[d.k]/max,1)*9;
+    const kl=S.niveaus[d.k]>=4?'#1F9D55':(S.niveaus[d.k]>=3?'#E8A200':'#D93025');
+    g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+kl+'" opacity=".85"'
+     +' data-tip="<b>'+d.n+'</b><br>Niveau '+S.niveaus[d.k]+' van 5<br>'+eur(kosten[d.k])+' per jaar aan handwerk<br>'+(UITLEG[d.k]||'')+'" data-ga="profiel"/>';
+    g+='<text x="'+cx+'" y="'+(cy-r-5)+'" text-anchor="middle" font-size="9.5" fill="#5C646E" font-family="Instrument Sans">'+d.n.split(' ')[0]+'</text>';
+  });
+  el.innerHTML=g;
+}
+function tekenKostenTrap(){
+  const el=document.getElementById('kostenTrap'); if(!el) return;
+  const f=[0,1,.78,.5,.22,.06]; const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const bij=function(n){ let t=0; DIM.forEach(function(d){ t+=d.u*f[Math.max(S.niveaus[d.k],n)]*(S.mw/24)*46*S.uur; }); return t; };
+  const nu=bij(1), r3=bij(3), r4=bij(4), r5=bij(5);
+  const rijen=[['Nu',nu,'#D93025'],['Alles op niveau 3',r3,'#E8A200'],['Alles op niveau 4',r4,'#1F9D55'],['Alles op niveau 5',r5,'#0E9F6E']];
+  const max=Math.max.apply(null,rijen.map(r=>r[1]))||1;
+  let g='',y=24;
+  rijen.forEach(function(r){
+    const w=(r[1]/max)*300;
+    g+='<g data-tip="<b>'+r[0]+'</b><br>'+eur(r[1])+' per jaar aan handwerk'+(r[1]<nu?'<br>Bespaart '+eur(nu-r[1])+' tegenover nu':'')+'">'
+     +'<text x="0" y="'+(y+14)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">'+r[0]+'</text>'
+     +'<rect x="150" y="'+y+'" width="300" height="20" rx="10" fill="#EDEBE5"/>'
+     +'<rect x="150" y="'+y+'" width="'+Math.max(w,6)+'" height="20" rx="10" fill="'+r[2]+'"/>'
+     +'<text x="'+(150+Math.max(w,6)+8)+'" y="'+(y+15)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+eur(r[1])+'</text></g>';
+    y+=62;
+  });
+  el.innerHTML=g;
+  document.getElementById('kostenTrapT').innerHTML='Van nu naar niveau 4 scheelt <b>'+eur(nu-r4)+'</b> per jaar. '
+   +'Niveau 5 levert daarbovenop nog '+eur(r4-r5)+' op \u2014 zelden de moeite voor een mkb-bedrijf. '
+   +'Onderzoek van McKinsey en BCG laat hetzelfde patroon zien: de sprong zit in het middenstuk, niet aan de top.';
+}
+
 function tekenBeleid(){
   (function(){
     const t=document.getElementById('techGraf'); if(!t)return;
