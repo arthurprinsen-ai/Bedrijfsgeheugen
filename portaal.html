@@ -1731,14 +1731,50 @@ function tekenCanvassen(){
   // conclusie over de canvassen heen
   const cc=document.getElementById('canvasConclusie');
   if(cc){
-    const ingevuld=['bmc','vpc2','lean','merk','content','sales2'].filter(function(x){return (S.eigen||{})[x];}).length;
-    cc.innerHTML='<h2>Wat deze zes canvassen toevoegen</h2>'
-     +'<p class="kern">De modellen laten zien <b>waar</b> het schuurt. De canvassen laten zien <b>waarom dat uitmaakt voor je verdienmodel</b>: '
-     +'je kernmiddel is kennis van mensen, je belofte is zekerheid, en je verkoop leunt op '+(grootste>=25?'\u00e9\u00e9n grote klant':'persoonlijk contact')+'. '
-     +'Die drie hangen aan hetzelfde punt.</p>'
-     +'<p class="sub">'+ingevuld+' van de 6 eigen antwoorden ingevuld. '
-     +'De gezamenlijke conclusie over modellen \u00e9n canvassen staat onder <b>De eindconclusie</b>.</p>'
-     +'<div style="margin-top:.6rem"><button class="knop" data-ga="eindconclusie">Naar de eindconclusie</button></div>';
+    const V=[['bmc','Winstgevendste klantgroep','Business Model'],
+             ['vpc2','Wat je beste klant aan je heeft','Waardepropositie'],
+             ['lean','Het \u00e9\u00e9ne probleem dit jaar','Lean'],
+             ['merk','Waarop klanten jullie kiezen','Merk'],
+             ['content','De vraag die je het vaakst krijgt','Content'],
+             ['sales2','Van wie je het vaakst verliest','Sales']];
+    const eig=S.eigen||{};
+    const gevuld=V.filter(function(v){return (eig[v[0]]||'').trim().length>2;});
+    const leeg=V.filter(function(v){return !((eig[v[0]]||'').trim().length>2);});
+
+    if(!gevuld.length){
+      cc.innerHTML='<h2>Deze conclusie schrijf jij</h2>'
+       +'<p class="kern">De canvassen hierboven zijn gevuld met je scancijfers, maar de zes vragen die er\u00f3nder staan kan alleen jij beantwoorden. '
+       +'<b>Zolang die leeg zijn, is hier geen conclusie te trekken</b> \u2014 een canvas zonder jouw antwoorden is een sjabloon, geen analyse.</p>'
+       +'<p class="sub" style="margin-bottom:.4rem">Nog te beantwoorden:</p>'
+       +'<div class="drie">'+leeg.slice(0,3).map(function(v){
+           return '<div class="stap"><span>'+v[2]+'</span><b>'+v[1]+'</b><p>Klap het canvas hieronder open en vul het invulveld in.</p></div>';
+         }).join('')+'</div>'
+       +'<p class="sub" style="margin-top:.8rem">Nog '+leeg.length+' van de 6 te gaan. Na de eerste twee verschijnt hier een conclusie die op jouw antwoorden is gebaseerd.</p>';
+      return;
+    }
+
+    // conclusie uit de eigen antwoorden
+    const kort=function(t){ t=(t||'').trim(); return t.length>150?t.slice(0,147)+'\u2026':t; };
+    let zinnen='';
+    if(eig.merk) zinnen+='Je wint volgens jezelf op <b>'+kort(eig.merk)+'</b>. ';
+    if(eig.bmc) zinnen+='Je meest winstgevende klantgroep is <b>'+kort(eig.bmc)+'</b>. ';
+    if(eig.lean) zinnen+='Het probleem dat je dit jaar zou oplossen als je maar \u00e9\u00e9n ding mocht doen: <b>'+kort(eig.lean)+'</b>. ';
+    if(eig.sales2) zinnen+='Je verliest het vaakst van <b>'+kort(eig.sales2)+'</b>. ';
+    if(eig.content) zinnen+='De vraag die je het vaakst krijgt is <b>'+kort(eig.content)+'</b>. ';
+    if(eig.vpc2) zinnen+='Je beste klant zegt dat hij aan je heeft: <b>'+kort(eig.vpc2)+'</b>. ';
+
+    const botst = (eig.merk && g('operatie')<3 && /prijs|goedkoop|snel/i.test(eig.merk))
+      ? 'Let op: je zegt te winnen op iets wat om strakke processen vraagt, terwijl operatie op niveau '+g('operatie')+' staat. Die twee bijten elkaar.'
+      : (eig.merk && g('mensen')<3 && /kennis|relatie|persoonlijk|maatwerk/i.test(eig.merk)
+         ? 'Let op: je wint op iets wat aan mensen hangt, terwijl kennis bij jullie op niveau '+g('mensen')+' staat. Vertrekt die persoon, dan vertrekt je onderscheid mee.'
+         : '');
+
+    cc.innerHTML='<h2>Wat jouw antwoorden zeggen</h2>'
+     +'<p class="sub">Gebaseerd op de '+gevuld.length+' van de 6 vragen die je zelf hebt beantwoord, naast je scancijfers.</p>'
+     +'<p class="kern">'+zinnen+'</p>'
+     +(botst?'<div style="padding:.7rem .85rem;border-left:4px solid var(--oranje);background:#FFF6F2;border-radius:0 4px 4px 0;font-size:.9rem;line-height:1.6">'+botst+'</div>':'')
+     +(leeg.length?'<p class="sub" style="margin-top:.8rem">Nog niet ingevuld: '+leeg.map(function(v){return v[1].toLowerCase();}).join(', ')+'.</p>':'')
+     +'<div style="margin-top:.7rem"><button class="knop" data-ga="eindconclusie">Naar de eindconclusie</button></div>';
   }
 }
 
