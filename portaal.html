@@ -613,6 +613,21 @@ input[type=range]{min-height:34px}
           <svg id="cGrafiek" viewBox="0 0 480 300" role="img" aria-label="Maatstaven tegenover de branche"></svg>
           <p class="sub" id="cBron"></p></div>
       </div>
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Klanttevredenheid (KTO)</h3>
+          <p class="sub" style="margin:-.3rem 0 .7rem">Vul in wat je weet. Weet je het niet, dan is dat het antwoord.</p>
+          <div class="velden">
+            <div class="veld met-eenheid"><label for="kNps">NPS</label><input type="number" id="kNps" min="-100" max="100" step="1"><span class="eenheid">-100..100</span></div>
+            <div class="veld met-eenheid"><label for="kTevreden">Tevredenheid</label><input type="number" id="kTevreden" min="1" max="10" step="0.1"><span class="eenheid">1-10</span></div>
+            <div class="veld met-eenheid"><label for="kHerhaal">Herhaalopdrachten</label><input type="number" id="kHerhaal" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+            <div class="veld met-eenheid"><label for="kKlacht">Klachten per maand</label><input type="number" id="kKlacht" min="0" step="1"><span class="eenheid">stuks</span></div>
+          </div>
+          <div id="ktoUit" style="margin-top:.8rem"></div></div>
+        <div class="kaart"><h3>Trusted advisor — waar sta je bij je klant?</h3>
+          <p class="sub" style="margin:-.3rem 0 .5rem">Vier treden. Hoe hoger, hoe minder de prijs het gesprek bepaalt.</p>
+          <svg id="taGraf" viewBox="0 0 460 260" role="img" aria-label="Trusted advisor-ladder"></svg>
+          <div id="taUit"></div></div>
+      </div>
       <div class="kaart"><h3>Wat dit betekent</h3><div id="cDuiding" style="font-size:.9rem;line-height:1.65"></div></div>
     </section>
 
