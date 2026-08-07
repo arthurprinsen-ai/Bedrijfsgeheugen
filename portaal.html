@@ -506,7 +506,7 @@ input[type=range]{min-height:34px}
         <div class="kaart" style="grid-column:1/-1"><h3>Je onderdelen in vier vakken</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Volwassenheid tegen wat het kost om het te laten zoals het is. Rechtsboven is op orde, linksonder kost geld en levert niets op.</p>
           <svg id="kwadrant" viewBox="0 0 980 540" style="width:100%;height:auto" role="img" aria-label="Onderdelen in vier vakken"></svg></div>
-        <div class="kaart"><h3>Wat niets doen kost</h3>
+        <div class="kaart" style="grid-column:1/-1"><h3>Wat niets doen kost</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Je huidige kosten tegenover wat je overhoudt bij niveau 3, 4 en 5. Het verschil is wat je nu weggeeft.</p>
           <svg id="kostenTrap" viewBox="0 0 760 270" style="width:100%;height:auto" role="img" aria-label="Kosten van niets doen"></svg>
           <div class="sub" id="kostenTrapT"></div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div></div>
@@ -2070,8 +2070,8 @@ function tekenKwadrant(){
   let g='';
   g+='<rect x="'+x0+'" y="'+y1+'" width="'+(midX-x0)+'" height="'+(midY-y1)+'" fill="#FDECE8"/>';
   g+='<rect x="'+midX+'" y="'+midY+'" width="'+(x1-midX)+'" height="'+(y0-midY)+'" fill="#EEF7F1"/>';
-  g+='<text x="'+(x0+14)+'" y="'+(midY-14)+'" font-size="13.5" font-weight="700" fill="#C0392B" fill-opacity=".85" font-family="Instrument Sans">Kost veel, staat laag</text>';
-  g+='<text x="'+(x1-14)+'" y="'+(y0-14)+'" text-anchor="end" font-size="13.5" font-weight="700" fill="#0E9F6E" fill-opacity=".85" font-family="Instrument Sans">Op orde</text>';
+  
+  
   g+='<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
   g+='<line x1="'+x0+'" y1="'+y1+'" x2="'+x0+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
   for(let n=1;n<=5;n++){
@@ -2090,7 +2090,8 @@ function tekenKwadrant(){
     const groep=perNiveau[n].sort(function(a,c){return py(K[a.k])-py(K[c.k]);});   // van boven naar beneden
     let vorigeLabelY=-999;
     groep.forEach(function(d,idx){
-      const cx=px(+n), cy=py(K[d.k]);
+      const zaad=(d.k.charCodeAt(0)*7+d.k.length*13)%100/100;      // vaste, natuurlijke spreiding
+      const cx=px(+n)+(zaad-0.5)*band*0.34, cy=py(K[d.k]);
       const r=9;                                   // alle stippen even groot
       const kl=+n>=4?'#1F9D55':(+n>=3?'#E8A200':'#D93025');
       const dim=(kwKeuze&&kwKeuze!==d.k);
@@ -2114,19 +2115,30 @@ function tekenKwadrant(){
       }
     });
   });
-  g+='<text x="'+x0+'" y="'+(y1-34)+'" font-size="12" fill="#8A94A3" font-family="Instrument Sans">klik een stip: je ziet wat het onderdeel inhoudt en wat je eraan doet</text>';
+  g+='<rect x="'+x0+'" y="'+(y1-38)+'" width="13" height="13" rx="3" fill="#FDECE8"/>'
+   +'<text x="'+(x0+20)+'" y="'+(y1-27)+'" font-size="12.5" fill="#5C646E" font-family="Instrument Sans">kost veel, staat laag</text>'
+   +'<rect x="'+(x0+180)+'" y="'+(y1-38)+'" width="13" height="13" rx="3" fill="#EEF7F1"/>'
+   +'<text x="'+(x0+200)+'" y="'+(y1-27)+'" font-size="12.5" fill="#5C646E" font-family="Instrument Sans">op orde</text>'
+   +'<text x="'+x1+'" y="'+(y1-27)+'" text-anchor="end" font-size="12.5" fill="#8A94A3" font-family="Instrument Sans">klik een stip om te filteren</text>';
   el.innerHTML=g;
 
   el.querySelectorAll('[data-kw]').forEach(function(c){
     if(c.dataset.aan)return; c.dataset.aan='1';
-    c.addEventListener('click',function(){ kwKeuze=(kwKeuze===c.dataset.kw)?null:c.dataset.kw; tekenKwadrant(); });
+    c.addEventListener('click',function(){
+      kwKeuze=(kwKeuze===c.dataset.kw)?null:c.dataset.kw;
+      if(typeof ondKeuze!=='undefined'){ ondKeuze = kwKeuze ? kwKeuze : 'alles'; if(typeof tekenOnderzoek==='function') tekenOnderzoek(); }
+      tekenKwadrant();
+    });
   });
   const fb=document.getElementById('kwFilter');
   if(fb){
     fb.innerHTML = kwKeuze
-      ? 'Je bekijkt <b>'+(DIM.find(function(d){return d.k===kwKeuze;})||{n:''}).n+'</b>. <button class="knop licht" id="kwTerug" style="margin-left:.4rem">Toon alles</button>'
+      ? 'Je bekijkt <b>'+(DIM.find(function(d){return d.k===kwKeuze;})||{n:''}).n+'</b> \u2014 de bevindingen hieronder zijn hierop gefilterd. <button class="knop licht" id="kwTerug" style="margin-left:.4rem">Toon alles</button>'
       : 'Klik op een stip om alleen dat onderdeel te bekijken.';
-    const kt=document.getElementById('kwTerug'); if(kt) kt.addEventListener('click',function(){ kwKeuze=null; tekenKwadrant(); });
+    const kt=document.getElementById('kwTerug');
+    if(kt) kt.addEventListener('click',function(){ kwKeuze=null;
+      if(typeof ondKeuze!=='undefined'){ ondKeuze='alles'; if(typeof tekenOnderzoek==='function') tekenOnderzoek(); }
+      tekenKwadrant(); });
   }
   const dt=document.getElementById('kwDetail');
   if(dt){
