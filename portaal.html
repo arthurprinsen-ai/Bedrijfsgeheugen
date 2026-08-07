@@ -326,6 +326,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="false" data-p="canvassen">Canvassen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="eindconclusie">De eindconclusie</button>
         <span class="groep">Doen</span>
+        <button class="tab" role="tab" aria-selected="false" data-p="dna">Strategie-DNA</button>
         <button class="tab" role="tab" aria-selected="false" data-p="uitvoering">Van strategie naar uitvoering</button>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
@@ -743,6 +744,26 @@ input[type=range]{min-height:34px}
         <div id="adviesLijst" style="margin-top:.9rem"></div>
       </div>
       <div class="kaart" id="rekenwijze1" style="margin-top:1rem"></div>
+    </section>
+
+    <!-- STRATEGIE-DNA -->
+    <section class="paneel" id="p-dna">
+      <div class="kaart conclusie" style="margin-top:1rem">
+        <h2>Strategie-DNA</h2>
+        <p class="kern">Elke directie kan een strategie benoemen. Bijna niemand kan beantwoorden: <b>wat betekent dat morgen voor mijn afdelingen, processen, data, systemen en mensen?</b>
+        Kies hieronder één strategisch thema. Dit portaal rekent uit wat er dan geraakt wordt — en met welke volwassenheid je daaraan begint.</p>
+        <div id="dnaKeuze" style="margin-top:.9rem"></div>
+      </div>
+      <div class="kaarten k3" id="dnaImpact" style="margin-top:1rem"></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Wat er geraakt wordt</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Van thema naar capability naar wat er in de organisatie moet veranderen. Klik een capability voor de details.</p>
+        <svg id="dnaGraaf" viewBox="0 0 980 460" role="img" aria-label="Strategie-DNA"></svg>
+        <div id="dnaDetail"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Volwassenheid per capability</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Wat je al kunt en wat nog niet — uit je eigen scan. Dit bepaalt de volgorde van de veranderagenda.</p>
+        <div id="dnaVolw"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>De veranderagenda</h3><div id="dnaAgenda"></div></div>
+      <p class="sub" style="margin-top:1rem;text-align:center">Strategie-DNA © 2026 Bedrijfsgeheugen · versie 1</p>
     </section>
 
     <!-- UITVOERING -->
@@ -1323,7 +1344,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenInvoer(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenDNA(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenInvoer(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1990,6 +2011,208 @@ const LADDER_STANDAARD=function(d){ return {t:d.n, afd:'De afdeling die dit raak
      {w:'Wijs een vaste eigenaar aan',rol:'directie',wie:'Directie',mnd:10,d:1,klaar:'E\u00e9n naam, vastgelegd.',deel:.10}]};
 };
 var uvRol='alles';
+
+/* ---------------------------------------------------------------
+   Strategie-DNA \u00a9 2026 Bedrijfsgeheugen
+   Een strategisch thema activeert capabilities; elke capability
+   activeert afdelingen, processen, data, systemen, AI, governance,
+   maatstaven en projecten. De volwassenheid komt uit de scan.
+----------------------------------------------------------------- */
+const CAP={
+ klantbeeld:{n:'Klantbeeld op \u00e9\u00e9n plek',dim:'commercie',
+   afd:['Sales','Service','Marketing'],proc:['Lead tot order','Klantvraag afhandelen'],
+   data:['Klantgegevens','Orderhistorie','Contactmomenten'],sys:['CRM of ERP-klantmodule'],
+   ai:['Samenvatting van klantcontact','Signaal bij afhaakgedrag'],gov:['Wie is eigenaar van klantgegevens'],
+   kpi:['Omzet per klant','Reactietijd','Herhaalopdrachten'],proj:['Klantgegevens uit \u00e9\u00e9n bron']},
+ opvolging:{n:'Opvolging die vanzelf gaat',dim:'commercie',
+   afd:['Sales','Binnendienst'],proc:['Offerte opvolgen','Contact vastleggen'],
+   data:['Offertes','Contactmomenten'],sys:['CRM','E-mailkoppeling'],
+   ai:['Concept-opvolgmail','Voorspelling welke offerte scoort'],gov:['Wie bewaakt de trechter'],
+   kpi:['Conversie per stap','Aantal open offertes'],proj:['Automatische opvolging na verzending']},
+ doorstroom:{n:'Werk stroomt zonder overtypen',dim:'tech',
+   afd:['Operatie','Finance','Binnendienst'],proc:['Order naar planning','Uren naar factuur'],
+   data:['Orders','Uren','Artikelen'],sys:['ERP','Urenregistratie','Koppeling'],
+   ai:['Documenten uitlezen','Afwijkingen signaleren'],gov:['E\u00e9n bron per gegeven'],
+   kpi:['Keer per week overgetypt','Doorlooptijd offerte-factuur'],proj:['Koppeling tussen de twee zwaarste systemen']},
+ sturing:{n:'Sturen op cijfers',dim:'analytics',
+   afd:['Directie','Finance'],proc:['Maandafsluiting','Maandelijks overleg'],
+   data:['Omzet','Marge','Uren','Verzuim'],sys:['Rapportage bovenop de bron'],
+   ai:['Vooruitkijken op eigen historie','Toelichting bij afwijkingen'],gov:['Definities en eigenaren','Rapportagekalender'],
+   kpi:['Dagen tot maandcijfers','Aantal versies van hetzelfde cijfer'],proj:['Dashboard met vijf getallen']},
+ kwaliteit:{n:'Gegevens die kloppen',dim:'quality',
+   afd:['Finance','Operatie','IT'],proc:['Invoer en controle'],
+   data:['Definities van klant, order, uur'],sys:['Validatie bij invoer'],
+   ai:['Dubbele records herkennen'],gov:['E\u00e9n eigenaar per bron'],
+   kpi:['Foutpercentage','Herstelwerk'],proj:['Definitielijst op \u00e9\u00e9n A4']},
+ kennis:{n:'Kennis van het bedrijf, niet van personen',dim:'mensen',
+   afd:['Alle afdelingen','HR'],proc:['Werk vastleggen','Inwerken'],
+   data:['Werkinstructies','Kennismatrix','Uitzonderingen'],sys:['Gedeelde documentomgeving'],
+   ai:['Zoeken in eigen documenten','Notities samenvatten'],gov:['Eigenaar per kernproces'],
+   kpi:['Taken met \u00e9\u00e9n naam','Inwerktijd'],proj:['Kennismatrix en drie procesbeschrijvingen']},
+ wendbaar:{n:'Verandering die beklijft',dim:'culture',
+   afd:['Directie','Leidinggevenden'],proc:['Verbetercyclus'],
+   data:['Medewerkerssignalen'],sys:['Takenlijst met eigenaar'],
+   ai:['Terugkerende signalen groeperen'],gov:['E\u00e9n verbetering per kwartaal'],
+   kpi:['Afgeronde verbeteringen','eNPS'],proj:['Vast verbetermoment']},
+ service:{n:'Klantvragen op \u00e9\u00e9n plek',dim:'service',
+   afd:['Klantenservice','Binnendienst'],proc:['Vraag aannemen','Klacht afhandelen'],
+   data:['Tickets','Veelgestelde vragen'],sys:['Servicepostbus of ticketsysteem'],
+   ai:['Antwoordconcept','Vragen sorteren'],gov:['Eigenaar per vraag'],
+   kpi:['Reactietijd','Oplostijd','NPS'],proj:['E\u00e9n servicepostbus met status']},
+ geld:{n:'Grip op geld',dim:'finance',
+   afd:['Finance','Directie'],proc:['Factureren','Debiteurenbeheer','Afsluiten'],
+   data:['Facturen','Bank','Openstaande posten'],sys:['Boekhouding','Automatische herinnering'],
+   ai:['Facturen uitlezen','Betaalgedrag voorspellen'],gov:['Wie grijpt in bij afwijking'],
+   kpi:['Debiteurendagen','Dagen tot cijfers'],proj:['Afsluitkalender en automatische herinneringen']},
+ veilig:{n:'Veilig en aantoonbaar',dim:'security',
+   afd:['Directie','IT'],proc:['Toegang beheren','Incident afhandelen'],
+   data:['Toegangsrechten','Back-ups'],sys:['MFA','Back-upvoorziening'],
+   ai:['Afwijkend inloggedrag signaleren'],gov:['Incidentplan','Uitdienstlijst'],
+   kpi:['Geteste back-ups','Openstaande accounts'],proj:['MFA en een geteste back-up']},
+ duurzaam:{n:'Duurzaamheidscijfers uit de administratie',dim:'duurzaam',
+   afd:['Finance','Facilitair','Inkoop'],proc:['Verbruik registreren','Rapporteren'],
+   data:['Energie','Afval','Vervoer','Inkoop'],sys:['Boekhouding','Wagenparkbeheer'],
+   ai:['Facturen omzetten naar verbruik'],gov:['Eigenaar duurzaamheid'],
+   kpi:['CO\u2082 per omzet','Dekking van de onderwerpen'],proj:['Verbruik uit de facturen halen']},
+ overdraagbaar:{n:'Overdraagbaar bedrijf',dim:'governance',
+   afd:['Directie','Finance','HR'],proc:['Besluiten vastleggen','Contracten beheren'],
+   data:['Contracten','Bevoegdheden','Klantafspraken'],sys:['Documentbeheer'],
+   ai:['Contracten doorzoeken op einddatum'],gov:['Wie mag wat tekenen'],
+   kpi:['Dertig-dagentoets','Klantconcentratie'],proj:['Contract- en bevoegdhedenregister']}
+};
+const THEMA={
+ klant:{n:'Klantgerichter worden',caps:['klantbeeld','service','opvolging','sturing']},
+ excellence:{n:'Operational excellence',caps:['doorstroom','kwaliteit','sturing','kennis']},
+ groei:{n:'Groeien zonder evenredig aan te nemen',caps:['doorstroom','opvolging','kennis','sturing']},
+ ai:{n:'AI-eerst werken',caps:['kwaliteit','sturing','doorstroom','veilig','wendbaar']},
+ exit:{n:'Verkoopklaar worden',caps:['kennis','overdraagbaar','geld','sturing']},
+ kapitaal:{n:'Kapitaal aantrekken',caps:['geld','sturing','kwaliteit','duurzaam']},
+ naleving:{n:'Naleving en risico beheersen',caps:['veilig','overdraagbaar','duurzaam','kwaliteit']},
+ mensen:{n:'Aantrekkelijk werkgeverschap',caps:['kennis','wendbaar','service','sturing']}
+};
+var dnaThema='klant', dnaCap=null;
+
+function tekenDNA(){
+  const kz=document.getElementById('dnaKeuze'); if(!kz) return;
+  const g=k=>S.niveaus[k]||2, eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const f=[0,1,.78,.5,.22,.06], K={};
+  DIM.forEach(function(d){ K[d.k]=d.u*f[g(d.k)]*(S.mw/24)*46*S.uur; });
+
+  // themakeuze; standaard afgeleid uit het doel van de scan
+  try{ if(!kz.dataset.aan){ const d=localStorage.getItem('bg_scan_doel');
+        const map={grip:'excellence',groei:'groei',exit:'exit',kapitaal:'kapitaal',overname:'excellence',opvolging:'exit',naleving:'naleving'};
+        if(d&&map[d]) dnaThema=map[d]; } }catch(e){}
+  kz.innerHTML='<div class="filterbalk">'+Object.keys(THEMA).map(function(k){
+      return '<button data-dna="'+k+'" aria-pressed="'+(dnaThema===k)+'">'+THEMA[k].n+'</button>'; }).join('')+'</div>';
+  kz.dataset.aan='1';
+  kz.querySelectorAll('[data-dna]').forEach(function(b){
+    if(b.dataset.k)return; b.dataset.k='1';
+    b.addEventListener('click',function(){ dnaThema=b.dataset.dna; dnaCap=null; tekenDNA(); });
+  });
+
+  const caps=THEMA[dnaThema].caps.map(function(k){ return Object.assign({k:k},CAP[k]); });
+
+  // impactmatrix
+  const uniek=function(veld){ const a=[]; caps.forEach(function(c){ (c[veld]||[]).forEach(function(x){ if(a.indexOf(x)<0) a.push(x); }); }); return a; };
+  const M=[['Capabilities',caps.length,'wat je moet kunnen'],
+           ['Afdellingen',uniek('afd').length,'die het merken'],
+           ['Processen',uniek('proc').length,'die veranderen'],
+           ['Gegevensbronnen',uniek('data').length,'die nodig zijn'],
+           ['Systemen',uniek('sys').length,'die geraakt worden'],
+           ['AI-toepassingen',uniek('ai').length,'die mogelijk worden'],
+           ['Afspraken',uniek('gov').length,'die je moet maken'],
+           ['Maatstaven',uniek('kpi').length,'waarop je stuurt'],
+           ['Projecten',uniek('proj').length,'die eruit volgen']];
+  document.getElementById('dnaImpact').innerHTML=M.map(function(r){
+    return '<div class="kaart"><h3>'+r[0]+'</h3><div class="kpi">'+r[1]+'</div><div class="sub">'+r[2]+'</div></div>';
+  }).join('');
+
+  // graaf
+  const el=document.getElementById('dnaGraaf');
+  if(el){
+    const W=980, x0=40, capX=300, uitX=640;
+    let sv='', hoogte=Math.max(caps.length*100+60, 300);
+    sv+='<rect x="'+x0+'" y="'+(hoogte/2-34)+'" width="200" height="68" rx="10" fill="#14171A"/>'
+     +'<text x="'+(x0+100)+'" y="'+(hoogte/2-6)+'" text-anchor="middle" font-size="12" fill="#FFE86B" font-family="Instrument Sans">strategisch thema</text>'
+     +'<text x="'+(x0+100)+'" y="'+(hoogte/2+14)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Instrument Sans">'+THEMA[dnaThema].n.slice(0,24)+'</text>';
+    caps.forEach(function(c,i){
+      const y=60+i*100, niv=g(c.dim);
+      const kl=niv>=4?'#1F9D55':(niv>=3?'#E8A200':'#D93025');
+      const gekozen=(dnaCap===c.k);
+      sv+='<path d="M'+(x0+200)+','+(hoogte/2)+' C'+(capX-60)+','+(hoogte/2)+' '+(capX-60)+','+(y+24)+' '+capX+','+(y+24)+'" fill="none" stroke="#C9CEDA" stroke-width="1.5"/>';
+      sv+='<g data-dnacap="'+c.k+'" style="cursor:pointer" opacity="'+(dnaCap&&!gekozen?.35:1)+'"'
+       +' data-tip="<b>'+c.n+'</b><br>Niveau '+niv+' van 5<br>Klik voor wat er dan verandert">'
+       +'<rect x="'+capX+'" y="'+y+'" width="250" height="48" rx="8" fill="'+(gekozen?'#2742D6':'#fff')+'" stroke="'+kl+'" stroke-width="2"/>'
+       +'<text x="'+(capX+14)+'" y="'+(y+21)+'" font-size="12.5" font-weight="700" fill="'+(gekozen?'#fff':'#14171A')+'" font-family="Instrument Sans">'+c.n.slice(0,30)+'</text>'
+       +'<text x="'+(capX+14)+'" y="'+(y+38)+'" font-size="11" fill="'+(gekozen?'#C9D2E8':kl)+'" font-family="Instrument Sans">niveau '+niv+' \u00b7 '+eur(K[c.dim]||0)+' p.j.</text></g>';
+      const uit=[['afdelingen',c.afd.length],['processen',c.proc.length],['gegevens',c.data.length],['systemen',c.sys.length],['AI',c.ai.length]];
+      uit.forEach(function(u,j){
+        const uy=y+4+j*9;
+        sv+='<line x1="'+(capX+250)+'" y1="'+(y+24)+'" x2="'+uitX+'" y2="'+uy+'" stroke="#EDEBE5" stroke-width="1"/>'
+         +'<circle cx="'+uitX+'" cy="'+uy+'" r="3" fill="#8A94A3"/>'
+         +'<text x="'+(uitX+8)+'" y="'+(uy+3)+'" font-size="9.5" fill="#5C646E" font-family="Instrument Sans">'+u[1]+' '+u[0]+'</text>';
+      });
+    });
+    el.setAttribute('viewBox','0 0 980 '+hoogte);
+    el.innerHTML=sv;
+    el.querySelectorAll('[data-dnacap]').forEach(function(n2){
+      if(n2.dataset.aan)return; n2.dataset.aan='1';
+      n2.addEventListener('click',function(){ dnaCap=(dnaCap===n2.dataset.dnacap)?null:n2.dataset.dnacap; tekenDNA(); });
+    });
+  }
+
+  // detail van de gekozen capability
+  const dt=document.getElementById('dnaDetail');
+  if(dt){
+    if(!dnaCap){ dt.innerHTML='<p class="sub" style="margin-top:.6rem">Klik een capability voor wat er dan precies verandert in afdelingen, processen, data, systemen, AI, afspraken en maatstaven.</p>'; }
+    else{
+      const c=Object.assign({k:dnaCap},CAP[dnaCap]);
+      const rij=function(l,a){ return '<tr><td style="padding:.4rem .6rem .4rem 0;color:var(--grijs);font-size:.82rem;white-space:nowrap;vertical-align:top;border-bottom:1px solid var(--lijn)">'+l+'</td>'
+        +'<td style="padding:.4rem 0;font-size:.87rem;line-height:1.6;border-bottom:1px solid var(--lijn)">'+a.map(function(x){return '\u2022 '+x;}).join('<br>')+'</td></tr>'; };
+      dt.innerHTML='<div style="margin-top:.9rem;padding:1rem 1.1rem;border:1px solid var(--lijn);border-radius:8px;background:#FBFAF7">'
+       +'<b style="font-size:1rem">'+c.n+'</b>'
+       +'<div class="sub" style="margin:.15rem 0 .6rem">Staat bij jullie op niveau '+g(c.dim)+' van 5 \u00b7 '+eur(K[c.dim]||0)+' per jaar aan handwerk in dit onderdeel</div>'
+       +'<table style="width:100%;border-collapse:collapse">'
+       +rij('Afdelingen',c.afd)+rij('Processen',c.proc)+rij('Gegevens',c.data)+rij('Systemen',c.sys)
+       +rij('AI-toepassingen',c.ai)+rij('Afspraken',c.gov)+rij('Maatstaven',c.kpi)+rij('Projecten',c.proj)
+       +'</table>'
+       +'<div style="margin-top:.8rem"><button class="knop" data-advies="'+encodeURIComponent(JSON.stringify({t:c.proj[0],dim:c.dim,d:2}))+'">Zet het project in mijn roadmap</button></div></div>';
+    }
+  }
+
+  // volwassenheid per capability
+  document.getElementById('dnaVolw').innerHTML=caps.map(function(c){
+    const niv=g(c.dim), pct=niv/5*100;
+    const kl=niv>=4?'var(--groen)':(niv>=3?'var(--amber)':'var(--rood)');
+    return '<div style="margin-bottom:.7rem"><div style="display:flex;justify-content:space-between;font-size:.88rem">'
+     +'<b>'+c.n+'</b><span class="sub">niveau '+niv+' \u00b7 '+eur(K[c.dim]||0)+' p.j.</span></div>'
+     +'<div style="background:#EFEFEC;border-radius:8px;height:12px;margin-top:.2rem"><div style="width:'+pct+'%;height:12px;border-radius:8px;background:'+kl+'"></div></div></div>';
+  }).join('')
+   +'<p class="sub" style="margin-top:.5rem">De capability met het laagste niveau bepaalt hoe snel dit thema kan landen \u2014 niet het gemiddelde.</p>';
+
+  // veranderagenda
+  const opVolgorde=caps.slice().sort(function(a,b2){ return g(a.dim)-g(b2.dim) || (K[b2.dim]||0)-(K[a.dim]||0); });
+  document.getElementById('dnaAgenda').innerHTML=
+    '<p class="sub" style="margin:-.3rem 0 .8rem">Op volgorde van laagste volwassenheid: hier begint het, want de rest bouwt hierop.</p>'
+   + opVolgorde.map(function(c,i){
+      return '<div style="display:grid;grid-template-columns:2rem 1fr auto;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--lijn);align-items:start">'
+       +'<b style="width:2rem;height:2rem;border-radius:50%;background:'+(i===0?'var(--oranje)':'var(--blauw)')+';color:#fff;display:grid;place-items:center;font-size:.78rem">'+(i+1)+'</b>'
+       +'<div><b style="font-size:.93rem">'+c.n+'</b>'
+       +'<div class="sub">Raakt '+c.afd.join(', ')+' \u00b7 '+c.proc.length+' processen \u00b7 '+c.sys.length+' systemen</div>'
+       +'<div style="font-size:.86rem;margin-top:.15rem"><b>Eerste project:</b> '+c.proj[0]+'</div></div>'
+       +'<button class="knop licht" data-advies="'+encodeURIComponent(JSON.stringify({t:c.proj[0],dim:c.dim,d:2}))+'">+ roadmap</button></div>';
+    }).join('');
+
+  document.querySelectorAll('[data-advies]').forEach(function(btn){
+    if(btn.dataset.aan)return; btn.dataset.aan='1';
+    btn.addEventListener('click',function(){
+      const o=JSON.parse(decodeURIComponent(btn.dataset.advies));
+      const laatste=S.taken.reduce(function(mx,t){return Math.max(mx,t.s+t.d-1);},0);
+      S.taken.push({id:Date.now(),t:o.t,dim:o.dim,s:Math.min(laatste+1||1,12),d:o.d,klaar:false});
+      bewaar(); teken(); btn.textContent='\u2713 staat erin'; btn.disabled=true;
+    });
+  });
+}
 
 function tekenUitvoering(){
   const box=document.getElementById('uvThemas'); if(!box) return;
