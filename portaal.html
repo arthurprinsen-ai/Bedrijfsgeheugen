@@ -1066,17 +1066,67 @@ function teken(){
     g+='<line x1="'+bx+'" y1="42" x2="'+bx+'" y2="192" stroke="#14171A" stroke-width="2" stroke-dasharray="6 4"'
      +' data-tip="<b>'+S.branche+'</b><br>Gemiddeld niveau ~'+b.dig.toFixed(1)+'<br>Dit is waar je concurrenten staan."/>'
      +'<text x="'+(bx+7)+'" y="52" font-size="11" fill="#14171A" font-family="Instrument Sans">branche ~'+b.dig.toFixed(1)+'</text>';
-    // jouw positie
-    const jx=x0+((gem-1)/4)*(x1-x0), jy=bel(jx);
+    // jouw positie — versleepbaar om een niveau te verkennen
+    const toon = (window.__curveSim!==undefined && window.__curveSim!==null) ? window.__curveSim : gem;
+    const jx=x0+((toon-1)/4)*(x1-x0), jy=bel(jx);
+    const sim=(window.__curveSim!==undefined && window.__curveSim!==null && Math.abs(window.__curveSim-gem)>0.05);
+    if(sim){
+      const rx=x0+((gem-1)/4)*(x1-x0);
+      g+='<circle cx="'+rx+'" cy="'+bel(rx)+'" r="7" fill="none" stroke="#FF4F17" stroke-width="2" stroke-dasharray="3 3"/>'
+       +'<text x="'+rx+'" y="'+(bel(rx)-16)+'" text-anchor="middle" font-size="10.5" fill="#FF4F17" font-family="Instrument Sans">nu</text>';
+    }
     g+='<line x1="'+jx+'" y1="'+jy+'" x2="'+jx+'" y2="192" stroke="#FF4F17" stroke-width="2"/>'
-     +'<circle cx="'+jx+'" cy="'+jy+'" r="9" fill="#FF4F17"'
-     +' data-tip="<b>Jullie: niveau '+gem.toFixed(1)+'</b><br>AI-gebruik '+(S.niveaus.tech||2)+' · stuurinformatie '+(S.niveaus.analytics||2)+' · datakwaliteit '+(S.niveaus.quality||2)+' · governance '+(S.niveaus.governance||2)+'"/>'
-     +'<text x="'+jx+'" y="'+(jy-16)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#14171A" font-family="Bricolage Grotesque">jij</text>';
+     +'<circle id="curveGreep" cx="'+jx+'" cy="'+jy+'" r="11" fill="#FF4F17" style="cursor:grab"'
+     +' data-tip="<b>Sleep me</b><br>Verplaats om te zien wat een ander niveau betekent"/>'
+     +'<circle cx="'+jx+'" cy="'+jy+'" r="19" fill="#FF4F17" opacity=".14"/>'
+     +'<text x="'+jx+'" y="'+(jy-26)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="#14171A" font-family="Bricolage Grotesque">'+(sim?'wat als':'jij')+'</text>';
     el.innerHTML=g;
-    const voor=VERD.slice(Math.round(gem)).reduce((a,v)=>a+v,0);
-    document.getElementById('curveMiniT').innerHTML=voor+'% van de markt staat vóór jullie. '
-     +(gem<b.dig-0.3?'Je loopt achter op je branche.':(gem>b.dig+0.3?'Je loopt voor op je branche.':'Je zit op het brancheniveau.'))
-     +' Beweeg over een segment of over de stippellijn voor de details.';
+
+    // slepen
+    const greep=el.querySelector('#curveGreep');
+    if(greep){
+      const pak=function(ev){
+        ev.preventDefault();
+        const beweeg=function(e){
+          const r=el.getBoundingClientRect();
+          const cx=(e.touches?e.touches[0].clientX:e.clientX);
+          const vb=(cx-r.left)/r.width*780;                    // terug naar tekencoo\u0308rdinaten
+          let n=1+((vb-x0)/(x1-x0))*4;
+          window.__curveSim=Math.max(1,Math.min(5,Math.round(n*10)/10));
+          teken();
+        };
+        const los=function(){ document.removeEventListener('mousemove',beweeg); document.removeEventListener('mouseup',los);
+                              document.removeEventListener('touchmove',beweeg); document.removeEventListener('touchend',los); };
+        document.addEventListener('mousemove',beweeg); document.addEventListener('mouseup',los);
+        document.addEventListener('touchmove',beweeg,{passive:false}); document.addEventListener('touchend',los);
+      };
+      greep.addEventListener('mousedown',pak); greep.addEventListener('touchstart',pak,{passive:false});
+    }
+
+    // uitleg bij het gekozen niveau
+    const f=[0,1,.78,.5,.22,.06];
+    const bij=function(n){ let t=0; DIM.forEach(function(d){ t+=d.u*f[Math.max(S.niveaus[d.k],Math.round(n))]*(S.mw/24)*46*S.uur; }); return t; };
+    const nuK=bij(1), doelK=bij(toon), eur2=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+    const idx=Math.max(0,Math.min(4,Math.round(toon)-1));
+    const voor=VERD.slice(Math.round(toon)).reduce((a,v)=>a+v,0);
+    const HOE=['Leg vast wat nu alleen in \u00e9\u00e9n hoofd zit \u2014 begin bij de taak die het vaakst misgaat.',
+               'Wijs \u00e9\u00e9n plek aan waar de waarheid woont en ruim de kopie\u00ebn op.',
+               'Koppel de twee systemen waartussen het meeste wordt overgetypt.',
+               'Meet per proces wat het kost en hoe lang het duurt; spreek definities af.',
+               'Laat het systeem zelf signaleren wat afwijkt. Zelden nodig in het mkb.'];
+    const kaart=el.closest('.kaart');
+    let vak=kaart?kaart.querySelector('.detailvak'):null;
+    if(kaart){
+      if(!vak){ vak=document.createElement('div'); vak.className='detailvak'; kaart.appendChild(vak); }
+      vak.innerHTML=(sim?'<button class="sluit" id="curveTerug" aria-label="Terug">\u00d7</button>':'')
+       +'<h4>Niveau '+Math.round(toon)+' \u2014 '+NAAM[idx]+' <span style="font-weight:400;color:var(--grijs);font-size:.85rem">('+SEG[idx]+')</span></h4>'
+       +'<p>'+voor+'% van de markt staat v\u00f3\u00f3r dit punt. Je branche zit op ~'+b.dig.toFixed(1)+'.</p>'
+       +(sim?'<p>Sta je nu op '+gem.toFixed(1)+' en kom je hier, dan daalt je handwerk van <b>'+eur2(nuK)+'</b> naar <b>'+eur2(doelK)+'</b> per jaar \u2014 een verschil van <b style="color:var(--groen)">'+eur2(nuK-doelK)+'</b>.</p>'
+             :'<p>Dit is waar je nu staat. Sleep de bol om te zien wat een volgende stap oplevert.</p>')
+       +'<div class="doen"><b>Hoe je daar komt:</b> '+HOE[idx]+'</div>';
+      const t=document.getElementById('curveTerug');
+      if(t) t.addEventListener('click',function(){ window.__curveSim=null; teken(); });
+    }
   })();
   // profielgrafiek
   let g='',y=10;
