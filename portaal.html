@@ -637,6 +637,7 @@ input[type=range]{min-height:34px}
           <svg id="eindMatrix" viewBox="0 0 620 360" role="img" aria-label="Opbrengst tegen doorlooptijd"></svg></div>
       </div>
       <div class="kaart" style="margin-top:1rem"><h3>De vijf aanbevelingen</h3><div id="eindAanbev"></div></div>
+      <div class="kaart" id="rekenwijze2" style="margin-top:1rem"></div>
     </section>
 
     <!-- ADVIES -->
@@ -648,6 +649,7 @@ input[type=range]{min-height:34px}
         <div id="modelTeller" style="margin-top:.7rem"></div>
         <div id="adviesLijst" style="margin-top:.9rem"></div>
       </div>
+      <div class="kaart" id="rekenwijze1" style="margin-top:1rem"></div>
     </section>
 
     <!-- ROADMAP -->
@@ -1176,7 +1178,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1776,6 +1778,56 @@ function tekenCanvassen(){
      +(leeg.length?'<p class="sub" style="margin-top:.8rem">Nog niet ingevuld: '+leeg.map(function(v){return v[1].toLowerCase();}).join(', ')+'.</p>':'')
      +'<div style="margin-top:.7rem"><button class="knop" data-ga="eindconclusie">Naar de eindconclusie</button></div>';
   }
+}
+
+function tekenRekenwijze(){
+  const c=S.cijfers||{}, b=B(), eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const html='<h3>Hoe dit portaal rekent</h3>'
+   +'<p class="sub" style="margin:-.3rem 0 .8rem">Alles wat je hier ziet komt uit deze zes berekeningen. Geen zwarte doos \u2014 je kunt ze narekenen.</p>'
+   +'<details open><summary style="cursor:pointer;list-style:none;font-weight:700;font-size:.92rem;padding:.4rem 0">1. Handwerk per onderdeel \u25be</summary>'
+   +'<div style="font-size:.87rem;line-height:1.65;padding:0 0 .6rem">'
+   +'<code style="background:#F1F0EC;padding:.15rem .4rem;border-radius:3px">uren per week \u00d7 factor(niveau) \u00d7 (medewerkers \u00f7 24) \u00d7 46 weken \u00d7 uurkosten</code>'
+   +'<p>Elk onderdeel heeft een basisaantal uren dat er bij een bedrijf van 24 mensen in gaat zitten. Dat schaalt mee met jouw aantal medewerkers ('+S.mw+') en jouw uurkosten ('+eur(S.uur)+').</p>'
+   +'<p><b>De factor per niveau:</b> niveau 1 = 100% \u00b7 niveau 2 = 78% \u00b7 niveau 3 = 50% \u00b7 niveau 4 = 22% \u00b7 niveau 5 = 6%. '
+   +'Hoe hoger het niveau, hoe minder werk er met de hand gebeurt. Die percentages zijn richtgetallen uit de praktijk, geen gemeten waarden.</p></div></details>'
+
+   +'<details><summary style="cursor:pointer;list-style:none;font-weight:700;font-size:.92rem;padding:.4rem 0">2. Fte aan vermijdbaar werk \u25be</summary>'
+   +'<div style="font-size:.87rem;line-height:1.65;padding:0 0 .6rem">'
+   +'<code style="background:#F1F0EC;padding:.15rem .4rem;border-radius:3px">totaal uren per week \u00d7 46 \u00f7 1.600</code>'
+   +'<p>1.600 uur is de gangbare aanname voor \u00e9\u00e9n voltijds werkjaar na vakantie en verzuim.</p></div></details>'
+
+   +'<details><summary style="cursor:pointer;list-style:none;font-weight:700;font-size:.92rem;padding:.4rem 0">3. Besparing bij een hoger niveau \u25be</summary>'
+   +'<div style="font-size:.87rem;line-height:1.65;padding:0 0 .6rem">'
+   +'<p>Dezelfde som, maar met de factor van het doelniveau. Het verschil tussen nu en straks is de besparing. '
+   +'Onderdelen die al hoger staan blijven staan \u2014 er wordt nooit een verslechtering gerekend.</p></div></details>'
+
+   +'<details><summary style="cursor:pointer;list-style:none;font-weight:700;font-size:.92rem;padding:.4rem 0">4. De volgorde van de adviezen \u25be</summary>'
+   +'<div style="font-size:.87rem;line-height:1.65;padding:0 0 .6rem">'
+   +'<code style="background:#F1F0EC;padding:.15rem .4rem;border-radius:3px">score = opbrengst per jaar \u00f7 doorlooptijd in maanden</code>'
+   +'<p>Heeft een advies geen bedrag \u2014 zoals een incidentplan \u2014 dan rekenen we met \u20ac 6.000 zodat risico\'s niet onderaan verdwijnen.</p>'
+   +'<p><b>Daarna komt de conclusie erbij:</b> \u00d7 2,2 als het aangrijpt op je smalste schakel, \u00d7 1,9 bij je duurste post, \u00d7 1,4 bij het onderdeel dat het vaakst wordt aangewezen. '
+   +'Zo staan conclusie en advies altijd in dezelfde volgorde.</p></div></details>'
+
+   +'<details><summary style="cursor:pointer;list-style:none;font-weight:700;font-size:.92rem;padding:.4rem 0">5. Waarde en financiering \u25be</summary>'
+   +'<div style="font-size:.87rem;line-height:1.65;padding:0 0 .6rem">'
+   +'<p><b>Ondernemingswaarde</b> = EBITDA \u00d7 multiple. <b>Aandeelhouderswaarde</b> = die waarde \u2212 schuld + kas. '
+   +'<b>DCF-toets</b> = vrije kasstroom (70% van EBITDA) \u00d7 (1+groei) \u00f7 (vermogenskosten \u2212 groei).</p>'
+   +'<p>Vul je geen EBITDA in, dan rekenen we met het branchepercentage ('+((b.fin&&b.fin.ebitda)||10)+'% van de omzet) en staat er <b>geschat</b> bij. '
+   +'De multiple staat standaard op het gangbare niveau voor '+S.branche.toLowerCase()+' ('+((b.fin&&b.fin.mult)||5)+'\u00d7).</p></div></details>'
+
+   +'<details><summary style="cursor:pointer;list-style:none;font-weight:700;font-size:.92rem;padding:.4rem 0">6. Waar de branchecijfers vandaan komen \u25be</summary>'
+   +'<div style="font-size:.87rem;line-height:1.65;padding:0 0 .6rem">'
+   +'<p>Verzuim en digitale intensiteit: CBS. Sectorgroei: RaboResearch. Groei, inflatie en lonen: DNB. Krapte: UWV. '
+   +'Multiples, marges en solvabiliteit: bandbreedtes uit sectorpublicaties.</p>'
+   +'<p>Ze staan in \u00e9\u00e9n bestand (<code>assets/data/branche.json</code>) en worden bij elk bezoek opgehaald, zodat ze bij te werken zijn zonder de site aan te passen.</p></div></details>'
+
+   +'<div style="margin-top:.8rem;padding:.7rem .85rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
+   +'<b>Wat geteld is en wat geschat:</b> je niveaus en je eigen cijfers heb jij ingevuld \u2014 die zijn hard. '
+   +'De urenfactoren per niveau en de branchebandbreedtes zijn richtgetallen. Waar dat geldt, staat het erbij. '
+   +'Voor een gesprek is dat genoeg; voor een due diligence toets je ze per bedrijf.</div>';
+  ['rekenwijze1','rekenwijze2'].forEach(function(id){
+    const el=document.getElementById(id); if(el) el.innerHTML=html;
+  });
 }
 
 function tekenEindconclusie(){
