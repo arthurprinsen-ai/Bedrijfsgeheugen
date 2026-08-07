@@ -347,6 +347,10 @@ input[type=range]{min-height:34px}
         <svg id="daiGeld" viewBox="0 0 900 300" role="img" aria-label="Kosten en opbrengsten"></svg>
         <div class="sub" id="daiGeldT"></div></div>
 
+      <div class="kaarten k2">
+        <div class="kaart"><h3>CMMI — procesvolwassenheid</h3><div id="daiCmmi"></div></div>
+        <div class="kaart"><h3>Greiner — groeifasen en hun crisis</h3><div id="daiGreiner"></div></div>
+      </div>
       <div class="kaart" style="margin-top:1rem"><h3>De afspraken eronder</h3><div id="daiBeleid"></div></div>
     </section>
 
@@ -1060,7 +1064,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -2112,6 +2116,60 @@ function tekenDaiExtra(){
     gd.innerHTML=sv;
     document.getElementById('daiGeldT').innerHTML='Kosten lopen vooruit en vlakken af; opbrengsten beginnen later maar stoppen niet. '
      +'De rode lijn is wat je intussen laat liggen: <b>'+eur(nu*0.35)+' per jaar</b>. Bij niveau 4 op alle onderdelen bespaar je <b>'+eur(besp)+' per jaar</b>.';
+  }
+}
+
+function tekenVolwassenheid(){
+  const g=k=>S.niveaus[k]||2;
+  const gem=DIM.reduce(function(a,d){return a+g(d.k);},0)/DIM.length;
+  const eigen=Math.max(1,Math.min(5,Math.round(gem)));
+
+  /* CMMI */
+  const C=[['1 — Initieel','Het werk lukt door inzet van mensen. Uitkomsten wisselen per keer en per persoon.'],
+           ['2 — Beheerst','Per project of afdeling zijn er afspraken, maar elke afdeling doet het net anders.'],
+           ['3 — Gedefinieerd','Er is één manier van werken die is vastgelegd en die iedereen volgt.'],
+           ['4 — Gemeten','Je stuurt op cijfers: je weet wat een proces kost en hoe lang het duurt.'],
+           ['5 — Optimaliserend','Verbeteren is routine; afwijkingen worden vanzelf gesignaleerd.']];
+  const el=document.getElementById('daiCmmi');
+  if(el){
+    el.innerHTML='<p class="sub" style="margin:-.3rem 0 .6rem">Het model waar de vijf niveaus in deze scan op leunen. Oorspronkelijk voor softwarebouw, inmiddels de standaard voor procesvolwassenheid.</p>'
+     + C.map(function(c,i){
+        const hier=i+1===eigen, gehaald=i+1<eigen;
+        return '<div style="display:grid;grid-template-columns:1fr auto;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--lijn);'
+         +(hier?'background:#F4F6FF;margin:0 -.5rem;padding-left:.5rem;padding-right:.5rem;border-radius:6px':'')+'">'
+         +'<div><b style="font-size:.9rem;color:'+(hier?'var(--blauw)':(gehaald?'var(--inkt)':'var(--grijs)'))+'">'+c[0]+'</b>'
+         +'<div class="sub">'+c[1]+'</div></div>'
+         +(hier?'<b style="font-size:.78rem;color:var(--blauw);white-space:nowrap">hier sta je</b>':(gehaald?'<span class="sub">\u2713</span>':''))
+         +'</div>';
+       }).join('')
+     +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
+     +'<b>Let op:</b> CMMI gaat over één stap tegelijk. Van 1 naar 3 springen lukt niet — zonder vastgelegde werkwijze valt er niets te meten, en zonder meting valt er niets te verbeteren.</div>';
+  }
+
+  /* Greiner */
+  const G=[[0,10,'Groei door creativiteit','Alles loopt via de oprichter. Iedereen doet alles.','Leiderschapscrisis: de oprichter wordt het knelpunt.'],
+           [10,25,'Groei door sturing','Er komen leidinggevenden, taken worden verdeeld.','Autonomiecrisis: mensen willen zelf beslissen, alles moet langs de top.'],
+           [25,60,'Groei door delegatie','Afdelingen krijgen ruimte en eigen verantwoordelijkheid.','Beheersingscrisis: het overzicht verdwijnt, iedereen doet het net anders.'],
+           [60,150,'Groei door co\u00f6rdinatie','Vaste processen en rapportages over afdelingen heen.','Bureaucratiecrisis: procedures gaan zwaarder wegen dan het werk.'],
+           [150,9999,'Groei door samenwerking','Sturen op vertrouwen en gedeelde doelen in plaats van regels.','—']];
+  const eg=document.getElementById('daiGreiner');
+  if(eg){
+    const idx=G.findIndex(function(r){ return S.mw>=r[0] && S.mw<r[1]; });
+    eg.innerHTML='<p class="sub" style="margin:-.3rem 0 .6rem">Elke groeifase eindigt in een crisis die je alleen oplost door anders te gaan werken. Met '+S.mw+' medewerkers zit je hier:</p>'
+     + G.map(function(r,i){
+        const hier=i===idx;
+        return '<div style="padding:.5rem 0;border-bottom:1px solid var(--lijn);'+(hier?'background:#FFF6F2;margin:0 -.5rem;padding-left:.5rem;padding-right:.5rem;border-radius:6px':'')+'">'
+         +'<div style="display:flex;justify-content:space-between;gap:.6rem"><b style="font-size:.9rem;color:'+(hier?'var(--oranje)':'var(--grijs)')+'">'+r[2]+'</b>'
+         +'<span class="sub" style="white-space:nowrap">'+r[0]+'\u2013'+(r[1]>1000?'150+':r[1])+' mdw</span></div>'
+         +'<div class="sub">'+r[3]+'</div>'
+         +(hier&&r[4]!=='\u2014'?'<div style="font-size:.86rem;color:var(--oranje);margin-top:.2rem"><b>Wat er nu op je afkomt:</b> '+r[4]+'</div>':'')
+         +'</div>';
+       }).join('')
+     +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
+     +'<b>Waarom dit hoort bij je scan:</b> de crisis die bij jouw fase hoort verklaart vaak beter waar het schuurt dan een lage score op één onderdeel. '
+     +(idx===2?'Bij 25 tot 60 mensen is dat bijna altijd: het overzicht is weg omdat iedereen zijn eigen manier heeft.'
+      :(idx===1?'Bij 10 tot 25 mensen is dat bijna altijd: alles moet nog langs de directeur.'
+      :'Kijk of je die crisis herkent — zo ja, dan is dat je echte agenda.'))+'</div>';
   }
 }
 
