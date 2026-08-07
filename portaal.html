@@ -327,7 +327,7 @@ input[type=range]{min-height:34px}
         <div class="sub" id="staatT"></div></div>
 
       <div class="kaarten k2">
-        <div class="kaart"><h3>Procesvolwassenheid (CMMI)</h3><div id="ovCmmi"></div></div>
+        <div class="kaart"><h3>Procesvolwassenheid (CMMI)</h3><svg id="ovCmmiGraf" viewBox="0 0 640 340" role="img" aria-label="CMMI-trap"></svg><div id="ovCmmi"></div></div>
         <div class="kaart"><h3>Waar je staat op de adoptiecurve</h3>
           <svg id="curveMini" viewBox="0 0 780 260" role="img" aria-label="Adoptiecurve"></svg>
           <div class="sub" id="curveMiniT"></div></div>
@@ -378,7 +378,7 @@ input[type=range]{min-height:34px}
         <div class="sub" id="daiGeldT"></div><div class="bron"><b>Bron:</b> eigen scancijfers · opzet volgens Forrester Total Economic Impact (kosten, baten, flexibiliteit, risico)</div></div>
 
       <div class="kaarten k2">
-        <div class="kaart"><h3>CMMI — procesvolwassenheid</h3><div id="daiCmmi"></div></div>
+        <div class="kaart"><h3>CMMI — procesvolwassenheid</h3><svg id="daiCmmiGraf" viewBox="0 0 640 340" role="img" aria-label="CMMI-trap"></svg><div id="daiCmmi"></div></div>
         <div class="kaart"><h3>Greiner — groeifasen en hun crisis</h3><div id="daiGreiner"></div></div>
       </div>
       <div class="kaart" style="margin-top:1rem"><h3>De afspraken eronder</h3><div id="daiBeleid"></div></div>
@@ -498,7 +498,7 @@ input[type=range]{min-height:34px}
       <div class="kaarten k2" style="margin-top:.8rem">
         <div class="kaart"><h3>Je onderdelen in vier vakken</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Volwassenheid tegen wat het kost om het te laten zoals het is. Rechtsboven is op orde, linksonder kost geld en levert niets op.</p>
-          <svg id="kwadrant" viewBox="0 0 640 420" style="width:100%;height:auto" role="img" aria-label="Onderdelen in vier vakken"></svg></div>
+          <svg id="kwadrant" viewBox="0 0 920 520" style="width:100%;height:auto" role="img" aria-label="Onderdelen in vier vakken"></svg></div>
         <div class="kaart"><h3>Wat niets doen kost</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Je huidige kosten tegenover wat je overhoudt bij niveau 3, 4 en 5. Het verschil is wat je nu weggeeft.</p>
           <svg id="kostenTrap" viewBox="0 0 620 360" style="min-height:280px" role="img" aria-label="Kosten van niets doen"></svg>
@@ -1095,7 +1095,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -2002,89 +2002,71 @@ function tekenKwadrant(){
   let max=1; const K={};
   DIM.forEach(function(d){ K[d.k]=d.u*f[S.niveaus[d.k]]*(S.mw/24)*46*S.uur; if(K[d.k]>max)max=K[d.k]; });
 
-  // vaste tekenruimte met marges
-  const W=640,H=420, L=54,R=18,T=34,Bm=52;
+  const W=920,H=520, L=150,R=150,T=70,Bm=70;      // ruime marges voor labels
   const x0=L, x1=W-R, y0=H-Bm, y1=T;
   const px=n=>x0+((n-1)/4)*(x1-x0);
-  const py=k=>y0-(k/max)*(y0-y1);
+  const py=k=>y0-(k/max)*(y0-y1)*0.92;
   const midX=px(3), midY=py(max/2);
 
   let g='';
-  // kwadranten
-  g+='<rect x="'+x0+'" y="'+y1+'" width="'+(midX-x0)+'" height="'+(midY-y1)+'" fill="#FDECE8"/>';
-  g+='<rect x="'+midX+'" y="'+midY+'" width="'+(x1-midX)+'" height="'+(y0-midY)+'" fill="#EEF7F1"/>';
-  g+='<text x="'+(x0+10)+'" y="'+(y1+18)+'" font-size="11.5" font-weight="700" fill="#C0392B" font-family="Instrument Sans">Kost veel, staat laag</text>';
-  g+='<text x="'+(x1-10)+'" y="'+(y0-12)+'" text-anchor="end" font-size="11.5" font-weight="700" fill="#0E9F6E" font-family="Instrument Sans">Op orde</text>';
-  // assen
+  g+='<rect x="'+x0+'" y="'+y1+'" width="'+(midX-x0)+'" height="'+(midY-y1)+'" fill="#FDECE8" rx="6"/>';
+  g+='<rect x="'+midX+'" y="'+midY+'" width="'+(x1-midX)+'" height="'+(y0-midY)+'" fill="#EEF7F1" rx="6"/>';
+  g+='<text x="'+(x0+14)+'" y="'+(y1+24)+'" font-size="14" font-weight="700" fill="#C0392B" font-family="Instrument Sans">Kost veel, staat laag</text>';
+  g+='<text x="'+(x1-14)+'" y="'+(y0-16)+'" text-anchor="end" font-size="14" font-weight="700" fill="#0E9F6E" font-family="Instrument Sans">Op orde</text>';
   g+='<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
   g+='<line x1="'+x0+'" y1="'+y1+'" x2="'+x0+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
-  for(let n=1;n<=5;n++) g+='<text x="'+px(n)+'" y="'+(y0+20)+'" text-anchor="middle" font-size="11" fill="#8A94A3" font-family="Instrument Sans">N'+n+'</text>';
-  g+='<text x="'+(W/2)+'" y="'+(H-14)+'" text-anchor="middle" font-size="11" fill="#8A94A3" font-family="Instrument Sans">volwassenheid \u2192</text>';
-  g+='<text x="14" y="'+(y1+4)+'" font-size="11" fill="#8A94A3" font-family="Instrument Sans" transform="rotate(-90 14 '+(y1+4)+')">kosten per jaar \u2192</text>';
-  // branchelijn
-  g+='<line x1="'+px(b.dig)+'" y1="'+y1+'" x2="'+px(b.dig)+'" y2="'+y0+'" stroke="#14171A" stroke-width="1.3" stroke-dasharray="4 4"/>';
-  g+='<text x="'+(px(b.dig)+5)+'" y="'+(y1+12)+'" font-size="10" fill="#14171A" font-family="Instrument Sans">branche</text>';
+  for(let n=1;n<=5;n++) g+='<text x="'+px(n)+'" y="'+(y0+26)+'" text-anchor="middle" font-size="13" fill="#5C646E" font-family="Instrument Sans">niveau '+n+'</text>';
+  g+='<text x="'+(W/2)+'" y="'+(H-18)+'" text-anchor="middle" font-size="12.5" fill="#8A94A3" font-family="Instrument Sans">volwassenheid \u2192</text>';
+  g+='<text x="'+(L-105)+'" y="'+((y0+y1)/2)+'" font-size="12.5" fill="#8A94A3" font-family="Instrument Sans" transform="rotate(-90 '+(L-105)+' '+((y0+y1)/2)+')" text-anchor="middle">kosten per jaar \u2192</text>';
+  g+='<line x1="'+px(b.dig)+'" y1="'+y1+'" x2="'+px(b.dig)+'" y2="'+y0+'" stroke="#14171A" stroke-width="1.4" stroke-dasharray="5 4"/>';
+  g+='<text x="'+(px(b.dig)+7)+'" y="'+(y1-10)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">branche</text>';
 
-  // stippen: spreiden binnen hun niveau, labels alleen voor de vijf duurste
+  // stippen: verticaal gesorteerd, labels afwisselend links en rechts om botsen te voorkomen
   const perNiveau={};
   DIM.forEach(function(d){ (perNiveau[S.niveaus[d.k]]=perNiveau[S.niveaus[d.k]]||[]).push(d); });
-  const duurste=DIM.slice().sort(function(a,c){return K[c.k]-K[a.k];}).slice(0,5).map(d=>d.k);
   Object.keys(perNiveau).forEach(function(n){
     const groep=perNiveau[n].sort(function(a,c){return K[c.k]-K[a.k];});
-    const breedte=(x1-x0)/4*0.55;
     groep.forEach(function(d,idx){
-      const spreid = groep.length>1 ? (idx/(groep.length-1)-0.5)*breedte : 0;
+      const spreid = groep.length>1 ? (idx%2===0?-1:1)*Math.ceil((idx+1)/2)*16 : 0;
       const cx=px(+n)+spreid, cy=py(K[d.k]);
-      const r=6+Math.min(K[d.k]/max,1)*7;
+      const r=9+Math.min(K[d.k]/max,1)*9;
       const kl=+n>=4?'#1F9D55':(+n>=3?'#E8A200':'#D93025');
-      g+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+kl+'" fill-opacity=".85" stroke="#fff" stroke-width="1.5"'
-       +' data-tip="<b>'+d.n+'</b><br>Niveau '+n+' van 5<br>'+eur(K[d.k])+' per jaar<br>'+(UITLEG[d.k]||'')+'"'
+      const dim=(kwKeuze&&kwKeuze!==d.k);
+      const links=(idx%2===0);
+      g+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+kl+'" fill-opacity="'+(dim?'.15':'.9')+'" stroke="#fff" stroke-width="2"'
        +' data-kw="'+d.k+'" style="cursor:pointer"'
-       +(kwKeuze&&kwKeuze!==d.k?' opacity=".18"':'')+'/>';
-      if(duurste.indexOf(d.k)>-1 && (!kwKeuze||kwKeuze===d.k))
-        g+='<text x="'+(cx+r+5).toFixed(1)+'" y="'+(cy+4).toFixed(1)+'" font-size="10.5" fill="#14171A" font-family="Instrument Sans">'+d.n.split(' ')[0]+'</text>';
+       +' data-tip="<b>'+d.n+'</b><br>Niveau '+n+' van 5<br>'+eur(K[d.k])+' per jaar<br>'+(UITLEG[d.k]||'')+'"/>';
+      if(!dim) g+='<text x="'+(links?(cx-r-8):(cx+r+8)).toFixed(1)+'" y="'+(cy+4).toFixed(1)+'" text-anchor="'+(links?'end':'start')+'"'
+        +' font-size="12" fill="#14171A" font-family="Instrument Sans">'+d.n+'</text>';
     });
   });
-  g+='<text x="'+x0+'" y="'+(y1-14)+'" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">grotere stip = hogere kosten \u00b7 alleen de vijf duurste zijn benoemd \u00b7 beweeg voor de rest</text>';
+  g+='<text x="'+x0+'" y="'+(y1-34)+'" font-size="12" fill="#8A94A3" font-family="Instrument Sans">grotere stip = hogere kosten \u00b7 klik een stip om erop in te zoomen</text>';
   el.innerHTML=g;
 
-  // klikken filtert; nog een keer klikken zet het terug
   el.querySelectorAll('[data-kw]').forEach(function(c){
     if(c.dataset.aan)return; c.dataset.aan='1';
-    c.addEventListener('click',function(){
-      kwKeuze = (kwKeuze===c.dataset.kw) ? null : c.dataset.kw;
-      tekenKwadrant();
-    });
+    c.addEventListener('click',function(){ kwKeuze=(kwKeuze===c.dataset.kw)?null:c.dataset.kw; tekenKwadrant(); });
   });
-
-  // filterbalk erboven
   const fb=document.getElementById('kwFilter');
   if(fb){
     fb.innerHTML = kwKeuze
-      ? 'Je bekijkt <b>'+(DIM.find(function(d){return d.k===kwKeuze;})||{n:''}).n+'</b>. '
-        +'<button class="knop licht" id="kwTerug" style="margin-left:.4rem">Toon alle onderdelen</button>'
+      ? 'Je bekijkt <b>'+(DIM.find(function(d){return d.k===kwKeuze;})||{n:''}).n+'</b>. <button class="knop licht" id="kwTerug" style="margin-left:.4rem">Toon alles</button>'
       : 'Klik op een stip om alleen dat onderdeel te bekijken.';
-    const kt=document.getElementById('kwTerug');
-    if(kt) kt.addEventListener('click',function(){ kwKeuze=null; tekenKwadrant(); });
+    const kt=document.getElementById('kwTerug'); if(kt) kt.addEventListener('click',function(){ kwKeuze=null; tekenKwadrant(); });
   }
-
-  // detail onder de grafiek
   const dt=document.getElementById('kwDetail');
   if(dt){
     if(!kwKeuze){ dt.innerHTML=''; }
-    else {
+    else{
       const d=DIM.find(function(x){return x.k===kwKeuze;});
-      const n=S.niveaus[d.k], kost=K[d.k];
       const A=(typeof verzamelAdvies==='function'?verzamelAdvies():[]).filter(function(a){return a.dim===d.k;});
       dt.innerHTML='<div style="margin-top:.8rem;padding:.9rem 1rem;border:1px solid var(--lijn);border-radius:8px;background:#FBFAF7">'
        +'<b style="font-size:.98rem">'+d.n+'</b>'
-       +'<div class="sub" style="margin:.2rem 0 .5rem">Niveau '+n+' van 5 \u00b7 '+eur(kost)+' per jaar \u00b7 branche ~'+b.dig.toFixed(1)+'</div>'
+       +'<div class="sub" style="margin:.2rem 0 .5rem">Niveau '+S.niveaus[d.k]+' van 5 \u00b7 '+eur(K[d.k])+' per jaar \u00b7 branche ~'+b.dig.toFixed(1)+'</div>'
        +'<div style="font-size:.88rem;line-height:1.6">'+(UITLEG[d.k]||'')+'</div>'
        +(A.length?'<div style="margin-top:.6rem"><b style="font-size:.85rem">Wat je hier kunt doen:</b>'
-           +A.slice(0,2).map(function(a){return '<div style="font-size:.86rem;line-height:1.55;margin-top:.25rem">\u2022 '+a.t+' \u2014 <span style="color:var(--grijs)">'+a.waarom+'</span></div>';}).join('')
-           +'</div>':'')
-       +'<div style="margin-top:.7rem"><button class="knop licht" data-ga="profiel">Pas het niveau aan</button></div>'
-       +'</div>';
+          +A.slice(0,2).map(function(a){return '<div style="font-size:.86rem;line-height:1.55;margin-top:.25rem">\u2022 '+a.t+'</div>';}).join('')+'</div>':'')
+       +'<div style="margin-top:.7rem"><button class="knop licht" data-ga="profiel">Pas het niveau aan</button></div></div>';
     }
   }
 }
@@ -2312,6 +2294,68 @@ function tekenStaat(){
    +'Beweeg over een stadium voor wat daar speelt.';
 }
 
+var cmmiKeuze=null;
+function tekenCmmiGrafiek(){
+  const g=k=>S.niveaus[k]||2;
+  const gem=DIM.reduce(function(a,d){return a+g(d.k);},0)/DIM.length;
+  const eigen=Math.max(1,Math.min(5,Math.round(gem)));
+  const C=[['Initieel','Het werk lukt door inzet van mensen. Uitkomsten wisselen per keer.'],
+           ['Beheerst','Per afdeling afspraken, maar elke afdeling doet het net anders.'],
+           ['Gedefinieerd','E\u00e9n vastgelegde manier van werken die iedereen volgt.'],
+           ['Gemeten','Je stuurt op cijfers: wat kost een proces en hoe lang duurt het.'],
+           ['Optimaliserend','Verbeteren is routine; afwijkingen worden vanzelf gezien.']];
+  const f=[0,1,.78,.5,.22,.06], eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const bij=function(n){ let t=0; DIM.forEach(function(d){ t+=d.u*f[Math.max(g(d.k),n)]*(S.mw/24)*46*S.uur; }); return t; };
+  const nu=bij(1);
+
+  ['ovCmmiGraf','daiCmmiGraf'].forEach(function(id){
+    const el=document.getElementById(id); if(!el) return;
+    const W=640,H=340,L=40,Bm=70, bw=104, gap=14;
+    let sv='';
+    C.forEach(function(c,i){
+      const h=48+i*44, x=L+i*(bw+gap), y=H-Bm-h;
+      const gehaald=i+1<eigen, hier=i+1===eigen;
+      const geselecteerd=(cmmiKeuze===i+1);
+      const kl = hier?'#2742D6' : (gehaald?'#C9CEDA' : (geselecteerd?'#FF4F17':'#EDEBE5'));
+      sv+='<g data-cmmi="'+(i+1)+'" style="cursor:pointer"'
+       +' data-tip="<b>Niveau '+(i+1)+' \u2014 '+c[0]+'</b><br>'+c[1]
+       +(i+1>eigen?'<br>Alles op dit niveau bespaart '+eur(nu-bij(i+1))+' per jaar':'')+'">'
+       +'<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="6" fill="'+kl+'"/>'
+       +'<text x="'+(x+bw/2)+'" y="'+(y-12)+'" text-anchor="middle" font-size="13" font-weight="700" fill="'+(hier?'#2742D6':'#5C646E')+'" font-family="Instrument Sans">'+(i+1)+'</text>'
+       +'<text x="'+(x+bw/2)+'" y="'+(H-Bm+22)+'" text-anchor="middle" font-size="12.5" font-weight="'+(hier?'700':'400')+'" fill="#14171A" font-family="Instrument Sans">'+c[0]+'</text>';
+      if(hier) sv+='<text x="'+(x+bw/2)+'" y="'+(H-Bm+42)+'" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2742D6" font-family="Instrument Sans">hier sta je</text>';
+      sv+='</g>';
+    });
+    sv+='<line x1="'+L+'" y1="'+(H-Bm)+'" x2="'+(L+5*bw+4*gap)+'" y2="'+(H-Bm)+'" stroke="#DCDFE6" stroke-width="1.5"/>';
+    sv+='<text x="'+L+'" y="26" font-size="12" fill="#8A94A3" font-family="Instrument Sans">klik een trede voor wat die stap oplevert \u00b7 beweeg voor de uitleg</text>';
+    el.innerHTML=sv;
+    el.querySelectorAll('[data-cmmi]').forEach(function(t){
+      if(t.dataset.aan)return; t.dataset.aan='1';
+      t.addEventListener('click',function(){ cmmiKeuze=(cmmiKeuze==+t.dataset.cmmi)?null:+t.dataset.cmmi; tekenCmmiGrafiek(); });
+    });
+  });
+
+  ['ovCmmi','daiCmmi'].forEach(function(id){
+    const el=document.getElementById(id); if(!el) return;
+    if(!cmmiKeuze){
+      el.innerHTML='<p class="sub" style="margin-top:.5rem">Je zit gemiddeld op niveau <b>'+gem.toFixed(1)+'</b>. '
+       +'CMMI gaat over \u00e9\u00e9n stap tegelijk: van 1 naar 3 springen lukt niet \u2014 zonder vastgelegde werkwijze valt er niets te meten, en zonder meting niets te verbeteren.</p>';
+      return;
+    }
+    const c=C[cmmiKeuze-1], winst=Math.max(nu-bij(cmmiKeuze),0);
+    const zwak=DIM.filter(function(d){return g(d.k)<cmmiKeuze;}).sort(function(a,b2){return g(a.k)-g(b2.k);}).slice(0,4);
+    el.innerHTML='<div style="margin-top:.7rem;padding:.9rem 1rem;border:1px solid var(--lijn);border-radius:8px;background:#FBFAF7">'
+     +'<b style="font-size:.98rem">Niveau '+cmmiKeuze+' \u2014 '+c[0]+'</b>'
+     +'<div style="font-size:.88rem;line-height:1.6;margin-top:.2rem">'+c[1]+'</div>'
+     +(cmmiKeuze>eigen
+        ? '<div class="sub" style="margin-top:.5rem">Alles op dit niveau bespaart <b style="color:var(--groen)">'+eur(winst)+' per jaar</b>.</div>'
+          +(zwak.length?'<div style="margin-top:.5rem;font-size:.86rem"><b>Wat er nog onder zit:</b> '
+             +zwak.map(function(d){return d.n.toLowerCase()+' (nu '+g(d.k)+')';}).join(', ')+'</div>':'')
+        : '<div class="sub" style="margin-top:.5rem">Dit niveau heb je grotendeels bereikt.</div>')
+     +'<div style="margin-top:.7rem"><button class="knop licht" data-ga="profiel">Bekijk je onderdelen</button></div></div>';
+  });
+}
+
 function tekenVolwassenheid(){
   const g=k=>S.niveaus[k]||2;
   const gem=DIM.reduce(function(a,d){return a+g(d.k);},0)/DIM.length;
@@ -2323,23 +2367,7 @@ function tekenVolwassenheid(){
            ['3 — Gedefinieerd','Er is één manier van werken die is vastgelegd en die iedereen volgt.'],
            ['4 — Gemeten','Je stuurt op cijfers: je weet wat een proces kost en hoe lang het duurt.'],
            ['5 — Optimaliserend','Verbeteren is routine; afwijkingen worden vanzelf gesignaleerd.']];
-  ['daiCmmi','ovCmmi'].forEach(function(idc){
-  const el=document.getElementById(idc);
-  if(el){
-    el.innerHTML='<p class="sub" style="margin:-.3rem 0 .6rem">Het model waar de vijf niveaus in deze scan op leunen. Oorspronkelijk voor softwarebouw, inmiddels de standaard voor procesvolwassenheid.</p>'
-     + C.map(function(c,i){
-        const hier=i+1===eigen, gehaald=i+1<eigen;
-        return '<div style="display:grid;grid-template-columns:1fr auto;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--lijn);'
-         +(hier?'background:#F4F6FF;margin:0 -.5rem;padding-left:.5rem;padding-right:.5rem;border-radius:6px':'')+'">'
-         +'<div><b style="font-size:.9rem;color:'+(hier?'var(--blauw)':(gehaald?'var(--inkt)':'var(--grijs)'))+'">'+c[0]+'</b>'
-         +'<div class="sub">'+c[1]+'</div></div>'
-         +(hier?'<b style="font-size:.78rem;color:var(--blauw);white-space:nowrap">hier sta je</b>':(gehaald?'<span class="sub">\u2713</span>':''))
-         +'</div>';
-       }).join('')
-     +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
-     +'<b>Let op:</b> CMMI gaat over één stap tegelijk. Van 1 naar 3 springen lukt niet — zonder vastgelegde werkwijze valt er niets te meten, en zonder meting valt er niets te verbeteren.</div>';
-  }
-  });
+  /* CMMI staat nu in tekenCmmiGrafiek */
 
   /* Greiner */
   const G=[[0,10,'Groei door creativiteit','Alles loopt via de oprichter. Iedereen doet alles.','Leiderschapscrisis: de oprichter wordt het knelpunt.'],
