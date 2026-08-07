@@ -354,7 +354,7 @@ input[type=range]{min-height:34px}
 
       <div class="kaarten k3" style="margin-top:1rem">
         <div class="kaart"><h3>Volwassenheid</h3><div class="kpi" id="kNiveau">–</div><div class="sub" id="kNiveauT"></div></div>
-        <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">wat werk kost dat een systeem zou kunnen doen — uren × uurkosten × 46 weken</div></div>
+        <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">wat dit werk kost aan tijd van je eigen mensen — uren × uurkosten × 46 weken. Geen geld dat vrijkomt, wel ruimte die je terugkrijgt.</div></div>
         <div class="kaart"><h3>Bezetting</h3><div class="kpi" id="kFte">–</div><div class="sub" id="kFteT"></div></div>
       </div>
 
@@ -371,7 +371,7 @@ input[type=range]{min-height:34px}
       </div>
 
       <div class="kaarten k2">
-        <div class="kaart"><h3>Waar het geld weglekt</h3>
+        <div class="kaart"><h3>Waar de tijd weglekt</h3>
           <svg id="taart" viewBox="0 0 460 230" role="img" aria-label="Kosten per onderdeel"></svg>
           <div class="sub" id="taartT"></div></div>
         <div class="kaart"><h3>Wat je nu remt</h3><div id="remmen"></div></div>
@@ -3637,9 +3637,14 @@ function tekenKostenTrap(){
     y+=rowH;
   });
   el.innerHTML=g;
-  document.getElementById('kostenTrapT').innerHTML='Van nu naar niveau 4 scheelt <b>'+eur(nu-r4)+'</b> per jaar. '
-   +'Niveau 5 levert daarbovenop nog '+eur(r4-r5)+' op \u2014 zelden de moeite voor een mkb-bedrijf. '
-   +'Klik een balk voor wat die stap inhoudt.';
+  const urenNu=DIM.reduce(function(a,d){return a+d.u*f[g(d.k)]*(S.mw/24)*46;},0);
+  document.getElementById('kostenTrapT').innerHTML='Van nu naar niveau 4 scheelt <b>'+eur(nu-r4)+'</b> per jaar aan werktijd \u2014 ongeveer <b>'
+   +((nu-r4)/S.uur/40).toFixed(1)+' werkweken</b>. '
+   +'Niveau 5 levert daarbovenop nog '+eur(r4-r5)+' op, zelden de moeite voor een mkb-bedrijf.'
+   +'<div style="margin-top:.7rem;padding:.7rem .85rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.87rem;line-height:1.6">'
+   +'<b>Dit is geen geld dat op je rekening verschijnt.</b> Je mensen blijven en krijgen hetzelfde betaald. '
+   +'Wat je terugkrijgt is ruimte: hetzelfde team kan meer aan zonder dat er iemand bij hoeft. '
+   +'Groei je, dan scheelt dat een aanname. Groei je niet, dan scheelt het fouten, wachttijd en gedoe \u2014 ook wat waard, maar niet zichtbaar in je resultaat.</div>';
 }
 
 function tekenDataAI(){
