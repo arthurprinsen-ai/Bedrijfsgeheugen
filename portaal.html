@@ -559,6 +559,15 @@ input[type=range]{min-height:34px}
         <div class="kaart"><h3>Incident: wat is het plan?</h3><div id="incident"></div></div>
       </div>
       
+      <div class="kaart" style="margin-top:1rem"><h3>CSRD en duurzaamheid — waar sta je?</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Elf onderwerpen uit de drie pijlers. Geef per onderwerp aan hoe de cijfers tot stand komen. Niet alleen óf je ze hebt — vooral of het nog handwerk is.</p>
+        <div id="esgVelden"></div>
+        <div class="kaarten k2" style="margin-top:1rem">
+          <div><svg id="esgGraf" viewBox="0 0 620 420" role="img" aria-label="CSRD-gereedheid"></svg></div>
+          <div id="esgUit"></div>
+        </div>
+        <div id="esgKennis" style="margin-top:1rem"></div>
+      </div>
       <div class="kaarten k2">
         <div class="kaart"><h3>Staat van de techniek</h3>
           <svg id="techGraf" viewBox="0 0 460 230" role="img" aria-label="Staat van de techniek"></svg>
@@ -862,7 +871,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[]};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[],esg:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -1063,7 +1072,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen, esg:S.esg,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -1092,6 +1101,7 @@ function importeer(bestand){
       if(p.uitvoering) S.uitvoering=p.uitvoering;
       if(p.kto) S.kto=p.kto;
       if(p.metingen) S.metingen=p.metingen;
+      if(p.esg) S.esg=p.esg;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -1276,7 +1286,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -3281,6 +3291,108 @@ function tekenTrustedAdvisor(){
     +'<div class="bron"><b>Bron:</b> trusted advisor-gedachte (Maister, Green &amp; Galford), toegepast op je eigen scangegevens</div>';
 }
 
+const ESG=[
+ {p:'E',k:'energie',n:'Energieverbruik',u:'Elektriciteit, gas, warmte \u2014 per maand en per locatie'},
+ {p:'E',k:'co2',n:'CO\u2082-uitstoot',u:'Scope 1 en 2; scope 3 is de keten en komt later'},
+ {p:'E',k:'afval',n:'Afval en grondstoffen',u:'Hoeveelheid, soort en wat er gescheiden wordt'},
+ {p:'E',k:'water',n:'Waterverbruik',u:'Alleen relevant bij productie of veel spoelen'},
+ {p:'E',k:'vervoer',n:'Vervoer en wagenpark',u:'Kilometers, brandstof, zakelijke reizen'},
+ {p:'S',k:'arbo',n:'Arbeidsomstandigheden',u:'Verzuim, ongevallen, werkdruk'},
+ {p:'S',k:'divers',n:'Diversiteit en gelijke beloning',u:'Verdeling en beloningsverschillen'},
+ {p:'S',k:'opleiding',n:'Opleiding en ontwikkeling',u:'Uren en uitgaven per medewerker'},
+ {p:'S',k:'keten',n:'Arbeid in de keten',u:'Wat weet je van je leveranciers'},
+ {p:'G',k:'ethiek',n:'Bedrijfsethiek en anticorruptie',u:'Gedragscode, meldregeling'},
+ {p:'G',k:'bestuur',n:'Bestuur en verantwoordelijkheid',u:'Wie is eigenaar van duurzaamheid'}
+];
+const ESGSTAT=['Niet beschikbaar','Met de hand bij elkaar gezocht','Deels uit een systeem','Komt vanzelf uit de administratie'];
+const ESGPIJLER={E:['Milieu','#1F9D55'],S:['Sociaal','#2742D6'],G:['Bestuur','#7A5BD6']};
+
+function tekenESG(){
+  const vel=document.getElementById('esgVelden'); if(!vel) return;
+  S.esg=S.esg||{};
+  vel.innerHTML=['E','S','G'].map(function(pj){
+    return '<div style="margin-bottom:.9rem"><div class="sub" style="color:'+ESGPIJLER[pj][1]+';font-weight:700;margin-bottom:.3rem">'+ESGPIJLER[pj][0]+'</div>'
+     + ESG.filter(function(x){return x.p===pj;}).map(function(x){
+        const v=S.esg[x.k]||0;
+        const kl=['#D93025','#E8A200','#4C86D9','#1F9D55'][v];
+        return '<div style="display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--lijn)">'
+         +'<div><b style="font-size:.89rem">'+x.n+'</b><div class="sub">'+x.u+'</div></div>'
+         +'<select data-esg="'+x.k+'" style="border:1px solid var(--lijn);border-radius:6px;padding:.35rem .5rem;font:inherit;font-size:.8rem;color:'+kl+';font-weight:600;background:#fff;max-width:14rem">'
+         + ESGSTAT.map(function(n2,i){return '<option value="'+i+'"'+(i===v?' selected':'')+'>'+n2+'</option>';}).join('')
+         +'</select></div>';
+       }).join('')+'</div>';
+  }).join('');
+  vel.querySelectorAll('[data-esg]').forEach(function(el){
+    if(el.dataset.aan)return; el.dataset.aan='1';
+    el.addEventListener('change',function(e){ S.esg[e.target.dataset.esg]=+e.target.value; bewaar(); teken(); });
+  });
+
+  // score per pijler
+  const scores={};
+  ['E','S','G'].forEach(function(pj){
+    const r=ESG.filter(function(x){return x.p===pj;});
+    const som=r.reduce(function(a,x){return a+(S.esg[x.k]||0);},0);
+    scores[pj]={pct:Math.round(som/(r.length*3)*100),
+                heeft:r.filter(function(x){return (S.esg[x.k]||0)>0;}).length,
+                auto:r.filter(function(x){return (S.esg[x.k]||0)>=2;}).length, n:r.length};
+  });
+  const totaal=Math.round((scores.E.pct+scores.S.pct+scores.G.pct)/3);
+  const handwerk=ESG.filter(function(x){return (S.esg[x.k]||0)===1;}).length;
+  const mist=ESG.filter(function(x){return (S.esg[x.k]||0)===0;}).length;
+
+  // grafiek: dekking tegen automatisering
+  const gr=document.getElementById('esgGraf');
+  if(gr){
+    const W=620,L=70,R=40,T=60,B=70, x0=L,x1=W-R,y0=420-B,y1=T;
+    let g='<rect x="'+x0+'" y="'+y1+'" width="'+((x1-x0)/2)+'" height="'+((y0-y1)/2)+'" fill="#FDECE8"/>'
+     +'<rect x="'+(x0+(x1-x0)/2)+'" y="'+y1+'" width="'+((x1-x0)/2)+'" height="'+((y0-y1)/2)+'" fill="#EEF7F1"/>'
+     +'<text x="'+(x0+10)+'" y="'+(y1+18)+'" font-size="11.5" font-weight="700" fill="#C0392B" font-family="Instrument Sans">veel handwerk</text>'
+     +'<text x="'+(x1-10)+'" y="'+(y1+18)+'" text-anchor="end" font-size="11.5" font-weight="700" fill="#0E9F6E" font-family="Instrument Sans">komt vanzelf</text>'
+     +'<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>'
+     +'<line x1="'+x0+'" y1="'+y1+'" x2="'+x0+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>'
+     +'<text x="'+(W/2)+'" y="'+(420-22)+'" text-anchor="middle" font-size="12" fill="#8A94A3" font-family="Instrument Sans">hoe automatisch de cijfers komen \u2192</text>'
+     +'<text x="22" y="'+((y0+y1)/2)+'" text-anchor="middle" font-size="12" fill="#8A94A3" font-family="Instrument Sans" transform="rotate(-90 22 '+((y0+y1)/2)+')">hoeveel onderwerpen je dekt \u2192</text>';
+    ['E','S','G'].forEach(function(pj,i){
+      const sc=scores[pj];
+      const autoPct=sc.n?sc.auto/sc.n:0, dekPct=sc.n?sc.heeft/sc.n:0;
+      const cx=x0+autoPct*(x1-x0), cy=y0-dekPct*(y0-y1);
+      g+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="16" fill="'+ESGPIJLER[pj][1]+'" fill-opacity=".85" stroke="#fff" stroke-width="3"'
+       +' data-tip="<b>'+ESGPIJLER[pj][0]+'</b><br>'+sc.heeft+' van '+sc.n+' onderwerpen gedekt<br>'+sc.auto+' komen (deels) uit een systeem<br>Gereedheid '+sc.pct+'%"'
+       +' data-detail="'+encodeURIComponent('<h4>'+ESGPIJLER[pj][0]+'</h4><p>Je dekt <b>'+sc.heeft+' van de '+sc.n+'</b> onderwerpen; <b>'+sc.auto+'</b> daarvan komen (deels) uit een systeem. Gereedheid: '+sc.pct+'%.</p><div class="doen"><b>Wat je hier doet:</b> '+(sc.heeft<sc.n?'zoek eerst uit welke cijfers er al ergens zijn \u2014 vaak staan ze in de energierekening, de urenregistratie of de wagenparkadministratie.':'haal de handmatige onderwerpen uit de spreadsheet en koppel de bron.')+'</div>')+'" style="cursor:pointer"/>'
+       +'<text x="'+cx.toFixed(1)+'" y="'+(cy+5).toFixed(1)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="Instrument Sans">'+pj+'</text>';
+    });
+    g+='<text x="'+x0+'" y="'+(y1-24)+'" font-size="12" fill="#8A94A3" font-family="Instrument Sans">rechtsboven is waar je wilt zijn: alles gedekt en het komt vanzelf</text>';
+    gr.innerHTML=g;
+  }
+
+  document.getElementById('esgUit').innerHTML=
+    '<div style="display:grid;gap:.5rem">'
+   +['E','S','G'].map(function(pj){ const sc=scores[pj];
+      return '<div><div style="display:flex;justify-content:space-between;font-size:.86rem"><b style="color:'+ESGPIJLER[pj][1]+'">'+ESGPIJLER[pj][0]+'</b><span>'+sc.pct+'%</span></div>'
+       +'<div style="background:#EFEFEC;border-radius:8px;height:12px;margin-top:.2rem"><div style="width:'+sc.pct+'%;height:12px;border-radius:8px;background:'+ESGPIJLER[pj][1]+'"></div></div>'
+       +'<div class="sub">'+sc.heeft+' van '+sc.n+' gedekt \u00b7 '+sc.auto+' uit een systeem</div></div>';
+    }).join('')
+   +'</div>'
+   +'<div style="margin-top:.9rem;padding:.75rem .9rem;border-left:4px solid '+(totaal<35?'var(--rood)':(totaal<70?'var(--amber)':'var(--groen)'))+';background:#FBFAF7;border-radius:0 4px 4px 0;font-size:.88rem;line-height:1.6">'
+   +'<b>CSRD-gereedheid: '+totaal+'%</b><br>'
+   +(mist?mist+' onderwerpen heb je nog niet. ':'')
+   +(handwerk?handwerk+' worden met de hand bij elkaar gezocht \u2014 dat is het duurste deel en het eerste dat misgaat als iemand ziek is. ':'')
+   +(totaal>=70?'Je bent in staat om aan te leveren als een klant of financier erom vraagt.':'Word je er nu naar gevraagd, dan kost dat weken werk.')
+   +'</div>';
+
+  document.getElementById('esgKennis').innerHTML=
+    '<details><summary style="cursor:pointer;list-style:none;font-weight:700;font-size:.92rem">Wat CSRD van je vraagt \u2014 in het kort \u25be</summary>'
+   +'<div style="font-size:.87rem;line-height:1.65;margin-top:.6rem">'
+   +'<p><b>Dubbele materialiteit.</b> Je kijkt twee kanten op: welke invloed heeft jouw bedrijf op de wereld, \u00e9n welke invloed heeft de wereld op jouw financi\u00eble positie. '
+   +'Voor het mkb is dat tweede vaak het urgentst: een klant die duurzaamheidscijfers eist, of een bank die er de rente op baseert.</p>'
+   +'<p><b>ESRS.</b> De Europese standaarden die bepalen w\u00e1t en h\u00f3e je meet. Als kleiner bedrijf krijg je meestal met de lichtere variant te maken, via je grote klanten.</p>'
+   +'<p><b>De waardeketen.</b> Het gaat niet alleen over je eigen werkvloer maar ook over leveranciers en klanten. Dat is meteen de reden dat dit ook zonder eigen rapportageplicht op je afkomt.</p>'
+   +'<p><b>Waarom het hier staat:</b> vrijwel elk onderwerp hierboven zit al ergens in je systemen \u2014 in de energierekening, de urenregistratie, het wagenpark of de inkoop. '
+   +'Het verschil tussen weken werk en een druk op de knop is niet of je de gegevens h\u00e9bt, maar of ze bij elkaar komen.</p>'
+   +'<p class="sub">Bronnen: RVO \u00b7 KVK \u00b7 SER \u00b7 EFRAG (ESRS)</p>'
+   +'</div></details>';
+}
+
 function tekenBeleid(){
   (function(){
     const t=document.getElementById('techGraf'); if(!t)return;
@@ -3494,6 +3606,15 @@ function verzamelAdvies(){
     if(fn('wRente')&&eb/(fn('wRente')*1000)<1.3) A.push({t:'Verlaag de vaste lasten of verleng de aflossing',dim:'finance',duur:3,waarde:0,
       waarom:'Rentedekking onder 1,3× — daar wordt een financier ongemakkelijk van, zeker bij tegenvallende maanden.',bron:'Model DSCR'});
   }
+
+  // --- CSRD ---
+  const esg=S.esg||{};
+  const esgHand=Object.keys(esg).filter(function(k){return esg[k]===1;}).length;
+  const esgMist=11-Object.keys(esg).filter(function(k){return esg[k]>0;}).length;
+  if(esgMist>=8) A.push({t:'Zoek uit welke duurzaamheidscijfers je al hebt',dim:'duurzaam',duur:1,waarde:0,
+    waarom:'CSRD: van de elf onderwerpen heb je er '+(11-esgMist)+'. De meeste staan al ergens \u2014 in de energierekening, de urenregistratie of het wagenpark. Zoeken kost een dag; opnieuw verzamelen kost weken.',bron:'Beleid'});
+  else if(esgHand>=4) A.push({t:'Haal de duurzaamheidscijfers uit de spreadsheet',dim:'duurzaam',duur:2,waarde:0,
+    waarom:'CSRD: '+esgHand+' onderwerpen worden met de hand bij elkaar gezocht. Dat is het duurste deel en het eerste dat misgaat als iemand ziek is.',bron:'Beleid'});
 
   // --- klanttevredenheid ---
   const kto=S.kto||{};
