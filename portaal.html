@@ -672,13 +672,30 @@ input[type=range]{min-height:34px}
     <!-- UITVOERING -->
     <section class="paneel" id="p-uitvoering">
       <div class="kaart conclusie" style="margin-top:1rem">
-        <h2>Van strategie naar uitvoering</h2>
-        <p class="kern">De modellen hierboven zeggen <b>waar</b> het schuurt. De canvassen zeggen <b>waarom</b> dat je verdienmodel raakt.
-        Wat vrijwel elk model overslaat: <b>welke processen, systemen, gegevens en rollen er dan precies moeten veranderen</b> — en wie dat maandagochtend oppakt.
-        Dat staat hieronder, per thema, afgeleid uit je eigen scores.</p>
+        <h2>De Uitvoeringsladder</h2>
+        <p class="kern">Strategiemodellen stoppen bij doelen en projecten. Ze zeggen zelden <b>welke vijf stappen je in welke volgorde zet</b>, wie ze doet, en waaraan je ziet dat een stap af is.
+        Dat is wat hieronder staat: per thema vijf treden, altijd in dezelfde volgorde. <b>Een trede overslaan werkt niet</b> — je kunt niet koppelen wat niet is vastgelegd, en niet meten wat niet is gekoppeld.</p>
+        <div class="drie">
+          <div class="stap"><span>Nieuw</span><b>Vaste volgorde</b><p>Tellen, vastleggen, koppelen, meten, borgen. Elke trede maakt de volgende mogelijk.</p></div>
+          <div class="stap"><span>Concreet</span><b>Klaar is klaar</b><p>Elke trede heeft één zin waaraan je ziet dat hij af is. Geen interpretatie.</p></div>
+          <div class="stap"><span>Zichtbaar</span><b>Waarde telt op</b><p>Vink je een trede af, dan zie je meteen wat er is vrijgespeeld.</p></div>
+        </div>
       </div>
-      <div id="s2o"></div>
+
+      <div class="kaarten k3" id="uvKpi" style="margin-top:1rem"></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>De planning</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Vijftien treden over twaalf maanden. Klik een blok om af te vinken — de waarde hieronder telt mee.</p>
+        <svg id="uvGantt" viewBox="0 0 980 420" role="img" aria-label="Planning van de uitvoeringsladder"></svg></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Wat het tot nu toe heeft opgeleverd</h3>
+        <svg id="uvWaarde" viewBox="0 0 900 260" role="img" aria-label="Opgeleverde waarde"></svg>
+        <div class="sub" id="uvWaardeT"></div></div>
+
+      <div id="uvThemas"></div>
+
       <div class="kaart" style="margin-top:1rem"><h3>Wat Bedrijfsgeheugen hierin doet</h3><div id="s2oRol"></div></div>
+      <p class="sub" style="margin-top:1rem;text-align:center">De Uitvoeringsladder © 2026 Bedrijfsgeheugen. Vrij te gebruiken binnen je eigen bedrijf; niet door te verkopen of te verspreiden zonder bronvermelding.</p>
     </section>
 
     <!-- ROADMAP -->
@@ -814,7 +831,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -997,7 +1014,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -1023,6 +1040,7 @@ function importeer(bestand){
       if(p.beleid) S.beleid=p.beleid;
       if(p.fin) S.fin=p.fin;
       if(p.modellen) S.modellen=p.modellen;
+      if(p.uitvoering) S.uitvoering=p.uitvoering;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -1810,112 +1828,167 @@ function tekenCanvassen(){
 }
 
 function tekenUitvoering(){
-  const box=document.getElementById('s2o'); if(!box) return;
+  const box=document.getElementById('uvThemas'); if(!box) return;
   const g=k=>S.niveaus[k]||2, b=B(), eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
   const f=[0,1,.78,.5,.22,.06]; const K={};
   DIM.forEach(function(d){ K[d.k]=d.u*f[g(d.k)]*(S.mw/24)*46*S.uur; });
-  const A=verzamelAdvies().filter(function(a){return modelAan(a.bron);});
+  S.uitvoering=S.uitvoering||{};
 
-  // drie thema's, afgeleid uit de scan
   const smalst=DIM.slice().sort(function(x,y){return g(x.k)-g(y.k);})[0];
   const duurste=DIM.slice().sort(function(x,y){return K[y.k]-K[x.k];})[0];
-  const THEMA=[
-   {t:'Kennis uit hoofden', dim:'mensen',
-    doel:'Het bedrijf kan dertig dagen door zonder de mensen die het nu dragen',
-    afd:'Alle afdelingen, te beginnen bij '+duurste.n.toLowerCase(),
-    cap:'Vastgelegde werkwijzen op de plek waar het werk gebeurt',
-    proces:['Per kerntaak vastleggen wie het kan (kennismatrix)','Besluit vastleggen bij de taak, niet in een los document','Maandelijkse controle: wat is veranderd sinds vorige maand'],
-    data:['Klantafspraken en uitzonderingen','Werkinstructies','Wie-kan-wat per taak'],
-    sys:['Bestaande pakketten — geen nieuw systeem','Gedeelde documentomgeving','Takenlijst met eigenaar'],
-    ai:['Gesprekken en notities laten samenvatten tot een concept','Zoeken in eigen documenten met een vraag in gewone taal'],
-    gov:['Eén eigenaar per kernproces','Wie mag wijzigen, wie controleert'],
-    kpi:['Aantal taken met maar één naam erachter','Inwerktijd nieuwe medewerker','Aantal keer dat iemand gebeld wordt op vakantie'],
-    proj:['Kennismatrix voor de tien belangrijkste taken','Drie procesbeschrijvingen van één A4'],
-    quick:'De kennismatrix: één middag, en je ziet meteen welke rijen één naam hebben',
-    eigenaar:'Directie samen met de leidinggevende van de zwaarste afdeling',
-    prio:'Hoog', planning:'Maand 1–3'},
 
-   {t:'Eén keer invoeren', dim:'tech',
-    doel:'Gegevens worden één keer ingevoerd en stromen door naar waar ze nodig zijn',
-    afd:'Commercie, operatie en finance',
-    cap:'Gekoppelde systemen in plaats van losse eilanden',
-    proces:['Offerte wordt order zonder overtypen','Uren gaan rechtstreeks naar de factuur','Klantgegevens één keer vastleggen'],
-    data:['Klanten, orders, uren — met afgesproken definities','Eén bronsysteem per gegeven'],
-    sys:['Koppeling tussen de twee zwaarste systemen','Rapportage bovenop de bron, niet ernaast'],
-    ai:['Documenten uitlezen en boeken','Afwijkingen signaleren in plaats van rapporteren'],
-    gov:['Definities van klant, order en uur op één A4','Eigenaar per bron'],
-    kpi:['Aantal keer per week overgetypt','Doorlooptijd offerte naar factuur','Fouten die hersteld moeten worden'],
-    proj:['Eén koppeling live','Rapportagekalender'],
-    quick:'Eén week turven hoe vaak iets dubbel wordt ingevoerd — dat getal is je businesscase',
-    eigenaar:'Iemand met mandaat over beide systemen, niet de leverancier',
-    prio:'Hoog', planning:'Maand 2–5'},
-
-   {t:'Sturen op cijfers', dim:'analytics',
-    doel:'Iedere maand dezelfde cijfers, waar niemand meer over discussieert',
-    afd:'Directie en finance, daarna de rest',
-    cap:'Stuurinformatie die uit het werk zelf komt',
-    proces:['Vaste maandafsluiting met vaste stappen','Vast overlegmoment met vaste cijfers','Afwijking bespreken, niet de definitie'],
-    data:['Omzet, marge, uren, verzuim, debiteuren','Met vastgelegde definities'],
-    sys:['Eén rapportage-omgeving','Automatisch bijwerken, geen handwerk'],
-    ai:['Vooruitkijken op basis van je eigen historie','Toelichting bij afwijkingen als concept'],
-    gov:['Wie hakt de knoop door bij een definitie','Rapportagekalender met verantwoordelijken'],
-    kpi:['Aantal dagen tot de maandcijfers klaar zijn','Aantal versies van hetzelfde cijfer','Besluiten genomen op cijfers'],
-    proj:['Eén dashboard met vijf getallen','Definitielijst'],
-    quick:'Kies vijf getallen die er echt toe doen en spreek af wat ze betekenen',
-    eigenaar:'Finance, met de directie als opdrachtgever',
-    prio: g('analytics')<3?'Hoog':'Midden', planning:'Maand 3–6'}
+  /* Drie thema's \u00d7 vijf treden. De volgorde is de vondst: elke trede maakt de volgende mogelijk. */
+  const TREDE=['Tellen','Vastleggen','Koppelen','Meten','Borgen'];
+  const T=[
+   {id:'kennis', t:'Kennis uit hoofden', dim:'mensen', kost:K[smalst.k]||K.mensen,
+    s:[{w:'Tel \u00e9\u00e9n week hoe vaak iemand iets moet navragen bij \u00e9\u00e9n persoon',wie:'Leidinggevende',mnd:1,d:1,
+        klaar:'Je hebt een lijst met namen en hoe vaak ze werden gestoord.',deel:.05},
+       {w:'Maak een kennismatrix: per taak wie het kan',wie:'Directie + leidinggevende',mnd:2,d:1,
+        klaar:'Elke kerntaak heeft minstens twee namen, of staat op de lijst met risico\'s.',deel:.20},
+       {w:'Beschrijf de drie taken met \u00e9\u00e9n naam op \u00e9\u00e9n A4',wie:'De persoon zelf, samen met een collega',mnd:3,d:2,
+        klaar:'Een collega heeft de taak \u00e9\u00e9n keer gedaan met alleen dat A4.',deel:.35},
+       {w:'Meet de inwerktijd van de volgende nieuwe collega',wie:'HR of directie',mnd:6,d:2,
+        klaar:'Je kent het aantal dagen tot iemand zelfstandig draait.',deel:.25},
+       {w:'Zet de controle vast: elk kwartaal de matrix bijwerken',wie:'Vaste eigenaar',mnd:9,d:1,
+        klaar:'Het staat in de agenda en is \u00e9\u00e9n keer uitgevoerd.',deel:.15}]},
+   {id:'invoer', t:'E\u00e9n keer invoeren', dim:'tech', kost:K.tech,
+    s:[{w:'Tel \u00e9\u00e9n week hoe vaak gegevens worden overgetypt',wie:'De mensen die het doen',mnd:1,d:1,
+        klaar:'Je hebt \u00e9\u00e9n getal: keer per week, en de zwaarste route.',deel:.05},
+       {w:'Spreek af wat een klant, een order en een uur precies zijn',wie:'Directie beslist, finance schrijft',mnd:2,d:1,
+        klaar:'E\u00e9n A4 met definities, door iedereen gezien.',deel:.15},
+       {w:'Koppel de twee systemen met het meeste handwerk',wie:'Bedrijfsgeheugen of je leverancier',mnd:3,d:2,
+        klaar:'Een order gaat van A naar B zonder dat iemand iets overtypt.',deel:.45},
+       {w:'Meet de doorlooptijd van offerte tot factuur',wie:'Finance',mnd:6,d:1,
+        klaar:'Je kent het aantal dagen, voor en na.',deel:.20},
+       {w:'Leg vast wie de koppeling beheert en wat er gebeurt als hij stilvalt',wie:'Vaste eigenaar',mnd:8,d:1,
+        klaar:'Er is \u00e9\u00e9n naam en \u00e9\u00e9n herstelinstructie van vijf regels.',deel:.15}]},
+   {id:'sturen', t:'Sturen op cijfers', dim:'analytics', kost:K.analytics,
+    s:[{w:'Tel hoeveel dagen na de maand je cijfers klaar zijn',wie:'Finance',mnd:2,d:1,
+        klaar:'Je kent het aantal dagen en wie erop wacht.',deel:.05},
+       {w:'Kies vijf getallen die er echt toe doen',wie:'Directie',mnd:3,d:1,
+        klaar:'Vijf getallen op papier, met per getal \u00e9\u00e9n eigenaar.',deel:.20},
+       {w:'Haal die vijf uit de bron in plaats van uit een spreadsheet',wie:'Bedrijfsgeheugen',mnd:5,d:2,
+        klaar:'De cijfers werken zichzelf bij; niemand exporteert nog iets.',deel:.40},
+       {w:'Bespreek ze maandelijks op een vast moment',wie:'Directie',mnd:7,d:3,
+        klaar:'Drie keer achter elkaar gedaan, met dezelfde cijfers.',deel:.20},
+       {w:'Zet de rapportagekalender vast',wie:'Finance',mnd:10,d:1,
+        klaar:'Wie levert wat wanneer staat op \u00e9\u00e9n plek.',deel:.15}]}
   ];
 
-  box.innerHTML=THEMA.map(function(T,i){
-    const kost=K[T.dim]||0;
-    const rij=function(l,v){ return '<tr><td style="padding:.42rem .6rem .42rem 0;vertical-align:top;white-space:nowrap;color:var(--grijs);font-size:.82rem;border-bottom:1px solid var(--lijn)">'+l+'</td>'
-      +'<td style="padding:.42rem 0;font-size:.87rem;line-height:1.6;border-bottom:1px solid var(--lijn)">'+v+'</td></tr>'; };
-    const lijst=function(a){ return a.map(function(x){return '\u2022 '+x;}).join('<br>'); };
-    return '<details class="mod" style="margin-top:1rem"'+(i===0?' open':'')+'>'
-     +'<summary><h3>'+(i+1)+'. '+T.t+'</h3><span class="herkomst">'+T.prio.toLowerCase()+' · '+T.planning+' \u25be</span></summary>'
-     +'<div class="inhoud"><table style="width:100%;border-collapse:collapse">'
-     +rij('Strategisch doel','<b>'+T.doel+'</b>')
-     +rij('Waar het nu staat','Niveau '+g(T.dim)+' van 5'+(kost?' · kost nu '+eur(kost)+' per jaar':'')+' · branche ~'+b.dig.toFixed(1))
-     +rij('Betrokken afdelingen',T.afd)
-     +rij('Gewenst vermogen',T.cap)
-     +rij('Proceswijzigingen',lijst(T.proces))
-     +rij('Gegevens',lijst(T.data))
-     +rij('Systemen',lijst(T.sys))
-     +rij('AI-mogelijkheden',lijst(T.ai))
-     +rij('Governance',lijst(T.gov))
-     +rij('Waaraan je het meet',lijst(T.kpi))
-     +rij('Projecten',lijst(T.proj))
-     +rij('Quick win','<b>'+T.quick+'</b>')
-     +rij('Eigenaar',T.eigenaar)
-     +rij('Prioriteit en planning',T.prio+' · '+T.planning)
-     +'</table>'
-     +'<div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">'
-     +'<button class="knop" data-advies="'+encodeURIComponent(JSON.stringify({t:'Quick win: '+T.t,dim:T.dim,d:1}))+'">Zet de quick win in mijn roadmap</button>'
-     +'<button class="knop licht" data-advies="'+encodeURIComponent(JSON.stringify({t:T.t,dim:T.dim,d:3}))+'">Zet het hele thema in mijn roadmap</button>'
-     +'</div></div></details>';
+  const af=function(id,i){ return !!(S.uitvoering[id]&&S.uitvoering[id][i]); };
+  let gerealiseerd=0, potentieel=0, gedaan=0, totaalStappen=0;
+  T.forEach(function(t){ const winst=(t.kost||0)*0.7; potentieel+=winst;
+    t.s.forEach(function(st,i){ totaalStappen++; if(af(t.id,i)){ gerealiseerd+=winst*st.deel; gedaan++; } }); });
+
+  // ---- kerngetallen ----
+  document.getElementById('uvKpi').innerHTML=
+    '<div class="kaart"><h3>Treden afgerond</h3><div class="kpi">'+gedaan+' / '+totaalStappen+'</div><div class="sub">over drie thema\'s</div></div>'
+   +'<div class="kaart"><h3>Al vrijgespeeld</h3><div class="kpi" style="color:var(--groen)">'+eur(gerealiseerd)+'</div><div class="sub">per jaar, op basis van afgeronde treden</div></div>'
+   +'<div class="kaart"><h3>Nog te halen</h3><div class="kpi">'+eur(Math.max(potentieel-gerealiseerd,0))+'</div><div class="sub">als je alle treden afmaakt</div></div>';
+
+  // ---- gantt ----
+  const gt=document.getElementById('uvGantt');
+  if(gt){
+    const L=250,R=30,T0=44,rij=24,W=980;
+    const mndB=(W-L-R)/12;
+    let sv='', y=T0;
+    for(let m=0;m<=12;m++){
+      sv+='<line x1="'+(L+m*mndB)+'" y1="'+(T0-18)+'" x2="'+(L+m*mndB)+'" y2="'+(T0+T.length*(rij*5+18))+'" stroke="#F0F0EE" stroke-width="1"/>';
+      if(m<12) sv+='<text x="'+(L+m*mndB+mndB/2)+'" y="'+(T0-24)+'" text-anchor="middle" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">'+(m+1)+'</text>';
+    }
+    sv+='<text x="0" y="'+(T0-24)+'" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">maand \u2192</text>';
+    T.forEach(function(t){
+      sv+='<text x="0" y="'+(y+12)+'" font-size="12.5" font-weight="700" fill="#14171A" font-family="Instrument Sans">'+t.t+'</text>';
+      y+=20;
+      t.s.forEach(function(st,i){
+        const x=L+(st.mnd-1)*mndB, w=st.d*mndB-4;
+        const klaar=af(t.id,i);
+        sv+='<g data-uv="'+t.id+':'+i+'" style="cursor:pointer"'
+         +' data-tip="<b>'+TREDE[i]+' \u2014 '+st.w+'</b><br>'+st.wie+' \u00b7 maand '+st.mnd+'<br><b>Klaar als:</b> '+st.klaar+'<br>'+(klaar?'\u2713 afgevinkt':'klik om af te vinken')+'">'
+         +'<rect x="'+L+'" y="'+y+'" width="'+(W-L-R)+'" height="'+(rij-6)+'" fill="transparent"/>'
+         +'<text x="'+(L-10)+'" y="'+(y+13)+'" text-anchor="end" font-size="11" fill="'+(klaar?'#8A94A3':'#5C646E')+'" font-family="Instrument Sans"'+(klaar?' text-decoration="line-through"':'')+'>'+TREDE[i]+'</text>'
+         +'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+(rij-8)+'" rx="4" fill="'+(klaar?'#1F9D55':'#2742D6')+'" fill-opacity="'+(klaar?'.9':'.75')+'"/>'
+         +(klaar?'<text x="'+(x+7)+'" y="'+(y+13)+'" font-size="11" fill="#fff" font-family="Instrument Sans">\u2713</text>':'')
+         +'</g>';
+        y+=rij;
+      });
+      y+=14;
+    });
+    gt.setAttribute('viewBox','0 0 980 '+(y+20));
+    gt.innerHTML=sv;
+    gt.querySelectorAll('[data-uv]').forEach(function(el){
+      if(el.dataset.aan)return; el.dataset.aan='1';
+      el.addEventListener('click',function(){
+        const dl=el.dataset.uv.split(':'), id=dl[0], i=+dl[1];
+        S.uitvoering[id]=S.uitvoering[id]||{};
+        S.uitvoering[id][i]=!S.uitvoering[id][i];
+        bewaar(); teken();
+      });
+    });
+  }
+
+  // ---- waardegrafiek ----
+  const wg=document.getElementById('uvWaarde');
+  if(wg){
+    const W=900,H=230,L=60,R=30,y0=180,y1=24;
+    const mndB=(W-L-R)/12;
+    let cum=[], loop=0;
+    for(let m=1;m<=12;m++){
+      T.forEach(function(t){ const winst=(t.kost||0)*0.7;
+        t.s.forEach(function(st,i){ if(st.mnd===m && af(t.id,i)) loop+=winst*st.deel; }); });
+      cum.push(loop);
+    }
+    const max=Math.max(potentieel,1);
+    const py=v=>y0-(v/max)*(y0-y1);
+    let d='M'+L+','+y0, sv='';
+    cum.forEach(function(v,i){ d+=' L'+(L+(i+1)*mndB)+','+py(v); });
+    sv+='<path d="'+d+' L'+(L+12*mndB)+','+y0+' Z" fill="#E8F5EC"/>';
+    sv+='<path d="'+d+'" fill="none" stroke="#1F9D55" stroke-width="3"/>';
+    sv+='<line x1="'+L+'" y1="'+py(potentieel)+'" x2="'+(L+12*mndB)+'" y2="'+py(potentieel)+'" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>';
+    sv+='<text x="'+(L+12*mndB)+'" y="'+(py(potentieel)-8)+'" text-anchor="end" font-size="11.5" fill="#14171A" font-family="Instrument Sans">volledig: '+eur(potentieel)+'</text>';
+    sv+='<line x1="'+L+'" y1="'+y0+'" x2="'+(L+12*mndB)+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
+    [1,4,7,10,12].forEach(function(m){ sv+='<text x="'+(L+m*mndB)+'" y="'+(y0+20)+'" text-anchor="middle" font-size="11" fill="#8A94A3" font-family="Instrument Sans">mnd '+m+'</text>'; });
+    cum.forEach(function(v,i){ if(v>0) sv+='<circle cx="'+(L+(i+1)*mndB)+'" cy="'+py(v)+'" r="4" fill="#1F9D55"/>'; });
+    wg.innerHTML=sv;
+    document.getElementById('uvWaardeT').innerHTML = gedaan
+      ? 'Je hebt <b>'+gedaan+'</b> van de '+totaalStappen+' treden afgerond. Dat is <b style="color:var(--groen)">'+eur(gerealiseerd)+' per jaar</b> aan vrijgespeelde tijd \u2014 '+(gerealiseerd/potentieel*100).toFixed(0)+'% van wat er in zit.'
+      : 'Nog geen treden afgevinkt. Vink er \u00e9\u00e9n af in de planning hierboven en je ziet hier wat het oplevert.';
+  }
+
+  // ---- thema's uitgeschreven ----
+  box.innerHTML=T.map(function(t,ti){
+    return '<details class="mod" style="margin-top:1rem"'+(ti===0?' open':'')+'>'
+     +'<summary><h3>'+(ti+1)+'. '+t.t+'</h3><span class="herkomst">niveau '+g(t.dim)+' \u00b7 '+eur(t.kost||0)+' p.j. \u25be</span></summary>'
+     +'<div class="inhoud">'
+     + t.s.map(function(st,i){
+        const klaar=af(t.id,i);
+        return '<div style="display:grid;grid-template-columns:2.1rem 1fr auto;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--lijn);align-items:start">'
+         +'<b style="width:2.1rem;height:2.1rem;border-radius:8px;background:'+(klaar?'#1F9D55':'var(--inkt)')+';color:#fff;display:grid;place-items:center;font-size:.72rem">'+(klaar?'\u2713':i+1)+'</b>'
+         +'<div><div class="sub" style="text-transform:uppercase;letter-spacing:.05em;font-size:.68rem">'+TREDE[i]+' \u00b7 maand '+st.mnd+' \u00b7 '+st.wie+'</div>'
+         +'<b style="font-size:.93rem;'+(klaar?'text-decoration:line-through;opacity:.6':'')+'">'+st.w+'</b>'
+         +'<div style="font-size:.85rem;color:var(--grijs);margin-top:.15rem"><b>Klaar als:</b> '+st.klaar+'</div></div>'
+         +'<button class="knop licht" data-uvk="'+t.id+':'+i+'">'+(klaar?'ongedaan':'afvinken')+'</button></div>';
+       }).join('')
+     +'</div></details>';
   }).join('');
-
-  document.getElementById('s2oRol').innerHTML=
-    '<p class="sub" style="margin:-.3rem 0 .8rem">Een canvas invullen is niet hetzelfde als het uitvoeren. Dit is waar wij het van je overnemen — en waar niet.</p>'
-   +'<div class="kaarten k3">'
-   +'<div><b>Wij tellen mee</b><p style="font-size:.87rem;line-height:1.6">Eén dag meelopen op de werkvloer: hoe vaak wordt iets overgetypt, waar wordt gewacht, wie wordt er gebeld als het misgaat. Dat is het deel dat een scan niet kan.</p></div>'
-   +'<div><b>Wij bouwen het</b><p style="font-size:.87rem;line-height:1.6">De koppeling, het dashboard, de kennismatrix, de definitielijst. Werkend opgeleverd in je eigen omgeving, niet als advies op papier. Eerste werkende resultaat binnen twee weken.</p></div>'
-   +'<div><b>Jij houdt de sleutels</b><p style="font-size:.87rem;line-height:1.6">Alles staat op jouw accounts en in jouw systemen. Stoppen mag altijd; er blijft niets achter dat alleen wij kunnen bedienen.</p></div>'
-   +'</div>'
-   +'<div style="margin-top:.9rem;padding:.8rem .95rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.88rem;line-height:1.6">'
-   +'<b>Wat je zelf kunt:</b> de quick wins hierboven. Die kosten een middag en leveren het getal op waarmee je de rest onderbouwt. '
-   +'Doe er één, en je weet meteen of dit portaal klopt met jouw werkelijkheid.</div>'
-   +'<div style="margin-top:.8rem"><button class="knop" data-ga="roadmap">Naar je roadmap</button></div>';
-
-  document.querySelectorAll('[data-advies]').forEach(function(btn){
-    if(btn.dataset.aan)return; btn.dataset.aan='1';
-    btn.addEventListener('click',function(){
-      const o=JSON.parse(decodeURIComponent(btn.dataset.advies));
-      const laatste=S.taken.reduce(function(mx,t){return Math.max(mx,t.s+t.d-1);},0);
-      S.taken.push({id:Date.now(),t:o.t,dim:o.dim,s:Math.min(laatste+1||1,12),d:o.d,klaar:false});
-      bewaar(); teken(); btn.textContent='\u2713 staat erin'; btn.disabled=true;
+  box.querySelectorAll('[data-uvk]').forEach(function(el){
+    if(el.dataset.aan)return; el.dataset.aan='1';
+    el.addEventListener('click',function(){
+      const dl=el.dataset.uvk.split(':'), id=dl[0], i=+dl[1];
+      S.uitvoering[id]=S.uitvoering[id]||{}; S.uitvoering[id][i]=!S.uitvoering[id][i];
+      bewaar(); teken();
     });
   });
+
+  document.getElementById('s2oRol').innerHTML=
+    '<p class="sub" style="margin:-.3rem 0 .8rem">Een ladder invullen is niet hetzelfde als hem beklimmen. Dit is waar wij het overnemen \u2014 en waar niet.</p>'
+   +'<div class="kaarten k3">'
+   +'<div><b>Wij tellen mee</b><p style="font-size:.87rem;line-height:1.6">Trede 1 van elk thema is tellen. E\u00e9n dag meelopen: hoe vaak wordt iets overgetypt, waar wordt gewacht, wie wordt gebeld als het misgaat.</p></div>'
+   +'<div><b>Wij bouwen trede 3</b><p style="font-size:.87rem;line-height:1.6">De koppeling, het dashboard, de definitielijst. Werkend in je eigen omgeving, eerste resultaat binnen twee weken. Dat is de trede die de meeste bedrijven niet zelf halen.</p></div>'
+   +'<div><b>Jij houdt de sleutels</b><p style="font-size:.87rem;line-height:1.6">Alles op jouw accounts en in jouw systemen. Stoppen mag altijd; er blijft niets achter dat alleen wij kunnen bedienen.</p></div>'
+   +'</div>'
+   +'<div style="margin-top:.9rem;padding:.8rem .95rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.88rem;line-height:1.6">'
+   +'<b>Begin bij trede 1 en doe hem zelf.</b> Tellen kost een week aandacht en levert het getal op waarmee je de rest onderbouwt \u2014 bij je team, bij je bank en bij een koper.</div>';
 }
 
 function tekenRekenwijze(){
