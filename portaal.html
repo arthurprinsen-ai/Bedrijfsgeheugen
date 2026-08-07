@@ -266,6 +266,16 @@ input[type=range]{min-height:34px}
 .sterren{display:flex;gap:.3rem}
 .sterren button{border:1px solid var(--lijn);background:#fff;border-radius:8px;width:2.4rem;height:2.4rem;font:inherit;font-size:.95rem;cursor:pointer;color:var(--grijs)}
 .sterren button[aria-pressed=true]{background:var(--inkt);color:#fff;border-color:var(--inkt)}
+
+.subnav{display:flex;gap:.3rem;flex-wrap:wrap;position:sticky;top:104px;z-index:13;
+ background:rgba(251,250,247,.94);backdrop-filter:blur(8px);padding:.55rem 0;margin:.6rem 0 .2rem;border-bottom:1px solid var(--lijn)}
+.subnav button{border:1px solid var(--lijn);background:#fff;border-radius:20px;padding:.4rem .85rem;
+ font:inherit;font-size:.82rem;color:var(--grijs);cursor:pointer;min-height:36px}
+.subnav button[aria-pressed=true]{background:var(--inkt);color:#fff;border-color:var(--inkt)}
+.subnav .tel{opacity:.65;font-size:.75rem;margin-left:.2rem}
+@media(max-width:1039px){.subnav{top:56px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+ .subnav button{white-space:nowrap}}
+.dnastap{scroll-margin-top:150px}
 </style>
 </head>
 <body>
@@ -2448,6 +2458,56 @@ function voegUitvoeringSamen(){
   dna.dataset.samen='1';
 }
 
+/* Het tabblad is lang. Deze subnavigatie toont \u00e9\u00e9n stap tegelijk,
+   zodat je focus houdt op waar je mee bezig bent. */
+var dnaStap='kiezen';
+const DNASTAPPEN=[
+ ['kiezen','1. Kiezen',      ['dnaKeuze','dnaVrij']],
+ ['impact','2. Wat het raakt',['dnaImpact','dnaGraaf','dnaAfdKeuze']],
+ ['inzicht','3. Doorvragen',  ['dnaVragen','dnaRadar','dnaVolw']],
+ ['agenda','4. De agenda',    ['dnaAgenda']],
+ ['doen','5. Uitvoeren',      ['uvKpi','uvSom','uvGantt','uvWaarde','uvThemas','s2oRol']],
+ ['model','Het model',        ['dnaZoek','ecNaam']]
+];
+function bouwSubnav(){
+  const dna=document.getElementById('p-dna'); if(!dna||dna.dataset.subnav) return;
+  // elke kaart labelen op basis van de elementen erin
+  DNASTAPPEN.forEach(function(st){
+    st[2].forEach(function(id){
+      const el=document.getElementById(id); if(!el) return;
+      const kaart=el.closest('.kaart'); if(kaart && !kaart.dataset.stap) kaart.dataset.stap=st[0];
+    });
+  });
+  // kaarten zonder label horen bij de stap ervoor
+  let laatste='kiezen';
+  Array.prototype.forEach.call(dna.children,function(kind){
+    if(kind.classList&&kind.classList.contains('kaart')){
+      if(kind.dataset.stap) laatste=kind.dataset.stap; else kind.dataset.stap=laatste;
+    } else if(kind.classList&&kind.classList.contains('kaarten')){
+      kind.dataset.stap=laatste;
+    }
+  });
+  const nav=document.createElement('div'); nav.className='subnav';
+  nav.innerHTML=DNASTAPPEN.map(function(st){
+    return '<button data-stap="'+st[0]+'" aria-pressed="'+(dnaStap===st[0])+'">'+st[1]+'</button>';
+  }).join('');
+  dna.insertBefore(nav, dna.children[1]||null);
+  nav.querySelectorAll('[data-stap]').forEach(function(b){
+    b.addEventListener('click',function(){ dnaStap=b.dataset.stap; toonStap(); window.scrollTo({top:0,behavior:'smooth'}); });
+  });
+  dna.dataset.subnav='1';
+  toonStap();
+}
+function toonStap(){
+  const dna=document.getElementById('p-dna'); if(!dna) return;
+  Array.prototype.forEach.call(dna.children,function(kind){
+    if(!kind.dataset) return;
+    if(kind.classList.contains('subnav')||kind.classList.contains('conclusie')&&!kind.dataset.stap) return;
+    if(kind.dataset.stap) kind.style.display=(kind.dataset.stap===dnaStap)?'':'none';
+  });
+  dna.querySelectorAll('.subnav [data-stap]').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.stap===dnaStap); });
+}
+
 function tekenDNAFamilie(){
   const el=document.getElementById('dnaFamilie'); if(!el) return;
   el.innerHTML='<div class="kaarten k2">'+DNAFAMILIE.map(function(r,i){
@@ -2463,6 +2523,8 @@ function tekenDNAFamilie(){
     b.addEventListener('mouseleave',function(){ b.style.boxShadow=''; b.style.borderColor='var(--lijn)'; });
     b.addEventListener('click',function(){
       const doelEl=document.getElementById(b.dataset.dnaspring); if(!doelEl) return;
+      const st=DNASTAPPEN.find(function(x){ return x[2].indexOf(b.dataset.dnaspring)>-1; });
+      if(st){ dnaStap=st[0]; toonStap(); }
       const kaart=doelEl.closest('.kaart')||doelEl;
       kaart.scrollIntoView({behavior:'smooth',block:'center'});
       const oud=kaart.style.boxShadow;
