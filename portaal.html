@@ -683,6 +683,7 @@ input[type=range]{min-height:34px}
       </div>
 
       <div class="kaarten k3" id="uvKpi" style="margin-top:1rem"></div>
+      <div class="kaart" id="uvSom" style="margin-top:1rem"></div>
 
       <div class="kaart" style="margin-top:1rem"><h3>De planning</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Vijftien treden over twaalf maanden. Klik een blok om af te vinken — de waarde hieronder telt mee.</p>
@@ -831,7 +832,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -979,6 +980,11 @@ function bouw(){
       tekenModelKaart();
     });
   });
+  ['kNps','kTevreden','kHerhaal','kKlacht'].forEach(function(id){
+    const el=document.getElementById(id); if(!el||el.dataset.aan)return; el.dataset.aan='1';
+    if(S.kto&&S.kto[id]!==undefined&&S.kto[id]!=='') el.value=S.kto[id];
+    el.addEventListener('input',function(e){ S.kto=S.kto||{}; S.kto[id]=e.target.value; bewaar(); teken(); });
+  });
   const be=document.getElementById('btnExport');
   if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',function(){vraagToegang(exporteer);});}
   const bi=document.getElementById('btnImport');
@@ -1014,7 +1020,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -1041,6 +1047,7 @@ function importeer(bestand){
       if(p.fin) S.fin=p.fin;
       if(p.modellen) S.modellen=p.modellen;
       if(p.uitvoering) S.uitvoering=p.uitvoering;
+      if(p.kto) S.kto=p.kto;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -1225,7 +1232,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1926,6 +1933,37 @@ function tekenUitvoering(){
   let gerealiseerd=0, potentieel=0, gedaan=0, totaalStappen=0;
   T.forEach(function(t){ const winst=(t.kost||0)*0.7; potentieel+=winst;
     t.s.forEach(function(st,i){ totaalStappen++; if(af(t.id,i)){ gerealiseerd+=winst*st.deel; gedaan++; } }); });
+
+  // hoe de bedragen tot stand komen
+  const som=document.getElementById('uvSom');
+  if(som){
+    som.innerHTML='<details><summary style="cursor:pointer;list-style:none;font-weight:700;font-size:.92rem">Hoe deze bedragen zijn berekend \u25be</summary>'
+     +'<div style="font-size:.87rem;line-height:1.65;margin-top:.7rem">'
+     +'<p>Per thema nemen we het handwerk dat er nu in zit en gaan ervan uit dat <b>70% ervan verdwijnt</b> als alle vijf treden af zijn. '
+     +'De overige 30% blijft: er zal altijd iemand moeten kijken, beoordelen en uitzonderingen afhandelen.</p>'
+     +'<table style="width:100%;border-collapse:collapse;margin-top:.5rem">'
+     +'<tr><td class="sub" style="padding:.3rem 0;border-bottom:1px solid var(--lijn)">Thema</td>'
+     +'<td class="sub" style="text-align:right;border-bottom:1px solid var(--lijn)">handwerk nu</td>'
+     +'<td class="sub" style="text-align:right;border-bottom:1px solid var(--lijn)">\u00d7 70%</td>'
+     +'<td class="sub" style="text-align:right;border-bottom:1px solid var(--lijn)">al vrijgespeeld</td></tr>'
+     + T.map(function(t){
+        let vrij=0; const winst=(t.kost||0)*0.7;
+        t.s.forEach(function(st,i){ if(af(t.id,i)) vrij+=winst*st.deel; });
+        return '<tr><td style="padding:.35rem 0;border-bottom:1px solid var(--lijn)">'+t.t+'</td>'
+         +'<td style="text-align:right;border-bottom:1px solid var(--lijn)">'+eur(t.kost||0)+'</td>'
+         +'<td style="text-align:right;border-bottom:1px solid var(--lijn)">'+eur(winst)+'</td>'
+         +'<td style="text-align:right;border-bottom:1px solid var(--lijn);color:var(--groen);font-weight:600">'+eur(vrij)+'</td></tr>';
+       }).join('')
+     +'</table>'
+     +'<p style="margin-top:.6rem"><b>Het handwerk per thema</b> komt uit je eigen scan: uren per week \u00d7 factor van je niveau \u00d7 (medewerkers \u00f7 24) \u00d7 46 weken \u00d7 uurkosten ('+eur(S.uur)+'). '
+     +'Zie <b>Hoe dit portaal rekent</b> onder Advies voor de volledige som.</p>'
+     +'<p><b>Het aandeel per trede</b> \u2014 tellen 5 tot 15%, vastleggen 15 tot 25%, koppelen 35 tot 45%, meten 20%, borgen 10 tot 15% \u2014 '
+     +'is een verdeling uit de praktijk: het zwaartepunt ligt bij koppelen, maar zonder de treden ervoor levert dat niets op. '
+     +'Het zijn richtgetallen, geen gemeten waarden.</p>'
+     +'<p class="sub">Wat hard is: je niveaus, je aantal medewerkers en je uurkosten \u2014 die heb jij ingevuld. '
+     +'Wat geschat is: de 70% en de verdeling per trede.</p>'
+     +'</div></details>';
+  }
 
   document.getElementById('uvKpi').innerHTML=
     '<div class="kaart"><h3>Treden afgerond</h3><div class="kpi">'+gedaan+' / '+totaalStappen+'</div><div class="sub">over drie thema\'s</div></div>'
@@ -3059,6 +3097,62 @@ function tekenVolwassenheid(){
   }
 }
 
+function tekenKTO(){
+  const el=document.getElementById('ktoUit'); if(!el) return;
+  const k=S.kto||{}, n=x=>(k[x]===''||k[x]===undefined)?null:+k[x];
+  const nps=n('kNps'), tev=n('kTevreden'), herh=n('kHerhaal'), kl=n('kKlacht');
+  const rij=function(l,v,oordeel,kleur){ return '<div style="display:grid;grid-template-columns:1fr auto;gap:.7rem;padding:.45rem 0;border-bottom:1px solid var(--lijn);align-items:baseline">'
+    +'<span style="font-size:.88rem">'+l+'</span><b style="color:'+(kleur||'var(--inkt)')+'">'+v+'</b></div>'
+    +(oordeel?'<div class="sub" style="margin:-.25rem 0 .35rem">'+oordeel+'</div>':''); };
+  let h='';
+  h+= nps!==null ? rij('NPS',nps, nps<0?'Meer klanten raden je af dan aan. Dit weegt zwaarder dan elk marketingbudget.':(nps<20?'Redelijk. Boven de 20 begint mond-tot-mondreclame te werken.':'Sterk \u2014 je klanten verkopen voor je.'), nps<0?'var(--rood)':(nps<20?'var(--amber)':'var(--groen)'))
+    : rij('NPS','\u2014','Niet gemeten. E\u00e9n vraag per factuur is genoeg om dit te weten.','var(--grijs)');
+  h+= tev!==null ? rij('Tevredenheid',tev.toFixed(1)+' / 10', tev<7?'Onder de 7 is het een risico: klanten blijven uit gewoonte, niet uit overtuiging.':'Voldoende basis om op te bouwen.', tev<7?'var(--rood)':'var(--groen)') : '';
+  h+= herh!==null ? rij('Herhaalopdrachten',herh+'%', herh<40?'Weinig terugkerende klanten \u2014 elke euro omzet moet opnieuw verdiend worden.':'Een goede basis: je verkoopt niet elke maand opnieuw je hele omzet.', herh<40?'var(--amber)':'var(--groen)') : '';
+  h+= kl!==null ? rij('Klachten per maand',kl, kl>0&&(S.niveaus.service||2)<3?'Klachten komen binnen op niveau '+(S.niveaus.service||2)+' voor klantenservice \u2014 de kans is groot dat ze nergens worden geteld of geanalyseerd.':'', 'var(--inkt)') : '';
+  if(nps===null&&tev===null&&herh===null&&kl===null)
+    h='<div style="padding:.8rem .9rem;border-left:4px solid var(--amber);background:#FFF8E8;border-radius:0 4px 4px 0;font-size:.88rem;line-height:1.6">'
+      +'<b>Je meet klanttevredenheid niet.</b> Dat is op zich informatie: je stuurt dan op omzet achteraf in plaats van op signalen vooraf. '
+      +'Begin klein \u2014 \u00e9\u00e9n vraag onder elke factuur: <i>zou je ons aanbevelen, en waarom?</i></div>';
+  el.innerHTML=h;
+}
+
+function tekenTrustedAdvisor(){
+  const el=document.getElementById('taGraf'); if(!el) return;
+  const g=k=>S.niveaus[k]||2, c=S.cijfers||{};
+  const grootste=+(c.cGrootste)||0, k=S.kto||{}, herh=(k.kHerhaal===''||k.kHerhaal===undefined)?null:+k.kHerhaal;
+  const T=[['Leverancier','Je levert wat er is besteld. Inwisselbaar op prijs.'],
+           ['Vakman','Ze bellen je om je kennis, niet om je prijslijst.'],
+           ['Partner','Je denkt mee over hun proces, niet alleen over jouw product.'],
+           ['Vertrouwd adviseur','Ze bellen je v\u00f3\u00f3rdat ze een besluit nemen \u2014 ook over dingen die je niet verkoopt.']];
+  // positie schatten uit wat we weten
+  let pos=1;
+  if(g('service')>=3) pos++;
+  if(herh!==null && herh>=50) pos++;
+  if(g('mensen')>=3 && grootste && grootste<25) pos++;
+  pos=Math.max(1,Math.min(4,pos));
+  let sv='', y=24;
+  T.forEach(function(t,i){
+    const hier=(i+1===pos), gehaald=(i+1<pos);
+    sv+='<g data-tip="<b>'+t[0]+'</b><br>'+t[1]+'"'
+     +' data-detail="'+encodeURIComponent('<h4>'+t[0]+'</h4><p>'+t[1]+'</p><div class="doen"><b>Stap omhoog:</b> '
+       +(i===0?'zorg dat klanten je bellen met een vraag in plaats van een bestelling \u2014 dat begint bij bereikbaarheid en reactietijd.'
+        :(i===1?'praat over hun proces in plaats van over je product. Vraag \u00e9\u00e9n keer: waar loopt het bij jullie vast?'
+        :(i===2?'wees eerlijk als iets niet bij je past. Een keer nee zeggen levert meer vertrouwen op dan drie opdrachten.'
+        :'houd het vast: dit is de plek waar prijs geen argument meer is.')))+'</div>')+'" style="cursor:pointer">'
+     +'<rect x="20" y="'+y+'" width="'+(120+i*80)+'" height="44" rx="8" fill="'+(hier?'#2742D6':(gehaald?'#C9CEDA':'#EDEBE5'))+'"/>'
+     +'<text x="34" y="'+(y+27)+'" font-size="13" font-weight="'+(hier?'700':'500')+'" fill="'+(hier?'#fff':'#14171A')+'" font-family="Instrument Sans">'+t[0]+'</text>'
+     +(hier?'<text x="'+(150+i*80)+'" y="'+(y+27)+'" font-size="11.5" font-weight="700" fill="#2742D6" font-family="Instrument Sans">hier sta je</text>':'')
+     +'</g>';
+    y+=58;
+  });
+  el.innerHTML=sv;
+  document.getElementById('taUit').innerHTML=
+    '<div class="sub" style="margin-top:.4rem">Geschat uit je klantenserviceniveau ('+g('service')+'), je herhaalopdrachten'
+    +(herh!==null?' ('+herh+'%)':' (niet ingevuld)')+' en je klantconcentratie'+(grootste?' ('+grootste+'%)':'')+'. Klik een trede voor de stap omhoog.</div>'
+    +'<div class="bron"><b>Bron:</b> trusted advisor-gedachte (Maister, Green &amp; Galford), toegepast op je eigen scangegevens</div>';
+}
+
 function tekenBeleid(){
   (function(){
     const t=document.getElementById('techGraf'); if(!t)return;
@@ -3272,6 +3366,13 @@ function verzamelAdvies(){
     if(fn('wRente')&&eb/(fn('wRente')*1000)<1.3) A.push({t:'Verlaag de vaste lasten of verleng de aflossing',dim:'finance',duur:3,waarde:0,
       waarom:'Rentedekking onder 1,3× — daar wordt een financier ongemakkelijk van, zeker bij tegenvallende maanden.',bron:'Model DSCR'});
   }
+
+  // --- klanttevredenheid ---
+  const kto=S.kto||{};
+  if(kto.kNps==='' || kto.kNps===undefined) A.push({t:'Vraag \u00e9\u00e9n keer wat klanten van je vinden',dim:'service',duur:1,waarde:0,
+    waarom:'Je meet klanttevredenheid niet. E\u00e9n vraag onder elke factuur \u2014 zou je ons aanbevelen, en waarom \u2014 is genoeg om te weten of je op tijd bijstuurt of achteraf verklaart.',bron:'Mensen'});
+  else if(+kto.kNps<0) A.push({t:'Bel de klanten die je zouden afraden',dim:'service',duur:1,waarde:0,
+    waarom:'Je NPS is negatief: meer klanten raden je af dan aan. Dat weegt zwaarder dan elk marketingbudget.',bron:'Mensen'});
 
   // --- uit de canvassen ---
   if(!(S.eigen||{}).merk) A.push({t:'Schrijf op waarop klanten jullie kiezen',dim:'commercie',duur:1,waarde:0,
