@@ -311,7 +311,6 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="true" data-p="overzicht">Overzicht</button>
         <button class="tab" role="tab" aria-selected="false" data-p="profiel">Profiel per onderdeel</button>
         <button class="tab" role="tab" aria-selected="false" data-p="dataai">Data en AI</button>
-        <button class="tab" role="tab" aria-selected="false" data-p="invoeren">Je gegevens invullen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="antwoorden">Wat je hebt ingevuld</button>
         <button class="tab" role="tab" aria-selected="false" data-p="business">Businesscase</button>
         <span class="groep">Vergelijken</span>
@@ -438,7 +437,22 @@ input[type=range]{min-height:34px}
     <!-- MENSEN -->
     <section class="paneel" id="p-mensen">
       <div class="kaarten k2">
-        
+        <div class="kaart">
+          <h3>Wat je van je mensen weet</h3>
+          <p class="sub">Vul in wat je hebt. Wat je niet weet, is zelf al een uitkomst.</p>
+          <div class="rij"><label class="sub">Ziekteverzuim % <input type="number" id="mVerzuim" step="0.1" min="0" max="25" style="width:5rem"></label>
+            <label class="sub">Verloop % per jaar <input type="number" id="mVerloop" step="1" min="0" max="60" style="width:5rem"></label>
+            <label class="sub">eNPS (−100 tot 100) <input type="number" id="mEnps" step="1" min="-100" max="100" style="width:5rem"></label></div>
+          <div class="rij"><label class="sub">Laatste MTO <select id="mMto">
+            <option value="0">nooit gedaan</option><option value="1">langer dan 2 jaar geleden</option>
+            <option value="2">binnen 2 jaar</option><option value="3">jaarlijks, met opvolging</option></select></label>
+            <label class="sub">Openstaande vacatures <input type="number" id="mVac" min="0" max="99" style="width:4rem"></label></div>
+          <div id="mUitleg" style="margin-top:1rem;font-size:.9rem;line-height:1.6"></div>
+        </div>
+        <div class="kaart"><h3>Tegenover je branche</h3>
+          <svg id="mGrafiek" viewBox="0 0 460 250" role="img" aria-label="Mensen tegenover de branche"></svg>
+          <p class="sub" id="mBron"></p></div>
+      </div>
     </section>
 
     <!-- ANTWOORDEN -->
@@ -448,91 +462,6 @@ input[type=range]{min-height:34px}
         <p class="sub">Alle vragen uit de Frisse blik met jouw antwoord. Klopt er iets niet meer? Pas het aan bij Profiel — de rest rekent mee.</p>
         <div id="antwLijst" style="margin-top:.9rem"></div>
       </div>
-    </section>
-
-    <!-- INVOEREN -->
-    <section class="paneel" id="p-invoeren">
-      <div class="kaart conclusie" style="margin-top:1rem">
-        <h2>Je gegevens invullen</h2>
-        <p class="kern">Alles wat je hier invult, rekent door in de grafieken en het advies op de andere tabbladen.
-        Je hoeft niet alles in één keer — elk veld dat je invult maakt de conclusie scherper.</p>
-        <div id="invoerVoortgang"></div>
-      </div>
-
-      <div class="kaart" style="margin-top:1rem"><h3>Bedrijfscijfers</h3>
-        <p class="sub" style="margin:-.3rem 0 .3rem">Uit je jaarrekening of boekhouding. Deze voeden de maatstaven, de waardering en de businesscase.</p>
-        <div class="velden" style="margin-top:.7rem">
-          <div class="veld"><label for="cKvk">KVK-nummer</label><input type="text" id="cKvk" placeholder="8 cijfers" maxlength="8" inputmode="numeric"></div>
-          <div class="veld met-eenheid"><label for="cOmzet">Omzet</label><input type="number" id="cOmzet" min="0" step="50"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="cBrutomarge">Brutomarge</label><input type="number" id="cBrutomarge" min="0" max="100" step="1"><span class="eenheid">%</span></div>
-          <div class="veld met-eenheid"><label for="cEbitda">EBITDA</label><input type="number" id="cEbitda" step="10"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="cLoon">Loonkosten</label><input type="number" id="cLoon" min="0" step="10"><span class="eenheid">× €1.000</span></div>
-          <div class="veld"><label for="cKlanten">Aantal klanten</label><input type="number" id="cKlanten" min="0" step="1"></div>
-          <div class="veld met-eenheid"><label for="cGrootste">Grootste klant</label><input type="number" id="cGrootste" min="0" max="100" step="1"><span class="eenheid">%</span></div>
-          <div class="veld met-eenheid"><label for="cMarketing">Marketingbudget</label><input type="number" id="cMarketing" min="0" step="5"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="cNieuw">Nieuwe klanten</label><input type="number" id="cNieuw" min="0" step="1"><span class="eenheid">p.j.</span></div>
-          <div class="veld met-eenheid"><label for="cDso">Debiteurendagen</label><input type="number" id="cDso" min="0" max="180" step="1"><span class="eenheid">dagen</span></div>
-          <div class="veld met-eenheid"><label for="cIt">IT-budget</label><input type="number" id="cIt" min="0" step="5"><span class="eenheid">× €1.000</span></div>
-        </div></div>
-
-      <div class="kaart" style="margin-top:1rem"><h3>Balans en financiering</h3>
-        <p class="sub" style="margin:-.3rem 0 .3rem">Voor solvabiliteit, rentedekking en de waarde van je bedrijf.</p>
-        
-        
-        <div class="velden" style="margin-top:.7rem">
-          <div class="veld met-eenheid"><label for="wSchuld">Rentedragende schuld</label><input type="number" id="wSchuld" min="0" step="10"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="wCash">Liquide middelen</label><input type="number" id="wCash" min="0" step="10"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="wEV">Eigen vermogen</label><input type="number" id="wEV" step="10"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="wBalans">Balanstotaal</label><input type="number" id="wBalans" min="0" step="10"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="wVast">Vaste kosten</label><input type="number" id="wVast" min="0" step="10"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="wRente">Rente en aflossing</label><input type="number" id="wRente" min="0" step="5"><span class="eenheid">× €1.000</span></div>
-          <div class="veld met-eenheid"><label for="wMultiple">EBITDA-multiple</label><input type="number" id="wMultiple" value="5" min="1" max="15" step="0.5"><span class="eenheid">×</span></div>
-          <div class="veld met-eenheid"><label for="wWacc">Vermogenskosten (WACC)</label><input type="number" id="wWacc" value="10" min="3" max="30" step="0.5"><span class="eenheid">%</span></div>
-        </div>
-      </div></div>
-
-      <div class="kaart" style="margin-top:1rem"><h3>Mensen</h3>
-        <p class="sub" style="margin:-.3rem 0 .3rem">Uit je verzuim- en personeelsadministratie.</p>
-        <div class="velden" style="margin-top:.7rem">
-          <div class="veld met-eenheid"><label for="mVerzuim">Ziekteverzuim</label><input type="number" id="mVerzuim" min="0" max="30" step="0.1"><span class="eenheid">%</span></div>
-          <div class="veld met-eenheid"><label for="mVerloop">Verloop per jaar</label><input type="number" id="mVerloop" min="0" max="100" step="1"><span class="eenheid">%</span></div>
-          <div class="veld met-eenheid"><label for="mEnps">eNPS</label><input type="number" id="mEnps" min="-100" max="100" step="1"><span class="eenheid">-100..100</span></div>
-          <div class="veld met-eenheid"><label for="mMto">Tevredenheid</label><input type="number" id="mMto" min="1" max="10" step="0.1"><span class="eenheid">1-10</span></div>
-          <div class="veld"><label for="mVac">Openstaande vacatures</label><input type="number" id="mVac" min="0" step="1"></div>
-        </div></div>
-
-      <div class="kaart" style="margin-top:1rem"><h3>Klanten</h3>
-        <p class="sub" style="margin:-.3rem 0 .3rem">Weet je het niet, dan is dat het antwoord — en meteen je eerste actie.</p>
-        
-          
-          <div class="velden">
-            <div class="veld met-eenheid"><label for="kNps">NPS</label><input type="number" id="kNps" min="-100" max="100" step="1"><span class="eenheid">-100..100</span></div>
-            <div class="veld met-eenheid"><label for="kTevreden">Tevredenheid</label><input type="number" id="kTevreden" min="1" max="10" step="0.1"><span class="eenheid">1-10</span></div>
-            <div class="veld met-eenheid"><label for="kHerhaal">Herhaalopdrachten</label><input type="number" id="kHerhaal" min="0" max="100" step="1"><span class="eenheid">%</span></div>
-            <div class="veld met-eenheid"><label for="kKlacht">Klachten per maand</label><input type="number" id="kKlacht" min="0" step="1"><span class="eenheid">stuks</span></div>
-          </div>
-          <div id="ktoUit" style="margin-top:.8rem"></div></div></div>
-
-      <div class="kaart" style="margin-top:1rem"><h3>Metingen toevoegen</h3>
-        <p class="sub" style="margin:-.3rem 0 .3rem">NPS, tevredenheid en verzuim meet je een paar keer per jaar. Zet elke meting hier neer, dan zie je bij Cijfers of je acties iets hebben gedaan.</p>
-        
-        
-        <div class="velden">
-          <div class="veld"><label for="mtDatum">Datum</label><input type="date" id="mtDatum"></div>
-          <div class="veld"><label for="mtSoort">Wat</label><select id="mtSoort">
-            <option value="NPS">NPS (klanten)</option><option value="KTO">Klanttevredenheid (1-10)</option>
-            <option value="eNPS">eNPS (medewerkers)</option><option value="MTO">Medewerkerstevredenheid (1-10)</option>
-            <option value="Verzuim">Verzuim (%)</option><option value="Herhaal">Herhaalopdrachten (%)</option></select></div>
-          <div class="veld"><label for="mtWaarde">Waarde</label><input type="number" id="mtWaarde" step="0.1"></div>
-          <div class="veld"><label for="mtNotitie">Wat ging eraan vooraf</label><input type="text" id="mtNotitie" placeholder="bijv. na invoeren één servicepostbus"></div>
-        </div>
-        <div style="margin-top:.7rem"><button class="knop" id="mtToe">Meting toevoegen</button></div></div>
-
-      <div class="kaart" style="margin-top:1rem"><h3>Duurzaamheid en CSRD</h3>
-        <p class="sub" style="margin:-.3rem 0 .3rem">Geef per onderwerp aan hoe de cijfers tot stand komen. Niet alleen óf je ze hebt — vooral of het nog handwerk is.</p>
-        <div id="esgVelden"></div></div>
-
-      <div class="kaart" style="margin-top:1rem"><h3>Wat hieruit blijkt</h3><div id="invoerConclusie"></div></div>
     </section>
 
     <!-- BUSINESSCASE -->
@@ -562,7 +491,20 @@ input[type=range]{min-height:34px}
 
     <!-- WAARDE -->
     <section class="paneel" id="p-waarde">
-      
+      <div class="kaart" style="margin-top:1rem">
+        <h3>De cijfers achter de waarde</h3>
+        <p class="sub">Vul aan wat je weet. Wat leeg blijft, wordt geschat uit je omzet — dat staat er dan bij.</p>
+        <div class="velden" style="margin-top:.7rem">
+          <div class="veld met-eenheid"><label for="wSchuld">Rentedragende schuld</label><input type="number" id="wSchuld" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wCash">Liquide middelen</label><input type="number" id="wCash" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wEV">Eigen vermogen</label><input type="number" id="wEV" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wBalans">Balanstotaal</label><input type="number" id="wBalans" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wVast">Vaste kosten</label><input type="number" id="wVast" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wRente">Rente en aflossing</label><input type="number" id="wRente" min="0" step="5"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wMultiple">EBITDA-multiple</label><input type="number" id="wMultiple" value="5" min="1" max="15" step="0.5"><span class="eenheid">×</span></div>
+          <div class="veld met-eenheid"><label for="wWacc">Vermogenskosten (WACC)</label><input type="number" id="wWacc" value="10" min="3" max="30" step="0.5"><span class="eenheid">%</span></div>
+        </div>
+      </div>
       <div class="kaarten k2">
         <div class="kaart"><h3>Wat is het bedrijf waard?</h3><div id="wWaarde"></div></div>
         <div class="kaart"><h3>Gezondheid en financierbaarheid</h3><div id="wGezond"></div></div>
@@ -617,7 +559,9 @@ input[type=range]{min-height:34px}
         <div class="kaart"><h3>Incident: wat is het plan?</h3><div id="incident"></div></div>
       </div>
       
-      
+      <div class="kaart" style="margin-top:1rem"><h3>CSRD en duurzaamheid — waar sta je?</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Elf onderwerpen uit de drie pijlers. Geef per onderwerp aan hoe de cijfers tot stand komen. Niet alleen óf je ze hebt — vooral of het nog handwerk is.</p>
+        <div id="esgVelden"></div>
         <div class="kaarten k2" style="margin-top:1rem">
           <div><svg id="esgGraf" viewBox="0 0 620 420" role="img" aria-label="CSRD-gereedheid"></svg></div>
           <div id="esgUit"></div>
@@ -656,7 +600,22 @@ input[type=range]{min-height:34px}
 
     <!-- CIJFERS -->
     <section class="paneel" id="p-cijfers">
-      
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Je eigen cijfers</h3>
+        <p class="sub">Vul in wat je weet. Elke ingevulde regel levert maatstaven op die je naast je branche kunt leggen.</p>
+        <div class="velden" style="margin-top:.7rem">
+          <div class="veld met-eenheid"><label for="cOmzet">Omzet</label><input type="number" id="cOmzet" min="0" step="50"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="cBrutomarge">Brutomarge</label><input type="number" id="cBrutomarge" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+          <div class="veld met-eenheid"><label for="cEbitda">EBITDA</label><input type="number" id="cEbitda" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="cLoon">Loonkosten</label><input type="number" id="cLoon" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld"><label for="cKlanten">Aantal klanten</label><input type="number" id="cKlanten" min="0" step="1"></div>
+          <div class="veld met-eenheid"><label for="cGrootste">Grootste klant</label><input type="number" id="cGrootste" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+          <div class="veld met-eenheid"><label for="cMarketing">Marketingbudget</label><input type="number" id="cMarketing" min="0" step="5"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="cNieuw">Nieuwe klanten</label><input type="number" id="cNieuw" min="0" step="1"><span class="eenheid">p.j.</span></div>
+          <div class="veld met-eenheid"><label for="cDso">Debiteurendagen</label><input type="number" id="cDso" min="0" max="180" step="1"><span class="eenheid">dagen</span></div>
+          <div class="veld met-eenheid"><label for="cIt">IT-budget</label><input type="number" id="cIt" min="0" step="5"><span class="eenheid">× €1.000</span></div>
+        </div>
+      </div>
       <div class="kaarten k2">
         <div class="kaart"><h3>Je maatstaven</h3><div id="cKpis"></div></div>
         <div class="kaart"><h3>Tegenover je branche</h3>
@@ -664,13 +623,32 @@ input[type=range]{min-height:34px}
           <p class="sub" id="cBron"></p></div>
       </div>
       <div class="kaarten k2">
-        
+        <div class="kaart"><h3>Klanttevredenheid (KTO)</h3>
+          <p class="sub" style="margin:-.3rem 0 .7rem">Vul in wat je weet. Weet je het niet, dan is dat het antwoord.</p>
+          <div class="velden">
+            <div class="veld met-eenheid"><label for="kNps">NPS</label><input type="number" id="kNps" min="-100" max="100" step="1"><span class="eenheid">-100..100</span></div>
+            <div class="veld met-eenheid"><label for="kTevreden">Tevredenheid</label><input type="number" id="kTevreden" min="1" max="10" step="0.1"><span class="eenheid">1-10</span></div>
+            <div class="veld met-eenheid"><label for="kHerhaal">Herhaalopdrachten</label><input type="number" id="kHerhaal" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+            <div class="veld met-eenheid"><label for="kKlacht">Klachten per maand</label><input type="number" id="kKlacht" min="0" step="1"><span class="eenheid">stuks</span></div>
+          </div>
+          <div id="ktoUit" style="margin-top:.8rem"></div></div>
         <div class="kaart"><h3>Trusted advisor — waar sta je bij je klant?</h3>
           <p class="sub" style="margin:-.3rem 0 .5rem">Vier treden. Hoe hoger, hoe minder de prijs het gesprek bepaalt.</p>
           <svg id="taGraf" viewBox="0 0 460 260" role="img" aria-label="Trusted advisor-ladder"></svg>
           <div id="taUit"></div></div>
       </div>
-      
+      <div class="kaart"><h3>Metingen over de tijd</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">NPS, klanttevredenheid, medewerkerstevredenheid en verzuim meet je een paar keer per jaar. Zet ze hier neer, dan zie je of je acties iets hebben gedaan.</p>
+        <div class="velden">
+          <div class="veld"><label for="mtDatum">Datum</label><input type="date" id="mtDatum"></div>
+          <div class="veld"><label for="mtSoort">Wat</label><select id="mtSoort">
+            <option value="NPS">NPS (klanten)</option><option value="KTO">Klanttevredenheid (1-10)</option>
+            <option value="eNPS">eNPS (medewerkers)</option><option value="MTO">Medewerkerstevredenheid (1-10)</option>
+            <option value="Verzuim">Verzuim (%)</option><option value="Herhaal">Herhaalopdrachten (%)</option></select></div>
+          <div class="veld"><label for="mtWaarde">Waarde</label><input type="number" id="mtWaarde" step="0.1"></div>
+          <div class="veld"><label for="mtNotitie">Wat ging eraan vooraf</label><input type="text" id="mtNotitie" placeholder="bijv. na invoeren één servicepostbus"></div>
+        </div>
+        <div style="margin-top:.7rem"><button class="knop" id="mtToe">Meting toevoegen</button></div>
         <svg id="mtGraf" viewBox="0 0 900 320" role="img" aria-label="Metingen over de tijd" style="margin-top:1rem"></svg>
         <div id="mtLijst" style="margin-top:.8rem"></div>
         <div id="mtEffect" style="margin-top:.8rem"></div></div>
@@ -1308,7 +1286,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenInvoer(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -3328,60 +3306,6 @@ const ESG=[
 ];
 const ESGSTAT=['Niet beschikbaar','Met de hand bij elkaar gezocht','Deels uit een systeem','Komt vanzelf uit de administratie'];
 const ESGPIJLER={E:['Milieu','#1F9D55'],S:['Sociaal','#2742D6'],G:['Bestuur','#7A5BD6']};
-
-function tekenInvoer(){
-  const vg=document.getElementById('invoerVoortgang'); if(!vg) return;
-  const c=S.cijfers||{}, F=S.fin||{}, m=S.mensen||{}, k=S.kto||{}, esg=S.esg||{};
-  const groepen=[
-   ['Bedrijfscijfers', ['cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt'].map(function(x){return c[x];})],
-   ['Balans en financiering', ['wSchuld','wCash','wEV','wBalans','wVast','wRente'].map(function(x){return F[x];})],
-   ['Mensen', ['mVerzuim','mVerloop','mEnps','mMto','mVacatures'].map(function(x){return m[x];})],
-   ['Klanten', ['kNps','kTevreden','kHerhaal','kKlacht'].map(function(x){return k[x];})],
-   ['Duurzaamheid', ESG.map(function(x){return esg[x.k]!==undefined?esg[x.k]:undefined;})]
-  ];
-  let totaal=0, gevuld=0;
-  const balken=groepen.map(function(g2){
-    const n=g2[1].length, v=g2[1].filter(function(x){return x!==undefined&&x!=='';}).length;
-    totaal+=n; gevuld+=v;
-    const pct=Math.round(v/n*100);
-    return '<div style="margin-top:.5rem"><div style="display:flex;justify-content:space-between;font-size:.84rem"><span>'+g2[0]+'</span><span class="sub">'+v+' van '+n+'</span></div>'
-     +'<div style="background:#EFEFEC;border-radius:8px;height:10px;margin-top:.2rem"><div style="width:'+pct+'%;height:10px;border-radius:8px;background:'+(pct>66?'var(--groen)':(pct>33?'var(--amber)':'var(--rood)'))+'"></div></div></div>';
-  }).join('');
-  const pctT=Math.round(gevuld/totaal*100);
-  vg.innerHTML='<div style="display:flex;align-items:baseline;gap:.7rem;margin-top:.5rem"><b style="font-family:\'Bricolage Grotesque\';font-size:1.8rem">'+pctT+'%</b>'
-   +'<span class="sub">'+gevuld+' van de '+totaal+' velden ingevuld</span></div>'+balken
-   +'<p class="sub" style="margin-top:.7rem">Elk veld dat je invult, verandert direct de grafieken, de conclusie en het advies op de andere tabbladen.</p>';
-
-  // wat blijkt eruit — vooral: hoeveel is nog handwerk
-  const el=document.getElementById('invoerConclusie'); if(!el) return;
-  const hand=ESG.filter(function(x){return esg[x.k]===1;}).length;
-  const mist=ESG.filter(function(x){return !esg[x.k];}).length;
-  const auto=ESG.filter(function(x){return esg[x.k]>=2;}).length;
-  const g=k2=>S.niveaus[k2]||2;
-  const bronnen=[];
-  if(!c.cOmzet||!c.cEbitda) bronnen.push('je boekhouding');
-  if(!m.mVerzuim) bronnen.push('je verzuimsysteem');
-  if(!k.kNps) bronnen.push('een klantvraag die nog niet gesteld wordt');
-  if(mist>4) bronnen.push('de energierekening, het wagenpark en de urenregistratie');
-
-  el.innerHTML='<p style="font-size:.9rem;line-height:1.65">'
-   +'Je hebt zojuist gegevens uit <b>verschillende systemen bij elkaar gezocht</b>. Dat is precies waar het bij rapporteren op vastloopt: '
-   +'de cijfers b\u00e9staan, maar ze komen niet vanzelf bij elkaar.</p>'
-   +'<div class="kaarten k3" style="margin-top:.8rem">'
-   +'<div class="kaart"><h3>Nog handwerk</h3><div class="kpi" style="color:'+(hand>3?'var(--rood)':'var(--amber)')+'">'+hand+'</div><div class="sub">duurzaamheidsonderwerpen worden met de hand verzameld</div></div>'
-   +'<div class="kaart"><h3>Ontbreekt</h3><div class="kpi">'+mist+'</div><div class="sub">onderwerpen waarvan je de cijfers niet hebt</div></div>'
-   +'<div class="kaart"><h3>Komt uit een systeem</h3><div class="kpi" style="color:var(--groen)">'+auto+'</div><div class="sub">van de '+ESG.length+'</div></div>'
-   +'</div>'
-   +'<div style="margin-top:.9rem;padding:.8rem .95rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.88rem;line-height:1.6">'
-   +'<b>Wat hier te automatiseren valt:</b> '
-   +(bronnen.length?'de gegevens die je mist staan meestal al in '+bronnen.slice(0,3).join(', ')+'. ':'')
-   +'Stuurinformatie staat bij jullie op niveau '+g('analytics')+' en datakwaliteit op '+g('quality')+'. '
-   +'Zolang dat zo is, is elke rapportage \u2014 aan de bank, aan een klant, of straks onder CSRD \u2014 opnieuw handwerk. '
-   +'Dat is niet een rapportageprobleem maar een koppelingsprobleem.</div>'
-   +'<div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">'
-   +'<button class="knop" data-ga="eindconclusie">Bekijk wat dit betekent</button>'
-   +'<button class="knop licht" data-ga="uitvoering">Naar de uitvoeringsladder</button></div>';
-}
 
 function tekenESG(){
   const vel=document.getElementById('esgVelden'); if(!vel) return;
