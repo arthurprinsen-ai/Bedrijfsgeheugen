@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Jouw koppelingen · Bedrijfsgeheugen</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--groen:#1F9D55;--amber:#E8A200;--rood:#D93025;--wit:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--papier);color:var(--inkt);font-family:"Instrument Sans",system-ui,sans-serif;line-height:1.65}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;line-height:1.1}
+a{color:var(--blauw)}
+.wrap{max-width:60rem;margin:0 auto;padding:0 1.2rem}
+header{border-bottom:2px solid var(--inkt);background:var(--papier)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:64px;flex-wrap:wrap}
+.merk{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.1rem;text-decoration:none;color:var(--inkt)}
+.merk span{color:var(--blauw)}
+main{padding:2rem 0 4rem}
+.eyebrow{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--oranje)}
+h1{font-size:clamp(1.8rem,4.5vw,2.7rem);margin:.3rem 0 .5rem}
+.sub{font-size:.88rem;color:var(--grijs)}
+.kaart{background:var(--wit);border:1px solid var(--lijn);border-radius:10px;padding:1.1rem 1.25rem;margin-top:1rem}
+.kaart h3{font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--grijs);font-weight:600;margin-bottom:.4rem}
+.kpi{font-family:"Bricolage Grotesque";font-weight:800;font-size:2rem;line-height:1}
+.drie{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1rem}
+.rij{display:grid;grid-template-columns:auto 1fr auto;gap:.9rem;padding:.85rem 0;border-bottom:1px solid var(--lijn);align-items:start}
+.bol{width:.7rem;height:.7rem;border-radius:50%;margin-top:.45rem}
+.pil{display:inline-block;font-size:.72rem;font-weight:600;padding:.15rem .5rem;border-radius:20px;white-space:nowrap}
+.balk{background:#EFEFEC;border-radius:8px;height:10px;margin-top:.35rem;overflow:hidden}
+.balk div{height:10px;border-radius:8px;background:var(--blauw)}
+.let{padding:.8rem .9rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 5px 5px 0;font-size:.88rem;line-height:1.6;margin-top:.9rem}
+.knop{display:inline-block;background:var(--inkt);color:#fff;border:0;border-radius:8px;padding:.7rem 1.1rem;font:inherit;font-weight:600;text-decoration:none;cursor:pointer}
+input{height:44px;padding:0 .8rem;border:1px solid var(--lijn);border-radius:8px;font:inherit;background:var(--wit);min-width:14rem}
+footer{border-top:2px solid var(--inkt);padding:1.4rem 0;font-size:.86rem;color:var(--grijs)}
+</style>
+</head>
+<body>
+<header><div class="wrap top">
+  <a class="merk" href="/">Bedrijfs<span>geheugen</span></a>
+  <span class="sub" id="ververst"></span>
+</div></header>
+
+<main class="wrap">
+  <span class="eyebrow">Jouw portaal · bijgewerkt vanuit onze administratie</span>
+  <h1 id="titel">Wat er voor je draait</h1>
+  <p class="sub" id="onder">Alles wat we voor je gebouwd hebben, wat er nu loopt, en hoeveel uur eraan besteed is.</p>
+
+  <div id="zoek" class="kaart" hidden>
+    <h3>Voor welk bedrijf</h3>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.3rem">
+      <input type="text" id="fKlant" placeholder="bedrijfsnaam">
+      <button class="knop" id="bOk">Bekijken</button>
+    </div>
+    <p class="sub" style="margin-top:.6rem">Je kunt ook rechtstreeks naar <code>?klant=jouwbedrijf</code>.</p>
+  </div>
+
+  <div id="inhoud"></div>
+</main>
+
+<footer><div class="wrap">Bedrijfsgeheugen · Vragen? Bel of mail gerust — <a href="/contact">contact</a></div></footer>
+
+<script>
+const HOOK='https://hook.eu1.make.com/q2xq2fbi6tfw9o86obq47j223ho42qh2';
+const KL={'Draait':['var(--groen)','#E8F5EC'],'In aanbouw':['var(--blauw)','#EDF0FD'],'Voorgesteld':['var(--amber)','#FFF6E3'],'Idee':['var(--grijs)','#F1F0EC'],'Gestopt':['var(--rood)','#FDECE8']};
+const params=new URLSearchParams(location.search);
+const klant=params.get('klant');
+
+function pil(t){const k=KL[t]||KL['Idee'];return '<span class="pil" style="color:'+k[0]+';background:'+k[1]+'">'+t+'</span>';}
+
+function toon(d){
+  const K=d.koppelingen||[];
+  const el=document.getElementById('inhoud');
+  document.getElementById('titel').textContent='Wat er draait voor '+d.klant;
+  document.getElementById('ververst').textContent='Bijgewerkt '+d.opgehaald;
+  if(!K.length){
+    el.innerHTML='<div class="kaart"><h3>Nog niets vastgelegd</h3><p class="sub">Er staat nog geen koppeling op deze naam. Klopt dat niet? Laat het ons weten, dan kijken we mee.</p></div>';
+    return;
+  }
+  const draait=K.filter(k=>k.status==='Draait');
+  const bouw=K.filter(k=>k.status==='In aanbouw');
+  const uren=K.reduce((a,k)=>a+(+k.uren||0),0);
+  const bespaard=draait.reduce((a,k)=>a+(+k.besparing||0),0);
+
+  el.innerHTML=
+   '<div class="drie" style="margin-top:1rem">'
+   +'<div class="kaart"><h3>Draait nu</h3><div class="kpi" style="color:var(--groen)">'+draait.length+'</div><div class="sub">van de '+K.length+' koppelingen</div></div>'
+   +'<div class="kaart"><h3>Uur besteed</h3><div class="kpi">'+uren.toFixed(1)+'</div><div class="sub">aan bouwen en aansluiten</div></div>'
+   +'<div class="kaart"><h3>Uur per jaar terug</h3><div class="kpi" style="color:var(--groen)">'+Math.round(bespaard)+'</div><div class="sub">bij jullie op de werkvloer</div></div>'
+   +'</div>'
+
+   +'<div class="kaart"><h3>Wat er draait</h3>'
+   + (draait.length? draait.map(function(k){
+       return '<div class="rij"><span class="bol" style="background:var(--groen)"></span>'
+        +'<div><b>'+k.titel+'</b><div class="sub">'+k.van+' \\u2192 '+k.naar+' \\u00b7 gebouwd met '+(k.middel||'\\u2014')+'</div>'
+        +(k.notitie?'<div class="sub">'+k.notitie+'</div>':'')+'</div>'
+        +'<div style="text-align:right">'+pil('Draait')+'<div class="sub" style="margin-top:.25rem">'+Math.round(k.besparing||0)+' uur p.j.</div></div></div>';
+      }).join('') : '<p class="sub">Nog niets live.</p>')
+   +'</div>'
+
+   + (bouw.length? '<div class="kaart"><h3>Waar we nu aan werken</h3>'
+      + bouw.map(function(k){
+         return '<div class="rij"><span class="bol" style="background:var(--blauw)"></span>'
+          +'<div><b>'+k.titel+'</b><div class="sub">'+k.van+' \\u2192 '+k.naar+' \\u00b7 '+(k.middel||'\\u2014')+'</div>'
+          +(k.notitie?'<div class="sub">'+k.notitie+'</div>':'')
+          +'<div class="balk"><div style="width:'+Math.min(100,(+k.uren||0)/8*100)+'%"></div></div>'
+          +'<div class="sub">'+(+k.uren||0)+' uur besteed</div></div>'
+          +'<div>'+pil('In aanbouw')+'</div></div>';
+        }).join('')+'</div>' : '')
+
+   +'<div class="kaart"><h3>Alles op een rij</h3>'
+   + K.map(function(k){
+      return '<div class="rij"><span class="bol" style="background:'+(KL[k.status]||KL['Idee'])[0]+'"></span>'
+       +'<div><b>'+k.titel+'</b><div class="sub">'+(k.middel||'\\u2014')+' \\u00b7 '+(+k.uren||0)+' uur</div></div>'
+       +'<div>'+pil(k.status)+'</div></div>';
+     }).join('')
+   +'</div>'
+
+   +'<div class="let"><b>Wat die uren betekenen.</b> De uren die vrijkomen zijn geen geld dat binnenkomt \\u2014 jullie mensen blijven. '
+   +'Het is ruimte: hetzelfde team kan meer aan zonder dat er iemand bij hoeft. Wat dat waard is, bepalen jullie zelf.</div>'
+
+   +'<div class="kaart"><h3>Storingen en meldingen</h3>'
+   +'<p class="sub">Valt er iets stil, dan zie je dat hier \\u2014 en krijg je bericht v\\u00f3\\u00f3rdat je klant het merkt. '
+   +'Op dit moment zijn er <b>geen storingen</b> gemeld.</p>'
+   +'<p class="sub" style="margin-top:.5rem">Merk je zelf iets? Bel of mail gerust. Onder de twee uur werk brengen we niets in rekening.</p></div>';
+}
+
+function haal(naam){
+  document.getElementById('inhoud').innerHTML='<div class="kaart"><p class="sub">Ophalen\\u2026</p></div>';
+  fetch(HOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({klant:naam})})
+    .then(r=>r.json()).then(toon)
+    .catch(function(){
+      document.getElementById('inhoud').innerHTML='<div class="kaart"><h3>Even niet bereikbaar</h3><p class="sub">We konden de gegevens nu niet ophalen. Probeer het zo nog eens, of laat het ons weten.</p></div>';
+    });
+}
+
+if(klant){ haal(klant); }
+else{
+  document.getElementById('zoek').hidden=false;
+  document.getElementById('bOk').addEventListener('click',function(){
+    const v=document.getElementById('fKlant').value.trim();
+    if(v) location.search='?klant='+encodeURIComponent(v);
+  });
+}
+</script>
+</body>
+</html>
