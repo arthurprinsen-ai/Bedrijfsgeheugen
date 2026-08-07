@@ -763,6 +763,19 @@ input[type=range]{min-height:34px}
         Kies hieronder één strategisch thema. Dit portaal rekent uit wat er dan geraakt wordt — en met welke volwassenheid je daaraan begint.</p>
         <div id="dnaKeuze" style="margin-top:.9rem"></div>
       </div>
+      <div class="kaart" style="margin-top:1rem"><h3>Hoe dit in elkaar zit</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Drie lagen. De onderste verandert zelden, de bovenste elke dag.</p>
+        <div class="kaarten k3">
+          <div style="padding:.8rem .9rem;border-left:4px solid var(--inkt);background:#FBFAF7;border-radius:0 6px 6px 0">
+            <b style="font-size:.92rem">De taal</b>
+            <p style="font-size:.86rem;line-height:1.6;color:var(--grijs);margin:.2rem 0 0">Hoe je een bedrijf beschrijft: strategie, capabilities, afdelingen, processen, gegevens, systemen, AI, maatstaven, projecten. Voor elk bedrijf dezelfde bouwstenen — alleen de volwassenheid verschilt.</p></div>
+          <div style="padding:.8rem .9rem;border-left:4px solid var(--blauw);background:#F5F7FF;border-radius:0 6px 6px 0">
+            <b style="font-size:.92rem">De logica</b>
+            <p style="font-size:.86rem;line-height:1.6;color:var(--grijs);margin:.2rem 0 0">De regels die bepalen wat een strategisch thema activeert, en in welke volgorde het kan landen. Dat is wat de impactcijfers en de veranderagenda uitrekenen.</p></div>
+          <div style="padding:.8rem .9rem;border-left:4px solid var(--oranje);background:#FFF6F2;border-radius:0 6px 6px 0">
+            <b style="font-size:.92rem">De werkplek</b>
+            <p style="font-size:.86rem;line-height:1.6;color:var(--grijs);margin:.2rem 0 0">Dit portaal: kiezen, doorvragen, plannen, afvinken en zien wat het oplevert. Hier werk je, de rest zit eronder.</p></div>
+        </div></div>
       <div class="kaart" style="margin-top:1rem"><h3>Hoe je dit gebruikt</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Negen stappen, in volgorde. Klik op een stap om er direct heen te springen.</p>
         <div id="dnaFamilie"></div></div>
@@ -794,8 +807,11 @@ input[type=range]{min-height:34px}
 
       <div class="kaart" style="margin-top:1rem"><h3>Transformatieradar</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Zeven lagen van het model, elk met je huidige volwassenheid. De vorm laat zien waar het scheef zit.</p>
-        <svg id="dnaRadar" viewBox="0 0 460 420" role="img" aria-label="Transformatieradar"></svg>
-        <div class="sub" id="dnaRadarT"></div></div>
+        <div class="kaarten k2">
+          <div><svg id="dnaRadar" viewBox="0 0 460 420" role="img" aria-label="Transformatieradar"></svg>
+            <div class="sub" id="dnaRadarT"></div></div>
+          <div id="dnaRadarVragen"></div>
+        </div></div>
 
       <div class="kaart" style="margin-top:1rem"><h3>De capability-bibliotheek</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Alles wat het model kent. Zoek erin, of kijk welk thema een capability activeert.</p>
@@ -2668,6 +2684,36 @@ function tekenDNAv3(caps, K){
     g2='<path d="M'+doel.map(function(x){return x.join(',');}).join(' L')+' Z" fill="none" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>'+g2;
     g2='<path d="M'+punten.map(function(x){return x.join(',');}).join(' L')+' Z" fill="rgba(39,66,214,.16)" stroke="#2742D6" stroke-width="2.5"/>'+g2;
     rd.innerHTML=g2;
+    // managementvragen naast de radar
+    const rv=document.getElementById('dnaRadarVragen');
+    if(rv){
+      const zonderProject=caps.filter(function(c){
+        return !(S.taken||[]).some(function(t){return t.dim===c.dim;}); });
+      const achter=caps.filter(function(c){ return g(c.dim)<3; });
+      const taken=(S.taken||[]);
+      const loopt=taken.filter(function(t){return !t.klaar;}).length;
+      const klaar=taken.filter(function(t){return t.klaar;}).length;
+      const zonderKpi=caps.filter(function(c){ return !(S.metingen||[]).length && c.kpi.length; });
+      const R=[
+        ['Welke capabilities zijn nog onvoldoende?', achter.length
+          ? achter.map(function(c){return c.n+' (niveau '+g(c.dim)+')';}).join('<br>')
+          : 'Geen \u2014 alle capabilities in dit thema staan op 3 of hoger.'],
+        ['Welke capabilities hebben nog geen project?', zonderProject.length
+          ? zonderProject.map(function(c){return c.n;}).join('<br>')+'<br><span class="sub">Zonder project blijft een capability een voornemen.</span>'
+          : 'Geen \u2014 elke capability heeft iets lopen.'],
+        ['Hoe staat de uitvoering ervoor?', taken.length
+          ? klaar+' afgerond, '+loopt+' lopend van de '+taken.length+'.'+(loopt>5?'<br><span class="sub">Meer dan vijf tegelijk is in het mkb te veel; kies er drie.</span>':'')
+          : 'Nog niets gepland. Zet de eerste stap uit de agenda in je roadmap.'],
+        ['Welke maatstaven ontbreken?', (S.metingen||[]).length
+          ? 'Je meet al. Kijk bij Cijfers of de trend de goede kant op gaat.'
+          : 'Je hebt nog geen enkele meting vastgelegd. Zonder nulmeting kun je later niet laten zien dat iets hielp.']
+      ];
+      rv.innerHTML=R.map(function(r){
+        return '<div style="padding:.6rem 0;border-bottom:1px solid var(--lijn)">'
+         +'<b style="font-size:.88rem">'+r[0]+'</b>'
+         +'<div style="font-size:.86rem;line-height:1.6;color:var(--grijs);margin-top:.2rem">'+r[1]+'</div></div>';
+      }).join('');
+    }
     const laagste=L.slice().sort(function(a,c){return g(a[1])-g(c[1]);})[0];
     document.getElementById('dnaRadarT').innerHTML='De stippellijn is niveau 4, het doel voor het mkb. '
      +'De diepste deuk zit bij <b>'+laagste[0].toLowerCase()+'</b> (niveau '+g(laagste[1])+') \u2014 een transformatie beweegt niet sneller dan zijn diepste deuk.';
