@@ -325,6 +325,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="false" data-p="canvassen">Canvassen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="eindconclusie">De eindconclusie</button>
         <span class="groep">Doen</span>
+        <button class="tab" role="tab" aria-selected="false" data-p="uitvoering">Van strategie naar uitvoering</button>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
         <span class="groep">Beheer</span>
@@ -666,6 +667,18 @@ input[type=range]{min-height:34px}
         <div id="adviesLijst" style="margin-top:.9rem"></div>
       </div>
       <div class="kaart" id="rekenwijze1" style="margin-top:1rem"></div>
+    </section>
+
+    <!-- UITVOERING -->
+    <section class="paneel" id="p-uitvoering">
+      <div class="kaart conclusie" style="margin-top:1rem">
+        <h2>Van strategie naar uitvoering</h2>
+        <p class="kern">De modellen hierboven zeggen <b>waar</b> het schuurt. De canvassen zeggen <b>waarom</b> dat je verdienmodel raakt.
+        Wat vrijwel elk model overslaat: <b>welke processen, systemen, gegevens en rollen er dan precies moeten veranderen</b> — en wie dat maandagochtend oppakt.
+        Dat staat hieronder, per thema, afgeleid uit je eigen scores.</p>
+      </div>
+      <div id="s2o"></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Wat Bedrijfsgeheugen hierin doet</h3><div id="s2oRol"></div></div>
     </section>
 
     <!-- ROADMAP -->
@@ -1194,7 +1207,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1794,6 +1807,115 @@ function tekenCanvassen(){
      +(leeg.length?'<p class="sub" style="margin-top:.8rem">Nog niet ingevuld: '+leeg.map(function(v){return v[1].toLowerCase();}).join(', ')+'.</p>':'')
      +'<div style="margin-top:.7rem"><button class="knop" data-ga="eindconclusie">Naar de eindconclusie</button></div>';
   }
+}
+
+function tekenUitvoering(){
+  const box=document.getElementById('s2o'); if(!box) return;
+  const g=k=>S.niveaus[k]||2, b=B(), eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const f=[0,1,.78,.5,.22,.06]; const K={};
+  DIM.forEach(function(d){ K[d.k]=d.u*f[g(d.k)]*(S.mw/24)*46*S.uur; });
+  const A=verzamelAdvies().filter(function(a){return modelAan(a.bron);});
+
+  // drie thema's, afgeleid uit de scan
+  const smalst=DIM.slice().sort(function(x,y){return g(x.k)-g(y.k);})[0];
+  const duurste=DIM.slice().sort(function(x,y){return K[y.k]-K[x.k];})[0];
+  const THEMA=[
+   {t:'Kennis uit hoofden', dim:'mensen',
+    doel:'Het bedrijf kan dertig dagen door zonder de mensen die het nu dragen',
+    afd:'Alle afdelingen, te beginnen bij '+duurste.n.toLowerCase(),
+    cap:'Vastgelegde werkwijzen op de plek waar het werk gebeurt',
+    proces:['Per kerntaak vastleggen wie het kan (kennismatrix)','Besluit vastleggen bij de taak, niet in een los document','Maandelijkse controle: wat is veranderd sinds vorige maand'],
+    data:['Klantafspraken en uitzonderingen','Werkinstructies','Wie-kan-wat per taak'],
+    sys:['Bestaande pakketten — geen nieuw systeem','Gedeelde documentomgeving','Takenlijst met eigenaar'],
+    ai:['Gesprekken en notities laten samenvatten tot een concept','Zoeken in eigen documenten met een vraag in gewone taal'],
+    gov:['Eén eigenaar per kernproces','Wie mag wijzigen, wie controleert'],
+    kpi:['Aantal taken met maar één naam erachter','Inwerktijd nieuwe medewerker','Aantal keer dat iemand gebeld wordt op vakantie'],
+    proj:['Kennismatrix voor de tien belangrijkste taken','Drie procesbeschrijvingen van één A4'],
+    quick:'De kennismatrix: één middag, en je ziet meteen welke rijen één naam hebben',
+    eigenaar:'Directie samen met de leidinggevende van de zwaarste afdeling',
+    prio:'Hoog', planning:'Maand 1–3'},
+
+   {t:'Eén keer invoeren', dim:'tech',
+    doel:'Gegevens worden één keer ingevoerd en stromen door naar waar ze nodig zijn',
+    afd:'Commercie, operatie en finance',
+    cap:'Gekoppelde systemen in plaats van losse eilanden',
+    proces:['Offerte wordt order zonder overtypen','Uren gaan rechtstreeks naar de factuur','Klantgegevens één keer vastleggen'],
+    data:['Klanten, orders, uren — met afgesproken definities','Eén bronsysteem per gegeven'],
+    sys:['Koppeling tussen de twee zwaarste systemen','Rapportage bovenop de bron, niet ernaast'],
+    ai:['Documenten uitlezen en boeken','Afwijkingen signaleren in plaats van rapporteren'],
+    gov:['Definities van klant, order en uur op één A4','Eigenaar per bron'],
+    kpi:['Aantal keer per week overgetypt','Doorlooptijd offerte naar factuur','Fouten die hersteld moeten worden'],
+    proj:['Eén koppeling live','Rapportagekalender'],
+    quick:'Eén week turven hoe vaak iets dubbel wordt ingevoerd — dat getal is je businesscase',
+    eigenaar:'Iemand met mandaat over beide systemen, niet de leverancier',
+    prio:'Hoog', planning:'Maand 2–5'},
+
+   {t:'Sturen op cijfers', dim:'analytics',
+    doel:'Iedere maand dezelfde cijfers, waar niemand meer over discussieert',
+    afd:'Directie en finance, daarna de rest',
+    cap:'Stuurinformatie die uit het werk zelf komt',
+    proces:['Vaste maandafsluiting met vaste stappen','Vast overlegmoment met vaste cijfers','Afwijking bespreken, niet de definitie'],
+    data:['Omzet, marge, uren, verzuim, debiteuren','Met vastgelegde definities'],
+    sys:['Eén rapportage-omgeving','Automatisch bijwerken, geen handwerk'],
+    ai:['Vooruitkijken op basis van je eigen historie','Toelichting bij afwijkingen als concept'],
+    gov:['Wie hakt de knoop door bij een definitie','Rapportagekalender met verantwoordelijken'],
+    kpi:['Aantal dagen tot de maandcijfers klaar zijn','Aantal versies van hetzelfde cijfer','Besluiten genomen op cijfers'],
+    proj:['Eén dashboard met vijf getallen','Definitielijst'],
+    quick:'Kies vijf getallen die er echt toe doen en spreek af wat ze betekenen',
+    eigenaar:'Finance, met de directie als opdrachtgever',
+    prio: g('analytics')<3?'Hoog':'Midden', planning:'Maand 3–6'}
+  ];
+
+  box.innerHTML=THEMA.map(function(T,i){
+    const kost=K[T.dim]||0;
+    const rij=function(l,v){ return '<tr><td style="padding:.42rem .6rem .42rem 0;vertical-align:top;white-space:nowrap;color:var(--grijs);font-size:.82rem;border-bottom:1px solid var(--lijn)">'+l+'</td>'
+      +'<td style="padding:.42rem 0;font-size:.87rem;line-height:1.6;border-bottom:1px solid var(--lijn)">'+v+'</td></tr>'; };
+    const lijst=function(a){ return a.map(function(x){return '\u2022 '+x;}).join('<br>'); };
+    return '<details class="mod" style="margin-top:1rem"'+(i===0?' open':'')+'>'
+     +'<summary><h3>'+(i+1)+'. '+T.t+'</h3><span class="herkomst">'+T.prio.toLowerCase()+' · '+T.planning+' \u25be</span></summary>'
+     +'<div class="inhoud"><table style="width:100%;border-collapse:collapse">'
+     +rij('Strategisch doel','<b>'+T.doel+'</b>')
+     +rij('Waar het nu staat','Niveau '+g(T.dim)+' van 5'+(kost?' · kost nu '+eur(kost)+' per jaar':'')+' · branche ~'+b.dig.toFixed(1))
+     +rij('Betrokken afdelingen',T.afd)
+     +rij('Gewenst vermogen',T.cap)
+     +rij('Proceswijzigingen',lijst(T.proces))
+     +rij('Gegevens',lijst(T.data))
+     +rij('Systemen',lijst(T.sys))
+     +rij('AI-mogelijkheden',lijst(T.ai))
+     +rij('Governance',lijst(T.gov))
+     +rij('Waaraan je het meet',lijst(T.kpi))
+     +rij('Projecten',lijst(T.proj))
+     +rij('Quick win','<b>'+T.quick+'</b>')
+     +rij('Eigenaar',T.eigenaar)
+     +rij('Prioriteit en planning',T.prio+' · '+T.planning)
+     +'</table>'
+     +'<div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">'
+     +'<button class="knop" data-advies="'+encodeURIComponent(JSON.stringify({t:'Quick win: '+T.t,dim:T.dim,d:1}))+'">Zet de quick win in mijn roadmap</button>'
+     +'<button class="knop licht" data-advies="'+encodeURIComponent(JSON.stringify({t:T.t,dim:T.dim,d:3}))+'">Zet het hele thema in mijn roadmap</button>'
+     +'</div></div></details>';
+  }).join('');
+
+  document.getElementById('s2oRol').innerHTML=
+    '<p class="sub" style="margin:-.3rem 0 .8rem">Een canvas invullen is niet hetzelfde als het uitvoeren. Dit is waar wij het van je overnemen — en waar niet.</p>'
+   +'<div class="kaarten k3">'
+   +'<div><b>Wij tellen mee</b><p style="font-size:.87rem;line-height:1.6">Eén dag meelopen op de werkvloer: hoe vaak wordt iets overgetypt, waar wordt gewacht, wie wordt er gebeld als het misgaat. Dat is het deel dat een scan niet kan.</p></div>'
+   +'<div><b>Wij bouwen het</b><p style="font-size:.87rem;line-height:1.6">De koppeling, het dashboard, de kennismatrix, de definitielijst. Werkend opgeleverd in je eigen omgeving, niet als advies op papier. Eerste werkende resultaat binnen twee weken.</p></div>'
+   +'<div><b>Jij houdt de sleutels</b><p style="font-size:.87rem;line-height:1.6">Alles staat op jouw accounts en in jouw systemen. Stoppen mag altijd; er blijft niets achter dat alleen wij kunnen bedienen.</p></div>'
+   +'</div>'
+   +'<div style="margin-top:.9rem;padding:.8rem .95rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.88rem;line-height:1.6">'
+   +'<b>Wat je zelf kunt:</b> de quick wins hierboven. Die kosten een middag en leveren het getal op waarmee je de rest onderbouwt. '
+   +'Doe er één, en je weet meteen of dit portaal klopt met jouw werkelijkheid.</div>'
+   +'<div style="margin-top:.8rem"><button class="knop" data-ga="roadmap">Naar je roadmap</button></div>';
+
+  document.querySelectorAll('[data-advies]').forEach(function(btn){
+    if(btn.dataset.aan)return; btn.dataset.aan='1';
+    btn.addEventListener('click',function(){
+      const o=JSON.parse(decodeURIComponent(btn.dataset.advies));
+      const laatste=S.taken.reduce(function(mx,t){return Math.max(mx,t.s+t.d-1);},0);
+      S.taken.push({id:Date.now(),t:o.t,dim:o.dim,s:Math.min(laatste+1||1,12),d:o.d,klaar:false});
+      bewaar(); teken(); btn.textContent='\u2713 staat erin'; btn.disabled=true;
+    });
+  });
 }
 
 function tekenRekenwijze(){
