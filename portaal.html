@@ -643,7 +643,7 @@ input[type=range]{min-height:34px}
     <section class="paneel" id="p-advies">
       <div class="kaart" style="margin-top:1rem">
         <h3>Wat wij je zouden adviseren</h3>
-        <p class="sub">Samengesteld uit alles wat je hebt ingevuld. Op volgorde van wat het oplevert gedeeld door wat het kost.</p>
+        <p class="sub">Samengesteld uit alles wat je hebt ingevuld. Bovenaan staat wat rechtstreeks uit <b>de eindconclusie</b> volgt — je smalste schakel, je duurste post en het onderdeel dat het vaakst wordt aangewezen. Daarna op opbrengst gedeeld door doorlooptijd.</p>
         <div id="modelKeuze" style="margin-top:.8rem"></div>
         <div id="modelTeller" style="margin-top:.7rem"></div>
         <div id="adviesLijst" style="margin-top:.9rem"></div>
@@ -1854,8 +1854,10 @@ function tekenEindconclusie(){
 
   // ---- vijf aanbevelingen ----
   const ab=document.getElementById('eindAanbev');
-  if(ab) ab.innerHTML=A.slice(0,5).map(function(a,i){return adviesRij(a,i,false);}).join('')
-    +'<p class="sub" style="margin-top:.7rem">Volgorde: opbrengst gedeeld door doorlooptijd, met de zwaarst aangewezen onderdelen eerst.</p>';
+  if(ab) ab.innerHTML='<p class="sub" style="margin:-.3rem 0 .8rem">Deze vijf volgen rechtstreeks uit de conclusie hierboven: ze grijpen aan op je smalste schakel (<b>'
+    +smalst.n.toLowerCase()+'</b>), je duurste post (<b>'+duurste.n.toLowerCase()+'</b>) of het onderdeel dat het vaakst wordt aangewezen. '
+    +'Dezelfde volgorde staat onder <b>Advies</b>.</p>'
+    +A.slice(0,5).map(function(a,i){return adviesRij(a,i,false);}).join('');
   document.querySelectorAll('[data-advies]').forEach(function(btn){
     if(btn.dataset.aan)return; btn.dataset.aan='1';
     btn.addEventListener('click',function(){
@@ -3048,8 +3050,24 @@ function verzamelAdvies(){
   if(gem<b.dig-0.3) A.push({t:'Sluit de achterstand op je branche',dim:'tech',duur:6,waarde:0,
     waarom:'Jouw gemiddelde is '+gem.toFixed(1)+', je branche zit op '+b.dig.toFixed(1)+'.',bron:'Branche'});
 
-  // sorteren: waarde per maand, met een duw voor risico's zonder euro's
-  return A.map(a=>({...a,score:(a.waarde||6000)/Math.max(a.duur,1)})).sort((x,y)=>y.score-x.score);
+  // ---- volgorde volgt de eindconclusie ----
+  // De conclusie wijst drie dingen aan: de smalste schakel, de duurste post,
+  // en het onderdeel dat het vaakst door modellen en canvassen wordt genoemd.
+  // Adviezen die daarop aangrijpen komen bovenaan — zo lopen conclusie en advies gelijk.
+  const smalstA=DIM.slice().sort(function(x,y){return g(x.k)-g(y.k);})[0];
+  const duursteA=DIM.slice().sort(function(x,y){return kosten[y.k]-kosten[x.k];})[0];
+  const telling={}; A.forEach(function(a){ telling[a.dim]=(telling[a.dim]||0)+1; });
+  let vaakst=null, meest=0;
+  Object.keys(telling).forEach(function(k){ if(telling[k]>meest){meest=telling[k];vaakst=k;} });
+
+  return A.map(function(a){
+    let score=(a.waarde||6000)/Math.max(a.duur,1);
+    let volgt=[];
+    if(a.dim===smalstA.k){ score*=2.2; volgt.push('smalste schakel'); }
+    if(a.dim===duursteA.k){ score*=1.9; volgt.push('duurste post'); }
+    if(a.dim===vaakst && vaakst!==smalstA.k && vaakst!==duursteA.k){ score*=1.4; volgt.push('vaakst aangewezen'); }
+    return Object.assign({},a,{score:score, volgt:volgt.join(' · ')});
+  }).sort(function(x,y){return y.score-x.score;});
 }
 
 /* Per advies: wat het concreet inhoudt, in gewone taal. */
@@ -3114,6 +3132,7 @@ function adviesRij(a,i,kort){
    +'<div><b style="font-size:.95rem">'+a.t+'</b>'
    +'<div style="font-size:.86rem;color:var(--grijs);margin-top:.15rem">'+a.waarom+'</div>'
    +'<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.5rem">'
+   +(a.volgt?'<span style="font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:#FFF1EC;color:#C0392B;padding:.14rem .45rem;border-radius:3px">volgt uit de conclusie: '+a.volgt+'</span>':'')
    +'<span style="font-size:.76rem;color:var(--grijs)">Komt uit '+h[0]+'</span>'
    +'<span style="font-size:.76rem;color:var(--grijs)">\u00b7 kost je ongeveer '+a.duur+' maand'+(a.duur>1?'en':'')+'</span>'
    +(a.waarde>1000?'<span style="font-size:.76rem;font-weight:600;color:var(--groen)">\u00b7 levert '+eur(a.waarde)+' per jaar op</span>':'')
