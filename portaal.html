@@ -1045,7 +1045,7 @@ function teken(){
     // klokvorm
     let d='M'+x0+','+bel(x0).toFixed(1);
     for(let x=x0;x<=x1;x+=8) d+=' L'+x+','+bel(x).toFixed(1);
-    g+='<path d="'+d+'" fill="none" stroke="url(#gr)" stroke-width="3"/>';
+    g+='<path d="'+d+'" fill="none" stroke="url(#gr)" stroke-width="3" pointer-events="none"/>';
     g+='<line x1="'+x0+'" y1="192" x2="'+x1+'" y2="192" stroke="#DCDFE6" stroke-width="2"/>';
     // segmenten + puntenwolk
     VERD.forEach((v,i)=>{
@@ -1053,7 +1053,7 @@ function teken(){
       g+='<line x1="'+(cx+70)+'" y1="55" x2="'+(cx+70)+'" y2="192" stroke="#EDEBE5" stroke-width="1" stroke-dasharray="3 4"/>';
       for(let k=0;k<v;k++){
         const px=cx-60+Math.random()*120, py=Math.min(186,bel(px)+8+Math.random()*Math.max(6,180-bel(px)));
-        g+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="2.6" fill="'+(eigen?'#2742D6':'#C9CEDA')+'" opacity="'+(eigen?'.9':'.55')+'"/>';
+        g+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="2.6" fill="'+(eigen?'#2742D6':'#C9CEDA')+'" opacity="'+(eigen?'.9':'.55')+'" pointer-events="none"/>';
       }
       g+='<g data-tip="<b>Niveau '+(i+1)+' — '+NAAM[i]+'</b><br>'+SEG[i]+'<br>'+v+'% van de markt zit hier.'
        +(eigen?'<br><b>Dit is waar jullie staan.</b>':'')+'" data-ga="profiel">'
@@ -1075,11 +1075,11 @@ function teken(){
       g+='<circle cx="'+rx+'" cy="'+bel(rx)+'" r="7" fill="none" stroke="#FF4F17" stroke-width="2" stroke-dasharray="3 3"/>'
        +'<text x="'+rx+'" y="'+(bel(rx)-16)+'" text-anchor="middle" font-size="10.5" fill="#FF4F17" font-family="Instrument Sans">nu</text>';
     }
-    g+='<line x1="'+jx+'" y1="'+jy+'" x2="'+jx+'" y2="192" stroke="#FF4F17" stroke-width="2"/>'
-     +'<circle id="curveGreep" cx="'+jx+'" cy="'+jy+'" r="11" fill="#FF4F17" style="cursor:grab"'
-     +' data-tip="<b>Sleep me</b><br>Verplaats om te zien wat een ander niveau betekent"/>'
-     +'<circle cx="'+jx+'" cy="'+jy+'" r="19" fill="#FF4F17" opacity=".14"/>'
-     +'<text x="'+jx+'" y="'+(jy-26)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="#14171A" font-family="Bricolage Grotesque">'+(sim?'wat als':'jij')+'</text>';
+    g+='<line x1="'+jx+'" y1="'+jy+'" x2="'+jx+'" y2="192" stroke="#FF4F17" stroke-width="2" pointer-events="none"/>'
+     +'<circle cx="'+jx+'" cy="'+jy+'" r="20" fill="#FF4F17" opacity=".14" pointer-events="none"/>'
+     +'<text x="'+jx+'" y="'+(jy-28)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="#14171A" font-family="Bricolage Grotesque" pointer-events="none">'+(sim?'wat als':'jij')+'</text>'
+     +'<circle id="curveGreep" cx="'+jx+'" cy="'+jy+'" r="16" fill="#FF4F17" stroke="#fff" stroke-width="3" style="cursor:grab;touch-action:none"'
+     +' data-tip="<b>Sleep mij</b><br>Verplaats om te zien wat een ander niveau betekent en oplevert"/>';
     el.innerHTML=g;
 
     // slepen
@@ -1093,7 +1093,8 @@ function teken(){
           const vb=(cx-r.left)/r.width*780;                    // terug naar tekencoo\u0308rdinaten
           let n=1+((vb-x0)/(x1-x0))*4;
           window.__curveSim=Math.max(1,Math.min(5,Math.round(n*10)/10));
-          teken();
+          if(window.__curveBezig) return; window.__curveBezig=true;
+          requestAnimationFrame(function(){ window.__curveBezig=false; teken(); });
         };
         const los=function(){ document.removeEventListener('mousemove',beweeg); document.removeEventListener('mouseup',los);
                               document.removeEventListener('touchmove',beweeg); document.removeEventListener('touchend',los); };
