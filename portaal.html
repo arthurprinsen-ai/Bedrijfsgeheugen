@@ -492,6 +492,21 @@ input[type=range]{min-height:34px}
       <div class="kaart" style="margin-top:1rem"><h3>Mensen</h3>
         <p class="sub" style="margin:-.3rem 0 .3rem">Uit je verzuim- en personeelsadministratie.</p>
         <div id="inMensen"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Productiviteit en operatie</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">De cijfers die zeggen hoeveel er uit je bedrijf komt per persoon en per dag.</p>
+        <div class="velden">
+          <div class="veld met-eenheid"><label for="pDeclarabel">Declarabel of productief</label><input type="number" id="pDeclarabel" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+          <div class="veld met-eenheid"><label for="pOtif">Op tijd geleverd</label><input type="number" id="pOtif" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+          <div class="veld met-eenheid"><label for="pFout">Herstelwerk of faalkosten</label><input type="number" id="pFout" min="0" max="50" step="0.5"><span class="eenheid">% omzet</span></div>
+          <div class="veld met-eenheid"><label for="pDoorloop">Doorlooptijd order</label><input type="number" id="pDoorloop" min="0" step="1"><span class="eenheid">dagen</span></div>
+          <div class="veld"><label for="pOrders">Orders per jaar</label><input type="number" id="pOrders" min="0" step="10"></div>
+          <div class="veld met-eenheid"><label for="pOfferte">Offerteconversie</label><input type="number" id="pOfferte" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+          <div class="veld met-eenheid"><label for="pOpleiding">Opleiding per medewerker</label><input type="number" id="pOpleiding" min="0" step="1"><span class="eenheid">uur p.j.</span></div>
+          <div class="veld met-eenheid"><label for="pVerloopKlant">Klantverloop</label><input type="number" id="pVerloopKlant" min="0" max="100" step="1"><span class="eenheid">% p.j.</span></div>
+        </div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Productiviteit en operatie</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">Hoeveel er uit je bedrijf komt per persoon en per dag.</p>
+        <div id="inProd"></div></div>
       <div class="kaart" style="margin-top:1rem"><h3>Klanten</h3>
         <p class="sub" style="margin:-.3rem 0 .3rem">Weet je het niet, dan is dat het antwoord — en meteen je eerste actie.</p>
         <div id="inKlanten"></div></div>
@@ -684,6 +699,9 @@ input[type=range]{min-height:34px}
           <svg id="taGraf" viewBox="0 0 460 260" role="img" aria-label="Trusted advisor-ladder"></svg>
           <div id="taUit"></div></div>
       </div>
+      <div class="kaart"><h3>Productiviteit</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Wat er uit je bedrijf komt per persoon en per dag, naast wat gangbaar is.</p>
+        <div id="prodUit"></div></div>
       <div class="kaart"><h3>Metingen over de tijd</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">NPS, klanttevredenheid, medewerkerstevredenheid en verzuim meet je een paar keer per jaar. Zet ze hier neer, dan zie je of je acties iets hebben gedaan.</p>
         <div class="velden">
@@ -1003,7 +1021,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[],esg:{},eigenCaps:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[],esg:{},eigenCaps:{},prod:{}};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -1151,6 +1169,11 @@ function bouw(){
       tekenModelKaart();
     });
   });
+  ['pDeclarabel','pOtif','pFout','pDoorloop','pOrders','pOfferte','pOpleiding','pVerloopKlant'].forEach(function(id){
+    const el=document.getElementById(id); if(!el||el.dataset.aan)return; el.dataset.aan='1';
+    if(S.prod&&S.prod[id]!==undefined&&S.prod[id]!=='') el.value=S.prod[id];
+    el.addEventListener('input',function(e){ S.prod=S.prod||{}; S.prod[id]=e.target.value; bewaar(); teken(); });
+  });
   ['kNps','kTevreden','kHerhaal','kKlacht'].forEach(function(id){
     const el=document.getElementById(id); if(!el||el.dataset.aan)return; el.dataset.aan='1';
     if(S.kto&&S.kto[id]!==undefined&&S.kto[id]!=='') el.value=S.kto[id];
@@ -1204,7 +1227,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen, esg:S.esg, eigenCaps:S.eigenCaps,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen, esg:S.esg, eigenCaps:S.eigenCaps, prod:S.prod,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -1235,6 +1258,7 @@ function importeer(bestand){
       if(p.metingen) S.metingen=p.metingen;
       if(p.esg) S.esg=p.esg;
       if(p.eigenCaps) S.eigenCaps=p.eigenCaps;
+      if(p.prod) S.prod=p.prod;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -1419,7 +1443,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenDNA(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenInvoer(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenProductiviteit(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenDNA(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenInvoer(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -4035,6 +4059,68 @@ function tekenMetingen(){
     : '<p class="sub">Voeg per soort een tweede meting toe, dan reken ik het verschil uit.</p>';
 }
 
+function tekenProductiviteit(){
+  const el=document.getElementById('prodUit'); if(!el) return;
+  S.prod=S.prod||{};
+  const c=S.cijfers||{}, P=S.prod||{}, m=S.mensen||{};
+  const n=x=>(c[x]===''||c[x]===undefined)?null:+c[x];
+  const q=x=>(P[x]===''||P[x]===undefined)?null:+P[x];
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const omzet=(n('cOmzet')||0)*1000, loon=(n('cLoon')||0)*1000, marge=n('cBrutomarge');
+  const mw=S.mw||1;
+
+  const R=[];
+  if(omzet) R.push(['Omzet per medewerker', eur(omzet/mw),
+    omzet/mw<80000?'Onder de \u20ac 80.000 is krap voor een dienstverlener; bij handel en productie kan het normaal zijn.':'Gezond niveau.',
+    omzet/mw<80000?'var(--amber)':'var(--groen)']);
+  if(omzet&&marge) R.push(['Toegevoegde waarde per medewerker', eur(omzet*marge/100/mw),
+    'Dit is wat er per persoon overblijft na inkoop. Hier betaal je alles van, inclusief jezelf.','var(--inkt)']);
+  if(omzet&&loon) R.push(['Loonquote', (loon/omzet*100).toFixed(0)+'%',
+    loon/omzet>0.45?'Boven de 45% wordt het krap zodra er \u00e9\u00e9n project tegenvalt.':'Ruimte om te investeren.',
+    loon/omzet>0.45?'var(--amber)':'var(--groen)']);
+  if(omzet&&loon) R.push(['Omzet per euro loon', '\u20ac '+(omzet/loon).toFixed(2),
+    'Voor elke euro loon komt er dit aan omzet binnen. Onder de \u20ac 2 is dun.', omzet/loon<2?'var(--rood)':'var(--groen)']);
+
+  const decl=q('pDeclarabel');
+  if(decl!==null) R.push(['Declarabel of productief', decl+'%',
+    decl<65?'Onder de 65% zit er veel tijd in werk dat niets oplevert \u2014 vaak administratie en zoeken.':'Goede bezetting.',
+    decl<65?'var(--rood)':'var(--groen)']);
+  const otif=q('pOtif');
+  if(otif!==null) R.push(['Op tijd geleverd', otif+'%',
+    otif<90?'Onder de 90% ga je klanten kosten zonder dat je het merkt \u2014 ze klagen niet, ze bestellen minder.':'Betrouwbaar.',
+    otif<90?'var(--rood)':'var(--groen)']);
+  const fout=q('pFout');
+  if(fout!==null) R.push(['Herstelwerk', fout+'% van de omzet', omzet?'Dat is '+eur(omzet*fout/100)+' per jaar aan werk dat je twee keer doet.':'Werk dat je twee keer doet.',
+    fout>3?'var(--rood)':'var(--amber)']);
+  const dl=q('pDoorloop');
+  if(dl!==null) R.push(['Doorlooptijd per order', dl+' dagen',
+    'Halveren hiervan doet meer voor je kasstroom dan tien procent meer omzet.','var(--inkt)']);
+  const ord=q('pOrders');
+  if(ord!==null) R.push(['Orders per medewerker', (ord/mw).toFixed(0)+' per jaar',
+    omzet&&ord?'Gemiddeld '+eur(omzet/ord)+' per order.':'','var(--inkt)']);
+  const conv=q('pOfferte');
+  if(conv!==null) R.push(['Offerteconversie', conv+'%',
+    conv<25?'Onder de 25% offreer je te breed, of te laat.':'Gezond \u2014 je praat met de juiste mensen.',
+    conv<25?'var(--amber)':'var(--groen)']);
+  const opl=q('pOpleiding');
+  if(opl!==null) R.push(['Opleiding per medewerker', opl+' uur per jaar',
+    opl<20?'Onder de 20 uur groeit niemand mee met wat er verandert.':'Voldoende om bij te blijven.',
+    opl<20?'var(--amber)':'var(--groen)']);
+  const kv=q('pVerloopKlant');
+  if(kv!==null && omzet) R.push(['Klantverloop', kv+'% per jaar',
+    'Kost je ongeveer '+eur(omzet*kv/100)+' aan omzet die je elk jaar opnieuw moet ophalen.',
+    kv>15?'var(--rood)':'var(--groen)']);
+
+  el.innerHTML = R.length
+    ? R.map(function(r){
+        return '<div style="display:grid;grid-template-columns:1fr auto;gap:.8rem;padding:.55rem 0;border-bottom:1px solid var(--lijn);align-items:baseline">'
+         +'<div><b style="font-size:.92rem">'+r[0]+'</b><div class="sub">'+r[2]+'</div></div>'
+         +'<b style="color:'+r[3]+';font-family:\'Bricolage Grotesque\';font-size:1.15rem;white-space:nowrap">'+r[1]+'</b></div>';
+      }).join('')
+      +'<p class="sub" style="margin-top:.7rem">Richtgetallen uit gangbare mkb-normen; ze verschillen per branche. Vul aan onder <b>Je gegevens invullen</b>.</p>'
+    : '<p class="sub">Vul je omzet, loonkosten en de productiviteitscijfers in onder <b>Je gegevens invullen</b>, dan staat hier wat eruit komt per persoon en per dag.</p>';
+}
+
 function tekenKTO(){
   const el=document.getElementById('ktoUit'); if(!el) return;
   const k=S.kto||{}, n=x=>(k[x]===''||k[x]===undefined)?null:+k[x];
@@ -4116,6 +4202,7 @@ function verhuisInvoer(){
     ['cOmzet','.velden','inCijfers'],
     ['wSchuld','.velden','inWaarde'],
     ['mVerzuim','.velden','inMensen'],
+    ['pDeclarabel','.velden','inProd'],
     ['kNps','.velden','inKlanten'],
     ['mtDatum','.velden','inMetingen'],
     ['esgVelden',null,'inEsg'],
