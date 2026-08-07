@@ -460,6 +460,16 @@ input[type=range]{min-height:34px}
     <!-- STRATEGIE -->
     <section class="paneel" id="p-strategie">
       <div class="kaart conclusie" id="conclusie" style="margin-top:1rem"></div>
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Alle modellen in één beeld</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Elke stip is een bevinding uit één model. Hoe hoger, hoe meer het oplevert; hoe verder naar links, hoe sneller het klaar is. Beweeg de schuiven om te filteren, ga over een stip voor de details, klik om hem in je roadmap te zetten.</p>
+        <div class="dim"><label for="kHorizon">Binnen hoeveel maanden</label>
+          <input type="range" id="kHorizon" min="1" max="12" step="1" value="12"><output id="o-kHorizon">12 mnd</output></div>
+        <div class="dim"><label for="kMin">Minimale opbrengst</label>
+          <input type="range" id="kMin" min="0" max="30000" step="1000" value="0"><output id="o-kMin">alles</output></div>
+        <svg id="kaartModellen" viewBox="0 0 720 420" role="img" aria-label="Alle modellen in één beeld"></svg>
+        <div id="kaartLegenda" class="sub" style="margin-top:.5rem"></div>
+      </div>
       <p class="sub" style="margin-top:1.4rem">De denkramen waar die conclusie op rust. Alles staat open — klik dicht wat je niet nodig hebt.</p>
       <div class="kaarten k2" id="stratKaarten"></div>
       <h3 style="margin:1.6rem 0 .2rem">Per functie</h3>
@@ -797,6 +807,14 @@ function bouw(){
     if(S.fin&&S.fin[id]!==undefined&&S.fin[id]!=='') el.value=S.fin[id];
     el.addEventListener('input',e=>{S.fin=S.fin||{};S.fin[id]=e.target.value;bewaar();teken();});
   });
+  ['kHorizon','kMin'].forEach(function(id){
+    const el=document.getElementById(id); if(!el||el.dataset.aan)return; el.dataset.aan='1';
+    el.addEventListener('input',function(e){
+      if(id==='kHorizon') document.getElementById('o-kHorizon').textContent=e.target.value+' mnd';
+      else document.getElementById('o-kMin').textContent = +e.target.value ? '\u20ac '+(+e.target.value).toLocaleString('nl-NL')+'+' : 'alles';
+      tekenModelKaart();
+    });
+  });
   const be=document.getElementById('btnExport');
   if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',function(){vraagToegang(exporteer);});}
   const bi=document.getElementById('btnImport');
@@ -991,7 +1009,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1338,6 +1356,63 @@ function tekenStrategie(){
   document.querySelectorAll('[data-eigen]').forEach(t=>{
     if(t.dataset.aan)return; t.dataset.aan='1';
     t.addEventListener('change',e=>{S.eigen=S.eigen||{};S.eigen[e.target.dataset.eigen]=e.target.value;bewaar();});
+  });
+}
+
+function tekenModelKaart(){
+  const el=document.getElementById('kaartModellen'); if(!el) return;
+  const hor=+(document.getElementById('kHorizon')||{}).value||12;
+  const min=+(document.getElementById('kMin')||{}).value||0;
+  const A=verzamelAdvies().filter(a=>modelAan(a.bron));
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const GROEP=function(b){ if(/^Model/.test(b)){ const f=BRONNEN.find(x=>x.k===b); return f?f.soort:'model'; } return 'data'; };
+  const KL={data:'#2742D6', model:'#FF4F17', functie:'#1F9D55', finance:'#7A5BD6'};
+  const NAAM={data:'Uit je eigen gegevens', model:'Strategiemodellen', functie:'Per functie', finance:'Financieel'};
+  const x0=70,x1=690,y0=350,y1=30;
+  const px=d=>x0+((Math.min(d,12)-1)/11)*(x1-x0);
+  const maxW=Math.max.apply(null,A.map(a=>a.waarde||0).concat([12000]));
+  const py=w=>y0-Math.min((w||0)/maxW,1)*(y0-y1);
+  let g='';
+  // vlakken
+  g+='<rect x="'+x0+'" y="'+y1+'" width="'+((x1-x0)/2)+'" height="'+((y0-y1)/2)+'" fill="#F1F9F4"/>';
+  g+='<rect x="'+(x0+(x1-x0)/2)+'" y="'+(y1+(y0-y1)/2)+'" width="'+((x1-x0)/2)+'" height="'+((y0-y1)/2)+'" fill="#FBFAF7"/>';
+  g+='<text x="'+(x0+10)+'" y="'+(y1+20)+'" font-size="11.5" font-weight="700" fill="#1F9D55" font-family="Instrument Sans">Eerst doen \u2014 snel en waardevol</text>';
+  g+='<text x="'+(x1-10)+'" y="'+(y1+20)+'" text-anchor="end" font-size="11.5" fill="#8A94A3" font-family="Instrument Sans">Waardevol, maar duurt langer</text>';
+  g+='<text x="'+(x0+10)+'" y="'+(y0-8)+'" font-size="11.5" fill="#8A94A3" font-family="Instrument Sans">Klein, maar zo geregeld</text>';
+  g+='<text x="'+(x1-10)+'" y="'+(y0-8)+'" text-anchor="end" font-size="11.5" fill="#8A94A3" font-family="Instrument Sans">Later</text>';
+  // assen
+  g+='<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="2"/>';
+  g+='<line x1="'+x0+'" y1="'+y1+'" x2="'+x0+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="2"/>';
+  [1,3,6,9,12].forEach(function(mm){ g+='<text x="'+px(mm)+'" y="'+(y0+20)+'" text-anchor="middle" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+mm+' mnd</text>'; });
+  g+='<text x="18" y="'+(y1+8)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans" transform="rotate(-90 18 '+(y1+8)+')">opbrengst per jaar</text>';
+  // horizonlijn
+  g+='<line x1="'+px(hor)+'" y1="'+y1+'" x2="'+px(hor)+'" y2="'+y0+'" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>';
+  // stippen
+  let getoond=0;
+  A.forEach(function(a){
+    const zicht = a.duur<=hor && (a.waarde||0)>=min;
+    if(zicht) getoond++;
+    const kl=KL[GROEP(a.bron)]||'#8A94A3';
+    const r=8+Math.min((a.waarde||0)/maxW,1)*10;
+    const cx=px(a.duur), cy=py(a.waarde);
+    g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+kl+'" opacity="'+(zicht?'.85':'.12')+'"'
+     +' data-tip="<b>'+a.t+'</b><br>'+a.waarom+'<br>'+a.duur+' maand'+(a.duur>1?'en':'')
+     +(a.waarde>1000?' \u00b7 '+eur(a.waarde)+' per jaar':'')+'<br><span style=\'opacity:.7\'>'+a.bron+'</span>"'
+     +(zicht?' data-advies="'+encodeURIComponent(JSON.stringify({t:a.t,dim:a.dim,d:a.duur}))+'" style="cursor:pointer"':'')+'/>';
+  });
+  el.innerHTML=g;
+  document.getElementById('kaartLegenda').innerHTML =
+    Object.keys(NAAM).map(function(k){ return '<span style="margin-right:1rem;white-space:nowrap"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+KL[k]+';margin-right:.35rem"></span>'+NAAM[k]+'</span>'; }).join('')
+   +'<br>'+getoond+' van de '+A.length+' bevindingen passen binnen '+hor+' maanden'+(min?' en leveren minstens '+eur(min)+' op':'')+'. Grotere stip = meer opbrengst.';
+  // knoppen koppelen (dezelfde afhandeling als in de adviezenlijst)
+  el.querySelectorAll('[data-advies]').forEach(function(c){
+    if(c.dataset.aan)return; c.dataset.aan='1';
+    c.addEventListener('click',function(){
+      const o=JSON.parse(decodeURIComponent(c.dataset.advies));
+      const laatste=S.taken.reduce(function(mx,t){return Math.max(mx,t.s+t.d-1);},0);
+      S.taken.push({id:Date.now(),t:o.t,dim:o.dim,s:Math.min(laatste+1||1,12),d:o.d,klaar:false});
+      bewaar(); teken();
+    });
   });
 }
 
