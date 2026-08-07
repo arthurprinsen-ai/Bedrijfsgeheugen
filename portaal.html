@@ -1026,7 +1026,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1725,6 +1725,31 @@ const ONDERZOEK=[
   bev:'DNB en het Financieel Stabiliteitscomit\u00e9 signaleren dat AI het cyberdreigingsbeeld verandert en de weerbaarheidseisen verhoogt. Tegelijk lopen de verplichtingen uit de EU AI Act vanaf augustus 2026 in.',
   bron:'DNB \u00b7 Financieel Stabiliteitscomit\u00e9 \u00b7 EU AI Act',
   advies:'Zet op \u00e9\u00e9n A4 welke AI-tools jullie gebruiken en welke gegevens erin gaan. Dat is de eerste vraag die je bij een audit of due diligence krijgt.'},
+ {dim:'sturing',t:'Nederland is Europees koploper — de lat ligt dus hoog',
+  cijfer:'89%',
+  bev:'89% van het Nederlandse mkb haalt het basisniveau van digitale intensiteit (vier van twaalf technologieën), tegen 83% twee jaar eerder. Nederland staat daarmee op plek één in Europa. In de ict-sector haalt 98% dat niveau; in de horeca zit 41% juist op het laagste.',
+  bron:'CBS en Eurostat (digitale-intensiteitsindex)',
+  advies:'Basisniveau is geen voorsprong meer maar een instapeis. De voorsprong zit in de stap daarna: gegevens die één keer worden ingevoerd.'},
+ {dim:'mensen',t:'Tot 60% van je opleidingskosten vergoed',
+  cijfer:'€ 24.999',
+  bev:'De SLIM-regeling vergoedt tot 60% van de kosten voor leren en ontwikkelen in het mkb, tot bijna € 25.000 per aanvraag. Voor 2026 is € 71,9 miljoen beschikbaar. Werkt je bedrijf aan technisch nieuwe processen of software, dan is de WBSO de grootste fiscale regeling.',
+  bron:'RVO en Uitvoering Van Beleid (SZW)',
+  advies:'Reken je verbeterplan door mét regeling. Een traject van € 20.000 kan netto € 8.000 kosten — dat verandert het gesprek in de directiekamer.'},
+ {dim:'finance',t:'Rendement met een bandbreedte, niet met één getal',
+  cijfer:'TEI',
+  bev:'Forrester rekent in zijn Total Economic Impact-aanpak vier dingen door: kosten, baten, de flexibiliteit die je erbij koopt, en het risico dat een aanname niet uitkomt. De uitkomst is een bandbreedte.',
+  bron:'Forrester (Total Economic Impact)',
+  advies:'Zet naast je besparing wat er gebeurt als het tegenvalt. Een businesscase met een ondergrens wordt eerder geloofd dan één mooi getal.'},
+ {dim:'tech',t:'Kies gereedschap op je eigen situatie, niet op een ranglijst',
+  cijfer:'40%',
+  bev:'Gartner verwacht dat ruim 40% van de agentische AI-projecten vóór eind 2027 wordt gestopt, door oplopende kosten en onduidelijk rendement. Leveranciersvergelijkingen zeggen iets over de markt, niet over jouw bedrijf.',
+  bron:'Gartner',
+  advies:'Kies op basis van wat er al draait bij jou. Een pakket dat hoog scoort maar niet koppelt met je huidige systemen, kost je meer dan het oplevert.'},
+ {dim:'operatie',t:'Wat de banken van je sector verwachten',
+  cijfer:'sector',
+  bev:'De economische bureaus van Rabobank, ING en ABN AMRO publiceren per kwartaal prognoses per sector — volumegroei, marges en knelpunten. Die cijfers gebruiken financiers ook bij hun eigen beoordeling.',
+  bron:'RaboResearch · ING Economisch Bureau · ABN AMRO Sector Advisory',
+  advies:'Leg je eigen groeiverwachting naast die van je sector. Wijk je er sterk van af, zorg dan dat je kunt uitleggen waarom — je financier vraagt ernaar.'},
  {dim:'security',t:'AI verandert het dreigingsbeeld',
   cijfer:'—',
   bev:'Het Financieel Stabiliteitscomité constateerde in juni 2026 dat geavanceerde AI-modellen het cyberdreigingslandschap ingrijpend veranderen en de urgentie van weerbaarheid vergroten.',
@@ -1765,6 +1790,39 @@ const BELEID=[
  {k:'continu',n:'Uitwijk en continuïteit',u:'Wat als een kernsysteem een week uitvalt. Meestal het enige dat echt getest moet worden.'}
 ];
 const BSTAT=['ontbreekt','concept','vastgesteld','geoefend'];
+const BRONNENLIJST=[
+ ['Statistiek','CBS StatLine','Verzuim per bedrijfstak, arbeidsproductiviteit, digitale intensiteit, omzet per branche','https://opendata.cbs.nl'],
+ ['Statistiek','Eurostat — digitale-intensiteitsindex','Nederland tegenover Europa; 89% van het mkb haalt het basisniveau','https://ec.europa.eu/eurostat'],
+ ['Economie','De Nederlandsche Bank','Groei, inflatie, loonontwikkeling, financiële stabiliteit','https://www.dnb.nl'],
+ ['Economie','RaboResearch · ING Economisch Bureau · ABN AMRO','Sectorprognoses per kwartaal','https://www.rabobank.nl/kennis'],
+ ['Onderzoek','McKinsey — State of AI','Gebruik tegenover opschaling; waarde ontstaat bij herontwerp van werk','https://www.mckinsey.com'],
+ ['Onderzoek','BCG — AI Radar','Budgetten en rendement','https://www.bcg.com'],
+ ['Onderzoek','Gartner','Verwachtingen over projecten en gereedschap','https://www.gartner.com'],
+ ['Onderzoek','Forrester — Total Economic Impact','Rendement met flexibiliteit en risico erin','https://www.forrester.com'],
+ ['Universiteit','MIT — Project NANDA · RAND','Waarom pilots stranden: data en integratie, niet het model','https://mit.edu'],
+ ['Universiteit','Stanford — AI Index','Jaarlijks overzicht van adoptie en kosten','https://aiindex.stanford.edu'],
+ ['Overheid','RVO — SLIM, WBSO, MIT','Tot 60% vergoeding voor leren en ontwikkelen; fiscale korting bij ontwikkelwerk','https://www.rvo.nl'],
+ ['Overheid','UWV — Arbeidsmarktprognose','Krapte per beroep en regio','https://www.uwv.nl'],
+ ['Overheid','KVK Handelsregister','SBI-code, grootteklasse en oprichtingsjaar','https://www.kvk.nl'],
+ ['Regelgeving','EU AI Act · NIS2 · CSRD · AVG','Wat er wanneer gaat gelden, per sector uitgewerkt','https://digital-strategy.ec.europa.eu'],
+ ['Branche','Metaalunie · Bouwend Nederland · NLdigital · INretail · TLN · KHN · ActiZ','Cao’s, marges en sectorspecifieke normen','https://www.mkb.nl']
+];
+function tekenBronnen(){
+  const el=document.getElementById('bronnenkaart'); if(!el) return;
+  const groepen=[...new Set(BRONNENLIJST.map(r=>r[0]))];
+  el.innerHTML='<div class="sub" style="margin-bottom:.5rem">Waar de cijfers in dit portaal vandaan komen — '+BRONNENLIJST.length+' bronnen</div>'
+   + groepen.map(function(g){
+      return '<details class="mod" style="margin-bottom:.4rem"><summary><h3 style="font-size:.9rem;text-transform:none;letter-spacing:0;color:var(--inkt)">'+g+'</h3>'
+       +'<span class="herkomst">'+BRONNENLIJST.filter(r=>r[0]===g).length+' ▾</span></summary><div class="inhoud">'
+       + BRONNENLIJST.filter(r=>r[0]===g).map(function(r){
+           return '<div style="padding:.4rem 0;border-bottom:1px solid var(--lijn)"><a href="'+r[3]+'" target="_blank" rel="noopener"><b>'+r[1]+'</b></a>'
+            +'<div class="sub">'+r[2]+'</div></div>';
+         }).join('')
+       +'</div></details>';
+     }).join('')
+   +'<p class="sub" style="margin-top:.7rem">Cijfers komen uit publieke samenvattingen en zijn gecontroleerd in augustus 2026. Onderzoek van adviesbureaus gaat grotendeels over grote ondernemingen — gebruik het als richting, niet als norm voor een bedrijf van jouw omvang.</p>';
+}
+
 function tekenKwadrant(){
   const el=document.getElementById('kwadrant'); if(!el) return;
   const f=[0,1,.78,.5,.22,.06]; const kosten={}; let max=1;
