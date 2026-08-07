@@ -439,7 +439,15 @@ input[type=range]{min-height:34px}
       <div class="kaart" style="margin-top:1rem">
         <h3>Hoe je deze cijfers moet lezen</h3>
         <p style="font-size:.89rem;line-height:1.65">Deze onderzoeken gaan grotendeels over grote ondernemingen — duizenden medewerkers, eigen IT-afdelingen, budgetten die het jouwe honderdvoudig overtreffen. Ze zijn nuttig als <b>richting</b>, niet als norm. Waar ze wél direct op jou slaan: het patroon dat bijna iedereen begint en bijna niemand doorpakt. Dat is in het mkb niet anders, alleen zichtbaarder.</p>
-        <p class="sub" style="margin-top:.6rem">Bronnen: McKinsey State of AI · BCG AI Radar · Gartner · MIT Project NANDA · Deloitte · PwC · Stanford AI Index · CBS · DNB · RaboResearch. Cijfers uit publieke samenvattingen, gecontroleerd augustus 2026.</p>
+        <div style="margin-top:.9rem;border-top:1px solid var(--lijn);padding-top:.8rem">
+          <b style="font-size:.86rem">Waar dit vandaan komt</b>
+          <div class="kaarten k3" style="margin-top:.5rem;font-size:.83rem;line-height:1.6">
+            <div><b>Statistiek</b><br><a href="https://www.cbs.nl" target="_blank" rel="noopener">CBS StatLine</a> · <a href="https://ec.europa.eu/eurostat" target="_blank" rel="noopener">Eurostat / DESI</a> · <a href="https://www.uwv.nl/nl/arbeidsmarktinformatie" target="_blank" rel="noopener">UWV</a></div>
+            <div><b>Economie en beleid</b><br><a href="https://www.dnb.nl" target="_blank" rel="noopener">DNB</a> · <a href="https://www.rabobank.nl/kennis" target="_blank" rel="noopener">RaboResearch</a> · ING Economisch Bureau · ABN AMRO Sector Advisory · <a href="https://www.rvo.nl" target="_blank" rel="noopener">RVO</a></div>
+            <div><b>Onderzoek en advies</b><br>McKinsey · BCG · Gartner · Forrester · MIT · RAND · Stanford AI Index · Nyenrode · Panteia</div>
+          </div>
+          <p class="sub" style="margin-top:.6rem">Cijfers uit publieke samenvattingen en open data, gecontroleerd augustus 2026. Onderzoek van adviesbureaus gaat grotendeels over grote ondernemingen — gebruik het als richting, niet als norm voor een bedrijf van jouw omvang.</p>
+        </div>
       </div>
     </section>
 
@@ -1682,6 +1690,41 @@ const ONDERZOEK=[
   bev:'Forrester rekent bij zijn Total Economic Impact-aanpak niet alleen kosten en baten door, maar ook de flexibiliteit die je erbij koopt en het risico dat een aanname niet uitkomt \u2014 met een bandbreedte in plaats van \u00e9\u00e9n getal.',
   bron:'Forrester (Total Economic Impact)',
   advies:'Zet naast je besparing ook op wat er misgaat als het tegenvalt. Een businesscase met een ondergrens wordt eerder geloofd dan \u00e9\u00e9n mooi getal.'},
+ {dim:'sturing',t:'Nederland zit in de Europese kopgroep, het mkb blijft achter',
+  cijfer:'DESI',
+  bev:'Eurostat en de Europese Commissie meten de digitale positie van lidstaten in de DESI-index. Nederland scoort hoog op connectiviteit en digitale vaardigheden, maar de spreiding binnen het mkb is groot \u2014 het gemiddelde wordt opgetrokken door grote bedrijven.',
+  bron:'Eurostat / Europese Commissie (DESI)',
+  advies:'Vergelijk je niet met het landelijk gemiddelde maar met je eigen branche en grootteklasse. Dat is de enige vergelijking waar je iets aan hebt.'},
+ {dim:'finance',t:'Er is subsidie voor precies dit soort werk',
+  cijfer:'RVO',
+  bev:'RVO voert regelingen uit die op digitalisering en scholing zijn gericht \u2014 onder meer SLIM (leren en ontwikkelen in het mkb), MIT (innovatie) en WBSO (loonkosten voor ontwikkelwerk). Voorwaarden en openstellingsperiodes wisselen per jaar.',
+  bron:'RVO',
+  advies:'Kijk v\u00f3\u00f3r je begint of je stap onder een regeling valt. Achteraf aanvragen kan meestal niet, en dat scheelt zomaar een derde van de kosten.'},
+ {dim:'commercie',t:'Banken zien per sector iets anders aankomen',
+  cijfer:'per sector',
+  bev:'De economische bureaus van Rabobank, ING en ABN AMRO publiceren elk kwartaal sectorprognoses met omzet-, marge- en volumeverwachtingen per branche, inclusief de knelpunten die zij bij hun klanten zien.',
+  bron:'RaboResearch \u00b7 ING Economisch Bureau \u00b7 ABN AMRO Sector Advisory',
+  advies:'Lees \u00e9\u00e9n keer per kwartaal het rapport van je eigen sector. Het kost twintig minuten en het is de goedkoopste marktanalyse die er bestaat.'},
+ {dim:'analytics',t:'Rendement aantonen vraagt om een bandbreedte',
+  cijfer:'TEI',
+  bev:'Forrester onderscheidt in zijn Total Economic Impact-aanpak vier onderdelen: kosten, baten, flexibiliteit (opties die je erbij koopt) en risico (de kans dat een aanname niet uitkomt). De uitkomst is een bandbreedte, geen enkel getal.',
+  bron:'Forrester (Total Economic Impact)',
+  advies:'Presenteer je businesscase met een ondergrens en een bovengrens. Directies geloven een bandbreedte eerder dan \u00e9\u00e9n mooi getal.'},
+ {dim:'mensen',t:'Bedrijfsoverdracht is een landelijk vraagstuk, geen persoonlijk probleem',
+  cijfer:'vergrijzing',
+  bev:'Onderzoek van universiteiten en kennisinstellingen (onder meer Nyenrode en Panteia, in opdracht van onder meer KVK en het ministerie van EZK) laat zien dat een groot deel van de mkb-eigenaren de komende jaren de pensioenleeftijd bereikt, terwijl de overdraagbaarheid van hun bedrijf vaak niet is voorbereid.',
+  bron:'Nyenrode \u00b7 Panteia \u00b7 KVK',
+  advies:'Begin drie jaar voor een beoogde overdracht met vastleggen, niet drie maanden. De kennisoverdracht is de traagste stap van het hele traject.'},
+ {dim:'quality',t:'Slechte datakwaliteit is een kostenpost, geen ergernis',
+  cijfer:'structureel',
+  bev:'Gartner wijst al jaren op datakwaliteit als een van de grootste verborgen kostenposten in organisaties: dubbel werk, verkeerde beslissingen en projecten die stranden op gegevens die niet kloppen.',
+  bron:'Gartner',
+  advies:'Kies drie kernbegrippen \u2014 klant, order, uur \u2014 en spreek af wat ze betekenen. Dat is goedkoper dan elk dashboard opnieuw bouwen.'},
+ {dim:'governance',t:'Toezichthouders kijken nu ook naar AI',
+  cijfer:'2026',
+  bev:'DNB en het Financieel Stabiliteitscomit\u00e9 signaleren dat AI het cyberdreigingsbeeld verandert en de weerbaarheidseisen verhoogt. Tegelijk lopen de verplichtingen uit de EU AI Act vanaf augustus 2026 in.',
+  bron:'DNB \u00b7 Financieel Stabiliteitscomit\u00e9 \u00b7 EU AI Act',
+  advies:'Zet op \u00e9\u00e9n A4 welke AI-tools jullie gebruiken en welke gegevens erin gaan. Dat is de eerste vraag die je bij een audit of due diligence krijgt.'},
  {dim:'security',t:'AI verandert het dreigingsbeeld',
   cijfer:'—',
   bev:'Het Financieel Stabiliteitscomité constateerde in juni 2026 dat geavanceerde AI-modellen het cyberdreigingslandschap ingrijpend veranderen en de urgentie van weerbaarheid vergroten.',
@@ -1957,6 +2000,10 @@ function verzamelAdvies(){
     waarom:'Verbieden werkt niet, vastleggen wel. Vanaf 2 augustus 2026 geldt bovendien de transparantieplicht.',bron:'Beleid'});
   if(mistDef) A.push({t:'Spreek af wat een klant, order en uur precies zijn',dim:'quality',duur:1,waarde:kosten.quality*0.4,
     waarom:'Zonder definities blijft elk dashboard betwistbaar en gaat de vergadering over wiens cijfer klopt.',bron:'Beleid'});
+
+  // --- subsidie (RVO) ---
+  if(A.length) A.push({t:'Check of je eerste stap onder een regeling valt',dim:'finance',duur:1,waarde:0,
+    waarom:'RVO voert regelingen uit die op digitalisering en scholing in het mkb zijn gericht (SLIM, MIT, WBSO). Achteraf aanvragen kan meestal niet \u2014 dus kijk voordat je begint.',bron:'Branche'});
 
   // --- arbeidsmarkt (UWV) ---
   if(b.spanning==='zeer krap' && g('mensen')<4) A.push({t:'Maak werk dat je niet hoeft in te vullen',dim:'mensen',duur:2,waarde:0,
