@@ -311,6 +311,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="true" data-p="overzicht">Overzicht</button>
         <button class="tab" role="tab" aria-selected="false" data-p="profiel">Profiel per onderdeel</button>
         <button class="tab" role="tab" aria-selected="false" data-p="dataai">Data en AI</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="invoeren">Je gegevens invullen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="antwoorden">Wat je hebt ingevuld</button>
         <button class="tab" role="tab" aria-selected="false" data-p="business">Businesscase</button>
         <span class="groep">Vergelijken</span>
@@ -462,6 +463,35 @@ input[type=range]{min-height:34px}
         <p class="sub">Alle vragen uit de Frisse blik met jouw antwoord. Klopt er iets niet meer? Pas het aan bij Profiel — de rest rekent mee.</p>
         <div id="antwLijst" style="margin-top:.9rem"></div>
       </div>
+    </section>
+
+    <!-- INVOEREN -->
+    <section class="paneel" id="p-invoeren">
+      <div class="kaart conclusie" style="margin-top:1rem">
+        <h2>Je gegevens invullen</h2>
+        <p class="kern">Alles wat je hier invult rekent direct door in de grafieken, de conclusie en het advies.
+        Je hoeft niet alles in één keer — elk veld maakt het scherper.</p>
+        <div id="invoerVoortgang"></div>
+      </div>
+      <div class="kaart" style="margin-top:1rem"><h3>Bedrijfscijfers</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">Uit je jaarrekening of boekhouding.</p>
+        <div id="inCijfers"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Balans en financiering</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">Voor solvabiliteit, rentedekking en de waarde van je bedrijf.</p>
+        <div id="inWaarde"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Mensen</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">Uit je verzuim- en personeelsadministratie.</p>
+        <div id="inMensen"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Klanten</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">Weet je het niet, dan is dat het antwoord — en meteen je eerste actie.</p>
+        <div id="inKlanten"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Metingen toevoegen</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">NPS, tevredenheid en verzuim meet je een paar keer per jaar. Elke meting hier, het verloop zie je bij Cijfers.</p>
+        <div id="inMetingen"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Duurzaamheid en CSRD</h3>
+        <p class="sub" style="margin:-.3rem 0 .3rem">Geef per onderwerp aan hoe de cijfers tot stand komen — vooral of het nog handwerk is.</p>
+        <div id="inEsg"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Wat hieruit blijkt</h3><div id="invoerConclusie"></div></div>
     </section>
 
     <!-- BUSINESSCASE -->
@@ -1286,7 +1316,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenESG(); tekenInvoer(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -3306,6 +3336,85 @@ const ESG=[
 ];
 const ESGSTAT=['Niet beschikbaar','Met de hand bij elkaar gezocht','Deels uit een systeem','Komt vanzelf uit de administratie'];
 const ESGPIJLER={E:['Milieu','#1F9D55'],S:['Sociaal','#2742D6'],G:['Bestuur','#7A5BD6']};
+
+/* De invoervelden staan in de HTML bij hun eigen onderwerp. Hier verplaatsen we
+   ze naar het invoertabblad. Verplaatsen behoudt id's en gebeurtenissen, dus er
+   kan niets stukgaan in de opmaak. */
+function verhuisInvoer(){
+  const doel=document.getElementById('inCijfers'); if(!doel||doel.dataset.klaar) return;
+  const paren=[
+    ['cOmzet','.velden','inCijfers'],
+    ['wSchuld','.velden','inWaarde'],
+    ['mVerzuim','.velden','inMensen'],
+    ['kNps','.velden','inKlanten'],
+    ['mtDatum','.velden','inMetingen'],
+    ['esgVelden',null,'inEsg']
+  ];
+  paren.forEach(function(r){
+    const veld=document.getElementById(r[0]); if(!veld) return;
+    const blok=r[1]?veld.closest(r[1]):veld; if(!blok) return;
+    const naar=document.getElementById(r[2]); if(!naar) return;
+    naar.appendChild(blok);
+  });
+  // de knop 'meting toevoegen' gaat mee
+  const mtb=document.getElementById('mtToe');
+  if(mtb){ const w=document.createElement('div'); w.style.marginTop='.7rem'; w.appendChild(mtb);
+           document.getElementById('inMetingen').appendChild(w); }
+  // lege kaarten opruimen
+  ['cKvk','wMultiple'].forEach(function(x){ const e=document.getElementById(x); if(e&&e.closest('.veld')) doel.appendChild(e.closest('.veld')); });
+  doel.dataset.klaar='1';
+}
+
+function tekenInvoer(){
+  verhuisInvoer();
+  const vg=document.getElementById('invoerVoortgang'); if(!vg) return;
+  const c=S.cijfers||{}, F=S.fin||{}, m=S.mensen||{}, k=S.kto||{}, esg=S.esg||{};
+  const groepen=[
+   ['Bedrijfscijfers', ['cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt'].map(function(x){return c[x];})],
+   ['Balans en financiering', ['wSchuld','wCash','wEV','wBalans','wVast','wRente'].map(function(x){return F[x];})],
+   ['Mensen', ['mVerzuim','mVerloop','mEnps','mMto','mVac'].map(function(x){return m[x];})],
+   ['Klanten', ['kNps','kTevreden','kHerhaal','kKlacht'].map(function(x){return k[x];})],
+   ['Duurzaamheid', (typeof ESG!=='undefined'?ESG:[]).map(function(x){return esg[x.k];})]
+  ];
+  let totaal=0, gevuld=0;
+  const balken=groepen.map(function(g2){
+    const n=g2[1].length||1, v=g2[1].filter(function(x){return x!==undefined&&x!==''&&x!==null;}).length;
+    totaal+=n; gevuld+=v;
+    const pct=Math.round(v/n*100);
+    return '<div style="margin-top:.5rem"><div style="display:flex;justify-content:space-between;font-size:.84rem"><span>'+g2[0]+'</span><span class="sub">'+v+' van '+n+'</span></div>'
+     +'<div style="background:#EFEFEC;border-radius:8px;height:10px;margin-top:.2rem"><div style="width:'+pct+'%;height:10px;border-radius:8px;background:'+(pct>66?'var(--groen)':(pct>33?'var(--amber)':'var(--rood)'))+'"></div></div></div>';
+  }).join('');
+  const pctT=Math.round(gevuld/Math.max(totaal,1)*100);
+  vg.innerHTML='<div style="display:flex;align-items:baseline;gap:.7rem;margin-top:.5rem">'
+   +'<b style="font-family:\'Bricolage Grotesque\';font-size:1.8rem">'+pctT+'%</b>'
+   +'<span class="sub">'+gevuld+' van de '+totaal+' velden ingevuld</span></div>'+balken;
+
+  const el=document.getElementById('invoerConclusie'); if(!el) return;
+  const E=(typeof ESG!=='undefined')?ESG:[];
+  const hand=E.filter(function(x){return esg[x.k]===1;}).length;
+  const mist=E.filter(function(x){return !esg[x.k];}).length;
+  const auto=E.filter(function(x){return esg[x.k]>=2;}).length;
+  const g=k2=>S.niveaus[k2]||2;
+  const bronnen=[];
+  if(!c.cOmzet||!c.cEbitda) bronnen.push('je boekhouding');
+  if(!m.mVerzuim) bronnen.push('je verzuimsysteem');
+  if(mist>4) bronnen.push('de energierekening, het wagenpark en de urenregistratie');
+  el.innerHTML='<p style="font-size:.9rem;line-height:1.65">Je hebt zojuist gegevens uit <b>verschillende systemen bij elkaar gezocht</b>. '
+   +'Dat is precies waar rapporteren op vastloopt: de cijfers b\u00e9staan, maar ze komen niet vanzelf bij elkaar.</p>'
+   +'<div class="kaarten k3" style="margin-top:.8rem">'
+   +'<div class="kaart"><h3>Nog handwerk</h3><div class="kpi" style="color:'+(hand>3?'var(--rood)':'var(--amber)')+'">'+hand+'</div><div class="sub">duurzaamheidsonderwerpen met de hand verzameld</div></div>'
+   +'<div class="kaart"><h3>Ontbreekt</h3><div class="kpi">'+mist+'</div><div class="sub">onderwerpen zonder cijfers</div></div>'
+   +'<div class="kaart"><h3>Komt uit een systeem</h3><div class="kpi" style="color:var(--groen)">'+auto+'</div><div class="sub">van de '+E.length+'</div></div>'
+   +'</div>'
+   +'<div style="margin-top:.9rem;padding:.8rem .95rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.88rem;line-height:1.6">'
+   +'<b>Wat hier te automatiseren valt:</b> '+(bronnen.length?'wat je mist staat meestal al in '+bronnen.slice(0,3).join(', ')+'. ':'')
+   +'Stuurinformatie staat op niveau '+g('analytics')+' en datakwaliteit op '+g('quality')+'. '
+   +'Zolang dat zo is, is elke rapportage \u2014 aan de bank, aan een klant of straks onder CSRD \u2014 opnieuw handwerk. '
+   +'<b>Dat is geen rapportageprobleem maar een koppelingsprobleem.</b></div>'
+   +'<div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">'
+   +'<button class="knop" data-ga="eindconclusie">Wat dit betekent</button>'
+   +'<button class="knop licht" data-ga="uitvoering">Naar de uitvoeringsladder</button></div>';
+}
 
 function tekenESG(){
   const vel=document.getElementById('esgVelden'); if(!vel) return;
