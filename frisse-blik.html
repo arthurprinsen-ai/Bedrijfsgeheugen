@@ -142,6 +142,10 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 /* ═══ vergrendeling: resultaten pas ná geboekt gesprek ═══ */
 let dashUnlocked=false;
 function lockDash(){
+  /* De uitkomst is vrij te bekijken. Gegevens vragen we pas als iemand
+     het rapport wil downloaden of afdrukken. */
+  unlockDash();
+  return;
   if(dashUnlocked)return;
   if(typeof PREVIEW!=='undefined' && PREVIEW){ unlockDash(); return; }
   $('dash').classList.add('locked');
@@ -491,7 +495,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <section class="screen" id="dash">
     <div class="lockbar" role="status">
       <div><b>🔒 Resultaten vergrendeld</b><br><span>Plan uw adviesgesprek van 30 minuten — daarna is uw cockpit direct zichtbaar.</span></div>
-      <button onclick="openLead()">Plan gesprek & ontgrendel</button>
+      <button onclick="openLead()">Plan een gesprek over de uitkomst</button>
     </div>
     <div class="dashveil">
     <div class="dash-head">
@@ -503,6 +507,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
       <div style="display:flex;gap:8px">
         <button class="pillbtn" onclick="restart()">↻ Opnieuw</button>
         <button class="pillbtn" id="btnRapport" onclick="openLead()" style="border-color:var(--amberG);background:#FFF6E5">⬇ Rapport downloaden</button>
+        <a class="pillbtn" href="/portaal#direct" style="text-decoration:none">→ Verder in je portaal</a>
       </div>
     </div>
 
@@ -1284,6 +1289,10 @@ function finish(){
 /* ═══ vergrendeling: resultaten pas ná geboekt gesprek ═══ */
 let dashUnlocked=false;
 function lockDash(){
+  /* De uitkomst is vrij te bekijken. Gegevens vragen we pas als iemand
+     het rapport wil downloaden of afdrukken. */
+  unlockDash();
+  return;
   if(dashUnlocked)return;
   if(typeof PREVIEW!=='undefined' && PREVIEW){ unlockDash(); return; }
   $('dash').classList.add('locked');
