@@ -1826,6 +1826,52 @@ function verzamelAdvies(){
   // sorteren: waarde per maand, met een duw voor risico's zonder euro's
   return A.map(a=>({...a,score:(a.waarde||6000)/Math.max(a.duur,1)})).sort((x,y)=>y.score-x.score);
 }
+
+/* Per advies: wat het concreet inhoudt, in gewone taal. */
+function hoeTekst(a){
+  const t=a.t.toLowerCase();
+  const H=[
+   [/mensen ervan vinden|mto|meet .*mensen/, 'Een korte vragenlijst onder je team — tien vragen, anoniem, vijf minuten invullen.',
+    ['Stel tien vragen: wat gaat goed, wat kost onnodig tijd, wat zou je veranderen.','Stuur hem naar iedereen, met de belofte dat je de uitkomst deelt.','Bespreek de drie meest genoemde punten in een teamoverleg en kies er één om op te lossen.'],
+    'Zonder dit weet je niet of een verbetering gaat landen. Je kunt techniek kopen, geen draagvlak.'],
+   [/incident|responseplan/, 'Eén A4 waarop staat wie wat doet als er iets misgaat — een storing, een datalek, gijzelsoftware.',
+    ['Schrijf op wie in het eerste uur beslist en wie de klanten belt.','Noteer de meldplichten: datalek binnen 72 uur naar de Autoriteit Persoonsgegevens.','Zet het op papier op een plek die ook werkt als het netwerk plat ligt.'],
+    'Bij een incident telt het eerste uur. Zonder plan belt iedereen jou, en jij bent er misschien niet.'],
+   [/back-up/, 'Eén keer daadwerkelijk een bestand terugzetten uit je back-up, om te zien of het werkt.',
+    ['Kies een gewone map of database en zet die terug op een testplek.','Klok hoe lang het duurt en of alles er echt in zit.','Zet een herinnering om dit één keer per jaar te herhalen.'],
+    'Een back-up die nooit is teruggezet is een aanname, geen zekerheid. De helft blijkt bij de eerste poging incompleet.'],
+   [/ai-tool|ai mag|ai-gebruik/, 'Afspraken op papier over welke AI-tools mensen mogen gebruiken en wat er wel en niet in mag.',
+    ['Vraag één keer rond wie wat gebruikt — je krijgt eerlijker antwoord dan je denkt.','Spreek af welke gegevens er niet in mogen: klantgegevens, contracten, personeelszaken.','Leg vast wie de uitkomst controleert voordat die naar een klant gaat.'],
+    'Verbieden werkt niet, dan gaat het ondergronds. Vanaf 2 augustus 2026 geldt bovendien de transparantieplicht uit de AI Act.'],
+   [/handwerk|overtypen/, 'Het werk waarbij dezelfde gegevens twee keer worden ingevoerd, laten verdwijnen door systemen te koppelen.',
+    ['Tel één week hoe vaak iets wordt overgetypt en hoeveel tijd dat kost.','Kies de zwaarste route — meestal offerte naar order, of urenregistratie naar factuur.','Koppel die twee, of laat het door één systeem doen in plaats van twee.'],
+    'Dit is de post die het meeste geld kost en het snelst is op te lossen.'],
+   [/klant.*afhankelijk|grootste klant/, 'De omzet minder laten leunen op één klant.',
+    ['Reken uit welk deel van je omzet van je grootste drie klanten komt.','Leg bij die klanten de afspraken vast in een actueel contract met looptijd.','Zet gerichte acquisitie op één vergelijkbaar klantprofiel.'],
+    'Boven de 20% telt één klant bij kopers en financiers als risico, en dat drukt je prijs.'],
+   [/factureer|herinner|debiteuren/, 'Sneller factureren en eerder herinneren, zodat je minder geld bij klanten laat staan.',
+    ['Factureer wekelijks in plaats van maandelijks.','Stuur automatisch een herinnering op dag 14 en dag 21.','Bel de vijf klanten die samen het grootste openstaande bedrag hebben.'],
+    'Elke dag eerder betaald is werkkapitaal dat vrijkomt zonder dat je iets hoeft te verkopen.'],
+   [/vastleggen wat alleen|kennis|één hoofd/, 'Opschrijven wat nu alleen in het hoofd van één of twee mensen zit.',
+    ['Maak een lijst met taken en zet erachter wie het kan — elke regel met één naam is een risico.','Loop een dag mee met die persoon en leg vast wat hij zonder nadenken doet.','Zet het op de plek waar het werk gebeurt, niet in een los document.'],
+    'Dit is de dertig-dagentoets die kopers gebruiken: kan het bedrijf een maand zonder deze persoon?'],
+   [/verzuim/, 'Uitzoeken waar het verzuim vandaan komt voordat je er beleid op maakt.',
+    ['Kijk per afdeling waar het verzuim zit, niet naar het gemiddelde.','Leg dat naast waar het werk zich opstapelt — dat valt vaak samen.','Bespreek het met de leidinggevende van die afdeling, niet met het hele team.'],
+    'Verzuim boven het brancheniveau is zelden toeval en bijna altijd een signaal over werkdruk of sturing.'],
+   [/inwerktijd|inwerken/, 'Vastleggen hoe het werk gaat, zodat een nieuwe collega niet alles hoeft na te vragen.',
+    ['Laat de laatste nieuwe medewerker opschrijven wat hij miste.','Maak van de drie belangrijkste processen één A4 per stuk.','Spreek af wie ze bijhoudt en wanneer.'],
+    'Bij verloop ben je permanent aan het inwerken. Elke week die dat korter wordt, telt direct mee.'],
+   [/solvabiliteit|buffer/, 'Het eigen vermogen versterken zodat je financierbaar blijft.',
+    ['Reken uit waar je nu staat: eigen vermogen gedeeld door balanstotaal.','Houd winst in plaats van uit te keren, of los sneller af.','Bespreek met je accountant welke route bij jouw situatie past.'],
+    'Banken hanteren doorgaans 25 à 30%. Daaronder wordt lenen duur of onmogelijk.'],
+   [/definities|klant, order en uur/, 'Afspreken wat een klant, een order en een uur precies zijn.',
+    ['Schrijf per begrip één zin op: wanneer telt het mee en wanneer niet.','Laat één persoon per begrip de knoop doorhakken.','Zet die definities bij het dashboard waar de cijfers staan.'],
+    'Zonder definities gaat elke vergadering over wiens cijfer klopt in plaats van over wat je gaat doen.']
+  ];
+  for(const r of H){ if(r[0].test(t)) return {wat:r[1], stappen:r[2], waarom:r[3]}; }
+  return {wat:a.waarom, stappen:['Kies één concrete eerste stap die binnen twee weken af kan.','Wijs één eigenaar aan die er over drie maanden nog op wordt bevraagd.','Spreek af waaraan je ziet dat het gelukt is.'],
+          waarom:'Een verbetering zonder eigenaar en zonder einddatum blijft een voornemen.'};
+}
 function adviesRij(a,i,kort){
   const eur=v=>'\u20ac ' + Math.round(v).toLocaleString('nl-NL');
   // waar de bevinding vandaan komt, in gewone taal + waar je het terugvindt
@@ -1847,6 +1893,12 @@ function adviesRij(a,i,kort){
    +'<span style="font-size:.76rem;color:var(--grijs)">\u00b7 kost je ongeveer '+a.duur+' maand'+(a.duur>1?'en':'')+'</span>'
    +(a.waarde>1000?'<span style="font-size:.76rem;font-weight:600;color:var(--groen)">\u00b7 levert '+eur(a.waarde)+' per jaar op</span>':'')
    +'</div>'
+   +(kort?'':(function(){ const h=hoeTekst(a);
+       return '<details style="margin-top:.55rem"><summary style="cursor:pointer;list-style:none;font-size:.82rem;font-weight:600;color:var(--blauw)">Wat houdt dit in? \u25be</summary>'
+        +'<div style="font-size:.86rem;line-height:1.6;margin-top:.45rem">'+h.wat
+        +'<ul style="margin:.4rem 0 0 1.05rem">'+h.stappen.map(function(x){return '<li style="margin:.15rem 0">'+x+'</li>';}).join('')+'</ul>'
+        +'<div style="margin-top:.5rem;padding-left:.7rem;border-left:3px solid var(--geel)"><b>Waarom het telt:</b> '+h.waarom+'</div></div></details>';
+     })())
    +(kort?'':'<div style="display:flex;gap:.4rem;margin-top:.6rem;flex-wrap:wrap">'
        +'<button class="knop" data-advies="'+encodeURIComponent(JSON.stringify({t:a.t,dim:a.dim,d:a.duur}))+'">Zet in mijn roadmap</button>'
        +'<button class="knop licht" data-ga="'+h[1]+'">Bekijk waar dit op gebaseerd is</button></div>')
