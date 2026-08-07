@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koppelingskiezer — hoe koppel je jouw systemen? · Bedrijfsgeheugen</title>
+<meta name="description" content="Kies wat er van waar naar waar moet, en zie meteen hoe je het koppelt, met welk hulpmiddel, hoeveel tijd het kost en wat het per jaar oplevert.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/koppelingen">
+<meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Bedrijfsgeheugen">
+<meta property="og:title" content="Koppelingskiezer — hoe koppel je jouw systemen?">
+<meta property="og:description" content="Van mailbox naar AFAS-dossier? Kies je systemen en zie hoe, hoe lang en wat het oplevert.">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/koppelingen">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--groen:#1F9D55;--wit:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--papier);color:var(--inkt);font-family:"Instrument Sans",system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;line-height:1.1}
+a{color:var(--blauw)}
+.wrap{max-width:64rem;margin:0 auto;padding:0 1.2rem}
+header{border-bottom:2px solid var(--inkt);background:var(--papier);position:sticky;top:0;z-index:20}
+.top{display:flex;align-items:center;gap:1.2rem;height:64px}
+.merk{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.15rem;text-decoration:none;color:var(--inkt)}
+.merk span{color:var(--blauw)}
+nav a{margin-right:1rem;font-size:.92rem;text-decoration:none;color:var(--inkt)}
+main{padding:2.5rem 0 4rem}
+.eyebrow{display:inline-block;font-size:.74rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--oranje);margin-bottom:.6rem}
+h1{font-size:clamp(2rem,5vw,3.1rem);margin-bottom:.8rem}
+.lead{font-size:1.12rem;color:var(--grijs);max-width:44rem}
+.mark{background:var(--geel);padding:0 .18em}
+.kaart{background:var(--wit);border:1px solid var(--lijn);border-radius:10px;padding:1.2rem 1.35rem;margin-top:1.1rem}
+.kaart h2{font-size:1.25rem;margin-bottom:.2rem}
+.kaart h3{font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;color:var(--grijs);font-weight:600;margin-bottom:.5rem}
+.sub{font-size:.88rem;color:var(--grijs)}
+.keuzes{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.4rem}
+.keuzes button{border:1px solid var(--lijn);background:var(--wit);border-radius:22px;padding:.5rem .9rem;font:inherit;font-size:.9rem;cursor:pointer;color:var(--inkt);min-height:40px}
+.keuzes button[aria-pressed=true]{background:var(--inkt);color:#fff;border-color:var(--inkt)}
+.stap{display:grid;grid-template-columns:2rem 1fr;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--lijn);align-items:start}
+.stap b.n{width:2rem;height:2rem;border-radius:50%;background:var(--blauw);color:#fff;display:grid;place-items:center;font-size:.78rem}
+.kpi{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.9rem;line-height:1}
+.drie{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem;margin-top:.8rem}
+.let{padding:.8rem .95rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 5px 5px 0;font-size:.9rem;line-height:1.6;margin-top:.9rem}
+.velden{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.8rem;margin-top:.6rem}
+label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--grijs);margin-bottom:.25rem}
+input{width:100%;height:44px;padding:0 .7rem;border:1px solid var(--lijn);border-radius:8px;font:inherit;background:var(--wit)}
+input:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(39,66,214,.12)}
+.knop{display:inline-block;background:var(--inkt);color:#fff;border:0;border-radius:8px;padding:.75rem 1.2rem;font:inherit;font-weight:600;text-decoration:none;cursor:pointer}
+.knop.licht{background:transparent;color:var(--inkt);border:1px solid var(--inkt)}
+table{width:100%;border-collapse:collapse;margin-top:.5rem}
+td{padding:.45rem 0;border-bottom:1px solid var(--lijn);font-size:.9rem;vertical-align:top}
+td:first-child{color:var(--grijs);white-space:nowrap;padding-right:1rem;width:11rem}
+footer{border-top:2px solid var(--inkt);padding:1.5rem 0;font-size:.88rem;color:var(--grijs)}
+@media(max-width:640px){td:first-child{width:7.5rem}}
+</style>
+</head>
+<body>
+<header><div class="wrap top">
+  <a class="merk" href="/">Bedrijfs<span>geheugen</span></a>
+  <nav><a href="/frisse-blik">Frisse blik</a><a href="/expertises">Expertises</a><a href="/contact">Contact</a></nav>
+</div></header>
+
+<main class="wrap">
+  <span class="eyebrow">Koppelingskiezer · gratis · geen gegevens nodig</span>
+  <h1>Van <span class="mark">waar</span> naar <span class="mark">waar</span>?</h1>
+  <p class="lead">Kies wat er nu met de hand gebeurt. Je ziet meteen hoe je het koppelt, met welk hulpmiddel, hoeveel tijd het kost om te bouwen en wat het per jaar oplevert.</p>
+
+  <div class="kaart">
+    <h3>1 · Waar komt het vandaan</h3><div class="keuzes" id="kBron"></div>
+    <h3 style="margin-top:1rem">2 · Wat moet er mee</h3><div class="keuzes" id="kWat"></div>
+    <h3 style="margin-top:1rem">3 · Waar moet het heen</h3><div class="keuzes" id="kDoel"></div>
+    <h3 style="margin-top:1rem">4 · Hoe vaak gebeurt dit</h3>
+    <div class="velden">
+      <div><label for="fAantal">Keer per week</label><input type="number" id="fAantal" value="40" min="1" step="1"></div>
+      <div><label for="fMin">Minuten per keer</label><input type="number" id="fMin" value="3" min="0.5" step="0.5"></div>
+      <div><label for="fUur">Kosten per uur</label><input type="number" id="fUur" value="45" min="10" step="5"></div>
+    </div>
+  </div>
+
+  <div id="uitkomst"></div>
+
+  <div class="kaart" style="background:var(--inkt);color:var(--papier);border-color:var(--inkt)">
+    <h2 style="color:var(--papier)">Wil je weten waar dit bij jou het meest oplevert?</h2>
+    <p style="color:#C9CEDA;font-size:.95rem;margin-top:.3rem">De Frisse blik loopt dertien onderdelen langs en rekent het handwerk in je hele bedrijf door. Zes minuten.</p>
+    <div style="margin-top:.9rem"><a class="knop" style="background:var(--geel);color:var(--inkt)" href="/frisse-blik">Doe de Frisse blik →</a></div>
+  </div>
+</main>
+
+<footer><div class="wrap">Bedrijfsgeheugen · Aanpakken zonder aanmodderen · <a href="/contact">contact</a></div></footer>
+
+<script>
+const BRON=[
+ ['outlook','Outlook / Microsoft 365'],['gmail','Gmail / Google Workspace'],['webform','Formulier op de website'],
+ ['webshop','Webshop'],['afas','AFAS'],['exact','Exact'],['excel','Excel of Sheets'],['whatsapp','WhatsApp'],['papier','Papier of scan']];
+const WAT=[
+ ['bijlage','Een bijlage (pdf, foto)'],['factuur','Een inkoopfactuur'],['order','Een order of offerte'],
+ ['contact','Contact- of klantgegevens'],['uren','Uren'],['melding','Een melding of signaal']];
+const DOEL=[
+ ['afas','AFAS'],['exact','Exact'],['sharepoint','SharePoint / Teams'],['drive','Google Drive'],
+ ['crm','CRM (HubSpot, Pipedrive, Notion)'],['excel','Excel of Sheets'],['mail','Mail naar de juiste persoon']];
+
+const NAAM=o=>(BRON.concat(WAT,DOEL).find(x=>x[0]===o)||['',o])[1];
+let kb='outlook', kw='bijlage', kd='afas';
+
+/* Welk hulpmiddel past het best bij deze combinatie? */
+function kiesMiddel(){
+  const ms=kb==='outlook'||kd==='sharepoint';
+  const gg=kb==='gmail'||kd==='drive';
+  if(ms) return {n:'Power Automate', w:'Zit al in je Microsoft 365-licentie. Geen extra kosten, en beheer valt onder je bestaande afspraken.',
+    k:'meestal inbegrepen', let:'Werkt uitstekend binnen Microsoft. Zodra er een systeem buiten Microsoft bij komt, wordt het snel omslachtig.'};
+  if(gg) return {n:'Make of Zapier', w:'Google heeft zelf geen sterke automatisering. Make koppelt Gmail en Drive aan vrijwel alles.',
+    k:'\u20ac 10 tot \u20ac 30 per maand', let:'Let op het aantal bewerkingen per maand \u2014 daar zit de prijs, niet in het aantal koppelingen.'};
+  if(kd==='afas'||kd==='exact') return {n:'Make met de API van je pakket', w:'AFAS en Exact hebben een eigen koppelvlak. Make praat daarmee zonder dat je zelf hoeft te programmeren.',
+    k:'\u20ac 10 tot \u20ac 30 per maand, plus eenmalig instellen van het koppelvlak', let:'Vraag je pakketleverancier eerst of de connector in je licentie zit. Bij AFAS is dat vaak een aparte module.'};
+  return {n:'Make of n8n', w:'Allebei kunnen dit. Make is sneller op te zetten, n8n draait op je eigen server en kost daarna niets per bericht.',
+    k:'Make \u20ac 10 tot \u20ac 30 per maand \u00b7 n8n gratis, maar je beheert hem zelf', let:'Kies n8n alleen als iemand bij jullie het beheer echt oppakt. Anders betaal je de besparing terug in gedoe.'};
+}
+
+const STAPPEN={
+ bijlage:[['Vang het bericht af','Een regel die kijkt naar afzender, onderwerp of een woord in de tekst. Hoe strakker de regel, hoe minder ruis.'],
+   ['Haal de bijlage eruit','Alleen pdf en afbeeldingen; de rest laat je liggen. Hernoem meteen: datum, afzender, onderwerp.'],
+   ['Zoek het juiste dossier','Op klantnummer, ordernummer of e-mailadres. Vind je niets, dan gaat het naar een bakje "uitzoeken" \u2014 nooit stilzwijgend weg.'],
+   ['Zet hem erin','Met de juiste dossiersoort, zodat hij ook via zoeken terug te vinden is.'],
+   ['Bevestig','Een vinkje op het bericht of een regel in een logboek. Zo zie je meteen of het werkte.']],
+ factuur:[['Vang de factuurmail af','Op afzender of op een apart adres, bijvoorbeeld facturen@.'],
+   ['Lees de factuur uit','Leverancier, bedrag, btw, factuurnummer, datum. Dit is waar herkenning nodig is \u2014 niet meer dan dat.'],
+   ['Leg naast de bestelling','Klopt het bedrag met wat besteld is? Zo ja: door. Zo nee: naar de persoon die erover gaat.'],
+   ['Boek in','Als concept, niet definitief. Iemand kijkt \u00e9\u00e9n keer per dag mee.'],
+   ['Archiveer','Factuur bij de boeking, zodat de accountant later niet hoeft te zoeken.']],
+ order:[['Herken de order','Uit het formulier, de mail of de webshop.'],
+   ['Controleer de klant','Bestaat hij al? Zo ja: koppelen. Zo nee: aanmaken met de gegevens die er zijn.'],
+   ['Maak de order aan','Met regels, aantallen en de afgesproken prijs.'],
+   ['Bevestig naar de klant','Automatisch, met het ordernummer erin.'],
+   ['Meld het intern','Alleen als er iets bijzonders is \u2014 niet bij elke order.']],
+ contact:[['Vang de gegevens op','Uit het formulier, de handtekening of de webshop.'],
+   ['Ontdubbel','Zoek op e-mailadres, niet op naam. Namen worden verkeerd getypt, adressen niet.'],
+   ['Vul aan in plaats van overschrijven','Bestaande gegevens blijven staan; nieuwe velden komen erbij.'],
+   ['Zet de bron erbij','Zo weet je later waar deze klant vandaan kwam.'],
+   ['Meld nieuwe klanten','E\u00e9n bericht per dag met wat er nieuw is, geen melding per contact.']],
+ uren:[['Verzamel de uren','Uit de app, het formulier of de kalender.'],
+   ['Koppel aan project of order','Zonder koppeling kun je later niet factureren of nacalculeren.'],
+   ['Controleer op gaten','Niemand werkt 0 uur op een werkdag. Signaleer dat v\u00f3\u00f3r de factuurronde.'],
+   ['Zet ze klaar voor facturatie','Als concept per klant, met de regels erbij.'],
+   ['Rapporteer wekelijks','Geschreven uren tegenover verwachte uren, in \u00e9\u00e9n overzicht.']],
+ melding:[['Bepaal wat een melding is','Wat moet er misgaan voordat iemand gestoord mag worden? Schrijf dat op voordat je iets bouwt.'],
+   ['Meet het','Een controle die elke vijf minuten kijkt of het nog draait.'],
+   ['Stuur naar de juiste persoon','Niet naar een groepsmailbox waar niemand zich eigenaar voelt.'],
+   ['Escaleer','Niet opgepakt binnen een uur? Dan de volgende persoon.'],
+   ['Leg vast wat er gebeurde','Anders herhaalt hetzelfde probleem zich zonder dat iemand het merkt.']]
+};
+
+const OPMERKING={
+ 'outlook|bijlage|afas':'Dit is de meest gevraagde koppeling in het mkb. AFAS heeft een dossierkoppelvlak (GetConnector en UpdateConnector) waarmee dit netjes kan. Vraag je AFAS-beheerder om een app-connector met alleen rechten op dossieritems \u2014 niet op de hele administratie.',
+ 'outlook|factuur|exact':'Exact Online heeft hiervoor een eigen scan-en-herken-module. Reken uit of die goedkoper is dan zelf bouwen: vaak wel, tenzij je meer wilt dan alleen boeken.',
+ 'webform|contact|crm':'Zorg dat het formulier zelf al valideert. Een koppeling die rommel doorzet, verplaatst het probleem alleen naar een systeem waar het duurder is om op te ruimen.',
+ 'webshop|order|exact':'Kijk eerst of je webshop een kant-en-klare koppeling heeft. Die is bijna altijd goedkoper dan zelf bouwen, en iemand anders houdt hem bij.',
+ 'whatsapp|bijlage|afas':'WhatsApp Business heeft een API maar die is bewerkelijk. Vaak is het slimmer om mensen te leren doorsturen naar een mailadres dat w\u00e9l gekoppeld is.',
+ 'papier|factuur|exact':'Begin bij de bron: vraag leveranciers om pdf per mail. Elke scan die je niet hoeft te maken, is de goedkoopste automatisering die er is.'
+};
+
+function teken(){
+  const el=document.getElementById('uitkomst');
+  const n=+document.getElementById('fAantal').value||0;
+  const m=+document.getElementById('fMin').value||0;
+  const u=+document.getElementById('fUur').value||0;
+  const urenJaar=n*m/60*46;
+  const kostenJaar=urenJaar*u;
+  const winst=kostenJaar*0.8;
+  const mid=kiesMiddel();
+  const stappen=STAPPEN[kw]||STAPPEN.bijlage;
+  const bouwUren=kw==='factuur'?14:(kw==='order'?12:8);
+  const bouwKosten=bouwUren*95;
+  const terug=winst>0?(bouwKosten/winst*12):null;
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const sleutel=kb+'|'+kw+'|'+kd;
+
+  el.innerHTML=
+   '<div class="kaart"><h2>'+NAAM(kb)+' \u2192 '+NAAM(kd)+'</h2>'
+   +'<p class="sub">'+NAAM(kw).toLowerCase()+', ongeveer '+n+' keer per week</p>'
+   +'<div class="drie">'
+   +'<div><div class="kpi">'+Math.round(urenJaar)+' uur</div><div class="sub">gaat hier nu per jaar in zitten</div></div>'
+   +'<div><div class="kpi">'+eur(kostenJaar)+'</div><div class="sub">kost dat aan werktijd</div></div>'
+   +'<div><div class="kpi" style="color:var(--groen)">'+eur(winst)+'</div><div class="sub">blijft over als het gekoppeld is</div></div>'
+   +'</div>'
+   +'<p class="sub" style="margin-top:.7rem">Gerekend met 80% besparing: er blijft altijd werk over voor uitzonderingen en controle. '
+   +'46 werkweken per jaar, '+eur(u)+' per uur.</p></div>'
+
+   +'<div class="kaart"><h2>Waarmee</h2>'
+   +'<table>'
+   +'<tr><td>Hulpmiddel</td><td><b>'+mid.n+'</b></td></tr>'
+   +'<tr><td>Waarom deze</td><td>'+mid.w+'</td></tr>'
+   +'<tr><td>Wat het kost</td><td>'+mid.k+'</td></tr>'
+   +'<tr><td>Bouwen</td><td>'+bouwUren+' uur werk, ongeveer '+eur(bouwKosten)+' eenmalig</td></tr>'
+   +'<tr><td>Terugverdiend na</td><td><b>'+(terug&&terug<24?terug.toFixed(1)+' maanden':'\u2014 vul eerst in hoe vaak dit gebeurt')+'</b></td></tr>'
+   +'</table>'
+   +'<div class="let"><b>Let op:</b> '+mid.let+'</div></div>'
+
+   +'<div class="kaart"><h2>Hoe je het doet</h2>'
+   +'<p class="sub" style="margin-bottom:.4rem">Vijf stappen, in deze volgorde. Sla er geen over \u2014 stap 3 is waar de meeste koppelingen op stuklopen.</p>'
+   + stappen.map(function(s,i){
+      return '<div class="stap"><b class="n">'+(i+1)+'</b><div><b>'+s[0]+'</b><div class="sub">'+s[1]+'</div></div></div>';
+     }).join('')
+   + (OPMERKING[sleutel]?'<div class="let"><b>Voor jouw combinatie:</b> '+OPMERKING[sleutel]+'</div>':'')
+   +'</div>'
+
+   +'<div class="kaart"><h2>Voordat je begint</h2>'
+   +'<table>'
+   +'<tr><td>Wie beslist</td><td>Iemand met toegang tot '+NAAM(kd)+' \u00e9n mandaat om rechten te geven. Zonder die persoon sta je binnen een dag stil.</td></tr>'
+   +'<tr><td>Wat er misgaat</td><td>Meestal niet de techniek, maar de uitzonderingen: een bijlage zonder klantnummer, een naam die net anders is gespeld. Spreek af waar die heen gaan.</td></tr>'
+   +'<tr><td>Wat je eerst meet</td><td>Tel \u00e9\u00e9n week hoe vaak dit echt gebeurt. Bijna iedereen schat te laag \u2014 en dan valt de businesscase later tegen terwijl hij juist beter is.</td></tr>'
+   +'<tr><td>Wie het beheert</td><td>Een koppeling die niemand in de gaten houdt, valt een keer stil zonder dat iemand het merkt. Zet er \u00e9\u00e9n naam op.</td></tr>'
+   +'</table></div>';
+}
+
+function bouwKeuzes(id,lijst,huidig,zet){
+  const el=document.getElementById(id);
+  el.innerHTML=lijst.map(function(o){return '<button data-k="'+o[0]+'" aria-pressed="'+(huidig()===o[0])+'">'+o[1]+'</button>';}).join('');
+  el.querySelectorAll('[data-k]').forEach(function(b){
+    b.addEventListener('click',function(){ zet(b.dataset.k);
+      el.querySelectorAll('[data-k]').forEach(function(x){x.setAttribute('aria-pressed',x.dataset.k===b.dataset.k);});
+      teken(); });
+  });
+}
+bouwKeuzes('kBron',BRON,()=>kb,v=>kb=v);
+bouwKeuzes('kWat',WAT,()=>kw,v=>kw=v);
+bouwKeuzes('kDoel',DOEL,()=>kd,v=>kd=v);
+['fAantal','fMin','fUur'].forEach(function(id){ document.getElementById(id).addEventListener('input',teken); });
+teken();
+</script>
+</body>
+</html>
