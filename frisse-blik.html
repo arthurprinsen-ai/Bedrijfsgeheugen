@@ -42,9 +42,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 /* ═══ resultaat-vergrendeling tot het gesprek is geboekt ═══ */
 #dash.locked .dashveil,#dash.locked .dashveil2{filter:blur(10px);pointer-events:none;user-select:none}
-#dash.summary .dashveil2{filter:blur(10px);pointer-events:none;user-select:none}
+#dash.summary .dashveil2{filter:none;pointer-events:auto;user-select:auto}
 .lockbar2{display:none;position:relative;z-index:30;background:#131A33;color:#fff;padding:.8rem 1.2rem;border-radius:12px;margin:18px 0 14px;align-items:center;gap:1rem;flex-wrap:wrap}
-#dash.summary .lockbar2{display:flex}
+#dash.summary .lockbar2{display:none}
 .lockbar2 b{font-size:.95rem}.lockbar2 span{font-size:.8rem;color:#B9C4DE}
 .lockbar{display:none;position:sticky;top:0;z-index:40;background:#131A33;color:#fff;padding:.8rem 1.2rem;border-radius:12px;margin:0 0 14px;align-items:center;gap:1rem;flex-wrap:wrap}
 #dash.locked .lockbar{display:flex}
@@ -154,8 +154,8 @@ function lockDash(){
 function unlockDash(){
   dashUnlocked=true;
   $('dash').classList.remove('locked');
-  if(typeof PREVIEW!=='undefined' && PREVIEW){ return; }
-  $('dash').classList.add('summary');   /* kop = samenvatting; de rest blijft voor het gesprek */
+  $('dash').classList.remove('summary');   /* alles zichtbaar — niets meer vervaagd */
+  return;   /* kop = samenvatting; de rest blijft voor het gesprek */
 }
 /* Voorvertoning voor Arthur zelf: ?preview op de URL slaat het formulier over
    en toont het volledige dashboard. Bezoekers zien dit niet. */
@@ -1301,8 +1301,8 @@ function lockDash(){
 function unlockDash(){
   dashUnlocked=true;
   $('dash').classList.remove('locked');
-  if(typeof PREVIEW!=='undefined' && PREVIEW){ return; }
-  $('dash').classList.add('summary');   /* kop = samenvatting; de rest blijft voor het gesprek */
+  $('dash').classList.remove('summary');   /* alles zichtbaar — niets meer vervaagd */
+  return;   /* kop = samenvatting; de rest blijft voor het gesprek */
 }
 /* Voorvertoning voor Arthur zelf: ?preview op de URL slaat het formulier over
    en toont het volledige dashboard. Bezoekers zien dit niet. */
