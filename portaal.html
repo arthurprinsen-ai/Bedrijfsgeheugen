@@ -203,6 +203,26 @@ input[type=range]{min-height:34px}
 .rij label.sub{display:inline-flex;align-items:center;gap:.45rem}
 .rij input,.rij select{height:40px;border:1px solid #E3E4E8;border-radius:8px;padding:0 .6rem;background:#fff}
 .rij input:focus,.rij select:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(39,66,214,.12)}
+
+/* ---------- meer kleur, rustig gedoseerd ---------- */
+.mod{border-left:4px solid var(--blauw)}
+.mod:nth-child(2n){border-left-color:var(--oranje)}
+.mod:nth-child(3n){border-left-color:var(--groen)}
+.mod:nth-child(5n){border-left-color:#7A5BD6}
+.mod summary{background:#FBFAF7}
+.mod[open] summary{background:#fff}
+.conclusie{border-left:5px solid var(--oranje);background:linear-gradient(180deg,#FFF8F3 0%,#fff 60%)}
+.conclusie h2{font-size:1.35rem;margin-bottom:.3rem}
+.conclusie .kern{font-size:1.02rem;line-height:1.65;margin:.5rem 0 .9rem}
+.conclusie .kern b{background:linear-gradient(transparent 55%,var(--geel) 55%);padding:0 .1em}
+.conclusie .drie{display:grid;gap:.6rem}
+@media(min-width:820px){.conclusie .drie{grid-template-columns:repeat(3,1fr)}}
+.conclusie .stap{background:#fff;border:1px solid var(--lijn);border-radius:8px;padding:.8rem .9rem}
+.conclusie .stap span{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--oranje)}
+.conclusie .stap b{display:block;font-size:.93rem;margin:.15rem 0 .2rem}
+.conclusie .stap p{font-size:.84rem;color:var(--grijs);line-height:1.5;margin:0}
+.q4 div{background:#FBFAF7}
+.erk div{border-left:3px solid var(--blauw)}
 </style>
 </head>
 <body>
@@ -439,7 +459,8 @@ input[type=range]{min-height:34px}
 
     <!-- STRATEGIE -->
     <section class="paneel" id="p-strategie">
-      <p class="sub" style="margin-top:1rem">Zes denkramen, ingevuld met jouw eigen scores en cijfers. Klik een kaart open.</p>
+      <div class="kaart conclusie" id="conclusie" style="margin-top:1rem"></div>
+      <p class="sub" style="margin-top:1.4rem">De denkramen waar die conclusie op rust. Alles staat open — klik dicht wat je niet nodig hebt.</p>
       <div class="kaarten k2" id="stratKaarten"></div>
       <h3 style="margin:1.6rem 0 .2rem">Per functie</h3>
       <p class="sub">Het model dat een consultant op deze afdeling zou leggen, met jouw cijfers erin.</p>
@@ -970,7 +991,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1312,12 +1333,51 @@ function tekenStrategie(){
     +eigenVeld('destep','Welke ontwikkeling raakt jullie het hardst, en wanneer?')});
 
   document.getElementById('stratKaarten').innerHTML = M.map((m,i)=>
-    '<details class="mod"'+(i===0?' open':'')+'><summary><h3>'+m.n+'</h3><span class="herkomst">'+m.h+' ▾</span></summary>'
+    '<details class="mod" open><summary><h3>'+m.n+'</h3><span class="herkomst">'+m.h+' ▾</span></summary>'
     +'<div class="inhoud">'+m.inhoud+'</div></details>').join('');
   document.querySelectorAll('[data-eigen]').forEach(t=>{
     if(t.dataset.aan)return; t.dataset.aan='1';
     t.addEventListener('change',e=>{S.eigen=S.eigen||{};S.eigen[e.target.dataset.eigen]=e.target.value;bewaar();});
   });
+}
+
+function tekenConclusie(){
+  const el=document.getElementById('conclusie'); if(!el) return;
+  const g=k=>S.niveaus[k]||2, b=B(), c=S.cijfers||{}, m=S.mensen||{}, n=x=>+(c[x])||0;
+  const gem=DIM.reduce((a,d)=>a+g(d.k),0)/DIM.length;
+  const hard=(g('tech')+g('analytics')+g('quality'))/3, zacht=(g('culture')+g('mensen'))/2;
+  const smalst=DIM.slice().sort((x,y)=>g(x.k)-g(y.k))[0];
+  const f=[0,1,.78,.5,.22,.06]; let tot=0, kosten={};
+  DIM.forEach(d=>{kosten[d.k]=d.u*f[g(d.k)]*(S.mw/24)*46*S.uur; tot+=kosten[d.k];});
+  const duurste=DIM.slice().sort((x,y)=>kosten[y.k]-kosten[x.k])[0];
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const A=verzamelAdvies().filter(a=>modelAan(a.bron));
+
+  // waar alle modellen op uitkomen
+  const patroon = hard-zacht>0.6 ? 'techniek loopt voor op mensen'
+                 : (zacht-hard>0.6 ? 'mensen kunnen meer aan dan de systemen toelaten'
+                 : 'techniek en organisatie lopen gelijk op');
+  const markt = b.groei<1 ? 'in een markt die nauwelijks groeit ('+b.groei.toFixed(1)+'%), dus groei komt uit productiviteit of van een concurrent'
+                          : 'in een markt die met '+b.groei.toFixed(1)+'% groeit, dus meebewegen kost minder moeite dan afpakken';
+  const positie = gem<b.dig-0.3 ? 'Je loopt achter op je branche ('+gem.toFixed(1)+' tegen '+b.dig.toFixed(1)+').'
+                : (gem>b.dig+0.3 ? 'Je loopt voor op je branche ('+gem.toFixed(1)+' tegen '+b.dig.toFixed(1)+').'
+                : 'Je zit op het niveau van je branche ('+gem.toFixed(1)+').');
+
+  const kern = positie+' Alle modellen wijzen naar dezelfde plek: <b>'+smalst.n.toLowerCase()+'</b> is je smalste schakel, '
+   +'en '+duurste.n.toLowerCase()+' kost je het meeste geld ('+eur(kosten[duurste.k])+' per jaar van in totaal '+eur(tot)+'). '
+   +'Het patroon eronder is dat '+patroon+' \u2014 '+markt+'.';
+
+  const stappen=A.slice(0,3);
+  el.innerHTML='<h2>De conclusie</h2>'
+   +'<p class="sub">Wat de '+BRONNEN.filter(x=>modelAan(x.k)).length+' modellen en bronnen samen zeggen, in \u00e9\u00e9n verhaal.</p>'
+   +'<p class="kern">'+kern+'</p>'
+   +'<div class="drie">'+stappen.map(function(a,i){
+       return '<div class="stap"><span>Stap '+(i+1)+'</span><b>'+a.t+'</b><p>'+a.waarom+'</p></div>';
+     }).join('')+'</div>'
+   +'<div style="margin-top:.9rem;display:flex;gap:.5rem;flex-wrap:wrap">'
+   +'<button class="knop" data-ga="advies">Bekijk het volledige advies</button>'
+   +'<button class="knop licht" data-ga="roadmap">Zet het in je roadmap</button></div>'
+   +'<p class="sub" style="margin-top:.7rem">Onderbouwing per model staat hieronder. Vul je meer in bij Cijfers, Mensen en Beleid, dan wordt deze conclusie scherper.</p>';
 }
 
 function tekenFuncties(){
@@ -1390,7 +1450,7 @@ function tekenFuncties(){
     +eigenVeld('admin','Welke stap in factureren kost de meeste tijd?')});
 
   document.getElementById('functieKaarten').innerHTML = F.map(f=>
-    '<details class="mod"><summary><h3>'+f.n+'</h3><span class="herkomst">'+f.h+' ▾</span></summary>'
+    '<details class="mod" open><summary><h3>'+f.n+'</h3><span class="herkomst">'+f.h+' ▾</span></summary>'
     +'<div class="inhoud">'+f.inhoud+'</div></details>').join('');
   document.querySelectorAll('[data-eigen]').forEach(t=>{
     if(t.dataset.aan)return; t.dataset.aan='1';
