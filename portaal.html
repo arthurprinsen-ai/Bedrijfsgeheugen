@@ -266,6 +266,7 @@ input[type=range]{min-height:34px}
         <span class="groep">Inzicht</span>
         <button class="tab" role="tab" aria-selected="true" data-p="overzicht">Overzicht</button>
         <button class="tab" role="tab" aria-selected="false" data-p="profiel">Profiel per onderdeel</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="dataai">Data en AI</button>
         <button class="tab" role="tab" aria-selected="false" data-p="antwoorden">Wat je hebt ingevuld</button>
         <button class="tab" role="tab" aria-selected="false" data-p="business">Businesscase</button>
         <span class="groep">Vergelijken</span>
@@ -292,7 +293,7 @@ input[type=range]{min-height:34px}
     <section class="paneel aan" id="p-overzicht">
       <div class="samenvatting" id="samenvatting"></div>
       <div id="scanmelding" style="margin-top:.6rem"></div>
-      <div class="kaart" style="margin-top:1rem"><h3>Je drie belangrijkste stappen</h3><p class="sub" style="margin:-.3rem 0 .6rem">Hieruit kiezen we op wat het oplevert gedeeld door wat het kost. Zet wat je wilt doen in je roadmap — dan zie je het terug in de planning.</p><div id="adviesTop"></div></div>
+
       <div class="kaarten k3">
         <div class="kaart"><h3>Volwassenheid</h3><div class="kpi" id="kNiveau">–</div><div class="sub" id="kNiveauT">nog geen scan gekoppeld</div></div>
         <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">directe uren × uurkosten</div></div>
@@ -314,6 +315,23 @@ input[type=range]{min-height:34px}
         <div class="kaart"><h3>Voortgang</h3><svg id="voortgang" viewBox="0 0 460 200" role="img" aria-label="Voortgang"></svg>
           <div class="sub" id="voortgangT"></div></div>
       </div>
+      <div class="kaart" style="margin-top:1rem">
+        <h3>En dan?</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Dit is de stand van zaken. Wil je weten wat je ermee doet, dan staat dat onder Advies — op volgorde van wat het oplevert.</p>
+        <div id="adviesTop"></div>
+      </div>
+    </section>
+
+    <!-- DATA EN AI -->
+    <section class="paneel" id="p-dataai">
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Waar je staat met data en AI</h3>
+          <svg id="daiGraf" viewBox="0 0 460 260" role="img" aria-label="Data en AI per onderdeel"></svg>
+          <div class="sub">Vijf onderdelen die samen bepalen of data en AI kunnen werken. Het streepje is je branche.</div></div>
+        <div class="kaart"><h3>Wat dat betekent</h3><div id="daiTekst"></div></div>
+      </div>
+      <div class="kaarten k3" id="daiKpi" style="margin-top:1rem"></div>
+      <div class="kaart" style="margin-top:1rem"><h3>De afspraken eronder</h3><div id="daiBeleid"></div></div>
     </section>
 
     <!-- PROFIEL -->
@@ -1026,7 +1044,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1919,6 +1937,59 @@ function tekenKostenTrap(){
   document.getElementById('kostenTrapT').innerHTML='Van nu naar niveau 4 scheelt <b>'+eur(nu-r4)+'</b> per jaar. '
    +'Niveau 5 levert daarbovenop nog '+eur(r4-r5)+' op \u2014 zelden de moeite voor een mkb-bedrijf. '
    +'Onderzoek van McKinsey en BCG laat hetzelfde patroon zien: de sprong zit in het middenstuk, niet aan de top.';
+}
+
+function tekenDataAI(){
+  const el=document.getElementById('daiGraf'); if(!el) return;
+  const b=B(), g=k=>S.niveaus[k]||2;
+  const rijen=[['Systemen en koppelingen','tech'],['Stuurinformatie','analytics'],['Datakwaliteit','quality'],
+               ['Governance','governance'],['Beveiliging','security']];
+  let sv='';
+  rijen.forEach(function(r,i){
+    const n=g(r[1]), w=(n/5)*250, kl=n>=4?'#1F9D55':(n>=3?'#E8A200':'#D93025');
+    sv+='<g data-tip="<b>'+r[0]+'</b><br>Niveau '+n+' van 5<br>'+(UITLEG[r[1]]||'')+'" data-ga="profiel">'
+     +'<text x="0" y="'+(28+i*48)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">'+r[0]+'</text>'
+     +'<rect x="180" y="'+(16+i*48)+'" width="250" height="16" rx="8" fill="#EDEBE5"/>'
+     +'<rect x="180" y="'+(16+i*48)+'" width="'+Math.max(w,8)+'" height="16" rx="8" fill="'+kl+'"/>'
+     +'<rect x="'+(180+(b.dig/5)*250-1.5)+'" y="'+(12+i*48)+'" width="3" height="24" fill="#14171A"/>'
+     +'<text x="438" y="'+(28+i*48)+'" font-size="11.5" fill="#5C646E" font-family="Instrument Sans">'+n+'</text></g>';
+  });
+  el.innerHTML=sv;
+
+  const gemDai=(g('tech')+g('analytics')+g('quality')+g('governance')+g('security'))/5;
+  const f=[0,1,.78,.5,.22,.06];
+  let kosten=0; ['tech','analytics','quality','governance','security'].forEach(function(k){
+    const d=DIM.find(x=>x.k===k); if(d) kosten+=d.u*f[g(k)]*(S.mw/24)*46*S.uur; });
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const kpi=(t,v,s2)=>'<div class="kaart"><h3>'+t+'</h3><div class="kpi">'+v+'</div><div class="sub">'+s2+'</div></div>';
+  document.getElementById('daiKpi').innerHTML=
+     kpi('Data en AI gemiddeld',gemDai.toFixed(1),'branche ~'+b.dig.toFixed(1))
+    +kpi('Kost je per jaar',eur(kosten),'handwerk in deze vijf onderdelen')
+    +kpi('Markt v\u00f3\u00f3r jullie',[5,21,34,31,9].slice(Math.round(gemDai)).reduce((a,v)=>a+v,0)+'%','op de adoptiecurve');
+
+  const st=S.beleid||{};
+  document.getElementById('daiTekst').innerHTML=
+    '<p style="font-size:.9rem;line-height:1.65">'
+    +(gemDai<2.5?'<b>Je basis is nog niet op orde.</b> AI werkt hier niet omdat het model tekortschiet, maar omdat gegevens verspreid staan en niet met elkaar kloppen. Elke euro in slimme toepassingen lekt weg zolang dat zo is.'
+     :(gemDai<3.5?'<b>De basis staat, de verbinding nog niet.</b> Systemen doen hun werk, maar gegevens gaan er met de hand tussenuit. Dat is precies de stap waar het meeste geld ligt.'
+     :'<b>Je bent er klaar voor.</b> Gegevens zijn te vertrouwen en te bereiken — nu levert een toepassing ook echt op wat hij belooft.'))+'</p>'
+    +'<p style="font-size:.9rem;line-height:1.65;margin-top:.6rem">Onderzoek wijst steeds dezelfde kant op: pilots stranden op gegevens en integratie, niet op het model. '
+    +'Bij niveau '+g('quality')+' op datakwaliteit is dat ook hier het eerste risico.</p>'
+    +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
+    +'<b>Eerst dit:</b> '+(g('quality')<3?'spreek af wat een klant, een order en een uur precies zijn, en wijs per bron één eigenaar aan.'
+      :(g('tech')<3?'koppel de twee systemen waartussen het meeste wordt overgetypt.'
+      :'kies één proces waar AI echt tijd scheelt en meet het resultaat een maand lang.'))+'</div>';
+
+  const B2=['aibeleid','datadef','rapport','verwerker','toegang'];
+  document.getElementById('daiBeleid').innerHTML=
+    '<p class="sub" style="margin:-.3rem 0 .6rem">De vijf stukken die bij data en AI horen. Bijwerken doe je onder Compliance, security en governance.</p>'
+    + B2.map(function(k){
+        const x=BELEID.find(y=>y.k===k)||{n:k,u:''}; const v=(st[k]||0);
+        const kl=['#D93025','#E8A200','#1F9D55','#0E9F6E'][v];
+        return '<div style="display:grid;grid-template-columns:1fr auto;gap:.8rem;padding:.5rem 0;border-bottom:1px solid var(--lijn);align-items:baseline">'
+         +'<div><b style="font-size:.9rem">'+x.n+'</b><div class="sub">'+x.u+'</div></div>'
+         +'<b style="color:'+kl+';font-size:.85rem">'+BSTAT[v]+'</b></div>';
+      }).join('');
 }
 
 function tekenBeleid(){
