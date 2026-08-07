@@ -317,7 +317,7 @@ input[type=range]{min-height:34px}
 
       <div class="kaarten k3" style="margin-top:1rem">
         <div class="kaart"><h3>Volwassenheid</h3><div class="kpi" id="kNiveau">–</div><div class="sub" id="kNiveauT"></div></div>
-        <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">directe uren × uurkosten</div></div>
+        <div class="kaart"><h3>Handwerk per jaar</h3><div class="kpi" id="kKosten">–</div><div class="sub">wat werk kost dat een systeem zou kunnen doen — uren × uurkosten × 46 weken</div></div>
         <div class="kaart"><h3>Bezetting</h3><div class="kpi" id="kFte">–</div><div class="sub" id="kFteT"></div></div>
       </div>
 
@@ -340,10 +340,10 @@ input[type=range]{min-height:34px}
         <div class="kaart"><h3>Wat je nu remt</h3><div id="remmen"></div></div>
       </div>
 
-      <div class="kaarten k2">
-        <div class="kaart"><h3>Je niveau</h3><svg id="ring" viewBox="0 0 220 200" role="img" aria-label="Volwassenheidsniveau"></svg><div class="sub" id="ringT"></div></div>
-        <div class="kaart"><h3>Voortgang</h3><svg id="voortgang" viewBox="0 0 460 200" role="img" aria-label="Voortgang"></svg><div class="sub" id="voortgangT"></div></div>
-      </div>
+      <div class="kaart" style="margin-top:1rem"><h3>Je voortgang</h3>
+        <p class="sub" style="margin:-.3rem 0 .6rem">Hoeveel van de verbeteringen in je roadmap je hebt afgerond. Nog niets gepland? Zet je eerste stap onder Advies.</p>
+        <svg id="voortgang" viewBox="0 0 460 120" role="img" aria-label="Voortgang"></svg>
+        <div class="sub" id="voortgangT"></div></div>
 
       <div class="kaart" style="margin-top:1rem">
         <h3>En dan?</h3>
@@ -998,10 +998,10 @@ function teken(){
      +'<div class="blok" style="text-align:right"><span>Branche</span><b>'+B().dig.toFixed(1)+'</b></div>';
   }
   document.getElementById('kNiveau').textContent=gem.toFixed(1);
-  document.getElementById('kNiveauT').textContent='gemiddeld — '+NIV[Math.round(gem)];
+  document.getElementById('kNiveauT').textContent='gemiddeld over 13 onderdelen — '+NIV[Math.round(gem)]+'. Doel voor het mkb is 4.';
   document.getElementById('kKosten').textContent=euro(totaal);
   document.getElementById('kFte').textContent=fte.toFixed(1);
-  document.getElementById('kFteT').textContent='fte aan vermijdbaar werk, van '+S.mw;
+  document.getElementById('kFteT').textContent='fte gaat op aan vermijdbaar werk, verdeeld over '+S.mw+' mensen';
 
   // remmen
   const top=DIM.slice().sort((a,b)=>kosten[b.k]-kosten[a.k]).slice(0,4);
@@ -1089,10 +1089,10 @@ function teken(){
   const klaar=S.taken.filter(t=>t.klaar).length, alles=S.taken.length;
   const pct=alles?Math.round(klaar/alles*100):0;
   document.getElementById('voortgang').innerHTML=
-    '<rect x="10" y="80" width="440" height="26" rx="13" fill="#EDEBE5"/>'
-   +'<rect x="10" y="80" width="'+(440*pct/100)+'" height="26" rx="13" fill="#2742D6"/>'
-   +'<text x="10" y="60" font-size="34" font-weight="800" fill="#14171A" font-family="Bricolage Grotesque">'+pct+'%</text>'
-   +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
+    '<text x="0" y="34" font-size="30" font-weight="800" fill="#14171A" font-family="Bricolage Grotesque">'+pct+'%</text>'
+   +'<rect x="0" y="52" width="460" height="20" rx="10" fill="#EDEBE5"/>'
+   +'<rect x="0" y="52" width="'+(460*pct/100)+'" height="20" rx="10" fill="#2742D6"/>'
+   +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
   tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
@@ -3046,7 +3046,11 @@ function modelAan(k){ return !(S.modellen && S.modellen[k]===false); }
 function tekenModelKeuze(A){
   const box=document.getElementById('modelKeuze'); if(!box) return;
   const groepen=[['data','Uit je eigen gegevens'],['model','Strategiemodellen'],['functie','Modellen per functie'],['finance','Financiële modellen']];
-  box.innerHTML=groepen.map(([g,titel])=>{
+  const actief=BRONNEN.filter(x=>modelAan(x.k)&&A.some(a=>a.bron===x.k)).length;
+  box.innerHTML='<details><summary style="cursor:pointer;list-style:none;font-size:.85rem;font-weight:600;color:var(--blauw)">'
+   +'Welke bronnen en modellen meewegen ('+actief+' leveren nu iets op) \u25be</summary>'
+   +'<div style="margin-top:.6rem">'
+   +groepen.map(([g,titel])=>{
     const items=BRONNEN.filter(b=>b.soort===g);
     return '<div style="margin-bottom:.5rem"><div class="sub" style="margin-bottom:.2rem">'+titel+'</div>'
      +'<div style="display:flex;gap:.35rem;flex-wrap:wrap">'
@@ -3058,7 +3062,7 @@ function tekenModelKeuze(A){
           +(aan?'✓ ':'')+b.n+(n?' <span style="opacity:.7">'+n+'</span>':'')+'</button>';
        }).join('')
      +'</div></div>';
-  }).join('');
+  }).join('')+'</div></details>';
   box.querySelectorAll('[data-model]').forEach(b=>{
     if(b.dataset.aan)return; b.dataset.aan='1';
     b.addEventListener('click',()=>{
