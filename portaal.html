@@ -753,8 +753,8 @@ input[type=range]{min-height:34px}
         Kies hieronder één strategisch thema. Dit portaal rekent uit wat er dan geraakt wordt — en met welke volwassenheid je daaraan begint.</p>
         <div id="dnaKeuze" style="margin-top:.9rem"></div>
       </div>
-      <div class="kaart" style="margin-top:1rem"><h3>Waar alles zit</h3>
-        <p class="sub" style="margin:-.3rem 0 .7rem">Het Strategie-DNA bestaat uit zeven onderdelen. Dit is waar je ze in dit portaal vindt.</p>
+      <div class="kaart" style="margin-top:1rem"><h3>Hoe je dit gebruikt</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Negen stappen, in volgorde. Klik op een stap om er direct heen te springen.</p>
         <div id="dnaFamilie"></div></div>
       <div class="kaarten k3" id="dnaImpact" style="margin-top:1rem"></div>
       <div class="kaart" style="margin-top:1rem"><h3>Wat er geraakt wordt</h3>
@@ -2419,13 +2419,15 @@ function dnaTrefwoorden(tekst){
 }
 /* --- productfamilie en eigen capabilities --- */
 const DNAFAMILIE=[
- ['Strategie-DNA','De methode zelf: van thema naar capability naar uitvoering','dna','dit tabblad, bovenaan'],
- ['Impactmotor','Rekent uit wat een strategisch thema raakt in je organisatie','dna','de negen kerngetallen en de graaf'],
- ['Capability-bibliotheek','Alle capabilities met hun processen, data, systemen en maatstaven','dna','onderaan dit tabblad, doorzoekbaar'],
- ['Kennisgraaf','De verbanden, bevraagbaar: wat houdt ons tegen, wat draagt niets bij','dna','\u201cVragen aan je organisatie\u201d'],
- ['Strategie-assistent','Vertaalt gewone taal naar een thema en de bijbehorende impact','dna','\u201cVertel het in je eigen woorden\u201d'],
- ['Transformatieradar','Volwassenheid over de zeven lagen, met de diepste deuk','dna','de radar op dit tabblad'],
- ['Uitvoeringsladder','Van capability naar vijf treden met wie, wanneer en klaar-als','dna','onderaan dit tabblad, na de veranderagenda']
+ ['Kies je thema','Begin hier: wat wil je bereiken?','dnaKeuze','Naar de themakeuze'],
+ ['Wat het raakt','De impactmotor rekent uit welke afdelingen, processen, systemen en gegevens veranderen','dnaImpact','Naar de impactcijfers'],
+ ['Per afdeling','Wat er precies verandert bij Operatie, Finance, Sales of Service','dnaAfdKeuze','Naar de afdelingen'],
+ ['In je eigen woorden','Typ waar je heen wilt; het model kiest het thema','dnaVrij','Naar de invoer'],
+ ['Vragen stellen','Wat houdt ons tegen? Wat draagt niets bij? Welke AI ligt voor de hand?','dnaVragen','Naar de vragen'],
+ ['Transformatieradar','Volwassenheid over zeven lagen, met de diepste deuk','dnaRadar','Naar de radar'],
+ ['Capability-bibliotheek','Alles wat het model kent, doorzoekbaar','dnaZoek','Naar de bibliotheek'],
+ ['Je eigen capabilities','Mist er iets? Voeg het toe \u2014 het telt overal mee','ecNaam','Zelf toevoegen'],
+ ['De uitvoeringsladder','Van capability naar vijf treden: wie, wanneer, en klaar als\u2026','uvGantt','Naar de planning']
 ];
 /* Strategie-DNA en de Uitvoeringsladder zijn twee helften van \u00e9\u00e9n verhaal:
    eerst wat er verandert, dan hoe je het doet. Hier voegen we ze samen tot
@@ -2448,12 +2450,27 @@ function voegUitvoeringSamen(){
 
 function tekenDNAFamilie(){
   const el=document.getElementById('dnaFamilie'); if(!el) return;
-  el.innerHTML='<div class="kaarten k2">'+DNAFAMILIE.map(function(r){
-    return '<div style="display:grid;grid-template-columns:auto 1fr;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--lijn);align-items:start">'
-     +'<span style="width:.55rem;height:.55rem;border-radius:50%;background:var(--blauw);margin-top:.45rem"></span>'
-     +'<div><b style="font-size:.9rem">'+r[0]+'</b><div class="sub">'+r[1]+'</div>'
-     +'<div class="sub" style="color:var(--blauw)">\u2192 '+r[3]+'</div></div></div>';
+  el.innerHTML='<div class="kaarten k2">'+DNAFAMILIE.map(function(r,i){
+    return '<button type="button" data-dnaspring="'+r[2]+'" style="text-align:left;border:1px solid var(--lijn);background:#fff;border-radius:8px;'
+     +'padding:.75rem .9rem;font:inherit;cursor:pointer;display:grid;grid-template-columns:1.6rem 1fr;gap:.7rem;align-items:start;transition:box-shadow .15s,border-color .15s">'
+     +'<b style="width:1.6rem;height:1.6rem;border-radius:50%;background:var(--blauw);color:#fff;display:grid;place-items:center;font-size:.72rem">'+(i+1)+'</b>'
+     +'<span><b style="font-size:.92rem">'+r[0]+'</b><span class="sub" style="display:block">'+r[1]+'</span>'
+     +'<span class="sub" style="display:block;color:var(--blauw);font-weight:600;margin-top:.2rem">'+r[3]+' \u2192</span></span></button>';
   }).join('')+'</div>';
+  el.querySelectorAll('[data-dnaspring]').forEach(function(b){
+    if(b.dataset.aan)return; b.dataset.aan='1';
+    b.addEventListener('mouseenter',function(){ b.style.boxShadow='0 4px 14px rgba(20,23,26,.08)'; b.style.borderColor='var(--blauw)'; });
+    b.addEventListener('mouseleave',function(){ b.style.boxShadow=''; b.style.borderColor='var(--lijn)'; });
+    b.addEventListener('click',function(){
+      const doelEl=document.getElementById(b.dataset.dnaspring); if(!doelEl) return;
+      const kaart=doelEl.closest('.kaart')||doelEl;
+      kaart.scrollIntoView({behavior:'smooth',block:'center'});
+      const oud=kaart.style.boxShadow;
+      kaart.style.transition='box-shadow .3s'; kaart.style.boxShadow='0 0 0 3px rgba(39,66,214,.35)';
+      setTimeout(function(){ kaart.style.boxShadow=oud||''; },1600);
+      if(doelEl.tagName==='INPUT') setTimeout(function(){ doelEl.focus(); },600);
+    });
+  });
 }
 
 function tekenEigenCaps(){
