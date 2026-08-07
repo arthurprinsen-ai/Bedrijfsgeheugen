@@ -331,6 +331,22 @@ input[type=range]{min-height:34px}
         <div class="kaart"><h3>Wat dat betekent</h3><div id="daiTekst"></div></div>
       </div>
       <div class="kaarten k3" id="daiKpi" style="margin-top:1rem"></div>
+      <div class="kaart" style="margin-top:1rem"><h3>De vijf fasen van invoering</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Waar je nu staat, en wat er in elke fase gebeurt. Beweeg over een fase voor wat er dan speelt.</p>
+        <svg id="daiFasen" viewBox="0 0 900 260" role="img" aria-label="Fasen van invoering"></svg></div>
+
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Wat mensen doen bij verandering</h3>
+          <svg id="daiWeerstand" viewBox="0 0 480 280" role="img" aria-label="Verandercurve"></svg>
+          <div class="sub" id="daiWeerstandT"></div></div>
+        <div class="kaart"><h3>Hoe je het bestuurt</h3><div id="daiGov"></div></div>
+      </div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Kosten en opbrengsten over de tijd</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Wat je uitgeeft loopt vooruit, wat je terugkrijgt komt later — en wat je laat liggen loopt op.</p>
+        <svg id="daiGeld" viewBox="0 0 900 300" role="img" aria-label="Kosten en opbrengsten"></svg>
+        <div class="sub" id="daiGeldT"></div></div>
+
       <div class="kaart" style="margin-top:1rem"><h3>De afspraken eronder</h3><div id="daiBeleid"></div></div>
     </section>
 
@@ -481,7 +497,7 @@ input[type=range]{min-height:34px}
         <div class="kaart"><h3>Deadlines en boetes</h3><div id="naleving"></div></div>
         <div class="kaart"><h3>Incident: wat is het plan?</h3><div id="incident"></div></div>
       </div>
-      <div class="kaart"><h3>AI, BI en data — de afspraken eronder</h3><div id="aibi"></div></div>
+      
       <div class="kaarten k2">
         <div class="kaart"><h3>Staat van de techniek</h3>
           <svg id="techGraf" viewBox="0 0 460 230" role="img" aria-label="Staat van de techniek"></svg>
@@ -1044,7 +1060,7 @@ function teken(){
    +'<text x="10" y="140" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1992,6 +2008,113 @@ function tekenDataAI(){
       }).join('');
 }
 
+function tekenDaiExtra(){
+  const g=k=>S.niveaus[k]||2, b=B(), eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const gemDai=(g('tech')+g('analytics')+g('quality')+g('governance')+g('security'))/5;
+
+  /* ---- vijf fasen ---- */
+  const F=[['In hoofden','Kennis en afspraken zitten bij mensen. Werkt zolang iedereen er is.','Begin met vastleggen wat alleen één iemand weet.'],
+           ['In lijstjes','Excel en mailboxen. Het staat ergens, maar niemand weet welke versie klopt.','Wijs één plek aan waar de waarheid woont.'],
+           ['In systemen','Pakketten die iedereen gebruikt. Ertussen wordt overgetypt.','Koppel de twee systemen met het meeste handwerk.'],
+           ['Verbonden','Gegevens worden één keer ingevoerd en stromen door.','Nu pas leveren slimme toepassingen echt op.'],
+           ['Zelfsturend','Het systeem signaleert zelf wat afwijkt.','Zelden nodig in het mkb — niveau 4 is het doel.']];
+  const el=document.getElementById('daiFasen');
+  if(el){
+    let sv='', x0=40, bw=150, gap=22;
+    F.forEach(function(f,i){
+      const x=x0+i*(bw+gap), hier=Math.round(gemDai)===i+1, gehaald=i+1<=Math.round(gemDai);
+      const kl=hier?'#2742D6':(gehaald?'#C9CEDA':'#EDEBE5');
+      sv+='<g data-tip="<b>Fase '+(i+1)+' — '+f[0]+'</b><br>'+f[1]+'<br><b>Wat je hier doet:</b> '+f[2]+'">'
+       +'<rect x="'+x+'" y="90" width="'+bw+'" height="54" rx="8" fill="'+kl+'"/>'
+       +'<text x="'+(x+bw/2)+'" y="122" text-anchor="middle" font-size="13" font-weight="700" fill="'+(hier?'#fff':'#14171A')+'" font-family="Instrument Sans">'+f[0]+'</text>'
+       +'<text x="'+(x+bw/2)+'" y="76" text-anchor="middle" font-size="11" fill="#5C646E" font-family="Instrument Sans">fase '+(i+1)+'</text>';
+      if(hier) sv+='<text x="'+(x+bw/2)+'" y="172" text-anchor="middle" font-size="12" font-weight="700" fill="#2742D6" font-family="Instrument Sans">hier sta je</text>';
+      sv+='</g>';
+      if(i<4) sv+='<path d="M'+(x+bw+4)+',117 l14,0 m-5,-5 l5,5 -5,5" stroke="#8A94A3" stroke-width="1.6" fill="none"/>';
+    });
+    const bx=40+(Math.round(b.dig)-1)*(bw+gap)+bw/2;
+    sv+='<line x1="'+bx+'" y1="40" x2="'+bx+'" y2="90" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>'
+      +'<text x="'+bx+'" y="34" text-anchor="middle" font-size="11" fill="#14171A" font-family="Instrument Sans">branche</text>';
+    sv+='<text x="40" y="220" font-size="11.5" fill="#5C646E" font-family="Instrument Sans">Elke fase overslaan kost meer dan hem doorlopen: zonder afspraken over gegevens werkt de volgende stap niet.</text>';
+    el.innerHTML=sv;
+  }
+
+  /* ---- verandercurve ---- */
+  const w=document.getElementById('daiWeerstand');
+  if(w){
+    const P=[['Ontkenning','“Bij ons werkt het toch?”','Laat cijfers zien, geen mening.'],
+             ['Weerstand','“Dit kost alleen maar tijd.”','Neem de zorg serieus; vraag wat er wegvalt.'],
+             ['Verkenning','“Wat betekent dit voor mij?”','Laat één klein resultaat zien.'],
+             ['Aanvaarding','“Zo werkt het nu.”','Leg vast en wijs een eigenaar aan.']];
+    const x0=45,x1=455,y=[110,205,150,80];
+    let sv='<line x1="'+x0+'" y1="235" x2="'+x1+'" y2="235" stroke="#DCDFE6" stroke-width="2"/>';
+    let d='M'+x0+',110';
+    P.forEach(function(p,i){ const x=x0+(i+1)*((x1-x0)/4); d+=' Q'+(x-50)+','+(y[i]+ (i===1?30:-20))+' '+x+','+y[i]; });
+    sv+='<path d="'+d+'" fill="none" stroke="#FF4F17" stroke-width="3"/>';
+    P.forEach(function(p,i){
+      const x=x0+(i+1)*((x1-x0)/4);
+      sv+='<circle cx="'+x+'" cy="'+y[i]+'" r="8" fill="#FF4F17" data-tip="<b>'+p[0]+'</b><br>'+p[1]+'<br><b>Wat werkt:</b> '+p[2]+'"/>'
+       +'<text x="'+x+'" y="255" text-anchor="middle" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+p[0]+'</text>';
+    });
+    sv+='<text x="'+x0+'" y="28" font-size="11.5" fill="#5C646E" font-family="Instrument Sans">stemming in het team → tijd</text>';
+    w.innerHTML=sv;
+    document.getElementById('daiWeerstandT').innerHTML='Gebaseerd op de veranderkundige modellen van K\u00fcbler-Ross, ADKAR en Kotter. '
+     +'Met cultuur op '+g('culture')+' duurt de dip '+(g('culture')<3?'langer dan gemiddeld — één verbetering per kwartaal is hier het maximum.':'korter dan gemiddeld; twee sporen tegelijk kan.');
+  }
+
+  /* ---- governance ---- */
+  const gv=document.getElementById('daiGov');
+  if(gv){
+    const lagen=[['Eigenaarschap','Per kernbron één naam — klanten, orders, uren. Niet een afdeling.',g('governance')],
+                 ['Afspraken','Definities, toegangsrechten, wat er wel en niet in een AI-tool mag.',g('quality')],
+                 ['Controle','Wie kijkt na of het klopt, en hoe vaak. Een rapportagekalender is genoeg.',g('analytics')]];
+    gv.innerHTML='<p class="sub" style="margin:-.3rem 0 .6rem">Drie lagen. Ontbreekt de onderste, dan houdt de rest geen stand.</p>'
+     + lagen.map(function(l,i){
+        const kl=l[2]>=4?'#1F9D55':(l[2]>=3?'#E8A200':'#D93025');
+        return '<div style="display:grid;grid-template-columns:2rem 1fr auto;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--lijn);align-items:start">'
+         +'<b style="width:2rem;height:2rem;border-radius:6px;background:'+kl+';color:#fff;display:grid;place-items:center;font-size:.8rem">'+(i+1)+'</b>'
+         +'<div><b style="font-size:.92rem">'+l[0]+'</b><div class="sub">'+l[1]+'</div></div>'
+         +'<b style="font-size:.85rem;color:'+kl+'">niveau '+l[2]+'</b></div>';
+       }).join('')
+     +'<div style="margin-top:.7rem;padding:.6rem .75rem;border-left:3px solid var(--geel);background:#FFFCF0;font-size:.86rem;line-height:1.55">'
+     +'<b>Zo zet je het neer:</b> begin klein — vier bronnen, vier namen, één A4 met definities, en één vast moment per maand waarop iemand nakijkt of het nog klopt. Een stuurgroep is hier overbodig.</div>';
+  }
+
+  /* ---- kosten en opbrengsten ---- */
+  const gd=document.getElementById('daiGeld');
+  if(gd){
+    const f=[0,1,.78,.5,.22,.06]; let nu=0, straks=0;
+    DIM.forEach(function(d){ const u=d.u*(S.mw/24);
+      nu+=u*f[g(d.k)]*46*S.uur; straks+=u*f[Math.max(g(d.k),4)]*46*S.uur; });
+    const besp=Math.max(nu-straks,0), pm=besp/12, invest=12000;
+    const x0=60,x1=860,y0=250,y1=30,M=36;
+    const px=m=>x0+(m/M)*(x1-x0);
+    const maxY=Math.max(besp*3, nu*1.2, invest*2, 1);
+    const py=v=>y0-(v/maxY)*(y0-y1);
+    let sv='<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="2"/>';
+    [0,12,24,36].forEach(function(m){ sv+='<text x="'+px(m)+'" y="'+(y0+20)+'" text-anchor="middle" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+(m?m+' mnd':'nu')+'</text>'; });
+    let a='M'+px(0)+','+py(0), c='M'+px(0)+','+py(invest*0.5), l='M'+px(0)+','+py(0);
+    for(let m=0;m<=M;m++){
+      a+=' L'+px(m)+','+py(pm*m);                                  // opbrengst
+      c+=' L'+px(m)+','+py(invest*0.5 + invest*0.5*Math.min(m/6,1) + m*60);  // kosten
+      l+=' L'+px(m)+','+py(nu/12*m*0.35);                          // gemiste opbrengst
+    }
+    sv+='<path d="'+l+'" fill="none" stroke="#D93025" stroke-width="2.5" stroke-dasharray="6 4"/>';
+    sv+='<path d="'+c+'" fill="none" stroke="#8A94A3" stroke-width="2.5"/>';
+    sv+='<path d="'+a+'" fill="none" stroke="#1F9D55" stroke-width="3"/>';
+    [6,12,24,36].forEach(function(m){
+      sv+='<circle cx="'+px(m)+'" cy="'+py(pm*m)+'" r="11" fill="transparent" data-tip="<b>Na '+m+' maanden</b><br>Opgeleverd: '+eur(pm*m)+'<br>Uitgegeven: '+eur(invest*0.5+invest*0.5*Math.min(m/6,1)+m*60)+'<br>Niet doen kost intussen '+eur(nu/12*m*0.35)+'"/>'
+       +'<circle cx="'+px(m)+'" cy="'+py(pm*m)+'" r="3.5" fill="#1F9D55"/>';
+    });
+    sv+='<text x="'+(x1-6)+'" y="'+(py(pm*M)-10)+'" text-anchor="end" font-size="11.5" font-weight="700" fill="#1F9D55" font-family="Instrument Sans">opbrengst</text>';
+    sv+='<text x="'+(x1-6)+'" y="'+(py(nu/12*M*0.35)-10)+'" text-anchor="end" font-size="11.5" font-weight="700" fill="#D93025" font-family="Instrument Sans">wat niets doen kost</text>';
+    sv+='<text x="'+(x1-6)+'" y="'+(py(invest+M*60)+16)+'" text-anchor="end" font-size="11.5" fill="#5C646E" font-family="Instrument Sans">kosten</text>';
+    gd.innerHTML=sv;
+    document.getElementById('daiGeldT').innerHTML='Kosten lopen vooruit en vlakken af; opbrengsten beginnen later maar stoppen niet. '
+     +'De rode lijn is wat je intussen laat liggen: <b>'+eur(nu*0.35)+' per jaar</b>. Bij niveau 4 op alle onderdelen bespaar je <b>'+eur(besp)+' per jaar</b>.';
+  }
+}
+
 function tekenBeleid(){
   (function(){
     const t=document.getElementById('techGraf'); if(!t)return;
@@ -2086,7 +2209,7 @@ function tekenBeleid(){
     +'<p class="sub" style="margin-top:.6rem">Eén A4 is genoeg. Een plan dat niemand leest, is geen plan.</p>';
 
   // AI, BI en data
-  document.getElementById('aibi').innerHTML=
+  const aibiEl=document.getElementById('aibi'); if(aibiEl) aibiEl.innerHTML=
     '<div class="kaarten k3">'
     +'<div><b>AI</b><p style="font-size:.87rem;line-height:1.6">AI-gebruik staat op niveau '+(S.niveaus.tech||2)+'. '
     +(st.aibeleid?'Er is beleid.':'Zonder afspraken over welke gegevens erin mogen, gaat het ondergronds — verbieden werkt niet, vastleggen wel.')
