@@ -487,7 +487,7 @@ input[type=range]{min-height:34px}
     <section class="paneel" id="p-roadmap">
       <div class="kaart" style="margin-top:1rem">
         <h3>Wat je gaat verbeteren</h3>
-        <p class="sub">Sleep een blok om te verschuiven. Klik de naam om af te vinken.</p>
+        <p class="sub">Voeg eerst iets toe — daarna kun je de blokken verslepen en afvinken.</p>
         <div class="rij">
           <input type="text" id="nTitel" placeholder="Wat ga je aanpakken?" style="min-width:15rem">
           <select id="nDim"></select>
@@ -953,7 +953,21 @@ function teken(){
   tekenAntwoorden(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBeleid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
-  document.getElementById('ganttLeeg').hidden = S.taken.length>0;
+  const leeg=document.getElementById('ganttLeeg');
+  const gt=document.querySelector('.gantt');
+  if(gt) gt.style.display = S.taken.length ? '' : 'none';
+  if(leeg){
+    leeg.hidden = S.taken.length>0;
+    if(!S.taken.length){
+      leeg.innerHTML='<div style="text-align:center;padding:1.6rem 1rem;border:1px dashed var(--lijn);border-radius:8px;background:#FBFAF7">'
+       +'<div style="font-family:\'Bricolage Grotesque\';font-weight:800;font-size:1.05rem;margin-bottom:.3rem">Je planning is nog leeg</div>'
+       +'<p class="sub" style="max-width:34rem;margin:0 auto .9rem">Zet hier de verbeteringen die je gaat doen. Elk blok is een periode in maanden — daarna kun je ze verslepen om te schuiven.</p>'
+       +'<button class="knop" id="leegVoorstel">Stel een volgorde voor op basis van mijn scan</button>'
+       +'<p class="sub" style="margin-top:.7rem">Of typ hierboven zelf iets in en klik op Toevoegen.</p></div>';
+      const kv=document.getElementById('leegVoorstel');
+      if(kv) kv.addEventListener('click',function(){ const b=document.getElementById('nVoorstel'); if(b) b.click(); });
+    }
+  }
   rijen.innerHTML=S.taken.map((t,i)=>{
     const kl=KLEUR[i%KLEUR.length];
     return '<div class="gtrij"><div class="gtnaam'+(t.klaar?' klaar':'')+'">'
