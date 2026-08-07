@@ -1358,6 +1358,19 @@ function renderDash(score,dimAvg){
     window.__remDoel = DL[answers[0]] || 'grip';
     localStorage.setItem('bg_scan_doel', window.__remDoel);
   }catch(e){}
+  /* Klaar met de vragen: door naar het portaal. Daar staat alles — scores,
+     cijfers, modellen en de roadmap. Met #preview blijft dit scherm staan. */
+  if(!(typeof PREVIEW!=='undefined' && PREVIEW)){
+    try{
+      const d=document.createElement('div');
+      d.style.cssText='position:fixed;inset:0;z-index:999;background:#0B1220;color:#fff;display:grid;place-items:center;text-align:center;padding:2rem;font-family:system-ui,sans-serif';
+      d.innerHTML='<div><div style="font-size:1.4rem;font-weight:700;margin-bottom:.5rem">Je scan is klaar</div>'
+        +'<div style="opacity:.75;font-size:.95rem">We zetten je resultaat klaar in je portaal…</div></div>';
+      document.body.appendChild(d);
+    }catch(e){}
+    setTimeout(function(){ location.href='/portaal#direct'; }, 1200);
+    return;
+  }
   try{
     localStorage.setItem('bg_scan_dimavg', JSON.stringify(dimAvg));
     localStorage.setItem('bg_scan_pakket', JSON.stringify({
