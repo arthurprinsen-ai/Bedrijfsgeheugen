@@ -782,7 +782,7 @@ input[type=range]{min-height:34px}
       <div class="kaarten k3" id="dnaImpact" style="margin-top:1rem"></div>
       <div class="kaart" style="margin-top:1rem"><h3>Wat het raakt</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Van thema naar capability naar wat er in de organisatie moet veranderen. Klik een capability voor de details.</p>
-        <svg id="dnaGraaf" viewBox="0 0 980 460" role="img" aria-label="Strategie-DNA"></svg>
+        <svg id="dnaGraaf" viewBox="0 0 980 460" role="img" aria-label="Wat een strategisch thema raakt"></svg>
         <div id="dnaDetail"></div></div>
       <div class="kaart" style="margin-top:1rem"><h3>Wat verandert er per afdeling?</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Kies een afdeling en zie precies wat er daar verandert — processen, systemen, gegevens, AI en waarop gestuurd wordt.</p>
@@ -808,7 +808,7 @@ input[type=range]{min-height:34px}
       <div class="kaart" style="margin-top:1rem"><h3>De thermometer</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Zeven lagen van het model, elk met je huidige volwassenheid. De vorm laat zien waar het scheef zit.</p>
         <div class="kaarten k2">
-          <div><svg id="dnaRadar" viewBox="0 0 460 420" role="img" aria-label="Transformatieradar"></svg>
+          <div><svg id="dnaRadar" viewBox="0 0 460 420" role="img" aria-label="De thermometer — volwassenheid per laag"></svg>
             <div class="sub" id="dnaRadarT"></div></div>
           <div id="dnaRadarVragen"></div>
         </div></div>
@@ -2088,7 +2088,7 @@ const LADDER_STANDAARD=function(d){ return {t:d.n, afd:'De afdeling die dit raak
 var uvRol='alles';
 
 /* ---------------------------------------------------------------
-   Strategie-DNA \u00a9 2026 Bedrijfsgeheugen
+   Van strategie naar maandagochtend \u00a9 2026 Bedrijfsgeheugen
    Een strategisch thema activeert capabilities; elke capability
    activeert afdelingen, processen, data, systemen, AI, governance,
    maatstaven en projecten. De volwassenheid komt uit de scan.
@@ -2166,7 +2166,7 @@ const THEMA={
  mensen:{n:'Aantrekkelijk werkgeverschap',caps:['kennis','wendbaar','service','sturing']}
 };
 
-/* --- Strategie-DNA versie 2: bredere bibliotheek + sectorspecifiek --- */
+/* --- Versie 2: bredere bouwstenenkast + sectorspecifiek --- */
 Object.assign(CAP,{
  planning:{n:'Planbaar werk',dim:'operatie',
    afd:['Operatie','Werkvoorbereiding','Planning'],proc:['Capaciteit plannen','Werk toewijzen','Herplannen bij uitval'],
@@ -2455,7 +2455,7 @@ const DNAFAMILIE=[
  ['Je eigen bouwstenen','Mist er iets? Voeg het toe \u2014 het telt overal mee','ecNaam','Zelf toevoegen'],
  ['De uitvoeringsladder','Van capability naar vijf treden: wie, wanneer, en klaar als\u2026','uvGantt','Naar de planning']
 ];
-/* Strategie-DNA en de Uitvoeringsladder zijn twee helften van \u00e9\u00e9n verhaal:
+/* De doorwerking en de uitvoeringsladder zijn twee helften van \u00e9\u00e9n verhaal:
    eerst wat er verandert, dan hoe je het doet. Hier voegen we ze samen tot
    \u00e9\u00e9n tabblad, met een tussenkop zodat de overgang duidelijk is. */
 function voegUitvoeringSamen(){
