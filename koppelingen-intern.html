@@ -270,7 +270,7 @@ function teken(){
   const mid=kiesMiddel();
   const stappen=STAPPEN[kw]||STAPPEN.bijlage;
   const bouwUren=kw==='factuur'?14:(kw==='order'?12:8);
-  const bouwKosten=bouwUren*95;
+  const bouwKosten=bouwUren*200;
   const terug=winst>0?(bouwKosten/winst*12):null;
   const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
   const sleutel=kb+'|'+kw+'|'+kd;
