@@ -2073,9 +2073,23 @@ function vraagToegang(daarna){
   document.getElementById('poortOk').onclick=function(){
     const m=document.getElementById('poortMail').value.trim();
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)){ document.getElementById('poortMail').style.borderColor='var(--rood)'; return; }
+    const bedr=document.getElementById('poortBedrijf').value.trim();
     try{
       localStorage.setItem('bg_portaal_open','1');
-      localStorage.setItem('bg_portaal_lead', JSON.stringify({mail:m, bedrijf:document.getElementById('poortBedrijf').value.trim(), datum:new Date().toISOString()}));
+      localStorage.setItem('bg_portaal_lead', JSON.stringify({mail:m, bedrijf:bedr, datum:new Date().toISOString()}));
+    }catch(e){}
+    // naar Make, die zet hem in het CRM
+    try{
+      let doel='', score='', niveau='', datum='';
+      try{ const pak=JSON.parse(localStorage.getItem('bg_scan_pakket')||'null');
+           if(pak){ score=pak.score||''; niveau=pak.niveau||''; datum=pak.datum||''; } }catch(e){}
+      try{ doel=localStorage.getItem('bg_scan_doel')||''; }catch(e){}
+      const gem=(DIM.reduce(function(a,d){return a+(S.niveaus[d.k]||2);},0)/DIM.length).toFixed(1);
+      fetch('https://hook.eu1.make.com/783x2glfestd2c8hfqxlrvsrgefknc45',{
+        method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
+        body: JSON.stringify({mail:m, bedrijf:bedr, bron:'Portaal', doel:doel,
+          score:score, niveau:niveau||gem, branche:S.branche, mw:S.mw, scandatum:datum})
+      }).catch(function(){});
     }catch(e){}
     document.body.classList.add('open');
     laag.remove(); daarna();
