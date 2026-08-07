@@ -336,7 +336,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="false" data-p="canvassen">Canvassen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="eindconclusie">De eindconclusie</button>
         <span class="groep">Doen</span>
-        <button class="tab" role="tab" aria-selected="false" data-p="dna">Van strategie naar uitvoering</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="dna">Van strategie naar maandagochtend</button>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
         <span class="groep">Beheer</span>
@@ -758,29 +758,29 @@ input[type=range]{min-height:34px}
     <!-- STRATEGIE-DNA -->
     <section class="paneel" id="p-dna">
       <div class="kaart conclusie" style="margin-top:1rem">
-        <h2>Strategie-DNA</h2>
+        <h2>Van strategie naar maandagochtend</h2>
         <p class="kern">Elke directie kan een strategie benoemen. Bijna niemand kan beantwoorden: <b>wat betekent dat morgen voor mijn afdelingen, processen, data, systemen en mensen?</b>
         Kies hieronder één strategisch thema. Dit portaal rekent uit wat er dan geraakt wordt — en met welke volwassenheid je daaraan begint.</p>
         <div id="dnaKeuze" style="margin-top:.9rem"></div>
       </div>
       <div class="kaart" style="margin-top:1rem"><h3>Hoe dit in elkaar zit</h3>
-        <p class="sub" style="margin:-.3rem 0 .7rem">Drie lagen. De onderste verandert zelden, de bovenste elke dag.</p>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Drie lagen. De bouwstenen veranderen zelden, de doorwerking rekent, en in het portaal werk je.</p>
         <div class="kaarten k3">
           <div style="padding:.8rem .9rem;border-left:4px solid var(--inkt);background:#FBFAF7;border-radius:0 6px 6px 0">
-            <b style="font-size:.92rem">De taal</b>
+            <b style="font-size:.92rem">De bouwstenen</b>
             <p style="font-size:.86rem;line-height:1.6;color:var(--grijs);margin:.2rem 0 0">Hoe je een bedrijf beschrijft: strategie, capabilities, afdelingen, processen, gegevens, systemen, AI, maatstaven, projecten. Voor elk bedrijf dezelfde bouwstenen — alleen de volwassenheid verschilt.</p></div>
           <div style="padding:.8rem .9rem;border-left:4px solid var(--blauw);background:#F5F7FF;border-radius:0 6px 6px 0">
-            <b style="font-size:.92rem">De logica</b>
+            <b style="font-size:.92rem">De doorwerking</b>
             <p style="font-size:.86rem;line-height:1.6;color:var(--grijs);margin:.2rem 0 0">De regels die bepalen wat een strategisch thema activeert, en in welke volgorde het kan landen. Dat is wat de impactcijfers en de veranderagenda uitrekenen.</p></div>
           <div style="padding:.8rem .9rem;border-left:4px solid var(--oranje);background:#FFF6F2;border-radius:0 6px 6px 0">
-            <b style="font-size:.92rem">De werkplek</b>
+            <b style="font-size:.92rem">Het portaal</b>
             <p style="font-size:.86rem;line-height:1.6;color:var(--grijs);margin:.2rem 0 0">Dit portaal: kiezen, doorvragen, plannen, afvinken en zien wat het oplevert. Hier werk je, de rest zit eronder.</p></div>
         </div></div>
       <div class="kaart" style="margin-top:1rem"><h3>Hoe je dit gebruikt</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Negen stappen, in volgorde. Klik op een stap om er direct heen te springen.</p>
         <div id="dnaFamilie"></div></div>
       <div class="kaarten k3" id="dnaImpact" style="margin-top:1rem"></div>
-      <div class="kaart" style="margin-top:1rem"><h3>Wat er geraakt wordt</h3>
+      <div class="kaart" style="margin-top:1rem"><h3>Wat het raakt</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Van thema naar capability naar wat er in de organisatie moet veranderen. Klik een capability voor de details.</p>
         <svg id="dnaGraaf" viewBox="0 0 980 460" role="img" aria-label="Strategie-DNA"></svg>
         <div id="dnaDetail"></div></div>
@@ -800,12 +800,12 @@ input[type=range]{min-height:34px}
         </div>
         <div id="dnaVrijUit" style="margin-top:.8rem"></div></div>
 
-      <div class="kaart" style="margin-top:1rem"><h3>Vragen aan je organisatie</h3>
+      <div class="kaart" style="margin-top:1rem"><h3>De verbanden — stel er een vraag over</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Het model kent de verbanden tussen thema, capability, proces, systeem, data en maatstaf. Stel er een vraag over.</p>
         <div id="dnaVragen"></div>
         <div id="dnaAntwoord" style="margin-top:.8rem"></div></div>
 
-      <div class="kaart" style="margin-top:1rem"><h3>Transformatieradar</h3>
+      <div class="kaart" style="margin-top:1rem"><h3>De thermometer</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Zeven lagen van het model, elk met je huidige volwassenheid. De vorm laat zien waar het scheef zit.</p>
         <div class="kaarten k2">
           <div><svg id="dnaRadar" viewBox="0 0 460 420" role="img" aria-label="Transformatieradar"></svg>
@@ -813,15 +813,15 @@ input[type=range]{min-height:34px}
           <div id="dnaRadarVragen"></div>
         </div></div>
 
-      <div class="kaart" style="margin-top:1rem"><h3>De capability-bibliotheek</h3>
+      <div class="kaart" style="margin-top:1rem"><h3>De bouwstenenkast</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Alles wat het model kent. Zoek erin, of kijk welk thema een capability activeert.</p>
         <input type="text" id="dnaZoek" placeholder="zoek op capability, systeem, proces of maatstaf" style="width:100%;height:44px;padding:0 .8rem;border:1px solid #E3E4E8;border-radius:8px;font:inherit;margin-bottom:.7rem">
         <div id="dnaBieb"></div></div>
 
-      <div class="kaart" style="margin-top:1rem"><h3>Je eigen capabilities</h3>
+      <div class="kaart" style="margin-top:1rem"><h3>Je eigen bouwstenen</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Mist er iets wat in jouw bedrijf juist belangrijk is? Voeg het toe. Het telt meteen mee in de impact, de agenda en de bibliotheek — en gaat mee in je download.</p>
         <div class="velden">
-          <div class="veld"><label for="ecNaam">Naam</label><input type="text" id="ecNaam" placeholder="bijv. Onderhoud op afstand"></div>
+          <div class="veld"><label for="ecNaam">Naam van de bouwsteen</label><input type="text" id="ecNaam" placeholder="bijv. Onderhoud op afstand"></div>
           <div class="veld"><label for="ecDim">Hoort bij onderdeel</label><select id="ecDim"></select></div>
           <div class="veld"><label for="ecAfd">Afdelingen</label><input type="text" id="ecAfd" placeholder="Operatie, Service"></div>
           <div class="veld"><label for="ecProc">Processen</label><input type="text" id="ecProc" placeholder="Storing melden, Plannen"></div>
@@ -834,7 +834,7 @@ input[type=range]{min-height:34px}
           <div class="veld"><label for="ecThema">Activeer bij thema</label><select id="ecThema"></select></div>
         </div>
         <p class="sub" style="margin-top:.4rem">Meerdere waarden scheid je met een komma.</p>
-        <div style="margin-top:.7rem"><button class="knop" id="ecToe">Capability toevoegen</button></div>
+        <div style="margin-top:.7rem"><button class="knop" id="ecToe">Bouwsteen toevoegen</button></div>
         <div id="ecLijst" style="margin-top:.9rem"></div></div>
 
 
@@ -867,7 +867,7 @@ input[type=range]{min-height:34px}
       <div id="uvThemas"></div>
 
       <div class="kaart" style="margin-top:1rem"><h3>Wat Bedrijfsgeheugen hierin doet</h3><div id="s2oRol"></div></div>
-      <p class="sub" style="margin-top:1.5rem;text-align:center">Strategie-DNA en de Uitvoeringsladder © 2026 Bedrijfsgeheugen · versie 3.<br>Vrij te gebruiken binnen je eigen bedrijf; niet door te verkopen of te verspreiden zonder bronvermelding.</p>
+      <p class="sub" style="margin-top:1.5rem;text-align:center">Van strategie naar maandagochtend © 2026 Bedrijfsgeheugen · versie 3 — bouwstenen, doorwerking en de uitvoeringsladder.<br>Vrij te gebruiken binnen je eigen bedrijf; niet door te verkopen of te verspreiden zonder bronvermelding.</p>
     </section>
 
     <!-- ROADMAP -->
@@ -2449,10 +2449,10 @@ const DNAFAMILIE=[
  ['Wat het raakt','De impactmotor rekent uit welke afdelingen, processen, systemen en gegevens veranderen','dnaImpact','Naar de impactcijfers'],
  ['Per afdeling','Wat er precies verandert bij Operatie, Finance, Sales of Service','dnaAfdKeuze','Naar de afdelingen'],
  ['In je eigen woorden','Typ waar je heen wilt; het model kiest het thema','dnaVrij','Naar de invoer'],
- ['Vragen stellen','Wat houdt ons tegen? Wat draagt niets bij? Welke AI ligt voor de hand?','dnaVragen','Naar de vragen'],
- ['Transformatieradar','Volwassenheid over zeven lagen, met de diepste deuk','dnaRadar','Naar de radar'],
- ['Capability-bibliotheek','Alles wat het model kent, doorzoekbaar','dnaZoek','Naar de bibliotheek'],
- ['Je eigen capabilities','Mist er iets? Voeg het toe \u2014 het telt overal mee','ecNaam','Zelf toevoegen'],
+ ['De verbanden','Wat houdt ons tegen? Wat draagt niets bij? Welke AI ligt voor de hand?','dnaVragen','Naar de vragen'],
+ ['De thermometer','Volwassenheid over zeven lagen, met de diepste deuk','dnaRadar','Naar de thermometer'],
+ ['De bouwstenenkast','Alles wat het model kent, doorzoekbaar','dnaZoek','Naar de bouwstenenkast'],
+ ['Je eigen bouwstenen','Mist er iets? Voeg het toe \u2014 het telt overal mee','ecNaam','Zelf toevoegen'],
  ['De uitvoeringsladder','Van capability naar vijf treden: wie, wanneer, en klaar als\u2026','uvGantt','Naar de planning']
 ];
 /* Strategie-DNA en de Uitvoeringsladder zijn twee helften van \u00e9\u00e9n verhaal:
@@ -2483,7 +2483,7 @@ const DNASTAPPEN=[
  ['inzicht','3. Doorvragen',  ['dnaVragen','dnaRadar','dnaVolw']],
  ['agenda','4. De agenda',    ['dnaAgenda']],
  ['doen','5. Uitvoeren',      ['uvKpi','uvSom','uvGantt','uvWaarde','uvThemas','s2oRol']],
- ['model','Het model',        ['dnaZoek','ecNaam']]
+ ['model','De bouwstenen',        ['dnaZoek','ecNaam']]
 ];
 function bouwSubnav(){
   const dna=document.getElementById('p-dna'); if(!dna||dna.dataset.subnav) return;
