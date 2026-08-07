@@ -1827,102 +1827,149 @@ function tekenCanvassen(){
   }
 }
 
+/* ---------------------------------------------------------------
+   De Uitvoeringsladder \u00a9 2026 Bedrijfsgeheugen
+   Thema's worden gekozen door dezelfde rangschikking als de eindconclusie:
+   smalste schakel, duurste post en het onderdeel dat modellen en canvassen
+   het vaakst aanwijzen. Per thema vijf treden in vaste volgorde, met per
+   trede wie het oppakt \u2014 de afdeling zelf, de directie of een projectleider.
+----------------------------------------------------------------- */
+const LADDER={
+ mensen:{t:'Kennis uit hoofden', afd:'HR en de afdeling met de meeste sleutelkennis',
+  s:[{w:'Tel \u00e9\u00e9n week hoe vaak iemand iets moet navragen bij \u00e9\u00e9n persoon',rol:'afdeling',wie:'Leidinggevende van die afdeling',mnd:1,d:1,klaar:'Je hebt een lijst met namen en hoe vaak ze werden gestoord.',deel:.05},
+     {w:'Maak een kennismatrix: per taak wie het kan',rol:'afdeling',wie:'Leidinggevende, in \u00e9\u00e9n werkoverleg',mnd:2,d:1,klaar:'Elke kerntaak heeft twee namen, of staat op de risicolijst.',deel:.20},
+     {w:'Beschrijf de taken met \u00e9\u00e9n naam op \u00e9\u00e9n A4',rol:'afdeling',wie:'De persoon zelf, met een collega die meeleest',mnd:3,d:2,klaar:'Een collega heeft de taak \u00e9\u00e9n keer gedaan met alleen dat A4.',deel:.35},
+     {w:'Meet de inwerktijd van de volgende nieuwe collega',rol:'directie',wie:'Directie of HR',mnd:6,d:2,klaar:'Je kent het aantal dagen tot iemand zelfstandig draait.',deel:.25},
+     {w:'Zet de kwartaalcontrole vast in de agenda',rol:'directie',wie:'Directie wijst \u00e9\u00e9n eigenaar aan',mnd:9,d:1,klaar:'Het staat in de agenda en is \u00e9\u00e9n keer uitgevoerd.',deel:.15}]},
+ tech:{t:'E\u00e9n keer invoeren', afd:'Commercie, operatie en finance samen',
+  s:[{w:'Tel \u00e9\u00e9n week hoe vaak gegevens worden overgetypt',rol:'afdeling',wie:'De mensen die het doen',mnd:1,d:1,klaar:'E\u00e9n getal: keer per week, plus de zwaarste route.',deel:.05},
+     {w:'Spreek af wat een klant, order en uur precies zijn',rol:'directie',wie:'Directie beslist, finance schrijft op',mnd:2,d:1,klaar:'E\u00e9n A4 met definities, door iedereen gezien.',deel:.15},
+     {w:'Koppel de twee systemen met het meeste handwerk',rol:'project',wie:'Projectleider of externe partij',mnd:3,d:2,klaar:'Een order gaat van A naar B zonder overtypen.',deel:.45},
+     {w:'Meet de doorlooptijd van offerte tot factuur',rol:'afdeling',wie:'Finance',mnd:6,d:1,klaar:'Je kent het aantal dagen, voor en na.',deel:.20},
+     {w:'Leg vast wie de koppeling beheert en wat er gebeurt als hij stilvalt',rol:'project',wie:'Projectleider draagt over aan een vaste eigenaar',mnd:8,d:1,klaar:'E\u00e9n naam en een herstelinstructie van vijf regels.',deel:.15}]},
+ analytics:{t:'Sturen op cijfers', afd:'Directie en finance',
+  s:[{w:'Tel hoeveel dagen na de maand je cijfers klaar zijn',rol:'afdeling',wie:'Finance',mnd:2,d:1,klaar:'Je kent het aantal dagen en wie erop wacht.',deel:.05},
+     {w:'Kies vijf getallen die er echt toe doen',rol:'directie',wie:'Directie, in \u00e9\u00e9n sessie van een uur',mnd:3,d:1,klaar:'Vijf getallen met per getal \u00e9\u00e9n eigenaar.',deel:.20},
+     {w:'Haal die vijf uit de bron in plaats van uit een spreadsheet',rol:'project',wie:'Projectleider of externe partij',mnd:5,d:2,klaar:'De cijfers werken zichzelf bij; niemand exporteert nog.',deel:.40},
+     {w:'Bespreek ze maandelijks op een vast moment',rol:'directie',wie:'Directie',mnd:7,d:3,klaar:'Drie keer achter elkaar gedaan met dezelfde cijfers.',deel:.20},
+     {w:'Zet de rapportagekalender vast',rol:'afdeling',wie:'Finance',mnd:10,d:1,klaar:'Wie levert wat wanneer staat op \u00e9\u00e9n plek.',deel:.15}]},
+ operatie:{t:'Het proces zichtbaar maken', afd:'Operatie en werkvoorbereiding',
+  s:[{w:'Volg \u00e9\u00e9n opdracht van binnenkomst tot factuur en noteer elke wachttijd',rol:'afdeling',wie:'Werkvoorbereider',mnd:1,d:1,klaar:'Je hebt de doorlooptijd en de drie langste wachtmomenten.',deel:.10},
+     {w:'Beschrijf de drie hoofdprocessen op \u00e9\u00e9n A4 (SIPOC)',rol:'afdeling',wie:'De mensen die het werk doen',mnd:2,d:2,klaar:'Per proces staat wie levert, wat erin gaat en wat eruit komt.',deel:.25},
+     {w:'Haal de grootste wachttijd eruit',rol:'project',wie:'Projectleider met de betrokken afdelingen',mnd:4,d:2,klaar:'De doorlooptijd is aantoonbaar korter dan bij de eerste meting.',deel:.35},
+     {w:'Meet doorlooptijd en herstelwerk elke maand',rol:'afdeling',wie:'Operatie',mnd:7,d:2,klaar:'Twee getallen die maandelijks vanzelf komen.',deel:.20},
+     {w:'Leg de nieuwe werkwijze vast en wijs een eigenaar aan',rol:'directie',wie:'Directie',mnd:10,d:1,klaar:'E\u00e9n naam per proces, vastgelegd.',deel:.10}]},
+ finance:{t:'Cijfers die vanzelf kloppen', afd:'Finance en administratie',
+  s:[{w:'Tel hoeveel uur de maandafsluiting kost en waaraan',rol:'afdeling',wie:'Administratie',mnd:1,d:1,klaar:'Je weet het aantal uur en de drie zwaarste stappen.',deel:.10},
+     {w:'Maak een afsluitkalender: wie doet wat op welke dag',rol:'afdeling',wie:'Finance',mnd:2,d:1,klaar:'De kalender is \u00e9\u00e9n maand gevolgd.',deel:.20},
+     {w:'Automatiseer de zwaarste stap (facturen, bank of uren)',rol:'project',wie:'Projectleider of je accountant',mnd:4,d:2,klaar:'Die stap gebeurt zonder handwerk.',deel:.40},
+     {w:'Meet debiteurendagen elke maand',rol:'afdeling',wie:'Administratie',mnd:6,d:1,klaar:'Het getal staat maandelijks op tafel.',deel:.20},
+     {w:'Spreek af wie bij afwijkingen ingrijpt',rol:'directie',wie:'Directie',mnd:9,d:1,klaar:'E\u00e9n naam, en \u00e9\u00e9n keer toegepast.',deel:.10}]},
+ commercie:{t:'Opvolging die niet meer vergeten wordt', afd:'Sales en binnendienst',
+  s:[{w:'Tel hoeveel offertes er open staan en hoe oud ze zijn',rol:'afdeling',wie:'Binnendienst',mnd:1,d:1,klaar:'Je hebt het aantal en de oudste datum.',deel:.10},
+     {w:'Leg de vier stappen van contact tot opdracht vast',rol:'afdeling',wie:'Sales samen met de directie',mnd:2,d:1,klaar:'Iedereen gebruikt dezelfde stappen.',deel:.20},
+     {w:'Zet automatische opvolging op na verzending',rol:'project',wie:'Projectleider of je systeembeheerder',mnd:3,d:2,klaar:'Geen offerte blijft langer dan tien dagen zonder contact.',deel:.40},
+     {w:'Meet conversie per stap',rol:'afdeling',wie:'Sales',mnd:6,d:2,klaar:'Je weet bij welke stap de meeste afvallers zitten.',deel:.20},
+     {w:'Bespreek verloren offertes \u00e9\u00e9n keer per maand',rol:'directie',wie:'Directie met sales',mnd:9,d:1,klaar:'Drie keer gedaan, met genoteerde redenen.',deel:.10}]},
+ service:{t:'Klantvragen naar \u00e9\u00e9n plek', afd:'Klantenservice en binnendienst',
+  s:[{w:'Tel een week lang waar klantvragen binnenkomen',rol:'afdeling',wie:'Binnendienst',mnd:1,d:1,klaar:'Je weet via welke kanalen en hoeveel per dag.',deel:.10},
+     {w:'Kies \u00e9\u00e9n adres of systeem voor alle vragen',rol:'directie',wie:'Directie beslist',mnd:2,d:1,klaar:'Alles komt op \u00e9\u00e9n plek binnen.',deel:.25},
+     {w:'Geef elke vraag een eigenaar en een status',rol:'project',wie:'Projectleider of leverancier',mnd:3,d:2,klaar:'Je ziet per vraag wie hem heeft en hoe lang hij open staat.',deel:.35},
+     {w:'Meet reactietijd en oplostijd',rol:'afdeling',wie:'Klantenservice',mnd:6,d:2,klaar:'Twee getallen per maand.',deel:.20},
+     {w:'Maak van de tien meestgestelde vragen een antwoordenlijst',rol:'afdeling',wie:'Klantenservice',mnd:9,d:1,klaar:'De lijst is er en wordt gebruikt.',deel:.10}]},
+ security:{t:'De basis van beveiliging', afd:'Directie met de systeembeheerder',
+  s:[{w:'Maak een lijst van wie waar toegang toe heeft',rol:'afdeling',wie:'Systeembeheerder',mnd:1,d:1,klaar:'De lijst is compleet en \u00e9\u00e9n keer nagelopen.',deel:.15},
+     {w:'Zet tweestapsverificatie aan op alles wat het ondersteunt',rol:'project',wie:'Systeembeheerder of externe partij',mnd:2,d:1,klaar:'Iedereen logt in met twee stappen.',deel:.30},
+     {w:'Zet \u00e9\u00e9n keer een back-up terug',rol:'project',wie:'Systeembeheerder',mnd:3,d:1,klaar:'Een bestand is teruggezet en werkt.',deel:.25},
+     {w:'Schrijf \u00e9\u00e9n A4 incident-responseplan',rol:'directie',wie:'Directie',mnd:5,d:1,klaar:'Wie doet wat in het eerste uur staat op papier.',deel:.20},
+     {w:'Zet de uitdienstlijst vast',rol:'directie',wie:'Directie met HR',mnd:8,d:1,klaar:'Bij de volgende vertrekker is de lijst gebruikt.',deel:.10}]}
+};
+const LADDER_STANDAARD=function(d){ return {t:d.n, afd:'De afdeling die dit raakt',
+  s:[{w:'Tel \u00e9\u00e9n week hoeveel tijd hier verloren gaat',rol:'afdeling',wie:'Leidinggevende',mnd:1,d:1,klaar:'Je hebt \u00e9\u00e9n getal.',deel:.10},
+     {w:'Leg vast hoe het nu gaat',rol:'afdeling',wie:'De mensen die het doen',mnd:2,d:2,klaar:'E\u00e9n A4 dat klopt met de praktijk.',deel:.25},
+     {w:'Verbeter de zwaarste stap',rol:'project',wie:'Projectleider',mnd:4,d:2,klaar:'De meting is beter dan bij de start.',deel:.35},
+     {w:'Meet het maandelijks',rol:'afdeling',wie:'Leidinggevende',mnd:7,d:2,klaar:'Het getal komt vanzelf.',deel:.20},
+     {w:'Wijs een vaste eigenaar aan',rol:'directie',wie:'Directie',mnd:10,d:1,klaar:'E\u00e9n naam, vastgelegd.',deel:.10}]};
+};
+var uvRol='alles';
+
 function tekenUitvoering(){
   const box=document.getElementById('uvThemas'); if(!box) return;
   const g=k=>S.niveaus[k]||2, b=B(), eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
   const f=[0,1,.78,.5,.22,.06]; const K={};
   DIM.forEach(function(d){ K[d.k]=d.u*f[g(d.k)]*(S.mw/24)*46*S.uur; });
   S.uitvoering=S.uitvoering||{};
+  const TREDE=['Tellen','Vastleggen','Koppelen','Meten','Borgen'];
+  const ROLNAAM={afdeling:'de afdeling zelf', directie:'directie', project:'projectleider'};
+  const ROLKL={afdeling:'#1F9D55', directie:'#FF4F17', project:'#2742D6'};
 
+  // ---- thema's afleiden uit dezelfde rangschikking als de eindconclusie ----
+  const A=verzamelAdvies().filter(function(a){return modelAan(a.bron);});
+  const telling={}; A.forEach(function(a){ telling[a.dim]=(telling[a.dim]||0)+1; });
   const smalst=DIM.slice().sort(function(x,y){return g(x.k)-g(y.k);})[0];
   const duurste=DIM.slice().sort(function(x,y){return K[y.k]-K[x.k];})[0];
+  let vaakst=null, meest=0;
+  Object.keys(telling).forEach(function(k){ if(telling[k]>meest && DIM.some(function(d){return d.k===k;})){meest=telling[k];vaakst=k;} });
+  const gekozen=[]; const waarom={};
+  [[smalst.k,'smalste schakel'],[duurste.k,'duurste post'],[vaakst,'vaakst aangewezen door modellen en canvassen']]
+    .forEach(function(r){ if(r[0] && gekozen.indexOf(r[0])<0){ gekozen.push(r[0]); waarom[r[0]]=r[1]; } });
+  DIM.slice().sort(function(x,y){return K[y.k]-K[x.k];}).forEach(function(d){
+    if(gekozen.length<3 && gekozen.indexOf(d.k)<0){ gekozen.push(d.k); waarom[d.k]='hoge kosten'; } });
 
-  /* Drie thema's \u00d7 vijf treden. De volgorde is de vondst: elke trede maakt de volgende mogelijk. */
-  const TREDE=['Tellen','Vastleggen','Koppelen','Meten','Borgen'];
-  const T=[
-   {id:'kennis', t:'Kennis uit hoofden', dim:'mensen', kost:K[smalst.k]||K.mensen,
-    s:[{w:'Tel \u00e9\u00e9n week hoe vaak iemand iets moet navragen bij \u00e9\u00e9n persoon',wie:'Leidinggevende',mnd:1,d:1,
-        klaar:'Je hebt een lijst met namen en hoe vaak ze werden gestoord.',deel:.05},
-       {w:'Maak een kennismatrix: per taak wie het kan',wie:'Directie + leidinggevende',mnd:2,d:1,
-        klaar:'Elke kerntaak heeft minstens twee namen, of staat op de lijst met risico\'s.',deel:.20},
-       {w:'Beschrijf de drie taken met \u00e9\u00e9n naam op \u00e9\u00e9n A4',wie:'De persoon zelf, samen met een collega',mnd:3,d:2,
-        klaar:'Een collega heeft de taak \u00e9\u00e9n keer gedaan met alleen dat A4.',deel:.35},
-       {w:'Meet de inwerktijd van de volgende nieuwe collega',wie:'HR of directie',mnd:6,d:2,
-        klaar:'Je kent het aantal dagen tot iemand zelfstandig draait.',deel:.25},
-       {w:'Zet de controle vast: elk kwartaal de matrix bijwerken',wie:'Vaste eigenaar',mnd:9,d:1,
-        klaar:'Het staat in de agenda en is \u00e9\u00e9n keer uitgevoerd.',deel:.15}]},
-   {id:'invoer', t:'E\u00e9n keer invoeren', dim:'tech', kost:K.tech,
-    s:[{w:'Tel \u00e9\u00e9n week hoe vaak gegevens worden overgetypt',wie:'De mensen die het doen',mnd:1,d:1,
-        klaar:'Je hebt \u00e9\u00e9n getal: keer per week, en de zwaarste route.',deel:.05},
-       {w:'Spreek af wat een klant, een order en een uur precies zijn',wie:'Directie beslist, finance schrijft',mnd:2,d:1,
-        klaar:'E\u00e9n A4 met definities, door iedereen gezien.',deel:.15},
-       {w:'Koppel de twee systemen met het meeste handwerk',wie:'Bedrijfsgeheugen of je leverancier',mnd:3,d:2,
-        klaar:'Een order gaat van A naar B zonder dat iemand iets overtypt.',deel:.45},
-       {w:'Meet de doorlooptijd van offerte tot factuur',wie:'Finance',mnd:6,d:1,
-        klaar:'Je kent het aantal dagen, voor en na.',deel:.20},
-       {w:'Leg vast wie de koppeling beheert en wat er gebeurt als hij stilvalt',wie:'Vaste eigenaar',mnd:8,d:1,
-        klaar:'Er is \u00e9\u00e9n naam en \u00e9\u00e9n herstelinstructie van vijf regels.',deel:.15}]},
-   {id:'sturen', t:'Sturen op cijfers', dim:'analytics', kost:K.analytics,
-    s:[{w:'Tel hoeveel dagen na de maand je cijfers klaar zijn',wie:'Finance',mnd:2,d:1,
-        klaar:'Je kent het aantal dagen en wie erop wacht.',deel:.05},
-       {w:'Kies vijf getallen die er echt toe doen',wie:'Directie',mnd:3,d:1,
-        klaar:'Vijf getallen op papier, met per getal \u00e9\u00e9n eigenaar.',deel:.20},
-       {w:'Haal die vijf uit de bron in plaats van uit een spreadsheet',wie:'Bedrijfsgeheugen',mnd:5,d:2,
-        klaar:'De cijfers werken zichzelf bij; niemand exporteert nog iets.',deel:.40},
-       {w:'Bespreek ze maandelijks op een vast moment',wie:'Directie',mnd:7,d:3,
-        klaar:'Drie keer achter elkaar gedaan, met dezelfde cijfers.',deel:.20},
-       {w:'Zet de rapportagekalender vast',wie:'Finance',mnd:10,d:1,
-        klaar:'Wie levert wat wanneer staat op \u00e9\u00e9n plek.',deel:.15}]}
-  ];
+  const T=gekozen.map(function(k){
+    const d=DIM.find(function(x){return x.k===k;})||{k:k,n:k};
+    const sj=LADDER[k]||LADDER_STANDAARD(d);
+    return {id:k, t:sj.t, dim:k, afd:sj.afd, kost:K[k]||0, waarom:waarom[k], niveau:g(k), s:sj.s};
+  });
 
   const af=function(id,i){ return !!(S.uitvoering[id]&&S.uitvoering[id][i]); };
   let gerealiseerd=0, potentieel=0, gedaan=0, totaalStappen=0;
   T.forEach(function(t){ const winst=(t.kost||0)*0.7; potentieel+=winst;
     t.s.forEach(function(st,i){ totaalStappen++; if(af(t.id,i)){ gerealiseerd+=winst*st.deel; gedaan++; } }); });
 
-  // ---- kerngetallen ----
   document.getElementById('uvKpi').innerHTML=
     '<div class="kaart"><h3>Treden afgerond</h3><div class="kpi">'+gedaan+' / '+totaalStappen+'</div><div class="sub">over drie thema\'s</div></div>'
    +'<div class="kaart"><h3>Al vrijgespeeld</h3><div class="kpi" style="color:var(--groen)">'+eur(gerealiseerd)+'</div><div class="sub">per jaar, op basis van afgeronde treden</div></div>'
    +'<div class="kaart"><h3>Nog te halen</h3><div class="kpi">'+eur(Math.max(potentieel-gerealiseerd,0))+'</div><div class="sub">als je alle treden afmaakt</div></div>';
 
-  // ---- gantt ----
+  // ---- gantt met rolkleuren ----
   const gt=document.getElementById('uvGantt');
   if(gt){
-    const L=250,R=30,T0=44,rij=24,W=980;
-    const mndB=(W-L-R)/12;
+    const L=250,R=30,T0=60,rij=26,W=980, mndB=(W-L-R)/12;
     let sv='', y=T0;
+    sv+='<text x="0" y="24" font-size="12" fill="#5C646E" font-family="Instrument Sans">Wie pakt het op:</text>';
+    ['afdeling','directie','project'].forEach(function(r,i){
+      sv+='<rect x="'+(150+i*180)+'" y="14" width="12" height="12" rx="3" fill="'+ROLKL[r]+'"/>'
+       +'<text x="'+(168+i*180)+'" y="24" font-size="12" fill="#5C646E" font-family="Instrument Sans">'+ROLNAAM[r]+'</text>';
+    });
     for(let m=0;m<=12;m++){
-      sv+='<line x1="'+(L+m*mndB)+'" y1="'+(T0-18)+'" x2="'+(L+m*mndB)+'" y2="'+(T0+T.length*(rij*5+18))+'" stroke="#F0F0EE" stroke-width="1"/>';
-      if(m<12) sv+='<text x="'+(L+m*mndB+mndB/2)+'" y="'+(T0-24)+'" text-anchor="middle" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">'+(m+1)+'</text>';
+      sv+='<line x1="'+(L+m*mndB)+'" y1="'+(T0-16)+'" x2="'+(L+m*mndB)+'" y2="'+(T0+T.length*(rij*5+20))+'" stroke="#F0F0EE" stroke-width="1"/>';
+      if(m<12) sv+='<text x="'+(L+m*mndB+mndB/2)+'" y="'+(T0-22)+'" text-anchor="middle" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">'+(m+1)+'</text>';
     }
-    sv+='<text x="0" y="'+(T0-24)+'" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">maand \u2192</text>';
     T.forEach(function(t){
-      sv+='<text x="0" y="'+(y+12)+'" font-size="12.5" font-weight="700" fill="#14171A" font-family="Instrument Sans">'+t.t+'</text>';
-      y+=20;
+      sv+='<text x="0" y="'+(y+12)+'" font-size="12.5" font-weight="700" fill="#14171A" font-family="Instrument Sans">'+t.t+'</text>'
+       +'<text x="0" y="'+(y+27)+'" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">'+t.afd+'</text>';
+      y+=34;
       t.s.forEach(function(st,i){
-        const x=L+(st.mnd-1)*mndB, w=st.d*mndB-4;
-        const klaar=af(t.id,i);
-        sv+='<g data-uv="'+t.id+':'+i+'" style="cursor:pointer"'
-         +' data-tip="<b>'+TREDE[i]+' \u2014 '+st.w+'</b><br>'+st.wie+' \u00b7 maand '+st.mnd+'<br><b>Klaar als:</b> '+st.klaar+'<br>'+(klaar?'\u2713 afgevinkt':'klik om af te vinken')+'">'
-         +'<rect x="'+L+'" y="'+y+'" width="'+(W-L-R)+'" height="'+(rij-6)+'" fill="transparent"/>'
+        const x=L+(st.mnd-1)*mndB, w=st.d*mndB-4, klaar=af(t.id,i);
+        const zicht=(uvRol==='alles'||uvRol===st.rol);
+        sv+='<g data-uv="'+t.id+':'+i+'" style="cursor:pointer" opacity="'+(zicht?1:.2)+'"'
+         +' data-tip="<b>'+TREDE[i]+' \u2014 '+st.w+'</b><br>'+st.wie+' \u00b7 maand '+st.mnd+'<br><b>Klaar als:</b> '+st.klaar+'"'
+         +' data-detail="'+encodeURIComponent('<h4>'+TREDE[i]+': '+st.w+'</h4><p><b>Wie:</b> '+st.wie+' ('+ROLNAAM[st.rol]+')<br><b>Wanneer:</b> maand '+st.mnd+', '+st.d+' maand'+(st.d>1?'en':'')+'</p><div class="doen"><b>Klaar als:</b> '+st.klaar+'</div>')+'">'
          +'<text x="'+(L-10)+'" y="'+(y+13)+'" text-anchor="end" font-size="11" fill="'+(klaar?'#8A94A3':'#5C646E')+'" font-family="Instrument Sans"'+(klaar?' text-decoration="line-through"':'')+'>'+TREDE[i]+'</text>'
-         +'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+(rij-8)+'" rx="4" fill="'+(klaar?'#1F9D55':'#2742D6')+'" fill-opacity="'+(klaar?'.9':'.75')+'"/>'
+         +'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+(rij-9)+'" rx="4" fill="'+(klaar?'#8A94A3':ROLKL[st.rol])+'" fill-opacity="'+(klaar?'.5':'.9')+'"/>'
          +(klaar?'<text x="'+(x+7)+'" y="'+(y+13)+'" font-size="11" fill="#fff" font-family="Instrument Sans">\u2713</text>':'')
          +'</g>';
         y+=rij;
       });
-      y+=14;
+      y+=16;
     });
-    gt.setAttribute('viewBox','0 0 980 '+(y+20));
-    gt.innerHTML=sv;
+    gt.setAttribute('viewBox','0 0 980 '+(y+20)); gt.innerHTML=sv;
     gt.querySelectorAll('[data-uv]').forEach(function(el){
       if(el.dataset.aan)return; el.dataset.aan='1';
       el.addEventListener('click',function(){
-        const dl=el.dataset.uv.split(':'), id=dl[0], i=+dl[1];
-        S.uitvoering[id]=S.uitvoering[id]||{};
-        S.uitvoering[id][i]=!S.uitvoering[id][i];
-        bewaar(); teken();
+        const dl=el.dataset.uv.split(':'); S.uitvoering[dl[0]]=S.uitvoering[dl[0]]||{};
+        S.uitvoering[dl[0]][+dl[1]]=!S.uitvoering[dl[0]][+dl[1]]; bewaar(); teken();
       });
     });
   }
@@ -1930,62 +1977,71 @@ function tekenUitvoering(){
   // ---- waardegrafiek ----
   const wg=document.getElementById('uvWaarde');
   if(wg){
-    const W=900,H=230,L=60,R=30,y0=180,y1=24;
-    const mndB=(W-L-R)/12;
+    const W=900,L=60,R=30,y0=180,y1=24, mndB=(W-L-R)/12;
     let cum=[], loop=0;
     for(let m=1;m<=12;m++){
       T.forEach(function(t){ const winst=(t.kost||0)*0.7;
         t.s.forEach(function(st,i){ if(st.mnd===m && af(t.id,i)) loop+=winst*st.deel; }); });
       cum.push(loop);
     }
-    const max=Math.max(potentieel,1);
-    const py=v=>y0-(v/max)*(y0-y1);
+    const max=Math.max(potentieel,1), py=v=>y0-(v/max)*(y0-y1);
     let d='M'+L+','+y0, sv='';
     cum.forEach(function(v,i){ d+=' L'+(L+(i+1)*mndB)+','+py(v); });
-    sv+='<path d="'+d+' L'+(L+12*mndB)+','+y0+' Z" fill="#E8F5EC"/>';
-    sv+='<path d="'+d+'" fill="none" stroke="#1F9D55" stroke-width="3"/>';
-    sv+='<line x1="'+L+'" y1="'+py(potentieel)+'" x2="'+(L+12*mndB)+'" y2="'+py(potentieel)+'" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>';
-    sv+='<text x="'+(L+12*mndB)+'" y="'+(py(potentieel)-8)+'" text-anchor="end" font-size="11.5" fill="#14171A" font-family="Instrument Sans">volledig: '+eur(potentieel)+'</text>';
-    sv+='<line x1="'+L+'" y1="'+y0+'" x2="'+(L+12*mndB)+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
+    sv+='<path d="'+d+' L'+(L+12*mndB)+','+y0+' Z" fill="#E8F5EC"/>'
+      +'<path d="'+d+'" fill="none" stroke="#1F9D55" stroke-width="3"/>'
+      +'<line x1="'+L+'" y1="'+py(potentieel)+'" x2="'+(L+12*mndB)+'" y2="'+py(potentieel)+'" stroke="#14171A" stroke-width="1.5" stroke-dasharray="5 4"/>'
+      +'<text x="'+(L+12*mndB)+'" y="'+(py(potentieel)-8)+'" text-anchor="end" font-size="11.5" fill="#14171A" font-family="Instrument Sans">volledig: '+eur(potentieel)+'</text>'
+      +'<line x1="'+L+'" y1="'+y0+'" x2="'+(L+12*mndB)+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
     [1,4,7,10,12].forEach(function(m){ sv+='<text x="'+(L+m*mndB)+'" y="'+(y0+20)+'" text-anchor="middle" font-size="11" fill="#8A94A3" font-family="Instrument Sans">mnd '+m+'</text>'; });
     cum.forEach(function(v,i){ if(v>0) sv+='<circle cx="'+(L+(i+1)*mndB)+'" cy="'+py(v)+'" r="4" fill="#1F9D55"/>'; });
     wg.innerHTML=sv;
     document.getElementById('uvWaardeT').innerHTML = gedaan
-      ? 'Je hebt <b>'+gedaan+'</b> van de '+totaalStappen+' treden afgerond. Dat is <b style="color:var(--groen)">'+eur(gerealiseerd)+' per jaar</b> aan vrijgespeelde tijd \u2014 '+(gerealiseerd/potentieel*100).toFixed(0)+'% van wat er in zit.'
-      : 'Nog geen treden afgevinkt. Vink er \u00e9\u00e9n af in de planning hierboven en je ziet hier wat het oplevert.';
+      ? 'Je hebt <b>'+gedaan+'</b> van de '+totaalStappen+' treden afgerond: <b style="color:var(--groen)">'+eur(gerealiseerd)+' per jaar</b> vrijgespeeld, '+(gerealiseerd/potentieel*100).toFixed(0)+'% van wat erin zit.'
+      : 'Nog geen treden afgevinkt. Vink er \u00e9\u00e9n af en je ziet hier wat het oplevert.';
   }
 
-  // ---- thema's uitgeschreven ----
-  box.innerHTML=T.map(function(t,ti){
+  // ---- thema's uitgeschreven, met rolfilter ----
+  box.innerHTML='<div class="filterbalk" style="margin-top:1rem">'
+   +[['alles','Alles'],['afdeling','Wat de afdeling zelf doet'],['directie','Wat directie moet doen'],['project','Wat een projectleider trekt']]
+     .map(function(r){ return '<button data-uvr="'+r[0]+'" aria-pressed="'+(uvRol===r[0])+'">'+r[1]+'</button>'; }).join('')
+   +'</div>'
+   + T.map(function(t,ti){
+    const zicht=t.s.filter(function(st){return uvRol==='alles'||uvRol===st.rol;});
     return '<details class="mod" style="margin-top:1rem"'+(ti===0?' open':'')+'>'
-     +'<summary><h3>'+(ti+1)+'. '+t.t+'</h3><span class="herkomst">niveau '+g(t.dim)+' \u00b7 '+eur(t.kost||0)+' p.j. \u25be</span></summary>'
+     +'<summary><h3>'+(ti+1)+'. '+t.t+'</h3><span class="herkomst">'+t.waarom+' \u00b7 niveau '+t.niveau+' \u00b7 '+eur(t.kost)+' p.j. \u25be</span></summary>'
      +'<div class="inhoud">'
-     + t.s.map(function(st,i){
-        const klaar=af(t.id,i);
+     +'<p class="sub" style="margin:-.2rem 0 .6rem"><b>Waarom dit thema:</b> gekozen omdat dit je '+t.waarom+' is. <b>Wie:</b> '+t.afd+'.</p>'
+     + zicht.map(function(st){
+        const i=t.s.indexOf(st), klaar=af(t.id,i);
         return '<div style="display:grid;grid-template-columns:2.1rem 1fr auto;gap:.8rem;padding:.7rem 0;border-bottom:1px solid var(--lijn);align-items:start">'
-         +'<b style="width:2.1rem;height:2.1rem;border-radius:8px;background:'+(klaar?'#1F9D55':'var(--inkt)')+';color:#fff;display:grid;place-items:center;font-size:.72rem">'+(klaar?'\u2713':i+1)+'</b>'
-         +'<div><div class="sub" style="text-transform:uppercase;letter-spacing:.05em;font-size:.68rem">'+TREDE[i]+' \u00b7 maand '+st.mnd+' \u00b7 '+st.wie+'</div>'
+         +'<b style="width:2.1rem;height:2.1rem;border-radius:8px;background:'+(klaar?'#8A94A3':ROLKL[st.rol])+';color:#fff;display:grid;place-items:center;font-size:.72rem">'+(klaar?'\u2713':i+1)+'</b>'
+         +'<div><div class="sub" style="text-transform:uppercase;letter-spacing:.05em;font-size:.68rem">'+TREDE[i]+' \u00b7 maand '+st.mnd+' \u00b7 <span style="color:'+ROLKL[st.rol]+';font-weight:700">'+ROLNAAM[st.rol]+'</span> \u00b7 '+st.wie+'</div>'
          +'<b style="font-size:.93rem;'+(klaar?'text-decoration:line-through;opacity:.6':'')+'">'+st.w+'</b>'
          +'<div style="font-size:.85rem;color:var(--grijs);margin-top:.15rem"><b>Klaar als:</b> '+st.klaar+'</div></div>'
          +'<button class="knop licht" data-uvk="'+t.id+':'+i+'">'+(klaar?'ongedaan':'afvinken')+'</button></div>';
        }).join('')
+     + (zicht.length?'':'<p class="sub">Geen treden voor deze rol in dit thema.</p>')
      +'</div></details>';
   }).join('');
+
+  box.querySelectorAll('[data-uvr]').forEach(function(el){
+    if(el.dataset.aan)return; el.dataset.aan='1';
+    el.addEventListener('click',function(){ uvRol=el.dataset.uvr; tekenUitvoering(); });
+  });
   box.querySelectorAll('[data-uvk]').forEach(function(el){
     if(el.dataset.aan)return; el.dataset.aan='1';
     el.addEventListener('click',function(){
-      const dl=el.dataset.uvk.split(':'), id=dl[0], i=+dl[1];
-      S.uitvoering[id]=S.uitvoering[id]||{}; S.uitvoering[id][i]=!S.uitvoering[id][i];
-      bewaar(); teken();
+      const dl=el.dataset.uvk.split(':'); S.uitvoering[dl[0]]=S.uitvoering[dl[0]]||{};
+      S.uitvoering[dl[0]][+dl[1]]=!S.uitvoering[dl[0]][+dl[1]]; bewaar(); teken();
     });
   });
 
   document.getElementById('s2oRol').innerHTML=
-    '<p class="sub" style="margin:-.3rem 0 .8rem">Een ladder invullen is niet hetzelfde als hem beklimmen. Dit is waar wij het overnemen \u2014 en waar niet.</p>'
+    '<p class="sub" style="margin:-.3rem 0 .8rem">De ladder wijst per trede aan wie hem oppakt. Dit is waar wij het overnemen \u2014 en waar niet.</p>'
    +'<div class="kaarten k3">'
-   +'<div><b>Wij tellen mee</b><p style="font-size:.87rem;line-height:1.6">Trede 1 van elk thema is tellen. E\u00e9n dag meelopen: hoe vaak wordt iets overgetypt, waar wordt gewacht, wie wordt gebeld als het misgaat.</p></div>'
-   +'<div><b>Wij bouwen trede 3</b><p style="font-size:.87rem;line-height:1.6">De koppeling, het dashboard, de definitielijst. Werkend in je eigen omgeving, eerste resultaat binnen twee weken. Dat is de trede die de meeste bedrijven niet zelf halen.</p></div>'
-   +'<div><b>Jij houdt de sleutels</b><p style="font-size:.87rem;line-height:1.6">Alles op jouw accounts en in jouw systemen. Stoppen mag altijd; er blijft niets achter dat alleen wij kunnen bedienen.</p></div>'
+   +'<div><b style="color:'+ROLKL.afdeling+'">De afdeling zelf</b><p style="font-size:.87rem;line-height:1.6">Tellen, vastleggen en meten. Dat kan een leidinggevende met zijn eigen mensen, in werkoverleggen. Daar hoeft niemand voor ingehuurd te worden.</p></div>'
+   +'<div><b style="color:'+ROLKL.directie+'">Directie</b><p style="font-size:.87rem;line-height:1.6">Knopen doorhakken: definities, eigenaren, en het vaste moment in de agenda. Dit is het deel dat niet gedelegeerd kan worden \u2014 en waar het meestal op stukloopt.</p></div>'
+   +'<div><b style="color:'+ROLKL.project+'">Projectleider</b><p style="font-size:.87rem;line-height:1.6">De koppeling, het dashboard, de beveiliging. Hier komen wij in beeld: werkend opgeleverd in je eigen omgeving, eerste resultaat binnen twee weken.</p></div>'
    +'</div>'
    +'<div style="margin-top:.9rem;padding:.8rem .95rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.88rem;line-height:1.6">'
    +'<b>Begin bij trede 1 en doe hem zelf.</b> Tellen kost een week aandacht en levert het getal op waarmee je de rest onderbouwt \u2014 bij je team, bij je bank en bij een koper.</div>';
