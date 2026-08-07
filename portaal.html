@@ -581,17 +581,17 @@ input[type=range]{min-height:34px}
 
     <!-- BELEID -->
     <section class="paneel" id="p-beleid">
-      <div class="kaart" style="margin-top:1rem">
-        <h3>Wat er op papier staat</h3>
-        <p class="sub">De stand van je beleidsstukken. Bijwerken doe je onder <b>Je gegevens invullen</b>.</p>
-        <div id="beleidLijst" style="margin-top:.8rem"></div>
-        <div id="beleidAdvies" style="margin-top:1rem"></div>
+      <p class="sub" style="margin-top:1rem">Wat je hier ziet volgt uit wat je invulde onder <b>Je gegevens invullen</b>.</p>
+
+      <div class="kaarten k2" style="margin-top:.6rem">
+        <div class="kaart"><h3>Staat van de techniek</h3>
+          <svg id="techGraf" viewBox="0 0 460 230" role="img" aria-label="Staat van de techniek"></svg>
+          <div class="sub">Vier onderdelen die samen bepalen of AI en BI kunnen werken.</div></div>
+        <div class="kaart"><h3>Governance-volwassenheid</h3>
+          <svg id="govGraf" viewBox="0 0 460 230" role="img" aria-label="Governance"></svg>
+          <div class="sub" id="govT"></div></div>
       </div>
-      <div class="kaarten k2">
-        <div class="kaart"><h3>Deadlines en boetes</h3><div id="naleving"></div></div>
-        <div class="kaart"><h3>Incident: wat is het plan?</h3><div id="incident"></div></div>
-      </div>
-      
+
       <div class="kaart" style="margin-top:1rem"><h3>CSRD en duurzaamheid — waar sta je?</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Elf onderwerpen uit de drie pijlers. Geef per onderwerp aan hoe de cijfers tot stand komen. Niet alleen óf je ze hebt — vooral of het nog handwerk is.</p>
         <div id="esgVelden"></div>
@@ -601,13 +601,17 @@ input[type=range]{min-height:34px}
         </div>
         <div id="esgKennis" style="margin-top:1rem"></div>
       </div>
+
+      <div class="kaart" style="margin-top:1rem">
+        <h3>Wat er op papier staat</h3>
+        <p class="sub">De stand van je beleidsstukken. Bijwerken doe je onder <b>Je gegevens invullen</b>.</p>
+        <div id="beleidLijst" style="margin-top:.8rem"></div>
+        <div id="beleidAdvies" style="margin-top:1rem"></div>
+      </div>
+
       <div class="kaarten k2">
-        <div class="kaart"><h3>Staat van de techniek</h3>
-          <svg id="techGraf" viewBox="0 0 460 230" role="img" aria-label="Staat van de techniek"></svg>
-          <div class="sub">Vier onderdelen die samen bepalen of AI en BI kunnen werken.</div></div>
-        <div class="kaart"><h3>Governance-volwassenheid</h3>
-          <svg id="govGraf" viewBox="0 0 460 230" role="img" aria-label="Governance"></svg>
-          <div class="sub" id="govT"></div></div>
+        <div class="kaart"><h3>Deadlines en boetes</h3><div id="naleving"></div></div>
+        <div class="kaart"><h3>Incident: wat is het plan?</h3><div id="incident"></div></div>
       </div>
     </section>
 
