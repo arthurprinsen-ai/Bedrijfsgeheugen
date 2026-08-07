@@ -32,7 +32,7 @@ jobs:
   publiceren:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Volgend artikel ophalen uit Notion
         id: kalender
@@ -157,6 +157,26 @@ jobs:
         if: steps.kalender.outputs.gevonden == 'true'
         run: |
           echo "lijst=$(ls -d blog/*/ 2>/dev/null | sed 's|blog/||;s|/||' | paste -sd', ')" >> "$GITHUB_OUTPUT"
+
+      - name: Sleutel controleren
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY is leeg of bestaat niet in de repo-secrets."
+            exit 1
+          fi
+          echo "Sleutel aanwezig, lengte ${#KEY}, begint met ${KEY:0:7}"
+          code=$(curl -s -o /tmp/resp.json -w "%{http_code}" https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $KEY" -H "anthropic-version: 2023-06-01" -H "content-type: application/json" \
+            -d '{"model":"claude-sonnet-4-5-20250929","max_tokens":16,"messages":[{"role":"user","content":"ok"}]}')
+          echo "Antwoord van de API: HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::De API weigert de sleutel (HTTP $code). Zie hieronder."
+            cat /tmp/resp.json
+            exit 1
+          fi
 
       - name: Artikel schrijven en publiceren
         if: steps.kalender.outputs.gevonden == 'true'
