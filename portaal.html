@@ -759,6 +759,10 @@ input[type=range]{min-height:34px}
         <p class="sub" style="margin:-.3rem 0 .7rem">Van thema naar capability naar wat er in de organisatie moet veranderen. Klik een capability voor de details.</p>
         <svg id="dnaGraaf" viewBox="0 0 980 460" role="img" aria-label="Strategie-DNA"></svg>
         <div id="dnaDetail"></div></div>
+      <div class="kaart" style="margin-top:1rem"><h3>Wat verandert er per afdeling?</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Kies een afdeling en zie precies wat er daar verandert — processen, systemen, gegevens, AI en waarop gestuurd wordt.</p>
+        <div id="dnaAfdKeuze"></div>
+        <div id="dnaAfdUit" style="margin-top:.8rem"></div></div>
       <div class="kaart" style="margin-top:1rem"><h3>Volwassenheid per capability</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Wat je al kunt en wat nog niet — uit je eigen scan. Dit bepaalt de volgorde van de veranderagenda.</p>
         <div id="dnaVolw"></div></div>
@@ -2090,7 +2094,93 @@ const THEMA={
  naleving:{n:'Naleving en risico beheersen',caps:['veilig','overdraagbaar','duurzaam','kwaliteit']},
  mensen:{n:'Aantrekkelijk werkgeverschap',caps:['kennis','wendbaar','service','sturing']}
 };
-var dnaThema='klant', dnaCap=null;
+
+/* --- Strategie-DNA versie 2: bredere bibliotheek + sectorspecifiek --- */
+Object.assign(CAP,{
+ planning:{n:'Planbaar werk',dim:'operatie',
+   afd:['Operatie','Werkvoorbereiding','Planning'],proc:['Capaciteit plannen','Werk toewijzen','Herplannen bij uitval'],
+   data:['Orders','Beschikbaarheid','Doorlooptijden'],sys:['Planbord of ERP-planning'],
+   ai:['Voorspellen van uitloop','Herplanvoorstel bij uitval'],gov:['Wie mag herplannen'],
+   kpi:['Levering op tijd','Bezettingsgraad','Uitloop in uren'],proj:['E\u00e9n planbord dat iedereen ziet']},
+ inkoop:{n:'Inkoop met overzicht',dim:'operatie',
+   afd:['Inkoop','Operatie','Finance'],proc:['Bestellen','Ontvangen','Factuurcontrole'],
+   data:['Leveranciers','Prijsafspraken','Bestellingen'],sys:['ERP-inkoop','Factuurherkenning'],
+   ai:['Factuur naast bestelling leggen','Prijsafwijking signaleren'],gov:['Wie mag bestellen tot welk bedrag'],
+   kpi:['Prijsafwijkingen','Leveranciersconcentratie','Doorlooptijd factuurcontrole'],proj:['Bestel- en factuurcontrole koppelen']},
+ voorraad:{n:'Voorraad die klopt',dim:'operatie',
+   afd:['Operatie','Magazijn','Finance'],proc:['Ontvangen','Uitgeven','Tellen'],
+   data:['Artikelen','Locaties','Mutaties'],sys:['Scanoplossing','ERP-voorraad'],
+   ai:['Verbruik voorspellen','Verschillen verklaren'],gov:['Wie doet de telling'],
+   kpi:['Voorraadverschil','Nee-verkopen'],proj:['Scannen bij ontvangst en uitgifte']},
+ prijs:{n:'Prijzen en marge onder controle',dim:'finance',
+   afd:['Sales','Finance','Directie'],proc:['Calculeren','Offreren','Nacalculatie'],
+   data:['Kostprijzen','Uren','Marges per order'],sys:['Calculatie in het systeem, niet in Excel'],
+   ai:['Marge voorspellen bij offerte','Uitschieters herkennen'],gov:['Wie mag korting geven'],
+   kpi:['Marge per order','Verschil voor- en nacalculatie'],proj:['Nacalculatie per order zichtbaar']},
+ werving:{n:'Sneller de juiste mensen',dim:'mensen',
+   afd:['HR','Leidinggevenden'],proc:['Vacature opstellen','Selecteren','Inwerken'],
+   data:['Vacatures','Doorlooptijd werving','Verloopcijfers'],sys:['Wervingsproces vastgelegd'],
+   ai:['Vacaturetekst schrijven','Reacties sorteren'],gov:['Wie beslist over aanname'],
+   kpi:['Dagen tot invulling','Uitval in eerste jaar'],proj:['Inwerkpad van twee weken vastleggen']},
+ opleiden:{n:'Mensen die meegroeien',dim:'mensen',
+   afd:['HR','Alle afdelingen'],proc:['Opleidingsplan','Voortgang bespreken'],
+   data:['Kennismatrix','Opleidingsuren'],sys:['Overzicht van certificaten en vervaldata'],
+   ai:['Voorstel voor opleiding per rol'],gov:['Budget en eigenaar'],
+   kpi:['Opleidingsuren per medewerker','Taken met twee namen'],proj:['Kennismatrix koppelen aan opleidingsplan']},
+ marketing:{n:'Vindbaar en herkenbaar',dim:'commercie',
+   afd:['Marketing','Sales'],proc:['Content maken','Publiceren','Opvolgen'],
+   data:['Websitebezoek','Aanvragen','Zoekwoorden'],sys:['Website','Nieuwsbrief','Statistieken'],
+   ai:['Concepten schrijven','Onderwerpen kiezen op zoekgedrag'],gov:['Wie keurt publicaties'],
+   kpi:['Aanvragen per maand','Aandeel in zoekopdrachten'],proj:['Vindbaarheid meten en maandelijks bespreken']},
+ projecten:{n:'Projecten die afkomen',dim:'sturing',
+   afd:['Directie','Projectleiders'],proc:['Starten','Bewaken','Afsluiten'],
+   data:['Projectstatus','Uren','Budget'],sys:['E\u00e9n projectoverzicht'],
+   ai:['Uitloop signaleren','Statusverslag schrijven'],gov:['E\u00e9n eigenaar per project'],
+   kpi:['Projecten binnen tijd','Afgeronde projecten per kwartaal'],proj:['E\u00e9n overzicht van lopende projecten']},
+ risico:{n:'Risico\'s in beeld',dim:'governance',
+   afd:['Directie','Finance','IT'],proc:['Risico\'s benoemen','Maatregelen bewaken'],
+   data:['Risicolijst','Verzekeringen','Contracten'],sys:['E\u00e9n risicolijst'],
+   ai:['Contracten doorzoeken op verplichtingen'],gov:['Eigenaar per risico'],
+   kpi:['Risico\'s met maatregel','Openstaande punten'],proj:['Risicolijst met eigenaren']},
+ keten:{n:'Grip op de keten',dim:'duurzaam',
+   afd:['Inkoop','Directie'],proc:['Leveranciers beoordelen','Afspraken vastleggen'],
+   data:['Leveranciersgegevens','Certificaten','Herkomst'],sys:['Leveranciersdossier'],
+   ai:['Certificaten uitlezen en bewaken'],gov:['Gedragscode voor leveranciers'],
+   kpi:['Leveranciers met actueel dossier','Afhankelijkheid van \u00e9\u00e9n leverancier'],proj:['Leveranciersdossier op orde']},
+ zelfservice:{n:'Klanten die zichzelf helpen',dim:'service',
+   afd:['Service','Marketing','IT'],proc:['Veelgestelde vragen bijhouden','Statusinformatie delen'],
+   data:['Vragen en antwoorden','Orderstatus'],sys:['Klantportaal of statuspagina'],
+   ai:['Antwoorden voorstellen','Vragen clusteren'],gov:['Wie houdt de antwoorden actueel'],
+   kpi:['Vragen die niet meer binnenkomen','Zelfredzaamheid'],proj:['Top tien vragen online zetten']},
+ documentatie:{n:'Documenten op orde',dim:'quality',
+   afd:['Alle afdelingen'],proc:['Vastleggen','Vinden','Archiveren'],
+   data:['Contracten','Instructies','Certificaten'],sys:['E\u00e9n documentomgeving met structuur'],
+   ai:['Zoeken op inhoud','Vervaldata bewaken'],gov:['Bewaartermijnen','Wie mag wijzigen'],
+   kpi:['Tijd om een document te vinden','Verlopen documenten'],proj:['Mappenstructuur en bewaartermijnen']}
+});
+
+/* Extra capabilities die per sector vanzelf meekomen */
+const BRANCHECAP={
+ 'Industrie & productie':['planning','voorraad','prijs'],
+ 'Bouw':['planning','prijs','inkoop'],
+ 'Handel & retail':['voorraad','inkoop','marketing'],
+ 'Logistiek & transport':['planning','keten','voorraad'],
+ 'ICT & software':['projecten','zelfservice','documentatie'],
+ 'Zakelijke dienstverlening':['projecten','prijs','marketing'],
+ 'Financi\u00eble dienstverlening':['risico','documentatie','zelfservice'],
+ 'Zorg':['opleiden','documentatie','risico'],
+ 'Horeca & recreatie':['voorraad','werving','marketing'],
+ 'Gemiddeld NL-bedrijf':['projecten','marketing','documentatie']
+};
+
+/* Extra thema's */
+Object.assign(THEMA,{
+ kosten:{n:'Kosten omlaag zonder mensen kwijt',caps:['doorstroom','inkoop','prijs','sturing']},
+ keten:{n:'Grip op de keten',caps:['inkoop','keten','voorraad','kwaliteit']},
+ werving:{n:'Sneller de juiste mensen',caps:['werving','opleiden','kennis','wendbaar']}
+});
+
+var dnaThema='klant', dnaCap=null, dnaAfd=null;
 
 function tekenDNA(){
   const kz=document.getElementById('dnaKeuze'); if(!kz) return;
@@ -2110,7 +2200,9 @@ function tekenDNA(){
     b.addEventListener('click',function(){ dnaThema=b.dataset.dna; dnaCap=null; tekenDNA(); });
   });
 
-  const caps=THEMA[dnaThema].caps.map(function(k){ return Object.assign({k:k},CAP[k]); });
+  let lijst=THEMA[dnaThema].caps.slice();
+  (BRANCHECAP[S.branche]||[]).forEach(function(k){ if(lijst.indexOf(k)<0 && CAP[k]) lijst.push(k); });
+  const caps=lijst.map(function(k){ return Object.assign({k:k},CAP[k]); });
 
   // impactmatrix
   const uniek=function(veld){ const a=[]; caps.forEach(function(c){ (c[veld]||[]).forEach(function(x){ if(a.indexOf(x)<0) a.push(x); }); }); return a; };
@@ -2123,9 +2215,12 @@ function tekenDNA(){
            ['Afspraken',uniek('gov').length,'die je moet maken'],
            ['Maatstaven',uniek('kpi').length,'waarop je stuurt'],
            ['Projecten',uniek('proj').length,'die eruit volgen']];
+  const extraB=(BRANCHECAP[S.branche]||[]).filter(function(k){return THEMA[dnaThema].caps.indexOf(k)<0;});
   document.getElementById('dnaImpact').innerHTML=M.map(function(r){
     return '<div class="kaart"><h3>'+r[0]+'</h3><div class="kpi">'+r[1]+'</div><div class="sub">'+r[2]+'</div></div>';
-  }).join('');
+  }).join('')
+   + (extraB.length?'<div class="kaart" style="grid-column:1/-1"><div class="sub">Voor '+S.branche.toLowerCase()+' komen hier '+extraB.length+' capabilities bij die in deze sector vrijwel altijd meespelen: '
+      + extraB.map(function(k){return CAP[k].n.toLowerCase();}).join(', ')+'.</div></div>':'');
 
   // graaf
   const el=document.getElementById('dnaGraaf');
@@ -2177,6 +2272,45 @@ function tekenDNA(){
        +rij('AI-toepassingen',c.ai)+rij('Afspraken',c.gov)+rij('Maatstaven',c.kpi)+rij('Projecten',c.proj)
        +'</table>'
        +'<div style="margin-top:.8rem"><button class="knop" data-advies="'+encodeURIComponent(JSON.stringify({t:c.proj[0],dim:c.dim,d:2}))+'">Zet het project in mijn roadmap</button></div></div>';
+    }
+  }
+
+  // ---- per afdeling ----
+  const afdelingen=[]; caps.forEach(function(c){ c.afd.forEach(function(a){ if(afdelingen.indexOf(a)<0) afdelingen.push(a); }); });
+  const ak=document.getElementById('dnaAfdKeuze');
+  if(ak){
+    ak.innerHTML='<div class="filterbalk">'+afdelingen.map(function(a){
+      const n=caps.filter(function(c){return c.afd.indexOf(a)>-1;}).length;
+      return '<button data-dnaafd="'+a+'" aria-pressed="'+(dnaAfd===a)+'">'+a+' ('+n+')</button>'; }).join('')+'</div>';
+    ak.querySelectorAll('[data-dnaafd]').forEach(function(b3){
+      if(b3.dataset.aan)return; b3.dataset.aan='1';
+      b3.addEventListener('click',function(){ dnaAfd=(dnaAfd===b3.dataset.dnaafd)?null:b3.dataset.dnaafd; tekenDNA(); });
+    });
+  }
+  const au=document.getElementById('dnaAfdUit');
+  if(au){
+    if(!dnaAfd){ au.innerHTML='<p class="sub">Kies hierboven een afdeling.</p>'; }
+    else{
+      const mijn=caps.filter(function(c){return c.afd.indexOf(dnaAfd)>-1;});
+      const bundel=function(veld){ const a=[]; mijn.forEach(function(c){ (c[veld]||[]).forEach(function(x){ if(a.indexOf(x)<0) a.push(x); }); }); return a; };
+      const kaart=function(titel,items,kleur){
+        return '<div class="kaart"><h3 style="color:'+kleur+'">'+titel+'</h3>'
+         +'<div style="font-size:.87rem;line-height:1.7">'+items.map(function(x){return '\u2022 '+x;}).join('<br>')+'</div></div>';
+      };
+      au.innerHTML='<p style="font-size:.9rem;line-height:1.6"><b>'+dnaAfd+'</b> wordt geraakt door '+mijn.length+' van de '+caps.length+' capabilities: '
+       + mijn.map(function(c){return c.n.toLowerCase();}).join(', ')+'.</p>'
+       +'<div class="kaarten k3" style="margin-top:.7rem">'
+       + kaart('Processen die veranderen',bundel('proc'),'var(--inkt)')
+       + kaart('Systemen',bundel('sys'),'var(--blauw)')
+       + kaart('Gegevens',bundel('data'),'var(--blauw)')
+       +'</div><div class="kaarten k3" style="margin-top:.7rem">'
+       + kaart('AI-toepassingen',bundel('ai'),'var(--oranje)')
+       + kaart('Afspraken',bundel('gov'),'var(--grijs)')
+       + kaart('Waarop gestuurd wordt',bundel('kpi'),'var(--groen)')
+       +'</div>'
+       +'<div style="margin-top:.8rem;padding:.7rem .85rem;border-left:4px solid var(--geel);background:#FFFCF0;font-size:.87rem;line-height:1.6">'
+       +'<b>Voor het gesprek met deze afdeling:</b> begin niet bij het systeem maar bij het proces. '
+       +'Vraag welke van deze processen nu het meeste tijd kost \u2014 dat is waar je begint, ongeacht wat de strategie zegt.</div>';
     }
   }
 
