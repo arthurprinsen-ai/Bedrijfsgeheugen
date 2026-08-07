@@ -1994,6 +1994,7 @@ function tekenBronnen(){
    +'<p class="sub" style="margin-top:.7rem">Cijfers komen uit publieke samenvattingen en zijn gecontroleerd in augustus 2026. Onderzoek van adviesbureaus gaat grotendeels over grote ondernemingen — gebruik het als richting, niet als norm voor een bedrijf van jouw omvang.</p>';
 }
 
+var kwKeuze=null;
 function tekenKwadrant(){
   const el=document.getElementById('kwadrant'); if(!el) return;
   const f=[0,1,.78,.5,.22,.06], b=B();
@@ -2037,13 +2038,55 @@ function tekenKwadrant(){
       const r=6+Math.min(K[d.k]/max,1)*7;
       const kl=+n>=4?'#1F9D55':(+n>=3?'#E8A200':'#D93025');
       g+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+kl+'" fill-opacity=".85" stroke="#fff" stroke-width="1.5"'
-       +' data-tip="<b>'+d.n+'</b><br>Niveau '+n+' van 5<br>'+eur(K[d.k])+' per jaar<br>'+(UITLEG[d.k]||'')+'" data-ga="profiel"/>';
-      if(duurste.indexOf(d.k)>-1)
+       +' data-tip="<b>'+d.n+'</b><br>Niveau '+n+' van 5<br>'+eur(K[d.k])+' per jaar<br>'+(UITLEG[d.k]||'')+'"'
+       +' data-kw="'+d.k+'" style="cursor:pointer"'
+       +(kwKeuze&&kwKeuze!==d.k?' opacity=".18"':'')+'/>';
+      if(duurste.indexOf(d.k)>-1 && (!kwKeuze||kwKeuze===d.k))
         g+='<text x="'+(cx+r+5).toFixed(1)+'" y="'+(cy+4).toFixed(1)+'" font-size="10.5" fill="#14171A" font-family="Instrument Sans">'+d.n.split(' ')[0]+'</text>';
     });
   });
   g+='<text x="'+x0+'" y="'+(y1-14)+'" font-size="10.5" fill="#8A94A3" font-family="Instrument Sans">grotere stip = hogere kosten \u00b7 alleen de vijf duurste zijn benoemd \u00b7 beweeg voor de rest</text>';
   el.innerHTML=g;
+
+  // klikken filtert; nog een keer klikken zet het terug
+  el.querySelectorAll('[data-kw]').forEach(function(c){
+    if(c.dataset.aan)return; c.dataset.aan='1';
+    c.addEventListener('click',function(){
+      kwKeuze = (kwKeuze===c.dataset.kw) ? null : c.dataset.kw;
+      tekenKwadrant();
+    });
+  });
+
+  // filterbalk erboven
+  const fb=document.getElementById('kwFilter');
+  if(fb){
+    fb.innerHTML = kwKeuze
+      ? 'Je bekijkt <b>'+(DIM.find(function(d){return d.k===kwKeuze;})||{n:''}).n+'</b>. '
+        +'<button class="knop licht" id="kwTerug" style="margin-left:.4rem">Toon alle onderdelen</button>'
+      : 'Klik op een stip om alleen dat onderdeel te bekijken.';
+    const kt=document.getElementById('kwTerug');
+    if(kt) kt.addEventListener('click',function(){ kwKeuze=null; tekenKwadrant(); });
+  }
+
+  // detail onder de grafiek
+  const dt=document.getElementById('kwDetail');
+  if(dt){
+    if(!kwKeuze){ dt.innerHTML=''; }
+    else {
+      const d=DIM.find(function(x){return x.k===kwKeuze;});
+      const n=S.niveaus[d.k], kost=K[d.k];
+      const A=(typeof verzamelAdvies==='function'?verzamelAdvies():[]).filter(function(a){return a.dim===d.k;});
+      dt.innerHTML='<div style="margin-top:.8rem;padding:.9rem 1rem;border:1px solid var(--lijn);border-radius:8px;background:#FBFAF7">'
+       +'<b style="font-size:.98rem">'+d.n+'</b>'
+       +'<div class="sub" style="margin:.2rem 0 .5rem">Niveau '+n+' van 5 \u00b7 '+eur(kost)+' per jaar \u00b7 branche ~'+b.dig.toFixed(1)+'</div>'
+       +'<div style="font-size:.88rem;line-height:1.6">'+(UITLEG[d.k]||'')+'</div>'
+       +(A.length?'<div style="margin-top:.6rem"><b style="font-size:.85rem">Wat je hier kunt doen:</b>'
+           +A.slice(0,2).map(function(a){return '<div style="font-size:.86rem;line-height:1.55;margin-top:.25rem">\u2022 '+a.t+' \u2014 <span style="color:var(--grijs)">'+a.waarom+'</span></div>';}).join('')
+           +'</div>':'')
+       +'<div style="margin-top:.7rem"><button class="knop licht" data-ga="profiel">Pas het niveau aan</button></div>'
+       +'</div>';
+    }
+  }
 }
 
 function tekenKostenTrap(){
