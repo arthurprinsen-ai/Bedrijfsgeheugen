@@ -508,7 +508,7 @@ input[type=range]{min-height:34px}
           <svg id="kwadrant" viewBox="0 0 980 540" style="width:100%;height:auto" role="img" aria-label="Onderdelen in vier vakken"></svg></div>
         <div class="kaart"><h3>Wat niets doen kost</h3>
           <p class="sub" style="margin:-.3rem 0 .6rem">Je huidige kosten tegenover wat je overhoudt bij niveau 3, 4 en 5. Het verschil is wat je nu weggeeft.</p>
-          <svg id="kostenTrap" viewBox="0 0 620 360" style="min-height:280px" role="img" aria-label="Kosten van niets doen"></svg>
+          <svg id="kostenTrap" viewBox="0 0 760 270" style="width:100%;height:auto" role="img" aria-label="Kosten van niets doen"></svg>
           <div class="sub" id="kostenTrapT"></div><div class="bron"><b>Bron:</b> eigen cijfers · patroon bevestigd door McKinsey en BCG (waarde ontstaat in het middenstuk)</div></div>
       </div>
       <div id="ondBlok" class="kaarten k2" style="margin-top:1rem"></div>
@@ -2086,28 +2086,39 @@ function tekenKwadrant(){
 
 function tekenKostenTrap(){
   const el=document.getElementById('kostenTrap'); if(!el) return;
-  const f=[0,1,.78,.5,.22,.06]; const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const f=[0,1,.78,.5,.22,.06], eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
   const bij=function(n){ let t=0; DIM.forEach(function(d){ t+=d.u*f[Math.max(S.niveaus[d.k],n)]*(S.mw/24)*46*S.uur; }); return t; };
   const nu=bij(1), r3=bij(3), r4=bij(4), r5=bij(5);
-  const rijen=[['Nu',nu,'#D93025'],['Alles op niveau 3',r3,'#E8A200'],['Alles op niveau 4',r4,'#1F9D55'],['Alles op niveau 5',r5,'#0E9F6E']];
+  const rijen=[['Nu',nu,'#D93025','Dit kost het handwerk je vandaag.'],
+               ['Alles op niveau 3',r3,'#E8A200','Systemen op orde, ertussen nog handwerk.'],
+               ['Alles op niveau 4',r4,'#1F9D55','Gegevens \u00e9\u00e9n keer invoeren \u2014 doel voor het mkb.'],
+               ['Alles op niveau 5',r5,'#0E9F6E','Zelfsturend. Zelden de moeite in het mkb.']];
   const max=Math.max.apply(null,rijen.map(r=>r[1]))||1;
-  let g='',y=24;
+
+  const W=760, L=180, R=30, rowH=58, T=18;
+  const H=T+rijen.length*rowH+16;
+  const balkB=W-L-R;
+  el.setAttribute('viewBox','0 0 '+W+' '+H);
+  let g='', y=T;
   rijen.forEach(function(r){
-    const w=(r[1]/max)*420;
-    g+='<g data-tip="<b>'+r[0]+'</b><br>'+eur(r[1])+' per jaar aan handwerk"'
-     +' data-detail="'+encodeURIComponent('<h4>'+r[0]+'</h4><p>Bij dit niveau kost het handwerk je <b>'+eur(r[1])+' per jaar</b>.'
-       +(r[1]<nu?' Dat is <b>'+eur(nu-r[1])+'</b> minder dan nu.':' Dit is je huidige situatie.')+'</p>'
-       +'<div class="doen"><b>Wat je hier doet:</b> '+(r[1]<nu?'kijk onder Advies welke stappen je hier brengen \u2014 begin bij de duurste post.':'begin bij \u00e9\u00e9n onderdeel; niveau 4 is het doel voor het mkb.')+'</div>')+'">'
-     +'<text x="0" y="'+(y+14)+'" font-size="12" fill="#14171A" font-family="Instrument Sans">'+r[0]+'</text>'
-     +'<rect x="170" y="'+y+'" width="420" height="20" rx="10" fill="#EDEBE5"/>'
-     +'<rect x="170" y="'+y+'" width="'+Math.max(w,6)+'" height="20" rx="10" fill="'+r[2]+'"/>'
-     +'<text x="'+(170+Math.max(w,6)+8)+'" y="'+(y+15)+'" font-size="11" fill="#5C646E" font-family="Instrument Sans">'+eur(r[1])+'</text></g>';
-    y+=62;
+    const w=Math.max((r[1]/max)*balkB,4);
+    const binnen = w>150;                       // bedrag in de balk of erachter
+    g+='<g data-tip="<b>'+r[0]+'</b><br>'+eur(r[1])+' per jaar"'
+     +' data-detail="'+encodeURIComponent('<h4>'+r[0]+'</h4><p>'+r[3]+' Het handwerk kost je dan <b>'+eur(r[1])+' per jaar</b>.'
+       +(r[1]<nu?' Dat is <b>'+eur(nu-r[1])+'</b> minder dan nu.':'')+'</p>'
+       +'<div class="doen"><b>Wat je hier doet:</b> '+(r[1]<nu?'kijk onder Advies welke stappen je hierheen brengen \u2014 begin bij de duurste post.':'begin bij \u00e9\u00e9n onderdeel; niveau 4 is het doel.')+'</div>')+'">'
+     +'<text x="0" y="'+(y+27)+'" font-size="13.5" fill="#14171A" font-family="Instrument Sans">'+r[0]+'</text>'
+     +'<rect x="'+L+'" y="'+(y+10)+'" width="'+balkB+'" height="26" rx="13" fill="#EFEFEC"/>'
+     +'<rect x="'+L+'" y="'+(y+10)+'" width="'+w.toFixed(1)+'" height="26" rx="13" fill="'+r[2]+'"/>'
+     +'<text x="'+(binnen?(L+w-12):(L+w+10)).toFixed(1)+'" y="'+(y+28)+'" text-anchor="'+(binnen?'end':'start')+'"'
+     +' font-size="13" font-weight="600" fill="'+(binnen?'#fff':'#14171A')+'" font-family="Instrument Sans">'+eur(r[1])+'</text>'
+     +'</g>';
+    y+=rowH;
   });
   el.innerHTML=g;
   document.getElementById('kostenTrapT').innerHTML='Van nu naar niveau 4 scheelt <b>'+eur(nu-r4)+'</b> per jaar. '
    +'Niveau 5 levert daarbovenop nog '+eur(r4-r5)+' op \u2014 zelden de moeite voor een mkb-bedrijf. '
-   +'Onderzoek van McKinsey en BCG laat hetzelfde patroon zien: de sprong zit in het middenstuk, niet aan de top.';
+   +'Klik een balk voor wat die stap inhoudt.';
 }
 
 function tekenDataAI(){
