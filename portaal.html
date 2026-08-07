@@ -628,6 +628,21 @@ input[type=range]{min-height:34px}
           <svg id="taGraf" viewBox="0 0 460 260" role="img" aria-label="Trusted advisor-ladder"></svg>
           <div id="taUit"></div></div>
       </div>
+      <div class="kaart"><h3>Metingen over de tijd</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">NPS, klanttevredenheid, medewerkerstevredenheid en verzuim meet je een paar keer per jaar. Zet ze hier neer, dan zie je of je acties iets hebben gedaan.</p>
+        <div class="velden">
+          <div class="veld"><label for="mtDatum">Datum</label><input type="date" id="mtDatum"></div>
+          <div class="veld"><label for="mtSoort">Wat</label><select id="mtSoort">
+            <option value="NPS">NPS (klanten)</option><option value="KTO">Klanttevredenheid (1-10)</option>
+            <option value="eNPS">eNPS (medewerkers)</option><option value="MTO">Medewerkerstevredenheid (1-10)</option>
+            <option value="Verzuim">Verzuim (%)</option><option value="Herhaal">Herhaalopdrachten (%)</option></select></div>
+          <div class="veld"><label for="mtWaarde">Waarde</label><input type="number" id="mtWaarde" step="0.1"></div>
+          <div class="veld"><label for="mtNotitie">Wat ging eraan vooraf</label><input type="text" id="mtNotitie" placeholder="bijv. na invoeren één servicepostbus"></div>
+        </div>
+        <div style="margin-top:.7rem"><button class="knop" id="mtToe">Meting toevoegen</button></div>
+        <svg id="mtGraf" viewBox="0 0 900 320" role="img" aria-label="Metingen over de tijd" style="margin-top:1rem"></svg>
+        <div id="mtLijst" style="margin-top:.8rem"></div>
+        <div id="mtEffect" style="margin-top:.8rem"></div></div>
       <div class="kaart"><h3>Wat dit betekent</h3><div id="cDuiding" style="font-size:.9rem;line-height:1.65"></div></div>
     </section>
 
@@ -847,7 +862,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[]};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -1000,6 +1015,19 @@ function bouw(){
     if(S.kto&&S.kto[id]!==undefined&&S.kto[id]!=='') el.value=S.kto[id];
     el.addEventListener('input',function(e){ S.kto=S.kto||{}; S.kto[id]=e.target.value; bewaar(); teken(); });
   });
+  const mtb=document.getElementById('mtToe');
+  if(mtb&&!mtb.dataset.aan){ mtb.dataset.aan='1';
+    const dt=document.getElementById('mtDatum'); if(dt&&!dt.value) dt.value=new Date().toISOString().slice(0,10);
+    mtb.addEventListener('click',function(){
+      const d=document.getElementById('mtDatum').value, v=document.getElementById('mtWaarde').value;
+      if(!d||v===''){ document.getElementById('mtWaarde').style.borderColor='var(--rood)'; return; }
+      S.metingen=S.metingen||[];
+      S.metingen.push({id:Date.now(), d:d, s:document.getElementById('mtSoort').value, v:+v,
+        n:document.getElementById('mtNotitie').value.trim()});
+      document.getElementById('mtWaarde').value=''; document.getElementById('mtNotitie').value='';
+      bewaar(); teken();
+    });
+  }
   const be=document.getElementById('btnExport');
   if(be&&!be.dataset.aan){be.dataset.aan='1';be.addEventListener('click',function(){vraagToegang(exporteer);});}
   const bi=document.getElementById('btnImport');
@@ -1035,7 +1063,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -1063,6 +1091,7 @@ function importeer(bestand){
       if(p.modellen) S.modellen=p.modellen;
       if(p.uitvoering) S.uitvoering=p.uitvoering;
       if(p.kto) S.kto=p.kto;
+      if(p.metingen) S.metingen=p.metingen;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -1247,7 +1276,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenKTO(); tekenTrustedAdvisor(); tekenMetingen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenUitvoering(); tekenRekenwijze(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -3110,6 +3139,90 @@ function tekenVolwassenheid(){
       :(idx===1?'Bij 10 tot 25 mensen is dat bijna altijd: alles moet nog langs de directeur.'
       :'Kijk of je die crisis herkent — zo ja, dan is dat je echte agenda.'))+'</div>';
   }
+}
+
+const MTKL={NPS:'#2742D6',KTO:'#1F9D55',eNPS:'#FF4F17',MTO:'#E8A200',Verzuim:'#D93025',Herhaal:'#7A5BD6'};
+const MTSCHAAL={NPS:[-100,100],KTO:[1,10],eNPS:[-100,100],MTO:[1,10],Verzuim:[0,12],Herhaal:[0,100]};
+function tekenMetingen(){
+  const el=document.getElementById('mtGraf'); if(!el) return;
+  S.metingen=S.metingen||[];
+  const M=S.metingen.slice().sort(function(a,b2){return a.d<b2.d?-1:1;});
+  const soorten=[...new Set(M.map(function(m){return m.s;}))];
+
+  if(!M.length){
+    el.innerHTML='<text x="20" y="40" font-size="13" fill="#8A94A3" font-family="Instrument Sans">Nog geen metingen. Voeg je eerste meting toe \u2014 dan is dit je nulpunt.</text>';
+    document.getElementById('mtLijst').innerHTML='';
+    document.getElementById('mtEffect').innerHTML=
+      '<div style="padding:.8rem .9rem;border-left:4px solid var(--amber);background:#FFF8E8;border-radius:0 4px 4px 0;font-size:.88rem;line-height:1.6">'
+      +'<b>Begin met een nulmeting.</b> Zonder beginpunt kun je later niet laten zien dat iets geholpen heeft \u2014 en dat is precies wat je nodig hebt om door te mogen met de volgende stap.</div>';
+    return;
+  }
+  const W=900,L=60,R=140,T=24,B=60, x0=L, x1=W-R, y0=320-B, y1=T;
+  const t0=new Date(M[0].d).getTime(), t1=new Date(M[M.length-1].d).getTime();
+  const spanT=Math.max(t1-t0, 86400000*30);
+  const px=d=>x0+((new Date(d).getTime()-t0)/spanT)*(x1-x0);
+  let g='<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>';
+
+  // acties uit de roadmap als verticale markering
+  (S.taken||[]).filter(function(t){return t.klaar;}).forEach(function(t,i){
+    const x=x0+((t.s-1)/12)*(x1-x0);
+    g+='<line x1="'+x+'" y1="'+y1+'" x2="'+x+'" y2="'+y0+'" stroke="#C9CEDA" stroke-width="1" stroke-dasharray="3 4"/>'
+     +'<text x="'+(x+4)+'" y="'+(y1+10+i%3*12)+'" font-size="9.5" fill="#8A94A3" font-family="Instrument Sans">'+t.t.slice(0,26)+'</text>';
+  });
+
+  soorten.forEach(function(so,si){
+    const rij=M.filter(function(m){return m.s===so;});
+    const sch=MTSCHAAL[so]||[0,100];
+    const py=v=>y0-((v-sch[0])/(sch[1]-sch[0]))*(y0-y1);
+    let d='';
+    rij.forEach(function(m,i){ d+=(i?' L':'M')+px(m.d)+','+py(m.v); });
+    g+='<path d="'+d+'" fill="none" stroke="'+(MTKL[so]||'#5C646E')+'" stroke-width="2.5"/>';
+    rij.forEach(function(m,i){
+      const verschil=i?(m.v-rij[i-1].v):null;
+      g+='<circle cx="'+px(m.d)+'" cy="'+py(m.v)+'" r="6" fill="'+(MTKL[so]||'#5C646E')+'" stroke="#fff" stroke-width="2"'
+       +' data-tip="<b>'+so+' \u2014 '+m.v+'</b><br>'+m.d+(m.n?'<br>'+m.n:'')
+       +(verschil!==null?'<br>'+(verschil>0?'+':'')+verschil.toFixed(1)+' tegenover de vorige meting':'')+'"/>';
+    });
+    const laatste=rij[rij.length-1];
+    g+='<text x="'+(x1+10)+'" y="'+(py(laatste.v)+4)+'" font-size="12" font-weight="600" fill="'+(MTKL[so]||'#5C646E')+'" font-family="Instrument Sans">'+so+' '+laatste.v+'</text>';
+  });
+  M.forEach(function(m,i){ if(i===0||i===M.length-1)
+    g+='<text x="'+px(m.d)+'" y="'+(y0+20)+'" text-anchor="middle" font-size="11" fill="#8A94A3" font-family="Instrument Sans">'+m.d+'</text>'; });
+  el.innerHTML=g;
+
+  // lijst
+  document.getElementById('mtLijst').innerHTML=M.slice().reverse().map(function(m){
+    return '<div style="display:grid;grid-template-columns:auto 1fr auto auto;gap:.7rem;padding:.4rem 0;border-bottom:1px solid var(--lijn);align-items:baseline;font-size:.87rem">'
+     +'<span class="sub" style="white-space:nowrap">'+m.d+'</span>'
+     +'<span><b style="color:'+(MTKL[m.s]||'#5C646E')+'">'+m.s+'</b> '+(m.n?'\u2014 '+m.n:'')+'</span>'
+     +'<b>'+m.v+'</b>'
+     +'<button class="knop licht" data-mtweg="'+m.id+'" style="padding:.2rem .5rem;min-height:0">verwijder</button></div>';
+  }).join('');
+  document.querySelectorAll('[data-mtweg]').forEach(function(b2){
+    if(b2.dataset.aan)return; b2.dataset.aan='1';
+    b2.addEventListener('click',function(){ S.metingen=S.metingen.filter(function(x){return String(x.id)!==b2.dataset.mtweg;}); bewaar(); teken(); });
+  });
+
+  // effect van acties
+  let tekst='';
+  soorten.forEach(function(so){
+    const rij=M.filter(function(m){return m.s===so;});
+    if(rij.length<2) return;
+    const eerste=rij[0], laatste=rij[rij.length-1];
+    const verschil=laatste.v-eerste.v;
+    const beter=(so==='Verzuim')?verschil<0:verschil>0;
+    tekst+='<div style="padding:.45rem 0;border-bottom:1px solid var(--lijn);font-size:.88rem">'
+     +'<b style="color:'+(MTKL[so]||'#5C646E')+'">'+so+'</b>: van '+eerste.v+' ('+eerste.d+') naar '+laatste.v+' ('+laatste.d+') \u2014 '
+     +'<b style="color:'+(beter?'var(--groen)':'var(--rood)')+'">'+(verschil>0?'+':'')+verschil.toFixed(1)+'</b>'
+     +(beter?' \u2014 de goede kant op.':' \u2014 verkeerde kant op.')
+     +(laatste.n?' Laatste meting: '+laatste.n:'')+'</div>';
+  });
+  const klaar=(S.taken||[]).filter(function(t){return t.klaar;}).length;
+  document.getElementById('mtEffect').innerHTML = tekst
+    ? '<h3 style="font-size:.82rem;margin:.6rem 0 .3rem">Wat er is veranderd</h3>'+tekst
+      +'<p class="sub" style="margin-top:.5rem">'+klaar+' afgeronde stappen uit je roadmap staan als stippellijn in de grafiek. '
+      +'Zie je een knik n\u00e1 zo\'n lijn, dan heb je je bewijs \u2014 en dat is het argument voor de volgende stap.</p>'
+    : '<p class="sub">Voeg per soort een tweede meting toe, dan reken ik het verschil uit.</p>';
 }
 
 function tekenKTO(){
