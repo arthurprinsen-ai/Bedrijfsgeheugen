@@ -307,6 +307,7 @@ input[type=range]{min-height:34px}
         <span class="groep">Denken</span>
         <button class="tab" role="tab" aria-selected="false" data-p="strategie">Strategiemodellen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="canvassen">Canvassen</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="eindconclusie">De eindconclusie</button>
         <span class="groep">Doen</span>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
@@ -622,6 +623,20 @@ input[type=range]{min-height:34px}
       <p class="sub" style="margin-top:1rem">Zes canvassen, ingevuld met wat je in dit portaal hebt opgegeven. Wat de scan niet kan weten, vul je zelf aan — dat wordt bewaard en telt mee in de conclusie.</p>
       <div class="kaart conclusie" id="canvasConclusie" style="margin-top:1rem"></div>
       <div class="kaarten k2" id="canvasKaarten" style="margin-top:1rem"></div>
+    </section>
+
+    <!-- EINDCONCLUSIE -->
+    <section class="paneel" id="p-eindconclusie">
+      <div class="kaart conclusie" id="eindKern" style="margin-top:1rem"></div>
+      <div class="kaarten k2">
+        <div class="kaart"><h3>Waar alle bronnen naar wijzen</h3>
+          <p class="sub" style="margin:-.3rem 0 .6rem">Hoe vaker een onderdeel door modellen, canvassen en cijfers wordt aangewezen, hoe zwaarder het weegt.</p>
+          <svg id="eindConsensus" viewBox="0 0 620 360" role="img" aria-label="Consensus per onderdeel"></svg></div>
+        <div class="kaart"><h3>Wat het oplevert tegenover wat het kost</h3>
+          <p class="sub" style="margin:-.3rem 0 .6rem">Elke stip is een aanbeveling. Linksboven eerst.</p>
+          <svg id="eindMatrix" viewBox="0 0 620 360" role="img" aria-label="Opbrengst tegen doorlooptijd"></svg></div>
+      </div>
+      <div class="kaart" style="margin-top:1rem"><h3>De vijf aanbevelingen</h3><div id="eindAanbev"></div></div>
     </section>
 
     <!-- ADVIES -->
@@ -1161,7 +1176,7 @@ function teken(){
    +'<text x="0" y="96" font-size="13" fill="#5C646E" font-family="Instrument Sans">'+klaar+' van '+alles+' verbeteringen afgerond</text>';
   document.getElementById('voortgangT').textContent = alles? '' : 'Zet je eerste stap in de roadmap.';
 
-  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
+  tekenAntwoorden(); tekenStaat(); tekenVolwassenheid(); tekenCmmiGrafiek(); tekenExtraGrafieken(); tekenMensen(); tekenBranche(); tekenCijfers(); tekenStrategie(); tekenCanvassen(); tekenConclusie(); tekenEindconclusie(); tekenModelKaart(); tekenFuncties(); tekenBusiness(); tekenOnderzoek(); tekenBronnen(); tekenKwadrant(); tekenKostenTrap(); tekenBeleid(); tekenDataAI(); tekenDaiExtra(); tekenVolwassenheid(); tekenWaarde(); tekenAdvies();
   // gantt
   const rijen=document.getElementById('ganttRijen');
   const leeg=document.getElementById('ganttLeeg');
@@ -1717,18 +1732,103 @@ function tekenCanvassen(){
   const cc=document.getElementById('canvasConclusie');
   if(cc){
     const ingevuld=['bmc','vpc2','lean','merk','content','sales2'].filter(function(x){return (S.eigen||{})[x];}).length;
-    cc.innerHTML='<h2>Wat de zes canvassen samen zeggen</h2>'
-     +'<p class="kern">Je verdienmodel leunt op '+(grootste>=25?'één grote klant':'een verdeelde klantgroep')
-      +' en op mensen: <b>'+zwakste.n.toLowerCase()+'</b> is je smalste schakel en '+duurste.n.toLowerCase()+' je duurste post ('+eur(K[duurste.k])+' per jaar). '
-      +'Je onderscheid zit niet in wat je aanbiedt maar in of je het kunt waarmaken zonder de mensen die het nu dragen. '
-      +'Dat maakt één ding tegelijk urgent: het vastleggen van wat nu in hoofden zit — daar hangen je merkbelofte, je verkoop en je marge aan vast.</p>'
-     +'<div class="drie">'
-     +'<div class="stap"><span>Model</span><b>Business Model</b><p>Je kernmiddel is kennis van mensen. Zolang die niet van het bedrijf is, is je model kwetsbaar.</p></div>'
-     +'<div class="stap"><span>Waarde</span><b>Waardepropositie</b><p>Je belooft zekerheid; die kun je pas waarmaken als het werk niet aan personen hangt.</p></div>'
-     +'<div class="stap"><span>Sales</span><b>Verkoop</b><p>'+(g('commercie')<3?'Opvolging is handwerk — daar lekt omzet weg voordat je iets hoeft te verkopen.':'De route van contact naar opdracht staat.')+'</p></div>'
-     +'</div>'
-     +'<p class="sub" style="margin-top:.8rem">'+ingevuld+' van de 6 eigen antwoorden ingevuld. Hoe meer je aanvult, hoe scherper deze conclusie — en het advies onder Advies.</p>';
+    cc.innerHTML='<h2>Wat deze zes canvassen toevoegen</h2>'
+     +'<p class="kern">De modellen laten zien <b>waar</b> het schuurt. De canvassen laten zien <b>waarom dat uitmaakt voor je verdienmodel</b>: '
+     +'je kernmiddel is kennis van mensen, je belofte is zekerheid, en je verkoop leunt op '+(grootste>=25?'\u00e9\u00e9n grote klant':'persoonlijk contact')+'. '
+     +'Die drie hangen aan hetzelfde punt.</p>'
+     +'<p class="sub">'+ingevuld+' van de 6 eigen antwoorden ingevuld. '
+     +'De gezamenlijke conclusie over modellen \u00e9n canvassen staat onder <b>De eindconclusie</b>.</p>'
+     +'<div style="margin-top:.6rem"><button class="knop" data-ga="eindconclusie">Naar de eindconclusie</button></div>';
   }
+}
+
+function tekenEindconclusie(){
+  const kern=document.getElementById('eindKern'); if(!kern) return;
+  const g=k=>S.niveaus[k]||2, b=B(), c=S.cijfers||{}, n=x=>+(c[x])||0;
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+  const f=[0,1,.78,.5,.22,.06]; let tot=0, K={};
+  DIM.forEach(function(d){ K[d.k]=d.u*f[g(d.k)]*(S.mw/24)*46*S.uur; tot+=K[d.k]; });
+  const gem=DIM.reduce(function(a,d){return a+g(d.k);},0)/DIM.length;
+  const A=verzamelAdvies().filter(function(a){return modelAan(a.bron);});
+  const smalst=DIM.slice().sort(function(a,x){return g(a.k)-g(x.k);})[0];
+  const duurste=DIM.slice().sort(function(a,x){return K[x.k]-K[a.k];})[0];
+  const hard=(g('tech')+g('analytics')+g('quality'))/3, zacht=(g('culture')+g('mensen'))/2;
+
+  // hoe vaak wordt een onderdeel aangewezen
+  const telling={}; DIM.forEach(function(d){ telling[d.k]=0; });
+  A.forEach(function(a){ if(telling[a.dim]!==undefined) telling[a.dim]++; });
+  const rang=DIM.slice().sort(function(a,x){ return (telling[x.k]-telling[a.k]) || (K[x.k]-K[a.k]); }).slice(0,8);
+  const maxT=Math.max.apply(null,rang.map(function(d){return telling[d.k];}).concat([1]));
+
+  // ---- kernverhaal ----
+  kern.innerHTML='<h2>De eindconclusie</h2>'
+   +'<p class="sub">Alles bij elkaar: '+A.length+' bevindingen uit '+BRONNEN.filter(function(x){return modelAan(x.k);}).length+' bronnen, achttien strategiemodellen en zes canvassen.</p>'
+   +'<p class="kern">Je staat gemiddeld op niveau <b>'+gem.toFixed(1)+'</b> terwijl je branche op '+b.dig.toFixed(1)+' zit. '
+   +'De modellen, de canvassen en je eigen cijfers wijzen alle drie naar hetzelfde punt: <b>'+smalst.n.toLowerCase()+'</b> is je smalste schakel, '
+   +'en '+duurste.n.toLowerCase()+' kost je het meeste geld ('+eur(K[duurste.k])+' van in totaal '+eur(tot)+' per jaar). '
+   +(hard-zacht>0.6?'Je techniek loopt voor op je mensen — daarom blijft verbetering nu niet hangen. '
+     :(zacht-hard>0.6?'Je mensen kunnen meer aan dan je systemen toelaten — daar ligt snelle winst. ':''))
+   +'In het Business Model Canvas is dat je kernmiddel, in de waardepropositie je belofte, en in de vijf krachten je onderhandelingspositie. '
+   +'<b>Het is dus één vraagstuk dat op vijf plekken terugkomt, geen vijf losse problemen.</b></p>'
+   +'<div class="drie">'
+   +'<div class="stap"><span>Diagnose</span><b>'+smalst.n+'</b><p>Niveau '+g(smalst.k)+' van 5. Alles wat je elders verbetert, loopt hier alsnog vast.</p></div>'
+   +'<div class="stap"><span>Kosten</span><b>'+eur(tot)+' per jaar</b><p>Aan werk dat een systeem of afspraak kan overnemen — '+(tot/ (S.mw*1600*S.uur)*100).toFixed(1)+'% van je loonkosten.</p></div>'
+   +'<div class="stap"><span>Richting</span><b>Naar niveau 4</b><p>Niet naar 5. Gegevens één keer invoeren is voor het mkb het punt waar het rendement stopt met stijgen.</p></div>'
+   +'</div>';
+
+  // ---- consensusgrafiek ----
+  const el=document.getElementById('eindConsensus');
+  if(el){
+    let sv='', y=16, L=160, bw=380;
+    rang.forEach(function(d){
+      const t=telling[d.k], w=Math.max((t/maxT)*bw,4);
+      const kl=g(d.k)>=4?'#1F9D55':(g(d.k)>=3?'#E8A200':'#D93025');
+      sv+='<g data-tip="<b>'+d.n+'</b><br>'+t+' keer aangewezen<br>Niveau '+g(d.k)+' · '+eur(K[d.k])+' per jaar"'
+       +' data-detail="'+encodeURIComponent('<h4>'+d.n+'</h4><p>Dit onderdeel wordt <b>'+t+' keer</b> aangewezen door de modellen, canvassen en cijfers samen. Het staat op niveau '+g(d.k)+' van 5 en kost '+eur(K[d.k])+' per jaar.</p><div class="doen"><b>Wat je hier doet:</b> '+(UITLEG[d.k]||'')+'</div>')+'">'
+       +'<text x="0" y="'+(y+14)+'" font-size="12.5" fill="#14171A" font-family="Instrument Sans">'+d.n+'</text>'
+       +'<rect x="'+L+'" y="'+y+'" width="'+bw+'" height="18" rx="9" fill="#EFEFEC"/>'
+       +'<rect x="'+L+'" y="'+y+'" width="'+w.toFixed(1)+'" height="18" rx="9" fill="'+kl+'"/>'
+       +'<text x="'+(L+bw+12)+'" y="'+(y+14)+'" font-size="12" fill="#5C646E" font-family="Instrument Sans">'+t+'×</text></g>';
+      y+=42;
+    });
+    el.setAttribute('viewBox','0 0 620 '+(y+10));
+    el.innerHTML=sv;
+  }
+
+  // ---- matrix opbrengst tegen doorlooptijd ----
+  const mx=document.getElementById('eindMatrix');
+  if(mx){
+    const x0=60,x1=560,y0=300,y1=30;
+    const maxW=Math.max.apply(null,A.map(function(a){return a.waarde||0;}).concat([12000]));
+    const px=d=>x0+((Math.min(d,12)-1)/11)*(x1-x0), py=w=>y0-Math.min((w||0)/maxW,1)*(y0-y1);
+    let sv='<rect x="'+x0+'" y="'+y1+'" width="'+((x1-x0)/2)+'" height="'+((y0-y1)/2)+'" fill="#EEF7F1"/>'
+     +'<line x1="'+x0+'" y1="'+y0+'" x2="'+x1+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>'
+     +'<line x1="'+x0+'" y1="'+y1+'" x2="'+x0+'" y2="'+y0+'" stroke="#DCDFE6" stroke-width="1.5"/>'
+     +'<text x="'+(x0+10)+'" y="'+(y1+18)+'" font-size="12" font-weight="700" fill="#0E9F6E" font-family="Instrument Sans">eerst doen</text>';
+    [1,3,6,9,12].forEach(function(m){ sv+='<text x="'+px(m)+'" y="'+(y0+20)+'" text-anchor="middle" font-size="11" fill="#8A94A3" font-family="Instrument Sans">'+m+' mnd</text>'; });
+    sv+='<text x="16" y="'+(y1+6)+'" font-size="11" fill="#8A94A3" font-family="Instrument Sans" transform="rotate(-90 16 '+(y1+6)+')">opbrengst →</text>';
+    A.forEach(function(a,i){
+      const cx=px(a.duur)+((i%3)-1)*7, cy=py(a.waarde);
+      sv+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="8" fill="#2742D6" fill-opacity=".8" stroke="#fff" stroke-width="2"'
+       +' data-tip="<b>'+a.t+'</b><br>'+a.waarom+'"'
+       +' data-detail="'+encodeURIComponent('<h4>'+a.t+'</h4><p>'+a.waarom+'</p><p class="sub">'+a.duur+' maand'+(a.duur>1?'en':'')+(a.waarde>1000?' \u00b7 '+eur(a.waarde)+' per jaar':'')+' \u00b7 uit '+a.bron+'</p>')+'" style="cursor:pointer"/>';
+    });
+    mx.innerHTML=sv;
+  }
+
+  // ---- vijf aanbevelingen ----
+  const ab=document.getElementById('eindAanbev');
+  if(ab) ab.innerHTML=A.slice(0,5).map(function(a,i){return adviesRij(a,i,false);}).join('')
+    +'<p class="sub" style="margin-top:.7rem">Volgorde: opbrengst gedeeld door doorlooptijd, met de zwaarst aangewezen onderdelen eerst.</p>';
+  document.querySelectorAll('[data-advies]').forEach(function(btn){
+    if(btn.dataset.aan)return; btn.dataset.aan='1';
+    btn.addEventListener('click',function(){
+      const o=JSON.parse(decodeURIComponent(btn.dataset.advies));
+      const laatste=S.taken.reduce(function(mx2,t){return Math.max(mx2,t.s+t.d-1);},0);
+      S.taken.push({id:Date.now(),t:o.t,dim:o.dim,s:Math.min(laatste+1||1,12),d:o.d,klaar:false});
+      bewaar(); teken(); btn.textContent='\u2713 staat erin'; btn.disabled=true;
+    });
+  });
 }
 
 function tekenConclusie(){
