@@ -183,6 +183,26 @@ input[type=range]{min-height:34px}
 .kopacties button:hover{background:#F1F0EC;color:var(--inkt)}
 .kopacties .wie{font-size:.8rem;color:var(--grijs);margin-right:.3rem;max-width:11rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:760px){.kopacties .wie{display:none}}
+
+/* ---------- invoervelden, netjes uitgelijnd ---------- */
+.velden{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.85rem 1rem;margin-top:.9rem}
+.veld{display:flex;flex-direction:column}
+.veld label{font-size:.74rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--grijs);margin-bottom:.28rem}
+.veld input,.veld select{width:100%;height:44px;padding:0 .75rem;border:1px solid #E3E4E8;border-radius:8px;
+ font:inherit;font-size:.95rem;background:#fff;color:var(--inkt);transition:border-color .12s ease,box-shadow .12s ease}
+.veld input::placeholder{color:#AEB4BE}
+.veld input:hover,.veld select:hover{border-color:#CFD3DA}
+.veld input:focus,.veld select:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(39,66,214,.12)}
+.veld input[type=number]{-moz-appearance:textfield}
+.veld input[type=number]::-webkit-outer-spin-button,.veld input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+/* eenheid rechts in het veld */
+.veld.met-eenheid{position:relative}
+.veld.met-eenheid input{padding-right:2.6rem}
+.veld .eenheid{position:absolute;right:.75rem;bottom:.85rem;font-size:.85rem;color:#9AA1AC;pointer-events:none}
+/* losse labels in rijen (Mensen, Waarde) gelijk trekken */
+.rij label.sub{display:inline-flex;align-items:center;gap:.45rem}
+.rij input,.rij select{height:40px;border:1px solid #E3E4E8;border-radius:8px;padding:0 .6rem;background:#fff}
+.rij input:focus,.rij select:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(39,66,214,.12)}
 </style>
 </head>
 <body>
@@ -340,7 +360,7 @@ input[type=range]{min-height:34px}
           <div class="dim"><label for="bUitstel">Later starten</label>
             <input type="range" id="bUitstel" min="0" max="18" step="3" value="12"><output id="o-bUitstel">12 mnd</output></div>
           <div class="velden" style="margin-top:.5rem">
-            <div class="veld"><label for="bInvest">Investering (× €1.000)</label><input type="number" id="bInvest" value="12" min="1" step="1"></div>
+            <div class="veld met-eenheid"><label for="bInvest">Investering</label><input type="number" id="bInvest" value="12" min="1" step="1"><span class="eenheid">× €1.000</span></div>
           </div>
           <div id="bKpi" class="kaarten k3" style="margin-top:.9rem"></div>
         </div>
@@ -361,14 +381,14 @@ input[type=range]{min-height:34px}
         <h3>De cijfers achter de waarde</h3>
         <p class="sub">Vul aan wat je weet. Wat leeg blijft, wordt geschat uit je omzet — dat staat er dan bij.</p>
         <div class="velden" style="margin-top:.7rem">
-          <div class="veld"><label for="wSchuld">Rentedragende schuld (× €1.000)</label><input type="number" id="wSchuld" min="0" step="10"></div>
-          <div class="veld"><label for="wCash">Liquide middelen (× €1.000)</label><input type="number" id="wCash" min="0" step="10"></div>
-          <div class="veld"><label for="wEV">Eigen vermogen (× €1.000)</label><input type="number" id="wEV" step="10"></div>
-          <div class="veld"><label for="wBalans">Balanstotaal (× €1.000)</label><input type="number" id="wBalans" min="0" step="10"></div>
-          <div class="veld"><label for="wVast">Vaste kosten per jaar (× €1.000)</label><input type="number" id="wVast" min="0" step="10"></div>
-          <div class="veld"><label for="wRente">Rente en aflossing p.j. (× €1.000)</label><input type="number" id="wRente" min="0" step="5"></div>
-          <div class="veld"><label for="wMultiple">EBITDA-multiple</label><input type="number" id="wMultiple" value="5" min="1" max="15" step="0.5"></div>
-          <div class="veld"><label for="wWacc">Vermogenskosten % (WACC)</label><input type="number" id="wWacc" value="10" min="3" max="30" step="0.5"></div>
+          <div class="veld met-eenheid"><label for="wSchuld">Rentedragende schuld</label><input type="number" id="wSchuld" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wCash">Liquide middelen</label><input type="number" id="wCash" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wEV">Eigen vermogen</label><input type="number" id="wEV" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wBalans">Balanstotaal</label><input type="number" id="wBalans" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wVast">Vaste kosten</label><input type="number" id="wVast" min="0" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wRente">Rente en aflossing</label><input type="number" id="wRente" min="0" step="5"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="wMultiple">EBITDA-multiple</label><input type="number" id="wMultiple" value="5" min="1" max="15" step="0.5"><span class="eenheid">×</span></div>
+          <div class="veld met-eenheid"><label for="wWacc">Vermogenskosten (WACC)</label><input type="number" id="wWacc" value="10" min="3" max="30" step="0.5"><span class="eenheid">%</span></div>
         </div>
       </div>
       <div class="kaarten k2">
@@ -432,16 +452,16 @@ input[type=range]{min-height:34px}
         <h3>Je eigen cijfers</h3>
         <p class="sub">Vul in wat je weet. Elke ingevulde regel levert maatstaven op die je naast je branche kunt leggen.</p>
         <div class="velden" style="margin-top:.7rem">
-          <div class="veld"><label for="cOmzet">Omzet (× €1.000)</label><input type="number" id="cOmzet" min="0" step="50"></div>
-          <div class="veld"><label for="cBrutomarge">Brutomarge %</label><input type="number" id="cBrutomarge" min="0" max="100" step="1"></div>
-          <div class="veld"><label for="cEbitda">EBITDA (× €1.000)</label><input type="number" id="cEbitda" step="10"></div>
-          <div class="veld"><label for="cLoon">Loonkosten (× €1.000)</label><input type="number" id="cLoon" min="0" step="10"></div>
+          <div class="veld met-eenheid"><label for="cOmzet">Omzet</label><input type="number" id="cOmzet" min="0" step="50"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="cBrutomarge">Brutomarge</label><input type="number" id="cBrutomarge" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+          <div class="veld met-eenheid"><label for="cEbitda">EBITDA</label><input type="number" id="cEbitda" step="10"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="cLoon">Loonkosten</label><input type="number" id="cLoon" min="0" step="10"><span class="eenheid">× €1.000</span></div>
           <div class="veld"><label for="cKlanten">Aantal klanten</label><input type="number" id="cKlanten" min="0" step="1"></div>
-          <div class="veld"><label for="cGrootste">Grootste klant % omzet</label><input type="number" id="cGrootste" min="0" max="100" step="1"></div>
-          <div class="veld"><label for="cMarketing">Marketingbudget (× €1.000)</label><input type="number" id="cMarketing" min="0" step="5"></div>
-          <div class="veld"><label for="cNieuw">Nieuwe klanten per jaar</label><input type="number" id="cNieuw" min="0" step="1"></div>
-          <div class="veld"><label for="cDso">Debiteurendagen (DSO)</label><input type="number" id="cDso" min="0" max="180" step="1"></div>
-          <div class="veld"><label for="cIt">IT-budget (× €1.000)</label><input type="number" id="cIt" min="0" step="5"></div>
+          <div class="veld met-eenheid"><label for="cGrootste">Grootste klant</label><input type="number" id="cGrootste" min="0" max="100" step="1"><span class="eenheid">%</span></div>
+          <div class="veld met-eenheid"><label for="cMarketing">Marketingbudget</label><input type="number" id="cMarketing" min="0" step="5"><span class="eenheid">× €1.000</span></div>
+          <div class="veld met-eenheid"><label for="cNieuw">Nieuwe klanten</label><input type="number" id="cNieuw" min="0" step="1"><span class="eenheid">p.j.</span></div>
+          <div class="veld met-eenheid"><label for="cDso">Debiteurendagen</label><input type="number" id="cDso" min="0" max="180" step="1"><span class="eenheid">dagen</span></div>
+          <div class="veld met-eenheid"><label for="cIt">IT-budget</label><input type="number" id="cIt" min="0" step="5"><span class="eenheid">× €1.000</span></div>
         </div>
       </div>
       <div class="kaarten k2">
