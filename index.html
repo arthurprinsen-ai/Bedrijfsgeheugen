@@ -222,7 +222,7 @@ footer{background:var(--inkt);color:#B9BFC7;padding:2.6rem 0 1.4rem;margin-top:2
 footer h4{color:#fff;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.7rem}
 footer a{color:#B9BFC7;text-decoration:none;display:block;font-size:.88rem;margin:.3rem 0}
 footer a:hover{color:#fff}
-.fg{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:2rem}
+.fg{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:1.8rem}
 @media(max-width:800px){.fg{grid-template-columns:1fr 1fr}}
 @media(max-width:720px){
   .wrap{padding:0 1rem}
@@ -259,11 +259,58 @@ footer a:hover{color:#fff}
   .mobbalk{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--blauw);color:#fff;text-align:center;padding:.9rem;font-weight:600;font-size:.92rem;text-decoration:none;box-shadow:0 -4px 18px rgba(17,24,39,.16)}
 }
 .fb{border-top:1px solid #2B3138;margin-top:1.6rem;padding-top:1rem;font-size:.8rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+
+/* meebewegende kopbalk */
+nav{transition:transform .3s ease, box-shadow .2s}
+nav.weg{transform:translateY(-100%)}
+nav.diep{box-shadow:0 6px 20px rgba(20,23,26,.07)}
+.voortgang{position:fixed;top:0;left:0;height:3px;background:var(--oranje);z-index:70;width:0;transition:width .1s linear}
+
+/* verschijnen bij scrollen */
+.op{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.op.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.op{opacity:1;transform:none;transition:none}nav{transition:none}}
+
+/* geeltjes met handschrift */
+.memo{background:var(--geel);padding:.8rem .95rem;border-radius:2px;font-family:"Caveat",cursive;font-size:1.15rem;line-height:1.25;color:var(--inkt);box-shadow:2px 3px 0 rgba(20,23,26,.13);max-width:11rem}
+.memo.links{transform:rotate(-3deg)}
+.memo.rechts{transform:rotate(2.5deg)}
+@media(max-width:980px){.memo{display:none}}
+
+/* whatsapp */
+.wa{position:fixed;right:1rem;bottom:1rem;z-index:65;display:inline-flex;align-items:center;gap:.5rem;background:#25D366;color:#fff;border-radius:30px;padding:.7rem 1.1rem;font-weight:600;font-size:.92rem;text-decoration:none;box-shadow:0 6px 20px rgba(20,23,26,.22)}
+.wa svg{width:20px;height:20px;fill:currentColor}
+.wa .tx{display:inline}
+@media(max-width:720px){.wa{bottom:4.2rem;padding:.75rem;border-radius:50%}.wa .tx{display:none}}
+
+/* markeerstift volgens de stijlgids */
+.mark{background:linear-gradient(transparent 52%,var(--geel) 52%,var(--geel) 105%,transparent 105%);padding:0 .16em}
+
+/* sterren en vertrouwen */
+.vertrouwen{display:flex;align-items:center;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap}
+.koppen{display:flex}
+.koppen span{width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid var(--papier);margin-left:-.55rem;background:linear-gradient(135deg,#C7CCD4,#8C939D)}
+.koppen span:first-child{margin-left:0}
+.ster{color:#F5A623;font-size:.95rem;letter-spacing:.08em}
+
+/* waarom kennis lekt */
+.lek{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:1.4rem;margin-top:1.4rem}
+.lek .rij{display:flex;gap:.8rem;align-items:flex-start}
+.lek .ic2{width:2.6rem;height:2.6rem;border:2px solid var(--blauw);border-radius:10px;display:grid;place-items:center;flex:none;font-size:1.1rem}
+.lek b{font-size:.95rem}
+.lek p{font-size:.85rem;color:var(--grijs);line-height:1.55;margin-top:.2rem}
+
+/* afdelingsbeelden */
+.ak .beeld{height:6.5rem;position:relative;overflow:hidden;background:var(--zacht)}
+.ak .beeld svg{width:100%;height:100%;display:block}
+.ak{transition:transform .18s, box-shadow .18s}
+.ak:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(20,23,26,.09)}
 </style>
 </head>
 <body>
 
-<nav><div class="wrap nb">
+<div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
   <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
     <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
     <span class="woord">Bedrijfs<b>geheugen</b></span>
@@ -293,37 +340,42 @@ footer a:hover{color:#fff}
 <main>
 <div class="wrap hero">
   <div>
-    <span class="pil">Het AI-kennisplatform voor mkb-organisaties</span>
-    <h1>Alles wat je bedrijf weet.<span class="b">Direct beschikbaar.</span></h1>
-    <div class="streep"></div>
-    <p class="lead">Betrouwbare antwoorden met bronvermelding, rechtstreeks uit je documenten, systemen en gesprekken. Zodat je team betere beslissingen neemt, sneller werkt, en kennis veilig binnen je organisatie blijft — bovenop AFAS, Exact en Microsoft 365 die je al hebt.</p>
+    <span class="pil">Voor het mkb</span>
+    <h1>Bedrijfskennis<span class="b">die <span class="mark">werkt</span>.</span></h1>
+    <p class="hand" style="font-size:1.5rem;color:var(--inkt);margin:.2rem 0 .9rem;border-bottom:2px solid var(--blauw);display:inline-block;padding-bottom:.2rem">Aanpakken zonder aanmodderen.</p>
+    <p class="lead">Wij maken kennis, informatie en processen in je organisatie <b>vindbaar, bruikbaar en betrouwbaar</b> — en automatiseren waar dat echt iets oplevert. Bovenop AFAS, Exact en Microsoft 365 die je al hebt.</p>
     <div class="usp">
-      <div><span>🔍</span>Antwoorden met bron</div>
-      <div><span>🛡️</span>Veilig &amp; afgeschermd</div>
-      <div><span>⚡</span>Van antwoord naar actie</div>
+      <div><span>🔍</span>Vind direct wat je nodig hebt</div>
+      <div><span>🛡️</span>Veilig &amp; betrouwbaar</div>
+      <div><span>⚡</span>Van inzicht naar actie</div>
+      <div><span>👥</span>Kennis blijft behouden</div>
     </div>
     <div class="knoppen">
       <a class="knop" href="#hoe">Bekijk hoe het werkt →</a>
-      <a class="knop lijn" href="/zelfscan">Ontdek waar jouw kennis weglekt</a>
+      <a class="knop lijn" href="/contact">Plan een kennismaking</a>
+    </div>
+    <div class="vertrouwen">
+      <div class="koppen"><span></span><span></span><span></span><span></span></div>
+      <div><div class="ster">★★★★★</div><div class="sub" style="font-size:.85rem">Vertrouwd door organisaties in het mkb</div></div>
     </div>
   </div>
 
   <div class="chat">
-    <div class="vraag"><p>Welke prijsafspraken hebben we met Jansen Bouw?</p><div class="foto"></div></div>
+    <div class="vraag"><p>Welke afspraken hebben we met Jansen Bouw over project X?</p><div class="foto"></div></div>
     <div class="antw"><i></i>Bedrijfsgeheugen</div>
     <div class="antw-body">
       <p>Voor Jansen Bouw hanteren we de volgende prijsafspraken:</p>
       <ul>
-        <li><b>Korting:</b> 7,5% op alle manuren</li>
-        <li><b>Betaling:</b> 30 dagen netto</li>
-        <li><b>Geldig t/m:</b> 31-12-2026</li>
+        <li><b>Offerte:</b> <span class="mark">12%</span> korting op alle materialen</li>
+        <li><b>Betaling:</b> <span class="mark">30 dagen</span> netto</li>
+        <li><b>Geldig tot:</b> <span class="mark">31-12-2026</span></li>
       </ul>
       <p style="font-size:.85rem;color:var(--grijs)">Deze afspraken zijn vastgelegd in meerdere bronnen.</p>
       <div class="bron">Bronnen</div>
-      <div class="bronrij"><b>Offerte — Jansen Bouw — v2</b><span>Bekijken</span></div>
-      <div class="bronrij"><b>Contract — Jansen Bouw</b><span>Bekijken</span></div>
-      <div class="bronrij"><b>Prijsafspraken — 2024</b><span>Bekijken</span></div>
-      <div class="acties"><div>Bekijk alle bronnen (3)</div><div>Open in SharePoint</div><div>Maak een taak aan</div></div>
+      <div class="bronrij"><b>Outlook<br><span style="color:var(--grijs);font-weight:400;font-size:.8rem">E-mail met Peter de Vries — 12 februari</span></b><span>↗</span></div>
+      <div class="bronrij"><b>SharePoint<br><span style="color:var(--grijs);font-weight:400;font-size:.8rem">Project X — afspraken.pdf</span></b><span>↗</span></div>
+      <div class="bronrij"><b>AFAS<br><span style="color:var(--grijs);font-weight:400;font-size:.8rem">Klantdossier Jansen Bouw</span></b><span>↗</span></div>
+      <div class="acties"><div>Stel een vervolgvraag</div><div>Open in SharePoint</div><div>Maak een taak aan</div></div>
     </div>
   </div>
 </div>
@@ -343,7 +395,11 @@ footer a:hover{color:#fff}
 
 <section id="onderzoek">
 <div class="wrap">
-  <h2 class="sk">Kennisverlies <span class="u">kost organisaties miljoenen</span>.</h2>
+  <div style="display:flex;gap:1.5rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap">
+    <div class="memo links">Frisse blik scan → start hier!</div>
+    <h2 class="sk" style="flex:1;min-width:16rem">Onderzoek bewijst: kennisverlies <span class="u">kost organisaties miljoenen</span>.</h2>
+    <div class="memo rechts">Kennisverlies = onzichtbare miljoenen.</div>
+  </div>
   <p class="sub">Niet omdat mensen hun werk niet doen, maar omdat de kennis die het bedrijf draaiende houdt in hoofden, mailboxen en losse bestanden zit.</p>
   <div class="onderzoek">
     <div class="ok"><div class="br">McKinsey — State of Teams</div><span class="gr">25%</span><p>van de tijd gaat op aan zoeken naar informatie.</p><div class="bron2">Bron: McKinsey</div></div>
@@ -360,7 +416,7 @@ footer a:hover{color:#fff}
         <ul>
           <li><b>Zoektijd per medewerker:</b> 30 min per dag <span style="display:block;font-size:.78rem">(Atlassian: 25% van de tijd zoeken)</span></li>
           <li><b>Werkdagen per jaar:</b> 250 <span style="display:block;font-size:.78rem">(CBS gemiddeld)</span></li>
-          <li><b>Kosten per uur:</b> € 75 <span style="display:block;font-size:.78rem">(gemiddelde totale loonkosten mkb, CBS)</span></li>
+          <li><b>Gemiddeld uurtarief:</b> € 65 <span style="display:block;font-size:.78rem">(gemiddelde totale loonkosten mkb, CBS)</span></li>
           <li><b>Dubbel werk:</b> + 20% verlies <span style="display:block;font-size:.78rem">(Gartner: tot 20% productiviteitsverlies)</span></li>
         </ul>
       </div>
@@ -368,16 +424,28 @@ footer a:hover{color:#fff}
         <label for="cMw">Aantal medewerkers</label><input type="number" id="cMw" value="50" min="1">
         <label for="cMin">Zoektijd per dag (minuten)</label><input type="number" id="cMin" value="30" min="0">
         <label for="cDag">Werkdagen per jaar</label><input type="number" id="cDag" value="250" min="1">
-        <label for="cUur">Kosten per uur</label><input type="number" id="cUur" value="75" min="1">
+        <label for="cUur">Kosten per uur</label><input type="number" id="cUur" value="65" min="1">
       </div>
       <div class="uitk">
         <div class="lbl">Jouw kennisverlies</div>
         <div class="bedrag" id="cBedrag">€ 281.250</div>
-        <div class="uren" id="cUren">Dat is 6.250 uur per jaar</div>
+        <div class="uren" id="cUren">Dat is € 16.927 per maand</div>
         <a class="knop" href="/zelfscan">Ontvang persoonlijk advies →</a>
         <p style="font-size:.74rem;color:var(--grijs);margin-top:.7rem">Dit is een indicatie. Vrijgespeelde uren zijn geen geld op je rekening, maar ruimte: hetzelfde team kan meer aan zonder dat er iemand bij hoeft.</p>
       </div>
     </div>
+  </div>
+</div>
+</section>
+
+<section>
+<div class="wrap">
+  <h2 class="sk">Waarom kennis lekt <span style="color:var(--grijs);font-weight:400;font-size:1rem">(en wat het kost)</span></h2>
+  <div class="lek">
+    <div class="rij"><div class="ic2">🎯</div><div><b>Strategie verdwijnt</b><p>Doelen en prioriteiten verschuiven, maar context verdwijnt in vergaderingen.</p></div></div>
+    <div class="rij"><div class="ic2">📄</div><div><b>Context verdwijnt</b><p>Historie en achtergrond ontbreken bij nieuwe collega's en stakeholders.</p></div></div>
+    <div class="rij"><div class="ic2">⏱️</div><div><b>Besluitvorming vertraagt</b><p>Besluiten zoeken te lang, waardoor kansen vertragen en kosten oplopen.</p></div></div>
+    <div class="rij"><div class="ic2">👥</div><div><b>Nieuwe mensen herhalen fouten</b><p>Slechte overdracht, onduidelijke processen en verlies van ervaren kennis.</p></div></div>
   </div>
 </div>
 </section>
@@ -399,12 +467,12 @@ footer a:hover{color:#fff}
 <div class="wrap">
   <h2 class="sk">Voor elke afdeling</h2>
   <div class="afd">
-    <a class="ak" href="/expertises"><div class="beeld">🤝</div><div class="tk"><b>Sales</b><p>Directe toegang tot offertes, prijzen en klantinformatie.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/expertises"><div class="beeld">📦</div><div class="tk"><b>Operations</b><p>Sneller informatie vinden over processen, voorraad en leveranciers.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/afas-koppeling"><div class="beeld">📊</div><div class="tk"><b>Finance</b><p>Toegang tot rapporten, contracten en financiële data uit AFAS en Exact.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/expertises"><div class="beeld">👥</div><div class="tk"><b>HR</b><p>Antwoorden op beleid, cao, verzuim en onboarding.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/expertises"><div class="beeld">📈</div><div class="tk"><b>Management</b><p>Inzicht in prestaties, besluiten en strategische informatie.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/connect"><div class="beeld">🎧</div><div class="tk"><b>Service</b><p>Kennis direct beschikbaar voor je team en je klanten.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M30 62h140" stroke="#2742D6" stroke-width="2"/><circle cx="70" cy="45" r="11" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="45" r="11" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M81 45h28" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Sales</b><p>Directe toegang tot offertes, prijzen en klantinformatie.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="45" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><rect x="85" y="34" width="34" height="30" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><rect x="125" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M30 68h140" stroke="#FF4F17" stroke-width="2"/></svg></div><div class="tk"><b>Operations</b><p>Sneller informatie vinden over processen, voorraad en leveranciers.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/afas-koppeling"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M40 66V48M65 66V38M90 66V54M115 66V30M140 66V44M165 66V36" stroke="#2742D6" stroke-width="7" stroke-linecap="round"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Finance</b><p>Toegang tot rapporten, contracten en financiële data uit AFAS en Exact.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFFCEB"/><circle cx="80" cy="36" r="10" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M62 66c0-10 8-16 18-16s18 6 18 16" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="40" r="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M106 66c0-8 6-13 14-13s14 5 14 13" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>HR</b><p>Antwoorden op beleid, cao, verzuim en onboarding.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M35 62L75 42l30 12 55-28" stroke="#2742D6" stroke-width="3" fill="none"/><circle cx="160" cy="26" r="6" fill="#FF4F17"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Management</b><p>Inzicht in prestaties, besluiten en strategische informatie.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/connect"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="60" y="30" width="80" height="34" rx="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M78 47h44M78 39h30" stroke="#2742D6" stroke-width="3" stroke-linecap="round"/><path d="M84 64l-6 12 16-12" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Service</b><p>Kennis direct beschikbaar voor je team en je klanten.</p><span>Lees meer →</span></div></a>
   </div>
 </div>
 </section>
@@ -413,23 +481,24 @@ footer a:hover{color:#fff}
 <div class="wrap">
   <div class="aanbod">
     <div>
-      <h3 style="font-size:1.5rem">Ontdek waar jouw bedrijf kennis, tijd en geld verliest.</h3>
-      <p class="sub" style="font-size:.92rem;margin-top:.5rem">Wij doen een frisse blik op jouw organisatie en leveren een helder rapport met concrete kansen — geen traject van maanden.</p>
+      <h3 style="font-size:1.5rem">Start met de Frisse Blik Scan</h3>
+      <p class="sub" style="font-size:.92rem;margin-top:.5rem">In één dag helder inzicht in je kennis, systemen en kansen. Je ontvangt een concreet rapport met advies en vervolgstappen.</p>
     </div>
     <div>
-      <div class="vink"><i>✓</i>Scan van je kennissystemen en zoekgedrag</div>
+      <div class="vink"><i>✓</i>Scan van je kennisstromen en zoekgedrag</div>
       <div class="vink"><i>✓</i>Inzicht in verspilling en risico's</div>
       <div class="vink"><i>✓</i>Concrete besparingskansen</div>
-      <div class="vink"><i>✓</i>Vaste prijs, geen nacalculatie</div>
+      <div class="vink"><i>✓</i>Vrijblijvend en kosteloos gesprek vooraf</div>
     </div>
     <div>
-      <div style="font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--grijs);font-weight:600">Investering</div>
+      <div style="font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--grijs);font-weight:600">Frisse Blik Scan</div>
       <div class="prijs">€ 2.900</div>
-      <p style="font-size:.8rem;color:var(--grijs);margin:.4rem 0 .9rem">Excl. btw · op afstand € 2.400</p>
-      <a class="knop" href="/frisse-blik">Start met de Frisse blik →</a>
+      <p style="font-size:.8rem;color:var(--grijs);margin:.4rem 0 .9rem">Excl. btw · inclusief rapport en advies · op afstand € 2.400</p>
+      <a class="knop" href="/frisse-blik">Plan de scan →</a>
       <p style="font-size:.8rem;color:var(--grijs);margin-top:.6rem">Of doe eerst de <a href="/zelfscan">gratis zelfscan</a> — 2 minuten.</p>
     </div>
   </div>
+  <div class="memo rechts" style="margin:1rem 0 0 auto">Binnen 2 weken helderheid.</div>
   <div class="logos"><span>KROON BOUW</span><span>VAN DER HELM</span><span>WITZAND</span><span>TRIPLE A</span><span>DE JONG &amp; LAAN</span></div>
 </div>
 </section>
@@ -461,12 +530,19 @@ footer a:hover{color:#fff}
     <div><h4>Resources</h4>
       <a href="/zelfscan">Gratis zelfscan</a><a href="/frisse-blik">Frisse blik</a><a href="/blog/">Blog</a></div>
     <div><h4>Over ons</h4>
-      <a href="/over-ons">Over Arthur</a><a href="/contact">Contact</a><a href="/privacy">Privacyverklaring</a></div>
+      <a href="/over-ons">Over Arthur</a><a href="/expertises">Werkwijze</a><a href="/contact">Contact</a></div>
+    <div><h4>Contact</h4>
+      <a href="tel:+31627483345">06 - 27 48 33 45</a>
+      <a href="mailto:info@bedrijfsgeheugen.nl">info@bedrijfsgeheugen.nl</a>
+      <a href="https://wa.me/31627483345" target="_blank" rel="noopener">WhatsApp →</a>
+      <a href="/privacy">Privacyverklaring</a></div>
   </div>
   <div class="fb"><span>© <span class="jr">2026</span> Bedrijfsgeheugen · Aanpakken zonder aanmodderen.</span><span>Den Haag · info@bedrijfsgeheugen.nl</span></div>
 </div>
 </footer>
 <div style="height:20px;background:var(--blauw)"></div>
+<a class="wa" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag%20over%20Bedrijfsgeheugen" target="_blank" rel="noopener" aria-label="App Arthur via WhatsApp">
+<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg><span class="tx">App Arthur</span></a>
 <a class="mobbalk" href="/zelfscan">Gratis zelfscan — 2 minuten, direct advies</a>
 
 <script>
@@ -477,12 +553,48 @@ footer a:hover{color:#fff}
     var uren=mw*(min/60)*dag;
     var kosten=uren*uur;
     document.getElementById('cBedrag').textContent='€ '+Math.round(kosten).toLocaleString('nl-NL');
-    document.getElementById('cUren').textContent='Dat is '+Math.round(uren).toLocaleString('nl-NL')+' uur per jaar';
+    document.getElementById('cUren').textContent='Dat is € '+Math.round(kosten/12).toLocaleString('nl-NL')+' per maand · '+Math.round(uren).toLocaleString('nl-NL')+' uur per jaar';
   }
   v.forEach(function(e){e.addEventListener('input',reken)});
   reken();
   var y=new Date().getFullYear();
   document.querySelectorAll('.jr').forEach(function(e){e.textContent=y});
+
+  // kopbalk beweegt mee: verbergt bij naar beneden scrollen, komt terug bij omhoog
+  var kop=document.getElementById('kop'), vg=document.getElementById('vg'), vorige=0;
+  function bijScroll(){
+    var y=window.scrollY||0;
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    vg.style.width=(h>0?(y/h*100):0)+'%';
+    kop.classList.toggle('diep', y>10);
+    if(y>vorige && y>320){ kop.classList.add('weg'); }
+    else { kop.classList.remove('weg'); }
+    vorige=y;
+  }
+  addEventListener('scroll',bijScroll,{passive:true}); bijScroll();
+
+  // blokken verschijnen als ze in beeld komen
+  var teTonen=document.querySelectorAll('section > .wrap > *, .hero > div, .aanbod, .afd .ak, .ok');
+  teTonen.forEach(function(el){ el.classList.add('op'); });
+  if('IntersectionObserver' in window){
+    var kijker=new IntersectionObserver(function(rijen){
+      rijen.forEach(function(r){ if(r.isIntersecting){ r.target.classList.add('in'); kijker.unobserve(r.target); } });
+    },{rootMargin:'0px 0px -8% 0px',threshold:.06});
+    teTonen.forEach(function(el){ kijker.observe(el); });
+  } else { teTonen.forEach(function(el){ el.classList.add('in'); }); }
+
+  // getallen tellen op
+  document.querySelectorAll('.gr').forEach(function(el){
+    var doel=el.textContent, m=doel.match(/\d+/);
+    if(!m) return;
+    var eind=+m[0], gestart=false;
+    new IntersectionObserver(function(r,o){
+      if(!r[0].isIntersecting||gestart)return; gestart=true;
+      var n=0, stap=Math.max(1,Math.round(eind/28));
+      var t=setInterval(function(){ n+=stap; if(n>=eind){n=eind;clearInterval(t);} el.textContent=doel.replace(m[0],n); },28);
+      o.disconnect();
+    },{threshold:.5}).observe(el);
+  });
 
   // mobiel menu
   var mk=document.getElementById('menuKnop'), mm=document.getElementById('mobMenu');
