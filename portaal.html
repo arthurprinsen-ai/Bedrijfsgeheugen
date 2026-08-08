@@ -276,6 +276,11 @@ input[type=range]{min-height:34px}
 @media(max-width:1039px){.subnav{top:56px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
  .subnav button{white-space:nowrap}}
 .dnastap{scroll-margin-top:150px}
+
+.bhrij{display:grid;grid-template-columns:1fr 8rem 9rem 8rem;gap:.6rem;padding:.55rem 0;border-bottom:1px solid var(--lijn);align-items:center}
+.bhrij input,.bhrij select{height:38px;padding:0 .5rem;border:1px solid var(--lijn);border-radius:7px;font:inherit;font-size:.85rem;background:var(--wit)}
+.bhrij2{display:grid;grid-template-columns:1fr auto;gap:.8rem;padding:.55rem 0;border-bottom:1px solid var(--lijn);align-items:start}
+@media(max-width:760px){.bhrij{grid-template-columns:1fr 1fr;gap:.45rem}.bhrij>div:first-child{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -337,6 +342,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="false" data-p="eindconclusie">De eindconclusie</button>
         <span class="groep">Doen</span>
         <button class="tab" role="tab" aria-selected="false" data-p="dna">Van strategie naar maandagochtend</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="bijhouden">Actueel houden</button>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
         <span class="groep">Beheer</span>
@@ -762,6 +768,45 @@ input[type=range]{min-height:34px}
     </section>
 
     <!-- ADVIES -->
+    <section class="paneel" id="p-bijhouden">
+      <h2>Actueel houden</h2>
+      <p class="kern">Een bedrijfsgeheugen dat niemand bijhoudt, is over een half jaar net zo verouderd als <i>strategie_definitief_v4.pdf</i>. Daarom heeft hier alles een eigenaar en een houdbaarheidsdatum.</p>
+
+      <div class="kaarten k3" id="bhCijfers" style="margin-top:1rem"></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Wie gaat waarover</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Vul per onderdeel in wie het bijhoudt en wanneer het voor het laatst is bevestigd. Verloopt het, dan zie je dat hier — en weet je wie je moet hebben.</p>
+        <div id="bhTabel"></div></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Besluiten</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Het waardevolste wat je vastlegt is niet wat je doet, maar waarom je het zo doet. Over een jaar weet niemand dat nog.</p>
+        <div class="velden">
+          <div class="veld"><label for="bsWat">Het besluit</label><input type="text" id="bsWat" placeholder="Alle offertes voortaan via het systeem"></div>
+          <div class="veld"><label for="bsWaarom">Waarom</label><input type="text" id="bsWaarom" placeholder="Te vaak losse versies in omloop"></div>
+          <div class="veld"><label for="bsDatum">Datum</label><input type="date" id="bsDatum"></div>
+          <div class="veld"><label for="bsDoor">Genomen door</label><input type="text" id="bsDoor" placeholder="Directie"></div>
+          <div class="veld"><label for="bsRaakt">Raakt welk onderdeel</label><select id="bsRaakt"></select></div>
+        </div>
+        <div style="margin-top:.7rem"><button class="knop" id="bsToe">Besluit vastleggen</button></div>
+        <div id="bsLijst" style="margin-top:.9rem"></div></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Documenten</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Een document is hier geen bron van waarheid, maar iets wat aan een onderdeel hangt. Verandert dat onderdeel, dan krijgt het document een vlag.</p>
+        <div class="velden">
+          <div class="veld"><label for="dcNaam">Naam</label><input type="text" id="dcNaam" placeholder="Werkinstructie offertes"></div>
+          <div class="veld"><label for="dcBij">Hoort bij</label><select id="dcBij"></select></div>
+          <div class="veld"><label for="dcDatum">Laatst bijgewerkt</label><input type="date" id="dcDatum"></div>
+        </div>
+        <div style="margin-top:.7rem"><button class="knop" id="dcToe">Document koppelen</button></div>
+        <div id="dcLijst" style="margin-top:.9rem"></div></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Wat er is veranderd</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Elke wijziging aan een onderdeel komt hier te staan, met wat het raakte. Dat is je bewijs bij een audit — en je geheugen bij een overdracht.</p>
+        <div id="bhLog"></div></div>
+
+      <p class="sub" style="margin-top:1.5rem;text-align:center">Actueel houden © 2026 Bedrijfsgeheugen · onderdeel van Van strategie naar maandagochtend</p>
+    </section>
+
     <section class="paneel" id="p-advies">
       <div class="kaart" style="margin-top:1rem">
         <h3>Wat wij je zouden adviseren</h3>
@@ -1021,7 +1066,7 @@ const BRANCHE={
    duiding:'De Nederlandse economie groeit in 2026 met ongeveer 1%, met oplopende inflatie.'}
 };
 const KLEUR=['#2742D6','#FF4F17','#1F9D55','#E8A200','#7A5BD6','#0E9F6E'];
-let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[],esg:{},eigenCaps:{},prod:{}};
+let S={niveaus:{},mw:24,uur:52,taken:[],start:null,branche:'Gemiddeld NL-bedrijf',omzet:0,mensen:{},cijfers:{},bc:{},eigen:{},beleid:{},fin:{},modellen:{},uitvoering:{},kto:{},metingen:[],esg:{},eigenCaps:{},prod:{},beheer:{},besluiten:[],docs:[],log:[]};
 let sleutel='bg_portaal_anoniem';
 
 /* ---------- opslag ---------- */
@@ -1227,7 +1272,7 @@ function bestandsnaam(){
 }
 function exporteer(){
   const pakket={versie:1, opgeslagen:new Date().toISOString(),
-    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen, esg:S.esg, eigenCaps:S.eigenCaps, prod:S.prod,
+    niveaus:S.niveaus, medewerkers:S.mw, uurkosten:S.uur, taken:S.taken, branche:S.branche, omzet:S.omzet, mensen:S.mensen, cijfers:S.cijfers, bc:S.bc, eigen:S.eigen, beleid:S.beleid, fin:S.fin, modellen:S.modellen, uitvoering:S.uitvoering, kto:S.kto, metingen:S.metingen, esg:S.esg, eigenCaps:S.eigenCaps, prod:S.prod, beheer:S.beheer, besluiten:S.besluiten, docs:S.docs, log:S.log,
     scanStempel:S.scanStempel, scanDatum:S.scanDatum, scanScore:S.scanScore};
   const blob=new Blob([JSON.stringify(pakket,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -1259,6 +1304,10 @@ function importeer(bestand){
       if(p.esg) S.esg=p.esg;
       if(p.eigenCaps) S.eigenCaps=p.eigenCaps;
       if(p.prod) S.prod=p.prod;
+      if(p.beheer) S.beheer=p.beheer;
+      if(p.besluiten) S.besluiten=p.besluiten;
+      if(p.docs) S.docs=p.docs;
+      if(p.log) S.log=p.log;
       if(p.scanStempel){S.scanStempel=p.scanStempel;S.scanDatum=p.scanDatum;S.scanScore=p.scanScore;}
       bewaar(); bouw(); teken();
     }catch(e){ alert('Dit bestand kon ik niet lezen. Kies het bestand dat je eerder hier hebt gedownload.'); }
@@ -2446,7 +2495,7 @@ function tekenDNA(){
     });
   });
 
-  voegUitvoeringSamen(); tekenDNAFamilie(); tekenEigenCaps(); tekenDNAv3(caps, K);
+  voegUitvoeringSamen(); tekenBijhouden(); tekenDNAFamilie(); tekenEigenCaps(); tekenDNAv3(caps, K);
 }
 
 /* --- versie 3: vrije invoer, kennisvragen, radar en bibliotheek --- */
@@ -2546,6 +2595,148 @@ function toonStap(){
     if(kind.dataset.stap) kind.style.display=(kind.dataset.stap===dnaStap)?'':'none';
   });
   dna.querySelectorAll('.subnav [data-stap]').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.stap===dnaStap); });
+}
+
+/* --- Actueel houden: eigenaren, besluiten, documenten en het logboek --- */
+function maanden(vanaf){
+  if(!vanaf) return null;
+  const d=new Date(vanaf), nu=new Date();
+  return (nu-d)/(1000*60*60*24*30.4);
+}
+function bhStatus(m, termijn){
+  if(m===null) return ['Nooit bevestigd','var(--rood)'];
+  if(m>termijn) return ['Verlopen \u2014 '+Math.round(m-termijn)+' mnd over tijd','var(--rood)'];
+  if(m>termijn*0.8) return ['Bijna toe aan herziening','var(--amber)'];
+  return ['Actueel','var(--groen)'];
+}
+function tekenBijhouden(){
+  S.beheer=S.beheer||{}; S.besluiten=S.besluiten||[]; S.docs=S.docs||[]; S.log=S.log||[];
+  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
+
+  // keuzelijsten vullen
+  ['bsRaakt','dcBij'].forEach(function(id){
+    const el=document.getElementById(id); if(!el||el.dataset.aan)return; el.dataset.aan='1';
+    el.innerHTML=DIM.map(function(d){return '<option value="'+d.k+'">'+d.n+'</option>';}).join('');
+  });
+
+  // 1. de tabel met eigenaren
+  const tb=document.getElementById('bhTabel');
+  if(tb && !tb.dataset.aan){
+    tb.dataset.aan='1';
+    tb.innerHTML=DIM.map(function(d){
+      const b=S.beheer[d.k]||{};
+      return '<div class="bhrij" data-k="'+d.k+'">'
+       +'<div><b style="font-size:.92rem">'+d.n+'</b><div class="sub" data-status="'+d.k+'"></div></div>'
+       +'<input type="text" placeholder="wie?" data-veld="wie" data-k="'+d.k+'" value="'+(b.wie||'')+'">'
+       +'<input type="date" data-veld="op" data-k="'+d.k+'" value="'+(b.op||'')+'">'
+       +'<select data-veld="termijn" data-k="'+d.k+'">'
+         +[3,6,12,24].map(function(t){return '<option value="'+t+'"'+((b.termijn||12)==t?' selected':'')+'>elke '+t+' mnd</option>';}).join('')
+       +'</select></div>';
+    }).join('');
+    tb.querySelectorAll('[data-veld]').forEach(function(el){
+      el.addEventListener('change',function(){
+        const k=el.dataset.k; S.beheer[k]=S.beheer[k]||{};
+        const oud=S.beheer[k][el.dataset.veld];
+        S.beheer[k][el.dataset.veld]=el.value;
+        if(el.dataset.veld==='op' && el.value && el.value!==oud){
+          const naam=(DIM.find(function(d){return d.k===k;})||{}).n;
+          S.log.unshift({datum:el.value, wat:naam+' opnieuw bevestigd', door:(S.beheer[k].wie||'onbekend'), raakt:k});
+        }
+        bewaar(); tekenBijhoudenCijfers();
+      });
+    });
+  }
+  tekenBijhoudenCijfers();
+
+  // 2. besluiten
+  const bt=document.getElementById('bsToe');
+  if(bt && !bt.dataset.aan){ bt.dataset.aan='1';
+    bt.addEventListener('click',function(){
+      const w=function(id){return document.getElementById(id).value.trim();};
+      if(!w('bsWat')){ document.getElementById('bsWat').style.borderColor='var(--rood)'; return; }
+      S.besluiten.unshift({wat:w('bsWat'), waarom:w('bsWaarom'), datum:w('bsDatum')||new Date().toISOString().slice(0,10),
+                           door:w('bsDoor'), raakt:w('bsRaakt')});
+      S.log.unshift({datum:w('bsDatum')||new Date().toISOString().slice(0,10), wat:'Besluit: '+w('bsWat'), door:w('bsDoor')||'onbekend', raakt:w('bsRaakt')});
+      ['bsWat','bsWaarom','bsDoor'].forEach(function(id){document.getElementById(id).value='';});
+      bewaar(); tekenBijhouden();
+    });
+  }
+  const bl=document.getElementById('bsLijst');
+  if(bl) bl.innerHTML = S.besluiten.length
+    ? S.besluiten.map(function(b,i){
+        const naam=(DIM.find(function(d){return d.k===b.raakt;})||{n:'\u2014'}).n;
+        return '<div class="bhrij2"><div><b style="font-size:.92rem">'+b.wat+'</b>'
+         +(b.waarom?'<div class="sub">Waarom: '+b.waarom+'</div>':'')
+         +'<div class="sub">'+b.datum+(b.door?' \u00b7 '+b.door:'')+' \u00b7 raakt '+naam.toLowerCase()+'</div></div>'
+         +'<button class="knop licht" data-bsweg="'+i+'" style="padding:.25rem .55rem;min-height:0">verwijder</button></div>';
+      }).join('')
+    : '<p class="sub">Nog geen besluiten vastgelegd. Begin met de laatste keuze die je hebt gemaakt en waarvan je nu al merkt dat mensen ernaar vragen.</p>';
+  if(bl) bl.querySelectorAll('[data-bsweg]').forEach(function(b){
+    if(b.dataset.aan)return; b.dataset.aan='1';
+    b.addEventListener('click',function(){ S.besluiten.splice(+b.dataset.bsweg,1); bewaar(); tekenBijhouden(); });
+  });
+
+  // 3. documenten met verouderingsvlag
+  const dt=document.getElementById('dcToe');
+  if(dt && !dt.dataset.aan){ dt.dataset.aan='1';
+    dt.addEventListener('click',function(){
+      const n=document.getElementById('dcNaam').value.trim();
+      if(!n){ document.getElementById('dcNaam').style.borderColor='var(--rood)'; return; }
+      S.docs.push({naam:n, bij:document.getElementById('dcBij').value, op:document.getElementById('dcDatum').value});
+      document.getElementById('dcNaam').value='';
+      bewaar(); tekenBijhouden();
+    });
+  }
+  const dl=document.getElementById('dcLijst');
+  if(dl) dl.innerHTML = S.docs.length
+    ? S.docs.map(function(d,i){
+        const naam=(DIM.find(function(x){return x.k===d.bij;})||{n:'\u2014'}).n;
+        const b=S.beheer[d.bij]||{};
+        const ouder = d.op && b.op && (new Date(b.op) > new Date(d.op));
+        const m=maanden(d.op);
+        const vlag = ouder ? ['Mogelijk verouderd \u2014 '+naam.toLowerCase()+' is daarna gewijzigd','var(--rood)']
+                   : (m!==null && m>12 ? ['Ouder dan een jaar','var(--amber)'] : ['Bij','var(--groen)']);
+        return '<div class="bhrij2"><div><b style="font-size:.92rem">'+d.naam+'</b>'
+         +'<div class="sub">hoort bij '+naam.toLowerCase()+(d.op?' \u00b7 bijgewerkt '+d.op:'')+'</div></div>'
+         +'<div style="text-align:right"><span style="font-size:.78rem;font-weight:600;color:'+vlag[1]+'">'+vlag[0]+'</span>'
+         +'<br><button class="knop licht" data-dcweg="'+i+'" style="padding:.2rem .5rem;min-height:0;margin-top:.3rem">verwijder</button></div></div>';
+      }).join('')
+    : '<p class="sub">Nog geen documenten gekoppeld. Begin met de drie die het vaakst worden opgezocht.</p>';
+  if(dl) dl.querySelectorAll('[data-dcweg]').forEach(function(b){
+    if(b.dataset.aan)return; b.dataset.aan='1';
+    b.addEventListener('click',function(){ S.docs.splice(+b.dataset.dcweg,1); bewaar(); tekenBijhouden(); });
+  });
+
+  // 4. logboek
+  const lg=document.getElementById('bhLog');
+  if(lg) lg.innerHTML = S.log.length
+    ? S.log.slice(0,25).map(function(l){
+        const naam=(DIM.find(function(d){return d.k===l.raakt;})||{n:''}).n;
+        const caps=naam?Object.keys(CAP).filter(function(k){return CAP[k].dim===l.raakt;}).length:0;
+        return '<div class="bhrij2"><div><b style="font-size:.9rem">'+l.wat+'</b>'
+         +'<div class="sub">'+l.datum+' \u00b7 '+l.door+(naam?' \u00b7 '+naam.toLowerCase():'')+'</div></div>'
+         +(caps?'<span class="sub" style="white-space:nowrap">raakt '+caps+' capabilit'+(caps>1?'ies':'y')+'</span>':'')+'</div>';
+      }).join('')
+    : '<p class="sub">Nog niets vastgelegd. Zodra je een datum bevestigt of een besluit toevoegt, komt het hier te staan.</p>';
+}
+
+function tekenBijhoudenCijfers(){
+  const el=document.getElementById('bhCijfers'); if(!el) return;
+  S.beheer=S.beheer||{};
+  let actueel=0, bijna=0, verlopen=0, zonder=0;
+  DIM.forEach(function(d){
+    const b=S.beheer[d.k]||{};
+    if(!b.wie) zonder++;
+    const m=maanden(b.op), t=+(b.termijn||12);
+    const st=bhStatus(m,t)[0];
+    if(st==='Actueel') actueel++; else if(st.indexOf('Bijna')===0) bijna++; else verlopen++;
+    const sub=document.querySelector('[data-status="'+d.k+'"]');
+    if(sub){ const s2=bhStatus(m,t); sub.innerHTML='<span style="color:'+s2[1]+';font-weight:600">'+s2[0]+'</span>'; }
+  });
+  el.innerHTML=
+   '<div class="kaart"><h3>Actueel</h3><div class="kpi" style="color:var(--groen)">'+actueel+'</div><div class="sub">van de '+DIM.length+' onderdelen</div></div>'
+   +'<div class="kaart"><h3>Toe aan herziening</h3><div class="kpi" style="color:'+(verlopen+bijna?'var(--amber)':'var(--groen)')+'">'+(bijna+verlopen)+'</div><div class="sub">waarvan '+verlopen+' over tijd</div></div>'
+   +'<div class="kaart"><h3>Zonder eigenaar</h3><div class="kpi" style="color:'+(zonder?'var(--rood)':'var(--groen)')+'">'+zonder+'</div><div class="sub">'+(zonder?'niemand die het bijhoudt':'alles belegd')+'</div></div>';
 }
 
 function tekenDNAFamilie(){
