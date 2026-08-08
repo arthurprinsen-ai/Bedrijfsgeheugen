@@ -346,7 +346,10 @@ nav .nb{transition:height .2s}
 .bouw8{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-top:1.2rem}
 @media(max-width:900px){.bouw8{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.bouw8{grid-template-columns:1fr}}
-.bs{background:var(--wit);border:1px solid var(--lijn);border-left:4px solid var(--blauw);border-radius:0 10px 10px 0;padding:.85rem .95rem}
+.bs{background:var(--wit);border:1px solid var(--lijn);border-left:4px solid var(--blauw);border-radius:0 10px 10px 0;padding:.9rem .95rem;transition:transform .15s,box-shadow .15s}
+.bs:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(20,23,26,.07)}
+.bsic{display:block;width:2.4rem;height:2.4rem;margin-bottom:.5rem}
+.bsic svg{width:100%;height:100%;display:block}
 .bs b{display:block;font-size:.93rem;margin-bottom:.15rem}
 .bs span{font-size:.83rem;color:var(--grijs);line-height:1.5}
 .let2{margin-top:1.2rem;background:var(--wit);border:2px solid var(--inkt);border-radius:12px;padding:1.1rem 1.25rem}
@@ -540,14 +543,14 @@ nav .nb{transition:height .2s}
   <h2 class="sk">Eén plek waar staat <span class="u">hoe je organisatie werkt</span></h2>
   <p class="sub">Acht bouwstenen, met elkaar verbonden. Daarom weet het portaal wat er geraakt wordt als er iets verandert.</p>
   <div class="bouw8">
-    <div class="bs"><b>Strategie</b><span>Wat willen we bereiken, en waarom?</span></div>
-    <div class="bs"><b>Doelen en maatstaven</b><span>Hoe meten we of we vooruitgaan?</span></div>
-    <div class="bs"><b>Besluiten</b><span>Welke keuzes hebben we gemaakt, en waarom?</span></div>
-    <div class="bs"><b>Processen</b><span>Hoe voeren we het werk uit?</span></div>
-    <div class="bs"><b>Rollen</b><span>Wie is waarvoor verantwoordelijk?</span></div>
-    <div class="bs"><b>Systemen en koppelingen</b><span>Wat ondersteunt welk proces, en hoe hangt het samen?</span></div>
-    <div class="bs"><b>Documenten</b><span>Welk document hoort bij welk proces of besluit?</span></div>
-    <div class="bs"><b>Acties</b><span>Wat moet er nu gebeuren, door wie en wanneer?</span></div>
+    <div class="bs"><span class="bsic"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="16" fill="none" stroke="#2742D6" stroke-width="2.4"/><circle cx="24" cy="24" r="8.5" fill="none" stroke="#2742D6" stroke-width="2.4"/><circle cx="24" cy="24" r="3" fill="#FF4F17"/><path d="M30 18l10-10M36 8h6v6" stroke="#14171A" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Strategie</b><span>Wat willen we bereiken, en waarom?</span></div>
+    <div class="bs"><span class="bsic"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 38h32" stroke="#14171A" stroke-width="2.4" stroke-linecap="round"/><rect x="11" y="24" width="7" height="12" fill="#FFE86B" stroke="#14171A" stroke-width="2.2"/><rect x="21" y="16" width="7" height="20" fill="#fff" stroke="#14171A" stroke-width="2.2"/><rect x="31" y="9" width="7" height="27" fill="#2742D6" stroke="#14171A" stroke-width="2.2"/></svg></span><b>Doelen en maatstaven</b><span>Hoe meten we of we vooruitgaan?</span></div>
+    <div class="bs"><span class="bsic"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8v10M24 18L12 30M24 18l12 12" stroke="#14171A" stroke-width="2.4" stroke-linecap="round"/><circle cx="24" cy="8" r="4" fill="#FFE86B" stroke="#14171A" stroke-width="2.2"/><circle cx="12" cy="34" r="5" fill="#2742D6" stroke="#14171A" stroke-width="2.2"/><path d="M9.6 34l1.8 1.8 3.2-3.4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="36" cy="34" r="5" fill="#fff" stroke="#14171A" stroke-width="2.2"/></svg></span><b>Besluiten</b><span>Welke keuzes hebben we gemaakt, en waarom?</span></div>
+    <div class="bs"><span class="bsic"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="19" width="11" height="10" rx="2" fill="#fff" stroke="#14171A" stroke-width="2.2"/><rect x="18.5" y="19" width="11" height="10" rx="2" fill="#FFE86B" stroke="#14171A" stroke-width="2.2"/><rect x="32" y="19" width="11" height="10" rx="2" fill="#fff" stroke="#14171A" stroke-width="2.2"/><path d="M16 24h2.5M29.5 24H32" stroke="#2742D6" stroke-width="2.4"/></svg></span><b>Processen</b><span>Hoe voeren we het werk uit?</span></div>
+    <div class="bs"><span class="bsic"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="17" cy="17" r="6" fill="#FFE86B" stroke="#14171A" stroke-width="2.2"/><path d="M7 33c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="none" stroke="#14171A" stroke-width="2.2" stroke-linecap="round"/><circle cx="34" cy="21" r="5" fill="#fff" stroke="#14171A" stroke-width="2.2"/><path d="M26 34c0-4.5 3.6-7.5 8-7.5s8 3 8 7.5" fill="none" stroke="#2742D6" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Rollen</b><span>Wie is waarvoor verantwoordelijk?</span></div>
+    <div class="bs"><span class="bsic"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="8" width="15" height="11" rx="2" fill="#fff" stroke="#14171A" stroke-width="2.2"/><rect x="27" y="8" width="15" height="11" rx="2" fill="#fff" stroke="#14171A" stroke-width="2.2"/><rect x="16.5" y="29" width="15" height="11" rx="2" fill="#2742D6" stroke="#14171A" stroke-width="2.2"/><path d="M13.5 19v5h21v-5M24 24v5" stroke="#FF4F17" stroke-width="2.2" fill="none"/></svg></span><b>Systemen en koppelingen</b><span>Wat ondersteunt welk proces, en hoe hangt het samen?</span></div>
+    <div class="bs"><span class="bsic"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 6h16l8 8v28H12z" fill="#fff" stroke="#14171A" stroke-width="2.2" stroke-linejoin="round"/><path d="M28 6v8h8" fill="#FFE86B" stroke="#14171A" stroke-width="2.2" stroke-linejoin="round"/><path d="M18 22h12M18 28h12M18 34h7" stroke="#2742D6" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Documenten</b><span>Welk document hoort bij welk proces of besluit?</span></div>
+    <div class="bs"><span class="bsic"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="7" y="9" width="34" height="30" rx="4" fill="#fff" stroke="#14171A" stroke-width="2.2"/><path d="M13 18l3 3 6-6" stroke="#2742D6" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 30l3 3 6-6" stroke="#2742D6" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M26 19h10M26 31h7" stroke="#14171A" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Acties</b><span>Wat moet er nu gebeuren, door wie en wanneer?</span></div>
   </div>
   <div class="let2">
     <b>Het portaal is de bron, niet het document.</b>
