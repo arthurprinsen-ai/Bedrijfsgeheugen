@@ -91,6 +91,21 @@ nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-f
 .nl2 a:hover{color:var(--blauw)}
 .ncta{background:var(--blauw);color:#fff!important;padding:.6rem 1.1rem;border-radius:8px;font-weight:600;text-decoration:none;font-size:.92rem}
 @media(max-width:900px){.nl2{display:none}}
+.menuknop{display:none;margin-left:auto;background:none;border:1px solid var(--lijn);border-radius:9px;width:44px;height:44px;cursor:pointer;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:0}
+.menuknop span{display:block;width:19px;height:2px;background:var(--inkt);border-radius:2px;transition:transform .2s,opacity .2s}
+.menuknop[aria-expanded=true] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.menuknop[aria-expanded=true] span:nth-child(2){opacity:0}
+.menuknop[aria-expanded=true] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.mobmenu{display:none;flex-direction:column;padding:.5rem 1.25rem 1.1rem;border-top:1px solid var(--lijn);background:#fff}
+.mobmenu a{padding:.8rem 0;border-bottom:1px solid var(--lijn);text-decoration:none;color:var(--inkt);font-weight:500;font-size:1rem}
+.mobmenu .mm-cta{margin-top:.9rem;background:var(--blauw);color:#fff;text-align:center;border-radius:9px;border:0;font-weight:600;padding:.85rem}
+@media(max-width:900px){
+  .menuknop{display:flex}
+  .mobmenu:not([hidden]){display:flex}
+  .nb{height:60px;gap:.8rem}
+  .ncta{display:none}
+  .logo{font-size:1rem}
+}
 
 .pil{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #C7D2FE;background:#EEF2FF;color:var(--blauwd);border-radius:20px;padding:.35rem .8rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 .hero{padding:3.5rem 0 2rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
@@ -194,6 +209,40 @@ footer a{color:#C7CEDD;text-decoration:none;display:block;font-size:.88rem;margi
 footer a:hover{color:#fff}
 .fg{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:2rem}
 @media(max-width:800px){.fg{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){
+  .wrap{padding:0 1rem}
+  section{padding:2.2rem 0}
+  .hero{padding:2rem 0 1rem}
+  h1{font-size:clamp(1.9rem,8vw,2.4rem)}
+  .streep{width:9rem;height:6px}
+  .lead{font-size:1rem}
+  .usp{gap:.9rem;margin:1.1rem 0}
+  .usp div{font-size:.84rem;width:100%}
+  .knoppen{flex-direction:column}
+  .knop{text-align:center;width:100%}
+  .chat{padding:.9rem;border-radius:13px}
+  .acties{flex-direction:column}
+  .acties div{min-width:0}
+  .drieblok{padding:1.2rem;gap:1.1rem}
+  .onderzoek{grid-template-columns:1fr 1fr;gap:.8rem}
+  .ok{padding:.9rem}
+  .ok .gr{font-size:1.9rem}
+  .ok p{font-size:.78rem}
+  .calc{padding:1.1rem}
+  .stappen{grid-template-columns:1fr 1fr;gap:1.1rem}
+  .afd{grid-template-columns:1fr 1fr;gap:.7rem}
+  .ak .beeld{height:4.2rem;font-size:1.3rem}
+  .aanbod{padding:1.2rem}
+  .prijs{font-size:2.1rem}
+  .logos{gap:1.1rem;font-size:.8rem;padding:1.1rem 0}
+  footer{padding:2rem 0 5rem}
+  .fb{font-size:.75rem}
+}
+@media(max-width:420px){.onderzoek{grid-template-columns:1fr}.afd{grid-template-columns:1fr}}
+.mobbalk{display:none}
+@media(max-width:720px){
+  .mobbalk{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--blauw);color:#fff;text-align:center;padding:.9rem;font-weight:600;font-size:.92rem;text-decoration:none;box-shadow:0 -4px 18px rgba(17,24,39,.16)}
+}
 .fb{border-top:1px solid #25335C;margin-top:1.6rem;padding-top:1rem;font-size:.8rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 </style>
 </head>
@@ -210,6 +259,17 @@ footer a:hover{color:#fff}
     <a href="/over-ons">Over ons</a>
   </div>
   <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="#hoe">Hoe het werkt</a>
+  <a href="/afas-koppeling">AFAS koppeling</a>
+  <a href="/koppelingen">Koppelingskiezer</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
 </div></nav>
 
 <main>
@@ -385,6 +445,7 @@ footer a:hover{color:#fff}
   <div class="fb"><span>© <span class="jr">2026</span> Bedrijfsgeheugen · Aanpakken zonder aanmodderen.</span><span>Den Haag · info@bedrijfsgeheugen.nl</span></div>
 </div>
 </footer>
+<a class="mobbalk" href="/zelfscan">Gratis zelfscan — 2 minuten, direct advies</a>
 
 <script>
 (function(){
@@ -400,6 +461,17 @@ footer a:hover{color:#fff}
   reken();
   var y=new Date().getFullYear();
   document.querySelectorAll('.jr').forEach(function(e){e.textContent=y});
+
+  // mobiel menu
+  var mk=document.getElementById('menuKnop'), mm=document.getElementById('mobMenu');
+  mk.addEventListener('click',function(){
+    var open=mk.getAttribute('aria-expanded')==='true';
+    mk.setAttribute('aria-expanded',!open);
+    mm.hidden=open;
+  });
+  mm.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',function(){ mk.setAttribute('aria-expanded','false'); mm.hidden=true; });
+  });
 })();
 </script>
 
