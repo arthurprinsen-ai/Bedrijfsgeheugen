@@ -800,6 +800,22 @@ input[type=range]{min-height:34px}
         <div style="margin-top:.7rem"><button class="knop" id="dcToe">Document koppelen</button></div>
         <div id="dcLijst" style="margin-top:.9rem"></div></div>
 
+      <div class="kaart" style="margin-top:1rem"><h3>Van wijziging naar taken</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Kies wat er verandert. Het portaal bepaalt welke afdelingen dat raakt en zet er taken bij, met een eigenaar en een datum.</p>
+        <div class="velden">
+          <div class="veld"><label for="twThema">Wat verandert er</label><select id="twThema"></select></div>
+          <div class="veld"><label for="twWanneer">Klaar voor</label><input type="date" id="twWanneer"></div>
+        </div>
+        <div style="margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="knop" id="twKijk">Laat zien wat dit raakt</button>
+          <button class="knop licht" id="twZet">Zet klaar als taken</button>
+        </div>
+        <div id="twUit" style="margin-top:.9rem"></div></div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>De taken per afdeling</h3>
+        <p class="sub" style="margin:-.3rem 0 .7rem">Wat er nu open staat, bij wie, en wanneer het af moet. Afvinken telt mee in je voortgang.</p>
+        <div id="twLijst"></div></div>
+
       <div class="kaart" style="margin-top:1rem"><h3>Wat er is veranderd</h3>
         <p class="sub" style="margin:-.3rem 0 .7rem">Elke wijziging aan een onderdeel komt hier te staan, met wat het raakte. Dat is je bewijs bij een audit — en je geheugen bij een overdracht.</p>
         <div id="bhLog"></div></div>
@@ -2495,7 +2511,7 @@ function tekenDNA(){
     });
   });
 
-  voegUitvoeringSamen(); tekenBijhouden(); tekenDNAFamilie(); tekenEigenCaps(); tekenDNAv3(caps, K);
+  voegUitvoeringSamen(); tekenBijhouden(); tekenWijziging(); tekenDNAFamilie(); tekenEigenCaps(); tekenDNAv3(caps, K);
 }
 
 /* --- versie 3: vrije invoer, kennisvragen, radar en bibliotheek --- */
@@ -2609,6 +2625,111 @@ function bhStatus(m, termijn){
   if(m>termijn*0.8) return ['Bijna toe aan herziening','var(--amber)'];
   return ['Actueel','var(--groen)'];
 }
+/* --- Van wijziging naar taken per afdeling --- */
+function tekenWijziging(){
+  S.taken=S.taken||[]; S.beheer=S.beheer||{};
+  const sel=document.getElementById('twThema');
+  if(sel && !sel.dataset.aan){
+    sel.dataset.aan='1';
+    sel.innerHTML=Object.keys(THEMA).map(function(k){return '<option value="'+k+'">'+THEMA[k].n+'</option>';}).join('');
+    document.getElementById('twKijk').addEventListener('click',function(){ toonDoorwerking(false); });
+    document.getElementById('twZet').addEventListener('click',function(){ toonDoorwerking(true); });
+  }
+  tekenTaken();
+}
+
+function doorwerking(themaK){
+  // welke capabilities activeert dit thema, en welke afdelingen raakt dat
+  S.eigenCaps=S.eigenCaps||{};
+  let lijst=(THEMA[themaK]||{caps:[]}).caps.slice();
+  Object.keys(S.eigenCaps).forEach(function(k){ if(S.eigenCaps[k].thema===themaK) lijst.push(k); });
+  const perAfd={};
+  lijst.forEach(function(k){
+    const c=CAP[k]||S.eigenCaps[k]; if(!c) return;
+    (c.afd||['Nog te bepalen']).forEach(function(a){
+      perAfd[a]=perAfd[a]||[];
+      (c.proj&&c.proj.length?c.proj:['Eerste stap bepalen voor '+c.n]).forEach(function(pj){
+        if(perAfd[a].indexOf(pj)<0) perAfd[a].push(pj);
+      });
+    });
+  });
+  return {caps:lijst, perAfd:perAfd};
+}
+
+function toonDoorwerking(vastleggen){
+  const themaK=document.getElementById('twThema').value;
+  const d=doorwerking(themaK);
+  const afds=Object.keys(d.perAfd);
+  const wanneer=document.getElementById('twWanneer').value ||
+    new Date(Date.now()+14*864e5).toISOString().slice(0,10);
+  const uit=document.getElementById('twUit');
+
+  if(!afds.length){ uit.innerHTML='<p class="sub">Dit thema raakt nog niets \u2014 vul eerst je niveaus in.</p>'; return; }
+
+  if(vastleggen){
+    let n=0;
+    afds.forEach(function(a){
+      d.perAfd[a].slice(0,3).forEach(function(t){
+        if(S.taken.some(function(x){return x.afd===a && x.wat===t;})) return;
+        S.taken.push({afd:a, wat:t, wie:'', op:wanneer, klaar:false, thema:themaK});
+        n++;
+      });
+    });
+    S.log=S.log||[];
+    S.log.unshift({datum:new Date().toISOString().slice(0,10),
+      wat:'Wijziging doorgevoerd: '+THEMA[themaK].n+' \u2014 '+n+' taken klaargezet',
+      door:'portaal', raakt:''});
+    bewaar();
+    uit.innerHTML='<div style="padding:.8rem .9rem;border-left:4px solid var(--groen);background:#EAF6EE;border-radius:0 6px 6px 0;font-size:.9rem">'
+      +'<b>'+n+' taken klaargezet</b> over '+afds.length+' afdelingen. Ze staan hieronder \u2014 zet er nog namen bij.</div>';
+    tekenTaken();
+    return;
+  }
+
+  uit.innerHTML='<p class="sub" style="margin-bottom:.5rem">Dit raakt <b>'+d.caps.length+' capabilities</b> in <b>'+afds.length+' afdelingen</b>:</p>'
+   + afds.map(function(a){
+      return '<div class="bhrij2"><div><b style="font-size:.92rem;color:var(--blauw)">'+a+'</b>'
+       +'<div class="sub">'+d.perAfd[a].slice(0,3).join(' \u00b7 ')+'</div></div>'
+       +'<span class="sub" style="white-space:nowrap">'+Math.min(d.perAfd[a].length,3)+' acties</span></div>';
+     }).join('');
+}
+
+function tekenTaken(){
+  const el=document.getElementById('twLijst'); if(!el) return;
+  S.taken=S.taken||[];
+  if(!S.taken.length){ el.innerHTML='<p class="sub">Nog geen taken. Kies hierboven wat er verandert en zet ze klaar.</p>'; return; }
+  const perAfd={};
+  S.taken.forEach(function(t,i){ (perAfd[t.afd]=perAfd[t.afd]||[]).push([t,i]); });
+  const klaar=S.taken.filter(function(t){return t.klaar;}).length;
+  el.innerHTML='<p class="sub" style="margin-bottom:.6rem"><b>'+klaar+' van '+S.taken.length+'</b> afgerond'
+    +(S.taken.length-klaar>5?' \u00b7 meer dan vijf tegelijk is in het mkb te veel; kies er drie':'')+'</p>'
+   + Object.keys(perAfd).map(function(a){
+      return '<div style="margin-top:.7rem"><b style="font-size:.9rem;color:var(--blauw)">'+a+'</b>'
+       + perAfd[a].map(function(r){
+          const t=r[0], i=r[1];
+          return '<div class="bhrij2" style="align-items:center">'
+           +'<label style="display:flex;gap:.6rem;align-items:flex-start;cursor:pointer;font-size:.9rem;text-transform:none;letter-spacing:0;color:var(--inkt);font-weight:400">'
+           +'<input type="checkbox" data-tk="'+i+'"'+(t.klaar?' checked':'')+' style="width:18px;height:18px;margin-top:.15rem;flex:none">'
+           +'<span'+(t.klaar?' style="text-decoration:line-through;color:var(--grijs)"':'')+'>'+t.wat+'</span></label>'
+           +'<div style="display:flex;gap:.4rem;align-items:center">'
+           +'<input type="text" data-tw="'+i+'" value="'+(t.wie||'')+'" placeholder="wie?" style="width:6.5rem;height:34px;padding:0 .45rem;border:1px solid var(--lijn);border-radius:7px;font:inherit;font-size:.82rem">'
+           +'<span class="sub" style="white-space:nowrap">'+(t.op||'')+'</span>'
+           +'<button class="knop licht" data-tweg="'+i+'" style="padding:.2rem .45rem;min-height:0">\u00d7</button></div></div>';
+         }).join('')
+       +'</div>';
+     }).join('');
+
+  el.querySelectorAll('[data-tk]').forEach(function(b){
+    b.addEventListener('change',function(){ S.taken[+b.dataset.tk].klaar=b.checked; bewaar(); tekenTaken(); });
+  });
+  el.querySelectorAll('[data-tw]').forEach(function(b){
+    b.addEventListener('change',function(){ S.taken[+b.dataset.tw].wie=b.value; bewaar(); });
+  });
+  el.querySelectorAll('[data-tweg]').forEach(function(b){
+    b.addEventListener('click',function(){ S.taken.splice(+b.dataset.tweg,1); bewaar(); tekenTaken(); });
+  });
+}
+
 function tekenBijhouden(){
   S.beheer=S.beheer||{}; S.besluiten=S.besluiten||[]; S.docs=S.docs||[]; S.log=S.log||[];
   const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
