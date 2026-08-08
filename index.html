@@ -128,15 +128,15 @@ h1 .b{color:var(--blauw);display:block}
 .streep{height:8px;background:var(--geel);width:14rem;border-radius:4px;margin:-.2rem 0 1.1rem}
 .lead{font-size:1.08rem;color:var(--grijs);max-width:34rem}
 .usp{display:flex;gap:1.6rem;flex-wrap:wrap;margin:1.6rem 0}
-.usp div{display:flex;gap:.55rem;align-items:center;font-size:.88rem;font-weight:600}
-.usp span{width:2.3rem;height:2.3rem;border-radius:9px;background:var(--wit);border:1px solid var(--lijn);display:grid;place-items:center}
+.usp div{display:flex;gap:.7rem;align-items:center;font-size:.9rem;font-weight:600;line-height:1.35}
+.usp span{width:2.6rem;height:2.6rem;border-radius:10px;background:var(--wit);border:1px solid var(--lijn);display:grid;place-items:center;flex:none}
 .usp span svg,.ic svg,.ic2 svg,.st .n svg{width:1.25rem;height:1.25rem;display:block}
-.usp span img,.ic img,.ic2 img{width:1.35rem;height:1.35rem;display:block;object-fit:contain}
-.st .n img{width:1.6rem;height:1.6rem;display:block;object-fit:contain}
+.usp span img,.ic img,.ic2 img{width:1.5rem;height:1.5rem;display:block;object-fit:contain}
+.st .n img{width:1.8rem;height:1.8rem;display:block;object-fit:contain}
 .vink img{flex:none;margin-top:.15rem}
 .st .n svg{width:1.45rem;height:1.45rem}
 .knoppen{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.4rem}
-.knop{display:inline-block;background:var(--blauw);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-weight:600;text-decoration:none;font-size:.95rem;border:2px solid var(--blauw);transition:transform .12s,background .12s}
+.knop{display:inline-flex;align-items:center;justify-content:center;min-height:48px;background:var(--blauw);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-weight:600;text-decoration:none;font-size:.95rem;border:2px solid var(--blauw);transition:transform .12s,background .12s}
 .knop:hover{background:var(--blauwd);border-color:var(--blauwd);transform:translateY(-2px)}
 .knop.lijn{background:transparent;color:var(--inkt);border:2px solid var(--inkt)}
 .knop.lijn:hover{background:var(--geel);color:var(--inkt);border-color:var(--inkt)}
@@ -171,7 +171,7 @@ section{padding:3.2rem 0}
 .dz{display:flex;flex-direction:column;gap:.5rem}
 .dz b{font-size:.95rem}
 .dz p{font-size:.85rem;color:var(--grijs);line-height:1.55}
-.ic{width:2.3rem;height:2.3rem;border-radius:9px;background:#fff;border:1px solid var(--lijn);display:grid;place-items:center;font-size:1rem}
+.ic{width:2.6rem;height:2.6rem;border-radius:10px;background:#fff;border:1px solid var(--lijn);display:grid;place-items:center;flex:none}
 
 .onderzoek{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:1.1rem;margin-top:1.4rem}
 .ok{background:var(--wit);border:1px solid var(--lijn);border-radius:12px;padding:1.1rem;text-align:center}
@@ -202,7 +202,7 @@ input:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(37,99,
 .st{text-align:center}
 .st{position:relative}
 .st .nr{display:inline-grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--blauw);color:#fff;font-size:.72rem;margin-right:.35rem;vertical-align:middle}
-.st .n{width:3rem;height:3rem;border-radius:12px;background:var(--zacht);border:1px solid var(--lijn);display:grid;place-items:center;margin:0 auto .6rem;font-size:1.2rem}
+.st .n{width:3.2rem;height:3.2rem;border-radius:12px;background:var(--wit);border:1px solid var(--lijn);display:grid;place-items:center;margin:0 auto .6rem}
 .st b{font-size:.92rem;display:block}
 .st p{font-size:.8rem;color:var(--grijs);line-height:1.5;margin-top:.25rem}
 
@@ -237,6 +237,8 @@ footer a:hover{color:#fff}
 .fg{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:1.8rem}
 @media(max-width:800px){.fg{grid-template-columns:1fr 1fr}}
 @media(max-width:720px){
+  .usp{display:grid;grid-template-columns:1fr;gap:.55rem}
+  .usp div{width:100%}
   .wrap{padding:0 1rem}
   section{padding:2.2rem 0}
   .hero{padding:2rem 0 1rem}
@@ -295,10 +297,10 @@ nav .nb{transition:height .2s}
 .wa{position:fixed;right:1rem;bottom:1rem;z-index:65;display:inline-flex;align-items:center;gap:.5rem;background:#25D366;color:#fff;border-radius:30px;padding:.7rem 1.1rem;font-weight:600;font-size:.92rem;text-decoration:none;box-shadow:0 6px 20px rgba(20,23,26,.22)}
 .wa svg{width:20px;height:20px;fill:currentColor}
 .wa .tx{display:inline}
-@media(max-width:720px){.wa{bottom:4.2rem;padding:.75rem;border-radius:50%}.wa .tx{display:none}}
+@media(max-width:720px){.wa{bottom:calc(4.6rem + env(safe-area-inset-bottom,0px));right:.9rem;padding:.8rem;border-radius:50%}.wa .tx{display:none}}
 
 /* markeerstift volgens de stijlgids */
-.mark{background:linear-gradient(transparent 52%,var(--geel) 52%,var(--geel) 105%,transparent 105%);padding:0 .16em}
+.mark{background:linear-gradient(transparent 55%,var(--geel) 55%,var(--geel) 96%,transparent 96%);padding:0 .1em .04em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 
 /* sterren en vertrouwen */
 .vertrouwen{display:flex;align-items:center;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap}
@@ -311,7 +313,7 @@ nav .nb{transition:height .2s}
 /* waarom kennis lekt */
 .lek{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:1.4rem;margin-top:1.4rem}
 .lek .rij{display:flex;gap:.8rem;align-items:flex-start}
-.lek .ic2{width:2.6rem;height:2.6rem;border:2px solid var(--blauw);border-radius:10px;display:grid;place-items:center;flex:none;font-size:1.1rem}
+.lek .ic2{width:2.8rem;height:2.8rem;border:2px solid var(--blauw);border-radius:10px;display:grid;place-items:center;flex:none;background:var(--wit)}
 .lek b{font-size:.95rem}
 .lek p{font-size:.85rem;color:var(--grijs);line-height:1.55;margin-top:.2rem}
 
@@ -362,7 +364,7 @@ nav .nb{transition:height .2s}
   <div>
     <span class="pil">Voor het mkb</span>
     <h1>Bedrijfskennis<span class="b">die <span class="mark">werkt</span>.</span></h1>
-    <p class="hand" style="font-size:1.5rem;color:var(--inkt);margin:.2rem 0 .9rem;border-bottom:2px solid var(--blauw);display:inline-block;padding-bottom:.2rem">Aanpakken zonder aanmodderen.</p>
+    <p class="hand" style="font-size:1.5rem;color:var(--inkt);margin:.2rem 0 .9rem;border-bottom:2px solid var(--blauw);display:inline-block;padding-bottom:.15rem;line-height:1.2">Aanpakken zonder aanmodderen.</p>
     <p class="lead">Wij maken kennis, informatie en processen in je organisatie <b>vindbaar, bruikbaar en betrouwbaar</b> — en automatiseren waar dat echt iets oplevert. Bovenop AFAS, Exact en Microsoft 365 die je al hebt.</p>
     <div class="usp">
       <div><span><img src="/assets/iconen/vind_direct.png" alt="" width="128" height="128" decoding="async"></span>Vind direct wat je nodig hebt</div>
