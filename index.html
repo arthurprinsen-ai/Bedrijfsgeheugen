@@ -84,8 +84,14 @@ a{color:var(--blauw)}
 
 nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--lijn)}
 .nb{display:flex;align-items:center;gap:1.6rem;height:68px}
-.logo{display:flex;align-items:center;gap:.5rem;font-family:"Bricolage Grotesque";font-weight:800;font-size:1.15rem;text-decoration:none;color:var(--inkt)}
+.logo{display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--inkt);flex:none}
+.logo .mark{width:34px;height:34px;flex:none;display:block}
+.logo .woord{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.18rem;letter-spacing:-.02em;white-space:nowrap;line-height:1}
 .logo b{color:var(--blauw);font-weight:800}
+.logo i{font-style:normal;color:var(--grijs);font-weight:600;font-size:.82em}
+.logo.voet{color:#fff}
+.logo.voet b{color:#8AA6FF}
+.logo.voet i{color:#8C97AE}
 .nl2{display:flex;gap:1.4rem;margin-left:auto}
 .nl2 a{font-size:.92rem;color:var(--inkt);text-decoration:none;font-weight:500}
 .nl2 a:hover{color:var(--blauw)}
@@ -102,9 +108,12 @@ nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-f
 @media(max-width:900px){
   .menuknop{display:flex}
   .mobmenu:not([hidden]){display:flex}
-  .nb{height:60px;gap:.8rem}
+  .nb{height:62px;gap:.7rem}
   .ncta{display:none}
-  .logo{font-size:1rem}
+}
+@media(max-width:400px){
+  .logo .woord{font-size:1.02rem}
+  .logo .mark{width:30px;height:30px}
 }
 
 .pil{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #C7D2FE;background:#EEF2FF;color:var(--blauwd);border-radius:20px;padding:.35rem .8rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
@@ -249,7 +258,10 @@ footer a:hover{color:#fff}
 <body>
 
 <nav><div class="wrap nb">
-  <a class="logo" href="/">🧠 Bedrijfs<b>geheugen</b>.nl</a>
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#2563EB"/><path d="M12 27V15.5A3.5 3.5 0 0 1 15.5 12h1.2a2.8 2.8 0 0 1 2.8 2.8V27" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M28 27V15.5A3.5 3.5 0 0 0 24.5 12h-1.2a2.8 2.8 0 0 0-2.8 2.8V27" stroke="#FFE86B" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="20" cy="20.5" r="2.1" fill="#FFE86B"/></svg>
+    <span class="woord">Bedrijfs<b>geheugen</b><i>.nl</i></span>
+  </a>
   <div class="nl2">
     <a href="/expertises">Expertises</a>
     <a href="/connect">Product</a>
@@ -432,7 +444,10 @@ footer a:hover{color:#fff}
 <div class="wrap">
   <div class="fg">
     <div>
-      <a class="logo" style="color:#fff" href="/">🧠 Bedrijfs<b style="color:#8AA6FF">geheugen</b>.nl</a>
+      <a class="logo voet" href="/" aria-label="Bedrijfsgeheugen.nl">
+        <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1D3AA8"/><path d="M12 27V15.5A3.5 3.5 0 0 1 15.5 12h1.2a2.8 2.8 0 0 1 2.8 2.8V27" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M28 27V15.5A3.5 3.5 0 0 0 24.5 12h-1.2a2.8 2.8 0 0 0-2.8 2.8V27" stroke="#FFE86B" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="20" cy="20.5" r="2.1" fill="#FFE86B"/></svg>
+        <span class="woord">Bedrijfs<b>geheugen</b><i>.nl</i></span>
+      </a>
       <p style="font-size:.86rem;margin-top:.7rem;line-height:1.6">Jouw bedrijf. Jouw kennis. En voor altijd. Bedrijfsgeheugen helpt organisaties hun kennis te borgen, veilig te verrijken en direct beschikbaar te maken.</p>
     </div>
     <div><h4>Product</h4>
