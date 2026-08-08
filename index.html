@@ -261,9 +261,11 @@ footer a:hover{color:#fff}
 .fb{border-top:1px solid #2B3138;margin-top:1.6rem;padding-top:1rem;font-size:.8rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 
 /* meebewegende kopbalk */
-nav{transition:transform .3s ease, box-shadow .2s}
-nav.weg{transform:translateY(-100%)}
-nav.diep{box-shadow:0 6px 20px rgba(20,23,26,.07)}
+nav{transition:box-shadow .2s, background .2s}
+nav.diep{box-shadow:0 4px 16px rgba(20,23,26,.08)}
+nav.klein .nb{height:58px}
+nav.klein .logo .mark{width:30px;height:30px}
+nav .nb{transition:height .2s}
 .voortgang{position:fixed;top:0;left:0;height:3px;background:var(--oranje);z-index:70;width:0;transition:width .1s linear}
 
 /* verschijnen bij scrollen */
@@ -561,15 +563,13 @@ nav.diep{box-shadow:0 6px 20px rgba(20,23,26,.07)}
   document.querySelectorAll('.jr').forEach(function(e){e.textContent=y});
 
   // kopbalk beweegt mee: verbergt bij naar beneden scrollen, komt terug bij omhoog
-  var kop=document.getElementById('kop'), vg=document.getElementById('vg'), vorige=0;
+  var kop=document.getElementById('kop'), vg=document.getElementById('vg');
   function bijScroll(){
     var y=window.scrollY||0;
     var h=document.documentElement.scrollHeight-window.innerHeight;
     vg.style.width=(h>0?(y/h*100):0)+'%';
     kop.classList.toggle('diep', y>10);
-    if(y>vorige && y>320){ kop.classList.add('weg'); }
-    else { kop.classList.remove('weg'); }
-    vorige=y;
+    kop.classList.toggle('klein', y>200);
   }
   addEventListener('scroll',bijScroll,{passive:true}); bijScroll();
 
