@@ -361,6 +361,24 @@ nav .nb{transition:height .2s}
 .let2{margin-top:1.2rem;background:var(--wit);border:2px solid var(--inkt);border-radius:12px;padding:1.1rem 1.25rem}
 .let2 b{font-family:"Bricolage Grotesque";font-size:1.05rem}
 .let2 p{font-size:.9rem;color:var(--grijs);line-height:1.6;margin-top:.3rem}
+
+.vast{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.6rem;text-align:left}
+@media(max-width:1100px){.vast{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.vast{grid-template-columns:1fr}}
+.vk{background:var(--wit);border:1px solid var(--lijn);border-radius:14px;padding:1.1rem;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:.55rem;transition:transform .16s,box-shadow .16s,border-color .16s}
+.vk:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(20,23,26,.08);border-color:var(--inkt)}
+.vkkop{display:flex;gap:.8rem;align-items:center}
+.vkic{width:3rem;height:3rem;border-radius:50%;background:#EEF1FD;display:grid;place-items:center;flex:none}
+.vkic svg{width:1.65rem;height:1.65rem;display:block}
+.vk b{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.02rem;line-height:1.2}
+.vk p{font-size:.87rem;color:var(--grijs);line-height:1.55;margin:0;flex:1}
+.vklink{color:var(--blauw);font-weight:600;font-size:.87rem;line-height:1.4}
+.vklink i{font-style:normal;transition:transform .16s;display:inline-block}
+.vk:hover .vklink i{transform:translateX(4px)}
+.vastvoet{background:var(--wit);border:2px solid var(--inkt);border-radius:14px;padding:1.1rem 1.3rem;margin-top:1.3rem;display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap}
+.vastvoet img{border-radius:50%;object-fit:cover;flex:none;border:2px solid var(--inkt)}
+.vastknoppen{display:flex;gap:.6rem;margin-left:auto;flex-wrap:wrap}
+@media(max-width:720px){.vastknoppen{margin-left:0;width:100%}.vastknoppen .knop{flex:1}}
 </style>
 </head>
 <body>
@@ -511,6 +529,28 @@ nav .nb{transition:height .2s}
     <div class="rij"><div class="ic2"><img src="/assets/iconen/context.svg" alt="" width="48" height="48" decoding="async"></div><div><b>Context verdwijnt</b><p>Historie en achtergrond ontbreken bij nieuwe collega's en stakeholders.</p></div></div>
     <div class="rij"><div class="ic2"><img src="/assets/iconen/besluitvorming.svg" alt="" width="48" height="48" decoding="async"></div><div><b>Besluitvorming vertraagt</b><p>Besluiten zoeken te lang, waardoor kansen vertragen en kosten oplopen.</p></div></div>
     <div class="rij"><div class="ic2"><img src="/assets/iconen/nieuwe_medewerkers.svg" alt="" width="48" height="48" decoding="async"></div><div><b>Nieuwe mensen herhalen fouten</b><p>Slechte overdracht, onduidelijke processen en verlies van ervaren kennis.</p></div></div>
+  </div>
+</div>
+</section>
+
+<section id="vastloop" style="background:var(--zacht)">
+<div class="wrap" style="text-align:center">
+  <span class="pil">Dit fixen wij</span>
+  <h2 class="sk" style="margin-top:.7rem">Waar loop jij tegenaan?<br><span style="color:var(--blauw)">Wij <span class="mark">fixen</span> het.</span></h2>
+  <div style="width:3rem;height:3px;background:var(--blauw);margin:.7rem auto 1rem;border-radius:2px"></div>
+  <p class="sub" style="margin:0 auto">Elk bedrijf loopt ergens op vast. Wij brengen het terug tot de kern en zorgen voor een oplossing die werkt én blijft werken. Herken je een van deze situaties?</p>
+  <div class="vast"><a class="vk" href="/frisse-blik"><div class="vkkop"><span class="vkic"><svg viewBox="0 0 48 48" fill="none" stroke="#14171A" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M31 40v-5.5c4.2-2.2 7-6.4 7-11.2C38 15.4 31.6 9 23.7 9 16.6 9 10.7 14.2 9.8 21L7 26.5l3.6 1.3v4.6c0 1.7 1.4 3.1 3.1 3.1H17v4.5"/><path d="M20 21c1.6-1.6 4.4-1.6 6 0s1.6 4.4 0 6"/></svg></span><b>Kennis zit in hoofden</b></div><p>Belangrijke informatie en ervaring zijn nergens vastgelegd.</p><span class="vklink">Wij bouwen je bedrijfsgeheugen <i>→</i></span></a><a class="vk" href="/expertises"><div class="vkkop"><span class="vkic"><svg viewBox="0 0 48 48" fill="none" stroke="#14171A" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="26" r="15"/><circle cx="22" cy="26" r="8"/><circle cx="22" cy="26" r="2" fill="#14171A"/><path d="M28 20L40 8M35 8h6v6"/></svg></span><b>Strategie wordt niet uitgevoerd</b></div><p>Plannen blijven plannen. De vertaalslag naar dagelijks werk ontbreekt.</p><span class="vklink">Wij vertalen strategie naar processen, maatstaven en acties <i>→</i></span></a><a class="vk" href="/koppelingen"><div class="vkkop"><span class="vkic"><svg viewBox="0 0 48 48" fill="none" stroke="#14171A" stroke-width="2.3" stroke-linejoin="round"><path d="M12 5h17l8 8v30H12z"/><path d="M29 5v8h8"/><path d="M18 22l10 13M28 22l-10 13" stroke-linecap="round"/></svg></span><b>Excel en mail regeren</b></div><p>Te veel handmatig werk, versies door elkaar en foutgevoelig.</p><span class="vklink">Wij structureren en automatiseren <i>→</i></span></a><a class="vk" href="/koppelingen"><div class="vkkop"><span class="vkic"><svg viewBox="0 0 48 48" fill="none" stroke="#14171A" stroke-width="2.3" stroke-linejoin="round"><path d="M8 8h12v4a3 3 0 106 0V8h12v12h-4a3 3 0 100 6h4v12H26v-4a3 3 0 10-6 0v4H8V26h4a3 3 0 100-6H8z"/></svg></span><b>Systemen praten niet met elkaar</b></div><p>Data staat los, dubbel werk ligt op de loer en overzicht ontbreekt.</p><span class="vklink">Wij bouwen de koppelingen <i>→</i></span></a><a class="vk" href="/connect"><div class="vkkop"><span class="vkic"><svg viewBox="0 0 48 48" fill="none" stroke="#14171A" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 40h32"/><path d="M14 40V28M23 40V20M32 40V25"/><path d="M12 17l9-7 7 5 10-9M32 6h6v6"/></svg></span><b>Geen actueel overzicht</b></div><p>Beslissingen worden genomen op gevoel, niet op feiten.</p><span class="vklink">Wij bouwen stuurinformatie <i>→</i></span></a><a class="vk" href="/expertises"><div class="vkkop"><span class="vkic"><svg viewBox="0 0 48 48" fill="none" stroke="#14171A" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 8a7 7 0 00-12 4 6 6 0 00-2 10 6.5 6.5 0 004 10 7 7 0 0012 3z"/><path d="M28 12h10M28 24h12M28 36h10M22 12h6M22 24h6M22 36h6"/><circle cx="40" cy="12" r="2.4" fill="#2742D6" stroke="none"/><circle cx="42" cy="24" r="2.4" fill="#2742D6" stroke="none"/><circle cx="40" cy="36" r="2.4" fill="#2742D6" stroke="none"/></svg></span><b>AI blijft experimenteren</b></div><p>Ideeën genoeg, maar geen concrete toepassing in het dagelijkse werk.</p><span class="vklink">Wij maken AI bruikbaar in de praktijk <i>→</i></span></a><a class="vk" href="/frisse-blik"><div class="vkkop"><span class="vkic"><svg viewBox="0 0 48 48" fill="none" stroke="#14171A" stroke-width="2.3" stroke-linecap="round"><circle cx="24" cy="16" r="8"/><path d="M8 42c0-8.8 7.2-14 16-14s16 5.2 16 14"/></svg></span><b>Processen zijn persoonsafhankelijk</b></div><p>Als iemand uitvalt, valt kennis, overzicht en voortgang weg.</p><span class="vklink">Wij leggen processen vast én houden ze actueel <i>→</i></span></a><a class="vk" href="/contact"><div class="vkkop"><span class="vkic"><svg viewBox="0 0 48 48" fill="none"><circle cx="13" cy="24" r="3.6" fill="#14171A"/><circle cx="24" cy="24" r="3.6" fill="#14171A"/><circle cx="35" cy="24" r="3.6" fill="#14171A"/></svg></span><b>Staat jouw probleem er niet tussen?</b></div><p>Elk bedrijf is anders. Vertel ons wat er vastloopt, dan kijken we mee.</p><span class="vklink">Vertel wat er vastloopt <i>→</i></span></a></div>
+
+  <div class="vastvoet">
+    <img src="/arthur.jpg" alt="Arthur Prinsen" width="64" height="64">
+    <div style="text-align:left">
+      <b style="font-family:'Bricolage Grotesque';font-size:1.05rem">Wat er ook vastloopt: we fixen het.</b>
+      <div class="sub">Direct contact. Concreet probleem. Werkende oplossing.</div>
+    </div>
+    <div class="vastknoppen">
+      <a class="knop" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20bij%20ons%20loopt%20het%20vast%20op..." target="_blank" rel="noopener" style="background:#25D366;border-color:#25D366">WhatsApp Arthur</a>
+      <a class="knop lijn" href="/contact">Plan een gesprek</a>
+    </div>
   </div>
 </div>
 </section>
