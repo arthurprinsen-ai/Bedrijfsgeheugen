@@ -129,7 +129,9 @@ h1 .b{color:var(--blauw);display:block}
 .lead{font-size:1.08rem;color:var(--grijs);max-width:34rem}
 .usp{display:flex;gap:1.6rem;flex-wrap:wrap;margin:1.6rem 0}
 .usp div{display:flex;gap:.55rem;align-items:center;font-size:.88rem;font-weight:600}
-.usp span{width:2.1rem;height:2.1rem;border-radius:8px;background:var(--zacht);display:grid;place-items:center;font-size:.95rem}
+.usp span{width:2.3rem;height:2.3rem;border-radius:9px;background:var(--wit);border:1px solid var(--lijn);display:grid;place-items:center}
+.usp span svg,.ic svg,.ic2 svg,.st .n svg{width:1.25rem;height:1.25rem;display:block}
+.st .n svg{width:1.45rem;height:1.45rem}
 .knoppen{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.4rem}
 .knop{display:inline-block;background:var(--blauw);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-weight:600;text-decoration:none;font-size:.95rem;border:2px solid var(--blauw);transition:transform .12s,background .12s}
 .knop:hover{background:var(--blauwd);border-color:var(--blauwd);transform:translateY(-2px)}
@@ -190,9 +192,13 @@ input:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(37,99,
 .uitk .bedrag{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.6rem;line-height:1.1;color:var(--inkt);background:linear-gradient(transparent 65%,var(--geel) 65%);display:inline-block}
 .uitk .uren{font-size:.86rem;color:var(--grijs);margin:.35rem 0 .9rem}
 
-.stappen{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:1.4rem}
+.stappen{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:1.4rem;position:relative}
+.stappen .st:not(:last-child)::after{content:"";position:absolute;top:1.5rem;right:-.6rem;width:1.2rem;height:2px;background:var(--lijn)}
+.stappen .st:not(:last-child)::before{content:"";position:absolute;top:1.15rem;right:-.65rem;border:5px solid transparent;border-left-color:var(--lijn);z-index:1}
 @media(max-width:900px){.stappen{grid-template-columns:repeat(2,1fr)}}
 .st{text-align:center}
+.st{position:relative}
+.st .nr{display:inline-grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--blauw);color:#fff;font-size:.72rem;margin-right:.35rem;vertical-align:middle}
 .st .n{width:3rem;height:3rem;border-radius:12px;background:var(--zacht);border:1px solid var(--lijn);display:grid;place-items:center;margin:0 auto .6rem;font-size:1.2rem}
 .st b{font-size:.92rem;display:block}
 .st p{font-size:.8rem;color:var(--grijs);line-height:1.5;margin-top:.25rem}
@@ -349,10 +355,10 @@ nav .nb{transition:height .2s}
     <p class="hand" style="font-size:1.5rem;color:var(--inkt);margin:.2rem 0 .9rem;border-bottom:2px solid var(--blauw);display:inline-block;padding-bottom:.2rem">Aanpakken zonder aanmodderen.</p>
     <p class="lead">Wij maken kennis, informatie en processen in je organisatie <b>vindbaar, bruikbaar en betrouwbaar</b> — en automatiseren waar dat echt iets oplevert. Bovenop AFAS, Exact en Microsoft 365 die je al hebt.</p>
     <div class="usp">
-      <div><span>🔍</span>Vind direct wat je nodig hebt</div>
-      <div><span>🛡️</span>Veilig &amp; betrouwbaar</div>
-      <div><span>⚡</span>Van inzicht naar actie</div>
-      <div><span>👥</span>Kennis blijft behouden</div>
+      <div><span><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/><path d="M8 10.5h5"/></svg></span>Vind direct wat je nodig hebt</div>
+      <div><span><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9V6z"/><path d="M9.3 12l2 2 3.6-3.8" stroke-linecap="round"/></svg></span>Veilig &amp; betrouwbaar</div>
+      <div><span><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M13.5 2.5L5 13.5h5.5L9.5 21.5 19 10.5h-6z"/></svg></span>Van inzicht naar actie</div>
+      <div><span><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c0-3.4 2.8-5.6 6.2-5.6s6.2 2.2 6.2 5.6"/><path d="M16.5 5.2a3.4 3.4 0 0 1 0 6.4M18 14.8c2.1.7 3.4 2.5 3.4 5.2"/></svg></span>Kennis blijft behouden</div>
     </div>
     <div class="knoppen">
       <a class="knop" href="#hoe">Bekijk hoe het werkt →</a>
@@ -395,9 +401,9 @@ nav .nb{transition:height .2s}
     <div>
       <h3>Je bedrijf weet ontzettend veel.<br><span style="color:var(--blauw)">Alleen staat het <span class="u">niet altijd klaar</span>.</span></h3>
     </div>
-    <div class="dz"><div class="ic">👤</div><b>Direct de juiste antwoorden</b><p>Uit al je interne bronnen, met bronvermelding erbij.</p></div>
-    <div class="dz"><div class="ic">🛡️</div><b>Veilig en afgeschermd</b><p>Binnen je eigen omgeving, met jouw rechtenmodel.</p></div>
-    <div class="dz"><div class="ic">⚡</div><b>Van inzicht naar actie</b><p>Zet antwoorden om in taken, besluiten en opvolging.</p></div>
+    <div class="dz"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg></div><b>Direct de juiste antwoorden</b><p>Uit al je interne bronnen, met bronvermelding erbij.</p></div>
+    <div class="dz"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9V6z"/><path d="M9.3 12l2 2 3.6-3.8" stroke-linecap="round"/></svg></div><b>Veilig en afgeschermd</b><p>Binnen je eigen omgeving, met jouw rechtenmodel.</p></div>
+    <div class="dz"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M13.5 2.5L5 13.5h5.5L9.5 21.5 19 10.5h-6z"/></svg></div><b>Van inzicht naar actie</b><p>Zet antwoorden om in taken, besluiten en opvolging.</p></div>
   </div>
 </div>
 </section>
@@ -451,10 +457,10 @@ nav .nb{transition:height .2s}
 <div class="wrap">
   <h2 class="sk">Waarom kennis lekt <span style="color:var(--grijs);font-weight:400;font-size:1rem">(en wat het kost)</span></h2>
   <div class="lek">
-    <div class="rij"><div class="ic2">🎯</div><div><b>Strategie verdwijnt</b><p>Doelen en prioriteiten verschuiven, maar context verdwijnt in vergaderingen.</p></div></div>
-    <div class="rij"><div class="ic2">📄</div><div><b>Context verdwijnt</b><p>Historie en achtergrond ontbreken bij nieuwe collega's en stakeholders.</p></div></div>
-    <div class="rij"><div class="ic2">⏱️</div><div><b>Besluitvorming vertraagt</b><p>Besluiten zoeken te lang, waardoor kansen vertragen en kosten oplopen.</p></div></div>
-    <div class="rij"><div class="ic2">👥</div><div><b>Nieuwe mensen herhalen fouten</b><p>Slechte overdracht, onduidelijke processen en verlies van ervaren kennis.</p></div></div>
+    <div class="rij"><div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r="1.2" fill="#FF4F17" stroke="none"/></svg></div><div><b>Strategie verdwijnt</b><p>Doelen en prioriteiten verschuiven, maar context verdwijnt in vergaderingen.</p></div></div>
+    <div class="rij"><div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div><div><b>Context verdwijnt</b><p>Historie en achtergrond ontbreken bij nieuwe collega's en stakeholders.</p></div></div>
+    <div class="rij"><div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13" r="7.6"/><path d="M12 9.2V13l2.6 1.8M9.6 2.8h4.8"/></svg></div><div><b>Besluitvorming vertraagt</b><p>Besluiten zoeken te lang, waardoor kansen vertragen en kosten oplopen.</p></div></div>
+    <div class="rij"><div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c0-3.4 2.8-5.6 6.2-5.6s6.2 2.2 6.2 5.6"/><path d="M16.5 5.2a3.4 3.4 0 0 1 0 6.4M18 14.8c2.1.7 3.4 2.5 3.4 5.2"/></svg></div><div><b>Nieuwe mensen herhalen fouten</b><p>Slechte overdracht, onduidelijke processen en verlies van ervaren kennis.</p></div></div>
   </div>
 </div>
 </section>
@@ -463,11 +469,11 @@ nav .nb{transition:height .2s}
 <div class="wrap">
   <h2 class="sk">Zo werkt <span class="u">Bedrijfsgeheugen</span></h2>
   <div class="stappen">
-    <div class="st"><div class="n">🔗</div><b>1. Verbinden</b><p>We sluiten aan op je bestaande systemen: AFAS, Exact, Microsoft 365, SharePoint.</p></div>
-    <div class="st"><div class="n">🧠</div><b>2. Begrijpen</b><p>De AI leest de inhoud en brengt informatie in verband met elkaar.</p></div>
-    <div class="st"><div class="n">💬</div><b>3. Vragen</b><p>Medewerkers stellen vragen in gewone taal, zonder training vooraf.</p></div>
-    <div class="st"><div class="n">✅</div><b>4. Antwoord</b><p>Je krijgt een betrouwbaar antwoord mét bronvermelding.</p></div>
-    <div class="st"><div class="n">⚡</div><b>5. Actie</b><p>En het zet de volgende stap om in een taak of opvolging.</p></div>
+    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l2.6-2.6a4.5 4.5 0 0 0-6.4-6.4L11 6.6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0L5 12.6a4.5 4.5 0 0 0 6.4 6.4L13 17.4"/></svg></div><b><span class="nr">1</span> Verbinden</b><p>We sluiten aan op je bestaande systemen: AFAS, Exact, Microsoft 365, SharePoint.</p></div>
+    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5a3 3 0 0 0-5.6 1.4A3 3 0 0 0 5 12a3 3 0 0 0 1.8 4.6A3 3 0 0 0 12 18.5z"/><path d="M12 5.5a3 3 0 0 1 5.6 1.4A3 3 0 0 1 19 12a3 3 0 0 1-1.8 4.6A3 3 0 0 1 12 18.5z"/></svg></div><b><span class="nr">2</span> Begrijpen</b><p>De AI leest de inhoud en brengt informatie in verband met elkaar.</p></div>
+    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5c0 3.6-3.6 6.5-8 6.5-1 0-2-.15-2.9-.42L4 20.5l1.5-3.6C4.2 15.7 3.5 14.2 3.5 12.5 3.5 8.9 7.1 6 11.5 6s8.5 2.9 8.5 6.5z"/></svg></div><b><span class="nr">3</span> Vragen</b><p>Medewerkers stellen vragen in gewone taal, zonder training vooraf.</p></div>
+    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="4"/><path d="M8 12.4l2.8 2.8L16.4 9"/></svg></div><b><span class="nr">4</span> Antwoord</b><p>Je krijgt een betrouwbaar antwoord mét bronvermelding.</p></div>
+    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M13.5 2.5L5 13.5h5.5L9.5 21.5 19 10.5h-6z"/></svg></div><b><span class="nr">5</span> Actie</b><p>En het zet de volgende stap om in een taak of opvolging.</p></div>
   </div>
 </div>
 </section>
@@ -476,10 +482,10 @@ nav .nb{transition:height .2s}
 <div class="wrap">
   <h2 class="sk">Voor elke afdeling</h2>
   <div class="afd">
-    <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/sales.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M30 62h140" stroke="#2742D6" stroke-width="2"/><circle cx="70" cy="45" r="11" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="45" r="11" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M81 45h28" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Sales</b><p>Directe toegang tot offertes, prijzen en klantinformatie.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/operations.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="45" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><rect x="85" y="34" width="34" height="30" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><rect x="125" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M30 68h140" stroke="#FF4F17" stroke-width="2"/></svg></div><div class="tk"><b>Operations</b><p>Sneller informatie vinden over processen, voorraad en leveranciers.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/afas-koppeling"><div class="beeld"><img src="/assets/afdelingen/finance.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M40 66V48M65 66V38M90 66V54M115 66V30M140 66V44M165 66V36" stroke="#2742D6" stroke-width="7" stroke-linecap="round"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Finance</b><p>Toegang tot rapporten, contracten en financiële data uit AFAS en Exact.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/hr.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFFCEB"/><circle cx="80" cy="36" r="10" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M62 66c0-10 8-16 18-16s18 6 18 16" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="40" r="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M106 66c0-8 6-13 14-13s14 5 14 13" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>HR</b><p>Antwoorden op beleid, cao, verzuim en onboarding.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><img src="https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021786188887739bc1c88901295dc331d2b18ca32f912fe6f1a53_0_1786188897452_0276b693.jpeg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M30 62h140" stroke="#2742D6" stroke-width="2"/><circle cx="70" cy="45" r="11" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="45" r="11" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M81 45h28" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Sales</b><p>Directe toegang tot offertes, prijzen en klantinformatie.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><img src="https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/0217861888871116438f8a7da3edc67692fae0fdfd3f961aa0d5a_0_1786188899246_3d0aa4cc.jpeg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="45" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><rect x="85" y="34" width="34" height="30" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><rect x="125" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M30 68h140" stroke="#FF4F17" stroke-width="2"/></svg></div><div class="tk"><b>Operations</b><p>Sneller informatie vinden over processen, voorraad en leveranciers.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/afas-koppeling"><div class="beeld"><img src="https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021786188887167f9cb936a41ab283113693068986f31c3aa8710_0_1786188904887_cc321c4b.jpeg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M40 66V48M65 66V38M90 66V54M115 66V30M140 66V44M165 66V36" stroke="#2742D6" stroke-width="7" stroke-linecap="round"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Finance</b><p>Toegang tot rapporten, contracten en financiële data uit AFAS en Exact.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><img src="https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/02178618888714599a3f43520201fc0164769d66e52699fca397a_0_1786188914780_38eb011b.jpeg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFFCEB"/><circle cx="80" cy="36" r="10" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M62 66c0-10 8-16 18-16s18 6 18 16" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="40" r="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M106 66c0-8 6-13 14-13s14 5 14 13" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>HR</b><p>Antwoorden op beleid, cao, verzuim en onboarding.</p><span>Lees meer →</span></div></a>
     <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/management.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M35 62L75 42l30 12 55-28" stroke="#2742D6" stroke-width="3" fill="none"/><circle cx="160" cy="26" r="6" fill="#FF4F17"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Management</b><p>Inzicht in prestaties, besluiten en strategische informatie.</p><span>Lees meer →</span></div></a>
     <a class="ak" href="/connect"><div class="beeld"><img src="/assets/afdelingen/service.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="60" y="30" width="80" height="34" rx="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M78 47h44M78 39h30" stroke="#2742D6" stroke-width="3" stroke-linecap="round"/><path d="M84 64l-6 12 16-12" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Service</b><p>Kennis direct beschikbaar voor je team en je klanten.</p><span>Lees meer →</span></div></a>
   </div>
