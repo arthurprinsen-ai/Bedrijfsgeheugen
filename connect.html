@@ -167,15 +167,38 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<nav aria-label="Hoofdnavigatie">
-  <div class="wrap">
-    <a class="logo" href="/" style="display:inline-flex;align-items:center;gap:.5rem"><svg viewBox="0 0 48 48" aria-hidden="true" style="width:24px;height:24px;transform:rotate(-5deg);flex-shrink:0"><path d="M10 4h28a6 6 0 0 1 6 6v22L32 44H10a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="#FFE86B"/><path d="M44 32 32 44v-8a4 4 0 0 1 4-4h8z" fill="#E2C73C"/><rect x="12" y="14" width="22" height="3.6" rx="1.8" fill="#14171A"/><rect x="12" y="22" width="16" height="3.6" rx="1.8" fill="#FF4F17"/><rect x="12" y="29.5" width="18" height="3.6" rx="1.8" fill="#14171A"/></svg><span class="wm">Bedrijfs<span>geheugen</span></span></a>
-    <a href="#diensten" style="margin-left:auto;margin-right:1.2rem;color:var(--inkt,#14171A);text-decoration:none;font-size:.88rem;font-weight:600">Diensten</a><a class="btn primary" href="#wachtlijst" style="margin-left:0">Zet mij op de wachtlijst</a>
+<div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="#hoe">Hoe het werkt</a>
+    <a href="/afas-koppeling">AFAS koppeling</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
   </div>
-</nav>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="#hoe">Hoe het werkt</a>
+  <a href="/afas-koppeling">AFAS koppeling</a>
+  <a href="/koppelingen">Koppelingskiezer</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
 
 <!-- ═══════════ HERO + WACHTLIJST ═══════════ -->
 <header class="hero">
@@ -328,11 +351,32 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
 </main>
 <footer>
-  <div class="wrap">
-    <div>© <span id="jaar"></span> Bedrijfsgeheugen · Arthur Prinsen</div>
-    <div><a href="/">Hoofdsite</a> · <a href="/zelfscan">Gratis zelfscan</a> · <a href="#contact">Contact</a></div>
+<div class="wrap">
+  <div class="fg">
+    <div>
+      <a class="logo voet" href="/" aria-label="Bedrijfsgeheugen.nl">
+        <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+        <span class="woord">Bedrijfs<b>geheugen</b></span>
+      </a>
+      <p style="font-size:.86rem;margin-top:.7rem;line-height:1.6">Jouw bedrijf. Jouw kennis. En voor altijd. Bedrijfsgeheugen helpt organisaties hun kennis te borgen, veilig te verrijken en direct beschikbaar te maken.</p>
+    </div>
+    <div><h4>Product</h4>
+      <a href="/connect">Connect</a><a href="#hoe">Hoe het werkt</a><a href="/expertises">Expertises</a><a href="/koppelingen">Koppelingskiezer</a><a href="/afas-koppeling">AFAS koppeling</a></div>
+    <div><h4>Resources</h4>
+      <a href="/zelfscan">Gratis zelfscan</a><a href="/frisse-blik">Frisse blik</a><a href="/blog/">Blog</a></div>
+    <div><h4>Over ons</h4>
+      <a href="/over-ons">Over Arthur</a><a href="/expertises">Werkwijze</a><a href="/contact">Contact</a></div>
+    <div><h4>Contact</h4>
+      <a href="tel:+31627483345">06 - 27 48 33 45</a>
+      <a href="mailto:info@bedrijfsgeheugen.nl">info@bedrijfsgeheugen.nl</a>
+      <a href="https://wa.me/31627483345" target="_blank" rel="noopener">WhatsApp →</a>
+      <a href="/privacy">Privacyverklaring</a></div>
   </div>
+  <div class="fb"><span>© <span class="jr">2026</span> Bedrijfsgeheugen · Aanpakken zonder aanmodderen.</span><span>Den Haag · info@bedrijfsgeheugen.nl</span></div>
+</div>
 </footer>
+<a class="wa" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag%20over%20Bedrijfsgeheugen" target="_blank" rel="noopener" aria-label="App Arthur via WhatsApp">
+<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg><span class="tx">App Arthur</span></a>
 
 <div class="mob-cta"><a href="#wachtlijst">🚀 Zet mij op de wachtlijst — 3 mnd gratis</a></div>
 
@@ -418,5 +462,6 @@ const WL={
   });
 })();
 </script>
+<script src="/assets/stijl.js" defer></script>
 </body>
 </html>
