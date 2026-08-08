@@ -73,29 +73,33 @@
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
-:root{--wit:#fff;--inkt:#111827;--blauw:#2563EB;--blauwd:#1E40AF;--geel:#FFE86B;--grijs:#5B6472;--lijn:#E5E7EB;--zacht:#F6F8FC;--groen:#16A34A}
+:root{--papier:#FBFAF7;--wit:#fff;--inkt:#14171A;--blauw:#2742D6;--blauwd:#1B2FA0;--oranje:#FF4F17;--geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--zacht:#F3F1EC;--groen:#1F9D55}
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--wit);color:var(--inkt);font-family:"Instrument Sans",system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;overflow-y:scroll;scrollbar-gutter:stable}
+*::-webkit-scrollbar{width:12px;height:12px}
+*::-webkit-scrollbar-track{background:#EFEDE8}
+*::-webkit-scrollbar-thumb{background:#C2C7CF;border-radius:8px;border:3px solid #EFEDE8}
+*::-webkit-scrollbar-thumb:hover{background:var(--grijs)}
+body{background:var(--papier);color:var(--inkt);font-family:"Instrument Sans",system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;line-height:1.12;letter-spacing:-.02em}
 a{color:var(--blauw)}
 .wrap{max-width:72rem;margin:0 auto;padding:0 1.25rem}
 .hand{font-family:"Caveat",cursive;font-weight:600}
 
-nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--lijn)}
+nav{position:sticky;top:0;z-index:50;background:rgba(251,250,247,.94);backdrop-filter:blur(10px);border-bottom:2px solid var(--inkt)}
 .nb{display:flex;align-items:center;gap:1.6rem;height:68px}
 .logo{display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--inkt);flex:none}
-.logo .mark{width:34px;height:34px;flex:none;display:block}
+.logo .mark{width:36px;height:36px;flex:none;display:block}
 .logo .woord{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.18rem;letter-spacing:-.02em;white-space:nowrap;line-height:1}
 .logo b{color:var(--blauw);font-weight:800}
 .logo i{font-style:normal;color:var(--grijs);font-weight:600;font-size:.82em}
 .logo.voet{color:#fff}
-.logo.voet b{color:#8AA6FF}
+.logo.voet b{color:#8FA3FF}
 .logo.voet i{color:#8C97AE}
 .nl2{display:flex;gap:1.4rem;margin-left:auto}
 .nl2 a{font-size:.92rem;color:var(--inkt);text-decoration:none;font-weight:500}
 .nl2 a:hover{color:var(--blauw)}
-.ncta{background:var(--blauw);color:#fff!important;padding:.6rem 1.1rem;border-radius:8px;font-weight:600;text-decoration:none;font-size:.92rem}
+.ncta{background:var(--blauw);color:#fff!important;padding:.6rem 1.1rem;border-radius:10px;font-weight:600;text-decoration:none;font-size:.92rem;border:2px solid var(--blauw)}
 @media(max-width:900px){.nl2{display:none}}
 .menuknop{display:none;margin-left:auto;background:none;border:1px solid var(--lijn);border-radius:9px;width:44px;height:44px;cursor:pointer;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:0}
 .menuknop span{display:block;width:19px;height:2px;background:var(--inkt);border-radius:2px;transition:transform .2s,opacity .2s}
@@ -116,7 +120,7 @@ nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-f
   .logo .mark{width:30px;height:30px}
 }
 
-.pil{display:inline-flex;align-items:center;gap:.5rem;border:1px solid #C7D2FE;background:#EEF2FF;color:var(--blauwd);border-radius:20px;padding:.35rem .8rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.pil{display:inline-flex;align-items:center;gap:.5rem;border:2px solid var(--inkt);background:var(--geel);color:var(--inkt);border-radius:20px;padding:.35rem .8rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 .hero{padding:3.5rem 0 2rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
 @media(max-width:980px){.hero{grid-template-columns:1fr;gap:2rem}}
 h1{font-size:clamp(2.2rem,5vw,3.5rem);margin:1rem 0 .4rem}
@@ -127,10 +131,12 @@ h1 .b{color:var(--blauw);display:block}
 .usp div{display:flex;gap:.55rem;align-items:center;font-size:.88rem;font-weight:600}
 .usp span{width:2.1rem;height:2.1rem;border-radius:8px;background:var(--zacht);display:grid;place-items:center;font-size:.95rem}
 .knoppen{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.4rem}
-.knop{display:inline-block;background:var(--blauw);color:#fff;padding:.85rem 1.4rem;border-radius:9px;font-weight:600;text-decoration:none;font-size:.95rem}
-.knop.lijn{background:#fff;color:var(--blauw);border:1.5px solid var(--blauw)}
+.knop{display:inline-block;background:var(--blauw);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-weight:600;text-decoration:none;font-size:.95rem;border:2px solid var(--blauw);transition:transform .12s,background .12s}
+.knop:hover{background:var(--blauwd);border-color:var(--blauwd);transform:translateY(-2px)}
+.knop.lijn{background:transparent;color:var(--inkt);border:2px solid var(--inkt)}
+.knop.lijn:hover{background:var(--geel);color:var(--inkt);border-color:var(--inkt)}
 
-.chat{background:#fff;border:1px solid var(--lijn);border-radius:16px;box-shadow:0 18px 50px rgba(17,24,39,.09);padding:1.15rem}
+.chat{background:var(--wit);border:2px solid var(--inkt);border-radius:12px;padding:1.15rem}
 .vraag{display:flex;gap:.7rem;align-items:flex-start;justify-content:flex-end;margin-bottom:1rem}
 .vraag p{background:var(--zacht);border-radius:12px 12px 2px 12px;padding:.7rem .9rem;font-size:.92rem}
 .foto{width:2.4rem;height:2.4rem;border-radius:50%;background:linear-gradient(135deg,#94A3B8,#475569);flex:none}
@@ -163,7 +169,7 @@ section{padding:3.2rem 0}
 .ic{width:2.3rem;height:2.3rem;border-radius:9px;background:#fff;border:1px solid var(--lijn);display:grid;place-items:center;font-size:1rem}
 
 .onderzoek{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:1.1rem;margin-top:1.4rem}
-.ok{background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:1.1rem;text-align:center;box-shadow:0 2px 10px rgba(17,24,39,.04)}
+.ok{background:var(--wit);border:1px solid var(--lijn);border-radius:12px;padding:1.1rem;text-align:center}
 .ok .br{font-size:.74rem;color:var(--grijs);font-weight:600;margin-bottom:.6rem}
 .ok .gr{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.4rem;line-height:1;background:linear-gradient(transparent 62%,var(--geel) 62%);display:inline-block;padding:0 .15rem}
 .ok p{font-size:.84rem;color:var(--inkt);margin-top:.6rem;line-height:1.5}
@@ -199,7 +205,7 @@ input:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(37,99,
 .ak p{font-size:.8rem;color:var(--grijs);line-height:1.5;margin-top:.2rem}
 .ak span{font-size:.8rem;color:var(--blauw);font-weight:600;display:inline-block;margin-top:.5rem}
 
-.aanbod{border:1px solid var(--lijn);border-radius:16px;padding:1.8rem;display:grid;grid-template-columns:1.2fr 1fr .9fr;gap:1.8rem;align-items:center;margin-top:1.5rem;background:#fff;box-shadow:0 4px 18px rgba(17,24,39,.05)}
+.aanbod{border:2px solid var(--inkt);border-radius:12px;padding:1.8rem;display:grid;grid-template-columns:1.2fr 1fr .9fr;gap:1.8rem;align-items:center;margin-top:1.5rem;background:var(--wit)}
 @media(max-width:900px){.aanbod{grid-template-columns:1fr;gap:1.2rem}}
 .vink{font-size:.9rem;margin:.4rem 0;display:flex;gap:.55rem;align-items:flex-start}
 .vink i{color:var(--blauw);font-style:normal}
@@ -212,9 +218,9 @@ summary{cursor:pointer;list-style:none;padding:.9rem 1.1rem;font-weight:600;font
 summary::-webkit-details-marker{display:none}
 details p{padding:0 1.1rem 1rem;font-size:.92rem;color:var(--grijs)}
 
-footer{background:#0F1B3D;color:#C7CEDD;padding:2.6rem 0 1.4rem;margin-top:2rem}
+footer{background:var(--inkt);color:#B9BFC7;padding:2.6rem 0 1.4rem;margin-top:2rem}
 footer h4{color:#fff;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.7rem}
-footer a{color:#C7CEDD;text-decoration:none;display:block;font-size:.88rem;margin:.3rem 0}
+footer a{color:#B9BFC7;text-decoration:none;display:block;font-size:.88rem;margin:.3rem 0}
 footer a:hover{color:#fff}
 .fg{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:2rem}
 @media(max-width:800px){.fg{grid-template-columns:1fr 1fr}}
@@ -252,15 +258,15 @@ footer a:hover{color:#fff}
 @media(max-width:720px){
   .mobbalk{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--blauw);color:#fff;text-align:center;padding:.9rem;font-weight:600;font-size:.92rem;text-decoration:none;box-shadow:0 -4px 18px rgba(17,24,39,.16)}
 }
-.fb{border-top:1px solid #25335C;margin-top:1.6rem;padding-top:1rem;font-size:.8rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.fb{border-top:1px solid #2B3138;margin-top:1.6rem;padding-top:1rem;font-size:.8rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 </style>
 </head>
 <body>
 
 <nav><div class="wrap nb">
   <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
-    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#2563EB"/><path d="M12 27V15.5A3.5 3.5 0 0 1 15.5 12h1.2a2.8 2.8 0 0 1 2.8 2.8V27" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M28 27V15.5A3.5 3.5 0 0 0 24.5 12h-1.2a2.8 2.8 0 0 0-2.8 2.8V27" stroke="#FFE86B" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="20" cy="20.5" r="2.1" fill="#FFE86B"/></svg>
-    <span class="woord">Bedrijfs<b>geheugen</b><i>.nl</i></span>
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
   </a>
   <div class="nl2">
     <a href="/expertises">Expertises</a>
@@ -347,7 +353,7 @@ footer a:hover{color:#fff}
   </div>
 
   <div class="calc">
-    <h3 style="font-size:1.15rem">Reken je kennisverlies zelf uit</h3>
+    <h3 style="font-size:1.15rem">Reken je kennisverlies zelf uit <span class="hand" style="color:var(--oranje);font-size:1.25rem;margin-left:.4rem">← vul je eigen cijfers in</span></h3>
     <p class="sub" style="font-size:.9rem">Gebaseerd op aannames uit onderzoek en benchmarks. Vul je eigen cijfers in.</p>
     <div class="calcgrid">
       <div class="aanname"><b>Onze aannames</b>
@@ -445,8 +451,8 @@ footer a:hover{color:#fff}
   <div class="fg">
     <div>
       <a class="logo voet" href="/" aria-label="Bedrijfsgeheugen.nl">
-        <svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1D3AA8"/><path d="M12 27V15.5A3.5 3.5 0 0 1 15.5 12h1.2a2.8 2.8 0 0 1 2.8 2.8V27" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M28 27V15.5A3.5 3.5 0 0 0 24.5 12h-1.2a2.8 2.8 0 0 0-2.8 2.8V27" stroke="#FFE86B" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="20" cy="20.5" r="2.1" fill="#FFE86B"/></svg>
-        <span class="woord">Bedrijfs<b>geheugen</b><i>.nl</i></span>
+        <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+        <span class="woord">Bedrijfs<b>geheugen</b></span>
       </a>
       <p style="font-size:.86rem;margin-top:.7rem;line-height:1.6">Jouw bedrijf. Jouw kennis. En voor altijd. Bedrijfsgeheugen helpt organisaties hun kennis te borgen, veilig te verrijken en direct beschikbaar te maken.</p>
     </div>
@@ -460,6 +466,7 @@ footer a:hover{color:#fff}
   <div class="fb"><span>© <span class="jr">2026</span> Bedrijfsgeheugen · Aanpakken zonder aanmodderen.</span><span>Den Haag · info@bedrijfsgeheugen.nl</span></div>
 </div>
 </footer>
+<div style="height:20px;background:var(--blauw)"></div>
 <a class="mobbalk" href="/zelfscan">Gratis zelfscan — 2 minuten, direct advies</a>
 
 <script>
