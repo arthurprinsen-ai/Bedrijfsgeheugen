@@ -195,7 +195,7 @@ input:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(37,99,
 .uitk .bedrag{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.6rem;line-height:1.1;color:var(--inkt);background:linear-gradient(transparent 65%,var(--geel) 65%);display:inline-block}
 .uitk .uren{font-size:.86rem;color:var(--grijs);margin:.35rem 0 .9rem}
 
-.stappen{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;margin-top:1.4rem;position:relative}
+.stappen{display:grid;grid-template-columns:repeat(6,1fr);gap:.8rem;margin-top:1.4rem;position:relative}
 .stappen .st:not(:last-child)::after{content:"";position:absolute;top:1.5rem;right:-.6rem;width:1.2rem;height:2px;background:var(--lijn)}
 .stappen .st:not(:last-child)::before{content:"";position:absolute;top:1.15rem;right:-.65rem;border:5px solid transparent;border-left-color:var(--lijn);z-index:1}
 @media(max-width:900px){.stappen{grid-template-columns:repeat(2,1fr)}}
@@ -327,6 +327,31 @@ nav .nb{transition:height .2s}
 .ak .beeld svg{position:absolute;inset:0;z-index:1}
 .ak{transition:transform .18s, box-shadow .18s}
 .ak:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(20,23,26,.09)}
+
+.doorwerk{display:grid;grid-template-columns:1fr auto 1.35fr;gap:1.2rem;align-items:center;margin-top:1.4rem}
+@media(max-width:900px){.doorwerk{grid-template-columns:1fr;gap:.8rem}}
+.doorwerk .lbl{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--grijs);font-weight:600;margin-bottom:.5rem}
+.bron{background:var(--geel);border:2px solid var(--inkt);border-radius:12px;padding:1.1rem 1.2rem}
+.bron .wijz{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.35rem;line-height:1.15}
+.gevolg{background:var(--wit);border:2px solid var(--inkt);border-radius:12px;padding:1.1rem 1.2rem}
+.afdrij{display:grid;grid-template-columns:7rem 1fr;gap:.7rem;padding:.42rem 0;border-bottom:1px solid var(--lijn);font-size:.87rem;align-items:baseline}
+.afdrij b{color:var(--blauw)}
+.afdrij span{color:var(--grijs)}
+.pijl{display:flex;flex-direction:column;gap:.28rem;align-items:center}
+.pijl span{width:.5rem;height:.5rem;border-radius:50%;background:var(--blauw);opacity:.35;animation:stroom 1.5s infinite}
+.pijl span:nth-child(2){animation-delay:.2s}.pijl span:nth-child(3){animation-delay:.4s}
+@keyframes stroom{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+@media(max-width:900px){.pijl{flex-direction:row}}
+@media(prefers-reduced-motion:reduce){.pijl span{animation:none;opacity:.6}}
+.bouw8{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-top:1.2rem}
+@media(max-width:900px){.bouw8{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.bouw8{grid-template-columns:1fr}}
+.bs{background:var(--wit);border:1px solid var(--lijn);border-left:4px solid var(--blauw);border-radius:0 10px 10px 0;padding:.85rem .95rem}
+.bs b{display:block;font-size:.93rem;margin-bottom:.15rem}
+.bs span{font-size:.83rem;color:var(--grijs);line-height:1.5}
+.let2{margin-top:1.2rem;background:var(--wit);border:2px solid var(--inkt);border-radius:12px;padding:1.1rem 1.25rem}
+.let2 b{font-family:"Bricolage Grotesque";font-size:1.05rem}
+.let2 p{font-size:.9rem;color:var(--grijs);line-height:1.6;margin-top:.3rem}
 </style>
 </head>
 <body>
@@ -365,7 +390,7 @@ nav .nb{transition:height .2s}
     <span class="pil">Voor het mkb</span>
     <h1>Bedrijfskennis<span class="b">die <span class="mark">werkt</span>.</span></h1>
     <p class="hand" style="font-size:1.5rem;color:var(--inkt);margin:.2rem 0 .9rem;border-bottom:2px solid var(--blauw);display:inline-block;padding-bottom:.15rem;line-height:1.2">Aanpakken zonder aanmodderen.</p>
-    <p class="lead">Wij maken kennis, informatie en processen in je organisatie <b>vindbaar, bruikbaar en betrouwbaar</b> — en automatiseren waar dat echt iets oplevert. Bovenop AFAS, Exact en Microsoft 365 die je al hebt.</p>
+    <p class="lead">Strategie, processen, kennis, systemen en acties blijven met elkaar verbonden. <b>Wijzig je iets, dan zie je direct wat er verandert</b> — en welke acties daaruit volgen. Bovenop AFAS, Exact en Microsoft 365 die je al hebt.</p>
     <div class="usp">
       <div><span><img src="/assets/iconen/vind_direct.png" alt="" width="128" height="128" decoding="async"></span>Vind direct wat je nodig hebt</div>
       <div><span><img src="/assets/iconen/veilig_betrouwbaar.png" alt="" width="128" height="128" decoding="async"></span>Veilig &amp; betrouwbaar</div>
@@ -481,15 +506,67 @@ nav .nb{transition:height .2s}
 </div>
 </section>
 
+<section id="levend" style="background:var(--zacht)">
+<div class="wrap">
+  <span class="pil" style="margin-bottom:.7rem">Wat ons anders maakt</span>
+  <h2 class="sk">Eén wijziging. <span class="mark">Overal doorgewerkt.</span></h2>
+  <p class="sub" style="margin-top:.4rem">Documenten verouderen. Strategie verwatert. Processen veranderen. En voor je het weet werkt elke afdeling met een andere versie van de werkelijkheid. Wij zorgen dat dat niet gebeurt.</p>
+
+  <div class="doorwerk">
+    <div class="bron">
+      <div class="lbl">Je wijzigt één ding</div>
+      <div class="wijz">Meer focus op<br><b>bestaande klanten</b></div>
+      <div class="sub" style="font-size:.8rem;margin-top:.5rem">Strategie · bijgewerkt vandaag</div>
+    </div>
+    <div class="pijl" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="gevolg">
+      <div class="lbl">Dit verandert daardoor</div>
+      <div class="afdrij"><b>Sales</b><span>Prioriteit van acquisitie naar behoud · 47 accounts nakijken</span></div>
+      <div class="afdrij"><b>Marketing</b><span>Campagnes en KPI's aangepast</span></div>
+      <div class="afdrij"><b>Service</b><span>Nieuwe klantdoelstellingen</span></div>
+      <div class="afdrij"><b>Operations</b><span>Twee processen moeten om</span></div>
+      <div class="afdrij"><b>Finance</b><span>Targets en rapportage bijgesteld</span></div>
+      <div class="afdrij"><b>Management</b><span>Andere stuurinformatie</span></div>
+      <div class="acties" style="margin-top:.7rem"><div>Maak taken aan</div><div>Open processen</div><div>Bekijk KPI's</div></div>
+    </div>
+  </div>
+
+  <p class="hand" style="font-size:1.35rem;color:var(--oranje);text-align:center;margin-top:1.1rem">Niet “de strategie is bijgewerkt”, maar “dit verandert er bij jou”.</p>
+</div>
+</section>
+
+<section>
+<div class="wrap">
+  <h2 class="sk">Eén plek waar staat <span class="u">hoe je organisatie werkt</span></h2>
+  <p class="sub">Acht bouwstenen, met elkaar verbonden. Daarom weet het portaal wat er geraakt wordt als er iets verandert.</p>
+  <div class="bouw8">
+    <div class="bs"><b>Strategie</b><span>Wat willen we bereiken, en waarom?</span></div>
+    <div class="bs"><b>Doelen en maatstaven</b><span>Hoe meten we of we vooruitgaan?</span></div>
+    <div class="bs"><b>Besluiten</b><span>Welke keuzes hebben we gemaakt, en waarom?</span></div>
+    <div class="bs"><b>Processen</b><span>Hoe voeren we het werk uit?</span></div>
+    <div class="bs"><b>Rollen</b><span>Wie is waarvoor verantwoordelijk?</span></div>
+    <div class="bs"><b>Systemen en koppelingen</b><span>Wat ondersteunt welk proces, en hoe hangt het samen?</span></div>
+    <div class="bs"><b>Documenten</b><span>Welk document hoort bij welk proces of besluit?</span></div>
+    <div class="bs"><b>Acties</b><span>Wat moet er nu gebeuren, door wie en wanneer?</span></div>
+  </div>
+  <div class="let2">
+    <b>Het portaal is de bron, niet het document.</b>
+    <p>Een kennisbank raakt vol met <i>Strategie_2026_definitief_v4.pdf</i>. Bij ons hangt elk document aan een proces of besluit. Verandert de bron, dan krijgt het document meteen een vlag: mogelijk verouderd. Je zoekt niet meer welke versie klopt.</p>
+  </div>
+</div>
+</section>
+
 <section id="hoe">
 <div class="wrap">
-  <h2 class="sk">Zo werkt <span class="u">Bedrijfsgeheugen</span></h2>
+  <h2 class="sk">Zo blijft het <span class="u">actueel</span></h2>
+  <p class="sub" style="margin-bottom:.3rem">Geen project met een einddatum, maar een kringloop. Stap drie is waar het bij anderen misgaat.</p>
   <div class="stappen">
-    <div class="st"><div class="n"><img src="/assets/iconen/verbinden.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">1</span> Verbinden</b><p>We sluiten aan op je bestaande systemen: AFAS, Exact, Microsoft 365, SharePoint.</p></div>
-    <div class="st"><div class="n"><img src="/assets/iconen/begrijpen.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">2</span> Begrijpen</b><p>De AI leest de inhoud en brengt informatie in verband met elkaar.</p></div>
-    <div class="st"><div class="n"><img src="/assets/iconen/vragen.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">3</span> Vragen</b><p>Medewerkers stellen vragen in gewone taal, zonder training vooraf.</p></div>
-    <div class="st"><div class="n"><img src="/assets/iconen/antwoorden.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">4</span> Antwoord</b><p>Je krijgt een betrouwbaar antwoord mét bronvermelding.</p></div>
-    <div class="st"><div class="n"><img src="/assets/iconen/actie.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">5</span> Actie</b><p>En het zet de volgende stap om in een taak of opvolging.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/verbinden.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">1</span> Vastleggen</b><p>De kern van je organisatie één keer gestructureerd vast: strategie, processen, rollen, systemen.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/begrijpen.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">2</span> Verbinden</b><p>Alles krijgt zijn plek ten opzichte van de rest, en sluit aan op AFAS, Exact en Microsoft 365.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/vragen.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">3</span> Actueel houden</b><p>Elk onderdeel heeft een eigenaar en een houdbaarheidsdatum. Verloopt het, dan krijgt die persoon bericht.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/antwoorden.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">4</span> Doorvertalen</b><p>Verandert er iets, dan zie je meteen wat het raakt — per afdeling, per proces, per maatstaf.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/actie.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">5</span> Uitvoeren</b><p>Het wordt een taak met een naam en een datum. Geen voornemen.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/besluitvorming.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">6</span> Meten en leren</b><p>Wat het opleverde gaat terug de kringloop in. Daarom heet het een geheugen.</p></div>
   </div>
 </div>
 </section>
