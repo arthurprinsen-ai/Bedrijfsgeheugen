@@ -203,11 +203,14 @@ input:focus{outline:0;border-color:var(--blauw);box-shadow:0 0 0 3px rgba(37,99,
 .st b{font-size:.92rem;display:block}
 .st p{font-size:.8rem;color:var(--grijs);line-height:1.5;margin-top:.25rem}
 
-.afd{display:grid;grid-template-columns:repeat(auto-fit,minmax(10.5rem,1fr));gap:1rem;margin-top:1.3rem}
+.afd{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-top:1.3rem}
+@media(max-width:1180px){.afd{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:720px){.afd{grid-template-columns:repeat(2,1fr);gap:.7rem}}
+@media(max-width:420px){.afd{grid-template-columns:1fr}}
 .ak{border:1px solid var(--lijn);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;display:block}
 .ak .beeld{height:5.5rem;background:linear-gradient(135deg,#DBEAFE,#EFF6FF);display:grid;place-items:center;font-size:1.6rem}
-.ak .tk{padding:.85rem}
-.ak b{font-size:.92rem}
+.ak .tk{padding:.8rem .85rem 1rem}
+.ak b{font-size:.95rem;display:block;margin-bottom:.15rem}
 .ak p{font-size:.8rem;color:var(--grijs);line-height:1.5;margin-top:.2rem}
 .ak span{font-size:.8rem;color:var(--blauw);font-weight:600;display:inline-block;margin-top:.5rem}
 
@@ -310,7 +313,10 @@ nav .nb{transition:height .2s}
 .lek p{font-size:.85rem;color:var(--grijs);line-height:1.55;margin-top:.2rem}
 
 /* afdelingsbeelden */
-.ak .beeld{height:6.5rem;position:relative;overflow:hidden;background:var(--zacht)}
+.ak .beeld{height:7.5rem;position:relative;overflow:hidden;background:var(--zacht)}
+@media(max-width:720px){.ak .beeld{height:6rem}}
+.ak .beeld .fotokaart{transition:transform .35s ease}
+.ak:hover .beeld .fotokaart{transform:scale(1.05)}
 .ak .beeld svg{width:100%;height:100%;display:block}
 .ak .beeld .fotokaart{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
 .ak{transition:transform .18s, box-shadow .18s}
@@ -480,7 +486,7 @@ nav .nb{transition:height .2s}
 
 <section>
 <div class="wrap">
-  <h2 class="sk">Voor elke afdeling</h2>
+  <h2 class="sk">Voor elke afdeling. <span style="color:var(--geel);-webkit-text-stroke:1px var(--inkt);font-size:1.4rem">✦</span></h2>
   <div class="afd">
     <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/sales.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M30 62h140" stroke="#2742D6" stroke-width="2"/><circle cx="70" cy="45" r="11" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="45" r="11" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M81 45h28" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Sales</b><p>Directe toegang tot offertes, prijzen en klantinformatie.</p><span>Lees meer →</span></div></a>
     <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/operations.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="45" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><rect x="85" y="34" width="34" height="30" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><rect x="125" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M30 68h140" stroke="#FF4F17" stroke-width="2"/></svg></div><div class="tk"><b>Operations</b><p>Sneller informatie vinden over processen, voorraad en leveranciers.</p><span>Lees meer →</span></div></a>
