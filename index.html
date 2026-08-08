@@ -131,6 +131,9 @@ h1 .b{color:var(--blauw);display:block}
 .usp div{display:flex;gap:.55rem;align-items:center;font-size:.88rem;font-weight:600}
 .usp span{width:2.3rem;height:2.3rem;border-radius:9px;background:var(--wit);border:1px solid var(--lijn);display:grid;place-items:center}
 .usp span svg,.ic svg,.ic2 svg,.st .n svg{width:1.25rem;height:1.25rem;display:block}
+.usp span img,.ic img,.ic2 img{width:1.35rem;height:1.35rem;display:block;object-fit:contain}
+.st .n img{width:1.6rem;height:1.6rem;display:block;object-fit:contain}
+.vink img{flex:none;margin-top:.15rem}
 .st .n svg{width:1.45rem;height:1.45rem}
 .knoppen{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.4rem}
 .knop{display:inline-block;background:var(--blauw);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-weight:600;text-decoration:none;font-size:.95rem;border:2px solid var(--blauw);transition:transform .12s,background .12s}
@@ -362,10 +365,10 @@ nav .nb{transition:height .2s}
     <p class="hand" style="font-size:1.5rem;color:var(--inkt);margin:.2rem 0 .9rem;border-bottom:2px solid var(--blauw);display:inline-block;padding-bottom:.2rem">Aanpakken zonder aanmodderen.</p>
     <p class="lead">Wij maken kennis, informatie en processen in je organisatie <b>vindbaar, bruikbaar en betrouwbaar</b> — en automatiseren waar dat echt iets oplevert. Bovenop AFAS, Exact en Microsoft 365 die je al hebt.</p>
     <div class="usp">
-      <div><span><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/><path d="M8 10.5h5"/></svg></span>Vind direct wat je nodig hebt</div>
-      <div><span><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9V6z"/><path d="M9.3 12l2 2 3.6-3.8" stroke-linecap="round"/></svg></span>Veilig &amp; betrouwbaar</div>
-      <div><span><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M13.5 2.5L5 13.5h5.5L9.5 21.5 19 10.5h-6z"/></svg></span>Van inzicht naar actie</div>
-      <div><span><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c0-3.4 2.8-5.6 6.2-5.6s6.2 2.2 6.2 5.6"/><path d="M16.5 5.2a3.4 3.4 0 0 1 0 6.4M18 14.8c2.1.7 3.4 2.5 3.4 5.2"/></svg></span>Kennis blijft behouden</div>
+      <div><span><img src="/assets/iconen/vind_direct.png" alt="" width="128" height="128" decoding="async"></span>Vind direct wat je nodig hebt</div>
+      <div><span><img src="/assets/iconen/veilig_betrouwbaar.png" alt="" width="128" height="128" decoding="async"></span>Veilig &amp; betrouwbaar</div>
+      <div><span><img src="/assets/iconen/van_inzicht_naar_actie.png" alt="" width="128" height="128" decoding="async"></span>Van inzicht naar actie</div>
+      <div><span><img src="/assets/iconen/kennis_blijft_behouden.png" alt="" width="128" height="128" decoding="async"></span>Kennis blijft behouden</div>
     </div>
     <div class="knoppen">
       <a class="knop" href="#hoe">Bekijk hoe het werkt →</a>
@@ -406,11 +409,12 @@ nav .nb{transition:height .2s}
 <div class="wrap">
   <div class="drieblok">
     <div>
+      <img src="/assets/iconen/check_groot.png" alt="" width="34" height="34" style="margin-bottom:.5rem">
       <h3>Je bedrijf weet ontzettend veel.<br><span style="color:var(--blauw)">Alleen staat het <span class="u">niet altijd klaar</span>.</span></h3>
     </div>
-    <div class="dz"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg></div><b>Direct de juiste antwoorden</b><p>Uit al je interne bronnen, met bronvermelding erbij.</p></div>
-    <div class="dz"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9V6z"/><path d="M9.3 12l2 2 3.6-3.8" stroke-linecap="round"/></svg></div><b>Veilig en afgeschermd</b><p>Binnen je eigen omgeving, met jouw rechtenmodel.</p></div>
-    <div class="dz"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M13.5 2.5L5 13.5h5.5L9.5 21.5 19 10.5h-6z"/></svg></div><b>Van inzicht naar actie</b><p>Zet antwoorden om in taken, besluiten en opvolging.</p></div>
+    <div class="dz"><div class="ic"><img src="/assets/iconen/direct_juiste_antwoorden.png" alt="" width="128" height="128" decoding="async"></div><b>Direct de juiste antwoorden</b><p>Uit al je interne bronnen, met bronvermelding erbij.</p></div>
+    <div class="dz"><div class="ic"><img src="/assets/iconen/veilig_compliant.png" alt="" width="128" height="128" decoding="async"></div><b>Veilig en afgeschermd</b><p>Binnen je eigen omgeving, met jouw rechtenmodel.</p></div>
+    <div class="dz"><div class="ic"><img src="/assets/iconen/inzicht_naar_actie_strip.png" alt="" width="128" height="128" decoding="async"></div><b>Van inzicht naar actie</b><p>Zet antwoorden om in taken, besluiten en opvolging.</p></div>
   </div>
 </div>
 </section>
@@ -431,9 +435,12 @@ nav .nb{transition:height .2s}
   </div>
 
   <div class="calc">
-    <h3 style="font-size:1.15rem">Reken je kennisverlies zelf uit <span class="hand" style="color:var(--oranje);font-size:1.25rem;margin-left:.4rem">← vul je eigen cijfers in</span></h3>
-    <p class="sub" style="font-size:.9rem">Gebaseerd op aannames uit onderzoek en benchmarks. Vul je eigen cijfers in.</p>
-    <div class="calcgrid">
+    <h3 style="font-size:1.15rem;display:flex;align-items:center;gap:.6rem"><img src="/assets/iconen/calculator.png" alt="" width="30" height="30">Bereken de kosten van kennisverlies in jouw organisatie <span class="hand" style="color:var(--oranje);font-size:1.25rem;margin-left:.4rem">← vul je eigen cijfers in</span></h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+      <p class="sub" style="font-size:.9rem;margin:0">Gebaseerd op conservatieve aannames uit toonaangevend onderzoek.</p>
+      <button id="calcKnop" aria-expanded="true" aria-controls="calcVeld" style="display:inline-flex;align-items:center;gap:.5rem;background:none;border:1px solid var(--lijn);border-radius:22px;padding:.45rem .8rem;font:inherit;font-size:.82rem;font-weight:600;color:var(--blauw);cursor:pointer">Open de calculator <img src="/assets/iconen/plus.png" alt="" width="18" height="18"></button>
+    </div>
+    <div class="calcgrid" id="calcVeld">
       <div class="aanname"><b>Onze aannames</b>
         <ul>
           <li><b>Zoektijd per medewerker:</b> 30 min per dag <span style="display:block;font-size:.78rem">(Atlassian: 25% van de tijd zoeken)</span></li>
@@ -464,10 +471,10 @@ nav .nb{transition:height .2s}
 <div class="wrap">
   <h2 class="sk">Waarom kennis lekt <span style="color:var(--grijs);font-weight:400;font-size:1rem">(en wat het kost)</span></h2>
   <div class="lek">
-    <div class="rij"><div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r="1.2" fill="#FF4F17" stroke="none"/></svg></div><div><b>Strategie verdwijnt</b><p>Doelen en prioriteiten verschuiven, maar context verdwijnt in vergaderingen.</p></div></div>
-    <div class="rij"><div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div><div><b>Context verdwijnt</b><p>Historie en achtergrond ontbreken bij nieuwe collega's en stakeholders.</p></div></div>
-    <div class="rij"><div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13" r="7.6"/><path d="M12 9.2V13l2.6 1.8M9.6 2.8h4.8"/></svg></div><div><b>Besluitvorming vertraagt</b><p>Besluiten zoeken te lang, waardoor kansen vertragen en kosten oplopen.</p></div></div>
-    <div class="rij"><div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c0-3.4 2.8-5.6 6.2-5.6s6.2 2.2 6.2 5.6"/><path d="M16.5 5.2a3.4 3.4 0 0 1 0 6.4M18 14.8c2.1.7 3.4 2.5 3.4 5.2"/></svg></div><div><b>Nieuwe mensen herhalen fouten</b><p>Slechte overdracht, onduidelijke processen en verlies van ervaren kennis.</p></div></div>
+    <div class="rij"><div class="ic2"><img src="/assets/iconen/strategie.png" alt="" width="128" height="128" decoding="async"></div><div><b>Strategie verdwijnt</b><p>Doelen en prioriteiten verschuiven, maar context verdwijnt in vergaderingen.</p></div></div>
+    <div class="rij"><div class="ic2"><img src="/assets/iconen/context.png" alt="" width="128" height="128" decoding="async"></div><div><b>Context verdwijnt</b><p>Historie en achtergrond ontbreken bij nieuwe collega's en stakeholders.</p></div></div>
+    <div class="rij"><div class="ic2"><img src="/assets/iconen/besluitvorming.png" alt="" width="128" height="128" decoding="async"></div><div><b>Besluitvorming vertraagt</b><p>Besluiten zoeken te lang, waardoor kansen vertragen en kosten oplopen.</p></div></div>
+    <div class="rij"><div class="ic2"><img src="/assets/iconen/nieuwe_medewerkers.png" alt="" width="128" height="128" decoding="async"></div><div><b>Nieuwe mensen herhalen fouten</b><p>Slechte overdracht, onduidelijke processen en verlies van ervaren kennis.</p></div></div>
   </div>
 </div>
 </section>
@@ -476,11 +483,11 @@ nav .nb{transition:height .2s}
 <div class="wrap">
   <h2 class="sk">Zo werkt <span class="u">Bedrijfsgeheugen</span></h2>
   <div class="stappen">
-    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l2.6-2.6a4.5 4.5 0 0 0-6.4-6.4L11 6.6"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0L5 12.6a4.5 4.5 0 0 0 6.4 6.4L13 17.4"/></svg></div><b><span class="nr">1</span> Verbinden</b><p>We sluiten aan op je bestaande systemen: AFAS, Exact, Microsoft 365, SharePoint.</p></div>
-    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5a3 3 0 0 0-5.6 1.4A3 3 0 0 0 5 12a3 3 0 0 0 1.8 4.6A3 3 0 0 0 12 18.5z"/><path d="M12 5.5a3 3 0 0 1 5.6 1.4A3 3 0 0 1 19 12a3 3 0 0 1-1.8 4.6A3 3 0 0 1 12 18.5z"/></svg></div><b><span class="nr">2</span> Begrijpen</b><p>De AI leest de inhoud en brengt informatie in verband met elkaar.</p></div>
-    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5c0 3.6-3.6 6.5-8 6.5-1 0-2-.15-2.9-.42L4 20.5l1.5-3.6C4.2 15.7 3.5 14.2 3.5 12.5 3.5 8.9 7.1 6 11.5 6s8.5 2.9 8.5 6.5z"/></svg></div><b><span class="nr">3</span> Vragen</b><p>Medewerkers stellen vragen in gewone taal, zonder training vooraf.</p></div>
-    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="4"/><path d="M8 12.4l2.8 2.8L16.4 9"/></svg></div><b><span class="nr">4</span> Antwoord</b><p>Je krijgt een betrouwbaar antwoord mét bronvermelding.</p></div>
-    <div class="st"><div class="n"><svg viewBox="0 0 24 24" fill="none" stroke="#2742D6" stroke-width="1.9" stroke-linejoin="round"><path d="M13.5 2.5L5 13.5h5.5L9.5 21.5 19 10.5h-6z"/></svg></div><b><span class="nr">5</span> Actie</b><p>En het zet de volgende stap om in een taak of opvolging.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/verbinden.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">1</span> Verbinden</b><p>We sluiten aan op je bestaande systemen: AFAS, Exact, Microsoft 365, SharePoint.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/begrijpen.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">2</span> Begrijpen</b><p>De AI leest de inhoud en brengt informatie in verband met elkaar.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/vragen.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">3</span> Vragen</b><p>Medewerkers stellen vragen in gewone taal, zonder training vooraf.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/antwoorden.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">4</span> Antwoord</b><p>Je krijgt een betrouwbaar antwoord mét bronvermelding.</p></div>
+    <div class="st"><div class="n"><img src="/assets/iconen/actie.png" alt="" width="128" height="128" decoding="async"></div><b><span class="nr">5</span> Actie</b><p>En het zet de volgende stap om in een taak of opvolging.</p></div>
   </div>
 </div>
 </section>
@@ -503,14 +510,14 @@ nav .nb{transition:height .2s}
 <div class="wrap">
   <div class="aanbod">
     <div>
-      <h3 style="font-size:1.5rem">Start met de Frisse Blik Scan</h3>
+      <h3 style="font-size:1.5rem;display:flex;align-items:center;gap:.7rem"><img src="/assets/iconen/frisse_blik_scan.png" alt="" width="40" height="40">Start met de Frisse Blik Scan</h3>
       <p class="sub" style="font-size:.92rem;margin-top:.5rem">In één dag helder inzicht in je kennis, systemen en kansen. Je ontvangt een concreet rapport met advies en vervolgstappen.</p>
     </div>
     <div>
-      <div class="vink"><i>✓</i>Scan van je kennisstromen en zoekgedrag</div>
-      <div class="vink"><i>✓</i>Inzicht in verspilling en risico's</div>
-      <div class="vink"><i>✓</i>Concrete besparingskansen</div>
-      <div class="vink"><i>✓</i>Vrijblijvend en kosteloos gesprek vooraf</div>
+      <div class="vink"><img src="/assets/iconen/check_groot.png" alt="" width="18" height="18">Scan van je kennisstromen en zoekgedrag</div>
+      <div class="vink"><img src="/assets/iconen/check_groot.png" alt="" width="18" height="18">Inzicht in verspilling en risico's</div>
+      <div class="vink"><img src="/assets/iconen/check_groot.png" alt="" width="18" height="18">Concrete besparingskansen</div>
+      <div class="vink"><img src="/assets/iconen/check_groot.png" alt="" width="18" height="18">Vrijblijvend en kosteloos gesprek vooraf</div>
     </div>
     <div>
       <div style="font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--grijs);font-weight:600">Frisse Blik Scan</div>
@@ -617,6 +624,15 @@ nav .nb{transition:height .2s}
       o.disconnect();
     },{threshold:.5}).observe(el);
   });
+
+  // calculator open en dicht
+  var ck=document.getElementById('calcKnop'), cv=document.getElementById('calcVeld');
+  if(ck){ ck.addEventListener('click',function(){
+    var open=ck.getAttribute('aria-expanded')==='true';
+    ck.setAttribute('aria-expanded',!open);
+    cv.style.display=open?'none':'';
+    ck.firstChild.textContent=open?'Open de calculator ':'Sluit de calculator ';
+  }); }
 
   // mobiel menu
   var mk=document.getElementById('menuKnop'), mm=document.getElementById('mobMenu');
