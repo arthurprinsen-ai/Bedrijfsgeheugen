@@ -139,7 +139,7 @@ h1 .b{color:var(--blauw);display:block}
 .chat{background:var(--wit);border:2px solid var(--inkt);border-radius:12px;padding:1.15rem}
 .vraag{display:flex;gap:.7rem;align-items:flex-start;justify-content:flex-end;margin-bottom:1rem}
 .vraag p{background:var(--zacht);border-radius:12px 12px 2px 12px;padding:.7rem .9rem;font-size:.92rem}
-.foto{width:2.4rem;height:2.4rem;border-radius:50%;background:linear-gradient(135deg,#94A3B8,#475569);flex:none}
+.foto{width:2.4rem;height:2.4rem;border-radius:50%;object-fit:cover;flex:none;border:2px solid var(--inkt)}
 .antw{display:flex;gap:.6rem;align-items:center;font-weight:700;font-size:.92rem;margin-bottom:.5rem}
 .antw i{width:1.6rem;height:1.6rem;border-radius:6px;background:var(--blauw);display:inline-block}
 .antw-body{font-size:.9rem;color:var(--inkt)}
@@ -291,8 +291,9 @@ nav .nb{transition:height .2s}
 /* sterren en vertrouwen */
 .vertrouwen{display:flex;align-items:center;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap}
 .koppen{display:flex}
-.koppen span{width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid var(--papier);margin-left:-.55rem;background:linear-gradient(135deg,#C7CCD4,#8C939D)}
-.koppen span:first-child{margin-left:0}
+.koppen span,.koppen img{width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid var(--papier);margin-left:-.55rem;object-fit:cover;display:block}
+.koppen span{background:linear-gradient(135deg,#C7CCD4,#8C939D)}
+.koppen span:first-child,.koppen img:first-child{margin-left:0}
 .ster{color:#F5A623;font-size:.95rem;letter-spacing:.08em}
 
 /* waarom kennis lekt */
@@ -305,6 +306,7 @@ nav .nb{transition:height .2s}
 /* afdelingsbeelden */
 .ak .beeld{height:6.5rem;position:relative;overflow:hidden;background:var(--zacht)}
 .ak .beeld svg{width:100%;height:100%;display:block}
+.ak .beeld .fotokaart{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
 .ak{transition:transform .18s, box-shadow .18s}
 .ak:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(20,23,26,.09)}
 </style>
@@ -357,13 +359,18 @@ nav .nb{transition:height .2s}
       <a class="knop lijn" href="/contact">Plan een kennismaking</a>
     </div>
     <div class="vertrouwen">
-      <div class="koppen"><span></span><span></span><span></span><span></span></div>
+      <div class="koppen">
+        <img src="/assets/klanten/klant-1.jpg" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{}))">
+        <img src="/assets/klanten/klant-2.jpg" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{}))">
+        <img src="/assets/klanten/klant-3.jpg" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{}))">
+        <img src="/assets/klanten/klant-4.jpg" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{}))">
+      </div>
       <div><div class="ster">★★★★★</div><div class="sub" style="font-size:.85rem">Vertrouwd door organisaties in het mkb</div></div>
     </div>
   </div>
 
   <div class="chat">
-    <div class="vraag"><p>Welke afspraken hebben we met Jansen Bouw over project X?</p><div class="foto"></div></div>
+    <div class="vraag"><p>Welke afspraken hebben we met Jansen Bouw over project X?</p><img class="foto" src="/arthur.jpg" alt="Arthur Prinsen" width="38" height="38" loading="lazy"></div>
     <div class="antw"><i></i>Bedrijfsgeheugen</div>
     <div class="antw-body">
       <p>Voor Jansen Bouw hanteren we de volgende prijsafspraken:</p>
@@ -469,12 +476,12 @@ nav .nb{transition:height .2s}
 <div class="wrap">
   <h2 class="sk">Voor elke afdeling</h2>
   <div class="afd">
-    <a class="ak" href="/expertises"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M30 62h140" stroke="#2742D6" stroke-width="2"/><circle cx="70" cy="45" r="11" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="45" r="11" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M81 45h28" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Sales</b><p>Directe toegang tot offertes, prijzen en klantinformatie.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/expertises"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="45" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><rect x="85" y="34" width="34" height="30" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><rect x="125" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M30 68h140" stroke="#FF4F17" stroke-width="2"/></svg></div><div class="tk"><b>Operations</b><p>Sneller informatie vinden over processen, voorraad en leveranciers.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/afas-koppeling"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M40 66V48M65 66V38M90 66V54M115 66V30M140 66V44M165 66V36" stroke="#2742D6" stroke-width="7" stroke-linecap="round"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Finance</b><p>Toegang tot rapporten, contracten en financiële data uit AFAS en Exact.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/expertises"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFFCEB"/><circle cx="80" cy="36" r="10" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M62 66c0-10 8-16 18-16s18 6 18 16" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="40" r="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M106 66c0-8 6-13 14-13s14 5 14 13" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>HR</b><p>Antwoorden op beleid, cao, verzuim en onboarding.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/expertises"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M35 62L75 42l30 12 55-28" stroke="#2742D6" stroke-width="3" fill="none"/><circle cx="160" cy="26" r="6" fill="#FF4F17"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Management</b><p>Inzicht in prestaties, besluiten en strategische informatie.</p><span>Lees meer →</span></div></a>
-    <a class="ak" href="/connect"><div class="beeld"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="60" y="30" width="80" height="34" rx="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M78 47h44M78 39h30" stroke="#2742D6" stroke-width="3" stroke-linecap="round"/><path d="M84 64l-6 12 16-12" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Service</b><p>Kennis direct beschikbaar voor je team en je klanten.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/sales.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M30 62h140" stroke="#2742D6" stroke-width="2"/><circle cx="70" cy="45" r="11" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="45" r="11" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M81 45h28" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Sales</b><p>Directe toegang tot offertes, prijzen en klantinformatie.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/operations.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="45" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><rect x="85" y="34" width="34" height="30" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><rect x="125" y="34" width="34" height="30" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M30 68h140" stroke="#FF4F17" stroke-width="2"/></svg></div><div class="tk"><b>Operations</b><p>Sneller informatie vinden over processen, voorraad en leveranciers.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/afas-koppeling"><div class="beeld"><img src="/assets/afdelingen/finance.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M40 66V48M65 66V38M90 66V54M115 66V30M140 66V44M165 66V36" stroke="#2742D6" stroke-width="7" stroke-linecap="round"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Finance</b><p>Toegang tot rapporten, contracten en financiële data uit AFAS en Exact.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/hr.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFFCEB"/><circle cx="80" cy="36" r="10" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M62 66c0-10 8-16 18-16s18 6 18 16" fill="#FFE86B" stroke="#14171A" stroke-width="2"/><circle cx="120" cy="40" r="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M106 66c0-8 6-13 14-13s14 5 14 13" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>HR</b><p>Antwoorden op beleid, cao, verzuim en onboarding.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/expertises"><div class="beeld"><img src="/assets/afdelingen/management.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#EEF1FD"/><path d="M35 62L75 42l30 12 55-28" stroke="#2742D6" stroke-width="3" fill="none"/><circle cx="160" cy="26" r="6" fill="#FF4F17"/><path d="M30 70h145" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Management</b><p>Inzicht in prestaties, besluiten en strategische informatie.</p><span>Lees meer →</span></div></a>
+    <a class="ak" href="/connect"><div class="beeld"><img src="/assets/afdelingen/service.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()" class="fotokaart"><svg viewBox="0 0 200 90" aria-hidden="true"><rect width="200" height="90" fill="#FFF6F2"/><rect x="60" y="30" width="80" height="34" rx="8" fill="#fff" stroke="#14171A" stroke-width="2"/><path d="M78 47h44M78 39h30" stroke="#2742D6" stroke-width="3" stroke-linecap="round"/><path d="M84 64l-6 12 16-12" fill="#fff" stroke="#14171A" stroke-width="2"/></svg></div><div class="tk"><b>Service</b><p>Kennis direct beschikbaar voor je team en je klanten.</p><span>Lees meer →</span></div></a>
   </div>
 </div>
 </section>

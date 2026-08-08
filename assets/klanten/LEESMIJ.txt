@@ -1,0 +1,9 @@
+Zet hier zes foto's neer, dan verschijnen ze vanzelf op de homepage.
+
+  sales.jpg · operations.jpg · finance.jpg · hr.jpg · management.jpg · service.jpg
+
+Formaat: 800 x 360 pixels, liggend, jpg, onder de 150 kB.
+Staat een bestand er niet, dan blijft de tekening staan. Er gaat dus nooit iets stuk.
+
+Zelfde geldt voor /assets/klanten/: klant-1.jpg t/m klant-4.jpg (vierkant, 200x200)
+voor de gezichten bij "Vertrouwd door organisaties in het mkb".
