@@ -202,9 +202,9 @@ footer a:hover{color:#fff}
   .fb{font-size:.75rem}
 }
 @media(max-width:420px){.onderzoek{grid-template-columns:1fr}.afd{grid-template-columns:1fr}}
-.mobbalk{display:none}
+
 @media(max-width:720px){
-  .mobbalk{display:block;position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--blauw);color:#fff;text-align:center;padding:.9rem;font-weight:600;font-size:.92rem;text-decoration:none;box-shadow:0 -4px 18px rgba(17,24,39,.16)}
+  
 }
 .fb{border-top:1px solid #2B3138;margin-top:1.6rem;padding-top:1rem;font-size:.8rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 
