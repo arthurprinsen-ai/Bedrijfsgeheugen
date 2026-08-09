@@ -20,8 +20,8 @@
   gtag('config', 'G-912L0PB68G');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Frisse blik | De scan die je bedrijf doorlicht zoals een consultant dat zou doen — Bedrijfsgeheugen</title>
-<meta name="description" content="Gratis Bedrijfsscan voor directie en CFO: volwassenheidsniveau per bedrijfsonderdeel, doorgerekende businesscase (terugverdientijd, prijs van wachten), EU AI Act- en NIS2-deadlines en een concreet stappenplan. Rapport na een gepland adviesgesprek van 30 minuten.">
+<title>Frisse blik — de scan die je bedrijf doorlicht | Bedrijfsgeheugen</title>
+<meta name="description" content="Twee sessies, een uur met de directeur en binnen een week een rapport: waar het handwerk zit, wat het kost en welke stap eerst. Vaste prijs.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/frisse-blik">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Bedrijfsgeheugen">
@@ -437,6 +437,9 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/stijl.css">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Frisse blik","item":"https://www.bedrijfsgeheugen.nl/frisse-blik"}]}</script>
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/banner-li-bedrijf.jpg">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
 <div class="voortgang" id="vg"></div>
@@ -1946,7 +1949,7 @@ function renderRapportFromSnapshot(s){
    +'@media print{.card{break-inside:avoid}}'
    +'</style></head><body><div class="pg">'
    +'<span class="eb">Frisse blik — volwassenheidsrapport</span>'
-   +'<h1>'+esc(s.lead.bedrijf)+'</h1>'
+   +'<h2>'+esc(s.lead.bedrijf)+'</h2>'
    +'<p class="mut">Opgesteld voor '+esc(s.lead.naam)+' · '+datum+' · scan v'+APP_VERSION+(s.lead.relatieId?' · relatie '+esc(s.lead.relatieId):'')+'</p>'
    +'<div class="card"><span class="eb">Uitkomst</span>'
    +'<h2 style="margin:.3rem 0">Niveau '+s.lvl+' — '+L.name+' <span class="mut">('+L.seg+')</span></h2>'
@@ -2017,7 +2020,7 @@ function downloadRapport(lead){
    +'@media print{.card{break-inside:avoid}}'
    +'</style></head><body><div class="pg">'
    +'<span class="eb">Data & AI Volwassenheidsrapport</span>'
-   +'<h1>'+esc(lead.bedrijf)+'</h1>'
+   +'<h2>'+esc(lead.bedrijf)+'</h2>'
    +'<p class="mut">Opgesteld voor '+esc(lead.naam)+' · '+datum+' · scan v'+APP_VERSION+(lead.relatieId?' · relatie '+esc(lead.relatieId):'')+'</p>'
    +'<div class="card"><span class="eb">Uitkomst</span>'
    +'<h2 style="margin:.3rem 0">Niveau '+userLevel+' — '+L.name+' <span class="mut">('+L.seg+')</span></h2>'
