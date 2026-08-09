@@ -144,6 +144,8 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Wat kost een AFAS-koppeling?","description":"Een AFAS-koppeling kost doorgaans € 3.500 tot € 12.000. Welke zes factoren de prijs bepalen, welke kosten er niet in horen en wanneer het zich terugverdient.","datePublished":"2026-08-03","dateModified":"2026-08-03","inLanguage":"nl-NL","mainEntityOfPage":"https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/","author":{"@type":"Person","name":"Arthur Prinsen","url":"https://www.bedrijfsgeheugen.nl/over-ons"},"publisher":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"articleSection":"Koppelingen","keywords":"AFAS koppeling kosten, AFAS koppeling laten maken, AFAS Profit integratie, koppeling prijs mkb"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Kan een AFAS-koppeling realtime?","acceptedAnswer":{"@type":"Answer","text":"In de praktijk niet, en dat is meestal geen probleem. AFAS kent geen klassieke webhooks; je synchroniseert gepland, bijvoorbeeld elk kwartier. Voor vrijwel elk mkb-proces is dat voldoende, en het is betrouwbaarder dan realtime."}},{"@type":"Question","name":"Hoe lang duurt het bouwen van een AFAS-koppeling?","acceptedAnswer":{"@type":"Answer","text":"Twee tot zes weken van start tot live. De doorlooptijd wordt vaker bepaald door hoe snel je toegang regelt en beslissingen neemt dan door het bouwwerk zelf."}},{"@type":"Question","name":"Moeten we AFAS vervangen voor een koppeling?","acceptedAnswer":{"@type":"Answer","text":"Nee. AFAS blijft de administratieve kern, inclusief alle historie en bestaande koppelingen. Er komt een verbindende laag omheen."}},{"@type":"Question","name":"Wie is eigenaar van de koppeling?","acceptedAnswer":{"@type":"Answer","text":"Dat hoor je vooraf vast te leggen. Bij Bedrijfsgeheugen zijn code, documentatie en toegang van de klant, zodat je later met een andere partij verder kunt."}},{"@type":"Question","name":"Wat gebeurt er bij een AFAS-update?","acceptedAnswer":{"@type":"Answer","text":"Koppelingen die netjes op GetConnectors en UpdateConnectors zijn gebouwd, zijn redelijk update-bestendig. Monitoring vangt af wat er toch misgaat."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.bedrijfsgeheugen.nl/blog/"},{"@type":"ListItem","position":3,"name":"Wat kost een AFAS-koppeling","item":"https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/"}]},{"@type":"ProfessionalService","@id":"https://www.bedrijfsgeheugen.nl/#org","name":"Bedrijfsgeheugen","url":"https://www.bedrijfsgeheugen.nl/","slogan":"Aanpakken zonder aanmodderen."}]}</script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="topbalk"><div class="wrap">
@@ -168,11 +170,33 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <main>
 <div class="wrap">
   <nav class="kruimel" aria-label="Kruimelpad"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Wat kost een AFAS-koppeling</nav>
-  <header class="artikelkop">
-    <span class="eyebrow">Koppelingen</span>
-    <h1>Wat kost een AFAS-koppeling?</h1>
-    <div class="artikelmeta"><span>3 augustus 2026</span><span>·</span><span>± 8 min lezen</span><span>·</span><span>Arthur Prinsen</span></div>
-  </header>
+  <div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="#hoe">Hoe het werkt</a>
+    <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="#hoe">Hoe het werkt</a>
+  <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+  <a href="/systemen-koppelen">Systemen koppelen</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
 
   <article class="artikel">
 <p class="lead">Een AFAS-koppeling kost in het Nederlandse mkb doorgaans <strong>€ 3.500 tot € 12.000</strong> eenmalig, plus € 25 tot € 150 per maand aan beheer en monitoring. Een koppeling in één richting — bijvoorbeeld webshoporders die automatisch in AFAS belanden — zit meestal tussen € 3.500 en € 6.000. Gaan gegevens twee kanten op en zitten er uitzonderingen, validaties of documentstromen in het proces, dan loopt het op tot € 12.000 of hoger.</p>
@@ -343,5 +367,6 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
   });
 })();
 </script>
+<script src="/assets/stijl.js" defer></script>
 </body>
 </html>

@@ -160,6 +160,8 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="topbalk"><div class="wrap">
@@ -184,11 +186,33 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <main>
 <div class="wrap">
   <nav class="kruimel" aria-label="Kruimelpad"><a href="/">Home</a> / <a href="/blog/">Blog</a> / AFAS en Exact koppelen</nav>
-  <header class="artikelkop">
-    <span class="eyebrow">Koppelingen</span>
-    <h1>AFAS en Exact koppelen: hoe u dubbel werk uit uw administratie haalt</h1>
-    <div class="artikelmeta"><span>27 juli 2026</span><span>·</span><span>± 7 min lezen</span><span>·</span><span>Uit de praktijk, niet uit de brochure</span></div>
-  </header>
+  <div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="#hoe">Hoe het werkt</a>
+    <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="#hoe">Hoe het werkt</a>
+  <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+  <a href="/systemen-koppelen">Systemen koppelen</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
 
   <article class="artikel">
     <p class="lead">Een nieuwe klant belt. Uw verkoper zet de gegevens in een Excel-lijst, want daar staat de offerte in. Gaat de opdracht door, dan tikt de administratie diezelfde naam, hetzelfde adres en hetzelfde btw-nummer nog een keer over in Exact of AFAS. Twee weken later blijkt het huisnummer verkeerd — in één van de twee. Niemand weet welke de juiste is. Dit is geen slordigheid van uw mensen. Dit is een ontbrekende koppeling.</p>
@@ -348,5 +372,6 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
   });
 })();
 </script>
+<script src="/assets/stijl.js" defer></script>
 </body>
 </html>

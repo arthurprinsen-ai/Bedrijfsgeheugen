@@ -96,6 +96,8 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"ProfessionalService","@id":"https://www.bedrijfsgeheugen.nl/#org","name":"Bedrijfsgeheugen","alternateName":"Bedrijfsgeheugen — digitalisering voor het mkb","url":"https://www.bedrijfsgeheugen.nl/","slogan":"Aanpakken zonder aanmodderen.","description":"Bedrijfsgeheugen is een Nederlands digitaliserings- en AI-adviesbureau voor mkb-bedrijven van 3 tot 250 medewerkers. Het bureau verbindt bestaande systemen zoals AFAS, Exact Online en Microsoft 365 tot één klantoverzicht, zonder een nieuw ERP-systeem in te voeren.","email":"arthur@bedrijfsgeheugen.nl","telephone":"+31627483345","priceRange":"€€","areaServed":{"@type":"Country","name":"Nederland"},"identifier":{"@type":"PropertyValue","name":"KvK","value":"68765428"},"founder":{"@id":"https://www.bedrijfsgeheugen.nl/#arthur"},"sameAs":["https://www.linkedin.com/company/bedrijfsgeheugen"],"knowsAbout":["digitalisering mkb","AFAS koppeling","Exact Online koppeling","Microsoft 365","offerte-opvolging","productieplanning","klantoverzicht","kennisborging","Microsoft Copilot training","ChatGPT","Claude","AI-adoptie","AI-agents","EU AI Act"]},{"@type":"Person","@id":"https://www.bedrijfsgeheugen.nl/#arthur","name":"Arthur Prinsen","jobTitle":"Oprichter en digitaliseringsadviseur","description":"Arthur Prinsen werkt vijftien jaar op het snijvlak van bedrijfsvoering en technologie: AFAS-koppelingen, Microsoft-omgevingen, planning en stuurinformatie.","worksFor":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"url":"https://www.bedrijfsgeheugen.nl/over-ons","knowsAbout":["AFAS","Exact Online","Microsoft 365","Power BI","AI-adoptie in het mkb"]},{"@type":"Blog","@id":"https://www.bedrijfsgeheugen.nl/blog/#blog","name":"Bedrijfsgeheugen kennisbank","url":"https://www.bedrijfsgeheugen.nl/blog/","inLanguage":"nl-NL","publisher":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"blogPost":[{"@type":"BlogPosting","headline":"Wat kost een AFAS-koppeling?","url":"https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/"},{"@type":"BlogPosting","headline":"EU AI Act voor het mkb: wat geldt nu en wat is uitgesteld","url":"https://www.bedrijfsgeheugen.nl/blog/eu-ai-act-mkb/"},{"@type":"BlogPosting","headline":"Offertes opvolgen zonder CRM","url":"https://www.bedrijfsgeheugen.nl/blog/offertes-opvolgen-zonder-crm/"},{"@type":"BlogPosting","headline":"Planning in Excel vervangen: waarmee en wanneer?","url":"https://www.bedrijfsgeheugen.nl/blog/planning-in-excel-vervangen/"}]}]}</script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="topbalk"><div class="wrap">
@@ -118,11 +120,33 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 </nav>
 <div class="np-merk"><a class="logo" href="/"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 4h28a6 6 0 0 1 6 6v22L32 44H10a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="#FFE86B"/><path d="M44 32 32 44v-8a4 4 0 0 1 4-4h8z" fill="#E2C73C"/><rect x="12" y="14" width="22" height="3.6" rx="1.8" fill="#14171A"/><rect x="12" y="22" width="16" height="3.6" rx="1.8" fill="#FF4F17"/><rect x="12" y="29.5" width="18" height="3.6" rx="1.8" fill="#14171A"/></svg><span>Bedrijfs<b>geheugen</b></span></a></div>
 <main>
-<header class="kop"><div class="wrap">
-  <span class="eyebrow">Blog</span>
-  <h1>Blog — praktische inzichten voor het mkb</h1>
-  <p class="intro">Uit de praktijk, niet uit de brochure. Praktische artikelen over kennisborging, koppelingen tussen AFAS, Exact en Microsoft 365, en AI voor het mkb. Elke week een nieuw artikel — geschreven vanuit de werkvloer, in gewone taal.</p>
-</div></header>
+<div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="#hoe">Hoe het werkt</a>
+    <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="#hoe">Hoe het werkt</a>
+  <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+  <a href="/systemen-koppelen">Systemen koppelen</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
 
 <section><div class="wrap">
 <div class="artikelen">
@@ -283,5 +307,6 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
   });
 })();
 </script>
+<script src="/assets/stijl.js" defer></script>
 </body>
 </html>

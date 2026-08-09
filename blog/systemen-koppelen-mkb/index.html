@@ -144,6 +144,8 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Systemen koppelen mkb: de complete gids","description":"Systemen koppelen mkb: welke koppeling je als eerste maakt, de drie routes met hun kosten en zes stappen naar een koppeling die blijft werken.","datePublished":"2026-08-05","dateModified":"2026-08-05","inLanguage":"nl-NL","mainEntityOfPage":"https://www.bedrijfsgeheugen.nl/blog/systemen-koppelen-mkb/","author":{"@type":"Person","name":"Arthur Prinsen","url":"https://www.bedrijfsgeheugen.nl/over-ons"},"publisher":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"articleSection":"Koppelingen","keywords":"systemen koppelen mkb, koppeling AFAS Exact Online, dubbele invoer voorkomen, integratieplatform mkb"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Moet ik een nieuw ERP-systeem kopen als mijn pakketten niet met elkaar praten?","acceptedAnswer":{"@type":"Answer","text":"Bijna nooit. AFAS Profit, Exact Online en Microsoft 365 hebben allemaal een open koppelvlak, dus je kunt ze verbinden met je webshop, urenregistratie of planning zonder ergens afscheid van te nemen. Een ERP-migratie kost maanden en tienduizenden euro's; een koppeling kost weken en € 3.500 tot € 12.000. Overstappen doe je pas als het pakket zelf je proces niet meer aankan — niet omdat het niet zou kunnen koppelen."}},{"@type":"Question","name":"Hoe lang duurt het koppelen van twee systemen in het mkb?","acceptedAnswer":{"@type":"Answer","text":"Een standaardconnector uit de marktplaats van AFAS of Exact Online staat vaak binnen een dag aan. Een koppeling via een integratieplatform kost één tot drie weken, waarvan het meeste tijd gaat zitten in het afspreken welke velden meegaan. Maatwerk via de API duurt twee tot zes weken van start tot live. In alle drie de gevallen is de techniek zelden het lange stuk: dat zijn de afspraken."}},{"@type":"Question","name":"Kan een koppeling realtime zijn?","acceptedAnswer":{"@type":"Answer","text":"Meestal hoeft dat niet en vaak kan het ook niet. AFAS werkt met GetConnectors en UpdateConnectors en kent geen klassieke webhooks; in de praktijk synchroniseer je gepland, bijvoorbeeld elk kwartier of elk uur. Exact Online en de meeste webshops kunnen wel direct een seintje geven. Voor vrijwel elk mkb-proces is elk kwartier ruim voldoende, en een geplande koppeling is makkelijker te herstellen als er iets misgaat."}},{"@type":"Question","name":"Wat gebeurt er als de koppeling stukloopt?","acceptedAnswer":{"@type":"Answer","text":"Dat gebeurt een keer: een leverancier wijzigt een veld, een wachtwoord verloopt, een order bevat een teken dat het andere systeem niet accepteert. Het gevaar zit niet in de storing maar in de stilte erna. Spreek daarom vooraf af wie de foutmeldingen krijgt en wie ze oplost. Wil je dat niet zelf bijhouden, dan kost beheer en monitoring via Connect vanaf € 29 per maand."}},{"@type":"Question","name":"Welke koppeling levert het meeste op?","acceptedAnswer":{"@type":"Answer","text":"De koppeling op de plek waar dezelfde gegevens twee keer worden ingetikt door twee verschillende mensen. In de meeste mkb-bedrijven is dat de route van offerte naar order naar factuur, of van urenregistratie naar facturatie. Tel een week lang bij hoe vaak iets wordt overgetypt en hoe lang dat duurt — die telling wijst je koppeling vanzelf aan."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.bedrijfsgeheugen.nl/blog/"},{"@type":"ListItem","position":3,"name":"Systemen koppelen in het mkb","item":"https://www.bedrijfsgeheugen.nl/blog/systemen-koppelen-mkb/"}]},{"@type":"ProfessionalService","@id":"https://www.bedrijfsgeheugen.nl/#org","name":"Bedrijfsgeheugen","url":"https://www.bedrijfsgeheugen.nl/","slogan":"Aanpakken zonder aanmodderen."}]}</script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="topbalk"><div class="wrap">
@@ -168,11 +170,33 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <main>
 <div class="wrap">
   <nav class="kruimel" aria-label="Kruimelpad"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Systemen koppelen in het mkb</nav>
-  <header class="artikelkop">
-    <span class="eyebrow">Koppelingen</span>
-    <h1>Systemen koppelen mkb: de complete gids</h1>
-    <div class="artikelmeta"><span>5 augustus 2026</span><span>·</span><span>± 8 min lezen</span><span>·</span><span>Arthur Prinsen</span></div>
-  </header>
+  <div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="#hoe">Hoe het werkt</a>
+    <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="#hoe">Hoe het werkt</a>
+  <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+  <a href="/systemen-koppelen">Systemen koppelen</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
 
   <article class="artikel">
     <p class="lead">Systemen koppelen in het mkb betekent: twee pakketten die je al hebt automatisch gegevens laten uitwisselen, zodat niemand ze nog overtypt. In de praktijk begin je met één koppeling — meestal tussen de plek waar de order binnenkomt en de plek waar de factuur uitgaat — en kost dat € 3.500 tot € 12.000 eenmalig, in plaats van een ERP-traject van zes maanden.</p>
@@ -366,5 +390,6 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
   });
 })();
 </script>
+<script src="/assets/stijl.js" defer></script>
 </body>
 </html>

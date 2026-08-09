@@ -144,6 +144,8 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Wat kost digitalisering in het mkb? Een eerlijk antwoord met bedragen","description":"Digitalisering in het mkb kost € 3.500 tot € 15.000 in jaar één. Wat kost digitalisering mkb per onderdeel, met rekensommen en terugverdientijd.","datePublished":"2026-08-07","dateModified":"2026-08-07","inLanguage":"nl-NL","mainEntityOfPage":"https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/","author":{"@type":"Person","name":"Arthur Prinsen","url":"https://www.bedrijfsgeheugen.nl/over-ons"},"publisher":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"articleSection":"Digitalisering","keywords":"wat kost digitalisering mkb, kosten digitalisering, digitalisering prijs mkb, vaste prijs automatisering"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wat kost digitalisering voor een bedrijf van 20 medewerkers?","acceptedAnswer":{"@type":"Answer","text":"Reken in het eerste jaar op € 3.500 tot € 15.000 als je één of twee processen aanpakt, plus vanaf € 29 per maand aan beheer. Bij 20 medewerkers zit je meestal in het midden van die bandbreedte: één koppeling van rond de € 6.000 en een overzicht dat daarop draait."}},{"@type":"Question","name":"Moet ik eerst een nieuw systeem kopen?","acceptedAnswer":{"@type":"Answer","text":"Meestal niet. AFAS, Exact Online en Microsoft 365 kunnen samen al veel meer dan de meeste bedrijven ervan gebruiken. Een nieuw pakket kost licenties, migratie en maanden gewenning; een koppeling tussen wat je al hebt kost € 3.500 tot € 12.000 en is in twee tot zes weken live."}},{"@type":"Question","name":"Waarom noemt bijna geen enkele leverancier een bedrag?","acceptedAnswer":{"@type":"Answer","text":"Omdat een uurtarief het risico bij jou legt in plaats van bij hen. Een leverancier die je proces vooraf doorneemt, kán een vaste prijs geven. Kan hij dat niet, dan is het proces onvoldoende besproken — niet te complex."}},{"@type":"Question","name":"Zit er verborgen kosten in licenties?","acceptedAnswer":{"@type":"Answer","text":"Vaak wel, maar niet bij ons: Bedrijfsgeheugen verkoopt geen software en verdient niets aan licenties. Let bij andere partijen op een eigen tussenplatform met maandbedrag — vraag altijd wat er met je koppeling gebeurt als je opzegt."}},{"@type":"Question","name":"Hoe snel verdient digitalisering zich terug?","acceptedAnswer":{"@type":"Answer","text":"Bij zes tot negen uur handwerk per week in een team van twaalf zit je op € 12.000 tot € 19.000 aan verloren tijd per jaar. Een oplossing van € 6.000 is dan in vier tot zes maanden terugverdiend. Kost het handwerk minder dan twee uur per week, dan duurt het jaren en is 'nog even niet' het eerlijke advies."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.bedrijfsgeheugen.nl/blog/"},{"@type":"ListItem","position":3,"name":"Wat kost digitalisering in het mkb","item":"https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/"}]},{"@type":"ProfessionalService","@id":"https://www.bedrijfsgeheugen.nl/#org","name":"Bedrijfsgeheugen","url":"https://www.bedrijfsgeheugen.nl/","slogan":"Strak geregeld. Zonder traject."}]}</script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="topbalk"><div class="wrap">
@@ -168,11 +170,33 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <main>
 <div class="wrap">
   <nav class="kruimel" aria-label="Kruimelpad"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Wat kost digitalisering in het mkb</nav>
-  <header class="artikelkop">
-    <span class="eyebrow">Digitalisering</span>
-    <h1>Wat kost digitalisering in het mkb? Een eerlijk antwoord met bedragen</h1>
-    <div class="artikelmeta"><span>7 augustus 2026</span><span>&middot;</span><span>&plusmn; 7 min lezen</span><span>&middot;</span><span>Arthur Prinsen</span></div>
-  </header>
+  <div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="#hoe">Hoe het werkt</a>
+    <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="#hoe">Hoe het werkt</a>
+  <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+  <a href="/systemen-koppelen">Systemen koppelen</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
 
   <article class="artikel">
 <p class="lead">Digitalisering in het mkb kost in het eerste jaar meestal <strong>&euro; 3.500 tot &euro; 15.000</strong> als je &eacute;&eacute;n of twee processen echt aanpakt, plus <strong>vanaf &euro; 29 per maand</strong> aan beheer daarna. Wie zoekt op <em>wat kost digitalisering mkb</em> krijgt zelden een bedrag te zien &mdash; meestal een uurtarief en de mededeling dat het &lsquo;afhangt van de situatie&rsquo;. Hieronder staan de bedragen w&eacute;l, inclusief de rekensom waarmee je zelf bepaalt of het uitkan.</p>
@@ -338,5 +362,6 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
   });
 })();
 </script>
+<script src="/assets/stijl.js" defer></script>
 </body>
 </html>

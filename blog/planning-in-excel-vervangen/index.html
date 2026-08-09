@@ -144,6 +144,8 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Planning in Excel vervangen — waarmee en wanneer?","description":"Wanneer is je Excel-planning echt te klein geworden en wat is dan de goedkoopste vervanger? Vier signalen, drie routes en de kosten op een rij.","datePublished":"2026-08-03","dateModified":"2026-08-03","inLanguage":"nl-NL","mainEntityOfPage":"https://www.bedrijfsgeheugen.nl/blog/planning-in-excel-vervangen/","author":{"@type":"Person","name":"Arthur Prinsen","url":"https://www.bedrijfsgeheugen.nl/over-ons"},"publisher":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"articleSection":"Planning","keywords":"planning Excel vervangen, productieplanning zonder ERP, gedeelde planning Microsoft 365, planningstool mkb"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Excel echt zo slecht voor planning?","acceptedAnswer":{"@type":"Answer","text":"Nee. Excel is uitstekend zolang één persoon het beheert. Het probleem is niet Excel, maar gedeeld gebruik van een bestand dat daar niet voor gemaakt is."}},{"@type":"Question","name":"Kan ik mijn planning koppelen aan wat verkoop verkoopt?","acceptedAnswer":{"@type":"Answer","text":"Ja, en dat is meestal de grootste winst. Zodra een order in AFAS of Exact staat, kan die automatisch als in te plannen werk verschijnen."}},{"@type":"Question","name":"Wat kost een planningsoplossing voor twintig medewerkers?","acceptedAnswer":{"@type":"Answer","text":"Binnen Microsoft 365: € 1.500 tot € 5.000 eenmalig en geen extra licenties. Met een gespecialiseerd pakket: € 3.600 tot € 12.000 per jaar aan licenties plus implementatie."}},{"@type":"Question","name":"Hoeveel tijd kost het mijn team om over te stappen?","acceptedAnswer":{"@type":"Answer","text":"Reken op een halve dag uitleg en twee tot drie weken wennen. Duurt het langer, dan is de oplossing te ingewikkeld gekozen."}},{"@type":"Question","name":"Moeten we dan een ERP-systeem aanschaffen?","acceptedAnswer":{"@type":"Answer","text":"Vrijwel nooit alleen voor planning. Een ERP koop je voor je administratieve kern, niet voor een planbord."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.bedrijfsgeheugen.nl/blog/"},{"@type":"ListItem","position":3,"name":"Planning in Excel vervangen","item":"https://www.bedrijfsgeheugen.nl/blog/planning-in-excel-vervangen/"}]},{"@type":"ProfessionalService","@id":"https://www.bedrijfsgeheugen.nl/#org","name":"Bedrijfsgeheugen","url":"https://www.bedrijfsgeheugen.nl/","slogan":"Aanpakken zonder aanmodderen."}]}</script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="topbalk"><div class="wrap">
@@ -168,11 +170,33 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 <main>
 <div class="wrap">
   <nav class="kruimel" aria-label="Kruimelpad"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Planning in Excel vervangen</nav>
-  <header class="artikelkop">
-    <span class="eyebrow">Planning</span>
-    <h1>Planning in Excel vervangen — waarmee en wanneer?</h1>
-    <div class="artikelmeta"><span>3 augustus 2026</span><span>·</span><span>± 7 min lezen</span><span>·</span><span>Arthur Prinsen</span></div>
-  </header>
+  <div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="#hoe">Hoe het werkt</a>
+    <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="#hoe">Hoe het werkt</a>
+  <a href="/blog/afas-koppeling/">AFAS koppeling</a>
+  <a href="/systemen-koppelen">Systemen koppelen</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
 
   <article class="artikel">
 <p class="lead">Je Excel-planning is toe aan vervanging zodra <strong>meer dan één persoon hem tegelijk moet kunnen wijzigen</strong>, of zodra er een tweede versie van het bestand in omloop is. Dat is het echte kantelpunt — niet het aantal regels, niet het aantal medewerkers.</p>
@@ -348,5 +372,6 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
   });
 })();
 </script>
+<script src="/assets/stijl.js" defer></script>
 </body>
 </html>
