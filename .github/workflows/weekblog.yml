@@ -170,11 +170,13 @@ jobs:
           echo "Sleutel aanwezig, lengte ${#KEY}, begint met ${KEY:0:7}"
           code=$(curl -s -o /tmp/resp.json -w "%{http_code}" https://api.anthropic.com/v1/messages \
             -H "x-api-key: $KEY" -H "anthropic-version: 2023-06-01" -H "content-type: application/json" \
-            -d '{"model":"claude-sonnet-4-5-20250929","max_tokens":16,"messages":[{"role":"user","content":"ok"}]}')
+            -d '{"model":"claude-sonnet-5","max_tokens":16,"messages":[{"role":"user","content":"ok"}]}')
           echo "Antwoord van de API: HTTP $code"
           if [ "$code" != "200" ]; then
-            echo "::error::De API weigert de sleutel (HTTP $code). Zie hieronder."
+            echo "::error::De API antwoordde met HTTP $code. Zie hieronder."
             cat /tmp/resp.json
+            echo "Let op: is dit 'model not found', dan bestaat het modelnummer niet meer."
+            echo "Werkende namen zijn onder meer claude-sonnet-5 en claude-opus-5."
             exit 1
           fi
 
@@ -183,7 +185,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--max-turns 60 --allowedTools Bash,Read,Write,Edit,Glob,Grep,WebSearch"
+          claude_args: "--model claude-sonnet-5 --max-turns 60 --allowedTools Bash,Read,Write,Edit,Glob,Grep,WebSearch"
           prompt: |
             Schrijf en publiceer één blogartikel voor www.bedrijfsgeheugen.nl (statische HTML-site, Nederlands).
 
