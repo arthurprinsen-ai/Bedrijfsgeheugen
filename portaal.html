@@ -3755,6 +3755,13 @@ const ONDERZOEK=[
   advies:'Begin bij het saaie deel: toegangsrechten, tweestapsverificatie en een back-up die je hebt teruggezet.'}
 ];
 var ondKeuze='alles';
+/* Bepaalt of een onderdeel op dit moment 'aan' staat in het kwadrant.
+   kwKeuze is null (alles aan), 'zwak' (alles onder niveau 3) of een onderdeelsleutel. */
+function kwGekozen(k){
+  if(typeof kwKeuze==='undefined'||!kwKeuze) return true;
+  if(kwKeuze==='zwak') return (S.niveaus[k]||2)<3;
+  return kwKeuze===k;
+}
 function tekenOnderzoek(){
   const box=document.getElementById('ondBlok'); if(!box) return;
   const fb=document.getElementById('ondFilter');
@@ -3766,7 +3773,14 @@ function tekenOnderzoek(){
      + '<button data-f="zwak" aria-pressed="'+(ondKeuze==='zwak')+'">Alleen waar jij laag scoort</button>';
     fb.querySelectorAll('[data-f]').forEach(function(b){
       if(b.dataset.aan)return; b.dataset.aan='1';
-      b.addEventListener('click',function(){ ondKeuze=b.dataset.f; tekenOnderzoek(); });
+      b.addEventListener('click',function(){
+        ondKeuze=b.dataset.f;
+        if(typeof kwKeuze!=='undefined'){
+          kwKeuze = (ondKeuze==='alles') ? null : ondKeuze;
+          if(typeof tekenKwadrant==='function') tekenKwadrant();
+        }
+        tekenOnderzoek();
+      });
     });
   }
   const lijst=ONDERZOEK.filter(function(o){
@@ -3870,6 +3884,7 @@ function tekenKwadrant(){
   // stippen: verticaal gesorteerd, labels afwisselend links en rechts om botsen te voorkomen
   const perNiveau={};
   DIM.forEach(function(d){ (perNiveau[S.niveaus[d.k]]=perNiveau[S.niveaus[d.k]]||[]).push(d); });
+  const gebruiktLinks=[], gebruiktRechts=[];
   Object.keys(perNiveau).forEach(function(n){
     const groep=perNiveau[n].sort(function(a,c){return py(K[a.k])-py(K[c.k]);});   // van boven naar beneden
     let vorigeLabelY=-999;
@@ -3878,25 +3893,32 @@ function tekenKwadrant(){
       const cx=px(+n)+(zaad-0.5)*band*0.34, cy=py(K[d.k]);
       const r=9;                                   // alle stippen even groot
       const kl=+n>=4?'#1F9D55':(+n>=3?'#E8A200':'#D93025');
-      const dim=(kwKeuze&&kwKeuze!==d.k);
-      // labels stapelen zonder overlap
-      let ly=cy+4; if(ly-vorigeLabelY<19) ly=vorigeLabelY+19; vorigeLabelY=ly;
+      const gekozen = kwGekozen(d.k);
+      const dim=(kwKeuze&&!gekozen);
+      // labels stapelen zonder overlap, ook tussen kolommen onderling
       const naarLinks = cx > (x0+x1)*0.55;
       const lx = naarLinks ? cx-r-10 : cx+r+10;
+      const bezet = naarLinks ? gebruiktLinks : gebruiktRechts;
+      let ly=cy+4;
+      if(ly-vorigeLabelY<19) ly=vorigeLabelY+19;
+      for(let poging=0; poging<40; poging++){
+        const botst = bezet.some(function(v){ return Math.abs(v.y-ly)<17 && Math.abs(v.x-lx)<210; });
+        if(!botst) break;
+        ly+=17;
+      }
+      vorigeLabelY=ly; bezet.push({x:lx,y:ly});
       const uitleg='<h4>'+d.n+'</h4><p>Staat op <b>niveau '+n+' van 5</b> en kost je <b>'+eur(K[d.k])+' per jaar</b>. '
         +'Je branche zit gemiddeld op '+b.dig.toFixed(1)+'.</p><p>'+(UITLEG[d.k]||'')+'</p>'
         +'<div class="doen"><b>Wat je hier doet:</b> '+(+n<3?'leg vast hoe het nu gaat en wijs \u00e9\u00e9n eigenaar aan.'
           :(+n<4?'haal het overtypen eruit door de twee systemen te koppelen.':'meten en fijnregelen \u2014 de basis staat.'))+'</div>';
-      g+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r+'" fill="'+kl+'" fill-opacity="'+(dim?'.15':'.92')+'" stroke="#fff" stroke-width="2.5"'
+      g+='<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r+'" fill="'+(dim?'#C4C9D4':kl)+'" fill-opacity="'+(dim?'.75':'.92')+'" stroke="#fff" stroke-width="2.5"'
        +' data-kw="'+d.k+'" data-detail="'+encodeURIComponent(uitleg)+'" style="cursor:pointer"'
        +' data-tip="<b>'+d.n+'</b><br>Niveau '+n+' \u00b7 '+eur(K[d.k])+' per jaar"/>';
-      if(!dim){
-        if(Math.abs(ly-(cy+4))>3)
-          g+='<line x1="'+(naarLinks?cx-r-3:cx+r+3)+'" y1="'+cy.toFixed(1)+'" x2="'+(naarLinks?lx+3:lx-3)+'" y2="'+(ly-4).toFixed(1)+'" stroke="#C9CEDA" stroke-width="1"/>';
-        g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+(naarLinks?'end':'start')+'"'
-         +' font-size="12.5" fill="#14171A" font-family="Instrument Sans" paint-order="stroke" stroke="#fff" stroke-width="3.5">'+d.n
-         +' <tspan fill="#8A94A3" font-size="11.5">'+eur(K[d.k])+'</tspan></text>';
-      }
+      if(Math.abs(ly-(cy+4))>3)
+        g+='<line x1="'+(naarLinks?cx-r-3:cx+r+3)+'" y1="'+cy.toFixed(1)+'" x2="'+(naarLinks?lx+3:lx-3)+'" y2="'+(ly-4).toFixed(1)+'" stroke="'+(dim?'#E4E6EB':'#C9CEDA')+'" stroke-width="1"/>';
+      g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+(naarLinks?'end':'start')+'"'
+       +' font-size="12.5" fill="'+(dim?'#B0B6C2':'#14171A')+'" font-family="Instrument Sans" paint-order="stroke" stroke="#fff" stroke-width="3.5">'+d.n
+       +' <tspan fill="'+(dim?'#C4C9D4':'#8A94A3')+'" font-size="11.5">'+eur(K[d.k])+'</tspan></text>';
     });
   });
   g+='<rect x="'+x0+'" y="'+(y1-38)+'" width="13" height="13" rx="3" fill="#FDECE8"/>'
@@ -3912,6 +3934,7 @@ function tekenKwadrant(){
       kwKeuze=(kwKeuze===c.dataset.kw)?null:c.dataset.kw;
       if(typeof ondKeuze!=='undefined'){ ondKeuze = kwKeuze ? kwKeuze : 'alles'; if(typeof tekenOnderzoek==='function') tekenOnderzoek(); }
       tekenKwadrant();
+      const kaart=c.closest('.kaart'); if(kaart) kaart.scrollIntoView({block:'nearest'});
     });
   });
   const fb=document.getElementById('kwFilter');
@@ -5858,9 +5881,28 @@ body{background:var(--np-vlak)}
      if(!bij){bij=document.createElement('span');bij.className='np-bij';blok.appendChild(bij);}
      bij.textContent=(score>=70?'Goed':score>=45?'Voldoende':'Aandacht nodig')+' · gemiddeld over 13 onderdelen';
      overigeGrafieken(sam,niveau);
+     ontdubbel(); setTimeout(ontdubbel,60);
    }
    teken();
    try{ new MutationObserver(function(){setTimeout(teken,0);}).observe(sam,{childList:true}); }catch(e){}
+ }
+
+ /* De KPI-balk bovenaan toont dezelfde cijfers als de drie kaarten eronder.
+    Die kaarten verbergen we; hun uitleg gaat mee als tekst bij de KPI-kaart. */
+ function ontdubbel(){
+   var kn=document.getElementById('kNiveau'); if(!kn) return;
+   var rij=kn.closest('.kaarten'); if(!rij) return;
+   var sam=document.getElementById('samenvatting'); if(!sam) return;
+   var blokken=sam.querySelectorAll('.blok'); if(blokken.length<3) return;
+   function uitleg(el){
+     if(!el) return '';
+     var k=el.closest('.kaart'); if(!k) return '';
+     var t=k.querySelector('.sub');
+     return t?(t.textContent||'').trim():'';
+   }
+   var teksten=[uitleg(kn),uitleg(document.getElementById('kKosten')),uitleg(document.getElementById('kFte'))];
+   for(var i=0;i<3;i++){ if(teksten[i]) blokken[i].setAttribute('title',teksten[i]); }
+   rij.style.display='none';
  }
 
  function getal(t){
