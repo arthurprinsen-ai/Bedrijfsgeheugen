@@ -5592,7 +5592,33 @@ body{background:var(--np-vlak)}
 .np-app .kaart{background:#fff;border:1px solid var(--np-lijn)!important;border-radius:14px!important;box-shadow:none!important;padding:1rem 1.1rem!important}
 .np-app .kaart h3{font-size:.95rem!important;font-weight:800!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--np-inkt)!important;margin-bottom:.5rem!important;font-family:'Bricolage Grotesque',sans-serif}
 .np-app .kpi{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem!important;letter-spacing:-.03em}
-.np-app .samenvatting{top:54px;border-radius:14px;border:1px solid var(--np-lijn);background:#fff;box-shadow:none}
+.np-app .samenvatting{position:static!important;display:grid!important;grid-template-columns:repeat(4,1fr);gap:1rem;align-items:stretch!important;justify-content:stretch!important;
+  background:none!important;border:0!important;padding:0!important;box-shadow:none!important;margin:0 0 1rem}
+@media(max-width:1100px){.np-app .samenvatting{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.np-app .samenvatting{grid-template-columns:1fr}}
+.np-app .samenvatting .blok{background:#fff;border:1px solid var(--np-lijn);border-radius:14px;padding:1rem 1.1rem;
+  text-align:left!important;display:flex!important;flex-direction:column;gap:.15rem;position:relative;justify-content:flex-end}
+.np-app .samenvatting .blok .np-meter{margin:0 auto .3rem}
+.np-app .samenvatting .blok .np-meter svg{width:118px}
+.np-app .samenvatting .blok span{order:1;font-size:.72rem!important;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--np-grijs)}
+.np-app .samenvatting .blok b{order:2;font-family:'Bricolage Grotesque',sans-serif;font-size:1.9rem!important;letter-spacing:-.03em;line-height:1.05}
+.np-app .samenvatting .blok .np-bij{order:3;font-size:.8rem;color:var(--np-grijs)}
+.np-app .samenvatting .blok .np-meter{order:0;align-self:center;margin-bottom:.2rem}
+.np-kop{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem}
+.np-kop .np-knoppen{margin-left:auto;display:flex;gap:.5rem;flex-wrap:wrap}
+.np-kop .np-knoppen button{border:1px solid var(--np-lijn);background:#fff;color:#3B4252;border-radius:9px;padding:.45rem .9rem;font:inherit;font-size:.84rem;font-weight:600;cursor:pointer}
+.np-kop .np-knoppen button.np-vol{background:var(--np-blauw);border-color:var(--np-blauw);color:#fff}
+.np-groet{font-size:.87rem;color:var(--np-grijs)}
+.np-gebr{display:flex;align-items:center;gap:.55rem;border:1px solid var(--np-lijn);border-radius:11px;padding:.5rem;margin-bottom:.55rem}
+.np-gebr .np-av{width:32px;height:32px;border-radius:9px;background:var(--np-blauw);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex:none}
+.np-gebr .np-nm{font-size:.82rem;font-weight:700;line-height:1.2}
+.np-gebr .np-rl{font-size:.72rem;color:var(--np-grijs)}
+.np-bedrijf{display:flex;align-items:center;gap:.4rem;width:100%;border:1px solid var(--np-lijn);border-radius:10px;padding:.42rem .6rem;font:inherit;font-size:.8rem;color:var(--np-grijs);background:#fff;cursor:pointer;margin-bottom:.55rem}
+.np-bedrijf b{color:var(--np-inkt);font-weight:600}
+.np-venster{position:fixed;inset:0;background:rgba(20,27,46,.5);display:flex;align-items:center;justify-content:center;padding:1.2rem;z-index:90}
+.np-venster>div{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:1.3rem 1.4rem}
+.np-venster h3{font-size:1.05rem;margin-bottom:.5rem;font-family:'Bricolage Grotesque',sans-serif}
+.np-venster p{font-size:.9rem;color:#3B4252;margin-bottom:1rem}
 .np-app .knop{border-radius:9px!important;background:var(--np-blauw);font-weight:600;padding:.45rem .9rem}
 .np-app .knop.licht{background:#fff;border:1px solid var(--np-lijn);color:#3B4252}
 .np-app details.mod,.np-app .conclusie{border-radius:14px!important}
@@ -5736,7 +5762,96 @@ body{background:var(--np-vlak)}
     if(e.target.closest('.tab')) {aside.classList.remove('np-open');window.scrollTo(0,0);}
   });
 
+  kopregel(wrap);
+  gebruikersblok(aside,zijvoet);
+  meterInSamenvatting();
   sleepbaar();
+ }
+
+ function melding(titel,tekst){
+   var el=document.createElement('div'); el.className='np-venster';
+   el.innerHTML='<div><h3></h3><p></p><div style="text-align:right"><button class="knop">Sluiten</button></div></div>';
+   el.querySelector('h3').textContent=titel; el.querySelector('p').textContent=tekst;
+   function dicht(e){ if(!e||e.target===el||e.target.tagName==='BUTTON'){el.remove();document.removeEventListener('keydown',toets);} }
+   function toets(e){ if(e.key==='Escape') dicht(); }
+   el.addEventListener('click',dicht); document.addEventListener('keydown',toets);
+   document.body.appendChild(el);
+ }
+
+ function wieNaam(){
+   var w=document.getElementById('wie');
+   var t=w?(w.textContent||'').trim():'';
+   t=t.replace(/^ingelogd als\s*/i,'').split('@')[0].replace(/[._]/g,' ').trim();
+   return t||'Arthur';
+ }
+
+ function kopregel(wrap){
+   var h1=wrap.querySelector('h1'); if(!h1||wrap.querySelector('.np-kop')) return;
+   var u=new Date().getHours();
+   var groet=u<12?'Goedemorgen':u<18?'Goedemiddag':'Goedenavond';
+   var naam=wieNaam().split(' ')[0];
+   var kop=document.createElement('div'); kop.className='np-kop';
+   var links=document.createElement('div');
+   var g=document.createElement('p'); g.className='np-groet'; g.textContent=groet+' '+naam+',';
+   links.appendChild(g);
+   h1.parentNode.insertBefore(kop,h1);
+   links.appendChild(h1);
+   var onder=wrap.querySelector('.np-koptekst');
+   if(onder) links.appendChild(onder);
+   kop.appendChild(links);
+   var kn=document.createElement('div'); kn.className='np-knoppen';
+   var wt=document.createElement('button'); wt.textContent='Bekijk walkthrough';
+   wt.addEventListener('click',function(){melding('Zo werkt dit portaal',
+     'Links kies je een onderdeel. Bovenin zoek je door alle onderdelen (Ctrl of Cmd + K). Kaarten binnen een rij sleep je in je eigen volgorde met de greep rechtsboven in een kaart — die volgorde onthouden we. Onder Profiel pas je je eigen antwoorden aan; alles rekent direct mee.');});
+   var dr=document.createElement('button'); dr.className='np-vol'; dr.textContent='Deel rapport';
+   dr.addEventListener('click',function(){
+     var e=document.getElementById('btnExport');
+     if(e){e.click();} else {melding('Rapport delen','Gebruik de knop Downloaden rechtsboven om alles als bestand op te slaan en te delen.');}
+   });
+   kn.appendChild(wt); kn.appendChild(dr); kop.appendChild(kn);
+ }
+
+ function gebruikersblok(aside,zijvoet){
+   if(!zijvoet||zijvoet.querySelector('.np-gebr')) return;
+   var naam=wieNaam();
+   var initialen=naam.split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0].toUpperCase();}).join('');
+   var g=document.createElement('div'); g.className='np-gebr';
+   g.innerHTML='<span class="np-av">'+initialen+'</span><span><span class="np-nm"></span><span class="np-rl">Beheerder</span></span>';
+   g.querySelector('.np-nm').textContent=naam;
+   var b=document.createElement('button'); b.className='np-bedrijf';
+   b.innerHTML='Bedrijf: <b></b>';
+   var bn=(document.getElementById('pBedrijf')&&document.getElementById('pBedrijf').value)||'jouw bedrijf';
+   b.querySelector('b').textContent=bn;
+   b.addEventListener('click',function(){melding('Ander bedrijf','De naam van je bedrijf pas je aan onder “Je gegevens invullen”. Werk je voor meerdere bedrijven? Laat het weten, dan zetten we een keuze klaar.');});
+   zijvoet.insertBefore(b,zijvoet.firstChild);
+   zijvoet.insertBefore(g,zijvoet.firstChild);
+ }
+
+ /* halve meter bij het eerste blok van de samenvatting */
+ function meterInSamenvatting(){
+   var sam=document.getElementById('samenvatting'); if(!sam) return;
+   function teken(){
+     var blok=sam.querySelector('.blok'); if(!blok) return;
+     var b=blok.querySelector('b'); if(!b) return;
+     var niveau=parseFloat((b.textContent||'0').replace(',','.'));
+     if(isNaN(niveau)) return;
+     var score=Math.max(0,Math.min(100,Math.round(niveau/5*100)));
+     var kleur=score>=70?'#17936B':score>=45?'#B4780B':'#C0392B';
+     var hoek=Math.PI*(score/100), x=90-62*Math.cos(hoek), y=88-62*Math.sin(hoek);
+     var oud=blok.querySelector('.np-meter'); if(oud) oud.remove();
+     var d=document.createElement('div'); d.className='np-meter';
+     d.innerHTML='<svg viewBox="0 0 180 104" width="132" role="img" aria-label="Score '+score+' van 100">'
+      +'<path d="M28 88a62 62 0 01124 0" fill="none" stroke="#E6E8EE" stroke-width="15" stroke-linecap="round"/>'
+      +(score>0?'<path d="M28 88A62 62 0 01'+x.toFixed(1)+' '+y.toFixed(1)+'" fill="none" stroke="'+kleur+'" stroke-width="15" stroke-linecap="round"/>':'')
+      +'<text x="90" y="80" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="32" font-weight="800" fill="#141B2E">'+score+'</text>'
+      +'<text x="90" y="98" text-anchor="middle" font-family="Instrument Sans,sans-serif" font-size="11" fill="#69707D">/100</text></svg>';
+     blok.insertBefore(d,blok.firstChild);
+     var bij=blok.querySelector('.np-bij');
+     if(!bij){bij=document.createElement('span');bij.className='np-bij';blok.appendChild(bij);}
+     bij.textContent=(score>=70?'Goed':score>=45?'Voldoende':'Aandacht nodig')+' · gemiddeld over 13 onderdelen';
+   }
+   teken();
+   try{ new MutationObserver(function(){setTimeout(teken,0);}).observe(sam,{childList:true}); }catch(e){}
  }
 
  /* kaarten binnen een rij kunnen versleept worden; volgorde blijft bewaard */
