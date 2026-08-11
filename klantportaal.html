@@ -4,192 +4,233 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Jouw portaal · Bedrijfsgeheugen</title>
+<title>Portaal · Bedrijfsgeheugen</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --papier:#FBFAF7; --inkt:#14171A; --blauw:#2742D6; --blauw-l:#EDF0FD;
-  --oranje:#FF4F17; --amber:#C77700; --amber-l:#FFF6E3;
-  --groen:#178A4C; --groen-l:#E8F5EC; --rood:#C0392B; --rood-l:#FDECE8;
-  --geel:#FFE86B; --grijs:#5C646E; --lijn:#E4E6EB; --vlak:#F5F6F9;
-  --zij:252px;
+  --inkt:#141B2E; --blauw:#2742D6; --blauw-l:#EDF0FD; --blauw-2:#5B7CFA;
+  --groen:#17936B; --groen-l:#E6F5EF; --amber:#B4780B; --amber-l:#FDF3E0;
+  --rood:#C0392B; --rood-l:#FBEDEB; --paars:#6C4BD6; --paars-l:#F0EBFC;
+  --geel:#FFE86B; --grijs:#69707D; --lijn:#E6E8EE; --vlak:#F6F7FA; --wit:#fff;
+  --zij:256px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Instrument Sans',system-ui,sans-serif;background:var(--vlak);color:var(--inkt);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{font-family:'Instrument Sans',system-ui,sans-serif;background:var(--vlak);color:var(--inkt);font-size:14.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;line-height:1.15}
 a{color:inherit}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--blauw);outline-offset:2px;border-radius:6px}
+svg{display:block}
 
 /* ── raamwerk ── */
 .app{display:grid;grid-template-columns:var(--zij) 1fr;min-height:100vh}
-.zij{background:#fff;border-right:1px solid var(--lijn);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.merk{display:flex;align-items:center;gap:.6rem;padding:1.15rem 1.25rem;border-bottom:1px solid var(--lijn);text-decoration:none}
+.zij{background:var(--wit);border-right:1px solid var(--lijn);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.merk{display:flex;align-items:center;gap:.6rem;padding:1.05rem 1.2rem;border-bottom:1px solid var(--lijn);text-decoration:none}
 .merk img{width:30px;height:30px}
-.merk b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.02rem;letter-spacing:-.02em}
-.menu{padding:.9rem .75rem;flex:1}
-.mkop{font-size:.66rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#9AA1AB;padding:.9rem .6rem .4rem}
-.mlink{display:flex;align-items:center;gap:.65rem;padding:.5rem .6rem;border-radius:9px;text-decoration:none;font-size:.9rem;font-weight:500;color:#3C424A;margin-bottom:1px;width:100%;text-align:left}
+.merk b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.92rem;letter-spacing:-.01em;display:block;line-height:1.1}
+.merk small{font-size:.66rem;letter-spacing:.16em;color:var(--grijs);font-weight:600}
+.menu{padding:.7rem .7rem;flex:1}
+.mkop{font-size:.63rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A2A8B4;padding:.85rem .6rem .3rem}
+.mlink{display:flex;align-items:center;gap:.6rem;padding:.47rem .6rem;border-radius:9px;text-decoration:none;font-size:.86rem;font-weight:500;color:#3B4252;margin-bottom:1px}
 .mlink:hover{background:var(--vlak)}
-.mlink.aan{background:var(--blauw-l);color:var(--blauw);font-weight:600}
-.mlink svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.mlink .telp{margin-left:auto;background:var(--vlak);border-radius:99px;font-size:.7rem;font-weight:700;padding:.05rem .42rem;color:var(--grijs)}
-.mlink.aan .telp{background:#fff;color:var(--blauw)}
-.zijvoet{padding:.9rem 1rem;border-top:1px solid var(--lijn);font-size:.78rem;color:var(--grijs)}
-.zijvoet .knop{width:100%;justify-content:center;margin-bottom:.7rem}
+.mlink.aan{background:var(--blauw);color:#fff;font-weight:600}
+.mlink svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mlink .telp{margin-left:auto;background:var(--vlak);border-radius:99px;font-size:.68rem;font-weight:700;padding:.02rem .4rem;color:var(--grijs)}
+.mlink.aan .telp{background:rgba(255,255,255,.2);color:#fff}
+.zijvoet{padding:.8rem .9rem;border-top:1px solid var(--lijn)}
+.zijgebr{display:flex;align-items:center;gap:.6rem;padding:.5rem;border-radius:11px;border:1px solid var(--lijn);margin-bottom:.6rem}
+.zijgebr .naam{font-size:.82rem;font-weight:700;line-height:1.2}
+.zijgebr .rol{font-size:.72rem;color:var(--grijs)}
+.zijbedrijf{width:100%;display:flex;align-items:center;gap:.5rem;border:1px solid var(--lijn);border-radius:10px;padding:.45rem .6rem;font-size:.8rem;color:var(--grijs)}
+.zijbedrijf b{color:var(--inkt);font-weight:600}
+.zijbedrijf svg{margin-left:auto;width:12px;height:12px;stroke:var(--grijs);fill:none;stroke-width:2}
 
 .hoofd{min-width:0;display:flex;flex-direction:column}
-.balk{background:#fff;border-bottom:1px solid var(--lijn);display:flex;align-items:center;gap:1rem;padding:.7rem 1.6rem;position:sticky;top:0;z-index:30}
-.zoekdoos{flex:1;max-width:440px;margin:0 auto;position:relative}
-.zoekdoos input{width:100%;border:1px solid var(--lijn);background:var(--vlak);border-radius:10px;padding:.5rem .8rem .5rem 2.2rem;font-size:.88rem}
+.balk{background:var(--wit);border-bottom:1px solid var(--lijn);display:flex;align-items:center;gap:.8rem;padding:.6rem 1.4rem;position:sticky;top:0;z-index:30}
+.zoekdoos{flex:1;max-width:420px;margin-left:auto;position:relative}
+.zoekdoos input{width:100%;border:1px solid var(--lijn);background:var(--vlak);border-radius:9px;padding:.45rem 2.6rem .45rem 2.1rem;font-size:.85rem}
 .zoekdoos input:focus{outline:none;border-color:var(--blauw);background:#fff}
-.zoekdoos>svg{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--grijs);fill:none;stroke-width:1.8}
-.zoeklijst{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--lijn);border-radius:12px;box-shadow:0 12px 30px rgba(20,23,26,.12);padding:.4rem;max-height:340px;overflow:auto;z-index:40}
-.zoeklijst button{display:block;width:100%;text-align:left;padding:.5rem .6rem;border-radius:8px;font-size:.86rem}
-.zoeklijst button:hover,.zoeklijst button.aan{background:var(--vlak)}
-.zoeklijst .leeg{padding:.6rem;color:var(--grijs);font-size:.86rem}
-.balk-rechts{display:flex;align-items:center;gap:.5rem;margin-left:auto;position:relative}
-.rond{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative}
+.zoekdoos>svg.loep{position:absolute;left:.65rem;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--grijs);fill:none;stroke-width:1.8}
+.zoekdoos .snel{position:absolute;right:.5rem;top:50%;transform:translateY(-50%);font-size:.68rem;color:var(--grijs);border:1px solid var(--lijn);border-radius:5px;padding:.02rem .28rem;background:#fff}
+.zoeklijst{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--lijn);border-radius:12px;box-shadow:0 14px 34px rgba(20,27,46,.13);padding:.35rem;max-height:340px;overflow:auto;z-index:40}
+.zoeklijst button{display:block;width:100%;text-align:left;padding:.45rem .55rem;border-radius:8px;font-size:.84rem}
+.zoeklijst button:hover{background:var(--vlak)}
+.zoeklijst .leeg{padding:.6rem;color:var(--grijs);font-size:.84rem}
+.balk-rechts{display:flex;align-items:center;gap:.35rem;position:relative}
+.rond{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;position:relative}
 .rond:hover{background:var(--vlak)}
-.rond svg{width:19px;height:19px;stroke:#3C424A;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.stip{position:absolute;top:4px;right:4px;min-width:16px;height:16px;border-radius:99px;background:var(--oranje);color:#fff;font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px}
-.gebruiker{display:flex;align-items:center;gap:.55rem;padding:.3rem .5rem .3rem .3rem;border-radius:10px}
-.gebruiker:hover{background:var(--vlak)}
-.avatar{width:32px;height:32px;border-radius:9px;background:var(--blauw);color:#fff;font-weight:700;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex:none}
-.gebruiker .naam{font-size:.85rem;font-weight:600;line-height:1.2;text-align:left}
-.gebruiker .rol{font-size:.72rem;color:var(--grijs)}
-.paneel{position:absolute;top:calc(100% + 8px);right:0;width:320px;background:#fff;border:1px solid var(--lijn);border-radius:14px;box-shadow:0 16px 40px rgba(20,23,26,.14);z-index:50;overflow:hidden}
-.paneel h4{font-size:.9rem;padding:.85rem 1rem;border-bottom:1px solid var(--lijn)}
-.paneel .item{display:block;width:100%;text-align:left;padding:.7rem 1rem;border-bottom:1px solid var(--lijn);font-size:.85rem}
+.rond svg{width:18px;height:18px;stroke:#3B4252;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.stip{position:absolute;top:3px;right:3px;min-width:15px;height:15px;border-radius:99px;background:var(--rood);color:#fff;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.paneel{position:absolute;top:calc(100% + 8px);right:0;width:310px;background:#fff;border:1px solid var(--lijn);border-radius:13px;box-shadow:0 16px 40px rgba(20,27,46,.15);z-index:50;overflow:hidden}
+.paneel h4{font-size:.86rem;padding:.75rem .9rem;border-bottom:1px solid var(--lijn)}
+.paneel .item{display:block;width:100%;text-align:left;padding:.62rem .9rem;border-bottom:1px solid var(--lijn);font-size:.83rem;text-decoration:none}
 .paneel .item:last-child{border-bottom:0}
 .paneel .item:hover{background:var(--vlak)}
-.paneel .item .tijd{font-size:.74rem;color:var(--grijs)}
-.inhoud{padding:1.6rem;max-width:1180px;width:100%}
+.paneel .tijd{font-size:.72rem;color:var(--grijs)}
+.inhoud{padding:1.4rem;max-width:1320px;width:100%}
 
-/* ── bouwstenen ── */
+/* ── koppen en knoppen ── */
 .kop-rij{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem}
-.welkom{font-size:.85rem;color:var(--grijs)}
-.welkom b{color:var(--blauw)}
-h1.titel{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;margin:.15rem 0 .3rem}
+h1.titel{font-size:clamp(1.35rem,2.4vw,1.75rem);font-weight:800}
 h1.titel span{color:var(--blauw)}
-.sub{color:var(--grijs);font-size:.9rem}
-.bijgewerkt{margin-left:auto;font-size:.8rem;color:var(--grijs);white-space:nowrap}
-.kaart{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
-.kaart>h3{font-size:1rem;font-weight:800;margin-bottom:.2rem}
-.kaartkop{display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem}
-.kaartkop h3{font-size:1rem;font-weight:800}
-.kaartkop .rechts{margin-left:auto;display:flex;gap:.5rem;align-items:center}
-.raster{display:grid;gap:1rem;margin-bottom:1rem}
-.r3{grid-template-columns:repeat(3,1fr)}
-.r2{grid-template-columns:1fr 1fr}
-.r23{grid-template-columns:1.55fr 1fr}
-@media(max-width:1000px){.r3,.r2,.r23{grid-template-columns:1fr}}
-.kpi{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1rem 1.1rem}
-.kpi .label{display:flex;align-items:center;gap:.5rem;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grijs);margin-bottom:.5rem}
-.kpi .label svg{width:15px;height:15px;stroke:var(--blauw);fill:none;stroke-width:1.8}
-.kpi .cijfer{font-family:'Bricolage Grotesque',sans-serif;font-size:1.9rem;font-weight:800;line-height:1}
-.kpi .bij{font-size:.82rem;color:var(--grijs);margin-top:.15rem}
-.kpi .onder{display:flex;align-items:flex-end;justify-content:space-between;gap:.6rem;margin-top:.6rem}
-.trend{font-size:.75rem;color:var(--groen);display:flex;align-items:center;gap:.25rem;white-space:nowrap}
-.rij{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem 0;border-top:1px solid var(--lijn)}
-.rij:first-of-type{border-top:0}
-.rij .bol{width:9px;height:9px;border-radius:50%;flex:none;margin-top:.45rem}
-.rij .mid{flex:1;min-width:0}
-.rij b{font-size:.92rem;font-weight:700;display:block}
-.rij .fijn{font-size:.8rem;color:var(--grijs)}
-.rij .rechts{text-align:right;white-space:nowrap}
-.pil{display:inline-block;border-radius:99px;padding:.1rem .55rem;font-size:.72rem;font-weight:700}
-.balkje{height:7px;border-radius:99px;background:var(--lijn);margin:.45rem 0 .3rem;overflow:hidden}
-.balkje div{height:100%;background:var(--blauw);border-radius:99px}
-.knop{display:inline-flex;align-items:center;gap:.4rem;background:var(--blauw);color:#fff;border-radius:9px;padding:.45rem .85rem;font-size:.85rem;font-weight:600;text-decoration:none}
+.sub{color:var(--grijs);font-size:.87rem}
+.kopknoppen{margin-left:auto;display:flex;gap:.5rem;flex-wrap:wrap}
+.knop{display:inline-flex;align-items:center;gap:.4rem;background:var(--blauw);color:#fff;border-radius:9px;padding:.45rem .85rem;font-size:.83rem;font-weight:600;text-decoration:none;white-space:nowrap}
 .knop:hover{filter:brightness(1.08)}
-.knop.stil{background:#fff;color:#3C424A;border:1px solid var(--lijn)}
+.knop.stil{background:#fff;color:#3B4252;border:1px solid var(--lijn)}
 .knop.stil:hover{border-color:var(--blauw);color:var(--blauw);filter:none}
-.knop svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9}
-.meer{display:block;text-align:center;padding-top:.8rem;margin-top:.4rem;border-top:1px solid var(--lijn);color:var(--blauw);font-weight:600;font-size:.85rem;text-decoration:none;width:100%}
-.let{padding:.85rem 1rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 8px 8px 0;font-size:.86rem;margin-bottom:1rem}
-.mel{padding:.85rem 1rem;border-left:4px solid var(--blauw);background:var(--blauw-l);border-radius:0 8px 8px 0;font-size:.86rem;margin-bottom:1rem;display:flex;gap:.7rem}
-.mel svg{width:18px;height:18px;flex:none;margin-top:2px;stroke:var(--blauw);fill:none;stroke-width:1.8}
-select.filter{border:1px solid var(--lijn);border-radius:8px;padding:.32rem .55rem;font-size:.8rem;background:#fff}
-.leegstand{text-align:center;padding:2.2rem 1rem;color:var(--grijs)}
-.leegstand svg{width:34px;height:34px;stroke:var(--lijn);fill:none;stroke-width:1.6;margin-bottom:.6rem}
-table.tab{width:100%;border-collapse:collapse;font-size:.86rem}
-table.tab th{text-align:left;font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--grijs);padding:.5rem .6rem;border-bottom:1px solid var(--lijn)}
-table.tab td{padding:.6rem;border-bottom:1px solid var(--lijn);vertical-align:top}
+.knop.groen{background:var(--groen)}
+.knop svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.9}
+.knop.klein{padding:.28rem .6rem;font-size:.76rem}
+
+/* ── kaarten en raster ── */
+.kaart{background:var(--wit);border:1px solid var(--lijn);border-radius:14px;padding:1rem 1.1rem}
+.kaart>h3,.kaartkop h3{font-size:.95rem;font-weight:800}
+.kaartkop{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem}
+.kaartkop .rechts{margin-left:auto;display:flex;gap:.4rem;align-items:center}
+.raster{display:grid;gap:1rem;margin-bottom:1rem}
+.r2{grid-template-columns:1fr 1fr}
+.r3{grid-template-columns:repeat(3,1fr)}
+.r4{grid-template-columns:repeat(4,1fr)}
+.r23{grid-template-columns:1.5fr 1fr}
+@media(max-width:1100px){.r4{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.r2,.r3,.r4,.r23{grid-template-columns:1fr}}
+.muur{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem;align-items:start}
+.widget{grid-column:span 12}
+.w3{grid-column:span 3}.w4{grid-column:span 4}.w5{grid-column:span 5}.w6{grid-column:span 6}.w7{grid-column:span 7}.w8{grid-column:span 8}.w12{grid-column:span 12}
+@media(max-width:1200px){.w3{grid-column:span 6}.w4,.w5{grid-column:span 6}.w7,.w8{grid-column:span 12}}
+@media(max-width:760px){.muur .widget{grid-column:span 12!important}}
+.widget .kaart{height:100%}
+.greep{display:flex;align-items:center;gap:.45rem;cursor:grab;color:#B3B9C6;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-left:auto}
+.greep svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.widget.sleept{opacity:.4}
+.widget.doel .kaart{outline:2px dashed var(--blauw);outline-offset:3px}
+
+/* ── kleine bouwstenen ── */
+.rij{display:flex;gap:.65rem;align-items:flex-start;padding:.6rem 0;border-top:1px solid var(--lijn)}
+.rij:first-of-type{border-top:0}
+.rij .bol{width:9px;height:9px;border-radius:50%;flex:none;margin-top:.42rem}
+.rij .mid{flex:1;min-width:0}
+.rij b{font-size:.88rem;font-weight:700;display:block}
+.rij .fijn{font-size:.79rem;color:var(--grijs)}
+.rij .rechts{text-align:right;white-space:nowrap}
+.pil{display:inline-block;border-radius:99px;padding:.08rem .5rem;font-size:.7rem;font-weight:700}
+.balkje{height:7px;border-radius:99px;background:var(--lijn);margin:.4rem 0 .25rem;overflow:hidden}
+.balkje div{height:100%;background:var(--blauw);border-radius:99px}
+.cijfergroot{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;line-height:1}
+.label{display:flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:700;color:var(--grijs);margin-bottom:.45rem}
+.label svg{width:15px;height:15px;stroke:var(--blauw);fill:none;stroke-width:1.8}
+.meer{display:block;text-align:center;padding-top:.7rem;margin-top:.4rem;border-top:1px solid var(--lijn);color:var(--blauw);font-weight:600;font-size:.82rem;text-decoration:none;width:100%}
+.let{padding:.8rem .95rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 8px 8px 0;font-size:.84rem;margin-bottom:1rem}
+.mel{padding:.8rem .95rem;border-left:4px solid var(--blauw);background:var(--blauw-l);border-radius:0 8px 8px 0;font-size:.84rem;margin-bottom:1rem;display:flex;gap:.65rem}
+.mel svg{width:17px;height:17px;flex:none;margin-top:2px;stroke:var(--blauw);fill:none;stroke-width:1.8}
+select.filter,input.filter{border:1px solid var(--lijn);border-radius:8px;padding:.28rem .5rem;font-size:.78rem;background:#fff}
+.leegstand{text-align:center;padding:1.8rem 1rem;color:var(--grijs);font-size:.86rem}
+table.tab{width:100%;border-collapse:collapse;font-size:.84rem}
+table.tab th{text-align:left;font-weight:700;font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--grijs);padding:.45rem .55rem;border-bottom:1px solid var(--lijn)}
+table.tab td{padding:.55rem;border-bottom:1px solid var(--lijn);vertical-align:top}
 table.tab tr:last-child td{border-bottom:0}
 table.tab td.num{text-align:right;white-space:nowrap}
-.tijdlijn{position:relative;padding-left:1.4rem}
+.tijdlijn{position:relative;padding-left:1.3rem}
 .tijdlijn::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--lijn)}
-.tijdlijn .gebeurt{position:relative;padding:.5rem 0}
-.tijdlijn .gebeurt::before{content:"";position:absolute;left:-1.4rem;top:.85rem;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--blauw)}
-.veld{display:block;margin-bottom:.9rem}
-.veld span{display:block;font-size:.8rem;font-weight:600;margin-bottom:.25rem}
-.veld input,.veld select,.veld textarea{width:100%;border:1px solid var(--lijn);border-radius:9px;padding:.5rem .7rem;font-size:.88rem;background:#fff}
+.gebeurt{position:relative;padding:.45rem 0}
+.gebeurt::before{content:"";position:absolute;left:-1.3rem;top:.8rem;width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid var(--blauw)}
+.veld{display:block;margin-bottom:.8rem}
+.veld span{display:block;font-size:.78rem;font-weight:600;margin-bottom:.22rem}
+.veld input,.veld select,.veld textarea{width:100%;border:1px solid var(--lijn);border-radius:9px;padding:.45rem .65rem;font-size:.86rem;background:#fff}
 .veld input:focus,.veld textarea:focus{outline:none;border-color:var(--blauw)}
-.schakel{display:flex;align-items:center;gap:.6rem;padding:.6rem 0;border-top:1px solid var(--lijn);font-size:.88rem}
+.schakel{display:flex;align-items:center;gap:.6rem;padding:.55rem 0;border-top:1px solid var(--lijn);font-size:.86rem}
 .schakel:first-of-type{border-top:0}
 .schakel input{margin-left:auto;width:18px;height:18px;accent-color:var(--blauw)}
+.klikbaar{cursor:pointer}
+.klikhint{font-size:.72rem;color:var(--grijs);display:flex;align-items:center;gap:.3rem;margin-top:.5rem}
+.klikhint svg{width:13px;height:13px;stroke:var(--grijs);fill:none;stroke-width:1.8}
+
+/* ── scan ── */
+.scan{display:grid;grid-template-columns:230px 1fr;gap:1rem}
+@media(max-width:860px){.scan{grid-template-columns:1fr}}
+.scanrail .them{display:flex;align-items:center;gap:.5rem;padding:.42rem .5rem;border-radius:8px;font-size:.82rem;width:100%;text-align:left}
+.scanrail .them:hover{background:var(--vlak)}
+.scanrail .them.aan{background:var(--blauw-l);color:var(--blauw);font-weight:700}
+.scanrail .them i{font-style:normal;width:19px;height:19px;border-radius:50%;background:var(--vlak);font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--grijs);flex:none}
+.scanrail .them.klaar i{background:var(--groen);color:#fff}
+.keuze{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin:.9rem 0}
+@media(max-width:760px){.keuze{grid-template-columns:1fr 1fr}}
+.keuze button{border:1.5px solid var(--lijn);border-radius:11px;padding:.75rem .6rem;text-align:left;background:#fff}
+.keuze button:hover{border-color:var(--blauw-2)}
+.keuze button.aan{border-color:var(--groen);background:var(--groen-l)}
+.keuze b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;margin-bottom:.2rem}
+.keuze span{font-size:.76rem;color:var(--grijs);line-height:1.35}
+
+/* ── roadmap ── */
+.borden{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media(max-width:900px){.borden{grid-template-columns:1fr}}
+.kolom{background:var(--vlak);border:1px solid var(--lijn);border-radius:13px;padding:.7rem;min-height:130px}
+.kolom h4{font-size:.82rem;margin-bottom:.55rem;display:flex;align-items:center;gap:.4rem}
+.kolom.doel{outline:2px dashed var(--blauw);outline-offset:2px}
+.kaartje{background:#fff;border:1px solid var(--lijn);border-radius:10px;padding:.6rem .7rem;margin-bottom:.5rem;cursor:grab;font-size:.84rem}
+.kaartje b{display:block;font-size:.85rem}
+.kaartje .fijn{font-size:.74rem;color:var(--grijs)}
+.kaartje.sleept{opacity:.4}
+
+/* ── overlay ── */
+.overlay{position:fixed;inset:0;background:rgba(20,27,46,.5);display:flex;align-items:center;justify-content:center;padding:1.2rem;z-index:90}
+.venster{background:#fff;border-radius:16px;max-width:480px;width:100%;padding:1.3rem 1.4rem;max-height:88vh;overflow:auto}
+.venster h3{font-size:1.05rem;margin-bottom:.4rem}
+.venster p.sub{margin-bottom:.9rem}
+.vknoppen{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap}
 .mobknop{display:none}
-.overlay{position:fixed;inset:0;background:rgba(20,23,26,.45);display:flex;align-items:center;justify-content:center;padding:1.2rem;z-index:80}
-.venster{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:1.4rem 1.5rem}
-.venster h3{font-size:1.1rem;margin-bottom:.5rem}
-.venster p{font-size:.9rem;color:#3C424A;margin-bottom:1rem}
 @media(max-width:860px){
   .app{grid-template-columns:1fr}
-  .zij{position:fixed;left:0;top:0;bottom:0;width:var(--zij);z-index:70;transform:translateX(-100%);transition:transform .22s ease;height:100vh}
+  .zij{position:fixed;left:0;top:0;bottom:0;width:var(--zij);z-index:70;transform:translateX(-100%);transition:transform .22s ease}
   .zij.open{transform:none}
   .mobknop{display:flex}
-  .inhoud{padding:1rem}
-  .balk{padding:.6rem .8rem}
-  .gebruiker .naam,.gebruiker .rol{display:none}
-  .zijscherm{position:fixed;inset:0;background:rgba(20,23,26,.4);z-index:60}
+  .inhoud{padding:.9rem}
+  .balk{padding:.5rem .7rem}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-
 <div class="app">
   <aside class="zij" id="zij">
     <a class="merk" href="/">
       <img src="/assets/merk/logo-merk.png" alt="" width="30" height="30">
-      <b>Bedrijfsgeheugen</b>
+      <span><b>BEDRIJFSGEHEUGEN.NL</b><small>PORTAAL</small></span>
     </a>
     <nav class="menu" id="menu"></nav>
     <div class="zijvoet">
-      <a class="knop stil" href="#/feedback">Feedback geven</a>
-      <span id="voetregel">Bedrijfsgeheugen</span>
+      <div class="zijgebr">
+        <span class="avatar" id="avatar" style="width:32px;height:32px;border-radius:9px;background:var(--blauw);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem">?</span>
+        <span><span class="naam" id="gebrNaam">—</span><span class="rol" id="gebrRol">—</span></span>
+      </div>
+      <button class="zijbedrijf" id="bedrijfKnop">Bedrijf: <b id="bedrijfNaam">—</b>
+        <svg viewBox="0 0 12 8"><path d="M1 1l5 5 5-5" stroke-linecap="round"/></svg>
+      </button>
     </div>
   </aside>
 
   <div class="hoofd">
     <header class="balk">
-      <button class="rond mobknop" id="mobKnop" aria-label="Menu openen">
-        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      </button>
+      <button class="rond mobknop" id="mobKnop" aria-label="Menu openen"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <div class="zoekdoos">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
-        <input type="search" id="zoek" placeholder="Zoek in je bedrijfsgeheugen…" autocomplete="off" aria-label="Zoeken">
+        <svg class="loep" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+        <input type="search" id="zoek" placeholder="Zoek in portaal…" autocomplete="off" aria-label="Zoeken">
+        <span class="snel">⌘K</span>
         <div class="zoeklijst" id="zoeklijst" hidden></div>
       </div>
       <div class="balk-rechts">
+        <button class="rond" id="hulpKnop" aria-label="Hulp"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.6a2.3 2.3 0 114 1.6c-.9.8-1.8 1.2-1.8 2.4M12 16.6v.3"/></svg></button>
         <button class="rond" id="belKnop" aria-label="Meldingen">
           <svg viewBox="0 0 24 24"><path d="M18 8.5a6 6 0 10-12 0c0 6-2 7.5-2 7.5h16s-2-1.5-2-7.5z"/><path d="M13.7 20a2 2 0 01-3.4 0"/></svg>
           <span class="stip" id="belTal" hidden>0</span>
         </button>
         <div class="paneel" id="belPaneel" hidden></div>
-        <button class="gebruiker" id="gebrKnop">
-          <span class="avatar" id="avatar">?</span>
-          <span>
-            <span class="naam" id="gebrNaam">—</span>
-            <span class="rol" id="gebrRol">—</span>
-          </span>
-          <svg width="12" height="12" viewBox="0 0 12 8" fill="none" aria-hidden="true"><path d="M1 1l5 5 5-5" stroke="#5C646E" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </button>
+        <button class="rond" id="gebrKnop" aria-label="Account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c0-4 3.4-6 7.5-6s7.5 2 7.5 6"/></svg></button>
         <div class="paneel" id="gebrPaneel" hidden></div>
       </div>
     </header>
@@ -198,35 +239,60 @@ table.tab td.num{text-align:right;white-space:nowrap}
 </div>
 
 <script>
-/* ═══════════════ gegevens ═══════════════ */
+/* ════════════════ opzet ════════════════ */
 const HOOK='https://hook.eu1.make.com/q2xq2fbi6tfw9o86obq47j223ho42qh2';
 const params=new URLSearchParams(location.search);
 const klantParam=params.get('klant');
-const isDemo = klantParam==='demo' || params.get('demo')!==null;
+const isDemo=klantParam==='demo'||params.get('demo')!==null;
+
+const THEMAS=['Strategie','Mensen','Processen','Systemen','Data & Informatie','Klanten','Financiën','Innovatie'];
+
+const VRAGEN=[
+ ['Strategie','Is de koers van de organisatie voor iedereen helder?'],
+ ['Strategie','Weet elk team hoe hun werk bijdraagt aan die koers?'],
+ ['Strategie','Worden keuzes onderbouwd met cijfers in plaats van gevoel?'],
+ ['Mensen','Is kennis van sleutelmedewerkers vastgelegd en overdraagbaar?'],
+ ['Mensen','Draaien nieuwe collega\'s binnen een maand zelfstandig mee?'],
+ ['Mensen','Weet iedereen waar hij of zij het antwoord kan vinden?'],
+ ['Processen','In hoeverre zijn de belangrijkste processen vastgelegd en actueel?'],
+ ['Processen','Worden processen gevolgd zoals ze bedoeld zijn?'],
+ ['Processen','Zijn handmatige, repeterende stappen eruit gehaald?'],
+ ['Systemen','Praten je systemen onderling zonder overtypen?'],
+ ['Systemen','Is duidelijk welk systeem de bron is van welke gegevens?'],
+ ['Systemen','Kun je een systeem vervangen zonder dat alles stilvalt?'],
+ ['Data & Informatie','Zijn de cijfers waarop je stuurt betrouwbaar?'],
+ ['Data & Informatie','Zijn cijfers op tijd beschikbaar, niet pas weken later?'],
+ ['Data & Informatie','Werkt iedereen met dezelfde definities en dezelfde bron?'],
+ ['Klanten','Heb je één beeld van de klant over alle systemen heen?'],
+ ['Klanten','Wordt elke aanvraag en offerte bewaakt tot het einde?'],
+ ['Klanten','Weet je waarom klanten blijven of juist weglopen?'],
+ ['Financiën','Weet je per opdracht of dienst wat je eraan verdient?'],
+ ['Financiën','Sluit de administratie aan op wat er op de werkvloer gebeurt?'],
+ ['Financiën','Kun je een prognose maken die uitkomt?'],
+ ['Innovatie','Is er ruimte om verbeteringen op te pakken naast het werk?'],
+ ['Innovatie','Worden goede ideeën vastgelegd in plaats van vergeten?'],
+ ['Innovatie','Wordt AI ingezet waar het echt werk scheelt?']
+].map((v,i)=>({id:'v'+(i+1),thema:v[0],tekst:v[1],antwoord:null,toelichting:''}));
+
+const SCHAAL=[
+ {n:1,kop:'Niet vastgelegd',uit:'Zit in hoofden of losse bestanden.'},
+ {n:2,kop:'Gedeeltelijk',uit:'Deels vastgelegd, niet overal gevolgd.'},
+ {n:3,kop:'Vastgelegd, niet actueel',uit:'Staat er, maar loopt achter.'},
+ {n:4,kop:'Vastgelegd en actueel',uit:'Klopt en wordt gebruikt.'},
+ {n:5,kop:'Continu verbeterd',uit:'Gestandaardiseerd en wordt bijgehouden.'}
+];
 
 const DEMO={
  klant:'Van Dijk Techniek (voorbeeld)',
- contact:{naam:'Arthur Prinsen', rol:'Beheerder'},
+ contact:{naam:'Arthur Prinsen',rol:'Beheerder'},
  tarief:200,
  koppelingen:[
-  {titel:'Webshoporder wordt verkooporder',van:'Webshop',naar:'Exact Online',middel:'Make',
-   notitie:'Order, klant en regels komen binnen zonder overtypen. Ook bij spoedorders.',
-   status:'Draait',uren:6.5,besparing:120,gefactureerd:1300,voortgang:100,sinds:'12 mei 2026'},
-  {titel:'Offertes volgen zichzelf op',van:'AFAS',naar:'Teams',middel:'Power Automate',
-   notitie:'Na vijf dagen stilte een herinnering bij de verkoper, met de offerte erbij.',
-   status:'Draait',uren:4,besparing:80,gefactureerd:800,voortgang:100,sinds:'3 juni 2026'},
-  {titel:'Inkoopfacturen worden ingelezen',van:'Mailbox',naar:'Exact Online',middel:'Make + AI',
-   notitie:'Leverancier, bedrag en btw eruit gehaald; twijfelgevallen gaan naar Finance.',
-   status:'Draait',uren:5.5,besparing:95,gefactureerd:1100,voortgang:100,sinds:'1 juli 2026'},
-  {titel:'Werkbon naar planning',van:'Formulier',naar:'Planning',middel:'Make',
-   notitie:'Monteur vult op locatie in, de planner ziet het direct.',
-   status:'In aanbouw',uren:3.2,besparing:60,gefactureerd:0,voortgang:35},
-  {titel:'Websiteaanvraag wordt klantkaart',van:'Website',naar:'AFAS',middel:'Make',
-   notitie:'Voorstel ligt bij jullie: we wachten op de velden die op de kaart moeten.',
-   status:'Voorgesteld',uren:0,besparing:40,gefactureerd:0,voortgang:0},
-  {titel:'Uren naar het loonjournaal',van:'Urenapp',naar:'Exact Online',middel:'nog te bepalen',
-   notitie:'Genoteerd als idee tijdens de Frisse blik. Nog niet ingepland.',
-   status:'Idee',uren:0,besparing:0,gefactureerd:0,voortgang:0}
+  {titel:'Webshoporder wordt verkooporder',van:'Webshop',naar:'Exact Online',middel:'Make',notitie:'Order, klant en regels komen binnen zonder overtypen. Ook bij spoedorders.',status:'Draait',uren:6.5,besparing:120,gefactureerd:1300,voortgang:100,sinds:'12 mei 2026'},
+  {titel:'Offertes volgen zichzelf op',van:'AFAS',naar:'Teams',middel:'Power Automate',notitie:'Na vijf dagen stilte een herinnering bij de verkoper, met de offerte erbij.',status:'Draait',uren:4,besparing:80,gefactureerd:800,voortgang:100,sinds:'3 juni 2026'},
+  {titel:'Inkoopfacturen worden ingelezen',van:'Mailbox',naar:'Exact Online',middel:'Make + AI',notitie:'Leverancier, bedrag en btw eruit gehaald; twijfelgevallen gaan naar Finance.',status:'Draait',uren:5.5,besparing:95,gefactureerd:1100,voortgang:100,sinds:'1 juli 2026'},
+  {titel:'Werkbon naar planning',van:'Formulier',naar:'Planning',middel:'Make',notitie:'Monteur vult op locatie in, de planner ziet het direct.',status:'In aanbouw',uren:3.2,besparing:60,gefactureerd:0,voortgang:35},
+  {titel:'Websiteaanvraag wordt klantkaart',van:'Website',naar:'AFAS',middel:'Make',notitie:'Voorstel ligt bij jullie: we wachten op de velden die op de kaart moeten.',status:'Voorgesteld',uren:0,besparing:40,gefactureerd:0,voortgang:0},
+  {titel:'Uren naar het loonjournaal',van:'Urenapp',naar:'Exact Online',middel:'nog te bepalen',notitie:'Genoteerd als idee tijdens de Frisse blik. Nog niet ingepland.',status:'Idee',uren:0,besparing:0,gefactureerd:0,voortgang:0}
  ],
  urenregels:[
   {datum:'2026-07-28',koppeling:'Inkoopfacturen worden ingelezen',uren:2.0,wat:'Herkenning van leveranciers ingeregeld en getest op 40 facturen',gefactureerd:true},
@@ -245,31 +311,50 @@ const DEMO={
   {nummer:'2026-063',datum:'2026-07-31',bedrag:1100,status:'Open',regels:'Inkoopfacturen worden ingelezen · 5,5 uur'}
  ],
  documenten:[
-  {naam:'Frisse blik — rapport',soort:'PDF',datum:'2026-04-22',bij:'Frisse blik'},
-  {naam:'Procesplaat order tot factuur',soort:'PDF',datum:'2026-04-22',bij:'Frisse blik'},
-  {naam:'Werkinstructie inkoopfacturen',soort:'Document',datum:'2026-07-30',bij:'Inkoopfacturen worden ingelezen'},
-  {naam:'Opleverdocument webshopkoppeling',soort:'Document',datum:'2026-05-12',bij:'Webshoporder wordt verkooporder'},
-  {naam:'Factuur 2026-063',soort:'PDF',datum:'2026-07-31',bij:'Uren en facturen'}
+  {naam:'Strategisch plan 2026-2028',soort:'Strategie',datum:'2026-05-12',bij:'Strategie'},
+  {naam:'Procesbeschrijving verkoop',soort:'Processen',datum:'2026-08-09',bij:'Processen'},
+  {naam:'Frisse blik — rapport',soort:'Rapporten',datum:'2026-04-22',bij:'Frisse blik'},
+  {naam:'Procesplaat order tot factuur',soort:'Processen',datum:'2026-04-22',bij:'Frisse blik'},
+  {naam:'Werkinstructie inkoopfacturen',soort:'Beleid & procedures',datum:'2026-07-30',bij:'Inkoopfacturen worden ingelezen'},
+  {naam:'Opleverdocument webshopkoppeling',soort:'Rapporten',datum:'2026-05-12',bij:'Webshoporder wordt verkooporder'},
+  {naam:'Beleid informatiebeveiliging',soort:'Beleid & procedures',datum:'2026-01-05',bij:'Beleid'},
+  {naam:'MT-presentatie mei 2026',soort:'Presentaties',datum:'2026-04-30',bij:'Directie'},
+  {naam:'Factuur 2026-063',soort:'Rapporten',datum:'2026-07-31',bij:'Uren en facturen'}
  ],
+ bronnen:[
+  {naam:'AFAS',categorie:'ERP',status:'Actief',sync:'8 min geleden'},
+  {naam:'Exact Online',categorie:'Financieel',status:'Actief',sync:'12 min geleden'},
+  {naam:'Power BI',categorie:'Analytics',status:'Actief',sync:'25 min geleden'},
+  {naam:'Google Analytics',categorie:'Web',status:'Actief',sync:'20 min geleden'},
+  {naam:'Notion',categorie:'Kennis',status:'Actief',sync:'35 min geleden'},
+  {naam:'Microsoft 365',categorie:'Documenten',status:'Actief',sync:'5 min geleden'},
+  {naam:'SharePoint',categorie:'Documenten',status:'Actief',sync:'5 min geleden'},
+  {naam:'Teams',categorie:'Samenwerking',status:'Actief',sync:'2 min geleden'},
+  {naam:'Webshop',categorie:'Verkoop',status:'Actief',sync:'9 min geleden'},
+  {naam:'Planning',categorie:'Operatie',status:'Waarschuwing',sync:'3 uur geleden'},
+  {naam:'Urenapp',categorie:'Operatie',status:'Waarschuwing',sync:'1 dag geleden'},
+  {naam:'Formulieren',categorie:'Verkoop',status:'Actief',sync:'14 min geleden'}
+ ],
+ bronnenTotaal:33, bronnenActief:31, bronnenWaarschuwing:2, bronnenFout:0,
  notities:[
   {datum:'2026-08-04',tekst:'Planner vraagt of de werkbon ook een foto kan meesturen. Meenemen in de volgende ronde.'},
   {datum:'2026-07-15',tekst:'Na de vakantie kijken naar de urenapp richting het loonjournaal.'}
  ],
  activiteit:[
-  {datum:'2026-08-11 08:40',tekst:'Werkbon naar planning: tweede testronde gestart',soort:'werk'},
+  {datum:'2026-08-09 09:12',tekst:'Frisse blik-scan afgerond',soort:'scan'},
+  {datum:'2026-08-06 14:30',tekst:'KTO Q2 2026 verwerkt',soort:'kto'},
+  {datum:'2026-08-04 11:20',tekst:'Strategiecanvas bijgewerkt',soort:'canvas'},
+  {datum:'2026-08-08 16:05',tekst:'Actie afgerond: bijsturen rapportage',soort:'actie'},
+  {datum:'2026-08-04 08:40',tekst:'AI-advies gegenereerd: kostenbesparing in processen',soort:'ai'},
   {datum:'2026-08-05 16:10',tekst:'2,0 uur geschreven op Werkbon naar planning',soort:'uren'},
   {datum:'2026-07-31 09:00',tekst:'Factuur 2026-063 verstuurd (€ 1.100)',soort:'factuur'},
-  {datum:'2026-07-30 15:20',tekst:'Inkoopfacturen worden ingelezen: opgeleverd en overgedragen',soort:'mijlpaal'},
-  {datum:'2026-07-15 11:05',tekst:'Notitie toegevoegd over de urenapp',soort:'notitie'},
-  {datum:'2026-07-01 09:30',tekst:'Inkoopfacturen worden ingelezen: gestart',soort:'werk'},
-  {datum:'2026-06-30 09:00',tekst:'Factuur 2026-052 verstuurd (€ 800)',soort:'factuur'},
-  {datum:'2026-06-03 14:00',tekst:'Offertes volgen zichzelf op: live gezet',soort:'mijlpaal'}
+  {datum:'2026-07-30 15:20',tekst:'Inkoopfacturen worden ingelezen: opgeleverd',soort:'mijlpaal'}
  ],
  team:[
-  {naam:'Arthur Prinsen',rol:'Beheerder',bij:'Bedrijfsgeheugen',laatst:'vandaag'},
-  {naam:'Directie',rol:'Meekijken',bij:'Van Dijk Techniek',laatst:'gisteren'},
-  {naam:'Finance',rol:'Uren en facturen',bij:'Van Dijk Techniek',laatst:'5 augustus'},
-  {naam:'Werkvoorbereiding',rol:'Meekijken',bij:'Van Dijk Techniek',laatst:'28 juli'}
+  {naam:'Arthur Prinsen',rol:'Beheerder',bij:'Bedrijfsgeheugen',laatst:'vandaag',status:'Actief'},
+  {naam:'Directie',rol:'Editor',bij:'Van Dijk Techniek',laatst:'gisteren',status:'Actief'},
+  {naam:'Finance',rol:'Viewer',bij:'Van Dijk Techniek',laatst:'5 augustus',status:'Actief'},
+  {naam:'Werkvoorbereiding',rol:'Viewer',bij:'Van Dijk Techniek',laatst:'28 juli',status:'Actief'}
  ],
  integraties:[
   {naam:'Exact Online',status:'Verbonden',laatste:'11 augustus 10:05',waarvoor:'Verkooporders, inkoopfacturen'},
@@ -280,81 +365,159 @@ const DEMO={
  ],
  meldingen:[
   {tekst:'Werkbon naar planning staat op 35% — tweede testronde loopt',tijd:'vandaag 08:40'},
-  {tekst:'Factuur 2026-063 staat nog open',tijd:'31 juli'},
-  {tekst:'Inkoopfacturen worden ingelezen is opgeleverd',tijd:'30 juli'}
+  {tekst:'Planning en Urenapp zijn langer dan een uur niet gesynchroniseerd',tijd:'vandaag 07:15'},
+  {tekst:'Factuur 2026-063 staat nog open',tijd:'31 juli'}
  ],
- urenPerMaand:[{m:'mrt',u:0},{m:'apr',u:0},{m:'mei',u:6.5},{m:'jun',u:4},{m:'jul',u:5.5},{m:'aug',u:3.2}]
+ scanAntwoorden:[4,4,4, 3,2,3, 4,4,4, 4,4,4, 3,2,3, 4,5,4, 4,4,4, 3,2,3],
+ urenPerMaand:[{m:'mrt',u:0},{m:'apr',u:0},{m:'mei',u:6.5},{m:'jun',u:4},{m:'jul',u:5.5},{m:'aug',u:3.2}],
+ benchmark:{'Strategie':3.2,'Mensen':2.9,'Processen':3.0,'Systemen':3.1,'Data & Informatie':2.8,'Klanten':3.3,'Financiën':3.4,'Innovatie':2.7},
+ kpis:[
+  {naam:'Omzetgroei',waarde:14,doel:12,eenheid:'%',voor:'+',reeks:[4,6,7,9,11,14],omhoogGoed:true},
+  {naam:'Brutomarge',waarde:32,doel:35,eenheid:'%',reeks:[29,30,30,31,31,32],omhoogGoed:true},
+  {naam:'Klanttevredenheid',waarde:8.2,doel:8.5,eenheid:'',reeks:[7.6,7.8,7.9,8.0,8.1,8.2],omhoogGoed:true},
+  {naam:'Medewerkerbetrokkenheid',waarde:7.6,doel:8,eenheid:'',reeks:[7.1,7.2,7.4,7.4,7.5,7.6],omhoogGoed:true},
+  {naam:'Verzuimpercentage',waarde:4.2,doel:3.5,eenheid:'%',reeks:[5.1,4.9,4.6,4.5,4.3,4.2],omhoogGoed:false},
+  {naam:'Gemiddelde doorlooptijd',waarde:12,doel:9,eenheid:' dagen',reeks:[19,17,16,15,13,12],omhoogGoed:false}
+ ],
+ rapportages:[
+  {naam:'Financieel',periode:'Q2 2026',bijgewerkt:'2026-06-30'},
+  {naam:'Operationeel',periode:'juni 2026',bijgewerkt:'2026-07-02'},
+  {naam:'HR & verzuim',periode:'Q2 2026',bijgewerkt:'2026-07-05'},
+  {naam:'Klanttevredenheid',periode:'Q2 2026',bijgewerkt:'2026-07-08'},
+  {naam:'Projecten',periode:'juni 2026',bijgewerkt:'2026-07-01'}
+ ],
+ omzetReeks:[{m:'jan',v:268},{m:'feb',v:284},{m:'mrt',v:301},{m:'apr',v:295},{m:'mei',v:322},{m:'jun',v:374}],
+ omzetVerdeling:[{naam:'Personeel',deel:40},{naam:'Huisvesting',deel:20},{naam:'Marketing',deel:15},{naam:'Overig',deel:25}],
+ kto:{score:8.2,verschil:0.4,respons:68,responsVerschil:12,
+   themas:[{naam:'Kwaliteit',score:8.3},{naam:'Betrouwbaarheid',score:8.1},{naam:'Communicatie',score:7.9},{naam:'Prijs / waarde',score:7.7},{naam:'Aanbevelen',score:8.4}],
+   verbeterpunten:['Snellere levertijd','Betere bereikbaarheid','Meer proactief advies']},
+ mto:{score:7.6,respons:74,themas:[{naam:'Werkplezier',score:7.9},{naam:'Werkdruk',score:6.8},{naam:'Ontwikkeling',score:7.4},{naam:'Waardering',score:7.6}]},
+ roadmap:[
+  {titel:'Datafundament op orde',spoor:'Data & Informatie',kwartaal:'Q3 2026',status:'In uitvoering'},
+  {titel:'Rapportages automatiseren',spoor:'Data & Informatie',kwartaal:'Q3 2026',status:'In uitvoering'},
+  {titel:'Procesonderhoud in kaart',spoor:'Processen',kwartaal:'Q3 2026',status:'In uitvoering'},
+  {titel:'Standaardiseren processen',spoor:'Processen',kwartaal:'Q4 2026',status:'Niet gestart'},
+  {titel:'Kennisplatform uitrollen',spoor:'Kennis & Mensen',kwartaal:'Q3 2026',status:'Afgerond'},
+  {titel:'AI-brieging team',spoor:'Kennis & Mensen',kwartaal:'Q4 2026',status:'Niet gestart'},
+  {titel:'Klantkaart één beeld',spoor:'Klanten',kwartaal:'Q4 2026',status:'Niet gestart'},
+  {titel:'Werkbon naar planning live',spoor:'Processen',kwartaal:'Q3 2026',status:'In uitvoering'}
+ ],
+ aiAdvies:[
+  {titel:'Automatiseer 3 rapportages',impact:'Hoog',moeite:'Middel',besparing:6400,
+   beschrijving:'Drie terugkerende rapportages komen volledig met de hand tot stand. Ze zijn uit de bronnen te genereren, met de bestaande data en definities.',
+   aanpak:['Bronnen en definities vastleggen','Rapportages in Power BI bouwen','Planning en distributie instellen']},
+  {titel:'Verminder handmatige invoer',impact:'Hoog',moeite:'Laag',besparing:6200,
+   beschrijving:'Dezelfde gegevens worden op drie plekken ingevoerd. Met één koppeling verdwijnt het overtypen en daarmee ook de fouten.',
+   aanpak:['Bepalen welk systeem de bron is','Koppeling bouwen en testen','Team bijpraten en overdragen']},
+  {titel:'Optimaliseer inkoopproces',impact:'Middel',moeite:'Middel',besparing:3500,
+   beschrijving:'Inkoopfacturen worden nu deels automatisch verwerkt. De uitzonderingen kosten nog veel tijd bij Finance.',
+   aanpak:['Uitzonderingen tellen en groeperen','Regels toevoegen voor de grootste groep','Restgroep handmatig houden']}
+ ]
 };
 
 const KL={'Draait':['var(--groen)','var(--groen-l)'],'In aanbouw':['var(--blauw)','var(--blauw-l)'],
-          'Voorgesteld':['var(--amber)','var(--amber-l)'],'Idee':['var(--grijs)','var(--vlak)'],
-          'Gestopt':['var(--rood)','var(--rood-l)']};
+ 'Voorgesteld':['var(--amber)','var(--amber-l)'],'Idee':['var(--grijs)','var(--vlak)'],'Gestopt':['var(--rood)','var(--rood-l)'],
+ 'Actief':['var(--groen)','var(--groen-l)'],'Waarschuwing':['var(--amber)','var(--amber-l)'],'Fout':['var(--rood)','var(--rood-l)'],
+ 'Verbonden':['var(--groen)','var(--groen-l)'],'Niet verbonden':['var(--grijs)','var(--vlak)'],
+ 'Afgerond':['var(--groen)','var(--groen-l)'],'In uitvoering':['var(--blauw)','var(--blauw-l)'],'Niet gestart':['var(--grijs)','var(--vlak)'],
+ 'Hoog':['var(--rood)','var(--rood-l)'],'Middel':['var(--amber)','var(--amber-l)'],'Laag':['var(--groen)','var(--groen-l)'],
+ 'Betaald':['var(--groen)','var(--groen-l)'],'Open':['var(--amber)','var(--amber-l)']};
 
-let D=null;             // de gegevens
-let filterStatus='alle';
-let zoekterm='';
+let D=null, filterStatus='alle', zoekterm='', scanIndex=0, roadmapFilter='alle', docFilter='Alle';
 
-/* ═══════════════ hulpjes ═══════════════ */
-const $=s=>document.querySelector(s);
+/* ════════════════ hulpjes ════════════════ */
+const $=s=>document.querySelector(s), $$=s=>Array.prototype.slice.call(document.querySelectorAll(s));
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const eur=v=>'€ '+Math.round(v||0).toLocaleString('nl-NL');
-const uur=v=>(+v||0).toLocaleString('nl-NL',{minimumFractionDigits:0,maximumFractionDigits:1});
+const uur=v=>(+v||0).toLocaleString('nl-NL',{maximumFractionDigits:1});
 const pil=t=>{const k=KL[t]||KL['Idee'];return '<span class="pil" style="color:'+k[0]+';background:'+k[1]+'">'+esc(t)+'</span>';};
-const bol=t=>'<span class="bol" style="background:'+(KL[t]||KL['Idee'])[0]+'"></span>';
-function datumNL(s){
-  if(!s) return '—';
-  const d=new Date(s.length>10?s.replace(' ','T'):s+'T00:00:00');
-  if(isNaN(d)) return esc(s);
-  return d.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-}
-function ico(p,w){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>';}
+const bol=t=>'<span class="bol" style="background:'+((KL[t]||KL['Idee'])[0])+'"></span>';
+function datumNL(s){if(!s)return '—';const d=new Date(s.length>10?s.replace(' ','T'):s+'T00:00:00');
+ return isNaN(d)?esc(s):d.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});}
+function ico(p){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>';}
 const I={
  dash:'<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/>',
- taken:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 5.5l1.2 1.2L7.5 4.4M4 11.5l1.2 1.2 2.3-2.3M4 17.5l1.2 1.2 2.3-2.3"/>',
- uren:'<rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9h17M8 2.5v4M16 2.5v4M8 13h3M8 16.5h6"/>',
- kop:'<circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.2 8.3l7.6 2.6M8.2 15.7l7.6-2.6"/>',
+ overzicht:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3 2"/>',
+ scan:'<circle cx="11" cy="11" r="6.5"/><path d="M15.6 15.6L21 21M11 8v6M8 11h6"/>',
+ canvas:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M10 10v9.5"/>',
+ data:'<ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>',
+ kpi:'<path d="M3.5 20.5h17"/><path d="M7 17v-5M11.5 17V6.5M16 17v-3M20 17V9.5" stroke-width="2"/>',
+ kto:'<path d="M20.5 12.5c0 3.9-3.8 7-8.5 7-1 0-2-.1-2.9-.4L4 20.5l1.4-3.5C4.3 15.8 3.5 14.2 3.5 12.5c0-3.9 3.8-7 8.5-7s8.5 3.1 8.5 7z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>',
+ actie:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 5.5l1.2 1.2L7.5 4.4M4 11.5l1.2 1.2 2.3-2.3M4 17.5l1.2 1.2 2.3-2.3"/>',
+ ai:'<path d="M12 3l1.7 4.6L18.5 9l-4.8 1.4L12 15l-1.7-4.6L5.5 9l4.8-1.4z"/><path d="M18 16l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z"/>',
  doc:'<path d="M14 3.5H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V8.5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/>',
+ bron:'<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/><path d="M7 10.5v4a2 2 0 002 2h4.5"/>',
+ instel:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.2 5.2l1.9 1.9M16.9 16.9l1.9 1.9M18.8 5.2l-1.9 1.9M7.1 16.9l-1.9 1.9"/>',
+ kop:'<circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.2 8.3l7.6 2.6M8.2 15.7l7.6-2.6"/>',
+ uren:'<rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9h17M8 2.5v4M16 2.5v4M8 13h3M8 16.5h6"/>',
  notitie:'<rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8.5h8M8 12.5h8M8 16.5h4"/>',
- rapport:'<path d="M3.5 20.5h17"/><path d="M7 17V10M11.5 17V5.5M16 17v-4M20 17V8.5" stroke-width="2"/>',
  impact:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.7l5.9-.8z"/>',
  activiteit:'<path d="M3 12h4l2.5-6 4 12 2.5-6h5"/>',
- instel:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.2 5.2l1.9 1.9M16.9 16.9l1.9 1.9M18.8 5.2l-1.9 1.9M7.1 16.9l-1.9 1.9"/>',
  team:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/>',
- integratie:'<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/><path d="M7 10.5v4a2 2 0 002 2h4.5"/>',
- klok:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.3l3.4 2"/>',
  vink:'<circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.2l2.6 2.6 5-5.6"/>',
- euro:'<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.6a4.2 4.2 0 100 6.8M7.8 11h5.4M7.8 13.4h5.4"/>',
+ klok:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.3l3.4 2"/>',
  info:'<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.4"/>',
- leeg:'<rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M3.5 10h17"/>'
+ grijp:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',
+ potlood:'<path d="M4 20l4-1 10-10-3-3L5 16z"/><path d="M14.5 5.5l3 3"/>',
+ raket:'<path d="M12 2.5c3.2 2.2 5 5.6 5 9.4l-1.8 4.3H8.8L7 11.9c0-3.8 1.8-7.2 5-9.4z"/><circle cx="12" cy="10" r="2"/><path d="M8.8 16.2L6.5 21l3.4-1.4M15.2 16.2L17.5 21l-3.4-1.4"/>'
 };
 
 const MENU=[
  {kop:'Overzicht'},
- {id:'dashboard', naam:'Dashboard', ico:I.dash},
- {id:'werkstromen', naam:'Taken & Werkstromen', ico:I.taken, tel:d=>d.koppelingen.filter(k=>k.status==='In aanbouw').length},
- {id:'uren', naam:'Uren & Facturen', ico:I.uren},
- {id:'koppelingen', naam:'Koppelingen', ico:I.kop, tel:d=>d.koppelingen.length},
- {id:'documenten', naam:'Documenten', ico:I.doc},
- {id:'notities', naam:'Notities', ico:I.notitie},
+ {id:'dashboard',naam:'Dashboard',ico:I.dash},
+ {id:'overzicht',naam:'Overzicht',ico:I.overzicht},
+ {kop:'Scan & modellen'},
+ {id:'scan',naam:'Frisse Blik Scan',ico:I.scan,tel:()=>onbeantwoord()||null},
+ {id:'canvassen',naam:'Modellen & Canvassen',ico:I.canvas},
  {kop:'Inzicht'},
- {id:'rapportages', naam:'Rapportages', ico:I.rapport},
- {id:'impact', naam:'Impact & Besparing', ico:I.impact},
- {id:'activiteit', naam:'Activiteit', ico:I.activiteit},
+ {id:'rapporten',naam:'Data & Rapporten',ico:I.data},
+ {id:'kpi',naam:'KPI Cockpit',ico:I.kpi},
+ {id:'kto',naam:'KTO / MTO',ico:I.kto},
+ {id:'impact',naam:'Impact & Besparing',ico:I.impact},
+ {id:'activiteit',naam:'Activiteit',ico:I.activiteit},
+ {kop:'Werk'},
+ {id:'roadmap',naam:'Actie & Roadmap',ico:I.actie,tel:d=>(d.roadmap||[]).filter(r=>r.status==='In uitvoering').length},
+ {id:'werkstromen',naam:'Taken & Werkstromen',ico:I.actie},
+ {id:'koppelingen',naam:'Koppelingen',ico:I.kop,tel:d=>(d.koppelingen||[]).length},
+ {id:'uren',naam:'Uren & Facturen',ico:I.uren},
+ {id:'ai',naam:'AI Advies',ico:I.ai},
+ {kop:'Kennis'},
+ {id:'documenten',naam:'Documenten',ico:I.doc},
+ {id:'notities',naam:'Notities',ico:I.notitie},
+ {id:'bronnen',naam:'Bronnen',ico:I.bron,tel:d=>d.bronnenTotaal||(d.bronnen||[]).length},
  {kop:'Beheer'},
- {id:'instellingen', naam:'Instellingen', ico:I.instel},
- {id:'team', naam:'Team & Toegang', ico:I.team},
- {id:'integraties', naam:'Integraties', ico:I.integratie}
+ {id:'instellingen',naam:'Instellingen',ico:I.instel},
+ {id:'team',naam:'Team & Toegang',ico:I.team},
+ {id:'integraties',naam:'Integraties',ico:I.bron},
+ {id:'feedback',naam:'Feedback geven',ico:I.notitie}
 ];
-const TITELS={dashboard:'Wat er draait voor',werkstromen:'Taken & werkstromen',uren:'Uren & facturen',
- koppelingen:'Koppelingen',documenten:'Documenten',notities:'Notities',rapportages:'Rapportages',
- impact:'Impact & besparing',activiteit:'Activiteit',instellingen:'Instellingen',team:'Team & toegang',
- integraties:'Integraties',feedback:'Feedback geven'};
+const TITELS={dashboard:'Dashboard',overzicht:'Overzicht',scan:'Frisse Blik Scan',canvassen:'Modellen & Canvassen',
+ rapporten:'Data & Rapporten',kpi:'KPI Cockpit',kto:'KTO / MTO',impact:'Impact & besparing',activiteit:'Activiteit',
+ roadmap:'Actie & Roadmap',werkstromen:'Taken & werkstromen',koppelingen:'Koppelingen',uren:'Uren & facturen',
+ ai:'AI Advies',documenten:'Documenten & kennis',notities:'Notities',bronnen:'Bronnen',instellingen:'Instellingen & gebruikers',
+ team:'Team & toegang',integraties:'Integraties',feedback:'Feedback geven'};
+const ONDER={dashboard:'Direct inzicht in de gezondheid van je organisatie, verbeterkansen, voortgang en volgende stappen.',
+ overzicht:'Alles wat we voor je gebouwd hebben, wat er loopt en hoeveel uur eraan besteed is.',
+ scan:'Vul de scan in. Je antwoorden werken meteen door in de radar en je gezondheidsscore.',
+ canvassen:'Alle modellen en canvassen, gevuld op basis van jouw input en data.',
+ rapporten:'Koppel je data en bekijk gebundelde rapportages.',
+ kpi:'Overzicht van de belangrijkste KPI\'s en trends. Klik op een KPI om waarde en doel bij te stellen.',
+ kto:'Verzamel en analyseer feedback van klanten en medewerkers.',
+ roadmap:'Van strategie naar concrete acties. Sleep een kaartje naar een andere kolom.',
+ ai:'AI analyseert je data en geeft concrete aanbevelingen.',
+ documenten:'Alle documenten, beleidsstukken en kennis centraal en doorzoekbaar.',
+ bronnen:'Overzicht van de gekoppelde databronnen en hun status.',
+ instellingen:'Beheer gebruikers, rechten, notificaties en koppelingen.'};
 
-/* ═══════════════ berekeningen ═══════════════ */
+/* ════════════════ opslag ════════════════ */
+function sleutel(deel){return 'bg_portaal_'+deel+'_'+(klantParam||'onbekend');}
+function laad(deel,standaard){try{const o=JSON.parse(localStorage.getItem(sleutel(deel))||'null');return o==null?standaard:o;}catch(e){return standaard;}}
+function bewaar(deel,waarde){try{localStorage.setItem(sleutel(deel),JSON.stringify(waarde));}catch(e){}}
+
+/* ════════════════ rekenwerk ════════════════ */
 function cijfers(){
  const K=D.koppelingen||[];
- const draait=K.filter(k=>k.status==='Draait');
- const bouw=K.filter(k=>k.status==='In aanbouw');
+ const draait=K.filter(k=>k.status==='Draait'), bouw=K.filter(k=>k.status==='In aanbouw');
  const uren=K.reduce((a,k)=>a+(+k.uren||0),0);
  const besparing=draait.reduce((a,k)=>a+(+k.besparing||0),0);
  const tarief=+D.tarief||200;
@@ -362,528 +525,922 @@ function cijfers(){
  const gewerkt=uren*tarief;
  return {K,draait,bouw,uren,besparing,tarief,gefactureerd,gewerkt,open:Math.max(gewerkt-gefactureerd,0)};
 }
-function sparkline(reeks,kleur){
- const w=90,h=30,max=Math.max.apply(null,reeks.concat([1])),min=0;
- const pts=reeks.map((v,i)=>[(i/(reeks.length-1||1))*w, h-((v-min)/(max-min||1))*(h-4)-2]);
- return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" aria-hidden="true">'
-  +'<polyline points="'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="none" stroke="'+kleur+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-}
-function donut(){
- const K=D.koppelingen||[];
- const volg=['Draait','In aanbouw','Voorgesteld','Idee','Gestopt'];
- const telling=volg.map(s=>({s,n:K.filter(k=>k.status===s).length})).filter(x=>x.n>0);
- const tot=K.length||1, r=52, omtrek=2*Math.PI*r;
- let start=0, segmenten='';
- telling.forEach(t=>{
-   const deel=t.n/tot*omtrek;
-   segmenten+='<circle cx="70" cy="70" r="'+r+'" fill="none" stroke="'+KL[t.s][0]+'" stroke-width="18"'
-     +' stroke-dasharray="'+(deel-3)+' '+(omtrek-deel+3)+'" stroke-dashoffset="'+(-start)+'" transform="rotate(-90 70 70)"/>';
-   start+=deel;
+function onbeantwoord(){return (D&&D.vragen? D.vragen.filter(v=>v.antwoord==null).length:0);}
+function themaScores(){
+ const uit={};
+ THEMAS.forEach(t=>{
+   const v=(D.vragen||[]).filter(x=>x.thema===t&&x.antwoord!=null);
+   uit[t]= v.length? v.reduce((a,x)=>a+x.antwoord,0)/v.length : 0;
  });
- return '<div style="display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap">'
-  +'<svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="Verdeling van de statussen">'+segmenten
-  +'<text x="70" y="68" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="26" font-weight="800" fill="#14171A">'+K.length+'</text>'
-  +'<text x="70" y="86" text-anchor="middle" font-family="Instrument Sans,sans-serif" font-size="12" fill="#5C646E">Totaal</text></svg>'
-  +'<div style="display:grid;gap:.5rem">'+telling.map(t=>'<div style="display:flex;gap:.5rem;align-items:center;font-size:.85rem">'
-     +'<span style="width:9px;height:9px;border-radius:50%;background:'+KL[t.s][0]+'"></span><b>'+t.n+'</b> '+esc(t.s)+'</div>').join('')
-  +'</div></div>';
+ return uit;
 }
-function leeg(tekst){
- return '<div class="leegstand">'+ico(I.leeg)+'<p>'+esc(tekst)+'</p></div>';
+function gezondheid(){
+ const s=themaScores(), waarden=THEMAS.map(t=>s[t]).filter(v=>v>0);
+ if(!waarden.length) return {score:0,ingevuld:0};
+ const gem=waarden.reduce((a,b)=>a+b,0)/waarden.length;
+ return {score:Math.round(gem/5*100), ingevuld:Math.round(((D.vragen||[]).filter(v=>v.antwoord!=null).length/(D.vragen||[1]).length)*100)};
+}
+function kansen(){
+ const s=themaScores();
+ const laag=THEMAS.filter(t=>s[t]>0).sort((a,b)=>s[a]-s[b]);
+ const teksten={
+  'Data & Informatie':['Data is versnipperd en niet betrouwbaar','Hoge impact','Gem. effort'],
+  'Mensen':['Kennis is niet vastgelegd en moeilijk vindbaar','Hoge impact','Lagere effort'],
+  'Processen':['Processen onvoldoende gestandaardiseerd','Middel impact','Gem. effort'],
+  'Systemen':['Systemen praten niet met elkaar','Hoge impact','Gem. effort'],
+  'Strategie':['Koers is niet vertaald naar de werkvloer','Middel impact','Lagere effort'],
+  'Klanten':['Geen één beeld van de klant','Middel impact','Gem. effort'],
+  'Financiën':['Rapportages niet stuurend en niet actueel','Middel impact','Lagere effort'],
+  'Innovatie':['AI-kansen nog niet concreet benut','Middel impact','Hoge effort']
+ };
+ return laag.slice(0,5).map((t,i)=>({nr:i+1,thema:t,tekst:(teksten[t]||[t])[0],impact:(teksten[t]||[])[1]||'Middel impact',effort:(teksten[t]||[])[2]||'Gem. effort',score:s[t]}));
 }
 
-/* ═══════════════ weergaven ═══════════════ */
+/* ════════════════ grafieken ════════════════ */
+function meter(score){
+ const r=62, midX=90, midY=88, hoek=Math.PI*(score/100);
+ const x=midX-r*Math.cos(hoek), y=midY-r*Math.sin(hoek);
+ const groot=score>50?1:0;
+ const kleur=score>=70?'var(--groen)':score>=45?'var(--amber)':'var(--rood)';
+ return '<svg viewBox="0 0 180 108" width="100%" style="max-width:190px" role="img" aria-label="Gezondheidsscore '+score+' van 100">'
+  +'<path d="M28 88a62 62 0 01124 0" fill="none" stroke="var(--lijn)" stroke-width="15" stroke-linecap="round"/>'
+  +(score>0?'<path d="M28 88A62 62 0 01'+x.toFixed(1)+' '+y.toFixed(1)+'" fill="none" stroke="'+kleur+'" stroke-width="15" stroke-linecap="round" data-groot="'+groot+'"/>':'')
+  +'<text x="90" y="80" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="34" font-weight="800" fill="#141B2E">'+score+'</text>'
+  +'<text x="90" y="99" text-anchor="middle" font-family="Instrument Sans,sans-serif" font-size="12" fill="#69707D">/100</text></svg>';
+}
+function radar(klikbaar){
+ const s=themaScores(), bm=D.benchmark||{}, n=THEMAS.length, cx=190, cy=145, R=100;
+ const punt=(i,v)=>{const a=(Math.PI*2*i/n)-Math.PI/2, r=R*(v/5);return [cx+r*Math.cos(a), cy+r*Math.sin(a)];};
+ let ringen='', assen='', labels='';
+ for(let k=1;k<=5;k++){
+   const p=THEMAS.map((_,i)=>punt(i,k).map(x=>x.toFixed(1)).join(',')).join(' ');
+   ringen+='<polygon points="'+p+'" fill="none" stroke="var(--lijn)" stroke-width="1"/>';
+ }
+ THEMAS.forEach((t,i)=>{
+   const p=punt(i,5), l=punt(i,5.75);
+   assen+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" stroke="var(--lijn)"/>';
+   const anker = l[0]>cx+6?'start':l[0]<cx-6?'end':'middle';
+   labels+='<text x="'+l[0].toFixed(1)+'" y="'+(l[1]+4).toFixed(1)+'" text-anchor="'+anker+'" font-family="Instrument Sans,sans-serif" font-size="10.5" fill="#69707D">'+esc(t)+'</text>';
+ });
+ const eigen=THEMAS.map((t,i)=>punt(i,s[t]||0).map(x=>x.toFixed(1)).join(',')).join(' ');
+ const bench=THEMAS.map((t,i)=>punt(i,bm[t]||0).map(x=>x.toFixed(1)).join(',')).join(' ');
+ const stippen=THEMAS.map((t,i)=>{const p=punt(i,s[t]||0);
+   return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4" fill="var(--blauw)"/>';}).join('');
+ return '<svg id="radar" viewBox="0 0 380 300" width="100%" style="max-width:420px;margin:0 auto'+(klikbaar?';cursor:crosshair':'')+'" role="img" aria-label="Radar met je score per thema">'
+  +ringen+assen+labels
+  +'<polygon points="'+bench+'" fill="none" stroke="#B3B9C6" stroke-width="1.6" stroke-dasharray="4 4"/>'
+  +'<polygon points="'+eigen+'" fill="rgba(39,66,214,.16)" stroke="var(--blauw)" stroke-width="2"/>'+stippen
+  +'</svg>'
+  +'<div style="display:flex;gap:1rem;justify-content:center;font-size:.76rem;color:var(--grijs);margin-top:.3rem">'
+  +'<span style="display:flex;gap:.3rem;align-items:center"><span style="width:9px;height:9px;border-radius:50%;background:var(--blauw)"></span>Jouw score</span>'
+  +'<span style="display:flex;gap:.3rem;align-items:center"><span style="width:14px;height:0;border-top:2px dashed #B3B9C6"></span>Benchmark</span></div>';
+}
+function lijn(reeks,kleur,hoogte,labels){
+ kleur=kleur||'var(--blauw)'; hoogte=hoogte||70;
+ const w=280,h=hoogte,max=Math.max.apply(null,reeks.concat([1])),min=Math.min.apply(null,reeks.concat([0]));
+ const p=reeks.map((v,i)=>[(i/(reeks.length-1||1))*w,h-((v-min)/((max-min)||1))*(h-12)-6]);
+ const pad=p.map(x=>x[0].toFixed(1)+','+x[1].toFixed(1)).join(' ');
+ const vlak='0,'+h+' '+pad+' '+w+','+h;
+ return '<svg viewBox="0 0 '+w+' '+(h+(labels?16:0))+'" width="100%" aria-hidden="true">'
+  +'<polygon points="'+vlak+'" fill="'+kleur+'" opacity=".10"/>'
+  +'<polyline points="'+pad+'" fill="none" stroke="'+kleur+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'
+  +p.map(x=>'<circle cx="'+x[0].toFixed(1)+'" cy="'+x[1].toFixed(1)+'" r="2.6" fill="'+kleur+'"/>').join('')
+  +(labels? labels.map((l,i)=>'<text x="'+((i/(labels.length-1||1))*w).toFixed(1)+'" y="'+(h+12)+'" text-anchor="'+(i===0?'start':i===labels.length-1?'end':'middle')+'" font-size="9.5" fill="#69707D" font-family="Instrument Sans,sans-serif">'+esc(l)+'</text>').join(''):'')
+  +'</svg>';
+}
+function staven(reeks,kleur){
+ const max=Math.max.apply(null,reeks.map(r=>r.v).concat([1]));
+ return '<div style="display:flex;align-items:flex-end;gap:.5rem;height:150px;padding:.4rem 0">'
+  + reeks.map(r=>'<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:.3rem;height:100%">'
+    +'<span style="font-size:.72rem;font-weight:700">'+esc(r.tekst!=null?r.tekst:r.v)+'</span>'
+    +'<div style="width:100%;max-width:46px;height:'+Math.max(3,(r.v/max)*100)+'%;background:'+(kleur||'var(--blauw)')+';border-radius:6px 6px 0 0"></div>'
+    +'<span style="font-size:.72rem;color:var(--grijs)">'+esc(r.m)+'</span></div>').join('')
+  +'</div>';
+}
+function ring(delen){
+ const tot=delen.reduce((a,d)=>a+d.deel,0)||1, r=48, omtrek=2*Math.PI*r;
+ const kleuren=['var(--blauw)','var(--blauw-2)','var(--paars)','var(--groen)','var(--amber)','var(--grijs)'];
+ let start=0,seg='';
+ delen.forEach((d,i)=>{const deel=d.deel/tot*omtrek;
+  seg+='<circle cx="66" cy="66" r="'+r+'" fill="none" stroke="'+kleuren[i%kleuren.length]+'" stroke-width="17" stroke-dasharray="'+(deel-2.5)+' '+(omtrek-deel+2.5)+'" stroke-dashoffset="'+(-start)+'" transform="rotate(-90 66 66)"/>';
+  start+=deel;});
+ return '<div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">'
+  +'<svg width="132" height="132" viewBox="0 0 132 132" aria-hidden="true">'+seg+'</svg>'
+  +'<div style="display:grid;gap:.35rem;font-size:.8rem">'
+  + delen.map((d,i)=>'<div style="display:flex;gap:.45rem;align-items:center"><span style="width:9px;height:9px;border-radius:50%;background:'+kleuren[i%kleuren.length]+'"></span>'+esc(d.naam)+' <b style="margin-left:auto">'+d.deel+'%</b></div>').join('')
+  +'</div></div>';
+}
+function leeg(t){return '<div class="leegstand">'+esc(t)+'</div>';}
+
+/* ════════════════ dashboardwidgets (sleepbaar) ════════════════ */
+const WIDGETS={
+ score:{breedte:'w3',maak:()=>{const g=gezondheid();
+   return kaart('Bedrijfsgezondheidsscore','score','<div style="display:flex;justify-content:center">'+meter(g.score)+'</div>'
+    +'<p class="sub" style="text-align:center">'+(g.score>=70?'Goed':g.score>=45?'Voldoende':g.ingevuld?'Aandacht nodig':'Nog niet ingevuld')
+    +' · '+g.ingevuld+'% van de scan ingevuld</p>'
+    +'<a class="meer" href="#/scan">Naar de scan →</a>');}},
+ kansen:{breedte:'w3',maak:()=>kaart('Belangrijkste verbeterkansen','kansen',
+   '<div class="cijfergroot">'+kansen().length+'</div><p class="sub">prioritaire kansen gevonden</p>'
+   +'<a class="meer" href="#/ai">Bekijk aanbevelingen →</a>')},
+ acties:{breedte:'w3',maak:()=>{const r=D.roadmap||[],af=r.filter(x=>x.status==='Afgerond').length,bezig=r.filter(x=>x.status==='In uitvoering').length;
+   const pct=r.length?Math.round(af/r.length*100):0;
+   return kaart('Acties in uitvoering','acties','<div class="cijfergroot">'+bezig+'</div><p class="sub">van '+r.length+' acties, '+af+' afgerond</p>'
+    +'<div class="balkje"><div style="width:'+pct+'%"></div></div><p class="sub">'+pct+'%</p>'
+    +'<a class="meer" href="#/roadmap">Naar actieplan →</a>');}},
+ bronnen:{breedte:'w3',maak:()=>kaart('Bronnen gekoppeld','bronnen',
+   '<div class="cijfergroot">'+(D.bronnenActief||(D.bronnen||[]).length)+'<span style="font-size:1rem;color:var(--grijs)">/'+(D.bronnenTotaal||(D.bronnen||[]).length)+'</span></div>'
+   +'<p class="sub">bronnen actief</p><a class="meer" href="#/bronnen">Bekijk bronnen →</a>')},
+ radar:{breedte:'w5',maak:()=>kaart('Waar staan we sterk en waar liggen kansen?','radar',
+   radar(true)+'<div class="klikhint">'+ico(I.potlood)+'Klik in de radar om een thema bij te stellen.</div>')},
+ top5:{breedte:'w4',maak:()=>{const k=kansen();
+   return kaart('Top 5 verbeterkansen','top5', k.length? k.map(x=>
+    '<div class="rij"><span class="bol" style="background:var(--vlak);width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--grijs);margin-top:.1rem">'+x.nr+'</span>'
+    +'<div class="mid"><b>'+esc(x.tekst)+'</b><div class="fijn">'+esc(x.thema)+' · score '+x.score.toFixed(1)+'/5</div></div>'
+    +'<div class="rechts">'+pil(x.impact.split(' ')[0])+' <span class="pil" style="background:var(--vlak);color:var(--grijs)">'+esc(x.effort)+'</span></div></div>').join('')
+    : leeg('Vul eerst de scan in, dan verschijnen hier je kansen.'))
+   +'<a class="meer" href="#/ai">Bekijk alle aanbevelingen →</a>';}},
+ volgende:{breedte:'w3',maak:()=>{const k=kansen()[0];
+   return kaart('Volgende stap','volgende','<div style="font-size:1.5rem">'+'</div>'
+   +'<p class="sub">'+(k? 'Op basis van je scan adviseren we te starten met het verbeteren van '+esc(k.thema.toLowerCase())+'.' : 'Vul de scan in, dan zetten we hier je volgende stap.')+'</p>'
+   +'<a class="knop" href="#/roadmap" style="margin-top:.7rem">Naar actieplan →</a>'
+   +'<p class="sub" style="margin-top:.7rem">Of plan een vrijblijvende sessie:</p>'
+   +'<a class="knop stil" href="https://calendly.com/arthur-prinsen/adviesgesprek-slimmer-geregeld" target="_blank" rel="noopener">Plan adviesgesprek</a>');}},
+ werkstromen:{breedte:'w6',maak:()=>{const c=cijfers();
+   return kaart('Wat er draait','werkstromen', (c.draait.length? c.draait.map(rijKoppeling).join('') : leeg('Nog niets live.'))
+    +'<a class="meer" href="#/werkstromen">Bekijk alle werkstromen →</a>');}},
+ uren:{breedte:'w6',maak:()=>{const c=cijfers();
+   return kaart('Uren en facturen','uren',
+    '<div class="raster r3" style="margin-bottom:.3rem">'
+    +'<div><div class="cijfergroot" style="font-size:1.5rem">'+uur(c.uren)+'</div><div class="sub">uur × '+eur(c.tarief)+'</div></div>'
+    +'<div><div class="cijfergroot" style="font-size:1.5rem">'+eur(c.gefactureerd)+'</div><div class="sub">gefactureerd</div></div>'
+    +'<div><div class="cijfergroot" style="font-size:1.5rem;color:'+(c.open>0?'var(--amber)':'var(--groen)')+'">'+eur(c.open)+'</div><div class="sub">'+(c.open>0?'nog niet gefactureerd':'niets open')+'</div></div></div>'
+    +'<a class="meer" href="#/uren">Alle uren en facturen →</a>');}},
+ activiteiten:{breedte:'w12',maak:()=>kaart('Laatste activiteiten','activiteiten',
+   '<div class="raster" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin:0">'
+   + (D.activiteit||[]).slice(0,5).map(a=>'<div><b style="font-size:.85rem;display:block">'+esc(a.tekst)+'</b><span class="sub">'+datumNL((a.datum||'').slice(0,10))+'</span></div>').join('')
+   +'</div><a class="meer" href="#/activiteit">Alle activiteit →</a>')}
+};
+const STANDAARDORDE=['score','kansen','acties','bronnen','radar','top5','volgende','werkstromen','uren','activiteiten'];
+function widgetOrde(){
+ const o=laad('widgets',null);
+ if(!o||!Array.isArray(o)) return STANDAARDORDE.slice();
+ const geldig=o.filter(x=>WIDGETS[x]);
+ STANDAARDORDE.forEach(x=>{if(geldig.indexOf(x)<0) geldig.push(x);});
+ return geldig;
+}
+function kaart(titel,id,binnen){
+ return '<div class="kaart"><div class="kaartkop"><h3>'+esc(titel)+'</h3>'
+  +'<span class="greep" data-greep="'+id+'" title="Sleep om te verplaatsen">'+ico(I.grijp)+'</span></div>'+binnen+'</div>';
+}
+function rijKoppeling(k){
+ return '<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
+  +'<div class="fijn">'+esc(k.van||'—')+' → '+esc(k.naar||'—')+' · '+esc(k.middel||'—')+'</div>'
+  +(k.notitie?'<div class="fijn">'+esc(k.notitie)+'</div>':'')+'</div>'
+  +'<div class="rechts">'+pil(k.status)+'<div class="fijn" style="margin-top:.2rem">'+Math.round(k.besparing||0)+' uur p.j.</div></div></div>';
+}
+
+/* ════════════════ schermen ════════════════ */
 const V={};
 
 V.dashboard=function(){
- const c=cijfers();
- const urenReeks=(D.urenPerMaand||[]).map(x=>x.u);
- return ''
- + (isDemo? '<div class="mel">'+ico(I.info)+'<div><b>Dit is een voorbeeld.</b> '+esc(D.klant.replace(' (voorbeeld)',''))
-   +' bestaat niet en alle koppelingen, uren en bedragen zijn verzonnen. Zo ziet jouw portaal eruit zodra we voor je aan de slag zijn.</div></div>' : '')
- + '<div class="raster r3">'
- + kpi('Draait nu', I.vink, c.draait.length, 'van de '+c.K.length+' koppelingen', sparkline([1,1,2,2,3,3],'var(--groen)'))
- + kpi('Uur besteed', I.klok, uur(c.uren), 'aan bouwen en aansluiten', sparkline(urenReeks.length?urenReeks:[0,1],'var(--blauw)'))
- + kpi('Uur per jaar terug', I.impact, Math.round(c.besparing), 'bij jullie op de werkvloer', sparkline([0,0,120,200,295,295],'var(--groen)'))
- + '</div>'
-
- + '<div class="raster r23">'
-   + '<div class="kaart"><div class="kaartkop"><h3>Wat er draait</h3>'
-     + '<span class="rechts"><a class="knop stil" href="#/koppelingen">Bekijk alles</a></span></div>'
-     + (c.draait.length? c.draait.map(k=>rijKoppeling(k,true)).join('') : leeg('Nog niets live.'))
-     + '<a class="meer" href="#/werkstromen">Bekijk alle werkstromen →</a></div>'
-   + '<div class="kaart"><div class="kaartkop"><h3>Waar we nu aan werken</h3></div>'
-     + (c.bouw.length? c.bouw.map(k=>''
-        + '<div class="rij"><span class="bol" style="background:var(--blauw)"></span><div class="mid">'
-        + '<b>'+esc(k.titel)+'</b><div class="fijn">'+esc(k.van||'—')+' → '+esc(k.naar||'—')+' · '+esc(k.middel||'—')+'</div>'
-        + (k.notitie? '<div class="fijn">'+esc(k.notitie)+'</div>':'')
-        + '<div class="balkje"><div style="width:'+(k.voortgang!=null?k.voortgang:Math.min(100,(+k.uren||0)/8*100))+'%"></div></div>'
-        + '<div class="fijn">'+uur(k.uren)+' uur besteed</div></div>'
-        + '<div class="rechts">'+pil('In aanbouw')+'</div></div>').join('') : leeg('Op dit moment staat er niets in de steigers.'))
-     + '<a class="meer" href="#/werkstromen">Ga naar taken →</a></div>'
- + '</div>'
-
- + '<div class="raster r23">'
-   + '<div class="kaart"><div class="kaartkop"><h3>Alles op een rij</h3></div>'
-     + c.K.map(k=>''
-        + '<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
-        + '<div class="fijn">'+esc(k.middel||'—')+' · '+uur(k.uren)+' uur</div></div>'
-        + '<div class="rechts">'+pil(k.status)+'</div></div>').join('')
-     + '<a class="meer" href="#/koppelingen">Bekijk alle koppelingen →</a></div>'
-   + '<div><div class="kaart"><div class="kaartkop"><h3>Statusoverzicht</h3></div>'+donut()+'</div>'
-     + '<div class="kaart" style="background:var(--blauw-l);border-color:#D5DCFA"><h3>Wist je dat?</h3>'
-     + '<p class="sub" style="margin:.3rem 0">Samen besparen we naar schatting</p>'
-     + '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.5rem;font-weight:800;color:var(--blauw)">'+Math.round(c.besparing)+' uur per jaar</div>'
-     + '<p class="sub" style="margin-top:.3rem">dat is bijna '+Math.round(c.besparing/8)+' werkdagen terug op jullie werkvloer.</p></div></div>'
- + '</div>'
-
- + kaartUren(c, true)
- + '<div class="let"><b>Wat die uren betekenen.</b> De uren die vrijkomen zijn geen geld dat binnenkomt — jullie mensen blijven. Het is ruimte: hetzelfde team kan meer aan zonder dat er iemand bij hoeft. Wat dat waard is, bepalen jullie zelf.</div>'
- + '<div class="kaart"><h3>Storingen en meldingen</h3>'
- + '<p class="sub" style="margin-top:.3rem">Valt er iets stil, dan zie je dat hier — en krijg je bericht vóórdat je klant het merkt. Op dit moment zijn er <b>geen storingen</b> gemeld.</p>'
- + '<p class="sub" style="margin-top:.4rem">Merk je zelf iets? Bel of mail gerust. Onder de twee uur werk brengen we niets in rekening.</p></div>';
+ return (isDemo? '<div class="mel">'+ico(I.info)+'<div><b>Dit is een voorbeeld.</b> '+esc(D.klant.replace(' (voorbeeld)',''))
+  +' bestaat niet; alle cijfers zijn verzonnen. Alles is wél echt aanpasbaar: sleep de blokken, klik in de radar, pas KPI\'s aan.</div></div>':'')
+ +'<div class="muur" id="muur">'
+ + widgetOrde().map(id=>'<section class="widget '+WIDGETS[id].breedte+'" data-widget="'+id+'" draggable="true">'+WIDGETS[id].maak()+'</section>').join('')
+ +'</div>';
 };
 
-function kpi(label,icoon,cijfer,bij,spark){
- return '<div class="kpi"><div class="label">'+ico(icoon)+esc(label)+'</div>'
-  +'<div class="onder"><div><div class="cijfer">'+cijfer+'</div><div class="bij">'+esc(bij)+'</div></div>'
-  +(spark||'')+'</div></div>';
-}
-function rijKoppeling(k,metBesparing){
- return '<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
-  +'<div class="fijn">'+esc(k.van||'—')+' → '+esc(k.naar||'—')+' · gebouwd met '+esc(k.middel||'—')+'</div>'
-  +(k.notitie? '<div class="fijn">'+esc(k.notitie)+'</div>':'')+'</div>'
-  +'<div class="rechts">'+pil(k.status)
-  +(metBesparing? '<div class="fijn" style="margin-top:.25rem">'+Math.round(k.besparing||0)+' uur p.j.</div>':'')
-  +'</div></div>';
-}
-function kaartUren(c,kort){
- const metUren=c.K.filter(k=>(+k.uren||0)>0);
- return '<div class="kaart"><div class="kaartkop"><h3>Uren en facturen</h3>'
- + (kort? '<span class="rechts"><a class="knop stil" href="#/uren">Alle uren</a></span>':'')+'</div>'
- + '<div class="raster r3" style="margin-bottom:.4rem">'
- + '<div><div class="cijfer" style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.6rem;font-weight:800">'+uur(c.uren)+'</div><div class="sub">uur gewerkt × '+eur(c.tarief)+'</div></div>'
- + '<div><div class="cijfer" style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.6rem;font-weight:800">'+eur(c.gefactureerd)+'</div><div class="sub">al gefactureerd</div></div>'
- + '<div><div class="cijfer" style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.6rem;font-weight:800;color:'+(c.open>0?'var(--amber)':'var(--groen)')+'">'+eur(c.open)+'</div><div class="sub">'+(c.open>0?'gewerkt maar nog niet gefactureerd':'niets openstaand')+'</div></div>'
- + '</div>'
- + (metUren.length? metUren.map(k=>{
-     const w=(+k.uren||0)*c.tarief, f=+k.gefactureerd||0;
-     return '<div class="rij"><span class="bol" style="background:'+(f>=w?'var(--groen)':'var(--amber)')+'"></span>'
-      +'<div class="mid"><b>'+esc(k.titel)+'</b><div class="fijn">'+uur(k.uren)+' uur · '+eur(w)+' aan werk</div></div>'
-      +'<div class="rechts"><b>'+eur(f)+'</b><div class="fijn">'+(f>=w?'gefactureerd':'nog niet gefactureerd')+'</div></div></div>';
-   }).join('') : leeg('Er is nog geen tijd geschreven.'))
- + '<p class="sub" style="margin-top:.7rem">Elke factuur komt met de urenlijst erbij: per dag, met wat er die dag gebeurde. Klopt er iets niet, zeg het — dan halen we het eraf. Werk onder twee uur brengen we niet in rekening.</p></div>';
-}
+V.overzicht=function(){
+ const c=cijfers();
+ return '<div class="raster r23">'
+ +'<div class="kaart"><div class="kaartkop"><h3>Alles op een rij</h3></div>'
+ + c.K.map(k=>'<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b><div class="fijn">'+esc(k.middel||'—')+' · '+uur(k.uren)+' uur</div></div><div class="rechts">'+pil(k.status)+'</div></div>').join('')
+ +'<a class="meer" href="#/koppelingen">Bekijk alle koppelingen →</a></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Statusverdeling</h3></div>'
+ + ring(['Draait','In aanbouw','Voorgesteld','Idee'].map(s=>({naam:s,deel:Math.round(c.K.filter(k=>k.status===s).length/(c.K.length||1)*100)})).filter(x=>x.deel>0))
+ +'</div></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Wat die uren betekenen</h3></div>'
+ +'<p class="sub">De uren die vrijkomen zijn geen geld dat binnenkomt — jullie mensen blijven. Het is ruimte: hetzelfde team kan meer aan zonder dat er iemand bij hoeft.</p></div>';
+};
+
+V.scan=function(){
+ const vragen=D.vragen||[];
+ if(scanIndex>=vragen.length) scanIndex=vragen.length-1;
+ if(scanIndex<0) scanIndex=0;
+ const v=vragen[scanIndex];
+ if(!v) return leeg('Er staan geen scanvragen klaar.');
+ const gedaan=vragen.filter(x=>x.antwoord!=null).length;
+ const pct=Math.round(gedaan/vragen.length*100);
+ const s=themaScores();
+ return '<div class="scan">'
+ +'<div class="kaart scanrail"><div class="label">Voortgang</div>'
+ +'<div class="balkje"><div style="width:'+pct+'%"></div></div>'
+ +'<p class="sub" style="margin-bottom:.7rem">'+pct+'% · vraag '+(scanIndex+1)+' van '+vragen.length+'</p>'
+ + THEMAS.map((t,i)=>{
+    const vt=vragen.filter(x=>x.thema===t), klaar=vt.every(x=>x.antwoord!=null);
+    return '<button class="them'+(t===v.thema?' aan':'')+(klaar?' klaar':'')+'" data-thema="'+esc(t)+'"><i>'+(klaar?'✓':(i+1))+'</i>'+esc(t)
+     +(s[t]?'<span style="margin-left:auto;font-size:.74rem;color:var(--grijs)">'+s[t].toFixed(1)+'</span>':'')+'</button>';
+   }).join('')
+ +'</div>'
+ +'<div class="kaart"><div class="label">'+esc(v.thema)+'</div>'
+ +'<h3 style="font-size:1.05rem;margin-bottom:.2rem">'+esc(v.tekst)+'</h3>'
+ +'<p class="sub">Kies de optie die het beste past.</p>'
+ +'<div class="keuze">'+SCHAAL.map(o=>'<button data-antwoord="'+o.n+'" class="'+(v.antwoord===o.n?'aan':'')+'"><b>'+o.n+'</b><span>'+esc(o.kop)+'</span></button>').join('')+'</div>'
+ +'<label class="veld"><span>Toelichting (optioneel)</span><textarea id="scanToe" rows="2" placeholder="Geef een korte toelichting…">'+esc(v.toelichting||'')+'</textarea></label>'
+ +'<div class="vknoppen" style="justify-content:space-between">'
+ +'<button class="knop stil" id="scanVorige"'+(scanIndex===0?' disabled style="opacity:.5"':'')+'>Vorige</button>'
+ +'<span style="display:flex;gap:.5rem"><button class="knop stil" id="scanSluit">Sla op en sluit af</button>'
+ +'<button class="knop" id="scanVolgende">'+(scanIndex===vragen.length-1?'Afronden':'Volgende')+'</button></span></div>'
+ +'</div></div>'
+ +'<div class="raster r2" style="margin-top:1rem">'
+ +'<div class="kaart"><div class="kaartkop"><h3>Je radar werkt direct mee</h3></div>'+radar(true)
+ +'<div class="klikhint">'+ico(I.potlood)+'Klik in de radar om een thema handmatig bij te stellen.</div></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Score per thema</h3></div>'
+ + THEMAS.map(t=>'<div class="rij"><div class="mid"><b>'+esc(t)+'</b>'
+    +'<div class="balkje"><div style="width:'+((s[t]||0)/5*100)+'%;background:'+((s[t]||0)>=3.5?'var(--groen)':(s[t]||0)>=2.5?'var(--amber)':'var(--rood)')+'"></div></div></div>'
+    +'<div class="rechts"><b>'+(s[t]?s[t].toFixed(1):'—')+'</b><div class="fijn">bench '+((D.benchmark||{})[t]||'—')+'</div></div></div>').join('')
+ +'</div></div>';
+};
+
+V.canvassen=function(){
+ const s=themaScores(), k=kansen();
+ const blokken=[
+  ['Missie','Wij zorgen dat bedrijfskennis niet in hoofden blijft zitten.'],
+  ['Visie','Elk mkb-bedrijf werkt slimmer met data, AI en vastgelegde kennis.'],
+  ['Strategische doelen','• Efficiëntere processen<br>• Datagedreven sturen<br>• Kennis borgen<br>• Klantwaarde verhogen'],
+  ['Kernwaarden','• Betrouwbaar<br>• Praktisch<br>• Transparant<br>• Betrokken'],
+  ['Kerncompetenties','• Data- en AI-expertise<br>• Procesoptimalisatie<br>• Pragmatische aanpak'],
+  ['Waardepropositie','Wij maken kennis, processen en data werkbaar en waardevol.'],
+  ['Doelgroepen','• Mkb-bedrijven<br>• Investeerders<br>• Due-diligenceteams'],
+  ['Strategische initiatieven', k.length? k.slice(0,3).map(x=>'• '+esc(x.thema)+' verbeteren').join('<br>') : '• Vul eerst de scan in']
+ ];
+ return '<div class="kaart"><div class="kaartkop"><h3>Strategiecanvas</h3>'
+ +'<span class="rechts"><button class="knop stil klein" data-melding="Bewerken|In jouw portaal open je hier het canvas om het aan te passen. In dit voorbeeld staat het vast.">Bewerk</button>'
+ +'<button class="knop stil klein" data-melding="Exporteren|Het canvas wordt als PDF klaargezet. In dit voorbeeld gebeurt dat niet echt.">Exporteren</button></span></div>'
+ +'<div class="raster r4" style="margin:0">'
+ + blokken.map(b=>'<div class="kaart" style="background:var(--vlak)"><h3 style="font-size:.85rem;margin-bottom:.35rem">'+esc(b[0])+'</h3><p class="sub">'+b[1]+'</p></div>').join('')
+ +'</div></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Andere modellen</h3></div>'
+ + ['Business Model Canvas','SWOT','Waardemodel','Klantreis','Procesplaat'].map(m=>
+    '<div class="rij"><div class="mid"><b>'+esc(m)+'</b><div class="fijn">gevuld op basis van je scan en je bronnen</div></div>'
+    +'<div class="rechts"><button class="knop stil klein" data-melding="'+esc(m)+'|Dit model wordt gevuld met je scanantwoorden en je gekoppelde bronnen. In dit voorbeeld is het niet uitgewerkt.">Openen</button></div></div>').join('')
+ +'</div>';
+};
+
+V.rapporten=function(){
+ const r=D.rapportages||[], o=D.omzetReeks||[];
+ return '<div class="raster r23">'
+ +'<div class="kaart"><div class="kaartkop"><h3>Omzettrend</h3>'
+ +'<span class="rechts"><select class="filter" id="fPeriode"><option>Dit jaar</option><option>Vorig jaar</option></select></span></div>'
+ + lijn(o.map(x=>x.v),'var(--blauw)',150,o.map(x=>x.m))
+ +'<p class="sub">Bedragen × € 1.000. Bron: Exact Online, bijgewerkt vanmorgen.</p></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Kostenverdeling</h3></div>'+ring(D.omzetVerdeling||[])+'</div>'
+ +'</div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Rapportages</h3>'
+ +'<span class="rechts"><input class="filter" id="fRap" placeholder="Zoek rapportage…"></span></div>'
+ +'<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Rapportage</th><th>Periode</th><th>Bijgewerkt</th><th></th></tr></thead><tbody>'
+ + r.map(x=>'<tr><td><b>'+esc(x.naam)+'</b></td><td>'+esc(x.periode)+'</td><td>'+datumNL(x.bijgewerkt)+'</td>'
+   +'<td class="num"><button class="knop stil klein" data-melding="'+esc(x.naam)+'|Deze rapportage wordt opgebouwd uit je gekoppelde bronnen. In dit voorbeeld hangt er geen bestand aan.">Bekijken</button></td></tr>').join('')
+ +'</tbody></table></div></div>';
+};
+
+V.kpi=function(){
+ const k=D.kpis||[];
+ return '<div class="raster r3">'
+ + k.map((x,i)=>{
+    const goed = x.omhoogGoed? x.waarde>=x.doel : x.waarde<=x.doel;
+    const kleur = goed?'var(--groen)':'var(--amber)';
+    return '<div class="kaart klikbaar" data-kpi="'+i+'" tabindex="0" role="button" aria-label="KPI '+esc(x.naam)+' aanpassen">'
+     +'<div class="kaartkop"><h3>'+esc(x.naam)+'</h3><span class="rechts">'+ico(I.potlood)+'</span></div>'
+     +'<div class="cijfergroot" style="color:'+kleur+'">'+(x.voor||'')+uur(x.waarde)+esc(x.eenheid||'')+'</div>'
+     +'<p class="sub">doel: '+(x.voor||'')+uur(x.doel)+esc(x.eenheid||'')+' · '+(goed?'gehaald':'nog niet gehaald')+'</p>'
+     + lijn(x.reeks||[0],kleur,60)
+     +'</div>';
+   }).join('')
+ +'</div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>KPI toevoegen</h3></div>'
+ +'<p class="sub">Zet een eigen KPI erbij; die telt meteen mee in dit overzicht.</p>'
+ +'<button class="knop" id="kpiNieuw" style="margin-top:.7rem">+ KPI toevoegen</button></div>';
+};
+
+V.kto=function(){
+ const k=D.kto||{}, m=D.mto||{};
+ return '<div class="raster r2">'
+ +'<div class="kaart"><div class="kaartkop"><h3>Klanttevredenheid (KTO)</h3></div>'
+ +'<div style="display:flex;gap:1.4rem;align-items:flex-start;flex-wrap:wrap">'
+ +'<div><div class="cijfergroot">'+uur(k.score)+'</div><p class="sub">'+(k.verschil>=0?'+':'')+uur(k.verschil)+' t.o.v. vorig kwartaal</p>'
+ +'<div style="margin-top:.7rem"><div class="cijfergroot" style="font-size:1.4rem">'+uur(k.respons)+'%</div><p class="sub">respons '+(k.responsVerschil>=0?'+':'')+uur(k.responsVerschil)+'%</p></div></div>'
+ +'<div style="flex:1;min-width:200px">'
+ + (k.themas||[]).map((t,i)=>'<div class="rij klikbaar" data-kto="'+i+'" tabindex="0"><div class="mid"><b>'+esc(t.naam)+'</b>'
+    +'<div class="balkje"><div style="width:'+(t.score/10*100)+'%;background:var(--blauw)"></div></div></div>'
+    +'<div class="rechts"><b>'+uur(t.score)+'</b></div></div>').join('')
+ +'<div class="klikhint">'+ico(I.potlood)+'Klik op een thema om de score bij te stellen.</div></div></div></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Medewerkers (MTO)</h3></div>'
+ +'<div class="cijfergroot">'+uur(m.score)+'</div><p class="sub">respons '+uur(m.respons)+'%</p>'
+ + staven((m.themas||[]).map(t=>({m:t.naam,v:t.score,tekst:uur(t.score)})),'var(--paars)')
+ +'</div></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Meest genoemde verbeterpunten</h3></div>'
+ +'<div style="display:flex;gap:.5rem;flex-wrap:wrap">'+(k.verbeterpunten||[]).map(v=>'<span class="pil" style="background:var(--vlak);color:var(--inkt)">'+esc(v)+'</span>').join('')+'</div></div>';
+};
+
+V.roadmap=function(){
+ const kolommen=['Niet gestart','In uitvoering','Afgerond'];
+ const r=D.roadmap||[];
+ const sporen=Array.from(new Set(r.map(x=>x.spoor)));
+ const lijst = roadmapFilter==='alle'? r : r.filter(x=>x.spoor===roadmapFilter);
+ return '<div class="kaart"><div class="kaartkop"><h3>Actieplan</h3>'
+ +'<span class="rechts"><select class="filter" id="fSpoor"><option value="alle">Alle sporen</option>'
+ + sporen.map(s=>'<option'+(s===roadmapFilter?' selected':'')+'>'+esc(s)+'</option>').join('')+'</select>'
+ +'<button class="knop klein" id="actieNieuw">+ Actie</button></span></div>'
+ +'<p class="sub" style="margin-bottom:.8rem">Sleep een kaartje naar een andere kolom om de status te wijzigen. Klik erop om het aan te passen.</p>'
+ +'<div class="borden" id="borden">'
+ + kolommen.map(k=>'<div class="kolom" data-kolom="'+esc(k)+'"><h4>'+bol(k)+esc(k)
+    +'<span class="pil" style="margin-left:auto;background:var(--vlak);color:var(--grijs)">'+lijst.filter(x=>x.status===k).length+'</span></h4>'
+    + lijst.filter(x=>x.status===k).map(x=>'<div class="kaartje" draggable="true" data-actie="'+esc(x.titel)+'">'
+       +'<b>'+esc(x.titel)+'</b><div class="fijn">'+esc(x.spoor)+' · '+esc(x.kwartaal)+'</div></div>').join('')
+    +'</div>').join('')
+ +'</div></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Per kwartaal</h3></div>'
+ + Array.from(new Set(r.map(x=>x.kwartaal))).sort().map(q=>'<div class="rij"><div class="mid"><b>'+esc(q)+'</b>'
+    +'<div class="fijn">'+r.filter(x=>x.kwartaal===q).map(x=>esc(x.titel)).join(' · ')+'</div></div>'
+    +'<div class="rechts"><b>'+r.filter(x=>x.kwartaal===q).length+'</b></div></div>').join('')
+ +'</div>';
+};
+
+V.ai=function(){
+ const a=D.aiAdvies||[];
+ return '<div class="raster r2">'
+ + a.map((x,i)=>'<div class="kaart"><div class="kaartkop"><h3>'+esc(x.titel)+'</h3>'
+   +'<span class="rechts">'+pil(x.impact)+'</span></div>'
+   +'<p class="sub">'+esc(x.beschrijving)+'</p>'
+   +'<div class="raster r3" style="margin:.8rem 0 .5rem">'
+   +'<div><div class="label">Impact</div><b>'+esc(x.impact)+'</b></div>'
+   +'<div><div class="label">Moeite</div><b>'+esc(x.moeite)+'</b></div>'
+   +'<div><div class="label">Besparing</div><b>'+eur(x.besparing)+' / jaar</b></div></div>'
+   +'<div class="label">Aanpak</div><ol style="padding-left:1.1rem;font-size:.85rem;color:#3B4252">'
+   + (x.aanpak||[]).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'
+   +'<button class="knop stil" style="margin-top:.8rem" data-naarroadmap="'+i+'">Voeg toe aan roadmap</button></div>').join('')
+ +'</div>'
+ +'<div class="let"><b>Hoe deze adviezen tot stand komen.</b> Ze volgen uit je scanantwoorden, je gekoppelde bronnen en wat we tijdens het bouwen hebben geteld. Het zijn schattingen om richting te geven — geen belofte, en geen vervanging van je eigen oordeel.</div>';
+};
+
+V.documenten=function(){
+ const docs=D.documenten||[];
+ const cats=['Alle'].concat(Array.from(new Set(docs.map(d=>d.soort))));
+ const lijst = docFilter==='Alle'? docs : docs.filter(d=>d.soort===docFilter);
+ return '<div class="raster" style="grid-template-columns:220px 1fr">'
+ +'<div class="kaart"><div class="label">Kennisbibliotheek</div>'
+ + cats.map(c=>'<button class="them'+(c===docFilter?' aan':'')+'" data-doccat="'+esc(c)+'" style="display:flex;width:100%;text-align:left;padding:.4rem .5rem;border-radius:8px;font-size:.83rem">'+esc(c)
+   +'<span style="margin-left:auto;color:var(--grijs)">'+(c==='Alle'?docs.length:docs.filter(d=>d.soort===c).length)+'</span></button>').join('')
+ +'</div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Documenten</h3>'
+ +'<span class="rechts"><input class="filter" id="fDoc" placeholder="Zoek document…">'
+ +'<button class="knop klein" data-melding="Uploaden|In jouw portaal sleep je hier bestanden naartoe. In dit voorbeeld is uploaden uitgezet.">Upload</button></span></div>'
+ +'<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Naam</th><th>Categorie</th><th>Gewijzigd</th><th></th></tr></thead><tbody id="docLijst">'
+ + lijst.map((d,i)=>'<tr><td><b>'+esc(d.naam)+'</b></td><td>'+esc(d.soort)+'</td><td>'+datumNL(d.datum)+'</td>'
+   +'<td class="num"><button class="knop stil klein" data-melding="'+esc(d.naam)+'|'+(isDemo?'Dit is een voorbeeld, dus er hangt geen bestand aan. In jouw portaal opent hier het document zelf.':'Vraag dit document op via de contactpagina, dan sturen we het door.')+'">Openen</button></td></tr>').join('')
+ +'</tbody></table></div>'
+ + (lijst.length?'':leeg('Geen documenten in deze categorie.'))
+ +'</div></div>';
+};
+
+V.bronnen=function(){
+ const b=D.bronnen||[];
+ return '<div class="raster r4">'
+ + [['Totaal verbonden',D.bronnenTotaal||b.length,'var(--inkt)'],['Actief',D.bronnenActief||b.filter(x=>x.status==='Actief').length,'var(--groen)'],
+    ['Waarschuwingen',D.bronnenWaarschuwing||b.filter(x=>x.status==='Waarschuwing').length,'var(--amber)'],['Fouten',D.bronnenFout||0,'var(--rood)']]
+   .map(x=>'<div class="kaart"><div class="cijfergroot" style="color:'+x[2]+'">'+x[1]+'</div><p class="sub">'+esc(x[0])+'</p></div>').join('')
+ +'</div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Databronnen</h3></div>'
+ +'<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Bron</th><th>Categorie</th><th>Status</th><th>Laatste sync</th></tr></thead><tbody>'
+ + b.map(x=>'<tr><td><b>'+esc(x.naam)+'</b></td><td>'+esc(x.categorie)+'</td><td>'+pil(x.status)+'</td><td>'+esc(x.sync)+'</td></tr>').join('')
+ +'</tbody></table></div>'
+ + ((D.bronnenTotaal||0)>b.length? '<p class="sub" style="margin-top:.7rem">Dit zijn de '+b.length+' bronnen die het meest worden gebruikt, van '+D.bronnenTotaal+' in totaal.</p>':'')
+ +'</div>';
+};
 
 V.werkstromen=function(){
  const c=cijfers();
  let lijst=c.K;
  if(filterStatus!=='alle') lijst=lijst.filter(k=>k.status===filterStatus);
- const opties=['alle','Draait','In aanbouw','Voorgesteld','Idee','Gestopt']
-   .map(s=>'<option value="'+s+'"'+(s===filterStatus?' selected':'')+'>'+(s==='alle'?'Alle statussen':s)+'</option>').join('');
  return '<div class="kaart"><div class="kaartkop"><h3>Alle werkstromen</h3>'
-  +'<span class="rechts"><select class="filter" id="fStatus">'+opties+'</select></span></div>'
-  + (lijst.length? lijst.map(k=>''
-     +'<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
-     +'<div class="fijn">'+esc(k.van||'—')+' → '+esc(k.naar||'—')+' · '+esc(k.middel||'—')+'</div>'
-     +(k.notitie? '<div class="fijn">'+esc(k.notitie)+'</div>':'')
-     +(k.status==='In aanbouw'? '<div class="balkje"><div style="width:'+(k.voortgang!=null?k.voortgang:40)+'%"></div></div>':'')
-     +'</div><div class="rechts">'+pil(k.status)+'<div class="fijn" style="margin-top:.25rem">'+uur(k.uren)+' uur</div></div></div>'
-    ).join('') : leeg('Geen werkstromen met deze status.'))
-  +'</div>'
-  +'<div class="kaart"><h3>Iets erbij of iets anders?</h3><p class="sub" style="margin-top:.3rem">Zie je een stap die beter kan, of mist er een werkstroom? Zet het bij <a href="#/notities" style="color:var(--blauw);font-weight:600">notities</a> of bel gerust — dan pakken we het op in de volgende ronde.</p></div>';
+ +'<span class="rechts"><select class="filter" id="fStatus">'
+ + ['alle','Draait','In aanbouw','Voorgesteld','Idee','Gestopt'].map(s=>'<option value="'+s+'"'+(s===filterStatus?' selected':'')+'>'+(s==='alle'?'Alle statussen':s)+'</option>').join('')
+ +'</select></span></div>'
+ + (lijst.length? lijst.map(k=>'<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
+    +'<div class="fijn">'+esc(k.van||'—')+' → '+esc(k.naar||'—')+' · '+esc(k.middel||'—')+'</div>'
+    +(k.notitie?'<div class="fijn">'+esc(k.notitie)+'</div>':'')
+    +(k.status==='In aanbouw'?'<div class="balkje"><div style="width:'+(k.voortgang!=null?k.voortgang:40)+'%"></div></div>':'')
+    +'</div><div class="rechts">'+pil(k.status)+'<div class="fijn" style="margin-top:.2rem">'+uur(k.uren)+' uur</div></div></div>').join('')
+   : leeg('Geen werkstromen met deze status.'))
+ +'</div>';
 };
 
 V.koppelingen=function(){
- const c=cijfers();
- const systemen={};
- c.K.forEach(k=>{[k.van,k.naar].forEach(s=>{ if(s){ systemen[s]=(systemen[s]||0)+1; } });});
+ const c=cijfers(), systemen={};
+ c.K.forEach(k=>[k.van,k.naar].forEach(s=>{if(s) systemen[s]=(systemen[s]||0)+1;}));
  return '<div class="kaart"><div class="kaartkop"><h3>Alle koppelingen</h3></div>'
-  +'<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Koppeling</th><th>Van → naar</th><th>Gebouwd met</th><th>Status</th><th class="num">Uur</th><th class="num">Uur p.j. terug</th></tr></thead><tbody>'
-  + c.K.map(k=>'<tr><td><b>'+esc(k.titel)+'</b>'+(k.sinds?'<div class="fijn" style="font-size:.78rem;color:var(--grijs)">live sinds '+esc(k.sinds)+'</div>':'')+'</td>'
-     +'<td>'+esc(k.van||'—')+' → '+esc(k.naar||'—')+'</td><td>'+esc(k.middel||'—')+'</td><td>'+pil(k.status)+'</td>'
-     +'<td class="num">'+uur(k.uren)+'</td><td class="num">'+Math.round(k.besparing||0)+'</td></tr>').join('')
-  +'</tbody></table></div></div>'
-  +'<div class="kaart"><div class="kaartkop"><h3>Systemen die meedoen</h3></div>'
-  + Object.keys(systemen).map(s=>'<div class="rij"><span class="bol" style="background:var(--blauw)"></span>'
-     +'<div class="mid"><b>'+esc(s)+'</b></div><div class="rechts fijn">'+systemen[s]+' koppeling'+(systemen[s]>1?'en':'')+'</div></div>').join('')
-  +'</div>';
+ +'<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Koppeling</th><th>Van → naar</th><th>Gebouwd met</th><th>Status</th><th class="num">Uur</th><th class="num">Uur p.j.</th></tr></thead><tbody>'
+ + c.K.map(k=>'<tr><td><b>'+esc(k.titel)+'</b>'+(k.sinds?'<div class="fijn" style="font-size:.76rem;color:var(--grijs)">live sinds '+esc(k.sinds)+'</div>':'')+'</td>'
+   +'<td>'+esc(k.van||'—')+' → '+esc(k.naar||'—')+'</td><td>'+esc(k.middel||'—')+'</td><td>'+pil(k.status)+'</td>'
+   +'<td class="num">'+uur(k.uren)+'</td><td class="num">'+Math.round(k.besparing||0)+'</td></tr>').join('')
+ +'</tbody></table></div></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Systemen die meedoen</h3></div>'
+ + Object.keys(systemen).map(s=>'<div class="rij"><span class="bol" style="background:var(--blauw)"></span><div class="mid"><b>'+esc(s)+'</b></div>'
+   +'<div class="rechts fijn">'+systemen[s]+' koppeling'+(systemen[s]>1?'en':'')+'</div></div>').join('')
+ +'</div>';
 };
 
 V.uren=function(){
  const c=cijfers();
  const regels=(D.urenregels||[]).slice().sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
- const fact=D.facturen||[];
- return kaartUren(c,false)
- + '<div class="kaart"><div class="kaartkop"><h3>Urenlijst per dag</h3></div>'
+ const metUren=c.K.filter(k=>(+k.uren||0)>0);
+ return '<div class="kaart"><div class="kaartkop"><h3>Uren en facturen</h3></div>'
+ +'<div class="raster r3" style="margin-bottom:.3rem">'
+ +'<div><div class="cijfergroot">'+uur(c.uren)+'</div><div class="sub">uur gewerkt × '+eur(c.tarief)+'</div></div>'
+ +'<div><div class="cijfergroot">'+eur(c.gefactureerd)+'</div><div class="sub">al gefactureerd</div></div>'
+ +'<div><div class="cijfergroot" style="color:'+(c.open>0?'var(--amber)':'var(--groen)')+'">'+eur(c.open)+'</div><div class="sub">'+(c.open>0?'nog niet gefactureerd':'niets openstaand')+'</div></div></div>'
+ + (metUren.length? metUren.map(k=>{const w=(+k.uren||0)*c.tarief,f=+k.gefactureerd||0;
+    return '<div class="rij"><span class="bol" style="background:'+(f>=w?'var(--groen)':'var(--amber)')+'"></span>'
+     +'<div class="mid"><b>'+esc(k.titel)+'</b><div class="fijn">'+uur(k.uren)+' uur · '+eur(w)+' aan werk</div></div>'
+     +'<div class="rechts"><b>'+eur(f)+'</b><div class="fijn">'+(f>=w?'gefactureerd':'nog niet')+'</div></div></div>';}).join('')
+   : leeg('Er is nog geen tijd geschreven.'))
+ +'</div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Urenlijst per dag</h3></div>'
  + (regels.length? '<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Datum</th><th>Werkstroom</th><th>Wat er gebeurde</th><th class="num">Uur</th><th class="num">Status</th></tr></thead><tbody>'
-    + regels.map(r=>'<tr><td style="white-space:nowrap">'+datumNL(r.datum)+'</td><td>'+esc(r.koppeling)+'</td><td>'+esc(r.wat)+'</td>'
-       +'<td class="num">'+uur(r.uren)+'</td><td class="num">'+pil(r.gefactureerd?'Draait':'In aanbouw').replace('Draait','gefactureerd').replace('In aanbouw','open')+'</td></tr>').join('')
-    + '</tbody></table></div>'
-    : leeg('De urenlijst per dag komt bij je factuur mee.'))
- + '</div>'
- + '<div class="kaart"><div class="kaartkop"><h3>Facturen</h3></div>'
- + (fact.length? fact.map(f=>'<div class="rij"><span class="bol" style="background:'+(f.status==='Betaald'?'var(--groen)':'var(--amber)')+'"></span>'
-     +'<div class="mid"><b>Factuur '+esc(f.nummer)+'</b><div class="fijn">'+datumNL(f.datum)+' · '+esc(f.regels)+'</div></div>'
-     +'<div class="rechts"><b>'+eur(f.bedrag)+'</b><div class="fijn">'+esc(f.status)+'</div></div></div>').join('')
+   + regels.map(r=>'<tr><td style="white-space:nowrap">'+datumNL(r.datum)+'</td><td>'+esc(r.koppeling)+'</td><td>'+esc(r.wat)+'</td>'
+     +'<td class="num">'+uur(r.uren)+'</td><td class="num">'+(r.gefactureerd?pil('Betaald').replace('Betaald','gefactureerd'):pil('Open').replace('Open','open'))+'</td></tr>').join('')
+   +'</tbody></table></div>' : leeg('De urenlijst per dag komt bij je factuur mee.'))
+ +'</div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Facturen</h3></div>'
+ + ((D.facturen||[]).length? D.facturen.map(f=>'<div class="rij">'+bol(f.status)+'<div class="mid"><b>Factuur '+esc(f.nummer)+'</b>'
+   +'<div class="fijn">'+datumNL(f.datum)+' · '+esc(f.regels)+'</div></div>'
+   +'<div class="rechts"><b>'+eur(f.bedrag)+'</b><div class="fijn">'+esc(f.status)+'</div></div></div>').join('')
    : leeg('Er zijn nog geen facturen verstuurd.'))
- + '<p class="sub" style="margin-top:.7rem">Klopt er iets niet op een factuur? Zeg het — dan halen we het eraf.</p></div>';
-};
-
-V.documenten=function(){
- const docs=D.documenten||[];
- return '<div class="kaart"><div class="kaartkop"><h3>Documenten</h3></div>'
- + (docs.length? docs.map((d,i)=>'<div class="rij">'+'<span class="bol" style="background:var(--blauw)"></span>'
-     +'<div class="mid"><b>'+esc(d.naam)+'</b><div class="fijn">'+esc(d.soort)+' · '+datumNL(d.datum)+' · hoort bij '+esc(d.bij)+'</div></div>'
-     +'<div class="rechts"><button class="knop stil" data-doc="'+i+'">Openen</button></div></div>').join('')
-   : leeg('Er staan nog geen documenten klaar.'))
- + '<p class="sub" style="margin-top:.7rem">Alles wat we opleveren is van jou: rapporten, procesplaten en werkinstructies — ook als je zelf verder wilt.</p></div>';
-};
-
-V.notities=function(){
- const n=(D.notities||[]).slice().sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
- return '<div class="kaart"><div class="kaartkop"><h3>Nieuwe notitie</h3></div>'
- + '<label class="veld"><span>Wat wil je vastleggen?</span><textarea id="nTekst" rows="3" placeholder="Bijvoorbeeld: de planner wil ook een foto bij de werkbon."></textarea></label>'
- + '<button class="knop" id="nBewaar">Notitie bewaren</button>'
- + '<p class="sub" style="margin-top:.6rem">Notities blijven in deze browser bewaard en komen mee als gespreksonderwerp bij het volgende overleg.</p></div>'
- + '<div class="kaart"><div class="kaartkop"><h3>Eerdere notities</h3></div>'
- + (n.length? n.map((x,i)=>'<div class="rij"><span class="bol" style="background:var(--geel)"></span>'
-     +'<div class="mid"><b>'+datumNL(x.datum)+'</b><div class="fijn">'+esc(x.tekst)+'</div></div>'
-     +'<div class="rechts"><button class="knop stil" data-notitie="'+esc(x.datum+'|'+x.tekst)+'">Verwijderen</button></div></div>').join('')
-   : leeg('Nog geen notities.'))
- + '</div>';
-};
-
-V.rapportages=function(){
- const c=cijfers();
- const maanden=D.urenPerMaand||[];
- const max=Math.max.apply(null,maanden.map(m=>m.u).concat([1]));
- return '<div class="kaart"><div class="kaartkop"><h3>Uren per maand</h3></div>'
- + (maanden.length? '<div style="display:flex;align-items:flex-end;gap:.8rem;height:180px;padding:.5rem 0">'
-    + maanden.map(m=>'<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:.4rem;height:100%">'
-       +'<span style="font-size:.78rem;font-weight:700">'+(m.u?uur(m.u):'')+'</span>'
-       +'<div style="width:100%;max-width:56px;height:'+Math.max(3,(m.u/max)*100)+'%;background:'+(m.u?'var(--blauw)':'var(--lijn)')+';border-radius:7px 7px 0 0"></div>'
-       +'<span style="font-size:.78rem;color:var(--grijs)">'+esc(m.m)+'</span></div>').join('')
-    + '</div>' : leeg('Nog geen uren om te tonen.'))
- + '</div>'
- + '<div class="raster r2">'
-   + '<div class="kaart"><div class="kaartkop"><h3>Stand van zaken</h3></div>'
-     + '<div class="rij"><div class="mid"><b>Koppelingen totaal</b></div><div class="rechts"><b>'+c.K.length+'</b></div></div>'
-     + '<div class="rij"><div class="mid"><b>Waarvan live</b></div><div class="rechts"><b>'+c.draait.length+'</b></div></div>'
-     + '<div class="rij"><div class="mid"><b>In aanbouw</b></div><div class="rechts"><b>'+c.bouw.length+'</b></div></div>'
-     + '<div class="rij"><div class="mid"><b>Uur besteed</b></div><div class="rechts"><b>'+uur(c.uren)+'</b></div></div>'
-     + '<div class="rij"><div class="mid"><b>Uur per jaar terug</b></div><div class="rechts"><b>'+Math.round(c.besparing)+'</b></div></div>'
-   + '</div>'
-   + '<div class="kaart"><div class="kaartkop"><h3>Verdeling</h3></div>'+donut()+'</div>'
- + '</div>';
+ +'<p class="sub" style="margin-top:.6rem">Elke factuur komt met de urenlijst erbij. Klopt er iets niet, zeg het — dan halen we het eraf.</p></div>';
 };
 
 V.impact=function(){
- const c=cijfers();
- const dagen=Math.round(c.besparing/8);
+ const c=cijfers(), dagen=Math.round(c.besparing/8);
+ const max=Math.max.apply(null,c.K.map(k=>+k.besparing||0).concat([1]));
  return '<div class="raster r3">'
-  + kpi('Uur per jaar terug', I.impact, Math.round(c.besparing), 'bij het huidige aantal live koppelingen','')
-  + kpi('Werkdagen', I.klok, dagen, 'omgerekend, bij acht uur per dag','')
-  + kpi('Nog te verzilveren', I.vink, Math.round(c.K.filter(k=>k.status!=='Draait'&&k.status!=='Gestopt').reduce((a,k)=>a+(+k.besparing||0),0)), 'zit in wat nog niet live staat','')
-  + '</div>'
-  + '<div class="kaart"><div class="kaartkop"><h3>Waar de tijd vandaan komt</h3></div>'
-  + c.K.filter(k=>(+k.besparing||0)>0).sort((a,b)=>b.besparing-a.besparing).map(k=>{
-      const breed=Math.round((k.besparing/Math.max.apply(null,c.K.map(x=>+x.besparing||0).concat([1])))*100);
-      return '<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
-       +'<div class="balkje"><div style="width:'+breed+'%;background:'+(k.status==='Draait'?'var(--groen)':'var(--lijn)')+'"></div></div>'
-       +'<div class="fijn">'+Math.round(k.besparing)+' uur per jaar'+(k.status==='Draait'?'':' — zodra dit live staat')+'</div></div>'
-       +'<div class="rechts">'+pil(k.status)+'</div></div>';
-    }).join('')
-  + '</div>'
-  + '<div class="let"><b>Eerlijk over deze cijfers.</b> Het zijn schattingen op basis van wat we samen hebben geteld tijdens het bouwen: hoe vaak een handeling voorkomt en hoe lang die duurde. Ze zijn bedoeld om richting te geven, niet om als besparing in de begroting te zetten. De uren die vrijkomen zijn ruimte, geen geld dat binnenkomt.</div>';
+ +'<div class="kaart"><div class="cijfergroot">'+Math.round(c.besparing)+'</div><p class="sub">uur per jaar terug</p></div>'
+ +'<div class="kaart"><div class="cijfergroot">'+dagen+'</div><p class="sub">werkdagen, bij acht uur per dag</p></div>'
+ +'<div class="kaart"><div class="cijfergroot">'+Math.round(c.K.filter(k=>k.status!=='Draait'&&k.status!=='Gestopt').reduce((a,k)=>a+(+k.besparing||0),0))+'</div><p class="sub">nog te verzilveren</p></div>'
+ +'</div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Waar de tijd vandaan komt</h3></div>'
+ + c.K.filter(k=>(+k.besparing||0)>0).sort((a,b)=>b.besparing-a.besparing).map(k=>'<div class="rij">'+bol(k.status)
+   +'<div class="mid"><b>'+esc(k.titel)+'</b><div class="balkje"><div style="width:'+Math.round(k.besparing/max*100)+'%;background:'+(k.status==='Draait'?'var(--groen)':'var(--lijn)')+'"></div></div>'
+   +'<div class="fijn">'+Math.round(k.besparing)+' uur per jaar'+(k.status==='Draait'?'':' — zodra dit live staat')+'</div></div>'
+   +'<div class="rechts">'+pil(k.status)+'</div></div>').join('')
+ +'</div>'
+ +'<div class="let"><b>Eerlijk over deze cijfers.</b> Het zijn schattingen op basis van wat we samen hebben geteld tijdens het bouwen. Ze geven richting; ze horen niet als besparing in de begroting. De uren die vrijkomen zijn ruimte, geen geld dat binnenkomt.</div>';
 };
 
 V.activiteit=function(){
  const a=(D.activiteit||[]).slice().sort((x,y)=>(y.datum||'').localeCompare(x.datum||''));
  return '<div class="kaart"><div class="kaartkop"><h3>Wat er gebeurd is</h3></div>'
- + (a.length? '<div class="tijdlijn">'+a.map(x=>'<div class="gebeurt"><b style="font-size:.92rem">'+esc(x.tekst)+'</b>'
-     +'<div class="fijn">'+datumNL((x.datum||'').slice(0,10))+((x.datum||'').length>10?' · '+esc(x.datum.slice(11,16)):'')+'</div></div>').join('')+'</div>'
+ + (a.length? '<div class="tijdlijn">'+a.map(x=>'<div class="gebeurt"><b style="font-size:.88rem">'+esc(x.tekst)+'</b>'
+   +'<div class="fijn" style="font-size:.78rem;color:var(--grijs)">'+datumNL((x.datum||'').slice(0,10))+((x.datum||'').length>10?' · '+esc(x.datum.slice(11,16)):'')+'</div></div>').join('')+'</div>'
    : leeg('Er is nog geen activiteit vastgelegd.'))
- + '</div>';
+ +'</div>';
+};
+
+V.notities=function(){
+ const n=(D.notities||[]).slice().sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
+ return '<div class="kaart"><div class="kaartkop"><h3>Nieuwe notitie</h3></div>'
+ +'<label class="veld"><span>Wat wil je vastleggen?</span><textarea id="nTekst" rows="3" placeholder="Bijvoorbeeld: de planner wil ook een foto bij de werkbon."></textarea></label>'
+ +'<button class="knop" id="nBewaar">Notitie bewaren</button>'
+ +'<p class="sub" style="margin-top:.5rem">Notities blijven in deze browser bewaard en komen mee als gespreksonderwerp.</p></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Eerdere notities</h3></div>'
+ + (n.length? n.map(x=>'<div class="rij"><span class="bol" style="background:var(--geel)"></span>'
+   +'<div class="mid"><b>'+datumNL(x.datum)+'</b><div class="fijn">'+esc(x.tekst)+'</div></div>'
+   +'<div class="rechts"><button class="knop stil klein" data-notitie="'+esc(x.datum+'|'+x.tekst)+'">Verwijderen</button></div></div>').join('')
+   : leeg('Nog geen notities.'))
+ +'</div>';
 };
 
 V.instellingen=function(){
  const v=voorkeuren();
- return '<div class="kaart"><div class="kaartkop"><h3>Jouw gegevens</h3></div>'
- + '<label class="veld"><span>Bedrijf</span><input type="text" value="'+esc(D.klant)+'" disabled></label>'
- + '<label class="veld"><span>Uurtarief</span><input type="text" value="'+eur(D.tarief||200)+' excl. btw" disabled></label>'
- + '<p class="sub">Klopt hier iets niet? Laat het weten, dan passen we het aan onze kant aan.</p></div>'
- + '<div class="kaart"><div class="kaartkop"><h3>Wanneer krijg je bericht</h3></div>'
- + schakelaar('storing','Bij een storing in een koppeling',v.storing)
- + schakelaar('week','Elke maandag een weekoverzicht',v.week)
- + schakelaar('factuur','Bij een nieuwe factuur',v.factuur)
- + schakelaar('mijlpaal','Als er iets wordt opgeleverd',v.mijlpaal)
- + '<p class="sub" style="margin-top:.7rem">Deze voorkeuren worden in deze browser bewaard.</p></div>'
- + '<div class="kaart"><div class="kaartkop"><h3>Hulp nodig?</h3></div>'
- + '<p class="sub">Bel of app gerust — je krijgt Arthur zelf aan de lijn, geen doorschakelmenu.</p>'
- + '<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem">'
- + '<a class="knop" href="https://wa.me/31627483345" target="_blank" rel="noopener">App Arthur</a>'
- + '<a class="knop stil" href="/contact">Contactpagina</a></div></div>';
+ return '<div class="raster r2">'
+ +'<div class="kaart"><div class="kaartkop"><h3>Jouw gegevens</h3></div>'
+ +'<label class="veld"><span>Bedrijf</span><input type="text" value="'+esc(D.klant)+'" disabled></label>'
+ +'<label class="veld"><span>Uurtarief</span><input type="text" value="'+eur(D.tarief||200)+' excl. btw" disabled></label>'
+ +'<p class="sub">Klopt hier iets niet? Laat het weten, dan passen we het aan onze kant aan.</p></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Wanneer krijg je bericht</h3></div>'
+ + [['storing','Bij een storing in een koppeling'],['week','Elke maandag een weekoverzicht'],['factuur','Bij een nieuwe factuur'],['mijlpaal','Als er iets wordt opgeleverd']]
+   .map(x=>'<label class="schakel"><span>'+esc(x[1])+'</span><input type="checkbox" data-voorkeur="'+x[0]+'"'+(v[x[0]]?' checked':'')+'></label>').join('')
+ +'<p class="sub" style="margin-top:.6rem">Deze voorkeuren worden in deze browser bewaard.</p></div></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Weergave</h3></div>'
+ +'<p class="sub">Je hebt de blokken op het dashboard zelf gerangschikt. Wil je terug naar de standaardvolgorde?</p>'
+ +'<button class="knop stil" id="resetWidgets" style="margin-top:.7rem">Dashboard herstellen</button></div>'
+ +'<div class="kaart"><div class="kaartkop"><h3>Hulp nodig?</h3></div>'
+ +'<p class="sub">Bel of app gerust — je krijgt Arthur zelf aan de lijn, geen doorschakelmenu.</p>'
+ +'<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem">'
+ +'<a class="knop" href="https://wa.me/31627483345" target="_blank" rel="noopener">App Arthur</a>'
+ +'<a class="knop stil" href="/contact">Contactpagina</a></div></div>';
 };
-function schakelaar(id,tekst,aan){
- return '<label class="schakel"><span>'+esc(tekst)+'</span><input type="checkbox" data-voorkeur="'+id+'"'+(aan?' checked':'')+'></label>';
-}
+function voorkeuren(){return laad('voorkeur',{storing:true,week:true,factuur:true,mijlpaal:false});}
 
 V.team=function(){
  const t=D.team||[];
- return '<div class="kaart"><div class="kaartkop"><h3>Wie kan meekijken</h3></div>'
- + (t.length? t.map(p=>'<div class="rij"><span class="avatar" style="width:32px;height:32px">'+esc(initialen(p.naam))+'</span>'
-    +'<div class="mid"><b>'+esc(p.naam)+'</b><div class="fijn">'+esc(p.rol)+' · '+esc(p.bij)+'</div></div>'
-    +'<div class="rechts fijn">laatst actief: '+esc(p.laatst)+'</div></div>').join('')
-   : leeg('Er is nog niemand toegevoegd.'))
- + '<p class="sub" style="margin-top:.7rem">Wil je iemand toevoegen of juist toegang intrekken? Laat het weten, dan regelen we het.</p></div>';
+ return '<div class="kaart"><div class="kaartkop"><h3>Gebruikers</h3>'
+ +'<span class="rechts"><button class="knop klein" data-melding="Gebruiker toevoegen|Laat weten wie er toegang moet krijgen en met welke rol, dan zetten we het klaar.">+ Gebruiker</button></span></div>'
+ +'<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Naam</th><th>Organisatie</th><th>Rol</th><th>Laatst actief</th><th>Status</th></tr></thead><tbody>'
+ + t.map(p=>'<tr><td><b>'+esc(p.naam)+'</b></td><td>'+esc(p.bij)+'</td><td>'+esc(p.rol)+'</td><td>'+esc(p.laatst)+'</td><td>'+pil(p.status||'Actief')+'</td></tr>').join('')
+ +'</tbody></table></div>'
+ +'<p class="sub" style="margin-top:.6rem">Wil je iemand toevoegen of toegang intrekken? Laat het weten, dan regelen we het.</p></div>';
 };
-function initialen(n){return String(n||'?').split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');}
 
 V.integraties=function(){
  const g=D.integraties||[];
  return '<div class="kaart"><div class="kaartkop"><h3>Aangesloten systemen</h3></div>'
- + (g.length? g.map(x=>'<div class="rij"><span class="bol" style="background:'+(x.status==='Verbonden'?'var(--groen)':'var(--grijs)')+'"></span>'
-    +'<div class="mid"><b>'+esc(x.naam)+'</b><div class="fijn">'+esc(x.waarvoor)+'</div></div>'
-    +'<div class="rechts">'+pil(x.status==='Verbonden'?'Draait':'Idee').replace('Draait','Verbonden').replace('Idee','Niet verbonden')
-    +'<div class="fijn" style="margin-top:.25rem">'+esc(x.laatste)+'</div></div></div>').join('')
+ + (g.length? g.map(x=>'<div class="rij">'+bol(x.status)+'<div class="mid"><b>'+esc(x.naam)+'</b><div class="fijn">'+esc(x.waarvoor)+'</div></div>'
+   +'<div class="rechts">'+pil(x.status)+'<div class="fijn" style="margin-top:.2rem">'+esc(x.laatste)+'</div></div></div>').join('')
    : leeg('Er zijn nog geen systemen aangesloten.'))
- + '<p class="sub" style="margin-top:.7rem">Je gegevens blijven in je eigen omgeving staan. Wij lezen alleen wat nodig is voor de koppelingen die je hierboven ziet.</p></div>';
+ +'<p class="sub" style="margin-top:.6rem">Je gegevens blijven in je eigen omgeving staan. Wij lezen alleen wat nodig is voor de koppelingen hierboven.</p></div>';
 };
 
 V.feedback=function(){
  return '<div class="kaart"><div class="kaartkop"><h3>Wat vind je van dit portaal?</h3></div>'
- + '<p class="sub">Mist er iets, of staat er iets in de weg? Schrijf het hier op — het komt bij Arthur terecht.</p>'
- + '<label class="veld" style="margin-top:.8rem"><span>Je bericht</span><textarea id="fbTekst" rows="4" placeholder="Wat zou dit portaal beter maken?"></textarea></label>'
- + '<button class="knop" id="fbStuur">Versturen</button></div>';
+ +'<p class="sub">Mist er iets, of staat er iets in de weg? Schrijf het hier op — het komt bij Arthur terecht.</p>'
+ +'<label class="veld" style="margin-top:.7rem"><span>Je bericht</span><textarea id="fbTekst" rows="4" placeholder="Wat zou dit portaal beter maken?"></textarea></label>'
+ +'<button class="knop" id="fbStuur">Versturen</button></div>';
 };
 
-/* ═══════════════ voorkeuren en notities (deze browser) ═══════════════ */
-function sleutel(deel){return 'bg_portaal_'+deel+'_'+(klantParam||'onbekend');}
-function voorkeuren(){
- let v={storing:true,week:true,factuur:true,mijlpaal:false};
- try{const o=JSON.parse(localStorage.getItem(sleutel('voorkeur'))||'null'); if(o) v=Object.assign(v,o);}catch(e){}
- return v;
+/* ════════════════ vensters ════════════════ */
+function venster(titel,binnen,opSluiten){
+ const el=document.createElement('div'); el.className='overlay';
+ el.innerHTML='<div class="venster"><h3>'+esc(titel)+'</h3>'+binnen+'</div>';
+ function sluit(){el.remove();document.removeEventListener('keydown',toets);if(opSluiten)opSluiten();}
+ function toets(e){if(e.key==='Escape')sluit();}
+ el.addEventListener('click',e=>{if(e.target===el||e.target.hasAttribute('data-sluit'))sluit();});
+ document.addEventListener('keydown',toets);
+ document.body.appendChild(el);
+ return {el,sluit};
 }
-function bewaarVoorkeur(id,aan){
- const v=voorkeuren(); v[id]=aan;
- try{localStorage.setItem(sleutel('voorkeur'),JSON.stringify(v));}catch(e){}
-}
-function eigenNotities(){
- try{return JSON.parse(localStorage.getItem(sleutel('notities'))||'[]');}catch(e){return [];}
-}
-function bewaarNotities(lijst){
- try{localStorage.setItem(sleutel('notities'),JSON.stringify(lijst));}catch(e){}
+function melding(titel,tekst){
+ venster(titel,'<p class="sub">'+esc(tekst)+'</p><div class="vknoppen"><button class="knop" data-sluit>Sluiten</button></div>');
 }
 
-/* ═══════════════ tekenen ═══════════════ */
-function route(){
- const h=(location.hash||'').replace(/^#\/?/,'').split('?')[0];
- return V[h]? h : 'dashboard';
-}
+/* ════════════════ tekenen ════════════════ */
+function route(){const h=(location.hash||'').replace(/^#\/?/,'').split('?')[0];return V[h]?h:'dashboard';}
 function tekenMenu(){
  const r=route();
  $('#menu').innerHTML=MENU.map(m=>{
-   if(m.kop) return '<div class="mkop">'+esc(m.kop)+'</div>';
-   const t=m.tel&&D? m.tel(D):null;
-   return '<a class="mlink'+(m.id===r?' aan':'')+'" href="#/'+m.id+'"'+(m.id===r?' aria-current="page"':'')+'>'
-     +ico(m.ico)+'<span>'+esc(m.naam)+'</span>'+(t? '<span class="telp">'+t+'</span>':'')+'</a>';
+  if(m.kop) return '<div class="mkop">'+esc(m.kop)+'</div>';
+  let t=null; try{t=m.tel&&D? m.tel(D):null;}catch(e){}
+  return '<a class="mlink'+(m.id===r?' aan':'')+'" href="#/'+m.id+'"'+(m.id===r?' aria-current="page"':'')+'>'
+   +ico(m.ico)+'<span>'+esc(m.naam)+'</span>'+(t?'<span class="telp">'+t+'</span>':'')+'</a>';
  }).join('');
 }
 function teken(){
  if(!D) return;
  const r=route();
  tekenMenu();
- const c=cijfers();
+ const eersteNaam=((D.contact&&D.contact.naam)||'').split(' ')[0]||'daar';
  const kop = r==='dashboard'
-   ? '<h1 class="titel">Wat er draait voor '+esc(D.klant.replace(' (voorbeeld)',''))+(isDemo?' <span>(voorbeeld)</span>':'')+'</h1>'
-     +'<p class="sub">Alles wat we voor je gebouwd hebben, wat er nu loopt, en hoeveel uur eraan besteed is.</p>'
-   : '<h1 class="titel">'+esc(TITELS[r]||'')+'</h1><p class="sub">'+esc(D.klant)+'</p>';
- $('#scherm').innerHTML=''
-  +'<div class="kop-rij"><div>'
-  +(r==='dashboard'? '<div class="welkom">Welkom terug, <b>'+esc((D.contact&&D.contact.naam||'').split(' ')[0]||'daar')+'</b> 👋</div>':'')
-  +kop+'</div>'
-  +'<div class="bijgewerkt">Bijgewerkt: '+esc(D.opgehaald||'—')+'</div></div>'
-  +V[r]();
+  ? '<p class="sub">Goedemorgen '+esc(eersteNaam)+',</p><h1 class="titel">Wat er draait voor '+esc(D.klant.replace(' (voorbeeld)',''))+(isDemo?' <span>(voorbeeld)</span>':'')+'</h1>'
+  : '<h1 class="titel">'+esc(TITELS[r]||'')+'</h1>';
+ const knoppen = r==='dashboard'
+  ? '<div class="kopknoppen"><button class="knop stil" id="walkthrough">Bekijk walkthrough</button>'
+    +'<button class="knop" data-melding="Rapport delen|We zetten een deelbare samenvatting klaar met je score, kansen en actieplan. In dit voorbeeld gebeurt dat niet echt.">Deel rapport</button></div>'
+  : (r==='scan'? '<div class="kopknoppen"><button class="knop stil" id="scanHerstel">Scan opnieuw</button></div>':'');
+ $('#scherm').innerHTML='<div class="kop-rij"><div>'+kop
+  +'<p class="sub">'+esc(ONDER[r]||('Bijgewerkt: '+(D.opgehaald||'—')))+'</p></div>'+knoppen+'</div>'+V[r]();
  window.scrollTo(0,0);
- koppelSchermknoppen();
+ koppel();
 }
 
-/* ═══════════════ knoppen binnen een scherm ═══════════════ */
-function koppelSchermknoppen(){
- const fs=$('#fStatus');
- if(fs) fs.addEventListener('change',e=>{filterStatus=e.target.value;teken();});
+/* ════════════════ interactie ════════════════ */
+function koppel(){
+ /* dashboard: widgets slepen */
+ const muur=$('#muur');
+ if(muur){
+  let bron=null;
+  $$('#muur .widget').forEach(w=>{
+   w.addEventListener('dragstart',e=>{bron=w;w.classList.add('sleept');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',w.dataset.widget);}catch(x){}});
+   w.addEventListener('dragend',()=>{bron=null;$$('#muur .widget').forEach(x=>x.classList.remove('sleept','doel'));bewaarOrde();});
+   w.addEventListener('dragover',e=>{e.preventDefault();if(bron&&bron!==w)w.classList.add('doel');});
+   w.addEventListener('dragleave',()=>w.classList.remove('doel'));
+   w.addEventListener('drop',e=>{
+     e.preventDefault(); w.classList.remove('doel');
+     if(!bron||bron===w) return;
+     const alle=$$('#muur .widget');
+     if(alle.indexOf(bron)<alle.indexOf(w)) w.after(bron); else w.before(bron);
+     bewaarOrde();
+   });
+  });
+ }
+ function bewaarOrde(){ if($('#muur')) bewaar('widgets',$$('#muur .widget').map(w=>w.dataset.widget)); }
 
- document.querySelectorAll('[data-voorkeur]').forEach(el=>{
-   el.addEventListener('change',e=>{bewaarVoorkeur(e.target.dataset.voorkeur,e.target.checked);melding('Voorkeur opgeslagen','Je krijgt hierover '+(e.target.checked?'wel':'geen')+' bericht meer.');});
+ /* radar: klikken om een thema bij te stellen */
+ const rd=$('#radar');
+ if(rd) rd.addEventListener('click',e=>{
+   const b=rd.getBoundingClientRect();
+   const x=(e.clientX-b.left)/b.width*380, y=(e.clientY-b.top)/b.height*300;
+   const dx=x-190, dy=y-145, afstand=Math.sqrt(dx*dx+dy*dy);
+   if(afstand<8) return;
+   let hoek=Math.atan2(dy,dx)+Math.PI/2; if(hoek<0) hoek+=Math.PI*2;
+   const i=Math.round(hoek/(Math.PI*2/THEMAS.length))%THEMAS.length;
+   const score=Math.max(1,Math.min(5,Math.round(afstand/100*5)));
+   zetThema(THEMAS[i],score);
  });
 
- document.querySelectorAll('[data-doc]').forEach(el=>{
-   el.addEventListener('click',()=>{
-     const d=(D.documenten||[])[+el.dataset.doc];
-     melding(d? d.naam : 'Document', isDemo
-       ? 'Dit is een voorbeeld, dus er hangt geen echt bestand aan. In jouw portaal opent hier het document zelf.'
-       : 'Dit document staat klaar bij Bedrijfsgeheugen. Vraag het op via de contactpagina, dan sturen we het door.');
+ /* scan */
+ $$('[data-antwoord]').forEach(b=>b.addEventListener('click',()=>{
+   const v=D.vragen[scanIndex]; v.antwoord=+b.dataset.antwoord;
+   const toe=$('#scanToe'); if(toe) v.toelichting=toe.value;
+   bewaarScan();
+   if(scanIndex<D.vragen.length-1) scanIndex++;
+   teken();
+ }));
+ const vol=$('#scanVolgende');
+ if(vol) vol.addEventListener('click',()=>{
+   const toe=$('#scanToe'); if(toe) D.vragen[scanIndex].toelichting=toe.value;
+   bewaarScan();
+   if(scanIndex<D.vragen.length-1){scanIndex++;teken();}
+   else {melding('Scan afgerond','Je score en je radar zijn bijgewerkt. Op het dashboard zie je meteen wat dat betekent.');location.hash='#/dashboard';}
+ });
+ const vor=$('#scanVorige');
+ if(vor) vor.addEventListener('click',()=>{const toe=$('#scanToe');if(toe)D.vragen[scanIndex].toelichting=toe.value;bewaarScan();if(scanIndex>0){scanIndex--;teken();}});
+ const sl=$('#scanSluit');
+ if(sl) sl.addEventListener('click',()=>{const toe=$('#scanToe');if(toe)D.vragen[scanIndex].toelichting=toe.value;bewaarScan();location.hash='#/dashboard';});
+ $$('[data-thema]').forEach(b=>b.addEventListener('click',()=>{
+   const i=D.vragen.findIndex(v=>v.thema===b.dataset.thema);
+   if(i>=0){scanIndex=i;teken();}
+ }));
+ const herstel=$('#scanHerstel');
+ if(herstel) herstel.addEventListener('click',()=>{
+   const v=venster('Scan opnieuw invullen','<p class="sub">Al je antwoorden worden gewist. Weet je het zeker?</p>'
+    +'<div class="vknoppen"><button class="knop stil" data-sluit>Annuleren</button><button class="knop" id="jaHerstel">Ja, opnieuw</button></div>');
+   v.el.querySelector('#jaHerstel').addEventListener('click',()=>{
+     D.vragen.forEach(x=>{x.antwoord=null;x.toelichting='';});
+     bewaarScan(); scanIndex=0; v.sluit(); teken();
    });
  });
 
- const nb=$('#nBewaar');
- if(nb) nb.addEventListener('click',()=>{
+ /* KPI aanpassen */
+ $$('[data-kpi]').forEach(el=>el.addEventListener('click',()=>bewerkKpi(+el.dataset.kpi)));
+ const kn=$('#kpiNieuw');
+ if(kn) kn.addEventListener('click',()=>bewerkKpi(-1));
+
+ /* KTO-thema aanpassen */
+ $$('[data-kto]').forEach(el=>el.addEventListener('click',()=>{
+   const i=+el.dataset.kto, t=D.kto.themas[i];
+   const v=venster('Score aanpassen: '+t.naam,
+     '<label class="veld"><span>Score (0 tot 10)</span><input type="number" id="ktoWaarde" min="0" max="10" step="0.1" value="'+t.score+'"></label>'
+    +'<div class="vknoppen"><button class="knop stil" data-sluit>Annuleren</button><button class="knop" id="ktoOk">Opslaan</button></div>');
+   v.el.querySelector('#ktoOk').addEventListener('click',()=>{
+     const w=parseFloat(v.el.querySelector('#ktoWaarde').value);
+     if(!isNaN(w)){t.score=Math.max(0,Math.min(10,w));
+      D.kto.score=+(D.kto.themas.reduce((a,x)=>a+x.score,0)/D.kto.themas.length).toFixed(1);
+      bewaar('kto',D.kto);}
+     v.sluit(); teken();
+   });
+ }));
+
+ /* roadmap slepen */
+ const borden=$('#borden');
+ if(borden){
+  let sleep=null;
+  $$('#borden .kaartje').forEach(k=>{
+   k.addEventListener('dragstart',e=>{sleep=k.dataset.actie;k.classList.add('sleept');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',sleep);}catch(x){}});
+   k.addEventListener('dragend',()=>{sleep=null;$$('#borden .kaartje').forEach(x=>x.classList.remove('sleept'));$$('#borden .kolom').forEach(x=>x.classList.remove('doel'));});
+   k.addEventListener('click',()=>bewerkActie(k.dataset.actie));
+  });
+  $$('#borden .kolom').forEach(kol=>{
+   kol.addEventListener('dragover',e=>{e.preventDefault();kol.classList.add('doel');});
+   kol.addEventListener('dragleave',()=>kol.classList.remove('doel'));
+   kol.addEventListener('drop',e=>{
+     e.preventDefault(); kol.classList.remove('doel');
+     const titel=sleep||e.dataTransfer.getData('text/plain');
+     const a=(D.roadmap||[]).find(x=>x.titel===titel);
+     if(a){a.status=kol.dataset.kolom;bewaar('roadmap',D.roadmap);teken();}
+   });
+  });
+ }
+ const fs2=$('#fSpoor'); if(fs2) fs2.addEventListener('change',e=>{roadmapFilter=e.target.value;teken();});
+ const an=$('#actieNieuw'); if(an) an.addEventListener('click',()=>bewerkActie(null));
+ $$('[data-naarroadmap]').forEach(b=>b.addEventListener('click',()=>{
+   const a=D.aiAdvies[+b.dataset.naarroadmap];
+   if((D.roadmap||[]).some(x=>x.titel===a.titel)){melding('Staat er al in','“'+a.titel+'” staat al op je roadmap.');return;}
+   D.roadmap=(D.roadmap||[]).concat([{titel:a.titel,spoor:'AI-advies',kwartaal:'Q4 2026',status:'Niet gestart'}]);
+   bewaar('roadmap',D.roadmap);
+   melding('Toegevoegd','“'+a.titel+'” staat nu op je roadmap onder Niet gestart.');
+   tekenMenu();
+ }));
+
+ /* filters en overige knoppen */
+ const fs=$('#fStatus'); if(fs) fs.addEventListener('change',e=>{filterStatus=e.target.value;teken();});
+ $$('[data-doccat]').forEach(b=>b.addEventListener('click',()=>{docFilter=b.dataset.doccat;teken();}));
+ const fd=$('#fDoc'); if(fd) fd.addEventListener('input',e=>{
+   const t=e.target.value.toLowerCase();
+   $$('#docLijst tr').forEach(tr=>{tr.style.display=tr.textContent.toLowerCase().includes(t)?'':'none';});
+ });
+ $$('[data-melding]').forEach(b=>b.addEventListener('click',()=>{
+   const d=b.dataset.melding.split('|'); melding(d[0],d[1]||'');
+ }));
+ $$('[data-voorkeur]').forEach(el=>el.addEventListener('change',e=>{
+   const v=voorkeuren(); v[e.target.dataset.voorkeur]=e.target.checked; bewaar('voorkeur',v);
+ }));
+ const rw=$('#resetWidgets'); if(rw) rw.addEventListener('click',()=>{bewaar('widgets',STANDAARDORDE.slice());melding('Hersteld','Het dashboard staat weer in de standaardvolgorde.');});
+ const wt=$('#walkthrough'); if(wt) wt.addEventListener('click',()=>melding('Zo werkt dit portaal',
+   'Links kies je een onderdeel. Op het dashboard sleep je de blokken in je eigen volgorde met de greep rechtsboven in een blok. In de radar klik je om een thema bij te stellen, bij KPI Cockpit klik je op een KPI om waarde en doel te wijzigen, en op de roadmap sleep je kaartjes tussen de kolommen.'));
+
+ const nb=$('#nBewaar'); if(nb) nb.addEventListener('click',()=>{
    const t=$('#nTekst').value.trim();
    if(!t){melding('Lege notitie','Schrijf eerst even op wat je wilt vastleggen.');return;}
-   const eigen=eigenNotities();
    const nieuw={datum:new Date().toISOString().slice(0,10),tekst:t};
-   eigen.push(nieuw); bewaarNotities(eigen);
-   D.notities=(D.notities||[]).concat([nieuw]);
+   bewaar('notities',laad('notities',[]).concat([nieuw]));
+   D.notities=(D.notities||[]).concat([nieuw]); teken();
+ });
+ $$('[data-notitie]').forEach(b=>b.addEventListener('click',()=>{
+   const d=b.dataset.notitie.split('|'), datum=d[0], tekst=d.slice(1).join('|');
+   D.notities=(D.notities||[]).filter(n=>!(n.datum===datum&&n.tekst===tekst));
+   bewaar('notities',laad('notities',[]).filter(n=>!(n.datum===datum&&n.tekst===tekst)));
    teken();
- });
-
- document.querySelectorAll('[data-notitie]').forEach(el=>{
-   el.addEventListener('click',()=>{
-     const [datum,...rest]=el.dataset.notitie.split('|');
-     const tekst=rest.join('|');
-     D.notities=(D.notities||[]).filter(n=>!(n.datum===datum&&n.tekst===tekst));
-     bewaarNotities(eigenNotities().filter(n=>!(n.datum===datum&&n.tekst===tekst)));
-     teken();
-   });
- });
-
- const fb=$('#fbStuur');
- if(fb) fb.addEventListener('click',()=>{
+ }));
+ const fb=$('#fbStuur'); if(fb) fb.addEventListener('click',()=>{
    const t=($('#fbTekst').value||'').trim();
    if(!t){melding('Nog niets ingevuld','Schrijf eerst op wat er beter kan.');return;}
-   melding('Dank je',"We hebben je bericht klaargezet. Wil je meteen antwoord? App Arthur, dan pakken we het direct op.");
+   melding('Dank je','We hebben je bericht klaargezet. Wil je meteen antwoord? App Arthur, dan pakken we het direct op.');
    $('#fbTekst').value='';
  });
 }
 
-function melding(titel,tekst){
- const el=document.createElement('div');
- el.className='overlay';
- el.innerHTML='<div class="venster"><h3>'+esc(titel)+'</h3><p>'+esc(tekst)+'</p>'
-   +'<button class="knop" data-sluit>Sluiten</button></div>';
- el.addEventListener('click',e=>{ if(e.target===el||e.target.hasAttribute('data-sluit')) el.remove(); });
- document.addEventListener('keydown',function ontsnap(e){ if(e.key==='Escape'){el.remove();document.removeEventListener('keydown',ontsnap);} });
- document.body.appendChild(el);
- el.querySelector('[data-sluit]').focus();
+function zetThema(thema,score){
+ (D.vragen||[]).filter(v=>v.thema===thema).forEach(v=>{v.antwoord=score;});
+ bewaarScan();
+ teken();
+}
+function bewaarScan(){bewaar('scan',(D.vragen||[]).map(v=>({id:v.id,antwoord:v.antwoord,toelichting:v.toelichting})));}
+
+function bewerkKpi(i){
+ const nieuw = i<0;
+ const k = nieuw? {naam:'',waarde:0,doel:0,eenheid:'',reeks:[0,0,0,0,0,0],omhoogGoed:true} : D.kpis[i];
+ const v=venster(nieuw?'KPI toevoegen':'KPI aanpassen: '+k.naam,
+  (nieuw?'<label class="veld"><span>Naam</span><input id="kNaam" value="'+esc(k.naam)+'"></label>':'')
+  +'<label class="veld"><span>Huidige waarde</span><input type="number" step="0.1" id="kWaarde" value="'+k.waarde+'"></label>'
+  +'<label class="veld"><span>Doel</span><input type="number" step="0.1" id="kDoel" value="'+k.doel+'"></label>'
+  +(nieuw?'<label class="veld"><span>Eenheid</span><input id="kEenheid" placeholder="bijv. % of dagen" value="'+esc(k.eenheid)+'"></label>':'')
+  +'<div class="vknoppen">'+(nieuw?'':'<button class="knop stil" id="kWeg" style="margin-right:auto">Verwijderen</button>')
+  +'<button class="knop stil" data-sluit>Annuleren</button><button class="knop" id="kOk">Opslaan</button></div>');
+ v.el.querySelector('#kOk').addEventListener('click',()=>{
+   const w=parseFloat(v.el.querySelector('#kWaarde').value), d=parseFloat(v.el.querySelector('#kDoel').value);
+   if(!isNaN(w)) k.waarde=w; if(!isNaN(d)) k.doel=d;
+   if(nieuw){
+     k.naam=(v.el.querySelector('#kNaam').value||'Nieuwe KPI').trim();
+     k.eenheid=v.el.querySelector('#kEenheid').value||'';
+     k.reeks=[k.waarde,k.waarde,k.waarde,k.waarde,k.waarde,k.waarde];
+     D.kpis=(D.kpis||[]).concat([k]);
+   }else{
+     k.reeks=(k.reeks||[]).slice(0,-1).concat([k.waarde]);
+   }
+   bewaar('kpis',D.kpis); v.sluit(); teken();
+ });
+ const weg=v.el.querySelector('#kWeg');
+ if(weg) weg.addEventListener('click',()=>{D.kpis.splice(i,1);bewaar('kpis',D.kpis);v.sluit();teken();});
 }
 
-/* ═══════════════ balk: zoeken, meldingen, gebruiker ═══════════════ */
-function zoekResultaten(t){
- t=t.toLowerCase().trim();
- if(!t) return [];
- const uit=[];
- (D.koppelingen||[]).forEach(k=>{
-   if((k.titel+' '+(k.van||'')+' '+(k.naar||'')+' '+(k.middel||'')+' '+(k.notitie||'')).toLowerCase().includes(t))
-     uit.push({tekst:k.titel,bij:'Koppeling · '+k.status,naar:'#/koppelingen'});
+function bewerkActie(titel){
+ const nieuw=!titel;
+ const a = nieuw? {titel:'',spoor:'Processen',kwartaal:'Q4 2026',status:'Niet gestart'} : (D.roadmap||[]).find(x=>x.titel===titel);
+ if(!a) return;
+ const v=venster(nieuw?'Actie toevoegen':'Actie aanpassen',
+  '<label class="veld"><span>Titel</span><input id="aTitel" value="'+esc(a.titel)+'"></label>'
+ +'<label class="veld"><span>Spoor</span><input id="aSpoor" value="'+esc(a.spoor)+'"></label>'
+ +'<label class="veld"><span>Kwartaal</span><input id="aKwartaal" value="'+esc(a.kwartaal)+'"></label>'
+ +'<label class="veld"><span>Status</span><select id="aStatus">'
+ + ['Niet gestart','In uitvoering','Afgerond'].map(s=>'<option'+(s===a.status?' selected':'')+'>'+s+'</option>').join('')+'</select></label>'
+ +'<div class="vknoppen">'+(nieuw?'':'<button class="knop stil" id="aWeg" style="margin-right:auto">Verwijderen</button>')
+ +'<button class="knop stil" data-sluit>Annuleren</button><button class="knop" id="aOk">Opslaan</button></div>');
+ v.el.querySelector('#aOk').addEventListener('click',()=>{
+   a.titel=(v.el.querySelector('#aTitel').value||'Nieuwe actie').trim();
+   a.spoor=v.el.querySelector('#aSpoor').value||'Overig';
+   a.kwartaal=v.el.querySelector('#aKwartaal').value||'';
+   a.status=v.el.querySelector('#aStatus').value;
+   if(nieuw) D.roadmap=(D.roadmap||[]).concat([a]);
+   bewaar('roadmap',D.roadmap); v.sluit(); teken();
  });
- (D.documenten||[]).forEach(d=>{ if(d.naam.toLowerCase().includes(t)) uit.push({tekst:d.naam,bij:'Document',naar:'#/documenten'}); });
- (D.notities||[]).forEach(n=>{ if(n.tekst.toLowerCase().includes(t)) uit.push({tekst:n.tekst.slice(0,70),bij:'Notitie',naar:'#/notities'}); });
- (D.urenregels||[]).forEach(r=>{ if((r.wat+' '+r.koppeling).toLowerCase().includes(t)) uit.push({tekst:r.wat,bij:'Urenregel · '+datumNL(r.datum),naar:'#/uren'}); });
- MENU.filter(m=>m.id).forEach(m=>{ if(m.naam.toLowerCase().includes(t)) uit.push({tekst:m.naam,bij:'Pagina',naar:'#/'+m.id}); });
+ const weg=v.el.querySelector('#aWeg');
+ if(weg) weg.addEventListener('click',()=>{D.roadmap=D.roadmap.filter(x=>x!==a);bewaar('roadmap',D.roadmap);v.sluit();teken();});
+}
+
+/* ════════════════ balk ════════════════ */
+function zoekResultaten(t){
+ t=t.toLowerCase().trim(); if(!t) return [];
+ const uit=[];
+ (D.koppelingen||[]).forEach(k=>{if((k.titel+' '+(k.van||'')+' '+(k.naar||'')+' '+(k.middel||'')+' '+(k.notitie||'')).toLowerCase().includes(t))
+   uit.push({tekst:k.titel,bij:'Koppeling · '+k.status,naar:'#/koppelingen'});});
+ (D.roadmap||[]).forEach(r=>{if((r.titel+' '+(r.spoor||'')+' '+(r.kwartaal||'')).toLowerCase().includes(t)) uit.push({tekst:r.titel,bij:'Actie · '+r.status,naar:'#/roadmap'});});
+ (D.documenten||[]).forEach(d=>{if((d.naam+' '+(d.soort||'')+' '+(d.bij||'')).toLowerCase().includes(t)) uit.push({tekst:d.naam,bij:'Document · '+(d.soort||''),naar:'#/documenten'});});
+ (D.bronnen||[]).forEach(b=>{if((b.naam+' '+(b.categorie||'')).toLowerCase().includes(t)) uit.push({tekst:b.naam,bij:'Bron · '+b.status,naar:'#/bronnen'});});
+ (D.kpis||[]).forEach(k=>{if(k.naam.toLowerCase().includes(t)) uit.push({tekst:k.naam,bij:'KPI',naar:'#/kpi'});});
+ THEMAS.forEach(x=>{if(x.toLowerCase().includes(t)) uit.push({tekst:x,bij:'Scanthema · score '+((themaScores()[x]||0).toFixed(1)),naar:'#/scan'});});
+ (D.vragen||[]).forEach(v=>{if((v.tekst+' '+v.thema).toLowerCase().includes(t)) uit.push({tekst:v.tekst,bij:'Scanvraag · '+v.thema,naar:'#/scan'});});
+ (D.aiAdvies||[]).forEach(a=>{if((a.titel+' '+a.beschrijving).toLowerCase().includes(t)) uit.push({tekst:a.titel,bij:'AI-advies',naar:'#/ai'});});
+ (D.team||[]).forEach(p=>{if(p.naam.toLowerCase().includes(t)) uit.push({tekst:p.naam,bij:'Gebruiker · '+p.rol,naar:'#/team'});});
+ (D.notities||[]).forEach(n=>{if(n.tekst.toLowerCase().includes(t)) uit.push({tekst:n.tekst.slice(0,70),bij:'Notitie',naar:'#/notities'});});
+ (D.urenregels||[]).forEach(r=>{if((r.wat+' '+r.koppeling).toLowerCase().includes(t)) uit.push({tekst:r.wat,bij:'Urenregel',naar:'#/uren'});});
+ MENU.filter(m=>m.id).forEach(m=>{if(m.naam.toLowerCase().includes(t)) uit.push({tekst:m.naam,bij:'Pagina',naar:'#/'+m.id});});
  return uit.slice(0,8);
 }
 function tekenZoek(){
- const lijst=$('#zoeklijst');
- const res=zoekResultaten(zoekterm);
- if(!zoekterm){ lijst.hidden=true; return; }
- lijst.hidden=false;
- lijst.innerHTML = res.length
-   ? res.map(r=>'<button data-naar="'+r.naar+'"><b>'+esc(r.tekst)+'</b><div class="fijn" style="font-size:.76rem;color:var(--grijs)">'+esc(r.bij)+'</div></button>').join('')
-   : '<div class="leeg">Niets gevonden voor “'+esc(zoekterm)+'”.</div>';
- lijst.querySelectorAll('[data-naar]').forEach(b=>b.addEventListener('click',()=>{
-   location.hash=b.dataset.naar; $('#zoek').value=''; zoekterm=''; lijst.hidden=true;
+ const l=$('#zoeklijst');
+ if(!zoekterm){l.hidden=true;return;}
+ const res=zoekResultaten(zoekterm); l.hidden=false;
+ l.innerHTML=res.length? res.map(r=>'<button data-naar="'+r.naar+'"><b>'+esc(r.tekst)+'</b>'
+   +'<div style="font-size:.74rem;color:var(--grijs)">'+esc(r.bij)+'</div></button>').join('')
+  : '<div class="leeg">Niets gevonden voor “'+esc(zoekterm)+'”.</div>';
+ $$('#zoeklijst [data-naar]').forEach(b=>b.addEventListener('click',()=>{
+   location.hash=b.dataset.naar; $('#zoek').value=''; zoekterm=''; l.hidden=true;
  }));
 }
 function tekenMeldingen(){
  const m=D.meldingen||[];
  $('#belTal').textContent=m.length; $('#belTal').hidden=m.length===0;
  $('#belPaneel').innerHTML='<h4>Meldingen</h4>'
-  + (m.length? m.map(x=>'<button class="item"><b>'+esc(x.tekst)+'</b><div class="tijd">'+esc(x.tijd)+'</div></button>').join('')
-    : '<div class="item">Geen meldingen.</div>');
- $('#belPaneel').querySelectorAll('.item').forEach(b=>b.addEventListener('click',()=>{location.hash='#/activiteit';$('#belPaneel').hidden=true;}));
+  +(m.length? m.map(x=>'<button class="item"><b>'+esc(x.tekst)+'</b><div class="tijd">'+esc(x.tijd)+'</div></button>').join('')
+   :'<div class="item">Geen meldingen.</div>');
+ $$('#belPaneel .item').forEach(b=>b.addEventListener('click',()=>{location.hash='#/activiteit';$('#belPaneel').hidden=true;}));
 }
 function tekenGebruiker(){
- const naam=(D.contact&&D.contact.naam)||'Gast';
- const rol=(D.contact&&D.contact.rol)||'Meekijken';
- $('#avatar').textContent=initialen(naam);
- $('#gebrNaam').textContent=naam;
- $('#gebrRol').textContent=rol;
+ const naam=(D.contact&&D.contact.naam)||'Gast', rol=(D.contact&&D.contact.rol)||'Meekijken';
+ $('#avatar').textContent=String(naam).split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+ $('#gebrNaam').textContent=naam; $('#gebrRol').textContent=rol;
+ $('#bedrijfNaam').textContent=D.klant;
  $('#gebrPaneel').innerHTML='<h4>'+esc(naam)+'</h4>'
   +'<a class="item" href="#/instellingen">Instellingen</a>'
   +'<a class="item" href="#/team">Team &amp; toegang</a>'
   +'<a class="item" href="#/feedback">Feedback geven</a>'
   +'<a class="item" href="/contact">Contact met Arthur</a>'
   +'<a class="item" href="/">Terug naar de website</a>';
- $('#gebrPaneel').querySelectorAll('.item').forEach(a=>a.addEventListener('click',()=>{$('#gebrPaneel').hidden=true;}));
+ $$('#gebrPaneel .item').forEach(a=>a.addEventListener('click',()=>{$('#gebrPaneel').hidden=true;}));
 }
 
-/* ═══════════════ opstarten ═══════════════ */
-function start(gegevens){
- D=gegevens;
- D.opgehaald = D.opgehaald || new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})
-   +' · '+new Date().toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
- D.koppelingen = D.koppelingen || [];
- D.notities = (D.notities||[]).concat(eigenNotities());
- $('#voetregel').textContent='Bedrijfsgeheugen · '+new Date().getFullYear();
+/* ════════════════ opstarten ════════════════ */
+function start(g){
+ D=g;
+ D.opgehaald=D.opgehaald||new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})+' · '+new Date().toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+ D.koppelingen=D.koppelingen||[];
+ D.vragen=D.vragen||VRAGEN.map(v=>Object.assign({},v));
+ if(D.scanAntwoorden) D.vragen.forEach((v,i)=>{if(D.scanAntwoorden[i]!=null) v.antwoord=D.scanAntwoorden[i];});
+ const opgeslagen=laad('scan',null);
+ if(opgeslagen) opgeslagen.forEach(o=>{const v=D.vragen.find(x=>x.id===o.id);if(v){v.antwoord=o.antwoord;v.toelichting=o.toelichting||'';}});
+ D.kpis=laad('kpis',D.kpis||[]);
+ D.roadmap=laad('roadmap',D.roadmap||[]);
+ if(D.kto) D.kto=laad('kto',D.kto);
+ D.notities=(D.notities||[]).concat(laad('notities',[]));
  tekenMeldingen(); tekenGebruiker(); teken();
 }
-function mislukt(tekst){
- $('#scherm').innerHTML='<div class="kaart"><h3>Even niet bereikbaar</h3><p class="sub" style="margin-top:.3rem">'+esc(tekst)+'</p>'
-  +'<div style="display:flex;gap:.6rem;margin-top:.9rem;flex-wrap:wrap"><button class="knop" onclick="location.reload()">Opnieuw proberen</button>'
+function mislukt(t){
+ $('#scherm').innerHTML='<div class="kaart"><h3>Even niet bereikbaar</h3><p class="sub">'+esc(t)+'</p>'
+  +'<div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap"><button class="knop" onclick="location.reload()">Opnieuw proberen</button>'
   +'<a class="knop stil" href="/contact">Laat het ons weten</a></div></div>';
 }
 function kiesScherm(){
- $('#scherm').innerHTML='<div class="kaart"><h3>Voor welk bedrijf</h3>'
-  +'<p class="sub" style="margin-top:.3rem">Vul de bedrijfsnaam in zoals wij die gebruiken, of open de link die je van ons hebt gekregen.</p>'
-  +'<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.9rem">'
-  +'<input type="text" id="fKlant" placeholder="bedrijfsnaam" style="flex:1;min-width:200px;border:1px solid var(--lijn);border-radius:9px;padding:.5rem .7rem">'
+ $('#scherm').innerHTML='<div class="kaart" style="max-width:520px"><h3>Voor welk bedrijf</h3>'
+  +'<p class="sub">Vul de bedrijfsnaam in zoals wij die gebruiken, of open de link die je van ons hebt gekregen.</p>'
+  +'<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem">'
+  +'<input type="text" id="fKlant" placeholder="bedrijfsnaam" style="flex:1;min-width:200px;border:1px solid var(--lijn);border-radius:9px;padding:.45rem .65rem">'
   +'<button class="knop" id="bOk">Bekijken</button></div>'
-  +'<p class="sub" style="margin-top:.8rem">Benieuwd hoe het eruitziet? <a href="?klant=demo" style="color:var(--blauw);font-weight:600">Bekijk een voorbeeld</a>.</p></div>';
- $('#bOk').addEventListener('click',()=>{
-   const v=$('#fKlant').value.trim();
-   if(v) location.search='?klant='+encodeURIComponent(v);
- });
- $('#fKlant').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#bOk').click(); });
+  +'<p class="sub" style="margin-top:.7rem">Benieuwd hoe het eruitziet? <a href="?klant=demo" style="color:var(--blauw);font-weight:600">Bekijk een voorbeeld</a>.</p></div>';
+ $('#bOk').addEventListener('click',()=>{const v=$('#fKlant').value.trim();if(v)location.search='?klant='+encodeURIComponent(v);});
+ $('#fKlant').addEventListener('keydown',e=>{if(e.key==='Enter')$('#bOk').click();});
 }
 
-/* balk-gedrag */
 $('#zoek').addEventListener('input',e=>{zoekterm=e.target.value;tekenZoek();});
-$('#zoek').addEventListener('keydown',e=>{ if(e.key==='Escape'){e.target.value='';zoekterm='';tekenZoek();} });
+$('#zoek').addEventListener('keydown',e=>{if(e.key==='Escape'){e.target.value='';zoekterm='';tekenZoek();}});
 $('#belKnop').addEventListener('click',e=>{e.stopPropagation();$('#gebrPaneel').hidden=true;$('#belPaneel').hidden=!$('#belPaneel').hidden;});
 $('#gebrKnop').addEventListener('click',e=>{e.stopPropagation();$('#belPaneel').hidden=true;$('#gebrPaneel').hidden=!$('#gebrPaneel').hidden;});
+$('#hulpKnop').addEventListener('click',()=>melding('Hulp nodig?','Links kies je een onderdeel. Sleep de blokken op het dashboard, klik in de radar om een thema bij te stellen, klik op een KPI om die aan te passen en sleep roadmapkaartjes tussen de kolommen. Kom je er niet uit? App Arthur.'));
+$('#bedrijfKnop').addEventListener('click',()=>melding('Ander bedrijf','Je portaal opent met de link die je van ons hebt gekregen. Werk je voor meerdere bedrijven? Laat het weten, dan zetten we een keuze klaar.'));
+$('#mobKnop').addEventListener('click',e=>{e.stopPropagation();$('#zij').classList.toggle('open');});
 document.addEventListener('click',e=>{
  if(!e.target.closest('.balk-rechts')){$('#belPaneel').hidden=true;$('#gebrPaneel').hidden=true;}
- if(!e.target.closest('.zoekdoos')){$('#zoeklijst').hidden=true;}
- const zij=$('#zij');
- if(zij.classList.contains('open')&&!e.target.closest('.zij')&&!e.target.closest('#mobKnop')) zij.classList.remove('open');
+ if(!e.target.closest('.zoekdoos')) $('#zoeklijst').hidden=true;
+ if($('#zij').classList.contains('open')&&!e.target.closest('.zij')&&!e.target.closest('#mobKnop')) $('#zij').classList.remove('open');
 });
-$('#mobKnop').addEventListener('click',e=>{e.stopPropagation();$('#zij').classList.toggle('open');});
-document.addEventListener('keydown',e=>{
- if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#zoek').focus();}
-});
-addEventListener('hashchange',()=>{ $('#zij').classList.remove('open'); if(D) teken(); });
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#zoek').focus();}});
+addEventListener('hashchange',()=>{$('#zij').classList.remove('open');if(D)teken();});
 
 tekenMenu();
-if(isDemo){
- start(JSON.parse(JSON.stringify(DEMO)));
-}else if(klantParam){
+if(isDemo){ start(JSON.parse(JSON.stringify(DEMO))); }
+else if(klantParam){
  $('#scherm').innerHTML='<div class="kaart"><p class="sub">Ophalen…</p></div>';
  fetch(HOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({klant:klantParam})})
   .then(r=>r.json())
   .then(d=>{
     if(!d||!d.koppelingen||!d.koppelingen.length){
-      D=Object.assign({klant:klantParam,koppelingen:[]},d||{});
-      start(D);
-      $('#scherm').insertAdjacentHTML('beforeend','<div class="kaart"><h3>Nog niets vastgelegd</h3><p class="sub" style="margin-top:.3rem">Er staat nog geen koppeling op deze naam. Klopt dat niet? Laat het ons weten, dan kijken we mee.</p></div>');
+      start(Object.assign({klant:klantParam,koppelingen:[]},d||{}));
+      $('#scherm').insertAdjacentHTML('beforeend','<div class="kaart"><h3>Nog niets vastgelegd</h3><p class="sub">Er staat nog geen koppeling op deze naam. Klopt dat niet? Laat het ons weten, dan kijken we mee.</p></div>');
       return;
     }
     start(d);
   })
   .catch(()=>mislukt('We konden de gegevens nu niet ophalen. Probeer het zo nog eens.'));
-}else{
- kiesScherm();
-}
+}else{ kiesScherm(); }
 </script>
 </body>
 </html>
