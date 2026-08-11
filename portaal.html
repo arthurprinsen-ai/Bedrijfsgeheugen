@@ -3973,7 +3973,7 @@ function tekenKostenTrap(){
     y+=rowH;
   });
   el.innerHTML=g;
-  const urenNu=DIM.reduce(function(a,d){return a+d.u*f[g(d.k)]*(S.mw/24)*46;},0);
+  const urenNu=DIM.reduce(function(a,d){return a+d.u*f[S.niveaus[d.k]||2]*(S.mw/24)*46;},0);
   document.getElementById('kostenTrapT').innerHTML='Van nu naar niveau 4 scheelt <b>'+eur(nu-r4)+'</b> per jaar aan werktijd \u2014 ongeveer <b>'
    +((nu-r4)/S.uur/40).toFixed(1)+' werkweken</b>. '
    +'Niveau 5 levert daarbovenop nog '+eur(r4-r5)+' op, zelden de moeite voor een mkb-bedrijf.'
@@ -4513,7 +4513,8 @@ function verhuisInvoer(){
   const paren=[
     ['cOmzet','.velden','inCijfers'],
     ['wSchuld','.velden','inWaarde'],
-    ['mVerzuim','.velden','inMensen'],
+    ['mVerzuim','.rij','inMensen'],
+    ['mMto','.rij','inMensen'],
     ['pDeclarabel','.velden','inProd'],
     ['kNps','.velden','inKlanten'],
     ['mtDatum','.velden','inMetingen'],
