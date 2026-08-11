@@ -340,6 +340,8 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="false" data-p="strategie">Strategiemodellen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="canvassen">Canvassen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="eindconclusie">De eindconclusie</button>
+        <span class="groep">Overname</span>
+        <button class="tab" role="tab" aria-selected="false" data-p="dd">Due diligence &amp; exit</button>
         <span class="groep">Doen</span>
         <button class="tab" role="tab" aria-selected="false" data-p="dna">Van strategie naar maandagochtend</button>
         <button class="tab" role="tab" aria-selected="false" data-p="bijhouden">Actueel houden</button>
@@ -970,6 +972,16 @@ input[type=range]{min-height:34px}
         </div>
         <div class="leeg" id="ganttLeeg" hidden>Nog niets gepland. Voeg je eerste stap toe — begin met de grootste rem.</div>
       </div>
+    </section>
+
+    <!-- DUE DILIGENCE & EXIT -->
+    <section class="paneel" id="p-dd">
+      <div class="kaart conclusie" style="margin-top:1rem">
+        <h2>Due diligence &amp; exit</h2>
+        <p class="kern">Waar een koper, investeerder of due-diligenceteam naar kijkt &mdash; en hoe ver jij daarin bent.
+        Alles hieronder komt uit je eigen scan en cijfers. Het vervangt geen echt boekenonderzoek, maar het is wel de spiegel die je vooraf wilt hebben.</p>
+      </div>
+      <div id="ddInhoud"></div>
     </section>
     </div></div>
   </div>
@@ -5565,6 +5577,252 @@ function vraagToegang(daarna){
 <a class="wa-knop" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag" target="_blank" rel="noopener" aria-label="App Arthur via WhatsApp"><svg viewBox="0 0 32 32" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg></a>
 <style>.wa-knop{position:fixed;right:1rem;bottom:1rem;z-index:80;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 6px 20px rgba(20,23,26,.22);text-decoration:none}
 @media(max-width:720px){.wa-knop{bottom:calc(1rem + env(safe-area-inset-bottom,0px))}}</style>
+<!-- ══ due diligence & exit ══ -->
+<script>
+/* Wat kopers, investeerders en due-diligenceteams onderzoeken, afgezet tegen
+   de stand uit je eigen scan. De indeling volgt de werkstromen die in de
+   Nederlandse mkb-overnamepraktijk gangbaar zijn: financieel, fiscaal,
+   juridisch, commercieel, operationeel, IT en data, personeel, compliance
+   en duurzaamheid. */
+(function(){
+ var STROMEN=[
+  {n:'Financieel',dims:['finance','analytics'],
+   vraagt:['Kwaliteit van de cijfers: omzet, marge, EBITDA en cashflow over drie jaar',
+           'Werkkapitaal, schuldpositie en normalisaties (wat verdient het bedrijf echt)',
+           'Prognoses die aansluiten op wat er in de administratie gebeurt'],
+   zelf:'Zorg dat je maandcijfers binnen twee weken kloppen en dat je ze kunt onderbouwen.'},
+  {n:'Fiscaal',dims:['finance','governance'],
+   vraagt:['Aangiften en aanslagen vpb, btw en loonheffing over de afgelopen jaren',
+           'Lopende discussies of afspraken met de Belastingdienst',
+           'Fiscale eenheid, rekening-courant en de structuur van de holding'],
+   zelf:'Fiscale risico\u2019s worden vrijwel altijd vertaald naar garanties of een inhouding op de koopprijs. Laat je fiscalist dit v\u00f3\u00f3r het proces nalopen.'},
+  {n:'Juridisch',dims:['governance'],
+   vraagt:['Contracten met klanten, leveranciers en verhuurder \u2014 getekend en actueel',
+           'Aandeelhoudersstructuur, statuten, volmachten en vergunningen',
+           'Lopende geschillen, garanties en intellectueel eigendom'],
+   zelf:'Mondelinge afspraken zijn de klassieke struikelblok. Leg vast wat er feitelijk geldt.'},
+  {n:'Commercieel',dims:['commercie','service'],
+   vraagt:['Marktpositie, concurrentie en de kwaliteit van de pijplijn',
+           'Klantconcentratie: hoeveel omzet hangt aan je grootste klanten',
+           'Terugkerende omzet, contractduur en klantverloop'],
+   zelf:'Voorspelbare omzet is waardevoller dan hoge omzet. Laat zien welk deel terugkeert.'},
+  {n:'Operationeel',dims:['operatie','quality'],
+   vraagt:['Zijn processen vastgelegd, en wordt er ook zo gewerkt?',
+           'Schaalbaarheid: kan het bedrijf meer aan zonder dat alles vastloopt',
+           'Afhankelijkheid van sleutelmedewerkers en van de eigenaar zelf'],
+   zelf:'Handmatige en ad-hoc werkwijzen vergroten het risico dat een koper inprijst.'},
+  {n:'IT en data',dims:['tech','quality'],
+   vraagt:['Welk systeemlandschap ligt er, en hangt het samen',
+           'Is de omgeving veilig, schaalbaar en \u00f3verdraagbaar zonder de huidige beheerder',
+           'Licenties, eigendom van code en data, en achterstallig onderhoud'],
+   zelf:'IT-schuld koopt een koper mee. Wat je nu opruimt, hoef je straks niet weg te geven in de prijs.'},
+  {n:'Personeel',dims:['mensen','culture'],
+   vraagt:['Arbeidsovereenkomsten, pensioen, bonussen en zzp-constructies',
+           'Verzuim, verloop en de bezetting van sleutelrollen',
+           'Wie blijft er na de overdracht, en waarom'],
+   zelf:'Kennis die alleen in hoofden zit, is voor een koper een risico \u2014 niet een kwaliteit.'},
+  {n:'Compliance en security',dims:['security','governance'],
+   vraagt:['AVG: verwerkersovereenkomsten, register en datalekprocedure',
+           'Informatiebeveiliging: toegangsrechten, tweestapsverificatie, back-ups die zijn teruggezet',
+           'AI-gebruik en de verplichtingen uit de EU AI Act'],
+   zelf:'Begin bij het saaie deel. Dit is het onderdeel waar het snelst punten te halen zijn.'},
+  {n:'Duurzaamheid',dims:['duurzaam'],
+   vraagt:['Rapportageverplichtingen en wat je keten van je vraagt',
+           'Energie, afval en milieuvergunningen bij productie of vastgoed',
+           'Of duurzaamheidsclaims onderbouwd zijn'],
+   zelf:'Voor de meeste mkb-bedrijven speelt dit indirect: via de eisen van grotere klanten.'}
+ ];
+
+ var DATAKAMER=[
+  ['Jaarrekeningen van de laatste drie jaar','financieel'],
+  ['Tussentijdse cijfers van dit jaar','financieel'],
+  ['Aansluiting tussen administratie en jaarrekening','financieel'],
+  ['Aangiften vpb, btw en loonheffing','fiscaal'],
+  ['Uittreksel KvK, statuten en aandeelhoudersregister','juridisch'],
+  ['Getekende klantcontracten en algemene voorwaarden','juridisch'],
+  ['Leveranciers- en huurcontracten','juridisch'],
+  ['Overzicht lopende geschillen en claims','juridisch'],
+  ['Omzet per klant over drie jaar','commercieel'],
+  ['Orderportefeuille en pijplijn','commercieel'],
+  ['Procesbeschrijvingen van je hoofdproces','operationeel'],
+  ['Systeemlandschap en koppelingen op \u00e9\u00e9n plaat','it'],
+  ['Licenties, contracten en eigendom van data','it'],
+  ['Personeelsdossiers, contracten en pensioenregeling','personeel'],
+  ['Verzuim- en verloopcijfers','personeel'],
+  ['AVG-register en verwerkersovereenkomsten','compliance'],
+  ['Back-up- en herstelbeleid, met bewijs van een test','compliance'],
+  ['Vergunningen en verzekeringen','compliance']
+ ];
+
+ function niv(k){ return (typeof S!=='undefined'&&S.niveaus&&S.niveaus[k])||2; }
+ function gem(ds){ var t=0; ds.forEach(function(k){t+=niv(k);}); return t/ds.length; }
+ function kleurNiv(v){ return v>=4?'var(--groen)':(v>=3?'var(--amber)':'var(--rood)'); }
+ function woordNiv(v){ return v>=4?'op orde':(v>=3?'bijna op orde':(v>=2?'aandacht nodig':'nog niet geregeld')); }
+ function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+ function eur(v){ return '\u20ac '+Math.round(v||0).toLocaleString('nl-NL'); }
+
+ /* Exit-gereedheid: het gemiddelde van de negen werkstromen, met aftrek voor
+    de risico's die een koper standaard inprijst. De opbouw staat eronder in beeld. */
+ function gereed(){
+  var basis=0; STROMEN.forEach(function(w){ basis+=gem(w.dims); });
+  basis=basis/STROMEN.length;                       // 1 tot 5
+  var score=basis/5*100, aftrek=[];
+  var c=(typeof S!=='undefined'&&S.cijfers)||{}, m=(typeof S!=='undefined'&&S.mensen)||{};
+  var grootste=+c.cGrootste||0;
+  if(grootste>=30){ score-=10; aftrek.push(['Grootste klant is '+grootste+'% van de omzet','\u221210']); }
+  else if(grootste>=20){ score-=5; aftrek.push(['Grootste klant is '+grootste+'% van de omzet','\u22125']); }
+  if(niv('mensen')<3){ score-=6; aftrek.push(['Kennis zit nog in hoofden','\u22126']); }
+  if(niv('analytics')<3){ score-=6; aftrek.push(['Stuurinformatie is niet actueel','\u22126']); }
+  if(niv('governance')<3){ score-=5; aftrek.push(['Afspraken en contracten niet vastgelegd','\u22125']); }
+  var verloop=+m.mVerloop||0;
+  if(verloop>=20){ score-=4; aftrek.push(['Personeelsverloop '+verloop+'% per jaar','\u22124']); }
+  return {score:Math.max(0,Math.min(100,Math.round(score))), basis:basis, aftrek:aftrek, grootste:grootste};
+ }
+
+ function meter(score){
+  var kleur=score>=70?'#1F9D55':(score>=45?'#E8A200':'#D93025');
+  var hoek=Math.PI*(score/100), x=90-62*Math.cos(hoek), y=88-62*Math.sin(hoek);
+  return '<svg viewBox="0 0 180 106" width="180" role="img" aria-label="Exit-gereedheid '+score+' van 100">'
+   +'<path d="M28 88a62 62 0 01124 0" fill="none" stroke="#DCDFE6" stroke-width="15" stroke-linecap="round"/>'
+   +(score>0?'<path d="M28 88A62 62 0 01'+x.toFixed(1)+' '+y.toFixed(1)+'" fill="none" stroke="'+kleur+'" stroke-width="15" stroke-linecap="round"/>':'')
+   +'<text x="90" y="80" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="34" font-weight="800" fill="#14171A">'+score+'</text>'
+   +'<text x="90" y="99" text-anchor="middle" font-family="Instrument Sans,sans-serif" font-size="11" fill="#5C646E">/100</text></svg>';
+ }
+
+ function vinkjes(){ if(typeof S==='undefined') return {}; S.dd=S.dd||{}; S.dd.vink=S.dd.vink||{}; return S.dd.vink; }
+
+ window.tekenDD=function(){
+  var el=document.getElementById('ddInhoud'); if(!el) return;
+  var g=gereed(), v=vinkjes();
+  var klaar=DATAKAMER.filter(function(r){return v[r[0]];}).length;
+  var pct=Math.round(klaar/DATAKAMER.length*100);
+
+  var h='';
+
+  /* 1. gereedheid */
+  h+='<div class="kaarten k2" style="margin-top:1rem">'
+   +'<div class="kaart"><h3>Exit-gereedheid</h3>'
+   +'<div style="display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap">'+meter(g.score)
+   +'<div><div class="sub" style="font-size:.95rem;line-height:1.6">'
+   +(g.score>=70?'Je bent goed voorbereid. Een koper vindt hier weinig verrassingen.'
+     :g.score>=45?'De basis staat, maar er zijn punten die een koper zal aangrijpen in de prijs.'
+     :'Een boekenonderzoek zou nu veel open einden opleveren. Dat kost geen deal, wel waarde.')
+   +'</div>'
+   +'<div class="sub" style="margin-top:.6rem">Gemiddelde over de negen werkstromen: <b>'+g.basis.toFixed(1)+' van 5</b></div>'
+   +(g.aftrek.length?'<div class="sub" style="margin-top:.5rem">Aftrek voor wat een koper standaard inprijst:<br>'
+      +g.aftrek.map(function(a){return '<span style="color:var(--rood);font-weight:600">'+a[1]+'</span> '+esc(a[0]);}).join('<br>')+'</div>':'')
+   +'</div></div>'
+   +'<div class="sub" style="margin-top:.9rem">Dit cijfer komt uit je eigen scan en cijfers. Het is een indicatie vooraf, geen waardering en geen boekenonderzoek.</div>'
+   +'</div>'
+   +'<div class="kaart"><h3>Datakamer</h3>'
+   +'<p class="sub" style="margin:-.3rem 0 .5rem">De stukken die een koper of investeerder standaard opvraagt. Vink af wat klaarligt.</p>'
+   +'<div style="display:flex;align-items:baseline;gap:.6rem"><div class="kpi" style="font-size:1.9rem">'+pct+'%</div>'
+   +'<div class="sub">'+klaar+' van de '+DATAKAMER.length+' stukken klaar</div></div>'
+   +'<div style="height:8px;border-radius:99px;background:#EFEFEC;margin:.5rem 0 .8rem;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+(pct>=80?'var(--groen)':pct>=40?'var(--amber)':'var(--rood)')+'"></div></div>'
+   + DATAKAMER.map(function(r,i){
+      return '<label style="display:flex;gap:.55rem;align-items:flex-start;padding:.28rem 0;font-size:.88rem;cursor:pointer">'
+       +'<input type="checkbox" data-dd="'+i+'"'+(v[r[0]]?' checked':'')+' style="margin-top:.28rem;accent-color:var(--blauw);width:16px;height:16px">'
+       +'<span>'+esc(r[0])+'</span></label>';
+     }).join('')
+   +'</div></div>';
+
+  /* 2. de negen werkstromen */
+  h+='<div class="kaart" style="margin-top:1rem"><h3>Waar een due-diligenceteam naar kijkt</h3>'
+   +'<p class="sub" style="margin:-.3rem 0 .8rem">Negen werkstromen. Per werkstroom staat wat er wordt opgevraagd en waar jij nu staat, op basis van je scan.</p>'
+   +'<div class="kaarten k3" style="margin:0">'
+   + STROMEN.map(function(w){
+      var n=gem(w.dims);
+      return '<div class="kaart" style="background:#FBFAF7">'
+       +'<div style="display:flex;justify-content:space-between;gap:.6rem;align-items:baseline">'
+       +'<b style="font-family:Bricolage Grotesque,sans-serif;font-size:1rem">'+esc(w.n)+'</b>'
+       +'<span style="font-size:.78rem;font-weight:700;color:'+kleurNiv(n)+'">'+n.toFixed(1)+' \u00b7 '+woordNiv(n)+'</span></div>'
+       +'<div style="height:6px;border-radius:99px;background:#EFEFEC;margin:.45rem 0 .6rem;overflow:hidden">'
+       +'<div style="height:100%;width:'+(n/5*100).toFixed(0)+'%;background:'+kleurNiv(n)+'"></div></div>'
+       +'<div class="sub" style="font-weight:600;margin-bottom:.25rem">Wat er wordt opgevraagd</div>'
+       +'<ul style="margin:0 0 .6rem 1rem;padding:0;font-size:.84rem;line-height:1.55">'
+       + w.vraagt.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'
+       +'<div style="padding:.5rem .65rem;border-left:3px solid var(--blauw);background:#fff;font-size:.83rem;line-height:1.5">'+esc(w.zelf)+'</div>'
+       +'</div>';
+     }).join('')
+   +'</div></div>';
+
+  /* 3. waardebepalende factoren */
+  var c=(typeof S!=='undefined'&&S.cijfers)||{}, m=(typeof S!=='undefined'&&S.mensen)||{};
+  function rij(naam,waarde,goed,uitleg){
+   return '<div style="display:flex;gap:.8rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid var(--lijn)">'
+    +'<span style="width:10px;height:10px;border-radius:50%;flex:none;margin-top:.42rem;background:'+(goed===true?'var(--groen)':goed===false?'var(--rood)':'var(--amber)')+'"></span>'
+    +'<div style="flex:1;min-width:0"><b style="font-size:.9rem">'+esc(naam)+'</b>'
+    +'<div class="sub" style="font-size:.83rem">'+uitleg+'</div></div>'
+    +'<div style="text-align:right;white-space:nowrap;font-weight:700;font-size:.9rem">'+waarde+'</div></div>';
+  }
+  var drivers='';
+  drivers+=rij('Afhankelijkheid van de eigenaar', niv('mensen')>=3?'beperkt':'hoog', niv('mensen')>=4?true:(niv('mensen')>=3?null:false),
+    'Een koper betaalt voor toekomstige kasstroom, niet voor jouw inzet. Draait het bedrijf zonder jou, dan stijgt de waarde.');
+  drivers+=rij('Klantconcentratie', g.grootste?g.grootste+'%':'onbekend', g.grootste?(g.grootste<20?true:(g.grootste<30?null:false)):null,
+    'Aandeel van je grootste klant in de omzet. Boven de 30% wordt dit vrijwel altijd ingeprijsd.');
+  drivers+=rij('Vastgelegde processen', niv('operatie').toFixed(0)+'/5', niv('operatie')>=4?true:(niv('operatie')>=3?null:false),
+    'Overdraagbaarheid: kan een ander het werk overnemen zonder jou erbij?');
+  drivers+=rij('Stuurinformatie', niv('analytics').toFixed(0)+'/5', niv('analytics')>=4?true:(niv('analytics')>=3?null:false),
+    'Kloppen de cijfers, en zijn ze op tijd? Dit bepaalt hoeveel vertrouwen een koper in je prognose heeft.');
+  drivers+=rij('Contracten en governance', niv('governance').toFixed(0)+'/5', niv('governance')>=4?true:(niv('governance')>=3?null:false),
+    'Getekend, actueel en vindbaar. Mondelinge afspraken zijn de meest voorkomende rode vlag in het mkb.');
+  drivers+=rij('Personeelsverloop', (+m.mVerloop?m.mVerloop+'%':'onbekend'), (+m.mVerloop? (+m.mVerloop<10?true:(+m.mVerloop<20?null:false)) : null),
+    'Laag verloop en laag verzuim wijzen op een organisatie die blijft draaien na de overdracht.');
+  drivers+=rij('Staat van de techniek', niv('tech').toFixed(0)+'/5', niv('tech')>=4?true:(niv('tech')>=3?null:false),
+    'Achterstallig onderhoud in systemen koopt een koper mee \u2014 en trekt hij af van de prijs.');
+  drivers+=rij('Beveiliging en AVG', niv('security').toFixed(0)+'/5', niv('security')>=4?true:(niv('security')>=3?null:false),
+    'Toegangsrechten, tweestapsverificatie, een back-up die is teruggezet, en een verwerkingsregister dat klopt.');
+
+  h+='<div class="kaarten k2" style="margin-top:1rem">'
+   +'<div class="kaart"><h3>Wat je waarde bepaalt</h3>'
+   +'<p class="sub" style="margin:-.3rem 0 .4rem">De factoren waarop een koper zijn risico-opslag baseert. Groen is een pluspunt, rood wordt ingeprijsd.</p>'
+   + drivers + '</div>'
+   +'<div class="kaart"><h3>Hoe het proces loopt</h3>'
+   +'<p class="sub" style="margin:-.3rem 0 .6rem">Zodat je weet wanneer wat aan de beurt is.</p>'
+   + [['1','Voorbereiding','Verkoopklaar maken: cijfers opschonen, afhankelijkheden verkleinen, contracten vastleggen. Duurt in de praktijk \u00e9\u00e9n tot vijf jaar \u2014 hoe eerder je begint, hoe meer je eraan hebt.'],
+      ['2','Waardebepaling','Wat is het bedrijf waard, en welke factoren bepalen dat. Basis voor je vraagprijs en voor waar je nog op kunt sturen.'],
+      ['3','Informatiememorandum','Het verhaal en de cijfers op papier, voor gesprekken met kandidaten.'],
+      ['4','Intentieovereenkomst','Prijs en voorwaarden op hoofdlijnen, onder voorbehoud van het boekenonderzoek.'],
+      ['5','Due diligence','De negen werkstromen hierboven, meestal via een digitale datakamer.'],
+      ['6','Koopovereenkomst','Bevindingen worden vertaald naar prijs, garanties, een escrow of een earn-out.'],
+      ['7','Overdracht','Levering, en vaak een periode waarin je als adviseur of directeur betrokken blijft.']]
+     .map(function(r){
+       return '<div style="display:flex;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--lijn)">'
+        +'<span style="width:22px;height:22px;border-radius:50%;background:var(--blauw);color:#fff;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">'+r[0]+'</span>'
+        +'<div><b style="font-size:.9rem">'+esc(r[1])+'</b><div class="sub" style="font-size:.83rem">'+esc(r[2])+'</div></div></div>';
+     }).join('')
+   +'</div></div>';
+
+  h+='<div class="kaart" style="margin-top:1rem"><h3>Eerlijk over dit onderdeel</h3>'
+   +'<p class="sub">Dit is geen due diligence en geen waardebepaling. Het laat zien waar een koper naar kijkt en hoe jouw scan zich daartoe verhoudt, '
+   +'zodat je de open einden kent voordat een ander ze vindt. Voor een echte waardering en een boekenonderzoek heb je een overnameadviseur, een accountant en een fiscalist nodig.</p>'
+   +'<div class="bron"><b>Indeling gebaseerd op:</b> de gangbare werkstromen in de Nederlandse mkb-overnamepraktijk \u2014 financieel, fiscaal, juridisch en commercieel als kern, aangevuld met operationeel, IT, personeel, compliance en duurzaamheid.</div></div>';
+
+  el.innerHTML=h;
+
+  el.querySelectorAll('[data-dd]').forEach(function(box){
+   box.addEventListener('change',function(){
+     var r=DATAKAMER[+box.dataset.dd];
+     var vv=vinkjes(); vv[r[0]]=box.checked;
+     if(typeof bewaar==='function') bewaar();
+     window.tekenDD();
+   });
+  });
+ };
+
+ /* meetekenen wanneer de rest van het portaal opnieuw rekent */
+ function haak(){
+  if(typeof teken!=='function'){ setTimeout(haak,200); return; }
+  if(teken.__dd) return; 
+  var oud=teken;
+  teken=function(){ var r=oud.apply(this,arguments); try{ window.tekenDD(); }catch(e){} return r; };
+  teken.__dd=1;
+  try{ window.tekenDD(); }catch(e){}
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',haak); else haak();
+})();
+</script>
+
 <!-- ══ nieuwe portaalskin ══ -->
 <style id="np-skin">
 :root{
