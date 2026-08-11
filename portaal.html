@@ -5544,9 +5544,9 @@ function vraagToegang(daarna){
 <!-- ══ nieuwe portaalskin ══ -->
 <style id="np-skin">
 :root{
-  --np-vlak:#F6F7FA; --np-lijn:#E6E8EE; --np-inkt:#141B2E; --np-grijs:#69707D;
-  --np-blauw:#2742D6; --np-blauwl:#EDF0FD; --np-groen:#17936B; --np-groenl:#E6F5EF;
-  --np-amber:#B4780B; --np-amberl:#FDF3E0; --np-zij:256px;
+  --np-vlak:#FBFAF7; --np-lijn:#DCDFE6; --np-inkt:#14171A; --np-grijs:#5C646E;
+  --np-blauw:#2742D6; --np-blauwl:#EDF0FD; --np-groen:#1F9D55; --np-groenl:#E8F5EC;
+  --np-amber:#C2410C; --np-amberl:#FFF6E3; --np-geel:#FFE86B; --np-oranje:#FF4F17; --np-zij:256px;
 }
 body{background:var(--np-vlak)}
 .np-app{display:grid;grid-template-columns:var(--np-zij) 1fr;min-height:100vh;align-items:start}
@@ -5609,6 +5609,12 @@ body{background:var(--np-vlak)}
 .np-kop .np-knoppen button{border:1px solid var(--np-lijn);background:#fff;color:#3B4252;border-radius:9px;padding:.45rem .9rem;font:inherit;font-size:.84rem;font-weight:600;cursor:pointer}
 .np-kop .np-knoppen button.np-vol{background:var(--np-blauw);border-color:var(--np-blauw);color:#fff}
 .np-groet{font-size:.87rem;color:var(--np-grijs)}
+.np-app .wrap>.np-kop h1 .np-markeer{position:relative;z-index:0;white-space:nowrap}
+.np-app .wrap>.np-kop h1 .np-markeer::before{content:"";position:absolute;left:-.1em;right:-.1em;bottom:.02em;height:.44em;
+  background:var(--np-geel);border-radius:2px 8px 3px 7px;transform:rotate(-.6deg);z-index:-1}
+.np-app .samenvatting .blok .np-graf{order:0;margin:0 auto .35rem;width:100%}
+.np-app .samenvatting .blok .np-graf svg{display:block;margin:0 auto}
+.np-app .kaart h3{color:var(--np-inkt)!important}
 .np-gebr{display:flex;align-items:center;gap:.55rem;border:1px solid var(--np-lijn);border-radius:11px;padding:.5rem;margin-bottom:.55rem}
 .np-gebr .np-av{width:32px;height:32px;border-radius:9px;background:var(--np-blauw);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex:none}
 .np-gebr .np-nm{font-size:.82rem;font-weight:700;line-height:1.2}
@@ -5794,6 +5800,7 @@ body{background:var(--np-vlak)}
    var links=document.createElement('div');
    var g=document.createElement('p'); g.className='np-groet'; g.textContent=groet+' '+naam+',';
    links.appendChild(g);
+   if(h1.innerHTML.indexOf('np-markeer')<0) h1.innerHTML=h1.innerHTML.replace('speelt','<span class="np-markeer">speelt</span>');
    h1.parentNode.insertBefore(kop,h1);
    links.appendChild(h1);
    var onder=wrap.querySelector('.np-koptekst');
@@ -5849,9 +5856,88 @@ body{background:var(--np-vlak)}
      var bij=blok.querySelector('.np-bij');
      if(!bij){bij=document.createElement('span');bij.className='np-bij';blok.appendChild(bij);}
      bij.textContent=(score>=70?'Goed':score>=45?'Voldoende':'Aandacht nodig')+' · gemiddeld over 13 onderdelen';
+     overigeGrafieken(sam,niveau);
    }
    teken();
    try{ new MutationObserver(function(){setTimeout(teken,0);}).observe(sam,{childList:true}); }catch(e){}
+ }
+
+ function getal(t){
+   var x=String(t||'').replace(/[^0-9.,-]/g,'');
+   if(x.indexOf(',')>=0) x=x.replace(/\./g,'').replace(',','.');
+   else if(/\.\d{3}(\D|$)/.test(x)) x=x.replace(/\./g,'');
+   var m=x.match(/-?\d+(\.\d+)?/); return m?parseFloat(m[0]):0;
+ }
+
+ function grafVak(blok,binnen){
+   var oud=blok.querySelector('.np-graf'); if(oud) oud.remove();
+   var d=document.createElement('div'); d.className='np-graf'; d.innerHTML=binnen;
+   blok.insertBefore(d,blok.firstChild);
+ }
+
+ function overigeGrafieken(sam,niveau){
+   var blokken=sam.querySelectorAll('.blok');
+   /* handwerk per jaar: de vier grootste kostenposten als staafjes */
+   if(blokken[1]){
+     var posten=[];
+     var remmen=document.getElementById('remmen');
+     if(remmen){
+       Array.prototype.forEach.call(remmen.querySelectorAll('.klikbaar'),function(r){
+         var naam=(r.querySelector('span')?r.querySelector('span').textContent:'').replace(/^\d+\.\s*/,'').split('·')[0].trim();
+         var bedrag=getal(r.querySelector('b:last-child')?r.querySelector('b:last-child').textContent:'');
+         if(bedrag>0) posten.push({n:naam,v:bedrag});
+       });
+     }
+     if(posten.length){
+       var max=Math.max.apply(null,posten.map(function(x){return x.v;}));
+       var kleuren=['#FF4F17','#2742D6','#1F9D55','#C2410C','#5C646E'];
+       var w=180,h=52,bb=(w-((posten.length-1)*8))/posten.length;
+       var st=posten.map(function(x,i){
+         var hoogte=Math.max(4,(x.v/max)*(h-6));
+         return '<rect x="'+(i*(bb+8)).toFixed(1)+'" y="'+(h-hoogte).toFixed(1)+'" width="'+bb.toFixed(1)+'" height="'+hoogte.toFixed(1)+'" rx="3" fill="'+kleuren[i%kleuren.length]+'"><title>'+x.n+'</title></rect>';
+       }).join('');
+       grafVak(blokken[1],'<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="max-width:180px" role="img" aria-label="De grootste kostenposten in verhouding">'+st+'</svg>');
+       var bij1=blokken[1].querySelector('.np-bij');
+       if(!bij1){bij1=document.createElement('span');bij1.className='np-bij';blokken[1].appendChild(bij1);}
+       bij1.textContent='grootste post: '+posten[0].n.toLowerCase();
+     }
+   }
+   /* fte kwijt: ring van het aandeel in de bezetting */
+   if(blokken[2]){
+     var fte=getal(blokken[2].querySelector('b')?blokken[2].querySelector('b').textContent:'');
+     var t=document.getElementById('kFteT');
+     var mensen=t?getal((t.textContent||'').split('verdeeld over')[1]||''):0;
+     if(mensen>0){
+       var deel=Math.max(0,Math.min(1,fte/mensen)), r=26, omtrek=2*Math.PI*r;
+       grafVak(blokken[2],'<svg viewBox="0 0 68 68" width="68" height="68" role="img" aria-label="Aandeel vermijdbaar werk in de bezetting">'
+        +'<circle cx="34" cy="34" r="'+r+'" fill="none" stroke="#DCDFE6" stroke-width="9"/>'
+        +'<circle cx="34" cy="34" r="'+r+'" fill="none" stroke="#FF4F17" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+(deel*omtrek).toFixed(1)+' '+omtrek.toFixed(1)+'" transform="rotate(-90 34 34)"/>'
+        +'<text x="34" y="38" text-anchor="middle" font-family="Instrument Sans,sans-serif" font-size="13" font-weight="700" fill="#14171A">'+Math.round(deel*100)+'%</text></svg>');
+       var bij2=blokken[2].querySelector('.np-bij');
+       if(!bij2){bij2=document.createElement('span');bij2.className='np-bij';blokken[2].appendChild(bij2);}
+       bij2.textContent='van '+mensen+' mensen';
+     }
+   }
+   /* branche: jouw niveau naast dat van je branche */
+   if(blokken[3]){
+     var br=getal(blokken[3].querySelector('b')?blokken[3].querySelector('b').textContent:'');
+     if(br>0){
+       var breedJij=Math.max(4,(niveau/5)*176), breedBr=Math.max(4,(br/5)*176);
+       grafVak(blokken[3],'<svg viewBox="0 0 176 58" width="100%" style="max-width:176px" role="img" aria-label="Jouw niveau tegenover je branche, op een schaal van 1 tot 5">'
+        +'<text x="0" y="9" font-family="Instrument Sans,sans-serif" font-size="9.5" fill="#5C646E">jij</text>'
+        +'<rect x="0" y="13" width="176" height="9" rx="4.5" fill="#EFEFEC"/>'
+        +'<rect x="0" y="13" width="'+breedJij.toFixed(1)+'" height="9" rx="4.5" fill="#2742D6"/>'
+        +'<text x="0" y="36" font-family="Instrument Sans,sans-serif" font-size="9.5" fill="#5C646E">branche</text>'
+        +'<rect x="0" y="40" width="176" height="9" rx="4.5" fill="#EFEFEC"/>'
+        +'<rect x="0" y="40" width="'+breedBr.toFixed(1)+'" height="9" rx="4.5" fill="#FF4F17"/>'
+        +'<text x="176" y="9" text-anchor="end" font-family="Instrument Sans,sans-serif" font-size="9" fill="#8A94A3">schaal 1 tot 5</text></svg>');
+       var bij3=blokken[3].querySelector('.np-bij');
+       if(!bij3){bij3=document.createElement('span');bij3.className='np-bij';blokken[3].appendChild(bij3);}
+       var v=(br-niveau);
+       bij3.textContent = Math.abs(v)<0.05 ? 'gelijk aan je branche'
+         : (v>0? v.toFixed(1)+' niveau boven jou' : Math.abs(v).toFixed(1)+' niveau onder jou');
+     }
+   }
  }
 
  /* kaarten binnen een rij kunnen versleept worden; volgorde blijft bewaard */
