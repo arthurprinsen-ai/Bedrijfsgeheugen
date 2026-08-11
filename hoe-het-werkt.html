@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  // Consent Mode v2 — standaard geen toestemming; analytics uit tot de bezoeker kiest
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    wait_for_update: 500
+  });
+  try{ if(localStorage.getItem('bg_consent')==='granted'){ gtag('consent','update',{analytics_storage:'granted'}); } }catch(e){}
+  gtag('js', new Date());
+  gtag('config', 'G-912L0PB68G');
+</script><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hoe het werkt — Kijken. Fixen. Borgen. Verder. | Bedrijfsgeheugen</title>
+<meta name="description" content="Kijken. Fixen. Borgen. Verder. Geen maandenlange trajecten, maar korte stappen die direct waarde opleveren. Zo werkt Bedrijfsgeheugen bij mkb-bedrijven van 3 tot 250 medewerkers.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/hoe-het-werkt">
+<meta name="theme-color" content="#2742D6">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
+<style>
+
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--oranje-t:#C2410C;--geel:#FFE86B;--lijn:#DCDFE6;--grijs:#5C646E}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--papier);color:var(--inkt);line-height:1.65;font-size:16.5px}
+h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;line-height:1.12}
+.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+@keyframes pulsdot{0%,100%{box-shadow:0 0 0 0 rgba(46,204,113,.5)}50%{box-shadow:0 0 0 6px rgba(46,204,113,0)}}
+@media(prefers-reduced-motion:reduce){.tb-status i{animation:none}}
+@media(max-width:640px){.tb-icons a{width:34px;height:34px}.tb-icons svg{width:16px;height:16px}}
+.btn{display:inline-block;border:2px solid var(--inkt);border-radius:10px;padding:.65rem 1.3rem;font-weight:700;text-decoration:none;color:var(--inkt);font-size:.95rem}
+.btn.blauw{background:var(--blauw);border-color:var(--blauw);color:#fff}
+.btn.oranje{background:var(--oranje);border-color:var(--oranje);color:var(--inkt)}
+.kop{padding:4.5rem 0 3rem}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--oranje-t);display:block;margin-bottom:1rem}
+.kop h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;max-width:15em}
+.kop p.intro{max-width:44em;margin-top:1.2rem;font-size:1.1rem;color:#3C424A}
+footer{background:var(--inkt);color:#C8CBD2;padding:3rem 0;margin-top:4rem;font-size:.9rem}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+footer a{color:#fff}
+.wa-knop{position:fixed;right:18px;bottom:18px;z-index:60;width:58px;height:58px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.wa-knop svg{width:32px;height:32px;fill:#fff}
+nav.scrolled{}
+/* ── zwevende pil-navigatie onderaan ── */
+body{padding-bottom:92px}
+@media(max-width:640px){
+}
+.logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.25rem;color:var(--inkt);text-decoration:none;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:.55rem}
+.logo b{color:var(--blauw)}
+.logo svg{width:26px;height:26px;transform:rotate(-5deg);flex-shrink:0}
+
+/* ── Hoe het werkt ── */
+.hw-kruim{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--grijs);padding:1.6rem 0 0}
+.hw-kruim a{color:var(--blauw);text-decoration:none}
+.hw-kruim a:hover{text-decoration:underline}
+
+.hw-hero{padding:2rem 0 3.5rem}
+.hw-hero-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:3.4rem;align-items:center}
+.hw-hero h1{font-size:clamp(2.4rem,5.6vw,4.1rem);font-weight:800;letter-spacing:-.03em}
+.hw-hero h1 span{display:block}
+.hw-belofte{margin:1.3rem 0 1.4rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(1.15rem,2.1vw,1.4rem);letter-spacing:-.02em}
+.hw-hero p.hw-tekst{max-width:44ch;color:#3C424A}
+.hw-cta{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.7rem}
+.hw-visual{position:relative}
+.hw-quote{position:absolute;right:-.4rem;bottom:-1.6rem;width:16rem;background:#fff;border:2px solid var(--inkt);border-radius:16px;padding:1.2rem 1.35rem 1rem;box-shadow:0 14px 34px rgba(20,23,26,.10)}
+.hw-quote .hw-q{font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;font-weight:800;color:var(--blauw);line-height:1;margin-bottom:.3rem}
+.hw-quote p{font-size:.92rem;line-height:1.5;margin-bottom:.6rem}
+.hw-quote .hw-sig{font-family:'Caveat',cursive;font-size:1.45rem}
+@media(max-width:900px){.hw-hero-grid{grid-template-columns:1fr;gap:2.2rem}.hw-quote{position:static;width:100%;margin-top:1.2rem;box-shadow:none}}
+
+.hw-markeer{position:relative;display:inline-block;white-space:nowrap;z-index:0}
+.hw-markeer::before{content:"";position:absolute;left:-.12em;right:-.12em;bottom:.02em;height:.46em;background:var(--geel);border-radius:2px 8px 3px 7px;transform:rotate(-.5deg);z-index:-1}
+
+.hw-stappen{padding:1rem 0 4rem}
+.hw-stappen h2{text-align:center;font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800;margin-bottom:3rem}
+.hw-rij{display:grid;grid-template-columns:repeat(4,1fr)}
+.hw-stap{padding:0 1.5rem}
+.hw-stap+.hw-stap{border-left:1px solid var(--lijn)}
+.hw-kopje{position:relative;margin-bottom:1.2rem}
+.hw-cirkel{width:74px;height:74px;border-radius:50%;background:#F0F2F7;display:flex;align-items:center;justify-content:center}
+.hw-cirkel svg{width:31px;height:31px;stroke:var(--inkt);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hw-nr{position:absolute;left:-6px;top:-6px;width:29px;height:29px;border-radius:50%;background:var(--blauw);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px var(--papier)}
+.hw-stap h3{font-size:1.2rem;font-weight:800;margin-bottom:.5rem}
+.hw-stap p{font-size:.95rem;color:#3C424A;margin-bottom:1rem}
+.hw-res{display:flex;gap:.55rem;align-items:flex-start;font-size:.84rem;border-top:1px solid var(--lijn);padding-top:.85rem}
+.hw-res svg{width:17px;height:17px;flex:none;margin-top:3px;color:var(--blauw)}
+@media(max-width:980px){.hw-rij{grid-template-columns:repeat(2,1fr);row-gap:2.2rem}.hw-stap:nth-child(3){border-left:0}}
+@media(max-width:600px){.hw-rij{grid-template-columns:1fr;row-gap:1.9rem}.hw-stap{padding:0;border-left:0!important}.hw-stap+.hw-stap{border-top:1px solid var(--lijn);padding-top:1.9rem}}
+
+.hw-aanpak{background:#F4F5F8;border:2px solid var(--inkt);border-radius:18px;padding:3rem 0 .5rem;margin-bottom:1.6rem}
+.hw-aanpak h2{text-align:center;font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800;margin-bottom:2.6rem}
+.hw-pijlers{display:grid;grid-template-columns:repeat(6,1fr)}
+.hw-pijler{padding:0 1.2rem 2.4rem;text-align:center}
+.hw-pijler+.hw-pijler{border-left:1px solid var(--lijn)}
+.hw-pijler svg{width:37px;height:37px;stroke:var(--inkt);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-bottom:.9rem}
+.hw-pijler h3{font-size:.95rem;font-weight:800;margin-bottom:.45rem}
+.hw-pijler p{font-size:.82rem;line-height:1.55;color:var(--grijs)}
+@media(max-width:1000px){.hw-pijlers{grid-template-columns:repeat(3,1fr)}.hw-pijler:nth-child(4){border-left:0}}
+@media(max-width:620px){.hw-pijlers{grid-template-columns:repeat(2,1fr)}.hw-pijler:nth-child(3),.hw-pijler:nth-child(5){border-left:0}}
+
+.hw-band{display:flex;align-items:center;gap:1.3rem;background:#F4F5F8;border:2px solid var(--inkt);border-radius:16px;padding:1.5rem 1.7rem;margin-bottom:2.6rem;flex-wrap:wrap}
+.hw-band-icoon{width:50px;height:50px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.hw-band-icoon svg{width:23px;height:23px;stroke:var(--blauw);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hw-band h3{font-size:1.25rem;font-weight:800;margin-bottom:.15rem}
+.hw-band p{font-size:.93rem;color:var(--grijs)}
+.hw-band a{margin-left:auto;white-space:nowrap;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;color:var(--blauw);text-decoration:none}
+.hw-band a:hover{text-decoration:underline}
+@media(max-width:760px){.hw-band a{margin-left:0}}
+
+.hw-scan{background:var(--inkt);color:#fff;border-radius:18px;padding:3rem 2.8rem;margin-bottom:1rem}
+.hw-scan-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:3rem;align-items:center}
+.hw-scan h2{color:#fff;font-size:clamp(1.7rem,3.2vw,2.3rem);font-weight:800;margin-bottom:.8rem}
+.hw-scan .hw-intro{color:rgba(255,255,255,.74);margin-bottom:1.3rem}
+.hw-checks{list-style:none;margin:0 0 1.5rem;display:grid;gap:.6rem}
+.hw-checks li{display:flex;gap:.6rem;align-items:flex-start;font-size:.98rem}
+.hw-checks svg{width:17px;height:17px;flex:none;margin-top:5px;color:var(--geel)}
+.hw-werkwijze{font-family:'Caveat',cursive;font-size:1.35rem;color:var(--geel);margin:-.7rem 0 1.4rem}
+.hw-dag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:1.5rem 1.6rem}
+.hw-dag-kop{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.hw-dag-kop svg{width:21px;height:21px;stroke:var(--geel);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hw-dag-kop h3{font-size:1.05rem;font-weight:800;color:#fff}
+.hw-dag-rij{display:grid;grid-template-columns:64px 1fr;gap:.8rem;padding:.5rem 0;font-size:.95rem;border-top:1px solid rgba(255,255,255,.10)}
+.hw-dag-rij:first-of-type{border-top:0}
+.hw-dag-rij b{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--geel);font-size:.85rem}
+.hw-noot{font-family:'Caveat',cursive;font-size:1.2rem;line-height:1.3;margin-top:1rem;display:flex;gap:.7rem;align-items:flex-start}
+.hw-noot svg{width:44px;height:26px;flex:none;stroke:var(--oranje);fill:none;stroke-width:2;stroke-linecap:round;margin-top:.35rem;transform:rotate(-8deg)}
+@media(max-width:900px){.hw-scan{padding:2.2rem 1.5rem}.hw-scan-grid{grid-template-columns:1fr;gap:2rem}}
+
+.hw-zweef{animation:hwzweef 6s ease-in-out infinite}
+.hw-zweef2{animation:hwzweef 7.5s ease-in-out .8s infinite}
+@keyframes hwzweef{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.hw-toon{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.hw-toon.hw-in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.hw-zweef,.hw-zweef2{animation:none}.hw-toon{opacity:1;transform:none;transition:none}}
+</style>
+<script>
+(function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
+if(Object.keys(u).length)sessionStorage.setItem('bg_utm',JSON.stringify(u));
+if(!sessionStorage.getItem('bg_ref')&&document.referrer)sessionStorage.setItem('bg_ref',document.referrer);}catch(e){}})();
+function bgEvent(n){try{if(window.goatcounter&&goatcounter.count)goatcounter.count({path:n,event:true})}catch(e){}try{if(typeof gtag==='function')gtag('event',String(n).replace(/-/g,'_'))}catch(e){}}
+function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}');u.referrer=sessionStorage.getItem('bg_ref')||'direct';return JSON.stringify(u)}catch(e){return'{}'}}
+</script>
+<script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"ProfessionalService","@id":"https://www.bedrijfsgeheugen.nl/#org","name":"Bedrijfsgeheugen","alternateName":"Bedrijfsgeheugen — digitalisering voor het mkb","url":"https://www.bedrijfsgeheugen.nl/","slogan":"Aanpakken zonder aanmodderen.","description":"Bedrijfsgeheugen is een Nederlands digitaliserings- en AI-adviesbureau voor mkb-bedrijven van 3 tot 250 medewerkers. Het bureau verbindt bestaande systemen zoals AFAS, Exact Online en Microsoft 365 tot één klantoverzicht, zonder een nieuw ERP-systeem in te voeren.","email":"arthur@bedrijfsgeheugen.nl","telephone":"+31627483345","priceRange":"€€","areaServed":{"@type":"Country","name":"Nederland"},"identifier":{"@type":"PropertyValue","name":"KvK","value":"68765428"},"founder":{"@id":"https://www.bedrijfsgeheugen.nl/#arthur"},"sameAs":["https://www.linkedin.com/company/bedrijfsgeheugen"],"knowsAbout":["digitalisering mkb","AFAS koppeling","Exact Online koppeling","Microsoft 365","offerte-opvolging","productieplanning","klantoverzicht","kennisborging","Microsoft Copilot training","ChatGPT","Claude","AI-adoptie","AI-agents","EU AI Act"]},{"@type":"Person","@id":"https://www.bedrijfsgeheugen.nl/#arthur","name":"Arthur Prinsen","jobTitle":"Oprichter en digitaliseringsadviseur","description":"Arthur Prinsen werkt vijftien jaar op het snijvlak van bedrijfsvoering en technologie: AFAS-koppelingen, Microsoft-omgevingen, planning en stuurinformatie.","worksFor":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"url":"https://www.bedrijfsgeheugen.nl/over-ons","knowsAbout":["AFAS","Exact Online","Microsoft 365","Power BI","AI-adoptie in het mkb"]}]}</script>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Hoe het werkt","item":"https://www.bedrijfsgeheugen.nl/hoe-het-werkt"}]}</script>
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/banner-li-bedrijf.jpg">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+<div class="voortgang" id="vg"></div>
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="/hoe-het-werkt" aria-current="page">Hoe het werkt</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="/hoe-het-werkt" aria-current="page">Hoe het werkt</a>
+  <a href="/systemen-koppelen">Systemen koppelen</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
+<main>
+<div class="wrap">
+  <nav class="hw-kruim" aria-label="Kruimelpad">
+    <a href="/">Home</a><span>&rsaquo;</span><span>Hoe het werkt</span>
+  </nav>
+</div>
+
+<section class="hw-hero"><div class="wrap hw-hero-grid">
+  <div>
+    <span class="eyebrow">Hoe het werkt</span>
+    <h1><span>Kijken. Fixen.</span><span>Borgen. Verder.</span></h1>
+    <p class="hw-belofte">Uit hoofden, in je bedrijf. En dan <span class="hw-markeer">werkend</span>.</p>
+    <p class="hw-tekst">Geen maandenlange trajecten. Geen dikke rapporten die in een la verdwijnen. We werken in korte stappen die direct waarde opleveren.</p>
+    <p class="hw-tekst">Eerst begrijpen we waar het schuurt. Dan fixen we het. En zorgen we dat het blijft werken.</p>
+    <div class="hw-cta">
+      <a class="btn blauw" href="/contact" onclick="bgEvent('hoe-het-werkt-meekijken')">Laat Arthur meekijken →</a>
+      <a class="btn" href="#bedrijfsscan">Plan de bedrijfsscan</a>
+    </div>
+  </div>
+
+  <div class="hw-visual">
+    <svg viewBox="0 0 560 440" role="img" aria-label="Illustratie: losse gele briefjes met kennis verlaten iemands hoofd en landen geordend in het bedrijfsgeheugen">
+      <defs><clipPath id="hwHoofd"><path d="M52 196c0-58 47-105 105-105 52 0 96 38 104 88l10 62c1 9-6 17-15 17h-18v34c0 12-10 22-22 22h-58c-10 0-19-8-19-19v-14C79 275 52 239 52 196z"/></clipPath></defs>
+      <g clip-path="url(#hwHoofd)">
+        <rect x="40" y="80" width="280" height="280" fill="#F0F2F7"/>
+        <g class="hw-zweef"><rect x="78" y="128" width="46" height="42" rx="3" fill="#FFE86B" transform="rotate(-13 101 149)"/><path d="M86 143h28M86 152h22" stroke="#14171A" stroke-width="2" stroke-linecap="round" transform="rotate(-13 101 149)" opacity=".65"/></g>
+        <g class="hw-zweef2"><rect x="152" y="112" width="44" height="40" rx="3" fill="#FFE86B" transform="rotate(11 174 132)"/><path d="M160 126h26M160 135h18" stroke="#14171A" stroke-width="2" stroke-linecap="round" transform="rotate(11 174 132)" opacity=".65"/></g>
+        <g><rect x="96" y="196" width="50" height="44" rx="3" fill="#FFE86B" transform="rotate(7 121 218)"/><path d="M104 212h32M104 222h24" stroke="#14171A" stroke-width="2" stroke-linecap="round" transform="rotate(7 121 218)" opacity=".65"/></g>
+        <g class="hw-zweef"><rect x="172" y="196" width="42" height="38" rx="3" fill="#FFE86B" transform="rotate(-8 193 215)"/><path d="M180 209h24M180 218h16" stroke="#14171A" stroke-width="2" stroke-linecap="round" transform="rotate(-8 193 215)" opacity=".65"/></g>
+        <g><rect x="120" y="258" width="46" height="40" rx="3" fill="#FFE86B" transform="rotate(-4 143 278)"/><path d="M128 272h28M128 282h20" stroke="#14171A" stroke-width="2" stroke-linecap="round" transform="rotate(-4 143 278)" opacity=".65"/></g>
+      </g>
+      <path d="M52 196c0-58 47-105 105-105 52 0 96 38 104 88l10 62c1 9-6 17-15 17h-18v34c0 12-10 22-22 22h-58c-10 0-19-8-19-19v-14C79 275 52 239 52 196z" fill="none" stroke="#14171A" stroke-width="3.4" stroke-linejoin="round"/>
+      <text x="156" y="392" text-anchor="middle" font-family="Instrument Sans,Arial" font-size="16" font-weight="500" fill="#5C646E">in hoofden</text>
+      <path d="M292 214c26-30 44-30 66 0" stroke="#FF4F17" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1 9"/>
+      <path d="M352 208l8 6-8 7" stroke="#FF4F17" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <g class="hw-zweef2"><rect x="300" y="150" width="34" height="30" rx="3" fill="#FFE86B" transform="rotate(-16 317 165)"/></g>
+      <rect x="376" y="96" width="164" height="228" rx="14" fill="#fff" stroke="#14171A" stroke-width="2.5"/>
+      <path d="M376 110a14 14 0 0114-14h136a14 14 0 0114 14v26H376z" fill="#2742D6"/>
+      <circle cx="396" cy="116" r="4" fill="#fff" opacity=".85"/><circle cx="410" cy="116" r="4" fill="#fff" opacity=".5"/><circle cx="424" cy="116" r="4" fill="#fff" opacity=".3"/>
+      <rect x="394" y="154" width="128" height="42" rx="7" fill="#FFF7CC" stroke="#F0DE8C"/><path d="M408 170h52M408 180h34" stroke="#14171A" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="504" cy="175" r="9" fill="#2742D6"/><path d="M500 175l3 3 5-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="394" y="208" width="128" height="42" rx="7" fill="#FFF7CC" stroke="#F0DE8C"/><path d="M408 224h44M408 234h58" stroke="#14171A" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="504" cy="229" r="9" fill="#2742D6"/><path d="M500 229l3 3 5-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="394" y="262" width="128" height="42" rx="7" fill="#FFF7CC" stroke="#F0DE8C"/><path d="M408 278h58M408 288h40" stroke="#14171A" stroke-width="2.4" stroke-linecap="round" opacity=".55"/><circle cx="504" cy="283" r="9" fill="#2742D6"/><path d="M500 283l3 3 5-6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="458" y="352" text-anchor="middle" font-family="Instrument Sans,Arial" font-size="16" font-weight="500" fill="#5C646E">in je bedrijf</text>
+    </svg>
+
+    <figure class="hw-quote">
+      <div class="hw-q">&ldquo;</div>
+      <p>Ik help mkb-bedrijven om kennis, processen en systemen zo in te richten dat ze weer werken voor je organisatie.</p>
+      <figcaption class="hw-sig">Arthur</figcaption>
+    </figure>
+  </div>
+</div></section>
+
+<section class="hw-stappen"><div class="wrap">
+  <h2>Vier stappen naar een organisatie die werkt</h2>
+  <div class="hw-rij">
+
+    <article class="hw-stap hw-toon">
+      <div class="hw-kopje">
+        <div class="hw-cirkel"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></div>
+        <span class="hw-nr">1</span>
+      </div>
+      <h3>Kijken</h3>
+      <p>We kijken hoe het werk écht loopt. Waar gaat tijd verloren? Waar zitten handmatige handelingen, afhankelijkheid van mensen of foutgevoelige stappen?</p>
+      <div class="hw-res"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 10.2l2.4 2.4 4.6-5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Resultaat: helder beeld van wat er speelt en wat het kost.</span></div>
+    </article>
+
+    <article class="hw-stap hw-toon">
+      <div class="hw-kopje">
+        <div class="hw-cirkel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5.5a5 5 0 01-6.6 6.6L5.6 19.9a2 2 0 01-2.8-2.8l7.8-7.8A5 5 0 0117.2 2.7l-3 3 2.1 2.1 3-3c.4.5.7 1.1.7 1.7z"/></svg></div>
+        <span class="hw-nr">2</span>
+      </div>
+      <h3>Fixen</h3>
+      <p>We kiezen samen de verbetering met de hoogste impact die praktisch oplosbaar is. En voeren die uit.</p>
+      <div class="hw-res"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 10.2l2.4 2.4 4.6-5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Resultaat: direct merkbare verbetering en minder gedoe.</span></div>
+    </article>
+
+    <article class="hw-stap hw-toon">
+      <div class="hw-kopje">
+        <div class="hw-cirkel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l7.5 3v6c0 4.6-3.1 8.2-7.5 9.4-4.4-1.2-7.5-4.8-7.5-9.4v-6z"/><path d="M8.6 12l2.3 2.3 4.5-5"/></svg></div>
+        <span class="hw-nr">3</span>
+      </div>
+      <h3>Borgen</h3>
+      <p>Wat werkt leggen we vast in processen, systemen en Bedrijfsgeheugen. Duidelijk, actueel en vindbaar.</p>
+      <div class="hw-res"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 10.2l2.4 2.4 4.6-5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Resultaat: kennis en afspraken blijven behouden en worden gebruikt.</span></div>
+    </article>
+
+    <article class="hw-stap hw-toon">
+      <div class="hw-kopje">
+        <div class="hw-cirkel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.5l5.5-5.5 3.5 3.5L20.5 7"/><path d="M15.5 7h5v5"/></svg></div>
+        <span class="hw-nr">4</span>
+      </div>
+      <h3>Verder</h3>
+      <p>Pas daarna pakken we de volgende verbetering aan. Stapsgewijs bouwen we aan een organisatie die blijft leren en verbeteren.</p>
+      <div class="hw-res"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 10.2l2.4 2.4 4.6-5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Resultaat: continue verbetering, geen terugval.</span></div>
+    </article>
+
+  </div>
+</div></section>
+
+<div class="wrap">
+  <section class="hw-aanpak">
+    <h2>Zo pakken we het aan</h2>
+    <div class="hw-pijlers">
+      <div class="hw-pijler">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/></svg>
+        <h3>Samen aan tafel</h3><p>We starten altijd met een gesprek. Over jullie doelen, uitdagingen en wat er nu niet lekker loopt.</p>
+      </div>
+      <div class="hw-pijler">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.6"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg>
+        <h3>Scherp op impact</h3><p>We focussen op problemen met de meeste impact op tijd, geld, kwaliteit of risico's.</p>
+      </div>
+      <div class="hw-pijler">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.5h5v2.2a1.8 1.8 0 103.6 0V9h2.4v5h-2.2a1.8 1.8 0 100 3.6H20v3h-5.5v-2.2a1.8 1.8 0 10-3.6 0V20.5H5.5V15H3.3a1.8 1.8 0 100-3.6h2.2V6h4z"/></svg>
+        <h3>Praktisch &amp; haalbaar</h3><p>We gebruiken wat er al is. Technologie is nooit het doel, maar het middel.</p>
+      </div>
+      <div class="hw-pijler">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V6.5L11 3v18"/><path d="M11 9h8.5v12"/><path d="M7 9.5h1M7 13h1M7 16.5h1M14.5 12.5h1.5M14.5 16h1.5"/></svg>
+        <h3>Klein beginnen</h3><p>We leveren snel een eerste resultaat. Zo zie je meteen wat het oplevert.</p>
+      </div>
+      <div class="hw-pijler">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="2.5" width="15" height="19" rx="2.5"/><path d="M8.5 7.5h7M8.5 11.5h7M8.5 15.5h4"/></svg>
+        <h3>Vastleggen wat telt</h3><p>Kennis, besluiten en afspraken leggen we vast waar je ze hoort te zoeken: in Bedrijfsgeheugen.</p>
+      </div>
+      <div class="hw-pijler">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 01-14.6 5.9"/><path d="M3.5 12a8.5 8.5 0 0114.6-5.9"/><path d="M18.1 2.5v3.6h-3.6M5.9 21.5v-3.6h3.6"/></svg>
+        <h3>Blijven verbeteren</h3><p>We meten, leren en verbeteren. Stap voor stap. Zonder aanmodderen.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="hw-band">
+    <div class="hw-band-icoon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 2.5a6.5 6.5 0 00-3.8 11.8c.5.4.8 1 .8 1.7h6c0-.7.3-1.3.8-1.7A6.5 6.5 0 0012 2.5z"/></svg></div>
+    <div>
+      <h3>Geen dikke plannen. Wel resultaat.</h3>
+      <p>We geloven niet in plannen om te plannen. We geloven in doen wat werkt.</p>
+    </div>
+    <a href="/expertises">Bekijk alle expertises →</a>
+  </section>
+
+  <section class="hw-scan" id="bedrijfsscan">
+    <div class="hw-scan-grid">
+      <div>
+        <h2>Eerst weten wat er écht speelt?</h2>
+        <p class="hw-intro">Met de bedrijfsscan krijg je in één dag helderheid over de grootste knelpunten, de impact ervan en de beste eerste stap.</p>
+        <ul class="hw-checks">
+          <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Eerlijk en onafhankelijk advies</li>
+          <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Concreet plan met prioriteiten</li>
+          <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Vaste prijs vooraf: € 2.900 excl. btw · volledig verrekend bij vervolg</li>
+        </ul>
+        <p class="hw-werkwijze">Strak geregeld. Zonder traject.</p>
+        <a class="btn oranje" href="/contact" onclick="bgEvent('hoe-het-werkt-bedrijfsscan')">Vraag de bedrijfsscan aan →</a>
+      </div>
+
+      <div class="hw-dag">
+        <div class="hw-dag-kop">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+          <h3>Hoe ziet zo'n dag eruit?</h3>
+        </div>
+        <div class="hw-dag-rij"><b>09:00</b><span>Start &amp; kennismaking</span></div>
+        <div class="hw-dag-rij"><b>09:30</b><span>Interviews &amp; analyse</span></div>
+        <div class="hw-dag-rij"><b>12:30</b><span>Lunch &amp; verdieping</span></div>
+        <div class="hw-dag-rij"><b>13:15</b><span>Analyse &amp; prioritering</span></div>
+        <div class="hw-dag-rij"><b>16:00</b><span>Terugkoppeling &amp; advies</span></div>
+        <div class="hw-noot">
+          <svg viewBox="0 0 48 28" aria-hidden="true"><path d="M2 4c14 16 30 20 44 20"/><path d="M38 20l8 4-6 4"/></svg>
+          <span>Je krijgt geen rapport van 80 slides.<br>Je krijgt heldere antwoorden en concrete vervolgstappen.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var els=document.querySelectorAll('.hw-toon');
+  if(!('IntersectionObserver' in window)){[].forEach.call(els,function(e){e.classList.add('hw-in')});return;}
+  var io=new IntersectionObserver(function(en){en.forEach(function(x,i){if(x.isIntersecting){var el=x.target;setTimeout(function(){el.classList.add('hw-in')},i*90);io.unobserve(el);}})},{threshold:.18});
+  [].forEach.call(els,function(e){io.observe(e)});
+})();
+</script>
+
+</main>
+<footer>
+<div class="wrap">
+  <div class="fg">
+    <div>
+      <a class="logo voet" href="/" aria-label="Bedrijfsgeheugen.nl">
+        <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+        <span class="woord">Bedrijfs<b>geheugen</b></span>
+      </a>
+      <p style="font-size:.86rem;margin-top:.7rem;line-height:1.6">Jouw bedrijf. Jouw kennis. En voor altijd. Bedrijfsgeheugen helpt organisaties hun kennis te borgen, veilig te verrijken en direct beschikbaar te maken.</p>
+    </div>
+    <div><h4>Product</h4>
+      <a href="/connect">Connect</a><a href="/#hoe">Hoe het werkt</a><a href="/expertises">Expertises</a><a href="/systemen-koppelen">Systemen koppelen</a><a href="/blog/afas-koppeling/">AFAS koppeling</a></div>
+    <div><h4>Resources</h4>
+      <a href="/zelfscan">Gratis zelfscan</a><a href="/frisse-blik">Frisse blik</a><a href="/blog/">Blog</a></div>
+    <div><h4>Over ons</h4>
+      <a href="/over-ons">Over Arthur</a><a href="/hoe-het-werkt">Werkwijze</a><a href="/contact">Contact</a></div>
+    <div><h4>Contact</h4>
+      <a href="tel:+31627483345">06 - 27 48 33 45</a>
+      <a href="mailto:info@bedrijfsgeheugen.nl">info@bedrijfsgeheugen.nl</a>
+      <a href="https://wa.me/31627483345" target="_blank" rel="noopener">WhatsApp →</a>
+      <a href="/privacy">Privacyverklaring</a></div>
+  </div>
+  <div class="fb"><span>© <span class="jr">2026</span> Bedrijfsgeheugen · Aanpakken zonder aanmodderen.</span><span>Den Haag · info@bedrijfsgeheugen.nl</span></div>
+</div>
+</footer>
+<a class="wa" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag%20over%20Bedrijfsgeheugen" target="_blank" rel="noopener" aria-label="App Arthur via WhatsApp">
+<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg><span class="tx">App Arthur</span></a>
+<script>
+(function(){var n=document.querySelector('nav');addEventListener('scroll',function(){n.classList.toggle('scrolled',scrollY>10)},{passive:true});
+var j=document.querySelectorAll('.jr');var y=new Date().getFullYear();j.forEach(function(e){e.textContent=y});})();
+</script>
+<!-- Cookiebanner (AVG/GDPR) — toestemming voor Google Analytics -->
+<style>
+#bgCookie{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:99999;max-width:660px;margin:0 auto;background:#fff;color:#16213e;border:1px solid #e4e4ec;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.20);padding:1.15rem 1.25rem;font:400 .92rem/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:none}
+#bgCookie.bgShow{display:block}
+#bgCookie h4{margin:0 0 .45rem;font-size:1.02rem;font-weight:700}
+#bgCookie p{margin:0}
+#bgCookie a{color:var(--blauw,#1a56db);text-decoration:underline}
+#bgCookie .bgBtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.95rem}
+#bgCookie button{flex:1 1 auto;min-width:140px;padding:.72rem 1rem;border-radius:9px;border:1.5px solid var(--blauw,#1a56db);font-weight:700;cursor:pointer;font-size:.92rem;font-family:inherit}
+#bgCookie .bgAccept{background:var(--blauw,#1a56db);color:#fff}
+#bgCookie .bgDeny{background:#fff;color:var(--blauw,#1a56db)}
+#bgCookie button:focus-visible{outline:3px solid rgba(26,86,219,.4);outline-offset:2px}
+@media(max-width:520px){#bgCookie .bgBtns{flex-direction:column-reverse}}
+</style>
+<div id="bgCookie" role="dialog" aria-label="Cookiemelding" aria-describedby="bgCookieTxt">
+  <h4>🍪 Cookies &amp; privacy</h4>
+  <p id="bgCookieTxt">Bedrijfsgeheugen gebruikt noodzakelijke cookies voor een goede werking van de site. Met jouw toestemming gebruiken we ook analytische cookies (Google Analytics) om te meten hoe de site wordt gebruikt en die te verbeteren. Je keuze wordt onthouden en je kunt 'm altijd wijzigen. Meer weten? Zie onze <a href="/privacy">privacyverklaring</a>.</p>
+  <div class="bgBtns">
+    <button type="button" class="bgDeny" id="bgCookieDeny">Alleen noodzakelijk</button>
+    <button type="button" class="bgAccept" id="bgCookieAccept">Accepteren</button>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='bg_consent';
+  function applyConsent(state){try{if(typeof gtag==='function'){gtag('consent','update',{analytics_storage:(state==='granted'?'granted':'denied'),ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});}}catch(e){}}
+  function el(){return document.getElementById('bgCookie');}
+  function show(){var b=el();if(b)b.classList.add('bgShow');}
+  function hide(){var b=el();if(b)b.classList.remove('bgShow');}
+  function choose(state){try{localStorage.setItem(KEY,state);localStorage.setItem(KEY+'_ts',new Date().toISOString());}catch(e){}applyConsent(state);hide();}
+  window.bgOpenCookies=function(){show();};
+  document.addEventListener('DOMContentLoaded',function(){
+    var a=document.getElementById('bgCookieAccept'),d=document.getElementById('bgCookieDeny');
+    if(a)a.addEventListener('click',function(){choose('granted');});
+    if(d)d.addEventListener('click',function(){choose('denied');});
+    var stored=null;try{stored=localStorage.getItem(KEY);}catch(e){}
+    if(stored!=='granted'&&stored!=='denied'){show();}
+  });
+})();
+</script>
+<script src="/assets/stijl.js" defer></script>
+</body>
+</html>

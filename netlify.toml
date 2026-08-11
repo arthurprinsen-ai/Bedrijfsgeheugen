@@ -11,6 +11,12 @@
   force = true
 
 [[redirects]]
+  from = "/hoe-het-werkt.html"
+  to = "/hoe-het-werkt"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/expertises.html"
   to = "/expertises"
   status = 301
