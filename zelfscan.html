@@ -59,8 +59,8 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 .stapje{display:none}
 .stapje.actief{display:block;animation:fadein .3s ease}
 @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.voortgang{height:8px;background:#EDEBE4;border-radius:99px;margin:1.4rem 0 2rem;overflow:hidden}
-.voortgang i{display:block;height:100%;background:var(--blauw);border-radius:99px;transition:width .3s ease;width:0}
+.stapbalk{height:8px;background:#EDEBE4;border-radius:99px;margin:1.4rem 0 2rem;overflow:hidden}
+.stapbalk i{display:block;height:100%;background:var(--blauw);border-radius:99px;transition:width .3s ease;width:0}
 .vraagnr{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--oranje-t)}
 .vraag h2{font-size:1.5rem;margin:.5rem 0 1.4rem}
 .optie{display:block;width:100%;text-align:left;background:var(--papier);border:2px solid var(--inkt);border-radius:12px;padding:1rem 1.15rem;font:inherit;font-weight:600;cursor:pointer;margin-bottom:.7rem;transition:transform .12s,background .12s}
@@ -207,7 +207,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <!-- VRAGEN (worden door JS gevuld) -->
   <section class="stapje" id="s-vraag">
     <span class="vraagnr" id="vnr"></span>
-    <div class="voortgang"><i id="vbalk"></i></div>
+    <div class="stapbalk"><i id="vbalk"></i></div>
     <div class="vraag"><h2 id="vtekst"></h2><div id="vopties"></div></div>
     <button class="terug" onclick="terug()">← vorige vraag</button>
   </section>
