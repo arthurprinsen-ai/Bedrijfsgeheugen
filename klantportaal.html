@@ -55,7 +55,7 @@ footer{border-top:2px solid var(--inkt);padding:1.4rem 0;font-size:.86rem;color:
       <input type="text" id="fKlant" placeholder="bedrijfsnaam">
       <button class="knop" id="bOk">Bekijken</button>
     </div>
-    <p class="sub" style="margin-top:.6rem">Je kunt ook rechtstreeks naar <code>?klant=jouwbedrijf</code>.</p>
+    <p class="sub" style="margin-top:.6rem">Je kunt ook rechtstreeks naar <code>?klant=jouwbedrijf</code>. Benieuwd hoe het eruitziet? <a href="?klant=demo">Bekijk een voorbeeld</a>.</p>
   </div>
 
   <div id="inhoud"></div>
@@ -100,7 +100,7 @@ function toon(d){
    +'<div class="kaart"><h3>Wat er draait</h3>'
    + (draait.length? draait.map(function(k){
        return '<div class="rij"><span class="bol" style="background:var(--groen)"></span>'
-        +'<div><b>'+k.titel+'</b><div class="sub">'+k.van+' \\u2192 '+k.naar+' \\u00b7 gebouwd met '+(k.middel||'\\u2014')+'</div>'
+        +'<div><b>'+k.titel+'</b><div class="sub">'+k.van+' → '+k.naar+' · gebouwd met '+(k.middel||'—')+'</div>'
         +(k.notitie?'<div class="sub">'+k.notitie+'</div>':'')+'</div>'
         +'<div style="text-align:right">'+pil('Draait')+'<div class="sub" style="margin-top:.25rem">'+Math.round(k.besparing||0)+' uur p.j.</div></div></div>';
       }).join('') : '<p class="sub">Nog niets live.</p>')
@@ -109,7 +109,7 @@ function toon(d){
    + (bouw.length? '<div class="kaart"><h3>Waar we nu aan werken</h3>'
       + bouw.map(function(k){
          return '<div class="rij"><span class="bol" style="background:var(--blauw)"></span>'
-          +'<div><b>'+k.titel+'</b><div class="sub">'+k.van+' \\u2192 '+k.naar+' \\u00b7 '+(k.middel||'\\u2014')+'</div>'
+          +'<div><b>'+k.titel+'</b><div class="sub">'+k.van+' → '+k.naar+' · '+(k.middel||'—')+'</div>'
           +(k.notitie?'<div class="sub">'+k.notitie+'</div>':'')
           +'<div class="balk"><div style="width:'+Math.min(100,(+k.uren||0)/8*100)+'%"></div></div>'
           +'<div class="sub">'+(+k.uren||0)+' uur besteed</div></div>'
@@ -119,7 +119,7 @@ function toon(d){
    +'<div class="kaart"><h3>Alles op een rij</h3>'
    + K.map(function(k){
       return '<div class="rij"><span class="bol" style="background:'+(KL[k.status]||KL['Idee'])[0]+'"></span>'
-       +'<div><b>'+k.titel+'</b><div class="sub">'+(k.middel||'\\u2014')+' \\u00b7 '+(+k.uren||0)+' uur</div></div>'
+       +'<div><b>'+k.titel+'</b><div class="sub">'+(k.middel||'—')+' · '+(+k.uren||0)+' uur</div></div>'
        +'<div>'+pil(k.status)+'</div></div>';
      }).join('')
    +'</div>'
@@ -140,17 +140,17 @@ function toon(d){
    +'Klopt er iets niet, zeg het \u2014 dan halen we het eraf. Werk onder twee uur brengen we niet in rekening.</p>'
    +'</div>'
 
-   +'<div class="let"><b>Wat die uren betekenen.</b> De uren die vrijkomen zijn geen geld dat binnenkomt \\u2014 jullie mensen blijven. '
+   +'<div class="let"><b>Wat die uren betekenen.</b> De uren die vrijkomen zijn geen geld dat binnenkomt — jullie mensen blijven. '
    +'Het is ruimte: hetzelfde team kan meer aan zonder dat er iemand bij hoeft. Wat dat waard is, bepalen jullie zelf.</div>'
 
    +'<div class="kaart"><h3>Storingen en meldingen</h3>'
-   +'<p class="sub">Valt er iets stil, dan zie je dat hier \\u2014 en krijg je bericht v\\u00f3\\u00f3rdat je klant het merkt. '
+   +'<p class="sub">Valt er iets stil, dan zie je dat hier — en krijg je bericht vóórdat je klant het merkt. '
    +'Op dit moment zijn er <b>geen storingen</b> gemeld.</p>'
    +'<p class="sub" style="margin-top:.5rem">Merk je zelf iets? Bel of mail gerust. Onder de twee uur werk brengen we niets in rekening.</p></div>';
 }
 
 function haal(naam){
-  document.getElementById('inhoud').innerHTML='<div class="kaart"><p class="sub">Ophalen\\u2026</p></div>';
+  document.getElementById('inhoud').innerHTML='<div class="kaart"><p class="sub">Ophalen…</p></div>';
   fetch(HOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({klant:naam})})
     .then(r=>r.json()).then(toon)
     .catch(function(){
@@ -158,7 +158,42 @@ function haal(naam){
     });
 }
 
-if(klant){ haal(klant); }
+
+const DEMO={
+ klant:'Van Dijk Techniek (voorbeeld)',
+ tarief:200,
+ koppelingen:[
+  {titel:'Webshoporder wordt verkooporder',van:'Webshop',naar:'Exact Online',middel:'Make',
+   notitie:'Order, klant en regels komen binnen zonder overtypen. Ook bij spoedorders.',
+   status:'Draait',uren:6.5,besparing:120,gefactureerd:1300},
+  {titel:'Offertes volgen zichzelf op',van:'AFAS',naar:'Teams',middel:'Power Automate',
+   notitie:'Na vijf dagen stilte een herinnering bij de verkoper, met de offerte erbij.',
+   status:'Draait',uren:4,besparing:80,gefactureerd:800},
+  {titel:'Inkoopfacturen worden ingelezen',van:'Mailbox',naar:'Exact Online',middel:'Make + AI',
+   notitie:'Leverancier, bedrag en btw eruit gehaald; twijfelgevallen gaan naar Finance.',
+   status:'Draait',uren:5.5,besparing:95,gefactureerd:1100},
+  {titel:'Werkbon naar planning',van:'Formulier',naar:'Planning',middel:'Make',
+   notitie:'Monteur vult op locatie in, de planner ziet het direct.',
+   status:'In aanbouw',uren:3.2,besparing:60,gefactureerd:0},
+  {titel:'Websiteaanvraag wordt klantkaart',van:'Website',naar:'AFAS',middel:'Make',
+   status:'Voorgesteld',uren:0,besparing:40,gefactureerd:0},
+  {titel:'Uren naar het loonjournaal',van:'Urenapp',naar:'Exact Online',middel:'nog te bepalen',
+   status:'Idee',uren:0,besparing:0,gefactureerd:0}
+ ]
+};
+
+function toonDemo(){
+  const d=JSON.parse(JSON.stringify(DEMO));
+  d.opgehaald=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
+  toon(d);
+  document.getElementById('inhoud').insertAdjacentHTML('afterbegin',
+    '<div class="let" style="margin-bottom:1rem"><b>Dit is een voorbeeld.</b> '
+   +'Van Dijk Techniek bestaat niet en alle koppelingen, uren en bedragen zijn verzonnen. '
+   +'Zo ziet jouw portaal eruit zodra we voor je aan de slag zijn.</div>');
+}
+
+if(klant==='demo'||params.get('demo')){ toonDemo(); }
+else if(klant){ haal(klant); }
 else{
   document.getElementById('zoek').hidden=false;
   document.getElementById('bOk').addEventListener('click',function(){
