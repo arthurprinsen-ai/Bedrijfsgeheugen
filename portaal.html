@@ -5971,6 +5971,137 @@ label.np-veld-in::after{content:" \2713";color:#1F9D55;font-weight:700}
 })();
 </script>
 
+<!-- ══ wat ontbreekt er, en waar vul je het in ══ -->
+<style id="np-mist-stijl">
+.np-mist{border-left:4px solid var(--oranje,#FF4F17);background:#FFF7F3;border-radius:0 8px 8px 0;
+  padding:.7rem .85rem;margin:.5rem 0 0;font-size:.86rem;line-height:1.55}
+.np-mist b{display:block;margin-bottom:.15rem}
+.np-mist .np-knopje{display:inline-flex;align-items:center;gap:.35rem;margin-top:.5rem;background:var(--blauw,#2742D6);
+  color:#fff;border:0;border-radius:8px;padding:.35rem .7rem;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none}
+.np-mist .np-knopje:hover{filter:brightness(1.08)}
+.np-veld-licht{animation:npLicht 2.4s ease}
+@keyframes npLicht{0%,60%{box-shadow:0 0 0 4px rgba(255,79,23,.35)}100%{box-shadow:0 0 0 0 rgba(255,79,23,0)}}
+</style>
+<script>
+/* Lege blokken zeggen nu wélke cijfers ze missen en brengen je met één klik
+   naar het juiste veld op het invulscherm. */
+(function(){
+ /* wat een blok nodig heeft: containerId -> [uitleg, veld-ids] */
+ var NODIG={
+  wWaarde:['je omzet en je EBITDA',['cOmzet','cEbitda']],
+  wGezond:['je schuld, liquide middelen en eigen vermogen',['wSchuld','wCash','wEV']],
+  wDupont:['je omzet, EBITDA en balanstotaal',['cOmzet','cEbitda','wBalans']],
+  wGevoel:['je omzet en je EBITDA',['cOmzet','cEbitda']],
+  wBreak:['je omzet, brutomarge en vaste kosten',['cOmzet','cBrutomarge','wVast']],
+  wRuntime:['je liquide middelen en vaste kosten',['wCash','wVast']],
+  cGrafiek:['je omzet en marge',['cOmzet','cBrutomarge']],
+  cKpis:['je bedrijfscijfers',['cOmzet','cBrutomarge','cEbitda']],
+  cDuiding:['je bedrijfscijfers',['cOmzet','cEbitda']],
+  mGrafiek:['je verzuim- en verloopcijfers',['mVerzuim','mVerloop']],
+  mUitleg:['je verzuim- en verloopcijfers',['mVerzuim','mVerloop']],
+  bGrafiek:['je omzet',['cOmzet']],
+  bcGraf:['je omzet en je EBITDA',['cOmzet','cEbitda']],
+  bOmzet:['je omzet',['cOmzet']]
+ };
+ var VELDNAAM={cOmzet:'Omzet',cBrutomarge:'Brutomarge',cEbitda:'EBITDA',cLoon:'Loonkosten',
+  cKlanten:'Aantal klanten',cGrootste:'Grootste klant',cDso:'Debiteurendagen',cIt:'IT-budget',
+  wSchuld:'Rentedragende schuld',wCash:'Liquide middelen',wEV:'Eigen vermogen',wBalans:'Balanstotaal',
+  wVast:'Vaste kosten',wRente:'Rente en aflossing',mVerzuim:'Ziekteverzuim',mVerloop:'Verloop'};
+
+ function leegVeld(id){
+  var e=document.getElementById(id);
+  if(!e) return true;
+  return String(e.value||'').trim()==='' || +e.value===0;
+ }
+ function knop(velden){
+  var open=velden.filter(leegVeld);
+  var doel=open[0]||velden[0];
+  return '<button class="np-knopje" data-naarveld="'+doel+'">Invullen bij Je gegevens \u2192</button>';
+ }
+
+ /* Is een kaart leeg? Kop, inleiding en onze eigen melding tellen niet mee. */
+ function isLeeg(kaart){
+  var kopie=kaart.cloneNode(true);
+  Array.prototype.forEach.call(kopie.querySelectorAll('h2,h3,h4,.np-mist,.np-sleep,.greep,.bron'),function(x){x.remove();});
+  var subs=kopie.querySelectorAll('.sub');
+  if(subs.length) subs[0].remove();
+  var tekst=(kopie.textContent||'').replace(/\s+/g,' ').trim();
+  var svgVol=Array.prototype.some.call(kaart.querySelectorAll('svg'),function(sv){
+    if(sv.closest('.np-sleep')||sv.closest('.greep')) return false;   // de sleepgreep telt niet mee
+    return sv.children.length>0;
+  });
+  var invoer=kaart.querySelector('input,select,textarea,label');
+  return tekst.length<12 && !svgVol && !invoer;
+ }
+
+ function plaats(kaart,el){
+  var na=kaart.querySelector('.sub')||kaart.querySelector('h3')||kaart.querySelector('h2');
+  if(na) na.insertAdjacentElement('afterend',el); else kaart.appendChild(el);
+ }
+ function melding(kaart, uitleg, velden){
+  var oud=kaart.querySelector('.np-mist'); if(oud) oud.remove();
+  var el=document.createElement('div'); el.className='np-mist';
+  el.innerHTML='<b>Hier ontbreken nog cijfers.</b>'
+   +'Zodra '+uitleg+' is ingevuld, verschijnt hier de uitkomst.'
+   +(velden&&velden.length? '<br><span style="color:var(--grijs,#5C646E);font-size:.8rem">Nog leeg: '
+      + velden.filter(leegVeld).map(function(v){return VELDNAAM[v]||v;}).join(', ') + '</span>' : '')
+   + (velden&&velden.length? '<div>'+knop(velden)+'</div>' : '');
+  plaats(kaart,el);
+ }
+
+ function loop(){
+  var panelen=document.querySelectorAll('#portaal .paneel');
+  Array.prototype.forEach.call(panelen,function(pa){
+   if(pa.id==='p-invoeren') return;
+   Array.prototype.forEach.call(pa.querySelectorAll('.kaart'),function(k){
+    /* specifieke blokken met een bekende gegevensbehoefte */
+    var gevonden=null;
+    for(var id in NODIG){ if(k.querySelector('#'+id)) { gevonden=id; break; } }
+    var tekst=(k.textContent||'').replace(/\s+/g,' ').trim();
+    var vraagt=/vul (eerst |je |aan )/i.test(tekst) && tekst.length<220;
+    var leeg=isLeeg(k)||vraagt;
+    if(!leeg){ var w=k.querySelector('.np-mist'); if(w) w.remove(); return; }
+    if(gevonden) melding(k, NODIG[gevonden][0], NODIG[gevonden][1]);
+    else {
+      var oud=k.querySelector('.np-mist'); if(oud) return;
+      var el=document.createElement('div'); el.className='np-mist';
+      el.innerHTML='<b>Hier staat nog niets.</b>Dit blok vult zich zodra de bijbehorende gegevens zijn ingevuld.'
+       +'<div><button class="np-knopje" data-naarveld="cOmzet">Naar Je gegevens \u2192</button></div>';
+      plaats(k,el);
+    }
+   });
+  });
+ }
+
+ document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('[data-naarveld]');
+  if(!b) return;
+  e.preventDefault();
+  var t=document.querySelector('.tab[data-p="invoeren"]');
+  if(t) t.click();
+  setTimeout(function(){
+   var v=document.getElementById(b.dataset.naarveld);
+   if(v){
+     v.scrollIntoView({block:'center',behavior:'smooth'});
+     v.classList.add('np-veld-licht');
+     try{ v.focus({preventScroll:true}); }catch(x){ v.focus(); }
+     setTimeout(function(){ v.classList.remove('np-veld-licht'); },2600);
+   }
+  },160);
+ });
+
+ function haak(){
+  if(typeof teken!=='function'){ setTimeout(haak,200); return; }
+  if(teken.__mist) return;
+  var oud=teken;
+  teken=function(){ var r=oud.apply(this,arguments); try{ setTimeout(loop,30); }catch(e){} return r; };
+  teken.__mist=1;
+  setTimeout(loop,600);
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',haak); else haak();
+})();
+</script>
+
 <!-- ══ nieuwe portaalskin ══ -->
 <style id="np-skin">
 :root{
@@ -6030,7 +6161,9 @@ body{background:var(--np-vlak)}
   text-align:left!important;display:flex!important;flex-direction:column;gap:.15rem;position:relative;justify-content:flex-end}
 .np-app .samenvatting .blok .np-meter{margin:0 auto .3rem}
 .np-app .samenvatting .blok .np-meter svg{width:118px}
-.np-app .samenvatting .blok span{order:1;font-size:.72rem!important;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--np-grijs)}
+.np-app .samenvatting .blok>span{order:1;font-size:.72rem!important;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--np-grijs)}
+.np-app .samenvatting .blok .np-bij{text-transform:none!important;font-weight:500!important;letter-spacing:0!important;font-size:.78rem!important}
+.np-app .samenvatting .blok .np-graf span{text-transform:none!important;font-weight:500!important;letter-spacing:0!important;font-size:.66rem!important;order:0!important}
 .np-app .samenvatting .blok b{order:2;font-family:'Bricolage Grotesque',sans-serif;font-size:1.9rem!important;letter-spacing:-.03em;line-height:1.05}
 .np-app .samenvatting .blok .np-bij{order:3;font-size:.8rem;color:var(--np-grijs)}
 .np-app .samenvatting .blok .np-meter{order:0;align-self:center;margin-bottom:.2rem}
@@ -6311,6 +6444,7 @@ body{background:var(--np-vlak)}
    rij.style.display='none';
  }
 
+ function eurNp(v){ return '\u20ac '+Math.round(v||0).toLocaleString('nl-NL'); }
  function getal(t){
    var x=String(t||'').replace(/[^0-9.,-]/g,'');
    if(x.indexOf(',')>=0) x=x.replace(/\./g,'').replace(',','.');
@@ -6338,17 +6472,26 @@ body{background:var(--np-vlak)}
        });
      }
      if(posten.length){
-       var max=Math.max.apply(null,posten.map(function(x){return x.v;}));
        var kleuren=['#FF4F17','#2742D6','#1F9D55','#C2410C','#5C646E'];
-       var w=180,h=52,bb=(w-((posten.length-1)*8))/posten.length;
-       var st=posten.map(function(x,i){
-         var hoogte=Math.max(4,(x.v/max)*(h-6));
-         return '<rect x="'+(i*(bb+8)).toFixed(1)+'" y="'+(h-hoogte).toFixed(1)+'" width="'+bb.toFixed(1)+'" height="'+hoogte.toFixed(1)+'" rx="3" fill="'+kleuren[i%kleuren.length]+'"><title>'+x.n+'</title></rect>';
-       }).join('');
-       grafVak(blokken[1],'<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="max-width:180px" role="img" aria-label="De grootste kostenposten in verhouding">'+st+'</svg>');
+       var tot=posten.reduce(function(a,x){return a+x.v;},0)||1;
+       var w=176,h=13,x0=0,st='';
+       posten.forEach(function(x,i){
+         var br=Math.max(3,(x.v/tot)*w);
+         st+='<rect x="'+x0.toFixed(1)+'" y="0" width="'+br.toFixed(1)+'" height="'+h+'" fill="'+kleuren[i%kleuren.length]+'">'
+            +'<title>'+x.n+': '+eurNp(x.v)+' per jaar</title></rect>';
+         x0+=br;
+       });
+       grafVak(blokken[1],
+         '<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="max-width:176px;border-radius:4px;overflow:hidden" role="img" aria-label="Verdeling van de grootste kostenposten">'+st+'</svg>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.1rem .5rem;margin-top:.35rem">'
+        + posten.map(function(x,i){
+            return '<span style="display:flex;align-items:center;gap:.25rem;font-size:.68rem;color:var(--np-grijs,#5C646E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'
+             +'<span style="width:7px;height:7px;border-radius:2px;flex:none;background:'+kleuren[i%kleuren.length]+'"></span>'+x.n+'</span>';
+          }).join('')
+        +'</div>');
        var bij1=blokken[1].querySelector('.np-bij');
        if(!bij1){bij1=document.createElement('span');bij1.className='np-bij';blokken[1].appendChild(bij1);}
-       bij1.textContent='grootste post: '+posten[0].n.toLowerCase();
+       bij1.textContent='verdeeld over je vier duurste onderdelen';
      }
    }
    /* fte kwijt: ring van het aandeel in de bezetting */
@@ -6364,7 +6507,7 @@ body{background:var(--np-vlak)}
         +'<text x="34" y="38" text-anchor="middle" font-family="Instrument Sans,sans-serif" font-size="13" font-weight="700" fill="#14171A">'+Math.round(deel*100)+'%</text></svg>');
        var bij2=blokken[2].querySelector('.np-bij');
        if(!bij2){bij2=document.createElement('span');bij2.className='np-bij';blokken[2].appendChild(bij2);}
-       bij2.textContent='van '+mensen+' mensen';
+       bij2.textContent=fte.toString().replace('.',',')+' fte van '+mensen+' mensen';
      }
    }
    /* branche: jouw niveau naast dat van je branche */
@@ -6383,8 +6526,8 @@ body{background:var(--np-vlak)}
        var bij3=blokken[3].querySelector('.np-bij');
        if(!bij3){bij3=document.createElement('span');bij3.className='np-bij';blokken[3].appendChild(bij3);}
        var v=(br-niveau);
-       bij3.textContent = Math.abs(v)<0.05 ? 'gelijk aan je branche'
-         : (v>0? v.toFixed(1)+' niveau boven jou' : Math.abs(v).toFixed(1)+' niveau onder jou');
+       bij3.textContent = Math.abs(v)<0.05 ? 'je branche staat er even goed voor'
+         : (v>0? 'je branche staat '+v.toFixed(1).replace('.',',')+' niveau hoger' : 'je staat '+Math.abs(v).toFixed(1).replace('.',',')+' niveau hoger dan je branche');
      }
    }
  }
