@@ -5541,5 +5541,257 @@ function vraagToegang(daarna){
 <a class="wa-knop" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag" target="_blank" rel="noopener" aria-label="App Arthur via WhatsApp"><svg viewBox="0 0 32 32" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg></a>
 <style>.wa-knop{position:fixed;right:1rem;bottom:1rem;z-index:80;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 6px 20px rgba(20,23,26,.22);text-decoration:none}
 @media(max-width:720px){.wa-knop{bottom:calc(1rem + env(safe-area-inset-bottom,0px))}}</style>
+<!-- ══ nieuwe portaalskin ══ -->
+<style id="np-skin">
+:root{
+  --np-vlak:#F6F7FA; --np-lijn:#E6E8EE; --np-inkt:#141B2E; --np-grijs:#69707D;
+  --np-blauw:#2742D6; --np-blauwl:#EDF0FD; --np-groen:#17936B; --np-groenl:#E6F5EF;
+  --np-amber:#B4780B; --np-amberl:#FDF3E0; --np-zij:256px;
+}
+body{background:var(--np-vlak)}
+.np-app{display:grid;grid-template-columns:var(--np-zij) 1fr;min-height:100vh;align-items:start}
+.np-zijbalk{background:#fff;border-right:1px solid var(--np-lijn);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.np-merk{display:flex;align-items:center;gap:.55rem;padding:1rem 1.15rem;border-bottom:1px solid var(--np-lijn)}
+.np-merk{flex-direction:column;align-items:flex-start;gap:.1rem}
+.np-merk .logo{font-size:.95rem!important;gap:.5rem!important;color:var(--np-inkt)!important;text-decoration:none!important}
+.np-merk .logo b{color:var(--np-blauw)!important}
+.np-merk .logo svg{width:26px!important;height:26px!important}
+.np-merk small{display:block;font-size:.64rem;letter-spacing:.16em;color:var(--np-grijs);font-weight:700}
+.np-zijbalk .zijlijst{display:block!important;padding:.6rem .65rem;flex:1}
+.np-zijbalk .groep{display:block;margin:.8rem .55rem .25rem!important;font-size:.63rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A2A8B4}
+.np-zijbalk .tab{display:flex!important;align-items:center;gap:.6rem;width:100%;text-align:left;border:0!important;background:none!important;
+  border-radius:9px!important;padding:.47rem .6rem!important;font-size:.85rem!important;font-weight:500;color:#3B4252;margin-bottom:1px}
+.np-zijbalk .tab:hover{background:var(--np-vlak)!important}
+.np-zijbalk .tab[aria-selected="true"]{background:var(--np-blauw)!important;color:#fff!important;font-weight:600}
+.np-zijbalk .tab svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.np-zijbalk .tab.licht{color:var(--np-grijs)}
+.np-zijvoet{border-top:1px solid var(--np-lijn);padding:.6rem .65rem}
+.np-zijvoet .sitenav{display:flex!important;flex-direction:column;gap:.1rem}
+.np-zijvoet .sitenav a{padding:.4rem .6rem;border-radius:8px;font-size:.82rem!important;font-weight:500!important;color:var(--np-grijs)!important}
+.np-zijvoet .sitenav a:hover{background:var(--np-vlak);color:var(--np-inkt)!important}
+.np-hoofd{min-width:0}
+.np-balk{background:#fff;border-bottom:1px solid var(--np-lijn);display:flex;align-items:center;gap:.7rem;padding:.55rem 1.3rem;position:sticky;top:0;z-index:25}
+.np-zoek{flex:1;max-width:420px;margin-left:auto;position:relative}
+.np-zoek input{width:100%;border:1px solid var(--np-lijn);background:var(--np-vlak);border-radius:9px;padding:.45rem .8rem .45rem 2.1rem;font:inherit;font-size:.85rem}
+.np-zoek input:focus{outline:0;border-color:var(--np-blauw);background:#fff}
+.np-zoek svg{position:absolute;left:.65rem;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--np-grijs);fill:none;stroke-width:1.8}
+.np-zoeklijst{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--np-lijn);border-radius:12px;
+  box-shadow:0 14px 34px rgba(20,27,46,.13);padding:.35rem;max-height:320px;overflow:auto;z-index:40}
+.np-zoeklijst button{display:block;width:100%;text-align:left;padding:.45rem .55rem;border:0;background:none;border-radius:8px;font:inherit;font-size:.84rem;cursor:pointer}
+.np-zoeklijst button:hover{background:var(--np-vlak)}
+.np-zoeklijst .np-leeg{padding:.55rem;color:var(--np-grijs);font-size:.84rem}
+.np-app .kopacties{margin-left:0}
+.np-app .kopacties button,.np-app .kopacties label{border-radius:9px!important;padding:.45rem .55rem!important}
+#fbKnop{position:fixed!important;right:16px!important;bottom:16px!important;top:auto!important;z-index:55!important;border-radius:99px!important}
+.np-mob{display:none;border:0;background:none;padding:.4rem;border-radius:9px;cursor:pointer}
+.np-mob svg{width:20px;height:20px;stroke:#3B4252;fill:none;stroke-width:1.8;stroke-linecap:round}
+.np-app .wrap{max-width:1320px;padding:1.3rem 1.4rem 4rem}
+.np-app .wrap>h1{font-size:clamp(1.35rem,2.4vw,1.8rem)!important;letter-spacing:-.02em;margin-bottom:.15rem}
+.np-koptekst{color:var(--np-grijs);font-size:.87rem;margin-bottom:1rem}
+.np-app .lay{display:block}
+.np-app .kaart{background:#fff;border:1px solid var(--np-lijn)!important;border-radius:14px!important;box-shadow:none!important;padding:1rem 1.1rem!important}
+.np-app .kaart h3{font-size:.95rem!important;font-weight:800!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--np-inkt)!important;margin-bottom:.5rem!important;font-family:'Bricolage Grotesque',sans-serif}
+.np-app .kpi{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem!important;letter-spacing:-.03em}
+.np-app .samenvatting{top:54px;border-radius:14px;border:1px solid var(--np-lijn);background:#fff;box-shadow:none}
+.np-app .knop{border-radius:9px!important;background:var(--np-blauw);font-weight:600;padding:.45rem .9rem}
+.np-app .knop.licht{background:#fff;border:1px solid var(--np-lijn);color:#3B4252}
+.np-app details.mod,.np-app .conclusie{border-radius:14px!important}
+.np-app table th{font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--np-grijs)}
+.np-app .veld input,.np-app .veld select{border-radius:9px}
+.np-sleep{cursor:grab;color:#B3B9C6;margin-left:auto;display:inline-flex}
+.np-sleep svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.np-kaartsleep{transition:opacity .15s ease}
+.np-kaartsleep.np-bezig{opacity:.4}
+.np-kaartsleep.np-doel{outline:2px dashed var(--np-blauw);outline-offset:3px;border-radius:14px}
+@media(max-width:980px){
+  .np-app{grid-template-columns:1fr}
+  .np-zijbalk{position:fixed;left:0;top:0;bottom:0;width:var(--np-zij);z-index:60;transform:translateX(-100%);transition:transform .22s ease}
+  .np-zijbalk.np-open{transform:none}
+  .np-mob{display:inline-flex}
+  .np-app .wrap{padding:1rem .9rem 3rem}
+}
+@media(prefers-reduced-motion:reduce){.np-zijbalk{transition:none}}
+@media print{.np-zijbalk,.np-balk{display:none!important}.np-app{display:block}}
+</style>
+<script>
+(function(){
+ var ICO={
+  overzicht:'<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/>',
+  profiel:'<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v8.5l6 3"/>',
+  dataai:'<path d="M12 3l1.7 4.6L18.5 9l-4.8 1.4L12 15l-1.7-4.6L5.5 9l4.8-1.4z"/><path d="M18 16l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z"/>',
+  invoeren:'<rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8.5h8M8 12.5h8M8 16.5h4"/>',
+  antwoorden:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 5.5l1.2 1.2L7.5 4.4M4 11.5l1.2 1.2 2.3-2.3M4 17.5l1.2 1.2 2.3-2.3"/>',
+  business:'<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.6a4.2 4.2 0 100 6.8M7.8 11h5.4M7.8 13.4h5.4"/>',
+  cijfers:'<path d="M3.5 20.5h17"/><path d="M7 17v-5M11.5 17V6.5M16 17v-3M20 17V9.5" stroke-width="2"/>',
+  waarde:'<path d="M12 4v16M6 20h12M4 9h16M4 9l-2.5 5.5h5zM20 9l2.5 5.5h-5z"/>',
+  mensen:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/>',
+  branche:'<path d="M4 21V6.5L11 3v18"/><path d="M11 9h8.5v12"/><path d="M7 9.5h1M7 13h1M7 16.5h1M14.5 12.5h1.5M14.5 16h1.5"/>',
+  onderzoek:'<circle cx="11" cy="11" r="6.5"/><path d="M15.6 15.6L21 21"/>',
+  beleid:'<path d="M12 2.8l7.5 3v6c0 4.6-3.1 8.2-7.5 9.4-4.4-1.2-7.5-4.8-7.5-9.4v-6z"/><path d="M8.6 12l2.3 2.3 4.5-5"/>',
+  strategie:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/>',
+  canvassen:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M10 10v9.5"/>',
+  eindconclusie:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.7l5.9-.8z"/>',
+  dna:'<path d="M3 12h4l2.5-6 4 12 2.5-6h5"/>',
+  bijhouden:'<path d="M20.5 12a8.5 8.5 0 01-14.6 5.9"/><path d="M3.5 12a8.5 8.5 0 0114.6-5.9"/><path d="M18.1 2.5v3.6h-3.6M5.9 21.5v-3.6h3.6"/>',
+  advies:'<path d="M9 18h6M10 21h4"/><path d="M12 2.5a6.5 6.5 0 00-3.8 11.8c.5.4.8 1 .8 1.7h6c0-.7.3-1.3.8-1.7A6.5 6.5 0 0012 2.5z"/>',
+  roadmap:'<path d="M4 6.5h9M4 12h16M11 17.5h9"/><circle cx="15.5" cy="6.5" r="2"/><circle cx="7.5" cy="17.5" r="2"/>',
+  uitvoering:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 5.5l1.2 1.2L7.5 4.4M4 11.5l1.2 1.2 2.3-2.3M4 17.5l1.2 1.2 2.3-2.3"/>'
+ };
+ function svg(p){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>';}
+
+ function bouw(){
+  var portaal=document.getElementById('portaal');
+  if(!portaal||document.querySelector('.np-app')) return;
+  var balk=portaal.querySelector('.balk'),
+      wrap=portaal.querySelector('.wrap'),
+      zij=portaal.querySelector('nav.zij'),
+      zijlijst=document.getElementById('zijlijst'),
+      merk=balk&&balk.querySelector('.merk'),
+      logo=merk&&merk.querySelector('.logo'),
+      sitenav=balk&&balk.querySelector('.sitenav'),
+      kopacties=balk&&balk.querySelector('.kopacties');
+  if(!portaal||!wrap||!zijlijst) return;
+
+  var app=document.createElement('div'); app.className='np-app';
+  var aside=document.createElement('aside'); aside.className='np-zijbalk';
+  var merkvak=document.createElement('div'); merkvak.className='np-merk';
+  if(logo){ merkvak.appendChild(logo); }
+  var sub=document.createElement('small'); sub.textContent='PORTAAL'; 
+  var merktekst=document.createElement('span'); merktekst.appendChild(sub);
+  merkvak.appendChild(merktekst);
+  aside.appendChild(merkvak);
+  aside.appendChild(zijlijst);
+  var zijvoet=document.createElement('div'); zijvoet.className='np-zijvoet';
+  if(sitenav) zijvoet.appendChild(sitenav);
+  aside.appendChild(zijvoet);
+
+  var hoofd=document.createElement('div'); hoofd.className='np-hoofd';
+  var top=document.createElement('header'); top.className='np-balk';
+  var mob=document.createElement('button'); mob.className='np-mob'; mob.setAttribute('aria-label','Menu openen');
+  mob.innerHTML='<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+  mob.addEventListener('click',function(e){e.stopPropagation();aside.classList.toggle('np-open');});
+  top.appendChild(mob);
+  var zoek=document.createElement('div'); zoek.className='np-zoek';
+  zoek.innerHTML='<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>'
+   +'<input type="search" id="npZoek" placeholder="Zoek in portaal…" autocomplete="off" aria-label="Zoek in portaal">'
+   +'<div class="np-zoeklijst" id="npZoeklijst" hidden></div>';
+  top.appendChild(zoek);
+  if(kopacties) top.appendChild(kopacties);
+  hoofd.appendChild(top);
+  hoofd.appendChild(wrap);
+
+  app.appendChild(aside); app.appendChild(hoofd);
+  portaal.appendChild(app);
+  if(balk) balk.remove();
+  if(zij) zij.remove();
+
+  /* iconen bij de menu-items */
+  Array.prototype.forEach.call(zijlijst.querySelectorAll('.tab'),function(t){
+    var p=t.getAttribute('data-p');
+    var tekst=t.textContent.trim();
+    t.innerHTML=(ICO[p]?svg(ICO[p]):svg(ICO.overzicht))+'<span>'+tekst+'</span>';
+    t.setAttribute('data-naam',tekst.toLowerCase());
+  });
+
+  /* korte omschrijving onder de titel */
+  var h1=wrap.querySelector('h1');
+  if(h1&&!wrap.querySelector('.np-koptekst')){
+    var p=document.createElement('p'); p.className='np-koptekst';
+    p.textContent='Direct inzicht in de gezondheid van je organisatie, verbeterkansen, voortgang en volgende stappen.';
+    h1.insertAdjacentElement('afterend',p);
+  }
+
+  /* zoeken door de onderdelen */
+  var invoer=document.getElementById('npZoek'), lijst=document.getElementById('npZoeklijst');
+  function toon(){
+    var t=(invoer.value||'').toLowerCase().trim();
+    if(!t){lijst.hidden=true;return;}
+    var res=Array.prototype.filter.call(zijlijst.querySelectorAll('.tab[data-p]'),function(x){
+      return x.getAttribute('data-naam').indexOf(t)>=0;});
+    lijst.hidden=false;
+    if(!res.length){lijst.innerHTML='<div class="np-leeg">Niets gevonden voor “'+t.replace(/[<>&]/g,'')+'”.</div>';return;}
+    lijst.innerHTML='';
+    res.slice(0,8).forEach(function(x){
+      var b=document.createElement('button');
+      b.innerHTML='<b>'+x.textContent.trim()+'</b>';
+      b.addEventListener('click',function(){x.click();invoer.value='';lijst.hidden=true;window.scrollTo(0,0);});
+      lijst.appendChild(b);
+    });
+  }
+  invoer.addEventListener('input',toon);
+  invoer.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){invoer.value='';lijst.hidden=true;}
+    if(e.key==='Enter'){var b=lijst.querySelector('button'); if(b) b.click();}
+  });
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.np-zoek')) lijst.hidden=true;
+    if(aside.classList.contains('np-open')&&!e.target.closest('.np-zijbalk')&&!e.target.closest('.np-mob')) aside.classList.remove('np-open');
+  });
+  document.addEventListener('keydown',function(e){
+    if((e.metaKey||e.ctrlKey)&&String(e.key).toLowerCase()==='k'){e.preventDefault();invoer.focus();}
+  });
+
+  /* menu sluit op mobiel na een keuze */
+  zijlijst.addEventListener('click',function(e){
+    if(e.target.closest('.tab')) {aside.classList.remove('np-open');window.scrollTo(0,0);}
+  });
+
+  sleepbaar();
+ }
+
+ /* kaarten binnen een rij kunnen versleept worden; volgorde blijft bewaard */
+ function sleepbaar(){
+  var rijen=document.querySelectorAll('#portaal .kaarten');
+  Array.prototype.forEach.call(rijen,function(rij,ri){
+   var kaarten=rij.querySelectorAll(':scope > .kaart');
+   if(kaarten.length<2) return;
+   var sleutel='np_orde_'+(location.pathname)+'_'+ri;
+   Array.prototype.forEach.call(kaarten,function(k,i){
+     if(k.querySelector('.np-sleep')) return;
+     k.setAttribute('draggable','true');
+     k.classList.add('np-kaartsleep');
+     k.setAttribute('data-kid', (k.querySelector('h3')?k.querySelector('h3').textContent.trim():'kaart'+i));
+     var kop=k.querySelector('h3');
+     var greep=document.createElement('span');
+     greep.className='np-sleep'; greep.title='Sleep om te verplaatsen';
+     greep.innerHTML='<svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/></svg>';
+     if(kop){kop.style.display='flex';kop.style.alignItems='center';kop.appendChild(greep);}
+     else k.insertBefore(greep,k.firstChild);
+   });
+   var bron=null;
+   Array.prototype.forEach.call(kaarten,function(k){
+     k.addEventListener('dragstart',function(e){bron=k;k.classList.add('np-bezig');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',k.getAttribute('data-kid'));}catch(x){}});
+     k.addEventListener('dragend',function(){bron=null;Array.prototype.forEach.call(rij.children,function(c){c.classList.remove('np-bezig','np-doel');});onthoud();});
+     k.addEventListener('dragover',function(e){e.preventDefault();if(bron&&bron!==k)k.classList.add('np-doel');});
+     k.addEventListener('dragleave',function(){k.classList.remove('np-doel');});
+     k.addEventListener('drop',function(e){
+       e.preventDefault(); k.classList.remove('np-doel');
+       if(!bron||bron===k) return;
+       var alle=Array.prototype.slice.call(rij.children);
+       if(alle.indexOf(bron)<alle.indexOf(k)) k.after(bron); else k.before(bron);
+       onthoud();
+     });
+   });
+   function onthoud(){
+     try{localStorage.setItem(sleutel,JSON.stringify(Array.prototype.map.call(rij.children,function(c){return c.getAttribute('data-kid');})));}catch(e){}
+   }
+   try{
+     var opgeslagen=JSON.parse(localStorage.getItem(sleutel)||'null');
+     if(opgeslagen&&opgeslagen.length){
+       opgeslagen.forEach(function(id){
+         var el=rij.querySelector('[data-kid="'+String(id).replace(/"/g,'')+'"]');
+         if(el) rij.appendChild(el);
+       });
+     }
+   }catch(e){}
+  });
+ }
+
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bouw);
+ else bouw();
+ setTimeout(sleepbaar,1200);
+})();
+</script>
+
 </body>
 </html>
