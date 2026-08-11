@@ -6405,20 +6405,28 @@ body{background:var(--np-vlak)}
      var b=blok.querySelector('b'); if(!b) return;
      var niveau=parseFloat((b.textContent||'0').replace(',','.'));
      if(isNaN(niveau)) return;
-     var score=Math.max(0,Math.min(100,Math.round(niveau/5*100)));
-     var kleur=score>=70?'#17936B':score>=45?'#B4780B':'#C0392B';
-     var hoek=Math.PI*(score/100), x=90-62*Math.cos(hoek), y=88-62*Math.sin(hoek);
+     /* De meter staat op dezelfde schaal als het cijfer eronder: 1 tot 5.
+        Een tweede getal op 100 zei hetzelfde en zorgde alleen voor verwarring. */
+     var deel=Math.max(0,Math.min(1,(niveau-1)/4));
+     var kleur=niveau>=4?'#17936B':niveau>=3?'#B4780B':'#C0392B';
+     var hoek=Math.PI*deel, x=90-62*Math.cos(hoek), y=88-62*Math.sin(hoek);
      var oud=blok.querySelector('.np-meter'); if(oud) oud.remove();
      var d=document.createElement('div'); d.className='np-meter';
-     d.innerHTML='<svg viewBox="0 0 180 104" width="132" role="img" aria-label="Score '+score+' van 100">'
+     var doelHoek=Math.PI*((4-1)/4), dx=90-70*Math.cos(doelHoek), dy=88-70*Math.sin(doelHoek);
+     var dx2=90-54*Math.cos(doelHoek), dy2=88-54*Math.sin(doelHoek);
+     d.innerHTML='<svg viewBox="0 0 180 112" width="140" role="img" aria-label="Niveau '+niveau.toFixed(1)+' van 5, doel is 4">'
       +'<path d="M28 88a62 62 0 01124 0" fill="none" stroke="#E6E8EE" stroke-width="15" stroke-linecap="round"/>'
-      +(score>0?'<path d="M28 88A62 62 0 01'+x.toFixed(1)+' '+y.toFixed(1)+'" fill="none" stroke="'+kleur+'" stroke-width="15" stroke-linecap="round"/>':'')
-      +'<text x="90" y="80" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="32" font-weight="800" fill="#141B2E">'+score+'</text>'
-      +'<text x="90" y="98" text-anchor="middle" font-family="Instrument Sans,sans-serif" font-size="11" fill="#69707D">/100</text></svg>';
+      +(deel>0.001?'<path d="M28 88A62 62 0 01'+x.toFixed(1)+' '+y.toFixed(1)+'" fill="none" stroke="'+kleur+'" stroke-width="15" stroke-linecap="round"/>':'')
+      +'<line x1="'+dx.toFixed(1)+'" y1="'+dy.toFixed(1)+'" x2="'+dx2.toFixed(1)+'" y2="'+dy2.toFixed(1)+'" stroke="#14171A" stroke-width="2"/>'
+      +'<text x="'+(dx+4).toFixed(1)+'" y="'+(dy-2).toFixed(1)+'" font-family="Instrument Sans,sans-serif" font-size="9" fill="#5C646E">doel 4</text>'
+      +'<text x="22" y="104" font-family="Instrument Sans,sans-serif" font-size="10" fill="#8A94A3">1 handwerk</text>'
+      +'<text x="158" y="104" text-anchor="end" font-family="Instrument Sans,sans-serif" font-size="10" fill="#8A94A3">5 sturend</text></svg>';
      blok.insertBefore(d,blok.firstChild);
+     b.textContent=niveau.toFixed(1).replace('.',',');
      var bij=blok.querySelector('.np-bij');
      if(!bij){bij=document.createElement('span');bij.className='np-bij';blok.appendChild(bij);}
-     bij.textContent=(score>=70?'Goed':score>=45?'Voldoende':'Aandacht nodig')+' · gemiddeld over 13 onderdelen';
+     bij.textContent=(niveau>=4?'Op orde':niveau>=3?'Bijna op orde':'Aandacht nodig')
+       +' · gemiddeld over 13 onderdelen · doel voor het mkb is 4';
      overigeGrafieken(sam,niveau);
      ontdubbel(); setTimeout(ontdubbel,60);
    }
@@ -6496,7 +6504,9 @@ body{background:var(--np-vlak)}
    }
    /* fte kwijt: ring van het aandeel in de bezetting */
    if(blokken[2]){
-     var fte=getal(blokken[2].querySelector('b')?blokken[2].querySelector('b').textContent:'');
+     var fEl=blokken[2].querySelector('b');
+     var fte=getal(fEl?fEl.textContent:'');
+     if(fEl&&fte) fEl.textContent=fte.toFixed(1).replace('.',',');
      var t=document.getElementById('kFteT');
      var mensen=t?getal((t.textContent||'').split('verdeeld over')[1]||''):0;
      if(mensen>0){
@@ -6512,8 +6522,10 @@ body{background:var(--np-vlak)}
    }
    /* branche: jouw niveau naast dat van je branche */
    if(blokken[3]){
-     var br=getal(blokken[3].querySelector('b')?blokken[3].querySelector('b').textContent:'');
+     var bEl=blokken[3].querySelector('b');
+     var br=getal(bEl?bEl.textContent:'');
      if(br>0){
+       if(bEl) bEl.textContent=br.toFixed(1).replace('.',',');
        var breedJij=Math.max(4,(niveau/5)*176), breedBr=Math.max(4,(br/5)*176);
        grafVak(blokken[3],'<svg viewBox="0 0 176 58" width="100%" style="max-width:176px" role="img" aria-label="Jouw niveau tegenover je branche, op een schaal van 1 tot 5">'
         +'<text x="0" y="9" font-family="Instrument Sans,sans-serif" font-size="9.5" fill="#5C646E">jij</text>'
