@@ -5823,6 +5823,104 @@ function vraagToegang(daarna){
 })();
 </script>
 
+<!-- ══ wat komt uit je scan, wat vul je zelf in ══ -->
+<style id="np-voorgevuld">
+.np-uitleg{border:1px solid var(--np-lijn,#DCDFE6);border-radius:12px;padding:.9rem 1rem;margin:.9rem 0 0;background:#fff}
+.np-uitleg h4{font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;margin-bottom:.5rem}
+.np-uitleg .np-regel{display:flex;gap:.6rem;align-items:flex-start;padding:.35rem 0;font-size:.87rem;line-height:1.5}
+.np-uitleg .np-merk{flex:none;font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  border-radius:99px;padding:.12rem .5rem;margin-top:.1rem;white-space:nowrap}
+.np-merk.scan{background:#EDF0FD;color:#2742D6}
+.np-merk.zelf{background:#FFF6E3;color:#C2410C}
+.np-merk.leeg{background:#F1F0EC;color:#5C646E}
+.np-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.68rem;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;background:#EDF0FD;color:#2742D6;border-radius:99px;padding:.1rem .5rem;margin-left:.5rem;vertical-align:middle}
+.np-veld-in input,.np-veld-in select{border-color:#1F9D55!important;background:#F7FCF9}
+.np-veld-in>label::after{content:" \2713";color:#1F9D55;font-weight:700}
+label.np-veld-in::after{content:" \2713";color:#1F9D55;font-weight:700}
+</style>
+<script>
+/* Uit de Frisse blik komen alleen de dertien niveaus en je branche. Alle cijfers
+   vul je zelf in. Dat was nergens te zien; deze laag maakt het zichtbaar. */
+(function(){
+ function scanDatum(){ try{ return (typeof S!=='undefined'&&S.scanDatum)||''; }catch(e){ return ''; } }
+ function heeftScan(){ try{ return !!(typeof S!=='undefined'&&S.scanStempel); }catch(e){ return false; } }
+
+ function uitlegInvoer(){
+  var paneel=document.getElementById('p-invoeren'); if(!paneel) return;
+  var anker=document.getElementById('invoerVoortgang'); if(!anker) return;
+  var oud=document.getElementById('npUitlegInvoer');
+  var d=scanDatum();
+  var h='<h4>Wat staat er al, en wat vul je zelf in?</h4>'
+   +'<div class="np-regel"><span class="np-merk scan">uit je scan</span><span>'
+   +(heeftScan()
+      ? 'De dertien niveaus onder <b>Profiel per onderdeel</b> en je branche zijn overgenomen uit je Frisse blik'+(d?' van '+d:'')+'. Die hoef je hier niet in te vullen \u2014 wel bij te stellen als er iets veranderd is.'
+      : 'Er staat nog geen scanresultaat in deze browser. Doe eerst de <a href="/frisse-blik">Frisse blik</a>, dan vullen de dertien niveaus en je branche zichzelf.')
+   +'</span></div>'
+   +'<div class="np-regel"><span class="np-merk zelf">vul je zelf</span><span>Alle cijfers hieronder komen uit je eigen administratie. De scan levert die niet aan \u2014 die vraagt naar hoe het werk loopt, niet naar bedragen.</span></div>'
+   +'<div class="np-regel"><span class="np-merk leeg">blijft leeg</span><span>Niets is verplicht. Wat je openlaat wordt geschat op basis van je branche, of overgeslagen. Waar dat gebeurt, staat het erbij. Een groen vinkje betekent: dit veld is ingevuld.</span></div>';
+  if(oud){ if(oud.innerHTML!==h) oud.innerHTML=h; return; }
+  var el=document.createElement('div'); el.className='np-uitleg'; el.id='npUitlegInvoer'; el.innerHTML=h;
+  anker.insertAdjacentElement('afterend',el);
+ }
+
+ function badgeProfiel(){
+  var sch=document.getElementById('schuiven'); if(!sch) return;
+  var kaart=sch.closest('.kaart'); if(!kaart) return;
+  var kop=kaart.querySelector('h3'); if(!kop||kop.querySelector('.np-badge')) return;
+  if(!heeftScan()) return;
+  var b=document.createElement('span'); b.className='np-badge';
+  b.textContent='uit je scan'; b.title='Deze niveaus zijn overgenomen uit je Frisse blik'+(scanDatum()?' van '+scanDatum():'')+'. Schuif ze bij als er iets veranderd is.';
+  kop.appendChild(b);
+  if(!kaart.querySelector('.np-scanregel')){
+   var p=document.createElement('p'); p.className='sub np-scanregel'; p.style.margin='-.3rem 0 .6rem';
+   p.innerHTML='Overgenomen uit je Frisse blik'+(scanDatum()?' van '+scanDatum():'')+'. Klopt er iets niet meer? Schuif het hier bij \u2014 alles rekent direct mee.';
+   kop.insertAdjacentElement('afterend',p);
+  }
+ }
+
+ function badgeBranche(){
+  var bk=document.getElementById('bKeuze'); if(!bk||!heeftScan()) return;
+  var houder=bk.closest('label')||bk.parentNode; if(!houder||houder.querySelector('.np-badge')) return;
+  var b=document.createElement('span'); b.className='np-badge'; b.textContent='uit je scan';
+  b.title='Je branche komt uit de Frisse blik. Je kunt hem hier wijzigen.';
+  houder.appendChild(b);
+ }
+
+ function merkVelden(){
+  var paneel=document.getElementById('p-invoeren'); if(!paneel) return;
+  var velden=paneel.querySelectorAll('input, select');
+  Array.prototype.forEach.call(velden,function(v){
+   if(v.type==='checkbox'||v.type==='file'||v.type==='button') return;
+   var houder=v.closest('.veld')||v.closest('label')||v.parentNode;
+   if(!houder) return;
+   var gevuld = v.tagName==='SELECT' ? (v.value!=='' && v.value!=='0') : String(v.value||'').trim()!=='';
+   houder.classList.toggle('np-veld-in', !!gevuld);
+  });
+ }
+
+ function alles(){ uitlegInvoer(); badgeProfiel(); badgeBranche(); merkVelden(); }
+
+ document.addEventListener('input',function(e){
+  if(e.target.closest&&e.target.closest('#p-invoeren')) merkVelden();
+ });
+ document.addEventListener('change',function(e){
+  if(e.target.closest&&e.target.closest('#p-invoeren')) merkVelden();
+ });
+
+ function haak(){
+  if(typeof teken!=='function'){ setTimeout(haak,200); return; }
+  if(teken.__vg) return;
+  var oud=teken;
+  teken=function(){ var r=oud.apply(this,arguments); try{ alles(); }catch(e){} return r; };
+  teken.__vg=1;
+  try{ alles(); }catch(e){}
+  setTimeout(alles,400);
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',haak); else haak();
+})();
+</script>
+
 <!-- ══ nieuwe portaalskin ══ -->
 <style id="np-skin">
 :root{
