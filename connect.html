@@ -25,7 +25,7 @@
 <meta name="description" content="Orders, facturen en klantgegevens automatisch tussen je webshop, AFAS, Exact en Microsoft 365. Vaste prijs, werkend binnen twee weken.">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/connect">
 <meta name="robots" content="index, follow">
-<meta name="theme-color" content="#131A33">
+<meta name="theme-color" content="#2742D6">
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="nl_NL">
@@ -46,26 +46,31 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
-<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Caveat:wght@600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Caveat:wght@600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Caveat:wght@600&display=swap" rel="stylesheet"></noscript>
 
 <style>
-:root{--ink:#212B2F;--paper:#FBFAF7;--petrol:#2742D6;--petrol-deep:#131A33;--ochre:#FF4F17;--ochre-soft:#FFE4D6;--mist:#F0EFEA;--line:#DCDFE6;--white:#fff;--ok:#3E7458;--risk:#A6432F}
+:root{--ink:#14171A;--paper:#FBFAF7;--petrol:#2742D6;--petrol-diep:#1B2FA0;--petrol-deep:#14171A;--ochre:#FF4F17;--ochre-soft:#FFE4D6;--geel:#FFE86B;--mist:#F3F1EC;--line:#DCDFE6;--white:#fff;--grijs:#5C646E;--ok:#1F9D55;--risk:#FF4F17}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:'Instrument Sans',sans-serif;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.6}
-h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;color:var(--petrol);line-height:1.15}
+h1,h2,h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;color:var(--inkt,#14171A);letter-spacing:-.02em;line-height:1.12}
+h2,h3{color:var(--petrol)}
+.hand{font-family:'Caveat',cursive;font-weight:600}
+.mark{background:linear-gradient(transparent 55%,var(--geel) 55%,var(--geel) 96%,transparent 96%);padding:0 .08em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .wrap{max-width:1020px;margin:0 auto;padding:0 1.5rem}
 section{padding:4rem 0}
 .eyebrow{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ochre);font-weight:700;margin-bottom:.7rem;display:flex;align-items:center;gap:.6rem}
 .eyebrow::before{content:"";width:30px;height:2px;background:var(--ochre)}
 h2{font-size:clamp(1.6rem,3.2vw,2.2rem);margin-bottom:1rem}
-.lead{color:#535C61;max-width:44em;font-size:1.02rem}
-.btn{border:none;border-radius:10px;padding:.8rem 1.6rem;font-weight:700;font-size:.98rem;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s;font-family:'Inter'}
+.lead{color:var(--grijs);max-width:44em;font-size:1.02rem}
+.btn{border:none;border-radius:10px;padding:.8rem 1.6rem;font-weight:700;font-size:.98rem;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s;}
 .btn:hover{transform:translateY(-2px)}
-.btn.primary{background:var(--ochre);color:#131A33}
-.btn.dark{background:var(--petrol);color:#fff}
+.btn.primary{background:var(--petrol);color:#fff}
+.btn.primary:hover{background:var(--petrol-diep);border-color:var(--petrol-diep)}
+.btn.dark{background:transparent;color:var(--inkt,#14171A);border-color:var(--inkt,#14171A)}
+.btn.dark:hover{background:var(--geel)}
 .hidden{display:none!important}
 
 nav{position:sticky;top:0;background:rgba(245,244,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:50}
@@ -74,20 +79,20 @@ nav .logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size
 nav .logo span{color:var(--ochre)}
 nav .btn{margin-left:auto;padding:.5rem 1.1rem;font-size:.85rem}
 
-.hero{background:var(--petrol-deep);color:#fff;padding:5rem 0 4.2rem;position:relative;overflow:hidden}
-.hero .badge{display:inline-block;background:rgba(217,160,63,.15);border:1px solid var(--ochre);color:var(--ochre);border-radius:999px;padding:.35rem 1rem;font-size:.8rem;font-weight:700;margin-bottom:1.2rem}
-.hero h1{color:#fff;font-size:clamp(2rem,4.8vw,3.4rem);max-width:17em;margin-bottom:1.1rem}
-.hero h1 em{font-style:normal;color:var(--ochre)}
-.hero p{color:#B9C4C4;font-size:1.1rem;max-width:36em;margin-bottom:1.8rem}
+.hero{background:var(--paper);border-bottom:1px solid var(--line);padding:4rem 0 3.4rem;position:relative;overflow:hidden}
+.hero .badge{display:inline-block;background:var(--geel);border:2px solid var(--inkt,#14171A);color:var(--inkt,#14171A);border-radius:20px;padding:.35rem .9rem;font-size:.76rem;font-weight:600;letter-spacing:.02em;margin-bottom:1.2rem}
+.hero h1{color:var(--inkt,#14171A);font-size:clamp(2rem,4.8vw,3.4rem);max-width:17em;margin-bottom:1.1rem}
+.hero h1 em{font-style:normal;color:var(--inkt,#14171A)}
+.hero p{color:var(--grijs);font-size:1.1rem;max-width:36em;margin-bottom:1.8rem}
 .flow{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;margin:2rem 0 2.2rem;font-size:.9rem}
-.flow .node{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:.7rem 1.1rem;font-weight:600;color:#DCE3E0}
-.flow .node small{display:block;font-weight:500;color:#8FA3A1;font-size:.72rem}
+.flow .node{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:.7rem 1.1rem;font-weight:600;color:var(--inkt,#14171A)}
+.flow .node small{display:block;font-weight:500;color:var(--grijs);font-size:.72rem;font-family:'IBM Plex Mono',monospace}
 .flow .arr{color:var(--ochre);font-size:1.3rem;font-weight:700}
-.flow .core{background:var(--ochre);color:#131A33;border-color:var(--ochre)}
-.flow .core small{color:#7A5E1F}
+.flow .core{background:var(--geel);color:var(--inkt,#14171A);border:2px solid var(--inkt,#14171A)}
+.flow .core small{color:var(--inkt,#14171A)}
 
 /* wachtlijst formulier */
-.wl{background:#fff;border-radius:16px;padding:1.6rem;box-shadow:0 24px 60px rgba(0,0,0,.3);max-width:560px}
+.wl{background:var(--white);border:2px solid var(--inkt,#14171A);border-radius:16px;padding:1.6rem;max-width:560px}
 .wl h3{font-size:1.15rem;margin-bottom:.2rem}
 .wl .sub{font-size:.85rem;color:#6B7076;margin-bottom:.9rem}
 .wl label{display:block;font-weight:600;font-size:.82rem;margin:.7rem 0 .25rem;color:var(--petrol)}
@@ -95,20 +100,20 @@ nav .btn{margin-left:auto;padding:.5rem 1.1rem;font-size:.85rem}
 .wl .row2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
 @media(max-width:560px){.wl .row2{grid-template-columns:1fr}}
 .wl .btn{width:100%;text-align:center;margin-top:1rem}
-.wl .mini{font-size:.75rem;color:#8A8F87;margin-top:.6rem;text-align:center}
+.wl .mini{font-size:.75rem;color:var(--grijs);margin-top:.6rem;text-align:center}
 .form-ok{background:#EEF4F0;border:1px solid #CBDCD1;color:var(--ok);border-radius:10px;padding:1rem 1.2rem;font-weight:600;font-size:.92rem;margin-top:.9rem}
 .form-err{color:var(--risk);font-weight:600;font-size:.88rem;margin-top:.8rem}
 .form-err a{color:var(--risk)}
 
 .counter{display:flex;gap:2.4rem;margin-top:1.6rem;flex-wrap:wrap}
 .counter div b{font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;color:var(--ochre);display:block}
-.counter div span{font-size:.8rem;color:#8FA3A1}
+.counter div span{font-size:.8rem;color:var(--grijs)}
 
 /* probleem */
 .pijnen{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:1.6rem}
 .pijn{background:var(--white);border:1px solid var(--line);border-left:5px solid var(--risk);border-radius:10px;padding:1.2rem 1.3rem}
 .pijn b{display:block;margin-bottom:.25rem}
-.pijn p{font-size:.88rem;color:#535C61}
+.pijn p{font-size:.88rem;color:var(--grijs)}
 
 /* hoe het werkt */
 .sec-alt{background:var(--white);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -116,46 +121,47 @@ nav .btn{margin-left:auto;padding:.5rem 1.1rem;font-size:.85rem}
 .stap{border:1px solid var(--line);border-radius:12px;padding:1.4rem;background:var(--paper)}
 .stap .n{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;width:40px;height:40px;border-radius:50%;background:var(--petrol);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:.8rem}
 .stap b{font-family:'Bricolage Grotesque',sans-serif;color:var(--petrol);font-size:1.02rem}
-.stap p{font-size:.88rem;color:#535C61;margin-top:.3rem}
+.stap p{font-size:.88rem;color:var(--grijs);margin-top:.3rem}
 .tijd{display:inline-block;background:var(--ochre-soft);color:var(--petrol);border-radius:999px;font-size:.72rem;font-weight:700;padding:.2rem .7rem;margin-top:.6rem}
 
 /* integraties */
 .integ{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem}
 .chip{background:var(--white);border:1.5px solid var(--line);border-radius:999px;padding:.55rem 1.2rem;font-size:.9rem;font-weight:600}
-.chip.soon{border-style:dashed;color:#8A8F87}
+.chip.soon{border-style:dashed;color:var(--grijs)}
 .chip.soon::after{content:" · binnenkort";font-size:.72rem;color:var(--ochre);font-weight:700}
 
 /* features */
 .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;margin-top:1.8rem}
 .feat{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:1.5rem}
-.feat .ic{width:44px;height:44px;border-radius:10px;background:var(--petrol);color:var(--ochre);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:.9rem}
+.feat .ic{width:44px;height:44px;border-radius:10px;background:var(--geel);border:2px solid var(--inkt,#14171A);display:flex;align-items:center;justify-content:center;margin-bottom:.9rem}
+.feat .ic img{width:1.5rem;height:1.5rem;display:block;object-fit:contain}
 .feat b{font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;color:var(--petrol)}
-.feat p{font-size:.9rem;color:#535C61;margin-top:.35rem}
+.feat p{font-size:.9rem;color:var(--grijs);margin-top:.35rem}
 
 /* prijzen teaser */
 .prijs-band{background:var(--petrol);color:#fff;text-align:center}
 .prijs-band h2{color:#fff}
-.prijs-band p{color:#C9D3D1;max-width:38em;margin:0 auto 1.4rem}
-.prijs-band .p{font-family:'Bricolage Grotesque',sans-serif;font-size:3rem;font-weight:700;color:var(--ochre)}
-.prijs-band .p span{font-size:1rem;font-family:'Inter';font-weight:500;color:#AEBDBC}
+.prijs-band p{color:#D8DEF8;max-width:38em;margin:0 auto 1.4rem}
+.prijs-band .p{font-family:'Bricolage Grotesque',sans-serif;font-size:3rem;font-weight:800;color:#fff}
+.prijs-band .p span{font-size:1rem;font-weight:500;color:#C9D3F5;font-family:'IBM Plex Mono',monospace}
 
 /* founder */
 .founder{display:grid;grid-template-columns:auto 1fr;gap:1.6rem;align-items:start;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:1.8rem;max-width:760px}
-.founder .av{width:72px;height:72px;border-radius:50%;background:var(--petrol);color:var(--ochre);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.6rem;flex-shrink:0}
-.founder p{font-size:.95rem;color:#535C61}
+.founder .av{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--inkt,#14171A);flex-shrink:0}
+.founder p{font-size:.95rem;color:var(--grijs)}
 .founder .naam{font-weight:700;color:var(--petrol);margin-top:.7rem;font-size:.9rem}
 
 details{background:var(--white);border:1px solid var(--line);border-radius:10px;margin-bottom:.7rem;padding:1rem 1.3rem}
 summary{font-weight:700;cursor:pointer;font-size:.98rem;color:var(--petrol)}
-details p{margin-top:.6rem;font-size:.92rem;color:#535C61}
+details p{margin-top:.6rem;font-size:.92rem;color:var(--grijs)}
 
 footer{background:var(--petrol-deep);color:#9FB0AE;padding:2.2rem 0;font-size:.85rem}
 footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
 footer a{color:#C9D3D1}
-.mob-cta{position:fixed;bottom:0;left:0;right:0;background:var(--ochre);padding:.8rem 1rem;text-align:center;z-index:60;display:none;box-shadow:0 -6px 20px rgba(0,0,0,.15)}
-.mob-cta a{color:var(--petrol-deep);font-weight:700;text-decoration:none}
+.mob-cta{position:fixed;bottom:0;left:0;right:0;background:var(--petrol);padding:.8rem 1rem;text-align:center;z-index:60;display:none;border-top:2px solid var(--inkt,#14171A)}
+.mob-cta a{color:#fff;font-weight:600;text-decoration:none}
 @media(max-width:700px){.mob-cta{display:block}body{padding-bottom:3.2rem}}
-.eyebrow{color:#C2410C!important}
+.eyebrow{color:var(--ochre)!important}
 </style>
 <script>
 (function(){try{var p=new URLSearchParams(location.search),u={};['utm_source','utm_medium','utm_campaign'].forEach(function(k){if(p.get(k))u[k]=p.get(k)});
@@ -168,7 +174,6 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/stijl.css">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Connect","item":"https://www.bedrijfsgeheugen.nl/connect"}]}</script>
 <meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/banner-li-bedrijf.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -205,8 +210,8 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <!-- ═══════════ HERO + WACHTLIJST ═══════════ -->
 <header class="hero">
   <div class="wrap">
-    <span class="badge">🚀 In ontwikkeling — wachtlijst open · eerste 100 inschrijvers: 3 maanden gratis</span>
-    <h1>Je koppeling boekt de order.<br><em>Wie volgt de klant op?</em></h1>
+    <span class="badge">In ontwikkeling — wachtlijst open · eerste 100 inschrijvers: 3 maanden gratis</span>
+    <h1>Je koppeling boekt de order.<br><em>Wie volgt de <span class="mark">klant</span> op?</em></h1>
     <p>Webshopkoppelingen boeken je orders — en daar stopt het. Connect is de laag erbovenop: klantkaart, automatische opvolging van offertes en aanvragen, en elke maandag één overzichtsmail. Werkt mét je bestaande koppeling, of legt er zelf één. Vanaf €29 per maand.</p>
 
     <div class="flow" aria-label="Hoe de datastroom loopt">
@@ -218,7 +223,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     </div>
 
     <div class="wl" id="wachtlijst">
-      <h3>Zet mij op de wachtlijst</h3>
+      <h3>Zet mij op de wachtlijst <span class="hand" style="color:var(--ochre);font-size:1.15rem;font-weight:600">← eerste 100 gratis</span></h3>
       <div class="sub">Vrijblijvend. Je krijgt als eerste toegang — en de eerste 100 inschrijvers gebruiken Connect 3 maanden gratis.</div>
       <form id="wlForm" onsubmit="return WL.submit(event)">
         <div class="row2">
@@ -235,7 +240,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
           <div><label for="w_boek">Welk boekhoudpakket gebruik je?</label>
             <select id="w_boek"><option>Moneybird</option><option>e-Boekhouden</option><option>Exact Online</option><option>SnelStart</option><option>AFAS</option><option>Anders / geen</option></select></div>
         </div>
-        <p style="font-size:.85rem;color:#5C646E;margin:.6rem 0">📬 Je ontvangt alleen bericht over de lancering van Connect — geen nieuwsbrief, geen belletjes. Zie de <a href="/privacy" style="color:#2742D6">privacyverklaring</a>.</p>
+        <p style="font-size:.85rem;color:var(--grijs);margin:.6rem 0">Je ontvangt alleen bericht over de lancering van Connect — geen nieuwsbrief, geen belletjes. Zie de <a href="/privacy" style="color:#2742D6">privacyverklaring</a>.</p>
 <button class="btn primary" type="submit">Reserveer mijn plek (gratis) →</button>
         <div class="mini">Geen spam. Alleen de lanceringsmail en 1-2 bouwupdates. Uitschrijven kan altijd.</div>
       </form>
@@ -272,7 +277,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <div class="wrap">
     <div class="eyebrow">Zo simpel als een betaalknop</div>
     <h2>Straks live in 10 minuten — zonder consultant, zonder gedoe</h2>
-<p style="font-family:\'IBM Plex Mono\',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#C2410C;margin-top:.5rem">In ontwikkeling — lancering najaar 2026 · wachtlijst geopend</p>
+<p style="font-family:\'IBM Plex Mono\',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ochre);margin-top:.5rem">In ontwikkeling — lancering najaar 2026 · wachtlijst geopend</p>
     <div class="hoe">
       <article class="stap"><div class="n">1</div><b>Account aanmaken</b><p>E-mailadres, wachtwoord, klaar. Geen creditcard nodig voor de proefperiode.</p><span class="tijd">± 1 min</span></article>
       <article class="stap"><div class="n">2</div><b>Verkoopkant koppelen</b><p>Kies je webshop of website en log in — twee klikken, veilig via de officiële koppeling.</p><span class="tijd">± 2 min</span></article>
@@ -288,12 +293,12 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <div class="eyebrow">Wat Connect voor je doet</div>
     <h2>Koppelt. Onthoudt. Volgt op.</h2>
     <div class="feats">
-      <article class="feat"><div class="ic">⇄</div><b>Werkt met je bestaande koppeling</b><p>Heb je al een (gratis) koppeling van e-Boekhouden, Combidesk of Webwinkelfacturen? Perfect — Connect leest mee en bouwt daarbovenop. Geen koppeling? Dan legt Connect er zelf één.</p></article>
-      <article class="feat"><div class="ic">👤</div><b>Klantkaart</b><p>Historie, bestellingen en afspraken op één plek. Klant belt? Iedereen weet direct wat er speelt — ook als de vaste contactpersoon er niet is.</p></article>
-      <article class="feat"><div class="ic">🔔</div><b>Automatische opvolging</b><p>Offerte zonder reactie of verlaten winkelwagen? Na X dagen gaat er vanzelf een nette opvolgmail uit, in jouw toon. Jij krijgt een seintje bij reactie.</p></article>
-      <article class="feat"><div class="ic">📬</div><b>De maandagochtend-mail</b><p>Eén mail per week: omzet, openstaande offertes, klanten die stil zijn gevallen. Je week sturen in 2 minuten.</p></article>
-      <article class="feat"><div class="ic">🛡️</div><b>Foutmeldingen die je snapt</b><p>"Order 1043 kon niet geboekt worden: btw-tarief ontbreekt → herstel met 1 klik." Geen cryptische logs, geen ticket nodig.</p></article>
-      <article class="feat"><div class="ic">🇳🇱</div><b>Nederlands, door en door</b><p>Gebouwd voor NL-pakketten, NL-btw en NL-support. Waar internationale tools generiek blijven, is dit thuis.</p></article>
+      <article class="feat"><div class="ic"><img src="/assets/iconen/verbinden.svg" alt="" width="24" height="24" decoding="async"></div><b>Werkt met je bestaande koppeling</b><p>Heb je al een (gratis) koppeling van e-Boekhouden, Combidesk of Webwinkelfacturen? Perfect — Connect leest mee en bouwt daarbovenop. Geen koppeling? Dan legt Connect er zelf één.</p></article>
+      <article class="feat"><div class="ic"><img src="/assets/iconen/kennis_blijft_behouden.svg" alt="" width="24" height="24" decoding="async"></div><b>Klantkaart</b><p>Historie, bestellingen en afspraken op één plek. Klant belt? Iedereen weet direct wat er speelt — ook als de vaste contactpersoon er niet is.</p></article>
+      <article class="feat"><div class="ic"><img src="/assets/iconen/actie.svg" alt="" width="24" height="24" decoding="async"></div><b>Automatische opvolging</b><p>Offerte zonder reactie of verlaten winkelwagen? Na X dagen gaat er vanzelf een nette opvolgmail uit, in jouw toon. Jij krijgt een seintje bij reactie.</p></article>
+      <article class="feat"><div class="ic"><img src="/assets/iconen/antwoorden.svg" alt="" width="24" height="24" decoding="async"></div><b>De maandagochtend-mail</b><p>Eén mail per week: omzet, openstaande offertes, klanten die stil zijn gevallen. Je week sturen in 2 minuten.</p></article>
+      <article class="feat"><div class="ic"><img src="/assets/iconen/veilig_betrouwbaar.svg" alt="" width="24" height="24" decoding="async"></div><b>Foutmeldingen die je snapt</b><p>"Order 1043 kon niet geboekt worden: btw-tarief ontbreekt → herstel met 1 klik." Geen cryptische logs, geen ticket nodig.</p></article>
+      <article class="feat"><div class="ic"><img src="/assets/iconen/vind_direct.svg" alt="" width="24" height="24" decoding="async"></div><b>Nederlands, door en door</b><p>Gebouwd voor NL-pakketten, NL-btw en NL-support. Waar internationale tools generiek blijven, is dit thuis.</p></article>
     </div>
 
     <div class="eyebrow" style="margin-top:2.6rem">Integraties</div>
@@ -328,7 +333,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <div class="eyebrow">Wie dit bouwt</div>
     <h2>Gebouwd in het openbaar, door iemand uit de praktijk</h2>
     <div class="founder">
-      <div class="av">AP</div>
+      <img class="av" src="/arthur.jpg" alt="Arthur Prinsen" width="72" height="72" loading="lazy">
       <div>
         <p>"Ik help al vijftien jaar mkb-bedrijven met AFAS, Exact en Microsoft-omgevingen — en bij elk bedrijf zie ik hetzelfde: gezonde zaken die uren per week verliezen aan overtypen en vergeten opvolging. Zapier is te technisch, ERP te groot. Daarom bouw ik Connect: de tussenoplossing die er had moeten zijn. Ik deel de hele bouw openbaar op LinkedIn — inclusief wat misgaat. Schrijf je in en bouw mee: de wachtlijst bepaalt welke koppelingen ik als eerste maak."</p>
         <div class="naam">Arthur Prinsen — oprichter Bedrijfsgeheugen · <a href="/">over het bedrijf</a></div>
@@ -380,7 +385,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <a class="wa" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag%20over%20Bedrijfsgeheugen" target="_blank" rel="noopener" aria-label="App Arthur via WhatsApp">
 <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg><span class="tx">App Arthur</span></a>
 
-<div class="mob-cta"><a href="#wachtlijst">🚀 Zet mij op de wachtlijst — 3 mnd gratis</a></div>
+<div class="mob-cta"><a href="#wachtlijst">Zet mij op de wachtlijst — 3 mnd gratis</a></div>
 
 <script>
 const CONFIG={
