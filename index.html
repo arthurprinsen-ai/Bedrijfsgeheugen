@@ -311,10 +311,12 @@ nav .nb{transition:height .2s}
 
 /* sterren en vertrouwen */
 .vertrouwen{margin-top:1.3rem}
-.koppen{display:flex;align-items:center;margin-bottom:.8rem;flex-wrap:wrap}
-.koppen img{width:2.6rem;height:2.6rem;border-radius:50%;border:2px solid var(--papier);margin-left:-.7rem;display:block}
-.koppen img:first-child{margin-left:0}
-.koppen-tekst{font-size:.86rem;color:var(--grijs);margin-left:.8rem;max-width:20rem;line-height:1.4}
+.koppen{display:flex;align-items:center;gap:.9rem;margin-bottom:.4rem;flex-wrap:nowrap}
+.koppen .rij-fotos{display:flex;flex:none}
+.koppen img{width:2.6rem;height:2.6rem;border-radius:50%;border:2px solid var(--papier);margin-left:-.7rem;display:block;object-fit:cover}
+.koppen .rij-fotos img:first-child{margin-left:0}
+.koppen-tekst{font-size:.86rem;color:var(--grijs);line-height:1.4;min-width:0}
+@media(max-width:520px){.koppen{flex-wrap:wrap}.koppen-tekst{width:100%}}
 .feitrij{display:flex;gap:.5rem;flex-wrap:wrap}
 .feitrij span{border:1px solid var(--lijn);background:var(--wit);border-radius:22px;padding:.45rem .85rem;font-size:.85rem;color:var(--grijs)}
 .feitrij b{color:var(--inkt)}
@@ -445,11 +447,13 @@ nav .nb{transition:height .2s}
     </div>
     <div class="vertrouwen">
       <div class="koppen">
-        <img src="/assets/avatars/figuur-1.svg" alt="" width="42" height="42">
-        <img src="/assets/avatars/figuur-2.svg" alt="" width="42" height="42">
-        <img src="/assets/avatars/figuur-3.svg" alt="" width="42" height="42">
-        <img src="/assets/avatars/figuur-4.svg" alt="" width="42" height="42">
-        <span class="koppen-tekst">Gemaakt voor directeuren van mkb-bedrijven met 3 tot 250 medewerkers</span>
+        <span class="rij-fotos">
+          <img src="https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021786435040855f6ba3ba09f8d739ff3017972d8947b2eb15ba5_0_1786435050673_580a00fa.jpeg" alt="" width="42" height="42">
+          <img src="https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/02178643504090870c18af9f89e89788c62dbe2222323617010fc_0_1786435060906_e5bf1d30.jpeg" alt="" width="42" height="42">
+          <img src="https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/0217864350405964d21f3e3e165e25fcf12f86815b4407fb63fba_0_1786435048042_69e3577d.jpeg" alt="" width="42" height="42">
+          <img src="https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021786435040868d3ceb3d471ce278cd568773b7d71d6393e62fc_0_1786435058256_f875c8e6.jpeg" alt="" width="42" height="42">
+        </span>
+        <span class="koppen-tekst">Gemaakt voor mkb-directeuren met 3 tot 250 medewerkers</span>
       </div>
       </div>
   </div>
