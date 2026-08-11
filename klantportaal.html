@@ -4,206 +4,886 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Jouw koppelingen · Bedrijfsgeheugen</title>
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Jouw portaal · Bedrijfsgeheugen</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--groen:#1F9D55;--amber:#E8A200;--rood:#D93025;--wit:#fff}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--papier);color:var(--inkt);font-family:"Instrument Sans",system-ui,sans-serif;line-height:1.65}
-h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;line-height:1.1}
-a{color:var(--blauw)}
-.wrap{max-width:60rem;margin:0 auto;padding:0 1.2rem}
-header{border-bottom:2px solid var(--inkt);background:var(--papier)}
-.top{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:64px;flex-wrap:wrap}
-.merk{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.1rem;text-decoration:none;color:var(--inkt)}
-.merk span{color:var(--blauw)}
-main{padding:2rem 0 4rem}
-.eyebrow{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--oranje)}
-h1{font-size:clamp(1.8rem,4.5vw,2.7rem);margin:.3rem 0 .5rem}
-.sub{font-size:.88rem;color:var(--grijs)}
-.kaart{background:var(--wit);border:1px solid var(--lijn);border-radius:10px;padding:1.1rem 1.25rem;margin-top:1rem}
-.kaart h3{font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;color:var(--grijs);font-weight:600;margin-bottom:.4rem}
-.kpi{font-family:"Bricolage Grotesque";font-weight:800;font-size:2rem;line-height:1}
-.drie{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1rem}
-.rij{display:grid;grid-template-columns:auto 1fr auto;gap:.9rem;padding:.85rem 0;border-bottom:1px solid var(--lijn);align-items:start}
-.bol{width:.7rem;height:.7rem;border-radius:50%;margin-top:.45rem}
-.pil{display:inline-block;font-size:.72rem;font-weight:600;padding:.15rem .5rem;border-radius:20px;white-space:nowrap}
-.balk{background:#EFEFEC;border-radius:8px;height:10px;margin-top:.35rem;overflow:hidden}
-.balk div{height:10px;border-radius:8px;background:var(--blauw)}
-.let{padding:.8rem .9rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 5px 5px 0;font-size:.88rem;line-height:1.6;margin-top:.9rem}
-.knop{display:inline-block;background:var(--inkt);color:#fff;border:0;border-radius:8px;padding:.7rem 1.1rem;font:inherit;font-weight:600;text-decoration:none;cursor:pointer}
-input{height:44px;padding:0 .8rem;border:1px solid var(--lijn);border-radius:8px;font:inherit;background:var(--wit);min-width:14rem}
-footer{border-top:2px solid var(--inkt);padding:1.4rem 0;font-size:.86rem;color:var(--grijs)}
+:root{
+  --papier:#FBFAF7; --inkt:#14171A; --blauw:#2742D6; --blauw-l:#EDF0FD;
+  --oranje:#FF4F17; --amber:#C77700; --amber-l:#FFF6E3;
+  --groen:#178A4C; --groen-l:#E8F5EC; --rood:#C0392B; --rood-l:#FDECE8;
+  --geel:#FFE86B; --grijs:#5C646E; --lijn:#E4E6EB; --vlak:#F5F6F9;
+  --zij:252px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Instrument Sans',system-ui,sans-serif;background:var(--vlak);color:var(--inkt);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;line-height:1.15}
+a{color:inherit}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blauw);outline-offset:2px;border-radius:6px}
+
+/* ── raamwerk ── */
+.app{display:grid;grid-template-columns:var(--zij) 1fr;min-height:100vh}
+.zij{background:#fff;border-right:1px solid var(--lijn);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.merk{display:flex;align-items:center;gap:.6rem;padding:1.15rem 1.25rem;border-bottom:1px solid var(--lijn);text-decoration:none}
+.merk img{width:30px;height:30px}
+.merk b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.02rem;letter-spacing:-.02em}
+.menu{padding:.9rem .75rem;flex:1}
+.mkop{font-size:.66rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#9AA1AB;padding:.9rem .6rem .4rem}
+.mlink{display:flex;align-items:center;gap:.65rem;padding:.5rem .6rem;border-radius:9px;text-decoration:none;font-size:.9rem;font-weight:500;color:#3C424A;margin-bottom:1px;width:100%;text-align:left}
+.mlink:hover{background:var(--vlak)}
+.mlink.aan{background:var(--blauw-l);color:var(--blauw);font-weight:600}
+.mlink svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mlink .telp{margin-left:auto;background:var(--vlak);border-radius:99px;font-size:.7rem;font-weight:700;padding:.05rem .42rem;color:var(--grijs)}
+.mlink.aan .telp{background:#fff;color:var(--blauw)}
+.zijvoet{padding:.9rem 1rem;border-top:1px solid var(--lijn);font-size:.78rem;color:var(--grijs)}
+.zijvoet .knop{width:100%;justify-content:center;margin-bottom:.7rem}
+
+.hoofd{min-width:0;display:flex;flex-direction:column}
+.balk{background:#fff;border-bottom:1px solid var(--lijn);display:flex;align-items:center;gap:1rem;padding:.7rem 1.6rem;position:sticky;top:0;z-index:30}
+.zoekdoos{flex:1;max-width:440px;margin:0 auto;position:relative}
+.zoekdoos input{width:100%;border:1px solid var(--lijn);background:var(--vlak);border-radius:10px;padding:.5rem .8rem .5rem 2.2rem;font-size:.88rem}
+.zoekdoos input:focus{outline:none;border-color:var(--blauw);background:#fff}
+.zoekdoos>svg{position:absolute;left:.7rem;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--grijs);fill:none;stroke-width:1.8}
+.zoeklijst{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--lijn);border-radius:12px;box-shadow:0 12px 30px rgba(20,23,26,.12);padding:.4rem;max-height:340px;overflow:auto;z-index:40}
+.zoeklijst button{display:block;width:100%;text-align:left;padding:.5rem .6rem;border-radius:8px;font-size:.86rem}
+.zoeklijst button:hover,.zoeklijst button.aan{background:var(--vlak)}
+.zoeklijst .leeg{padding:.6rem;color:var(--grijs);font-size:.86rem}
+.balk-rechts{display:flex;align-items:center;gap:.5rem;margin-left:auto;position:relative}
+.rond{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative}
+.rond:hover{background:var(--vlak)}
+.rond svg{width:19px;height:19px;stroke:#3C424A;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.stip{position:absolute;top:4px;right:4px;min-width:16px;height:16px;border-radius:99px;background:var(--oranje);color:#fff;font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.gebruiker{display:flex;align-items:center;gap:.55rem;padding:.3rem .5rem .3rem .3rem;border-radius:10px}
+.gebruiker:hover{background:var(--vlak)}
+.avatar{width:32px;height:32px;border-radius:9px;background:var(--blauw);color:#fff;font-weight:700;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex:none}
+.gebruiker .naam{font-size:.85rem;font-weight:600;line-height:1.2;text-align:left}
+.gebruiker .rol{font-size:.72rem;color:var(--grijs)}
+.paneel{position:absolute;top:calc(100% + 8px);right:0;width:320px;background:#fff;border:1px solid var(--lijn);border-radius:14px;box-shadow:0 16px 40px rgba(20,23,26,.14);z-index:50;overflow:hidden}
+.paneel h4{font-size:.9rem;padding:.85rem 1rem;border-bottom:1px solid var(--lijn)}
+.paneel .item{display:block;width:100%;text-align:left;padding:.7rem 1rem;border-bottom:1px solid var(--lijn);font-size:.85rem}
+.paneel .item:last-child{border-bottom:0}
+.paneel .item:hover{background:var(--vlak)}
+.paneel .item .tijd{font-size:.74rem;color:var(--grijs)}
+.inhoud{padding:1.6rem;max-width:1180px;width:100%}
+
+/* ── bouwstenen ── */
+.kop-rij{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem}
+.welkom{font-size:.85rem;color:var(--grijs)}
+.welkom b{color:var(--blauw)}
+h1.titel{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;margin:.15rem 0 .3rem}
+h1.titel span{color:var(--blauw)}
+.sub{color:var(--grijs);font-size:.9rem}
+.bijgewerkt{margin-left:auto;font-size:.8rem;color:var(--grijs);white-space:nowrap}
+.kaart{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
+.kaart>h3{font-size:1rem;font-weight:800;margin-bottom:.2rem}
+.kaartkop{display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem}
+.kaartkop h3{font-size:1rem;font-weight:800}
+.kaartkop .rechts{margin-left:auto;display:flex;gap:.5rem;align-items:center}
+.raster{display:grid;gap:1rem;margin-bottom:1rem}
+.r3{grid-template-columns:repeat(3,1fr)}
+.r2{grid-template-columns:1fr 1fr}
+.r23{grid-template-columns:1.55fr 1fr}
+@media(max-width:1000px){.r3,.r2,.r23{grid-template-columns:1fr}}
+.kpi{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1rem 1.1rem}
+.kpi .label{display:flex;align-items:center;gap:.5rem;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grijs);margin-bottom:.5rem}
+.kpi .label svg{width:15px;height:15px;stroke:var(--blauw);fill:none;stroke-width:1.8}
+.kpi .cijfer{font-family:'Bricolage Grotesque',sans-serif;font-size:1.9rem;font-weight:800;line-height:1}
+.kpi .bij{font-size:.82rem;color:var(--grijs);margin-top:.15rem}
+.kpi .onder{display:flex;align-items:flex-end;justify-content:space-between;gap:.6rem;margin-top:.6rem}
+.trend{font-size:.75rem;color:var(--groen);display:flex;align-items:center;gap:.25rem;white-space:nowrap}
+.rij{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem 0;border-top:1px solid var(--lijn)}
+.rij:first-of-type{border-top:0}
+.rij .bol{width:9px;height:9px;border-radius:50%;flex:none;margin-top:.45rem}
+.rij .mid{flex:1;min-width:0}
+.rij b{font-size:.92rem;font-weight:700;display:block}
+.rij .fijn{font-size:.8rem;color:var(--grijs)}
+.rij .rechts{text-align:right;white-space:nowrap}
+.pil{display:inline-block;border-radius:99px;padding:.1rem .55rem;font-size:.72rem;font-weight:700}
+.balkje{height:7px;border-radius:99px;background:var(--lijn);margin:.45rem 0 .3rem;overflow:hidden}
+.balkje div{height:100%;background:var(--blauw);border-radius:99px}
+.knop{display:inline-flex;align-items:center;gap:.4rem;background:var(--blauw);color:#fff;border-radius:9px;padding:.45rem .85rem;font-size:.85rem;font-weight:600;text-decoration:none}
+.knop:hover{filter:brightness(1.08)}
+.knop.stil{background:#fff;color:#3C424A;border:1px solid var(--lijn)}
+.knop.stil:hover{border-color:var(--blauw);color:var(--blauw);filter:none}
+.knop svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9}
+.meer{display:block;text-align:center;padding-top:.8rem;margin-top:.4rem;border-top:1px solid var(--lijn);color:var(--blauw);font-weight:600;font-size:.85rem;text-decoration:none;width:100%}
+.let{padding:.85rem 1rem;border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 8px 8px 0;font-size:.86rem;margin-bottom:1rem}
+.mel{padding:.85rem 1rem;border-left:4px solid var(--blauw);background:var(--blauw-l);border-radius:0 8px 8px 0;font-size:.86rem;margin-bottom:1rem;display:flex;gap:.7rem}
+.mel svg{width:18px;height:18px;flex:none;margin-top:2px;stroke:var(--blauw);fill:none;stroke-width:1.8}
+select.filter{border:1px solid var(--lijn);border-radius:8px;padding:.32rem .55rem;font-size:.8rem;background:#fff}
+.leegstand{text-align:center;padding:2.2rem 1rem;color:var(--grijs)}
+.leegstand svg{width:34px;height:34px;stroke:var(--lijn);fill:none;stroke-width:1.6;margin-bottom:.6rem}
+table.tab{width:100%;border-collapse:collapse;font-size:.86rem}
+table.tab th{text-align:left;font-weight:700;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--grijs);padding:.5rem .6rem;border-bottom:1px solid var(--lijn)}
+table.tab td{padding:.6rem;border-bottom:1px solid var(--lijn);vertical-align:top}
+table.tab tr:last-child td{border-bottom:0}
+table.tab td.num{text-align:right;white-space:nowrap}
+.tijdlijn{position:relative;padding-left:1.4rem}
+.tijdlijn::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--lijn)}
+.tijdlijn .gebeurt{position:relative;padding:.5rem 0}
+.tijdlijn .gebeurt::before{content:"";position:absolute;left:-1.4rem;top:.85rem;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--blauw)}
+.veld{display:block;margin-bottom:.9rem}
+.veld span{display:block;font-size:.8rem;font-weight:600;margin-bottom:.25rem}
+.veld input,.veld select,.veld textarea{width:100%;border:1px solid var(--lijn);border-radius:9px;padding:.5rem .7rem;font-size:.88rem;background:#fff}
+.veld input:focus,.veld textarea:focus{outline:none;border-color:var(--blauw)}
+.schakel{display:flex;align-items:center;gap:.6rem;padding:.6rem 0;border-top:1px solid var(--lijn);font-size:.88rem}
+.schakel:first-of-type{border-top:0}
+.schakel input{margin-left:auto;width:18px;height:18px;accent-color:var(--blauw)}
+.mobknop{display:none}
+.overlay{position:fixed;inset:0;background:rgba(20,23,26,.45);display:flex;align-items:center;justify-content:center;padding:1.2rem;z-index:80}
+.venster{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:1.4rem 1.5rem}
+.venster h3{font-size:1.1rem;margin-bottom:.5rem}
+.venster p{font-size:.9rem;color:#3C424A;margin-bottom:1rem}
+@media(max-width:860px){
+  .app{grid-template-columns:1fr}
+  .zij{position:fixed;left:0;top:0;bottom:0;width:var(--zij);z-index:70;transform:translateX(-100%);transition:transform .22s ease;height:100vh}
+  .zij.open{transform:none}
+  .mobknop{display:flex}
+  .inhoud{padding:1rem}
+  .balk{padding:.6rem .8rem}
+  .gebruiker .naam,.gebruiker .rol{display:none}
+  .zijscherm{position:fixed;inset:0;background:rgba(20,23,26,.4);z-index:60}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<header><div class="wrap top">
-  <a class="merk" href="/">Bedrijfs<span>geheugen</span></a>
-  <span class="sub" id="ververst"></span>
-</div></header>
 
-<main class="wrap">
-  <span class="eyebrow">Jouw portaal · bijgewerkt vanuit onze administratie</span>
-  <h1 id="titel">Wat er voor je draait</h1>
-  <p class="sub" id="onder">Alles wat we voor je gebouwd hebben, wat er nu loopt, en hoeveel uur eraan besteed is.</p>
-
-  <div id="zoek" class="kaart" hidden>
-    <h3>Voor welk bedrijf</h3>
-    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.3rem">
-      <input type="text" id="fKlant" placeholder="bedrijfsnaam">
-      <button class="knop" id="bOk">Bekijken</button>
+<div class="app">
+  <aside class="zij" id="zij">
+    <a class="merk" href="/">
+      <img src="/assets/merk/logo-merk.png" alt="" width="30" height="30">
+      <b>Bedrijfsgeheugen</b>
+    </a>
+    <nav class="menu" id="menu"></nav>
+    <div class="zijvoet">
+      <a class="knop stil" href="#/feedback">Feedback geven</a>
+      <span id="voetregel">Bedrijfsgeheugen</span>
     </div>
-    <p class="sub" style="margin-top:.6rem">Je kunt ook rechtstreeks naar <code>?klant=jouwbedrijf</code>. Benieuwd hoe het eruitziet? <a href="?klant=demo">Bekijk een voorbeeld</a>.</p>
+  </aside>
+
+  <div class="hoofd">
+    <header class="balk">
+      <button class="rond mobknop" id="mobKnop" aria-label="Menu openen">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="zoekdoos">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+        <input type="search" id="zoek" placeholder="Zoek in je bedrijfsgeheugen…" autocomplete="off" aria-label="Zoeken">
+        <div class="zoeklijst" id="zoeklijst" hidden></div>
+      </div>
+      <div class="balk-rechts">
+        <button class="rond" id="belKnop" aria-label="Meldingen">
+          <svg viewBox="0 0 24 24"><path d="M18 8.5a6 6 0 10-12 0c0 6-2 7.5-2 7.5h16s-2-1.5-2-7.5z"/><path d="M13.7 20a2 2 0 01-3.4 0"/></svg>
+          <span class="stip" id="belTal" hidden>0</span>
+        </button>
+        <div class="paneel" id="belPaneel" hidden></div>
+        <button class="gebruiker" id="gebrKnop">
+          <span class="avatar" id="avatar">?</span>
+          <span>
+            <span class="naam" id="gebrNaam">—</span>
+            <span class="rol" id="gebrRol">—</span>
+          </span>
+          <svg width="12" height="12" viewBox="0 0 12 8" fill="none" aria-hidden="true"><path d="M1 1l5 5 5-5" stroke="#5C646E" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <div class="paneel" id="gebrPaneel" hidden></div>
+      </div>
+    </header>
+    <main class="inhoud" id="scherm"></main>
   </div>
-
-  <div id="inhoud"></div>
-</main>
-
-<footer><div class="wrap">Bedrijfsgeheugen · Vragen? Bel of mail gerust — <a href="/contact">contact</a></div></footer>
+</div>
 
 <script>
+/* ═══════════════ gegevens ═══════════════ */
 const HOOK='https://hook.eu1.make.com/q2xq2fbi6tfw9o86obq47j223ho42qh2';
-const KL={'Draait':['var(--groen)','#E8F5EC'],'In aanbouw':['var(--blauw)','#EDF0FD'],'Voorgesteld':['var(--amber)','#FFF6E3'],'Idee':['var(--grijs)','#F1F0EC'],'Gestopt':['var(--rood)','#FDECE8']};
 const params=new URLSearchParams(location.search);
-const klant=params.get('klant');
-
-function pil(t){const k=KL[t]||KL['Idee'];return '<span class="pil" style="color:'+k[0]+';background:'+k[1]+'">'+t+'</span>';}
-
-function toon(d){
-  const K=d.koppelingen||[];
-  const el=document.getElementById('inhoud');
-  document.getElementById('titel').textContent='Wat er draait voor '+d.klant;
-  document.getElementById('ververst').textContent='Bijgewerkt '+d.opgehaald;
-  if(!K.length){
-    el.innerHTML='<div class="kaart"><h3>Nog niets vastgelegd</h3><p class="sub">Er staat nog geen koppeling op deze naam. Klopt dat niet? Laat het ons weten, dan kijken we mee.</p></div>';
-    return;
-  }
-  const draait=K.filter(k=>k.status==='Draait');
-  const bouw=K.filter(k=>k.status==='In aanbouw');
-  const uren=K.reduce((a,k)=>a+(+k.uren||0),0);
-  const bespaard=draait.reduce((a,k)=>a+(+k.besparing||0),0);
-  const tarief=+d.tarief||200;
-  const gefactureerd=K.reduce((a,k)=>a+(+k.gefactureerd||0),0);
-  const gewerkt=uren*tarief;
-  const open=Math.max(gewerkt-gefactureerd,0);
-  const eur=v=>'\u20ac '+Math.round(v).toLocaleString('nl-NL');
-
-  el.innerHTML=
-   '<div class="drie" style="margin-top:1rem">'
-   +'<div class="kaart"><h3>Draait nu</h3><div class="kpi" style="color:var(--groen)">'+draait.length+'</div><div class="sub">van de '+K.length+' koppelingen</div></div>'
-   +'<div class="kaart"><h3>Uur besteed</h3><div class="kpi">'+uren.toFixed(1)+'</div><div class="sub">aan bouwen en aansluiten</div></div>'
-   +'<div class="kaart"><h3>Uur per jaar terug</h3><div class="kpi" style="color:var(--groen)">'+Math.round(bespaard)+'</div><div class="sub">bij jullie op de werkvloer</div></div>'
-   +'</div>'
-
-   +'<div class="kaart"><h3>Wat er draait</h3>'
-   + (draait.length? draait.map(function(k){
-       return '<div class="rij"><span class="bol" style="background:var(--groen)"></span>'
-        +'<div><b>'+k.titel+'</b><div class="sub">'+k.van+' → '+k.naar+' · gebouwd met '+(k.middel||'—')+'</div>'
-        +(k.notitie?'<div class="sub">'+k.notitie+'</div>':'')+'</div>'
-        +'<div style="text-align:right">'+pil('Draait')+'<div class="sub" style="margin-top:.25rem">'+Math.round(k.besparing||0)+' uur p.j.</div></div></div>';
-      }).join('') : '<p class="sub">Nog niets live.</p>')
-   +'</div>'
-
-   + (bouw.length? '<div class="kaart"><h3>Waar we nu aan werken</h3>'
-      + bouw.map(function(k){
-         return '<div class="rij"><span class="bol" style="background:var(--blauw)"></span>'
-          +'<div><b>'+k.titel+'</b><div class="sub">'+k.van+' → '+k.naar+' · '+(k.middel||'—')+'</div>'
-          +(k.notitie?'<div class="sub">'+k.notitie+'</div>':'')
-          +'<div class="balk"><div style="width:'+Math.min(100,(+k.uren||0)/8*100)+'%"></div></div>'
-          +'<div class="sub">'+(+k.uren||0)+' uur besteed</div></div>'
-          +'<div>'+pil('In aanbouw')+'</div></div>';
-        }).join('')+'</div>' : '')
-
-   +'<div class="kaart"><h3>Alles op een rij</h3>'
-   + K.map(function(k){
-      return '<div class="rij"><span class="bol" style="background:'+(KL[k.status]||KL['Idee'])[0]+'"></span>'
-       +'<div><b>'+k.titel+'</b><div class="sub">'+(k.middel||'—')+' · '+(+k.uren||0)+' uur</div></div>'
-       +'<div>'+pil(k.status)+'</div></div>';
-     }).join('')
-   +'</div>'
-
-   +'<div class="kaart"><h3>Uren en facturen</h3>'
-   +'<div class="drie" style="margin-bottom:.6rem">'
-   +'<div><div class="kpi">'+uren.toFixed(1)+'</div><div class="sub">uur gewerkt \u00d7 '+eur(tarief)+'</div></div>'
-   +'<div><div class="kpi">'+eur(gefactureerd)+'</div><div class="sub">al gefactureerd</div></div>'
-   +'<div><div class="kpi" style="color:'+(open>0?'var(--amber)':'var(--groen)')+'">'+eur(open)+'</div><div class="sub">'+(open>0?'gewerkt maar nog niet gefactureerd':'niets openstaand')+'</div></div>'
-   +'</div>'
-   + K.filter(function(k){return (+k.uren||0)>0;}).map(function(k){
-      const w=(+k.uren||0)*tarief, f=+k.gefactureerd||0;
-      return '<div class="rij"><span class="bol" style="background:'+(f>=w?'var(--groen)':'var(--amber)')+'"></span>'
-       +'<div><b>'+k.titel+'</b><div class="sub">'+(+k.uren||0)+' uur \u00b7 '+eur(w)+' aan werk</div></div>'
-       +'<div style="text-align:right"><b>'+eur(f)+'</b><div class="sub">gefactureerd</div></div></div>';
-     }).join('')
-   +'<p class="sub" style="margin-top:.7rem">Elke factuur komt met de urenlijst erbij: per dag, met wat er die dag gebeurde. '
-   +'Klopt er iets niet, zeg het \u2014 dan halen we het eraf. Werk onder twee uur brengen we niet in rekening.</p>'
-   +'</div>'
-
-   +'<div class="let"><b>Wat die uren betekenen.</b> De uren die vrijkomen zijn geen geld dat binnenkomt — jullie mensen blijven. '
-   +'Het is ruimte: hetzelfde team kan meer aan zonder dat er iemand bij hoeft. Wat dat waard is, bepalen jullie zelf.</div>'
-
-   +'<div class="kaart"><h3>Storingen en meldingen</h3>'
-   +'<p class="sub">Valt er iets stil, dan zie je dat hier — en krijg je bericht vóórdat je klant het merkt. '
-   +'Op dit moment zijn er <b>geen storingen</b> gemeld.</p>'
-   +'<p class="sub" style="margin-top:.5rem">Merk je zelf iets? Bel of mail gerust. Onder de twee uur werk brengen we niets in rekening.</p></div>';
-}
-
-function haal(naam){
-  document.getElementById('inhoud').innerHTML='<div class="kaart"><p class="sub">Ophalen…</p></div>';
-  fetch(HOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({klant:naam})})
-    .then(r=>r.json()).then(toon)
-    .catch(function(){
-      document.getElementById('inhoud').innerHTML='<div class="kaart"><h3>Even niet bereikbaar</h3><p class="sub">We konden de gegevens nu niet ophalen. Probeer het zo nog eens, of laat het ons weten.</p></div>';
-    });
-}
-
+const klantParam=params.get('klant');
+const isDemo = klantParam==='demo' || params.get('demo')!==null;
 
 const DEMO={
  klant:'Van Dijk Techniek (voorbeeld)',
+ contact:{naam:'Arthur Prinsen', rol:'Beheerder'},
  tarief:200,
  koppelingen:[
   {titel:'Webshoporder wordt verkooporder',van:'Webshop',naar:'Exact Online',middel:'Make',
    notitie:'Order, klant en regels komen binnen zonder overtypen. Ook bij spoedorders.',
-   status:'Draait',uren:6.5,besparing:120,gefactureerd:1300},
+   status:'Draait',uren:6.5,besparing:120,gefactureerd:1300,voortgang:100,sinds:'12 mei 2026'},
   {titel:'Offertes volgen zichzelf op',van:'AFAS',naar:'Teams',middel:'Power Automate',
    notitie:'Na vijf dagen stilte een herinnering bij de verkoper, met de offerte erbij.',
-   status:'Draait',uren:4,besparing:80,gefactureerd:800},
+   status:'Draait',uren:4,besparing:80,gefactureerd:800,voortgang:100,sinds:'3 juni 2026'},
   {titel:'Inkoopfacturen worden ingelezen',van:'Mailbox',naar:'Exact Online',middel:'Make + AI',
    notitie:'Leverancier, bedrag en btw eruit gehaald; twijfelgevallen gaan naar Finance.',
-   status:'Draait',uren:5.5,besparing:95,gefactureerd:1100},
+   status:'Draait',uren:5.5,besparing:95,gefactureerd:1100,voortgang:100,sinds:'1 juli 2026'},
   {titel:'Werkbon naar planning',van:'Formulier',naar:'Planning',middel:'Make',
    notitie:'Monteur vult op locatie in, de planner ziet het direct.',
-   status:'In aanbouw',uren:3.2,besparing:60,gefactureerd:0},
+   status:'In aanbouw',uren:3.2,besparing:60,gefactureerd:0,voortgang:35},
   {titel:'Websiteaanvraag wordt klantkaart',van:'Website',naar:'AFAS',middel:'Make',
-   status:'Voorgesteld',uren:0,besparing:40,gefactureerd:0},
+   notitie:'Voorstel ligt bij jullie: we wachten op de velden die op de kaart moeten.',
+   status:'Voorgesteld',uren:0,besparing:40,gefactureerd:0,voortgang:0},
   {titel:'Uren naar het loonjournaal',van:'Urenapp',naar:'Exact Online',middel:'nog te bepalen',
-   status:'Idee',uren:0,besparing:0,gefactureerd:0}
- ]
+   notitie:'Genoteerd als idee tijdens de Frisse blik. Nog niet ingepland.',
+   status:'Idee',uren:0,besparing:0,gefactureerd:0,voortgang:0}
+ ],
+ urenregels:[
+  {datum:'2026-07-28',koppeling:'Inkoopfacturen worden ingelezen',uren:2.0,wat:'Herkenning van leveranciers ingeregeld en getest op 40 facturen',gefactureerd:true},
+  {datum:'2026-07-29',koppeling:'Inkoopfacturen worden ingelezen',uren:1.5,wat:'Twijfelgevallen naar Finance laten lopen, met uitleg in de mail',gefactureerd:true},
+  {datum:'2026-07-30',koppeling:'Inkoopfacturen worden ingelezen',uren:2.0,wat:'Boeking in Exact getest en overgedragen aan de administratie',gefactureerd:true},
+  {datum:'2026-08-03',koppeling:'Werkbon naar planning',uren:1.2,wat:'Formulier opgezet met de velden van de monteurs',gefactureerd:false},
+  {datum:'2026-08-05',koppeling:'Werkbon naar planning',uren:2.0,wat:'Koppeling naar de planning gebouwd, eerste testronde',gefactureerd:false},
+  {datum:'2026-06-11',koppeling:'Offertes volgen zichzelf op',uren:2.5,wat:'Herinneringsstroom gebouwd in Power Automate',gefactureerd:true},
+  {datum:'2026-06-12',koppeling:'Offertes volgen zichzelf op',uren:1.5,wat:'Teksten aangepast en met verkoop doorgenomen',gefactureerd:true},
+  {datum:'2026-05-08',koppeling:'Webshoporder wordt verkooporder',uren:3.5,wat:'Ordermapping gemaakt tussen webshop en Exact',gefactureerd:true},
+  {datum:'2026-05-09',koppeling:'Webshoporder wordt verkooporder',uren:3.0,wat:'Spoedorders en kortingsregels afgevangen',gefactureerd:true}
+ ],
+ facturen:[
+  {nummer:'2026-041',datum:'2026-05-31',bedrag:1300,status:'Betaald',regels:'Webshoporder wordt verkooporder · 6,5 uur'},
+  {nummer:'2026-052',datum:'2026-06-30',bedrag:800,status:'Betaald',regels:'Offertes volgen zichzelf op · 4 uur'},
+  {nummer:'2026-063',datum:'2026-07-31',bedrag:1100,status:'Open',regels:'Inkoopfacturen worden ingelezen · 5,5 uur'}
+ ],
+ documenten:[
+  {naam:'Frisse blik — rapport',soort:'PDF',datum:'2026-04-22',bij:'Frisse blik'},
+  {naam:'Procesplaat order tot factuur',soort:'PDF',datum:'2026-04-22',bij:'Frisse blik'},
+  {naam:'Werkinstructie inkoopfacturen',soort:'Document',datum:'2026-07-30',bij:'Inkoopfacturen worden ingelezen'},
+  {naam:'Opleverdocument webshopkoppeling',soort:'Document',datum:'2026-05-12',bij:'Webshoporder wordt verkooporder'},
+  {naam:'Factuur 2026-063',soort:'PDF',datum:'2026-07-31',bij:'Uren en facturen'}
+ ],
+ notities:[
+  {datum:'2026-08-04',tekst:'Planner vraagt of de werkbon ook een foto kan meesturen. Meenemen in de volgende ronde.'},
+  {datum:'2026-07-15',tekst:'Na de vakantie kijken naar de urenapp richting het loonjournaal.'}
+ ],
+ activiteit:[
+  {datum:'2026-08-11 08:40',tekst:'Werkbon naar planning: tweede testronde gestart',soort:'werk'},
+  {datum:'2026-08-05 16:10',tekst:'2,0 uur geschreven op Werkbon naar planning',soort:'uren'},
+  {datum:'2026-07-31 09:00',tekst:'Factuur 2026-063 verstuurd (€ 1.100)',soort:'factuur'},
+  {datum:'2026-07-30 15:20',tekst:'Inkoopfacturen worden ingelezen: opgeleverd en overgedragen',soort:'mijlpaal'},
+  {datum:'2026-07-15 11:05',tekst:'Notitie toegevoegd over de urenapp',soort:'notitie'},
+  {datum:'2026-07-01 09:30',tekst:'Inkoopfacturen worden ingelezen: gestart',soort:'werk'},
+  {datum:'2026-06-30 09:00',tekst:'Factuur 2026-052 verstuurd (€ 800)',soort:'factuur'},
+  {datum:'2026-06-03 14:00',tekst:'Offertes volgen zichzelf op: live gezet',soort:'mijlpaal'}
+ ],
+ team:[
+  {naam:'Arthur Prinsen',rol:'Beheerder',bij:'Bedrijfsgeheugen',laatst:'vandaag'},
+  {naam:'Directie',rol:'Meekijken',bij:'Van Dijk Techniek',laatst:'gisteren'},
+  {naam:'Finance',rol:'Uren en facturen',bij:'Van Dijk Techniek',laatst:'5 augustus'},
+  {naam:'Werkvoorbereiding',rol:'Meekijken',bij:'Van Dijk Techniek',laatst:'28 juli'}
+ ],
+ integraties:[
+  {naam:'Exact Online',status:'Verbonden',laatste:'11 augustus 10:05',waarvoor:'Verkooporders, inkoopfacturen'},
+  {naam:'AFAS',status:'Verbonden',laatste:'11 augustus 09:50',waarvoor:'Klanten en offertes'},
+  {naam:'Microsoft 365',status:'Verbonden',laatste:'11 augustus 10:02',waarvoor:'Teams-berichten, documenten'},
+  {naam:'Webshop',status:'Verbonden',laatste:'11 augustus 09:58',waarvoor:'Orders'},
+  {naam:'Urenapp',status:'Niet verbonden',laatste:'—',waarvoor:'Nog een idee'}
+ ],
+ meldingen:[
+  {tekst:'Werkbon naar planning staat op 35% — tweede testronde loopt',tijd:'vandaag 08:40'},
+  {tekst:'Factuur 2026-063 staat nog open',tijd:'31 juli'},
+  {tekst:'Inkoopfacturen worden ingelezen is opgeleverd',tijd:'30 juli'}
+ ],
+ urenPerMaand:[{m:'mrt',u:0},{m:'apr',u:0},{m:'mei',u:6.5},{m:'jun',u:4},{m:'jul',u:5.5},{m:'aug',u:3.2}]
 };
 
-function toonDemo(){
-  const d=JSON.parse(JSON.stringify(DEMO));
-  d.opgehaald=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-  toon(d);
-  document.getElementById('inhoud').insertAdjacentHTML('afterbegin',
-    '<div class="let" style="margin-bottom:1rem"><b>Dit is een voorbeeld.</b> '
-   +'Van Dijk Techniek bestaat niet en alle koppelingen, uren en bedragen zijn verzonnen. '
-   +'Zo ziet jouw portaal eruit zodra we voor je aan de slag zijn.</div>');
+const KL={'Draait':['var(--groen)','var(--groen-l)'],'In aanbouw':['var(--blauw)','var(--blauw-l)'],
+          'Voorgesteld':['var(--amber)','var(--amber-l)'],'Idee':['var(--grijs)','var(--vlak)'],
+          'Gestopt':['var(--rood)','var(--rood-l)']};
+
+let D=null;             // de gegevens
+let filterStatus='alle';
+let zoekterm='';
+
+/* ═══════════════ hulpjes ═══════════════ */
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eur=v=>'€ '+Math.round(v||0).toLocaleString('nl-NL');
+const uur=v=>(+v||0).toLocaleString('nl-NL',{minimumFractionDigits:0,maximumFractionDigits:1});
+const pil=t=>{const k=KL[t]||KL['Idee'];return '<span class="pil" style="color:'+k[0]+';background:'+k[1]+'">'+esc(t)+'</span>';};
+const bol=t=>'<span class="bol" style="background:'+(KL[t]||KL['Idee'])[0]+'"></span>';
+function datumNL(s){
+  if(!s) return '—';
+  const d=new Date(s.length>10?s.replace(' ','T'):s+'T00:00:00');
+  if(isNaN(d)) return esc(s);
+  return d.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
+}
+function ico(p,w){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>';}
+const I={
+ dash:'<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/>',
+ taken:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 5.5l1.2 1.2L7.5 4.4M4 11.5l1.2 1.2 2.3-2.3M4 17.5l1.2 1.2 2.3-2.3"/>',
+ uren:'<rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9h17M8 2.5v4M16 2.5v4M8 13h3M8 16.5h6"/>',
+ kop:'<circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.2 8.3l7.6 2.6M8.2 15.7l7.6-2.6"/>',
+ doc:'<path d="M14 3.5H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V8.5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/>',
+ notitie:'<rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8.5h8M8 12.5h8M8 16.5h4"/>',
+ rapport:'<path d="M3.5 20.5h17"/><path d="M7 17V10M11.5 17V5.5M16 17v-4M20 17V8.5" stroke-width="2"/>',
+ impact:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.7l5.9-.8z"/>',
+ activiteit:'<path d="M3 12h4l2.5-6 4 12 2.5-6h5"/>',
+ instel:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.2 5.2l1.9 1.9M16.9 16.9l1.9 1.9M18.8 5.2l-1.9 1.9M7.1 16.9l-1.9 1.9"/>',
+ team:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/>',
+ integratie:'<rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/><path d="M7 10.5v4a2 2 0 002 2h4.5"/>',
+ klok:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.3l3.4 2"/>',
+ vink:'<circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.2l2.6 2.6 5-5.6"/>',
+ euro:'<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.6a4.2 4.2 0 100 6.8M7.8 11h5.4M7.8 13.4h5.4"/>',
+ info:'<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.4"/>',
+ leeg:'<rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M3.5 10h17"/>'
+};
+
+const MENU=[
+ {kop:'Overzicht'},
+ {id:'dashboard', naam:'Dashboard', ico:I.dash},
+ {id:'werkstromen', naam:'Taken & Werkstromen', ico:I.taken, tel:d=>d.koppelingen.filter(k=>k.status==='In aanbouw').length},
+ {id:'uren', naam:'Uren & Facturen', ico:I.uren},
+ {id:'koppelingen', naam:'Koppelingen', ico:I.kop, tel:d=>d.koppelingen.length},
+ {id:'documenten', naam:'Documenten', ico:I.doc},
+ {id:'notities', naam:'Notities', ico:I.notitie},
+ {kop:'Inzicht'},
+ {id:'rapportages', naam:'Rapportages', ico:I.rapport},
+ {id:'impact', naam:'Impact & Besparing', ico:I.impact},
+ {id:'activiteit', naam:'Activiteit', ico:I.activiteit},
+ {kop:'Beheer'},
+ {id:'instellingen', naam:'Instellingen', ico:I.instel},
+ {id:'team', naam:'Team & Toegang', ico:I.team},
+ {id:'integraties', naam:'Integraties', ico:I.integratie}
+];
+const TITELS={dashboard:'Wat er draait voor',werkstromen:'Taken & werkstromen',uren:'Uren & facturen',
+ koppelingen:'Koppelingen',documenten:'Documenten',notities:'Notities',rapportages:'Rapportages',
+ impact:'Impact & besparing',activiteit:'Activiteit',instellingen:'Instellingen',team:'Team & toegang',
+ integraties:'Integraties',feedback:'Feedback geven'};
+
+/* ═══════════════ berekeningen ═══════════════ */
+function cijfers(){
+ const K=D.koppelingen||[];
+ const draait=K.filter(k=>k.status==='Draait');
+ const bouw=K.filter(k=>k.status==='In aanbouw');
+ const uren=K.reduce((a,k)=>a+(+k.uren||0),0);
+ const besparing=draait.reduce((a,k)=>a+(+k.besparing||0),0);
+ const tarief=+D.tarief||200;
+ const gefactureerd=K.reduce((a,k)=>a+(+k.gefactureerd||0),0);
+ const gewerkt=uren*tarief;
+ return {K,draait,bouw,uren,besparing,tarief,gefactureerd,gewerkt,open:Math.max(gewerkt-gefactureerd,0)};
+}
+function sparkline(reeks,kleur){
+ const w=90,h=30,max=Math.max.apply(null,reeks.concat([1])),min=0;
+ const pts=reeks.map((v,i)=>[(i/(reeks.length-1||1))*w, h-((v-min)/(max-min||1))*(h-4)-2]);
+ return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" aria-hidden="true">'
+  +'<polyline points="'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="none" stroke="'+kleur+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+function donut(){
+ const K=D.koppelingen||[];
+ const volg=['Draait','In aanbouw','Voorgesteld','Idee','Gestopt'];
+ const telling=volg.map(s=>({s,n:K.filter(k=>k.status===s).length})).filter(x=>x.n>0);
+ const tot=K.length||1, r=52, omtrek=2*Math.PI*r;
+ let start=0, segmenten='';
+ telling.forEach(t=>{
+   const deel=t.n/tot*omtrek;
+   segmenten+='<circle cx="70" cy="70" r="'+r+'" fill="none" stroke="'+KL[t.s][0]+'" stroke-width="18"'
+     +' stroke-dasharray="'+(deel-3)+' '+(omtrek-deel+3)+'" stroke-dashoffset="'+(-start)+'" transform="rotate(-90 70 70)"/>';
+   start+=deel;
+ });
+ return '<div style="display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap">'
+  +'<svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="Verdeling van de statussen">'+segmenten
+  +'<text x="70" y="68" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="26" font-weight="800" fill="#14171A">'+K.length+'</text>'
+  +'<text x="70" y="86" text-anchor="middle" font-family="Instrument Sans,sans-serif" font-size="12" fill="#5C646E">Totaal</text></svg>'
+  +'<div style="display:grid;gap:.5rem">'+telling.map(t=>'<div style="display:flex;gap:.5rem;align-items:center;font-size:.85rem">'
+     +'<span style="width:9px;height:9px;border-radius:50%;background:'+KL[t.s][0]+'"></span><b>'+t.n+'</b> '+esc(t.s)+'</div>').join('')
+  +'</div></div>';
+}
+function leeg(tekst){
+ return '<div class="leegstand">'+ico(I.leeg)+'<p>'+esc(tekst)+'</p></div>';
 }
 
-if(klant==='demo'||params.get('demo')){ toonDemo(); }
-else if(klant){ haal(klant); }
-else{
-  document.getElementById('zoek').hidden=false;
-  document.getElementById('bOk').addEventListener('click',function(){
-    const v=document.getElementById('fKlant').value.trim();
-    if(v) location.search='?klant='+encodeURIComponent(v);
-  });
+/* ═══════════════ weergaven ═══════════════ */
+const V={};
+
+V.dashboard=function(){
+ const c=cijfers();
+ const urenReeks=(D.urenPerMaand||[]).map(x=>x.u);
+ return ''
+ + (isDemo? '<div class="mel">'+ico(I.info)+'<div><b>Dit is een voorbeeld.</b> '+esc(D.klant.replace(' (voorbeeld)',''))
+   +' bestaat niet en alle koppelingen, uren en bedragen zijn verzonnen. Zo ziet jouw portaal eruit zodra we voor je aan de slag zijn.</div></div>' : '')
+ + '<div class="raster r3">'
+ + kpi('Draait nu', I.vink, c.draait.length, 'van de '+c.K.length+' koppelingen', sparkline([1,1,2,2,3,3],'var(--groen)'))
+ + kpi('Uur besteed', I.klok, uur(c.uren), 'aan bouwen en aansluiten', sparkline(urenReeks.length?urenReeks:[0,1],'var(--blauw)'))
+ + kpi('Uur per jaar terug', I.impact, Math.round(c.besparing), 'bij jullie op de werkvloer', sparkline([0,0,120,200,295,295],'var(--groen)'))
+ + '</div>'
+
+ + '<div class="raster r23">'
+   + '<div class="kaart"><div class="kaartkop"><h3>Wat er draait</h3>'
+     + '<span class="rechts"><a class="knop stil" href="#/koppelingen">Bekijk alles</a></span></div>'
+     + (c.draait.length? c.draait.map(k=>rijKoppeling(k,true)).join('') : leeg('Nog niets live.'))
+     + '<a class="meer" href="#/werkstromen">Bekijk alle werkstromen →</a></div>'
+   + '<div class="kaart"><div class="kaartkop"><h3>Waar we nu aan werken</h3></div>'
+     + (c.bouw.length? c.bouw.map(k=>''
+        + '<div class="rij"><span class="bol" style="background:var(--blauw)"></span><div class="mid">'
+        + '<b>'+esc(k.titel)+'</b><div class="fijn">'+esc(k.van||'—')+' → '+esc(k.naar||'—')+' · '+esc(k.middel||'—')+'</div>'
+        + (k.notitie? '<div class="fijn">'+esc(k.notitie)+'</div>':'')
+        + '<div class="balkje"><div style="width:'+(k.voortgang!=null?k.voortgang:Math.min(100,(+k.uren||0)/8*100))+'%"></div></div>'
+        + '<div class="fijn">'+uur(k.uren)+' uur besteed</div></div>'
+        + '<div class="rechts">'+pil('In aanbouw')+'</div></div>').join('') : leeg('Op dit moment staat er niets in de steigers.'))
+     + '<a class="meer" href="#/werkstromen">Ga naar taken →</a></div>'
+ + '</div>'
+
+ + '<div class="raster r23">'
+   + '<div class="kaart"><div class="kaartkop"><h3>Alles op een rij</h3></div>'
+     + c.K.map(k=>''
+        + '<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
+        + '<div class="fijn">'+esc(k.middel||'—')+' · '+uur(k.uren)+' uur</div></div>'
+        + '<div class="rechts">'+pil(k.status)+'</div></div>').join('')
+     + '<a class="meer" href="#/koppelingen">Bekijk alle koppelingen →</a></div>'
+   + '<div><div class="kaart"><div class="kaartkop"><h3>Statusoverzicht</h3></div>'+donut()+'</div>'
+     + '<div class="kaart" style="background:var(--blauw-l);border-color:#D5DCFA"><h3>Wist je dat?</h3>'
+     + '<p class="sub" style="margin:.3rem 0">Samen besparen we naar schatting</p>'
+     + '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.5rem;font-weight:800;color:var(--blauw)">'+Math.round(c.besparing)+' uur per jaar</div>'
+     + '<p class="sub" style="margin-top:.3rem">dat is bijna '+Math.round(c.besparing/8)+' werkdagen terug op jullie werkvloer.</p></div></div>'
+ + '</div>'
+
+ + kaartUren(c, true)
+ + '<div class="let"><b>Wat die uren betekenen.</b> De uren die vrijkomen zijn geen geld dat binnenkomt — jullie mensen blijven. Het is ruimte: hetzelfde team kan meer aan zonder dat er iemand bij hoeft. Wat dat waard is, bepalen jullie zelf.</div>'
+ + '<div class="kaart"><h3>Storingen en meldingen</h3>'
+ + '<p class="sub" style="margin-top:.3rem">Valt er iets stil, dan zie je dat hier — en krijg je bericht vóórdat je klant het merkt. Op dit moment zijn er <b>geen storingen</b> gemeld.</p>'
+ + '<p class="sub" style="margin-top:.4rem">Merk je zelf iets? Bel of mail gerust. Onder de twee uur werk brengen we niets in rekening.</p></div>';
+};
+
+function kpi(label,icoon,cijfer,bij,spark){
+ return '<div class="kpi"><div class="label">'+ico(icoon)+esc(label)+'</div>'
+  +'<div class="onder"><div><div class="cijfer">'+cijfer+'</div><div class="bij">'+esc(bij)+'</div></div>'
+  +(spark||'')+'</div></div>';
+}
+function rijKoppeling(k,metBesparing){
+ return '<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
+  +'<div class="fijn">'+esc(k.van||'—')+' → '+esc(k.naar||'—')+' · gebouwd met '+esc(k.middel||'—')+'</div>'
+  +(k.notitie? '<div class="fijn">'+esc(k.notitie)+'</div>':'')+'</div>'
+  +'<div class="rechts">'+pil(k.status)
+  +(metBesparing? '<div class="fijn" style="margin-top:.25rem">'+Math.round(k.besparing||0)+' uur p.j.</div>':'')
+  +'</div></div>';
+}
+function kaartUren(c,kort){
+ const metUren=c.K.filter(k=>(+k.uren||0)>0);
+ return '<div class="kaart"><div class="kaartkop"><h3>Uren en facturen</h3>'
+ + (kort? '<span class="rechts"><a class="knop stil" href="#/uren">Alle uren</a></span>':'')+'</div>'
+ + '<div class="raster r3" style="margin-bottom:.4rem">'
+ + '<div><div class="cijfer" style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.6rem;font-weight:800">'+uur(c.uren)+'</div><div class="sub">uur gewerkt × '+eur(c.tarief)+'</div></div>'
+ + '<div><div class="cijfer" style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.6rem;font-weight:800">'+eur(c.gefactureerd)+'</div><div class="sub">al gefactureerd</div></div>'
+ + '<div><div class="cijfer" style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.6rem;font-weight:800;color:'+(c.open>0?'var(--amber)':'var(--groen)')+'">'+eur(c.open)+'</div><div class="sub">'+(c.open>0?'gewerkt maar nog niet gefactureerd':'niets openstaand')+'</div></div>'
+ + '</div>'
+ + (metUren.length? metUren.map(k=>{
+     const w=(+k.uren||0)*c.tarief, f=+k.gefactureerd||0;
+     return '<div class="rij"><span class="bol" style="background:'+(f>=w?'var(--groen)':'var(--amber)')+'"></span>'
+      +'<div class="mid"><b>'+esc(k.titel)+'</b><div class="fijn">'+uur(k.uren)+' uur · '+eur(w)+' aan werk</div></div>'
+      +'<div class="rechts"><b>'+eur(f)+'</b><div class="fijn">'+(f>=w?'gefactureerd':'nog niet gefactureerd')+'</div></div></div>';
+   }).join('') : leeg('Er is nog geen tijd geschreven.'))
+ + '<p class="sub" style="margin-top:.7rem">Elke factuur komt met de urenlijst erbij: per dag, met wat er die dag gebeurde. Klopt er iets niet, zeg het — dan halen we het eraf. Werk onder twee uur brengen we niet in rekening.</p></div>';
+}
+
+V.werkstromen=function(){
+ const c=cijfers();
+ let lijst=c.K;
+ if(filterStatus!=='alle') lijst=lijst.filter(k=>k.status===filterStatus);
+ const opties=['alle','Draait','In aanbouw','Voorgesteld','Idee','Gestopt']
+   .map(s=>'<option value="'+s+'"'+(s===filterStatus?' selected':'')+'>'+(s==='alle'?'Alle statussen':s)+'</option>').join('');
+ return '<div class="kaart"><div class="kaartkop"><h3>Alle werkstromen</h3>'
+  +'<span class="rechts"><select class="filter" id="fStatus">'+opties+'</select></span></div>'
+  + (lijst.length? lijst.map(k=>''
+     +'<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
+     +'<div class="fijn">'+esc(k.van||'—')+' → '+esc(k.naar||'—')+' · '+esc(k.middel||'—')+'</div>'
+     +(k.notitie? '<div class="fijn">'+esc(k.notitie)+'</div>':'')
+     +(k.status==='In aanbouw'? '<div class="balkje"><div style="width:'+(k.voortgang!=null?k.voortgang:40)+'%"></div></div>':'')
+     +'</div><div class="rechts">'+pil(k.status)+'<div class="fijn" style="margin-top:.25rem">'+uur(k.uren)+' uur</div></div></div>'
+    ).join('') : leeg('Geen werkstromen met deze status.'))
+  +'</div>'
+  +'<div class="kaart"><h3>Iets erbij of iets anders?</h3><p class="sub" style="margin-top:.3rem">Zie je een stap die beter kan, of mist er een werkstroom? Zet het bij <a href="#/notities" style="color:var(--blauw);font-weight:600">notities</a> of bel gerust — dan pakken we het op in de volgende ronde.</p></div>';
+};
+
+V.koppelingen=function(){
+ const c=cijfers();
+ const systemen={};
+ c.K.forEach(k=>{[k.van,k.naar].forEach(s=>{ if(s){ systemen[s]=(systemen[s]||0)+1; } });});
+ return '<div class="kaart"><div class="kaartkop"><h3>Alle koppelingen</h3></div>'
+  +'<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Koppeling</th><th>Van → naar</th><th>Gebouwd met</th><th>Status</th><th class="num">Uur</th><th class="num">Uur p.j. terug</th></tr></thead><tbody>'
+  + c.K.map(k=>'<tr><td><b>'+esc(k.titel)+'</b>'+(k.sinds?'<div class="fijn" style="font-size:.78rem;color:var(--grijs)">live sinds '+esc(k.sinds)+'</div>':'')+'</td>'
+     +'<td>'+esc(k.van||'—')+' → '+esc(k.naar||'—')+'</td><td>'+esc(k.middel||'—')+'</td><td>'+pil(k.status)+'</td>'
+     +'<td class="num">'+uur(k.uren)+'</td><td class="num">'+Math.round(k.besparing||0)+'</td></tr>').join('')
+  +'</tbody></table></div></div>'
+  +'<div class="kaart"><div class="kaartkop"><h3>Systemen die meedoen</h3></div>'
+  + Object.keys(systemen).map(s=>'<div class="rij"><span class="bol" style="background:var(--blauw)"></span>'
+     +'<div class="mid"><b>'+esc(s)+'</b></div><div class="rechts fijn">'+systemen[s]+' koppeling'+(systemen[s]>1?'en':'')+'</div></div>').join('')
+  +'</div>';
+};
+
+V.uren=function(){
+ const c=cijfers();
+ const regels=(D.urenregels||[]).slice().sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
+ const fact=D.facturen||[];
+ return kaartUren(c,false)
+ + '<div class="kaart"><div class="kaartkop"><h3>Urenlijst per dag</h3></div>'
+ + (regels.length? '<div style="overflow-x:auto"><table class="tab"><thead><tr><th>Datum</th><th>Werkstroom</th><th>Wat er gebeurde</th><th class="num">Uur</th><th class="num">Status</th></tr></thead><tbody>'
+    + regels.map(r=>'<tr><td style="white-space:nowrap">'+datumNL(r.datum)+'</td><td>'+esc(r.koppeling)+'</td><td>'+esc(r.wat)+'</td>'
+       +'<td class="num">'+uur(r.uren)+'</td><td class="num">'+pil(r.gefactureerd?'Draait':'In aanbouw').replace('Draait','gefactureerd').replace('In aanbouw','open')+'</td></tr>').join('')
+    + '</tbody></table></div>'
+    : leeg('De urenlijst per dag komt bij je factuur mee.'))
+ + '</div>'
+ + '<div class="kaart"><div class="kaartkop"><h3>Facturen</h3></div>'
+ + (fact.length? fact.map(f=>'<div class="rij"><span class="bol" style="background:'+(f.status==='Betaald'?'var(--groen)':'var(--amber)')+'"></span>'
+     +'<div class="mid"><b>Factuur '+esc(f.nummer)+'</b><div class="fijn">'+datumNL(f.datum)+' · '+esc(f.regels)+'</div></div>'
+     +'<div class="rechts"><b>'+eur(f.bedrag)+'</b><div class="fijn">'+esc(f.status)+'</div></div></div>').join('')
+   : leeg('Er zijn nog geen facturen verstuurd.'))
+ + '<p class="sub" style="margin-top:.7rem">Klopt er iets niet op een factuur? Zeg het — dan halen we het eraf.</p></div>';
+};
+
+V.documenten=function(){
+ const docs=D.documenten||[];
+ return '<div class="kaart"><div class="kaartkop"><h3>Documenten</h3></div>'
+ + (docs.length? docs.map((d,i)=>'<div class="rij">'+'<span class="bol" style="background:var(--blauw)"></span>'
+     +'<div class="mid"><b>'+esc(d.naam)+'</b><div class="fijn">'+esc(d.soort)+' · '+datumNL(d.datum)+' · hoort bij '+esc(d.bij)+'</div></div>'
+     +'<div class="rechts"><button class="knop stil" data-doc="'+i+'">Openen</button></div></div>').join('')
+   : leeg('Er staan nog geen documenten klaar.'))
+ + '<p class="sub" style="margin-top:.7rem">Alles wat we opleveren is van jou: rapporten, procesplaten en werkinstructies — ook als je zelf verder wilt.</p></div>';
+};
+
+V.notities=function(){
+ const n=(D.notities||[]).slice().sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
+ return '<div class="kaart"><div class="kaartkop"><h3>Nieuwe notitie</h3></div>'
+ + '<label class="veld"><span>Wat wil je vastleggen?</span><textarea id="nTekst" rows="3" placeholder="Bijvoorbeeld: de planner wil ook een foto bij de werkbon."></textarea></label>'
+ + '<button class="knop" id="nBewaar">Notitie bewaren</button>'
+ + '<p class="sub" style="margin-top:.6rem">Notities blijven in deze browser bewaard en komen mee als gespreksonderwerp bij het volgende overleg.</p></div>'
+ + '<div class="kaart"><div class="kaartkop"><h3>Eerdere notities</h3></div>'
+ + (n.length? n.map((x,i)=>'<div class="rij"><span class="bol" style="background:var(--geel)"></span>'
+     +'<div class="mid"><b>'+datumNL(x.datum)+'</b><div class="fijn">'+esc(x.tekst)+'</div></div>'
+     +'<div class="rechts"><button class="knop stil" data-notitie="'+esc(x.datum+'|'+x.tekst)+'">Verwijderen</button></div></div>').join('')
+   : leeg('Nog geen notities.'))
+ + '</div>';
+};
+
+V.rapportages=function(){
+ const c=cijfers();
+ const maanden=D.urenPerMaand||[];
+ const max=Math.max.apply(null,maanden.map(m=>m.u).concat([1]));
+ return '<div class="kaart"><div class="kaartkop"><h3>Uren per maand</h3></div>'
+ + (maanden.length? '<div style="display:flex;align-items:flex-end;gap:.8rem;height:180px;padding:.5rem 0">'
+    + maanden.map(m=>'<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:.4rem;height:100%">'
+       +'<span style="font-size:.78rem;font-weight:700">'+(m.u?uur(m.u):'')+'</span>'
+       +'<div style="width:100%;max-width:56px;height:'+Math.max(3,(m.u/max)*100)+'%;background:'+(m.u?'var(--blauw)':'var(--lijn)')+';border-radius:7px 7px 0 0"></div>'
+       +'<span style="font-size:.78rem;color:var(--grijs)">'+esc(m.m)+'</span></div>').join('')
+    + '</div>' : leeg('Nog geen uren om te tonen.'))
+ + '</div>'
+ + '<div class="raster r2">'
+   + '<div class="kaart"><div class="kaartkop"><h3>Stand van zaken</h3></div>'
+     + '<div class="rij"><div class="mid"><b>Koppelingen totaal</b></div><div class="rechts"><b>'+c.K.length+'</b></div></div>'
+     + '<div class="rij"><div class="mid"><b>Waarvan live</b></div><div class="rechts"><b>'+c.draait.length+'</b></div></div>'
+     + '<div class="rij"><div class="mid"><b>In aanbouw</b></div><div class="rechts"><b>'+c.bouw.length+'</b></div></div>'
+     + '<div class="rij"><div class="mid"><b>Uur besteed</b></div><div class="rechts"><b>'+uur(c.uren)+'</b></div></div>'
+     + '<div class="rij"><div class="mid"><b>Uur per jaar terug</b></div><div class="rechts"><b>'+Math.round(c.besparing)+'</b></div></div>'
+   + '</div>'
+   + '<div class="kaart"><div class="kaartkop"><h3>Verdeling</h3></div>'+donut()+'</div>'
+ + '</div>';
+};
+
+V.impact=function(){
+ const c=cijfers();
+ const dagen=Math.round(c.besparing/8);
+ return '<div class="raster r3">'
+  + kpi('Uur per jaar terug', I.impact, Math.round(c.besparing), 'bij het huidige aantal live koppelingen','')
+  + kpi('Werkdagen', I.klok, dagen, 'omgerekend, bij acht uur per dag','')
+  + kpi('Nog te verzilveren', I.vink, Math.round(c.K.filter(k=>k.status!=='Draait'&&k.status!=='Gestopt').reduce((a,k)=>a+(+k.besparing||0),0)), 'zit in wat nog niet live staat','')
+  + '</div>'
+  + '<div class="kaart"><div class="kaartkop"><h3>Waar de tijd vandaan komt</h3></div>'
+  + c.K.filter(k=>(+k.besparing||0)>0).sort((a,b)=>b.besparing-a.besparing).map(k=>{
+      const breed=Math.round((k.besparing/Math.max.apply(null,c.K.map(x=>+x.besparing||0).concat([1])))*100);
+      return '<div class="rij">'+bol(k.status)+'<div class="mid"><b>'+esc(k.titel)+'</b>'
+       +'<div class="balkje"><div style="width:'+breed+'%;background:'+(k.status==='Draait'?'var(--groen)':'var(--lijn)')+'"></div></div>'
+       +'<div class="fijn">'+Math.round(k.besparing)+' uur per jaar'+(k.status==='Draait'?'':' — zodra dit live staat')+'</div></div>'
+       +'<div class="rechts">'+pil(k.status)+'</div></div>';
+    }).join('')
+  + '</div>'
+  + '<div class="let"><b>Eerlijk over deze cijfers.</b> Het zijn schattingen op basis van wat we samen hebben geteld tijdens het bouwen: hoe vaak een handeling voorkomt en hoe lang die duurde. Ze zijn bedoeld om richting te geven, niet om als besparing in de begroting te zetten. De uren die vrijkomen zijn ruimte, geen geld dat binnenkomt.</div>';
+};
+
+V.activiteit=function(){
+ const a=(D.activiteit||[]).slice().sort((x,y)=>(y.datum||'').localeCompare(x.datum||''));
+ return '<div class="kaart"><div class="kaartkop"><h3>Wat er gebeurd is</h3></div>'
+ + (a.length? '<div class="tijdlijn">'+a.map(x=>'<div class="gebeurt"><b style="font-size:.92rem">'+esc(x.tekst)+'</b>'
+     +'<div class="fijn">'+datumNL((x.datum||'').slice(0,10))+((x.datum||'').length>10?' · '+esc(x.datum.slice(11,16)):'')+'</div></div>').join('')+'</div>'
+   : leeg('Er is nog geen activiteit vastgelegd.'))
+ + '</div>';
+};
+
+V.instellingen=function(){
+ const v=voorkeuren();
+ return '<div class="kaart"><div class="kaartkop"><h3>Jouw gegevens</h3></div>'
+ + '<label class="veld"><span>Bedrijf</span><input type="text" value="'+esc(D.klant)+'" disabled></label>'
+ + '<label class="veld"><span>Uurtarief</span><input type="text" value="'+eur(D.tarief||200)+' excl. btw" disabled></label>'
+ + '<p class="sub">Klopt hier iets niet? Laat het weten, dan passen we het aan onze kant aan.</p></div>'
+ + '<div class="kaart"><div class="kaartkop"><h3>Wanneer krijg je bericht</h3></div>'
+ + schakelaar('storing','Bij een storing in een koppeling',v.storing)
+ + schakelaar('week','Elke maandag een weekoverzicht',v.week)
+ + schakelaar('factuur','Bij een nieuwe factuur',v.factuur)
+ + schakelaar('mijlpaal','Als er iets wordt opgeleverd',v.mijlpaal)
+ + '<p class="sub" style="margin-top:.7rem">Deze voorkeuren worden in deze browser bewaard.</p></div>'
+ + '<div class="kaart"><div class="kaartkop"><h3>Hulp nodig?</h3></div>'
+ + '<p class="sub">Bel of app gerust — je krijgt Arthur zelf aan de lijn, geen doorschakelmenu.</p>'
+ + '<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem">'
+ + '<a class="knop" href="https://wa.me/31627483345" target="_blank" rel="noopener">App Arthur</a>'
+ + '<a class="knop stil" href="/contact">Contactpagina</a></div></div>';
+};
+function schakelaar(id,tekst,aan){
+ return '<label class="schakel"><span>'+esc(tekst)+'</span><input type="checkbox" data-voorkeur="'+id+'"'+(aan?' checked':'')+'></label>';
+}
+
+V.team=function(){
+ const t=D.team||[];
+ return '<div class="kaart"><div class="kaartkop"><h3>Wie kan meekijken</h3></div>'
+ + (t.length? t.map(p=>'<div class="rij"><span class="avatar" style="width:32px;height:32px">'+esc(initialen(p.naam))+'</span>'
+    +'<div class="mid"><b>'+esc(p.naam)+'</b><div class="fijn">'+esc(p.rol)+' · '+esc(p.bij)+'</div></div>'
+    +'<div class="rechts fijn">laatst actief: '+esc(p.laatst)+'</div></div>').join('')
+   : leeg('Er is nog niemand toegevoegd.'))
+ + '<p class="sub" style="margin-top:.7rem">Wil je iemand toevoegen of juist toegang intrekken? Laat het weten, dan regelen we het.</p></div>';
+};
+function initialen(n){return String(n||'?').split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');}
+
+V.integraties=function(){
+ const g=D.integraties||[];
+ return '<div class="kaart"><div class="kaartkop"><h3>Aangesloten systemen</h3></div>'
+ + (g.length? g.map(x=>'<div class="rij"><span class="bol" style="background:'+(x.status==='Verbonden'?'var(--groen)':'var(--grijs)')+'"></span>'
+    +'<div class="mid"><b>'+esc(x.naam)+'</b><div class="fijn">'+esc(x.waarvoor)+'</div></div>'
+    +'<div class="rechts">'+pil(x.status==='Verbonden'?'Draait':'Idee').replace('Draait','Verbonden').replace('Idee','Niet verbonden')
+    +'<div class="fijn" style="margin-top:.25rem">'+esc(x.laatste)+'</div></div></div>').join('')
+   : leeg('Er zijn nog geen systemen aangesloten.'))
+ + '<p class="sub" style="margin-top:.7rem">Je gegevens blijven in je eigen omgeving staan. Wij lezen alleen wat nodig is voor de koppelingen die je hierboven ziet.</p></div>';
+};
+
+V.feedback=function(){
+ return '<div class="kaart"><div class="kaartkop"><h3>Wat vind je van dit portaal?</h3></div>'
+ + '<p class="sub">Mist er iets, of staat er iets in de weg? Schrijf het hier op — het komt bij Arthur terecht.</p>'
+ + '<label class="veld" style="margin-top:.8rem"><span>Je bericht</span><textarea id="fbTekst" rows="4" placeholder="Wat zou dit portaal beter maken?"></textarea></label>'
+ + '<button class="knop" id="fbStuur">Versturen</button></div>';
+};
+
+/* ═══════════════ voorkeuren en notities (deze browser) ═══════════════ */
+function sleutel(deel){return 'bg_portaal_'+deel+'_'+(klantParam||'onbekend');}
+function voorkeuren(){
+ let v={storing:true,week:true,factuur:true,mijlpaal:false};
+ try{const o=JSON.parse(localStorage.getItem(sleutel('voorkeur'))||'null'); if(o) v=Object.assign(v,o);}catch(e){}
+ return v;
+}
+function bewaarVoorkeur(id,aan){
+ const v=voorkeuren(); v[id]=aan;
+ try{localStorage.setItem(sleutel('voorkeur'),JSON.stringify(v));}catch(e){}
+}
+function eigenNotities(){
+ try{return JSON.parse(localStorage.getItem(sleutel('notities'))||'[]');}catch(e){return [];}
+}
+function bewaarNotities(lijst){
+ try{localStorage.setItem(sleutel('notities'),JSON.stringify(lijst));}catch(e){}
+}
+
+/* ═══════════════ tekenen ═══════════════ */
+function route(){
+ const h=(location.hash||'').replace(/^#\/?/,'').split('?')[0];
+ return V[h]? h : 'dashboard';
+}
+function tekenMenu(){
+ const r=route();
+ $('#menu').innerHTML=MENU.map(m=>{
+   if(m.kop) return '<div class="mkop">'+esc(m.kop)+'</div>';
+   const t=m.tel&&D? m.tel(D):null;
+   return '<a class="mlink'+(m.id===r?' aan':'')+'" href="#/'+m.id+'"'+(m.id===r?' aria-current="page"':'')+'>'
+     +ico(m.ico)+'<span>'+esc(m.naam)+'</span>'+(t? '<span class="telp">'+t+'</span>':'')+'</a>';
+ }).join('');
+}
+function teken(){
+ if(!D) return;
+ const r=route();
+ tekenMenu();
+ const c=cijfers();
+ const kop = r==='dashboard'
+   ? '<h1 class="titel">Wat er draait voor '+esc(D.klant.replace(' (voorbeeld)',''))+(isDemo?' <span>(voorbeeld)</span>':'')+'</h1>'
+     +'<p class="sub">Alles wat we voor je gebouwd hebben, wat er nu loopt, en hoeveel uur eraan besteed is.</p>'
+   : '<h1 class="titel">'+esc(TITELS[r]||'')+'</h1><p class="sub">'+esc(D.klant)+'</p>';
+ $('#scherm').innerHTML=''
+  +'<div class="kop-rij"><div>'
+  +(r==='dashboard'? '<div class="welkom">Welkom terug, <b>'+esc((D.contact&&D.contact.naam||'').split(' ')[0]||'daar')+'</b> 👋</div>':'')
+  +kop+'</div>'
+  +'<div class="bijgewerkt">Bijgewerkt: '+esc(D.opgehaald||'—')+'</div></div>'
+  +V[r]();
+ window.scrollTo(0,0);
+ koppelSchermknoppen();
+}
+
+/* ═══════════════ knoppen binnen een scherm ═══════════════ */
+function koppelSchermknoppen(){
+ const fs=$('#fStatus');
+ if(fs) fs.addEventListener('change',e=>{filterStatus=e.target.value;teken();});
+
+ document.querySelectorAll('[data-voorkeur]').forEach(el=>{
+   el.addEventListener('change',e=>{bewaarVoorkeur(e.target.dataset.voorkeur,e.target.checked);melding('Voorkeur opgeslagen','Je krijgt hierover '+(e.target.checked?'wel':'geen')+' bericht meer.');});
+ });
+
+ document.querySelectorAll('[data-doc]').forEach(el=>{
+   el.addEventListener('click',()=>{
+     const d=(D.documenten||[])[+el.dataset.doc];
+     melding(d? d.naam : 'Document', isDemo
+       ? 'Dit is een voorbeeld, dus er hangt geen echt bestand aan. In jouw portaal opent hier het document zelf.'
+       : 'Dit document staat klaar bij Bedrijfsgeheugen. Vraag het op via de contactpagina, dan sturen we het door.');
+   });
+ });
+
+ const nb=$('#nBewaar');
+ if(nb) nb.addEventListener('click',()=>{
+   const t=$('#nTekst').value.trim();
+   if(!t){melding('Lege notitie','Schrijf eerst even op wat je wilt vastleggen.');return;}
+   const eigen=eigenNotities();
+   const nieuw={datum:new Date().toISOString().slice(0,10),tekst:t};
+   eigen.push(nieuw); bewaarNotities(eigen);
+   D.notities=(D.notities||[]).concat([nieuw]);
+   teken();
+ });
+
+ document.querySelectorAll('[data-notitie]').forEach(el=>{
+   el.addEventListener('click',()=>{
+     const [datum,...rest]=el.dataset.notitie.split('|');
+     const tekst=rest.join('|');
+     D.notities=(D.notities||[]).filter(n=>!(n.datum===datum&&n.tekst===tekst));
+     bewaarNotities(eigenNotities().filter(n=>!(n.datum===datum&&n.tekst===tekst)));
+     teken();
+   });
+ });
+
+ const fb=$('#fbStuur');
+ if(fb) fb.addEventListener('click',()=>{
+   const t=($('#fbTekst').value||'').trim();
+   if(!t){melding('Nog niets ingevuld','Schrijf eerst op wat er beter kan.');return;}
+   melding('Dank je',"We hebben je bericht klaargezet. Wil je meteen antwoord? App Arthur, dan pakken we het direct op.");
+   $('#fbTekst').value='';
+ });
+}
+
+function melding(titel,tekst){
+ const el=document.createElement('div');
+ el.className='overlay';
+ el.innerHTML='<div class="venster"><h3>'+esc(titel)+'</h3><p>'+esc(tekst)+'</p>'
+   +'<button class="knop" data-sluit>Sluiten</button></div>';
+ el.addEventListener('click',e=>{ if(e.target===el||e.target.hasAttribute('data-sluit')) el.remove(); });
+ document.addEventListener('keydown',function ontsnap(e){ if(e.key==='Escape'){el.remove();document.removeEventListener('keydown',ontsnap);} });
+ document.body.appendChild(el);
+ el.querySelector('[data-sluit]').focus();
+}
+
+/* ═══════════════ balk: zoeken, meldingen, gebruiker ═══════════════ */
+function zoekResultaten(t){
+ t=t.toLowerCase().trim();
+ if(!t) return [];
+ const uit=[];
+ (D.koppelingen||[]).forEach(k=>{
+   if((k.titel+' '+(k.van||'')+' '+(k.naar||'')+' '+(k.middel||'')+' '+(k.notitie||'')).toLowerCase().includes(t))
+     uit.push({tekst:k.titel,bij:'Koppeling · '+k.status,naar:'#/koppelingen'});
+ });
+ (D.documenten||[]).forEach(d=>{ if(d.naam.toLowerCase().includes(t)) uit.push({tekst:d.naam,bij:'Document',naar:'#/documenten'}); });
+ (D.notities||[]).forEach(n=>{ if(n.tekst.toLowerCase().includes(t)) uit.push({tekst:n.tekst.slice(0,70),bij:'Notitie',naar:'#/notities'}); });
+ (D.urenregels||[]).forEach(r=>{ if((r.wat+' '+r.koppeling).toLowerCase().includes(t)) uit.push({tekst:r.wat,bij:'Urenregel · '+datumNL(r.datum),naar:'#/uren'}); });
+ MENU.filter(m=>m.id).forEach(m=>{ if(m.naam.toLowerCase().includes(t)) uit.push({tekst:m.naam,bij:'Pagina',naar:'#/'+m.id}); });
+ return uit.slice(0,8);
+}
+function tekenZoek(){
+ const lijst=$('#zoeklijst');
+ const res=zoekResultaten(zoekterm);
+ if(!zoekterm){ lijst.hidden=true; return; }
+ lijst.hidden=false;
+ lijst.innerHTML = res.length
+   ? res.map(r=>'<button data-naar="'+r.naar+'"><b>'+esc(r.tekst)+'</b><div class="fijn" style="font-size:.76rem;color:var(--grijs)">'+esc(r.bij)+'</div></button>').join('')
+   : '<div class="leeg">Niets gevonden voor “'+esc(zoekterm)+'”.</div>';
+ lijst.querySelectorAll('[data-naar]').forEach(b=>b.addEventListener('click',()=>{
+   location.hash=b.dataset.naar; $('#zoek').value=''; zoekterm=''; lijst.hidden=true;
+ }));
+}
+function tekenMeldingen(){
+ const m=D.meldingen||[];
+ $('#belTal').textContent=m.length; $('#belTal').hidden=m.length===0;
+ $('#belPaneel').innerHTML='<h4>Meldingen</h4>'
+  + (m.length? m.map(x=>'<button class="item"><b>'+esc(x.tekst)+'</b><div class="tijd">'+esc(x.tijd)+'</div></button>').join('')
+    : '<div class="item">Geen meldingen.</div>');
+ $('#belPaneel').querySelectorAll('.item').forEach(b=>b.addEventListener('click',()=>{location.hash='#/activiteit';$('#belPaneel').hidden=true;}));
+}
+function tekenGebruiker(){
+ const naam=(D.contact&&D.contact.naam)||'Gast';
+ const rol=(D.contact&&D.contact.rol)||'Meekijken';
+ $('#avatar').textContent=initialen(naam);
+ $('#gebrNaam').textContent=naam;
+ $('#gebrRol').textContent=rol;
+ $('#gebrPaneel').innerHTML='<h4>'+esc(naam)+'</h4>'
+  +'<a class="item" href="#/instellingen">Instellingen</a>'
+  +'<a class="item" href="#/team">Team &amp; toegang</a>'
+  +'<a class="item" href="#/feedback">Feedback geven</a>'
+  +'<a class="item" href="/contact">Contact met Arthur</a>'
+  +'<a class="item" href="/">Terug naar de website</a>';
+ $('#gebrPaneel').querySelectorAll('.item').forEach(a=>a.addEventListener('click',()=>{$('#gebrPaneel').hidden=true;}));
+}
+
+/* ═══════════════ opstarten ═══════════════ */
+function start(gegevens){
+ D=gegevens;
+ D.opgehaald = D.opgehaald || new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})
+   +' · '+new Date().toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+ D.koppelingen = D.koppelingen || [];
+ D.notities = (D.notities||[]).concat(eigenNotities());
+ $('#voetregel').textContent='Bedrijfsgeheugen · '+new Date().getFullYear();
+ tekenMeldingen(); tekenGebruiker(); teken();
+}
+function mislukt(tekst){
+ $('#scherm').innerHTML='<div class="kaart"><h3>Even niet bereikbaar</h3><p class="sub" style="margin-top:.3rem">'+esc(tekst)+'</p>'
+  +'<div style="display:flex;gap:.6rem;margin-top:.9rem;flex-wrap:wrap"><button class="knop" onclick="location.reload()">Opnieuw proberen</button>'
+  +'<a class="knop stil" href="/contact">Laat het ons weten</a></div></div>';
+}
+function kiesScherm(){
+ $('#scherm').innerHTML='<div class="kaart"><h3>Voor welk bedrijf</h3>'
+  +'<p class="sub" style="margin-top:.3rem">Vul de bedrijfsnaam in zoals wij die gebruiken, of open de link die je van ons hebt gekregen.</p>'
+  +'<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.9rem">'
+  +'<input type="text" id="fKlant" placeholder="bedrijfsnaam" style="flex:1;min-width:200px;border:1px solid var(--lijn);border-radius:9px;padding:.5rem .7rem">'
+  +'<button class="knop" id="bOk">Bekijken</button></div>'
+  +'<p class="sub" style="margin-top:.8rem">Benieuwd hoe het eruitziet? <a href="?klant=demo" style="color:var(--blauw);font-weight:600">Bekijk een voorbeeld</a>.</p></div>';
+ $('#bOk').addEventListener('click',()=>{
+   const v=$('#fKlant').value.trim();
+   if(v) location.search='?klant='+encodeURIComponent(v);
+ });
+ $('#fKlant').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#bOk').click(); });
+}
+
+/* balk-gedrag */
+$('#zoek').addEventListener('input',e=>{zoekterm=e.target.value;tekenZoek();});
+$('#zoek').addEventListener('keydown',e=>{ if(e.key==='Escape'){e.target.value='';zoekterm='';tekenZoek();} });
+$('#belKnop').addEventListener('click',e=>{e.stopPropagation();$('#gebrPaneel').hidden=true;$('#belPaneel').hidden=!$('#belPaneel').hidden;});
+$('#gebrKnop').addEventListener('click',e=>{e.stopPropagation();$('#belPaneel').hidden=true;$('#gebrPaneel').hidden=!$('#gebrPaneel').hidden;});
+document.addEventListener('click',e=>{
+ if(!e.target.closest('.balk-rechts')){$('#belPaneel').hidden=true;$('#gebrPaneel').hidden=true;}
+ if(!e.target.closest('.zoekdoos')){$('#zoeklijst').hidden=true;}
+ const zij=$('#zij');
+ if(zij.classList.contains('open')&&!e.target.closest('.zij')&&!e.target.closest('#mobKnop')) zij.classList.remove('open');
+});
+$('#mobKnop').addEventListener('click',e=>{e.stopPropagation();$('#zij').classList.toggle('open');});
+document.addEventListener('keydown',e=>{
+ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#zoek').focus();}
+});
+addEventListener('hashchange',()=>{ $('#zij').classList.remove('open'); if(D) teken(); });
+
+tekenMenu();
+if(isDemo){
+ start(JSON.parse(JSON.stringify(DEMO)));
+}else if(klantParam){
+ $('#scherm').innerHTML='<div class="kaart"><p class="sub">Ophalen…</p></div>';
+ fetch(HOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({klant:klantParam})})
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d||!d.koppelingen||!d.koppelingen.length){
+      D=Object.assign({klant:klantParam,koppelingen:[]},d||{});
+      start(D);
+      $('#scherm').insertAdjacentHTML('beforeend','<div class="kaart"><h3>Nog niets vastgelegd</h3><p class="sub" style="margin-top:.3rem">Er staat nog geen koppeling op deze naam. Klopt dat niet? Laat het ons weten, dan kijken we mee.</p></div>');
+      return;
+    }
+    start(d);
+  })
+  .catch(()=>mislukt('We konden de gegevens nu niet ophalen. Probeer het zo nog eens.'));
+}else{
+ kiesScherm();
 }
 </script>
-<a class="wa-knop" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag" target="_blank" rel="noopener" aria-label="App Arthur via WhatsApp"><svg viewBox="0 0 32 32" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg></a>
-<style>.wa-knop{position:fixed;right:1rem;bottom:1rem;z-index:80;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 6px 20px rgba(20,23,26,.22);text-decoration:none}
-@media(max-width:720px){.wa-knop{bottom:calc(1rem + env(safe-area-inset-bottom,0px))}}</style>
 </body>
 </html>
