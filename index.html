@@ -311,12 +311,11 @@ nav .nb{transition:height .2s}
 
 /* sterren en vertrouwen */
 .vertrouwen{margin-top:1.3rem}
-.koppen{display:flex;align-items:center;gap:.9rem;margin-bottom:.4rem;flex-wrap:nowrap}
-.koppen .rij-fotos{display:flex;flex:none}
-.koppen img{width:2.6rem;height:2.6rem;border-radius:50%;border:2px solid var(--papier);margin-left:-.7rem;display:block;object-fit:cover}
+.koppen{display:block;margin-bottom:.4rem}
+.koppen .rij-fotos{display:block;line-height:0;margin-bottom:.55rem}
+.koppen .rij-fotos img{width:2.6rem;height:2.6rem;border-radius:50%;border:2px solid var(--papier);margin-left:-.7rem;object-fit:cover;display:inline-block;vertical-align:middle}
 .koppen .rij-fotos img:first-child{margin-left:0}
-.koppen-tekst{font-size:.86rem;color:var(--grijs);line-height:1.4;min-width:0}
-@media(max-width:520px){.koppen{flex-wrap:wrap}.koppen-tekst{width:100%}}
+.koppen-tekst{display:block;font-size:.86rem;color:var(--grijs);line-height:1.45}
 .feitrij{display:flex;gap:.5rem;flex-wrap:wrap}
 .feitrij span{border:1px solid var(--lijn);background:var(--wit);border-radius:22px;padding:.45rem .85rem;font-size:.85rem;color:var(--grijs)}
 .feitrij b{color:var(--inkt)}
