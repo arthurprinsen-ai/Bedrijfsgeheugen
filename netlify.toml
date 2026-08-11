@@ -58,6 +58,24 @@
   status = 301
   force = true
 
+[[redirects]]
+  from = "/voor-mkb.html"
+  to = "/voor-mkb"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/investeerders-ma.html"
+  to = "/investeerders-ma"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/due-diligence.html"
+  to = "/due-diligence"
+  status = 301
+  force = true
+
 # Blog zonder slash → met slash
 [[redirects]]
   from = "/blog"
