@@ -201,8 +201,55 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
 </div></nav>
 
+<main>
 <!-- ═══════════ HERO + WACHTLIJST ═══════════ -->
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">🚀 In ontwikkeling — wachtlijst open · eerste 100 inschrijvers: 3 maanden gratis</span>
+    <h1>Je koppeling boekt de order.<br><em>Wie volgt de klant op?</em></h1>
+    <p>Webshopkoppelingen boeken je orders — en daar stopt het. Connect is de laag erbovenop: klantkaart, automatische opvolging van offertes en aanvragen, en elke maandag één overzichtsmail. Werkt mét je bestaande koppeling, of legt er zelf één. Vanaf €29 per maand.</p>
 
+    <div class="flow" aria-label="Hoe de datastroom loopt">
+      <div class="node">Shopify · WooCommerce<br>website · e-mail<small>orders & aanvragen</small></div>
+      <div class="arr">→</div>
+      <div class="node">Je bestaande koppeling<br>of die van Connect<small>boekt de order</small></div>
+      <div class="arr">→</div>
+      <div class="node core">Connect<small>onthoudt · volgt op · signaleert</small></div>
+    </div>
+
+    <div class="wl" id="wachtlijst">
+      <h3>Zet mij op de wachtlijst</h3>
+      <div class="sub">Vrijblijvend. Je krijgt als eerste toegang — en de eerste 100 inschrijvers gebruiken Connect 3 maanden gratis.</div>
+      <form id="wlForm" onsubmit="return WL.submit(event)">
+        <div class="row2">
+          <div><label for="w_naam">Naam *</label><input id="w_naam" required autocomplete="name" placeholder="Uw naam"></div>
+          <div><label for="w_bedrijf">Bedrijf</label><input id="w_bedrijf" autocomplete="organization" placeholder="Bedrijfsnaam"></div>
+        </div>
+        <div class="row2">
+          <div><label for="w_email">E-mailadres *</label><input id="w_email" type="email" required autocomplete="email" placeholder="u@bedrijf.nl"></div>
+          <div><label for="w_tel">Telefoon (optioneel)</label><input id="w_tel" type="tel" autocomplete="tel" placeholder="06-..."></div>
+        </div>
+        <div class="row2">
+          <div><label for="w_shop">Waar komen je verkopen/aanvragen binnen?</label>
+            <select id="w_shop"><option>WooCommerce</option><option>Shopify</option><option>WordPress-formulier</option><option>Eigen website</option><option>Vooral per e-mail/telefoon</option><option>Anders</option></select></div>
+          <div><label for="w_boek">Welk boekhoudpakket gebruik je?</label>
+            <select id="w_boek"><option>Moneybird</option><option>e-Boekhouden</option><option>Exact Online</option><option>SnelStart</option><option>AFAS</option><option>Anders / geen</option></select></div>
+        </div>
+        <p style="font-size:.85rem;color:#5C646E;margin:.6rem 0">📬 Je ontvangt alleen bericht over de lancering van Connect — geen nieuwsbrief, geen belletjes. Zie de <a href="/privacy" style="color:#2742D6">privacyverklaring</a>.</p>
+<button class="btn primary" type="submit">Reserveer mijn plek (gratis) →</button>
+        <div class="mini">Geen spam. Alleen de lanceringsmail en 1-2 bouwupdates. Uitschrijven kan altijd.</div>
+      </form>
+      <div class="form-ok hidden" id="wOk">✓ Je staat op de lijst! Check je inbox — en je hoort van Arthur zodra jouw koppeling live gaat.</div>
+      <div class="form-err hidden" id="wErr">Automatisch versturen lukte niet. <a href="#" id="wMailto">Klik hier om je aanmelding per e-mail te versturen</a> — alles staat al klaar.</div>
+    </div>
+
+    <div class="counter">
+      <div><b>10 min</b><span>van aanmelden tot live</span></div>
+      <div><b>€29</b><span>per maand, opzegbaar per maand</span></div>
+      <div><b>0×</b><span>overtypen van orders & klanten</span></div>
+    </div>
+  </div>
+</header>
 
 <main>
 <!-- ═══════════ HET PROBLEEM ═══════════ -->
@@ -340,7 +387,6 @@ const CONFIG={
   leadEmail:"arthur@bedrijfsgeheugen.nl",
   web3formsKey:"5d2bad12-e036-4469-b83d-f6ef1ec68e07"  // aanbevolen: gratis key via web3forms.com met bovenstaand adres
 };
-document.getElementById('jaar').textContent=new Date().getFullYear();
 
 const WL={
   async deliver(subject,payload){
