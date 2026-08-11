@@ -310,7 +310,11 @@ nav .nb{transition:height .2s}
 .mark{background:linear-gradient(transparent 55%,var(--geel) 55%,var(--geel) 96%,transparent 96%);padding:0 .08em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 
 /* sterren en vertrouwen */
-.vertrouwen{display:flex;align-items:center;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap}
+.vertrouwen{margin-top:1.3rem}
+.feitrij{display:flex;gap:.5rem;flex-wrap:wrap}
+.feitrij span{border:1px solid var(--lijn);background:var(--wit);border-radius:22px;padding:.45rem .85rem;font-size:.85rem;color:var(--grijs)}
+.feitrij b{color:var(--inkt)}
+.vertrouwen-oud{display:flex;align-items:center;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap}
 .koppen{display:flex}
 .koppen span,.koppen img{width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid var(--papier);margin-left:-.55rem;object-fit:cover;display:block}
 .koppen span{background:linear-gradient(135deg,#C7CCD4,#8C939D)}
@@ -436,18 +440,17 @@ nav .nb{transition:height .2s}
       <a class="knop lijn" href="/frisse-blik">Doe eerst de Frisse blik</a>
     </div>
     <div class="vertrouwen">
-      <div class="koppen">
-        <img src="/assets/klanten/klant-1.jpg" width="34" height="34" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{}))">
-        <img src="/assets/klanten/klant-2.jpg" width="34" height="34" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{}))">
-        <img src="/assets/klanten/klant-3.jpg" width="34" height="34" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{}))">
-        <img src="/assets/klanten/klant-4.jpg" width="34" height="34" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{}))">
+      <div class="feitrij">
+        <span><b>Vaste prijs</b> vooraf</span>
+        <span><b>Prijzen</b> op de site</span>
+        <span>Werkend binnen <b>twee weken</b></span>
       </div>
-      <div><div class="ster">★★★★★</div><div class="sub" style="font-size:.85rem">Vertrouwd door organisaties in het mkb</div></div>
     </div>
+  </div>
   </div>
 
   <div class="chat">
-    <div class="vraag"><p>Welke afspraken hebben we met Jansen Bouw over project X?</p><img class="foto" src="/arthur.jpg" alt="Arthur Prinsen" width="38" height="38" loading="lazy"></div>
+    <div class="vraag"><p>Welke prijsafspraken hebben we met Jansen Bouw?</p><img class="foto" src="/arthur.jpg" alt="Arthur Prinsen" width="38" height="38" loading="lazy"></div>
     <div class="antw"><i></i>Bedrijfsgeheugen</div>
     <div class="antw-body">
       <p>Voor Jansen Bouw hanteren we de volgende prijsafspraken:</p>
@@ -458,8 +461,8 @@ nav .nb{transition:height .2s}
       </ul>
       <p style="font-size:.85rem;color:var(--grijs)">Deze afspraken zijn vastgelegd in meerdere bronnen.</p>
       <div class="bron">Bronnen</div>
-      <div class="bronrij"><b>Outlook<br><span style="color:var(--grijs);font-weight:400;font-size:.8rem">E-mail met Peter de Vries — 12 februari</span></b><span>↗</span></div>
-      <div class="bronrij"><b>SharePoint<br><span style="color:var(--grijs);font-weight:400;font-size:.8rem">Project X — afspraken.pdf</span></b><span>↗</span></div>
+      <div class="bronrij"><b>Outlook<br><span style="color:var(--grijs);font-weight:400;font-size:.8rem">Mail van de inkoper — 12 februari</span></b><span>↗</span></div>
+      <div class="bronrij"><b>SharePoint<br><span style="color:var(--grijs);font-weight:400;font-size:.8rem">Raamovereenkomst Jansen Bouw 2026.pdf</span></b><span>↗</span></div>
       <div class="bronrij"><b>AFAS<br><span style="color:var(--grijs);font-weight:400;font-size:.8rem">Klantdossier Jansen Bouw</span></b><span>↗</span></div>
       <div class="acties"><div>Stel een vervolgvraag</div><div>Open in SharePoint</div><div>Maak een taak aan</div></div>
     </div>
