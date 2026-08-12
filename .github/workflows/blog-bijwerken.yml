@@ -8,7 +8,7 @@ name: Blog bijwerken
 # Na afloop zet deze workflow Herzien op "Goedgekeurd", zodat hij niet blijft draaien.
 on:
   schedule:
-    - cron: '30 6 * * 2,4'
+    - cron: '30 6 * * 1,2,3,4,5'
   push:
     paths:
       - '.github/triggers/bijwerken/**'
