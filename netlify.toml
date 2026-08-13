@@ -29,6 +29,18 @@
   force = true
 
 [[redirects]]
+  from = "/ai-marketing-mkb.html"
+  to = "/ai-marketing-mkb"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ai-marketingmachine"
+  to = "/ai-marketing-mkb"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/product.html"
   to = "/product"
   status = 301
