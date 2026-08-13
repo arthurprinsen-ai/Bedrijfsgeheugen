@@ -6717,6 +6717,31 @@ body{background:var(--np-vlak)}
 #p-wijzigingen .w-motor{background:#14171A;color:#D8DEE9;border-radius:8px;padding:.6rem .75rem;font-family:ui-monospace,Menlo,monospace;font-size:.72rem;white-space:pre-wrap;margin-top:.6rem}
 #p-wijzigingen .w-motor b{color:#FFE86B;font-family:inherit}
 #p-wijzigingen .w-leeg{font-size:.85rem;color:var(--w-grijs);padding:.4rem 0}
+/* rode bol in het menu */
+.w-bol{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;
+ margin-left:.4rem;border-radius:20px;background:#D93025;color:#fff;font-size:.68rem;font-weight:700;line-height:1;vertical-align:middle}
+.w-bol.stil{background:#8A93A0}
+/* statusblok bovenaan het overzicht */
+#w-status{margin:0 0 1rem}
+#w-status .w-st-kaart{background:#fff;border:1px solid var(--lijn,#DCDFE6);border-radius:9px;padding:.9rem 1rem}
+#w-status .w-st-kop{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+#w-status .w-st-kop h3{font-size:1rem;margin:0}
+#w-status .w-st-kop .re{margin-left:auto;display:flex;gap:.4rem;flex-wrap:wrap}
+#w-status .w-st-net{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin-bottom:.6rem}
+#w-status .w-st-vak{border:1px solid var(--lijn,#DCDFE6);border-radius:8px;padding:.55rem .65rem;background:#FCFCFB}
+#w-status .w-st-vak.let{border-color:#F3C4B2;background:#FFF6F3}
+#w-status .w-st-vak b{display:block;font-size:1.5rem;line-height:1.15}
+#w-status .w-st-vak.let b{color:#D93025}
+#w-status .w-st-vak span{font-size:.74rem;color:var(--grijs,#5C646E)}
+#w-status .w-st-lijst{list-style:none;margin:.2rem 0 0;padding:0;font-size:.85rem}
+#w-status .w-st-lijst li{display:flex;gap:.5rem;align-items:baseline;padding:.3rem 0;border-bottom:1px solid var(--lijn,#DCDFE6)}
+#w-status .w-st-lijst li:last-child{border-bottom:0}
+#w-status .w-st-lijst .stip{width:7px;height:7px;border-radius:50%;background:#D93025;flex:0 0 7px;position:relative;top:-1px}
+#w-status .w-st-lijst .stip.rustig{background:#1F9D55}
+#w-status .w-st-lijst .bij{font-size:.74rem;color:var(--grijs,#5C646E);margin-left:auto;white-space:nowrap}
+#w-status .w-st-knop{font:inherit;font-size:.78rem;font-weight:600;padding:.25rem .6rem;border-radius:6px;
+ border:1px solid var(--lijn,#DCDFE6);background:#fff;color:inherit;cursor:pointer}
+#w-status .w-st-knop.blauw{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6);color:#fff}
 
 </style>
 <script>
@@ -7080,7 +7105,68 @@ body{background:var(--np-vlak)}
   if(!w.eigenaren) w.eigenaren={};
   if(!w.teller) w.teller=1284;
   return w; }
- function bw(){ try{ if(typeof bewaar==='function') bewaar(); }catch(e){} }
+ function bw(){ try{ if(typeof bewaar==='function') bewaar(); }catch(e){} ververs(); }
+
+ /* ---------- rode bol in het menu + statusblok op het overzicht ---------- */
+ function openTelling(){
+  var w=W(); if(!w) return {voorstellen:0,taken:0,klad:0,teBeoordelen:0};
+  var open=w.voorstellen.filter(function(p){return p.status==='open';});
+  var teB=0; open.forEach(function(p){ (p.eig||[]).forEach(function(e){ if(!e.ok) teB++; }); });
+  var taken=(S.taken||[]).filter(function(t){return !t.klaar;}).length;
+  return {voorstellen:open.length,taken:taken,klad:w.klad?w.klad.w.length:0,teBeoordelen:teB,lijst:open};
+ }
+ function zetBol(p,n,stil){
+  var kn=document.querySelectorAll('.tab[data-p="'+p+'"], .onderbalk button[data-p="'+p+'"]');
+  Array.prototype.forEach.call(kn,function(b){
+   var b2=b.querySelector('.w-bol');
+   if(!n){ if(b2) b2.remove(); return; }
+   if(!b2){ b2=document.createElement('span'); b2.className='w-bol'; b.appendChild(b2); }
+   b2.className='w-bol'+(stil?' stil':''); b2.textContent=n>99?'99+':n;
+  });
+ }
+ function ververs(){
+  try{
+   var t=openTelling();
+   zetBol('wijzigingen', t.voorstellen+(t.klad?1:0), false);
+   zetBol('bijhouden', t.taken, true);
+   statusblok();
+  }catch(e){}
+ }
+ function statusblok(){
+  var paneel=document.getElementById('p-overzicht'); if(!paneel) return;
+  var el=document.getElementById('w-status');
+  if(!el){ el=document.createElement('div'); el.id='w-status'; paneel.insertBefore(el,paneel.firstChild); }
+  var w=W(); if(!w) return;
+  var t=openTelling(), laatste=w.commits[0];
+  var punten=[];
+  t.lijst.forEach(function(p){
+   var nog=(p.eig||[]).filter(function(e){return !e.ok;});
+   punten.push({rood:true,tekst:'<b>'+esc(p.naam)+'</b> wacht op '+(nog.length?esc(nog.map(function(e){return e.naam;}).join(', ')):'doorvoeren'),
+                bij:'BG-'+p.id,ga:'wijzigingen'});
+  });
+  if(t.klad) punten.push({rood:true,tekst:'Je hebt <b>'+t.klad+' wijziging'+(t.klad===1?'':'en')+'</b> in je klad staan, nog niet ingediend',bij:'niet ingediend',ga:'wijzigingen'});
+  (S.taken||[]).filter(function(x){return !x.klaar;}).slice(0,3).forEach(function(x){
+   punten.push({rood:false,tekst:esc(x.wat)+(x.wie?' — '+esc(x.wie):''),bij:esc(x.afd||''),ga:'bijhouden'});
+  });
+  el.innerHTML='<div class="w-st-kaart"><div class="w-st-kop"><h3>Hoe je er nu voor staat</h3>'
+   +'<div class="re">'+(t.voorstellen||t.klad?'<button class="w-st-knop blauw" data-w-ga="wijzigingen">Naar wijzigingen</button>':'')
+   +(t.taken?'<button class="w-st-knop" data-w-ga="bijhouden">Naar je taken</button>':'')+'</div></div>'
+   +'<div class="w-st-net">'
+   +'<div class="w-st-vak'+(t.teBeoordelen?' let':'')+'"><b>'+t.teBeoordelen+'</b><span>wachten op goedkeuring</span></div>'
+   +'<div class="w-st-vak'+(t.taken?' let':'')+'"><b>'+t.taken+'</b><span>taken open</span></div>'
+   +'<div class="w-st-vak"><b>'+t.klad+'</b><span>in je klad</span></div>'
+   +'<div class="w-st-vak"><b>'+w.commits.length+'</b><span>doorgevoerd</span></div>'
+   +'</div>'
+   +(punten.length?'<ul class="w-st-lijst">'+punten.map(function(p,i){
+      return '<li><span class="stip'+(p.rood?'':' rustig')+'"></span><span>'+p.tekst+'</span>'
+       +'<span class="bij">'+p.bij+'</span><button class="w-st-knop" data-w-ga="'+p.ga+'">Open</button></li>';}).join('')+'</ul>'
+     :'<p class="w-sub" style="margin:0">Niets openstaand. Geen wijziging in behandeling en geen taken open.</p>')
+   +(laatste?'<p class="w-sub" style="margin:.6rem 0 0">Laatst doorgevoerd: <b>'+esc(laatste.naam)+'</b> — BG-'+laatste.id+', '+esc(laatste.op)+' door '+esc(laatste.door)+'.</p>':'')
+   +'</div>';
+  Array.prototype.forEach.call(el.querySelectorAll('[data-w-ga]'),function(b){
+   b.addEventListener('click',function(){ var k=document.querySelector('.tab[data-p="'+b.dataset.wGa+'"]'); if(k) k.click(); });
+  });
+ }
  function hert(){ try{ if(typeof teken==='function') teken(); }catch(e){} }
  function dims(){ return (typeof DIM!=='undefined')?DIM:[]; }
  function niv(){ return (typeof NIV!=='undefined')?NIV:['','','','','','']; }
@@ -7402,7 +7488,10 @@ body{background:var(--np-vlak)}
   var t=document.querySelector('.tab[data-p="wijzigingen"]'), p=document.getElementById('p-wijzigingen');
   if(!t||!p||typeof S==='undefined'||!S.niveaus){ setTimeout(start,400); return; }
   t.addEventListener('click',teken2);
-  teken2();
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(b){
+   b.addEventListener('click',function(){ setTimeout(ververs,60); }); });
+  teken2(); ververs();
+  setInterval(ververs,4000);
  }
  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
