@@ -173,7 +173,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Voor mkb-bedrijven","item":"https://www.bedrijfsgeheugen.nl/voor-mkb"}]}</script>
 <meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/banner-li-bedrijf.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="/assets/kop.css?v=4">
+<link rel="stylesheet" href="/assets/kop.css?v=5">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="nl_NL">
 <meta property="og:site_name" content="Bedrijfsgeheugen">
@@ -187,6 +187,10 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <meta name="twitter:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
 </head>
 <body>
+<div class="bgtop"><div class="bgtop-in">
+  <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
+  <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
+</div></div>
 <nav class="bgkop" id="bgkop"><div class="bgkop-in">
   <a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
     <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
@@ -195,6 +199,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <div class="bgkop-links">
     <a href="/expertises">Expertises</a>
     <a href="/product">Product</a>
+    <a href="/ai-marketing-mkb">AI Marketing Machine</a>
     <a href="/wijzigingen">Wijzigingen</a>
     <a href="/hoe-het-werkt">Hoe het werkt</a>
     <a href="/blog/">Blog</a>
@@ -206,6 +211,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <div class="bgkop-mob" id="bgkopMob" hidden>
   <a href="/expertises">Expertises</a>
   <a href="/product">Product</a>
+    <a href="/ai-marketing-mkb">AI Marketing Machine</a>
   <a href="/wijzigingen">Wijzigingen</a>
   <a href="/hoe-het-werkt">Hoe het werkt</a>
   <a href="/blog/">Blog</a>
@@ -339,8 +345,42 @@ var j=document.querySelectorAll('.jr');var y=new Date().getFullYear();j.forEach(
 </script>
 <script src="/assets/stijl.js" defer></script>
 <footer class="bgvoet"><div class="bgvoet-in">
-  <span>&copy; 2026 Bedrijfsgeheugen &mdash; Aanpakken zonder aanmodderen.</span>
-  <span class="bgvoet-links"><a href="/product">Product</a><a href="/wijzigingen">Wijzigingen</a><a href="/hoe-het-werkt">Hoe het werkt</a><a href="/frisse-blik">Frisse blik</a><a href="/ai-marketing-mkb">AI-marketing</a><a href="/blog/">Blog</a><a href="/over-ons">Over ons</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a></span>
+  <div class="bgvoet-net">
+    <div>
+      <span class="bgvoet-merk">Bedrijfs<b>geheugen</b>.nl</span>
+      <p class="bgvoet-over">Praktische strategie, slimme systemen en AI.<br>Voor ondernemers die willen groeien.</p>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Producten</span>
+      <a href="/ai-marketing-mkb">AI Marketing Machine</a>
+      <a href="/product">Het portaal</a>
+      <a href="/wijzigingen">Wijzigingen</a>
+      <a href="/frisse-blik">Frisse blik</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Expertises</span>
+      <a href="/expertises">Alle expertises</a>
+      <a href="/systemen-koppelen">Systemen koppelen</a>
+      <a href="/afas-koppeling">AFAS-koppeling</a>
+      <a href="/due-diligence">Due diligence &amp; exit</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Kennis</span>
+      <a href="/blog/">Blog</a>
+      <a href="/hoe-het-werkt">Hoe het werkt</a>
+      <a href="/wijzigingen-uitgelegd">Wijzigingen uitgelegd</a>
+      <a href="/zelfscan">Zelfscan</a>
+    </div>
+    <div class="bgvoet-cta">
+      <b>Plan een Frisse blik</b>
+      <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
+      <a class="bgvoet-knop" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+    </div>
+  </div>
+  <div class="bgvoet-onder">
+    <span>&copy; 2026 Bedrijfsgeheugen &mdash; Aanpakken zonder aanmodderen.</span>
+    <span class="bgvoet-links"><a href="/over-ons">Over ons</a><a href="/voor-mkb">Voor het mkb</a><a href="/investeerders-ma">Investeerders &amp; M&amp;A</a><a href="/contact">Contact</a><a href="/privacy">Privacyverklaring</a></span>
+  </div>
 </div></footer>
 <script>
 (function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');

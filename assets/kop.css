@@ -24,14 +24,38 @@
 .bgkop-mob a:last-child{border-bottom:0;color:var(--bg-blauw)}
 @media(max-width:1040px){.bgkop-links,.bgkop-cta{display:none}.bgkop-knop{display:flex}.bgkop-mob:not([hidden]){display:flex}}
 
-.bgvoet{background:var(--bg-inkt);color:#C8CBD2;padding:2.6rem 0;margin-top:3.5rem;font-size:.9rem;font-family:'Instrument Sans',system-ui,sans-serif}
-.bgvoet-in{max-width:1120px;margin:0 auto;padding:0 1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;align-items:center}
-.bgvoet a{color:#fff;text-decoration:none}
-.bgvoet a:hover{text-decoration:underline}
-.bgvoet-links{display:flex;flex-wrap:wrap;gap:.4rem .9rem}
+.bgvoet{background:var(--bg-inkt);color:#C8CBD2;padding:2.8rem 0 0;margin-top:3.5rem;font-size:.88rem;font-family:'Instrument Sans',system-ui,sans-serif}
+.bgvoet-in{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+.bgvoet a{color:#C8CBD2;text-decoration:none}
+.bgvoet a:hover{color:#fff;text-decoration:underline}
+.bgvoet-net{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.5fr;gap:1.6rem;padding-bottom:2rem}
+.bgvoet-merk{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:1.05rem;color:#fff;letter-spacing:-.02em;display:block;margin-bottom:.5rem}
+.bgvoet-merk b{color:#7C90F0}
+.bgvoet-over{color:#8E96A5;font-size:.84rem;line-height:1.55}
+.bgvoet-kop{color:#fff;font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.55rem;display:block}
+.bgvoet-kolom a{display:block;padding:.2rem 0;line-height:1.45}
+.bgvoet-cta{background:#20242B;border-radius:12px;padding:1rem 1.1rem}
+.bgvoet-cta b{color:#fff;display:block;margin-bottom:.25rem}
+.bgvoet-cta p{color:#8E96A5;font-size:.82rem;margin-bottom:.7rem;line-height:1.5}
+.bgvoet-knop{display:inline-flex;align-items:center;gap:.4rem;background:var(--bg-geel,#FFE86B);color:var(--bg-inkt);
+ font-weight:700;font-size:.85rem;border-radius:9px;padding:.5rem 1rem;text-decoration:none}
+.bgvoet-knop:hover{color:var(--bg-inkt);text-decoration:none;filter:brightness(.96)}
+.bgvoet-onder{border-top:1px solid #2A2F38;padding:1rem 0 1.4rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;font-size:.8rem;color:#8E96A5}
+.bgvoet-onder .bgvoet-links{display:flex;flex-wrap:wrap;gap:.4rem 1rem}
+@media(max-width:900px){.bgvoet-net{grid-template-columns:1fr 1fr;gap:1.4rem}}
+@media(max-width:560px){.bgvoet-net{grid-template-columns:1fr}}
 
 /* Kruimelpad — één opmaak voor de hele site */
 .bgkruim{max-width:1120px;margin:0 auto;padding:1.3rem 1.5rem .2rem;display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;font-family:'Instrument Sans',system-ui,sans-serif;font-size:.85rem;color:var(--bg-grijs);border:0}
 .bgkruim a{color:var(--bg-blauw);text-decoration:none}
 .bgkruim a:hover{text-decoration:underline}
 .bgkruim span[aria-hidden]{color:var(--bg-lijn)}
+
+/* Bovenbalk — vaste site-chrome, één plek */
+.bgtop{background:var(--bg-inkt);color:#C8CBD2;font-family:'Instrument Sans',system-ui,sans-serif;font-size:.78rem}
+.bgtop-in{max-width:1120px;margin:0 auto;padding:.45rem 1.5rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
+.bgtop-punten{display:flex;gap:1.2rem;flex-wrap:wrap}
+.bgtop-punten span{display:inline-flex;align-items:center;gap:.35rem}
+.bgtop-punten span::before{content:"\2713";color:var(--bg-geel,#FFE86B);font-weight:700}
+.bgtop-re{margin-left:auto;color:#8E96A5}
+@media(max-width:760px){.bgtop-re{display:none}.bgtop-punten{gap:.9rem;font-size:.72rem}}
