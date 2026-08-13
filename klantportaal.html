@@ -6742,6 +6742,76 @@ body{background:var(--np-vlak)}
 #w-status .w-st-knop{font:inherit;font-size:.78rem;font-weight:600;padding:.25rem .6rem;border-radius:6px;
  border:1px solid var(--lijn,#DCDFE6);background:#fff;color:inherit;cursor:pointer}
 #w-status .w-st-knop.blauw{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6);color:#fff}
+/* --- kleur en iconen --- */
+#p-wijzigingen .w-svg{width:18px;height:18px;display:block}
+#p-wijzigingen .w-chip{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;margin:0 auto .35rem}
+#p-wijzigingen .k-blauw{background:#E9EDFD;color:#2742D6}
+#p-wijzigingen .k-rood{background:#FFEEE9;color:#E0431A}
+#p-wijzigingen .k-paars{background:#F0EBFD;color:#6B45D6}
+#p-wijzigingen .k-groen{background:#E7F6ED;color:#137F44}
+#p-wijzigingen .k-geel{background:#FFF7D6;color:#9A7B00}
+#p-wijzigingen .k-cyaan{background:#E4F5F8;color:#0B7285}
+#p-wijzigingen .w-box{transition:transform .12s,box-shadow .12s}
+#p-wijzigingen .w-box:hover{transform:translateY(-2px);box-shadow:0 8px 18px -14px rgba(20,23,26,.5)}
+#p-wijzigingen .w-box b{font-size:1.35rem}
+#p-wijzigingen .w-vk{border-left:4px solid var(--w-lijn);position:relative}
+#p-wijzigingen .w-vk.s-open{border-left-color:#2742D6}
+#p-wijzigingen .w-vk.s-door{border-left-color:#1F9D55}
+#p-wijzigingen .w-vk.s-terug{border-left-color:#8A93A0}
+#p-wijzigingen .w-vk.s-klad{border-left-color:#FFE86B}
+/* commitlijn, zoals een git-log */
+#p-wijzigingen .w-lane{position:relative;padding-left:2.6rem;margin-top:.6rem}
+#p-wijzigingen .w-lane::before{content:"";position:absolute;left:1.05rem;top:.6rem;bottom:.6rem;width:2px;background:linear-gradient(#2742D6,#C3CCF6)}
+#p-wijzigingen .w-cm{position:relative;margin-bottom:.9rem;border:1px solid var(--w-lijn);border-radius:10px;padding:.7rem .85rem;background:#fff}
+#p-wijzigingen .w-cm::before{content:"";position:absolute;left:-1.72rem;top:1rem;width:12px;height:12px;border-radius:50%;
+ background:#2742D6;box-shadow:0 0 0 3px #fff,0 0 0 5px #C3CCF6}
+#p-wijzigingen .w-cm.terug::before{background:#8A93A0;box-shadow:0 0 0 3px #fff,0 0 0 5px #E4E7EC}
+#p-wijzigingen .w-cm .w-cmkop{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem}
+#p-wijzigingen .w-cm .w-hash{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;background:#F3F4F6;color:#5C646E;border-radius:5px;padding:.1rem .4rem}
+#p-wijzigingen .w-cm .w-tijd2{font-size:.72rem;color:var(--w-grijs);margin-left:auto}
+#p-wijzigingen .w-cm h4{font-size:.95rem;margin:.1rem 0 .2rem}
+#p-wijzigingen .w-diff{font-family:ui-monospace,Menlo,monospace;font-size:.74rem;border-radius:7px;overflow:hidden;margin:.4rem 0;border:1px solid var(--w-lijn)}
+#p-wijzigingen .w-diff div{padding:.22rem .5rem}
+#p-wijzigingen .w-diff .min{background:#FFF1EE;color:#B3341A}
+#p-wijzigingen .w-diff .plus{background:#EDF8F1;color:#137F44}
+#p-wijzigingen .w-chips{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.35rem}
+#p-wijzigingen .w-mini{font-size:.7rem;background:#F3F4F6;color:#5C646E;border-radius:20px;padding:.12rem .5rem}
+#p-wijzigingen .w-mini.blauw{background:#E9EDFD;color:#2742D6}
+#p-wijzigingen .w-mini.groen{background:#E7F6ED;color:#137F44}
+#p-wijzigingen .w-lint{background:linear-gradient(90deg,#E9EDFD,#FFF7D6);border-radius:10px;padding:.6rem .8rem;font-size:.85rem;margin-bottom:.7rem}
+#p-wijzigingen .w-mens{border-left:3px solid #E4E7EC}
+#p-wijzigingen .w-mens.ok{border-left-color:#1F9D55;background:#FBFEFC}
+#p-wijzigingen .w-mens.wacht{border-left-color:#E8A200;background:#FFFDF5}
+#w-status .w-st-kaart{border-left:4px solid #2742D6}
+#w-status .w-st-vak.let{animation:none}
+/* --- vaste maten voor iconen (ook als een ander blad ze zou willen oprekken) --- */
+#p-wijzigingen svg.w-svg{width:18px!important;height:18px!important;max-width:18px;max-height:18px;flex:0 0 18px}
+#p-wijzigingen .w-chip{width:34px;height:34px;flex:0 0 34px}
+#p-wijzigingen .w-chip.mini{width:24px;height:24px;flex:0 0 24px;border-radius:7px;margin:0}
+#p-wijzigingen .w-chip.mini svg.w-svg{width:14px!important;height:14px!important}
+/* --- samenhang, netjes uitgelijnd --- */
+#p-wijzigingen .w-sam{display:grid;gap:.15rem}
+#p-wijzigingen .w-samrij{padding:.7rem 0;border-bottom:1px solid var(--w-lijn)}
+#p-wijzigingen .w-samrij:last-child{border-bottom:0}
+#p-wijzigingen .w-samkop{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;flex-wrap:wrap}
+#p-wijzigingen .w-samkop b{font-size:.92rem}
+#p-wijzigingen .w-samtot{margin-left:auto;font-size:.74rem;color:var(--w-grijs);white-space:nowrap}
+#p-wijzigingen .w-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.4rem;margin-top:.45rem}
+@media(max-width:720px){#p-wijzigingen .w-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#p-wijzigingen .w-stat{display:flex;align-items:center;gap:.4rem;min-width:0;font-size:.78rem;color:var(--w-grijs)}
+#p-wijzigingen .w-stat b{font-size:.92rem;color:var(--inkt,#14171A)}
+#p-wijzigingen .w-stat span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* --- tegels compacter en rustiger --- */
+#p-wijzigingen .w-imp{grid-template-columns:repeat(auto-fit,minmax(118px,1fr))}
+#p-wijzigingen .w-box{padding:.7rem .5rem}
+#p-wijzigingen .w-box b{font-size:1.3rem;margin-top:.1rem}
+#p-wijzigingen .w-box span:last-child{font-size:.72rem;line-height:1.25;display:block}
+/* --- formulier ademt --- */
+#p-wijzigingen .w-form{gap:.75rem 1rem}
+#p-wijzigingen .w-veld label{font-size:.75rem;font-weight:600;color:var(--inkt,#14171A);margin-bottom:.25rem}
+#p-wijzigingen .w-inv{padding:.5rem .6rem;border-radius:7px}
+#p-wijzigingen .w-inv:focus{outline:2px solid var(--w-blauw);outline-offset:-1px;border-color:var(--w-blauw)}
+#p-wijzigingen .w-stap i{height:5px}
 
 </style>
 <script>
@@ -7093,7 +7163,7 @@ body{background:var(--np-vlak)}
  var TAB='wijzigingen', gekozen=null, wiz=null;
  var FOTO={'sanne':'/assets/mensen/sanne-de-vries.jpg','mark':'/assets/mensen/mark-jansen.jpg',
            'lisa':'/assets/mensen/lisa-van-dijk.jpg','arthur':'/arthur.jpg'};
- function svg(p){ return '<svg class="w-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>'; }
+ function svg(p,g){ g=g||18; return '<svg class="w-svg" width="'+g+'" height="'+g+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="width:'+g+'px;height:'+g+'px;flex:0 0 '+g+'px;display:block">'+p+'</svg>'; }
  var ICO={
   afd:svg('<path d="M16 19v-1.5a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3V19"/><circle cx="9.5" cy="8" r="3"/><path d="M21 19v-1.5a3 3 0 0 0-2.2-2.9"/><path d="M15.5 5.2a3 3 0 0 1 0 5.6"/>'),
   kpi:svg('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/>'),
@@ -7412,16 +7482,19 @@ body{background:var(--np-vlak)}
   var max=Math.max(1,rijen[0]?rijen[0].tot:1);
   document.getElementById('w-inhoud').innerHTML=
    '<div class="w-kaart"><div class="w-rij"><h3>Samenhang in je bedrijfsgeheugen</h3></div>'
-   +'<p class="w-sub">Hoeveel hangt er aan elk onderdeel? Hoe langer de balk, hoe zwaarder een wijziging weegt — en hoe meer mensen er dus naar moeten kijken.</p>'
-   +rijen.map(function(r){
-     return '<div style="padding:.5rem 0;border-bottom:1px solid var(--w-lijn)">'
-      +'<div class="w-rij" style="margin-bottom:.2rem"><b style="font-size:.9rem">'+esc(r.n)+'</b>'
-      +'<div class="w-re"><span class="w-tag">'+niv()[S.niveaus[r.k]]+'</span></div></div>'
-      +'<div class="w-balk"><i style="width:'+Math.round(r.tot/max*100)+'%"></i></div>'
-      +'<div class="w-meta"><span>'+ICO.afd+' '+r.i.afd.length+' afdelingen</span><span>'+ICO.kpi+' '+r.i.kpi.length+' cijfers</span>'
-      +'<span>'+ICO.proc+' '+r.i.proc.length+' processen</span><span>'+ICO.doc+' '+r.i.proj.length+' acties</span>'
-      +'<span>'+ICO.sys+' '+r.i.sys.length+' systemen</span></div></div>';}).join('')
-   +'</div>';
+   +'<p class="w-sub">Hoeveel hangt er aan elk onderdeel? Hoe langer de balk, hoe zwaarder een wijziging weegt — en hoe meer mensen ernaar moeten kijken.</p>'
+   +'<div class="w-sam">'+rijen.map(function(r){
+     return '<div class="w-samrij">'
+      +'<div class="w-samkop"><b>'+esc(r.n)+'</b><span class="w-tag">'+esc(niv()[S.niveaus[r.k]])+'</span>'
+      +'<span class="w-samtot">'+r.tot+' verbindingen</span></div>'
+      +'<div class="w-balk"><i style="width:'+Math.max(4,Math.round(r.tot/max*100))+'%"></i></div>'
+      +'<div class="w-stats">'
+      +[[ICO.afd,'k-blauw',r.i.afd.length,'afdelingen'],[ICO.kpi,'k-rood',r.i.kpi.length,'cijfers'],
+        [ICO.proc,'k-paars',r.i.proc.length,'processen'],[ICO.doc,'k-groen',r.i.proj.length,'acties'],
+        [ICO.sys,'k-geel',r.i.sys.length,'systemen']]
+        .map(function(t){return '<span class="w-stat"><span class="w-chip mini '+t[1]+'">'+t[0]+'</span>'
+          +'<b>'+t[2]+'</b><span>'+t[3]+'</span></span>';}).join('')
+      +'</div></div>';}).join('')+'</div></div>';
  }
 
  /* ---------------- nieuwe wijziging ---------------- */
