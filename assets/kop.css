@@ -6,7 +6,7 @@
 
 .bgkop{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--bg-lijn);font-family:'Instrument Sans',system-ui,sans-serif}
 .bgkop *{box-sizing:border-box}
-.bgkop-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem 1.5rem}
+.bgkop-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem 1.5rem}
 .bgkop-logo{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--bg-inkt)}
 .bgkop-logo img{width:34px;height:34px;flex-shrink:0}
 .bgkop-woord{font-family:'Bricolage Grotesque','Instrument Sans',sans-serif;font-weight:800;font-size:1.22rem;letter-spacing:-.02em;line-height:1.1;display:block}
@@ -25,13 +25,13 @@
 @media(max-width:1040px){.bgkop-links,.bgkop-cta{display:none}.bgkop-knop{display:flex}.bgkop-mob:not([hidden]){display:flex}}
 
 .bgvoet{background:var(--bg-inkt);color:#C8CBD2;padding:2.6rem 0;margin-top:3.5rem;font-size:.9rem;font-family:'Instrument Sans',system-ui,sans-serif}
-.bgvoet-in{max-width:1180px;margin:0 auto;padding:0 1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;align-items:center}
+.bgvoet-in{max-width:1120px;margin:0 auto;padding:0 1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;align-items:center}
 .bgvoet a{color:#fff;text-decoration:none}
 .bgvoet a:hover{text-decoration:underline}
 .bgvoet-links{display:flex;flex-wrap:wrap;gap:.4rem .9rem}
 
 /* Kruimelpad — één opmaak voor de hele site */
-.bgkruim{max-width:1180px;margin:0 auto;padding:1.3rem 1.5rem .2rem;display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;font-family:'Instrument Sans',system-ui,sans-serif;font-size:.85rem;color:var(--bg-grijs);border:0}
+.bgkruim{max-width:1120px;margin:0 auto;padding:1.3rem 1.5rem .2rem;display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;font-family:'Instrument Sans',system-ui,sans-serif;font-size:.85rem;color:var(--bg-grijs);border:0}
 .bgkruim a{color:var(--bg-blauw);text-decoration:none}
 .bgkruim a:hover{text-decoration:underline}
 .bgkruim span[aria-hidden]{color:var(--bg-lijn)}
