@@ -2,36 +2,26 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('consent', 'default', {
-    ad_storage: 'denied',
-    ad_user_data: 'denied',
-    ad_personalization: 'denied',
-    analytics_storage: 'denied',
-    wait_for_update: 500
-  });
+  gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
   try{ if(localStorage.getItem('bg_consent')==='granted'){ gtag('consent','update',{analytics_storage:'granted'}); } }catch(e){}
   gtag('js', new Date());
-  gtag('config', 'G-912L0PB68G');
+  gtag('config','G-912L0PB68G');
 </script><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kennisborging mkb: alles op één plek | Bedrijfsgeheugen</title>
-<meta name="description" content="Kennisborging voor het mkb in één portaal: strategie, KPI's, processen, acties en documenten aan elkaar. Verander één ding en zie direct wat het raakt.">
+<title>Strategie, KPI's en acties op één plek | Bedrijfsgeheugen</title>
+<meta name="description" content="Kennisborging mkb in één portaal: strategie, KPI's, processen, acties en koppelingen aan elkaar. Van strategie als document naar strategie als systeem.">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/product">
 <meta name="theme-color" content="#2742D6">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="nl_NL">
+<meta property="og:type" content="website"><meta property="og:locale" content="nl_NL">
 <meta property="og:site_name" content="Bedrijfsgeheugen">
 <meta property="og:url" content="https://www.bedrijfsgeheugen.nl/product">
-<meta property="og:title" content="Kennisborging mkb: alles op één plek | Bedrijfsgeheugen">
-<meta property="og:description" content="Kennisborging voor het mkb in één portaal: strategie, KPI's, processen, acties en documenten aan elkaar. Verander één ding en zie direct wat het raakt.">
+<meta property="og:title" content="Strategie, KPI's en acties op één plek | Bedrijfsgeheugen"><meta property="og:description" content="Kennisborging mkb in één portaal: strategie, KPI's, processen, acties en koppelingen aan elkaar. Van strategie als document naar strategie als systeem.">
 <meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Kennisborging mkb: alles op één plek | Bedrijfsgeheugen">
-<meta name="twitter:description" content="Strategie, KPI's, processen, acties en documenten in één portaal. Verander één ding en zie direct wat het raakt.">
+<meta name="twitter:title" content="Strategie, KPI's en acties op één plek | Bedrijfsgeheugen"><meta name="twitter:description" content="Kennisborging mkb in één portaal: strategie, KPI's, processen, acties en koppelingen aan elkaar. Van strategie als document naar strategie als systeem.">
 <meta name="twitter:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,296 +29,381 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
-<link rel="icon" href="/favicon.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<style>
-:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--oranje-t:#C2410C;--geel:#FFE86B;--lijn:#DCDFE6;--grijs:#5C646E}
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--blauw-l:#EEF1FD;--oranje:#FF4F17;--oranje-t:#C2410C;--geel:#FFE86B;--lijn:#DCDFE6;--grijs:#5C646E;--groen:#1E9E5A}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'Instrument Sans',sans-serif;background:var(--papier);color:var(--inkt);line-height:1.65;font-size:16.5px;padding-bottom:92px}
+body{font-family:'Instrument Sans',sans-serif;background:var(--papier);color:var(--inkt);line-height:1.65;font-size:16.5px}
 h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;line-height:1.12}
-.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+.wrap{max-width:1180px;margin:0 auto;padding:0 1.5rem}
 a{color:var(--blauw)}
 .btn{display:inline-block;border:2px solid var(--inkt);border-radius:10px;padding:.65rem 1.3rem;font-weight:700;text-decoration:none;color:var(--inkt);font-size:.95rem}
 .btn.blauw{background:var(--blauw);border-color:var(--blauw);color:#fff}
-.btn.oranje{background:var(--oranje);border-color:var(--oranje);color:var(--inkt)}
-.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--oranje-t);display:block;margin-bottom:1rem}
+.btn.geel{background:var(--geel);border-color:var(--inkt);color:var(--inkt)}
+.btn.wit{background:#fff;border-color:var(--blauw);color:var(--blauw)}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--blauw);display:block;margin-bottom:1rem}
 .logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.25rem;color:var(--inkt);text-decoration:none;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:.55rem}
 .logo b{color:var(--blauw)}
-nav#kop{position:sticky;top:0;z-index:50;background:rgba(251,250,247,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--lijn)}
-nav#kop .nb{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 1.5rem}
-.nl2{display:flex;gap:1.4rem;font-size:.95rem;font-weight:600}
-.nl2 a{color:var(--inkt);text-decoration:none}
-.nl2 a[aria-current=page]{color:var(--blauw)}
-.ncta{background:var(--geel);border:2px solid var(--inkt);border-radius:10px;padding:.5rem 1rem;font-weight:700;font-size:.9rem;color:var(--inkt);text-decoration:none;white-space:nowrap}
+.logo .payoff{display:block;font-family:'Instrument Sans',sans-serif;font-size:.58rem;font-weight:500;color:var(--grijs);letter-spacing:0}
+nav#kop{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--lijn)}
+nav#kop .nb{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1.5rem}
+.nl2{display:flex;gap:1.35rem;font-size:.92rem;font-weight:600}
+.nl2 a{color:var(--inkt);text-decoration:none;padding-bottom:.2rem}
+.nl2 a[aria-current=page]{color:var(--blauw);border-bottom:2px solid var(--blauw)}
+.ncta{background:var(--geel);border:2px solid var(--inkt);border-radius:10px;padding:.5rem 1rem;font-weight:700;font-size:.88rem;color:var(--inkt);text-decoration:none;white-space:nowrap}
 .menuknop{display:none;background:none;border:0;flex-direction:column;gap:4px;cursor:pointer}
 .menuknop span{display:block;width:24px;height:2px;background:var(--inkt)}
-.mobmenu{display:none;flex-direction:column;gap:.2rem;padding:.5rem 1.5rem 1.2rem;border-bottom:1px solid var(--lijn)}
+.mobmenu{display:none;flex-direction:column;padding:.5rem 1.5rem 1.2rem;border-bottom:1px solid var(--lijn);background:#fff}
 .mobmenu a{color:var(--inkt);text-decoration:none;font-weight:600;padding:.5rem 0}
 .mm-cta{color:var(--blauw)!important}
-@media(max-width:900px){.nl2,.ncta{display:none}.menuknop{display:flex}.mobmenu:not([hidden]){display:flex}}
-.kruim{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--grijs);padding:1.6rem 0 0}
+@media(max-width:1000px){.nl2,.ncta{display:none}.menuknop{display:flex}.mobmenu:not([hidden]){display:flex}}
+.kruim{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--grijs);padding:1.4rem 0 0}
 .kruim a{color:var(--blauw);text-decoration:none}
-
-/* hero */
-.pr-hero{padding:2rem 0 3.5rem}
-.pr-hero-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:3rem;align-items:center}
-.pr-hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.03em}
-.pr-belofte{margin:1.2rem 0 1.2rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(1.1rem,2vw,1.35rem);letter-spacing:-.02em}
+section{padding:2.8rem 0}
+h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:800;margin-bottom:.5rem}
+.sect-intro{color:var(--grijs);max-width:56em;margin-bottom:1.5rem;font-size:.95rem}
+.paneel{background:#fff;border:1px solid var(--lijn);border-radius:16px;padding:1.6rem}
+.check{list-style:none}
+.check li{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.45rem}
+.check li::before{content:"✓";color:var(--blauw);font-weight:800;flex-shrink:0}
 .markeer{background:linear-gradient(to top,var(--geel) 58%,transparent 58%);padding:0 .1em}
-.pr-lijst{list-style:none;margin:1.2rem 0 0}
-.pr-lijst li{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.5rem;font-weight:600}
-.pr-lijst li::before{content:"✓";color:var(--blauw);font-weight:800}
-.pr-cta{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.7rem}
-.pr-badges{display:flex;gap:1.6rem;flex-wrap:wrap;margin-top:1.8rem;font-size:.82rem;color:var(--grijs)}
-.pr-badges b{display:block;color:var(--inkt);font-size:.88rem}
-
-/* portaal-mock */
-.mock{background:#fff;border:2px solid var(--inkt);border-radius:18px;box-shadow:0 18px 40px rgba(20,23,26,.10);overflow:hidden}
-.mock-kop{display:flex;justify-content:space-between;align-items:center;padding:.9rem 1.1rem;border-bottom:1px solid var(--lijn)}
-.mock-kop strong{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem}
-.mock-kop span{font-size:.72rem;color:var(--grijs);font-family:'IBM Plex Mono',monospace}
-.mock-cijfers{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;padding:1rem}
-.mock-cijfers div{border:1px solid var(--lijn);border-radius:10px;padding:.6rem .7rem;background:var(--papier)}
-.mock-cijfers small{display:block;font-size:.66rem;color:var(--grijs);text-transform:uppercase;letter-spacing:.06em;font-family:'IBM Plex Mono',monospace}
-.mock-cijfers b{font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800}
-.mock-balken{padding:0 1rem 1.1rem}
-.mock-balken p{font-size:.78rem;font-weight:700;margin-bottom:.5rem}
-.mock-rij{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;font-size:.78rem}
-.mock-rij span{flex:0 0 9rem;color:var(--grijs)}
-.mock-bar{flex:1;height:7px;border-radius:4px;background:var(--lijn);overflow:hidden}
-.mock-bar i{display:block;height:100%;background:var(--blauw)}
-
-/* secties */
-section{padding:3.2rem 0}
-h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:800;margin-bottom:.6rem}
-.sect-intro{color:#3C424A;max-width:52em;margin-bottom:1.8rem}
-.kaarten{display:grid;gap:1rem}
-.k5{grid-template-columns:repeat(5,1fr)}
-.k4{grid-template-columns:repeat(4,1fr)}
-.k3{grid-template-columns:repeat(3,1fr)}
-.k2{grid-template-columns:repeat(2,1fr)}
-.kaart{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.1rem 1.2rem}
-.kaart h3{font-size:1rem;font-weight:700;margin-bottom:.35rem}
-.kaart p{font-size:.9rem;color:var(--grijs);line-height:1.55}
-.bouwstenen{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.4rem}
-.bs{border-left:3px solid var(--blauw);padding:.2rem 0 .2rem .8rem}
-.bs b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem}
-.bs span{font-size:.85rem;color:var(--grijs)}
-
-/* wijziging */
-.wz{background:#fff;border:2px solid var(--inkt);border-radius:18px;padding:1.6rem;margin-top:1.6rem}
-.wz-van-naar{display:grid;grid-template-columns:1fr auto 1fr;gap:1.2rem;align-items:center;border:1px solid var(--lijn);border-radius:12px;padding:1.1rem}
-.wz-van-naar small{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--grijs);font-family:'IBM Plex Mono',monospace}
-.wz-van-naar b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;margin-bottom:.6rem}
-.wz-pijl{font-size:1.4rem;color:var(--blauw)}
-.wz-naar b{color:var(--blauw)}
-.impact{display:grid;grid-template-columns:repeat(6,1fr);gap:.7rem;margin-top:1.2rem}
-.impact div{border:1px solid var(--lijn);border-radius:10px;padding:.7rem;text-align:center;background:var(--papier)}
-.impact b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800}
-.impact small{font-size:.72rem;color:var(--grijs)}
-.gebeurt{list-style:none;margin-top:1.3rem;display:grid;grid-template-columns:1fr 1fr;gap:.4rem .0}
-.gebeurt li{display:flex;gap:.55rem;font-size:.92rem}
-.gebeurt li::before{content:"✓";color:var(--blauw);font-weight:800}
-
-/* stappen */
-.stappen{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-top:1.4rem;counter-reset:s}
-.stap{position:relative;padding-top:2.4rem}
-.stap::before{counter-increment:s;content:counter(s);position:absolute;top:0;left:0;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--blauw);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem}
-.stap h3{font-size:1rem;margin-bottom:.3rem}
-.stap p{font-size:.88rem;color:var(--grijs)}
-
-/* prijzen */
-.prijzen{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.4rem}
-.prijs{background:#fff;border:1px solid var(--lijn);border-radius:16px;padding:1.4rem}
-.prijs.uit{border:2px solid var(--oranje)}
-.prijs .label{font-family:'IBM Plex Mono',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--oranje-t)}
-.prijs h3{font-size:1.15rem;margin:.3rem 0 .2rem}
-.prijs .bedrag{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800}
-.prijs .bedrag small{font-size:.8rem;font-weight:600;color:var(--grijs)}
-.prijs ul{list-style:none;margin:.9rem 0 1.1rem}
-.prijs li{display:flex;gap:.5rem;font-size:.88rem;margin-bottom:.35rem}
-.prijs li::before{content:"✓";color:var(--blauw);font-weight:800}
-
-/* faq */
-details{background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.6rem}
-summary{font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif}
-details p{margin-top:.6rem;font-size:.94rem;color:#3C424A}
-
-/* slotband */
-.band{background:var(--blauw);color:#fff;border-radius:18px;padding:2rem;display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;margin:2rem 0 0}
-.band h2{color:#fff;margin-bottom:.3rem}
-.band p{opacity:.9;font-size:.95rem}
-.band .btn{border-color:#fff;color:#fff}
-.band .btn.geel{background:var(--geel);border-color:var(--geel);color:var(--inkt)}
-
-footer{background:var(--inkt);color:#C8CBD2;padding:3rem 0;margin-top:4rem;font-size:.9rem}
+footer{background:var(--inkt);color:#C8CBD2;padding:3rem 0;margin-top:3rem;font-size:.9rem}
 footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
 footer a{color:#fff}
-
-@media(max-width:980px){
-  .pr-hero-grid{grid-template-columns:1fr}
-  .k5,.k4,.bouwstenen,.stappen,.impact{grid-template-columns:repeat(2,1fr)}
-  .k3,.prijzen{grid-template-columns:1fr}
-  .gebeurt{grid-template-columns:1fr}
-  .wz-van-naar{grid-template-columns:1fr}
-  .wz-pijl{display:none}
-  .mock-cijfers{grid-template-columns:repeat(2,1fr)}
-}
+.vertrouwen{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;padding:1.6rem 0 0;border-top:1px solid var(--lijn)}
+.vertrouwen div{font-size:.85rem;color:var(--grijs)}
+.vertrouwen b{display:block;color:var(--inkt);font-size:.9rem}
+.band{background:var(--blauw);color:#fff;border-radius:18px;padding:2rem;margin-top:1rem}
+.band h2{color:#fff}
+.band-in{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.band .btn{border-color:#fff;color:#fff}
+.band-checks{display:flex;gap:1.6rem;flex-wrap:wrap;margin-top:1.2rem;font-size:.9rem;opacity:.95}
+.band-checks span::before{content:"✓ ";font-weight:800}
+@media(max-width:900px){.vertrouwen{grid-template-columns:repeat(2,1fr)}}
 </style>
+<style>
+.pr-hero{padding:2rem 0 3rem}
+.pr-hero-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:2.6rem;align-items:center}
+.pr-hero h1{font-size:clamp(2rem,4.2vw,2.9rem);font-weight:800;letter-spacing:-.03em}
+.pr-usp{margin:1.3rem 0 1rem;font-weight:600}
+.pr-tekst{color:var(--grijs);font-size:.95rem;max-width:40em}
+.pr-cta{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem}
+.pr-badges{display:flex;gap:1.8rem;flex-wrap:wrap;margin-top:1.8rem;font-size:.78rem;color:var(--grijs)}
+.pr-badges b{display:block;color:var(--inkt);font-size:.85rem}
+
+.mock{background:#fff;border:1px solid var(--lijn);border-radius:14px;box-shadow:0 20px 46px rgba(20,23,26,.10);overflow:hidden;font-size:.72rem}
+.mock-body{display:grid;grid-template-columns:9.5rem 1fr}
+.mock-zij{background:var(--papier);border-right:1px solid var(--lijn);padding:.9rem .7rem;display:flex;flex-direction:column;gap:.15rem}
+.mock-zij span{padding:.32rem .5rem;border-radius:7px;color:var(--grijs)}
+.mock-zij .actief{background:var(--blauw-l);color:var(--blauw);font-weight:700}
+.mock-zij .onder{margin-top:auto}
+.mock-hoofd{padding:.9rem 1rem 1.1rem}
+.mock-kop{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.8rem}
+.mock-kop strong{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;display:block}
+.mock-kop small{color:var(--grijs)}
+.mock-pillen{display:flex;gap:.4rem}
+.mock-pillen span{border:1px solid var(--lijn);border-radius:7px;padding:.2rem .5rem;color:var(--grijs)}
+.mock-cijfers{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-bottom:.7rem}
+.mock-cijfers div{border:1px solid var(--lijn);border-radius:9px;padding:.55rem .6rem}
+.mock-cijfers small{display:block;color:var(--grijs);font-size:.64rem}
+.mock-cijfers b{font-family:'Bricolage Grotesque',sans-serif;font-size:1.25rem;font-weight:800;display:block}
+.mock-cijfers i{font-style:normal;color:var(--groen);font-size:.62rem}
+.mock-twee{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:.55rem}
+.mock-kaart{border:1px solid var(--lijn);border-radius:9px;padding:.6rem .7rem}
+.mock-t{font-weight:700;margin-bottom:.5rem;font-size:.72rem}
+.mock-pct{float:right;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem}
+.mock-rij{display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem}
+.mock-rij span{flex:0 0 6.6rem;color:var(--inkt);font-size:.66rem}
+.mock-rij em{display:block;font-style:normal;color:var(--grijs);font-size:.6rem}
+.mock-bar{flex:1;height:6px;border-radius:4px;background:var(--lijn);overflow:hidden}
+.mock-bar.groot{height:8px;margin-bottom:.35rem}
+.mock-bar i{display:block;height:100%;background:var(--blauw)}
+.mock-sub{color:var(--grijs);font-size:.64rem;display:block}
+.mock-link{display:inline-block;margin-top:.5rem;color:var(--blauw);text-decoration:none;font-weight:600;font-size:.75rem}
+.mock-sig{display:flex;align-items:center;gap:.4rem;margin-bottom:.4rem;font-size:.66rem}
+.mock-sig span{flex:1}
+.mock-sig em{font-style:normal;background:var(--papier);border:1px solid var(--lijn);border-radius:5px;padding:.05rem .35rem;color:var(--grijs)}
+.mock-sig i{font-style:normal;color:var(--grijs);flex:0 0 1.6rem;text-align:right}
+
+.grijsvlak{background:#fff;border-top:1px solid var(--lijn);border-bottom:1px solid var(--lijn)}
+.kaarten{display:grid;gap:1rem}
+.k5{grid-template-columns:repeat(5,1fr)}
+.k3{grid-template-columns:repeat(3,1fr)}
+.kaart{background:var(--papier);border:1px solid var(--lijn);border-radius:12px;padding:1rem 1.1rem}
+.kaart .ik,.bs .ik{color:var(--blauw);font-size:1.15rem;display:block;margin-bottom:.4rem}
+.kaart h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+.kaart p{font-size:.85rem;color:var(--grijs);line-height:1.5}
+.bouwstenen{display:grid;grid-template-columns:repeat(8,1fr);gap:1rem;margin-top:1.2rem}
+.bs b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem}
+.bs span{font-size:.78rem;color:var(--grijs);line-height:1.45}
+
+.stroom{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:1.2rem;margin-top:1.2rem;align-items:start}
+.stroom-t{font-size:.78rem;font-weight:700;margin-bottom:.6rem}
+.sk{border:1px solid var(--lijn);border-radius:9px;padding:.5rem .65rem;margin-bottom:.45rem;background:var(--papier)}
+.sk b{display:block;font-size:.82rem}
+.sk span{font-size:.72rem;color:var(--grijs)}
+.verrijk{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.kern{border:1px solid var(--blauw);background:var(--blauw-l);border-radius:12px;padding:.9rem;text-align:center;margin:.7rem 0}
+.kern b{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;display:block}
+.kern>span{font-size:.75rem;color:var(--grijs)}
+.kern-rij{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin-top:.7rem}
+.kern-rij span{background:#fff;border:1px solid var(--lijn);border-radius:7px;padding:.25rem .55rem;font-size:.72rem}
+.ontbreekt{border:1px dashed var(--lijn);border-radius:9px;padding:.55rem;text-align:center;font-size:.75rem;color:var(--grijs)}
+.legenda{margin-top:1rem;font-size:.75rem;color:var(--grijs);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.ln{display:inline-block;width:26px;height:0;border-top:2px solid var(--blauw)}
+.ln.stip{border-top-style:dashed;border-color:var(--grijs);margin-left:1rem}
+
+.stappen{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-top:1.2rem;counter-reset:s}
+.stap{position:relative;padding-top:2.4rem}
+.stap::before{counter-increment:s;content:counter(s);position:absolute;top:0;left:0;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--blauw);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.stap h3{font-size:.95rem;margin-bottom:.3rem}
+.stap p{font-size:.84rem;color:var(--grijs)}
+.pk{font-size:1rem;margin-bottom:.7rem}
+.check.klein li{font-size:.85rem;margin-bottom:.3rem}
+.tools{list-style:none;display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.7rem}
+.tools li{border:1px solid var(--lijn);border-radius:7px;padding:.25rem .55rem;font-size:.78rem;font-weight:600;background:var(--papier)}
+
+.prijzen{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.2rem}
+.prijs{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.2rem;position:relative;display:flex;flex-direction:column}
+.prijs.uit{border:2px solid var(--geel);box-shadow:0 10px 26px rgba(20,23,26,.07)}
+.prijs .tag{position:absolute;top:-.7rem;left:1.1rem;background:var(--geel);border-radius:6px;padding:.1rem .5rem;font-size:.68rem;font-weight:700}
+.prijs h3{font-size:1.05rem;margin-bottom:.2rem}
+.bedrag{font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800}
+.bedrag.klein{font-size:1.05rem}
+.bedrag small{font-size:.78rem;font-weight:600;color:var(--grijs)}
+.pw{font-size:.8rem;color:var(--grijs);margin:.4rem 0 .7rem}
+.prijs .check{margin-bottom:1rem}
+.breed{text-align:center;margin-top:auto}
+.prijs-noot{margin-top:1.1rem;font-size:.88rem;color:var(--grijs)}
+
+details{background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.55rem}
+summary{font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif}
+details p{margin-top:.6rem;font-size:.92rem;color:#3C424A}
+
+@media(max-width:1050px){
+  .pr-hero-grid{grid-template-columns:1fr}
+  .bouwstenen{grid-template-columns:repeat(4,1fr)}
+  .k5,.stappen,.prijzen{grid-template-columns:repeat(2,1fr)}
+  .k3{grid-template-columns:1fr}
+  .stroom{grid-template-columns:1fr}
+  .verrijk{grid-template-columns:repeat(2,1fr)}
+  .mock-body{grid-template-columns:1fr}
+  .mock-zij{flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--lijn)}
+  .mock-zij .onder{margin-top:0}
+  .mock-cijfers{grid-template-columns:repeat(2,1fr)}
+  .mock-twee{grid-template-columns:1fr}
+}
+@media(max-width:620px){.bouwstenen{grid-template-columns:repeat(2,1fr)}.k5,.stappen,.prijzen{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
-
 <nav id="kop"><div class="wrap nb">
   <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
-    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
-    <span class="woord">Bedrijfs<b>geheugen</b></span>
+    <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
+    <span>Bedrijfs<b>geheugen</b><span class="payoff">Aanpakken zonder aanmodderen.</span></span>
   </a>
   <div class="nl2">
     <a href="/expertises">Expertises</a>
     <a href="/product" aria-current="page">Product</a>
+    <a href="/wijzigingen">Wijzigingen</a>
     <a href="/hoe-het-werkt">Hoe het werkt</a>
     <a href="/blog/">Blog</a>
     <a href="/over-ons">Over ons</a>
   </div>
-  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <a class="ncta" href="/frisse-blik">Plan een Frisse blik →</a>
   <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
 </div>
 <div class="mobmenu" id="mobMenu" hidden>
   <a href="/expertises">Expertises</a>
   <a href="/product" aria-current="page">Product</a>
+  <a href="/wijzigingen">Wijzigingen</a>
   <a href="/hoe-het-werkt">Hoe het werkt</a>
   <a href="/systemen-koppelen">Systemen koppelen</a>
   <a href="/blog/">Blog</a>
   <a href="/over-ons">Over ons</a>
-  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+  <a href="/frisse-blik" class="mm-cta">Plan een Frisse blik</a>
 </div></nav>
-
 <main>
 <div class="wrap">
-  <nav class="kruim" aria-label="Kruimelpad">
-    <a href="/">Home</a><span>&rsaquo;</span><span>Product</span>
-  </nav>
+  <nav class="kruim" aria-label="Kruimelpad"><a href="/">Home</a><span>&rsaquo;</span><span>Product</span></nav>
 </div>
 
 <section class="pr-hero"><div class="wrap pr-hero-grid">
   <div>
-    <span class="eyebrow">Voor ondernemers en managementteams</span>
+    <span class="eyebrow">Voor ondernemers &amp; managementteams</span>
     <h1>Eén plek waar strategie, cijfers en acties samenkomen.</h1>
-    <p class="pr-belofte">Uit hoofden, in je bedrijf. En dan <span class="markeer">werkend</span>.</p>
-    <p>Kennisborging in het mkb strandt bijna altijd op hetzelfde: wat besloten is staat in een presentatie, wat er gebeurt staat in een ander systeem, en wat iemand weet staat nergens. Het portaal van Bedrijfsgeheugen zet die drie aan elkaar — bovenop de AFAS, Exact of Microsoft 365 die je al hebt.</p>
-    <ul class="pr-lijst">
+    <ul class="check pr-usp">
       <li>Minder vergaderen, meer sturen</li>
       <li>Direct zien wat aandacht vraagt</li>
       <li>Van strategie naar resultaat, elke dag</li>
     </ul>
+    <p class="pr-tekst">Kennisborging in het mkb strandt bijna altijd op hetzelfde: wat besloten is staat in een presentatie, wat er gebeurt staat in een ander systeem, en wat iemand weet staat nergens. Het portaal zet die drie aan elkaar — bovenop de AFAS, Exact of Microsoft 365 die je al hebt.</p>
     <div class="pr-cta">
-      <a class="btn blauw" href="/frisse-blik">Plan een Frisse blik →</a>
-      <a class="btn" href="/klantportaal?klant=demo">Bekijk het portaal</a>
+      <a class="btn blauw" href="/frisse-blik">Plan een Frisse Blik →</a>
+      <a class="btn wit" href="/klantportaal?klant=demo">Bekijk het portaal</a>
     </div>
     <div class="pr-badges">
-      <span><b>Gebouwd voor schaal</b>Van mkb tot enterprise</span>
-      <span><b>Veilig en betrouwbaar</b>AVG-proof, gebouwd in Nederland</span>
-      <span><b>Team met trackrecord</b>Asito, IKEA, ING, KPN</span>
+      <div><b>Gebouwd voor schaal</b>Van MKB tot enterprise</div>
+      <div><b>Veilig &amp; betrouwbaar</b>ISO 27001-ready</div>
+      <div><b>Team met trackrecord</b>Ervaring in scale-up &amp; SaaS</div>
     </div>
   </div>
 
-  <div class="mock" role="img" aria-label="Voorbeeld van het portaal: een overzicht met KPI's in beeld, acties op schema, nieuwe signalen en actuele documenten, plus de prioriteiten van deze maand.">
-    <div class="mock-kop"><strong>Goedemorgen</strong><span>Dit is de situatie van vandaag</span></div>
-    <div class="mock-cijfers">
-      <div><small>KPI's in beeld</small><b>86%</b></div>
-      <div><small>Acties op schema</small><b>74%</b></div>
-      <div><small>Signalen nieuw</small><b>12</b></div>
-      <div><small>Documenten actueel</small><b>92%</b></div>
-    </div>
-    <div class="mock-balken">
-      <p>Prioriteiten deze maand</p>
-      <div class="mock-rij"><span>Omzetgroei</span><div class="mock-bar"><i style="width:72%"></i></div></div>
-      <div class="mock-rij"><span>Kostenbeheersing</span><div class="mock-bar"><i style="width:55%"></i></div></div>
-      <div class="mock-rij"><span>Klantwaarde</span><div class="mock-bar"><i style="width:38%"></i></div></div>
+  <div class="mock" role="img" aria-label="Voorbeeld van het portaal: overzicht met KPI's in beeld 86 procent, acties op schema 74 procent, twaalf nieuwe signalen, 92 procent actuele documenten, de prioriteiten van deze maand, de voortgang op de roadmap, recente signalen en acties die aandacht vragen.">
+    <div class="mock-body">
+      <aside class="mock-zij">
+        <span class="actief">Overzicht</span><span>Strategie</span><span>KPI's</span><span>Processen</span><span>Acties</span><span>Documenten</span><span>Dashboards</span><span>Signalen</span>
+        <span class="onder">Instellingen</span>
+      </aside>
+      <div class="mock-hoofd">
+        <div class="mock-kop">
+          <div><strong>Goedemorgen, Sanne</strong><small>Dit is de situatie van vandaag.</small></div>
+          <div class="mock-pillen"><span>Alle afdelingen</span><span>12 mei</span></div>
+        </div>
+        <div class="mock-cijfers">
+          <div><small>KPI's in beeld</small><b>86%</b><i>▲ 8% vs vorige maand</i></div>
+          <div><small>Acties op schema</small><b>74%</b><i>▲ 12% vs vorige maand</i></div>
+          <div><small>Signalen nieuw</small><b>12</b><i>▲ 3 nieuw</i></div>
+          <div><small>Documenten actueel</small><b>92%</b><i>▲ 6%</i></div>
+        </div>
+        <div class="mock-twee">
+          <div class="mock-kaart">
+            <p class="mock-t">Prioriteiten deze maand</p>
+            <div class="mock-rij"><span>Omzetgroei<em>Actief op 7 acties</em></span><div class="mock-bar"><i style="width:78%"></i></div></div>
+            <div class="mock-rij"><span>Kostenbeheersing<em>Actief op 5 acties</em></span><div class="mock-bar"><i style="width:58%"></i></div></div>
+            <div class="mock-rij"><span>Klantbehoud<em>Actief op 4 acties</em></span><div class="mock-bar"><i style="width:41%"></i></div></div>
+          </div>
+          <div class="mock-kaart">
+            <p class="mock-t">Voortgang roadmap <b class="mock-pct">42%</b></p>
+            <div class="mock-bar groot"><i style="width:42%"></i></div>
+            <small class="mock-sub">12 van 29 mijlpalen behaald</small>
+            <a class="mock-link" href="/klantportaal?klant=demo">Bekijk roadmap →</a>
+          </div>
+        </div>
+        <div class="mock-twee">
+          <div class="mock-kaart">
+            <p class="mock-t">Recente signalen</p>
+            <div class="mock-sig"><span>Prijsstijging leveranciers</span><em>Financiën</em><i>2u</i></div>
+            <div class="mock-sig"><span>Dalende NPS-trend</span><em>Klanten</em><i>3u</i></div>
+            <div class="mock-sig"><span>Hoge werkdruk in operatie</span><em>HR</em><i>2u</i></div>
+          </div>
+          <div class="mock-kaart">
+            <p class="mock-t">Acties die aandacht vragen</p>
+            <div class="mock-sig"><span>Proces onboarding verbeteren</span><em>Sales</em><i>3d</i></div>
+            <div class="mock-sig"><span>Klantsegmentatie afronden</span><em>Marketing</em><i>3d</i></div>
+            <div class="mock-sig"><span>Capaciteitsplanning Q3</span><em>Operatie</em><i>7d</i></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div></section>
 
-<section style="padding-top:0"><div class="wrap">
+<section class="grijsvlak"><div class="wrap">
   <h2>Herken je deze uitdagingen?</h2>
-  <p class="sect-intro">Vijf dingen die we bij vrijwel elk bedrijf van 11 tot 50 medewerkers tegenkomen.</p>
   <div class="kaarten k5">
-    <article class="kaart"><h3>Informatie versnipperd</h3><p>Data staat overal, maar nergens compleet.</p></article>
-    <article class="kaart"><h3>Te veel vergaderen</h3><p>Besluiten blijven liggen, actie blijft uit.</p></article>
-    <article class="kaart"><h3>Geen actueel inzicht</h3><p>Rapportages zijn achterhaald, missers blijven onzichtbaar.</p></article>
-    <article class="kaart"><h3>Geen samenhang</h3><p>Strategie, KPI's en acties zijn niet verbonden.</p></article>
-    <article class="kaart"><h3>Afhankelijk van mensen</h3><p>Kennis zit in hoofden, niet in het systeem.</p></article>
+    <article class="kaart"><span class="ik">◈</span><h3>Informatie versnipperd</h3><p>Data staat overal, maar nergens compleet.</p></article>
+    <article class="kaart"><span class="ik">◔</span><h3>Te veel vergaderen</h3><p>Besluiten blijven liggen, actie blijft uit.</p></article>
+    <article class="kaart"><span class="ik">◎</span><h3>Geen actueel inzicht</h3><p>Rapportages zijn achterhaald, missers blijven onzichtbaar.</p></article>
+    <article class="kaart"><span class="ik">◈</span><h3>Geen samenhang</h3><p>Strategie, KPI's en acties zijn niet verbonden.</p></article>
+    <article class="kaart"><span class="ik">◍</span><h3>Afhankelijk van mensen</h3><p>Kennis zit in hoofden, niet in het systeem.</p></article>
   </div>
 </div></section>
 
 <section><div class="wrap">
   <h2>Kennisborging in het mkb: alles komt samen in jouw portaal</h2>
-  <p class="sect-intro">Acht onderdelen, één samenhangend geheel. Je vult niets dubbel in en je zoekt nergens naar.</p>
   <div class="bouwstenen">
-    <div class="bs"><b>Strategie</b><span>Doelen, keuzes en richting.</span></div>
-    <div class="bs"><b>KPI's</b><span>Wat je wilt meten, altijd actueel.</span></div>
-    <div class="bs"><b>Processen</b><span>Zo werkt je bedrijf, duidelijk in kaart.</span></div>
-    <div class="bs"><b>Acties</b><span>Wie doet wat, wanneer.</span></div>
-    <div class="bs"><b>Documenten</b><span>Versies, context en centrale opslag.</span></div>
-    <div class="bs"><b>Koppelingen</b><span>Data uit systemen en externe tools.</span></div>
-    <div class="bs"><b>Signalen</b><span>Wat nieuw is en wat aandacht vraagt.</span></div>
-    <div class="bs"><b>Dashboards</b><span>Inzicht op maat, voor elk niveau.</span></div>
+    <div class="bs"><span class="ik">◆</span><b>Strategie</b><span>Doelen, keuzes en richting.</span></div>
+    <div class="bs"><span class="ik">▮</span><b>KPI's</b><span>Wat je wilt meten, altijd actueel.</span></div>
+    <div class="bs"><span class="ik">⋈</span><b>Processen</b><span>Zo werkt je bedrijf, duidelijk in kaart.</span></div>
+    <div class="bs"><span class="ik">◍</span><b>Acties</b><span>Wie doet wat, wanneer.</span></div>
+    <div class="bs"><span class="ik">▤</span><b>Documenten</b><span>Versies, context en centrale opslag.</span></div>
+    <div class="bs"><span class="ik">⛓</span><b>Koppelingen</b><span>Data uit systemen en externe tools.</span></div>
+    <div class="bs"><span class="ik">◐</span><b>Signalen</b><span>Wat is nieuw, wat vraagt aandacht.</span></div>
+    <div class="bs"><span class="ik">▨</span><b>Dashboards</b><span>Inzicht op maat, voor elk niveau.</span></div>
   </div>
 </div></section>
 
-<section><div class="wrap">
-  <h2>Eén wijziging. Direct zien wat dat betekent.</h2>
-  <p class="sect-intro">Verander je een prioriteit, een KPI of een proces? Dan zie je meteen de gevolgen én past het systeem de rest voor je aan. Dat is het verschil tussen een strategie als document en een strategie als systeem.</p>
-
-  <div class="wz">
-    <div class="wz-van-naar">
-      <div><small>Van (huidige situatie)</small><b>Omzetgroei</b><span>Focus: groei in volume. KPI: omzet in euro's.</span></div>
-      <div class="wz-pijl" aria-hidden="true">→</div>
-      <div class="wz-naar"><small>Naar (nieuwe situatie)</small><b>Marge verbeteren</b><span>Focus: winstgevendheid en prijsdiscipline. KPI: brutomarge.</span></div>
+<section class="grijsvlak"><div class="wrap">
+  <div class="paneel">
+    <h2>Hoe je data in het portaal samenhang krijgt</h2>
+    <div class="stroom">
+      <div class="stroom-kolom">
+        <p class="stroom-t">Invoer: data uit alle richtingen</p>
+        <div class="sk"><b>Frisse Blik</b><span>Visie- en strategiewijzigingen</span></div>
+        <div class="sk"><b>33+ bronnen</b><span>Financieel, CRM, HRM, ERP en meer</span></div>
+        <div class="sk"><b>Systemen &amp; koppelingen</b><span>Realtime data en automatische sync</span></div>
+        <div class="sk"><b>MTO / KTO</b><span>Medewerker- en klantfeedback</span></div>
+        <div class="sk"><b>Handmatige input</b><span>Formulieren, notities, eigen input</span></div>
+        <div class="sk"><b>Documenten</b><span>Bestanden, rapporten, beleid</span></div>
+      </div>
+      <div class="stroom-midden">
+        <p class="stroom-t">Verrijking &amp; context</p>
+        <div class="verrijk">
+          <div class="sk"><b>Modellen &amp; canvassen</b><span>Werkvormen die structuur geven</span></div>
+          <div class="sk"><b>Compliance &amp; wetgeving</b><span>Relevante regels en verplichtingen</span></div>
+          <div class="sk"><b>Benchmarks</b><span>Vergelijk jezelf met markt en sector</span></div>
+          <div class="sk"><b>AI-analyse</b><span>Patronen herkennen, kansen signaleren</span></div>
+        </div>
+        <div class="kern">
+          <b>Bedrijfsgeheugen.nl Portaal</b>
+          <span>Alles verbonden. Altijd actueel. Direct inzetbaar.</span>
+          <div class="kern-rij"><span>Strategie</span><span>KPI's</span><span>Processen</span><span>Documenten</span><span>Acties</span><span>Koppelingen</span></div>
+        </div>
+        <div class="ontbreekt">Ontbrekende informatie wordt zichtbaar en kan worden aangevuld.</div>
+      </div>
+      <div class="stroom-kolom">
+        <p class="stroom-t">Uitvoer: inzicht dat aanzet tot actie</p>
+        <div class="sk"><b>Conclusies</b><span>Wat betekenen de cijfers?</span></div>
+        <div class="sk"><b>Aanbevelingen</b><span>Wat kun je beter doen?</span></div>
+        <div class="sk"><b>Roadmap</b><span>Prioriteiten en mijlpalen</span></div>
+        <div class="sk"><b>Acties per afdeling</b><span>Taken met eigenaar en deadline</span></div>
+        <div class="sk"><b>Signalen</b><span>Risico's, kansen en afwijkingen</span></div>
+        <div class="sk"><b>Dashboards</b><span>Overzichten voor elk niveau</span></div>
+      </div>
     </div>
-
-    <div class="impact">
-      <div><b>6</b><small>KPI's geraakt</small></div>
-      <div><b>4</b><small>Processen geraakt</small></div>
-      <div><b>3</b><small>Afdelingen geraakt</small></div>
-      <div><b>11</b><small>Acties aangepast</small></div>
-      <div><b>7</b><small>Documenten geraakt</small></div>
-      <div><b>5</b><small>Dashboards geraakt</small></div>
-    </div>
-
-    <ul class="gebeurt">
-      <li>KPI's die niet meer passen worden herijkt</li>
-      <li>Processen die het raken worden aangepast</li>
-      <li>Acties worden herschreven of toegevoegd</li>
-      <li>Dashboards worden bijgewerkt</li>
-      <li>Documenten worden geüpdatet</li>
-      <li>Signalen worden opnieuw beoordeeld</li>
-    </ul>
+    <p class="legenda"><span class="ln vol"></span> Automatisch ingevuld vanuit bronnen en antwoorden <span class="ln stip"></span> Handmatig aan te vullen</p>
   </div>
 </div></section>
 
 <section><div class="wrap">
   <h2>Zo werkt het</h2>
-  <p class="sect-intro">Van idee naar blijvende verandering in vijf stappen.</p>
   <div class="stappen">
-    <div class="stap"><h3>Verbind en verzamel</h3><p>We koppelen je bronnen en voegen de documenten toe die ertoe doen.</p></div>
-    <div class="stap"><h3>Verrijk en structureer</h3><p>Het portaal ordent alles en plaatst het in samenhang.</p></div>
-    <div class="stap"><h3>Analyseer en ontdek</h3><p>Inzichten, trends en signalen komen bovendrijven.</p></div>
-    <div class="stap"><h3>Beslis en plan</h3><p>Je stelt prioriteiten en zet acties uit met eigenaarschap.</p></div>
-    <div class="stap"><h3>Voer uit en stuur bij</h3><p>Je volgt de voortgang en stuurt continu bij.</p></div>
+    <div class="stap"><h3>Verbind &amp; verzamel</h3><p>Koppel je bronnen en voeg relevante documenten toe.</p></div>
+    <div class="stap"><h3>Verrijk &amp; structureer</h3><p>Het portaal ordent, verrijkt en plaatst alles in samenhang.</p></div>
+    <div class="stap"><h3>Analyseer &amp; ontdek</h3><p>AI en modellen tonen inzichten, trends en signalen.</p></div>
+    <div class="stap"><h3>Beslis &amp; plan</h3><p>Stel prioriteiten, plan en acties met eigenaarschap.</p></div>
+    <div class="stap"><h3>Voer uit &amp; stuur bij</h3><p>Volg voortgang, ontvang signalen en stuur continu bij.</p></div>
   </div>
 </div></section>
 
-<section><div class="wrap">
-  <div class="kaarten k2">
-    <article class="kaart">
-      <h3>Werkt met de systemen die je al gebruikt</h3>
-      <p>AFAS, Exact, Microsoft 365, Power BI, Google Workspace en je webshop. We vervangen niets — we koppelen erbovenop, zodat dubbele invoer verdwijnt. Lees hoe we <a href="/systemen-koppelen">systemen koppelen in het mkb</a> of wat een <a href="/afas-koppeling">AFAS-koppeling kost</a>.</p>
+<section class="grijsvlak"><div class="wrap">
+  <div class="kaarten k3">
+    <article class="paneel">
+      <h3 class="pk">Gebouwd vanuit de praktijk</h3>
+      <ul class="check klein">
+        <li>Ontwikkeld met ondernemers</li>
+        <li>Direct toepasbaar, zonder IT-project</li>
+        <li>Snel waarde, elke dag beter</li>
+      </ul>
+      <a class="mock-link" href="/over-ons">Lees klantverhalen →</a>
     </article>
-    <article class="kaart">
-      <h3>Gebouwd vanuit de praktijk</h3>
-      <p>Ontwikkeld met ondernemers, niet in een lab. Direct toepasbaar, zonder IT-project van zes maanden. Waarom dat onze kern is, lees je in <a href="/hoe-het-werkt">hoe het werkt</a> en in het blog over <a href="/blog/wat-is-een-bedrijfsgeheugen/">wat een bedrijfsgeheugen precies is</a>.</p>
+    <article class="paneel">
+      <h3 class="pk">Werkt met de tools die je al gebruikt</h3>
+      <ul class="tools">
+        <li>AFAS</li><li>Exact</li><li>Microsoft 365</li><li>Salesforce</li><li>Power BI</li><li>Oracle</li><li>Google Workspace</li>
+      </ul>
+      <a class="mock-link" href="/systemen-koppelen">Bekijk alle koppelingen →</a>
+    </article>
+    <article class="paneel">
+      <h3 class="pk">Veilig, schaalbaar en betrouwbaar</h3>
+      <ul class="check klein">
+        <li>ISO 27001-ready</li>
+        <li>AVG-proof</li>
+        <li>Gebouwd in Nederland</li>
+      </ul>
+      <a class="mock-link" href="/privacy">Lees hoe we met data omgaan →</a>
     </article>
   </div>
 </div></section>
@@ -338,42 +413,35 @@ footer a{color:#fff}
   <p class="sect-intro">Onze prijzen staan gewoon op de site. Je kunt ze lezen zonder ons te spreken. Strak geregeld. Zonder traject.</p>
   <div class="prijzen">
     <div class="prijs">
-      <span class="label">Beginnen</span>
-      <h3>Frisse blik</h3>
-      <div class="bedrag">€ 2.900 <small>excl. btw</small></div>
-      <ul>
-        <li>Gratis online zelfscan vooraf</li>
-        <li>Een dag meelopen op locatie</li>
-        <li>Adviesrapport binnen een week</li>
-        <li>Verrekend bij een vervolg</li>
-      </ul>
-      <a class="btn" href="/frisse-blik">Bekijk de Frisse blik</a>
+      <h3>Starter</h3>
+      <div class="bedrag">€99 <small>/maand</small></div>
+      <p class="pw">Voor kleine teams die structuur en inzicht willen.</p>
+      <ul class="check klein"><li>Tot 10 gebruikers</li><li>Basis dashboards</li><li>5 koppelingen</li></ul>
+      <a class="btn wit breed" href="/contact">Start met Starter</a>
     </div>
     <div class="prijs uit">
-      <span class="label">Meest gekozen</span>
-      <h3>Top drie uitgevoerd</h3>
-      <div class="bedrag">€ 4.900 <small>excl. btw</small></div>
-      <ul>
-        <li>De drie grootste punten uit het rapport</li>
-        <li>Vaste prijs vooraf, geen nacalculatie</li>
-        <li>Eerste werkend resultaat binnen twee weken</li>
-        <li>Je eigen team kan er daarna mee verder</li>
-      </ul>
-      <a class="btn blauw" href="/contact">Plan een kennismaking</a>
+      <span class="tag">Meest gekozen</span>
+      <h3>Pro</h3>
+      <div class="bedrag">€299 <small>/maand</small></div>
+      <p class="pw">Voor groeiende organisaties met meer data en teams.</p>
+      <ul class="check klein"><li>Onbeperkt gebruikers</li><li>Geavanceerde dashboards</li><li>Ongelimiteerde koppelingen</li><li>AI-analyse en signalen</li></ul>
+      <a class="btn geel breed" href="/contact">Start met Pro</a>
     </div>
     <div class="prijs">
-      <span class="label">Doorlopend</span>
-      <h3>Portaal en beheer</h3>
-      <div class="bedrag">Op maat</div>
-      <ul>
-        <li>Het portaal blijft actueel en gekoppeld</li>
-        <li>Opplussen en afschalen wanneer je wilt</li>
-        <li>Je houdt zelf de regie en het inzicht</li>
-        <li>Geen lock-in bij ons als leverancier</li>
-      </ul>
-      <a class="btn" href="/contact">Vraag een offerte</a>
+      <h3>Enterprise</h3>
+      <div class="bedrag">Offerte</div>
+      <p class="pw">Voor organisaties met specifieke wensen en hogere eisen.</p>
+      <ul class="check klein"><li>Maatwerk en integraties</li><li>Dedicated support</li><li>SLA en onboarding</li></ul>
+      <a class="btn wit breed" href="/contact">Neem contact op</a>
+    </div>
+    <div class="prijs">
+      <h3>30 dagen gratis ervaren</h3>
+      <div class="bedrag klein">Proefperiode</div>
+      <ul class="check klein"><li>Geen creditcard nodig</li><li>Volledige toegang</li><li>Stel al je vragen</li></ul>
+      <a class="btn wit breed" href="/frisse-blik">Plan een demo →</a>
     </div>
   </div>
+  <p class="prijs-noot">Liever eerst weten waar het bij jou vastloopt? De <a href="/frisse-blik">Frisse blik</a> is een dag meelopen plus adviesrapport voor € 2.900 excl. btw, verrekend bij een vervolg. De top drie daaruit uitgevoerd kost € 4.900 excl. btw.</p>
 </div></section>
 
 <section><div class="wrap">
@@ -381,73 +449,43 @@ footer a{color:#fff}
   <details><summary>Moeten we onze huidige systemen vervangen?</summary><p>Nee. Het portaal komt bovenop wat je al hebt. AFAS, Exact en Microsoft 365 blijven staan; wij koppelen erop en halen de dubbele invoer eruit.</p></details>
   <details><summary>Hoe lang duurt het voor we iets zien?</summary><p>Het eerste werkende resultaat staat er binnen twee weken. We werken niet met trajecten van maanden, maar met korte stappen die direct iets opleveren.</p></details>
   <details><summary>Wat gebeurt er als onze sleutelmedewerker vertrekt?</summary><p>Dat is precies waarvoor het portaal bestaat. Processen, afspraken en context staan vastgelegd in het systeem in plaats van in één hoofd. Meer daarover in ons blog over <a href="/blog/bedrijfsopvolging-begin-bij-het-geheugen/">bedrijfsopvolging en het bedrijfsgeheugen</a>.</p></details>
+  <details><summary>Wat gebeurt er als we onze strategie wijzigen?</summary><p>Dan rekent het portaal de impact door en past het de rest aan. Zie <a href="/wijzigingen">hoe een wijziging doorwerkt</a>.</p></details>
   <details><summary>Zitten we straks aan jullie vast?</summary><p>Nee. Je data blijft van jou en je kunt op elk moment afschalen. Wij verdienen aan resultaat, niet aan afhankelijkheid.</p></details>
-  <details><summary>Voor welke bedrijven is dit bedoeld?</summary><p>Voor mkb-bedrijven van ongeveer 3 tot 250 medewerkers zonder eigen IT-afdeling, waar de directeur zelf beslist. Zie ook <a href="/voor-mkb">wat we voor het mkb doen</a>.</p></details>
 </div></section>
 
 <section style="padding-top:0"><div class="wrap">
   <div class="band">
-    <div>
-      <h2>Je bedrijf onthoudt wat je besluit.</h2>
-      <p>En past zich mee aan als er iets verandert.</p>
+    <div class="band-in">
+      <div>
+        <h2>Van strategie als document naar strategie als systeem.</h2>
+        <p>Eén plek. Echte samenhang. Resultaat in de praktijk.</p>
+      </div>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+        <a class="btn geel" href="/frisse-blik">Plan een Frisse Blik →</a>
+        <a class="btn" href="/klantportaal?klant=demo">Bekijk het portaal</a>
+      </div>
     </div>
-    <div style="display:flex;gap:.7rem;flex-wrap:wrap">
-      <a class="btn geel" href="/frisse-blik">Plan een Frisse blik →</a>
-      <a class="btn" href="/klantportaal?klant=demo">Bekijk het portaal</a>
-    </div>
+    <div class="band-checks"><span>Sneller betere beslissingen</span><span>Direct inzicht in wat telt</span><span>Minder overleg, meer actie</span></div>
   </div>
 </div></section>
 </main>
-
 <footer><div class="wrap">
   <span>&copy; 2026 Bedrijfsgeheugen — Aanpakken zonder aanmodderen.</span>
-  <span><a href="/over-ons">Over ons</a> &middot; <a href="/contact">Contact</a> &middot; <a href="/privacy">Privacy</a></span>
+  <span><a href="/product">Product</a> &middot; <a href="/wijzigingen">Wijzigingen</a> &middot; <a href="/over-ons">Over ons</a> &middot; <a href="/contact">Contact</a> &middot; <a href="/privacy">Privacy</a></span>
 </div></footer>
-
 <script>
-(function(){
-  var k=document.getElementById('menuKnop'),m=document.getElementById('mobMenu');
-  if(k&&m){k.addEventListener('click',function(){var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}k.setAttribute('aria-expanded',o?'true':'false')})}
-})();
-function bgEvent(n){try{gtag('event',n)}catch(e){}}
-</script>
-
-<script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@graph":[
-    {
-      "@type":"BreadcrumbList",
-      "itemListElement":[
-        {"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},
-        {"@type":"ListItem","position":2,"name":"Product","item":"https://www.bedrijfsgeheugen.nl/product"}
-      ]
-    },
-    {
-      "@type":"Service",
-      "name":"Bedrijfsgeheugen portaal",
-      "serviceType":"Kennisborging en digitalisering voor het mkb",
-      "url":"https://www.bedrijfsgeheugen.nl/product",
-      "areaServed":{"@type":"Country","name":"Nederland"},
-      "provider":{"@type":"Organization","name":"Bedrijfsgeheugen","url":"https://www.bedrijfsgeheugen.nl/"},
-      "description":"Eén portaal waarin strategie, KPI's, processen, acties, documenten, koppelingen, signalen en dashboards met elkaar verbonden zijn.",
-      "offers":[
-        {"@type":"Offer","name":"Frisse blik","price":"2900","priceCurrency":"EUR","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
-        {"@type":"Offer","name":"Top drie uitgevoerd","price":"4900","priceCurrency":"EUR","url":"https://www.bedrijfsgeheugen.nl/product"}
-      ]
-    },
-    {
-      "@type":"FAQPage",
-      "mainEntity":[
-        {"@type":"Question","name":"Moeten we onze huidige systemen vervangen?","acceptedAnswer":{"@type":"Answer","text":"Nee. Het portaal komt bovenop wat je al hebt. AFAS, Exact en Microsoft 365 blijven staan; wij koppelen erop en halen de dubbele invoer eruit."}},
-        {"@type":"Question","name":"Hoe lang duurt het voor we iets zien?","acceptedAnswer":{"@type":"Answer","text":"Het eerste werkende resultaat staat er binnen twee weken. We werken niet met trajecten van maanden, maar met korte stappen die direct iets opleveren."}},
-        {"@type":"Question","name":"Wat gebeurt er als onze sleutelmedewerker vertrekt?","acceptedAnswer":{"@type":"Answer","text":"Processen, afspraken en context staan vastgelegd in het systeem in plaats van in één hoofd."}},
-        {"@type":"Question","name":"Zitten we straks aan jullie vast?","acceptedAnswer":{"@type":"Answer","text":"Nee. Je data blijft van jou en je kunt op elk moment afschalen."}},
-        {"@type":"Question","name":"Voor welke bedrijven is dit bedoeld?","acceptedAnswer":{"@type":"Answer","text":"Voor mkb-bedrijven van ongeveer 3 tot 250 medewerkers zonder eigen IT-afdeling, waar de directeur zelf beslist."}}
-      ]
-    }
-  ]
-}
+(function(){var k=document.getElementById('menuKnop'),m=document.getElementById('mobMenu');
+if(k&&m){k.addEventListener('click',function(){var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}k.setAttribute('aria-expanded',o?'true':'false')})}})();
+</script><script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Product","item":"https://www.bedrijfsgeheugen.nl/product"}]},
+{"@type":"SoftwareApplication","name":"Bedrijfsgeheugen portaal","applicationCategory":"BusinessApplication","operatingSystem":"Web","url":"https://www.bedrijfsgeheugen.nl/product","description":"Eén portaal waarin strategie, KPI's, processen, acties, documenten, koppelingen, signalen en dashboards met elkaar verbonden zijn.","provider":{"@type":"Organization","name":"Bedrijfsgeheugen","url":"https://www.bedrijfsgeheugen.nl/"},"offers":[{"@type":"Offer","name":"Starter","price":"99","priceCurrency":"EUR"},{"@type":"Offer","name":"Pro","price":"299","priceCurrency":"EUR"}]},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Moeten we onze huidige systemen vervangen?","acceptedAnswer":{"@type":"Answer","text":"Nee. Het portaal komt bovenop wat je al hebt. AFAS, Exact en Microsoft 365 blijven staan; wij koppelen erop en halen de dubbele invoer eruit."}},
+{"@type":"Question","name":"Hoe lang duurt het voor we iets zien?","acceptedAnswer":{"@type":"Answer","text":"Het eerste werkende resultaat staat er binnen twee weken."}},
+{"@type":"Question","name":"Wat gebeurt er als onze sleutelmedewerker vertrekt?","acceptedAnswer":{"@type":"Answer","text":"Processen, afspraken en context staan vastgelegd in het systeem in plaats van in één hoofd."}},
+{"@type":"Question","name":"Wat gebeurt er als we onze strategie wijzigen?","acceptedAnswer":{"@type":"Answer","text":"Het portaal rekent de impact door en past acties, dashboards en documenten aan."}},
+{"@type":"Question","name":"Zitten we straks aan jullie vast?","acceptedAnswer":{"@type":"Answer","text":"Nee. Je data blijft van jou en je kunt op elk moment afschalen."}}]}]}
 </script>
 </body>
 </html>
