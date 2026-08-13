@@ -161,8 +161,10 @@ footer a{color:#fff}
 .pk{font-size:1rem;margin-bottom:.7rem}
 .praktijkfoto{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:10px;margin-bottom:.8rem;display:block}
 .check.klein li{font-size:.85rem;margin-bottom:.3rem}
-.tools{list-style:none;display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.7rem}
-.tools li{border:1px solid var(--lijn);border-radius:7px;padding:.25rem .55rem;font-size:.78rem;font-weight:600;background:var(--papier)}
+.tools{list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:.55rem 1.1rem;margin-bottom:.9rem}
+.tools li{display:flex;align-items:center}
+.tools img{height:26px;width:auto;max-width:9rem;object-fit:contain;display:block}
+@media(max-width:620px){.tools img{height:22px}}
 
 .prijzen{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.2rem}
 .prijs{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.2rem;position:relative;display:flex;flex-direction:column}
@@ -394,7 +396,13 @@ details p{margin-top:.6rem;font-size:.92rem;color:#3C424A}
     <article class="paneel">
       <h3 class="pk">Werkt met de tools die je al gebruikt</h3>
       <ul class="tools">
-        <li>AFAS</li><li>Exact</li><li>Microsoft 365</li><li>Salesforce</li><li>Power BI</li><li>Oracle</li><li>Google Workspace</li>
+        <li><img src="/assets/logos/afas.png" alt="AFAS" width="165" height="92" loading="lazy" decoding="async"></li>
+        <li><img src="/assets/logos/exact.png" alt="Exact" width="241" height="63" loading="lazy" decoding="async"></li>
+        <li><img src="/assets/logos/microsoft-365.png" alt="Microsoft 365" width="265" height="57" loading="lazy" decoding="async"></li>
+        <li><img src="/assets/logos/sharepoint.png" alt="SharePoint" width="226" height="67" loading="lazy" decoding="async"></li>
+        <li><img src="/assets/logos/teams.png" alt="Microsoft Teams" width="202" height="75" loading="lazy" decoding="async"></li>
+        <li><img src="/assets/logos/onedrive.png" alt="OneDrive" width="188" height="81" loading="lazy" decoding="async"></li>
+        <li><img src="/assets/logos/power-bi.png" alt="Power BI" width="205" height="74" loading="lazy" decoding="async"></li>
       </ul>
       <a class="mock-link" href="/systemen-koppelen">Bekijk alle koppelingen →</a>
     </article>
