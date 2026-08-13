@@ -29,3 +29,9 @@
 .bgvoet a{color:#fff;text-decoration:none}
 .bgvoet a:hover{text-decoration:underline}
 .bgvoet-links{display:flex;flex-wrap:wrap;gap:.4rem .9rem}
+
+/* Kruimelpad — één opmaak voor de hele site */
+.bgkruim{max-width:1180px;margin:0 auto;padding:1.3rem 1.5rem .2rem;display:flex;align-items:center;flex-wrap:wrap;gap:.45rem;font-family:'Instrument Sans',system-ui,sans-serif;font-size:.85rem;color:var(--bg-grijs);border:0}
+.bgkruim a{color:var(--bg-blauw);text-decoration:none}
+.bgkruim a:hover{text-decoration:underline}
+.bgkruim span[aria-hidden]{color:var(--bg-lijn)}
