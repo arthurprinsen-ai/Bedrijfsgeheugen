@@ -7191,7 +7191,12 @@ body{background:var(--np-vlak)}
     +(isKlad?'<td><button class="w-knop klein" data-w-weg="'+i+'">Ongedaan</button></td>':'')+'</tr>';
   });
   h+='</tbody></table>';
-  if(im.proj.length) h+='<p class="w-sub"><b>Acties die hieraan hangen:</b> '+esc(im.proj.join(' · '))+'</p>';
+  if(im.proj.length) h+='<p class="w-sub"><b>Acties die hieraan hangen:</b> '+esc(im.proj.join(' \u00b7 '))+'<br>'
+   +((isKlad||p.status==='open')
+     ? 'Bij doorvoeren zet het portaal deze klaar als taken bij <b>Actueel houden</b> \u2014 daar staat je enige takenlijst; hier zie je alleen wat het gaat opleveren.'
+     : (p.status==='door' ? '<b>'+(p.acties||0)+' taken klaargezet</b> bij Actueel houden.'
+        : 'De nog niet afgevinkte taken zijn weer weggehaald; wat al af was blijft staan.'))
+   +'</p>';
 
   if(!isKlad){
    h+='<h3 style="font-size:.9rem;margin-top:.7rem">4. Goedkeuring — '+ja+' van '+eig.length+'</h3><div class="w-mensen">'
@@ -7213,7 +7218,8 @@ body{background:var(--np-vlak)}
    +'<button class="w-knop" id="w-weg">Klad weggooien</button>';
   else if(p.status==='open') h+='<button class="w-knop groen" id="w-door"'+(klaar?'':' disabled')+'>Voer wijziging door</button>'
    +'<button class="w-knop" id="w-in">Intrekken</button>';
-  else if(p.status==='door') h+='<button class="w-knop terug" id="w-terug">Draai wijziging terug</button>';
+  else if(p.status==='door') h+='<button class="w-knop terug" id="w-terug">Draai wijziging terug</button>'
+   +'<button class="w-knop" id="w-naartaken">Bekijk de taken bij Actueel houden</button>';
   h+='</div>';
   if(!isKlad&&p.status==='open'&&!klaar) h+='<p class="w-sub" style="margin-top:.5rem"><b>Waarom is de knop grijs?</b> '
    +esc(eig.filter(function(e){return !e.ok;}).map(function(e){return e.naam;}).join(', '))+' moet'+(eig.length-ja>1?'en':'')+' nog beoordelen.</p>';
@@ -7235,6 +7241,8 @@ body{background:var(--np-vlak)}
   if((q=d.querySelector('#w-in'))) q.addEventListener('click',function(){
    w.voorstellen=w.voorstellen.filter(function(x){return x!==p;}); gekozen=null; bw(); tekLijst(); });
   if((q=d.querySelector('#w-terug'))) q.addEventListener('click',function(){ draaiTerug(p); });
+  if((q=d.querySelector('#w-naartaken'))) q.addEventListener('click',function(){
+   var t=document.querySelector('.tab[data-p="bijhouden"]'); if(t) t.click(); });
  }
 
  /* ---------------- versiehistorie ---------------- */
@@ -7326,6 +7334,28 @@ body{background:var(--np-vlak)}
    wiz=null; gekozen='klad'; TAB='lijst'; bw(); teken2(); });
  }
 
+ function zetActiesTekst(p){ return (p.acties||0)+' taken klaargezet bij Actueel houden'; }
+ /* ---------------- acties: één lijst, die van Actueel houden ---------------- */
+ function tekenTakenOok(){ try{ if(typeof tekenTaken==='function') tekenTaken(); }catch(e){} }
+ function overDagen(d){ return new Date(Date.now()+d*864e5).toISOString().slice(0,10); }
+ function zetActies(p){
+  S.taken=S.taken||[];
+  var w=W(), n=0, wanneer=(p.w[0]&&p.w[0].datum)||overDagen(14);
+  p.w.forEach(function(x){
+   var eig=(w.eigenaren[x.k]||'').trim(), i=impact(x.k), afd=i.afd[0]||'Nog te bepalen';
+   i.proj.forEach(function(wat){
+    if(S.taken.some(function(t){ return t.wat===wat; })) return;
+    S.taken.push({afd:afd,wat:wat,wie:eig,op:wanneer,klaar:false,bron:'BG-'+p.id}); n++; });
+  });
+  return n;
+ }
+ function haalActiesWeg(p){
+  if(!S.taken) return 0;
+  var voor=S.taken.length;
+  S.taken=S.taken.filter(function(t){ return !(t.bron==='BG-'+p.id && !t.klaar); });
+  return voor-S.taken.length;
+ }
+
  /* ---------------- acties ---------------- */
  function dienIn(){
   var w=W(), kl=w.klad, namen={};
@@ -7346,22 +7376,26 @@ body{background:var(--np-vlak)}
    regels:p.w.map(function(x){return dn(x.k)+': '+x.van+' \u2192 '+x.naar;})
      .concat([im.afd.length+' afdelingen',im.kpi.length+' cijfers',im.proj.length+' acties'])});
   S.log=S.log||[];
+  p.acties=zetActies(p);
+  w.commits[0].regels.push(zetActiesTekst(p));
   S.log.unshift({datum:new Date().toISOString().slice(0,10),
-   wat:'Wijziging doorgevoerd (BG-'+p.id+'): '+p.naam,door:p.door,
+   wat:'Wijziging doorgevoerd (BG-'+p.id+'): '+p.naam+(p.acties?' \u2014 '+p.acties+' taken klaargezet':''),door:p.door,
    raakt:p.w.map(function(x){return dn(x.k);}).join(', ')});
-  bw(); hert(); teken2();
+  bw(); hert(); tekenTakenOok(); teken2();
  }
  function draaiTerug(p){
   var w=W();
   p.w.forEach(function(x){ var n=niv().indexOf(x.van); if(n>0){ S.niveaus[x.k]=n;
    versies(x.k).unshift({w:x.van,wie:ik(),op:dat(),rdn:'Teruggedraaid (BG-'+p.id+')'}); } });
   p.status='terug';
+  var weg=haalActiesWeg(p);
   w.commits.unshift({id:p.id,naam:'Teruggedraaid: '+p.naam,door:ik(),op:dat(),waarom:'',terug:true,
-   regels:p.w.map(function(x){return dn(x.k)+': '+x.naar+' \u2192 '+x.van;})});
+   regels:p.w.map(function(x){return dn(x.k)+': '+x.naar+' \u2192 '+x.van;})
+     .concat([weg?weg+' nog niet afgevinkte taken weer weggehaald':'afgevinkte taken blijven staan'])});
   S.log=S.log||[];
   S.log.unshift({datum:new Date().toISOString().slice(0,10),
    wat:'Wijziging teruggedraaid (BG-'+p.id+'): '+p.naam,door:ik(),raakt:''});
-  bw(); hert(); teken2();
+  bw(); hert(); tekenTakenOok(); teken2();
  }
 
  function start(){
