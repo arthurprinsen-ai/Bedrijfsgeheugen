@@ -132,6 +132,11 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
 .praktijk{display:grid;grid-template-columns:.7fr 1.3fr;gap:1.6rem;align-items:center}
 .praktijk img{width:100%;border-radius:14px;display:block}
 .tools{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.pluspunten{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:.9rem 0 .2rem}
+.pluspunten li{position:relative;padding-left:1.6rem;font-size:.86rem;color:#3C424A}
+.pluspunten li::before{content:"";position:absolute;left:0;top:.3em;width:1.05rem;height:1.05rem;border-radius:50%;background:var(--blauw)}
+.pluspunten li::after{content:"";position:absolute;left:.33rem;top:.58em;width:.38rem;height:.2rem;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg)}
+@media(max-width:700px){.pluspunten{grid-template-columns:1fr}}
 .tool{background:#fff;border:1px solid var(--lijn);border-radius:9px;padding:.35rem .75rem;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.45rem}
 .tm{width:20px;height:20px;border-radius:5px;display:inline-grid;place-items:center;color:#fff;font-size:.6rem;font-weight:700;font-style:normal;flex:0 0 20px}
 .geeltje{background:var(--geel);border-radius:8px;padding:.8rem 1rem;font-family:'Caveat',cursive;font-weight:600;
@@ -429,16 +434,25 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
     <div>
       <h2 class="kop">Gebouwd vanuit de praktijk</h2>
       <p class="sect-intro">Ik ben Arthur, oprichter van Bedrijfsgeheugen. Ik help al meer dan tien jaar ondernemers en directies om hun merk, marketing en processen slimmer in te richten. De AI Marketing Machine is uit die ervaring ontstaan — en hij draait eerst bij ons zelf. Alles wat je op deze pagina ziet, gebruiken we elke week voor onze eigen marketing.</p>
-      <h3 style="font-size:.95rem;margin-bottom:.2rem">Werkt met je eigen gereedschap</h3>
+      <ul class="pluspunten">
+        <li>10+ jaar ervaring in strategie en groei</li>
+        <li>Gebouwd met en voor ondernemers</li>
+        <li>Focus op resultaat, niet op tools</li>
+      </ul>
+      <h3 style="font-size:.95rem;margin:.9rem 0 .2rem">Werkt met je tools</h3>
       <div class="tools">
         <span class="tool"><i class="tm" style="background:#0A66C2">in</i>LinkedIn</span>
         <span class="tool"><i class="tm" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">ig</i>Instagram</span>
+        <span class="tool"><i class="tm" style="background:#FF0000">&#9654;</i>YouTube</span>
         <span class="tool"><i class="tm" style="background:#14171A">N</i>Notion</span>
-        <span class="tool"><i class="tm" style="background:#2742D6">◍</i>Je eigen website</span>
-        <span class="tool"><i class="tm" style="background:#4285F4">G</i>Search Console</span>
-        <span class="tool"><i class="tm" style="background:#34A853">Ad</i>Google Ads</span>
-        <span class="tool"><i class="tm" style="background:#D83B01">M</i>Microsoft 365</span>
-        <span class="tool"><i class="tm" style="background:#168EEA">B</i>Buffer</span>
+        <span class="tool"><i class="tm" style="background:#21759B">W</i>WordPress</span>
+        <span class="tool"><i class="tm" style="background:#1FA463">D</i>Google Drive</span>
+        <span class="tool"><i class="tm" style="background:#FF7A59">H</i>HubSpot</span>
+        <span class="tool"><i class="tm" style="background:#FFE01B;color:#14171A">M</i>Mailchimp</span>
+        <span class="tool"><i class="tm" style="background:#00C4CC">C</i>Canva</span>
+        <span class="tool"><i class="tm" style="background:#E8710A">GA</i>Google Analytics</span>
+        <span class="tool"><i class="tm" style="background:#FF4A00">Z</i>Zapier</span>
+        <span class="tool"><i class="tm" style="background:#2742D6">+</i>Meer koppelingen via Zapier en API</span>
       </div>
       <p style="margin-top:1rem"><span class="geeltje">De machine leert.<br>Jij groeit.<br>Automatisch.</span></p>
     </div>
@@ -567,7 +581,7 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
   </div>
   <div class="bgvoet-onder">
     <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
-    <span>Aanpakken zonder aanmodderen.</span>
+    <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
   </div>
 </div></footer>
 <script type="application/ld+json">
