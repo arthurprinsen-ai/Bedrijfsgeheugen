@@ -49,6 +49,9 @@ h2.kop{font-size:clamp(1.45rem,3vw,1.9rem);margin-bottom:.35rem;display:inline-b
 .check li::after{content:"";position:absolute;left:.36rem;top:.72em;width:.42rem;height:.24rem;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg)}
 .hero-knoppen{display:flex;gap:.7rem;flex-wrap:wrap}
 
+.schema{margin:0;background:#fff;border:1px solid var(--lijn);border-radius:16px;padding:1rem}
+.schema img{display:block;width:100%;height:auto;max-width:602px;margin:0 auto}
+.praktijk img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block}
 .stroomkaart{background:#fff;border:1px solid var(--lijn);border-radius:16px;padding:1.5rem 1.2rem 1.1rem;position:relative}
 .notitie{position:absolute;top:-1rem;right:1.4rem;background:var(--geel);border-radius:6px;padding:.25rem .8rem;
   font-family:'Caveat',cursive;font-weight:600;font-size:1.05rem;transform:rotate(-1.5deg);box-shadow:0 2px 0 rgba(0,0,0,.06)}
@@ -129,7 +132,8 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
 .praktijk{display:grid;grid-template-columns:.7fr 1.3fr;gap:1.6rem;align-items:center}
 .praktijk img{width:100%;border-radius:14px;display:block}
 .tools{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
-.tool{background:#fff;border:1px solid var(--lijn);border-radius:9px;padding:.4rem .8rem;font-size:.85rem;font-weight:600}
+.tool{background:#fff;border:1px solid var(--lijn);border-radius:9px;padding:.35rem .75rem;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.45rem}
+.tm{width:20px;height:20px;border-radius:5px;display:inline-grid;place-items:center;color:#fff;font-size:.6rem;font-weight:700;font-style:normal;flex:0 0 20px}
 .geeltje{background:var(--geel);border-radius:8px;padding:.8rem 1rem;font-family:'Caveat',cursive;font-weight:600;
   font-size:1.15rem;line-height:1.25;transform:rotate(-1.2deg);display:inline-block;box-shadow:0 2px 0 rgba(0,0,0,.06)}
 
@@ -221,41 +225,11 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
     </div>
   </div>
 
-  <div class="stroomkaart">
-    <span class="notitie">Van input naar impact. Alles draait automatisch.</span>
-    <div class="stroom">
-      <div class="fase"><span class="nr">1 &middot; Input</span>
-        <div class="item"><span class="vlak geel">&#9998;</span>Stijlgids en toon</div>
-        <div class="item"><span class="vlak geel">&#9635;</span>Merkassets en logo's</div>
-        <div class="item"><span class="vlak geel">&#8801;</span>Productinfo en aanbod</div>
-        <div class="item"><span class="vlak geel">&#9636;</span>Contentkalender</div>
-        <div class="item"><span class="vlak geel">&#9678;</span>Doelen en KPI's</div>
-      </div>
-      <div class="fase"><span class="nr">2 &middot; AI maakt content</span>
-        <div class="item"><span class="vlak">in</span>LinkedIn-post</div>
-        <div class="item"><span class="vlak ig">ig</span>Instagrampost</div>
-        <div class="item"><span class="vlak web">&#9998;</span>Blogartikel</div>
-        <div class="item"><span class="vlak yt">&#9654;</span>Reel of video</div>
-        <div class="item"><span class="vlak geel">#</span>Caption en hashtags</div>
-      </div>
-      <div class="fase"><span class="nr">3 &middot; Publicatie</span>
-        <div class="item"><span class="vlak">in</span>LinkedIn</div>
-        <div class="item"><span class="vlak ig">ig</span>Instagram</div>
-        <div class="item"><span class="vlak web">&#9677;</span>Blog op je site</div>
-        <div class="item"><span class="vlak yt">&#9654;</span>Video en reels</div>
-        <div class="item"><span class="vlak mail">&#9993;</span>Nieuwsbrief</div>
-      </div>
-      <div class="fase"><span class="nr">4 &middot; Resultaten</span>
-        <div class="item"><span class="vlak">&#9636;</span>Bereik</div>
-        <div class="item"><span class="vlak">&#9679;</span>Interacties</div>
-        <div class="item"><span class="vlak">&#8599;</span>Clicks</div>
-        <div class="item"><span class="vlak">&#9670;</span>Aanvragen</div>
-        <div class="item"><span class="vlak">&#10003;</span>Conversies</div>
-      </div>
-      <div class="motor"><b>AI Marketing Machine</b><span>Schrijft &middot; ontwerpt &middot; plant &middot; publiceert &middot; leert</span></div>
-      <div class="terugkoppel"><b>5 &middot; Optimalisatie</b>De machine leest de cijfers terug en stuurt onderwerpen, formats en timing bij — vanzelf, elke ronde opnieuw.</div>
-    </div>
-  </div>
+  <figure class="schema">
+    <img src="/assets/ai/schema-marketingmachine-v1.png"
+         alt="Van input naar impact: stijlgids, merkassets en doelen gaan naar de AI Marketing Machine, die content maakt voor LinkedIn, Instagram, blog en video, publiceert op alle kanalen, de resultaten meet en daarmee onderwerpen, formats en timing bijstuurt."
+         width="602" height="302" loading="eager" decoding="async">
+  </figure>
 </div></section>
 
 <section class="wit"><div class="wrap">
@@ -394,15 +368,20 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
 
 <section><div class="wrap">
   <div class="praktijk">
-    <img src="/assets/mensen/praktijk.jpg" alt="Arthur Prinsen, oprichter van Bedrijfsgeheugen" loading="lazy" width="420" height="420">
+    <img src="/assets/mensen/praktijk.jpg" alt="Werksessie bij een klant" loading="lazy" width="1200" height="900">
     <div>
       <h2 class="kop">Gebouwd vanuit de praktijk</h2>
       <p class="sect-intro">Ik ben Arthur, oprichter van Bedrijfsgeheugen. Ik help al meer dan tien jaar ondernemers en directies om hun merk, marketing en processen slimmer in te richten. De AI Marketing Machine is uit die ervaring ontstaan — en hij draait eerst bij ons zelf. Alles wat je op deze pagina ziet, gebruiken we elke week voor onze eigen marketing.</p>
       <h3 style="font-size:.95rem;margin-bottom:.2rem">Werkt met je eigen gereedschap</h3>
       <div class="tools">
-        <span class="tool">LinkedIn</span><span class="tool">Instagram</span><span class="tool">Notion</span>
-        <span class="tool">Je eigen website</span><span class="tool">Google Search Console</span>
-        <span class="tool">Google Ads</span><span class="tool">Microsoft 365</span><span class="tool">Buffer</span>
+        <span class="tool"><i class="tm" style="background:#0A66C2">in</i>LinkedIn</span>
+        <span class="tool"><i class="tm" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">ig</i>Instagram</span>
+        <span class="tool"><i class="tm" style="background:#14171A">N</i>Notion</span>
+        <span class="tool"><i class="tm" style="background:#2742D6">◍</i>Je eigen website</span>
+        <span class="tool"><i class="tm" style="background:#4285F4">G</i>Search Console</span>
+        <span class="tool"><i class="tm" style="background:#34A853">Ad</i>Google Ads</span>
+        <span class="tool"><i class="tm" style="background:#D83B01">M</i>Microsoft 365</span>
+        <span class="tool"><i class="tm" style="background:#168EEA">B</i>Buffer</span>
       </div>
       <p style="margin-top:1rem"><span class="geeltje">De machine leert.<br>Jij groeit.<br>Automatisch.</span></p>
     </div>
