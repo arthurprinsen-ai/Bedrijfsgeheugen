@@ -156,6 +156,25 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
 .band h2{color:#fff;font-size:clamp(1.3rem,2.6vw,1.8rem);margin-bottom:.3rem}
 .band p{color:#D8DEF9;font-size:.94rem;max-width:54ch}
 
+.tk{display:grid;grid-template-columns:1fr auto 1fr;gap:1.2rem;align-items:center}
+.tk-pijl{font-size:1.6rem;color:var(--grijs)}
+.tk-blok{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.2rem 1.3rem}
+.tk-blok h3{font-size:1rem;margin-bottom:.6rem}
+.tk-blok ul{list-style:none;font-size:.9rem}
+.tk-blok li{display:flex;gap:.6rem;padding:.35rem 0;border-bottom:1px dashed var(--lijn);color:#3C424A}
+.tk-blok li:last-child{border-bottom:0}
+.tk-blok li b{color:var(--inkt);font-weight:600}
+.verg{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.verg .kolom{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.2rem 1.3rem}
+.verg .kolom.wij{border-color:var(--blauw);background:var(--blauw-l)}
+.verg h3{font-size:1rem;margin-bottom:.6rem}
+.verg ul{list-style:none;font-size:.92rem}
+.verg li{padding:.4rem 0 .4rem 1.5rem;position:relative;border-bottom:1px dashed var(--lijn);color:#3C424A}
+.verg li:last-child{border-bottom:0}
+.verg .kolom:not(.wij) li::before{content:"\00d7";position:absolute;left:0;color:#B3341A;font-weight:700}
+.verg .kolom.wij li::before{content:"\2713";position:absolute;left:0;color:var(--groen);font-weight:700}
+.tk-blok li b{color:var(--inkt);font-weight:600}
+@media(max-width:1050px){.tk{grid-template-columns:1fr}.tk-pijl{transform:rotate(90deg);text-align:center}.verg{grid-template-columns:1fr}}
 @media(max-width:1050px){
   .hero-grid,.res,.praktijk{grid-template-columns:1fr}
   .k5{grid-template-columns:repeat(3,1fr)}
@@ -324,6 +343,33 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
 </div></section>
 
 <section class="wit"><div class="wrap">
+  <span class="eyebrow">Het verschil</span>
+  <h2>De machine kijkt terug. Daar zit het rendement.</h2>
+  <p class="sect-intro">De meeste marketing stopt bij plaatsen. Hier begint het dan pas: de cijfers komen automatisch binnen en bepalen wat er de volgende ronde anders gaat.</p>
+  <div class="tk">
+    <div class="tk-blok">
+      <h3>Wat er binnenkomt</h3>
+      <ul>
+        <li><b>Bereik en interacties</b> per LinkedIn-post en per Instagrampost, elke ochtend</li>
+        <li><b>Google Search Console</b> — op welke woorden je gevonden wordt en op welke plek</li>
+        <li><b>Advertentieresultaten</b> uit Google en LinkedIn: kosten, klikken, aanvragen</li>
+        <li><b>Zoekvolume</b> per zoekwoord, zodat je weet waar de vraag zit</li>
+      </ul>
+    </div>
+    <div class="tk-pijl" aria-hidden="true">&rarr;</div>
+    <div class="tk-blok">
+      <h3>Wat ermee gebeurt</h3>
+      <ul>
+        <li><b>Per post een oordeel:</b> wat werkte aan de tekst, het beeld, de video — en wat de volgende keer anders moet</li>
+        <li><b>Blogs worden echt herschreven,</b> niet alleen becommentarieerd: titel, meta en tekst gaan aangepast de deur uit</li>
+        <li><b>Zoekwoorden schuiven mee</b> met wat er daadwerkelijk aanslaat</li>
+        <li><b>Advertentiebudget</b> verschuift naar wat aanvragen oplevert in plaats van klikken</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
   <h2 class="kop hand" style="font-size:2rem">Resultaten en optimalisatie</h2>
   <p class="sect-intro">Hier stopt het meeste marketingwerk en hier begint deze machine juist. De cijfers komen automatisch binnen — bereik en interacties per post, Google Search Console, advertentieresultaten — en bepalen wat er de volgende ronde anders gaat.</p>
   <div class="res">
@@ -366,7 +412,7 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
   </div>
 </div></section>
 
-<section><div class="wrap">
+<section class="wit"><div class="wrap">
   <div class="praktijk">
     <img src="/assets/mensen/praktijk.jpg" alt="Werksessie bij een klant" loading="lazy" width="1200" height="900">
     <div>
@@ -384,6 +430,33 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
         <span class="tool"><i class="tm" style="background:#168EEA">B</i>Buffer</span>
       </div>
       <p style="margin-top:1rem"><span class="geeltje">De machine leert.<br>Jij groeit.<br>Automatisch.</span></p>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <span class="eyebrow">Waarom niet gewoon een bureau</span>
+  <h2>Je huurt geen uren in. Je krijgt een machine die van jou is.</h2>
+  <div class="verg">
+    <div class="kolom">
+      <h3>Een marketingbureau</h3>
+      <ul>
+        <li>Betalen per uur, ook voor overleg</li>
+        <li>Stoppen betekent: alles stopt</li>
+        <li>De kennis van jouw merk zit bij hen</li>
+        <li>Rapportage achteraf, in een deck</li>
+        <li>Elk extra kanaal is een nieuw voorstel</li>
+      </ul>
+    </div>
+    <div class="kolom wij">
+      <h3>De AI-marketingmachine</h3>
+      <ul>
+        <li>Vaste prijs per maand, geen uurtje-factuurtje</li>
+        <li>De machine staat op jouw accounts en blijft draaien</li>
+        <li>Je merk staat vastgelegd bij jou, niet in iemands hoofd</li>
+        <li>Bijsturen gebeurt in de machine zelf, elke week</li>
+        <li>Kanaal erbij of eraf wanneer je wilt</li>
+      </ul>
     </div>
   </div>
 </div></section>
