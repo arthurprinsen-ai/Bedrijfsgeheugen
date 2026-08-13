@@ -6742,48 +6742,6 @@ body{background:var(--np-vlak)}
 #w-status .w-st-knop{font:inherit;font-size:.78rem;font-weight:600;padding:.25rem .6rem;border-radius:6px;
  border:1px solid var(--lijn,#DCDFE6);background:#fff;color:inherit;cursor:pointer}
 #w-status .w-st-knop.blauw{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6);color:#fff}
-/* --- kleur en iconen --- */
-#p-wijzigingen .w-svg{width:18px;height:18px;display:block}
-#p-wijzigingen .w-chip{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;margin:0 auto .35rem}
-#p-wijzigingen .k-blauw{background:#E9EDFD;color:#2742D6}
-#p-wijzigingen .k-rood{background:#FFEEE9;color:#E0431A}
-#p-wijzigingen .k-paars{background:#F0EBFD;color:#6B45D6}
-#p-wijzigingen .k-groen{background:#E7F6ED;color:#137F44}
-#p-wijzigingen .k-geel{background:#FFF7D6;color:#9A7B00}
-#p-wijzigingen .k-cyaan{background:#E4F5F8;color:#0B7285}
-#p-wijzigingen .w-box{transition:transform .12s,box-shadow .12s}
-#p-wijzigingen .w-box:hover{transform:translateY(-2px);box-shadow:0 8px 18px -14px rgba(20,23,26,.5)}
-#p-wijzigingen .w-box b{font-size:1.35rem}
-#p-wijzigingen .w-vk{border-left:4px solid var(--w-lijn);position:relative}
-#p-wijzigingen .w-vk.s-open{border-left-color:#2742D6}
-#p-wijzigingen .w-vk.s-door{border-left-color:#1F9D55}
-#p-wijzigingen .w-vk.s-terug{border-left-color:#8A93A0}
-#p-wijzigingen .w-vk.s-klad{border-left-color:#FFE86B}
-/* commitlijn, zoals een git-log */
-#p-wijzigingen .w-lane{position:relative;padding-left:2.6rem;margin-top:.6rem}
-#p-wijzigingen .w-lane::before{content:"";position:absolute;left:1.05rem;top:.6rem;bottom:.6rem;width:2px;background:linear-gradient(#2742D6,#C3CCF6)}
-#p-wijzigingen .w-cm{position:relative;margin-bottom:.9rem;border:1px solid var(--w-lijn);border-radius:10px;padding:.7rem .85rem;background:#fff}
-#p-wijzigingen .w-cm::before{content:"";position:absolute;left:-1.72rem;top:1rem;width:12px;height:12px;border-radius:50%;
- background:#2742D6;box-shadow:0 0 0 3px #fff,0 0 0 5px #C3CCF6}
-#p-wijzigingen .w-cm.terug::before{background:#8A93A0;box-shadow:0 0 0 3px #fff,0 0 0 5px #E4E7EC}
-#p-wijzigingen .w-cm .w-cmkop{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem}
-#p-wijzigingen .w-cm .w-hash{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;background:#F3F4F6;color:#5C646E;border-radius:5px;padding:.1rem .4rem}
-#p-wijzigingen .w-cm .w-tijd2{font-size:.72rem;color:var(--w-grijs);margin-left:auto}
-#p-wijzigingen .w-cm h4{font-size:.95rem;margin:.1rem 0 .2rem}
-#p-wijzigingen .w-diff{font-family:ui-monospace,Menlo,monospace;font-size:.74rem;border-radius:7px;overflow:hidden;margin:.4rem 0;border:1px solid var(--w-lijn)}
-#p-wijzigingen .w-diff div{padding:.22rem .5rem}
-#p-wijzigingen .w-diff .min{background:#FFF1EE;color:#B3341A}
-#p-wijzigingen .w-diff .plus{background:#EDF8F1;color:#137F44}
-#p-wijzigingen .w-chips{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.35rem}
-#p-wijzigingen .w-mini{font-size:.7rem;background:#F3F4F6;color:#5C646E;border-radius:20px;padding:.12rem .5rem}
-#p-wijzigingen .w-mini.blauw{background:#E9EDFD;color:#2742D6}
-#p-wijzigingen .w-mini.groen{background:#E7F6ED;color:#137F44}
-#p-wijzigingen .w-lint{background:linear-gradient(90deg,#E9EDFD,#FFF7D6);border-radius:10px;padding:.6rem .8rem;font-size:.85rem;margin-bottom:.7rem}
-#p-wijzigingen .w-mens{border-left:3px solid #E4E7EC}
-#p-wijzigingen .w-mens.ok{border-left-color:#1F9D55;background:#FBFEFC}
-#p-wijzigingen .w-mens.wacht{border-left-color:#E8A200;background:#FFFDF5}
-#w-status .w-st-kaart{border-left:4px solid #2742D6}
-#w-status .w-st-vak.let{animation:none}
 
 </style>
 <script>
@@ -7283,12 +7241,19 @@ body{background:var(--np-vlak)}
       return '<button class="w-vk '+kl2+'" data-w-id="'+p.id+'" aria-current="'+(gekozen===p.id)+'"><span class="w-tag '+t[0]+'">'+t[1]+'</span>'
        +'<h4>'+esc(p.naam)+'</h4><div class="w-meta"><span>'+esc(p.door)+'</span><span>'+esc(p.op)+'</span><span>BG-'+p.id+'</span></div></button>';}).join('')
      :'<p class="w-leeg">Nog geen voorstellen. Klik op <b>+ Nieuw</b> om er een te maken.</p>')
+   +'</div>'
+   +'<div class="w-kaart"><div class="w-rij"><h3>Laatst doorgevoerd</h3><div class="w-re">'
+   +'<button class="w-knop klein" data-w-tab2="historie">Hele historie</button></div></div>'
+   +(w.commits.length?'<div class="w-lane">'+w.commits.slice(0,3).map(cmKaart).join('')+'</div>'
+     :'<p class="w-leeg">Nog niets doorgevoerd. Zodra je een wijziging doorvoert komt hier de commit met jouw naam erbij.</p>')
    +'</div>';
   doel.innerHTML='<div class="w-net"><div>'+links+'</div><div id="w-detail"></div></div>';
   Array.prototype.forEach.call(doel.querySelectorAll('[data-w-id]'),function(b){
    b.addEventListener('click',function(){ gekozen=b.dataset.wId==='klad'?'klad':parseInt(b.dataset.wId,10); tekLijst(); }); });
   Array.prototype.forEach.call(doel.querySelectorAll('[data-w-tab2]'),function(b){
-   b.addEventListener('click',function(){ TAB='nieuw'; nieuwWiz(); teken2(); }); });
+   b.addEventListener('click',function(){ var d2=b.dataset.wTab2;
+    if(d2==='historie'){ TAB='historie'; } else { TAB='nieuw'; nieuwWiz(); }
+    teken2(); }); });
   tekDetail();
  }
 
@@ -7354,6 +7319,23 @@ body{background:var(--np-vlak)}
    +'  \u2192 '+im.afd.length+' afdelingen / '+im.kpi.length+' cijfers / '+im.proc.length+' processen / '+im.proj.length+' acties / '+im.sys.length+' systemen\n'
    +(isKlad?'wacht op: indienen':(p.status==='open'?'wacht op: '+(eig.length-ja)+' goedkeuring(en)':'commit BG-'+p.id+' geschreven'))+'</div>';
 
+  if(!isKlad){
+   var cms=commitsVan(p.id);
+   var nogNiet=(p.eig||[]).filter(function(e){return !e.ok;});
+   h+='<h3 style="font-size:.9rem;margin-top:.7rem">5. Wie wat deed</h3>'
+    +'<div class="w-mensen">'
+    +'<div class="w-mens"><div style="display:flex;align-items:center;gap:.5rem">'+avatar(p.door)
+    +'<div><div class="rl">Gemaakt door</div><div class="nm">'+esc(p.door)+'</div><div class="rl">'+esc(p.op)+'</div></div></div></div>'
+    +'<div class="w-mens"><div style="display:flex;align-items:center;gap:.5rem"><span class="w-chip k-blauw" style="width:26px;height:26px;border-radius:8px;margin:0">'+ICO.klok+'</span>'
+    +'<div><div class="rl">Laatst bijgewerkt</div><div class="nm">'+esc(cms[0]?cms[0].op:p.op)+'</div>'
+    +'<div class="rl">'+(cms[0]?'door '+esc(cms[0].door):'nog niet doorgevoerd')+'</div></div></div></div>'
+    +'<div class="w-mens '+(nogNiet.length?'wacht':'ok')+'"><div style="display:flex;align-items:center;gap:.5rem">'
+    +(nogNiet.length?avatar(nogNiet[0].naam):'<span class="w-chip k-groen" style="width:26px;height:26px;border-radius:8px;margin:0">'+ICO.vink+'</span>')
+    +'<div><div class="rl">'+(nogNiet.length?'Moet nog goedkeuren':'Iedereen akkoord')+'</div>'
+    +'<div class="nm">'+esc(nogNiet.length?nogNiet.map(function(e){return e.naam;}).join(', '):'klaar om door te voeren')+'</div></div></div></div>'
+    +'</div>';
+   if(cms.length) h+='<h3 style="font-size:.9rem;margin-top:.7rem">6. De commit</h3><div class="w-lane">'+cms.map(cmKaart).join('')+'</div>';
+  }
   h+='<div class="w-knoppen">';
   if(isKlad) h+='<button class="w-knop blauw" id="w-dien"'+(p.w.length?'':' disabled')+'>Indienen ter goedkeuring</button>'
    +'<button class="w-knop" id="w-weg">Klad weggooien</button>';
@@ -7386,25 +7368,29 @@ body{background:var(--np-vlak)}
    var t=document.querySelector('.tab[data-p="bijhouden"]'); if(t) t.click(); });
  }
 
+ function cmKaart(c){
+  var diff=(c.diff||[]);
+  return '<div class="w-cm'+(c.terug?' terug':'')+'">'
+   +'<div class="w-cmkop">'+avatar(c.door)+'<b style="font-size:.85rem">'+esc(c.door)+'</b>'
+   +'<span class="w-hash">BG-'+c.id+'</span>'
+   +'<span class="w-tag '+(c.terug?'grijs':'groen')+'">'+(c.terug?'teruggedraaid':'gecommit')+'</span>'
+   +'<span class="w-tijd2">'+esc(c.op)+'</span></div>'
+   +'<h4>'+esc(c.naam)+'</h4>'
+   +(c.waarom?'<div class="w-callout" style="margin:.3rem 0">'+esc(c.waarom)+'</div>':'')
+   +(diff.length?'<div class="w-diff">'+diff.map(function(r){
+      return '<div class="min">- '+esc(r.k)+': '+esc(r.van)+'</div><div class="plus">+ '+esc(r.k)+': '+esc(r.naar)+'</div>';}).join('')+'</div>':'')
+   +'<div class="w-chips">'+(c.regels||[]).slice(diff.length?-3:0).map(function(x){
+      return '<span class="w-mini'+(/taken/.test(x)?' groen':/afdeling|cijfer/.test(x)?' blauw':'')+'">'+esc(x)+'</span>';}).join('')+'</div>'
+   +'</div>';
+ }
+ function commitsVan(id){ var w=W(); return w.commits.filter(function(c){return c.id===id;}); }
+
  /* ---------------- versiehistorie ---------------- */
  function tekHistorie(){
   var w=W();
   var h='<div class="w-kaart"><div class="w-rij"><h3>Versiehistorie en audit trail</h3></div>'
    +'<p class="w-sub">Elke doorvoering bewaart de oude én de nieuwe toestand, de reden, wie het deed en wat het raakte.</p>'
-   +(w.commits.length?'<div class="w-lane">'+w.commits.map(function(c){
-      var diff=(c.diff||[]);
-      return '<div class="w-cm'+(c.terug?' terug':'')+'">'
-       +'<div class="w-cmkop">'+avatar(c.door)+'<b style="font-size:.85rem">'+esc(c.door)+'</b>'
-       +'<span class="w-hash">BG-'+c.id+'</span>'
-       +'<span class="w-tag '+(c.terug?'grijs':'groen')+'">'+(c.terug?'teruggedraaid':'gecommit')+'</span>'
-       +'<span class="w-tijd2">'+esc(c.op)+'</span></div>'
-       +'<h4>'+esc(c.naam)+'</h4>'
-       +(c.waarom?'<div class="w-callout" style="margin:.3rem 0">'+esc(c.waarom)+'</div>':'')
-       +(diff.length?'<div class="w-diff">'+diff.map(function(r){
-          return '<div class="min">- '+esc(r.k)+': '+esc(r.van)+'</div><div class="plus">+ '+esc(r.k)+': '+esc(r.naar)+'</div>';}).join('')+'</div>':'')
-       +'<div class="w-chips">'+(c.regels||[]).slice(diff.length?-3:0).map(function(x){
-          return '<span class="w-mini'+(/taken/.test(x)?' groen':/afdeling|cijfer/.test(x)?' blauw':'')+'">'+esc(x)+'</span>';}).join('')+'</div>'
-       +'</div>';}).join('')+'</div>'
+   +(w.commits.length?'<div class="w-lane">'+w.commits.map(cmKaart).join('')+'</div>'
      :'<p class="w-leeg">Nog niets doorgevoerd. Zodra je een wijziging doorvoert komt hier de commit met jouw naam erbij.</p>')+'</div>'
    +'<div class="w-kaart"><div class="w-rij"><h3>Geschiedenis per onderdeel</h3></div>'
    +dims().map(function(d){ var vs=versies(d.k);
