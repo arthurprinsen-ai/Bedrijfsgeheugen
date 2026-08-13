@@ -17,6 +17,12 @@
   force = true
 
 [[redirects]]
+  from = "/wijzigingen-uitgelegd.html"
+  to = "/wijzigingen-uitgelegd"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/product.html"
   to = "/product"
   status = 301

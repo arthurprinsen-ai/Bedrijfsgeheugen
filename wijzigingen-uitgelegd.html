@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Stap voor stap: hoe je in Bedrijfsgeheugen een wijziging voorstelt, ziet wat die raakt, laat goedkeuren, doorvoert en weer terugdraait.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/wijzigingen-uitgelegd">
+<title>Zo werkt een wijziging, stap voor stap | Bedrijfsgeheugen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papier:#FBFAF7;
+  --inkt:#14171A;
+  --blauw:#2742D6;
+  --oranje:#FF4F17;
+  --geel:#FFE86B;
+  --grijs:#5C646E;
+  --lijn:#DCDFE6;
+  --wit:#FFFFFF;
+  --groen:#157A4B;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Instrument Sans",system-ui,sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--papier);
+  color:var(--inkt);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+
+/* ---------- kop ---------- */
+.kop{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.merk{font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.01em}
+.merk em{font-style:normal;color:var(--blauw)}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blauw)}
+h1{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(30px,5vw,52px);line-height:1.04;letter-spacing:-.02em;
+  margin:14px 0 10px;max-width:16ch;
+}
+.intro-regel{color:var(--grijs);max-width:56ch;margin:0 0 26px}
+
+.mark{
+  background-image:linear-gradient(to top,var(--geel) 0 46%,transparent 46%);
+  padding:0 .06em;
+}
+
+/* ---------- voortgangsrail ---------- */
+.rail{
+  display:flex;gap:6px;align-items:stretch;
+  border-top:1px solid var(--lijn);border-bottom:1px solid var(--lijn);
+  padding:10px 0;margin-bottom:28px;overflow-x:auto;scrollbar-width:none;
+}
+.rail::-webkit-scrollbar{display:none}
+.rail button{
+  flex:1 1 0;min-width:104px;text-align:left;
+  background:none;border:0;padding:8px 10px;border-radius:8px;
+  font-family:var(--body);font-size:13px;color:var(--grijs);cursor:pointer;
+  display:flex;flex-direction:column;gap:6px;line-height:1.25;
+}
+.rail button:hover{background:#F1EFE9}
+.rail button .balk{height:4px;border-radius:2px;background:var(--lijn)}
+.rail button[aria-current="true"]{color:var(--inkt);font-weight:600}
+.rail button[aria-current="true"] .balk{background:var(--blauw)}
+.rail button.klaar .balk{background:#B9C2F0}
+.rail button:focus-visible{outline:2px solid var(--blauw);outline-offset:2px}
+
+/* ---------- paneel ---------- */
+.paneel{display:none;grid-template-columns:minmax(0,0.86fr) minmax(0,1.14fr);gap:44px;align-items:start}
+.paneel.actief{display:grid;animation:in .34s ease both}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.stapnr{
+  font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.1em;
+  color:var(--blauw);text-transform:uppercase;margin-bottom:10px;display:block;
+}
+.paneel h2{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(24px,3.2vw,34px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;
+}
+.paneel p{margin:0 0 14px;color:#2A3037}
+.paneel p.zacht{color:var(--grijs)}
+
+/* geeltje met de alledaagse vergelijking */
+.geeltje{
+  position:relative;background:var(--geel);color:var(--inkt);
+  padding:18px 20px 22px;margin:22px 0 0;max-width:400px;
+  font-size:16px;line-height:1.5;
+  box-shadow:0 1px 0 rgba(0,0,0,.06);
+}
+.geeltje::after{
+  content:"";position:absolute;right:0;bottom:0;width:26px;height:26px;
+  background:linear-gradient(135deg,rgba(0,0,0,.13) 0 50%,var(--papier) 50% 100%);
+}
+.geeltje b{display:block;font-family:var(--display);font-weight:800;font-size:13px;
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+
+/* ---------- nagemaakt scherm ---------- */
+.scherm{
+  background:var(--wit);border:1px solid var(--lijn);border-radius:14px;
+  box-shadow:0 12px 30px -22px rgba(20,23,26,.45);overflow:hidden;
+}
+.scherm-balk{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:13px 16px;border-bottom:1px solid var(--lijn);background:#FCFCFB;
+}
+.scherm-titel{font-family:var(--display);font-weight:800;font-size:15px}
+.badge{
+  font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;
+  border:1px solid var(--lijn);color:var(--grijs);background:var(--wit);
+}
+.badge.blauw{color:var(--blauw);border-color:#C3CCF6;background:#EEF1FE}
+.badge.groen{color:var(--groen);border-color:#BEE3CF;background:#EDF8F1}
+.scherm-body{padding:18px 16px}
+
+.veldrij{display:grid;grid-template-columns:1fr 34px 1fr;gap:12px;align-items:center}
+.veld{border:1px solid var(--lijn);border-radius:10px;padding:12px 13px;background:var(--wit)}
+.veld .label{font-size:11px;color:var(--grijs);margin-bottom:3px}
+.veld .waarde{font-family:var(--display);font-weight:600;font-size:15px}
+.veld.naar .waarde{color:var(--blauw)}
+.pijl{text-align:center;color:var(--grijs)}
+.waarom{margin-top:12px;border:1px solid var(--lijn);border-radius:10px;padding:12px 13px;background:#FCFCFB}
+.waarom .label{font-size:11px;color:var(--grijs);margin-bottom:5px}
+.waarom .tekst{font-size:14px;color:#2A3037}
+.teller{font-size:11px;color:var(--grijs);text-align:right;margin-top:6px}
+
+.tegels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tegel{border:1px solid var(--lijn);border-radius:10px;padding:12px;background:var(--wit)}
+.tegel .wat{font-size:12px;color:var(--grijs);margin-bottom:6px;line-height:1.3}
+.tegel .getal{font-family:var(--display);font-weight:800;font-size:26px;line-height:1}
+.tegel .details{font-size:12px;color:var(--blauw);margin-top:8px}
+
+.vergelijk{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kolom{border:1px solid var(--lijn);border-radius:10px;overflow:hidden}
+.kolom h4{margin:0;padding:9px 12px;font-family:var(--display);font-size:12px;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--grijs);background:#FCFCFB;border-bottom:1px solid var(--lijn)}
+.kolom.straks h4{color:var(--blauw);background:#EEF1FE;border-bottom-color:#DDE3FB}
+.kolom ul{list-style:none;margin:0;padding:10px 12px;font-size:13.5px}
+.kolom li{padding:6px 0;border-bottom:1px dashed var(--lijn);color:#2A3037}
+.kolom li:last-child{border-bottom:0}
+.kolom li s{color:#A9B0B8}
+
+.mens{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--lijn)}
+.mens:last-of-type{border-bottom:0}
+.bol{width:34px;height:34px;border-radius:50%;flex:0 0 34px;display:grid;place-items:center;
+  font-family:var(--display);font-weight:800;font-size:13px;color:var(--wit);background:var(--blauw)}
+.bol.b2{background:#7A56D6}.bol.b3{background:var(--oranje)}
+.mens .naam{font-weight:600;font-size:14.5px}
+.mens .rol{font-size:12.5px;color:var(--grijs)}
+.mens .staat{margin-left:auto;font-size:12px;color:var(--grijs)}
+.mens .staat.ja{color:var(--groen);font-weight:600}
+.reden{margin-top:12px;font-size:13px;color:var(--grijs);background:#FCFCFB;border:1px dashed var(--lijn);border-radius:10px;padding:11px 12px}
+
+.knop{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--body);font-weight:600;font-size:15px;
+  padding:12px 18px;border-radius:10px;border:1px solid var(--lijn);
+  background:var(--wit);color:var(--inkt);cursor:pointer;width:100%;
+}
+.knop.hoofd{background:var(--groen);border-color:var(--groen);color:var(--wit)}
+.knop.terug{background:var(--wit);border-color:#F3C4B2;color:var(--oranje)}
+.knop:disabled{opacity:.55;cursor:default}
+.knop:focus-visible{outline:2px solid var(--blauw);outline-offset:2px}
+.knoprij{display:grid;gap:9px}
+
+.afvinklijst{list-style:none;margin:14px 0 0;padding:0;font-size:13.5px}
+.afvinklijst li{display:flex;align-items:center;gap:9px;padding:7px 0;color:#A9B0B8}
+.afvinklijst li .vink{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--lijn);flex:0 0 18px}
+.afvinklijst li.gedaan{color:#2A3037}
+.afvinklijst li.gedaan .vink{background:var(--groen);border-color:var(--groen);position:relative}
+.afvinklijst li.gedaan .vink::after{content:"";position:absolute;left:5px;top:2px;width:5px;height:9px;
+  border:solid var(--wit);border-width:0 2px 2px 0;transform:rotate(42deg)}
+
+.melding{display:flex;gap:11px;align-items:flex-start;border:1px solid #F3C4B2;background:#FFF3EE;
+  border-radius:10px;padding:12px 13px;font-size:13.5px;color:#7A2E10;margin-bottom:14px}
+.melding .bal{width:8px;height:8px;border-radius:50%;background:var(--oranje);margin-top:7px;flex:0 0 8px}
+
+.tijdlijn{list-style:none;margin:0;padding:0 0 0 20px;position:relative;font-size:13.5px}
+.tijdlijn::before{content:"";position:absolute;left:4px;top:8px;bottom:8px;width:2px;background:var(--lijn)}
+.tijdlijn li{position:relative;padding:0 0 18px}
+.tijdlijn li::before{content:"";position:absolute;left:-20px;top:6px;width:10px;height:10px;border-radius:50%;
+  background:var(--wit);border:2px solid var(--blauw)}
+.tijdlijn li.oud::before{border-color:var(--lijn)}
+.tijdlijn .wanneer{font-size:12px;color:var(--grijs)}
+.tijdlijn .wat{font-weight:600}
+.tijdlijn .wie{font-size:12.5px;color:var(--grijs)}
+
+/* ---------- intro-tekening ---------- */
+.ripple{width:100%;height:auto;display:block}
+.ripple .lijn{stroke:var(--lijn);stroke-width:1.5;fill:none;stroke-dasharray:120;stroke-dashoffset:120;
+  animation:teken .9s ease forwards}
+.ripple .knoop{fill:var(--wit);stroke:var(--lijn);stroke-width:1.5;opacity:0;animation:pop .4s ease forwards}
+.ripple .kern{fill:var(--blauw);stroke:none}
+.ripple text{font-family:var(--body);font-size:11px;fill:var(--grijs)}
+.ripple .kerntekst{fill:var(--wit);font-weight:600}
+@keyframes teken{to{stroke-dashoffset:0}}
+@keyframes pop{to{opacity:1}}
+
+/* ---------- invulvelden ---------- */
+.veld input.inv,.waarom textarea.inv{
+  width:100%;font:inherit;font-family:var(--display);font-weight:600;font-size:15px;
+  color:var(--inkt);border:0;background:none;padding:0;margin:0;
+  border-bottom:2px dashed var(--geel);
+}
+.waarom textarea.inv{font-family:var(--body);font-weight:400;font-size:14px;line-height:1.5;
+  resize:vertical;min-height:64px;border-bottom:0;background:#FFFDF2;border:1px dashed #E4D48A;
+  border-radius:7px;padding:8px 9px}
+.veld.naar input.inv{color:var(--blauw)}
+.inv:focus{outline:0;border-bottom-color:var(--blauw);background:#FFFDF2}
+.waarom textarea.inv:focus{border-color:var(--blauw)}
+.jouwbeurt{
+  display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;
+  color:var(--oranje);background:#FFF3EE;border:1px solid #F3C4B2;border-radius:20px;padding:3px 10px;
+}
+.jouwbeurt::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--oranje)}
+
+/* ---------- portret ---------- */
+.portret{width:38px;height:38px;border-radius:50%;flex:0 0 38px;object-fit:cover;background:#EEF1FE;border:1px solid var(--lijn)}
+
+/* ---------- sitebalk & afsluiter ---------- */
+.sitebalk{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--lijn);background:#fff}
+.sitebalk a{color:inherit;text-decoration:none;display:flex;align-items:center;gap:9px}
+.sitebalk .terug{margin-left:auto;font-size:13.5px;color:var(--blauw);font-weight:600;text-decoration:none}
+.afsluiter{margin-top:34px;border-top:1px solid var(--lijn);padding-top:22px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.afsluiter p{margin:0;color:var(--grijs);font-size:14px;flex:1 1 260px}
+.cta{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;padding:11px 18px;
+  border-radius:10px;text-decoration:none;background:var(--blauw);color:#fff}
+.cta.stil{background:#fff;color:var(--inkt);border:1px solid var(--lijn)}
+
+/* ---------- navigatie ---------- */
+.nav{
+  display:flex;align-items:center;gap:14px;margin-top:34px;
+  border-top:1px solid var(--lijn);padding-top:18px;
+}
+.nav .telling{font-size:13px;color:var(--grijs);margin-left:auto}
+.navknop{
+  font-family:var(--body);font-weight:600;font-size:15px;padding:11px 20px;border-radius:10px;
+  border:1px solid var(--lijn);background:var(--wit);color:var(--inkt);cursor:pointer;
+}
+.navknop.primair{background:var(--blauw);border-color:var(--blauw);color:var(--wit)}
+.navknop:disabled{opacity:.4;cursor:default}
+.navknop:focus-visible{outline:2px solid var(--blauw);outline-offset:2px}
+
+@media (max-width:860px){
+  .paneel.actief{grid-template-columns:1fr;gap:26px}
+  .tegels{grid-template-columns:repeat(2,1fr)}
+  .veldrij{grid-template-columns:1fr;gap:8px}
+  .pijl{transform:rotate(90deg)}
+  .vergelijk{grid-template-columns:1fr}
+  .wrap{padding:24px 18px 64px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .ripple .lijn{stroke-dashoffset:0}
+  .ripple .knoop{opacity:1}
+}
+</style>
+</head>
+<body>
+<div class="sitebalk">
+  <a href="/"><img src="/assets/merk/logo-merk.png" alt="" width="30" height="30"><span class="merk">Bedrijfs<em>geheugen</em></span></a>
+  <a class="terug" href="/wijzigingen">&larr; Terug naar Wijzigingen</a>
+</div>
+<div class="wrap">
+
+  <div class="kop">
+    <span class="merk">Bedrijfs<em>geheugen</em></span>
+    <span class="eyebrow">Zo werkt een wijziging</span>
+  </div>
+  <h1>Eén ding veranderen, zonder dat er iets omvalt.</h1>
+  <p class="intro-regel">Zeven schermen, vier minuten. Geen voorkennis nodig — als u weleens een adreswijziging heeft doorgegeven, kunt u dit ook.</p>
+
+  <nav class="rail" id="rail" aria-label="Stappen"></nav>
+
+  <!-- 0 -->
+  <section class="paneel" data-titel="Het idee">
+    <div>
+      <span class="stapnr">Het idee</span>
+      <h2>In een bedrijf hangt alles aan elkaar.</h2>
+      <p>U besluit iets: we gaan sturen op <span class="mark">marge</span> in plaats van op omzet. Dat klinkt als één zin. Maar er hangen doelen aan vast, en cijfers, en werkafspraken, en documenten, en de acties van uw mensen.</p>
+      <p>Normaal ontdekt u pas maanden later wat u vergeten bent aan te passen. Hier ziet u het meteen — en er verandert pas iets als u zelf ja zegt.</p>
+      <div class="geeltje">
+        <b>De hele truc</b>
+        U verandert één ding. Wij zoeken uit wat daar nog meer aan vastzit, laten het u zien, en voeren het pas door als u akkoord geeft.
+      </div>
+    </div>
+    <div class="scherm">
+      <div class="scherm-balk"><span class="scherm-titel">Wat er aan één besluit vastzit</span></div>
+      <div class="scherm-body">
+        <svg class="ripple" viewBox="0 0 480 300" role="img" aria-label="Eén besluit in het midden, met lijnen naar zes onderdelen die eraan vastzitten">
+          <line class="lijn" x1="240" y1="150" x2="100" y2="60"  style="animation-delay:.15s"/>
+          <line class="lijn" x1="240" y1="150" x2="380" y2="60"  style="animation-delay:.25s"/>
+          <line class="lijn" x1="240" y1="150" x2="70"  y2="160" style="animation-delay:.35s"/>
+          <line class="lijn" x1="240" y1="150" x2="410" y2="160" style="animation-delay:.45s"/>
+          <line class="lijn" x1="240" y1="150" x2="130" y2="252" style="animation-delay:.55s"/>
+          <line class="lijn" x1="240" y1="150" x2="350" y2="252" style="animation-delay:.65s"/>
+          <circle class="knoop" cx="100" cy="60"  r="26" style="animation-delay:.6s"/>
+          <circle class="knoop" cx="380" cy="60"  r="26" style="animation-delay:.7s"/>
+          <circle class="knoop" cx="70"  cy="160" r="26" style="animation-delay:.8s"/>
+          <circle class="knoop" cx="410" cy="160" r="26" style="animation-delay:.9s"/>
+          <circle class="knoop" cx="130" cy="252" r="26" style="animation-delay:1.0s"/>
+          <circle class="knoop" cx="350" cy="252" r="26" style="animation-delay:1.1s"/>
+          <text x="100" y="64"  text-anchor="middle">doelen</text>
+          <text x="380" y="64"  text-anchor="middle">cijfers</text>
+          <text x="70"  y="164" text-anchor="middle">afdeling</text>
+          <text x="410" y="164" text-anchor="middle">acties</text>
+          <text x="130" y="256" text-anchor="middle">documenten</text>
+          <text x="350" y="256" text-anchor="middle">dashboards</text>
+          <circle class="knoop kern" cx="240" cy="150" r="46" style="animation-delay:0s"/>
+          <text class="kerntekst" x="240" y="146" text-anchor="middle">uw</text>
+          <text class="kerntekst" x="240" y="162" text-anchor="middle">besluit</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section class="paneel" data-titel="Opschrijven">
+    <div>
+      <span class="stapnr">Stap 1 van 7</span>
+      <h2>U schrijft op wat u wilt veranderen.</h2>
+      <p>Twee vakjes en een waarom. Links wat er nu staat, rechts wat het moet worden. Daaronder in gewone taal waarom u dit doet.</p>
+      <p><b>Dit scherm is echt: typ er maar in.</b> Wat u hier invult, komt in de volgende schermen terug — dit is de enige plek waar u zelf iets invoert. De rest wordt uitgerekend.</p>
+      <p class="zacht">Meer hoeft u niet te weten. Geen codes, geen formulieren, geen bijlagen. Er gebeurt op dit moment nog helemaal niets — het staat op <span class="mark">concept</span>, zoals een mailtje dat u nog niet verstuurd heeft.</p>
+      <div class="geeltje">
+        <b>Vergelijk het met</b>
+        Een briefje op de koelkast: wat gaan we anders doen, en waarom. Alleen leest dit briefje mee.
+      </div>
+    </div>
+    <div class="scherm">
+      <div class="scherm-balk">
+        <span class="scherm-titel">Wijziging doorvoeren</span>
+        <span class="jouwbeurt">Vul zelf in</span>
+      </div>
+      <div class="scherm-body">
+        <div class="veldrij">
+          <div class="veld">
+            <div class="label">Van (hoe het nu is)</div>
+            <input class="inv" id="iVan" value="Omzetgroei" maxlength="40" aria-label="Van (hoe het nu is)">
+          </div>
+          <div class="pijl">&rarr;</div>
+          <div class="veld naar">
+            <div class="label">Naar (hoe het wordt)</div>
+            <input class="inv" id="iNaar" value="Marge verbeteren" maxlength="40" aria-label="Naar (hoe het wordt)">
+          </div>
+        </div>
+        <div class="waarom">
+          <div class="label">Waarom deze wijziging?</div>
+          <textarea class="inv" id="iWaarom" maxlength="500" aria-label="Waarom deze wijziging?">De markt vraagt om winstgevendheid en prijsdiscipline. We gaan sturen op margegroei zonder volumegroei uit het oog te verliezen.</textarea>
+          <div class="teller"><span id="iTeller">137</span> / 500 tekens</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="paneel" data-titel="Wat het raakt">
+    <div>
+      <span class="stapnr">Stap 2 van 7</span>
+      <h2>Het systeem zoekt uit wat eraan vastzit.</h2>
+      <p class="zacht" id="echoTwee" style="font-size:14px"></p>
+      <p>Binnen een paar tellen staat er wat uw ene zin allemaal raakt. Zes cijfers die niet meer kloppen. Vier werkafspraken. Elf acties die iemand deze week zou uitvoeren.</p>
+      <p class="zacht">Achter elk getal zit <span class="mark">Bekijk details</span>: dan ziet u niet dát er elf acties veranderen, maar wélke elf, en wat er precies anders komt te staan. Elke regel kunt u apart uitvinken.</p>
+      <div class="geeltje">
+        <b>Vergelijk het met</b>
+        Een adreswijziging bij de gemeente. Overal waar uw adres stond, verandert het mee. Alleen krijgt u hier eerst de lijst te zien.
+      </div>
+    </div>
+    <div class="scherm">
+      <div class="scherm-balk">
+        <span class="scherm-titel" id="echoKop">Wat deze wijziging raakt</span>
+        <span class="badge blauw">Automatisch gevonden</span>
+      </div>
+      <div class="scherm-body">
+        <div class="tegels" id="tegels">
+          <div class="tegel"><div class="wat">Cijfers die u volgt</div><div class="getal" data-tot="6">0</div><div class="details">Bekijk details &rarr;</div></div>
+          <div class="tegel"><div class="wat">Werkafspraken</div><div class="getal" data-tot="4">0</div><div class="details">Bekijk details &rarr;</div></div>
+          <div class="tegel"><div class="wat">Afdelingen</div><div class="getal" data-tot="3">0</div><div class="details">Bekijk details &rarr;</div></div>
+          <div class="tegel"><div class="wat">Acties van mensen</div><div class="getal" data-tot="11">0</div><div class="details">Bekijk details &rarr;</div></div>
+          <div class="tegel"><div class="wat">Documenten</div><div class="getal" data-tot="7">0</div><div class="details">Bekijk details &rarr;</div></div>
+          <div class="tegel"><div class="wat">Dashboards</div><div class="getal" data-tot="5">0</div><div class="details">Bekijk details &rarr;</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="paneel" data-titel="Eerst kijken">
+    <div>
+      <span class="stapnr">Stap 3 van 7</span>
+      <h2>U kijkt eerst hoe het eruit gaat zien.</h2>
+      <p>Naast elkaar: hoe het nu is, en hoe het straks wordt. Uw roadmap, uw cijfers, de briefing voor het MT — precies zoals ze eruit komen te zien als u doorzet.</p>
+      <p class="zacht">Er wordt hier nog steeds <span class="mark">niets</span> opgeslagen. Bevalt het niet, dan sluit u het scherm en is er niets gebeurd.</p>
+      <div class="geeltje">
+        <b>Vergelijk het met</b>
+        Passen in de winkel. U staat voor de spiegel, maar u heeft nog niets gekocht.
+      </div>
+    </div>
+    <div class="scherm">
+      <div class="scherm-balk">
+        <span class="scherm-titel">Voorbeeld: uw roadmap</span>
+        <span class="badge">Nog niets opgeslagen</span>
+      </div>
+      <div class="scherm-body">
+        <div class="vergelijk">
+          <div class="kolom">
+            <h4>Nu</h4>
+            <ul>
+              <li>Nieuwe klanten werven — 1</li>
+              <li>Volume vergroten in regio Zuid — 2</li>
+              <li>Prijslijst herzien — 6</li>
+              <li>Kortingsbeleid aanscherpen — 8</li>
+            </ul>
+          </div>
+          <div class="kolom straks">
+            <h4>Straks</h4>
+            <ul>
+              <li>Prijslijst herzien — 1</li>
+              <li>Kortingsbeleid aanscherpen — 2</li>
+              <li>Nieuwe klanten werven — 5</li>
+              <li><s>Volume vergroten in regio Zuid</s></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="paneel" data-titel="Meekijken">
+    <div>
+      <span class="stapnr">Stap 4 van 7</span>
+      <h2>De juiste mensen kijken mee.</h2>
+      <p>U hoeft niemand uit te zoeken. Wie eigenaar is van iets dat verandert, krijgt het vanzelf voorgelegd — met de reden erbij waarom hij of zij erop staat.</p>
+      <p class="zacht">Zij zien hetzelfde overzicht als u en kunnen goedkeuren, of om aanpassing vragen. Zolang er iemand nog niet gekeken heeft, kan de wijziging <span class="mark">niet</span> doorgevoerd worden.</p>
+      <div class="geeltje">
+        <b>Vergelijk het met</b>
+        Een verhuizing waarbij de mensen die uw spullen moeten dragen vooraf te horen krijgen hoeveel dozen het zijn.
+      </div>
+    </div>
+    <div class="scherm">
+      <div class="scherm-balk">
+        <span class="scherm-titel">Eigenaren &amp; goedkeuring</span>
+        <span class="badge">2 van 3 akkoord</span>
+      </div>
+      <div class="scherm-body">
+        <div class="mens">
+          <img class="portret" src="/assets/mensen/sanne-de-vries.jpg" alt="" width="38" height="38" onerror="this.style.visibility='hidden'">
+          <div><div class="naam">Sanne de Vries</div><div class="rol">CFO — verantwoordelijk eigenaar</div></div>
+          <div class="staat ja">Akkoord</div>
+        </div>
+        <div class="mens">
+          <img class="portret" src="/assets/mensen/mark-jansen.jpg" alt="" width="38" height="38" onerror="this.style.visibility='hidden'">
+          <div><div class="naam">Mark Jansen</div><div class="rol">Head of Sales — 4 acties van zijn team</div></div>
+          <div class="staat ja">Akkoord</div>
+        </div>
+        <div class="mens">
+          <img class="portret" src="/assets/mensen/lisa-van-dijk.jpg" alt="" width="38" height="38" onerror="this.style.visibility='hidden'">
+          <div><div class="naam">Lisa van Dijk</div><div class="rol">COO — 2 werkafspraken</div></div>
+          <div class="staat">Nog niet gekeken</div>
+        </div>
+        <div class="reden">Deze drie staan er niet omdat iemand ze heeft aangevinkt, maar omdat er iets van hen bij zit.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="paneel" data-titel="Doorvoeren">
+    <div>
+      <span class="stapnr">Stap 5 van 7</span>
+      <h2>U zet het aan. Eén knop.</h2>
+      <p>Alles verandert tegelijk, of er verandert niets. Nooit half. U kunt dus niet eindigen met een dashboard dat al op marge stuurt terwijl de acties nog over volume gaan.</p>
+      <p class="zacht">Probeer de knop maar — dit is een <span class="mark">voorbeeld</span>, er gebeurt niets echts.</p>
+      <div class="geeltje">
+        <b>Vergelijk het met</b>
+        Een lichtknopje. Aan of uit. Niet half aan, en niet één lamp die achterblijft.
+      </div>
+    </div>
+    <div class="scherm">
+      <div class="scherm-balk">
+        <span class="scherm-titel">Voer wijziging door</span>
+        <span class="badge groen" id="badge5">Klaar om te starten</span>
+      </div>
+      <div class="scherm-body">
+        <div class="knoprij">
+          <button class="knop hoofd" id="knopDoor" type="button">Voer wijziging door</button>
+        </div>
+        <ul class="afvinklijst" id="lijst5">
+          <li><span class="vink"></span>6 cijfers herberekend</li>
+          <li><span class="vink"></span>4 werkafspraken aangepast</li>
+          <li><span class="vink"></span>11 acties herschreven</li>
+          <li><span class="vink"></span>7 documenten bijgewerkt</li>
+          <li><span class="vink"></span>5 dashboards bijgewerkt</li>
+          <li><span class="vink"></span>MT-briefing klaargezet</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="paneel" data-titel="Terugdraaien">
+    <div>
+      <span class="stapnr">Stap 6 van 7</span>
+      <h2>Toch verkeerd? Eén knop terug.</h2>
+      <p>Omdat alles in één keer aan ging, kan het ook in één keer weer uit. Alles staat terug zoals het was, tot en met de tekst van die elf acties.</p>
+      <p class="zacht">Dit is de reden dat u durft te veranderen. Een besluit terugdraaien kost hier <span class="mark">tien seconden</span>, geen week uitzoekwerk.</p>
+      <div class="geeltje">
+        <b>Vergelijk het met</b>
+        Ctrl+Z. Maar dan voor uw hele bedrijf, en ook nog morgen.
+      </div>
+    </div>
+    <div class="scherm">
+      <div class="scherm-balk">
+        <span class="scherm-titel">Doorgevoerd op 13 augustus, 11:04</span>
+        <span class="badge groen" id="badge6">Actief</span>
+      </div>
+      <div class="scherm-body">
+        <div class="melding"><span class="bal"></span><span>Mark meldt dat regio Zuid dit kwartaal al vastligt in klantafspraken. Terugdraaien?</span></div>
+        <div class="knoprij">
+          <button class="knop terug" id="knopTerug" type="button">Draai deze wijziging terug</button>
+        </div>
+        <ul class="afvinklijst" id="lijst6">
+          <li class="gedaan"><span class="vink"></span>6 cijfers terug naar omzetgroei</li>
+          <li class="gedaan"><span class="vink"></span>4 werkafspraken hersteld</li>
+          <li class="gedaan"><span class="vink"></span>11 acties met de oude tekst terug</li>
+          <li class="gedaan"><span class="vink"></span>Roadmap in de oude volgorde</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="paneel" data-titel="Het geheugen">
+    <div>
+      <span class="stapnr">Stap 7 van 7</span>
+      <h2>En daarna onthoudt uw bedrijf het.</h2>
+      <p>Elk besluit blijft staan met de datum, de naam en het waarom erbij. Over een jaar vraagt iemand waarom die prijslijst ook alweer herzien is — dan staat het er gewoon.</p>
+      <p class="zacht">Dat is het hele punt van Bedrijfsgeheugen: niet dat u iets verandert, maar dat het <span class="mark">blijft werken</span> als de bedenker er niet meer is.</p>
+      <div class="geeltje">
+        <b>Vergelijk het met</b>
+        Het logboek van een schip. Niemand leest het elke dag. Maar als het nodig is, staat alles er.
+      </div>
+    </div>
+    <div class="scherm">
+      <div class="scherm-balk"><span class="scherm-titel">Tijdlijn — Strategie</span></div>
+      <div class="scherm-body">
+        <ul class="tijdlijn">
+          <li>
+            <div class="wanneer">13 augustus 2026, 11:19</div>
+            <div class="wat">Wijziging teruggedraaid</div>
+            <div class="wie">Sanne de Vries — regio Zuid ligt vast in klantafspraken</div>
+          </li>
+          <li>
+            <div class="wanneer">13 augustus 2026, 11:04</div>
+            
+            <div class="wie">Sanne de Vries — markt vraagt om winstgevendheid</div>
+          </li>
+          <li class="oud">
+            <div class="wanneer">2 april 2026, 09:30</div>
+            <div class="wat">Doel regio Zuid verhoogd naar 12%</div>
+            <div class="wie">Mark Jansen — nieuwe vestiging Eindhoven open</div>
+          </li>
+          <li class="oud">
+            <div class="wanneer">7 januari 2026, 14:12</div>
+            <div class="wat">Strategie vastgesteld: omzetgroei</div>
+            <div class="wie">Sanne de Vries — jaarplan 2026</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="afsluiter">
+    <p>Dit is één wijziging, van bedenken tot terugdraaien. In het portaal staat dit onder <b>Wijzigingen</b>.</p>
+    <a class="cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+    <a class="cta stil" href="/wijzigingen">Bekijk het scherm zelf</a>
+  </div>
+
+  <div class="nav">
+    <button class="navknop" id="vorige" type="button">Vorige</button>
+    <button class="navknop primair" id="volgende" type="button">Volgende</button>
+    <span class="telling" id="telling"></span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var panelen = Array.prototype.slice.call(document.querySelectorAll('.paneel'));
+  var rail = document.getElementById('rail');
+  var vorige = document.getElementById('vorige');
+  var volgende = document.getElementById('volgende');
+  var telling = document.getElementById('telling');
+  var nu = 0;
+  var rustig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  panelen.forEach(function(p, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = '<span class="balk"></span><span>' + p.dataset.titel + '</span>';
+    b.addEventListener('click', function(){ toon(i); });
+    rail.appendChild(b);
+  });
+  var railKnoppen = Array.prototype.slice.call(rail.children);
+
+  function toon(i){
+    nu = Math.max(0, Math.min(panelen.length - 1, i));
+    panelen.forEach(function(p, j){ p.classList.toggle('actief', j === nu); });
+    railKnoppen.forEach(function(b, j){
+      b.setAttribute('aria-current', j === nu ? 'true' : 'false');
+      b.classList.toggle('klaar', j < nu);
+    });
+    vorige.disabled = nu === 0;
+    volgende.disabled = nu === panelen.length - 1;
+    volgende.textContent = nu === panelen.length - 1 ? 'Klaar' : 'Volgende';
+    telling.textContent = (nu + 1) + ' van ' + panelen.length;
+    railKnoppen[nu].scrollIntoView({block:'nearest', inline:'center', behavior: rustig ? 'auto' : 'smooth'});
+    if (nu === 2) telUp();
+    if (nu === 4) reset5();
+    if (nu === 5) reset6();
+  }
+
+  vorige.addEventListener('click', function(){ toon(nu - 1); });
+  volgende.addEventListener('click', function(){ toon(nu + 1); });
+  document.addEventListener('keydown', function(e){
+    if (e.target.tagName === 'BUTTON' && e.key === ' ') return;
+    if (e.key === 'ArrowRight') toon(nu + 1);
+    if (e.key === 'ArrowLeft') toon(nu - 1);
+  });
+
+  /* stap 2: getallen laten oplopen */
+  function telUp(){
+    document.querySelectorAll('#tegels .getal').forEach(function(el, i){
+      var tot = parseInt(el.dataset.tot, 10);
+      if (rustig){ el.textContent = tot; return; }
+      el.textContent = '0';
+      var n = 0;
+      setTimeout(function(){
+        var t = setInterval(function(){
+          n++; el.textContent = n;
+          if (n >= tot) clearInterval(t);
+        }, 60);
+      }, 120 * i);
+    });
+  }
+
+  /* stap 5: doorvoeren */
+  var knopDoor = document.getElementById('knopDoor');
+  var lijst5 = document.getElementById('lijst5');
+  var badge5 = document.getElementById('badge5');
+  function reset5(){
+    lijst5.querySelectorAll('li').forEach(function(li){ li.classList.remove('gedaan'); });
+    knopDoor.disabled = false;
+    knopDoor.textContent = 'Voer wijziging door';
+    badge5.textContent = 'Klaar om te starten';
+  }
+  knopDoor.addEventListener('click', function(){
+    knopDoor.disabled = true;
+    knopDoor.textContent = 'Bezig…';
+    badge5.textContent = 'Bezig';
+    var items = lijst5.querySelectorAll('li');
+    items.forEach(function(li, i){
+      setTimeout(function(){
+        li.classList.add('gedaan');
+        if (i === items.length - 1){
+          knopDoor.textContent = 'Doorgevoerd';
+          badge5.textContent = 'Doorgevoerd';
+        }
+      }, rustig ? 0 : 260 * (i + 1));
+    });
+  });
+
+  /* stap 6: terugdraaien */
+  var knopTerug = document.getElementById('knopTerug');
+  var lijst6 = document.getElementById('lijst6');
+  var badge6 = document.getElementById('badge6');
+  function reset6(){
+    lijst6.querySelectorAll('li').forEach(function(li){ li.classList.add('gedaan'); });
+    knopTerug.disabled = false;
+    knopTerug.textContent = 'Draai deze wijziging terug';
+    badge6.textContent = 'Actief';
+    badge6.className = 'badge groen';
+  }
+  knopTerug.addEventListener('click', function(){
+    knopTerug.disabled = true;
+    knopTerug.textContent = 'Teruggedraaid';
+    badge6.textContent = 'Teruggedraaid';
+    badge6.className = 'badge';
+    var items = lijst6.querySelectorAll('li');
+    items.forEach(function(li, i){
+      li.classList.remove('gedaan');
+      setTimeout(function(){ li.classList.add('gedaan'); }, rustig ? 0 : 240 * (i + 1));
+    });
+  });
+
+  /* wat u in stap 1 typt, loopt door de rest van de schermen */
+  var iVan = document.getElementById('iVan'),
+      iNaar = document.getElementById('iNaar'),
+      iWaarom = document.getElementById('iWaarom'),
+      iTeller = document.getElementById('iTeller');
+  function echo(){
+    var van = (iVan.value || 'iets').trim(), naar = (iNaar.value || 'iets anders').trim();
+    var zin = 'Van ' + van.toLowerCase() + ' naar ' + naar.toLowerCase();
+    var el;
+    el = document.getElementById('echoTwee');
+    if (el) el.textContent = 'U vroeg: ' + zin.toLowerCase() + '. Dit staat eraan vast:';
+    el = document.getElementById('echoKop');
+    if (el) el.textContent = zin;
+    el = document.getElementById('echoTijdlijn');
+    if (el) el.textContent = zin;
+    el = document.getElementById('echoWaarom');
+    if (el) el.textContent = 'Sanne de Vries — ' + ((iWaarom.value || '').split(/[.\n]/)[0] || 'geen reden ingevuld').trim().toLowerCase();
+    iTeller.textContent = iWaarom.value.length;
+  }
+  [iVan, iNaar, iWaarom].forEach(function(el){ el.addEventListener('input', echo); });
+  echo();
+
+  toon(0);
+})();
+</script>
+</body>
+</html>
