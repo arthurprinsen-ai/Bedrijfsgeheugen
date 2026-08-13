@@ -174,6 +174,17 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
 .verg .kolom:not(.wij) li::before{content:"\00d7";position:absolute;left:0;color:#B3341A;font-weight:700}
 .verg .kolom.wij li::before{content:"\2713";position:absolute;left:0;color:var(--groen);font-weight:700}
 .tk-blok li b{color:var(--inkt);font-weight:600}
+.bandbreed{background:var(--blauw);color:#fff;padding:2.4rem 0;position:relative;overflow:hidden;margin-top:1rem}
+.bandwrap{max-width:1120px;margin:0 auto;padding:0 1.5rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.6rem;align-items:center}
+.bandtekst{text-align:center}
+.bandtekst h2{color:#fff;font-size:clamp(1.25rem,2.6vw,1.75rem);margin-bottom:.3rem}
+.bandtekst p{color:#D8DEF9;font-size:.94rem}
+.bandknoppen{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn.wit-lijn{border-color:rgba(255,255,255,.6);color:#fff;background:transparent}
+.kleefbriefje{background:var(--geel);color:var(--inkt);font-family:'Caveat',cursive;font-weight:600;font-size:1.1rem;
+ line-height:1.25;border-radius:6px;padding:.7rem .9rem;transform:rotate(-4deg);display:inline-block;box-shadow:0 3px 0 rgba(0,0,0,.12);max-width:170px}
+@media(max-width:900px){.bandwrap{grid-template-columns:1fr;text-align:center;justify-items:center}
+ .kleefbriefje{transform:rotate(-2deg)}.bandknoppen{justify-content:center}}
 @media(max-width:1050px){.tk{grid-template-columns:1fr}.tk-pijl{transform:rotate(90deg);text-align:center}.verg{grid-template-columns:1fr}}
 @media(max-width:1050px){
   .hero-grid,.res,.praktijk{grid-template-columns:1fr}
@@ -188,7 +199,7 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
 }
 @media(max-width:620px){.k5,.zw,.k6,.stroom{grid-template-columns:1fr}.cijfers{grid-template-columns:repeat(2,1fr)}}
 </style>
-<link rel="stylesheet" href="/assets/kop.css?v=6">
+<link rel="stylesheet" href="/assets/kop.css?v=7">
 </head>
 <body>
 <div class="bgtop"><div class="bgtop-in">
@@ -499,18 +510,19 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
   </div>
 </div></section>
 
-<section><div class="wrap">
-  <div class="band">
-    <div>
+<section class="bandbreed">
+  <div class="bandwrap">
+    <span class="kleefbriefje">Jij focust op je bedrijf.<br>Wij draaien de machine.</span>
+    <div class="bandtekst">
       <h2>Van losse content naar een machine die blijft draaien.</h2>
       <p>Meer zichtbaarheid, meer impact, minder werk. Zonder dat jij er iets voor hoeft te doen.</p>
     </div>
-    <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+    <div class="bandknoppen">
       <a class="btn geel" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
-      <a class="btn" style="border-color:#fff;color:#fff" href="/contact">Stel eerst een vraag</a>
+      <a class="btn wit-lijn" href="/contact">Stel eerst een vraag</a>
     </div>
   </div>
-</div></section>
+</section>
 </main>
 
 <footer class="bgvoet"><div class="bgvoet-in">
@@ -520,18 +532,18 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
       <p class="bgvoet-over">Praktische strategie, slimme systemen en AI.<br>Voor ondernemers die willen groeien.</p>
     </div>
     <div class="bgvoet-kolom">
-      <span class="bgvoet-kop">Producten</span>
-      <a href="/ai-marketing-mkb">AI-marketing</a>
-      <a href="/product">Het portaal</a>
-      <a href="/wijzigingen">Wijzigingen</a>
-      <a href="/frisse-blik">Frisse blik</a>
-    </div>
-    <div class="bgvoet-kolom">
-      <span class="bgvoet-kop">Expertises</span>
+      <span class="bgvoet-kop">Oplossingen</span>
       <a href="/expertises">Alle expertises</a>
       <a href="/systemen-koppelen">Systemen koppelen</a>
       <a href="/afas-koppeling">AFAS-koppeling</a>
       <a href="/due-diligence">Due diligence &amp; exit</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Producten</span>
+      <a href="/ai-marketing-mkb">AI Marketing Machine</a>
+      <a href="/product">Het portaal</a>
+      <a href="/wijzigingen">Wijzigingen</a>
+      <a href="/frisse-blik">Frisse blik</a>
     </div>
     <div class="bgvoet-kolom">
       <span class="bgvoet-kop">Kennis</span>
@@ -540,6 +552,13 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
       <a href="/wijzigingen-uitgelegd">Wijzigingen uitgelegd</a>
       <a href="/zelfscan">Zelfscan</a>
     </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Over ons</span>
+      <a href="/over-ons">Ons verhaal</a>
+      <a href="/voor-mkb">Voor het mkb</a>
+      <a href="/investeerders-ma">Investeerders &amp; M&amp;A</a>
+      <a href="/contact">Contact</a>
+    </div>
     <div class="bgvoet-cta">
       <b>Plan een Frisse blik</b>
       <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
@@ -547,8 +566,8 @@ details p{margin-top:.5rem;font-size:.88rem;color:#3C424A}
     </div>
   </div>
   <div class="bgvoet-onder">
-    <span>&copy; 2026 Bedrijfsgeheugen &mdash; Aanpakken zonder aanmodderen.</span>
-    <span class="bgvoet-links"><a href="/over-ons">Over ons</a><a href="/voor-mkb">Voor het mkb</a><a href="/investeerders-ma">Investeerders &amp; M&amp;A</a><a href="/contact">Contact</a><a href="/privacy">Privacyverklaring</a></span>
+    <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
+    <span>Aanpakken zonder aanmodderen.</span>
   </div>
 </div></footer>
 <script type="application/ld+json">
