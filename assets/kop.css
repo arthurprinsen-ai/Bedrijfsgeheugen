@@ -35,12 +35,15 @@
 .bgvoet-over{color:#8E96A5;font-size:.84rem;line-height:1.55}
 .bgvoet-kop{color:#fff;font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.55rem;display:block}
 .bgvoet-kolom a{display:block;padding:.2rem 0;line-height:1.45}
-.bgvoet-cta{background:#20242B;border-radius:12px;padding:1rem 1.1rem}
-.bgvoet-cta b{color:#fff;display:block;margin-bottom:.25rem}
-.bgvoet-cta p{color:#8E96A5;font-size:.82rem;margin-bottom:.7rem;line-height:1.5}
-.bgvoet-knop{display:inline-flex;align-items:center;gap:.4rem;background:var(--bg-geel,#FFE86B);color:var(--bg-inkt);
- font-weight:700;font-size:.85rem;border-radius:9px;padding:.5rem 1rem;text-decoration:none}
-.bgvoet-knop:hover{color:var(--bg-inkt);text-decoration:none;filter:brightness(.96)}
+.bgvoet-cta{background:linear-gradient(180deg,#20242B,#191D24);border:1px solid #2E343E;border-radius:14px;
+ padding:1.15rem 1.2rem;display:flex;flex-direction:column;align-items:flex-start}
+.bgvoet-cta b{color:#fff;display:block;font-size:.98rem;margin-bottom:.3rem;letter-spacing:-.01em}
+.bgvoet-cta p{color:#98A0AE;font-size:.83rem;margin:0 0 .9rem;line-height:1.5}
+.bgvoet a.bgvoet-knop{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;white-space:nowrap;
+ background:var(--bg-geel,#FFE86B);color:var(--bg-inkt);font-weight:700;font-size:.85rem;border-radius:9px;
+ padding:.55rem 1.05rem;text-decoration:none;box-shadow:0 2px 0 rgba(0,0,0,.25);transition:transform .12s,box-shadow .12s;margin-top:auto}
+.bgvoet a.bgvoet-knop:hover{color:var(--bg-inkt);text-decoration:none;transform:translateY(-1px);box-shadow:0 4px 0 rgba(0,0,0,.28)}
+.bgvoet a.bgvoet-knop:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .bgvoet-onder{border-top:1px solid #2A2F38;padding:1rem 0 1.4rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;font-size:.8rem;color:#8E96A5}
 .bgvoet-onder .bgvoet-links{display:flex;flex-wrap:wrap;gap:.4rem 1rem}
 @media(max-width:1120px){.bgvoet-net{grid-template-columns:1.4fr 1fr 1fr;gap:1.4rem}}
