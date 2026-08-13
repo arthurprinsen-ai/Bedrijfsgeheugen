@@ -6640,48 +6640,83 @@ body{background:var(--np-vlak)}
 .pj-leeg{text-align:center;padding:1.6rem 1rem;color:var(--grijs);font-size:.88rem}
 .pj-melding{border-left:4px solid var(--blauw);background:#EDF0FD;border-radius:0 8px 8px 0;padding:.75rem .9rem;font-size:.86rem;margin-bottom:1rem}
 /* --- Wijzigingen-module (toegevoegd, overschrijft niets bestaands) --- */
-#p-wijzigingen .pk2{font-size:1.3rem;margin:0 0 .3rem}
-#p-wijzigingen .sub2{font-size:.87rem;color:var(--grijs);line-height:1.55;margin:0 0 .6rem}
-#p-wijzigingen .kaart2{background:#fff;border:1px solid var(--lijn);border-radius:8px;padding:.9rem 1rem;margin-bottom:.8rem}
-#p-wijzigingen .kop2{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;flex-wrap:wrap}
-#p-wijzigingen .kop2 h3{font-size:1rem;margin:0}
-#p-wijzigingen .kop2 .bg-knop{margin-left:auto}
-#p-wijzigingen .bg-pil{font-size:.7rem;font-weight:600;padding:.15rem .55rem;border-radius:20px;border:1px solid var(--lijn);color:var(--grijs)}
-#p-wijzigingen .bg-pil.open{color:var(--blauw);border-color:#C3CCF6;background:#EEF1FE}
-#p-wijzigingen .bg-pil.goed{color:var(--groen);border-color:#BEE3CF;background:#EDF8F1}
-#p-wijzigingen .bg-pil.terug{color:var(--oranje);border-color:#F3C4B2;background:#FFF3EE}
-#p-wijzigingen .bg-knop{font:inherit;font-size:.85rem;font-weight:600;padding:.45rem .8rem;border-radius:6px;border:1px solid var(--lijn);background:#fff;color:var(--inkt);cursor:pointer}
-#p-wijzigingen .bg-knop.klein{font-size:.75rem;padding:.2rem .5rem}
-#p-wijzigingen .bg-knop.blauw{background:var(--blauw);border-color:var(--blauw);color:#fff}
-#p-wijzigingen .bg-knop.groen{background:var(--groen);border-color:var(--groen);color:#fff}
-#p-wijzigingen .bg-knop.terug{border-color:#F3C4B2;color:var(--oranje)}
-#p-wijzigingen .bg-knop:disabled{opacity:.45;cursor:default}
-#p-wijzigingen .bg-knoppen{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem}
-#p-wijzigingen .bg-tab{width:100%;border-collapse:collapse;font-size:.85rem;margin:.4rem 0}
-#p-wijzigingen .bg-tab th{text-align:left;font-size:.72rem;color:var(--grijs);padding:0 .5rem .35rem 0;border-bottom:1px solid var(--lijn)}
-#p-wijzigingen .bg-tab td{padding:.4rem .5rem .4rem 0;border-bottom:1px solid var(--lijn)}
-#p-wijzigingen .oud2{color:#A9B0B8;text-decoration:line-through}
-#p-wijzigingen .nw2{color:var(--blauw);font-weight:600}
-#p-wijzigingen .bg-kies{margin-top:.8rem;border-top:1px solid var(--lijn);padding-top:.7rem}
-#p-wijzigingen .bg-rooster{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.55rem;margin-top:.4rem}
-#p-wijzigingen .bg-vak{border:1px solid var(--lijn);border-radius:7px;padding:.5rem .6rem;background:#FCFCFB}
-#p-wijzigingen .bg-lb{font-size:.75rem;color:var(--grijs);margin-bottom:.2rem}
-#p-wijzigingen .bg-sel,#p-wijzigingen .bg-inv{font:inherit;font-size:.85rem;width:100%;padding:.35rem .45rem;border:1px solid var(--lijn);border-radius:5px;background:#fff}
-#p-wijzigingen .bg-inv.sm{font-size:.78rem;margin-top:.3rem}
-#p-wijzigingen .bg-was{font-size:.72rem;color:var(--grijs);margin-top:.2rem}
-#p-wijzigingen .bg-imp{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:.5rem;margin-top:.8rem}
-#p-wijzigingen .bg-it{border:1px solid var(--lijn);border-radius:7px;padding:.5rem;text-align:center;background:#fff}
-#p-wijzigingen .bg-g{font-size:1.25rem;font-weight:700;line-height:1.1}
-#p-wijzigingen .bg-l{font-size:.72rem;color:var(--grijs)}
-#p-wijzigingen .bg-eig{margin-top:.7rem;border-top:1px solid var(--lijn);padding-top:.6rem}
-#p-wijzigingen .bg-check{display:inline-flex;align-items:center;gap:.35rem;font-size:.85rem;margin:.3rem .8rem .3rem 0}
-#p-wijzigingen .bg-det{border-bottom:1px solid var(--lijn);padding:.45rem 0;font-size:.85rem}
-#p-wijzigingen .bg-det:last-child{border-bottom:0}
-#p-wijzigingen .bg-det summary{cursor:pointer}
-#p-wijzigingen .bg-vl{list-style:none;margin:.4rem 0 .2rem;padding:0 0 0 .9rem;border-left:2px solid var(--lijn)}
-#p-wijzigingen .bg-vl li{padding:.25rem 0}
-#p-wijzigingen .bg-vl li.nu{color:var(--blauw)}
-#p-wijzigingen .bg-rdn{font-size:.78rem;color:var(--grijs);background:#FCFCFB;border:1px dashed var(--lijn);border-radius:5px;padding:.3rem .45rem;margin-top:.2rem}
+#p-wijzigingen{--w-lijn:var(--lijn,#DCDFE6);--w-blauw:var(--blauw,#2742D6);--w-grijs:var(--grijs,#5C646E)}
+#p-wijzigingen .w-kop{display:flex;align-items:flex-start;gap:.6rem;flex-wrap:wrap;margin-bottom:.2rem}
+#p-wijzigingen h2.w-t{font-size:1.35rem;margin:0}
+#p-wijzigingen .w-sub{font-size:.87rem;color:var(--w-grijs);line-height:1.55;margin:.1rem 0 .8rem}
+#p-wijzigingen .w-pillen{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+#p-wijzigingen .w-pil{font:inherit;font-size:.82rem;font-weight:600;padding:.35rem .8rem;border-radius:20px;border:1px solid var(--w-lijn);background:#fff;color:var(--w-grijs);cursor:pointer}
+#p-wijzigingen .w-pil[aria-selected="true"]{background:var(--w-blauw);border-color:var(--w-blauw);color:#fff}
+#p-wijzigingen .w-net{display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:.8rem;align-items:start}
+@media(max-width:900px){#p-wijzigingen .w-net{grid-template-columns:1fr}}
+#p-wijzigingen .w-kaart{background:#fff;border:1px solid var(--w-lijn);border-radius:9px;padding:.9rem 1rem;margin-bottom:.8rem}
+#p-wijzigingen .w-kaart h3{font-size:.98rem;margin:0}
+#p-wijzigingen .w-rij{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem}
+#p-wijzigingen .w-rij .w-re{margin-left:auto;display:flex;gap:.4rem;flex-wrap:wrap}
+#p-wijzigingen .w-tag{font-size:.7rem;font-weight:600;padding:.12rem .55rem;border-radius:20px;border:1px solid var(--w-lijn);color:var(--w-grijs);background:#fff;display:inline-block}
+#p-wijzigingen .w-tag.blauw{color:var(--w-blauw);border-color:#C3CCF6;background:#EEF1FE}
+#p-wijzigingen .w-tag.groen{color:#1F9D55;border-color:#BEE3CF;background:#EDF8F1}
+#p-wijzigingen .w-tag.rood{color:#D93025;border-color:#F3C4B2;background:#FFF3EE}
+#p-wijzigingen .w-tag.grijs{color:var(--w-grijs);background:#F3F4F6}
+#p-wijzigingen .w-vk{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--w-lijn);border-radius:8px;padding:.6rem .7rem;margin-bottom:.5rem;cursor:pointer;font:inherit}
+#p-wijzigingen .w-vk:hover{border-color:#C3CCF6}
+#p-wijzigingen .w-vk[aria-current="true"]{border-color:var(--w-blauw);background:#F7F9FF}
+#p-wijzigingen .w-vk h4{font-size:.9rem;margin:.3rem 0 .1rem}
+#p-wijzigingen .w-meta{display:flex;gap:.6rem;font-size:.74rem;color:var(--w-grijs);flex-wrap:wrap}
+#p-wijzigingen .w-vn{display:grid;grid-template-columns:1fr auto 1fr;gap:.6rem;align-items:center;margin:.5rem 0}
+@media(max-width:640px){#p-wijzigingen .w-vn{grid-template-columns:1fr}}
+#p-wijzigingen .w-ba{border:1px solid var(--w-lijn);border-radius:8px;padding:.6rem .7rem;background:#FCFCFB}
+#p-wijzigingen .w-ba.na{background:#F4FBF6;border-color:#BEE3CF}
+#p-wijzigingen .w-kick{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--w-grijs)}
+#p-wijzigingen .w-groot{font-size:1.02rem;font-weight:700;margin-top:.15rem}
+#p-wijzigingen .w-pijl{text-align:center;color:var(--w-grijs);font-size:1.1rem}
+#p-wijzigingen .w-callout{border-left:3px solid var(--geel,#FFE86B);background:#FFFDF2;border-radius:0 7px 7px 0;padding:.6rem .8rem;font-size:.85rem;margin:.6rem 0}
+#p-wijzigingen .w-imp{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:.5rem;margin:.5rem 0}
+#p-wijzigingen .w-box{border:1px solid var(--w-lijn);border-radius:8px;padding:.55rem .4rem;text-align:center;background:#fff;cursor:pointer;font:inherit}
+#p-wijzigingen .w-box:hover{border-color:#C3CCF6}
+#p-wijzigingen .w-box .w-ico{font-size:1.05rem;display:block}
+#p-wijzigingen .w-box b{display:block;font-size:1.2rem;line-height:1.2}
+#p-wijzigingen .w-box span{font-size:.7rem;color:var(--w-grijs)}
+#p-wijzigingen .w-tabel{width:100%;border-collapse:collapse;font-size:.85rem;margin:.4rem 0}
+#p-wijzigingen .w-tabel th{text-align:left;font-size:.7rem;letter-spacing:.03em;text-transform:uppercase;color:var(--w-grijs);padding:0 .5rem .35rem 0;border-bottom:1px solid var(--w-lijn)}
+#p-wijzigingen .w-tabel td{padding:.45rem .5rem .45rem 0;border-bottom:1px solid var(--w-lijn);vertical-align:middle}
+#p-wijzigingen .w-oud{color:#A9B0B8;text-decoration:line-through}
+#p-wijzigingen .w-nw{color:#1F9D55;font-weight:600}
+#p-wijzigingen .w-pers{display:inline-flex;align-items:center;gap:.4rem}
+#p-wijzigingen .w-av{width:26px;height:26px;border-radius:50%;background:#EEF1FE;color:var(--w-blauw);font-size:.68rem;font-weight:700;display:inline-grid;place-items:center;object-fit:cover;flex:0 0 26px}
+#p-wijzigingen .w-mensen{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.5rem;margin-top:.4rem}
+#p-wijzigingen .w-mens{border:1px solid var(--w-lijn);border-radius:8px;padding:.55rem .65rem;background:#fff;display:flex;align-items:center;gap:.5rem}
+#p-wijzigingen .w-mens .nm{font-size:.85rem;font-weight:600;line-height:1.2}
+#p-wijzigingen .w-mens .rl{font-size:.7rem;color:var(--w-grijs)}
+#p-wijzigingen .w-mens .st{margin-left:auto}
+#p-wijzigingen .w-knop{font:inherit;font-size:.85rem;font-weight:600;padding:.45rem .8rem;border-radius:6px;border:1px solid var(--w-lijn);background:#fff;color:inherit;cursor:pointer}
+#p-wijzigingen .w-knop.klein{font-size:.75rem;padding:.2rem .55rem}
+#p-wijzigingen .w-knop.blauw{background:var(--w-blauw);border-color:var(--w-blauw);color:#fff}
+#p-wijzigingen .w-knop.groen{background:#1F9D55;border-color:#1F9D55;color:#fff}
+#p-wijzigingen .w-knop.terug{border-color:#F3C4B2;color:#FF4F17}
+#p-wijzigingen .w-knop:disabled{opacity:.45;cursor:default}
+#p-wijzigingen .w-knoppen{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem}
+#p-wijzigingen .w-veld{margin-bottom:.55rem}
+#p-wijzigingen .w-veld label{display:block;font-size:.72rem;color:var(--w-grijs);margin-bottom:.15rem}
+#p-wijzigingen .w-inv{font:inherit;font-size:.85rem;width:100%;padding:.4rem .5rem;border:1px solid var(--w-lijn);border-radius:6px;background:#fff}
+#p-wijzigingen .w-form{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+#p-wijzigingen .w-form .vol{grid-column:1/-1}
+@media(max-width:640px){#p-wijzigingen .w-form{grid-template-columns:1fr}}
+#p-wijzigingen .w-stap{display:flex;gap:.3rem;margin:.4rem 0 .7rem}
+#p-wijzigingen .w-stap i{height:4px;flex:1;border-radius:2px;background:#E9ECF0}
+#p-wijzigingen .w-stap i.aan{background:var(--w-blauw)}
+#p-wijzigingen .w-tijd{list-style:none;margin:0;padding:0 0 0 1.1rem;position:relative}
+#p-wijzigingen .w-tijd::before{content:"";position:absolute;left:4px;top:.4rem;bottom:.4rem;width:2px;background:var(--w-lijn)}
+#p-wijzigingen .w-tijd li{position:relative;padding:0 0 .9rem}
+#p-wijzigingen .w-tijd li::before{content:"";position:absolute;left:-1.1rem;top:.35rem;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--w-lijn)}
+#p-wijzigingen .w-tijd li.nu::before{border-color:var(--w-blauw);background:var(--w-blauw)}
+#p-wijzigingen .w-tijd .w-id{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:var(--w-grijs)}
+#p-wijzigingen .w-tijd .w-wat{font-weight:600;font-size:.9rem}
+#p-wijzigingen .w-balk{height:6px;border-radius:3px;background:#E9ECF0;overflow:hidden;margin:.35rem 0}
+#p-wijzigingen .w-balk i{display:block;height:100%;background:var(--w-blauw)}
+#p-wijzigingen .w-motor{background:#14171A;color:#D8DEE9;border-radius:8px;padding:.6rem .75rem;font-family:ui-monospace,Menlo,monospace;font-size:.72rem;white-space:pre-wrap;margin-top:.6rem}
+#p-wijzigingen .w-motor b{color:#FFE86B;font-family:inherit}
+#p-wijzigingen .w-leeg{font-size:.85rem;color:var(--w-grijs);padding:.4rem 0}
 
 </style>
 <script>
@@ -7025,216 +7060,312 @@ body{background:var(--np-vlak)}
 <script>
 /* ============================================================
    Wijzigingen — toegevoegde module (raakt geen bestaande code).
-   Leest DIM, NIV, CAP en S uit het portaal; schrijft alleen bij
-   "doorvoeren" naar S.niveaus en S.log, en roept dan bewaar()
-   en teken() aan. Eigen gegevens staan in S.wijz.
+   Leest DIM, NIV, CAP en S uit het portaal. Schrijft alleen bij
+   doorvoeren/terugdraaien naar S.niveaus en S.log, en roept dan
+   bewaar() en teken() aan. Eigen gegevens staan onder S.wijz.
    ============================================================ */
 (function(){
- function er(n){ try{ return typeof window[n]!=='undefined'?window[n]:eval(n); }catch(e){ return undefined; } }
- function W(){
-  if(typeof S==='undefined') return null;
-  if(!S.wijz) S.wijz={klad:null,voorstellen:[],versies:{},eigenaren:{},teller:117};
+ var TAB='wijzigingen', gekozen=null, wiz=null;
+ var FOTO={'sanne':'/assets/mensen/sanne-de-vries.jpg','mark':'/assets/mensen/mark-jansen.jpg',
+           'lisa':'/assets/mensen/lisa-van-dijk.jpg','arthur':'/arthur.jpg'};
+ var ICO={afd:'\u{1F465}',kpi:'\u{1F3AF}',proc:'\u2318',doc:'\u{1F4C4}',sys:'\u2B21',mens:'\u{1F464}'};
+
+ function W(){ if(typeof S==='undefined'||!S.niveaus) return null;
+  if(!S.wijz) S.wijz={};
   var w=S.wijz;
-  if(!w.versies) w.versies={}; if(!w.eigenaren) w.eigenaren={};
-  if(!w.voorstellen) w.voorstellen=[]; if(!w.teller) w.teller=117;
-  return w;
- }
+  if(!w.klad) w.klad=null;
+  if(!w.voorstellen) w.voorstellen=[];
+  if(!w.commits) w.commits=[];
+  if(!w.versies) w.versies={};
+  if(!w.eigenaren) w.eigenaren={};
+  if(!w.teller) w.teller=1284;
+  return w; }
  function bw(){ try{ if(typeof bewaar==='function') bewaar(); }catch(e){} }
- function hertekenPortaal(){ try{ if(typeof teken==='function') teken(); }catch(e){} }
+ function hert(){ try{ if(typeof teken==='function') teken(); }catch(e){} }
  function dims(){ return (typeof DIM!=='undefined')?DIM:[]; }
  function niv(){ return (typeof NIV!=='undefined')?NIV:['','','','','','']; }
- function dnaam(k){ var d=dims().filter(function(x){return x.k===k;})[0]; return d?d.n:k; }
- function wieBenIk(){ var e=document.getElementById('wie'); return (e&&e.textContent)||'jij'; }
- function nuDatum(){ return new Date().toISOString().slice(0,10); }
+ function dn(k){ var d=dims().filter(function(x){return x.k===k;})[0]; return d?d.n:k; }
+ function ik(){ var e=document.getElementById('wie'); return (e&&e.textContent&&e.textContent.trim())||'Jij'; }
+ function dat(){ var d=new Date(); return d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'})+' om '+
+   d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}); }
  function esc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+ function ini(n){ return String(n||'?').trim().split(/\s+/).map(function(x){return x[0];}).slice(0,2).join('').toUpperCase(); }
+ function avatar(n){ var l=String(n||'').toLowerCase(), f=null;
+  Object.keys(FOTO).forEach(function(k){ if(l.indexOf(k)>=0) f=FOTO[k]; });
+  return f?'<img class="w-av" src="'+f+'" alt="" onerror="this.replaceWith(document.createTextNode(\'\'))">'
+          :'<span class="w-av">'+esc(ini(n))+'</span>'; }
+ function pers(n,r){ return '<span class="w-pers">'+avatar(n)+'<span><span class="nm">'+esc(n||'niemand')+'</span>'
+   +(r?'<span class="rl" style="display:block">'+esc(r)+'</span>':'')+'</span></span>'; }
 
- /* impact: welke bouwstenen hangen aan dit onderdeel, en wat raakt dat */
- function impact(k){
-  var caps=[],afd={},proj={},kpi={},sys={};
-  if(typeof CAP!=='undefined'){
-   Object.keys(CAP).forEach(function(ck){
-    var c=CAP[ck]; if(!c||c.dim!==k) return;
-    caps.push(c.n||ck);
-    (c.afd||[]).forEach(function(x){afd[x]=1;});
-    (c.proj||[]).forEach(function(x){proj[x]=1;});
-    (c.kpi||[]).forEach(function(x){kpi[x]=1;});
-    (c.sys||[]).forEach(function(x){sys[x]=1;});
-   });
-  }
-  return {caps:caps,afd:Object.keys(afd),proj:Object.keys(proj),kpi:Object.keys(kpi),sys:Object.keys(sys)};
- }
- function impactVan(lijst){
-  var a={},p={},kp={},sy={},c=0;
+ function impact(k){ var caps=[],a={},p={},kp={},sy={},pr={};
+  if(typeof CAP!=='undefined') Object.keys(CAP).forEach(function(ck){ var c=CAP[ck];
+   if(!c||c.dim!==k) return; caps.push(c.n||ck);
+   (c.afd||[]).forEach(function(x){a[x]=1;}); (c.proj||[]).forEach(function(x){p[x]=1;});
+   (c.kpi||[]).forEach(function(x){kp[x]=1;}); (c.sys||[]).forEach(function(x){sy[x]=1;});
+   (c.proc||[]).forEach(function(x){pr[x]=1;}); });
+  return {caps:caps,afd:Object.keys(a),proj:Object.keys(p),kpi:Object.keys(kp),sys:Object.keys(sy),proc:Object.keys(pr)}; }
+ function impactVan(lijst){ var a={},p={},kp={},sy={},pr={},c=0;
   lijst.forEach(function(x){ var i=impact(x.k); c+=i.caps.length;
    i.afd.forEach(function(y){a[y]=1;}); i.proj.forEach(function(y){p[y]=1;});
-   i.kpi.forEach(function(y){kp[y]=1;}); i.sys.forEach(function(y){sy[y]=1;}); });
-  return {caps:c,afd:Object.keys(a),proj:Object.keys(p),kpi:Object.keys(kp),sys:Object.keys(sy)};
- }
- function versies(k){
-  var w=W(); if(!w.versies[k]) w.versies[k]=[{w:niv()[S.niveaus[k]]||'',wie:'',op:'bij de start',rdn:'Zoals het portaal begon'}];
-  return w.versies[k];
- }
+   i.kpi.forEach(function(y){kp[y]=1;}); i.sys.forEach(function(y){sy[y]=1;}); i.proc.forEach(function(y){pr[y]=1;}); });
+  return {caps:c,afd:Object.keys(a),proj:Object.keys(p),kpi:Object.keys(kp),sys:Object.keys(sy),proc:Object.keys(pr)}; }
+ function versies(k){ var w=W(); if(!w.versies[k]) w.versies[k]=[{w:niv()[S.niveaus[k]]||'',wie:'',op:'bij de start',rdn:'Zoals het portaal begon'}];
+  return w.versies[k]; }
 
- /* ---------- tekenen ---------- */
+ /* ---------------- tekenen ---------------- */
  function teken2(){
   var el=document.getElementById('p-wijzigingen'); if(!el) return;
-  var w=W(); if(!w){ el.innerHTML='<p class="sub">Nog even wachten…</p>'; return; }
-  var h='';
-  h+='<h2 class="pk2">Wijzigingen</h2>'
-   +'<p class="sub2">Verander hier iets aan je bedrijf zonder dat het meteen vastligt. Je maakt eerst een <b>klad</b> — alleen jij ziet dat — en pas als je het doorvoert verandert het portaal mee. Alles blijft bewaard en is terug te draaien.</p>';
+  var w=W(); if(!w){ el.innerHTML='<p class="w-sub">Even geduld…</p>'; return; }
+  var open=w.voorstellen.filter(function(p){return p.status==='open';}).length;
+  var h='<div class="w-kop"><h2 class="w-t">Wijzigingen</h2></div>'
+   +'<p class="w-sub">Van voorstel naar gecontroleerde doorvoering — met impact, goedkeuring, versiehistorie en terugdraaien. '
+   +'<b>'+open+'</b> openstaand · <b>'+w.commits.length+'</b> doorgevoerd.</p>'
+   +'<div class="w-pillen">'
+   +[['lijst','Wijzigingen'],['historie','Versiehistorie'],['samenhang','Samenhang'],['nieuw','+ Nieuwe wijziging']]
+     .map(function(t){return '<button class="w-pil" data-w-tab="'+t[0]+'" aria-selected="'+(TAB===t[0])+'">'+t[1]+'</button>';}).join('')
+   +'</div><div id="w-inhoud"></div>';
+  el.innerHTML=h;
+  Array.prototype.forEach.call(el.querySelectorAll('[data-w-tab]'),function(b){
+   b.addEventListener('click',function(){ TAB=b.dataset.wTab; if(TAB==='nieuw'&&!wiz) nieuwWiz(); teken2(); }); });
+  ({lijst:tekLijst,historie:tekHistorie,samenhang:tekSamenhang,nieuw:tekWiz})[TAB]();
+ }
 
-  /* klad */
-  if(!w.klad){
-   h+='<div class="kaart2"><div class="kop2"><h3>Nog niets onderhanden</h3>'
-    +'<button class="bg-knop blauw" id="wz-start">Nieuwe wijziging beginnen</button></div>'
-    +'<p class="sub2">Je kiest zo welke onderdelen je wilt aanpassen. Er verandert niets tot je op doorvoeren klikt.</p></div>';
-  } else {
-   var kl=w.klad;
-   h+='<div class="kaart2"><div class="kop2"><h3>Je klad</h3><span class="bg-pil">niet ingediend</span></div>'
-    +'<label class="sub2" style="display:block;margin-bottom:8px">Naam <input class="bg-inv" id="wz-naam" value="'+esc(kl.naam)+'"></label>'
-    +'<table class="bg-tab"><thead><tr><th>Onderdeel</th><th>Van</th><th>Naar</th><th>Eigenaar</th><th></th></tr></thead><tbody>';
-   if(!kl.w.length) h+='<tr><td colspan="5" class="sub2">Nog niets gekozen. Kies hieronder een onderdeel.</td></tr>';
-   kl.w.forEach(function(x,i){
-    h+='<tr><td>'+esc(dnaam(x.k))+'</td><td class="oud2">'+esc(x.van)+'</td><td class="nw2">'+esc(x.naar)+'</td>'
-     +'<td>'+esc(w.eigenaren[x.k]||'niemand ingevuld')+'</td>'
-     +'<td><button class="bg-knop klein" data-wz-weg="'+i+'">Ongedaan</button></td></tr>';
-   });
-   h+='</tbody></table>';
+ function tekLijst(){
+  var w=W(), doel=document.getElementById('w-inhoud');
+  if(gekozen===null&&w.voorstellen.length) gekozen=w.voorstellen[0].id;
+  var links='<div class="w-kaart"><div class="w-rij"><h3>Voorstellen</h3><div class="w-re">'
+   +'<button class="w-knop klein blauw" data-w-tab2="nieuw">+ Nieuw</button></div></div>'
+   +(w.klad?'<button class="w-vk" data-w-id="klad" aria-current="'+(gekozen==='klad')+'"><span class="w-tag">Je klad</span>'
+      +'<h4>'+esc(w.klad.naam)+'</h4><div class="w-meta"><span>'+w.klad.w.length+' onderdelen</span><span>niet ingediend</span></div></button>':'')
+   +(w.voorstellen.length?w.voorstellen.map(function(p){
+      var t=p.status==='open'?['blauw','Openstaand']:p.status==='door'?['groen','Doorgevoerd']:['grijs','Teruggedraaid'];
+      return '<button class="w-vk" data-w-id="'+p.id+'" aria-current="'+(gekozen===p.id)+'"><span class="w-tag '+t[0]+'">'+t[1]+'</span>'
+       +'<h4>'+esc(p.naam)+'</h4><div class="w-meta"><span>'+esc(p.door)+'</span><span>'+esc(p.op)+'</span><span>BG-'+p.id+'</span></div></button>';}).join('')
+     :'<p class="w-leeg">Nog geen voorstellen. Klik op <b>+ Nieuw</b> om er een te maken.</p>')
+   +'</div>';
+  doel.innerHTML='<div class="w-net"><div>'+links+'</div><div id="w-detail"></div></div>';
+  Array.prototype.forEach.call(doel.querySelectorAll('[data-w-id]'),function(b){
+   b.addEventListener('click',function(){ gekozen=b.dataset.wId==='klad'?'klad':parseInt(b.dataset.wId,10); tekLijst(); }); });
+  Array.prototype.forEach.call(doel.querySelectorAll('[data-w-tab2]'),function(b){
+   b.addEventListener('click',function(){ TAB='nieuw'; nieuwWiz(); teken2(); }); });
+  tekDetail();
+ }
 
-   h+='<div class="bg-kies"><span class="sub2">Onderdeel toevoegen of aanpassen:</span><div class="bg-rooster">';
-   dims().forEach(function(d){
-    var hui=S.niveaus[d.k], inKl=kl.w.filter(function(x){return x.k===d.k;})[0];
-    h+='<div class="bg-vak"><div class="bg-lb">'+esc(d.n)+'</div>'
-     +'<select class="bg-sel" data-wz-k="'+d.k+'">'
-     +[1,2,3,4,5].map(function(i){
-        var g=inKl?niv().indexOf(inKl.naar):hui;
-        return '<option value="'+i+'"'+(i===g?' selected':'')+'>'+i+' — '+esc(niv()[i])+'</option>';}).join('')
-     +'</select>'+(inKl?'<div class="bg-was">was '+esc(inKl.van)+'</div>':'')
-     +'<input class="bg-inv sm" data-wz-eig="'+d.k+'" placeholder="eigenaar (naam)" value="'+esc(w.eigenaren[d.k]||'')+'"></div>';
-   });
-   h+='</div></div>';
+ function tekDetail(){
+  var w=W(), d=document.getElementById('w-detail'); if(!d) return;
+  var p=(gekozen==='klad')?w.klad:w.voorstellen.filter(function(x){return x.id===gekozen;})[0];
+  if(!p){ d.innerHTML='<div class="w-kaart"><p class="w-leeg">Kies links een wijziging.</p></div>'; return; }
+  var isKlad=(gekozen==='klad'), im=impactVan(p.w);
+  var eig=p.eig||[], ja=eig.filter(function(e){return e.ok;}).length, klaar=eig.length?ja===eig.length:true;
+  var t=isKlad?['','Je klad — nog niet ingediend']
+        :p.status==='open'?['blauw','Openstaand']:p.status==='door'?['groen','Doorgevoerd']:['grijs','Teruggedraaid'];
 
-   if(kl.w.length){
-    var im=impactVan(kl.w);
-    h+='<div class="bg-imp">'
-     +[[im.caps,'Bouwstenen'],[im.afd.length,'Afdelingen'],[im.proj.length,'Acties'],[im.kpi.length,'Cijfers'],[im.sys.length,'Systemen']]
-       .map(function(t){return '<div class="bg-it"><div class="bg-g">'+t[0]+'</div><div class="bg-l">'+t[1]+'</div></div>';}).join('')
-     +'</div>'
-     +(im.afd.length?'<p class="sub2">Raakt: '+esc(im.afd.join(' · '))+'</p>':'');
-   }
-   h+='<label class="sub2" style="display:block;margin-top:10px">Waarom doe je dit? <textarea class="bg-inv" id="wz-waarom" rows="2" placeholder="Eén zin. Dit is het enige wat het portaal niet voor je kan bedenken.">'+esc(kl.waarom)+'</textarea></label>'
-    +'<div class="bg-knoppen"><button class="bg-knop blauw" id="wz-dien"'+(kl.w.length?'':' disabled')+'>Indienen ter goedkeuring</button>'
-    +'<button class="bg-knop" id="wz-weg">Klad weggooien</button></div></div>';
+  var h='<div class="w-kaart"><div class="w-rij"><div><span class="w-tag '+t[0]+'">'+t[1]+'</span>'
+   +'<h3 style="font-size:1.15rem;margin-top:.35rem">'+esc(p.naam)+'</h3>'
+   +'<div class="w-meta">'+(isKlad?'<span>alleen jij ziet dit</span>':'<span>'+esc(p.door)+'</span><span>'+esc(p.op)+'</span><span>BG-'+p.id+'</span>')+'</div>'
+   +'</div></div>';
+
+  h+='<h3 style="font-size:.9rem;margin-top:.6rem">1. Van &rarr; Naar</h3>';
+  p.w.forEach(function(x){
+   h+='<div class="w-vn"><div class="w-ba"><div class="w-kick">Huidig</div><div class="w-groot">'+esc(x.van)+'</div>'
+    +'<div class="w-meta">'+esc(dn(x.k))+'</div></div><div class="w-pijl">&rarr;</div>'
+    +'<div class="w-ba na"><div class="w-kick">Nieuw</div><div class="w-groot">'+esc(x.naar)+'</div>'
+    +'<div class="w-meta">'+esc(dn(x.k))+'</div></div></div>';
+  });
+  h+='<div class="w-callout"><b>Waarom deze wijziging?</b><br>'+(p.waarom?esc(p.waarom):'<i>nog niet ingevuld</i>')+'</div>';
+
+  h+='<h3 style="font-size:.9rem;margin-top:.7rem">2. Impact, automatisch berekend</h3><div class="w-imp">'
+   +[[ICO.afd,im.afd.length,'Afdelingen',im.afd],[ICO.kpi,im.kpi.length,'Cijfers',im.kpi],
+     [ICO.proc,im.proc.length,'Processen',im.proc],[ICO.doc,im.proj.length,'Acties',im.proj],
+     [ICO.sys,im.sys.length,'Systemen',im.sys],[ICO.mens,im.caps,'Bouwstenen',[]]]
+    .map(function(b,i){return '<button class="w-box" data-w-box="'+i+'"><span class="w-ico">'+b[0]+'</span><b>'+b[1]+'</b><span>'+b[2]+'</span></button>';}).join('')
+   +'</div><div id="w-boxuit" class="w-meta" style="min-height:1.1rem"></div>';
+
+  h+='<h3 style="font-size:.9rem;margin-top:.7rem">3. Wat er meegaat</h3>'
+   +'<table class="w-tabel"><thead><tr>'+(isKlad?'<th></th>':'')+'<th>Onderdeel</th><th>Van</th><th>Naar</th><th>Eigenaar</th>'+(isKlad?'<th></th>':'')+'</tr></thead><tbody>';
+  p.w.forEach(function(x,i){
+   var e=w.eigenaren[x.k]||'';
+   h+='<tr>'+(isKlad?'<td><input type="checkbox" checked disabled></td>':'')
+    +'<td><b>'+esc(dn(x.k))+'</b></td><td class="w-oud">'+esc(x.van)+'</td><td class="w-nw">'+esc(x.naar)+'</td>'
+    +'<td>'+pers(e||'niet ingevuld')+'</td>'
+    +(isKlad?'<td><button class="w-knop klein" data-w-weg="'+i+'">Ongedaan</button></td>':'')+'</tr>';
+  });
+  h+='</tbody></table>';
+  if(im.proj.length) h+='<p class="w-sub"><b>Acties die hieraan hangen:</b> '+esc(im.proj.join(' · '))+'</p>';
+
+  if(!isKlad){
+   h+='<h3 style="font-size:.9rem;margin-top:.7rem">4. Goedkeuring — '+ja+' van '+eig.length+'</h3><div class="w-mensen">'
+    +(eig.length?eig.map(function(e,i){
+       return '<div class="w-mens">'+avatar(e.naam)+'<div><div class="nm">'+esc(e.naam)+'</div><div class="rl">'+esc(e.rol||'eigenaar van een geraakt onderdeel')+'</div></div>'
+        +'<div class="st">'+(e.ok?'<span class="w-tag groen">Akkoord</span>'
+          :(p.status==='open'?'<button class="w-knop klein" data-w-ok="'+i+'">Akkoord</button>':'<span class="w-tag rood">Niet beoordeeld</span>'))+'</div></div>';}).join('')
+      :'<p class="w-leeg">Niemand ingevuld — dan hoeft er ook niemand te kijken.</p>')+'</div>';
   }
 
-  /* voorstellen */
-  w.voorstellen.forEach(function(p,pi){
-   var ja=p.eig.filter(function(e){return e.ok;}).length, klaar=ja===p.eig.length;
-   h+='<div class="kaart2"><div class="kop2"><h3>'+esc(p.naam)+'</h3>'
-    +'<span class="bg-pil '+(p.status==='open'?'open':p.status==='door'?'goed':'terug')+'">'
-    +(p.status==='open'?'Ter goedkeuring':p.status==='door'?'Doorgevoerd':'Teruggedraaid')+'</span></div>'
-    +'<p class="sub2">'+esc(p.door)+' · '+esc(p.op)+(p.waarom?' · '+esc(p.waarom):'')+'</p>'
-    +'<table class="bg-tab"><thead><tr><th>Onderdeel</th><th>Van</th><th>Naar</th></tr></thead><tbody>'
-    +p.w.map(function(x){return '<tr><td>'+esc(dnaam(x.k))+'</td><td class="oud2">'+esc(x.van)+'</td><td class="nw2">'+esc(x.naar)+'</td></tr>';}).join('')
-    +'</tbody></table>';
-   if(p.status==='open'){
-    h+='<div class="bg-eig"><span class="sub2">Wie moet akkoord geven — '+ja+' van '+p.eig.length+'</span>';
-    p.eig.forEach(function(e,ei){
-     h+='<label class="bg-check"><input type="checkbox" data-wz-ok="'+pi+'|'+ei+'"'+(e.ok?' checked':'')+'> '+esc(e.naam)+'</label>';
-    });
-    h+='</div><div class="bg-knoppen"><button class="bg-knop groen" data-wz-door="'+pi+'"'+(klaar?'':' disabled')+'>Voer wijziging door</button>'
-     +'<button class="bg-knop" data-wz-in="'+pi+'">Intrekken</button></div>'
-     +(klaar?'':'<p class="sub2">Zolang niet iedereen is afgevinkt verandert er niets in het portaal.</p>');
-   } else if(p.status==='door'){
-    h+='<div class="bg-knoppen"><button class="bg-knop terug" data-wz-terug="'+pi+'">Draai terug</button></div>';
-   }
-   h+='</div>';
-  });
+  h+='<div class="w-motor"><b>Onder de motorkap</b>\n'
+   +'impact_van('+(isKlad?'"klad"':'"BG-'+p.id+'"')+')\n'
+   +'  \u2192 objecten traverseren via de koppelingen\n'
+   +'  \u2192 '+im.afd.length+' afdelingen / '+im.kpi.length+' cijfers / '+im.proc.length+' processen / '+im.proj.length+' acties / '+im.sys.length+' systemen\n'
+   +(isKlad?'wacht op: indienen':(p.status==='open'?'wacht op: '+(eig.length-ja)+' goedkeuring(en)':'commit BG-'+p.id+' geschreven'))+'</div>';
 
-  /* geschiedenis per onderdeel */
-  h+='<div class="kaart2"><div class="kop2"><h3>Geschiedenis per onderdeel</h3></div>';
-  dims().forEach(function(d){
-   var vs=versies(d.k);
-   h+='<details class="bg-det"><summary><b>'+esc(d.n)+'</b> — nu '+esc(niv()[S.niveaus[d.k]]||'')+' · '+vs.length+' versie'+(vs.length===1?'':'s')+'</summary><ul class="bg-vl">'
-    +vs.map(function(v,i){return '<li'+(i===0?' class="nu"':'')+'><b>'+esc(v.w)+'</b><span class="sub2"> — '+esc(v.op)+(v.wie?' · '+esc(v.wie):'')+'</span>'
-      +(v.rdn?'<div class="bg-rdn">'+esc(v.rdn)+'</div>':'')+'</li>';}).join('')
-    +'</ul></details>';
-  });
+  h+='<div class="w-knoppen">';
+  if(isKlad) h+='<button class="w-knop blauw" id="w-dien"'+(p.w.length?'':' disabled')+'>Indienen ter goedkeuring</button>'
+   +'<button class="w-knop" id="w-weg">Klad weggooien</button>';
+  else if(p.status==='open') h+='<button class="w-knop groen" id="w-door"'+(klaar?'':' disabled')+'>Voer wijziging door</button>'
+   +'<button class="w-knop" id="w-in">Intrekken</button>';
+  else if(p.status==='door') h+='<button class="w-knop terug" id="w-terug">Draai wijziging terug</button>';
   h+='</div>';
-  el.innerHTML=h;
-  bind(el);
+  if(!isKlad&&p.status==='open'&&!klaar) h+='<p class="w-sub" style="margin-top:.5rem"><b>Waarom is de knop grijs?</b> '
+   +esc(eig.filter(function(e){return !e.ok;}).map(function(e){return e.naam;}).join(', '))+' moet'+(eig.length-ja>1?'en':'')+' nog beoordelen.</p>';
+  h+='</div>';
+  d.innerHTML=h;
+
+  var im2=[im.afd,im.kpi,im.proc,im.proj,im.sys,[]];
+  Array.prototype.forEach.call(d.querySelectorAll('[data-w-box]'),function(b){
+   b.addEventListener('click',function(){ var l=im2[parseInt(b.dataset.wBox,10)];
+    document.getElementById('w-boxuit').innerHTML=l.length?esc(l.join(' · ')):'Uit je eigen bouwstenen berekend.'; }); });
+  Array.prototype.forEach.call(d.querySelectorAll('[data-w-weg]'),function(b){
+   b.addEventListener('click',function(){ w.klad.w.splice(parseInt(b.dataset.wWeg,10),1); bw(); tekLijst(); }); });
+  Array.prototype.forEach.call(d.querySelectorAll('[data-w-ok]'),function(b){
+   b.addEventListener('click',function(){ p.eig[parseInt(b.dataset.wOk,10)].ok=true; bw(); tekLijst(); }); });
+  var q;
+  if((q=d.querySelector('#w-dien'))) q.addEventListener('click',dienIn);
+  if((q=d.querySelector('#w-weg'))) q.addEventListener('click',function(){ w.klad=null; gekozen=null; bw(); tekLijst(); });
+  if((q=d.querySelector('#w-door'))) q.addEventListener('click',function(){ voerDoor(p); });
+  if((q=d.querySelector('#w-in'))) q.addEventListener('click',function(){
+   w.voorstellen=w.voorstellen.filter(function(x){return x!==p;}); gekozen=null; bw(); tekLijst(); });
+  if((q=d.querySelector('#w-terug'))) q.addEventListener('click',function(){ draaiTerug(p); });
  }
 
- function bind(el){
+ /* ---------------- versiehistorie ---------------- */
+ function tekHistorie(){
   var w=W();
-  var b=el.querySelector('#wz-start');
-  if(b) b.addEventListener('click',function(){
-   w.klad={naam:'Wijziging van '+wieBenIk(),w:[],waarom:''}; bw(); teken2(); });
-  var nm=el.querySelector('#wz-naam');
-  if(nm) nm.addEventListener('input',function(){ w.klad.naam=nm.value; bw(); });
-  var wa=el.querySelector('#wz-waarom');
-  if(wa) wa.addEventListener('input',function(){ w.klad.waarom=wa.value; bw(); });
-  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-k]'),function(s){
-   s.addEventListener('change',function(){
-    var k=s.dataset.wzK, naar=niv()[parseInt(s.value,10)], van=niv()[S.niveaus[k]];
-    var i=-1; w.klad.w.forEach(function(x,j){ if(x.k===k) i=j; });
-    if(naar===van){ if(i>=0) w.klad.w.splice(i,1); }
-    else if(i>=0) w.klad.w[i].naar=naar;
-    else w.klad.w.push({k:k,van:van,naar:naar});
-    bw(); teken2(); }); });
-  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-eig]'),function(i){
-   i.addEventListener('change',function(){ w.eigenaren[i.dataset.wzEig]=i.value.trim(); bw(); }); });
-  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-weg]'),function(x){
-   x.addEventListener('click',function(){ w.klad.w.splice(parseInt(x.dataset.wzWeg,10),1); bw(); teken2(); }); });
-  var dg=el.querySelector('#wz-weg');
-  if(dg) dg.addEventListener('click',function(){ w.klad=null; bw(); teken2(); });
-  var di=el.querySelector('#wz-dien');
-  if(di) di.addEventListener('click',function(){
-   var kl=w.klad, namen={};
-   kl.w.forEach(function(x){ var n=(w.eigenaren[x.k]||'').trim(); if(n) namen[n]=1; });
-   var eig=Object.keys(namen).map(function(n){return {naam:n,ok:false};});
-   if(!eig.length) eig=[{naam:wieBenIk()+' (jijzelf)',ok:true}];
-   w.teller++;
-   w.voorstellen.unshift({id:w.teller,naam:kl.naam,door:wieBenIk(),op:nuDatum(),waarom:kl.waarom,w:kl.w,eig:eig,status:'open'});
-   w.klad=null; bw(); teken2(); });
-  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-ok]'),function(c){
-   c.addEventListener('change',function(){ var p=c.dataset.wzOk.split('|');
-    w.voorstellen[+p[0]].eig[+p[1]].ok=c.checked; bw(); teken2(); }); });
-  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-in]'),function(x){
-   x.addEventListener('click',function(){ w.voorstellen.splice(parseInt(x.dataset.wzIn,10),1); bw(); teken2(); }); });
-  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-door]'),function(x){
-   x.addEventListener('click',function(){ voerDoor2(w.voorstellen[parseInt(x.dataset.wzDoor,10)]); }); });
-  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-terug]'),function(x){
-   x.addEventListener('click',function(){ terug2(w.voorstellen[parseInt(x.dataset.wzTerug,10)]); }); });
+  var h='<div class="w-kaart"><div class="w-rij"><h3>Versiehistorie en audit trail</h3></div>'
+   +'<p class="w-sub">Elke doorvoering bewaart de oude én de nieuwe toestand, de reden, wie het deed en wat het raakte.</p>'
+   +(w.commits.length?'<ul class="w-tijd">'+w.commits.map(function(c,i){
+      return '<li'+(i===0?' class="nu"':'')+'><div class="w-id">BG-'+c.id+' · '+esc(c.op)+'</div>'
+       +'<div class="w-wat">'+esc(c.naam)+'</div>'
+       +'<div class="w-meta">'+pers(c.door)+'<span class="w-tag '+(c.terug?'grijs':'groen')+'">'+(c.terug?'Teruggedraaid':'Gecommit')+'</span></div>'
+       +'<div class="w-meta">'+esc(c.regels.join(' · '))+'</div>'
+       +(c.waarom?'<div class="w-callout" style="margin:.35rem 0 0">'+esc(c.waarom)+'</div>':'')+'</li>';}).join('')+'</ul>'
+     :'<p class="w-leeg">Nog niets doorgevoerd.</p>')+'</div>'
+   +'<div class="w-kaart"><div class="w-rij"><h3>Geschiedenis per onderdeel</h3></div>'
+   +dims().map(function(d){ var vs=versies(d.k);
+      return '<details style="border-bottom:1px solid var(--w-lijn);padding:.4rem 0"><summary style="cursor:pointer;font-size:.88rem">'
+       +'<b>'+esc(d.n)+'</b> — nu '+esc(niv()[S.niveaus[d.k]]||'')+' · '+vs.length+' versie'+(vs.length===1?'':'s')+'</summary>'
+       +'<ul class="w-tijd" style="margin-top:.5rem">'+vs.map(function(v,i){
+          return '<li'+(i===0?' class="nu"':'')+'><div class="w-wat">'+esc(v.w)+'</div>'
+           +'<div class="w-meta"><span>'+esc(v.op)+'</span>'+(v.wie?pers(v.wie):'')+'</div>'
+           +(v.rdn?'<div class="w-meta">'+esc(v.rdn)+'</div>':'')+'</li>';}).join('')+'</ul></details>';}).join('')
+   +'</div>';
+  document.getElementById('w-inhoud').innerHTML=h;
  }
 
- function voerDoor2(p){
+ /* ---------------- samenhang ---------------- */
+ function tekSamenhang(){
+  var rijen=dims().map(function(d){ var i=impact(d.k);
+   return {n:d.n,k:d.k,tot:i.afd.length+i.kpi.length+i.proc.length+i.proj.length+i.sys.length,i:i}; })
+   .sort(function(a,b){return b.tot-a.tot;});
+  var max=Math.max(1,rijen[0]?rijen[0].tot:1);
+  document.getElementById('w-inhoud').innerHTML=
+   '<div class="w-kaart"><div class="w-rij"><h3>Samenhang in je bedrijfsgeheugen</h3></div>'
+   +'<p class="w-sub">Hoeveel hangt er aan elk onderdeel? Hoe langer de balk, hoe zwaarder een wijziging weegt — en hoe meer mensen er dus naar moeten kijken.</p>'
+   +rijen.map(function(r){
+     return '<div style="padding:.5rem 0;border-bottom:1px solid var(--w-lijn)">'
+      +'<div class="w-rij" style="margin-bottom:.2rem"><b style="font-size:.9rem">'+esc(r.n)+'</b>'
+      +'<div class="w-re"><span class="w-tag">'+niv()[S.niveaus[r.k]]+'</span></div></div>'
+      +'<div class="w-balk"><i style="width:'+Math.round(r.tot/max*100)+'%"></i></div>'
+      +'<div class="w-meta"><span>'+ICO.afd+' '+r.i.afd.length+' afdelingen</span><span>'+ICO.kpi+' '+r.i.kpi.length+' cijfers</span>'
+      +'<span>'+ICO.proc+' '+r.i.proc.length+' processen</span><span>'+ICO.doc+' '+r.i.proj.length+' acties</span>'
+      +'<span>'+ICO.sys+' '+r.i.sys.length+' systemen</span></div></div>';}).join('')
+   +'</div>';
+ }
+
+ /* ---------------- nieuwe wijziging ---------------- */
+ function nieuwWiz(){ wiz={k:dims()[0]?dims()[0].k:'',naar:2,waarom:'',eig:'',datum:''}; }
+ function tekWiz(){
+  if(!wiz) nieuwWiz();
+  var hui=S.niveaus[wiz.k], im=impact(wiz.k);
+  var vol=(wiz.k?1:0)+(niv()[wiz.naar]!==niv()[hui]?1:0)+(wiz.waarom?1:0)+(wiz.eig?1:0);
+  document.getElementById('w-inhoud').innerHTML=
+   '<div class="w-kaart"><div class="w-rij"><h3>Nieuwe wijziging</h3></div>'
+   +'<p class="w-sub">Niets geldt voordat het is goedgekeurd en doorgevoerd.</p>'
+   +'<div class="w-stap">'+[0,1,2,3].map(function(i){return '<i class="'+(i<vol?'aan':'')+'"></i>';}).join('')+'</div>'
+   +'<div class="w-form">'
+   +'<div class="w-veld"><label>Welk onderdeel wil je wijzigen?</label><select class="w-inv" id="wz-k">'
+     +dims().map(function(d){return '<option value="'+d.k+'"'+(d.k===wiz.k?' selected':'')+'>'+esc(d.n)+'</option>';}).join('')+'</select></div>'
+   +'<div class="w-veld"><label>Nieuwe waarde</label><select class="w-inv" id="wz-n">'
+     +[1,2,3,4,5].map(function(i){return '<option value="'+i+'"'+(i===wiz.naar?' selected':'')+'>'+i+' — '+esc(niv()[i])+'</option>';}).join('')+'</select></div>'
+   +'<div class="w-veld"><label>Huidige waarde</label><input class="w-inv" value="'+esc(niv()[hui])+'" readonly></div>'
+   +'<div class="w-veld"><label>Wie is de eigenaar? (die moet akkoord geven)</label><input class="w-inv" id="wz-e" value="'+esc(wiz.eig)+'" placeholder="naam"></div>'
+   +'<div class="w-veld vol"><label>Waarom deze wijziging?</label><textarea class="w-inv" id="wz-r" rows="2" placeholder="Eén zin. Dit is het enige wat het portaal niet voor je kan bedenken.">'+esc(wiz.waarom)+'</textarea></div>'
+   +'<div class="w-veld"><label>Ingangsdatum (mag leeg)</label><input class="w-inv" type="date" id="wz-d" value="'+esc(wiz.datum)+'"></div>'
+   +'</div>'
+   +'<div class="w-imp" style="margin-top:.7rem">'
+   +[[ICO.afd,im.afd.length,'Afdelingen'],[ICO.kpi,im.kpi.length,'Cijfers'],[ICO.proc,im.proc.length,'Processen'],
+     [ICO.doc,im.proj.length,'Acties'],[ICO.sys,im.sys.length,'Systemen'],[ICO.mens,im.caps.length,'Bouwstenen']]
+     .map(function(b){return '<div class="w-box"><span class="w-ico">'+b[0]+'</span><b>'+b[1]+'</b><span>'+b[2]+'</span></div>';}).join('')
+   +'</div>'
+   +'<div class="w-knoppen"><button class="w-knop blauw" id="wz-voeg">Aan mijn klad toevoegen</button>'
+   +'<button class="w-knop" id="wz-af">Annuleren</button></div></div>';
+  var q=function(i){return document.getElementById(i);};
+  q('wz-k').addEventListener('change',function(){ wiz.k=this.value; wiz.naar=S.niveaus[wiz.k]; tekWiz(); });
+  q('wz-n').addEventListener('change',function(){ wiz.naar=parseInt(this.value,10); tekWiz(); });
+  q('wz-e').addEventListener('input',function(){ wiz.eig=this.value; });
+  q('wz-r').addEventListener('input',function(){ wiz.waarom=this.value; });
+  q('wz-d').addEventListener('change',function(){ wiz.datum=this.value; });
+  q('wz-af').addEventListener('click',function(){ wiz=null; TAB='lijst'; teken2(); });
+  q('wz-voeg').addEventListener('click',function(){
+   var w=W(), van=niv()[S.niveaus[wiz.k]], naar=niv()[wiz.naar];
+   if(naar===van){ return; }
+   if(!w.klad) w.klad={naam:'Wijziging van '+ik(),w:[],waarom:''};
+   var i=-1; w.klad.w.forEach(function(x,j){ if(x.k===wiz.k) i=j; });
+   if(i>=0) w.klad.w[i].naar=naar; else w.klad.w.push({k:wiz.k,van:van,naar:naar,datum:wiz.datum});
+   if(wiz.eig) w.eigenaren[wiz.k]=wiz.eig;
+   if(wiz.waarom) w.klad.waarom=(w.klad.waarom?w.klad.waarom+' ':'')+wiz.waarom;
+   wiz=null; gekozen='klad'; TAB='lijst'; bw(); teken2(); });
+ }
+
+ /* ---------------- acties ---------------- */
+ function dienIn(){
+  var w=W(), kl=w.klad, namen={};
+  kl.w.forEach(function(x){ var n=(w.eigenaren[x.k]||'').trim(); if(n) namen[n]=(namen[n]||0)+1; });
+  var eig=Object.keys(namen).map(function(n){return {naam:n,rol:namen[n]+' onderdeel'+(namen[n]===1?'':'en'),ok:false};});
+  if(!eig.length) eig=[{naam:ik(),rol:'jijzelf',ok:true}];
+  w.teller++;
+  w.voorstellen.unshift({id:w.teller,naam:kl.naam,door:ik(),op:dat(),waarom:kl.waarom,w:kl.w,eig:eig,status:'open'});
+  w.klad=null; gekozen=w.teller; bw(); teken2();
+ }
+ function voerDoor(p){
   var w=W();
-  p.w.forEach(function(x){
-   var n=niv().indexOf(x.naar); if(n>0){ S.niveaus[x.k]=n;
-    versies(x.k).unshift({w:x.naar,wie:p.door,op:nuDatum(),rdn:p.waarom||('Voorstel '+p.id)}); }
-  });
+  p.w.forEach(function(x){ var n=niv().indexOf(x.naar); if(n>0){ S.niveaus[x.k]=n;
+   versies(x.k).unshift({w:x.naar,wie:p.door,op:dat(),rdn:p.waarom||('Voorstel BG-'+p.id)}); } });
   p.status='door';
+  var im=impactVan(p.w);
+  w.commits.unshift({id:p.id,naam:p.naam,door:p.door,op:dat(),waarom:p.waarom,terug:false,
+   regels:p.w.map(function(x){return dn(x.k)+': '+x.van+' \u2192 '+x.naar;})
+     .concat([im.afd.length+' afdelingen',im.kpi.length+' cijfers',im.proj.length+' acties'])});
   S.log=S.log||[];
-  S.log.unshift({datum:nuDatum(),wat:'Wijziging doorgevoerd: '+p.naam+' — '+p.w.length+' onderdeel'+(p.w.length===1?'':'en'),
-                 door:p.door,raakt:p.w.map(function(x){return dnaam(x.k);}).join(', ')});
-  bw(); hertekenPortaal(); teken2();
+  S.log.unshift({datum:new Date().toISOString().slice(0,10),
+   wat:'Wijziging doorgevoerd (BG-'+p.id+'): '+p.naam,door:p.door,
+   raakt:p.w.map(function(x){return dn(x.k);}).join(', ')});
+  bw(); hert(); teken2();
  }
- function terug2(p){
+ function draaiTerug(p){
   var w=W();
-  p.w.forEach(function(x){
-   var n=niv().indexOf(x.van); if(n>0){ S.niveaus[x.k]=n;
-    versies(x.k).unshift({w:x.van,wie:wieBenIk(),op:nuDatum(),rdn:'Teruggedraaid'}); }
-  });
+  p.w.forEach(function(x){ var n=niv().indexOf(x.van); if(n>0){ S.niveaus[x.k]=n;
+   versies(x.k).unshift({w:x.van,wie:ik(),op:dat(),rdn:'Teruggedraaid (BG-'+p.id+')'}); } });
   p.status='terug';
+  w.commits.unshift({id:p.id,naam:'Teruggedraaid: '+p.naam,door:ik(),op:dat(),waarom:'',terug:true,
+   regels:p.w.map(function(x){return dn(x.k)+': '+x.naar+' \u2192 '+x.van;})});
   S.log=S.log||[];
-  S.log.unshift({datum:nuDatum(),wat:'Wijziging teruggedraaid: '+p.naam,door:wieBenIk(),raakt:''});
-  bw(); hertekenPortaal(); teken2();
+  S.log.unshift({datum:new Date().toISOString().slice(0,10),
+   wat:'Wijziging teruggedraaid (BG-'+p.id+'): '+p.naam,door:ik(),raakt:''});
+  bw(); hert(); teken2();
  }
 
  function start(){
-  var t=document.querySelector('.tab[data-p="wijzigingen"]');
-  var p=document.getElementById('p-wijzigingen');
+  var t=document.querySelector('.tab[data-p="wijzigingen"]'), p=document.getElementById('p-wijzigingen');
   if(!t||!p||typeof S==='undefined'||!S.niveaus){ setTimeout(start,400); return; }
   t.addEventListener('click',teken2);
   teken2();
