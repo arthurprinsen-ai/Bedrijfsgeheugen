@@ -23,6 +23,12 @@
   force = true
 
 [[redirects]]
+  from = "/klantportaal-demo.html"
+  to = "/klantportaal-demo"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/product.html"
   to = "/product"
   status = 301
