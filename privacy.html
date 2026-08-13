@@ -105,15 +105,26 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Privacyverklaring","item":"https://www.bedrijfsgeheugen.nl/privacy"}]}</script>
 <meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/banner-li-bedrijf.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/assets/kop.css">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Bedrijfsgeheugen">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/privacy">
+<meta property="og:title" content="Privacyverklaring — Bedrijfsgeheugen">
+<meta property="og:description" content="Hoe Bedrijfsgeheugen omgaat met je gegevens: wat we verzamelen, waarom, hoe lang we het bewaren en welke rechten je hebt.">
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Privacyverklaring — Bedrijfsgeheugen">
+<meta name="twitter:description" content="Hoe Bedrijfsgeheugen omgaat met je gegevens: wat we verzamelen, waarom, hoe lang we het bewaren en welke rechten je hebt.">
+<meta name="twitter:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
 </head>
 <body>
-<div class="voortgang" id="vg"></div>
-<nav id="kop"><div class="wrap nb">
-  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
-    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
-    <span class="woord">Bedrijfs<b>geheugen</b></span>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+  <a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
+    <span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span>
   </a>
-  <div class="nl2">
+  <div class="bgkop-links">
     <a href="/expertises">Expertises</a>
     <a href="/product">Product</a>
     <a href="/wijzigingen">Wijzigingen</a>
@@ -121,19 +132,21 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <a href="/blog/">Blog</a>
     <a href="/over-ons">Over ons</a>
   </div>
-  <a class="ncta" href="/contact">Plan een kennismaking</a>
-  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  <a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+  <button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
 </div>
-<div class="mobmenu" id="mobMenu" hidden>
+<div class="bgkop-mob" id="bgkopMob" hidden>
   <a href="/expertises">Expertises</a>
   <a href="/product">Product</a>
-    <a href="/wijzigingen">Wijzigingen</a>
+  <a href="/wijzigingen">Wijzigingen</a>
   <a href="/hoe-het-werkt">Hoe het werkt</a>
-  <a href="/systemen-koppelen">Systemen koppelen</a>
   <a href="/blog/">Blog</a>
   <a href="/over-ons">Over ons</a>
-  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+  <a href="/frisse-blik">Plan een Frisse blik &rarr;</a>
 </div></nav>
+
+<div class="voortgang" id="vg"></div>
+
 <main>
 <header class="kop"><div class="wrap">
   <span class="eyebrow">Privacy</span>
@@ -162,31 +175,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 </div></section>
 </main>
 <style>.pv h2{font-size:1.25rem;margin:1.8rem 0 .5rem}.pv p{color:#3C424A;margin-bottom:.7rem}.pv a{color:var(--blauw)}</style>
-<footer>
-<div class="wrap">
-  <div class="fg">
-    <div>
-      <a class="logo voet" href="/" aria-label="Bedrijfsgeheugen.nl">
-        <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
-        <span class="woord">Bedrijfs<b>geheugen</b></span>
-      </a>
-      <p style="font-size:.86rem;margin-top:.7rem;line-height:1.6">Jouw bedrijf. Jouw kennis. En voor altijd. Bedrijfsgeheugen helpt organisaties hun kennis te borgen, veilig te verrijken en direct beschikbaar te maken.</p>
-    </div>
-    <div><h4>Product</h4>
-      <a href="/connect">Connect</a><a href="/hoe-het-werkt">Hoe het werkt</a><a href="/expertises">Expertises</a><a href="/systemen-koppelen">Systemen koppelen</a><a href="/afas-koppeling">AFAS koppeling</a></div>
-    <div><h4>Resources</h4>
-      <a href="/zelfscan">Gratis zelfscan</a><a href="/frisse-blik">Frisse blik</a><a href="/blog/">Blog</a></div>
-    <div><h4>Over ons</h4>
-      <a href="/over-ons">Over Arthur</a><a href="/voor-mkb">Voor mkb-bedrijven</a><a href="/investeerders-ma">Investeerders &amp; M&amp;A</a><a href="/due-diligence">Due diligence</a><a href="/hoe-het-werkt">Werkwijze</a><a href="/contact">Contact</a></div>
-    <div><h4>Contact</h4>
-      <a href="tel:+31627483345">06 - 27 48 33 45</a>
-      <a href="mailto:info@bedrijfsgeheugen.nl">info@bedrijfsgeheugen.nl</a>
-      <a href="https://wa.me/31627483345" target="_blank" rel="noopener">WhatsApp →</a>
-      <a href="/privacy">Privacyverklaring</a></div>
-  </div>
-  <div class="fb"><span>© <span class="jr">2026</span> Bedrijfsgeheugen · Aanpakken zonder aanmodderen.</span><span>Den Haag · info@bedrijfsgeheugen.nl</span></div>
-</div>
-</footer>
+
 <a class="wa" href="https://wa.me/31627483345?text=Hoi%20Arthur%2C%20ik%20heb%20een%20vraag%20over%20Bedrijfsgeheugen" target="_blank" rel="noopener" aria-label="App Arthur via WhatsApp">
 <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4 29l7.3-2.3c1.9 1 4 1.6 6.2 1.6h.5c6.6 0 12-5.3 12-11.9C30 8.3 24.6 3 16 3zm7 16.9c-.3.8-1.7 1.6-2.4 1.7-.6.1-1.4.2-2.3-.1-.5-.2-1.2-.4-2.1-.8-3.7-1.6-6.1-5.3-6.3-5.5-.2-.2-1.5-2-1.5-3.8s1-2.7 1.3-3.1c.3-.4.7-.5 1-.5h.7c.2 0 .5-.1.8.6.3.8 1 2.6 1.1 2.8.1.2.2.4 0 .7-.1.3-.2.4-.4.7l-.6.7c-.2.2-.4.4-.2.8.2.4 1 1.7 2.2 2.7 1.5 1.3 2.8 1.7 3.2 1.9.4.2.6.2.9-.1.2-.3 1-1.2 1.3-1.6.3-.4.5-.3.9-.2.4.1 2.2 1 2.6 1.2.4.2.6.3.7.5.1.2.1.9-.2 1.7z"/></svg><span class="tx">App Arthur</span></a>
 <script>
@@ -234,5 +223,15 @@ var j=document.querySelectorAll('.jr');var y=new Date().getFullYear();j.forEach(
 })();
 </script>
 <script src="/assets/stijl.js" defer></script>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <span>&copy; 2026 Bedrijfsgeheugen &mdash; Aanpakken zonder aanmodderen.</span>
+  <span class="bgvoet-links"><a href="/product">Product</a><a href="/wijzigingen">Wijzigingen</a><a href="/hoe-het-werkt">Hoe het werkt</a><a href="/frisse-blik">Frisse blik</a><a href="/blog/">Blog</a><a href="/over-ons">Over ons</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a></span>
+</div></footer>
+<script>
+(function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');
+if(k&&m){k.addEventListener('click',function(){var dicht=m.hasAttribute('hidden');
+if(dicht){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}
+k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
+</script>
 </body>
 </html>

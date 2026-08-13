@@ -19,18 +19,20 @@
 </script><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Pagina niet gevonden | Bedrijfsgeheugen</title>
+<meta name="description" content="Deze pagina bestaat niet meer of is verplaatst. Ga terug naar de homepage of bekijk het product, de blog of de Frisse blik.">
 <link rel="stylesheet" href="/assets/stijl.css">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Instrument+Sans:wght@400;600&family=Caveat:wght@600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="/favicon.png">
+<link rel="stylesheet" href="/assets/kop.css">
+<meta name="theme-color" content="#2742D6">
 </head><body>
-<div class="voortgang" id="vg"></div>
-<nav id="kop"><div class="wrap nb">
-  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
-    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
-    <span class="woord">Bedrijfs<b>geheugen</b></span>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+  <a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
+    <span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span>
   </a>
-  <div class="nl2">
+  <div class="bgkop-links">
     <a href="/expertises">Expertises</a>
     <a href="/product">Product</a>
     <a href="/wijzigingen">Wijzigingen</a>
@@ -38,19 +40,21 @@
     <a href="/blog/">Blog</a>
     <a href="/over-ons">Over ons</a>
   </div>
-  <a class="ncta" href="/contact">Plan een kennismaking</a>
-  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  <a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+  <button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
 </div>
-<div class="mobmenu" id="mobMenu" hidden>
+<div class="bgkop-mob" id="bgkopMob" hidden>
   <a href="/expertises">Expertises</a>
   <a href="/product">Product</a>
-    <a href="/wijzigingen">Wijzigingen</a>
+  <a href="/wijzigingen">Wijzigingen</a>
   <a href="/hoe-het-werkt">Hoe het werkt</a>
-  <a href="/systemen-koppelen">Systemen koppelen</a>
   <a href="/blog/">Blog</a>
   <a href="/over-ons">Over ons</a>
-  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+  <a href="/frisse-blik">Plan een Frisse blik &rarr;</a>
 </div></nav>
+
+<div class="voortgang" id="vg"></div>
+
 <main class="wrap" style="padding:5rem 1.25rem;max-width:44rem">
   <span class="pil">Foutje</span>
   <h1 style="margin:1rem 0 .5rem">Deze pagina staat <span class="mark">nergens</span>.</h1>
@@ -107,5 +111,15 @@
     if(stored!=='granted'&&stored!=='denied'){show();}
   });
 })();
+</script>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <span>&copy; 2026 Bedrijfsgeheugen &mdash; Aanpakken zonder aanmodderen.</span>
+  <span class="bgvoet-links"><a href="/product">Product</a><a href="/wijzigingen">Wijzigingen</a><a href="/hoe-het-werkt">Hoe het werkt</a><a href="/frisse-blik">Frisse blik</a><a href="/blog/">Blog</a><a href="/over-ons">Over ons</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a></span>
+</div></footer>
+<script>
+(function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');
+if(k&&m){k.addEventListener('click',function(){var dicht=m.hasAttribute('hidden');
+if(dicht){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}
+k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
 </script>
 </body></html>

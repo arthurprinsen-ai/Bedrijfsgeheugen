@@ -263,12 +263,47 @@ h1{
   .ripple .knoop{opacity:1}
 }
 </style>
+<link rel="stylesheet" href="/assets/kop.css">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Bedrijfsgeheugen">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/wijzigingen-uitgelegd">
+<meta property="og:title" content="Zo werkt een wijziging, stap voor stap | Bedrijfsgeheugen">
+<meta property="og:description" content="Stap voor stap: hoe je in Bedrijfsgeheugen een wijziging voorstelt, ziet wat die raakt, laat goedkeuren, doorvoert en weer terugdraait.">
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Zo werkt een wijziging, stap voor stap | Bedrijfsgeheugen">
+<meta name="twitter:description" content="Stap voor stap: hoe je in Bedrijfsgeheugen een wijziging voorstelt, ziet wat die raakt, laat goedkeuren, doorvoert en weer terugdraait.">
+<meta name="twitter:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<meta name="theme-color" content="#2742D6">
 </head>
 <body>
-<div class="sitebalk">
-  <a href="/"><img src="/assets/merk/logo-merk.png" alt="" width="30" height="30"><span class="merk">Bedrijfs<em>geheugen</em></span></a>
-  <a class="terug" href="/wijzigingen">&larr; Terug naar Wijzigingen</a>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+  <a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
+    <span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span>
+  </a>
+  <div class="bgkop-links">
+    <a href="/expertises">Expertises</a>
+    <a href="/product">Product</a>
+    <a href="/wijzigingen">Wijzigingen</a>
+    <a href="/hoe-het-werkt">Hoe het werkt</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+  <button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
 </div>
+<div class="bgkop-mob" id="bgkopMob" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/product">Product</a>
+  <a href="/wijzigingen">Wijzigingen</a>
+  <a href="/hoe-het-werkt">Hoe het werkt</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+</div></nav>
+
 <div class="wrap">
 
   <div class="kop">
@@ -725,6 +760,16 @@ h1{
 
   toon(0);
 })();
+</script>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <span>&copy; 2026 Bedrijfsgeheugen &mdash; Aanpakken zonder aanmodderen.</span>
+  <span class="bgvoet-links"><a href="/product">Product</a><a href="/wijzigingen">Wijzigingen</a><a href="/hoe-het-werkt">Hoe het werkt</a><a href="/frisse-blik">Frisse blik</a><a href="/blog/">Blog</a><a href="/over-ons">Over ons</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a></span>
+</div></footer>
+<script>
+(function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');
+if(k&&m){k.addEventListener('click',function(){var dicht=m.hasAttribute('hidden');
+if(dicht){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}
+k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
 </script>
 </body>
 </html>

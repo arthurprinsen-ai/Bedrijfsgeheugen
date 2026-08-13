@@ -172,14 +172,15 @@ footer a{color:#fff}
 @media(max-width:620px){.impact,.stappen,.k4,.netwerk{grid-template-columns:1fr}}
 </style>
 
+<link rel="stylesheet" href="/assets/kop.css">
 </head>
 <body>
-<nav id="kop"><div class="wrap nb">
-  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+  <a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
     <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
-    <span>Bedrijfs<b>geheugen</b><span class="payoff">Aanpakken zonder aanmodderen.</span></span>
+    <span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span>
   </a>
-  <div class="nl2">
+  <div class="bgkop-links">
     <a href="/expertises">Expertises</a>
     <a href="/product">Product</a>
     <a href="/wijzigingen" aria-current="page">Wijzigingen</a>
@@ -187,19 +188,20 @@ footer a{color:#fff}
     <a href="/blog/">Blog</a>
     <a href="/over-ons">Over ons</a>
   </div>
-  <a class="ncta" href="/frisse-blik">Plan een Frisse blik →</a>
-  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+  <a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+  <button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
 </div>
-<div class="mobmenu" id="mobMenu" hidden>
+<div class="bgkop-mob" id="bgkopMob" hidden>
   <a href="/expertises">Expertises</a>
   <a href="/product">Product</a>
   <a href="/wijzigingen" aria-current="page">Wijzigingen</a>
   <a href="/hoe-het-werkt">Hoe het werkt</a>
-  <a href="/systemen-koppelen">Systemen koppelen</a>
   <a href="/blog/">Blog</a>
   <a href="/over-ons">Over ons</a>
-  <a href="/frisse-blik" class="mm-cta">Plan een Frisse blik</a>
+  <a href="/frisse-blik">Plan een Frisse blik &rarr;</a>
 </div></nav>
+
+
 <main>
 <div class="wrap">
   <nav class="kruim" aria-label="Kruimelpad"><a href="/">Home</a><span>&rsaquo;</span><a href="/hoe-het-werkt">Hoe het werkt</a><span>&rsaquo;</span><span>Wijzigingen</span></nav>
@@ -383,10 +385,7 @@ footer a{color:#fff}
   </div>
 </div></section>
 </main>
-<footer><div class="wrap">
-  <span>&copy; 2026 Bedrijfsgeheugen — Aanpakken zonder aanmodderen.</span>
-  <span><a href="/product">Product</a> &middot; <a href="/wijzigingen">Wijzigingen</a> &middot; <a href="/over-ons">Over ons</a> &middot; <a href="/contact">Contact</a> &middot; <a href="/privacy">Privacy</a></span>
-</div></footer>
+
 <script>
 (function(){var k=document.getElementById('menuKnop'),m=document.getElementById('mobMenu');
 if(k&&m){k.addEventListener('click',function(){var o=m.hasAttribute('hidden');if(o){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}k.setAttribute('aria-expanded',o?'true':'false')})}})();
@@ -399,6 +398,16 @@ if(k&&m){k.addEventListener('click',function(){var o=m.hasAttribute('hidden');if
 {"@type":"HowToStep","position":3,"name":"Goedkeuren","text":"Eigenaren beoordelen de impact en keuren de wijziging goed."},
 {"@type":"HowToStep","position":4,"name":"Doorvoeren","text":"Na akkoord werkt het systeem de wijziging door en past alles automatisch aan."},
 {"@type":"HowToStep","position":5,"name":"Blijvend volgen","text":"Het systeem monitort de effecten en signaleert afwijkingen."}]}]}
+</script>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <span>&copy; 2026 Bedrijfsgeheugen &mdash; Aanpakken zonder aanmodderen.</span>
+  <span class="bgvoet-links"><a href="/product">Product</a><a href="/wijzigingen">Wijzigingen</a><a href="/hoe-het-werkt">Hoe het werkt</a><a href="/frisse-blik">Frisse blik</a><a href="/blog/">Blog</a><a href="/over-ons">Over ons</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a></span>
+</div></footer>
+<script>
+(function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');
+if(k&&m){k.addEventListener('click',function(){var dicht=m.hasAttribute('hidden');
+if(dicht){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}
+k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
 </script>
 </body>
 </html>
