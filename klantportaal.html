@@ -345,6 +345,7 @@ input[type=range]{min-height:34px}
         <span class="groep">Doen</span>
         <button class="tab" role="tab" aria-selected="false" data-p="dna">Van strategie naar maandagochtend</button>
         <button class="tab" role="tab" aria-selected="false" data-p="bijhouden">Actueel houden</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="wijzigingen">Wijzigingen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
         <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
         <span class="groep">Beheer</span>
@@ -952,6 +953,8 @@ input[type=range]{min-height:34px}
     </section>
 
     <!-- ROADMAP -->
+    <section class="paneel" id="p-wijzigingen"></section>
+
     <section class="paneel" id="p-roadmap">
       <div class="kaart" style="margin-top:1rem">
         <h3>Wat je gaat verbeteren</h3>
@@ -6636,6 +6639,50 @@ body{background:var(--np-vlak)}
 .pj-tab td.num{text-align:right;white-space:nowrap}
 .pj-leeg{text-align:center;padding:1.6rem 1rem;color:var(--grijs);font-size:.88rem}
 .pj-melding{border-left:4px solid var(--blauw);background:#EDF0FD;border-radius:0 8px 8px 0;padding:.75rem .9rem;font-size:.86rem;margin-bottom:1rem}
+/* --- Wijzigingen-module (toegevoegd, overschrijft niets bestaands) --- */
+#p-wijzigingen .pk2{font-size:1.3rem;margin:0 0 .3rem}
+#p-wijzigingen .sub2{font-size:.87rem;color:var(--grijs);line-height:1.55;margin:0 0 .6rem}
+#p-wijzigingen .kaart2{background:#fff;border:1px solid var(--lijn);border-radius:8px;padding:.9rem 1rem;margin-bottom:.8rem}
+#p-wijzigingen .kop2{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;flex-wrap:wrap}
+#p-wijzigingen .kop2 h3{font-size:1rem;margin:0}
+#p-wijzigingen .kop2 .bg-knop{margin-left:auto}
+#p-wijzigingen .bg-pil{font-size:.7rem;font-weight:600;padding:.15rem .55rem;border-radius:20px;border:1px solid var(--lijn);color:var(--grijs)}
+#p-wijzigingen .bg-pil.open{color:var(--blauw);border-color:#C3CCF6;background:#EEF1FE}
+#p-wijzigingen .bg-pil.goed{color:var(--groen);border-color:#BEE3CF;background:#EDF8F1}
+#p-wijzigingen .bg-pil.terug{color:var(--oranje);border-color:#F3C4B2;background:#FFF3EE}
+#p-wijzigingen .bg-knop{font:inherit;font-size:.85rem;font-weight:600;padding:.45rem .8rem;border-radius:6px;border:1px solid var(--lijn);background:#fff;color:var(--inkt);cursor:pointer}
+#p-wijzigingen .bg-knop.klein{font-size:.75rem;padding:.2rem .5rem}
+#p-wijzigingen .bg-knop.blauw{background:var(--blauw);border-color:var(--blauw);color:#fff}
+#p-wijzigingen .bg-knop.groen{background:var(--groen);border-color:var(--groen);color:#fff}
+#p-wijzigingen .bg-knop.terug{border-color:#F3C4B2;color:var(--oranje)}
+#p-wijzigingen .bg-knop:disabled{opacity:.45;cursor:default}
+#p-wijzigingen .bg-knoppen{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.7rem}
+#p-wijzigingen .bg-tab{width:100%;border-collapse:collapse;font-size:.85rem;margin:.4rem 0}
+#p-wijzigingen .bg-tab th{text-align:left;font-size:.72rem;color:var(--grijs);padding:0 .5rem .35rem 0;border-bottom:1px solid var(--lijn)}
+#p-wijzigingen .bg-tab td{padding:.4rem .5rem .4rem 0;border-bottom:1px solid var(--lijn)}
+#p-wijzigingen .oud2{color:#A9B0B8;text-decoration:line-through}
+#p-wijzigingen .nw2{color:var(--blauw);font-weight:600}
+#p-wijzigingen .bg-kies{margin-top:.8rem;border-top:1px solid var(--lijn);padding-top:.7rem}
+#p-wijzigingen .bg-rooster{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.55rem;margin-top:.4rem}
+#p-wijzigingen .bg-vak{border:1px solid var(--lijn);border-radius:7px;padding:.5rem .6rem;background:#FCFCFB}
+#p-wijzigingen .bg-lb{font-size:.75rem;color:var(--grijs);margin-bottom:.2rem}
+#p-wijzigingen .bg-sel,#p-wijzigingen .bg-inv{font:inherit;font-size:.85rem;width:100%;padding:.35rem .45rem;border:1px solid var(--lijn);border-radius:5px;background:#fff}
+#p-wijzigingen .bg-inv.sm{font-size:.78rem;margin-top:.3rem}
+#p-wijzigingen .bg-was{font-size:.72rem;color:var(--grijs);margin-top:.2rem}
+#p-wijzigingen .bg-imp{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:.5rem;margin-top:.8rem}
+#p-wijzigingen .bg-it{border:1px solid var(--lijn);border-radius:7px;padding:.5rem;text-align:center;background:#fff}
+#p-wijzigingen .bg-g{font-size:1.25rem;font-weight:700;line-height:1.1}
+#p-wijzigingen .bg-l{font-size:.72rem;color:var(--grijs)}
+#p-wijzigingen .bg-eig{margin-top:.7rem;border-top:1px solid var(--lijn);padding-top:.6rem}
+#p-wijzigingen .bg-check{display:inline-flex;align-items:center;gap:.35rem;font-size:.85rem;margin:.3rem .8rem .3rem 0}
+#p-wijzigingen .bg-det{border-bottom:1px solid var(--lijn);padding:.45rem 0;font-size:.85rem}
+#p-wijzigingen .bg-det:last-child{border-bottom:0}
+#p-wijzigingen .bg-det summary{cursor:pointer}
+#p-wijzigingen .bg-vl{list-style:none;margin:.4rem 0 .2rem;padding:0 0 0 .9rem;border-left:2px solid var(--lijn)}
+#p-wijzigingen .bg-vl li{padding:.25rem 0}
+#p-wijzigingen .bg-vl li.nu{color:var(--blauw)}
+#p-wijzigingen .bg-rdn{font-size:.78rem;color:var(--grijs);background:#FCFCFB;border:1px dashed var(--lijn);border-radius:5px;padding:.3rem .45rem;margin-top:.2rem}
+
 </style>
 <script>
 /* De projectschermen: wat wij voor de klant bouwen, wat het kost en wat er draait.
@@ -6973,6 +7020,228 @@ body{background:var(--np-vlak)}
  }
  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
+</script>
+
+<script>
+/* ============================================================
+   Wijzigingen — toegevoegde module (raakt geen bestaande code).
+   Leest DIM, NIV, CAP en S uit het portaal; schrijft alleen bij
+   "doorvoeren" naar S.niveaus en S.log, en roept dan bewaar()
+   en teken() aan. Eigen gegevens staan in S.wijz.
+   ============================================================ */
+(function(){
+ function er(n){ try{ return typeof window[n]!=='undefined'?window[n]:eval(n); }catch(e){ return undefined; } }
+ function W(){
+  if(typeof S==='undefined') return null;
+  if(!S.wijz) S.wijz={klad:null,voorstellen:[],versies:{},eigenaren:{},teller:117};
+  var w=S.wijz;
+  if(!w.versies) w.versies={}; if(!w.eigenaren) w.eigenaren={};
+  if(!w.voorstellen) w.voorstellen=[]; if(!w.teller) w.teller=117;
+  return w;
+ }
+ function bw(){ try{ if(typeof bewaar==='function') bewaar(); }catch(e){} }
+ function hertekenPortaal(){ try{ if(typeof teken==='function') teken(); }catch(e){} }
+ function dims(){ return (typeof DIM!=='undefined')?DIM:[]; }
+ function niv(){ return (typeof NIV!=='undefined')?NIV:['','','','','','']; }
+ function dnaam(k){ var d=dims().filter(function(x){return x.k===k;})[0]; return d?d.n:k; }
+ function wieBenIk(){ var e=document.getElementById('wie'); return (e&&e.textContent)||'jij'; }
+ function nuDatum(){ return new Date().toISOString().slice(0,10); }
+ function esc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+ /* impact: welke bouwstenen hangen aan dit onderdeel, en wat raakt dat */
+ function impact(k){
+  var caps=[],afd={},proj={},kpi={},sys={};
+  if(typeof CAP!=='undefined'){
+   Object.keys(CAP).forEach(function(ck){
+    var c=CAP[ck]; if(!c||c.dim!==k) return;
+    caps.push(c.n||ck);
+    (c.afd||[]).forEach(function(x){afd[x]=1;});
+    (c.proj||[]).forEach(function(x){proj[x]=1;});
+    (c.kpi||[]).forEach(function(x){kpi[x]=1;});
+    (c.sys||[]).forEach(function(x){sys[x]=1;});
+   });
+  }
+  return {caps:caps,afd:Object.keys(afd),proj:Object.keys(proj),kpi:Object.keys(kpi),sys:Object.keys(sys)};
+ }
+ function impactVan(lijst){
+  var a={},p={},kp={},sy={},c=0;
+  lijst.forEach(function(x){ var i=impact(x.k); c+=i.caps.length;
+   i.afd.forEach(function(y){a[y]=1;}); i.proj.forEach(function(y){p[y]=1;});
+   i.kpi.forEach(function(y){kp[y]=1;}); i.sys.forEach(function(y){sy[y]=1;}); });
+  return {caps:c,afd:Object.keys(a),proj:Object.keys(p),kpi:Object.keys(kp),sys:Object.keys(sy)};
+ }
+ function versies(k){
+  var w=W(); if(!w.versies[k]) w.versies[k]=[{w:niv()[S.niveaus[k]]||'',wie:'',op:'bij de start',rdn:'Zoals het portaal begon'}];
+  return w.versies[k];
+ }
+
+ /* ---------- tekenen ---------- */
+ function teken2(){
+  var el=document.getElementById('p-wijzigingen'); if(!el) return;
+  var w=W(); if(!w){ el.innerHTML='<p class="sub">Nog even wachten…</p>'; return; }
+  var h='';
+  h+='<h2 class="pk2">Wijzigingen</h2>'
+   +'<p class="sub2">Verander hier iets aan je bedrijf zonder dat het meteen vastligt. Je maakt eerst een <b>klad</b> — alleen jij ziet dat — en pas als je het doorvoert verandert het portaal mee. Alles blijft bewaard en is terug te draaien.</p>';
+
+  /* klad */
+  if(!w.klad){
+   h+='<div class="kaart2"><div class="kop2"><h3>Nog niets onderhanden</h3>'
+    +'<button class="bg-knop blauw" id="wz-start">Nieuwe wijziging beginnen</button></div>'
+    +'<p class="sub2">Je kiest zo welke onderdelen je wilt aanpassen. Er verandert niets tot je op doorvoeren klikt.</p></div>';
+  } else {
+   var kl=w.klad;
+   h+='<div class="kaart2"><div class="kop2"><h3>Je klad</h3><span class="bg-pil">niet ingediend</span></div>'
+    +'<label class="sub2" style="display:block;margin-bottom:8px">Naam <input class="bg-inv" id="wz-naam" value="'+esc(kl.naam)+'"></label>'
+    +'<table class="bg-tab"><thead><tr><th>Onderdeel</th><th>Van</th><th>Naar</th><th>Eigenaar</th><th></th></tr></thead><tbody>';
+   if(!kl.w.length) h+='<tr><td colspan="5" class="sub2">Nog niets gekozen. Kies hieronder een onderdeel.</td></tr>';
+   kl.w.forEach(function(x,i){
+    h+='<tr><td>'+esc(dnaam(x.k))+'</td><td class="oud2">'+esc(x.van)+'</td><td class="nw2">'+esc(x.naar)+'</td>'
+     +'<td>'+esc(w.eigenaren[x.k]||'niemand ingevuld')+'</td>'
+     +'<td><button class="bg-knop klein" data-wz-weg="'+i+'">Ongedaan</button></td></tr>';
+   });
+   h+='</tbody></table>';
+
+   h+='<div class="bg-kies"><span class="sub2">Onderdeel toevoegen of aanpassen:</span><div class="bg-rooster">';
+   dims().forEach(function(d){
+    var hui=S.niveaus[d.k], inKl=kl.w.filter(function(x){return x.k===d.k;})[0];
+    h+='<div class="bg-vak"><div class="bg-lb">'+esc(d.n)+'</div>'
+     +'<select class="bg-sel" data-wz-k="'+d.k+'">'
+     +[1,2,3,4,5].map(function(i){
+        var g=inKl?niv().indexOf(inKl.naar):hui;
+        return '<option value="'+i+'"'+(i===g?' selected':'')+'>'+i+' — '+esc(niv()[i])+'</option>';}).join('')
+     +'</select>'+(inKl?'<div class="bg-was">was '+esc(inKl.van)+'</div>':'')
+     +'<input class="bg-inv sm" data-wz-eig="'+d.k+'" placeholder="eigenaar (naam)" value="'+esc(w.eigenaren[d.k]||'')+'"></div>';
+   });
+   h+='</div></div>';
+
+   if(kl.w.length){
+    var im=impactVan(kl.w);
+    h+='<div class="bg-imp">'
+     +[[im.caps,'Bouwstenen'],[im.afd.length,'Afdelingen'],[im.proj.length,'Acties'],[im.kpi.length,'Cijfers'],[im.sys.length,'Systemen']]
+       .map(function(t){return '<div class="bg-it"><div class="bg-g">'+t[0]+'</div><div class="bg-l">'+t[1]+'</div></div>';}).join('')
+     +'</div>'
+     +(im.afd.length?'<p class="sub2">Raakt: '+esc(im.afd.join(' · '))+'</p>':'');
+   }
+   h+='<label class="sub2" style="display:block;margin-top:10px">Waarom doe je dit? <textarea class="bg-inv" id="wz-waarom" rows="2" placeholder="Eén zin. Dit is het enige wat het portaal niet voor je kan bedenken.">'+esc(kl.waarom)+'</textarea></label>'
+    +'<div class="bg-knoppen"><button class="bg-knop blauw" id="wz-dien"'+(kl.w.length?'':' disabled')+'>Indienen ter goedkeuring</button>'
+    +'<button class="bg-knop" id="wz-weg">Klad weggooien</button></div></div>';
+  }
+
+  /* voorstellen */
+  w.voorstellen.forEach(function(p,pi){
+   var ja=p.eig.filter(function(e){return e.ok;}).length, klaar=ja===p.eig.length;
+   h+='<div class="kaart2"><div class="kop2"><h3>'+esc(p.naam)+'</h3>'
+    +'<span class="bg-pil '+(p.status==='open'?'open':p.status==='door'?'goed':'terug')+'">'
+    +(p.status==='open'?'Ter goedkeuring':p.status==='door'?'Doorgevoerd':'Teruggedraaid')+'</span></div>'
+    +'<p class="sub2">'+esc(p.door)+' · '+esc(p.op)+(p.waarom?' · '+esc(p.waarom):'')+'</p>'
+    +'<table class="bg-tab"><thead><tr><th>Onderdeel</th><th>Van</th><th>Naar</th></tr></thead><tbody>'
+    +p.w.map(function(x){return '<tr><td>'+esc(dnaam(x.k))+'</td><td class="oud2">'+esc(x.van)+'</td><td class="nw2">'+esc(x.naar)+'</td></tr>';}).join('')
+    +'</tbody></table>';
+   if(p.status==='open'){
+    h+='<div class="bg-eig"><span class="sub2">Wie moet akkoord geven — '+ja+' van '+p.eig.length+'</span>';
+    p.eig.forEach(function(e,ei){
+     h+='<label class="bg-check"><input type="checkbox" data-wz-ok="'+pi+'|'+ei+'"'+(e.ok?' checked':'')+'> '+esc(e.naam)+'</label>';
+    });
+    h+='</div><div class="bg-knoppen"><button class="bg-knop groen" data-wz-door="'+pi+'"'+(klaar?'':' disabled')+'>Voer wijziging door</button>'
+     +'<button class="bg-knop" data-wz-in="'+pi+'">Intrekken</button></div>'
+     +(klaar?'':'<p class="sub2">Zolang niet iedereen is afgevinkt verandert er niets in het portaal.</p>');
+   } else if(p.status==='door'){
+    h+='<div class="bg-knoppen"><button class="bg-knop terug" data-wz-terug="'+pi+'">Draai terug</button></div>';
+   }
+   h+='</div>';
+  });
+
+  /* geschiedenis per onderdeel */
+  h+='<div class="kaart2"><div class="kop2"><h3>Geschiedenis per onderdeel</h3></div>';
+  dims().forEach(function(d){
+   var vs=versies(d.k);
+   h+='<details class="bg-det"><summary><b>'+esc(d.n)+'</b> — nu '+esc(niv()[S.niveaus[d.k]]||'')+' · '+vs.length+' versie'+(vs.length===1?'':'s')+'</summary><ul class="bg-vl">'
+    +vs.map(function(v,i){return '<li'+(i===0?' class="nu"':'')+'><b>'+esc(v.w)+'</b><span class="sub2"> — '+esc(v.op)+(v.wie?' · '+esc(v.wie):'')+'</span>'
+      +(v.rdn?'<div class="bg-rdn">'+esc(v.rdn)+'</div>':'')+'</li>';}).join('')
+    +'</ul></details>';
+  });
+  h+='</div>';
+  el.innerHTML=h;
+  bind(el);
+ }
+
+ function bind(el){
+  var w=W();
+  var b=el.querySelector('#wz-start');
+  if(b) b.addEventListener('click',function(){
+   w.klad={naam:'Wijziging van '+wieBenIk(),w:[],waarom:''}; bw(); teken2(); });
+  var nm=el.querySelector('#wz-naam');
+  if(nm) nm.addEventListener('input',function(){ w.klad.naam=nm.value; bw(); });
+  var wa=el.querySelector('#wz-waarom');
+  if(wa) wa.addEventListener('input',function(){ w.klad.waarom=wa.value; bw(); });
+  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-k]'),function(s){
+   s.addEventListener('change',function(){
+    var k=s.dataset.wzK, naar=niv()[parseInt(s.value,10)], van=niv()[S.niveaus[k]];
+    var i=-1; w.klad.w.forEach(function(x,j){ if(x.k===k) i=j; });
+    if(naar===van){ if(i>=0) w.klad.w.splice(i,1); }
+    else if(i>=0) w.klad.w[i].naar=naar;
+    else w.klad.w.push({k:k,van:van,naar:naar});
+    bw(); teken2(); }); });
+  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-eig]'),function(i){
+   i.addEventListener('change',function(){ w.eigenaren[i.dataset.wzEig]=i.value.trim(); bw(); }); });
+  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-weg]'),function(x){
+   x.addEventListener('click',function(){ w.klad.w.splice(parseInt(x.dataset.wzWeg,10),1); bw(); teken2(); }); });
+  var dg=el.querySelector('#wz-weg');
+  if(dg) dg.addEventListener('click',function(){ w.klad=null; bw(); teken2(); });
+  var di=el.querySelector('#wz-dien');
+  if(di) di.addEventListener('click',function(){
+   var kl=w.klad, namen={};
+   kl.w.forEach(function(x){ var n=(w.eigenaren[x.k]||'').trim(); if(n) namen[n]=1; });
+   var eig=Object.keys(namen).map(function(n){return {naam:n,ok:false};});
+   if(!eig.length) eig=[{naam:wieBenIk()+' (jijzelf)',ok:true}];
+   w.teller++;
+   w.voorstellen.unshift({id:w.teller,naam:kl.naam,door:wieBenIk(),op:nuDatum(),waarom:kl.waarom,w:kl.w,eig:eig,status:'open'});
+   w.klad=null; bw(); teken2(); });
+  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-ok]'),function(c){
+   c.addEventListener('change',function(){ var p=c.dataset.wzOk.split('|');
+    w.voorstellen[+p[0]].eig[+p[1]].ok=c.checked; bw(); teken2(); }); });
+  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-in]'),function(x){
+   x.addEventListener('click',function(){ w.voorstellen.splice(parseInt(x.dataset.wzIn,10),1); bw(); teken2(); }); });
+  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-door]'),function(x){
+   x.addEventListener('click',function(){ voerDoor2(w.voorstellen[parseInt(x.dataset.wzDoor,10)]); }); });
+  Array.prototype.forEach.call(el.querySelectorAll('[data-wz-terug]'),function(x){
+   x.addEventListener('click',function(){ terug2(w.voorstellen[parseInt(x.dataset.wzTerug,10)]); }); });
+ }
+
+ function voerDoor2(p){
+  var w=W();
+  p.w.forEach(function(x){
+   var n=niv().indexOf(x.naar); if(n>0){ S.niveaus[x.k]=n;
+    versies(x.k).unshift({w:x.naar,wie:p.door,op:nuDatum(),rdn:p.waarom||('Voorstel '+p.id)}); }
+  });
+  p.status='door';
+  S.log=S.log||[];
+  S.log.unshift({datum:nuDatum(),wat:'Wijziging doorgevoerd: '+p.naam+' — '+p.w.length+' onderdeel'+(p.w.length===1?'':'en'),
+                 door:p.door,raakt:p.w.map(function(x){return dnaam(x.k);}).join(', ')});
+  bw(); hertekenPortaal(); teken2();
+ }
+ function terug2(p){
+  var w=W();
+  p.w.forEach(function(x){
+   var n=niv().indexOf(x.van); if(n>0){ S.niveaus[x.k]=n;
+    versies(x.k).unshift({w:x.van,wie:wieBenIk(),op:nuDatum(),rdn:'Teruggedraaid'}); }
+  });
+  p.status='terug';
+  S.log=S.log||[];
+  S.log.unshift({datum:nuDatum(),wat:'Wijziging teruggedraaid: '+p.naam,door:wieBenIk(),raakt:''});
+  bw(); hertekenPortaal(); teken2();
+ }
+
+ function start(){
+  var t=document.querySelector('.tab[data-p="wijzigingen"]');
+  var p=document.getElementById('p-wijzigingen');
+  if(!t||!p||typeof S==='undefined'||!S.niveaus){ setTimeout(start,400); return; }
+  t.addEventListener('click',teken2);
+  teken2();
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
+})();
+
 </script>
 
 </body>
