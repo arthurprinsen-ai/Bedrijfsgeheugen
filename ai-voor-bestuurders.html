@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-advies voor bestuurders &mdash; van richting naar besluiten | Bedrijfsgeheugen</title>
+<meta name="description" content="Strategische keuzes, risico-overzicht, governance en praktische vervolgstappen. Onafhankelijk advies voor directies, MT en RvC.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/ai-voor-bestuurders">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI-advies voor bestuurders &mdash; van richting naar besluiten | Bedrijfsgeheugen"><meta property="og:description" content="Strategische keuzes, risico-overzicht, governance en praktische vervolgstappen. Onafhankelijk advies voor directies, MT en RvC.">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/ai-voor-bestuurders">
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<meta name="twitter:card" content="summary_large_image">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/assets/kop.css?v=6">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--blauw-l:#EDF0FD;--oranje:#FF4F17;
+ --geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--vlak:#F4F5F8;--groen:#1F9D55;--groen-l:#E8F5EC;
+ --amber:#C2410C;--amber-l:#FFF6E3;--rood:#C0392B;--rood-l:#FBEDEB;--wrap:1120px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--inkt);font-family:'Instrument Sans',system-ui,sans-serif;
+ font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif;margin:0;letter-spacing:-.025em;line-height:1.12}
+p{margin:0 0 .8rem}
+img,svg{max-width:100%;display:block}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 1.5rem}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+.sub{color:var(--grijs)}
+a{color:var(--blauw)}
+:focus-visible{outline:3px solid var(--blauw);outline-offset:3px;border-radius:6px}
+
+/* markeerstift: gele baan achter de tekst, onderste helft */
+.mark{position:relative;display:inline-block;white-space:nowrap;z-index:0}
+.mark::before{content:"";position:absolute;left:-.1em;right:-.1em;bottom:.04em;height:.44em;
+ background:var(--geel);border-radius:2px 8px 3px 7px;transform:rotate(-.6deg);z-index:-1}
+
+/* knoppen */
+.knop{display:inline-flex;align-items:center;gap:.45rem;background:var(--blauw);color:#fff;border-radius:10px;
+ padding:.65rem 1.1rem;font-weight:600;font-size:.95rem;text-decoration:none;border:1.5px solid var(--blauw)}
+.knop:hover{filter:brightness(1.08)}
+.knop.licht{background:#fff;color:var(--inkt);border-color:var(--lijn)}
+.knop.licht:hover{border-color:var(--blauw);color:var(--blauw);filter:none}
+.knop.geel{background:var(--geel);color:var(--inkt);border-color:var(--geel)}
+
+/* hero */
+.ai-hero{padding:1.6rem 0 2.8rem}
+.ai-hero-grid{display:grid;grid-template-columns:1.02fr 1.15fr;gap:2.6rem;align-items:start}
+.ai-hero-grid>*{min-width:0}
+@media(max-width:960px){.ai-hero-grid{grid-template-columns:1fr;gap:2rem}}
+.ai-hero h1{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;margin:.5rem 0 .3rem}
+.ai-hero .belofte{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(1.05rem,2vw,1.35rem);
+ letter-spacing:-.02em;margin:.2rem 0 1rem}
+.ai-hero p.intro{max-width:46ch;color:#3C424A}
+.ai-cta{display:flex;gap:.7rem;flex-wrap:wrap;margin:1.3rem 0 1.4rem}
+.ai-usps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;border-top:1px solid var(--lijn);padding-top:1.1rem}
+@media(max-width:700px){.ai-usps{grid-template-columns:1fr;gap:.7rem}}
+.ai-usp{display:flex;gap:.55rem;align-items:flex-start}
+.ai-usp svg{width:22px;height:22px;flex:none;stroke:var(--blauw);fill:none;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.ai-usp b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.9rem}
+.ai-usp span{font-size:.8rem;color:var(--grijs);line-height:1.45}
+
+/* paneel: het dashboardbeeld naast de hero */
+.paneel{background:#fff;border:2px solid var(--inkt);border-radius:16px;padding:1rem;box-shadow:0 16px 40px rgba(20,23,26,.08)}
+.paneel-kop{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.7rem}
+.paneel-kop h2{font-size:.95rem;font-weight:800}
+.paneel-kop .stand{margin-left:auto;font-size:.72rem;color:var(--grijs)}
+.tegels{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+@media(max-width:620px){.tegels{grid-template-columns:1fr!important}}
+.tegel{border:1px solid var(--lijn);border-radius:11px;padding:.65rem .75rem;background:var(--vlak);min-width:0;overflow-wrap:anywhere}
+.tegel .lab{font-size:.7rem;color:var(--grijs);display:block;margin-bottom:.15rem}
+.tegel .getal{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;line-height:1}
+.tegel .bij{display:block;font-size:.72rem;color:var(--grijs);margin-top:.15rem}
+.balkje{height:6px;border-radius:99px;background:var(--lijn);margin-top:.45rem;overflow:hidden}
+.balkje div{height:100%;border-radius:99px;background:var(--blauw)}
+
+/* geeltje met handgeschreven notitie */
+.geeltje{background:var(--geel);border-radius:3px 3px 10px 3px;padding:.7rem .85rem;font-size:.86rem;
+ line-height:1.4;box-shadow:0 6px 16px rgba(20,23,26,.10);transform:rotate(-1.4deg);max-width:15rem}
+.geeltje b{display:block}
+
+/* secties */
+section.blok{padding:2.4rem 0 0}
+section.blok h2{font-size:clamp(1.4rem,3vw,1.95rem);font-weight:800;margin-bottom:.35rem}
+section.blok h2 .mark::before{height:.36em}
+section.blok .leid{color:var(--grijs);max-width:60ch;margin-bottom:1.2rem}
+.rooster{display:grid;gap:.9rem}
+.r2{grid-template-columns:repeat(2,1fr)}
+.r3{grid-template-columns:repeat(3,1fr)}
+.r4{grid-template-columns:repeat(4,1fr)}
+.r5{grid-template-columns:repeat(5,1fr)}
+.r6{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1040px){.r5,.r6{grid-template-columns:repeat(3,1fr)}.r4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.r2,.r3,.r4,.r5,.r6{grid-template-columns:1fr}}
+.kaart{background:#fff;border:1px solid var(--lijn);border-radius:13px;padding:1rem 1.05rem}
+.kaart svg.ico{width:26px;height:26px;stroke:var(--blauw);fill:none;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;margin-bottom:.55rem}
+.kaart.waarschuw svg.ico{stroke:var(--oranje)}
+.kaart h3{font-size:.98rem;font-weight:800;margin-bottom:.3rem}
+.kaart p{font-size:.87rem;color:var(--grijs);margin:0}
+.kaart .nr{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;
+ background:var(--blauw);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.78rem;margin-bottom:.55rem}
+
+/* stappenrij */
+.stappen{display:grid;gap:.9rem;grid-template-columns:repeat(5,1fr);align-items:start}
+.stappen.zes{grid-template-columns:repeat(6,1fr)}
+.stappen.vier{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1040px){.stappen,.stappen.zes,.stappen.vier{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stappen,.stappen.zes,.stappen.vier{grid-template-columns:1fr}}
+.stap{position:relative;padding-right:.6rem}
+.stap .bol{width:30px;height:30px;border-radius:50%;background:var(--blauw);color:#fff;display:flex;
+ align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+ font-size:.85rem;margin-bottom:.55rem}
+.stap b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;margin-bottom:.2rem}
+.stap span{font-size:.84rem;color:var(--grijs);line-height:1.5}
+
+/* tabellen */
+.tabelhuls{overflow-x:auto;border:1px solid var(--lijn);border-radius:13px;background:#fff}
+table.tab{width:100%;border-collapse:collapse;font-size:.87rem;min-width:640px}
+table.tab th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+ text-transform:uppercase;color:var(--grijs);padding:.7rem .85rem;border-bottom:1px solid var(--lijn);background:var(--vlak)}
+table.tab td{padding:.7rem .85rem;border-bottom:1px solid var(--lijn);vertical-align:top}
+table.tab tr:last-child td{border-bottom:0}
+.pil{display:inline-block;border-radius:99px;padding:.1rem .55rem;font-size:.73rem;font-weight:700;white-space:nowrap}
+.pil.groen{background:var(--groen-l);color:var(--groen)}
+.pil.amber{background:var(--amber-l);color:var(--amber)}
+.pil.rood{background:var(--rood-l);color:var(--rood)}
+.pil.grijs{background:var(--vlak);color:var(--grijs)}
+
+/* risicoklassen */
+.klassen{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+@media(max-width:900px){.klassen{grid-template-columns:1fr}}
+.klasse{border-radius:13px;padding:1rem 1.05rem;border:1px solid}
+.klasse.laag{background:var(--groen-l);border-color:#BFD9C8}
+.klasse.beperkt{background:var(--amber-l);border-color:#F0DE8C}
+.klasse.hoog{background:var(--rood-l);border-color:#F0C4BD}
+.klasse h3{font-size:.95rem;margin-bottom:.5rem}
+.klasse ul{margin:0;padding-left:1.05rem;font-size:.85rem;line-height:1.55}
+.klasse li{margin-bottom:.4rem}
+.klasse li b{display:block}
+
+/* lijst met vinkjes */
+.vink{list-style:none;padding:0;margin:.6rem 0 0;display:grid;gap:.45rem}
+.vink li{display:flex;gap:.55rem;align-items:flex-start;font-size:.9rem;color:#3C424A}
+.vink svg{width:16px;height:16px;flex:none;margin-top:4px;color:var(--blauw)}
+
+/* slot */
+.slot{background:var(--inkt);color:#fff;border-radius:18px;padding:2rem 2.1rem;margin:2.6rem 0 3.2rem;
+ display:grid;grid-template-columns:1.25fr auto;gap:1.6rem;align-items:center}
+@media(max-width:860px){.slot{grid-template-columns:1fr;padding:1.6rem}}
+.slot h2{color:#fff;font-size:1.5rem;margin-bottom:.35rem}
+.slot p{color:rgba(255,255,255,.76);font-size:.94rem;max-width:52ch;margin:0}
+.slot .knoppen{display:flex;gap:.6rem;flex-wrap:wrap}
+.slot-punten{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:1rem;font-size:.85rem;color:rgba(255,255,255,.8)}
+.slot-punten span{display:inline-flex;align-items:center;gap:.35rem}
+.slot-punten svg{width:15px;height:15px;color:var(--geel)}
+
+/* eerlijk-blok */
+.eerlijk{border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 10px 10px 0;
+ padding:.9rem 1.05rem;font-size:.9rem;margin-top:1.2rem}
+.eerlijk b{font-family:'Bricolage Grotesque',sans-serif}
+.bron{font-size:.8rem;color:var(--grijs);margin-top:.8rem}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.krijg{display:grid;gap:.9rem;grid-template-columns:repeat(5,1fr)}
+@media(max-width:1040px){.krijg{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.krijg{grid-template-columns:1fr}}
+.waarde-rij{display:grid;grid-template-columns:repeat(5,1fr);gap:.9rem}
+@media(max-width:1040px){.waarde-rij{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.waarde-rij{grid-template-columns:1fr}}
+.waarde-rij .kaart{text-align:left}
+.waarde-rij .groot{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;line-height:1;margin-bottom:.2rem}
+</style>
+</head>
+<body>
+<div class="bgtop"><div class="bgtop-in">
+  <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
+  <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
+</div></div>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+  <a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
+    <span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span>
+  </a>
+  <div class="bgkop-links">
+    <a href="/expertises">Expertises</a>
+    <a href="/product">Product</a>
+    <a href="/ai-marketing-mkb">AI-marketing</a>
+    <a href="/wijzigingen">Wijzigingen</a>
+    <a href="/hoe-het-werkt">Hoe het werkt</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+  <button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
+</div>
+<div class="bgkop-mob" id="bgkopMob" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/product">Product</a>
+    <a href="/ai-marketing-mkb">AI-marketing</a>
+  <a href="/wijzigingen">Wijzigingen</a>
+  <a href="/hoe-het-werkt">Hoe het werkt</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+</div></nav>
+<main>
+<nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">&rsaquo;</span><span aria-current="page">AI voor bestuurders</span></nav>
+
+<section class="ai-hero"><div class="wrap ai-hero-grid">
+  <div>
+    <span class="eyebrow">AI &amp; Governance</span>
+    <h1>AI-advies voor bestuurders. Van richting naar <span class="mark">besluiten</span>.</h1>
+    <p class="intro">Op directieniveau gaat het zelden over welke tool. Het gaat over: wat betekent dit voor onze strategie, welke risico&rsquo;s lopen we, wie beslist erover, en waar beginnen we? Wij helpen directies, MT&rsquo;s en raden van commissarissen die vragen te beantwoorden &mdash; onafhankelijk, want wij verkopen geen software.</p>
+    <div class="ai-cta">
+      <a class="knop" href="/contact">Plan een kennismaking &rarr;</a>
+      <a class="knop licht" href="/frisse-blik">Doe de Frisse blik</a>
+    </div>
+    <div class="ai-usps">
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg><div><b>Strategisch en praktisch</b><span>Van visie tot uitvoerbare keuzes.</span></div></div>
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l7.5 3v6c0 4.6-3.1 8.2-7.5 9.4-4.4-1.2-7.5-4.8-7.5-9.4v-6z"/><path d="M8.6 12l2.3 2.3 4.5-5"/></svg><div><b>Onafhankelijk</b><span>Belangenvrij, geen leverancier.</span></div></div>
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.3l3.4 2"/></svg><div><b>Snel naar duidelijkheid</b><span>Inzicht, richting en prioriteiten.</span></div></div>
+    </div>
+  </div>
+  <div><div class="paneel">
+  <div class="paneel-kop"><h2>Directieoverzicht</h2><span class="stand">voorbeeld</span></div>
+  <div class="tegels" style="grid-template-columns:repeat(3,1fr)">
+    <div class="tegel"><span class="lab">Strategische kansen</span><span class="getal">6</span><span class="bij">grootste: procesautomatisering</span></div>
+    <div class="tegel"><span class="lab">Risico&rsquo;s hoog of kritisch</span><span class="getal" style="color:var(--rood)">4</span><span class="bij">hoogste: dataprivacy</span></div>
+    <div class="tegel"><span class="lab">Besluit nodig</span><span class="getal" style="color:var(--amber)">3</span><span class="bij">eerstvolgend: leverancierskeuze</span></div>
+  </div>
+  <div style="margin-top:.7rem;border-top:1px solid var(--lijn);padding-top:.7rem">
+    <span style="font-size:.72rem;color:var(--grijs);display:block;margin-bottom:.45rem">Top drie prioriteiten</span>
+    <div style="display:grid;gap:.35rem;font-size:.85rem">
+      <div style="display:flex;gap:.55rem"><b style="color:var(--blauw)">1</b><span>Gebruikscases met de meeste impact</span></div>
+      <div style="display:flex;gap:.55rem"><b style="color:var(--blauw)">2</b><span>Governance en risico&rsquo;s</span></div>
+      <div style="display:flex;gap:.55rem"><b style="color:var(--blauw)">3</b><span>Data en leveranciers</span></div>
+    </div>
+  </div>
+  <div class="tegels" style="grid-template-columns:1fr 1fr;margin-top:.7rem">
+    <div class="tegel"><span class="lab">AI-volwassenheid</span><span class="getal">2,6</span><span class="bij">van 5 &middot; doel voor het mkb is 4</span>
+      <div class="balkje"><div style="width:52%"></div></div></div>
+    <div class="tegel"><span class="lab">Volgende review</span><span class="getal" style="font-size:1.1rem">over 8 weken</span><span class="bij">in de MT-sessie</span></div>
+  </div>
+</div>
+<div class="geeltje" style="margin:1rem 0 0 auto">Duidelijke keuzes.<br>Sneller besluiten.<br>Meer waarde.</div></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Waar bestuurders mee worstelen</h2>
+  <div class="rooster r5"><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.6a2.3 2.3 0 114 1.6c-.9.8-1.8 1.2-1.8 2.4M12 16.6v.3"/></svg><h3>Onzeker over de impact</h3><p>Wat betekent AI voor onze strategie, onze klanten en ons verdienmodel? En op welke termijn?</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l9 16H3z"/><path d="M12 9.5v4.5M12 17v.3"/></svg><h3>Risico&rsquo;s zijn onduidelijk</h3><p>We zien risico&rsquo;s, maar niet welke prioriteit hebben en wie ervoor verantwoordelijk is.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.3l3.4 2"/></svg><h3>Keuzes worden uitgesteld</h3><p>Te weinig overzicht en data om scherpe besluiten te nemen, dus schuift het door naar het volgende overleg.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M6 20h12M4 9h16M4 9l-2.5 5.5h5zM20 9l2.5 5.5h-5z"/></svg><h3>Governance ontbreekt</h3><p>Wie beslist over AI, en hoe borgen we verantwoord gebruik zonder alles dicht te timmeren?</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/></svg><h3>Geen tijd of capaciteit</h3><p>AI staat op de agenda, maar de organisatie komt niet in beweging. Iedereen zit al vol.</p></article></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Waar wij op adviseren</h2>
+  <p class="leid">Zes onderwerpen. Welke er aan de beurt zijn, hangt af van waar jullie staan.</p>
+  <div class="rooster r3"><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg><h3>AI-strategie en visie</h3><p>We vertalen ambities naar een koers die waarde creëert in plaats van naar een lijst met tools.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg><h3>Kansrijke use cases</h3><p>We identificeren en prioriteren op impact en haalbaarheid, niet op wat er in de markt gehypet wordt.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M6 20h12M4 9h16M4 9l-2.5 5.5h5zM20 9l2.5 5.5h-5z"/></svg><h3>Risico&rsquo;s en compliance</h3><p>Wetgeving vertaald naar praktische acties. Zie ook <a href="/ai-act">de AI Act</a>.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l7.5 3v6c0 4.6-3.1 8.2-7.5 9.4-4.4-1.2-7.5-4.8-7.5-9.4v-6z"/><path d="M8.6 12l2.3 2.3 4.5-5"/></svg><h3>Governance en sturing</h3><p>Besluitvorming, rollen en beleid. Zie ook <a href="/ai-governance">AI-governance</a>.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5h9.5a4 4 0 000-8 5.5 5.5 0 00-10.6 1.6A3.4 3.4 0 007 18.5z"/></svg><h3>Leverancierskeuzes</h3><p>Selectie van technologie en partners, onafhankelijk beoordeeld.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4.5M5 5h11l-1.6 3.2L16 11.5H5"/></svg><h3>Roadmap en prioriteiten</h3><p>Een realistische routekaart met mijlpalen en een eigenaar per stap.</p></article></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Van vraag naar besluit</h2>
+  <div class="stappen "><div class="stap"><span class="bol">1</span><b>Vraag verkennen</b><span>We begrijpen jullie context, ambities en zorgen.</span></div><div class="stap"><span class="bol">2</span><b>Inzicht en analyse</b><span>We analyseren kansen, risico&rsquo;s en de huidige positie.</span></div><div class="stap"><span class="bol">3</span><b>Scenario&rsquo;s en opties</b><span>We werken scenario&rsquo;s uit met impact en risico&rsquo;s.</span></div><div class="stap"><span class="bol">4</span><b>Besluit en prioriteiten</b><span>We adviseren keuzes en stellen prioriteiten vast.</span></div><div class="stap"><span class="bol">5</span><b>Actie en opvolging</b><span>We helpen bij uitvoering, borging en monitoring.</span></div></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Wat je als bestuurder krijgt</h2>
+  <p class="leid">Geen rapport van tachtig slides. Materiaal waarmee je in de directiekamer een besluit neemt.</p>
+  <div class="krijg">
+    <div class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3.5H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V8.5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></svg><h3>&Eacute;&eacute;n pagina</h3><p>Kansen, risico&rsquo;s en wat dit voor jullie betekent, op &eacute;&eacute;n vel.</p></div>
+    <div class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 5.5l1.2 1.2L7.5 4.4M4 11.5l1.2 1.2 2.3-2.3M4 17.5l1.2 1.2 2.3-2.3"/></svg><h3>Prioriteiten</h3><p>Een top drie met impact, benodigde investering en een eigenaar per punt.</p></div>
+    <div class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.6a4.2 4.2 0 100 6.8M7.8 11h5.4M7.8 13.4h5.4"/></svg><h3>Investeringskeuzes</h3><p>Onderbouwde adviezen over budget en volgorde, met de <a href="/business-case-ai">business case</a> eronder.</p></div>
+    <div class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l7.5 3v6c0 4.6-3.1 8.2-7.5 9.4-4.4-1.2-7.5-4.8-7.5-9.4v-6z"/><path d="M8.6 12l2.3 2.3 4.5-5"/></svg><h3>Governance-acties</h3><p>Concrete stappen voor beleid, rollen, data en compliance.</p></div>
+    <div class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/></svg><h3>Materiaal voor het MT</h3><p>Zodat het gesprek over besluiten gaat en niet over uitleg.</p></div>
+  </div>
+  <div class="eerlijk"><b>Waarom onafhankelijk telt.</b> Wij verkopen geen licenties en zijn van geen enkele leverancier partner. Dat betekent dat &ldquo;niet doen&rdquo; ook een advies kan zijn, en dat gebeurt regelmatig. Bij een adviseur die de software er zelf bij levert, is dat zelden de uitkomst.</div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Voor directie, MT en investeerders</h2>
+  <div class="rooster r4"><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V6.5L11 3v18"/><path d="M11 9h8.5v12"/><path d="M7 9.5h1M7 13h1M7 16.5h1M14.5 12.5h1.5M14.5 16h1.5"/></svg><h3>Bestuurders en RvC</h3><p>Strategische keuzes en governance om AI veilig en waardevol te benutten.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.6a4.2 4.2 0 100 6.8M7.8 11h5.4M7.8 13.4h5.4"/></svg><h3>CFO en financi&euml;n</h3><p>Businesscases, waarderealisatie en rendement &mdash; inzichtelijk gemaakt.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.2 5.2l1.9 1.9M16.9 16.9l1.9 1.9M18.8 5.2l-1.9 1.9M7.1 16.9l-1.9 1.9"/></svg><h3>COO en operatie</h3><p>Procesimpact, capaciteit en adoptie voor maximaal operationeel rendement.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 20.5h17"/><path d="M7 17v-5M11.5 17V6.5M16 17v-3M20 17V9.5"/></svg><h3>Investeerders</h3><p>Inzicht in risico&rsquo;s, kansen en governance voor vertrouwd toezicht. Zie <a href="/due-diligence">due diligence</a>.</p></article></div>
+</div></section>
+
+<div class="wrap"><section class="slot"><div><h2>Van richting naar besluiten.</h2><p>Begin met een kennismaking van dertig minuten, of doe eerst de gratis online Frisse blik &mdash; dan gaat het gesprek meteen over jullie eigen cijfers.</p><div class="slot-punten"><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Onafhankelijk advies</span><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Geen verplichtingen</span><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Binnen twee weken duidelijkheid</span></div></div><div class="knoppen"><a class="knop geel" href="/contact">Plan een kennismaking &rarr;</a><a class="knop licht" href="/frisse-blik">Doe de Frisse blik</a></div></section></div>
+
+</main>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <div class="bgvoet-net">
+    <div>
+      <span class="bgvoet-merk">Bedrijfs<b>geheugen</b>.nl</span>
+      <p class="bgvoet-over">Praktische strategie, slimme systemen en AI.<br>Voor ondernemers die willen groeien.</p>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Oplossingen</span>
+      <a href="/expertises">Alle expertises</a>
+      <a href="/systemen-koppelen">Systemen koppelen</a>
+      <a href="/afas-koppeling">AFAS-koppeling</a>
+      <a href="/due-diligence">Due diligence &amp; exit</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Producten</span>
+      <a href="/ai-marketing-mkb">AI Marketing Machine</a>
+      <a href="/product">Het portaal</a>
+      <a href="/wijzigingen">Wijzigingen</a>
+      <a href="/frisse-blik">Frisse blik</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Kennis</span>
+      <a href="/blog/">Blog</a>
+      <a href="/hoe-het-werkt">Hoe het werkt</a>
+      <a href="/wijzigingen-uitgelegd">Wijzigingen uitgelegd</a>
+      <a href="/zelfscan">Zelfscan</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Over ons</span>
+      <a href="/over-ons">Ons verhaal</a>
+      <a href="/voor-mkb">Voor het mkb</a>
+      <a href="/investeerders-ma">Investeerders &amp; M&amp;A</a>
+      <a href="/contact">Contact</a>
+    </div>
+    <div class="bgvoet-cta">
+      <b>Plan een Frisse blik</b>
+      <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
+      <a class="bgvoet-knop" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+    </div>
+  </div>
+  <div class="bgvoet-onder">
+    <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
+    <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
+  </div>
+</div></footer>
+<script>
+(function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');
+if(k&&m){k.addEventListener('click',function(){var dicht=m.hasAttribute('hidden');
+if(dicht){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}
+k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
+</script>
+</body>
+</html>
