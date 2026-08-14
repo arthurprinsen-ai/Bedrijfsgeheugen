@@ -71,8 +71,8 @@ a{color:var(--blauw)}
 .paneel-kop h2{font-size:.95rem;font-weight:800}
 .paneel-kop .stand{margin-left:auto;font-size:.72rem;color:var(--grijs)}
 .tegels{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
-@media(max-width:520px){.tegels{grid-template-columns:1fr}}
-.tegel{border:1px solid var(--lijn);border-radius:11px;padding:.65rem .75rem;background:var(--vlak)}
+@media(max-width:620px){.tegels{grid-template-columns:1fr!important}}
+.tegel{border:1px solid var(--lijn);border-radius:11px;padding:.65rem .75rem;background:var(--vlak);min-width:0;overflow-wrap:anywhere}
 .tegel .lab{font-size:.7rem;color:var(--grijs);display:block;margin-bottom:.15rem}
 .tegel .getal{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;line-height:1}
 .tegel .bij{display:block;font-size:.72rem;color:var(--grijs);margin-top:.15rem}
