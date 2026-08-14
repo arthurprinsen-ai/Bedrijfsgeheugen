@@ -6,13 +6,13 @@
 
 .bgkop{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--bg-lijn);font-family:'Instrument Sans',system-ui,sans-serif}
 .bgkop *{box-sizing:border-box}
-.bgkop-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.1rem;padding:.7rem 1.5rem;flex-wrap:nowrap}
+.bgkop-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.7rem 1.5rem;flex-wrap:nowrap}
 .bgkop-logo{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--bg-inkt)}
 .bgkop-logo img{width:34px;height:34px;flex-shrink:0}
 .bgkop-woord{font-family:'Bricolage Grotesque','Instrument Sans',sans-serif;font-weight:800;font-size:1.22rem;letter-spacing:-.02em;line-height:1.1;display:block}
 .bgkop-woord b{color:var(--bg-blauw);font-weight:800}
 .bgkop-payoff{display:block;font-size:.62rem;font-weight:500;color:var(--bg-grijs);letter-spacing:0;line-height:1.3;margin-top:.1rem}
-.bgkop-links{display:flex;align-items:center;gap:1.2rem;font-size:.92rem;font-weight:600;white-space:nowrap}
+.bgkop-links{display:flex;align-items:center;gap:.72rem;font-size:.85rem;font-weight:600;white-space:nowrap}
 .bgkop-links a{color:var(--bg-inkt);text-decoration:none;padding-bottom:.2rem;border-bottom:2px solid transparent;white-space:nowrap}
 .bgkop-links a:hover{color:var(--bg-blauw)}
 .bgkop-links a[aria-current=page]{color:var(--bg-blauw);border-bottom-color:var(--bg-blauw)}
@@ -22,7 +22,8 @@
 .bgkop-mob{display:none;flex-direction:column;padding:.4rem 1.5rem 1.1rem;background:#fff;border-bottom:1px solid var(--bg-lijn);font-family:'Instrument Sans',system-ui,sans-serif}
 .bgkop-mob a{color:var(--bg-inkt);text-decoration:none;font-weight:600;padding:.55rem 0;border-bottom:1px solid var(--bg-lijn)}
 .bgkop-mob a:last-child{border-bottom:0;color:var(--bg-blauw)}
-@media(max-width:1240px){.bgkop-links{gap:.95rem;font-size:.87rem}.bgkop-cta{font-size:.83rem;padding:.45rem .85rem}}
+@media(max-width:1320px){.bgkop-links{gap:.8rem;font-size:.85rem}.bgkop-cta{font-size:.82rem;padding:.45rem .8rem}}
+@media(max-width:1200px){.bgkop-links{gap:.62rem;font-size:.81rem}.bgkop-cta{font-size:.78rem;padding:.42rem .7rem}.bgkop-payoff{display:none}}
 @media(max-width:1120px){.bgkop-links,.bgkop-cta{display:none}.bgkop-knop{display:flex}.bgkop-mob:not([hidden]){display:flex}}
 
 .bgvoet{background:var(--bg-inkt);color:#C8CBD2;padding:2.8rem 0 0;margin-top:3.5rem;font-size:.88rem;font-family:'Instrument Sans',system-ui,sans-serif}

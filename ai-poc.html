@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Proof of concept voor AI &mdash; van pilot naar bewezen stap | Bedrijfsgeheugen</title>
+<title>Proof of concept voor AI | Bedrijfsgeheugen</title>
 <meta name="description" content="AI-pilots met een heldere hypothese, testopzet en vooraf afgesproken criteria. Zodat er aan het eind een besluit ligt: stoppen, aanpassen of opschalen.">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/ai-poc">
 <meta property="og:type" content="website">
@@ -17,7 +17,7 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
-<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/assets/kop.css?v=6">
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/assets/kop.css?v=9">
 <style>
 :root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--blauw-l:#EDF0FD;--oranje:#FF4F17;
  --geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--vlak:#F4F5F8;--groen:#1F9D55;--groen-l:#E8F5EC;
@@ -193,6 +193,16 @@ table.tab tr:last-child td{border-bottom:0}
 .besluit li svg{width:14px;height:14px;flex:none;margin-top:3px}
 .scorekaart td.num{text-align:right;white-space:nowrap;font-weight:700}
 </style>
+<style id="bg-cluster-stijl">
+.bg-cluster{max-width:1120px;margin:2rem auto;padding:1rem 1.15rem;background:#fff;
+ border:1px solid #DCDFE6;border-radius:13px;font-family:'Instrument Sans',system-ui,sans-serif}
+.bg-cluster b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;letter-spacing:-.02em;margin-bottom:.5rem}
+.bg-cluster ul{list-style:none;margin:0;padding:0;display:grid;gap:.4rem}
+.bg-cluster li{font-size:.88rem;line-height:1.5;color:#5C646E}
+.bg-cluster a{color:#2742D6;font-weight:600;text-decoration:none}
+.bg-cluster a:hover{text-decoration:underline}
+@media(max-width:820px){.bg-cluster{margin:1.5rem 1rem}}
+</style>
 </head>
 <body>
 <div class="bgtop"><div class="bgtop-in">
@@ -208,7 +218,7 @@ table.tab tr:last-child td{border-bottom:0}
     <a href="/expertises">Expertises</a>
     <a href="/product">Product</a>
     <a href="/ai-marketing-mkb">AI-marketing</a>
-    <a href="/wijzigingen">Wijzigingen</a>
+    <a href="/ai-adoptie">AI &amp; Governance</a>
     <a href="/hoe-het-werkt">Hoe het werkt</a>
     <a href="/blog/">Blog</a>
     <a href="/over-ons">Over ons</a>
@@ -220,6 +230,8 @@ table.tab tr:last-child td{border-bottom:0}
   <a href="/expertises">Expertises</a>
   <a href="/product">Product</a>
     <a href="/ai-marketing-mkb">AI-marketing</a>
+  <a href="/ai-adoptie">AI &amp; Governance</a>
+  <a href="/workshops">AI-workshops</a>
   <a href="/wijzigingen">Wijzigingen</a>
   <a href="/hoe-het-werkt">Hoe het werkt</a>
   <a href="/blog/">Blog</a>
@@ -342,6 +354,11 @@ table.tab tr:last-child td{border-bottom:0}
 
 <div class="wrap"><section class="slot"><div><h2>Zet de eerste stap naar een pilot die iets oplevert.</h2><p>Ook als de uitkomst &ldquo;niet doen&rdquo; is. Begin met de gratis online Frisse blik om te zien waar de kansen zitten.</p><div class="slot-punten"><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Gratis online scan</span><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Vooraf afgesproken criteria</span><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Een besluit aan het eind</span></div></div><div class="knoppen"><a class="knop geel" href="/frisse-blik">Doe de Frisse blik &rarr;</a><a class="knop licht" href="/contact">Plan een gesprek</a></div></section></div>
 
+
+<aside class="bg-cluster" aria-label="Verder lezen">
+  <b>Verder lezen</b>
+  <ul><li><a href="/ai-adoptie">AI-adoptie in de praktijk</a> &mdash; wat er na een geslaagde pilot komt</li><li><a href="/ai-implementeren">AI verantwoord implementeren</a> &mdash; de stap na een geslaagde pilot</li></ul>
+</aside>
 </main>
 <footer class="bgvoet"><div class="bgvoet-in">
   <div class="bgvoet-net">

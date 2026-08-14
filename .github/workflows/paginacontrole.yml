@@ -1,4 +1,4 @@
-name: Paginacontrole
+name: Pagina- en SEO-controle
 
 # Loopt elke publieke pagina langs in een echte browser en kijkt of er iets stuk is.
 # Aanleiding: bij het gelijktrekken van de site-chrome (commit 4fb892b) is de voettekst
@@ -12,6 +12,10 @@ name: Paginacontrole
 #   4. Geen horizontale overloop op een telefoonscherm
 #   5. Interne links die nergens heen gaan
 #   6. Ontbrekende title, meta-omschrijving of canonical
+#
+# Daarnaast draait de SEO-controle, die de site tegen de zoekwoordstrategie legt:
+# de ijzeren regel (één zoekwoord, één pagina), de clusterstructuur (elke
+# clusterpagina linkt naar zijn pijler en terug) en ankerteksten die iets zeggen.
 #
 # Faalt de controle, dan blokkeert dat niets — de site staat er al. Het is een melding.
 
@@ -57,12 +61,26 @@ jobs:
         run: python .github/scripts/paginacontrole.py
         continue-on-error: true
 
+      - name: SEO en interne links controleren
+        id: seo
+        run: python .github/scripts/seocontrole.py
+        continue-on-error: true
+
+      - name: Rapporten samenvoegen
+        if: always()
+        run: |
+          : > rapport-samen.md
+          cat rapport.md >> rapport-samen.md 2>/dev/null || true
+          echo "" >> rapport-samen.md
+          cat seo-rapport.md >> rapport-samen.md 2>/dev/null || true
+          mv rapport-samen.md rapport.md
+
       - name: Rapport tonen
         if: always()
         run: cat rapport.md || echo "geen rapport"
 
       - name: Melding maken bij problemen
-        if: steps.controle.outcome == 'failure'
+        if: steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure'
         uses: actions/github-script@v7
         with:
           script: |
@@ -86,7 +104,7 @@ jobs:
             }
 
       - name: Melding sluiten als alles goed is
-        if: steps.controle.outcome == 'success'
+        if: steps.controle.outcome == 'success' && steps.seo.outcome == 'success'
         uses: actions/github-script@v7
         with:
           script: |
@@ -106,5 +124,5 @@ jobs:
             }
 
       - name: Falen doorgeven
-        if: steps.controle.outcome == 'failure'
+        if: steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure'
         run: exit 1
