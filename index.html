@@ -283,9 +283,7 @@ footer a:hover{color:#fff}
 
 /* meebewegende kopbalk */
 nav{transition:box-shadow .2s, background .2s}
-nav.diep{box-shadow:0 4px 16px rgba(20,23,26,.08)}
-nav.klein .nb{height:58px}
-nav.klein .logo .mark{width:30px;height:30px}
+.bgkop.diep{box-shadow:0 4px 16px rgba(20,23,26,.08)}
 nav .nb{transition:height .2s}
 .voortgang{position:fixed;top:0;left:0;height:3px;background:var(--oranje);z-index:70;width:0;transition:width .1s linear}
 
@@ -848,13 +846,12 @@ nav .nb{transition:height .2s}
   document.querySelectorAll('.jr').forEach(function(e){e.textContent=y});
 
   // kopbalk beweegt mee: verbergt bij naar beneden scrollen, komt terug bij omhoog
-  var kop=document.getElementById('kop'), vg=document.getElementById('vg');
+  var kop=document.getElementById('bgkop'), vg=document.getElementById('vg');
   function bijScroll(){
     var y=window.scrollY||0;
     var h=document.documentElement.scrollHeight-window.innerHeight;
-    vg.style.width=(h>0?(y/h*100):0)+'%';
-    kop.classList.toggle('diep', y>10);
-    kop.classList.toggle('klein', y>200);
+    if(vg) vg.style.width=(h>0?(y/h*100):0)+'%';
+    if(kop) kop.classList.toggle('diep', y>10);
   }
   addEventListener('scroll',bijScroll,{passive:true}); bijScroll();
 
@@ -892,16 +889,7 @@ nav .nb{transition:height .2s}
     ck.firstChild.textContent=open?'Open de calculator ':'Sluit de calculator ';
   }); }
 
-  // mobiel menu
-  var mk=document.getElementById('menuKnop'), mm=document.getElementById('mobMenu');
-  mk.addEventListener('click',function(){
-    var open=mk.getAttribute('aria-expanded')==='true';
-    mk.setAttribute('aria-expanded',!open);
-    mm.hidden=open;
-  });
-  mm.querySelectorAll('a').forEach(function(a){
-    a.addEventListener('click',function(){ mk.setAttribute('aria-expanded','false'); mm.hidden=true; });
-  });
+  // het mobiele menu zit sinds het gelijktrekken van de site-chrome in assets/kop.css
 })();
 </script>
 
