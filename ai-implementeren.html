@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI verantwoord implementeren &mdash; van pilot naar praktijk | Bedrijfsgeheugen</title>
+<meta name="description" content="Privacy, beveiliging, menselijke controle, testen en werkafspraken. Zo komt AI van de pilot in het dagelijkse werk, zonder dat het onderweg misgaat.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/ai-implementeren">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI verantwoord implementeren &mdash; van pilot naar praktijk | Bedrijfsgeheugen"><meta property="og:description" content="Privacy, beveiliging, menselijke controle, testen en werkafspraken. Zo komt AI van de pilot in het dagelijkse werk, zonder dat het onderweg misgaat.">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/ai-implementeren">
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<meta name="twitter:card" content="summary_large_image">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/assets/kop.css?v=6">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--blauw-l:#EDF0FD;--oranje:#FF4F17;
+ --geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--vlak:#F4F5F8;--groen:#1F9D55;--groen-l:#E8F5EC;
+ --amber:#C2410C;--amber-l:#FFF6E3;--rood:#C0392B;--rood-l:#FBEDEB;--wrap:1120px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--inkt);font-family:'Instrument Sans',system-ui,sans-serif;
+ font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif;margin:0;letter-spacing:-.025em;line-height:1.12}
+p{margin:0 0 .8rem}
+img,svg{max-width:100%;display:block}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 1.5rem}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+.sub{color:var(--grijs)}
+a{color:var(--blauw)}
+:focus-visible{outline:3px solid var(--blauw);outline-offset:3px;border-radius:6px}
+
+/* markeerstift: gele baan achter de tekst, onderste helft */
+.mark{position:relative;display:inline-block;white-space:nowrap;z-index:0}
+.mark::before{content:"";position:absolute;left:-.1em;right:-.1em;bottom:.04em;height:.44em;
+ background:var(--geel);border-radius:2px 8px 3px 7px;transform:rotate(-.6deg);z-index:-1}
+
+/* knoppen */
+.knop{display:inline-flex;align-items:center;gap:.45rem;background:var(--blauw);color:#fff;border-radius:10px;
+ padding:.65rem 1.1rem;font-weight:600;font-size:.95rem;text-decoration:none;border:1.5px solid var(--blauw)}
+.knop:hover{filter:brightness(1.08)}
+.knop.licht{background:#fff;color:var(--inkt);border-color:var(--lijn)}
+.knop.licht:hover{border-color:var(--blauw);color:var(--blauw);filter:none}
+.knop.geel{background:var(--geel);color:var(--inkt);border-color:var(--geel)}
+
+/* hero */
+.ai-hero{padding:1.6rem 0 2.8rem}
+.ai-hero-grid{display:grid;grid-template-columns:1.02fr 1.15fr;gap:2.6rem;align-items:start}
+.ai-hero-grid>*{min-width:0}
+@media(max-width:960px){.ai-hero-grid{grid-template-columns:1fr;gap:2rem}}
+.ai-hero h1{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;margin:.5rem 0 .3rem}
+.ai-hero .belofte{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(1.05rem,2vw,1.35rem);
+ letter-spacing:-.02em;margin:.2rem 0 1rem}
+.ai-hero p.intro{max-width:46ch;color:#3C424A}
+.ai-cta{display:flex;gap:.7rem;flex-wrap:wrap;margin:1.3rem 0 1.4rem}
+.ai-usps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;border-top:1px solid var(--lijn);padding-top:1.1rem}
+@media(max-width:700px){.ai-usps{grid-template-columns:1fr;gap:.7rem}}
+.ai-usp{display:flex;gap:.55rem;align-items:flex-start}
+.ai-usp svg{width:22px;height:22px;flex:none;stroke:var(--blauw);fill:none;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.ai-usp b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.9rem}
+.ai-usp span{font-size:.8rem;color:var(--grijs);line-height:1.45}
+
+/* paneel: het dashboardbeeld naast de hero */
+.paneel{background:#fff;border:2px solid var(--inkt);border-radius:16px;padding:1rem;box-shadow:0 16px 40px rgba(20,23,26,.08)}
+.paneel-kop{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.7rem}
+.paneel-kop h2{font-size:.95rem;font-weight:800}
+.paneel-kop .stand{margin-left:auto;font-size:.72rem;color:var(--grijs)}
+.tegels{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+@media(max-width:620px){.tegels{grid-template-columns:1fr!important}}
+.tegel{border:1px solid var(--lijn);border-radius:11px;padding:.65rem .75rem;background:var(--vlak);min-width:0;overflow-wrap:anywhere}
+.tegel .lab{font-size:.7rem;color:var(--grijs);display:block;margin-bottom:.15rem}
+.tegel .getal{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;line-height:1}
+.tegel .bij{display:block;font-size:.72rem;color:var(--grijs);margin-top:.15rem}
+.balkje{height:6px;border-radius:99px;background:var(--lijn);margin-top:.45rem;overflow:hidden}
+.balkje div{height:100%;border-radius:99px;background:var(--blauw)}
+
+/* geeltje met handgeschreven notitie */
+.geeltje{background:var(--geel);border-radius:3px 3px 10px 3px;padding:.7rem .85rem;font-size:.86rem;
+ line-height:1.4;box-shadow:0 6px 16px rgba(20,23,26,.10);transform:rotate(-1.4deg);max-width:15rem}
+.geeltje b{display:block}
+
+/* secties */
+section.blok{padding:2.4rem 0 0}
+section.blok h2{font-size:clamp(1.4rem,3vw,1.95rem);font-weight:800;margin-bottom:.35rem}
+section.blok h2 .mark::before{height:.36em}
+section.blok .leid{color:var(--grijs);max-width:60ch;margin-bottom:1.2rem}
+.rooster{display:grid;gap:.9rem}
+.r2{grid-template-columns:repeat(2,1fr)}
+.r3{grid-template-columns:repeat(3,1fr)}
+.r4{grid-template-columns:repeat(4,1fr)}
+.r5{grid-template-columns:repeat(5,1fr)}
+.r6{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1040px){.r5,.r6{grid-template-columns:repeat(3,1fr)}.r4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.r2,.r3,.r4,.r5,.r6{grid-template-columns:1fr}}
+.kaart{background:#fff;border:1px solid var(--lijn);border-radius:13px;padding:1rem 1.05rem}
+.kaart svg.ico{width:26px;height:26px;stroke:var(--blauw);fill:none;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;margin-bottom:.55rem}
+.kaart.waarschuw svg.ico{stroke:var(--oranje)}
+.kaart h3{font-size:.98rem;font-weight:800;margin-bottom:.3rem}
+.kaart p{font-size:.87rem;color:var(--grijs);margin:0}
+.kaart .nr{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;
+ background:var(--blauw);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.78rem;margin-bottom:.55rem}
+
+/* stappenrij */
+.stappen{display:grid;gap:.9rem;grid-template-columns:repeat(5,1fr);align-items:start}
+.stappen.zes{grid-template-columns:repeat(6,1fr)}
+.stappen.vier{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1040px){.stappen,.stappen.zes,.stappen.vier{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stappen,.stappen.zes,.stappen.vier{grid-template-columns:1fr}}
+.stap{position:relative;padding-right:.6rem}
+.stap .bol{width:30px;height:30px;border-radius:50%;background:var(--blauw);color:#fff;display:flex;
+ align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+ font-size:.85rem;margin-bottom:.55rem}
+.stap b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;margin-bottom:.2rem}
+.stap span{font-size:.84rem;color:var(--grijs);line-height:1.5}
+
+/* tabellen */
+.tabelhuls{overflow-x:auto;border:1px solid var(--lijn);border-radius:13px;background:#fff}
+table.tab{width:100%;border-collapse:collapse;font-size:.87rem;min-width:640px}
+table.tab th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+ text-transform:uppercase;color:var(--grijs);padding:.7rem .85rem;border-bottom:1px solid var(--lijn);background:var(--vlak)}
+table.tab td{padding:.7rem .85rem;border-bottom:1px solid var(--lijn);vertical-align:top}
+table.tab tr:last-child td{border-bottom:0}
+.pil{display:inline-block;border-radius:99px;padding:.1rem .55rem;font-size:.73rem;font-weight:700;white-space:nowrap}
+.pil.groen{background:var(--groen-l);color:var(--groen)}
+.pil.amber{background:var(--amber-l);color:var(--amber)}
+.pil.rood{background:var(--rood-l);color:var(--rood)}
+.pil.grijs{background:var(--vlak);color:var(--grijs)}
+
+/* risicoklassen */
+.klassen{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+@media(max-width:900px){.klassen{grid-template-columns:1fr}}
+.klasse{border-radius:13px;padding:1rem 1.05rem;border:1px solid}
+.klasse.laag{background:var(--groen-l);border-color:#BFD9C8}
+.klasse.beperkt{background:var(--amber-l);border-color:#F0DE8C}
+.klasse.hoog{background:var(--rood-l);border-color:#F0C4BD}
+.klasse h3{font-size:.95rem;margin-bottom:.5rem}
+.klasse ul{margin:0;padding-left:1.05rem;font-size:.85rem;line-height:1.55}
+.klasse li{margin-bottom:.4rem}
+.klasse li b{display:block}
+
+/* lijst met vinkjes */
+.vink{list-style:none;padding:0;margin:.6rem 0 0;display:grid;gap:.45rem}
+.vink li{display:flex;gap:.55rem;align-items:flex-start;font-size:.9rem;color:#3C424A}
+.vink svg{width:16px;height:16px;flex:none;margin-top:4px;color:var(--blauw)}
+
+/* slot */
+.slot{background:var(--inkt);color:#fff;border-radius:18px;padding:2rem 2.1rem;margin:2.6rem 0 3.2rem;
+ display:grid;grid-template-columns:1.25fr auto;gap:1.6rem;align-items:center}
+@media(max-width:860px){.slot{grid-template-columns:1fr;padding:1.6rem}}
+.slot h2{color:#fff;font-size:1.5rem;margin-bottom:.35rem}
+.slot p{color:rgba(255,255,255,.76);font-size:.94rem;max-width:52ch;margin:0}
+.slot .knoppen{display:flex;gap:.6rem;flex-wrap:wrap}
+.slot-punten{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:1rem;font-size:.85rem;color:rgba(255,255,255,.8)}
+.slot-punten span{display:inline-flex;align-items:center;gap:.35rem}
+.slot-punten svg{width:15px;height:15px;color:var(--geel)}
+
+/* eerlijk-blok */
+.eerlijk{border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 10px 10px 0;
+ padding:.9rem 1.05rem;font-size:.9rem;margin-top:1.2rem}
+.eerlijk b{font-family:'Bricolage Grotesque',sans-serif}
+.bron{font-size:.8rem;color:var(--grijs);margin-top:.8rem}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.ctrl-tab{width:100%;border-collapse:collapse;font-size:.85rem;min-width:520px}
+.ctrl-tab th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.08em;
+ text-transform:uppercase;color:var(--grijs);padding:.55rem .7rem;border-bottom:1px solid var(--lijn);background:var(--vlak)}
+.ctrl-tab td{padding:.55rem .7rem;border-bottom:1px solid var(--lijn);vertical-align:middle}
+.ctrl-tab tr:last-child td{border-bottom:0}
+.matrix{border-collapse:collapse;width:100%;font-size:.82rem;min-width:460px}
+.matrix th{padding:.5rem .6rem;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.07em;
+ text-transform:uppercase;color:var(--grijs);text-align:center}
+.matrix th:first-child{text-align:left}
+.matrix td{padding:.5rem .6rem;text-align:center;font-weight:700;border-radius:6px}
+.matrix td:first-child{text-align:left;font-weight:400;color:var(--grijs)}
+.m1{background:var(--groen-l);color:var(--groen)}
+.m2{background:#FDF3E0;color:var(--amber)}
+.m3{background:#FBE3DC;color:#B03A22}
+.m4{background:var(--rood-l);color:var(--rood)}
+.besluit{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+@media(max-width:860px){.besluit{grid-template-columns:1fr}}
+.besluit .kaart{border-width:1px}
+.besluit .kaart.stop{background:var(--rood-l);border-color:#F0C4BD}
+.besluit .kaart.pas{background:var(--amber-l);border-color:#F0DE8C}
+.besluit .kaart.op{background:var(--groen-l);border-color:#BFD9C8}
+.besluit ul{list-style:none;padding:0;margin:.5rem 0 0;display:grid;gap:.3rem}
+.besluit li{display:flex;gap:.4rem;align-items:flex-start;font-size:.84rem}
+.besluit li svg{width:14px;height:14px;flex:none;margin-top:3px}
+.scorekaart td.num{text-align:right;white-space:nowrap;font-weight:700}
+</style>
+</head>
+<body>
+<div class="bgtop"><div class="bgtop-in">
+  <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
+  <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
+</div></div>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+  <a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
+    <span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span>
+  </a>
+  <div class="bgkop-links">
+    <a href="/expertises">Expertises</a>
+    <a href="/product">Product</a>
+    <a href="/ai-marketing-mkb">AI-marketing</a>
+    <a href="/wijzigingen">Wijzigingen</a>
+    <a href="/hoe-het-werkt">Hoe het werkt</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+  <button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
+</div>
+<div class="bgkop-mob" id="bgkopMob" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/product">Product</a>
+    <a href="/ai-marketing-mkb">AI-marketing</a>
+  <a href="/wijzigingen">Wijzigingen</a>
+  <a href="/hoe-het-werkt">Hoe het werkt</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+</div></nav>
+<main>
+<nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">&rsaquo;</span><span aria-current="page">AI implementeren</span></nav>
+
+<section class="ai-hero"><div class="wrap ai-hero-grid">
+  <div>
+    <span class="eyebrow">AI &amp; Governance</span>
+    <h1>AI verantwoord implementeren. Van pilot naar <span class="mark">praktijk</span>.</h1>
+    <p class="intro">Tussen &ldquo;het werkt in de demo&rdquo; en &ldquo;het draait mee in het werk&rdquo; zit het deel waar het meestal misgaat. Wij helpen je die stap te zetten met aandacht voor privacy, beveiliging, menselijke controle, testen en werkafspraken die mensen ook echt volgen.</p>
+    <div class="ai-cta">
+      <a class="knop" href="/frisse-blik">Doe de Frisse blik &rarr;</a>
+      <a class="knop licht" href="/contact">Plan een sessie</a>
+    </div>
+    <div class="ai-usps">
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l7.5 3v6c0 4.6-3.1 8.2-7.5 9.4-4.4-1.2-7.5-4.8-7.5-9.4v-6z"/><path d="M8.6 12l2.3 2.3 4.5-5"/></svg><div><b>Verantwoord</b><span>Privacy, beveiliging en compliance vanaf het begin.</span></div></div>
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/></svg><div><b>Mens centraal</b><span>Menselijke controle waar het ertoe doet.</span></div></div>
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.2l2.6 2.6 5-5.6"/></svg><div><b>Getest en bewezen</b><span>Van pilot naar praktijk, niet van demo naar hoop.</span></div></div>
+    </div>
+  </div>
+  <div><div class="paneel">
+  <div class="paneel-kop"><h2>Implementatie-overzicht</h2><span class="stand">voorbeeld</span></div>
+  <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-bottom:.7rem">
+    <span class="pil groen">Pilot afgerond</span><span style="color:var(--lijn)">&rarr;</span>
+    <span class="pil groen">Testen afgerond</span><span style="color:var(--lijn)">&rarr;</span>
+    <span class="pil amber">Werkafspraken</span><span style="color:var(--lijn)">&rarr;</span>
+    <span class="pil grijs">Livegang</span><span style="color:var(--lijn)">&rarr;</span>
+    <span class="pil grijs">Evaluatie</span>
+  </div>
+  <div class="tegels">
+    <div class="tegel"><span class="lab">Privacy en data</span><span class="getal" style="font-size:1.05rem;color:var(--groen)">In orde</span><span class="bij">DPIA afgerond</span></div>
+    <div class="tegel"><span class="lab">Beveiliging</span><span class="getal" style="font-size:1.05rem;color:var(--groen)">In orde</span><span class="bij">toegang en logging</span></div>
+    <div class="tegel"><span class="lab">Mens in de lus</span><span class="getal" style="font-size:1.05rem;color:var(--groen)">Actief</span><span class="bij">bij elk besluit dat telt</span></div>
+    <div class="tegel"><span class="lab">Adoptie en training</span><span class="getal" style="font-size:1.05rem;color:var(--amber)">Loopt</span><span class="bij">3 van 5 teams</span></div>
+  </div>
+  <div style="margin-top:.7rem;border-top:1px solid var(--lijn);padding-top:.7rem;display:flex;gap:.8rem;align-items:center">
+    <div style="flex:1"><span style="font-size:.72rem;color:var(--grijs)">Voortgang</span>
+      <div class="balkje" style="margin-top:.3rem"><div style="width:73%"></div></div></div>
+    <span style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.3rem;font-weight:800">73%</span>
+  </div>
+  <p style="font-size:.8rem;color:var(--grijs);margin:.5rem 0 0">Volgende stap: werkafspraken vastleggen met de teamleiders.</p>
+</div>
+<div class="geeltje" style="margin:1rem 0 0 auto">Verantwoord AI-gebruik<br>begint met goede<br>afspraken.</div></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Wat er vaak misgaat</h2>
+  <p class="leid">Zes patronen. Ze kosten zelden de techniek, wel het vertrouwen.</p>
+  <div class="rooster r3"><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.3l3.4 2"/></svg><h3>Te snel live</h3><p>Van pilot direct naar productie, zonder fatsoenlijke test. De eerste fout is meteen zichtbaar bij een klant.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3.5H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V8.5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></svg><h3>Geen spelregels</h3><p>Onduidelijk wie mag beslissen, controleren en aanpassen. Dus doet iedereen het anders.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 018 0v3M12 14.5v2.5"/></svg><h3>Privacy vergeten</h3><p>Persoonsgegevens of vertrouwelijke informatie die niet goed is afgeschermd. Achteraf lastig recht te zetten.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg><h3>Uitvoer niet gecontroleerd</h3><p>Antwoorden worden blind overgenomen zonder validatie. Tot er &eacute;&eacute;n niet klopt.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 01-14.6 5.9"/><path d="M3.5 12a8.5 8.5 0 0114.6-5.9"/><path d="M18.1 2.5v3.6h-3.6M5.9 21.5v-3.6h3.6"/></svg><h3>Geen terugkoppeling</h3><p>Gebruikersfeedback wordt niet opgehaald, dus niemand weet waar het schuurt.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/></svg><h3>Afhankelijk van &eacute;&eacute;n persoon</h3><p>Kennis en beheer zitten bij de enthousiasteling. Vertrekt die, dan valt het stil.</p></article></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Waar wij op sturen</h2>
+  <div class="rooster r3"><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 018 0v3M12 14.5v2.5"/></svg><h3>Veilige inrichting</h3><p>Data-soeverein, privacy vanaf het ontwerp en beveiliging volgens de standaard. Zie <a href="/data-soevereiniteit">data-soevereiniteit</a>.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/></svg><h3>Mens in de lus</h3><p>Menselijke controle en uitleg bij beslissingen die gevolgen hebben voor mensen.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.2l2.6 2.6 5-5.6"/></svg><h3>Kwaliteitscontrole</h3><p>Tests, validatie en monitoring van uitvoer en prestaties &mdash; ook n&aacute; de livegang.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3.5H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V8.5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></svg><h3>Duidelijke afspraken</h3><p>Rollen, verantwoordelijkheden en escalatie vastgelegd. Zie <a href="/ai-governance">AI-governance</a>.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 20.5h17"/><path d="M7 17v-5M11.5 17V6.5M16 17v-3M20 17V9.5"/></svg><h3>Monitoring</h3><p>Doorlopend inzicht in gebruik, kwaliteit en impact, in plaats van een meting achteraf.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 01-14.6 5.9"/><path d="M3.5 12a8.5 8.5 0 0114.6-5.9"/><path d="M18.1 2.5v3.6h-3.6M5.9 21.5v-3.6h3.6"/></svg><h3>Bijsturen</h3><p>Regelmatig evalueren en aanpassen op basis van data en feedback.</p></article></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Van pilot naar praktijk</h2>
+  <p class="leid">Zes stappen. Stap vier is waar de meeste trajecten stranden &mdash; en waar wij het meeste tijd in steken.</p>
+  <div class="stappen zes"><div class="stap"><span class="bol">1</span><b>Inventarisatie</b><span>We brengen use cases, data, risico&rsquo;s en eisen in kaart.</span></div><div class="stap"><span class="bol">2</span><b>Ontwerp</b><span>We ontwerpen de oplossing en bepalen succescriteria en meetpunten.</span></div><div class="stap"><span class="bol">3</span><b>Testen en valideren</b><span>We testen met echte data, met focus op kwaliteit, privacy en vertekening.</span></div><div class="stap"><span class="bol">4</span><b>Werkafspraken</b><span>We leggen rollen, controles, regels en escalatie vast &mdash; hier strandt het meestal.</span></div><div class="stap"><span class="bol">5</span><b>Livegang</b><span>Gefaseerde uitrol met training, ondersteuning en communicatie.</span></div><div class="stap"><span class="bol">6</span><b>Evaluatie</b><span>We meten impact, halen feedback op en sturen continu bij.</span></div></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>De checklist die we aflopen</h2>
+  <p class="leid">Elk punt heeft een eigenaar. Zonder eigenaar is het geen afspraak maar een voornemen.</p>
+  <div class="tabelhuls"><table class="ctrl-tab">
+    <thead><tr><th>Controle</th><th>Status</th><th>Eigenaar</th></tr></thead>
+    <tbody>
+      <tr><td>Dataclassificatie en DPIA</td><td><span class="pil groen">gereed</span></td><td>Privacy</td></tr>
+      <tr><td>Toegangsbeheer en autorisaties</td><td><span class="pil groen">gereed</span></td><td>IT</td></tr>
+      <tr><td>Modelkeuze en documentatie</td><td><span class="pil groen">gereed</span></td><td>Projectleiding</td></tr>
+      <tr><td>Testplan en validatiecriteria</td><td><span class="pil amber">in uitvoering</span></td><td>Proceseigenaar</td></tr>
+      <tr><td>Controle op vertekening en fouten</td><td><span class="pil amber">in uitvoering</span></td><td>Projectleiding</td></tr>
+      <tr><td>Menselijke controle ingericht</td><td><span class="pil amber">in uitvoering</span></td><td>Proceseigenaar</td></tr>
+      <tr><td>Logging en audittrail</td><td><span class="pil grijs">te plannen</span></td><td>IT</td></tr>
+      <tr><td>Gebruikerstraining en adoptieplan</td><td><span class="pil grijs">te plannen</span></td><td>Teamleiding</td></tr>
+      <tr><td>Incidentprocedure en escalatie</td><td><span class="pil grijs">te plannen</span></td><td>Directie</td></tr>
+      <tr><td>Evaluatie en meetpunten</td><td><span class="pil grijs">te plannen</span></td><td>Proceseigenaar</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Risico&rsquo;s wegen, niet vermijden</h2>
+  <p class="leid">Kans tegen impact. Rechtsboven eerst, linksonder later of nooit.</p>
+  <div class="tabelhuls" style="padding:.8rem"><table class="matrix">
+    <thead><tr><th></th><th>Kans laag</th><th>Kans middel</th><th>Kans hoog</th><th>Kans zeer hoog</th></tr></thead>
+    <tbody>
+      <tr><td>Impact zeer hoog</td><td class="m2">2</td><td class="m3">3</td><td class="m4">4</td><td class="m4">4</td></tr>
+      <tr><td>Impact hoog</td><td class="m1">1</td><td class="m2">2</td><td class="m3">3</td><td class="m4">4</td></tr>
+      <tr><td>Impact middel</td><td class="m1">1</td><td class="m1">1</td><td class="m2">2</td><td class="m3">3</td></tr>
+      <tr><td>Impact laag</td><td class="m1">1</td><td class="m1">1</td><td class="m1">1</td><td class="m2">2</td></tr>
+    </tbody>
+  </table></div>
+  <div class="rooster r2" style="margin-top:.9rem">
+    <div class="kaart"><h3>De maatregelen die het vaakst nodig zijn</h3>
+      <ul class="vink">
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Geen persoonsgegevens in prompts of uitvoer, tenzij vastgelegd waarom</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Menselijke controle bij besluiten met gevolgen voor mensen</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Periodieke kwaliteitscontrole en hertraining</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Duidelijke escalatie bij afwijkingen, met een naam erbij</li>
+      </ul></div>
+    <div class="kaart"><h3>Wat dit oplevert</h3>
+      <ul class="vink">
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b style="font-weight:600">Meer vertrouwen</b> &mdash; gebruikers weten dat het veilig is ingericht</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b style="font-weight:600">Minder risico</b> &mdash; minder kans op fouten, lekken en compliance-gedoe</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b style="font-weight:600">Snellere adoptie</b> &mdash; duidelijke afspraken maken het makkelijker, niet moeilijker</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b style="font-weight:600">Aantoonbaar</b> &mdash; gedocumenteerd en toetsbaar volgens interne en wettelijke eisen</li>
+      </ul></div>
+  </div>
+  <div class="eerlijk"><b>Waarom dit geen rem is.</b> De meeste organisaties denken dat governance vertraagt. In de praktijk versnelt het: als vooraf vastligt wat mag, hoeft niemand meer per geval te vragen of het mag. Dat scheelt meer tijd dan het kost.</div>
+</div></section>
+
+<div class="wrap"><section class="slot"><div><h2>Klaar om AI verantwoord te implementeren?</h2><p>De Frisse blik laat zien waar je staat met data, AI en governance &mdash; en welke stap als eerste zin heeft.</p><div class="slot-punten"><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Gratis online scan</span><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Geen verplichtingen</span><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Praktisch stappenplan</span></div></div><div class="knoppen"><a class="knop geel" href="/frisse-blik">Doe de Frisse blik &rarr;</a><a class="knop licht" href="/contact">Plan een gesprek</a></div></section></div>
+
+</main>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <div class="bgvoet-net">
+    <div>
+      <span class="bgvoet-merk">Bedrijfs<b>geheugen</b>.nl</span>
+      <p class="bgvoet-over">Praktische strategie, slimme systemen en AI.<br>Voor ondernemers die willen groeien.</p>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Oplossingen</span>
+      <a href="/expertises">Alle expertises</a>
+      <a href="/systemen-koppelen">Systemen koppelen</a>
+      <a href="/afas-koppeling">AFAS-koppeling</a>
+      <a href="/due-diligence">Due diligence &amp; exit</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Producten</span>
+      <a href="/ai-marketing-mkb">AI Marketing Machine</a>
+      <a href="/product">Het portaal</a>
+      <a href="/wijzigingen">Wijzigingen</a>
+      <a href="/frisse-blik">Frisse blik</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Kennis</span>
+      <a href="/blog/">Blog</a>
+      <a href="/hoe-het-werkt">Hoe het werkt</a>
+      <a href="/wijzigingen-uitgelegd">Wijzigingen uitgelegd</a>
+      <a href="/zelfscan">Zelfscan</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Over ons</span>
+      <a href="/over-ons">Ons verhaal</a>
+      <a href="/voor-mkb">Voor het mkb</a>
+      <a href="/investeerders-ma">Investeerders &amp; M&amp;A</a>
+      <a href="/contact">Contact</a>
+    </div>
+    <div class="bgvoet-cta">
+      <b>Plan een Frisse blik</b>
+      <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
+      <a class="bgvoet-knop" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+    </div>
+  </div>
+  <div class="bgvoet-onder">
+    <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
+    <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
+  </div>
+</div></footer>
+<script>
+(function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');
+if(k&&m){k.addEventListener('click',function(){var dicht=m.hasAttribute('hidden');
+if(dicht){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}
+k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
+</script>
+</body>
+</html>
