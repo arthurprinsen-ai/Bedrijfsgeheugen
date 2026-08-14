@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grip op de AI Act &mdash; zonder juridisch doolhof | Bedrijfsgeheugen</title>
+<meta name="description" content="Wat de EU AI Act van jouw organisatie vraagt: risicoklassen, transparantieplicht, documentatie en de nieuwe deadlines na de Digital Omnibus. Praktisch, voor 3 tot 250 medewerkers.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/ai-act">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Grip op de AI Act &mdash; zonder juridisch doolhof | Bedrijfsgeheugen"><meta property="og:description" content="Wat de EU AI Act van jouw organisatie vraagt: risicoklassen, transparantieplicht, documentatie en de nieuwe deadlines na de Digital Omnibus. Praktisch, voor 3 tot 250 medewerkers.">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/ai-act">
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<meta name="twitter:card" content="summary_large_image">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/assets/kop.css?v=6">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--blauw-l:#EDF0FD;--oranje:#FF4F17;
+ --geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--vlak:#F4F5F8;--groen:#1F9D55;--groen-l:#E8F5EC;
+ --amber:#C2410C;--amber-l:#FFF6E3;--rood:#C0392B;--rood-l:#FBEDEB;--wrap:1120px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--inkt);font-family:'Instrument Sans',system-ui,sans-serif;
+ font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif;margin:0;letter-spacing:-.025em;line-height:1.12}
+p{margin:0 0 .8rem}
+img,svg{max-width:100%;display:block}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 1.5rem}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+.sub{color:var(--grijs)}
+a{color:var(--blauw)}
+:focus-visible{outline:3px solid var(--blauw);outline-offset:3px;border-radius:6px}
+
+/* markeerstift: gele baan achter de tekst, onderste helft */
+.mark{position:relative;display:inline-block;white-space:nowrap;z-index:0}
+.mark::before{content:"";position:absolute;left:-.1em;right:-.1em;bottom:.04em;height:.44em;
+ background:var(--geel);border-radius:2px 8px 3px 7px;transform:rotate(-.6deg);z-index:-1}
+
+/* knoppen */
+.knop{display:inline-flex;align-items:center;gap:.45rem;background:var(--blauw);color:#fff;border-radius:10px;
+ padding:.65rem 1.1rem;font-weight:600;font-size:.95rem;text-decoration:none;border:1.5px solid var(--blauw)}
+.knop:hover{filter:brightness(1.08)}
+.knop.licht{background:#fff;color:var(--inkt);border-color:var(--lijn)}
+.knop.licht:hover{border-color:var(--blauw);color:var(--blauw);filter:none}
+.knop.geel{background:var(--geel);color:var(--inkt);border-color:var(--geel)}
+
+/* hero */
+.ai-hero{padding:1.6rem 0 2.8rem}
+.ai-hero-grid{display:grid;grid-template-columns:1.02fr 1.15fr;gap:2.6rem;align-items:start}
+@media(max-width:960px){.ai-hero-grid{grid-template-columns:1fr;gap:2rem}}
+.ai-hero h1{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;margin:.5rem 0 .3rem}
+.ai-hero .belofte{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(1.05rem,2vw,1.35rem);
+ letter-spacing:-.02em;margin:.2rem 0 1rem}
+.ai-hero p.intro{max-width:46ch;color:#3C424A}
+.ai-cta{display:flex;gap:.7rem;flex-wrap:wrap;margin:1.3rem 0 1.4rem}
+.ai-usps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;border-top:1px solid var(--lijn);padding-top:1.1rem}
+@media(max-width:700px){.ai-usps{grid-template-columns:1fr;gap:.7rem}}
+.ai-usp{display:flex;gap:.55rem;align-items:flex-start}
+.ai-usp svg{width:22px;height:22px;flex:none;stroke:var(--blauw);fill:none;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.ai-usp b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.9rem}
+.ai-usp span{font-size:.8rem;color:var(--grijs);line-height:1.45}
+
+/* paneel: het dashboardbeeld naast de hero */
+.paneel{background:#fff;border:2px solid var(--inkt);border-radius:16px;padding:1rem;box-shadow:0 16px 40px rgba(20,23,26,.08)}
+.paneel-kop{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.7rem}
+.paneel-kop h2{font-size:.95rem;font-weight:800}
+.paneel-kop .stand{margin-left:auto;font-size:.72rem;color:var(--grijs)}
+.tegels{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+@media(max-width:520px){.tegels{grid-template-columns:1fr}}
+.tegel{border:1px solid var(--lijn);border-radius:11px;padding:.65rem .75rem;background:var(--vlak)}
+.tegel .lab{font-size:.7rem;color:var(--grijs);display:block;margin-bottom:.15rem}
+.tegel .getal{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;line-height:1}
+.tegel .bij{display:block;font-size:.72rem;color:var(--grijs);margin-top:.15rem}
+.balkje{height:6px;border-radius:99px;background:var(--lijn);margin-top:.45rem;overflow:hidden}
+.balkje div{height:100%;border-radius:99px;background:var(--blauw)}
+
+/* geeltje met handgeschreven notitie */
+.geeltje{background:var(--geel);border-radius:3px 3px 10px 3px;padding:.7rem .85rem;font-size:.86rem;
+ line-height:1.4;box-shadow:0 6px 16px rgba(20,23,26,.10);transform:rotate(-1.4deg);max-width:15rem}
+.geeltje b{display:block}
+
+/* secties */
+section.blok{padding:2.4rem 0 0}
+section.blok h2{font-size:clamp(1.4rem,3vw,1.95rem);font-weight:800;margin-bottom:.35rem}
+section.blok h2 .mark::before{height:.36em}
+section.blok .leid{color:var(--grijs);max-width:60ch;margin-bottom:1.2rem}
+.rooster{display:grid;gap:.9rem}
+.r2{grid-template-columns:repeat(2,1fr)}
+.r3{grid-template-columns:repeat(3,1fr)}
+.r4{grid-template-columns:repeat(4,1fr)}
+.r5{grid-template-columns:repeat(5,1fr)}
+.r6{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1040px){.r5,.r6{grid-template-columns:repeat(3,1fr)}.r4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.r2,.r3,.r4,.r5,.r6{grid-template-columns:1fr}}
+.kaart{background:#fff;border:1px solid var(--lijn);border-radius:13px;padding:1rem 1.05rem}
+.kaart svg.ico{width:26px;height:26px;stroke:var(--blauw);fill:none;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;margin-bottom:.55rem}
+.kaart.waarschuw svg.ico{stroke:var(--oranje)}
+.kaart h3{font-size:.98rem;font-weight:800;margin-bottom:.3rem}
+.kaart p{font-size:.87rem;color:var(--grijs);margin:0}
+.kaart .nr{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;
+ background:var(--blauw);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.78rem;margin-bottom:.55rem}
+
+/* stappenrij */
+.stappen{display:grid;gap:.9rem;grid-template-columns:repeat(5,1fr);align-items:start}
+.stappen.zes{grid-template-columns:repeat(6,1fr)}
+.stappen.vier{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1040px){.stappen,.stappen.zes,.stappen.vier{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stappen,.stappen.zes,.stappen.vier{grid-template-columns:1fr}}
+.stap{position:relative;padding-right:.6rem}
+.stap .bol{width:30px;height:30px;border-radius:50%;background:var(--blauw);color:#fff;display:flex;
+ align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+ font-size:.85rem;margin-bottom:.55rem}
+.stap b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;margin-bottom:.2rem}
+.stap span{font-size:.84rem;color:var(--grijs);line-height:1.5}
+
+/* tabellen */
+.tabelhuls{overflow-x:auto;border:1px solid var(--lijn);border-radius:13px;background:#fff}
+table.tab{width:100%;border-collapse:collapse;font-size:.87rem;min-width:640px}
+table.tab th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+ text-transform:uppercase;color:var(--grijs);padding:.7rem .85rem;border-bottom:1px solid var(--lijn);background:var(--vlak)}
+table.tab td{padding:.7rem .85rem;border-bottom:1px solid var(--lijn);vertical-align:top}
+table.tab tr:last-child td{border-bottom:0}
+.pil{display:inline-block;border-radius:99px;padding:.1rem .55rem;font-size:.73rem;font-weight:700;white-space:nowrap}
+.pil.groen{background:var(--groen-l);color:var(--groen)}
+.pil.amber{background:var(--amber-l);color:var(--amber)}
+.pil.rood{background:var(--rood-l);color:var(--rood)}
+.pil.grijs{background:var(--vlak);color:var(--grijs)}
+
+/* risicoklassen */
+.klassen{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+@media(max-width:900px){.klassen{grid-template-columns:1fr}}
+.klasse{border-radius:13px;padding:1rem 1.05rem;border:1px solid}
+.klasse.laag{background:var(--groen-l);border-color:#BFD9C8}
+.klasse.beperkt{background:var(--amber-l);border-color:#F0DE8C}
+.klasse.hoog{background:var(--rood-l);border-color:#F0C4BD}
+.klasse h3{font-size:.95rem;margin-bottom:.5rem}
+.klasse ul{margin:0;padding-left:1.05rem;font-size:.85rem;line-height:1.55}
+.klasse li{margin-bottom:.4rem}
+.klasse li b{display:block}
+
+/* lijst met vinkjes */
+.vink{list-style:none;padding:0;margin:.6rem 0 0;display:grid;gap:.45rem}
+.vink li{display:flex;gap:.55rem;align-items:flex-start;font-size:.9rem;color:#3C424A}
+.vink svg{width:16px;height:16px;flex:none;margin-top:4px;color:var(--blauw)}
+
+/* slot */
+.slot{background:var(--inkt);color:#fff;border-radius:18px;padding:2rem 2.1rem;margin:2.6rem 0 3.2rem;
+ display:grid;grid-template-columns:1.25fr auto;gap:1.6rem;align-items:center}
+@media(max-width:860px){.slot{grid-template-columns:1fr;padding:1.6rem}}
+.slot h2{color:#fff;font-size:1.5rem;margin-bottom:.35rem}
+.slot p{color:rgba(255,255,255,.76);font-size:.94rem;max-width:52ch;margin:0}
+.slot .knoppen{display:flex;gap:.6rem;flex-wrap:wrap}
+.slot-punten{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:1rem;font-size:.85rem;color:rgba(255,255,255,.8)}
+.slot-punten span{display:inline-flex;align-items:center;gap:.35rem}
+.slot-punten svg{width:15px;height:15px;color:var(--geel)}
+
+/* eerlijk-blok */
+.eerlijk{border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 10px 10px 0;
+ padding:.9rem 1.05rem;font-size:.9rem;margin-top:1.2rem}
+.eerlijk b{font-family:'Bricolage Grotesque',sans-serif}
+.bron{font-size:.8rem;color:var(--grijs);margin-top:.8rem}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="bgtop"><div class="bgtop-in">
+  <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
+  <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
+</div></div>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+  <a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img src="/assets/merk/logo-merk.png" alt="" width="34" height="34">
+    <span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span>
+  </a>
+  <div class="bgkop-links">
+    <a href="/expertises">Expertises</a>
+    <a href="/product">Product</a>
+    <a href="/ai-marketing-mkb">AI-marketing</a>
+    <a href="/wijzigingen">Wijzigingen</a>
+    <a href="/hoe-het-werkt">Hoe het werkt</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+  <button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
+</div>
+<div class="bgkop-mob" id="bgkopMob" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/product">Product</a>
+    <a href="/ai-marketing-mkb">AI-marketing</a>
+  <a href="/wijzigingen">Wijzigingen</a>
+  <a href="/hoe-het-werkt">Hoe het werkt</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+</div></nav>
+<main>
+<nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">&rsaquo;</span><span aria-current="page">AI Act</span></nav>
+
+<section class="ai-hero"><div class="wrap ai-hero-grid">
+  <div>
+    <span class="eyebrow">AI &amp; Governance</span>
+    <h1>Grip op de AI Act.</h1>
+    <p class="belofte">Zonder juridisch <span class="mark">doolhof</span>.</p>
+    <p class="intro">De AI Act stelt eisen aan organisaties die AI ontwikkelen of gebruiken. Wij helpen je begrijpen wat er van je wordt verwacht, in welke risicoklasse je valt, wat je moet documenteren en welke maatregelen je moet nemen. Praktisch, gestructureerd en meteen toepasbaar.</p>
+    <div class="ai-cta">
+      <a class="knop" href="/frisse-blik">Doe de Frisse blik &rarr;</a>
+      <a class="knop licht" href="/contact">Plan een sessie</a>
+    </div>
+    <div class="ai-usps">
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.2l2.6 2.6 5-5.6"/></svg><div><b>Praktisch en begrijpelijk</b><span>Geen juridisch jargon.</span></div></div>
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5.5a5 5 0 01-6.6 6.6L5.6 19.9a2 2 0 01-2.8-2.8l7.8-7.8A5 5 0 0117.2 2.7l-3 3 2.1 2.1 3-3c.4.5.7 1.1.7 1.7z"/></svg><div><b>Direct toepasbaar</b><span>Voor organisaties van 3 tot 250 medewerkers.</span></div></div>
+      <div class="ai-usp"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.3l3.4 2"/></svg><div><b>Actueel</b><span>De Digital Omnibus is verwerkt.</span></div></div>
+    </div>
+  </div>
+  <div><div class="paneel">
+  <div class="paneel-kop"><h2>Waar je staat onder de AI Act</h2><span class="stand">voorbeeld</span></div>
+  <div class="tegels">
+    <div class="tegel"><span class="lab">AI-systemen in kaart</span><span class="getal">18</span><span class="bij">12 in gebruik &middot; 6 in ontwikkeling</span></div>
+    <div class="tegel"><span class="lab">Risicoklasse</span><span class="getal">3</span><span class="bij">hoog &middot; 7 beperkt &middot; 8 minimaal</span></div>
+    <div class="tegel"><span class="lab">Beleid vastgelegd</span><span class="getal">3</span><span class="bij">van de 3 verplichte stukken</span></div>
+    <div class="tegel"><span class="lab">Documentatie compleet</span><span class="getal">68%</span><span class="bij">23 van 34 onderdelen</span>
+      <div class="balkje"><div style="width:68%"></div></div></div>
+    <div class="tegel"><span class="lab">Leveranciers getoetst</span><span class="getal">8</span><span class="bij">op AI-verplichtingen</span></div>
+    <div class="tegel"><span class="lab">Deadlines binnen 90 dagen</span><span class="getal">2</span><span class="bij">markering &middot; jaarlijkse review</span></div>
+  </div>
+  <div style="display:flex;gap:.8rem;align-items:center;margin-top:.8rem;border-top:1px solid var(--lijn);padding-top:.8rem">
+    <span class="pil groen">Goed op weg</span>
+    <span style="font-size:.82rem;color:var(--grijs)">Focus op documentatie en de beoordeling van je leveranciers.</span>
+  </div>
+</div>
+<div class="geeltje" style="margin:1rem 0 0 auto">Geen standaardpakket.<br>Wel een helder pad<br>naar compliance.</div></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Wat er nu geldt, en wat is uitgesteld</h2>
+  <p class="leid">Sinds 24 juli 2026 staat de Digital Omnibus in het Publicatieblad. Veel ondernemers lazen alleen de kop &ldquo;AI Act uitgesteld&rdquo;. Dat klopt niet: het zwaarste deel schuift op, de rest geldt gewoon.</p>
+  <div class="tabelhuls"><table class="tab">
+    <thead><tr><th>Wanneer</th><th>Wat</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>2 februari 2025</td><td>Verbod op bepaalde AI-praktijken. Verplichting tot AI-geletterdheid (artikel&nbsp;4)</td><td><span class="pil rood">geldt nu</span></td></tr>
+      <tr><td>2 augustus 2025</td><td>Regels voor general-purpose AI-modellen</td><td><span class="pil rood">geldt nu</span></td></tr>
+      <tr><td>2 augustus 2026</td><td>Transparantieplichten (artikel&nbsp;50). Handhaving en boetebevoegdheid</td><td><span class="pil rood">geldt nu</span></td></tr>
+      <tr><td>2 december 2026</td><td>Markering van AI-content voor systemen die al v&oacute;&oacute;r augustus 2026 op de markt waren</td><td><span class="pil amber">binnenkort</span></td></tr>
+      <tr><td>2 december 2027</td><td>Hoog-risico AI, bijlage&nbsp;III &mdash; werving, kredietscoring, biometrie</td><td><span class="pil grijs">uitgesteld</span></td></tr>
+      <tr><td>2 augustus 2028</td><td>Hoog-risico AI ingebouwd in gereguleerde producten, bijlage&nbsp;I</td><td><span class="pil grijs">uitgesteld</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="eerlijk"><b>Uitstel is geen vrijstelling.</b> Een risicoclassificatie, een AI-register en de documentatie kosten maanden, geen weken. En de transparantieplicht raakt vrijwel elke organisatie die een chatbot inzet of content met AI publiceert &mdash; die datum is al geweest.</div>
+  <p class="bron">Bron: Verordening (EU) 2026/1744 (Digital Omnibus on AI), bekendgemaakt 24 juli 2026, in werking 27 juli 2026. Gecontroleerd op 14 augustus 2026. Meer hierover in <a href="/blog/eu-ai-act-mkb/">ons artikel over de AI Act voor het mkb</a>.</p>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Waar organisaties vastlopen</h2>
+  <p class="leid">Vijf dingen die we bij vrijwel elke organisatie tegenkomen.</p>
+  <div class="rooster r5"><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.6a2.3 2.3 0 114 1.6c-.9.8-1.8 1.2-1.8 2.4M12 16.6v.3"/></svg><h3>Onduidelijke inventarisatie</h3><p>Niet helder welke systemen onder de AI Act vallen. Vaak zit er meer AI in het bedrijf dan iemand denkt.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/></svg><h3>Geen eigenaarschap</h3><p>Niemand is formeel verantwoordelijk. Het ligt bij IT, bij Legal, of bij niemand.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5h9.5a4 4 0 000-8 5.5 5.5 0 00-10.6 1.6A3.4 3.4 0 007 18.5z"/></svg><h3>Leveranciers onduidelijk</h3><p>Onvoldoende zicht op de risico&rsquo;s en verplichtingen van de partijen waar je AI van afneemt.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3.5H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V8.5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/></svg><h3>Documentatie ontbreekt</h3><p>De vereiste stukken zijn er niet, zijn verouderd, of zijn niet terug te vinden als iemand ernaar vraagt.</p></article><article class="kaart waarschuw"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg><h3>Geen controle op gebruik</h3><p>Geen zicht op hoe AI in de praktijk wordt gebruikt &mdash; en of dat is wat er is afgesproken.</p></article></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Wat wij doen</h2>
+  <p class="leid">Zeven stappen, van inventarisatie tot een actielijst waar je maandag mee begint.</p>
+  <div class="rooster r4"><article class="kaart"><span class="nr">1</span><h3>Inventariseren</h3><p>We brengen je AI-systemen en het feitelijke gebruik in kaart. Ook de tools die niemand heeft aangemeld.</p></article><article class="kaart"><span class="nr">2</span><h3>Classificeren</h3><p>We bepalen per systeem de risicoklasse volgens de AI Act, met de onderbouwing erbij.</p></article><article class="kaart"><span class="nr">3</span><h3>Beleid vastleggen</h3><p>Beleid, principes en controlemaatregelen, geschreven in taal die je team begrijpt.</p></article><article class="kaart"><span class="nr">4</span><h3>Verantwoordelijkheden</h3><p>We leggen rollen vast: wie is eigenaar, wie beoordeelt, wie grijpt in.</p></article><article class="kaart"><span class="nr">5</span><h3>Leveranciers toetsen</h3><p>We beoordelen je AI-leveranciers op risico&rsquo;s en op wat zij contractueel moeten leveren.</p></article><article class="kaart"><span class="nr">6</span><h3>Dossier opbouwen</h3><p>We verzamelen en structureren de vereiste documentatie op &eacute;&eacute;n plek.</p></article><article class="kaart"><span class="nr">7</span><h3>Actielijst opleveren</h3><p>Je krijgt een praktische roadmap met prioriteiten en een eigenaar per punt.</p></article></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Van AI-gebruik naar aantoonbare <span class="mark">beheersing</span></h2>
+  <p class="leid">De wet vraagt niet dat je perfect bent. De wet vraagt dat je kunt laten zien dat je bewust met AI omgaat.</p>
+  <div class="stappen "><div class="stap"><span class="bol">1</span><b>Inzicht krijgen</b><span>Inventarisatie en classificatie van al je AI-systemen.</span></div><div class="stap"><span class="bol">2</span><b>Risico&rsquo;s bepalen</b><span>Welke risico&rsquo;s zijn er, en welke maatregelen zijn noodzakelijk?</span></div><div class="stap"><span class="bol">3</span><b>Maatregelen inrichten</b><span>Beleid, controles, toezicht en documentatie in de praktijk.</span></div><div class="stap"><span class="bol">4</span><b>Aantonen en monitoren</b><span>Doorlopende bewijsvoering van naleving, niet een eenmalig rapport.</span></div><div class="stap"><span class="bol">5</span><b>Klaar voor de toekomst</b><span>Actueel en voorbereid op audits en op de deadlines van 2027.</span></div></div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Voorbeelden van AI-gebruik en risicoklassen</h2>
+  <p class="leid">De meeste organisaties zitten links en in het midden. Dat is goed nieuws: daar zijn de verplichtingen licht.</p>
+  <div class="klassen">
+    <div class="klasse laag"><h3>Laag of minimaal risico</h3><ul>
+      <li><b>Interne efficiëntie</b>notities samenvatten, vertalen, intern zoeken</li>
+      <li><b>Contentassistentie</b>schrijfondersteuning, spelling- en grammaticacontrole</li>
+      <li><b>Aanbevelingen</b>productsuggesties in een webshop</li>
+    </ul></div>
+    <div class="klasse beperkt"><h3>Beperkt risico &mdash; transparantieplicht</h3><ul>
+      <li><b>Gebruikersinteractie</b>chatbots en virtuele assistenten</li>
+      <li><b>AI-gegenereerde content</b>beeld, tekst, audio en video</li>
+      <li><b>Emotieherkenning</b>informeren is verplicht</li>
+    </ul></div>
+    <div class="klasse hoog"><h3>Hoog risico &mdash; vanaf december 2027</h3><ul>
+      <li><b>Werving en selectie</b>cv-screening, kandidaatscoring</li>
+      <li><b>Krediet en verzekering</b>kredietwaardigheid, toegang tot diensten</li>
+      <li><b>Kritieke infrastructuur</b>medische apparatuur, transport, energie</li>
+    </ul></div>
+  </div>
+  <div class="rooster r2" style="margin-top:.9rem">
+    <div class="kaart"><h3>Belangrijk om te weten</h3>
+      <ul class="vink">
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Als mkb-bedrijf ben je bijna altijd gebruiker, niet aanbieder &mdash; dat scheelt aanzienlijk in verplichtingen</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>AI-geletterdheid geldt al sinds februari 2025 en is nu handhaafbaar</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Een AI-register is geen wettelijk voorgeschreven formulier, maar zonder overzicht kun je niets aantonen</li>
+      </ul></div>
+    <div class="kaart"><h3>De boetes, precies</h3>
+      <ul class="vink">
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b style="font-weight:600">Tot &euro;&nbsp;35 mln of 7%</b> van de wereldwijde jaaromzet &mdash; alleen voor verboden AI-praktijken</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b style="font-weight:600">Tot &euro;&nbsp;15 mln of 3%</b> &mdash; voor de overige verplichtingen, waaronder hoog-risico</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b style="font-weight:600">Tot &euro;&nbsp;7,5 mln of 1%</b> &mdash; voor het verstrekken van onjuiste informatie</li>
+      </ul>
+      <p class="bron" style="margin-top:.6rem">Voor mkb en start-ups geldt het laagste van het bedrag of het percentage, niet het hoogste.</p></div>
+  </div>
+</div></section>
+
+<section class="blok"><div class="wrap">
+  <h2>Voor wie dit werkt</h2>
+  <div class="rooster r4"><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V6.5L11 3v18"/><path d="M11 9h8.5v12"/><path d="M7 9.5h1M7 13h1M7 16.5h1M14.5 12.5h1.5M14.5 16h1.5"/></svg><h3>Mkb en groeiende bedrijven</h3><p>Praktisch en betaalbaar op orde komen, zonder een compliance-afdeling op te tuigen.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 14.4c2.9 0 5 1.6 5 4.6"/></svg><h3>Directies en MT</h3><p>Strategisch inzicht in risico, reputatie en wettelijke verplichtingen.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M6 20h12M4 9h16M4 9l-2.5 5.5h5zM20 9l2.5 5.5h-5z"/></svg><h3>Compliance en legal</h3><p>Ondersteuning bij beleid, documentatie en aantoonbare naleving.</p></article><article class="kaart"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 20.5h17"/><path d="M7 17v-5M11.5 17V6.5M16 17v-3M20 17V9.5"/></svg><h3>Investeerders en due diligence</h3><p>Aantoonbaar in control bij investeringen en overnames &mdash; zie ook <a href="/due-diligence">due diligence</a>.</p></article></div>
+</div></section>
+
+<div class="wrap"><section class="slot"><div><h2>Zet de AI Act om in overzicht, actie en zekerheid.</h2><p>Begin met de gratis online Frisse blik: dertien onderdelen, ongeveer zes minuten. Je ziet meteen waar je staat, ook op AI en governance.</p><div class="slot-punten"><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Gratis online scan</span><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Geen verplichtingen</span><span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Concrete actielijst</span></div></div><div class="knoppen"><a class="knop geel" href="/frisse-blik">Doe de Frisse blik &rarr;</a><a class="knop licht" href="/contact">Plan een gesprek</a></div></section></div>
+
+</main>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <div class="bgvoet-net">
+    <div>
+      <span class="bgvoet-merk">Bedrijfs<b>geheugen</b>.nl</span>
+      <p class="bgvoet-over">Praktische strategie, slimme systemen en AI.<br>Voor ondernemers die willen groeien.</p>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Oplossingen</span>
+      <a href="/expertises">Alle expertises</a>
+      <a href="/systemen-koppelen">Systemen koppelen</a>
+      <a href="/afas-koppeling">AFAS-koppeling</a>
+      <a href="/due-diligence">Due diligence &amp; exit</a><a href="/ai-act">AI Act &amp; governance</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Producten</span>
+      <a href="/ai-marketing-mkb">AI Marketing Machine</a>
+      <a href="/product">Het portaal</a>
+      <a href="/wijzigingen">Wijzigingen</a>
+      <a href="/frisse-blik">Frisse blik</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Kennis</span>
+      <a href="/blog/">Blog</a>
+      <a href="/hoe-het-werkt">Hoe het werkt</a>
+      <a href="/wijzigingen-uitgelegd">Wijzigingen uitgelegd</a>
+      <a href="/zelfscan">Zelfscan</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Over ons</span>
+      <a href="/over-ons">Ons verhaal</a>
+      <a href="/voor-mkb">Voor het mkb</a>
+      <a href="/investeerders-ma">Investeerders &amp; M&amp;A</a>
+      <a href="/contact">Contact</a>
+    </div>
+    <div class="bgvoet-cta">
+      <b>Plan een Frisse blik</b>
+      <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
+      <a class="bgvoet-knop" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+    </div>
+  </div>
+  <div class="bgvoet-onder">
+    <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
+    <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
+  </div>
+</div></footer>
+<script>
+(function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');
+if(k&&m){k.addEventListener('click',function(){var dicht=m.hasAttribute('hidden');
+if(dicht){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}
+k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
+</script>
+</body>
+</html>
