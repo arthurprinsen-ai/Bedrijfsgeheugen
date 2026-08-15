@@ -210,6 +210,27 @@ def main():
                       'meta-omschrijving, h1 en canonical.')
 
     io.open('seo-rapport.md', 'w', encoding='utf-8').write('\n'.join(regels) + '\n')
+
+    # ── seo-status.json: de site publiceert zijn eigen SEO-stand ──────────
+    # Make leest dit bestand om te bepalen of een zoekwoord al een pagina heeft.
+    # Zonder dit zou een automatisering blind blogs bijmaken voor onderwerpen
+    # die al een pagina hebben — precies de kannibalisatie waar de strategie
+    # tegen waarschuwt.
+    status = {'bijgewerkt': __import__('datetime').date.today().isoformat(),
+              'zoekwoorden': []}
+    for zw, eigenaar in sorted(EIGENAAR.items()):
+        sleutel = eigenaar.rstrip('/') or '/'
+        p = P.get(sleutel)
+        status['zoekwoorden'].append({
+            'zoekwoord': zw,
+            'pagina': eigenaar,
+            'bestaat': bool(p),
+            'claimt': bool(p and claimt(zw, p)),
+            'type': 'pijler' if eigenaar in CLUSTERS else 'cluster',
+        })
+    status['pijlers'] = sorted(CLUSTERS.keys())
+    io.open('seo-status.json', 'w', encoding='utf-8').write(
+        json.dumps(status, ensure_ascii=False, indent=1) + '\n')
     print('\n'.join(regels))
     # alleen hoge bevindingen laten falen; midden en laag zijn een melding
     sys.exit(1 if tel['hoog'] else 0)

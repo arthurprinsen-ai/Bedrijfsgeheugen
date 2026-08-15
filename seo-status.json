@@ -1,0 +1,138 @@
+{
+ "bijgewerkt": "2026-08-15",
+ "zoekwoorden": [
+  {
+   "zoekwoord": "afas koppeling kosten",
+   "pagina": "/blog/wat-kost-een-afas-koppeling/",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "ai act compliance mkb",
+   "pagina": "/ai-act",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "ai adoptie mkb",
+   "pagina": "/ai-adoptie",
+   "bestaat": true,
+   "claimt": true,
+   "type": "pijler"
+  },
+  {
+   "zoekwoord": "ai governance mkb",
+   "pagina": "/ai-governance",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "ai implementeren mkb",
+   "pagina": "/ai-implementeren",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "ai marketing mkb",
+   "pagina": "/ai-marketing-mkb",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "ai pilot opzetten mkb",
+   "pagina": "/ai-poc",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "ai strategie directie",
+   "pagina": "/ai-voor-bestuurders",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "ai workshop mkb",
+   "pagina": "/workshops",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "bedrijfsopvolging familiebedrijf kennis",
+   "pagina": "/blog/bedrijfsopvolging-begin-bij-het-geheugen/",
+   "bestaat": true,
+   "claimt": true,
+   "type": "pijler"
+  },
+  {
+   "zoekwoord": "business case ai mkb",
+   "pagina": "/business-case-ai",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "chatgpt bedrijfsgegevens beleid",
+   "pagina": "/data-soevereiniteit",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "erp implementatie mislukt",
+   "pagina": "/blog/automatiseren-zonder-traject/",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "eu ai act mkb",
+   "pagina": "/blog/eu-ai-act-mkb/",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "kennisborging mkb",
+   "pagina": "/product",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "systemen koppelen mkb",
+   "pagina": "/blog/systemen-koppelen-mkb/",
+   "bestaat": true,
+   "claimt": true,
+   "type": "pijler"
+  },
+  {
+   "zoekwoord": "wat kost digitalisering mkb",
+   "pagina": "/blog/wat-kost-digitalisering-mkb/",
+   "bestaat": true,
+   "claimt": true,
+   "type": "pijler"
+  },
+  {
+   "zoekwoord": "werkinstructie voorbeeld",
+   "pagina": "/blog/werkinstructie-voorbeeld/",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  }
+ ],
+ "pijlers": [
+  "/ai-adoptie",
+  "/blog/bedrijfsopvolging-begin-bij-het-geheugen/",
+  "/blog/systemen-koppelen-mkb/",
+  "/blog/wat-is-een-bedrijfsgeheugen/",
+  "/blog/wat-kost-digitalisering-mkb/"
+ ]
+}
