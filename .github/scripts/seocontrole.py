@@ -26,7 +26,8 @@ CLUSTERS = {
         '/blog/wat-kost-een-afas-koppeling/', '/blog/wat-kost-een-afas-partner/',
         '/blog/automatiseren-zonder-traject/', '/frisse-blik'],
     '/blog/wat-is-een-bedrijfsgeheugen/': [
-        '/blog/bedrijfsopvolging-begin-bij-het-geheugen/', '/product', '/zelfscan'],
+        '/blog/bedrijfsopvolging-begin-bij-het-geheugen/', '/product', '/zelfscan',
+        '/blog/werkinstructie-voorbeeld/'],
     '/blog/bedrijfsopvolging-begin-bij-het-geheugen/': [
         '/due-diligence', '/investeerders-ma', '/blog/wat-is-een-bedrijfsgeheugen/'],
     '/ai-adoptie': [
@@ -46,6 +47,7 @@ EIGENAAR = {
     'erp implementatie mislukt': '/blog/automatiseren-zonder-traject/',
     'ai marketing mkb': '/ai-marketing-mkb',
     'kennisborging mkb': '/product',
+    'werkinstructie voorbeeld': '/blog/werkinstructie-voorbeeld/',
     # cluster AI in het mkb, toegevoegd 14 augustus
     'ai adoptie mkb': '/ai-adoptie',
     'ai act compliance mkb': '/ai-act',
