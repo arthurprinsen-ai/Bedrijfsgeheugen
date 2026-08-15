@@ -36,7 +36,8 @@ CLUSTERS = {
 
 # ── zoekwoord → de pagina die het hoort te claimen ────────────────────────
 EIGENAAR = {
-    # zoekwoord uit de Notion-database → de pagina die het hoort te claimen
+    # zoekwoord uit de Notion-database → de pagina die het hoort te claimen.
+    # Wijzig je een cluster of zoekwoord in Notion, werk dan deze lijst bij.
     'systemen koppelen mkb': '/blog/systemen-koppelen-mkb/',
     'wat kost digitalisering mkb': '/blog/wat-kost-digitalisering-mkb/',
     'bedrijfsopvolging familiebedrijf kennis': '/blog/bedrijfsopvolging-begin-bij-het-geheugen/',
@@ -45,6 +46,16 @@ EIGENAAR = {
     'erp implementatie mislukt': '/blog/automatiseren-zonder-traject/',
     'ai marketing mkb': '/ai-marketing-mkb',
     'kennisborging mkb': '/product',
+    # cluster AI in het mkb, toegevoegd 14 augustus
+    'ai adoptie mkb': '/ai-adoptie',
+    'ai act compliance mkb': '/ai-act',
+    'ai workshop mkb': '/workshops',
+    'ai governance mkb': '/ai-governance',
+    'chatgpt bedrijfsgegevens beleid': '/data-soevereiniteit',
+    'business case ai mkb': '/business-case-ai',
+    'ai strategie directie': '/ai-voor-bestuurders',
+    'ai implementeren mkb': '/ai-implementeren',
+    'ai pilot opzetten mkb': '/ai-poc',
 }
 
 OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo'}
