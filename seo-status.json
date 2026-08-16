@@ -93,6 +93,13 @@
    "type": "pijler"
   },
   {
+   "zoekwoord": "begrippenlijst mkb",
+   "pagina": "/begrippen",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "benchmark mkb digitalisering",
    "pagina": "/benchmark",
    "bestaat": true,

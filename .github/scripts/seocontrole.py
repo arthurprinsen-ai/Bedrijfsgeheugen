@@ -20,7 +20,7 @@ CLUSTERS = {
     '/bedrijfsgeheugen': [
         '/blog/wat-is-een-bedrijfsgeheugen/', '/zelfscan', '/product',
         '/afmaakindex', '/frisse-blik', '/systemen-koppelen', '/due-diligence',
-        '/ai-adoptie'],
+        '/ai-adoptie', '/begrippen'],
     '/blog/systemen-koppelen-mkb/': [
         '/blog/afas-exact-koppelen/', '/blog/afas-koppeling/',
         '/blog/wat-kost-een-afas-koppeling/', '/blog/wat-kost-een-afas-partner/',
@@ -67,6 +67,7 @@ EIGENAAR = {
     'afmaakindex': '/afmaakindex',
     'bedrijfsgeheugen': '/bedrijfsgeheugen',
     'kennisverlies mkb': '/blog/wat-is-een-bedrijfsgeheugen/',
+    'begrippenlijst mkb': '/begrippen',
 }
 
 OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo'}
