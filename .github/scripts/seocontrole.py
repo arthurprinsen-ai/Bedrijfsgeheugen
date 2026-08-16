@@ -104,6 +104,15 @@ VERBODEN_WOORDEN = {
 }
 GEEN_TAALEIS = {'privacy', '404', 'index-oud', 'klantportaal', 'klantportaal-demo'}
 
+# -- kop en voettekst --
+# Elke pagina heeft exact dezelfde balk en voettekst. De referentie staat in
+# .github/canoniek/. Wijkt een pagina af, dan is dat altijd een fout: zo zijn
+# er eerder zeven verschillende voetteksten ontstaan, waarvan een met het
+# verkeerde e-mailadres erin.
+CANONIEK_KOP = '.github/canoniek/kop.html'
+CANONIEK_VOET = '.github/canoniek/voet.html'
+GEEN_BALK = {'klantportaal', 'klantportaal-demo', 'index-oud'}
+
 MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
 MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
 GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact'}
@@ -317,6 +326,37 @@ def main():
         zichtbaar = re.sub(r'<script[\s\S]*?</script>|<style[\s\S]*?</style>|<!--[\s\S]*?-->', ' ', p['hoofd'])
         if '!' in re.sub(r'<[^>]+>', ' ', zichtbaar):
             bevindingen.append(('laag', url, 'uitroepteken in de tekst'))
+
+
+    # -- 6. kop en voettekst identiek op elke pagina --
+    def schoon(x):
+        # aria-current markeert de actieve pagina en mag per pagina verschillen
+        x = re.sub(r'\s+aria-current="page"', '', x or '')
+        return re.sub(r'\s+', ' ', x).strip()
+
+    ref_kop = ref_voet = None
+    if os.path.exists(CANONIEK_KOP):
+        ref_kop = schoon(io.open(CANONIEK_KOP, encoding='utf-8').read())
+    if os.path.exists(CANONIEK_VOET):
+        ref_voet = schoon(io.open(CANONIEK_VOET, encoding='utf-8').read())
+
+    for url, p in sorted(P.items()):
+        naam = os.path.basename(p['bestand'])[:-5]
+        if naam in GEEN_BALK:
+            continue
+        s = p['ruw']
+        m = re.search(r'<nav class="bgkop"[\s\S]*?</nav>', s)
+        if ref_kop and (not m or schoon(m.group(0)) != ref_kop):
+            bevindingen.append(('hoog', url,
+                'de menubalk wijkt af van .github/canoniek/kop.html'))
+        vs = re.findall(r'<footer[\s\S]*?</footer>', s)
+        if ref_voet:
+            if len(vs) != 1:
+                bevindingen.append(('hoog', url,
+                    'er staan %d voetteksten op deze pagina, er hoort er precies een' % len(vs)))
+            elif schoon(vs[0]) != ref_voet:
+                bevindingen.append(('hoog', url,
+                    'de voettekst wijkt af van .github/canoniek/voet.html'))
 
     bevindingen.sort(key=lambda b: (orde[b[0]], b[1]))
     tel = {k: sum(1 for b in bevindingen if b[0] == k) for k in orde}
