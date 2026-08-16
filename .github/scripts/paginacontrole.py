@@ -58,11 +58,22 @@ def bestaat(pad):
 # Meet de layoutverschuiving en het grootste element. Moet vóór het laden
 # draaien, anders mist de waarnemer de eerste verschuivingen.
 METER = """
-window.__cls=0; window.__lcp=0;
+window.__cls=0; window.__lcp=0; window.__bronnen={};
 try{
  new PerformanceObserver(function(l){ l.getEntries().forEach(function(e){
-   if(!e.hadRecentInput) window.__cls+=e.value; });
- }).observe({type:'layout-shift',buffered:true});
+   if(e.hadRecentInput) return;
+   window.__cls+=e.value;
+   // onthoud welk element verschoof, zodat de reparatie gericht kan
+   (e.sources||[]).forEach(function(s){
+     var n=s.node; if(!n) return;
+     if(n.nodeType===3) n=n.parentElement; if(!n) return;
+     var k=n.tagName.toLowerCase()
+       +(n.id?'#'+n.id:'')
+       +(n.className&&typeof n.className==='string'&&n.className.trim()
+         ?'.'+n.className.trim().split(/\s+/).slice(0,2).join('.'):'');
+     window.__bronnen[k]=(window.__bronnen[k]||0)+e.value;
+   });
+ }); }).observe({type:'layout-shift',buffered:true});
  new PerformanceObserver(function(l){ l.getEntries().forEach(function(e){
    window.__lcp=Math.max(window.__lcp,e.startTime); });
  }).observe({type:'largest-contentful-paint',buffered:true});
@@ -91,6 +102,10 @@ def main():
 
             pagina = browser.new_page(viewport={'width': 1280, 'height': 900})
             pagina.add_init_script(METER)
+            # TIJDELIJK EXPERIMENT: alle externe lettertypes blokkeren.
+            # Verdwijnt de verschuiving, dan is het lettertype de oorzaak.
+            pagina.route('**://fonts.googleapis.com/**', lambda r: r.abort())
+            pagina.route('**://fonts.gstatic.com/**', lambda r: r.abort())
             js_fouten = []
             pagina.on('pageerror', lambda e: js_fouten.append(str(e)))
             pagina.goto('http://127.0.0.1:%d/%s.html' % (POORT, naam), wait_until='load')
@@ -136,11 +151,12 @@ def main():
             # Core Web Vitals. Google beoordeelt op echte bezoekers, niet op deze
             # meting — maar een pagina die hier al zakt, zakt daar zeker.
             # Grenzen 2026: LCP onder 2,5 s, CLS onder 0,1.
-            vitals = pagina.evaluate('()=>({cls: window.__cls||0, lcp: Math.round(window.__lcp||0)})')
+            vitals = pagina.evaluate('()=>({cls: window.__cls||0, lcp: Math.round(window.__lcp||0), bronnen: Object.entries(window.__bronnen||{}).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]+" ("+x[1].toFixed(3)+")")})')
             if vitals['cls'] > 0.1:
-                fouten.append('layout verspringt tijdens het laden (CLS %.3f, grens 0,1) — '
-                              'meestal een blok dat pas met JavaScript hoogte krijgt'
-                              % vitals['cls'])
+                fouten.append('layout verspringt tijdens het laden (CLS %.3f, grens 0,1) \u2014 '
+                              'schuldig: %s'
+                              % (vitals['cls'],
+                                 ', '.join(vitals.get('bronnen') or ['onbekend']) or 'onbekend'))
             if vitals['lcp'] > 2500:
                 fouten.append('grootste element verschijnt pas na %d ms (grens 2500)'
                               % vitals['lcp'])
