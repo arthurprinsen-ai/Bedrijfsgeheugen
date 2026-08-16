@@ -15,7 +15,7 @@
 # Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
 # functie leest process.env. Zonder deze uitzondering faalt elke build.
 [build.environment]
-  SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/vraag.mjs"
+  SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml"
 
 [functions]
   directory = "netlify/functions"
