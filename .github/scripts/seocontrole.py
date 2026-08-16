@@ -301,13 +301,21 @@ def main():
         if naam in GEEN_TAALEIS:
             continue
         plat = norm(p['hoofd'])
+        # Blogs beschrijven de taal van de markt; daar is 'implementatie' vaak
+        # juist het zoekwoord (ERP implementatie mislukt, implementatiepartner).
+        # De eis geldt onverkort op onze eigen dienstenpagina's.
         for woord, toegestaan in VERBODEN_WOORDEN.items():
             if url in toegestaan:
+                continue
+            if url.startswith('/blog/') and woord.startswith('implementa'):
+                continue
+            if url.startswith('/blog/') and woord == 'implementeren':
                 continue
             if woord in plat:
                 bevindingen.append(('midden', url,
                     'merktaal: het woord "%s" hoort niet in onze teksten' % woord))
-        if '!' in re.sub(r'<[^>]+>', ' ', p['hoofd']):
+        zichtbaar = re.sub(r'<script[\s\S]*?</script>|<style[\s\S]*?</style>|<!--[\s\S]*?-->', ' ', p['hoofd'])
+        if '!' in re.sub(r'<[^>]+>', ' ', zichtbaar):
             bevindingen.append(('laag', url, 'uitroepteken in de tekst'))
 
     bevindingen.sort(key=lambda b: (orde[b[0]], b[1]))
