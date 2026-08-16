@@ -26,6 +26,13 @@ on:
       - '**.html'
       - 'assets/**'
       - '_redirects'
+  # Ook op elke pull request, zodat een halve pagina niet gemerged kan worden.
+  # Op main is de controle een melding achteraf; op een PR is het een rem vooraf.
+  pull_request:
+    paths:
+      - '**.html'
+      - 'assets/**'
+      - '_redirects'
   workflow_dispatch:
   schedule:
     # elke maandag 07:00 Nederlandse tijd, ook als er niets gepusht is
@@ -67,7 +74,7 @@ jobs:
         continue-on-error: true
 
       - name: seo-status.json terugzetten als hij is veranderd
-        if: always()
+        if: always() && github.event_name != 'pull_request'
         run: |
           if [ -n "$(git status --porcelain seo-status.json)" ]; then
             git config user.name "github-actions[bot]"
@@ -93,7 +100,7 @@ jobs:
         run: cat rapport.md || echo "geen rapport"
 
       - name: Melding maken bij problemen
-        if: steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure'
+        if: (steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure') && github.event_name != 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
@@ -117,7 +124,7 @@ jobs:
             }
 
       - name: Melding sluiten als alles goed is
-        if: steps.controle.outcome == 'success' && steps.seo.outcome == 'success'
+        if: steps.controle.outcome == 'success' && steps.seo.outcome == 'success' && github.event_name != 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |

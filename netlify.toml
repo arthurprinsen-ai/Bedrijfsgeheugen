@@ -4,6 +4,12 @@
   publish = "."
   command = "node tools/bouw-kennisindex.mjs"
 
+# Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
+# Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
+# functie leest process.env. Zonder deze uitzondering faalt elke build.
+[build.environment]
+  SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/vraag.mjs"
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
