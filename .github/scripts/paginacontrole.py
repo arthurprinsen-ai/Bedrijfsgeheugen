@@ -7,6 +7,7 @@ scriptblok van de Frisse blik kreeg daardoor een syntaxisfout en de scan startte
 maandenlang niet. Dat soort schade is met het blote oog niet te zien: de pagina
 ziet er prima uit, alleen doet hij niets.
 """
+import json
 import glob, http.server, os, socketserver, threading, urllib.request, functools, sys
 
 from playwright.sync_api import sync_playwright
@@ -54,6 +55,23 @@ def bestaat(pad):
     return False
 
 
+# Meet de layoutverschuiving en het grootste element. Moet vóór het laden
+# draaien, anders mist de waarnemer de eerste verschuivingen.
+METER = """
+window.__cls=0; window.__lcp=0;
+try{
+ new PerformanceObserver(function(l){ l.getEntries().forEach(function(e){
+   if(!e.hadRecentInput) window.__cls+=e.value; });
+ }).observe({type:'layout-shift',buffered:true});
+ new PerformanceObserver(function(l){ l.getEntries().forEach(function(e){
+   window.__lcp=Math.max(window.__lcp,e.startTime); });
+ }).observe({type:'largest-contentful-paint',buffered:true});
+}catch(e){}
+"""
+
+GEEN_SCHEMA = {'404', 'bedankt', 'zelfscan', 'klantformulier'}
+
+
 def main():
     start_server()
     paginas = sorted(
@@ -72,6 +90,7 @@ def main():
             fouten = []
 
             pagina = browser.new_page(viewport={'width': 1280, 'height': 900})
+            pagina.add_init_script(METER)
             js_fouten = []
             pagina.on('pageerror', lambda e: js_fouten.append(str(e)))
             pagina.goto('http://127.0.0.1:%d/%s.html' % (POORT, naam), wait_until='load')
@@ -113,6 +132,45 @@ def main():
             dood = [l for l in links if not bestaat(l)]
             if dood:
                 fouten.append('link gaat nergens heen: %s' % ', '.join(dood[:4]))
+
+            # Core Web Vitals. Google beoordeelt op echte bezoekers, niet op deze
+            # meting — maar een pagina die hier al zakt, zakt daar zeker.
+            # Grenzen 2026: LCP onder 2,5 s, CLS onder 0,1.
+            vitals = pagina.evaluate('()=>({cls: window.__cls||0, lcp: Math.round(window.__lcp||0)})')
+            if vitals['cls'] > 0.1:
+                fouten.append('layout verspringt tijdens het laden (CLS %.3f, grens 0,1) — '
+                              'meestal een blok dat pas met JavaScript hoogte krijgt'
+                              % vitals['cls'])
+            if vitals['lcp'] > 2500:
+                fouten.append('grootste element verschijnt pas na %d ms (grens 2500)'
+                              % vitals['lcp'])
+
+            # gestructureerde data
+            schema = pagina.eval_on_selector_all(
+                'script[type="application/ld+json"]', 'e=>e.map(x=>x.textContent)')
+            if not schema and naam not in GEEN_SCHEMA:
+                fouten.append('geen gestructureerde data (JSON-LD)')
+            for blok in schema:
+                try:
+                    json.loads(blok)
+                except ValueError:
+                    fouten.append('gestructureerde data is ongeldig JSON')
+                    break
+
+            # beeld zonder afmeting laat de pagina verspringen
+            zonder = pagina.eval_on_selector_all(
+                'img', '''e=>e.filter(x=>{
+                    if(x.getAttribute('width')&&x.getAttribute('height')) return false;
+                    const s=getComputedStyle(x);
+                    return !(s.width&&s.width!=='auto'&&s.height&&s.height!=='auto');
+                }).map(x=>x.getAttribute('src')||'(zonder src)').slice(0,3)''')
+            if zonder:
+                fouten.append('beeld zonder vaste afmeting: %s' % ', '.join(zonder))
+
+            zonder_alt = pagina.eval_on_selector_all(
+                'img:not([alt])', 'e=>e.map(x=>x.getAttribute("src")||"?").slice(0,3)')
+            if zonder_alt:
+                fouten.append('beeld zonder alt-tekst: %s' % ', '.join(zonder_alt))
 
             pagina.close()
 
