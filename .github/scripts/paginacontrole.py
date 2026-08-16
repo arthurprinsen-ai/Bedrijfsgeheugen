@@ -58,11 +58,13 @@ def bestaat(pad):
 # Meet de layoutverschuiving en het grootste element. Moet vóór het laden
 # draaien, anders mist de waarnemer de eerste verschuivingen.
 METER = """
-window.__cls=0; window.__lcp=0; window.__bronnen={};
+window.__cls=0; window.__lcp=0; window.__bronnen={}; window.__reeks=[]; window.__fonts=null;
+try{document.fonts.ready.then(function(){window.__fonts=performance.now();});}catch(e){}
 try{
  new PerformanceObserver(function(l){ l.getEntries().forEach(function(e){
    if(e.hadRecentInput) return;
    window.__cls+=e.value;
+   window.__reeks.push([Math.round(e.startTime), +e.value.toFixed(4)]);
    // onthoud welk element verschoof, zodat de reparatie gericht kan
    (e.sources||[]).forEach(function(s){
      var n=s.node; if(!n) return;
@@ -147,12 +149,14 @@ def main():
             # Core Web Vitals. Google beoordeelt op echte bezoekers, niet op deze
             # meting — maar een pagina die hier al zakt, zakt daar zeker.
             # Grenzen 2026: LCP onder 2,5 s, CLS onder 0,1.
-            vitals = pagina.evaluate('()=>({cls: window.__cls||0, lcp: Math.round(window.__lcp||0), bronnen: Object.entries(window.__bronnen||{}).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]+" ("+x[1].toFixed(3)+")")})')
+            vitals = pagina.evaluate('()=>({cls: window.__cls||0, lcp: Math.round(window.__lcp||0), bronnen: Object.entries(window.__bronnen||{}).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]+" ("+x[1].toFixed(3)+")"), reeks: window.__reeks.slice(0,8), fonts: Math.round(window.__fonts||-1), breedte: document.documentElement.clientWidth, hoogte: document.documentElement.scrollHeight})')
             if vitals['cls'] > 0.1:
                 fouten.append('layout verspringt tijdens het laden (CLS %.3f, grens 0,1) \u2014 '
                               'schuldig: %s'
                               % (vitals['cls'],
                                  ', '.join(vitals.get('bronnen') or ['onbekend']) or 'onbekend'))
+                fouten.append('  meetreeks (ms, waarde): %s | fonts klaar op %s ms | breedte %s | hoogte %s'
+                              % (vitals.get('reeks'), vitals.get('fonts'), vitals.get('breedte'), vitals.get('hoogte')))
             if vitals['lcp'] > 2500:
                 fouten.append('grootste element verschijnt pas na %d ms (grens 2500)'
                               % vitals['lcp'])
