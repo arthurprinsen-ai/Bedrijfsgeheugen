@@ -282,6 +282,14 @@ input[type=range]{min-height:34px}
 .bhrij2{display:grid;grid-template-columns:1fr auto;gap:.8rem;padding:.55rem 0;border-bottom:1px solid var(--lijn);align-items:start}
 @media(max-width:760px){.bhrij{grid-template-columns:1fr 1fr;gap:.45rem}.bhrij>div:first-child{grid-column:1/-1}}
 </style>
+<style id="as-stijl">
+.tab-aiscan{width:100%;border-collapse:collapse;font-size:.88rem}
+.tab-aiscan th{text-align:left;font-weight:600;padding:.45rem .5rem;border-bottom:2px solid #14171A;white-space:nowrap}
+.tab-aiscan td{padding:.4rem .5rem;border-bottom:1px solid #EDEBE5;vertical-align:middle}
+.tab-aiscan input,.tab-aiscan select{font:inherit;padding:.3rem .4rem;border:1px solid #DCDFE6;border-radius:7px;background:#fff;max-width:100%}
+.tab-aiscan input[type=text],.tab-aiscan td input:not([type=number]){width:100%}
+.as-weg{padding:.2rem .55rem;line-height:1}
+</style>
 </head>
 <body>
 
@@ -326,6 +334,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="true" data-p="overzicht">Overzicht</button>
         <button class="tab" role="tab" aria-selected="false" data-p="profiel">Profiel per onderdeel</button>
         <button class="tab" role="tab" aria-selected="false" data-p="dataai">Data en AI</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="aiscan">AI-scan: kansenkaart</button>
         <button class="tab" role="tab" aria-selected="false" data-p="invoeren">Je gegevens invullen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="antwoorden">Wat je hebt ingevuld</button>
         <button class="tab" role="tab" aria-selected="false" data-p="business">Businesscase</button>
@@ -428,6 +437,51 @@ input[type=range]{min-height:34px}
         <div class="kaart"><h3>Greiner — groeifasen en hun crisis</h3><div id="daiGreiner"></div></div>
       </div>
       <div class="kaart" style="margin-top:1rem"><h3>De afspraken eronder</h3><div id="daiBeleid"></div></div>
+    </section>
+
+
+    <!-- AI-SCAN -->
+    <section class="paneel" id="p-aiscan">
+      <div class="kaart">
+        <h3>De kansenkaart</h3>
+        <p class="sub" style="margin:-.3rem 0 .8rem">Geen technologieshow maar een kaart: welke taken kosten tijd, komen vaak terug, en zijn met de gegevens die je hebt te ondersteunen. Vul per taak in wat je weet &mdash; een schatting is genoeg om de volgorde te bepalen.</p>
+        <div style="overflow-x:auto">
+          <table class="tab-aiscan" id="asTabel">
+            <thead><tr>
+              <th style="min-width:190px">Taak</th>
+              <th>Wie</th>
+              <th>Uur per week</th>
+              <th>Hoe vaak hetzelfde</th>
+              <th>Gegevens op orde</th>
+              <th>Risico bij fout</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="asRijen"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem">
+          <button class="knop" id="asToevoegen" type="button">Taak toevoegen</button>
+          <button class="knop licht" id="asVoorbeeld" type="button">Vul voorbeeldtaken in</button>
+          <button class="knop licht" id="asLeeg" type="button">Alles wissen</button>
+        </div>
+        <div class="sub" style="margin-top:.6rem">Uurtarief voor de berekening:
+          <input type="number" id="asTarief" value="55" min="10" max="250" step="5" style="width:5.5rem;padding:.25rem .4rem;border:1px solid #DCDFE6;border-radius:7px"> euro.
+          Dit is wat een uur van deze mensen je kost, inclusief werkgeverslasten.</div>
+      </div>
+
+      <div class="kaarten k2" style="margin-top:1rem">
+        <div class="kaart"><h3>Waar de kansen zitten</h3>
+          <svg id="asKaart" viewBox="0 0 480 380" role="img" aria-label="Kansenkaart: opbrengst tegen haalbaarheid"></svg>
+          <div class="sub">Rechtsboven is waar je begint: veel op te halen, weinig weerstand.</div></div>
+        <div class="kaart"><h3>Wat dit betekent</h3><div id="asDuiding"></div></div>
+      </div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>Per taak: wat het oplevert en wanneer</h3>
+        <div style="overflow-x:auto"><table class="tab-aiscan" id="asUitkomst"></table></div>
+        <div class="bron"><b>Hoe gerekend:</b> uren per week &times; 46 werkweken &times; uurtarief, vermenigvuldigd met het deel dat realistisch te ondersteunen is. Dat deel loopt van 15% bij weinig herhaling tot 70% bij zeer repeterend werk met gegevens op orde. Bij hoog risico gaat er een derde af, want dan blijft controle door een mens nodig.</div>
+      </div>
+
+      <div class="kaart" style="margin-top:1rem"><h3>De volgorde</h3><div id="asVolgorde"></div></div>
     </section>
 
     <!-- PROFIEL -->
@@ -7622,5 +7676,196 @@ body{background:var(--np-vlak)}
 
 </script>
 
+
+<script>
+/* ══ AI-SCAN: kansenkaart ══════════════════════════════════════════════════
+   Vier assen per taak. Tijd en herhaling bepalen wat er te halen valt;
+   gegevens en risico bepalen of het haalbaar is. */
+(function(){
+  var WEKEN=46;
+  var VOORBEELD=[
+    ['Offertes opstellen en natypen','Verkoop',6,'vaak','deels','laag'],
+    ['Facturen inboeken uit e-mail','Administratie',5,'altijd','ja','laag'],
+    ['Vragen van klanten beantwoorden','Support',9,'vaak','deels','midden'],
+    ['Werkinstructies bijwerken','Operatie',2,'soms','nee','laag'],
+    ['Sollicitanten beoordelen','HR',3,'soms','nee','hoog'],
+    ['Voorraad handmatig overtypen','Logistiek',4,'altijd','ja','midden']
+  ];
+  var HERH={'zelden':0.15,'soms':0.3,'vaak':0.5,'altijd':0.7};
+  var GEG={'nee':0.55,'deels':0.8,'ja':1};
+  var RIS={'laag':1,'midden':0.85,'hoog':0.65};
+
+  function taken(){ try{ return JSON.parse(localStorage.getItem('bg_aiscan')||'[]'); }catch(e){ return []; } }
+  function bewaar(t){ try{ localStorage.setItem('bg_aiscan',JSON.stringify(t)); }catch(e){} }
+  function tarief(){ var e=document.getElementById('asTarief'); return Math.max(10,+(e&&e.value)||55); }
+
+  function reken(t){
+    var uren=+t[2]||0, h=HERH[t[3]]||0.3, g=GEG[t[4]]||0.8, r=RIS[t[5]]||1;
+    var deel=h*g*r;                          // welk deel realistisch te ondersteunen is
+    var urenJaar=uren*WEKEN;
+    var winstUren=urenJaar*deel;
+    var winstEuro=winstUren*tarief();
+    // haalbaarheid: gegevens en risico wegen zwaar, herhaling licht
+    var haalbaar=(g*0.55+r*0.30+h*0.15)*100;
+    var opbrengst=winstEuro;
+    return {uren:winstUren, euro:winstEuro, haalbaar:haalbaar, opbrengst:opbrengst, deel:deel};
+  }
+
+  function rijHtml(t,i){
+    function sel(v,opts,k){ var s='<select data-i="'+i+'" data-k="'+k+'" class="as-in">';
+      opts.forEach(function(o){ s+='<option'+(o===v?' selected':'')+'>'+o+'</option>'; }); return s+'</select>'; }
+    return '<tr>'
+      +'<td><input class="as-in" data-i="'+i+'" data-k="0" value="'+(t[0]||'').replace(/"/g,'&quot;')+'" placeholder="Wat gebeurt er?"></td>'
+      +'<td><input class="as-in" data-i="'+i+'" data-k="1" value="'+(t[1]||'').replace(/"/g,'&quot;')+'" placeholder="Afdeling" style="width:7rem"></td>'
+      +'<td><input class="as-in" type="number" min="0" step="0.5" data-i="'+i+'" data-k="2" value="'+(t[2]||0)+'" style="width:4.5rem"></td>'
+      +'<td>'+sel(t[3],['zelden','soms','vaak','altijd'],3)+'</td>'
+      +'<td>'+sel(t[4],['nee','deels','ja'],4)+'</td>'
+      +'<td>'+sel(t[5],['laag','midden','hoog'],5)+'</td>'
+      +'<td><button class="knop licht as-weg" data-i="'+i+'" type="button" aria-label="Regel verwijderen">&times;</button></td>'
+      +'</tr>';
+  }
+
+  function euro(n){ return '\u20ac ' + Math.round(n).toLocaleString('nl-NL'); }
+
+  function tekenKaart(t){
+    var svg=document.getElementById('asKaart'); if(!svg) return;
+    var g='', L=60,R=450,T=30,B=320;
+    var max=1; t.forEach(function(x){ var r=reken(x); if(r.opbrengst>max) max=r.opbrengst; });
+    // kwadranten
+    var mx=(L+R)/2, my=(T+B)/2;
+    g+='<rect x="'+mx+'" y="'+T+'" width="'+(R-mx)+'" height="'+(my-T)+'" fill="#EAF6EE"/>';
+    g+='<rect x="'+L+'" y="'+T+'" width="'+(mx-L)+'" height="'+(my-T)+'" fill="#FFF7E0"/>';
+    g+='<rect x="'+mx+'" y="'+my+'" width="'+(R-mx)+'" height="'+(B-my)+'" fill="#F4F6FB"/>';
+    g+='<rect x="'+L+'" y="'+my+'" width="'+(mx-L)+'" height="'+(B-my)+'" fill="#FBF0EE"/>';
+    g+='<text x="'+(mx+8)+'" y="'+(T+16)+'" font-size="10.5" fill="#1F7A44" font-family="Instrument Sans" font-weight="700">Hier beginnen</text>';
+    g+='<text x="'+(L+8)+'" y="'+(T+16)+'" font-size="10.5" fill="#8A6A00" font-family="Instrument Sans">Eerst gegevens op orde</text>';
+    g+='<text x="'+(mx+8)+'" y="'+(B-8)+'" font-size="10.5" fill="#5C646E" font-family="Instrument Sans">Makkelijk, maar levert weinig</text>';
+    g+='<text x="'+(L+8)+'" y="'+(B-8)+'" font-size="10.5" fill="#A33" font-family="Instrument Sans">Niet doen</text>';
+    g+='<line x1="'+L+'" y1="'+my+'" x2="'+R+'" y2="'+my+'" stroke="#DCDFE6"/>';
+    g+='<line x1="'+mx+'" y1="'+T+'" x2="'+mx+'" y2="'+B+'" stroke="#DCDFE6"/>';
+    g+='<line x1="'+L+'" y1="'+B+'" x2="'+R+'" y2="'+B+'" stroke="#14171A" stroke-width="1.5"/>';
+    g+='<line x1="'+L+'" y1="'+T+'" x2="'+L+'" y2="'+B+'" stroke="#14171A" stroke-width="1.5"/>';
+    g+='<text x="'+((L+R)/2)+'" y="'+(B+30)+'" text-anchor="middle" font-size="11.5" fill="#14171A" font-family="Instrument Sans" font-weight="600">Haalbaarheid \u2192</text>';
+    g+='<text transform="translate(20,'+((T+B)/2)+') rotate(-90)" text-anchor="middle" font-size="11.5" fill="#14171A" font-family="Instrument Sans" font-weight="600">Wat het oplevert \u2192</text>';
+    t.forEach(function(x,i){
+      if(!x[0]) return;
+      var r=reken(x);
+      var px=L+(R-L)*(r.haalbaar/100);
+      var py=B-(B-T)*(r.opbrengst/max);
+      var kleur=(px>mx&&py<my)?'#1F9D55':(px>mx?'#2742D6':(py<my?'#FF9500':'#D93025'));
+      g+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="7" fill="'+kleur+'" opacity=".85"/>';
+      g+='<text x="'+(px+11).toFixed(1)+'" y="'+(py+4).toFixed(1)+'" font-size="10.5" fill="#14171A" font-family="Instrument Sans">'+(i+1)+'</text>';
+    });
+    svg.innerHTML=g;
+  }
+
+  function tekenUitkomst(t){
+    var el=document.getElementById('asUitkomst'); if(!el) return;
+    var rijen=t.filter(function(x){return x[0];}).map(function(x,i){ var r=reken(x); return {n:i+1,t:x,r:r}; })
+                .sort(function(a,b){ return b.r.opbrengst-a.r.opbrengst; });
+    if(!rijen.length){ el.innerHTML='<tbody><tr><td class="sub">Vul hierboven taken in, dan verschijnt hier wat elke taak oplevert.</td></tr></tbody>'; return; }
+    var h='<thead><tr><th>#</th><th>Taak</th><th>Uur per jaar terug</th><th>Waarde per jaar</th><th>Haalbaarheid</th><th>Advies</th></tr></thead><tbody>';
+    var totU=0, totE=0;
+    rijen.forEach(function(o){
+      totU+=o.r.uren; totE+=o.r.euro;
+      var adv = o.r.haalbaar>=65 && o.r.euro>=3000 ? '<b style="color:#1F7A44">Nu oppakken</b>'
+              : o.r.haalbaar>=65 ? 'Meenemen als je toch bezig bent'
+              : o.r.euro>=3000 ? 'Eerst gegevens op orde brengen'
+              : 'Laten liggen';
+      h+='<tr><td>'+o.n+'</td><td>'+(o.t[0]||'')+'<span class="sub"> \u00b7 '+(o.t[1]||'')+'</span></td>'
+        +'<td>'+Math.round(o.r.uren)+'</td><td><b>'+euro(o.r.euro)+'</b></td>'
+        +'<td>'+Math.round(o.r.haalbaar)+'%</td><td>'+adv+'</td></tr>';
+    });
+    h+='<tr style="border-top:2px solid #14171A"><td></td><td><b>Samen</b></td><td><b>'+Math.round(totU)+'</b></td><td><b>'+euro(totE)+'</b></td><td></td><td></td></tr></tbody>';
+    el.innerHTML=h;
+
+    var d=document.getElementById('asDuiding');
+    if(d){
+      var nu=rijen.filter(function(o){return o.r.haalbaar>=65&&o.r.euro>=3000;});
+      var wacht=rijen.filter(function(o){return o.r.haalbaar<65&&o.r.euro>=3000;});
+      var weg=rijen.filter(function(o){return o.r.euro<3000;});
+      var p='<p>Over alle taken samen gaat het om <b>'+Math.round(totU)+' uur per jaar</b>, ofwel <b>'+euro(totE)+'</b>. Dat is geen besparing die vanzelf in je resultaat verschijnt &mdash; het is tijd die vrijkomt. Wat je ermee doet bepaalt of het geld wordt.</p>';
+      if(nu.length) p+='<p><b>'+nu.length+' '+(nu.length===1?'taak':'taken')+' kun je nu oppakken.</b> Genoeg opbrengst en de gegevens zijn er. Begin bij '+nu[0].t[0].toLowerCase()+'.</p>';
+      if(wacht.length) p+='<p><b>'+wacht.length+' '+(wacht.length===1?'taak levert':'taken leveren')+' veel op maar '+(wacht.length===1?'is':'zijn')+' nog niet haalbaar.</b> Meestal omdat de gegevens niet op orde zijn of het risico bij een fout te groot is. Dat is werk v\u00f3\u00f3r de AI, niet met de AI.</p>';
+      if(weg.length) p+='<p class="sub">'+weg.length+' '+(weg.length===1?'taak levert':'taken leveren')+' te weinig op om nu aandacht aan te geven. Dat is een prima uitkomst: niet alles hoeft.</p>';
+      p+='<p class="sub">Deze bedragen zijn een schatting op basis van wat je zelf hebt ingevuld. Ze zijn bedoeld om de volgorde te bepalen, niet om in een begroting te zetten.</p>';
+      d.innerHTML=p;
+    }
+
+    var v=document.getElementById('asVolgorde');
+    if(v){
+      var top=rijen.filter(function(o){return o.r.haalbaar>=65&&o.r.euro>=3000;}).slice(0,3);
+      if(!top.length){ v.innerHTML='<p>Er staat nu niets klaar om direct op te pakken. Dat betekent meestal dat de gegevens eerst op orde moeten &mdash; dat is stap \u00e9\u00e9n en daar heb je nog geen AI voor nodig.</p>'; }
+      else {
+        var s='<ol style="margin:0;padding-left:1.1rem;line-height:1.7">';
+        top.forEach(function(o,i){
+          s+='<li><b>'+o.t[0]+'</b> \u2014 '+euro(o.r.euro)+' per jaar, haalbaarheid '+Math.round(o.r.haalbaar)+'%.'
+            +(i===0?' Begin hier: kleinste stap met het grootste zichtbare resultaat.':'')+'</li>';
+        });
+        s+='</ol><p class="sub" style="margin-top:.7rem">Eerst \u00e9\u00e9n taak echt af, gemeten en geborgd. Pas daarna de volgende. Drie tegelijk halveert de kans dat er \u00e9\u00e9n blijft staan.</p>';
+        v.innerHTML=s;
+      }
+    }
+  }
+
+  function teken(){ var t=taken(); 
+    var b=document.getElementById('asRijen');
+    if(b) b.innerHTML=t.map(rijHtml).join('') || '<tr><td colspan="7" class="sub">Nog geen taken. Voeg er een toe of vul de voorbeelden in.</td></tr>';
+    tekenKaart(t); tekenUitkomst(t);
+  }
+
+  document.addEventListener('input',function(e){
+    var el=e.target;
+    if(el.id==='asTarief'){ teken(); return; }
+    if(!el.classList||!el.classList.contains('as-in')) return;
+    var t=taken(), i=+el.dataset.i, k=+el.dataset.k;
+    if(!t[i]) return;
+    t[i][k]= (k===2? (+el.value||0) : el.value);
+    bewaar(t);
+    tekenKaart(t); tekenUitkomst(t);
+  });
+  document.addEventListener('change',function(e){
+    var el=e.target;
+    if(el.classList&&el.classList.contains('as-in')&&el.tagName==='SELECT'){
+      var t=taken(); t[+el.dataset.i][+el.dataset.k]=el.value; bewaar(t); tekenKaart(t); tekenUitkomst(t);
+    }
+  });
+  document.addEventListener('click',function(e){
+    var el=e.target;
+    if(el.id==='asToevoegen'){ var t=taken(); t.push(['','',0,'soms','deels','laag']); bewaar(t); teken(); }
+    if(el.id==='asVoorbeeld'){ bewaar(VOORBEELD.map(function(r){return r.slice();})); teken(); }
+    if(el.id==='asLeeg'){ bewaar([]); teken(); }
+    if(el.classList&&el.classList.contains('as-weg')){ var t2=taken(); t2.splice(+el.dataset.i,1); bewaar(t2); teken(); }
+  });
+
+  // het portaal zet een 'hier staat nog niets'-melding op kaarten die bij het laden
+  // leeg lijken. Deze kaarten vullen zichzelf, dus die melding hoort hier weg.
+  function opschonen(){
+    var p=document.getElementById('p-aiscan'); if(!p) return;
+    Array.prototype.forEach.call(p.querySelectorAll('.np-mist'), function(n){ n.remove(); });
+  }
+  // blijf kijken: de leeg-detector van het portaal draait ook bij het wisselen
+  // van tabblad, dus eenmalig opruimen is niet genoeg.
+  (function(){
+    var p=document.getElementById('p-aiscan'); if(!p||!window.MutationObserver) return;
+    new MutationObserver(function(m){
+      for(var i=0;i<m.length;i++){
+        for(var j=0;j<m[i].addedNodes.length;j++){
+          var n=m[i].addedNodes[j];
+          if(n.nodeType===1&&n.classList&&n.classList.contains('np-mist')) n.remove();
+        }
+      }
+    }).observe(p,{childList:true,subtree:true});
+  })();
+  function tekenEnOpschonen(){ teken(); opschonen(); setTimeout(opschonen,300); }
+
+  document.addEventListener('click', function(e){
+    var t=e.target;
+    if(t && t.dataset && t.dataset.p==='aiscan') setTimeout(tekenEnOpschonen,60);
+  });
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',tekenEnOpschonen); else tekenEnOpschonen();
+})();
+</script>
 </body>
 </html>
