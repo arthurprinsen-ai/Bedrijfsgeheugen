@@ -79,6 +79,13 @@
    "type": "cluster"
   },
   {
+   "zoekwoord": "api koppeling laten maken",
+   "pagina": "/api-koppeling-laten-maken",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "bedrijfsgeheugen",
    "pagina": "/bedrijfsgeheugen",
    "bestaat": true,
@@ -135,6 +142,13 @@
    "type": "cluster"
   },
   {
+   "zoekwoord": "exact online koppeling",
+   "pagina": "/exact-online-koppeling",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "kennisborging mkb",
    "pagina": "/product",
    "bestaat": true,
@@ -156,11 +170,25 @@
    "type": "pijler"
   },
   {
+   "zoekwoord": "twinfield koppeling",
+   "pagina": "/twinfield-koppeling",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "wat kost digitalisering mkb",
    "pagina": "/blog/wat-kost-digitalisering-mkb/",
    "bestaat": true,
    "claimt": true,
    "type": "pijler"
+  },
+  {
+   "zoekwoord": "webshop koppelen boekhouding",
+   "pagina": "/webshop-koppeling",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
   },
   {
    "zoekwoord": "werkinstructie voorbeeld",
@@ -171,6 +199,7 @@
   }
  ],
  "pijlers": [
+  "/afas-koppeling",
   "/ai-adoptie",
   "/bedrijfsgeheugen",
   "/blog/bedrijfsopvolging-begin-bij-het-geheugen/",
