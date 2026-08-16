@@ -104,7 +104,17 @@ export default async (request) => {
       body: JSON.stringify({ parent: { database_id: DB }, properties: eigenschappen }),
     });
     if (!bewaard.ok) {
-      return Response.json({ fout: 'Opslaan lukte niet. Probeer het zo nog eens.' }, { status: 502 });
+      // Notion's eigen melding meesturen: zonder die tekst is niet te zien of het
+      // aan de deling ligt (404), aan een veldnaam (400) of aan het token (401).
+      let detail = '';
+      try {
+        const f = await bewaard.json();
+        detail = [f.code, f.message].filter(Boolean).join(' - ').slice(0, 300);
+      } catch { detail = 'geen leesbare melding'; }
+      return Response.json(
+        { fout: 'Opslaan lukte niet. Probeer het zo nog eens.', notion: bewaard.status + ' ' + detail },
+        { status: 502 }
+      );
     }
 
     const rijen = await alles(token);
