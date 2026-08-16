@@ -152,3 +152,16 @@
   for = "/*.jpg"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Stijl en scripts korter cachen. Ze hebben een versienummer in de URL, dus een
+# nieuwe versie krijgt vanzelf een nieuw adres; deze regel is de vangnetlaag
+# voor bestanden die zonder versienummer worden opgevraagd.
+[[headers]]
+  for = "/assets/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
