@@ -32,7 +32,7 @@ CLUSTERS = {
         '/due-diligence', '/investeerders-ma', '/blog/wat-is-een-bedrijfsgeheugen/'],
     '/ai-adoptie': [
         '/ai-act', '/ai-governance', '/data-soevereiniteit', '/business-case-ai',
-        '/ai-voor-bestuurders', '/ai-implementeren', '/ai-poc', '/workshops', '/ai-scan', '/benchmark'],
+        '/ai-voor-bestuurders', '/ai-implementeren', '/ai-poc', '/workshops', '/ai-scan', '/benchmark', '/afmaakindex'],
 }
 
 # ── zoekwoord → de pagina die het hoort te claimen ────────────────────────
@@ -60,6 +60,7 @@ EIGENAAR = {
     'ai pilot opzetten mkb': '/ai-poc',
     'ai scan mkb': '/ai-scan',
     'benchmark mkb digitalisering': '/benchmark',
+    'afmaakindex': '/afmaakindex',
 }
 
 OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo'}

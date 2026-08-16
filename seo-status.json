@@ -9,6 +9,13 @@
    "type": "cluster"
   },
   {
+   "zoekwoord": "afmaakindex",
+   "pagina": "/afmaakindex",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "ai act compliance mkb",
    "pagina": "/ai-act",
    "bestaat": true,
