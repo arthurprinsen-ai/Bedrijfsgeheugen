@@ -358,6 +358,29 @@ def main():
                 bevindingen.append(('hoog', url,
                     'de voettekst wijkt af van .github/canoniek/voet.html'))
 
+
+    # -- 7. staat elke pagina in de sitemap --
+    # De sitemap wordt bij elke build gegenereerd (tools/bouw-sitemap.mjs).
+    # Deze controle is het vangnet: liep hij ooit achter, dan wisten zoek-
+    # machines niet dat nieuwe pagina's bestonden. Dat gebeurde met zeven
+    # pagina's tegelijk.
+    if os.path.exists('sitemap.xml'):
+        sm = io.open('sitemap.xml', encoding='utf-8').read()
+        in_sitemap = set()
+        for loc in re.findall(r'<loc>([^<]+)</loc>', sm):
+            pad = re.sub(r'^https?://[^/]+', '', loc).rstrip('/') or '/'
+            in_sitemap.add(pad)
+        for url, p in sorted(P.items()):
+            naam = os.path.basename(p['bestand'])[:-5]
+            if naam in ('404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt'):
+                continue
+            if 'noindex' in p['ruw']:
+                continue
+            if url.rstrip('/') and url.rstrip('/') not in in_sitemap:
+                bevindingen.append(('hoog', url, 'staat niet in sitemap.xml'))
+            elif url == '/' and '/' not in in_sitemap:
+                bevindingen.append(('hoog', url, 'staat niet in sitemap.xml'))
+
     bevindingen.sort(key=lambda b: (orde[b[0]], b[1]))
     tel = {k: sum(1 for b in bevindingen if b[0] == k) for k in orde}
 
