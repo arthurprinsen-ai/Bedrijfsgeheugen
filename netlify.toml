@@ -1,4 +1,11 @@
 # Bedrijfsgeheugen — routing, headers en caching
+#
+# OMGEVINGSVARIABELEN (Site configuration → Environment variables)
+#   ANTHROPIC_API_KEY  — nodig voor /api/vraag, de zoekbalk in de kennisbank
+#   NOTION_TOKEN       — nodig voor /api/monitor, de Digitaliseringsmonitor
+#                        De Notion-database moet ook met die integratie gedeeld zijn,
+#                        anders geeft Notion een 404 terwijl het token klopt.
+# Let op: een gewijzigde variabele werkt pas vanaf de eerstvolgende build.
 
 [build]
   publish = "."
