@@ -59,8 +59,8 @@
 
 /* Bovenbalk — vaste site-chrome, één plek */
 .bgtop{background:var(--bg-inkt);color:#C8CBD2;font-family:'Instrument Sans',system-ui,sans-serif;font-size:.78rem;line-height:1.5}
-.bgtop-in{max-width:1120px;margin:0 auto;padding:.45rem 1.5rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
-.bgtop-punten{display:flex;gap:1.2rem;flex-wrap:wrap}
+.bgtop-in{max-width:1120px;margin:0 auto;padding:.45rem 1.5rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:nowrap;height:32px;box-sizing:border-box;overflow:hidden}
+.bgtop-punten{display:flex;gap:1.2rem;flex-wrap:nowrap;overflow:hidden;white-space:nowrap}
 .bgtop-punten span{display:inline-flex;align-items:center;gap:.35rem}
 .bgtop-punten span::before{content:"\2713";color:var(--bg-geel,#FFE86B);font-weight:700}
 .bgtop-re{margin-left:auto;color:#8E96A5}
