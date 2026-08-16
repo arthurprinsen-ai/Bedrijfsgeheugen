@@ -102,10 +102,6 @@ def main():
 
             pagina = browser.new_page(viewport={'width': 1280, 'height': 900})
             pagina.add_init_script(METER)
-            # TIJDELIJK EXPERIMENT: alle externe lettertypes blokkeren.
-            # Verdwijnt de verschuiving, dan is het lettertype de oorzaak.
-            pagina.route('**://fonts.googleapis.com/**', lambda r: r.abort())
-            pagina.route('**://fonts.gstatic.com/**', lambda r: r.abort())
             js_fouten = []
             pagina.on('pageerror', lambda e: js_fouten.append(str(e)))
             pagina.goto('http://127.0.0.1:%d/%s.html' % (POORT, naam), wait_until='load')
