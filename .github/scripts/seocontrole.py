@@ -75,6 +75,9 @@ GEEN_KRUIMEL = {'index', '404'}
 GEEN_CANONICAL = {'404'}
 GEEN_H2 = {'404'}
 GEEN_SCHEMA = {'404', 'bedankt', 'zelfscan'}
+MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
+MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
+GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact'}
 SLECHTE_ANKERS = {'lees meer', 'klik hier', 'meer info', 'hier', 'lees verder', 'meer'}
 
 
@@ -224,6 +227,38 @@ def main():
                 bevindingen.append(('midden', url,
                     'ankertekst "%s" zegt niets over de bestemming' % a))
                 break
+
+
+    # ── 4. interne linkkracht: weespagina's en te weinig uitgaande links ──
+    # Een pagina zonder inkomende links is voor Google een pagina die niemand
+    # belangrijk vindt, hoe goed hij ook geschreven is. Dit is de stap die bij
+    # het toevoegen van een pagina het vaakst vergeten wordt.
+    inkomend = {u: set() for u in P}
+    for bron, p in P.items():
+        for doel in p['links']:
+            d = doel.rstrip('/') or '/'
+            if d in inkomend and d != bron:
+                inkomend[d].add(bron)
+
+    for url, p in sorted(P.items()):
+        naam = os.path.basename(p['bestand'])[:-5]
+        if naam in GEEN_LINKEIS:
+            continue
+        n_in = len(inkomend[url])
+        if n_in == 0:
+            bevindingen.append(('hoog', url,
+                'weespagina — geen enkele andere pagina linkt hierheen'))
+        elif n_in < MIN_INKOMEND:
+            bevindingen.append(('midden', url,
+                'maar %d inkomende link%s, streef naar %d'
+                % (n_in, '' if n_in == 1 else 's', MIN_INKOMEND)))
+
+        n_uit = len({l.rstrip('/') or '/' for l in p['links']} & set(P) - {url})
+        if n_uit < MIN_UITGAAND:
+            bevindingen.append(('laag', url,
+                'maar %d uitgaande interne link%s, streef naar %d'
+                % (n_uit, '' if n_uit == 1 else 's', MIN_UITGAAND)))
+
 
     # ── rapport ───────────────────────────────────────────────────────────
     orde = {'hoog': 0, 'midden': 1, 'laag': 2}
