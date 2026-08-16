@@ -7214,7 +7214,7 @@ body{background:var(--np-vlak)}
    bewaar() en teken() aan. Eigen gegevens staan onder S.wijz.
    ============================================================ */
 (function(){
- var TAB='wijzigingen', gekozen=null, wiz=null;
+ var TAB='lijst', gekozen=null, wiz=null;   // 'wijzigingen' bestond niet als tabblad, waardoor de eerste tekenbeurt op een undefined viel
  var FOTO={'sanne':'/assets/mensen/sanne-de-vries.jpg','mark':'/assets/mensen/mark-jansen.jpg',
            'lisa':'/assets/mensen/lisa-van-dijk.jpg','arthur':'/arthur.jpg'};
  function svg(p,g){ g=g||18; return '<svg class="w-svg" width="'+g+'" height="'+g+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="width:'+g+'px;height:'+g+'px;flex:0 0 '+g+'px;display:block">'+p+'</svg>'; }
@@ -7349,7 +7349,8 @@ body{background:var(--np-vlak)}
   el.innerHTML=h;
   Array.prototype.forEach.call(el.querySelectorAll('[data-w-tab]'),function(b){
    b.addEventListener('click',function(){ TAB=b.dataset.wTab; if(TAB==='nieuw'&&!wiz) nieuwWiz(); teken2(); }); });
-  ({lijst:tekLijst,historie:tekHistorie,samenhang:tekSamenhang,nieuw:tekWiz})[TAB]();
+  var teken={lijst:tekLijst,historie:tekHistorie,samenhang:tekSamenhang,nieuw:tekWiz};
+  (teken[TAB]||teken.lijst)();
  }
 
  function tekLijst(){

@@ -51,6 +51,13 @@
    "type": "cluster"
   },
   {
+   "zoekwoord": "ai scan mkb",
+   "pagina": "/ai-scan",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "ai strategie directie",
    "pagina": "/ai-voor-bestuurders",
    "bestaat": true,
