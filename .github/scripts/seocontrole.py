@@ -17,6 +17,10 @@ import glob, html, io, json, os, re, sys, unicodedata
 
 # ── de clusters, zoals vastgelegd in de zoekwoordenstrategie ───────────────
 CLUSTERS = {
+    '/bedrijfsgeheugen': [
+        '/blog/wat-is-een-bedrijfsgeheugen/', '/zelfscan', '/product',
+        '/afmaakindex', '/frisse-blik', '/systemen-koppelen', '/due-diligence',
+        '/ai-adoptie'],
     '/blog/systemen-koppelen-mkb/': [
         '/blog/afas-exact-koppelen/', '/blog/afas-koppeling/',
         '/blog/wat-kost-een-afas-koppeling/', '/blog/wat-kost-een-afas-partner/',
@@ -61,6 +65,8 @@ EIGENAAR = {
     'ai scan mkb': '/ai-scan',
     'benchmark mkb digitalisering': '/benchmark',
     'afmaakindex': '/afmaakindex',
+    'bedrijfsgeheugen': '/bedrijfsgeheugen',
+    'kennisverlies mkb': '/blog/wat-is-een-bedrijfsgeheugen/',
 }
 
 OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo'}
@@ -77,10 +83,29 @@ def norm(t):
     return re.sub(r'\s+', ' ', re.sub(r'[^a-z0-9 ]', ' ', t)).strip()
 
 
+MERK = 'bedrijfsgeheugen'
+
+
+def zonder_merk(titel):
+    """Haalt het merkdeel uit de titel weg.
+
+    De merknaam staat achter elke titel ('... | Bedrijfsgeheugen'). Zonder deze
+    stap ziet de controle elk zoekwoord dat de merknaam bevat als door iedere
+    pagina geclaimd, en meldt hij kannibalisatie waar alleen branding staat.
+    """
+    t = titel
+    for scheiding in (' | ', ' — ', ' - ', ' · '):
+        deel = t.split(scheiding)
+        if len(deel) > 1 and MERK in norm(deel[-1]) and len(norm(deel[-1]).split()) <= 3:
+            t = scheiding.join(deel[:-1])
+    return t
+
+
 def claimt(zoekwoord, pagina):
     """Claimt deze pagina het zoekwoord? Alle woorden moeten in titel of h1 staan.
-    Op stam vergeleken, zodat 'kost' ook 'kosten' dekt."""
-    doel = norm(pagina['titel']) + ' ' + norm(' '.join(pagina['h1']))
+    Op stam vergeleken, zodat 'kost' ook 'kosten' dekt. Het merkdeel van de titel
+    telt niet mee."""
+    doel = norm(zonder_merk(pagina['titel'])) + ' ' + norm(' '.join(pagina['h1']))
     woorden = [w for w in zoekwoord.split() if w not in ('van', 'de', 'het', 'een', 'in', 'je')]
     return all(any(d.startswith(w[:max(4, len(w) - 2)]) for d in doel.split()) for w in woorden)
 

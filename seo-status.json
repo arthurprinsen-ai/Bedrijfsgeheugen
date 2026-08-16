@@ -79,6 +79,13 @@
    "type": "cluster"
   },
   {
+   "zoekwoord": "bedrijfsgeheugen",
+   "pagina": "/bedrijfsgeheugen",
+   "bestaat": true,
+   "claimt": true,
+   "type": "pijler"
+  },
+  {
    "zoekwoord": "bedrijfsopvolging familiebedrijf kennis",
    "pagina": "/blog/bedrijfsopvolging-begin-bij-het-geheugen/",
    "bestaat": true,
@@ -128,6 +135,13 @@
    "type": "cluster"
   },
   {
+   "zoekwoord": "kennisverlies mkb",
+   "pagina": "/blog/wat-is-een-bedrijfsgeheugen/",
+   "bestaat": true,
+   "claimt": true,
+   "type": "pijler"
+  },
+  {
    "zoekwoord": "systemen koppelen mkb",
    "pagina": "/blog/systemen-koppelen-mkb/",
    "bestaat": true,
@@ -151,6 +165,7 @@
  ],
  "pijlers": [
   "/ai-adoptie",
+  "/bedrijfsgeheugen",
   "/blog/bedrijfsopvolging-begin-bij-het-geheugen/",
   "/blog/systemen-koppelen-mkb/",
   "/blog/wat-is-een-bedrijfsgeheugen/",
