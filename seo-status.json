@@ -79,6 +79,13 @@
    "type": "pijler"
   },
   {
+   "zoekwoord": "benchmark mkb digitalisering",
+   "pagina": "/benchmark",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "business case ai mkb",
    "pagina": "/business-case-ai",
    "bestaat": true,

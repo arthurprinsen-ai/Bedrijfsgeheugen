@@ -205,6 +205,15 @@ table.tab tr:last-child td{border-bottom:0}
 .tab-aiscan input[type=text],.tab-aiscan td input:not([type=number]){width:100%}
 .as-weg{padding:.2rem .55rem;line-height:1}
 </style><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "@id": "https://www.bedrijfsgeheugen.nl/ai-scan#hoofd", "name": "AI-scan: de kansenkaart", "url": "https://www.bedrijfsgeheugen.nl/ai-scan", "description": "Vul per taak in hoeveel tijd hij kost en hoe vaak hij terugkomt, en zie waar techniek tijd en marge oplevert.", "inLanguage": "nl-NL", "provider": {"@id": "https://www.bedrijfsgeheugen.nl/#organisatie"}, "applicationCategory": "BusinessApplication", "operatingSystem": "Elke browser", "browserRequirements": "JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}, {"@type": "ProfessionalService", "@id": "https://www.bedrijfsgeheugen.nl/#organisatie", "name": "Bedrijfsgeheugen", "url": "https://www.bedrijfsgeheugen.nl/", "slogan": "Aanpakken zonder aanmodderen.", "telephone": "+31627483345", "areaServed": {"@type": "Country", "name": "Nederland"}, "founder": {"@type": "Person", "name": "Arthur Prinsen"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.bedrijfsgeheugen.nl/"}, {"@type": "ListItem", "position": 2, "name": "Expertises", "item": "https://www.bedrijfsgeheugen.nl/expertises"}, {"@type": "ListItem", "position": 3, "name": "AI-scan", "item": "https://www.bedrijfsgeheugen.nl/ai-scan"}]}]}</script>
+<style id="bm-stijl">
+.bm-kaart .bm-rij{display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-end}
+.bm-kaart label{display:grid;gap:.25rem;font-size:.85rem;color:#5C646E}
+.bm-kaart select{font:inherit;padding:.4rem .5rem;border:1px solid #DCDFE6;border-radius:8px;background:#fff;min-width:11rem}
+.bm-kaart .knop[disabled]{opacity:.45;cursor:not-allowed}
+.bm-privacy{margin-top:.7rem;padding:.6rem .75rem;background:#FFF7E0;border-radius:9px;line-height:1.55}
+#bmUitkomst{margin-top:.8rem}
+@media(max-width:620px){.bm-kaart select{min-width:100%}.bm-kaart .bm-rij>*{width:100%}}
+</style>
 </head>
 <body>
 <div class="bgtop"><div class="bgtop-in">
@@ -295,7 +304,31 @@ table.tab tr:last-child td{border-bottom:0}
         <div class="bron"><b>Hoe gerekend:</b> uren per week &times; 46 werkweken &times; uurtarief, vermenigvuldigd met het deel dat realistisch te ondersteunen is. Dat deel loopt van 15% bij weinig herhaling tot 70% bij zeer repeterend werk met gegevens op orde. Bij hoog risico gaat er een derde af, want dan blijft controle door een mens nodig.</div>
       </div>
 
-      <div class="kaart" style="margin-top:1rem"><h3>De volgorde</h3><div id="asVolgorde"></div></div>
+      
+<div class="kaart bm-kaart" style="margin-top:1rem">
+  <h3>Vergelijk je uitkomst met andere mkb-bedrijven</h3>
+  <p class="sub" style="margin:-.3rem 0 .8rem">Doe anoniem mee aan de benchmark. Je ziet dan hoe jouw cijfers zich verhouden tot vergelijkbare bedrijven &mdash; en je helpt het beeld scherper te maken.</p>
+  <div class="bm-rij">
+    <label>Branche
+      <select id="bmBranche">
+        <option value="">Kies&hellip;</option>
+        <option>Productie</option><option>Groothandel</option>
+        <option>Zakelijke dienstverlening</option><option>Bouw en installatie</option>
+        <option>Retail en e-commerce</option><option>Zorg</option>
+        <option>Transport en logistiek</option><option>Overig</option>
+      </select></label>
+    <label>Aantal medewerkers
+      <select id="bmOmvang">
+        <option value="">Kies&hellip;</option>
+        <option>3 tot 10</option><option>10 tot 25</option><option>25 tot 50</option>
+        <option>50 tot 100</option><option>100 tot 250</option>
+      </select></label>
+    <button class="knop" id="bmVerstuur" type="button" disabled>Anoniem meedoen</button>
+  </div>
+  <p class="sub bm-privacy">Wat er wordt verstuurd: <b>branche, omvangklasse en de berekende uren per jaar</b>. Verder niets &mdash; geen bedrijfsnaam, geen taaknamen, geen bedragen, geen contactgegevens. Je kunt dit niet ongedaan maken, dus doe het pas als je tevreden bent met wat je hebt ingevuld.</p>
+  <div id="bmUitkomst"></div>
+</div>
+<div class="kaart" style="margin-top:1rem"><h3>De volgorde</h3><div id="asVolgorde"></div></div>
     </div>
 </div></section>
 
@@ -555,5 +588,64 @@ k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',tekenEnOpschonen); else tekenEnOpschonen();
 })();
-</script></body>
+</script>
+<script>
+/* ══ BENCHMARK: anoniem meedoen ═══════════════════════════════════════════
+   Verstuurt alleen branche, omvangklasse en de uitkomst. Nooit taaknamen of
+   bedragen — die blijven op het apparaat van de bezoeker. */
+(function(){
+  var HAAK='https://hook.eu1.make.com/2r9l6hjotdf1h87n4m8nyay78togg0eo';
+  function el(i){ return document.getElementById(i); }
+  function klaar(){
+    var b=el('bmBranche'), o=el('bmOmvang'), k=el('bmVerstuur');
+    if(!b||!o||!k) return;
+    var urenEl=document.getElementById('asUitkomst');
+    var heeftScan=urenEl && /Samen/.test(urenEl.textContent||'');
+    k.disabled = !(b.value && o.value && heeftScan);
+    k.textContent = heeftScan ? 'Anoniem meedoen' : 'Vul eerst de scan in';
+  }
+  function urenUitScan(){
+    var rij=document.querySelector('#asUitkomst tbody tr:last-child');
+    if(!rij) return 0;
+    var c=rij.querySelectorAll('td');
+    return c.length>2 ? (parseInt((c[2].textContent||'').replace(/\D/g,''),10)||0) : 0;
+  }
+  function verstuur(){
+    var k=el('bmVerstuur'); if(!k||k.disabled) return;
+    var lading={ branche:el('bmBranche').value, omvang:el('bmOmvang').value,
+      bron:'AI-scan', uren:urenUitScan(), compleet:'ja',
+      knelpunt:'', gemiddelde:'', kennisborging:'', koppelingen:'',
+      dataai:'', processen:'', mensen:'' };
+    k.disabled=true; k.textContent='Bezig\u2026';
+    fetch(HAAK,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(lading)})
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function(){
+        k.textContent='Bedankt, je doet mee';
+        try{ localStorage.setItem('bg_bm_gedaan','1'); }catch(e){}
+        el('bmUitkomst').innerHTML='<p class="sub"><b>Je bijdrage is opgeslagen.</b> '
+          +'Zodra er genoeg scans zijn, verschijnt het benchmarkrapport op '
+          +'<a href="/benchmark">de benchmarkpagina</a>. Je krijgt geen mail &mdash; '
+          +'we hebben je adres niet.</p>';
+      })
+      .catch(function(){
+        k.disabled=false; k.textContent='Opnieuw proberen';
+        el('bmUitkomst').innerHTML='<p class="sub">Versturen lukte niet. Probeer het zo nog eens.</p>';
+      });
+  }
+  function start(){
+    var b=el('bmBranche'); if(!b) return;
+    ['bmBranche','bmOmvang'].forEach(function(i){
+      var e=el(i); if(e) e.addEventListener('change', klaar); });
+    var k=el('bmVerstuur'); if(k) k.addEventListener('click', verstuur);
+    document.addEventListener('click', function(){ setTimeout(klaar,200); });
+    document.addEventListener('input', function(){ setTimeout(klaar,200); });
+    try{ if(localStorage.getItem('bg_bm_gedaan')==='1'){
+      k.disabled=true; k.textContent='Je doet al mee'; } }catch(e){}
+    klaar();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
+})();
+</script>
+</body>
 </html>
