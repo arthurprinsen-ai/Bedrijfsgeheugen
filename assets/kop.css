@@ -65,3 +65,22 @@
 .bgtop-punten span::before{content:"\2713";color:var(--bg-geel,#FFE86B);font-weight:700}
 .bgtop-re{margin-left:auto;color:#8E96A5}
 @media(max-width:760px){.bgtop-re{display:none}.bgtop-punten{gap:.9rem;font-size:.72rem}}
+
+/* ── submenu's in de hoofdbalk ──────────────────────────────────────────
+   Vijf items in de balk, drie daarvan met een uitklapper. Openen gebeurt
+   met hover en met toetsenbordfocus, zodat het ook zonder muis werkt.
+   Op smalle schermen valt dit weg en neemt .bgkop-mob het over.        */
+.bgkop-groep{position:relative;display:flex;align-items:center}
+.bgkop-trig{display:inline-flex;align-items:center;gap:.28rem;background:none;border:0;padding:0 0 .2rem;font:inherit;font-size:.85rem;font-weight:600;color:var(--bg-inkt);cursor:pointer;border-bottom:2px solid transparent}
+.bgkop-trig svg{width:10px;height:10px;transition:transform .18s ease}
+.bgkop-groep:hover .bgkop-trig,.bgkop-groep:focus-within .bgkop-trig{border-bottom-color:var(--bg-inkt)}
+.bgkop-groep:hover .bgkop-trig svg,.bgkop-groep:focus-within .bgkop-trig svg{transform:rotate(180deg)}
+.bgkop-paneel{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(6px);min-width:300px;background:#fff;border:1.5px solid var(--bg-lijn);border-radius:14px;box-shadow:0 18px 44px rgba(20,23,26,.14);padding:.5rem;display:grid;gap:.1rem;opacity:0;visibility:hidden;transition:opacity .16s ease,transform .16s ease;z-index:90}
+.bgkop-groep:hover .bgkop-paneel,.bgkop-groep:focus-within .bgkop-paneel{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+.bgkop-paneel::before{content:"";position:absolute;top:-10px;left:0;right:0;height:10px}
+.bgkop-paneel a{display:block;padding:.5rem .7rem;border-radius:9px;border-bottom:0;white-space:normal}
+.bgkop-paneel a:hover{background:var(--bg-vlak,#F4F5F8)}
+.bgkop-paneel b{display:block;font-size:.86rem;font-weight:600}
+.bgkop-paneel span{display:block;font-size:.76rem;font-weight:400;color:var(--bg-grijs,#5C646E);margin-top:.1rem}
+.bgkop-mob-kop{display:block;margin:.7rem 0 .15rem;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--bg-grijs,#5C646E);font-weight:600}
+@media(max-width:1100px){.bgkop-groep{display:none}}
