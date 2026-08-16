@@ -1,3 +1,4 @@
+// Laatst opnieuw uitgerold om een gewijzigde ANTHROPIC-sleutel op te pikken.
 // Beantwoordt een bezoekersvraag met alleen wat er op bedrijfsgeheugen.nl staat.
 //
 // Nodig: omgevingsvariabele ANTHROPIC_API_KEY in Netlify.
