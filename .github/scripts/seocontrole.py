@@ -17,6 +17,10 @@ import glob, html, io, json, os, re, sys, unicodedata
 
 # ── de clusters, zoals vastgelegd in de zoekwoordenstrategie ───────────────
 CLUSTERS = {
+    # koppelingen: /afas-koppeling is de pijler, de pakketpagina's linken heen en terug
+    '/afas-koppeling': [
+        '/exact-online-koppeling', '/twinfield-koppeling', '/webshop-koppeling',
+        '/api-koppeling-laten-maken'],
     '/bedrijfsgeheugen': [
         '/blog/wat-is-een-bedrijfsgeheugen/', '/zelfscan', '/product',
         '/afmaakindex', '/frisse-blik', '/systemen-koppelen', '/due-diligence',
@@ -62,6 +66,11 @@ EIGENAAR = {
     'ai strategie directie': '/ai-voor-bestuurders',
     'ai implementeren mkb': '/ai-implementeren',
     'ai pilot opzetten mkb': '/ai-poc',
+    # pakketkoppelingen, gemeten met DataForSEO op 16 augustus
+    'exact online koppeling': '/exact-online-koppeling',
+    'api koppeling laten maken': '/api-koppeling-laten-maken',
+    'twinfield koppeling': '/twinfield-koppeling',
+    'webshop koppelen boekhouding': '/webshop-koppeling',
     'ai scan mkb': '/ai-scan',
     'benchmark mkb digitalisering': '/benchmark',
     'afmaakindex': '/afmaakindex',
