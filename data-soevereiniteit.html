@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=optional">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=optional" rel="stylesheet">
-<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/assets/kop.css?v=9">
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/assets/kop.css?v=0466dd43">
 <style>
 :root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--blauw-l:#EDF0FD;--oranje:#FF4F17;
  --geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--vlak:#F4F5F8;--groen:#1F9D55;--groen-l:#E8F5EC;
@@ -190,7 +190,7 @@ table.tab tr:last-child td{border-bottom:0}
 <button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
 </div>
 <div class="bgkop-mob" id="bgkopMob" hidden><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/systemen-koppelen">Systemen koppelen</a><a href="/bedrijfsgeheugen">Kennis borgen</a><a href="/ai-adoptie">AI &amp; governance</a><a href="/ai-marketing-mkb">AI-marketing</a><a href="/due-diligence">Due diligence &amp; exit</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/afas-koppeling">AFAS-koppeling</a><a href="/exact-online-koppeling">Exact Online</a><a href="/twinfield-koppeling">Twinfield</a><a href="/webshop-koppeling">Webshop koppelen</a><a href="/api-koppeling-laten-maken">API-koppeling laten maken</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/blog/">Blog</a><a href="/ai-act">AI Act</a><a href="/data-soevereiniteit">Data-soevereiniteit</a><a href="/ai-in-bi">AI in business intelligence</a><a href="/ai-in-data-engineering">AI in data engineering</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/begrippen">Begrippenlijst</a></div><a href="/product">Het portaal</a><a href="/hoe-het-werkt">Hoe het werkt</a><a href="/expertises">Alle expertises</a><a href="/over-ons">Over ons</a><a class="bgkop-mcta" href="/frisse-blik">Plan een Frisse blik &rarr;</a></div>
-<script src="/assets/js/menu.js" defer></script></nav>
+<script src="/assets/js/menu.js?v=198c58e3" defer></script></nav>
 <main>
 <nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">&rsaquo;</span><span aria-current="page">Data-soevereiniteit</span></nav>
 
@@ -329,5 +329,11 @@ table.tab tr:last-child td{border-bottom:0}
     <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
   </div>
 </div></footer>
+<script>
+(function(){var k=document.getElementById('bgkopKnop'),m=document.getElementById('bgkopMob');
+if(k&&m){k.addEventListener('click',function(){var dicht=m.hasAttribute('hidden');
+if(dicht){m.removeAttribute('hidden')}else{m.setAttribute('hidden','')}
+k.setAttribute('aria-expanded',dicht?'true':'false')})}})();
+</script>
 </body>
 </html>
