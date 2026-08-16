@@ -84,6 +84,26 @@ GEEN_KRUIMEL = {'index', '404'}
 GEEN_CANONICAL = {'404'}
 GEEN_H2 = {'404'}
 GEEN_SCHEMA = {'404', 'bedankt', 'zelfscan'}
+# -- merktaal --
+# Woorden uit de bouwsteen "Hoe Arthur overkomt" die niet klinken als iemand die
+# het aan tafel zegt. Per woord staat erbij op welke pagina's het wel mag, omdat
+# het daar het zoekwoord of een officiele term is.
+VERBODEN_WOORDEN = {
+    'implementeren': {'/ai-implementeren', '/expertises', '/ai-adoptie', '/ai-poc'},
+    'implementatie': {'/ai-implementeren', '/frisse-blik'},
+    'optimaliseren': set(),
+    'optimalisatie': set(),
+    'strategisch': {'/ai-voor-bestuurders'},
+    'strategische': {'/ai-voor-bestuurders'},
+    'waardevol': set(),
+    'ontzorgen': set(),
+    'naadloos': set(),
+    'toekomstbestendig': set(),
+    'op het snijvlak': set(),
+    'oplossingen op maat': set(),
+}
+GEEN_TAALEIS = {'privacy', '404', 'index-oud', 'klantportaal', 'klantportaal-demo'}
+
 MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
 MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
 GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact'}
@@ -271,6 +291,33 @@ def main():
 
     # ── rapport ───────────────────────────────────────────────────────────
     orde = {'hoog': 0, 'midden': 1, 'laag': 2}
+
+    # -- 5. merktaal: consultancywoorden en uitroeptekens --
+    # De enige controle op hoe het klinkt in plaats van hoe het is opgebouwd.
+    # Zonder deze stap sluipt de brochuretaal er vanzelf weer in, want die
+    # woorden voelen bij het schrijven altijd even goed.
+    for url, p in sorted(P.items()):
+        naam = os.path.basename(p['bestand'])[:-5]
+        if naam in GEEN_TAALEIS:
+            continue
+        plat = norm(p['hoofd'])
+        # Blogs beschrijven de taal van de markt; daar is 'implementatie' vaak
+        # juist het zoekwoord (ERP implementatie mislukt, implementatiepartner).
+        # De eis geldt onverkort op onze eigen dienstenpagina's.
+        for woord, toegestaan in VERBODEN_WOORDEN.items():
+            if url in toegestaan:
+                continue
+            if url.startswith('/blog/') and woord.startswith('implementa'):
+                continue
+            if url.startswith('/blog/') and woord == 'implementeren':
+                continue
+            if woord in plat:
+                bevindingen.append(('midden', url,
+                    'merktaal: het woord "%s" hoort niet in onze teksten' % woord))
+        zichtbaar = re.sub(r'<script[\s\S]*?</script>|<style[\s\S]*?</style>|<!--[\s\S]*?-->', ' ', p['hoofd'])
+        if '!' in re.sub(r'<[^>]+>', ' ', zichtbaar):
+            bevindingen.append(('laag', url, 'uitroepteken in de tekst'))
+
     bevindingen.sort(key=lambda b: (orde[b[0]], b[1]))
     tel = {k: sum(1 for b in bevindingen if b[0] == k) for k in orde}
 
