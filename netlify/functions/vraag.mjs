@@ -5,7 +5,7 @@
 
 import index from '../../kennisbank-index.json' with { type: 'json' };
 
-const MODEL = 'claude-sonnet-4-6';
+const MODEL = 'claude-sonnet-5';
 const AANTAL_STUKKEN = 6;
 const MAX_VRAAG = 500;
 
@@ -124,7 +124,17 @@ export default async (request) => {
     });
 
     if (!antwoord.ok) {
-      return Response.json({ fout: 'De zoekfunctie is even niet bereikbaar.' }, { status: 502 });
+      // De melding van de API meesturen: zonder die tekst is niet te zien of het
+      // aan de sleutel ligt, aan de modelnaam of aan een limiet.
+      let detail = '';
+      try {
+        const f = await antwoord.json();
+        detail = [f.error?.type, f.error?.message].filter(Boolean).join(' - ').slice(0, 200);
+      } catch { detail = 'geen leesbare melding'; }
+      return Response.json(
+        { fout: 'De zoekfunctie is even niet bereikbaar.', api: antwoord.status + ' ' + detail },
+        { status: 502 }
+      );
     }
 
     const data = await antwoord.json();
