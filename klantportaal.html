@@ -7697,7 +7697,7 @@ body{background:var(--np-vlak)}
   var RIS={'laag':1,'midden':0.85,'hoog':0.65};
 
   function taken(){ try{ return JSON.parse(localStorage.getItem('bg_aiscan')||'[]'); }catch(e){ return []; } }
-  function bewaar(t){ try{ localStorage.setItem('bg_aiscan',JSON.stringify(t)); }catch(e){} }
+  function bewaarScan(t){ try{ localStorage.setItem('bg_aiscan',JSON.stringify(t)); }catch(e){} }
   function tarief(){ var e=document.getElementById('asTarief'); return Math.max(10,+(e&&e.value)||55); }
 
   function reken(t){
@@ -7765,7 +7765,7 @@ body{background:var(--np-vlak)}
     var rijen=t.filter(function(x){return x[0];}).map(function(x,i){ var r=reken(x); return {n:i+1,t:x,r:r}; })
                 .sort(function(a,b){ return b.r.opbrengst-a.r.opbrengst; });
     if(!rijen.length){ el.innerHTML='<tbody><tr><td class="sub">Vul hierboven taken in, dan verschijnt hier wat elke taak oplevert.</td></tr></tbody>'; return; }
-    var h='<thead><tr><th>#</th><th>Taak</th><th>Uur per jaar terug</th><th>Waarde per jaar</th><th>Haalbaarheid</th><th>Advies</th></tr></thead><tbody>';
+    var h='<thead><tr><th>#</th><th>Taak</th><th>Uur per jaar terug</th><th>Waarde per jaar</th><th>Haalbaarheid</th><th>Advies</th><th></th></tr></thead><tbody>';
     var totU=0, totE=0;
     rijen.forEach(function(o){
       totU+=o.r.uren; totE+=o.r.euro;
@@ -7775,9 +7775,12 @@ body{background:var(--np-vlak)}
               : 'Laten liggen';
       h+='<tr><td>'+o.n+'</td><td>'+(o.t[0]||'')+'<span class="sub"> \u00b7 '+(o.t[1]||'')+'</span></td>'
         +'<td>'+Math.round(o.r.uren)+'</td><td><b>'+euro(o.r.euro)+'</b></td>'
-        +'<td>'+Math.round(o.r.haalbaar)+'%</td><td>'+adv+'</td></tr>';
+        +'<td>'+Math.round(o.r.haalbaar)+'%</td><td>'+adv+'</td>'
+        +'<td><button class="knop licht as-actie" type="button" data-t="'+(o.t[0]||'').replace(/"/g,'&quot;')
+        +'" data-e="'+Math.round(o.r.euro)+'" data-h="'+Math.round(o.r.haalbaar)+'">Zet op de roadmap</button></td></tr>';
     });
-    h+='<tr style="border-top:2px solid #14171A"><td></td><td><b>Samen</b></td><td><b>'+Math.round(totU)+'</b></td><td><b>'+euro(totE)+'</b></td><td></td><td></td></tr></tbody>';
+    h+='<tr style="border-top:2px solid #14171A"><td></td><td><b>Samen</b></td><td><b>'+Math.round(totU)+'</b></td><td><b>'+euro(totE)+'</b></td><td></td><td></td>'
+      +'<td><button class="knop as-alles" type="button">Alle kansen erop</button></td></tr></tbody>';
     el.innerHTML=h;
 
     var d=document.getElementById('asDuiding');
@@ -7809,7 +7812,7 @@ body{background:var(--np-vlak)}
     }
   }
 
-  function teken(){ var t=taken(); 
+  function tekenScan(){ var t=taken(); 
     var b=document.getElementById('asRijen');
     if(b) b.innerHTML=t.map(rijHtml).join('') || '<tr><td colspan="7" class="sub">Nog geen taken. Voeg er een toe of vul de voorbeelden in.</td></tr>';
     tekenKaart(t); tekenUitkomst(t);
@@ -7817,27 +7820,65 @@ body{background:var(--np-vlak)}
 
   document.addEventListener('input',function(e){
     var el=e.target;
-    if(el.id==='asTarief'){ teken(); return; }
+    if(el.id==='asTarief'){ tekenScan(); return; }
     if(!el.classList||!el.classList.contains('as-in')) return;
     var t=taken(), i=+el.dataset.i, k=+el.dataset.k;
     if(!t[i]) return;
     t[i][k]= (k===2? (+el.value||0) : el.value);
-    bewaar(t);
+    bewaarScan(t);
     tekenKaart(t); tekenUitkomst(t);
   });
   document.addEventListener('change',function(e){
     var el=e.target;
     if(el.classList&&el.classList.contains('as-in')&&el.tagName==='SELECT'){
-      var t=taken(); t[+el.dataset.i][+el.dataset.k]=el.value; bewaar(t); tekenKaart(t); tekenUitkomst(t);
+      var t=taken(); t[+el.dataset.i][+el.dataset.k]=el.value; bewaarScan(t); tekenKaart(t); tekenUitkomst(t);
     }
   });
   document.addEventListener('click',function(e){
     var el=e.target;
-    if(el.id==='asToevoegen'){ var t=taken(); t.push(['','',0,'soms','deels','laag']); bewaar(t); teken(); }
-    if(el.id==='asVoorbeeld'){ bewaar(VOORBEELD.map(function(r){return r.slice();})); teken(); }
-    if(el.id==='asLeeg'){ bewaar([]); teken(); }
-    if(el.classList&&el.classList.contains('as-weg')){ var t2=taken(); t2.splice(+el.dataset.i,1); bewaar(t2); teken(); }
+    if(el.id==='asToevoegen'){ var t=taken(); t.push(['','',0,'soms','deels','laag']); bewaarScan(t); tekenScan(); }
+    if(el.id==='asVoorbeeld'){ bewaarScan(VOORBEELD.map(function(r){return r.slice();})); tekenScan(); }
+    if(el.id==='asLeeg'){ bewaarScan([]); tekenScan(); }
+    if(el.classList&&el.classList.contains('as-weg')){ var t2=taken(); t2.splice(+el.dataset.i,1); bewaarScan(t2); tekenScan(); }
+    if(el.classList&&el.classList.contains('as-actie')){ naarRoadmap([{t:el.dataset.t,e:+el.dataset.e,h:+el.dataset.h}], el); }
+    if(el.classList&&el.classList.contains('as-alles')){
+      var lijst=taken().filter(function(x){return x[0];}).map(function(x){ var r=reken(x);
+        return {t:x[0], e:Math.round(r.euro), h:Math.round(r.haalbaar)}; })
+        .filter(function(o){ return o.h>=65 && o.e>=3000; })
+        .sort(function(a,b){ return b.e-a.e; });
+      naarRoadmap(lijst, el);
+    }
   });
+
+  /* Een kans uit de scan wordt een taak op de roadmap. Bewust dezelfde S.taken
+     als het roadmapscherm gebruikt, zodat het geen tweede lijstje wordt die je
+     apart moet bijhouden. De haalbaarheid bepaalt wanneer het start: wat nu kan
+     begint in maand 1, wat eerst voorbereiding vraagt later. */
+  function naarRoadmap(lijst, knop){
+    if(!lijst.length){ melding(knop,'Nog niets dat er klaar voor is'); return; }
+    if(typeof S==='undefined'||!S.taken){ melding(knop,'Roadmap niet beschikbaar'); return; }
+    var bestaand={}; S.taken.forEach(function(x){ bestaand[x.t]=1; });
+    var toe=0, maand=1;
+    lijst.forEach(function(o){
+      var titel='AI-scan: '+o.t;
+      if(bestaand[titel]) return;
+      var start = o.h>=80 ? maand : (o.h>=65 ? maand+1 : maand+3);
+      S.taken.push({id:Date.now()+toe, t:titel, dim:(typeof DIM!=='undefined'&&DIM[0]?DIM[0].k:'proces'),
+                    s:Math.min(start,12), d:2, klaar:false});
+      maand=Math.min(maand+1,10); toe++;
+    });
+    if(!toe){ melding(knop,'Stond er al op'); return; }
+    // het portaal bewaart en tekent zijn eigen roadmap; deze module de kansenkaart
+    if(typeof window.bewaar==='function') window.bewaar();
+    if(typeof window.teken==='function') window.teken();
+    tekenScan();
+    melding(knop, toe===1 ? 'Op de roadmap gezet' : toe+' taken op de roadmap');
+  }
+  function melding(knop, tekst){
+    if(!knop) return;
+    var oud=knop.textContent; knop.textContent=tekst; knop.disabled=true;
+    setTimeout(function(){ knop.textContent=oud; knop.disabled=false; }, 1800);
+  }
 
   // het portaal zet een 'hier staat nog niets'-melding op kaarten die bij het laden
   // leeg lijken. Deze kaarten vullen zichzelf, dus die melding hoort hier weg.
@@ -7858,7 +7899,7 @@ body{background:var(--np-vlak)}
       }
     }).observe(p,{childList:true,subtree:true});
   })();
-  function tekenEnOpschonen(){ teken(); opschonen(); setTimeout(opschonen,300); }
+  function tekenEnOpschonen(){ tekenScan(); opschonen(); setTimeout(opschonen,300); }
 
   document.addEventListener('click', function(e){
     var t=e.target;

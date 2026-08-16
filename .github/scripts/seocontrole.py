@@ -65,6 +65,7 @@ OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo'}
 GEEN_KRUIMEL = {'index', '404'}
 GEEN_CANONICAL = {'404'}
 GEEN_H2 = {'404'}
+GEEN_SCHEMA = {'404', 'bedankt', 'zelfscan'}
 SLECHTE_ANKERS = {'lees meer', 'klik hier', 'meer info', 'hier', 'lees verder', 'meer'}
 
 
@@ -176,6 +177,18 @@ def main():
             bevindingen.append(('laag', url, 'geen og:title voor het delen op social'))
         if not p['h2'] and naam not in GEEN_H2:
             bevindingen.append(('laag', url, 'geen enkele h2 — de pagina heeft geen structuur'))
+
+        # gestructureerde data: zonder JSON-LD weet Google wel waar de pagina over
+        # gaat, maar niet wát het is — een dienst, een gereedschap, een cursus.
+        blokken = re.findall(r'<script type="application/ld\+json">(.*?)</script>',
+                             p['ruw'], re.S)
+        if not blokken and naam not in GEEN_SCHEMA:
+            bevindingen.append(('midden', url, 'geen gestructureerde data (JSON-LD)'))
+        for b in blokken:
+            try:
+                json.loads(b)
+            except ValueError as e:
+                bevindingen.append(('hoog', url, 'gestructureerde data is ongeldig JSON: %s' % e))
 
         for anker in p['ankers']:
             a = norm(anker)
