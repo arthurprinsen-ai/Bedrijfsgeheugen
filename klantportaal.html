@@ -8171,7 +8171,28 @@ body{background:var(--np-vlak)}
      De klant ziet dus w\u00e9l wat een scherm doet, maar niet wat erin staat. */
   (function(){
     if (!K || K.actief) return;
-    var VRIJ = { overzicht: 1, offerte: 1 };
+    var VRIJ = { offerte: 1 };
+    /* Het Overzicht is NIET vrij: daar staan de KPI's, de scanuitslag en de
+       kosten van handwerk. Die komen uit localStorage en gaan dus over wie er
+       het laatst op dit apparaat is ingelogd. We verbergen ze volledig en
+       laten alleen het startblok staan \u2014 blur is niet genoeg, de tekst zou
+       nog te selecteren zijn. */
+    (function(){
+      var ov = document.getElementById('p-overzicht');
+      if (!ov) return;
+      Array.prototype.forEach.call(ov.children, function(kind){
+        if (!kind.classList.contains('of-start')) kind.style.display = 'none';
+      });
+      var m = document.createElement('div');
+      m.className = 'kaart';
+      m.style.marginTop = '1rem';
+      m.innerHTML = '<h3>Je cijfers verschijnen hier</h3>' +
+        '<p class="sub">Zodra het portaal actief is staan op deze plek jullie eigen cijfers: ' +
+        'waar jullie staan, wat het handwerk per jaar kost, hoeveel fte daarin verdwijnt en ' +
+        'hoe jullie scoren naast de branche. Nu staat er niets \u2014 en dat is bewust, ' +
+        'want er horen geen cijfers van iemand anders te staan.</p>';
+      ov.appendChild(m);
+    })();
     var WAT = {
       profiel:'Per onderdeel waar jullie nu staan en wat de volgende stap is',
       dataai:'Wat er met jullie gegevens gebeurt en waar AI iets oplevert',
