@@ -9518,6 +9518,27 @@ window.__BG_LOOPT__ = function(K, slug){
     koppel(p,st);
   }
 
+
+  /* Ongedaan maken. Een vinkje is zo aangetikt, en het telt meteen door in
+     activiteit en in geld. Daarom na elke wijziging een balk met terugzetten,
+     die na tien seconden vanzelf verdwijnt. Ook verwijderde stories komen
+     hiermee terug. */
+  var TERUG=null, TERUGTIJD=null;
+  function meldTerug(p, tekst, herstel){
+    TERUG=herstel;
+    var oud=document.querySelector('.dpTerug');
+    if(oud) oud.remove();
+    var b=document.createElement('div');
+    b.className='dpTerug';
+    b.innerHTML='<span>'+tekst+'</span><button type="button">Ongedaan maken</button>';
+    document.body.appendChild(b);
+    b.querySelector('button').addEventListener('click',function(){
+      if(TERUG) TERUG();
+      b.remove(); TERUG=null;
+    });
+    clearTimeout(TERUGTIJD);
+    TERUGTIJD=setTimeout(function(){ b.remove(); TERUG=null; }, 10000);
+  }
   function koppel(p,st){
     var sleepF=null, sleepS=null;
     Array.prototype.forEach.call(p.querySelectorAll('.dpFeat'),function(el){
@@ -9564,22 +9585,39 @@ window.__BG_LOOPT__ = function(K, slug){
     Array.prototype.forEach.call(p.querySelectorAll('[data-vinkf]'),function(c){
       c.addEventListener('change',function(e){
         e.stopPropagation();
-        st.features.forEach(function(f){ if(f.id===c.dataset.vinkf) f.af=c.checked; });
+        var id=c.dataset.vinkf, was=null, naam='';
+        st.features.forEach(function(f){ if(f.id===id){ was=f.af; naam=f.titel; f.af=c.checked; } });
         bewaar(st); teken(p,st);
+        meldTerug(p, (c.checked?'Afgevinkt: ':'Weer open: ')+naam, function(){
+          var s2=lees(); s2.features.forEach(function(f){ if(f.id===id) f.af=was; });
+          bewaar(s2); teken(document.getElementById('p-werkstromen'), s2);
+        });
       });
     });
     Array.prototype.forEach.call(p.querySelectorAll('[data-vinks]'),function(c){
       c.addEventListener('change',function(e){
         e.stopPropagation();
-        st.stories.forEach(function(x){ if(x.id===c.dataset.vinks) x.af=c.checked; });
+        var id=c.dataset.vinks, was=null;
+        st.stories.forEach(function(x){ if(x.id===id){ was=x.af; x.af=c.checked; } });
         bewaar(st); teken(p,st);
+        meldTerug(p, c.checked?'User story afgevinkt':'User story weer open', function(){
+          var s2=lees(); s2.stories.forEach(function(x){ if(x.id===id) x.af=was; });
+          bewaar(s2); teken(document.getElementById('p-werkstromen'), s2);
+        });
       });
     });
     Array.prototype.forEach.call(p.querySelectorAll('[data-weg]'),function(b){
       b.addEventListener('click',function(e){
         e.stopPropagation();
-        st.stories=st.stories.filter(function(x){ return x.id!==b.dataset.weg; });
+        var id=b.dataset.weg;
+        var kwijt=st.stories.filter(function(x){ return x.id===id; })[0];
+        st.stories=st.stories.filter(function(x){ return x.id!==id; });
         bewaar(st); teken(p,st);
+        meldTerug(p, 'User story verwijderd', function(){
+          var s2=lees();
+          if(kwijt && !s2.stories.some(function(x){return x.id===id;})) s2.stories.push(kwijt);
+          bewaar(s2); teken(document.getElementById('p-werkstromen'), s2);
+        });
       });
     });
     Array.prototype.forEach.call(p.querySelectorAll('[data-plus]'),function(b){
@@ -10649,6 +10687,16 @@ window.__BG_LOOPT__ = function(K, slug){
  padding:.55rem 1.1rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer;white-space:nowrap}
 .acItem button:hover{background:var(--blauw,#2742D6)}
 @media(max-width:640px){.acItem button{width:100%}}
+</style>
+<style>
+.dpTerug{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);z-index:9998;
+ background:var(--inkt,#14171A);color:#fff;border-radius:99px;padding:.6rem .7rem .6rem 1.1rem;
+ display:flex;align-items:center;gap:.8rem;box-shadow:0 8px 26px rgba(20,23,26,.28);
+ font-size:.88rem;max-width:92vw}
+.dpTerug span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dpTerug button{border:0;background:var(--geel,#FFE86B);color:var(--inkt,#14171A);border-radius:99px;
+ padding:.35rem .85rem;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;white-space:nowrap}
+@media(max-width:640px){.dpTerug{bottom:4.5rem}}
 </style>
 </body>
 </html>
