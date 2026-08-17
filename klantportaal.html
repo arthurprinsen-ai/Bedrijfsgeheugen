@@ -406,6 +406,28 @@ body.bg-dicht #p-overzicht > *:not(.of-start):not(.of-leegmelding):not(.of-voort
 
 
 
+
+.mw{margin-top:1rem}
+.mwLijst{margin-top:1rem}
+.mwRij{display:grid;grid-template-columns:1fr auto auto;gap:1rem;align-items:center;
+ border:1.5px solid var(--lijn,#DCDFE6);border-radius:12px;padding:.9rem 1.05rem;margin-bottom:.6rem;background:#fff}
+@media(max-width:760px){.mwRij{grid-template-columns:1fr;gap:.6rem}}
+.mwRij b{display:block;font-size:.96rem}.mwRij span{font-size:.86rem;color:var(--grijs,#5C646E)}
+.mwCijfers{display:flex;flex-direction:column;align-items:flex-end;gap:.1rem}
+@media(max-width:760px){.mwCijfers{align-items:flex-start}}
+.mwPrijs{font-weight:700;font-size:1rem;color:var(--inkt,#14171A)!important}
+.mwWeek{font-size:.82rem}.mwEind{font-size:.78rem}
+.mwKlaar{border-left:3px solid #1F9D55;padding:.3rem 0 .3rem .8rem;margin:.5rem 0}
+.mwKlaar b{display:block;font-size:.94rem}.mwKlaar span{font-size:.84rem;color:var(--grijs,#5C646E)}
+.mwVoor{margin-top:1rem;border:2px solid var(--blauw,#2742D6);border-radius:14px;padding:1.2rem 1.3rem;background:#fff}
+.mwVoor>b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;margin-bottom:.7rem}
+.mwTab{width:100%;border-collapse:collapse;font-size:.92rem;margin-bottom:.8rem}
+.mwTab td{padding:.42rem 0;border-bottom:1px solid var(--lijn,#DCDFE6)}
+.mwTab td:last-child{text-align:right;font-weight:600;white-space:nowrap}
+.mwTab tr.mwTot td{border-bottom:2px solid var(--inkt,#14171A);font-weight:700;font-size:1.02rem}
+.mwVoor label{display:block;font-size:.88rem;font-weight:600;margin:.8rem 0 0}
+.mwVoor input[type=text]{width:100%;max-width:22rem;margin-top:.25rem;font:inherit;padding:.55rem .7rem;
+ border:1.5px solid var(--lijn,#DCDFE6);border-radius:9px}
 .wgRij{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0 .4rem}
 .wgPers{display:flex;align-items:center;gap:.55rem;background:#fff;border:1.5px solid var(--lijn,#DCDFE6);
  border-radius:99px;padding:.45rem .9rem .45rem .45rem;font:inherit;font-size:.9rem;cursor:pointer}
@@ -8789,6 +8811,127 @@ body{background:var(--np-vlak)}
           '</div>' +
           '<p class="wgSlot">Daarom leggen we per onderdeel vast wie erover gaat en waarom het zo is ' +
           'afgesproken. Niet om iemand te vervangen — om te zorgen dat het werk doorgaat.</p></div>';
+      });
+    });
+  })();
+
+
+  /* Meerwerk met een handtekening.
+     Na akkoord is de offerte vast. Wil de klant er iets bij, dan wordt dat een
+     voorstel met de prijs, de extra weken en de nieuwe einddatum erbij — en een
+     eigen handtekening. Geen verrassing op de factuur, en een spoor van wie wat
+     wanneer heeft afgesproken. */
+  (function(){
+    if (!K || !K.onderdelen) return;
+    var of = document.getElementById('p-offerte');
+    if (!of) return;
+    var HOOK = 'https://hook.eu1.make.com/783x2glfestd2c8hfqxlrvsrgefknc45';
+
+    function gelezen(sleutel, terug){
+      try { return JSON.parse(localStorage.getItem(sleutel) || 'null') || terug; }
+      catch (e) { return terug; }
+    }
+    var akkoord = gelezen('bg_akkoord_' + slug, K.getekend);
+    if (!akkoord) return;                       /* nog niet getekend: geen meerwerk */
+
+    var extra = gelezen('bg_meerwerk_' + slug, []);
+    var basisWeken = 0, basisPrijs = 0;
+    K.onderdelen.filter(function(o){ return o.vast; }).forEach(function(o){
+      basisPrijs += o.prijs; basisWeken += o.sprints.length;
+    });
+    extra.forEach(function(e){ basisPrijs += e.prijs; basisWeken += e.weken; });
+
+    var open = K.onderdelen.filter(function(o){
+      return !o.vast && !extra.some(function(e){ return e.id === o.id; });
+    });
+
+    function datum(weken){
+      var d = new Date();
+      d.setDate(d.getDate() + weken * 7);
+      return d.toLocaleDateString('nl-NL', { day:'numeric', month:'long', year:'numeric' });
+    }
+
+    var blok = document.createElement('div');
+    blok.className = 'kaart mw';
+    blok.innerHTML =
+      '<h3>Er iets bij laten doen</h3>' +
+      '<p class="sub">De getekende offerte staat vast. Wil je er iets bij, dan zie je hier wat het kost, ' +
+      'hoeveel het opschuift en wanneer het dan klaar is — vóórdat je tekent. Geen verrassing achteraf.</p>' +
+      (extra.length
+        ? '<div class="mwLijst"><span class="of-kopje">Al afgesproken meerwerk</span>' +
+          extra.map(function(e){
+            return '<div class="mwKlaar"><b>' + esc(e.titel) + '</b>' +
+              '<span>\u20ac ' + e.prijs.toLocaleString('nl-NL') + ' · +' + e.weken +
+              (e.weken === 1 ? ' week' : ' weken') + ' · getekend door ' + esc(e.naam) +
+              ' op ' + esc(e.datum) + '</span></div>';
+          }).join('') + '</div>'
+        : '') +
+      (open.length
+        ? '<div class="mwLijst"><span class="of-kopje">Nog beschikbaar</span>' +
+          open.map(function(o){
+            var w = o.sprints.length;
+            return '<div class="mwRij" data-id="' + o.id + '">' +
+              '<div><b>' + esc(o.titel) + '</b><span>' + esc(o.kort) + '</span></div>' +
+              '<div class="mwCijfers">' +
+                '<span class="mwPrijs">\u20ac ' + o.prijs.toLocaleString('nl-NL') + '</span>' +
+                '<span class="mwWeek">+' + w + (w === 1 ? ' week' : ' weken') + '</span>' +
+                '<span class="mwEind">klaar rond ' + datum(basisWeken - (K.voortgang || 0) + w) + '</span>' +
+              '</div>' +
+              '<button class="knop licht mwKies" type="button">Dit erbij →</button></div>';
+          }).join('') + '</div>'
+        : '<p class="sub">Alles uit de offerte loopt al. Wil je iets anders? Mail ' +
+          '<a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a>.</p>') +
+      '<div id="mwTeken"></div>';
+    of.appendChild(blok);
+
+    blok.querySelectorAll('.mwKies').forEach(function(b){
+      b.addEventListener('click', function(){
+        var rij = b.closest('.mwRij');
+        var o = K.onderdelen.filter(function(x){ return x.id === rij.dataset.id; })[0];
+        if (!o) return;
+        var w = o.sprints.length;
+        var nieuw = basisPrijs + o.prijs;
+        document.getElementById('mwTeken').innerHTML =
+          '<div class="mwVoor"><b>Voorstel: ' + esc(o.titel) + '</b>' +
+          '<table class="mwTab">' +
+            '<tr><td>Nu afgesproken</td><td>\u20ac ' + basisPrijs.toLocaleString('nl-NL') + '</td></tr>' +
+            '<tr><td>Dit erbij</td><td>+ \u20ac ' + o.prijs.toLocaleString('nl-NL') + '</td></tr>' +
+            '<tr class="mwTot"><td>Nieuw totaal</td><td>\u20ac ' + nieuw.toLocaleString('nl-NL') + '</td></tr>' +
+            '<tr><td>Extra doorlooptijd</td><td>+' + w + (w === 1 ? ' week' : ' weken') + '</td></tr>' +
+            '<tr><td>Nieuwe einddatum</td><td>rond ' +
+              datum(basisWeken - (K.voortgang || 0) + w) + '</td></tr>' +
+          '</table>' +
+          '<p class="sub">Wat je krijgt: ' + esc(o.sprints[0].op) + '</p>' +
+          '<label>Je naam<input type="text" id="mwNaam" placeholder="Voor- en achternaam"></label>' +
+          '<label class="htkVink"><input type="checkbox" id="mwVink">' +
+          'Ik geef akkoord op dit meerwerk en de nieuwe totaalprijs.</label>' +
+          '<button class="knop" type="button" id="mwStuur">Tekenen voor dit meerwerk</button>' +
+          '<p class="htkMeld" id="mwMeld" hidden></p></div>';
+
+        document.getElementById('mwStuur').addEventListener('click', function(){
+          var naam = document.getElementById('mwNaam').value.trim();
+          var m = document.getElementById('mwMeld');
+          m.hidden = false;
+          if (naam.length < 3 || !document.getElementById('mwVink').checked) {
+            m.className = 'htkMeld fout'; m.textContent = 'Vul je naam in en vink het vakje aan.'; return;
+          }
+          m.className = 'htkMeld'; m.textContent = 'Bezig\u2026';
+          var d = new Date().toISOString().slice(0, 10);
+          fetch(HOOK, { method:'POST', headers:{'content-type':'application/json'},
+            body: JSON.stringify({ soort:'Meerwerk getekend', klant:(K.naam||slug), naam:naam,
+              datum:d, onderdelen:o.titel, bedrag:o.prijs, nieuwtotaal:nieuw }) })
+            .then(function(){
+              extra.push({ id:o.id, titel:o.titel, prijs:o.prijs, weken:w, naam:naam, datum:d });
+              try { localStorage.setItem('bg_meerwerk_' + slug, JSON.stringify(extra)); } catch(e){}
+              m.className = 'htkMeld goed';
+              m.textContent = 'Getekend. Het staat nu in je taken en je termijnen.';
+              setTimeout(function(){ location.reload(); }, 1400);
+            })
+            .catch(function(){
+              m.className = 'htkMeld fout';
+              m.textContent = 'Versturen lukte niet. Mail arthur@bedrijfsgeheugen.nl.';
+            });
+        });
       });
     });
   })();
