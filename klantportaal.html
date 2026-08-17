@@ -8404,6 +8404,13 @@ window.__BG_LOOPT__ = function(K, slug){
     return;
   }
 
+  /* Het offertepaneel bestaat pas nadat het portaal het heeft aangemaakt.
+     Daarom als functie die telkens opnieuw draait. Als losse code bij het
+     laden gooide dit een fout op een paneel dat er nog niet was, waardoor
+     alle registraties hieronder nooit werden bereikt. */
+  __BGVUL__(function(){
+    var paneel = paneelNu();
+    if (!paneel) return;
   var D = K.onderdelen, aan = {};
   var euro = function(n){ return '\u20ac ' + n.toLocaleString('nl-NL'); };
   var esc = function(t){ var d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
@@ -8511,7 +8518,9 @@ window.__BG_LOOPT__ = function(K, slug){
   /* Startblok bovenaan het Overzicht: wat staat er klaar, wat is nog leeg,
      en wat het kost om de rest te laten vullen. Zonder dit blok landt een
      klant in een portaal vol lege schermen en weet hij niet waar te beginnen. */
-  __BGVUL__(function(){
+  });
+
+__BGVUL__(function(){
     var ov = document.getElementById('p-overzicht');
     if (!ov || !K) return;
     var d = document.createElement('div');
