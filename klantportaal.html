@@ -9447,5 +9447,74 @@ window.__BG_LOOPT__ = function(K, slug){
 .bgKopje{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
  color:var(--grijs,#5C646E);font-weight:700;margin:0 0 .3rem}
 </style>
+<script>
+/* Activiteit — wat er is opgeleverd, nieuwste bovenaan. Op zichzelf staand blok.
+   Zolang er nog niets af is, vertelt het scherm wat er k\u00f3mt te staan, in plaats
+   van leeg te blijven. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+
+  function vul(){
+    try{
+      var K=(window.__KLANTEN__||{})[slug()];
+      if(!K||!K.onderdelen) return;
+      var p=document.getElementById('p-activiteit');
+      if(!p) return;
+      if(p.getAttribute('data-bg')==='klaar'&&p.innerHTML.length>300) return;
+
+      var gedaan=K.voortgang||0, wk=0, af=[], komt=[];
+      K.onderdelen.forEach(function(o){
+        if(!o.vast) return;
+        o.sprints.forEach(function(sp){
+          wk++;
+          (wk<=gedaan?af:komt).push({wk:wk,sp:sp});
+        });
+      });
+      if(!wk) return;
+
+      var inhoud;
+      if(af.length){
+        inhoud='<p class="sub">Per week wat er af is gekomen. Nieuwste bovenaan.</p>'+
+          af.slice().reverse().map(function(r){
+            return '<div class="bgAct"><b>Week '+r.wk+' \u00b7 '+esc(r.sp.titel)+'</b>'+
+              '<span>'+esc(r.sp.op)+'</span></div>';
+          }).join('');
+        if(komt.length){
+          inhoud+='<p class="sub" style="margin:1rem 0 .3rem"><b>Hierna:</b> week '+komt[0].wk+
+            ' \u2014 '+esc(komt[0].sp.titel)+'</p>';
+        }
+      } else {
+        inhoud='<p class="sub">Er is nog niets opgeleverd \u2014 het werk begint zodra je akkoord geeft. '+
+          'Daarna staat hier per week wat je hebt gekregen, met de datum erbij.</p>'+
+          '<div class="bgAct wacht"><b>Als eerste: week 1 \u00b7 '+esc(komt[0].sp.titel)+'</b>'+
+          '<span>'+esc(komt[0].sp.op)+'</span></div>'+
+          '<p class="sub" style="margin:.9rem 0 0">In totaal '+wk+' weken, '+wk+' opleveringen.</p>';
+      }
+
+      p.innerHTML='<div class="kaart" style="margin-top:1rem"><h3>Wat er is opgeleverd</h3>'+inhoud+'</div>';
+      p.setAttribute('data-bg','klaar');
+    }catch(e){ console.error('[bedrijfsgeheugen] activiteit:',e); }
+  }
+  vul();
+  setInterval(function(){
+    var p=document.getElementById('p-activiteit');
+    if(p&&p.innerHTML.length<300) p.removeAttribute('data-bg');
+    vul();
+  },700);
+  document.addEventListener('click',function(e){
+    if(e.target.closest&&e.target.closest('.tab')) setTimeout(vul,60);
+  });
+})();
+</script>
+<style>
+.bgAct{border-left:3px solid #1F9D55;padding:.4rem 0 .4rem .85rem;margin:.65rem 0}
+.bgAct.wacht{border-left-color:var(--geel,#FFE86B)}
+.bgAct b{display:block;font-size:.94rem}
+.bgAct span{font-size:.86rem;color:var(--grijs,#5C646E)}
+</style>
 </body>
 </html>
