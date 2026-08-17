@@ -10405,5 +10405,153 @@ window.__BG_LOOPT__ = function(K, slug){
   setInterval(verstuur,60000);
 })();
 </script>
+<script>
+/* Alle blokken op het overzicht verplaatsbaar, ook die van het portaal zelf.
+   Slepen met de muis \u00e9n pijltjes voor de telefoon, want HTML5-slepen werkt
+   niet op een aanraakscherm. De volgorde wordt per klant bewaard. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function jl(k,t){try{return JSON.parse(localStorage.getItem(k)||'null')||t;}catch(e){return t;}}
+  function jz(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  var SLEUTEL=function(){return 'bg_overzicht_'+slug();};
+  var BEZIG=false;
+
+  function naam(el,i){
+    if(el.classList.contains('dsWrap')) return 'dashboard';
+    if(el.classList.contains('of-start')) return 'welkom';
+    if(el.classList.contains('of-leegmelding')) return 'cijfers-melding';
+    if(el.classList.contains('of-voortgang')) return 'voortgang';
+    var h=el.querySelector('h2,h3,h4');
+    if(h&&h.textContent.trim()) return 'k-'+h.textContent.trim().toLowerCase()
+      .replace(/[^a-z0-9]+/g,'-').slice(0,40);
+    return 'blok-'+i;
+  }
+
+  function zichtbaar(el){
+    return el.style.display!=='none' && !el.hasAttribute('hidden');
+  }
+
+  function greep(el){
+    if(el.querySelector(':scope > .ovGreep')) return;
+    var g=document.createElement('div');
+    g.className='ovGreep';
+    g.innerHTML='<span class="ovPak" draggable="true" title="Versleep">\u2237</span>'+
+      '<button type="button" data-op title="Omhoog">\u2191</button>'+
+      '<button type="button" data-neer title="Omlaag">\u2193</button>';
+    el.appendChild(g);
+    el.classList.add('ovBlok');
+  }
+
+  function orde(ov){
+    var kinderen=Array.prototype.filter.call(ov.children,zichtbaar);
+    var bewaard=jl(SLEUTEL(),[]);
+    if(!bewaard.length) return kinderen;
+    var op={};
+    kinderen.forEach(function(el,i){ op[naam(el,i)]=el; });
+    var nieuw=[];
+    bewaard.forEach(function(n){ if(op[n]){ nieuw.push(op[n]); delete op[n]; } });
+    kinderen.forEach(function(el,i){ var n=naam(el,i); if(op[n]) nieuw.push(el); });
+    return nieuw;
+  }
+
+  function pas(){
+    if(BEZIG) return;
+    var ov=document.getElementById('p-overzicht');
+    if(!ov) return;
+    var rij=orde(ov);
+    rij.forEach(function(el,i){
+      greep(el);
+      if(ov.children[i]!==el) ov.insertBefore(el, ov.children[i]||null);
+    });
+  }
+
+  function bewaarOrde(){
+    var ov=document.getElementById('p-overzicht');
+    if(!ov) return;
+    jz(SLEUTEL(), Array.prototype.filter.call(ov.children,zichtbaar)
+      .map(function(el,i){ return naam(el,i); }));
+  }
+
+  function schuif(el,richting){
+    var ov=el.parentNode;
+    var rij=Array.prototype.filter.call(ov.children,zichtbaar);
+    var i=rij.indexOf(el), j=i+richting;
+    if(i<0||j<0||j>=rij.length) return;
+    if(richting<0) ov.insertBefore(el, rij[j]);
+    else ov.insertBefore(rij[j], el);
+    bewaarOrde();
+    el.classList.add('ovNet');
+    setTimeout(function(){ el.classList.remove('ovNet'); },600);
+  }
+
+  var sleep=null;
+  document.addEventListener('dragstart',function(e){
+    var p=e.target.closest&&e.target.closest('.ovPak');
+    if(!p) return;
+    BEZIG=true;
+    sleep=p.closest('.ovBlok');
+    sleep.classList.add('ovSleept');
+    try{e.dataTransfer.setData('text/plain','blok');}catch(x){}
+  },true);
+  document.addEventListener('dragend',function(){
+    BEZIG=false;
+    if(sleep) sleep.classList.remove('ovSleept');
+    sleep=null;
+  },true);
+  document.addEventListener('dragover',function(e){
+    if(!sleep) return;
+    var d=e.target.closest&&e.target.closest('.ovBlok');
+    if(!d||d===sleep) return;
+    e.preventDefault();
+    d.classList.add('ovOver');
+  });
+  document.addEventListener('dragleave',function(e){
+    var d=e.target.closest&&e.target.closest('.ovBlok');
+    if(d) d.classList.remove('ovOver');
+  });
+  document.addEventListener('drop',function(e){
+    if(!sleep) return;
+    var d=e.target.closest&&e.target.closest('.ovBlok');
+    if(!d||d===sleep) return;
+    e.preventDefault();
+    d.classList.remove('ovOver');
+    var ov=d.parentNode;
+    var rij=Array.prototype.slice.call(ov.children);
+    if(rij.indexOf(sleep)<rij.indexOf(d)) ov.insertBefore(sleep, d.nextSibling);
+    else ov.insertBefore(sleep, d);
+    bewaarOrde();
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.ovGreep button');
+    if(!b) return;
+    e.preventDefault(); e.stopPropagation();
+    schuif(b.closest('.ovBlok'), b.hasAttribute('data-op') ? -1 : 1);
+  },true);
+
+  try{ pas(); }catch(e){ console.error('[bedrijfsgeheugen] overzichtorde:',e); }
+  setInterval(function(){ try{ pas(); }catch(e){} },1200);
+})();
+</script>
+<style>
+.ovBlok{position:relative}
+.ovGreep{position:absolute;top:.5rem;right:.6rem;display:flex;gap:.2rem;align-items:center;z-index:3;
+ opacity:.35;transition:opacity .15s}
+.ovBlok:hover .ovGreep{opacity:1}
+@media(max-width:900px){.ovGreep{opacity:.85}}
+.ovPak{cursor:grab;font-size:.95rem;color:var(--grijs,#5C646E);user-select:none;padding:.1rem .25rem;
+ line-height:1}
+.ovPak:active{cursor:grabbing}
+.ovGreep button{border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:7px;
+ width:24px;height:24px;font:inherit;font-size:.8rem;line-height:1;color:var(--grijs,#5C646E);
+ cursor:pointer;padding:0}
+.ovGreep button:hover{border-color:var(--blauw,#2742D6);color:var(--blauw,#2742D6)}
+.ovSleept{opacity:.45}
+.ovOver{outline:2px solid var(--blauw,#2742D6);outline-offset:3px;border-radius:12px}
+.ovNet{animation:ovLicht .6s ease-out}
+@keyframes ovLicht{from{background:#EDF0FD}to{background:transparent}}
+</style>
 </body>
 </html>
