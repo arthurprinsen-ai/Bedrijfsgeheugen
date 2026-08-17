@@ -9037,31 +9037,62 @@ window.__BG_LOOPT__ = function(K, slug){
   }, true);
 })();
 </script>
-<script>
-/* De cijfers op het overzicht verbergen zolang het portaal niet actief is.
-   Bewust in JavaScript en herhaald: het portaal bouwt het overzicht na het
-   laden opnieuw op, en een CSS-regel bleek de blokken niet te raken. */
+<script>window.__WAT__={"profiel": "Per onderdeel waar jullie staan en wat de volgende stap is", "dataai": "Wat er met jullie gegevens gebeurt en waar AI iets oplevert", "aiscan": "De kansenkaart: waar AI bij jullie tijd of geld scheelt", "invoeren": "De vragen die het portaal vullen", "antwoorden": "Wat jullie hebben ingevuld, op een plek", "business": "De businesscase per verbetering, met terugverdientijd", "cijfers": "Jullie cijfers en maatstaven over tijd", "waarde": "Waarde en financiering: wat het bedrijf waard is en waarom", "mensen": "Wie waarvoor verantwoordelijk is en waar het op een persoon leunt", "branche": "Hoe jullie scoren naast vergelijkbare bedrijven", "onderzoek": "Het onderzoek achter de conclusies", "beleid": "Compliance, security en governance, inclusief de AI Act", "strategie": "De strategiemodellen, ingevuld voor jullie situatie", "canvassen": "De canvassen waarop de strategie rust", "eindconclusie": "De eindconclusie en de keuzes die eruit volgen", "dd": "Due diligence en exit: wat een koper straks vraagt", "dna": "Van strategie naar maandagochtend: wie doet wat", "bijhouden": "Actueel houden, zodat het niet veroudert", "wijzigingen": "Wijzigingen met hun gevolgen, voordat ze doorgaan", "advies": "Ons advies, onderbouwd", "roadmap": "De roadmap van jullie hele bedrijf"};
+/* Afschermen zolang het portaal niet actief is, in een functie die blijft
+   draaien: het portaal bouwt zijn schermen opnieuw op en gooit anders alles
+   weg wat we neerzetten. Op het overzicht verbergen we de gegevensblokken op
+   elke diepte; op de andere schermen zetten we de slotkaart terug. */
 (function(){
+  var VRIJ={offerte:1,koppelingen:1,werkstromen:1,uren:1,documenten:1,
+            projectnotities:1,activiteit:1,team:1,integraties:1};
   function slug(){
-    var m = (location.search + location.hash).match(/[?&#]+klant=([^&#]+)/i);
-    return m ? decodeURIComponent(m[1]).toLowerCase() : '';
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
   }
-  function dicht(){
-    var K = (window.__KLANTEN__ || {})[slug()];
-    if (!K || K.actief) return;
-    var ov = document.getElementById('p-overzicht');
-    if (!ov) return;
-    Array.prototype.forEach.call(ov.children, function(kind){
-      var houden = kind.classList.contains('of-start') ||
-                   kind.classList.contains('of-leegmelding') ||
-                   kind.classList.contains('of-voortgang');
-      kind.style.display = houden ? '' : 'none';
+  function eigen(el){
+    return el.classList.contains('of-start')||el.classList.contains('of-leegmelding')||
+           el.classList.contains('of-voortgang')||el.classList.contains('slotlaag')||
+           !!el.closest('.slotlaag');
+  }
+  function slotkaart(naam){
+    return '<div class="slotkaart">'+
+      '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" '+
+      'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+
+      '<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'+
+      '<b>'+((window.__WAT__||{})[naam]||'Dit scherm is nog niet geactiveerd')+'</b>'+
+      '<p>Dit scherm hoort bij het portaal-abonnement. Zolang het niet actief is staat er niets in '+
+      '\u2014 ook geen voorbeeldgegevens van iemand anders.</p>'+
+      '<p class="prijs"><b>Vanaf \u20ac 99 per maand.</b> Of laat het \u00e9\u00e9n keer samen invullen met een '+
+      'Frisse blik van \u20ac 2.900. Maandelijks opzegbaar, en wat er staat blijft van jou.</p>'+
+      '<a class="knop" href="/frisse-blik">Frisse blik \u2192</a> '+
+      '<a class="knop licht" href="/product">Bekijk wat het kost</a>'+
+      '<p class="klein">Alle prijzen staan op <a href="/product">bedrijfsgeheugen.nl/product</a>.</p>'+
+    '</div>';
+  }
+  function afschermen(){
+    var K=(window.__KLANTEN__||{})[slug()];
+    if(!K||K.actief) return;
+    var ov=document.getElementById('p-overzicht');
+    if(ov){
+      Array.prototype.forEach.call(
+        ov.querySelectorAll('.samenvatting,.kaarten,.staat,#scanmelding,table,.kaart'),
+        function(el){ if(!eigen(el)) el.style.display='none'; });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.paneel'),function(p){
+      var naam=p.id.replace(/^p-/,'');
+      if(naam==='overzicht'||VRIJ[naam]) return;
+      if(p.querySelector('.slotlaag')) return;
+      p.classList.add('opslot');
+      var o=document.createElement('div');
+      o.className='slotlaag';
+      o.innerHTML=slotkaart(naam);
+      p.appendChild(o);
     });
   }
-  dicht();
-  setInterval(dicht, 600);
-  document.addEventListener('click', function(e){
-    if (e.target.closest && e.target.closest('.tab')) setTimeout(dicht, 60);
+  afschermen();
+  setInterval(afschermen,600);
+  document.addEventListener('click',function(e){
+    if(e.target.closest&&e.target.closest('.tab')) setTimeout(afschermen,60);
   });
 })();
 </script>
