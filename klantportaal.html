@@ -9899,5 +9899,274 @@ window.__BG_LOOPT__ = function(K, slug){
 .htkKlaar b{display:block;font-size:1.05rem;color:#1F9D55;margin-bottom:.2rem}
 .htkKlaar p{margin:0 0 .4rem;font-size:.92rem}
 </style>
+<script>
+/* Overzicht als dashboard. Kaarten zijn te slepen en aan of uit te zetten; die
+   voorkeur wordt per klant bewaard. Alles komt uit de offerte, het deliveryplan
+   en het akkoord \u2014 niets uit een andere bron, dus er staan nooit cijfers van
+   iemand anders. Plus rode bolletjes in het menu voor wat nog niet is bekeken. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function euro(n){return '\u20ac '+Math.round(n).toLocaleString('nl-NL');}
+  function jsonLees(k,t){try{return JSON.parse(localStorage.getItem(k)||'null')||t;}catch(e){return t;}}
+  function jsonZet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+  var VOLG=['stand','acties','blokken','sprint','geld','volgende','snel'];
+  function voorkeur(){
+    return jsonLees('bg_dash_'+slug(), {orde:VOLG.slice(), uit:[]});
+  }
+
+  /* ---------- gegevens ---------- */
+  function gegevens(){
+    var K=(window.__KLANTEN__||{})[slug()];
+    if(!K||!K.onderdelen) return null;
+    var plan=jsonLees('bg_plan_'+slug(),null);
+    var akkoord=jsonLees('bg_akkoord_'+slug(),null)||K.getekend||null;
+    var totaal=0, af=0, fTot=0, fAf=0, sTot=0, sAf=0, volgende=null, sprintNu=0, sprints=0;
+    if(plan&&plan.features){
+      sprints=plan.sprints||0;
+      plan.features.forEach(function(f){
+        fTot++; totaal+=(f.waarde||0);
+        if(f.af){ fAf++; af+=(f.waarde||0); }
+        else if(!volgende) volgende=f;
+      });
+      plan.stories.forEach(function(s){ sTot++; if(s.af) sAf++; });
+      var open=plan.features.filter(function(f){return !f.af&&typeof f.sprint==='number';});
+      sprintNu=open.length?Math.min.apply(null,open.map(function(f){return f.sprint;})):sprints;
+    } else {
+      K.onderdelen.forEach(function(o){ if(o.vast) totaal+=o.prijs; });
+    }
+    return {K:K,plan:plan,akkoord:akkoord,totaal:totaal,af:af,fTot:fTot,fAf:fAf,
+            sTot:sTot,sAf:sAf,volgende:volgende,sprintNu:sprintNu,sprints:sprints};
+  }
+
+  /* ---------- kaarten ---------- */
+  function kaart(id,titel,inhoud,extra){
+    return '<div class="dsKaart'+(extra||'')+'" data-k="'+id+'" draggable="true">'+
+      '<div class="dsGreep" title="Versleep">\u2237</div>'+
+      '<h4>'+titel+'</h4>'+inhoud+'</div>';
+  }
+
+  function bouwKaart(id,g){
+    var pct=g.totaal?Math.round(g.af/g.totaal*100):0;
+    if(id==='stand'){
+      return kaart('stand','Waar je staat',
+        '<div class="dsGroot">'+euro(g.af)+'</div>'+
+        '<p class="dsSub">van '+euro(g.totaal)+' opgeleverd \u00b7 '+pct+'% van de waarde</p>'+
+        '<div class="dsBalk"><div style="width:'+pct+'%"></div></div>'+
+        '<p class="dsSub">'+(g.akkoord?'Getekend door '+esc(g.akkoord.naam)+' op '+esc(g.akkoord.datum)
+          :'Nog niet getekend \u2014 het werk begint na akkoord')+'</p>', ' groot');
+    }
+    if(id==='acties'){
+      var lijst=[];
+      if(!g.akkoord) lijst.push({t:'Offerte tekenen',w:'Zet je naam eronder, dan staat het project klaar',
+                                 naar:'offerte',urgent:true});
+      if(g.volgende) lijst.push({t:'Volgende oplevering: '+g.volgende.titel,
+                                 w:g.volgende.op||'',naar:'werkstromen'});
+      if(g.plan&&g.sTot-g.sAf>0) lijst.push({t:(g.sTot-g.sAf)+' user stories open',
+                                 w:'In het deliveryplan',naar:'werkstromen'});
+      if(!lijst.length) lijst.push({t:'Niets openstaand',w:'Alles is afgerond',naar:'activiteit'});
+      return kaart('acties','Wat er van jou wordt gevraagd',
+        lijst.map(function(a){
+          return '<button class="dsActie'+(a.urgent?' urgent':'')+'" data-naar="'+a.naar+'">'+
+            '<b>'+esc(a.t)+'</b>'+(a.w?'<span>'+esc(a.w)+'</span>':'')+'</button>';
+        }).join(''));
+    }
+    if(id==='blokken'){
+      if(!g.plan) return kaart('blokken','Bouwblokken',
+        '<p class="dsSub">Verschijnt zodra het deliveryplan staat.</p>');
+      var b='';
+      g.plan.features.forEach(function(f){
+        var ep=g.plan.epics.filter(function(e){return e.id===f.epic;})[0];
+        var i=g.plan.epics.indexOf(ep);
+        b+='<div class="dsBlok e'+(i%3)+(f.af?' af':'')+'" style="flex:'+
+           Math.max(g.totaal?(f.waarde||0)/g.totaal*100:10,6)+'" title="'+esc(f.titel)+'"></div>';
+      });
+      return kaart('blokken','Bouwblokken',
+        '<div class="dsBlokken">'+b+'</div>'+
+        '<p class="dsSub">'+g.fAf+' van '+g.fTot+' af \u00b7 elk blok is een feature, breed naar zijn waarde</p>');
+    }
+    if(id==='sprint'){
+      if(!g.plan) return kaart('sprint','Sprint','<p class="dsSub">Nog geen deliveryplan.</p>');
+      return kaart('sprint','Sprint',
+        '<div class="dsGroot">'+g.sprintNu+' <small>/ '+g.sprints+'</small></div>'+
+        '<p class="dsSub">sprints van twee weken \u00b7 '+g.sAf+' van '+g.sTot+' user stories af</p>');
+    }
+    if(id==='geld'){
+      var open=g.totaal-g.af;
+      return kaart('geld','Wat er nog komt',
+        '<div class="dsGroot">'+euro(open)+'</div>'+
+        '<p class="dsSub">nog te leveren \u00b7 wordt pas gefactureerd na oplevering</p>'+
+        '<button class="dsActie" data-naar="uren">Bekijk de termijnen</button>');
+    }
+    if(id==='volgende'){
+      if(!g.volgende) return kaart('volgende','Hierna',
+        '<p class="dsSub">Alles is opgeleverd.</p>');
+      return kaart('volgende','Hierna',
+        '<b class="dsMid">'+esc(g.volgende.titel)+'</b>'+
+        (g.volgende.op?'<p class="dsGeel">Levert op: '+esc(g.volgende.op)+'</p>':'')+
+        '<button class="dsActie" data-naar="werkstromen">Naar het deliveryplan</button>');
+    }
+    if(id==='snel'){
+      return kaart('snel','Snel naar',
+        '<div class="dsSnel">'+
+        [['offerte','Offerte'],['werkstromen','Deliveryplan'],['activiteit','Activiteit'],
+         ['documenten','Documenten'],['uren','Termijnen'],['projectnotities','Waarom']]
+        .map(function(x){return '<button data-naar="'+x[0]+'">'+x[1]+'</button>';}).join('')+
+        '</div>');
+    }
+    return '';
+  }
+
+  /* ---------- tekenen ---------- */
+  function teken(){
+    var g=gegevens();
+    if(!g) return;
+    var ov=document.getElementById('p-overzicht');
+    if(!ov) return;
+    var oud=ov.querySelector('.dsWrap');
+    var vk=voorkeur();
+    var sleutelNu=JSON.stringify([g.af,g.fAf,g.sAf,!!g.akkoord,vk]);
+    if(oud&&oud.getAttribute('data-s')===sleutelNu) return;
+    if(oud) oud.remove();
+
+    var w=document.createElement('div');
+    w.className='dsWrap';
+    w.setAttribute('data-s',sleutelNu);
+    var kaarten=vk.orde.filter(function(id){ return vk.uit.indexOf(id)<0; })
+                      .map(function(id){ return bouwKaart(id,g); }).join('');
+    w.innerHTML='<div class="dsKop"><span>Jouw overzicht</span>'+
+      '<button class="dsInstel" type="button">Kaarten kiezen</button></div>'+
+      '<div class="dsRooster">'+kaarten+'</div>'+
+      '<div class="dsKiezer" hidden>'+VOLG.map(function(id){
+        var uit=vk.uit.indexOf(id)>=0;
+        return '<label><input type="checkbox" data-kies="'+id+'"'+(uit?'':' checked')+'>'+
+          {stand:'Waar je staat',acties:'Wat er van jou wordt gevraagd',blokken:'Bouwblokken',
+           sprint:'Sprint',geld:'Wat er nog komt',volgende:'Hierna',snel:'Snel naar'}[id]+'</label>';
+      }).join('')+'</div>';
+    ov.insertBefore(w, ov.firstChild);
+    koppel(w,vk);
+  }
+
+  function koppel(w,vk){
+    var sleep=null;
+    Array.prototype.forEach.call(w.querySelectorAll('.dsKaart'),function(el){
+      el.addEventListener('dragstart',function(e){
+        sleep=el.dataset.k; el.classList.add('sleept');
+        try{e.dataTransfer.setData('text/plain',sleep);}catch(x){}
+      });
+      el.addEventListener('dragend',function(){ el.classList.remove('sleept'); });
+      el.addEventListener('dragover',function(e){ e.preventDefault(); el.classList.add('over'); });
+      el.addEventListener('dragleave',function(){ el.classList.remove('over'); });
+      el.addEventListener('drop',function(e){
+        e.preventDefault(); el.classList.remove('over');
+        var doel=el.dataset.k;
+        if(!sleep||sleep===doel) return;
+        var o=vk.orde.slice();
+        o.splice(o.indexOf(sleep),1);
+        o.splice(o.indexOf(doel),0,sleep);
+        vk.orde=o; jsonZet('bg_dash_'+slug(),vk);
+        var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
+        teken();
+      });
+    });
+    var knop=w.querySelector('.dsInstel'), kiezer=w.querySelector('.dsKiezer');
+    if(knop) knop.addEventListener('click',function(){
+      if(kiezer.hasAttribute('hidden')) kiezer.removeAttribute('hidden');
+      else kiezer.setAttribute('hidden','');
+    });
+    Array.prototype.forEach.call(w.querySelectorAll('[data-kies]'),function(c){
+      c.addEventListener('change',function(){
+        var id=c.dataset.kies;
+        vk.uit=vk.uit.filter(function(x){return x!==id;});
+        if(!c.checked) vk.uit.push(id);
+        jsonZet('bg_dash_'+slug(),vk);
+        var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
+        teken();
+      });
+    });
+    Array.prototype.forEach.call(w.querySelectorAll('[data-naar]'),function(b){
+      b.addEventListener('click',function(){
+        var t=document.querySelector('.tab[data-p="'+b.dataset.naar+'"]');
+        if(t) t.click();
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    });
+  }
+
+  /* ---------- rode bolletjes ---------- */
+  var LETOP=['offerte','werkstromen','koppelingen','documenten','uren','projectnotities','activiteit'];
+  function bolletjes(){
+    var gezien=jsonLees('bg_gezien_'+slug(),{});
+    LETOP.forEach(function(naam){
+      var t=document.querySelector('.tab[data-p="'+naam+'"]');
+      if(!t) return;
+      var paneel=document.getElementById('p-'+naam);
+      var heeft=paneel&&paneel.innerHTML.length>300;
+      var bol=t.querySelector('.dsBol');
+      if(heeft&&!gezien[naam]){
+        if(!bol){ bol=document.createElement('i'); bol.className='dsBol'; t.appendChild(bol); }
+      } else if(bol){ bol.remove(); }
+    });
+  }
+  document.addEventListener('click',function(e){
+    var t=e.target.closest&&e.target.closest('.tab[data-p]');
+    if(!t) return;
+    var g=jsonLees('bg_gezien_'+slug(),{});
+    g[t.getAttribute('data-p')]=Date.now();
+    jsonZet('bg_gezien_'+slug(),g);
+    setTimeout(bolletjes,120);
+  });
+
+  function draai(){ try{ teken(); bolletjes(); }catch(e){ console.error('[bedrijfsgeheugen] dashboard:',e); } }
+  draai();
+  setInterval(draai,900);
+})();
+</script>
+<style>
+.dsWrap{margin:1rem 0 1.4rem}
+.dsKop{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}
+.dsKop span{font-size:.68rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:var(--grijs,#5C646E)}
+.dsInstel{border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:99px;padding:.3rem .8rem;font:inherit;font-size:.8rem;cursor:pointer}
+.dsInstel:hover{border-color:var(--blauw,#2742D6);color:var(--blauw,#2742D6)}
+.dsKiezer{display:flex;flex-wrap:wrap;gap:.8rem;background:#F4F5F8;border-radius:10px;padding:.8rem 1rem;margin-top:.7rem;font-size:.85rem}
+.dsKiezer label{display:flex;align-items:center;gap:.35rem;cursor:pointer}
+.dsRooster{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.8rem}
+.dsKaart{position:relative;background:#fff;border:1.5px solid var(--lijn,#DCDFE6);border-radius:14px;padding:1rem 1.1rem;transition:border-color .15s,transform .15s}
+.dsKaart.groot{grid-column:span 2}
+@media(max-width:720px){.dsKaart.groot{grid-column:span 1}}
+.dsKaart.over{border-color:var(--blauw,#2742D6)}
+.dsKaart.sleept{opacity:.4;transform:scale(.98)}
+.dsGreep{position:absolute;top:.6rem;right:.7rem;color:var(--lijn,#DCDFE6);cursor:grab;font-size:.9rem;user-select:none}
+.dsKaart:hover .dsGreep{color:var(--grijs,#5C646E)}
+.dsKaart h4{margin:0 0 .5rem;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--grijs,#5C646E);font-weight:700}
+</style>
+<style>
+.dsGroot{font-family:'Bricolage Grotesque',sans-serif;font-size:2.1rem;font-weight:700;line-height:1;letter-spacing:-.02em}
+.dsGroot small{font-size:1rem;color:var(--grijs,#5C646E);font-weight:400}
+.dsMid{display:block;font-size:1.05rem;line-height:1.3;margin-bottom:.3rem}
+.dsSub{margin:.4rem 0 0;font-size:.83rem;color:var(--grijs,#5C646E);line-height:1.5}
+.dsGeel{background:var(--geel,#FFE86B);border-radius:8px;padding:.4rem .6rem;font-size:.82rem;margin:.4rem 0 0;font-weight:600}
+.dsBalk{height:8px;border-radius:99px;background:var(--lijn,#DCDFE6);overflow:hidden;margin:.6rem 0 .2rem}
+.dsBalk div{height:100%;background:#1F9D55;border-radius:99px;transition:width .4s}
+.dsBlokken{display:flex;gap:3px;height:38px;margin:.2rem 0 .1rem}
+.dsBlok{border-radius:5px;border:1.5px solid var(--lijn,#DCDFE6);background:#fff;min-width:.8rem}
+.dsBlok.af.e0{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6)}
+.dsBlok.af.e1{background:var(--oranje,#FF4F17);border-color:var(--oranje,#FF4F17)}
+.dsBlok.af.e2{background:#1F9D55;border-color:#1F9D55}
+.dsActie{display:block;width:100%;text-align:left;background:#F4F5F8;border:0;border-radius:10px;padding:.55rem .7rem;margin-top:.45rem;font:inherit;cursor:pointer;transition:background .15s}
+.dsActie:hover{background:#EDF0FD}
+.dsActie.urgent{background:var(--geel,#FFE86B)}
+.dsActie b{display:block;font-size:.88rem}
+.dsActie span{display:block;font-size:.78rem;color:var(--grijs,#5C646E);margin-top:.1rem}
+.dsSnel{display:flex;flex-wrap:wrap;gap:.35rem}
+.dsSnel button{border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:99px;padding:.3rem .7rem;font:inherit;font-size:.8rem;cursor:pointer}
+.dsSnel button:hover{border-color:var(--blauw,#2742D6);color:var(--blauw,#2742D6)}
+.dsBol{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#E5484D;box-shadow:0 0 0 3px rgba(229,72,77,.18)}
+.tab{position:relative}
+</style>
 </body>
 </html>
