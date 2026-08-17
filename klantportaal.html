@@ -9797,5 +9797,107 @@ window.__BG_LOOPT__ = function(K, slug){
 .acVolgend b{display:block;font-size:.95rem}
 .acVolgend span{display:block;font-size:.84rem;margin-top:.15rem}
 </style>
+<script>
+/* Handtekening onder de offerte, als eigen blok zodat hij niet meevalt met
+   andere modules. Tekenen stuurt het akkoord naar het CRM en zet het vast. */
+(function(){
+  var HOOK='https://hook.eu1.make.com/783x2glfestd2c8hfqxlrvsrgefknc45';
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function gelezen(){
+    try{return JSON.parse(localStorage.getItem('bg_akkoord_'+slug())||'null');}catch(e){return null;}
+  }
+
+  function vul(){
+    try{
+      var K=(window.__KLANTEN__||{})[slug()];
+      if(!K||!K.onderdelen) return;
+      var p=document.getElementById('p-offerte');
+      if(!p||!p.innerHTML||p.innerHTML.length<200) return;
+      var was=p.querySelector('.htkBlok');
+      var akkoord=gelezen()||K.getekend;
+      if(was&&was.getAttribute('data-staat')===(akkoord?'getekend':'open')) return;
+      if(was) was.remove();
+
+      var blok=document.createElement('div');
+      blok.className='kaart htkBlok';
+      blok.setAttribute('data-staat', akkoord?'getekend':'open');
+      if(akkoord){
+        blok.innerHTML='<div class="htkKlaar"><b>Akkoord gegeven</b>'+
+          '<p>'+esc(akkoord.naam)+(akkoord.functie?', '+esc(akkoord.functie):'')+
+          ' \u00b7 '+esc(akkoord.datum)+'</p>'+
+          '<p class="sub">Sindsdien staat het werk in je project: het deliveryplan, de koppelingen, '+
+          'de documenten en de termijnen. Er is niets overgetypt.</p></div>';
+      } else {
+        blok.innerHTML='<h3>Akkoord geven</h3>'+
+          '<p class="sub">Zet je naam eronder en het hele project staat klaar: de sprints met hun '+
+          'features en user stories, de koppelingen die we maken, de documenten die je krijgt en wat je '+
+          'per onderdeel betaalt. Je hoeft niets in te vullen \u2014 het staat er al.</p>'+
+          '<label>Je naam<input type="text" id="htkNaam" placeholder="Voor- en achternaam"></label>'+
+          '<label>Je functie<input type="text" id="htkFunctie" placeholder="Bijvoorbeeld: directeur"></label>'+
+          '<label class="htkVink"><input type="checkbox" id="htkVinkje">'+
+          'Ik geef akkoord op de gekozen onderdelen en de vaste prijs die hierboven staat.</label>'+
+          '<button class="knop" type="button" id="htkKnop">Zet je handtekening</button>'+
+          '<p class="htkMeld" id="htkMeld" hidden></p>';
+      }
+      p.appendChild(blok);
+
+      var kn=blok.querySelector('#htkKnop');
+      if(kn) kn.addEventListener('click',function(){
+        var naam=blok.querySelector('#htkNaam').value.trim();
+        var func=blok.querySelector('#htkFunctie').value.trim();
+        var m=blok.querySelector('#htkMeld');
+        m.hidden=false;
+        if(naam.length<3||!blok.querySelector('#htkVinkje').checked){
+          m.className='htkMeld fout'; m.textContent='Vul je naam in en vink het vakje aan.'; return;
+        }
+        m.className='htkMeld'; m.textContent='Bezig\u2026';
+        var keuze=[];
+        Array.prototype.forEach.call(p.querySelectorAll('.of-rij[data-aan="1"] h4'),function(t){
+          keuze.push(t.textContent);
+        });
+        var datum=new Date().toISOString().slice(0,10);
+        fetch(HOOK,{method:'POST',headers:{'content-type':'application/json'},
+          body:JSON.stringify({soort:'Akkoord offerte',klant:(K.naam||slug()),naam:naam,
+            functie:func,datum:datum,onderdelen:keuze.join(' \u00b7 ')})})
+          .then(function(){
+            try{localStorage.setItem('bg_akkoord_'+slug(),
+              JSON.stringify({naam:naam,functie:func,datum:datum}));}catch(e){}
+            m.className='htkMeld goed';
+            m.textContent='Getekend. Je project staat klaar.';
+            setTimeout(vul,900);
+          })
+          .catch(function(){
+            m.className='htkMeld fout';
+            m.textContent='Versturen lukte niet. Mail arthur@bedrijfsgeheugen.nl.';
+          });
+      });
+    }catch(e){ console.error('[bedrijfsgeheugen] handtekening:',e); }
+  }
+  vul();
+  setInterval(vul,900);
+  document.addEventListener('click',function(e){
+    if(e.target.closest&&e.target.closest('.tab')) setTimeout(vul,120);
+  });
+})();
+</script>
+<style>
+.htkBlok{margin-top:1rem;border:2px solid var(--blauw,#2742D6)!important}
+.htkBlok label{display:block;font-size:.88rem;font-weight:600;margin:.8rem 0 0}
+.htkBlok input[type=text]{width:100%;max-width:22rem;margin-top:.25rem;font:inherit;padding:.55rem .7rem;
+ border:1.5px solid var(--lijn,#DCDFE6);border-radius:9px}
+.htkVink{display:flex!important;gap:.5rem;align-items:flex-start;font-weight:400!important;
+ font-size:.88rem;margin:1rem 0 1.1rem!important}
+.htkVink input{margin-top:.2rem}
+.htkMeld{margin:.8rem 0 0;font-size:.88rem;color:var(--grijs,#5C646E)}
+.htkMeld.goed{color:#1F9D55;font-weight:600}
+.htkMeld.fout{color:#C0392B;font-weight:600}
+.htkKlaar{background:#E8F5EC;border-radius:12px;padding:1rem 1.15rem}
+.htkKlaar b{display:block;font-size:1.05rem;color:#1F9D55;margin-bottom:.2rem}
+.htkKlaar p{margin:0 0 .4rem;font-size:.92rem}
+</style>
 </body>
 </html>
