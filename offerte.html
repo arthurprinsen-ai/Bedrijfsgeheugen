@@ -229,7 +229,10 @@ table.tab tr:last-child td{border-bottom:0}
 .of-story{border-left:3px solid var(--bg-geel);padding:.15rem 0 .15rem .8rem;margin:.55rem 0;font-size:.88rem;line-height:1.55}
 .of-kopje{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bg-grijs);margin:.9rem 0 .35rem;display:block}
 .of-lijst{margin:.2rem 0 0;padding-left:1.1rem;font-size:.88rem;color:var(--bg-grijs);line-height:1.6}
-.of-road{display:grid;gap:.55rem;margin:.4rem 0 0}
+/* Ruimte vooraf reserveren: de rijen en de roadmap komen uit JavaScript,
+   en zonder minimumhoogte springt de pagina bij het laden omlaag. */
+#ofRijen{min-height:470px}
+.of-road{display:grid;gap:.55rem;margin:.4rem 0 0;min-height:600px}
 .of-sprint{display:grid;grid-template-columns:64px 1fr;gap:1rem;align-items:start;border:1.5px solid var(--bg-lijn);border-radius:12px;padding:.95rem 1.1rem;background:#fff}
 .of-sprint .wk{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;text-align:center;background:var(--bg-inkt);color:#fff;border-radius:8px;padding:.35rem .2rem;line-height:1.25}
 .of-sprint .wk i{display:block;font-style:normal;font-size:1.15rem}
