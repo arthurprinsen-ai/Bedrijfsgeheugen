@@ -8240,6 +8240,19 @@ window.__BG_LOOPT__ = function(K, slug){
     return;
   }
 
+  /* Het portaal bouwt zijn indeling opnieuw op en neemt dit paneel daarbij niet
+     mee, waardoor het uit beeld verdwijnt. Daarom: opzoeken, zo nodig opnieuw
+     aanmaken naast een paneel dat er wél is, en dan pas vullen. */
+  function vulOfferte(){
+    var paneel = document.getElementById('p-offerte');
+    if (!paneel) {
+      var buur = document.getElementById('p-koppelingen') || document.getElementById('p-overzicht');
+      if (!buur || !buur.parentNode) return;
+      paneel = document.createElement('section');
+      paneel.className = 'paneel';
+      paneel.id = 'p-offerte';
+      buur.parentNode.appendChild(paneel);
+    }
   var D = K.onderdelen, aan = {};
   var euro = function(n){ return '\u20ac ' + n.toLocaleString('nl-NL'); };
   var esc = function(t){ var d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
@@ -8343,6 +8356,16 @@ window.__BG_LOOPT__ = function(K, slug){
     paneel.querySelector('#tOp').textContent = sprints.length;
     paneel.querySelector('#tPerWeek').textContent = euro(Math.round(prijs / weken));
   }
+    teken();
+  }
+  vulOfferte();
+  setInterval(function(){
+    var p = document.getElementById('p-offerte');
+    if (!p || p.innerHTML.length < 200) vulOfferte();
+  }, 700);
+  document.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('.tab')) setTimeout(vulOfferte, 60);
+  });
 
   /* Startblok bovenaan het Overzicht: wat staat er klaar, wat is nog leeg,
      en wat het kost om de rest te laten vullen. Zonder dit blok landt een
