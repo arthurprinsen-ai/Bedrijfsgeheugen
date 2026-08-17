@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offerte analytics en Power BI-dashboard | Bedrijfsgeheugen</title>
+<meta name="description" content="Interactieve offerte met sprints, user stories en een roadmap die meebeweegt met wat u kiest.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/offerte">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Offerte — analytics en Power BI-dashboard"><meta property="og:description" content="Waar AI in BI echt iets oplevert, waar het geld kost zonder resultaat, en welke stap je als eerste zet. Voor mkb-bedrijven van 3 tot 250 medewerkers.">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/offerte">
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<meta name="twitter:card" content="summary_large_image">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=optional">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=optional" rel="stylesheet">
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/assets/kop.css?v=0466dd43">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--blauw-l:#EDF0FD;--oranje:#FF4F17;
+ --geel:#FFE86B;--grijs:#5C646E;--lijn:#DCDFE6;--vlak:#F4F5F8;--groen:#1F9D55;--groen-l:#E8F5EC;
+ --amber:#C2410C;--amber-l:#FFF6E3;--rood:#C0392B;--rood-l:#FBEDEB;--wrap:1120px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--inkt);font-family:'Instrument Sans',system-ui,sans-serif;
+ font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Bricolage Grotesque',sans-serif;margin:0;letter-spacing:-.025em;line-height:1.12}
+p{margin:0 0 .8rem}
+img,svg{max-width:100%;display:block}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 1.5rem}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+.sub{color:var(--grijs)}
+a{color:var(--blauw)}
+:focus-visible{outline:3px solid var(--blauw);outline-offset:3px;border-radius:6px}
+
+/* markeerstift: gele baan achter de tekst, onderste helft */
+.mark{position:relative;display:inline-block;white-space:nowrap;z-index:0}
+.mark::before{content:"";position:absolute;left:-.1em;right:-.1em;bottom:.04em;height:.44em;
+ background:var(--geel);border-radius:2px 8px 3px 7px;transform:rotate(-.6deg);z-index:-1}
+
+/* knoppen */
+.knop{display:inline-flex;align-items:center;gap:.45rem;background:var(--blauw);color:#fff;border-radius:10px;
+ padding:.65rem 1.1rem;font-weight:600;font-size:.95rem;text-decoration:none;border:1.5px solid var(--blauw)}
+.knop:hover{filter:brightness(1.08)}
+.knop.licht{background:#fff;color:var(--inkt);border-color:var(--lijn)}
+.knop.licht:hover{border-color:var(--blauw);color:var(--blauw);filter:none}
+.knop.geel{background:var(--geel);color:var(--inkt);border-color:var(--geel)}
+
+/* hero */
+.ai-hero{padding:1.6rem 0 2.8rem}
+.ai-hero-grid{display:grid;grid-template-columns:1.02fr 1.15fr;gap:2.6rem;align-items:start}
+.ai-hero-grid>*{min-width:0}
+@media(max-width:960px){.ai-hero-grid{grid-template-columns:1fr;gap:2rem}}
+.ai-hero h1{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;margin:.5rem 0 .3rem}
+.ai-hero .belofte{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:clamp(1.05rem,2vw,1.35rem);
+ letter-spacing:-.02em;margin:.2rem 0 1rem}
+.ai-hero p.intro{max-width:46ch;color:#3C424A}
+.ai-cta{display:flex;gap:.7rem;flex-wrap:wrap;margin:1.3rem 0 1.4rem}
+.ai-usps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;border-top:1px solid var(--lijn);padding-top:1.1rem}
+@media(max-width:700px){.ai-usps{grid-template-columns:1fr;gap:.7rem}}
+.ai-usp{display:flex;gap:.55rem;align-items:flex-start}
+.ai-usp svg{width:22px;height:22px;flex:none;stroke:var(--blauw);fill:none;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.ai-usp b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.9rem}
+.ai-usp span{font-size:.8rem;color:var(--grijs);line-height:1.45}
+
+/* paneel: het dashboardbeeld naast de hero */
+.paneel{background:#fff;border:2px solid var(--inkt);border-radius:16px;padding:1rem;box-shadow:0 16px 40px rgba(20,23,26,.08)}
+.paneel-kop{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.7rem}
+.paneel-kop h2{font-size:.95rem;font-weight:800}
+.paneel-kop .stand{margin-left:auto;font-size:.72rem;color:var(--grijs)}
+.tegels{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+@media(max-width:620px){.tegels{grid-template-columns:1fr!important}}
+.tegel{border:1px solid var(--lijn);border-radius:11px;padding:.65rem .75rem;background:var(--vlak);min-width:0;overflow-wrap:anywhere}
+.tegel .lab{font-size:.7rem;color:var(--grijs);display:block;margin-bottom:.15rem}
+.tegel .getal{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;line-height:1}
+.tegel .bij{display:block;font-size:.72rem;color:var(--grijs);margin-top:.15rem}
+.balkje{height:6px;border-radius:99px;background:var(--lijn);margin-top:.45rem;overflow:hidden}
+.balkje div{height:100%;border-radius:99px;background:var(--blauw)}
+
+/* geeltje met handgeschreven notitie */
+.geeltje{background:var(--geel);border-radius:3px 3px 10px 3px;padding:.7rem .85rem;font-size:.86rem;
+ line-height:1.4;box-shadow:0 6px 16px rgba(20,23,26,.10);transform:rotate(-1.4deg);max-width:15rem}
+.geeltje b{display:block}
+
+/* secties */
+section.blok{padding:2.4rem 0 0}
+section.blok h2{font-size:clamp(1.4rem,3vw,1.95rem);font-weight:800;margin-bottom:.35rem}
+section.blok h2 .mark::before{height:.36em}
+section.blok .leid{color:var(--grijs);max-width:60ch;margin-bottom:1.2rem}
+.rooster{display:grid;gap:.9rem}
+.r2{grid-template-columns:repeat(2,1fr)}
+.r3{grid-template-columns:repeat(3,1fr)}
+.r4{grid-template-columns:repeat(4,1fr)}
+.r5{grid-template-columns:repeat(5,1fr)}
+.r6{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1040px){.r5,.r6{grid-template-columns:repeat(3,1fr)}.r4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.r2,.r3,.r4,.r5,.r6{grid-template-columns:1fr}}
+.kaart{background:#fff;border:1px solid var(--lijn);border-radius:13px;padding:1rem 1.05rem}
+.kaart svg.ico{width:26px;height:26px;stroke:var(--blauw);fill:none;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;margin-bottom:.55rem}
+.kaart.waarschuw svg.ico{stroke:var(--oranje)}
+.kaart h3{font-size:.98rem;font-weight:800;margin-bottom:.3rem}
+.kaart p{font-size:.87rem;color:var(--grijs);margin:0}
+.kaart .nr{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;
+ background:var(--blauw);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:.78rem;margin-bottom:.55rem}
+
+/* stappenrij */
+.stappen{display:grid;gap:.9rem;grid-template-columns:repeat(5,1fr);align-items:start}
+.stappen.zes{grid-template-columns:repeat(6,1fr)}
+.stappen.vier{grid-template-columns:repeat(4,1fr)}
+@media(max-width:1040px){.stappen,.stappen.zes,.stappen.vier{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stappen,.stappen.zes,.stappen.vier{grid-template-columns:1fr}}
+.stap{position:relative;padding-right:.6rem}
+.stap .bol{width:30px;height:30px;border-radius:50%;background:var(--blauw);color:#fff;display:flex;
+ align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;
+ font-size:.85rem;margin-bottom:.55rem}
+.stap b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;margin-bottom:.2rem}
+.stap span{font-size:.84rem;color:var(--grijs);line-height:1.5}
+
+/* tabellen */
+.tabelhuls{overflow-x:auto;border:1px solid var(--lijn);border-radius:13px;background:#fff}
+table.tab{width:100%;border-collapse:collapse;font-size:.87rem;min-width:640px}
+table.tab th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.08em;
+ text-transform:uppercase;color:var(--grijs);padding:.7rem .85rem;border-bottom:1px solid var(--lijn);background:var(--vlak)}
+table.tab td{padding:.7rem .85rem;border-bottom:1px solid var(--lijn);vertical-align:top}
+table.tab tr:last-child td{border-bottom:0}
+.pil{display:inline-block;border-radius:99px;padding:.1rem .55rem;font-size:.73rem;font-weight:700;white-space:nowrap}
+.pil.groen{background:var(--groen-l);color:var(--groen)}
+.pil.amber{background:var(--amber-l);color:var(--amber)}
+.pil.rood{background:var(--rood-l);color:var(--rood)}
+.pil.grijs{background:var(--vlak);color:var(--grijs)}
+
+/* risicoklassen */
+.klassen{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+@media(max-width:900px){.klassen{grid-template-columns:1fr}}
+.klasse{border-radius:13px;padding:1rem 1.05rem;border:1px solid}
+.klasse.laag{background:var(--groen-l);border-color:#BFD9C8}
+.klasse.beperkt{background:var(--amber-l);border-color:#F0DE8C}
+.klasse.hoog{background:var(--rood-l);border-color:#F0C4BD}
+.klasse h3{font-size:.95rem;margin-bottom:.5rem}
+.klasse ul{margin:0;padding-left:1.05rem;font-size:.85rem;line-height:1.55}
+.klasse li{margin-bottom:.4rem}
+.klasse li b{display:block}
+
+/* lijst met vinkjes */
+.vink{list-style:none;padding:0;margin:.6rem 0 0;display:grid;gap:.45rem}
+.vink li{display:flex;gap:.55rem;align-items:flex-start;font-size:.9rem;color:#3C424A}
+.vink svg{width:16px;height:16px;flex:none;margin-top:4px;color:var(--blauw)}
+
+/* slot */
+.slot{background:var(--inkt);color:#fff;border-radius:18px;padding:2rem 2.1rem;margin:2.6rem 0 3.2rem;
+ display:grid;grid-template-columns:1.25fr auto;gap:1.6rem;align-items:center}
+@media(max-width:860px){.slot{grid-template-columns:1fr;padding:1.6rem}}
+.slot h2{color:#fff;font-size:1.5rem;margin-bottom:.35rem}
+.slot p{color:rgba(255,255,255,.76);font-size:.94rem;max-width:52ch;margin:0}
+.slot .knoppen{display:flex;gap:.6rem;flex-wrap:wrap}
+.slot-punten{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:1rem;font-size:.85rem;color:rgba(255,255,255,.8)}
+.slot-punten span{display:inline-flex;align-items:center;gap:.35rem}
+.slot-punten svg{width:15px;height:15px;color:var(--geel)}
+
+/* eerlijk-blok */
+.eerlijk{border-left:4px solid var(--geel);background:#FFFCF0;border-radius:0 10px 10px 0;
+ padding:.9rem 1.05rem;font-size:.9rem;margin-top:1.2rem}
+.eerlijk b{font-family:'Bricolage Grotesque',sans-serif}
+.bron{font-size:.8rem;color:var(--grijs);margin-top:.8rem}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<style>
+.sectie{padding:3.5rem 0;border-top:1px solid var(--lijn)}
+.sectie h2{font-size:clamp(1.5rem,3.4vw,2.1rem);margin:0 0 .4rem}
+.sectie .sub{margin:0 0 1.8rem;max-width:62ch}
+.kaarten{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.kaart{border:1.5px solid var(--lijn);border-radius:14px;padding:1.25rem;background:#fff}
+.kaart h3{font-size:1.05rem;margin:0 0 .45rem}
+.kaart p{margin:0;font-size:.94rem;color:var(--grijs)}
+.kaart--ja{border-left:4px solid var(--groen)}
+.kaart--nee{border-left:4px solid var(--rood)}
+.hero{padding:3.5rem 0 2.5rem}
+.hero h1{font-size:clamp(2rem,5.2vw,3.1rem);margin:0 0 .8rem}
+.hero p.lead{font-size:1.1rem;color:var(--grijs);max-width:60ch}
+.vraagblok{border-top:1px solid var(--lijn);padding:1.1rem 0}
+.vraagblok b{display:block;margin-bottom:.3rem}
+.vraagblok p{margin:0;color:var(--grijs);font-size:.95rem}
+.datum{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--grijs);letter-spacing:.06em}
+</style>
+
+<meta name="robots" content="noindex,follow">
+</head>
+<body>
+<div class="bgtop"><div class="bgtop-in">
+  <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
+  <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
+</div></div>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+<a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage"><img src="/assets/merk/logo-merk.png" alt="" width="34" height="34"><span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span></a>
+<div class="bgkop-links"><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/systemen-koppelen"><b>Systemen koppelen</b><span>Twee pakketten laten praten, zonder overtypen</span></a><a href="/ai-adoptie"><b>AI &amp; governance</b><span>Verantwoord aan de slag, met afspraken die gelden</span></a><a href="/ai-marketing-mkb"><b>AI-marketing</b><span>Zichtbaar blijven zonder er elke week tijd in te steken</span></a><a href="/due-diligence"><b>Due diligence &amp; exit</b><span>Wat weet dit bedrijf, en wat als de eigenaar wegloopt</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/afas-koppeling"><b>AFAS-koppeling</b><span>Aanvragen, orders en uren automatisch in AFAS</span></a><a href="/exact-online-koppeling"><b>Exact Online</b><span>Webshop, CRM of urenregistratie naar je boekhouding</span></a><a href="/twinfield-koppeling"><b>Twinfield</b><span>Facturen en uren zonder handmatig inboeken</span></a><a href="/webshop-koppeling"><b>Webshop koppelen</b><span>Shopify of WooCommerce naar je administratie</span></a><a href="/api-koppeling-laten-maken"><b>API-koppeling laten maken</b><span>Twee pakketten die allebei een API hebben</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Het bedrijfsgeheugen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/bedrijfsgeheugen"><b>Wat is een bedrijfsgeheugen?</b><span>Waar het over gaat, in gewone taal</span></a><a href="/product"><b>Het portaal</b><span>Waar alles doorheen loopt en zichtbaar blijft</span></a><a href="/frisse-blik"><b>Frisse blik</b><span>In 30 minuten zien waar de grootste kansen liggen</span></a><a href="/zelfscan"><b>Zelfscan</b><span>Zeven vragen over waar kennis bij jou weglekt</span></a><a href="/ai-scan"><b>AI-scan</b><span>Waar levert AI bij jou echt iets op</span></a><a href="/afmaakindex"><b>De Afmaakindex</b><span>Wat draait er nog van vorig jaar</span></a><a href="/monitor"><b>Bedrijfsgeheugen-index</b><span>Meet in tien minuten wat overtypen je kost</span></a><a href="/benchmark"><b>Benchmark</b><span>Hoe je scoort naast vergelijkbare bedrijven</span></a><a href="/hoe-het-werkt"><b>Hoe het werkt</b><span>Een handeling per keer, vaste prijs, geen traject</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/blog/"><b>Blog</b><span>Wat we tegenkomen, uitgelegd zonder jargon</span></a><a href="/ai-act"><b>AI Act</b><span>Wat er nu geldt voor bedrijven van 3 tot 250 man</span></a><a href="/data-soevereiniteit"><b>Data-soevereiniteit</b><span>Waar gaan je gegevens heen bij ChatGPT en Copilot</span></a><a href="/ai-in-bi" aria-current="page"><b>AI in business intelligence</b><span>Wat werkt op je cijfers, en wat niet</span></a><a href="/ai-in-data-engineering"><b>AI in data engineering</b><span>Wat zin heeft en waar de grens ligt</span></a><a href="/monitor"><b>Bedrijfsgeheugen-index</b><span>Meet in tien minuten wat het bij jou kost</span></a><a href="/begrippen"><b>Begrippenlijst</b><span>De termen, in gewone taal</span></a></div></div><a href="/over-ons">Over ons</a></div>
+<a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+<button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
+</div>
+<div class="bgkop-mob" id="bgkopMob" hidden><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/systemen-koppelen">Systemen koppelen</a><a href="/ai-adoptie">AI &amp; governance</a><a href="/ai-marketing-mkb">AI-marketing</a><a href="/due-diligence">Due diligence &amp; exit</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/afas-koppeling">AFAS-koppeling</a><a href="/exact-online-koppeling">Exact Online</a><a href="/twinfield-koppeling">Twinfield</a><a href="/webshop-koppeling">Webshop koppelen</a><a href="/api-koppeling-laten-maken">API-koppeling laten maken</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/blog/">Blog</a><a href="/ai-act">AI Act</a><a href="/data-soevereiniteit">Data-soevereiniteit</a><a href="/ai-in-bi">AI in business intelligence</a><a href="/ai-in-data-engineering">AI in data engineering</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/begrippen">Begrippenlijst</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Het bedrijfsgeheugen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/bedrijfsgeheugen">Wat is een bedrijfsgeheugen?</a><a href="/product">Het portaal</a><a href="/frisse-blik">Frisse blik</a><a href="/zelfscan">Zelfscan</a><a href="/ai-scan">AI-scan</a><a href="/afmaakindex">De Afmaakindex</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/benchmark">Benchmark</a><a href="/hoe-het-werkt">Hoe het werkt</a></div><a href="/expertises">Alle expertises</a><a href="/over-ons">Over ons</a><a class="bgkop-mcta" href="/frisse-blik">Plan een Frisse blik &rarr;</a></div>
+<script src="/assets/js/menu.js?v=198c58e3" defer></script></nav>
+
+<style>
+.of{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+.of-lint{position:sticky;top:0;z-index:40;background:var(--bg-inkt);color:#fff;padding:.95rem 0;margin:0 0 1.8rem}
+.of-lint .of{display:flex;flex-wrap:wrap;gap:1.2rem;align-items:center;justify-content:space-between}
+.of-lint b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;letter-spacing:-.02em}
+.of-lint span.of-sub2{color:#C8CBD2;font-size:.84rem}
+.of-som{font-family:'Bricolage Grotesque',sans-serif;font-size:1.85rem;font-weight:700;line-height:1;white-space:nowrap}
+.of-som small{display:block;font-size:.66rem;font-weight:400;color:#C8CBD2;letter-spacing:.05em;margin-top:.25rem}
+.of-klaar{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:700;color:var(--bg-geel)}
+.of-rij{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:start;border:1.5px solid var(--bg-lijn);
+ border-radius:12px;padding:1.05rem 1.2rem;margin-bottom:.7rem;background:#fff}
+.of-rij[data-aan="1"]{border-color:var(--bg-blauw)}
+.of-rij[data-vast="1"]{background:#F4F5F8}
+.of-vink{width:24px;height:24px;border:2px solid var(--bg-lijn);border-radius:7px;background:#fff;cursor:pointer;flex:none;position:relative;margin-top:.15rem}
+.of-rij[data-aan="1"] .of-vink{background:var(--bg-blauw);border-color:var(--bg-blauw)}
+.of-vink::after{content:"";position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg);opacity:0}
+.of-rij[data-aan="1"] .of-vink::after{opacity:1}
+.of-rij[data-vast="1"] .of-vink{cursor:default;background:var(--bg-inkt);border-color:var(--bg-inkt)}
+.of-rij h3{margin:0 0 .2rem;font-size:1.02rem}
+.of-rij>div>p{margin:0;color:var(--bg-grijs);font-size:.9rem;line-height:1.5}
+.of-prijs{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.15rem;white-space:nowrap;text-align:right}
+.of-duur{display:block;font-family:'Instrument Sans',sans-serif;font-weight:400;font-size:.76rem;color:var(--bg-grijs);margin-top:.15rem}
+.of-meer{margin-top:.6rem;border:0;background:none;padding:0;font:inherit;font-size:.84rem;color:var(--bg-blauw);cursor:pointer;text-decoration:underline}
+.of-uit{margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--bg-lijn)}
+.of-story{border-left:3px solid var(--bg-geel);padding:.15rem 0 .15rem .8rem;margin:.55rem 0;font-size:.88rem;line-height:1.55}
+.of-kopje{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bg-grijs);margin:.9rem 0 .35rem;display:block}
+.of-lijst{margin:.2rem 0 0;padding-left:1.1rem;font-size:.88rem;color:var(--bg-grijs);line-height:1.6}
+.of-road{display:grid;gap:.55rem;margin:.4rem 0 0}
+.of-sprint{display:grid;grid-template-columns:64px 1fr;gap:1rem;align-items:start;border:1.5px solid var(--bg-lijn);border-radius:12px;padding:.95rem 1.1rem;background:#fff}
+.of-sprint .wk{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.72rem;text-align:center;background:var(--bg-inkt);color:#fff;border-radius:8px;padding:.35rem .2rem;line-height:1.25}
+.of-sprint .wk i{display:block;font-style:normal;font-size:1.15rem}
+.of-sprint h4{margin:0 0 .2rem;font-family:'Bricolage Grotesque',sans-serif;font-size:.98rem}
+.of-sprint p{margin:0;font-size:.87rem;color:var(--bg-grijs);line-height:1.5}
+.of-op{display:inline-block;margin-top:.5rem;background:var(--bg-geel);border-radius:7px;padding:.28rem .6rem;font-size:.82rem;font-weight:600}
+.of-let{background:var(--bg-geel);border-radius:12px;padding:1.1rem 1.3rem;margin:1.6rem 0;font-size:.95rem;line-height:1.6}
+.of-let b{display:block;margin-bottom:.2rem}
+.of-waarsch{border:1.5px solid var(--bg-lijn);border-left:4px solid var(--bg-inkt);border-radius:8px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.9rem;color:var(--bg-grijs);line-height:1.55}
+.of-tel{display:flex;gap:2rem;flex-wrap:wrap;margin:1rem 0 0;font-size:.86rem;color:var(--bg-grijs)}
+.of-tel b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.35rem;color:var(--bg-inkt)}
+@media(max-width:640px){
+ .of-rij{grid-template-columns:auto 1fr;gap:.8rem}
+ .of-prijs{grid-column:2;text-align:left;margin-top:.4rem}
+ .of-lint{position:static}
+ .of-sprint{grid-template-columns:52px 1fr;gap:.7rem}
+}
+</style>
+
+<main>
+<nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">&rsaquo;</span><a href="/product">Het portaal</a><span aria-hidden="true">&rsaquo;</span><span aria-current="page">Offerte</span></nav>
+
+<section class="sectie" style="border-top:0;padding-bottom:1rem"><div class="of">
+  <p class="eyebrow">Offerte &middot; in uw portaal</p>
+  <h1 style="font-size:clamp(2rem,5vw,2.9rem);margin:0 0 .7rem">Analytics en een <span class="mark">Power BI-dashboard</span> waar vier rollen mee sturen</h1>
+  <p class="sub" style="font-size:1.08rem;max-width:60ch">Zet hieronder aan wat u wilt. De prijs, de doorlooptijd en de roadmap bewegen mee. Per onderdeel ziet u wat er gebeurt, wie er iets aan heeft en wat u aan het eind van die week in handen hebt.</p>
+  <p class="sub" style="font-size:.86rem">Geldig tot 17 september 2026 &middot; alle bedragen excl. btw</p>
+</div></section>
+
+<div class="of-lint"><div class="of">
+  <div><b id="ofTitel">Fase 1 en het fundament</b><span class="of-sub2" id="ofDuur">5 weken</span></div>
+  <div style="display:flex;gap:1.8rem;align-items:center">
+    <div class="of-klaar" id="ofKlaar">klaar week 5</div>
+    <div class="of-som"><span id="ofSom">&euro; 12.800</span><small>EXCL. BTW &middot; VASTE PRIJS</small></div>
+  </div>
+</div></div>
+
+<section style="padding:0 0 1rem"><div class="of">
+  <h2 style="font-size:1.4rem;margin:0 0 .3rem">Wat u kiest</h2>
+  <p class="sub" style="margin-bottom:1.1rem">De eerste twee staan vast — daar rust de rest op. De schermen kiest u zelf, nu of later.</p>
+  <div id="ofRijen"></div>
+</div></section>
+
+<section style="padding:1.5rem 0 1rem"><div class="of">
+  <h2 style="font-size:1.4rem;margin:0 0 .3rem">Uw roadmap, week voor week</h2>
+  <p class="sub" style="margin-bottom:1rem">Elke week eindigt met iets dat u kunt bekijken. Geen fase van drie weken waarin u niets hoort.</p>
+  <div class="of-road" id="ofRoad"></div>
+  <div class="of-tel">
+    <div><b id="tWeken">5</b>weken van start tot oplevering</div>
+    <div><b id="tStories">6</b>user stories, allemaal benoemd</div>
+    <div><b id="tOp">5</b>momenten dat u iets in handen krijgt</div>
+    <div><b id="tPerWeek">&euro; 2.560</b>per week, alles inbegrepen</div>
+  </div>
+</div></section>
+
+<section style="padding:1.5rem 0 3rem"><div class="of">
+  <div class="of-let"><b>De keuze die dit project maakt of breekt</b>
+  GA4 rechtstreeks aan Power BI koppelen werkt in een demo en gaat daarna stuk: quota, steekproeven zodra het volume oploopt, en geen ruwe gegevens — u kunt achteraf dus geen vraag stellen die u vooraf niet bedacht had. Wij zetten de gratis BigQuery-export aan en laten Power BI daaruit lezen. Een halve dag extra, één keer, in week 2.</div>
+
+  <div class="of-waarsch"><b style="color:var(--bg-inkt)">Wat er níet in zit.</b> Fabric-capaciteit wordt bij dit soort trajecten vaak aangeboden en is hier overbodig — pas relevant vanaf enkele honderden kijkers. Power BI Pro is wel nodig: circa &euro; 10 per persoon per maand, reken op acht tot vijftien licenties. BigQuery blijft bij dit volume binnen de gratis laag. Die kosten gaan niet naar ons.</div>
+
+  <div class="of-waarsch" style="border-left-color:var(--bg-blauw)"><b style="color:var(--bg-inkt)">Waar het blijft werken.</b> Na oplevering staat alles in uw portaal: per KPI wat hij betekent, uit welke bron hij komt en wie erover gaat. Verandert er iets, dan ziet u vóór de wijziging welke schermen en mensen het raakt. Optioneel met beheer voor &euro; 390 per maand, maandelijks opzegbaar.</div>
+
+  <p style="margin:1.8rem 0 .6rem"><a class="knop" href="/contact">Akkoord — zet het klaar als project</a></p>
+  <p class="sub" style="font-size:.86rem;max-width:62ch">Na akkoord staat deze roadmap als project in uw portaal: elke sprint met zijn user stories, de eigenaar per rol en de opleverdatum. Wat u hier ziet wordt niet ergens anders overgetypt — het ís de planning.</p>
+</div></section>
+</main>
+
+<script>window.__OFFERTE__ = [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}];</script>
+<script>
+(function(){
+  var D = window.__OFFERTE__ || [];
+  var euro = function(n){ return '\u20ac ' + n.toLocaleString('nl-NL'); };
+  var rijenEl = document.getElementById('ofRijen'), roadEl = document.getElementById('ofRoad');
+  var aan = {};
+  D.forEach(function(o){
+    aan[o.id] = !!o.vast;
+    var weken = o.sprints.length;
+    var d = document.createElement('div');
+    d.className = 'of-rij';
+    d.dataset.aan = o.vast ? '1' : '0';
+    if (o.vast) d.dataset.vast = '1';
+    var st = o.stories.map(function(s){
+      return '<div class="of-story">Als <b>' + s[0] + '</b> wil ik ' + s[1] + ', zodat ' + s[2] + '.</div>';
+    }).join('');
+    var sp = o.sprints.map(function(s){
+      return '<li><b>' + s.titel + '</b> \u2014 ' + s.wat + '</li>';
+    }).join('');
+    d.innerHTML =
+      '<span class="of-vink"' + (o.vast ? '' : ' role="checkbox" tabindex="0" aria-checked="false" aria-label="' + o.titel + '"') + '></span>' +
+      '<div><h3>' + o.titel + '</h3><p>' + o.kort + '</p>' +
+      '<button class="of-meer" type="button">Bekijk de sprints en user stories</button>' +
+      '<div class="of-uit" hidden><span class="of-kopje">Wie heeft er iets aan</span>' + st +
+      '<span class="of-kopje">Wat er in de ' + (weken === 1 ? 'week' : weken + ' weken') + ' gebeurt</span>' +
+      '<ul class="of-lijst">' + sp + '</ul></div></div>' +
+      '<div class="of-prijs">' + euro(o.prijs) + '<span class="of-duur">' + weken +
+      (weken === 1 ? ' week' : ' weken') + (o.vast ? ' \u00b7 vast' : '') + '</span></div>';
+    rijenEl.appendChild(d);
+    var vink = d.querySelector('.of-vink');
+    if (!o.vast) {
+      var wissel = function(){
+        aan[o.id] = !aan[o.id];
+        d.dataset.aan = aan[o.id] ? '1' : '0';
+        vink.setAttribute('aria-checked', aan[o.id] ? 'true' : 'false');
+        teken();
+      };
+      vink.addEventListener('click', wissel);
+      vink.addEventListener('keydown', function(e){
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); wissel(); }
+      });
+    }
+    var knop = d.querySelector('.of-meer'), uit = d.querySelector('.of-uit');
+    knop.addEventListener('click', function(){
+      if (uit.hasAttribute('hidden')) { uit.removeAttribute('hidden'); knop.textContent = 'Verbergen'; }
+      else { uit.setAttribute('hidden',''); knop.textContent = 'Bekijk de sprints en user stories'; }
+    });
+  });
+  function teken(){
+    var prijs = 0, weken = 0, schermen = 0, stories = 0, sprints = [];
+    D.forEach(function(o){
+      if (!aan[o.id]) return;
+      prijs += o.prijs; schermen += o.scherm || 0; stories += o.stories.length;
+      o.sprints.forEach(function(s){ weken++; sprints.push({ wk: weken, s: s }); });
+    });
+    roadEl.innerHTML = sprints.map(function(r){
+      return '<div class="of-sprint"><div class="wk">WEEK<i>' + r.wk + '</i></div><div><h4>' +
+        r.s.titel + '</h4><p>' + r.s.wat + '</p><span class="of-op">Aan het eind: ' + r.s.op + '</span></div></div>';
+    }).join('');
+    document.getElementById('ofSom').textContent = euro(prijs);
+    document.getElementById('ofKlaar').textContent = 'klaar week ' + weken;
+    document.getElementById('ofDuur').textContent = weken + ' weken \u00b7 ' + schermen +
+      (schermen === 1 ? ' scherm' : ' schermen') + ' \u00b7 ' + stories + ' user stories';
+    document.getElementById('ofTitel').textContent =
+      schermen >= 4 ? 'Alles, in \u00e9\u00e9n keer' : (schermen <= 1 ? 'Fase 1 en het fundament' : 'Uw keuze');
+    document.getElementById('tWeken').textContent = weken;
+    document.getElementById('tStories').textContent = stories;
+    document.getElementById('tOp').textContent = sprints.length;
+    document.getElementById('tPerWeek').textContent = euro(Math.round(prijs / weken));
+  }
+  teken();
+})();
+</script><footer class="bgvoet"><div class="bgvoet-in">
+  <div class="bgvoet-net">
+    <div>
+      <span class="bgvoet-merk">Bedrijfs<b>geheugen</b>.nl</span>
+      <p class="bgvoet-over">Systemen koppelen, kennis borgen en AI die past.<br>Voor mkb-bedrijven van 3 tot 250 medewerkers.</p>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Oplossingen</span>
+      <a href="/systemen-koppelen">Systemen koppelen</a>
+      <a href="/ai-adoptie">AI &amp; governance</a>
+      <a href="/ai-marketing-mkb">AI-marketing</a>
+      <a href="/workshops">AI-workshops</a>
+      <a href="/due-diligence">Due diligence &amp; exit</a>
+      <a href="/expertises">Alle expertises</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Koppelingen</span>
+      <a href="/afas-koppeling">AFAS-koppeling</a>
+      <a href="/exact-online-koppeling">Exact Online</a>
+      <a href="/twinfield-koppeling">Twinfield</a>
+      <a href="/webshop-koppeling">Webshop koppelen</a>
+      <a href="/api-koppeling-laten-maken">API-koppeling laten maken</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Kennis</span>
+      <a href="/blog/">Blog</a>
+      <a href="/ai-act">AI Act</a>
+      <a href="/data-soevereiniteit">Data-soevereiniteit</a>
+      <a href="/ai-in-bi">AI in business intelligence</a>
+      <a href="/ai-in-data-engineering">AI in data engineering</a>
+      <a href="/monitor">Bedrijfsgeheugen-index</a>
+      <a href="/benchmark">Benchmark</a>
+      <a href="/begrippen">Begrippenlijst</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Het bedrijfsgeheugen</span>
+      <a href="/bedrijfsgeheugen">Wat is een bedrijfsgeheugen?</a>
+      <a href="/product">Het portaal</a>
+      <a href="/frisse-blik">Frisse blik</a>
+      <a href="/zelfscan">Zelfscan</a>
+      <a href="/ai-scan">AI-scan</a>
+      <a href="/afmaakindex">De Afmaakindex</a>
+      <a href="/monitor">Bedrijfsgeheugen-index</a>
+      <a href="/hoe-het-werkt">Hoe het werkt</a>
+      <a href="/wijzigingen">Wijzigingen</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Over ons</span>
+      <a href="/over-ons">Ons verhaal</a>
+      <a href="/voor-mkb">Voor het mkb</a>
+      <a href="/investeerders-ma">Investeerders &amp; M&amp;A</a>
+      <a href="/contact">Contact</a>
+    </div>
+    <div class="bgvoet-cta">
+      <b>Plan een Frisse blik</b>
+      <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
+      <a class="bgvoet-knop" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+    </div>
+  </div>
+  <div class="bgvoet-onder">
+    <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
+    <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
+  </div>
+</div></footer>
+<script src="/assets/js/techniekscan.js" defer></script>
+</body>
+</html>
