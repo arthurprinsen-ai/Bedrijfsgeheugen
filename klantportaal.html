@@ -8383,7 +8383,7 @@ window.__BG_LOOPT__ = function(K, slug){
   /* Startblok bovenaan het Overzicht: wat staat er klaar, wat is nog leeg,
      en wat het kost om de rest te laten vullen. Zonder dit blok landt een
      klant in een portaal vol lege schermen en weet hij niet waar te beginnen. */
-  (function(){
+  (function(){ try {
     var ov = document.getElementById('p-overzicht');
     if (!ov || !K) return;
     var d = document.createElement('div');
@@ -8416,7 +8416,7 @@ window.__BG_LOOPT__ = function(K, slug){
       if (t) t.click();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-  })();
+  } catch (e) { console.error('[bedrijfsgeheugen] module startblok gaf een fout:', e); } })();
 
 
   /* Slot op de niet-geactiveerde schermen.
@@ -8424,7 +8424,7 @@ window.__BG_LOOPT__ = function(K, slug){
      zolang alles uit localStorage komt kan dat gebeuren. Twee: gebruik van het
      portaal kost geld, en dat moet zichtbaar zijn v\u00f3\u00f3rdat iemand gaat invullen.
      De klant ziet dus w\u00e9l wat een scherm doet, maar niet wat erin staat. */
-  (function(){
+  (function(){ try {
     if (!K || K.actief) return;
     var VRIJ = { overzicht: 1, offerte: 1, werkstromen: 1, activiteit: 1, koppelingen: 1, documenten: 1, uren: 1, mensen: 1 };
     /* Het Overzicht is NIET vrij: daar staan de KPI's, de scanuitslag en de
@@ -8493,7 +8493,7 @@ window.__BG_LOOPT__ = function(K, slug){
         '</div>';
       p.appendChild(o);
     });
-  })();
+  } catch (e) { console.error('[bedrijfsgeheugen] module slot gaf een fout:', e); } })();
 
 
   /* Feedback bovenin, niet als zwevende knop rechtsonder — daar botst hij met
@@ -8611,7 +8611,7 @@ window.__BG_LOOPT__ = function(K, slug){
 
   /* De sprints uit de offerte worden het werk: taken, voortgang en activiteit.
      Eén bron — wijzigt de offerte, dan wijzigen de taken mee. Niets overtypen. */
-  (function(){
+  (function(){ try {
   /* Het portaal bouwt zijn schermen opnieuw op; deze vulling werd daarbij
      weggegooid. Daarom als functie die blijft draaien in plaats van code die
      één keer bij het laden schrijft. Hij schrijft de panelen volledig opnieuw,
@@ -8690,13 +8690,13 @@ window.__BG_LOOPT__ = function(K, slug){
   document.addEventListener('click', function(e){
     if (e.target.closest && e.target.closest('.tab')) setTimeout(vulWerk, 60);
   });
-})();
+} catch (e) { console.error('[bedrijfsgeheugen] module werk gaf een fout:', e); } })();
 
 
   /* De offerte verdeelt zich over het project: koppelingen, documenten en
      termijnen komen uit dezelfde bron als de taken. En de handtekening zet het
      in gang — één keer tekenen, en alles staat er ingevuld. */
-  (function(){
+  (function(){ try {
   /* Draait telkens opnieuw: het portaal bouwt zijn schermen na het laden
      opnieuw op en gooide deze vulling weg. Elke keer wordt het paneel
      volledig herschreven, dus herhalen is veilig. */
@@ -8829,14 +8829,14 @@ window.__BG_LOOPT__ = function(K, slug){
   document.addEventListener('click', function(e){
     if (e.target.closest && e.target.closest('.tab')) setTimeout(vulProject, 60);
   });
-})();
+} catch (e) { console.error('[bedrijfsgeheugen] module project gaf een fout:', e); } })();
 
 
   /* Wat valt stil als deze persoon wegvalt.
      Gebouwd op de rollen uit de user stories: elke rol heeft schermen die hij
      nodig heeft en koppelingen die daaronder liggen. Valt de rol weg, dan staat
      dat werk stil — en dat is precies het gesprek dat we willen voeren. */
-  (function(){
+  (function(){ try {
     if (!K || !K.onderdelen) return;
     var men = document.getElementById('p-mensen');
     if (!men) return;
@@ -8895,7 +8895,7 @@ window.__BG_LOOPT__ = function(K, slug){
           'afgesproken. Niet om iemand te vervangen — om te zorgen dat het werk doorgaat.</p></div>';
       });
     });
-  })();
+  } catch (e) { console.error('[bedrijfsgeheugen] module wegvallen gaf een fout:', e); } })();
 
 
   /* Meerwerk met een handtekening.
