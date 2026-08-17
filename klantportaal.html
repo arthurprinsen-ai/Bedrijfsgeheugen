@@ -10168,5 +10168,104 @@ window.__BG_LOOPT__ = function(K, slug){
 .dsBol{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#E5484D;box-shadow:0 0 0 3px rgba(229,72,77,.18)}
 .tab{position:relative}
 </style>
+<script>
+/* Twee kaarten erbij op het overzicht: de uitslag van de Frisse blik-scan, en
+   wat er nog moet worden ingevuld voor een compleet beeld. Beide alleen als het
+   portaal actief is \u2014 die gegevens staan in de browser en horen bij degene die
+   is ingelogd, dus bij een klant die nog niet actief is laten we ze weg. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function jl(k,t){try{return JSON.parse(localStorage.getItem(k)||'null')||t;}catch(e){return t;}}
+
+  var SECTIES=[
+    ['profiel','Profiel per onderdeel','niveaus'],
+    ['cijfers','Cijfers en maatstaven','cijfers'],
+    ['mensen','Mensen','mensen'],
+    ['business','Businesscase','bc'],
+    ['beleid','Compliance en beleid','beleid'],
+    ['waarde','Waarde en financiering','fin'],
+    ['strategie','Strategiemodellen','modellen'],
+    ['dd','Due diligence','esg']
+  ];
+
+  function scan(){
+    var p=jl('bg_scan_pakket',null);
+    if(p&&p.datum) return p;
+    var S=jl('bg_portaal_'+((document.getElementById('wie')||{}).textContent||'anoniem'),null);
+    if(S&&S.scanDatum) return {datum:S.scanDatum,score:S.scanScore,dimAvg:null,branche:S.branche};
+    return null;
+  }
+
+  function state(){
+    var mail=(document.getElementById('wie')||{}).textContent||'anoniem';
+    return jl('bg_portaal_'+mail,null)||jl('bg_portaal_anoniem',null);
+  }
+
+  function vul(){
+    try{
+      var K=(window.__KLANTEN__||{})[slug()];
+      if(!K||!K.actief) return;                 /* niet actief: niets uit de browser tonen */
+      var wrap=document.querySelector('.dsRooster');
+      if(!wrap) return;
+      if(wrap.querySelector('[data-k="scan"]')||wrap.querySelector('[data-k="compleet"]')) return;
+
+      var sc=scan(), S=state();
+
+      if(sc){
+        var d=document.createElement('div');
+        d.className='dsKaart';
+        d.setAttribute('data-k','scan');
+        d.innerHTML='<div class="dsGreep">\u2237</div><h4>Je Frisse blik</h4>'+
+          '<div class="dsGroot">'+(sc.score!=null?esc(String(sc.score))+' <small>/ 100</small>':'ingevuld')+'</div>'+
+          '<p class="dsSub">scan van '+esc(sc.datum||'')+
+          (sc.branche?' \u00b7 branche '+esc(sc.branche):'')+'</p>'+
+          '<button class="dsActie" data-naar="profiel"><b>Bekijk je profiel per onderdeel</b>'+
+          '<span>De schuiven staan op je eigen antwoorden</span></button>';
+        wrap.appendChild(d);
+      }
+
+      if(S){
+        var leeg=SECTIES.filter(function(x){
+          var v=S[x[2]];
+          if(!v) return true;
+          if(Array.isArray(v)) return v.length===0;
+          return Object.keys(v).length===0;
+        });
+        var vol=SECTIES.length-leeg.length;
+        var c=document.createElement('div');
+        c.className='dsKaart';
+        c.setAttribute('data-k','compleet');
+        c.innerHTML='<div class="dsGreep">\u2237</div><h4>Hoe compleet je beeld is</h4>'+
+          '<div class="dsGroot">'+vol+' <small>/ '+SECTIES.length+'</small></div>'+
+          '<div class="dsBalk"><div style="width:'+Math.round(vol/SECTIES.length*100)+'%"></div></div>'+
+          (leeg.length
+            ? '<p class="dsSub">Nog in te vullen voor een compleet beeld:</p>'+
+              leeg.slice(0,3).map(function(x){
+                return '<button class="dsActie" data-naar="'+x[0]+'"><b>'+esc(x[1])+'</b></button>';
+              }).join('')+
+              (leeg.length>3?'<p class="dsSub">en nog '+(leeg.length-3)+' onderdelen</p>':'')
+            : '<p class="dsSub">Alles is ingevuld. Mooi \u2014 daar wordt elk advies scherper van.</p>');
+        wrap.appendChild(c);
+      }
+
+      Array.prototype.forEach.call(wrap.querySelectorAll('[data-naar]'),function(b){
+        if(b.getAttribute('data-bg-klik')) return;
+        b.setAttribute('data-bg-klik','1');
+        b.addEventListener('click',function(){
+          var t=document.querySelector('.tab[data-p="'+b.dataset.naar+'"]');
+          if(t) t.click();
+          window.scrollTo({top:0,behavior:'smooth'});
+        });
+      });
+    }catch(e){ console.error('[bedrijfsgeheugen] scankaarten:',e); }
+  }
+  vul();
+  setInterval(vul,1100);
+})();
+</script>
 </body>
 </html>
