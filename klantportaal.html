@@ -9374,5 +9374,78 @@ window.__BG_LOOPT__ = function(K, slug){
   });
 })();
 </script>
+<script>window.__BESLUITEN__=[{"wat": "GA4 gaat via BigQuery, niet via de directe koppeling", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "waarom": "De directe koppeling kent quota en past steekproeven toe zodra het volume oploopt, en bewaart geen ruwe gegevens. Dan kun je achteraf geen vraag stellen die je vooraf niet had bedacht.", "gevolg": "Kost een halve dag extra in week 2. Vanaf dat moment bouwt de historie zich op — zet je het later aan, dan begint die historie later."}, {"wat": "Vaste prijs per onderdeel, geen uren", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "waarom": "Bij nacalculatie verschuift het gesprek van resultaat naar verantwoording. Met een vaste prijs weet je vooraf waar je aan toe bent en dragen wij het risico van uitloop.", "gevolg": "Meerwerk is nooit een verrassing: het wordt een voorstel met prijs en nieuwe einddatum, waar apart voor getekend wordt."}, {"wat": "Geen Fabric-capaciteit", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "waarom": "Wordt bij dit soort trajecten vaak aangeboden en is bij dit volume overbodig. Pas relevant vanaf enkele honderden kijkers.", "gevolg": "Bespaart honderden euro's per maand. Power BI Pro volstaat, circa € 10 per persoon per maand."}, {"wat": "Definities worden één keer vastgesteld", "wie": "samen, in week 4", "wanneer": "week 4", "waarom": "Als “circulair” op twee schermen iets anders betekent, gaat elk gesprek over de cijfers in plaats van over de zaak.", "gevolg": "Verandert een definitie later, dan is dat een wijziging met zichtbare gevolgen, en geen correctie."}, {"wat": "De interne bestanden moeten machineleesbaar zijn", "wie": "afgesproken bij de offerte", "wanneer": "bij de offerte", "waarom": "Eén kop per kolom, geen samengevoegde cellen, geen kleur als betekenis. Daar loopt dit soort projecten op vast.", "gevolg": "Blijkt het anders, dan melden we dat in week één met een prijs voor het opschonen — niet achteraf op de factuur."}];
+/* Notities is geen notitieblok maar de waaromlaag: waarom is iets zo
+   afgesproken, door wie, en wat is het gevolg. Een taak vertelt w\u00e1t er moet
+   gebeuren; een besluit vertelt waarom \u2014 en dat is wat na oplevering waarde
+   houdt. Op zichzelf staand blok, net als de andere. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+
+  function vul(){
+    try{
+      var K=(window.__KLANTEN__||{})[slug()];
+      if(!K) return;
+      var lijst=K.besluiten||window.__BESLUITEN__||[];
+      if(!lijst.length) return;
+      var p=document.getElementById('p-projectnotities');
+      if(!p) return;
+      if(p.getAttribute('data-bg')==='klaar'&&p.innerHTML.length>300) return;
+
+      p.innerHTML=
+        '<div class="kaart" style="margin-top:1rem">'+
+        '<h3>Waarom het zo is afgesproken</h3>'+
+        '<p class="sub">Elke keuze uit je offerte staat hier met de reden erbij, en met wat het gevolg is. '+
+        'Vraagt iemand over twee jaar waarom dit zo gaat, dan staat het antwoord er \u2014 ook als degene '+
+        'die het besloot er niet meer werkt. Dat is het bedrijfsgeheugen.</p>'+
+        lijst.map(function(b,i){
+          return '<div class="bgWrm"><button class="bgWrmKop" type="button">'+
+            '<span><b>'+esc(b.wat)+'</b>'+
+            '<em>'+esc(b.wie)+' \u00b7 '+esc(b.wanneer)+'</em></span>'+
+            '<i>\u203a</i></button>'+
+            '<div class="bgWrmUit" hidden>'+
+              '<span class="bgKopje">Waarom</span><p>'+esc(b.waarom)+'</p>'+
+              '<span class="bgKopje">Wat dat betekent</span><p>'+esc(b.gevolg)+'</p>'+
+            '</div></div>';
+        }).join('')+
+        '</div>';
+      Array.prototype.forEach.call(p.querySelectorAll('.bgWrmKop'),function(b){
+        b.addEventListener('click',function(){
+          var u=b.nextElementSibling;
+          if(u.hasAttribute('hidden')){u.removeAttribute('hidden');b.classList.add('aan');}
+          else{u.setAttribute('hidden','');b.classList.remove('aan');}
+        });
+      });
+      p.setAttribute('data-bg','klaar');
+    }catch(e){ console.error('[bedrijfsgeheugen] notities:',e); }
+  }
+  vul();
+  setInterval(function(){
+    var p=document.getElementById('p-projectnotities');
+    if(p&&p.innerHTML.length<300) p.removeAttribute('data-bg');
+    vul();
+  },700);
+  document.addEventListener('click',function(e){
+    if(e.target.closest&&e.target.closest('.tab')) setTimeout(vul,60);
+  });
+})();
+</script>
+<style>
+.bgWrm{border:1.5px solid var(--lijn,#DCDFE6);border-radius:12px;margin-top:.6rem;background:#fff;overflow:hidden}
+.bgWrmKop{display:flex;gap:.8rem;align-items:center;justify-content:space-between;width:100%;
+ background:none;border:0;padding:.95rem 1.1rem;font:inherit;text-align:left;cursor:pointer}
+.bgWrmKop b{display:block;font-size:.98rem}
+.bgWrmKop em{display:block;font-style:normal;font-size:.82rem;color:var(--grijs,#5C646E);margin-top:.15rem}
+.bgWrmKop i{font-style:normal;font-size:1.3rem;color:var(--grijs,#5C646E);transition:transform .18s}
+.bgWrmKop.aan i{transform:rotate(90deg)}
+.bgWrmUit{padding:.8rem 1.1rem 1rem;border-top:1px solid var(--lijn,#DCDFE6)}
+.bgWrmUit p{margin:0 0 .7rem;font-size:.9rem;line-height:1.6}
+.bgKopje{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--grijs,#5C646E);font-weight:700;margin:0 0 .3rem}
+</style>
 </body>
 </html>
