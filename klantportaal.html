@@ -9391,75 +9391,7 @@ window.__BG_LOOPT__ = function(K, slug){
 .bgKopje{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
  color:var(--grijs,#5C646E);font-weight:700;margin:0 0 .3rem}
 </style>
-<script>
-/* Activiteit — wat er is opgeleverd, nieuwste bovenaan. Op zichzelf staand blok.
-   Zolang er nog niets af is, vertelt het scherm wat er k\u00f3mt te staan, in plaats
-   van leeg te blijven. */
-(function(){
-  function slug(){
-    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
-    return m?decodeURIComponent(m[1]).toLowerCase():'';
-  }
-  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
 
-  function vul(){
-    try{
-      var K=(window.__KLANTEN__||{})[slug()];
-      if(!K||!K.onderdelen) return;
-      var p=document.getElementById('p-activiteit');
-      if(!p) return;
-      if(p.getAttribute('data-bg')==='klaar'&&p.innerHTML.length>300) return;
-
-      var gedaan=K.voortgang||0, wk=0, af=[], komt=[];
-      K.onderdelen.forEach(function(o){
-        if(!o.vast) return;
-        o.sprints.forEach(function(sp){
-          wk++;
-          (wk<=gedaan?af:komt).push({wk:wk,sp:sp});
-        });
-      });
-      if(!wk) return;
-
-      var inhoud;
-      if(af.length){
-        inhoud='<p class="sub">Per week wat er af is gekomen. Nieuwste bovenaan.</p>'+
-          af.slice().reverse().map(function(r){
-            return '<div class="bgAct"><b>Week '+r.wk+' \u00b7 '+esc(r.sp.titel)+'</b>'+
-              '<span>'+esc(r.sp.op)+'</span></div>';
-          }).join('');
-        if(komt.length){
-          inhoud+='<p class="sub" style="margin:1rem 0 .3rem"><b>Hierna:</b> week '+komt[0].wk+
-            ' \u2014 '+esc(komt[0].sp.titel)+'</p>';
-        }
-      } else {
-        inhoud='<p class="sub">Er is nog niets opgeleverd \u2014 het werk begint zodra je akkoord geeft. '+
-          'Daarna staat hier per week wat je hebt gekregen, met de datum erbij.</p>'+
-          '<div class="bgAct wacht"><b>Als eerste: week 1 \u00b7 '+esc(komt[0].sp.titel)+'</b>'+
-          '<span>'+esc(komt[0].sp.op)+'</span></div>'+
-          '<p class="sub" style="margin:.9rem 0 0">In totaal '+wk+' weken, '+wk+' opleveringen.</p>';
-      }
-
-      p.innerHTML='<div class="kaart" style="margin-top:1rem"><h3>Wat er is opgeleverd</h3>'+inhoud+'</div>';
-      p.setAttribute('data-bg','klaar');
-    }catch(e){ console.error('[bedrijfsgeheugen] activiteit:',e); }
-  }
-  vul();
-  setInterval(function(){
-    var p=document.getElementById('p-activiteit');
-    if(p&&p.innerHTML.length<300) p.removeAttribute('data-bg');
-    vul();
-  },700);
-  document.addEventListener('click',function(e){
-    if(e.target.closest&&e.target.closest('.tab')) setTimeout(vul,60);
-  });
-})();
-</script>
-<style>
-.bgAct{border-left:3px solid #1F9D55;padding:.4rem 0 .4rem .85rem;margin:.65rem 0}
-.bgAct.wacht{border-left-color:var(--geel,#FFE86B)}
-.bgAct b{display:block;font-size:.94rem}
-.bgAct span{font-size:.86rem;color:var(--grijs,#5C646E)}
-</style>
 
 <script>
 /* Deliveryplan volgens de agile hi\u00ebrarchie: epic \u2192 feature \u2192 user story.
@@ -9740,6 +9672,130 @@ window.__BG_LOOPT__ = function(K, slug){
 .dpPlus:hover{border-color:var(--blauw,#2742D6);color:var(--blauw,#2742D6)}
 .dpWaarde{display:block;margin-top:.4rem;font-size:.75rem;color:var(--grijs,#5C646E);font-weight:600}
 .dpLeeg{border:1.5px dashed var(--lijn,#DCDFE6);border-radius:10px;padding:1rem .6rem;text-align:center;font-size:.8rem;color:var(--grijs,#5C646E)}
+</style>
+<script>
+/* Activiteit leest het deliveryplan, niet de offerte: hier staat wat er
+   werkelijk is afgevinkt. Voortgang wordt getoond als bouwblokken \u2014 \u00e9\u00e9n blok
+   per feature, breed naar rato van zijn waarde, dat opvult zodra het af is.
+   Zo zie je in \u00e9\u00e9n balk hoeveel er staat en wat dat waard is. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function euro(n){return '\u20ac '+Math.round(n).toLocaleString('nl-NL');}
+  function plan(){
+    try{return JSON.parse(localStorage.getItem('bg_plan_'+slug())||'null');}catch(e){return null;}
+  }
+
+  function vul(){
+    try{
+      var st=plan();
+      var p=document.getElementById('p-activiteit');
+      if(!p) return;
+      var K=(window.__KLANTEN__||{})[slug()];
+      if(!K) return;
+
+      if(!st||!st.features||!st.features.length){
+        p.innerHTML='<div class="kaart" style="margin-top:1rem"><h3>Wat er is opgeleverd</h3>'+
+          '<p class="sub">Zodra het deliveryplan is ingevuld en er iets is afgevinkt, staat hier wat er '+
+          'af is \u2014 in bouwblokken en in geld. Open Taken &amp; werkstromen om te beginnen.</p></div>';
+        return;
+      }
+
+      var totaal=0, af=0, blok='', af_lijst=[], volgende=null;
+      st.features.forEach(function(f){ totaal+=(f.waarde||0); if(f.af) af+=(f.waarde||0); });
+
+      st.features.slice().sort(function(a,b){
+        var sa=(a.sprint==='backlog'?99:a.sprint), sb=(b.sprint==='backlog'?99:b.sprint);
+        return sa-sb;
+      }).forEach(function(f){
+        var ep=st.epics.filter(function(e){return e.id===f.epic;})[0];
+        var idx=st.epics.indexOf(ep);
+        var breed=totaal?((f.waarde||0)/totaal*100):0;
+        blok+='<div class="acBlok e'+(idx%3)+(f.af?' af':'')+'" style="flex:'+Math.max(breed,4)+'" '+
+          'title="'+esc(f.titel)+' \u00b7 '+euro(f.waarde||0)+'">'+
+          '<span>'+esc(f.titel)+'</span></div>';
+        if(f.af){
+          var ss=st.stories.filter(function(x){return x.feature===f.id&&x.af;});
+          af_lijst.push({f:f,ss:ss,ep:ep});
+        } else if(!volgende){ volgende={f:f,ep:ep}; }
+      });
+
+      var sAf=st.stories.filter(function(x){return x.af;}).length;
+      var pct=totaal?Math.round(af/totaal*100):0;
+
+      var h='<div class="kaart" style="margin-top:1rem"><h3>Wat er is opgeleverd</h3>'+
+        '<p class="sub">Elk blok is een feature uit het deliveryplan, breed naar rato van wat het waard '+
+        'is. Vol betekent opgeleverd.</p>'+
+        '<div class="acBlokken">'+blok+'</div>'+
+        '<div class="acTel">'+
+          '<div><b>'+euro(af)+'</b>van '+euro(totaal)+' opgeleverd</div>'+
+          '<div><b>'+pct+'%</b>van de waarde</div>'+
+          '<div><b>'+af_lijst.length+' / '+st.features.length+'</b>bouwblokken af</div>'+
+          '<div><b>'+sAf+' / '+st.stories.length+'</b>user stories af</div>'+
+        '</div>';
+
+      if(af_lijst.length){
+        h+='<span class="acKopje">Opgeleverd</span>';
+        af_lijst.slice().reverse().forEach(function(r){
+          h+='<div class="acRij"><b>'+esc(r.f.titel)+'</b>'+
+            '<span>'+esc(r.ep?r.ep.titel:'')+' \u00b7 '+euro(r.f.waarde||0)+
+            (r.f.op?' \u00b7 '+esc(r.f.op):'')+'</span>'+
+            (r.ss.length?'<em>'+r.ss.length+
+              (r.ss.length===1?' user story af':' user stories af')+'</em>':'')+
+            '</div>';
+        });
+      } else {
+        h+='<p class="sub" style="margin-top:1rem">Er is nog niets afgevinkt. Zodra je in het '+
+          'deliveryplan een feature afvinkt, verschijnt hij hier met zijn waarde.</p>';
+      }
+      if(volgende){
+        h+='<div class="acVolgend"><b>Hierna: '+esc(volgende.f.titel)+'</b>'+
+          '<span>'+esc(volgende.ep?volgende.ep.titel:'')+
+          (volgende.f.op?' \u00b7 levert op: '+esc(volgende.f.op):'')+'</span></div>';
+      } else {
+        h+='<div class="acVolgend klaar"><b>Alles opgeleverd</b>'+
+          '<span>Alle bouwblokken staan. '+euro(totaal)+' aan werk afgerond.</span></div>';
+      }
+      h+='</div>';
+      p.innerHTML=h;
+    }catch(e){ console.error('[bedrijfsgeheugen] activiteit2:',e); }
+  }
+  vul();
+  setInterval(vul,900);
+  document.addEventListener('click',function(e){
+    if(e.target.closest&&e.target.closest('.tab')) setTimeout(vul,60);
+  });
+})();
+</script>
+<style>
+.acBlokken{display:flex;gap:4px;margin:1rem 0 .8rem;height:64px}
+.acBlok{position:relative;border-radius:8px;border:2px solid var(--lijn,#DCDFE6);background:#fff;
+ display:flex;align-items:flex-end;padding:.3rem;overflow:hidden;min-width:2.2rem;transition:background .25s}
+.acBlok span{font-size:.62rem;line-height:1.15;color:var(--grijs,#5C646E);
+ overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.acBlok.af span{color:#fff;font-weight:600}
+.acBlok.af.e0{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6)}
+.acBlok.af.e1{background:var(--oranje,#FF4F17);border-color:var(--oranje,#FF4F17)}
+.acBlok.af.e2{background:#1F9D55;border-color:#1F9D55}
+.acBlok.e0{border-color:#B9C2F0}
+.acBlok.e1{border-color:#FFC0A8}
+.acBlok.e2{border-color:#A9DCBC}
+.acTel{display:flex;flex-wrap:wrap;gap:1.6rem;margin:.2rem 0 .4rem;font-size:.85rem;color:var(--grijs,#5C646E)}
+.acTel b{display:block;font-size:1.3rem;color:var(--inkt,#14171A)}
+.acKopje{display:block;font-size:.68rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;
+ color:var(--grijs,#5C646E);margin:1.2rem 0 .4rem}
+.acRij{border-left:3px solid #1F9D55;padding:.4rem 0 .4rem .85rem;margin:.6rem 0}
+.acRij b{display:block;font-size:.94rem}
+.acRij span{display:block;font-size:.83rem;color:var(--grijs,#5C646E)}
+.acRij em{display:inline-block;font-style:normal;margin-top:.25rem;background:#E8F5EC;color:#1F9D55;
+ border-radius:99px;padding:.12rem .55rem;font-size:.75rem;font-weight:700}
+.acVolgend{margin-top:1.1rem;background:var(--geel,#FFE86B);border-radius:10px;padding:.75rem .9rem}
+.acVolgend.klaar{background:#E8F5EC}
+.acVolgend b{display:block;font-size:.95rem}
+.acVolgend span{display:block;font-size:.84rem;margin-top:.15rem}
 </style>
 </body>
 </html>
