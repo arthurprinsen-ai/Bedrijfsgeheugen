@@ -9182,5 +9182,71 @@ window.__BG_LOOPT__ = function(K, slug){
 .bgOp{display:inline-block;margin-top:.45rem;background:var(--geel,#FFE86B);
  border-radius:7px;padding:.24rem .55rem;font-size:.8rem;font-weight:600}
 </style>
+<script>
+/* Koppelingen, volledig op zichzelf staand.
+   Bewust niet in het omhulsel waar de andere vulmodules zitten: valt daar iets
+   om, dan blijft dit werken. Leest rechtstreeks uit __KLANTEN__ en schrijft het
+   paneel telkens opnieuw, want het portaal bouwt zijn schermen opnieuw op. */
+(function(){
+  function slug(){
+    var m = (location.search + location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m ? decodeURIComponent(m[1]).toLowerCase() : '';
+  }
+  function esc(t){ var d = document.createElement('div'); d.textContent = t == null ? '' : t; return d.innerHTML; }
+
+  function vul(){
+    try {
+      var K = (window.__KLANTEN__ || {})[slug()];
+      if (!K || !K.onderdelen) return;
+      var p = document.getElementById('p-koppelingen');
+      if (!p) return;
+      if (p.getAttribute('data-bg') === 'klaar' && p.innerHTML.length > 300) return;
+
+      var gedaan = K.voortgang || 0, rijen = [];
+      K.onderdelen.forEach(function(o){
+        if (!o.vast) return;
+        (o.koppelingen || []).forEach(function(c){ rijen.push(c); });
+      });
+      if (!rijen.length) return;
+
+      p.innerHTML =
+        '<div class="kaart" style="margin-top:1rem">' +
+        '<h3>Wat er gekoppeld wordt</h3>' +
+        '<p class="sub">Dit volgt uit je offerte. Elke koppeling hoort bij een week uit de roadmap.</p>' +
+        rijen.map(function(c){
+          var klaar = c.week <= gedaan;
+          return '<div class="bgKop">' +
+            '<span class="bgPil ' + (klaar ? 'klaar' : 'wacht') + '">' +
+              (klaar ? 'Draait' : 'Week ' + c.week) + '</span>' +
+            '<div><b>' + esc(c.naam) + '</b><span>' + esc(c.wat) + '</span></div></div>';
+        }).join('') +
+        '</div>';
+      p.setAttribute('data-bg', 'klaar');
+    } catch (e) {
+      console.error('[bedrijfsgeheugen] koppelingen:', e);
+    }
+  }
+  vul();
+  setInterval(function(){
+    var p = document.getElementById('p-koppelingen');
+    if (p && p.innerHTML.length < 300) p.removeAttribute('data-bg');
+    vul();
+  }, 700);
+  document.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('.tab')) setTimeout(vul, 60);
+  });
+})();
+</script>
+<style>
+.bgKop{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start;
+ border-bottom:1px solid var(--lijn,#DCDFE6);padding:.8rem 0}
+.bgKop:last-of-type{border-bottom:0}
+.bgKop b{display:block;font-size:.95rem}
+.bgKop span{display:block;font-size:.86rem;color:var(--grijs,#5C646E)}
+.bgPil{display:inline-block;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;
+ font-weight:700;white-space:nowrap}
+.bgPil.klaar{background:#E8F5EC;color:#1F9D55}
+.bgPil.wacht{background:#F4F5F8;color:var(--grijs,#5C646E)}
+</style>
 </body>
 </html>
