@@ -360,7 +360,11 @@ input[type=range]{min-height:34px}
 #p-overzicht .of-leeg li b{display:inline}
 
 .paneel.opslot{position:relative;min-height:26rem}
-.paneel.opslot>*:not(.slotlaag){filter:blur(6px);opacity:.35;pointer-events:none;user-select:none}
+/* Inhoud echt weghalen, niet vervagen. Achter een waas staat de data er nog
+   en is hij te selecteren — en het leest alsof het al is ingevuld. */
+.paneel.opslot>*:not(.slotlaag){display:none!important}
+.paneel.opslot{min-height:auto}
+.slotlaag{position:static;padding:0;background:none;backdrop-filter:none}
 .slotlaag{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;
  padding:3rem 1rem 1rem;background:rgba(251,250,247,.55);backdrop-filter:blur(2px);z-index:5}
 .slotkaart{background:#fff;border:1.5px solid var(--lijn,#DCDFE6);border-radius:16px;padding:1.6rem 1.7rem;
@@ -370,6 +374,7 @@ input[type=range]{min-height:34px}
 .slotkaart p{color:var(--grijs,#5C646E);font-size:.9rem;line-height:1.55;margin:0 0 .7rem}
 .slotkaart p.prijs{color:var(--inkt,#14171A);background:#F4F5F8;border-radius:10px;padding:.7rem .85rem;font-size:.88rem}
 .slotkaart p.prijs b{display:inline;font-family:inherit;font-size:inherit}
+.slotkaart p.klein{margin:.7rem 0 0;font-size:.82rem;color:var(--grijs,#5C646E)}
 </style>
 </head>
 <body>
@@ -8234,7 +8239,9 @@ body{background:var(--np-vlak)}
           '<p class="prijs"><b>Vanaf \u20ac 99 per maand.</b> Of laat het \u00e9\u00e9n keer samen invullen met een ' +
           'Frisse blik van \u20ac 2.900. Maandelijks opzegbaar, en wat er staat blijft van jou.</p>' +
           '<a class="knop" href="/contact?portaal=' + encodeURIComponent(slug) + '">Activeren</a> ' +
-          '<a class="knop licht" href="/product">Wat zit erin</a>' +
+          '<a class="knop licht" href="/product">Bekijk wat het kost</a>' +
+          '<p class="klein">Alle prijzen staan op <a href="/product">bedrijfsgeheugen.nl/product</a>. ' +
+          'Geen offerte nodig, geen gesprek vooraf \u2014 je ziet vooraf wat je betaalt.</p>' +
         '</div>';
       p.appendChild(o);
     });
