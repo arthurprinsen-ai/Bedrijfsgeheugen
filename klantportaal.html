@@ -9037,5 +9037,33 @@ window.__BG_LOOPT__ = function(K, slug){
   }, true);
 })();
 </script>
+<script>
+/* De cijfers op het overzicht verbergen zolang het portaal niet actief is.
+   Bewust in JavaScript en herhaald: het portaal bouwt het overzicht na het
+   laden opnieuw op, en een CSS-regel bleek de blokken niet te raken. */
+(function(){
+  function slug(){
+    var m = (location.search + location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m ? decodeURIComponent(m[1]).toLowerCase() : '';
+  }
+  function dicht(){
+    var K = (window.__KLANTEN__ || {})[slug()];
+    if (!K || K.actief) return;
+    var ov = document.getElementById('p-overzicht');
+    if (!ov) return;
+    Array.prototype.forEach.call(ov.children, function(kind){
+      var houden = kind.classList.contains('of-start') ||
+                   kind.classList.contains('of-leegmelding') ||
+                   kind.classList.contains('of-voortgang');
+      kind.style.display = houden ? '' : 'none';
+    });
+  }
+  dicht();
+  setInterval(dicht, 600);
+  document.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('.tab')) setTimeout(dicht, 60);
+  });
+})();
+</script>
 </body>
 </html>
