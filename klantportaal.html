@@ -8169,7 +8169,12 @@ body{background:var(--np-vlak)}
    ze niet één keer maar telkens opnieuw. Elke functie is idempotent: hij
    schrijft zijn eigen paneel volledig opnieuw. */
 window.__BGVULLERS__ = [];
-function __BGVUL__(fn){ window.__BGVULLERS__.push(fn); }
+function __BGVUL__(fn){
+  window.__BGVULLERS__.push(fn);
+  /* Geeft een lege functie terug, zodat een achtergebleven ()-aanroep
+     achter de registratie geen fout geeft en de rest blijft draaien. */
+  return function(){};
+}
 window.__BGDRAAI__ = function(){
   window.__BGVULLERS__.forEach(function(fn){ try { fn(); } catch (e) {} });
 };
