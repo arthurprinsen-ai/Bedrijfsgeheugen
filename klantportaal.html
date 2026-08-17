@@ -362,7 +362,7 @@ input[type=range]{min-height:34px}
 .paneel.opslot{position:relative;min-height:26rem}
 /* Inhoud echt weghalen, niet vervagen. Achter een waas staat de data er nog
    en is hij te selecteren — en het leest alsof het al is ingevuld. */
-.paneel.opslot>*:not(.slotlaag){display:none!important}
+.paneel.opslot>*:not(.slotlaag):not(.of-start){display:none!important}
 .paneel.opslot{min-height:auto}
 .slotlaag{position:static;padding:0;background:none;backdrop-filter:none}
 .slotlaag{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;
@@ -374,6 +374,35 @@ input[type=range]{min-height:34px}
 .slotkaart p{color:var(--grijs,#5C646E);font-size:.9rem;line-height:1.55;margin:0 0 .7rem}
 .slotkaart p.prijs{color:var(--inkt,#14171A);background:#F4F5F8;border-radius:10px;padding:.7rem .85rem;font-size:.88rem}
 .slotkaart p.prijs b{display:inline;font-family:inherit;font-size:inherit}
+
+
+.fbTop{display:inline-flex;align-items:center;gap:.35rem;background:var(--geel,#FFE86B);border:0;
+ border-radius:8px;padding:.45rem .75rem;font:inherit;font-size:.84rem;font-weight:600;
+ color:var(--inkt,#14171A);cursor:pointer;margin-right:.4rem}
+.fbTop:hover{filter:brightness(.96)}
+.fbLaag{position:fixed;inset:0;background:rgba(20,23,26,.45);display:flex;align-items:center;
+ justify-content:center;padding:1.2rem;z-index:9999}
+.fbLaag[hidden]{display:none}
+.fbKaart{background:#fff;border-radius:16px;padding:1.6rem 1.7rem;max-width:30rem;width:100%;
+ max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 24px 60px rgba(20,23,26,.22)}
+.fbKaart h3{margin:0 0 .2rem;font-family:'Bricolage Grotesque',sans-serif;font-size:1.25rem}
+.fbKaart>.sub{margin:0 0 1rem}
+.fbKaart label{display:block;font-size:.86rem;font-weight:600;margin-bottom:.75rem}
+.fbKaart label .sub{font-weight:400}
+.fbKaart select,.fbKaart textarea,.fbKaart input{width:100%;margin-top:.25rem;font:inherit;
+ font-size:.92rem;padding:.55rem .7rem;border:1.5px solid var(--lijn,#DCDFE6);border-radius:9px;background:#fff}
+.fbKaart textarea{resize:vertical}
+.fbSluit{position:absolute;top:.7rem;right:.9rem;border:0;background:none;font-size:1.5rem;
+ line-height:1;color:var(--grijs,#5C646E);cursor:pointer}
+.fbRij{display:flex;gap:.6rem;margin-top:.4rem}
+.fbMelding{margin:.8rem 0 0;font-size:.88rem;color:var(--grijs,#5C646E)}
+.fbMelding.goed{color:#1F9D55;font-weight:600}
+.fbMelding.fout{color:#C0392B;font-weight:600}
+.of-klaarstaat{background:var(--geel,#FFE86B);border-radius:14px;padding:1.2rem 1.35rem;margin:1rem 0 0}
+.of-klaarstaat .of-vlag{display:inline-block;font-size:.66rem;letter-spacing:.11em;font-weight:700;
+ background:var(--inkt,#14171A);color:#fff;border-radius:6px;padding:.22rem .5rem;margin-bottom:.55rem}
+.of-klaarstaat b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.25rem;margin-bottom:.3rem}
+.of-klaarstaat p{margin:0 0 .9rem;font-size:.92rem;line-height:1.55}
 .slotkaart p.klein{margin:.7rem 0 0;font-size:.82rem;color:var(--grijs,#5C646E)}
 </style>
 </head>
@@ -8143,10 +8172,13 @@ body{background:var(--np-vlak)}
     d.className = 'kaart of-start';
     d.innerHTML =
       '<h3>Welkom, ' + esc(K.naam) + '</h3>' +
-      '<p class="sub">Dit portaal is voor jullie ingericht. E\u00e9n onderdeel is al gevuld: ' +
-      'jullie offerte, met de aanpak, de sprints per week en de roadmap.</p>' +
-      '<p style="margin:.9rem 0 0"><button class="knop" type="button" data-ganaar="offerte">' +
-      'Bekijk je offerte \u2192</button></p>' +
+      '<div class="of-klaarstaat">' +
+        '<span class="of-vlag">KLAARGEZET VOOR JULLIE</span>' +
+        '<b>Jullie offerte staat klaar</b>' +
+        '<p>Met de aanpak, de sprints per week, de user stories en de roadmap. ' +
+        'Zet onderdelen aan en uit en de prijs beweegt mee.</p>' +
+        '<button class="knop" type="button" data-ganaar="offerte">Bekijk je offerte \u2192</button>' +
+      '</div>' +
       '<div class="of-leeg">' +
         '<b>De rest staat nog leeg, en dat is met opzet.</b>' +
         '<p>De schermen voor cijfers, mensen, strategie, due diligence en de roadmap van je hele bedrijf ' +
@@ -8176,7 +8208,7 @@ body{background:var(--np-vlak)}
      De klant ziet dus w\u00e9l wat een scherm doet, maar niet wat erin staat. */
   (function(){
     if (!K || K.actief) return;
-    var VRIJ = { offerte: 1 };
+    var VRIJ = { overzicht: 1, offerte: 1 };
     /* Het Overzicht is NIET vrij: daar staan de KPI's, de scanuitslag en de
        kosten van handwerk. Die komen uit localStorage en gaan dus over wie er
        het laatst op dit apparaat is ingelogd. We verbergen ze volledig en
@@ -8244,6 +8276,103 @@ body{background:var(--np-vlak)}
           'Geen offerte nodig, geen gesprek vooraf \u2014 je ziet vooraf wat je betaalt.</p>' +
         '</div>';
       p.appendChild(o);
+    });
+  })();
+
+
+  /* Feedback bovenin, niet als zwevende knop rechtsonder — daar botst hij met
+     de WhatsApp-widget. Schrijft naar BG 29, dat het in Notion zet. */
+  (function(){
+    var HOOK = 'https://hook.eu1.make.com/l744eyrlaic9y4rqubj8mjzt6k353aw9';
+    var SCHERM = { overzicht:'Overzicht', offerte:'Offerte', profiel:'Profiel', dataai:'Data en AI',
+      cijfers:'Cijfers', waarde:'Waarde', mensen:'Mensen', branche:'Branche', onderzoek:'Onderzoek',
+      beleid:'Compliance', strategie:'Strategie', canvassen:'Canvassen', eindconclusie:'Eindconclusie',
+      advies:'Advies', roadmap:'Roadmap' };
+
+    var oud = document.getElementById('fbKnop');
+    if (oud) oud.remove();
+
+    var acties = document.querySelector('.kopacties');
+    if (!acties) return;
+    var knop = document.createElement('button');
+    knop.className = 'fbTop';
+    knop.type = 'button';
+    knop.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5a8.4 8.4 0 0 1-.9-3.9 8.4 8.4 0 0 1 8.4-9 8.4 8.4 0 0 1 8.6 8.4z"/></svg>Feedback';
+    acties.insertBefore(knop, acties.firstChild);
+
+    var laag = document.createElement('div');
+    laag.className = 'fbLaag';
+    laag.hidden = true;
+    laag.innerHTML =
+      '<div class="fbKaart" role="dialog" aria-modal="true" aria-labelledby="fbTitel">' +
+        '<button class="fbSluit" type="button" aria-label="Sluiten">&times;</button>' +
+        '<h3 id="fbTitel">Wat kan er beter?</h3>' +
+        '<p class="sub">Alles helpt — een halve zin is genoeg. We lezen het allemaal.</p>' +
+        '<label>Wat is het<select id="fbSoort">' +
+          '<option>Onduidelijk</option><option>Mist iets</option><option>Werkt niet</option>' +
+          '<option>Compliment</option><option>Anders</option></select></label>' +
+        '<label>Waar gaat het over<select id="fbOnderdeel"></select></label>' +
+        '<label>Vertel het maar<textarea id="fbTekst" rows="4" ' +
+          'placeholder="Bijvoorbeeld: ik zoek de prijzen maar vind ze niet."></textarea></label>' +
+        '<label>Cijfer voor het portaal, van 1 tot 10 <span class="sub">(mag leeg)</span>' +
+          '<input type="number" id="fbCijfer" min="1" max="10" step="1"></label>' +
+        '<label>Je e-mail <span class="sub">(alleen als je antwoord wilt)</span>' +
+          '<input type="email" id="fbMail" placeholder="jij@bedrijf.nl"></label>' +
+        '<div class="fbRij"><button class="knop" type="button" id="fbStuur">Versturen</button>' +
+        '<button class="knop licht" type="button" id="fbAnnuleer">Annuleren</button></div>' +
+        '<p class="fbMelding" id="fbMelding" hidden></p>' +
+      '</div>';
+    document.body.appendChild(laag);
+
+    var sel = laag.querySelector('#fbOnderdeel');
+    Object.keys(SCHERM).forEach(function(k){
+      var o = document.createElement('option'); o.value = SCHERM[k]; o.textContent = SCHERM[k];
+      sel.appendChild(o);
+    });
+    var alg = document.createElement('option'); alg.value = 'Algemeen'; alg.textContent = 'Algemeen';
+    sel.appendChild(alg);
+
+    function open(){
+      var actief = document.querySelector('.paneel.aan');
+      var naam = actief ? actief.id.replace(/^p-/, '') : '';
+      sel.value = SCHERM[naam] || 'Algemeen';
+      laag.hidden = false;
+      laag.querySelector('#fbTekst').focus();
+    }
+    function sluit(){ laag.hidden = true; }
+
+    knop.addEventListener('click', open);
+    laag.querySelector('.fbSluit').addEventListener('click', sluit);
+    laag.querySelector('#fbAnnuleer').addEventListener('click', sluit);
+    laag.addEventListener('click', function(e){ if (e.target === laag) sluit(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !laag.hidden) sluit(); });
+
+    laag.querySelector('#fbStuur').addEventListener('click', function(){
+      var tekst = laag.querySelector('#fbTekst').value.trim();
+      var m = laag.querySelector('#fbMelding');
+      if (tekst.length < 3) { laag.querySelector('#fbTekst').focus(); return; }
+      m.hidden = false; m.textContent = 'Bezig met versturen…'; m.className = 'fbMelding';
+      fetch(HOOK, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          feedback: tekst,
+          soort: laag.querySelector('#fbSoort').value,
+          onderdeel: sel.value,
+          cijfer: laag.querySelector('#fbCijfer').value || '',
+          mail: laag.querySelector('#fbMail').value.trim(),
+          bedrijf: (K && K.naam) || slug || 'onbekend'
+        })
+      }).then(function(){
+        m.textContent = 'Dank je. We hebben het binnen.';
+        m.className = 'fbMelding goed';
+        laag.querySelector('#fbTekst').value = '';
+        setTimeout(sluit, 1600);
+      }).catch(function(){
+        m.textContent = 'Versturen lukte niet. Mail het naar arthur@bedrijfsgeheugen.nl.';
+        m.className = 'fbMelding fout';
+      });
     });
   })();
 
