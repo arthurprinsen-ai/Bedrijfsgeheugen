@@ -404,6 +404,24 @@ input[type=range]{min-height:34px}
    inloggen opnieuw op, en dan kwamen de cijfers terug. */
 body.bg-dicht #p-overzicht > *:not(.of-start):not(.of-leegmelding):not(.of-voortgang){display:none!important}
 
+
+.pjRij{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start;border-bottom:1px solid var(--lijn,#DCDFE6);padding:.75rem 0}
+.pjRij:last-of-type{border-bottom:0}
+.pjRij b{display:block;font-size:.95rem}
+.pjRij span{font-size:.86rem;color:var(--grijs,#5C646E)}
+.pjBedrag{font-weight:700;font-size:.95rem;min-width:5.5rem}
+.pjTot{display:flex;align-items:baseline;gap:.6rem;border-top:2px solid var(--inkt,#14171A);margin-top:.6rem;padding-top:.7rem}
+.pjTot span{font-weight:600}.pjTot b{font-size:1.35rem;margin-left:auto}.pjTot small{color:var(--grijs,#5C646E)}
+.htk{margin-top:1rem;border:2px solid var(--blauw,#2742D6)!important}
+.htk label{display:block;font-size:.88rem;font-weight:600;margin:.8rem 0 0}
+.htk input[type=text]{width:100%;max-width:22rem;margin-top:.25rem;font:inherit;padding:.55rem .7rem;border:1.5px solid var(--lijn,#DCDFE6);border-radius:9px}
+.htkVink{display:flex!important;gap:.5rem;align-items:flex-start;font-weight:400!important;font-size:.88rem;margin:1rem 0 1.1rem!important}
+.htkVink input{margin-top:.2rem}
+.htkMeld{margin:.8rem 0 0;font-size:.88rem;color:var(--grijs,#5C646E)}
+.htkMeld.goed{color:#1F9D55;font-weight:600}.htkMeld.fout{color:#C0392B;font-weight:600}
+.htkKlaar{background:#E8F5EC;border-radius:12px;padding:1rem 1.15rem}
+.htkKlaar b{display:block;font-size:1.05rem;color:#1F9D55;margin-bottom:.2rem}
+.htkKlaar p{margin:0 0 .4rem;font-size:.92rem}
 .vgBalk{height:8px;border-radius:99px;background:var(--lijn,#DCDFE6);margin:.7rem 0;overflow:hidden}
 .vgBalk div{height:100%;background:var(--blauw,#2742D6);border-radius:99px}
 .vgVolgend{margin:.7rem 0 0;background:var(--geel,#FFE86B);border-radius:9px;padding:.6rem .8rem;font-size:.9rem}
@@ -8052,7 +8070,7 @@ body{background:var(--np-vlak)}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',tekenEnOpschonen); else tekenEnOpschonen();
 })();
 </script>
-<script>window.__KLANTEN__ = {"ijsselmonde": {"naam": "IJsselmonde", "logo": "", "titel": "Analytics en een Power BI-dashboard waar vier rollen mee sturen", "geldig": "17 september 2026", "onderdelen": [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}], "domein": "", "actief": false, "emails": ["arthur.prinsen@gmail.com", "arthur@bedrijfsgeheugen.nl"], "voortgang": 0, "gestart": ""}, "demo": {"naam": "Voorbeeld BV", "logo": "", "titel": "Analytics en een Power BI-dashboard waar vier rollen mee sturen", "geldig": "17 september 2026", "onderdelen": [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}], "domein": "bedrijfsgeheugen.nl", "actief": true, "emails": [], "voortgang": 3, "gestart": "2026-07-27"}};</script>
+<script>window.__KLANTEN__ = {"ijsselmonde": {"naam": "IJsselmonde", "logo": "", "titel": "Analytics en een Power BI-dashboard waar vier rollen mee sturen", "geldig": "17 september 2026", "onderdelen": [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}], "koppelingen": [{"naam": "Google Analytics 4", "wat": "Meet wat er op de site gebeurt", "week": 1}, {"naam": "Google Tag Manager", "wat": "Zet de meetpunten zonder code te wijzigen", "week": 1}, {"naam": "BigQuery", "wat": "Bewaart de ruwe gebeurtenissen, elke dag", "week": 2}], "documenten": [{"naam": "Meetplan", "week": 1}, {"naam": "Overdracht en uitleg", "week": 2}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}], "koppelingen": [{"naam": "Power BI Service", "wat": "Ververst het dashboard automatisch", "week": 5}, {"naam": "Interne bestanden", "wat": "Afval, energie, wagenpark, verzuim en veiligheid", "week": 3}, {"naam": "SharePoint of OneDrive", "wat": "Waar die bestanden staan, zodat er geen gateway nodig is", "week": 3}], "documenten": [{"naam": "Oordeel over je databestanden", "week": 3}, {"naam": "Definitielijst ter goedkeuring", "week": 4}, {"naam": "Opleverdocument dashboard", "week": 5}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}], "domein": "", "actief": false, "emails": ["arthur.prinsen@gmail.com", "arthur@bedrijfsgeheugen.nl"], "voortgang": 0, "gestart": "", "getekend": null}, "demo": {"naam": "Voorbeeld BV", "logo": "", "titel": "Analytics en een Power BI-dashboard waar vier rollen mee sturen", "geldig": "17 september 2026", "onderdelen": [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}], "koppelingen": [{"naam": "Google Analytics 4", "wat": "Meet wat er op de site gebeurt", "week": 1}, {"naam": "Google Tag Manager", "wat": "Zet de meetpunten zonder code te wijzigen", "week": 1}, {"naam": "BigQuery", "wat": "Bewaart de ruwe gebeurtenissen, elke dag", "week": 2}], "documenten": [{"naam": "Meetplan", "week": 1}, {"naam": "Overdracht en uitleg", "week": 2}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}], "koppelingen": [{"naam": "Power BI Service", "wat": "Ververst het dashboard automatisch", "week": 5}, {"naam": "Interne bestanden", "wat": "Afval, energie, wagenpark, verzuim en veiligheid", "week": 3}, {"naam": "SharePoint of OneDrive", "wat": "Waar die bestanden staan, zodat er geen gateway nodig is", "week": 3}], "documenten": [{"naam": "Oordeel over je databestanden", "week": 3}, {"naam": "Definitielijst ter goedkeuring", "week": 4}, {"naam": "Opleverdocument dashboard", "week": 5}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}], "domein": "bedrijfsgeheugen.nl", "actief": true, "emails": [], "voortgang": 3, "gestart": "2026-07-27", "getekend": {"naam": "Sanne de Vries", "functie": "directeur", "datum": "2026-07-24"}}};</script>
 <script>
 /* Toegangsslot. Twee gaten die hiermee dichtgaan:
    1. "Verder zonder inloggen" liet iedereen binnen, ook op een echt klantportaal.
@@ -8308,7 +8326,7 @@ body{background:var(--np-vlak)}
      De klant ziet dus w\u00e9l wat een scherm doet, maar niet wat erin staat. */
   (function(){
     if (!K || K.actief) return;
-    var VRIJ = { overzicht: 1, offerte: 1, werkstromen: 1, activiteit: 1 };
+    var VRIJ = { overzicht: 1, offerte: 1, werkstromen: 1, activiteit: 1, koppelingen: 1, documenten: 1, uren: 1 };
     /* Het Overzicht is NIET vrij: daar staan de KPI's, de scanuitslag en de
        kosten van handwerk. Die komen uit localStorage en gaan dus over wie er
        het laatst op dit apparaat is ingelogd. We verbergen ze volledig en
@@ -8557,6 +8575,132 @@ body{background:var(--np-vlak)}
             }).join('')
           : '<p class="sub">Nog niets — het werk is nog niet begonnen. Zodra de eerste week klaar is ' +
             'staat hier wat je hebt gekregen, met de datum erbij.</p>') + '</div>';
+    }
+  })();
+
+
+  /* De offerte verdeelt zich over het project: koppelingen, documenten en
+     termijnen komen uit dezelfde bron als de taken. En de handtekening zet het
+     in gang — één keer tekenen, en alles staat er ingevuld. */
+  (function(){
+    if (!K || !K.onderdelen) return;
+    var HOOK = 'https://hook.eu1.make.com/783x2glfestd2c8hfqxlrvsrgefknc45';
+    var vast = K.onderdelen.filter(function(o){ return o.vast; });
+    var gedaan = K.voortgang || 0;
+    var getekend = K.getekend;
+    try { var eigen = JSON.parse(localStorage.getItem('bg_akkoord_' + slug) || 'null');
+          if (eigen) getekend = eigen; } catch (e) {}
+
+    function pil(week){
+      var st = week <= gedaan ? 'klaar' : (week === gedaan + 1 ? 'loopt' : 'wacht');
+      var w = { klaar: 'Klaar', loopt: 'Deze week', wacht: 'Week ' + week };
+      return '<span class="vgPil ' + st + '">' + w[st] + '</span>';
+    }
+
+    /* koppelingen */
+    var kp = document.getElementById('p-koppelingen');
+    if (kp) {
+      var rijen = [];
+      vast.forEach(function(o){ (o.koppelingen || []).forEach(function(c){ rijen.push(c); }); });
+      kp.innerHTML = '<div class="kaart" style="margin-top:1rem"><h3>Wat er gekoppeld wordt</h3>' +
+        '<p class="sub">Dit volgt uit je offerte. Elke koppeling hoort bij een week uit de roadmap.</p>' +
+        rijen.map(function(c){
+          return '<div class="pjRij">' + pil(c.week) + '<div><b>' + esc(c.naam) + '</b>' +
+            '<span>' + esc(c.wat) + '</span></div></div>';
+        }).join('') + '</div>';
+    }
+
+    /* documenten */
+    var dc = document.getElementById('p-documenten');
+    if (dc) {
+      var docs = [];
+      vast.forEach(function(o){ (o.documenten || []).forEach(function(d){ docs.push(d); }); });
+      dc.innerHTML = '<div class="kaart" style="margin-top:1rem"><h3>Wat je krijgt, en wanneer</h3>' +
+        '<p class="sub">Elk document komt uit een week van de roadmap. Zodra het klaar is, staat het hier.</p>' +
+        docs.map(function(d){
+          return '<div class="pjRij">' + pil(d.week) + '<div><b>' + esc(d.naam) + '</b>' +
+            '<span>' + (d.week <= gedaan ? 'Opgeleverd' : 'Komt in week ' + d.week) + '</span></div></div>';
+        }).join('') + '</div>';
+    }
+
+    /* termijnen in plaats van uren */
+    var ur = document.getElementById('p-uren');
+    if (ur) {
+      var totaal = 0; vast.forEach(function(o){ totaal += o.prijs; });
+      var t = [];
+      vast.forEach(function(o){
+        var laatste = 0; o.sprints.forEach(function(){ laatste++; });
+        t.push({ naam: o.titel, bedrag: o.prijs });
+      });
+      ur.innerHTML = '<div class="kaart" style="margin-top:1rem"><h3>Wat je betaalt, en wanneer</h3>' +
+        '<p class="sub">Vaste prijs per onderdeel. Geen uren, geen nacalculatie. ' +
+        'Je betaalt na oplevering van dat onderdeel.</p>' +
+        t.map(function(r){
+          return '<div class="pjRij"><span class="pjBedrag">\u20ac ' + r.bedrag.toLocaleString('nl-NL') +
+            '</span><div><b>' + esc(r.naam) + '</b><span>Na oplevering</span></div></div>';
+        }).join('') +
+        '<div class="pjTot"><span>Totaal</span><b>\u20ac ' + totaal.toLocaleString('nl-NL') +
+        '</b><small>excl. btw</small></div></div>';
+    }
+
+    /* handtekening op de offerte */
+    var of = document.getElementById('p-offerte');
+    if (of) {
+      var blok = document.createElement('div');
+      blok.className = 'kaart htk';
+      blok.innerHTML = getekend
+        ? '<div class="htkKlaar"><b>Akkoord gegeven</b>' +
+          '<p>' + esc(getekend.naam) + (getekend.functie ? ', ' + esc(getekend.functie) : '') +
+          ' · ' + esc(getekend.datum) + '</p>' +
+          '<p class="sub">Sindsdien staat het werk in je project: de koppelingen, de taken, ' +
+          'de documenten en de termijnen. Er is niets overgetypt.</p></div>'
+        : '<h3>Akkoord geven</h3>' +
+          '<p class="sub">Zet je naam eronder en het hele project staat klaar: de weken als taken, ' +
+          'de koppelingen die we maken, de documenten die je krijgt en wat je per onderdeel betaalt. ' +
+          'Je hoeft niets in te vullen — het staat er al.</p>' +
+          '<label>Je naam<input type="text" id="htkNaam" placeholder="Voor- en achternaam"></label>' +
+          '<label>Je functie<input type="text" id="htkFunctie" placeholder="Bijvoorbeeld: directeur"></label>' +
+          '<label class="htkVink"><input type="checkbox" id="htkAkkoord">' +
+          'Ik geef akkoord op de gekozen onderdelen en de vaste prijs die hierboven staat.</label>' +
+          '<button class="knop" type="button" id="htkKnop">Zet je handtekening</button>' +
+          '<p class="htkMeld" id="htkMeld" hidden></p>';
+      of.appendChild(blok);
+
+      var kn = blok.querySelector('#htkKnop');
+      if (kn) kn.addEventListener('click', function(){
+        var naam = blok.querySelector('#htkNaam').value.trim();
+        var func = blok.querySelector('#htkFunctie').value.trim();
+        var vink = blok.querySelector('#htkAkkoord').checked;
+        var m = blok.querySelector('#htkMeld');
+        m.hidden = false;
+        if (naam.length < 3 || !vink) {
+          m.className = 'htkMeld fout';
+          m.textContent = 'Vul je naam in en vink het vakje aan.';
+          return;
+        }
+        m.className = 'htkMeld'; m.textContent = 'Bezig\u2026';
+        var keuze = [];
+        document.querySelectorAll('#p-offerte .of-rij[data-aan="1"]').forEach(function(el){
+          var t = el.querySelector('h4');
+          if (t) keuze.push(t.textContent);
+        });
+        var datum = new Date().toISOString().slice(0, 10);
+        fetch(HOOK, { method:'POST', headers:{'content-type':'application/json'},
+          body: JSON.stringify({ soort:'Akkoord offerte', klant:(K.naam||slug), naam:naam,
+            functie:func, datum:datum, onderdelen:keuze.join(' · '),
+            mail:(document.getElementById('wie')||{}).textContent||'' }) })
+          .then(function(){
+            try { localStorage.setItem('bg_akkoord_' + slug,
+              JSON.stringify({naam:naam, functie:func, datum:datum})); } catch(e){}
+            m.className = 'htkMeld goed';
+            m.textContent = 'Getekend. Je project staat klaar — we verversen even.';
+            setTimeout(function(){ location.reload(); }, 1400);
+          })
+          .catch(function(){
+            m.className = 'htkMeld fout';
+            m.textContent = 'Versturen lukte niet. Mail arthur@bedrijfsgeheugen.nl.';
+          });
+      });
     }
   })();
 
