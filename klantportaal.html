@@ -10022,7 +10022,9 @@ window.__BG_LOOPT__ = function(K, slug){
   }
 
   /* ---------- tekenen ---------- */
+  var BEZIG=false;   /* pauzeert het hertekenen tijdens slepen of kiezen */
   function teken(){
+    if(BEZIG) return;
     var g=gegevens();
     if(!g) return;
     var ov=document.getElementById('p-overzicht');
@@ -10055,10 +10057,10 @@ window.__BG_LOOPT__ = function(K, slug){
     var sleep=null;
     Array.prototype.forEach.call(w.querySelectorAll('.dsKaart'),function(el){
       el.addEventListener('dragstart',function(e){
-        sleep=el.dataset.k; el.classList.add('sleept');
+        BEZIG=true; sleep=el.dataset.k; el.classList.add('sleept');
         try{e.dataTransfer.setData('text/plain',sleep);}catch(x){}
       });
-      el.addEventListener('dragend',function(){ el.classList.remove('sleept'); });
+      el.addEventListener('dragend',function(){ BEZIG=false; el.classList.remove('sleept'); });
       el.addEventListener('dragover',function(e){ e.preventDefault(); el.classList.add('over'); });
       el.addEventListener('dragleave',function(){ el.classList.remove('over'); });
       el.addEventListener('drop',function(e){
@@ -10069,14 +10071,16 @@ window.__BG_LOOPT__ = function(K, slug){
         o.splice(o.indexOf(sleep),1);
         o.splice(o.indexOf(doel),0,sleep);
         vk.orde=o; jsonZet('bg_dash_'+slug(),vk);
+        BEZIG=false;
         var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
         teken();
       });
     });
     var knop=w.querySelector('.dsInstel'), kiezer=w.querySelector('.dsKiezer');
-    if(knop) knop.addEventListener('click',function(){
-      if(kiezer.hasAttribute('hidden')) kiezer.removeAttribute('hidden');
-      else kiezer.setAttribute('hidden','');
+    if(knop) knop.addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      if(kiezer.hasAttribute('hidden')){ kiezer.removeAttribute('hidden'); BEZIG=true; }
+      else { kiezer.setAttribute('hidden',''); BEZIG=false; }
     });
     Array.prototype.forEach.call(w.querySelectorAll('[data-kies]'),function(c){
       c.addEventListener('change',function(){
@@ -10085,7 +10089,8 @@ window.__BG_LOOPT__ = function(K, slug){
         if(!c.checked) vk.uit.push(id);
         jsonZet('bg_dash_'+slug(),vk);
         var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
-        teken();
+        BEZIG=false; teken(); BEZIG=true;
+        var k2=document.querySelector('.dsKiezer'); if(k2) k2.removeAttribute('hidden');
       });
     });
     Array.prototype.forEach.call(w.querySelectorAll('[data-naar]'),function(b){
