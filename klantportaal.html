@@ -10267,5 +10267,63 @@ window.__BG_LOOPT__ = function(K, slug){
   setInterval(vul,1100);
 })();
 </script>
+<script>
+/* Derde kaart op het overzicht: de AI-scan. Die bewaart zijn taken in
+   bg_aiscan; per taak staat er hoe vaak hij voorkomt en hoeveel uur hij kost.
+   Zelfde regel als de andere scankaarten: alleen bij een actief portaal, want
+   deze gegevens komen uit de browser van degene die is ingelogd. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function euro(n){return '\u20ac '+Math.round(n).toLocaleString('nl-NL');}
+  function jl(k,t){try{return JSON.parse(localStorage.getItem(k)||'null')||t;}catch(e){return t;}}
+
+  var HERH={'zelden':0.15,'soms':0.3,'vaak':0.5,'altijd':0.7};
+
+  function vul(){
+    try{
+      var K=(window.__KLANTEN__||{})[slug()];
+      if(!K||!K.actief) return;
+      var wrap=document.querySelector('.dsRooster');
+      if(!wrap||wrap.querySelector('[data-k="aiscan"]')) return;
+
+      var taken=jl('bg_aiscan',[]);
+      if(!taken.length) return;
+
+      var uren=0, kansen=0;
+      taken.forEach(function(t){
+        var u=+t[2]||0, h=HERH[t[3]]||0.3;
+        uren+=u; if(h>=0.5) kansen++;
+      });
+      var perJaar=uren*46;
+      var doel=(function(){try{return localStorage.getItem('bg_scan_doel')||'';}catch(e){return '';}})();
+
+      var d=document.createElement('div');
+      d.className='dsKaart';
+      d.setAttribute('data-k','aiscan');
+      d.innerHTML='<div class="dsGreep">\u2237</div><h4>Je AI-scan</h4>'+
+        '<div class="dsGroot">'+taken.length+' <small>taken in beeld</small></div>'+
+        '<p class="dsSub">samen ongeveer '+Math.round(perJaar)+' uur per jaar'+
+        (kansen?' \u00b7 '+kansen+(kansen===1?' kans die eruit springt':' kansen die eruit springen'):'')+
+        (doel?' \u00b7 doel: '+esc(doel):'')+'</p>'+
+        '<button class="dsActie" data-naar="aiscan"><b>Bekijk de kansenkaart</b>'+
+        '<span>Waar tijd of geld te winnen is</span></button>';
+      wrap.appendChild(d);
+
+      var b=d.querySelector('[data-naar]');
+      b.addEventListener('click',function(){
+        var t=document.querySelector('.tab[data-p="aiscan"]');
+        if(t) t.click();
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    }catch(e){ console.error('[bedrijfsgeheugen] aiscankaart:',e); }
+  }
+  vul();
+  setInterval(vul,1100);
+})();
+</script>
 </body>
 </html>
