@@ -8363,9 +8363,12 @@ window.__BG_LOOPT__ = function(K, slug){
    geen ingrepen in S, alleen lezen uit KLANTEN en schrijven in #p-offerte. */
 (function(){
   var KLANTEN = window.__KLANTEN__ || {};
-  var paneel = document.getElementById('p-offerte');
   var merk = document.getElementById('klantMerk');
-  if (!paneel) return;
+  /* Het paneel wordt door het portaal aangemaakt, dus het bestaat bij het laden
+     nog niet. Niet afbreken maar telkens opnieuw opzoeken — anders worden de
+     registraties hieronder nooit uitgevoerd en blijft alles leeg. */
+  function paneelNu(){ return document.getElementById('p-offerte'); }
+  var paneel = paneelNu();
 
   var slug = (new URLSearchParams(location.search).get('klant') || '').toLowerCase();
   var K = KLANTEN[slug];
@@ -8384,6 +8387,7 @@ window.__BG_LOOPT__ = function(K, slug){
   }
 
   if (!K || !K.onderdelen) {
+    var paneel = paneelNu(); if (!paneel) return;
     paneel.innerHTML = '<div class="kaart" style="margin-top:1rem">' +
       '<h3>Nog geen offerte</h3><p class="sub">Zodra er een voorstel voor je klaarstaat, ' +
       'vind je het hier: de onderdelen, de sprints per week en de roadmap.</p></div>';
