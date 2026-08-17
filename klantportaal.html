@@ -290,6 +290,67 @@ input[type=range]{min-height:34px}
 .tab-aiscan input[type=text],.tab-aiscan td input:not([type=number]){width:100%}
 .as-weg{padding:.2rem .55rem;line-height:1}
 </style>
+
+<style>
+/* ── Offerte in het portaal ─────────────────────────────────────────────
+   Puur toevoegend: alle selectors beginnen met #p-offerte of .klantmerk,
+   zodat er niets aan het bestaande portaal verandert.               */
+.klantmerk{display:inline-flex;align-items:center;gap:.5rem;margin-left:.9rem;padding-left:.9rem;
+ border-left:1px solid var(--lijn,#DCDFE6);font-size:.9rem;font-weight:600;color:var(--inkt,#14171A)}
+.klantmerk img{height:24px;width:auto;display:block;border-radius:4px}
+.klantmerk .init{width:26px;height:26px;border-radius:6px;background:var(--geel,#FFE86B);
+ display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;letter-spacing:.02em}
+@media(max-width:720px){.klantmerk{margin-left:.5rem;padding-left:.5rem;font-size:.82rem}.klantmerk .sitenaam{display:none}}
+
+#p-offerte .of-lint{background:var(--inkt,#14171A);color:#fff;border-radius:14px;padding:1.1rem 1.3rem;
+ margin:1rem 0 1.4rem;display:flex;flex-wrap:wrap;gap:1.2rem;align-items:center;justify-content:space-between}
+#p-offerte .of-lint b{display:block;font-size:1.05rem}
+#p-offerte .of-lint .sub2{color:#C8CBD2;font-size:.84rem}
+#p-offerte .of-som{font-size:1.8rem;font-weight:700;line-height:1;white-space:nowrap}
+#p-offerte .of-som small{display:block;font-size:.65rem;font-weight:400;color:#C8CBD2;letter-spacing:.05em;margin-top:.25rem}
+#p-offerte .of-klaar{font-size:1rem;font-weight:700;color:var(--geel,#FFE86B)}
+#p-offerte .of-rij{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:start;
+ border:1.5px solid var(--lijn,#DCDFE6);border-radius:12px;padding:1rem 1.15rem;margin-bottom:.65rem;background:#fff}
+#p-offerte .of-rij[data-aan="1"]{border-color:var(--blauw,#2742D6)}
+#p-offerte .of-rij[data-vast="1"]{background:#F4F5F8}
+#p-offerte .of-vink{width:23px;height:23px;border:2px solid var(--lijn,#DCDFE6);border-radius:7px;background:#fff;
+ cursor:pointer;flex:none;position:relative;margin-top:.15rem}
+#p-offerte .of-rij[data-aan="1"] .of-vink{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6)}
+#p-offerte .of-vink::after{content:"";position:absolute;left:6.5px;top:3px;width:6px;height:10px;
+ border:solid #fff;border-width:0 2.4px 2.4px 0;transform:rotate(45deg);opacity:0}
+#p-offerte .of-rij[data-aan="1"] .of-vink::after{opacity:1}
+#p-offerte .of-rij[data-vast="1"] .of-vink{cursor:default;background:var(--inkt,#14171A);border-color:var(--inkt,#14171A)}
+#p-offerte .of-rij h4{margin:0 0 .2rem;font-size:1rem}
+#p-offerte .of-rij p{margin:0;color:var(--grijs,#5C646E);font-size:.89rem;line-height:1.5}
+#p-offerte .of-prijs{font-weight:700;font-size:1.1rem;white-space:nowrap;text-align:right}
+#p-offerte .of-duur{display:block;font-weight:400;font-size:.75rem;color:var(--grijs,#5C646E);margin-top:.15rem}
+#p-offerte .of-meer{margin-top:.55rem;border:0;background:none;padding:0;font:inherit;font-size:.83rem;
+ color:var(--blauw,#2742D6);cursor:pointer;text-decoration:underline}
+#p-offerte .of-uit{margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--lijn,#DCDFE6)}
+#p-offerte .of-story{border-left:3px solid var(--geel,#FFE86B);padding:.15rem 0 .15rem .8rem;margin:.5rem 0;
+ font-size:.87rem;line-height:1.55}
+#p-offerte .of-kopje{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grijs,#5C646E);
+ margin:.85rem 0 .35rem;display:block;font-weight:600}
+#p-offerte .of-lijst{margin:.2rem 0 0;padding-left:1.1rem;font-size:.87rem;color:var(--grijs,#5C646E);line-height:1.6}
+#p-offerte .of-sprint{display:grid;grid-template-columns:60px 1fr;gap:.9rem;align-items:start;
+ border:1.5px solid var(--lijn,#DCDFE6);border-radius:12px;padding:.9rem 1.05rem;background:#fff;margin-bottom:.55rem}
+#p-offerte .of-sprint .wk{font-weight:700;font-size:.7rem;text-align:center;background:var(--inkt,#14171A);
+ color:#fff;border-radius:8px;padding:.35rem .2rem;line-height:1.25}
+#p-offerte .of-sprint .wk i{display:block;font-style:normal;font-size:1.1rem}
+#p-offerte .of-sprint h4{margin:0 0 .2rem;font-size:.96rem}
+#p-offerte .of-op{display:inline-block;margin-top:.45rem;background:var(--geel,#FFE86B);border-radius:7px;
+ padding:.26rem .55rem;font-size:.81rem;font-weight:600}
+#p-offerte .of-tel{display:flex;gap:2rem;flex-wrap:wrap;margin:1rem 0 0;font-size:.85rem;color:var(--grijs,#5C646E)}
+#p-offerte .of-tel b{display:block;font-size:1.3rem;color:var(--inkt,#14171A)}
+#p-offerte .of-let{background:var(--geel,#FFE86B);border-radius:12px;padding:1rem 1.2rem;margin:1.4rem 0;
+ font-size:.93rem;line-height:1.6}
+#p-offerte .of-let b{display:block;margin-bottom:.2rem}
+@media(max-width:640px){
+ #p-offerte .of-rij{grid-template-columns:auto 1fr;gap:.75rem}
+ #p-offerte .of-prijs{grid-column:2;text-align:left;margin-top:.4rem}
+ #p-offerte .of-sprint{grid-template-columns:50px 1fr;gap:.65rem}
+}
+</style>
 </head>
 <body>
 
@@ -308,7 +369,7 @@ input[type=range]{min-height:34px}
 <button id="fbKnop" hidden>Feedback geven</button>
 <div id="portaal" hidden>
   <div class="balk">
-    <div class="merk"><a class="logo" href="/"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 4h28a6 6 0 0 1 6 6v22L32 44H10a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="#FFE86B"/><path d="M44 32 32 44v-8a4 4 0 0 1 4-4h8z" fill="#E2C73C"/><rect x="12" y="14" width="22" height="3.6" rx="1.8" fill="#14171A"/><rect x="12" y="22" width="16" height="3.6" rx="1.8" fill="#FF4F17"/><rect x="12" y="30" width="19" height="3.6" rx="1.8" fill="#14171A" transform="rotate(-4 12 30)" opacity="0"/><rect x="12" y="29.5" width="18" height="3.6" rx="1.8" fill="#14171A"/></svg><span>Bedrijfs<b>geheugen</b></span></a><nav class="sitenav">
+    <div class="merk"><a class="logo" href="/"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 4h28a6 6 0 0 1 6 6v22L32 44H10a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="#FFE86B"/><path d="M44 32 32 44v-8a4 4 0 0 1 4-4h8z" fill="#E2C73C"/><rect x="12" y="14" width="22" height="3.6" rx="1.8" fill="#14171A"/><rect x="12" y="22" width="16" height="3.6" rx="1.8" fill="#FF4F17"/><rect x="12" y="30" width="19" height="3.6" rx="1.8" fill="#14171A" transform="rotate(-4 12 30)" opacity="0"/><rect x="12" y="29.5" width="18" height="3.6" rx="1.8" fill="#14171A"/></svg><span>Bedrijfs<b>geheugen</b></span></a><span class="klantmerk" id="klantMerk" hidden></span><nav class="sitenav">
         <a href="/frisse-blik">Frisse blik</a>
         <a href="/zelfscan">Zelfscan</a>
         <a href="/expertises">Expertises</a>
@@ -356,7 +417,7 @@ input[type=range]{min-height:34px}
         <button class="tab" role="tab" aria-selected="false" data-p="bijhouden">Actueel houden</button>
         <button class="tab" role="tab" aria-selected="false" data-p="wijzigingen">Wijzigingen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
-        <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="offerte">Offerte</button><button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
         <span class="groep">Beheer</span>
         <button class="tab licht" id="mExport">Downloaden</button>
         <label class="tab licht" style="cursor:pointer">Openen<input type="file" id="mImport" accept="application/json" hidden></label>
@@ -1007,7 +1068,7 @@ input[type=range]{min-height:34px}
     </section>
 
     <!-- ROADMAP -->
-    <section class="paneel" id="p-wijzigingen"></section>
+    <section class="paneel" id="p-wijzigingen"></section><section class="paneel" id="p-offerte"></section>
 
     <section class="paneel" id="p-roadmap">
       <div class="kaart" style="margin-top:1rem">
@@ -7907,6 +7968,143 @@ body{background:var(--np-vlak)}
   });
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',tekenEnOpschonen); else tekenEnOpschonen();
+})();
+</script>
+<script>window.__KLANTEN__ = {"ijsselmonde": {"naam": "IJsselmonde", "logo": "", "titel": "Analytics en een Power BI-dashboard waar vier rollen mee sturen", "geldig": "17 september 2026", "onderdelen": [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}]}, "demo": {"naam": "Voorbeeld BV", "logo": "", "titel": "Analytics en een Power BI-dashboard waar vier rollen mee sturen", "geldig": "17 september 2026", "onderdelen": [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}]}};</script>
+<script>
+/* Offerte in het portaal. Leest ?klant= en vult het paneel dat hierboven leeg
+   staat. Verandert niets aan het bestaande portaal: geen gedeelde variabelen,
+   geen ingrepen in S, alleen lezen uit KLANTEN en schrijven in #p-offerte. */
+(function(){
+  var KLANTEN = window.__KLANTEN__ || {};
+  var paneel = document.getElementById('p-offerte');
+  var merk = document.getElementById('klantMerk');
+  if (!paneel) return;
+
+  var slug = (new URLSearchParams(location.search).get('klant') || '').toLowerCase();
+  var K = KLANTEN[slug];
+
+  /* naam en logo van de klant in de balk */
+  if (K && merk) {
+    var init = K.naam.split(/\s+/).map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
+    merk.innerHTML = (K.logo
+        ? '<img src="' + K.logo + '" alt="' + K.naam + '">'
+        : '<span class="init">' + init + '</span>') +
+      '<span class="sitenaam">' + K.naam + '</span>';
+    merk.hidden = false;
+  }
+
+  if (!K || !K.onderdelen) {
+    paneel.innerHTML = '<div class="kaart" style="margin-top:1rem">' +
+      '<h3>Nog geen offerte</h3><p class="sub">Zodra er een voorstel voor je klaarstaat, ' +
+      'vind je het hier: de onderdelen, de sprints per week en de roadmap.</p></div>';
+    return;
+  }
+
+  var D = K.onderdelen, aan = {};
+  var euro = function(n){ return '\u20ac ' + n.toLocaleString('nl-NL'); };
+  var esc = function(t){ var d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
+
+  paneel.innerHTML =
+    '<div class="kaart" style="margin-top:1rem">' +
+      '<h3>' + esc(K.titel) + '</h3>' +
+      '<p class="sub">Zet aan wat je wilt. De prijs, de doorlooptijd en de roadmap bewegen mee. ' +
+      'Geldig tot ' + esc(K.geldig) + ', bedragen excl. btw.</p>' +
+      '<div class="of-lint">' +
+        '<div><b id="ofTitel"></b><span class="sub2" id="ofDuur"></span></div>' +
+        '<div style="display:flex;gap:1.6rem;align-items:center">' +
+          '<span class="of-klaar" id="ofKlaar"></span>' +
+          '<span class="of-som"><span id="ofSom"></span><small>EXCL. BTW &middot; VASTE PRIJS</small></span>' +
+        '</div>' +
+      '</div>' +
+      '<div id="ofRijen"></div>' +
+    '</div>' +
+    '<div class="kaart" style="margin-top:1rem">' +
+      '<h3>De roadmap, week voor week</h3>' +
+      '<p class="sub">Elke week eindigt met iets dat je kunt bekijken.</p>' +
+      '<div id="ofRoad"></div>' +
+      '<div class="of-tel">' +
+        '<div><b id="tWeken"></b>weken tot oplevering</div>' +
+        '<div><b id="tStories"></b>user stories</div>' +
+        '<div><b id="tOp"></b>opleveringen</div>' +
+        '<div><b id="tPerWeek"></b>per week</div>' +
+      '</div>' +
+      '<div class="of-let"><b>De keuze die dit project maakt of breekt</b>' +
+      'GA4 rechtstreeks aan Power BI koppelen werkt in een demo en gaat daarna stuk: quota, ' +
+      'steekproeven bij volume, en geen ruwe gegevens. Wij zetten de gratis BigQuery-export aan ' +
+      'en laten Power BI daaruit lezen. Een halve dag extra, in week 2.</div>' +
+    '</div>';
+
+  var rijenEl = paneel.querySelector('#ofRijen'), roadEl = paneel.querySelector('#ofRoad');
+
+  D.forEach(function(o){
+    aan[o.id] = !!o.vast;
+    var weken = o.sprints.length;
+    var d = document.createElement('div');
+    d.className = 'of-rij';
+    d.dataset.aan = o.vast ? '1' : '0';
+    if (o.vast) d.dataset.vast = '1';
+    var st = o.stories.map(function(s){
+      return '<div class="of-story">Als <b>' + esc(s[0]) + '</b> wil ik ' + esc(s[1]) + ', zodat ' + esc(s[2]) + '.</div>';
+    }).join('');
+    var sp = o.sprints.map(function(s){
+      return '<li><b>' + esc(s.titel) + '</b> \u2014 ' + esc(s.wat) + '</li>';
+    }).join('');
+    d.innerHTML =
+      '<span class="of-vink"' + (o.vast ? '' : ' role="checkbox" tabindex="0" aria-checked="false" aria-label="' + esc(o.titel) + '"') + '></span>' +
+      '<div><h4>' + esc(o.titel) + '</h4><p>' + esc(o.kort) + '</p>' +
+      '<button class="of-meer" type="button">Bekijk de sprints en user stories</button>' +
+      '<div class="of-uit" hidden><span class="of-kopje">Wie heeft er iets aan</span>' + st +
+      '<span class="of-kopje">Wat er in de ' + (weken === 1 ? 'week' : weken + ' weken') + ' gebeurt</span>' +
+      '<ul class="of-lijst">' + sp + '</ul></div></div>' +
+      '<div class="of-prijs">' + euro(o.prijs) + '<span class="of-duur">' + weken +
+      (weken === 1 ? ' week' : ' weken') + (o.vast ? ' \u00b7 vast' : '') + '</span></div>';
+    rijenEl.appendChild(d);
+
+    var vink = d.querySelector('.of-vink');
+    if (!o.vast) {
+      var wissel = function(){
+        aan[o.id] = !aan[o.id];
+        d.dataset.aan = aan[o.id] ? '1' : '0';
+        vink.setAttribute('aria-checked', aan[o.id] ? 'true' : 'false');
+        teken();
+      };
+      vink.addEventListener('click', wissel);
+      vink.addEventListener('keydown', function(e){
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); wissel(); }
+      });
+    }
+    var knop = d.querySelector('.of-meer'), uit = d.querySelector('.of-uit');
+    knop.addEventListener('click', function(){
+      if (uit.hasAttribute('hidden')) { uit.removeAttribute('hidden'); knop.textContent = 'Verbergen'; }
+      else { uit.setAttribute('hidden',''); knop.textContent = 'Bekijk de sprints en user stories'; }
+    });
+  });
+
+  function teken(){
+    var prijs = 0, weken = 0, schermen = 0, stories = 0, sprints = [];
+    D.forEach(function(o){
+      if (!aan[o.id]) return;
+      prijs += o.prijs; schermen += o.scherm || 0; stories += o.stories.length;
+      o.sprints.forEach(function(s){ weken++; sprints.push({ wk: weken, s: s }); });
+    });
+    roadEl.innerHTML = sprints.map(function(r){
+      return '<div class="of-sprint"><div class="wk">WEEK<i>' + r.wk + '</i></div><div><h4>' +
+        esc(r.s.titel) + '</h4><p>' + esc(r.s.wat) + '</p>' +
+        '<span class="of-op">Aan het eind: ' + esc(r.s.op) + '</span></div></div>';
+    }).join('');
+    paneel.querySelector('#ofSom').textContent = euro(prijs);
+    paneel.querySelector('#ofKlaar').textContent = 'klaar week ' + weken;
+    paneel.querySelector('#ofDuur').textContent = weken + ' weken \u00b7 ' + schermen +
+      (schermen === 1 ? ' scherm' : ' schermen') + ' \u00b7 ' + stories + ' user stories';
+    paneel.querySelector('#ofTitel').textContent =
+      schermen >= 4 ? 'Alles, in \u00e9\u00e9n keer' : (schermen <= 1 ? 'Fase 1 en het fundament' : 'Jouw keuze');
+    paneel.querySelector('#tWeken').textContent = weken;
+    paneel.querySelector('#tStories').textContent = stories;
+    paneel.querySelector('#tOp').textContent = sprints.length;
+    paneel.querySelector('#tPerWeek').textContent = euro(Math.round(prijs / weken));
+  }
+  teken();
 })();
 </script>
 </body>
