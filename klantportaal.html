@@ -8981,5 +8981,34 @@ window.__BG_LOOPT__ = function(K, slug){
   teken();
 })();
 </script>
+<script>
+/* Klikafhandeling voor het hele menu, op het document.
+   Het portaal bouwt de zijbalk na het laden opnieuw op. Daarbij verliezen de
+   knoppen hun oorspronkelijke klikactie, waardoor alleen de items die daarna
+   worden aangemaakt (Jouw project) nog werkten. Dit werkt ongeacht wanneer een
+   knop is gemaakt of hoe vaak de zijbalk opnieuw wordt getekend. */
+(function(){
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.tab[data-p]');
+    if (!b) return;
+    var naam = b.getAttribute('data-p');
+    var doel = document.getElementById('p-' + naam);
+    if (!doel) return;                 /* paneel bestaat niet: laat met rust */
+    e.preventDefault();
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(x){
+      x.setAttribute('aria-selected', String(x === b));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.paneel'), function(p){
+      p.classList.remove('aan');
+    });
+    doel.classList.add('aan');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    var zij = document.querySelector('.np-zijbalk');
+    if (zij) zij.classList.remove('np-open');
+    var l = document.getElementById('zijlijst');
+    if (l && window.innerWidth < 1040) l.classList.remove('open');
+  }, true);
+})();
+</script>
 </body>
 </html>
