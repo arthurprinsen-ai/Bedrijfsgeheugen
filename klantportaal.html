@@ -9516,5 +9516,228 @@ window.__BG_LOOPT__ = function(K, slug){
 .bgAct b{display:block;font-size:.94rem}
 .bgAct span{font-size:.86rem;color:var(--grijs,#5C646E)}
 </style>
+<script>
+/* Deliveryboard in het Roadmap-scherm.
+   Epics zijn de onderdelen uit de offerte, features de weken daarbinnen, en
+   user stories komen uit de offerte. Sprints duren twee weken. Items zijn te
+   slepen tussen sprints, af te vinken en zelf toe te voegen. Alles wordt per
+   klant bewaard; de offerte is alleen het vertrekpunt. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function euro(n){return '\u20ac '+Math.round(n).toLocaleString('nl-NL');}
+  function sleutel(){return 'bg_board_'+slug();}
+
+  function bewaar(st){ try{localStorage.setItem(sleutel(),JSON.stringify(st));}catch(e){} }
+  function lees(){ try{return JSON.parse(localStorage.getItem(sleutel())||'null');}catch(e){return null;} }
+
+  /* eerste keer: het bord vullen uit de offerte */
+  function zaai(K){
+    var items=[], wk=0, n=0;
+    K.onderdelen.forEach(function(o){
+      if(!o.vast) return;
+      var perOnderdeel=[];
+      o.sprints.forEach(function(sp){
+        wk++;
+        perOnderdeel.push({soort:'feature',titel:sp.titel,wat:sp.wat,op:sp.op,week:wk});
+      });
+      (o.stories||[]).forEach(function(s){
+        perOnderdeel.push({soort:'story',titel:'Als '+s[0]+' wil ik '+s[1],
+                           wat:'zodat '+s[2],op:'',week:o.sprints.length?wk:1});
+      });
+      var waarde=o.prijs/(perOnderdeel.length||1);
+      perOnderdeel.forEach(function(it){
+        it.id='i'+(++n);
+        it.epic=o.titel;
+        it.waarde=waarde;
+        it.sprint=Math.ceil(it.week/2);
+        it.af=false;
+        items.push(it);
+      });
+    });
+    return {items:items, sprints:Math.max(1,Math.ceil(wk/2))};
+  }
+
+  function tel(st){
+    var t={items:0,af:0,geld:0,geldAf:0};
+    st.items.forEach(function(i){
+      t.items++; t.geld+=i.waarde;
+      if(i.af){ t.af++; t.geldAf+=i.waarde; }
+    });
+    return t;
+  }
+
+  function teken(p,st){
+    var t=tel(st);
+    var kolommen=['backlog'];
+    for(var s=1;s<=st.sprints;s++) kolommen.push(s);
+
+    var html='<div class="kaart" style="margin-top:1rem">'+
+      '<h3>Deliveryboard</h3>'+
+      '<p class="sub">Epics, features en user stories uit je offerte, verdeeld over sprints van '+
+      'twee weken. Sleep een item naar een andere sprint, vink af wat klaar is, of voeg zelf iets toe.</p>'+
+      '<div class="bdTel">'+
+        '<div><b>'+t.af+' / '+t.items+'</b>items af</div>'+
+        '<div><b>'+euro(t.geldAf)+'</b>van '+euro(t.geld)+' opgeleverd</div>'+
+        '<div><b>'+Math.round(t.items?t.geldAf/t.geld*100:0)+'%</b>van de waarde</div>'+
+        '<div><b>'+st.sprints+'</b>sprints van 2 weken</div>'+
+      '</div>'+
+      '<div class="bdBalk"><div style="width:'+(t.geld?t.geldAf/t.geld*100:0)+'%"></div></div>'+
+      '<div class="bdNieuw">'+
+        '<input type="text" id="bdTitel" placeholder="Nieuw item\u2026">'+
+        '<select id="bdSoort"><option value="story">User story</option>'+
+        '<option value="feature">Feature</option><option value="epic">Epic</option></select>'+
+        '<select id="bdWaar"><option value="backlog">Backlog</option>'+
+        kolommen.filter(function(k){return k!=='backlog';}).map(function(s){
+          return '<option value="'+s+'">Sprint '+s+'</option>';}).join('')+
+        '</select>'+
+        '<button class="knop" type="button" id="bdToe">Toevoegen</button>'+
+      '</div>'+
+      '<div class="bdBord">';
+
+    kolommen.forEach(function(k){
+      var inKolom=st.items.filter(function(i){
+        return k==='backlog' ? (i.sprint===0||i.sprint==='backlog') : i.sprint===k;
+      });
+      var som=inKolom.reduce(function(a,i){return a+i.waarde;},0);
+      var afK=inKolom.filter(function(i){return i.af;}).length;
+      html+='<div class="bdKolom" data-kolom="'+k+'">'+
+        '<div class="bdKop"><b>'+(k==='backlog'?'Backlog':'Sprint '+k)+'</b>'+
+        '<span>'+(k==='backlog'?'nog niet ingepland':'week '+(k*2-1)+'\u2013'+(k*2))+'</span>'+
+        '<em>'+inKolom.length+' items \u00b7 '+euro(som)+(afK?' \u00b7 '+afK+' af':'')+'</em></div>';
+      inKolom.forEach(function(i){
+        html+='<div class="bdItem '+i.soort+(i.af?' af':'')+'" draggable="true" data-id="'+i.id+'">'+
+          '<label><input type="checkbox" '+(i.af?'checked':'')+' data-vink="'+i.id+'">'+
+          '<span class="bdSoort">'+(i.soort==='story'?'Story':i.soort==='epic'?'Epic':'Feature')+'</span></label>'+
+          '<b>'+esc(i.titel)+'</b>'+
+          (i.wat?'<span>'+esc(i.wat)+'</span>':'')+
+          (i.op?'<span class="bdOp">Levert op: '+esc(i.op)+'</span>':'')+
+          '<span class="bdMeta">'+esc(i.epic||'eigen item')+' \u00b7 '+euro(i.waarde)+'</span>'+
+          '<button class="bdWeg" data-weg="'+i.id+'" title="Verwijderen">\u00d7</button>'+
+          '</div>';
+      });
+      if(!inKolom.length) html+='<div class="bdLeeg">Sleep hier een item naartoe</div>';
+      html+='</div>';
+    });
+    html+='</div></div>';
+    p.innerHTML=html;
+    koppel(p,st);
+  }
+
+  function koppel(p,st){
+    var sleep=null;
+    Array.prototype.forEach.call(p.querySelectorAll('.bdItem'),function(el){
+      el.addEventListener('dragstart',function(e){
+        sleep=el.dataset.id; el.classList.add('sleept');
+        try{e.dataTransfer.setData('text/plain',sleep);}catch(x){}
+        e.dataTransfer.effectAllowed='move';
+      });
+      el.addEventListener('dragend',function(){ el.classList.remove('sleept'); });
+    });
+    Array.prototype.forEach.call(p.querySelectorAll('.bdKolom'),function(kol){
+      kol.addEventListener('dragover',function(e){ e.preventDefault(); kol.classList.add('over'); });
+      kol.addEventListener('dragleave',function(){ kol.classList.remove('over'); });
+      kol.addEventListener('drop',function(e){
+        e.preventDefault(); kol.classList.remove('over');
+        var id=sleep||e.dataTransfer.getData('text/plain');
+        var k=kol.dataset.kolom;
+        st.items.forEach(function(i){
+          if(i.id===id) i.sprint = (k==='backlog') ? 'backlog' : parseInt(k,10);
+        });
+        bewaar(st); teken(p,st);
+      });
+    });
+    Array.prototype.forEach.call(p.querySelectorAll('[data-vink]'),function(c){
+      c.addEventListener('change',function(){
+        st.items.forEach(function(i){ if(i.id===c.dataset.vink) i.af=c.checked; });
+        bewaar(st); teken(p,st);
+      });
+    });
+    Array.prototype.forEach.call(p.querySelectorAll('[data-weg]'),function(b){
+      b.addEventListener('click',function(){
+        st.items=st.items.filter(function(i){ return i.id!==b.dataset.weg; });
+        bewaar(st); teken(p,st);
+      });
+    });
+    var toe=p.querySelector('#bdToe');
+    if(toe) toe.addEventListener('click',function(){
+      var t=p.querySelector('#bdTitel');
+      if(!t.value.trim()) { t.focus(); return; }
+      var waar=p.querySelector('#bdWaar').value;
+      st.items.push({id:'e'+Date.now(), soort:p.querySelector('#bdSoort').value,
+        titel:t.value.trim(), wat:'', op:'', epic:'', waarde:0,
+        sprint: waar==='backlog'?'backlog':parseInt(waar,10), af:false});
+      bewaar(st); teken(p,st);
+    });
+  }
+
+  function vul(){
+    try{
+      var K=(window.__KLANTEN__||{})[slug()];
+      if(!K||!K.onderdelen) return;
+      var p=document.getElementById('p-roadmap');
+      if(!p) return;
+      if(p.getAttribute('data-bg')==='klaar'&&p.querySelector('.bdBord')) return;
+      var st=lees();
+      if(!st||!st.items||!st.items.length){ st=zaai(K); bewaar(st); }
+      teken(p,st);
+      p.setAttribute('data-bg','klaar');
+    }catch(e){ console.error('[bedrijfsgeheugen] roadmap:',e); }
+  }
+  vul();
+  setInterval(function(){
+    var p=document.getElementById('p-roadmap');
+    if(p&&!p.querySelector('.bdBord')) p.removeAttribute('data-bg');
+    vul();
+  },700);
+  document.addEventListener('click',function(e){
+    if(e.target.closest&&e.target.closest('.tab')) setTimeout(vul,60);
+  });
+})();
+</script>
+<style>
+.bdTel{display:flex;flex-wrap:wrap;gap:1.6rem;margin:1rem 0 .5rem;font-size:.85rem;color:var(--grijs,#5C646E)}
+.bdTel b{display:block;font-size:1.3rem;color:var(--inkt,#14171A)}
+.bdBalk{height:8px;border-radius:99px;background:var(--lijn,#DCDFE6);overflow:hidden;margin:.2rem 0 1rem}
+.bdBalk div{height:100%;background:#1F9D55;border-radius:99px;transition:width .3s}
+.bdNieuw{display:grid;grid-template-columns:1fr 9rem 9rem auto;gap:.5rem;margin-bottom:1.1rem}
+@media(max-width:760px){.bdNieuw{grid-template-columns:1fr}}
+.bdNieuw input,.bdNieuw select{font:inherit;padding:.55rem .7rem;border:1.5px solid var(--lijn,#DCDFE6);
+ border-radius:9px;background:#fff}
+.bdBord{display:grid;grid-auto-flow:column;grid-auto-columns:17rem;gap:.8rem;overflow-x:auto;
+ padding-bottom:.8rem;scroll-snap-type:x proximity}
+.bdKolom{background:#F4F5F8;border-radius:12px;padding:.75rem;min-height:9rem;scroll-snap-align:start;
+ border:2px solid transparent;transition:border-color .15s,background .15s}
+.bdKolom.over{border-color:var(--blauw,#2742D6);background:#EDF0FD}
+.bdKop{margin-bottom:.6rem}
+.bdKop b{display:block;font-size:.95rem}
+.bdKop span{display:block;font-size:.76rem;color:var(--grijs,#5C646E)}
+.bdKop em{display:block;font-style:normal;font-size:.72rem;color:var(--grijs,#5C646E);margin-top:.2rem}
+.bdItem{position:relative;background:#fff;border:1.5px solid var(--lijn,#DCDFE6);border-radius:10px;
+ padding:.65rem .75rem;margin-bottom:.5rem;cursor:grab}
+.bdItem:active{cursor:grabbing}
+.bdItem.sleept{opacity:.45}
+.bdItem.af{opacity:.6}
+.bdItem.af b{text-decoration:line-through}
+.bdItem.feature{border-left:4px solid var(--blauw,#2742D6)}
+.bdItem.story{border-left:4px solid var(--geel,#FFE86B)}
+.bdItem.epic{border-left:4px solid var(--oranje,#FF4F17)}
+.bdItem label{display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem;cursor:pointer}
+.bdSoort{font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;
+ color:var(--grijs,#5C646E)}
+.bdItem b{display:block;font-size:.88rem;line-height:1.35;margin-bottom:.15rem}
+.bdItem span{display:block;font-size:.79rem;color:var(--grijs,#5C646E);line-height:1.4}
+.bdOp{background:var(--geel,#FFE86B);border-radius:6px;padding:.15rem .4rem;margin-top:.3rem;
+ display:inline-block!important;color:var(--inkt,#14171A)!important;font-weight:600}
+.bdMeta{margin-top:.35rem;font-size:.72rem!important}
+.bdWeg{position:absolute;top:.35rem;right:.4rem;border:0;background:none;font-size:1.1rem;
+ line-height:1;color:var(--lijn,#DCDFE6);cursor:pointer;padding:.1rem .25rem}
+.bdWeg:hover{color:#C0392B}
+.bdLeeg{border:1.5px dashed var(--lijn,#DCDFE6);border-radius:10px;padding:1rem .6rem;text-align:center;
+ font-size:.8rem;color:var(--grijs,#5C646E)}
+</style>
 </body>
 </html>
