@@ -398,6 +398,11 @@ input[type=range]{min-height:34px}
 .fbMelding{margin:.8rem 0 0;font-size:.88rem;color:var(--grijs,#5C646E)}
 .fbMelding.goed{color:#1F9D55;font-weight:600}
 .fbMelding.fout{color:#C0392B;font-weight:600}
+
+/* Portaal nog niet geactiveerd: de gegevensblokken op het overzicht blijven leeg.
+   Bewust in CSS en niet in JavaScript — het portaal bouwt het overzicht na het
+   inloggen opnieuw op, en dan kwamen de cijfers terug. */
+body.bg-dicht #p-overzicht > *:not(.of-start):not(.of-leegmelding){display:none!important}
 .of-klaarstaat{background:var(--geel,#FFE86B);border-radius:14px;padding:1.2rem 1.35rem;margin:1rem 0 0}
 .of-klaarstaat .of-vlag{display:inline-block;font-size:.66rem;letter-spacing:.11em;font-weight:700;
  background:var(--inkt,#14171A);color:#fff;border-radius:6px;padding:.22rem .5rem;margin-bottom:.55rem}
@@ -8289,11 +8294,9 @@ body{background:var(--np-vlak)}
     (function(){
       var ov = document.getElementById('p-overzicht');
       if (!ov) return;
-      Array.prototype.forEach.call(ov.children, function(kind){
-        if (!kind.classList.contains('of-start')) kind.style.display = 'none';
-      });
+      document.body.classList.add('bg-dicht');
       var m = document.createElement('div');
-      m.className = 'kaart';
+      m.className = 'kaart of-leegmelding';
       m.style.marginTop = '1rem';
       m.innerHTML = '<h3>Je cijfers verschijnen hier</h3>' +
         '<p class="sub">Zodra het portaal actief is staan op deze plek jullie eigen cijfers: ' +
@@ -8446,6 +8449,22 @@ body{background:var(--np-vlak)}
         m.className = 'fbMelding fout';
       });
     });
+  })();
+
+
+  /* De offerte hoort bij het project, niet bij de inzichtschermen: daar staat
+     het werk. We verplaatsen de knop zodra het projectmenu is opgebouwd. */
+  (function(){
+    function zet(){
+      var kop = document.getElementById('pj-groep');
+      var knop = document.querySelector('.tab[data-p="offerte"]');
+      if (!kop || !knop) return false;
+      if (knop.previousElementSibling === kop) return true;
+      kop.parentNode.insertBefore(knop, kop.nextSibling);
+      return true;
+    }
+    if (zet()) return;
+    var n = 0, t = setInterval(function(){ if (zet() || ++n > 40) clearInterval(t); }, 250);
   })();
 
   teken();
