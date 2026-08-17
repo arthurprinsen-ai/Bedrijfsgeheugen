@@ -10325,5 +10325,80 @@ window.__BG_LOOPT__ = function(K, slug){
   setInterval(vul,1100);
 })();
 </script>
+<script>
+/* Scans en offerte wegschrijven naar de database, voor de benchmark.
+   Alleen toevoegen \u2014 de publieke sleutel mag niet lezen, dus niemand kan via
+   het portaal de gegevens van andere bedrijven ophalen. We sturen geen namen of
+   e-mailadressen mee: alleen de klant-slug, de uitkomsten en de branche. Elke
+   inzending gaat \u00e9\u00e9n keer weg; dat onthouden we per apparaat. */
+(function(){
+  var URL='https://adhjwmvyoixzjtmiroln.supabase.co/rest/v1/';
+  var SLEUTEL='sb_publishable_W5aGMsfbZE4H7GraIR4oMQ_gV-x0xWL';
+
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function jl(k,t){try{return JSON.parse(localStorage.getItem(k)||'null')||t;}catch(e){return t;}}
+  function gestuurd(){ return jl('bg_verstuurd_'+slug(),{}); }
+  function markeer(k){ var g=gestuurd(); g[k]=Date.now();
+    try{localStorage.setItem('bg_verstuurd_'+slug(),JSON.stringify(g));}catch(e){} }
+
+  function stuur(tabel,rij,merk){
+    return fetch(URL+tabel,{method:'POST',
+      headers:{'apikey':SLEUTEL,'Authorization':'Bearer '+SLEUTEL,
+               'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify(rij)})
+      .then(function(r){ if(r.ok) markeer(merk); })
+      .catch(function(){});
+  }
+
+  function verstuur(){
+    try{
+      var K=(window.__KLANTEN__||{})[slug()];
+      if(!K) return;
+      var g=gestuurd();
+
+      /* Frisse blik */
+      var pak=jl('bg_scan_pakket',null);
+      if(pak&&pak.datum&&!g['frisse_'+pak.datum]){
+        stuur('scan_inzendingen',{klant_slug:slug(),soort:'frisse_blik',
+          scan_datum:pak.datum, score:(pak.score!=null?pak.score:null),
+          branche:pak.branche||null, niveaus:pak.dimAvg||null,
+          doel:(function(){try{return localStorage.getItem('bg_scan_doel');}catch(e){return null;}})()
+        },'frisse_'+pak.datum);
+      }
+
+      /* AI-scan */
+      var taken=jl('bg_aiscan',[]);
+      if(taken.length&&!g['ai_'+taken.length]){
+        stuur('scan_inzendingen',{klant_slug:slug(),soort:'ai_scan',
+          scan_datum:new Date().toISOString().slice(0,10),
+          branche:(pak&&pak.branche)||null,
+          taken:taken.map(function(t){ return {uren:+t[2]||0, herhaling:t[3]||'', gegevens:t[4]||'', risico:t[5]||''}; })
+        },'ai_'+taken.length);
+      }
+
+      /* Offerte */
+      if(K.onderdelen&&!g['offerte']){
+        var totaal=0, weken=0, del=[];
+        K.onderdelen.forEach(function(o){
+          if(!o.vast) return;
+          totaal+=o.prijs; weken+=o.sprints.length;
+          del.push({naam:o.titel, prijs:o.prijs, sprints:o.sprints.length});
+        });
+        var akk=jl('bg_akkoord_'+slug(),null)||K.getekend||null;
+        if(totaal){
+          stuur('offerte_inzendingen',{klant_slug:slug(),titel:K.titel||null,
+            totaal:totaal, weken:weken, onderdelen:del,
+            getekend:!!akk, getekend_op:akk?akk.datum:null},'offerte');
+        }
+      }
+    }catch(e){ console.error('[bedrijfsgeheugen] benchmark:',e); }
+  }
+  setTimeout(verstuur,2500);
+  setInterval(verstuur,60000);
+})();
+</script>
 </body>
 </html>
