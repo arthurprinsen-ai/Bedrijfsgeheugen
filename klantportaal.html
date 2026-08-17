@@ -402,15 +402,7 @@ input[type=range]{min-height:34px}
 /* Portaal nog niet geactiveerd: de gegevensblokken op het overzicht blijven leeg.
    Bewust in CSS en niet in JavaScript — het portaal bouwt het overzicht na het
    inloggen opnieuw op, en dan kwamen de cijfers terug. */
-/* Niet met > werken: het portaal hangt na de herbouw een laag tussen het
-   paneel en de blokken, en dan raakt de regel niets meer. Daarom de
-   blokken zelf, op elke diepte. */
-body.bg-dicht #p-overzicht .samenvatting,
-body.bg-dicht #p-overzicht #scanmelding,
-body.bg-dicht #p-overzicht .kaarten,
-body.bg-dicht #p-overzicht .staat,
-body.bg-dicht #p-overzicht table,
-body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-voortgang){display:none!important}
+body.bg-dicht #p-overzicht > *:not(.of-start):not(.of-leegmelding):not(.of-voortgang){display:none!important}
 
 
 
@@ -5779,14 +5771,20 @@ function vraagToegang(daarna){
 
 /* zet onder elke grafiek met data-bron een bronregel */
 (function(){
+  /* Blijven kijken in plaats van één keer verplaatsen: het portaal bouwt de
+     zijbalk opnieuw op, en dan staat de knop terug op zijn oude plek. */
   function zet(){
-    document.querySelectorAll('svg[data-bron]').forEach(function(sv){
-      if(sv.dataset.bronGezet) return; sv.dataset.bronGezet='1';
-      const d=document.createElement('div'); d.className='bron'; d.innerHTML=sv.getAttribute('data-bron');
-      sv.parentNode.insertBefore(d, sv.nextSibling);
-    });
+    var kop = document.getElementById('pj-groep');
+    if (!kop) return;
+    var alle = document.querySelectorAll('.tab[data-p="offerte"]');
+    if (!alle.length) return;
+    var knop = alle[0];
+    for (var i = 1; i < alle.length; i++) alle[i].remove();   /* dubbelen opruimen */
+    if (knop.previousElementSibling === kop) return;          /* staat al goed */
+    kop.parentNode.insertBefore(knop, kop.nextSibling);
   }
-  document.addEventListener('DOMContentLoaded',zet); setTimeout(zet,1200); setTimeout(zet,3000);
+  zet();
+  setInterval(zet, 800);
 })();
 /* Klik op een onderdeel van een grafiek: toon de uitleg onder die kaart. */
 (function(){
