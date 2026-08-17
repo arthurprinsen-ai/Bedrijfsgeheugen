@@ -8037,8 +8037,14 @@ body{background:var(--np-vlak)}
   var K = (window.__KLANTEN__ || {})[slug];
   var DEMO = slug === 'demo' || /[?&]direct\b/.test(location.search);
 
+  /* Staat er een token in de hash, dan is Netlify bezig met uitnodigen of
+     wachtwoord herstellen. Niet ingrijpen — anders overschrijven we het venster
+     waarin iemand net een wachtwoord kiest. */
+  var BEZIG = /#(invite|recovery|confirmation|email_change)_token=/.test(location.hash);
+
   function mag(user){
-    if (DEMO) return true;
+    if (DEMO || BEZIG) return true;
+    if (!slug) return true;          /* geen klantnaam in de URL: gewoon het portaal */
     if (!K) return false;
     var lijst = K.emails || [];
     if (!lijst.length) return true;
@@ -8074,7 +8080,19 @@ body{background:var(--np-vlak)}
 
   if (window.netlifyIdentity) {
     netlifyIdentity.on('init', function(u){ if (u && !mag(u)) weiger(u.email); });
-    netlifyIdentity.on('login', function(u){ if (!mag(u)) { netlifyIdentity.close(); weiger(u.email); } });
+    netlifyIdentity.on('login', function(u){
+      if (BEZIG) {
+        /* uitnodiging afgerond: hash opruimen en naar het eigen portaal */
+        netlifyIdentity.close();
+        var mail = ((u && u.email) || '').toLowerCase();
+        var eigen = Object.keys(window.__KLANTEN__ || {}).filter(function(k){
+          return (window.__KLANTEN__[k].emails || []).some(function(m){ return m.toLowerCase() === mail; });
+        })[0];
+        location.replace('/klantportaal' + (eigen ? '?klant=' + eigen : ''));
+        return;
+      }
+      if (!mag(u)) { netlifyIdentity.close(); weiger(u.email); }
+    });
   }
 })();
 </script>
