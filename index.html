@@ -405,6 +405,17 @@ nav .nb{transition:height .2s}
 @media(max-width:600px){.keten span{font-size:.85rem;padding:.4rem .8rem}}
 </style>
 <link rel="stylesheet" href="/assets/kop.css?v=0466dd43">
+<script>
+/* Netlify Identity stuurt uitnodigingen en herstelmails naar de homepage, met het
+   token in de hash. De widget draait alleen op het klantportaal, dus zonder deze
+   doorverwijzing gebeurt er niets en denkt de ontvanger dat de link stuk is. */
+(function(){
+  var h = location.hash || '';
+  if (/^#(invite_token|recovery_token|confirmation_token|email_change_token)=/.test(h)) {
+    location.replace('/klantportaal' + h);
+  }
+})();
+</script>
 </head>
 <body>
 <div class="bgtop"><div class="bgtop-in">
