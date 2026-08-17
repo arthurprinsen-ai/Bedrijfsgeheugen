@@ -402,7 +402,14 @@ input[type=range]{min-height:34px}
 /* Portaal nog niet geactiveerd: de gegevensblokken op het overzicht blijven leeg.
    Bewust in CSS en niet in JavaScript — het portaal bouwt het overzicht na het
    inloggen opnieuw op, en dan kwamen de cijfers terug. */
-body.bg-dicht #p-overzicht > *:not(.of-start):not(.of-leegmelding):not(.of-voortgang){display:none!important}
+/* Niet met > werken: het portaal hangt na de herbouw een laag tussen het
+   paneel en de blokken, en dan raakt de regel niets meer. */
+body.bg-dicht #p-overzicht .samenvatting,
+body.bg-dicht #p-overzicht #scanmelding,
+body.bg-dicht #p-overzicht .kaarten,
+body.bg-dicht #p-overzicht .staat,
+body.bg-dicht #p-overzicht table,
+body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-voortgang){display:none!important}
 
 
 
