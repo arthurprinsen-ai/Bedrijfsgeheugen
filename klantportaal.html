@@ -602,7 +602,7 @@ body.bg-dicht #p-overzicht > *:not(.of-start):not(.of-leegmelding):not(.of-voort
         <button class="tab" role="tab" aria-selected="false" data-p="bijhouden">Actueel houden</button>
         <button class="tab" role="tab" aria-selected="false" data-p="wijzigingen">Wijzigingen</button>
         <button class="tab" role="tab" aria-selected="false" data-p="advies">Advies</button>
-        <button class="tab" role="tab" aria-selected="false" data-p="offerte">Offerte</button><button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="roadmap">Roadmap</button>
         <span class="groep">Beheer</span>
         <button class="tab licht" id="mExport">Downloaden</button>
         <label class="tab licht" style="cursor:pointer">Openen<input type="file" id="mImport" accept="application/json" hidden></label>
@@ -1253,7 +1253,7 @@ body.bg-dicht #p-overzicht > *:not(.of-start):not(.of-leegmelding):not(.of-voort
     </section>
 
     <!-- ROADMAP -->
-    <section class="paneel" id="p-wijzigingen"></section><section class="paneel" id="p-offerte"></section>
+    <section class="paneel" id="p-wijzigingen"></section>
 
     <section class="paneel" id="p-roadmap">
       <div class="kaart" style="margin-top:1rem">
@@ -7350,8 +7350,7 @@ body{background:var(--np-vlak)}
  function bewaarNotities(l){try{localStorage.setItem(nSleutel(),JSON.stringify(l));}catch(e){}}
 
  /* ── menu en panelen aanmaken ── */
- var ONDERDELEN=[
-  ['koppelingen','Koppelingen'],
+ var ONDERDELEN=[ ['offerte','Offerte'], ['koppelingen','Koppelingen'],
   ['werkstromen','Taken &amp; werkstromen'],
   ['uren','Uren &amp; facturen'],
   ['documenten','Documenten'],
@@ -8682,42 +8681,6 @@ window.__BG_LOOPT__ = function(K, slug){
         m.className = 'fbMelding fout';
       });
     });
-  })();
-
-
-  /* De offerte hoort bij het project, niet bij de inzichtschermen: daar staat
-     het werk. We verplaatsen de knop zodra het projectmenu is opgebouwd. */
-  (function(){
-    /* Het portaal bouwt de zijbalk na het laden opnieuw op. Een klikafhandeling
-       op de knop zelf gaat daarbij verloren, dus doen we het op documentniveau:
-       die overleeft elke herbouw. Geldt ook voor de knop op het overzicht. */
-    document.addEventListener('click', function(e){
-      var b = e.target.closest && e.target.closest('[data-p="offerte"], [data-ganaar="offerte"]');
-      if (!b) return;
-      e.preventDefault();
-      document.querySelectorAll('.tab').forEach(function(x){
-        x.setAttribute('aria-selected', String(x === b));
-      });
-      document.querySelectorAll('.paneel').forEach(function(p){ p.classList.remove('aan'); });
-      var doel = document.getElementById('p-offerte');
-      if (doel) doel.classList.add('aan');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      var zij = document.querySelector('.np-zijbalk');
-      if (zij) zij.classList.remove('np-open');
-      var lijst = document.getElementById('zijlijst');
-      if (lijst && window.innerWidth < 1040) lijst.classList.remove('open');
-    }, true);
-
-    /* de knop bij Jouw project zetten, en blijven kijken want de zijbalk
-       wordt na het laden opnieuw opgebouwd */
-    function zet(){
-      var kop = document.getElementById('pj-groep');
-      var knop = document.querySelector('.tab[data-p="offerte"]');
-      if (!kop || !knop || knop.previousElementSibling === kop) return;
-      kop.parentNode.insertBefore(knop, kop.nextSibling);
-    }
-    zet();
-    var n = 0, t = setInterval(function(){ zet(); if (++n > 60) clearInterval(t); }, 300);
   })();
 
 
