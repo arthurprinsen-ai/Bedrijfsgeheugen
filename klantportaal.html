@@ -9109,63 +9109,7 @@ window.__BG_LOOPT__ = function(K, slug){
   });
 })();
 </script>
-<script>
-/* Taken en werkstromen, op zichzelf staand — zelfde opzet als Koppelingen.
-   De weken uit de offerte zijn de taken: één bron, niets overgetypt. */
-(function(){
-  function slug(){
-    var m = (location.search + location.hash).match(/[?&#]+klant=([^&#]+)/i);
-    return m ? decodeURIComponent(m[1]).toLowerCase() : '';
-  }
-  function esc(t){ var d = document.createElement('div'); d.textContent = t == null ? '' : t; return d.innerHTML; }
 
-  function vul(){
-    try {
-      var K = (window.__KLANTEN__ || {})[slug()];
-      if (!K || !K.onderdelen) return;
-      var p = document.getElementById('p-werkstromen');
-      if (!p) return;
-      if (p.getAttribute('data-bg') === 'klaar' && p.innerHTML.length > 300) return;
-
-      var gedaan = K.voortgang || 0, sprints = [], wk = 0;
-      K.onderdelen.forEach(function(o){
-        if (!o.vast) return;
-        o.sprints.forEach(function(sp){ wk++; sprints.push({ wk: wk, sp: sp }); });
-      });
-      if (!sprints.length) return;
-
-      var WOORD = { klaar: 'Opgeleverd', loopt: 'Loopt nu', wacht: 'Staat klaar' };
-      p.innerHTML =
-        '<div class="kaart" style="margin-top:1rem">' +
-        '<h3>Het werk uit je offerte</h3>' +
-        '<p class="sub">Elke week uit de offerte staat hier als taak. Wijzigt de offerte, dan wijzigt ' +
-        'deze lijst mee \u2014 er wordt niets overgetypt.</p>' +
-        sprints.map(function(r){
-          var st = r.wk <= gedaan ? 'klaar' : (r.wk === gedaan + 1 ? 'loopt' : 'wacht');
-          return '<div class="bgTaak ' + st + '">' +
-            '<div class="bgWk">WEEK<i>' + r.wk + '</i></div>' +
-            '<div><span class="bgPil ' + st + '">' + WOORD[st] + '</span>' +
-            '<h4>' + esc(r.sp.titel) + '</h4>' +
-            '<p>' + esc(r.sp.wat) + '</p>' +
-            '<span class="bgOp">Je krijgt: ' + esc(r.sp.op) + '</span></div></div>';
-        }).join('') +
-        '</div>';
-      p.setAttribute('data-bg', 'klaar');
-    } catch (e) {
-      console.error('[bedrijfsgeheugen] taken:', e);
-    }
-  }
-  vul();
-  setInterval(function(){
-    var p = document.getElementById('p-werkstromen');
-    if (p && p.innerHTML.length < 300) p.removeAttribute('data-bg');
-    vul();
-  }, 700);
-  document.addEventListener('click', function(e){
-    if (e.target.closest && e.target.closest('.tab')) setTimeout(vul, 60);
-  });
-})();
-</script>
 <style>
 .bgTaak{display:grid;grid-template-columns:58px 1fr;gap:.9rem;align-items:start;
  border:1.5px solid var(--lijn,#DCDFE6);border-radius:12px;padding:.9rem 1.05rem;
@@ -9678,7 +9622,7 @@ window.__BG_LOOPT__ = function(K, slug){
     try{
       var K=(window.__KLANTEN__||{})[slug()];
       if(!K||!K.onderdelen) return;
-      var p=document.getElementById('p-roadmap');
+      var p=document.getElementById('p-werkstromen');
       if(!p) return;
       if(p.getAttribute('data-bg')==='klaar'&&p.querySelector('.bdBord')) return;
       var st=lees();
@@ -9689,7 +9633,7 @@ window.__BG_LOOPT__ = function(K, slug){
   }
   vul();
   setInterval(function(){
-    var p=document.getElementById('p-roadmap');
+    var p=document.getElementById('p-werkstromen');
     if(p&&!p.querySelector('.bdBord')) p.removeAttribute('data-bg');
     vul();
   },700);
