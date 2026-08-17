@@ -9317,5 +9317,62 @@ window.__BG_LOOPT__ = function(K, slug){
 .bgTot b{font-size:1.35rem;margin-left:auto}
 .bgTot small{color:var(--grijs,#5C646E)}
 </style>
+<script>
+/* Documenten — wat de klant krijgt en wanneer. Op zichzelf staand blok.
+   Elk document hoort bij een week uit de roadmap. */
+(function(){
+  function slug(){
+    var m = (location.search + location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m ? decodeURIComponent(m[1]).toLowerCase() : '';
+  }
+  function esc(t){ var d = document.createElement('div'); d.textContent = t == null ? '' : t; return d.innerHTML; }
+
+  function vul(){
+    try {
+      var K = (window.__KLANTEN__ || {})[slug()];
+      if (!K || !K.onderdelen) return;
+      var p = document.getElementById('p-documenten');
+      if (!p) return;
+      if (p.getAttribute('data-bg') === 'klaar' && p.innerHTML.length > 300) return;
+
+      var gedaan = K.voortgang || 0, docs = [];
+      K.onderdelen.forEach(function(o){
+        if (!o.vast) return;
+        (o.documenten || []).forEach(function(x){ docs.push(x); });
+      });
+      if (!docs.length) return;
+
+      p.innerHTML =
+        '<div class="kaart" style="margin-top:1rem">' +
+        '<h3>Wat je krijgt, en wanneer</h3>' +
+        '<p class="sub">Elk document komt uit een week van de roadmap. Zodra het klaar is, ' +
+        'staat het hier om te openen.</p>' +
+        docs.map(function(x){
+          var klaar = x.week <= gedaan;
+          return '<div class="bgKop">' +
+            '<span class="bgPil ' + (klaar ? 'klaar' : 'wacht') + '">' +
+              (klaar ? 'Klaar' : 'Week ' + x.week) + '</span>' +
+            '<div><b>' + esc(x.naam) + '</b><span>' +
+            (klaar ? 'Opgeleverd' : 'Komt in week ' + x.week) + '</span></div></div>';
+        }).join('') +
+        '<p class="sub" style="margin:.9rem 0 0">Alles wat we opleveren blijft van jullie, ' +
+        'ook als we stoppen. Documenten en sleutels gaan mee.</p>' +
+        '</div>';
+      p.setAttribute('data-bg', 'klaar');
+    } catch (e) {
+      console.error('[bedrijfsgeheugen] documenten:', e);
+    }
+  }
+  vul();
+  setInterval(function(){
+    var p = document.getElementById('p-documenten');
+    if (p && p.innerHTML.length < 300) p.removeAttribute('data-bg');
+    vul();
+  }, 700);
+  document.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('.tab')) setTimeout(vul, 60);
+  });
+})();
+</script>
 </body>
 </html>
