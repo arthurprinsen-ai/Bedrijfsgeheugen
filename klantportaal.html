@@ -10553,5 +10553,102 @@ window.__BG_LOOPT__ = function(K, slug){
 .ovNet{animation:ovLicht .6s ease-out}
 @keyframes ovLicht{from{background:#EDF0FD}to{background:transparent}}
 </style>
+<script>
+/* Actiestrook bovenaan het overzicht. Alleen zichtbaar als er echt iets van de
+   klant wordt gevraagd \u2014 een strook die er altijd staat, leest niemand meer.
+   Belangrijkste geval: de offerte is nog niet getekend. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function euro(n){return '\u20ac '+Math.round(n).toLocaleString('nl-NL');}
+  function jl(k,t){try{return JSON.parse(localStorage.getItem(k)||'null')||t;}catch(e){return t;}}
+
+  function acties(){
+    var K=(window.__KLANTEN__||{})[slug()];
+    if(!K||!K.onderdelen) return null;
+    var akkoord=jl('bg_akkoord_'+slug(),null)||K.getekend||null;
+    var plan=jl('bg_plan_'+slug(),null);
+    var lijst=[];
+
+    if(!akkoord){
+      var totaal=0, weken=0;
+      K.onderdelen.forEach(function(o){ if(o.vast){ totaal+=o.prijs; weken+=o.sprints.length; } });
+      lijst.push({
+        zwaar:true, naar:'offerte',
+        kop:'Je offerte wacht op je handtekening',
+        uitleg:'Onderaan de offerte staat een blok met je naam en een vinkje. Zodra je tekent staat '+
+               'het hele project klaar: '+weken+' weken werk, '+euro(totaal)+' excl. btw.',
+        knop:'Naar de offerte'
+      });
+    }
+    if(plan&&plan.stories){
+      var open=plan.stories.filter(function(s){ return !s.af; }).length;
+      var volgende=(plan.features||[]).filter(function(f){ return !f.af; })[0];
+      if(akkoord&&volgende){
+        lijst.push({naar:'werkstromen',
+          kop:'Nu aan de beurt: '+volgende.titel,
+          uitleg:(volgende.op?'Levert op: '+volgende.op+'. ':'')+
+                 (open?open+' user stories open in het deliveryplan.':''),
+          knop:'Naar het deliveryplan'});
+      }
+    }
+    return lijst;
+  }
+
+  function teken(){
+    try{
+      var ov=document.getElementById('p-overzicht');
+      if(!ov) return;
+      var lijst=acties();
+      var oud=ov.querySelector('.acStrook');
+      if(!lijst||!lijst.length){ if(oud) oud.remove(); return; }
+      var stempel=JSON.stringify(lijst.map(function(a){return a.kop;}));
+      if(oud&&oud.getAttribute('data-s')===stempel) return;
+      if(oud) oud.remove();
+
+      var w=document.createElement('div');
+      w.className='acStrook';
+      w.setAttribute('data-s',stempel);
+      w.innerHTML='<span class="acLabel">Actie vereist</span>'+
+        lijst.map(function(a){
+          return '<div class="acItem'+(a.zwaar?' zwaar':'')+'">'+
+            '<div><b>'+esc(a.kop)+'</b><span>'+esc(a.uitleg)+'</span></div>'+
+            '<button type="button" data-naar="'+a.naar+'">'+esc(a.knop)+'</button></div>';
+        }).join('');
+      ov.insertBefore(w, ov.firstChild);
+
+      Array.prototype.forEach.call(w.querySelectorAll('[data-naar]'),function(b){
+        b.addEventListener('click',function(){
+          var t=document.querySelector('.tab[data-p="'+b.dataset.naar+'"]');
+          if(t) t.click();
+          window.scrollTo({top:0,behavior:'smooth'});
+        });
+      });
+    }catch(e){ console.error('[bedrijfsgeheugen] actiestrook:',e); }
+  }
+  teken();
+  setInterval(teken,1000);
+})();
+</script>
+<style>
+.acStrook{background:var(--geel,#FFE86B);border-radius:16px;padding:1.1rem 1.3rem;margin:1rem 0 1.2rem}
+.acLabel{display:inline-block;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+ font-weight:700;background:var(--inkt,#14171A);color:#fff;border-radius:6px;padding:.22rem .55rem;
+ margin-bottom:.7rem}
+.acItem{display:flex;flex-wrap:wrap;gap:.9rem;align-items:center;justify-content:space-between;
+ background:rgba(255,255,255,.55);border-radius:12px;padding:.85rem 1rem;margin-bottom:.5rem}
+.acItem:last-child{margin-bottom:0}
+.acItem.zwaar{background:#fff;box-shadow:0 2px 10px rgba(20,23,26,.08)}
+.acItem b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;
+ line-height:1.3;margin-bottom:.15rem}
+.acItem span{display:block;font-size:.87rem;line-height:1.5;color:var(--inkt,#14171A);max-width:52ch}
+.acItem button{border:0;background:var(--inkt,#14171A);color:#fff;border-radius:99px;
+ padding:.55rem 1.1rem;font:inherit;font-size:.88rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.acItem button:hover{background:var(--blauw,#2742D6)}
+@media(max-width:640px){.acItem button{width:100%}}
+</style>
 </body>
 </html>
