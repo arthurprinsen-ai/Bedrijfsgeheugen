@@ -9248,5 +9248,74 @@ window.__BG_LOOPT__ = function(K, slug){
 .bgPil.klaar{background:#E8F5EC;color:#1F9D55}
 .bgPil.wacht{background:#F4F5F8;color:var(--grijs,#5C646E)}
 </style>
+<script>
+/* Uren en facturen — termijnen in plaats van uren. Op zichzelf staand blok.
+   Vaste prijs per onderdeel uit de offerte, te betalen na oplevering. */
+(function(){
+  function slug(){
+    var m = (location.search + location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m ? decodeURIComponent(m[1]).toLowerCase() : '';
+  }
+  function esc(t){ var d = document.createElement('div'); d.textContent = t == null ? '' : t; return d.innerHTML; }
+  function euro(n){ return '\u20ac ' + Number(n).toLocaleString('nl-NL'); }
+
+  function vul(){
+    try {
+      var K = (window.__KLANTEN__ || {})[slug()];
+      if (!K || !K.onderdelen) return;
+      var p = document.getElementById('p-uren');
+      if (!p) return;
+      if (p.getAttribute('data-bg') === 'klaar' && p.innerHTML.length > 300) return;
+
+      var gedaan = K.voortgang || 0, totaal = 0, wk = 0, rijen = [];
+      K.onderdelen.forEach(function(o){
+        if (!o.vast) return;
+        wk += o.sprints.length;
+        totaal += o.prijs;
+        rijen.push({ titel: o.titel, prijs: o.prijs, week: wk });
+      });
+      if (!rijen.length) return;
+
+      p.innerHTML =
+        '<div class="kaart" style="margin-top:1rem">' +
+        '<h3>Wat je betaalt, en wanneer</h3>' +
+        '<p class="sub">Vaste prijs per onderdeel. Geen uren, geen nacalculatie. ' +
+        'Je betaalt na oplevering van dat onderdeel.</p>' +
+        rijen.map(function(r){
+          var klaar = r.week <= gedaan;
+          return '<div class="bgKop">' +
+            '<span class="bgBedrag">' + euro(r.prijs) + '</span>' +
+            '<div><b>' + esc(r.titel) + '</b><span>' +
+            (klaar ? 'Opgeleverd \u2014 factuur volgt' : 'Na oplevering, rond week ' + r.week) +
+            '</span></div></div>';
+        }).join('') +
+        '<div class="bgTot"><span>Totaal</span><b>' + euro(totaal) + '</b><small>excl. btw</small></div>' +
+        '<p class="sub" style="margin:.9rem 0 0">Er wordt pas gefactureerd nadat een onderdeel is ' +
+        'opgeleverd. Loopt er iets uit, dan schuift de factuur mee.</p>' +
+        '</div>';
+      p.setAttribute('data-bg', 'klaar');
+    } catch (e) {
+      console.error('[bedrijfsgeheugen] uren:', e);
+    }
+  }
+  vul();
+  setInterval(function(){
+    var p = document.getElementById('p-uren');
+    if (p && p.innerHTML.length < 300) p.removeAttribute('data-bg');
+    vul();
+  }, 700);
+  document.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('.tab')) setTimeout(vul, 60);
+  });
+})();
+</script>
+<style>
+.bgBedrag{font-weight:700;font-size:.98rem;min-width:5.5rem;display:inline-block}
+.bgTot{display:flex;align-items:baseline;gap:.6rem;border-top:2px solid var(--inkt,#14171A);
+ margin-top:.6rem;padding-top:.7rem}
+.bgTot span{font-weight:600}
+.bgTot b{font-size:1.35rem;margin-left:auto}
+.bgTot small{color:var(--grijs,#5C646E)}
+</style>
 </body>
 </html>
