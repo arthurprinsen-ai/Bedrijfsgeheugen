@@ -8697,6 +8697,10 @@ window.__BG_LOOPT__ = function(K, slug){
      termijnen komen uit dezelfde bron als de taken. En de handtekening zet het
      in gang — één keer tekenen, en alles staat er ingevuld. */
   (function(){
+  /* Draait telkens opnieuw: het portaal bouwt zijn schermen na het laden
+     opnieuw op en gooide deze vulling weg. Elke keer wordt het paneel
+     volledig herschreven, dus herhalen is veilig. */
+  function vulProject(){
     if (!K || !K.onderdelen) return;
     var HOOK = 'https://hook.eu1.make.com/783x2glfestd2c8hfqxlrvsrgefknc45';
     var vast = window.__BG_LOOPT__(K, slug);
@@ -8816,7 +8820,16 @@ window.__BG_LOOPT__ = function(K, slug){
           });
       });
     }
-  })();
+  }
+  vulProject();
+  setInterval(function(){
+    var kp = document.getElementById('p-koppelingen');
+    if (!kp || kp.innerHTML.length < 200) vulProject();
+  }, 800);
+  document.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('.tab')) setTimeout(vulProject, 60);
+  });
+})();
 
 
   /* Wat valt stil als deze persoon wegvalt.
