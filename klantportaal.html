@@ -8612,6 +8612,11 @@ window.__BG_LOOPT__ = function(K, slug){
   /* De sprints uit de offerte worden het werk: taken, voortgang en activiteit.
      Eén bron — wijzigt de offerte, dan wijzigen de taken mee. Niets overtypen. */
   (function(){
+  /* Het portaal bouwt zijn schermen opnieuw op; deze vulling werd daarbij
+     weggegooid. Daarom als functie die blijft draaien in plaats van code die
+     één keer bij het laden schrijft. Hij schrijft de panelen volledig opnieuw,
+     dus herhalen is veilig. */
+  function vulWerk(){
     if (!K || !K.onderdelen) return;
 
     var vast = window.__BG_LOOPT__(K, slug);
@@ -8676,7 +8681,16 @@ window.__BG_LOOPT__ = function(K, slug){
           : '<p class="sub">Nog niets — het werk is nog niet begonnen. Zodra de eerste week klaar is ' +
             'staat hier wat je hebt gekregen, met de datum erbij.</p>') + '</div>';
     }
-  })();
+  }
+  vulWerk();
+  setInterval(function(){
+    var w = document.getElementById('p-werkstromen');
+    if (!w || w.innerHTML.length < 200) vulWerk();
+  }, 800);
+  document.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('.tab')) setTimeout(vulWerk, 60);
+  });
+})();
 
 
   /* De offerte verdeelt zich over het project: koppelingen, documenten en
