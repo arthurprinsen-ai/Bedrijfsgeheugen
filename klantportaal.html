@@ -408,6 +408,23 @@ body.bg-dicht #p-overzicht > *:not(.of-start):not(.of-leegmelding):not(.of-voort
 
 
 
+
+.lgNieuw{display:grid;grid-template-columns:1fr 10rem auto;gap:.5rem;margin:1rem 0 1.2rem}
+@media(max-width:700px){.lgNieuw{grid-template-columns:1fr}}
+.lgNieuw input,.lgNieuw select{font:inherit;padding:.55rem .7rem;border:1.5px solid var(--lijn,#DCDFE6);border-radius:9px;background:#fff}
+.lgRij{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start;padding:.85rem 0;border-bottom:1px solid var(--lijn,#DCDFE6)}
+.lgRij.open{background:#FFFCF0;border-left:3px solid var(--geel,#FFE86B);padding-left:.8rem}
+.lgSoort{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;
+ background:#F4F5F8;border-radius:6px;padding:.25rem .5rem;white-space:nowrap;color:var(--grijs,#5C646E)}
+.lgRij b{display:block;font-size:.95rem}
+.lgRij span{display:block;font-size:.86rem;color:var(--grijs,#5C646E)}
+.lgWie{font-size:.8rem!important;margin-top:.15rem}
+.lgKnop{display:flex!important;gap:.4rem;margin-top:.5rem}
+.lgKnop .knop{padding:.35rem .8rem;font-size:.84rem}
+.lgStat{display:inline-block!important;margin-top:.35rem;font-size:.8rem!important;font-weight:600;
+ border-radius:99px;padding:.15rem .6rem}
+.lgStat.ja{background:#E8F5EC;color:#1F9D55}
+.lgStat.nee{background:#FBEDEB;color:#C0392B}
 .wrmKaart{border:1.5px solid var(--lijn,#DCDFE6);border-radius:12px;margin-top:.6rem;background:#fff;overflow:hidden}
 .wrmKop{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:center;width:100%;
  background:none;border:0;padding:.95rem 1.1rem;font:inherit;text-align:left;cursor:pointer}
@@ -8137,6 +8154,32 @@ body{background:var(--np-vlak)}
 </script>
 <script>window.__KLANTEN__ = {"ijsselmonde": {"naam": "IJsselmonde", "logo": "", "titel": "Analytics en een Power BI-dashboard waar vier rollen mee sturen", "geldig": "17 september 2026", "onderdelen": [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}], "koppelingen": [{"naam": "Google Analytics 4", "wat": "Meet wat er op de site gebeurt", "week": 1}, {"naam": "Google Tag Manager", "wat": "Zet de meetpunten zonder code te wijzigen", "week": 1}, {"naam": "BigQuery", "wat": "Bewaart de ruwe gebeurtenissen, elke dag", "week": 2}], "documenten": [{"naam": "Meetplan", "week": 1}, {"naam": "Overdracht en uitleg", "week": 2}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}], "koppelingen": [{"naam": "Power BI Service", "wat": "Ververst het dashboard automatisch", "week": 5}, {"naam": "Interne bestanden", "wat": "Afval, energie, wagenpark, verzuim en veiligheid", "week": 3}, {"naam": "SharePoint of OneDrive", "wat": "Waar die bestanden staan, zodat er geen gateway nodig is", "week": 3}], "documenten": [{"naam": "Oordeel over je databestanden", "week": 3}, {"naam": "Definitielijst ter goedkeuring", "week": 4}, {"naam": "Opleverdocument dashboard", "week": 5}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}], "domein": "", "actief": false, "emails": ["arthur.prinsen@gmail.com", "arthur@bedrijfsgeheugen.nl"], "voortgang": 0, "gestart": "", "getekend": null, "besluiten": [{"wat": "GA4 gaat via BigQuery, niet via de directe koppeling", "waarom": "De directe koppeling kent quota en past steekproeven toe zodra het volume oploopt, en bewaart geen ruwe gegevens. Dan kun je achteraf geen vraag stellen die je vooraf niet had bedacht.", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "gevolg": "Kost een halve dag extra in week 2. Vanaf dat moment bouwt de historie zich op."}, {"wat": "Vaste prijs per onderdeel, geen uren", "waarom": "Bij nacalculatie verschuift het gesprek van resultaat naar verantwoording. Met een vaste prijs weet je vooraf waar je aan toe bent en dragen wij het risico van uitloop.", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "gevolg": "Meerwerk is nooit een verrassing: het wordt een voorstel met prijs en einddatum, waar apart voor getekend wordt."}, {"wat": "Geen Fabric-capaciteit", "waarom": "Wordt bij dit soort trajecten vaak aangeboden en is bij dit volume overbodig. Pas relevant vanaf enkele honderden kijkers.", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "gevolg": "Bespaart honderden euro's per maand. Power BI Pro volstaat, circa € 10 per persoon."}, {"wat": "Definities worden één keer vastgesteld", "waarom": "Als “circulair” op twee schermen iets anders betekent, gaat elk gesprek over de cijfers in plaats van over de zaak.", "wie": "samen, in week 4", "wanneer": "week 4", "gevolg": "Verandert een definitie later, dan is dat een wijziging — met zichtbare gevolgen — en geen correctie."}, {"wat": "De interne bestanden moeten machineleesbaar zijn", "waarom": "Eén kop per kolom, geen samengevoegde cellen, geen kleur als betekenis. Daar loopt dit soort projecten op vast.", "wie": "afgesproken bij de offerte", "wanneer": "bij de offerte", "gevolg": "Blijkt het anders, dan melden we dat in week één met een prijs voor het opschonen — niet achteraf op de factuur."}]}, "demo": {"naam": "Voorbeeld BV", "logo": "", "titel": "Analytics en een Power BI-dashboard waar vier rollen mee sturen", "geldig": "17 september 2026", "onderdelen": [{"id": "fase1", "vast": true, "prijs": 3900, "titel": "Fase 1 — Meten opzetten", "kort": "GA4, Tag Manager, conversies en een uniforme UTM-structuur. Inclusief de BigQuery-export.", "stories": [["marketeer", "zien welke campagne een offerte-aanvraag oplevert", "ik weet waar ik mijn tijd in stop"], ["directeur", "weten hoeveel aanvragen er via de site binnenkomen", "ik niet hoef te gokken of de site iets doet"], ["marketeer", "één afgesproken manier van taggen", "cijfers uit verschillende maanden vergelijkbaar blijven"]], "sprints": [{"titel": "Meetplan en Tag Manager", "wat": "We bepalen samen welke handelingen op de site iets betekenen, en zetten GTM op met een testcontainer.", "op": "Een meetplan van één pagina dat u begrijpt"}, {"titel": "Conversies, UTM en BigQuery", "wat": "Events en conversies vastleggen en per stuk testen, de UTM-structuur in één bronbestand, en de BigQuery-export aanzetten.", "op": "Werkende meting plus een uur overdracht"}], "koppelingen": [{"naam": "Google Analytics 4", "wat": "Meet wat er op de site gebeurt", "week": 1}, {"naam": "Google Tag Manager", "wat": "Zet de meetpunten zonder code te wijzigen", "week": 1}, {"naam": "BigQuery", "wat": "Bewaart de ruwe gebeurtenissen, elke dag", "week": 2}], "documenten": [{"naam": "Meetplan", "week": 1}, {"naam": "Overdracht en uitleg", "week": 2}]}, {"id": "fundament", "vast": true, "prijs": 8900, "scherm": 1, "titel": "Fundament — datamodel en het directiescherm", "kort": "Eén samenhangend model met vaste definities, automatische verversing, en het eerste scherm.", "stories": [["directeur", "in één scherm zien waar we afwijken van wat we hadden afgesproken", "ik in het MT één gesprek voer in plaats van vier"], ["directeur", "erop kunnen vertrouwen dat “circulair” overal hetzelfde betekent", "discussies over cijfers ophouden"], ["controller", "dat de cijfers zichzelf verversen", "ik geen ochtend per maand kwijt ben aan bijwerken"]], "sprints": [{"titel": "Bronnen ophalen en opschonen", "wat": "De interne bestanden en GA4 binnenhalen, structuur controleren, en melden wat er niet machineleesbaar is.", "op": "Een eerlijk oordeel over uw databestanden, in week één"}, {"titel": "Datamodel en definities", "wat": "Eén model waarin elke KPI één keer is gedefinieerd, met de bron en de eigenaar erbij.", "op": "De definitielijst, ter goedkeuring bij u"}, {"titel": "Directiescherm en verversing", "wat": "Het eerste scherm bouwen rond afwijkingen, en de automatische verversing inregelen.", "op": "Een werkend dashboard dat u zelf kunt openen"}], "koppelingen": [{"naam": "Power BI Service", "wat": "Ververst het dashboard automatisch", "week": 5}, {"naam": "Interne bestanden", "wat": "Afval, energie, wagenpark, verzuim en veiligheid", "week": 3}, {"naam": "SharePoint of OneDrive", "wat": "Waar die bestanden staan, zodat er geen gateway nodig is", "week": 3}], "documenten": [{"naam": "Oordeel over je databestanden", "week": 3}, {"naam": "Definitielijst ter goedkeuring", "week": 4}, {"naam": "Opleverdocument dashboard", "week": 5}]}, {"id": "marketing", "prijs": 2400, "scherm": 1, "titel": "Scherm — Marketing en UTM-analyse", "kort": "Verkeer, conversieratio’s, landingspagina’s en campagneresultaten per bron.", "stories": [["marketeer", "per bron zien wat conversies oplevert en wat alleen bezoek", "ik budget verschuif op cijfers in plaats van op gevoel"], ["marketeer", "zien welke landingspagina afhaakt", "ik weet welke pagina ik als eerste herschrijf"]], "sprints": [{"titel": "Marketingscherm", "wat": "Verkeer, conversie en campagnes per UTM-bron, met de vraag “waar lekt het” als vertrekpunt.", "op": "Het marketingscherm, plus een halfuur uitleg"}]}, {"id": "esg", "prijs": 2400, "scherm": 1, "titel": "Scherm — ESG, duurzaamheid en operations", "kort": "Afvalstromen circulair versus niet-circulair, energiebalans, wagenpark en laadpalen.", "stories": [["operationeel manager", "zien welk deel van het afval circulair is", "ik weet of we vooruitgaan of stilstaan"], ["directeur", "de energiebalans naast de opwekking zien", "ik kan onderbouwen wat de zonnepanelen opleveren"], ["duurzaamheidscoördinator", "cijfers hebben die ik zo in een CSRD-rapportage kan zetten", "ik dat werk niet elk jaar opnieuw doe"]], "sprints": [{"titel": "ESG- en operationsscherm", "wat": "Afval, energie en wagenpark in één beeld, met de definities uit het fundament.", "op": "Het ESG-scherm, klaar voor de jaarrapportage"}]}, {"id": "hr", "prijs": 2400, "scherm": 1, "titel": "Scherm — HR en veiligheid (SHEQ)", "kort": "Verzuim, (bijna-)ongevallen, leeftijdsopbouw en opleidingsinvesteringen.", "stories": [["HR-manager", "verzuim per afdeling over tijd zien", "ik weet waar ik het gesprek moet voeren"], ["veiligheidskundige", "bijna-ongevallen naast ongevallen zien", "ik kan ingrijpen voordat het er een wordt"], ["directeur", "de leeftijdsopbouw zien", "ik weet welke kennis er de komende vijf jaar vertrekt"]], "sprints": [{"titel": "HR- en veiligheidsscherm", "wat": "Verzuim, ongevallen en opleiding in één beeld, met bijna-ongevallen als voorspeller.", "op": "Het HR-scherm, met de privacygrenzen erin"}]}], "domein": "bedrijfsgeheugen.nl", "actief": true, "emails": [], "voortgang": 3, "gestart": "2026-07-27", "getekend": {"naam": "Sanne de Vries", "functie": "directeur", "datum": "2026-07-24"}, "besluiten": [{"wat": "GA4 gaat via BigQuery, niet via de directe koppeling", "waarom": "De directe koppeling kent quota en past steekproeven toe zodra het volume oploopt, en bewaart geen ruwe gegevens. Dan kun je achteraf geen vraag stellen die je vooraf niet had bedacht.", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "gevolg": "Kost een halve dag extra in week 2. Vanaf dat moment bouwt de historie zich op."}, {"wat": "Vaste prijs per onderdeel, geen uren", "waarom": "Bij nacalculatie verschuift het gesprek van resultaat naar verantwoording. Met een vaste prijs weet je vooraf waar je aan toe bent en dragen wij het risico van uitloop.", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "gevolg": "Meerwerk is nooit een verrassing: het wordt een voorstel met prijs en einddatum, waar apart voor getekend wordt."}, {"wat": "Geen Fabric-capaciteit", "waarom": "Wordt bij dit soort trajecten vaak aangeboden en is bij dit volume overbodig. Pas relevant vanaf enkele honderden kijkers.", "wie": "Arthur Prinsen", "wanneer": "bij de offerte", "gevolg": "Bespaart honderden euro's per maand. Power BI Pro volstaat, circa € 10 per persoon."}, {"wat": "Definities worden één keer vastgesteld", "waarom": "Als “circulair” op twee schermen iets anders betekent, gaat elk gesprek over de cijfers in plaats van over de zaak.", "wie": "samen, in week 4", "wanneer": "week 4", "gevolg": "Verandert een definitie later, dan is dat een wijziging — met zichtbare gevolgen — en geen correctie."}, {"wat": "De interne bestanden moeten machineleesbaar zijn", "waarom": "Eén kop per kolom, geen samengevoegde cellen, geen kleur als betekenis. Daar loopt dit soort projecten op vast.", "wie": "afgesproken bij de offerte", "wanneer": "bij de offerte", "gevolg": "Blijkt het anders, dan melden we dat in week één met een prijs voor het opschonen — niet achteraf op de factuur."}]}};</script>
 <script>
+/* Eén logboek voor alles: handtekeningen, meerwerk, ingevulde namen,
+   opleveringen en opmerkingen. Elk met wie, wat, wanneer — en of er nog
+   akkoord op moet. Zonder dit staat de waarheid verspreid over acht schermen. */
+window.__BG_LOG__ = {
+  sleutel: function(slug){ return 'bg_log_' + slug; },
+  lees: function(slug){
+    try { return JSON.parse(localStorage.getItem(this.sleutel(slug)) || '[]') || []; }
+    catch (e) { return []; }
+  },
+  schrijf: function(slug, regel){
+    var l = this.lees(slug);
+    regel.id = 'r' + Date.now() + Math.random().toString(36).slice(2, 6);
+    regel.wanneer = regel.wanneer || new Date().toISOString();
+    l.push(regel);
+    try { localStorage.setItem(this.sleutel(slug), JSON.stringify(l)); } catch (e) {}
+    return regel;
+  },
+  bij: function(slug, id, velden){
+    var l = this.lees(slug);
+    l.forEach(function(r){ if (r.id === id) Object.keys(velden).forEach(function(k){ r[k] = velden[k]; }); });
+    try { localStorage.setItem(this.sleutel(slug), JSON.stringify(l)); } catch (e) {}
+  }
+};
+</script>
+
+<script>
 /* Wat er loopt = de vaste onderdelen plus het meerwerk waarvoor is getekend.
    Eén functie, zodat taken, koppelingen, documenten, termijnen, activiteit en
    de voortgang allemaal hetzelfde antwoord krijgen. Eerder pakten die alleen de
@@ -8776,6 +8819,7 @@ window.__BG_LOOPT__ = function(K, slug){
           .then(function(){
             try { localStorage.setItem('bg_akkoord_' + slug,
               JSON.stringify({naam:naam, functie:func, datum:datum})); } catch(e){}
+            window.__BG_LOG__.schrijf(slug, { soort:'Handtekening', wat:'Akkoord op de offerte', wie:naam + (func ? ', ' + func : ''), detail:keuze.join(' \u00b7 '), akkoord:true });
             m.className = 'htkMeld goed';
             m.textContent = 'Getekend. Je project staat klaar — we verversen even.';
             setTimeout(function(){ location.reload(); }, 1400);
@@ -8962,6 +9006,7 @@ window.__BG_LOOPT__ = function(K, slug){
             .then(function(){
               extra.push({ id:o.id, titel:o.titel, prijs:o.prijs, weken:w, naam:naam, datum:d });
               try { localStorage.setItem('bg_meerwerk_' + slug, JSON.stringify(extra)); } catch(e){}
+              window.__BG_LOG__.schrijf(slug, { soort:'Meerwerk', wat:o.titel, wie:naam, detail:'\u20ac ' + o.prijs.toLocaleString('nl-NL') + ' \u00b7 +' + w + (w === 1 ? ' week' : ' weken') + ' \u00b7 nieuw totaal \u20ac ' + nieuw.toLocaleString('nl-NL'), akkoord:true });
               m.className = 'htkMeld goed';
               m.textContent = 'Getekend. Het staat nu in je taken en je termijnen.';
               setTimeout(function(){ location.reload(); }, 1400);
@@ -9037,6 +9082,7 @@ window.__BG_LOOPT__ = function(K, slug){
         inp.addEventListener('change', function(){
           namen[inp.dataset.rol] = inp.value.trim();
           try { localStorage.setItem('bg_team_' + slug, JSON.stringify(namen)); } catch (e) {}
+          window.__BG_LOG__.schrijf(slug, { soort:'Wijziging', wat:'Rol ingevuld: ' + inp.dataset.rol, wie:(document.getElementById('wie')||{}).textContent || 'iemand', detail:inp.value.trim() || 'leeggemaakt', akkoord:null });
           var m = tm.querySelector('#tmMeld'); m.hidden = false;
           setTimeout(function(){ m.hidden = true; }, 1600);
         });
@@ -9059,6 +9105,87 @@ window.__BG_LOOPT__ = function(K, slug){
             '<span class="igVal">Valt dit uit, dan mist: ' + esc(c.wat.toLowerCase()) + '</span></div></div>';
         }).join('') : '<p class="sub">Nog geen koppelingen — die volgen uit je offerte.</p>') + '</div>';
     }
+  })();
+
+
+  /* Activiteit wordt het logboek: alles op één tijdlijn, met akkoord waar dat
+     nog moet. Opleveringen komen uit de roadmap, de rest uit het logboek zelf.
+     Wie iets wil opmerken, doet dat hier — dan staat het bij de rest en niet in
+     een mailtje dat niemand terugvindt. */
+  (function(){
+    if (!K) return;
+    var a = document.getElementById('p-activiteit');
+    if (!a) return;
+    var HOOK = 'https://hook.eu1.make.com/l744eyrlaic9y4rqubj8mjzt6k353aw9';
+    var LOG = window.__BG_LOG__;
+
+    function tekenLog(){
+      var loopt = window.__BG_LOOPT__(K, slug), gedaan = K.voortgang || 0;
+      var rijen = [];
+      var wk = 0;
+      loopt.forEach(function(o){
+        o.sprints.forEach(function(sp){
+          wk++;
+          if (wk <= gedaan) rijen.push({ soort:'Oplevering', wat:sp.titel, wie:'Bedrijfsgeheugen',
+            detail:sp.op, akkoord:true, wanneer:'week ' + wk, vast:true });
+        });
+      });
+      LOG.lees(slug).forEach(function(r){ rijen.push(r); });
+      rijen.reverse();
+
+      var open = rijen.filter(function(r){ return r.akkoord === null; }).length;
+
+      a.innerHTML = '<div class="kaart" style="margin-top:1rem">' +
+        '<h3>Alles wat er gebeurt, op één plek</h3>' +
+        '<p class="sub">Elke handtekening, elk stuk meerwerk, elke wijziging en elke opmerking. ' +
+        'Met wie het deed, wanneer, en of er nog akkoord op moet.' +
+        (open ? ' <b>' + open + (open === 1 ? ' regel wacht' : ' regels wachten') + ' op akkoord.</b>' : '') +
+        '</p>' +
+        '<div class="lgNieuw">' +
+          '<input type="text" id="lgTekst" placeholder="Iets opmerken of vastleggen…">' +
+          '<select id="lgSoort"><option>Opmerking</option><option>Wijziging</option>' +
+          '<option>Vraag</option><option>Afspraak</option></select>' +
+          '<button class="knop" type="button" id="lgToe">Vastleggen</button>' +
+        '</div>' +
+        (rijen.length ? rijen.map(function(r){
+          var st = r.akkoord === true ? 'ja' : (r.akkoord === false ? 'nee' : 'open');
+          var w = r.wanneer && r.wanneer.indexOf('week') === 0 ? r.wanneer
+                : new Date(r.wanneer).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
+          return '<div class="lgRij ' + st + '">' +
+            '<span class="lgSoort">' + esc(r.soort) + '</span>' +
+            '<div><b>' + esc(r.wat) + '</b>' +
+            (r.detail ? '<span>' + esc(r.detail) + '</span>' : '') +
+            '<span class="lgWie">' + esc(r.wie || '') + ' · ' + esc(w) + '</span>' +
+            (r.akkoord === null
+              ? '<span class="lgKnop"><button class="knop lgJa" data-id="' + r.id + '">Akkoord</button>' +
+                '<button class="knop licht lgNee" data-id="' + r.id + '">Niet doen</button></span>'
+              : '<span class="lgStat ' + st + '">' +
+                (st === 'ja' ? 'Akkoord' + (r.door ? ' · ' + esc(r.door) : '') : 'Niet doen') + '</span>') +
+            '</div></div>';
+        }).join('') : '<p class="sub">Nog niets vastgelegd.</p>') + '</div>';
+
+      a.querySelectorAll('.lgJa, .lgNee').forEach(function(b){
+        b.addEventListener('click', function(){
+          var wie = (document.getElementById('wie')||{}).textContent || 'iemand';
+          LOG.bij(slug, b.dataset.id, { akkoord: b.classList.contains('lgJa'), door: wie });
+          tekenLog();
+        });
+      });
+      var toe = a.querySelector('#lgToe');
+      if (toe) toe.addEventListener('click', function(){
+        var t = a.querySelector('#lgTekst');
+        if (t.value.trim().length < 3) { t.focus(); return; }
+        var wie = (document.getElementById('wie')||{}).textContent || 'iemand';
+        LOG.schrijf(slug, { soort: a.querySelector('#lgSoort').value, wat: t.value.trim(),
+          wie: wie, akkoord: null });
+        fetch(HOOK, { method:'POST', headers:{'content-type':'application/json'},
+          body: JSON.stringify({ feedback:t.value.trim(), soort:'Anders', onderdeel:'Algemeen',
+            mail:wie, bedrijf:(K.naam||slug) }) }).catch(function(){});
+        t.value = '';
+        tekenLog();
+      });
+    }
+    tekenLog();
   })();
 
   teken();
