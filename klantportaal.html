@@ -9110,10 +9110,8 @@ window.__BG_LOOPT__ = function(K, slug){
 })();
 </script>
 <script>
-/* Koppelingen, volledig op zichzelf staand.
-   Bewust niet in het omhulsel waar de andere vulmodules zitten: valt daar iets
-   om, dan blijft dit werken. Leest rechtstreeks uit __KLANTEN__ en schrijft het
-   paneel telkens opnieuw, want het portaal bouwt zijn schermen opnieuw op. */
+/* Taken en werkstromen, op zichzelf staand — zelfde opzet als Koppelingen.
+   De weken uit de offerte zijn de taken: één bron, niets overgetypt. */
 (function(){
   function slug(){
     var m = (location.search + location.hash).match(/[?&#]+klant=([^&#]+)/i);
@@ -9125,37 +9123,41 @@ window.__BG_LOOPT__ = function(K, slug){
     try {
       var K = (window.__KLANTEN__ || {})[slug()];
       if (!K || !K.onderdelen) return;
-      var p = document.getElementById('p-koppelingen');
+      var p = document.getElementById('p-werkstromen');
       if (!p) return;
       if (p.getAttribute('data-bg') === 'klaar' && p.innerHTML.length > 300) return;
 
-      var gedaan = K.voortgang || 0, rijen = [];
+      var gedaan = K.voortgang || 0, sprints = [], wk = 0;
       K.onderdelen.forEach(function(o){
         if (!o.vast) return;
-        (o.koppelingen || []).forEach(function(c){ rijen.push(c); });
+        o.sprints.forEach(function(sp){ wk++; sprints.push({ wk: wk, sp: sp }); });
       });
-      if (!rijen.length) return;
+      if (!sprints.length) return;
 
+      var WOORD = { klaar: 'Opgeleverd', loopt: 'Loopt nu', wacht: 'Staat klaar' };
       p.innerHTML =
         '<div class="kaart" style="margin-top:1rem">' +
-        '<h3>Wat er gekoppeld wordt</h3>' +
-        '<p class="sub">Dit volgt uit je offerte. Elke koppeling hoort bij een week uit de roadmap.</p>' +
-        rijen.map(function(c){
-          var klaar = c.week <= gedaan;
-          return '<div class="bgKop">' +
-            '<span class="bgPil ' + (klaar ? 'klaar' : 'wacht') + '">' +
-              (klaar ? 'Draait' : 'Week ' + c.week) + '</span>' +
-            '<div><b>' + esc(c.naam) + '</b><span>' + esc(c.wat) + '</span></div></div>';
+        '<h3>Het werk uit je offerte</h3>' +
+        '<p class="sub">Elke week uit de offerte staat hier als taak. Wijzigt de offerte, dan wijzigt ' +
+        'deze lijst mee \u2014 er wordt niets overgetypt.</p>' +
+        sprints.map(function(r){
+          var st = r.wk <= gedaan ? 'klaar' : (r.wk === gedaan + 1 ? 'loopt' : 'wacht');
+          return '<div class="bgTaak ' + st + '">' +
+            '<div class="bgWk">WEEK<i>' + r.wk + '</i></div>' +
+            '<div><span class="bgPil ' + st + '">' + WOORD[st] + '</span>' +
+            '<h4>' + esc(r.sp.titel) + '</h4>' +
+            '<p>' + esc(r.sp.wat) + '</p>' +
+            '<span class="bgOp">Je krijgt: ' + esc(r.sp.op) + '</span></div></div>';
         }).join('') +
         '</div>';
       p.setAttribute('data-bg', 'klaar');
     } catch (e) {
-      console.error('[bedrijfsgeheugen] koppelingen:', e);
+      console.error('[bedrijfsgeheugen] taken:', e);
     }
   }
   vul();
   setInterval(function(){
-    var p = document.getElementById('p-koppelingen');
+    var p = document.getElementById('p-werkstromen');
     if (p && p.innerHTML.length < 300) p.removeAttribute('data-bg');
     vul();
   }, 700);
@@ -9165,15 +9167,20 @@ window.__BG_LOOPT__ = function(K, slug){
 })();
 </script>
 <style>
-.bgKop{display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start;
- border-bottom:1px solid var(--lijn,#DCDFE6);padding:.8rem 0}
-.bgKop:last-of-type{border-bottom:0}
-.bgKop b{display:block;font-size:.95rem}
-.bgKop span{display:block;font-size:.86rem;color:var(--grijs,#5C646E)}
-.bgPil{display:inline-block;border-radius:99px;padding:.15rem .6rem;font-size:.72rem;
- font-weight:700;white-space:nowrap}
-.bgPil.klaar{background:#E8F5EC;color:#1F9D55}
-.bgPil.wacht{background:#F4F5F8;color:var(--grijs,#5C646E)}
+.bgTaak{display:grid;grid-template-columns:58px 1fr;gap:.9rem;align-items:start;
+ border:1.5px solid var(--lijn,#DCDFE6);border-radius:12px;padding:.9rem 1.05rem;
+ margin-top:.6rem;background:#fff}
+.bgTaak.klaar{opacity:.72}
+.bgTaak.loopt{border-color:var(--blauw,#2742D6);border-width:2px}
+.bgWk{font-weight:700;font-size:.68rem;text-align:center;background:var(--inkt,#14171A);
+ color:#fff;border-radius:8px;padding:.32rem .2rem;line-height:1.25}
+.bgWk i{display:block;font-style:normal;font-size:1.05rem}
+.bgTaak.klaar .bgWk{background:#1F9D55}
+.bgTaak h4{margin:.25rem 0 .2rem;font-size:.98rem}
+.bgTaak p{margin:0;font-size:.88rem;color:var(--grijs,#5C646E);line-height:1.5}
+.bgPil.loopt{background:#EDF0FD;color:var(--blauw,#2742D6)}
+.bgOp{display:inline-block;margin-top:.45rem;background:var(--geel,#FFE86B);
+ border-radius:7px;padding:.24rem .55rem;font-size:.8rem;font-weight:600}
 </style>
 </body>
 </html>
