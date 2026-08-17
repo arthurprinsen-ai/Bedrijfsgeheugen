@@ -362,7 +362,7 @@ input[type=range]{min-height:34px}
 .paneel.opslot{position:relative;min-height:26rem}
 /* Inhoud echt weghalen, niet vervagen. Achter een waas staat de data er nog
    en is hij te selecteren — en het leest alsof het al is ingevuld. */
-.paneel.opslot>*:not(.slotlaag){display:none!important}
+.paneel.opslot>*:not(.slotlaag):not(.of-start){display:none!important}
 .paneel.opslot{min-height:auto}
 .slotlaag{position:static;padding:0;background:none;backdrop-filter:none}
 .slotlaag{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;
@@ -374,6 +374,31 @@ input[type=range]{min-height:34px}
 .slotkaart p{color:var(--grijs,#5C646E);font-size:.9rem;line-height:1.55;margin:0 0 .7rem}
 .slotkaart p.prijs{color:var(--inkt,#14171A);background:#F4F5F8;border-radius:10px;padding:.7rem .85rem;font-size:.88rem}
 .slotkaart p.prijs b{display:inline;font-family:inherit;font-size:inherit}
+#p-overzicht .of-klaarblok{border:2px solid var(--blauw,#2742D6);border-radius:14px;padding:1.2rem 1.3rem;margin:1rem 0}
+#p-overzicht .of-vlag{display:inline-block;background:var(--geel,#FFE86B);border-radius:99px;padding:.18rem .7rem;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.5rem}
+#p-overzicht .of-klaarblok b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.25rem;margin-bottom:.3rem}
+#p-overzicht .of-klaarblok p{color:var(--grijs,#5C646E);font-size:.92rem;line-height:1.55;margin:0 0 .9rem}
+.fbtop{display:inline-flex;align-items:center;gap:.35rem;background:var(--geel,#FFE86B);border:0;
+ border-radius:8px;padding:.42rem .7rem;font:inherit;font-size:.82rem;font-weight:600;color:var(--inkt,#14171A);
+ cursor:pointer;margin-right:.5rem;min-height:36px}
+.fbtop:hover{filter:brightness(.96)}
+.fbvenster{position:fixed;inset:0;background:rgba(20,23,26,.45);display:flex;align-items:center;
+ justify-content:center;padding:1rem;z-index:200}
+.fbvenster[hidden]{display:none}
+.fbkaart{background:#fff;border-radius:16px;padding:1.6rem 1.7rem;max-width:30rem;width:100%;
+ max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 24px 60px rgba(20,23,26,.22)}
+.fbkaart h3{margin:0 0 .2rem}
+.fbkaart>.sub{margin:0 0 1rem}
+.fbkaart label{display:block;margin-bottom:.75rem;font-size:.86rem;font-weight:600}
+.fbkaart label .sub{font-weight:400}
+.fbkaart select,.fbkaart input,.fbkaart textarea{display:block;width:100%;margin-top:.25rem;font:inherit;
+ font-size:.92rem;font-weight:400;padding:.5rem .6rem;border:1.5px solid var(--lijn,#DCDFE6);border-radius:9px;
+ background:#fff;box-sizing:border-box}
+.fbkaart textarea{resize:vertical}
+.fbdicht{position:absolute;top:.7rem;right:.8rem;border:0;background:none;font-size:1.5rem;line-height:1;
+ color:var(--grijs,#5C646E);cursor:pointer}
+.fbknoppen{display:flex;align-items:center;gap:.8rem;margin-top:.4rem}
+.fbmelding{font-size:.85rem;color:var(--grijs,#5C646E)}
 .slotkaart p.klein{margin:.7rem 0 0;font-size:.82rem;color:var(--grijs,#5C646E)}
 </style>
 </head>
@@ -8143,10 +8168,14 @@ body{background:var(--np-vlak)}
     d.className = 'kaart of-start';
     d.innerHTML =
       '<h3>Welkom, ' + esc(K.naam) + '</h3>' +
-      '<p class="sub">Dit portaal is voor jullie ingericht. E\u00e9n onderdeel is al gevuld: ' +
-      'jullie offerte, met de aanpak, de sprints per week en de roadmap.</p>' +
-      '<p style="margin:.9rem 0 0"><button class="knop" type="button" data-ganaar="offerte">' +
-      'Bekijk je offerte \u2192</button></p>' +
+      '<p class="sub">Dit portaal is voor jullie ingericht.</p>' +
+      '<div class="of-klaarblok">' +
+        '<span class="of-vlag">Klaar voor je</span>' +
+        '<b>Je offerte staat klaar</b>' +
+        '<p>De aanpak, de sprints per week, de user stories en de roadmap. ' +
+        'Zet zelf onderdelen aan en uit \u2014 de prijs en de doorlooptijd bewegen mee.</p>' +
+        '<button class="knop" type="button" data-ganaar="offerte">Bekijk je offerte \u2192</button>' +
+      '</div>' +
       '<div class="of-leeg">' +
         '<b>De rest staat nog leeg, en dat is met opzet.</b>' +
         '<p>De schermen voor cijfers, mensen, strategie, due diligence en de roadmap van je hele bedrijf ' +
@@ -8244,6 +8273,91 @@ body{background:var(--np-vlak)}
           'Geen offerte nodig, geen gesprek vooraf \u2014 je ziet vooraf wat je betaalt.</p>' +
         '</div>';
       p.appendChild(o);
+    });
+  })();
+
+
+  /* Feedbackknop bovenaan, met een formulier dat naar Notion schrijft via BG 29.
+     Bewust kort: zes velden, waarvan er maar \u00e9\u00e9n verplicht is. Wie moet nadenken
+     over een formulier, geeft geen feedback. */
+  (function(){
+    var balk = document.querySelector('.kopacties');
+    if (!balk) return;
+
+    var kn = document.createElement('button');
+    kn.className = 'fbtop';
+    kn.type = 'button';
+    kn.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback';
+    balk.insertBefore(kn, balk.firstChild);
+
+    var dlg = document.createElement('div');
+    dlg.className = 'fbvenster';
+    dlg.hidden = true;
+    dlg.innerHTML =
+      '<div class="fbkaart" role="dialog" aria-modal="true" aria-label="Feedback geven">' +
+        '<button class="fbdicht" type="button" aria-label="Sluiten">&times;</button>' +
+        '<h3>Wat vind je ervan?</h3>' +
+        '<p class="sub">E\u00e9n regel is genoeg. Alles wat je hier schrijft komt direct bij Arthur terecht.</p>' +
+        '<label>Waar gaat het over?<select id="fbSoort">' +
+          '<option>Idee</option><option>Werkt niet</option><option>Onduidelijk</option>' +
+          '<option>Compliment</option><option>Vraag</option></select></label>' +
+        '<label>Welk scherm?<select id="fbOnderdeel"></select></label>' +
+        '<label>Je feedback<textarea id="fbTekst" rows="4" placeholder="Wat viel je op?"></textarea></label>' +
+        '<label>Cijfer voor het portaal, 1 tot 10 <span class="sub">(mag leeg)</span>' +
+          '<input type="number" id="fbCijfer" min="1" max="10" placeholder="\u2013"></label>' +
+        '<label>Je e-mailadres <span class="sub">(alleen als je antwoord wilt)</span>' +
+          '<input type="email" id="fbMail" placeholder="jij@bedrijf.nl"></label>' +
+        '<div class="fbknoppen"><button class="knop" type="button" id="fbStuur">Versturen</button>' +
+        '<span class="fbmelding" id="fbMelding"></span></div>' +
+      '</div>';
+    document.body.appendChild(dlg);
+
+    var sel = dlg.querySelector('#fbOnderdeel');
+    var namen = { overzicht:'Overzicht', offerte:'Offerte', profiel:'Profiel per onderdeel',
+      dataai:'Data en AI', aiscan:'AI-scan', invoeren:'Je gegevens invullen', business:'Businesscase',
+      cijfers:'Cijfers', waarde:'Waarde en financiering', mensen:'Mensen', branche:'Branche',
+      onderzoek:'Onderzoek', beleid:'Compliance en security', strategie:'Strategie', canvassen:'Canvassen',
+      dd:'Due diligence', dna:'Van strategie naar maandag', bijhouden:'Actueel houden',
+      wijzigingen:'Wijzigingen', advies:'Advies', roadmap:'Roadmap', anders:'Iets anders' };
+    Object.keys(namen).forEach(function(k){
+      var o = document.createElement('option'); o.value = k; o.textContent = namen[k]; sel.appendChild(o);
+    });
+
+    function open(){
+      var actief = document.querySelector('.paneel.aan');
+      if (actief) sel.value = actief.id.replace(/^p-/, '') in namen ? actief.id.replace(/^p-/, '') : 'anders';
+      dlg.hidden = false;
+      dlg.querySelector('#fbTekst').focus();
+    }
+    function sluit(){ dlg.hidden = true; dlg.querySelector('#fbMelding').textContent = ''; }
+    kn.addEventListener('click', open);
+    dlg.querySelector('.fbdicht').addEventListener('click', sluit);
+    dlg.addEventListener('click', function(e){ if (e.target === dlg) sluit(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !dlg.hidden) sluit(); });
+
+    dlg.querySelector('#fbStuur').addEventListener('click', function(){
+      var t = dlg.querySelector('#fbTekst').value.trim();
+      var m = dlg.querySelector('#fbMelding');
+      if (t.length < 3) { m.textContent = 'Schrijf even \u00e9\u00e9n regel.'; dlg.querySelector('#fbTekst').focus(); return; }
+      m.textContent = 'Bezig\u2026';
+      fetch('https://hook.eu1.make.com/l744eyrlaic9y4rqubj8mjzt6k353aw9', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          feedback: t,
+          soort: dlg.querySelector('#fbSoort').value,
+          onderdeel: namen[sel.value] || 'Iets anders',
+          cijfer: dlg.querySelector('#fbCijfer').value || '',
+          mail: dlg.querySelector('#fbMail').value.trim(),
+          bedrijf: (K && K.naam) || slug || ''
+        })
+      }).then(function(){
+        m.textContent = 'Dank je \u2014 het staat genoteerd.';
+        dlg.querySelector('#fbTekst').value = '';
+        setTimeout(sluit, 1400);
+      }).catch(function(){
+        m.textContent = 'Versturen lukte niet. Mail het naar arthur@bedrijfsgeheugen.nl.';
+      });
     });
   })();
 
