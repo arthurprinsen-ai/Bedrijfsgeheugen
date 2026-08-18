@@ -9510,6 +9510,13 @@ window.__BG_LOOPT__ = function(K, slug){
     return t;
   }
 
+  var EFILTER='alles';   /* alles | ingepland | backlog */
+  var EGEKOZEN=null;     /* id van de aangeklikte epic */
+
+  function ingepland(st,e){
+    return st.features.some(function(f){ return f.epic===e.id && typeof f.sprint==='number'; });
+  }
+
   function teken(p,st){
     var t=tel(st);
     var h='<div class="kaart" style="margin-top:1rem">'+
@@ -9526,21 +9533,57 @@ window.__BG_LOOPT__ = function(K, slug){
       '<div class="dpBalk"><div style="width:'+(t.geld?t.geldAf/t.geld*100:0)+'%"></div></div>';
 
     /* epics: lopen over sprints, tonen hun bereik en voortgang */
-    h+='<span class="dpKopje">Epics</span><div class="dpEpics">';
+    var nIn=st.epics.filter(function(e){ return ingepland(st,e); }).length;
+    var nUit=st.epics.length-nIn;
+    if((EFILTER==='ingepland'&&!nIn)||(EFILTER==='backlog'&&!nUit)) EFILTER='alles';
+
+    h+='<div class="dpEkop"><span class="dpKopje">Epics</span><div class="dpEfilter">'+
+      [['alles','Alles',st.epics.length],['ingepland','Ingepland',nIn],
+       ['backlog','Nog niet ingepland',nUit]].map(function(x){
+        return '<button type="button" class="dpEknop'+(EFILTER===x[0]?' aan':'')+
+          (x[2]?'':' leeg')+'" data-efilter="'+x[0]+'"'+(x[2]?'':' disabled')+'>'+
+          x[1]+' <span>'+x[2]+'</span></button>';
+      }).join('')+'</div></div><div class="dpEpics">';
+
     st.epics.forEach(function(e,i){
       var fs=st.features.filter(function(f){return f.epic===e.id;});
       var ss=st.stories.filter(function(s){return s.epic===e.id;});
       var af=fs.filter(function(f){return f.af;}).length;
       var sp=fs.map(function(f){return f.sprint;}).filter(function(x){return typeof x==='number';});
       var van=sp.length?Math.min.apply(null,sp):null, tot=sp.length?Math.max.apply(null,sp):null;
-      h+='<div class="dpEpic e'+(i%3)+'">'+
+      if(EFILTER==='ingepland'&&!van) return;
+      if(EFILTER==='backlog'&&van) return;
+
+      /* Tijdlijn: alle sprints naast elkaar, de eigen sprints ingekleurd.
+         Een epic loopt over sprints heen; dat lees je in een balk sneller
+         dan in de tekst "sprint 2-3". */
+      var lat='';
+      for(var s2=1;s2<=st.sprints;s2++){
+        var aan=van&&s2>=van&&s2<=tot;
+        lat+='<i class="'+(aan?'vol':'')+'" title="Sprint '+s2+'"></i>';
+      }
+      h+='<div class="dpEpic e'+(i%3)+(EGEKOZEN===e.id?' gekozen':'')+
+        '" data-epic="'+e.id+'" tabindex="0" role="button" '+
+        'title="Bekijk de features en user stories van deze epic">'+
         '<b>'+esc(e.titel)+'</b>'+
         '<span>'+(van?('sprint '+van+(tot!==van?'\u2013'+tot:'')):'nog niet ingepland')+
         ' \u00b7 '+fs.length+' features \u00b7 '+ss.length+' stories</span>'+
+        '<div class="dpTijd">'+lat+'</div>'+
         '<div class="dpMini"><div style="width:'+(fs.length?af/fs.length*100:0)+'%"></div></div>'+
         '<span class="dpGeld">'+euro(e.prijs)+'</span></div>';
     });
     h+='</div>';
+
+    if(EGEKOZEN){
+      var ge=st.epics.filter(function(e){return e.id===EGEKOZEN;})[0];
+      if(ge){
+        var gf=st.features.filter(function(f){return f.epic===ge.id;});
+        var gs=st.stories.filter(function(x){return x.epic===ge.id;});
+        h+='<p class="dpGekozen">Je ziet alleen <b>'+esc(ge.titel)+'</b> \u2014 '+
+          gf.length+' features en '+gs.length+' user stories. '+
+          '<button type="button" class="dpAlles">Toon alles</button></p>';
+      } else EGEKOZEN=null;
+    }
 
     /* het bord: kolommen per sprint, met features en hun stories */
     h+='<span class="dpKopje">Sprints</span><div class="dpBord">';
@@ -9548,7 +9591,8 @@ window.__BG_LOOPT__ = function(K, slug){
     for(var s=1;s<=st.sprints;s++) kolommen.push(s);
     kolommen.forEach(function(k){
       var fs=st.features.filter(function(f){
-        return k==='backlog' ? f.sprint==='backlog' : f.sprint===k;
+        if(EGEKOZEN && f.epic!==EGEKOZEN) return false;
+        return k==='backlog' ? typeof f.sprint!=='number' : f.sprint===k;
       });
       var som=fs.reduce(function(a,f){return a+(f.waarde||0);},0);
       h+='<div class="dpKolom" data-kolom="'+k+'">'+
@@ -9606,6 +9650,26 @@ window.__BG_LOOPT__ = function(K, slug){
   }
   function koppel(p,st){
     var sleepF=null, sleepS=null;
+
+    Array.prototype.forEach.call(p.querySelectorAll('[data-efilter]'),function(b){
+      b.addEventListener('click',function(){
+        if(b.disabled) return;
+        EFILTER=b.dataset.efilter; teken(p,st);
+      });
+    });
+    Array.prototype.forEach.call(p.querySelectorAll('[data-epic]'),function(el){
+      function kies(){
+        EGEKOZEN = (EGEKOZEN===el.dataset.epic) ? null : el.dataset.epic;
+        teken(p,st);
+      }
+      el.addEventListener('click',kies);
+      el.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); kies(); }
+      });
+    });
+    Array.prototype.forEach.call(p.querySelectorAll('.dpAlles'),function(b){
+      b.addEventListener('click',function(){ EGEKOZEN=null; teken(p,st); });
+    });
     Array.prototype.forEach.call(p.querySelectorAll('.dpFeat'),function(el){
       el.addEventListener('dragstart',function(e){
         e.stopPropagation(); sleepF=el.dataset.f; sleepS=null; el.classList.add('sleept');
@@ -9740,6 +9804,28 @@ window.__BG_LOOPT__ = function(K, slug){
 .dpEpic.e2{border-left-color:#1F9D55}
 .dpEpic b{display:block;font-size:.95rem;margin-bottom:.15rem}
 .dpEpic span{display:block;font-size:.78rem;color:var(--grijs,#5C646E)}
+.dpEpic{cursor:pointer;transition:box-shadow .15s,transform .15s}
+.dpEpic:hover{box-shadow:0 2px 10px rgba(20,23,26,.08)}
+.dpEpic.gekozen{box-shadow:0 0 0 2px var(--blauw,#2742D6)}
+.dpEkop{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;justify-content:space-between}
+.dpEfilter{display:flex;gap:.35rem;flex-wrap:wrap}
+.dpEknop{border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:99px;padding:.28rem .7rem;
+ font:inherit;font-size:.8rem;color:var(--inkt,#14171A);cursor:pointer;display:inline-flex;gap:.35rem;
+ align-items:center}
+.dpEknop span{font-size:.73rem;color:var(--grijs,#5C646E)}
+.dpEknop:hover{border-color:var(--blauw,#2742D6)}
+.dpEknop.aan{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6);color:#fff}
+.dpEknop.aan span{color:rgba(255,255,255,.75)}
+.dpEknop.leeg{opacity:.4;cursor:default}
+.dpTijd{display:flex;gap:2px;margin:.45rem 0 .1rem}
+.dpTijd i{flex:1;height:7px;border-radius:3px;background:var(--lijn,#DCDFE6)}
+.dpTijd i.vol{background:currentColor}
+.dpEpic.e0 .dpTijd i.vol{background:var(--blauw,#2742D6)}
+.dpEpic.e1 .dpTijd i.vol{background:var(--oranje,#FF4F17)}
+.dpEpic.e2 .dpTijd i.vol{background:#1F9D55}
+.dpGekozen{background:#EDF0FD;border-radius:10px;padding:.6rem .9rem;font-size:.86rem;margin:.7rem 0 0}
+.dpAlles{border:0;background:none;color:var(--blauw,#2742D6);font:inherit;font-size:.86rem;
+ text-decoration:underline;cursor:pointer;padding:0}
 .dpMini{height:5px;border-radius:99px;background:var(--lijn,#DCDFE6);overflow:hidden;margin:.5rem 0 .3rem}
 .dpMini div{height:100%;background:var(--inkt,#14171A);border-radius:99px}
 .dpGeld{font-weight:700;color:var(--inkt,#14171A)!important;font-size:.85rem!important}
