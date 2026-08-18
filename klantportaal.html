@@ -8253,7 +8253,7 @@ window.__BG_LOOPT__ = function(K, slug){
   if (!K || !K.onderdelen) {
     paneel.innerHTML = '<div class="kaart" style="margin-top:1rem">' +
       '<h3>Nog geen offerte</h3><p class="sub">Zodra er een voorstel voor je klaarstaat, ' +
-      'vind je het hier: de onderdelen, de sprints per week en de roadmap.</p></div>';
+      'vind je het hier: de onderdelen, de sprints en de roadmap.</p></div>';
     return;
   }
 
@@ -8290,10 +8290,10 @@ window.__BG_LOOPT__ = function(K, slug){
     '</div>' +
     '<div class="kaart" style="margin-top:1rem">' +
       '<h3>De roadmap, week voor week</h3>' +
-      '<p class="sub">Elke week eindigt met iets dat je kunt bekijken.</p>' +
+      '<p class="sub">Elke week van de doorlooptijd eindigt met iets dat je kunt bekijken.</p>' +
       '<div id="ofRoad"></div>' +
       '<div class="of-tel">' +
-        '<div><b id="tWeken"></b>weken tot oplevering</div>' +
+        '<div><b id="tWeken"></b>weken doorlooptijd</div>' +
         '<div><b id="tStories"></b>user stories</div>' +
         '<div><b id="tOp"></b>opleveringen</div>' +
         '<div><b id="tPerWeek"></b>per week</div>' +
@@ -8363,8 +8363,8 @@ window.__BG_LOOPT__ = function(K, slug){
         '<span class="of-op">Aan het eind: ' + esc(r.s.op) + '</span></div></div>';
     }).join('');
     paneel.querySelector('#ofSom').textContent = euro(prijs);
-    paneel.querySelector('#ofKlaar').textContent = 'klaar week ' + weken;
-    paneel.querySelector('#ofDuur').textContent = weken + ' weken \u00b7 ' + schermen +
+    paneel.querySelector('#ofKlaar').textContent = 'klaar na ' + weken + ' weken';
+    paneel.querySelector('#ofDuur').textContent = 'doorlooptijd ' + weken + ' weken \u00b7 ' + schermen +
       (schermen === 1 ? ' scherm' : ' schermen') + ' \u00b7 ' + stories + ' user stories';
     paneel.querySelector('#ofTitel').textContent =
       schermen >= 4 ? 'Alles, in \u00e9\u00e9n keer' : (schermen <= 1 ? 'Fase 1 en het fundament' : 'Jouw keuze');
@@ -8641,8 +8641,8 @@ window.__BG_LOOPT__ = function(K, slug){
       v.className = 'kaart of-start of-voortgang';
       v.innerHTML = gedaan === 0
         ? '<h3>Het werk begint zodra je akkoord geeft</h3>' +
-          '<p class="sub">Je offerte beschrijft ' + totaal + ' weken werk. Zodra je akkoord geeft ' +
-          'verschijnen die weken hier als taken, met per week wat je krijgt en wanneer.</p>'
+          '<p class="sub">Je offerte beschrijft een doorlooptijd van ' + totaal + ' weken. Zodra je ' +
+          'akkoord geeft verschijnt die doorlooptijd hier als taken, met wat je krijgt en wanneer.</p>'
         : '<h3>Week ' + gedaan + ' van ' + totaal + ' — ' +
             (loopt ? esc(loopt.sp.titel) : 'alles opgeleverd') + '</h3>' +
           '<div class="vgBalk"><div style="width:' + Math.round(gedaan / totaal * 100) + '%"></div></div>' +
@@ -8777,7 +8777,7 @@ window.__BG_LOOPT__ = function(K, slug){
           '<p class="sub">Sindsdien staat het werk in je project: de koppelingen, de taken, ' +
           'de documenten en de termijnen. Er is niets overgetypt.</p></div>'
         : '<h3>Akkoord geven</h3>' +
-          '<p class="sub">Zet je naam eronder en het hele project staat klaar: de weken als taken, ' +
+          '<p class="sub">Zet je naam eronder en het hele project staat klaar: de doorlooptijd als taken, ' +
           'de koppelingen die we maken, de documenten die je krijgt en wat je per onderdeel betaalt. ' +
           'Je hoeft niets in te vullen — het staat er al.</p>' +
           '<label>Je naam<input type="text" id="htkNaam" placeholder="Voor- en achternaam"></label>' +
@@ -8960,7 +8960,7 @@ window.__BG_LOOPT__ = function(K, slug){
               '<div><b>' + esc(o.titel) + '</b><span>' + esc(o.kort) + '</span></div>' +
               '<div class="mwCijfers">' +
                 '<span class="mwPrijs">\u20ac ' + o.prijs.toLocaleString('nl-NL') + '</span>' +
-                '<span class="mwWeek">+' + w + (w === 1 ? ' week' : ' weken') + '</span>' +
+                '<span class="mwWeek">+' + w + (w === 1 ? ' week' : ' weken') + ' doorlooptijd</span>' +
                 '<span class="mwEind">klaar rond ' + datum(basisWeken - (K.voortgang || 0) + w) + '</span>' +
               '</div>' +
               '<button class="knop licht mwKies" type="button">Dit erbij →</button></div>';
@@ -11068,7 +11068,7 @@ window.__BG_LOOPT__ = function(K, slug){
         zwaar:true, naar:'offerte',
         kop:'Je offerte wacht op je handtekening',
         uitleg:'Onderaan de offerte staat een blok met je naam en een vinkje. Zodra je tekent staat '+
-               'het hele project klaar: '+weken+' weken werk, '+euro(totaal)+' excl. btw.',
+               'het hele project klaar: doorlooptijd '+weken+' weken, '+euro(totaal)+' excl. btw.',
         knop:'Naar de offerte'
       });
     }
