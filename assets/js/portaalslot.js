@@ -40,6 +40,34 @@
     });
   }
 
+  /* Een klant die een offerte opent heeft geen wachtwoord en wil er ook geen.
+     Daarom een inloglink per mail: hij typt zijn adres, klikt in de mail, en is
+     binnen. Het account wordt bij die eerste klik aangemaakt; de uitnodiging in
+     de database koppelt hem meteen aan de juiste organisatie. */
+  function linkSturen(email) {
+    return api('/auth/v1/otp', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        create_user: true,
+        options: { email_redirect_to: location.href }
+      })
+    });
+  }
+
+  /* Terug uit de mail: Supabase zet de sleutels in de hash. Die halen we eruit,
+     ruimen de adresbalk op en halen de offerte op. */
+  function uitHash() {
+    var h = location.hash || '';
+    if (h.indexOf('access_token=') < 0) return null;
+    var p = {};
+    h.replace(/^#/, '').split('&').forEach(function (deel) {
+      var i = deel.indexOf('=');
+      if (i > 0) p[deel.slice(0, i)] = decodeURIComponent(deel.slice(i + 1));
+    });
+    return p.access_token || null;
+  }
+
   function inloggen(email, wachtwoord) {
     return api('/auth/v1/token?grant_type=password', {
       method: 'POST',
@@ -84,6 +112,8 @@
     + '#bgSlot label{display:block;font-size:.82rem;font-weight:600;margin:.6rem 0 .2rem}'
     + '#bgSlot input{width:100%;padding:.6rem .7rem;border:1px solid var(--lijn);border-radius:8px;font:inherit}'
     + '#bgSlot .knop{width:100%;margin-top:.9rem}'
+    + '#bgSlot .knop.licht{margin-top:.5rem}'
+    + '.bgSlotUit{font-size:.78rem;color:var(--grijs,#5C646E);margin:.6rem 0 0;line-height:1.45}'
     + '#bgSlotFout{color:var(--rood);font-size:.84rem;margin-top:.6rem;min-height:1.2em}'
     + '</style>';
 
@@ -106,6 +136,8 @@
       + '<label for="bgWw">Wachtwoord</label>'
       + '<input id="bgWw" type="password" autocomplete="current-password">'
       + '<button class="knop" id="bgIn">Inloggen</button>'
+      + '<button class="knop licht" id="bgLink" type="button">Stuur me een inloglink</button>'
+      + '<p class="bgSlotUit">Geen wachtwoord? Vul alleen je e-mailadres in en klik op de link die je krijgt.</p>'
       + '<div id="bgSlotFout" role="alert"></div>'
       + '</div>');
 
@@ -132,6 +164,25 @@
           else fout.textContent = 'Inloggen lukt nu niet. Probeer het zo nog eens.';
         });
     }
+
+    var link = document.getElementById('bgLink');
+    link.addEventListener('click', function () {
+      var mail = (document.getElementById('bgMail').value || '').trim();
+      if (!mail) { fout.textContent = 'Vul eerst je e-mailadres in.'; return; }
+      link.disabled = true;
+      fout.textContent = 'Bezig met versturen\u2026';
+      linkSturen(mail)
+        .then(function () {
+          fout.textContent = 'Verstuurd. Klik op de link in je mail, dan ben je binnen.';
+        })
+        .catch(function (e) {
+          link.disabled = false;
+          var m = (e && (e.error_description || e.msg || e.message)) || '';
+          fout.textContent = /rate|limit/i.test(m)
+            ? 'Er is net al een link gestuurd. Kijk even in je mail.'
+            : 'Versturen lukt nu niet. Probeer het zo nog eens.';
+        });
+    });
 
     knop.addEventListener('click', probeer);
     document.getElementById('bgWw').addEventListener('keydown', function (e) {
@@ -171,6 +222,15 @@
   function start() {
     var s = slug();
     if (!s || s === 'demo') return;
+
+    var uitMail = uitHash();
+    if (uitMail) {
+      history.replaceState(null, '', location.pathname + location.search);
+      haalOfferte(uitMail, s)
+        .then(function (k) { bewaar(s, k, uitMail); location.reload(); })
+        .catch(function () { wissen(); toonInlog(s); });
+      return;
+    }
 
     var heeft = false;
     try { heeft = !!sessionStorage.getItem(BEWAAR + s); } catch (e) {}
