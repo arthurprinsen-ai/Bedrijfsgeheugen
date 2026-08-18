@@ -153,11 +153,18 @@
       try { oud = sessionStorage.getItem(BEWAAR + s) || ''; } catch (e) {}
       if (nieuw === oud) return;
       bewaar(s, k, token);
+      try { sessionStorage.removeItem('bg_herstel'); } catch (e2) {}
       location.reload();
-    }).catch(function (e) {
-      /* Verlopen sessie: opruimen en opnieuw laten inloggen. */
-      var m = (e && (e.message || e.msg || e.code)) || '';
-      if (/JWT|token|expired|401/i.test(String(m))) { wissen(); location.reload(); }
+    }).catch(function () {
+      /* Lukt ophalen niet — verlopen sessie, netwerk, wat dan ook — dan is de
+         bewaarde offerte niet te vertrouwen: opruimen en opnieuw laten inloggen.
+         Eén keer, want een herlaadlus is erger dan een inlogscherm. */
+      var gedaan = '';
+      try { gedaan = sessionStorage.getItem('bg_herstel') || ''; } catch (e2) {}
+      if (gedaan) return;
+      try { sessionStorage.setItem('bg_herstel', '1'); } catch (e2) {}
+      wissen();
+      location.reload();
     });
   }
 
