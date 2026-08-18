@@ -67,6 +67,9 @@ EIGENAAR = {
     'ai implementeren mkb': '/ai-implementeren',
     'ai pilot opzetten mkb': '/ai-poc',
     # pakketkoppelingen, gemeten met DataForSEO op 16 augustus
+    # hoofdzoekwoord, gekozen op 18 augustus: 480 zoekopdrachten per maand,
+    # concurrentie 41, CPC 18,79 euro. Hoogste waarde in de hele kansenlijst.
+    'bedrijfsprocessen automatiseren': '/bedrijfsprocessen-automatiseren',
     'exact online koppeling': '/exact-online-koppeling',
     'api koppeling laten maken': '/api-koppeling-laten-maken',
     'twinfield koppeling': '/twinfield-koppeling',
