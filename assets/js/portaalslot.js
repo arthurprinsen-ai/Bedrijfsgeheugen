@@ -139,6 +139,28 @@
     });
   }
 
+  /* Elke keer dat de pagina opent de offerte opnieuw ophalen. Zonder dit blijft
+     een tabblad hangen op de versie van het moment van inloggen, en ziet de klant
+     een nieuw onderdeel pas na het sluiten van zijn browser. Alleen herladen als
+     er echt iets veranderd is, anders zou de pagina zichzelf blijven verversen. */
+  function verversen(s) {
+    var token = '';
+    try { token = sessionStorage.getItem(TOKEN) || ''; } catch (e) {}
+    if (!token) return;
+
+    haalOfferte(token, s).then(function (k) {
+      var nieuw = JSON.stringify(k), oud = '';
+      try { oud = sessionStorage.getItem(BEWAAR + s) || ''; } catch (e) {}
+      if (nieuw === oud) return;
+      bewaar(s, k, token);
+      location.reload();
+    }).catch(function (e) {
+      /* Verlopen sessie: opruimen en opnieuw laten inloggen. */
+      var m = (e && (e.message || e.msg || e.code)) || '';
+      if (/JWT|token|expired|401/i.test(String(m))) { wissen(); location.reload(); }
+    });
+  }
+
   function start() {
     var s = slug();
     if (!s || s === 'demo') return;
@@ -151,6 +173,7 @@
       document.querySelectorAll('[aria-label="Uitloggen"]').forEach(function (b) {
         b.addEventListener('click', wissen, true);
       });
+      verversen(s);
       return;
     }
 
