@@ -52,6 +52,8 @@ EIGENAAR = {
     'bedrijfsopvolging familiebedrijf kennis': '/blog/bedrijfsopvolging-begin-bij-het-geheugen/',
     'eu ai act mkb': '/blog/eu-ai-act-mkb/',
     'afas koppeling kosten': '/blog/wat-kost-een-afas-koppeling/',
+    # 140 per maand, concurrentie 9 — laagste weerstand in de hele lijst.
+    'afas pocket app koppelen': '/afas-pocket-koppelen',
     'erp implementatie mislukt': '/blog/automatiseren-zonder-traject/',
     'ai marketing mkb': '/ai-marketing-mkb',
     'kennisborging mkb': '/product',
