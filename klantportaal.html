@@ -9965,6 +9965,7 @@ window.__BG_LOOPT__ = function(K, slug){
   function voorkeur(){
     var v=jsonLees('bg_dash_'+slug(), {orde:VOLG.slice(), uit:[]});
     if(!v.groep) v.groep={};
+    if(!v.filter) v.filter='alles';
     VOLG.forEach(function(id){ if(!v.groep[id]) v.groep[id]=GROEP[id]; });
     return v;
   }
@@ -10090,17 +10091,36 @@ window.__BG_LOOPT__ = function(K, slug){
     w.className='dsWrap';
     w.setAttribute('data-s',sleutelNu);
     var aan=vk.orde.filter(function(id){ return vk.uit.indexOf(id)<0; });
-    var kaarten='';
+    var perSectie={}, gevuld=[];
     SECTIES.forEach(function(sec){
       var inSec=aan.filter(function(id){ return (vk.groep[id]||GROEP[id])===sec; });
-      if(!inSec.length) return;
-      kaarten+='<div class="dsGroepKop">'+sec+'</div>'+
-        inSec.map(function(id){ return bouwKaart(id,g); }).join('');
+      if(inSec.length){ perSectie[sec]=inSec; gevuld.push(sec); }
     });
-    w.innerHTML='<div class="dsKop"><span>Jouw overzicht</span>'+
-      '<button class="dsInstel" type="button" aria-expanded="false">Kaarten kiezen</button></div>'+
-      '<div class="dsKiezer" hidden><p class="dsKiezerUitleg">Vink aan welke kaarten je ziet, '+
-      'en kies per kaart onder welke sectie hij staat. Je keuze wordt bewaard.</p>'+VOLG.map(function(id){
+    if(gevuld.indexOf(vk.filter)<0) vk.filter='alles';
+
+    /* Filterknoppen: alleen secties die kaarten hebben, met het aantal erbij.
+       Onderzoek naar filters is eenduidig: bij een handvol keuzes horen ze
+       boven de inhoud te staan, altijd zichtbaar, met de actieve keuze in beeld. */
+    var chips='<button type="button" class="dsChip'+(vk.filter==='alles'?' aan':'')+
+      '" data-filter="alles">Alles <span>'+aan.length+'</span></button>'+
+      gevuld.map(function(sec){
+        return '<button type="button" class="dsChip'+(vk.filter===sec?' aan':'')+
+          '" data-filter="'+sec+'">'+sec+' <span>'+perSectie[sec].length+'</span></button>';
+      }).join('');
+
+    var toon=vk.filter==='alles'?gevuld:[vk.filter];
+    var kaarten='';
+    toon.forEach(function(sec){
+      kaarten+=(vk.filter==='alles'?'<div class="dsGroepKop">'+sec+'</div>':'')+
+        perSectie[sec].map(function(id){ return bouwKaart(id,g); }).join('');
+    });
+    w.innerHTML='<div class="dsBalk2"><div class="dsChips">'+chips+'</div>'+
+      '<button class="dsInstel" type="button" aria-expanded="false">Aanpassen</button></div>'+
+      (vk.filter!=='alles'?'<p class="dsFilterMelding">Je ziet alleen <b>'+vk.filter+
+        '</b>. <button type="button" class="dsWis" data-filter="alles">Alles tonen</button></p>':'')+
+      '<div class="dsKiezer" hidden><p class="dsKiezerUitleg">Dit verandert je overzicht zelf: '+
+      'vink aan welke kaarten je wilt zien, en kies per kaart onder welke sectie hij staat. '+
+      'Je keuze wordt bewaard.</p>'+VOLG.map(function(id){
         var uit=vk.uit.indexOf(id)>=0, gr=vk.groep[id]||GROEP[id];
         return '<div class="dsKiezerRij">'+
           '<label><input type="checkbox" data-kies="'+id+'"'+(uit?'':' checked')+'>'+
@@ -10145,7 +10165,7 @@ window.__BG_LOOPT__ = function(K, slug){
       else { kiezer.setAttribute('hidden',''); BEZIG=false; }
       knop.setAttribute('aria-expanded', open?'true':'false');
       knop.classList.toggle('aan', open);
-      knop.textContent = open ? 'Klaar met kiezen' : 'Kaarten kiezen';
+      knop.textContent = open ? 'Klaar' : 'Aanpassen';
     });
     Array.prototype.forEach.call(w.querySelectorAll('[data-kies]'),function(c){
       c.addEventListener('change',function(){
@@ -10156,6 +10176,14 @@ window.__BG_LOOPT__ = function(K, slug){
         var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
         BEZIG=false; teken(); BEZIG=true;
         var k2=document.querySelector('.dsKiezer'); if(k2) k2.removeAttribute('hidden');
+      });
+    });
+    Array.prototype.forEach.call(w.querySelectorAll('[data-filter]'),function(b){
+      b.addEventListener('click',function(){
+        vk.filter=b.dataset.filter;
+        jsonZet('bg_dash_'+slug(),vk);
+        var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
+        BEZIG=false; teken();
       });
     });
     Array.prototype.forEach.call(w.querySelectorAll('[data-groep]'),function(sel){
@@ -10219,6 +10247,21 @@ window.__BG_LOOPT__ = function(K, slug){
 .dsInstel.aan:hover{color:#fff}
 .dsKiezer label{display:flex;align-items:center;gap:.35rem;cursor:pointer}
 .dsKop{padding-right:5.5rem}
+.dsBalk2{position:sticky;top:104px;z-index:12;display:flex;align-items:center;gap:.8rem;
+ justify-content:space-between;background:var(--papier,#FBFAF7);padding:.55rem 0 .6rem;
+ border-bottom:1px solid var(--lijn,#DCDFE6);margin-bottom:.9rem}
+.dsChips{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;min-width:0}
+.dsChip{border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:99px;
+ padding:.32rem .8rem;font:inherit;font-size:.82rem;color:var(--inkt,#14171A);cursor:pointer;
+ display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap}
+.dsChip span{font-size:.74rem;color:var(--grijs,#5C646E)}
+.dsChip:hover{border-color:var(--blauw,#2742D6)}
+.dsChip.aan{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6);color:#fff}
+.dsChip.aan span{color:rgba(255,255,255,.75)}
+.dsFilterMelding{margin:-.4rem 0 .8rem;font-size:.83rem;color:var(--grijs,#5C646E)}
+.dsWis{border:0;background:none;color:var(--blauw,#2742D6);font:inherit;font-size:.83rem;
+ text-decoration:underline;cursor:pointer;padding:0}
+@media(max-width:720px){.dsBalk2{flex-wrap:wrap}.dsChips{overflow-x:auto}}
 .dsKiezer{flex-direction:column;align-items:stretch}
 .dsKiezerRij{display:flex;align-items:center;gap:.6rem;justify-content:space-between}
 .dsKiezerRij label{flex:1}
