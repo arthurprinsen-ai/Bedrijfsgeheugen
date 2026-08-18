@@ -11400,5 +11400,106 @@ window.__BG_LOOPT__ = function(K, slug){
  font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
 .ofBekijk:hover{background:var(--blauw,#2742D6)}
 </style>
+<script>
+/* De rest van de offerte in het portaal: aanpak en architectuur, de planning met
+   datums, de licentiekosten en wat wij van de klant nodig hebben. Die stonden wel
+   in de PDF maar niet in het portaal, en dan gaan twee versies uit elkaar lopen.
+   Puur toevoegend: eigen blokken onder de bestaande offerte, niets gewijzigd. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function euro(n){return '\u20ac '+Math.round(n).toLocaleString('nl-NL');}
+
+  function vul(){
+    var p=document.getElementById('p-offerte');
+    if(!p||document.getElementById('ofExtra')) return;
+    var K=(window.__KLANTEN__||{})[slug()];
+    if(!K) return;
+    if(!K.architectuur&&!K.planning&&!K.licenties&&!K.vanUNodig) return;
+    var rijen=p.querySelector('#ofRijen');
+    if(!rijen) return;
+
+    var h='';
+    if(K.fasering){
+      h+='<div class="oxKaart"><h3>De opbouw van de kosten</h3>'+
+        '<div class="oxFase"><div><b>Fase 1 \u2014 meten opzetten</b><span>GA4, Tag Manager, conversies en UTM</span></div>'+
+        '<em>'+euro(K.fasering.fase1)+'</em></div>'+
+        '<div class="oxFase"><div><b>Fase 2 \u2014 Power BI en datamodellering</b><span>Fundament, directiescherm en de schermen per rol</span></div>'+
+        '<em>'+euro(K.fasering.fase2)+'</em></div>'+
+        '<p class="sub">'+esc(K.fasering.regel||'')+'</p></div>';
+    }
+    if(K.architectuur){
+      var A=K.architectuur;
+      h+='<div class="oxKaart"><h3>'+esc(A.kop||'Aanpak en architectuur')+'</h3>'+
+        '<p class="sub">'+esc(A.intro||'')+'</p>'+
+        (A.lagen||[]).map(function(l){
+          return '<div class="oxLaag"><b>'+esc(l[0])+'</b><span>'+esc(l[1])+'</span></div>';
+        }).join('')+
+        (A.afwijking?'<p class="oxLet">'+esc(A.afwijking)+'</p>':'')+'</div>';
+    }
+    if(K.planning){
+      h+='<div class="oxKaart"><h3>Van akkoord tot oplevering</h3>'+
+        K.planning.map(function(r){
+          return '<div class="oxLaag"><b>'+esc(r[0])+'</b><span>'+esc(r[1])+'</span></div>';
+        }).join('')+'</div>';
+    }
+    if(K.licenties){
+      h+='<div class="oxKaart"><h3>Aanvullende kosten</h3>'+
+        '<p class="sub">'+esc(K.licenties.intro||'')+'</p>'+
+        (K.licenties.regels||[]).map(function(r){
+          return '<div class="oxFase"><div><b>'+esc(r[0])+'</b><span>'+esc(r[2]||'')+'</span></div>'+
+            '<em class="oxKlein">'+esc(r[1])+'</em></div>';
+        }).join('')+
+        (K.licenties.slot?'<p class="sub">'+esc(K.licenties.slot)+'</p>':'')+'</div>';
+    }
+    if(K.vanUNodig){
+      h+='<div class="oxKaart"><h3>Wat wij van u nodig hebben</h3><ul class="oxLijst">'+
+        K.vanUNodig.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul></div>';
+    }
+    if(K.doorlopend){
+      var D=K.doorlopend;
+      h+='<div class="oxKaart"><h3>Wat het portaal kost</h3>'+
+        '<p class="oxGeel">'+esc(D.tijdens||'Tijdens het project inbegrepen.')+'</p>'+
+        '<div class="oxFase"><div><b>Starter</b><span>'+esc(D.wat_starter||'')+'</span></div>'+
+        '<em>'+euro(D.daarna_starter||0)+' p/m</em></div>'+
+        '<div class="oxFase"><div><b>Pro</b><span>'+esc(D.wat_pro||'')+'</span></div>'+
+        '<em>'+euro(D.daarna_pro||0)+' p/m</em></div>'+
+        '<p class="sub">'+esc(D.regel||'')+'</p></div>';
+    }
+    if(!h) return;
+    var wrap=document.createElement('div');
+    wrap.id='ofExtra'; wrap.className='ofExtra';
+    wrap.innerHTML=h;
+    rijen.parentNode.appendChild(wrap);
+  }
+  setInterval(function(){ try{ vul(); }catch(e){ console.error('[bedrijfsgeheugen] offerte-extra:',e); } },800);
+})();
+</script>
+<style>
+.ofExtra{margin:1.6rem 0 0;display:grid;gap:.9rem}
+.oxKaart{border:1.5px solid var(--lijn,#DCDFE6);border-radius:14px;padding:1.1rem 1.2rem;background:#fff}
+.oxKaart h3{margin:0 0 .5rem;font-size:1.05rem}
+.oxKaart .sub{font-size:.85rem;color:var(--grijs,#5C646E);margin:.5rem 0 0;line-height:1.5}
+.oxFase{display:flex;align-items:flex-start;gap:1rem;justify-content:space-between;
+ border-top:1px solid var(--lijn,#DCDFE6);padding:.6rem 0}
+.oxKaart .oxFase:first-of-type{border-top:0}
+.oxFase b{display:block;font-size:.92rem}
+.oxFase span{display:block;font-size:.8rem;color:var(--grijs,#5C646E);line-height:1.45;margin-top:.1rem}
+.oxFase em{font-style:normal;font-weight:700;white-space:nowrap}
+.oxKlein{font-size:.85rem;color:var(--blauw,#2742D6)}
+.oxLaag{display:flex;gap:1rem;align-items:flex-start;border-top:1px solid var(--lijn,#DCDFE6);padding:.6rem 0}
+.oxKaart .oxLaag:first-of-type{border-top:0}
+.oxLaag b{flex:0 0 9rem;font-size:.9rem}
+.oxLaag span{flex:1;font-size:.85rem;line-height:1.5}
+.oxLet{background:var(--geel,#FFE86B);border-radius:10px;padding:.7rem .9rem;font-size:.83rem;
+ line-height:1.5;margin:.8rem 0 0}
+.oxGeel{background:var(--geel,#FFE86B);border-radius:10px;padding:.6rem .9rem;font-size:.88rem;
+ font-weight:600;margin:0 0 .5rem}
+.oxLijst{margin:.3rem 0 0;padding-left:1.1rem;font-size:.88rem;line-height:1.6}
+@media(max-width:640px){.oxLaag{flex-direction:column;gap:.2rem}.oxLaag b{flex:none}}
+</style>
 </body>
 </html>
