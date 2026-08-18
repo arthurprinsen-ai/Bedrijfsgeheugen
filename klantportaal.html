@@ -9152,8 +9152,17 @@ window.__BG_LOOPT__ = function(K, slug){
 
       var gedaan = K.voortgang || 0, rijen = [];
       K.onderdelen.forEach(function(o){
-        if (!o.vast) return;
-        (o.koppelingen || []).forEach(function(c){ rijen.push(c); });
+        (o.koppelingen || []).forEach(function(c){
+          var r = {}; for (var k in c) r[k] = c[k];
+          r.meerwerk = !o.vast;
+          rijen.push(r);
+        });
+      });
+      /* Op weeknummer, want een lijst die door elkaar staat leest niemand.
+         Meerwerk achteraan: het hoort erbij, maar is nog niet getekend. */
+      rijen.sort(function(a, b){
+        if (!!a.meerwerk !== !!b.meerwerk) return a.meerwerk ? 1 : -1;
+        return (a.week || 99) - (b.week || 99);
       });
       if (!rijen.length) return;
 
@@ -9238,6 +9247,19 @@ window.__BG_LOOPT__ = function(K, slug){
             '</span></div></div>';
         }).join('') +
         '<div class="bgTot"><span>Totaal</span><b>' + euro(totaal) + '</b><small>excl. btw</small></div>' +
+        (function(){
+          /* Meerwerk staat er wel, maar telt niet mee: het is nog niet getekend. */
+          var m = K.onderdelen.filter(function(o){ return !o.vast; });
+          if (!m.length) return '';
+          var som = 0; m.forEach(function(o){ som += o.prijs; });
+          return '<p class="sub" style="margin:1rem 0 .4rem"><b>Nog niet getekend \u2014 meerwerk</b></p>' +
+            m.map(function(o){
+              return '<div class="bgKop bgMeer"><span class="bgBedrag">' + euro(o.prijs) + '</span>' +
+                '<div><b>' + esc(o.titel) + '</b><span>Pas na aparte akkoord</span></div></div>';
+            }).join('') +
+            '<div class="bgTot bgMeerTot"><span>Meerwerk samen</span><b>' + euro(som) +
+            '</b><small>excl. btw, niet in het totaal</small></div>';
+        })() +
         '<p class="sub" style="margin:.9rem 0 0">Er wordt pas gefactureerd nadat een onderdeel is ' +
         'opgeleverd. Loopt er iets uit, dan schuift de factuur mee.</p>' +
         '</div>';
@@ -9264,6 +9286,9 @@ window.__BG_LOOPT__ = function(K, slug){
 .bgTot span{font-weight:600}
 .bgTot b{font-size:1.35rem;margin-left:auto}
 .bgTot small{color:var(--grijs,#5C646E)}
+.bgMeer{opacity:.72}
+.bgMeerTot{border-top:1.5px dashed var(--lijn,#DCDFE6)}
+.bgMeerTot b{font-size:1.05rem}
 </style>
 <script>
 /* Documenten — wat de klant krijgt en wanneer. Op zichzelf staand blok.
@@ -9285,8 +9310,15 @@ window.__BG_LOOPT__ = function(K, slug){
 
       var gedaan = K.voortgang || 0, docs = [];
       K.onderdelen.forEach(function(o){
-        if (!o.vast) return;
-        (o.documenten || []).forEach(function(x){ docs.push(x); });
+        (o.documenten || []).forEach(function(x){
+          var d2 = {}; for (var k in x) d2[k] = x[k];
+          d2.meerwerk = !o.vast;
+          docs.push(d2);
+        });
+      });
+      docs.sort(function(a, b){
+        if (!!a.meerwerk !== !!b.meerwerk) return a.meerwerk ? 1 : -1;
+        return (a.week || 99) - (b.week || 99);
       });
       if (!docs.length) return;
 
@@ -9413,6 +9445,35 @@ window.__BG_LOOPT__ = function(K, slug){
   function sleutel(){return 'bg_plan_'+slug();}
   function bewaar(st){try{localStorage.setItem(sleutel(),JSON.stringify(st));}catch(e){}}
   function lees(){try{return JSON.parse(localStorage.getItem(sleutel())||'null');}catch(e){return null;}}
+
+  /* Vult een bestaand plan aan met onderdelen die er nog niet in staan. Zonder
+     dit blijft het bord staan op de offerte van het moment van zaaien, en komt
+     een later toegevoegd onderdeel er nooit meer in. Nieuwe onderdelen landen in
+     de backlog: nog niet ingepland is eerlijker dan een sprint verzinnen. */
+  function aanvullen(K, st){
+    if(!st||!st.epics) return false;
+    var bestaat={}, gewijzigd=false;
+    st.epics.forEach(function(e){ bestaat[e.titel]=true; });
+    var fid=st.features.length, sid=st.stories.length, eid=st.epics.length;
+    K.onderdelen.forEach(function(o){
+      if(bestaat[o.titel]) return;
+      gewijzigd=true;
+      var e={id:'E'+(++eid)+'x', titel:o.titel, prijs:o.prijs, meerwerk:!o.vast};
+      st.epics.push(e);
+      var eersteF=null;
+      (o.sprints||[]).forEach(function(sp){
+        var f={id:'F'+(++fid)+'x', epic:e.id, titel:sp.titel, wat:sp.wat, op:sp.op,
+               sprint:null, af:false, waarde:o.vast?(o.prijs/(o.sprints.length||1)):0};
+        if(!eersteF) eersteF=f.id;
+        st.features.push(f);
+      });
+      (o.stories||[]).forEach(function(x){
+        st.stories.push({id:'S'+(++sid)+'x', epic:e.id, feature:eersteF,
+                         rol:x[0], wens:x[1], reden:x[2], af:false});
+      });
+    });
+    return gewijzigd;
+  }
 
   function zaai(K){
     var epics=[], features=[], stories=[], wk=0, fid=0, sid=0, eid=0;
@@ -9649,6 +9710,7 @@ window.__BG_LOOPT__ = function(K, slug){
       if(p.getAttribute('data-bg')==='klaar'&&p.querySelector('.dpBord')) return;
       var st=lees();
       if(!st||!st.features||!st.features.length){ st=zaai(K); bewaar(st); }
+      else if(aanvullen(K, st)){ bewaar(st); }
       teken(p,st);
       p.setAttribute('data-bg','klaar');
     }catch(e){ console.error('[bedrijfsgeheugen] deliveryplan:',e); }
