@@ -10110,12 +10110,35 @@ window.__BG_LOOPT__ = function(K, slug){
              acties:'Doen',volgende:'Doen',snel:'Inzicht'};
   var NAAM={stand:'Waar je staat',acties:'Wat er van jou wordt gevraagd',blokken:'Bouwblokken',
             sprint:'Sprint',geld:'Wat er nog komt',volgende:'Hierna',snel:'Snel naar'};
+  var TOONT={stand:'Cijfer',geld:'Cijfer',sprint:'Cijfer',blokken:'Voortgang',
+             acties:'Actie',volgende:'Actie',snel:'Snel naar'};
   function voorkeur(){
     var v=jsonLees('bg_dash_'+slug(), {orde:VOLG.slice(), uit:[]});
     if(!v.groep) v.groep={};
-    if(!v.filter) v.filter='alles';
     VOLG.forEach(function(id){ if(!v.groep[id]) v.groep[id]=GROEP[id]; });
+    if(!v.keuze||typeof v.keuze!=='object'||Array.isArray(v.keuze)) v.keuze={};
+    if(!v.keuze.sectie) v.keuze.sectie=[];
+    if(!v.keuze.toont) v.keuze.toont=[];
+    delete v.filter;
     return v;
+  }
+
+  /* Filteren op het overzicht, in dezelfde vorm als op de offerte: een dunne
+     balk met het aantal en een knop, en een paneel dat van rechts inschuift.
+     Twee facetten \u2014 onder welke sectie de kaart staat, en wat hij laat zien. */
+  function facetVan(id,vk,sleutel){
+    return sleutel==='sectie' ? (vk.groep[id]||GROEP[id]) : (TOONT[id]||'Overig');
+  }
+  var FACETTEN=[{sleutel:'sectie',naam:'Sectie'},{sleutel:'toont',naam:'Wat de kaart toont'}];
+  function kaartPast(id,vk){
+    return FACETTEN.every(function(f){
+      var g=vk.keuze[f.sleutel]||[];
+      return !g.length || g.indexOf(facetVan(id,vk,f.sleutel))>=0;
+    });
+  }
+  function aantalGekozen(vk){
+    var n=0; FACETTEN.forEach(function(f){ n+=(vk.keuze[f.sleutel]||[]).length; });
+    return n;
   }
 
   /* ---------- gegevens ---------- */
@@ -10239,9 +10262,10 @@ window.__BG_LOOPT__ = function(K, slug){
     w.className='dsWrap';
     w.setAttribute('data-s',sleutelNu);
     var aan=vk.orde.filter(function(id){ return vk.uit.indexOf(id)<0; });
+    var zichtbaar=aan.filter(function(id){ return kaartPast(id,vk); });
     var perSectie={}, gevuld=[];
     SECTIES.forEach(function(sec){
-      var inSec=aan.filter(function(id){ return (vk.groep[id]||GROEP[id])===sec; });
+      var inSec=zichtbaar.filter(function(id){ return (vk.groep[id]||GROEP[id])===sec; });
       if(inSec.length){ perSectie[sec]=inSec; gevuld.push(sec); }
     });
     var kaarten='';
@@ -10249,8 +10273,24 @@ window.__BG_LOOPT__ = function(K, slug){
       kaarten+='<div class="dsGroepKop">'+sec+'</div>'+
         perSectie[sec].map(function(id){ return bouwKaart(id,g); }).join('');
     });
+    var nGekozen=aantalGekozen(vk);
     w.innerHTML='<div class="dsKop"><span>Jouw overzicht</span>'+
       '<button class="dsInstel" type="button" aria-expanded="false">Aanpassen</button></div>'+
+      '<div class="ofBalk"><div class="ofBalkRij">'+
+        '<span class="ofTel"><b>'+zichtbaar.length+'</b> van '+aan.length+' kaarten</span>'+
+        '<button type="button" class="dsOpen ofOpen">Filteren'+(nGekozen?' ('+nGekozen+')':'')+
+          '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" '+
+          'stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/>'+
+          '<circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>'+
+      '</div>'+(nGekozen?'<div class="ofChips">'+FACETTEN.map(function(f){
+        return (vk.keuze[f.sleutel]||[]).map(function(x){
+          return '<button type="button" class="dsChipWeg ofChip" data-weg="'+f.sleutel+'|'+x+'">'+
+            x+' <b>\u00d7</b></button>';
+        }).join('');
+      }).join('')+'<button type="button" class="dsWisAlles ofWis">Alles wissen</button></div>':'')+
+      '</div>'+
+      (zichtbaar.length?'':'<p class="ofLeeg">Geen kaart past bij deze keuze. '+
+        '<button type="button" class="dsWisAlles ofWis">Alles wissen</button></p>')+
       '<div class="dsKiezer" hidden><p class="dsKiezerUitleg">Welke kaarten je ziet, '+
       'en onder welke sectie ze staan.</p>'+VOLG.map(function(id){
         var uit=vk.uit.indexOf(id)>=0, gr=vk.groep[id]||GROEP[id];
@@ -10265,6 +10305,96 @@ window.__BG_LOOPT__ = function(K, slug){
     ov.insertBefore(w, plek>=0 ? (ov.children[plek]||null) : ov.firstChild);
     koppel(w,vk);
   }
+
+  function lade(){
+    var l=document.getElementById('dsLaag');
+    if(l) return l;
+    l=document.createElement('div');
+    l.className='ofLaag'; l.id='dsLaag'; l.hidden=true;
+    l.innerHTML='<div class="ofLade" role="dialog" aria-modal="true" aria-label="Filteren">'+
+      '<div class="ofLadeKop"><span>Filteren</span>'+
+      '<button type="button" class="ofSluit" aria-label="Sluiten">\u00d7</button></div>'+
+      '<div class="ofLadeLijf"></div>'+
+      '<div class="ofLadeVoet"><button type="button" class="ofWisLade">Wissen</button>'+
+      '<button type="button" class="ofBekijk">Bekijk</button></div></div>';
+    document.body.appendChild(l);
+    return l;
+  }
+  function vulLade(vk){
+    var l=lade(), aan=vk.orde.filter(function(id){ return vk.uit.indexOf(id)<0; });
+    l.querySelector('.ofLadeLijf').innerHTML=FACETTEN.map(function(f){
+      var waarden=[];
+      aan.forEach(function(id){ var x=facetVan(id,vk,f.sleutel); if(waarden.indexOf(x)<0) waarden.push(x); });
+      if(f.sleutel==='sectie') waarden.sort(function(a,b){ return SECTIES.indexOf(a)-SECTIES.indexOf(b); });
+      if(waarden.length<2) return '';
+      var gekozen=(vk.keuze[f.sleutel]||[]).length;
+      return '<div class="ofGroep"><button type="button" class="ofGroepKop" data-klapds="'+f.sleutel+'">'+
+        '<span class="ofGroepNaam">'+f.naam+(gekozen?' <em>'+gekozen+'</em>':'')+'</span><i>\u2212</i></button>'+
+        '<div class="ofGroepLijf">'+waarden.map(function(x){
+          /* teller: wat blijft er over als je alleen deze erbij zet */
+          var n=aan.filter(function(id){
+            return FACETTEN.every(function(f2){
+              if(f2.sleutel===f.sleutel) return facetVan(id,vk,f2.sleutel)===x;
+              var g=vk.keuze[f2.sleutel]||[];
+              return !g.length || g.indexOf(facetVan(id,vk,f2.sleutel))>=0;
+            });
+          }).length;
+          var isAan=(vk.keuze[f.sleutel]||[]).indexOf(x)>=0;
+          return '<label class="ofOptie'+(n?'':' leeg')+'"><input type="checkbox" data-dsg="'+
+            f.sleutel+'" data-dsw="'+x+'"'+(isAan?' checked':'')+(n?'':' disabled')+'>'+
+            '<span>'+x+'</span><em>'+n+'</em></label>';
+        }).join('')+'</div></div>';
+    }).join('');
+    var over=aan.filter(function(id){ return kaartPast(id,vk); }).length;
+    l.querySelector('.ofBekijk').textContent='Bekijk ['+over+']';
+    l.querySelector('.ofWisLade').disabled=!aantalGekozen(vk);
+    return l;
+  }
+  function ladeOpen(ja){
+    var l=lade();
+    if(ja){ l.hidden=false; setTimeout(function(){ l.classList.add('aan'); },10); }
+    else { l.classList.remove('aan'); setTimeout(function(){ l.hidden=true; },220); }
+  }
+  function opnieuw(vk){
+    jsonZet('bg_dash_'+slug(),vk);
+    var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
+    BEZIG=false; teken();
+  }
+
+  /* \u00e9\u00e9n keer aan het document hangen, want de lade staat buiten het blok */
+  (function(){
+    document.addEventListener('click',function(e){
+      var t=e.target;
+      if(t.closest&&t.closest('.dsOpen')){ vulLade(voorkeur()); ladeOpen(true); return; }
+      var l=document.getElementById('dsLaag');
+      if(!l) return;
+      if(t.closest&&(t.closest('#dsLaag .ofSluit')||t.closest('#dsLaag .ofBekijk'))){ ladeOpen(false); return; }
+      if(t===l){ ladeOpen(false); return; }
+      var klap=t.closest&&t.closest('[data-klapds]');
+      if(klap){ klap.parentNode.classList.toggle('dicht');
+        klap.querySelector('i').textContent=klap.parentNode.classList.contains('dicht')?'+':'\u2212';
+        return; }
+      var weg=t.closest&&t.closest('.dsChipWeg');
+      if(weg){ var d=weg.dataset.weg.split('|'), vk=voorkeur();
+        vk.keuze[d[0]]=(vk.keuze[d[0]]||[]).filter(function(x){return x!==d[1];});
+        opnieuw(vk); vulLade(voorkeur()); return; }
+      if(t.closest&&(t.closest('.dsWisAlles')||t.closest('#dsLaag .ofWisLade'))){
+        var v2=voorkeur(); v2.keuze={sectie:[],toont:[]}; opnieuw(v2); vulLade(voorkeur()); return; }
+    });
+    document.addEventListener('change',function(e){
+      var c=e.target;
+      if(!c.dataset||!c.dataset.dsg) return;
+      var vk=voorkeur(), g=c.dataset.dsg, x=c.dataset.dsw;
+      vk.keuze[g]=vk.keuze[g]||[];
+      var i=vk.keuze[g].indexOf(x);
+      if(c.checked){ if(i<0) vk.keuze[g].push(x); } else if(i>=0) vk.keuze[g].splice(i,1);
+      opnieuw(vk); vulLade(voorkeur());
+    });
+    document.addEventListener('keydown',function(e){
+      var l=document.getElementById('dsLaag');
+      if(e.key==='Escape'&&l&&!l.hidden) ladeOpen(false);
+    });
+  })();
 
   function koppel(w,vk){
     var sleep=null;
