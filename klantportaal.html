@@ -10325,8 +10325,7 @@ window.__BG_LOOPT__ = function(K, slug){
         perSectie[sec].map(function(id){ return bouwKaart(id,g); }).join('');
     });
     var nGekozen=aantalGekozen(vk);
-    w.innerHTML='<div class="dsKop"><span>Jouw overzicht</span>'+
-      '<button class="dsInstel" type="button" aria-expanded="false">Aanpassen</button></div>'+
+    w.innerHTML='<div class="dsKop"><span>Jouw overzicht</span></div>'+
       '<div class="ofBalk"><div class="ofBalkRij">'+
         '<span class="ofTel"><b>'+zichtbaar.length+'</b> van '+aan.length+' kaarten</span>'+
         '<button type="button" class="dsOpen ofOpen">Filteren'+(nGekozen?' ('+nGekozen+')':'')+
@@ -10342,16 +10341,6 @@ window.__BG_LOOPT__ = function(K, slug){
       '</div>'+
       (zichtbaar.length?'':'<p class="ofLeeg">Geen kaart past bij deze keuze. '+
         '<button type="button" class="dsWisAlles ofWis">Alles wissen</button></p>')+
-      '<div class="dsKiezer" hidden><p class="dsKiezerUitleg">Welke kaarten je ziet, '+
-      'en onder welke sectie ze staan.</p>'+VOLG.map(function(id){
-        var uit=vk.uit.indexOf(id)>=0, gr=vk.groep[id]||GROEP[id];
-        return '<div class="dsKiezerRij">'+
-          '<label><input type="checkbox" data-kies="'+id+'"'+(uit?'':' checked')+'>'+
-          NAAM[id]+'</label>'+
-          '<select data-groep="'+id+'">'+SECTIES.map(function(sec){
-            return '<option'+(sec===gr?' selected':'')+'>'+sec+'</option>';
-          }).join('')+'</select></div>';
-      }).join('')+'</div>'+
       '<div class="dsRooster">'+kaarten+'</div>';
     ov.insertBefore(w, plek>=0 ? (ov.children[plek]||null) : ov.firstChild);
     koppel(w,vk);
@@ -10395,7 +10384,23 @@ window.__BG_LOOPT__ = function(K, slug){
             f.sleutel+'" data-dsw="'+x+'"'+(isAan?' checked':'')+(n?'':' disabled')+'>'+
             '<span>'+x+'</span><em>'+n+'</em></label>';
         }).join('')+'</div></div>';
-    }).join('');
+    }).join('')+
+    /* Welke kaarten je ziet en waar ze staan: hoort bij dezelfde lade, want
+       het is dezelfde vraag \u2014 wat wil ik zien. Filteren is tijdelijk,
+       dit blijft staan; daarom een eigen kop en een eigen uitleg. */
+    '<div class="ofGroep ofGroepInstel"><button type="button" class="ofGroepKop" data-klapds="kaarten">'+
+      '<span class="ofGroepNaam">Kaarten en secties</span><i>\u2212</i></button>'+
+      '<div class="ofGroepLijf"><p class="ofInstelUit">Welke kaarten je ziet, en onder welke sectie '+
+      'ze staan. Dit blijft staan, ook als je het filter wist.</p>'+
+      VOLG.map(function(id){
+        var uit=vk.uit.indexOf(id)>=0, gr=vk.groep[id]||GROEP[id];
+        return '<div class="ofInstelRij">'+
+          '<label class="ofOptie"><input type="checkbox" data-kies="'+id+'"'+(uit?'':' checked')+'>'+
+          '<span>'+NAAM[id]+'</span></label>'+
+          '<select data-groep="'+id+'">'+SECTIES.map(function(sec){
+            return '<option'+(sec===gr?' selected':'')+'>'+sec+'</option>';
+          }).join('')+'</select></div>';
+      }).join('')+'</div></div>';
     var over=aan.filter(function(id){ return kaartPast(id,vk); }).length;
     l.querySelector('.ofBekijk').textContent='Bekijk ['+over+']';
     l.querySelector('.ofWisLade').disabled=!aantalGekozen(vk);
@@ -10435,6 +10440,17 @@ window.__BG_LOOPT__ = function(K, slug){
     });
     document.addEventListener('change',function(e){
       var c=e.target;
+      if(c.dataset&&c.dataset.kies&&c.closest('#dsLaag')){
+        var v3=voorkeur(), id=c.dataset.kies;
+        v3.uit=v3.uit.filter(function(x){return x!==id;});
+        if(!c.checked) v3.uit.push(id);
+        opnieuw(v3); vulLade(voorkeur()); return;
+      }
+      if(c.dataset&&c.dataset.groep&&c.closest('#dsLaag')){
+        var v4=voorkeur();
+        v4.groep[c.dataset.groep]=c.value;
+        opnieuw(v4); vulLade(voorkeur()); return;
+      }
       if(!c.dataset||!c.dataset.dsg) return;
       var vk=voorkeur(), g=c.dataset.dsg, x=c.dataset.dsw;
       vk.keuze[g]=vk.keuze[g]||[];
@@ -11336,6 +11352,12 @@ window.__BG_LOOPT__ = function(K, slug){
 .ofOptie span{flex:1}
 .ofOptie em{font-style:normal;font-size:.8rem;color:var(--grijs,#5C646E)}
 .ofOptie.leeg{opacity:.4;cursor:default}
+.ofInstelUit{font-size:.8rem;color:var(--grijs,#5C646E);margin:.1rem 0 .6rem;line-height:1.45}
+.ofInstelRij{display:flex;align-items:center;gap:.6rem;justify-content:space-between}
+.ofInstelRij .ofOptie{flex:1;min-width:0}
+.ofInstelRij select{border:1.5px solid var(--lijn,#DCDFE6);border-radius:8px;padding:.25rem .45rem;
+ font:inherit;font-size:.78rem;background:#fff;cursor:pointer;max-width:8.5rem}
+.ofGroepInstel{border-bottom:0}
 .ofLadeVoet{display:flex;gap:.6rem;padding:.9rem 1.2rem;border-top:1px solid var(--lijn,#DCDFE6)}
 .ofWisLade{flex:1;border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:8px;
  padding:.7rem;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer}
