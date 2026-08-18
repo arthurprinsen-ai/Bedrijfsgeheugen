@@ -8324,10 +8324,10 @@ window.__BG_LOOPT__ = function(K, slug){
       '<div><h4>' + esc(o.titel) + '</h4><p>' + esc(o.kort) + '</p>' +
       '<button class="of-meer" type="button">Bekijk de sprints en user stories</button>' +
       '<div class="of-uit" hidden><span class="of-kopje">Wie heeft er iets aan</span>' + st +
-      '<span class="of-kopje">Wat er in de ' + (weken === 1 ? 'week' : weken + ' weken') + ' gebeurt</span>' +
+      '<span class="of-kopje">Wat er in die doorlooptijd gebeurt</span>' +
       '<ul class="of-lijst">' + sp + '</ul></div></div>' +
-      '<div class="of-prijs">' + euro(o.prijs) + '<span class="of-duur">' + weken +
-      (weken === 1 ? ' week' : ' weken') + (o.vast ? ' \u00b7 vast' : '') + '</span></div>';
+      '<div class="of-prijs">' + euro(o.prijs) + '<span class="of-duur">doorlooptijd ' + weken +
+      (weken === 1 ? ' week' : ' weken') + (o.vast ? ' \u00b7 vaste prijs' : '') + '</span></div>';
     rijenEl.appendChild(d);
 
     var vink = d.querySelector('.of-vink');
