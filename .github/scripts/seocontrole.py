@@ -61,6 +61,9 @@ EIGENAAR = {
     'ai act compliance mkb': '/ai-act',
     'ai workshop mkb': '/workshops',
     'ai governance mkb': '/ai-governance',
+    # 260 zoekopdrachten per maand, concurrentie 41, CPC 17,73 euro.
+    # Eigen thema dat vrijwel niemand commercieel claimt.
+    'data soevereiniteit': '/data-soevereiniteit',
     'chatgpt bedrijfsgegevens beleid': '/data-soevereiniteit',
     'business case ai mkb': '/business-case-ai',
     'ai strategie directie': '/ai-voor-bestuurders',
