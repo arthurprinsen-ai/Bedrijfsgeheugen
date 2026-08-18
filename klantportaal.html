@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Portaal | Bedrijfsgeheugen</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10096,9 +10098,9 @@ window.__BG_LOOPT__ = function(K, slug){
         inSec.map(function(id){ return bouwKaart(id,g); }).join('');
     });
     w.innerHTML='<div class="dsKop"><span>Jouw overzicht</span>'+
-      '<button class="dsInstel" type="button">Kaarten kiezen</button></div>'+
-      '<div class="dsRooster">'+kaarten+'</div>'+
-      '<div class="dsKiezer" hidden>'+VOLG.map(function(id){
+      '<button class="dsInstel" type="button" aria-expanded="false">Kaarten kiezen</button></div>'+
+      '<div class="dsKiezer" hidden><p class="dsKiezerUitleg">Vink aan welke kaarten je ziet, '+
+      'en kies per kaart onder welke sectie hij staat. Je keuze wordt bewaard.</p>'+VOLG.map(function(id){
         var uit=vk.uit.indexOf(id)>=0, gr=vk.groep[id]||GROEP[id];
         return '<div class="dsKiezerRij">'+
           '<label><input type="checkbox" data-kies="'+id+'"'+(uit?'':' checked')+'>'+
@@ -10106,7 +10108,8 @@ window.__BG_LOOPT__ = function(K, slug){
           '<select data-groep="'+id+'">'+SECTIES.map(function(sec){
             return '<option'+(sec===gr?' selected':'')+'>'+sec+'</option>';
           }).join('')+'</select></div>';
-      }).join('')+'</div>';
+      }).join('')+'</div>'+
+      '<div class="dsRooster">'+kaarten+'</div>';
     ov.insertBefore(w, plek>=0 ? (ov.children[plek]||null) : ov.firstChild);
     koppel(w,vk);
   }
@@ -10137,8 +10140,12 @@ window.__BG_LOOPT__ = function(K, slug){
     var knop=w.querySelector('.dsInstel'), kiezer=w.querySelector('.dsKiezer');
     if(knop) knop.addEventListener('click',function(e){
       e.preventDefault(); e.stopPropagation();
-      if(kiezer.hasAttribute('hidden')){ kiezer.removeAttribute('hidden'); BEZIG=true; }
+      var open=kiezer.hasAttribute('hidden');
+      if(open){ kiezer.removeAttribute('hidden'); BEZIG=true; }
       else { kiezer.setAttribute('hidden',''); BEZIG=false; }
+      knop.setAttribute('aria-expanded', open?'true':'false');
+      knop.classList.toggle('aan', open);
+      knop.textContent = open ? 'Klaar met kiezen' : 'Kaarten kiezen';
     });
     Array.prototype.forEach.call(w.querySelectorAll('[data-kies]'),function(c){
       c.addEventListener('change',function(){
@@ -10204,7 +10211,12 @@ window.__BG_LOOPT__ = function(K, slug){
 .dsKop span{font-size:.68rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:var(--grijs,#5C646E)}
 .dsInstel{border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:99px;padding:.3rem .8rem;font:inherit;font-size:.8rem;cursor:pointer}
 .dsInstel:hover{border-color:var(--blauw,#2742D6);color:var(--blauw,#2742D6)}
-.dsKiezer{display:flex;flex-wrap:wrap;gap:.8rem;background:#F4F5F8;border-radius:10px;padding:.8rem 1rem;margin-top:.7rem;font-size:.85rem}
+.dsKiezer{display:flex;flex-wrap:wrap;gap:.8rem;background:#F4F5F8;border-radius:10px;
+ padding:.9rem 1.1rem;margin:0 0 1rem;font-size:.85rem;width:100%;
+ border:1.5px solid var(--lijn,#DCDFE6)}
+.dsKiezerUitleg{margin:0 0 .2rem;font-size:.83rem;color:var(--grijs,#5C646E)}
+.dsInstel.aan{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6);color:#fff}
+.dsInstel.aan:hover{color:#fff}
 .dsKiezer label{display:flex;align-items:center;gap:.35rem;cursor:pointer}
 .dsKop{padding-right:5.5rem}
 .dsKiezer{flex-direction:column;align-items:stretch}
