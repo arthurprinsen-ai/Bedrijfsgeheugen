@@ -9897,29 +9897,55 @@ window.__BG_LOOPT__ = function(K, slug){
       var totaal=0, af=0, blok='', af_lijst=[], volgende=null;
       st.features.forEach(function(f){ totaal+=(f.waarde||0); if(f.af) af+=(f.waarde||0); });
 
+      /* Per sprint een blok, met per feature een regel en een balkje dat toont
+         welk deel van de totale waarde die feature is. Veertien blokjes naast
+         elkaar leverde slivers op waarin geen titel paste; op een rij past hij wel. */
+      var perSprint={}, volgorde=[];
       st.features.slice().sort(function(a,b){
-        var sa=(a.sprint==='backlog'?99:a.sprint), sb=(b.sprint==='backlog'?99:b.sprint);
+        var sa=(typeof a.sprint==='number'?a.sprint:99), sb=(typeof b.sprint==='number'?b.sprint:99);
         return sa-sb;
       }).forEach(function(f){
-        var ep=st.epics.filter(function(e){return e.id===f.epic;})[0];
-        var idx=st.epics.indexOf(ep);
-        var breed=totaal?((f.waarde||0)/totaal*100):0;
-        blok+='<div class="acBlok e'+(idx%3)+(f.af?' af':'')+'" style="flex:'+Math.max(breed,4)+'" '+
-          'title="'+esc(f.titel)+' \u00b7 '+euro(f.waarde||0)+'">'+
-          '<span>'+esc(f.titel)+'</span></div>';
+        var k=(typeof f.sprint==='number'?f.sprint:'backlog');
+        if(!perSprint[k]){ perSprint[k]=[]; volgorde.push(k); }
+        perSprint[k].push(f);
         if(f.af){
           var ss=st.stories.filter(function(x){return x.feature===f.id&&x.af;});
-          af_lijst.push({f:f,ss:ss,ep:ep});
-        } else if(!volgende){ volgende={f:f,ep:ep}; }
+          af_lijst.push({f:f,ss:ss,ep:st.epics.filter(function(e){return e.id===f.epic;})[0]});
+        } else if(!volgende && typeof f.sprint==='number'){
+          volgende={f:f,ep:st.epics.filter(function(e){return e.id===f.epic;})[0]};
+        }
+      });
+      var grootste=1;
+      st.features.forEach(function(f){ if((f.waarde||0)>grootste) grootste=f.waarde; });
+
+      volgorde.forEach(function(k){
+        var fs=perSprint[k], som=0, klaar=0;
+        fs.forEach(function(f){ som+=(f.waarde||0); if(f.af) klaar++; });
+        blok+='<div class="acSprint"><div class="acSprintKop">'+
+          '<b>'+(k==='backlog'?'Nog niet ingepland':'Sprint '+k)+'</b>'+
+          '<span>'+(k==='backlog'?'meerwerk, nog niet getekend':'week '+(k*2-1)+'\u2013'+(k*2))+
+          ' \u00b7 '+klaar+' van '+fs.length+' af'+(som?' \u00b7 '+euro(som):'')+'</span></div>';
+        fs.forEach(function(f){
+          var ep=st.epics.filter(function(e){return e.id===f.epic;})[0];
+          var idx=st.epics.indexOf(ep);
+          var deel=Math.max(6,Math.round((f.waarde||0)/grootste*100));
+          blok+='<div class="acReg e'+(idx%3)+(f.af?' af':'')+'">'+
+            '<i class="acVink">'+(f.af?'\u2713':'')+'</i>'+
+            '<div class="acRegTekst"><b>'+esc(f.titel)+'</b>'+
+            '<span>'+esc(ep?ep.titel:'')+(f.op?' \u00b7 '+esc(f.op):'')+'</span>'+
+            '<div class="acStreep"><i style="width:'+deel+'%"></i></div></div>'+
+            '<span class="acGeld">'+(f.waarde?euro(f.waarde):'\u2014')+'</span></div>';
+        });
+        blok+='</div>';
       });
 
       var sAf=st.stories.filter(function(x){return x.af;}).length;
       var pct=totaal?Math.round(af/totaal*100):0;
 
       var h='<div class="kaart" style="margin-top:1rem"><h3>Wat er is opgeleverd</h3>'+
-        '<p class="sub">Elk blok is een feature uit het deliveryplan, breed naar rato van wat het waard '+
-        'is. Vol betekent opgeleverd.</p>'+
-        '<div class="acBlokken">'+blok+'</div>'+
+        '<p class="sub">Per sprint wat er te leveren is. Het streepje achter een regel toont hoe zwaar '+
+        'die feature weegt in het geheel; een vinkje betekent opgeleverd.</p>'+
+        '<div class="acLijst">'+blok+'</div>'+
         '<div class="acTel">'+
           '<div><b>'+euro(af)+'</b>van '+euro(totaal)+' opgeleverd</div>'+
           '<div><b>'+pct+'%</b>van de waarde</div>'+
@@ -9961,6 +9987,31 @@ window.__BG_LOOPT__ = function(K, slug){
 })();
 </script>
 <style>
+.acLijst{margin:1rem 0 .9rem}
+.acSprint{border:1.5px solid var(--lijn,#DCDFE6);border-radius:12px;padding:.75rem .9rem;margin-bottom:.6rem;background:#fff}
+.acSprintKop{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.5rem}
+.acSprintKop b{font-size:.95rem}
+.acSprintKop span{font-size:.78rem;color:var(--grijs,#5C646E)}
+.acReg{display:flex;align-items:flex-start;gap:.65rem;padding:.45rem 0;border-top:1px solid var(--lijn,#DCDFE6)}
+.acSprint .acReg:first-of-type{border-top:0}
+.acVink{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--lijn,#DCDFE6);flex:none;
+ display:flex;align-items:center;justify-content:center;font-size:.72rem;color:#fff;font-style:normal;margin-top:.15rem}
+.acReg.af.e0 .acVink{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6)}
+.acReg.af.e1 .acVink{background:var(--oranje,#FF4F17);border-color:var(--oranje,#FF4F17)}
+.acReg.af.e2 .acVink{background:#1F9D55;border-color:#1F9D55}
+.acRegTekst{flex:1;min-width:0}
+.acRegTekst b{display:block;font-size:.9rem;line-height:1.3}
+.acRegTekst span{display:block;font-size:.76rem;color:var(--grijs,#5C646E);line-height:1.35;margin:.1rem 0 .25rem}
+.acStreep{height:5px;border-radius:99px;background:#F1F0EC;overflow:hidden;max-width:22rem}
+.acStreep i{display:block;height:100%;border-radius:99px;background:var(--lijn,#DCDFE6)}
+.acReg.e0 .acStreep i{background:#B9C2F2}
+.acReg.e1 .acStreep i{background:#FFC0A8}
+.acReg.e2 .acStreep i{background:#A6D9BC}
+.acReg.af.e0 .acStreep i{background:var(--blauw,#2742D6)}
+.acReg.af.e1 .acStreep i{background:var(--oranje,#FF4F17)}
+.acReg.af.e2 .acStreep i{background:#1F9D55}
+.acGeld{font-size:.85rem;font-weight:700;white-space:nowrap;margin-top:.1rem}
+@media(max-width:600px){.acGeld{font-size:.8rem}}
 .acBlokken{display:flex;gap:4px;margin:1rem 0 .8rem;height:64px}
 .acBlok{position:relative;border-radius:8px;border:2px solid var(--lijn,#DCDFE6);background:#fff;
  display:flex;align-items:flex-end;padding:.3rem;overflow:hidden;min-width:2.2rem;transition:background .25s}
@@ -10365,11 +10416,12 @@ window.__BG_LOOPT__ = function(K, slug){
   (function(){
     document.addEventListener('click',function(e){
       var t=e.target;
-      if(t.closest&&t.closest('.dsOpen')){ vulLade(voorkeur()); ladeOpen(true); return; }
+      if(t.closest&&t.closest('.dsOpen')){ e.stopPropagation(); vulLade(voorkeur()); ladeOpen(true); return; }
       var l=document.getElementById('dsLaag');
       if(!l) return;
-      if(t.closest&&(t.closest('#dsLaag .ofSluit')||t.closest('#dsLaag .ofBekijk'))){ ladeOpen(false); return; }
-      if(t===l){ ladeOpen(false); return; }
+      if(t.closest&&(t.closest('#dsLaag .ofSluit')||t.closest('#dsLaag .ofBekijk'))){
+        e.stopPropagation(); ladeOpen(false); return; }
+      if(t===l){ e.stopPropagation(); ladeOpen(false); return; }
       var klap=t.closest&&t.closest('[data-klapds]');
       if(klap){ klap.parentNode.classList.toggle('dicht');
         klap.querySelector('i').textContent=klap.parentNode.classList.contains('dicht')?'+':'\u2212';
@@ -11205,16 +11257,20 @@ window.__BG_LOOPT__ = function(K, slug){
 
     document.addEventListener('click',function(e){
       var t=e.target;
-      if(t.closest&&t.closest('.ofOpen')){ open(true,laag); tekenLade(D,lade); return; }
-      if(t.closest&&(t.closest('.ofSluit')||t.closest('.ofBekijk'))){ open(false,laag); return; }
-      if(t===laag){ open(false,laag); return; }
-      var klap=t.closest&&t.closest('[data-klap]');
+      /* strikt binnen deze lade blijven: er staat er nog een op het overzicht,
+         en twee handlers die elkaars knoppen pakken sluiten twee panelen tegelijk */
+      if(t.closest&&t.closest('.ofBalk .ofOpen')&&t.closest('#p-offerte')){
+        open(true,laag); tekenLade(D,lade); return; }
+      if(t.closest&&(t.closest('#ofLaag .ofSluit')||t.closest('#ofLaag .ofBekijk'))){
+        e.stopPropagation(); open(false,laag); return; }
+      if(t===laag){ e.stopPropagation(); open(false,laag); return; }
+      var klap=t.closest&&t.closest('#ofLaag [data-klap]');
       if(klap){ var k=klap.dataset.klap; DICHTGEKLAPT[k]=!DICHTGEKLAPT[k]; tekenLade(D,lade); return; }
-      var weg=t.closest&&t.closest('.ofChip');
+      var weg=t.closest&&t.closest('#p-offerte .ofChip');
       if(weg){ var d=weg.dataset.weg.split('|');
         KEUZE[d[0]]=(KEUZE[d[0]]||[]).filter(function(x){return x!==d[1];});
         alles(D,balk,lade,rijen); return; }
-      if(t.closest&&(t.closest('.ofWis')||t.closest('.ofWisLade'))){
+      if(t.closest&&(t.closest('#p-offerte .ofWis')||t.closest('#ofLaag .ofWisLade'))){
         KEUZE={}; alles(D,balk,lade,rijen); return; }
     });
     document.addEventListener('change',function(e){
