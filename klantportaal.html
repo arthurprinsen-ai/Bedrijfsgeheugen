@@ -11501,5 +11501,137 @@ window.__BG_LOOPT__ = function(K, slug){
 .oxLijst{margin:.3rem 0 0;padding-left:1.1rem;font-size:.88rem;line-height:1.6}
 @media(max-width:640px){.oxLaag{flex-direction:column;gap:.2rem}.oxLaag b{flex:none}}
 </style>
+<script>
+/* Vraag het je portaal. Een vraagbalk bovenaan het Overzicht die antwoordt op
+   basis van de eigen offerte, planning en stand van het werk — niets anders.
+   De vraag gaat naar /api/portaalvraag; de offerte gaat mee vanuit de browser,
+   die hem na inloggen toch al heeft. De server bewaart niets.
+   Puur toevoegend: een eigen blok, geen bestaande module aangeraakt. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function jl(k,t){try{return JSON.parse(localStorage.getItem(k)||'null')||t;}catch(e){return t;}}
+
+  var VOORBEELDEN=['Wanneer is het directiescherm klaar?',
+                   'Wat kost het als ik het HR-scherm erbij zet?',
+                   'Wat moet ik aanleveren?'];
+
+  /* Alleen wat de klant zelf al ziet gaat mee. Geen bouwuren, geen marge:
+     die staan niet in de offerte en mogen er ook niet in komen. */
+  function context(){
+    var K=(window.__KLANTEN__||{})[slug()];
+    if(!K) return null;
+    var plan=jl('bg_plan_'+slug(),null);
+    var c={
+      klant:K.naam, titel:K.titel, geldig:K.geldig,
+      getekend:K.getekend||null, voortgang:K.voortgang||0,
+      onderdelen:(K.onderdelen||[]).map(function(o){
+        return {titel:o.titel, kort:o.kort, prijs:o.prijs, vast:!!o.vast,
+                sprints:(o.sprints||[]).map(function(s){return {titel:s.titel, levert:s.op};}),
+                koppelingen:o.koppelingen||[], documenten:o.documenten||[]};
+      }),
+      instap:K.instap||null, fasering:K.fasering||null, planning:K.planning||null,
+      architectuur:K.architectuur||null, licenties:K.licenties||null,
+      wat_wij_nodig_hebben:K.vanUNodig||null, portaalkosten:K.doorlopend||null
+    };
+    if(plan&&plan.features){
+      c.stand={
+        features_af:plan.features.filter(function(f){return f.af;}).length,
+        features_totaal:plan.features.length,
+        stories_af:(plan.stories||[]).filter(function(s){return s.af;}).length,
+        stories_totaal:(plan.stories||[]).length,
+        nog_niet_ingepland:plan.features.filter(function(f){return typeof f.sprint!=='number';})
+          .map(function(f){return f.titel;})
+      };
+    }
+    return c;
+  }
+
+  function bouw(ov){
+    var w=document.createElement('div');
+    w.className='vbBlok'; w.id='vbBlok';
+    w.innerHTML=
+      '<div class="vbKop"><b>Vraag het je portaal</b>'+
+        '<span>Antwoord op basis van je eigen offerte en planning \u2014 niets anders.</span></div>'+
+      '<div class="vbRij">'+
+        '<input id="vbIn" type="text" placeholder="Bijvoorbeeld: wanneer is het directiescherm klaar?" '+
+        'autocomplete="off" aria-label="Vraag over je project">'+
+        '<button type="button" id="vbGa">Vraag</button>'+
+      '</div>'+
+      '<div class="vbTips">'+VOORBEELDEN.map(function(v){
+        return '<button type="button" class="vbTip">'+esc(v)+'</button>';
+      }).join('')+'</div>'+
+      '<div class="vbUit" id="vbUit" hidden></div>';
+    ov.insertBefore(w, ov.firstChild);
+    return w;
+  }
+
+  function vraagStellen(tekst){
+    var uit=document.getElementById('vbUit');
+    var c=context();
+    if(!c){ uit.hidden=false; uit.textContent='Ik zie nog geen projectgegevens. Log opnieuw in.'; return; }
+    uit.hidden=false;
+    uit.innerHTML='<span class="vbBezig">Even kijken\u2026</span>';
+    fetch('/api/portaalvraag',{
+      method:'POST', headers:{'content-type':'application/json'},
+      body:JSON.stringify({vraag:tekst, context:c})
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if(d.antwoord){
+        uit.innerHTML='<p class="vbAntwoord">'+esc(d.antwoord).replace(/\n/g,'<br>')+'</p>'+
+          '<p class="vbVoet">Uit je offerte en planning. Klopt er iets niet? Zeg het tegen Arthur.</p>';
+      } else {
+        uit.innerHTML='<p class="vbAntwoord">'+esc(d.fout||'Dat lukt nu even niet.')+'</p>';
+      }
+    }).catch(function(){
+      uit.innerHTML='<p class="vbAntwoord">De vraagfunctie is even niet bereikbaar.</p>';
+    });
+  }
+
+  function start(){
+    var ov=document.getElementById('p-overzicht');
+    if(!ov||document.getElementById('vbBlok')) return;
+    if(!(window.__KLANTEN__||{})[slug()]) return;
+    var w=bouw(ov);
+    w.querySelector('#vbGa').addEventListener('click',function(){
+      var t=w.querySelector('#vbIn').value.trim();
+      if(t.length>2) vraagStellen(t);
+    });
+    w.querySelector('#vbIn').addEventListener('keydown',function(e){
+      if(e.key==='Enter'){ var t=this.value.trim(); if(t.length>2) vraagStellen(t); }
+    });
+    Array.prototype.forEach.call(w.querySelectorAll('.vbTip'),function(b){
+      b.addEventListener('click',function(){
+        w.querySelector('#vbIn').value=b.textContent;
+        vraagStellen(b.textContent);
+      });
+    });
+  }
+  setInterval(function(){ try{ start(); }catch(e){ console.error('[bedrijfsgeheugen] vraagbalk:',e); } },900);
+})();
+</script>
+<style>
+.vbBlok{border:1.5px solid var(--lijn,#DCDFE6);border-radius:14px;padding:1rem 1.1rem;background:#fff;margin:0 0 1rem}
+.vbKop b{display:block;font-size:1rem}
+.vbKop span{display:block;font-size:.82rem;color:var(--grijs,#5C646E);margin:.15rem 0 .7rem}
+.vbRij{display:flex;gap:.5rem}
+.vbRij input{flex:1;min-width:0;border:1.5px solid var(--lijn,#DCDFE6);border-radius:10px;
+ padding:.6rem .8rem;font:inherit;font-size:.92rem}
+.vbRij input:focus{outline:0;border-color:var(--blauw,#2742D6)}
+.vbRij button{border:0;background:var(--blauw,#2742D6);color:#fff;border-radius:10px;padding:.6rem 1.1rem;
+ font:inherit;font-size:.88rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.vbRij button:hover{filter:brightness(1.08)}
+.vbTips{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.6rem}
+.vbTip{border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:99px;padding:.28rem .7rem;
+ font:inherit;font-size:.79rem;color:var(--grijs,#5C646E);cursor:pointer}
+.vbTip:hover{border-color:var(--blauw,#2742D6);color:var(--blauw,#2742D6)}
+.vbUit{margin-top:.8rem;background:#F4F5F8;border-radius:10px;padding:.8rem .9rem}
+.vbUit[hidden]{display:none}
+.vbAntwoord{margin:0;font-size:.92rem;line-height:1.6}
+.vbVoet{margin:.5rem 0 0;font-size:.76rem;color:var(--grijs,#5C646E)}
+.vbBezig{font-size:.88rem;color:var(--grijs,#5C646E)}
+</style>
 </body>
 </html>
