@@ -135,6 +135,13 @@
    "type": "cluster"
   },
   {
+   "zoekwoord": "data soevereiniteit",
+   "pagina": "/data-soevereiniteit",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "erp implementatie mislukt",
    "pagina": "/blog/automatiseren-zonder-traject/",
    "bestaat": true,
