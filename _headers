@@ -8,6 +8,9 @@
 /assets/kop.css
   Cache-Control: public, max-age=300, must-revalidate
 
+/assets/js/portaalslot.js
+  Cache-Control: public, max-age=300, must-revalidate
+
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
