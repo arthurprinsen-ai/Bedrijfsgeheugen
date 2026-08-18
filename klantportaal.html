@@ -10158,31 +10158,15 @@ window.__BG_LOOPT__ = function(K, slug){
       var inSec=aan.filter(function(id){ return (vk.groep[id]||GROEP[id])===sec; });
       if(inSec.length){ perSectie[sec]=inSec; gevuld.push(sec); }
     });
-    if(gevuld.indexOf(vk.filter)<0) vk.filter='alles';
-
-    /* Filterknoppen: alleen secties die kaarten hebben, met het aantal erbij.
-       Onderzoek naar filters is eenduidig: bij een handvol keuzes horen ze
-       boven de inhoud te staan, altijd zichtbaar, met de actieve keuze in beeld. */
-    var chips='<button type="button" class="dsChip'+(vk.filter==='alles'?' aan':'')+
-      '" data-filter="alles">Alles <span>'+aan.length+'</span></button>'+
-      gevuld.map(function(sec){
-        return '<button type="button" class="dsChip'+(vk.filter===sec?' aan':'')+
-          '" data-filter="'+sec+'">'+sec+' <span>'+perSectie[sec].length+'</span></button>';
-      }).join('');
-
-    var toon=vk.filter==='alles'?gevuld:[vk.filter];
     var kaarten='';
-    toon.forEach(function(sec){
-      kaarten+=(vk.filter==='alles'?'<div class="dsGroepKop">'+sec+'</div>':'')+
+    gevuld.forEach(function(sec){
+      kaarten+='<div class="dsGroepKop">'+sec+'</div>'+
         perSectie[sec].map(function(id){ return bouwKaart(id,g); }).join('');
     });
-    w.innerHTML='<div class="dsBalk2"><div class="dsChips">'+chips+'</div>'+
+    w.innerHTML='<div class="dsKop"><span>Jouw overzicht</span>'+
       '<button class="dsInstel" type="button" aria-expanded="false">Aanpassen</button></div>'+
-      (vk.filter!=='alles'?'<p class="dsFilterMelding">Je ziet alleen <b>'+vk.filter+
-        '</b>. <button type="button" class="dsWis" data-filter="alles">Alles tonen</button></p>':'')+
-      '<div class="dsKiezer" hidden><p class="dsKiezerUitleg">Dit verandert je overzicht zelf: '+
-      'vink aan welke kaarten je wilt zien, en kies per kaart onder welke sectie hij staat. '+
-      'Je keuze wordt bewaard.</p>'+VOLG.map(function(id){
+      '<div class="dsKiezer" hidden><p class="dsKiezerUitleg">Welke kaarten je ziet, '+
+      'en onder welke sectie ze staan.</p>'+VOLG.map(function(id){
         var uit=vk.uit.indexOf(id)>=0, gr=vk.groep[id]||GROEP[id];
         return '<div class="dsKiezerRij">'+
           '<label><input type="checkbox" data-kies="'+id+'"'+(uit?'':' checked')+'>'+
@@ -10238,14 +10222,6 @@ window.__BG_LOOPT__ = function(K, slug){
         var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
         BEZIG=false; teken(); BEZIG=true;
         var k2=document.querySelector('.dsKiezer'); if(k2) k2.removeAttribute('hidden');
-      });
-    });
-    Array.prototype.forEach.call(w.querySelectorAll('[data-filter]'),function(b){
-      b.addEventListener('click',function(){
-        vk.filter=b.dataset.filter;
-        jsonZet('bg_dash_'+slug(),vk);
-        var oud=document.querySelector('.dsWrap'); if(oud) oud.remove();
-        BEZIG=false; teken();
       });
     });
     Array.prototype.forEach.call(w.querySelectorAll('[data-groep]'),function(sel){
@@ -10855,5 +10831,190 @@ window.__BG_LOOPT__ = function(K, slug){
 @media(max-width:640px){.dpTerug{bottom:4.5rem}}
 </style>
 <script src="/assets/js/portaalslot.js?v=2"></script>
+<script>
+/* Een echte filter, op de plek waar een lijst staat: de offerte.
+   Gebouwd naar het patroon van webwinkels en vergelijkers — Zalando, H&M,
+   Booking: facetgroepen met een teller per keuze, OF binnen een groep en EN
+   tussen groepen, de actieve keuzes als chips boven de lijst, een regel die
+   zegt hoeveel er overblijft, en altijd een weg terug.
+   Puur toevoegend: er wordt niets aan de offertemodule zelf gewijzigd, alleen
+   rijen verborgen. Het aanvinken, de prijs en de handtekening blijven van hen. */
+(function(){
+  function slug(){
+    var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
+    return m?decodeURIComponent(m[1]).toLowerCase():'';
+  }
+  function esc(t){var d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML;}
+  function euro(n){return '\u20ac '+Math.round(n).toLocaleString('nl-NL');}
+
+  var KEUZE={};   /* groep -> [waarden] */
+
+  function soort(o){
+    if(o.soort==='ai') return 'AI';
+    if(o.id==='fase1') return 'Meten opzetten';
+    if(o.id==='fundament') return 'Fundament';
+    return 'Scherm';
+  }
+  function duur(o){
+    var w=(o.sprints||[]).length||1;
+    return w===1?'1 week':w+' weken';
+  }
+  function status(o){ return o.vast?'In de opdracht':'Meerwerk'; }
+
+  var GROEPEN=[
+    {sleutel:'status', naam:'Status', bij:status},
+    {sleutel:'soort',  naam:'Wat het is', bij:soort},
+    {sleutel:'duur',   naam:'Doorlooptijd', bij:duur}
+  ];
+
+  function past(o){
+    return GROEPEN.every(function(gr){
+      var gekozen=KEUZE[gr.sleutel]||[];
+      return !gekozen.length || gekozen.indexOf(gr.bij(o))>=0;
+    });
+  }
+  /* Teller per keuze: wat zou er overblijven als je alleen deze erbij zet.
+     Zonder die teller weet niemand of een filter iets doet. */
+  function telVoor(gr,waarde,D){
+    return D.filter(function(o){
+      return GROEPEN.every(function(g2){
+        if(g2.sleutel===gr.sleutel) return g2.bij(o)===waarde;
+        var gekozen=KEUZE[g2.sleutel]||[];
+        return !gekozen.length || gekozen.indexOf(g2.bij(o))>=0;
+      });
+    }).length;
+  }
+
+  function bouw(paneel,D){
+    var balk=document.createElement('div');
+    balk.className='ofFilter';
+    balk.id='ofFilter';
+    paneel.querySelector('#ofRijen').parentNode.insertBefore(balk, paneel.querySelector('#ofRijen'));
+    return balk;
+  }
+
+  function teken(D,balk,rijen){
+    var over=D.filter(past), som=0;
+    over.forEach(function(o){ som+=o.prijs; });
+
+    var groepen=GROEPEN.map(function(gr){
+      var waarden=[];
+      D.forEach(function(o){ var w=gr.bij(o); if(waarden.indexOf(w)<0) waarden.push(w); });
+      if(waarden.length<2) return '';
+      /* Doorlooptijd op getal, niet op toeval: 1 week voor 2 weken. */
+      if(gr.sleutel==='duur') waarden.sort(function(a,b){ return parseInt(a,10)-parseInt(b,10); });
+      return '<div class="ofFgroep"><span class="ofFnaam">'+gr.naam+'</span>'+
+        waarden.map(function(w){
+          var n=telVoor(gr,w,D), aan=(KEUZE[gr.sleutel]||[]).indexOf(w)>=0;
+          return '<button type="button" class="ofFknop'+(aan?' aan':'')+(n?'':' leeg')+
+            '" data-g="'+gr.sleutel+'" data-w="'+esc(w)+'"'+(n?'':' disabled')+'>'+
+            esc(w)+' <span>'+n+'</span></button>';
+        }).join('')+'</div>';
+    }).join('');
+
+    var chips=[];
+    GROEPEN.forEach(function(gr){
+      (KEUZE[gr.sleutel]||[]).forEach(function(w){
+        chips.push('<button type="button" class="ofChip" data-weg="'+gr.sleutel+'|'+esc(w)+'">'+
+          esc(gr.naam)+': '+esc(w)+' <b>\u00d7</b></button>');
+      });
+    });
+
+    balk.innerHTML=groepen+
+      '<div class="ofFuit">'+
+        '<span class="ofFtel"><b>'+over.length+'</b> van '+D.length+' onderdelen'+
+        (over.length?' \u00b7 '+euro(som)+' samen':'')+'</span>'+
+        (chips.length?'<div class="ofChips">'+chips.join('')+
+          '<button type="button" class="ofWis">Alles wissen</button></div>':'')+
+      '</div>';
+
+    rijen.forEach(function(r,i){
+      r.el.classList.toggle('ofVerborgen', !past(r.o));
+    });
+
+    var leeg=paneel_leegmelding(balk);
+    if(!over.length){ leeg.hidden=false; } else { leeg.hidden=true; }
+  }
+
+  function paneel_leegmelding(balk){
+    var el=document.getElementById('ofLeeg');
+    if(!el){
+      el=document.createElement('p');
+      el.id='ofLeeg';
+      el.className='ofLeeg';
+      el.innerHTML='Geen onderdeel past bij deze keuze. <button type="button" class="ofWis">Alles wissen</button>';
+      balk.parentNode.insertBefore(el, balk.nextSibling);
+    }
+    return el;
+  }
+
+  function koppel(D,balk,rijen){
+    document.addEventListener('click',function(e){
+      var k=e.target.closest&&e.target.closest('#ofFilter .ofFknop');
+      if(k&&!k.disabled){
+        var g=k.dataset.g, w=k.dataset.w;
+        KEUZE[g]=KEUZE[g]||[];
+        var i=KEUZE[g].indexOf(w);
+        if(i<0) KEUZE[g].push(w); else KEUZE[g].splice(i,1);
+        teken(D,balk,rijen); return;
+      }
+      var weg=e.target.closest&&e.target.closest('.ofChip');
+      if(weg){
+        var d=weg.dataset.weg.split('|');
+        KEUZE[d[0]]=(KEUZE[d[0]]||[]).filter(function(x){return x!==d[1];});
+        teken(D,balk,rijen); return;
+      }
+      var wis=e.target.closest&&e.target.closest('.ofWis');
+      if(wis){ KEUZE={}; teken(D,balk,rijen); }
+    });
+  }
+
+  function start(){
+    var paneel=document.getElementById('p-offerte');
+    if(!paneel||document.getElementById('ofFilter')) return;
+    var rijenEl=paneel.querySelector('#ofRijen');
+    if(!rijenEl) return;
+    var els=Array.prototype.slice.call(rijenEl.querySelectorAll('.of-rij'));
+    var K=(window.__KLANTEN__||{})[slug()];
+    if(!K||!K.onderdelen||els.length!==K.onderdelen.length) return;
+    if(K.onderdelen.length<4) return;   /* onder de vier valt er niets te filteren */
+
+    var D=K.onderdelen, rijen=els.map(function(el,i){ return {el:el,o:D[i]}; });
+    var balk=bouw(paneel,D);
+    koppel(D,balk,rijen);
+    teken(D,balk,rijen);
+  }
+
+  setInterval(function(){ try{ start(); }catch(e){ console.error('[bedrijfsgeheugen] offertefilter:',e); } },700);
+})();
+</script>
+<style>
+.ofFilter{display:flex;flex-direction:column;gap:.55rem;background:#fff;border:1.5px solid var(--lijn,#DCDFE6);
+ border-radius:14px;padding:.9rem 1rem;margin:0 0 1rem}
+.ofFgroep{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.ofFnaam{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;
+ color:var(--grijs,#5C646E);min-width:8.5rem}
+.ofFknop{border:1.5px solid var(--lijn,#DCDFE6);background:#fff;border-radius:99px;padding:.3rem .75rem;
+ font:inherit;font-size:.82rem;color:var(--inkt,#14171A);cursor:pointer;display:inline-flex;
+ align-items:center;gap:.35rem;white-space:nowrap}
+.ofFknop span{font-size:.74rem;color:var(--grijs,#5C646E)}
+.ofFknop:hover{border-color:var(--blauw,#2742D6)}
+.ofFknop.aan{background:var(--blauw,#2742D6);border-color:var(--blauw,#2742D6);color:#fff}
+.ofFknop.aan span{color:rgba(255,255,255,.75)}
+.ofFknop.leeg{opacity:.4;cursor:default}
+.ofFuit{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;border-top:1px solid var(--lijn,#DCDFE6);
+ padding-top:.6rem;margin-top:.15rem}
+.ofFtel{font-size:.85rem;color:var(--grijs,#5C646E)}
+.ofFtel b{color:var(--inkt,#14171A)}
+.ofChips{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
+.ofChip{border:0;background:var(--geel,#FFE86B);border-radius:99px;padding:.28rem .7rem;font:inherit;
+ font-size:.8rem;color:var(--inkt,#14171A);cursor:pointer;display:inline-flex;gap:.4rem;align-items:center}
+.ofChip b{font-size:.95rem;line-height:1}
+.ofWis{border:0;background:none;color:var(--blauw,#2742D6);font:inherit;font-size:.82rem;
+ text-decoration:underline;cursor:pointer;padding:0}
+.ofVerborgen{display:none!important}
+.ofLeeg{background:#F4F5F8;border-radius:10px;padding:.9rem 1rem;font-size:.88rem;margin:0 0 1rem}
+@media(max-width:720px){.ofFnaam{min-width:100%}}
+</style>
 </body>
 </html>
