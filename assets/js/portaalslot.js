@@ -45,13 +45,11 @@
      binnen. Het account wordt bij die eerste klik aangemaakt; de uitnodiging in
      de database koppelt hem meteen aan de juiste organisatie. */
   function linkSturen(email) {
-    return api('/auth/v1/otp', {
+    /* De REST-schil wil het terugkeeradres als parameter in de URL, niet in de
+       body: options{} is iets van de JavaScript-bibliotheek, niet van de API. */
+    return api('/auth/v1/otp?redirect_to=' + encodeURIComponent(location.href), {
       method: 'POST',
-      body: JSON.stringify({
-        email: email,
-        create_user: true,
-        options: { email_redirect_to: location.href }
-      })
+      body: JSON.stringify({ email: email, create_user: true })
     });
   }
 
@@ -177,10 +175,17 @@
         })
         .catch(function (e) {
           link.disabled = false;
-          var m = (e && (e.error_description || e.msg || e.message)) || '';
-          fout.textContent = /rate|limit/i.test(m)
-            ? 'Er is net al een link gestuurd. Kijk even in je mail.'
-            : 'Versturen lukt nu niet. Probeer het zo nog eens.';
+          var m = (e && (e.error_description || e.msg || e.message || e.error)) || '';
+          if (/rate|limit|seconds/i.test(m)) {
+            fout.textContent = 'Er is net al een link gestuurd. Wacht even en probeer opnieuw.';
+          } else if (/signup|not allowed|disabled/i.test(m)) {
+            fout.textContent = 'Dit adres staat nog niet klaar. Laat het even weten, dan zet ik het open.';
+          } else {
+            /* De echte melding tonen in plaats van hem te verstoppen: anders is
+               een storing niet te vinden zonder in de console te kijken. */
+            fout.textContent = 'Versturen lukt nu niet' + (m ? ' \u2014 ' + m : '') + '.';
+          }
+          try { console.error('[bedrijfsgeheugen] inloglink:', e); } catch (x) {}
         });
     });
 
