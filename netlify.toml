@@ -165,3 +165,22 @@
   for = "/assets/js/*"
   [headers.values]
     Cache-Control = "public, max-age=3600, must-revalidate"
+
+# Slot op de interne map. De edge function vraagt om inloggegevens; die staan
+# als INTERN_GEBRUIKER en INTERN_WACHTWOORD in de Netlify-omgevingsvariabelen.
+[[edge_functions]]
+  function = "intern-slot"
+  path = "/intern/*"
+
+# .html-varianten die Google alsnog had opgepikt, doorsturen naar de schone URL
+[[redirects]]
+  from = "/connect.html"
+  to = "/connect"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/expertises.html"
+  to = "/expertises"
+  status = 301
+  force = true
