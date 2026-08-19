@@ -28,4 +28,4 @@
 /benchmark   /benchmark.html   200
 /ai-scan   /ai-scan.html   200
 /workshops /workshops.html 200
-/zelfscan /zelfscan.html 200
+/zelfscan.html  /zelfscan  301!
