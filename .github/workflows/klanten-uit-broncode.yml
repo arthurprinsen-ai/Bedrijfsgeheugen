@@ -43,7 +43,8 @@ jobs:
       - name: Controleren dat er geen prijzen meer in staan
         run: |
           if grep -q '"emails": \["' klantportaal.html; then
-            echo 'Er staan nog e-mailadressen van klanten in de broncode'; exit 1
+            echo '::error::Er staan nog e-mailadressen van klanten in de broncode van klantportaal.html. Haal ze eruit voordat dit live gaat.'
+            exit 1
           fi
           echo 'Geen klantgegevens meer in de broncode'
 
