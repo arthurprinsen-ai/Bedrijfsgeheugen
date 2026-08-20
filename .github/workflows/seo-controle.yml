@@ -1,0 +1,45 @@
+name: SEO-controle bij elke wijziging
+
+# Draait zodra er een pagina wijzigt op main. Herstelt sitemap en 301 zelf,
+# meldt de rest in het dagplan via Make BG 53.
+on:
+  push:
+    branches: [main]
+    paths: ['*.html']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  controle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Pagina's controleren
+        id: controle
+        env:
+          BG_SEO_WEBHOOK: ${{ secrets.BG_SEO_WEBHOOK }}
+        continue-on-error: true
+        run: python3 tools/seo-controle.py | tee uitkomst.txt
+
+      - name: Sitemap en redirects terugcommitten
+        run: |
+          if [ -n "$(git status --porcelain sitemap.xml netlify.toml)" ]; then
+            git config user.name "SEO-poortwachter"
+            git config user.email "actions@users.noreply.github.com"
+            git add sitemap.xml netlify.toml
+            git commit -m "SEO-poortwachter: sitemap en redirects bijgewerkt"
+            git push
+          else
+            echo "Niets te herstellen."
+          fi
+
+      - name: Uitkomst in de samenvatting
+        run: cat uitkomst.txt >> $GITHUB_STEP_SUMMARY
+
+      - name: Falen bij een echte fout
+        run: exit ${{ steps.controle.outcome == 'failure' && 1 || 0 }}
