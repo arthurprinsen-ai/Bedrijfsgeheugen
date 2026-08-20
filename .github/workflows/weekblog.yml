@@ -285,7 +285,15 @@ jobs:
             https://www.bedrijfsgeheugen.nl/#org), FAQPage met dezelfde vragen als in het artikel, en
             BreadcrumbList Home > Blog > artikel. Valideer dat de JSON parseert.
 
-            BEELD: elk artikel krijgt minstens één en hoogstens drie figuren die iets uitleggen
+            BEELD — FOTO: staat er een Beeld URL in de kalender, zet die foto dan direct onder de
+            h1, boven de eerste alinea, in deze vorm:
+            <figure><img src="DE_BEELD_URL" alt="DE_ALT_TEKST" width="1200" height="675"
+            decoding="async"><figcaption>Eén zin die zegt wat je ziet.</figcaption></figure>
+            Geen loading="lazy" op dit ene beeld, want het staat boven de vouw. Neem de foto ook op
+            in het JSON-LD als "image". Is er geen Beeld URL, laat de foto dan weg en meld dat in je
+            afsluitende samenvatting — verzin er nooit een bestandsnaam bij die niet bestaat.
+
+            BEELD — FIGUREN: elk artikel krijgt minstens twee en hoogstens vier figuren die iets uitleggen
             wat in tekst omslachtig is: een stroom, een voor-en-na, een vergelijking, een opbouw in
             stappen. Maak die als inline SVG in de huisstijl — geen losse bestanden, geen externe
             afbeeldingen, geen stockfoto's. Gebruik de merkkleuren: papier #FBFAF7, inkt #14171A,
@@ -303,8 +311,9 @@ jobs:
             van dit cluster, en verwijder nooit bestaande artikelen.
 
             CONTROLE VOOR PUBLICATIE: precies één h1, geldige JSON-LD, canonical zonder .html,
-            een meta bg-zoekwoord met exact het focus-zoekwoord uit de kalender, minstens één
-            figuur met figcaption en een leesbare lettergrootte in de svg, geen
+            een meta bg-zoekwoord met exact het focus-zoekwoord uit de kalender, minstens twee
+            figuren met figcaption en een leesbare lettergrootte in de svg, bij elke img een alt van
+            hooguit 125 tekens plus width, height en decoding, geen
             enkele interne link die op .html eindigt, geen link naar een slug die niet bestaat, en
             minimaal drie interne links naar andere pagina's onder blog/ of naar een dienstpagina.
 
