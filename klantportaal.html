@@ -7540,7 +7540,7 @@ body{background:var(--np-vlak)}
  function ini(n){ return String(n||'?').trim().split(/\s+/).map(function(x){return x[0];}).slice(0,2).join('').toUpperCase(); }
  function avatar(n){ var l=String(n||'').toLowerCase(), f=null;
   Object.keys(FOTO).forEach(function(k){ if(l.indexOf(k)>=0) f=FOTO[k]; });
-  return f?'<img class="w-av" src="'+f+'" alt="" onerror="this.replaceWith(document.createTextNode(\'\'))">'
+  return f?'<img class="w-av" src="'+f+'" alt="" onerror="this.replaceWith(document.createTextNode(\'\'))" loading="lazy" decoding="async">'
           :'<span class="w-av">'+esc(ini(n))+'</span>'; }
  function pers(n,r){ return '<span class="w-pers">'+avatar(n)+'<span><span class="nm">'+esc(n||'niemand')+'</span>'
    +(r?'<span class="rl" style="display:block">'+esc(r)+'</span>':'')+'</span></span>'; }
@@ -8284,7 +8284,7 @@ window.__BG_LOOPT__ = function(K, slug){
        Lukt het laden niet, dan verschijnen de initialen — nooit een gebroken plaatje. */
     var bron = K.logo || (K.domein ? 'https://www.google.com/s2/favicons?sz=128&domain=' + K.domein : '');
     merk.innerHTML = (bron
-        ? '<img src="' + bron + '" alt="' + K.naam + '" onerror="this.outerHTML=\'<span class=&quot;init&quot;>' + init + '</span>\'">'
+        ? '<img src="' + bron + '" alt="' + K.naam + '" onerror="this.outerHTML=\'<span class=&quot;init&quot; loading="lazy" decoding="async">' + init + '</span>\'">'
         : '<span class="init">' + init + '</span>') +
       '<span class="sitenaam">' + K.naam + '</span>';
     merk.hidden = false;
