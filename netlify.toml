@@ -185,17 +185,6 @@
   path = "/intern/*"
 
 # .html-varianten die Google alsnog had opgepikt, doorsturen naar de schone URL
-[[redirects]]
-  from = "/connect.html"
-  to = "/connect"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/expertises.html"
-  to = "/expertises"
-  status = 301
-  force = true
 
 [[redirects]]
   from = "/brochure.html"
