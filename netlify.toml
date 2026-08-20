@@ -184,3 +184,9 @@
   to = "/expertises"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/brochure.html"
+  to = "/brochure"
+  status = 301
+  force = true
