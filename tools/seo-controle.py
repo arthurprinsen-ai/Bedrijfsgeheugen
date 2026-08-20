@@ -36,7 +36,8 @@ SITEMAP = "sitemap.xml"
 NETLIFY = "netlify.toml"
 # Pagina's die geen zoekwoord hoeven te hebben.
 VRIJGESTELD = {"404.html", "klantportaal.html", "klantportaal-demo.html",
-               "offerte.html", "portaal.html", "bedankt.html"}
+               "offerte.html", "portaal.html", "bedankt.html",
+               "contact.html", "privacy.html", "index-oud.html"}
 
 FOUT, WAARSCHUWING, HERSTELD = [], [], []
 
