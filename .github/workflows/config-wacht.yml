@@ -17,6 +17,8 @@ on:
       - '_redirects'
       - 'sitemap.xml'
       - 'tools/seo-controle.py'
+      - 'tools/config-wacht.py'
+      - '.github/workflows/*.yml'
       - '.github/workflows/config-wacht.yml'
   pull_request:
     paths:
