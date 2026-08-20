@@ -697,6 +697,11 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
         <div class="bron"><b>Hoe gerekend:</b> uren per week &times; 46 werkweken &times; uurtarief, vermenigvuldigd met het deel dat realistisch te ondersteunen is. Dat deel loopt van 15% bij weinig herhaling tot 70% bij zeer repeterend werk met gegevens op orde. Bij hoog risico gaat er een derde af, want dan blijft controle door een mens nodig.</div>
       </div>
 
+      <div class="kaart" style="margin-top:1rem"><h3>Een ijkpunt: is dit veel?</h3>
+        <div id="asIjk"></div>
+        <div class="bron"><b>Waar deze cijfers vandaan komen:</b> Lucid Software (2.148 kenniswerkers), Savanta voor Snowflake (1.088 werknemers Benelux), Glean Work AI Index 2026 (6.000 kenniswerkers), Adaptavist (2.500 kenniswerkers), Eurostat en CBS. Alles staat met bron op <a href="https://www.bedrijfsgeheugen.nl/benchmark" target="_blank" rel="noopener">bedrijfsgeheugen.nl/benchmark</a>.</div>
+      </div>
+
       <div class="kaart" style="margin-top:1rem"><h3>De volgorde</h3><div id="asVolgorde"></div></div>
     </section>
 
@@ -8016,6 +8021,41 @@ body{background:var(--np-vlak)}
       if(weg.length) p+='<p class="sub">'+weg.length+' '+(weg.length===1?'taak levert':'taken leveren')+' te weinig op om nu aandacht aan te geven. Dat is een prima uitkomst: niet alles hoeft.</p>';
       p+='<p class="sub">Deze bedragen zijn een schatting op basis van wat je zelf hebt ingevuld. Ze zijn bedoeld om de volgorde te bepalen, niet om in een begroting te zetten.</p>';
       d.innerHTML=p;
+    }
+
+    /* Het ijkpunt: de eigen uitkomst naast wat er landelijk gemeten is.
+       Zonder vergelijking weet niemand of 300 uur veel of weinig is. */
+    var ij=document.getElementById('asIjk');
+    if(ij){
+      var p2='';
+      if(!totU){
+        p2='<p>Vul hierboven je taken in, dan leggen we je uitkomst naast wat er landelijk is gemeten.</p>';
+      } else {
+        var perWeek = totU/46;
+        p2='<p>Je komt uit op <b>'+Math.round(totU)+' uur per jaar</b>, ofwel ruim <b>'
+          +(Math.round(perWeek*10)/10).toString().replace('.',',')+' uur per week</b>.</p>';
+        p2+='<p>Ter vergelijking: Nederlandse kenniswerkers zijn gemiddeld <b>520 uur per jaar</b> kwijt aan het '
+          +'zoeken naar informatie &mdash; ruim elf uur per week, en ruim \u20ac 12.000 per persoon. Dat gaat alleen over '
+          +'z\u00f3eken. Overtypen, navragen en werk overdoen komen daar bovenop.</p>';
+        if(totU >= 520){
+          p2+='<p><b>Jouw uitkomst ligt boven dat gemiddelde.</b> Dat is geen reden tot paniek: het betekent meestal dat je '
+            +'eerlijk hebt ingevuld. De meeste mensen schatten te laag omdat ze de kleine onderbrekingen niet meetellen.</p>';
+        } else if(totU >= 260){
+          p2+='<p><b>Jouw uitkomst zit in dezelfde orde van grootte.</b> Dat maakt het geen incident maar een patroon &mdash; '
+            +'en een patroon is aan te pakken.</p>';
+        } else {
+          p2+='<p><b>Jouw uitkomst ligt daar onder.</b> Twee mogelijkheden: het gaat bij jullie inderdaad beter, of je hebt '
+            +'nog niet alle taken ingevuld. Meestal is het het tweede. De taken die je vergeet zijn precies de taken die '
+            +'zo gewoon zijn geworden dat je ze niet meer ziet.</p>';
+        }
+        p2+='<p style=\"margin-top:.8rem\"><b>En \u00e9\u00e9n cijfer om in gedachten te houden voordat je AI erop zet.</b> '
+          +'Kenniswerkers zeggen tot elf uur per week te besparen met AI, maar slechts <b>13%</b> ziet dat terug in de '
+          +'prestaties van het bedrijf. De verklaring: <b>42%</b> is meer tijd kwijt aan het nakijken van de uitvoer dan de '
+          +'techniek bespaart.</p>';
+        p2+='<p class=\"sub\">Daarom staat in de kolom hiernaast bij hoog risico een lagere haalbaarheid. Niet omdat het niet '
+          +'kan, maar omdat er dan een mens blijft controleren \u2014 en die tijd telt mee.</p>';
+      }
+      ij.innerHTML=p2;
     }
 
     var v=document.getElementById('asVolgorde');
