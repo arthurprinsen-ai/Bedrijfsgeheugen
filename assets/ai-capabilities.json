@@ -1,0 +1,643 @@
+{
+ "versie": "1.0",
+ "datum": "2026-08-20",
+ "titel": "Het AI-capabilitymodel",
+ "onder": "Alles wat een organisatie moet kunnen om AI veilig en meetbaar te draaien.",
+ "bron": "Opgezet naar het voorbeeld van het Enterprise AI Capability Model (pre-3.0) van Martin Molenkamp; de indeling in negen lagen is daarvan overgenomen, de definities en de mkb-vertaling zijn van Bedrijfsgeheugen.",
+ "niveaus": [
+  {
+   "n": 1,
+   "naam": "Ad hoc",
+   "kort": "Iemand doet het, niemand weet het",
+   "uitleg": "Het gebeurt buiten afspraken om. Werkt het, dan komt dat door de persoon, niet door de inrichting."
+  },
+  {
+   "n": 2,
+   "naam": "Herhaalbaar",
+   "kort": "Het werkt, maar met de hand",
+   "uitleg": "Er is een vaste manier, opgeschreven of afgekeken. Nog handwerk, en afhankelijk van wie het doet."
+  },
+  {
+   "n": 3,
+   "naam": "Ingericht",
+   "kort": "Vastgelegd in een systeem",
+   "uitleg": "Het staat op één plek, met een eigenaar. Anderen kunnen het overnemen zonder uitleg."
+  },
+  {
+   "n": 4,
+   "naam": "Bestuurd",
+   "kort": "Gemeten en bijgestuurd",
+   "uitleg": "Er zitten cijfers op, grenzen omheen en er wordt op gestuurd. Afwijkingen komen vanzelf boven."
+  },
+  {
+   "n": 5,
+   "naam": "Toonaangevend",
+   "kort": "Verbetert zichzelf",
+   "uitleg": "Het past zich aan zonder dat iemand ingrijpt, en het is goed genoeg om anderen te laten zien."
+  }
+ ],
+ "relevantie": {
+  "nu": "Telt vanaf je eerste AI-toepassing",
+  "groei": "Nodig zodra meerdere teams meedoen",
+  "later": "Pas bij schaal of strenge eisen"
+ },
+ "lagen": [
+  {
+   "nr": 1,
+   "k": "strategie",
+   "n": "Business & Strategie",
+   "onder": "Welke problemen we oplossen, wat het moet opleveren, wie het bezit",
+   "soort": "stapel",
+   "caps": [
+    {
+     "id": "strategie-01",
+     "n": "AI-visie en richting",
+     "d": "Eén geschreven antwoord op de vraag waar AI in dit bedrijf voor dient, en waarvoor uitdrukkelijk niet.",
+     "rel": "nu"
+    },
+    {
+     "id": "strategie-02",
+     "n": "Portefeuille van toepassingen",
+     "d": "Eén lijst van alle bedachte, lopende en gestopte AI-toepassingen, met de reden erbij.",
+     "rel": "nu"
+    },
+    {
+     "id": "strategie-03",
+     "n": "Waardebepaling en business case",
+     "d": "Per toepassing vooraf vastgelegd wat het moet opleveren, in uren, euro's of fouten.",
+     "rel": "nu"
+    },
+    {
+     "id": "strategie-04",
+     "n": "Eigenaarschap en besluitvorming",
+     "d": "Per toepassing één naam die beslist of hij aan, uit of anders gaat.",
+     "rel": "nu"
+    },
+    {
+     "id": "strategie-05",
+     "n": "Adoptie en verandering",
+     "d": "De begeleiding die zorgt dat mensen het nieuwe werk ook echt zo gaan doen.",
+     "rel": "nu"
+    }
+   ]
+  },
+  {
+   "nr": 2,
+   "k": "kanalen",
+   "n": "Kanalen & Interfaces",
+   "onder": "Waar mensen en systemen het platform raken",
+   "soort": "stapel",
+   "caps": [
+    {
+     "id": "kanalen-01",
+     "n": "Chat voor medewerkers",
+     "d": "Eén afgesproken plek waar medewerkers AI mogen gebruiken voor hun eigen werk.",
+     "rel": "nu"
+    },
+    {
+     "id": "kanalen-02",
+     "n": "Klantkanaal",
+     "d": "AI die klanten rechtstreeks te woord staat, op de site of in een klantomgeving.",
+     "rel": "groei"
+    },
+    {
+     "id": "kanalen-03",
+     "n": "Werkplekintegratie",
+     "d": "AI die zit waar het werk al gebeurt: Teams, Outlook, SharePoint.",
+     "rel": "nu"
+    },
+    {
+     "id": "kanalen-04",
+     "n": "Kantoortoepassingen",
+     "d": "AI in Word, Excel en PowerPoint, met toegang tot bedrijfsdocumenten.",
+     "rel": "nu"
+    },
+    {
+     "id": "kanalen-05",
+     "n": "AI in eigen software",
+     "d": "AI-functies ingebouwd in de applicaties die het bedrijf zelf laat bouwen.",
+     "rel": "groei"
+    },
+    {
+     "id": "kanalen-06",
+     "n": "Spraak en telefonie",
+     "d": "Gesproken in- en uitvoer: uitgeschreven gesprekken, telefonische afhandeling.",
+     "rel": "later"
+    },
+    {
+     "id": "kanalen-07",
+     "n": "E-mail en documentstromen",
+     "d": "Binnenkomende post en documenten die automatisch worden gelezen en gerouteerd.",
+     "rel": "groei"
+    },
+    {
+     "id": "kanalen-08",
+     "n": "Koppelvlakken voor systemen",
+     "d": "Een vaste manier waarop andere systemen AI-functies kunnen aanroepen.",
+     "rel": "groei"
+    },
+    {
+     "id": "kanalen-09",
+     "n": "Mobiel gebruik",
+     "d": "Dezelfde toegang en dezelfde grenzen op een telefoon als achter een bureau.",
+     "rel": "later"
+    },
+    {
+     "id": "kanalen-10",
+     "n": "Taal en toegankelijkheid",
+     "d": "Antwoorden in de taal en op het niveau van de gebruiker, ook bij beperkingen.",
+     "rel": "later"
+    }
+   ]
+  },
+  {
+   "nr": 3,
+   "k": "agenten",
+   "n": "Agent-ontwikkeling",
+   "onder": "Van idee naar een werkende, geteste agent",
+   "soort": "stapel",
+   "caps": [
+    {
+     "id": "agenten-01",
+     "n": "Taakafbakening",
+     "d": "Zwart op wit wat de agent wél en niet doet, en wanneer hij het overdraagt.",
+     "rel": "nu"
+    },
+    {
+     "id": "agenten-02",
+     "n": "Promptbeheer",
+     "d": "Instructieteksten op één plek, met versies, in plaats van verspreid in scenario's.",
+     "rel": "nu"
+    },
+    {
+     "id": "agenten-03",
+     "n": "Gereedschappen definiëren",
+     "d": "Beschrijven welke handelingen de agent mag uitvoeren en met welke gegevens.",
+     "rel": "nu"
+    },
+    {
+     "id": "agenten-04",
+     "n": "Context en werkgeheugen",
+     "d": "Bepalen wat de agent per opdracht meekrijgt, en wat hij tussen opdrachten onthoudt.",
+     "rel": "groei"
+    },
+    {
+     "id": "agenten-05",
+     "n": "Orkestratie van stappen",
+     "d": "De volgorde waarin een agent denkt, opzoekt, handelt en controleert.",
+     "rel": "groei"
+    },
+    {
+     "id": "agenten-06",
+     "n": "Samenwerkende agenten",
+     "d": "Meerdere agenten die werk aan elkaar doorgeven met een duidelijke overdracht.",
+     "rel": "later"
+    },
+    {
+     "id": "agenten-07",
+     "n": "Mens in de lus",
+     "d": "De momenten waarop een mens moet goedkeuren voordat de agent doorgaat.",
+     "rel": "nu"
+    },
+    {
+     "id": "agenten-08",
+     "n": "Foutafhandeling en terugval",
+     "d": "Wat er gebeurt als een stap mislukt: opnieuw, overslaan, of naar een mens.",
+     "rel": "nu"
+    },
+    {
+     "id": "agenten-09",
+     "n": "Evaluatieset",
+     "d": "Een vaste set voorbeelden met het goede antwoord, om kwaliteit te kunnen meten.",
+     "rel": "groei"
+    },
+    {
+     "id": "agenten-10",
+     "n": "Regressietest bij wisseling",
+     "d": "Diezelfde set opnieuw draaien voordat een ander model of nieuwe versie live gaat.",
+     "rel": "groei"
+    },
+    {
+     "id": "agenten-11",
+     "n": "Proefdraaien",
+     "d": "De agent eerst laten meelopen zonder gevolgen, met een mens die meekijkt.",
+     "rel": "nu"
+    },
+    {
+     "id": "agenten-12",
+     "n": "Uitrolstraat",
+     "d": "Een vaste weg van klad naar productie, zodat niemand rechtstreeks in het echte systeem sleutelt.",
+     "rel": "groei"
+    },
+    {
+     "id": "agenten-13",
+     "n": "Versiebeheer en terugdraaien",
+     "d": "Elke versie bewaard, en met één handeling terug naar de vorige.",
+     "rel": "groei"
+    },
+    {
+     "id": "agenten-14",
+     "n": "Herbruikbare bouwblokken",
+     "d": "Onderdelen die in meerdere agenten terugkomen, één keer gemaakt en gedeeld.",
+     "rel": "later"
+    }
+   ]
+  },
+  {
+   "nr": 4,
+   "k": "controlplane",
+   "n": "AI Control Plane",
+   "onder": "Elk verzoek, elke tool-call en elke euro langs één bewaakt punt",
+   "soort": "stapel",
+   "caps": [
+    {
+     "id": "controlplane-01",
+     "n": "Eén doorgang (gateway)",
+     "d": "Alle AI-verkeer loopt langs één punt, zodat er niets buiten het zicht om gebeurt.",
+     "rel": "groei"
+    },
+    {
+     "id": "controlplane-02",
+     "n": "Routering naar het juiste model",
+     "d": "Per soort vraag automatisch het model kiezen dat past qua prijs en kwaliteit.",
+     "rel": "groei"
+    },
+    {
+     "id": "controlplane-03",
+     "n": "Sleutels en geheimen",
+     "d": "API-sleutels centraal beheerd en vervangbaar, nooit in platte tekst in een scenario.",
+     "rel": "nu"
+    },
+    {
+     "id": "controlplane-04",
+     "n": "Quota en snelheidslimieten",
+     "d": "Grenzen per gebruiker, team of toepassing, zodat één fout niet alles opeet.",
+     "rel": "groei"
+    },
+    {
+     "id": "controlplane-05",
+     "n": "Kostenmeting per verzoek",
+     "d": "Van elk verzoek is bekend wat het kostte en wie het aanvroeg.",
+     "rel": "nu"
+    },
+    {
+     "id": "controlplane-06",
+     "n": "Doorbelasting",
+     "d": "Kosten toewijzen aan de afdeling of klant waar het werk vandaan komt.",
+     "rel": "later"
+    },
+    {
+     "id": "controlplane-07",
+     "n": "Hergebruik van antwoorden",
+     "d": "Dezelfde vraag niet twee keer betalen: bewaren en opnieuw uitserveren.",
+     "rel": "groei"
+    },
+    {
+     "id": "controlplane-08",
+     "n": "Grenzen op de invoer",
+     "d": "Controle vooraf op wat er ingaat: gevoelige gegevens, verboden verzoeken, injectiepogingen.",
+     "rel": "groei"
+    },
+    {
+     "id": "controlplane-09",
+     "n": "Grenzen op de uitvoer",
+     "d": "Controle achteraf op wat eruit komt: verzinsels, ongepaste inhoud, gelekte gegevens.",
+     "rel": "groei"
+    },
+    {
+     "id": "controlplane-10",
+     "n": "Gevoelige gegevens afschermen",
+     "d": "Persoonsgegevens en bedrijfsgeheimen onherkenbaar maken voordat ze het pand verlaten.",
+     "rel": "nu"
+    },
+    {
+     "id": "controlplane-11",
+     "n": "Toolregister",
+     "d": "Eén overzicht van alle koppelingen en MCP-servers die een agent mag aanroepen.",
+     "rel": "groei"
+    },
+    {
+     "id": "controlplane-12",
+     "n": "Vastlegging van elk verzoek",
+     "d": "Wie vroeg wat, welk model antwoordde, en wat er terugkwam — herleidbaar bewaard.",
+     "rel": "nu"
+    },
+    {
+     "id": "controlplane-13",
+     "n": "Bewaking en alarmering",
+     "d": "Doorlopend zicht op fouten, wachttijden en uitschieters, met een melding als het misgaat.",
+     "rel": "groei"
+    },
+    {
+     "id": "controlplane-14",
+     "n": "Terugval bij storing",
+     "d": "Een tweede weg als de leverancier eruit ligt, zodat het werk niet stilvalt.",
+     "rel": "groei"
+    }
+   ]
+  },
+  {
+   "nr": 5,
+   "k": "modellen",
+   "n": "Modellen & Inferentie",
+   "onder": "De motoren, uitwisselbaar achter de gateway",
+   "soort": "stapel",
+   "caps": [
+    {
+     "id": "modellen-01",
+     "n": "Modelkeuze en -register",
+     "d": "Eén lijst van toegestane modellen, met waarvoor ze wel en niet gebruikt mogen worden.",
+     "rel": "nu"
+    },
+    {
+     "id": "modellen-02",
+     "n": "Meerdere leveranciers",
+     "d": "Niet vastzitten aan één aanbieder: wisselen is configuratie, geen migratieproject.",
+     "rel": "groei"
+    },
+    {
+     "id": "modellen-03",
+     "n": "Eigen modellen draaien",
+     "d": "Modellen in eigen beheer of eigen regio voor werk dat het pand niet uit mag.",
+     "rel": "later"
+    },
+    {
+     "id": "modellen-04",
+     "n": "Bijstellen op eigen werk",
+     "d": "Een model laten meebewegen met de eigen vaktaal en voorbeelden.",
+     "rel": "later"
+    },
+    {
+     "id": "modellen-05",
+     "n": "Inbedding en herrangschikking",
+     "d": "De modellen die tekst doorzoekbaar maken en de beste stukken bovenaan zetten.",
+     "rel": "groei"
+    },
+    {
+     "id": "modellen-06",
+     "n": "Snelheid en wachttijd",
+     "d": "Weten hoe lang een antwoord duurt, en of dat past bij het werk erachter.",
+     "rel": "groei"
+    },
+    {
+     "id": "modellen-07",
+     "n": "Prijs tegen kwaliteit",
+     "d": "Bewuste keuze per taak: het goedkope model waar het kan, het dure waar het moet.",
+     "rel": "nu"
+    },
+    {
+     "id": "modellen-08",
+     "n": "Levenscyclus van modellen",
+     "d": "Verouderde modellen tijdig vervangen, met een test die aantoont dat het goed blijft.",
+     "rel": "groei"
+    }
+   ]
+  },
+  {
+   "nr": 6,
+   "k": "kennis",
+   "n": "Kennis & Data",
+   "onder": "AI is nooit beter dan de data die het mag zien",
+   "soort": "stapel",
+   "caps": [
+    {
+     "id": "kennis-01",
+     "n": "Bronnen ontsluiten",
+     "d": "De systemen en mappen waar de kennis in zit bereikbaar maken voor AI.",
+     "rel": "nu"
+    },
+    {
+     "id": "kennis-02",
+     "n": "Documenten klaarmaken",
+     "d": "Scans leesbaar maken, documenten opknippen in stukken die los begrijpelijk zijn.",
+     "rel": "nu"
+    },
+    {
+     "id": "kennis-03",
+     "n": "Doorzoekbare opslag",
+     "d": "Een index waarin op betekenis gezocht wordt, niet alleen op letterlijke woorden.",
+     "rel": "groei"
+    },
+    {
+     "id": "kennis-04",
+     "n": "Terughaalstrategie",
+     "d": "De manier waarop bij een vraag de juiste stukken worden opgehaald en meegegeven.",
+     "rel": "groei"
+    },
+    {
+     "id": "kennis-05",
+     "n": "Herkomst en verwijzing",
+     "d": "Bij elk antwoord terug te vinden uit welk document en welke versie het komt.",
+     "rel": "nu"
+    },
+    {
+     "id": "kennis-06",
+     "n": "Rechten per document",
+     "d": "Iemand krijgt via AI niets te zien wat hij zonder AI ook niet mocht zien.",
+     "rel": "nu"
+    },
+    {
+     "id": "kennis-07",
+     "n": "Actualiteit",
+     "d": "Afgesproken hoe vaak de kennis wordt ververst, en zichtbaar wanneer dat laatst gebeurde.",
+     "rel": "nu"
+    },
+    {
+     "id": "kennis-08",
+     "n": "Begrippen en definities",
+     "d": "Eén afgesproken betekenis van klant, order, marge en uur — ook voor AI.",
+     "rel": "nu"
+    },
+    {
+     "id": "kennis-09",
+     "n": "Datakwaliteit",
+     "d": "Weten hoe compleet en betrouwbaar de bron is voordat AI erop wordt losgelaten.",
+     "rel": "nu"
+    },
+    {
+     "id": "kennis-10",
+     "n": "Bewaren en verwijderen",
+     "d": "Vastgelegd hoe lang gesprekken en documenten blijven, en hoe iets echt weg gaat.",
+     "rel": "groei"
+    },
+    {
+     "id": "kennis-11",
+     "n": "Terugkoppeling naar de bron",
+     "d": "Wat AI fout ziet, leidt tot herstel in het bronsysteem, niet tot een omweg.",
+     "rel": "later"
+    }
+   ]
+  },
+  {
+   "nr": 7,
+   "k": "infra",
+   "n": "Infrastructuur & Runtime",
+   "onder": "Het fundament waar alles op draait",
+   "soort": "stapel",
+   "caps": [
+    {
+     "id": "infra-01",
+     "n": "Rekencapaciteit",
+     "d": "Genoeg en op tijd, zonder dat er een machine met de hand wordt aangezet.",
+     "rel": "groei"
+    },
+    {
+     "id": "infra-02",
+     "n": "Netwerk en koppelvlakken",
+     "d": "Verbindingen naar leveranciers en interne systemen, afgeschermd en gecontroleerd.",
+     "rel": "groei"
+    },
+    {
+     "id": "infra-03",
+     "n": "Opslag",
+     "d": "Waar documenten, indexen en logboeken staan, met de juiste bescherming erop.",
+     "rel": "nu"
+    },
+    {
+     "id": "infra-04",
+     "n": "Afgeschermde uitvoer",
+     "d": "Code en tool-aanroepen draaien in een omgeving die de rest niet kan raken.",
+     "rel": "groei"
+    },
+    {
+     "id": "infra-05",
+     "n": "Beschikbaarheid en herstel",
+     "d": "Afgesproken hoe lang iets uit mag liggen, en een herstel dat is getest.",
+     "rel": "groei"
+    },
+    {
+     "id": "infra-06",
+     "n": "Regio en datalocatie",
+     "d": "Weten in welk land de gegevens staan en verwerkt worden, en dat kunnen aantonen.",
+     "rel": "nu"
+    },
+    {
+     "id": "infra-07",
+     "n": "Uitrol en beheer",
+     "d": "De omgeving staat als code beschreven, zodat opnieuw opbouwen geen zoekplaatje is.",
+     "rel": "later"
+    }
+   ]
+  },
+  {
+   "nr": 8,
+   "k": "governance",
+   "n": "Governance & FinOps",
+   "onder": "Waarde, risico, kosten en compliance, dwars door elke laag heen",
+   "soort": "rail",
+   "caps": [
+    {
+     "id": "governance-01",
+     "n": "AI-register",
+     "d": "Eén overzicht van alle AI-toepassingen die draaien, inclusief die van leveranciers.",
+     "rel": "nu"
+    },
+    {
+     "id": "governance-02",
+     "n": "Risicoklasse bepalen",
+     "d": "Per toepassing vaststellen in welke categorie van de AI-verordening hij valt.",
+     "rel": "nu"
+    },
+    {
+     "id": "governance-03",
+     "n": "Beleid en gebruiksregels",
+     "d": "Op één A4 wat medewerkers wel en niet met AI mogen, in gewone taal.",
+     "rel": "nu"
+    },
+    {
+     "id": "governance-04",
+     "n": "Menselijk toezicht",
+     "d": "Vastgelegd waar een mens moet meekijken en wie dat is.",
+     "rel": "nu"
+    },
+    {
+     "id": "governance-05",
+     "n": "Transparantie",
+     "d": "Mensen weten wanneer ze met AI te maken hebben en wat ermee gebeurt.",
+     "rel": "nu"
+    },
+    {
+     "id": "governance-06",
+     "n": "Audit-spoor",
+     "d": "Achteraf aantoonbaar wat er gebeurde, voor accountant, auditor of toezichthouder.",
+     "rel": "groei"
+    },
+    {
+     "id": "governance-07",
+     "n": "Leveranciers en contracten",
+     "d": "Verwerkersovereenkomsten, voorwaarden en trainingsgebruik per leverancier vastgelegd.",
+     "rel": "nu"
+    },
+    {
+     "id": "governance-08",
+     "n": "Budget en plafonds",
+     "d": "Een maandbedrag per toepassing met een harde grens en een melding vooraf.",
+     "rel": "nu"
+    },
+    {
+     "id": "governance-09",
+     "n": "Opbrengst meten",
+     "d": "Per toepassing meten wat hij oplevert, en stoppen wat niets doet.",
+     "rel": "groei"
+    },
+    {
+     "id": "governance-10",
+     "n": "Incidenten en escalatie",
+     "d": "Een vaste route als AI iets fout doet: melden, stoppen, herstellen, vastleggen.",
+     "rel": "groei"
+    }
+   ]
+  },
+  {
+   "nr": 9,
+   "k": "identiteit",
+   "n": "Identiteit & Security",
+   "onder": "Wie mag handelen, namens wie, en binnen welke grens",
+   "soort": "rail",
+   "caps": [
+    {
+     "id": "identiteit-01",
+     "n": "Aanmelden en identiteit",
+     "d": "Eén account met tweestapsverificatie, ook voor AI-toepassingen.",
+     "rel": "nu"
+    },
+    {
+     "id": "identiteit-02",
+     "n": "Rollen en rechten",
+     "d": "Wat iemand mag, hangt aan zijn rol en gaat mee als die rol verandert.",
+     "rel": "nu"
+    },
+    {
+     "id": "identiteit-03",
+     "n": "Handelen namens iemand",
+     "d": "De agent werkt met de rechten van de gebruiker, niet met die van een beheerder.",
+     "rel": "groei"
+    },
+    {
+     "id": "identiteit-04",
+     "n": "Machine-identiteiten",
+     "d": "Agenten en scenario's hebben een eigen, herleidbaar account met beperkte rechten.",
+     "rel": "groei"
+    },
+    {
+     "id": "identiteit-05",
+     "n": "Geheimenbeheer",
+     "d": "Wachtwoorden en sleutels in een kluis, met vervaldatum en vervanging.",
+     "rel": "nu"
+    },
+    {
+     "id": "identiteit-06",
+     "n": "Aanvallen op AI",
+     "d": "Bescherming tegen promptinjectie, misbruik van tools en het weglekken van gegevens.",
+     "rel": "groei"
+    },
+    {
+     "id": "identiteit-07",
+     "n": "Beveiligingsbewaking",
+     "d": "Meekijken op afwijkend gebruik, en periodiek laten testen of het houdt.",
+     "rel": "later"
+    }
+   ]
+  }
+ ]
+}

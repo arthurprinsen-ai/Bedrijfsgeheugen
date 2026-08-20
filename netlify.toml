@@ -48,6 +48,12 @@
   force = true
 
 [[redirects]]
+  from = "/ai-capability-model.html"
+  to = "/ai-capability-model"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/wijzigingen.html"
   to = "/wijzigingen"
   status = 301
