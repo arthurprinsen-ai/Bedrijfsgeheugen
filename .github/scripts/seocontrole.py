@@ -40,7 +40,8 @@ CLUSTERS = {
         '/due-diligence', '/investeerders-ma', '/blog/wat-is-een-bedrijfsgeheugen/'],
     '/ai-adoptie': [
         '/ai-act', '/ai-governance', '/data-soevereiniteit', '/business-case-ai',
-        '/ai-voor-bestuurders', '/ai-implementeren', '/ai-poc', '/workshops', '/ai-scan', '/benchmark', '/afmaakindex'],
+        '/ai-voor-bestuurders', '/ai-implementeren', '/ai-poc', '/workshops', '/ai-scan', '/benchmark',
+        '/afmaakindex', '/ai-capability-model'],
 }
 
 # ── zoekwoord → de pagina die het hoort te claimen ────────────────────────
@@ -63,6 +64,8 @@ EIGENAAR = {
     'ai act compliance mkb': '/ai-act',
     'ai workshop mkb': '/workshops',
     'ai governance mkb': '/ai-governance',
+    # toegevoegd 20 augustus: eigen model, nog door geen pagina geclaimd
+    'ai capability model': '/ai-capability-model',
     # 260 zoekopdrachten per maand, concurrentie 41, CPC 17,73 euro.
     # Eigen thema dat vrijwel niemand commercieel claimt.
     'data soevereiniteit': '/data-soevereiniteit',
