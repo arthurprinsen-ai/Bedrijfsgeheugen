@@ -11948,6 +11948,7 @@ window.__BG_LOOPT__ = function(K, slug){
 #p-aicap .ac-cijfer{background:#fff;border:1px solid #E3E4E8;border-radius:10px;padding:.5rem .8rem;display:flex;gap:.5rem;align-items:baseline;min-width:120px}
 #p-aicap .ac-cijfer b{font-size:1.35rem;font-weight:800;line-height:1}
 #p-aicap .ac-cijfer span{font-size:.78rem;color:#5C646E;line-height:1.25}
+#p-aicap .ac-herkomst{background:#EEF1FD;border:1px solid #C9D3F7;border-radius:9px;padding:.55rem .8rem;font-size:.85rem;margin-top:.8rem}
 #p-aicap .ac-balk{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin:1rem 0 .2rem;padding:.6rem 0;border-top:1px solid #E3E4E8;border-bottom:1px solid #E3E4E8}
 #p-aicap .ac-zoek{flex:1;min-width:180px;height:38px;padding:0 .7rem;border:1px solid #E3E4E8;border-radius:8px;font:inherit}
 #p-aicap .ac-f{border:1px solid #E3E4E8;background:#fff;border-radius:8px;padding:.35rem .7rem;font:inherit;font-size:.83rem;font-weight:600;cursor:pointer}
@@ -11986,9 +11987,31 @@ window.__BG_LOOPT__ = function(K, slug){
  var f='alles', q='';
 
  function st(){ if(typeof S==='undefined') return null; if(!S.aicap) S.aicap={}; return S.aicap; }
+
+ /* Uitkomst van de scan op /ai-capability-model overnemen. Eén niveau per laag
+    vult alle capabilities van die laag, maar alleen waar nog niets stond of waar
+    de vorige waarde ook uit de scan kwam — met de hand gezette scores blijven. */
+ function haalScan(){
+  var a=st(); if(!a) return null;
+  var pak=null;
+  try{ pak=JSON.parse(localStorage.getItem('bg_aicap_pakket')||'null'); }catch(e){}
+  if(!pak||!pak.lagen) return null;
+  if(!(pak.stempel>(S.aicapStempel||0))){ return pak; }
+  if(!S.aicapUitScan) S.aicapUitScan={};
+  AC.lagen.forEach(function(lg){
+   var n=pak.lagen[lg.k]; if(!n) return;
+   lg.caps.forEach(function(c){
+    if(!a[c.id] || S.aicapUitScan[c.id]){ a[c.id]=n; S.aicapUitScan[c.id]=true; }
+   });
+  });
+  S.aicapStempel=pak.stempel; S.aicapDatum=pak.datum||'';
+  try{ if(typeof bewaar==='function') bewaar(); }catch(e){}
+  return pak;
+ }
  function sc(id){ var a=st(); return (a&&a[id])||0; }
  function zet(id,n){ var a=st(); if(!a) return;
   a[id] = (a[id]===n) ? 0 : n;
+  if(S.aicapUitScan) delete S.aicapUitScan[id];
   try{ if(typeof bewaar==='function') bewaar(); }catch(e){}
   teken(); }
 
@@ -12018,6 +12041,8 @@ window.__BG_LOOPT__ = function(K, slug){
    alle++; var n=sc(c.id); if(n>0) gescoord++;
    if(c.rel==='nu'&&n>0){ somNu+=n; telNu++; } }); });
 
+  var pak=haalScan();
+  var uitScan=0; if(S.aicapUitScan) for(var kk in S.aicapUitScan){ if(S.aicapUitScan[kk]) uitScan++; }
   var h='<div class="ac-kop"><div><h2>AI-capabilities</h2>'
    +'<p class="sub" style="margin:.2rem 0 0">'+esc(AC.onder)+' Negen lagen, 86 capabilities. '
    +'Zet per capability op welk niveau je staat &mdash; wat je niet invult telt niet mee.</p></div></div>'
@@ -12027,6 +12052,16 @@ window.__BG_LOOPT__ = function(K, slug){
    +'</b><span>gemiddeld op<br>wat nu al telt</span></div>'
    +'<div class="ac-cijfer"><b>'+zwakste().length+'</b><span>zwakke plekken<br>die nu al tellen</span></div>'
    +'</div>';
+
+  if(pak&&uitScan){
+   h+='<p class="ac-herkomst">'+uitScan+' capabilities zijn ingevuld met de uitkomst van je scan'
+    +(S.aicapDatum? ' van '+esc(S.aicapDatum) : '')+' \u2014 één niveau per laag. '
+    +'Zodra je er zelf een aanpast, telt die van jou.</p>';
+  } else if(!pak){
+   h+='<p class="ac-herkomst">Nog geen scan gedaan? Met negen vragen op '
+    +'<a href="/ai-capability-model#scan" target="_blank" rel="noopener">de modelpagina</a> '
+    +'staat dit scherm in twee minuten ingevuld.</p>';
+  }
 
   h+='<div class="ac-balk"><input type="text" class="ac-zoek" id="acZoek" placeholder="zoek op capability, bijvoorbeeld gateway, rechten of kosten" value="'+esc(q)+'">'
    +['alles','nu','groei','later'].map(function(k){
@@ -12082,6 +12117,9 @@ window.__BG_LOOPT__ = function(K, slug){
   if(!t||!p||typeof S==='undefined'){ setTimeout(start,400); return; }
   t.addEventListener('click',teken);
   teken();
+  /* Vanaf de scan komt men binnen op #aicap — dan meteen dit tabblad tonen. */
+  try{ if((location.hash||'').toLowerCase()==='#aicap'){ t.click(); 
+   setTimeout(function(){ try{ if(t.scrollIntoView) t.scrollIntoView({block:'nearest'}); }catch(e){} },150); } }catch(e){}
  }
  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
  else start();
