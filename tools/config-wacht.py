@@ -110,10 +110,51 @@ def sitemap():
     GOED.append(f"{naam} leesbaar - {len(locs)} URL's")
 
 
+def alarmen_met_inhoud():
+    """Elk alarm moet zeggen wat er mis is.
+
+    Aanleiding, 20 augustus 2026: de paginacontrole werd rood op een regel uit
+    het rapport, terwijl er geen melding werd aangemaakt. Je kreeg dus een mail
+    'All jobs have failed' zonder dat ergens stond wat er aan de hand was. Het
+    slechtste van twee werelden: een alarm zonder inhoud wordt weggeklikt, en
+    dan mis je het alarm dat er wel toe doet.
+
+    Regel: een workflow die zichzelf rood kan maken, moet in dezelfde run ook
+    een melding kunnen aanmaken of bijwerken. Anders is het alarm inhoudsloos.
+    """
+    import glob
+
+    zonder = []
+    for pad in sorted(glob.glob(".github/workflows/*.yml")):
+        try:
+            tekst = open(pad, encoding="utf-8").read()
+        except OSError:
+            continue
+        kan_falen = "exit 1" in tekst
+        # Twee manieren om te zeggen wat er mis is: een melding in GitHub, of
+        # een ::error::-annotatie die in de samenvatting en de mail terechtkomt.
+        zegt_wat = (
+            "issues.create" in tekst
+            or "issues.update" in tekst
+            or "::error::" in tekst
+        )
+        if kan_falen and not zegt_wat:
+            zonder.append(pad)
+
+    if zonder:
+        FOUTEN.append(
+            "Deze workflows kunnen rood worden zonder ergens te vertellen wat er mis "
+            "is. Voeg een melding toe, of laat ze niet falen:\n    " + "\n    ".join(zonder)
+        )
+    else:
+        GOED.append("alle workflows die kunnen falen, maken ook een melding met de reden")
+
+
 def main():
     netlify_toml()
     redirects_bestand()
     sitemap()
+    alarmen_met_inhoud()
 
     print("## Configuratiewacht\n")
     for g in GOED:
