@@ -52,9 +52,9 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -101,7 +101,7 @@ jobs:
 
       - name: Melding maken bij problemen
         if: (steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure') && github.event_name != 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
@@ -125,7 +125,7 @@ jobs:
 
       - name: Melding sluiten als alles goed is
         if: steps.controle.outcome == 'success' && steps.seo.outcome == 'success' && github.event_name != 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const open = await github.rest.issues.listForRepo({
@@ -143,6 +143,27 @@ jobs:
               });
             }
 
-      - name: Falen doorgeven
-        if: steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure'
-        run: exit 1
+      # Rood worden doet de controle alleen nog bij een kapotte pagina of een
+      # probleem met de zwaarste weging. Aandachtspunten van het niveau midden
+      # of laag staan in de melding met label paginacontrole - daar hoort geen
+      # mail over een mislukte workflow bij. Reden (20 aug 2026): bij een reeks
+      # commits achter elkaar kwam er een faalmail binnen voor een probleem dat
+      # zeven minuten later al was opgelost. Een alarm dat te vaak afgaat wordt
+      # weggeklikt, en dan mis je het alarm dat er wel toe doet.
+      - name: Falen doorgeven bij echte problemen
+        if: always()
+        run: |
+          if [ ! -f rapport.md ]; then
+            echo "Geen rapport gevonden - de controle zelf is stukgelopen."
+            exit 1
+          fi
+          if grep -qiE "pagina's met een probleem|JavaScript-fout|titel ontbreekt|canonical ontbreekt" rapport.md; then
+            echo "Er staat een kapotte pagina in het rapport."
+            exit 1
+          fi
+          if grep -qiE "^## Hoog" rapport.md; then
+            echo "Er staat een probleem van het niveau hoog in het rapport."
+            exit 1
+          fi
+          echo "Alleen aandachtspunten van niveau midden of laag - die staan in de melding, niet in een faalmail."
+
