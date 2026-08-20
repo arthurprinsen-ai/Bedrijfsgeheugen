@@ -156,21 +156,35 @@ def herstel_sitemap(paden):
 
 
 def herstel_redirects(paden):
+    # netlify.toml is TOML; _redirects heeft een eigen, platte vorm. Die twee
+    # mogen nooit in hetzelfde bestand belanden. Op 20 augustus 2026 werd de
+    # inhoud van _redirects hier bij de TOML opgeteld en daarna teruggeschreven,
+    # waardoor Netlify de configuratie niet meer kon lezen en elke build faalde.
+    # Daarom lezen we _redirects nu apart, alleen om te kijken of een pad er
+    # al in staat, en schrijven we uitsluitend naar netlify.toml.
     nt = open(NETLIFY, encoding="utf-8").read()
     try:
-        nt += open("_redirects", encoding="utf-8").read()
+        bestaand = open("_redirects", encoding="utf-8").read()
     except OSError:
-        pass
+        bestaand = ""
     toe = ""
     for pad in paden:
         if pad == "index.html" or pad in VRIJGESTELD or not mag_geindexeerd(pad):
             continue
-        if f'from = "/{pad}"' not in nt and f"/{pad}" not in nt:
+        if f'from = "/{pad}"' not in nt and f"/{pad}" not in bestaand:
             toe += (f'\n[[redirects]]\n  from = "/{pad}"\n  to = "/{pad[:-5]}"\n'
                     f'  status = 301\n  force = true\n')
             HERSTELD.append(f"301 toegevoegd: /{pad} → /{pad[:-5]}")
     if toe:
-        open(NETLIFY, "w", encoding="utf-8").write(nt.rstrip() + "\n" + toe)
+        nieuw_bestand = nt.rstrip() + "\n" + toe
+        # Vangnet: schrijf nooit iets weg wat geen geldige TOML is.
+        try:
+            import tomllib
+            tomllib.loads(nieuw_bestand)
+        except Exception as fout:
+            print(f"netlify.toml NIET bijgewerkt, resultaat was geen geldige TOML: {fout}")
+            return
+        open(NETLIFY, "w", encoding="utf-8").write(nieuw_bestand)
 
 
 # ── melden ────────────────────────────────────────────────────────────────
