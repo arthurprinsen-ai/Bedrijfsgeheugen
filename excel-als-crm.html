@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
+  try{ if(localStorage.getItem('bg_consent')==='granted'){ gtag('consent','update',{analytics_storage:'granted'}); } }catch(e){}
+  gtag('js', new Date());
+  gtag('config','G-912L0PB68G');
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel als CRM in een familiebedrijf: waar de grens ligt</title>
+<meta name="description" content="Excel als CRM in een familiebedrijf: waar het wel werkt, waar het stukloopt, wat het onderzoek over fouten zegt, en wat AI er wel en niet aan verandert.">
+<meta name="bg-zoekwoord" content="excel als crm familiebedrijf">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/excel-als-crm">
+<meta name="theme-color" content="#2742D6">
+<meta property="og:type" content="article"><meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Bedrijfsgeheugen">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/excel-als-crm">
+<meta property="og:title" content="Excel als CRM in een familiebedrijf: waar de grens ligt"><meta property="og:description" content="Excel als CRM in een familiebedrijf: waar het wel werkt, waar het stukloopt, wat het onderzoek over fouten zegt, en wat AI er wel en niet aan verandert.">
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Excel als CRM in een familiebedrijf: waar de grens ligt"><meta name="twitter:description" content="Excel als CRM in een familiebedrijf: waar het wel werkt, waar het stukloopt, wat het onderzoek over fouten zegt, en wat AI er wel en niet aan verandert.">
+<meta name="twitter:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=optional">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=optional" rel="stylesheet">
+<link rel="icon" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--blauw-l:#EEF1FD;--oranje:#FF4F17;--oranje-t:#C2410C;--geel:#FFE86B;--lijn:#DCDFE6;--grijs:#5C646E}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--papier);color:var(--inkt);line-height:1.65;font-size:16.5px}
+h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;line-height:1.12}
+.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+a{color:var(--blauw)}
+.btn{display:inline-block;border:2px solid var(--inkt);border-radius:10px;padding:.65rem 1.3rem;font-weight:700;text-decoration:none;color:var(--inkt);font-size:.95rem}
+.btn.blauw{background:var(--blauw);border-color:var(--blauw);color:#fff}
+.btn.geel{background:var(--geel);border-color:var(--inkt);color:var(--inkt)}
+.btn.wit{background:#fff;border-color:var(--blauw);color:var(--blauw)}
+.eyebrow{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#C2410C;display:block;margin-bottom:1rem}
+.markeer{background:linear-gradient(to top,var(--geel) 58%,transparent 58%);padding:0 .1em}
+.paneel{background:#fff;border:1px solid var(--lijn);border-radius:16px;padding:1.6rem}
+section{padding:2.4rem 0}
+h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:800;margin-bottom:.5rem}
+.sect-intro{color:var(--grijs);max-width:56em;margin-bottom:1.4rem;font-size:.95rem}
+.check{list-style:none;margin:.8rem 0}
+.check li{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.45rem}
+.check li::before{content:"\2713";color:var(--blauw);font-weight:800;flex-shrink:0}
+.cj-hero{padding:2.4rem 0 1.6rem}
+.cj-hero h1{font-size:clamp(1.9rem,4.4vw,3rem);font-weight:800;margin-bottom:1rem;max-width:19em}
+.cj-lead{font-size:1.06rem;color:var(--grijs);max-width:44em;margin-bottom:1rem}
+.cj-datum{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.74rem;color:var(--grijs);margin-bottom:1.4rem}
+.cj-uitleg b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;margin-bottom:.7rem}
+.cj-legenda{list-style:none;display:grid;gap:.5rem;font-size:.9rem;color:var(--grijs)}
+.pil{display:inline-block;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.16rem .5rem;border-radius:5px;margin-right:.5rem}
+.pil.hard{background:#E4F5EC;color:#146B3E}
+.pil.redelijk{background:var(--blauw-l);color:var(--blauw)}
+.pil.zwak{background:#FDEBE3;color:var(--oranje-t)}
+.cj-net{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cj-tegel{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.3rem;display:flex;flex-direction:column;gap:.5rem}
+.cj-tegel p{font-size:.92rem;color:var(--grijs);flex:1}
+.cj-getal{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.9rem;letter-spacing:-.03em;color:var(--inkt);line-height:1}
+.cj-tegel .pil{align-self:flex-start;margin-right:0}
+.cj-bron{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.68rem;color:var(--grijs);line-height:1.4}
+.cj-tegel.cj-uit{border-color:var(--inkt);border-width:2px;background:#FFFDF2}
+.cj-kader{background:#fff;border:1px solid var(--lijn);border-left:5px solid var(--geel);border-radius:12px;padding:1.3rem 1.5rem;margin-top:1.2rem}
+.cj-kader.blauw{border-left-color:var(--blauw)}
+.cj-kader b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;margin-bottom:.5rem}
+.cj-kader p{font-size:.94rem;color:var(--grijs)}
+.cj-kader-na{margin-top:.7rem}
+.cj-na{font-size:.94rem;color:var(--grijs);max-width:56em;margin-top:1.1rem}
+.cj-gat{background:var(--blauw-l);border-radius:16px;padding:1.7rem}
+.cj-gat p{font-size:.96rem;margin-bottom:.7rem;max-width:54em}
+.cj-bronlijst{list-style:none;display:grid;gap:.6rem;font-size:.93rem;color:var(--grijs)}
+.cj-bronlijst b{color:var(--inkt)}
+.band{background:var(--blauw);color:#fff;border-radius:18px;padding:2rem}
+.band h2{color:#fff;margin-bottom:.4rem}
+.band p{opacity:.92;font-size:.95rem}
+.band-in{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.band .btn{border-color:#fff;color:#fff}
+@media(max-width:900px){.cj-net{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.cj-net{grid-template-columns:1fr}}
+
+.cj-getal.cj-klein{font-size:1.25rem}
+.cj-lijst{list-style:none;display:grid;gap:.85rem;max-width:60em}
+.cj-lijst li{background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:1rem 1.2rem;font-size:.95rem;color:var(--grijs)}
+.cj-lijst b{color:var(--inkt)}
+.mk-twee{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.mk-kolom{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:1.4rem}
+.mk-kolom b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;margin-bottom:.8rem}
+.mk-wel{border-top:4px solid var(--blauw)}
+.mk-niet{border-top:4px solid var(--oranje)}
+.mk-kolom li{font-size:.93rem;color:var(--grijs)}
+.kruis{list-style:none}
+.kruis li{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.45rem}
+.kruis li::before{content:" d7";color:var(--oranje);font-weight:800;flex-shrink:0;font-size:1.1rem;line-height:1.3}
+.cj-stappen{counter-reset:s;list-style:none;display:grid;gap:.8rem;max-width:60em}
+.cj-stappen li{counter-increment:s;background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:1rem 1.2rem 1rem 3.2rem;position:relative;font-size:.95rem;color:var(--grijs)}
+.cj-stappen li::before{content:counter(s);position:absolute;left:1.1rem;top:1rem;width:1.6rem;height:1.6rem;background:var(--blauw);color:#fff;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.cj-stappen b{color:var(--inkt)}
+@media(max-width:700px){.mk-twee{grid-template-columns:1fr}}
+</style>
+<link rel="stylesheet" href="/assets/kop.css?v=0466dd43">
+</head>
+<body>
+<div class="bgtop"><div class="bgtop-in">
+  <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
+  <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
+</div></div>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+<a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage"><img src="/assets/merk/logo-merk.png" alt="" width="34" height="34"><span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span></a>
+<div class="bgkop-links"><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/systemen-koppelen"><b>Systemen koppelen</b><span>Twee pakketten laten praten, zonder overtypen</span></a><a href="/ai-adoptie"><b>AI &amp; governance</b><span>Verantwoord aan de slag, met afspraken die gelden</span></a><a href="/ai-marketing-mkb"><b>AI-marketing</b><span>Zichtbaar blijven zonder er elke week tijd in te steken</span></a><a href="/due-diligence"><b>Due diligence &amp; exit</b><span>Wat weet dit bedrijf, en wat als de eigenaar wegloopt</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/afas-koppeling"><b>AFAS-koppeling</b><span>Aanvragen, orders en uren automatisch in AFAS</span></a><a href="/exact-online-koppeling"><b>Exact Online</b><span>Webshop, CRM of urenregistratie naar je boekhouding</span></a><a href="/twinfield-koppeling"><b>Twinfield</b><span>Facturen en uren zonder handmatig inboeken</span></a><a href="/webshop-koppeling"><b>Webshop koppelen</b><span>Shopify of WooCommerce naar je administratie</span></a><a href="/api-koppeling-laten-maken"><b>API-koppeling laten maken</b><span>Twee pakketten die allebei een API hebben</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Het bedrijfsgeheugen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/bedrijfsgeheugen"><b>Wat is een bedrijfsgeheugen?</b><span>Waar het over gaat, in gewone taal</span></a><a href="/product" aria-current="page"><b>Het portaal</b><span>Waar alles doorheen loopt en zichtbaar blijft</span></a><a href="/frisse-blik"><b>Frisse blik</b><span>In 30 minuten zien waar de grootste kansen liggen</span></a><a href="/zelfscan"><b>Zelfscan</b><span>Zeven vragen over waar kennis bij jou weglekt</span></a><a href="/ai-scan"><b>AI-scan</b><span>Waar levert AI bij jou echt iets op</span></a><a href="/afmaakindex"><b>De Afmaakindex</b><span>Wat draait er nog van vorig jaar</span></a><a href="/monitor"><b>Bedrijfsgeheugen-index</b><span>Meet in tien minuten wat overtypen je kost</span></a><a href="/benchmark"><b>Benchmark</b><span>Hoe je scoort naast vergelijkbare bedrijven</span></a><a href="/hoe-het-werkt"><b>Hoe het werkt</b><span>Een handeling per keer, vaste prijs, geen traject</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/blog/"><b>Blog</b><span>Wat we tegenkomen, uitgelegd zonder jargon</span></a><a href="/ai-act"><b>AI Act</b><span>Wat er nu geldt voor bedrijven van 3 tot 250 man</span></a><a href="/data-soevereiniteit"><b>Data-soevereiniteit</b><span>Waar gaan je gegevens heen bij ChatGPT en Copilot</span></a><a href="/ai-in-bi"><b>AI in business intelligence</b><span>Wat werkt op je cijfers, en wat niet</span></a><a href="/ai-in-data-engineering"><b>AI in data engineering</b><span>Wat zin heeft en waar de grens ligt</span></a><a href="/monitor"><b>Bedrijfsgeheugen-index</b><span>Meet in tien minuten wat het bij jou kost</span></a><a href="/begrippen"><b>Begrippenlijst</b><span>De termen, in gewone taal</span></a></div></div><a href="/over-ons">Over ons</a></div>
+<a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+<button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
+</div>
+<div class="bgkop-mob" id="bgkopMob" hidden><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/systemen-koppelen">Systemen koppelen</a><a href="/ai-adoptie">AI &amp; governance</a><a href="/ai-marketing-mkb">AI-marketing</a><a href="/due-diligence">Due diligence &amp; exit</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/afas-koppeling">AFAS-koppeling</a><a href="/exact-online-koppeling">Exact Online</a><a href="/twinfield-koppeling">Twinfield</a><a href="/webshop-koppeling">Webshop koppelen</a><a href="/api-koppeling-laten-maken">API-koppeling laten maken</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/blog/">Blog</a><a href="/ai-act">AI Act</a><a href="/data-soevereiniteit">Data-soevereiniteit</a><a href="/ai-in-bi">AI in business intelligence</a><a href="/ai-in-data-engineering">AI in data engineering</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/begrippen">Begrippenlijst</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Het bedrijfsgeheugen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/bedrijfsgeheugen">Wat is een bedrijfsgeheugen?</a><a href="/product">Het portaal</a><a href="/frisse-blik">Frisse blik</a><a href="/zelfscan">Zelfscan</a><a href="/ai-scan">AI-scan</a><a href="/afmaakindex">De Afmaakindex</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/benchmark">Benchmark</a><a href="/hoe-het-werkt">Hoe het werkt</a></div><a href="/expertises">Alle expertises</a><a href="/over-ons">Over ons</a><a class="bgkop-mcta" href="/frisse-blik">Plan een Frisse blik &rarr;</a></div>
+<script src="/assets/js/menu.js?v=198c58e3" defer></script></nav>
+
+
+
+<main>
+<nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">&rsaquo;</span><span aria-current="page">Excel als CRM</span></nav>
+
+<section class="cj-hero"><div class="wrap">
+  <span class="eyebrow">Do's en don'ts</span>
+  <h1>Excel als CRM in een familiebedrijf: <span class="markeer">waar de grens ligt</span></h1>
+  <p class="cj-lead">Excel is niet het probleem. Voor lijsten, voorraad, uren en bedragen is het uitstekend gereedschap, en de meeste bedrijven kunnen er goed mee werken. Het loopt pas stuk zodra je er relaties in gaat beheren: contactmomenten, opvolging, en informatie die aan een project of order vastzit. Hieronder waar die grens precies ligt, wat de cijfers zeggen, en wat AI er wel en niet aan verandert.</p>
+  <p class="cj-datum">Laatst bijgewerkt: 20 augustus 2026</p>
+  <p><a class="btn geel" href="/frisse-blik">Plan een Frisse blik &rarr;</a> <a class="btn wit" href="/cijfers-bedrijfsoverdracht">De cijfers achter dit verhaal</a></p>
+</div></section>
+
+<section class="wrap">
+  <div class="cj-kader">
+    <b>Vooraf: Excel afschaffen is niet het advies</b>
+    <p>Wie zegt dat je van Excel af moet, verkoopt meestal iets. Wij zeggen iets preciezers: gebruik Excel waar het sterk is, en zet iets anders neer op de twee of drie plekken waar het aantoonbaar misgaat. In vrijwel elk bedrijf dat wij zien blijft Excel gewoon in gebruik — alleen niet meer als geheugen voor klantrelaties.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Waar Excel juist goed in is</h2>
+  <p class="sect-intro">Deze dingen zou je niet moeten vervangen. Een systeem ervoor in de plaats zetten kost geld en levert niets op.</p>
+  <div class="cj-net">
+    <div class="cj-tegel"><span class="cj-getal cj-klein">Rekenen</span><p>Calculaties, marges, kostprijzen. Een sheet die één ding uitrekent en waar één iemand eigenaar van is.</p></div>
+    <div class="cj-tegel"><span class="cj-getal cj-klein">Lijsten</span><p>Voorraad, uren, bedragen, materiaalstaten. Platte gegevens die niet aan elkaar hoeven te hangen.</p></div>
+    <div class="cj-tegel"><span class="cj-getal cj-klein">Eenmalig</span><p>Een analyse, een scenario, een export die je één keer doorrekent en daarna weggooit.</p></div>
+    <div class="cj-tegel"><span class="cj-getal cj-klein">Proberen</span><p>Een werkwijze uittesten voordat je hem in een systeem vastlegt. Vaak de goedkoopste eerste stap die er is.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Waar het stukloopt</h2>
+  <p class="sect-intro">Steeds hetzelfde patroon: zodra gegevens aan elkaar moeten hangen, of zodra meerdere mensen ze tegelijk bijhouden, doet Excel iets waar het niet voor gemaakt is.</p>
+  <ul class="cj-lijst">
+    <li><b>Relatiebeheer.</b> Een klant is geen rij. Een klant heeft contactpersonen, gesprekken, offertes, orders en een geschiedenis. In een platte sheet wordt dat kopiëren of weglaten — meestal weglaten.</li>
+    <li><b>Contactmomenten en opvolging.</b> Wie belde wanneer, wat is afgesproken, wanneer moet er iets terug. Dit is precies het soort informatie die niet in een cel past en dus in iemands hoofd of mailbox blijft hangen.</li>
+    <li><b>Koppelen aan projecten en orders.</b> Zodra je wilt zien welke gesprekken bij welke order horen, ga je handmatig verbanden onderhouden die een systeem gratis legt.</li>
+    <li><b>Meerdere mensen tegelijk.</b> Twee versies, een bestand in iemands map, een kopie in een mailbijlage. De vraag "welke is de laatste" kost meer tijd dan het werk zelf.</li>
+    <li><b>Rechten en AVG.</b> Een sheet met klantgegevens kent geen rollen. Wie het bestand heeft, heeft alles. Bij een datalek is niet te reconstrueren wie wat zag.</li>
+    <li><b>Geschiedenis.</b> Een gewijzigde cel is een overschreven cel. Wat er vorige maand stond, en waarom het veranderde, is weg.</li>
+  </ul>
+</section>
+
+<section class="wrap">
+  <h2>Wat het onderzoek zegt over fouten</h2>
+  <p class="sect-intro">Dit is geen mening. Spreadsheetfouten zijn een van de best onderzochte onderwerpen in de bedrijfsinformatica, met veertig jaar aan audits.</p>
+  <div class="cj-net">
+    <div class="cj-tegel"><span class="cj-getal">94%</span><p>van de onderzochte operationele spreadsheets bevatte minstens één fout</p><span class="cj-bron">Panko, overzicht van dertien audits (1995–2004)</span></div>
+    <div class="cj-tegel"><span class="cj-getal">~5%</span><p>van de cellen bevat gemiddeld een fout — in lijn met hoe vaak mensen fouten maken bij complexe denkstappen (2 tot 5%)</p><span class="cj-bron">Panko</span></div>
+    <div class="cj-tegel cj-uit"><span class="cj-getal">86% / 18%</span><p>van de gemaakte sheets bevatte een fout, terwijl de makers de kans daarop zelf op 18% schatten</p><span class="cj-bron">Panko en Halverson (2001)</span></div>
+  </div>
+  <div class="cj-kader blauw">
+    <b>Het punt is niet dat mensen slordig zijn</b>
+    <p>Onderzoekers vonden geen verschil in foutpercentage tussen beginners en mensen met honderden uren spreadsheetervaring. Fouten maken hoort bij denkwerk; het verschil zit erin of een systeem ze opvangt of vermenigvuldigt. Een spreadsheet bewaart elke fout netjes en kopieert hem door in elke formule die ernaar verwijst. En mensen zijn slecht in het terugvinden van hun eigen fouten — dat laatste is misschien wel het belangrijkste cijfer hierboven.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Waarom dit in een familiebedrijf zwaarder telt</h2>
+  <p class="sect-intro">In een familiebedrijf zit de kennis vaker bij een kleine groep mensen die er lang zit. Dat is een kracht, tot het moment van overdracht.</p>
+  <div class="cj-net">
+    <div class="cj-tegel"><span class="cj-getal">41%</span><p>van de cruciale praktijkkennis zit bij collega's die binnen vijf jaar met pensioen gaan</p><span class="cj-bron">ROVC TechBarometer, 2026</span></div>
+    <div class="cj-tegel"><span class="cj-getal">2 op 3</span><p>ondernemers wil binnen tien jaar stoppen; ruim vier op de tien van hen heeft geen opvolger geregeld</p><span class="cj-bron">ABN AMRO / Ipsos I&amp;O, dec 2025</span></div>
+    <div class="cj-tegel"><span class="cj-getal">5,0</span><p>gemiddelde EBITDA-multiple in het mkb — en digitalisering is inmiddels een factor in de waardering</p><span class="cj-bron">Brookz / Dealsuite, H2-2025</span></div>
+  </div>
+  <p class="cj-na">In een due diligence komt dit terug met een naam: afhankelijkheid van enkele sleutelpersonen, mondelinge afspraken die nergens vastliggen, en een administratie die niet op orde is. Dat zijn geen abstracte risico's — het zijn de punten waarop een koper de prijs bijstelt. Alle cijfers hierover staan op de <a href="/cijfers-bedrijfsoverdracht">cijferpagina over bedrijfsoverdracht</a>, en wat een koper concreet nakijkt op <a href="/due-diligence">due diligence en exit</a>.</p>
+</section>
+
+<section class="wrap">
+  <h2>Vijf signalen dat je over de grens zit</h2>
+  <div class="paneel">
+    <ul class="check">
+      <li>Iemand vraagt "welke versie is de laatste" — en er is discussie mogelijk over het antwoord.</li>
+      <li>Je kunt niet in dertig seconden zien wanneer er voor het laatst contact was met je tien grootste klanten.</li>
+      <li>Een opvolging wordt vergeten en niemand kan achteraf zien waar het misging.</li>
+      <li>Er is één persoon die weet hoe de sheet in elkaar zit, en bij vakantie ligt dat proces stil.</li>
+      <li>Klantgegevens staan in een bestand dat iedereen met toegang tot de map volledig kan inzien.</li>
+    </ul>
+    <p class="cj-na">Twee of meer herkenbaar? Dan is het geen kwestie van beter opletten, maar van gereedschap dat niet meer past bij wat je ermee doet.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>AI erbij: wat wel en wat niet</h2>
+  <p class="sect-intro">De verleiding is groot om AI op de bestaande sheets los te laten en te hopen dat het overzicht ontstaat. Zo werkt het niet. AI leest wat er staat — inclusief wat er niet staat.</p>
+  <div class="mk-twee">
+    <div class="mk-kolom mk-wel">
+      <b>Wel doen</b>
+      <ul class="check">
+        <li>AI inzetten op gegevens die al gestructureerd zijn: vaste velden, één bron, duidelijke eigenaar.</li>
+        <li>AI gebruiken om een bestaande sheet te controleren op fouten en dubbele regels, vóór een migratie.</li>
+        <li>AI het saaie invoerwerk laten doen: een e-mail of gespreksverslag omzetten naar een contactmoment in het juiste systeem.</li>
+        <li>Vastleggen welke gegevens in welke tool mogen. Dat is sinds de AI Act geen luxe meer.</li>
+      </ul>
+    </div>
+    <div class="mk-kolom mk-niet">
+      <b>Niet doen</b>
+      <ul class="kruis">
+        <li>AI als redding voor een rommelige sheet. Een model dat op onvolledige gegevens werkt, geeft nette antwoorden die niet kloppen — en dat is gevaarlijker dan geen antwoord.</li>
+        <li>Klantgegevens in een publieke chattool plakken zonder afspraak over waar die data heen gaat.</li>
+        <li>Verwachten dat AI ziet dat de laatste versie in iemands mailbox zit. Wat niet is vastgelegd, bestaat voor een model niet.</li>
+        <li>Een AI-project starten voordat er één plek is waar relaties in staan. Dan automatiseer je de rommel.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="cj-na">Meer hierover: <a href="/ai-adoptie">AI en governance</a> en <a href="/data-soevereiniteit">waar gaan je gegevens heen</a>.</p>
+</section>
+
+<section class="wrap">
+  <h2>Wat dan wel — en in welke volgorde</h2>
+  <p class="sect-intro">Niet meteen een groot pakket. De volgorde is belangrijker dan de keuze.</p>
+  <ol class="cj-stappen">
+    <li><b>Eén plek voor relaties.</b> Bedrijven, contactpersonen, contactmomenten. Verder niets. Dit is een middag werk, geen project.</li>
+    <li><b>Vaste velden afspreken.</b> Wat leg je vast bij een gesprek, en wie doet dat. Zonder die afspraak wordt elk systeem binnen een maand een tweede rommelbak.</li>
+    <li><b>Koppelen aan wat er al draait.</b> Offertes, orders, facturatie. Niet vervangen — koppelen, zodat niemand iets twee keer intypt.</li>
+    <li><b>Excel laten staan waar hij goed is.</b> Calculaties en lijsten blijven gewoon in Excel, en trekken hun gegevens waar mogelijk uit de bron.</li>
+  </ol>
+  <p class="cj-na">Zo werken wij: één handeling per keer, vaste prijs, geen traject van zes maanden. Zie <a href="/hoe-het-werkt">hoe het werkt</a> en <a href="/systemen-koppelen">systemen koppelen</a>.</p>
+</section>
+
+<section class="wrap">
+  <h2>Bronnen</h2>
+  <ul class="cj-bronlijst">
+    <li><b>Raymond Panko</b> — overzichtsonderzoek naar foutpercentages in operationele spreadsheets, dertien audits over 1995–2004; en Panko &amp; Halverson (2001) over zelfoverschatting bij makers</li>
+    <li><b>EuSpRIG</b> — European Spreadsheet Risks Interest Group, verzamelt gedocumenteerde spreadsheetincidenten</li>
+    <li><b>ROVC</b> — TechBarometer (2026), over praktijkkennis en vergrijzing</li>
+    <li><b>ABN AMRO / Ipsos I&amp;O</b> — Sectorprognoses 2026–2027 (december 2025), over opvolging</li>
+    <li><b>Brookz en Dealsuite</b> — Overname Barometer H2-2025, over multiples en waardering</li>
+  </ul>
+  <p class="cj-na">Alle cijfers met bron, jaartal en een oordeel over hun hardheid staan op de <a href="/cijfers-bedrijfsoverdracht">cijferpagina</a>.</p>
+</section>
+
+<section class="wrap">
+  <div class="band"><div class="band-in">
+    <div>
+      <h2>Zien waar het bij jou weglekt</h2>
+      <p>Een dag meekijken en daarna een rapport waar je zelf mee verder kunt. Ook als de uitkomst is dat Excel prima volstaat.</p>
+    </div>
+    <a class="btn" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+  </div></div>
+</section>
+</main>
+
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Excel als CRM","item":"https://www.bedrijfsgeheugen.nl/excel-als-crm"}]},{"@type":"WebPage","@id":"https://www.bedrijfsgeheugen.nl/excel-als-crm","name":"Excel als CRM in een familiebedrijf: waar de grens ligt","description":"Excel als CRM in een familiebedrijf: waar het wel werkt, waar het stukloopt, wat het onderzoek over fouten zegt, en wat AI er wel en niet aan verandert.","inLanguage":"nl-NL","dateModified":"2026-08-20","isPartOf":{"@type":"WebSite","name":"Bedrijfsgeheugen","url":"https://www.bedrijfsgeheugen.nl/"},"publisher":{"@type":"Organization","name":"Bedrijfsgeheugen","url":"https://www.bedrijfsgeheugen.nl/"}}]}</script>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <div class="bgvoet-net">
+    <div>
+      <span class="bgvoet-merk">Bedrijfs<b>geheugen</b>.nl</span>
+      <p class="bgvoet-over">Systemen koppelen, kennis borgen en AI die past.<br>Voor mkb-bedrijven van 3 tot 250 medewerkers.</p>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Oplossingen</span>
+      <a href="/systemen-koppelen">Systemen koppelen</a>
+      <a href="/ai-adoptie">AI &amp; governance</a>
+      <a href="/ai-marketing-mkb">AI-marketing</a>
+      <a href="/workshops">AI-workshops</a>
+      <a href="/due-diligence">Due diligence &amp; exit</a>
+      <a href="/expertises">Alle expertises</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Koppelingen</span>
+      <a href="/afas-koppeling">AFAS-koppeling</a>
+      <a href="/exact-online-koppeling">Exact Online</a>
+      <a href="/twinfield-koppeling">Twinfield</a>
+      <a href="/webshop-koppeling">Webshop koppelen</a>
+      <a href="/api-koppeling-laten-maken">API-koppeling laten maken</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Kennis</span>
+      <a href="/blog/">Blog</a>
+      <a href="/ai-act">AI Act</a>
+      <a href="/data-soevereiniteit">Data-soevereiniteit</a>
+      <a href="/ai-in-bi">AI in business intelligence</a>
+      <a href="/ai-in-data-engineering">AI in data engineering</a>
+      <a href="/monitor">Bedrijfsgeheugen-index</a>
+      <a href="/benchmark">Benchmark</a>
+      <a href="/begrippen">Begrippenlijst</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Het bedrijfsgeheugen</span>
+      <a href="/bedrijfsgeheugen">Wat is een bedrijfsgeheugen?</a>
+      <a href="/product">Het portaal</a>
+      <a href="/frisse-blik">Frisse blik</a>
+      <a href="/zelfscan">Zelfscan</a>
+      <a href="/ai-scan">AI-scan</a>
+      <a href="/afmaakindex">De Afmaakindex</a>
+      <a href="/monitor">Bedrijfsgeheugen-index</a>
+      <a href="/hoe-het-werkt">Hoe het werkt</a>
+      <a href="/wijzigingen">Wijzigingen</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Over ons</span>
+      <a href="/over-ons">Ons verhaal</a>
+      <a href="/voor-mkb">Voor het mkb</a>
+      <a href="/investeerders-ma">Investeerders &amp; M&amp;A</a>
+      <a href="/contact">Contact</a>
+    </div>
+    <div class="bgvoet-cta">
+      <b>Plan een Frisse blik</b>
+      <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
+      <a class="bgvoet-knop" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+    </div>
+  </div>
+  <div class="bgvoet-onder">
+    <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
+    <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
+  </div>
+</div></footer>
+</body>
+</html>
