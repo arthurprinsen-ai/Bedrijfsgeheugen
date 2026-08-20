@@ -18,11 +18,13 @@ on:
         type: boolean
         default: false
 
-# Twee runs tegelijk botsen: allebei committen ze sitemap.xml en netlify.toml,
-# en de tweede push wordt geweigerd. Dit slot laat ze netjes op elkaar wachten.
-# cancel-in-progress blijft false, anders verliezen we een herstel dat al klaar was.
+# GEDEELD SLOT. Deze workflow schrijft sitemap.xml terug naar main, en dat doen
+# seo-controle.yml, blog-bijwerken.yml en weekblog.yml alle drie. Draaien er twee
+# tegelijk, dan slaagt de eerste push en wordt de tweede geweigerd: exit code 1.
+# Daarom delen ze EEN groepsnaam. Een slot met een eigen naam per workflow houdt
+# alleen zichzelf tegen en is dus geen slot. Wijzig deze naam nooit los.
 concurrency:
-  group: seo-poortwachter
+  group: repo-schrijven
   cancel-in-progress: false
 
 permissions:
