@@ -1,7 +1,12 @@
-name: SEO-controle bij elke wijziging
+name: Nieuwe pagina aanmelden (sitemap, 301, zoekwoord)
 
-# Draait zodra er een pagina wijzigt op main. Herstelt sitemap en 301 zelf,
-# meldt de rest in het dagplan via Make BG 53.
+# Aanvulling op paginacontrole.yml, die de inhoudelijke SEO al doet.
+# Deze workflow doet alleen wat daar niet in zit:
+#   1. een nieuwe pagina in sitemap.xml zetten
+#   2. de 301 van /pagina.html naar /pagina aanmaken in netlify.toml
+#   3. melden als een pagina geen focus-zoekwoord declareert of er een
+#      van een andere pagina afpakt
+# De melding komt als regel in het dagplan via Make BG 53.
 on:
   push:
     branches: [main]
@@ -19,7 +24,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Pagina's controleren
+      - name: Zoekwoord en sitemap nalopen
         id: controle
         env:
           BG_SEO_WEBHOOK: ${{ secrets.BG_SEO_WEBHOOK }}

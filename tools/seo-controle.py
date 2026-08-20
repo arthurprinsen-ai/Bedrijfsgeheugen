@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""SEO-poortwachter voor bedrijfsgeheugen.nl.
+"""Nieuwe pagina aanmelden — sitemap, 301 en melding in het dagplan.
+
+Aanvulling op paginacontrole.yml, die de inhoudelijke SEO al doet (ijzeren regel,
+clusterlinks, ankerteksten, browsercontrole). Dit script doet wat daar niet in zit:
+een nieuwe pagina in de sitemap zetten, de 301 van .html naar de schone URL
+aanmaken, en melden zodra een pagina geen focus-zoekwoord declareert.
+
+Met --volledig draait ook de technische controle, voor los gebruik.
+
+Oorspronkelijke beschrijving:
 
 Draait in GitHub Actions bij elke push naar main. Controleert de pagina's die
 in die push zijn gewijzigd of toegevoegd, herstelt zelf wat veilig te herstellen
@@ -184,8 +193,26 @@ def main():
             if zw:
                 alle.setdefault(zw.group(1).strip().lower(), []).append(p)
 
-    for pad in paden:
-        controleer(pad, open(pad, encoding="utf-8").read(), alle)
+    if "--volledig" in sys.argv:
+        for pad in paden:
+            controleer(pad, open(pad, encoding="utf-8").read(), alle)
+    else:
+        # alleen het zoekwoord: de rest doet paginacontrole.yml
+        import re as _re
+        for pad in paden:
+            if pad in VRIJGESTELD:
+                continue
+            h = open(pad, encoding="utf-8").read()
+            zw = _re.search(r'<meta name="bg-zoekwoord" content="(.*?)"', h)
+            if not zw:
+                melden(FOUT, pad, 'geen focus-zoekwoord — voeg '
+                       '<meta name="bg-zoekwoord" content="..."> toe en zet het '
+                       'woord in de Zoekwoorden-database')
+            else:
+                claims = alle.get(zw.group(1).strip().lower(), [])
+                if len(claims) > 1:
+                    melden(FOUT, pad, f'kannibalisatie: "{zw.group(1)}" wordt ook '
+                           f'geclaimd door {", ".join(q for q in claims if q != pad)}')
     herstel_sitemap(paden)
     herstel_redirects(paden)
 
