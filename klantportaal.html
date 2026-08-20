@@ -12727,7 +12727,13 @@ window.__BG_LOOPT__ = function(K, slug){
    return;
   }
 
-  var pad = soort==='nieuw' ? '/auth/v1/signup' : '/auth/v1/token?grant_type=password';
+  /* Bij aanmelden geven we mee waar de bevestigingslink heen moet, anders
+     komt iemand terug op de standaard-site-URL in plaats van in het portaal. */
+  var pad = soort==='nieuw'
+   ? '/auth/v1/signup?redirect_to='+encodeURIComponent(location.origin+'/klantportaal')
+   : '/auth/v1/token?grant_type=password';
+  /* Bewust geen 'data' meesturen: wat de aanmelder zelf meegeeft mag nooit
+     rechten opleveren. De server bepaalt dat, op basis van uitnodigingen. */
   api(pad,{method:'POST',body:JSON.stringify({email:mail,password:ww})})
    .then(function(a){
     if(!a||!a.access_token){
