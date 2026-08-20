@@ -23,6 +23,12 @@
 
 # .html-varianten netjes doorsturen naar de schone URL (voorkomt duplicate content)
 [[redirects]]
+  from = "/cijfers-bedrijfsoverdracht.html"
+  to = "/cijfers-bedrijfsoverdracht"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/index.html"
   to = "/"
   status = 301
