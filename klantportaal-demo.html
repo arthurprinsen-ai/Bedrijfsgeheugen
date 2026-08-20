@@ -199,7 +199,7 @@ select.niv:disabled{background:#F2F4F6;color:var(--zacht)}
     <span class="re">
       <span>Ingelogd als</span>
       <select id="kiesWie"></select>
-      <img id="fotoWie" src="" alt="" onerror="this.style.display='none'">
+      <img id="fotoWie" src="" alt="" onerror="this.style.display='none'" loading="lazy" decoding="async">
     </span>
   </div>
   <nav class="groeprij" id="groeprij" aria-label="Hoofdmenu"></nav>
@@ -521,7 +521,7 @@ function tekenDetail(){
      + kl.w.map(function(x,i){var e=eigenaarVan(x.k);
         return '<tr><td><input type="checkbox" data-w="'+i+'"'+(x.mee!==false?' checked':'')+'></td>'
          +'<td>'+dimNaam(x.k)+'</td><td class="oudw">'+x.van+'</td><td class="nieuww">'+x.naar+'</td>'
-         +'<td><span class="persoon"><img class="avatar" src="'+MENSEN[e].foto+'" alt="" onerror="this.style.visibility=\'hidden\'"><span><span class="nm">'+naam(e)+'</span><span class="rl">'+(e===IK?'u zelf':'moet akkoord geven')+'</span></span></span></td>'
+         +'<td><span class="persoon"><img class="avatar" src="'+MENSEN[e].foto+'" alt="" onerror="this.style.visibility=\'hidden\'" loading="lazy" decoding="async"><span><span class="nm">'+naam(e)+'</span><span class="rl">'+(e===IK?'u zelf':'moet akkoord geven')+'</span></span></span></td>'
          +'<td><button class="knop klein" data-weg="'+i+'">Ongedaan</button></td></tr>';}).join('')
      +'</tbody></table>'
      +'<div class="waaromvak"><div class="lb">Waarom deze wijziging?</div>'
@@ -562,19 +562,19 @@ function tekenDetail(){
    +'<table class="acties"><thead><tr><th>Onderdeel</th><th>Van (huidig)</th><th>Naar (nieuw)</th><th>Eigenaar</th></tr></thead><tbody>'
    + p.w.map(function(x){var e=eigenaarVan(x.k);
       return '<tr><td>'+dimNaam(x.k)+'</td><td class="oudw">'+x.van+'</td><td class="nieuww">'+x.naar+'</td>'
-       +'<td><span class="persoon"><img class="avatar" src="'+MENSEN[e].foto+'" alt="" onerror="this.style.visibility=\'hidden\'"><span><span class="nm">'+naam(e)+'</span><span class="rl">'+MENSEN[e].rol+'</span></span></span></td></tr>';}).join('')
+       +'<td><span class="persoon"><img class="avatar" src="'+MENSEN[e].foto+'" alt="" onerror="this.style.visibility=\'hidden\'" loading="lazy" decoding="async"><span><span class="nm">'+naam(e)+'</span><span class="rl">'+MENSEN[e].rol+'</span></span></span></td></tr>';}).join('')
    +'</tbody></table></div>'
 
    +'<div class="kaart"><div class="kk"><h3>Goedkeuring</h3><div class="re"><span class="sub">'+ja+' van '+lijst.length+'</span></div></div>'
    + (lijst.length?lijst.map(function(w){
-       return '<div class="rij"><span class="persoon"><img class="avatar" src="'+MENSEN[w].foto+'" alt="" onerror="this.style.visibility=\'hidden\'"><span><span class="nm">'+naam(w)+'</span><span class="rl">'+MENSEN[w].rol+' — '+p.raakt[w]+' onderdeel'+(p.raakt[w]===1?'':'en')+' van hem of haar</span></span></span><span></span>'
+       return '<div class="rij"><span class="persoon"><img class="avatar" src="'+MENSEN[w].foto+'" alt="" onerror="this.style.visibility=\'hidden\'" loading="lazy" decoding="async"><span><span class="nm">'+naam(w)+'</span><span class="rl">'+MENSEN[w].rol+' — '+p.raakt[w]+' onderdeel'+(p.raakt[w]===1?'':'en')+' van hem of haar</span></span></span><span></span>'
         +'<span>'+(p.akkoord[w]?'<span class="pil goed">Akkoord</span>'
            :(p.status==='open'?(w===IK?'<button class="knop klein blauw" data-ok="1">Ik ga akkoord</button>':'<span class="sub">wacht op '+vnaam(w)+'</span>'):'<span class="sub">niet beoordeeld</span>'))+'</span></div>';}).join('')
       :'<div class="melding rust"><span>&#10003;</span><span>Alles is van de indiener zelf. Niemand hoeft mee te kijken.</span></div>')
    +'</div>'
 
    +'<div class="voetmeta">'
-   +'<div class="mv"><div class="lb">Gemaakt door</div><span class="persoon"><img class="avatar" src="'+MENSEN[p.door].foto+'" alt="" onerror="this.style.visibility=\'hidden\'"><span class="nm">'+naam(p.door)+'</span></span></div>'
+   +'<div class="mv"><div class="lb">Gemaakt door</div><span class="persoon"><img class="avatar" src="'+MENSEN[p.door].foto+'" alt="" onerror="this.style.visibility=\'hidden\'" loading="lazy" decoding="async"><span class="nm">'+naam(p.door)+'</span></span></div>'
    +'<div class="mv"><div class="lb">Status</div><span class="pil '+pil[0]+'">'+pil[1]+'</span></div>'
    +'<div class="mv"><div class="lb">Moet goedgekeurd worden door</div>'+(lijst.length?lijst.map(vnaam).join(', '):'niemand')+'</div></div>'
 
@@ -600,7 +600,7 @@ function tekenActies(){
   document.getElementById('p-acties').innerHTML=
    '<h1 class="pk">Acties</h1><p class="uitleg">Deze lijst komt uit het focusthema. Verandert dat thema, dan verandert deze lijst mee — daarom gaat zo\'n wijziging eerst langs de eigenaren.</p>'
    + Object.keys(per).map(function(w){
-      return '<div class="kaart"><div class="kk"><span class="persoon"><img class="avatar" src="'+MENSEN[w].foto+'" alt="" onerror="this.style.visibility=\'hidden\'"><span><span class="nm">'+naam(w)+'</span><span class="rl">'+MENSEN[w].rol+'</span></span></span>'
+      return '<div class="kaart"><div class="kk"><span class="persoon"><img class="avatar" src="'+MENSEN[w].foto+'" alt="" onerror="this.style.visibility=\'hidden\'" loading="lazy" decoding="async"><span><span class="nm">'+naam(w)+'</span><span class="rl">'+MENSEN[w].rol+'</span></span></span>'
        +'<div class="re"><span class="sub">'+per[w].filter(function(t){return !t.klaar;}).length+' open</span></div></div>'
        + per[w].map(function(t){return '<div class="rij"><span class="afd">'+t.afd+'</span><span'+(t.klaar?' style="color:var(--zacht);text-decoration:line-through"':'')+'>'+t.wat+'</span>'
           +(t.klaar?'<span class="pil goed">Klaar</span>':(w===IK?'<button class="knop klein" data-k2="'+S.taken.indexOf(t)+'">Afvinken</button>':'<span class="sub">open</span>'))+'</div>';}).join('')
