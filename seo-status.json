@@ -37,6 +37,13 @@
    "type": "pijler"
   },
   {
+   "zoekwoord": "ai capability model",
+   "pagina": "/ai-capability-model",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "ai governance mkb",
    "pagina": "/ai-governance",
    "bestaat": true,
