@@ -276,3 +276,15 @@
   to = "/kennisverlies-vergrijzing-mkb"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/ai-cijfers-mkb.html"
+  to = "/ai-cijfers-mkb"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/waarom-ai-projecten-mislukken.html"
+  to = "/waarom-ai-projecten-mislukken"
+  status = 301
+  force = true
