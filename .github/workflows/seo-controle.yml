@@ -12,6 +12,11 @@ on:
     branches: [main]
     paths: ['*.html']
   workflow_dispatch:
+    inputs:
+      alles:
+        description: 'Alle paginas nalopen in plaats van alleen de gewijzigde'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -29,7 +34,12 @@ jobs:
         env:
           BG_SEO_WEBHOOK: ${{ secrets.BG_SEO_WEBHOOK }}
         continue-on-error: true
-        run: python3 tools/seo-controle.py | tee uitkomst.txt
+        run: |
+          if [ "${{ inputs.alles }}" = "true" ]; then
+            python3 tools/seo-controle.py --alles | tee uitkomst.txt
+          else
+            python3 tools/seo-controle.py | tee uitkomst.txt
+          fi
 
       - name: Sitemap en redirects terugcommitten
         run: |
