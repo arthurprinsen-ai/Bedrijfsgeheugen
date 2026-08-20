@@ -612,6 +612,8 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
         <div class="kaart"><h3>Wat je nu remt</h3><div id="remmen"></div></div>
       </div>
 
+      <div data-vg="volledig"></div>
+
       <div class="kaart" style="margin-top:1rem"><h3>Je voortgang</h3>
         <p class="sub" style="margin:-.3rem 0 .6rem">Hoeveel van de verbeteringen in je roadmap je hebt afgerond. Nog niets gepland? Zet je eerste stap onder Advies.</p>
         <svg id="voortgang" viewBox="0 0 460 120" role="img" aria-label="Voortgang"></svg>
@@ -626,6 +628,7 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
 
     <!-- DATA EN AI -->
     <section class="paneel" id="p-dataai">
+      <div data-vg="kort" data-vg-blok="nulmeting"></div>
       <div class="kaarten k2">
         <div class="kaart"><h3>Waar je staat met data en AI</h3>
           <svg id="daiGraf" viewBox="0 0 460 260" role="img" aria-label="Data en AI per onderdeel"></svg>
@@ -708,6 +711,7 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
 
     <!-- PROFIEL -->
     <section class="paneel" id="p-profiel">
+      <div data-vg="kort" data-vg-blok="profiel"></div>
       <div class="kaarten k2">
         <div class="kaart">
           <h3>Je onderdelen — schuif om bij te werken</h3>
@@ -762,6 +766,7 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
 
     <!-- INVOEREN -->
     <section class="paneel" id="p-invoeren">
+      <div data-vg="kort" data-vg-blok="nulmeting"></div>
       <div class="kaart conclusie" style="margin-top:1rem">
         <h2>Je gegevens invullen</h2>
         <p class="kern">Alles wat je hier invult rekent direct door in de grafieken, de conclusie en het advies.
@@ -1048,6 +1053,7 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
 
     <!-- ADVIES -->
     <section class="paneel" id="p-bijhouden">
+      <div data-vg="kort" data-vg-blok="acties"></div>
       <h2>Actueel houden</h2>
       <p class="kern">Een bedrijfsgeheugen dat niemand bijhoudt, is over een half jaar net zo verouderd als <i>strategie_definitief_v4.pdf</i>. Daarom heeft hier alles een eigenaar en een houdbaarheidsdatum.</p>
 
@@ -1103,6 +1109,7 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
     </section>
 
     <section class="paneel" id="p-advies">
+      <div data-vg="kort" data-vg-blok="acties"></div>
       <div class="kaart" style="margin-top:1rem">
         <h3>Wat wij je zouden adviseren</h3>
         <p class="sub">Samengesteld uit alles wat je hebt ingevuld. Bovenaan staat wat rechtstreeks uit <b>de eindconclusie</b> volgt — je smalste schakel, je duurste post en het onderdeel dat het vaakst wordt aangewezen. Daarna op opbrengst gedeeld door doorlooptijd.</p>
@@ -1232,6 +1239,7 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
     <section class="paneel" id="p-aicap"></section><section class="paneel" id="p-wijzigingen"></section><section class="paneel" id="p-offerte"></section>
 
     <section class="paneel" id="p-roadmap">
+      <div data-vg="kort" data-vg-blok="acties"></div>
       <div class="kaart" style="margin-top:1rem">
         <h3>Wat je gaat verbeteren</h3>
         <p class="sub">Voeg eerst iets toe — daarna kun je de blokken verslepen en afvinken.</p>
@@ -12007,6 +12015,7 @@ window.__BG_LOOPT__ = function(K, slug){
  var AC = {"versie":"1.1","datum":"2026-08-20","titel":"Het AI-capabilitymodel","onder":"Alles wat een organisatie moet kunnen om AI veilig en meetbaar te draaien.","bron":"Opgezet naar het voorbeeld van het Enterprise AI Capability Model (pre-3.0) van Martin Molenkamp; de indeling in negen lagen is daarvan overgenomen, de definities en de mkb-vertaling zijn van Bedrijfsgeheugen.","niveaus":[{"n":1,"naam":"Ad hoc","kort":"Iemand doet het, niemand weet het","uitleg":"Het gebeurt buiten afspraken om. Werkt het, dan komt dat door de persoon, niet door de inrichting."},{"n":2,"naam":"Herhaalbaar","kort":"Het werkt, maar met de hand","uitleg":"Er is een vaste manier, opgeschreven of afgekeken. Nog handwerk, en afhankelijk van wie het doet."},{"n":3,"naam":"Ingericht","kort":"Vastgelegd in een systeem","uitleg":"Het staat op één plek, met een eigenaar. Anderen kunnen het overnemen zonder uitleg."},{"n":4,"naam":"Bestuurd","kort":"Gemeten en bijgestuurd","uitleg":"Er zitten cijfers op, grenzen omheen en er wordt op gestuurd. Afwijkingen komen vanzelf boven."},{"n":5,"naam":"Toonaangevend","kort":"Verbetert zichzelf","uitleg":"Het past zich aan zonder dat iemand ingrijpt, en het is goed genoeg om anderen te laten zien."}],"relevantie":{"nu":"Telt vanaf je eerste AI-toepassing","groei":"Nodig zodra meerdere teams meedoen","later":"Pas bij schaal of strenge eisen"},"lagen":[{"nr":1,"k":"strategie","n":"Business & Strategie","onder":"Welke problemen we oplossen, wat het moet opleveren, wie het bezit","soort":"stapel","caps":[{"id":"strategie-01","n":"AI-visie en richting","d":"Eén geschreven antwoord op de vraag waar AI in dit bedrijf voor dient, en waarvoor uitdrukkelijk niet.","rel":"nu","v":"Kun je in één zin zeggen waar AI hier voor dient, en waarvoor uitdrukkelijk niet?"},{"id":"strategie-02","n":"Portefeuille van toepassingen","d":"Eén lijst van alle bedachte, lopende en gestopte AI-toepassingen, met de reden erbij.","rel":"nu","v":"Is er één lijst met alles wat er aan AI draait, is bedacht of is gestopt?"},{"id":"strategie-03","n":"Waardebepaling en business case","d":"Per toepassing vooraf vastgelegd wat het moet opleveren, in uren, euro's of fouten.","rel":"nu","v":"Staat per toepassing vooraf vast wat hij moet opleveren, in uren of euro's?"},{"id":"strategie-04","n":"Eigenaarschap en besluitvorming","d":"Per toepassing één naam die beslist of hij aan, uit of anders gaat.","rel":"nu","v":"Kun je per toepassing één naam noemen die beslist of hij aan of uit gaat?"},{"id":"strategie-05","n":"Adoptie en verandering","d":"De begeleiding die zorgt dat mensen het nieuwe werk ook echt zo gaan doen.","rel":"nu","v":"Is er begeleiding geregeld zodat mensen het nieuwe werk ook echt zo gaan doen?"}],"vraag":"Weet iedereen waar AI bij jullie voor dient?","opties":["Nee — iedereen probeert maar wat","Er is een idee, maar het staat nergens","Het staat op papier, met een eigenaar erbij","Per toepassing staat vast wat hij moet opleveren, en dat wordt gemeten","Elk kwartaal herzien; wat niets oplevert gaat eruit"]},{"nr":2,"k":"kanalen","n":"Kanalen & Interfaces","onder":"Waar mensen en systemen het platform raken","soort":"stapel","caps":[{"id":"kanalen-01","n":"Chat voor medewerkers","d":"Eén afgesproken plek waar medewerkers AI mogen gebruiken voor hun eigen werk.","rel":"nu","v":"Is er één afgesproken plek waar medewerkers AI mogen gebruiken voor hun werk?"},{"id":"kanalen-02","n":"Klantkanaal","d":"AI die klanten rechtstreeks te woord staat, op de site of in een klantomgeving.","rel":"groei","v":"Staat AI klanten rechtstreeks te woord, en weet je waar dat begrensd is?"},{"id":"kanalen-03","n":"Werkplekintegratie","d":"AI die zit waar het werk al gebeurt: Teams, Outlook, SharePoint.","rel":"nu","v":"Zit AI in Teams, Outlook en SharePoint, op bedrijfsaccounts?"},{"id":"kanalen-04","n":"Kantoortoepassingen","d":"AI in Word, Excel en PowerPoint, met toegang tot bedrijfsdocumenten.","rel":"nu","v":"Kan AI in Word, Excel en PowerPoint bij je bedrijfsdocumenten?"},{"id":"kanalen-05","n":"AI in eigen software","d":"AI-functies ingebouwd in de applicaties die het bedrijf zelf laat bouwen.","rel":"groei","v":"Zitten er AI-functies in de applicaties die je zelf laat bouwen?"},{"id":"kanalen-06","n":"Spraak en telefonie","d":"Gesproken in- en uitvoer: uitgeschreven gesprekken, telefonische afhandeling.","rel":"later","v":"Worden gesprekken uitgeschreven of telefonisch afgehandeld met AI?"},{"id":"kanalen-07","n":"E-mail en documentstromen","d":"Binnenkomende post en documenten die automatisch worden gelezen en gerouteerd.","rel":"groei","v":"Worden binnenkomende post en documenten automatisch gelezen en doorgestuurd?"},{"id":"kanalen-08","n":"Koppelvlakken voor systemen","d":"Een vaste manier waarop andere systemen AI-functies kunnen aanroepen.","rel":"groei","v":"Kunnen andere systemen je AI-functies aanroepen op een vaste manier?"},{"id":"kanalen-09","n":"Mobiel gebruik","d":"Dezelfde toegang en dezelfde grenzen op een telefoon als achter een bureau.","rel":"later","v":"Gelden op een telefoon dezelfde toegang en dezelfde grenzen als achter een bureau?"},{"id":"kanalen-10","n":"Taal en toegankelijkheid","d":"Antwoorden in de taal en op het niveau van de gebruiker, ook bij beperkingen.","rel":"later","v":"Krijgt iedereen antwoord in zijn eigen taal en op zijn eigen niveau?"}],"vraag":"Waar gebruiken mensen AI?","opties":["Op eigen accounts, buiten beeld","Eén afgesproken tool, de rest los","In de werkplek zelf: Teams, Outlook, Office, met bedrijfsaccounts","Meerdere kanalen aangesloten, en we zien wie wat gebruikt","Ook klanten en andere systemen komen binnen via vaste koppelvlakken"]},{"nr":3,"k":"agenten","n":"Agent-ontwikkeling","onder":"Van idee naar een werkende, geteste agent","soort":"stapel","caps":[{"id":"agenten-01","n":"Taakafbakening","d":"Zwart op wit wat de agent wél en niet doet, en wanneer hij het overdraagt.","rel":"nu","v":"Staat zwart op wit wat de agent níét doet en wanneer hij overdraagt?"},{"id":"agenten-02","n":"Promptbeheer","d":"Instructieteksten op één plek, met versies, in plaats van verspreid in scenario's.","rel":"nu","v":"Staan de instructieteksten op één plek, met versies?"},{"id":"agenten-03","n":"Gereedschappen definiëren","d":"Beschrijven welke handelingen de agent mag uitvoeren en met welke gegevens.","rel":"nu","v":"Is beschreven welke handelingen de agent mag uitvoeren, en met welke gegevens?"},{"id":"agenten-04","n":"Context en werkgeheugen","d":"Bepalen wat de agent per opdracht meekrijgt, en wat hij tussen opdrachten onthoudt.","rel":"groei","v":"Is bepaald wat de agent per opdracht meekrijgt en wat hij daarna onthoudt?"},{"id":"agenten-05","n":"Orkestratie van stappen","d":"De volgorde waarin een agent denkt, opzoekt, handelt en controleert.","rel":"groei","v":"Ligt de volgorde vast waarin de agent denkt, opzoekt, handelt en controleert?"},{"id":"agenten-06","n":"Samenwerkende agenten","d":"Meerdere agenten die werk aan elkaar doorgeven met een duidelijke overdracht.","rel":"later","v":"Geven agenten werk aan elkaar door met een duidelijke overdracht?"},{"id":"agenten-07","n":"Mens in de lus","d":"De momenten waarop een mens moet goedkeuren voordat de agent doorgaat.","rel":"nu","v":"Is aangewezen waar een mens moet goedkeuren voordat de agent doorgaat?"},{"id":"agenten-08","n":"Foutafhandeling en terugval","d":"Wat er gebeurt als een stap mislukt: opnieuw, overslaan, of naar een mens.","rel":"nu","v":"Weet je wat er gebeurt als een stap mislukt: opnieuw, overslaan of naar een mens?"},{"id":"agenten-09","n":"Evaluatieset","d":"Een vaste set voorbeelden met het goede antwoord, om kwaliteit te kunnen meten.","rel":"groei","v":"Is er een vaste set voorbeelden met het goede antwoord, om kwaliteit te meten?"},{"id":"agenten-10","n":"Regressietest bij wisseling","d":"Diezelfde set opnieuw draaien voordat een ander model of nieuwe versie live gaat.","rel":"groei","v":"Draai je die set opnieuw voordat een ander model of een nieuwe versie live gaat?"},{"id":"agenten-11","n":"Proefdraaien","d":"De agent eerst laten meelopen zonder gevolgen, met een mens die meekijkt.","rel":"nu","v":"Loopt een nieuwe agent eerst mee zonder gevolgen, met iemand die meekijkt?"},{"id":"agenten-12","n":"Uitrolstraat","d":"Een vaste weg van klad naar productie, zodat niemand rechtstreeks in het echte systeem sleutelt.","rel":"groei","v":"Is er een vaste weg van klad naar productie, of wordt er live gesleuteld?"},{"id":"agenten-13","n":"Versiebeheer en terugdraaien","d":"Elke versie bewaard, en met één handeling terug naar de vorige.","rel":"groei","v":"Kun je met één handeling terug naar de vorige versie?"},{"id":"agenten-14","n":"Herbruikbare bouwblokken","d":"Onderdelen die in meerdere agenten terugkomen, één keer gemaakt en gedeeld.","rel":"later","v":"Hergebruik je onderdelen tussen agenten, of bouw je elke keer opnieuw?"}],"vraag":"Hoe komt een AI-toepassing bij jullie tot stand?","opties":["Die komt er niet, of iemand knutselt in zijn eentje","Er draaien wat prompts en scenario's, ongetest","Opdracht afgebakend, prompts op één plek, een mens keurt goed","Vaste testset, opnieuw testen bij een nieuw model, aparte uitrolstraat","Herbruikbare bouwblokken — een nieuwe agent is dagen werk, geen project"]},{"nr":4,"k":"controlplane","n":"AI Control Plane","onder":"Elk verzoek, elke tool-call en elke euro langs één bewaakt punt","soort":"stapel","caps":[{"id":"controlplane-01","n":"Eén doorgang (gateway)","d":"Alle AI-verkeer loopt langs één punt, zodat er niets buiten het zicht om gebeurt.","rel":"groei","v":"Loopt al het AI-verkeer langs één punt, of gaat iedereen zijn eigen weg?"},{"id":"controlplane-02","n":"Routering naar het juiste model","d":"Per soort vraag automatisch het model kiezen dat past qua prijs en kwaliteit.","rel":"groei","v":"Wordt per soort vraag automatisch een passend model gekozen?"},{"id":"controlplane-03","n":"Sleutels en geheimen","d":"API-sleutels centraal beheerd en vervangbaar, nooit in platte tekst in een scenario.","rel":"nu","v":"Staan de API-sleutels centraal, en kun je er één vervangen zonder te zoeken?"},{"id":"controlplane-04","n":"Quota en snelheidslimieten","d":"Grenzen per gebruiker, team of toepassing, zodat één fout niet alles opeet.","rel":"groei","v":"Zitten er grenzen per gebruiker, team of toepassing op het gebruik?"},{"id":"controlplane-05","n":"Kostenmeting per verzoek","d":"Van elk verzoek is bekend wat het kostte en wie het aanvroeg.","rel":"nu","v":"Weet je van een willekeurig verzoek van gisteren wat het kostte en wie het aanvroeg?"},{"id":"controlplane-06","n":"Doorbelasting","d":"Kosten toewijzen aan de afdeling of klant waar het werk vandaan komt.","rel":"later","v":"Worden kosten toegewezen aan de afdeling of klant waar het werk vandaan komt?"},{"id":"controlplane-07","n":"Hergebruik van antwoorden","d":"Dezelfde vraag niet twee keer betalen: bewaren en opnieuw uitserveren.","rel":"groei","v":"Betaal je dezelfde vraag twee keer, of wordt een eerder antwoord hergebruikt?"},{"id":"controlplane-08","n":"Grenzen op de invoer","d":"Controle vooraf op wat er ingaat: gevoelige gegevens, verboden verzoeken, injectiepogingen.","rel":"groei","v":"Wordt vooraf gecontroleerd wat er ingaat aan gevoelige gegevens en rare verzoeken?"},{"id":"controlplane-09","n":"Grenzen op de uitvoer","d":"Controle achteraf op wat eruit komt: verzinsels, ongepaste inhoud, gelekte gegevens.","rel":"groei","v":"Wordt achteraf gecontroleerd wat eruit komt aan verzinsels en gelekte gegevens?"},{"id":"controlplane-10","n":"Gevoelige gegevens afschermen","d":"Persoonsgegevens en bedrijfsgeheimen onherkenbaar maken voordat ze het pand verlaten.","rel":"nu","v":"Worden persoonsgegevens onherkenbaar gemaakt voordat ze het pand verlaten?"},{"id":"controlplane-11","n":"Toolregister","d":"Eén overzicht van alle koppelingen en MCP-servers die een agent mag aanroepen.","rel":"groei","v":"Is er één overzicht van alle koppelingen en MCP-servers die een agent mag aanroepen?"},{"id":"controlplane-12","n":"Vastlegging van elk verzoek","d":"Wie vroeg wat, welk model antwoordde, en wat er terugkwam — herleidbaar bewaard.","rel":"nu","v":"Kun je van vorige week terugvinden wie wat vroeg en wat er terugkwam?"},{"id":"controlplane-13","n":"Bewaking en alarmering","d":"Doorlopend zicht op fouten, wachttijden en uitschieters, met een melding als het misgaat.","rel":"groei","v":"Krijg je een melding als het aantal fouten of de wachttijd oploopt?"},{"id":"controlplane-14","n":"Terugval bij storing","d":"Een tweede weg als de leverancier eruit ligt, zodat het werk niet stilvalt.","rel":"groei","v":"Wat gebeurt er met het werk als je leverancier een dag uit de lucht ligt?"}],"vraag":"Wie ziet wat er aan AI-verkeer omgaat?","opties":["Niemand — iedereen gebruikt zijn eigen sleutels","Sleutels staan centraal, het verbruik zien we op de factuur","Al het AI-verkeer loopt langs één punt en wordt vastgelegd","Grenzen op wat erin en eruit gaat, kosten per verzoek en per team","Automatische routering, terugval bij storing, alarm bij afwijking"]},{"nr":5,"k":"modellen","n":"Modellen & Inferentie","onder":"De motoren, uitwisselbaar achter de gateway","soort":"stapel","caps":[{"id":"modellen-01","n":"Modelkeuze en -register","d":"Eén lijst van toegestane modellen, met waarvoor ze wel en niet gebruikt mogen worden.","rel":"nu","v":"Is er een lijst van toegestane modellen, met waarvoor ze wel en niet mogen?"},{"id":"modellen-02","n":"Meerdere leveranciers","d":"Niet vastzitten aan één aanbieder: wisselen is configuratie, geen migratieproject.","rel":"groei","v":"Kun je van leverancier wisselen zonder dat het een project wordt?"},{"id":"modellen-03","n":"Eigen modellen draaien","d":"Modellen in eigen beheer of eigen regio voor werk dat het pand niet uit mag.","rel":"later","v":"Kun je werk dat het pand niet uit mag op een eigen of Europees model draaien?"},{"id":"modellen-04","n":"Bijstellen op eigen werk","d":"Een model laten meebewegen met de eigen vaktaal en voorbeelden.","rel":"later","v":"Beweegt een model mee met je eigen vaktaal en je eigen voorbeelden?"},{"id":"modellen-05","n":"Inbedding en herrangschikking","d":"De modellen die tekst doorzoekbaar maken en de beste stukken bovenaan zetten.","rel":"groei","v":"Weet je welk model je tekst doorzoekbaar maakt en de beste stukken bovenaan zet?"},{"id":"modellen-06","n":"Snelheid en wachttijd","d":"Weten hoe lang een antwoord duurt, en of dat past bij het werk erachter.","rel":"groei","v":"Weet je hoe lang een antwoord duurt, en of dat past bij het werk erachter?"},{"id":"modellen-07","n":"Prijs tegen kwaliteit","d":"Bewuste keuze per taak: het goedkope model waar het kan, het dure waar het moet.","rel":"nu","v":"Kies je per taak bewust tussen een goedkoop en een duur model?"},{"id":"modellen-08","n":"Levenscyclus van modellen","d":"Verouderde modellen tijdig vervangen, met een test die aantoont dat het goed blijft.","rel":"groei","v":"Weet je wanneer je huidige modellen verouderen, en wat er dan moet gebeuren?"}],"vraag":"Hoe kiezen jullie welk model iets doet?","opties":["Wat de tool toevallig gebruikt","Eén leverancier, één model, voor alles","Een lijst met toegestane modellen per soort werk","Meerdere leveranciers naast elkaar; wisselen is een instelling","Per taak gekozen op prijs en kwaliteit, met een test die dat aantoont"]},{"nr":6,"k":"kennis","n":"Kennis & Data","onder":"AI is nooit beter dan de data die het mag zien","soort":"stapel","caps":[{"id":"kennis-01","n":"Bronnen ontsluiten","d":"De systemen en mappen waar de kennis in zit bereikbaar maken voor AI.","rel":"nu","v":"Kan AI bij de systemen en mappen waar de kennis in zit?"},{"id":"kennis-02","n":"Documenten klaarmaken","d":"Scans leesbaar maken, documenten opknippen in stukken die los begrijpelijk zijn.","rel":"nu","v":"Zijn scans leesbaar gemaakt en documenten opgeknipt in stukken die los kloppen?"},{"id":"kennis-03","n":"Doorzoekbare opslag","d":"Een index waarin op betekenis gezocht wordt, niet alleen op letterlijke woorden.","rel":"groei","v":"Wordt er op betekenis gezocht, of alleen op letterlijke woorden?"},{"id":"kennis-04","n":"Terughaalstrategie","d":"De manier waarop bij een vraag de juiste stukken worden opgehaald en meegegeven.","rel":"groei","v":"Is bepaald hoe bij een vraag de juiste stukken worden opgehaald en meegegeven?"},{"id":"kennis-05","n":"Herkomst en verwijzing","d":"Bij elk antwoord terug te vinden uit welk document en welke versie het komt.","rel":"nu","v":"Staat bij elk antwoord uit welk document en welke versie het komt?"},{"id":"kennis-06","n":"Rechten per document","d":"Iemand krijgt via AI niets te zien wat hij zonder AI ook niet mocht zien.","rel":"nu","v":"Kan iemand via AI iets zien wat hij zonder AI niet mocht zien?"},{"id":"kennis-07","n":"Actualiteit","d":"Afgesproken hoe vaak de kennis wordt ververst, en zichtbaar wanneer dat laatst gebeurde.","rel":"nu","v":"Is afgesproken hoe vaak de kennis wordt ververst, en zie je wanneer dat was?"},{"id":"kennis-08","n":"Begrippen en definities","d":"Eén afgesproken betekenis van klant, order, marge en uur — ook voor AI.","rel":"nu","v":"Betekenen klant, order, marge en uur overal hetzelfde — ook voor AI?"},{"id":"kennis-09","n":"Datakwaliteit","d":"Weten hoe compleet en betrouwbaar de bron is voordat AI erop wordt losgelaten.","rel":"nu","v":"Weet je hoe compleet en betrouwbaar de bron is voordat AI erop wordt losgelaten?"},{"id":"kennis-10","n":"Bewaren en verwijderen","d":"Vastgelegd hoe lang gesprekken en documenten blijven, en hoe iets echt weg gaat.","rel":"groei","v":"Is vastgelegd hoe lang gesprekken en documenten blijven, en hoe iets echt weg gaat?"},{"id":"kennis-11","n":"Terugkoppeling naar de bron","d":"Wat AI fout ziet, leidt tot herstel in het bronsysteem, niet tot een omweg.","rel":"later","v":"Wordt wat AI fout ziet in het bronsysteem hersteld, of eromheen gewerkt?"}],"vraag":"Wat weet AI van jullie eigen documenten?","opties":["Niets — het kent onze bestanden niet","Mensen plakken zelf stukken tekst in het gesprek","Bronnen zijn ontsloten, en antwoorden verwijzen naar het document","Rechten per document, vaste verversing, definities vastgelegd","Wat AI fout ziet, wordt in het bronsysteem hersteld"]},{"nr":7,"k":"infra","n":"Infrastructuur & Runtime","onder":"Het fundament waar alles op draait","soort":"stapel","caps":[{"id":"infra-01","n":"Rekencapaciteit","d":"Genoeg en op tijd, zonder dat er een machine met de hand wordt aangezet.","rel":"groei","v":"Is er genoeg rekencapaciteit, zonder dat iemand met de hand iets moet aanzetten?"},{"id":"infra-02","n":"Netwerk en koppelvlakken","d":"Verbindingen naar leveranciers en interne systemen, afgeschermd en gecontroleerd.","rel":"groei","v":"Zijn de verbindingen naar leveranciers en interne systemen afgeschermd?"},{"id":"infra-03","n":"Opslag","d":"Waar documenten, indexen en logboeken staan, met de juiste bescherming erop.","rel":"nu","v":"Weet je waar documenten, indexen en logboeken staan, en hoe ze beschermd zijn?"},{"id":"infra-04","n":"Afgeschermde uitvoer","d":"Code en tool-aanroepen draaien in een omgeving die de rest niet kan raken.","rel":"groei","v":"Draaien code en tool-aanroepen in een omgeving die de rest niet kan raken?"},{"id":"infra-05","n":"Beschikbaarheid en herstel","d":"Afgesproken hoe lang iets uit mag liggen, en een herstel dat is getest.","rel":"groei","v":"Is afgesproken hoe lang iets uit mag liggen, en is het herstel echt getest?"},{"id":"infra-06","n":"Regio en datalocatie","d":"Weten in welk land de gegevens staan en verwerkt worden, en dat kunnen aantonen.","rel":"nu","v":"Kun je aantonen in welk land je gegevens staan en verwerkt worden?"},{"id":"infra-07","n":"Uitrol en beheer","d":"De omgeving staat als code beschreven, zodat opnieuw opbouwen geen zoekplaatje is.","rel":"later","v":"Staat de omgeving als code beschreven, zodat opnieuw opbouwen geen zoekplaatje is?"}],"vraag":"Weet je waar je gegevens staan en draaien?","opties":["Nee — het staat ergens bij een leverancier","We weten welke dienst het is, niet waar de gegevens staan","Regio is bekend en vastgelegd, opslag is beschermd","Beschikbaarheid afgesproken, herstel getest, uitvoer afgeschermd","De omgeving staat als code; opnieuw opbouwen is één handeling"]},{"nr":8,"k":"governance","n":"Governance & FinOps","onder":"Waarde, risico, kosten en compliance, dwars door elke laag heen","soort":"rail","caps":[{"id":"governance-01","n":"AI-register","d":"Eén overzicht van alle AI-toepassingen die draaien, inclusief die van leveranciers.","rel":"nu","v":"Kun je binnen een minuut laten zien welke AI-toepassingen er draaien?"},{"id":"governance-02","n":"Risicoklasse bepalen","d":"Per toepassing vaststellen in welke categorie van de AI-verordening hij valt.","rel":"nu","v":"Weet je per toepassing in welke categorie van de AI-verordening hij valt?"},{"id":"governance-03","n":"Beleid en gebruiksregels","d":"Op één A4 wat medewerkers wel en niet met AI mogen, in gewone taal.","rel":"nu","v":"Is er één A4 met wat medewerkers wel en niet met AI mogen, in gewone taal?"},{"id":"governance-04","n":"Menselijk toezicht","d":"Vastgelegd waar een mens moet meekijken en wie dat is.","rel":"nu","v":"Is vastgelegd waar een mens moet meekijken, en wie dat is?"},{"id":"governance-05","n":"Transparantie","d":"Mensen weten wanneer ze met AI te maken hebben en wat ermee gebeurt.","rel":"nu","v":"Weten mensen wanneer ze met AI te maken hebben?"},{"id":"governance-06","n":"Audit-spoor","d":"Achteraf aantoonbaar wat er gebeurde, voor accountant, auditor of toezichthouder.","rel":"groei","v":"Kun je een accountant of auditor achteraf laten zien wat er precies gebeurde?"},{"id":"governance-07","n":"Leveranciers en contracten","d":"Verwerkersovereenkomsten, voorwaarden en trainingsgebruik per leverancier vastgelegd.","rel":"nu","v":"Zijn verwerkersovereenkomsten en voorwaarden per leverancier vastgelegd?"},{"id":"governance-08","n":"Budget en plafonds","d":"Een maandbedrag per toepassing met een harde grens en een melding vooraf.","rel":"nu","v":"Zit er een maandbedrag met een harde grens op elke toepassing?"},{"id":"governance-09","n":"Opbrengst meten","d":"Per toepassing meten wat hij oplevert, en stoppen wat niets doet.","rel":"groei","v":"Meet je per toepassing wat hij oplevert, en zet je uit wat niets doet?"},{"id":"governance-10","n":"Incidenten en escalatie","d":"Een vaste route als AI iets fout doet: melden, stoppen, herstellen, vastleggen.","rel":"groei","v":"Is er een vaste route als AI iets fout doet: melden, stoppen, herstellen?"}],"vraag":"Wat is er geregeld rond risico en kosten?","opties":["Niets — geen overzicht en geen regels","Er zijn afspraken, maar mondeling","Een AI-register, gebruiksregels op één A4, risicoklasse bepaald","Budget met plafond per toepassing, audit-spoor, contracten op orde","Opbrengst per toepassing gemeten; wat niets doet, zetten we uit"]},{"nr":9,"k":"identiteit","n":"Identiteit & Security","onder":"Wie mag handelen, namens wie, en binnen welke grens","soort":"rail","caps":[{"id":"identiteit-01","n":"Aanmelden en identiteit","d":"Eén account met tweestapsverificatie, ook voor AI-toepassingen.","rel":"nu","v":"Gaat toegang via één account met tweestapsverificatie, ook voor AI?"},{"id":"identiteit-02","n":"Rollen en rechten","d":"Wat iemand mag, hangt aan zijn rol en gaat mee als die rol verandert.","rel":"nu","v":"Verandert wat iemand mag automatisch mee als zijn rol verandert?"},{"id":"identiteit-03","n":"Handelen namens iemand","d":"De agent werkt met de rechten van de gebruiker, niet met die van een beheerder.","rel":"groei","v":"Werkt de agent met de rechten van de gebruiker, of met die van een beheerder?"},{"id":"identiteit-04","n":"Machine-identiteiten","d":"Agenten en scenario's hebben een eigen, herleidbaar account met beperkte rechten.","rel":"groei","v":"Hebben agenten en scenario's een eigen, herleidbaar account met beperkte rechten?"},{"id":"identiteit-05","n":"Geheimenbeheer","d":"Wachtwoorden en sleutels in een kluis, met vervaldatum en vervanging.","rel":"nu","v":"Staan wachtwoorden en sleutels in een kluis, met een vervaldatum erop?"},{"id":"identiteit-06","n":"Aanvallen op AI","d":"Bescherming tegen promptinjectie, misbruik van tools en het weglekken van gegevens.","rel":"groei","v":"Is ooit getest wat er gebeurt bij een promptinjectie of misbruik van een tool?"},{"id":"identiteit-07","n":"Beveiligingsbewaking","d":"Meekijken op afwijkend gebruik, en periodiek laten testen of het houdt.","rel":"later","v":"Wordt er meegekeken op afwijkend gebruik, en laat je periodiek testen of het houdt?"}],"vraag":"Hoe is toegang geregeld?","opties":["Gedeelde accounts en gedeelde wachtwoorden","Eigen accounts, maar niet overal tweestapsverificatie","Eén aanmelding met MFA, rollen en rechten geregeld","Agenten hebben eigen, beperkte accounts; geheimen in een kluis","Getest op promptinjectie, met bewaking op afwijkend gebruik"]}]};
  var f='alles', q='', wiz=null;
 
+ try{ window.__AICAP__=AC; }catch(e){}
  function st(){ if(typeof S==='undefined') return null; if(!S.aicap) S.aicap={}; return S.aicap; }
 
  /* Uitkomst van de scan op /ai-capability-model overnemen. Eén niveau per laag
@@ -12220,8 +12229,10 @@ window.__BG_LOOPT__ = function(K, slug){
       +', niveau '+x.n+')</span></li>'; }).join('')
     +'</ol></div>';
   }
+  h+='<div data-vg="kort" data-vg-blok="caps"></div>';
   h+='<p class="ac-bron">'+esc(AC.bron)+'</p>';
   p.innerHTML=h;
+  try{ if(window.BGvoortgang) window.BGvoortgang.ververs(); }catch(e){}
 
   var zk=document.getElementById('acZoek');
   if(zk){ zk.addEventListener('input',function(){ q=this.value; teken();
@@ -12249,6 +12260,281 @@ window.__BG_LOOPT__ = function(K, slug){
   try{ if((location.hash||'').toLowerCase()==='#aicap'){ t.click(); 
    setTimeout(function(){ try{ if(t.scrollIntoView) t.scrollIntoView({block:'nearest'}); }catch(e){} },150); } }catch(e){}
  }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+ else start();
+})();
+</script>
+
+
+<style>
+/* ===== Hoe scherp is je beeld ===== */
+.vg-kaart{background:#fff;border:1px solid #E3E4E8;border-radius:12px;padding:1.1rem 1.2rem;margin-top:1rem}
+.vg-kop{display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap}
+.vg-ring{flex:none}
+.vg-kopT{flex:1;min-width:220px}
+.vg-kopT h3{margin:0 0 .2rem}
+.vg-band{display:inline-block;font-size:.72rem;font-weight:700;padding:.15rem .55rem;border-radius:99px;margin-bottom:.4rem}
+.vg-zin{font-size:.92rem;line-height:1.6;color:#14171A;margin:0}
+.vg-zin b{color:#2742D6}
+.vg-balken{display:grid;gap:.55rem;margin-top:1.1rem}
+.vg-rij{display:grid;grid-template-columns:1fr 46px;gap:.7rem;align-items:center}
+.vg-rlab{font-size:.87rem}
+.vg-rlab span{color:#5C646E;font-size:.82rem}
+.vg-staaf{height:7px;border-radius:99px;background:#EEF0F3;overflow:hidden;margin-top:.28rem}
+.vg-staaf i{display:block;height:100%;border-radius:99px}
+.vg-rpct{text-align:right;font-weight:700;font-size:.88rem}
+.vg-nu{background:#FFF8E6;border:1px solid #F0E4A8;border-radius:10px;padding:.75rem .95rem;margin-top:1rem;font-size:.9rem;line-height:1.6}
+.vg-nu b{display:block}
+.vg-nu button{background:none;border:0;padding:0;font:inherit;color:#2742D6;cursor:pointer;text-decoration:underline}
+.vg-goed{background:#F1F9F4;border:1px solid #BFE3CC;border-radius:10px;padding:.7rem .95rem;margin-top:.7rem;font-size:.9rem;line-height:1.55}
+.vg-waarde{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;padding-top:.9rem;border-top:1px solid #E3E4E8}
+.vg-wblok{flex:1;min-width:150px}
+.vg-wblok b{display:block;font-size:1.45rem;font-family:'Bricolage Grotesque',sans-serif;line-height:1.1}
+.vg-wblok span{font-size:.82rem;color:#5C646E;line-height:1.4;display:block;margin-top:.15rem}
+.vg-klein{font-size:.78rem;color:#5C646E;margin-top:.7rem;line-height:1.5}
+.vg-strip{display:flex;gap:.9rem;align-items:center;background:#F7F8FA;border:1px solid #E3E4E8;border-radius:10px;padding:.6rem .9rem;margin-bottom:1rem;flex-wrap:wrap}
+.vg-strip .vg-spct{font-weight:800;font-size:1.1rem;font-family:'Bricolage Grotesque',sans-serif;flex:none}
+.vg-strip .vg-stekst{flex:1;min-width:200px;font-size:.86rem;line-height:1.5}
+.vg-strip .vg-sstaaf{flex:none;width:110px;height:7px;border-radius:99px;background:#EEF0F3;overflow:hidden}
+.vg-strip .vg-sstaaf i{display:block;height:100%;border-radius:99px}
+</style>
+
+<script>
+/* ===== Hoe scherp is je beeld — volledigheid, waarde en aanmoediging =====
+   Toegevoegd, niets gewijzigd. Rekent uitsluitend met wat de klant zelf heeft
+   ingevuld en met de formule die het portaal al gebruikt voor Handwerk per jaar
+   (uren x uurkosten x 46 weken). Geen enkel bedrag komt hier van buiten. */
+(function(){
+ var F=[0,1,.78,.5,.22,.06];
+
+ function euroK(n){
+  try{ return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',
+   maximumFractionDigits:0}).format(Math.round(n)); }catch(e){ return '\u20ac '+Math.round(n); }
+ }
+ function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(m){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]; }); }
+
+ /* ── de vier blokken ─────────────────────────────────────────────────── */
+ function meet(){
+  if(typeof S==='undefined'||!S.niveaus) return null;
+  var b={};
+
+  // profiel: de vier gegevens waar elke berekening op rust
+  var velden=[['mensen in dienst',S.mw],['uurkosten',S.uur],['branche',S.branche],['omzet',S.omzet]];
+  var ing=velden.filter(function(v){ return v[1]; }).length;
+  b.profiel={n:'Je bedrijfsgegevens', deel:ing, totaal:velden.length,
+   pct:Math.round(ing/velden.length*100),
+   open:velden.filter(function(v){ return !v[1]; }).map(function(v){ return v[0]; })};
+
+  // nulmeting: de dertien onderdelen
+  var dims=(typeof DIM!=='undefined')?DIM:[];
+  var gezet=S.scanStempel ? dims.length
+   : dims.filter(function(d){ return S.niveaus[d.k]!==2; }).length;
+  b.nulmeting={n:'De dertien onderdelen', deel:gezet, totaal:dims.length||13,
+   pct:Math.round(gezet/(dims.length||13)*100), scan:!!S.scanStempel};
+
+  // AI-capabilities: zelf beantwoord telt vol, uit de scan telt half
+  var AC=window.__AICAP__, tot=0, zelf=0, uitScan=0;
+  if(AC){
+   AC.lagen.forEach(function(lg){ lg.caps.forEach(function(c){
+    tot++;
+    var v=(S.aicap||{})[c.id];
+    if(v>0){ if(S.aicapUitScan&&S.aicapUitScan[c.id]) uitScan++; else zelf++; }
+   });});
+  }
+  b.caps={n:'De 86 AI-capabilities', deel:zelf, totaal:tot||86, uitScan:uitScan,
+   pct: tot? Math.round((zelf+uitScan*0.5)/tot*100) : 0};
+
+  // acties: pas iets waard als ze bestaan en afgerond worden
+  var tk=(S.taken||[]), klaar=tk.filter(function(t){ return t.klaar; }).length;
+  b.acties={n:'Acties in je roadmap', deel:klaar, totaal:tk.length,
+   pct: tk.length ? Math.round(40+60*(klaar/tk.length)) : 0, open:tk.length-klaar};
+
+  var weeg=[['profiel',15],['nulmeting',25],['caps',30],['acties',30]];
+  var totPct=weeg.reduce(function(a,w){ return a+b[w[0]].pct*w[1]/100; },0);
+  b.totaal=Math.round(totPct);
+  b.volgorde=weeg.map(function(w){ return w[0]; });
+  return b;
+ }
+
+ /* ── wat de open acties in dit model opleveren ───────────────────────── */
+ function waarde(){
+  if(typeof DIM==='undefined'||!S.uur||!S.mw) return null;
+  var open=(S.taken||[]).filter(function(t){ return !t.klaar; });
+  var som=0, met=0;
+  open.forEach(function(t){
+   var d=DIM.filter(function(x){ return x.k===t.dim; })[0]; if(!d) return;
+   var niv=S.niveaus[d.k]||1; if(niv>=5) return;
+   som += d.u*(F[niv]-F[niv+1])*(S.mw/24)*46*S.uur;
+   met++;
+  });
+  return {som:som, met:met, open:open.length};
+ }
+
+ /* ── wat het advies op dit moment waard is ───────────────────────────── */
+ var BANDEN=[
+  [0,  'Nog geen beeld',  '#5C646E','#F1F2F4',
+   'Wat je nu aan advies krijgt is een algemeen verhaal. Het kan over elk bedrijf gaan.'],
+  [25, 'Ruwe schets',     '#8A6100','#FFF3D6',
+   'Genoeg voor een richting, te weinig voor een besluit. De bedragen zijn nog schattingen op standaardaannames.'],
+  [50, 'Bruikbaar',       '#2742D6','#EEF1FD',
+   'Hier kun je mee werken. De volgorde van wat je als eerste aanpakt klopt nu waarschijnlijk.'],
+  [75, 'Scherp',          '#1E9E5A','#F1F9F4',
+   'Het advies rust op jouw cijfers, niet op aannames. Wat hier bovenaan staat, is ook echt jouw grootste lek.'],
+  [90, 'Compleet',        '#1E9E5A','#E7F6ED',
+   'Alles staat erin. Dit is het niveau waarop een adviseur zonder voorbehoud een voorstel kan doen.']
+ ];
+ function band(p){ var b=BANDEN[0]; BANDEN.forEach(function(x){ if(p>=x[0]) b=x; }); return b; }
+
+ /* ── de eerstvolgende stap die het meest oplevert ────────────────────── */
+ function volgende(b){
+  function lijst(a){ return a.length<2 ? (a[0]||'')
+   : a.slice(0,-1).join(', ')+' en '+a[a.length-1]; }
+  if(b.profiel.pct<100)
+   return {t:'Vul '+lijst(b.profiel.open)+' in onder Profiel',
+    w:'Zonder die gegevens is elk bedrag hier een aanname. Het is een minuut werk.', ga:'profiel'};
+  if(b.nulmeting.pct<100)
+   return {t:'Zet de dertien onderdelen op je eigen stand',
+    w:'Daarmee weet het portaal waar je tijd weglekt, en niet alleen dát het weglekt.', ga:'invoeren'};
+  if(b.caps.uitScan>0 && b.caps.deel<b.caps.totaal)
+   return {t:'Scherp '+Math.min(b.caps.uitScan,39)+' AI-capabilities aan',
+    w:'Nu staat een hele laag op één cijfer uit de scan. Per capability antwoorden maakt het advies '
+      +'specifiek genoeg om er acties uit te halen.', ga:'aicap'};
+  if(b.caps.pct<100)
+   return {t:'Beantwoord de laatste '+(b.caps.totaal-b.caps.deel)+' capabilities',
+    w:'Wat je openlaat, telt niet mee — en verdwijnt dus ook uit je advies.', ga:'aicap'};
+  if(!b.acties.totaal)
+   return {t:'Zet je eerste acties klaar',
+    w:'Een beeld zonder acties verandert niets. Onder Advies staat wat het meeste oplevert.', ga:'advies'};
+  if(b.acties.open)
+   return {t:'Rond '+b.acties.open+' openstaande '+(b.acties.open===1?'actie':'acties')+' af',
+    w:'Dit is het enige deel dat je cijfers echt beweegt.', ga:'bijhouden'};
+  return {t:'Je bent rond — houd het actueel',
+   w:'Zet een moment per kwartaal om de stand opnieuw te zetten.', ga:'bijhouden'};
+ }
+
+ /* ── aanmoediging: alleen als er iets te prijzen valt ────────────────── */
+ function goedBezig(b, w){
+  var r=[];
+  if(b.caps.deel>=20) r.push('Je hebt '+b.caps.deel+' capabilities zelf beoordeeld. '
+   +'De meeste bedrijven blijven bij het laaggemiddelde steken.');
+  if(b.acties.deel>0) r.push(b.acties.deel+' '+(b.acties.deel===1?'actie':'acties')+' afgerond'
+   +(w&&w.som?' \u2014 dat is werk dat niet meer terugkomt':'')+'.');
+  if(b.nulmeting.pct===100 && b.profiel.pct===100) r.push('Je basis is compleet, dus alles wat je hier ziet rekent met jouw cijfers.');
+  else if(b.nulmeting.pct===100) r.push('Je nulmeting staat \u2014 het zwaarste invulwerk heb je gehad.');
+  if(!r.length) return null;
+  var kop = b.totaal>=75 ? 'Sterk bezig.' : (b.totaal>=40 ? 'Goed bezig.' : 'Goed begin.');
+  return '<b>'+kop+'</b> '+r.slice(0,2).join(' ');
+ }
+
+ /* ── de ring ─────────────────────────────────────────────────────────── */
+ function ring(p, kleur){
+  var r=42, c=2*Math.PI*r, vol=c*p/100;
+  return '<svg class="vg-ring" width="108" height="108" viewBox="0 0 108 108" role="img" '
+   +'aria-label="'+p+' procent ingevuld">'
+   +'<circle cx="54" cy="54" r="'+r+'" fill="none" stroke="#EEF0F3" stroke-width="11"/>'
+   +'<circle cx="54" cy="54" r="'+r+'" fill="none" stroke="'+kleur+'" stroke-width="11" '
+   +'stroke-linecap="round" stroke-dasharray="'+vol.toFixed(1)+' '+c.toFixed(1)+'" '
+   +'transform="rotate(-90 54 54)"/>'
+   +'<text x="54" y="52" text-anchor="middle" font-size="24" font-weight="800" '
+   +'font-family="Bricolage Grotesque, sans-serif" fill="#14171A">'+p+'</text>'
+   +'<text x="54" y="68" text-anchor="middle" font-size="10" fill="#5C646E">procent</text></svg>';
+ }
+
+ function kleurVan(p){ return p>=75?'#1E9E5A':(p>=50?'#2742D6':(p>=25?'#E8A317':'#FF4F17')); }
+
+ /* ── volledige kaart ─────────────────────────────────────────────────── */
+ function kaart(b){
+  var bd=band(b.totaal), w=waarde(), vlg=volgende(b), gb=goedBezig(b,w);
+  var h='<div class="vg-kaart"><div class="vg-kop">'+ring(b.totaal, kleurVan(b.totaal))
+   +'<div class="vg-kopT">'
+   +'<span class="vg-band" style="color:'+bd[2]+';background:'+bd[3]+'">'+esc(bd[1])+'</span>'
+   +'<h3>Hoe scherp is je beeld</h3>'
+   +'<p class="vg-zin">'+esc(bd[4])+'</p></div></div>';
+
+  h+='<div class="vg-balken">';
+  b.volgorde.forEach(function(k){
+   var x=b[k], sub='';
+   if(k==='caps') sub=x.deel+' zelf beantwoord'+(x.uitScan?', '+x.uitScan+' uit de scan':'')+' van '+x.totaal;
+   else if(k==='acties') sub= x.totaal? x.deel+' van '+x.totaal+' afgerond' : 'nog geen acties klaargezet';
+   else sub=x.deel+' van '+x.totaal+' ingevuld';
+   h+='<div class="vg-rij"><div><div class="vg-rlab">'+esc(x.n)+' <span>\u00b7 '+esc(sub)+'</span></div>'
+    +'<div class="vg-staaf"><i style="width:'+x.pct+'%;background:'+kleurVan(x.pct)+'"></i></div></div>'
+    +'<div class="vg-rpct" style="color:'+kleurVan(x.pct)+'">'+x.pct+'%</div></div>';
+  });
+  h+='</div>';
+
+  h+='<div class="vg-nu"><b>Zet hierna deze stap: '+esc(vlg.t)+'</b>'+esc(vlg.w)
+   +' <button data-vg-ga="'+vlg.ga+'">Ga erheen &rarr;</button></div>';
+  if(gb) h+='<div class="vg-goed">'+gb+'</div>';
+
+  if(w && w.open){
+   h+='<div class="vg-waarde">'
+    +'<div class="vg-wblok"><b>'+w.open+'</b><span>'+(w.open===1?'actie staat':'acties staan')+' open</span></div>'
+    +'<div class="vg-wblok"><b style="color:#1E9E5A">'+euroK(w.som)+'</b>'
+    +'<span>aan handwerk per jaar dat die acties volgens dit model wegnemen</span></div>'
+    +'<div class="vg-wblok"><b>'+(S.uur? Math.round(w.som/S.uur/46) : 0)+'</b>'
+    +'<span>uur per week dat daarmee vrijkomt</span></div></div>'
+    +'<p class="vg-klein">Gerekend met dezelfde formule als <b>Handwerk per jaar</b> hierboven: '
+    +'uren \u00d7 uurkosten \u00d7 46 weken, met het effect van \u00e9\u00e9n niveau stijgen per onderdeel. '
+    +'Een modelbedrag op jouw eigen invoer \u2014 geen offerte en geen belofte.'
+    +(w.met<w.open? ' '+(w.open-w.met)+' '+(w.open-w.met===1?'actie hangt':'acties hangen')
+      +' niet aan een onderdeel en telt daarom niet mee.' : '')+'</p>';
+  }
+
+  h+='<p class="vg-klein">Dit percentage zegt hoe compleet je invoer is, niet hoe goed je bedrijf ervoor staat. '
+   +'Dat laatste staat onder <b>Volwassenheid</b>. Een bedrijf kan hier 100% halen en toch op niveau 2 staan \u2014 '
+   +'dan weet je alleen heel precies waar je werk ligt.</p>';
+  return h+'</div>';
+ }
+
+ /* ── korte strip ─────────────────────────────────────────────────────── */
+ function strip(b, blokK){
+  var x=b[blokK]; if(!x) return '';
+  var vlg=volgende(b), eigen=(vlg.ga===blokK||(blokK==='caps'&&vlg.ga==='aicap'));
+  var tekst;
+  if(blokK==='caps') tekst = x.deel+' van '+x.totaal+' capabilities zelf beantwoord'
+   +(x.uitScan? ', '+x.uitScan+' staan nog op het cijfer van de laag' : '')+'.';
+  else if(blokK==='acties') tekst = x.totaal ? x.deel+' van '+x.totaal+' acties afgerond.'
+   : 'Nog geen acties klaargezet \u2014 hier begint het effect.';
+  else if(blokK==='nulmeting') tekst = x.pct===100 ? 'Alle dertien onderdelen staan op jouw stand.'
+   : x.deel+' van '+x.totaal+' onderdelen op je eigen stand gezet.';
+  else tekst = x.pct===100 ? 'Je bedrijfsgegevens zijn compleet.'
+   : 'Nog open: '+(x.open.length<2 ? x.open[0]
+      : x.open.slice(0,-1).join(', ')+' en '+x.open[x.open.length-1])+'.';
+  if(eigen && x.pct<100) tekst += ' <b>Dit is nu je grootste winst.</b>';
+  else if(x.pct===100) tekst += ' Mooi \u2014 dit deel is rond.';
+  return '<div class="vg-strip"><span class="vg-spct" style="color:'+kleurVan(x.pct)+'">'+x.pct+'%</span>'
+   +'<span class="vg-sstaaf"><i style="width:'+x.pct+'%;background:'+kleurVan(x.pct)+'"></i></span>'
+   +'<span class="vg-stekst">'+tekst+'</span></div>';
+ }
+
+ function ververs(){
+  var b=meet(); if(!b) return;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-vg]'),function(el){
+   var nieuw = el.getAttribute('data-vg')==='volledig'
+    ? kaart(b) : strip(b, el.getAttribute('data-vg-blok')||'caps');
+   if(el.getAttribute('data-vg-s')!==String(b.totaal)+nieuw.length){
+    el.innerHTML=nieuw; el.setAttribute('data-vg-s',String(b.totaal)+nieuw.length);
+   }
+  });
+ }
+
+ document.addEventListener('click',function(e){
+  var k=e.target.closest && e.target.closest('[data-vg-ga]'); if(!k) return;
+  var t=document.querySelector('.tab[data-p="'+k.getAttribute('data-vg-ga')+'"]');
+  if(t){ t.click(); try{ if(t.scrollIntoView) t.scrollIntoView({block:'nearest'}); }catch(x){} }
+ });
+
+ function start(){
+  if(typeof S==='undefined'||!S.niveaus||!document.querySelector('[data-vg]')){
+   setTimeout(start,400); return; }
+  ververs();
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(t){
+   t.addEventListener('click',function(){ setTimeout(ververs,80); }); });
+  setInterval(ververs,3000);
+ }
+ window.BGvoortgang={ververs:ververs, meet:meet};
  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
  else start();
 })();
