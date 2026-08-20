@@ -26,7 +26,7 @@
 <meta name="bg-zoekwoord" content="bedrijfsscan mkb">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/frisse-blik">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Bedrijfsgeheugen">
-<meta property="og:title" content="Frisse blik — waar staat uw organisatie, en wat kost wachten?">
+<meta property="og:title" content="Frisse blik — waar staat je bedrijf, en wat kost wachten?">
 <meta property="og:description" content="Volwassenheidsscore, businesscase en EU AI Act-deadlines in één gratis scan. Rapport na een gepland adviesgesprek.">
 <meta property="og:url" content="https://www.bedrijfsgeheugen.nl/frisse-blik">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Frisse blik","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"description":"Gratis Data & AI-volwassenheidsscan met businesscase en EU AI Act-compliance-overzicht voor het mkb en middenbedrijf.","provider":{"@type":"Organization","name":"Bedrijfsgeheugen"}}</script>
@@ -143,42 +143,9 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 }
 .wiz-back{background:none;border:none;color:var(--dim);font-size:.82rem;margin-top:6px;padding:8px}
 .wiz-back:hover{color:var(--txt)}
+.rsBtn{display:none}
+body.bg-preview .rsBtn{display:inline-block}
 
-/* ═══ vergrendeling: resultaten pas ná geboekt gesprek ═══ */
-let dashUnlocked=false;
-function lockDash(){
-  /* De uitkomst is vrij te bekijken. Gegevens vragen we pas als iemand
-     het rapport wil downloaden of afdrukken. */
-  unlockDash();
-  return;
-  if(dashUnlocked)return;
-  if(typeof PREVIEW!=='undefined' && PREVIEW){ unlockDash(); return; }
-  $('dash').classList.add('locked');
-  setTimeout(()=>{ if(!dashUnlocked && !PREVIEW) openLead(); }, 900);
-}
-function unlockDash(){
-  dashUnlocked=true;
-  $('dash').classList.remove('locked');
-  $('dash').classList.remove('summary');   /* alles zichtbaar — niets meer vervaagd */
-  return;   /* kop = samenvatting; de rest blijft voor het gesprek */
-}
-/* Voorvertoning voor Arthur zelf: ?preview op de URL slaat het formulier over
-   en toont het volledige dashboard. Bezoekers zien dit niet. */
-var PREVIEW = /[?&]preview\b/.test(location.search) || /preview/i.test(location.hash);
-try{ if(PREVIEW) sessionStorage.setItem('bg_preview','1');
-     else if(sessionStorage.getItem('bg_preview')==='1') PREVIEW=true; }catch(e){}
-if(PREVIEW){
-  try{
-    dashUnlocked = true;
-    document.addEventListener('DOMContentLoaded', function(){
-      var b=document.createElement('div');
-      b.textContent='Voorvertoning \u2014 formulier overgeslagen';
-      b.style.cssText='position:fixed;left:12px;bottom:12px;z-index:9999;background:#FFE86B;color:#14171A;'
-        +'font:600 12px/1.3 system-ui,sans-serif;padding:7px 11px;border-radius:3px;box-shadow:0 2px 8px rgba(0,0,0,.25)';
-      document.body.appendChild(b);
-    });
-  }catch(e){}
-}
 
 /* ================= DASHBOARD ================= */
 .dash-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
@@ -484,7 +451,6 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   <section class="screen" id="landing">
     <span class="eyebrow">Frisse blik · dertien onderdelen · voor directie, eigenaren, overnameadviseurs en investeerders</span>
     <h1>Hoe volwassen is jouw bedrijf echt?</h1>
-<p class="sub" style="margin-top:.5rem">De Frisse blik heette voorheen de bedrijfsscan &mdash; zelfde onderzoek, nieuwe naam.</p>
     <p class="sub">Je begint met één vraag: waarvoor gebruik je de scan? Daarna krijg je alleen de vragen die daarbij horen — en een dashboard met je niveau per onderdeel, je positie tegenover je branche, en de businesscase in euro's.</p>
     <p class="sub" style="margin-top:-.4rem">Directeuren gebruiken hem om grip te krijgen. <b style="color:#fff">Overnameadviseurs en investeerders</b> gebruiken hem als nulmeting: hoe overdraagbaar is dit bedrijf, wat vindt een koper als eerste, en wat doet dat met de prijs.</p>
     <div class="chiprow">
@@ -498,6 +464,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
       <span>Overname doen</span><span>Opvolging</span><span>Naleving en risico</span>
     </div>
     <button class="cta" onclick="go('wizard')">Start de scan <span>→</span></button>
+    <p class="naderhand" style="margin-top:.9rem"><b style="color:#fff">De online scan is gratis.</b> Wil je daarna dat ik een dag meekijk op de werkvloer: € 2.900 excl. btw, op afstand € 2.400 — verrekend zodra je met een vervolgstap doorgaat.</p>
     <p class="naderhand">Na afloop kun je verder in je eigen portaal: cijfers ernaast leggen, modellen erop loslaten en je stappen plannen.</p>
     <div class="cd">
       <div class="cd-seg" id="cdLand"></div>
@@ -525,10 +492,6 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
   <!-- ============ DASHBOARD ============ -->
   <section class="screen" id="dash">
-    <div class="lockbar" role="status">
-      <div><b>🔒 Resultaten vergrendeld</b><br><span>Plan uw adviesgesprek van 30 minuten — daarna is uw cockpit direct zichtbaar.</span></div>
-      <button onclick="openLead()">Plan een gesprek over de uitkomst</button>
-    </div>
     <div class="dashveil">
     <div class="dash-head">
       <div>
@@ -579,9 +542,6 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
       </div>
 
     </div><!-- einde dashveil (kop-samenvatting) -->
-    <div class="lockbar2" role="status">
-      <div><b>🔒 Businesscase, stappenplan &amp; use-cases</b><br><span>Dit deel bespreken we samen in uw adviesgesprek — daarna ontvangt u het volledige rapport per e-mail.</span></div>
-    </div>
     <div class="g hov" id="remKaart" style="margin-bottom:14px"><div id="remBlok"></div></div>
     <div class="g hov" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
       <div><b style="font-size:1rem">Verder werken met deze uitkomst</b>
@@ -693,12 +653,12 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 <div class="ovl" id="ovl2" onclick="closeLead()"></div>
 <div class="modal" id="leadModal" role="dialog" aria-modal="true">
   <div id="leadForm">
-    <span class="eyebrow">Nog 2 stappen</span>
-    <h3 style="margin:.3rem 0 .4rem">Ontgrendel uw resultaten</h3>
+    <span class="eyebrow">Het rapport</span>
+    <h3 style="margin:.3rem 0 .4rem">Je uitkomst als rapport</h3>
     <div style="font-size:.82rem;color:var(--mut);margin-bottom:14px;line-height:1.6">
-      <div style="display:flex;gap:8px;margin-bottom:5px"><b style="color:var(--amberG)">1.</b><span><b>Vul uw gegevens in</b> — dan weten we voor wie het advies is.</span></div>
-      <div style="display:flex;gap:8px;margin-bottom:5px"><b style="color:var(--amberG)">2.</b><span><b>Plan het adviesgesprek</b> (30 min, gratis) — direct daarna is uw cockpit met scores en businesscase zichtbaar.</span></div>
-      <div style="display:flex;gap:8px"><b style="color:var(--amberG)">3.</b><span><b>In het gesprek</b> lopen we het volledige adviesrapport samen door — daarna ontvangt u het per e-mail als presentatie (te bewaren als PDF).</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:5px"><b style="color:var(--amberG)">1.</b><span><b>Vul je gegevens in</b> — dan weet ik voor wie het rapport is.</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:5px"><b style="color:var(--amberG)">2.</b><span><b>Plan het adviesgesprek</b> (30 min, gratis) — daar lopen we je uitkomst samen door.</span></div>
+      <div style="display:flex;gap:8px"><b style="color:var(--amberG)">3.</b><span><b>Na dat gesprek</b> krijg je het volledige rapport per e-mail, als presentatie om te bewaren.</span></div>
     </div>
     <label class="fld"><span>Naam *</span><input id="ldNaam" type="text" autocomplete="name"></label>
     <label class="fld"><span>Zakelijke e-mail *</span><input id="ldMail" type="email" autocomplete="email"></label>
@@ -771,7 +731,7 @@ const WEBHOOK_URL='';
 /* ================= CENTRALE FEITEN & BRONNEN (één plek, altijd actueel) =================
    Update dit blok — of host een JSON op CONTENT_URL om de cijfers te verversen ZONDER de
    HTML opnieuw te bouwen. Remote JSON overschrijft de waarden hieronder bij het laden. */
-const CONTENT_URL='';   // bijv. 'https://jouwdomein.nl/cockpit-content.json'
+const CONTENT_URL='/data/regelgeving.json';   // wekelijks bijgewerkt door .github/workflows/regelgeving-bijwerken.yml
 let CONTENT = {
   peildatum: '6 juli 2026',
   peildatumISO: '2026-07-06',
@@ -814,7 +774,7 @@ const RESEARCH_PROXY='';
 /* Automatisch actueel: bij het openen checkt de pagina zelf het web (via de research-tool)
    zodra de cijfers ouder zijn dan AUTO_RESEARCH_DAYS. Alles zit in dit ene bestand —
    geen aparte function of JSON-hosting nodig. (CONTENT_URL blijft optioneel als extra.) */
-const AUTO_RESEARCH=true;
+const AUTO_RESEARCH=false;   // browser heeft geen API-sleutel; het bijwerken gebeurt in de workflow
 const AUTO_RESEARCH_DAYS=7;
 const RESEARCH_MODEL='claude-sonnet-4-6';
 function researchPrompt(){
@@ -1339,7 +1299,7 @@ function unlockDash(){
 /* Voorvertoning voor Arthur zelf: ?preview op de URL slaat het formulier over
    en toont het volledige dashboard. Bezoekers zien dit niet. */
 var PREVIEW = /[?&]preview\b/.test(location.search);
-if(PREVIEW){
+if(PREVIEW){ try{ document.addEventListener('DOMContentLoaded',function(){document.body.classList.add('bg-preview');}); }catch(e){}
   try{
     dashUnlocked = true;
     document.addEventListener('DOMContentLoaded', function(){

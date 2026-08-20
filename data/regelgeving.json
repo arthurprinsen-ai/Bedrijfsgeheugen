@@ -1,0 +1,15 @@
+{
+  "peildatum": "6 juli 2026",
+  "peildatumISO": "2026-07-06",
+  "omnibusStatus": "Digital Omnibus definitief aangenomen (EP 16 juni, Raad 29 juni 2026); publicatie in Publicatieblad volgt.",
+  "deadlines": [
+    {"date":"2026-08-02","label":"EU AI Act: transparantieplicht chatbots & AI-content (art. 50) + NL-handhaving AI-geletterdheid (art. 4) + AI Office krijgt volledige handhavingsbevoegdheid op GPAI-modellen (boetes tot 3% / € 15 mln) — NIET uitgesteld","kort":"AI-transparantie + GPAI-handhaving"},
+    {"date":"2026-08-15","label":"Cyberbeveiligingswet (NIS2): zorg-, meld- en registratieplicht — verwachte inwerkingtreding","kort":"NIS2 / Cbw"},
+    {"date":"2026-12-02","label":"EU AI Act: watermerk-overgang bestaande generatieve AI verloopt + nieuw art. 5-verbod (nudifiers/AI-CSAM)","kort":"AI-watermerken & nieuw verbod"},
+    {"date":"2027-08-02","label":"EU AI Act: bestaande GPAI-modellen (op de markt vóór aug 2025) moeten volledig voldoen + lidstaten moeten AI regulatory sandboxes operationeel hebben","kort":"GPAI bestaand + sandboxes"},
+    {"date":"2027-12-02","label":"EU AI Act: hoog-risico AI (Annex III — o.a. werving, kredietscoring) — uitgesteld van aug 2026 naar dec 2027 (Digital Omnibus)","kort":"Hoog-risico AI (uitgesteld)"},
+    {"date":"2028-08-02","label":"EU AI Act: hoog-risico AI in gereguleerde producten (Annex I) — was aug 2027","kort":"AI in producten"}
+  ],
+  "fines": {"aiActLow":3,"aiActHigh":7,"nis2":2},
+  "stats": {"mkbAI":"29,8%","grootAI":"66,2%","bedrijfAI2024":"22,7%","bedrijfAI2023":"14%","afhaakErvaring":"74,6%","gartnerTop":"<5%"}
+}
