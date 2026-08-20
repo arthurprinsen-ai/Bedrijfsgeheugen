@@ -47,8 +47,13 @@ a{color:var(--blauw)}
 .markeer{background:linear-gradient(to top,var(--geel) 58%,transparent 58%);padding:0 .1em}
 .paneel{background:#fff;border:1px solid var(--lijn);border-radius:16px;padding:1.6rem}
 section{padding:2.4rem 0}
-h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:800;margin-bottom:.5rem}
-.sect-intro{color:var(--grijs);max-width:56em;margin-bottom:1.4rem;font-size:.95rem}
+/* .wrap is een klasse en verslaat daarmee de element-regel hierboven:
+   zonder deze regel krijgt elke <section class="wrap"> nul ruimte boven en onder. */
+section.wrap{padding-top:3.4rem;padding-bottom:0}
+section.wrap:first-of-type{padding-top:2.4rem}
+main{padding-bottom:3.5rem}
+h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:800;margin-bottom:.9rem}
+.sect-intro{color:var(--grijs);max-width:56em;margin-bottom:1.7rem;font-size:.95rem;margin-top:-.3rem}
 .check{list-style:none;margin:.8rem 0}
 .check li{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.45rem}
 .check li::before{content:"\2713";color:var(--blauw);font-weight:800;flex-shrink:0}
@@ -69,7 +74,7 @@ h2{font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:800;margin-bottom:.5rem}
 .cj-tegel .pil{align-self:flex-start;margin-right:0}
 .cj-bron{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.68rem;color:var(--grijs);line-height:1.4}
 .cj-tegel.cj-uit{border-color:var(--inkt);border-width:2px;background:#FFFDF2}
-.cj-kader{background:#fff;border:1px solid var(--lijn);border-left:5px solid var(--geel);border-radius:12px;padding:1.3rem 1.5rem;margin-top:1.2rem}
+.cj-kader{background:#fff;border:1px solid var(--lijn);border-left:5px solid var(--geel);border-radius:12px;padding:1.5rem 1.7rem;margin-top:1.6rem}
 .cj-kader.blauw{border-left-color:var(--blauw)}
 .cj-kader b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;margin-bottom:.5rem}
 .cj-kader p{font-size:.94rem;color:var(--grijs)}
