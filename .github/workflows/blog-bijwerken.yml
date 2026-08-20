@@ -203,6 +203,10 @@ jobs:
 
             PUBLICEREN: git add -A, commit met bericht
             "blog bijgewerkt: ${{ steps.kalender.outputs.slug }}" en push naar main.
+            Wordt de push geweigerd omdat er ondertussen een andere commit binnenkwam,
+            doe dan: git pull --rebase origin main en push opnieuw. Hooguit drie pogingen.
+            Meld het in je samenvatting als het na drie keer nog niet lukt. Forceer nooit
+            met --force: dan gooi je werk van een andere workflow weg.
             Meld in je samenvatting welke regels je hebt gewijzigd en wat je hebt laten staan.
 
       - name: Notion op Goedgekeurd zetten
