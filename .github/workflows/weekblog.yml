@@ -275,7 +275,11 @@ jobs:
 
             HEAD: title max 60 tekens, meta description 140-155 tekens, canonical
             https://www.bedrijfsgeheugen.nl/blog/${{ steps.kalender.outputs.slug }}/, og:title,
-            og:description en og:url. Eén script van het type application/ld+json met een @graph dat
+            og:description en og:url. Zet direct ONDER de canonical dit veld:
+            <meta name="bg-zoekwoord" content="${{ steps.kalender.outputs.zoekwoord }}">
+            Dat legt vast welk zoekwoord deze pagina claimt. De zoekwoordendatabase in Notion wordt
+            ermee vergeleken om te zien of twee pagina's hetzelfde zoekwoord pakken. Laat het nooit
+            weg en vul er nooit een ander zoekwoord in dan dat uit de kalender. Eén script van het type application/ld+json met een @graph dat
             bevat: BlogPosting (headline, description, datePublished en dateModified op de datum van
             vandaag, inLanguage nl-NL, author Person "Arthur Prinsen", publisher met @id
             https://www.bedrijfsgeheugen.nl/#org), FAQPage met dezelfde vragen als in het artikel, en
@@ -286,7 +290,8 @@ jobs:
             schone URL zonder .html). Wijzig verder NIETS aan bestaande pagina's behalve de pijlerpagina
             van dit cluster, en verwijder nooit bestaande artikelen.
 
-            CONTROLE VOOR PUBLICATIE: precies één h1, geldige JSON-LD, canonical zonder .html, geen
+            CONTROLE VOOR PUBLICATIE: precies één h1, geldige JSON-LD, canonical zonder .html,
+            een meta bg-zoekwoord met exact het focus-zoekwoord uit de kalender, geen
             enkele interne link die op .html eindigt, geen link naar een slug die niet bestaat, en
             minimaal drie interne links naar andere pagina's onder blog/ of naar een dienstpagina.
 
