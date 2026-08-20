@@ -65,10 +65,10 @@ jobs:
                 exit 0
               fi
               echo "Push geweigerd, iemand was ons voor. Rebasen en opnieuw."
-              git pull --rebase origin main || exit 1
+              git pull --rebase origin main || { echo "::error::Rebasen op main mislukte. Los het handmatig op: de sitemap of een 301 is niet weggeschreven."; exit 1; }
               sleep 3
             done
-            echo "Na drie pogingen nog steeds niet gelukt."
+            echo "::error::Na drie pogingen kon de bijgewerkte sitemap/301 niet worden gepusht. Er is dus niets vastgelegd; draai deze workflow opnieuw."
             exit 1
           else
             echo "Niets te herstellen."
