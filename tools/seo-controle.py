@@ -46,6 +46,15 @@ def melden(lijst, pagina, tekst):
 
 
 # ── de pagina's ophalen ────────────────────────────────────────────────────
+def mag_geindexeerd(pad):
+    """Pagina's op noindex horen niet in de sitemap en hebben geen zoekwoord nodig."""
+    try:
+        h = open(pad, encoding="utf-8", errors="ignore").read(4000)
+    except OSError:
+        return False
+    return "noindex" not in h.lower()
+
+
 def gewijzigde_paginas():
     if "--alles" in sys.argv:
         return sorted(p for p in os.listdir(".") if p.endswith(".html"))
@@ -102,7 +111,7 @@ def controleer(pad, html, alle_zoekwoorden):
         melden(WAARSCHUWING, pad, "geen kruimelpad")
 
     # ── het zoekwoord ──
-    if pad in VRIJGESTELD:
+    if pad in VRIJGESTELD or not mag_geindexeerd(pad):
         return
     zw = re.search(r'<meta name="bg-zoekwoord" content="(.*?)"', html)
     if not zw:
@@ -133,7 +142,7 @@ def herstel_sitemap(paden):
     toe = []
     for pad in paden:
         slug = "/" + pad[:-5]
-        if pad in VRIJGESTELD or pad == "index.html":
+        if pad in VRIJGESTELD or pad == "index.html" or not mag_geindexeerd(pad):
             continue
         if f"<loc>{SITE}{slug}</loc>" not in sm:
             toe.append(f"<url><loc>{SITE}{slug}</loc><changefreq>monthly</changefreq>"
@@ -147,11 +156,15 @@ def herstel_sitemap(paden):
 
 def herstel_redirects(paden):
     nt = open(NETLIFY, encoding="utf-8").read()
+    try:
+        nt += open("_redirects", encoding="utf-8").read()
+    except OSError:
+        pass
     toe = ""
     for pad in paden:
-        if pad == "index.html" or pad in VRIJGESTELD:
+        if pad == "index.html" or pad in VRIJGESTELD or not mag_geindexeerd(pad):
             continue
-        if f'from = "/{pad}"' not in nt:
+        if f'from = "/{pad}"' not in nt and f"/{pad}" not in nt:
             toe += (f'\n[[redirects]]\n  from = "/{pad}"\n  to = "/{pad[:-5]}"\n'
                     f'  status = 301\n  force = true\n')
             HERSTELD.append(f"301 toegevoegd: /{pad} → /{pad[:-5]}")
@@ -200,7 +213,7 @@ def main():
         # alleen het zoekwoord: de rest doet paginacontrole.yml
         import re as _re
         for pad in paden:
-            if pad in VRIJGESTELD:
+            if pad in VRIJGESTELD or not mag_geindexeerd(pad):
                 continue
             h = open(pad, encoding="utf-8").read()
             zw = _re.search(r'<meta name="bg-zoekwoord" content="(.*?)"', h)
