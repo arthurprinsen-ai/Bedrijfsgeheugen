@@ -21,8 +21,13 @@ permissions:
   contents: write
   id-token: write
 
+# GEDEELD SLOT. Deze workflow schrijft sitemap.xml terug naar main, en dat doen
+# seo-controle.yml, blog-bijwerken.yml en weekblog.yml alle drie. Draaien er twee
+# tegelijk, dan slaagt de eerste push en wordt de tweede geweigerd: exit code 1.
+# Daarom delen ze EEN groepsnaam. Een slot met een eigen naam per workflow houdt
+# alleen zichzelf tegen en is dus geen slot. Wijzig deze naam nooit los.
 concurrency:
-  group: weekblog
+  group: repo-schrijven
   cancel-in-progress: false
 
 jobs:
