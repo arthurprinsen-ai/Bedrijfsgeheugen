@@ -143,27 +143,15 @@ jobs:
               });
             }
 
-      # Rood worden doet de controle alleen nog bij een kapotte pagina of een
-      # probleem met de zwaarste weging. Aandachtspunten van het niveau midden
-      # of laag staan in de melding met label paginacontrole - daar hoort geen
-      # mail over een mislukte workflow bij. Reden (20 aug 2026): bij een reeks
-      # commits achter elkaar kwam er een faalmail binnen voor een probleem dat
-      # zeven minuten later al was opgelost. Een alarm dat te vaak afgaat wordt
-      # weggeklikt, en dan mis je het alarm dat er wel toe doet.
-      - name: Falen doorgeven bij echte problemen
-        if: always()
+      # De uitslag van de workflow volgt precies de melding: is er een melding
+      # met label paginacontrole, dan is de run rood; is die er niet, dan groen.
+      # Reden (20 aug 2026): een tussenversie liet de run falen op een regel uit
+      # het rapport terwijl er geen melding werd aangemaakt. Je kreeg dan een
+      # faalmail zonder dat ergens stond wat er aan de hand was - het slechtste
+      # van twee werelden. Een alarm zonder inhoud wordt weggeklikt, en dan mis
+      # je het alarm dat er wel toe doet.
+      - name: Falen doorgeven
+        if: steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure'
         run: |
-          if [ ! -f rapport.md ]; then
-            echo "Geen rapport gevonden - de controle zelf is stukgelopen."
-            exit 1
-          fi
-          if grep -qiE "pagina's met een probleem|JavaScript-fout|titel ontbreekt|canonical ontbreekt" rapport.md; then
-            echo "Er staat een kapotte pagina in het rapport."
-            exit 1
-          fi
-          if grep -qiE "^## Hoog" rapport.md; then
-            echo "Er staat een probleem van het niveau hoog in het rapport."
-            exit 1
-          fi
-          echo "Alleen aandachtspunten van niveau midden of laag - die staan in de melding, niet in een faalmail."
-
+          echo "Er staat een melding open met label paginacontrole. Daarin staat wat er mis is."
+          exit 1
