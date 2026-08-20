@@ -324,6 +324,10 @@ jobs:
 
             PUBLICEREN: git add -A, commit met bericht "blog: ${{ steps.kalender.outputs.slug }}"
             en push naar main.
+            Wordt de push geweigerd omdat er ondertussen een andere commit binnenkwam,
+            doe dan: git pull --rebase origin main en push opnieuw. Hooguit drie pogingen.
+            Meld het in je samenvatting als het na drie keer nog niet lukt. Forceer nooit
+            met --force: dan gooi je werk van een andere workflow weg.
 
       - name: Notion bijwerken
         if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != ''
