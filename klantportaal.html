@@ -12292,6 +12292,13 @@ window.__BG_LOOPT__ = function(K, slug){
 .vg-wblok b{display:block;font-size:1.45rem;font-family:'Bricolage Grotesque',sans-serif;line-height:1.1}
 .vg-wblok span{font-size:.82rem;color:#5C646E;line-height:1.4;display:block;margin-top:.15rem}
 .vg-klein{font-size:.78rem;color:#5C646E;margin-top:.7rem;line-height:1.5}
+.vg-uitleg{margin-top:1rem;border-top:1px solid #E3E4E8;padding-top:.8rem}
+.vg-uitleg summary{cursor:pointer;font-size:.86rem;font-weight:600;color:#2742D6}
+.vg-uitleg p{font-size:.85rem;color:#5C646E;line-height:1.6;margin-top:.6rem}
+.vg-uitleg table{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:.83rem}
+.vg-uitleg th{text-align:left;font-weight:600;border-bottom:1px solid #E3E4E8;padding:.3rem .4rem .3rem 0}
+.vg-uitleg td{border-bottom:1px solid #F0F1F3;padding:.35rem .4rem .35rem 0;vertical-align:top;color:#5C646E}
+.vg-uitleg td:first-child{color:#14171A}
 .vg-strip{display:flex;gap:.9rem;align-items:center;background:#F7F8FA;border:1px solid #E3E4E8;border-radius:10px;padding:.6rem .9rem;margin-bottom:1rem;flex-wrap:wrap}
 .vg-strip .vg-spct{font-weight:800;font-size:1.1rem;font-family:'Bricolage Grotesque',sans-serif;flex:none}
 .vg-strip .vg-stekst{flex:1;min-width:200px;font-size:.86rem;line-height:1.5}
@@ -12482,6 +12489,21 @@ window.__BG_LOOPT__ = function(K, slug){
       +' niet aan een onderdeel en telt daarom niet mee.' : '')+'</p>';
   }
 
+  h+='<details class="vg-uitleg"><summary>Hoe dit percentage wordt berekend</summary>'
+   +'<p>Vier onderdelen, elk met een eigen gewicht. Iedereen begint op <b>0 van 100%</b> \u2014 '
+   +'ook na de Frisse blik, want die vult alleen het tweede onderdeel.</p>'
+   +'<table><tr><th>Onderdeel</th><th>Weegt</th><th>Vol bij</th></tr>'
+   +'<tr><td>Je bedrijfsgegevens</td><td>15%</td><td>mensen, uurkosten, branche en omzet ingevuld</td></tr>'
+   +'<tr><td>De dertien onderdelen</td><td>25%</td><td>scan gedaan, of alle dertien zelf gezet</td></tr>'
+   +'<tr><td>De 86 AI-capabilities</td><td>30%</td><td>alle 86 zelf beantwoord \u2014 een antwoord uit de scan telt half</td></tr>'
+   +'<tr><td>Acties in je roadmap</td><td>30%</td><td>40% zodra er acties staan, de rest naar rato van wat je afrondt</td></tr>'
+   +'</table>'
+   +'<p>Waarom een antwoord uit de scan half telt: de negen scanvragen geven \u00e9\u00e9n cijfer voor een '
+   +'hele laag. Dat is een startpunt, geen oordeel per capability. Scherp je er \u00e9\u00e9n aan, dan telt '
+   +'die vanaf dat moment vol mee.</p>'
+   +'<p>De weging is een keuze, geen natuurwet. Acties wegen zwaar omdat alleen die je cijfers echt '
+   +'bewegen; bedrijfsgegevens wegen licht omdat het weinig werk is \u2014 maar zonder die vier is elk '
+   +'bedrag hier een aanname.</p></details>';
   h+='<p class="vg-klein">Dit percentage zegt hoe compleet je invoer is, niet hoe goed je bedrijf ervoor staat. '
    +'Dat laatste staat onder <b>Volwassenheid</b>. Een bedrijf kan hier 100% halen en toch op niveau 2 staan \u2014 '
    +'dan weet je alleen heel precies waar je werk ligt.</p>';
@@ -12535,6 +12557,286 @@ window.__BG_LOOPT__ = function(K, slug){
   setInterval(ververs,3000);
  }
  window.BGvoortgang={ververs:ververs, meet:meet};
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+ else start();
+})();
+</script>
+
+
+<style>
+/* ===== Account en ranking ===== */
+#acc-laag{position:fixed;inset:0;z-index:900;background:rgba(11,18,32,.72);display:grid;place-items:center;padding:1.2rem;overflow:auto}
+#acc-laag .acc-kaart{background:#fff;border-radius:14px;padding:1.6rem 1.7rem;max-width:430px;width:100%;box-shadow:0 18px 50px rgba(0,0,0,.28)}
+#acc-laag h3{font-size:1.3rem;margin:0 0 .3rem;line-height:1.2}
+#acc-laag .acc-sub{font-size:.9rem;color:#5C646E;line-height:1.6;margin-bottom:1rem}
+#acc-laag label{display:block;font-size:.83rem;font-weight:600;margin:.6rem 0 .2rem}
+#acc-laag input{width:100%;padding:.62rem .7rem;border:1px solid #DCDFE6;border-radius:8px;font:inherit}
+#acc-laag input:focus{outline:2px solid #2742D6;outline-offset:1px;border-color:#2742D6}
+#acc-laag .acc-knop{width:100%;margin-top:1rem;background:#2742D6;color:#fff;border:0;border-radius:9px;padding:.72rem;font:inherit;font-weight:700;cursor:pointer}
+#acc-laag .acc-knop[disabled]{opacity:.6;cursor:default}
+#acc-laag .acc-wissel{margin-top:.8rem;font-size:.86rem;color:#5C646E;text-align:center}
+#acc-laag .acc-wissel button{background:none;border:0;font:inherit;color:#2742D6;cursor:pointer;text-decoration:underline;padding:0}
+#acc-laag .acc-fout{background:#FDEDEA;border:1px solid #F5C6BC;color:#A6301A;border-radius:8px;padding:.55rem .7rem;font-size:.85rem;margin-top:.8rem;line-height:1.5}
+#acc-laag .acc-goed{background:#F1F9F4;border:1px solid #BFE3CC;color:#12653A;border-radius:8px;padding:.55rem .7rem;font-size:.85rem;margin-top:.8rem;line-height:1.5}
+#acc-laag .acc-klein{font-size:.78rem;color:#5C646E;margin-top:1rem;line-height:1.5}
+#acc-laag .acc-start{background:#F7F8FA;border:1px solid #E3E4E8;border-radius:10px;padding:.7rem .85rem;font-size:.86rem;line-height:1.55;margin-bottom:1rem}
+.acc-balk{display:flex;gap:.6rem;align-items:center;font-size:.8rem;color:#5C646E;padding:.3rem 0 0;flex-wrap:wrap}
+.acc-balk b{color:#14171A}
+.acc-balk button{background:none;border:0;font:inherit;font-size:.8rem;color:#2742D6;cursor:pointer;text-decoration:underline;padding:0}
+.acc-bol{width:7px;height:7px;border-radius:50%;background:#1E9E5A;flex:none}
+.acc-bol.uit{background:#C2410C}
+.vg-rank{background:#EEF1FD;border:1px solid #C9D3F7;border-radius:10px;padding:.7rem .95rem;margin-top:.9rem;font-size:.9rem;line-height:1.6}
+.vg-rank b{color:#2742D6}
+.vg-rank .vg-rbalk{height:8px;border-radius:99px;background:#fff;margin-top:.5rem;position:relative;overflow:hidden}
+.vg-rank .vg-rbalk i{display:block;height:100%;background:#2742D6;border-radius:99px}
+.vg-rank .vg-rgem{position:absolute;top:-2px;width:2px;height:12px;background:#14171A}
+</style>
+
+<script>
+/* ===== bg-account — inloggen, stand bewaren en ranking ====================
+   Iedereen die via de Frisse blik of een scan in dit portaal komt, maakt een
+   account met e-mail en wachtwoord. Daarmee volgt zijn percentage hem naar een
+   ander apparaat, en kan hij zich met anderen vergelijken.
+   Wachtwoorden worden nergens in deze code aangeraakt of bewaard: het gaat
+   rechtstreeks naar Supabase Auth, dat ze gehasht opslaat.
+   De offerteroute (/klantportaal?klant=...) blijft ongemoeid. */
+(function(){
+ var BASIS='https://adhjwmvyoixzjtmiroln.supabase.co';
+ var SLEUTEL='sb_publishable_W5aGMsfbZE4H7GraIR4oMQ_gV-x0xWL';
+ var TK='bg_stand_sessie';
+ var sessie=null, bezig=false, wachtrij=null, rank=null;
+
+ function heeftKlantParam(){ return !!new URLSearchParams(location.search).get('klant'); }
+
+ function api(pad, opties, metToken){
+  opties=opties||{};
+  opties.headers=Object.assign({apikey:SLEUTEL,'Content-Type':'application/json'},opties.headers||{});
+  if(metToken&&sessie) opties.headers.Authorization='Bearer '+sessie.access_token;
+  return fetch(BASIS+pad,opties).then(function(r){
+   return r.text().then(function(t){
+    var j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+    return r.ok ? j : Promise.reject((j&&(j.msg||j.error_description||j.message))||('fout '+r.status));
+   });
+  });
+ }
+ function bewaarSessie(x){
+  sessie=x; try{ localStorage.setItem(TK, JSON.stringify(x)); }catch(e){}
+ }
+ function leesSessie(){
+  try{ var r=localStorage.getItem(TK); sessie=r?JSON.parse(r):null; }catch(e){ sessie=null; }
+  return sessie;
+ }
+ function uitloggen(){
+  sessie=null; try{ localStorage.removeItem(TK); }catch(e){}
+  location.reload();
+ }
+
+ /* ── stand ophalen en wegschrijven ─────────────────────────────────────── */
+ function pct(){
+  try{ var b=window.BGvoortgang&&window.BGvoortgang.meet(); return b?b.totaal:0; }catch(e){ return 0; }
+ }
+ function haalStand(){
+  return api('/rest/v1/portaal_stand?select=stand,volledigheid,bedrijf&limit=1',{},true)
+   .then(function(rijen){ return (rijen&&rijen[0])||null; });
+ }
+ function zetStand(){
+  if(!sessie||typeof S==='undefined') return Promise.resolve();
+  var body={gebruiker_id:sessie.user.id, volledigheid:pct(), stand:S};
+  try{ var l=JSON.parse(localStorage.getItem('bg_portaal_lead')||'null');
+       if(l&&l.bedrijf) body.bedrijf=l.bedrijf; }catch(e){}
+  return api('/rest/v1/portaal_stand?on_conflict=gebruiker_id',{
+   method:'POST', headers:{Prefer:'resolution=merge-duplicates,return=minimal'},
+   body:JSON.stringify(body)},true);
+ }
+ function bewaarStraks(){
+  if(!sessie) return;
+  clearTimeout(wachtrij);
+  wachtrij=setTimeout(function(){ zetStand().then(haalRank).then(teken2).catch(function(){}); },2500);
+ }
+ function haalRank(){
+  return api('/rest/v1/rpc/mijn_ranking',{method:'POST',body:'{}'},true)
+   .then(function(r){ rank=(r&&r[0])||r||null; }).catch(function(){});
+ }
+
+ /* ── schermen ──────────────────────────────────────────────────────────── */
+ function scherm(soort){
+  var l=document.getElementById('acc-laag');
+  if(!l){ l=document.createElement('div'); l.id='acc-laag'; document.body.appendChild(l); }
+  var scan=null; try{ scan=JSON.parse(localStorage.getItem('bg_scan_pakket')||'null'); }catch(e){}
+  var kop, sub, knop;
+  if(soort==='nieuw'){
+   kop='Maak je account'; knop='Account maken';
+   sub='Je scan staat klaar. Met een account bewaren we je stand, kun je hem op een ander '
+     +'apparaat openen, en zie je hoe je ervoor staat naast andere bedrijven.';
+  } else if(soort==='vergeten'){
+   kop='Wachtwoord vergeten'; knop='Stuur me een herstelmail';
+   sub='Vul je e-mailadres in. Je krijgt een mail waarmee je een nieuw wachtwoord kunt instellen.';
+  } else {
+   kop='Inloggen'; knop='Inloggen';
+   sub='Welkom terug. Je stand wordt geladen zoals je hem achterliet.';
+  }
+  var h='<div class="acc-kaart"><h3>'+kop+'</h3><p class="acc-sub">'+sub+'</p>';
+  if(soort==='nieuw'&&scan) h+='<div class="acc-start"><b>Je begint op 0 van 100%.</b> '
+   +'Je scan'+(scan.datum?' van '+scan.datum:'')+' is de nulmeting. Alles wat je daarna invult '
+   +'in het portaal laat dat percentage stijgen \u2014 en daarmee wordt het advies scherper.</div>';
+  h+='<label for="accMail">E-mailadres</label><input id="accMail" type="email" autocomplete="email" placeholder="naam@bedrijf.nl">';
+  if(soort!=='vergeten')
+   h+='<label for="accWw">Wachtwoord</label><input id="accWw" type="password" '
+    +'autocomplete="'+(soort==='nieuw'?'new-password':'current-password')+'" placeholder="'
+    +(soort==='nieuw'?'minstens 8 tekens':'je wachtwoord')+'">';
+  h+='<button class="acc-knop" id="accOk">'+knop+'</button><div id="accMelding"></div>';
+  h+='<div class="acc-wissel">'
+   +(soort==='nieuw' ? 'Heb je al een account? <button data-acc="in">Inloggen</button>'
+    : soort==='in'   ? 'Nog geen account? <button data-acc="nieuw">Account maken</button> &middot; '
+                       +'<button data-acc="vergeten">Wachtwoord vergeten</button>'
+                     : '<button data-acc="in">Terug naar inloggen</button>')
+   +'</div>';
+  h+='<p class="acc-klein">Je gegevens staan in Europa en zijn alleen voor jou zichtbaar. '
+   +'Je kunt ze in het portaal in \u00e9\u00e9n handeling wissen.</p></div>';
+  l.innerHTML=h;
+
+  Array.prototype.forEach.call(l.querySelectorAll('[data-acc]'),function(b){
+   b.addEventListener('click',function(){ scherm(b.getAttribute('data-acc')); }); });
+  var ok=document.getElementById('accOk');
+  ok.addEventListener('click',function(){ verstuur(soort, ok); });
+  l.addEventListener('keydown',function(e){ if(e.key==='Enter') verstuur(soort, ok); });
+  document.getElementById('accMail').focus();
+ }
+
+ function melden(soort, tekst){
+  var m=document.getElementById('accMelding'); if(!m) return;
+  m.innerHTML='<div class="acc-'+soort+'">'+tekst+'</div>';
+ }
+
+ function verstuur(soort, knop){
+  if(bezig) return;
+  var mail=(document.getElementById('accMail')||{}).value||'';
+  var ww=(document.getElementById('accWw')||{}).value||'';
+  mail=mail.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)){ melden('fout','Vul een geldig e-mailadres in.'); return; }
+  if(soort!=='vergeten'&&ww.length<8){ melden('fout','Kies een wachtwoord van minstens acht tekens.'); return; }
+  bezig=true; knop.disabled=true; knop.textContent='Even geduld\u2026';
+
+  var klaar=function(){ bezig=false; knop.disabled=false; };
+
+  if(soort==='vergeten'){
+   api('/auth/v1/recover',{method:'POST',body:JSON.stringify({email:mail})})
+    .then(function(){ melden('goed','Verstuurd. Kijk in je mail \u2014 ook in de map ongewenst.'); })
+    .catch(function(){ melden('goed','Als dit adres bekend is, staat er een mail voor je klaar.'); })
+    .then(function(){ klaar(); knop.textContent='Stuur me een herstelmail'; });
+   return;
+  }
+
+  var pad = soort==='nieuw' ? '/auth/v1/signup' : '/auth/v1/token?grant_type=password';
+  api(pad,{method:'POST',body:JSON.stringify({email:mail,password:ww})})
+   .then(function(a){
+    if(!a||!a.access_token){
+     melden('goed','Je account is aangemaakt. Bevestig je e-mailadres via de mail die we net stuurden, '
+      +'en log daarna hier in.');
+     klaar(); knop.textContent='Account maken'; return null;
+    }
+    bewaarSessie(a);
+    try{ localStorage.setItem('bg_portaal_open','1'); }catch(e){}
+    return binnen(true);
+   })
+   .catch(function(f){
+    var t=String(f||'');
+    if(/already registered|already exists/i.test(t))
+     melden('fout','Dit adres heeft al een account. Kies <b>Inloggen</b> hierboven.');
+    else if(/Invalid login/i.test(t))
+     melden('fout','Dat e-mailadres en wachtwoord horen niet bij elkaar.');
+    else if(/Email not confirmed/i.test(t))
+     melden('fout','Bevestig eerst je e-mailadres via de mail die je van ons kreeg.');
+    else melden('fout','Het lukte niet: '+t);
+    klaar(); knop.textContent = soort==='nieuw' ? 'Account maken' : 'Inloggen';
+   });
+ }
+
+ /* ── binnenkomen: stand samenvoegen ────────────────────────────────────── */
+ function binnen(nieuwBinnen){
+  var l=document.getElementById('acc-laag'); if(l) l.remove();
+  return haalStand().then(function(rij){
+   if(rij&&rij.stand&&Object.keys(rij.stand).length&&typeof S!=='undefined'){
+    /* Wat op de server staat wint, behalve als hier net een verse scan is
+       binnengekomen — die is nieuwer dan wat er bewaard is. */
+    var versScan = S.scanStempel && (!rij.stand.scanStempel || S.scanStempel>rij.stand.scanStempel);
+    var vers = versScan ? S : null;
+    Object.keys(rij.stand).forEach(function(k){ S[k]=rij.stand[k]; });
+    if(vers){ S.niveaus=vers.niveaus; S.scanStempel=vers.scanStempel;
+              S.scanDatum=vers.scanDatum; S.scanScore=vers.scanScore; }
+    try{ if(typeof bewaar==='function') bewaar(); }catch(e){}
+    try{ if(typeof teken==='function') teken(); }catch(e){}
+   }
+   return zetStand();
+  }).then(haalRank).then(function(){
+   teken2();
+   if(nieuwBinnen) try{ if(typeof teken==='function') teken(); }catch(e){}
+  }).catch(function(){ teken2(); });
+ }
+
+ /* ── balk met wie je bent, en de ranking in de voortgangskaart ─────────── */
+ function teken2(){
+  var kop=document.querySelector('.inhoudkolom')||document.body;
+  var b=document.getElementById('acc-balk');
+  if(!b){ b=document.createElement('div'); b.id='acc-balk'; b.className='acc-balk';
+          kop.insertBefore(b, kop.firstChild); }
+  b.innerHTML = sessie
+   ? '<span class="acc-bol"></span><span>Ingelogd als <b>'+(sessie.user&&sessie.user.email||'')+'</b>'
+     +' \u2014 je stand wordt bewaard.</span><button id="accUit">Uitloggen</button>'
+     +'<button id="accWis">Mijn gegevens wissen</button>'
+   : '<span class="acc-bol uit"></span><span>Niet ingelogd \u2014 wat je invult blijft alleen op dit apparaat.</span>'
+     +'<button id="accIn">Inloggen of account maken</button>';
+  var u=document.getElementById('accUit'); if(u) u.onclick=uitloggen;
+  var i=document.getElementById('accIn'); if(i) i.onclick=function(){ scherm('in'); };
+  var w=document.getElementById('accWis'); if(w) w.onclick=function(){
+   if(!confirm('Hiermee wis je alles wat je in dit portaal hebt ingevuld, ook op de server. Doorgaan?')) return;
+   api('/rest/v1/portaal_stand?gebruiker_id=eq.'+sessie.user.id,{method:'DELETE'},true)
+    .then(function(){ alert('Gewist.'); uitloggen(); })
+    .catch(function(){ alert('Wissen lukte niet. Probeer het zo nog eens.'); });
+  };
+  rankTekenen();
+ }
+
+ function rankTekenen(){
+  var kaart=document.querySelector('[data-vg="volledig"] .vg-kaart'); if(!kaart) return;
+  var oud=kaart.querySelector('.vg-rank'); if(oud) oud.remove();
+  if(!sessie||!rank) return;
+  var mijn=rank.mijn||0, n=rank.meedoeners||1, lager=rank.lager||0, gem=rank.gemiddelde||0;
+  var boven = n>1 ? Math.round(lager/(n-1)*100) : null;
+  var t;
+  if(n<5) t='<b>Je staat op '+mijn+' van 100%.</b> Er doen nog te weinig bedrijven mee om je '
+    +'eerlijk te vergelijken \u2014 zodra dat er vijf zijn, staat je positie hier.';
+  else if(boven>=50) t='<b>Je staat op '+mijn+' van 100% en daarmee hoger dan '+boven+'% van de '
+    +n+' bedrijven die meedoen.</b> Het gemiddelde is '+gem+'%.';
+  else t='<b>Je staat op '+mijn+' van 100%.</b> Het gemiddelde van de '+n+' bedrijven die meedoen '
+    +'is '+gem+'%. Elk onderdeel dat je invult schuift je omhoog.';
+  var h='<div class="vg-rank">'+t
+   +'<div class="vg-rbalk"><i style="width:'+mijn+'%"></i>'
+   +(n>=5?'<span class="vg-rgem" style="left:'+gem+'%" title="gemiddelde"></span>':'')+'</div></div>';
+  kaart.insertAdjacentHTML('beforeend',h);
+ }
+
+ /* ── starten ───────────────────────────────────────────────────────────── */
+ function start(){
+  if(heeftKlantParam()) return;                 /* offerteroute: niet aankomen */
+  if(typeof S==='undefined'||!S.niveaus){ setTimeout(start,400); return; }
+  leesSessie();
+  teken2();
+  if(sessie&&sessie.access_token){
+   binnen(false);
+  } else {
+   var scan=null;
+   try{ scan=localStorage.getItem('bg_scan_pakket')||localStorage.getItem('bg_aicap_pakket'); }catch(e){}
+   /* Wie net een scan heeft gedaan, komt hier binnen en maakt een account.
+      Wie alleen rondkijkt, kan dat blijven doen. */
+   if(scan) scherm('nieuw');
+  }
+  /* elke wijziging in het portaal komt uiteindelijk op de server terecht */
+  document.addEventListener('click',function(){ bewaarStraks(); });
+  document.addEventListener('change',function(){ bewaarStraks(); });
+  setInterval(function(){ if(sessie) rankTekenen(); },4000);
+ }
+ window.BGaccount={scherm:scherm, stand:zetStand, sessie:function(){ return sessie; }};
  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
  else start();
 })();
