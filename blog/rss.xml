@@ -6,7 +6,14 @@
     <description>Praktische artikelen over kennisborging, koppelingen tussen AFAS, Exact en Microsoft 365, en AI voor het mkb. Uit de praktijk, niet uit de brochure.</description>
     <language>nl-NL</language>
     <atom:link href="https://www.bedrijfsgeheugen.nl/blog/rss.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Wed, 19 Aug 2026 09:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2026 09:00:00 +0200</lastBuildDate>
+    <item>
+  <title>Exact Online API: wat kan het en wat kost een koppeling</title>
+  <link>https://www.bedrijfsgeheugen.nl/blog/exact-online-api/</link>
+  <guid>https://www.bedrijfsgeheugen.nl/blog/exact-online-api/</guid>
+  <pubDate>Fri, 21 Aug 2026 09:00:00 +0200</pubDate>
+  <description>Wat je met de Exact Online API kunt, waar de grenzen zitten en wat een koppeling in de praktijk kost. Voor bedrijven die willen stoppen met overtypen.</description>
+</item>
     <item>
   <title>AFAS API: wat kan er wel en wat niet</title>
   <link>https://www.bedrijfsgeheugen.nl/blog/afas-api/</link>
