@@ -5,11 +5,13 @@
 // database gedeeld worden en dat is stil te breken. De Make-verbinding schrijft
 // hier al maanden zonder problemen, en fouten zijn daar zichtbaar.
 //
-// POST /api/monitor  met de tien antwoorden.
+// POST /api/monitor met de tien antwoorden plus optionele attributionvelden.
 
 const WEBHOOK = 'https://hook.eu1.make.com/7hsxkgmjyipcpzm0lq86khswzw2wxvda';
 const WERKWEKEN = 46; // vakanties eraf, zodat het jaarcijfer niet te rooskleurig is
 const MAX_UREN = 200;
+
+const tekst = (v, max = 200) => String(v || '').trim().slice(0, max);
 
 export default async (request) => {
   if (request.method !== 'POST') return new Response('Alleen POST', { status: 405 });
@@ -24,19 +26,60 @@ export default async (request) => {
   const systemen = Number(a.systemen);
   const perJaar = Math.round(uren * WERKWEKEN);
 
+  const requestReferer = tekst(request.headers.get('referer'), 1200);
+  let landingParams = new URLSearchParams();
+  try {
+    if (requestReferer) landingParams = new URL(requestReferer).searchParams;
+  } catch {
+    landingParams = new URLSearchParams();
+  }
+
+  const bron = tekst(a.bron || landingParams.get('bron'), 100);
+  const utmSource = tekst(a.utm_source || landingParams.get('utm_source') || bron, 120);
+  const utmMedium = tekst(a.utm_medium || landingParams.get('utm_medium'), 120);
+  const utmCampaign = tekst(a.utm_campaign || landingParams.get('utm_campaign'), 160);
+  const utmContent = tekst(a.utm_content || landingParams.get('utm_content'), 200);
+  const contentId = tekst(a.content_id || landingParams.get('content_id'), 200);
+  const platformPostId = tekst(a.platform_post_id || landingParams.get('platform_post_id') || landingParams.get('post_id'), 240);
+  const landingUrl = tekst(a.landing_url || requestReferer, 1200);
+  const externalReferrer = tekst(a.referrer, 1200);
+
+  const attributionParts = [
+    utmSource,
+    utmMedium,
+    utmCampaign,
+    utmContent,
+    contentId,
+    platformPostId,
+  ].map(v => v || '-');
+  const attributionKey = tekst(
+    a.attribution_key || (attributionParts.some(v => v !== '-') ? `monitor|${attributionParts.join('|')}` : ''),
+    900
+  );
+
   const inzending = {
-    grootte: String(a.grootte || '').slice(0, 40),
-    sector: String(a.sector || '').slice(0, 60),
-    provincie: String(a.provincie || '').slice(0, 40),
+    grootte: tekst(a.grootte, 40),
+    sector: tekst(a.sector, 60),
+    provincie: tekst(a.provincie, 40),
     uren,
     systemen: Number.isFinite(systemen) ? systemen : '',
-    pakket: String(a.pakket || '').slice(0, 40),
-    uitval: String(a.uitval || '').slice(0, 40),
-    ai: String(a.ai || '').slice(0, 40),
-    abonnement: String(a.abonnement || '').slice(0, 20),
-    aiact: String(a.aiact || '').slice(0, 40),
+    pakket: tekst(a.pakket, 40),
+    uitval: tekst(a.uitval, 40),
+    ai: tekst(a.ai, 40),
+    abonnement: tekst(a.abonnement, 20),
+    aiact: tekst(a.aiact, 40),
     rapport: !!a.rapport,
     email: a.rapport && typeof a.email === 'string' && a.email.includes('@') ? a.email.trim().slice(0, 200) : '',
+    bron,
+    utm_source: utmSource,
+    utm_medium: utmMedium,
+    utm_campaign: utmCampaign,
+    utm_content: utmContent,
+    referrer: externalReferrer,
+    landing_url: landingUrl,
+    content_id: contentId,
+    platform_post_id: platformPostId,
+    attribution_key: attributionKey,
   };
 
   try {
@@ -55,8 +98,6 @@ export default async (request) => {
     return Response.json({ fout: 'Opslaan lukte niet. Probeer het zo nog eens.' }, { status: 502 });
   }
 
-  // De benchmark tonen we pas vanaf vijftig deelnemers. Een gemiddelde over
-  // twaalf bedrijven is geen gemiddelde, dat is toeval met een komma erin.
   return Response.json({
     eigen: {
       urenPerWeek: uren,
