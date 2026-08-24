@@ -19,7 +19,7 @@
    "zoekwoord": "afmaakindex",
    "pagina": "/afmaakindex",
    "bestaat": true,
-   "claimt": false,
+   "claimt": true,
    "type": "cluster"
   },
   {
@@ -54,7 +54,7 @@
    "zoekwoord": "ai implementeren mkb",
    "pagina": "/ai-implementeren",
    "bestaat": true,
-   "claimt": false,
+   "claimt": true,
    "type": "cluster"
   },
   {
@@ -103,7 +103,7 @@
    "zoekwoord": "bedrijfsgeheugen",
    "pagina": "/bedrijfsgeheugen",
    "bestaat": true,
-   "claimt": false,
+   "claimt": true,
    "type": "pijler"
   },
   {
@@ -145,14 +145,14 @@
    "zoekwoord": "chatgpt bedrijfsgegevens beleid",
    "pagina": "/data-soevereiniteit",
    "bestaat": true,
-   "claimt": false,
+   "claimt": true,
    "type": "cluster"
   },
   {
    "zoekwoord": "data soevereiniteit",
    "pagina": "/data-soevereiniteit",
    "bestaat": true,
-   "claimt": false,
+   "claimt": true,
    "type": "cluster"
   },
   {
@@ -187,7 +187,7 @@
    "zoekwoord": "kennisverlies mkb",
    "pagina": "/blog/wat-is-een-bedrijfsgeheugen/",
    "bestaat": true,
-   "claimt": false,
+   "claimt": true,
    "type": "pijler"
   },
   {
