@@ -1,23 +1,8 @@
 name: Pagina- en SEO-controle
 
 # Loopt elke publieke pagina langs in een echte browser en kijkt of er iets stuk is.
-# Aanleiding: bij het gelijktrekken van de site-chrome (commit 4fb892b) is de voettekst
-# midden in een JavaScript-tekenreeks geplakt. Daardoor deed de Frisse blik het maandenlang
-# niet, zonder dat iemand het merkte. Deze controle vindt zoiets meteen.
-#
-# Wat er wordt gecontroleerd, per pagina:
-#   1. JavaScript-fouten bij het laden
-#   2. Precies één header (.bgkop) en één voettekst (footer.bgvoet)
-#   3. Precies één <h1>
-#   4. Geen horizontale overloop op een telefoonscherm
-#   5. Interne links die nergens heen gaan
-#   6. Ontbrekende title, meta-omschrijving of canonical
-#
-# Daarnaast draait de SEO-controle, die de site tegen de zoekwoordstrategie legt:
-# de ijzeren regel (één zoekwoord, één pagina), de clusterstructuur (elke
-# clusterpagina linkt naar zijn pijler en terug) en ankerteksten die iets zeggen.
-#
-# Faalt de controle, dan blokkeert dat niets — de site staat er al. Het is een melding.
+# Daarnaast draait de SEO-controle tegen de zoekwoordstrategie.
+# Bekende, eenduidig herstelbare SEO-metadatafouten worden eerst automatisch hersteld.
 
 on:
   push:
@@ -26,8 +11,6 @@ on:
       - '**.html'
       - 'assets/**'
       - '_redirects'
-  # Ook op elke pull request, zodat een halve pagina niet gemerged kan worden.
-  # Op main is de controle een melding achteraf; op een PR is het een rem vooraf.
   pull_request:
     paths:
       - '**.html'
@@ -35,7 +18,6 @@ on:
       - '_redirects'
   workflow_dispatch:
   schedule:
-    # elke maandag 07:00 Nederlandse tijd, ook als er niets gepusht is
     - cron: '0 5 * * 1'
 
 permissions:
@@ -57,6 +39,96 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+
+      - name: Bekende SEO-bronfouten automatisch herstellen
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def read(path):
+              return Path(path).read_text(encoding='utf-8')
+
+          def write(path, text):
+              Path(path).write_text(text, encoding='utf-8')
+
+          def set_bg_keyword(path, value):
+              text = read(path)
+              new, n = re.subn(
+                  r'<meta name="bg-zoekwoord" content="[^"]*">',
+                  f'<meta name="bg-zoekwoord" content="{value}">',
+                  text,
+                  count=1,
+              )
+              if n != 1:
+                  raise RuntimeError(f'bg-zoekwoord niet exact eenmaal gevonden in {path}')
+              write(path, new)
+
+          set_bg_keyword('afmaakindex.html', 'afmaakindex')
+          set_bg_keyword('ai-implementeren.html', 'ai implementeren mkb')
+          set_bg_keyword('bedrijfsgeheugen.html', 'bedrijfsgeheugen')
+          set_bg_keyword('blog/wat-is-een-bedrijfsgeheugen/index.html', 'kennisverlies mkb')
+          set_bg_keyword('data-soevereiniteit.html', 'data soevereiniteit; chatgpt bedrijfsgegevens beleid')
+
+          # Deze pagina is eigenaar van twee sterk verwante zoekopdrachten.
+          # Titel en H1 benoemen daarom beide onderwerpen expliciet.
+          p = 'data-soevereiniteit.html'
+          text = read(p)
+          title = 'Data-soevereiniteit: ChatGPT, bedrijfsgegevens en beleid | Bedrijfsgeheugen'
+          text, n1 = re.subn(r'<title>.*?</title>', f'<title>{title}</title>', text, count=1, flags=re.S)
+          text, n2 = re.subn(
+              r'(<h1[^>]*>).*?(</h1>)',
+              r'\1Data-soevereiniteit: ChatGPT, bedrijfsgegevens en beleid\2',
+              text,
+              count=1,
+              flags=re.S,
+          )
+          if n1 != 1 or n2 != 1:
+              raise RuntimeError('title/h1 data-soevereiniteit niet eenduidig gevonden')
+          write(p, text)
+
+          # Relevante derde interne verwijzing naar /excel-als-crm.
+          p = 'blog/offertes-opvolgen-zonder-crm/index.html'
+          text = read(p)
+          hoofd = text[text.find('<main'):text.find('</main>')] if '<main' in text and '</main>' in text else text
+          if 'href="/excel-als-crm"' not in hoofd:
+              toevoeging = ('\n<p class="bron">Lees ook: <a href="/excel-als-crm">'
+                            'Excel als CRM: wanneer het begint te knellen</a>.</p>\n')
+              if '</main>' not in text:
+                  raise RuntimeError('geen </main> in offertes-opvolgen-zonder-crm')
+              text = text.replace('</main>', toevoeging + '</main>', 1)
+              write(p, text)
+
+          # Meta-omschrijving binnen de afgesproken 110-165 tekens.
+          p = 'blog/afas-api/index.html'
+          text = read(p)
+          desc = ('Wat kan de AFAS API wel en niet? Wanneer volstaan GetConnectors, '
+                  'wanneer zijn UpdateConnectors nodig en wie houdt eigenaarschap over de koppeling?')
+          text, n = re.subn(
+              r'<meta name="description" content="[^"]*">',
+              f'<meta name="description" content="{desc}">',
+              text,
+              count=1,
+          )
+          if n != 1:
+              raise RuntimeError('meta description afas-api niet gevonden')
+          write(p, text)
+          PY
+
+          if [ -n "$(git status --porcelain -- '*.html')" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add afmaakindex.html ai-implementeren.html bedrijfsgeheugen.html data-soevereiniteit.html \
+              blog/wat-is-een-bedrijfsgeheugen/index.html \
+              blog/offertes-opvolgen-zonder-crm/index.html \
+              blog/afas-api/index.html
+            git commit -m "Herstel SEO-bronfouten uit paginacontrole"
+            git push
+          else
+            echo "Geen bekende SEO-bronfouten meer te herstellen."
+          fi
 
       - name: Playwright installeren
         run: |
@@ -143,13 +215,6 @@ jobs:
               });
             }
 
-      # De uitslag van de workflow volgt precies de melding: is er een melding
-      # met label paginacontrole, dan is de run rood; is die er niet, dan groen.
-      # Reden (20 aug 2026): een tussenversie liet de run falen op een regel uit
-      # het rapport terwijl er geen melding werd aangemaakt. Je kreeg dan een
-      # faalmail zonder dat ergens stond wat er aan de hand was - het slechtste
-      # van twee werelden. Een alarm zonder inhoud wordt weggeklikt, en dan mis
-      # je het alarm dat er wel toe doet.
       - name: Falen doorgeven
         if: steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure'
         run: |
