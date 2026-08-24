@@ -155,11 +155,19 @@ def zonder_merk(titel):
 
 
 def claimt(zoekwoord, pagina):
-    """Claimt deze pagina het zoekwoord? Alle woorden moeten in titel of h1 staan.
-    Op stam vergeleken, zodat 'kost' ook 'kosten' dekt. Het merkdeel van de titel
-    telt niet mee."""
-    doel = norm(zonder_merk(pagina['titel'])) + ' ' + norm(' '.join(pagina['h1']))
+    """Claimt deze pagina het zoekwoord?
+
+    Een expliciete bg-zoekwoord-meta is leidend. Zo kan een artikel woorden uit
+    een commercieel zoekwoord in titel of h1 gebruiken zonder dat het automatisch
+    dat zoekwoord claimt. Zonder expliciete meta blijft de titel/h1-heuristiek.
+    """
     woorden = [w for w in zoekwoord.split() if w not in ('van', 'de', 'het', 'een', 'in', 'je')]
+    expliciet = norm(pagina.get('zoekwoord', ''))
+    if expliciet:
+        expliciet_woorden = expliciet.split()
+        if not all(any(d.startswith(w[:max(4, len(w) - 2)]) for d in expliciet_woorden) for w in woorden):
+            return False
+    doel = norm(zonder_merk(pagina['titel'])) + ' ' + norm(' '.join(pagina['h1']))
     return all(any(d.startswith(w[:max(4, len(w) - 2)]) for d in doel.split()) for w in woorden)
 
 
@@ -186,6 +194,7 @@ def lees_paginas():
             'bestand': f, 'url': url, 'ruw': s, 'hoofd': hoofd,
             'titel': html.unescape((re.search(r'<title>(.*?)</title>', s, re.S) or [None, ''])[1]),
             'meta': html.unescape((re.search(r'<meta name="description" content="(.*?)"', s, re.S) or [None, ''])[1]),
+            'zoekwoord': html.unescape((re.search(r'<meta name="bg-zoekwoord" content="(.*?)"', s, re.S) or [None, ''])[1]),
             'h1': re.findall(r'<h1[^>]*>(.*?)</h1>', s, re.S),
             'h2': [norm(x) for x in re.findall(r'<h2[^>]*>(.*?)</h2>', s, re.S)],
             'canon': (re.search(r'<link rel="canonical" href="(.*?)"', s) or [None, ''])[1],
