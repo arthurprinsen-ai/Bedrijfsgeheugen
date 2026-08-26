@@ -16,6 +16,8 @@ jobs:
           node --check pw-mo14-1/sync.js
       - name: Test provisional team advice
         run: node pw-mo14-1/tests/partial-team.test.js
+      - name: Test compact mobile UI structure
+        run: node pw-mo14-1/tests/mobile-ui.test.js
       - name: Deploy with official Netlify MCP client
         working-directory: pw-mo14-1
         run: >-
