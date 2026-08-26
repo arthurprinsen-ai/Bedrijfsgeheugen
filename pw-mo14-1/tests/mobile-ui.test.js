@@ -1,0 +1,10 @@
+const fs=require('fs'),assert=require('assert');
+const player=fs.readFileSync(__dirname+'/../player.js','utf8');
+const sync=fs.readFileSync(__dirname+'/../sync.js','utf8');
+assert.ok(player.includes('const baseRows=METRICS.slice(0,8)'), 'player page renders the original 8 scores separately');
+assert.ok(player.includes('<details class="deep-review"'), 'six newer metrics are placed in a collapsible deep-review section');
+assert.ok(player.includes('Automatisch positieadvies'), 'position advice remains on the player page');
+assert.ok(player.includes('Coachbeeld & ontwikkeling'), 'coach development fields remain visible');
+assert.ok(sync.includes('reviewer-status-card'), 'reviewer progress uses separate status cards');
+assert.ok(sync.includes('status-main'), 'reviewer name/status is separated from progress metadata');
+console.log('mobile UI structure OK');
