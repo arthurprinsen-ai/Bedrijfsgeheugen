@@ -16,24 +16,36 @@ function developmentGaps(metrics,pos){return PROFILE[pos].map((w,i)=>({label:MET
 function xGap(w,v){v=Number(v||0);return v>0?w*(5-v):0}
 const POSITION_OPTIONS=["Nog te bepalen","Keeper","Linksachter","Centraal achter","Rechtsachter","Linksmidden","Centraal midden","Rechtsmidden","Linksvoor","Centrumspits","Rechtsvoor"];
 function options(selected){return POSITION_OPTIONS.map(x=>`<option ${x===selected?"selected":""}>${x}</option>`).join("")}
+function htmlText(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"','&quot;')}
 function getDetails(i){return{kracht:document.getElementById(`kracht${i}`)?.value||"Nog te bepalen",tweede:document.getElementById(`tweede${i}`)?.value||"Nog te bepalen",ontwikkel:document.getElementById(`ontwikkel${i}`)?.value||"Nog te bepalen",krachttekst:document.getElementById(`krachttekst${i}`)?.value||"",coachdoel:document.getElementById(`coachdoel${i}`)?.value||""}}
+function metricRow(m,j,i,scores,showDesc=false){return `<tr><td><b>${m.label}</b></td><td><div class="rate">${[1,2,3,4,5].map(v=>`<input type="radio" id="r${i}_${j}_${v}" name="r${i}_${j}" value="${v}" ${Number(scores?.[m.id])===v?"checked":""}><label for="r${i}_${j}_${v}">${v}</label>`).join("")}</div></td>${showDesc?`<td>${m.desc}</td>`:""}</tr>`}
 function page(name,i){
- const pid=PLAYER_IDS[name], d=getDraft(pid),filled=scoreCount(d.scores),legacy=legacyScoreCount(d.scores),det=d.details||{};
- const rows=METRICS.map((m,j)=>`<tr><td><b>${m.label}</b></td><td><div class="rate">${[1,2,3,4,5].map(v=>`<input type="radio" id="r${i}_${j}_${v}" name="r${i}_${j}" value="${v}" ${Number(d.scores?.[m.id])===v?"checked":""}><label for="r${i}_${j}_${v}">${v}</label>`).join("")}</div></td><td>${m.desc}</td></tr>`).join("");
- let sourceNote="";if(d.fromCentral){sourceNote=legacy===8&&filled===8?`<div class="box ok"><b>✓ Oorspronkelijke beoordeling compleet.</b> ${reviewer()?.name||"Deze beoordelaar"} heeft alle 8 onderdelen van het oorspronkelijke formulier ingevuld. De 6 later toegevoegde kenmerken zijn optionele verdieping voor het nieuwe model.</div>`:`<div class="box"><b>Bestaande beoordeling geladen uit Notion.</b> ${filled}/14 kenmerken beschikbaar voor ${reviewer()?.name||"deze beoordelaar"}.</div>`}
- return `<section id="sp${i}" class="p"><h2>${name}</h2><p class="lead"><b>Mijn beoordeling</b> — ${reviewer()?.name||"kies eerst een beoordelaar op de homepage"}.</p>${sourceNote}
- <div class="box"><b>Score:</b> 1 = nog ontwikkelen · 3 = gemiddeld · 5 = duidelijke kracht</div>
- <table class="score-table"><tr><th>Kenmerk</th><th>Score 1–5</th><th>Waar kijken we naar?</th></tr>${rows}</table>
- <h3>Coachbeeld & ontwikkeling</h3>
- <div class="fillrow"><strong>Krachtpositie</strong><select id="kracht${i}">${options(det.kracht||"Nog te bepalen")}</select></div>
- <div class="fillrow"><strong>Tweede positie</strong><select id="tweede${i}">${options(det.tweede||"Nog te bepalen")}</select></div>
- <div class="fillrow"><strong>Ontwikkelpositie</strong><select id="ontwikkel${i}">${options(det.ontwikkel||"Nog te bepalen")}</select></div>
- <div class="fillrow"><strong>Belangrijkste kracht</strong><input id="krachttekst${i}" value="${(det.krachttekst||"").replaceAll('"','&quot;')}" placeholder="Bijv. snelheid, overzicht, duel..."></div>
- <div class="fillrow"><strong>Coachdoel</strong><textarea id="coachdoel${i}" placeholder="Bijv. vóór balaanname over schouder kijken">${det.coachdoel||""}</textarea></div>
- <div class="fillrow"><strong>Observatie</strong><textarea id="obs${i}" placeholder="Wat zagen we in training/wedstrijd?">${d.observation||""}</textarea></div>
+ const pid=PLAYER_IDS[name],d=getDraft(pid),filled=scoreCount(d.scores),legacy=legacyScoreCount(d.scores),det=d.details||{};
+ const baseRows=METRICS.slice(0,8).map((m,j)=>metricRow(m,j,i,d.scores)).join("");
+ const deepRows=METRICS.slice(8).map((m,k)=>metricRow(m,k+8,i,d.scores,true)).join("");
+ const deepFilled=Math.max(0,filled-legacy),deepOpen=deepFilled>0?" open":"";
+ let sourceNote="";
+ if(d.fromCentral){sourceNote=legacy===8&&filled===8?`<div class="source-card complete"><b>✓ Oorspronkelijke beoordeling compleet</b><span>${reviewer()?.name||"Deze beoordelaar"} heeft alle 8 onderdelen van het oorspronkelijke formulier ingevuld.</span><small>De 6 later toegevoegde kenmerken zijn verdieping en veranderen deze status niet.</small></div>`:`<div class="source-card"><b>Bestaande beoordeling uit Notion</b><span>${filled}/14 kenmerken beschikbaar voor ${reviewer()?.name||"deze beoordelaar"}.</span></div>`}
+ return `<section id="sp${i}" class="p player-page">
+ <div class="player-head"><div><span class="eyebrow">Speelster</span><h2>${name}</h2><p class="lead"><b>Mijn beoordeling</b> · ${reviewer()?.name||"kies eerst een beoordelaar op de homepage"}</p></div><a class="mini-home" href="#spelers">← Alle speelsters</a></div>
+ ${sourceNote}
+ <div class="score-key"><b>Score</b><span>1 = ontwikkelen</span><span>3 = gemiddeld</span><span>5 = duidelijke kracht</span></div>
+ <div class="section-title"><span>1</span><div><b>Basisbeoordeling</b><small>De oorspronkelijke 8 hockeykenmerken</small></div><strong>${legacy}/8</strong></div>
+ <div class="table-card"><table class="score-table base-score-table"><tr><th>Kenmerk</th><th>Score 1–5</th></tr>${baseRows}</table></div>
  <div class="fit" id="myfit${i}">Positieadvies wordt berekend…</div>
- <div class="sync"><button class="b" id="save${i}" onclick="saveAssessment(${i})">Mijn beoordeling opslaan</button><span id="ss${i}">${d.fromCentral?"Centrale beoordeling geladen":"Lokale draft wordt automatisch bewaard"}</span></div>
- <div class="teamview"><h3>Teambeeld</h3><div id="tv${i}">Nog geen centrale beoordelingen geladen.</div></div>
+ <div class="section-title"><span>2</span><div><b>Coachbeeld & ontwikkeling</b><small>Van score naar concrete positie en coachfocus</small></div></div>
+ <div class="coach-fields">
+  <div class="fillrow"><strong>Krachtpositie</strong><select id="kracht${i}">${options(det.kracht||"Nog te bepalen")}</select></div>
+  <div class="fillrow"><strong>Tweede positie</strong><select id="tweede${i}">${options(det.tweede||"Nog te bepalen")}</select></div>
+  <div class="fillrow"><strong>Ontwikkelpositie</strong><select id="ontwikkel${i}">${options(det.ontwikkel||"Nog te bepalen")}</select></div>
+  <div class="fillrow"><strong>Belangrijkste kracht</strong><input id="krachttekst${i}" value="${htmlText(det.krachttekst)}" placeholder="Bijv. snelheid, overzicht, duel..."></div>
+  <div class="fillrow"><strong>Coachdoel</strong><textarea id="coachdoel${i}" placeholder="Bijv. vóór balaanname over schouder kijken">${htmlText(det.coachdoel)}</textarea></div>
+  <div class="fillrow"><strong>Observatie</strong><textarea id="obs${i}" placeholder="Wat zagen we in training/wedstrijd?">${htmlText(d.observation)}</textarea></div>
+ </div>
+ <details class="deep-review"${deepOpen}><summary><span><b>Verdiepende beoordeling</b><small>6 nieuwere kenmerken voor een nauwkeuriger team- en positieadvies</small></span><strong>${deepFilled}/6</strong></summary><div class="deep-body"><table class="score-table"><tr><th>Kenmerk</th><th>Score 1–5</th><th>Waar kijken we naar?</th></tr>${deepRows}</table></div></details>
+ <div class="sync assessment-actions"><button class="b" id="save${i}" onclick="saveAssessment(${i})">Uitgebreide beoordeling opslaan</button><span id="ss${i}">${d.fromCentral?"Centrale beoordeling geladen":"Lokale draft wordt automatisch bewaard"}</span></div>
+ <div class="teamview"><div class="section-title"><span>3</span><div><b>Teambeeld</b><small>Gecombineerde beoordeling van alle begeleiders</small></div></div><div id="tv${i}">Nog geen centrale beoordelingen geladen.</div></div>
+ <div class="bottom-nav"><a href="#spelers">← Alle speelsters</a><a href="#home">⌂ Hoofdmenu</a></div>
  </section>`;
 }
 function renderPlayerPages(){playerList.innerHTML=PLAYERS.map((n,i)=>`<a href="#sp${i+1}">${n}</a>`).join("");playerPages.innerHTML=PLAYERS.map((n,i)=>page(n,i+1)).join("");PLAYERS.forEach((n,idx)=>wirePlayer(idx+1,n));renderAllTeamViews()}
@@ -47,7 +59,7 @@ function wirePlayer(i,name){
 }
 function renderMyFit(i,scores){
  const e=document.getElementById(`myfit${i}`);if(!e)return;const legacy=legacyScoreCount(scores),filled=scoreCount(scores);
- if(legacy<8){e.innerHTML=`<h3>Automatisch positieadvies</h3><div class="why">Vul eerst de oorspronkelijke 8 basisscores in. Nog ${8-legacy} basisscore(s) te gaan.</div>`;return}
+ if(legacy<8){e.innerHTML=`<div class="fit-title"><span>⚡</span><div><h3>Automatisch positieadvies</h3><small>Vul de 8 basisscores in</small></div></div><div class="why">Nog <b>${8-legacy}</b> basisscore(s) te gaan. Daarna verschijnt direct het eerste positieadvies.</div>`;return}
  const definitive=isCompleteScores(scores),f=definitive?positionFits(scores):partialPositionFits(scores),best=f[0][0],str=strongestContributors(scores,best).map(x=>x.label).join(", "),gaps=developmentGaps(scores,best).map(x=>x.label).join(", ");
- e.innerHTML=`<h3>Automatisch positieadvies</h3><div class="why"><b>${definitive?"Definitief uitgebreid advies":"Voorlopig advies op oorspronkelijke 8/8"}:</b> ${POSITION_LABEL[best]} ${f[0][1]}% · 2e ${POSITION_LABEL[f[1][0]]} ${f[1][1]}% · 3e ${POSITION_LABEL[f[2][0]]} ${f[2][1]}%</div><div>${f.slice(0,5).map(x=>`<div class="fitrow"><span>${POSITION_LABEL[x[0]]}</span><div class="track"><div class="fill" style="width:${x[1]}%"></div></div><b>${x[1]}%</b></div>`).join("")}</div><div class="why"><b>Waarom:</b> ${str||"op basis van de beschikbare scores"}.${gaps?` <b>Ontwikkelpunten:</b> ${gaps}.`:""}</div><div class="note">${definitive?"Alle 14 kenmerken zijn meegenomen.":`${filled}/14 kenmerken beschikbaar. Floris' oorspronkelijke 8/8 blijft compleet; de 6 nieuwe kenmerken kunnen het advies later verfijnen.`}</div>`;
+ e.innerHTML=`<div class="fit-title"><span>⚡</span><div><h3>Automatisch positieadvies</h3><small>${definitive?"Uitgebreid profiel 14/14":"Oorspronkelijke beoordeling 8/8"}</small></div><em>${definitive?"DEFINITIEF":"VOORLOPIG"}</em></div><div class="best-position"><small>Beste fit</small><b>${POSITION_LABEL[best]}</b><strong>${f[0][1]}%</strong></div><div>${f.slice(0,5).map(x=>`<div class="fitrow"><span>${POSITION_LABEL[x[0]]}</span><div class="track"><div class="fill" style="width:${x[1]}%"></div></div><b>${x[1]}%</b></div>`).join("")}</div><div class="why"><b>Waarom:</b> ${str||"op basis van de beschikbare scores"}.${gaps?` <b>Ontwikkelpunten:</b> ${gaps}.`:""}</div><div class="note">${definitive?"Alle 14 kenmerken zijn meegenomen.":`${filled}/14 kenmerken beschikbaar. De oorspronkelijke 8/8-beoordeling is compleet; de 6 verdiepende kenmerken kunnen het advies later verfijnen.`}</div>`;
 }
