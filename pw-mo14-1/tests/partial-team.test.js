@@ -1,0 +1,12 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const ctx={console,METRICS:Array.from({length:14},(_,i)=>({id:'m'+i,label:'M'+i})),PROFILE:{A:Array(14).fill(1/14),B:Array(14).fill(1/14)},POSITION_LABEL:{A:'A',B:'B'},PLAYERS:[],PLAYER_IDS:{},centralAssessments:[]};
+vm.createContext(ctx);
+vm.runInContext(`function fitFor(metrics,position){return Math.round(PROFILE[position].reduce((a,w,i)=>a+w*Number(metrics[METRICS[i].id]||0),0)/5*100)} function positionFits(metrics){return Object.keys(PROFILE).map(k=>[k,fitFor(metrics,k)]).sort((a,b)=>b[1]-a[1])}`,ctx);
+vm.runInContext(fs.readFileSync(__dirname+'/../team.js','utf8'),ctx);
+const scores={}; for(let i=0;i<8;i++)scores['m'+i]=4;
+const tv=ctx.aggregatePlayerAssessments([{reviewerId:'floris',playerId:'jackie',scores,timestamp:'2026-08-26'}]);
+assert.equal(tv.filledMetricCount,8,'tracks available team metrics');
+assert.equal(tv.provisional,true,'8/14 gives provisional advice');
+assert.ok(Array.isArray(tv.fits)&&tv.fits.length,'provisional position fits are calculated');
+assert.equal(tv.complete,false,'8/14 is not definitive');
+console.log('partial-team behavior OK');
