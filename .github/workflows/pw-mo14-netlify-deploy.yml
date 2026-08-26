@@ -14,9 +14,10 @@ jobs:
           zip -q ../pw-mo14-1-site.zip index.html
       - name: Deploy through authorized Netlify proxy
         env:
-          NETLIFY_PROXY: "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..8e1h0nu4dPgFkpxc.wcXtuwnhRVzbMcAPPkz122b240cNY5_Pkq-qlpmQ_994RCgonShCskTYNQe-RGthTikNpGZXrL8AvtE8CsJq3m71p8WakBYIfAwn09WmqCSetC6B9UeQVOu3u-sVrlUhrZTURurzcinAI7BoniJpkWFX6Ccdmm9NdoEvYbj4OaKnCAtRPVkltp8hMhkCwEKxbymg9eh9NEBdWcKbif00Z4ka7P1OWUaPiheTF8NWcAvmA9iJTIhr7pJi0sdbxzseRiuuu-VeJjts9iLWm0qIBy55VgTKVx0BVFfTxb3ZHdiNzul4zh2Er7GOsj4zTBYMHeKujHexLZJ7o1ezBqr7AC7-dnq1CkjDhdCPacwF8tcYbnrE_0VBpUl2IuLr1O2Smt4-kJni.pxB94zdLWaQWzBUTrWHdUg"
+          NETLIFY_PROXY: "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..8e1h0nu4dPgFkpxc.wcXtuwnhRVzbMcAPPkz122b240cNY5_Pkq-qlpmQ_994RCgonShCskTYNQe-RGthTikNpGZXrL8AvtE8CsJq3m71p8WakBYIfAwn09WmqCSetC6B9UeQVOu3u-sVrlUhrZTURurzcinAI7BoniJpkWFX6Ccdmm9NdoEvYbj4OaKnCAtRPVkltp8hMhkCwEKxbymg9eh9NEBdWcKbif00Z4ka7P1OWUaPiheTF8NWcAvmA9iJTIhr7pJi0sdbxzseRiuuu-VeJjts9iLWm0qIBy55VgTKVx0BVFfTxb3ZHdiNzul4zh2Er7GOsj4zTBYMHeKujHexLZJ7o1ezBqr7AC7-dnq1CkjDhdCPacwF8tcYbnrE_0VBpUl2IuLr1O2Smt4-kJni.pxB94zdLWaQWzBUTrWHdUg/api/v1/sites/ba4f3545-f001-4729-9245-3bf64cbf940e/builds"
         run: |
           set -euo pipefail
           code=$(curl -sS -o deploy-response.json -w '%{http_code}' -X POST -F 'zip=@pw-mo14-1-site.zip;type=application/zip' "$NETLIFY_PROXY")
           cat deploy-response.json
+          echo "HTTP $code"
           test "$code" -ge 200 -a "$code" -lt 300
