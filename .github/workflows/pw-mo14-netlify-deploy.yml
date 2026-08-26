@@ -1,0 +1,22 @@
+name: Deploy PW MO14-1 to Netlify
+on:
+  push:
+    branches: [pw-mo14-1-live]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build deploy zip
+        run: |
+          cd pw-mo14-1
+          zip -q ../pw-mo14-1-site.zip index.html
+      - name: Deploy through authorized Netlify proxy
+        env:
+          NETLIFY_PROXY: "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..8e1h0nu4dPgFkpxc.wcXtuwnhRVzbMcAPPkz122b240cNY5_Pkq-qlpmQ_994RCgonShCskTYNQe-RGthTikNpGZXrL8AvtE8CsJq3m71p8WakBYIfAwn09WmqCSetC6B9UeQVOu3u-sVrlUhrZTURurzcinAI7BoniJpkWFX6Ccdmm9NdoEvYbj4OaKnCAtRPVkltp8hMhkCwEKxbymg9eh9NEBdWcKbif00Z4ka7P1OWUaPiheTF8NWcAvmA9iJTIhr7pJi0sdbxzseRiuuu-VeJjts9iLWm0qIBy55VgTKVx0BVFfTxb3ZHdiNzul4zh2Er7GOsj4zTBYMHeKujHexLZJ7o1ezBqr7AC7-dnq1CkjDhdCPacwF8tcYbnrE_0VBpUl2IuLr1O2Smt4-kJni.pxB94zdLWaQWzBUTrWHdUg"
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o deploy-response.json -w '%{http_code}' -X POST -F 'zip=@pw-mo14-1-site.zip;type=application/zip' "$NETLIFY_PROXY")
+          cat deploy-response.json
+          test "$code" -ge 200 -a "$code" -lt 300
