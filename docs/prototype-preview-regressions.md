@@ -1,78 +1,67 @@
-# Prototype preview — lessons learned & regressieregels
+# V18 preview — reliability contract & lessons learned
 
-Dit document borgt de fouten en herstelacties uit de V18-previewreeks. Het doel is dat toekomstige agents deze fouten niet opnieuw introduceren.
+Deze regels gelden voor alle huidige en toekomstige agents die de Bedrijfsgeheugen-preview wijzigen.
 
-## Niet-onderhandelbare regels
+## Acceptatie-architectuur
+- De acceptatie-URL serveert gewone statische HTML vanaf Netlify.
+- Hero-media is een lokaal, versieerbaar MP4-bestand op dezelfde Netlify-deploy.
+- Geen browser-side gzip/base64/chunk-reconstructie.
+- Geen `DecompressionStream`, pako of externe decoder voor kernfunctionaliteit.
+- Geen Netlify Function als primaire acceptatieroute voor het statische prototype.
+- Geen `file:`, `sandbox:` of lokaal HTML-bestand gebruiken als bewijs dat de live versie werkt.
+- De rijke V18-basis mag nooit stilzwijgend worden vervangen door een vereenvoudigde wrapper.
+- `main`/productie nooit mergen of overschrijven zonder expliciete bevestiging.
 
-1. Werk altijd verder op de laatst bewezen werkende HTTPS-preview. Geef de gebruiker nooit opnieuw een lokaal `sandbox:`-HTML-bestand als vervanging voor een werkende live preview.
-2. Wijzig bij een visuele aanpassing alleen het bedoelde onderdeel. Voor een hero-video mag menu, routing, scans, portal, views, footer of SPA-navigatie niet worden herschreven.
-3. Productie (`main` / www.bedrijfsgeheugen.nl) blijft onaangeraakt totdat de gebruiker expliciet toestemming geeft om te mergen.
-4. De preview-PR blijft draft zolang de gebruiker alleen test.
-5. Claim nooit dat Safari/iPhone live is getest als dat niet daadwerkelijk is gebeurd.
+## Hero-video contract
+- H.264 MP4 zonder audio voor autoplay.
+- Exact één `<video id="heroBackgroundVideo">`.
+- Verplicht: `autoplay muted playsinline loop`.
+- In JS ook `muted`, `defaultMuted`, `volume=0` en `playsInline` afdwingen.
+- Videowijzigingen mogen menu, routing, scans, AI of portal niet wijzigen.
+- Visuele richting: inspirationeel/premium/abstract; geen zakelijke hoofden, kantooroverleg of generieke wolkenbeelden.
 
-## Fouten die zijn opgetreden
+## Routing/UI contract
+- Exact 14 views in de huidige acceptatiebasis.
+- Iedere `data-view` moet naar een bestaande view wijzen.
+- Mobiele drawer moet aanwezig blijven en openen/navigeren/sluiten.
+- Geen horizontale overflow op mobiel.
+- Iedere echte `<a href>` gebruikt een absolute `https://` URL; SPA-routing gebruikt daarnaast `data-view`.
 
-### Verkeerde prototypebasis live gezet
-De vereenvoudigde V18.6/7-build werd gepubliceerd terwijl de gebruiker de rijke V18.5-designlijn bedoelde.
+## Deploy quality gate
+`tools/bouw-v18-preview.mjs` bouwt de volledige pagina tijdens de Netlify-build. `tools/test-v18-preview.mjs` blokkeert de deploy bij regressie. Een link mag pas gedeeld worden wanneer de Netlify Deploy Preview `success/ready` is.
 
-**Regel:** visuele fixes altijd uitvoeren op de laatst door de gebruiker geaccepteerde volledige basis, niet op een vereenvoudigde reconstructie.
+Verplichte checks:
+1. canonieke V18 payloadlengte + SHA256;
+2. canonieke uitgepakte HTML SHA256;
+3. 14 views;
+4. mobiele drawer aanwezig;
+5. alle `data-view` targets bestaan;
+6. exact één hero-video;
+7. autoplay/muted/playsinline/loop;
+8. lokale versieerbare MP4;
+9. geen runtime-decompressielogica;
+10. alleen absolute HTTPS-anchorlinks;
+11. hero-MP4 heeft plausibele bestandsgrootte;
+12. Netlify deploy is groen.
 
-### Verkeerde hero-video
-Eerst werd een andere Pexels-video gebruikt; daarna een wolkenclip en vervolgens een zakelijke teamvideo. Technisch werkend, inhoudelijk niet passend.
+## Incidenten die niet opnieuw mogen gebeuren
+- iPhone Safari: `DecompressionStream` gaf “Failed to Decode Data”.
+- pako/fallback: `invalid distance too far back`; browserdecode was geen betrouwbare architectuur.
+- Chunkvolgorde: `chunk-gap` werd eerst onterecht toegevoegd/verwijderd; hierdoor ontbraken exact 8.000 tekens of werd gzip corrupt.
+- `chunk-03` raakte versnipperd; zonder hashes kon een afwijkende payload worden gepubliceerd.
+- Lokale HTML werd als acceptatieversie gedeeld; menu/video gedroegen zich anders dan op HTTPS.
+- Een vereenvoudigde V18.6-wrapper verving tijdelijk de rijke V18-uitvoering; dat is verboden.
+- Dubbele/legacy video-controllers en opacity-states konden de video onzichtbaar maken.
+- Externe video-hosting leverde technisch werkende maar inhoudelijk verkeerde beelden (wolken / zakelijke hoofden).
+- De live branch bevatte een andere hero-MP4 dan de lokaal geteste asset. Branch/deploy is voortaan de enige acceptatiewaarheid.
+- Inline SVG-motion werd als “video” gepubliceerd; dit voldeed niet aan de afgesproken echte video-output.
 
-**Regel:** hero moet inspirationeel zijn zonder zakelijke hoofden, kantooroverleg of generieke wolken. Richting: abstract licht, flow, diepte, vooruitgang, premium blauw/warm accent.
-
-### Safari/browser-decompressie
-`DecompressionStream` en een fallback-decoder veroorzaakten fouten op iPhone/Safari.
-
-**Regel:** browser mag nooit verantwoordelijk zijn voor gzip/chunk-reconstructie van het prototype. Reconstructie gebeurt server-side; browser ontvangt gewone HTML.
-
-### Payload 100484 versus 108484
-Een segment van precies 8000 tekens ontbrak. `chunk-gap.txt` bleek een noodzakelijk deel van de canonieke payload.
-
-**Regel:** serverfunctie valideert altijd:
-- base64-lengte exact 108484;
-- payload SHA-256 exact `64c33847585fb3d93e3a4bbe8bfd33aee5221678a047f613f6144330f69e305b`;
-- HTML SHA-256 exact `be938e95870994b89773d141a400318a1be3eac4829d69aac6bac48942bd230b`.
-
-### Corrupte/verkeerde chunk-03
-`chunk-03` week af van de canonieke payload. De juiste reconstructie gebruikt de gecontroleerde subdelen.
-
-**Regel:** gebruik de huidige `FILES`-volgorde in `netlify/functions/prototype-v18.mjs`; niet improviseren met oude samengestelde chunk-bestanden.
-
-### Dubbele video-controller
-Meerdere playback-controllers konden elkaar tegenwerken waardoor opacity/playback fout ging.
-
-**Regel:** exact één controller mag `heroBackgroundVideo` aansturen. iOS-attributen: `autoplay muted playsinline loop` plus `defaultMuted=true` en play-retry op load/visibility/first interaction.
-
-### Menu/interactie werkte niet in lokaal bestand
-De gebruiker kreeg een lokaal prototype waarin de route- en assetsituatie afweek van de live site.
-
-**Regel:** acceptatie gebeurt op de Netlify Deploy Preview via HTTPS. Geen lokale file-URL als eindacceptatie.
-
-## Verplichte regressiechecks vóór een link wordt gedeeld
-
-- Netlify status is `success`/`ready` voor exact de laatste branchcommit.
-- PR-head SHA en Netlify commit-ref komen overeen.
-- 14 `view-*` views zijn aanwezig.
-- `v18MobileDrawer` bestaat.
-- interne `data-view` routing is aanwezig.
-- exact één `heroBackgroundVideo`.
-- video heeft `autoplay`, `muted`, `playsinline`, `loop`.
-- geen oude Pexels people/cloud URL in de live response.
-- hero gebruikt een same-origin asset onder `/assets/`.
-- JS-syntax check is groen.
-- productie is niet gewijzigd.
-
-## Wijzigingsstrategie
-
-Voor visuele hero-wijzigingen wordt de canonieke HTML niet opnieuw opgebouwd. De bestaande serverfunctie valideert eerst de canonieke payload en vervangt daarna uitsluitend de `<video id="heroBackgroundVideo">`-tag. Dit beperkt het blast radius en beschermt menu, routing en portal.
-
-## Actuele hero-richting
-
-- Geen mensen/hoofden.
-- Geen kantoorbeelden.
-- Geen generieke wolken.
-- Abstracte motion: blauw/navy, subtiele warme highlights, lichtstromen/netwerklijnen, diepte en rustige vooruitgang.
-- Achtergrond moet hero-copy leesbaar houden.
-- Same-origin MP4 + SVG-poster voor maximale voorspelbaarheid.
+## Werkmethode toekomstige agents
+1. Eerst foutmelding/reproductie en branch/deploy-state lezen.
+2. Root cause bewijzen; geen stapeling van vermoedelijke fixes.
+3. Regressietest eerst laten falen waar mogelijk.
+4. Eén minimale wijziging per hypothese.
+5. Build-time QA moet groen zijn.
+6. Exacte Netlify commit/deploy verifiëren.
+7. Pas daarna acceptatielink delen.
+8. Nooit claimen dat iets op echte iPhone werkt voordat dat daar daadwerkelijk bevestigd is.
