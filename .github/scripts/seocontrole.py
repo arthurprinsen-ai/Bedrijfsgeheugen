@@ -93,8 +93,8 @@ EIGENAAR = {
 OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo'}
 # Previewroutes zijn geen indexeerbare productiepagina's. Alleen op een
 # prototypebranch slaan we de tijdelijke indexredirect en prototypes over.
-if os.getenv('BG_PREVIEW_BRANCH') == 'true':
-    OVERSLAAN.add('index')
+PREVIEW_BRANCH = os.getenv('BG_PREVIEW_BRANCH') == 'true'
+if PREVIEW_BRANCH:
     OVERSLAAN.update(
         os.path.basename(f)[:-5] for f in glob.glob('prototype-*.html')
     )
@@ -181,6 +181,10 @@ def claimt(zoekwoord, pagina):
 def lees_paginas():
     paginas = {}
     for f in sorted(glob.glob('*.html') + glob.glob('blog/*/index.html')):
+        # Alleen de tijdelijke rootredirect overslaan; blog/*/index.html blijft
+        # onderdeel van de controle.
+        if PREVIEW_BRANCH and f == 'index.html':
+            continue
         naam = os.path.basename(f)[:-5]
         if naam in OVERSLAAN:
             continue
