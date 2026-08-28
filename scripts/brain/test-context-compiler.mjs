@@ -1,0 +1,12 @@
+import {chooseAuthoritativeState} from '../../brain/context/authority.mjs';
+import {compileContext} from '../../brain/context/compiler.mjs';
+const states=[{entity_ref:'site',truth_status:'STALE',last_verified_at:'2026-08-27T00:00:00Z',confidence:.9,current_value:'old'},{entity_ref:'site',truth_status:'VERIFIED',last_verified_at:'2026-08-28T00:00:00Z',confidence:.8,current_value:'new'}];
+if(chooseAuthoritativeState(states).current_value!=='new') throw new Error('verified state must win');
+const mission={id:'m1',targets:['company:1'],objective:'x',constraints:['NO_SECRETS'],protected_metrics:['security'],budget:{credits:10},rollback:{strategy:'restore'}};
+const evidence=[{id:'e1',entity_refs:['company:1'],truth_status:'SUPPORTED',confidence:.9},{id:'e2',entity_refs:['company:2'],truth_status:'SUPPORTED',confidence:.9},{id:'e3',entity_refs:['company:1'],truth_status:'CONTESTED',confidence:.9}];
+const out=compileContext({mission,currentStates:states,evidence,patterns:[{id:'p1',entity_refs:['company:1']},{id:'p2',entity_refs:['company:9']}],failures:[{id:'f1',entity_refs:['company:1']}],hardBoundaries:['NO_CREDENTIAL_CHANGES']});
+if(out.evidence.some(e=>e.id==='e2')) throw new Error('unrelated evidence leaked');
+if(!out.evidence.find(e=>e.id==='e3'&&e.effective_confidence<.9)) throw new Error('contested confidence not reduced');
+if(!out.constraints.includes('NO_CREDENTIAL_CHANGES')) throw new Error('hard boundary missing');
+if(out.patterns.some(p=>p.id==='p2')) throw new Error('unrelated pattern leaked');
+console.log('context compiler tests passed');

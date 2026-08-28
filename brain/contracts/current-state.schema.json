@@ -1,0 +1,5 @@
+{
+  "$id":"brain.v1/current-state",
+  "allOf":["brain.v1/envelope"],
+  "required":["entity_ref","state_type","current_value","valid_since","source_of_truth","last_verified_at","confidence_level","version"]
+}

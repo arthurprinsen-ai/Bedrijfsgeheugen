@@ -1,0 +1,6 @@
+{
+  "$id":"brain.v1/mission",
+  "allOf":["brain.v1/envelope"],
+  "required":["decision_ref","objective","type","targets","baseline","success_metrics","protected_metrics","constraints","budget","required_capabilities","assigned_agents","rollback","status","hypothesis","attempt","next_action"],
+  "enums":{"status":["PENDING","PARTIAL","RECOVERING","DEGRADED","ROLLING_BACK","WAITING_DEPENDENCY","VERIFIED","PRODUCTION_GREEN","BLOCKED_HARD_BOUNDARY"]}
+}

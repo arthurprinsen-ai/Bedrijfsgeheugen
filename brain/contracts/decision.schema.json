@@ -1,0 +1,6 @@
+{
+  "$id":"brain.v1/decision",
+  "allOf":["brain.v1/envelope"],
+  "required":["candidate_ref","decision","policy_version","algorithm_version","evidence_refs","alternatives","rejection_reasons","expected_utility","risk","autonomy_class","protected_metrics","re_evaluate_at"],
+  "enums":{"decision":["IGNORE","WATCH","RESEARCH","CONTACT","CREATE_CONTENT","BUILD","TEST","FIX","OPTIMIZE","SCALE","PAUSE","ROLLBACK","ESCALATE_HARD_BOUNDARY"]}
+}
