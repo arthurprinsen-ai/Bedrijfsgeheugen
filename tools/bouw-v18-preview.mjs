@@ -9,10 +9,39 @@ const FILES = [
   'v18-full/chunk-04.txt','v18-full/chunk-05.txt','v18-full/chunk-06.txt'
 ];
 
+const HERO_FILES = [
+  'assets/hero-v2-source/chunk-00.txt','assets/hero-v2-source/chunk-01.txt','assets/hero-v2-source/chunk-02.txt',
+  'assets/hero-v2-source/chunk-03.txt','assets/hero-v2-source/chunk-04.txt','assets/hero-v2-source/chunk-05.txt',
+  'assets/hero-v2-source/chunk-06.txt','assets/hero-v2-source/chunk-07.txt','assets/hero-v2-source/chunk-08.txt'
+];
+
 const EXPECTED_BASE64_LENGTH = 108484;
 const EXPECTED_BASE64_SHA256 = '64c33847585fb3d93e3a4bbe8bfd33aee5221678a047f613f6144330f69e305b';
 const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6bac48942bd230b';
+const EXPECTED_HERO_BASE64_LENGTH = 65212;
+const EXPECTED_HERO_BYTES = 48909;
+const EXPECTED_HERO_SHA256 = '476e0cfcfb065b01f419dab96ca5f28a20495862716fb34da9db742e9899db2a';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
+
+// Rebuild the final browser MP4 at BUILD time from small, transport-safe text chunks.
+// The browser never sees these chunks; Netlify serves one ordinary static H.264 MP4.
+const heroParts = await Promise.all(HERO_FILES.map(path => readFile(path, 'utf8')));
+const heroBase64 = heroParts.join('').replace(/\s+/g, '');
+if (heroBase64.length !== EXPECTED_HERO_BASE64_LENGTH) {
+  throw new Error(`Hero source length ${heroBase64.length}, expected ${EXPECTED_HERO_BASE64_LENGTH}`);
+}
+const heroBytes = Buffer.from(heroBase64, 'base64');
+if (heroBytes.length !== EXPECTED_HERO_BYTES) {
+  throw new Error(`Hero MP4 size ${heroBytes.length}, expected ${EXPECTED_HERO_BYTES}`);
+}
+if (heroBytes.subarray(4, 8).toString('ascii') !== 'ftyp') {
+  throw new Error('Hero source did not reconstruct a valid MP4 container');
+}
+const heroHash = sha256(heroBytes);
+if (heroHash !== EXPECTED_HERO_SHA256) {
+  throw new Error(`Hero MP4 integrity mismatch: ${heroHash}`);
+}
+await writeFile('assets/inspirational-hero-v2.mp4', heroBytes);
 
 const parts = await Promise.all(FILES.map(path => readFile(path, 'utf8')));
 const base64 = parts.join('').replace(/\s+/g, '');
@@ -52,4 +81,4 @@ const videoFix = `<style id="v18-stable-video-fix">
 
 html = html.replace('</body>', `${videoFix}\n</body>`);
 await writeFile('prototype-v18-stable.html', html, 'utf8');
-console.log(`V18 stable static preview built: ${Buffer.byteLength(html)} bytes`);
+console.log(`V18 stable static preview built: ${Buffer.byteLength(html)} bytes; hero ${heroBytes.length} bytes ${heroHash}`);
