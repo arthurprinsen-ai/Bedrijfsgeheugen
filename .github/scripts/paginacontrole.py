@@ -17,6 +17,14 @@ WORTEL = os.getcwd()
 
 # pagina's die bewust geen site-chrome hebben of niet publiek zijn
 OVERSLAAN = {'index-oud', 'klantportaal', 'klantportaal-demo'}
+# Een prototypebranch gebruikt index.html alleen als previewredirect en bevat
+# prototype-*.html-bestanden die nooit als losse productiepagina's publiceren.
+# Op main blijft de volledige productiecontrole dus ongewijzigd.
+if os.getenv('BG_PREVIEW_BRANCH') == 'true':
+    OVERSLAAN.add('index')
+    OVERSLAAN.update(
+        os.path.basename(f)[:-5] for f in glob.glob('prototype-*.html')
+    )
 # pagina's die bewust geen kruimelpad hebben
 GEEN_KRUIMEL = {'index', '404'}
 # een foutpagina hoort niet naar zichzelf te verwijzen
