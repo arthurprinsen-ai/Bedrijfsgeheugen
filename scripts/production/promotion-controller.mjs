@@ -12,6 +12,12 @@ const iphoneSafeMedia = media => Boolean(
   media.faststart === true
 );
 
+const authoritativeProductionState = state => {
+  const stored = state.authoritative_production_state;
+  if (!stored || String(stored.status || '').toUpperCase() !== 'GREEN' || !stored.last_known_good_sha) return null;
+  return stored;
+};
+
 export function evaluatePromotion(state = {}) {
   if (state.hard_boundary) {
     return {
@@ -21,24 +27,68 @@ export function evaluatePromotion(state = {}) {
     };
   }
 
+  const stored = authoritativeProductionState(state);
+  if (!stored) {
+    return {
+      state: 'OPEN_REPAIR',
+      action: 'VERIFY_PRODUCTION_STATE',
+      reason: 'authoritative production state missing or invalid'
+    };
+  }
+
+  const productionSha = String(state.production_sha || '');
+  const currentMainSha = String(state.current_main_sha || '');
+  const persistedLkg = String(stored.last_known_good_sha || '');
+  const persistedLkgTree = String(stored.last_known_good_tree_sha || stored.production_tree_sha || '');
+
   if (String(state.production_status || '').toLowerCase() === 'red') {
+    if (!productionSha || !currentMainSha || productionSha !== currentMainSha || persistedLkg === currentMainSha) {
+      return {
+        state: 'OPEN_REPAIR',
+        action: 'VERIFY_PRODUCTION_STATE',
+        reason: 'rollback precondition mismatch: require production_sha=current_main_sha and persisted distinct last-known-good'
+      };
+    }
+
     return {
       state: 'ROLLBACK_REQUIRED',
       action: 'ROLLBACK_LAST_KNOWN_GOOD',
-      rollback_sha: state.last_known_good_sha || null
+      rollback_sha: persistedLkg,
+      current_main_sha: currentMainSha
     };
   }
 
   if (
     green(state.production_status) &&
-    state.production_sha &&
-    state.production_sha === state.candidate_sha &&
+    state.rollback_completed === true &&
+    productionSha &&
+    productionSha === currentMainSha &&
+    ready(state.production_deploy_status)
+  ) {
+    if (!state.production_tree_sha || !persistedLkgTree || state.production_tree_sha !== persistedLkgTree) {
+      return { state: 'OPEN_REPAIR', action: 'VERIFY_PRODUCTION_STATE' };
+    }
+
+    return {
+      state: 'ROLLED_BACK_GREEN',
+      action: 'ROLLED_BACK_GREEN',
+      production_sha: productionSha,
+      restored_tree_sha: state.production_tree_sha,
+      last_known_good_sha: persistedLkg,
+      history_preserved: true
+    };
+  }
+
+  if (
+    green(state.production_status) &&
+    productionSha &&
+    productionSha === state.candidate_sha &&
     ready(state.production_deploy_status)
   ) {
     return {
       state: 'PRODUCTION_GREEN',
       action: 'PRODUCTION_GREEN',
-      production_sha: state.production_sha
+      production_sha: productionSha
     };
   }
 
@@ -46,7 +96,7 @@ export function evaluatePromotion(state = {}) {
     return { state: 'OPEN_REPAIR', action: 'VERIFY_CANDIDATE' };
   }
 
-  if (!state.base_sha || !state.current_main_sha || state.base_sha !== state.current_main_sha) {
+  if (!state.base_sha || !currentMainSha || state.base_sha !== currentMainSha) {
     return { state: 'OPEN_REPAIR', action: 'VERIFY_CANDIDATE' };
   }
 
@@ -74,13 +124,14 @@ export function evaluatePromotion(state = {}) {
     }
   }
 
-  if (!state.rollback_ready || !state.last_known_good_sha) {
+  if (!state.rollback_ready || !persistedLkg) {
     return { state: 'OPEN_REPAIR', action: 'VERIFY_CANDIDATE' };
   }
 
   return {
     state: 'PROMOTION_READY',
     action: 'PROMOTE_EXACT_SHA',
-    candidate_sha: state.candidate_sha
+    candidate_sha: state.candidate_sha,
+    last_known_good_sha: persistedLkg
   };
 }
