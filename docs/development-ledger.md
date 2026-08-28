@@ -221,3 +221,13 @@ When any production promotion regresses protected smoke/regression or metrics, a
 - **Attempted/avoided approach:** no further timing rewrite was applied after fresh evidence was green; the next red occurrence must justify a bounded poll rather than another blind fixed-delay increase.
 - **Production protection:** website production remained `1bf419adf0cd955c564f94a1b62b64c4ca71acb9` / Netlify `6a91e114014f8b0008051e02`, `ready`.
 - **Reusable lesson:** asynchronous healthchecks must distinguish terminal failure from “not finished yet”; do not convert timing uncertainty into a red runtime state.
+
+## 2026-08-28 21:43 CEST — IMPROVEMENT — native Instagram metrics and scene learning consolidated into BG180
+- **Fingerprint:** `instagram|native-metrics-scene|canonical-bg180-limit3`
+- **Baseline:** native Instagram measurement and scene-learning responsibilities had been spread across multiple scheduled routes, creating duplicate reads and duplicated learning/snapshot work.
+- **Change:** BG180 scenario `7141270` is now the single scheduled native Instagram metrics + scene-learning route: `GetUserMedia` -> exact Notion match -> Mira scene-tag parser -> verified content-record update -> state-change dedupe -> Datahub snapshot. BG179 remains separate because it is the on-demand publishing executor.
+- **Verification:** the active Instagram scenario inventory now shows BG180 as the only scheduled native metrics/scene-learning route and BG179 as on-demand publisher; latest BG180 execution `a286ea7231884438b888cf5718a9398f` completed `success` with 7 operations and 8 credits. The current BG180 blueprint contains metrics, scene parsing and deduped Datahub write in one flow.
+- **Impact:** removes overlapping scheduled metric/scene reads while preserving verified likes/comments, scene-learning tags and deduplicated snapshot history.
+- **Guard:** do not merge BG179 into BG180 and do not revive retired metric/scene routes without new evidence that a distinct responsibility is missing.
+- **Production protection:** website production remains `2c05b2eda5381b0f193f3a5cd638ba3054053b3b` / Netlify `6a91e4da1f6a5900080ead85`, `ready`.
+- **Reusable lesson:** one canonical scheduled analytics route lowers cost and contradiction risk; publishing remains a separate responsibility.
