@@ -1,5 +1,5 @@
 name: Approved central blog publisher
-# Canary 3: sealed transactional route
+# Canary 4: publish sealed BG-428 snapshot
 
 on:
   push:
