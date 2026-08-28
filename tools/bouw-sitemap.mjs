@@ -1,5 +1,3 @@
-import './bouw-v18-preview.mjs';
-
 // Bouwt sitemap.xml uit de daadwerkelijke pagina's, bij elke build.
 //
 // Waarom gegenereerd en niet met de hand: de handmatige sitemap liep zeven
