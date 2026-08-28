@@ -16,6 +16,7 @@ def get_queue(force=''):
         {'property': 'Autopublish toegestaan', 'checkbox': {'equals': True}},
         {'property': 'Quality gate', 'select': {'equals': 'Geslaagd'}},
         {'property': 'Herzien', 'select': {'equals': 'Goedgekeurd'}},
+        {'property': 'Publicatiedatum', 'date': {'on_or_before': dt.date.today().isoformat()}},
     ]
     if force:
         conditions.append({'property': 'Slug', 'rich_text': {'equals': force}})
