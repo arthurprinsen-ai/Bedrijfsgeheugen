@@ -3,7 +3,7 @@ name: Shared Agent Memory Tests
 on:
   push:
     branches:
-      - automation/production-controller-v1
+      - 'automation/**'
   workflow_dispatch:
 
 permissions:
