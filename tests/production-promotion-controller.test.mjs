@@ -113,6 +113,27 @@ test('normalized media without validation remains in verification', () => {
   assert.equal(r.action, 'VERIFY_MEDIA');
 });
 
+test('validated derivative still requires iPhone runtime acceptance', () => {
+  const r = evaluatePromotion({
+    ...base,
+    media_contract_required: true,
+    media_source: { width: 1920, height: 1088, fps: 24, has_audio: true },
+    media_derivative: {
+      width: 1920,
+      height: 1080,
+      fps: 30,
+      codec: 'h264',
+      pixel_format: 'yuv420p',
+      has_audio: false,
+      faststart: true
+    },
+    media_derivative_validated: true,
+    iphone_runtime_status: 'pending'
+  });
+  assert.equal(r.state, 'OPEN_REPAIR');
+  assert.equal(r.action, 'VERIFY_IPHONE_RUNTIME');
+});
+
 test('validated iPhone-safe derivative is eligible for normal exact-SHA promotion', () => {
   const r = evaluatePromotion({
     ...base,
