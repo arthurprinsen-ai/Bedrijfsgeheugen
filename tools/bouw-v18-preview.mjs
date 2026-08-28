@@ -11,12 +11,16 @@ const FILES = [
 const EXPECTED_BASE64_LENGTH = 108484;
 const EXPECTED_BASE64_SHA256 = '64c33847585fb3d93e3a4bbe8bfd33aee5221678a047f613f6144330f69e305b';
 const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6bac48942bd230b';
-const PEXELS_DOWNLOAD_URL = 'https://www.pexels.com/download/video/36063952/';
+const PEXELS_DOWNLOAD_URL = 'https://www.pexels.com/download/video/8783011/';
+const EXPECTED_SOURCE_SUFFIX = '/8783011/8783011-hd_1920_1080_30fps.mp4';
 const DRONE_POSTER = 'https://images.pexels.com/videos/36182314/aerial-architecture-building-business-36182314.jpeg?auto=compress&dpr=1&h=750&w=1260';
 const LEGACY_PEOPLE_IMAGE = 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600';
 const HERO_SOURCE_MANIFEST = 'assets/hero-pexels-source.txt';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
+// Device evidence on iPhone: previous candidate painted the drone poster/first frame and then went blank.
+// Keep the canonical player/controller unchanged and change one variable only: media delivery.
+// This Pexels building-drone download resolves to HD 1920x1080 at 30fps, matching the proven source class.
 const sourceResponse = await fetch(PEXELS_DOWNLOAD_URL, {
   method: 'GET',
   redirect: 'follow',
@@ -30,6 +34,9 @@ const resolvedDroneSource = sourceResponse.url;
 const contentType = (sourceResponse.headers.get('content-type') || '').toLowerCase();
 if (!resolvedDroneSource.startsWith('https://videos.pexels.com/')) {
   throw new Error(`Pexels download did not resolve to videos.pexels.com: ${resolvedDroneSource}`);
+}
+if (!resolvedDroneSource.includes(EXPECTED_SOURCE_SUFFIX)) {
+  throw new Error(`Pexels source no longer resolves to required 1920x1080@30fps delivery: ${resolvedDroneSource}`);
 }
 if (!contentType.includes('video/mp4') && !contentType.includes('application/octet-stream')) {
   throw new Error(`Pexels resolved source returned unexpected content-type: ${contentType}`);
@@ -56,15 +63,12 @@ hero = hero.replace(/<source\s+src="[^"]+"\s+type="video\/mp4"\s*\/?>/, `<source
 if (!hero.includes(resolvedDroneSource) || !hero.includes(DRONE_POSTER)) throw new Error('Hero media swap failed');
 html = html.replace(heroMatch[0], hero);
 
-// Remove the second legacy people-image fallback baked into .hero-video::before.
-// Replace every occurrence so the first painted frame and the video poster are visually consistent.
+// The canonical payload also contains a CSS first-paint fallback with the old people image.
+// Replace it with the drone poster so no device can flash the legacy visual before video startup.
 html = html.split(LEGACY_PEOPLE_IMAGE).join(DRONE_POSTER);
 if (html.includes(LEGACY_PEOPLE_IMAGE)) throw new Error('Legacy people hero fallback still present');
 
-// Preserve the proven startup controller. Only after Safari has actually reached `playing`
-// increase visual motion slightly; this does not participate in autoplay/startup.
-const motionTuning = `<script id="v18-drone-motion-tuning">\n(function(){\n  const video=document.getElementById('heroBackgroundVideo');\n  if(!video)return;\n  video.addEventListener('playing',()=>{video.playbackRate=1.2;},{once:false});\n})();\n</script>`;
-html = html.replace('</body>', `${motionTuning}\n</body>`);
-
+// Do not add playback-rate or alternate-controller tuning while the iPhone recovery is being verified.
+// Startup behavior remains byte-for-byte canonical; only source and fallback imagery differ.
 await writeFile('prototype-v18-stable.html', html, 'utf8');
-console.log(`V18 stable preview built: no legacy people fallback; canonical controller; Pexels-resolved drone at 1.2x after playing: ${resolvedDroneSource}`);
+console.log(`V18 stable preview built: canonical controller, no legacy people fallback, official HD 1920x1080@30fps Pexels drone: ${resolvedDroneSource}`);
