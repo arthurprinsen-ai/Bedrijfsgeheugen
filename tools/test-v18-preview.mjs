@@ -9,6 +9,7 @@ const fail = message => { throw new Error(`V18 preview regression: ${message}`);
 const count = (text, re) => (text.match(re) || []).length;
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const HERO_PATH = 'assets/inspirational-hero-v4.mp4';
+const ORIGINAL_POSTER = 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600';
 
 if (!indexHtml.includes('/prototype-v18-stable.html')) fail('preview root must route to prototype-v18-stable.html');
 if (indexHtml.includes('/prototype-v18-6.html')) fail('preview root still routes to obsolete simplified V18.6');
@@ -22,7 +23,7 @@ for (const target of targets) if (!views.has(target)) fail(`missing data-view ta
 if (count(html, /id="heroBackgroundVideo"/g) !== 1) fail('expected exactly one hero video');
 const hero = html.match(/<video[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/)?.[0] || '';
 for (const attr of ['autoplay','muted','playsinline','loop']) if (!new RegExp(`\\b${attr}\\b`).test(hero)) fail(`hero missing ${attr}`);
-if (!hero.includes('poster="https://images.pexels.com/videos/35649915/free-video-35649915.jpg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600"')) fail('original proven poster must stay intact');
+if (!hero.includes(`poster="${ORIGINAL_POSTER}"`)) fail('original proven V18 poster must stay intact');
 if (!hero.includes('/assets/inspirational-hero-v4.mp4')) fail('hero must use local drone v4 asset');
 if (hero.includes('videos.pexels.com/video-files/35649915/15107522_1920_1080_30fps.mp4')) fail('control Pexels video must be replaced by drone source');
 if (!html.includes('id="v18-4-video-controller"')) fail('proven original V18 controller must remain');
