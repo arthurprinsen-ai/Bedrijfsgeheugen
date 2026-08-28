@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import datetime as dt
 import hashlib
 import json
 import pathlib
@@ -6,6 +7,28 @@ import re
 import sys
 
 import publish_approved_blog as base
+
+
+def get_queue(force=''):
+    conditions = [
+        {'property': 'Source Mode', 'select': {'equals': 'Approved central article'}},
+        {'property': 'Dispatch status', 'select': {'equals': 'Pending'}},
+        {'property': 'Autopublish toegestaan', 'checkbox': {'equals': True}},
+        {'property': 'Quality gate', 'select': {'equals': 'Geslaagd'}},
+        {'property': 'Herzien', 'select': {'equals': 'Goedgekeurd'}},
+    ]
+    if force:
+        conditions.append({'property': 'Slug', 'rich_text': {'equals': force}})
+    rows = base.req(f'/data_sources/{base.QUEUE}/query', 'POST', {
+        'filter': {'and': conditions},
+        'sorts': [{'property': 'Publicatiedatum', 'direction': 'ascending'}],
+        'page_size': 2,
+    }).get('results') or []
+    if not rows:
+        return None
+    if force and len(rows) != 1:
+        base.fail(f'Geforceerde slug is niet uniek; gevonden={len(rows)}')
+    return rows[0]
 
 
 def snapshot_from_row(row):
@@ -29,16 +52,27 @@ def actual_hash(q):
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
-def seal_or_validate(row):
+def queue_contract(row):
     q = snapshot_from_row(row)
+    if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', q['slug']):
+        base.fail('Queue bevat ongeldige slug')
+    if q['cmd'].replace('\\|', '|') != f"seo-publish|{q['source']}|{q['slug']}":
+        base.fail('Publish Command ID mismatch')
+    if q['attempt'] >= 2:
+        base.fail('Maximaal twee dispatchpogingen toegestaan')
+    if not all([q['source'], q['title'], q['blogtext'], q['keyword'], q['meta'], q['source_hash']]):
+        base.fail('Approved snapshot is incompleet')
+    if not 120 <= len(q['meta']) <= 170:
+        base.fail('Meta-omschrijving buiten toegestane lengte')
+    return q
+
+
+def seal_or_validate(row):
+    q = queue_contract(row)
     actual = actual_hash(q)
     if q['source_hash'] == 'PENDING_SEAL':
         base.req(f"/pages/{q['page']}", 'PATCH', {
-            'properties': {
-                'Approved Source Hash': {
-                    'rich_text': [{'type': 'text', 'text': {'content': actual}}]
-                }
-            }
+            'properties': {'Approved Source Hash': {'rich_text': [{'type': 'text', 'text': {'content': actual}}]}}
         })
         print(f'SEALED:{actual}')
         return None
@@ -50,14 +84,13 @@ def seal_or_validate(row):
 def render(force=''):
     if force and not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', force):
         base.fail('Ongeldige geforceerde slug')
-    row = base.get_queue(force)
+    row = get_queue(force)
     if not row:
         print('NO_ACTION: geen Pending Approved central article')
         return
-    sealed = seal_or_validate(row)
-    if sealed is None:
+    q = seal_or_validate(row)
+    if q is None:
         return
-    q = base.queue_contract(row)
     target = pathlib.Path('blog') / q['slug'] / 'index.html'
     if target.exists():
         base.fail('Doelslug bestaat al; verificatie vereist in plaats van tweede commit')
@@ -66,15 +99,7 @@ def render(force=''):
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(base.article(base.TEMPLATE.read_text(encoding='utf-8'), q), encoding='utf-8')
     base.updates(q)
-    print(json.dumps({
-        'status': 'RENDERED',
-        'slug': q['slug'],
-        'content_id': q['source'],
-        'command_id': q['cmd'],
-        'source_hash': q['source_hash'],
-        'queue_page': q['page'],
-        'dispatch_attempt': q['attempt'] + 1,
-    }, ensure_ascii=False))
+    print(json.dumps({'status': 'RENDERED', 'slug': q['slug'], 'content_id': q['source'], 'command_id': q['cmd'], 'source_hash': q['source_hash'], 'queue_page': q['page'], 'dispatch_attempt': q['attempt'] + 1}, ensure_ascii=False))
 
 
 def mark_dispatched(page_id, attempt, run_id=''):
@@ -83,6 +108,7 @@ def mark_dispatched(page_id, attempt, run_id=''):
     props = {
         'Dispatch status': {'select': {'name': 'Dispatched'}},
         'Dispatch attempt': {'number': int(attempt)},
+        'Dispatched At': {'date': {'start': dt.datetime.now(dt.timezone.utc).isoformat()}},
     }
     if run_id:
         props['GitHub Run ID'] = {'rich_text': [{'type': 'text', 'text': {'content': str(run_id)}}]}
