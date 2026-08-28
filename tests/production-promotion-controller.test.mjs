@@ -2,6 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { evaluatePromotion } from '../scripts/production/promotion-controller.mjs';
 
+const authoritative = {
+  status: 'GREEN',
+  production_sha: 'main123',
+  last_known_good_sha: 'lkg123',
+  production_tree_sha: 'tree-main',
+  last_known_good_tree_sha: 'tree-lkg'
+};
+
 const base = {
   fingerprint: 'production|candidate|abc',
   owner_agent: '09',
@@ -10,7 +18,8 @@ const base = {
   tested_head_sha: 'candidate123',
   base_sha: 'main123',
   current_main_sha: 'main123',
-  last_known_good_sha: 'main123',
+  last_known_good_sha: 'caller-should-not-control-this',
+  authoritative_production_state: authoritative,
   last_known_good_deploy_id: 'deploy-old',
   current_hypothesis: 'fix build',
   retry_count_for_hypothesis: 0,
@@ -25,8 +34,15 @@ test('green exact candidate is ready for exact-SHA promotion', () => {
   assert.deepEqual(evaluatePromotion(base), {
     state: 'PROMOTION_READY',
     action: 'PROMOTE_EXACT_SHA',
-    candidate_sha: 'candidate123'
+    candidate_sha: 'candidate123',
+    last_known_good_sha: 'lkg123'
   });
+});
+
+test('missing authoritative production state fails closed before promotion or rollback', () => {
+  const r = evaluatePromotion({ ...base, authoritative_production_state: undefined });
+  assert.equal(r.state, 'OPEN_REPAIR');
+  assert.equal(r.action, 'VERIFY_PRODUCTION_STATE');
 });
 
 test('red candidate routes to repair rather than terminal failure', () => {
@@ -51,11 +67,33 @@ test('main drift requires candidate re-verification before promotion', () => {
   assert.equal(r.action, 'VERIFY_CANDIDATE');
 });
 
-test('production red requires deterministic rollback', () => {
-  const r = evaluatePromotion({ ...base, production_status: 'red', production_sha: 'candidate123' });
+test('production red uses persisted LKG and ignores caller supplied rollback pointer', () => {
+  const r = evaluatePromotion({
+    ...base,
+    production_status: 'red',
+    production_sha: 'main123',
+    current_main_sha: 'main123',
+    last_known_good_sha: 'malicious-caller-sha'
+  });
   assert.equal(r.state, 'ROLLBACK_REQUIRED');
   assert.equal(r.action, 'ROLLBACK_LAST_KNOWN_GOOD');
-  assert.equal(r.rollback_sha, 'main123');
+  assert.equal(r.rollback_sha, 'lkg123');
+  assert.equal(r.current_main_sha, 'main123');
+});
+
+test('production red fails closed when persisted LKG equals current main', () => {
+  const r = evaluatePromotion({
+    ...base,
+    production_status: 'red',
+    production_sha: 'main123',
+    current_main_sha: 'main123',
+    authoritative_production_state: {
+      ...authoritative,
+      last_known_good_sha: 'main123'
+    }
+  });
+  assert.equal(r.state, 'OPEN_REPAIR');
+  assert.equal(r.action, 'VERIFY_PRODUCTION_STATE');
 });
 
 test('verified production exact SHA becomes green', () => {
@@ -67,6 +105,36 @@ test('verified production exact SHA becomes green', () => {
   });
   assert.equal(r.state, 'PRODUCTION_GREEN');
   assert.equal(r.action, 'PRODUCTION_GREEN');
+});
+
+test('verified rollback becomes ROLLED_BACK_GREEN only when restored tree equals persisted LKG tree', () => {
+  const r = evaluatePromotion({
+    ...base,
+    production_status: 'green',
+    production_sha: 'rollback-commit',
+    current_main_sha: 'rollback-commit',
+    production_deploy_status: 'ready',
+    rollback_completed: true,
+    production_tree_sha: 'tree-lkg'
+  });
+  assert.equal(r.state, 'ROLLED_BACK_GREEN');
+  assert.equal(r.action, 'ROLLED_BACK_GREEN');
+  assert.equal(r.restored_tree_sha, 'tree-lkg');
+  assert.equal(r.history_preserved, true);
+});
+
+test('rollback completion with wrong tree remains open repair', () => {
+  const r = evaluatePromotion({
+    ...base,
+    production_status: 'green',
+    production_sha: 'rollback-commit',
+    current_main_sha: 'rollback-commit',
+    production_deploy_status: 'ready',
+    rollback_completed: true,
+    production_tree_sha: 'wrong-tree'
+  });
+  assert.equal(r.state, 'OPEN_REPAIR');
+  assert.equal(r.action, 'VERIFY_PRODUCTION_STATE');
 });
 
 test('hard boundary is the only blocking terminal state', () => {
@@ -153,4 +221,5 @@ test('validated iPhone-safe derivative is eligible for normal exact-SHA promotio
   });
   assert.equal(r.state, 'PROMOTION_READY');
   assert.equal(r.action, 'PROMOTE_EXACT_SHA');
+  assert.equal(r.last_known_good_sha, 'lkg123');
 });
