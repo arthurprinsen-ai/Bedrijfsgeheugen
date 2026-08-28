@@ -23,7 +23,7 @@ let html = gunzipSync(Buffer.from(base64, 'base64')).toString('utf8');
 if (sha256(html) !== EXPECTED_HTML_SHA256) throw new Error(`V18 HTML integrity mismatch: ${sha256(html)}`);
 
 const video = `<video id="heroBackgroundVideo" class="hero-bg-video" autoplay muted playsinline loop preload="metadata" aria-hidden="true">
-  <source src="/assets/inspirational-hero-v1.mp4" type="video/mp4">
+  <source src="/assets/inspirational-hero-v2.mp4" type="video/mp4">
 </video>`;
 
 html = html.replace(/<video[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/, video);
