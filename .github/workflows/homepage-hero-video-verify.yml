@@ -1,0 +1,35 @@
+name: Homepage Hero Video Verify
+
+on:
+  push:
+    branches:
+      - automation/openart-hero-homepage-integration
+    paths:
+      - index.html
+      - assets/openart-hero-iphone-safe-v1.mp4
+      - assets/openart-hero-production.json
+      - tests/homepage-hero-video.test.mjs
+      - .github/workflows/homepage-hero-video-verify.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - index.html
+      - assets/openart-hero-iphone-safe-v1.mp4
+      - assets/openart-hero-production.json
+      - tests/homepage-hero-video.test.mjs
+      - .github/workflows/homepage-hero-video-verify.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/homepage-hero-video.test.mjs
