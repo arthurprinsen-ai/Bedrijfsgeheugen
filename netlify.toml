@@ -261,7 +261,7 @@
 
 [[redirects]]
   from = "/twinfield-koppeling.html"
-  to = "/twinfield-koppelen"
+  to = "/twinfield-koppeling"
   status = 301
   force = true
 
