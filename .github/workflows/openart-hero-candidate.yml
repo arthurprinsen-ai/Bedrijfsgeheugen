@@ -1,0 +1,56 @@
+name: OpenArt Hero Candidate
+
+on:
+  push:
+    branches:
+      - automation/openart-hero-candidate
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure ffmpeg tooling
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+      - name: Download exact OpenArt hero source
+        run: |
+          curl -L --fail --retry 3 --retry-delay 2 \
+            'https://cdn.openart.ai/openart-ai/production/2026-08/create-video/WZvuT1BzGx566fWaFo8F/xai-video-143123ce-c19d-935c-a98f-0ffc678d4ae0_1787928916465_3c8704c8.mp4' \
+            -o openart-hero-source.mp4
+      - name: Normalize and validate
+        run: |
+          node scripts/media/hero-media-executor.mjs \
+            openart-hero-source.mp4 \
+            openart-hero-iphone-safe.mp4 \
+            > openart-hero-manifest.json
+          cat openart-hero-manifest.json
+      - name: Assert exact media contract
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const m = JSON.parse(fs.readFileSync('openart-hero-manifest.json', 'utf8'));
+          const p = m.promotion_state;
+          if (!p?.media_derivative_validated) throw new Error(`media gate failed: ${JSON.stringify(p?.media_validation_failures || [])}`);
+          if (p.iphone_runtime_status !== 'pending') throw new Error('candidate must remain pending physical iPhone runtime acceptance');
+          console.log(JSON.stringify({
+            source: m.source_probe,
+            derivative: m.derivative_probe,
+            source_sha256: m.source_sha256,
+            derivative_sha256: m.derivative_sha256,
+            state: 'VERIFY_IPHONE_RUNTIME'
+          }, null, 2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openart-hero-iphone-safe-candidate
+          path: |
+            openart-hero-iphone-safe.mp4
+            openart-hero-manifest.json
+          retention-days: 7
