@@ -18,9 +18,6 @@ const LEGACY_PEOPLE_IMAGE = 'https://images.pexels.com/photos/3182812/pexels-pho
 const HERO_SOURCE_MANIFEST = 'assets/hero-pexels-source.txt';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
-// Device evidence on iPhone: previous candidate painted the drone poster/first frame and then went blank.
-// Keep the canonical player/controller unchanged and change one variable only: media delivery.
-// This Pexels building-drone download resolves to HD 1920x1080 at 30fps, matching the proven source class.
 const sourceResponse = await fetch(PEXELS_DOWNLOAD_URL, {
   method: 'GET',
   redirect: 'follow',
@@ -63,12 +60,53 @@ hero = hero.replace(/<source\s+src="[^"]+"\s+type="video\/mp4"\s*\/?>/, `<source
 if (!hero.includes(resolvedDroneSource) || !hero.includes(DRONE_POSTER)) throw new Error('Hero media swap failed');
 html = html.replace(heroMatch[0], hero);
 
-// The canonical payload also contains a CSS first-paint fallback with the old people image.
-// Replace it with the drone poster so no device can flash the legacy visual before video startup.
 html = html.split(LEGACY_PEOPLE_IMAGE).join(DRONE_POSTER);
 if (html.includes(LEGACY_PEOPLE_IMAGE)) throw new Error('Legacy people hero fallback still present');
 
-// Do not add playback-rate or alternate-controller tuning while the iPhone recovery is being verified.
-// Startup behavior remains byte-for-byte canonical; only source and fallback imagery differ.
+const diagnostics = `<style id="v18-hero-hard-reset">
+.hero-video{background:#dbe7ee!important;background-image:none!important;}
+.hero-video::before,.hero-video::after{content:none!important;display:none!important;background:none!important;background-image:none!important;}
+#heroBackgroundVideo{display:block!important;opacity:1!important;visibility:visible!important;}
+#v18VideoDebug{display:none;position:fixed;z-index:2147483647;left:8px;right:8px;bottom:8px;max-height:42vh;overflow:auto;background:rgba(0,0,0,.88);color:#fff;padding:10px 12px;border-radius:10px;font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;}
+</style>
+<div id="v18VideoDebug" aria-live="polite"></div>
+<script id="v18-video-diagnostics">
+(function(){
+  const video=document.getElementById('heroBackgroundVideo');
+  const box=document.getElementById('v18VideoDebug');
+  if(!video||!box)return;
+  const debug=new URLSearchParams(location.search).get('video-debug')==='1';
+  if(!debug)return;
+  box.style.display='block';
+  const events=[];
+  const snapshot=(label)=>{
+    const e=video.error;
+    const data={
+      label,
+      t:Date.now(),
+      currentSrc:video.currentSrc,
+      paused:video.paused,
+      ended:video.ended,
+      currentTime:Number(video.currentTime||0).toFixed(3),
+      readyState:video.readyState,
+      networkState:video.networkState,
+      videoWidth:video.videoWidth,
+      videoHeight:video.videoHeight,
+      errorCode:e?e.code:0,
+      errorMessage:e&&e.message?e.message:'',
+      muted:video.muted,
+      playsInline:video.playsInline
+    };
+    events.push(data);
+    while(events.length>12)events.shift();
+    box.textContent=events.map(x=>JSON.stringify(x)).join('\n');
+  };
+  ['loadstart','loadedmetadata','loadeddata','canplay','canplaythrough','play','playing','waiting','stalled','suspend','pause','error','abort','emptied'].forEach(evt=>video.addEventListener(evt,()=>snapshot(evt)));
+  setInterval(()=>snapshot('tick'),1500);
+  snapshot('init');
+})();
+</script>`;
+
+html = html.replace('</body>', `${diagnostics}\n</body>`);
 await writeFile('prototype-v18-stable.html', html, 'utf8');
-console.log(`V18 stable preview built: canonical controller, no legacy people fallback, official HD 1920x1080@30fps Pexels drone: ${resolvedDroneSource}`);
+console.log(`V18 stable preview built: canonical controller, hard-reset hero fallback, iPhone diagnostics, official HD 1920x1080@30fps Pexels source: ${resolvedDroneSource}`);
