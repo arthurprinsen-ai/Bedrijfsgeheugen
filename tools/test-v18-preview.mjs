@@ -1,6 +1,6 @@
 import { readFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import ffmpegPath from 'ffmpeg-static';
 
 const html = await readFile('prototype-v18-stable.html', 'utf8');
@@ -41,12 +41,8 @@ if (heroBytes.subarray(4,8).toString('ascii') !== 'ftyp') fail('drone hero is no
 const heroHash = sha256(heroBytes);
 
 if (!ffmpegPath) fail('ffmpeg-static binary unavailable for media QA');
-let mediaInfo = '';
-try {
-  mediaInfo = execFileSync(ffmpegPath, ['-hide_banner','-i',HERO_PATH,'-f','null','-'], { encoding:'utf8', stdio:['ignore','pipe','pipe'] });
-} catch (error) {
-  mediaInfo = `${error.stdout || ''}\n${error.stderr || ''}`;
-}
+const probe = spawnSync(ffmpegPath, ['-hide_banner','-i',HERO_PATH,'-f','null','-'], { encoding:'utf8' });
+const mediaInfo = `${probe.stdout || ''}\n${probe.stderr || ''}`;
 const inputInfo = mediaInfo.split('Stream mapping:')[0].split('Output #0')[0];
 const videoStreams = inputInfo.match(/Stream #0:\d+.*Video:/g) || [];
 const audioStreams = inputInfo.match(/Stream #0:\d+.*Audio:/g) || [];
