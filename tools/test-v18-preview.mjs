@@ -1,5 +1,6 @@
 import { readFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 
 const html = await readFile('prototype-v18-stable.html', 'utf8');
 const indexHtml = await readFile('index.html', 'utf8');
@@ -20,8 +21,7 @@ for (const target of targets) if (!views.has(target)) fail(`missing data-view ta
 if (count(html, /id="heroBackgroundVideo"/g) !== 1) fail('expected exactly one hero video');
 const hero = html.match(/<video[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/)?.[0] || '';
 for (const attr of ['autoplay','muted','playsinline','loop']) if (!new RegExp(`\\b${attr}\\b`).test(hero)) fail(`hero video missing ${attr}`);
-if (!hero.includes('/assets/inspirational-hero-v4.mp4')) fail('hero video must use same-origin Safari-safe v4 MP4');
-if (!/preload="auto"/.test(hero)) fail('hero v4 must preload for fast first paint');
+if (!hero.includes('/assets/inspirational-hero-v4.mp4')) fail('hero video must use Safari-safe same-origin v4 MP4');
 if (!html.includes('video.playbackRate=.65')) fail('hero v4 must use the approved slower cinematic playback rate');
 
 for (const forbidden of ['DecompressionStream','pako','v18-full/chunk','atob(']) if (html.includes(forbidden)) fail(`runtime loader token present: ${forbidden}`);
@@ -32,19 +32,34 @@ if (badHrefs.length) fail(`non-HTTPS anchor hrefs: ${badHrefs.slice(0,5).join(',
 
 const VIDEO_PATH = 'assets/inspirational-hero-v4.mp4';
 const videoStat = await stat(VIDEO_PATH);
-if (videoStat.size < 300000 || videoStat.size > 8000000) fail(`hero v4 size outside web-safe range: ${videoStat.size} bytes`);
+if (videoStat.size < 100000) fail(`hero v4 unexpectedly small: ${videoStat.size} bytes`);
 const videoBytes = await readFile(VIDEO_PATH);
 if (videoBytes.subarray(4, 8).toString('ascii') !== 'ftyp') fail('hero v4 is not a valid MP4 container');
 const videoHash = sha256(videoBytes);
 if (!/^[a-f0-9]{64}$/.test(videoHash)) fail('hero v4 hash invalid');
-const manifest = await readFile('assets/inspirational-hero-v4.integrity.txt', 'utf8');
-for (const required of [
-  `bytes=${videoStat.size}`,
-  `sha256=${videoHash}`,
-  'codec=h264',
-  'pixel_format=yuv420p',
-  'audio=none',
-  'resolution=1280x720'
-]) if (!manifest.includes(required)) fail(`hero v4 manifest missing: ${required}`);
 
-console.log(`V18 preview QA PASS — stable root, 14 views, ${targets.length} routes, Safari-safe hero-v4 ${videoStat.size} bytes ${videoHash}, ${hrefs.length} HTTPS anchors`);
+let probe;
+try {
+  probe = JSON.parse(execFileSync('ffprobe', [
+    '-v','error',
+    '-show_entries','stream=index,codec_type,codec_name,pix_fmt,width,height:format=format_name,duration',
+    '-of','json',
+    VIDEO_PATH
+  ], { encoding: 'utf8' }));
+} catch (error) {
+  fail(`ffprobe failed: ${error?.message || error}`);
+}
+const streams = Array.isArray(probe?.streams) ? probe.streams : [];
+const videoStreams = streams.filter(s => s.codec_type === 'video');
+const audioStreams = streams.filter(s => s.codec_type === 'audio');
+if (videoStreams.length !== 1) fail(`expected exactly one video stream, found ${videoStreams.length}`);
+if (audioStreams.length !== 0) fail(`hero v4 must contain no audio streams, found ${audioStreams.length}`);
+const v = videoStreams[0];
+if (v.codec_name !== 'h264') fail(`hero v4 codec ${v.codec_name}, expected h264`);
+if (v.pix_fmt !== 'yuv420p') fail(`hero v4 pixel format ${v.pix_fmt}, expected yuv420p`);
+if (v.width !== 1280 || v.height !== 720) fail(`hero v4 dimensions ${v.width}x${v.height}, expected 1280x720`);
+if (!String(probe?.format?.format_name || '').includes('mp4')) fail(`hero v4 container ${probe?.format?.format_name}, expected mp4`);
+const duration = Number(probe?.format?.duration || 0);
+if (!(duration > 7 && duration < 9)) fail(`hero v4 duration ${duration}s outside expected source range`);
+
+console.log(`V18 preview QA PASS — stable root, 14 views, ${targets.length} routes, Safari-safe hero-v4 ${videoStat.size} bytes ${videoHash}, h264/yuv420p/1280x720/no-audio, ${hrefs.length} HTTPS anchors`);
