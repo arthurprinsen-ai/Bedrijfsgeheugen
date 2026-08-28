@@ -141,3 +141,43 @@ When any production promotion regresses protected smoke/regression or metrics, a
 - **Current terminal state:** `ROLLED_BACK_GREEN`.
 - **Owner:** Architect/Integrator + QA/Regression.
 - **Reusable lesson:** `PRODUCTION_GREEN` is point-in-time evidence, not a permanent state; any later protected red signal must trigger exact-tree rollback and independent production re-verification.
+
+## 2026-08-28 21:20 CEST — ERROR — BG167 current projection contradicted release truth and specialist routing
+- **Fingerprint:** `shared-memory|bg167|contradicted-promotion-and-agent-id-collision`
+- **Signal:** current Team Memory still exposed a stale `PRODUCTION_PROMOTION` whose own reason contained `PRODUCTION_ROLLBACK`, and Agents 07/08/09 were mapped to shifted/duplicate scenario IDs.
+- **Impact:** a later agent could infer the wrong current release state or dispatch specialist work to the wrong Make scenario.
+- **Root cause:** BG167 module 4 only filtered one legacy smoke pattern and used a stale static team table: Agent 07=`7088553`, Agent 08=`7088558`, Agent 09=`7088558`.
+- **Evidence:** pre-fix BG167 run `336f452298a54e4a87f20460e38ef1c1`; Make scenario lookup verified Agent 07 Signal Ingest=`7088548`, Agent 08 DM History Backend=`7088553`, Agent 09 Telemetry Self-Healing=`7088558`.
+- **Owner:** Knowledge/Governance + Architect/Integrator.
+- **Production protection:** production stayed `cdb45925145ff77c47b23b32d3b6471030a1486a`, Netlify `6a91d363fba2440008d9c514`, `ready`.
+
+## 2026-08-28 21:20 CEST — RECOVERY — BG167 projection consistency restored
+- **Fingerprint:** `shared-memory|bg167|projection-consistency-restored`
+- **Fix:** suppress a CURRENT `PRODUCTION_PROMOTION` projection only when its own evidence explicitly contains rollback semantics; correct Agent 07/08/09 IDs to `7088548`/`7088553`/`7088558`; add a fail-fast uniqueness assertion across all 16 specialist scenario IDs.
+- **Regression gate:** BG167 generation throws `TEAM_CONTEXT duplicate agent scenario ids` on collisions.
+- **Verification:** BG167 run `87eb64ab8f794b1cb57a9bd6f936a994` returned 16 unique specialist IDs, the verified 07/08/09 mappings and no contradicted rollback-as-promotion record; the genuine promotion regression fixture remained visible.
+- **Rollback:** restore the prior module-4 mapper if context generation regresses; source learning history is not deleted.
+- **Reusable lesson:** preserve immutable history but keep CURRENT projections contradiction-free; static agent dispatch tables require executable uniqueness guards.
+
+## 2026-08-28 21:23 CEST — ERROR — BG168 diagnostic ERROR overridden by rollback keywords
+- **Fingerprint:** `shared-learning|bg168|explicit-error-prefix-overridden-by-rollback-keywords`
+- **Signal:** BG168 execution `aab328b8f1a44d22ac6e2c3a27fae10d` received an `ERROR:` event describing rollback evidence and returned `kind=PRODUCTION_ROLLBACK`.
+- **Impact:** diagnostic learning could create a false production rollback record merely because the error description contains rollback vocabulary.
+- **Root cause:** for non-JSON free text, BG168 applied semantic rollback keyword detection before explicit material event prefixes.
+- **Known failed approach:** relying on keyword precedence alone when the caller already supplies an explicit event type.
+- **Owner:** Knowledge/Governance + Outcome Router.
+
+## 2026-08-28 21:23 CEST — RECOVERY — BG168 explicit material type precedence
+- **Fingerprint:** `shared-learning|bg168|explicit-type-prefix-precedence`
+- **Fix:** detect explicit leading `ERROR:`, `RECOVERY:`, `IMPROVEMENT:`, `CONTRACT_CHANGE:`, `PRODUCTION_PROMOTION:` and `PRODUCTION_ROLLBACK:` before semantic fallback; retain the existing production-negation guard.
+- **Regression verification:** exact failing message re-run as execution `2d263ce204c64d1395eb284316f90d16` now returns `AGENT_ERROR`; genuine rollback execution `0ef4fe32d6064ffb81c8bd753b38ed1d` still returns `PRODUCTION_ROLLBACK`.
+- **Rollback:** restore the previous module-2 mapper if explicit prefix handling suppresses a valid untyped material event.
+- **Reusable lesson:** explicit structured intent must outrank incidental vocabulary; semantic classification is a fallback, not an override.
+
+## 2026-08-28 21:23 CEST — IMPROVEMENT — shared-memory routing consistency guards
+- **Fingerprint:** `shared-memory|routing-consistency|unique-ids-explicit-type-precedence`
+- **Baseline:** three consecutive specialist slots projected only two unique Make IDs, and explicit diagnostic event types could be overridden by incidental release-state words.
+- **Change:** Team Memory now enforces 16/16 unique specialist IDs and BG168 honors explicit event prefixes before keyword fallback while retaining rollback-before-promotion semantics for untyped text.
+- **After:** Agent 07/08/09 route to verified `7088548`/`7088553`/`7088558`; BG167 run `87eb64ab8f794b1cb57a9bd6f936a994` and BG168 runs `2d263ce204c64d1395eb284316f90d16` / `0ef4fe32d6064ffb81c8bd753b38ed1d` are green.
+- **Production:** no website code changed; protected production remains `cdb45925145ff77c47b23b32d3b6471030a1486a` / `6a91d363fba2440008d9c514`, `ready`, with public homepage smoke healthy.
+- **Reusable lesson:** make routing identity and event-type precedence executable invariants so shared memory cannot silently corrupt the next agent's decisions.
