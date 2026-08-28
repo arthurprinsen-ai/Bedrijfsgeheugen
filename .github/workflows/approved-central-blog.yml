@@ -1,5 +1,5 @@
 name: Approved central blog publisher
-# Canary 4: publish sealed BG-428 snapshot
+# Canary 5: include untracked article in deterministic diff contract
 
 on:
   push:
@@ -58,11 +58,17 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import json, pathlib, re, subprocess
-          changed = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
+          status = subprocess.check_output(['git','status','--porcelain'], text=True).splitlines()
+          changed = []
+          for line in status:
+              path = line[3:].strip()
+              if ' -> ' in path:
+                  path = path.split(' -> ', 1)[1]
+              changed.append(path)
           allowed_exact = {'blog/index.html','blog/rss.xml','sitemap.xml'}
           article = [p for p in changed if re.fullmatch(r'blog/[a-z0-9-]+/index\.html', p)]
           unexpected = [p for p in changed if p not in allowed_exact and p not in article]
-          assert len(article) == 1, f'exact één artikelbestand vereist, gevonden={article}'
+          assert len(article) == 1, f'exact één artikelbestand vereist, gevonden={article}; changed={changed}'
           assert not unexpected, f'onverwachte bestanden gewijzigd: {unexpected}'
           text = pathlib.Path(article[0]).read_text(encoding='utf-8')
           assert len(re.findall(r'<h1(?:\s|>)', text)) == 1, 'exact één h1 vereist'
@@ -72,7 +78,7 @@ jobs:
           ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
           assert ld, 'JSON-LD ontbreekt'
           json.loads(ld.group(1))
-          print('CONTRACT_OK', article[0], m.group(1))
+          print('CONTRACT_OK', article[0], m.group(1), changed)
           PY
 
       - name: Commit and push
