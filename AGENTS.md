@@ -16,11 +16,30 @@ Verplichte self-healing lus:
 5. voer de kleinst mogelijke oorzaakgerichte fix uit;
 6. test opnieuw;
 7. als de test faalt: analyseer de nieuwe fout en herhaal de lus;
-8. publiceer alleen naar de bedoelde preview/testomgeving;
-9. verifieer de exacte commit/deploy;
-10. leg fout, oorzaak, fix, mislukte pogingen en preventieregel vast in het ledger.
+8. publiceer naar preview/test;
+9. verifieer exacte commit/deploy;
+10. als preview groen is: promoveer automatisch naar productie;
+11. verifieer productie opnieuw;
+12. als productie rood is: rollback naar last-known-good, analyseer de nieuwe fout en hervat de herstelcyclus;
+13. leg fout, oorzaak, fix, mislukte pogingen, productie-uitkomst en preventieregel vast in het ledger.
 
-Een agent mag dus niet eindigen met alleen “dit moet je aanpassen”, “controleer dit”, “hier is een advies” of “de build faalt”, wanneer de agent de fout zelf veilig kan herstellen.
+Een agent mag dus niet eindigen met alleen “dit moet je aanpassen”, “controleer dit”, “hier is een advies”, “de build faalt” of “de deploy is rood” wanneer de agent de fout zelf veilig kan herstellen.
+
+## Groen-tot-klaar contract
+Voor veilig oplosbare kandidaatwijzigingen is `FAILED` geen terminale status maar een nieuwe diagnose-input.
+
+Agents blijven itereren totdat één van deze terminale toestanden is bereikt:
+- `PRODUCTION_GREEN`: productie is aantoonbaar groen en de wijziging is geverifieerd;
+- `ROLLED_BACK_GREEN`: de nieuwe variant kon nog niet veilig worden behouden, maar productie is automatisch teruggebracht naar de laatste bewezen groene versie en de reparatielus gaat op de veilige ontwikkelroute verder;
+- `BLOCKED_HARD_BOUNDARY`: alleen wanneer de volgende noodzakelijke stap secrets/credentials/permissies, security-controls, destructieve/onherroepelijke data, hogere betaalde externe resources of juridisch/financieel bindende acties vereist.
+
+Regels:
+- maximaal twee identieke retries zonder nieuwe informatie;
+- daarna verplicht nieuwe hypothese, andere oorzaakfix of bewezen fallback;
+- geen eindeloze blinde retry-loop;
+- iedere iteratie moet nieuw bewijs opleveren;
+- productie blijft beschikbaar via last-known-good waar technisch mogelijk;
+- agents hervatten bij de volgende run automatisch openstaande niet-groene herstelitems.
 
 ## Eén team, één geheugen
 Alle agents opereren als één team met specialistische rollen. Geen agent mag een eigen geïsoleerde waarheid aanhouden.
@@ -33,7 +52,7 @@ Voor iedere materiële taak geldt verplicht:
 5. schrijf iedere materiële uitkomst terug via `material outcome writeback`;
 6. laat de gedeelde teamcontext daarna verversen zodat alle agents dezelfde nieuwste waarheid zien.
 
-Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT` en `CONTRACT_CHANGE`.
+Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` en `CONTRACT_CHANGE`.
 
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read of material-outcome writeback ontbreekt.
 
@@ -58,38 +77,40 @@ Een kans mag niet als losse hype worden uitgevoerd. Voor autonome uitvoering zij
 - meetbare hypothese en `baseline`;
 - succesmetric;
 - expliciete `rollback`;
-- veilige `preview experiment` execution class.
+- veilige execution class.
 
-Sterke veilig testbare kansen mogen niet eindeloos als advies blijven staan. Binnen preview/testgrenzen bouwt de eigenaar de kleinste testbare variant, meet het effect en schrijft `EXPERIMENT_RESULT` terug. Alleen aantoonbare verbetering wordt behouden; regressie leidt tot rollback.
+Sterke veilig testbare kansen mogen niet als advies blijven staan. De eigenaar bouwt de kleinste testbare variant, meet het effect, promoveert bij groen automatisch naar productie en schrijft `EXPERIMENT_RESULT` terug. Alleen aantoonbare verbetering wordt behouden; regressie leidt automatisch tot rollback en nieuwe herstel-/experimentiteratie.
 
 ## Autonomiebereik
 Agents mogen zonder aanvullende toestemming zelfstandig:
-- previewbranches repareren;
+- ontwikkel-, preview- en productiebranches repareren via de vastgelegde groene promotiepoort;
 - tests, validators en quality gates toevoegen of aanscherpen;
-- niet-destructieve build/deployconfiguratie op preview herstellen;
-- kapotte preview-assets vervangen of opnieuw genereren volgens bestaande ontwerp- en kwaliteitsregels;
+- niet-destructieve build/deployconfiguratie herstellen;
+- kapotte assets vervangen of opnieuw genereren volgens bestaande ontwerp- en kwaliteitsregels;
 - regressies in routing, UI, media en statische assets herstellen;
 - documentatie, runbooks en het development ledger bijwerken;
-- kosten-, performance- en betrouwbaarheidsverbeteringen uitvoeren wanneer gedrag en output aantoonbaar gelijk of beter blijven;
-- veilige SEO-, website-, content-, product- en technische preview-experimenten uitvoeren met baseline, metric en rollback;
-- een mislukte previewdeploy opnieuw laten bouwen nadat de oorzaak is opgelost.
+- kosten-, performance-, SEO-, UX- en betrouwbaarheidsverbeteringen uitvoeren wanneer gedrag en protected metrics aantoonbaar gelijk of beter blijven;
+- veilige SEO-, website-, content-, product- en technische experimenten uitvoeren met baseline, metric en rollback;
+- mislukte deploys opnieuw laten bouwen nadat de oorzaak is gewijzigd of een nieuwe hypothese bestaat;
+- een groene kandidaat automatisch naar productie promoveren;
+- bij productieregressie automatisch terugrollen naar last-known-good.
 
 Agents mogen NIET autonoom:
-- `main` of productie mergen, overschrijven of vervangen;
-- secrets, credentials, permissies of security-controls verzwakken;
-- destructieve datamutaties uitvoeren;
-- betalingen, abonnementen of externe kosten verhogen;
-- onomkeerbare wijzigingen uitvoeren zonder expliciete toestemming.
+- secrets, credentials of permissies wijzigen;
+- security-controls verzwakken;
+- destructieve of onomkeerbare datamutaties uitvoeren;
+- betalingen, abonnementen of betaalde externe resources verhogen;
+- juridisch of financieel bindende acties uitvoeren.
 
-Bij zo'n grens wordt de veilige omgeving werkend gehouden, de blokkade exact vastgelegd en alleen de echt noodzakelijke toestemming gevraagd.
+Bij zo'n harde grens wordt productie veilig groen gehouden, de blokkade exact vastgelegd en alleen de echt noodzakelijke toestemming gevraagd.
 
 ## Geen stilstand als ontwerpprincipe
 Een fout in één optimalisatie of verbetering mag de rest van het systeem niet onnodig stilzetten. Waar technisch verantwoord moeten agents:
-- terugvallen op de laatste bewezen werkende previewversie;
-- een mislukte nieuwe variant blokkeren zonder de laatste groene variant kapot te maken;
+- terugvallen op de laatste bewezen werkende productie-/previewversie;
+- een mislukte nieuwe variant isoleren zonder de laatste groene variant kapot te maken;
 - retries begrenzen en daarna een alternatieve bewezen route kiezen;
 - degradatie zichtbaar maken maar kernfunctionaliteit beschikbaar houden;
-- nooit een kapotte nieuwe build als “acceptatieversie” presenteren.
+- nooit een kapotte nieuwe build als acceptatie- of productieversie presenteren.
 
 ## Verplichte leesvolgorde
 1. `AGENTS.md`
@@ -109,24 +130,27 @@ Voor iedere wijziging:
 2. Schrijf het gewenste resultaat en de invarianten op.
 3. Reproduceer/bewijs de fout of kwalificeer de kans.
 4. Voeg waar mogelijk eerst een falende regressiecheck of meetbare baseline toe.
-5. Pas de kleinst mogelijke oorzaakgerichte wijziging/preview-experiment toe.
+5. Pas de kleinst mogelijke oorzaakgerichte wijziging/experiment toe.
 6. Test lokaal/build-time/runtime passend bij het risico.
-7. Publiceer alleen naar de bedoelde preview/omgeving.
-8. Verifieer de exacte commit/deploy die de gebruiker gaat testen.
-9. Vergelijk resultaat met baseline en protected metrics.
-10. Behoud of rollback op basis van bewijs.
-11. Leg oorzaak/kans, fix/experiment, bewijs en preventieregel/les vast in het development ledger en gedeelde teamgeheugen.
+7. Deploy naar preview/test en verifieer exact commit/artifact.
+8. Als niet groen: analyseer nieuwe fout en herhaal met nieuwe informatie.
+9. Als groen: promoveer automatisch naar productie.
+10. Verifieer productie met smoke/regressie en protected metrics.
+11. Bij productieregressie: rollback naar last-known-good en hervat herstel.
+12. Vergelijk resultaat met baseline en protected metrics.
+13. Behoud of rollback op basis van bewijs.
+14. Leg oorzaak/kans, fix/experiment, bewijs, productiepromotie/rollback en preventieregel/les vast in development ledger en gedeeld teamgeheugen.
 
 ## Definition of Done
 Een wijziging is pas klaar als:
-- de oorzaak bekend is of expliciet als onbewezen staat gemarkeerd, óf de opportunity-rationale en evidence zijn vastgelegd;
 - relevante tests groen zijn;
+- de exacte productiecommit/deploy is geverifieerd;
+- productie-smoke/regressie groen is;
 - regressiechecks toekomstige herhaling blokkeren;
-- de juiste omgeving/commit is geverifieerd;
 - documentatie/ledger en material outcome writeback zijn bijgewerkt;
-- productie niet onbedoeld is gewijzigd;
-- de gebruiker geen oude of lokale acceptatie-URL krijgt;
-- opportunity-experimenten een meetbaar KEEP/ROLLBACK-resultaat hebben.
+- opportunity-experimenten een meetbaar KEEP/ROLLBACK-resultaat hebben;
+- een productieregressie automatisch naar last-known-good is teruggedraaid;
+- er geen veilig oplosbare rode kandidaat openstaat zonder actieve herstelroute.
 
 ## Snelheidsregels
 - Eerst bestaande kennis lezen, daarna pas debuggen of kansen uitwerken.
@@ -138,14 +162,15 @@ Een wijziging is pas klaar als:
 - Maak één bron van waarheid voor binaries, routes, hashes en runtimeconfig.
 - Vermijd tijdelijke oplossingen die later handmatig moeten worden onthouden.
 - Als een fix twee keer terugkomt, automatiseer de preventie.
-- Als een agent een fout zelf veilig kan oplossen, doet hij dat direct in plaats van een actie bij de gebruiker neer te leggen.
-- Als een gekwalificeerde kans veilig op preview kan worden getest, bouw en meet die in plaats van alleen adviseren.
+- Als een agent een fout zelf veilig kan oplossen, doet hij dat direct.
+- Als een gekwalificeerde kans veilig kan worden getest, bouw, meet en promoveer die bij groen in plaats van alleen adviseren.
 
 ## Veiligheids-/omgevingregels
-- `main`/productie nooit mergen, overschrijven of vervangen zonder expliciete bevestiging.
-- Preview-acceptatie moet een echte HTTPS-deploy zijn.
+- Productiepromotie mag alleen vanuit een aantoonbaar groene kandidaat met rollback/last-known-good.
+- Productieacceptatie moet een echte HTTPS-deploy zijn.
 - Lokale `file:`, `sandbox:` of QuickLook-weergave is geen acceptatiebewijs.
-- Grote binaire assets niet blind via connector-upload publiceren; transportintegriteit controleren of build-time reconstrueren/downloaden.
+- Grote binaire assets niet blind publiceren; transportintegriteit controleren of build-time reconstrueren/downloaden.
+- Security- en data-grenzen blijven ook bij een groene kandidaat bindend.
 
 ## Kennisborging
 Nieuwe fouten, verbeteringen, kansen en belangrijke beslissingen worden toegevoegd aan `docs/development-ledger.md` met:
@@ -161,8 +186,8 @@ Nieuwe fouten, verbeteringen, kansen en belangrijke beslissingen worden toegevoe
 - owner agent;
 - regressietest/gate;
 - verification en resultaatmetric;
+- productiecommit/deploy;
 - rollback/last-known-good;
-- herbruikbare les;
-- relevante commit/deploy.
+- herbruikbare les.
 
 De repo en Powerhouse Team Memory vormen samen het gedeelde geheugen. Agents moeten deze kennis uitbreiden en gebruiken.
