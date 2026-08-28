@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {evaluateShadow,SHADOW_POLICY_VERSION} from '../../brain/runtime/shadow-decision.mjs';
+const input={candidate:{type:'SEO_CONTENT_OPPORTUNITY',trace_id:'t1',correlation_id:'c1',evidence_refs:['e1'],evidence_quality:.9,evidence_freshness:1,confidence:.9,expected_value:2,success_probability:.8,urgency:1,strategic_fit:1,learning_value:1,reusability:1,cost:.5,risk:.5,time:.5,opportunity_cost:.5,alternatives:['WATCH']},mission:{id:'m1',objective:'Test demand',targets:['topic:brain'],protected_metrics:['security','brand'],budget:{credits:10},rollback:{mode:'NO_EXTERNAL_SIDE_EFFECTS'}},evidence:[{id:'e1',entity_refs:['topic:brain'],truth_status:'VERIFIED',confidence:.9}],proposedTeam:['PH03','PH10']};
+const out=evaluateShadow(input);
+assert.equal(out.mode,'SHADOW');
+assert.equal(out.side_effects_allowed,false);
+assert.equal(out.policy_version,SHADOW_POLICY_VERSION);
+assert.equal(out.trace_id,'t1');
+assert.deepEqual(out.evidence_refs,['e1']);
+assert.deepEqual(out.proposed_team,['PH03','PH10']);
+assert(out.context.known_facts.length===1);
+assert(['CREATE_CONTENT','TEST','WATCH','RESEARCH','PAUSE'].includes(out.decision));
+console.log('PASS shadow decision is side-effect free and traceable');
