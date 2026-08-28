@@ -1,0 +1,4 @@
+{
+  "$id": "brain.v1/envelope",
+  "required": ["id", "schema_version", "created_at", "producer", "trace_id", "correlation_id", "classification", "data_quality", "confidence", "provenance"]
+}
