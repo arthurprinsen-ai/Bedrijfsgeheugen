@@ -44,16 +44,19 @@ const mediaCheck = spawnSync(ffmpegPath, ['-hide_banner','-i',VIDEO_PATH,'-f','n
 if (mediaCheck.error) fail(`ffmpeg media verification failed to start: ${mediaCheck.error.message}`);
 if (mediaCheck.status !== 0) fail(`ffmpeg media verification failed: ${(mediaCheck.stderr || '').slice(-1200)}`);
 const mediaInfo = mediaCheck.stderr || '';
-const videoLines = mediaInfo.split('\n').filter(line => /Stream #.*Video:/.test(line));
-const audioLines = mediaInfo.split('\n').filter(line => /Stream #.*Audio:/.test(line));
-if (videoLines.length !== 1) fail(`expected exactly one video stream, found ${videoLines.length}`);
-if (audioLines.length !== 0) fail(`hero v4 must contain no audio streams, found ${audioLines.length}`);
+// ffmpeg prints input stream metadata first and generated null-output metadata later.
+// Only inspect the input section; otherwise one real input video appears as two video lines.
+const inputInfo = mediaInfo.split('Stream mapping:')[0].split('Output #0')[0];
+const videoLines = inputInfo.split('\n').filter(line => /Stream #0:\d+.*Video:/.test(line));
+const audioLines = inputInfo.split('\n').filter(line => /Stream #0:\d+.*Audio:/.test(line));
+if (videoLines.length !== 1) fail(`expected exactly one input video stream, found ${videoLines.length}: ${videoLines.join(' | ')}`);
+if (audioLines.length !== 0) fail(`hero v4 must contain no input audio streams, found ${audioLines.length}`);
 const videoLine = videoLines[0];
 if (!/Video:\s*h264\b/.test(videoLine)) fail(`hero v4 is not H.264: ${videoLine.trim()}`);
 if (!/\byuv420p\b/.test(videoLine)) fail(`hero v4 is not yuv420p: ${videoLine.trim()}`);
 if (!/\b1280x720\b/.test(videoLine)) fail(`hero v4 is not 1280x720: ${videoLine.trim()}`);
-if (!/Input #0, .*mp4/i.test(mediaInfo)) fail('hero v4 input container was not recognized as MP4');
-const durationMatch = mediaInfo.match(/Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/);
+if (!/Input #0, .*mp4/i.test(inputInfo)) fail('hero v4 input container was not recognized as MP4');
+const durationMatch = inputInfo.match(/Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/);
 if (!durationMatch) fail('hero v4 duration missing from ffmpeg inspection');
 const duration = Number(durationMatch[1])*3600 + Number(durationMatch[2])*60 + Number(durationMatch[3]);
 if (!(duration > 7 && duration < 9)) fail(`hero v4 duration ${duration}s outside expected source range`);
