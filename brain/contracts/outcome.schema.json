@@ -1,0 +1,5 @@
+{
+  "$id":"brain.v1/outcome",
+  "allOf":["brain.v1/envelope"],
+  "required":["mission_ref","decision_ref","action","started_at","finished_at","expected_value","actual_value","business_value","cost","latency_ms","quality","errors","protected_metric_effects","attribution","causal_confidence"]
+}
