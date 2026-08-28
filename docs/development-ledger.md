@@ -115,3 +115,29 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 
 ## PRODUCTION_ROLLBACK event contract
 When any production promotion regresses protected smoke/regression or metrics, append a `PRODUCTION_ROLLBACK` entry with failed production SHA/deploy, restored last-known-good SHA/deploy, evidence, rollback verification and the next candidate hypothesis. No rollback was required for the incidents above because production remained on the last-known-good SHA until each promotion was verified.
+
+## 2026-08-28 20:25 CEST — ERROR — BG168 rollback classified as promotion
+- **Fingerprint:** `shared-learning|bg168|rollback-precedence-over-promotion`
+- **Signal:** execution `bc7dcb50e59e4cccbcf5f43904838fd3` received explicit `PRODUCTION_ROLLBACK` evidence but returned `kind=PRODUCTION_PROMOTION`.
+- **Impact:** shared memory could falsely record a rollback as a successful production promotion.
+- **Root cause:** BG168 module 2 tested promotion keywords such as `production_green` before testing rollback keywords; rollback evidence legitimately contains both the failed prior production state and the restored green state.
+- **Known failed approach:** free-text keyword classification where promotion takes precedence over rollback.
+- **Owner:** Knowledge/Governance + Outcome Router.
+
+## 2026-08-28 20:25 CEST — RECOVERY — BG168 rollback precedence guard
+- **Fingerprint:** `shared-learning|bg168|rollback-precedence-fixed`
+- **Fix:** added an explicit `rollbackMention` detector and moved rollback classification ahead of promotion classification in BG168 module 2.
+- **Regression verification:** execution `e99193e7b67f4217b06964485fb14df2` classifies mixed rollback + restored-green text as `PRODUCTION_ROLLBACK`; execution `7a1268064e4540d68520654fc267378f` still classifies genuine promotion text as `PRODUCTION_PROMOTION`.
+- **Rollback:** restore the prior module mapper if the new precedence guard blocks a confirmed promotion without rollback evidence.
+- **Reusable lesson:** terminal rollback semantics must dominate earlier promotion wording in the same narrative.
+
+## 2026-08-28 20:25 CEST — PRODUCTION_ROLLBACK — BG169 canary reverted to exact last-known-good tree
+- **Fingerprint:** `production|rollback|980e2e8b-to-lkg-tree-0ba2eb32`
+- **Signal:** BG169 controller input at execution `a1738d34b0584e248063928ca7417302` explicitly set `production_status=red` for production SHA `980e2e8b2a42151ffcfb334e1ab1a28e2ac83f41`.
+- **Impact:** production could not remain on the canary promotion despite its earlier `PRODUCTION_GREEN` verification.
+- **Rollback:** BG169 execution `b5786c46ee6b482b8b6198742d5bc9f5` created history-preserving rollback commit `c95394d4a1e854293a27cb2b7243ca87ea130543`, restoring exact last-known-good tree `0ba2eb32d417cab77385ed40fe5d5a4a1f6a247d` from LKG SHA `9a8038e7654da29c99f5c21dd0b57e8c09144dc7`; no force-push was used.
+- **Final production state:** follow-up Netlify trigger commits `4395648cb05556fd0aaa8f3f0382b95560fb6950` and `b692482543f4d36f32360ffcc8d1823c0723ef6e` preserve that same LKG tree. Netlify deploy `6a91c6fabcc0eb000866843f` is `ready`, exact `commit_ref=b692482543f4d36f32360ffcc8d1823c0723ef6e`, with 68 redirects, 16 headers, 3 functions, 1 edge function and zero secret-scan findings.
+- **Smoke:** `https://www.bedrijfsgeheugen.nl` returned the live production homepage after rollback.
+- **Current terminal state:** `ROLLED_BACK_GREEN`.
+- **Owner:** Architect/Integrator + QA/Regression.
+- **Reusable lesson:** `PRODUCTION_GREEN` is point-in-time evidence, not a permanent state; any later protected red signal must trigger exact-tree rollback and independent production re-verification.
