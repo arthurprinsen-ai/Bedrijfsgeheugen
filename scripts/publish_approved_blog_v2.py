@@ -75,9 +75,11 @@ def seal_or_validate(row):
         base.req(f"/pages/{q['page']}", 'PATCH', {
             'properties': {'Approved Source Hash': {'rich_text': [{'type': 'text', 'text': {'content': actual}}]}}
         })
-        print(f'SEALED:{actual}')
-        return None
-    if q['source_hash'] != actual:
+        # The hash is computed from the exact snapshot just read back from Notion.
+        # Only the hash property is changed by this PATCH, so continuing with this
+        # same snapshot is deterministic and avoids waiting for a second workflow run.
+        q['source_hash'] = actual
+    elif q['source_hash'] != actual:
         base.fail('Approved Source Hash mismatch; snapshot is gewijzigd na sealing')
     return q
 
@@ -90,8 +92,6 @@ def render(force=''):
         print('NO_ACTION: geen Pending Approved central article')
         return
     q = seal_or_validate(row)
-    if q is None:
-        return
     target = pathlib.Path('blog') / q['slug'] / 'index.html'
     if target.exists():
         base.fail('Doelslug bestaat al; verificatie vereist in plaats van tweede commit')
