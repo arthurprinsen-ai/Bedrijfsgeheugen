@@ -1,5 +1,5 @@
 name: Approved central blog publisher
-# Canary 5: include untracked article in deterministic diff contract
+# Canary 6: file-level deterministic diff contract
 
 on:
   push:
@@ -35,9 +35,10 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           FORCE_SLUG: ${{ github.event.inputs.slug }}
+          PYTHONDONTWRITEBYTECODE: '1'
         run: |
           set -euo pipefail
-          python3 scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/publish-result.txt
+          python3 -B scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/publish-result.txt
           if grep -Eq '^(NO_ACTION:|SEALED:)' /tmp/publish-result.txt; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
@@ -58,13 +59,9 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import json, pathlib, re, subprocess
-          status = subprocess.check_output(['git','status','--porcelain'], text=True).splitlines()
-          changed = []
-          for line in status:
-              path = line[3:].strip()
-              if ' -> ' in path:
-                  path = path.split(' -> ', 1)[1]
-              changed.append(path)
+          tracked = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
+          untracked = subprocess.check_output(['git','ls-files','--others','--exclude-standard'], text=True).splitlines()
+          changed = sorted(set(tracked + untracked))
           allowed_exact = {'blog/index.html','blog/rss.xml','sitemap.xml'}
           article = [p for p in changed if re.fullmatch(r'blog/[a-z0-9-]+/index\.html', p)]
           unexpected = [p for p in changed if p not in allowed_exact and p not in article]
@@ -105,6 +102,7 @@ jobs:
           QUEUE_PAGE: ${{ steps.render.outputs.queue_page }}
           DISPATCH_ATTEMPT: ${{ steps.render.outputs.dispatch_attempt }}
           RUN_ID: ${{ github.run_id }}
+          PYTHONDONTWRITEBYTECODE: '1'
         run: |
           set -euo pipefail
-          python3 scripts/publish_approved_blog_v2.py --mark-dispatched "$QUEUE_PAGE" "$DISPATCH_ATTEMPT" "$RUN_ID"
+          python3 -B scripts/publish_approved_blog_v2.py --mark-dispatched "$QUEUE_PAGE" "$DISPATCH_ATTEMPT" "$RUN_ID"
