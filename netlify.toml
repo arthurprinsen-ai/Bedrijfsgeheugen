@@ -16,7 +16,7 @@
 
 [build]
   publish = "."
-  command = "node tools/build-openart-hero-production.mjs && node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs"
+  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs"
 
 # Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
 # Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
