@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-import datetime as dt, html, json, os, pathlib, re, sys, urllib.request
-API='https://api.notion.com/v1'; VER='2025-09-03'
-QUEUE='70706495-cc0c-44ed-84bc-493df00651f1'
-TEMPLATE=pathlib.Path('blog/bedrijfsopvolging-begin-bij-het-geheugen/index.html')
-INDEX=pathlib.Path('blog/index.html'); RSS=pathlib.Path('blog/rss.xml'); SITEMAP=pathlib.Path('sitemap.xml')
+import datetime as dt, hashlib, html, json, os, pathlib, re, sys, urllib.request
+API='https://api.notion.com/v1'; VER='2025-09-03'; QUEUE='70706495-cc0c-44ed-84bc-493df00651f1'
+TEMPLATE=pathlib.Path('blog/bedrijfsopvolging-begin-bij-het-geheugen/index.html'); INDEX=pathlib.Path('blog/index.html'); RSS=pathlib.Path('blog/rss.xml'); SITEMAP=pathlib.Path('sitemap.xml')
 
 def fail(m): print(f'::error::{m}',file=sys.stderr); raise SystemExit(1)
 def req(path,method='GET',body=None):
@@ -14,19 +12,7 @@ def req(path,method='GET',body=None):
 def txt(p,n):
  a=(p.get(n)or{}).get('rich_text') or (p.get(n)or{}).get('title') or []
  return ''.join(x.get('plain_text','') for x in a).strip()
-def uid(p,n):
- v=p.get(n)or{}; u=v.get('unique_id')or{}
- if u and u.get('number') is not None:
-  prefix=str(u.get('prefix')or'').strip(); number=str(u['number']); return f'{prefix}-{number}' if prefix else number
- return txt(p,n)
-def sel(p,n): return ((((p.get(n)or{}).get('select')or{}).get('name'))or'').strip()
-def chk(p,n): return bool((p.get(n)or{}).get('checkbox'))
-def url(p,n): return str((p.get(n)or{}).get('url')or'').strip()
 def num(p,n): return (p.get(n)or{}).get('number') or 0
-def pid(u):
- m=re.search(r'([0-9a-fA-F]{32})(?:\?|$)',u.replace('-',''))
- if not m: fail('Bronpagina bevat geen geldige Notion page-id')
- s=m.group(1).lower(); return f'{s[:8]}-{s[8:12]}-{s[12:16]}-{s[16:20]}-{s[20:]}'
 
 def get_queue(force=''):
  c=[{'property':'Status','select':{'equals':'Gepland'}},{'property':'Source Mode','select':{'equals':'Approved central article'}},{'property':'Dispatch status','select':{'equals':'Pending'}},{'property':'Autopublish toegestaan','checkbox':{'equals':True}},{'property':'Quality gate','select':{'equals':'Geslaagd'}},{'property':'Herzien','select':{'equals':'Goedgekeurd'}}]
@@ -36,18 +22,16 @@ def get_queue(force=''):
  if force and len(rows)!=1:fail(f'Geforceerde slug is niet uniek; gevonden={len(rows)}')
  return rows[0]
 def queue_contract(row):
- p=row.get('properties')or{}; q={'page':row['id'],'slug':txt(p,'Slug'),'source':txt(p,'Bron Content ID'),'cmd':txt(p,'Publish Command ID'),'source_page':url(p,'Bronpagina'),'attempt':int(num(p,'Dispatch attempt'))}
+ p=row.get('properties')or{}
+ q={'page':row['id'],'slug':txt(p,'Slug'),'source':txt(p,'Bron Content ID'),'cmd':txt(p,'Publish Command ID'),'attempt':int(num(p,'Dispatch attempt')),'title':txt(p,'Titel'),'blogtext':txt(p,'Approved Blogtekst'),'keyword':txt(p,'Focus-zoekwoord'),'meta':txt(p,'Meta-omschrijving'),'source_hash':txt(p,'Approved Source Hash')}
  if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*',q['slug']):fail('Queue bevat ongeldige slug')
  if q['cmd'].replace('\\|','|')!=f"seo-publish|{q['source']}|{q['slug']}":fail('Publish Command ID mismatch')
- if not q['source_page']:fail('Bronpagina ontbreekt')
  if q['attempt']>=2:fail('Maximaal twee dispatchpogingen toegestaan')
+ if not all([q['source'],q['title'],q['blogtext'],q['keyword'],q['meta'],q['source_hash']]):fail('Approved snapshot is incompleet')
+ if not 120<=len(q['meta'])<=170:fail('Meta-omschrijving buiten toegestane lengte')
+ payload='\n'.join([q['source'],q['slug'],q['title'],q['keyword'],q['meta'],q['blogtext']]); actual=hashlib.sha256(payload.encode()).hexdigest()
+ if actual!=q['source_hash']:fail('Approved Source Hash mismatch; snapshot is gewijzigd')
  return q
-def source_contract(page,q):
- p=page.get('properties')or{}; s={'content_id':uid(p,'Content ID'),'title':txt(p,'Titel'),'blogtext':txt(p,'Blogtekst'),'slug':txt(p,'SEO Slug'),'keyword':txt(p,'SEO focuszoekwoord'),'meta':txt(p,'SEO metaomschrijving')}
- checks={'content_id':s['content_id']==q['source'],'type':sel(p,'Contenttype')=='Artikel','approved':sel(p,'Herzien')=='Goedgekeurd','gate':sel(p,'Publicatiecheck')=='Gereed','status':sel(p,'Make status')=='Publiceren','narrative':sel(p,'Rode-draadcheck')=='Klopt','generate':not chk(p,'Genereren'),'test':not chk(p,'Testmodus'),'unpublished':not url(p,'Publicatielink'),'slug':s['slug']==q['slug'],'title':bool(s['title']),'text':bool(s['blogtext']),'keyword':bool(s['keyword']),'meta':120<=len(s['meta'])<=170}
- bad=[k for k,v in checks.items() if not v]
- if bad:fail('Centrale bron faalt toelatingspoort: '+', '.join(bad))
- return s
 
 def inline(x):
  x=html.escape(x,quote=False); x=re.sub(r'\[([^\]]+)\]\((https?://[^)]+)\)',r'<a href="\2">\1</a>',x); return re.sub(r'\*\*([^*]+)\*\*',r'<strong>\1</strong>',x)
@@ -93,8 +77,7 @@ def main():
  if not row:print('NO_ACTION: geen Pending Approved central article');return
  q=queue_contract(row); target=pathlib.Path('blog')/q['slug']/'index.html'
  if target.exists():fail('Doelslug bestaat al; verificatie vereist in plaats van tweede commit')
- s=source_contract(req(f"/pages/{pid(q['source_page'])}"),q)
  if not TEMPLATE.exists():fail(f'Template ontbreekt: {TEMPLATE}')
- target.parent.mkdir(parents=True,exist_ok=True); target.write_text(article(TEMPLATE.read_text(encoding='utf-8'),s),encoding='utf-8'); updates(s); mark(q)
- print(json.dumps({'status':'RENDERED','slug':q['slug'],'content_id':s['content_id'],'command_id':q['cmd']},ensure_ascii=False))
+ target.parent.mkdir(parents=True,exist_ok=True); target.write_text(article(TEMPLATE.read_text(encoding='utf-8'),q),encoding='utf-8'); updates(q); mark(q)
+ print(json.dumps({'status':'RENDERED','slug':q['slug'],'content_id':q['source'],'command_id':q['cmd'],'source_hash':q['source_hash']},ensure_ascii=False))
 if __name__=='__main__':main()
