@@ -18,7 +18,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
       - run: npm install --ignore-scripts=false
       - run: node tools/bouw-v18-preview.mjs
       - run: node tools/test-v18-preview.mjs
