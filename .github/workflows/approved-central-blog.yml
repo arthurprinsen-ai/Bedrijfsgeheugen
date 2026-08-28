@@ -1,5 +1,5 @@
 name: Approved central blog publisher
-# Canary 2: immutable approved snapshot route
+# Canary 3: sealed transactional route
 
 on:
   push:
@@ -30,18 +30,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Render exact approved central article
+      - name: Seal or render exact approved article
         id: render
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           FORCE_SLUG: ${{ github.event.inputs.slug }}
         run: |
           set -euo pipefail
-          python3 scripts/publish_approved_blog.py "$FORCE_SLUG" | tee /tmp/publish-result.txt
-          if grep -q '^NO_ACTION:' /tmp/publish-result.txt; then
+          python3 scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/publish-result.txt
+          if grep -Eq '^(NO_ACTION:|SEALED:)' /tmp/publish-result.txt; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            python3 - <<'PY'
+          import json, os, pathlib
+          lines=[x for x in pathlib.Path('/tmp/publish-result.txt').read_text().splitlines() if x.strip()]
+          data=json.loads(lines[-1])
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write(f"queue_page={data['queue_page']}\n")
+              f.write(f"dispatch_attempt={data['dispatch_attempt']}\n")
+          PY
           fi
 
       - name: Deterministic contract checks
@@ -83,3 +91,14 @@ jobs:
           done
           echo "::error::Push faalde na drie begrensde pogingen"
           exit 1
+
+      - name: Mark queue dispatched after successful push
+        if: steps.render.outputs.changed == 'true'
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          QUEUE_PAGE: ${{ steps.render.outputs.queue_page }}
+          DISPATCH_ATTEMPT: ${{ steps.render.outputs.dispatch_attempt }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python3 scripts/publish_approved_blog_v2.py --mark-dispatched "$QUEUE_PAGE" "$DISPATCH_ATTEMPT" "$RUN_ID"
