@@ -91,5 +91,27 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Rollback/last-known-good:** no production code changed; production `e8cfdecfb19a22428f146b24f97455d654809947` / `6a9197b8043dcf00086cbb73` remains the protected last-known-good.
 - **Reusable lesson:** observability failures are release-gate failures, not product failures; never infer runtime health from an evidence collector that did not attach to the target page.
 
+## 2026-08-28 17:50 CEST — RECOVERY — opt-in iPhone runtime evidence probe
+- **Fingerprint:** `preview|hero-video|iphone-runtime-probe-v1`
+- **Signal:** build/deploy success and the broken local Chrome evidence wrapper could not prove the original physical-iPhone playback defect.
+- **Root cause addressed:** acceptance lacked an observer running in the same Safari execution context as the affected device.
+- **TDD evidence:** exact SHA `2cc0cacb2cbbcf2d95f1035d1198752537ccc68e` intentionally went RED in Netlify deploy `6a91ad99168a000008c55709` after the new probe contract test was wired before the probe asset existed; build returned non-zero exit code 2.
+- **Fix:** exact Pexels candidate lineage received `assets/runtime-evidence-probe.js`, activated only by `?bg-runtime-probe=1`, plus exactly one deferred build injection. The probe records bounded video events/state, requires at least 5 seconds of `currentTime` advancement, caps history at 80 events, performs no outbound requests and never calls `play()`/`pause()` or mutates source, poster, playback rate or opacity.
+- **Regression gate:** `tools/test-runtime-evidence-probe.mjs` forbids network APIs and playback/media mutations; `tools/test-v18-preview.mjs` imports that gate, requires exactly one deferred probe script and preserves the byte-identical canonical V18 controller test.
+- **GREEN verification:** exact candidate `ac3fdd66efe7de541c12185de9c36ac3bc004dd8`; Netlify deploy `6a91ae01fbc8c0000846d342`; `state=ready`; `context=deploy-preview`; exact `commit_ref` match; 68 redirects and 18 headers deployed without errors; 4 functions and 1 edge function deployed; 0 secret-scan findings.
+- **Current status:** `PREVIEW_GREEN_BUILD_RUNTIME_ACCEPTANCE_PENDING`; physical iPhone must still report probe `PASS` before this candidate can enter a production gate.
+- **Rollback:** remove the static probe asset/script injection; production was untouched by this candidate.
+- **Reusable lesson:** for a device-only media failure, instrument the failing execution context directly while keeping the player immutable; do not treat build green as runtime green.
+
+## 2026-08-28 17:51 CEST — ERROR — BG168 false production-promotion classification
+- **Fingerprint:** `shared-learning|bg168|false-production-promotion-from-negated-text`
+- **Signal:** BG168 execution `26e7239fd435412193e6c1d22a5e2be8` classified the preview-only recovery as `PRODUCTION_PROMOTION` even though the result explicitly stated that production promotion had not occurred.
+- **Impact:** shared memory could falsely imply a production release.
+- **Root cause:** outcome classification matched production-promotion wording without correctly handling negation/context.
+- **Recovery:** wrote a corrective ERROR plus the real RECOVERY directly through BG166 and refreshed BG167. Exact deployment evidence remains authoritative: `ac3fdd66...` is deploy-preview only, while production is separate and untouched by this runtime-probe candidate.
+- **Regression requirement:** BG168 must not emit `PRODUCTION_PROMOTION` unless exact production SHA/deploy evidence is affirmative; explicit `production_promotion=false`, `NO_PRODUCTION_PROMOTION` or preview-only context must veto that kind.
+- **Owner:** Knowledge/Governance + Outcome Router.
+- **Reusable lesson:** semantic mention of a release state is not release evidence; deterministic exact-SHA production evidence must dominate free-text classification.
+
 ## PRODUCTION_ROLLBACK event contract
 When any production promotion regresses protected smoke/regression or metrics, append a `PRODUCTION_ROLLBACK` entry with failed production SHA/deploy, restored last-known-good SHA/deploy, evidence, rollback verification and the next candidate hypothesis. No rollback was required for the incidents above because production remained on the last-known-good SHA until each promotion was verified.
