@@ -14,6 +14,58 @@ const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 
+const VIDEO_TAG = `<video id="heroBackgroundVideo" class="hero-bg-video" autoplay muted playsinline loop preload="metadata" poster="https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" aria-hidden="true">
+  <source src="https://videos.pexels.com/video-files/35649915/15107522_1920_1080_30fps.mp4" type="video/mp4">
+</video>`;
+
+const VIDEO_FIX = `
+<style id="v18-10-video-fix">
+.hero-video{background:#071019}
+.hero-bg-video{
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  background:#071019;
+}
+.hero-video:not(.v18-video-playing) .hero-bg-video{opacity:.01!important}
+.hero-video.v18-video-playing .hero-bg-video,
+.hero-video.video-playing .hero-bg-video,
+.hero-video.video-poster.v18-video-playing .hero-bg-video{opacity:1!important}
+@media(max-width:768px){.hero-bg-video{object-position:center 45%!important}}
+</style>
+<script id="v18-10-video-controller">
+(function(){
+  const video=document.getElementById('heroBackgroundVideo');
+  const hero=document.querySelector('.hero-video');
+  if(!video||!hero)return;
+  video.muted=true;
+  video.defaultMuted=true;
+  video.volume=0;
+  video.playsInline=true;
+  video.loop=true;
+  video.setAttribute('muted','');
+  video.setAttribute('playsinline','');
+  video.setAttribute('webkit-playsinline','');
+  const markPlaying=()=>hero.classList.add('v18-video-playing');
+  const tryPlay=()=>{
+    video.muted=true;
+    const p=video.play();
+    if(p&&typeof p.then==='function')p.then(markPlaying).catch(()=>{});
+  };
+  ['loadeddata','canplay','playing'].forEach(evt=>video.addEventListener(evt,markPlaying));
+  if(video.readyState>=2)markPlaying();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tryPlay,{once:true});
+  else tryPlay();
+  window.addEventListener('load',tryPlay,{once:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)tryPlay();});
+  ['touchstart','pointerdown'].forEach(evt=>window.addEventListener(evt,tryPlay,{passive:true,once:true}));
+})();
+</script>`;
+
 export const handler = async () => {
   try {
     const parts = await Promise.all(FILES.map(async (file) => {
@@ -40,14 +92,20 @@ export const handler = async () => {
       throw new Error('prototype validation failed');
     }
 
+    html = html.replace(/<video[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/, VIDEO_TAG);
+    html = html.replace(/<script id="v18-4-video-controller">[\s\S]*?<\/script>\s*/, '');
+    if (!html.includes('id="v18-10-video-controller"')) {
+      html = html.replace('</body>', `${VIDEO_FIX}\n</body>`);
+    }
     html = html.replace('<head>', '<head><base href="/">');
+
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
         'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
         'X-Robots-Tag': 'noindex, nofollow',
-        'X-Prototype-Version': 'v18-verified'
+        'X-Prototype-Version': 'v18-video-fixed'
       },
       body: html
     };
