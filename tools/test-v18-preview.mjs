@@ -1,3 +1,5 @@
+await import('./test-runtime-evidence-probe.mjs');
+
 import { readFile } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
 
