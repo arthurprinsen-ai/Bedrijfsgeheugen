@@ -1,0 +1,7 @@
+{
+  "$id":"brain.v1/creative-intent",
+  "required":["format","text_type","hook_type","cta_type","audience","problem","channel","narrative_arc","narrative_role","core_story","emotion","brand_signature","source_learning_refs","experiment_variable"],
+  "video_required":["opening_mechanism","scene_beats","spoken_lines","cliffhanger_mechanism","continuity_callback","supporting_character","conflict_type","location_type","running_gag","camera","audio"],
+  "image_required":["visual_concept","composition","brand_consistency"],
+  "text_required":["length_band","structure","voice"]
+}
