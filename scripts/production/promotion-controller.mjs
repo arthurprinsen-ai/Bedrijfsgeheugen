@@ -1,6 +1,17 @@
 const green = value => String(value || '').toLowerCase() === 'green';
 const ready = value => String(value || '').toLowerCase() === 'ready';
 
+const iphoneSafeMedia = media => Boolean(
+  media &&
+  Number(media.width) === 1920 &&
+  Number(media.height) === 1080 &&
+  Number(media.fps) === 30 &&
+  String(media.codec || '').toLowerCase() === 'h264' &&
+  String(media.pixel_format || '').toLowerCase() === 'yuv420p' &&
+  media.has_audio === false &&
+  media.faststart === true
+);
+
 export function evaluatePromotion(state = {}) {
   if (state.hard_boundary) {
     return {
@@ -47,6 +58,20 @@ export function evaluatePromotion(state = {}) {
       action: retries >= 2 ? 'CHANGE_HYPOTHESIS' : 'REPAIR',
       owner_agent: state.owner_agent || null
     };
+  }
+
+  if (state.media_contract_required) {
+    if (!iphoneSafeMedia(state.media_derivative)) {
+      return { state: 'OPEN_REPAIR', action: 'NORMALIZE_MEDIA' };
+    }
+
+    if (!state.media_derivative_validated) {
+      return { state: 'OPEN_REPAIR', action: 'VERIFY_MEDIA' };
+    }
+
+    if (!green(state.iphone_runtime_status)) {
+      return { state: 'OPEN_REPAIR', action: 'VERIFY_IPHONE_RUNTIME' };
+    }
   }
 
   if (!state.rollback_ready || !state.last_known_good_sha) {
