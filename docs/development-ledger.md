@@ -68,6 +68,17 @@ Dit ledger bewaart uitvoerbare kennis: wat ging mis, waarom, hoe het is opgelost
 - Gate/test: huidige Netlify-build op commit `7506adf88a91c7aade82bb5004ab0e3e468f2dcf` is READY.
 - Herbruikbare les: tests moeten het bedoelde observatiepunt meten, niet hun eigen gegenereerde output.
 
+## 2026-08-28 — iPhone hero-video fysiek geaccepteerd
+- Symptoom vóór fix: hero bleef stil staan; op sommige varianten verscheen kort de oude mensenfoto voordat een gebouwframe of leeg beeld verscheen.
+- Root cause: meerdere oorzaken stapelden: de canonical V18 had naast het `poster`-attribuut ook een legacy people-image in de CSS-fallbacklaag; sommige vervangende mediabronnen waren niet gelijkwaardig aan de fysiek bewezen browserdelivery; wijzigingen door parallelle agents maakten builder en QA tijdelijk incoherent.
+- Bewezen fix: behoud de canonical `v18-4-video-controller`; gebruik de door de build officieel opgeloste Pexels HD-bron; verwijder de legacy people-image uit alle gegenereerde hero-fallbacks; forceer na alle bestaande CSS de hero-fallback-reset; behoud de iPhone-diagnostiek uitsluitend achter `?video-debug=1`.
+- Fysiek bewijs: gebruiker bevestigde op 2026-08-28 op iPhone expliciet `Werkt` voor Netlify deploy `6a919798b6397000080985a7`, commit `3361ec315874c8ea4c3ceca844bb3e4c9e707be6`.
+- Nieuwe golden baseline: `prototype-v18-6` commit `3361ec315874c8ea4c3ceca844bb3e4c9e707be6` + Netlify immutable deploy `6a919798b6397000080985a7`.
+- Freeze-regel: agents mogen de hero player/controller, autoplay-startupgedrag, fallback-reset of mediadelivery niet wijzigen als optimalisatie zonder eerst een afzonderlijke regressiehypothese en echte-device acceptatie. Visuele media mogen alleen worden gewisseld wanneer de technische deliveryklasse en fallbackcontracten behouden blijven.
+- Diagnostiek: `?video-debug=1` toont `currentSrc`, `readyState`, `networkState`, `paused`, `currentTime`, `error.code`, dimensies en media-events; normale gebruikers zien deze overlay niet.
+- Preventie: oude mensenfallback is een verboden regressie; playback-rate hacks en alternatieve controllers blijven verboden tijdens iPhone-herstel; builder en QA moeten één coherente bron-/fallbackcontractversie delen.
+- Herbruikbare les: een groene build is geen browseracceptatie. Voor kritieke above-the-fold media is fysieke-device bevestiging de hoogste acceptatielaag en wordt die versie daarna de immutable golden baseline.
+
 ## ADR — Preview reliability architecture
 - Context: iteraties op rijke V18-preview moesten snel én iPhone-betrouwbaar worden.
 - Besluit: build-time reconstructie/optimalisatie, statische same-origin eindassets, automatische regressiegates, immutable deploy-permalinks voor acceptatie.
@@ -86,4 +97,4 @@ Voor vervolgwerk geldt:
 6. verifieer exact commit + deploy;
 7. voeg nieuwe les direct aan dit ledger toe.
 
-Laatste bewezen groene videoketen bij aanmaak van dit ledger: previewbranch `prototype-v18-6`, commit `7506adf88a91c7aade82bb5004ab0e3e468f2dcf`, Netlify Deploy Preview READY.
+Laatste fysiek bewezen groene videoketen: previewbranch `prototype-v18-6`, commit `3361ec315874c8ea4c3ceca844bb3e4c9e707be6`, Netlify deploy `6a919798b6397000080985a7`, bevestigd werkend op iPhone op 2026-08-28.
