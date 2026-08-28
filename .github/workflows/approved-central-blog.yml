@@ -1,4 +1,5 @@
 name: Approved central blog publisher
+# Canary 2: immutable approved snapshot route
 
 on:
   push:
