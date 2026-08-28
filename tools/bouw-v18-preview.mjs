@@ -20,9 +20,9 @@ const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6
 const CONTROL_SOURCE = 'https://videos.pexels.com/video-files/35649915/15107522_1920_1080_30fps.mp4';
 const ORIGINAL_POSTER = 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600';
 const HERO_SOURCE_URL = 'https://cdn.openart.ai/openart-ai/production/2026-08/create-video/WZvuT1BzGx566fWaFo8F/xai-video-1e5fd189-ae01-9b05-b8b8-b0d05a1f7f52_1787916876752_794b55dd.mp4';
+const HERO_POSTER_URL = 'https://cdn.openart.ai/openart/thumbnail/production/2026-08/create-video/WZvuT1BzGx566fWaFo8F/xai-video-1e5fd189-ae01-9b05-b8b8-b0d05a1f7f52_1787916880132_134b0c26.webp';
 const HERO_SOURCE_PATH = 'assets/inspirational-hero-v4-source.mp4';
 const HERO_PATH = 'assets/inspirational-hero-v4.mp4';
-const HERO_POSTER_PATH = 'assets/inspirational-hero-v4-poster.jpg';
 const HERO_MANIFEST_PATH = 'assets/inspirational-hero-v4.integrity.txt';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
@@ -43,19 +43,11 @@ await execFileAsync(ffmpegPath, [
   HERO_PATH
 ], { maxBuffer: 20 * 1024 * 1024 });
 
-await execFileAsync(ffmpegPath, [
-  '-y','-ss','0.15','-i',HERO_PATH,'-frames:v','1','-q:v','3',HERO_POSTER_PATH
-], { maxBuffer: 20 * 1024 * 1024 });
-
 const heroBytes = await readFile(HERO_PATH);
-const posterBytes = await readFile(HERO_POSTER_PATH);
 if (heroBytes.length < 300000 || heroBytes.length > 8000000) throw new Error(`Hero web asset size outside expected range: ${heroBytes.length}`);
 if (heroBytes.subarray(4,8).toString('ascii') !== 'ftyp') throw new Error('Hero output is not a valid MP4');
-if (posterBytes.length < 20000 || posterBytes.length > 1000000) throw new Error(`Hero poster size outside expected range: ${posterBytes.length}`);
-if (!(posterBytes[0] === 0xff && posterBytes[1] === 0xd8)) throw new Error('Hero poster is not a valid JPEG');
 const heroHash = sha256(heroBytes);
-const posterHash = sha256(posterBytes);
-await writeFile(HERO_MANIFEST_PATH, `bytes=${heroBytes.length}\nsha256=${heroHash}\ncodec=h264\npixel_format=yuv420p\naudio=none\nresolution=1280x720\nposter_bytes=${posterBytes.length}\nposter_sha256=${posterHash}\nsource=${HERO_SOURCE_URL}\n`, 'utf8');
+await writeFile(HERO_MANIFEST_PATH, `bytes=${heroBytes.length}\nsha256=${heroHash}\ncodec=h264\npixel_format=yuv420p\naudio=none\nresolution=1280x720\nposter=${HERO_POSTER_URL}\nsource=${HERO_SOURCE_URL}\n`, 'utf8');
 await unlink(HERO_SOURCE_PATH).catch(() => {});
 
 const parts = await Promise.all(FILES.map(path => readFile(path, 'utf8')));
@@ -68,9 +60,8 @@ if (!html.includes(CONTROL_SOURCE)) throw new Error('Canonical proven Pexels con
 if (!html.includes(ORIGINAL_POSTER)) throw new Error('Canonical proven poster missing');
 if (!html.includes('id="v18-4-video-controller"')) throw new Error('Canonical proven V18 controller missing');
 
-// Keep the proven player/controller exactly intact; only swap media source and poster imagery.
 html = html.replace(CONTROL_SOURCE, '/assets/inspirational-hero-v4.mp4');
-html = html.replace(ORIGINAL_POSTER, '/assets/inspirational-hero-v4-poster.jpg');
+html = html.replace(ORIGINAL_POSTER, HERO_POSTER_URL);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
-console.log(`V18 stable preview built with proven player + drone source/poster: ${heroBytes.length} bytes ${heroHash}; poster ${posterBytes.length} bytes ${posterHash}`);
+console.log(`V18 stable preview built with proven player + drone source + matching drone poster: ${heroBytes.length} bytes ${heroHash}`);
