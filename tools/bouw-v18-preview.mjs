@@ -16,6 +16,7 @@ const EXPECTED_SOURCE_SUFFIX = '/8783011/8783011-hd_1920_1080_30fps.mp4';
 const DRONE_POSTER = 'https://images.pexels.com/videos/36182314/aerial-architecture-building-business-36182314.jpeg?auto=compress&dpr=1&h=750&w=1260';
 const LEGACY_PEOPLE_IMAGE = 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600';
 const HERO_SOURCE_MANIFEST = 'assets/hero-pexels-source.txt';
+const PROBE_SCRIPT = '<script defer src="/assets/runtime-evidence-probe.js"></script>';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
 // Device evidence on iPhone: previous candidate painted the drone poster/first frame and then went blank.
@@ -68,7 +69,13 @@ html = html.replace(heroMatch[0], hero);
 html = html.split(LEGACY_PEOPLE_IMAGE).join(DRONE_POSTER);
 if (html.includes(LEGACY_PEOPLE_IMAGE)) throw new Error('Legacy people hero fallback still present');
 
+// Runtime evidence is observational only and opt-in via ?bg-runtime-probe=1.
+// It must not alter the canonical player/controller or media behavior.
+if (!html.includes('</body>')) throw new Error('V18 body closing tag missing for runtime probe injection');
+if (html.includes('/assets/runtime-evidence-probe.js')) throw new Error('Runtime evidence probe already present before controlled injection');
+html = html.replace('</body>', `${PROBE_SCRIPT}</body>`);
+
 // Do not add playback-rate or alternate-controller tuning while the iPhone recovery is being verified.
-// Startup behavior remains byte-for-byte canonical; only source and fallback imagery differ.
+// Startup behavior remains byte-for-byte canonical; only source/fallback imagery plus observational probe differ.
 await writeFile('prototype-v18-stable.html', html, 'utf8');
-console.log(`V18 stable preview built: canonical controller, no legacy people fallback, official HD 1920x1080@30fps Pexels drone: ${resolvedDroneSource}`);
+console.log(`V18 stable preview built: canonical controller, no legacy people fallback, official HD 1920x1080@30fps Pexels drone, opt-in runtime probe: ${resolvedDroneSource}`);
