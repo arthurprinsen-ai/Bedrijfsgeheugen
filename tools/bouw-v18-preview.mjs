@@ -1,6 +1,8 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import ffmpegPath from 'ffmpeg-static';
 
 const FILES = [
   'v18-full/chunk-00.txt','v18-full/chunk-gap.txt','v18-full/chunk-01.txt','v18-full/chunk-02.txt',
@@ -11,36 +13,48 @@ const FILES = [
 const EXPECTED_BASE64_LENGTH = 108484;
 const EXPECTED_BASE64_SHA256 = '64c33847585fb3d93e3a4bbe8bfd33aee5221678a047f613f6144330f69e305b';
 const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6bac48942bd230b';
-const PEXELS_DOWNLOAD_URL = 'https://www.pexels.com/download/video/8783011/';
-const EXPECTED_SOURCE_SUFFIX = '/8783011/8783011-hd_1920_1080_30fps.mp4';
-const DRONE_POSTER = 'https://images.pexels.com/videos/36182314/aerial-architecture-building-business-36182314.jpeg?auto=compress&dpr=1&h=750&w=1260';
+const OPENART_SOURCE = 'https://cdn.openart.ai/openart-ai/production/2026-08/create-video/WZvuT1BzGx566fWaFo8F/xai-video-143123ce-c19d-935c-a98f-0ffc678d4ae0_1787928916465_3c8704c8.mp4';
+const HERO_VIDEO_URL = '/assets/hero-openart-v1.mp4';
+const HERO_VIDEO_FILE = 'assets/hero-openart-v1.mp4';
+const HERO_POSTER_URL = '/assets/hero-openart-v1.jpg';
+const HERO_POSTER_FILE = 'assets/hero-openart-v1.jpg';
+const HERO_MANIFEST = 'assets/hero-openart-v1.txt';
+const RAW_FILE = 'assets/.hero-openart-v1-raw.mp4';
 const LEGACY_PEOPLE_IMAGE = 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600';
-const HERO_SOURCE_MANIFEST = 'assets/hero-pexels-source.txt';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
-const sourceResponse = await fetch(PEXELS_DOWNLOAD_URL, {
-  method: 'GET',
-  redirect: 'follow',
-  headers: { Range: 'bytes=0-1023' },
-  cache: 'no-store'
-});
-if (!(sourceResponse.ok || sourceResponse.status === 206)) {
-  throw new Error(`Pexels drone source resolution failed: HTTP ${sourceResponse.status}`);
+await mkdir('assets', { recursive: true });
+
+const sourceResponse = await fetch(OPENART_SOURCE, { cache: 'no-store' });
+if (!sourceResponse.ok) throw new Error(`OpenArt source download failed: HTTP ${sourceResponse.status}`);
+const raw = Buffer.from(await sourceResponse.arrayBuffer());
+if (raw.length < 500000) throw new Error(`OpenArt source unexpectedly small: ${raw.length}`);
+await writeFile(RAW_FILE, raw);
+
+try {
+  execFileSync(ffmpegPath, [
+    '-y','-hide_banner','-loglevel','error',
+    '-i',RAW_FILE,
+    '-an',
+    '-vf','scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,fps=30',
+    '-c:v','libx264','-profile:v','high','-level:v','4.0','-pix_fmt','yuv420p',
+    '-preset','medium','-crf','23','-maxrate','4500k','-bufsize','9000k',
+    '-movflags','+faststart',
+    HERO_VIDEO_FILE
+  ], { stdio: 'pipe' });
+
+  execFileSync(ffmpegPath, [
+    '-y','-hide_banner','-loglevel','error',
+    '-ss','0.2','-i',HERO_VIDEO_FILE,
+    '-frames:v','1','-q:v','3',
+    HERO_POSTER_FILE
+  ], { stdio: 'pipe' });
+} finally {
+  await rm(RAW_FILE, { force: true });
 }
-const resolvedDroneSource = sourceResponse.url;
-const contentType = (sourceResponse.headers.get('content-type') || '').toLowerCase();
-if (!resolvedDroneSource.startsWith('https://videos.pexels.com/')) {
-  throw new Error(`Pexels download did not resolve to videos.pexels.com: ${resolvedDroneSource}`);
-}
-if (!resolvedDroneSource.includes(EXPECTED_SOURCE_SUFFIX)) {
-  throw new Error(`Pexels source no longer resolves to required 1920x1080@30fps delivery: ${resolvedDroneSource}`);
-}
-if (!contentType.includes('video/mp4') && !contentType.includes('application/octet-stream')) {
-  throw new Error(`Pexels resolved source returned unexpected content-type: ${contentType}`);
-}
-await sourceResponse.arrayBuffer();
-await writeFile(HERO_SOURCE_MANIFEST,
-  `download=${PEXELS_DOWNLOAD_URL}\nresolved=${resolvedDroneSource}\nstatus=${sourceResponse.status}\ncontent_type=${contentType}\n`,
+
+await writeFile(HERO_MANIFEST,
+  `source=${OPENART_SOURCE}\ntarget=1920x1080@30fps\ncodec=h264\npix_fmt=yuv420p\naudio=none\nfaststart=true\nvideo=${HERO_VIDEO_URL}\nposter=${HERO_POSTER_URL}\n`,
   'utf8'
 );
 
@@ -55,12 +69,12 @@ if (!html.includes('id="v18-4-video-controller"')) throw new Error('Canonical pr
 const heroMatch = html.match(/<video[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/);
 if (!heroMatch) throw new Error('Canonical hero video element missing');
 let hero = heroMatch[0];
-hero = hero.replace(/poster="[^"]*"/, `poster="${DRONE_POSTER}"`);
-hero = hero.replace(/<source\s+src="[^"]+"\s+type="video\/mp4"\s*\/?>/, `<source src="${resolvedDroneSource}" type="video/mp4">`);
-if (!hero.includes(resolvedDroneSource) || !hero.includes(DRONE_POSTER)) throw new Error('Hero media swap failed');
+hero = hero.replace(/poster="[^"]*"/, `poster="${HERO_POSTER_URL}"`);
+hero = hero.replace(/<source\s+src="[^"]+"\s+type="video\/mp4"\s*\/?>/, `<source src="${HERO_VIDEO_URL}" type="video/mp4">`);
+if (!hero.includes(HERO_VIDEO_URL) || !hero.includes(HERO_POSTER_URL)) throw new Error('OpenArt hero media swap failed');
 html = html.replace(heroMatch[0], hero);
 
-html = html.split(LEGACY_PEOPLE_IMAGE).join(DRONE_POSTER);
+html = html.split(LEGACY_PEOPLE_IMAGE).join(HERO_POSTER_URL);
 if (html.includes(LEGACY_PEOPLE_IMAGE)) throw new Error('Legacy people hero fallback still present');
 
 const diagnostics = `<style id="v18-hero-hard-reset">
@@ -81,22 +95,7 @@ const diagnostics = `<style id="v18-hero-hard-reset">
   const events=[];
   const snapshot=(label)=>{
     const e=video.error;
-    const data={
-      label,
-      t:Date.now(),
-      currentSrc:video.currentSrc,
-      paused:video.paused,
-      ended:video.ended,
-      currentTime:Number(video.currentTime||0).toFixed(3),
-      readyState:video.readyState,
-      networkState:video.networkState,
-      videoWidth:video.videoWidth,
-      videoHeight:video.videoHeight,
-      errorCode:e?e.code:0,
-      errorMessage:e&&e.message?e.message:'',
-      muted:video.muted,
-      playsInline:video.playsInline
-    };
+    const data={label,t:Date.now(),currentSrc:video.currentSrc,paused:video.paused,ended:video.ended,currentTime:Number(video.currentTime||0).toFixed(3),readyState:video.readyState,networkState:video.networkState,videoWidth:video.videoWidth,videoHeight:video.videoHeight,errorCode:e?e.code:0,errorMessage:e&&e.message?e.message:'',muted:video.muted,playsInline:video.playsInline};
     events.push(data);
     while(events.length>12)events.shift();
     box.textContent=events.map(x=>JSON.stringify(x)).join('\n');
@@ -109,4 +108,4 @@ const diagnostics = `<style id="v18-hero-hard-reset">
 
 html = html.replace('</body>', `${diagnostics}\n</body>`);
 await writeFile('prototype-v18-stable.html', html, 'utf8');
-console.log(`V18 stable preview built: canonical controller, hard-reset hero fallback, iPhone diagnostics, official HD 1920x1080@30fps Pexels source: ${resolvedDroneSource}`);
+console.log(`V18 stable preview built with optimized OpenArt hero ${HERO_VIDEO_URL}; canonical controller preserved`);
