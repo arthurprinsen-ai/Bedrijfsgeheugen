@@ -5,24 +5,36 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0a1118">
 <title>Bedrijfsgeheugen V18.8 · Full prototype</title>
-<style>html,body{margin:0;background:#0a1118;color:#fff;font-family:Inter,system-ui,sans-serif}.loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px}.loading b{font-size:22px}.loading small{display:block;margin-top:8px;opacity:.68}</style>
+<style>html,body{margin:0;background:#0a1118;color:#fff;font-family:Inter,system-ui,sans-serif}.loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px}.loading b{font-size:22px}.loading small{display:block;margin-top:8px;opacity:.68;line-height:1.5}.retry{margin-top:18px;border:1px solid rgba(255,255,255,.22);background:#fff;color:#0a1118;border-radius:12px;padding:11px 15px;font-weight:800}</style>
+<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 </head>
 <body>
 <div class="loading" id="loading"><div><b>Bedrijfsgeheugen laden…</b><small>Volledige V18.8 prototype</small></div></div>
 <script>
 (async()=>{
+  const loading=document.getElementById('loading');
   try{
-    if(!('DecompressionStream' in window)) throw new Error('Deze browser ondersteunt de prototype-loader niet.');
     const urls=['./v18-full/chunk-00.txt','./v18-full/chunk-01.txt','./v18-full/chunk-02.txt','./v18-full/chunk-03.txt','./v18-full/chunk-04.txt','./v18-full/chunk-05.txt','./v18-full/chunk-06.txt'];
     const parts=await Promise.all(urls.map(async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(u+' HTTP '+r.status);return r.text()}));
     const b64=parts.join('').replace(/\s+/g,'');
-    const bin=atob(b64); const bytes=new Uint8Array(bin.length);
+    const bin=atob(b64);
+    const bytes=new Uint8Array(bin.length);
     for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
-    const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-    const html=await new Response(stream).text();
+
+    let html='';
+    if(window.pako && typeof window.pako.ungzip==='function'){
+      html=new TextDecoder('utf-8').decode(window.pako.ungzip(bytes));
+    }else if('DecompressionStream' in window){
+      const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+      html=await new Response(stream).text();
+    }else{
+      throw new Error('Geen geschikte decoder beschikbaar.');
+    }
+
+    if(!html.startsWith('<!DOCTYPE html>') && !html.startsWith('<!doctype html>')) throw new Error('Prototype-data is ongeldig.');
     document.open();document.write(html);document.close();
   }catch(err){
-    document.getElementById('loading').innerHTML='<div><b>Prototype kon niet laden.</b><small>'+String(err.message||err)+'</small></div>';
+    loading.innerHTML='<div><b>Prototype kon niet laden.</b><small>'+String(err.message||err)+'</small><button class="retry" onclick="location.reload()">Opnieuw laden</button></div>';
     console.error(err);
   }
 })();
