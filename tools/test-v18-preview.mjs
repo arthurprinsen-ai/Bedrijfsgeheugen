@@ -1,6 +1,7 @@
 import { readFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
+import ffmpegPath from 'ffmpeg-static';
 
 const html = await readFile('prototype-v18-stable.html', 'utf8');
 const indexHtml = await readFile('index.html', 'utf8');
@@ -38,9 +39,8 @@ if (videoBytes.subarray(4, 8).toString('ascii') !== 'ftyp') fail('hero v4 is not
 const videoHash = sha256(videoBytes);
 if (!/^[a-f0-9]{64}$/.test(videoHash)) fail('hero v4 hash invalid');
 
-// Verify the FINAL encoded asset with the same ffmpeg binary the builder uses.
-// This avoids depending on ffprobe being separately installed in Netlify.
-const mediaCheck = spawnSync('ffmpeg', ['-hide_banner','-i',VIDEO_PATH,'-f','null','-'], { encoding: 'utf8' });
+if (!ffmpegPath) fail('ffmpeg-static did not provide a verification binary path');
+const mediaCheck = spawnSync(ffmpegPath, ['-hide_banner','-i',VIDEO_PATH,'-f','null','-'], { encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 });
 if (mediaCheck.error) fail(`ffmpeg media verification failed to start: ${mediaCheck.error.message}`);
 if (mediaCheck.status !== 0) fail(`ffmpeg media verification failed: ${(mediaCheck.stderr || '').slice(-1200)}`);
 const mediaInfo = mediaCheck.stderr || '';
