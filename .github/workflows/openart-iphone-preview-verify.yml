@@ -25,6 +25,8 @@ jobs:
         run: cat assets/hero-openart-source.json
       - uses: actions/upload-artifact@v4
         with:
-          name: openart-iphone-preview-manifest
-          path: assets/hero-openart-source.json
+          name: openart-iphone-preview-candidate
+          path: |
+            assets/hero-openart-source.json
+            assets/openart-hero-iphone-safe-v1.mp4
           retention-days: 7
