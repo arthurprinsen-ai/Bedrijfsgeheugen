@@ -14,6 +14,7 @@ const SOURCE_MANIFEST = 'assets/hero-pexels-source.txt';
 const OLD_POSTER = 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600';
 const EXPECTED_DOWNLOAD = 'https://www.pexels.com/download/video/8783011/';
 const EXPECTED_SOURCE_SUFFIX = '/8783011/8783011-hd_1920_1080_30fps.mp4';
+const PROBE_SCRIPT = '<script defer src="/assets/runtime-evidence-probe.js"></script>';
 const fail = message => { throw new Error(`V18 preview regression: ${message}`); };
 const count = (text, re) => (text.match(re) || []).length;
 
@@ -35,6 +36,7 @@ if (!/video\/mp4|application\/octet-stream/i.test(contentType)) fail(`resolved P
 if (!indexHtml.includes('/prototype-v18-stable.html')) fail('preview root must route to prototype-v18-stable.html');
 if (count(html, /id="view-[^"]+"/g) !== 14) fail('expected exactly 14 views');
 if (!html.includes('id="v18MobileDrawer"')) fail('mobile drawer missing');
+if (html.split(PROBE_SCRIPT).length - 1 !== 1) fail('expected exactly one deferred runtime evidence probe script');
 
 const hero = html.match(/<video[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/)?.[0] || '';
 if (!hero) fail('hero video missing');
