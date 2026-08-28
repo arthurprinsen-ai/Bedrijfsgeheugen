@@ -1,0 +1,51 @@
+name: Hero Media Production Verify
+
+on:
+  push:
+    branches:
+      - main
+      - automation/openart-hero-production-promotion
+    paths:
+      - package.json
+      - tools/build-openart-hero-production.mjs
+      - netlify.toml
+      - .github/workflows/hero-media-production-verify.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - package.json
+      - tools/build-openart-hero-production.mjs
+      - netlify.toml
+      - .github/workflows/hero-media-production-verify.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts=false
+      - run: node tools/build-openart-hero-production.mjs
+      - name: Verify accepted media identity
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const expected = 'a261792e9b0058802ab5b30ce107c7ac14e8b2291a3bd7ee78fdb5968bbe97fd';
+          const bytes = fs.readFileSync('assets/openart-hero-iphone-safe-v1.mp4');
+          const sha = crypto.createHash('sha256').update(bytes).digest('hex');
+          const manifest = JSON.parse(fs.readFileSync('assets/openart-hero-production.json','utf8'));
+          if (sha !== expected) throw new Error(`deployed candidate hash mismatch: ${sha}`);
+          if (manifest.derivative_sha256 !== expected) throw new Error('manifest hash mismatch');
+          if (manifest.physical_iphone_runtime !== 'PASS') throw new Error('physical iPhone acceptance missing');
+          if (manifest.promotion_state !== 'MEDIA_READY') throw new Error('media not promotion-ready');
+          console.log(`Hero media production contract PASS: ${sha}`);
+          NODE
