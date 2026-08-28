@@ -13,11 +13,10 @@ const EXPECTED_BASE64_SHA256 = '64c33847585fb3d93e3a4bbe8bfd33aee5221678a047f613
 const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6bac48942bd230b';
 const PEXELS_DOWNLOAD_URL = 'https://www.pexels.com/download/video/36063952/';
 const DRONE_POSTER = 'https://images.pexels.com/videos/36182314/aerial-architecture-building-business-36182314.jpeg?auto=compress&dpr=1&h=750&w=1260';
+const LEGACY_PEOPLE_IMAGE = 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600';
 const HERO_SOURCE_MANIFEST = 'assets/hero-pexels-source.txt';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
-// Resolve the actual Pexels video URL from Pexels' own published download endpoint.
-// Never derive or guess videos.pexels.com filenames.
 const sourceResponse = await fetch(PEXELS_DOWNLOAD_URL, {
   method: 'GET',
   redirect: 'follow',
@@ -57,5 +56,15 @@ hero = hero.replace(/<source\s+src="[^"]+"\s+type="video\/mp4"\s*\/?>/, `<source
 if (!hero.includes(resolvedDroneSource) || !hero.includes(DRONE_POSTER)) throw new Error('Hero media swap failed');
 html = html.replace(heroMatch[0], hero);
 
+// Remove the second legacy people-image fallback baked into .hero-video::before.
+// Replace every occurrence so the first painted frame and the video poster are visually consistent.
+html = html.split(LEGACY_PEOPLE_IMAGE).join(DRONE_POSTER);
+if (html.includes(LEGACY_PEOPLE_IMAGE)) throw new Error('Legacy people hero fallback still present');
+
+// Preserve the proven startup controller. Only after Safari has actually reached `playing`
+// increase visual motion slightly; this does not participate in autoplay/startup.
+const motionTuning = `<script id="v18-drone-motion-tuning">\n(function(){\n  const video=document.getElementById('heroBackgroundVideo');\n  if(!video)return;\n  video.addEventListener('playing',()=>{video.playbackRate=1.2;},{once:false});\n})();\n</script>`;
+html = html.replace('</body>', `${motionTuning}\n</body>`);
+
 await writeFile('prototype-v18-stable.html', html, 'utf8');
-console.log(`V18 stable preview built with canonical player/controller and Pexels-resolved drone source: ${resolvedDroneSource}`);
+console.log(`V18 stable preview built: no legacy people fallback; canonical controller; Pexels-resolved drone at 1.2x after playing: ${resolvedDroneSource}`);
