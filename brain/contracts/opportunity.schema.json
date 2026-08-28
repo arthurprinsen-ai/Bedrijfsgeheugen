@@ -1,0 +1,5 @@
+{
+  "$id":"brain.v1/opportunity",
+  "allOf":["brain.v1/envelope"],
+  "required":["type","targets","problem","signals","evidence_refs","expected_value","urgency","strategic_fit","learning_value","reusability","cost","time","risk","status"]
+}
