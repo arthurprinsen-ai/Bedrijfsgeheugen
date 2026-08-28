@@ -91,6 +91,13 @@ EIGENAAR = {
 }
 
 OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo'}
+# Previewroutes zijn geen indexeerbare productiepagina's. Alleen op een
+# prototypebranch slaan we de tijdelijke indexredirect en prototypes over.
+if os.getenv('BG_PREVIEW_BRANCH') == 'true':
+    OVERSLAAN.add('index')
+    OVERSLAAN.update(
+        os.path.basename(f)[:-5] for f in glob.glob('prototype-*.html')
+    )
 GEEN_KRUIMEL = {'index', '404'}
 GEEN_CANONICAL = {'404'}
 GEEN_H2 = {'404'}
