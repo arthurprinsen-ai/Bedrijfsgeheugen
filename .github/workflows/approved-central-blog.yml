@@ -29,7 +29,6 @@ jobs:
         id: render
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_BLOG_DB: ${{ secrets.NOTION_BLOG_DB }}
           FORCE_SLUG: ${{ github.event.inputs.slug }}
         run: |
           set -euo pipefail
