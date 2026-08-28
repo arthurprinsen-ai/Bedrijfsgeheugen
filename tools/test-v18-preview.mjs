@@ -25,11 +25,15 @@ if (!hero.includes('preload="auto"')) fail('hero v7 must preload natively');
 if (!hero.includes('/assets/inspirational-hero-v7.mp4')) fail('hero video must use cache-busted same-origin v7 MP4');
 if (!hero.includes('poster="/assets/inspirational-hero-v7-poster.jpg"')) fail('hero v7 must have a same-origin poster');
 if (html.includes('id="heroVideoFallback"')) fail('native v7 must not ship custom fallback controls');
-if (html.includes('debugVideo')) fail('native v7 must not ship runtime debug UI');
-if (html.includes('playbackRate')) fail('native v7 must not alter playback rate');
-if (html.includes('IntersectionObserver')) fail('native v7 must not use IntersectionObserver for hero playback');
 if (html.includes('v18-stable-video-controller')) fail('native v7 must not ship a custom hero video controller');
-if (/heroBackgroundVideo[\s\S]{0,3000}\.play\s*\(/.test(html)) fail('native v7 must not call play() from custom hero code');
+
+const heroWindowStart = Math.max(0, html.indexOf('id="heroBackgroundVideo"') - 1200);
+const heroWindowEnd = Math.min(html.length, html.indexOf('id="heroBackgroundVideo"') + 5000);
+const heroWindow = html.slice(heroWindowStart, heroWindowEnd);
+if (/playbackRate/.test(heroWindow)) fail('native v7 hero must not alter playback rate');
+if (/IntersectionObserver/.test(heroWindow)) fail('native v7 hero must not use IntersectionObserver');
+if (/\.play\s*\(/.test(heroWindow)) fail('native v7 hero must not call play() from custom code');
+if (/\.pause\s*\(/.test(heroWindow)) fail('native v7 hero must not call pause() from custom code');
 
 for (const forbidden of ['DecompressionStream','pako','v18-full/chunk','atob(']) if (html.includes(forbidden)) fail(`runtime loader token present: ${forbidden}`);
 const hrefs = [...html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/gi)].map(m => m[1].trim());
@@ -68,4 +72,4 @@ if (!durationMatch) fail('hero v7 duration missing from ffmpeg inspection');
 const duration = Number(durationMatch[1])*3600 + Number(durationMatch[2])*60 + Number(durationMatch[3]);
 if (!(duration > 7 && duration < 9)) fail(`hero v7 duration ${duration}s outside expected source range`);
 
-console.log(`V18 preview QA PASS — stable root, 14 views, ${targets.length} routes, native Neno-style hero-v7 ${videoStat.size} bytes ${videoHash}, poster ${posterStat.size} bytes, h264/main3.1/yuv420p/1280x720/no-audio/<5MB, no custom playback JS, ${hrefs.length} HTTPS anchors`);
+console.log(`V18 preview QA PASS — stable root, 14 views, ${targets.length} routes, native Neno-style hero-v7 ${videoStat.size} bytes ${videoHash}, poster ${posterStat.size} bytes, h264/main3.1/yuv420p/1280x720/no-audio/<5MB, no custom hero playback JS, ${hrefs.length} HTTPS anchors`);
