@@ -1,0 +1,12 @@
+import {decide} from '../../brain/decision/policy.mjs';
+import {rankPortfolio} from '../../brain/decision/portfolio.mjs';
+const base={id:'x',type:'SEO_OPPORTUNITY',expected_value:100,success_probability:.7,urgency:.5,strategic_fit:.8,evidence_quality:.8,confidence:.8,learning_value:.4,reusability:.5,cost:10,risk:.2,time:1,opportunity_cost:5,evidence_freshness:.9,reversible:true,autonomy_class:'A1',protected_metrics:['security'],hard_boundary:false,security_incident:false,production_red:false,data_integrity_red:false,contact_pressure_ok:true,budget_ok:true};
+const sec=decide({...base,security_incident:true}); if(sec.decision!=='FIX'||sec.lane!=='INCIDENT') throw new Error('security must interrupt');
+const prod=decide({...base,production_red:true}); if(prod.decision!=='ROLLBACK'||prod.lane!=='INCIDENT') throw new Error('production red must rollback');
+const low=decide({...base,evidence_quality:.3,confidence:.4}); if(low.decision!=='RESEARCH') throw new Error('low evidence should research');
+const stale=decide({...base,evidence_freshness:.2}); if(stale.decision!=='WATCH') throw new Error('stale evidence should watch');
+const hard=decide({...base,hard_boundary:true}); if(hard.decision!=='ESCALATE_HARD_BOUNDARY') throw new Error('hard boundary not blocked');
+const high=decide(base); if(!['TEST','OPTIMIZE','BUILD','CREATE_CONTENT'].includes(high.decision)) throw new Error(`high value should execute, got ${high.decision}`);
+const wait=decide({...base,expected_value:6,cost:20,opportunity_cost:20}); if(wait.decision!=='PAUSE'&&wait.decision!=='WATCH') throw new Error('low utility should wait/pause');
+const items=Array.from({length:5},(_,i)=>({...base,id:`o${i}`,large_experiment:true,expected_value:100-i*5})); const ranked=rankPortfolio(items,[]); if(ranked.filter(x=>x.admitted).length!==3) throw new Error('WIP must admit 3 large experiments');
+console.log('decision policy tests passed');
