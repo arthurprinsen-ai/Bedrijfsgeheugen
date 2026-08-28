@@ -18,14 +18,16 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Fingerprint:** `docs-contract|required-files|guarded`
 - **Fix:** add the missing canonical operating-system, ledger and shared-memory design documents; add `tests/development-doc-contract.test.mjs`; broaden Shared Agent Memory CI to `automation/**` pushes and PRs targeting `main`.
 - **Regression gate:** test asserts all mandatory files exist and that `AGENTS.md` references them; workflow executes the gate together with existing shared-memory tests.
-- **Rollback:** revert the candidate commit; production is unchanged until candidate is green and promoted.
+- **Verification:** initial candidate run `33174931495` failed because `IMPROVEMENT` was absent from the ledger vocabulary; the ledger contract was corrected. A concurrent production-controller promotion moved `main`, so the candidate was rebased rather than force-merged. Rebased candidate `f3d73c777994c84ae8e27fbd009b29748cfb3ed3` passed run `33175126995`.
+- **Rollback:** previous production remained available until the exact candidate was green and promoted.
 - **Reusable lesson:** every mandatory documentation dependency in an agent contract must be machine-validated by CI; branch-specific temporary gates are not production governance.
 
 ## 2026-08-28 — IMPROVEMENT — shared-memory-ci-scope
 - **Fingerprint:** `shared-memory|ci-scope|automation-and-main-prs`
 - **Baseline:** Shared Agent Memory Tests ran only for `automation/green-production-gate` pushes.
-- **Change:** run the same bounded test suite for all `automation/**` pushes and pull requests targeting `main`.
+- **Change:** run the bounded shared-memory suite for all `automation/**` pushes and pull requests targeting `main`, including the development-document contract and deterministic production-promotion-controller regression test.
 - **Success metric:** future self-heal candidates receive an automatic shared-memory/documentation gate without modifying branch-specific CI.
+- **Verification:** workflow run `33175126995` passed on the rebased candidate.
 - **Rollback:** restore the prior workflow trigger if the broader trigger causes an unexpected CI regression.
 
 ## 2026-08-28 — PRODUCTION_PROMOTION — self-healing-team-memory-contract
@@ -33,5 +35,16 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Evidence:** PR #98 candidate `95f26fa3c7199a35ea9e9cdb4e6c5cbd9fc229d2` was merged to `main` as `e1e1dc4804091bbfef76b2bad8a26b4e013ff371` after green Shared Agent Memory tests.
 - **Lesson:** promotion succeeded, but follow-up contract completeness must itself be gated; this ledger entry records the exact production transition for future agents.
 
+## 2026-08-28 — PRODUCTION_PROMOTION — docs-contract-restored
+- **Fingerprint:** `docs-contract|required-files|production-green`
+- **Candidate:** `f3d73c777994c84ae8e27fbd009b29748cfb3ed3`, verified by Shared Agent Memory Tests run `33175126995`.
+- **Promotion:** PR #99 merged exact candidate head to production SHA `80bf408c62f3dcf8ba45618b15bd23c235528d66`.
+- **Production deploy:** Netlify deploy `6a918bc0ade51c0008d3f136`, context `production`, state `ready`, exact `commit_ref=80bf408c62f3dcf8ba45618b15bd23c235528d66`, published `2026-08-28T13:23:32.088Z`, deploy time 18 seconds.
+- **Protected verification:** 68 redirect rules and 16 header rules processed without errors; 3 functions and 1 edge function deployed; secret scan found 0 matches.
+- **Last-known-good before promotion:** `87b65e40051dfcb8736bc9f173261bc0963dbad3`.
+- **Rollback:** restore the last-known-good SHA if production smoke/regression or protected metrics regress. No rollback was required.
+- **Shared learning:** ERROR, RECOVERY, IMPROVEMENT and PRODUCTION_PROMOTION were written through BG166; BG166 refreshed BG167 after each write. BG168 routed the material production outcome.
+- **Reusable lesson:** promote only an exact rebased green SHA, verify the exact production deployment after merge, and make mandatory memory/document contracts executable in CI.
+
 ## PRODUCTION_ROLLBACK event contract
-When any production promotion regresses protected smoke/regression or metrics, append a `PRODUCTION_ROLLBACK` entry with failed production SHA/deploy, restored last-known-good SHA/deploy, evidence, rollback verification and the next candidate hypothesis. No rollback was required for the incident above because production remained on the last-known-good SHA during repair.
+When any production promotion regresses protected smoke/regression or metrics, append a `PRODUCTION_ROLLBACK` entry with failed production SHA/deploy, restored last-known-good SHA/deploy, evidence, rollback verification and the next candidate hypothesis. No rollback was required for the incidents above because production remained on the last-known-good SHA until each promotion was verified.
