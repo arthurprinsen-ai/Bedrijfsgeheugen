@@ -46,5 +46,24 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Shared learning:** ERROR, RECOVERY, IMPROVEMENT and PRODUCTION_PROMOTION were written through BG166; BG166 refreshed BG167 after each write. BG168 routed the material production outcome.
 - **Reusable lesson:** promote only an exact rebased green SHA, verify the exact production deployment after merge, and make mandatory memory/document contracts executable in CI.
 
+## 2026-08-28 16:10 CEST — ERROR — iPhone hero runtime blank after first frame
+- **Fingerprint:** `preview|hero-video|iphone-poster-first-frame-blank`
+- **Signal:** physical iPhone preview evidence showed the hero move from the legacy people image to a buildings frame and then blank; playback did not continue.
+- **Impact:** PR #96 remained runtime-red even though its Netlify deploy was `ready`; automatic promotion was forbidden because device-specific runtime acceptance was not green.
+- **Root cause/hypothesis:** the failing candidate used a Pexels media encode whose device behavior differed from the proven 1920x1080@30fps source class. A concurrent branch change also introduced post-`playing` playback-rate tuning, adding an unnecessary runtime variable during recovery.
+- **Evidence:** failed candidate `f6b7081436d17e3c818b46bf05da8eeb5ee4a027`; failed preview deploy `6a9194c9ca34540008af1a38`; user evidence: `person -> buildings -> blank; video does not play`.
+- **Known failed approaches:** assuming equal CDN implies equal Safari compatibility; treating Netlify `ready` as proof of video runtime health; adding motion/playback tuning before device playback is proven.
+- **Owner:** QA/Regression + Frontend Wiring.
+- **Last-known-good production:** `dfd7a19b5520604ce493902fbbe565e54d7e0fc0`, Netlify `6a918da7c229aa00097758b3`, remained `ready` and untouched.
+
+## 2026-08-28 16:10 CEST — RECOVERY — constrained 1080p30 hero candidate
+- **Fingerprint:** `preview|hero-video|iphone-1080p30-recovery-candidate`
+- **Fix:** on draft PR #96, keep the canonical V18 player/controller unchanged; use official Pexels building-drone endpoint `https://www.pexels.com/download/video/8783011/`, require resolution to `videos.pexels.com/.../8783011-hd_1920_1080_30fps.mp4`, remove all playback-rate tuning, and replace the legacy people fallback everywhere with the drone poster.
+- **Regression gate:** `tools/test-v18-preview.mjs` requires the exact official endpoint, exact 1920x1080@30fps resolved suffix, valid MP4 response/status, byte-identical canonical controller, no `playbackRate`/`defaultPlaybackRate` assignment, no legacy people image, 14 views and valid routes.
+- **Verification:** candidate `b8e765486f8f7220d044c940602381e8ab838e6d`; Netlify preview `6a9196ce86ab9a00089829d6`; state `ready`; context `deploy-preview`; 68 redirects and 18 headers processed; 4 functions and 1 edge function deployed; 0 secret-scan matches.
+- **Current status:** `PREVIEW_GREEN_BUILD_RUNTIME_ACCEPTANCE_PENDING`. This is not production-green because the original defect is device-specific and requires iPhone runtime proof before promotion.
+- **Production protection:** production remained `dfd7a19b5520604ce493902fbbe565e54d7e0fc0` / `6a918da7c229aa00097758b3`, state `ready`; no production promotion or rollback was required.
+- **Reusable lesson:** for device media regressions, freeze the proven player, constrain the media delivery fingerprint explicitly, remove unrelated runtime tuning, and never equate build/deploy success with device runtime acceptance.
+
 ## PRODUCTION_ROLLBACK event contract
 When any production promotion regresses protected smoke/regression or metrics, append a `PRODUCTION_ROLLBACK` entry with failed production SHA/deploy, restored last-known-good SHA/deploy, evidence, rollback verification and the next candidate hypothesis. No rollback was required for the incidents above because production remained on the last-known-good SHA until each promotion was verified.
