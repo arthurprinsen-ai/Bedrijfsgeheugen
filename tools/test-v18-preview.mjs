@@ -1,6 +1,6 @@
 import { readFile, stat } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
-import { execFileSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import ffmpegPath from 'ffmpeg-static';
 
 const FILES = [
@@ -30,14 +30,8 @@ if (!manifest.includes('audio=none')) fail('OpenArt no-audio contract missing fr
 
 const videoStat = await stat(HERO_VIDEO_FILE);
 if (videoStat.size < 500000) fail(`OpenArt hero video unexpectedly small: ${videoStat.size}`);
-const ffmpegOutput = (() => {
-  try {
-    execFileSync(ffmpegPath, ['-hide_banner','-i',HERO_VIDEO_FILE,'-f','null','-'], { encoding:'utf8', stdio:['ignore','pipe','pipe'] });
-    return '';
-  } catch (error) {
-    return `${error.stdout || ''}\n${error.stderr || ''}`;
-  }
-})();
+const ffmpegProbe = spawnSync(ffmpegPath, ['-hide_banner','-i',HERO_VIDEO_FILE,'-f','null','-'], { encoding:'utf8' });
+const ffmpegOutput = `${ffmpegProbe.stdout || ''}\n${ffmpegProbe.stderr || ''}`;
 const inputSection = ffmpegOutput.split('Output #0')[0];
 if (!/Video:\s*h264/i.test(inputSection)) fail('OpenArt hero is not H.264');
 if (!/yuv420p/i.test(inputSection)) fail('OpenArt hero is not yuv420p');
