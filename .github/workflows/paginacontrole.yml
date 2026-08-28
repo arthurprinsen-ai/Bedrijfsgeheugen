@@ -32,6 +32,8 @@ jobs:
   controle:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      BG_PREVIEW_BRANCH: ${{ startsWith(github.head_ref || github.ref_name, 'prototype-') }}
 
     steps:
       - uses: actions/checkout@v5
