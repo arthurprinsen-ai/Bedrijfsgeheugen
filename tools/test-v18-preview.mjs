@@ -39,14 +39,14 @@ if (!hero) fail('hero video missing');
 for (const attr of ['autoplay','muted','playsinline','loop']) if (!new RegExp(`\\b${attr}\\b`).test(hero)) fail(`hero missing ${attr}`);
 if (!hero.includes(resolvedSource)) fail('hero does not use build-resolved Pexels source');
 if (!hero.includes(DRONE_POSTER)) fail('matching drone poster missing');
-if (hero.includes(OLD_POSTER)) fail('old people hero poster still present');
+if (html.includes(OLD_POSTER)) fail('legacy people hero image still present anywhere in generated HTML');
 
 const canonicalController = canonicalHtml.match(/<script id="v18-4-video-controller">[\s\S]*?<\/script>/)?.[0] || '';
 const currentController = html.match(/<script id="v18-4-video-controller">[\s\S]*?<\/script>/)?.[0] || '';
 if (!canonicalController) fail('canonical V18 controller missing');
 if (currentController !== canonicalController) fail('proven V18 controller changed');
 if (html.includes('v18-stable-video-controller')) fail('alternate playback controller present');
-if (html.includes('playbackRate=.65') || html.includes('defaultPlaybackRate=.65')) fail('playback-rate modification present');
+if (/\b(?:defaultPlaybackRate|playbackRate)\s*=/.test(html)) fail('playback-rate modification present during iPhone recovery');
 
 const views = new Set([...html.matchAll(/id="view-([^"]+)"/g)].map(m => m[1]));
 for (const target of [...html.matchAll(/data-view="([^"]+)"/g)].map(m => m[1])) if (!views.has(target)) fail(`missing data-view target: ${target}`);
@@ -55,4 +55,4 @@ const hrefs = [...html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/gi)].map(m => m[1].tr
 const badHrefs = hrefs.filter(href => !href.startsWith('https://'));
 if (badHrefs.length) fail(`non-HTTPS anchor hrefs: ${badHrefs.slice(0,5).join(', ')}`);
 
-console.log(`V18 preview QA PASS — canonical controller preserved; official Pexels source resolved to 1920x1080@30fps: ${resolvedSource}`);
+console.log(`V18 preview QA PASS — canonical controller frozen; official Pexels source resolved to 1920x1080@30fps: ${resolvedSource}`);
