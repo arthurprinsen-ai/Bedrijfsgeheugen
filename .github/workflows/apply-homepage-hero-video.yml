@@ -1,5 +1,6 @@
 name: Apply homepage hero video integration
 
+# One-time branch patcher; deletes itself after a successful exact-anchor patch.
 on:
   push:
     branches:
