@@ -4,6 +4,7 @@
   "version": "18.0.0",
   "description": "Build dependencies for verified Bedrijfsgeheugen preview media",
   "dependencies": {
-    "ffmpeg-static": "5.2.0"
+    "ffmpeg-static": "5.2.0",
+    "ffprobe-static": "3.1.0"
   }
 }
