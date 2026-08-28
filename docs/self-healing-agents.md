@@ -43,6 +43,28 @@ Agents moeten waar mogelijk ontwerpen met:
 - atomische deploys;
 - rollbackbare previewbranches.
 
+## Protected golden baselines
+Een fysiek door de gebruiker geaccepteerde device-baseline is sterker bewijs dan alleen build-, desktop- of CI-groen. Zo'n baseline mag een self-heal agent niet autonoom herschrijven zolang de betreffende subsystemen niet aantoonbaar defect zijn.
+
+### V18 hero video — iPhone
+Golden baseline vanaf 2026-08-28:
+- fysieke-device acceptatie op iPhone;
+- commit `3361ec315874c8ea4c3ceca844bb3e4c9e707be6`;
+- Netlify deploy `6a919798b6397000080985a7`;
+- canonical `v18-4-video-controller` intact;
+- officiële Pexels 1920×1080/30fps-deliveryklasse;
+- alle legacy hero/fallback-achtergronden hard gereset;
+- geen playbackRate-hack, alternate controller, WebP-vervanging of IntersectionObserver-playback;
+- diagnose beschikbaar via `?video-debug=1`.
+
+Self-healregels voor deze baseline:
+1. bij een nieuwe hero-regressie eerst exact deze baseline als control herstellen/vergelijken;
+2. slechts één variabele tegelijk wijzigen;
+3. controller en fallback-reset als invarianten behandelen;
+4. build/runtime-diagnostiek verzamelen vóór bron- of architectuurwissels;
+5. geen nieuwe aanpak promoveren tot baseline zonder fysieke-device acceptatie van de exacte immutable HTTPS-deploy;
+6. indien een agent tegelijk aan dezelfde hero-builder/testbestanden werkt: conflicterende writer stoppen, nieuwste branchstate opnieuw lezen en één coherente wijziging uitvoeren; geen parallelle writes op dezelfde bestanden.
+
 ## Stopgrenzen
 Autonome self-healing stopt uitsluitend wanneer de volgende stap één van deze grenzen raakt:
 - productie/main wijzigen;
