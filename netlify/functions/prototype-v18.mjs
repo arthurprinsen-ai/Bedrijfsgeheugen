@@ -15,7 +15,7 @@ const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 
 const VIDEO_TAG = `<video id="heroBackgroundVideo" class="hero-bg-video" autoplay muted playsinline loop preload="metadata" poster="https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" aria-hidden="true">
-  <source src="https://videos.pexels.com/video-files/35649915/15107522_1920_1080_30fps.mp4" type="video/mp4">
+  <source src="https://videos.pexels.com/video-files/5020277/5020277-hd_1920_1080_25fps.mp4" type="video/mp4">
 </video>`;
 
 const VIDEO_FIX = `
@@ -105,7 +105,7 @@ export const handler = async () => {
         'Content-Type': 'text/html; charset=utf-8',
         'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
         'X-Robots-Tag': 'noindex, nofollow',
-        'X-Prototype-Version': 'v18-video-fixed'
+        'X-Prototype-Version': 'v18-human-hero'
       },
       body: html
     };
