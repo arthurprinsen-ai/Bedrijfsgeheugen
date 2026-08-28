@@ -1,0 +1,9 @@
+{
+  "name": "bedrijfsgeheugen-preview",
+  "private": true,
+  "version": "18.0.0",
+  "description": "Build dependencies for verified Bedrijfsgeheugen preview media",
+  "dependencies": {
+    "ffmpeg-static": "5.2.0"
+  }
+}
