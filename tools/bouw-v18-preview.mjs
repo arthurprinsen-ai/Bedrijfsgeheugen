@@ -13,17 +13,41 @@ const EXPECTED_BASE64_LENGTH = 108484;
 const EXPECTED_BASE64_SHA256 = '64c33847585fb3d93e3a4bbe8bfd33aee5221678a047f613f6144330f69e305b';
 const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6bac48942bd230b';
 const HERO_URL = 'https://videos.pexels.com/video-files/13761469/13761469-uhd_3840_2160_30fps.mp4';
+const HERO_ORIGIN = 'https://videos.pexels.com';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
-// V9 deliberately restores the previously proven working architecture:
-// direct Pexels MP4 source + native autoplay/muted/loop/playsinline.
-// Only the media source changed; no playback controller or local transcoding is involved.
+// Proven playback architecture: direct Pexels MP4 + native HTML video.
+// Before publishing, verify the CDN really exposes a streamable MP4 and byte ranges.
+const head = await fetch(HERO_URL, { method: 'HEAD', redirect: 'follow', cache: 'no-store' });
+if (!head.ok) throw new Error(`Hero source HEAD failed: HTTP ${head.status}`);
+const contentType = (head.headers.get('content-type') || '').toLowerCase();
+if (!contentType.includes('video/mp4')) throw new Error(`Hero source content-type is not video/mp4: ${contentType || 'missing'}`);
+const contentLength = Number(head.headers.get('content-length') || 0);
+if (contentLength && contentLength < 250000) throw new Error(`Hero source unexpectedly small: ${contentLength} bytes`);
+
+const range = await fetch(HERO_URL, {
+  method: 'GET',
+  headers: { Range: 'bytes=0-1023' },
+  redirect: 'follow',
+  cache: 'no-store'
+});
+if (range.status !== 206) throw new Error(`Hero source does not support byte-range streaming: HTTP ${range.status}`);
+const contentRange = range.headers.get('content-range') || '';
+if (!/^bytes\s+0-1023\//i.test(contentRange)) throw new Error(`Hero source returned unexpected Content-Range: ${contentRange || 'missing'}`);
+await range.arrayBuffer();
+
 const parts = await Promise.all(FILES.map(path => readFile(path, 'utf8')));
 const base64 = parts.join('').replace(/\s+/g, '');
 if (base64.length !== EXPECTED_BASE64_LENGTH) throw new Error(`V18 payload length ${base64.length}, expected ${EXPECTED_BASE64_LENGTH}`);
 if (sha256(base64) !== EXPECTED_BASE64_SHA256) throw new Error(`V18 payload integrity mismatch: ${sha256(base64)}`);
 let html = gunzipSync(Buffer.from(base64, 'base64')).toString('utf8');
 if (sha256(html) !== EXPECTED_HTML_SHA256) throw new Error(`V18 HTML integrity mismatch: ${sha256(html)}`);
+
+// Warm up DNS/TLS to the external media CDN before Safari discovers the video source.
+const resourceHints = `<link rel="dns-prefetch" href="//videos.pexels.com">\n<link rel="preconnect" href="${HERO_ORIGIN}">`;
+if (!html.includes(`rel="preconnect" href="${HERO_ORIGIN}"`)) {
+  html = html.replace('</head>', `${resourceHints}\n</head>`);
+}
 
 const video = `<video id="heroBackgroundVideo" class="hero-bg-video" autoplay muted playsinline loop preload="auto" aria-hidden="true">
   <source src="${HERO_URL}" type="video/mp4">
@@ -43,4 +67,4 @@ const style = `<style id="v18-stable-video-fix">
 </style>`;
 html = html.replace('</body>', `${style}\n</body>`);
 await writeFile('prototype-v18-stable.html', html, 'utf8');
-console.log(`V18 stable preview built with proven Pexels playback pattern: ${HERO_URL}`);
+console.log(`V18 stable preview built with proven Pexels playback pattern; MP4/range verified; CDN preconnected: ${HERO_URL}`);
