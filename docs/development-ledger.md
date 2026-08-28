@@ -181,3 +181,43 @@ When any production promotion regresses protected smoke/regression or metrics, a
 - **After:** Agent 07/08/09 route to verified `7088548`/`7088553`/`7088558`; BG167 run `87eb64ab8f794b1cb57a9bd6f936a994` and BG168 runs `2d263ce204c64d1395eb284316f90d16` / `0ef4fe32d6064ffb81c8bd753b38ed1d` are green.
 - **Production:** no website code changed; protected production remains `cdb45925145ff77c47b23b32d3b6471030a1486a` / `6a91d363fba2440008d9c514`, `ready`, with public homepage smoke healthy.
 - **Reusable lesson:** make routing identity and event-type precedence executable invariants so shared memory cannot silently corrupt the next agent's decisions.
+
+## 2026-08-28 21:33 CEST — ERROR — BG140 native Instagram insights metric contract mismatch
+- **Fingerprint:** `instagram|native-insights|getmediainsights-metric-required`
+- **Signal:** BG140 `GetMediaInsights` received media id `17877791463626109` and a metric list, but Meta returned `(#100) For field 'insights': The parameter metric is required` and the incident handler ran.
+- **Impact:** native Instagram analytics remained incomplete and the scheduled route consumed operations while repeatedly producing the same external API incident.
+- **Root cause:** the Make `instagram-business:GetMediaInsights` module/API contract did not accept the supplied generic metrics payload for this image media path; retrying the same call reproduced the same error.
+- **Known failed approach:** repeated production calls to `GetMediaInsights` without a media-type-specific metric canary.
+- **Owner:** Signal Ingest / Analytics self-heal.
+- **Production protection:** website production remained `1bf419adf0cd955c564f94a1b62b64c4ca71acb9` / Netlify `6a91e114014f8b0008051e02`, `ready`.
+
+## 2026-08-28 21:34 CEST — RECOVERY — BG140 verified public metrics fallback
+- **Fingerprint:** `instagram|native-insights|verified-public-metrics-fallback`
+- **Fix:** remove `GetMediaInsights` from the active BG140 path; read the exact native post with `instagram-business:GetMedia` and write only fields returned by that call (`like_count`, `comments_count`, plus analytics timestamp). Do not synthesize unavailable reach/views/saved values.
+- **Regression verification:** BG140 execution `bc66359641b646ac94050a2253553f23` completed successfully; module 10 returned the exact post, permalink and public counts; module 11 updated the Notion record; the incident handler did not execute.
+- **Rollback:** restore the prior route only after a metric-specific canary proves a supported insight contract for the relevant media type.
+- **Reusable lesson:** for external analytics APIs, degrade to verified partial truth rather than manufacturing completeness or repeatedly calling a known-failing endpoint.
+
+## 2026-08-28 21:34 CEST — IMPROVEMENT — BG140 known-failing call removed
+- **Fingerprint:** `instagram|native-insights|remove-known-failing-call`
+- **Baseline:** the active BG140 route invoked an endpoint that had reproduced the same Meta `#100` error.
+- **Change:** the failing insight call is no longer in the active route; BG140 now performs a successful native media read and bounded Notion update. BG180 remains separate because it performs all-media discovery and deduped Datahub snapshots rather than the same record enrichment.
+- **Verification:** current BG140 scenario `7140387` contains `GetMedia` and no `GetMediaInsights`; latest verified run consumed 3 credits and completed without the incident handler.
+- **Rollback:** restore only if a supported insight canary demonstrates equal or better correctness.
+- **Reusable lesson:** remove a deterministic failure from the scheduled hot path instead of paying to rediscover it every run.
+
+## 2026-08-28 21:34 CEST — ERROR — BG150 false degraded from early execution poll
+- **Fingerprint:** `agent-runtime|stable-runner|false-degraded-early-poll`
+- **Signal:** sentinel run `5a08ff9a85624ad297c3da85ec98d0f6` read Agent14 execution `e9d5d9f204f34e1d987585a3cbf07bda` while it was still `RUNNING`, then projected `PH Agent stable runtime sentinel — DEGRADED` even though the target later completed successfully with result `OK`.
+- **Impact:** shared memory could unnecessarily suppress PH-agent fan-out and route engineering through degraded-mode fallbacks despite a healthy runtime.
+- **Root cause:** the sentinel used a fixed wait shorter than the observed target runtime; the target took 5.928 seconds to complete.
+- **Known failed approach:** treating a non-terminal `RUNNING` sample as terminal degradation.
+- **Owner:** Telemetry/Self-Healing.
+
+## 2026-08-28 21:38 CEST — RECOVERY — BG150 terminal-success canary restored
+- **Fingerprint:** `agent-runtime|stable-runner|false-degraded-early-poll-recovered`
+- **Fix/evidence:** a concurrent safe change increased the sentinel wait before the execution read; the next sentinel run `166891a1868449ada5e3c755e3f044e2` read target `11e073ac0af44cd3a603fa49b792b487` as `SUCCESS` with exact result `OK`. The target completed in 5.799 seconds and the sentinel classified `HEALTHY`.
+- **Regression gate:** only terminal execution success plus semantic output exactly `OK` may establish health; a prior `RUNNING` sample is inconclusive, not proof of degradation.
+- **Attempted/avoided approach:** no further timing rewrite was applied after fresh evidence was green; the next red occurrence must justify a bounded poll rather than another blind fixed-delay increase.
+- **Production protection:** website production remained `1bf419adf0cd955c564f94a1b62b64c4ca71acb9` / Netlify `6a91e114014f8b0008051e02`, `ready`.
+- **Reusable lesson:** asynchronous healthchecks must distinguish terminal failure from “not finished yet”; do not convert timing uncertainty into a red runtime state.
