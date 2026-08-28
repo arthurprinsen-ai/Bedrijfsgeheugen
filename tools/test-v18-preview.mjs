@@ -2,9 +2,13 @@ import { readFile, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 
 const html = await readFile('prototype-v18-stable.html', 'utf8');
+const indexHtml = await readFile('index.html', 'utf8');
 const fail = message => { throw new Error(`V18 preview regression: ${message}`); };
 const count = (text, re) => (text.match(re) || []).length;
 const sha256 = value => createHash('sha256').update(value).digest('hex');
+
+if (!indexHtml.includes('/prototype-v18-stable.html')) fail('preview root must route to prototype-v18-stable.html');
+if (indexHtml.includes('/prototype-v18-6.html')) fail('preview root still routes to obsolete simplified V18.6');
 
 if (count(html, /id="view-[^"]+"/g) !== 14) fail('expected exactly 14 views');
 if (!html.includes('id="v18MobileDrawer"')) fail('mobile drawer missing');
@@ -34,4 +38,4 @@ if (videoBytes.subarray(4, 8).toString('ascii') !== 'ftyp') fail('hero asset is 
 const videoHash = sha256(videoBytes);
 if (videoHash !== EXPECTED_VIDEO_SHA256) fail(`hero video integrity mismatch: ${videoHash}`);
 
-console.log(`V18 preview QA PASS — 14 views, ${targets.length} routes, verified video ${videoStat.size} bytes, ${hrefs.length} HTTPS anchors`);
+console.log(`V18 preview QA PASS — stable root, 14 views, ${targets.length} routes, verified video ${videoStat.size} bytes, ${hrefs.length} HTTPS anchors`);
