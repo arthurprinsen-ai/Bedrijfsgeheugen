@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import datetime as dt, html, json, os, pathlib, re, sys, urllib.request
 API='https://api.notion.com/v1'; VER='2025-09-03'
-QUEUE=os.getenv('NOTION_BLOG_DB','70706495-cc0c-44ed-84bc-493df00651f1')
+QUEUE='70706495-cc0c-44ed-84bc-493df00651f1'
 TEMPLATE=pathlib.Path('blog/bedrijfsopvolging-begin-bij-het-geheugen/index.html')
 INDEX=pathlib.Path('blog/index.html'); RSS=pathlib.Path('blog/rss.xml'); SITEMAP=pathlib.Path('sitemap.xml')
 
@@ -14,6 +14,11 @@ def req(path,method='GET',body=None):
 def txt(p,n):
  a=(p.get(n)or{}).get('rich_text') or (p.get(n)or{}).get('title') or []
  return ''.join(x.get('plain_text','') for x in a).strip()
+def uid(p,n):
+ v=p.get(n)or{}; u=v.get('unique_id')or{}
+ if u and u.get('number') is not None:
+  prefix=str(u.get('prefix')or'').strip(); number=str(u['number']); return f'{prefix}-{number}' if prefix else number
+ return txt(p,n)
 def sel(p,n): return ((((p.get(n)or{}).get('select')or{}).get('name'))or'').strip()
 def chk(p,n): return bool((p.get(n)or{}).get('checkbox'))
 def url(p,n): return str((p.get(n)or{}).get('url')or'').strip()
@@ -38,7 +43,7 @@ def queue_contract(row):
  if q['attempt']>=2:fail('Maximaal twee dispatchpogingen toegestaan')
  return q
 def source_contract(page,q):
- p=page.get('properties')or{}; s={'content_id':txt(p,'Content ID'),'title':txt(p,'Titel'),'blogtext':txt(p,'Blogtekst'),'slug':txt(p,'SEO Slug'),'keyword':txt(p,'SEO focuszoekwoord'),'meta':txt(p,'SEO metaomschrijving')}
+ p=page.get('properties')or{}; s={'content_id':uid(p,'Content ID'),'title':txt(p,'Titel'),'blogtext':txt(p,'Blogtekst'),'slug':txt(p,'SEO Slug'),'keyword':txt(p,'SEO focuszoekwoord'),'meta':txt(p,'SEO metaomschrijving')}
  checks={'content_id':s['content_id']==q['source'],'type':sel(p,'Contenttype')=='Artikel','approved':sel(p,'Herzien')=='Goedgekeurd','gate':sel(p,'Publicatiecheck')=='Gereed','status':sel(p,'Make status')=='Publiceren','narrative':sel(p,'Rode-draadcheck')=='Klopt','generate':not chk(p,'Genereren'),'test':not chk(p,'Testmodus'),'unpublished':not url(p,'Publicatielink'),'slug':s['slug']==q['slug'],'title':bool(s['title']),'text':bool(s['blogtext']),'keyword':bool(s['keyword']),'meta':120<=len(s['meta'])<=170}
  bad=[k for k,v in checks.items() if not v]
  if bad:fail('Centrale bron faalt toelatingspoort: '+', '.join(bad))
