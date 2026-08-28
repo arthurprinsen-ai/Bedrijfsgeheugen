@@ -1,0 +1,10 @@
+{
+  "name": "bedrijfsgeheugen",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Build dependencies for Bedrijfsgeheugen production media",
+  "dependencies": {
+    "ffmpeg-static": "5.2.0",
+    "ffprobe-static": "3.1.0"
+  }
+}
