@@ -13,9 +13,8 @@ const FILES = [
 const CONTROL_SOURCE = 'https://videos.pexels.com/video-files/35649915/15107522_1920_1080_30fps.mp4';
 const ORIGINAL_POSTER = 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600';
 const LOCAL_SOURCE = '/assets/inspirational-hero-v4.mp4';
-const LOCAL_POSTER = '/assets/inspirational-hero-v4-poster.jpg';
+const DRONE_POSTER = 'https://cdn.openart.ai/openart/thumbnail/production/2026-08/create-video/WZvuT1BzGx566fWaFo8F/xai-video-1e5fd189-ae01-9b05-b8b8-b0d05a1f7f52_1787916880132_134b0c26.webp';
 const HERO_PATH = 'assets/inspirational-hero-v4.mp4';
-const HERO_POSTER_PATH = 'assets/inspirational-hero-v4-poster.jpg';
 const fail = message => { throw new Error(`V18 preview regression: ${message}`); };
 const count = (text, re) => (text.match(re) || []).length;
 const sha256 = value => createHash('sha256').update(value).digest('hex');
@@ -37,8 +36,9 @@ for (const target of targets) if (!views.has(target)) fail(`missing data-view ta
 const canonicalHero = canonicalHtml.match(/<video[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/)?.[0] || '';
 const currentHero = html.match(/<video[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/)?.[0] || '';
 if (!canonicalHero || !currentHero) fail('hero video missing');
-const expectedHero = canonicalHero.replace(CONTROL_SOURCE, LOCAL_SOURCE).replace(ORIGINAL_POSTER, LOCAL_POSTER);
-if (currentHero !== expectedHero) fail('hero markup differs from canonical V18 beyond allowed src/poster swaps');
+const expectedHero = canonicalHero.replace(CONTROL_SOURCE, LOCAL_SOURCE).replace(ORIGINAL_POSTER, DRONE_POSTER);
+if (currentHero !== expectedHero) fail('hero markup differs from canonical V18 beyond allowed source/poster swaps');
+if (currentHero.includes(ORIGINAL_POSTER)) fail('old people poster must not remain');
 
 const canonicalController = canonicalHtml.match(/<script id="v18-4-video-controller">[\s\S]*?<\/script>/)?.[0] || '';
 const currentController = html.match(/<script id="v18-4-video-controller">[\s\S]*?<\/script>/)?.[0] || '';
@@ -47,20 +47,14 @@ if (currentController !== canonicalController) fail('proven V18 controller chang
 if (html.includes('v18-stable-video-controller')) fail('unproven alternate playback controller present');
 if (html.includes('playbackRate=.65') || html.includes('defaultPlaybackRate=.65')) fail('unproven playback-rate modification present');
 
-const canonicalWithMedia = canonicalHtml.replace(CONTROL_SOURCE, LOCAL_SOURCE).replace(ORIGINAL_POSTER, LOCAL_POSTER);
-if (html !== canonicalWithMedia) fail('preview HTML differs from canonical V18 beyond hero src/poster swaps');
+const canonicalWithMedia = canonicalHtml.replace(CONTROL_SOURCE, LOCAL_SOURCE).replace(ORIGINAL_POSTER, DRONE_POSTER);
+if (html !== canonicalWithMedia) fail('preview HTML differs from canonical V18 beyond hero source/poster swaps');
 
 const heroStat = await stat(HERO_PATH);
 if (heroStat.size < 300000 || heroStat.size > 8000000) fail(`drone hero size outside expected range: ${heroStat.size}`);
 const heroBytes = await readFile(HERO_PATH);
 if (heroBytes.subarray(4,8).toString('ascii') !== 'ftyp') fail('drone hero is not a valid MP4');
 const heroHash = sha256(heroBytes);
-
-const posterStat = await stat(HERO_POSTER_PATH);
-if (posterStat.size < 20000 || posterStat.size > 1000000) fail(`drone poster size outside expected range: ${posterStat.size}`);
-const posterBytes = await readFile(HERO_POSTER_PATH);
-if (!(posterBytes[0] === 0xff && posterBytes[1] === 0xd8)) fail('drone poster is not a JPEG');
-const posterHash = sha256(posterBytes);
 
 if (!ffmpegPath) fail('ffmpeg-static binary unavailable for media QA');
 const probe = spawnSync(ffmpegPath, ['-hide_banner','-i',HERO_PATH,'-f','null','-'], { encoding:'utf8' });
@@ -83,4 +77,4 @@ const hrefs = [...html.matchAll(/<a\b[^>]*\bhref="([^"]+)"/gi)].map(m => m[1].tr
 const badHrefs = hrefs.filter(href => !href.startsWith('https://'));
 if (badHrefs.length) fail(`non-HTTPS anchor hrefs: ${badHrefs.slice(0,5).join(', ')}`);
 
-console.log(`V18 preview QA PASS — canonical proven player; drone src ${heroStat.size} bytes ${heroHash}; poster ${posterStat.size} bytes ${posterHash}; 14 views, ${targets.length} routes`);
+console.log(`V18 preview QA PASS — proven player preserved; matching drone poster; drone ${heroStat.size} bytes ${heroHash}; 14 views, ${targets.length} routes`);
