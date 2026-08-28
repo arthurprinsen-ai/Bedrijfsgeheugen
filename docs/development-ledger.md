@@ -65,5 +65,31 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Production protection:** production remained `dfd7a19b5520604ce493902fbbe565e54d7e0fc0` / `6a918da7c229aa00097758b3`, state `ready`; no production promotion or rollback was required.
 - **Reusable lesson:** for device media regressions, freeze the proven player, constrain the media delivery fingerprint explicitly, remove unrelated runtime tuning, and never equate build/deploy success with device runtime acceptance.
 
+## 2026-08-28 17:18 CEST — ERROR — accepted preview candidate branch drift
+- **Fingerprint:** `preview|hero-video|candidate-branch-drift|runtime-evidence-missing`
+- **Signal:** PR #96 moved after the accepted build candidate from `b8e765486f8f7220d044c940602381e8ab838e6d` to `c0499ac0780f4ab214331e4d2f232592da22b600` through parallel agent work.
+- **Impact:** the mutable PR head can no longer represent the previously tested Pexels candidate and must not be promoted by head-name or PR-number alone.
+- **Root cause:** a long-lived prototype branch accumulated parallel changes after candidate acceptance. Compared with production `main` `e8cfdecfb19a22428f146b24f97455d654809947`, the new head is diverged, 114 commits ahead and 29 behind, and contains another hero-source change to OpenArt.
+- **Evidence:** immutable Pexels Netlify deploy `6a9196ce86ab9a00089829d6` remains `ready` and exact `commit_ref=b8e765486f8f7220d044c940602381e8ab838e6d`; current `c0499ac0780f4ab214331e4d2f232592da22b600` also has Netlify build success but no iPhone runtime acceptance. PR #96 is not mergeable.
+- **Attempted/avoided approaches:** no blind merge, force-ref rewrite, retry or promotion of the changed head; these would mix unaccepted branch history into the release.
+- **Recovery:** pin acceptance to immutable candidate SHA/deploy, keep production on last-known-good, and require a clean promotion branch from current `main` after device runtime acceptance.
+- **Owner:** QA/Regression + Architect/Integrator.
+- **Regression gate:** promotion must reject head movement after acceptance and reject merge-conflicted/diverged candidates.
+- **Production protection:** `e8cfdecfb19a22428f146b24f97455d654809947` / Netlify `6a9197b8043dcf00086cbb73` remains `ready`.
+- **Reusable lesson:** PR identity is not release identity; the accepted artifact is the exact SHA plus immutable deploy.
+
+## 2026-08-28 17:18 CEST — ERROR — browser evidence CLI page argument missing
+- **Fingerprint:** `browser-evidence|chrome-devtools|required-page-argument-missing`
+- **Signal:** BG151 Browser Evidence run `e7b7505f87eb4c3fb0a31a26e6447543` produced `chrome-devtools list_console_messages --output-format=json` -> `Error: Not enough non-option arguments: got 0, need at least 1`; `pageUrl` stayed `about:blank`.
+- **Impact:** the automated browser release gate cannot currently provide trustworthy console/network/runtime evidence for the device-specific hero-video acceptance step.
+- **Root cause:** the monitor wrapper still invokes an older zero-positional-argument CLI contract while the installed `chrome-devtools` CLI requires an explicit selected page/page id for page-scoped commands.
+- **Known failed approach:** rerunning the same zero-argument command. The retry limit is exhausted for that hypothesis; future recovery must change the invocation contract.
+- **Safe recovery completed:** the faulty evidence was rejected rather than interpreted as a page result; production remained protected; the error fingerprint was written through BG168/BG166 and projected into BG167.
+- **Remaining fix:** update the monitor wrapper to select a real page and pass that page/page id into snapshot/console/network calls; add a regression test that rejects zero-argument page-scoped invocations and requires `pageUrl != about:blank` before evidence can satisfy a release gate.
+- **Owner:** Telemetry/Self-Healing + QA/Regression.
+- **Verification:** BG167 Team Memory refresh at `2026-08-28T15:19:00.276Z` includes both the branch-drift and Browser Evidence CLI errors.
+- **Rollback/last-known-good:** no production code changed; production `e8cfdecfb19a22428f146b24f97455d654809947` / `6a9197b8043dcf00086cbb73` remains the protected last-known-good.
+- **Reusable lesson:** observability failures are release-gate failures, not product failures; never infer runtime health from an evidence collector that did not attach to the target page.
+
 ## PRODUCTION_ROLLBACK event contract
 When any production promotion regresses protected smoke/regression or metrics, append a `PRODUCTION_ROLLBACK` entry with failed production SHA/deploy, restored last-known-good SHA/deploy, evidence, rollback verification and the next candidate hypothesis. No rollback was required for the incidents above because production remained on the last-known-good SHA until each promotion was verified.
