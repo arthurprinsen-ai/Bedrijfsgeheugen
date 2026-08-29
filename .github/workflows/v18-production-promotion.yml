@@ -16,5 +16,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Verify promotion contract
-        run: node --test tests/v18-production-promotion.test.mjs
+      - name: Verify promotion and accepted site baseline contracts
+        run: node --test tests/v18-production-promotion.test.mjs tests/site-baseline-guardian.test.mjs
