@@ -1,0 +1,3 @@
+Operational verification trigger only.
+This branch must never be merged.
+Candidate mode must not mark Notion dispatched or publish to main.
