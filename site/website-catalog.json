@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "source": "complete-website-reconstruction",
+  "routes": [
+    {"route":"/","group":"primary","file":"index.html","state":"accepted-current","sources":["current-production"],"requiredAnchors":[],"navigation":{"primary":true},"children":[],"approval":"technical"},
+    {"route":"/over-ons","group":"primary","file":"over-ons.html","state":"wrong-version","sources":["PR110 prototype-v18-6.html","PR187"],"requiredAnchors":["Ons verhaal","Onze missie","Onze ambitie","Ons geloof"],"navigation":{"primary":true},"children":[],"approval":"visual-business"}
+  ]
+}
