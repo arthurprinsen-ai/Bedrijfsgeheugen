@@ -1,0 +1,73 @@
+name: Business OS Live Preview
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'portal-next/**'
+      - '.github/workflows/business-os-live-preview.yml'
+      - '.github/workflows/paginacontrole.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Wait for exact Netlify preview SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for i in $(seq 1 48); do
+            json=$(curl -fsS \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
+            state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
+            target=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .target_url' | head -n1)
+            if [ "$state" = "success" ]; then
+              echo "PREVIEW_URL=$target" >> "$GITHUB_ENV"
+              echo "Exact preview is ready: $target"
+              exit 0
+            fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "::error::Netlify preview failed for $HEAD_SHA: $state"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "::error::Timed out waiting for Netlify preview on exact head SHA"
+          exit 1
+
+      - name: Verify new portal preview is actually served
+        run: |
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/" -o /tmp/portal-next.html
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.css" -o /tmp/portal-next.css
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.js" -o /tmp/portal-next.js
+          grep -q 'AI Management Summary' /tmp/portal-next.html
+          grep -q 'Preview · voorbeelddata · geen actieve bedrijfswaarheid' /tmp/portal-next.html
+          grep -q 'Trust & Governance' /tmp/portal-next.html
+          grep -q 'prefers-reduced-motion:reduce' /tmp/portal-next.css
+          grep -q 'preview voert geen echte AI-call uit' /tmp/portal-next.js
+
+      - name: Verify legacy portal remains last-known-good in the same preview
+        run: |
+          curl -fsSL --max-time 30 "$PREVIEW_URL/klantportaal" -o /tmp/legacy.html
+          grep -q 'Portaal | Bedrijfsgeheugen' /tmp/legacy.html
+          grep -q 'data-p="overzicht"' /tmp/legacy.html
+          grep -q 'data-p="roadmap"' /tmp/legacy.html
+          grep -q 'id="btnExport"' /tmp/legacy.html
+
+      - name: Report exact preview evidence
+        run: |
+          echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
+          echo "Verified preview: $PREVIEW_URL"
+          echo "New portal preview + legacy portal smoke are both green."
