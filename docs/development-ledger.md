@@ -289,3 +289,16 @@ When any production promotion regresses protected smoke/regression or metrics, a
 - **Last-known-good before promotion:** `b1e4ba214df1a2ae916f9023d7a67ec0570481b3`, Netlify `6a92cb3f1311e100076163ec` ready.
 - **Owner:** Powerhouse Production Promotion Guardian.
 - **Reusable lesson:** the agent carries green work through merge, deployment, exact-SHA verification and outcome evidence; Netlify is only the executor.
+
+## 2026-08-29 — CONTRACT_CHANGE / PRODUCTION_PROMOTION — autonomous Production Promotion Guardian v1
+- **Fingerprint:** `production-promotion-guardian|autonomous-release-owner|v1`
+- **Contract:** every safe, accepted green repository candidate creates a production obligation owned by `Powerhouse Production Promotion Guardian`; commit, PR, merge, CI success or Netlify `ready` alone is not completion.
+- **Implementation:** `config/production-promotion.json`, `tools/evaluate-production-promotion.mjs`, `tests/production-promotion-guardian.test.mjs`, shared CI wiring and whole-brain obligation/governance contract. Safe promotion and history-preserving rollback are autonomous; exact production SHA plus smoke/regression/protected evidence is required.
+- **TDD evidence:** initial candidate gate run `33251567062` was red only because an unrelated development-doc test overreached into missing ledger vocabulary; the contract test was narrowed to the established append-only ledger vocabulary. Exact corrected candidate run `33251603936` passed. Canonical replacement candidate `3dcf684bbcc7f626224afaf49450f8773e2fe751` passed Shared Agent Memory Tests run `33251733761` and was merged via PR #164 as `487b5f8d9501aea677a6e3da8f86d901c6c62d84`.
+- **Concurrency/supersession:** stale duplicate PR #166 (`cb9555dfddd50e2c50a7eb8c70cfc244ed313c4e`) was explicitly superseded and closed unmerged after current main advanced, preventing stale parallel history from being reintroduced.
+- **Current production verification:** current `main=ef6bde5955b623cdba2808c2d4bffa90f288a4d6`; Git tree `70449d11354bdaa1c6a9445d3c2215c780384cdf`; Netlify production deploy `6a92cda7227779000849c9eb` is `ready`, context `production`, exact `commit_ref=ef6bde5955b623cdba2808c2d4bffa90f288a4d6`, 68 redirects and 16 headers processed without errors, 3 functions + 1 edge function deployed, secret-scan matches 0. Public HTTPS homepage smoke passed.
+- **Production authority:** BG169 execution `f32bdf45f432430a8ca8317e38dc4744` returned `PRODUCTION_GREEN` for exact current production and persisted authoritative production state.
+- **Runtime ownership:** hourly `Powerhouse Production + Self Heal` reconciles green candidates/main/Netlify, allows bounded 180s auto-deploy grace, triggers missing/stale normal production deploys, verifies exact SHA/outcome and rolls back to LKG when production is red.
+- **Shared learning:** BG168 execution `df558d865b4640d88d837872fed5a56b` dispatched `PRODUCTION_PROMOTION` to shared learning.
+- **Terminal state:** `PRODUCTION_GREEN`.
+- **Reusable lesson:** release identity is immutable SHA plus independently verified production outcome. A green candidate is work-in-progress until the Production Promotion Guardian proves exact production convergence; stale duplicate branches are superseded rather than merged.
