@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Canonical object and relationship contracts
-        run: node --test tests/canonical-object-contract.test.mjs
+      - name: Canonical contracts
+        run: node --test tests/canonical-*.test.mjs
       - name: Protected portal baseline
         run: python3 .github/scripts/portal_parity.py
