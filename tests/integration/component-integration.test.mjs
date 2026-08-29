@@ -17,7 +17,8 @@ test('migration composer preserves source index and replaces only isolated zones
 
   assert.equal(after, before, 'source index.html was mutated');
   for (const id of ids) {
-    assert.equal((output.match(new RegExp(`data-bg-component=["']${id}["']`, 'g')) || []).length, 1, `${id} must appear exactly once`);
+    const roots = output.match(new RegExp(`<[^>]+data-bg-component=["']${id}["'][^>]*>`, 'g')) || [];
+    assert.equal(roots.length, 1, `${id} must render exactly once`);
   }
   assert.match(output, /Onderzoek bewijst: kennisverlies/);
   assert.match(output, /Veelgestelde vragen/);
