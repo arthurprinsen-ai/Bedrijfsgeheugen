@@ -8,6 +8,7 @@ Dit contract geldt voor het volledige Bedrijfsgeheugen en alle huidige en toekom
 - **NO LOST OBLIGATION** — ieder verwacht resultaat blijft als obligation bestaan totdat bewijs van voltooiing bestaat of een expliciete harde grens is bereikt.
 - **GREEN MEANS OUTCOME VERIFIED** — groen betekent aantoonbaar extern of systeemmatig resultaat, niet alleen exit code 0.
 - **RED MEANS AGENTS KEEP WORKING** — een veilig oplosbare rode toestand start of hervat automatisch recovery totdat het resultaat geverifieerd is.
+- **GREEN CANDIDATE MEANS PROMOTE TO PRODUCTION** — een aantoonbaar groene repository-kandidaat creëert automatisch een productie-obligation.
 
 ## Obligation-model
 
@@ -21,6 +22,14 @@ Iedere verwachte actie wordt vóór of uiterlijk bij dispatch machine-readable g
 - `evidencePolicy`: welk bewijs `COMPLETED` mag veroorzaken;
 - `idempotencyKey`: beschermt tegen dubbele side-effects;
 - `recoveryPolicy`: veilige herstelroute en escalatiepad.
+
+## Productie-obligation
+
+Voor repository-backed wijzigingen is **Powerhouse Production Promotion Guardian** de owner zodra de kandidaat aantoonbaar groen is. De machine-readable policy staat in `config/production-promotion.json`.
+
+Een commit of merge is not completion: de obligation blijft open totdat de exacte productie-SHA aantoonbaar gelijk is aan de geaccepteerde `main`-SHA en productie-smoke, regressie en protected metrics groen zijn. Netlify `ready` op een andere commit is niet voldoende. Safe promotion and rollback are autonomous: de Guardian merge/promoveert, deployt/reconcileert, verifieert en rolt bij productieregressie terug naar last-known-good zonder extra toestemming zolang geen harde grens wordt geraakt.
+
+Historische tussen-SHA's mogen bij een commitstorm expliciet worden gesupersede door een nieuwere aantoonbaar releasable `main`, maar mogen nooit stil verdwijnen. De supersession-evidence sluit de oude obligation en de nieuwste `main` behoudt de actieve productie-obligation.
 
 ## Outcome boven runstatus
 
@@ -59,10 +68,14 @@ De generieke vergelijking is:
 
 `expected obligations` − `verified completed obligations` − `valid hard boundaries` = `open recovery work`.
 
+Voor `deploy` vergelijkt de Production Promotion Guardian bovendien periodiek de nieuwste geaccepteerde `main`-SHA met de actuele production `commit_ref`. Na de bounded grace period is een mismatch `MISSED_OBLIGATION` en moet hij zelf de veiligste productieactie uitvoeren en opnieuw verifiëren.
+
 ## Harde grenzen
 
 Alleen credentials/accountverbindingen, permissies, security-verzwakking, destructieve/onherroepelijke data, hogere betaalde resources of juridisch/financieel bindende handelingen mogen autonome recovery blokkeren. De blokkade moet zelf expliciet geregistreerd blijven en bij volgende agentruns opnieuw worden gecontroleerd.
 
+Een veilige groene productiepromotie of rollback naar een bewezen last-known-good is geen harde grens.
+
 ## Definition of Done
 
-Een obligation is pas klaar als het bedoelde resultaat bestaat, het vereiste bewijs is opgeslagen, idempotency is bevestigd, regressie/preventie is geborgd waar technisch mogelijk en de gedeelde teamcontext de uitkomst kent. Technische success-status zonder outcome-bewijs voldoet niet.
+Een obligation is pas klaar als het bedoelde resultaat bestaat, het vereiste bewijs is opgeslagen, idempotency is bevestigd, regressie/preventie is geborgd waar technisch mogelijk en de gedeelde teamcontext de uitkomst kent. Technische success-status zonder outcome-bewijs voldoet niet. Voor repository-wijzigingen betekent dit expliciet dat de exacte production SHA is geverifieerd; commit- of merge-status alleen is nooit klaar.
