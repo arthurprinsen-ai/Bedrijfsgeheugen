@@ -48,3 +48,11 @@ test('catalog entries have explicit reconstruction state and evidence', () => {
     assert.ok(item.file, `${item.route} has no source file`);
   }
 });
+
+test('Meer preserves the company pages visible in the accepted V18 site', () => {
+  const menu = read('assets/js/menu.js');
+  assert.match(menu, /maakGroepKnop\('meer', 'Meer'\)/, 'Meer drilldown must remain in the mobile catalog');
+  assert.match(menu, /href:\s*'\/over-ons'[\s\S]*label:\s*'Over ons'/, 'Meer must contain Over ons');
+  assert.match(menu, /href:\s*'\/hoe-het-werkt'[\s\S]*label:\s*'Werkwijze'/, 'Meer must contain Werkwijze');
+  assert.match(menu, /label:\s*'Partners'/, 'Meer must contain Partners as shown in the accepted V18 site');
+});
