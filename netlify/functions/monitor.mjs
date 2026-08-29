@@ -1,14 +1,12 @@
 // Neemt een ingevulde Digitaliseringsmonitor aan en geeft de deelnemer zijn eigen
 // uitkomst terug. Het opslaan gebeurt in Make (BG 47), dat naar Notion schrijft.
-//
-// Waarom via Make en niet rechtstreeks naar Notion: de Notion-integratie moet per
-// database gedeeld worden en dat is stil te breken. De Make-verbinding schrijft
-// hier al maanden zonder problemen, en fouten zijn daar zichtbaar.
-//
-// POST /api/monitor met de tien antwoorden plus optionele attributionvelden.
+// De bestaande Make-payload blijft intact; Brain-metadata wordt alleen additief
+// meegestuurd zodat elke inzending provenance, idempotency en verificatiestatus heeft.
+
+import { createSourceEventEnvelope } from '../../platform/integrations/source-event-envelope.mjs';
 
 const WEBHOOK = 'https://hook.eu1.make.com/7hsxkgmjyipcpzm0lq86khswzw2wxvda';
-const WERKWEKEN = 46; // vakanties eraf, zodat het jaarcijfer niet te rooskleurig is
+const WERKWEKEN = 46;
 const MAX_UREN = 200;
 
 const tekst = (v, max = 200) => String(v || '').trim().slice(0, max);
@@ -82,20 +80,39 @@ export default async (request) => {
     attribution_key: attributionKey,
   };
 
+  const explicitIdempotencyKey = tekst(
+    request.headers.get('x-idempotency-key') || a.idempotency_key || a.submission_id,
+    240
+  );
+  const brainEvent = createSourceEventEnvelope({
+    payload: inzending,
+    explicitIdempotencyKey,
+  });
+  const writePayload = {
+    ...inzending,
+    brain_event_id: brainEvent.eventId,
+    brain_idempotency_key: brainEvent.idempotencyKey,
+    _brain: brainEvent,
+  };
+
   try {
     const r = await fetch(WEBHOOK, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(inzending),
+      headers: {
+        'content-type': 'application/json',
+        'x-idempotency-key': brainEvent.idempotencyKey,
+        'x-bedrijfsgeheugen-event-id': brainEvent.eventId,
+      },
+      body: JSON.stringify(writePayload),
     });
     if (!r.ok) {
       return Response.json(
-        { fout: 'Opslaan lukte niet. Probeer het zo nog eens.', detail: 'make ' + r.status },
+        { fout: 'Opslaan lukte niet. Probeer het zo nog eens.', detail: 'make ' + r.status, eventId: brainEvent.eventId },
         { status: 502 }
       );
     }
   } catch {
-    return Response.json({ fout: 'Opslaan lukte niet. Probeer het zo nog eens.' }, { status: 502 });
+    return Response.json({ fout: 'Opslaan lukte niet. Probeer het zo nog eens.', eventId: brainEvent.eventId }, { status: 502 });
   }
 
   return Response.json({
@@ -107,6 +124,7 @@ export default async (request) => {
     benchmark: null,
     deelnemers: null,
     drempel: 50,
+    eventId: brainEvent.eventId,
   });
 };
 
