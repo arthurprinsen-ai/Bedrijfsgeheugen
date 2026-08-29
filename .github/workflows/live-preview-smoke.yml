@@ -7,6 +7,11 @@ on:
     paths:
       - 'v18-full/**'
       - 'tools/**'
+      - 'assets/kop.css'
+      - 'assets/js/menu.js'
+      - 'assets/shared-mobile-drilldown.css'
+      - 'assets/v18-mobile-drilldown.css'
+      - 'assets/js/v18-mobile-drilldown.js'
       - 'tests/integration/v18-live-runtime.spec.js'
       - 'netlify.toml'
       - '.github/workflows/live-preview-smoke.yml'
