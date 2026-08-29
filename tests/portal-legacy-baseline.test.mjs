@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { LEGACY_CAPABILITIES } from '../portal/core.mjs';
+import { resolvePortalRoute,legacyHref } from '../portal/legacy-map.mjs';
+const required=['overzicht','bedrijfsgezondheid','strategie-uitvoering','processen-organisatie','kennis','data-koppelingen','ai-insights','acties-impact','rapportages','koppelingen-bouwen','roadmap','facturen-abonnement','organisatie-gebruikers','instellingen','frisse-blik'];
+test('every approved legacy portal capability remains represented',()=>{const ids=new Set(LEGACY_CAPABILITIES.map(x=>x.id));for(const id of required)assert.equal(ids.has(id),true,`missing legacy capability ${id}`)});
+test('legacy overview resolves to today',()=>assert.deepEqual(resolvePortalRoute('overzicht'),{route:'today',legacyId:'overzicht'}));
+test('legacy health remains directly addressable',()=>assert.deepEqual(resolvePortalRoute('bedrijfsgezondheid'),{route:'company/health',legacyId:'bedrijfsgezondheid'}));
+test('legacy data route resolves to canonical company data',()=>assert.deepEqual(resolvePortalRoute('data-koppelingen'),{route:'company/data',legacyId:'data-koppelingen'}));
+test('canonical nested routes pass through',()=>assert.deepEqual(resolvePortalRoute('execution/roadmap'),{route:'execution/roadmap',legacyId:null}));
+test('unknown routes fail closed to today',()=>assert.deepEqual(resolvePortalRoute('does-not-exist'),{route:'today',legacyId:null}));
+test('legacy href uses canonical route',()=>assert.equal(legacyHref('rapportages'),'#/impact/reports'));
