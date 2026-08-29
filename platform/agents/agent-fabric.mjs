@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { createAgentWork } from './agent-work.mjs';
+import { createLearningMemory } from './learning-memory.mjs';
 
 const TRANSITIONS = Object.freeze({
   Assigned:new Set(['Investigating']),
@@ -28,8 +29,9 @@ function fingerprint(signal) {
   return createHash('sha256').update(source).digest('hex').slice(0, 24);
 }
 
-export function createAgentFabric({ registry, now = () => new Date().toISOString() } = {}) {
+export function createAgentFabric({ registry, learningMemory = createLearningMemory(), now = () => new Date().toISOString() } = {}) {
   if (!registry?.route) throw new TypeError('registry is required');
+  if (!learningMemory?.findMatches || !learningMemory?.recordVerified) throw new TypeError('learningMemory is invalid');
   const workById = new Map();
   const activeByFingerprint = new Map();
   const metadata = new Map();
@@ -88,17 +90,36 @@ export function createAgentFabric({ registry, now = () => new Date().toISOString
     return next;
   }
 
-  function getWork(id) {
-    return workById.get(id) ?? null;
+  function suggestLearning({ workId, requesterAgentId } = {}) {
+    const work = workById.get(workId);
+    const info = metadata.get(workId);
+    if (!work || !info) throw new Error('AgentWork not found');
+    const matches = learningMemory.findMatches({ tenantId:work.tenantId, domains:info.domains, fingerprint:info.problemClass });
+    for (const match of matches) learningMemory.markReused(match.id, { agentId:requesterAgentId ?? work.primaryAgentId });
+    return matches;
   }
 
-  function listWork({ tenantId } = {}) {
-    return Object.freeze([...workById.values()].filter(work => !tenantId || work.tenantId === tenantId));
+  function recordLearning({ workId, actionFingerprint, evidence, impact, confidence } = {}) {
+    const work = workById.get(workId);
+    const info = metadata.get(workId);
+    if (!work || !info) throw new Error('AgentWork not found');
+    if (!TERMINAL.has(work.status)) throw new Error('learning requires resolved AgentWork');
+    return learningMemory.recordVerified({
+      tenantId:work.tenantId,
+      fingerprint:info.problemClass,
+      domains:info.domains,
+      sourceAgentId:work.primaryAgentId,
+      actionFingerprint,
+      verified:true,
+      evidence,
+      impact,
+      confidence,
+    });
   }
 
-  function getMetadata(id) {
-    return metadata.get(id) ?? null;
-  }
+  function getWork(id) { return workById.get(id) ?? null; }
+  function listWork({ tenantId } = {}) { return Object.freeze([...workById.values()].filter(work => !tenantId || work.tenantId === tenantId)); }
+  function getMetadata(id) { return metadata.get(id) ?? null; }
 
-  return Object.freeze({ intake, transition, getWork, listWork, getMetadata });
+  return Object.freeze({ intake, transition, getWork, listWork, getMetadata, suggestLearning, recordLearning });
 }
