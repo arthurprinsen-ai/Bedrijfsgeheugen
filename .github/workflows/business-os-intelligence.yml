@@ -1,0 +1,31 @@
+name: Business OS Intelligence
+
+on:
+  pull_request:
+    paths:
+      - 'platform/intelligence/**'
+      - 'platform/agents/**'
+      - 'tests/intelligence-agent-runtime.test.mjs'
+      - '.github/workflows/business-os-intelligence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  intelligence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Intelligence and agent runtime contracts
+        run: node --test tests/intelligence-agent-runtime.test.mjs
+      - name: Trust contracts remain green
+        run: node --test tests/policy-engine.test.mjs tests/trust-*.test.mjs
+      - name: Foundation contracts remain green
+        run: node --test tests/canonical-*.test.mjs tests/source-adapters.test.mjs tests/read-models.test.mjs tests/foundation-registry-eventstore.test.mjs
+      - name: Protected portal baseline remains green
+        run: python3 .github/scripts/portal_parity.py
