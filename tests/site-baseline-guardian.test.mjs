@@ -97,7 +97,6 @@ test('primary navigation is the accepted seven-view test catalog', () => {
 
 test('restored standalone pages share the canonical responsive shell and stay contextually connected', () => {
   const standalone = ['/problemen','/oplossingen','/prijzen','/cases','/kennis'];
-  const standaloneSet = new Set(standalone);
   const incoming = new Map(standalone.map(route => [route, 0]));
   for (const route of standalone) {
     const file = routeMap.get(route)?.file;
@@ -112,7 +111,7 @@ test('restored standalone pages share the canonical responsive shell and stay co
       if (target !== route && main.includes(`href="${target}"`)) incoming.set(target, incoming.get(target) + 1);
     }
   }
-  for (const route of standaloneSet) assert.ok(incoming.get(route) > 0, `${route} became an orphan inside the restored page cluster`);
+  for (const route of standalone) assert.ok(incoming.get(route) > 0, `${route} became an orphan inside the restored page cluster`);
 
   const shell = read('assets/recovered-page-shell.js');
   assert.match(shell, /class="bgkop"/);
@@ -120,11 +119,13 @@ test('restored standalone pages share the canonical responsive shell and stay co
   assert.match(shell, /aria-label="Menu openen"/);
   assert.match(shell, /class="bgvoet"/);
 
-  const mobile = read('assets/test-prototype-pages.js');
+  const compatibility = read('assets/test-prototype-pages.js');
+  assert.match(compatibility, /single owner of mobile navigation/);
+  const mobile = read('assets/js/menu.js');
   assert.match(mobile, /aria-expanded/);
-  assert.match(mobile, /mobile-drawer/);
+  assert.match(mobile, /bgSharedMobileNav/);
   assert.match(mobile, /Escape/);
-  assert.match(mobile, /Sluit/);
+  assert.match(mobile, /Sluit menu/);
   assert.match(mobile, /Menu/);
 });
 
