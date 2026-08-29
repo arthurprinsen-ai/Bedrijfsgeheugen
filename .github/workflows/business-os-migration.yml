@@ -8,6 +8,8 @@ on:
       - 'platform/read-models/website.mjs'
       - 'platform/intelligence/learning.mjs'
       - 'tests/business-os-migration.test.mjs'
+      - 'tests/paginacontrole-concurrency.test.mjs'
+      - '.github/workflows/paginacontrole.yml'
       - '.github/workflows/business-os-migration.yml'
   workflow_dispatch:
 
@@ -24,7 +26,7 @@ jobs:
         with:
           node-version: '22'
       - name: Business OS migration contracts
-        run: node --test tests/business-os-migration.test.mjs
+        run: node --test tests/business-os-migration.test.mjs tests/paginacontrole-concurrency.test.mjs
       - name: Experience remains green
         run: node --test tests/portal-next-shell.test.mjs
       - name: Intelligence remains green
