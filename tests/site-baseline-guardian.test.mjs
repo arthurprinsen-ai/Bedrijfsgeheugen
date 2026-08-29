@@ -35,6 +35,15 @@ test('all protected website routes still exist', () => {
   }
 });
 
+test('every primary route has a semantic contract, not presence-only protection', () => {
+  for (const [route] of TEST_PRIMARY) {
+    const item = routeMap.get(route);
+    assert.ok(item, `${route} must be protected`);
+    assert.equal(item.mode, 'semantic', `${route} must be semantic, not ${item.mode}`);
+    assert.ok(Array.isArray(item.required_anchors) && item.required_anchors.length > 0, `${route} must define semantic anchors`);
+  }
+});
+
 test('all restored test prototype pages keep their accepted semantics', () => {
   for (const [route, file] of TEST_PRIMARY) {
     const item = routeMap.get(route);
@@ -60,11 +69,12 @@ test('test account views are real protected routes, not dead prototype links', (
   }
 });
 
-test('over-ons is pinned to the accepted test-prototype story', () => {
+test('over-ons is pinned to the accepted test-prototype story including ambition', () => {
   const fragment = read('site/accepted-pages/over-ons-main.html');
   assert.match(fragment, /data-bg-accepted-baseline="over-ons-test-prototype-v2"/);
   assert.match(fragment, /Ons verhaal/);
   assert.match(fragment, /Onze missie/);
+  assert.match(fragment, /Onze ambitie/);
   assert.match(fragment, /Ons geloof/);
   assert.match(fragment, /Van chaos naar grip en controle\./);
   assert.match(fragment, /Samenhang/);
