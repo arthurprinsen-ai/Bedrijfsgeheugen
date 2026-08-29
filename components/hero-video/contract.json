@@ -10,7 +10,7 @@
     "components/hero-video/contract.json"
   ],
   "invariants": [
-    "baseline-disabled-until-media-accepted",
+    "baseline-media-preserved",
     "poster-fallback",
     "fixed-16-9-aspect-ratio",
     "no-sibling-component-selectors"
