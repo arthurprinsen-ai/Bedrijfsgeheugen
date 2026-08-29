@@ -36,7 +36,6 @@
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/werkinstructie-voorbeeld/</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/business-case-ai</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/connect</loc><lastmod>2026-08-16</lastmod></url>
-  <url><loc>https://www.bedrijfsgeheugen.nl/contact</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/data-soevereiniteit</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/due-diligence</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/exact-online-koppeling</loc><lastmod>2026-08-16</lastmod></url>
@@ -66,4 +65,5 @@
 <url><loc>https://www.bedrijfsgeheugen.nl/excel-als-crm</loc><lastmod>2026-08-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://www.bedrijfsgeheugen.nl/ai-capability-model</loc><lastmod>2026-08-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/kennis-borgen-in-je-bedrijf/</loc><lastmod>2026-08-28</lastmod></url>
+  <!-- operational verification canary: seo-controle must restore /contact; never merge this branch -->
 </urlset>
