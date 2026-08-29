@@ -1,44 +1,55 @@
 # Self-Healing Agents — Bedrijfsgeheugen
 
 ## Doel
-Agents herstellen aantoonbare fouten zelfstandig, houden de laatste groene toestand beschikbaar en zetten iedere fout om in herbruikbare kennis en een automatische preventieregel.
+Agents herstellen aantoonbare fouten zelfstandig, houden de laatste groene toestand beschikbaar en zetten iedere fout om in herbruikbare kennis en een automatische preventieregel. De whole-brain outcome-regels in `docs/outcome-obligations.md` zijn bindend voor iedere herstelroute.
+
+## Hoogste outcome-invariant
+**NO SILENT FAILURE. NO LOST OBLIGATION. GREEN MEANS OUTCOME VERIFIED. RED MEANS AGENTS KEEP WORKING.**
+
+Een technisch succesvolle run is nooit voldoende wanneer een verwacht resultaat ontbreekt. Als een outcome due is, zijn zero-candidate, zero-work, zero-output en success-without-outcome rode toestanden. Een gemiste outcome wordt `MISSED_OBLIGATION` en blijft herstelwerk totdat onafhankelijk bewijs bestaat of een echte harde grens resteert.
 
 ## Standaardcyclus
-1. **Observe** — lees actuele runtime-, build-, deploy- en branchstatus.
-2. **Classify** — bepaal: code, data, config, asset, dependency, performance, kosten of externe storing.
-3. **Protect** — bewaar de laatste bewezen groene productieversie als rollback/fallback.
-4. **Reproduce** — leg het symptoom vast met concreet bewijs.
-5. **Root cause** — verander niets voordat de meest waarschijnlijke oorzaak aantoonbaar is.
-6. **Gate first** — voeg waar mogelijk een test toe die de fout reproduceert.
-7. **Minimal repair** — wijzig alleen de oorzaak en behoud invarianten.
-8. **Verify candidate** — draai statische tests, buildtests en relevante runtimechecks.
-9. **Deploy preview** — publiceer naar veilige preview/testomgeving.
-10. **Inspect exact preview** — controleer exacte SHA, deploystatus en artifact.
-11. **If red, continue** — een rode kandidaat is geen eindstatus. Analyseer de nieuwe fout en ga terug naar root cause/gate/minimal repair.
-12. **Promote on green** — zodra de kandidaat aantoonbaar groen is, promoveer automatisch naar productie.
-13. **Verify production** — controleer exacte productie-SHA/deploy, smoke/regressie en protected metrics.
-14. **Rollback on production red** — bij productieregressie onmiddellijk terug naar last-known-good en hervat de herstelcyclus op de veilige ontwikkelroute.
-15. **Learn** — schrijf incident, oorzaak, fix, retries/hypotheses, productiepromotie/rollback en preventie naar het gedeelde ledger.
-16. **Promote prevention** — maak herhaalbare foutklassen permanente gates/validators.
+1. **Observe** — lees actuele runtime-, build-, deploy-, branch- en obligation/outcome-status.
+2. **Classify** — bepaal: code, data, config, asset, dependency, performance, kosten, externe storing of gemiste obligation.
+3. **Define outcome** — bepaal welk concreet resultaat verwacht wordt en welke onafhankelijke evidence dat bewijst.
+4. **Protect** — bewaar de laatste bewezen groene productieversie als rollback/fallback.
+5. **Reproduce** — leg symptoom of outcome-gap vast met concreet bewijs.
+6. **Root cause** — verander niets voordat de meest waarschijnlijke oorzaak aantoonbaar is.
+7. **Gate first** — voeg waar mogelijk een test toe die de fout reproduceert.
+8. **Minimal repair** — wijzig alleen de oorzaak en behoud invarianten.
+9. **Verify candidate** — draai statische tests, buildtests en relevante runtimechecks.
+10. **Verify outcome** — controleer het echte resultaat; technisch succes alleen telt niet.
+11. **Deploy preview** — publiceer naar veilige preview/testomgeving wanneer code/deploy betrokken is.
+12. **Inspect exact preview** — controleer exacte SHA, deploystatus en artifact.
+13. **If red, continue** — een rode kandidaat of obligation is geen eindstatus; analyseer nieuw bewijs en hervat de cyclus.
+14. **Promote on green** — zodra de kandidaat aantoonbaar groen is, promoveer automatisch naar productie.
+15. **Verify production** — controleer exacte productie-SHA/deploy, smoke/regressie, protected metrics en intended outcome.
+16. **Rollback on production red** — bij productieregressie onmiddellijk terug naar last-known-good en hervat herstel op de veilige route.
+17. **Learn** — schrijf incident, obligation, oorzaak, fix, retries/hypotheses, outcome evidence, promotie/rollback en preventie naar gedeeld geheugen.
+18. **Promote prevention** — maak herhaalbare foutklassen permanente gates/validators.
 
 ## Groen-tot-klaar
 Voor veilig oplosbare wijzigingen bestaan slechts drie geldige terminale toestanden:
-- `PRODUCTION_GREEN`: nieuwe productieversie is aantoonbaar groen;
+- `PRODUCTION_GREEN`: nieuwe productieversie én het bedoelde resultaat zijn aantoonbaar groen;
 - `ROLLED_BACK_GREEN`: productie is terug op last-known-good en de nieuwe kandidaat blijft open voor verdere automatische reparatie;
 - `BLOCKED_HARD_BOUNDARY`: de volgende noodzakelijke stap raakt een harde autonome grens.
 
-`FAILED`, `BUILD_FAILED`, `TEST_FAILED`, `DEPLOY_FAILED` en vergelijkbare statussen zijn tussenstappen, geen eindresultaten zolang een veilige herstelroute bestaat.
+`FAILED`, `BUILD_FAILED`, `TEST_FAILED`, `DEPLOY_FAILED`, `SUCCESS_WITHOUT_OUTCOME` en `MISSED_OBLIGATION` zijn tussenstappen zolang een veilige herstelroute bestaat.
 
-Een open rood herstelitem wordt bij de volgende agentrun automatisch hervat vanuit het laatste bewijs, zodat het niet afhankelijk is van chatgeschiedenis of handmatige opvolging.
+Een open rood herstelitem of obligation wordt bij de volgende agentrun automatisch hervat vanuit het laatste bewijs, zodat herstel niet afhankelijk is van chatgeschiedenis of handmatige opvolging.
 
 ## Beslisregels
+- **Expected outcome ontbreekt ondanks technisch succes:** classificeer RED / `MISSED_OBLIGATION` en start of hervat recovery.
 - **Known issue + known fix:** fix direct; geen nieuwe verkenning.
 - **Known issue + eerdere fix faalt:** onderzoek verschil in omgeving/state en maak nieuwe regressiecheck.
 - **Nieuwe fout, laag risico:** zelfstandig herstellen tot groen.
 - **Nieuwe fout, hoog risico:** last-known-good groen houden; risicovolle stap isoleren en alle overige veilige herstelstappen uitvoeren.
+- **Deterministisch veilige state-gap:** herstel kleinste reversibele machine-state, voer idempotent opnieuw uit en verifieer outcome.
+- **Runtime continuity:** BG165 kan inactive/invalid state herstellen, maar runtime-health vervangt nooit outcome evidence.
+- **Niet deterministisch veilig:** routeer via gedeeld geheugen/BG168 en BG156 of het kleinste geschikte specialistische team.
 - **Externe dependency faalt:** gebruik laatste goede lokale/cached output waar mogelijk; dependency niet eindeloos pollen.
 - **Kosten/performance overschrijding:** reduceren, batchen, cachen, comprimeren of fallback gebruiken; functionaliteit niet onnodig stoppen.
-- **Productie groen na candidate gate:** automatisch promoveren en productie verifiëren.
+- **Productie groen na candidate gate:** automatisch promoveren en exact verifiëren.
 - **Productie rood na promotie:** automatisch rollback en nieuwe diagnose-iteratie.
 
 ## Retrybeleid
@@ -54,35 +65,39 @@ Agents moeten waar mogelijk ontwerpen met:
 - last-known-good productieartifact;
 - versioned assets;
 - cached/read-only state;
-- idempotente writes;
+- idempotente writes en idempotency keys;
 - degradatie zonder totale uitval;
 - atomische deploys;
 - rollbackbare branches/releases;
-- productie-canary/smoke vóór definitieve KEEP-beslissing.
+- productie-canary/smoke vóór definitieve KEEP-beslissing;
+- persisted next safe action voor gemiste obligations.
 
 ## Harde stopgrenzen
 Autonome self-healing stopt uitsluitend wanneer de volgende noodzakelijke stap één van deze grenzen raakt:
-- secrets/credentials/permissies wijzigen;
+- secrets/credentials/accountverbindingen/permissies wijzigen;
 - security-controls verzwakken;
 - destructieve of onomkeerbare datamutatie;
 - externe kosten/betalingen/resources verhogen;
 - juridisch of financieel bindende actie.
 
-Productiepromotie zelf is geen harde grens meer: een aantoonbaar groene, rollbackbare kandidaat mag automatisch naar productie.
+Productiepromotie zelf is geen harde grens: een aantoonbaar groene, rollbackbare kandidaat mag automatisch naar productie.
 
-De agent moet vóór een harde grens alles doen wat wel veilig mogelijk is: diagnose afronden, kandidaat groen maken, tests draaien, rollback voorbereiden, production promotion voorbereiden en exact aangeven welke ene blokkade resteert.
+De agent moet vóór een harde grens alles doen wat wel veilig mogelijk is: diagnose afronden, kandidaat groen maken, tests draaien, rollback voorbereiden, obligation-state bewaren en exact aangeven welke blokkade resteert.
 
 ## Kennis als gedeeld teamgeheugen
-Alle agents gebruiken dezelfde repo-documentatie, tests en Powerhouse Team Memory. Een incident is pas afgesloten wanneer oorzaak, fix, mislukte hypotheses, productie-uitkomst en preventieregel voor de volgende agent beschikbaar zijn. Geen agent mag afhankelijk zijn van chatgeschiedenis om een bekende fout te begrijpen.
+Alle agents gebruiken dezelfde repo-documentatie, tests en Powerhouse Team Memory. Een incident of gemiste obligation is pas afgesloten wanneer oorzaak, fix, mislukte hypotheses, outcome evidence, productie-uitkomst en preventieregel voor de volgende agent beschikbaar zijn.
 
-Open herstelitems bewaren minimaal: fingerprint, current hypothesis, laatst geverifieerde fout, attempted fixes, retry count per hypothesis, last-known-good, candidate SHA/deploy, owner agent en volgende veilige actie.
+Open herstelitems bewaren minimaal: fingerprint, obligation-id/expected outcome waar relevant, current hypothesis, laatst geverifieerde fout, attempted fixes, retry count per hypothesis, last-known-good, candidate SHA/deploy, owner agent en next safe action.
 
-## KPI's voor sneller ontwikkelen
+## KPI's voor sneller ontwikkelen en minder stille uitval
 We sturen op:
 - mean time to detect;
 - mean time to repair;
 - tijd van rood naar groen;
 - percentage fouten automatisch hersteld;
+- percentage obligations vóór deadline geverifieerd;
+- aantal overdue unverified obligations;
+- aantal technisch-succes-zonder-outcome incidents;
 - percentage groene kandidaten automatisch succesvol naar productie gepromoveerd;
 - rollback rate;
 - regressiepercentage;
@@ -90,4 +105,4 @@ We sturen op:
 - deploy success rate;
 - aantal handmatige interventies.
 
-Doel: veilig oplosbare rode toestanden verdwijnen automatisch, productie blijft groen en dezelfde foutklasse wordt na één incident voortaan eerder onderschept of automatisch hersteld.
+Doel: veilig oplosbare rode toestanden verdwijnen automatisch, gemiste outcomes kunnen niet stil blijven liggen, productie blijft groen en dezelfde foutklasse wordt na één incident voortaan eerder onderschept of automatisch hersteld.
