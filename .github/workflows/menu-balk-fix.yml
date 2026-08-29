@@ -3,6 +3,11 @@ on:
   workflow_dispatch: {}
 permissions:
   contents: write
+
+concurrency:
+  group: repo-schrijven
+  cancel-in-progress: false
+
 jobs:
   fix:
     runs-on: ubuntu-latest
