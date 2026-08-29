@@ -53,8 +53,18 @@
     });
   });
 
+  function bestaandHref(href) {
+    var gevonden = false;
+    Object.keys(groepen).forEach(function (key) {
+      (groepen[key] || []).forEach(function (item) {
+        if (item.href === href) gevonden = true;
+      });
+    });
+    return gevonden;
+  }
+
   /* Alles wat in het oude mobiele menu als losse toplink stond, hoort onder
-     Meer. Zo blijft #bgkopMob de enige bron van waarheid en kan een nieuwe
+     Meer. Zo blijft #bgkopMob de primaire bron van waarheid en kan een nieuwe
      losse pagina nooit stil verdwijnen uit de moderne drill-down. */
   var direct = {};
   groepen.meer = [];
@@ -69,6 +79,19 @@
       beschrijving: beschrijvingen[a.getAttribute('href')] || ''
     });
   });
+
+  /* Deze twee routes stonden aantoonbaar in het eerdere mobiele hoofdmenu,
+     maar zijn bij de latere groepsindeling uit de bronmarkup verdwenen. Houd
+     ze als compatibiliteitsset onder Meer zolang ze niet elders zijn ingedeeld. */
+  [
+    { href: '/workshops', label: 'AI-workshops' },
+    { href: '/wijzigingen', label: 'Wijzigingen' }
+  ].forEach(function (item) {
+    if (bestaandHref(item.href)) return;
+    var alInMeer = groepen.meer.some(function (meerItem) { return meerItem.href === item.href; });
+    if (!alInMeer) groepen.meer.push({ href: item.href, label: item.label, beschrijving: '' });
+  });
+
   if (!groepen.meer.length) delete groepen.meer;
 
   var nav = document.createElement('div');
