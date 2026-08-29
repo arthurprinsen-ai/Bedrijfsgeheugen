@@ -25,6 +25,21 @@ Verplichte self-healing lus:
 
 Een agent mag dus niet eindigen met alleen “dit moet je aanpassen”, “controleer dit”, “hier is een advies”, “de build faalt” of “de deploy is rood” wanneer de agent de fout zelf veilig kan herstellen.
 
+## Whole-brain outcome obligations — hoogste invariant
+`docs/outcome-obligations.md` en `config/outcome-obligations.json` gelden voor iedere huidige en toekomstige agent en workflow.
+
+Iedere actie waarvan volgens planning, state, contract of historie een resultaat moet bestaan, wordt behandeld als een outcome obligation met eigenaar, deadline, evidence policy, idempotency key en recovery policy.
+
+De niet-onderhandelbare regels zijn:
+- `NO SILENT FAILURE`;
+- `NO LOST OBLIGATION`;
+- `GREEN MEANS OUTCOME VERIFIED`;
+- `RED MEANS AGENTS KEEP WORKING`.
+
+Een technisch succesvolle run is nooit voldoende wanneer het bedoelde resultaat ontbreekt. Een Make-run met status success, HTTP 2xx, een lege zoekopdracht, `zero candidates`, een groene build of een geslaagde dispatch kan dus nog steeds `MISSED_OBLIGATION` zijn. Zodra een verschuldigd outcome na de deadline geen geldig bewijs heeft, start de owner agent automatisch herstel en schrijft bij veilig herstel `AUTO_REPAIR` terug.
+
+Een obligation mag alleen eindigen als `COMPLETED` met geldig outcome-bewijs of als `BLOCKED_HARD_BOUNDARY` volgens de harde grenzen hieronder. Side-effects worden altijd idempotent uitgevoerd en eerst gecontroleerd op bestaand extern bewijs om dubbel publiceren, dubbel mailen, dubbele writes of andere dubbele handelingen te voorkomen.
+
 ## Groen-tot-klaar contract
 Voor veilig oplosbare kandidaatwijzigingen is `FAILED` geen terminale status maar een nieuwe diagnose-input.
 
@@ -39,22 +54,22 @@ Regels:
 - geen eindeloze blinde retry-loop;
 - iedere iteratie moet nieuw bewijs opleveren;
 - productie blijft beschikbaar via last-known-good waar technisch mogelijk;
-- agents hervatten bij de volgende run automatisch openstaande niet-groene herstelitems.
+- agents hervatten bij de volgende run automatisch openstaande niet-groene herstelitems en open outcome obligations.
 
 ## Eén team, één geheugen
 Alle agents opereren als één team met specialistische rollen. Geen agent mag een eigen geïsoleerde waarheid aanhouden.
 
 Voor iedere materiële taak geldt verplicht:
 1. lees de actuele `shared team context` vóór uitvoering;
-2. controleer bestaande fouten, fixes, verbeteringen, experimenten en kansen op fingerprint;
+2. controleer bestaande fouten, fixes, verbeteringen, experimenten, obligations en kansen op fingerprint;
 3. bepaal één `owner agent` voor uitvoering;
 4. voorkom dubbel of conflicterend werk;
 5. schrijf iedere materiële uitkomst terug via `material outcome writeback`;
 6. laat de gedeelde teamcontext daarna verversen zodat alle agents dezelfde nieuwste waarheid zien.
 
-Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` en `CONTRACT_CHANGE`.
+Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `MISSED_OBLIGATION`, `AUTO_REPAIR`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` en `CONTRACT_CHANGE`.
 
-Een nieuwe of toekomstige agent is niet production-ready als shared-context read of material-outcome writeback ontbreekt.
+Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
 
 ## Kansen actief zien en benutten
 Agents zoeken niet alleen fouten; zij zoeken ook dagelijks aantoonbare kansen op:
@@ -92,6 +107,7 @@ Agents mogen zonder aanvullende toestemming zelfstandig:
 - kosten-, performance-, SEO-, UX- en betrouwbaarheidsverbeteringen uitvoeren wanneer gedrag en protected metrics aantoonbaar gelijk of beter blijven;
 - veilige SEO-, website-, content-, product- en technische experimenten uitvoeren met baseline, metric en rollback;
 - mislukte deploys opnieuw laten bouwen nadat de oorzaak is gewijzigd of een nieuwe hypothese bestaat;
+- outcome obligations reconciliëren en veilige machine-state automatisch herstellen;
 - een groene kandidaat automatisch naar productie promoveren;
 - bij productieregressie automatisch terugrollen naar last-known-good.
 
@@ -117,9 +133,11 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 2. `docs/development-operating-system.md`
 3. `docs/development-ledger.md`
 4. `docs/self-healing-agents.md`
-5. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
-6. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
-7. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
+5. `docs/outcome-obligations.md`
+6. `config/outcome-obligations.json`
+7. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
+8. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
+9. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-experiment al in de repo of gedeelde teamcontext is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.
@@ -127,7 +145,7 @@ Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-e
 ## Werkmethode
 Voor iedere wijziging:
 1. Lees huidige branch/deploy/runtime-state en gedeelde teamcontext.
-2. Schrijf het gewenste resultaat en de invarianten op.
+2. Schrijf het gewenste resultaat en de invarianten op en materialiseer verwachte resultaten als obligations.
 3. Reproduceer/bewijs de fout of kwalificeer de kans.
 4. Voeg waar mogelijk eerst een falende regressiecheck of meetbare baseline toe.
 5. Pas de kleinst mogelijke oorzaakgerichte wijziging/experiment toe.
@@ -135,22 +153,24 @@ Voor iedere wijziging:
 7. Deploy naar preview/test en verifieer exact commit/artifact.
 8. Als niet groen: analyseer nieuwe fout en herhaal met nieuwe informatie.
 9. Als groen: promoveer automatisch naar productie.
-10. Verifieer productie met smoke/regressie en protected metrics.
-11. Bij productieregressie: rollback naar last-known-good en hervat herstel.
-12. Vergelijk resultaat met baseline en protected metrics.
-13. Behoud of rollback op basis van bewijs.
-14. Leg oorzaak/kans, fix/experiment, bewijs, productiepromotie/rollback en preventieregel/les vast in development ledger en gedeeld teamgeheugen.
+10. Verifieer productie met smoke/regressie, protected metrics en outcome-bewijs.
+11. Reconcile alle verschuldigde obligations; technische success-status zonder resultaat telt niet als groen.
+12. Bij productieregressie: rollback naar last-known-good en hervat herstel.
+13. Vergelijk resultaat met baseline en protected metrics.
+14. Behoud of rollback op basis van bewijs.
+15. Leg oorzaak/kans, fix/experiment, obligation-uitkomst, bewijs, productiepromotie/rollback en preventieregel/les vast in development ledger en gedeeld teamgeheugen.
 
 ## Definition of Done
 Een wijziging is pas klaar als:
 - relevante tests groen zijn;
 - de exacte productiecommit/deploy is geverifieerd;
 - productie-smoke/regressie groen is;
+- alle verschuldigde outcome obligations `COMPLETED` zijn met geldig bewijs of expliciet `BLOCKED_HARD_BOUNDARY`;
 - regressiechecks toekomstige herhaling blokkeren;
 - documentatie/ledger en material outcome writeback zijn bijgewerkt;
 - opportunity-experimenten een meetbaar KEEP/ROLLBACK-resultaat hebben;
 - een productieregressie automatisch naar last-known-good is teruggedraaid;
-- er geen veilig oplosbare rode kandidaat openstaat zonder actieve herstelroute.
+- er geen veilig oplosbare rode kandidaat of `MISSED_OBLIGATION` openstaat zonder actieve herstelroute.
 
 ## Snelheidsregels
 - Eerst bestaande kennis lezen, daarna pas debuggen of kansen uitwerken.
@@ -159,10 +179,11 @@ Een wijziging is pas klaar als:
 - Gebruik de laatste bewezen werkende versie als basis.
 - Bewaar checks in code/build, niet alleen in tekst.
 - Gebruik versioned assets voor cachegevoelige media.
-- Maak één bron van waarheid voor binaries, routes, hashes en runtimeconfig.
+- Maak één bron van waarheid voor binaries, routes, hashes, obligations en runtimeconfig.
 - Vermijd tijdelijke oplossingen die later handmatig moeten worden onthouden.
 - Als een fix twee keer terugkomt, automatiseer de preventie.
 - Als een agent een fout zelf veilig kan oplossen, doet hij dat direct.
+- Als een verschuldigd resultaat ontbreekt, behandel dat als recoverywerk en niet als succesvolle lege run.
 - Als een gekwalificeerde kans veilig kan worden getest, bouw, meet en promoveer die bij groen in plaats van alleen adviseren.
 
 ## Veiligheids-/omgevingregels
@@ -184,6 +205,7 @@ Nieuwe fouten, verbeteringen, kansen en belangrijke beslissingen worden toegevoe
 - mislukte aanpakken/eerdere experimenten;
 - definitieve fix/experiment;
 - owner agent;
+- obligation-id/status/evidence indien van toepassing;
 - regressietest/gate;
 - verification en resultaatmetric;
 - productiecommit/deploy;
