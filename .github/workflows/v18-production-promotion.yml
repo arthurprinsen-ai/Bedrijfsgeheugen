@@ -24,6 +24,8 @@ jobs:
           tests/portal-server-state.test.mjs
           tests/portal-projection-layers.test.mjs
           tests/canonical-portal-projector.test.mjs
+          tests/projected-brain-runtime.test.mjs
+          tests/production-brain-runtime.test.mjs
           tests/portal-question-handler.test.mjs
           tests/portal-production-contract.test.mjs
           tests/portal-data-adapter.test.mjs
