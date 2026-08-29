@@ -70,18 +70,18 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape') return;
+    if (e.key === 'Escape') {
+      var openDesktop = kop.querySelector('.bgkop-trig[aria-expanded="true"]');
+      if (openDesktop) {
+        sluitDesktop();
+        openDesktop.focus();
+        return;
+      }
 
-    var openDesktop = kop.querySelector('.bgkop-trig[aria-expanded="true"]');
-    if (openDesktop) {
-      sluitDesktop();
-      openDesktop.focus();
-      return;
-    }
-
-    if (!paneel.hasAttribute('hidden')) {
-      sluit();
-      knop.focus();
+      if (!paneel.hasAttribute('hidden')) {
+        sluit();
+        knop.focus();
+      }
     }
   });
 
