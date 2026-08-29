@@ -1,0 +1,1 @@
+Verification target is the exact branch head at PR creation time; any later documentation or code commit moves the target and requires rerunning exact-head gates.
