@@ -1,0 +1,45 @@
+name: Install Component Preview Context
+
+on:
+  push:
+    branches:
+      - automation/component-integration
+    paths:
+      - '.github/workflows/add-netlify-component-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: automation/component-integration
+      - name: Add deploy-preview-only component build
+        shell: bash
+        run: |
+          if grep -q '^\[context\.deploy-preview\]' netlify.toml; then
+            echo 'deploy-preview context already present'
+            exit 0
+          fi
+          cat >> netlify.toml <<'EOF'
+
+# Component-architectuur: alleen deploy previews bouwen de homepage uit losse componenten.
+# De productie-build hierboven blijft ongewijzigd totdat de migratie expliciet is goedgekeurd.
+[context.deploy-preview]
+  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/compose-home-migration.mjs /tmp/component-index.html && cp /tmp/component-index.html index.html"
+EOF
+      - name: Commit preview context
+        shell: bash
+        run: |
+          if git diff --quiet -- netlify.toml; then
+            echo 'No change needed'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add netlify.toml
+          git commit -m 'ci: isolate component build to Netlify deploy previews'
+          git push origin HEAD:automation/component-integration
