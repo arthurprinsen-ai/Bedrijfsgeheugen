@@ -1,0 +1,62 @@
+name: Live Preview Smoke
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'components/**'
+      - 'tools/**'
+      - 'netlify.toml'
+      - '.github/workflows/live-preview-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Netlify preview
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS --max-time 15 "$PREVIEW_URL/" -o /tmp/index.html; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Preview did not become reachable: $PREVIEW_URL" >&2
+          exit 1
+
+      - name: Verify rendered component homepage
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('/tmp/index.html', 'utf8');
+          const ids = ['header','hero-copy','hero-video','hero-demo','social-proof','pricing','footer'];
+          for (const id of ids) {
+            const escaped = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const re = new RegExp(`data-bg-component=["']${escaped}["']`, 'g');
+            const count = (html.match(re) || []).length;
+            if (count !== 1) throw new Error(`${id}: expected 1 rendered root, got ${count}`);
+          }
+          if (!html.includes('/assets/openart-hero-iphone-safe-v1.mp4')) throw new Error('hero video source missing');
+          if (html.includes('data-bg-slot="hero-video"')) throw new Error('unresolved hero-video slot remains');
+          if (!html.includes('Veelgestelde vragen')) throw new Error('baseline FAQ content missing');
+          console.log('Live preview component contract OK');
+          NODE
+
+      - name: Verify hero video asset
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: |
+          curl -fsS --max-time 20 --range 0-1023 \
+            "$PREVIEW_URL/assets/openart-hero-iphone-safe-v1.mp4" \
+            -o /tmp/hero-video.bin
+          test -s /tmp/hero-video.bin
