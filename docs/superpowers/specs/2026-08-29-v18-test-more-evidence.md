@@ -1,0 +1,1 @@
+Accepted Meer evidence from user screenshots: Bedrijf → Over ons, Werkwijze, Partners, Cases; Kennis → Blog & kennisbank, Onderzoeken, Benchmark, Templates & tools; Vertrouwen → Security, AI Act, Privacy, Juridisch; Support → Helpcentrum, Changelog, Contact, Inloggen.
