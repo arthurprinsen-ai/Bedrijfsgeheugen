@@ -7,6 +7,14 @@
   var bron = document.getElementById('bgkopMob');
   if (!knop || !bron) return;
 
+  if (!document.querySelector('link[data-bg-shared-mobile-nav]')) {
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = '/assets/shared-mobile-drilldown.css?v=1';
+    css.setAttribute('data-bg-shared-mobile-nav', '');
+    document.head.appendChild(css);
+  }
+
   var labels = {
     oplossingen: 'Oplossingen',
     bedrijfsgeheugen: 'Bedrijfsgeheugen',
