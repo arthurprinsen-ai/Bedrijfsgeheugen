@@ -16,7 +16,7 @@
 
 [build]
   publish = "."
-  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs"
+  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
 
 # Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
 # Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
@@ -289,7 +289,8 @@
   status = 301
   force = true
 
-# Component-architectuur: alleen deploy previews bouwen de homepage uit losse componenten.
-# De productie-build hierboven blijft ongewijzigd totdat de migratie expliciet is goedgekeurd.
+# Deploy previews zijn bewust een exacte kopie van de productie-build.
+# Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
+# alternatieve preview-composer meer die een andere website kan tonen.
 [context.deploy-preview]
-  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/compose-home-migration.mjs /tmp/component-index.html && cp /tmp/component-index.html index.html"
+  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
