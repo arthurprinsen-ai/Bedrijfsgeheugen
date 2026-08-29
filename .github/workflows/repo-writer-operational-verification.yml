@@ -17,6 +17,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
+      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
     steps:
       - name: Verify exact main base
         shell: bash
@@ -34,5 +35,5 @@ jobs:
           set -euo pipefail
           gh workflow run menu-balk-fix.yml \
             --repo "$GITHUB_REPOSITORY" \
-            --ref main \
+            --ref "$VERIFY_REF" \
             -f delivery_mode=candidate-pr
