@@ -1,0 +1,1 @@
+This candidate must remain draft/test-only until exact-head technical verification and explicit visual/business approval are complete.
