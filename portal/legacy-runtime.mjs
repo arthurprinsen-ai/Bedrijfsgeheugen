@@ -3,7 +3,7 @@ import { resolvePortalRoute } from './legacy-map.mjs';
 import { renderLegacyBridge } from './render-legacy-bridge.mjs';
 import { bindLegacyFrames } from './legacy-frame.mjs';
 
-const NATIVE_LEGACY_WORKSPACES=new Set(['profiel','dataai','antwoorden']);
+const NATIVE_LEGACY_WORKSPACES=new Set(['profiel','dataai','antwoorden','aiscan','business','cijfers']);
 
 const style=document.createElement('link');
 style.rel='stylesheet';
