@@ -54,6 +54,30 @@ test('operational harness has an isolated paginacontrole lane that is candidate-
   assert.doesNotMatch(text, /\bgit\s+push\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
 });
 
+for (const lane of [
+  ['approved-central-blog', 'approved-central-blog.yml'],
+  ['blog-bijwerken', 'blog-bijwerken.yml'],
+  ['weekblog', 'weekblog.yml'],
+]) {
+  test(`operational harness has an isolated ${lane[0]} lane that is candidate-only`, () => {
+    const text = fs.readFileSync(harnessPath, 'utf8');
+    const escaped = lane[1].replaceAll('.', '\\.');
+    assert.match(text, new RegExp(`verify/${lane[0]}-`));
+    assert.match(text, new RegExp(`gh\\s+workflow\\s+run\\s+${escaped}`));
+    assert.match(text, /--ref\s+"\$VERIFY_REF"/);
+    assert.match(text, /delivery_mode=candidate-pr/);
+  });
+}
+
+test('operational harness itself remains actions-only and cannot publish or mutate external content state', () => {
+  const text = fs.readFileSync(harnessPath, 'utf8');
+  assert.match(text, /permissions:\s*\n\s*contents:\s*read\s*\n\s*actions:\s*write/);
+  assert.doesNotMatch(text, /contents:\s*write\b|pull-requests:\s*write\b/);
+  assert.doesNotMatch(text, /\bgit\s+(push|commit|add)\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
+  assert.doesNotMatch(text, /NOTION_TOKEN|NOTION_DB|notion\.so|api\.notion/i);
+  assert.doesNotMatch(text, /delivery_mode=direct/);
+});
+
 test('operational harness records the triggering PR base SHA before dispatch', () => {
   const text = fs.readFileSync(harnessPath, 'utf8');
   assert.match(text, /github\.event\.pull_request\.base\.sha/);
