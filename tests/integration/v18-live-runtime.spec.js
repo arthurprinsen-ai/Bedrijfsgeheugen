@@ -30,6 +30,30 @@ test('V18.8 runtime and navigation diagnostics', async ({ page }) => {
   });
   console.log('V18_NAV_STATE=' + JSON.stringify(navState));
 
+  const structures = await page.evaluate(() => {
+    const buttons = Array.from(document.querySelectorAll('button'));
+    const pick = label => {
+      const el = buttons.find(b => (b.textContent || '').trim().startsWith(label));
+      return el ? {
+        label,
+        self: el.outerHTML.slice(0, 1800),
+        parent: el.parentElement ? el.parentElement.outerHTML.slice(0, 7000) : '',
+        next: el.nextElementSibling ? el.nextElementSibling.outerHTML.slice(0, 3500) : ''
+      } : null;
+    };
+    const mobile = document.getElementById('mobileToggle');
+    return {
+      oplossingen: pick('Oplossingen'),
+      meer: pick('Meer'),
+      mobile: mobile ? {
+        self: mobile.outerHTML.slice(0,1800),
+        parent: mobile.parentElement ? mobile.parentElement.outerHTML.slice(0,7000) : '',
+        next: mobile.nextElementSibling ? mobile.nextElementSibling.outerHTML.slice(0,5000) : ''
+      } : null
+    };
+  });
+  console.log('V18_NAV_STRUCTURES=' + JSON.stringify(structures));
+
   const navCount = await page.locator('nav, [role="navigation"]').count();
   expect(navCount).toBeGreaterThan(0);
 });
