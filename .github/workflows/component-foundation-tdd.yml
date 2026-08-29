@@ -8,11 +8,16 @@ on:
     branches:
       - main
     paths:
-      - 'config/component-ownership.json'
-      - 'config/change-classes.json'
-      - 'components/_schema/contract.schema.json'
+      - 'config/**'
+      - 'components/_schema/**'
+      - 'pages/**'
+      - 'preview/**'
+      - 'tools/compose-site.mjs'
+      - 'tools/compose-component-preview.mjs'
       - 'tests/parallel-ownership.test.mjs'
       - 'tests/change-classes.test.mjs'
+      - 'tests/page-composition.test.mjs'
+      - 'tests/component-preview-composition.test.mjs'
       - '.github/workflows/component-foundation-tdd.yml'
 
 permissions:
@@ -26,4 +31,4 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: node --test tests/parallel-ownership.test.mjs tests/change-classes.test.mjs
+      - run: node --test tests/parallel-ownership.test.mjs tests/change-classes.test.mjs tests/page-composition.test.mjs tests/component-preview-composition.test.mjs
