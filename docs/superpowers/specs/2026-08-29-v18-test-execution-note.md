@@ -1,0 +1,1 @@
+Execution is being performed inline on the isolated branch because no subagent execution tool is available in this session.
