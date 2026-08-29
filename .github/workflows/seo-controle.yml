@@ -17,6 +17,14 @@ on:
         description: 'Alle paginas nalopen in plaats van alleen de gewijzigde'
         type: boolean
         default: false
+      delivery_mode:
+        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        type: choice
+        required: true
+        default: direct
+        options:
+          - direct
+          - candidate-pr
 
 # GEDEELD SLOT. Deze workflow schrijft sitemap.xml terug naar main, en dat doen
 # seo-controle.yml, blog-bijwerken.yml en weekblog.yml alle drie. Draaien er twee
@@ -29,6 +37,7 @@ concurrency:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   controle:
@@ -36,7 +45,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+
+      - name: Exacte basis vastleggen
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Zoekwoord en sitemap nalopen
         id: controle
@@ -50,29 +63,99 @@ jobs:
             python3 tools/seo-controle.py | tee uitkomst.txt
           fi
 
-      - name: Sitemap en redirects terugcommitten
+      - name: Sitemap en redirects valideren en committen
+        id: commit
+        env:
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
-          if [ -n "$(git status --porcelain sitemap.xml netlify.toml)" ]; then
-            git config user.name "SEO-poortwachter"
-            git config user.email "actions@users.noreply.github.com"
-            git add sitemap.xml netlify.toml
-            git commit -m "SEO-poortwachter: sitemap en redirects bijgewerkt"
-            # Kwam er ondertussen een andere commit binnen, dan rebasen we erop
-            # en proberen we opnieuw. Drie pogingen, daarna pas echt falen.
-            for poging in 1 2 3; do
-              if git push; then
-                echo "Gepusht bij poging $poging."
-                exit 0
-              fi
-              echo "Push geweigerd, iemand was ons voor. Rebasen en opnieuw."
-              git pull --rebase origin main || { echo "::error::Rebasen op main mislukte. Los het handmatig op: de sitemap of een 301 is niet weggeschreven."; exit 1; }
-              sleep 3
-            done
-            echo "::error::Na drie pogingen kon de bijgewerkte sitemap/301 niet worden gepusht. Er is dus niets vastgelegd; draai deze workflow opnieuw."
-            exit 1
-          else
+          set -euo pipefail
+          mapfile -t changed < <(git diff --name-only -- sitemap.xml netlify.toml)
+          if [ "${#changed[@]}" -eq 0 ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "Niets te herstellen."
+            exit 0
           fi
+
+          mapfile -t all_changed < <(git diff --name-only)
+          for f in "${all_changed[@]}"; do
+            case "$f" in
+              sitemap.xml|netlify.toml) ;;
+              *) echo "::error::UNAPPROVED_CHANGED_FILE:$f"; exit 1 ;;
+            esac
+          done
+
+          git config user.name "SEO-poortwachter"
+          git config user.email "actions@users.noreply.github.com"
+          git add sitemap.xml netlify.toml
+          git commit -m "SEO-poortwachter: sitemap en redirects bijgewerkt"
+
+          if [ "$DELIVERY_MODE" = "candidate-pr" ]; then
+            export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+            CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
+          const files = String(process.env.CHANGED_FILES || '').split('\n').filter(Boolean).sort();
+          const candidate = createWriterCandidate({
+            writer: 'seo-controle',
+            baseSha: process.env.BASE_SHA,
+            runId: process.env.GITHUB_RUN_ID,
+            changedFiles: files,
+            allowedFiles: ['netlify.toml', 'sitemap.xml'],
+            rollbackSha: process.env.BASE_SHA,
+          });
+          validateWriterCandidate(candidate);
+          console.log(candidate.branch);
+          NODE
+            )
+            echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
+          else
+            echo "delivery=direct" >> "$GITHUB_OUTPUT"
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Direct publiceren op huidige veilige pad
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'direct'
+        run: |
+          set -euo pipefail
+          for poging in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "Gepusht bij poging $poging."
+              exit 0
+            fi
+            echo "Push geweigerd, iemand was ons voor. Rebasen en opnieuw."
+            git pull --rebase origin main || { echo "::error::Rebasen op main mislukte. Los het handmatig op: de sitemap of een 301 is niet weggeschreven."; exit 1; }
+            sleep 3
+          done
+          echo "::error::Na drie pogingen kon de bijgewerkte sitemap/301 niet worden gepusht. Er is dus niets vastgelegd; draai deze workflow opnieuw."
+          exit 1
+
+      - name: Candidate branch publiceren
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        env:
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+      - name: Candidate PR openen
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Candidate PR bestaat al: #$existing"
+            exit 0
+          fi
+          gh pr create \
+            --base main \
+            --head "$CANDIDATE_BRANCH" \
+            --title "SEO candidate $GITHUB_RUN_ID" \
+            --body "Gecontroleerde candidate uit seo-controle. Base SHA: $BASE_SHA. Deze workflow merge't zichzelf niet; normale repositorygates beslissen over promotie."
 
       - name: Uitkomst in de samenvatting
         run: cat uitkomst.txt >> $GITHUB_STEP_SUMMARY
