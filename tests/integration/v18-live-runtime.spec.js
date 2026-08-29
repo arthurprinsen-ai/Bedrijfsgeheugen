@@ -45,20 +45,59 @@ test('desktop mega menus expose reliable open and close state', async ({ page })
   await expect(more).toHaveAttribute('aria-expanded', 'false');
 });
 
-test('mobile drawer open and close state stays synchronized', async ({ page }) => {
+test('mobile uses white Menu pill and full-height drilldown navigation', async ({ page }) => {
   await openV18(page, 390, 844);
   const toggle = page.locator('#mobileToggle');
-  const drawer = page.locator('#v18MobileDrawer');
-  const close = page.locator('#v18MobileClose');
+  const menuLabel = toggle.locator('.bg-mobile-menu-label');
+  const nav = page.locator('#bgMobileNav');
 
-  await expect(toggle).toHaveAttribute('aria-controls', 'v18MobileDrawer');
+  await expect(menuLabel).toHaveText('Menu');
+  await expect(toggle).toHaveAttribute('aria-controls', 'bgMobileNav');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await expect(drawer).toHaveAttribute('aria-hidden', 'true');
+  await expect(nav).toHaveAttribute('aria-hidden', 'true');
+
+  const toggleStyle = await toggle.evaluate(el => {
+    const s = getComputedStyle(el);
+    const r = el.getBoundingClientRect();
+    return { background: s.backgroundColor, radius: s.borderRadius, width: r.width, height: r.height };
+  });
+  expect(toggleStyle.background).toBe('rgb(255, 255, 255)');
+  expect(parseFloat(toggleStyle.radius)).toBeGreaterThanOrEqual(20);
+  expect(toggleStyle.width).toBeGreaterThanOrEqual(64);
+  expect(toggleStyle.height).toBeGreaterThanOrEqual(44);
+
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await expect(drawer).toHaveAttribute('aria-hidden', 'false');
-  await expect(drawer).toBeVisible();
-  await close.click();
+  await expect(menuLabel).toHaveText('Sluit');
+  await expect(nav).toHaveAttribute('aria-hidden', 'false');
+  await expect(nav).toBeVisible();
+
+  const navBox = await nav.boundingBox();
+  expect(navBox.height).toBeGreaterThanOrEqual(800);
+  const navBg = await nav.evaluate(el => getComputedStyle(el).backgroundColor);
+  expect(navBg).toBe('rgb(255, 255, 255)');
+
+  const root = nav.locator('[data-bg-mobile-view="root"]');
+  await expect(root).toBeVisible();
+  await expect(root.getByRole('button', { name: 'Oplossingen' })).toBeVisible();
+  await expect(root.getByRole('button', { name: 'Bedrijfsgeheugen' })).toBeVisible();
+  await expect(root.getByRole('button', { name: 'Koppelingen' })).toBeVisible();
+  await expect(root.getByRole('button', { name: 'Kennis' })).toBeVisible();
+  await expect(root.getByRole('link', { name: 'Over ons' })).toBeVisible();
+
+  await root.getByRole('button', { name: 'Koppelingen' }).click();
+  const integrations = nav.locator('[data-bg-mobile-view="koppelingen"]');
+  await expect(root).toBeHidden();
+  await expect(integrations).toBeVisible();
+  await expect(integrations.getByRole('heading', { name: 'Koppelingen' })).toBeVisible();
+  await expect(integrations.getByRole('link', { name: 'AFAS-koppeling' })).toBeVisible();
+  await expect(integrations.getByRole('button', { name: 'Terug' })).toBeVisible();
+
+  await integrations.getByRole('button', { name: 'Terug' }).click();
+  await expect(root).toBeVisible();
+  await expect(integrations).toBeHidden();
+
+  await page.keyboard.press('Escape');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await expect(drawer).toHaveAttribute('aria-hidden', 'true');
+  await expect(nav).toHaveAttribute('aria-hidden', 'true');
 });
