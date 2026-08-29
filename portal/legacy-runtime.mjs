@@ -3,6 +3,8 @@ import { resolvePortalRoute } from './legacy-map.mjs';
 import { renderLegacyBridge } from './render-legacy-bridge.mjs';
 import { bindLegacyFrames } from './legacy-frame.mjs';
 
+const NATIVE_LEGACY_WORKSPACES=new Set(['profiel','dataai','antwoorden']);
+
 const style=document.createElement('link');
 style.rel='stylesheet';
 style.href=new URL('./legacy-bridge.css',window.location.href).href;
@@ -13,6 +15,8 @@ function route(){return resolvePortalRoute(parsePortalLocation(location.hash)).r
 function applyLegacyWorkspace(){
  const current=route();
  if(!current.includes('/legacy/'))return;
+ const id=current.split('/legacy/')[1]||'';
+ if(NATIVE_LEGACY_WORKSPACES.has(id))return;
  const main=document.querySelector('.main-content');
  if(!main)return;
  if(main.dataset.legacyRoute!==current){
