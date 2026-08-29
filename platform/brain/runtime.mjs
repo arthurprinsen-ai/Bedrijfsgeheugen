@@ -3,6 +3,7 @@ import { createEvent, EVENT_TYPES } from '../contracts/event.mjs';
 import { createInMemoryEventStore } from '../events/event-store.mjs';
 import { authorizeAIRequest } from '../intelligence/context-broker.mjs';
 import { ACTIONS, DECISIONS, evaluatePolicy } from '../policy/policy-engine.mjs';
+import { AI_USE_CASE_STATES, canActivateAIUseCase } from '../policy/ai-register.mjs';
 import { canAgentExecute, createAgentWork } from '../agents/agent-work.mjs';
 import { planSelfHeal, verifyRecovery } from '../agents/self-heal.mjs';
 
@@ -14,7 +15,7 @@ function safeId(prefix, value) {
   return `${prefix}-${String(value).replace(/[^a-zA-Z0-9_-]/g, '_')}`;
 }
 
-export function createBrainRuntime({ policies = [], providerRegistry, contextPolicy, aiProvider, executor, now = () => new Date().toISOString() }) {
+export function createBrainRuntime({ policies = [], providerRegistry, aiUseCases = [], contextPolicy, aiProvider, executor, now = () => new Date().toISOString() }) {
   if (!providerRegistry?.assertAllowed) throw new TypeError('providerRegistry is required');
   if (!aiProvider?.analyze) throw new TypeError('aiProvider.analyze is required');
   if (!executor?.execute) throw new TypeError('executor.execute is required');
@@ -25,6 +26,7 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
   const activeObjects = new Map();
   const recommendations = new Map();
   const decisions = new Map();
+  const aiUseCaseRegistry = new Map(aiUseCases.map(useCase => [useCase.id, useCase]));
   const idempotentIngest = new Map();
   const learning = [];
   const audit = [];
@@ -43,6 +45,12 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
       eventId:next('EVT'), eventType, tenantId, objectId, actorId, source:'brain-runtime', timestamp:timestamp(), reason,
       correlationId, causationId, risk, schemaVersion:1, idempotencyKey:idempotencyKey ?? next('IDEMP'), beforeVersion, afterVersion,
     }));
+  }
+
+  function updateAgentWork(work, status, patch = {}) {
+    const updated = createAgentWork({ ...work, ...patch, status });
+    agentWork.set(updated.id, updated);
+    return updated;
   }
 
   function ingest(signal, { actorId }) {
@@ -69,6 +77,19 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
     return result;
   }
 
+  function assertAIUseCase(input, signal) {
+    const useCase = aiUseCaseRegistry.get(input.aiUseCaseId);
+    if (!useCase) throw new Error('AI use case is not registered');
+    if (useCase.tenantId !== signal.tenantId) throw new Error('AI use case tenant mismatch');
+    if (useCase.state !== AI_USE_CASE_STATES.ACTIVE) throw new Error(`AI use case is not active: ${useCase.state}`);
+    const activation = canActivateAIUseCase(useCase);
+    if (!activation.allowed) throw new Error(`AI use case governance denied: ${activation.reason}`);
+    if (useCase.purpose !== input.purpose) throw new Error('AI use case purpose mismatch');
+    if (useCase.providerModelId !== input.providerModelId) throw new Error('AI use case provider/model mismatch');
+    if (!useCase.dataClasses.includes(input.dataClass)) throw new Error('AI use case data class mismatch');
+    return useCase;
+  }
+
   async function analyze(input) {
     const signal = sourceObjects.get(input?.signalId);
     if (!signal) throw new Error('signal not found');
@@ -78,6 +99,7 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
 
     let authorized;
     try {
+      assertAIUseCase(input, signal);
       authorized = authorizeAIRequest({
         request:{
           requestId:next('AIREQ'), tenantId:signal.tenantId, requesterId:input.requesterId, role:input.role,
@@ -101,6 +123,7 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
       throw new Error(`AI provider failed safely: ${error.message}`);
     }
     if (!result?.text || typeof result.confidence !== 'number' || !Array.isArray(result.evidenceRefs) || !result.evidenceRefs.length) {
+      auditMetadata({ tenantId:signal.tenantId, action:'AI_RESULT_REJECTED', actorId:input.requesterId, objectId:signal.id, correlationId, outcome:'FAILED_SAFE' });
       throw new Error('AI result rejected: structured evidence-backed result required');
     }
 
@@ -123,6 +146,12 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
     if (!recommendation) throw new Error('recommendation not found');
     required(requesterId, 'requesterId'); required(reason, 'reason');
     const correlationId = next('CORR');
+    const permission = evaluatePolicy({ subjectId:requesterId, action:ACTIONS.APPROVE, resourceType:'Recommendation', resourceId:recommendation.id, tenantId:recommendation.tenantId }, policies);
+    if (permission.decision !== DECISIONS.ALLOW) {
+      auditMetadata({ tenantId:recommendation.tenantId, action:'RECOMMENDATION_APPROVAL_DENIED', actorId:requesterId, objectId:recommendation.id, correlationId, outcome:'DENIED', policyIds:permission.policies });
+      throw new Error(`approval denied: ${permission.reason}`);
+    }
+
     const decisionId = next('DEC');
     const decision = createCanonicalObject({
       id:decisionId, type:'Decision', tenantId:recommendation.tenantId, truthClass:TRUTH_CLASSES.BUSINESS_TRUTH,
@@ -132,6 +161,7 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
     });
     decisions.set(decision.id, decision); activeObjects.set(decision.id, decision);
     append({ eventType:EVENT_TYPES.DECISION_RECORDED, tenantId:decision.tenantId, objectId:decision.id, actorId:requesterId, correlationId, reason, afterVersion:1 });
+    auditMetadata({ tenantId:decision.tenantId, action:'DECISION_RECORDED', actorId:requesterId, objectId:decision.id, correlationId, policyIds:permission.policies });
     if (!approved) return Object.freeze({ decision, change:null });
 
     const change = createCanonicalObject({
@@ -141,7 +171,6 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
     });
     workingObjects.set(change.id, change);
     append({ eventType:EVENT_TYPES.CHANGE_PROPOSED, tenantId:change.tenantId, objectId:change.id, actorId:requesterId, correlationId, reason:'Approved recommendation prepared as working change', afterVersion:1 });
-    auditMetadata({ tenantId:change.tenantId, action:'DECISION_RECORDED', actorId:requesterId, objectId:decision.id, correlationId });
     return Object.freeze({ decision, change });
   }
 
@@ -170,40 +199,66 @@ export function createBrainRuntime({ policies = [], providerRegistry, contextPol
     const correlationId = next('CORR');
     const verificationResult = verifyRecovery(input);
     if (verificationResult.state !== 'Resolved') throw new Error('verification failed; change cannot be marked verified');
+
+    const verifiedChange = createCanonicalObject({
+      ...change, lifecycle:LIFECYCLE_STATES.ACTIVE, version:change.version + 1,
+      verification:VERIFICATION_STATES.VERIFIED, provenance:change.provenance,
+      data:{ ...change.data, verifiedAt:timestamp() }, updatedAt:timestamp(),
+    });
+    activeObjects.set(verifiedChange.id, verifiedChange);
     const verification = Object.freeze({ id:next('VER'), tenantId:change.tenantId, changeId:change.id, status:'Verified', evidence:{ regressionPassed:true, productionSmokePassed:true, expectedStateObserved:true }, verifiedAt:timestamp() });
-    append({ eventType:EVENT_TYPES.VERIFICATION_COMPLETED, tenantId:change.tenantId, objectId:change.id, actorId:input.requesterId, correlationId, reason:'Post-change verification passed', beforeVersion:change.version, afterVersion:change.version });
+    append({ eventType:EVENT_TYPES.VERIFICATION_COMPLETED, tenantId:change.tenantId, objectId:change.id, actorId:input.requesterId, correlationId, reason:'Post-change verification passed', beforeVersion:change.version, afterVersion:verifiedChange.version });
     const impact = Object.freeze({ id:next('IMP'), tenantId:change.tenantId, changeId:change.id, status:'Verified', expected:input.expectedImpact, observed:input.observedImpact, verifiedAt:timestamp() });
     append({ eventType:EVENT_TYPES.IMPACT_VERIFIED, tenantId:change.tenantId, objectId:impact.id, actorId:input.requesterId, correlationId, reason:'Observed impact verified' });
     const record = Object.freeze({ id:next('LRN'), tenantId:change.tenantId, changeId:change.id, recommendationId:change.data.recommendationId, decisionId:change.data.decisionId, expectedImpact:input.expectedImpact, observedImpact:input.observedImpact, shared:true, governed:true, recordedAt:timestamp() });
     learning.push(record);
     append({ eventType:EVENT_TYPES.LEARNING_RECORDED, tenantId:change.tenantId, objectId:record.id, actorId:input.requesterId, correlationId, reason:'Verified outcome stored in shared governed learning memory' });
     auditMetadata({ tenantId:change.tenantId, action:'CHANGE_VERIFIED_AND_LEARNED', actorId:input.requesterId, objectId:change.id, correlationId });
-    return Object.freeze({ verification, impact, learning:record });
+    return Object.freeze({ change:verifiedChange, verification, impact, learning:record });
   }
 
   async function selfHeal(input) {
     const correlationId = next('CORR');
-    const work = createAgentWork({ id:next('WORK'), tenantId:input.tenantId, trigger:'FAILURE_DETECTED', priority:input.risk === 'High' ? 'P0' : 'P2', primaryAgentId:input.actorId, affectedObjectIds:[input.failureId], risk:input.risk, status:'Investigating' });
+    let work = createAgentWork({ id:next('WORK'), tenantId:input.tenantId, trigger:'FAILURE_DETECTED', priority:input.risk === 'High' ? 'P0' : 'P2', primaryAgentId:input.actorId, affectedObjectIds:[input.failureId], risk:input.risk, status:'Investigating' });
     agentWork.set(work.id, work);
+
+    const permission = evaluatePolicy({ subjectId:input.actorId, action:ACTIONS.EXECUTE, resourceType:'Recovery', resourceId:input.failureId, tenantId:input.tenantId }, policies);
+    if (permission.decision !== DECISIONS.ALLOW) {
+      work = updateAgentWork(work, 'WaitingApproval', { outcome:'POLICY_DENIED' });
+      auditMetadata({ tenantId:input.tenantId, action:'SELF_HEAL_POLICY_DENIED', actorId:input.actorId, objectId:input.failureId, correlationId, outcome:'DENIED', policyIds:permission.policies });
+      throw new Error(`self-heal policy denied: ${permission.reason}`);
+    }
+
     const plan = planSelfHeal(input);
     if (plan.state !== 'Execute') {
-      auditMetadata({ tenantId:input.tenantId, action:'SELF_HEAL_ESCALATED', actorId:input.actorId, objectId:input.failureId, correlationId, outcome:'ESCALATED' });
+      work = updateAgentWork(work, 'WaitingApproval', { outcome:plan.reason });
+      auditMetadata({ tenantId:input.tenantId, action:'SELF_HEAL_ESCALATED', actorId:input.actorId, objectId:input.failureId, correlationId, outcome:'ESCALATED', policyIds:permission.policies });
       return Object.freeze({ state:'Escalated', reason:plan.reason, work });
     }
+
+    work = updateAgentWork(work, 'Executing');
     const result = await executor.execute(Object.freeze({ tenantId:input.tenantId, failureId:input.failureId, command:input.command, correlationId, recovery:true }));
+    work = updateAgentWork(work, 'Verifying');
     const verification = verifyRecovery({ regressionPassed:result?.ok === true, productionSmokePassed:result?.ok === true, expectedStateObserved:result?.ok === true });
-    if (verification.state !== 'Resolved') return Object.freeze({ state:'Escalated', reason:'VERIFICATION_FAILED', work });
+    if (verification.state !== 'Resolved') {
+      work = updateAgentWork(work, 'WaitingApproval', { verification, outcome:'VERIFICATION_FAILED' });
+      return Object.freeze({ state:'Escalated', reason:'VERIFICATION_FAILED', work });
+    }
+
+    work = updateAgentWork(work, 'Resolved', { verification, outcome:'VERIFIED_RECOVERY' });
     const record = Object.freeze({ id:next('LRN'), tenantId:input.tenantId, failureId:input.failureId, pattern:'KNOWN_SAFE_RECOVERY', shared:true, governed:true, recordedAt:timestamp() });
     learning.push(record);
     append({ eventType:EVENT_TYPES.LEARNING_RECORDED, tenantId:input.tenantId, objectId:record.id, actorId:input.actorId, correlationId, reason:'Verified self-heal pattern stored in shared learning memory' });
-    auditMetadata({ tenantId:input.tenantId, action:'SELF_HEAL_VERIFIED', actorId:input.actorId, objectId:input.failureId, correlationId });
+    work = updateAgentWork(work, 'LearningRecorded', { learningId:record.id });
+    auditMetadata({ tenantId:input.tenantId, action:'SELF_HEAL_VERIFIED', actorId:input.actorId, objectId:input.failureId, correlationId, policyIds:permission.policies });
     return Object.freeze({ state:'Resolved', verification, learning:record, work });
   }
 
   function snapshot() {
     return Object.freeze({
       events:eventStore.all(), sourceObjects:new Map(sourceObjects), workingObjects:new Map(workingObjects), activeObjects:new Map(activeObjects),
-      recommendations:new Map(recommendations), decisions:new Map(decisions), learning:Object.freeze([...learning]), audit:Object.freeze([...audit]), agentWork:new Map(agentWork),
+      recommendations:new Map(recommendations), decisions:new Map(decisions), aiUseCases:new Map(aiUseCaseRegistry),
+      learning:Object.freeze([...learning]), audit:Object.freeze([...audit]), agentWork:new Map(agentWork),
     });
   }
 
