@@ -1,11 +1,12 @@
 {
-  "version": 1,
+  "version": 2,
   "contract": "whole-brain-outcome-obligations",
   "invariants": [
     "NO SILENT FAILURE",
     "NO LOST OBLIGATION",
     "GREEN MEANS OUTCOME VERIFIED",
-    "RED MEANS AGENTS KEEP WORKING"
+    "RED MEANS AGENTS KEEP WORKING",
+    "GREEN CANDIDATE MEANS PROMOTE TO PRODUCTION"
   ],
   "statuses": [
     "NOT_DUE",
@@ -43,6 +44,14 @@
     "external_signal",
     "agent_task"
   ],
+  "productionPromotion": {
+    "ownerAgent": "Powerhouse Production Promotion Guardian",
+    "policy": "config/production-promotion.json",
+    "greenCandidateCreatesProductionObligation": true,
+    "commitOrMergeIsCompletion": false,
+    "exactProductionShaEvidenceRequired": true,
+    "safePromotionAndRollbackAreAutonomous": true
+  },
   "rules": {
     "technicalSuccessWithoutOutcomeEvidenceIsGreen": false,
     "zeroCandidatesCanBeTerminalSuccessWhenOutcomeIsExpected": false,
