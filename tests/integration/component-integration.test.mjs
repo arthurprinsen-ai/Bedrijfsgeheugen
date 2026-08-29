@@ -31,8 +31,8 @@ test('hero video is injected inside hero demo exactly once', async () => {
   const outputPath = join(dir, 'index.html');
   await composeHomeMigration({ sourcePath: 'index.html', outputPath });
   const output = await readFile(outputPath, 'utf8');
-  const demoStart = output.indexOf('data-bg-component="hero-demo"');
-  const videoStart = output.indexOf('data-bg-component="hero-video"');
+  const demoStart = output.indexOf('<section data-bg-component="hero-demo"');
+  const videoStart = output.indexOf('<section data-bg-component="hero-video"');
   assert.ok(demoStart >= 0 && videoStart > demoStart, 'hero video must be nested after hero demo root begins');
   assert.equal((output.match(/openart-hero-iphone-safe-v1\.mp4/g) || []).length, 1, 'baseline hero media must occur once');
   assert.doesNotMatch(output, /data-bg-slot="hero-video"/);
