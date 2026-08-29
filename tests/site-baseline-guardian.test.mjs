@@ -95,15 +95,31 @@ test('primary navigation is the accepted seven-view test catalog', () => {
   assert.equal(navigation.cta.href, '/frisse-blik');
 });
 
-test('restored standalone pages share a working responsive navigation contract', () => {
+test('restored standalone pages share the canonical responsive shell and stay contextually connected', () => {
   const standalone = ['/problemen','/oplossingen','/prijzen','/cases','/kennis'];
+  const standaloneSet = new Set(standalone);
+  const incoming = new Map(standalone.map(route => [route, 0]));
   for (const route of standalone) {
     const file = routeMap.get(route)?.file;
     const html = read(file);
     assert.match(html, /\/assets\/test-prototype-pages\.css/);
     assert.match(html, /\/assets\/test-prototype-pages\.js/);
-    for (const [href] of TEST_PRIMARY) assert.match(html, new RegExp(`href="${href}"`));
+    assert.match(html, /data-bg-shared-shell="header"/);
+    assert.match(html, /data-bg-shared-shell="footer"/);
+    assert.match(html, /\/assets\/recovered-page-shell\.js/);
+    const main = (html.match(/<main>[\s\S]*?<\/main>/) || [''])[0];
+    for (const target of standalone) {
+      if (target !== route && main.includes(`href="${target}"`)) incoming.set(target, incoming.get(target) + 1);
+    }
   }
+  for (const route of standaloneSet) assert.ok(incoming.get(route) > 0, `${route} became an orphan inside the restored page cluster`);
+
+  const shell = read('assets/recovered-page-shell.js');
+  assert.match(shell, /class="bgkop"/);
+  assert.match(shell, /id="bgkopKnop"/);
+  assert.match(shell, /aria-label="Menu openen"/);
+  assert.match(shell, /class="bgvoet"/);
+
   const mobile = read('assets/test-prototype-pages.js');
   assert.match(mobile, /aria-expanded/);
   assert.match(mobile, /mobile-drawer/);
