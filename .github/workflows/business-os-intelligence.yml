@@ -5,7 +5,9 @@ on:
     paths:
       - 'platform/intelligence/**'
       - 'platform/agents/**'
+      - 'platform/brain/**'
       - 'tests/intelligence-agent-runtime.test.mjs'
+      - 'tests/brain-acceptance.test.mjs'
       - '.github/workflows/business-os-intelligence.yml'
   workflow_dispatch:
 
@@ -23,6 +25,8 @@ jobs:
           node-version: '22'
       - name: Intelligence and agent runtime contracts
         run: node --test tests/intelligence-agent-runtime.test.mjs
+      - name: End-to-end Brain Acceptance Gate
+        run: node --test tests/brain-acceptance.test.mjs
       - name: Trust contracts remain green
         run: node --test tests/policy-engine.test.mjs tests/trust-*.test.mjs
       - name: Foundation contracts remain green
