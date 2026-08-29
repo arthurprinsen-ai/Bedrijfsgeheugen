@@ -1,0 +1,26 @@
+const ALLOWED_KEYS=Object.freeze(['company','period','managementSummary','healthCards','roadmap','recommendedActions','monthlyImpact','activities','integrationStatus','quickLinks','graph','signals','decisions','actions','valueItems','memories','agents','audit','admin','sourceMeta']);
+const cleanText=v=>typeof v==='string'?v.trim():'';
+export function resolveIdentityTenant(user){
+  if(!user?.id) return null;
+  const configured=cleanText(user?.appMetadata?.tenantId||user?.app_metadata?.tenantId);
+  return configured||`user:${user.id}`;
+}
+export function sanitizePortalProjection(state,{tenantId,userId,now=()=>new Date().toISOString()}={}){
+  if(!tenantId||!userId) throw new TypeError('tenantId and userId are required');
+  const source=state&&typeof state==='object'?state:{};
+  const data={};
+  for(const key of ALLOWED_KEYS){if(source[key]!==undefined)data[key]=source[key]}
+  delete data.user;
+  data.sourceMeta={...(data.sourceMeta||{}),kind:'server-projection',live:true,label:'Bedrijfsgeheugen serverprojectie',updatedAt:cleanText(data.sourceMeta?.updatedAt)||now()};
+  return Object.freeze({schemaVersion:1,tenantId,updatedBy:userId,updatedAt:now(),data:Object.freeze(data)});
+}
+export function portalProjectionToState(record,user){
+  if(!record?.data) return null;
+  return {...record.data,user:{name:user?.name||user?.userMetadata?.full_name||user?.email||'Gebruiker',email:user?.email||'',role:Array.isArray(user?.roles)?user.roles.join(', '):''},sourceMeta:{...(record.data.sourceMeta||{}),kind:'server',live:true,label:'Bedrijfsgeheugen serverstate',updatedAt:record.updatedAt||record.data.sourceMeta?.updatedAt||''}};
+}
+export function shouldReplaceProjection(current,next){
+  if(!current) return true;
+  const a=Date.parse(current.updatedAt||current.data?.sourceMeta?.updatedAt||0)||0;
+  const b=Date.parse(next.updatedAt||next.data?.sourceMeta?.updatedAt||0)||0;
+  return b>a;
+}
