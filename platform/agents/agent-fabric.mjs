@@ -29,6 +29,24 @@ function fingerprint(signal) {
   return createHash('sha256').update(source).digest('hex').slice(0, 24);
 }
 
+function boundedMetric(value, name, { min = 1, max = 5 } = {}) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < min || number > max) throw new TypeError(`${name} must be between ${min} and ${max}`);
+  return number;
+}
+
+function opportunityPriority(signal) {
+  const materiality = boundedMetric(signal.materiality, 'materiality');
+  const urgency = boundedMetric(signal.urgency, 'urgency');
+  const expectedValue = boundedMetric(signal.expectedValue, 'expectedValue');
+  const risk = boundedMetric(signal.risk, 'risk');
+  const confidence = boundedMetric(signal.confidence, 'confidence', { min:0, max:1 });
+  const score = materiality + urgency + expectedValue + (confidence * 5) - (risk * 0.5);
+  if (score >= 12) return 'P1';
+  if (score >= 8) return 'P2';
+  return 'P3';
+}
+
 export function createAgentFabric({ registry, learningMemory = createLearningMemory(), now = () => new Date().toISOString() } = {}) {
   if (!registry?.route) throw new TypeError('registry is required');
   if (!learningMemory?.findMatches || !learningMemory?.recordVerified) throw new TypeError('learningMemory is invalid');
@@ -76,6 +94,10 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     return work;
   }
 
+  function intakeOpportunity(signal) {
+    return intake({ ...signal, kind:'Opportunity', priority:opportunityPriority(signal) });
+  }
+
   function transition({ workId, status, ...patch }) {
     const current = workById.get(workId);
     if (!current) throw new Error('AgentWork not found');
@@ -121,5 +143,5 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
   function listWork({ tenantId } = {}) { return Object.freeze([...workById.values()].filter(work => !tenantId || work.tenantId === tenantId)); }
   function getMetadata(id) { return metadata.get(id) ?? null; }
 
-  return Object.freeze({ intake, transition, getWork, listWork, getMetadata, suggestLearning, recordLearning });
+  return Object.freeze({ intake, intakeOpportunity, transition, getWork, listWork, getMetadata, suggestLearning, recordLearning });
 }
