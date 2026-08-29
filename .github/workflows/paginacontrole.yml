@@ -24,11 +24,11 @@ permissions:
   contents: write
   issues: write
 
-# Alle workflows die naar main kunnen schrijven delen één niet-annuleerbaar slot.
-# Zo kan geen tweede publisher of nieuwere run een proces midden in een commit/push afbreken.
+# PR-verificaties blijven per PR geïsoleerd en mogen een oudere run van dezelfde PR vervangen.
+# Alle niet-PR-runs kunnen naar main schrijven en delen daarom het niet-annuleerbare repo-slot.
 concurrency:
-  group: repo-schrijven
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('paginacontrole-{0}', github.event.pull_request.number) || 'repo-schrijven' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   controle:
