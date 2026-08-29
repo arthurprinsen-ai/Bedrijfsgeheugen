@@ -101,3 +101,35 @@ test('mobile uses white Menu pill and full-height drilldown navigation', async (
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await expect(nav).toHaveAttribute('aria-hidden', 'true');
 });
+
+test('shared pages use the same mobile drilldown navigation', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${previewUrl}/over-ons`, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(1200);
+
+  const toggle = page.locator('#bgkopKnop');
+  const nav = page.locator('#bgSharedMobileNav');
+  await expect(toggle.locator('.bg-mobile-menu-label')).toHaveText('Menu');
+  await expect(toggle).toHaveAttribute('aria-controls', 'bgSharedMobileNav');
+  await toggle.click();
+  await expect(nav).toHaveAttribute('aria-hidden', 'false');
+  await expect(nav).toBeVisible();
+
+  const root = nav.locator('[data-bg-shared-mobile-view="root"]');
+  await expect(root.getByRole('button', { name: 'Oplossingen' })).toBeVisible();
+  await expect(root.getByRole('button', { name: 'Bedrijfsgeheugen' })).toBeVisible();
+  await expect(root.getByRole('button', { name: 'Koppelingen' })).toBeVisible();
+  await expect(root.getByRole('button', { name: 'Kennis' })).toBeVisible();
+  await expect(root.getByRole('link', { name: 'Over ons' })).toBeVisible();
+
+  await root.getByRole('button', { name: 'Kennis' }).click();
+  const knowledge = nav.locator('[data-bg-shared-mobile-view="kennis"]');
+  await expect(knowledge).toBeVisible();
+  await expect(knowledge.getByRole('heading', { name: 'Kennis' })).toBeVisible();
+  await expect(knowledge.getByRole('link', { name: 'Blog' })).toBeVisible();
+  await knowledge.getByRole('button', { name: 'Terug' }).click();
+  await expect(root).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(nav).toHaveAttribute('aria-hidden', 'true');
+});
