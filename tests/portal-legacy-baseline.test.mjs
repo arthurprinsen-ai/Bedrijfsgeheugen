@@ -1,9 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LEGACY_CAPABILITIES } from '../portal/core.mjs';
+import { LEGACY_CAPABILITIES,LEGACY_WORKSPACES } from '../portal/core.mjs';
 import { resolvePortalRoute,legacyHref } from '../portal/legacy-map.mjs';
 const required=['overzicht','bedrijfsgezondheid','strategie-uitvoering','processen-organisatie','kennis','data-koppelingen','ai-insights','acties-impact','rapportages','koppelingen-bouwen','roadmap','facturen-abonnement','organisatie-gebruikers','instellingen','frisse-blik'];
+const workspaces=['overzicht','profiel','dataai','aiscan','invoeren','antwoorden','business','cijfers','waarde','mensen','branche','onderzoek','beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap','downloaden','openen','afdrukken'];
 test('every approved legacy portal capability remains represented',()=>{const ids=new Set(LEGACY_CAPABILITIES.map(x=>x.id));for(const id of required)assert.equal(ids.has(id),true,`missing legacy capability ${id}`)});
+test('every concrete old portal workspace is inventoried',()=>{const ids=new Set(LEGACY_WORKSPACES.map(x=>x.id));for(const id of workspaces)assert.equal(ids.has(id),true,`missing legacy workspace ${id}`);assert.equal(ids.size,workspaces.length)});
+test('all legacy workspaces map into one of the eight canonical portal domains',()=>{const domains=new Set(['today','company','intelligence','decisions','execution','impact','memory','admin']);for(const item of LEGACY_WORKSPACES){assert.equal(domains.has(item.route.split('/')[0]),true,`${item.id} has invalid route ${item.route}`)}});
 test('legacy overview resolves to today',()=>assert.deepEqual(resolvePortalRoute('overzicht'),{route:'today',legacyId:'overzicht'}));
 test('legacy health remains directly addressable',()=>assert.deepEqual(resolvePortalRoute('bedrijfsgezondheid'),{route:'company/health',legacyId:'bedrijfsgezondheid'}));
 test('legacy data route resolves to canonical company data',()=>assert.deepEqual(resolvePortalRoute('data-koppelingen'),{route:'company/data',legacyId:'data-koppelingen'}));
