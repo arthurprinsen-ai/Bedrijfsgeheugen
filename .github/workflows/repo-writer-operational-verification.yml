@@ -18,14 +18,20 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
       VERIFY_REF: ${{ github.event.pull_request.head.ref }}
+      VERIFY_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
-      - name: Verify exact main base
+      - name: Verify exact main base and verification head
         shell: bash
         run: |
           set -euo pipefail
           actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
           if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
             echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
+            exit 1
+          fi
+          actual_verify_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${VERIFY_REF}" --jq '.object.sha')"
+          if [ "$actual_verify_sha" != "$VERIFY_SHA" ]; then
+            echo "::error::VERIFY_SHA_DRIFT:$VERIFY_SHA:$actual_verify_sha"
             exit 1
           fi
 
