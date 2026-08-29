@@ -20,6 +20,7 @@ jobs:
       - name: Add deploy-preview-only component build
         shell: bash
         run: |
+          echo 'Ensuring deploy-preview context exists'
           if grep -q '^\[context\.deploy-preview\]' netlify.toml; then
             echo 'deploy-preview context already present'
             exit 0
