@@ -31,19 +31,21 @@ const base = {
   production_status: 'not_started'
 };
 
-test('paginacontrole automated pushes rebase onto current main before push', async () => {
+test('paginacontrole publication paths synchronize with current main without stale-worktree races', async () => {
   const workflow = await readFile(new URL('../.github/workflows/paginacontrole.yml', import.meta.url), 'utf8');
-  const pushes = [...workflow.matchAll(/^\s*git push\s*$/gm)];
-  assert.equal(pushes.length, 2, 'expected exactly two automated git push paths');
+  const rebasedPushes = [...workflow.matchAll(/^\s*git push\s*$/gm)];
+  assert.equal(rebasedPushes.length, 1, 'only source repair should use the normal rebase push path');
 
-  for (const push of pushes) {
-    const beforePush = workflow.slice(Math.max(0, push.index - 200), push.index);
-    assert.match(
-      beforePush,
-      /git pull --rebase origin main\s*$/m,
-      'every automated push must first rebase onto current main to avoid non-fast-forward failures',
-    );
-  }
+  const beforeSourcePush = workflow.slice(Math.max(0, rebasedPushes[0].index - 200), rebasedPushes[0].index);
+  assert.match(beforeSourcePush, /git pull --rebase origin main\s*$/m);
+
+  const statusStep = workflow.slice(workflow.indexOf('- name: seo-status.json publiceren als hij is veranderd'));
+  const statusPublication = statusStep.slice(0, statusStep.indexOf('- name: Rapporten samenvoegen'));
+  assert.match(statusPublication, /git fetch origin main/);
+  assert.match(statusPublication, /git reset --hard origin\/main/);
+  assert.match(statusPublication, /cp \/tmp\/seo-status\.json seo-status\.json/);
+  assert.match(statusPublication, /git push origin HEAD:main/);
+  assert.doesNotMatch(statusPublication, /git pull --rebase origin main/);
 });
 
 test('green exact candidate is ready for exact-SHA promotion', () => {
