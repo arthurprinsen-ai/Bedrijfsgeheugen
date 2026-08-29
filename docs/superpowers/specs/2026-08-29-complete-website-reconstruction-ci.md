@@ -1,0 +1,1 @@
+CI strategy: the V18 Production Promotion workflow now includes `tests/website-catalog.test.mjs` and `tools/audit-website-catalog.mjs`, so Task 1 is proven RED before catalog completion and must turn GREEN before later reconstruction tasks can claim completeness.
