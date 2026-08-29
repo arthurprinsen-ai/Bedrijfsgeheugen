@@ -22,6 +22,18 @@ test('whole-brain obligation contract exists and declares the non-silent invaria
   }
 });
 
+test('agent governance makes outcome obligations mandatory for every future agent', async () => {
+  const agents = await readFile('AGENTS.md', 'utf8');
+  const operatingSystem = await readFile('docs/development-operating-system.md', 'utf8');
+
+  assert.match(agents, /docs\/outcome-obligations\.md/);
+  assert.match(agents, /MISSED_OBLIGATION/);
+  assert.match(agents, /AUTO_REPAIR/);
+  assert.match(agents, /technisch.*succes.*resultaat/is);
+  assert.match(operatingSystem, /outcome obligation/i);
+  assert.match(operatingSystem, /zero candidates/i);
+});
+
 test('technical success without required outcome evidence is never green', async () => {
   const { evaluateObligation } = await import('../tools/outcome-obligation-validator.mjs');
   const result = evaluateObligation({
