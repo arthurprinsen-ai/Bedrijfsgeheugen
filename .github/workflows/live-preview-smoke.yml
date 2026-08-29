@@ -13,6 +13,7 @@ on:
       - 'assets/v18-mobile-drilldown.css'
       - 'assets/js/v18-mobile-drilldown.js'
       - 'tests/integration/v18-live-runtime.spec.js'
+      - 'tests/live-preview-exact-head.test.mjs'
       - 'netlify.toml'
       - '.github/workflows/live-preview-smoke.yml'
   workflow_dispatch:
@@ -27,6 +28,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Verify checkout matches pull request head
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          ACTUAL_SHA=$(git rev-parse HEAD)
+          if [ "$ACTUAL_SHA" != "$HEAD_SHA" ]; then
+            echo "::error::checkout head mismatch: expected $HEAD_SHA, got $ACTUAL_SHA"
+            exit 1
+          fi
+          echo "Exact preview checkout verified: $ACTUAL_SHA"
 
       - name: Wait for Netlify status on current head SHA
         env:
