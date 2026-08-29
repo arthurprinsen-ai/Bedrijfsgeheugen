@@ -1,0 +1,30 @@
+name: V18 Test Route Integrity
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - '*.html'
+      - 'blog/**'
+      - 'assets/v18-test.*'
+      - '_redirects'
+      - 'sitemap.xml'
+      - 'tests/v18-test-route-integrity.test.mjs'
+      - '.github/workflows/v18-test-route-integrity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact checked-out SHA
+        if: github.event_name == 'pull_request'
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Run V18 route integrity tests
+        run: node --test tests/v18-test-route-integrity.test.mjs
