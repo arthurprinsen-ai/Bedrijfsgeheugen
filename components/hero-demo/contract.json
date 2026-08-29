@@ -1,0 +1,18 @@
+{
+  "id": "hero-demo",
+  "version": 1,
+  "root": "[data-bg-component=\"hero-demo\"]",
+  "ownedFiles": [
+    "components/hero-demo/hero-demo.html",
+    "components/hero-demo/hero-demo.css",
+    "components/hero-demo/contract.json"
+  ],
+  "invariants": [
+    "baseline-demo-preserved",
+    "no-video-ownership",
+    "hero-video-slot-only",
+    "no-sibling-component-selectors"
+  ],
+  "jsEntry": null,
+  "dependencies": []
+}
