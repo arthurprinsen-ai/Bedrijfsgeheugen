@@ -294,3 +294,45 @@
 # alternatieve preview-composer meer die een andere website kan tonen.
 [context.deploy-preview]
   command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
+
+[[redirects]]
+  from = "/aanmelden.html"
+  to = "/aanmelden"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cases.html"
+  to = "/cases"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/inloggen.html"
+  to = "/inloggen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/kennis.html"
+  to = "/kennis"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/oplossingen.html"
+  to = "/oplossingen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/prijzen.html"
+  to = "/prijzen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/problemen.html"
+  to = "/problemen"
+  status = 301
+  force = true
