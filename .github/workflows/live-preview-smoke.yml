@@ -84,7 +84,7 @@ jobs:
       - name: Verify hero video actually plays
         env:
           PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: npx --yes @playwright/test@1.55.0 test tests/integration/live-hero-video.spec.js --project=chromium --workers=1
+        run: npx --yes @playwright/test@1.55.0 test tests/integration/live-hero-video.spec.js --workers=1
 
       - name: Capture preview and production screenshots after reveal fallback
         env:
