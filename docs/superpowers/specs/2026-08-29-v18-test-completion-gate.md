@@ -1,0 +1,1 @@
+Completion may only be claimed after exact-head GitHub Actions success, exact-head Netlify ready deploy, and independent preview smoke checks. Until then this remains a candidate.
