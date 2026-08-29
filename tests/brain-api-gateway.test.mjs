@@ -2,6 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createBrainGateway, BRAIN_COMMANDS, BRAIN_QUERIES } from '../platform/api/brain-gateway.mjs';
 
+function inertMethods(snapshot) {
+  return Object.freeze({
+    ingest() {}, async analyze() {}, recordDecision() {}, async executeChange() {}, verifyAndLearn() {}, async selfHeal() {}, snapshot,
+  });
+}
+
 test('brain gateway exposes one explicit command surface and never arbitrary runtime methods', async () => {
   const calls = [];
   const runtime = Object.freeze({
@@ -27,14 +33,10 @@ test('brain gateway exposes one explicit command surface and never arbitrary run
 });
 
 test('brain status query returns metadata counts only, never raw canonical/business payloads', () => {
-  const runtime = Object.freeze({
-    snapshot() {
-      return {
-        events:[{ raw:'SECRET' }], activeObjects:new Map([['A',{ private:'SECRET' }]]), workingObjects:new Map([['W',{}]]),
-        recommendations:new Map([['R',{}]]), decisions:new Map([['D',{}]]), learning:[{ private:'SECRET' }], agentWork:new Map([['J',{}]]),
-      };
-    },
-  });
+  const runtime = inertMethods(() => ({
+    events:[{ raw:'SECRET' }], activeObjects:new Map([['A',{ private:'SECRET' }]]), workingObjects:new Map([['W',{}]]),
+    recommendations:new Map([['R',{}]]), decisions:new Map([['D',{}]]), learning:[{ private:'SECRET' }], agentWork:new Map([['J',{}]]),
+  }));
   const gateway = createBrainGateway({ runtime });
   const status = gateway.query({ type:BRAIN_QUERIES.STATUS });
   assert.deepEqual(status, { events:1, activeObjects:1, workingObjects:1, recommendations:1, decisions:1, learning:1, agentWork:1 });
