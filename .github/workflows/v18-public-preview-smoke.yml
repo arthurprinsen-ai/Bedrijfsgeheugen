@@ -1,0 +1,55 @@
+name: V18 Public Preview Smoke
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PREVIEW: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+    steps:
+      - name: Wait for Netlify success on exact PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 50); do
+            state=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status" --jq '.statuses[] | select(.context=="netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1 || true)
+            echo "Netlify exact-head status: ${state:-missing}"
+            if [ "$state" = "success" ]; then exit 0; fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then exit 1; fi
+            sleep 10
+          done
+          echo "Timed out waiting for exact-head Netlify deploy" >&2
+          exit 1
+      - name: Smoke public V18 routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          routes=(/ /meer /partners /onderzoeken /templates-tools /security /juridisch /helpcentrum /changelog /blog/ /over-ons /hoe-het-werkt /cases /kennis /prijzen /inloggen /aanmelden)
+          for route in "${routes[@]}"; do
+            code=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -LsS -o /tmp/page.html -w '%{http_code}' "${PREVIEW}${route}")
+            echo "${route} -> ${code}"
+            test "$code" -ge 200 -a "$code" -lt 400
+            ! grep -qi '<title>.*404' /tmp/page.html
+          done
+      - name: Verify accepted V18 public content
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -LsS "${PREVIEW}/meer" -o /tmp/meer.html
+          grep -Fq 'Alles rond Bedrijfsgeheugen op één plek.' /tmp/meer.html
+          grep -Fq 'Wie we zijn en hoe we werken' /tmp/meer.html
+          grep -Fq 'Blog &amp; kennisbank' /tmp/meer.html
+          grep -Fq 'Veilig, transparant en uitlegbaar' /tmp/meer.html
+          grep -Fq 'Hulp wanneer je die nodig hebt' /tmp/meer.html
+          curl -LsS "${PREVIEW}/blog/" -o /tmp/blog.html
+          test -s /tmp/blog.html
