@@ -12,8 +12,8 @@ test('desktop dropdown toggles open and closed on click', async ({ page }) => {
   const triggers = page.locator('.bgkop-trig');
   const first = triggers.nth(0);
   const second = triggers.nth(1);
-  const firstPanel = first.locator('xpath=following-sibling::*[contains(@class,"bgkop-paneel")]');
-  const secondPanel = second.locator('xpath=following-sibling::*[contains(@class,"bgkop-paneel")]');
+  const firstPanel = first.locator('xpath=following-sibling::*[1]');
+  const secondPanel = second.locator('xpath=following-sibling::*[1]');
 
   await expect(first).toHaveAttribute('aria-expanded', 'false');
   await first.click();
@@ -39,7 +39,7 @@ test('mobile menu and accordion toggle open and closed on click', async ({ page 
   const menuButton = page.locator('#bgkopKnop');
   const mobileMenu = page.locator('#bgkopMob');
   const accordion = mobileMenu.locator('.bgkop-macc').first();
-  const panel = accordion.locator('xpath=following-sibling::*[contains(@class,"bgkop-mpaneel")]');
+  const panel = accordion.locator('xpath=following-sibling::*[1]');
 
   await menuButton.click();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
