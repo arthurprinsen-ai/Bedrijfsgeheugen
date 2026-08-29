@@ -8,6 +8,7 @@ on:
       - 'components/**'
       - 'tools/**'
       - 'tests/**'
+      - 'netlify.toml'
       - '.github/workflows/component-integration-tdd.yml'
   workflow_dispatch:
 
@@ -41,7 +42,8 @@ jobs:
             tests/components/pricing.test.mjs \
             tests/components/footer.test.mjs \
             tests/integration/component-integration.test.mjs \
-            tests/integration/integration-workflow-contract.test.mjs
+            tests/integration/integration-workflow-contract.test.mjs \
+            tests/integration/netlify-preview-contract.test.mjs
 
       - name: Compose full homepage candidate
         run: node tools/compose-home-migration.mjs dist/index.html
