@@ -157,6 +157,9 @@ jobs:
           pip install --quiet playwright
           playwright install --with-deps chromium
 
+      - name: Gedeelde sitechrome materialiseren voor broncontroles
+        run: python .github/scripts/sitecustomize.py
+
       - name: Pagina's controleren
         id: controle
         run: python .github/scripts/paginacontrole.py
