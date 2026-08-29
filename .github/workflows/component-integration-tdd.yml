@@ -1,0 +1,26 @@
+name: Component Integration TDD
+
+on:
+  push:
+    branches:
+      - automation/component-integration
+    paths:
+      - 'components/**'
+      - 'tools/**'
+      - 'tests/integration/**'
+      - '.github/workflows/component-integration-tdd.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Run component integration contract
+        run: node --test tests/integration/component-integration.test.mjs
