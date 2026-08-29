@@ -19,9 +19,10 @@
     oplossingen: 'Oplossingen',
     bedrijfsgeheugen: 'Bedrijfsgeheugen',
     koppelingen: 'Koppelingen',
-    kennis: 'Kennis'
+    kennis: 'Kennis',
+    meer: 'Meer'
   };
-  var volgorde = ['oplossingen', 'bedrijfsgeheugen', 'koppelingen', 'kennis'];
+  var volgorde = ['oplossingen', 'bedrijfsgeheugen', 'koppelingen', 'kennis', 'meer'];
 
   function sleutel(tekst) {
     var t = String(tekst || '').trim().toLowerCase();
@@ -52,13 +53,23 @@
     });
   });
 
+  /* Alles wat in het oude mobiele menu als losse toplink stond, hoort onder
+     Meer. Zo blijft #bgkopMob de enige bron van waarheid en kan een nieuwe
+     losse pagina nooit stil verdwijnen uit de moderne drill-down. */
   var direct = {};
+  groepen.meer = [];
   Array.prototype.forEach.call(bron.querySelectorAll(':scope > a[href]'), function (a) {
-    var tekst = a.textContent.trim().toLowerCase();
-    if (tekst.indexOf('over ons') !== -1) direct.over = a.getAttribute('href');
-    if (tekst.indexOf('expertises') !== -1) direct.expertises = a.getAttribute('href');
-    if (a.classList.contains('bgkop-mcta')) direct.cta = a.getAttribute('href');
+    if (a.classList.contains('bgkop-mcta')) {
+      direct.cta = a.getAttribute('href');
+      return;
+    }
+    groepen.meer.push({
+      href: a.getAttribute('href'),
+      label: a.textContent.trim(),
+      beschrijving: beschrijvingen[a.getAttribute('href')] || ''
+    });
   });
+  if (!groepen.meer.length) delete groepen.meer;
 
   var nav = document.createElement('div');
   nav.id = 'bgSharedMobileNav';
@@ -80,17 +91,6 @@
       b.innerHTML = '<span>' + labels[key] + '</span><span class="bg-shared-mobile-arrow" aria-hidden="true">→</span>';
       root.appendChild(b);
     });
-
-    function directLink(href, tekst) {
-      if (!href) return;
-      var a = document.createElement('a');
-      a.className = 'bg-shared-mobile-row';
-      a.href = href;
-      a.innerHTML = '<span>' + tekst + '</span><span class="bg-shared-mobile-arrow" aria-hidden="true">→</span>';
-      root.appendChild(a);
-    }
-    directLink(direct.over || '/over-ons', 'Over ons');
-    directLink(direct.expertises || '/expertises', 'Alle expertises');
 
     var cta = document.createElement('a');
     cta.className = 'bg-shared-mobile-cta';
