@@ -1,3 +1,4 @@
+// TDD gate: this test intentionally lands before the ownership manifest.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
