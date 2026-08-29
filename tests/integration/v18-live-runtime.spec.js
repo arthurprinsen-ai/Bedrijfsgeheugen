@@ -86,17 +86,20 @@ test('all accepted test-environment views resolve as real production routes', as
   }
 });
 
-test('recovered test pages have a real responsive Menu drawer', async ({ page }) => {
+test('recovered pages use the current V18 responsive mobile drilldown', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${previewUrl}/problemen`, { waitUntil: 'domcontentloaded' });
-  const toggle = page.getByRole('button', { name: 'Menu openen' });
+  const toggle = page.getByRole('button', { name: 'Open menu' });
   await expect(toggle).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await toggle.click();
-  await expect(toggle).toHaveText('Sluit');
-  await expect(page.locator('.mobile-drawer')).toHaveClass(/open/);
-  await expect(page.locator('.mobile-drawer').getByRole('link', { name: /Prijzen/ })).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-label', 'Sluit menu');
+  await expect(toggle.locator('.bg-mobile-menu-label')).toHaveText('Sluit');
+  const nav = page.locator('#bgSharedMobileNav');
+  await expect(nav).toHaveAttribute('aria-hidden', 'false');
+  await nav.getByRole('button', { name: 'Meer' }).click();
+  await expect(nav.getByRole('link', { name: 'Over ons' })).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(toggle).toHaveText('Menu');
+  await expect(toggle.locator('.bg-mobile-menu-label')).toHaveText('Menu');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 });
