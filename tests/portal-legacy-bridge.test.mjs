@@ -24,13 +24,19 @@ test('bridge preserves customer context and exact legacy workspace id',()=>{
  assert.match(html,/\/klantportaal\.html\?klant=demo\+klant/);
 });
 
-test('runtime binds bridge iframe to the exact old portal tab',async()=>{
- const runtime=await readFile(new URL('../portal/legacy-frame.mjs',import.meta.url),'utf8');
+test('additive runtime binds bridge without replacing secure portal app',async()=>{
+ const frame=await readFile(new URL('../portal/legacy-frame.mjs',import.meta.url),'utf8');
+ const runtime=await readFile(new URL('../portal/legacy-runtime.mjs',import.meta.url),'utf8');
+ const index=await readFile(new URL('../portal/index.html',import.meta.url),'utf8');
  const app=await readFile(new URL('../portal/app.mjs',import.meta.url),'utf8');
  const css=await readFile(new URL('../portal/legacy-bridge.css',import.meta.url),'utf8');
- assert.match(runtime,/\.tab\[data-p=/);
- assert.match(runtime,/target\.click\(\)/);
- assert.match(app,/bindLegacyFrames\(document\)/);
+ assert.match(frame,/\.tab\[data-p=/);
+ assert.match(frame,/target\.click\(\)/);
+ assert.match(runtime,/bindLegacyFrames\(main\)/);
+ assert.match(runtime,/MutationObserver/);
+ assert.match(index,/legacy-runtime\.mjs/);
+ assert.match(app,/body:JSON\.stringify\(\{vraag\}\)/);
+ assert.doesNotMatch(app,/projectContext|context:state/);
  assert.match(css,/\.legacy-frame/);
  assert.match(css,/\.legacy-workspace-groups/);
 });
