@@ -1,0 +1,1 @@
+V18 reconstruction is test-only. No production merge, credential change, secret change, permission change, destructive data change, paid-resource increase, security weakening, or force-push is permitted during reconstruction and verification.
