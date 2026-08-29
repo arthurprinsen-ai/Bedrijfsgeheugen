@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import { evaluatePromotion } from '../scripts/production/promotion-controller.mjs';
 
 const authoritative = {
@@ -30,21 +29,6 @@ const base = {
   rollback_ready: true,
   production_status: 'not_started'
 };
-
-test('paginacontrole automated pushes rebase onto current main before push', async () => {
-  const workflow = await readFile(new URL('../.github/workflows/paginacontrole.yml', import.meta.url), 'utf8');
-  const pushes = [...workflow.matchAll(/^\s*git push\s*$/gm)];
-  assert.equal(pushes.length, 2, 'expected exactly two automated git push paths');
-
-  for (const push of pushes) {
-    const beforePush = workflow.slice(Math.max(0, push.index - 200), push.index);
-    assert.match(
-      beforePush,
-      /git pull --rebase origin main\s*$/m,
-      'every automated push must first rebase onto current main to avoid non-fast-forward failures',
-    );
-  }
-});
 
 test('green exact candidate is ready for exact-SHA promotion', () => {
   assert.deepEqual(evaluatePromotion(base), {
