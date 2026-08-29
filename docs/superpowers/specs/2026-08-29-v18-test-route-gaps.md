@@ -1,0 +1,1 @@
+Zero-gap rule: every route visible in the V18 primary navigation, Meer directory, shared footer, or preserved production sitemap must resolve to a real file or intentional redirect. Unknown missing targets block green status.
