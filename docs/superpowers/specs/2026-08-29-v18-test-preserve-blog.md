@@ -1,0 +1,1 @@
+Production Blog is preserved on the V18 test branch. V18 navigation points to `/blog/`; no blog article is replaced or deleted by the reconstruction.
