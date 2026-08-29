@@ -17,6 +17,7 @@ on:
       - 'tools/verify-component-boundaries.mjs'
       - 'tools/verify-change-scope.mjs'
       - 'tools/verify-component-hashes.mjs'
+      - 'tools/detect-changed-components.mjs'
       - 'tests/parallel-ownership.test.mjs'
       - 'tests/change-classes.test.mjs'
       - 'tests/page-composition.test.mjs'
@@ -24,6 +25,7 @@ on:
       - 'tests/component-boundaries.test.mjs'
       - 'tests/change-scope.test.mjs'
       - 'tests/component-hash-protection.test.mjs'
+      - 'tests/detect-changed-components.test.mjs'
       - '.github/workflows/component-foundation-tdd.yml'
 
 permissions:
@@ -39,4 +41,4 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: node --test tests/parallel-ownership.test.mjs tests/change-classes.test.mjs tests/page-composition.test.mjs tests/component-preview-composition.test.mjs tests/component-boundaries.test.mjs tests/change-scope.test.mjs tests/component-hash-protection.test.mjs
+      - run: node --test tests/parallel-ownership.test.mjs tests/change-classes.test.mjs tests/page-composition.test.mjs tests/component-preview-composition.test.mjs tests/component-boundaries.test.mjs tests/change-scope.test.mjs tests/component-hash-protection.test.mjs tests/detect-changed-components.test.mjs
