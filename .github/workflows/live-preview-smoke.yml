@@ -8,6 +8,7 @@ on:
       - 'components/**'
       - 'tools/**'
       - 'tests/integration/**'
+      - 'tests/page-composition-js-entry.test.mjs'
       - 'netlify.toml'
       - '.github/workflows/live-preview-smoke.yml'
   workflow_dispatch:
@@ -77,6 +78,9 @@ jobs:
             "$PREVIEW_URL/assets/openart-hero-iphone-safe-v1.mp4" \
             -o /tmp/hero-video.bin
           test -s /tmp/hero-video.bin
+
+      - name: Verify component JavaScript entry paths
+        run: node --test tests/page-composition-js-entry.test.mjs
 
       - name: Install Playwright test runtime and Chromium
         run: |
