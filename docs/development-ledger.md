@@ -231,3 +231,33 @@ When any production promotion regresses protected smoke/regression or metrics, a
 - **Guard:** do not merge BG179 into BG180 and do not revive retired metric/scene routes without new evidence that a distinct responsibility is missing.
 - **Production protection:** website production remains `2c05b2eda5381b0f193f3a5cd638ba3054053b3b` / Netlify `6a91e4da1f6a5900080ead85`, `ready`.
 - **Reusable lesson:** one canonical scheduled analytics route lowers cost and contradiction risk; publishing remains a separate responsibility.
+
+## 2026-08-29 11:54 CEST — ERROR — guarded promotion blocked by draft release state
+- **Fingerprint:** `production-promotion|draft-pr|bg169-merge-405`
+- **Signal:** BG169 guarded exact-head promotion of PR #138 on tested SHA `ff81ad3bf3405f47348a711bbdaaf0b73e84d136` was rejected with `[405] Pull Request is still a draft`.
+- **Impact:** no production change occurred; the already-green candidate could not enter the production merge gate while the PR remained draft.
+- **Root cause:** release metadata still marked PR #138 as draft after its exact SHA had completed the required preview gates. The first safe ready-for-review mutation also exposed connector fingerprint `github-connector|mark-ready-for-review|undefinedField-fullDatabaseId`: its GraphQL response selection requested a field GitHub does not expose.
+- **Known failed approaches:** do not retry BG169 against the same draft PR; do not retry the broken ready-for-review connector wrapper without new evidence.
+- **Safe fallback:** close unmerged draft PR #138 and open non-draft PR #139 on the unchanged head/base; require a fresh PR-event gate set before promotion.
+- **Owner:** QA/Regression + Architect/Integrator.
+- **Production protection:** production stayed on `8d44b8f6a53c4bdfe79580fe8a740955daa99a5e` / Netlify `6a9285dae60aa80008b832c0`, `ready` during the recovery.
+- **Reusable lesson:** draft state is part of release eligibility; promotion tooling must distinguish a green artifact from merge-eligible PR metadata and keep exact-head guarding intact.
+
+## 2026-08-29 11:57 CEST — RECOVERY — hero video Chrome codec-stack smoke green
+- **Fingerprint:** `preview|hero-video|chrome-codec-stack-runtime-v1`
+- **Fix:** retain candidate SHA `ff81ad3bf3405f47348a711bbdaaf0b73e84d136` with the Chrome codec-stack runtime verification, replace only the release container by non-draft PR #139, and rerun every PR-event gate on that unchanged SHA.
+- **Regression evidence:** Live Preview Smoke #15 `33246567404` SUCCESS; Pagina- en SEO-controle #458 `33246567396` SUCCESS; Component Preview #70 `33246567413` SUCCESS; Component Foundation TDD #43 `33246567398` SUCCESS; Shared Agent Memory Tests #362 `33246567399` SUCCESS; Configuratiewacht #100 `33246567422` SUCCESS.
+- **Preview verification:** Netlify deploy-preview `6a92ac4dd730da00085d8ec3` was `ready` on exact `commit_ref=ff81ad3bf3405f47348a711bbdaaf0b73e84d136`, with 68 redirects, 16 headers, 3 functions, 1 edge function and 0 secret-scan matches.
+- **Rollback:** no production rollback was needed because production remained on the prior verified SHA until promotion.
+- **Reusable lesson:** when code is unchanged but release metadata must change, rerun PR-scoped gates anyway; exact SHA equality does not replace event-context verification.
+
+## 2026-08-29 11:58 CEST — PRODUCTION_PROMOTION — component architecture PR139
+- **Fingerprint:** `production|component-architecture|pr139|72ff2b74`
+- **Candidate:** tested head `ff81ad3bf3405f47348a711bbdaaf0b73e84d136`, PR #139, base `8d44b8f6a53c4bdfe79580fe8a740955daa99a5e`.
+- **Promotion:** BG169 guarded exact-head merge succeeded and GitHub `main` moved to signed merge SHA `72ff2b74a9d2305e17ff0bfa350fa39a17749793`, tree `a07bcd731a50286ac5c6f4cbff34c6f294cdcdab`.
+- **Production deploy:** Netlify deploy `6a92ad1fead2e80007e963e2`, context `production`, state `ready`, exact `commit_ref=72ff2b74a9d2305e17ff0bfa350fa39a17749793`.
+- **Protected verification:** 68 redirect rules and 16 header rules processed without errors; 3 functions and 1 edge function deployed; secret scan found 0 matches. BG169 terminal state is `PRODUCTION_GREEN`.
+- **Last-known-good before promotion:** BG169 persisted prior LKG `fefee01dd74cbb2b7e15432e7558722cf4d03ede`; production immediately before promotion was independently verified as `8d44b8f6a53c4bdfe79580fe8a740955daa99a5e` / `6a9285dae60aa80008b832c0`, `ready`.
+- **Rollback:** use BG169 history-preserving exact-tree rollback if any post-promotion protected signal turns red; no rollback was required in this cycle.
+- **Shared learning:** ERROR, RECOVERY and PRODUCTION_PROMOTION were routed through BG168 to BG166/BG167.
+- **Reusable lesson:** exact preview SHA + fresh PR-event CI + guarded merge + exact production deploy identity are all separate release proofs; none may substitute for another.
