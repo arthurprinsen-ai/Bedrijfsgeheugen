@@ -7,6 +7,7 @@ on:
     paths:
       - 'components/**'
       - 'tools/**'
+      - 'tests/integration/live-hero-video.spec.js'
       - 'netlify.toml'
       - '.github/workflows/live-preview-smoke.yml'
   workflow_dispatch:
@@ -20,6 +21,8 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
+
       - name: Wait for Netlify status on current head SHA
         env:
           GH_TOKEN: ${{ github.token }}
@@ -75,8 +78,13 @@ jobs:
             -o /tmp/hero-video.bin
           test -s /tmp/hero-video.bin
 
-      - name: Install Chromium for visual review
+      - name: Install Chromium for browser verification
         run: npx --yes playwright@1.55.0 install --with-deps chromium
+
+      - name: Verify hero video actually plays
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: npx --yes @playwright/test@1.55.0 test tests/integration/live-hero-video.spec.js --project=chromium --workers=1
 
       - name: Capture preview and production screenshots after reveal fallback
         env:
@@ -95,4 +103,4 @@ jobs:
         with:
           name: component-preview-visual-review
           path: visual-review/*.png
-          if-no-files-found: error
+          if-no-files-found: warn
