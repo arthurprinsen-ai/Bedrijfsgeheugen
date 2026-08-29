@@ -16,8 +16,8 @@ test('self-healing publications preserve concurrent main work with path-appropri
   const rebases = workflow.match(/git pull --rebase origin main/g) ?? [];
   assert.equal(rebases.length, 1, 'only the source-repair worktree should require a rebase');
 
-  const stepStart = workflow.indexOf('- name: seo-status.json publiceren als hij is veranderd');
-  const stepEnd = workflow.indexOf('- name: Rapporten samenvoegen', stepStart);
+  const stepStart = workflow.indexOf('- name: seo-status.json verwerken als hij is veranderd');
+  const stepEnd = workflow.indexOf('- name: Candidate branch en PR publiceren', stepStart);
   assert.ok(stepStart >= 0 && stepEnd > stepStart, 'seo-status publication step must exist');
 
   const statusPublication = workflow.slice(stepStart, stepEnd);

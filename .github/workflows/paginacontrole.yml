@@ -17,11 +17,21 @@ on:
       - 'assets/**'
       - '_redirects'
   workflow_dispatch:
+    inputs:
+      delivery_mode:
+        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        type: choice
+        required: true
+        default: direct
+        options:
+          - direct
+          - candidate-pr
   schedule:
     - cron: '0 5 * * 1'
 
 permissions:
   contents: write
+  pull-requests: write
   issues: write
 
 # PR-verificaties blijven per PR geïsoleerd en mogen een oudere run van dezelfde PR vervangen.
@@ -37,6 +47,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Exacte basis vastleggen
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-python@v6
         with:
@@ -45,7 +61,10 @@ jobs:
       - name: Bekende SEO-bronfouten automatisch herstellen
         if: github.event_name != 'pull_request'
         shell: bash
+        env:
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
+          set -euo pipefail
           python - <<'PY'
           from pathlib import Path
           import re
@@ -123,8 +142,12 @@ jobs:
               blog/offertes-opvolgen-zonder-crm/index.html \
               blog/afas-api/index.html
             git commit -m "Herstel SEO-bronfouten uit paginacontrole"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            if [ "$DELIVERY_MODE" = "direct" ]; then
+              git pull --rebase origin main
+              git push origin HEAD:main
+            else
+              echo "SEO-bronfix blijft lokaal in de candidate tot de PR is geverifieerd."
+            fi
           else
             echo "Geen bekende SEO-bronfouten meer te herstellen."
           fi
@@ -144,10 +167,13 @@ jobs:
         run: python .github/scripts/seocontrole.py
         continue-on-error: true
 
-      - name: seo-status.json publiceren als hij is veranderd
+      - name: seo-status.json verwerken als hij is veranderd
         if: always() && github.event_name != 'pull_request'
         shell: bash
+        env:
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
+          set -euo pipefail
           if [ -z "$(git status --porcelain seo-status.json)" ]; then
             echo "seo-status.json ongewijzigd"
             exit 0
@@ -156,18 +182,81 @@ jobs:
           cp seo-status.json /tmp/seo-status.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git reset --hard origin/main
-          cp /tmp/seo-status.json seo-status.json
 
-          if git diff --quiet -- seo-status.json; then
-            echo "seo-status.json is al door een parallelle run gepubliceerd"
+          if [ "$DELIVERY_MODE" = "direct" ]; then
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/seo-status.json seo-status.json
+            if git diff --quiet -- seo-status.json; then
+              echo "seo-status.json is al door een parallelle run gepubliceerd"
+              exit 0
+            fi
+            git add -- seo-status.json
+            git commit -m "seo-status.json bijgewerkt door de SEO-controle"
+            git push origin HEAD:main
+          else
+            cp /tmp/seo-status.json seo-status.json
+            if ! git diff --quiet -- seo-status.json; then
+              git add -- seo-status.json
+              git commit -m "seo-status.json bijgewerkt door de SEO-controle"
+            fi
+            echo "seo-status.json blijft onderdeel van dezelfde candidate PR."
+          fi
+
+      - name: Candidate branch en PR publiceren
+        id: candidate
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.delivery_mode == 'candidate-pr'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet "$BASE_SHA..HEAD"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Geen repositorywijziging voor candidate."
             exit 0
           fi
 
-          git add -- seo-status.json
-          git commit -m "seo-status.json bijgewerkt door de SEO-controle"
-          git push origin HEAD:main
+          mapfile -t changed < <(git diff --name-only "$BASE_SHA..HEAD" | sort -u)
+          allowed=(
+            afmaakindex.html
+            ai-implementeren.html
+            bedrijfsgeheugen.html
+            data-soevereiniteit.html
+            blog/wat-is-een-bedrijfsgeheugen/index.html
+            blog/offertes-opvolgen-zonder-crm/index.html
+            blog/afas-api/index.html
+            seo-status.json
+          )
+          export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+          export ALLOWED_FILES="$(printf '%s\n' "${allowed[@]}")"
+          CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
+          const lines = (name) => String(process.env[name] || '').split('\n').filter(Boolean).sort();
+          const candidate = createWriterCandidate({
+            writer: 'paginacontrole',
+            baseSha: process.env.BASE_SHA,
+            runId: process.env.GITHUB_RUN_ID,
+            changedFiles: lines('CHANGED_FILES'),
+            allowedFiles: lines('ALLOWED_FILES'),
+            rollbackSha: process.env.BASE_SHA,
+          });
+          validateWriterCandidate(candidate);
+          console.log(candidate.branch);
+          NODE
+          )
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$existing" ]; then
+            gh pr create \
+              --base main \
+              --head "$CANDIDATE_BRANCH" \
+              --title "Paginacontrole candidate $GITHUB_RUN_ID" \
+              --body "Gecontroleerde candidate uit paginacontrole. Base SHA: $BASE_SHA. Bekende bronfixes en seo-status blijven samen in één candidate; productie-issues worden door deze candidate-run niet gesloten. Deze workflow merge't zichzelf niet."
+          else
+            echo "Candidate PR bestaat al: #$existing"
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Rapporten samenvoegen
         if: always()
@@ -183,7 +272,7 @@ jobs:
         run: cat rapport.md || echo "geen rapport"
 
       - name: Melding maken bij problemen
-        if: (steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure') && github.event_name != 'pull_request'
+        if: (steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure') && github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.delivery_mode != 'candidate-pr')
         uses: actions/github-script@v8
         with:
           script: |
@@ -207,7 +296,7 @@ jobs:
             }
 
       - name: Melding sluiten als alles goed is
-        if: steps.controle.outcome == 'success' && steps.seo.outcome == 'success' && github.event_name != 'pull_request'
+        if: steps.controle.outcome == 'success' && steps.seo.outcome == 'success' && github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.delivery_mode != 'candidate-pr')
         uses: actions/github-script@v8
         with:
           script: |

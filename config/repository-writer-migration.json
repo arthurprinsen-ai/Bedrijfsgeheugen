@@ -3,12 +3,12 @@
   "mainProtectionReady": false,
   "governingIssue": 175,
   "writers": [
-    {"name":"approved-central-blog","candidateMode":"not_started","parityVerified":false,"rollbackVerified":false,"merged":false},
-    {"name":"blog-bijwerken","candidateMode":"not_started","parityVerified":false,"rollbackVerified":false,"merged":false},
+    {"name":"approved-central-blog","candidateMode":"merged_unverified","pullRequest":188,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"blog-bijwerken","candidateMode":"prepared","pullRequest":189,"parityVerified":false,"rollbackVerified":false,"merged":false},
     {"name":"menu-balk-fix","candidateMode":"merged_unverified","pullRequest":180,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"paginacontrole","candidateMode":"not_started","parityVerified":false,"rollbackVerified":false,"merged":false},
-    {"name":"regelgeving-bijwerken","candidateMode":"prepared","pullRequest":181,"parityVerified":false,"rollbackVerified":false,"merged":false},
-    {"name":"seo-controle","candidateMode":"prepared","pullRequest":182,"parityVerified":false,"rollbackVerified":false,"merged":false},
-    {"name":"weekblog","candidateMode":"not_started","parityVerified":false,"rollbackVerified":false,"merged":false}
+    {"name":"paginacontrole","candidateMode":"prepared","pullRequest":189,"parityVerified":false,"rollbackVerified":false,"merged":false},
+    {"name":"regelgeving-bijwerken","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":181,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"seo-controle","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":182,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"weekblog","candidateMode":"prepared","pullRequest":189,"parityVerified":false,"rollbackVerified":false,"merged":false}
   ]
 }

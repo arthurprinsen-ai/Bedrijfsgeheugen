@@ -40,8 +40,8 @@ test('paginacontrole publication paths synchronize with current main without sta
   assert.match(sourceRepair, /git pull --rebase origin main/);
   assert.match(sourceRepair, /git push(?: origin HEAD:main)?/);
 
-  const stepStart = workflow.indexOf('- name: seo-status.json publiceren als hij is veranderd');
-  const stepEnd = workflow.indexOf('- name: Rapporten samenvoegen', stepStart);
+  const stepStart = workflow.indexOf('- name: seo-status.json verwerken als hij is veranderd');
+  const stepEnd = workflow.indexOf('- name: Candidate branch en PR publiceren', stepStart);
   assert.ok(stepStart >= 0 && stepEnd > stepStart, 'seo-status publication step must exist');
   const statusPublication = workflow.slice(stepStart, stepEnd);
   assert.match(statusPublication, /git fetch origin main/);
