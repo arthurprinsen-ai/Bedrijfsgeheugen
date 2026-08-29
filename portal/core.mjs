@@ -27,18 +27,11 @@ export const LEGACY_CAPABILITIES = Object.freeze([
 {id:'frisse-blik',label:'Frisse Blik Scan',canonicalRoute:'admin/frisse-blik',requiredSurface:'upsell'}
 ]);
 export const SIGNAL_PIPELINE = Object.freeze(['signal','verify','match','impact','prioritise','recommend']);
-export const PORTAL_INDEX = Object.freeze([
-{type:'KPI',title:'Brutomarge Product B',route:'impact',keywords:'marge product b finance prijs'},
-{type:'Besluit',title:'Marge herstellen met prijswijziging',route:'decisions',keywords:'marge prijs besluit product b'},
-{type:'Kans',title:'€72K factuurcontrole',route:'intelligence',keywords:'besparing factuur finance opportunity'},
-{type:'Actie',title:'Prijs Product B voorbereiden',route:'execution',keywords:'prijs marge actie product b'},
-{type:'Kennis',title:'Kritieke kennis Finance',route:'memory/knowledge',keywords:'finance kennis borging'},
-{type:'Systeem',title:'Exact koppeling',route:'admin/integrations',keywords:'exact koppeling systeem data'},
-{type:'Agent',title:'Optimizer',route:'admin/agents',keywords:'kosten performance agent optimizer'}
-]);
+export const PORTAL_INDEX = Object.freeze(LEGACY_CAPABILITIES.map(x=>({type:'Navigatie',title:x.label,route:x.canonicalRoute,keywords:`${x.id} ${x.requiredSurface}`})));
 export function canCompleteAction(action){return Boolean(action?.owner&&action.executed&&action.verified&&action.result)}
 export function riskPolicy(score){const n=Number(score);if(!Number.isFinite(n)||n<0||n>100)throw new RangeError('risk score must be 0-100');if(n<=20)return'autonomous';if(n<=50)return'autonomous-audit';if(n<=80)return'approval';return'human-controlled'}
 export function verifiedValue(items=[]){return items.filter(i=>i?.stage==='Realised'&&i?.verified===true&&i?.evidence).reduce((sum,i)=>sum+Number(i.amount||0),0)}
 export function routeFromHash(hash){const raw=(hash||'').replace(/^#\/?/,'').replace(/^\/+/, '');if(!raw)return'today';const top=raw.split('/')[0];return NAV_ITEMS.some(x=>x.id===top)?top:'today'}
 export function parsePortalLocation(hash){const raw=(hash||'').replace(/^#\/?/,'').replace(/^\/+/, '');return raw||'today'}
-export function searchPortal(query){const q=(query||'').trim().toLowerCase();if(!q)return[];return PORTAL_INDEX.filter(x=>`${x.title} ${x.type} ${x.keywords}`.toLowerCase().includes(q))}
+export function buildPortalIndex(state={}){const rows=[...PORTAL_INDEX];const add=(items,type,route,title='title',keywords=[])=>{for(const item of Array.isArray(items)?items:[]){const label=item?.[title]||item?.label||item?.name;if(!label)continue;rows.push({type,title:String(label),route,keywords:keywords.map(k=>item?.[k]).filter(Boolean).flat().join(' ')})}};add(state.actions,'Actie','execution','title',['owner','status','source']);add(state.decisions,'Besluit','decisions','title',['why','expected','owner','risk']);add(state.signals,'Signaal','intelligence','title',['category','source','summary','affected']);add(state.memories,'Kennis','memory/knowledge','title',['excerpt','type','date']);add(state.graph?.nodes,'Bedrijfsobject','company','label',['meta','type']);add(state.healthCards,'KPI','company/health','label',['value']);return rows}
+export function searchPortal(query,state={}){const q=(query||'').trim().toLowerCase();if(!q)return[];return buildPortalIndex(state).filter(x=>`${x.title} ${x.type} ${x.keywords}`.toLowerCase().includes(q)).slice(0,30)}
