@@ -37,4 +37,37 @@ if (!overOns.includes('class="bgkop"') || !overOns.includes('/assets/js/menu.js'
 }
 
 await writeFile(OVER_ONS_FILE, overOns, 'utf8');
-console.log('Accepted site baseline applied: /over-ons');
+
+const moreButton = '      <button class="bg-mobile-row" type="button" data-bg-mobile-target="meer">Meer <span class="bg-mobile-arrow" aria-hidden="true">→</span></button>';
+const moreView = `
+    <div class="bg-mobile-view" data-bg-mobile-view="meer" hidden>
+      <div class="bg-mobile-subtitle"><button class="bg-mobile-back" type="button" data-bg-mobile-back aria-label="Terug">← Terug</button><h2>Meer</h2></div>
+      <a class="bg-mobile-link" href="/expertises">Alle expertises <span aria-hidden="true">→</span></a>
+      <a class="bg-mobile-link" href="/over-ons">Over ons <span aria-hidden="true">→</span></a>
+    </div>
+`;
+
+async function alignHomepageNavigation(path) {
+  let homepage = await readFile(path, 'utf8');
+  homepage = replaceSingle(
+    homepage,
+    /\s*<a class="bg-mobile-row" href="\/over-ons">Over ons <span class="bg-mobile-arrow" aria-hidden="true">→<\/span><\/a>\s*<a class="bg-mobile-row" href="\/expertises">Alle expertises <span class="bg-mobile-arrow" aria-hidden="true">→<\/span><\/a>/,
+    `\n${moreButton}`,
+    `${path} legacy direct mobile links`
+  );
+  homepage = replaceSingle(
+    homepage,
+    /\n  <\/div>\n<\/div>\n<script src="\/assets\/js\/v18-menu-state\.js\?v=1" defer><\/script>/,
+    `\n${moreView}  </div>\n</div>\n<script src="/assets/js/v18-menu-state.js?v=1" defer></script>`,
+    `${path} mobile navigation shell close`
+  );
+  if (!homepage.includes('data-bg-mobile-target="meer"') || !homepage.includes('data-bg-mobile-view="meer"')) {
+    throw new Error(`${path}: Meer drilldown missing after accepted navigation alignment`);
+  }
+  await writeFile(path, homepage, 'utf8');
+}
+
+await alignHomepageNavigation('index.html');
+await alignHomepageNavigation('prototype-v18-stable.html');
+
+console.log('Accepted site baseline applied: /over-ons + navigation route catalog');
