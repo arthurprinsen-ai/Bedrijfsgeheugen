@@ -44,10 +44,11 @@
       var platform=normalizeGroupButton(root.querySelector('[data-bg-mobile-target="bedrijfsgeheugen"]'),'Platform');
       var integrations=normalizeGroupButton(root.querySelector('[data-bg-mobile-target="koppelingen"]'),'Koppelingen');
       var knowledge=normalizeGroupButton(root.querySelector('[data-bg-mobile-target="kennis"]'),'Kennis');
-      var about=root.querySelector('a[href="/over-ons"]');
+      var existingAbout=root.querySelector('a[href="/over-ons"]');
       var expertises=root.querySelector('a[href="/expertises"]');
       var cta=root.querySelector('.bg-mobile-cta');
       var meta=root.querySelector('.bg-mobile-meta');
+      if(existingAbout)existingAbout.remove();
 
       var ordered=[
         primaryLink('/problemen','Problemen'),
@@ -56,7 +57,7 @@
         primaryLink('/prijzen','Prijzen'),
         primaryLink('/cases','Cases'),
         knowledge,
-        about,
+        primaryLink('/over-ons','Over ons'),
         integrations,
         expertises
       ].filter(Boolean);
