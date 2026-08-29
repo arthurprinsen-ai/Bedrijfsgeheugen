@@ -1,0 +1,12 @@
+{
+  "enabled": false,
+  "src": null,
+  "type": "video/mp4",
+  "poster": "/og-image.png",
+  "aspectRatio": "16/9",
+  "autoplay": true,
+  "muted": true,
+  "playsinline": true,
+  "loop": true,
+  "acceptance": "not-selected"
+}
