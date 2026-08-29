@@ -1,7 +1,7 @@
 /* Bedrijfsgeheugen — gedeelde mobiele navigatie.
    De bestaande server-side links blijven in #bgkopMob staan voor SEO en
-   no-JS navigatie; op mobiel bouwen we daar een duidelijke drill-down laag
-   bovenop met grote touch-targets en een herkenbare Menu-pill. */
+   no-JS navigatie. De interactieve laag exposeert eerst de geaccepteerde
+   zeven hoofdviews en houdt de bestaande drilldowns als verdieping. */
 (function () {
   var knop = document.getElementById('bgkopKnop');
   var bron = document.getElementById('bgkopMob');
@@ -17,12 +17,12 @@
 
   var labels = {
     oplossingen: 'Oplossingen',
-    bedrijfsgeheugen: 'Bedrijfsgeheugen',
+    bedrijfsgeheugen: 'Platform',
     koppelingen: 'Koppelingen',
     kennis: 'Kennis',
     meer: 'Meer'
   };
-  var volgorde = ['oplossingen', 'bedrijfsgeheugen', 'koppelingen', 'kennis', 'meer'];
+  var volgorde = ['oplossingen', 'bedrijfsgeheugen', 'kennis', 'koppelingen', 'meer'];
 
   function sleutel(tekst) {
     var t = String(tekst || '').trim().toLowerCase();
@@ -53,20 +53,31 @@
     });
   });
 
-  /* De oude server-side mobiele navigatie is de inhoudelijke bron van waarheid.
-     Alle losse toplinks worden onder Meer getoond. Daardoor verandert alleen de
-     UX; geen enkele bestaande route kan door de drill-down omzetting verdwijnen. */
+  function voegOverzichtToe(key, href, label, beschrijving) {
+    if (!groepen[key]) groepen[key] = [];
+    if (groepen[key].some(function (item) { return item.href === href; })) return;
+    groepen[key].unshift({ href: href, label: label, beschrijving: beschrijving });
+  }
+  voegOverzichtToe('oplossingen', '/oplossingen', 'Alle oplossingen', 'Organisatie, automatisering, data en AI in samenhang');
+  voegOverzichtToe('bedrijfsgeheugen', '/bedrijfsgeheugen', 'Platform', 'Wat het bedrijfsgeheugen is en hoe je het meet');
+  voegOverzichtToe('kennis', '/kennis', 'Kennisoverzicht', 'Vraag, lees en vertaal kennis naar je eigen bedrijf');
+
   var direct = {};
   groepen.meer = [];
   Array.prototype.forEach.call(bron.querySelectorAll(':scope > a[href]'), function (a) {
+    var href = a.getAttribute('href');
     if (a.classList.contains('bgkop-mcta')) {
-      direct.cta = a.getAttribute('href');
+      direct.cta = href;
+      return;
+    }
+    if (href === '/over-ons') {
+      direct.overOns = href;
       return;
     }
     groepen.meer.push({
-      href: a.getAttribute('href'),
+      href: href,
       label: a.textContent.trim(),
-      beschrijving: beschrijvingen[a.getAttribute('href')] || ''
+      beschrijving: beschrijvingen[href] || ''
     });
   });
   if (!groepen.meer.length) delete groepen.meer;
@@ -78,19 +89,43 @@
   nav.innerHTML = '<div class="bg-shared-mobile-shell"><div class="bg-shared-mobile-brandline"><span class="bg-shared-mobile-kicker">Bedrijfsgeheugen</span></div></div>';
   var shell = nav.firstElementChild;
 
+  function maakDirect(href, label, secondary) {
+    var a = document.createElement('a');
+    a.className = 'bg-shared-mobile-row' + (secondary ? ' bg-shared-mobile-secondary' : '');
+    a.href = href;
+    a.innerHTML = '<span>' + label + '</span><span class="bg-shared-mobile-arrow" aria-hidden="true">→</span>';
+    return a;
+  }
+
+  function maakGroepKnop(key, label) {
+    if (!groepen[key]) return null;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'bg-shared-mobile-row';
+    b.setAttribute('data-bg-shared-mobile-target', key);
+    b.innerHTML = '<span>' + label + '</span><span class="bg-shared-mobile-arrow" aria-hidden="true">→</span>';
+    return b;
+  }
+
   function maakRoot() {
     var root = document.createElement('div');
     root.className = 'bg-shared-mobile-view';
     root.setAttribute('data-bg-shared-mobile-view', 'root');
-    volgorde.forEach(function (key) {
-      if (!groepen[key]) return;
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'bg-shared-mobile-row';
-      b.setAttribute('data-bg-shared-mobile-target', key);
-      b.innerHTML = '<span>' + labels[key] + '</span><span class="bg-shared-mobile-arrow" aria-hidden="true">→</span>';
-      root.appendChild(b);
-    });
+    root.setAttribute('data-bg-primary-catalog', 'v2');
+
+    [
+      maakDirect('/problemen', 'Problemen'),
+      maakGroepKnop('oplossingen', 'Oplossingen'),
+      maakGroepKnop('bedrijfsgeheugen', 'Platform'),
+      maakDirect('/prijzen', 'Prijzen'),
+      maakDirect('/cases', 'Cases'),
+      maakGroepKnop('kennis', 'Kennis'),
+      maakDirect(direct.overOns || '/over-ons', 'Over ons'),
+      maakGroepKnop('koppelingen', 'Koppelingen'),
+      maakGroepKnop('meer', 'Meer'),
+      maakDirect('/inloggen', 'Inloggen', true),
+      maakDirect('/aanmelden', 'Aanmelden', true)
+    ].forEach(function (item) { if (item) root.appendChild(item); });
 
     var cta = document.createElement('a');
     cta.className = 'bg-shared-mobile-cta';
