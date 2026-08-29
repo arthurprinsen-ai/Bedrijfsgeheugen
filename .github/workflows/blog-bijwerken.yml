@@ -1,11 +1,8 @@
 name: Blog bijwerken
-# NIEUW. De weekblog-workflow schrijft alleen artikelen die nog niet bestaan.
-# Deze workflow doet het omgekeerde: hij werkt bestaande artikelen bij wanneer
-# het zoekwoord, de meta-omschrijving of de interne links in Notion zijn gewijzigd.
-#
-# Trigger in Notion: zet Herzien op "Voorstel klaar" bij een rij met status
-# "Gepubliceerd". BG 16 in Make doet dat automatisch na een zoekwoordwijziging.
-# Na afloop zet deze workflow Herzien op "Goedgekeurd", zodat hij niet blijft draaien.
+# Werkt bestaande artikelen bij wanneer de zoekwoordstrategie in Notion wijzigt.
+# AI mag uitsluitend inhoud voorbereiden. Een deterministische contractgate valideert
+# de wijzigingsset en een vaste publisher verzorgt daarna de repository-writeback.
+# Notion wordt pas na succesvolle publicatie op Goedgekeurd gezet.
 on:
   schedule:
     - cron: '30 6 * * 1,2,3,4,5'
@@ -23,11 +20,9 @@ permissions:
   contents: write
   id-token: write
 
-# GEDEELD SLOT. Deze workflow schrijft sitemap.xml terug naar main, en dat doen
-# seo-controle.yml, blog-bijwerken.yml en weekblog.yml alle drie. Draaien er twee
-# tegelijk, dan slaagt de eerste push en wordt de tweede geweigerd: exit code 1.
-# Daarom delen ze EEN groepsnaam. Een slot met een eigen naam per workflow houdt
-# alleen zichzelf tegen en is dus geen slot. Wijzig deze naam nooit los.
+# GEDEELD SLOT. Alle workflows die main kunnen muteren gebruiken dezelfde groep.
+# Een actieve writeback wordt nooit geannuleerd en kan niet parallel lopen met
+# een andere bekende repo-schrijver.
 concurrency:
   group: repo-schrijven
   cancel-in-progress: false
@@ -145,7 +140,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-sonnet-5 --max-turns 40 --allowedTools Bash,Read,Write,Edit,Glob,Grep"
+          claude_args: "--model claude-sonnet-5 --max-turns 40 --allowedTools Read,Write,Edit,Glob,Grep"
           prompt: |
             Werk één BESTAAND blogartikel bij op www.bedrijfsgeheugen.nl. Je schrijft geen nieuw
             artikel: je past een bestaand bestand aan omdat de zoekwoordstrategie is gewijzigd.
@@ -191,23 +186,34 @@ jobs:
             7. sitemap.xml: lastmod van deze URL op vandaag.
 
             WAT JE NOOIT AANPAST
-            - De slug, de canonical-URL of de bestandsnaam. Een URL wijzigen kost je de ranking
-              die je al hebt.
+            - De slug, de canonical-URL of de bestandsnaam.
             - datePublished, de auteur, de prijzen of de FAQ-antwoorden.
-            - Andere artikelen, behalve de pijlerpagina van dit cluster als daar een link naar dit
-              artikel bij moet.
+            - Andere artikelen, behalve hooguit de pijlerpagina van dit cluster als daar een link
+              naar dit artikel bij moet.
             - De huisstijl, de head-structuur, de topbalk, de navigatie of de footer.
 
-            CONTROLE VOOR PUBLICATIE: precies één h1, geldige JSON-LD, canonical ongewijzigd, geen
-            interne link die op .html eindigt, geen link naar een niet-bestaande slug.
+            CONTROLE VOOR OPLEVERING: precies één h1, geldige JSON-LD, canonical ongewijzigd,
+            geen interne link die op .html eindigt en geen link naar een niet-bestaande slug.
 
-            PUBLICEREN: git add -A, commit met bericht
-            "blog bijgewerkt: ${{ steps.kalender.outputs.slug }}" en push naar main.
-            Wordt de push geweigerd omdat er ondertussen een andere commit binnenkwam,
-            doe dan: git pull --rebase origin main en push opnieuw. Hooguit drie pogingen.
-            Meld het in je samenvatting als het na drie keer nog niet lukt. Forceer nooit
-            met --force: dan gooi je werk van een andere workflow weg.
-            Meld in je samenvatting welke regels je hebt gewijzigd en wat je hebt laten staan.
+            PUBLICATIEGRENS
+            Wijzig uitsluitend het doelartikel, sitemap.xml en hooguit de relevante pijlerpagina
+            die hierboven is toegestaan. Voer zelf geen versiebeheer- of publicatiehandelingen uit.
+            Een deterministische vervolgstap controleert exact welke bestanden zijn gewijzigd en
+            verzorgt pas daarna de publicatie. Meld in je samenvatting welke regels je hebt gewijzigd
+            en wat je hebt laten staan.
+
+      - name: Deterministic update contract checks
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          SLUG: ${{ steps.kalender.outputs.slug }}
+          FOCUS_KEYWORD: ${{ steps.kalender.outputs.zoekwoord }}
+        run: python3 scripts/ci/validate_blog_writeback.py update "$SLUG" "$FOCUS_KEYWORD"
+
+      - name: Commit and push validated changes
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          COMMIT_MESSAGE: 'blog bijgewerkt: ${{ steps.kalender.outputs.slug }}'
+        run: bash scripts/ci/commit_validated_main.sh "$COMMIT_MESSAGE"
 
       - name: Notion op Goedgekeurd zetten
         if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != ''
@@ -232,7 +238,7 @@ jobs:
               },
               method="PATCH")
           urllib.request.urlopen(req)
-          print("Notion op Goedgekeurd gezet.")
+          print("Notion op Goedgekeurd gezet na bevestigde repository-publicatie.")
           PY
 
       - name: Niets te doen
