@@ -28,3 +28,4 @@ jobs:
           tests/portal-production-contract.test.mjs
           tests/portal-data-adapter.test.mjs
           tests/portal-legacy-state.test.mjs
+          tests/portal-native-legacy-batch-1.test.mjs
