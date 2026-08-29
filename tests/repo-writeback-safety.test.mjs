@@ -52,12 +52,17 @@ test('AI prompts and allowed tools never own git staging, commits, pulls or push
   }
 });
 
+function hasChangedFileInventory(workflow) {
+  const diff = workflow.includes('git diff --name-only') || workflow.includes("['git','diff','--name-only']") || workflow.includes('["git","diff","--name-only"]');
+  const untracked = workflow.includes('git ls-files --others --exclude-standard') || workflow.includes("['git','ls-files','--others','--exclude-standard']") || workflow.includes('["git","ls-files","--others","--exclude-standard"]');
+  return diff && untracked;
+}
+
 test('content workflows validate and publish deterministically after AI generation', () => {
   for (const path of ['.github/workflows/weekblog.yml', '.github/workflows/blog-bijwerken.yml']) {
     const workflow = contents[path];
     assert.match(workflow, /name: Deterministic (?:publication|update) contract checks/);
-    assert.match(workflow, /git diff --name-only/);
-    assert.match(workflow, /git ls-files --others --exclude-standard/);
+    assert.equal(hasChangedFileInventory(workflow), true, `${path} must inventory tracked and untracked changes deterministically`);
     assert.match(workflow, /name: Commit and push validated changes/);
     assert.match(workflow, /git add --/);
     assert.doesNotMatch(workflow, /git add -A/);
