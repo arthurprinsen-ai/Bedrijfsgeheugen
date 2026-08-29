@@ -6,6 +6,8 @@ on:
     paths:
       - 'platform/**'
       - 'tests/canonical-*.test.mjs'
+      - 'tests/source-adapters.test.mjs'
+      - 'tests/read-models.test.mjs'
       - 'docs/parity/**'
       - '.github/scripts/portal_parity.py'
       - '.github/workflows/business-os-foundation.yml'
@@ -24,6 +26,6 @@ jobs:
         with:
           node-version: '22'
       - name: Canonical contracts
-        run: node --test tests/canonical-*.test.mjs
+        run: node --test tests/canonical-*.test.mjs tests/source-adapters.test.mjs tests/read-models.test.mjs
       - name: Protected portal baseline
         run: python3 .github/scripts/portal_parity.py
