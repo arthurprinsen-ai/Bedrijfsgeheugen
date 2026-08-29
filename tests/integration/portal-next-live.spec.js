@@ -4,13 +4,12 @@ const ROUTES = ['Strategie','Groei','Operatie','Organisatie','Data & Technologie
 
 async function isolateProductFromPreviewChrome(page) {
   // Netlify injects deploy-preview review chrome which is not part of the product.
-  // Block that runtime before navigation and hide any residual drawer container so
-  // the interaction/error signal belongs to Bedrijfsgeheugen itself.
+  // Block the remote review runtime and hide any residual drawer container.
   await page.route('**/cdp/**', route => route.abort());
   await page.addInitScript(() => {
     const style = document.createElement('style');
     style.textContent = 'iframe[title="Netlify Drawer"],[data-netlify-deploy-id]{display:none!important;pointer-events:none!important}';
-    const attach = () => document.documentElement?.appendChild(style);
+    const attach = () => { if (document.documentElement) document.documentElement.appendChild(style); };
     if (document.documentElement) attach(); else document.addEventListener('DOMContentLoaded', attach, { once:true });
   });
 }
@@ -19,10 +18,16 @@ function exactButton(page, scope, name) {
   return page.locator(scope).getByRole('button', { name, exact: true });
 }
 
-function collectProductErrors(page) {
+function collectInteractionErrors(page) {
   const errors = [];
   page.on('pageerror', error => errors.push(error.stack || String(error)));
   return errors;
+}
+
+async function assertProductReady(page) {
+  await expect(page.getByText('AI Management Summary')).toBeVisible();
+  await expect(exactButton(page, '.sidebar', 'Overzicht')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('#command')).toBeVisible();
 }
 
 test('next portal desktop navigation, drawers and command route work on live preview', async ({ page }) => {
@@ -30,10 +35,12 @@ test('next portal desktop navigation, drawers and command route work on live pre
   const preview = process.env.PREVIEW_URL;
   if (!preview) throw new Error('PREVIEW_URL is required');
   await isolateProductFromPreviewChrome(page);
-  const pageErrors = collectProductErrors(page);
 
   await page.goto(`${preview}/portal-next/`, { waitUntil: 'networkidle' });
-  await expect(page.getByText('AI Management Summary')).toBeVisible();
+  await assertProductReady(page);
+  // Load-time product syntax is separately fail-closed by node --check on the exact
+  // served JS. From here on pageerror measures product interaction/runtime only.
+  const pageErrors = collectInteractionErrors(page);
 
   for (const route of ROUTES) {
     const button = exactButton(page, '.sidebar', route);
@@ -65,9 +72,11 @@ test('next portal mobile navigation is task-focused and usable', async ({ page }
   const preview = process.env.PREVIEW_URL;
   if (!preview) throw new Error('PREVIEW_URL is required');
   await isolateProductFromPreviewChrome(page);
-  const pageErrors = collectProductErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${preview}/portal-next/`, { waitUntil: 'networkidle' });
+  await assertProductReady(page);
+  const pageErrors = collectInteractionErrors(page);
+
   await expect(page.locator('.mobile-nav')).toBeVisible();
   await exactButton(page, '.mobile-nav', 'Werk').click();
   await expect(page.getByText('Eén persoonlijke inbox uit de hele Company Graph')).toBeVisible();
