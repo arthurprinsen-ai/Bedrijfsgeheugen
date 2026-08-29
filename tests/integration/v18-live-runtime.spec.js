@@ -109,3 +109,16 @@ test('recovered pages use the current V18 responsive mobile drilldown', async ({
   await expect(toggle.locator('.bg-mobile-menu-label')).toHaveText('Menu');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 });
+
+test('mobile navigation exposes the complete seven-view primary catalog', async ({ page }) => {
+  const expected = ['Problemen','Oplossingen','Platform','Prijzen','Cases','Kennis','Over ons'];
+  await openV18(page, 390, 844);
+  await page.locator('#mobileToggle').click();
+  const homeRoot = page.locator('#bgMobileNav [data-bg-mobile-view="root"]');
+  for (const label of expected) await expect(homeRoot.getByText(label, { exact: true })).toBeVisible();
+
+  await page.goto(`${previewUrl}/problemen`, { waitUntil: 'domcontentloaded' });
+  await page.locator('#bgkopKnop').click();
+  const sharedRoot = page.locator('#bgSharedMobileNav [data-bg-shared-mobile-view="root"]');
+  for (const label of expected) await expect(sharedRoot.getByText(label, { exact: true })).toBeVisible();
+});
