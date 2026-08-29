@@ -1,0 +1,11 @@
+{
+  "components": [
+    "header",
+    "hero-copy",
+    "hero-video",
+    "hero-demo",
+    "social-proof",
+    "pricing",
+    "footer"
+  ]
+}
