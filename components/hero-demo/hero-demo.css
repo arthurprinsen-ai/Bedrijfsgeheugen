@@ -16,4 +16,3 @@
 [data-bg-component="hero-demo"] .bg-hero-demo__source-detail{color:var(--grijs);font-weight:400;font-size:.8rem}
 [data-bg-component="hero-demo"] .acties{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
 [data-bg-component="hero-demo"] .acties div{flex:1;min-width:8rem;border:1px solid var(--lijn);border-radius:9px;padding:.55rem;text-align:center;font-size:.78rem;font-weight:600;color:var(--grijs)}
-[data-bg-component="hero-demo"] [data-bg-slot="hero-video"]:empty{display:none}
