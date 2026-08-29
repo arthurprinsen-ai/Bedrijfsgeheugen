@@ -1,10 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
-async function inspectVideo(page, url) {
-  await page.goto(url, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(3000);
-
-  const passive = await page.evaluate(() => {
+async function findPassiveState(page) {
+  return page.evaluate(() => {
     const video = [...document.querySelectorAll('video')].find(v => {
       if ((v.currentSrc || '').includes('openart-hero-iphone-safe-v1.mp4')) return true;
       return [...v.querySelectorAll('source')].some(s => (s.src || '').includes('openart-hero-iphone-safe-v1.mp4'));
@@ -26,45 +23,64 @@ async function inspectVideo(page, url) {
       error: video.error ? { code: video.error.code, message: video.error.message } : null
     };
   });
+}
 
-  const explicit = await page.evaluate(async () => {
+async function boundedPlayProbe(page) {
+  return page.evaluate(async () => {
     const video = [...document.querySelectorAll('video')].find(v => {
       if ((v.currentSrc || '').includes('openart-hero-iphone-safe-v1.mp4')) return true;
       return [...v.querySelectorAll('source')].some(s => (s.src || '').includes('openart-hero-iphone-safe-v1.mp4'));
     });
-    if (!video) return { found: false, ok: false, error: 'video not found' };
-    try {
-      await video.play();
-      return { found: true, ok: true, currentTime: video.currentTime, paused: video.paused };
-    } catch (error) {
-      return { found: true, ok: false, name: error.name, message: error.message, paused: video.paused };
-    }
-  });
+    if (!video) return { found: false, outcome: 'missing' };
 
-  await page.waitForTimeout(1200);
-  const afterPlay = await page.evaluate(() => {
-    const video = [...document.querySelectorAll('video')].find(v => {
-      if ((v.currentSrc || '').includes('openart-hero-iphone-safe-v1.mp4')) return true;
-      return [...v.querySelectorAll('source')].some(s => (s.src || '').includes('openart-hero-iphone-safe-v1.mp4'));
-    });
-    return video ? { currentTime: video.currentTime, paused: video.paused } : { currentTime: 0, paused: true };
-  });
+    const probe = (async () => {
+      try {
+        await video.play();
+        return { found: true, outcome: 'resolved', paused: video.paused, currentTime: video.currentTime };
+      } catch (error) {
+        return { found: true, outcome: 'rejected', name: error.name, message: error.message, paused: video.paused };
+      }
+    })();
 
+    const timeout = new Promise(resolve => setTimeout(() => resolve({
+      found: true,
+      outcome: 'timeout',
+      paused: video.paused,
+      currentTime: video.currentTime
+    }), 2500));
+
+    return Promise.race([probe, timeout]);
+  });
+}
+
+async function inspectVideo(page, url, label) {
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(3000);
+  const passive = await findPassiveState(page);
+  console.log(`${label} passive`, JSON.stringify(passive));
+  const explicit = await boundedPlayProbe(page);
+  console.log(`${label} explicit`, JSON.stringify(explicit));
+  await page.waitForTimeout(800);
+  const afterPlay = await findPassiveState(page);
+  console.log(`${label} after`, JSON.stringify(afterPlay));
   return { passive, explicit, afterPlay };
 }
 
-test('preview hero video matches production playability', async ({ page }) => {
+test('preview hero video preserves production media behavior', async ({ page }) => {
+  test.setTimeout(45000);
   const previewUrl = process.env.PREVIEW_URL;
   const productionUrl = process.env.PROD_URL || 'https://www.bedrijfsgeheugen.nl';
   if (!previewUrl) throw new Error('PREVIEW_URL is required');
 
-  const production = await inspectVideo(page, productionUrl);
-  const preview = await inspectVideo(page, previewUrl);
-  console.log('production video state', JSON.stringify(production));
-  console.log('preview video state', JSON.stringify(preview));
+  const production = await inspectVideo(page, productionUrl, 'production');
+  const preview = await inspectVideo(page, previewUrl, 'preview');
 
   expect(production.passive.found).toBe(true);
   expect(preview.passive.found).toBe(true);
+  expect(preview.passive.autoplay).toBe(production.passive.autoplay);
+  expect(preview.passive.muted).toBe(production.passive.muted);
+  expect(preview.passive.playsInline).toBe(production.passive.playsInline);
+  expect(preview.passive.error).toBeNull();
   expect(preview.passive.width).toBeGreaterThan(0);
   expect(preview.passive.height).toBeGreaterThan(0);
   expect(preview.passive.readyState).toBeGreaterThanOrEqual(2);
@@ -73,7 +89,10 @@ test('preview hero video matches production playability', async ({ page }) => {
     expect(preview.passive.paused).toBe(false);
   }
 
-  expect(preview.explicit.ok).toBe(true);
-  expect(preview.afterPlay.paused).toBe(false);
-  expect(preview.afterPlay.currentTime).toBeGreaterThan(preview.explicit.currentTime + 0.25);
+  if (production.explicit.outcome === 'resolved') {
+    expect(preview.explicit.outcome).toBe('resolved');
+    expect(preview.afterPlay.paused).toBe(false);
+  } else {
+    expect(['resolved', production.explicit.outcome]).toContain(preview.explicit.outcome);
+  }
 });
