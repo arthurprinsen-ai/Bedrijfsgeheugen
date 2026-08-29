@@ -63,7 +63,15 @@
   voegOverzichtToe('kennis', '/kennis', 'Kennisoverzicht', 'Vraag, lees en vertaal kennis naar je eigen bedrijf');
 
   var direct = {};
-  groepen.meer = [];
+  /* De geaccepteerde V18-site heeft onder Meer een expliciete bedrijfsgroep.
+     Deze links zijn daarom onderdeel van het contract en niet meer afhankelijk
+     van toevallige overgebleven top-level links in de legacy bron. */
+  groepen.meer = [
+    { href: '/meer', label: 'Alles onder Meer', beschrijving: 'Organisatie, kennis, vertrouwen, support en praktische hulpmiddelen' },
+    { href: '/over-ons', label: 'Over ons', beschrijving: 'Wie we zijn en waar we in geloven' },
+    { href: '/hoe-het-werkt', label: 'Werkwijze', beschrijving: 'Hoe we kijken, fixen en borgen' },
+    { href: '/partners', label: 'Partners', beschrijving: 'Samenwerken rond kennis, data, systemen en AI' }
+  ];
   Array.prototype.forEach.call(bron.querySelectorAll(':scope > a[href]'), function (a) {
     var href = a.getAttribute('href');
     if (a.classList.contains('bgkop-mcta')) {
@@ -74,13 +82,13 @@
       direct.overOns = href;
       return;
     }
+    if (groepen.meer.some(function (item) { return item.href === href; })) return;
     groepen.meer.push({
       href: href,
       label: a.textContent.trim(),
       beschrijving: beschrijvingen[href] || ''
     });
   });
-  if (!groepen.meer.length) delete groepen.meer;
 
   var nav = document.createElement('div');
   nav.id = 'bgSharedMobileNav';
