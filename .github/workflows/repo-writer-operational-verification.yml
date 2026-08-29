@@ -1,0 +1,38 @@
+name: Repository Writer Operational Verification
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch-menu-balk-candidate:
+    if: startsWith(github.head_ref, 'verify/menu-balk-fix-') && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - name: Verify exact main base
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
+            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
+            exit 1
+          fi
+
+      - name: Dispatch existing menu writer in candidate mode only
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run menu-balk-fix.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f delivery_mode=candidate-pr
