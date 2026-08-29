@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Verify promotion, accepted baseline, and complete route catalog
+      - name: Verify promotion, accepted baseline, complete route catalog, and exact preview head
         run: |
-          node --test tests/v18-production-promotion.test.mjs tests/site-baseline-guardian.test.mjs tests/website-catalog.test.mjs
+          node --test tests/v18-production-promotion.test.mjs tests/site-baseline-guardian.test.mjs tests/website-catalog.test.mjs tests/live-preview-exact-head.test.mjs
           node tools/audit-website-catalog.mjs
