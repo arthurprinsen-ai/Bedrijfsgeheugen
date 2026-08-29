@@ -23,4 +23,4 @@ jobs:
         with:
           node-version: '22'
       - name: Run component integration contract
-        run: node --test tests/integration/component-integration.test.mjs
+        run: node --test tests/integration/component-integration.test.mjs tests/integration/integration-workflow-contract.test.mjs
