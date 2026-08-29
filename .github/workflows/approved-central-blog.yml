@@ -17,6 +17,11 @@ on:
         options:
           - direct
           - candidate-pr
+      verification_mode:
+        description: 'Gebruik uitsluitend de lokale operationele verificatie-fixture; nooit productiecontent'
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: write
@@ -43,15 +48,40 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           FORCE_SLUG: ${{ github.event.inputs.slug }}
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
           set -euo pipefail
-          python3 -B scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/publish-result.txt
-          if grep -Eq '^(NO_ACTION:|SEALED:)' /tmp/publish-result.txt; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
+          if [ "$VERIFICATION_MODE" = "true" ]; then
+            if [ "$DELIVERY_MODE" != "candidate-pr" ]; then
+              echo "::error::VERIFICATION_REQUIRES_CANDIDATE_PR"
+              exit 1
+            fi
+            target="blog/writer-verification-approved-central/index.html"
+            mkdir -p "$(dirname "$target")"
+            cat > "$target" <<'HTML'
+          <!doctype html>
+          <html lang="nl">
+          <head>
+            <meta charset="utf-8">
+            <title>Writer verification</title>
+            <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/blog/writer-verification-approved-central/">
+            <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Writer verification"}</script>
+          </head>
+          <body><h1>Writer verification</h1><p>Lokale operationele verificatie; nooit publiceren.</p></body>
+          </html>
+          HTML
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            python3 - <<'PY'
+            echo "queue_page=" >> "$GITHUB_OUTPUT"
+            echo "dispatch_attempt=0" >> "$GITHUB_OUTPUT"
+          else
+            python3 -B scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/publish-result.txt
+            if grep -Eq '^(NO_ACTION:|SEALED:)' /tmp/publish-result.txt; then
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+              python3 - <<'PY'
           import json, os, pathlib
           lines=[x for x in pathlib.Path('/tmp/publish-result.txt').read_text().splitlines() if x.strip()]
           data=json.loads(lines[-1])
@@ -59,6 +89,7 @@ jobs:
               f.write(f"queue_page={data['queue_page']}\n")
               f.write(f"dispatch_attempt={data['dispatch_attempt']}\n")
           PY
+            fi
           fi
 
       - name: Deterministic contract checks
