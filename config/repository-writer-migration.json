@@ -8,7 +8,7 @@
     {"name":"menu-balk-fix","candidateMode":"merged_unverified","pullRequest":180,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true},
     {"name":"paginacontrole","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
     {"name":"regelgeving-bijwerken","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":181,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"seo-controle","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":182,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"seo-controle","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":182,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true},
     {"name":"weekblog","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true}
   ]
 }
