@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { createProviderRegistry } from '../platform/intelligence/provider-registry.mjs';
 import { ACTIONS, DECISIONS } from '../platform/policy/policy-engine.mjs';
 import { createAIUseCase, AI_RISK_CLASSES, AI_USE_CASE_STATES } from '../platform/policy/ai-register.mjs';
@@ -56,4 +57,12 @@ test('provider errors fail closed and raw request context is never returned as r
     request:{ requestId:'REQ-3', tenantId:'PUBLIC', requesterId:'public-visitor', aiUseCaseId:'AI-WEBSITE-QA', purpose:'website-answer', resourceType:'QuestionContext', resourceId:'REQ-3', providerModelId:'ANTHROPIC-SONNET', dataClass:'Public', context:{ question:'SECRET QUESTION', fragments:'PUBLIC SOURCE' } },
     policies, providerRegistry:providers, aiUseCases:useCases, contextPolicy:{allowedFields:['question','fragments']}, invokeModel:async () => { throw new Error('outage'); },
   }), /provider|outage|failed/i);
+});
+
+test('public AI routes cannot call Anthropic directly and must use the shared Brain adapter', async () => {
+  for (const route of ['vraag.mjs', 'portaalvraag.mjs']) {
+    const source = await readFile(new URL(`../netlify/functions/${route}`, import.meta.url), 'utf8');
+    assert.equal(source.includes('api.anthropic.com'), false, `${route} bypasses Brain governance`);
+    assert.match(source, /_brain-ai\.mjs/);
+  }
 });
