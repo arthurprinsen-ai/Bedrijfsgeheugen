@@ -4,6 +4,10 @@ import test from 'node:test';
 
 const workflow = await readFile('.github/workflows/paginacontrole.yml', 'utf8');
 
+// Regression fingerprints:
+// - paginacontrole|git-push|non-fast-forward-concurrent-main-update
+// - paginacontrole|git-rebase|dirty-generated-seo-report
+
 test('paginacontrole rebases main before every automated git push', () => {
   const pushes = [...workflow.matchAll(/^\s*git push\s*$/gm)];
   assert.equal(pushes.length, 2, 'expected exactly two automated git push paths');
