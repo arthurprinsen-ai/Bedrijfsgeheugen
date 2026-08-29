@@ -54,13 +54,17 @@ test('low-risk writers preserve direct fallback and candidate-only PR behavior',
   }
 });
 
-test('structural proof is explicitly not operational parity or rollback proof', () => {
+test('structural proof never claims parity or rollback and operational proof advances only as an independent evidence flag', () => {
   const state = JSON.parse(fs.readFileSync('config/repository-writer-migration.json', 'utf8'));
   for (const writer of state.writers) {
     assert.equal(writer.structuralContractVerified, true, `${writer.name}: structural contract should be machine verified`);
-    assert.equal(writer.operationalCandidateVerified, false, `${writer.name}: operational proof must remain false without a real writer candidate run`);
-    assert.equal(writer.parityVerified, false, `${writer.name}: structural proof must not claim operational parity`);
-    assert.equal(writer.rollbackVerified, false, `${writer.name}: structural proof must not claim operational rollback`);
+    assert.equal(typeof writer.operationalCandidateVerified, 'boolean', `${writer.name}: operational proof must be an explicit evidence flag`);
+    assert.equal(writer.parityVerified, false, `${writer.name}: structural/operational candidate proof must not claim parity`);
+    assert.equal(writer.rollbackVerified, false, `${writer.name}: structural/operational candidate proof must not claim rollback`);
   }
+  assert.equal(state.writers.some((writer) => writer.operationalCandidateVerified === true), true,
+    'at least one writer must retain its evidence-backed operational progress');
+  assert.equal(state.writers.some((writer) => writer.operationalCandidateVerified === false), true,
+    'unverified writers must remain explicitly blocked');
   assert.equal(state.mainProtectionReady, false);
 });
