@@ -13,7 +13,7 @@ for (const id of ['mensen','wijzigingen','advies']) {
 
 test('Mensen renders natively in company', () => {
   assert.match(company, /company\/legacy\/mensen/);
-  assert.match(company, />Mensen</);
+  assert.match(company, /pageHead\('Mensen'/);
 });
 
 test('Wijzigingen renders natively in memory', () => {
