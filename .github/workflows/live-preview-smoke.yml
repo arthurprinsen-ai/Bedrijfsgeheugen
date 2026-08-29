@@ -74,3 +74,21 @@ jobs:
             "$PREVIEW_URL/assets/openart-hero-iphone-safe-v1.mp4" \
             -o /tmp/hero-video.bin
           test -s /tmp/hero-video.bin
+
+      - name: Install Chromium for visual review
+        run: npx --yes playwright@1.55.0 install --with-deps chromium
+
+      - name: Capture desktop and iPhone screenshots
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: |
+          mkdir -p visual-review
+          npx --yes playwright@1.55.0 screenshot --full-page --viewport-size="1440,1200" "$PREVIEW_URL/" visual-review/desktop.png
+          npx --yes playwright@1.55.0 screenshot --full-page --device="iPhone 13" "$PREVIEW_URL/" visual-review/iphone.png
+
+      - name: Upload visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-preview-visual-review
+          path: visual-review/*.png
+          if-no-files-found: error
