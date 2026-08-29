@@ -1,0 +1,21 @@
+name: Header Current Main Preview
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'components/header/**'
+      - 'tests/components/header-click-state.test.mjs'
+      - '.github/workflows/header-current-main-preview.yml'
+
+jobs:
+  header:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Verify current header contracts
+        run: |
+          node --test tests/components/header.test.mjs tests/components/header-click-state.test.mjs
