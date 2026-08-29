@@ -9,4 +9,4 @@ test('shell retains legacy navigation and approved topbar',()=>{for(const text o
 test('today preserves legacy dashboard surfaces',()=>{for(const text of ['AI Management Summary','Alles verbonden in één overzicht','Impact deze maand','Recente activiteiten','Koppelingen status','Roadmap & voortgang','Aanbevolen acties','Snelle links'])assert.ok(today.includes(text),text)});
 test('portal supports search contextual AI and detail drawer',()=>{assert.ok(shell.includes('command-modal'));assert.ok(shell.includes('Bedrijfsgeheugen AI'));assert.ok(app.includes('openDetail'))});
 test('portal exposes all eight canonical route renderers',()=>{for(const id of ['today','company','intelligence','decisions','execution','impact','memory','admin'])assert.ok(app.includes(id+':'),id)});
-test('sample fallback is explicitly labelled',()=>assert.ok(shell.includes('Prototype · voorbeelddata')));
+test('production shell never presents demo data as live company facts',()=>{assert.equal(shell.includes('Prototype · voorbeelddata'),false);assert.ok(shell.includes('Nog geen live bedrijfsdata gekoppeld'));assert.ok(shell.includes('Laatste bekende data'));assert.ok(shell.includes('Live ·'))});
