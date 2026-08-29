@@ -1,11 +1,31 @@
 (function () {
+  var kop = document.getElementById('bgkop');
   var knop = document.getElementById('bgkopKnop');
   var paneel = document.getElementById('bgkopMob');
-  if (!knop || !paneel) return;
+  if (!kop || !knop || !paneel) return;
+
+  var desktopTrigs = kop.querySelectorAll('.bgkop-trig');
+
+  function sluitDesktop() {
+    Array.prototype.forEach.call(desktopTrigs, function (t) {
+      t.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  Array.prototype.forEach.call(desktopTrigs, function (t) {
+    t.addEventListener('click', function () {
+      var wasOpen = t.getAttribute('aria-expanded') === 'true';
+      sluitDesktop();
+      if (!wasOpen) t.setAttribute('aria-expanded', 'true');
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!kop.contains(e.target)) sluitDesktop();
+  });
 
   function zetHoogte() {
-    var kop = document.getElementById('bgkop');
-    if (kop) document.documentElement.style.setProperty('--bgkop-h', kop.offsetHeight + 'px');
+    document.documentElement.style.setProperty('--bgkop-h', kop.offsetHeight + 'px');
   }
 
   function sluit() {
@@ -16,6 +36,7 @@
   }
 
   function open() {
+    sluitDesktop();
     zetHoogte();
     paneel.removeAttribute('hidden');
     knop.setAttribute('aria-expanded', 'true');
@@ -49,12 +70,25 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !paneel.hasAttribute('hidden')) { sluit(); knop.focus(); }
+    if (e.key !== 'Escape') return;
+
+    var openDesktop = kop.querySelector('.bgkop-trig[aria-expanded="true"]');
+    if (openDesktop) {
+      sluitDesktop();
+      openDesktop.focus();
+      return;
+    }
+
+    if (!paneel.hasAttribute('hidden')) {
+      sluit();
+      knop.focus();
+    }
   });
 
   addEventListener('resize', function () {
     zetHoogte();
     if (innerWidth > 1100 && !paneel.hasAttribute('hidden')) sluit();
+    if (innerWidth <= 1100) sluitDesktop();
   });
 
   zetHoogte();
