@@ -1,0 +1,14 @@
+# 2026-08-29 — PRODUCTION_PROMOTION — native legacy portal batch 3
+
+- **Fingerprint:** `portal|legacy-native-migration|batch-3|production-green`
+- **Type:** `PRODUCTION_PROMOTION`
+- **Scope:** migrate `Mensen`, `Wijzigingen`, and `Advies` from the temporary same-origin iframe bridge to native Business Operating Intelligence views.
+- **TDD RED:** exact head `0f19a27221c07bfb5695a2c6422c4e241db99429`; V18 run `33273921913`; 57 tests total, 51 pass, 6 fail. Failures were exactly the three bridge-bypass requirements and the three missing native views.
+- **Implementation:** `portal/legacy-runtime.mjs` adds `mensen`, `wijzigingen`, and `advies` to the native workspace allowlist. `portal/render-company.mjs` renders people/ownership/knowledge context from available health and graph data. `portal/render-memory.mjs` renders native change/audit history. `portal/render-decisions.mjs` renders advice from existing decision objects with context, expected impact, confidence and owner. Missing data stays an explicit empty state.
+- **Debugging evidence:** first GREEN candidate `9f5fdf2bb4913db1a79e503fa0b62cc24e007734` produced 56 pass / 1 fail. Systematic debugging showed the only failure was a test implementation detail: the Mensen title is rendered through the existing `pageHead('Mensen', ...)` helper while the static test required literal `>Mensen<` source text. Production behavior was present. Only the test contract was corrected; production code was not changed in that correction.
+- **GREEN:** exact candidate `5f42d3928a5517b5d6b96097bcce3f1386b4f3d3`; V18 runs `33274026520` and PR-context `33274068510` completed successfully; Shared Agent Memory runs `33274026504` and `33274068596` completed successfully.
+- **Preview:** Netlify deploy-preview `6a9343931311e10007798c6d`, `state=ready`, exact `commit_ref=5f42d3928a5517b5d6b96097bcce3f1386b4f3d3`; 75 redirect rules and 16 header rules processed without errors; 7 functions and 1 edge function deployed; 0 secret-scan matches across 3,555 files.
+- **Promotion:** release PR #250 merged with expected-head SHA lock as `f247620728e1ae65c6f9eedb0ccf8d78ce26542c`.
+- **Production:** Netlify deploy `6a9343c0032ea300089a69be`, `state=ready`, exact `commit_ref=f247620728e1ae65c6f9eedb0ccf8d78ce26542c`, published `2026-08-29T20:41:11.378Z`; 75 redirect rules and 16 header rules processed without errors; 7 functions and 1 edge function deployed; 0 secret-scan matches across 3,601 files.
+- **Security invariant:** `portal/app.mjs` remained untouched; authenticated server-derived tenant context remains authoritative and browser context is not sent to portal AI.
+- **Rollback:** remove `mensen`, `wijzigingen`, and `advies` from `NATIVE_LEGACY_WORKSPACES` to restore their bridge routes. `/klantportaal.html` remains the bounded rollback source.
