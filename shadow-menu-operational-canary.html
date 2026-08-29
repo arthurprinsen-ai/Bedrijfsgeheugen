@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <style>
-.navpill{position:fixed;top:auto;bottom:16px;height:auto;left:50%;transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:.35rem;background:rgba(20,23,26,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:.45rem .5rem .45rem .55rem;box-shadow:0 14px 40px rgba(20,23,26,.35)}
+.navpill{position:fixed;top:auto;bottom:16px;height:auto;left:50%;transform:translateX(-50%) translateY(160%);opacity:0;pointer-events:none;transition:opacity .3s ease,transform .4s cubic-bezier(.16,1,.3,1);z-index:80;display:flex;align-items:center;justify-content:center;gap:.4rem;background:#14171A;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:.45rem .5rem .45rem .55rem;box-shadow:0 14px 40px rgba(20,23,26,.35)}
+.navpill.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
 </style>
 </head>
 <body>
 <nav class="navpill">Operational writer canary</nav>
+<script>(function(){var n=document.querySelector(".navpill");if(n){var s=function(){n.classList.toggle("show",(window.scrollY||0)>200)};addEventListener("scroll",s,{passive:true});s()}})();</script>
 </body>
 </html>
