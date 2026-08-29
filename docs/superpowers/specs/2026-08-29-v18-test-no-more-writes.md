@@ -1,0 +1,1 @@
+No more candidate writes should occur before exact-head verification unless a test failure requires a fix.
