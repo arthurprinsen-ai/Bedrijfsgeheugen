@@ -24,12 +24,13 @@ test('integration workflow runs every isolated component contract', () => {
   }
 });
 
-test('integration workflow runs reusable architecture gates', () => {
+test('integration workflow runs reusable architecture and preview gates', () => {
   for (const file of foundationTests) {
     assert.ok(workflow.includes(`tests/${file}`), `missing architecture gate ${file}`);
   }
   assert.ok(workflow.includes('tests/integration/component-integration.test.mjs'));
   assert.ok(workflow.includes('tests/integration/integration-workflow-contract.test.mjs'));
+  assert.ok(workflow.includes('tests/integration/netlify-preview-contract.test.mjs'));
 });
 
 test('integration workflow composes and uploads the full homepage candidate', () => {
