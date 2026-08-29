@@ -26,6 +26,8 @@ on:
       - 'tests/change-scope.test.mjs'
       - 'tests/component-hash-protection.test.mjs'
       - 'tests/detect-changed-components.test.mjs'
+      - 'tests/component-preview-workflow-contract.test.mjs'
+      - '.github/workflows/component-preview.yml'
       - '.github/workflows/component-foundation-tdd.yml'
 
 permissions:
@@ -41,4 +43,4 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: node --test tests/parallel-ownership.test.mjs tests/change-classes.test.mjs tests/page-composition.test.mjs tests/component-preview-composition.test.mjs tests/component-boundaries.test.mjs tests/change-scope.test.mjs tests/component-hash-protection.test.mjs tests/detect-changed-components.test.mjs
+      - run: node --test tests/parallel-ownership.test.mjs tests/change-classes.test.mjs tests/page-composition.test.mjs tests/component-preview-composition.test.mjs tests/component-boundaries.test.mjs tests/change-scope.test.mjs tests/component-hash-protection.test.mjs tests/detect-changed-components.test.mjs tests/component-preview-workflow-contract.test.mjs
