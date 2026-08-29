@@ -25,6 +25,20 @@ Verplichte self-healing lus:
 
 Een agent mag dus niet eindigen met alleen “dit moet je aanpassen”, “controleer dit”, “hier is een advies”, “de build faalt” of “de deploy is rood” wanneer de agent de fout zelf veilig kan herstellen.
 
+## Accepted website baseline — protected invariant
+De **accepted website baseline** in `site/accepted-baseline.json` en `site/navigation-baseline.json` is bindend voor iedere huidige en toekomstige agent. Een route die nog bestaat en technisch/SEO-groen is, kan toch rood zijn wanneer de betekenis, propositie, het verhaal, verplichte inhoudsankers of de navigatiepositie onverwacht zijn gewijzigd.
+
+Regels:
+- beschermde pagina-inhoud mag alleen wijzigen wanneer een machineleesbare **explicit scope** de betreffende route en change class expliciet dekt;
+- buiten die explicit scope moeten semantic anchors en de accepted routecatalogus identiek blijven;
+- een redesign, menu- of mobile-UX-wijziging mag presentatie veranderen, maar nooit stil routes, pagina-inhoud of de betekenis van een protected pagina vervangen;
+- desktop en mobiel zijn views op dezelfde accepted navigation catalog en mogen geen eigen inhoudelijke waarheid hebben;
+- onverwachte semantic content drift is release-blocking, ook wanneer HTML, H1, canonical, HTTP en SEO technisch geldig zijn;
+- bij drift: blokkeer promotie → herstel alleen de afwijkende route vanuit accepted last-known-good → behoud additieve security/SEO/Brain/portal/infrastructuurverbeteringen → draai baseline-, browser-, V18- en SEO-gates opnieuw → schrijf incident en preventieregel terug naar gedeeld geheugen;
+- een agent mag nooit een oudere of nieuwere pagina kiezen alleen omdat die commit chronologisch recenter is; de accepted baseline bepaalt welke inhoudsversie correct is.
+
+`tests/site-baseline-guardian.test.mjs` is onderdeel van de productiepoort en mag niet worden omzeild of verzwakt om een kandidaat groen te maken.
+
 ## Whole-brain outcome obligations — hoogste invariant
 `docs/outcome-obligations.md` en `config/outcome-obligations.json` gelden voor iedere huidige en toekomstige agent en workflow.
 
