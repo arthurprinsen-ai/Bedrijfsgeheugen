@@ -1,4 +1,17 @@
-import { readFile, writeFile } from 'node:fs/promises';
-const OVER_ONS_FILE='over-ons.html';const OVER_ONS_FRAGMENT='site/accepted-pages/over-ons-main.html';
-function replaceSingle(input,pattern,replacement,label){const matches=input.match(new RegExp(pattern.source,pattern.flags.includes('g')?pattern.flags:pattern.flags+'g'))||[];if(matches.length!==1)throw new Error(`${label}: expected exactly one match, got ${matches.length}`);return input.replace(pattern,replacement)}
-let overOns=await readFile(OVER_ONS_FILE,'utf8');const acceptedMain=(await readFile(OVER_ONS_FRAGMENT,'utf8')).trim();overOns=replaceSingle(overOns,/<main>[\s\S]*?<\/main>/i,acceptedMain,'over-ons main');overOns=replaceSingle(overOns,/<title>[\s\S]*?<\/title>/i,'<title>Over ons — missie en geloof | Bedrijfsgeheugen</title>','over-ons title');overOns=replaceSingle(overOns,/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i,'<meta name="description" content="Een bedrijf hoort niet afhankelijk te zijn van wat mensen toevallig onthouden. Lees ons verhaal, onze missie en waar Bedrijfsgeheugen in gelooft.">','over-ons meta description');const semanticAnchors=['Een bedrijf hoort niet afhankelijk te zijn van wat mensen toevallig onthouden.','Ons geloof: technologie moet mensen tijd teruggeven, context zichtbaar maken en de organisatie sterker maken.','Ons verhaal','De kennis was er wel. Alleen niet als één geheel.','Onze missie','Van chaos naar grip en controle.','Samenhang','Continuïteit','Ruimte','Betrouwbare AI'];for(const anchor of semanticAnchors)if(!overOns.includes(anchor))throw new Error(`over-ons test prototype anchor missing: ${anchor}`);if(!overOns.includes('class="bgkop"')||!overOns.includes('/assets/js/menu.js'))throw new Error('over-ons technical/navigation shell was lost');await writeFile(OVER_ONS_FILE,overOns,'utf8');console.log('Accepted test-prototype website baseline applied');
+import { readFile } from 'node:fs/promises';
+
+// Over ons is een volledige, historisch geaccepteerde pagina. De build mag de
+// inhoud niet meer vervangen door een los prototype-fragment. We valideren de
+// kernankers en laten het bronbestand daarna ongemoeid.
+const overOns = await readFile('over-ons.html', 'utf8');
+const semanticAnchors = [
+  'Eerst kijken hoe het werk écht loopt. Dan pas techniek.',
+  'Bedrijfsgeheugen is opgericht door Arthur Prinsen.',
+  'Gewone taal',
+  'Geen big bang',
+  'Van jou, niet van mij'
+];
+for (const anchor of semanticAnchors) {
+  if (!overOns.includes(anchor)) throw new Error(`over-ons historical anchor missing: ${anchor}`);
+}
+console.log('Historical website baseline validated; no content rewritten');
