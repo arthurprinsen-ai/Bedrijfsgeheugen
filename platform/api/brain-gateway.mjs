@@ -9,10 +9,8 @@ export const BRAIN_COMMANDS = Object.freeze({
 
 export const BRAIN_QUERIES = Object.freeze({ STATUS:'STATUS' });
 
-function assertRuntime(runtime) {
-  for (const method of ['ingest','analyze','recordDecision','executeChange','verifyAndLearn','selfHeal','snapshot']) {
-    if (typeof runtime?.[method] !== 'function') throw new TypeError(`runtime.${method} is required`);
-  }
+function requireMethod(runtime, method) {
+  if (typeof runtime?.[method] !== 'function') throw new TypeError(`runtime.${method} is required`);
 }
 
 function unsupported(kind, value) {
@@ -22,23 +20,29 @@ function unsupported(kind, value) {
 }
 
 export function createBrainGateway({ runtime }) {
-  assertRuntime(runtime);
+  requireMethod(runtime, 'snapshot');
 
   async function command(request) {
     if (!request || typeof request.type !== 'string') throw new TypeError('Brain command type is required');
     const payload = Object.freeze({ ...(request.payload ?? {}) });
     switch (request.type) {
       case BRAIN_COMMANDS.INGEST_SIGNAL:
+        requireMethod(runtime, 'ingest');
         return runtime.ingest(payload, { actorId:request.actorId ?? payload.actorId });
       case BRAIN_COMMANDS.ANALYZE_SIGNAL:
+        requireMethod(runtime, 'analyze');
         return runtime.analyze(payload);
       case BRAIN_COMMANDS.RECORD_DECISION:
+        requireMethod(runtime, 'recordDecision');
         return runtime.recordDecision(payload);
       case BRAIN_COMMANDS.EXECUTE_CHANGE:
+        requireMethod(runtime, 'executeChange');
         return runtime.executeChange(payload);
       case BRAIN_COMMANDS.VERIFY_AND_LEARN:
+        requireMethod(runtime, 'verifyAndLearn');
         return runtime.verifyAndLearn(payload);
       case BRAIN_COMMANDS.SELF_HEAL:
+        requireMethod(runtime, 'selfHeal');
         return runtime.selfHeal(payload);
       default:
         throw unsupported('command', request.type);
