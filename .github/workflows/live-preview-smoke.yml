@@ -78,15 +78,16 @@ jobs:
       - name: Install Chromium for visual review
         run: npx --yes playwright@1.55.0 install --with-deps chromium
 
-      - name: Capture desktop and iPhone screenshots
+      - name: Capture desktop and mobile screenshots
         env:
           PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: |
           mkdir -p visual-review
           npx --yes playwright@1.55.0 screenshot --full-page --viewport-size="1440,1200" "$PREVIEW_URL/" visual-review/desktop.png
-          npx --yes playwright@1.55.0 screenshot --full-page --device="iPhone 13" "$PREVIEW_URL/" visual-review/iphone.png
+          npx --yes playwright@1.55.0 screenshot --full-page --viewport-size="390,844" "$PREVIEW_URL/" visual-review/iphone.png
 
       - name: Upload visual review
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: component-preview-visual-review
