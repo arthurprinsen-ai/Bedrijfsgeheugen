@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { canAccess,filterAiContext,effectivePermissions } from '../portal/permissions.mjs';
+import { normalizeEvidence,confidenceLabel } from '../portal/evidence.mjs';
+const manager={tenant:'t1',role:'Manager',entityScopes:['nl']};
+test('permissions fail closed across tenants',()=>assert.equal(canAccess({user:manager,object:{tenant:'t2',entity:'nl'},action:'read'}),false));
+test('entity scope is enforced',()=>assert.equal(canAccess({user:manager,object:{tenant:'t1',entity:'de'},action:'read'}),false));
+test('role permission is enforced',()=>{assert.equal(canAccess({user:manager,object:{tenant:'t1',entity:'nl'},action:'read'}),true);assert.equal(canAccess({user:manager,object:{tenant:'t1',entity:'nl'},action:'approve'}),false)});
+test('AI context can never exceed readable objects',()=>assert.deepEqual(filterAiContext(manager,[{id:1,tenant:'t1',entity:'nl'},{id:2,tenant:'t1',entity:'de'},{id:3,tenant:'t2',entity:'nl'}]).map(x=>x.id),[1]));
+test('administrator has explicit admin permission',()=>assert.ok(effectivePermissions({role:'Beheerder'}).has('admin')));
+test('evidence exposes provenance and confidence',()=>{const e=normalizeEvidence({id:'E1',source:'EU',confidence:94,verified:true,aiGenerated:false});assert.equal(e.confidenceLabel,'Verified');assert.equal(e.verified,true);assert.equal(confidenceLabel(81),'High confidence')});

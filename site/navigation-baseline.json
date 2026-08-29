@@ -1,43 +1,10 @@
 {
-  "version": 1,
-  "groups": [
-    {"group":"Oplossingen","items":[
-      {"label":"Systemen koppelen","route":"/systemen-koppelen"},
-      {"label":"AI & governance","route":"/ai-adoptie"},
-      {"label":"AI-marketing","route":"/ai-marketing-mkb"},
-      {"label":"Due diligence & exit","route":"/due-diligence"}
-    ]},
-    {"group":"Bedrijfsgeheugen","items":[
-      {"label":"Wat is een bedrijfsgeheugen?","route":"/bedrijfsgeheugen"},
-      {"label":"Het portaal","route":"/product"},
-      {"label":"Frisse blik","route":"/frisse-blik"},
-      {"label":"Zelfscan","route":"/zelfscan"},
-      {"label":"AI-scan","route":"/ai-scan"},
-      {"label":"De Afmaakindex","route":"/afmaakindex"},
-      {"label":"Bedrijfsgeheugen-index","route":"/monitor"},
-      {"label":"Benchmark","route":"/benchmark"},
-      {"label":"Hoe het werkt","route":"/hoe-het-werkt"}
-    ]},
-    {"group":"Koppelingen","items":[
-      {"label":"AFAS-koppeling","route":"/afas-koppeling"},
-      {"label":"Exact Online","route":"/exact-online-koppeling"},
-      {"label":"Twinfield","route":"/twinfield-koppeling"},
-      {"label":"Webshop koppelen","route":"/webshop-koppeling"},
-      {"label":"API-koppeling laten maken","route":"/api-koppeling-laten-maken"}
-    ]},
-    {"group":"Kennis","items":[
-      {"label":"Blog","route":"/blog/"},
-      {"label":"AI Act","route":"/ai-act"},
-      {"label":"Data-soevereiniteit","route":"/data-soevereiniteit"},
-      {"label":"AI in business intelligence","route":"/ai-in-bi"},
-      {"label":"AI in data engineering","route":"/ai-in-data-engineering"},
-      {"label":"Bedrijfsgeheugen-index","route":"/monitor"},
-      {"label":"AI-capabilitymodel","route":"/ai-capability-model"},
-      {"label":"Begrippenlijst","route":"/begrippen"}
-    ]},
-    {"group":"Meer","items":[
-      {"label":"Alle expertises","route":"/expertises"},
-      {"label":"Over ons","route":"/over-ons"}
-    ]}
-  ]
+  "version": 2,
+  "source": "PR110 prototype-v18-6.html",
+  "primary": [
+    {"label":"Problemen","href":"/problemen"},{"label":"Oplossingen","href":"/oplossingen"},{"label":"Platform","href":"/bedrijfsgeheugen"},{"label":"Prijzen","href":"/prijzen"},{"label":"Cases","href":"/cases"},{"label":"Kennis","href":"/kennis"},{"label":"Over ons","href":"/over-ons"}
+  ],
+  "account": [{"label":"Inloggen","href":"/inloggen"},{"label":"Aanmelden","href":"/aanmelden"}],
+  "cta": {"label":"Frisse Blik","href":"/frisse-blik"},
+  "invariants": ["Every primary route must exist as a real production route.","Desktop and mobile navigation expose the same primary route catalog.","No autonomous agent may silently replace or remove a primary test-prototype route.","Unexpected route or semantic drift blocks production promotion and restores last-known-good."]
 }

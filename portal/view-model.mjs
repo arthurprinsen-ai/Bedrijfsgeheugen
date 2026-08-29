@@ -1,0 +1,7 @@
+import { verifiedValue } from './core.mjs';
+const clone=value=>JSON.parse(JSON.stringify(value));
+export function buildTodayViewModel(state){return Object.freeze({company:clone(state.company),user:clone(state.user),period:state.period,managementSummary:clone(state.managementSummary),healthCards:clone(state.healthCards),graph:clone(state.graph),roadmap:clone(state.roadmap),recommendedActions:clone(state.recommendedActions),monthlyImpact:clone(state.monthlyImpact),activities:clone(state.activities),integrationStatus:clone(state.integrationStatus),quickLinks:clone(state.quickLinks)})}
+export function buildHealthViewModel(state){return Object.freeze({score:state.company.health,delta:state.company.delta,cards:clone(state.healthCards),risks:clone(state.signals.filter(s=>s.impact==='Hoog')),actions:clone(state.recommendedActions)})}
+export function buildBusinessGraphViewModel(state){return Object.freeze({nodes:clone(state.graph.nodes),edges:clone(state.graph.edges),legacyNodes:clone(state.graph.nodes.filter(x=>x.legacy))})}
+export function buildImpactViewModel(state){return Object.freeze({monthly:clone(state.monthlyImpact),items:clone(state.valueItems),verifiedTotal:verifiedValue(state.valueItems),stages:['Identified','Validated','Approved','Executing','Realised']})}
+export function buildAdminViewModel(state){return Object.freeze({admin:clone(state.admin),agents:clone(state.agents),integrations:clone(state.integrationStatus),quickLinks:clone(state.quickLinks)})}
