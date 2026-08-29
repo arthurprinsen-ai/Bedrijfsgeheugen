@@ -1,0 +1,1 @@
+Existing production-only pages inherited from current main remain in the V18 test candidate unless accepted V18 evidence explicitly supersedes that route.
