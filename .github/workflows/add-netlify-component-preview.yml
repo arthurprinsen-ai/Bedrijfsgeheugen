@@ -25,13 +25,12 @@ jobs:
             echo 'deploy-preview context already present'
             exit 0
           fi
-          cat >> netlify.toml <<'EOF'
-
-# Component-architectuur: alleen deploy previews bouwen de homepage uit losse componenten.
-# De productie-build hierboven blijft ongewijzigd totdat de migratie expliciet is goedgekeurd.
-[context.deploy-preview]
-  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/compose-home-migration.mjs /tmp/component-index.html && cp /tmp/component-index.html index.html"
-EOF
+          printf '\n%s\n%s\n%s\n%s\n' \
+            '# Component-architectuur: alleen deploy previews bouwen de homepage uit losse componenten.' \
+            '# De productie-build hierboven blijft ongewijzigd totdat de migratie expliciet is goedgekeurd.' \
+            '[context.deploy-preview]' \
+            '  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/compose-home-migration.mjs /tmp/component-index.html && cp /tmp/component-index.html index.html"' \
+            >> netlify.toml
       - name: Commit preview context
         shell: bash
         run: |
