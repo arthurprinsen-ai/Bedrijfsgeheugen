@@ -1,0 +1,19 @@
+{
+  "id": "header",
+  "version": 1,
+  "root": "[data-bg-component=\"header\"]",
+  "ownedFiles": [
+    "components/header/header.html",
+    "components/header/header.css",
+    "components/header/header.js",
+    "components/header/contract.json"
+  ],
+  "invariants": [
+    "navigation-links-preserved",
+    "mobile-menu-keyboard-behavior-preserved",
+    "responsive-breakpoints-preserved",
+    "no-sibling-component-selectors"
+  ],
+  "jsEntry": "components/header/header.js",
+  "dependencies": []
+}

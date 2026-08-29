@@ -1,0 +1,108 @@
+name: Live Preview Smoke
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'components/**'
+      - 'tools/**'
+      - 'tests/integration/live-hero-video.spec.js'
+      - 'netlify.toml'
+      - '.github/workflows/live-preview-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  smoke:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Wait for Netlify status on current head SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for i in $(seq 1 36); do
+            json=$(curl -fsS \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
+            state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
+            if [ "$state" = "success" ]; then
+              exit 0
+            fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "::error::Netlify preview failed for $HEAD_SHA: $state"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "::error::Timed out waiting for Netlify preview status for $HEAD_SHA"
+          exit 1
+
+      - name: Fetch current Netlify preview
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: curl -fsS --max-time 20 "$PREVIEW_URL/" -o /tmp/index.html
+
+      - name: Verify rendered component homepage
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('/tmp/index.html', 'utf8');
+          const ids = ['header','hero-copy','hero-video','hero-demo','social-proof','pricing','footer'];
+          for (const id of ids) {
+            const escaped = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const re = new RegExp(`<[^>]+data-bg-component=["']${escaped}["'][^>]*>`, 'g');
+            const count = (html.match(re) || []).length;
+            if (count !== 1) throw new Error(`${id}: expected 1 rendered root, got ${count}`);
+          }
+          if (!html.includes('/assets/openart-hero-iphone-safe-v1.mp4')) throw new Error('hero video source missing');
+          if (html.includes('data-bg-slot="hero-video"')) throw new Error('unresolved hero-video slot remains');
+          if (!html.includes('Veelgestelde vragen')) throw new Error('baseline FAQ content missing');
+          console.log('Live preview component contract OK');
+          NODE
+
+      - name: Verify hero video asset
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: |
+          curl -fsS --max-time 20 --range 0-1023 \
+            "$PREVIEW_URL/assets/openart-hero-iphone-safe-v1.mp4" \
+            -o /tmp/hero-video.bin
+          test -s /tmp/hero-video.bin
+
+      - name: Install Playwright test runtime and Chromium
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Verify hero video actually plays
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: npx playwright test tests/integration/live-hero-video.spec.js --workers=1
+
+      - name: Capture preview and production screenshots after reveal fallback
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+          PROD_URL: https://www.bedrijfsgeheugen.nl
+        run: |
+          mkdir -p visual-review
+          npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="1440,1200" "$PREVIEW_URL/" visual-review/preview-desktop.png
+          npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="390,844" "$PREVIEW_URL/" visual-review/preview-mobile.png
+          npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="1440,1200" "$PROD_URL/" visual-review/production-desktop.png
+          npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="390,844" "$PROD_URL/" visual-review/production-mobile.png
+
+      - name: Upload visual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-preview-visual-review
+          path: visual-review/*.png
+          if-no-files-found: warn

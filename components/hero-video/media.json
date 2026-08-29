@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "src": "/assets/openart-hero-iphone-safe-v1.mp4",
+  "type": "video/mp4",
+  "poster": "/og-image.png",
+  "aspectRatio": "16/9",
+  "autoplay": true,
+  "muted": true,
+  "playsinline": true,
+  "loop": true,
+  "acceptance": "baseline-main-8d44b8f"
+}

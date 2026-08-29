@@ -1,0 +1,15 @@
+[data-bg-component="hero-copy"]{min-width:0;padding:0}
+[data-bg-component="hero-copy"] .pil{display:inline-flex;align-items:center;gap:.5rem;border:2px solid var(--inkt);background:var(--geel);color:var(--inkt);border-radius:20px;padding:.35rem .8rem;font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+[data-bg-component="hero-copy"] h1{font-size:clamp(1.9rem,5vw,3.5rem);margin:1rem 0 .4rem;overflow-wrap:break-word;hyphens:manual;-webkit-hyphens:manual;text-wrap:balance}
+[data-bg-component="hero-copy"] .mark{background:linear-gradient(transparent 55%,var(--geel) 55%,var(--geel) 96%,transparent 96%);padding:0 .08em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+[data-bg-component="hero-copy"] .bg-hero-copy__payoff{font-size:1.5rem;color:var(--inkt);margin:.2rem 0 .9rem;border-bottom:2px solid var(--blauw);display:inline-block;padding-bottom:.15rem;line-height:1.25;max-width:100%}
+[data-bg-component="hero-copy"] .lead{font-size:1.08rem;color:var(--grijs);max-width:34rem}
+[data-bg-component="hero-copy"] .usp{display:flex;gap:1.6rem;flex-wrap:wrap;margin:1.6rem 0}
+[data-bg-component="hero-copy"] .usp div{display:flex;gap:.7rem;align-items:center;font-size:.9rem;font-weight:600;line-height:1.35}
+[data-bg-component="hero-copy"] .usp span{width:2.6rem;height:2.6rem;border-radius:10px;background:var(--wit);border:1px solid var(--lijn);display:grid;place-items:center;flex:none}
+[data-bg-component="hero-copy"] .usp span img{width:1.5rem;height:1.5rem;display:block;object-fit:contain}
+[data-bg-component="hero-copy"] .knoppen{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.4rem}
+[data-bg-component="hero-copy"] .knop{display:inline-flex;align-items:center;justify-content:center;min-height:48px;background:var(--blauw);color:#fff;padding:.85rem 1.4rem;border-radius:12px;font-weight:600;text-decoration:none;font-size:.95rem;border:2px solid var(--blauw);transition:transform .12s,background .12s}
+[data-bg-component="hero-copy"] .knop:hover{background:var(--blauwd);border-color:var(--blauwd);transform:translateY(-2px)}
+[data-bg-component="hero-copy"] .knop.lijn{background:transparent;color:var(--inkt);border:2px solid var(--inkt)}
+[data-bg-component="hero-copy"] .knop.lijn:hover{background:var(--geel);color:var(--inkt);border-color:var(--inkt)}

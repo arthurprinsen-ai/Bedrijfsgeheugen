@@ -1,0 +1,20 @@
+{
+  "id": "hero-video",
+  "version": 1,
+  "root": "[data-bg-component=\"hero-video\"]",
+  "ownedFiles": [
+    "components/hero-video/hero-video.html",
+    "components/hero-video/hero-video.css",
+    "components/hero-video/hero-video.js",
+    "components/hero-video/media.json",
+    "components/hero-video/contract.json"
+  ],
+  "invariants": [
+    "baseline-media-preserved",
+    "poster-fallback",
+    "fixed-16-9-aspect-ratio",
+    "no-sibling-component-selectors"
+  ],
+  "jsEntry": "components/hero-video/hero-video.js",
+  "dependencies": []
+}

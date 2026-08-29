@@ -288,3 +288,8 @@
   to = "/waarom-ai-projecten-mislukken"
   status = 301
   force = true
+
+# Component-architectuur: alleen deploy previews bouwen de homepage uit losse componenten.
+# De productie-build hierboven blijft ongewijzigd totdat de migratie expliciet is goedgekeurd.
+[context.deploy-preview]
+  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/compose-home-migration.mjs /tmp/component-index.html && cp /tmp/component-index.html index.html"

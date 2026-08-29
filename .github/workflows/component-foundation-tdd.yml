@@ -1,0 +1,46 @@
+name: Component Foundation TDD
+
+on:
+  push:
+    branches:
+      - automation/component-foundation
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'config/**'
+      - 'components/_schema/**'
+      - 'pages/**'
+      - 'preview/**'
+      - 'tools/compose-site.mjs'
+      - 'tools/compose-component-preview.mjs'
+      - 'tools/verify-component-boundaries.mjs'
+      - 'tools/verify-change-scope.mjs'
+      - 'tools/verify-component-hashes.mjs'
+      - 'tools/detect-changed-components.mjs'
+      - 'tests/parallel-ownership.test.mjs'
+      - 'tests/change-classes.test.mjs'
+      - 'tests/page-composition.test.mjs'
+      - 'tests/component-preview-composition.test.mjs'
+      - 'tests/component-boundaries.test.mjs'
+      - 'tests/change-scope.test.mjs'
+      - 'tests/component-hash-protection.test.mjs'
+      - 'tests/detect-changed-components.test.mjs'
+      - 'tests/component-preview-workflow-contract.test.mjs'
+      - '.github/workflows/component-preview.yml'
+      - '.github/workflows/component-foundation-tdd.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: node --test tests/parallel-ownership.test.mjs tests/change-classes.test.mjs tests/page-composition.test.mjs tests/component-preview-composition.test.mjs tests/component-boundaries.test.mjs tests/change-scope.test.mjs tests/component-hash-protection.test.mjs tests/detect-changed-components.test.mjs tests/component-preview-workflow-contract.test.mjs

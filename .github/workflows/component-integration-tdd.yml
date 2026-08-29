@@ -1,0 +1,56 @@
+name: Component Integration TDD
+
+on:
+  push:
+    branches:
+      - automation/component-integration
+    paths:
+      - 'components/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'netlify.toml'
+      - '.github/workflows/component-integration-tdd.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Run architecture and component contracts
+        run: |
+          node --test \
+            tests/parallel-ownership.test.mjs \
+            tests/change-classes.test.mjs \
+            tests/page-composition.test.mjs \
+            tests/component-preview-composition.test.mjs \
+            tests/component-boundaries.test.mjs \
+            tests/detect-changed-components.test.mjs \
+            tests/component-preview-workflow-contract.test.mjs \
+            tests/components/header.test.mjs \
+            tests/components/hero-copy.test.mjs \
+            tests/components/hero-video.test.mjs \
+            tests/components/hero-demo.test.mjs \
+            tests/components/social-proof.test.mjs \
+            tests/components/pricing.test.mjs \
+            tests/components/footer.test.mjs \
+            tests/integration/component-integration.test.mjs \
+            tests/integration/integration-workflow-contract.test.mjs \
+            tests/integration/netlify-preview-contract.test.mjs
+
+      - name: Compose full homepage candidate
+        run: node tools/compose-home-migration.mjs dist/index.html
+
+      - name: Upload full homepage candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-homepage-candidate
+          path: dist/index.html
+          if-no-files-found: error

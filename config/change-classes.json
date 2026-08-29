@@ -1,0 +1,18 @@
+{
+  "hero-video-media": {
+    "components": ["hero-video"],
+    "allowed": [
+      "components/hero-video/media.json",
+      "assets/hero/**",
+      "tests/fixtures/hero-video/**"
+    ]
+  },
+  "header-navigation": {
+    "components": ["header"],
+    "allowed": ["components/header/**", "tests/components/header.test.mjs"]
+  },
+  "component-interface-change": {
+    "components": ["*"],
+    "allowed": ["components/**", "pages/**", "tools/**", "config/**", "tests/**"]
+  }
+}

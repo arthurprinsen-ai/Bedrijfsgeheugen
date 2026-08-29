@@ -1,0 +1,18 @@
+{
+  "id": "social-proof",
+  "version": 1,
+  "root": "[data-bg-component=\"social-proof\"]",
+  "ownedFiles": [
+    "components/social-proof/social-proof.html",
+    "components/social-proof/social-proof.css",
+    "components/social-proof/contract.json"
+  ],
+  "invariants": [
+    "baseline-trust-proof-preserved",
+    "four-people-images",
+    "no-copy-demo-or-video-ownership",
+    "no-sibling-component-selectors"
+  ],
+  "jsEntry": null,
+  "dependencies": []
+}
