@@ -12,9 +12,8 @@ function digest(value) {
 
 export function createSourceEventEnvelope({ payload, explicitIdempotencyKey = '', occurredAt = new Date().toISOString() }) {
   if (!payload || typeof payload !== 'object') throw new TypeError('payload is required');
-  const derived = `monitor:${digest(payload)}`;
-  const idempotencyKey = String(explicitIdempotencyKey || derived).trim().slice(0, 240);
-  if (!idempotencyKey) throw new TypeError('idempotency key is required');
+  const explicit = String(explicitIdempotencyKey || '').trim();
+  const idempotencyKey = explicit ? `client:${digest(explicit)}` : `monitor:${digest(payload)}`;
   const eventHash = digest({ source:'website-monitor', idempotencyKey }).slice(0, 24);
 
   return Object.freeze({
