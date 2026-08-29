@@ -1,50 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-<item><title>Kennis borgen in je bedrijf: zo voorkom je stilstand</title><link>https://www.bedrijfsgeheugen.nl/blog/kennis-borgen-in-je-bedrijf/</link><guid>https://www.bedrijfsgeheugen.nl/blog/kennis-borgen-in-je-bedrijf/</guid><pubDate>Fri, 28 Aug 2026 11:10:06 +0000</pubDate><description>Kennis borgen voorkomt stilstand, dubbel werk en afhankelijkheid van medewerkers. Zo verbind je afspraken, processen en systemen in je mkb-bedrijf.</description></item>
-
     <title>Bedrijfsgeheugen — Blog</title>
     <link>https://www.bedrijfsgeheugen.nl/blog/</link>
     <description>Praktische artikelen over kennisborging, koppelingen tussen AFAS, Exact en Microsoft 365, en AI voor het mkb. Uit de praktijk, niet uit de brochure.</description>
     <language>nl-NL</language>
     <atom:link href="https://www.bedrijfsgeheugen.nl/blog/rss.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Fri, 21 Aug 2026 09:00:00 +0200</lastBuildDate>
-    <item>
-  <title>Exact Online API: wat kan het en wat kost een koppeling</title>
-  <link>https://www.bedrijfsgeheugen.nl/blog/exact-online-api/</link>
-  <guid>https://www.bedrijfsgeheugen.nl/blog/exact-online-api/</guid>
-  <pubDate>Fri, 21 Aug 2026 09:00:00 +0200</pubDate>
-  <description>Wat je met de Exact Online API kunt, waar de grenzen zitten en wat een koppeling in de praktijk kost. Voor bedrijven die willen stoppen met overtypen.</description>
-</item>
-    <item>
-  <title>AFAS API: wat kan er wel en wat niet</title>
-  <link>https://www.bedrijfsgeheugen.nl/blog/afas-api/</link>
-  <guid>https://www.bedrijfsgeheugen.nl/blog/afas-api/</guid>
-  <pubDate>Wed, 19 Aug 2026 09:00:00 +0200</pubDate>
-  <description>Wat de AFAS API wel en niet kan, wanneer GetConnectors volstaan en wanneer je UpdateConnectors nodig hebt, en wat het betekent voor het eigenaarschap van je koppeling.</description>
-</item>
-    <item>
-  <title>Werkinstructie voorbeeld: zo maak je er een die gebruikt wordt</title>
-  <link>https://www.bedrijfsgeheugen.nl/blog/werkinstructie-voorbeeld/</link>
-  <guid>https://www.bedrijfsgeheugen.nl/blog/werkinstructie-voorbeeld/</guid>
-  <pubDate>Sat, 15 Aug 2026 09:00:00 +0200</pubDate>
-  <description>De acht onderdelen die in een werkinstructie horen, en de drie redenen waarom instructies in de praktijk ongelezen blijven.</description>
-</item>
-<item>
-  <title>Automatiseren zonder traject van zes maanden</title>
-  <link>https://www.bedrijfsgeheugen.nl/blog/automatiseren-zonder-traject/</link>
-  <guid>https://www.bedrijfsgeheugen.nl/blog/automatiseren-zonder-traject/</guid>
-  <pubDate>Fri, 14 Aug 2026 08:00:00 +0200</pubDate>
-  <description>Waarom een ERP implementatie mislukt in het mkb — en hoe je automatiseert zonder traject van zes maanden. Vier afspraken die je vooraf vastlegt.</description>
-</item>
-<item>
-  <title>Wat kost een AFAS-partner per maand?</title>
-  <link>https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-partner/</link>
-  <guid>https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-partner/</guid>
-  <pubDate>Tue, 11 Aug 2026 09:00:00 +0200</pubDate>
-  <description>De licentie betaal je aan AFAS, de partner aan de partner. Welke bedragen je in het mkb tegenkomt, en welke kosten in vrijwel elke offerte ontbreken.</description>
-</item>
-<item><title>Bedrijfsopvolging: begin bij het geheugen, niet bij de aandelen</title><link>https://www.bedrijfsgeheugen.nl/blog/bedrijfsopvolging-begin-bij-het-geheugen/</link><guid>https://www.bedrijfsgeheugen.nl/blog/bedrijfsopvolging-begin-bij-het-geheugen/</guid><description>De akte is in drie maanden rond, de kennis kost twaalf tot achttien maanden. Wat je vastlegt, in welke volgorde, en de rekensom van een oud-eigenaar die blijft hangen.</description><pubDate>Mon, 10 Aug 2026 08:00:00 +0200</pubDate></item>
+    <lastBuildDate>Mon, 10 Aug 2026 08:00:00 +0200</lastBuildDate>
+    <item><title>Bedrijfsopvolging: begin bij het geheugen, niet bij de aandelen</title><link>https://www.bedrijfsgeheugen.nl/blog/bedrijfsopvolging-begin-bij-het-geheugen/</link><guid>https://www.bedrijfsgeheugen.nl/blog/bedrijfsopvolging-begin-bij-het-geheugen/</guid><description>De akte is in drie maanden rond, de kennis kost twaalf tot achttien maanden. Wat je vastlegt, in welke volgorde, en de rekensom van een oud-eigenaar die blijft hangen.</description><pubDate>Mon, 10 Aug 2026 08:00:00 +0200</pubDate></item>
     <item><title>Wat kost digitalisering in het mkb?</title><link>https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/</link><guid>https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/</guid><description>Digitalisering in het mkb kost € 3.500 tot € 15.000 in jaar één. Wat kost digitalisering mkb per onderdeel, met rekensommen en terugverdientijd.</description><pubDate>Fri, 07 Aug 2026 08:00:00 +0200</pubDate></item>
     <item><title>Systemen koppelen mkb: de complete gids</title><link>https://www.bedrijfsgeheugen.nl/blog/systemen-koppelen-mkb/</link><guid>https://www.bedrijfsgeheugen.nl/blog/systemen-koppelen-mkb/</guid><description>Welke koppeling je als eerste maakt, de drie routes van standaardconnector tot maatwerk met hun kosten, en zes stappen naar een koppeling die over een jaar nog werkt.</description><pubDate>Wed, 05 Aug 2026 09:00:00 +0200</pubDate></item>
 <item><title>Microsoft Copilot mkb: 7 taken die je morgen automatiseert</title><link>https://www.bedrijfsgeheugen.nl/blog/microsoft-copilot-mkb/</link><guid>https://www.bedrijfsgeheugen.nl/blog/microsoft-copilot-mkb/</guid><description>Van notulen en mail tot offerteteksten en Excel-analyses. Zeven taken met de tijdwinst per stuk, de rekensom bij € 26 per gebruiker en waarom Copilot zo vaak stilvalt.</description><pubDate>Wed, 05 Aug 2026 08:00:00 +0200</pubDate></item>

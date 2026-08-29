@@ -1,5 +1,0 @@
-{
-  "$id":"brain.v1/experiment",
-  "allOf":["brain.v1/envelope"],
-  "required":["mission_ref","hypothesis","control","variants","population","allocation","start_at","stop_conditions","sample","cost","primary_metric","secondary_metrics","protected_metrics","causal_confidence"]
-}

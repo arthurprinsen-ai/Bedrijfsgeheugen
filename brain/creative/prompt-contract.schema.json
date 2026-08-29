@@ -1,5 +1,0 @@
-{
-  "$id":"brain.v1/prompt-compilation",
-  "required":["model_family","creative_intent_ref","compiled_prompt","prompt_version","constraints","source_learning_refs","expected_cost","expected_quality"],
-  "principle":"PromptCompilation translates CreativeIntent into a model-specific contract and is never primary evidence."
-}

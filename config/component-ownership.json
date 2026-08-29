@@ -1,9 +1,0 @@
-{
-  "header": ["components/header/**", "tests/components/header.test.mjs"],
-  "hero-copy": ["components/hero-copy/**", "tests/components/hero-copy.test.mjs"],
-  "hero-video": ["components/hero-video/**", "assets/hero/**", "tests/components/hero-video.test.mjs"],
-  "hero-demo": ["components/hero-demo/**", "tests/components/hero-demo.test.mjs"],
-  "social-proof": ["components/social-proof/**", "tests/components/social-proof.test.mjs"],
-  "pricing": ["components/pricing/**", "tests/components/pricing.test.mjs"],
-  "footer": ["components/footer/**", "tests/components/footer.test.mjs"]
-}

@@ -1,6 +1,0 @@
-[data-bg-component="social-proof"]{margin-top:1.4rem;padding:0;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
-[data-bg-component="social-proof"] .bolletjes{display:flex;align-items:center}
-[data-bg-component="social-proof"] .bolletjes img{width:44px;height:44px;border-radius:50%;border:2px solid var(--papier);object-fit:cover;display:inline-block;vertical-align:middle}
-[data-bg-component="social-proof"] .bolletjes img+img{margin-left:-12px}
-[data-bg-component="social-proof"] .ster{font-size:.85rem;letter-spacing:.08em;color:#E5A800;line-height:1}
-[data-bg-component="social-proof"] .vertrouwen-tekst{font-size:.8rem;color:var(--grijs);font-weight:600;line-height:1.4;margin-top:.2rem}

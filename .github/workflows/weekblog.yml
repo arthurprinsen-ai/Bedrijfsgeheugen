@@ -1,10 +1,18 @@
 name: Weekblog
-# Draait maandag, woensdag en vrijdag. Haalt het eerstvolgende geplande artikel
-# uit de Notion-kalender. AI bereidt uitsluitend contentbestanden voor; de workflow
-# valideert, staged, commit en pusht daarna deterministisch onder het gedeelde schrijverslot.
+# Draait maandag, woensdag en vrijdag. Haalt het eerstvolgende artikel met
+# status "Gepland" EN een publicatiedatum van vandaag of eerder uit de Notion-kalender,
+# laat Claude het schrijven, pusht het
+# en zet de rij in Notion op "Gepubliceerd".
+#
+# GEWIJZIGD: haalt nu ook Meta-omschrijving, Interne links, SEO-blok, Paginatype
+# en Cluster op. De interne links worden daardoor niet meer door Claude bedacht
+# maar voorgeschreven vanuit de zoekwoordenstrategie in Notion.
 on:
   schedule:
     - cron: '0 5 * * 1,3,5'
+  push:
+    paths:
+      - '.github/triggers/weekblog/**'
   workflow_dispatch:
     inputs:
       slug:
@@ -17,7 +25,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: repo-schrijven
+  group: weekblog
   cancel-in-progress: false
 
 jobs:
@@ -25,8 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
       - name: Volgend artikel ophalen uit Notion
         id: kalender
@@ -36,7 +42,7 @@ jobs:
           FORCE_SLUG: ${{ github.event.inputs.slug }}
         run: |
           python3 - <<'PY'
-          import json, os, urllib.request, pathlib, uuid, datetime
+          import json, os, sys, urllib.request, pathlib, uuid, datetime
 
           token = os.environ.get("NOTION_TOKEN", "")
           db    = os.environ.get("NOTION_DB", "")
@@ -54,6 +60,7 @@ jobs:
               return ((v.get("select") or {}) or {}).get("name", "")
 
           def rollup_keuze(props, naam):
+              # Cluster en Zoekintentie zijn rollups vanuit de zoekwoordendatabase.
               v = props.get(naam) or {}
               r = v.get("rollup") or {}
               for item in (r.get("array") or []):
@@ -63,6 +70,7 @@ jobs:
               return ""
 
           def schrijf(f, sleutel, waarde):
+              # Meerregelige waarden moeten via een delimiter naar GITHUB_OUTPUT.
               waarde = waarde or ""
               if "\n" in waarde:
                   d = "EOF_" + uuid.uuid4().hex
@@ -71,6 +79,7 @@ jobs:
                   f.write("%s=%s\n" % (sleutel, waarde))
 
           kandidaten = []
+
           if token and db:
               print("Bron: Notion-kalender")
               req = urllib.request.Request(
@@ -158,24 +167,27 @@ jobs:
             echo "::error::ANTHROPIC_API_KEY is leeg of bestaat niet in de repo-secrets."
             exit 1
           fi
+          echo "Sleutel aanwezig, lengte ${#KEY}, begint met ${KEY:0:7}"
           code=$(curl -s -o /tmp/resp.json -w "%{http_code}" https://api.anthropic.com/v1/messages \
             -H "x-api-key: $KEY" -H "anthropic-version: 2023-06-01" -H "content-type: application/json" \
             -d '{"model":"claude-sonnet-5","max_tokens":16,"messages":[{"role":"user","content":"ok"}]}')
           echo "Antwoord van de API: HTTP $code"
           if [ "$code" != "200" ]; then
-            echo "::error::De API antwoordde met HTTP $code."
+            echo "::error::De API antwoordde met HTTP $code. Zie hieronder."
             cat /tmp/resp.json
+            echo "Let op: is dit 'model not found', dan bestaat het modelnummer niet meer."
+            echo "Werkende namen zijn onder meer claude-sonnet-5 en claude-opus-5."
             exit 1
           fi
 
-      - name: Artikel schrijven
+      - name: Artikel schrijven en publiceren
         if: steps.kalender.outputs.gevonden == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-sonnet-5 --max-turns 60 --allowedTools Read,Write,Edit,Glob,Grep,WebSearch"
+          claude_args: "--model claude-sonnet-5 --max-turns 60 --allowedTools Bash,Read,Write,Edit,Glob,Grep,WebSearch"
           prompt: |
-            Schrijf één blogartikel voor www.bedrijfsgeheugen.nl (statische HTML-site, Nederlands).
+            Schrijf en publiceer één blogartikel voor www.bedrijfsgeheugen.nl (statische HTML-site, Nederlands).
 
             OPDRACHT UIT DE KALENDER
             - Titel: ${{ steps.kalender.outputs.titel }}
@@ -197,143 +209,92 @@ jobs:
             SEO-BLOK UIT DE ZOEKWOORDENSTRATEGIE
             ${{ steps.kalender.outputs.seo_blok }}
 
-            Staat er iets bij interne links of in het SEO-blok, dan is dat een opdracht. Neem die
-            links op met de opgegeven anchortekst en in de opgegeven alinea. Wijkt een genoemde slug
-            af van wat echt onder blog/ staat, gebruik dan de bestaande slug; verzin er nooit een bij.
+            Staat er iets bij interne links of in het SEO-blok, dan is dat GEEN suggestie maar een
+            opdracht. Neem die links op met de opgegeven anchortekst, in de opgegeven alinea. Wijkt
+            een genoemde slug af van wat er echt onder blog/ staat, controleer dan met Glob en gebruik
+            de bestaande slug; verzin er nooit een bij. Is beide leeg, val dan terug op regel 6 hieronder.
 
             BESTAANDE ARTIKELEN OM NAAR TE LINKEN
             ${{ steps.slugs.outputs.lijst }}
 
-            CLUSTERREGEL
-            - Clusterblog: link naar de pijlerpagina, twee andere artikelen uit hetzelfde cluster
-              en één dienstpagina.
-            - Pijlerpagina: link naar minimaal vier artikelen uit het eigen cluster.
-            - Gebruik beschrijvende anchortekst, nooit "lees meer" of "klik hier".
+            CLUSTERREGEL (dit bepaalt of Google je als autoriteit ziet)
+            - Ben je een Clusterblog: link naar de pijlerpagina van je cluster, naar twee andere
+              artikelen uit hetzelfde cluster, en naar één dienstpagina.
+            - Ben je een Pijlerpagina: link naar minimaal vier artikelen uit je eigen cluster.
+            - Anchortekst beschrijft altijd waar je heen gaat. Nooit "lees meer" of "klik hier":
+              die vertellen Google niets over de doelpagina, en dat is het hele nut van de link.
 
-            BEDRIJF EN TOON
+            BEDRIJF
             Bedrijfsgeheugen helpt mkb-bedrijven (3-250 medewerkers) met digitalisering zonder groot
             nieuw systeem: koppelingen tussen AFAS, Exact Online en Microsoft 365, één klantoverzicht,
             offerte-opvolging, dashboards en AI-trainingen (Copilot, ChatGPT, Claude).
-            Payoff: "Strak geregeld. Zonder traject." Spreek aan met "je". Schrijf praktisch,
-            concreet, in gewone taal en zonder verkooppraat of consultancyjargon.
+            Payoff: "Strak geregeld. Zonder traject." De vijand in de positionering is het IT-project:
+            maanden doorlooptijd, uitloop, uurtje-factuurtje, een systeem dat niemand gebruikt.
+            Bedrijfsgeheugen verkoopt zelf geen software en verdient niets aan licenties.
 
-            PRIJZEN — gebruik exact deze, verzin nooit andere prijzen
+            AANSPREEKVORM: "je", niet "u". Toon: praktische adviseur, gewone taal, droge humor mag,
+            geen jargon en geen verkooppraat.
+
+            PRIJZEN (gebruik exact deze, verzin er nooit andere bij)
             - Gratis zelfscan: /zelfscan
             - Bedrijfsscan: EUR 2.900 excl. btw, één dag op locatie, rapport binnen een week,
               volledig verrekend bij vervolg
             - AFAS/Exact-koppeling: EUR 3.500 tot EUR 12.000, vaste prijs vooraf
-            - Connect: vanaf EUR 29 per maand
+            - Connect (beheer en monitoring): vanaf EUR 29 per maand
 
-            URL'S
-            Gebruik schone URL's zonder .html: /zelfscan, /expertises, /afas-koppeling, /over-ons,
-            /connect, /data-ai-cockpit en /blog/<slug>/.
+            URL'S: de site gebruikt SCHONE URL'S ZONDER .html. Gebruik /zelfscan, /expertises,
+            /afas-koppeling, /over-ons, /connect, /data-ai-cockpit, /blog/<slug>/.
+            Schrijf NOOIT /zelfscan.html of /expertises.html — dat levert een redirect op.
 
-            SCHRIJFREGELS
-            1. Beantwoord de titelvraag in de eerste twee zinnen.
-            2. Focus-zoekwoord exact in titel, eerste 100 woorden, minstens één H2 en meta description.
-            3. Gebruik concrete getallen en navolgbare rekensommen waar relevant.
-            4. Noem systemen bij naam wanneer relevant.
-            5. 900 tot 1400 woorden; volledigheid is belangrijker dan lengte.
-            6. H1, lead, 4-6 vraaggerichte H2's, concreet stappenplan of tabel, FAQ 4-5 vragen en CTA.
-            7. Eén geverifieerde externe bron van CBS, KVK, Rijksoverheid of Europese Commissie; bij
-               twijfel geen externe link.
-            8. Voorkom dubbel werk en link naar bestaande artikelen die dezelfde deelvraag behandelen.
+            SCHRIJFREGELS (deze bepalen of AI-assistenten het artikel citeren)
+            1. Beantwoord de vraag uit de titel in de eerste twee zinnen. Alles daarna is onderbouwing.
+               Dit is het fragment dat ChatGPT en AI Overviews overnemen — verstop het niet.
+            2. Het focus-zoekwoord staat exact in de titel, in de eerste honderd woorden, in minstens
+               één H2 en in de meta description. Daarbuiten niet forceren: onnatuurlijk herhalen
+               werkt averechts.
+            3. Getallen in plaats van bijvoeglijke naamwoorden. Niet "aanzienlijke besparing" maar
+               "6 tot 9 uur per week bij een team van 12". Maak rekensommen expliciet en navolgbaar.
+            4. Noem systemen bij naam: AFAS, Exact Online, WooCommerce, Shopify, Microsoft 365, Copilot.
+            5. 900 tot 1400 woorden. Volledig beantwoorden telt, lengte niet.
+            6. Structuur: H1, lead-alinea met het antwoord, 4 tot 6 H2-secties waarvan de koppen
+               geformuleerd zijn zoals iemand ze intypt, een concreet stappenplan of tabel, een
+               FAQ-blok met 4 tot 5 vragen, en een afsluitend CTA-blok.
+            7. Eén externe bron (CBS, KVK, Rijksoverheid, Europese Commissie). Verifieer met WebSearch
+               dat de URL bestaat. Bij twijfel: geen externe link.
+            8. Geen dubbel werk: als een bestaand artikel onder blog/ dezelfde vraag al beantwoordt,
+               link ernaar in plaats van het over te doen.
 
-            TERUGLINKEN
-            Voeg in maximaal één bestaande pijlerpagina van dit cluster een beschrijvende teruglink
-            naar het nieuwe artikel toe. Bestaat die pijlerpagina niet, sla dit over.
+            TERUGLINKEN (nieuw en verplicht)
+            Een cluster werkt pas als de links twee kanten op gaan. Voeg daarom in de pijlerpagina van
+            dit cluster een link naar dit nieuwe artikel toe, met beschrijvende anchortekst, op de
+            logische plek in de tekst. Bestaat die pijlerpagina nog niet onder blog/, sla deze stap
+            dan over en meld dat in je samenvatting.
 
             BOUWEN
-            Maak blog/${{ steps.kalender.outputs.slug }}/index.html in exact de bestaande huisstijl.
-            Neem een bestaand artikel als template en vervang alleen de inhoud van <main>. Precies één h1.
-            Head: title max 60 tekens, meta description 140-155 tekens, canonical
+            Maak blog/${{ steps.kalender.outputs.slug }}/index.html in exact de huisstijl van de site.
+            Neem een bestaand artikel onder blog/ als template: kopieer de volledige head (fonts,
+            style-blok), de topbalk, de merkbalk, de navpill-navigatie en de footer, en vervang alleen
+            de inhoud van <main>. Precies één <h1> per pagina.
+
+            HEAD: title max 60 tekens, meta description 140-155 tekens, canonical
             https://www.bedrijfsgeheugen.nl/blog/${{ steps.kalender.outputs.slug }}/, og:title,
-            og:description en og:url. Zet direct onder canonical:
-            <meta name="bg-zoekwoord" content="${{ steps.kalender.outputs.zoekwoord }}">
-            Voeg één geldige application/ld+json @graph toe met BlogPosting, FAQPage en BreadcrumbList;
-            datePublished en dateModified zijn vandaag, auteur Arthur Prinsen, taal nl-NL.
+            og:description en og:url. Eén script van het type application/ld+json met een @graph dat
+            bevat: BlogPosting (headline, description, datePublished en dateModified op de datum van
+            vandaag, inLanguage nl-NL, author Person "Arthur Prinsen", publisher met @id
+            https://www.bedrijfsgeheugen.nl/#org), FAQPage met dezelfde vragen als in het artikel, en
+            BreadcrumbList Home > Blog > artikel. Valideer dat de JSON parseert.
 
-            FIGUREN
-            Voeg minstens twee en hoogstens vier functionele inline SVG-figuren toe in de huisstijl.
-            Elke figuur krijgt figure/figcaption, role="img", title, viewBox, width="100%",
-            height="auto", max-width 720px en minimaal 14px tekst. Geen decoratieve figuren.
+            BIJWERKEN: blog/index.html (nieuwe artikelkaart bovenaan, zelfde markup als de bestaande
+            kaarten), blog/rss.xml (nieuw item bovenaan) en sitemap.xml (nieuwe URL met lastmod vandaag,
+            schone URL zonder .html). Wijzig verder NIETS aan bestaande pagina's behalve de pijlerpagina
+            van dit cluster, en verwijder nooit bestaande artikelen.
 
-            BIJWERKEN
-            Werk blog/index.html bij met een nieuwe kaart bovenaan, blog/rss.xml met een item bovenaan
-            en sitemap.xml met de nieuwe schone URL en lastmod vandaag. Wijzig verder niets aan bestaande
-            pagina's behalve eventueel die ene cluster-pijlerpagina. Verwijder nooit bestaande artikelen.
+            CONTROLE VOOR PUBLICATIE: precies één h1, geldige JSON-LD, canonical zonder .html, geen
+            enkele interne link die op .html eindigt, geen link naar een slug die niet bestaat, en
+            minimaal drie interne links naar andere pagina's onder blog/ of naar een dienstpagina.
 
-            CONTROLE VOOR OPLEVERING
-            Precies één h1, geldige JSON-LD, canonical zonder .html, exact focus-zoekwoord in
-            bg-zoekwoord, minstens twee figuren met figcaption, interne links zonder .html, geen link
-            naar een niet-bestaande slug en minimaal drie interne links naar blog- of dienstpagina's.
-
-            Lever uitsluitend de benodigde bestandswijzigingen op. De workflow valideert zelfstandig
-            de changed-file allowlist en verzorgt staging, commit, conflictbehandeling en publicatie.
-            Wijzig alleen het nieuwe artikel, blog/index.html, blog/rss.xml, sitemap.xml en eventueel
-            één bestaande cluster-pijlerpagina.
-
-      - name: Deterministic publication contract checks
-        if: steps.kalender.outputs.gevonden == 'true'
-        env:
-          SLUG: ${{ steps.kalender.outputs.slug }}
-          ZOEKWOORD: ${{ steps.kalender.outputs.zoekwoord }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json, os, pathlib, re, subprocess
-
-          slug = os.environ['SLUG']
-          zoekwoord = os.environ['ZOEKWOORD']
-          article = f'blog/{slug}/index.html'
-          tracked = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
-          untracked = subprocess.check_output(['git','ls-files','--others','--exclude-standard'], text=True).splitlines()
-          changed = sorted(set(tracked + untracked))
-
-          required = {article, 'blog/index.html', 'blog/rss.xml', 'sitemap.xml'}
-          missing = sorted(required - set(changed))
-          assert not missing, f'verplichte publicatiebestanden ontbreken: {missing}; changed={changed}'
-          optional_blog = [p for p in changed if re.fullmatch(r'blog/[a-z0-9-]+/index\.html', p) and p != article]
-          assert len(optional_blog) <= 1, f'hooguit één pijlerpagina mag aanvullend wijzigen: {optional_blog}'
-          allowed = required | set(optional_blog)
-          unexpected = [p for p in changed if p not in allowed]
-          assert not unexpected, f'onverwachte bestanden gewijzigd: {unexpected}'
-
-          text = pathlib.Path(article).read_text(encoding='utf-8')
-          assert len(re.findall(r'<h1(?:\s|>)', text)) == 1, 'exact één h1 vereist'
-          canonical = re.search(r'<link rel="canonical" href="([^"]+)">', text)
-          assert canonical and canonical.group(1) == f'https://www.bedrijfsgeheugen.nl/blog/{slug}/', 'canonical onjuist'
-          meta_keyword = re.search(r'<meta name="bg-zoekwoord" content="([^"]*)">', text)
-          assert meta_keyword and meta_keyword.group(1) == zoekwoord, 'bg-zoekwoord wijkt af van kalender'
-          ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
-          assert ld, 'JSON-LD ontbreekt'
-          json.loads(ld.group(1))
-          assert len(re.findall(r'<figure\b', text)) >= 2, 'minstens twee figuren vereist'
-
-          pathlib.Path('/tmp/validated-weekblog-files').write_text('\n'.join(changed) + '\n', encoding='utf-8')
-          print('PUBLICATION_CONTRACT_OK', changed)
-          PY
-
-      - name: Commit and push validated changes
-        if: steps.kalender.outputs.gevonden == 'true'
-        env:
-          SLUG: ${{ steps.kalender.outputs.slug }}
-        run: |
-          set -euo pipefail
-          git config user.name "Bedrijfsgeheugen Publisher"
-          git config user.email "actions@users.noreply.github.com"
-          while IFS= read -r path; do
-            [ -n "$path" ] && git add -- "$path"
-          done < /tmp/validated-weekblog-files
-          git commit -m "blog: $SLUG"
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            git pull --rebase origin main
-          done
-          echo "::error::Push faalde na drie begrensde pogingen"
-          exit 1
+            PUBLICEREN: git add -A, commit met bericht "blog: ${{ steps.kalender.outputs.slug }}"
+            en push naar main.
 
       - name: Notion bijwerken
         if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != ''

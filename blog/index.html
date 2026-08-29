@@ -27,8 +27,9 @@
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=optional">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=optional" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--oranje-t:#C2410C;--geel:#FFE86B;--lijn:#DCDFE6;--grijs:#5C646E}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -42,7 +43,7 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 .btn{display:inline-block;border:2px solid var(--inkt);border-radius:10px;padding:.65rem 1.3rem;font-weight:700;text-decoration:none;color:var(--inkt);font-size:.95rem}
 .btn.blauw{background:var(--blauw);border-color:var(--blauw);color:#fff}
 .kop{padding:4.5rem 0 2.5rem}
-.eyebrow{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#C2410C;display:block;margin-bottom:1rem}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--oranje-t);display:block;margin-bottom:1rem}
 .kop h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;max-width:15em}
 .kop p.intro{max-width:44em;margin-top:1.2rem;font-size:1.1rem;color:#3C424A}
 .logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.25rem;color:var(--inkt);text-decoration:none;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:.55rem}
@@ -70,127 +71,42 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 .fonder{border-top:1px solid rgba(255,255,255,.14);margin-top:2.5rem;padding-top:1.3rem;font-size:.8rem;color:#7E8590}
 </style>
 <script data-goatcounter="https://bedrijfsgeheugen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"ProfessionalService","@id":"https://www.bedrijfsgeheugen.nl/#org","name":"Bedrijfsgeheugen","alternateName":"Bedrijfsgeheugen — digitalisering voor het mkb","url":"https://www.bedrijfsgeheugen.nl/","slogan":"Aanpakken zonder aanmodderen.","description":"Bedrijfsgeheugen is een Nederlands digitaliserings- en AI-adviesbureau voor organisaties van 3 tot 250 medewerkers. Het bureau verbindt bestaande systemen zoals AFAS, Exact Online en Microsoft 365 tot één klantoverzicht, zonder een nieuw ERP-systeem in te voeren.","email":"arthur@bedrijfsgeheugen.nl","telephone":"+31627483345","priceRange":"€€","areaServed":{"@type":"Country","name":"Nederland"},"identifier":{"@type":"PropertyValue","name":"KvK","value":"68765428"},"founder":{"@id":"https://www.bedrijfsgeheugen.nl/#arthur"},"sameAs":["https://www.linkedin.com/company/bedrijfsgeheugen"],"knowsAbout":["digitalisering mkb","AFAS koppeling","Exact Online koppeling","Microsoft 365","offerte-opvolging","productieplanning","klantoverzicht","kennisborging","Microsoft Copilot training","ChatGPT","Claude","AI-adoptie","AI-agents","EU AI Act"]},{"@type":"Person","@id":"https://www.bedrijfsgeheugen.nl/#arthur","name":"Arthur Prinsen","jobTitle":"Oprichter en digitaliseringsadviseur","description":"Arthur Prinsen werkt vijftien jaar op het snijvlak van bedrijfsvoering en technologie: AFAS-koppelingen, Microsoft-omgevingen, planning en stuurinformatie.","worksFor":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"url":"https://www.bedrijfsgeheugen.nl/over-ons","knowsAbout":["AFAS","Exact Online","Microsoft 365","Power BI","AI-adoptie in het mkb"]},{"@type":"Blog","@id":"https://www.bedrijfsgeheugen.nl/blog/#blog","name":"Bedrijfsgeheugen kennisbank","url":"https://www.bedrijfsgeheugen.nl/blog/","inLanguage":"nl-NL","publisher":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"blogPost":[{"@type":"BlogPosting","headline":"AI-gebruik in het mkb: de cijfers","url":"https://www.bedrijfsgeheugen.nl/ai-cijfers-mkb"},{"@type":"BlogPosting","headline":"Waarom AI-projecten mislukken","url":"https://www.bedrijfsgeheugen.nl/waarom-ai-projecten-mislukken"},{"@type":"BlogPosting","headline":"Kennis borgen bij pensionering","url":"https://www.bedrijfsgeheugen.nl/kennisverlies-vergrijzing-mkb"},{"@type":"BlogPosting","headline":"Bedrijfsoverdracht familiebedrijven: de cijfers op een rij","url":"https://www.bedrijfsgeheugen.nl/cijfers-bedrijfsoverdracht"},{"@type":"BlogPosting","headline":"Excel als CRM in een familiebedrijf: waar de grens ligt","url":"https://www.bedrijfsgeheugen.nl/excel-als-crm"},{"@type":"BlogPosting","headline":"Werkinstructie voorbeeld: zo maak je er een die gebruikt wordt","url":"https://www.bedrijfsgeheugen.nl/blog/werkinstructie-voorbeeld/"},{"@type":"BlogPosting","headline":"Automatiseren zonder traject van zes maanden","url":"https://www.bedrijfsgeheugen.nl/blog/automatiseren-zonder-traject/"},{"@type":"BlogPosting","headline":"Wat kost een AFAS-partner per maand?","url":"https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-partner/"},{"@type":"BlogPosting","headline":"Wat kost een AFAS-koppeling?","url":"https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/"},{"@type":"BlogPosting","headline":"EU AI Act voor het mkb: wat geldt nu en wat is uitgesteld","url":"https://www.bedrijfsgeheugen.nl/blog/eu-ai-act-mkb/"},{"@type":"BlogPosting","headline":"Offertes opvolgen zonder CRM","url":"https://www.bedrijfsgeheugen.nl/blog/offertes-opvolgen-zonder-crm/"},{"@type":"BlogPosting","headline":"Planning in Excel vervangen: waarmee en wanneer?","url":"https://www.bedrijfsgeheugen.nl/blog/planning-in-excel-vervangen/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"ProfessionalService","@id":"https://www.bedrijfsgeheugen.nl/#org","name":"Bedrijfsgeheugen","alternateName":"Bedrijfsgeheugen — digitalisering voor het mkb","url":"https://www.bedrijfsgeheugen.nl/","slogan":"Aanpakken zonder aanmodderen.","description":"Bedrijfsgeheugen is een Nederlands digitaliserings- en AI-adviesbureau voor mkb-bedrijven van 3 tot 250 medewerkers. Het bureau verbindt bestaande systemen zoals AFAS, Exact Online en Microsoft 365 tot één klantoverzicht, zonder een nieuw ERP-systeem in te voeren.","email":"arthur@bedrijfsgeheugen.nl","telephone":"+31627483345","priceRange":"€€","areaServed":{"@type":"Country","name":"Nederland"},"identifier":{"@type":"PropertyValue","name":"KvK","value":"68765428"},"founder":{"@id":"https://www.bedrijfsgeheugen.nl/#arthur"},"sameAs":["https://www.linkedin.com/company/bedrijfsgeheugen"],"knowsAbout":["digitalisering mkb","AFAS koppeling","Exact Online koppeling","Microsoft 365","offerte-opvolging","productieplanning","klantoverzicht","kennisborging","Microsoft Copilot training","ChatGPT","Claude","AI-adoptie","AI-agents","EU AI Act"]},{"@type":"Person","@id":"https://www.bedrijfsgeheugen.nl/#arthur","name":"Arthur Prinsen","jobTitle":"Oprichter en digitaliseringsadviseur","description":"Arthur Prinsen werkt vijftien jaar op het snijvlak van bedrijfsvoering en technologie: AFAS-koppelingen, Microsoft-omgevingen, planning en stuurinformatie.","worksFor":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"url":"https://www.bedrijfsgeheugen.nl/over-ons","knowsAbout":["AFAS","Exact Online","Microsoft 365","Power BI","AI-adoptie in het mkb"]},{"@type":"Blog","@id":"https://www.bedrijfsgeheugen.nl/blog/#blog","name":"Bedrijfsgeheugen kennisbank","url":"https://www.bedrijfsgeheugen.nl/blog/","inLanguage":"nl-NL","publisher":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"blogPost":[{"@type":"BlogPosting","headline":"Wat kost een AFAS-koppeling?","url":"https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/"},{"@type":"BlogPosting","headline":"EU AI Act voor het mkb: wat geldt nu en wat is uitgesteld","url":"https://www.bedrijfsgeheugen.nl/blog/eu-ai-act-mkb/"},{"@type":"BlogPosting","headline":"Offertes opvolgen zonder CRM","url":"https://www.bedrijfsgeheugen.nl/blog/offertes-opvolgen-zonder-crm/"},{"@type":"BlogPosting","headline":"Planning in Excel vervangen: waarmee en wanneer?","url":"https://www.bedrijfsgeheugen.nl/blog/planning-in-excel-vervangen/"}]}]}</script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/stijl.css">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=optional" rel="stylesheet">
-<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/banner-li-bedrijf.jpg">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="/assets/kop.css?v=0466dd43">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="nl_NL">
-<meta property="og:site_name" content="Bedrijfsgeheugen">
-<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/blog/">
-<meta property="og:title" content="Blog — praktische inzichten voor het mkb | Bedrijfsgeheugen">
-<meta property="og:description" content="Praktische artikelen over kennisborging, koppelingen tussen AFAS, Exact en Microsoft 365, en AI voor het mkb. Uit de praktijk, niet uit de brochure.">
-<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Blog — praktische inzichten voor het mkb | Bedrijfsgeheugen">
-<meta name="twitter:description" content="Praktische artikelen over kennisborging, koppelingen tussen AFAS, Exact en Microsoft 365, en AI voor het mkb. Uit de praktijk, niet uit de brochure.">
-<meta name="twitter:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="bgtop"><div class="bgtop-in">
-  <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
-  <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
-</div></div>
-<nav class="bgkop" id="bgkop"><div class="bgkop-in">
-<a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage"><img src="/assets/merk/logo-merk.png" alt="" width="34" height="34"><span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span></a>
-<div class="bgkop-links"><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/systemen-koppelen"><b>Systemen koppelen</b><span>Twee pakketten laten praten, zonder overtypen</span></a><a href="/ai-adoptie"><b>AI &amp; governance</b><span>Verantwoord aan de slag, met afspraken die gelden</span></a><a href="/ai-marketing-mkb"><b>AI-marketing</b><span>Zichtbaar blijven zonder er elke week tijd in te steken</span></a><a href="/due-diligence"><b>Due diligence &amp; exit</b><span>Wat weet dit bedrijf, en wat als de eigenaar wegloopt</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/afas-koppeling"><b>AFAS-koppeling</b><span>Aanvragen, orders en uren automatisch in AFAS</span></a><a href="/exact-online-koppeling"><b>Exact Online</b><span>Webshop, CRM of urenregistratie naar je boekhouding</span></a><a href="/twinfield-koppeling"><b>Twinfield</b><span>Facturen en uren zonder handmatig inboeken</span></a><a href="/webshop-koppeling"><b>Webshop koppelen</b><span>Shopify of WooCommerce naar je administratie</span></a><a href="/api-koppeling-laten-maken"><b>API-koppeling laten maken</b><span>Twee pakketten die allebei een API hebben</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Het bedrijfsgeheugen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/bedrijfsgeheugen"><b>Wat is een bedrijfsgeheugen?</b><span>Waar het over gaat, in gewone taal</span></a><a href="/product"><b>Het portaal</b><span>Waar alles doorheen loopt en zichtbaar blijft</span></a><a href="/frisse-blik"><b>Frisse blik</b><span>In 30 minuten zien waar de grootste kansen liggen</span></a><a href="/zelfscan"><b>Zelfscan</b><span>Zeven vragen over waar kennis bij jou weglekt</span></a><a href="/ai-scan"><b>AI-scan</b><span>Waar levert AI bij jou echt iets op</span></a><a href="/afmaakindex"><b>De Afmaakindex</b><span>Wat draait er nog van vorig jaar</span></a><a href="/monitor"><b>Bedrijfsgeheugen-index</b><span>Meet in tien minuten wat overtypen je kost</span></a><a href="/benchmark"><b>Benchmark</b><span>Hoe je scoort naast vergelijkbare bedrijven</span></a><a href="/hoe-het-werkt"><b>Hoe het werkt</b><span>Een handeling per keer, vaste prijs, geen traject</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/blog/"><b>Blog</b><span>Wat we tegenkomen, uitgelegd zonder jargon</span></a><a href="/ai-act"><b>AI Act</b><span>Wat er nu geldt voor bedrijven van 3 tot 250 man</span></a><a href="/data-soevereiniteit"><b>Data-soevereiniteit</b><span>Waar gaan je gegevens heen bij ChatGPT en Copilot</span></a><a href="/ai-in-bi"><b>AI in business intelligence</b><span>Wat werkt op je cijfers, en wat niet</span></a><a href="/ai-in-data-engineering"><b>AI in data engineering</b><span>Wat zin heeft en waar de grens ligt</span></a><a href="/monitor"><b>Bedrijfsgeheugen-index</b><span>Meet in tien minuten wat het bij jou kost</span></a><a href="/ai-capability-model"><b>AI-capabilitymodel</b><span>De 86 capabilities, plus een scan in negen vragen</span></a><a href="/begrippen"><b>Begrippenlijst</b><span>De termen, in gewone taal</span></a></div></div><a href="/over-ons">Over ons</a></div>
-<a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
-<button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
-</div>
-<div class="bgkop-mob" id="bgkopMob" hidden><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/systemen-koppelen">Systemen koppelen</a><a href="/ai-adoptie">AI &amp; governance</a><a href="/ai-marketing-mkb">AI-marketing</a><a href="/due-diligence">Due diligence &amp; exit</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/afas-koppeling">AFAS-koppeling</a><a href="/exact-online-koppeling">Exact Online</a><a href="/twinfield-koppeling">Twinfield</a><a href="/webshop-koppeling">Webshop koppelen</a><a href="/api-koppeling-laten-maken">API-koppeling laten maken</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/blog/">Blog</a><a href="/ai-act">AI Act</a><a href="/data-soevereiniteit">Data-soevereiniteit</a><a href="/ai-in-bi">AI in business intelligence</a><a href="/ai-in-data-engineering">AI in data engineering</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/ai-capability-model">AI-capabilitymodel</a><a href="/begrippen">Begrippenlijst</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Het bedrijfsgeheugen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/bedrijfsgeheugen">Wat is een bedrijfsgeheugen?</a><a href="/product">Het portaal</a><a href="/frisse-blik">Frisse blik</a><a href="/zelfscan">Zelfscan</a><a href="/ai-scan">AI-scan</a><a href="/afmaakindex">De Afmaakindex</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/benchmark">Benchmark</a><a href="/hoe-het-werkt">Hoe het werkt</a></div><a href="/expertises">Alle expertises</a><a href="/over-ons">Over ons</a><a class="bgkop-mcta" href="/frisse-blik">Plan een Frisse blik &rarr;</a></div>
-<script src="/assets/js/menu.js?v=198c58e3" defer></script></nav>
-
 <div class="voortgang" id="vg"></div>
-
+<nav id="kop"><div class="wrap nb">
+  <a class="logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage">
+    <img class="mark" src="/assets/merk/logo-merk.png" alt="" width="36" height="36">
+    <span class="woord">Bedrijfs<b>geheugen</b></span>
+  </a>
+  <div class="nl2">
+    <a href="/expertises">Expertises</a>
+    <a href="/connect">Product</a>
+    <a href="/#hoe">Hoe het werkt</a>
+    <a href="/blog/">Blog</a>
+    <a href="/over-ons">Over ons</a>
+  </div>
+  <a class="ncta" href="/contact">Plan een kennismaking</a>
+  <button class="menuknop" id="menuKnop" aria-label="Menu openen" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<div class="mobmenu" id="mobMenu" hidden>
+  <a href="/expertises">Expertises</a>
+  <a href="/connect">Product</a>
+  <a href="/#hoe">Hoe het werkt</a>
+  <a href="/systemen-koppelen">Systemen koppelen</a>
+  <a href="/blog/">Blog</a>
+  <a href="/over-ons">Over ons</a>
+  <a href="/zelfscan" class="mm-cta">Gratis zelfscan — 2 minuten</a>
+</div></nav>
 <main>
-<nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">&rsaquo;</span><span aria-current="page">Blog</span></nav>
-<header class="kop"><div class="wrap">
-  <span class="eyebrow">Blog</span>
-  <h1>Blog — praktische inzichten voor het mkb</h1>
-  <p class="intro">Uit de praktijk, niet uit de brochure. Praktische artikelen over kennisborging, koppelingen tussen AFAS, Exact en Microsoft 365, en AI voor het mkb.</p>
-</div></header>
 
 <section><div class="wrap">
 <div class="artikelen">
-
-  <a class="kaart" href="/blog/kennis-borgen-in-je-bedrijf/"><span class="tag">Kennisborging</span><h2>Kennis borgen in je bedrijf: zo voorkom je stilstand</h2><p>Veel mkb-bedrijven draaien prima zolang de juiste mensen aanwezig zijn. De order komt binnen, iemand weet welke uitzondering geldt en een collega kent de omweg in het systeem. Het…</p><span class="lees">Lees het artikel &rarr;</span><span class="datum">28-08-2026 &middot; nieuw</span></a>
-
-
-  <a class="kaart" href="/blog/exact-online-api/">
-    <span class="tag">Koppelingen</span>
-    <h2>Exact Online API: wat kan het en wat kost een koppeling</h2>
-    <p>REST, OAuth 2.0 en voor een beperkt aantal onderwerpen echte webhooks. Wat het kan, waar de grenzen zitten en wat een koppeling kost.</p>
-    <span class="lees">Lees het artikel &rarr;</span>
-    <span class="datum">21 augustus 2026 &middot; &plusmn; 7 min</span>
-  </a>
-
-  <a class="kaart" href="/ai-cijfers-mkb">
-    <span class="tag">Cijfers</span>
-    <h2>AI-gebruik in het mkb: de cijfers</h2>
-    <p>13,8% van de microbedrijven, 29,8% van het mkb en 66,2% van het grootbedrijf. Waar je staat op de adoptiecurve, en waar het naartoe gaat.</p>
-    <span class="lees">Lees het artikel &rarr;</span>
-    <span class="datum">20 augustus 2026 &middot; &plusmn; 8 min</span>
-  </a>
-
-  <a class="kaart" href="/waarom-ai-projecten-mislukken">
-    <span class="tag">Cijfers</span>
-    <h2>Waarom AI-projecten mislukken</h2>
-    <p>95% faalt of 74% haalt de ROI? De vier bekendste cijfers naast elkaar, met de methode erbij. Plus de 10-20-70-regel van BCG.</p>
-    <span class="lees">Lees het artikel &rarr;</span>
-    <span class="datum">20 augustus 2026 &middot; &plusmn; 6 min</span>
-  </a>
-
-  <a class="kaart" href="/kennisverlies-vergrijzing-mkb">
-    <span class="tag">Kennisborging</span>
-    <h2>Kennis borgen bij pensionering</h2>
-    <p>Negen van de tien vacatures tot 2028 zijn vervanging, niet groei. Wat dat betekent voor kennis die nergens is vastgelegd.</p>
-    <span class="lees">Lees het artikel &rarr;</span>
-    <span class="datum">20 augustus 2026 &middot; &plusmn; 6 min</span>
-  </a>
-
-  <a class="kaart" href="/cijfers-bedrijfsoverdracht">
-    <span class="tag">Cijfers</span>
-    <h2>Bedrijfsoverdracht familiebedrijven: de cijfers op een rij</h2>
-    <p>Alle cijfers over bedrijfsoverdracht en familiebedrijven, met bron, jaartal en hoe hard ze zijn. Van de opvolgingsgolf tot kennis die met pensioen gaat.</p>
-    <span class="lees">Lees het artikel &rarr;</span>
-    <span class="datum">20 augustus 2026 &middot; &plusmn; 7 min</span>
-  </a>
-
-  <a class="kaart" href="/excel-als-crm">
-    <span class="tag">Kennisborging</span>
-    <h2>Excel als CRM in een familiebedrijf: waar de grens ligt</h2>
-    <p>Waar het wel werkt, waar het stukloopt, wat het onderzoek over fouten zegt, en wat AI er wel en niet aan verandert.</p>
-    <span class="lees">Lees het artikel &rarr;</span>
-    <span class="datum">20 augustus 2026 &middot; &plusmn; 7 min</span>
-  </a>
-
-  <a class="kaart" href="/blog/afas-api/">
-    <span class="tag">Koppelingen</span>
-    <h2>AFAS API: wat kan er wel en wat niet</h2>
-    <p>GetConnectors en UpdateConnectors, geen realtime webhooks, en wat dat betekent voor het eigenaarschap van je koppeling.</p>
-    <span class="lees">Lees het artikel →</span>
-    <span class="datum">19 augustus 2026 · ± 7 min</span>
-  </a>
-
-  <a class="kaart" href="/blog/werkinstructie-voorbeeld/">
-    <span class="tag">Kennisborging</span>
-    <h2>Werkinstructie voorbeeld: zo maak je er een die gebruikt wordt</h2>
-    <p>De acht onderdelen die erin horen, de drie redenen waarom instructies stuklopen, en de test die binnen twintig minuten laat zien wat er ontbreekt.</p>
-    <span class="lees">Lees het artikel →</span>
-    <span class="datum">15 augustus 2026 · ± 7 min</span>
-  </a>
-
-  <a class="kaart" href="/blog/automatiseren-zonder-traject/">
-    <span class="tag">Digitalisering</span>
-    <h2>Automatiseren zonder traject van zes maanden</h2>
-    <p>Waarom een ERP-implementatie in het mkb zo vaak mislukt, wat die uitloop kost en de vier afspraken waarmee je automatiseert zonder groot traject.</p>
-    <span class="lees">Lees het artikel →</span>
-    <span class="datum">14 augustus 2026 · ± 7 min</span>
-  </a>
 
   <a class="kaart" href="/blog/bedrijfsopvolging-begin-bij-het-geheugen/">
     <span class="tag">Kennisborging</span>
@@ -222,14 +138,6 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
     <p>Van notulen en mail tot offerteteksten en Excel-analyses. Zeven taken met de tijdwinst per stuk, de rekensom bij € 26 per gebruiker en waarom Copilot zo vaak stilvalt.</p>
     <span class="lees">Lees het artikel →</span>
     <span class="datum">5 augustus 2026 · ± 6 min</span>
-  </a>
-
-  <a class="kaart" href="/blog/wat-kost-een-afas-partner/">
-    <span class="tag">Koppelingen</span>
-    <h2>Wat kost een AFAS-partner per maand?</h2>
-    <p>De licentie betaal je aan AFAS, de partner aan de partner. Welke bedragen je in het mkb tegenkomt, en welke kosten in vrijwel elke offerte ontbreken.</p>
-    <span class="lees">Lees het artikel →</span>
-    <span class="datum">11 augustus 2026 · ± 6 min</span>
   </a>
 
   <a class="kaart" href="/blog/wat-kost-een-afas-koppeling/">
@@ -283,7 +191,42 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 </div>
 </div></section>
 </main>
-
+<footer class="xfooter">
+  <div class="wrap fgrid">
+    <div class="fkol merk">
+      <span class="flogo">Bedrijfs<b>geheugen</b></span>
+      <p>Jij kunt je volledig richten op je bedrijf. Wij verbinden je kennis, klanten en systemen tot één geheel, op de systemen die je al hebt. Aanpakken zonder aanmodderen.</p>
+    </div>
+    <div class="fkol">
+      <h4>Pagina's</h4>
+      <a href="/">Home</a>
+      <a href="/expertises">Expertises</a>
+      <a href="/over-ons">Over ons</a>
+      <a href="/blog/">Blog</a>
+      <a href="/connect">Connect</a>
+      <a href="/frisse-blik">Frisse blik</a>
+      <a href="/zelfscan">Gratis zelfscan</a>
+    </div>
+    <div class="fkol">
+      <h4>Beginnen</h4>
+      <a href="/zelfscan">Doe de zelfscan (2 min)</a>
+      <a href="/frisse-blik">Plan een Frisse blik</a>
+      <a href="/contact">Vraag een AI-workshop aan</a>
+      <a href="/connect">Connect-wachtlijst</a>
+      <a href="/#faq">Veelgestelde vragen</a>
+    </div>
+    <div class="fkol">
+      <h4>Neem direct contact op</h4>
+      <a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a>
+      <a href="tel:+31627483345">06 - 27 48 33 45</a>
+      <a href="https://wa.me/31627483345" target="_blank" rel="noopener">WhatsApp →</a>
+      <a href="https://www.linkedin.com/company/bedrijfsgeheugen" target="_blank" rel="noopener">LinkedIn →</a>
+      <a href="/privacy">Privacyverklaring</a>
+      <span class="fklein">Bedrijfsgeheugen · KvK 68765428</span>
+    </div>
+  </div>
+  <div class="wrap fonder">© <span class="jr"></span> Bedrijfsgeheugen — strak geregeld, zonder traject</div>
+</footer>
 <script>
 (function(){var j=document.querySelectorAll('.jr');var y=new Date().getFullYear();j.forEach(function(e){e.textContent=y});})();
 </script>
@@ -328,69 +271,5 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 })();
 </script>
 <script src="/assets/stijl.js" defer></script>
-<footer class="bgvoet"><div class="bgvoet-in">
-  <div class="bgvoet-net">
-    <div>
-      <span class="bgvoet-merk">Bedrijfs<b>geheugen</b>.nl</span>
-      <p class="bgvoet-over">Systemen koppelen, kennis borgen en AI die past.<br>Voor mkb-bedrijven van 3 tot 250 medewerkers.</p>
-    </div>
-    <div class="bgvoet-kolom">
-      <span class="bgvoet-kop">Oplossingen</span>
-      <a href="/systemen-koppelen">Systemen koppelen</a>
-      <a href="/ai-adoptie">AI &amp; governance</a>
-      <a href="/ai-marketing-mkb">AI-marketing</a>
-      <a href="/workshops">AI-workshops</a>
-      <a href="/due-diligence">Due diligence &amp; exit</a>
-      <a href="/expertises">Alle expertises</a>
-    </div>
-    <div class="bgvoet-kolom">
-      <span class="bgvoet-kop">Koppelingen</span>
-      <a href="/afas-koppeling">AFAS-koppeling</a>
-      <a href="/exact-online-koppeling">Exact Online</a>
-      <a href="/twinfield-koppeling">Twinfield</a>
-      <a href="/webshop-koppeling">Webshop koppelen</a>
-      <a href="/api-koppeling-laten-maken">API-koppeling laten maken</a>
-    </div>
-    <div class="bgvoet-kolom">
-      <span class="bgvoet-kop">Kennis</span>
-      <a href="/blog/">Blog</a>
-      <a href="/ai-act">AI Act</a>
-      <a href="/data-soevereiniteit">Data-soevereiniteit</a>
-      <a href="/ai-in-bi">AI in business intelligence</a>
-      <a href="/ai-in-data-engineering">AI in data engineering</a>
-      <a href="/monitor">Bedrijfsgeheugen-index</a>
-      <a href="/benchmark">Benchmark</a>
-      <a href="/begrippen">Begrippenlijst</a>
-    </div>
-    <div class="bgvoet-kolom">
-      <span class="bgvoet-kop">Het bedrijfsgeheugen</span>
-      <a href="/bedrijfsgeheugen">Wat is een bedrijfsgeheugen?</a>
-      <a href="/product">Het portaal</a>
-      <a href="/frisse-blik">Frisse blik</a>
-      <a href="/zelfscan">Zelfscan</a>
-      <a href="/ai-scan">AI-scan</a>
-      <a href="/afmaakindex">De Afmaakindex</a>
-      <a href="/monitor">Bedrijfsgeheugen-index</a>
-      <a href="/hoe-het-werkt">Hoe het werkt</a>
-      <a href="/wijzigingen">Wijzigingen</a>
-    </div>
-    <div class="bgvoet-kolom">
-      <span class="bgvoet-kop">Over ons</span>
-      <a href="/over-ons">Ons verhaal</a>
-      <a href="/voor-mkb">Voor het mkb</a>
-      <a href="/investeerders-ma">Investeerders &amp; M&amp;A</a>
-      <a href="/contact">Contact</a>
-    </div>
-    <div class="bgvoet-cta">
-      <b>Plan een Frisse blik</b>
-      <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
-      <a class="bgvoet-knop" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
-    </div>
-  </div>
-  <div class="bgvoet-onder">
-    <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
-    <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
-  </div>
-</div></footer>
 </body>
 </html>

@@ -1,91 +1,12 @@
-# LET OP: dit bestand is TOML. Regels in _redirects-vorm (/van /naar 301)
-# horen hier NIET in - die horen in het bestand _redirects. Staat er zo'n regel
-# tussen, dan kan Netlify de configuratie niet lezen en faalt elke build met
-# 'Failed during stage: Reading and parsing configuration files'. Dat gebeurde
-# op 20 augustus 2026: de hele inhoud van _redirects was hier twee keer
-# ingeplakt door een workflow.
-
 # Bedrijfsgeheugen — routing, headers en caching
-#
-# OMGEVINGSVARIABELEN (Site configuration → Environment variables)
-#   ANTHROPIC_API_KEY  — nodig voor /api/vraag, de zoekbalk in de kennisbank
-#   NOTION_TOKEN       — nodig voor /api/monitor, de Digitaliseringsmonitor
-#                        De Notion-database moet ook met die integratie gedeeld zijn,
-#                        anders geeft Notion een 404 terwijl het token klopt.
-# Let op: een gewijzigde variabele werkt pas vanaf de eerstvolgende build.
 
 [build]
   publish = "."
-  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
-
-# Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
-# Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
-# functie leest process.env. Zonder deze uitzondering faalt elke build.
-[build.environment]
-  SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml"
-
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
 
 # .html-varianten netjes doorsturen naar de schone URL (voorkomt duplicate content)
 [[redirects]]
-  from = "/excel-als-crm.html"
-  to = "/excel-als-crm"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/cijfers-bedrijfsoverdracht.html"
-  to = "/cijfers-bedrijfsoverdracht"
-  status = 301
-  force = true
-
-[[redirects]]
   from = "/index.html"
   to = "/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/ai-capability-model.html"
-  to = "/ai-capability-model"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/wijzigingen.html"
-  to = "/wijzigingen"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/wijzigingen-uitgelegd.html"
-  to = "/wijzigingen-uitgelegd"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/klantportaal-demo.html"
-  to = "/klantportaal-demo"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/ai-marketing-mkb.html"
-  to = "/ai-marketing-mkb"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/ai-marketingmachine"
-  to = "/ai-marketing-mkb"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/product.html"
-  to = "/product"
   status = 301
   force = true
 
@@ -137,24 +58,6 @@
   status = 301
   force = true
 
-[[redirects]]
-  from = "/voor-mkb.html"
-  to = "/voor-mkb"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/investeerders-ma.html"
-  to = "/investeerders-ma"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/due-diligence.html"
-  to = "/due-diligence"
-  status = 301
-  force = true
-
 # Blog zonder slash → met slash
 [[redirects]]
   from = "/blog"
@@ -177,120 +80,3 @@
   for = "/*.jpg"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-# Stijl en scripts korter cachen. Ze hebben een versienummer in de URL, dus een
-# nieuwe versie krijgt vanzelf een nieuw adres; deze regel is de vangnetlaag
-# voor bestanden die zonder versienummer worden opgevraagd.
-[[headers]]
-  for = "/assets/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
-
-[[headers]]
-  for = "/assets/js/*"
-  [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
-
-# Slot op de interne map. De edge function vraagt om inloggegevens; die staan
-# als INTERN_GEBRUIKER en INTERN_WACHTWOORD in de Netlify-omgevingsvariabelen.
-[[edge_functions]]
-  function = "intern-slot"
-  path = "/intern/*"
-
-# .html-varianten die Google alsnog had opgepikt, doorsturen naar de schone URL
-
-[[redirects]]
-  from = "/brochure.html"
-  to = "/brochure"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/afas-pocket-koppelen.html"
-  to = "/afas-pocket-koppelen"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/ai-in-bi.html"
-  to = "/ai-in-bi"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/ai-in-data-engineering.html"
-  to = "/ai-in-data-engineering"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/api-koppeling-laten-maken.html"
-  to = "/api-koppeling-laten-maken"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/bedrijfsprocessen-automatiseren.html"
-  to = "/bedrijfsprocessen-automatiseren"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/exact-online-koppeling.html"
-  to = "/exact-online-koppeling"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/frisse-blik.html"
-  to = "/frisse-blik"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/monitor.html"
-  to = "/monitor"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/systemen-koppelen.html"
-  to = "/systemen-koppelen"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/twinfield-koppeling.html"
-  to = "/twinfield-koppeling"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/webshop-koppeling.html"
-  to = "/webshop-koppeling"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/kennisverlies-vergrijzing-mkb.html"
-  to = "/kennisverlies-vergrijzing-mkb"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/ai-cijfers-mkb.html"
-  to = "/ai-cijfers-mkb"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/waarom-ai-projecten-mislukken.html"
-  to = "/waarom-ai-projecten-mislukken"
-  status = 301
-  force = true
-
-# Deploy previews zijn bewust een exacte kopie van de productie-build.
-# Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
-# alternatieve preview-composer meer die een andere website kan tonen.
-[context.deploy-preview]
-  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"

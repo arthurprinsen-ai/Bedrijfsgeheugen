@@ -1,5 +1,0 @@
-{
-  "$id":"brain.v1/signal",
-  "allOf":["brain.v1/envelope"],
-  "required":["source","entity_refs","observed_at","freshness","evidence_refs","severity","domain","dedupe_key","processing_cost"]
-}

@@ -1,6 +1,0 @@
-{
-  "$id":"brain.v1/pattern",
-  "allOf":["brain.v1/envelope"],
-  "required":["type","context","conditions","recommended_action","effect","sample_size","confidence_level","valid_from","last_confirmed_at","decay","supporting_outcomes","contradicting_outcomes","status"],
-  "enums":{"status":["EXPERIMENTAL","EMERGING","PROVEN","DEGRADING","RETIRED"]}
-}
