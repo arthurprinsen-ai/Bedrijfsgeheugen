@@ -22,6 +22,7 @@ jobs:
           tests/v18-production-promotion.test.mjs
           tests/site-baseline-guardian.test.mjs
           tests/portal-server-state.test.mjs
+          tests/portal-question-handler.test.mjs
           tests/portal-production-contract.test.mjs
           tests/portal-data-adapter.test.mjs
           tests/portal-legacy-state.test.mjs
