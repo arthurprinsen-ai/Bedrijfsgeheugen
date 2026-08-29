@@ -8,9 +8,24 @@ Agents herstellen aantoonbare fouten zelfstandig, houden de laatste groene toest
 
 Een technisch succesvolle run is nooit voldoende wanneer een verwacht resultaat ontbreekt. Als een outcome due is, zijn zero-candidate, zero-work, zero-output en success-without-outcome rode toestanden. Een gemiste outcome wordt `MISSED_OBLIGATION` en blijft herstelwerk totdat onafhankelijk bewijs bestaat of een echte harde grens resteert.
 
+## Accepted website baseline en semantic content drift
+De geaccepteerde website-identiteit in `site/accepted-baseline.json` en `site/navigation-baseline.json` is een protected invariant. **Semantic content drift** betekent dat een route technisch bestaat en mogelijk zelfs SEO-groen is, maar inhoudelijk een andere pagina-/propositie-/verhaalversie vertegenwoordigt dan de accepted website baseline.
+
+Bij semantic content drift geldt verplicht dezelfde autonome herstelroute:
+1. blokkeer preview-naar-productiepromotie;
+2. rapporteer route, gewijzigde of ontbrekende semantic anchors en de niet-gedekte wijzigingsscope;
+3. herstel alleen de afwijkende protected content vanuit de versioned **last-known-good** accepted baseline; draai geen brede repository rollback;
+4. behoud additieve security-, SEO-, Brain-, portal-, analytics- en infrastructuurverbeteringen;
+5. controleer dat desktop en mobiel dezelfde accepted navigation route catalog behouden;
+6. draai `tests/site-baseline-guardian.test.mjs`, V18 Production Promotion, Live Preview Smoke en Pagina-/SEO-controle opnieuw;
+7. als een gate rood blijft, vervolg de normale diagnose-/repairlus en promoveer niet;
+8. schrijf incident, root cause, herstelbron, herstelcommit en nieuwe preventieregel naar development ledger en gedeeld agentgeheugen.
+
+Een protected pagina mag alleen inhoudelijk veranderen wanneer een expliciete machineleesbare scope de route dekt. Zonder explicit scope is iedere onverwachte semantic hash/anchor-drift rood, ook als HTTP, HTML, H1, canonical of SEO technisch geldig zijn.
+
 ## Standaardcyclus
 1. **Observe** — lees actuele runtime-, build-, deploy-, branch- en obligation/outcome-status.
-2. **Classify** — bepaal: code, data, config, asset, dependency, performance, kosten, externe storing of gemiste obligation.
+2. **Classify** — bepaal: code, data, config, asset, dependency, performance, kosten, externe storing, semantic content drift of gemiste obligation.
 3. **Define outcome** — bepaal welk concreet resultaat verwacht wordt en welke onafhankelijke evidence dat bewijst.
 4. **Protect** — bewaar de laatste bewezen groene productieversie als rollback/fallback.
 5. **Reproduce** — leg symptoom of outcome-gap vast met concreet bewijs.
@@ -40,6 +55,7 @@ Een open rood herstelitem of obligation wordt bij de volgende agentrun automatis
 
 ## Beslisregels
 - **Expected outcome ontbreekt ondanks technisch succes:** classificeer RED / `MISSED_OBLIGATION` en start of hervat recovery.
+- **Semantic content drift:** blokkeer release, herstel protected route vanaf accepted last-known-good, verifieer volledige site-identiteit en leg de foutklasse vast.
 - **Known issue + known fix:** fix direct; geen nieuwe verkenning.
 - **Known issue + eerdere fix faalt:** onderzoek verschil in omgeving/state en maak nieuwe regressiecheck.
 - **Nieuwe fout, laag risico:** zelfstandig herstellen tot groen.
@@ -63,6 +79,7 @@ Een open rood herstelitem of obligation wordt bij de volgende agentrun automatis
 ## Fallbacks
 Agents moeten waar mogelijk ontwerpen met:
 - last-known-good productieartifact;
+- accepted website baseline;
 - versioned assets;
 - cached/read-only state;
 - idempotente writes en idempotency keys;
@@ -98,6 +115,7 @@ We sturen op:
 - percentage obligations vóór deadline geverifieerd;
 - aantal overdue unverified obligations;
 - aantal technisch-succes-zonder-outcome incidents;
+- aantal semantic-content-drift incidents dat vóór productie is geblokkeerd;
 - percentage groene kandidaten automatisch succesvol naar productie gepromoveerd;
 - rollback rate;
 - regressiepercentage;
