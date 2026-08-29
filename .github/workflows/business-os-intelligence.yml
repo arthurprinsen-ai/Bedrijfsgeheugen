@@ -7,12 +7,15 @@ on:
       - 'platform/agents/**'
       - 'platform/brain/**'
       - 'platform/api/brain-gateway.mjs'
+      - 'platform/api/agent-fabric-gateway.mjs'
       - 'netlify/functions/**'
       - 'tests/intelligence-agent-runtime.test.mjs'
       - 'tests/brain-acceptance.test.mjs'
       - 'tests/brain-api-gateway.test.mjs'
       - 'tests/brain-production-ai.test.mjs'
       - 'tests/brain-storage-port.test.mjs'
+      - 'tests/agent-fabric.test.mjs'
+      - 'tests/agent-fabric-gateway.test.mjs'
       - '.github/workflows/business-os-intelligence.yml'
   workflow_dispatch:
 
@@ -28,6 +31,11 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Shared Agent Fabric contracts
+        run: node --test tests/agent-fabric.test.mjs
+      - name: Agent Fabric API boundary
+        if: ${{ hashFiles('tests/agent-fabric-gateway.test.mjs') != '' }}
+        run: node --test tests/agent-fabric-gateway.test.mjs
       - name: Intelligence and agent runtime contracts
         run: node --test tests/intelligence-agent-runtime.test.mjs
       - name: End-to-end Brain Acceptance Gate
