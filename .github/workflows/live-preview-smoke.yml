@@ -7,7 +7,7 @@ on:
     paths:
       - 'components/**'
       - 'tools/**'
-      - 'tests/integration/live-hero-video.spec.js'
+      - 'tests/integration/**'
       - 'netlify.toml'
       - '.github/workflows/live-preview-smoke.yml'
   workflow_dispatch:
@@ -82,6 +82,11 @@ jobs:
         run: |
           npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
+
+      - name: Verify header menu interactions
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: npx playwright test tests/integration/live-menu-interaction.spec.js --workers=1
 
       - name: Verify hero video actually plays
         env:
