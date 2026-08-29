@@ -12,4 +12,9 @@ assert.match(builder, /prototype-v18-stable\.html/, 'builder must retain a stabl
 const netlify = readFileSync('netlify.toml','utf8');
 assert.match(netlify, /node tools\/bouw-v18-production\.mjs/, 'Netlify build must run the V18 production builder');
 
+const mobileMenu = readFileSync('assets/js/menu.js','utf8');
+assert.match(mobileMenu, /meer\s*:\s*['"]Meer['"]/, 'mobile drilldown must expose a Meer fallback group');
+assert.match(mobileMenu, /volgorde\s*=\s*\[[^\]]*['"]meer['"]/s, 'Meer must be part of mobile drilldown order');
+assert.match(mobileMenu, /groepen\.meer/, 'leftover legacy mobile links must be collected into Meer');
+
 console.log('V18 production promotion contract passed');
