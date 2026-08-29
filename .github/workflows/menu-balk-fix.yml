@@ -1,8 +1,18 @@
 name: Menu-balk fix
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      delivery_mode:
+        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        type: choice
+        required: true
+        default: direct
+        options:
+          - direct
+          - candidate-pr
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: repo-schrijven
@@ -13,6 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Exacte basis vastleggen
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Balk aanpassen op alle paginas
         run: |
           python3 - <<'PY'
@@ -40,10 +57,89 @@ jobs:
               else:
                   print("al goed:",f)
           PY
-      - name: Commit en push
+
+      - name: Wijzigingen valideren en committen
+        id: commit
+        env:
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          DELIVERY_MODE: ${{ inputs.delivery_mode }}
         run: |
+          set -euo pipefail
+          mapfile -t changed < <(git diff --name-only)
+          if [ "${#changed[@]}" -eq 0 ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Geen menu-wijzigingen nodig."
+            exit 0
+          fi
+
+          for f in "${changed[@]}"; do
+            case "$f" in
+              *.html) ;;
+              *) echo "::error::NON_HTML_CHANGE:$f"; exit 1 ;;
+            esac
+          done
+
+          printf '%s\n' "${changed[@]}" > /tmp/menu-writer-files.txt
           git config user.name "site-fix"
           git config user.email "actions@users.noreply.github.com"
-          git add -A
-          git commit -m "menu-balk: een kleur, verschijnt bij scrollen, mobiel uitgelijnd" || echo "niets te committen"
-          git push
+          git add -- "${changed[@]}"
+          git commit -m "menu-balk: een kleur, verschijnt bij scrollen, mobiel uitgelijnd"
+
+          if [ "$DELIVERY_MODE" = "candidate-pr" ]; then
+            export CHANGED_FILES="$(cat /tmp/menu-writer-files.txt)"
+            CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
+          const files = String(process.env.CHANGED_FILES || '').split('\n').filter(Boolean);
+          const candidate = createWriterCandidate({
+            writer: 'menu-balk-fix',
+            baseSha: process.env.BASE_SHA,
+            runId: process.env.GITHUB_RUN_ID,
+            changedFiles: files,
+            allowedFiles: files,
+            rollbackSha: process.env.BASE_SHA,
+          });
+          validateWriterCandidate(candidate);
+          console.log(candidate.branch);
+          NODE
+            )
+            echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
+          else
+            echo "delivery=direct" >> "$GITHUB_OUTPUT"
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Direct publiceren op huidige veilige pad
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'direct'
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Candidate branch publiceren
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        env:
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          # writer/menu-balk-fix/<deterministic-id> wordt door de canonical candidate builder geleverd.
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+      - name: Candidate PR openen
+        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Candidate PR bestaat al: #$existing"
+            exit 0
+          fi
+          gh pr create \
+            --base main \
+            --head "$CANDIDATE_BRANCH" \
+            --title "Menu-balk candidate $GITHUB_RUN_ID" \
+            --body "Gecontroleerde candidate uit menu-balk-fix. Base SHA: $BASE_SHA. Deze workflow merge't zichzelf niet; normale repositorygates beslissen over promotie."
