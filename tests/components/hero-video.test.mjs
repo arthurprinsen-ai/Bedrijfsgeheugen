@@ -8,13 +8,16 @@ const js = await readFile('components/hero-video/hero-video.js', 'utf8');
 const contract = JSON.parse(await readFile('components/hero-video/contract.json', 'utf8'));
 const media = JSON.parse(await readFile('components/hero-video/media.json', 'utf8'));
 
-test('hero video has one isolated canonical slot controlled by local media manifest', () => {
+test('hero video preserves the exact accepted baseline media in one isolated slot', () => {
   assert.match(html, /data-bg-component="hero-video"/);
   assert.equal((html.match(/<video\b/g) || []).length, 1);
   assert.equal(contract.id, 'hero-video');
   assert.equal(contract.root, '[data-bg-component="hero-video"]');
-  assert.equal(typeof media.enabled, 'boolean');
-  assert.equal(media.enabled, false, 'baseline must remain video-disabled until separately accepted');
+  assert.equal(media.enabled, true);
+  assert.equal(media.src, '/assets/openart-hero-iphone-safe-v1.mp4');
+  assert.equal(media.type, 'video/mp4');
+  assert.match(html, /openart-hero-iphone-safe-v1\.mp4/);
+  assert.match(html, /AI-gedreven\. Menselijk gericht\./);
 });
 
 test('hero video owns a poster fallback and fixed aspect ratio', () => {
@@ -35,6 +38,6 @@ test('hero video cannot reach sibling components', () => {
 
 test('media swap interface is local and explicit', () => {
   assert.ok(contract.ownedFiles.includes('components/hero-video/media.json'));
-  assert.ok(contract.invariants.includes('baseline-disabled-until-media-accepted'));
+  assert.ok(contract.invariants.includes('baseline-media-preserved'));
   assert.ok(contract.invariants.includes('poster-fallback'));
 });
