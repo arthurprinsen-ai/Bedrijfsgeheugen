@@ -60,7 +60,7 @@ const DOMAIN_VIEWS = {
         ['Strategic choice','Enterprise focus boven losse consultancy','Menselijk goedgekeurd','evidence'],
       ])],
       ['Aannames & alignment', `<div class="split"><article class="card detail-card"><span class="tag risk">REVIEW</span><h3>Implementatiecapaciteit groeit mee</h3><p>Confidence 61% · 2 ondersteunende bronnen · 1 tegengesteld capaciteitsignaal.</p><button class="link-btn" data-drawer="evidence">Bekijk bewijs →</button></article><article class="card detail-card"><span class="tag opportunity">ALIGNED</span><h3>Website → propositie → roadmap</h3><p>De kernpropositie en actieve groeidoelen verwijzen naar dezelfde canonical objects.</p></article></div>`],
-      ['Decision Inbox', table(['Besluit','Impact','Owner','Status'], [['CRM-integratie versnellen','Hoog','Directie','Review'],['Scale pricing experiment','Midden','Growth','Concept']]))
+      ['Decision Inbox', table(['Besluit','Impact','Owner','Status'], [['CRM-integratie versnellen','Hoog','Directie','Review'],['Scale pricing experiment','Midden','Growth','Concept']])]
     ]
   }),
   'Groei': () => workspace({
@@ -69,7 +69,7 @@ const DOMAIN_VIEWS = {
     sections:[
       ['Commercial control', cards([['Pricing','4 actieve plannen','1 experiment · 1 review','change'],['Pipeline','€640K qualified','2 opportunities risk','evidence'],['Customer','14 expansion signals','3 churn risks','opportunity']])],
       ['Pricing consistency', `<article class="card detail-card"><div class="flow-row"><b>Canonical PricePlan €349</b><span>···→</span><b>Website €349</b><span>···→</span><b>Billing €299</b></div><p class="muted">Derived Finding: billing wijkt af van ACTIVE PricePlan. Het systeem corrigeert dit niet stilletjes.</p><button class="link-btn" data-drawer="change">Maak change proposal →</button></article>`],
-      ['External opportunities', table(['Signaal','Contextmatch','Confidence','Actie'], [['AI governance vraag groeit','3 objecten','81%','Onderzoeken'],['Subsidie digitalisering','2 initiatives','74%','Kwalificeren']]))
+      ['External opportunities', table(['Signaal','Contextmatch','Confidence','Actie'], [['AI governance vraag groeit','3 objecten','81%','Onderzoeken'],['Subsidie digitalisering','2 initiatives','74%','Kwalificeren']])]
     ]
   }),
   'Operatie': () => workspace({
@@ -78,14 +78,14 @@ const DOMAIN_VIEWS = {
     sections:[
       ['Order-to-Cash', `<div class="card process-map"><button data-drawer="evidence">Order</button><span>···→</span><button class="warn-node" data-drawer="change">Validatie</button><span>···→</span><button>Approval</button><span>···→</span><button>Delivery</button><span>···→</span><button>Billing</button></div>`],
       ['Wat remt?', cards([['Validatie','8.2 uur gemiddelde wachttijd','31% rework · 2 systems','change'],['Knowledge handoff','1 kritieke kennishouder','3 processes affected','knowledge'],['Supplier API','Freshness attention','Laatst verified 47 min geleden','evidence']])],
-      ['Automation opportunities', table(['Proces','Potentieel','Risico','Autonomie'], [['Invoice matching','6u/week','Laag','Prepare'],['Customer onboarding','9u/week','Midden','Approval']]))
+      ['Automation opportunities', table(['Proces','Potentieel','Risico','Autonomie'], [['Invoice matching','6u/week','Laag','Prepare'],['Customer onboarding','9u/week','Midden','Approval']])]
     ]
   }),
   'Organisatie': () => workspace({
     eyebrow:'Organisatie', title:'Capabilities, ownership en kennis', text:'Niet alleen organogrammen: welke capabilities zijn nodig, wie draagt verantwoordelijkheid en waar zit operationele afhankelijkheid?',
     stats:[['71','organization health'],['63','knowledge health'],['3','ownership gaps'],['2','bus-factor risks']],
     sections:[
-      ['Capability gaps', table(['Capability','Nu','Nodig','Gap'], [['Enterprise Sales','2.8','4.1','1.3'],['Implementation','3.2','3.8','0.6'],['AI Governance','2.4','4.0','1.6']])) ,
+      ['Capability gaps', table(['Capability','Nu','Nodig','Gap'], [['Enterprise Sales','2.8','4.1','1.3'],['Implementation','3.2','3.8','0.6'],['AI Governance','2.4','4.0','1.6']])],
       ['Knowledge resilience', cards([['Finance closing','1 primaire expert','Freshness 18d · High criticality','knowledge'],['CRM configuration','2 experts','Document coverage 84%','evidence'],['Pricing rationale','Owner aanwezig','Review over 21d','decision']])],
       ['Ownership', `<article class="card detail-card"><div class="flow-row"><b>Goal</b><span>···→</span><b>Capability</b><span>···→</span><b>Process</b><span>···→</span><b>Role</b><span>···→</span><b>Team</b></div><p class="muted">Accountable, Responsible, Contributors, Reviewer en Approver blijven expliciete relaties.</p></article>`]
     ]
@@ -94,9 +94,9 @@ const DOMAIN_VIEWS = {
     eyebrow:'Data & Technologie', title:'Systemen, data, integraties en AI', text:'Technische gezondheid wordt vertaald naar bedrijfsimpact, lineage, datakwaliteit, kosten en beheersbare autonomie.',
     stats:[['29','integraties healthy'],['2','degraded'],['76','data/tech health'],['0','failed']],
     sections:[
-      ['Integration Health', table(['Integratie','Status','Freshness','Impact'], [['CRM → Portal','Healthy','2 min','Revenue'],['ERP → Finance','Healthy','8 min','Finance'],['Supplier API','Attention','47 min','Operations']])) ,
+      ['Integration Health', table(['Integratie','Status','Freshness','Impact'], [['CRM → Portal','Healthy','2 min','Revenue'],['ERP → Finance','Healthy','8 min','Finance'],['Supplier API','Attention','47 min','Operations']])],
       ['Data lineage', `<article class="card detail-card"><div class="flow-row"><b>Revenue KPI</b><span>←</span><b>Metric</b><span>←</span><b>Dataset</b><span>←</span><b>Integration</b><span>←</span><b>ERP</b></div><button class="link-btn" data-drawer="evidence">Bekijk lineage →</button></article>`],
-      ['AI Systems', table(['Use-case','Data','Autonomie','Governance'], [['Management Summary','Internal/Confidential','Advise','Approved'],['Integration recovery','Internal','L5 safe patterns','Approved'],['HR candidate ranking','Restricted','None','BLOCKED']]))
+      ['AI Systems', table(['Use-case','Data','Autonomie','Governance'], [['Management Summary','Internal/Confidential','Advise','Approved'],['Integration recovery','Internal','L5 safe patterns','Approved'],['HR candidate ranking','Restricted','None','BLOCKED']])]
     ]
   }),
   'Uitvoering': () => workspace({
@@ -105,19 +105,19 @@ const DOMAIN_VIEWS = {
     sections:[
       ['Change Center', cards([['BG-204 · CRM Integration','v8.3 → v8.4','HIGH IMPACT · Review nodig','change'],['BG-207 · Pricing experiment','Scale plan working version','Impact analysis','change'],['BG-209 · SEO schema fix','Verified','No regression','evidence']])],
       ['Roadmap & dependencies', `<article class="card detail-card"><div class="flow-row"><b>CRM</b><span>···→</span><b>Sales efficiency</b><span>···→</span><b>Onboarding</b><span>···→</span><b>Revenue goal</b></div><p class="muted">€310K expected value deelt dezelfde CRM-afhankelijkheid. Scenario-state blijft apart van ACTIVE.</p><button class="link-btn" data-drawer="change">Simuleer herplanning →</button></article>`],
-      ['Impact', table(['Change','Expected','Observed','Verified'], [['CRM pilot','€110K','€84K','€79K · 80%'],['Onboarding automation','9u/week','7.8u/week','7.1u/week · 88%']]))
+      ['Impact', table(['Change','Expected','Observed','Verified'], [['CRM pilot','€110K','€84K','€79K · 80%'],['Onboarding automation','9u/week','7.8u/week','7.1u/week · 88%']])]
     ]
   }),
   'Mijn werk': () => workspace({
     eyebrow:'Mijn werk', title:'Eén persoonlijke inbox uit de hele Company Graph', text:'Acties, besluiten, reviews, approvals, blockers, AI-voorstellen en access reviews komen samen op prioriteit.',
     stats:[['4','vandaag'],['2','besluiten'],['3','reviews'],['1','blocked']],
-    sections:[['Vandaag', table(['Werk','Bron','Deadline','Status'], [['Review CRM change','Change BG-204','Vandaag','Review'],['Besluit Scale pricing','Decision DEC-18','Morgen','Open'],['Access review externe adviseur','Trust','3 sep','Review'],['Kennisrisk owner toewijzen','Process Finance','5 sep','Open']]))],['AI-voorstellen', cards([['Automatiseer safe token refresh','18 eerdere incidenten · 100% verified','Voorstel autonomie L5','agent'],['Consolideer pricing evidence','2 conflicterende bronnen','Prepare','evidence']])]
+    sections:[['Vandaag', table(['Werk','Bron','Deadline','Status'], [['Review CRM change','Change BG-204','Vandaag','Review'],['Besluit Scale pricing','Decision DEC-18','Morgen','Open'],['Access review externe adviseur','Trust','3 sep','Review'],['Kennisrisk owner toewijzen','Process Finance','5 sep','Open']])],['AI-voorstellen', cards([['Automatiseer safe token refresh','18 eerdere incidenten · 100% verified','Voorstel autonomie L5','agent'],['Consolideer pricing evidence','2 conflicterende bronnen','Prepare','evidence']])]
     ]
   }),
   'Model Library': () => workspace({
     eyebrow:'Model Library', title:'Alle modellen en canvassen blijven intact', text:'Het universele workspace-contract voegt owner, versie, completeness, quality, confidence, freshness, AI Review, evidence en history toe zonder modelvelden plat te slaan.',
     stats:[['12','modellen'],['8','active'],['3','review nodig'],['1','stale']],
-    sections:[['Library', table(['Model','Completeness','Quality','Freshness'], [['Strategy DNA','92%','High','Current'],['Execution Canvas','84%','Medium','Current'],['AI Capability Model','78%','High','Review 4d'],['Due Diligence Canvas','69%','Medium','Stale']]))],['AI Review', cards([['Strategy DNA','2 zwakke assumptions','Evidence review','evidence'],['Execution Canvas','1 ownership gap','Create action','decision'],['AI Capability','3 dependencies','Context available','evidence']])]
+    sections:[['Library', table(['Model','Completeness','Quality','Freshness'], [['Strategy DNA','92%','High','Current'],['Execution Canvas','84%','Medium','Current'],['AI Capability Model','78%','High','Review 4d'],['Due Diligence Canvas','69%','Medium','Stale']])],['AI Review', cards([['Strategy DNA','2 zwakke assumptions','Evidence review','evidence'],['Execution Canvas','1 ownership gap','Create action','decision'],['AI Capability','3 dependencies','Context available','evidence']])]
     ]
   }),
   'Trust & Governance': () => workspace({
@@ -125,7 +125,7 @@ const DOMAIN_VIEWS = {
     stats:[['94','trust score'],['1','AI review'],['0','critical access risks'],['91%','evidence current']],
     sections:[
       ['Trust Map', `<div class="card process-map trust-map"><button data-drawer="access">People</button><span>···→</span><button data-drawer="access">Roles</button><span>···→</span><button data-drawer="trust">Data</button><span>···→</span><button data-drawer="trust">AI</button><span>···→</span><button data-drawer="agent">Agents</button><span>···→</span><button data-drawer="change">Systems</button></div>`],
-      ['AI Register', table(['Use-case','Risk','Human oversight','Status'], [['Management Summary','Transparency','Available','Approved'],['Website Agent','Other','Policy-based','Approved'],['HR candidate ranking','Potential High Risk','Undefined','BLOCKED']])) ,
+      ['AI Register', table(['Use-case','Risk','Human oversight','Status'], [['Management Summary','Transparency','Available','Approved'],['Website Agent','Other','Policy-based','Approved'],['HR candidate ranking','Potential High Risk','Undefined','BLOCKED']])],
       ['Agent Team', cards([['Integration Specialist','L5 safe recovery','Verifying CRM health','agent'],['Risk Specialist','Advise/Prepare','Impact assessed','agent'],['QA Guardian','Verify','All protected gates green','agent']])],
       ['Access Center', `<article class="card detail-card"><h3>Effective Access · voorbeeldgebruiker</h3><div class="permission-grid"><span>Strategie <b>Full</b></span><span>Finance <b>View</b></span><span>HR <b>None</b></span><span>AI Process <b>3 use-cases</b></span></div><button class="link-btn" data-drawer="access">Waarom deze toegang? →</button></article>`]
     ]
@@ -133,7 +133,7 @@ const DOMAIN_VIEWS = {
   'Beheer': () => workspace({
     eyebrow:'Beheer', title:'Organisatie-instellingen en administratie', text:'Configuratie blijft gescheiden van dagelijkse managementaandacht. Gevoelige wijzigingen lopen via dezelfde Change- en Policy-engine.',
     stats:[['12','gebruikers'],['7','rollen'],['4','integraties'],['0','overdue invoices']],
-    sections:[['Beheer', cards([['Gebruikers & rollen','Effective access en reviews','Policy controlled','access'],['Koppelingen','Bouwen en configureren','Health & cost','change'],['Facturen','Abonnement en facturen','Restricted permission','evidence']])],['Platform', table(['Onderdeel','Status','Laatste check'], [['Canonical contracts','Healthy','Nu'],['AI Data Gateway','Healthy','Nu'],['Portal parity','Healthy','Nu'],['Live preview smoke','Healthy','Nu']]))]
+    sections:[['Beheer', cards([['Gebruikers & rollen','Effective access en reviews','Policy controlled','access'],['Koppelingen','Bouwen en configureren','Health & cost','change'],['Facturen','Abonnement en facturen','Restricted permission','evidence']])],['Platform', table(['Onderdeel','Status','Laatste check'], [['Canonical contracts','Healthy','Nu'],['AI Data Gateway','Healthy','Nu'],['Portal parity','Healthy','Nu'],['Live preview smoke','Healthy','Nu']])]
     ]
   }),
 };
