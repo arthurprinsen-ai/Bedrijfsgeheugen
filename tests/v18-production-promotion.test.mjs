@@ -16,5 +16,7 @@ const mobileMenu = readFileSync('assets/js/menu.js','utf8');
 assert.match(mobileMenu, /meer\s*:\s*['"]Meer['"]/, 'mobile drilldown must expose a Meer fallback group');
 assert.match(mobileMenu, /volgorde\s*=\s*\[[^\]]*['"]meer['"]/s, 'Meer must be part of mobile drilldown order');
 assert.match(mobileMenu, /groepen\.meer/, 'leftover legacy mobile links must be collected into Meer');
+assert.match(mobileMenu, /['"]\/workshops['"]/, 'Meer must restore AI-workshops from the legacy mobile menu');
+assert.match(mobileMenu, /['"]\/wijzigingen['"]/, 'Meer must restore Wijzigingen from the legacy mobile menu');
 
 console.log('V18 production promotion contract passed');
