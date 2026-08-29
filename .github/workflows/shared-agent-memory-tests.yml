@@ -21,4 +21,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/development-doc-contract.test.mjs tests/team-learning-event.test.mjs tests/team-memory-fingerprint.test.mjs tests/opportunity-scout.test.mjs tests/production-promotion-controller.test.mjs tests/hero-media-normalizer.test.mjs tests/hero-media-executor.test.mjs
+      - run: node --test tests/development-doc-contract.test.mjs tests/team-learning-event.test.mjs tests/team-memory-fingerprint.test.mjs tests/opportunity-scout.test.mjs tests/production-promotion-controller.test.mjs tests/hero-media-normalizer.test.mjs tests/hero-media-executor.test.mjs tests/paginacontrole-concurrent-push.test.mjs
