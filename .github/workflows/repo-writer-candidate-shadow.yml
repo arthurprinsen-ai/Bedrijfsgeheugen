@@ -1,0 +1,25 @@
+name: Repository Writer Candidate Shadow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: startsWith(github.head_ref, 'writer/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify bounded writer candidate paths
+        run: node scripts/ci/repo-writer-shadow-verify.mjs
