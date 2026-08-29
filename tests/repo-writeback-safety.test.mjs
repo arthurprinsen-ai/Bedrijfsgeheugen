@@ -19,12 +19,25 @@ const contents = Object.fromEntries(
 // - ci|main-writeback|cancelled-mid-write
 //
 // AI may prepare content, but only deterministic workflow code may decide what
-// is staged/committed/pushed to main.
+// is staged/committed/pushed to main. PR-only verification may keep a per-PR
+// cancellable lock as long as every main-writing run resolves to repo-schrijven
+// and is non-cancellable.
 
-test('all known main-writing workflows share the non-cancelling repository writer lock', () => {
-  for (const [path, workflow] of Object.entries(contents)) {
-    assert.match(workflow, /concurrency:\s*[\s\S]*?group:\s*repo-schrijven\s*[\s\S]*?cancel-in-progress:\s*false/, `${path} must use the shared repo-schrijven lock without cancellation`);
+test('dedicated main writers use the shared non-cancelling repository lock', () => {
+  for (const path of [
+    '.github/workflows/approved-central-blog.yml',
+    '.github/workflows/weekblog.yml',
+    '.github/workflows/blog-bijwerken.yml',
+  ]) {
+    const workflow = contents[path];
+    assert.match(workflow, /concurrency:\s*[\s\S]*?group:\s*repo-schrijven\s*[\s\S]*?cancel-in-progress:\s*false/, `${path} must use repo-schrijven without cancellation`);
   }
+});
+
+test('paginacontrole keeps PR isolation but routes every main-writing run through repo-schrijven without cancellation', () => {
+  const workflow = contents['.github/workflows/paginacontrole.yml'];
+  assert.match(workflow, /group:\s*\$\{\{\s*github\.event_name\s*==\s*'pull_request'[\s\S]*format\('paginacontrole-\{0\}'[\s\S]*\|\|\s*'repo-schrijven'\s*\}\}/);
+  assert.match(workflow, /cancel-in-progress:\s*\$\{\{\s*github\.event_name\s*==\s*'pull_request'\s*\}\}/);
 });
 
 test('AI prompts and allowed tools never own git staging, commits, pulls or pushes', () => {
@@ -50,10 +63,4 @@ test('content workflows validate and publish deterministically after AI generati
     assert.doesNotMatch(workflow, /git add -A/);
     assert.doesNotMatch(workflow, /git push --force|git push -f/);
   }
-});
-
-test('paginacontrole cannot be cancelled while it owns a main writeback', () => {
-  const workflow = contents['.github/workflows/paginacontrole.yml'];
-  assert.match(workflow, /group:\s*repo-schrijven/);
-  assert.match(workflow, /cancel-in-progress:\s*false/);
 });
