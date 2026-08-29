@@ -22,6 +22,11 @@
       return a;
     }
 
+    function normalizeGroupButton(button,text){
+      if(button)button.innerHTML='<span>'+text+'</span><span class="bg-mobile-arrow" aria-hidden="true">→</span>';
+      return button;
+    }
+
     function overviewLink(viewName,href,text,description){
       var view=nav.querySelector('[data-bg-mobile-view="'+viewName+'"]');
       if(!view||view.querySelector('a[href="'+href+'"]'))return;
@@ -35,16 +40,14 @@
 
     function ensurePrimaryCatalog(){
       if(!root||root.getAttribute('data-bg-primary-catalog')==='v2')return;
-      var solutions=root.querySelector('[data-bg-mobile-target="oplossingen"]');
-      var platform=root.querySelector('[data-bg-mobile-target="bedrijfsgeheugen"]');
-      var integrations=root.querySelector('[data-bg-mobile-target="koppelingen"]');
-      var knowledge=root.querySelector('[data-bg-mobile-target="kennis"]');
+      var solutions=normalizeGroupButton(root.querySelector('[data-bg-mobile-target="oplossingen"]'),'Oplossingen');
+      var platform=normalizeGroupButton(root.querySelector('[data-bg-mobile-target="bedrijfsgeheugen"]'),'Platform');
+      var integrations=normalizeGroupButton(root.querySelector('[data-bg-mobile-target="koppelingen"]'),'Koppelingen');
+      var knowledge=normalizeGroupButton(root.querySelector('[data-bg-mobile-target="kennis"]'),'Kennis');
       var about=root.querySelector('a[href="/over-ons"]');
       var expertises=root.querySelector('a[href="/expertises"]');
       var cta=root.querySelector('.bg-mobile-cta');
       var meta=root.querySelector('.bg-mobile-meta');
-
-      if(platform)platform.innerHTML='Platform <span class="bg-mobile-arrow" aria-hidden="true">→</span>';
 
       var ordered=[
         primaryLink('/problemen','Problemen'),
