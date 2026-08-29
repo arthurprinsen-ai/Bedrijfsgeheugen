@@ -1,0 +1,32 @@
+name: Business OS Foundation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'platform/**'
+      - 'tests/canonical-*.test.mjs'
+      - 'tests/source-adapters.test.mjs'
+      - 'tests/read-models.test.mjs'
+      - 'tests/foundation-registry-eventstore.test.mjs'
+      - 'docs/parity/**'
+      - '.github/scripts/portal_parity.py'
+      - '.github/workflows/business-os-foundation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Canonical contracts
+        run: node --test tests/canonical-*.test.mjs tests/source-adapters.test.mjs tests/read-models.test.mjs tests/foundation-registry-eventstore.test.mjs
+      - name: Protected portal baseline
+        run: python3 .github/scripts/portal_parity.py
