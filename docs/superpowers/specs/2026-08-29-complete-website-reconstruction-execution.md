@@ -1,0 +1,1 @@
+Execution mode: inline executing-plans in ChatGPT because no separate subagent runtime is exposed in this session. The approved plan, TDD gates, exact-SHA checks, and production approval boundaries remain unchanged.
