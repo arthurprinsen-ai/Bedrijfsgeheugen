@@ -54,7 +54,7 @@ test('homepage mobile menu remains usable', async ({ page }) => {
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 });
 
-test('over-ons preview is the accepted test-environment mission and belief page', async ({ page }) => {
+test('over-ons preview contains story, mission, ambition and belief', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${previewUrl}/over-ons`, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(1000);
@@ -66,13 +66,18 @@ test('over-ons preview is the accepted test-environment mission and belief page'
   await expect(main.getByText('Onze missie', { exact: true })).toBeVisible();
   await expect(main.getByRole('heading', { name: 'Van chaos naar grip en controle.' })).toBeVisible();
   for (const name of ['Samenhang','Continuïteit','Ruimte','Betrouwbare AI']) await expect(main.getByRole('heading', { name })).toBeVisible();
+  await expect(main.getByText('Onze ambitie', { exact: true })).toBeVisible();
+  await expect(main.getByRole('heading', { name: 'Bedrijfskennis moet net zo bestuurbaar worden als geld, mensen en systemen.' })).toBeVisible();
+  await expect(main.getByText('Ons geloof', { exact: true })).toBeVisible();
+  await expect(main.getByRole('heading', { name: 'Technologie moet de organisatie sterker maken.' })).toBeVisible();
   await expect(page.getByText('Geen callcenter.', { exact: true })).toHaveCount(0);
 });
 
-test('all accepted test-environment views resolve as real production routes', async ({ page }) => {
+test('all accepted primary and account views resolve as real candidate routes', async ({ page }) => {
   const checks = [
     ['/problemen', 'Waar organisaties tijd, kennis en controle verliezen.'],
     ['/oplossingen', 'Organisatie, automatisering, data en AI in samenhang.'],
+    ['/bedrijfsgeheugen', 'Bedrijfsgeheugen: definitie, waar het lekt en hoe je het meet'],
     ['/prijzen', 'Meer regie naarmate je groeit.'],
     ['/cases', 'Van vastlopen naar werkend.'],
     ['/kennis', 'Vraag, lees en vertaal kennis naar je eigen bedrijf.'],
