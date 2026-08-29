@@ -261,3 +261,31 @@ When any production promotion regresses protected smoke/regression or metrics, a
 - **Rollback:** use BG169 history-preserving exact-tree rollback if any post-promotion protected signal turns red; no rollback was required in this cycle.
 - **Shared learning:** ERROR, RECOVERY and PRODUCTION_PROMOTION were routed through BG168 to BG166/BG167.
 - **Reusable lesson:** exact preview SHA + fresh PR-event CI + guarded merge + exact production deploy identity are all separate release proofs; none may substitute for another.
+
+## 2026-08-29 14:13 CEST — CONTRACT_CHANGE — autonomous production promotion owner
+- **Fingerprint:** `production-promotion|guardian|autonomous-owner`
+- **Change:** every safe accepted repository candidate creates a production obligation owned by `Powerhouse Production Promotion Guardian`; commit, PR, merge, CI success and Netlify `ready` without exact SHA/outcome evidence are non-terminal.
+- **Policy:** `config/production-promotion.json`; design and implementation plan are canonical repo knowledge.
+- **Autonomy:** exact candidate promotion/merge, normal Netlify deploy reconciliation and LKG rollback are autonomous safe release actions; hard boundaries remain unchanged.
+- **Regression gate:** `tests/production-promotion-guardian.test.mjs` and `tests/development-doc-contract.test.mjs` in Shared Agent Memory Tests.
+- **Reusable lesson:** delivery ends at verified production outcome, never at source-control state.
+
+## 2026-08-29 14:13 CEST — RECOVERY — generic atomic ledger append
+- **Fingerprint:** `repo-ledger|atomic-append|hardcoded-dedupe-pr139`
+- **Signal:** ledger helper execution `d4aed1aa942b4612a034d9ac6d4172a4` returned success but module 3 emitted `skip=true` and unchanged length for unrelated Production Promotion Guardian evidence.
+- **Root cause:** helper `7146637` hardcoded a historical PR139 fingerprint as the skip condition, so once PR139 existed every future append silently skipped.
+- **Fix:** dedupe now compares the exact requested addition against current ledger content; unrelated future material outcomes append atomically using the current blob SHA.
+- **Owner:** Powerhouse Production Promotion Guardian / Knowledge Governance.
+- **Regression:** this append itself is the runtime regression proof; output must show `skip=false` and increased length before GitHub writeback.
+
+## 2026-08-29 14:13 CEST — PRODUCTION_PROMOTION — autonomous Production Promotion Guardian
+- **Fingerprint:** `production-promotion|guardian|production-green`
+- **Candidate:** `3dcf684bbcc7f626224afaf49450f8773e2fe751`.
+- **Promotion:** PR #164 merged with exact-head guard to main SHA `487b5f8d9501aea677a6e3da8f86d901c6c62d84`; merge tree `9aa300ab1b42f22105c42f0b768b2e35fa5a0794` equals the tested candidate tree.
+- **Candidate gates:** push Shared Agent Memory `33251733761` green; PR Shared Agent Memory `33251760965`, V18 Production Promotion `33251760979`, Component Foundation `33251760966`, Live Preview Smoke `33251760993` all green.
+- **Production deploy:** Netlify `6a92cc10c9b935000802f40a`, context production, state ready, exact `commit_ref=487b5f8d9501aea677a6e3da8f86d901c6c62d84`; 68 redirects, 16 headers, 3 functions and 1 edge function deployed; secret scan 0 matches.
+- **Production smoke:** public HTTPS homepage, `/over-ons` and `/frisse-blik` returned valid HTML; production merge tree is byte-identical to the exact Live Preview Smoke-tested candidate tree.
+- **Production authority:** BG169 execution `75bbe079523c47b18f319dde7743cd51` returned and persisted `PRODUCTION_GREEN` for exact production SHA.
+- **Last-known-good before promotion:** `b1e4ba214df1a2ae916f9023d7a67ec0570481b3`, Netlify `6a92cb3f1311e100076163ec` ready.
+- **Owner:** Powerhouse Production Promotion Guardian.
+- **Reusable lesson:** the agent carries green work through merge, deployment, exact-SHA verification and outcome evidence; Netlify is only the executor.
