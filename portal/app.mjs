@@ -13,7 +13,7 @@ import { renderImpact } from './render-impact.mjs';
 import { renderMemory } from './render-memory.mjs';
 import { renderAdmin } from './render-admin.mjs';
 import { renderLegacyBridge } from './render-legacy-bridge.mjs';
-const style=document.createElement('link');style.rel='stylesheet';style.href=new URL('./styles.css',window.location.href).href;document.head.append(style);
+for(const href of ['./styles.css','./legacy-bridge.css']){const link=document.createElement('link');link.rel='stylesheet';link.href=new URL(href,window.location.href).href;document.head.append(link)}
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];const esc=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let state=createEmptyPortalState();let source='empty';let adapter=null;let loadGeneration=0;
 function currentRoute(){return resolvePortalRoute(parsePortalLocation(location.hash)).route}
