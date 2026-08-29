@@ -61,11 +61,7 @@ test('learning memory rejects outcomes without verification evidence', () => {
 
 test('verified learning can be reused by another specialist in the same tenant', () => {
   const memory = createLearningMemory();
-  const saved = memory.recordVerified({
-    tenantId:'TENANT-A', fingerprint:'website-regression', domains:['Website','SEO'],
-    sourceAgentId:'agent-seo', actionFingerprint:'restore-canonical-meta',
-    verified:true, evidence:['regression-green','production-smoke-green'], impact:{ seoHealth:'+12' }, confidence:0.96,
-  });
+  const saved = memory.recordVerified({ tenantId:'TENANT-A', fingerprint:'website-regression', domains:['Website','SEO'], sourceAgentId:'agent-seo', actionFingerprint:'restore-canonical-meta', verified:true, evidence:['regression-green','production-smoke-green'], impact:{ seoHealth:'+12' }, confidence:0.96 });
   const matches = memory.findMatches({ tenantId:'TENANT-A', domains:['Website','UX'], fingerprint:'website-regression' });
   assert.equal(matches.length, 1);
   assert.equal(matches[0].id, saved.id);
@@ -88,4 +84,19 @@ test('Agent Fabric attaches matching prior learning to another agent work item',
   const suggestions = fabric.suggestLearning({ workId:work.id, requesterAgentId:'agent-ux' });
   assert.equal(suggestions.length, 1);
   assert.equal(suggestions[0].actionFingerprint, 'restore-canonical-meta');
+});
+
+test('proactive opportunities use the same governed AgentWork lifecycle', () => {
+  const fabric = createAgentFabric({ registry:registry() });
+  const work = fabric.intakeOpportunity({ tenantId:'TENANT-A', problemClass:'make-cost-reduction', domains:['Cost','Operations'], capabilities:['optimize'], affectedObjectIds:['make-all'], problem:'Reduce Make operations', materiality:5, urgency:4, expectedValue:5, risk:2, confidence:0.9 });
+  assert.equal(work.trigger, 'OPPORTUNITY_DETECTED');
+  assert.equal(work.primaryAgentId, 'agent-cost');
+  assert.equal(work.status, 'Assigned');
+  assert.equal(work.priority, 'P1');
+});
+
+test('opportunity priority is lower when expected value and confidence are low', () => {
+  const fabric = createAgentFabric({ registry:registry() });
+  const work = fabric.intakeOpportunity({ tenantId:'TENANT-A', problemClass:'small-seo-experiment', domains:['SEO'], capabilities:['optimize'], affectedObjectIds:['blog-1'], problem:'Small SEO tweak', materiality:1, urgency:1, expectedValue:1, risk:1, confidence:0.3 });
+  assert.equal(work.priority, 'P3');
 });
