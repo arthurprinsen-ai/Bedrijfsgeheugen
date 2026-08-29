@@ -43,13 +43,34 @@ test('all direct-main workflow writers are explicitly inventoried', () => {
   );
 });
 
-test('every approved direct-main writer uses the shared non-cancelling repo lock', () => {
+test('every approved direct-main writer serializes main writes without cancellation', () => {
   for (const name of APPROVED_DIRECT_MAIN_WRITERS) {
     const text = fs.readFileSync(path.join(WORKFLOWS, name), 'utf8');
-    assert.match(text, /concurrency:[\s\S]*?group:\s*(?:\$\{\{[^\n]+\}\}|repo-schrijven)\s*\n/,
-      `${name} must serialize repository writes through repo-schrijven`);
-    assert.match(text, /cancel-in-progress:\s*false\b/,
-      `${name} must never cancel an in-flight repository write`);
+
+    if (name === 'paginacontrole.yml') {
+      assert.match(
+        text,
+        /group:\s*\$\{\{\s*github\.event_name\s*==\s*'pull_request'[\s\S]*?'repo-schrijven'[\s\S]*?\}\}/,
+        'paginacontrole must isolate PR verification while routing non-PR writers through repo-schrijven',
+      );
+      assert.match(
+        text,
+        /cancel-in-progress:\s*\$\{\{\s*github\.event_name\s*==\s*'pull_request'\s*\}\}/,
+        'paginacontrole may cancel PR verification only; main-writing runs must remain non-cancelling',
+      );
+      continue;
+    }
+
+    assert.match(
+      text,
+      /concurrency:[\s\S]*?group:\s*repo-schrijven\s*\n/,
+      `${name} must serialize repository writes through repo-schrijven`,
+    );
+    assert.match(
+      text,
+      /cancel-in-progress:\s*false\b/,
+      `${name} must never cancel an in-flight repository write`,
+    );
   }
 });
 
