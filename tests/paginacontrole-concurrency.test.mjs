@@ -9,3 +9,8 @@ test('page-control concurrency is isolated per PR/ref so main cannot cancel an u
   assert.match(workflow, /cancel-in-progress:\s*true/);
   assert.doesNotMatch(workflow, /group:\s*paginacontrole\s*\n/);
 });
+
+test('self-healing pushes preserve concurrent main work by rebasing before push', () => {
+  const rebases = workflow.match(/git pull --rebase origin main/g) ?? [];
+  assert.equal(rebases.length, 2);
+});
