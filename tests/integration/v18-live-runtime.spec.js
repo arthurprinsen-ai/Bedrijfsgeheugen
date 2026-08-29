@@ -103,8 +103,10 @@ test('recovered pages use the current V18 responsive mobile drilldown', async ({
   await expect(toggle.locator('.bg-mobile-menu-label')).toHaveText('Sluit');
   const nav = page.locator('#bgSharedMobileNav');
   await expect(nav).toHaveAttribute('aria-hidden', 'false');
+  const root = nav.locator('[data-bg-shared-mobile-view="root"]');
+  await expect(root.getByRole('link', { name: 'Over ons' })).toBeVisible();
   await nav.getByRole('button', { name: 'Meer' }).click();
-  await expect(nav.getByRole('link', { name: 'Over ons' })).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Alle expertises' })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(toggle.locator('.bg-mobile-menu-label')).toHaveText('Menu');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
