@@ -1,0 +1,6 @@
+[data-bg-component="hero-video"]{width:100%;margin:0}
+[data-bg-component="hero-video"][hidden]{display:none!important}
+.bg-hero-video__frame{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#EAF1F3}
+.bg-hero-video__media,.bg-hero-video__poster{width:100%;height:100%;display:block;object-fit:cover}
+.bg-hero-video__poster{position:absolute;inset:0}
+[data-bg-component="hero-video"].is-playing .bg-hero-video__poster{display:none}
