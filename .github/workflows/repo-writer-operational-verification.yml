@@ -105,3 +105,75 @@ jobs:
         run: |
           set -euo pipefail
           gh workflow run paginacontrole.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
+
+  dispatch-approved-central-blog-candidate:
+    if: startsWith(github.head_ref, 'verify/approved-central-blog-') && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
+      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Verify exact main base
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
+            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
+            exit 1
+          fi
+      - name: Dispatch approved central blog writer in candidate mode only
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run approved-central-blog.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
+
+  dispatch-blog-bijwerken-candidate:
+    if: startsWith(github.head_ref, 'verify/blog-bijwerken-') && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
+      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Verify exact main base
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
+            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
+            exit 1
+          fi
+      - name: Dispatch blog updater in candidate mode only
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run blog-bijwerken.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
+
+  dispatch-weekblog-candidate:
+    if: startsWith(github.head_ref, 'verify/weekblog-') && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
+      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Verify exact main base
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
+            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
+            exit 1
+          fi
+      - name: Dispatch weekblog writer in candidate mode only
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run weekblog.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr

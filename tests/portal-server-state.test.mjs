@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {resolveIdentityTenant,sanitizePortalProjection,portalProjectionToState,shouldReplaceProjection} from '../platform/read-models/portal-server-state.mjs';
+import {PORTAL_LAYERS} from '../platform/read-models/portal-projection-layers.mjs';
 import {createPortalStateHandler} from '../platform/api/portal-state-handler.mjs';
 
 test('tenant is server-derived from app metadata or identity id',()=>{
@@ -10,12 +11,16 @@ test('tenant is server-derived from app metadata or identity id',()=>{
  assert.equal(resolveIdentityTenant(null),null);
 });
 
-test('projection strips browser identity and tenant input',()=>{
+test('browser projection strips identity and tenant input and is marked legacy migration',()=>{
  const p=sanitizePortalProjection({tenantId:'evil',user:{email:'x'},company:{name:'A'},sourceMeta:{updatedAt:'2026-08-29T19:00:00Z'}},{tenantId:'safe',userId:'u1',now:()=> '2026-08-29T20:00:00Z'});
- assert.equal(p.tenantId,'safe');assert.equal(p.data.user,undefined);assert.equal(p.data.tenantId,undefined);assert.equal(p.sourceUpdatedAt,'2026-08-29T19:00:00Z');
+ assert.equal(p.tenantId,'safe');assert.equal(p.data.user,undefined);assert.equal(p.data.tenantId,undefined);assert.equal(p.sourceUpdatedAt,'2026-08-29T19:00:00Z');assert.equal(p.origin,PORTAL_LAYERS.LEGACY);assert.equal(p.data.sourceMeta.kind,PORTAL_LAYERS.LEGACY);
 });
 
-test('older browser projection cannot replace newer server projection',()=>{
+test('browser cannot claim canonical projection provenance',()=>{
+ assert.throws(()=>sanitizePortalProjection({company:{name:'A'}},{tenantId:'safe',userId:'u1',origin:'browser-canonical'}),/origin/i);
+});
+
+test('older projection cannot replace newer projection within the same layer',()=>{
  assert.equal(shouldReplaceProjection({sourceUpdatedAt:'2026-08-29T20:00:00Z'},{sourceUpdatedAt:'2026-08-29T19:00:00Z'}),false);
  assert.equal(shouldReplaceProjection({sourceUpdatedAt:'2026-08-29T19:00:00Z'},{sourceUpdatedAt:'2026-08-29T20:00:00Z'}),true);
 });
@@ -47,5 +52,5 @@ test('handler writes only to derived tenant and rejects oversized state',async()
 test('stored projection rehydrates only current verified user identity',()=>{
  const p=sanitizePortalProjection({company:{name:'A'}},{tenantId:'acme',userId:'u1'});
  const s=portalProjectionToState(p,{id:'u2',email:'b@x.nl',name:'B',roles:['viewer']});
- assert.equal(s.user.email,'b@x.nl');assert.equal(s.company.name,'A');assert.equal(s.sourceMeta.kind,'server');
+ assert.equal(s.user.email,'b@x.nl');assert.equal(s.company.name,'A');assert.equal(s.sourceMeta.kind,PORTAL_LAYERS.LEGACY);
 });
