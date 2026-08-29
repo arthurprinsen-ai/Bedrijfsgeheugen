@@ -15,12 +15,19 @@ function safeId(prefix, value) {
   return `${prefix}-${String(value).replace(/[^a-zA-Z0-9_-]/g, '_')}`;
 }
 
-export function createBrainRuntime({ policies = [], providerRegistry, aiUseCases = [], contextPolicy, aiProvider, executor, now = () => new Date().toISOString() }) {
+function assertEventStore(store) {
+  for (const method of ['append','all','byObject','byCorrelation']) {
+    if (typeof store?.[method] !== 'function') throw new TypeError(`eventStore.${method} is required`);
+  }
+  return store;
+}
+
+export function createBrainRuntime({ policies = [], providerRegistry, aiUseCases = [], contextPolicy, aiProvider, executor, eventStore = createInMemoryEventStore(), now = () => new Date().toISOString() }) {
   if (!providerRegistry?.assertAllowed) throw new TypeError('providerRegistry is required');
   if (!aiProvider?.analyze) throw new TypeError('aiProvider.analyze is required');
   if (!executor?.execute) throw new TypeError('executor.execute is required');
+  assertEventStore(eventStore);
 
-  const eventStore = createInMemoryEventStore();
   const sourceObjects = new Map();
   const workingObjects = new Map();
   const activeObjects = new Map();

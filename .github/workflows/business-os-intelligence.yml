@@ -12,6 +12,7 @@ on:
       - 'tests/brain-acceptance.test.mjs'
       - 'tests/brain-api-gateway.test.mjs'
       - 'tests/brain-production-ai.test.mjs'
+      - 'tests/brain-storage-port.test.mjs'
       - '.github/workflows/business-os-intelligence.yml'
   workflow_dispatch:
 
@@ -35,6 +36,8 @@ jobs:
         run: node --test tests/brain-api-gateway.test.mjs
       - name: Governed production AI adapter
         run: node --test tests/brain-production-ai.test.mjs
+      - name: Injectable Brain storage port
+        run: node --test tests/brain-storage-port.test.mjs
       - name: Trust contracts remain green
         run: node --test tests/policy-engine.test.mjs tests/trust-*.test.mjs
       - name: Foundation contracts remain green
