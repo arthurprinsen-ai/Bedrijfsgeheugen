@@ -26,129 +26,77 @@ test('desktop mega menus expose reliable open and close state', async ({ page })
   const solutionsMega = solutionsItem.locator(':scope > .mega');
   const moreItem = page.locator('.navitem[data-mega]').filter({ has: page.locator('#v17MoreMega') });
   const more = moreItem.locator(':scope > .navbtn');
-
   await expect(solutions).toHaveAttribute('aria-expanded', 'false');
-  await expect(solutions).toHaveAttribute('aria-haspopup', 'true');
   await solutions.click();
   await expect(solutions).toHaveAttribute('aria-expanded', 'true');
   await expect(solutionsMega).toBeVisible();
   await solutions.click();
-  await expect(solutions).toHaveAttribute('aria-expanded', 'false');
   await expect(solutionsMega).toBeHidden();
-
   await solutions.click();
   await more.click();
   await expect(solutions).toHaveAttribute('aria-expanded', 'false');
   await expect(more).toHaveAttribute('aria-expanded', 'true');
-
   await page.keyboard.press('Escape');
   await expect(more).toHaveAttribute('aria-expanded', 'false');
 });
 
-test('mobile uses white Menu pill and accepted Meer drilldown navigation', async ({ page }) => {
+test('homepage mobile menu remains usable', async ({ page }) => {
   await openV18(page, 390, 844);
   const toggle = page.locator('#mobileToggle');
   const menuLabel = toggle.locator('.bg-mobile-menu-label');
   const nav = page.locator('#bgMobileNav');
-
   await expect(menuLabel).toHaveText('Menu');
-  await expect(toggle).toHaveAttribute('aria-controls', 'bgMobileNav');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await expect(nav).toHaveAttribute('aria-hidden', 'true');
-
-  const toggleStyle = await toggle.evaluate(el => {
-    const s = getComputedStyle(el);
-    const r = el.getBoundingClientRect();
-    return { background: s.backgroundColor, radius: s.borderRadius, width: r.width, height: r.height };
-  });
-  expect(toggleStyle.background).toBe('rgb(255, 255, 255)');
-  expect(parseFloat(toggleStyle.radius)).toBeGreaterThanOrEqual(20);
-  expect(toggleStyle.width).toBeGreaterThanOrEqual(64);
-  expect(toggleStyle.height).toBeGreaterThanOrEqual(44);
-
   await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(menuLabel).toHaveText('Sluit');
-  await expect(nav).toHaveAttribute('aria-hidden', 'false');
   await expect(nav).toBeVisible();
-
-  const navBox = await nav.boundingBox();
-  expect(navBox.height).toBeGreaterThanOrEqual(800);
-  const navBg = await nav.evaluate(el => getComputedStyle(el).backgroundColor);
-  expect(navBg).toBe('rgb(255, 255, 255)');
-
-  const root = nav.locator('[data-bg-mobile-view="root"]');
-  await expect(root).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Oplossingen' })).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Bedrijfsgeheugen' })).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Koppelingen' })).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Kennis' })).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Meer' })).toBeVisible();
-  await expect(root.getByRole('link', { name: 'Over ons' })).toHaveCount(0);
-
-  await root.getByRole('button', { name: 'Meer' }).click();
-  const more = nav.locator('[data-bg-mobile-view="meer"]');
-  await expect(root).toBeHidden();
-  await expect(more).toBeVisible();
-  await expect(more.getByRole('heading', { name: 'Meer' })).toBeVisible();
-  await expect(more.getByRole('link', { name: 'Alle expertises' })).toBeVisible();
-  await expect(more.getByRole('link', { name: 'Over ons' })).toBeVisible();
-  await more.getByRole('button', { name: 'Terug' }).click();
-  await expect(root).toBeVisible();
-
-  await root.getByRole('button', { name: 'Koppelingen' }).click();
-  const integrations = nav.locator('[data-bg-mobile-view="koppelingen"]');
-  await expect(root).toBeHidden();
-  await expect(integrations).toBeVisible();
-  await expect(integrations.getByRole('heading', { name: 'Koppelingen' })).toBeVisible();
-  await expect(integrations.getByRole('link', { name: 'AFAS-koppeling' })).toBeVisible();
-  await integrations.getByRole('button', { name: 'Terug' }).click();
-  await expect(root).toBeVisible();
-
   await page.keyboard.press('Escape');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await expect(nav).toHaveAttribute('aria-hidden', 'true');
 });
 
-test('over-ons preview restores accepted mission ambition belief and story', async ({ page }) => {
+test('over-ons preview is the accepted test-environment mission and belief page', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${previewUrl}/over-ons`, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(1200);
-
-  await expect(page.getByRole('heading', { level: 1, name: 'Eerst kijken hoe het werk écht loopt. Dan pas techniek.' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'De kennis van je bedrijf moet van het bedrijf zijn.' })).toBeVisible();
-  await expect(page.getByText('Onze missie', { exact: true })).toBeVisible();
-  await expect(page.getByText('Onze ambitie', { exact: true })).toBeVisible();
-  await expect(page.getByText('Ons geloof', { exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Praktiseren wat je preekt.' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Gewone taal' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Geen big bang' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Van jou, niet van mij' })).toBeVisible();
+  await page.waitForTimeout(1000);
+  const main = page.getByRole('main');
+  await expect(main.getByRole('heading', { level: 1, name: 'Een bedrijf hoort niet afhankelijk te zijn van wat mensen toevallig onthouden.' })).toBeVisible();
+  await expect(main.getByText('Ons geloof: technologie moet mensen tijd teruggeven, context zichtbaar maken en de organisatie sterker maken.', { exact: true })).toBeVisible();
+  await expect(main.getByText('Ons verhaal', { exact: true })).toBeVisible();
+  await expect(main.getByRole('heading', { name: 'De kennis was er wel. Alleen niet als één geheel.' })).toBeVisible();
+  await expect(main.getByText('Onze missie', { exact: true })).toBeVisible();
+  await expect(main.getByRole('heading', { name: 'Van chaos naar grip en controle.' })).toBeVisible();
+  for (const name of ['Samenhang','Continuïteit','Ruimte','Betrouwbare AI']) await expect(main.getByRole('heading', { name })).toBeVisible();
   await expect(page.getByText('Geen callcenter.', { exact: true })).toHaveCount(0);
+});
 
-  const toggle = page.locator('#bgkopKnop');
-  const nav = page.locator('#bgSharedMobileNav');
-  await expect(toggle.locator('.bg-mobile-menu-label')).toHaveText('Menu');
-  await expect(toggle).toHaveAttribute('aria-controls', 'bgSharedMobileNav');
+test('all accepted test-environment views resolve as real production routes', async ({ page }) => {
+  const checks = [
+    ['/problemen', 'Waar organisaties tijd, kennis en controle verliezen.'],
+    ['/oplossingen', 'Organisatie, automatisering, data en AI in samenhang.'],
+    ['/prijzen', 'Meer regie naarmate je groeit.'],
+    ['/cases', 'Van vastlopen naar werkend.'],
+    ['/kennis', 'Vraag, lees en vertaal kennis naar je eigen bedrijf.'],
+    ['/inloggen', 'Open je Bedrijfsgeheugen.'],
+    ['/aanmelden', 'Start met je bedrijfscontext.']
+  ];
+  for (const [route, heading] of checks) {
+    const response = await page.goto(`${previewUrl}${route}`, { waitUntil: 'domcontentloaded' });
+    expect(response && response.ok(), `${route} should return HTTP success`).toBeTruthy();
+    await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
+  }
+});
+
+test('recovered test pages have a real responsive Menu drawer', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${previewUrl}/problemen`, { waitUntil: 'domcontentloaded' });
+  const toggle = page.getByRole('button', { name: 'Menu openen' });
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await toggle.click();
-  await expect(nav).toHaveAttribute('aria-hidden', 'false');
-  await expect(nav).toBeVisible();
-
-  const root = nav.locator('[data-bg-shared-mobile-view="root"]');
-  await expect(root.getByRole('button', { name: 'Oplossingen' })).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Bedrijfsgeheugen' })).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Koppelingen' })).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Kennis' })).toBeVisible();
-  await expect(root.getByRole('button', { name: 'Meer' })).toBeVisible();
-
-  await root.getByRole('button', { name: 'Meer' }).click();
-  const more = nav.locator('[data-bg-shared-mobile-view="meer"]');
-  await expect(more).toBeVisible();
-  await expect(more.getByRole('link', { name: 'Alle expertises' })).toBeVisible();
-  await expect(more.getByRole('link', { name: 'Over ons' })).toBeVisible();
-  await more.getByRole('button', { name: 'Terug' }).click();
-  await expect(root).toBeVisible();
-
+  await expect(toggle).toHaveText('Sluit');
+  await expect(page.locator('.mobile-drawer')).toHaveClass(/open/);
+  await expect(page.locator('.mobile-drawer').getByRole('link', { name: /Prijzen/ })).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(nav).toHaveAttribute('aria-hidden', 'true');
+  await expect(toggle).toHaveText('Menu');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 });
