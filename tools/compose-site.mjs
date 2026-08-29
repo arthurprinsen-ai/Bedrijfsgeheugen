@@ -29,7 +29,7 @@ export async function composeSite({ pageManifest, outputPath }) {
     .join('\n');
   const js = components
     .filter(({ contract }) => contract.jsEntry)
-    .map(({ id, contract }) => `<script type="module" src="/components/${id}/${contract.jsEntry}"></script>`)
+    .map(({ contract }) => `<script type="module" src="/${String(contract.jsEntry).replace(/^\/+/, '')}"></script>`)
     .join('\n');
   const body = components.map(({ html }) => html.trim()).join('\n');
 
