@@ -1,13 +1,9 @@
-// Beantwoordt een vraag van een klant over zijn eigen project, en alleen daarover.
-//
-// De browser stuurt de offerte mee die hij na inloggen al in handen heeft; de
-// server bewaart niets. Zo blijft dit los van /api/vraag, dat over de site gaat.
-// Nodig: omgevingsvariabele ANTHROPIC_API_KEY in Netlify.
-// Aanroep: POST /api/portaalvraag  met  { "vraag": "...", "context": { ... } }
+// Beantwoordt een vraag van een klant over de request-scoped projectcontext.
+// De server bewaart de context niet; iedere AI-call loopt door Brain governance.
+import { runPortalAnswer } from './_brain-ai.mjs';
 
-const MODEL = 'claude-sonnet-5';
 const MAX_VRAAG = 400;
-const MAX_CONTEXT = 60000;   // ruim genoeg voor een offerte, klein genoeg tegen misbruik
+const MAX_CONTEXT = 60000;
 
 const SYSTEEM = `Je beantwoordt vragen van een klant van Bedrijfsgeheugen over zijn eigen project, in zijn klantportaal.
 
@@ -45,38 +41,8 @@ export default async (request) => {
   }
 
   try {
-    const antwoord = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': sleutel,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 500,
-        system: SYSTEEM,
-        messages: [{
-          role: 'user',
-          content: `PROJECTGEGEVENS (JSON):\n\n${gegevens}\n\n---\n\nVRAAG VAN DE KLANT:\n${vraag}`,
-        }],
-      }),
-    });
-
-    if (!antwoord.ok) {
-      let detail = '';
-      try {
-        const f = await antwoord.json();
-        detail = [f.error?.type, f.error?.message].filter(Boolean).join(' - ').slice(0, 200);
-      } catch { detail = 'geen leesbare melding'; }
-      return Response.json({ fout: 'De vraagfunctie is even niet bereikbaar.', api: antwoord.status + ' ' + detail }, { status: 502 });
-    }
-
-    const data = await antwoord.json();
-    const tekst = (data.content || [])
-      .filter((b) => b.type === 'text').map((b) => b.text).join('\n').trim();
-
-    return Response.json({ antwoord: tekst });
+    const result = await runPortalAnswer({ question:vraag, projectContext:gegevens, apiKey:sleutel, system:SYSTEEM });
+    return Response.json({ antwoord: result.text });
   } catch {
     return Response.json({ fout: 'De vraagfunctie is even niet bereikbaar.' }, { status: 502 });
   }
