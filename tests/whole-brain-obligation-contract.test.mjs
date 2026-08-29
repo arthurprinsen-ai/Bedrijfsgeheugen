@@ -6,6 +6,8 @@ const requiredFiles = [
   'docs/outcome-obligations.md',
   'config/outcome-obligations.json',
   'tools/outcome-obligation-validator.mjs',
+  'docs/make/bg184-social-outcome-obligation-guardian.md',
+  'docs/make/global-execution-obligation-sentinel.md',
 ];
 
 test('whole-brain obligation contract exists and declares the non-silent invariants', async () => {
@@ -22,9 +24,10 @@ test('whole-brain obligation contract exists and declares the non-silent invaria
   }
 });
 
-test('agent governance makes outcome obligations mandatory for every future agent', async () => {
+test('agent and self-healing governance make outcome obligations mandatory', async () => {
   const agents = await readFile('AGENTS.md', 'utf8');
   const operatingSystem = await readFile('docs/development-operating-system.md', 'utf8');
+  const selfHealing = await readFile('docs/self-healing-agents.md', 'utf8');
 
   assert.match(agents, /docs\/outcome-obligations\.md/);
   assert.match(agents, /MISSED_OBLIGATION/);
@@ -32,6 +35,24 @@ test('agent governance makes outcome obligations mandatory for every future agen
   assert.match(agents, /technisch.*succes.*resultaat/is);
   assert.match(operatingSystem, /outcome obligation/i);
   assert.match(operatingSystem, /zero candidates/i);
+  assert.match(selfHealing, /docs\/outcome-obligations\.md/);
+  assert.match(selfHealing, /technisch.*succes.*resultaat/is);
+  assert.match(selfHealing, /MISSED_OBLIGATION|SUCCESS_WITHOUT_OUTCOME/);
+});
+
+test('runtime adapters preserve outcome evidence and deterministic healthy-path semantics', async () => {
+  const social = await readFile('docs/make/bg184-social-outcome-obligation-guardian.md', 'utf8');
+  for (const token of ['7147086', '3600', 'Post ID LinkedIn', 'Bedrijfspaginapost', 'Post ID Instagram', '7132258', '7136176', 'idempotent']) {
+    assert.ok(social.includes(token), `social guardian missing ${token}`);
+  }
+  assert.match(social, /zero[- ]candidate[\s\S]{0,180}RED/is);
+
+  const sentinel = await readFile('docs/make/global-execution-obligation-sentinel.md', 'utf8');
+  for (const token of ['BG165', 'BG156', 'BG168', 'schedule', 'last execution', 'required output', 'deterministic', 'bounded', 'domain adapter']) {
+    assert.ok(sentinel.includes(token), `global sentinel missing ${token}`);
+  }
+  assert.match(sentinel, /healthy[\s\S]{0,240}no paid AI/i);
+  assert.match(sentinel, /successful Make execution[\s\S]{0,240}not[\s\S]{0,240}business outcome/i);
 });
 
 test('technical success without required outcome evidence is never green', async () => {
