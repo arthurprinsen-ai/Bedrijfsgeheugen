@@ -14,9 +14,18 @@ on:
         description: 'Optioneel: forceer een specifieke slug'
         required: false
         default: ''
+      delivery_mode:
+        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        type: choice
+        required: true
+        default: direct
+        options:
+          - direct
+          - candidate-pr
 
 permissions:
   contents: write
+  pull-requests: write
   id-token: write
 
 concurrency:
@@ -30,6 +39,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Exacte basis vastleggen
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Bij te werken artikel ophalen uit Notion
         id: kalender
@@ -232,18 +245,50 @@ jobs:
           print('UPDATE_CONTRACT_OK', changed)
           PY
 
-      - name: Commit and push validated changes
+      - name: Commit validated changes
+        id: commit
         if: steps.kalender.outputs.gevonden == 'true'
         env:
           SLUG: ${{ steps.kalender.outputs.slug }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
           set -euo pipefail
+          mapfile -t changed < /tmp/validated-blog-update-files
           git config user.name "Bedrijfsgeheugen Publisher"
           git config user.email "actions@users.noreply.github.com"
-          while IFS= read -r path; do
+          for path in "${changed[@]}"; do
             [ -n "$path" ] && git add -- "$path"
-          done < /tmp/validated-blog-update-files
+          done
           git commit -m "blog bijgewerkt: $SLUG"
+
+          if [ "$DELIVERY_MODE" = "candidate-pr" ]; then
+            export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+            CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
+          const files = String(process.env.CHANGED_FILES || '').split('\n').filter(Boolean).sort();
+          const candidate = createWriterCandidate({
+            writer: 'blog-bijwerken',
+            baseSha: process.env.BASE_SHA,
+            runId: process.env.GITHUB_RUN_ID,
+            changedFiles: files,
+            allowedFiles: files,
+            rollbackSha: process.env.BASE_SHA,
+          });
+          validateWriterCandidate(candidate);
+          console.log(candidate.branch);
+          NODE
+            )
+            echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
+          else
+            echo "delivery=direct" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Direct publiceren op huidige veilige pad
+        if: steps.kalender.outputs.gevonden == 'true' && steps.commit.outputs.delivery == 'direct'
+        run: |
+          set -euo pipefail
           for attempt in 1 2 3; do
             if git push origin HEAD:main; then
               exit 0
@@ -253,8 +298,36 @@ jobs:
           echo "::error::Push faalde na drie begrensde pogingen"
           exit 1
 
-      - name: Notion op Goedgekeurd zetten
-        if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != ''
+      - name: Candidate branch publiceren
+        if: steps.kalender.outputs.gevonden == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        env:
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+      - name: Candidate PR openen
+        if: steps.kalender.outputs.gevonden == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          SLUG: ${{ steps.kalender.outputs.slug }}
+        run: |
+          set -euo pipefail
+          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Candidate PR bestaat al: #$existing"
+            exit 0
+          fi
+          gh pr create \
+            --base main \
+            --head "$CANDIDATE_BRANCH" \
+            --title "Blog update candidate: $SLUG" \
+            --body "Gecontroleerde candidate uit blog-bijwerken. Base SHA: $BASE_SHA. Notion blijft op Voorstel klaar totdat de wijziging werkelijk is gepromoveerd. Deze workflow merge't zichzelf niet."
+
+      - name: Notion op Goedgekeurd zetten na succesvolle directe publicatie
+        if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != '' && steps.commit.outputs.delivery == 'direct'
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           PAGE_ID: ${{ steps.kalender.outputs.page_id }}
