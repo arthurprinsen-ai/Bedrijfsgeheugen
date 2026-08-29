@@ -54,5 +54,22 @@ test('Meer preserves the company pages visible in the accepted V18 site', () => 
   assert.match(menu, /maakGroepKnop\('meer', 'Meer'\)/, 'Meer drilldown must remain in the mobile catalog');
   assert.match(menu, /href:\s*'\/over-ons'[\s\S]*label:\s*'Over ons'/, 'Meer must contain Over ons');
   assert.match(menu, /href:\s*'\/hoe-het-werkt'[\s\S]*label:\s*'Werkwijze'/, 'Meer must contain Werkwijze');
-  assert.match(menu, /label:\s*'Partners'/, 'Meer must contain Partners as shown in the accepted V18 site');
+  assert.match(menu, /href:\s*'\/partners'[\s\S]*label:\s*'Partners'/, 'Meer must contain Partners as shown in the accepted V18 site');
+});
+
+test('desktop and directory preserve the accepted Meer information architecture', () => {
+  const shell = read('assets/recovered-page-shell.js');
+  const more = read('meer.html');
+  assert.match(shell, />Meer</, 'desktop shared header must expose Meer');
+  for (const href of ['/meer','/over-ons','/hoe-het-werkt','/partners']) {
+    assert.ok(shell.includes(`href=\"${href}\"`), `desktop Meer must expose ${href}`);
+  }
+  assert.match(more, /Alles rond Bedrijfsgeheugen op één plek\./);
+  assert.match(more, /Van organisatie en kennis tot vertrouwen, support en praktische hulpmiddelen\./);
+  assert.match(more, /Wie we zijn en hoe we werken/);
+  assert.match(more, />Over ons</);
+  assert.match(more, />Werkwijze</);
+  assert.match(more, />Partners</);
+  assert.ok(routes.has('/meer'), '/meer must be in the website catalog');
+  assert.ok(routes.has('/partners'), '/partners must be in the website catalog');
 });
