@@ -25,10 +25,13 @@ jobs:
             state=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status" --jq '.statuses[] | select(.context=="netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1 || true)
             echo "Netlify exact-head status: ${state:-missing}"
             if [ "$state" = "success" ]; then exit 0; fi
-            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then exit 1; fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "::error::Netlify preview failed for exact head ${HEAD_SHA}"
+              exit 1
+            fi
             sleep 10
           done
-          echo "Timed out waiting for exact-head Netlify deploy" >&2
+          echo "::error::Timed out waiting for Netlify preview on exact head ${HEAD_SHA}"
           exit 1
       - name: Smoke public V18 routes
         shell: bash
@@ -38,18 +41,24 @@ jobs:
           for route in "${routes[@]}"; do
             code=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -LsS -o /tmp/page.html -w '%{http_code}' "${PREVIEW}${route}")
             echo "${route} -> ${code}"
-            test "$code" -ge 200 -a "$code" -lt 400
-            ! grep -qi '<title>.*404' /tmp/page.html
+            if ! { test "$code" -ge 200 -a "$code" -lt 400 && ! grep -qi '<title>.*404' /tmp/page.html; }; then
+              echo "::error::Public preview route ${route} failed with HTTP ${code} or rendered a 404"
+              exit 1
+            fi
           done
       - name: Verify accepted V18 public content
         shell: bash
         run: |
           set -euo pipefail
           curl -LsS "${PREVIEW}/meer" -o /tmp/meer.html
-          grep -Fq 'Alles rond Bedrijfsgeheugen op één plek.' /tmp/meer.html
-          grep -Fq 'Wie we zijn en hoe we werken' /tmp/meer.html
-          grep -Fq 'Blog &amp; kennisbank' /tmp/meer.html
-          grep -Fq 'Veilig, transparant en uitlegbaar' /tmp/meer.html
-          grep -Fq 'Hulp wanneer je die nodig hebt' /tmp/meer.html
+          for expected in 'Alles rond Bedrijfsgeheugen op één plek.' 'Wie we zijn en hoe we werken' 'Blog &amp; kennisbank' 'Veilig, transparant en uitlegbaar' 'Hulp wanneer je die nodig hebt'; do
+            if ! grep -Fq "$expected" /tmp/meer.html; then
+              echo "::error::Public Meer page is missing accepted content: ${expected}"
+              exit 1
+            fi
+          done
           curl -LsS "${PREVIEW}/blog/" -o /tmp/blog.html
-          test -s /tmp/blog.html
+          if ! test -s /tmp/blog.html; then
+            echo "::error::Preserved production Blog returned empty content"
+            exit 1
+          fi
