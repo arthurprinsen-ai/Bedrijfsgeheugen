@@ -67,9 +67,12 @@ test('desktop and directory preserve the accepted Meer information architecture'
   assert.match(more, /Alles rond Bedrijfsgeheugen op één plek\./);
   assert.match(more, /Van organisatie en kennis tot vertrouwen, support en praktische hulpmiddelen\./);
   assert.match(more, /Wie we zijn en hoe we werken/);
-  assert.match(more, />Over ons</);
-  assert.match(more, />Werkwijze</);
-  assert.match(more, />Partners</);
+  for (const heading of ['Bedrijf','Voor wie','Scans & meten','Kennis & vertrouwen','AI & groei','Koppelingen']) {
+    assert.ok(more.includes(heading), `Meer must contain desktop group ${heading}`);
+  }
+  for (const href of ['/over-ons','/hoe-het-werkt','/partners','/voor-mkb','/investeerders-ma','/frisse-blik','/zelfscan','/ai-scan','/afmaakindex','/monitor','/benchmark','/kennis','/blog/','/ai-act','/data-soevereiniteit','/ai-adoptie','/ai-marketing-mkb','/ai-capability-model','/afas-koppeling','/exact-online-koppeling','/twinfield-koppeling','/webshop-koppeling','/api-koppeling-laten-maken']) {
+    assert.ok(more.includes(`href=\"${href}\"`), `Meer directory must expose ${href}`);
+  }
   assert.ok(routes.has('/meer'), '/meer must be in the website catalog');
   assert.ok(routes.has('/partners'), '/partners must be in the website catalog');
 });
