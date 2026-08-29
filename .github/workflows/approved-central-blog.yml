@@ -9,9 +9,18 @@ on:
         description: 'Optioneel: publiceer exact deze goedgekeurde centrale slug'
         required: false
         default: ''
+      delivery_mode:
+        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        type: choice
+        required: true
+        default: direct
+        options:
+          - direct
+          - candidate-pr
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: repo-schrijven
@@ -24,6 +33,10 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      - name: Exacte basis vastleggen
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Seal or render exact approved article
         id: render
@@ -70,17 +83,53 @@ jobs:
           ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
           assert ld, 'JSON-LD ontbreekt'
           json.loads(ld.group(1))
+          pathlib.Path('/tmp/validated-approved-blog-files').write_text('\n'.join(changed) + '\n', encoding='utf-8')
           print('CONTRACT_OK', article[0], m.group(1), changed)
           PY
 
-      - name: Commit and push validated changes
+      - name: Commit validated changes
+        id: commit
         if: steps.render.outputs.changed == 'true'
+        env:
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
           set -euo pipefail
+          mapfile -t changed < /tmp/validated-approved-blog-files
           git config user.name "Bedrijfsgeheugen Publisher"
           git config user.email "actions@users.noreply.github.com"
-          git add -- blog/ sitemap.xml
+          for path in "${changed[@]}"; do
+            [ -n "$path" ] && git add -- "$path"
+          done
           git commit -m "blog: publish approved central article"
+
+          if [ "$DELIVERY_MODE" = "candidate-pr" ]; then
+            export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+            CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
+          const files = String(process.env.CHANGED_FILES || '').split('\n').filter(Boolean).sort();
+          const candidate = createWriterCandidate({
+            writer: 'approved-central-blog',
+            baseSha: process.env.BASE_SHA,
+            runId: process.env.GITHUB_RUN_ID,
+            changedFiles: files,
+            allowedFiles: files,
+            rollbackSha: process.env.BASE_SHA,
+          });
+          validateWriterCandidate(candidate);
+          console.log(candidate.branch);
+          NODE
+            )
+            echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
+            echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
+          else
+            echo "delivery=direct" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Direct publiceren op huidige veilige pad
+        if: steps.render.outputs.changed == 'true' && steps.commit.outputs.delivery == 'direct'
+        run: |
+          set -euo pipefail
           for attempt in 1 2 3; do
             if git push origin HEAD:main; then
               exit 0
@@ -90,8 +139,35 @@ jobs:
           echo "::error::Push faalde na drie begrensde pogingen"
           exit 1
 
-      - name: Mark queue dispatched after successful push
-        if: steps.render.outputs.changed == 'true'
+      - name: Candidate branch publiceren
+        if: steps.render.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        env:
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+      - name: Candidate PR openen
+        if: steps.render.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Candidate PR bestaat al: #$existing"
+            exit 0
+          fi
+          gh pr create \
+            --base main \
+            --head "$CANDIDATE_BRANCH" \
+            --title "Approved blog candidate $GITHUB_RUN_ID" \
+            --body "Gecontroleerde candidate uit approved-central-blog. Base SHA: $BASE_SHA. De Notion-queue is nog niet als dispatched gemarkeerd; dat gebeurt uitsluitend op het bestaande directe productiepad. Deze workflow merge't zichzelf niet."
+
+      - name: Mark queue dispatched after successful direct push
+        if: steps.render.outputs.changed == 'true' && steps.commit.outputs.delivery == 'direct'
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           QUEUE_PAGE: ${{ steps.render.outputs.queue_page }}
