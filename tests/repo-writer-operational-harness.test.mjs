@@ -16,6 +16,9 @@ test('operational writer harness can only dispatch menu-balk-fix in candidate-pr
   assert.doesNotMatch(text, /pull-requests:\s*write\b/);
 
   assert.match(text, /VERIFY_REF:\s*\$\{\{ github\.event\.pull_request\.head\.ref \}\}/);
+  assert.match(text, /VERIFY_SHA:\s*\$\{\{ github\.event\.pull_request\.head\.sha \}\}/);
+  assert.match(text, /actual_verify_sha/);
+  assert.match(text, /VERIFY_SHA_DRIFT/);
   assert.match(text, /gh\s+workflow\s+run\s+menu-balk-fix\.yml/);
   assert.match(text, /--ref\s+"\$VERIFY_REF"/);
   assert.match(text, /delivery_mode=candidate-pr/);
