@@ -1,0 +1,1 @@
+Verification gate: exact PR head SHA must pass `node --test tests/v18-test-route-integrity.test.mjs`; Netlify deploy must be `ready` with `commit_ref` equal to that exact head SHA; public preview routes must be smoke-tested before any green/completion claim.
