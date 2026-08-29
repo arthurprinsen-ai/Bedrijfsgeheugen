@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'portal-next/**'
+      - 'tests/integration/portal-next-live.spec.js'
       - '.github/workflows/business-os-live-preview.yml'
       - '.github/workflows/paginacontrole.yml'
   workflow_dispatch:
@@ -17,7 +18,7 @@ jobs:
   preview:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
 
@@ -51,11 +52,15 @@ jobs:
         run: |
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/" -o /tmp/portal-next.html
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.css" -o /tmp/portal-next.css
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/workspaces.css" -o /tmp/workspaces.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.js" -o /tmp/portal-next.js
           grep -q 'AI Management Summary' /tmp/portal-next.html
           grep -q 'Preview · voorbeelddata · geen actieve bedrijfswaarheid' /tmp/portal-next.html
           grep -q 'Trust & Governance' /tmp/portal-next.html
           grep -q 'prefers-reduced-motion:reduce' /tmp/portal-next.css
+          grep -q 'focus-visible' /tmp/workspaces.css
+          grep -q 'AI Register' /tmp/portal-next.js
+          grep -q 'Agent Team' /tmp/portal-next.js
           grep -q 'preview voert geen echte AI-call uit' /tmp/portal-next.js
 
       - name: Verify legacy portal remains last-known-good in the same preview
@@ -66,8 +71,18 @@ jobs:
           grep -q 'data-p="roadmap"' /tmp/legacy.html
           grep -q 'id="btnExport"' /tmp/legacy.html
 
+      - name: Install Playwright runtime
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Verify desktop and mobile interactions on live preview
+        env:
+          PREVIEW_URL: ${{ env.PREVIEW_URL }}
+        run: npx playwright test tests/integration/portal-next-live.spec.js --workers=1
+
       - name: Report exact preview evidence
         run: |
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
           echo "Verified preview: $PREVIEW_URL"
-          echo "New portal preview + legacy portal smoke are both green."
+          echo "New portal desktop/mobile interactions + legacy portal smoke are green."
