@@ -120,7 +120,7 @@ test('over-ons preview restores accepted mission ambition belief and story', asy
   await expect(page.getByText('Onze missie', { exact: true })).toBeVisible();
   await expect(page.getByText('Onze ambitie', { exact: true })).toBeVisible();
   await expect(page.getByText('Ons geloof', { exact: true })).toBeVisible();
-  await expect(page.getByText(/praktiseren wat je preekt/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Praktiseren wat je preekt.' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Gewone taal' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Geen big bang' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Van jou, niet van mij' })).toBeVisible();
