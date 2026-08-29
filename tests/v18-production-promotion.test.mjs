@@ -13,10 +13,12 @@ const netlify = readFileSync('netlify.toml','utf8');
 assert.match(netlify, /node tools\/bouw-v18-production\.mjs/, 'Netlify build must run the V18 production builder');
 
 const mobileMenu = readFileSync('assets/js/menu.js','utf8');
-assert.match(mobileMenu, /meer\s*:\s*['"]Meer['"]/, 'mobile drilldown must expose a Meer fallback group');
+assert.match(mobileMenu, /meer\s*:\s*['"]Meer['"]/, 'mobile drilldown must expose Meer as presentation group');
 assert.match(mobileMenu, /volgorde\s*=\s*\[[^\]]*['"]meer['"]/s, 'Meer must be part of mobile drilldown order');
-assert.match(mobileMenu, /groepen\.meer/, 'leftover legacy mobile links must be collected into Meer');
-assert.match(mobileMenu, /['"]\/workshops['"]/, 'Meer must restore AI-workshops from the legacy mobile menu');
-assert.match(mobileMenu, /['"]\/wijzigingen['"]/, 'Meer must restore Wijzigingen from the legacy mobile menu');
+assert.match(mobileMenu, /groepen\.meer/, 'legacy top-level links must be collected into Meer');
+assert.doesNotMatch(mobileMenu, /href:\s*['"]\/workshops['"]/,
+  'mobile navigation must not add routes that were absent from the exact pre-change mobile source');
+assert.doesNotMatch(mobileMenu, /href:\s*['"]\/wijzigingen['"]/,
+  'mobile navigation must not add routes that were absent from the exact pre-change mobile source');
 
 console.log('V18 production promotion contract passed');
