@@ -10,15 +10,12 @@ const workflow = await readFile('.github/workflows/paginacontrole.yml', 'utf8');
 // - paginacontrole|seo-status|stale-worktree-rebase
 
 test('paginacontrole preserves concurrent main work for both automated publication paths', () => {
-  const rebasedPushes = [...workflow.matchAll(/^\s*git push\s*$/gm)];
-  assert.equal(rebasedPushes.length, 1, 'the source-repair path remains the single worktree rebase push');
-
-  const beforeSourcePush = workflow.slice(Math.max(0, rebasedPushes[0].index - 220), rebasedPushes[0].index);
-  assert.match(
-    beforeSourcePush,
-    /git pull --rebase origin main\s*$/m,
-    'source repair must rebase onto current main before its normal push',
-  );
+  const sourceStart = workflow.indexOf('- name: Bekende SEO-bronfouten automatisch herstellen');
+  const sourceEnd = workflow.indexOf('- name: Playwright installeren', sourceStart);
+  assert.ok(sourceStart >= 0 && sourceEnd > sourceStart, 'source-repair step must exist');
+  const sourceRepair = workflow.slice(sourceStart, sourceEnd);
+  assert.match(sourceRepair, /git pull --rebase origin main/);
+  assert.match(sourceRepair, /git push(?: origin HEAD:main)?/);
 
   const stepStart = workflow.indexOf('- name: seo-status.json publiceren als hij is veranderd');
   const stepEnd = workflow.indexOf('- name: Rapporten samenvoegen', stepStart);

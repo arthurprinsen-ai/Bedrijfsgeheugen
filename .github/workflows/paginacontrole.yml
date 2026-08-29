@@ -24,11 +24,11 @@ permissions:
   contents: write
   issues: write
 
-# PR-controles mogen niet meer door een gelijktijdige main-run worden geannuleerd.
-# Runs voor dezelfde PR/ref vervangen elkaar nog steeds om verspilling te voorkomen.
+# PR-verificaties blijven per PR geïsoleerd en mogen een oudere run van dezelfde PR vervangen.
+# Alle niet-PR-runs kunnen naar main schrijven en delen daarom het niet-annuleerbare repo-slot.
 concurrency:
-  group: paginacontrole-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'pull_request' && format('paginacontrole-{0}', github.event.pull_request.number) || 'repo-schrijven' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   controle:
@@ -74,8 +74,6 @@ jobs:
           set_bg_keyword('blog/wat-is-een-bedrijfsgeheugen/index.html', 'kennisverlies mkb')
           set_bg_keyword('data-soevereiniteit.html', 'data soevereiniteit; chatgpt bedrijfsgegevens beleid')
 
-          # Deze pagina is eigenaar van twee sterk verwante zoekopdrachten.
-          # Titel en H1 benoemen daarom beide onderwerpen expliciet.
           p = 'data-soevereiniteit.html'
           text = read(p)
           title = 'Data-soevereiniteit: ChatGPT, bedrijfsgegevens en beleid | Bedrijfsgeheugen'
@@ -91,7 +89,6 @@ jobs:
               raise RuntimeError('title/h1 data-soevereiniteit niet eenduidig gevonden')
           write(p, text)
 
-          # Relevante derde interne verwijzing naar /excel-als-crm.
           p = 'blog/offertes-opvolgen-zonder-crm/index.html'
           text = read(p)
           hoofd = text[text.find('<main'):text.find('</main>')] if '<main' in text and '</main>' in text else text
@@ -103,7 +100,6 @@ jobs:
               text = text.replace('</main>', toevoeging + '</main>', 1)
               write(p, text)
 
-          # Meta-omschrijving binnen de afgesproken 110-165 tekens.
           p = 'blog/afas-api/index.html'
           text = read(p)
           desc = ('Wat kan de AFAS API wel en niet? Wanneer volstaan GetConnectors, '
@@ -122,13 +118,13 @@ jobs:
           if [ -n "$(git status --porcelain -- '*.html')" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add afmaakindex.html ai-implementeren.html bedrijfsgeheugen.html data-soevereiniteit.html \
+            git add -- afmaakindex.html ai-implementeren.html bedrijfsgeheugen.html data-soevereiniteit.html \
               blog/wat-is-een-bedrijfsgeheugen/index.html \
               blog/offertes-opvolgen-zonder-crm/index.html \
               blog/afas-api/index.html
             git commit -m "Herstel SEO-bronfouten uit paginacontrole"
             git pull --rebase origin main
-            git push
+            git push origin HEAD:main
           else
             echo "Geen bekende SEO-bronfouten meer te herstellen."
           fi
@@ -160,10 +156,6 @@ jobs:
           cp seo-status.json /tmp/seo-status.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # Publiceer uitsluitend het afgeleide statusbestand bovenop de nieuwste main.
-          # Zo kan een parallelle productie-/agentpush geen rebase van de volledige
-          # oude workflow-worktree laten mislukken.
           git fetch origin main
           git reset --hard origin/main
           cp /tmp/seo-status.json seo-status.json
@@ -173,7 +165,7 @@ jobs:
             exit 0
           fi
 
-          git add seo-status.json
+          git add -- seo-status.json
           git commit -m "seo-status.json bijgewerkt door de SEO-controle"
           git push origin HEAD:main
 

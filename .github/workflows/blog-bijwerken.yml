@@ -1,11 +1,7 @@
 name: Blog bijwerken
-# NIEUW. De weekblog-workflow schrijft alleen artikelen die nog niet bestaan.
-# Deze workflow doet het omgekeerde: hij werkt bestaande artikelen bij wanneer
-# het zoekwoord, de meta-omschrijving of de interne links in Notion zijn gewijzigd.
-#
-# Trigger in Notion: zet Herzien op "Voorstel klaar" bij een rij met status
-# "Gepubliceerd". BG 16 in Make doet dat automatisch na een zoekwoordwijziging.
-# Na afloop zet deze workflow Herzien op "Goedgekeurd", zodat hij niet blijft draaien.
+# Werkt bestaande artikelen bij wanneer zoekwoord, meta-omschrijving of interne links
+# in Notion zijn gewijzigd. AI mag uitsluitend contentbestanden voorbereiden;
+# validatie, staging, commit en push zijn deterministische workflowverantwoordelijkheid.
 on:
   schedule:
     - cron: '30 6 * * 1,2,3,4,5'
@@ -23,11 +19,6 @@ permissions:
   contents: write
   id-token: write
 
-# GEDEELD SLOT. Deze workflow schrijft sitemap.xml terug naar main, en dat doen
-# seo-controle.yml, blog-bijwerken.yml en weekblog.yml alle drie. Draaien er twee
-# tegelijk, dan slaagt de eerste push en wordt de tweede geweigerd: exit code 1.
-# Daarom delen ze EEN groepsnaam. Een slot met een eigen naam per workflow houdt
-# alleen zichzelf tegen en is dus geen slot. Wijzig deze naam nooit los.
 concurrency:
   group: repo-schrijven
   cancel-in-progress: false
@@ -37,6 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Bij te werken artikel ophalen uit Notion
         id: kalender
@@ -145,7 +138,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-sonnet-5 --max-turns 40 --allowedTools Bash,Read,Write,Edit,Glob,Grep"
+          claude_args: "--model claude-sonnet-5 --max-turns 40 --allowedTools Read,Write,Edit,Glob,Grep"
           prompt: |
             Werk één BESTAAND blogartikel bij op www.bedrijfsgeheugen.nl. Je schrijft geen nieuw
             artikel: je past een bestaand bestand aan omdat de zoekwoordstrategie is gewijzigd.
@@ -171,43 +164,94 @@ jobs:
             ${{ steps.slugs.outputs.lijst }}
 
             DE BELANGRIJKSTE REGEL
-            Je herschrijft het artikel NIET. Je past alleen aan wat door de nieuwe zoekwoordkeuze
-            niet meer klopt. Elke alinea die niets met het zoekwoord of de links te maken heeft,
-            blijft woord voor woord staan. Een artikel dat na jouw bewerking onherkenbaar is, is
-            een fout resultaat. Bij twijfel: laat staan.
+            Je herschrijft het artikel NIET. Pas alleen aan wat door de nieuwe zoekwoordkeuze niet
+            meer klopt. Elke alinea die niets met het zoekwoord of de links te maken heeft blijft
+            woord voor woord staan. Bij twijfel: laat staan.
 
             WAT JE WEL AANPAST
-            1. De <title> in de head, als het nieuwe zoekwoord er niet in staat. Maximaal 60 tekens.
-            2. De meta description en og:description: gebruik de voorgeschreven tekst letterlijk.
-               Is die leeg, pas de bestaande dan minimaal aan zodat het zoekwoord erin staat.
-            3. De H1 en de eerste honderd woorden: zorg dat het zoekwoord er exact in voorkomt,
-               op een manier die natuurlijk leest. Herschrijf hooguit twee zinnen.
-            4. Minstens één H2 moet het zoekwoord bevatten. Pas een bestaande kop aan; voeg er
-               geen nieuwe sectie bij.
-            5. De interne links uit het blok hierboven: voeg ze toe met de opgegeven anchortekst,
-               in de aangegeven alinea. Bestaat een genoemde slug niet in de lijst hierboven, sla
-               die link dan over en meld dat.
-            6. dateModified in de JSON-LD op de datum van vandaag. datePublished blijft ongewijzigd.
-            7. sitemap.xml: lastmod van deze URL op vandaag.
+            1. De <title> als het nieuwe zoekwoord er niet in staat, maximaal 60 tekens.
+            2. Meta description en og:description: gebruik voorgeschreven tekst letterlijk; is die
+               leeg, pas minimaal aan zodat het zoekwoord erin staat.
+            3. H1 en eerste honderd woorden: laat het zoekwoord exact en natuurlijk voorkomen;
+               herschrijf hooguit twee zinnen.
+            4. Minstens één H2 bevat het zoekwoord; pas een bestaande kop aan.
+            5. Voeg voorgeschreven interne links toe met de opgegeven anchortekst. Bestaat een slug
+               niet in de lijst, sla die link over en meld dat.
+            6. dateModified in JSON-LD wordt vandaag; datePublished blijft ongewijzigd.
+            7. sitemap.xml: lastmod van deze URL wordt vandaag.
 
             WAT JE NOOIT AANPAST
-            - De slug, de canonical-URL of de bestandsnaam. Een URL wijzigen kost je de ranking
-              die je al hebt.
-            - datePublished, de auteur, de prijzen of de FAQ-antwoorden.
-            - Andere artikelen, behalve de pijlerpagina van dit cluster als daar een link naar dit
-              artikel bij moet.
-            - De huisstijl, de head-structuur, de topbalk, de navigatie of de footer.
+            - Slug, canonical-URL of bestandsnaam.
+            - datePublished, auteur, prijzen of FAQ-antwoorden.
+            - Andere artikelen, behalve maximaal één pijlerpagina van dit cluster als daar een
+              teruglink naar dit artikel bij moet.
+            - Huisstijl, head-structuur, topbalk, navigatie of footer.
 
-            CONTROLE VOOR PUBLICATIE: precies één h1, geldige JSON-LD, canonical ongewijzigd, geen
-            interne link die op .html eindigt, geen link naar een niet-bestaande slug.
+            CONTROLE VOOR OPLEVERING: precies één h1, geldige JSON-LD, canonical ongewijzigd,
+            geen interne link die op .html eindigt en geen link naar een niet-bestaande slug.
 
-            PUBLICEREN: git add -A, commit met bericht
-            "blog bijgewerkt: ${{ steps.kalender.outputs.slug }}" en push naar main.
-            Wordt de push geweigerd omdat er ondertussen een andere commit binnenkwam,
-            doe dan: git pull --rebase origin main en push opnieuw. Hooguit drie pogingen.
-            Meld het in je samenvatting als het na drie keer nog niet lukt. Forceer nooit
-            met --force: dan gooi je werk van een andere workflow weg.
-            Meld in je samenvatting welke regels je hebt gewijzigd en wat je hebt laten staan.
+            Lever uitsluitend de benodigde bestandswijzigingen op. De workflow valideert daarna
+            zelfstandig de changed-file allowlist en verzorgt staging, commit, conflictbehandeling
+            en publicatie. Wijzig niets buiten het doelartikel, sitemap.xml en eventueel één
+            bestaande cluster-pijlerpagina.
+
+      - name: Deterministic update contract checks
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          SLUG: ${{ steps.kalender.outputs.slug }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, re, subprocess
+
+          slug = os.environ['SLUG']
+          target = f'blog/{slug}/index.html'
+          tracked = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
+          untracked = subprocess.check_output(['git','ls-files','--others','--exclude-standard'], text=True).splitlines()
+          changed = sorted(set(tracked + untracked))
+          assert changed, 'AI leverde geen bestandswijziging op'
+          assert target in changed, f'doelartikel ontbreekt in wijzigingen: {changed}'
+          assert 'sitemap.xml' in changed, f'sitemap.xml moet lastmod bijwerken: {changed}'
+
+          optional_blog = [p for p in changed if re.fullmatch(r'blog/[a-z0-9-]+/index\.html', p) and p != target]
+          assert len(optional_blog) <= 1, f'hooguit één pijlerpagina mag aanvullend wijzigen: {optional_blog}'
+          allowed = {target, 'sitemap.xml', *optional_blog}
+          unexpected = [p for p in changed if p not in allowed]
+          assert not unexpected, f'onverwachte bestanden gewijzigd: {unexpected}'
+
+          text = pathlib.Path(target).read_text(encoding='utf-8')
+          assert len(re.findall(r'<h1(?:\s|>)', text)) == 1, 'exact één h1 vereist'
+          canonical = re.search(r'<link rel="canonical" href="([^"]+)">', text)
+          assert canonical and canonical.group(1).endswith(f'/blog/{slug}/'), 'canonical mag niet wijzigen'
+          assert '.html' not in canonical.group(1), 'canonical mag geen .html bevatten'
+          ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
+          assert ld, 'JSON-LD ontbreekt'
+          json.loads(ld.group(1))
+
+          pathlib.Path('/tmp/validated-blog-update-files').write_text('\n'.join(changed) + '\n', encoding='utf-8')
+          print('UPDATE_CONTRACT_OK', changed)
+          PY
+
+      - name: Commit and push validated changes
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          SLUG: ${{ steps.kalender.outputs.slug }}
+        run: |
+          set -euo pipefail
+          git config user.name "Bedrijfsgeheugen Publisher"
+          git config user.email "actions@users.noreply.github.com"
+          while IFS= read -r path; do
+            [ -n "$path" ] && git add -- "$path"
+          done < /tmp/validated-blog-update-files
+          git commit -m "blog bijgewerkt: $SLUG"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            git pull --rebase origin main
+          done
+          echo "::error::Push faalde na drie begrensde pogingen"
+          exit 1
 
       - name: Notion op Goedgekeurd zetten
         if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != ''
