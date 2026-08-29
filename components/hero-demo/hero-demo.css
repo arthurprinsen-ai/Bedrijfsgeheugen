@@ -1,0 +1,19 @@
+[data-bg-component="hero-demo"]{background:var(--wit);border:2px solid var(--inkt);border-radius:12px;padding:1.15rem;min-width:0;overflow:hidden}
+[data-bg-component="hero-demo"] .vraag{display:flex;gap:.7rem;align-items:flex-start;justify-content:flex-end;margin-bottom:1rem}
+[data-bg-component="hero-demo"] .vraag p{background:var(--zacht);border-radius:12px 12px 2px 12px;padding:.7rem .9rem;font-size:.92rem}
+[data-bg-component="hero-demo"] .foto{width:2.4rem;height:2.4rem;border-radius:50%;object-fit:cover;flex:none;border:2px solid var(--inkt)}
+[data-bg-component="hero-demo"] .antw{display:flex;gap:.6rem;align-items:center;font-weight:700;font-size:.92rem;margin-bottom:.5rem}
+[data-bg-component="hero-demo"] .antw i{width:1.6rem;height:1.6rem;border-radius:6px;background:var(--blauw);display:inline-block}
+[data-bg-component="hero-demo"] .antw-body{font-size:.9rem;color:var(--inkt)}
+[data-bg-component="hero-demo"] .antw-body ul{margin:.5rem 0 .6rem 1.1rem}
+[data-bg-component="hero-demo"] .antw-body li{margin:.15rem 0}
+[data-bg-component="hero-demo"] .mark{background:linear-gradient(transparent 55%,var(--geel) 55%,var(--geel) 96%,transparent 96%);padding:0 .08em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+[data-bg-component="hero-demo"] .bg-hero-demo__hint{font-size:.85rem;color:var(--grijs)}
+[data-bg-component="hero-demo"] .bron{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--grijs);font-weight:600;margin:.9rem 0 .4rem}
+[data-bg-component="hero-demo"] .bronrij{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--lijn);border-radius:9px;padding:.5rem .7rem;margin-bottom:.4rem;font-size:.85rem}
+[data-bg-component="hero-demo"] .bronrij b{font-weight:500}
+[data-bg-component="hero-demo"] .bronrij>span{color:var(--blauw);font-size:.8rem;font-weight:600}
+[data-bg-component="hero-demo"] .bg-hero-demo__source-detail{color:var(--grijs);font-weight:400;font-size:.8rem}
+[data-bg-component="hero-demo"] .acties{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+[data-bg-component="hero-demo"] .acties div{flex:1;min-width:8rem;border:1px solid var(--lijn);border-radius:9px;padding:.55rem;text-align:center;font-size:.78rem;font-weight:600;color:var(--grijs)}
+[data-bg-component="hero-demo"] [data-bg-slot="hero-video"]:empty{display:none}
