@@ -1,9 +1,11 @@
 // Neemt een ingevulde Digitaliseringsmonitor aan en geeft de deelnemer zijn eigen
 // uitkomst terug. Het opslaan gebeurt in Make (BG 47), dat naar Notion schrijft.
 // De bestaande Make-payload blijft intact; Brain-metadata wordt alleen additief
-// meegestuurd zodat elke inzending provenance, idempotency en verificatiestatus heeft.
+// meegestuurd. Eventmetadata wordt eerst duurzaam en idempotent opgeslagen in
+// Netlify Blobs; volledige formulierdata blijft alleen in de bestaande Make/Notion-keten.
 
 import { createSourceEventEnvelope } from '../../platform/integrations/source-event-envelope.mjs';
+import { persistBrainEvent } from './_brain-event-store.mjs';
 
 const WEBHOOK = 'https://hook.eu1.make.com/7hsxkgmjyipcpzm0lq86khswzw2wxvda';
 const WERKWEKEN = 46;
@@ -88,6 +90,16 @@ export default async (request) => {
     payload: inzending,
     explicitIdempotencyKey,
   });
+
+  try {
+    await persistBrainEvent(brainEvent, { status:'RECEIVED' });
+  } catch {
+    return Response.json(
+      { fout:'Opslaan is tijdelijk niet veilig beschikbaar. Probeer het zo nog eens.', eventId:brainEvent.eventId },
+      { status:503 }
+    );
+  }
+
   const writePayload = {
     ...inzending,
     brain_event_id: brainEvent.eventId,
@@ -113,6 +125,13 @@ export default async (request) => {
     }
   } catch {
     return Response.json({ fout: 'Opslaan lukte niet. Probeer het zo nog eens.', eventId: brainEvent.eventId }, { status: 502 });
+  }
+
+  try {
+    await persistBrainEvent(brainEvent, { status:'FORWARDED_TO_MAKE' });
+  } catch {
+    // De business-writeback is al gelukt. Niet alsnog een duplicerende client-retry
+    // veroorzaken; de RECEIVED-status blijft als herstelbaar signaal in de Brain-store.
   }
 
   return Response.json({
