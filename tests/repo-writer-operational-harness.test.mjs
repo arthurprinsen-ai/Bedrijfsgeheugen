@@ -25,6 +25,18 @@ test('operational writer harness can only dispatch menu-balk-fix in candidate-pr
   assert.doesNotMatch(text, /NOTION|notion|publiceer|publish/i);
 });
 
+test('operational harness has an isolated regulation writer lane that is candidate-only', () => {
+  const text = fs.readFileSync(harnessPath, 'utf8');
+
+  assert.match(text, /dispatch-regulation-candidate:/);
+  assert.match(text, /verify\/regelgeving-bijwerken-/);
+  assert.match(text, /gh\s+workflow\s+run\s+regelgeving-bijwerken\.yml/);
+  assert.match(text, /--ref\s+"\$VERIFY_REF"/);
+  assert.match(text, /delivery_mode=candidate-pr/);
+  assert.doesNotMatch(text, /delivery_mode=direct/);
+  assert.doesNotMatch(text, /\bgit\s+push\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
+});
+
 test('operational harness records the triggering PR base SHA before dispatch', () => {
   const text = fs.readFileSync(harnessPath, 'utf8');
   assert.match(text, /github\.event\.pull_request\.base\.sha/);
