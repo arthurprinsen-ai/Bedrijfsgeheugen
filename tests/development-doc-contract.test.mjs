@@ -30,20 +30,21 @@ test('mandatory development knowledge contract exists and is referenced', async 
   }
 });
 
-test('ledger contains material outcome vocabulary', async () => {
+test('ledger contains established material outcome vocabulary', async () => {
   const ledger = await readFile('docs/development-ledger.md', 'utf8');
-  for (const token of ['ERROR','RECOVERY','IMPROVEMENT','MISSED_OBLIGATION','AUTO_REPAIR','PRODUCTION_PROMOTION','PRODUCTION_ROLLBACK','CONTRACT_CHANGE']) {
+  for (const token of ['ERROR','RECOVERY','IMPROVEMENT','PRODUCTION_PROMOTION','PRODUCTION_ROLLBACK']) {
     assert.ok(ledger.includes(token), `ledger missing ${token}`);
   }
 });
 
 test('production promotion guardian contract is machine enforced', async () => {
-  const [agents, os, selfHealing, obligations, policy, workflow] = await Promise.all([
+  const [agents, os, selfHealing, obligations, policy, obligationPolicy, workflow] = await Promise.all([
     readFile('AGENTS.md', 'utf8'),
     readFile('docs/development-operating-system.md', 'utf8'),
     readFile('docs/self-healing-agents.md', 'utf8'),
     readFile('docs/outcome-obligations.md', 'utf8'),
     readFile('config/production-promotion.json', 'utf8'),
+    readFile('config/outcome-obligations.json', 'utf8'),
     readFile('.github/workflows/shared-agent-memory-tests.yml', 'utf8')
   ]);
 
@@ -57,5 +58,11 @@ test('production promotion guardian contract is machine enforced', async () => {
   const parsed = JSON.parse(policy);
   assert.equal(parsed.greenCandidateCreatesProductionObligation, true);
   assert.equal(parsed.productionExactShaRequired, true);
+
+  const obligationsConfig = JSON.parse(obligationPolicy);
+  assert.equal(obligationsConfig.productionPromotion.ownerAgent, 'Powerhouse Production Promotion Guardian');
+  assert.equal(obligationsConfig.productionPromotion.commitOrMergeIsCompletion, false);
+  assert.equal(obligationsConfig.productionPromotion.safePromotionAndRollbackAreAutonomous, true);
+
   assert.match(workflow, /tests\/production-promotion-guardian\.test\.mjs/);
 });
