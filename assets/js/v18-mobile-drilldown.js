@@ -12,8 +12,69 @@
     toggle.setAttribute('aria-label','Open menu');
 
     var label=toggle.querySelector('.bg-mobile-menu-label');
-    var views=Array.prototype.slice.call(nav.querySelectorAll('[data-bg-mobile-view]'));
     var root=nav.querySelector('[data-bg-mobile-view="root"]');
+
+    function primaryLink(href,text){
+      var a=document.createElement('a');
+      a.className='bg-mobile-row';
+      a.href=href;
+      a.innerHTML='<span>'+text+'</span><span class="bg-mobile-arrow" aria-hidden="true">→</span>';
+      return a;
+    }
+
+    function overviewLink(viewName,href,text,description){
+      var view=nav.querySelector('[data-bg-mobile-view="'+viewName+'"]');
+      if(!view||view.querySelector('a[href="'+href+'"]'))return;
+      var title=view.querySelector('.bg-mobile-subtitle');
+      var a=document.createElement('a');
+      a.className='bg-mobile-link';
+      a.href=href;
+      a.innerHTML='<span>'+text+(description?'<small>'+description+'</small>':'')+'</span><span aria-hidden="true">→</span>';
+      if(title&&title.nextSibling)view.insertBefore(a,title.nextSibling);else view.appendChild(a);
+    }
+
+    function ensurePrimaryCatalog(){
+      if(!root||root.getAttribute('data-bg-primary-catalog')==='v2')return;
+      var solutions=root.querySelector('[data-bg-mobile-target="oplossingen"]');
+      var platform=root.querySelector('[data-bg-mobile-target="bedrijfsgeheugen"]');
+      var integrations=root.querySelector('[data-bg-mobile-target="koppelingen"]');
+      var knowledge=root.querySelector('[data-bg-mobile-target="kennis"]');
+      var about=root.querySelector('a[href="/over-ons"]');
+      var expertises=root.querySelector('a[href="/expertises"]');
+      var cta=root.querySelector('.bg-mobile-cta');
+      var meta=root.querySelector('.bg-mobile-meta');
+
+      if(platform)platform.innerHTML='Platform <span class="bg-mobile-arrow" aria-hidden="true">→</span>';
+
+      var ordered=[
+        primaryLink('/problemen','Problemen'),
+        solutions,
+        platform,
+        primaryLink('/prijzen','Prijzen'),
+        primaryLink('/cases','Cases'),
+        knowledge,
+        about,
+        integrations,
+        expertises
+      ].filter(Boolean);
+      ordered.forEach(function(item){root.appendChild(item);});
+
+      var login=primaryLink('/inloggen','Inloggen');
+      login.classList.add('bg-mobile-secondary');
+      var signup=primaryLink('/aanmelden','Aanmelden');
+      signup.classList.add('bg-mobile-secondary');
+      root.appendChild(login);
+      root.appendChild(signup);
+      if(cta)root.appendChild(cta);
+      if(meta)root.appendChild(meta);
+      root.setAttribute('data-bg-primary-catalog','v2');
+
+      overviewLink('oplossingen','/oplossingen','Alle oplossingen','Organisatie, automatisering, data en AI in samenhang');
+      overviewLink('kennis','/kennis','Kennisoverzicht','Vraag, lees en vertaal kennis naar je eigen bedrijf');
+    }
+
+    ensurePrimaryCatalog();
+    var views=Array.prototype.slice.call(nav.querySelectorAll('[data-bg-mobile-view]'));
 
     function showView(name){
       views.forEach(function(view){
