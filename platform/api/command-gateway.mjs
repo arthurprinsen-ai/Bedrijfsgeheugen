@@ -26,7 +26,7 @@ export async function authorizeAndPlanCommand({ command, currentVersion, authori
     tenantId:command.tenantId, objectId:command.objectId, actorId:command.actorId,
     timestamp:now(), reason:command.reason, correlationId:command.correlationId ?? command.commandId,
     causationId:command.causationId ?? null, schemaVersion:1, idempotencyKey:command.commandId,
-    beforeRef:`${command.objectId}@v${currentVersion}`, afterRef:`${command.objectId}@v${currentVersion+1}`,
+    beforeVersion:currentVersion, afterVersion:currentVersion+1,
     risk:command.risk ?? 'Unknown',
   });
   return Object.freeze({ command, policy, event, nextVersion:currentVersion+1 });
