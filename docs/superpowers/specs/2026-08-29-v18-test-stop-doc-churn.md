@@ -1,0 +1,1 @@
+Candidate documentation is frozen here so the next exact head can be verified without unnecessary SHA churn.
