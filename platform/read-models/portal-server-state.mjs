@@ -11,16 +11,18 @@ export function sanitizePortalProjection(state,{tenantId,userId,now=()=>new Date
   const data={};
   for(const key of ALLOWED_KEYS){if(source[key]!==undefined)data[key]=source[key]}
   delete data.user;
-  data.sourceMeta={...(data.sourceMeta||{}),kind:'server-projection',live:true,label:'Bedrijfsgeheugen serverprojectie',updatedAt:cleanText(data.sourceMeta?.updatedAt)||now()};
-  return Object.freeze({schemaVersion:1,tenantId,updatedBy:userId,updatedAt:now(),data:Object.freeze(data)});
+  const writtenAt=now();
+  const sourceUpdatedAt=cleanText(source?.sourceMeta?.updatedAt)||cleanText(source?.company?.lastSync)||writtenAt;
+  data.sourceMeta={...(data.sourceMeta||{}),kind:'server-projection',live:true,label:'Bedrijfsgeheugen serverprojectie',updatedAt:sourceUpdatedAt};
+  return Object.freeze({schemaVersion:1,tenantId,updatedBy:userId,updatedAt:writtenAt,sourceUpdatedAt,data:Object.freeze(data)});
 }
 export function portalProjectionToState(record,user){
   if(!record?.data) return null;
-  return {...record.data,user:{name:user?.name||user?.userMetadata?.full_name||user?.email||'Gebruiker',email:user?.email||'',role:Array.isArray(user?.roles)?user.roles.join(', '):''},sourceMeta:{...(record.data.sourceMeta||{}),kind:'server',live:true,label:'Bedrijfsgeheugen serverstate',updatedAt:record.updatedAt||record.data.sourceMeta?.updatedAt||''}};
+  return {...record.data,user:{name:user?.name||user?.userMetadata?.full_name||user?.email||'Gebruiker',email:user?.email||'',role:Array.isArray(user?.roles)?user.roles.join(', '):''},sourceMeta:{...(record.data.sourceMeta||{}),kind:'server',live:true,label:'Bedrijfsgeheugen serverstate',updatedAt:record.sourceUpdatedAt||record.data.sourceMeta?.updatedAt||record.updatedAt||''}};
 }
 export function shouldReplaceProjection(current,next){
   if(!current) return true;
-  const a=Date.parse(current.updatedAt||current.data?.sourceMeta?.updatedAt||0)||0;
-  const b=Date.parse(next.updatedAt||next.data?.sourceMeta?.updatedAt||0)||0;
+  const a=Date.parse(current.sourceUpdatedAt||current.data?.sourceMeta?.updatedAt||current.updatedAt||0)||0;
+  const b=Date.parse(next.sourceUpdatedAt||next.data?.sourceMeta?.updatedAt||next.updatedAt||0)||0;
   return b>a;
 }
