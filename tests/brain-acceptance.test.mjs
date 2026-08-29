@@ -2,20 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProviderRegistry } from '../platform/intelligence/provider-registry.mjs';
 import { ACTIONS, DECISIONS } from '../platform/policy/policy-engine.mjs';
-import { TRUTH_CLASSES, LIFECYCLE_STATES } from '../platform/contracts/canonical-object.mjs';
+import { createAIUseCase, AI_RISK_CLASSES, AI_USE_CASE_STATES } from '../platform/policy/ai-register.mjs';
+import { TRUTH_CLASSES, LIFECYCLE_STATES, VERIFICATION_STATES } from '../platform/contracts/canonical-object.mjs';
 import { createBrainRuntime } from '../platform/brain/runtime.mjs';
 
-function fixture() {
+function fixture({ providerFails = false } = {}) {
   const providerRegistry = createProviderRegistry([{
     id: 'FAKE-MODEL', provider: 'deterministic-test', model: 'fake-v1', status: 'Approved',
     allowedDataClasses: ['Internal'], allowedPurposes: ['management-insight'],
     trainingAllowed: false, persistentProviderMemory: false,
   }]);
 
+  const aiUseCases = [createAIUseCase({
+    id:'AIUSE-MGMT', tenantId:'T1', purpose:'management-insight', ownerId:'manager', legalRole:'Deployer',
+    riskClass:AI_RISK_CLASSES.OTHER, providerModelId:'FAKE-MODEL', dataClasses:['Internal'],
+    humanOversight:'Management approval before business-truth promotion', autonomy:'L2',
+    controls:['AI_DATA_GATEWAY','HUMAN_APPROVAL'], evidence:['CTRL-EVIDENCE-1'], state:AI_USE_CASE_STATES.ACTIVE,
+  })];
+
   const policies = [
     { id:'P-VIEW', subjectId:'manager', action:ACTIONS.VIEW, resourceType:'ExternalSignal', tenantId:'T1', decision:DECISIONS.ALLOW },
     { id:'P-AI', subjectId:'manager', action:ACTIONS.AI_PROCESS, resourceType:'ExternalSignal', purpose:'management-insight', dataClass:'Internal', tenantId:'T1', decision:DECISIONS.ALLOW },
+    { id:'P-APPROVE', subjectId:'manager', action:ACTIONS.APPROVE, resourceType:'Recommendation', tenantId:'T1', decision:DECISIONS.ALLOW },
     { id:'P-EXEC', subjectId:'manager', action:ACTIONS.EXECUTE, resourceType:'Change', tenantId:'T1', decision:DECISIONS.ALLOW },
+    { id:'P-HEAL', subjectId:'AGENT-INTEGRATION', action:ACTIONS.EXECUTE, resourceType:'Recovery', tenantId:'T1', decision:DECISIONS.ALLOW },
     { id:'P-VIEW-ONLY', subjectId:'viewer', action:ACTIONS.VIEW, resourceType:'ExternalSignal', tenantId:'T1', decision:DECISIONS.ALLOW },
   ];
 
@@ -24,6 +34,7 @@ function fixture() {
   const aiProvider = Object.freeze({
     async analyze(request) {
       providerCalls.push(structuredClone(request));
+      if (providerFails) throw new Error('simulated provider outage');
       return {
         type: 'Recommendation',
         text: 'Automatiseer de handmatige overdracht.',
@@ -41,12 +52,12 @@ function fixture() {
   });
 
   const runtime = createBrainRuntime({
-    policies, providerRegistry,
+    policies, providerRegistry, aiUseCases,
     contextPolicy:{ allowedFields:['summary','sourceRef','customerId'], pseudonymizeFields:['customerId'] },
     aiProvider, executor,
     now: () => '2026-08-29T12:00:00Z',
   });
-  return { runtime, providerCalls, executions };
+  return { runtime, providerCalls, executions, aiUseCases };
 }
 
 const sourceSignal = Object.freeze({
@@ -95,6 +106,15 @@ test('brain runs source -> AI interpretation -> decision -> safe execution -> ve
   assert.equal(closed.learning.shared, true);
   assert.equal(runtime.snapshot().learning.length, 1);
   assert.equal(runtime.snapshot().activeObjects.get(decision.change.id).lifecycle, LIFECYCLE_STATES.ACTIVE);
+  assert.equal(runtime.snapshot().activeObjects.get(decision.change.id).verification, VERIFICATION_STATES.VERIFIED);
+});
+
+test('AI use case must be registered, active and match tenant/purpose/provider/data class before provider invocation', async () => {
+  const { runtime, providerCalls } = fixture();
+  runtime.ingest(sourceSignal, { actorId:'source-adapter' });
+  await assert.rejects(() => runtime.analyze({ signalId:'SIGNAL-1', requesterId:'manager', aiUseCaseId:'UNREGISTERED', purpose:'management-insight', providerModelId:'FAKE-MODEL', dataClass:'Internal' }), /registered|use case/i);
+  await assert.rejects(() => runtime.analyze({ signalId:'SIGNAL-1', requesterId:'manager', aiUseCaseId:'AIUSE-MGMT', purpose:'wrong-purpose', providerModelId:'FAKE-MODEL', dataClass:'Internal' }), /purpose/i);
+  assert.equal(providerCalls.length, 0);
 });
 
 test('view permission does not imply AI processing permission and cross-tenant access fails closed', async () => {
@@ -103,6 +123,25 @@ test('view permission does not imply AI processing permission and cross-tenant a
   await assert.rejects(() => runtime.analyze({ signalId:'SIGNAL-1', requesterId:'viewer', aiUseCaseId:'AIUSE-MGMT', purpose:'management-insight', providerModelId:'FAKE-MODEL', dataClass:'Internal' }), /AI processing denied/i);
   await assert.rejects(() => runtime.analyze({ signalId:'SIGNAL-1', requesterId:'manager', tenantId:'T2', aiUseCaseId:'AIUSE-MGMT', purpose:'management-insight', providerModelId:'FAKE-MODEL', dataClass:'Internal' }), /tenant/i);
   assert.equal(providerCalls.length, 0);
+});
+
+test('only an explicitly authorized human can promote AI interpretation into a business decision', async () => {
+  const { runtime } = fixture();
+  runtime.ingest(sourceSignal, { actorId:'source-adapter' });
+  const analysis = await runtime.analyze({ signalId:'SIGNAL-1', requesterId:'manager', aiUseCaseId:'AIUSE-MGMT', purpose:'management-insight', providerModelId:'FAKE-MODEL', dataClass:'Internal' });
+  assert.throws(() => runtime.recordDecision({ recommendationId:analysis.recommendation.id, requesterId:'viewer', approved:true, reason:'Unauthorized approval attempt' }), /approval|approve|denied/i);
+  assert.equal(runtime.snapshot().decisions.size, 0);
+  assert.equal(runtime.snapshot().recommendations.get(analysis.recommendation.id).truthClass, TRUTH_CLASSES.AI_INTERPRETATION);
+  assert.equal(runtime.snapshot().workingObjects.get(analysis.recommendation.id).lifecycle, LIFECYCLE_STATES.REVIEW);
+});
+
+test('provider outage fails safely and cannot create recommendation, decision or business truth', async () => {
+  const { runtime, providerCalls } = fixture({ providerFails:true });
+  runtime.ingest(sourceSignal, { actorId:'source-adapter' });
+  await assert.rejects(() => runtime.analyze({ signalId:'SIGNAL-1', requesterId:'manager', aiUseCaseId:'AIUSE-MGMT', purpose:'management-insight', providerModelId:'FAKE-MODEL', dataClass:'Internal' }), /failed safely/i);
+  assert.equal(providerCalls.length, 1);
+  assert.equal(runtime.snapshot().recommendations.size, 0);
+  assert.equal(runtime.snapshot().decisions.size, 0);
 });
 
 test('high-risk autonomous execution is blocked and WORKING never silently replaces ACTIVE', async () => {
@@ -116,15 +155,17 @@ test('high-risk autonomous execution is blocked and WORKING never silently repla
   assert.equal(runtime.snapshot().activeObjects.has(decision.change.id), false);
 });
 
-test('self-healing fixes known safe failures but escalates unknown/high-impact failures without mutation', async () => {
+test('self-healing uses the same policy layer, resolves only verified safe failures and records shared lifecycle', async () => {
   const { runtime, executions } = fixture();
   const safe = await runtime.selfHeal({ failureId:'FAIL-1', tenantId:'T1', actorId:'AGENT-INTEGRATION', knownPattern:true, risk:'Low', reversible:true, regressionTestAvailable:true, verificationAvailable:true, command:{ kind:'REFRESH_TOKEN' } });
   assert.equal(safe.state, 'Resolved');
   assert.equal(safe.learning.shared, true);
+  assert.equal(runtime.snapshot().agentWork.get(safe.work.id).status, 'LearningRecorded');
   const before = executions.length;
   const unsafe = await runtime.selfHeal({ failureId:'FAIL-2', tenantId:'T1', actorId:'AGENT-INTEGRATION', knownPattern:false, risk:'High', reversible:false, regressionTestAvailable:false, verificationAvailable:false, command:{ kind:'DELETE_DATA' } });
   assert.equal(unsafe.state, 'Escalated');
   assert.equal(executions.length, before);
+  await assert.rejects(() => runtime.selfHeal({ failureId:'FAIL-3', tenantId:'T1', actorId:'UNKNOWN-AGENT', knownPattern:true, risk:'Low', reversible:true, regressionTestAvailable:true, verificationAvailable:true, command:{ kind:'REFRESH_TOKEN' } }), /policy|denied/i);
 });
 
 test('audit/evidence are metadata-only: raw business payload and prompt are never persisted', async () => {
