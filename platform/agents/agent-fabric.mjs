@@ -14,6 +14,7 @@ const TRANSITIONS = Object.freeze({
 });
 
 const TERMINAL = new Set(['Resolved','LearningRecorded']);
+const NOOP_EVENT_SINK = Object.freeze({ append:event => event });
 
 function normalize(values) {
   return [...new Set((values ?? []).map(value => String(value).trim()).filter(Boolean))].sort();
@@ -47,13 +48,28 @@ function opportunityPriority(signal) {
   return 'P3';
 }
 
-export function createAgentFabric({ registry, learningMemory = createLearningMemory(), now = () => new Date().toISOString() } = {}) {
+export function createAgentFabric({ registry, learningMemory = createLearningMemory(), eventSink = NOOP_EVENT_SINK, now = () => new Date().toISOString() } = {}) {
   if (!registry?.route) throw new TypeError('registry is required');
   if (!learningMemory?.findMatches || !learningMemory?.recordVerified) throw new TypeError('learningMemory is invalid');
+  if (!eventSink?.append) throw new TypeError('eventSink.append is required');
   const workById = new Map();
   const activeByFingerprint = new Map();
   const metadata = new Map();
   let sequence = 0;
+
+  function emit(type, work, info, extra = {}) {
+    return eventSink.append(Object.freeze({
+      type,
+      tenantId:work.tenantId,
+      workId:work.id,
+      fingerprint:info.fingerprint,
+      primaryAgentId:work.primaryAgentId,
+      supportAgentIds:Object.freeze([...work.supportAgentIds]),
+      status:work.status,
+      occurredAt:now(),
+      ...extra,
+    }));
+  }
 
   function intake(signal) {
     if (!signal?.tenantId) throw new TypeError('tenantId is required');
@@ -81,16 +97,19 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
       risk:signal.risk ?? null,
       status:'Assigned',
     });
-    workById.set(id, work);
-    activeByFingerprint.set(key, id);
-    metadata.set(id, Object.freeze({
+    const info = Object.freeze({
       fingerprint:key,
       kind:signal.kind ?? 'Failure',
       problemClass:signal.problemClass,
       domains:Object.freeze(normalize(signal.domains)),
       capabilities:Object.freeze(normalize(signal.capabilities)),
       createdAt:now(),
-    }));
+    });
+    workById.set(id, work);
+    activeByFingerprint.set(key, id);
+    metadata.set(id, info);
+    emit('AGENT_WORK_ASSIGNED', work, info, { kind:info.kind });
+    if (info.kind === 'Opportunity') emit('OPPORTUNITY_QUEUED', work, info, { priority:work.priority });
     return work;
   }
 
@@ -105,10 +124,9 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     if (!allowed.has(status)) throw new Error(`invalid AgentWork transition: ${current.status} -> ${status}`);
     const next = createAgentWork({ ...current, ...patch, status });
     workById.set(workId, next);
-    if (TERMINAL.has(status)) {
-      const info = metadata.get(workId);
-      if (info) activeByFingerprint.delete(info.fingerprint);
-    }
+    const info = metadata.get(workId);
+    emit('AGENT_WORK_TRANSITIONED', next, info, { fromStatus:current.status, toStatus:status });
+    if (TERMINAL.has(status) && info) activeByFingerprint.delete(info.fingerprint);
     return next;
   }
 
@@ -117,7 +135,11 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     const info = metadata.get(workId);
     if (!work || !info) throw new Error('AgentWork not found');
     const matches = learningMemory.findMatches({ tenantId:work.tenantId, domains:info.domains, fingerprint:info.problemClass });
-    for (const match of matches) learningMemory.markReused(match.id, { agentId:requesterAgentId ?? work.primaryAgentId });
+    const consumer = requesterAgentId ?? work.primaryAgentId;
+    for (const match of matches) {
+      learningMemory.markReused(match.id, { agentId:consumer });
+      emit('LEARNING_REUSED', work, info, { learningId:match.id, requesterAgentId:consumer });
+    }
     return matches;
   }
 
@@ -126,7 +148,7 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     const info = metadata.get(workId);
     if (!work || !info) throw new Error('AgentWork not found');
     if (!TERMINAL.has(work.status)) throw new Error('learning requires resolved AgentWork');
-    return learningMemory.recordVerified({
+    const record = learningMemory.recordVerified({
       tenantId:work.tenantId,
       fingerprint:info.problemClass,
       domains:info.domains,
@@ -137,6 +159,8 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
       impact,
       confidence,
     });
+    emit('LEARNING_RECORDED', work, info, { learningId:record.id, actionFingerprint:record.actionFingerprint });
+    return record;
   }
 
   function getWork(id) { return workById.get(id) ?? null; }
