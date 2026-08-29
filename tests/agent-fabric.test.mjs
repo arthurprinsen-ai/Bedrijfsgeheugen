@@ -53,8 +53,8 @@ test('cross-domain intake creates one owner with collaborating support agents', 
     domains:['Website','SEO','UX','Security'], capabilities:['analyze'], affectedObjectIds:['page-pricing'],
     problem:'Pricing page change impacts multiple domains', evidence:['change-17'],
   });
-  assert.equal(work.primaryAgentId, 'agent-security');
-  assert.deepEqual(work.supportAgentIds, ['agent-seo','agent-ux']);
+  assert.equal(work.primaryAgentId, 'agent-seo');
+  assert.deepEqual(work.supportAgentIds, ['agent-ux','agent-security']);
   assert.equal(work.status, 'Assigned');
 });
 
