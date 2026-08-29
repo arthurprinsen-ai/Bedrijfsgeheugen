@@ -1,14 +1,14 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "mainProtectionReady": false,
   "governingIssue": 175,
   "writers": [
-    {"name":"approved-central-blog","candidateMode":"merged_unverified","pullRequest":188,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"blog-bijwerken","candidateMode":"merged_unverified","pullRequest":189,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"menu-balk-fix","candidateMode":"merged_unverified","pullRequest":180,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"paginacontrole","candidateMode":"merged_unverified","pullRequest":189,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"regelgeving-bijwerken","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":181,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"seo-controle","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":182,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"weekblog","candidateMode":"merged_unverified","pullRequest":189,"parityVerified":false,"rollbackVerified":false,"merged":true}
+    {"name":"approved-central-blog","candidateMode":"merged_unverified","pullRequest":188,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"blog-bijwerken","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"menu-balk-fix","candidateMode":"merged_unverified","pullRequest":180,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"paginacontrole","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"regelgeving-bijwerken","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":181,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"seo-controle","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":182,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"weekblog","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true}
   ]
 }
