@@ -40,11 +40,13 @@ if (/<link\s+rel=["']canonical["'][^>]*>/i.test(html)) html = html.replace(/<lin
 else html = html.replace('</head>', `  <meta name="robots" content="index,follow">\n  ${canonical}\n</head>`);
 if (!/name=["']robots["']/i.test(html)) html = html.replace('</head>', '  <meta name="robots" content="index,follow">\n</head>');
 
+const menuStateScript = '\n<script src="/assets/js/v18-menu-state.js?v=1" defer></script>';
 const productionMarker = `\n<script id="bg-production-v18-marker">window.__BG_PRODUCTION_VERSION__='V18.8';</script>`;
-html = html.replace('</body>', `${productionMarker}\n</body>`);
+html = html.replace('</body>', `${menuStateScript}${productionMarker}\n</body>`);
 
 if (/noindex|nofollow/i.test(html.match(/<head>[\s\S]*?<\/head>/i)?.[0] || '')) throw new Error('Production homepage still contains crawler blocking metadata');
 if (!html.includes(HERO_VIDEO_URL)) throw new Error('Production homepage does not reference accepted local hero media');
+if (!html.includes('/assets/js/v18-menu-state.js?v=1')) throw new Error('V18 menu state layer missing');
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
