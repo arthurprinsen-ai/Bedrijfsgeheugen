@@ -24,9 +24,16 @@ function collectInteractionErrors(page) {
   return errors;
 }
 
-async function assertProductReady(page) {
+async function assertDesktopReady(page) {
   await expect(page.getByText('AI Management Summary')).toBeVisible();
   await expect(exactButton(page, '.sidebar', 'Overzicht')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('#command')).toBeVisible();
+}
+
+async function assertMobileReady(page) {
+  await expect(page.getByText('AI Management Summary')).toBeVisible();
+  await expect(page.locator('.mobile-nav')).toBeVisible();
+  await expect(exactButton(page, '.mobile-nav', 'Home')).toBeVisible();
   await expect(page.locator('#command')).toBeVisible();
 }
 
@@ -37,7 +44,7 @@ test('next portal desktop navigation, drawers and command route work on live pre
   await isolateProductFromPreviewChrome(page);
 
   await page.goto(`${preview}/portal-next/`, { waitUntil: 'networkidle' });
-  await assertProductReady(page);
+  await assertDesktopReady(page);
   // Load-time product syntax is separately fail-closed by node --check on the exact
   // served JS. From here on pageerror measures product interaction/runtime only.
   const pageErrors = collectInteractionErrors(page);
@@ -74,10 +81,9 @@ test('next portal mobile navigation is task-focused and usable', async ({ page }
   await isolateProductFromPreviewChrome(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${preview}/portal-next/`, { waitUntil: 'networkidle' });
-  await assertProductReady(page);
+  await assertMobileReady(page);
   const pageErrors = collectInteractionErrors(page);
 
-  await expect(page.locator('.mobile-nav')).toBeVisible();
   await exactButton(page, '.mobile-nav', 'Werk').click();
   await expect(page.getByText('Eén persoonlijke inbox uit de hele Company Graph')).toBeVisible();
   await exactButton(page, '.mobile-nav', 'Changes').click();
