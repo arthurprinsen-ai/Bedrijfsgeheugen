@@ -1,8 +1,8 @@
 # Reconstruction execution status
 
 - Task 1: COMPLETE — RED proven in V18 Production Promotion run 33270188004 with 71 uncatalogued routes; complete 73-route catalog then GREEN in run 33270260100.
-- Task 2: IN_PROGRESS — promote strategic routes from presence-only protection to semantic contracts.
-- Task 3: pending
+- Task 2: COMPLETE — RED proven in run 33270408076 (`/bedrijfsgeheugen` presence-only and Over ons without Ambitie); semantic platform contract + Verhaal/Missie/Ambitie/Geloof accepted story GREEN in run 33270497533.
+- Task 3: IN_PROGRESS — exact browser contract now covers all primary/account routes plus Over ons Verhaal/Missie/Ambitie/Geloof.
 - Task 4: pending
 - Task 5: pending
 - Task 6: pending
