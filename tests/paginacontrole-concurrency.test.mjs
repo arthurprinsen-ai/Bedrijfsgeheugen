@@ -14,3 +14,8 @@ test('self-healing pushes preserve concurrent main work by rebasing before push'
   const rebases = workflow.match(/git pull --rebase origin main/g) ?? [];
   assert.equal(rebases.length, 2);
 });
+
+test('daily SEO checks do not push when only the volatile bijgewerkt date changed', () => {
+  assert.match(workflow, /git diff --ignore-matching-lines=.*bijgewerkt.*--quiet -- seo-status\.json/);
+  assert.match(workflow, /git restore seo-status\.json/);
+});
