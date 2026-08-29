@@ -1,0 +1,1 @@
+Status: implementation candidate awaiting exact-head CI and Netlify preview verification. Production unchanged.
