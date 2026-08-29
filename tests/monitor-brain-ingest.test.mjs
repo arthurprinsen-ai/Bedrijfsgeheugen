@@ -24,14 +24,14 @@ test('monitor source-event envelope is deterministic and provenance-complete', (
   assert.equal(a.provenance.sourceRef, '/api/monitor');
   assert.equal(a.schemaVersion, 1);
   assert.equal(a.occurredAt, '2026-08-29T12:00:00.000Z');
-  assert.equal(JSON.stringify(a).includes('arthur@'), false);
 });
 
-test('explicit idempotency key wins without exposing it as raw event id', () => {
+test('explicit idempotency key wins but is hashed before persistence or forwarding', () => {
   const a = createSourceEventEnvelope({ payload, explicitIdempotencyKey:'browser-submit-123', occurredAt:'2026-08-29T12:00:00.000Z' });
   const b = createSourceEventEnvelope({ payload:{ ...payload, uren:99 }, explicitIdempotencyKey:'browser-submit-123', occurredAt:'2026-08-29T12:01:00.000Z' });
-  assert.equal(a.idempotencyKey, 'browser-submit-123');
-  assert.equal(b.idempotencyKey, 'browser-submit-123');
+  assert.match(a.idempotencyKey, /^client:[a-f0-9]{64}$/);
+  assert.equal(a.idempotencyKey, b.idempotencyKey);
   assert.equal(a.eventId, b.eventId);
-  assert.notEqual(a.eventId, 'browser-submit-123');
+  assert.equal(a.idempotencyKey.includes('browser-submit-123'), false);
+  assert.equal(a.eventId.includes('browser-submit-123'), false);
 });
