@@ -1,0 +1,29 @@
+name: Component Foundation TDD
+
+on:
+  push:
+    branches:
+      - automation/component-foundation
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'config/component-ownership.json'
+      - 'config/change-classes.json'
+      - 'components/_schema/contract.schema.json'
+      - 'tests/parallel-ownership.test.mjs'
+      - 'tests/change-classes.test.mjs'
+      - '.github/workflows/component-foundation-tdd.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: node --test tests/parallel-ownership.test.mjs tests/change-classes.test.mjs
