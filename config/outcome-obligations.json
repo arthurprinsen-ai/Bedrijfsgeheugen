@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "contract": "whole-brain-outcome-obligations",
+  "invariants": [
+    "NO SILENT FAILURE",
+    "NO LOST OBLIGATION",
+    "GREEN MEANS OUTCOME VERIFIED",
+    "RED MEANS AGENTS KEEP WORKING"
+  ],
+  "statuses": [
+    "NOT_DUE",
+    "PENDING",
+    "AWAITING_OUTCOME",
+    "MISSED_OBLIGATION",
+    "RECOVERING",
+    "COMPLETED",
+    "BLOCKED_HARD_BOUNDARY"
+  ],
+  "requiredFields": [
+    "id",
+    "domain",
+    "expected",
+    "dueAt",
+    "ownerAgent",
+    "evidencePolicy",
+    "idempotencyKey",
+    "recoveryPolicy"
+  ],
+  "domains": [
+    "publication",
+    "content",
+    "seo",
+    "website",
+    "deploy",
+    "data_sync",
+    "monitoring",
+    "sales",
+    "crm",
+    "cost",
+    "security",
+    "performance",
+    "governance",
+    "external_signal",
+    "agent_task"
+  ],
+  "rules": {
+    "technicalSuccessWithoutOutcomeEvidenceIsGreen": false,
+    "zeroCandidatesCanBeTerminalSuccessWhenOutcomeIsExpected": false,
+    "missedDeadlineStartsRecovery": true,
+    "recoveryContinuesUntilOutcomeVerifiedOrHardBoundary": true,
+    "duplicateSideEffectsForbidden": true,
+    "hardBoundaries": [
+      "credentials_or_account_connection",
+      "permissions",
+      "security_control_weakening",
+      "destructive_or_irreversible_data",
+      "paid_resource_increase",
+      "legal_or_financial_commitment"
+    ]
+  }
+}
