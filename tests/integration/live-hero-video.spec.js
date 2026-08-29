@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect, chromium } = require('@playwright/test');
 
 async function findPassiveState(page) {
   return page.evaluate(() => {
@@ -60,39 +60,43 @@ async function inspectVideo(page, url, label) {
   console.log(`${label} passive`, JSON.stringify(passive));
   const explicit = await boundedPlayProbe(page);
   console.log(`${label} explicit`, JSON.stringify(explicit));
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(1200);
   const afterPlay = await findPassiveState(page);
   console.log(`${label} after`, JSON.stringify(afterPlay));
   return { passive, explicit, afterPlay };
 }
 
-test('preview hero video preserves production media behavior', async ({ page }) => {
+test('preview hero video decodes and preserves production behavior in Chrome', async () => {
   test.setTimeout(45000);
   const previewUrl = process.env.PREVIEW_URL;
   const productionUrl = process.env.PROD_URL || 'https://www.bedrijfsgeheugen.nl';
   if (!previewUrl) throw new Error('PREVIEW_URL is required');
 
-  const production = await inspectVideo(page, productionUrl, 'production');
-  const preview = await inspectVideo(page, previewUrl, 'preview');
+  const browser = await chromium.launch({ channel: 'chrome', headless: true });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  try {
+    const production = await inspectVideo(page, productionUrl, 'production');
+    const preview = await inspectVideo(page, previewUrl, 'preview');
 
-  expect(production.passive.found).toBe(true);
-  expect(preview.passive.found).toBe(true);
-  expect(preview.passive.autoplay).toBe(production.passive.autoplay);
-  expect(preview.passive.muted).toBe(production.passive.muted);
-  expect(preview.passive.playsInline).toBe(production.passive.playsInline);
-  expect(preview.passive.error).toBeNull();
-  expect(preview.passive.width).toBeGreaterThan(0);
-  expect(preview.passive.height).toBeGreaterThan(0);
-  expect(preview.passive.readyState).toBeGreaterThanOrEqual(2);
+    expect(production.passive.found).toBe(true);
+    expect(preview.passive.found).toBe(true);
+    expect(preview.passive.autoplay).toBe(production.passive.autoplay);
+    expect(preview.passive.muted).toBe(production.passive.muted);
+    expect(preview.passive.playsInline).toBe(production.passive.playsInline);
+    expect(preview.passive.error).toBeNull();
+    expect(preview.passive.width).toBeGreaterThan(0);
+    expect(preview.passive.height).toBeGreaterThan(0);
+    expect(preview.passive.readyState).toBeGreaterThanOrEqual(2);
 
-  if (!production.passive.paused) {
-    expect(preview.passive.paused).toBe(false);
-  }
+    if (!production.passive.paused) {
+      expect(preview.passive.paused).toBe(false);
+    }
 
-  if (production.explicit.outcome === 'resolved') {
     expect(preview.explicit.outcome).toBe('resolved');
     expect(preview.afterPlay.paused).toBe(false);
-  } else {
-    expect(['resolved', production.explicit.outcome]).toContain(preview.explicit.outcome);
+    expect(preview.afterPlay.currentTime).toBeGreaterThan(preview.explicit.currentTime + 0.25);
+  } finally {
+    await browser.close();
   }
 });
