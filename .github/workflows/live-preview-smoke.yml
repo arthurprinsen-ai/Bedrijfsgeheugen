@@ -78,13 +78,15 @@ jobs:
             -o /tmp/hero-video.bin
           test -s /tmp/hero-video.bin
 
-      - name: Install Chromium for browser verification
-        run: npx --yes playwright@1.55.0 install --with-deps chromium
+      - name: Install Playwright test runtime and Chromium
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
 
       - name: Verify hero video actually plays
         env:
           PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: npx --yes @playwright/test@1.55.0 test tests/integration/live-hero-video.spec.js --workers=1
+        run: npx playwright test tests/integration/live-hero-video.spec.js --workers=1
 
       - name: Capture preview and production screenshots after reveal fallback
         env:
@@ -92,10 +94,10 @@ jobs:
           PROD_URL: https://www.bedrijfsgeheugen.nl
         run: |
           mkdir -p visual-review
-          npx --yes playwright@1.55.0 screenshot --wait-for-timeout 2000 --full-page --viewport-size="1440,1200" "$PREVIEW_URL/" visual-review/preview-desktop.png
-          npx --yes playwright@1.55.0 screenshot --wait-for-timeout 2000 --full-page --viewport-size="390,844" "$PREVIEW_URL/" visual-review/preview-mobile.png
-          npx --yes playwright@1.55.0 screenshot --wait-for-timeout 2000 --full-page --viewport-size="1440,1200" "$PROD_URL/" visual-review/production-desktop.png
-          npx --yes playwright@1.55.0 screenshot --wait-for-timeout 2000 --full-page --viewport-size="390,844" "$PROD_URL/" visual-review/production-mobile.png
+          npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="1440,1200" "$PREVIEW_URL/" visual-review/preview-desktop.png
+          npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="390,844" "$PREVIEW_URL/" visual-review/preview-mobile.png
+          npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="1440,1200" "$PROD_URL/" visual-review/production-desktop.png
+          npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="390,844" "$PROD_URL/" visual-review/production-mobile.png
 
       - name: Upload visual review
         if: always()
