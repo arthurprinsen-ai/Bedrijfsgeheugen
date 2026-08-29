@@ -54,6 +54,7 @@ jobs:
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.css" -o /tmp/portal-next.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/workspaces.css" -o /tmp/workspaces.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.js" -o /tmp/portal-next.js
+          node --check /tmp/portal-next.js
           grep -q 'AI Management Summary' /tmp/portal-next.html
           grep -q 'Preview · voorbeelddata · geen actieve bedrijfswaarheid' /tmp/portal-next.html
           grep -q 'Trust & Governance' /tmp/portal-next.html
