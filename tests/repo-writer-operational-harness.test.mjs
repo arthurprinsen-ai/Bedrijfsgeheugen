@@ -37,6 +37,18 @@ test('operational harness has an isolated regulation writer lane that is candida
   assert.doesNotMatch(text, /\bgit\s+push\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
 });
 
+test('operational harness has an isolated SEO writer lane that is candidate-only', () => {
+  const text = fs.readFileSync(harnessPath, 'utf8');
+
+  assert.match(text, /dispatch-seo-candidate:/);
+  assert.match(text, /verify\/seo-controle-/);
+  assert.match(text, /gh\s+workflow\s+run\s+seo-controle\.yml/);
+  assert.match(text, /--ref\s+"\$VERIFY_REF"/);
+  assert.match(text, /delivery_mode=candidate-pr/);
+  assert.doesNotMatch(text, /delivery_mode=direct/);
+  assert.doesNotMatch(text, /\bgit\s+push\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
+});
+
 test('operational harness records the triggering PR base SHA before dispatch', () => {
   const text = fs.readFileSync(harnessPath, 'utf8');
   assert.match(text, /github\.event\.pull_request\.base\.sha/);
