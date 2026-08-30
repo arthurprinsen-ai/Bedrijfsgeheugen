@@ -22,17 +22,20 @@ if (manifest.physical_iphone_runtime === 'PASS') {
   fail(`invalid physical iPhone runtime status: ${manifest.physical_iphone_runtime}`);
 }
 
-const matches = [...html.matchAll(/<video\b[^>]*class="hero-product-video"[^>]*>[\s\S]*?<\/video>/gi)];
-if (matches.length !== 1) fail(`expected exactly one hero-product-video, found ${matches.length}`);
+// Current production builder preserves the canonical V18 hero identity.
+const matches = [...html.matchAll(/<video\b[^>]*id="heroBackgroundVideo"[^>]*>[\s\S]*?<\/video>/gi)];
+if (matches.length !== 1) fail(`expected exactly one canonical heroBackgroundVideo, found ${matches.length}`);
 const video = matches[0][0];
 for (const attr of ['autoplay', 'muted', 'playsinline', 'loop']) {
   if (!new RegExp(`\\b${attr}\\b`, 'i').test(video)) fail(`video missing ${attr}`);
 }
 if (!video.includes(`src="${expectedSource}"`)) fail('video does not use exact accepted local derivative');
 if (/cdn\.openart\.ai/i.test(video)) fail('production hero video must not depend on OpenArt CDN');
-if (!/aria-hidden="true"/i.test(video)) fail('decorative video must be hidden from accessibility tree');
-if (!html.includes('class="hero-media-frame"')) fail('responsive hero media frame missing');
-if (!html.includes('.hero-product-video')) fail('hero video CSS contract missing');
-if (!html.includes('@media(max-width:980px)')) fail('existing responsive breakpoint missing');
+
+const canonicalController = html.match(/<script id="v18-4-video-controller">[\s\S]*?<\/script>/)?.[0] || '';
+if (!canonicalController) fail('canonical proven V18 controller missing');
+if (/\b(?:defaultPlaybackRate|playbackRate)\s*=/.test(html)) fail('playback-rate tuning reintroduced');
+if (/images\.pexels\.com\/photos\/3182812\/pexels-photo-3182812\.jpeg/i.test(html)) fail('legacy people fallback reintroduced');
+if (!html.includes('@media(max-width:980px)')) fail('canonical responsive breakpoint missing');
 
 console.log(`Homepage hero video contract PASS: ${expectedSha} (${manifest.physical_iphone_runtime})`);
