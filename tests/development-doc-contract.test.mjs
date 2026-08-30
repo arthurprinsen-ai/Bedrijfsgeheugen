@@ -59,6 +59,20 @@ test('customer auth recovery is retained as reusable shared-memory knowledge', a
   assert.match(architecture, /focus/i);
 });
 
+test('canonical chat checkpoint carries current portal and memory-CI lessons', async () => {
+  const checkpoint = await readFile('docs/learning/chat-learning-checkpoint-2026-08-30.md', 'utf8');
+  for (const token of [
+    'portal|customer-auth|legacy-inline-login-jitter',
+    'klant-login.html',
+    'mixed Netlify Identity',
+    'Supabase',
+    'device outcome evidence',
+    'direct pushes to `main`',
+    'inspect the existing memory architecture before creating a new memory subsystem',
+    'case-insensitive'
+  ]) assert.ok(checkpoint.includes(token), `canonical chat checkpoint missing ${token}`);
+});
+
 test('Powerhouse chat learning checkpoint preserves cross-platform failure prevention', async () => {
   const [checkpoint, ledger] = await Promise.all([
     readFile('docs/powerhouse-chat-learning-checkpoint-2026-08-30.md', 'utf8'),
