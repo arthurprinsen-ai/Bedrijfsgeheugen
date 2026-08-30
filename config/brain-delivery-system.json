@@ -83,7 +83,7 @@
     {
       "id": "website",
       "owner": "agent-website-ux",
-      "paths": ["components/", "assets/", "pages/", "site/", "blog/", "index.html", "styles.css", "script.js", "seo-status.json", "sitemap.xml", "data/regelgeving.json"],
+      "paths": ["components/", "assets/", "pages/", "site/", "blog/", "index.html", "styles.css", "script.js", "seo-status.json", "sitemap.xml", "data/regelgeving.json", "tests/live-preview-trigger-scope.test.mjs"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
