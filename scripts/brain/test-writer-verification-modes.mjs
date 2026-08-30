@@ -1,26 +1,26 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
-const regulation=fs.readFileSync('.github/workflows/regelgeving-bijwerken.yml','utf8');
-const weekblog=fs.readFileSync('.github/workflows/weekblog.yml','utf8');
+const canaryPath='.github/workflows/repo-writer-cheap-canary.yml';
+assert.ok(fs.existsSync(canaryPath),'cheap deterministic repository-writer canary workflow must exist');
+const canary=fs.readFileSync(canaryPath,'utf8');
 
-for(const [name,text] of [['regelgeving-bijwerken',regulation],['weekblog',weekblog]]){
-  assert.match(text,/verification_mode:/,`${name} must expose deterministic verification_mode`);
-  assert.match(text,/type:\s*boolean/);
-  assert.match(text,/default:\s*false/);
+for(const writer of ['regelgeving-bijwerken','seo-controle','weekblog']){
+  assert.match(canary,new RegExp(writer.replaceAll('-','\\-')),`${writer} must be supported by cheap canary`);
 }
+assert.match(canary,/workflow_dispatch:/);
+assert.match(canary,/createWriterCandidate/);
+assert.match(canary,/validateWriterCandidate/);
+assert.match(canary,/gh pr create/);
+assert.match(canary,/repo-writer-candidate-shadow\.yml/);
+assert.match(canary,/-f pr_number=/);
+assert.match(canary,/-f base_sha=/);
+assert.match(canary,/-f head_sha=/);
+assert.match(canary,/-f candidate_branch=/);
+assert.match(canary,/data\/regelgeving\.json/);
+assert.match(canary,/blog\/writer-verification-weekblog/);
+assert.match(canary,/sitemap\.xml/);
+assert.doesNotMatch(canary,/ANTHROPIC_API_KEY|NOTION_TOKEN|NOTION_BLOG_DB|BG_SEO_WEBHOOK|api\.anthropic\.com/);
+assert.doesNotMatch(canary,/git push origin HEAD:main|git push origin main|gh pr merge/);
 
-assert.match(regulation,/Deterministic verification fixture/);
-assert.match(regulation,/inputs\.verification_mode/);
-assert.match(regulation,/_verification_canary/);
-assert.match(regulation,/ANTHROPIC_API_KEY/);
-assert.match(regulation,/if:\s*\$\{\{[^\n]*verification_mode[^\n]*false/);
-
-assert.match(weekblog,/VERIFY_MODE/);
-assert.match(weekblog,/writer-verification-weekblog/);
-assert.match(weekblog,/Deterministic verification article/);
-assert.match(weekblog,/\/tmp\/validated-weekblog-files/);
-assert.match(weekblog,/Sleutel controleren[\s\S]*verification_mode[^\n]*false/);
-assert.match(weekblog,/Artikel schrijven[\s\S]*verification_mode[^\n]*false/);
-
-console.log('PASS paid/external repository writers have deterministic local verification modes');
+console.log('PASS expensive/external writers use one deterministic candidate-only transport canary');
