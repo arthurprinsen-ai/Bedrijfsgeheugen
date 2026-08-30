@@ -2,6 +2,7 @@ import {normalizeBrainRecord,deriveLoopState} from './model.mjs';
 import {prioritizeIntelligence} from './intelligence.mjs';
 import {projectVerifiedValue} from './verified-value.mjs';
 import {projectLivingMemory} from './living-memory.mjs';
+import {projectIntegrationHealth} from './integration-health.mjs';
 const enc=v=>encodeURIComponent(String(v));
 const prefixFor=tenantId=>`${enc(tenantId)}/records/`;
 const keyFor=(tenantId,id)=>`${prefixFor(tenantId)}${enc(id)}`;
@@ -15,8 +16,8 @@ export function createOperatingLoopStore(adapter,{now=()=>new Date().toISOString
       const envelope={idempotencyKey:String(input.idempotencyKey),storedAt:now(),record};await adapter.put(key,envelope);return {duplicate:false,record};
     },
     async getProjection(tenantId){
-      const entries=await adapter.list(prefixFor(tenantId));const records=entries.map(entry=>entry.value?.record).filter(Boolean).sort((a,b)=>String(a.observedAt).localeCompare(String(b.observedAt)));const state=deriveLoopState(records);const prioritizedAdvice=prioritizeIntelligence(records);const verifiedValue=projectVerifiedValue(records);const livingMemory=projectLivingMemory(records,{now:now()});
-      return {schemaVersion:'brain-operating-projection.v1',tenantId:String(tenantId),records,state,advice:state.advice,prioritizedAdvice,verifiedValue,livingMemory};
+      const entries=await adapter.list(prefixFor(tenantId));const records=entries.map(entry=>entry.value?.record).filter(Boolean).sort((a,b)=>String(a.observedAt).localeCompare(String(b.observedAt)));const state=deriveLoopState(records);const prioritizedAdvice=prioritizeIntelligence(records);const verifiedValue=projectVerifiedValue(records);const livingMemory=projectLivingMemory(records,{now:now()});const integrationHealth=projectIntegrationHealth(records);
+      return {schemaVersion:'brain-operating-projection.v1',tenantId:String(tenantId),records,state,advice:state.advice,prioritizedAdvice,verifiedValue,livingMemory,integrationHealth};
     }
   });
 }
