@@ -10,12 +10,13 @@ test('green executable pull requests can reach BG169 without writer-only branch 
   const condition = handoff.match(/\n\s*if:\s*([^\n]+)/)?.[1] || '';
   assert.ok(condition.includes("needs.plan.outputs.has_lanes == 'true'"), 'handoff must require executable lanes');
   assert.ok(!condition.includes("startsWith(inputs.candidate_branch, 'writer/')"), 'general production handoff must not be writer-only');
-  assert.ok(!condition.includes("github.event_name == 'workflow_dispatch'"), 'normal pull-request delivery must be eligible for BG169 handoff');
+  assert.ok(!condition.includes("github.event_name == 'workflow_dispatch' &&"), 'normal pull-request delivery must be eligible for BG169 handoff');
 });
 
 test('verification-only writer dispatch remains explicitly non-promoting', () => {
   assert.match(workflow, /Record verification-only non-promotion evidence/);
   assert.match(workflow, /startsWith\(inputs\.candidate_branch, 'writer\/'\).*inputs\.verification_only == true/);
+  assert.match(handoff, /inputs\.verification_only != true/);
 });
 
 test('BG169 payload resolves immutable identity for PR and explicit dispatch events', () => {
@@ -23,4 +24,10 @@ test('BG169 payload resolves immutable identity for PR and explicit dispatch eve
   assert.match(handoff, /BASE_SHA:\s*\$\{\{\s*needs\.plan\.outputs\.base_sha\s*\}\}/);
   assert.match(handoff, /HEAD_SHA:\s*\$\{\{\s*needs\.plan\.outputs\.head_sha\s*\}\}/);
   assert.match(handoff, /CANDIDATE_BRANCH:\s*\$\{\{\s*inputs\.candidate_branch\s*\|\|\s*github\.event\.pull_request\.head\.ref\s*\}\}/);
+});
+
+test('handoff is not green until exact candidate is verified in main', () => {
+  assert.match(handoff, /jq -e '\.accepted == true and \.production_authority == "BG169"'/);
+  assert.match(handoff, /git merge-base --is-ancestor "\$HEAD_SHA" origin\/main/);
+  assert.match(handoff, /BG169_PROMOTION_NOT_VERIFIED/);
 });
