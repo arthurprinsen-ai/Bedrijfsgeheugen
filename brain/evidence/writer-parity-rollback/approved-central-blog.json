@@ -1,0 +1,22 @@
+{
+  "contract": "BRAIN-DELIVERY-v2",
+  "truth_status": "VERIFIED",
+  "status": "COMPLETED",
+  "proof": "writer-parity-rollback",
+  "writer": "approved-central-blog",
+  "baseSha": "deff83404d4a28058b241f320641150930ebfa46",
+  "candidateHeadSha": "da6fdb6eaec0e7d4aaf33fc8961c5c2bbc469213",
+  "rollbackSha": "deff83404d4a28058b241f320641150930ebfa46",
+  "directOutputSha256": "4cf126ffb975b85aa244cc0c82f7986dcf9544e3dfdb66f8b979bd6a3db69ee0",
+  "candidateOutputSha256": "4cf126ffb975b85aa244cc0c82f7986dcf9544e3dfdb66f8b979bd6a3db69ee0",
+  "rollbackOutputSha256": "048ce22c3210a5def2c586f8fade8bc672ad9a5bd6366b982d5fdaf5e7a7034c",
+  "baseOutputSha256": "048ce22c3210a5def2c586f8fade8bc672ad9a5bd6366b982d5fdaf5e7a7034c",
+  "operationalCandidateVerified": true,
+  "pathPolicyVerified": true,
+  "exactHeadVerified": true,
+  "parityVerified": true,
+  "rollbackVerified": true,
+  "evidenceRef": "github-run:33328740055:writer:approved-central-blog",
+  "outcome_router": "BG168",
+  "current_state_projection": "BG167"
+}

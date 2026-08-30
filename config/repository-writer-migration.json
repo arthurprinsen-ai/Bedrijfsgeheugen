@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "mainProtectionReady": false,
+  "mainProtectionReady": true,
   "governingIssue": 175,
   "prCreationBoundary": {
     "status": "RESOLVED_VERIFIED",
@@ -18,12 +18,236 @@
     "requiredResolution": null
   },
   "writers": [
-    {"name":"approved-central-blog","candidateMode":"operational_verified","pullRequest":188,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true,"operationalEvidence":{"verificationPullRequest":347,"writerPullRequest":348,"shadowRunId":33313232371,"shadowJobId":99261910908,"artifactId":9732632866,"artifactDigest":"sha256:6dd7457f58770da8abc43630670a236f22a5a276839012de65e00280f461e2b6","baseSha":"deff83404d4a28058b241f320641150930ebfa46","headSha":"da6fdb6eaec0e7d4aaf33fc8961c5c2bbc469213","candidateBranch":"writer/approved-central-blog/a45ad06379906eb1","changedFiles":["blog/writer-verification-approved-central/index.html"],"pathPolicyVerified":true,"exactHeadVerified":true}},
-    {"name":"blog-bijwerken","candidateMode":"operational_verified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true,"operationalEvidence":{"verificationPullRequest":365,"writerPullRequest":366,"shadowRunId":33314010737,"shadowJobId":99263981189,"artifactId":9732865607,"artifactDigest":"sha256:84d3f99cba5ecb755c2bc21a53f0380099c71dcbf9fb9376f85739cfbfc41c99","baseSha":"865871f17ec16e0a279c249f4d0ffa5dbb0ac3cf","headSha":"e4eefd8f7973b2d2ddb4fbb8cd0aceaf4a3c2f12","candidateBranch":"writer/blog-bijwerken/ed7f789b81251345","changedFiles":["blog/writer-verification-blog-update-seed/index.html","blog/writer-verification-blog-update/index.html","sitemap.xml"],"pathPolicyVerified":true,"exactHeadVerified":true}},
-    {"name":"menu-balk-fix","candidateMode":"operational_verified","pullRequest":180,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true,"operationalEvidence":{"verificationPullRequest":341,"writerPullRequest":343,"shadowRunId":33312942251,"shadowJobId":99261145374,"artifactId":9732547841,"artifactDigest":"sha256:1990d6abce41c46f0f30e57d716d71de3f1038ff00df52e0fd07268a3392b388","baseSha":"6240886f38ade95d61769048ce49e8280f8356cd","headSha":"613ddfa3bae4d836aafa0e8546588923c391ca45","candidateBranch":"writer/menu-balk-fix/5f1a11b96d1d4fc7","changedFiles":["writer-verification-menu-shadow-production-proof-20260830.html"],"pathPolicyVerified":true,"exactHeadVerified":true}},
-    {"name":"paginacontrole","candidateMode":"operational_verified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true,"operationalEvidence":{"verificationPullRequest":414,"writerPullRequest":417,"shadowRunId":33316041100,"baseSha":"d888a495e3f2368442a618da0e3ad032ee444581","headSha":"d5783314fda2b663a31e2933fc994f30af3e8a9b","candidateBranch":"writer/paginacontrole/7b692b1b59021dba","changedFiles":["paginacontrole-canary.html"],"pathPolicyVerified":true,"exactHeadVerified":true,"certificationEvidence":"brain/evidence/writer-canary/paginacontrole-operational-certification.json","idempotencyKey":"writer-certification|paginacontrole|8439f40c1a3a9f25701ed1f61fb9d02b399720b4|33316041100"}},
-    {"name":"regelgeving-bijwerken","candidateMode":"operational_verified","pullRequest":185,"originPullRequest":181,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true,"operationalEvidence":{"verificationPullRequest":490,"writerPullRequest":492,"shadowRunId":33323815856,"baseSha":"7e14fdb3ddde3491032a9d97a5673904c991613c","headSha":"ecb9a5e9e973c366e852a7fd8d5dcb0819d74ce6","candidateBranch":"writer/regelgeving-bijwerken/6ade39be30626266","changedFiles":["data/regelgeving.json"],"pathPolicyVerified":true,"exactHeadVerified":true,"certificationEvidence":"brain/evidence/writer-canary/regelgeving-bijwerken-operational-certification.json","idempotencyKey":"writer-certification:regelgeving-bijwerken:ecb9a5e9e973c366e852a7fd8d5dcb0819d74ce6"}},
-    {"name":"seo-controle","candidateMode":"operational_verified","pullRequest":185,"originPullRequest":182,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true,"operationalEvidence":{"verificationPullRequest":491,"writerPullRequest":494,"shadowRunId":33323822523,"baseSha":"7e14fdb3ddde3491032a9d97a5673904c991613c","headSha":"3cc5c257dc455d32f359a95b2d2decfb3a1c0463","candidateBranch":"writer/seo-controle/ef6910dfb84a5014","changedFiles":["sitemap.xml"],"pathPolicyVerified":true,"exactHeadVerified":true,"certificationEvidence":"brain/evidence/writer-canary/seo-controle-operational-certification.json","idempotencyKey":"writer-certification:seo-controle:3cc5c257dc455d32f359a95b2d2decfb3a1c0463"}},
-    {"name":"weekblog","candidateMode":"operational_verified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true,"operationalEvidence":{"verificationPullRequest":493,"writerPullRequest":495,"shadowRunId":33323831068,"baseSha":"7e14fdb3ddde3491032a9d97a5673904c991613c","headSha":"3472ef06b9bdeac695d2d988986803a96a1e1851","candidateBranch":"writer/weekblog/9b10b092945fdf5d","changedFiles":["blog/writer-verification-weekblog-33323817141/index.html"],"pathPolicyVerified":true,"exactHeadVerified":true,"certificationEvidence":"brain/evidence/writer-canary/weekblog-operational-certification.json","idempotencyKey":"writer-certification:weekblog:3472ef06b9bdeac695d2d988986803a96a1e1851"}}
+    {
+      "name": "approved-central-blog",
+      "candidateMode": "operational_verified",
+      "pullRequest": 188,
+      "structuralContractVerified": true,
+      "operationalCandidateVerified": true,
+      "parityVerified": true,
+      "rollbackVerified": true,
+      "merged": true,
+      "operationalEvidence": {
+        "verificationPullRequest": 347,
+        "writerPullRequest": 348,
+        "shadowRunId": 33313232371,
+        "shadowJobId": 99261910908,
+        "artifactId": 9732632866,
+        "artifactDigest": "sha256:6dd7457f58770da8abc43630670a236f22a5a276839012de65e00280f461e2b6",
+        "baseSha": "deff83404d4a28058b241f320641150930ebfa46",
+        "headSha": "da6fdb6eaec0e7d4aaf33fc8961c5c2bbc469213",
+        "candidateBranch": "writer/approved-central-blog/a45ad06379906eb1",
+        "changedFiles": [
+          "blog/writer-verification-approved-central/index.html"
+        ],
+        "pathPolicyVerified": true,
+        "exactHeadVerified": true
+      },
+      "parityRollbackEvidence": {
+        "evidenceRef": "github-run:33328740055:writer:approved-central-blog",
+        "truth_status": "VERIFIED",
+        "status": "COMPLETED",
+        "outcome_router": "BG168",
+        "current_state_projection": "BG167"
+      }
+    },
+    {
+      "name": "blog-bijwerken",
+      "candidateMode": "operational_verified",
+      "pullRequest": 189,
+      "structuralContractVerified": true,
+      "operationalCandidateVerified": true,
+      "parityVerified": true,
+      "rollbackVerified": true,
+      "merged": true,
+      "operationalEvidence": {
+        "verificationPullRequest": 365,
+        "writerPullRequest": 366,
+        "shadowRunId": 33314010737,
+        "shadowJobId": 99263981189,
+        "artifactId": 9732865607,
+        "artifactDigest": "sha256:84d3f99cba5ecb755c2bc21a53f0380099c71dcbf9fb9376f85739cfbfc41c99",
+        "baseSha": "865871f17ec16e0a279c249f4d0ffa5dbb0ac3cf",
+        "headSha": "e4eefd8f7973b2d2ddb4fbb8cd0aceaf4a3c2f12",
+        "candidateBranch": "writer/blog-bijwerken/ed7f789b81251345",
+        "changedFiles": [
+          "blog/writer-verification-blog-update-seed/index.html",
+          "blog/writer-verification-blog-update/index.html",
+          "sitemap.xml"
+        ],
+        "pathPolicyVerified": true,
+        "exactHeadVerified": true
+      },
+      "parityRollbackEvidence": {
+        "evidenceRef": "github-run:33328740055:writer:blog-bijwerken",
+        "truth_status": "VERIFIED",
+        "status": "COMPLETED",
+        "outcome_router": "BG168",
+        "current_state_projection": "BG167"
+      }
+    },
+    {
+      "name": "menu-balk-fix",
+      "candidateMode": "operational_verified",
+      "pullRequest": 180,
+      "structuralContractVerified": true,
+      "operationalCandidateVerified": true,
+      "parityVerified": true,
+      "rollbackVerified": true,
+      "merged": true,
+      "operationalEvidence": {
+        "verificationPullRequest": 341,
+        "writerPullRequest": 343,
+        "shadowRunId": 33312942251,
+        "shadowJobId": 99261145374,
+        "artifactId": 9732547841,
+        "artifactDigest": "sha256:1990d6abce41c46f0f30e57d716d71de3f1038ff00df52e0fd07268a3392b388",
+        "baseSha": "6240886f38ade95d61769048ce49e8280f8356cd",
+        "headSha": "613ddfa3bae4d836aafa0e8546588923c391ca45",
+        "candidateBranch": "writer/menu-balk-fix/5f1a11b96d1d4fc7",
+        "changedFiles": [
+          "writer-verification-menu-shadow-production-proof-20260830.html"
+        ],
+        "pathPolicyVerified": true,
+        "exactHeadVerified": true
+      },
+      "parityRollbackEvidence": {
+        "evidenceRef": "github-run:33328740055:writer:menu-balk-fix",
+        "truth_status": "VERIFIED",
+        "status": "COMPLETED",
+        "outcome_router": "BG168",
+        "current_state_projection": "BG167"
+      }
+    },
+    {
+      "name": "paginacontrole",
+      "candidateMode": "operational_verified",
+      "pullRequest": 189,
+      "structuralContractVerified": true,
+      "operationalCandidateVerified": true,
+      "parityVerified": true,
+      "rollbackVerified": true,
+      "merged": true,
+      "operationalEvidence": {
+        "verificationPullRequest": 414,
+        "writerPullRequest": 417,
+        "shadowRunId": 33316041100,
+        "baseSha": "d888a495e3f2368442a618da0e3ad032ee444581",
+        "headSha": "d5783314fda2b663a31e2933fc994f30af3e8a9b",
+        "candidateBranch": "writer/paginacontrole/7b692b1b59021dba",
+        "changedFiles": [
+          "paginacontrole-canary.html"
+        ],
+        "pathPolicyVerified": true,
+        "exactHeadVerified": true,
+        "certificationEvidence": "brain/evidence/writer-canary/paginacontrole-operational-certification.json",
+        "idempotencyKey": "writer-certification|paginacontrole|8439f40c1a3a9f25701ed1f61fb9d02b399720b4|33316041100"
+      },
+      "parityRollbackEvidence": {
+        "evidenceRef": "github-run:33328740055:writer:paginacontrole",
+        "truth_status": "VERIFIED",
+        "status": "COMPLETED",
+        "outcome_router": "BG168",
+        "current_state_projection": "BG167"
+      }
+    },
+    {
+      "name": "regelgeving-bijwerken",
+      "candidateMode": "operational_verified",
+      "pullRequest": 185,
+      "originPullRequest": 181,
+      "structuralContractVerified": true,
+      "operationalCandidateVerified": true,
+      "parityVerified": true,
+      "rollbackVerified": true,
+      "merged": true,
+      "operationalEvidence": {
+        "verificationPullRequest": 490,
+        "writerPullRequest": 492,
+        "shadowRunId": 33323815856,
+        "baseSha": "7e14fdb3ddde3491032a9d97a5673904c991613c",
+        "headSha": "ecb9a5e9e973c366e852a7fd8d5dcb0819d74ce6",
+        "candidateBranch": "writer/regelgeving-bijwerken/6ade39be30626266",
+        "changedFiles": [
+          "data/regelgeving.json"
+        ],
+        "pathPolicyVerified": true,
+        "exactHeadVerified": true,
+        "certificationEvidence": "brain/evidence/writer-canary/regelgeving-bijwerken-operational-certification.json",
+        "idempotencyKey": "writer-certification:regelgeving-bijwerken:ecb9a5e9e973c366e852a7fd8d5dcb0819d74ce6"
+      },
+      "parityRollbackEvidence": {
+        "evidenceRef": "github-run:33328740055:writer:regelgeving-bijwerken",
+        "truth_status": "VERIFIED",
+        "status": "COMPLETED",
+        "outcome_router": "BG168",
+        "current_state_projection": "BG167"
+      }
+    },
+    {
+      "name": "seo-controle",
+      "candidateMode": "operational_verified",
+      "pullRequest": 185,
+      "originPullRequest": 182,
+      "structuralContractVerified": true,
+      "operationalCandidateVerified": true,
+      "parityVerified": true,
+      "rollbackVerified": true,
+      "merged": true,
+      "operationalEvidence": {
+        "verificationPullRequest": 491,
+        "writerPullRequest": 494,
+        "shadowRunId": 33323822523,
+        "baseSha": "7e14fdb3ddde3491032a9d97a5673904c991613c",
+        "headSha": "3cc5c257dc455d32f359a95b2d2decfb3a1c0463",
+        "candidateBranch": "writer/seo-controle/ef6910dfb84a5014",
+        "changedFiles": [
+          "sitemap.xml"
+        ],
+        "pathPolicyVerified": true,
+        "exactHeadVerified": true,
+        "certificationEvidence": "brain/evidence/writer-canary/seo-controle-operational-certification.json",
+        "idempotencyKey": "writer-certification:seo-controle:3cc5c257dc455d32f359a95b2d2decfb3a1c0463"
+      },
+      "parityRollbackEvidence": {
+        "evidenceRef": "github-run:33328740055:writer:seo-controle",
+        "truth_status": "VERIFIED",
+        "status": "COMPLETED",
+        "outcome_router": "BG168",
+        "current_state_projection": "BG167"
+      }
+    },
+    {
+      "name": "weekblog",
+      "candidateMode": "operational_verified",
+      "pullRequest": 189,
+      "structuralContractVerified": true,
+      "operationalCandidateVerified": true,
+      "parityVerified": true,
+      "rollbackVerified": true,
+      "merged": true,
+      "operationalEvidence": {
+        "verificationPullRequest": 493,
+        "writerPullRequest": 495,
+        "shadowRunId": 33323831068,
+        "baseSha": "7e14fdb3ddde3491032a9d97a5673904c991613c",
+        "headSha": "3472ef06b9bdeac695d2d988986803a96a1e1851",
+        "candidateBranch": "writer/weekblog/9b10b092945fdf5d",
+        "changedFiles": [
+          "blog/writer-verification-weekblog-33323817141/index.html"
+        ],
+        "pathPolicyVerified": true,
+        "exactHeadVerified": true,
+        "certificationEvidence": "brain/evidence/writer-canary/weekblog-operational-certification.json",
+        "idempotencyKey": "writer-certification:weekblog:3472ef06b9bdeac695d2d988986803a96a1e1851"
+      },
+      "parityRollbackEvidence": {
+        "evidenceRef": "github-run:33328740055:writer:weekblog",
+        "truth_status": "VERIFIED",
+        "status": "COMPLETED",
+        "outcome_router": "BG168",
+        "current_state_projection": "BG167"
+      }
+    }
   ]
 }
