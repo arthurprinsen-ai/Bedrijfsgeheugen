@@ -18,6 +18,21 @@ test('chat-learning completeness guard is fail-closed and blocks completion with
   assert.equal(contract.completionPolicy.requireRegressionGuardWhereFeasible, true);
 });
 
+test('completion is bound to the same canonical learning sources used by delivery preflight', async () => {
+  const contract = await readJson(CONTRACT_PATH);
+  for (const required of [
+    'docs/brain/delivery-failure-lessons.json',
+    'config/delivery-prevention-rules.json',
+    'brain/learning/current-execution-lessons-2026-08-30.json',
+    'brain/learning/chat-completeness-addendum-2026-08-30.json',
+    'tools/delivery-preflight.mjs'
+  ]) {
+    assert.ok(contract.requiredCanonicalSources.includes(required), `missing canonical completion source ${required}`);
+  }
+  assert.equal(contract.completionPolicy.requireDeliveryPreflightGreen, true);
+  assert.equal(contract.completionPolicy.blockOnOrphanActivePreventionRule, true);
+});
+
 test('learning records preserve the full causal chain', async () => {
   const contract = await readJson(CONTRACT_PATH);
   assert.deepEqual(contract.requiredLearningFields, [
