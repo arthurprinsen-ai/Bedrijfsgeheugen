@@ -29,3 +29,9 @@ test('Make acknowledgement alone never suppresses verified failover', () => {
   assert.match(workflow, /github-native/);
   assert.match(workflow, /BG169_PROMOTION_NOT_VERIFIED/);
 });
+
+test('production handoff stays inside the governed writer dispatch scope', () => {
+  const guardedScope = "github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only != true";
+  assert.match(workflow, new RegExp(guardedScope.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(workflow, /github\.event_name != 'workflow_dispatch'/);
+});
