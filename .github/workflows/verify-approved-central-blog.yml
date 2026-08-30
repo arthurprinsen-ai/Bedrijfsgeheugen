@@ -1,6 +1,11 @@
 name: Verify approved central blog
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-approved-central-blog.yml'
+      - 'tests/approved-blog-verifier-contract.test.mjs'
   workflow_dispatch:
     inputs:
       slug:
@@ -37,11 +42,21 @@ permissions:
   contents: read
 
 concurrency:
-  group: approved-blog-verify-${{ inputs.content_id }}-${{ inputs.slug }}
+  group: approved-blog-verify-${{ github.event_name }}-${{ inputs.content_id || github.event.pull_request.number }}-${{ inputs.slug || github.sha }}
   cancel-in-progress: false
 
 jobs:
+  contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v5
+      - name: Verify approved blog verifier contract
+        run: node --test tests/approved-blog-verifier-contract.test.mjs
+
   verify:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
