@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "type": "POWERHOUSE_EXTERNAL_CONTROL_CURRENT_STATE",
+  "date": "2026-08-30",
+  "fingerprint": "github|main|native-protection-absent",
+  "component": {
+    "repository": "arthurprinsen-ai/Bedrijfsgeheugen",
+    "branch": "main"
+  },
+  "state": "UNRESOLVED_EXTERNAL_CONTROL",
+  "direct_evidence": {
+    "branch_protected": false,
+    "repository_rulesets_count": 0,
+    "observed_main_sha": "373b80496f89c7aa972497d01cd66efccbf57c84"
+  },
+  "interpretation": "Internal Brain/Shared-Memory/V18/BRAIN-delivery checks can be green while GitHub itself does not currently enforce native protection or a repository ruleset on main. Internal CI is not proof of native platform protection.",
+  "current_safety": [
+    "Continue using exact-head PR merges and required internal verification gates.",
+    "Never treat protected=false or empty rulesets as green merely because CI passes.",
+    "Do not weaken internal gates while native protection is absent."
+  ],
+  "blocked_action": {
+    "reason": "The currently authorized GitHub connector exposes direct protection/ruleset reads but no native branch-protection/ruleset mutation action.",
+    "required_capability": "Authorized GitHub branch protection or repository ruleset write capability.",
+    "forbidden_fallback": "Do not claim protection was enabled, do not simulate native protection with documentation, and do not bypass PR/exact-SHA governance."
+  },
+  "resume_contract": [
+    "Read main branch protection and repository rulesets directly again before acting; do not rely on this historical snapshot.",
+    "If native protection remains absent and an authorized mutation capability is available, configure protection/ruleset according to the repository's required delivery checks without disabling the existing internal gates.",
+    "After mutation, read native platform state back and prove the exact rule/protection configuration.",
+    "Run a non-destructive governance verification showing protected main rejects a disallowed path while the governed PR path remains usable.",
+    "Persist the resulting production evidence and close this fingerprint only after direct readback."
+  ],
+  "success_criteria": [
+    "Direct GitHub evidence shows main is governed by intended native branch protection or matching repository ruleset.",
+    "Required Brain/Shared-Memory/V18/BRAIN-delivery paths remain operable.",
+    "No direct-main bypass path remains contrary to policy.",
+    "Protection state is independently read back from GitHub after configuration."
+  ]
+}

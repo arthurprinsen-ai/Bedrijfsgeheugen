@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "type": "CHAT_CONTINUITY_LEARNING_SET",
   "date": "2026-08-30",
   "scope": ["website", "github", "netlify", "seo", "navigation", "agents", "release", "make", "notion", "security", "cost", "social"],
@@ -11,6 +11,11 @@
     "verified_content_sha": "eb27982ecc5f25af06a71333a52a91f7d7a78b30",
     "powerhouse_checkpoint": "docs/powerhouse-chat-learning-checkpoint-2026-08-30.md"
   },
+  "linked_learning_sources": [
+    "brain/learning/bg89-shadow-parity-runtime-lessons-2026-08-30.json",
+    "brain/learning/make-hard-pause-resume-state-2026-08-30.json",
+    "brain/learning/github-main-native-protection-gap-2026-08-30.json"
+  ],
   "protected_primary_routes": ["/problemen", "/oplossingen", "/bedrijfsgeheugen", "/prijzen", "/cases", "/kennis", "/over-ons"],
   "protected_account_routes": ["/inloggen", "/aanmelden"],
   "cta_route": "/frisse-blik",
@@ -50,5 +55,5 @@
   },
   "required_release_evidence": ["exact commit SHA", "exact Netlify deploy/artifact", "V18 Production Promotion green", "Live Preview Smoke green", "Pagina- en SEO-controle green", "Shared Agent Memory Tests green", "desktop and mobile runtime evidence"],
   "fast_path_rules": ["accepted baseline first", "one diff and route inventory before edits", "one canonical owner per concern", "parallelize independent gates", "exact failure then minimal fix", "avoid no-op commits", "preview does not equal production acceptance", "green means outcome verified, not merely technical success", "write every material new failure/fix/prevention back to shared memory"],
-  "agent_instruction": "Before related website, SEO, GitHub, Netlify, Make, Notion, social, security, cost or recovery work, fingerprint-match this learning set, the BRAIN chat-learning contract and the development ledger. Reuse proven fixes and gates before inventing new recovery paths."
+  "agent_instruction": "Before related website, SEO, GitHub, Netlify, Make, Notion, social, security, cost or recovery work, fingerprint-match this learning set, the BRAIN chat-learning contract, the development ledger and every linked_learning_sources entry. Reuse proven fixes and gates before inventing new recovery paths."
 }
