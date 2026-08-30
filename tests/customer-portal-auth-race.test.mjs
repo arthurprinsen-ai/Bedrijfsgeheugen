@@ -14,12 +14,23 @@ const source = `(function(){
     else { toonPortaal({email:'lokaal'}); }
   });
 
+function toonInlog(s) {
+  var poort = document.getElementById('poort');
+}
+
 .then(function (sessie) { return haalOfferte(sessie.access_token, s).then(function (k) { bewaar(s, k, sessie.access_token); }); })
         .then(function () { location.reload(); })`;
 
 test('real customer slug bypasses the legacy Netlify auth controller', () => {
   const html = repairCustomerPortalAuth(source);
   assert.match(html, /var slug = .*?;\s*if \(slug && slug !== 'demo'\) return;/s);
+});
+
+test('customer login button opens the Supabase customer login instead of becoming inert', () => {
+  const html = repairCustomerPortalAuth(source);
+  assert.match(html, /if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\)\{\s*if\(window\.__bgCustomerLogin\) window\.__bgCustomerLogin\(\);\s*return;/s);
+  assert.match(html, /window\.__bgCustomerLogin = function\(\)\{ var s=slug\(\); if\(s\) toonInlog\(s\); \};/);
+  assert.doesNotMatch(html, /if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\) return;/);
 });
 
 test('successful customer authentication stores the offer and opens the legacy portal directly', () => {
