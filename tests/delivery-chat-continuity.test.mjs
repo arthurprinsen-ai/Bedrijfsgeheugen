@@ -10,7 +10,12 @@ const required = [
   ['delivery-failure|capacity|automation|make-quota-paused-production-handoff','BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE'],
   ['delivery-failure|cost|automation|client-cache-without-source-call-reduction','OPTIMIZE_SOURCE_CALLS_NOT_ONLY_CLIENT_CACHE'],
   ['delivery-failure|governance|shared|write-used-as-branch-existence-probe','NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE'],
-  ['delivery-failure|governance|shared|chat-checkpoint-test-landed-without-checkpoint','CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST']
+  ['delivery-failure|governance|shared|chat-checkpoint-test-landed-without-checkpoint','CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST'],
+  ['delivery-failure|writeback|shared|contents-api-partial-replacement-truncated-file','REQUIRE_FULL_READ_TRANSFORM_WRITE_FOR_CONTENTS_API'],
+  ['delivery-failure|merge|shared|file-nonoverlap-hidden-semantic-contract-overlap','REFRESH_BASE_BEFORE_FINAL_GATE'],
+  ['delivery-failure|verification|shared|same-head-new-pr-reused-old-pr-identity-evidence','REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION'],
+  ['delivery-failure|pipeline|shared|independent-repairs-mutually-blocked-ci','CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES'],
+  ['delivery-failure|verification|shared|merge-treated-as-complete-without-main-readback','VERIFY_MERGE_SHA_AND_POST_MERGE_CI']
 ];
 
 const preservedRules = [
@@ -20,7 +25,8 @@ const preservedRules = [
   'VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE',
   'USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH',
   'USE_GITHUB_READY_FOR_REVIEW_ACTION',
-  'REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE'
+  'REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE',
+  'SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE'
 ];
 
 test('chat incident continuity survives moving-main consolidation', () => {
