@@ -16,7 +16,7 @@
   "exactHeadVerified": true,
   "parityVerified": true,
   "rollbackVerified": true,
-  "evidenceRef": "github-run:33328740055:writer:approved-central-blog",
+  "evidenceRef": "github-run:33331182252:writer:approved-central-blog",
   "outcome_router": "BG168",
   "current_state_projection": "BG167"
 }

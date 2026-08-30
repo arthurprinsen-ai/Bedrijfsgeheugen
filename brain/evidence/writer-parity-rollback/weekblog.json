@@ -16,7 +16,7 @@
   "exactHeadVerified": true,
   "parityVerified": true,
   "rollbackVerified": true,
-  "evidenceRef": "github-run:33328740055:writer:weekblog",
+  "evidenceRef": "github-run:33331182252:writer:weekblog",
   "outcome_router": "BG168",
   "current_state_projection": "BG167"
 }
