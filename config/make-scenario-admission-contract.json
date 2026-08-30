@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "contract_id": "MAKE-SCENARIO-ADMISSION-v1",
+  "status": "candidate",
+  "purpose": "Block new or materially changed Make scenarios from production promotion when cost, reliability, security, semantic ownership, recovery or learning contracts are missing.",
+  "applies_to": [
+    "new_make_scenario",
+    "new_schedule_or_polling_trigger",
+    "new_external_api_or_ai_step",
+    "material_source_or_trigger_migration",
+    "material_write_or_publish_path_change"
+  ],
+  "required_fields": [
+    "canonical_owner",
+    "authoritative_source",
+    "domain_eligibility",
+    "stable_identity_or_dedupe_key",
+    "trigger_rationale",
+    "max_batch_or_bounded_window",
+    "cache_or_delta_strategy",
+    "ai_justification",
+    "expected_cost_and_transfer",
+    "protected_metrics",
+    "rollback_identity_or_plan",
+    "compatibility_mapping",
+    "learning_writeback"
+  ],
+  "rules": [
+    {
+      "id": "DOMAIN_ELIGIBILITY_BEFORE_GENERIC_DATAHUB_CONSUMPTION",
+      "severity": "block",
+      "fingerprints": [
+        "bg145|control-plane-semantic-corruption|commercial-writeback-cross-domain",
+        "bg89|generic-datahub-watch|noncommercial-record-scoring"
+      ],
+      "require": "Generic shared stores such as Interaction Datahub must have explicit positive/negative domain eligibility before code, AI or writes. Generic schema membership is never sufficient domain identity."
+    },
+    {
+      "id": "DEDUPE_BEFORE_EXPENSIVE_WORK",
+      "severity": "block",
+      "fingerprints": [
+        "make|scheduled-daily|duplicate-expensive-read-before-dedupe",
+        "make|concurrency|bg14-overlapping-ai-runs"
+      ],
+      "require": "Stable dedupe/idempotency/atomic overlap guard must execute before broad source reads, AI/media generation, external research or mutating side effects whenever duplicate execution is possible."
+    },
+    {
+      "id": "BOUNDED_SOURCE_READ",
+      "severity": "block",
+      "require": "Every scheduled/read-heavy source must declare a hard page/batch/window bound. Unbounded scans are not production-admissible."
+    },
+    {
+      "id": "PROJECT_CONSUMED_FIELDS",
+      "severity": "block_when_supported",
+      "fingerprints": [
+        "ai|context|full-record-token-ballast",
+        "guardian|window-check-after-inventory"
+      ],
+      "require": "Retrieve/project only fields consumed downstream when the connector/API supports projection. If the trigger cannot project, document that limitation and provide a migration or bounded mitigation."
+    },
+    {
+      "id": "CHEAP_DETERMINISTIC_GATE_FIRST",
+      "severity": "block",
+      "require": "Time-window, approval, due, identity, unchanged/already-complete, domain eligibility and known-policy checks run before expensive API/AI/media/inventory work."
+    },
+    {
+      "id": "AI_ONLY_FOR_MATERIAL_UNCERTAINTY",
+      "severity": "block",
+      "fingerprints": [
+        "cost|ai|rules-used-after-model",
+        "agents|shared-context|full-json-token-ballast"
+      ],
+      "require": "AI step must state the non-deterministic decision it resolves and must consume bounded mission-relevant context rather than full shared/raw records."
+    },
+    {
+      "id": "NO_BLIND_POLLING_OR_FREQUENCY_INCREASE",
+      "severity": "block",
+      "require": "New polling requires proof that no event/change-driven path is available and must declare freshness SLA, interval and lookback overlap. Frequency may not be increased merely to clear backlog."
+    },
+    {
+      "id": "API_SEMANTICS_PROVEN_BEFORE_PRODUCTION",
+      "severity": "block",
+      "fingerprints": [
+        "make|scenario-list|array-query-serialization",
+        "make|datastore|exact-get-not-supported",
+        "make|notion-json|mapped-pipe-escaping"
+      ],
+      "require": "Array query encoding, endpoint semantics and complex JSON mapping are proven in an isolated/no-side-effect probe before production mutation. Do not infer read endpoints from write symmetry."
+    },
+    {
+      "id": "SHADOW_BEFORE_SOURCE_TRIGGER_CUTOVER",
+      "severity": "block",
+      "require": "Material source/trigger migrations run shadow/no-write first. Prove candidate selection/eligibility, then output equivalence on representative protected cases, before cutover."
+    },
+    {
+      "id": "SEMANTIC_OUTCOME_NOT_JUST_TECHNICAL_SUCCESS",
+      "severity": "block",
+      "fingerprints": [
+        "bg145|control-plane-semantic-corruption|commercial-writeback-cross-domain"
+      ],
+      "require": "Production verification covers semantic key/value/type/outcome invariants, not only Make success, HTTP 2xx, schema validity or non-empty output."
+    },
+    {
+      "id": "RATE_LIMIT_DISCIPLINE",
+      "severity": "block_on_unbounded_retry",
+      "fingerprints": [
+        "make|rate-limit|429-retry-pressure",
+        "make|429|blueprint-read-during-optimization"
+      ],
+      "require": "429/limit handling must stop, cool down, read back remote state, and permit at most one targeted retry without new evidence."
+    },
+    {
+      "id": "LEARNING_FABRIC_REQUIRED",
+      "severity": "block",
+      "require": "Material error, recovery, optimization, experiment and contract change must write fingerprint/root cause/fix/evidence/prevention through the shared learning fabric and refresh shared context without recursive/unbounded fan-out."
+    },
+    {
+      "id": "PROTECTED_METRIC_REGRESSION_LIMIT",
+      "severity": "block",
+      "require": "A change that regresses any protected metric by more than 10% is rejected or rolled back unless the regression is explicitly justified and accepted."
+    }
+  ],
+  "mandatory_regression_cases": [
+    "cache_hit_must_not_fan_out_to_live_notion",
+    "generic_datahub_system_record_must_not_enter_commercial_scorer",
+    "already_processed_record_must_stop_before_write",
+    "empty_notion_search_bundle_must_stop_without_identity",
+    "duplicate_reservation_is_safe_no_action",
+    "array_query_serialization_returns_all_expected_items",
+    "routine_agent_healthcheck_must_not_create_false_error_learning",
+    "overlapping_expensive_run_must_stop_before_ai",
+    "window_ineligible_guardian_must_stop_before_inventory",
+    "source_trigger_migration_requires_shadow_equivalence"
+  ],
+  "promotion_decision": {
+    "pass": "All block rules satisfied and protected regression evidence green.",
+    "fail": "Any required block rule missing, unknown, or red. Promotion must fail closed.",
+    "warning_only": "Only explicitly marked non-blocking observations may warn without blocking."
+  },
+  "evidence_required": [
+    "baseline_operations_credits_transfer_duration",
+    "post_change_operations_credits_transfer_duration",
+    "runtime_or_external_outcome_evidence",
+    "protected_metric_comparison",
+    "rollback_readiness",
+    "learning_fingerprint"
+  ]
+}
