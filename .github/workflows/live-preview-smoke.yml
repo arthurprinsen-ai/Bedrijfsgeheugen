@@ -6,7 +6,8 @@ on:
       - main
     paths:
       - 'v18-full/**'
-      - 'tools/**'
+      - 'tools/bouw-v18-production-core.mjs'
+      - 'tools/bouw-v18-production.mjs'
       - 'site/seo-baseline.json'
       - 'assets/kop.css'
       - 'assets/js/menu.js'
