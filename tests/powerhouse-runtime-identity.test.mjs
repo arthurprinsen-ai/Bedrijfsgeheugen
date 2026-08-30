@@ -36,8 +36,11 @@ test('Mission Control cache owners are singular and bounded stale cache is expli
   assert.equal(c.new_refresh_owner_requires_overlap_check, true);
 });
 
-test('prevention rules retain green-until-done, rate-limit and secret contracts', () => {
-  assert.match(registry.prevention.branch_drift, /current main/i);
+test('prevention rules retain independent delivery, green-until-done, rate-limit and secret contracts', () => {
+  assert.match(registry.prevention.branch_drift, /Generic main drift alone is not a blocker/i);
+  assert.match(registry.prevention.branch_drift, /changed-path overlap/i);
+  assert.match(registry.prevention.branch_drift, /contract overlap/i);
+  assert.match(registry.prevention.branch_drift, /dependency conflict/i);
   assert.match(registry.prevention.green_until_done, /two identical retries/i);
   assert.match(registry.prevention.rate_limit, /429/);
   assert.match(registry.prevention.secrets, /Never place API keys, PATs or tokens/i);
