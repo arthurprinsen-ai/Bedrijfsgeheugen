@@ -19,6 +19,9 @@ export function createAgentRegistry(agentDefinitions = []) {
       id:String(definition.id),
       domains:normalize(definition.domains),
       capabilities:normalize(definition.capabilities),
+      tasks:normalize(definition.tasks),
+      playbooks:normalize(definition.playbooks),
+      learningContracts:normalize(definition.learningContracts),
       costProfile:definition.costProfile ? Object.freeze({ ...definition.costProfile }) : null,
     }));
   }
