@@ -30,6 +30,16 @@
       "fix": "use bounded GitHub public HTTP title and canonical verification and return the result to Make",
       "preventionRule": "BOUNDED_GITHUB_PUBLIC_PROOF",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|pipeline|portal|persistent-auth-stale-test",
+      "stage": "PIPELINE",
+      "component": "portal",
+      "reason": "customer portal routing regression expected the previous direct toonInlog bridge after persistent Supabase session restore was implemented",
+      "rootCause": "implementation and its literal contract assertion changed in different commits, leaving the portal regression test stale",
+      "fix": "keep the persistent Supabase session behavior and update the regression contract to assert AUTH_STORE plus herstelAuth fallback before toonInlog",
+      "preventionRule": "CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST",
+      "status": "PROVEN"
     }
   ]
 }
