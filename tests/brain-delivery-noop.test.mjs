@@ -6,7 +6,7 @@ import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 test('ignored-only documentation change creates a valid zero-lane delivery plan', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({
-    changedPaths:['docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md'],
+    changedPaths:['docs/superpowers/plans/2026-08-30-rollout-notes.md'],
     headSha:'abcdef1234567890',
     policy,
   });
