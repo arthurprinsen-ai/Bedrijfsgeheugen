@@ -4,17 +4,20 @@
   "writer": "paginacontrole",
   "component_id": "repository-writer:paginacontrole",
   "proof": "operational-candidate-shadow-flow",
-  "truth_status": "SUPPORTED",
-  "status": "AWAITING_OUTCOME",
+  "truth_status": "VERIFIED",
+  "status": "COMPLETED",
   "confidence": 1,
   "production_authority": "BG169",
   "outcome_router": "BG168",
   "current_state_projection": "BG167",
   "projection_verification": {
-    "bg168_routed": false,
-    "bg167_visible": false,
-    "verified": false,
-    "reason": "No independent runtime acknowledgement or BG167 current-state version has been demonstrated yet."
+    "bg168_routed": true,
+    "bg167_visible": true,
+    "verified": true,
+    "fingerprint": "writer-certifications|2026-08-30|final-four",
+    "bg168_execution_id": "1e42fe2f09414105ae91901353d63706",
+    "bg167_execution_id": "3aaf37250fa14df384bb77997df1b01c",
+    "reason": "BG168 independently returned LEARNING_DISPATCHED for the exact final-four certification fingerprint and BG167 subsequently projected that same OUTCOME in latest_learning."
   },
   "verification_pr": 414,
   "verification_sha": "8439f40c1a3a9f25701ed1f61fb9d02b399720b4",
@@ -40,5 +43,5 @@
     "verified": true
   },
   "evidence_policy": "Mechanical writer evidence is supported. COMPLETED/VERIFIED additionally requires independent BG168 routing and BG167 current-state visibility acknowledgement.",
-  "verified_at": "2026-08-30T14:17:52Z"
+  "verified_at": "2026-08-30T17:50:07.085Z"
 }
