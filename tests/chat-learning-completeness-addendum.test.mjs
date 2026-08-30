@@ -6,13 +6,15 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   const raw = await readFile('brain/learning/chat-completeness-addendum-2026-08-30.json', 'utf8');
   const addendum = JSON.parse(raw);
 
-  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1');
+  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.1');
   assert.equal(addendum.completionGate.id, 'chat-learning-completeness-gate-v1');
 
   const fingerprints = new Map(addendum.failurePatterns.map(x => [x.id, x.fingerprint]));
   assert.equal(fingerprints.get('CONTROL_PLANE_CREDIT_STORM'), 'make|multi-agent-context-learning-credit-storm|2026-08-30-v1');
   assert.equal(fingerprints.get('INACTIVE_ON_DEMAND_STILL_CALLABLE'), 'make|subscenario|inactive-still-callable-v1');
   assert.equal(fingerprints.get('CONNECTOR_MUTATION_WRONG_RESOURCE'), 'connector|mutation|wrong-tool-or-resource-selected-v1');
+  assert.equal(fingerprints.get('OPTIONAL_LEARNING_MUST_NOT_OWN_PRIMARY_RETURN'), 'agent|learning-path|optional-learning-blocks-primary-return-v1');
+  assert.equal(fingerprints.get('CANONICAL_ARTIFACT_REFERENCE_DRIFT'), 'learning|canonical-artifact|reference-path-drift-v1');
 
   const credit = addendum.failurePatterns.find(x => x.id === 'CONTROL_PLANE_CREDIT_STORM');
   for (const guard of [
@@ -26,9 +28,15 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
     'learning_write_fail_open_from_projection_refresh'
   ]) assert.ok(credit.requiredGuards.includes(guard), `missing credit guard ${guard}`);
 
+  const resultPath = addendum.failurePatterns.find(x => x.id === 'OPTIONAL_LEARNING_MUST_NOT_OWN_PRIMARY_RETURN');
+  assert.match(resultPath.requiredAction, /independent direct ReturnData path/);
+  assert.match(resultPath.regression, /BG168 must receive zero calls/);
+  assert.match(resultPath.regression, /exact primary agent result/);
+
   assert.equal(addendum.runtimeState.BG167.canonicalRefreshCaller, 'BG166');
-  assert.match(addendum.runtimeState.BG167.status, /SAFE_MODE/);
-  assert.match(addendum.runtimeState.BG168.status, /PENDING_CALLER_SIDE_MATERIALITY_GUARD/);
+  assert.match(addendum.runtimeState.BG167.status, /ENTRY_GUARD_VERIFIED/);
+  assert.match(addendum.runtimeState.BG168.status, /PENDING_CALLER_SIDE_MATERIALITY_BRANCH/);
+  assert.match(addendum.runtimeState.BG168.protectedInvariant, /Primary agent result delivery is independent/);
 
   for (const path of addendum.canonicalArtifacts) {
     const content = await readFile(path, 'utf8');
@@ -40,6 +48,8 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
     'root cause recorded',
     'prevention and regression contract recorded',
     'open recovery obligations explicitly preserved',
-    'machine-readable CI/preflight coverage exists'
+    'machine-readable CI/preflight coverage exists',
+    'canonical artifact paths verified by exact readback',
+    'optional observability and learning paths cannot own primary business result delivery'
   ]) assert.ok(addendum.completionGate.requirements.includes(required), `completion gate missing: ${required}`);
 });
