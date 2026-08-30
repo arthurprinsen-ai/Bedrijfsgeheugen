@@ -8,13 +8,20 @@ async function exists(file) {
   try { await access(file); return true; } catch { return false; }
 }
 
-function collectKnownFailures(value, source, out = []) {
-  if (!value || typeof value !== 'object') return out;
-  if (!Array.isArray(value) && typeof value.fingerprint === 'string' && ('regressionContract' in value || source.endsWith('guard.json'))) {
-    out.push({ source, fingerprint: value.fingerprint, regressionContract: value.regressionContract || null });
+function normalizeFailure(value, source) {
+  if (!value || typeof value !== 'object' || Array.isArray(value) || typeof value.fingerprint !== 'string') return null;
+  return { source, fingerprint: value.fingerprint, regressionContract: typeof value.regressionContract === 'string' ? value.regressionContract : null };
+}
+
+function collectKnownFailures(doc, source) {
+  const failures = [];
+  const single = normalizeFailure(doc?.knownFailure, source);
+  if (single) failures.push(single);
+  for (const value of Array.isArray(doc?.knownFailures) ? doc.knownFailures : []) {
+    const item = normalizeFailure(value, source);
+    if (item) failures.push(item);
   }
-  for (const child of Array.isArray(value) ? value : Object.values(value)) collectKnownFailures(child, source, out);
-  return out;
+  return failures;
 }
 
 function isGoverned(testPath, policy) {
@@ -34,7 +41,7 @@ export async function buildGuardRegressionInventory({ root = REPO_ROOT } = {}) {
   for (const file of guardFiles) {
     const relative = path.relative(root, file).replaceAll('\\', '/');
     const doc = JSON.parse(await readFile(file, 'utf8'));
-    for (const failure of collectKnownFailures(doc, relative)) guards.push(failure);
+    guards.push(...collectKnownFailures(doc, relative));
   }
 
   const missingRegressionContracts = guards.filter(item => !item.regressionContract).map(item => item.fingerprint);
