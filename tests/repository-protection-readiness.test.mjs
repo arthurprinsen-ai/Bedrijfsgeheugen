@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { computeMainProtectionReady } from '../scripts/brain/writer-certification-state.mjs';
 
 const state = JSON.parse(fs.readFileSync('config/repository-writer-migration.json', 'utf8'));
 const expected = [
@@ -29,15 +30,26 @@ test('main protection cannot become ready before every writer has operational mi
   );
   assert.equal(state.mainProtectionReady, allReady,
     'mainProtectionReady must equal the evidence-derived writer readiness state');
+  assert.equal(state.mainProtectionReady, computeMainProtectionReady(state.writers));
 });
 
 test('operational verification alone can never unlock main protection without parity and rollback', () => {
-  assert.equal(state.writers.every((writer) => writer.structuralContractVerified === true), true);
-  assert.equal(state.writers.every((writer) => writer.operationalCandidateVerified === true), true);
-  assert.equal(state.writers.every((writer) => writer.candidateMode === 'operational_verified'), true);
-  assert.equal(state.writers.some((writer) => writer.parityVerified !== true), true);
-  assert.equal(state.writers.some((writer) => writer.rollbackVerified !== true), true);
-  assert.equal(state.mainProtectionReady, false);
+  const operationalOnly = state.writers.map((writer) => ({
+    ...writer,
+    candidateMode:'operational_verified',
+    structuralContractVerified:true,
+    operationalCandidateVerified:true,
+    parityVerified:false,
+    rollbackVerified:false,
+    merged:true,
+    parityRollbackEvidence:undefined,
+  }));
+  assert.equal(operationalOnly.every((writer) => writer.structuralContractVerified === true), true);
+  assert.equal(operationalOnly.every((writer) => writer.operationalCandidateVerified === true), true);
+  assert.equal(operationalOnly.every((writer) => writer.candidateMode === 'operational_verified'), true);
+  assert.equal(operationalOnly.some((writer) => writer.parityVerified !== true), true);
+  assert.equal(operationalOnly.some((writer) => writer.rollbackVerified !== true), true);
+  assert.equal(computeMainProtectionReady(operationalOnly), false);
 });
 
 test('prepared candidate PRs are not misrepresented as completed migration', () => {
