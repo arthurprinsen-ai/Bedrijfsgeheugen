@@ -71,7 +71,7 @@
     {
       "id": "portal",
       "owner": "agent-product-opportunity",
-      "paths": ["portal/", "klantportaal.html", "netlify/functions/portaalvraag.mjs", "netlify/functions/portal-state.mjs"],
+      "paths": ["portal/", "tests/portal-", "klantportaal.html", "netlify/functions/portaalvraag.mjs", "netlify/functions/portal-state.mjs"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
