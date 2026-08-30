@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import { computeMainProtectionReady } from './writer-certification-state.mjs';
 
 const evidencePath='brain/evidence/writer-canary/paginacontrole-operational-certification.json';
 assert.ok(fs.existsSync(evidencePath),'paginacontrole writer certification evidence must exist');
@@ -41,9 +42,16 @@ assert.ok(pageWriter,'paginacontrole must exist in repository writer migration s
 assert.equal(pageWriter.candidateMode,'operational_verified');
 assert.equal(pageWriter.operationalCandidateVerified,true);
 assert.equal(pageWriter.operationalEvidence.certificationEvidence,evidencePath);
-assert.equal(pageWriter.parityVerified,false);
-assert.equal(pageWriter.rollbackVerified,false);
-assert.equal(migration.mainProtectionReady,false);
+assert.equal(typeof pageWriter.parityVerified,'boolean');
+assert.equal(typeof pageWriter.rollbackVerified,'boolean');
+assert.equal(pageWriter.parityVerified,pageWriter.rollbackVerified,'parity and rollback proof dimensions must advance together');
+if(pageWriter.parityVerified){
+  assert.equal(pageWriter.parityRollbackEvidence?.truth_status,'VERIFIED');
+  assert.equal(pageWriter.parityRollbackEvidence?.status,'COMPLETED');
+  assert.equal(pageWriter.parityRollbackEvidence?.outcome_router,'BG168');
+  assert.equal(pageWriter.parityRollbackEvidence?.current_state_projection,'BG167');
+}
+assert.equal(migration.mainProtectionReady,computeMainProtectionReady(migration.writers),'mainProtectionReady must be derived from all writer proof dimensions');
 
 const reconcileScript='scripts/brain/reconcile-writer-certifications.mjs';
 const reconcileWorkflow='.github/workflows/writer-certification-reconcile.yml';
@@ -59,4 +67,4 @@ assert.match(workflow,/brain\/evidence\/writer-canary\/\*\.json/);
 assert.match(workflow,/reconcile-writer-certifications\.mjs --write/);
 assert.doesNotMatch(workflow,/git push origin HEAD:main|git push origin main/);
 
-console.log('PASS writer certification completes only with independently verified BG168 routing and BG167 visibility');
+console.log('PASS writer certification readiness is derived from independent BG168/BG167 and parity/rollback proof state');
