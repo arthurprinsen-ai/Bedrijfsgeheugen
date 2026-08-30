@@ -17,8 +17,10 @@ const source = `(function(){
 
   function toonInlog(s) {
     var poort = document.getElementById('poort');
+    poort.insertAdjacentHTML('beforeend', '<input id="bgMail"><input id="bgWw">');
   }
 
+  /* Elke keer dat de pagina opent de offerte opnieuw ophalen. */
   .then(function (sessie) { return haalOfferte(sessie.access_token, s).then(function (k) { bewaar(s, k, sessie.access_token); }); })
         .then(function () { location.reload(); })
 
