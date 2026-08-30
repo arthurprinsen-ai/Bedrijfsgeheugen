@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "type": "POWERHOUSE_BLOCKED_CURRENT_STATE",
   "date": "2026-08-30",
   "fingerprint": "make|organization-limit|all-scenario-runs-blocked",
@@ -36,14 +36,46 @@
     "All captured cleanup pages received the same clear operation; one typo request was atomically rejected and then corrected successfully.",
     "A-B no-write parity is GREEN on real BG98 research, LinkedIn DM and LinkedIn company record classes with zero deterministic scorer diffs.",
     "PR #694 merged to main as 1a3501a0e9e8e7af24759ecd06127f0025e0aa6c and contains the durable failure/prevention lessons.",
-    "TMP BG89 scenario inventory readback shows every TMP BG89 scenario isActive=false; BG89 A-B Projection Parity v1 no-write is also isActive=false."
+    "TMP BG89 scenario inventory readback shows every TMP BG89 scenario isActive=false; BG89 A-B Projection Parity v1 no-write is also isActive=false.",
+    "BG14 historical same-burst executions 9211336029124695ac1be09d8388cd4d, bf55ccdb9a3c4bd7974a32cbca229ca3 and a3fa5160d3ba42e38dc0f40002234ee6 consumed 144.63, 99.72 and 47.26 credits respectively.",
+    "After the BG14 10-minute atomic run-lock, execution 86499e07b2f3422cb5e279cda8631dda stopped after modules 14+15 at 2 operations/3 credits; module15 returned Make duplicate-key for bg14-run:2980196 and no Notion/AI modules executed."
+  ],
+  "proven_prevention_patterns": [
+    {
+      "id": "ATOMIC_RESERVATION_BEFORE_EXPENSIVE_FANOUT",
+      "fingerprint": "make|overlap|duplicate-expensive-run",
+      "rule": "Before Notion/AI/paid fan-out, create a short-TTL atomic reservation on a stable time/idempotency key. Duplicate-key is an expected cheap terminal no-action, not an error to retry.",
+      "proof": "BG14 duplicate overlap reduced to 2 operations/3 credits and stopped before paid AI after a prior burst of 144.63/99.72/47.26-credit runs."
+    },
+    {
+      "id": "FULL_NOTION_WATCH_TRANSFER_BEFORE_FILTER",
+      "fingerprint": "make|notion-watch|large-record-before-local-filter",
+      "rule": "A bounded Watch can still be transfer-expensive because full wide Datahub records arrive before local filtering. Candidate replacement is a bounded field-projected query, but only after trigger/cursor/backlog/freshness parity is proven.",
+      "proof": "BG97 successful no-op runs on 2026-08-30 used only 1 operation/1 credit but repeatedly transferred about 248-279 KB; current trigger is Notion watchDatabaseItems limit=5 and sends the entire properties array to local code."
+    }
+  ],
+  "next_cost_candidates": [
+    {
+      "scenario_id": 7038601,
+      "name": "BG 97 - Powerhouse Trading Loop dispatcher v1.4 bounded5 fresh6h",
+      "current_pattern": "Notion watchDatabaseItems limit=5 -> local filter/code",
+      "recent_noop_cost": "1 operation / 1 credit / approximately 248-279 KB per successful run",
+      "safe_next_step": "Derive scorer dependency projection and build no-write same-input trigger/cursor parity before any production trigger replacement."
+    },
+    {
+      "scenario_id": 6804589,
+      "name": "BG 14 - Narrative calibration + adaptive learning controller v2 retry-safe",
+      "current_pattern": "10-minute atomic run-lock before Notion/AI",
+      "status": "anti-overlap guard runtime-proven; do not remove or move it after paid fan-out"
+    }
   ],
   "forbidden_while_blocked": [
     "Do not retry Make scenario_run while the organization/team remains hard-paused.",
     "Do not buy, upgrade or enable additional paid capacity autonomously.",
     "Do not reactivate any TMP/shadow/parity scenario merely because platform capacity returns.",
     "Do not claim network cleanup remaining=0 until an exact fresh query proves it.",
-    "Do not cut BG89 production ownership to the projected query until trigger/cursor/backlog/freshness parity is runtime-proven."
+    "Do not cut BG89 production ownership to the projected query until trigger/cursor/backlog/freshness parity is runtime-proven.",
+    "Do not remove or bypass an atomic pre-fanout reservation merely to make a duplicate run proceed."
   ],
   "resume_contract": [
     "First read Make organization/team runtime state; do not infer recovery from elapsed time.",
@@ -53,6 +85,7 @@
     "Verify BG89 saved network exclusion on Interaction Key before any production run.",
     "Verify trigger/cursor parity against the current production Watch semantics before replacing the trigger with a projected query.",
     "When Notion query_data_sources becomes available, execute exactly one count for network-* + BG89 Modelversie + Opportunity Updated present. Require remaining=0 before cleanup is marked complete.",
+    "For any recurring paid/AI scenario, verify atomic reservation/dedupe occurs before expensive fan-out and that duplicate-key terminates cheaply.",
     "After every material new proof, update durable learning/current state and refresh shared team context through the normal governed learning route when Make is available."
   ],
   "ownership": {
@@ -66,6 +99,7 @@
     "Network contamination exact remaining count is 0.",
     "BG89 network exclusion is preserved.",
     "Projected read cutover, if pursued, has same-input scorer parity plus trigger/cursor/backlog/freshness parity.",
+    "Recurring expensive flows have pre-fanout dedupe/coalescing or an explicit evidence-backed reason not to.",
     "Any production change has exact candidate identity, rollback and fresh production evidence."
   ]
 }
