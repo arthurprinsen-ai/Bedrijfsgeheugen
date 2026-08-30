@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { repairCustomerPortalAuth } from '../tools/customer-portal-auth-race.mjs';
 
 const source = `(function(){
@@ -60,4 +61,13 @@ test('iOS in-app browser gets a first-party cookie fallback when localStorage is
   assert.match(html, /SameSite=Lax/);
   assert.match(html, /Secure/);
   assert.match(html, /leesCookieAuth\(\)/);
+});
+
+test('production build always applies customer portal auth repair after generating V18', () => {
+  const build = readFileSync(new URL('../tools/bouw-v18-production.mjs', import.meta.url), 'utf8');
+  const helper = readFileSync(new URL('../tools/apply-customer-portal-auth.mjs', import.meta.url), 'utf8');
+  assert.match(build, /applyCustomerPortalAuth/);
+  assert.ok(build.indexOf("await import('./bouw-v18-production-core.mjs')") < build.indexOf('applyCustomerPortalAuth()'));
+  assert.match(helper, /repairCustomerPortalAuth/);
+  assert.match(helper, /writeFileSync/);
 });
