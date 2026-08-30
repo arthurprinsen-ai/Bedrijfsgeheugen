@@ -44,9 +44,10 @@ const reconcileWorkflow='.github/workflows/writer-certification-reconcile.yml';
 assert.ok(fs.existsSync(reconcileScript),'writer certification reconciliation script must exist');
 assert.ok(fs.existsSync(reconcileWorkflow),'writer certification reconciliation workflow must exist');
 const workflow=fs.readFileSync(reconcileWorkflow,'utf8');
-assert.match(workflow,/brain\/evidence\/writer-canary\/\*\*\/\*\.json|brain\/evidence\/writer-canary\/\*\.json/);
+assert.match(workflow,/brain\/evidence\/writer-canary\/\*\.json/);
 assert.match(workflow,/reconcile-writer-certifications\.mjs --write/);
-assert.match(workflow,/writer\/certification-reconcile\//);
+assert.match(workflow,/brain\/writer-certification-reconcile\//);
 assert.match(workflow,/gh pr create/);
+assert.doesNotMatch(workflow,/git push origin HEAD:main|git push origin main/);
 
 console.log('PASS writer certification is durable Brain evidence and automatically reconciles into shared writer state');
