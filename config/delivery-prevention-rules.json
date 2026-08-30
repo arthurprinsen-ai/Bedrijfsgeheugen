@@ -26,6 +26,22 @@
     {"id":"RESTORE_GENERATED_REPORT_BEFORE_REBASE","active":true,"enforcedBy":"paginacontrole-concurrent-push-regression","scope":"shared"},
     {"id":"DEDUPE_LEDGER_BY_EVENT_FINGERPRINT_NOT_HARDCODED_PR","active":true,"enforcedBy":"atomic-ledger-fingerprint-dedupe","scope":"shared"},
     {"id":"RECONCILE_MAIN_TO_EXACT_PRODUCTION_SHA","active":true,"enforcedBy":"production-promotion-guardian","scope":"shared"},
-    {"id":"REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN","active":true,"enforcedBy":"whole-brain-outcome-obligation-contract","scope":"shared"}
+    {"id":"REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN","active":true,"enforcedBy":"whole-brain-outcome-obligation-contract","scope":"shared"},
+    {"id":"MAKE_DATASTORE_READ_LIST_NOT_SINGLE_KEY_GET","active":true,"enforcedBy":"make-datastore-read-adapter-contract","scope":"automation"},
+    {"id":"READBACK_AFTER_AMBIGUOUS_MUTATION_ERROR","active":true,"enforcedBy":"idempotent-read-after-ambiguous-mutation-contract","scope":"shared"},
+    {"id":"EXPLICIT_OUTCOME_STATUS_OUTRANKS_TASK_KEYWORDS","active":true,"enforcedBy":"bg168-outcome-classifier-contract","scope":"automation"},
+    {"id":"NO_ACTION_AND_CANARIES_MUST_NOT_POLLUTE_TEAM_MEMORY","active":true,"enforcedBy":"bg167-current-projection-filter-contract","scope":"automation"},
+    {"id":"NEW_LEARNING_REFRESHES_SHARED_CONTEXT_EVENT_DRIVEN","active":true,"enforcedBy":"bg166-bg167-event-driven-refresh-contract","scope":"automation"},
+    {"id":"RECENT_TEAM_CONTEXT_NEVER_SUBSTITUTES_EXPLICIT_EVIDENCE","active":true,"enforcedBy":"bg183-evidence-packet-contract","scope":"automation"},
+    {"id":"GUARDIAN_VALIDATES_SEMANTIC_CONTRACTS_NOT_LINEAR_BLUEPRINT_ORDER","active":true,"enforcedBy":"bg185-semantic-guardian-contract","scope":"automation"},
+    {"id":"GUARDIAN_COVERAGE_FOLLOWS_REGISTERED_TEAM_AND_CONTROL_PLANE","active":true,"enforcedBy":"bg185-registered-coverage-contract","scope":"automation"},
+    {"id":"LEARNING_DEDUP_PRECEDES_WRITE_AND_REFRESH","active":true,"enforcedBy":"bg166-dedupe-before-write-contract","scope":"automation"},
+    {"id":"MAKE_CAPACITY_LIMIT_IS_HARD_BOUNDARY","active":true,"enforcedBy":"brain-platform-capacity-hard-boundary-contract","scope":"automation"},
+    {"id":"ACTIVE_ERROR_VS_RETIRED_OR_HISTORICAL_ERROR","active":true,"enforcedBy":"current-state-freshness-contract","scope":"automation"},
+    {"id":"STRUCTURAL_READINESS_IS_NOT_OPERATIONAL_PARITY","active":true,"enforcedBy":"repository-protection-readiness-contract","scope":"shared"},
+    {"id":"EXTERNAL_PLATFORM_CONTROLS_REQUIRE_DIRECT_OBSERVATION","active":true,"enforcedBy":"external-platform-current-state-contract","scope":"shared"},
+    {"id":"ONE_SHARED_CONTEXT_BEFORE_SPECIALIST_WORK","active":true,"enforcedBy":"agent-fabric-team-memory-contract","scope":"automation"},
+    {"id":"KEEP_ONE_TRUTH_AND_NO_SECOND_MEMORY","active":true,"enforcedBy":"agent-fabric-canonical-state-contract","scope":"shared"},
+    {"id":"NO_DIRECT_EXTERNAL_EXECUTION_FROM_AGENT_FABRIC","active":true,"enforcedBy":"agent-fabric-execution-boundary-contract","scope":"shared"}
   ]
 }
