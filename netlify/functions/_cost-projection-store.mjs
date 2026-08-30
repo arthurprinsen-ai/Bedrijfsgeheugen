@@ -193,17 +193,12 @@ export function createNotionCostProjectionSource({ fetchImpl = fetch, token = pr
 export function createCostProjectionStore(store = getStore({ name: STORE_NAME, consistency: 'strong' }), notionSource = createNotionCostProjectionSource(), aiUsageSource = createAiUsageStore()) {
   return Object.freeze({
     async get() {
-      const [blobRecord, notionRecord, tokenUsage] = await Promise.all([
+      const [blobRecord, tokenUsage] = await Promise.all([
         store.get(STORE_KEY, { type: 'json', consistency: 'strong' }),
-        notionSource.get(),
         aiUsageSource.monthly({ monthlyLimitTokens:10_000 }).catch(() => null),
       ]);
-      const newest = !blobRecord
-        ? notionRecord
-        : !notionRecord
-          ? blobRecord
-          : new Date(notionRecord.sourceUpdatedAt).getTime() > new Date(blobRecord.sourceUpdatedAt).getTime() ? notionRecord : blobRecord;
-      return recordWithTokenUsage(newest, tokenUsage);
+      const record = blobRecord ?? await notionSource.get();
+      return recordWithTokenUsage(record, tokenUsage);
     },
     async put(projection) {
       return store.setJSON(STORE_KEY, projection);
