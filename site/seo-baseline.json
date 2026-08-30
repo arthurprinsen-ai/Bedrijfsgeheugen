@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "status": "production-seo-baseline",
+  "rules": {
+    "visibleV18BodyIsImmutable": true,
+    "seoAppliesAfterHistoricalV18Core": true,
+    "onePrimaryKeywordOneRoute": true,
+    "canonicalHost": "https://www.bedrijfsgeheugen.nl"
+  },
+  "home": {
+    "route": "/",
+    "title": "Digitalisering mkb | Kennis borgen en automatiseren",
+    "description": "Bedrijfsgeheugen helpt mkb-bedrijven kennis borgen, bedrijfsprocessen automatiseren en AFAS, Exact Online en Microsoft 365 koppelen zonder systemen te vervangen.",
+    "primaryKeyword": "digitalisering mkb",
+    "canonical": "https://www.bedrijfsgeheugen.nl/",
+    "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+    "ogImage": "https://www.bedrijfsgeheugen.nl/og-image.png"
+  },
+  "keywordOwners": [
+    {"keyword": "digitalisering mkb", "route": "/"},
+    {"keyword": "bedrijfsgeheugen", "route": "/bedrijfsgeheugen"},
+    {"keyword": "bedrijfsprocessen automatiseren", "route": "/bedrijfsprocessen-automatiseren"},
+    {"keyword": "systemen koppelen mkb", "route": "/blog/systemen-koppelen-mkb/"},
+    {"keyword": "afas koppeling", "route": "/afas-koppeling"},
+    {"keyword": "exact online koppeling", "route": "/exact-online-koppeling"},
+    {"keyword": "ai governance mkb", "route": "/ai-governance"},
+    {"keyword": "ai act compliance mkb", "route": "/ai-act"},
+    {"keyword": "data soevereiniteit", "route": "/data-soevereiniteit"},
+    {"keyword": "kennisverlies mkb", "route": "/blog/wat-is-een-bedrijfsgeheugen/"}
+  ],
+  "schema": {
+    "organizationName": "Bedrijfsgeheugen",
+    "organizationType": "ProfessionalService",
+    "areaServed": "NL",
+    "language": "nl-NL",
+    "slogan": "Aanpakken zonder aanmodderen."
+  }
+}
