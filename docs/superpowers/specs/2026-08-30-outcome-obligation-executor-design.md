@@ -127,10 +127,10 @@ The executor uses the following externally meaningful states:
 The obligation exists but neither its schedule nor a relevant event requires action now.
 
 ### `PENDING`
-The obligation is due and has been accepted for evaluation, but no owner work has yet been dispatched for this execution identity.
+The obligation is due and has been accepted for execution, but no durable owner-work dispatch exists yet. This state is observable when dispatch has not started or when a dispatch attempt failed before a durable idempotent `AgentWork` record was established.
 
 ### `AWAITING_OUTCOME`
-Owner work has been dispatched or completed locally, but independent required evidence is not yet sufficient.
+A durable owner-work identity exists, but independent required evidence is not yet sufficient. The owner may still be executing, may have completed locally, or may be waiting on production/outcome verification.
 
 ### `MISSED_OBLIGATION`
 The obligation's deadline/evidence window has passed without accepted evidence.
@@ -158,12 +158,14 @@ For every wake-up:
 6. If not due, return `NOT_DUE` without dispatch.
 7. If a hard boundary prevents execution, return `BLOCKED_HARD_BOUNDARY` and record evidence.
 8. If accepted evidence already satisfies the obligation, return `COMPLETED` idempotently.
-9. If due and no work exists, create one governed `AgentWork` for the owner and return `AWAITING_OUTCOME`.
-10. If work exists but evidence is still within the allowed outcome window, remain `AWAITING_OUTCOME`.
-11. If the evidence window expires, transition to `MISSED_OBLIGATION` and assign governed recovery.
-12. While recovery is active, return `RECOVERING` until independent evidence proves the required outcome.
-13. Only after accepted evidence, and exact production verification where applicable, transition to `COMPLETED`.
-14. Append state-transition/evidence metadata to BRAIN learning/audit storage.
+9. If due and no durable work exists, enter `PENDING` and attempt to create exactly one governed `AgentWork` for the owner.
+10. Once durable `AgentWork` exists, transition to `AWAITING_OUTCOME`.
+11. If dispatch cannot establish durable work, remain `PENDING`; retry/recovery behavior follows the obligation deadline and idempotency identity rather than creating a new identity.
+12. If work exists but evidence is still within the allowed outcome window, remain `AWAITING_OUTCOME`.
+13. If the evidence window expires, transition to `MISSED_OBLIGATION` and assign governed recovery.
+14. While recovery is active, return `RECOVERING` until independent evidence proves the required outcome.
+15. Only after accepted evidence, and exact production verification where applicable, transition to `COMPLETED`.
+16. Append state-transition/evidence metadata to BRAIN learning/audit storage.
 
 ## 7. Idempotency and duplicate prevention
 
@@ -235,8 +237,8 @@ The existing Supabase performance obligation owned by `agent-performance` become
 
 Daily path:
 
-1. Scheduled sweep evaluates the obligation.
-2. Executor creates/reuses one daily work identity.
+1. Scheduled sweep evaluates the obligation against the Europe/Amsterdam business-date window.
+2. Executor creates/reuses one daily work identity for that local business date.
 3. `agent-performance` collects performance evidence.
 4. Trend governor evaluates observations.
 5. If the result is `OBSERVE`, evidence is stored and the daily obligation completes.
@@ -255,7 +257,9 @@ No linter finding directly causes DDL in production.
 
 ## 12. Scheduling
 
-Initial periodic cadence should be low-cost and generic rather than one scheduler per obligation.
+Initial periodic cadence is one generic daily sweep. The obligation execution window for daily obligations is keyed to the **Europe/Amsterdam local business date**, not to a fixed UTC calendar date. This prevents daylight-saving-time changes from creating two daily identities or skipping a local day.
+
+The trigger mechanism may execute at a UTC time chosen for operational convenience, but the executor computes due-state and idempotency from the configured local business-date window. A delayed sweep still reconciles the correct local date instead of silently losing the obligation.
 
 A single scheduled workflow wakes the executor and lets the obligation registry decide what is due.
 
@@ -287,7 +291,7 @@ Dashboards/Notion may project this validated state, but they do not become the c
 Unknown obligation schema or owner agent -> fail closed and surface a governance/configuration failure.
 
 ### Dispatch failure
-Do not create repeated work blindly. Preserve idempotency identity and enter recoverable pending/missed state based on deadline.
+Do not create repeated work blindly. Preserve idempotency identity, remain `PENDING`, and enter missed/recovery handling only when the relevant deadline is exceeded.
 
 ### Evidence source unavailable
 Do not mark completed. Remain awaiting or become missed based on the evidence deadline.
@@ -323,22 +327,24 @@ Implementation begins RED-first. Minimum failing tests before production code:
 
 1. Future obligation -> `NOT_DUE`, no work dispatch.
 2. Due obligation -> exactly one owner-agent work identity.
-3. Repeated scheduled wake-up -> no duplicate work.
-4. Replayed event fingerprint -> no duplicate work.
-5. Scheduled + equivalent event trigger -> coalesced according to obligation contract.
-6. Unknown/disabled owner agent -> fail closed.
-7. Hard authorization boundary -> `BLOCKED_HARD_BOUNDARY`.
-8. Owner self-report without independent evidence -> not `COMPLETED`.
-9. Valid independent evidence -> `COMPLETED` when no production proof is required.
-10. Production-facing obligation without exact production proof -> `AWAITING_OUTCOME`.
-11. Exact accepted production evidence -> `COMPLETED`.
-12. Evidence deadline exceeded -> `MISSED_OBLIGATION`.
-13. Missed obligation -> one governed recovery identity, not repeated retries.
-14. Recovery with accepted outcome evidence -> `COMPLETED` plus learning reference.
-15. Supabase daily performance obligation routes to `agent-performance`.
-16. Relevant Supabase event triggers the same executor.
-17. Two equivalent Supabase triggers do not create duplicate measurements.
-18. No direct production mutation is emitted by the executor.
+3. Dispatch failure -> `PENDING` with the same idempotency identity on retry.
+4. Repeated scheduled wake-up -> no duplicate work.
+5. Replayed event fingerprint -> no duplicate work.
+6. Scheduled + equivalent event trigger -> coalesced according to obligation contract.
+7. Unknown/disabled owner agent -> fail closed.
+8. Hard authorization boundary -> `BLOCKED_HARD_BOUNDARY`.
+9. Owner self-report without independent evidence -> not `COMPLETED`.
+10. Valid independent evidence -> `COMPLETED` when no production proof is required.
+11. Production-facing obligation without exact production proof -> `AWAITING_OUTCOME`.
+12. Exact accepted production evidence -> `COMPLETED`.
+13. Evidence deadline exceeded -> `MISSED_OBLIGATION`.
+14. Missed obligation -> one governed recovery identity, not repeated retries.
+15. Recovery with accepted outcome evidence -> `COMPLETED` plus learning reference.
+16. Supabase daily performance obligation routes to `agent-performance`.
+17. Daily obligation uses one Europe/Amsterdam business-date identity across DST/UTC changes.
+18. Relevant Supabase event triggers the same executor.
+19. Two equivalent Supabase triggers do not create duplicate measurements.
+20. No direct production mutation is emitted by the executor.
 
 ## 18. Delivery and verification
 
