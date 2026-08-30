@@ -67,6 +67,7 @@ test('writer-created PRs explicitly self-dispatch read-only shadow verification'
   const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   const menu = fs.readFileSync('.github/workflows/menu-balk-fix.yml', 'utf8');
   const approved = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
+  const blogUpdate = fs.readFileSync('.github/workflows/blog-bijwerken.yml', 'utf8');
 
   assert.match(shadow, /workflow_dispatch:/);
   assert.match(shadow, /pr_number:/);
@@ -75,7 +76,7 @@ test('writer-created PRs explicitly self-dispatch read-only shadow verification'
   assert.match(shadow, /candidate_branch:/);
   assert.match(shadow, /github\.event_name == 'workflow_dispatch'/);
 
-  for (const [name, workflow] of [['menu-balk-fix', menu], ['approved-central-blog', approved]]) {
+  for (const [name, workflow] of [['menu-balk-fix', menu], ['approved-central-blog', approved], ['blog-bijwerken', blogUpdate]]) {
     assert.match(workflow, /repo-writer-candidate-shadow\.yml/, `${name} must dispatch shadow`);
     assert.match(workflow, /gh workflow run/, `${name} must explicitly dispatch shadow`);
     assert.match(workflow, /-f pr_number=/);
@@ -85,17 +86,17 @@ test('writer-created PRs explicitly self-dispatch read-only shadow verification'
   }
 });
 
-test('approved writer passes shadow the candidate PR exact base head and ref identity', () => {
-  const approved = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
-  assert.match(approved, /gh api .*pulls\/\$\{?number/);
-  assert.match(approved, /\.base\.sha/);
-  assert.match(approved, /\.head\.sha/);
-  assert.match(approved, /\.head\.ref/);
-  assert.match(approved, /PR_HEAD_REF_DRIFT/);
-  assert.match(approved, /echo "base_sha=\$pr_base_sha" >> "\$GITHUB_OUTPUT"/);
-  assert.match(approved, /echo "head_sha=\$pr_head_sha" >> "\$GITHUB_OUTPUT"/);
-  assert.match(approved, /BASE_SHA:\s*\$\{\{ steps\.pr\.outputs\.base_sha \}\}/);
-  assert.match(approved, /HEAD_SHA:\s*\$\{\{ steps\.pr\.outputs\.head_sha \}\}/);
+test('approved and blog-update writers pass shadow the candidate PR exact base head and ref identity', () => {
+  for (const path of ['.github/workflows/approved-central-blog.yml', '.github/workflows/blog-bijwerken.yml']) {
+    const workflow = fs.readFileSync(path, 'utf8');
+    assert.match(workflow, /gh api .*pulls\/\$\{?(number|pr_number)/);
+    assert.match(workflow, /\.base\.sha/);
+    assert.match(workflow, /\.head\.sha/);
+    assert.match(workflow, /\.head\.ref/);
+    assert.match(workflow, /PR_HEAD_REF_DRIFT/);
+    assert.match(workflow, /base_sha=\$pr_base_sha/);
+    assert.match(workflow, /head_sha=\$pr_head_sha/);
+  }
 });
 
 test('workflow_dispatch never relies on protected GitHub default env for writer identity', () => {
