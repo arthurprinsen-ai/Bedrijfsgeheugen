@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const approved = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
+const blogUpdate = fs.readFileSync('.github/workflows/blog-bijwerken.yml', 'utf8');
 const harness = fs.readFileSync('.github/workflows/repo-writer-operational-verification.yml', 'utf8');
 
 test('approved central operational verification is fixture-only and candidate-only', () => {
@@ -17,6 +18,21 @@ test('approved central operational verification is fixture-only and candidate-on
 test('trusted harness forces approved central verification fixture plus candidate delivery', () => {
   const section = harness.split('dispatch-approved-central-blog-candidate:')[1]?.split('dispatch-blog-bijwerken-candidate:')[0] || '';
   assert.match(section, /approved-central-blog\.yml/);
+  assert.match(section, /delivery_mode=candidate-pr/);
+  assert.match(section, /verification_mode=true/);
+  assert.doesNotMatch(section, /delivery_mode=direct/);
+});
+
+test('blog update operational verification is fixture-only and skips paid generation', () => {
+  assert.match(blogUpdate, /verification_mode:[\s\S]*?default:\s*false/);
+  assert.match(blogUpdate, /VERIFICATION_REQUIRES_CANDIDATE_PR/);
+  assert.match(blogUpdate, /writer-verification-blog-update/);
+  assert.match(blogUpdate, /Artikel bijwerken[\s\S]*?inputs\.verification_mode/);
+});
+
+test('trusted harness forces blog update verification fixture plus candidate delivery', () => {
+  const section = harness.split('dispatch-blog-bijwerken-candidate:')[1]?.split('dispatch-weekblog-candidate:')[0] || '';
+  assert.match(section, /blog-bijwerken\.yml/);
   assert.match(section, /delivery_mode=candidate-pr/);
   assert.match(section, /verification_mode=true/);
   assert.doesNotMatch(section, /delivery_mode=direct/);
