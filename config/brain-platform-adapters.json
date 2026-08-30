@@ -1,0 +1,99 @@
+{
+  "contract": "BRAIN-PLATFORM-ADAPTER-v1",
+  "version": 1,
+  "activation": {
+    "mode": "fail_closed",
+    "auto_registration": true,
+    "production_ready_requires": [
+      "compatibility_mapping",
+      "regression_contract",
+      "shared_memory",
+      "health_freshness_error_owner_cost_revision",
+      "exact_revision_evidence",
+      "rollback_verified"
+    ]
+  },
+  "canonical_services": [
+    "business_graph",
+    "change_impact",
+    "external_intelligence",
+    "decision_lifecycle",
+    "action_execution",
+    "verified_value",
+    "living_memory",
+    "ai_governance"
+  ],
+  "platforms": [
+    {
+      "platform": "github",
+      "component_types": ["repository","workflow","agent"],
+      "lane": "backend",
+      "compatibility_mapping": "versioned",
+      "regression_contract": "required",
+      "direct_promotion": true,
+      "authority": "BG169"
+    },
+    {
+      "platform": "netlify",
+      "component_types": ["website","portal","backend","function"],
+      "lane": "backend",
+      "compatibility_mapping": "versioned",
+      "regression_contract": "required",
+      "direct_promotion": true,
+      "authority": "BG169"
+    },
+    {
+      "platform": "make",
+      "component_types": ["scenario","webhook","data_store"],
+      "lane": "automation",
+      "compatibility_mapping": "versioned-preserve-legacy",
+      "regression_contract": "required",
+      "direct_promotion": true,
+      "authority": "BG169"
+    },
+    {
+      "platform": "notion",
+      "component_types": ["database","projection","schema","automation"],
+      "lane": "automation",
+      "compatibility_mapping": "versioned-preserve-legacy",
+      "regression_contract": "required",
+      "direct_promotion": true,
+      "authority": "BG169"
+    },
+    {
+      "platform": "supabase",
+      "component_types": ["schema","migration","table","function","policy"],
+      "lane": "backend",
+      "compatibility_mapping": "versioned-forward-fix",
+      "regression_contract": "required",
+      "direct_promotion": true,
+      "authority": "BG169"
+    },
+    {
+      "platform": "dataforseo",
+      "component_types": ["sensor","endpoint","job","config"],
+      "lane": "automation",
+      "compatibility_mapping": "versioned",
+      "regression_contract": "required",
+      "direct_promotion": true,
+      "authority": "BG169"
+    }
+  ],
+  "telemetry_contract": {
+    "required_fields": ["health","freshness","error","owner","cost","revision","last_verified_at"],
+    "projection": "executive_cockpit",
+    "memory": "BG167",
+    "error_ledger": "BG166",
+    "outcome_router": "BG168"
+  },
+  "outcome_contract": {
+    "done_requires": ["owner","executed","verified","result","evidence"],
+    "realised_value_requires": ["realised","verified","evidence"],
+    "recommendation_loop": ["recommendation","owner","execution","verification","measurement","learning"]
+  },
+  "future_components": {
+    "inherit_automatically": true,
+    "unknown_adapter": "fail_closed",
+    "no_production_without_contract": true
+  }
+}
