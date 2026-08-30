@@ -9,6 +9,8 @@
     "docs/outcome-obligations.md",
     "docs/superpowers/specs/",
     "scripts/brain/",
+    "scripts/ci/repo-writer-",
+    "tests/repo-writer-",
     "brain/contracts/",
     "brain/production/",
     "tools/brain-delivery-system.mjs",
@@ -30,7 +32,7 @@
   "conflictContracts": [
     {
       "id": "delivery-control-plane",
-      "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml", "docs/superpowers/specs/"]
+      "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml", "scripts/ci/repo-writer-", "tests/repo-writer-", "docs/superpowers/specs/"]
     },
     {
       "id": "brain-governance",
