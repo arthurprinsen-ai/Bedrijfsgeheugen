@@ -16,6 +16,7 @@ on:
       - 'tests/v18-test-route-integrity.test.mjs'
       - 'tests/v18-preview-build-contract.test.mjs'
       - 'tests/v18-component-registry.test.mjs'
+      - 'tests/v18-merge-rule-guardian.test.mjs'
       - '.github/workflows/v18-test-route-integrity.yml'
   workflow_dispatch:
 permissions:
@@ -38,7 +39,7 @@ jobs:
             exit 1
           fi
       - name: Run V18 route and preview build contract tests
-        run: node --test tests/v18-test-route-integrity.test.mjs tests/v18-preview-build-contract.test.mjs tests/v18-component-registry.test.mjs
+        run: node --test tests/v18-test-route-integrity.test.mjs tests/v18-preview-build-contract.test.mjs tests/v18-component-registry.test.mjs tests/v18-merge-rule-guardian.test.mjs
       - name: Verify pinned user-accepted V18 baseline is publicly reachable
         shell: bash
         run: |
