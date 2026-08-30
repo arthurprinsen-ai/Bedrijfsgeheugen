@@ -33,6 +33,21 @@ test('completion is bound to the same canonical learning sources used by deliver
   assert.equal(contract.completionPolicy.blockOnOrphanActivePreventionRule, true);
 });
 
+test('agents cannot stop on local green while material obligations remain open', async () => {
+  const contract = await readJson(CONTRACT_PATH);
+  assert.equal(contract.completionPolicy.localGreenIsNotCompletion, true);
+  assert.equal(contract.completionPolicy.continueUntilAllMaterialObligationsTerminal, true);
+  assert.equal(contract.completionPolicy.hardBoundaryMustBeExplicitlyProven, true);
+
+  const rule = contract.knownFailureFingerprints.find(
+    x => x.fingerprint === 'learning|completion|premature-stop-open-obligations'
+  );
+  assert.ok(rule, 'missing premature-stop learning fingerprint');
+  assert.equal(rule.failedApproach, 'Stoppen na lokale technische groenstatus terwijl materiële outcome-, delivery-, recovery- of production-obligations nog open staan.');
+  assert.match(rule.preventionRule, /alle materiële obligations/i);
+  assert.equal(rule.status, 'GUARDED');
+});
+
 test('learning records preserve the full causal chain', async () => {
   const contract = await readJson(CONTRACT_PATH);
   assert.deepEqual(contract.requiredLearningFields, [
