@@ -1,0 +1,117 @@
+{
+  "version": "BROWSER-EVIDENCE-GUARD-v1",
+  "failClosed": true,
+  "releaseIdentity": {
+    "canonicalSource": "manifest.json",
+    "requireBrowserManifestEquality": true,
+    "folderNameIsEvidence": false,
+    "zipNameIsEvidence": false,
+    "prNameIsEvidence": false
+  },
+  "chromeDevTools": {
+    "pageScopedCalls": {
+      "requirePageId": true,
+      "commands": [
+        "take_snapshot",
+        "list_console_messages",
+        "list_network_requests",
+        "evaluate_script"
+      ]
+    },
+    "serviceWorkerEvaluation": {
+      "requireServiceWorkerId": true,
+      "pageIdOmittedWhenServiceWorkerTargeted": true
+    },
+    "rejectAboutBlankAsRuntimeEvidence": true,
+    "cliOrProtocolErrorResult": "FAIL",
+    "missingMandatoryEvidenceResult": "FAIL",
+    "listExtensionsPrimaryEvidence": false
+  },
+  "candidateSession": {
+    "required": true,
+    "acceptedSessionId": "ca11da7e",
+    "validateFormatBeforeStart": true,
+    "fallbackAllowed": false,
+    "requireSameSessionAcrossInstallerWrapperMonitorAndGates": true
+  },
+  "macosLaunchAgent": {
+    "resolveAbsoluteChromeDevtoolsPath": true,
+    "resolveNodeDirectory": true,
+    "injectBothIntoPath": true,
+    "preflightExecutables": ["node", "chrome-devtools"],
+    "interactiveShellPathInheritanceAssumed": false
+  },
+  "inputSafety": {
+    "rawHttpsOnly": true,
+    "rejectMarkdownLinks": true,
+    "rejectWhitespaceContamination": true,
+    "invalidInputAction": "FAIL_INSTALL",
+    "operatorCopyPasteErrorsBecomeAutomationRequirements": true
+  },
+  "extensionApiSafety": {
+    "contextInvalidation": {
+      "wrapSynchronousCallsInTryCatch": true,
+      "handlePromiseRejections": true,
+      "stopOldInstancePersistenceAndTimers": true
+    }
+  },
+  "runtimeGates": {
+    "extensionPresent": {
+      "pageWorldSentinelPrimaryEvidence": false,
+      "listExtensionsPrimaryEvidence": false,
+      "requiredSignals": [
+        "candidate-session-match",
+        "linkedin-page-selected",
+        "extension-service-worker",
+        "manifest-version-match",
+        "liveLinkedInState-present",
+        "liveLinkedInHealth-status-ok",
+        "powerhouse-dom-output-present",
+        "collector-error-free"
+      ],
+      "mandatorySignalConflictAction": "FAIL_RELEASE",
+      "deprecatedStandaloneDiagnosis": "runtime|extension-present|sentinel-missing"
+    },
+    "workerTabs": {
+      "visibleAutomaticWorkerTabsAllowed": false
+    }
+  },
+  "chromeLoading": {
+    "stableChromeLoadExtensionFlagIsProof": false,
+    "persistentCandidateProfileRequired": true,
+    "runtimeVerificationAfterLoadRequired": true
+  },
+  "knownFailureFingerprints": [
+    "browser-evidence|cli|page-id-missing",
+    "browser-evidence|extensions-api|browser-context-missing",
+    "browser-evidence|isolated-world|sentinel-false-negative",
+    "browser-evidence|candidate-session|wrong-daemon",
+    "browser-evidence|session-id|invalid-format",
+    "browser-evidence|launchagent|chrome-devtools-path-missing",
+    "browser-evidence|launchagent|node-path-missing",
+    "browser-evidence|webhook|markdown-url-contamination",
+    "extension|runtime|context-invalidated-storage",
+    "extension|release|manifest-version-drift",
+    "chrome|stable|load-extension-assumption",
+    "browser-evidence|gate|fail-open",
+    "browser-evidence|worker-tabs|visible-side-effects"
+  ],
+  "debuggingSequence": [
+    "reproduce-and-preserve-raw-fingerprint",
+    "verify-immutable-runtime-identity",
+    "search-shared-memory-before-fix",
+    "one-hypothesis-at-a-time",
+    "max-two-identical-retries-without-new-evidence",
+    "add-regression-check-first-where-feasible",
+    "apply-smallest-root-cause-fix",
+    "rerun-original-and-surrounding-regressions",
+    "never-promote-on-placeholder-or-collector-failure",
+    "writeback-error-recovery-regression-verification-lesson"
+  ],
+  "learningLifecycle": {
+    "MEMORY": "fingerprint-root-cause-fix-stored",
+    "GUARDED": "deterministic-regression-or-validator-enforced",
+    "PROVEN": "guard-detected-or-prevented-original-defect-in-intended-runtime"
+  },
+  "completionRule": "NO_COMPLETION_WHILE_MATERIAL_LEARNING_EXISTS_ONLY_IN_CHAT"
+}
