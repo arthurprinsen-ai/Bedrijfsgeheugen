@@ -88,7 +88,13 @@ Een nieuwe of toekomstige agent is niet production-ready als shared-context read
 ### BRAIN chat-learning preflight
 `config/brain-chat-learning-contract.json` (`BRAIN-CHAT-LEARNING-v1`) is verplichte gedeelde voorkennis voor iedere huidige en toekomstige agent, workflow en scenario die materieel werk uitvoert.
 
-- Laad de canonieke learning sources uit het contract vóór debuggen, ontwerpen, wijzigen of uitvoeren.
+Verplichte entrypoint vóór debuggen, ontwerpen, wijzigen of uitvoeren:
+
+`node scripts/brain/chat-learning-preflight.mjs`
+
+De command moet `status: READY` opleveren. Bij `CHAT_LEARNING_PREFLIGHT_FAILED` is materiële uitvoering fail-closed: herstel eerst de ontbrekende/ongeldige learningbron of begrenzing; omzeil de preflight niet.
+
+- Gebruik uitsluitend het door deze command samengestelde bounded packet als preflight-ingang; handmatig overslaan van `canonicalSources` of `linked_learning_sources` en het reconstrueren van een parallel agentgeheugen zijn verboden.
 - Match iedere relevante fingerprint vóór uitvoering en hergebruik eerst een bewezen fix/preventieregel.
 - Een bekende mislukte aanpak blijft geblokkeerd totdat nieuwe evidence aantoonbaar maakt dat de eerdere root cause of randvoorwaarde niet meer geldt.
 - Houd audit history en actuele operationele projection semantisch gescheiden; testcanaries/no-op false positives mogen de actuele teamcontext niet vervuilen.

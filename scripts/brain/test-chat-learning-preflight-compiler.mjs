@@ -37,4 +37,22 @@ assert.throws(
 const again = compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 256_000 });
 assert.equal(JSON.stringify(packet), JSON.stringify(again), 'same repository state must compile deterministically');
 
+const agentsContract = fs.readFileSync('AGENTS.md', 'utf8');
+assert.match(
+  agentsContract,
+  /node scripts\/brain\/chat-learning-preflight\.mjs/,
+  'AGENTS.md must require the deterministic chat-learning preflight command'
+);
+assert.match(
+  agentsContract,
+  /vóór (debuggen|materieel werk|ontwerpen|wijzigen|uitvoeren)/i,
+  'AGENTS.md must require preflight before material execution'
+);
+assert.match(agentsContract, /status: READY/, 'AGENTS.md must require a READY preflight result');
+assert.match(
+  agentsContract,
+  /CHAT_LEARNING_PREFLIGHT_FAILED/,
+  'AGENTS.md must keep material execution fail-closed when preflight fails'
+);
+
 console.log(`PASS chat-learning preflight compiler: ${packet.sources.length} sources, ${packet.totalBytes} bytes`);
