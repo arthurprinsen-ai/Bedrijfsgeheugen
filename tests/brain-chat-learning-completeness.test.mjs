@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 
 const CONTRACT_PATH = 'config/chat-learning-completeness-guard.json';
 const BROWSER_CONTRACT_PATH = 'config/browser-evidence-guard-contract.json';
+const DELIVERY_LESSONS_PATH = 'docs/brain/delivery-failure-lessons.json';
+const PREVENTION_RULES_PATH = 'config/delivery-prevention-rules.json';
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
@@ -63,4 +65,41 @@ test('browser evidence learning remains linked as guarded domain knowledge', asy
   assert.ok(contract.requiredCanonicalSources.includes(BROWSER_CONTRACT_PATH));
   assert.equal(browser.learningLifecycle.GUARDED, 'deterministic-regression-or-validator-enforced');
   assert.equal(browser.completionRule, 'NO_COMPLETION_WHILE_MATERIAL_LEARNING_EXISTS_ONLY_IN_CHAT');
+});
+
+test('delivery lessons and active prevention rules are mandatory canonical chat-learning sources', async () => {
+  const contract = await readJson(CONTRACT_PATH);
+  assert.ok(contract.requiredCanonicalSources.includes(DELIVERY_LESSONS_PATH));
+  assert.ok(contract.requiredCanonicalSources.includes(PREVENTION_RULES_PATH));
+  assert.equal(contract.crossSourceCompleteness?.requireEveryActivePreventionRuleHasProvenLesson, true);
+  assert.equal(contract.crossSourceCompleteness?.requireEveryProvenLessonHasActivePreventionRule, true);
+});
+
+test('every active prevention rule is backed by PROVEN learning and every PROVEN lesson remains actively enforced', async () => {
+  const [lessonsDoc, rulesDoc] = await Promise.all([
+    readJson(DELIVERY_LESSONS_PATH),
+    readJson(PREVENTION_RULES_PATH),
+  ]);
+  const provenRules = new Set((lessonsDoc.lessons || [])
+    .filter(item => item.status === 'PROVEN')
+    .map(item => item.preventionRule));
+  const activeRules = new Set((rulesDoc.rules || [])
+    .filter(item => item.active === true)
+    .map(item => item.id));
+
+  const activeWithoutLearning = [...activeRules].filter(id => !provenRules.has(id));
+  const provenWithoutActiveRule = [...provenRules].filter(id => !activeRules.has(id));
+  assert.deepEqual(activeWithoutLearning, [], `active prevention rules without PROVEN learning: ${activeWithoutLearning.join(', ')}`);
+  assert.deepEqual(provenWithoutActiveRule, [], `PROVEN lessons without active prevention: ${provenWithoutActiveRule.join(', ')}`);
+});
+
+test('chat-learning canonical records do not contain duplicate fingerprints or prevention rule ids', async () => {
+  const [lessonsDoc, rulesDoc] = await Promise.all([
+    readJson(DELIVERY_LESSONS_PATH),
+    readJson(PREVENTION_RULES_PATH),
+  ]);
+  const fingerprints = (lessonsDoc.lessons || []).map(item => item.fingerprint);
+  const ruleIds = (rulesDoc.rules || []).map(item => item.id);
+  assert.equal(new Set(fingerprints).size, fingerprints.length, 'duplicate delivery learning fingerprint detected');
+  assert.equal(new Set(ruleIds).size, ruleIds.length, 'duplicate prevention rule id detected');
 });
