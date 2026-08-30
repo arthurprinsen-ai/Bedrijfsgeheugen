@@ -1,0 +1,186 @@
+{
+  "version": "BRAIN-CHAT-LEARNING-v1",
+  "preflightRequired": true,
+  "newAgentsMustReadBeforeExecution": true,
+  "purpose": "Indexeer chat-afgeleide engineeringkennis en blokkeer herhaling van bekende fouten voordat een agent materieel werk uitvoert.",
+  "canonicalSources": [
+    "docs/learning/chat-learning-checkpoint-2026-08-30.md",
+    "docs/brain/delivery-failure-lessons.json",
+    "config/delivery-prevention-rules.json",
+    "brain/learning/chat-continuity-2026-08-30.json",
+    "docs/development-ledger.md",
+    "docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md"
+  ],
+  "policy": {
+    "fingerprintMatchBeforeMaterialExecution": true,
+    "reuseKnownFixBeforeExperimenting": true,
+    "blockKnownFailedApproachWithoutNewEvidence": true,
+    "bindEvidenceToExactCandidateIdentity": true,
+    "writeNewMaterialLearningBack": true,
+    "refreshSharedContextAfterNewLearning": true,
+    "keepAuditHistoryAppendOnly": true,
+    "keepCurrentProjectionFreeOfTestArtifacts": true
+  },
+  "lessons": [
+    {
+      "id": "MAKE_DATASTORE_READ_LIST_NOT_SINGLE_KEY_GET",
+      "fingerprint": "make|datastore|single-key-get-404",
+      "symptom": "Een GET op een individueel Make Data Store key-pad geeft 404 terwijl de record wel bestaat.",
+      "rootCause": "De Make Data Store API ondersteunt individuele keys op die route voor writes, maar niet als equivalente single-key GET.",
+      "failedApproach": "De write-URL aannemen als symmetrische read-URL en daarna de 404 als ontbrekende cache interpreteren.",
+      "requiredAction": "Lees GET /data-stores/{id}/data en selecteer daarna exact de bedoelde key, bijvoorbeeld team-context:latest.",
+      "prevention": "Gebruik één geteste Data Store read-adapter en hergebruik die in alle scenario's.",
+      "evidenceRule": "Een 404 op de foutieve single-key route bewijst nooit dat de Data Store-record ontbreekt."
+    },
+    {
+      "id": "READBACK_AFTER_AMBIGUOUS_MUTATION_ERROR",
+      "fingerprint": "make|mutation|502-or-429-may-have-succeeded",
+      "symptom": "Een state-changing Make-call retourneert 502/429 of een clientfout terwijl de remote mutatie of execution toch kan zijn gestart.",
+      "rootCause": "Client/connector acknowledgement en remote uitvoering zijn niet atomair zichtbaar.",
+      "failedApproach": "Onmiddellijk dezelfde mutatie opnieuw uitvoeren en zo dubbele runs, writes of kosten veroorzaken.",
+      "requiredAction": "Lees scenario/execution/state eerst terug en retry alleen als het bedoelde effect aantoonbaar ontbreekt.",
+      "prevention": "Iedere ambiguously failed mutation gebruikt read-after-write/read-after-error met idempotency of dedupe.",
+      "evidenceRule": "Na 429/502 is retry verboden totdat actuele remote state is gecontroleerd."
+    },
+    {
+      "id": "EXPLICIT_OUTCOME_STATUS_OUTRANKS_TASK_KEYWORDS",
+      "fingerprint": "agent-learning|classifier|task-keywords-overrode-explicit-status",
+      "symptom": "NO_ACTION, IMPROVEMENT of een andere expliciete outcome wordt als error/recovery gelabeld omdat taaktekst woorden als error, blocked of rollback bevat.",
+      "rootCause": "Vrije-tekstsignalen kregen hogere prioriteit dan de expliciete outcome/status van de specialist.",
+      "failedApproach": "Classificeren op losse trefwoorden uit taak en resultaat zonder statusprioriteit.",
+      "requiredAction": "Laat expliciete NO_ACTION/HEALTHY, IMPROVEMENT, RECOVERY, ERROR en governance/design-status eerst beslissen; gebruik tekstheuristiek alleen als fallback.",
+      "prevention": "Classifier-contracttests bevatten tegenstrijdige taakwoorden en expliciete statuses.",
+      "evidenceRule": "Een expliciete status mag alleen worden overschreven door een expliciet hoger-prioriteits governancecontract, nooit door losse woorden."
+    },
+    {
+      "id": "NO_ACTION_AND_CANARIES_MUST_NOT_POLLUTE_TEAM_MEMORY",
+      "fingerprint": "agent-learning|projection|false-positive-noop-or-canary",
+      "symptom": "Gezonde NO_ACTION-uitkomsten of classifier-canaries verschijnen als actuele teamlearning en beïnvloeden latere agents.",
+      "rootCause": "Append-only audit history en de operationele current projection werden als hetzelfde geheugen behandeld.",
+      "failedApproach": "Testartefacten of bewezen no-op outcomes als actuele operationele kennis projecteren.",
+      "requiredAction": "Bewaar audit history, maar filter no-op false positives en expliciete canaries uit BG167/current team context.",
+      "prevention": "Projector heeft generieke audit-only/test-artifact filters plus regressietests.",
+      "evidenceRule": "Audit-retentie is toegestaan; actuele teamcontext bevat alleen materiële herbruikbare learning."
+    },
+    {
+      "id": "NEW_LEARNING_REFRESHES_SHARED_CONTEXT_EVENT_DRIVEN",
+      "fingerprint": "agent-memory|refresh|new-write-without-context-refresh",
+      "symptom": "Een nieuw verified learningrecord is opgeslagen maar volgende agents lezen tijdelijk een oude gedeelde context.",
+      "rootCause": "Learning write en shared-context projection waren niet event-driven aan elkaar gekoppeld.",
+      "failedApproach": "Wachten op periodieke refresh of iedere agent zelf opnieuw alle bronnen laten ophalen.",
+      "requiredAction": "Na een werkelijk nieuwe BG166-write direct BG167 verversen; alleen nieuwe learning triggert refresh.",
+      "prevention": "Write-path contract: dedupe -> write -> refresh -> return.",
+      "evidenceRule": "Nieuwe learning is pas team-beschikbaar als de gedeelde projection aantoonbaar is vernieuwd."
+    },
+    {
+      "id": "RECENT_TEAM_CONTEXT_NEVER_SUBSTITUTES_EXPLICIT_EVIDENCE",
+      "fingerprint": "agent-evidence|recent-learning|implicit-repair-of-missing-ref",
+      "symptom": "Recente gedeelde learning lijkt een ontbrekende expliciete evidence-ref te kunnen compenseren.",
+      "rootCause": "Supportive team context en hard evidence werden semantisch samengevoegd.",
+      "failedApproach": "Een unresolved explicit ref als resolved behandelen omdat vergelijkbare recente teamlearning bestaat.",
+      "requiredAction": "Houd explicit evidence resolution en bounded recent team context afzonderlijk; een missende explicit ref blijft missing.",
+      "prevention": "Evidence packets bevatten aparte velden/counts voor required refs en supportive team context.",
+      "evidenceRule": "Recent learning kan een expliciete evidence-verplichting nooit vervangen."
+    },
+    {
+      "id": "GUARDIAN_VALIDATES_SEMANTIC_CONTRACTS_NOT_LINEAR_BLUEPRINT_ORDER",
+      "fingerprint": "agent-guardian|false-drift|error-handler-branch-order",
+      "symptom": "Een gezonde Make-scenario blueprint wordt als drift gemarkeerd omdat fallback/error-handler modules niet lineair staan.",
+      "rootCause": "De guardian valideerde fysieke modulevolgorde in plaats van semantische flow-invarianten en branch presence.",
+      "failedApproach": "Alle vereiste modules in één strikte lineaire volgorde afdwingen.",
+      "requiredAction": "Valideer alleen noodzakelijke ordered edges op de hoofdflow en vereis branch/fallback-aanwezigheid afzonderlijk.",
+      "prevention": "Guardian-contracten modelleren Make error-handler branches expliciet.",
+      "evidenceRule": "Drift is alleen echt als een functionele invariant ontbreekt of verkeerd verbonden is, niet door legitieme branch-layout."
+    },
+    {
+      "id": "GUARDIAN_COVERAGE_FOLLOWS_REGISTERED_TEAM_AND_CONTROL_PLANE",
+      "fingerprint": "agent-guardian|coverage|specialists-only",
+      "symptom": "Een guardian controleert slechts één representatieve agent of alleen specialisten en mist drift in centrale control-plane componenten.",
+      "rootCause": "Coverage was een handmatige vaste subset in plaats van afgeleid uit de geregistreerde team/control-plane contracten.",
+      "failedApproach": "Eén runner als representatief bewijs voor alle agents gebruiken.",
+      "requiredAction": "Laat guardian coverage alle geregistreerde specialist- en control-plane contracten volgen en laat registry-wijzigingen de verwachte coverage aanpassen.",
+      "prevention": "Coverage-test vergelijkt guardian targets met de actuele geregistreerde contractset.",
+      "evidenceRule": "Teamcontract is alleen groen als iedere momenteel geregistreerde collaboration component is gevalideerd."
+    },
+    {
+      "id": "LEARNING_DEDUP_PRECEDES_WRITE_AND_REFRESH",
+      "fingerprint": "agent-memory|dedupe|duplicate-write-refresh",
+      "symptom": "Dezelfde learning kan opnieuw naar Notion/memory worden geschreven en een onnodige context-refresh veroorzaken.",
+      "rootCause": "Dedupe vond te laat in de pipeline plaats.",
+      "failedApproach": "Eerst schrijven/verversen en pas daarna fingerprints vergelijken.",
+      "requiredAction": "Bereken en controleer fingerprint vóór write en vóór BG167 refresh; duplicate wordt terminal coalesced/no-action.",
+      "prevention": "Idempotencytest vereist written=false en nul downstream refresh op exact duplicate input.",
+      "evidenceRule": "Een duplicate learning mag geen nieuwe persistent write en geen context-refresh veroorzaken."
+    },
+    {
+      "id": "MAKE_CAPACITY_LIMIT_IS_HARD_BOUNDARY",
+      "fingerprint": "make|capacity|operations-or-transfer-paused",
+      "symptom": "Make weigert scenario-runs omdat operations- of datatransferlimiet is bereikt/gepauzeerd.",
+      "rootCause": "Externe betaalde capaciteit is uitgeput en valt buiten veilige autonome technische reparatie.",
+      "failedApproach": "Meer betaalde capaciteit activeren, billing verhogen of runtime groen verklaren zonder canary.",
+      "requiredAction": "Markeer BLOCKED_HARD_BOUNDARY, stop betaalde retries en ga door met onafhankelijke repo-/analysewerkzaamheden.",
+      "prevention": "Cost/capacity state is onderdeel van CurrentState en voorkomt dispatch vóór betaalde fan-out.",
+      "evidenceRule": "Zonder succesvolle actuele runtime-run mag Make runtime-verificatie niet als groen worden gerapporteerd."
+    },
+    {
+      "id": "ACTIVE_ERROR_VS_RETIRED_OR_HISTORICAL_ERROR",
+      "fingerprint": "make|error-state|retired-or-historical-not-live-defect",
+      "symptom": "Oude foutmails of RETIRED/inactieve scenario's worden geïnterpreteerd als actuele productieproblemen.",
+      "rootCause": "Historische/audit evidence werd verward met current operational state.",
+      "failedApproach": "Alle gevonden errors behandelen als live incident zonder actuele execution/scenario-state.",
+      "requiredAction": "Classificeer current active error alleen met actuele scenario-status en recente execution evidence; behoud historie als learning.",
+      "prevention": "CurrentState en audit history zijn afzonderlijke truth classes met freshness.",
+      "evidenceRule": "Een historische fout is geen live defect zonder actuele reproduceerbare/operationele evidence."
+    },
+    {
+      "id": "STRUCTURAL_READINESS_IS_NOT_OPERATIONAL_PARITY",
+      "fingerprint": "repository-writer|readiness|structural-vs-runtime-proof",
+      "symptom": "Een writer heeft structurele candidate-mode checks groen maar is nog nooit operationeel door candidate/parity/rollback gegaan.",
+      "rootCause": "Codecontract-verified en runtime-evidence werden als dezelfde readiness beschouwd.",
+      "failedApproach": "structuralContractVerified gebruiken om operationalCandidateVerified, parityVerified, rollbackVerified of mainProtectionReady af te leiden.",
+      "requiredAction": "Houd structurele en operationele bewijsvelden afzonderlijk en fail closed totdat echte candidate/parity/rollback evidence bestaat.",
+      "prevention": "Readiness calculator vereist alle afzonderlijke evidenceklassen.",
+      "evidenceRule": "Structureel groen is noodzakelijk maar nooit voldoende voor operationele parity of platform protection readiness."
+    },
+    {
+      "id": "EXTERNAL_PLATFORM_CONTROLS_REQUIRE_DIRECT_OBSERVATION",
+      "fingerprint": "governance|platform-control|ci-green-does-not-prove-native-control",
+      "symptom": "Interne CI/gates zijn groen terwijl native GitHub protection/ruleset of een andere platformcontrol uit kan staan.",
+      "rootCause": "Interne governance health werd ten onrechte als bewijs voor extern platformconfiguratie gebruikt.",
+      "failedApproach": "Branch protection, Make capacity of andere externe controls afleiden uit repositorytests.",
+      "requiredAction": "Lees native platformstate rechtstreeks via de bevoegde connector/API en rapporteer onbekend/blocked als dat niet kan.",
+      "prevention": "Platform controls hebben eigen CurrentState adapters en onafhankelijke evidence obligations.",
+      "evidenceRule": "Een externe control is alleen groen met directe actuele platformevidence."
+    },
+    {
+      "id": "ONE_SHARED_CONTEXT_BEFORE_SPECIALIST_WORK",
+      "fingerprint": "agent-fabric|context|specialist-ran-without-latest-team-state",
+      "symptom": "Een specialist werkt met lokale/oudere context en herhaalt werk of mist een eerdere fix van een andere agent.",
+      "rootCause": "Shared-context read was niet verplicht vóór iedere materiële specialist/control-plane taak.",
+      "failedApproach": "Iedere agent zelfstandig context laten reconstrueren of alleen zijn eigen output laten kennen.",
+      "requiredAction": "Lees bounded actuele BG167/shared team context vóór materieel werk en geef downstream specialisten ook upstream resultaten mee.",
+      "prevention": "Agent contract/guardian vereist context-read vóór specialist reasoning en outcome-writeback vóór return.",
+      "evidenceRule": "Een specialist-run zonder actuele shared-context preflight is niet production-ready evidence."
+    },
+    {
+      "id": "KEEP_ONE_TRUTH_AND_NO_SECOND_MEMORY",
+      "fingerprint": "agent-fabric|memory|parallel-isolated-agent-truth",
+      "symptom": "Losse agents bouwen eigen memories, statussen of interpretaties die niet met het gezamenlijke Brain reconciliëren.",
+      "rootCause": "Samenwerking werd als messaging tussen bots ontworpen in plaats van één gedeelde canonical state en learninglaag.",
+      "failedApproach": "Een tweede agentgeheugen of alternatieve business truth naast Company Graph/Canonical State creëren.",
+      "requiredAction": "Alle agentcoördinatie gebruikt dezelfde Canonical State/Company Graph, AgentWork, evidence en team learning; lokale caches zijn alleen projections.",
+      "prevention": "Gateway/registry/tests blokkeren tweede execution/memory truth en tenant-crossing.",
+      "evidenceRule": "Alle persistente business truth moet naar de canonieke truthlaag herleidbaar zijn."
+    },
+    {
+      "id": "NO_DIRECT_EXTERNAL_EXECUTION_FROM_AGENT_FABRIC",
+      "fingerprint": "agent-fabric|execution|bypass-brain-governance",
+      "symptom": "Een collaboration/agentlaag probeert rechtstreeks externe side effects uit te voeren buiten Brain Runtime/change governance.",
+      "rootCause": "Taakcoördinatie en execution authority werden niet gescheiden.",
+      "failedApproach": "Agent Fabric een directe Make/GitHub/Netlify/customer mutation bypass geven.",
+      "requiredAction": "Agent Fabric plant/routeert/verzamelt evidence; externe changes lopen uitsluitend via Brain Runtime/Change Engine/autonomy/policy/verification gates.",
+      "prevention": "Gateway exposeert geen execution bypass en tests blokkeren directe externe mutatiepaden.",
+      "evidenceRule": "Geen Agent Fabric outcome geldt als uitgevoerde externe change zonder governance- en verification evidence van de execution authority."
+    }
+  ]
+}
