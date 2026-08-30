@@ -85,7 +85,7 @@ jobs:
               --write-out '%{http_code}' \
               "${EXPECTED_URL}?verify=${GITHUB_RUN_ID}-${attempt}" || printf '0')
             if [ "$HTTP_CODE" = "200" ]; then
-              python3 - <<'PY'
+              if python3 - <<'PY'
           import html, os, pathlib, re, sys
           body = pathlib.Path('/tmp/article.html').read_text(encoding='utf-8', errors='replace')
           expected_title = pathlib.Path('/tmp/expected-title.txt').read_text(encoding='utf-8')
@@ -102,15 +102,17 @@ jobs:
               print(f'CANONICAL_MISMATCH expected={expected_url!r} actual={canonical!r}', file=sys.stderr)
               raise SystemExit(3)
           PY
-              rc=$?
-              if [ "$rc" = "0" ]; then
+              then
                 success=true
                 reason=PUBLIC_PROOF_OK
                 break
-              elif [ "$rc" = "2" ]; then
-                reason=TITLE_MISMATCH
               else
-                reason=CANONICAL_MISMATCH
+                rc=$?
+                if [ "$rc" = "2" ]; then
+                  reason=TITLE_MISMATCH
+                else
+                  reason=CANONICAL_MISMATCH
+                fi
               fi
             else
               reason="HTTP_${HTTP_CODE}"
@@ -118,10 +120,12 @@ jobs:
             sleep $((attempt * 2))
           done
           verification_attempt=$((PREVIOUS_VERIFICATION_ATTEMPT + 1))
+          verified_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo "url=$EXPECTED_URL" >> "$GITHUB_OUTPUT"
           echo "http_code=$HTTP_CODE" >> "$GITHUB_OUTPUT"
           echo "reason=$reason" >> "$GITHUB_OUTPUT"
           echo "verification_attempt=$verification_attempt" >> "$GITHUB_OUTPUT"
+          echo "verified_at=$verified_at" >> "$GITHUB_OUTPUT"
           echo "success=$success" >> "$GITHUB_OUTPUT"
           if [ "$success" != "true" ]; then
             echo "::error::$reason"
@@ -137,21 +141,20 @@ jobs:
           CENTRAL_PAGE: ${{ inputs.central_page }}
           CONTENT_ID: ${{ inputs.content_id }}
           SLUG: ${{ inputs.slug }}
-          EXPECTED_TITLE: ${{ inputs.expected_title }}
           PUBLIC_URL: ${{ steps.public.outputs.url }}
+          VERIFIED_AT: ${{ steps.public.outputs.verified_at }}
           VERIFICATION_ATTEMPT: ${{ steps.public.outputs.verification_attempt }}
           DISPATCH_ATTEMPT: ${{ inputs.dispatch_attempt }}
         run: |
           set -euo pipefail
           [ -n "$NOTION_TOKEN" ] || { echo '::error::NOTION_TOKEN_MISSING'; exit 1; }
-          verified_at=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           python3 - <<'PY' >/tmp/queue.json
           import json, os
           print(json.dumps({'properties': {
             'Status': {'select': {'name': 'Gepubliceerd'}},
             'Dispatch status': {'select': {'name': 'Published'}},
-            'Verified At': {'date': {'start': os.environ['verified_at']}},
-            'Last verification': {'date': {'start': os.environ['verified_at']}},
+            'Verified At': {'date': {'start': os.environ['VERIFIED_AT']}},
+            'Last verification': {'date': {'start': os.environ['VERIFIED_AT']}},
             'Verification attempt': {'number': int(os.environ['VERIFICATION_ATTEMPT'])},
             'Failure fingerprint': {'rich_text': []},
             'URL': {'url': os.environ['PUBLIC_URL']},
@@ -163,7 +166,7 @@ jobs:
             'Make status': {'select': {'name': 'Gepubliceerd'}},
             'Publicatielink': {'url': os.environ['PUBLIC_URL']},
             'Publish Attempt': {'number': int(os.environ['DISPATCH_ATTEMPT'])},
-            'Publish Verified At': {'date': {'start': os.environ['verified_at']}},
+            'Publish Verified At': {'date': {'start': os.environ['VERIFIED_AT']}},
             'Foutmelding': {'rich_text': []},
           }}))
           PY
@@ -180,5 +183,3 @@ jobs:
             --header 'Content-Type: application/json' \
             --data-binary @/tmp/central.json >/tmp/central-response.json
           echo "PUBLIC_PROOF_OK content_id=$CONTENT_ID slug=$SLUG url=$PUBLIC_URL verification attempt=$VERIFICATION_ATTEMPT"
-        env:
-          verified_at: ${{ steps.public.outputs.verified_at }}
