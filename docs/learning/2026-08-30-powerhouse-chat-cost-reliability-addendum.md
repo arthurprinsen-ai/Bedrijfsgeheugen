@@ -154,7 +154,13 @@ Future agents must search these fingerprints before diagnosis or mutation. A mat
 
 **Architecture successor:** shadow-test `scheduled/on-demand bounded query -> explicit commercial eligibility -> projected consumed fields -> deterministic scorer -> one idempotent write`. No production cutover until representative DM/research/SEO/action outputs are equivalent.
 
-**Prevention:** generic Datahub presence is never sufficient domain identity. Every consumer defines positive/negative eligibility and an idempotency marker before paid/mutating work.
+**Shadow selector red→green evidence:** shadow scenario `7164640` was built no-write/on-demand. RED baseline filtered only `Opportunity Updated is empty`; execution `5b1a566835124ef4b602292e602148d9` failed exactly on known forbidden candidates: two `Regression Test` rows and four `Duplicate` DM-learning rows. After moving the full eligibility contract into the Notion query, execution `20af45d1ab1a449fb45a0b6d25a867af` returned GREEN with 10 valid candidates (BG98 research, inbound Chrome DM and LinkedIn-company evidence), no forbidden subtype, 2 operations, 3 credits and 39,063 bytes. This is materially below the ~931 KB legacy Watch batch because only 12 candidate fields are projected.
+
+**Prevention:** generic Datahub presence is never sufficient domain identity. Every consumer defines positive/negative eligibility and an idempotency marker before paid/mutating work. For trigger/source migrations, write a RED eligibility assertion first and keep it in the shadow path during GREEN verification.
+
+## `make|429|blueprint-read-during-optimization`
+
+A managed Make blueprint/spec read hit `Too Many Requests` while preparing the BG89 shadow scorer. Per the existing rate-limit contract, no immediate retry was sent. Independent GitHub/learning work continued during cooldown; the next Make mutation/read must start with remote-state readback and at most one targeted retry. This is evidence that optimization tooling itself must obey the same cost/rate discipline as production scenarios.
 
 ## Global regression rules added by this tranche
 
@@ -168,3 +174,5 @@ Future agents must search these fingerprints before diagnosis or mutation. A mat
 8. Preserve real commercial inbound/action signals while eliminating system telemetry from commercial scoring.
 9. Migrations that alter source/trigger semantics run shadow/no-write first and require output-equivalence evidence before cutover.
 10. Every new failure/fix gets fingerprint, root cause, failed approach, minimal fix, regression, production evidence and prevention written back to GitHub + BG166/BG167.
+11. A shadow migration must first prove selection/eligibility equivalence before scorer/output equivalence; do not collapse both unknowns into one test.
+12. Rate-limited optimization tooling stops and cools down just like production; never create a debugging retry storm.
