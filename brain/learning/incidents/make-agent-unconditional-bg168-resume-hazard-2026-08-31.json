@@ -5,11 +5,13 @@
   "pattern": "paused-isActive-resume-hazard-v1",
   "severity": "critical",
   "status": "CONTAINED_BY_TEAM_PAUSE_NOT_STRUCTURALLY_FIXED",
-  "symptom": "Make reports PH agent scenarios as status=paused while they remain logically isActive=true. At least five inspected high-cost agents still route every AI result directly to BG168 before returning the primary result, so recovery of team capacity could restore unnecessary paid learning traffic immediately.",
+  "symptom": "Make reports PH agent scenarios as status=paused while they remain logically isActive=true. Seven individually inspected agents still route every AI result directly to BG168 before returning the primary result, so recovery of team capacity could restore unnecessary paid learning traffic immediately.",
   "confirmedAffectedAgents": [
+    {"scenarioId":7088532,"name":"PH Agent 03 - Intelligence v3 stable runner","learningModuleId":7},
     {"scenarioId":7088558,"name":"PH Agent 09 - Telemetry Self-Healing v3 stable runner","learningModuleId":7},
     {"scenarioId":7088574,"name":"PH Agent 11 - QA Regression v3 stable runner","learningModuleId":7},
     {"scenarioId":7088579,"name":"PH Agent 12 - Knowledge Governance v3 stable runner","learningModuleId":7},
+    {"scenarioId":7088585,"name":"PH Agent 13 - Architect Integrator v3 stable runner","learningModuleId":7},
     {"scenarioId":7088656,"name":"PH Agent 14 - Make Cost Optimizer v3 stable runner","learningModuleId":10},
     {"scenarioId":7089148,"name":"PH Agent 16 - System Performance Optimizer v3 stable runner","learningModuleId":7}
   ],
@@ -39,7 +41,7 @@
     "NON_MATERIAL outcomes must call BG168 zero times and return the exact original primary result.",
     "MATERIAL outcomes may call BG168 at most once and must still return the exact original primary result when learning fails.",
     "Resume from capacity pause in controlled stages after caller guards and runtime evidence, never as a big-bang restoration.",
-    "Inventory every caller before declaring the template fixed; currently only five agents are confirmed by exact blueprint readback.",
+    "Inventory every caller before declaring the template fixed; currently seven agents are confirmed by exact blueprint readback.",
     "Never persist credential-, token- or capability-like runtime values in repository learning, logs or user-visible evidence.",
     "Do not buy additional paid capacity autonomously to force runtime proof."
   ],
