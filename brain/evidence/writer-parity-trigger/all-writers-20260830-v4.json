@@ -1,0 +1,7 @@
+{
+  "contract": "BRAIN-DELIVERY-v2",
+  "verification_only": true,
+  "scope": "all-governed-repository-writers",
+  "reason": "prove scoped transport parity and exact rollback from immutable Git history after fully-qualified evidence push fix",
+  "production_promotion": false
+}
