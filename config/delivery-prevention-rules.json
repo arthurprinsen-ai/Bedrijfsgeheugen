@@ -27,6 +27,14 @@
     {"id":"DEDUPE_LEDGER_BY_EVENT_FINGERPRINT_NOT_HARDCODED_PR","active":true,"enforcedBy":"atomic-ledger-fingerprint-dedupe","scope":"shared"},
     {"id":"RECONCILE_MAIN_TO_EXACT_PRODUCTION_SHA","active":true,"enforcedBy":"production-promotion-guardian","scope":"shared"},
     {"id":"REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN","active":true,"enforcedBy":"whole-brain-outcome-obligation-contract","scope":"shared"},
-    {"id":"NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN","active":true,"enforcedBy":"brain-chat-learning-preflight-plus-candidate-only-delivery-plus-main-push-detection","scope":"shared"}
+    {"id":"NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN","active":true,"enforcedBy":"brain-chat-learning-preflight-plus-candidate-only-delivery-plus-main-push-detection","scope":"shared"},
+    {"id":"STRIP_SQL_COMMENTS_BEFORE_SEMANTIC_ASSERTIONS","active":true,"enforcedBy":"supabase-semantic-test-normalization-contract","scope":"backend"},
+    {"id":"DO_NOT_AUTO_FIX_PERFORMANCE_INFO","active":true,"enforcedBy":"supabase-performance-governor","scope":"backend"},
+    {"id":"REVOKE_ALL_BEFORE_LEAST_PRIVILEGE_GRANT","active":true,"enforcedBy":"supabase-strict-privilege-contract","scope":"backend"},
+    {"id":"READ_LIVE_SCHEMA_BEFORE_EVIDENCE_WRITE","active":true,"enforcedBy":"brain-evidence-schema-contract","scope":"backend"},
+    {"id":"REQUIRE_OBSERVED_SCHEDULER_RUN_BEFORE_AUTONOMY_CLAIM","active":true,"enforcedBy":"outcome-obligation-operational-certification","scope":"automation"},
+    {"id":"NO_NOOP_MIGRATION_FOR_TRIGGER_PROOF","active":true,"enforcedBy":"supabase-trigger-proof-contract","scope":"backend"},
+    {"id":"USE_EXACT_SHA_EVENT_FINGERPRINTS","active":true,"enforcedBy":"outcome-obligation-event-idempotency-contract","scope":"automation"},
+    {"id":"CLASSIFY_NEW_RUNTIME_TOOL_PATHS","active":true,"enforcedBy":"brain-delivery-classifier-contract","scope":"shared"}
   ]
 }
