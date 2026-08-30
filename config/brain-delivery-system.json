@@ -7,6 +7,7 @@
     "docs/brain/",
     "docs/development-",
     "docs/outcome-obligations.md",
+    "docs/superpowers/specs/",
     "scripts/brain/",
     "brain/contracts/",
     "brain/production/",
@@ -15,7 +16,7 @@
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
-    "docs/superpowers/"
+    "docs/superpowers/plans/"
   ],
   "branchPolicy": {
     "strategy": "conflict-aware-independent-lanes",
