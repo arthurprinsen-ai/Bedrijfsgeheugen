@@ -21,6 +21,9 @@
     "requireExactEvidenceForProvenStatus": true,
     "requireDeliveryPreflightGreen": true,
     "blockOnOrphanActivePreventionRule": true,
+    "localGreenIsNotCompletion": true,
+    "continueUntilAllMaterialObligationsTerminal": true,
+    "hardBoundaryMustBeExplicitlyProven": true,
     "documentationAloneMayReach": "MEMORY",
     "machineEnforcedValidatorRequiredFor": "GUARDED",
     "intendedRuntimeEvidenceRequiredFor": "PROVEN"
@@ -88,6 +91,18 @@
       "preventionRule": "Geen completion zolang materiële learning alleen in chat bestaat.",
       "regressionContract": "brain-chat-learning-completeness.test.mjs moet de completion policy afdwingen.",
       "evidence": "BRAIN-CHAT-LEARNING-v1 en BROWSER-EVIDENCE-GUARD-v1 zijn bestaande canonical sources en worden door deze guard verplicht gekoppeld.",
+      "owner": "agent-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "learning|completion|premature-stop-open-obligations",
+      "symptom": "Een agent rapporteert lokaal groen of rondt een chat/run af terwijl materiële outcome-, delivery-, recovery- of production-obligations nog open staan.",
+      "rootCause": "Lokale technische successtatus werd verward met end-to-end completion en open vervolgverplichtingen waren geen blocking completion state.",
+      "failedApproach": "Stoppen na lokale technische groenstatus terwijl materiële outcome-, delivery-, recovery- of production-obligations nog open staan.",
+      "fix": "Blijf de veilige repair/delivery/verification-loop uitvoeren totdat alle materiële obligations aantoonbaar terminal/green zijn of een expliciete hard boundary met actuele evidence is bewezen.",
+      "preventionRule": "Completion is geblokkeerd zolang niet alle materiële obligations terminal/green zijn; alleen een expliciet bewezen hard boundary mag veilig stoppen zonder groen outcome-bewijs.",
+      "regressionContract": "brain-chat-learning-completeness.test.mjs afdwingt localGreenIsNotCompletion, continueUntilAllMaterialObligationsTerminal, hardBoundaryMustBeExplicitlyProven en verplichte uitvoering in Shared Agent Memory CI.",
+      "evidence": "2026-08-30 chat: herhaald verzoek om door te gaan en alle learning te borgen maakte zichtbaar dat lokale groene subresultaten niet als volledige completion mogen worden behandeld zolang de overkoepelende obligation open blijft.",
       "owner": "agent-reliability",
       "status": "GUARDED"
     }

@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const CONTRACT_PATH = 'config/chat-learning-completeness-guard.json';
 const BROWSER_CONTRACT_PATH = 'config/browser-evidence-guard-contract.json';
+const SHARED_MEMORY_WORKFLOW = '.github/workflows/shared-agent-memory-tests.yml';
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
@@ -31,6 +32,26 @@ test('completion is bound to the same canonical learning sources used by deliver
   }
   assert.equal(contract.completionPolicy.requireDeliveryPreflightGreen, true);
   assert.equal(contract.completionPolicy.blockOnOrphanActivePreventionRule, true);
+});
+
+test('agents cannot stop on local green while material obligations remain open', async () => {
+  const contract = await readJson(CONTRACT_PATH);
+  assert.equal(contract.completionPolicy.localGreenIsNotCompletion, true);
+  assert.equal(contract.completionPolicy.continueUntilAllMaterialObligationsTerminal, true);
+  assert.equal(contract.completionPolicy.hardBoundaryMustBeExplicitlyProven, true);
+
+  const rule = contract.knownFailureFingerprints.find(
+    x => x.fingerprint === 'learning|completion|premature-stop-open-obligations'
+  );
+  assert.ok(rule, 'missing premature-stop learning fingerprint');
+  assert.equal(rule.failedApproach, 'Stoppen na lokale technische groenstatus terwijl materiële outcome-, delivery-, recovery- of production-obligations nog open staan.');
+  assert.match(rule.preventionRule, /alle materiële obligations/i);
+  assert.equal(rule.status, 'GUARDED');
+});
+
+test('shared agent memory CI executes the chat-learning completeness guard', async () => {
+  const workflow = await readFile(SHARED_MEMORY_WORKFLOW, 'utf8');
+  assert.match(workflow, /tests\/brain-chat-learning-completeness\.test\.mjs/);
 });
 
 test('learning records preserve the full causal chain', async () => {
