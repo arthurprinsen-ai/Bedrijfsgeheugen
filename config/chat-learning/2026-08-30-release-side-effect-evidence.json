@@ -26,7 +26,7 @@
     "netlify_deploy_trigger_verified": false,
     "netlify_wrapper_result": "instruction_only_no_verified_side_effect"
   },
-  "required_response": "For every merge, deploy, publish or other external side effect, inspect the real external state after the supposed action. A success response, green job label, returned command string, ready status on an older SHA, or skipped promotion step is not outcome evidence; keep the obligation open. Never bypass a required main-protection or security gate. When permission-capable tooling is unavailable, route the blocked action as a hard boundary while continuing all independent safe work.",
+  "required_response": "For every merge, deploy, publish or other external side effect, perform an independent read-back of the real external state after the supposed action. A success response, green job label, returned command string, ready status on an older SHA, or skipped promotion step is not outcome evidence; keep the obligation open. Never bypass a required main-protection or security gate. When permission-capable tooling is unavailable, route the blocked action as a hard boundary while continuing all independent safe work.",
   "open_obligations": [
     "Enable and certify GitHub main protection through an authorized permission-capable route, then rerun the explicit production handoff for PR 716 at its exact verified head.",
     "Converge Netlify production commit_ref to the newest releasable main SHA and verify production smoke, security and protected metrics.",
