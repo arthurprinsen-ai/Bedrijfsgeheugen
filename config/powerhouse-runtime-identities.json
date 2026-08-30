@@ -1,0 +1,64 @@
+{
+  "contract": "POWERHOUSE-RUNTIME-IDENTITY-v1",
+  "generated_at": "2026-08-30T22:22:00+02:00",
+  "identity_rule": "Resolve active ownership by scenario_id + canonical_role + latest_verified_state. Never use a BG label alone as runtime authority.",
+  "truth_precedence": [
+    "latest_verified_state_with_runtime_or_production_evidence",
+    "scenario_id_and_current_blueprint",
+    "canonical_role_registry",
+    "historical_chat_or_ledger_alias"
+  ],
+  "current": [
+    {
+      "scenario_id": 7071153,
+      "label": "BG139",
+      "canonical_role": "Mission Control API",
+      "status": "active",
+      "notes": "Cache-first request endpoint. Historical references to another BG139 function are namesake history only."
+    },
+    {
+      "scenario_id": 7152183,
+      "label": "BG186",
+      "canonical_role": "Mission Control Current State Projection v1",
+      "status": "active"
+    },
+    {
+      "scenario_id": 7152314,
+      "label": "BG188",
+      "canonical_role": "Mission Control Shadow Equivalence Guardian v1",
+      "status": "active"
+    },
+    {
+      "scenario_id": 7152387,
+      "label": "BG190",
+      "canonical_role": "Mission Control Cache-First Read Service v1",
+      "status": "active"
+    },
+    {
+      "scenario_id": 7152400,
+      "label": "BG191",
+      "canonical_role": "Mission Control Cache Promotion Executor v1",
+      "status": "active"
+    }
+  ],
+  "mission_control_cache_contract": {
+    "request_owner": 7071153,
+    "projection_owner": 7152183,
+    "equivalence_owner": 7152314,
+    "fallback_owner": 7152387,
+    "promotion_owner": 7152400,
+    "serve_last_known_good": true,
+    "stale_grace_seconds": 21600,
+    "observable_sources": ["CACHE_FRESH", "CACHE_STALE", "MISS"],
+    "synchronous_live_fallback_only_when_no_usable_payload": true,
+    "duplicate_cache_stack_forbidden": true,
+    "new_refresh_owner_requires_overlap_check": true
+  },
+  "prevention": {
+    "branch_drift": "Rebuild candidate from current main and reapply only proven delta; exact-head gates before promotion.",
+    "green_until_done": "Failed build/test/deploy is intermediate unless a hard boundary is reached; at most two identical retries per hypothesis.",
+    "security_continuity": "Do not stop core scenarios as normal remediation; use safe mode and restore verified full mode.",
+    "rate_limit": "On 429, stop discovery/retry pressure, use alternate evidence, then one targeted retry.",
+    "secrets": "Never place API keys, PATs or tokens in URLs, querystrings, prompts, logs or scenario mappings."
+  }
+}
