@@ -5,6 +5,11 @@
     {"id":"STRIP_SQL_COMMENTS_BEFORE_SEMANTIC_ASSERTIONS","active":true,"enforcedBy":"supabase-semantic-test-normalization-contract","scope":"backend"},{"id":"DO_NOT_AUTO_FIX_PERFORMANCE_INFO","active":true,"enforcedBy":"supabase-performance-governor","scope":"backend"},{"id":"REVOKE_ALL_BEFORE_LEAST_PRIVILEGE_GRANT","active":true,"enforcedBy":"supabase-strict-privilege-contract","scope":"backend"},{"id":"READ_LIVE_SCHEMA_BEFORE_EVIDENCE_WRITE","active":true,"enforcedBy":"brain-evidence-schema-contract","scope":"backend"},{"id":"REQUIRE_OBSERVED_SCHEDULER_RUN_BEFORE_AUTONOMY_CLAIM","active":true,"enforcedBy":"outcome-obligation-operational-certification","scope":"automation"},{"id":"NO_NOOP_MIGRATION_FOR_TRIGGER_PROOF","active":true,"enforcedBy":"supabase-trigger-proof-contract","scope":"backend"},{"id":"USE_EXACT_SHA_EVENT_FINGERPRINTS","active":true,"enforcedBy":"outcome-obligation-event-idempotency-contract","scope":"automation"},{"id":"CLASSIFY_NEW_RUNTIME_TOOL_PATHS","active":true,"enforcedBy":"brain-delivery-classifier-contract","scope":"shared"},
     {"id":"NETLIFY_DEPLOY_INSTRUCTION_IS_NOT_EXECUTION","active":true,"enforcedBy":"netlify-deploy-readback-contract","scope":"shared"},
     {"id":"RUNTIME_DNS_FAILURE_IS_INFRA_BOUNDARY","active":true,"enforcedBy":"runtime-infrastructure-boundary-contract","scope":"shared"},
-    {"id":"PRODUCTION_PARITY_MISMATCH_REQUIRES_RECOVERY","active":true,"enforcedBy":"production-promotion-guardian-plus-recovery-obligation","scope":"shared"}
+    {"id":"PRODUCTION_PARITY_MISMATCH_REQUIRES_RECOVERY","active":true,"enforcedBy":"production-promotion-guardian-plus-recovery-obligation","scope":"shared"},
+    {"id":"REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK","active":true,"enforcedBy":"delivery-chat-continuity-plus-production-authority-contract","scope":"shared"},
+    {"id":"BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE","active":true,"enforcedBy":"delivery-chat-continuity-plus-current-state-capacity-gate","scope":"automation"},
+    {"id":"OPTIMIZE_SOURCE_CALLS_NOT_ONLY_CLIENT_CACHE","active":true,"enforcedBy":"delivery-chat-continuity-plus-cost-governance-contract","scope":"automation"},
+    {"id":"NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE","active":true,"enforcedBy":"delivery-chat-continuity-plus-read-only-branch-preflight","scope":"shared"},
+    {"id":"CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST","active":true,"enforcedBy":"development-doc-contract-plus-delivery-chat-continuity","scope":"shared"}
   ]
 }
