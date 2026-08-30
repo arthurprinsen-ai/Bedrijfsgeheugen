@@ -208,7 +208,7 @@ jobs:
         run: |
           echo "Verification-only delivery: production authority handoff intentionally skipped."
       - name: Hand exact green lane identities to Brain production authority
-        if: needs.plan.outputs.has_lanes == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only == true)
+        if: needs.plan.outputs.has_lanes == 'true' && (github.event_name != 'workflow_dispatch' || inputs.verification_only != true)
         env:
           BG169_HANDOFF_URL: ${{ vars.BG169_HANDOFF_URL }}
           PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
