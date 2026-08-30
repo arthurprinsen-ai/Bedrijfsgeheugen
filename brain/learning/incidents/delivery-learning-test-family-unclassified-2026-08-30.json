@@ -1,0 +1,51 @@
+{
+  "version": "DELIVERY-LEARNING-TEST-FAMILY-UNCLASSIFIED-v1",
+  "date": "2026-08-30",
+  "fingerprint": "delivery|classifier|learning-test-family-unclassified-v1",
+  "severity": "high",
+  "status": "GUARDED",
+  "symptom": "BRAIN delivery PR #746 failed closed with unclassified delivery path for legitimate tests/chat-learning-* and tests/make-agent-learning-* governance tests even though their dedicated and shared CI tests were green.",
+  "rootCause": "The delivery lane taxonomy used explicit path prefixes and did not yet include the two legitimate learning-contract test families.",
+  "failedApproaches": [
+    "Treat the red delivery gate as CI noise because the unit tests were green.",
+    "Rename legitimate tests cosmetically merely to match an existing prefix.",
+    "Broaden the classifier so far that unknown test families no longer fail closed.",
+    "Patch a stale BG168 branch directly after main changed the same delivery-control-plane config."
+  ],
+  "provenFix": {
+    "config": "config/brain-delivery-system.json",
+    "backendPrefixesAdded": ["tests/chat-learning-", "tests/make-agent-learning-"],
+    "preservedConcurrentPrefix": "tests/agent-fabric",
+    "regressionTest": "tests/brain-learning-contract-delivery-classification.test.mjs",
+    "dedicatedWorkflow": ".github/workflows/learning-contract-delivery-classifier-tests.yml",
+    "mergedClassifierFixCommit": "e9b922e2c1d300bed3dc8819b3ac9b70402a80c2"
+  },
+  "preventionRules": [
+    "Every new executable or governance test family must be classified in the canonical delivery taxonomy before its owning PR can be considered delivery-green.",
+    "Unknown active paths remain fail-closed; add the narrowest semantic prefix rather than a wildcard that hides future ownership gaps.",
+    "A green unit or feature workflow never overrides a red BRAIN delivery-plan gate.",
+    "When main changes the same delivery-control-plane config, rebuild from current main and preserve concurrent classifications instead of forcing or overwriting.",
+    "Use a dedicated regression workflow when feature-specific coverage can avoid mutating a shared CI hotspot."
+  ],
+  "regressionContract": {
+    "mustClassifyAsBackend": [
+      "tests/chat-learning-future-contract.test.mjs",
+      "tests/make-agent-learning-future-contract.test.mjs"
+    ],
+    "mustRemainUnclassified": ["tests/unowned-future-system.test.mjs"],
+    "requiredDeliveryEvidence": [
+      "BRAIN plan succeeds",
+      "backend lane succeeds",
+      "moving-main conflict index succeeds",
+      "handoff succeeds"
+    ]
+  },
+  "evidence": {
+    "originalFailurePR": 746,
+    "redDedicatedRun": 33337939925,
+    "greenClassifierPR": 765,
+    "greenClassifierMergeCommit": "e9b922e2c1d300bed3dc8819b3ac9b70402a80c2",
+    "greenBG168SuccessorPR": 770,
+    "greenBG168Head": "94c77b93ecc3e3cb345342a257979e36ca45a506"
+  }
+}
