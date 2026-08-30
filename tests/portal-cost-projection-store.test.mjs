@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createCostProjectionStore } from '../netlify/functions/_cost-projection-store.mjs';
+import { mkdir, writeFile } from 'node:fs/promises';
+
+await mkdir('node_modules/@netlify/blobs', { recursive: true });
+await writeFile('node_modules/@netlify/blobs/package.json', JSON.stringify({ name:'@netlify/blobs', type:'module', exports:'./index.js' }));
+await writeFile('node_modules/@netlify/blobs/index.js', 'export function getStore(){ throw new Error("default Netlify store must not be used by injected tests"); }\n');
+
+const { createCostProjectionStore } = await import('../netlify/functions/_cost-projection-store.mjs');
 
 const blobRecord = {
   schemaVersion: 1,
