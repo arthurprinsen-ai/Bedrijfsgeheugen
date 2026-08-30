@@ -10,7 +10,16 @@ async function exists(file) {
 
 function normalizeFailure(value, source) {
   if (!value || typeof value !== 'object' || Array.isArray(value) || typeof value.fingerprint !== 'string') return null;
-  return { source, fingerprint: value.fingerprint, regressionContract: typeof value.regressionContract === 'string' ? value.regressionContract : null };
+  return {
+    source,
+    fingerprint: value.fingerprint,
+    rootCause: typeof value.rootCause === 'string' ? value.rootCause : null,
+    fix: typeof value.fix === 'string' ? value.fix : null,
+    preventionRule: typeof value.preventionRule === 'string' ? value.preventionRule : null,
+    regressionContract: typeof value.regressionContract === 'string' ? value.regressionContract : null,
+    owner: typeof value.owner === 'string' ? value.owner : null,
+    status: typeof value.status === 'string' ? value.status : null,
+  };
 }
 
 function collectKnownFailures(doc, source) {

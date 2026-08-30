@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { createPreflightDecision } from './delivery-learning.mjs';
+import { buildGuardRegressionInventory } from './delivery-guard-regression-inventory.mjs';
 import { evaluateCompletionReadiness } from '../brain/policy/completion-readiness.mjs';
 
 export { evaluateCompletionReadiness };
@@ -68,6 +69,7 @@ export async function loadDeliveryPreflight({
   const orphanRules = activeRules.filter(ruleId => !explainedRuleIds.has(ruleId));
   if (orphanRules.length) throw new Error(`active prevention rules missing PROVEN lesson: ${orphanRules.join(', ')}`);
 
+  const guardInventory = await buildGuardRegressionInventory();
   const baseDecision = createPreflightDecision({ component, stages, knownLessons: provenLessons, appliedPreventionRules: activeRules });
   const reusedGuards = [
     ...(completenessGuard.knownFailureFingerprints || []).map(item => typeof item === 'string' ? item : item?.fingerprint),
@@ -75,10 +77,13 @@ export async function loadDeliveryPreflight({
     ownershipGuard.knownFailure?.fingerprint,
     guardDiscovery.knownFailure?.fingerprint,
     guardRegistrySchema.knownFailure?.fingerprint,
+    ...guardInventory.fingerprints,
   ].filter(Boolean);
+  const guardKnowledge = guardInventory.guards.map(guard => Object.freeze({ ...guard }));
   return Object.freeze({
     ...baseDecision,
     reusedGuards: Object.freeze([...new Set(reusedGuards)]),
+    guardKnowledge: Object.freeze(guardKnowledge),
     completionPolicy: Object.freeze({ ...completionPolicy })
   });
 }
