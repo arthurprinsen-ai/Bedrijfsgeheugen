@@ -39,6 +39,15 @@ Regels:
 
 `tests/site-baseline-guardian.test.mjs` is onderdeel van de productiepoort en mag niet worden omzeild of verzwakt om een kandidaat groen te maken.
 
+## Canonical SEO Footer Contract — sitewide invariant
+Iedere huidige en toekomstige agent die footer, websitebouw, interne navigatielinks, SEO-architectuur of zoekwoord-eigenaarschap raakt, moet vóór uitvoering `docs/canonical-seo-footer.md` en `site/footer-contract.json` lezen.
+
+`.github/canoniek/voet.html` is de enige footerwaarheid voor alle publieke/indexeerbare websitepagina's. Een footerwijziging heeft altijd scopes `component:footer` en `area:seo` en telt als SEO-wijziging, niet als cosmetische wijziging.
+
+De footer mag niet promoveren wanneer een footer- of SEO-gate rood is. Agents mogen zo'n rode gate nooit omzeilen, verzwakken of breed uitzonderen om promotie mogelijk te maken. Structurele drift mag automatisch worden hersteld naar de canonieke footer; een semantische wijziging van keyword owner, zoekwoord-eigenaar of primaire intentie vereist een expliciete geteste contractwijziging.
+
+De historische V18-body blijft beschermd; alleen de footerregio is binnen dit contract een toegestane body-uitzondering. Iedere materiële footerwijziging wordt als `CONTRACT_CHANGE`, `IMPROVEMENT`, `RECOVERY` of `PRODUCTION_PROMOTION` naar het gedeelde geheugen geschreven onder fingerprint `canonical-seo-footer-v1`.
+
 ## Whole-brain outcome obligations — hoogste invariant
 `docs/outcome-obligations.md` en `config/outcome-obligations.json` gelden voor iedere huidige en toekomstige agent en workflow.
 
@@ -170,8 +179,9 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 5. `docs/outcome-obligations.md`
 6. `config/outcome-obligations.json`
 7. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
-8. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
-9. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
+8. `docs/canonical-seo-footer.md` bij website-, footer-, navigatie- of SEO-werk
+9. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
+10. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-experiment al in de repo of gedeelde teamcontext is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.
