@@ -11,9 +11,11 @@ for(const id of ['dna','downloaden','afdrukken']){
  test(`${id} bypasses the iframe bridge`,()=>assert.match(runtime,new RegExp(`['\"]${id}['\"]`)));
 }
 
-test('Openen remains on compatibility bridge because it mutates customer state',()=>{
+test('Openen now bypasses the bridge through the verified safe import flow',()=>{
  const set=runtime.match(/NATIVE_LEGACY_WORKSPACES=new Set\(\[([^\]]+)/)?.[1]||'';
- assert.doesNotMatch(set,/['\"]openen['\"]/);
+ assert.match(set,/['\"]openen['\"]/);
+ assert.match(app,/confirmPortalImport/);
+ assert.match(app,/importId/);
 });
 
 test('strategy-to-monday DNA renders natively in execution',()=>{
