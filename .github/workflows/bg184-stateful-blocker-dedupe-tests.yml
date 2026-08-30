@@ -1,0 +1,25 @@
+name: BG184 Stateful Blocker Dedupe Tests
+
+on:
+  push:
+    paths:
+      - 'tests/brain-bg184-stateful-blocker-dedupe.test.mjs'
+      - 'config/bg184-stateful-blocker-dedupe.json'
+      - 'brain/learning/incidents/bg184-repeated-known-blocker-dispatch-2026-08-30.json'
+      - '.github/workflows/bg184-stateful-blocker-dedupe-tests.yml'
+  pull_request:
+    paths:
+      - 'tests/brain-bg184-stateful-blocker-dedupe.test.mjs'
+      - 'config/bg184-stateful-blocker-dedupe.json'
+      - 'brain/learning/incidents/bg184-repeated-known-blocker-dispatch-2026-08-30.json'
+      - '.github/workflows/bg184-stateful-blocker-dedupe-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test tests/brain-bg184-stateful-blocker-dedupe.test.mjs
