@@ -19,7 +19,7 @@
    "zoekwoord": "afmaakindex",
    "pagina": "/afmaakindex",
    "bestaat": true,
-   "claimt": false,
+   "claimt": true,
    "type": "cluster"
   },
   {
