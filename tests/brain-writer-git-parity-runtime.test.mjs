@@ -33,6 +33,28 @@ test('real candidate diff is byte-identical to direct apply and reverse apply re
   assert.equal(await readFile(join(repo, 'writer-output.txt'), 'utf8'), 'candidate\n');
 });
 
+test('unrelated concurrent history outside declared writer paths does not contaminate scoped parity', async () => {
+  const repo = await mkdtemp(join(tmpdir(), 'writer-parity-concurrent-'));
+  git(repo, 'init', '-q');
+  git(repo, 'config', 'user.email', 'test@example.com');
+  git(repo, 'config', 'user.name', 'test');
+  await writeFile(join(repo, 'writer-output.txt'), 'base\n');
+  await writeFile(join(repo, 'unrelated.txt'), 'before\n');
+  git(repo, 'add', 'writer-output.txt', 'unrelated.txt');
+  git(repo, 'commit', '-qm', 'base');
+  const baseSha = git(repo, 'rev-parse', 'HEAD');
+  await writeFile(join(repo, 'writer-output.txt'), 'candidate\n');
+  await writeFile(join(repo, 'unrelated.txt'), 'parallel brain change\n');
+  git(repo, 'add', 'writer-output.txt', 'unrelated.txt');
+  git(repo, 'commit', '-qm', 'candidate plus concurrent work');
+  const candidateHeadSha = git(repo, 'rev-parse', 'HEAD');
+
+  const result = await proveGitTransportParity({ repoDir: repo, baseSha, candidateHeadSha, changedFiles: ['writer-output.txt'] });
+  assert.equal(result.directOutputSha256, result.candidateOutputSha256);
+  assert.equal(result.rollbackOutputSha256, result.baseOutputSha256);
+  assert.deepEqual(result.changedFiles, ['writer-output.txt']);
+});
+
 test('parity proof fails closed when declared changed files do not match the candidate diff', async () => {
   const repo = await mkdtemp(join(tmpdir(), 'writer-parity-mismatch-'));
   git(repo, 'init', '-q');

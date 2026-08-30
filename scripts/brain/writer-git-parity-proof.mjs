@@ -6,9 +6,14 @@ import { join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const SHA40=/^[a-f0-9]{40}$/i;
+const MAX_BUFFER=64*1024*1024;
 
 function git(repoDir,...args){
-  return execFileSync('git',args,{cwd:repoDir,encoding:'utf8',maxBuffer:64*1024*1024});
+  return execFileSync('git',args,{cwd:repoDir,encoding:'utf8',maxBuffer:MAX_BUFFER});
+}
+
+function gitBuffer(repoDir,...args){
+  return execFileSync('git',args,{cwd:repoDir,maxBuffer:MAX_BUFFER});
 }
 
 function normalizeFiles(files){
@@ -34,8 +39,8 @@ async function hashBundle(root,files){
   return hash.digest('hex');
 }
 
-function exactDiffFiles(repoDir,baseSha,candidateHeadSha){
-  return git(repoDir,'diff','--name-only','--no-renames',baseSha,candidateHeadSha)
+function scopedDiffFiles(repoDir,baseSha,candidateHeadSha,files){
+  return git(repoDir,'diff','--name-only','--no-renames',baseSha,candidateHeadSha,'--',...files)
     .split(/\r?\n/).map(v=>v.trim()).filter(Boolean).sort();
 }
 
@@ -47,7 +52,12 @@ export async function proveGitTransportParity({repoDir='.',baseSha,candidateHead
   const files=normalizeFiles(changedFiles);
   git(repoDir,'cat-file','-e',`${baseSha}^{commit}`);
   git(repoDir,'cat-file','-e',`${candidateHeadSha}^{commit}`);
-  const actual=exactDiffFiles(repoDir,baseSha,candidateHeadSha);
+
+  // Deliberately constrain the comparison to the writer-owned paths that were
+  // already accepted by immutable operational path-policy evidence. Unrelated
+  // moving-main history must not contaminate parity, while every declared path
+  // must still contain a real base→candidate delta.
+  const actual=scopedDiffFiles(repoDir,baseSha,candidateHeadSha,files);
   if(!sameFiles(actual,files)) throw new Error(`CHANGED_FILES_MISMATCH:${actual.join(',')}`);
 
   const parent=await mkdtemp(join(tmpdir(),'writer-parity-proof-'));
@@ -58,13 +68,14 @@ export async function proveGitTransportParity({repoDir='.',baseSha,candidateHead
     git(repoDir,'worktree','add','--detach',direct,baseSha);
     git(repoDir,'worktree','add','--detach',candidate,candidateHeadSha);
     git(repoDir,'worktree','add','--detach',base,baseSha);
-    const patch=git(repoDir,'diff','--binary','--full-index','--no-renames',baseSha,candidateHeadSha);
-    execFileSync('git',['apply','--binary','-'],{cwd:direct,input:patch,encoding:'utf8',maxBuffer:64*1024*1024});
+
+    const patch=gitBuffer(repoDir,'diff','--binary','--full-index','--no-renames',baseSha,candidateHeadSha,'--',...files);
+    execFileSync('git',['apply','--binary','-'],{cwd:direct,input:patch,maxBuffer:MAX_BUFFER});
     const directOutputSha256=await hashBundle(direct,files);
     const candidateOutputSha256=await hashBundle(candidate,files);
     if(directOutputSha256!==candidateOutputSha256) throw new Error('PARITY_MISMATCH');
 
-    execFileSync('git',['apply','--binary','-R','-'],{cwd:candidate,input:patch,encoding:'utf8',maxBuffer:64*1024*1024});
+    execFileSync('git',['apply','--binary','-R','-'],{cwd:candidate,input:patch,maxBuffer:MAX_BUFFER});
     const rollbackOutputSha256=await hashBundle(candidate,files);
     const baseOutputSha256=await hashBundle(base,files);
     if(rollbackOutputSha256!==baseOutputSha256) throw new Error('ROLLBACK_OUTPUT_MISMATCH');
