@@ -93,7 +93,7 @@ De canonieke regel is **independent delivery, shared intelligence**:
 - iedere lane heeft een eigen `change_id`, `component_id`, `lane_id`, scope, dependencies, kandidaatidentiteit en rollbackidentiteit;
 - iedere lane valideert uitsluitend zijn eigen scope plus expliciet gedeclareerde contract- en dependencychecks;
 - generieke drift op `main` is nooit op zichzelf een rebuild- of wachtreden;
-- alleen een aantoonbaar mergeconflict, changed-path overlap of declared dependency conflict vereist synchronisatie van de betrokken lane;
+- alleen een aantoonbaar mergeconflict, changed-path overlap, declared contract overlap of declared dependency conflict vereist synchronisatie van de betrokken lane;
 - niet-conflicterende lanes blijven doorwerken en mogen onafhankelijk promoveren;
 - exact de geteste kandidaatidentiteit moet worden gepromoveerd; een andere SHA/artifact/revisie is automatisch niet groen;
 - BG169 blijft de enige productieautoriteit voor GitHub-backed productiepromoties; agents mogen die autoriteit niet stil omzeilen;
