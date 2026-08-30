@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_url": "https://cdn.openart.ai/openart-ai/production/2026-08/create-video/WZvuT1BzGx566fWaFo8F/xai-video-143123ce-c19d-935c-a98f-0ffc678d4ae0_1787928916465_3c8704c8.mp4",
   "source_sha256": "d4a516304adebbf8067bceb034046ddd65e3ff62fd8e34c800115aeb226c89e0",
   "derivative_url": "/assets/openart-hero-iphone-safe-v1.mp4",
@@ -13,6 +13,8 @@
     "has_audio": false,
     "faststart": true
   },
-  "physical_iphone_runtime": "PASS",
-  "promotion_state": "MEDIA_READY"
+  "physical_iphone_runtime": "PENDING",
+  "physical_iphone_runtime_derivative_sha256": null,
+  "physical_iphone_runtime_evidence": null,
+  "promotion_state": "MEDIA_PENDING_IPHONE_ACCEPTANCE"
 }
