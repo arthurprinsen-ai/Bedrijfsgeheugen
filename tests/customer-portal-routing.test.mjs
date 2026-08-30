@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const redirects = readFileSync(new URL('../_redirects', import.meta.url), 'utf8');
 const frisseBlik = readFileSync(new URL('../frisse-blik.html', import.meta.url), 'utf8');
+const klantportaal = readFileSync(new URL('../klantportaal.html', import.meta.url), 'utf8');
 
 test('demo1 serves the legacy customer portal without changing the public URL', () => {
   assert.match(redirects, /^\/klantportaal\s+klant=demo1\s+\/klantportaal-demo\.html\s+200!$/m);
@@ -28,4 +29,11 @@ test('all other customer slugs from scans serve the legacy full portal', () => {
 test('Frisse Blik bare portal handoff resolves to the legacy demo', () => {
   assert.match(frisseBlik, /\/klantportaal#direct/);
   assert.match(redirects, /^\/klantportaal\s+\/klantportaal-demo\.html\s+200!$/m);
+});
+
+test('customer offer routes can never open the legacy Netlify Identity modal', () => {
+  assert.match(
+    klantportaal,
+    /const bl=document\.getElementById\('btnLogin'\);\s*if\(bl\) bl\.addEventListener\('click',function\(\)\{\s*if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\) return;/m
+  );
 });
