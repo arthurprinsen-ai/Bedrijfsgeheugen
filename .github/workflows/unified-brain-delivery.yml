@@ -22,6 +22,11 @@ on:
         description: 'Immutable candidate branch'
         required: false
         type: string
+      verification_only:
+        description: 'Run full delivery verification but never hand candidate to production authority'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -198,8 +203,12 @@ jobs:
       - name: Record successful ignored-only no-op
         if: needs.plan.outputs.has_lanes != 'true'
         run: echo "No executable delivery lanes; ignored-only change is a successful no-op."
+      - name: Record verification-only non-promotion evidence
+        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only == true
+        run: |
+          echo "Verification-only delivery: production authority handoff intentionally skipped."
       - name: Hand exact green lane identities to Brain production authority
-        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/')
+        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only != true
         env:
           BG169_HANDOFF_URL: ${{ vars.BG169_HANDOFF_URL }}
           PR_NUMBER: ${{ inputs.pr_number }}

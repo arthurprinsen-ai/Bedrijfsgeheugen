@@ -180,7 +180,7 @@ jobs:
             -f candidate_branch="$PR_HEAD_REF"
           echo "SHADOW_DISPATCHED pr=$PR_NUMBER head=$PR_HEAD_SHA"
 
-      - name: Dispatch Unified Brain Delivery production-authority handoff
+      - name: Dispatch Unified Brain Delivery verification-only handoff
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
@@ -193,8 +193,9 @@ jobs:
             -f pr_number="$PR_NUMBER" \
             -f base_sha="$PR_BASE_SHA" \
             -f head_sha="$PR_HEAD_SHA" \
-            -f candidate_branch="$PR_HEAD_REF"
-          echo "UNIFIED_BRAIN_DISPATCHED pr=$PR_NUMBER head=$PR_HEAD_SHA"
+            -f candidate_branch="$PR_HEAD_REF" \
+            -f verification_only=true
+          echo "UNIFIED_BRAIN_VERIFICATION_ONLY_DISPATCHED pr=$PR_NUMBER head=$PR_HEAD_SHA"
 
       - name: BRAIN v2 canary handoff
         run: |
@@ -204,3 +205,4 @@ jobs:
           echo "current_state_projection=BG167"
           echo "external_calls=0"
           echo "direct_main_push=false"
+          echo "verification_only=true"
