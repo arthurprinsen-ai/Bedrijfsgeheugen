@@ -197,6 +197,37 @@ When BG82 surfaces old mails, do not automatically mutate the referenced scenari
 
 Rule: historical mail != current production defect.
 
+## Portal customer-auth recovery / current memory-CI lessons
+
+Fingerprint: `portal|customer-auth|legacy-inline-login-jitter`.
+
+Reusable rules:
+- `klant-login.html` is a dedicated customer-auth surface and must not silently inherit unrelated legacy inline-login behavior.
+- Do not leave mixed Netlify Identity and custom customer-auth flows active on the same user path. Mixed ownership creates login jitter, duplicate state and ambiguous failure evidence.
+- Supabase auth/session state must have one explicit owner and must be tested independently from public-site SEO/navigation checks.
+- Browser/CI green is not sufficient for mobile customer-auth claims; require device outcome evidence for the actual login/session result when the defect is device-specific.
+- Avoid direct pushes to `main` for normal development/recovery changes. Use a guarded candidate branch/PR so exact-head evidence, reviewability and rollback remain intact.
+- Before building new memory, agent-state or learning infrastructure, **inspect the existing memory architecture before creating a new memory subsystem**. Extend the canonical Brain/shared memory instead of introducing a second truth.
+- Matching of fingerprints, route names, statuses and known failure signatures must be case-insensitive where casing is not semantically meaningful; otherwise the same failure can evade reuse through superficial text variation.
+
+## Website baseline / wrong-source recovery lesson
+
+Fingerprint: `website|baseline|prototype-view-mistaken-for-production-route`.
+
+Incident evidence:
+- PR #187 used PR #110 / `prototype-v18-6.html` as a supposed canonical website source.
+- That assumption was wrong. It derived standalone primary routes such as `/prijzen` from prototype views that were not the intended production information architecture.
+- PR #187 was closed without merge.
+- The corrective path later restored the real pre-change route/navigation state and historical `/over-ons` semantics while preserving newer Brain, portal, security and infrastructure work.
+
+Permanent rules:
+- A prototype/test view is **never automatically a production route baseline**. Acceptance of visual/homepage behavior does not imply acceptance of every prototype view as a standalone route.
+- Before restoring missing pages/navigation, inspect actual historical production commits, route files, sitemap and navigation state. Historical production evidence outranks inferred prototype structure unless the user explicitly accepted the prototype route model.
+- When a source baseline is contradicted by route history or user feedback, stop promotion immediately; close/retire the unsafe candidate and reconstruct from the true last-known-good production state.
+- Preserve later technical/security/Brain improvements while rolling back only the incorrect website/content/navigation layer.
+- Add a regression contract for the corrected route catalog so a later agent cannot reintroduce prototype-only routes from the rejected baseline.
+- A green test suite on the wrong business baseline is still wrong. Correct source-of-truth selection is a precondition to meaningful GREEN.
+
 ## OpenArt workflow learning
 
 OpenArt connector is available. For video generation:
@@ -212,11 +243,13 @@ Current chosen concept: variant 1 — peaceful premium 10s 1080p 16:9 drone flig
 
 To make future work faster:
 - inspect current state first; other agents/chats may have advanced `main` or Make scenarios
+- inspect existing memory/owners before creating parallel subsystems
 - reuse exact known-good patterns and hashes
 - prefer deterministic guards over repeated AI calls
 - use tiny clean diffs and exact-head PRs
 - separate test harnesses from merge candidates
 - close unsafe broad prototype PRs without merge
+- validate the source-of-truth baseline before spending time making a candidate technically green
 - encode each discovered failure as a regression contract or fail-closed gate
 - treat cost, latency, security and production outcome as first-class evidence fields
 
@@ -224,14 +257,15 @@ To make future work faster:
 
 Before declaring a change complete:
 1. confirm current base/state
-2. reproduce or prove the actual root cause
-3. establish RED where practical
-4. make one minimal change
-5. establish GREEN on exact candidate
-6. verify no unrelated diff/config drift
-7. verify preview/runtime as relevant
-8. promote only exact tested candidate
-9. verify resulting production externally
-10. write outcome, fingerprint, fix and prevention into shared memory
+2. confirm the source-of-truth baseline is the real accepted production/business baseline
+3. reproduce or prove the actual root cause
+4. establish RED where practical
+5. make one minimal change
+6. establish GREEN on exact candidate
+7. verify no unrelated diff/config drift
+8. verify preview/runtime as relevant
+9. promote only exact tested candidate
+10. verify resulting production externally
+11. write outcome, fingerprint, fix and prevention into shared memory
 
 Any future agent that encounters one of the fingerprints or failure modes above should reuse the documented fix/prevention first and only form a new hypothesis when fresh evidence contradicts the existing one.
