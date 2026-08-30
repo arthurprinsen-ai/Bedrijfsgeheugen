@@ -80,3 +80,18 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Rollback:** restore the last-known-good SHA if production smoke/regression or protected metrics regress. No rollback was required.
 - **Shared learning:** ERROR, RECOVERY, IMPROVEMENT and PRODUCTION_PROMOTION were written through BG166; BG166 refreshed BG167 after each write. BG168 routed the material production outcome.
 - **Reusable lesson:** promote only an exact rebased green SHA, verify the exact production deployment after merge, and make mandatory memory/document contracts executable in CI.
+
+## 2026-08-30 21:25 CEST — CONTRACT_CHANGE — Powerhouse chat learning checkpoint
+- **Fingerprint:** `shared-memory|chat-learning|cross-platform-checkpoint-20260830`
+- **Signal:** material Powerhouse engineering knowledge accumulated across Make, Notion, GitHub, Netlify, SEO publishing, native social publishing, analytics, security and cost optimization. Without a repository-level checkpoint, future chats/agents could still repeat already diagnosed failures even though portions were present in runtime or Notion memory.
+- **Impact:** repeated diagnosis, duplicated publishers, credential regressions, unnecessary AI/Make credits, blind retries and false-green deployments.
+- **Root cause/rationale:** runtime learning and Notion state were strong but not every cross-platform lesson had one repository artifact that future code agents could read before work.
+- **Evidence:** Notion Engineering Registry and Direct Knowledge Base contain the 2026-08-30 chat checkpoint; Powerhouse Latest Verified State contains the verified Learning Contract and a blocked BG140 resume record; repository branch `automation/chat-learning-checkpoint-20260830` adds the same reusable engineering truth.
+- **Known failed approaches recorded:** generic BG22 dispatch; AI rewrite of approved copy; plaintext tokens; unsupported `toJSON`; Notion empty-bundle writes; rich-text >2000 single writes; run storms; 429 retry pressure; duplicate publishers; direct Notion array→URN mapping; blind retry after create/verify ambiguity; treating Make `success` as functional success when error handlers ran; unbounded AI context; restart for configuration errors; legacy Buffer IDs sent to native metrics APIs; repeated expensive Gemini generation while GitHub upload transport remained unproven.
+- **Final change:** add `docs/powerhouse-chat-learning-checkpoint-2026-08-30.md` with mandatory preflight, fingerprints, anti-patterns, component contracts, current blocked state and resume instructions; append this ledger record.
+- **Owner:** Knowledge/Governance + all agents.
+- **Regression gate:** existing shared-memory/document contract must remain green; follow-up should add this checkpoint to the mandatory docs contract before promotion if the candidate gate does not already discover it.
+- **Verification:** repository file created on exact candidate branch from main SHA `7ad7a88061422056771a7638ff7d5b7ba6a5d9a1`; Notion copies were already created and marked verified/AI-skill where applicable.
+- **Production SHA/deploy:** not yet production at time of this entry; candidate must pass normal PR/BG169 promotion gates. Do not bypass them for documentation-only urgency.
+- **Rollback/last-known-good:** main SHA `7ad7a88061422056771a7638ff7d5b7ba6a5d9a1` remains last-known-good until candidate promotion.
+- **Reusable lesson:** durable learning requires the same truth to be discoverable by runtime agents, Notion knowledge and repository code agents. A chat summary alone is not an engineering memory system.

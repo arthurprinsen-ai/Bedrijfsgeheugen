@@ -12,6 +12,7 @@ const required = [
   'docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md',
   'docs/superpowers/specs/2026-08-29-production-promotion-guardian-design.md',
   'docs/superpowers/plans/2026-08-29-production-promotion-guardian.md',
+  'docs/powerhouse-chat-learning-checkpoint-2026-08-30.md',
   'config/production-promotion.json',
   'tools/evaluate-production-promotion.mjs'
 ];
@@ -56,6 +57,36 @@ test('customer auth recovery is retained as reusable shared-memory knowledge', a
   assert.match(architecture, /Netlify Identity/);
   assert.match(architecture, /symptoompatch/i);
   assert.match(architecture, /focus/i);
+});
+
+test('Powerhouse chat learning checkpoint preserves cross-platform failure prevention', async () => {
+  const [checkpoint, ledger] = await Promise.all([
+    readFile('docs/powerhouse-chat-learning-checkpoint-2026-08-30.md', 'utf8'),
+    readFile('docs/development-ledger.md', 'utf8')
+  ]);
+
+  for (const token of [
+    'SECRET_LEAK',
+    'IDEMPOTENCY_DUPLICATE',
+    'MAPPING_EXPRESSION_ERROR',
+    'empty Notion search bundle',
+    'scenario `success` with error-handler invocation',
+    'BG171',
+    'BG179',
+    'BG140 Native Instagram Insights',
+    '17841446582493753',
+    'aba20c0cfa734002a24fb6bbb78dc9ca',
+    '2c6ca62e4bec4cf9a205eb54e45f072e',
+    'Create -> GetMedia verify',
+    'without plaintext tokens'
+  ]) {
+    assert.ok(checkpoint.includes(token), `Powerhouse chat learning missing ${token}`);
+  }
+
+  assert.match(ledger, /shared-memory\|chat-learning\|cross-platform-checkpoint-20260830/);
+  assert.match(checkpoint, /A Make execution can report success because an error handler consumed the failure/);
+  assert.match(checkpoint, /Scenario\/build status alone is insufficient/);
+  assert.match(checkpoint, /Current truth precedence/);
 });
 
 test('shared memory workflow protects direct main pushes as well as pull requests', async () => {
