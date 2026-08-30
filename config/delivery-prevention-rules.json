@@ -14,6 +14,11 @@
     {"id":"REQUIRE_AUTHORIZED_CONNECTOR_FOR_REMOTE_WRITES","active":true,"enforcedBy":"remote-write-authorization-contract","scope":"shared"},
     {"id":"REQUIRE_ACTIVE_RULE_FOR_REQUIRED_CHAT_LESSON","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
     {"id":"DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
-    {"id":"REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES","active":true,"enforcedBy":"brain-chat-learning-preflight-plus-candidate-only-manual-write-contract","scope":"shared"}
+    {"id":"REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES","active":true,"enforcedBy":"brain-chat-learning-preflight-plus-candidate-only-manual-write-contract","scope":"shared"},
+    {"id":"REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK","active":true,"enforcedBy":"bg169-execution-readback-contract","scope":"shared"},
+    {"id":"BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE","active":true,"enforcedBy":"currentstate-capacity-gate-plus-production-authority","scope":"automation"},
+    {"id":"OPTIMIZE_SOURCE_CALLS_NOT_ONLY_CLIENT_CACHE","active":true,"enforcedBy":"make-cost-portfolio-plus-source-call-budget","scope":"automation"},
+    {"id":"NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE","active":true,"enforcedBy":"agent-contract-plus-read-only-branch-discovery","scope":"shared"},
+    {"id":"CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST","active":true,"enforcedBy":"chat-learning-continuity-regression","scope":"shared"}
   ]
 }
