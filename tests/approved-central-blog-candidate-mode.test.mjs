@@ -15,8 +15,9 @@ test('approved central blog is candidate-only under BRAIN delivery v2', () => {
   assert.match(text, /gh pr create/);
 });
 
-test('writer hands off a candidate and never mutates main directly', () => {
-  assert.match(text, /Mark queue dispatched after candidate PR handoff/);
+test('candidate handoff does not mark the source queue dispatched before production proof', () => {
+  assert.doesNotMatch(text, /Mark queue dispatched after candidate PR handoff/);
+  assert.doesNotMatch(text, /--mark-dispatched/);
   assert.doesNotMatch(text, /git\s+push\s+origin\s+HEAD:main/);
   assert.doesNotMatch(text, /gh\s+pr\s+merge/);
   assert.match(text, /production_authority=BG169/);
