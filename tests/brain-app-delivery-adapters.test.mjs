@@ -8,6 +8,8 @@ import {
   SUPPORTED_APP_TARGETS,
 } from '../brain/adapters/app-delivery.mjs';
 
+const discardEvidence = async () => {};
+
 const validManifest = {
   contract: 'BRAIN-DELIVERY-v2',
   change_id: 'change-001',
@@ -41,6 +43,7 @@ test('fails closed before remote execution when delivery contract is invalid', a
   const adapter = createAppDeliveryAdapter({
     target: 'notion',
     invoke: async () => { calls += 1; return { status: 200, body: { ok: true } }; },
+    writeEvidence: discardEvidence,
   });
   const result = await adapter.deliver({
     manifest: { ...validManifest, contract: 'legacy-v1' },
@@ -57,6 +60,7 @@ test('fails closed when any required delivery gate is red', async () => {
   const adapter = createAppDeliveryAdapter({
     target: 'dataforseo',
     invoke: async () => { calls += 1; return { status: 200 }; },
+    writeEvidence: discardEvidence,
   });
   const result = await adapter.deliver({
     manifest: { ...validManifest, gates: { ...validManifest.gates, security: false } },
@@ -73,6 +77,7 @@ test('deduplicates repeated deliveries by idempotency key', async () => {
   const adapter = createAppDeliveryAdapter({
     target: 'make',
     invoke: async () => { calls += 1; return { status: 202, body: { accepted: true } }; },
+    writeEvidence: discardEvidence,
   });
   const request = {
     manifest: validManifest,
@@ -117,7 +122,7 @@ test('classifies remote failures deterministically', () => {
 
 test('rejects unknown targets', () => {
   assert.throws(
-    () => createAppDeliveryAdapter({ target: 'random-app', invoke: async () => ({ status: 200 }) }),
+    () => createAppDeliveryAdapter({ target: 'random-app', invoke: async () => ({ status: 200 }), writeEvidence: discardEvidence }),
     /Unsupported app delivery target/,
   );
 });
@@ -129,6 +134,7 @@ test('canonical factory requires a concrete invoker for every external target', 
     make: invoker,
     supabase: invoker,
     dataforseo: invoker,
+    writeEvidence: discardEvidence,
   });
   assert.deepEqual(Object.keys(adapters).sort(), ['dataforseo', 'make', 'notion', 'supabase']);
 });
