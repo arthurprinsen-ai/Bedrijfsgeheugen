@@ -20,6 +20,18 @@ test('writer path policies accept intended files and reject cross-domain drift',
   assert.throws(() => validateWriterPaths('menu-balk-fix', ['index.html', 'package.json']), /UNAPPROVED_WRITER_PATH/);
 });
 
+test('menu writer shadow policy allows only its exact no-op canary evidence shape', () => {
+  assert.equal(validateWriterPaths('menu-balk-fix', ['brain/evidence/writer-canary/menu-balk-fix-33314973402-1.json']).ok, true);
+  assert.throws(
+    () => validateWriterPaths('menu-balk-fix', ['brain/evidence/writer-canary/weekblog-33314973402-1.json']),
+    /UNAPPROVED_WRITER_PATH/,
+  );
+  assert.throws(
+    () => validateWriterPaths('menu-balk-fix', ['brain/evidence/writer-canary/menu-balk-fix-manual.json']),
+    /UNAPPROVED_WRITER_PATH/,
+  );
+});
+
 test('shadow workflow is read-only and only verifies writer candidate PRs', () => {
   const text = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   assert.match(text, /pull_request:/);
