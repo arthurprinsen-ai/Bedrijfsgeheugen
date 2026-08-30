@@ -7,6 +7,7 @@
     "docs/brain/",
     "docs/development-",
     "docs/outcome-obligations.md",
+    "docs/powerhouse-chat-learning-checkpoint-",
     "docs/superpowers/specs/",
     "scripts/brain/",
     "brain/contracts/",
@@ -16,8 +17,7 @@
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
-    "docs/superpowers/plans/",
-    "docs/powerhouse-chat-learning-checkpoint-"
+    "docs/superpowers/plans/"
   ],
   "branchPolicy": {
     "strategy": "conflict-aware-independent-lanes",
