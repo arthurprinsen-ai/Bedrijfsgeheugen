@@ -1,0 +1,47 @@
+{
+  "version": "MAKE-AGENT-RESUME-LEARNING-GUARD-v1",
+  "state": "BLOCKED_PENDING_CALLER_GUARDS_AND_RUNTIME_EVIDENCE",
+  "resumeAllowed": false,
+  "purpose": "Prevent Make team-capacity recovery from automatically re-exposing active PH agents that still invoke BG168 for every AI result, including non-material outcomes.",
+  "confirmedAffectedScenarioIds": [7088558, 7088574, 7088579, 7088656, 7089148],
+  "confirmedAffectedAgents": [
+    "PH Agent 09 - Telemetry Self-Healing v3 stable runner",
+    "PH Agent 11 - QA Regression v3 stable runner",
+    "PH Agent 12 - Knowledge Governance v3 stable runner",
+    "PH Agent 14 - Make Cost Optimizer v3 stable runner",
+    "PH Agent 16 - System Performance Optimizer v3 stable runner"
+  ],
+  "observedTeamState": {
+    "status": "paused",
+    "isActive": true,
+    "meaning": "External/team-capacity suspension is containing execution, but logical activation remains. Pause is not a structural fix."
+  },
+  "requiredCallerTopology": "AI result -> deterministic materiality classification -> branch; NON_MATERIAL returns exact primary result without BG168; MATERIAL may invoke BG168 once and always preserves exact primary result if learning fails.",
+  "invariants": {
+    "nonMaterialOutcomeBG168Calls": 0,
+    "materialOutcomeBG168CallsMax": 1,
+    "learningFailurePreservesPrimaryResult": true,
+    "pausedWithIsActiveTrueCountsAsDisabled": false,
+    "resumeRequiresCallerGuards": true,
+    "resumeRequiresRuntimeEvidence": true,
+    "resumeRequiresBoundedCreditSlope": true,
+    "paidCapacityIncreaseAllowedAutonomously": false,
+    "secretsMayBePersistedInLearningOrRepo": false
+  },
+  "resumeGate": {
+    "requiredBeforeNormalService": [
+      "Inventory all PH-agent BG168 callers and classify each as guarded or explicitly exempt with evidence.",
+      "Migrate the canonical agent template so materiality is decided before paid BG168 invocation.",
+      "Verify NON_MATERIAL produces the exact primary result with zero BG168 calls.",
+      "Verify MATERIAL produces at most one BG168 call and still returns the exact primary result.",
+      "Verify BG168 failure or unavailability never suppresses the primary agent result.",
+      "Verify bounded credits per logical outcome under controlled runtime proof.",
+      "Verify no uncontrolled burst or 429 occurs during staged resume."
+    ],
+    "rollout": "One inactive staging/canary template first, then small-batch agent rollout with exact blueprint readback and runtime evidence; no big-bang reactivation."
+  },
+  "security": {
+    "rule": "Capability-, token-, credential- and secret-like values observed in connected runtime configuration must never be copied into repository artifacts, learning records, logs or user-visible evidence.",
+    "rotation": "Rotation or secret-store migration requires an explicit secure mechanism and authorization; it is not performed autonomously as part of learning retention."
+  }
+}
