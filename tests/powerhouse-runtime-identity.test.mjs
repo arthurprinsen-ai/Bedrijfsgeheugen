@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const registry = JSON.parse(fs.readFileSync('config/powerhouse-runtime-identities.json','utf8'));
+test('runtime identity requires scenario id plus canonical role',()=>{assert.equal(registry.contract,'POWERHOUSE-RUNTIME-IDENTITY-v1');assert.match(registry.identity_rule,/scenario_id \+ canonical_role \+ latest_verified_state/i);for(const item of registry.current){assert.ok(Number.isInteger(item.scenario_id)&&item.scenario_id>0);assert.ok(item.canonical_role)}});
+test('current BG139 is Mission Control by scenario id',()=>{const x=registry.current.filter(i=>i.label==='BG139');assert.equal(x.length,1);assert.equal(x[0].scenario_id,7071153);assert.equal(x[0].canonical_role,'Mission Control API');assert.match(x[0].notes,/namesake history only/i)});
+test('cache ownership and bounded stale contract are explicit',()=>{const c=registry.mission_control_cache_contract;assert.equal(new Set([c.request_owner,c.projection_owner,c.equivalence_owner,c.fallback_owner,c.promotion_owner]).size,5);assert.equal(c.stale_grace_seconds,21600);assert.deepEqual(c.observable_sources,['CACHE_FRESH','CACHE_STALE','MISS']);assert.equal(c.duplicate_cache_stack_forbidden,true);assert.equal(c.new_refresh_owner_requires_overlap_check,true)});
+test('moving main, green-until-done, rate limit and secrets remain guarded',()=>{assert.match(registry.prevention.branch_drift,/Unrelated main drift is not a blocker/i);assert.match(registry.prevention.branch_drift,/changed-path overlap/i);assert.match(registry.prevention.green_until_done,/two identical retries/i);assert.match(registry.prevention.rate_limit,/429/);assert.match(registry.prevention.secrets,/Never place API keys, PATs or tokens/i)});
