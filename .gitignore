@@ -3,3 +3,5 @@ seo-rapport.md
 kennisbank-index.json
 assets/vendor/netlify-identity.mjs
 assets/vendor/gotrue.mjs
+.artifacts/
+node_modules/

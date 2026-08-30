@@ -85,6 +85,20 @@ Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
 
+## Eén parallelle delivery-eenheid
+Backend, website en portaal zijn geen losse producten of releases. Iedere codewijziging loopt via `config/brain-delivery-system.json` en `tools/brain-delivery-system.mjs` als één `BRAIN-DELIVERY-v1` delivery-eenheid.
+
+Verplicht voor iedere huidige en toekomstige agent, workflow en Make-integratie:
+- automatische Brain-membership met `brain.v1`, shared-context read, cost management, security governance en material-outcome writeback;
+- automatische classificatie van iedere gewijzigde route of file naar `backend`, `website`, `portal` of een expliciet genegeerde documentklasse;
+- onbekende actieve scope faalt gesloten en mag niet naar productie;
+- onafhankelijke lanes bouwen en testen gelijktijdig;
+- integratie gebeurt één keer op exact hetzelfde kandidaat-SHA;
+- BG169 blijft de enige productieautoriteit; BG168 routeert de uitkomst en BG167 ververst de gedeelde actuele context;
+- nieuwe Make-scenario's blijven daarnaast automatisch zichtbaar via de dynamische Cost/Brain-componentcatalogus en krijgen vóór activatie een kostenklasse.
+
+Geen agent mag een nieuw backend-, website-, portaal-, workflow- of scenario-onderdeel buiten deze delivery-eenheid live zetten.
+
 ## Kansen actief zien en benutten
 Agents zoeken niet alleen fouten; zij zoeken ook dagelijks aantoonbare kansen op:
 - SEO en zoekvraag;

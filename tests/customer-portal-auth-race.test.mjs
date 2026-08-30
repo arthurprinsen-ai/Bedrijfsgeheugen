@@ -14,7 +14,7 @@ const source = `(function(){
     else { toonPortaal({email:'lokaal'}); }
   });
 
-function toonInlog(s) {
+  function toonInlog(s) {
   var poort = document.getElementById('poort');
 }
 
