@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { classifyMaterialOutcome } from '../brain/guards/material-outcome-classifier.mjs';
 
 test('chat learning completeness addendum retains Make credit-storm recovery contracts', async () => {
   const raw = await readFile('brain/learning/chat-completeness-addendum-2026-08-30.json', 'utf8');
   const addendum = JSON.parse(raw);
 
-  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.3');
+  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.4');
   assert.equal(addendum.completionGate.id, 'chat-learning-completeness-gate-v1');
 
   const fingerprints = new Map(addendum.failurePatterns.map(x => [x.id, x.fingerprint]));
@@ -17,6 +18,7 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   assert.equal(fingerprints.get('CANONICAL_ARTIFACT_REFERENCE_DRIFT'), 'learning|canonical-artifact|reference-path-drift-v1');
   assert.equal(fingerprints.get('LIVE_STRUCTURAL_MIGRATION_PARTIAL_STATE'), 'make|structural-migration|partial-branch-state-under-429-v1');
   assert.equal(fingerprints.get('CREATE_429_AMBIGUOUS_MUTATION'), 'make|scenario-create|429-ambiguous-mutation-v1');
+  assert.equal(fingerprints.get('MAKE_VALIDATOR_WARNING_PATH_INCONSISTENCY'), 'make|validator|required-field-path-warning-inconsistent-with-module-spec-v1');
 
   const credit = addendum.failurePatterns.find(x => x.id === 'CONTROL_PLANE_CREDIT_STORM');
   for (const guard of [
@@ -45,12 +47,36 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   assert.match(ambiguousCreate.requiredAction, /one exact readback/);
   assert.match(ambiguousCreate.regression, /No duplicate staging or production scenario/);
 
+  const warning = addendum.failurePatterns.find(x => x.id === 'MAKE_VALIDATOR_WARNING_PATH_INCONSISTENCY');
+  assert.match(warning.requiredAction, /module_spec/);
+  assert.match(warning.requiredAction, /exact saved module readback/);
+  assert.match(warning.regression, /must not mutate a module into a schema-invalid shape/);
+
+  for (const value of ['OK', 'OK.', 'healthy', 'NO_ACTION', 'no change', 'Geen actie', 'Geen wijzigingen.']) {
+    const result = classifyMaterialOutcome(value);
+    assert.equal(result.isMaterial, false, `${value} must be non-material`);
+    assert.equal(result.answer, String(value).trim());
+  }
+
+  for (const value of [
+    'Reduced duplicate reads by 42%',
+    '429 detected; applied safe rollback',
+    'Potential anomaly requires review',
+    '',
+    'Unknown'
+  ]) {
+    const result = classifyMaterialOutcome(value);
+    assert.equal(result.isMaterial, true, `${value || '<empty>'} must conservatively remain material`);
+  }
+
   assert.equal(addendum.runtimeState.BG167.canonicalRefreshCaller, 'BG166');
   assert.match(addendum.runtimeState.BG167.status, /ENTRY_GUARD_VERIFIED/);
-  assert.match(addendum.runtimeState.BG168.status, /PENDING_CALLER_SIDE_MATERIALITY_BRANCH/);
+  assert.match(addendum.runtimeState.BG168.status, /PENDING_RUNTIME_PROOF/);
   assert.match(addendum.runtimeState.BG168.protectedInvariant, /Primary agent result delivery is independent/);
   assert.match(addendum.runtimeState.PH_AGENT_14_CANARY.status, /ROLLED_BACK_TO_PRE_MIGRATION_GREEN_TOPOLOGY/);
-  assert.match(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.status, /NOT_CREATED_AFTER_429_READBACK/);
+  assert.equal(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.scenarioId, 7165093);
+  assert.match(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.status, /INACTIVE_BLUEPRINT_VALIDATED_RUNTIME_NOT_YET_PROVEN/);
+  assert.match(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.topology, /NON_MATERIAL -> direct Return without BG168/);
 
   for (const path of addendum.canonicalArtifacts) {
     const content = await readFile(path, 'utf8');
@@ -66,6 +92,8 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
     'canonical artifact paths verified by exact readback',
     'optional observability and learning paths cannot own primary business result delivery',
     'multi-step structural migrations are atomic or every intermediate state is independently safe',
-    'ambiguous state-changing connector responses require exact readback before any retry'
+    'ambiguous state-changing connector responses require exact readback before any retry',
+    'contradictory validator warnings are reconciled against authoritative module schema and exact readback before mutation',
+    'shared materiality classification is deterministic, conservative and centrally tested'
   ]) assert.ok(addendum.completionGate.requirements.includes(required), `completion gate missing: ${required}`);
 });
