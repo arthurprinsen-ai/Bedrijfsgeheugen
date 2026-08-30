@@ -1,0 +1,61 @@
+{
+  "version": "MAKE-AGENT-UNCONDITIONAL-BG168-RESUME-HAZARD-v1",
+  "date": "2026-08-31",
+  "fingerprint": "make|agent-template|unconditional-bg168-dispatch-on-resume-v1",
+  "pattern": "paused-isActive-resume-hazard-v1",
+  "severity": "critical",
+  "status": "CONTAINED_BY_TEAM_PAUSE_NOT_STRUCTURALLY_FIXED",
+  "symptom": "Make reports PH agent scenarios as status=paused while they remain logically isActive=true. At least five inspected high-cost agents still route every AI result directly to BG168 before returning the primary result, so recovery of team capacity could restore unnecessary paid learning traffic immediately.",
+  "confirmedAffectedAgents": [
+    {"scenarioId":7088558,"name":"PH Agent 09 - Telemetry Self-Healing v3 stable runner","learningModuleId":7},
+    {"scenarioId":7088574,"name":"PH Agent 11 - QA Regression v3 stable runner","learningModuleId":7},
+    {"scenarioId":7088579,"name":"PH Agent 12 - Knowledge Governance v3 stable runner","learningModuleId":7},
+    {"scenarioId":7088656,"name":"PH Agent 14 - Make Cost Optimizer v3 stable runner","learningModuleId":10},
+    {"scenarioId":7089148,"name":"PH Agent 16 - System Performance Optimizer v3 stable runner","learningModuleId":7}
+  ],
+  "rootCause": "The stable-runner template structurally couples AI completion to optional team-learning dispatch. Materiality is decided only after BG168 has already been invoked, so healthy, no-action or verification-only results can still consume BG168 credits. Team-level pause currently masks rather than removes this topology.",
+  "failedApproaches": [
+    "Treat status=paused as proof the agent is structurally disabled even when isActive=true.",
+    "Rely only on BG168 internal classification to save caller-side invocation cost.",
+    "Put a filter directly on the learning module while leaving primary ReturnData downstream, because non-material outcomes could lose their primary result.",
+    "Reactivate all agents together after capacity recovery and use production traffic as the first runtime proof.",
+    "Reduce useful agent sensing or business functionality globally merely to lower learning cost.",
+    "Persist or repeat secret-like runtime capability values in learning evidence."
+  ],
+  "containment": {
+    "teamCapacityPauseObserved": true,
+    "productionCallersStructurallyFixed": false,
+    "BG168Paused": true,
+    "BG167Paused": true,
+    "BG184Paused": true,
+    "stagingMaterialityCanaryScenarioId": 7165093,
+    "stagingMaterialityCanaryStatus": "paused",
+    "runtimeProofBlockedByCapacity": true
+  },
+  "preventionRules": [
+    "Decide materiality before invoking BG168; internal BG168 classification cannot eliminate invocation cost already incurred.",
+    "Do not treat Make status=paused with isActive=true as a structural deactivation or completed fix.",
+    "Primary business/agent result delivery must be independent from optional learning dispatch.",
+    "NON_MATERIAL outcomes must call BG168 zero times and return the exact original primary result.",
+    "MATERIAL outcomes may call BG168 at most once and must still return the exact original primary result when learning fails.",
+    "Resume from capacity pause in controlled stages after caller guards and runtime evidence, never as a big-bang restoration.",
+    "Inventory every caller before declaring the template fixed; currently only five agents are confirmed by exact blueprint readback.",
+    "Never persist credential-, token- or capability-like runtime values in repository learning, logs or user-visible evidence.",
+    "Do not buy additional paid capacity autonomously to force runtime proof."
+  ],
+  "regressionContract": {
+    "resumeGate": "fail closed while any confirmed high-risk caller lacks caller-side materiality or required runtime evidence",
+    "nonMaterial": "zero BG168 calls and exact primary result",
+    "material": "maximum one BG168 call and exact primary result",
+    "learningUnavailable": "exact primary result remains available",
+    "pauseSemantics": "status=paused plus isActive=true is containment evidence only, never structural-green evidence",
+    "rollout": "staging/canary then small batches with exact readback and bounded credit slope",
+    "security": "learning artifacts contain rules about secrets but never secret values"
+  },
+  "related": [
+    "make|multi-agent-context-learning-credit-storm|2026-08-30-v1",
+    "agent|learning-path|optional-learning-blocks-primary-return-v1",
+    "make|promotion|blueprint-or-ci-green-without-runtime-evidence-v1",
+    "make|capacity|team-paused-operations-or-data-transfer-limit-v1"
+  ]
+}
