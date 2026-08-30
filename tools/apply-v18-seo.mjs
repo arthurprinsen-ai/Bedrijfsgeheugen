@@ -9,6 +9,10 @@ const esc = value => String(value)
   .replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;');
 
+function bodyOf(html) {
+  return (html.match(/<body\b[^>]*>[\s\S]*<\/body>/i) || [''])[0];
+}
+
 function cleanHead(head) {
   return head
     .replace(/<title\b[^>]*>[\s\S]*?<\/title>\s*/gi, '')
@@ -74,9 +78,16 @@ export function applySeo(html) {
   const cleaned = cleanHead(oldHead);
   const newHead = cleaned.replace(/<\/head>/i, `${seoBlock()}\n</head>`);
   const result = html.replace(oldHead, newHead);
-  const oldBody = (html.match(/<body\b[^>]*>[\s\S]*<\/body>/i) || [''])[0];
-  const newBody = (result.match(/<body\b[^>]*>[\s\S]*<\/body>/i) || [''])[0];
-  if (!oldBody || oldBody !== newBody) throw new Error('SEO layer attempted to change visible V18 body');
+  if (!bodyOf(html) || bodyOf(html) !== bodyOf(result)) throw new Error('SEO layer attempted to change visible V18 body');
+  return result;
+}
+
+export function applyPageOverride(html, override) {
+  const before = bodyOf(html);
+  if (!before) throw new Error(`SEO override ${override.route} has no body`);
+  if (!/<title\b[^>]*>[\s\S]*?<\/title>/i.test(html)) throw new Error(`SEO override ${override.route} has no title`);
+  const result = html.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, `<title>${esc(override.title)}</title>`);
+  if (bodyOf(result) !== before) throw new Error(`SEO override ${override.route} changed visible body`);
   return result;
 }
 
@@ -85,4 +96,9 @@ for (const path of ['index.html', 'prototype-v18-stable.html']) {
   await writeFile(path, applySeo(html), 'utf8');
 }
 
-console.log(`Persistent SEO applied to historical V18: ${home.primaryKeyword} -> ${home.canonical}`);
+for (const override of config.pageOverrides || []) {
+  const html = await readFile(override.file, 'utf8');
+  await writeFile(override.file, applyPageOverride(html, override), 'utf8');
+}
+
+console.log(`Persistent SEO applied: homepage + ${(config.pageOverrides || []).length} static override(s)`);
