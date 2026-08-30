@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { createAgentWork } from './agent-work.mjs';
 import { createLearningMemory } from './learning-memory.mjs';
 import { requireRunnableBudgetEnvelope } from '../cost/budget-policy.mjs';
+import { evaluateCompletionReadiness } from '../../tools/delivery-preflight.mjs';
 
 const TRANSITIONS = Object.freeze({
   Assigned:new Set(['Investigating']),
@@ -121,11 +122,20 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     return intake({ ...signal, kind:'Opportunity', priority:opportunityPriority(signal) });
   }
 
-  function transition({ workId, status, ...patch }) {
+  function transition({ workId, status, completionContext, ...patch }) {
     const current = workById.get(workId);
     if (!current) throw new Error('AgentWork not found');
     const allowed = TRANSITIONS[current.status] ?? new Set();
     if (!allowed.has(status)) throw new Error(`invalid AgentWork transition: ${current.status} -> ${status}`);
+
+    if (!TERMINAL.has(current.status) && TERMINAL.has(status)) {
+      const readiness = evaluateCompletionReadiness(completionContext ?? {});
+      if (!readiness.canComplete) {
+        const open = readiness.openObligations.length ? readiness.openObligations.join(', ') : 'completion-context-not-proven';
+        throw new Error(`AgentWork completion readiness blocked: ${open}`);
+      }
+    }
+
     const next = createAgentWork({ ...current, ...patch, status });
     workById.set(workId, next);
     const info = metadata.get(workId);
