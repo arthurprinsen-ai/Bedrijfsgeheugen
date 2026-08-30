@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "type": "POWERHOUSE_CONNECTOR_RUNTIME_LEARNING",
+  "date": "2026-08-30",
+  "fingerprint": "make|notion-custom-post|body-visible-but-not-applied",
+  "symptom": "Make notion:makeApiCall runtime input visibly contains page_size/filter body, but Notion returns the default 100 records and ignores body semantics.",
+  "rootCause": "For the proven data-source query route, an object body is not sufficient evidence that the outgoing Notion request applies the body. The working pattern uses a serialized JSON string, explicit Content-Type application/json, Notion version 2025-09-03, and literal filter_properties[] query parameters.",
+  "failedApproaches": [
+    "URL-encoded filter_properties%5B%5D with old/default Notion version: Invalid request URL.",
+    "Correct literal filter_properties[] and version 2025-09-03 with object body: request succeeds but page_size/filter are ignored; default 100 rows return.",
+    "Treat the Make module input card showing a body object as proof that Notion applied that body."
+  ],
+  "provenFix": "Use serialized JSON string body plus Content-Type: application/json, version 2025-09-03, and literal filter_properties[] in URL. Canary execution 12f5046d574a407ba389ef98f38e935e changed the same BG89 shadow query from 100 rows to exactly 5 with body {page_size:5}.",
+  "regressionContract": [
+    "Verify response semantics, not only module input: requested page_size must equal actual result count when enough rows exist.",
+    "Eligibility filters are only certified when forbidden record classes are absent from returned rows.",
+    "A successful HTTP/Make execution with ignored request semantics is RED, not GREEN.",
+    "Do not promote BG89 shadow until bounded count and all eligibility exclusions are runtime-proven."
+  ],
+  "relatedScenarios": {
+    "shadow": 7164777,
+    "production_bg89": 7036518,
+    "working_reference_bg84": 7163276,
+    "working_reference_bg98": 7053689
+  }
+}
