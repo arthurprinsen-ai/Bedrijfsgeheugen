@@ -27,7 +27,6 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
-  actions: write
 
 jobs:
   controle:
@@ -107,7 +106,6 @@ jobs:
           git push origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
-        id: candidate
         if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -115,43 +113,16 @@ jobs:
           BASE_SHA: ${{ steps.base.outputs.sha }}
         run: |
           set -euo pipefail
-          pr_number=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
-          if [ -z "$pr_number" ]; then
-            pr_url=$(gh pr create \
-              --base main \
-              --head "$CANDIDATE_BRANCH" \
-              --title "SEO candidate $GITHUB_RUN_ID" \
-              --body "BRAIN-DELIVERY-v2 candidate uit seo-controle. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit.")
-            pr_number="${pr_url##*/}"
-          else
-            echo "Candidate PR bestaat al: #$pr_number"
+          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Candidate PR bestaat al: #$existing"
+            exit 0
           fi
-          pr_base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.base.sha')
-          pr_head_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.head.sha')
-          pr_head_ref=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.head.ref')
-          [ "$pr_head_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$pr_head_ref"; exit 1; }
-          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
-          echo "base_sha=$pr_base_sha" >> "$GITHUB_OUTPUT"
-          echo "head_sha=$pr_head_sha" >> "$GITHUB_OUTPUT"
-          echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
-
-      - name: Dispatch read-only shadow verification
-        if: steps.commit.outputs.changed == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ steps.candidate.outputs.pr_number }}
-          BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
-          HEAD_SHA: ${{ steps.candidate.outputs.head_sha }}
-          CANDIDATE_BRANCH: ${{ steps.candidate.outputs.candidate_branch }}
-        run: |
-          set -euo pipefail
-          gh workflow run repo-writer-candidate-shadow.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref main \
-            -f pr_number="$PR_NUMBER" \
-            -f base_sha="$BASE_SHA" \
-            -f head_sha="$HEAD_SHA" \
-            -f candidate_branch="$CANDIDATE_BRANCH"
+          gh pr create \
+            --base main \
+            --head "$CANDIDATE_BRANCH" \
+            --title "SEO candidate $GITHUB_RUN_ID" \
+            --body "BRAIN-DELIVERY-v2 candidate uit seo-controle. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit."
 
       - name: Uitkomst in de samenvatting
         run: cat uitkomst.txt >> $GITHUB_STEP_SUMMARY
