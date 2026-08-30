@@ -78,13 +78,14 @@ test('Powerhouse chat learning checkpoint preserves cross-platform failure preve
     'aba20c0cfa734002a24fb6bbb78dc9ca',
     '2c6ca62e4bec4cf9a205eb54e45f072e',
     'Create -> GetMedia verify',
-    'No plaintext token workaround'
+    'without plaintext tokens'
   ]) {
     assert.ok(checkpoint.includes(token), `Powerhouse chat learning missing ${token}`);
   }
 
   assert.match(ledger, /shared-memory\|chat-learning\|cross-platform-checkpoint-20260830/);
-  assert.match(checkpoint, /scenario `success`[^\n]{0,120}insufficient|scenario `success`[^\n]{0,120}error handler/i);
+  assert.match(checkpoint, /A Make execution can report success because an error handler consumed the failure/);
+  assert.match(checkpoint, /Scenario\/build status alone is insufficient/);
   assert.match(checkpoint, /Current truth precedence/);
 });
 
