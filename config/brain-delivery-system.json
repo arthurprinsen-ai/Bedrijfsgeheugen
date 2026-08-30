@@ -9,8 +9,6 @@
     "docs/outcome-obligations.md",
     "docs/superpowers/specs/",
     "scripts/brain/",
-    "scripts/ci/repo-writer-",
-    "tests/repo-writer-",
     "brain/contracts/",
     "brain/production/",
     "tools/brain-delivery-system.mjs",
@@ -32,7 +30,7 @@
   "conflictContracts": [
     {
       "id": "delivery-control-plane",
-      "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml", "scripts/ci/repo-writer-", "tests/repo-writer-", "docs/superpowers/specs/"]
+      "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml", "docs/superpowers/specs/"]
     },
     {
       "id": "brain-governance",
@@ -63,7 +61,7 @@
     {
       "id": "backend",
       "owner": "agent-integration-make",
-      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "supabase/", "tests/supabase-", "tests/brain-"],
+      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tests/supabase-", "tests/brain-", "tests/repo-writer-"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
