@@ -1,0 +1,88 @@
+{
+  "version": "CHAT-LEARNING-COMPLETENESS-GUARD-v1",
+  "failClosed": true,
+  "purpose": "Voorkom dat materiële technische of operationele learnings alleen in conversatietekst blijven en voorkom herhaling van bekende fouten door verplichte shared-memory writeback en regressieguards.",
+  "requiredCanonicalSources": [
+    "AGENTS.md",
+    "config/brain-chat-learning-contract.json",
+    "config/browser-evidence-guard-contract.json",
+    "docs/development-browser-evidence-candidate-chrome.md",
+    "docs/development-ledger.md"
+  ],
+  "completionPolicy": {
+    "blockIfMaterialLearningOnlyInChat": true,
+    "requirePersistentSharedMemoryWriteback": true,
+    "requireRegressionGuardWhereFeasible": true,
+    "requireExactEvidenceForProvenStatus": true,
+    "documentationAloneMayReach": "MEMORY",
+    "machineEnforcedValidatorRequiredFor": "GUARDED",
+    "intendedRuntimeEvidenceRequiredFor": "PROVEN"
+  },
+  "requiredLearningFields": [
+    "fingerprint",
+    "symptom",
+    "rootCause",
+    "failedApproach",
+    "fix",
+    "preventionRule",
+    "regressionContract",
+    "evidence",
+    "owner",
+    "status"
+  ],
+  "retryPolicy": {
+    "maxIdenticalRetriesWithoutNewEvidence": 2,
+    "blockKnownFailedApproachWithoutNewEvidence": true,
+    "requireNewHypothesisAfterLimit": true,
+    "readCurrentStateBeforeRetryingAmbiguousMutation": true
+  },
+  "connectorMutationSafety": {
+    "verifyExactMutationToolBeforeWrite": true,
+    "noProbeMutations": true,
+    "requireReadbackAfterMutation": true,
+    "recordUnexpectedSideEffectsAsLearning": true,
+    "preferReadOnlyDiscoveryForCapabilities": true,
+    "doNotCreateTemporaryPersistentArtifactsForSchemaDiscovery": true,
+    "cleanupRequiresExplicitlySupportedDeleteOrArchiveAction": true,
+    "unknownMutationSemanticsAction": "FAIL_CLOSED"
+  },
+  "operatorInputSafety": {
+    "treatRepeatedCopyPasteErrorsAsAutomationRequirements": true,
+    "preferSingleLineCommandsWherePossible": true,
+    "neverEmbedMarkdownLinksInsideShellValues": true,
+    "validatorsMustRejectMalformedExternalIdentifiers": true
+  },
+  "runtimeEvidencePolicy": {
+    "technicalGreenDoesNotEqualProductWorking": true,
+    "browserCollectorErrorDoesNotProveProductFailure": true,
+    "collectorFailureCannotProducePass": true,
+    "exactRuntimeIdentityRequired": true,
+    "productWorkingRequiresHumanVisibleOutcomeEvidence": true
+  },
+  "knownFailureFingerprints": [
+    {
+      "fingerprint": "connector|mutation|probe-created-unwanted-artifacts",
+      "symptom": "Een capability- of schema-probe maakt onbedoeld persistente objecten aan in een externe connector, zoals tijdelijke Notion-databases.",
+      "rootCause": "Een muterende create-actie werd gebruikt om capability/schema te ontdekken in plaats van read-only tool discovery en contractinspectie.",
+      "failedApproach": "Gebruik een muterende create-actie als capability-probe of schema-experiment.",
+      "fix": "Stop verdere mutaties, inventariseer de onverwachte side-effects, gebruik read-only discovery en alleen een expliciet ondersteunde cleanup-route.",
+      "preventionRule": "Capability discovery is read-only; mutations happen only through a confirmed action/schema and are followed by readback.",
+      "regressionContract": "Connector mutation tests require read-only discovery, confirmed write schema and post-write readback.",
+      "evidence": "2026-08-30 chat: vier lege tijdelijke Notion-databases ontstonden tijdens fout gerouteerde muterende discovery.",
+      "owner": "agent-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "learning|completion|material-learning-only-in-chat",
+      "symptom": "Een fout, root cause, fix of preventieregel is besproken maar nog niet persistently gedeeld met toekomstige agents.",
+      "rootCause": "Conversatie werd behandeld als voldoende operationeel geheugen.",
+      "failedApproach": "Een chat afronden met alleen een samenvatting zonder canonical writeback of regressieguard.",
+      "fix": "Schrijf materiële learning naar canonical shared memory en voeg waar haalbaar een validator/regressietest toe vóór completion.",
+      "preventionRule": "Geen completion zolang materiële learning alleen in chat bestaat.",
+      "regressionContract": "brain-chat-learning-completeness.test.mjs moet de completion policy afdwingen.",
+      "evidence": "BRAIN-CHAT-LEARNING-v1 en BROWSER-EVIDENCE-GUARD-v1 zijn bestaande canonical sources en worden door deze guard verplicht gekoppeld.",
+      "owner": "agent-reliability",
+      "status": "GUARDED"
+    }
+  ]
+}
