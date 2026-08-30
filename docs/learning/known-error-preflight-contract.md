@@ -66,6 +66,19 @@ If an equivalent canonical capability exists, creation is blocked unless there i
 
 Production example: canonical `BG 201 - Radar Heartbeat Stale Sensor v1` is Make scenario `7164254`. Duplicate scenario `7164500` was retired and must not be reactivated.
 
+## Repository mutation governance
+
+### `repository|manual-connector-write|default-main-bypass`
+Symptom: a manual GitHub connector write can modify the repository default branch when `branch` is omitted, even while the intended delivery model requires candidate → tests → promotion.
+
+Root cause: connector authorization proves permission to write but does not prove governed delivery; native GitHub main protection is a separate external control and may be absent.
+
+Blocked approach: never use `create_file`, `update_file` or `delete_file` for a material change with branch omitted or `branch=main`, then treat a technically successful write or later CI on main as equivalent to candidate evidence.
+
+Required prevention: create a non-main candidate branch from current main before the first material repository write, pass that branch explicitly on every connector mutation, bind RED/GREEN and integration evidence to the exact candidate SHA, and use only the governed promotion authority to move accepted work to main.
+
+Evidence rule: governed repository delivery requires an explicit candidate branch, exact tested candidate SHA and authorized promotion/readback. Connector-write success alone is never sufficient production evidence.
+
 ## Incident state semantics
 
 ### `incident-open-selection-semantic-mismatch-v1`
