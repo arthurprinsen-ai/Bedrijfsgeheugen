@@ -44,6 +44,68 @@
     "external_signal",
     "agent_task"
   ],
+  "registeredObligations": [
+    {
+      "id": "cost-policy-10000-monthly",
+      "domain": "cost",
+      "expected": "Every optional Make scenario and Brain agent remains inside the shared 10000-credit monthly envelope.",
+      "dueAt": "continuous_with_daily_recalculation",
+      "ownerAgent": "agent-cost",
+      "evidencePolicy": "Current budget envelope, period usage, remaining credits and run decision are present in the canonical cost projection.",
+      "idempotencyKey": "cost-policy|calendar-month|budget-version",
+      "recoveryPolicy": "Defer optional work, preserve protected interrupts and re-evaluate after the next verified cost snapshot."
+    },
+    {
+      "id": "cost-ledger-all-scenarios-daily",
+      "domain": "cost",
+      "expected": "Every discovered Make scenario and registered Brain agent is classified and represented in the daily normalized cost ledger.",
+      "dueAt": "daily_after_inventory_refresh",
+      "ownerAgent": "agent-cost",
+      "evidencePolicy": "The catalog contains every current inventory key once and unknown optional components are BUDGET_DEFERRED.",
+      "idempotencyKey": "cost-ledger|component-key|snapshot-fingerprint",
+      "recoveryPolicy": "Refresh inventory, deduplicate by component key and quarantine invalid or contradictory metering."
+    },
+    {
+      "id": "brain-budget-writeback",
+      "domain": "data_sync",
+      "expected": "Every material budget decision and verified optimization outcome is routed through BG168 and visible in BG167.",
+      "dueAt": "after_each_material_cost_decision",
+      "ownerAgent": "agent-cost",
+      "evidencePolicy": "brain.v1 event includes trace, correlation, fingerprint, evidence and protected metrics; BG167 confirms visibility.",
+      "idempotencyKey": "brain-cost-event|fingerprint|trace-id",
+      "recoveryPolicy": "Retry routing at most twice per hypothesis, then retain locally verified evidence and resume through the shared-memory recovery path."
+    },
+    {
+      "id": "internal-dashboard-authz",
+      "domain": "security",
+      "expected": "The cost dashboard and API remain private, read-only and fail closed for anonymous or unauthorized users.",
+      "dueAt": "every_request_and_every_deploy",
+      "ownerAgent": "agent-security",
+      "evidencePolicy": "Anonymous receives 401, wrong role receives 403, authorized app_metadata role receives sanitized aggregate data only.",
+      "idempotencyKey": "dashboard-authz|deploy-sha|security-policy-version",
+      "recoveryPolicy": "Block access and rollback the candidate if authorization, no-store, CSP, noindex or data-minimization checks fail."
+    },
+    {
+      "id": "internal-dashboard-freshness",
+      "domain": "monitoring",
+      "expected": "The dashboard uses the newest verified canonical BG159 or strongly consistent projection without exposing raw prompts, CRM payloads or secrets.",
+      "dueAt": "daily_after_bg159_snapshot",
+      "ownerAgent": "agent-data-quality",
+      "evidencePolicy": "Projection exposes source timestamp and fingerprint and selects the newest valid aggregate source.",
+      "idempotencyKey": "dashboard-projection|snapshot-fingerprint",
+      "recoveryPolicy": "Keep the last verified projection, mark freshness visibly and reject malformed or untrusted records."
+    },
+    {
+      "id": "production-promotion-dashboard",
+      "domain": "deploy",
+      "expected": "A green dashboard candidate is promoted only through BG169 and verified on the exact production SHA.",
+      "dueAt": "after_green_candidate_acceptance",
+      "ownerAgent": "Powerhouse Production Promotion Guardian",
+      "evidencePolicy": "Exact candidate SHA, CI, production deploy identity, anonymous-denial smoke and protected regression checks are green.",
+      "idempotencyKey": "dashboard-promotion|candidate-sha",
+      "recoveryPolicy": "Rollback to the last-known-good production tree when an exact-SHA or protected-metric check regresses."
+    }
+  ],
   "productionPromotion": {
     "ownerAgent": "Powerhouse Production Promotion Guardian",
     "policy": "config/production-promotion.json",

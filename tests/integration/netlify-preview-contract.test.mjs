@@ -4,9 +4,13 @@ import { readFile } from 'node:fs/promises';
 
 const config = await readFile('netlify.toml', 'utf8');
 
-test('deploy previews compose component homepage without changing production build command', () => {
-  assert.match(config, /\[build\][\s\S]*command\s*=\s*"node tools\/bouw-sitemap\.mjs && node tools\/bouw-kennisindex\.mjs"/);
-  assert.match(config, /\[context\.deploy-preview\]/);
-  assert.match(config, /node tools\/compose-home-migration\.mjs \/tmp\/component-index\.html/);
-  assert.match(config, /cp \/tmp\/component-index\.html index\.html/);
+test('deploy previews run the exact accepted V18 production build', () => {
+  const acceptedBuild = 'node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs';
+  const commandLine = `command = "${acceptedBuild}"`;
+  const productionBlock = config.match(/\[build\]\n([\s\S]*?)(?=\n\[)/)?.[1] ?? '';
+  const previewBlock = config.match(/\[context\.deploy-preview\]\n([\s\S]*?)(?=\n\[)/)?.[1] ?? '';
+
+  assert.ok(productionBlock.includes(commandLine));
+  assert.ok(previewBlock.includes(commandLine));
+  assert.doesNotMatch(config, /compose-home-migration\.mjs/);
 });

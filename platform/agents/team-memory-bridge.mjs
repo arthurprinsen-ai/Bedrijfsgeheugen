@@ -1,4 +1,5 @@
 import { validateLearningEvent } from '../../scripts/team-memory/validate-event.mjs';
+import { toBrainCostEvent } from '../cost/brain-cost-events.mjs';
 
 const MATERIAL_TYPES = new Set(['ERROR','RECOVERY','IMPROVEMENT','OPPORTUNITY','EXPERIMENT_RESULT','CONTRACT_CHANGE','PRODUCTION_PROMOTION','PRODUCTION_ROLLBACK']);
 
@@ -16,6 +17,13 @@ function verified(value) {
 }
 
 export function createTeamMemoryBridge() {
+  function toCostOutcome(input) {
+    const event = toBrainCostEvent(input);
+    const validation = validateLearningEvent(event);
+    if (!validation.valid) throw new Error(`invalid Brain cost event: ${validation.errors.join('; ')}`);
+    return event;
+  }
+
   function toMaterialOutcome(input) {
     if (!MATERIAL_TYPES.has(input?.outcomeType)) throw new TypeError('unsupported material outcome type');
     if (!input?.tenantId) throw new TypeError('tenantId is required');
@@ -73,5 +81,5 @@ export function createTeamMemoryBridge() {
       .filter(candidate => candidate.fingerprint && candidate.lesson));
   }
 
-  return Object.freeze({ toMaterialOutcome, fromSharedContext });
+  return Object.freeze({ toMaterialOutcome, toCostOutcome, fromSharedContext });
 }

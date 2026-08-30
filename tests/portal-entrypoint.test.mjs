@@ -5,8 +5,11 @@ import { readFile } from 'node:fs/promises';
 const redirects=await readFile(new URL('../_redirects',import.meta.url),'utf8');
 const index=await readFile(new URL('../portal/index.html',import.meta.url),'utf8');
 
-test('customer portal entrypoints redirect temporarily to the new portal',()=>{
- assert.match(redirects,/^\/klantportaal\s+\/portal\/\s+302!$/m);
+test('customer portal entrypoints preserve explicit demos and route real customers to the new portal',()=>{
+ assert.match(redirects,/^\/klantportaal\s+klant=demo1\s+\/klantportaal-demo\.html\s+200!$/m);
+ assert.match(redirects,/^\/klantportaal\s+klant=demoAI\s+\/portal\/\s+200!$/m);
+ assert.match(redirects,/^\/klantportaal\s+klant=:klant\s+\/portal\/\s+302!$/m);
+ assert.match(redirects,/^\/klantportaal\s+\/klantportaal-demo\.html\s+200!$/m);
  assert.match(redirects,/^\/portaal\s+\/portal\/\s+302!$/m);
  assert.match(redirects,/^\/portaal\.html\s+\/portal\/\s+302!$/m);
 });

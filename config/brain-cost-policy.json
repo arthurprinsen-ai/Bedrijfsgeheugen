@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "monthlyLimitCredits": 10000,
+  "timezone": "Europe/Amsterdam",
+  "allocations": {
+    "production_core": 4500,
+    "publishing_sync": 2000,
+    "commercial": 1500,
+    "shared_memory_control": 800,
+    "research_creative": 700,
+    "emergency_reserve": 500
+  },
+  "states": {
+    "greenBelow": 0.70,
+    "orangeBelow": 0.90,
+    "redBelow": 1.00
+  },
+  "unknownComponentDecision": "BUDGET_DEFERRED",
+  "maxProductionExperimentsPerDay": 1,
+  "maxIdenticalRetriesPerHypothesis": 2
+}

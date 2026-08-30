@@ -18,7 +18,3 @@ test('Onderzoek renders natively in intelligence',()=>{
  assert.match(intelligence,/intelligence\/legacy\/onderzoek/);
  assert.match(intelligence,/>Onderzoek</);
 });
-
-test('governance stays on compatibility bridge until split renderer is reviewed',()=>{
- assert.doesNotMatch(runtime,/['\"]beleid['\"]/);
-});

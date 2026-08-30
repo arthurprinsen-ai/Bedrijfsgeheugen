@@ -15,7 +15,7 @@ const OVERSLAAN = new Set(['404.html', 'index-oud.html', 'klantportaal.html',
 function paginas(map = '.', diep = 0) {
   const uit = [];
   for (const naam of readdirSync(map)) {
-    if (naam.startsWith('.') || naam === 'node_modules' || naam === 'assets' ||
+    if (naam.startsWith('.') || naam === 'node_modules' || naam === 'assets' || naam === 'intern' ||
         naam === 'tools' || naam === 'netlify') continue;
     const pad = join(map, naam);
     const st = statSync(pad);

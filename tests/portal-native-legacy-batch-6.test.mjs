@@ -13,7 +13,7 @@ for(const id of ['canvassen','dd','eindconclusie']){
 
 test('Canvassen renders natively in company',()=>{
  assert.match(company,/company\/legacy\/canvassen/);
- assert.match(company,/>Canvassen</);
+ assert.match(company,/pageHead\('Canvassen'/);
 });
 
 test('Due diligence & exit renders natively in company',()=>{

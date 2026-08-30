@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Powerhouse kosten | Bedrijfsgeheugen</title>
+  <link rel="stylesheet" href="/assets/css/powerhouse-kosten.css">
+  <script type="module" src="/assets/js/powerhouse-kosten.mjs"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Bedrijfsgeheugen Brain</p>
+      <h1>Powerhouse kosten</h1>
+    </div>
+    <div class="freshness" aria-live="polite">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="freshness">Laden…</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="budget-grid" aria-labelledby="budget-title">
+      <h2 id="budget-title" class="section-title">Budget nu</h2>
+      <article class="metric"><span>Maandlimiet</span><strong id="monthly-limit">—</strong></article>
+      <article class="metric"><span>Verbruikt</span><strong id="used-credits">—</strong></article>
+      <article class="metric"><span>Resterend</span><strong id="remaining-credits">—</strong></article>
+      <article class="metric"><span>Vandaag toegestaan</span><strong id="daily-allowance">—</strong></article>
+      <article class="metric metric-state"><span>Budgetstatus</span><strong id="budget-state">—</strong></article>
+    </section>
+
+    <section class="panel" aria-labelledby="components-title">
+      <div class="panel-heading">
+        <div><p class="eyebrow">Automatisch compleet</p><h2 id="components-title">Alle scenario’s en agents</h2></div>
+        <span class="count" id="component-count">0</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Onderdeel</th><th>Type</th><th>Klasse</th><th>Credits vandaag</th><th>Per uitkomst</th><th>Beslissing</th></tr></thead>
+          <tbody id="components-body"></tbody>
+        </table>
+      </div>
+      <p class="empty" id="components-empty">Nog geen kostensnapshot beschikbaar.</p>
+    </section>
+
+    <div class="split">
+      <section class="panel" aria-labelledby="consumers-title">
+        <div class="panel-heading"><h2 id="consumers-title">Grootste verbruikers</h2></div>
+        <ol class="ranked-list" id="consumers-list"></ol>
+        <p class="empty" id="consumers-empty">Geen verbruik gemeten.</p>
+      </section>
+      <section class="panel" aria-labelledby="waste-title">
+        <div class="panel-heading"><h2 id="waste-title">Verspillingssignalen</h2></div>
+        <ul class="signal-list" id="waste-list"></ul>
+        <p class="empty" id="waste-empty">Geen actuele signalen.</p>
+      </section>
+    </div>
+
+    <div class="split">
+      <section class="panel" aria-labelledby="savings-title">
+        <div class="panel-heading"><h2 id="savings-title">Geverifieerde besparing</h2></div>
+        <ul class="signal-list" id="savings-list"></ul>
+        <p class="empty" id="savings-empty">Nog geen vergelijkbare uitkomst vastgelegd.</p>
+      </section>
+      <section class="panel" aria-labelledby="deferred-title">
+        <div class="panel-heading"><h2 id="deferred-title">Uitgesteld door budget</h2></div>
+        <ul class="signal-list" id="deferred-list"></ul>
+        <p class="empty" id="deferred-empty">Geen werk uitgesteld.</p>
+      </section>
+    </div>
+
+    <section class="contract" aria-labelledby="contract-title">
+      <h2 id="contract-title">Gedeeld geheugen</h2>
+      <dl><div><dt>Teamcontract</dt><dd id="team-contract">—</dd></div><div><dt>BG167-watermerk</dt><dd id="watermark">—</dd></div><div><dt>Snapshot</dt><dd id="snapshot">—</dd></div></dl>
+    </section>
+
+    <p class="error" id="error" role="alert" hidden></p>
+  </main>
+</body>
+</html>
