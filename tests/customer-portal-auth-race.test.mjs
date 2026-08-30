@@ -22,6 +22,17 @@ const source = `(function(){
   .then(function (sessie) { return haalOfferte(sessie.access_token, s).then(function (k) { bewaar(s, k, sessie.access_token); }); })
         .then(function () { location.reload(); })
 
+    var heeft = false;
+    try { heeft = !!sessionStorage.getItem(BEWAAR + s); } catch (e) {}
+
+    if (heeft) {
+      document.querySelectorAll('[aria-label="Uitloggen"]').forEach(function (b) {
+        b.addEventListener('click', wissen, true);
+      });
+      verversen(s);
+      return;
+    }
+
     wissen();
     toonInlog(s);
 })();`;
@@ -50,7 +61,12 @@ test('customer auth persists and refreshes before showing login again', () => {
   assert.match(html, /AUTH_STORE\s*=\s*'bg_customer_auth'/);
   assert.match(html, /localStorage\.setItem\(AUTH_STORE, JSON\.stringify\(sessie\)\)/);
   assert.match(html, /grant_type=refresh_token/);
-  assert.match(html, /herstelAuth\(s\)\.catch\(function\(\)\{ toonInlog\(s\); \}\)/);
+});
+
+test('real customer start path has one auth authority and never calls the destructive legacy refresh loop', () => {
+  const html = repairCustomerPortalAuth(source);
+  assert.match(html, /herstelAuth\(s\)\.catch\(function\(\)\{ wissen\(\); toonInlog\(s\); \}\)/);
+  assert.doesNotMatch(html, /if \(heeft\)[\s\S]*?verversen\(s\)/);
 });
 
 test('iOS in-app browser gets a first-party cookie fallback when localStorage is not retained', () => {
