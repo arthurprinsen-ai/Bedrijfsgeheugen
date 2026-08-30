@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
   actions: write
 
 jobs:
@@ -177,3 +178,88 @@ jobs:
         run: |
           set -euo pipefail
           gh workflow run weekblog.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
+
+  handoff-shadow-after-writer:
+    needs:
+      - dispatch-menu-balk-candidate
+      - dispatch-regulation-candidate
+      - dispatch-seo-candidate
+      - dispatch-paginacontrole-candidate
+      - dispatch-approved-central-blog-candidate
+      - dispatch-blog-bijwerken-candidate
+      - dispatch-weekblog-candidate
+    if: >-
+      always() && github.event.pull_request.head.repo.full_name == github.repository &&
+      (startsWith(github.head_ref, 'verify/paginacontrole-') ||
+       startsWith(github.head_ref, 'verify/regelgeving-bijwerken-') ||
+       startsWith(github.head_ref, 'verify/seo-controle-') ||
+       startsWith(github.head_ref, 'verify/weekblog-'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
+      VERIFY_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Resolve exact writer candidate PR
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$VERIFY_REF" in
+            verify/paginacontrole-*) WRITER='paginacontrole' ;;
+            verify/regelgeving-bijwerken-*) WRITER='regelgeving-bijwerken' ;;
+            verify/seo-controle-*) WRITER='seo-controle' ;;
+            verify/weekblog-*) WRITER='weekblog' ;;
+            *) echo "::error::UNSUPPORTED_VERIFY_REF:$VERIFY_REF"; exit 1 ;;
+          esac
+          echo "writer=$WRITER" >> "$GITHUB_OUTPUT"
+
+          PR_NUMBER=""
+          for attempt in $(seq 1 12); do
+            matches="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --limit 100 --json number,headRefName,body | jq -r --arg prefix "writer/$WRITER/" --arg verify "$VERIFY_SHA" '.[] | select(.headRefName | startswith($prefix)) | select((.body // "") | contains($verify)) | .number')"
+            count="$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')"
+            if [ "$count" -gt 1 ]; then
+              echo "::error::AMBIGUOUS_WRITER_PR:$WRITER:$VERIFY_SHA:$matches"
+              exit 1
+            fi
+            if [ "$count" -eq 1 ]; then
+              PR_NUMBER="$(printf '%s\n' "$matches" | sed '/^$/d')"
+              break
+            fi
+            sleep 5
+          done
+          if [ -z "$PR_NUMBER" ]; then
+            echo "::error::WRITER_PR_NOT_FOUND:$WRITER:$VERIFY_SHA"
+            exit 1
+          fi
+
+          PR_BASE_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.base.sha')"
+          PR_HEAD_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+          PR_HEAD_REF="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.ref')"
+          if [[ "$PR_HEAD_REF" != "writer/$WRITER/"* ]]; then
+            echo "::error::WRITER_PR_HEAD_REF_DRIFT:$WRITER:$PR_HEAD_REF"
+            exit 1
+          fi
+
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$PR_BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$PR_HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$PR_HEAD_REF" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch immutable read-only shadow
+        shell: bash
+        env:
+          PR_NUMBER: ${{ steps.candidate.outputs.pr_number }}
+          PR_BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
+          PR_HEAD_SHA: ${{ steps.candidate.outputs.head_sha }}
+          PR_HEAD_REF: ${{ steps.candidate.outputs.head_ref }}
+        run: |
+          set -euo pipefail
+          gh workflow run repo-writer-candidate-shadow.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$PR_BASE_SHA" \
+            -f head_sha="$PR_HEAD_SHA" \
+            -f candidate_branch="$PR_HEAD_REF"
