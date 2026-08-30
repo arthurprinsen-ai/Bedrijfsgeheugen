@@ -12,14 +12,26 @@ function matches(path, patterns = []) {
   return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern));
 }
 
-export function evaluateBranchDrift({ featurePaths = [], mainDriftPaths = [], mergeable = true } = {}) {
+export function deriveConflictContracts(paths = [], policy = {}) {
+  const changed = unique(paths.map(value => String(value).trim()).filter(Boolean));
+  return unique((policy.conflictContracts || [])
+    .filter(contract => changed.some(path => matches(path, contract.paths || [])))
+    .map(contract => String(contract.id || '').trim())
+    .filter(Boolean))
+    .sort();
+}
+
+export function evaluateBranchDrift({ featurePaths = [], mainDriftPaths = [], featureContracts = [], mainDriftContracts = [], mergeable = true } = {}) {
   const feature = unique(featurePaths.map(value => String(value).trim()).filter(Boolean)).sort();
   const drift = unique(mainDriftPaths.map(value => String(value).trim()).filter(Boolean)).sort();
   const driftSet = new Set(drift);
   const overlap = feature.filter(path => driftSet.has(path));
-  if (!mergeable) return Object.freeze({ action:'SYNC_REQUIRED', reason:'merge-conflict', overlap:Object.freeze(overlap) });
-  if (overlap.length) return Object.freeze({ action:'SYNC_REQUIRED', reason:'changed-path-overlap', overlap:Object.freeze(overlap) });
-  return Object.freeze({ action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:Object.freeze([]) });
+  const featureContractSet = new Set(unique(featureContracts.map(value => String(value).trim()).filter(Boolean)));
+  const contractOverlap = unique(mainDriftContracts.map(value => String(value).trim()).filter(value => value && featureContractSet.has(value))).sort();
+  if (!mergeable) return Object.freeze({ action:'SYNC_REQUIRED', reason:'merge-conflict', overlap:Object.freeze(overlap), contractOverlap:Object.freeze(contractOverlap) });
+  if (overlap.length) return Object.freeze({ action:'SYNC_REQUIRED', reason:'changed-path-overlap', overlap:Object.freeze(overlap), contractOverlap:Object.freeze(contractOverlap) });
+  if (contractOverlap.length) return Object.freeze({ action:'SYNC_REQUIRED', reason:'declared-contract-overlap', overlap:Object.freeze([]), contractOverlap:Object.freeze(contractOverlap) });
+  return Object.freeze({ action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:Object.freeze([]), contractOverlap:Object.freeze([]) });
 }
 
 export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
@@ -53,6 +65,7 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
     traceId: `delivery|${sha.slice(0, 12)}`,
     headSha: sha,
     changedPaths: Object.freeze(paths),
+    conflictContracts: Object.freeze(deriveConflictContracts(paths, policy)),
     ignoredPaths: Object.freeze(ignored),
     branchPolicy: Object.freeze({ ...policy.branchPolicy }),
     registration: Object.freeze({ ...(policy.registration || { required:false, autoDiscover:false }) }),
@@ -105,12 +118,20 @@ async function repositoryMembership() {
   return discoverBrainMembership({ registeredComponents:registry.components, agents:DEFAULT_AGENT_TEAM, workflows:workflowNames });
 }
 
+function argValue(args, name, fallback = '') {
+  const index = args.indexOf(name);
+  return index >= 0 ? args[index + 1] : fallback;
+}
+
+function gitDiffNames(range) {
+  return execFileSync('git', ['diff', '--name-only', range], { encoding:'utf8' }).split(/\r?\n/).filter(Boolean);
+}
+
 async function main() {
   const [command = 'plan', ...args] = process.argv.slice(2);
   await mkdir('.artifacts', { recursive: true });
   if (command === 'deploy-preflight') {
-    const shaIndex = args.indexOf('--sha');
-    const expectedSha = shaIndex >= 0 ? args[shaIndex + 1] : '';
+    const expectedSha = argValue(args, '--sha');
     const result = evaluateNetlifyDeploySource({
       gitDir: execFileSync('git', ['rev-parse', '--git-dir'], { encoding:'utf8' }).trim(),
       gitCommonDir: execFileSync('git', ['rev-parse', '--git-common-dir'], { encoding:'utf8' }).trim(),
@@ -128,22 +149,38 @@ async function main() {
     await writeFile('.artifacts/brain-membership.json', `${JSON.stringify({ generatedAt:new Date().toISOString(), components:membership }, null, 2)}\n`);
     process.stdout.write(`${JSON.stringify({ ok:true, components:membership.length })}\n`); return;
   }
+  if (command === 'branch-drift') {
+    const base = argValue(args, '--base');
+    const head = argValue(args, '--head');
+    const currentMain = argValue(args, '--current-main');
+    if (!base || !head || !currentMain) throw new Error('branch-drift requires --base, --head and --current-main');
+    const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+    const featurePaths = gitDiffNames(`${base}...${head}`);
+    const mainDriftPaths = base === currentMain ? [] : gitDiffNames(`${base}..${currentMain}`);
+    const featureContracts = deriveConflictContracts(featurePaths, policy);
+    const mainDriftContracts = deriveConflictContracts(mainDriftPaths, policy);
+    const result = evaluateBranchDrift({ featurePaths, mainDriftPaths, featureContracts, mainDriftContracts, mergeable:true });
+    const evidence = { ...result, base, head, currentMain, featureContracts, mainDriftContracts };
+    await writeFile('.artifacts/brain-branch-drift.json', `${JSON.stringify(evidence, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(evidence)}\n`);
+    if (result.action === 'SYNC_REQUIRED') process.exitCode = 42;
+    return;
+  }
   if (command !== 'plan') throw new Error(`unknown command: ${command}`);
-  const baseIndex = args.indexOf('--base');
-  const headIndex = args.indexOf('--head');
-  const base = baseIndex >= 0 ? args[baseIndex + 1] : 'HEAD^';
-  const head = headIndex >= 0 ? args[headIndex + 1] : 'HEAD';
+  const base = argValue(args, '--base', 'HEAD^');
+  const head = argValue(args, '--head', 'HEAD');
   const headSha = execFileSync('git', ['rev-parse', head], { encoding:'utf8' }).trim();
-  const changedPaths = execFileSync('git', ['diff', '--name-only', `${base}...${head}`], { encoding:'utf8' }).split(/\r?\n/).filter(Boolean);
+  const baseSha = execFileSync('git', ['rev-parse', base], { encoding:'utf8' }).trim();
+  const changedPaths = gitDiffNames(`${base}...${head}`);
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({ changedPaths, headSha, policy });
-  await writeFile('.artifacts/brain-delivery-plan.json', `${JSON.stringify(plan, null, 2)}\n`);
+  await writeFile('.artifacts/brain-delivery-plan.json', `${JSON.stringify({ ...plan, baseSha }, null, 2)}\n`);
   const matrix = JSON.stringify({ include:plan.lanes.map(lane => ({ id:lane.id, lane_id:lane.laneId, candidate_identity:lane.candidateIdentity })) });
   if (process.env.GITHUB_OUTPUT) {
     const { appendFile } = await import('node:fs/promises');
-    await appendFile(process.env.GITHUB_OUTPUT, `matrix=${matrix}\ntrace_id=${plan.traceId}\n`);
+    await appendFile(process.env.GITHUB_OUTPUT, `matrix=${matrix}\ntrace_id=${plan.traceId}\nbase_sha=${baseSha}\nhead_sha=${headSha}\n`);
   }
-  process.stdout.write(`${JSON.stringify({ ok:true, traceId:plan.traceId, matrix:JSON.parse(matrix) })}\n`);
+  process.stdout.write(`${JSON.stringify({ ok:true, traceId:plan.traceId, baseSha, headSha, matrix:JSON.parse(matrix) })}\n`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().catch(error => { process.stderr.write(`${JSON.stringify({ ok:false, error:error.message })}\n`); process.exitCode = 1; });
