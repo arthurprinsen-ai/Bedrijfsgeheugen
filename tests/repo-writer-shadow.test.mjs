@@ -32,6 +32,25 @@ test('menu writer shadow policy allows only its exact no-op canary evidence shap
   );
 });
 
+test('paginacontrole rejects destructive impact even when the path itself is allowed', () => {
+  assert.throws(
+    () => validateWriterPaths(
+      'paginacontrole',
+      ['afmaakindex.html'],
+      [{ file: 'afmaakindex.html', additions: 4, deletions: 423 }],
+    ),
+    /WRITER_DIFF_IMPACT_EXCEEDED:afmaakindex\.html/,
+  );
+  assert.equal(validateWriterPaths(
+    'paginacontrole',
+    ['afmaakindex.html', 'seo-status.json'],
+    [
+      { file: 'afmaakindex.html', additions: 2, deletions: 2 },
+      { file: 'seo-status.json', additions: 1, deletions: 1 },
+    ],
+  ).ok, true);
+});
+
 test('shadow workflow is read-only and only verifies writer candidate PRs', () => {
   const text = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   assert.match(text, /pull_request:/);
@@ -62,6 +81,9 @@ test('shadow verification emits immutable exact-PR evidence as a read-only artif
   assert.match(verifier, /headSha/);
   assert.match(verifier, /changedFiles/);
   assert.match(verifier, /candidateBranch/);
+  assert.match(verifier, /--numstat/);
+  assert.match(verifier, /diffStats/);
+  assert.match(verifier, /impactPolicyVerified/);
   assert.match(verifier, /writeFileSync/);
   assert.match(verifier, /schemaVersion:\s*1/);
 });
