@@ -54,9 +54,19 @@ test('shadow verification emits immutable exact-PR evidence as a read-only artif
   assert.match(verifier, /schemaVersion:\s*1/);
 });
 
-test('writer-created PRs can explicitly self-dispatch read-only shadow verification', () => {
+test('explicit shadow dispatch validates PR identity against GitHub before checkout', () => {
+  const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
+  assert.match(shadow, /Validate explicitly dispatched PR identity/);
+  assert.match(shadow, /gh api .*pulls\/\$\{?PR_NUMBER/);
+  assert.match(shadow, /PR_BASE_SHA_DRIFT/);
+  assert.match(shadow, /PR_HEAD_SHA_DRIFT/);
+  assert.match(shadow, /PR_HEAD_REF_DRIFT/);
+});
+
+test('writer-created PRs explicitly self-dispatch read-only shadow verification', () => {
   const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   const menu = fs.readFileSync('.github/workflows/menu-balk-fix.yml', 'utf8');
+  const approved = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
 
   assert.match(shadow, /workflow_dispatch:/);
   assert.match(shadow, /pr_number:/);
@@ -65,12 +75,14 @@ test('writer-created PRs can explicitly self-dispatch read-only shadow verificat
   assert.match(shadow, /candidate_branch:/);
   assert.match(shadow, /github\.event_name == 'workflow_dispatch'/);
 
-  assert.match(menu, /repo-writer-candidate-shadow\.yml/);
-  assert.match(menu, /gh workflow run/);
-  assert.match(menu, /-f pr_number=/);
-  assert.match(menu, /-f base_sha=/);
-  assert.match(menu, /-f head_sha=/);
-  assert.match(menu, /-f candidate_branch=/);
+  for (const [name, workflow] of [['menu-balk-fix', menu], ['approved-central-blog', approved]]) {
+    assert.match(workflow, /repo-writer-candidate-shadow\.yml/, `${name} must dispatch shadow`);
+    assert.match(workflow, /gh workflow run/, `${name} must explicitly dispatch shadow`);
+    assert.match(workflow, /-f pr_number=/);
+    assert.match(workflow, /-f base_sha=/);
+    assert.match(workflow, /-f head_sha=/);
+    assert.match(workflow, /-f candidate_branch=/);
+  }
 });
 
 test('workflow_dispatch never relies on protected GitHub default env for writer identity', () => {

@@ -25,6 +25,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 concurrency:
   group: repo-schrijven
@@ -166,6 +167,7 @@ jobs:
           if [ -n "$existing" ]; then
             echo "Candidate PR bestaat al: #$existing"
             echo "number=$existing" >> "$GITHUB_OUTPUT"
+            echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           url=$(gh pr create \
@@ -175,7 +177,26 @@ jobs:
             --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn. De Notion queue blijft Pending totdat productie-uitkomst aantoonbaar is verwerkt.")
           number=${url##*/}
           echo "number=$number" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "Candidate PR geopend: $url"
+
+      - name: Dispatch read-only shadow verification
+        if: steps.render.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          gh workflow run repo-writer-candidate-shadow.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$BASE_SHA" \
+            -f head_sha="$HEAD_SHA" \
+            -f candidate_branch="$CANDIDATE_BRANCH"
 
       - name: BRAIN v2 handoff evidence
         if: steps.render.outputs.changed == 'true'
