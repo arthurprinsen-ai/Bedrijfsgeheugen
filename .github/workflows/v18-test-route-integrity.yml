@@ -1,0 +1,85 @@
+name: V18 Test Route Integrity
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - '*.html'
+      - 'blog/**'
+      - 'assets/v18-test.*'
+      - '_redirects'
+      - 'sitemap.xml'
+      - 'netlify.toml'
+      - 'site/v18-test-source.json'
+      - 'site/v18-component-registry.json'
+      - 'site/v18-scope-policy.json'
+      - 'docs/incidents/2026-08-30-v18-test-identity.md'
+      - 'tools/bouw-v18-test-preview.mjs'
+      - 'tools/check-v18-scope.mjs'
+      - 'tests/v18-test-route-integrity.test.mjs'
+      - 'tests/v18-preview-build-contract.test.mjs'
+      - 'tests/v18-component-registry.test.mjs'
+      - 'tests/v18-merge-rule-guardian.test.mjs'
+      - 'tests/v18-scope-policy.test.mjs'
+      - '.github/workflows/v18-test-route-integrity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact checked-out SHA
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ "$(git rev-parse HEAD)" != "${{ github.event.pull_request.head.sha }}" ]; then
+            echo "::error::V18 integrity check is not running on the exact PR head SHA"
+            exit 1
+          fi
+      - name: Run V18 route, merge and scope contract tests
+        run: node --test tests/v18-test-route-integrity.test.mjs tests/v18-preview-build-contract.test.mjs tests/v18-component-registry.test.mjs tests/v18-merge-rule-guardian.test.mjs tests/v18-scope-policy.test.mjs
+      - name: Enforce declared component scope on PR changes
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BODY=$(jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH")
+          TAGS=$(printf '%s\n' "$BODY" | sed -n 's/^V18-SCOPE-TAGS:[[:space:]]*//p' | tail -n1)
+          if [ -z "$TAGS" ]; then
+            echo "::error::Missing V18-SCOPE-TAGS in PR body. Declare the smallest component/area scope before changing V18."
+            exit 1
+          fi
+          CHANGED=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
+          echo "Declared V18 scope: $TAGS"
+          echo "Changed files:"
+          printf '%s\n' "$CHANGED"
+          V18_DECLARED_TAGS="$TAGS" V18_CHANGED_FILES="$CHANGED" node tools/check-v18-scope.mjs
+      - name: Verify pinned user-accepted V18 baseline is publicly reachable
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).userTestUrl")
+          code=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -LsS -o /tmp/v18-accepted.html -w '%{http_code}' "$URL")
+          echo "Pinned V18 baseline -> HTTP $code"
+          if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
+            echo "::error::Pinned user-accepted V18 baseline is not publicly reachable: HTTP $code — $URL"
+            exit 1
+          fi
+          if ! grep -Fq 'view-home' /tmp/v18-accepted.html; then
+            echo "::error::Pinned V18 baseline no longer contains the accepted V18 view-home marker: $URL"
+            exit 1
+          fi
+          if ! grep -Fq 'view-product' /tmp/v18-accepted.html; then
+            echo "::error::Pinned V18 baseline no longer contains the accepted V18 view-product marker: $URL"
+            exit 1
+          fi
+          echo "Accepted V18 user baseline is public and contains the expected V18 markers."

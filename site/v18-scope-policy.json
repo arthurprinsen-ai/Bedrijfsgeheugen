@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "rule": "A changed file must be owned by at least one declared component tag and one declared area tag. Shared governance files require an explicit governance tag.",
+  "componentRules": {
+    "component:mobile-menu": ["assets/js/menu.js", "assets/js/v18-mobile-drilldown.js", "assets/shared-mobile-drilldown.css", "assets/v18-mobile-drilldown.css"],
+    "component:desktop-menu": ["assets/js/menu.js", "assets/kop.css", "assets/recovered-page-shell.js"],
+    "component:header": ["assets/js/menu.js", "assets/kop.css", "assets/recovered-page-shell.js", "index.html"],
+    "component:footer": ["assets/recovered-page-shell.js", "assets/v18-test.js", "*.html"],
+    "component:hero": ["index.html", "assets/v18-test.css", "assets/v18-test.js"],
+    "component:hero-video": ["index.html", "tools/bouw-v18-test-preview.mjs", "v18-full/**", "assets/*.mp4"],
+    "component:page-content": ["*.html", "blog/**"],
+    "component:cta": ["*.html", "blog/**"],
+    "component:blog": ["blog/**"]
+  },
+  "areaRules": {
+    "area:navigation": ["assets/js/menu.js", "assets/js/v18-mobile-drilldown.js", "assets/shared-mobile-drilldown.css", "assets/v18-mobile-drilldown.css", "assets/kop.css", "assets/recovered-page-shell.js", "index.html", "meer.html"],
+    "area:pricing": ["prijzen.html"],
+    "area:company": ["over-ons.html", "hoe-het-werkt.html", "partners.html", "expertises.html", "contact.html", "meer.html"],
+    "area:knowledge": ["kennis.html", "onderzoeken.html", "templates-tools.html", "blog/**", "benchmark.html", "ai-act.html", "ai-capability-model.html", "business-case-ai.html", "ai-voor-bestuurders.html", "kennisverlies-vergrijzing-mkb.html", "ai-cijfers-mkb.html", "cijfers-bedrijfsoverdracht.html", "wijzigingen-uitgelegd.html", "meer.html"],
+    "area:trust": ["security.html", "ai-act.html", "privacy.html", "juridisch.html", "meer.html"],
+    "area:support": ["helpcentrum.html", "changelog.html", "contact.html", "inloggen.html", "workshops.html", "wijzigingen.html", "wijzigingen-uitgelegd.html", "meer.html"],
+    "area:cases": ["cases.html"],
+    "area:platform": ["index.html", "problemen.html", "oplossingen.html", "bedrijfsgeheugen.html", "aanmelden.html", "inloggen.html", "hoe-het-werkt.html", "ai-adoptie.html", "ai-marketing-mkb.html", "ai-capability-model.html", "business-case-ai.html", "ai-cijfers-mkb.html", "wijzigingen.html", "assets/v18-test.css", "assets/v18-test.js"],
+    "area:integrations": ["systemen-koppelen.html", "afas-koppeling.html", "exact-online-koppeling.html", "twinfield-koppeling.html", "webshop-koppeling.html", "api-koppeling-laten-maken.html"],
+    "area:audience": ["voor-mkb.html", "investeerders-ma.html", "due-diligence.html", "ai-voor-bestuurders.html", "cijfers-bedrijfsoverdracht.html"],
+    "area:scans": ["frisse-blik.html", "zelfscan.html", "ai-scan.html", "afmaakindex.html", "monitor.html", "benchmark.html"]
+  },
+  "governanceRules": {
+    "scope:governance": ["site/v18-component-registry.json", "site/v18-scope-policy.json", "site/v18-test-source.json", "tests/v18-*.test.mjs", ".github/pull_request_template.md", ".github/workflows/v18-test-route-integrity.yml", ".github/workflows/v18-public-preview-smoke.yml", ".github/workflows/live-preview-smoke.yml", "docs/superpowers/**", "docs/incidents/**", "docs/bedrijfsgeheugen-learning-ledger.md", "netlify.toml", "_redirects", "sitemap.xml", "tools/bouw-v18-test-preview.mjs", "tools/check-v18-scope.mjs"]
+  }
+}

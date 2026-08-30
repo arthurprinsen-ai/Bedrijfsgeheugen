@@ -27,6 +27,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Detect preview composition mode
+        id: mode
+        shell: bash
+        run: |
+          if grep -q 'bouw-v18-test-preview.mjs' netlify.toml; then
+            echo 'historical=true' >> "$GITHUB_OUTPUT"
+            echo 'Historical V18 preview mode detected'
+          else
+            echo 'historical=false' >> "$GITHUB_OUTPUT"
+            echo 'Production-candidate preview mode detected'
+          fi
 
       - name: Wait for Netlify status on current head SHA
         env:
@@ -54,7 +68,26 @@ jobs:
           PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: curl -fsS --max-time 20 "$PREVIEW_URL/" -o /tmp/index.html
 
+      - name: Verify historical V18 test HTML contract
+        if: steps.mode.outputs.historical == 'true'
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('/tmp/index.html', 'utf8');
+          if (!html.includes('content="V18-TEST"')) throw new Error('V18 test environment marker missing');
+          if (!html.includes('window.__BG_TEST_VERSION__="V18-HISTORICAL"')) throw new Error('historical V18 marker missing');
+          if (!html.includes('id="heroBackgroundVideo"')) throw new Error('historical V18 hero video element missing');
+          if (!html.includes('/assets/openart-hero-iphone-safe-v1.mp4')) throw new Error('accepted local hero media missing');
+          if (!html.toLowerCase().includes('noindex')) throw new Error('test preview must remain noindex');
+          console.log('Historical V18 test HTML contract OK');
+          NODE
+          curl -fsS --max-time 20 "$PREVIEW_URL/prototype-v18-stable.html" -o /tmp/prototype.html
+          grep -Fq 'window.__BG_TEST_VERSION__="V18-HISTORICAL"' /tmp/prototype.html
+
       - name: Verify V18.8 production HTML contract
+        if: steps.mode.outputs.historical != 'true'
         run: |
           node <<'NODE'
           const fs = require('node:fs');
@@ -78,16 +111,19 @@ jobs:
           test -s /tmp/hero-video.bin
 
       - name: Install Playwright runtime and Chromium
+        if: steps.mode.outputs.historical != 'true'
         run: |
           npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
 
       - name: Verify V18.8 browser runtime and inspect navigation
+        if: steps.mode.outputs.historical != 'true'
         env:
           PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: npx playwright test tests/integration/v18-live-runtime.spec.js --workers=1
 
       - name: Capture V18.8 desktop and mobile preview
+        if: steps.mode.outputs.historical != 'true'
         env:
           PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: |

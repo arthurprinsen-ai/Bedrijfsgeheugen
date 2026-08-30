@@ -1,0 +1,125 @@
+name: V18 Public Preview Smoke
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PREVIEW: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Verify exact checked-out SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(git rev-parse HEAD)" != "$HEAD_SHA" ]; then
+            echo "::error::Public V18 smoke is not running on exact PR head $HEAD_SHA"
+            exit 1
+          fi
+
+      - name: Wait for Netlify success on exact PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 50); do
+            state=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status" --jq '.statuses[] | select(.context=="netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1 || true)
+            echo "Netlify exact-head status: ${state:-missing}"
+            if [ "$state" = "success" ]; then exit 0; fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "::error::Netlify preview failed for exact head ${HEAD_SHA}"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "::error::Timed out waiting for Netlify preview on exact head ${HEAD_SHA}"
+          exit 1
+
+      - name: Verify immutable user-accepted V18 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_URL=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).userTestUrl")
+          SOURCE_COMMIT=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).acceptedSourceCommit")
+          SOURCE_DEPLOY=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).acceptedSourceDeployId")
+          if [[ "$SOURCE_URL" == *"deploy-preview-"* ]] || [[ "$SOURCE_URL" == "https://www.bedrijfsgeheugen.nl"* ]]; then
+            echo "::error::userTestUrl is mutable or production instead of the immutable accepted V18 deploy: $SOURCE_URL"
+            exit 1
+          fi
+          if [[ "$SOURCE_URL" != *"${SOURCE_DEPLOY}--bedrijfsgeheugen.netlify.app"* ]]; then
+            echo "::error::userTestUrl does not match pinned source deploy $SOURCE_DEPLOY"
+            exit 1
+          fi
+          code=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -LsS -o /tmp/v18-source.html -w '%{http_code}' "$SOURCE_URL")
+          echo "Accepted V18 source $SOURCE_COMMIT / $SOURCE_DEPLOY -> HTTP $code"
+          if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
+            echo "::error::Immutable accepted V18 source is not public: HTTP $code"
+            exit 1
+          fi
+          if ! grep -Fq 'view-home' /tmp/v18-source.html || ! grep -Fq 'view-product' /tmp/v18-source.html; then
+            echo "::error::Immutable accepted V18 source lost its identity markers"
+            exit 1
+          fi
+
+      - name: Prove preview root is V18 and not production-composed
+        shell: bash
+        run: |
+          set -euo pipefail
+          code=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -LsS -o /tmp/v18-root.html -w '%{http_code}' "${PREVIEW}/")
+          echo "Preview root -> HTTP $code"
+          test "$code" -ge 200 -a "$code" -lt 400
+          if ! grep -Fq 'view-home' /tmp/v18-root.html; then
+            echo "::error::Preview root is reachable but does not contain the accepted V18 view-home marker"
+            exit 1
+          fi
+          if ! grep -Fq 'view-product' /tmp/v18-root.html; then
+            echo "::error::Preview root is reachable but does not contain the accepted V18 view-product marker"
+            exit 1
+          fi
+          if grep -Fq '__BG_PRODUCTION_VERSION__' /tmp/v18-root.html; then
+            echo "::error::Production-composed root leaked into V18 test preview (__BG_PRODUCTION_VERSION__)"
+            exit 1
+          fi
+
+      - name: Smoke public V18 routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          routes=(/ /meer /partners /onderzoeken /templates-tools /security /juridisch /helpcentrum /changelog /blog/ /over-ons /hoe-het-werkt /cases /kennis /prijzen /inloggen /aanmelden /kennisverlies-vergrijzing-mkb /ai-cijfers-mkb /cijfers-bedrijfsoverdracht /wijzigingen /wijzigingen-uitgelegd)
+          for route in "${routes[@]}"; do
+            code=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -LsS -o /tmp/page.html -w '%{http_code}' "${PREVIEW}${route}")
+            echo "${route} -> ${code}"
+            if ! { test "$code" -ge 200 -a "$code" -lt 400 && ! grep -qi '<title>.*404' /tmp/page.html; }; then
+              echo "::error::Public preview route ${route} failed with HTTP ${code} or rendered a 404"
+              exit 1
+            fi
+          done
+
+      - name: Verify accepted V18 public content
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -LsS "${PREVIEW}/meer" -o /tmp/meer.html
+          for expected in 'Alles rond Bedrijfsgeheugen op één plek.' 'Wie we zijn en hoe we werken' 'Blog &amp; kennisbank' 'Veilig, transparant en uitlegbaar' 'Hulp wanneer je die nodig hebt'; do
+            if ! grep -Fq "$expected" /tmp/meer.html; then
+              echo "::error::Public Meer page is missing accepted content: ${expected}"
+              exit 1
+            fi
+          done
+          curl -LsS "${PREVIEW}/blog/" -o /tmp/blog.html
+          if ! test -s /tmp/blog.html; then
+            echo "::error::Preserved production Blog returned empty content"
+            exit 1
+          fi

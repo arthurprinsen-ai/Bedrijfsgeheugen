@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "status": "accepted-user-baseline",
+  "acceptedSourceCommit": "195d30e411a327553f81be40815d4c0d8da4e98d",
+  "acceptedSourceDeployId": "6a918685f3737c0008ee981a",
+  "acceptedSourceUrl": "https://6a918685f3737c0008ee981a--bedrijfsgeheugen.netlify.app/prototype-v18-stable.html",
+  "userTestUrl": "https://6a918685f3737c0008ee981a--bedrijfsgeheugen.netlify.app/prototype-v18-stable.html",
+  "rules": {
+    "v18IsLeadingWhenPageExists": true,
+    "keepProductionPageWhenV18OnlyLinksToIt": true,
+    "writeMissingLinkedPages": true,
+    "preserveProductionBlog": true,
+    "neverShareMutableDeployPreviewAliasAsUserTestUrl": true,
+    "neverPromoteWithoutExactPublicUrlVerification": true,
+    "productionRequiresExplicitVisualBusinessApproval": true
+  },
+  "note": "This file is the machine-readable single source of truth for which V18 the user accepted. Engineering previews may change, but the user-facing V18 test baseline must not silently drift."
+}
