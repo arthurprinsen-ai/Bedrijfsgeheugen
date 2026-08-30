@@ -33,6 +33,14 @@ test('repository writer static assets are classified as website delivery work', 
   }
 });
 
+test('future Supabase governance tools are automatically classified as backend delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  for (const path of ['tools/supabase-performance-governor.mjs','tools/supabase-future-optimizer.mjs']) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend'], `${path} must be backend delivery work`);
+  }
+});
+
 test('non-overlapping main drift never causes a branch rebuild', () => {
   assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/render-offer.mjs','tests/portal-native-legacy-batch-11.test.mjs'], mainDriftPaths:['blog/index.html','assets/css/powerhouse-kosten.css'], featureContracts:[], mainDriftContracts:[], mergeable:true }), { action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:[], contractOverlap:[] });
 });
