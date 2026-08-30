@@ -28,4 +28,25 @@ assert.match(obligation.expected,/BG168/);
 assert.match(obligation.expected,/BG167/);
 assert.match(obligation.evidencePolicy,/immutable shadow evidence/i);
 
-console.log('PASS writer certification is durable Brain evidence with BG168 -> BG167 obligation');
+const migration=JSON.parse(fs.readFileSync('config/repository-writer-migration.json','utf8'));
+const pageWriter=migration.writers.find(x=>x.name==='paginacontrole');
+assert.ok(pageWriter,'paginacontrole must exist in repository writer migration state');
+assert.equal(pageWriter.candidateMode,'operational_verified');
+assert.equal(pageWriter.operationalCandidateVerified,true);
+assert.equal(pageWriter.operationalEvidence.verificationPullRequest,evidence.verification_pr);
+assert.equal(pageWriter.operationalEvidence.writerPullRequest,evidence.candidate_pr);
+assert.equal(String(pageWriter.operationalEvidence.shadowRunId),String(evidence.shadow_run_id));
+assert.equal(pageWriter.operationalEvidence.headSha,evidence.candidate_head_sha);
+assert.equal(pageWriter.operationalEvidence.candidateBranch,evidence.candidate_branch);
+
+const reconcileScript='scripts/brain/reconcile-writer-certifications.mjs';
+const reconcileWorkflow='.github/workflows/writer-certification-reconcile.yml';
+assert.ok(fs.existsSync(reconcileScript),'writer certification reconciliation script must exist');
+assert.ok(fs.existsSync(reconcileWorkflow),'writer certification reconciliation workflow must exist');
+const workflow=fs.readFileSync(reconcileWorkflow,'utf8');
+assert.match(workflow,/brain\/evidence\/writer-canary\/\*\*\/\*\.json|brain\/evidence\/writer-canary\/\*\.json/);
+assert.match(workflow,/reconcile-writer-certifications\.mjs --write/);
+assert.match(workflow,/writer\/certification-reconcile\//);
+assert.match(workflow,/gh pr create/);
+
+console.log('PASS writer certification is durable Brain evidence and automatically reconciles into shared writer state');
