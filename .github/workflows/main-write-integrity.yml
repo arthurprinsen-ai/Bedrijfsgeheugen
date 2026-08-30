@@ -1,0 +1,47 @@
+name: Main Write Integrity
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Classify main write provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { writeFile } from 'node:fs/promises';
+          import { classifyMainWrite } from './tools/main-write-integrity.mjs';
+          const sha = process.env.GITHUB_SHA;
+          const parentLine = execFileSync('git', ['rev-list', '--parents', '-n', '1', sha], { encoding: 'utf8' }).trim();
+          const parentCount = Math.max(0, parentLine.split(/\s+/).length - 1);
+          const changedPaths = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', sha], { encoding: 'utf8' }).split(/\r?\n/).map(v => v.trim()).filter(Boolean);
+          const result = classifyMainWrite({ branch: process.env.GITHUB_REF_NAME, parentCount, changedPaths, headSha: sha });
+          const evidence = { observedAt: new Date().toISOString(), repository: process.env.GITHUB_REPOSITORY, runId: process.env.GITHUB_RUN_ID, ...result };
+          await writeFile('.artifacts/main-write-integrity.json', `${JSON.stringify(evidence, null, 2)}\n`);
+          console.log(JSON.stringify(evidence));
+          if (!result.productionGreenAllowed) process.exitCode = 42;
+          NODE
+      - name: Upload immutable integrity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-write-integrity-${{ github.run_id }}
+          path: .artifacts/main-write-integrity.json
+          if-no-files-found: error
+          retention-days: 30
