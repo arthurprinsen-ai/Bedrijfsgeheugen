@@ -1,0 +1,30 @@
+{
+  "version":"brain-platforms-v1",
+  "brainContractVersion":"brain.v1",
+  "platforms":[
+    {
+      "platform":"github","key":"PLATFORM_GITHUB","status":"active","owner":"agent-reliability","adapterType":"repository",
+      "productionIdentity":"exact-merge-sha","validation":"affected-ci-and-mergeability","activation":"merge-current-main","readBackEvidence":"main-sha-and-ci-status","rollback":"revert-offending-merge","costClass":"production_core","securityClass":"governed","brainContractVersion":"brain.v1"
+    },
+    {
+      "platform":"netlify","key":"PLATFORM_NETLIFY","status":"active","owner":"agent-reliability","adapterType":"deployment",
+      "productionIdentity":"deploy-id-plus-commit-ref","validation":"preview-ready-secret-scan-headers-redirects-functions","activation":"publish-exact-merge-sha","readBackEvidence":"production-deploy-ready-with-exact-commit-ref","rollback":"last-known-good-deploy","costClass":"production_core","securityClass":"governed","brainContractVersion":"brain.v1"
+    },
+    {
+      "platform":"make","key":"PLATFORM_MAKE","status":"active","owner":"agent-integration-make","adapterType":"automation",
+      "productionIdentity":"scenario-id-plus-lastEdit","validation":"scenario-validation-and-safe-test-run","activation":"atomic-scenario-patch-and-activate","readBackEvidence":"scenario-readback-plus-execution-outcome","rollback":"restore-last-known-good-blueprint-or-deactivate-affected-scenario","costClass":"operation_metered","securityClass":"governed","brainContractVersion":"brain.v1"
+    },
+    {
+      "platform":"notion","key":"PLATFORM_NOTION","status":"active","owner":"agent-integration-make","adapterType":"transactional-saas",
+      "productionIdentity":"object-id-plus-last-edited-version","validation":"schema-object-and-contract-validation","activation":"smallest-safe-platform-native-write","readBackEvidence":"exact-object-readback-after-write","rollback":"restore-previous-safe-object-state-where-reversible","costClass":"external_saas","securityClass":"governed","brainContractVersion":"brain.v1"
+    },
+    {
+      "platform":"supabase","key":"PLATFORM_SUPABASE","status":"active","owner":"agent-integration-make","adapterType":"transactional-data",
+      "productionIdentity":"migration-or-object-state-version","validation":"schema-contract-and-transaction-validation","activation":"transaction-or-versioned-migration","readBackEvidence":"deterministic-schema-or-object-query","rollback":"transaction-rollback-or-tested-down-migration","costClass":"production_data","securityClass":"high","brainContractVersion":"brain.v1"
+    },
+    {
+      "platform":"dataforseo","key":"PLATFORM_DATAFORSEO","status":"active","owner":"agent-seo-demand","adapterType":"external-evidence-api",
+      "productionIdentity":"query-contract-plus-source-timestamp","validation":"query-contract-provenance-freshness-cost-budget","activation":"activate-validated-query-or-config-immediately","readBackEvidence":"provider-response-provenance-and-query-contract","rollback":"restore-last-known-good-query-config","costClass":"operation_metered","securityClass":"external_read","brainContractVersion":"brain.v1"
+    }
+  ]
+}
