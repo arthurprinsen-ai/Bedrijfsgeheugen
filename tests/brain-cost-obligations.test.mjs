@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const REQUIRED_COST_OBLIGATIONS = [
   'cost-policy-10000-monthly',
+  'token-policy-10000-monthly',
   'cost-ledger-all-scenarios-daily',
   'brain-budget-writeback',
   'internal-dashboard-authz',

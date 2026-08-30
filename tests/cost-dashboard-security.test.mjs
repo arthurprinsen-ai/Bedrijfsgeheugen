@@ -20,6 +20,9 @@ test('scenario-controlled values use safe DOM text rendering', () => {
   assert.match(client, /\.textContent\s*=/);
   assert.doesNotMatch(client, /\.innerHTML\s*=/);
   assert.match(client, /credentials:\s*'same-origin'/);
+  assert.match(html, /id="used-tokens"/);
+  assert.match(html, /Tokens vandaag/);
+  assert.match(client, /tokenCoverage/);
 });
 
 test('internal users can authenticate with the supported headless Identity client', () => {
