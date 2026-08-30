@@ -7,13 +7,20 @@
     "config/brain-chat-learning-contract.json",
     "config/browser-evidence-guard-contract.json",
     "docs/development-browser-evidence-candidate-chrome.md",
-    "docs/development-ledger.md"
+    "docs/development-ledger.md",
+    "docs/brain/delivery-failure-lessons.json",
+    "config/delivery-prevention-rules.json",
+    "brain/learning/current-execution-lessons-2026-08-30.json",
+    "brain/learning/chat-completeness-addendum-2026-08-30.json",
+    "tools/delivery-preflight.mjs"
   ],
   "completionPolicy": {
     "blockIfMaterialLearningOnlyInChat": true,
     "requirePersistentSharedMemoryWriteback": true,
     "requireRegressionGuardWhereFeasible": true,
     "requireExactEvidenceForProvenStatus": true,
+    "requireDeliveryPreflightGreen": true,
+    "blockOnOrphanActivePreventionRule": true,
     "documentationAloneMayReach": "MEMORY",
     "machineEnforcedValidatorRequiredFor": "GUARDED",
     "intendedRuntimeEvidenceRequiredFor": "PROVEN"
