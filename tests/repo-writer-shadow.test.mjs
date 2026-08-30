@@ -23,8 +23,10 @@ test('writer path policies accept intended files and reject cross-domain drift',
 test('shadow workflow is read-only and only verifies writer candidate PRs', () => {
   const text = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   assert.match(text, /pull_request:/);
+  assert.match(text, /workflow_dispatch:/);
   assert.match(text, /branches:\s*\n\s*- main/);
   assert.match(text, /startsWith\(github\.head_ref, 'writer\/'\)/);
+  assert.match(text, /startsWith\(inputs\.candidate_branch, 'writer\/'\)/);
   assert.match(text, /permissions:\s*\n\s*contents:\s*read\b/);
   assert.doesNotMatch(text, /contents:\s*write\b/);
   assert.doesNotMatch(text, /pull-requests:\s*write\b/);
@@ -36,8 +38,12 @@ test('shadow verification emits immutable exact-PR evidence as a read-only artif
   const workflow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   const verifier = fs.readFileSync('scripts/ci/repo-writer-shadow-verify.mjs', 'utf8');
 
-  assert.match(workflow, /GITHUB_PR_BASE_SHA:\s*\$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
-  assert.match(workflow, /GITHUB_PR_HEAD_SHA:\s*\$\{\{ github\.event\.pull_request\.head\.sha \}\}/);
+  assert.match(workflow, /github\.event\.pull_request\.base\.sha/);
+  assert.match(workflow, /inputs\.candidate_base_sha/);
+  assert.match(workflow, /github\.event\.pull_request\.head\.sha/);
+  assert.match(workflow, /inputs\.candidate_head_sha/);
+  assert.match(workflow, /GITHUB_PR_BASE_SHA:/);
+  assert.match(workflow, /GITHUB_PR_HEAD_SHA:/);
   assert.match(workflow, /REPO_WRITER_EVIDENCE_PATH:\s*artifacts\/repo-writer-shadow-evidence\.json/);
   assert.match(workflow, /uses:\s*actions\/upload-artifact@v4/);
   assert.match(workflow, /path:\s*artifacts\/repo-writer-shadow-evidence\.json/);
