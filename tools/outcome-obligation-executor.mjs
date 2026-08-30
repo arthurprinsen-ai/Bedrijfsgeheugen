@@ -98,6 +98,9 @@ export function evaluateOutcomeObligation({ obligation, now, trigger, agent, due
     const refs = productionProofRequired ? exactProduction.map(item => item.ref) : accepted.map(item => item.ref);
     return freeze({ ...base, status:'COMPLETED', acceptedEvidenceRefs:refs });
   }
+  if (productionProofRequired && accepted.length > 0 && exactProduction.length === 0) {
+    return freeze({ ...base, status:'AWAITING_OUTCOME' });
+  }
 
   const deadline = evidenceDeadline ? normalizeDate(evidenceDeadline) : null;
   const expired = Boolean(deadline && normalizeDate(now).getTime() > deadline.getTime());
