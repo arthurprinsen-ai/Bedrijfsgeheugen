@@ -1,0 +1,95 @@
+{
+  "version": "BRAIN-CHAT-LEARNING-v1",
+  "source": "website-restoration-chat-2026-08-30",
+  "appendOnly": true,
+  "lessons": [
+    {
+      "id": "SHARED_SHELL_READY_BEFORE_DOMCONTENTLOADED",
+      "preventionRule": "REQUIRE_SHARED_SHELL_BEFORE_DOMCONTENTLOADED",
+      "fingerprint": "website|shared-shell|domcontentloaded-readiness",
+      "symptom": "Een browser-smoke ziet bij DOMContentLoaded nog geen menu/header terwijl runtime-JavaScript die kort daarna injecteert.",
+      "rootCause": "De gedeelde site-shell was pas via deferred runtime-injectie beschikbaar terwijl de browseracceptatie en gebruiker de navigatie al bij document-ready verwachten.",
+      "failedApproach": "Een pagina technisch groen noemen omdat de shell uiteindelijk verschijnt en de readiness-race negeren.",
+      "requiredAction": "Zorg dat de canonieke header en menu-owner vóór of uiterlijk op DOMContentLoaded beschikbaar en geïnitialiseerd zijn; verifieer dit in echte browser-smoke.",
+      "prevention": "Browser readiness is een invariant: primaire navigatie mag niet afhankelijk zijn van post-DOMContentLoaded herstel.",
+      "evidenceRule": "Groen vereist dat de menu-trigger en canonieke navigatie tijdens de browser-readiness-check bestaan en functioneren."
+    },
+    {
+      "id": "SOURCE_CRAWLERS_MATERIALIZE_CANONICAL_SHELL",
+      "preventionRule": "MATERIALIZE_CANONICAL_SHELL_BEFORE_SOURCE_SCAN",
+      "fingerprint": "website|seo-source-scan|canonical-shell-materialization",
+      "symptom": "Browserchecks zijn groen maar brongebaseerde pagina- of SEO-crawlers missen links die alleen runtime in de DOM worden geïnjecteerd.",
+      "rootCause": "Runtime-DOM en source-HTML werden als dezelfde verificatielaag behandeld terwijl de crawler bewust ruwe bron leest.",
+      "failedApproach": "De crawler versoepelen of duplicate header/footer in iedere pagina plakken om de mismatch te verbergen.",
+      "requiredAction": "Materialiseer vóór source-based kwaliteitschecks exact de canonieke gedeelde shell in de tijdelijke checkout en scan daarna die deterministische bron.",
+      "prevention": "DRY runtime-shell en bron-SEO blijven één waarheid via CI-materialisatie van dezelfde canonieke fragmenten.",
+      "evidenceRule": "Zowel browser-DOM als gematerialiseerde source-scan moeten dezelfde navigatie- en SEO-invarianten groen bewijzen."
+    },
+    {
+      "id": "REGRESSION_ASSERTIONS_FOLLOW_CANONICAL_OWNER",
+      "preventionRule": "ASSERT_CANONICAL_OWNER_NOT_DUPLICATE_IMPLEMENTATION",
+      "fingerprint": "tests|architecture|assert-canonical-owner-not-shim",
+      "symptom": "Een regressietest blijft rood omdat hij gedrag verwacht in een compatibility-shim terwijl de echte functionaliteit correct naar één centrale owner is verplaatst.",
+      "rootCause": "De test was gekoppeld aan implementatielocatie in plaats van aan de canonieke owner en gebruikersinvariant.",
+      "failedApproach": "Dezelfde logica opnieuw in de shim zetten alleen om een verouderde test groen te maken.",
+      "requiredAction": "Classificeer eerst productbug versus stale assertion; laat de test de canonieke owner en de zichtbare invariant controleren zonder duplicate implementation te eisen.",
+      "prevention": "Regressiecontracten volgen ownership en semantiek, niet historische bestandslocaties.",
+      "evidenceRule": "Een testwijziging is alleen geldig als de gebruikersinvariant even sterk of sterker blijft en de echte browser/runtimecheck groen is."
+    },
+    {
+      "id": "RESTORED_ROUTE_CLUSTER_HAS_NO_ORPHANS",
+      "preventionRule": "REQUIRE_CONTEXT_LINK_FOR_RESTORED_ROUTES",
+      "fingerprint": "website|restored-route-cluster|orphan-internal-link",
+      "symptom": "Een teruggebrachte route bestaat en is SEO-technisch geldig maar heeft binnen de relevante contentcluster geen inkomende contextlink.",
+      "rootCause": "Routeherstel werd als bestandsexistentie gezien en niet als herstel van vindbaarheid en informatiearchitectuur.",
+      "failedApproach": "Alleen directe URL en sitemap bestaan laten tellen als volledig herstel.",
+      "requiredAction": "Voeg een inhoudelijk logische interne contextlink toe en bescherm de cluster tegen orphan-routes met een regressiecheck.",
+      "prevention": "Iedere herstelde primaire contentroute moet vanuit minstens één relevante pagina of canonieke navigatiecontext bereikbaar zijn.",
+      "evidenceRule": "Herstel is pas groen als route, semantiek, navigatie en interne bereikbaarheid aantoonbaar kloppen."
+    },
+    {
+      "id": "METADATA_ONLY_CHANGES_MUST_NOT_CREATE_NOOP_COMMITS",
+      "preventionRule": "FORBID_NOOP_SOURCE_COMMITS_FOR_METADATA",
+      "fingerprint": "github|metadata-update|noop-source-commit-ci-churn",
+      "symptom": "Een administratieve PR-wijziging maakt een commit met ongewijzigde bytes en start daardoor opnieuw dure CI- en previewruns.",
+      "rootCause": "Een source-file write API werd gebruikt voor PR-metadata in plaats van de specifieke PR metadata API.",
+      "failedApproach": "Een bestaand bestand opnieuw schrijven zonder inhoudswijziging om titel/body/status van een PR te willen aanpassen.",
+      "requiredAction": "Gebruik voor titel, body, draft/ready en andere PR-metadata uitsluitend de PR metadata API; vergelijk bytes vóór iedere source-write en skip echte no-op writes.",
+      "prevention": "Metadata-mutaties en source-mutaties zijn gescheiden; unchanged-byte source commits zijn verboden.",
+      "evidenceRule": "Een metadata-only handeling mag geen nieuwe source commit, build of CI-fanout veroorzaken."
+    },
+    {
+      "id": "ACCEPTED_CONTENT_AND_MODERN_TECHNICAL_SHELL_STAY_SEPARATE",
+      "preventionRule": "PRESERVE_ACCEPTED_CONTENT_WITH_MODERN_SHELL",
+      "fingerprint": "website|restoration|accepted-content-modern-shell-separation",
+      "symptom": "Een volledige historische tree-restore zou goedgekeurde pagina-inhoud terugbrengen maar tegelijk nieuwere security, Brain, build of deploymentverbeteringen verwijderen.",
+      "rootCause": "Contentbaseline en technische platformbaseline werden als één ondeelbare commit/tree behandeld.",
+      "failedApproach": "De hele oude preview- of website-tree resetten omdat die visueel de juiste pagina's bevat.",
+      "requiredAction": "Herstel alleen geaccepteerde contentsemantiek en routecatalogus bovenop de actuele technische shell; behoud additieve security, build, Brain en infrastructuurverbeteringen.",
+      "prevention": "Accepted content is een protected semantic layer; de technische shell evolueert onafhankelijk zolang de contentinvarianten behouden blijven.",
+      "evidenceRule": "Groen vereist zowel accepted-content anchors/routes als de actuele technische/security/deployment-contracten."
+    },
+    {
+      "id": "RELEASE_EVIDENCE_STAYS_ON_ONE_EXACT_SHA",
+      "preventionRule": "REQUIRE_ONE_EXACT_SHA_FOR_RELEASE_GATES",
+      "fingerprint": "delivery|release-gates|single-exact-sha-evidence",
+      "symptom": "Verschillende groene gates behoren tot verschillende candidate heads waardoor een samengestelde groene conclusie niet één werkelijk geteste release vertegenwoordigt.",
+      "rootCause": "Na iedere kleine write werd oudere evidence hergebruikt zonder opnieuw exact candidate identity te binden.",
+      "failedApproach": "Browserbewijs van SHA A, SEO van SHA B en contracttests van SHA C samen als één groen releasebewijs presenteren.",
+      "requiredAction": "Stabiliseer de kandidaat, bind alle verplichte gates aan dezelfde exact SHA en invalideer release-GREEN zodra de head verandert.",
+      "prevention": "Release evidence is immutable-candidate evidence; mixed-head bewijs is niet promotable.",
+      "evidenceRule": "Alle vereiste releasegates tonen success op exact dezelfde candidate SHA voordat promotie is toegestaan."
+    },
+    {
+      "id": "STABLE_CANDIDATE_RUNS_INDEPENDENT_GATES_IN_PARALLEL",
+      "preventionRule": "PARALLELIZE_INDEPENDENT_GATES_AFTER_STABILIZATION",
+      "fingerprint": "delivery|stable-candidate|parallel-independent-gates",
+      "symptom": "Ontwikkeling duurt onnodig lang doordat onafhankelijke browser-, SEO-, contract- en memory-gates na stabilisatie serieel worden afgewacht.",
+      "rootCause": "De verificatieflow gebruikte menselijke stap-voor-stap sequencing terwijl de gates geen onderlinge data-afhankelijkheid hebben.",
+      "failedApproach": "Eerst één volledige gate afwachten en pas daarna de volgende starten, of tijdens lopende gates steeds nieuwe no-op writes doen.",
+      "requiredAction": "Stabiliseer eerst één candidate SHA en laat daarna onafhankelijke gates parallel op exact die SHA draaien; schrijf alleen opnieuw bij concrete rode evidence.",
+      "prevention": "Independent delivery lanes en quality gates fan-out parallel na candidate stabilization en fan-in op één releasebesluit.",
+      "evidenceRule": "Snelheidswinst is geldig wanneer parallelle gates dezelfde SHA testen en geen verplichte dependency wordt overgeslagen."
+    }
+  ]
+}
