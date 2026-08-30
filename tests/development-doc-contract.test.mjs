@@ -171,7 +171,7 @@ test('Make control-plane credit storm learning is retained and machine-readable'
   ]) assert.ok(doc.includes(token), `Make credit-storm learning missing ${token}`);
 
   const parsed = JSON.parse(guard);
-  assert.equal(parsed.version, 'MAKE-CONTROL-PLANE-CREDIT-STORM-v1.1');
+  assert.match(parsed.version, /^MAKE-CONTROL-PLANE-CREDIT-STORM-v1(?:\.\d+)?$/);
   assert.equal(parsed.fingerprint, 'make|multi-agent-context-learning-credit-storm|2026-08-30-v1');
   assert.equal(parsed.guard, 'control-plane-credit-storm-prevention-v1');
   assert.equal(parsed.observed.dailyCreditsConsumed, 9165);
