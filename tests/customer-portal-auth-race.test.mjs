@@ -41,7 +41,8 @@ test('successful customer authentication stores the session and opens the legacy
   const html = repairCustomerPortalAuth(source);
   assert.match(html, /bewaarAuth\(sessie\)/);
   assert.match(html, /window\.__KLANTEN__\[s\] = k/);
-  assert.match(html, /toonPortaal\(\{email:mail\}\)/);
+  assert.match(html, /return openKlant\(sessie, s, mail\)/);
+  assert.match(html, /toonPortaal\(\{email: mail \|\| \(sessie\.user && sessie\.user\.email\) \|\| ''\}\)/);
   assert.doesNotMatch(html, /\.then\(function \(\) \{ location\.reload\(\); \}\)/);
 });
 
