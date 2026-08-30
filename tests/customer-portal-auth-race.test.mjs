@@ -97,11 +97,29 @@ test('iOS in-app browser gets a first-party cookie fallback when localStorage is
   assert.match(html, /leesCookieAuth\(\)/);
 });
 
-test('production build always applies customer portal auth repair after generating V18', () => {
+test('production build repairs and then verifies the isolated customer login contract', () => {
   const build = readFileSync(new URL('../tools/bouw-v18-production.mjs', import.meta.url), 'utf8');
   const helper = readFileSync(new URL('../tools/apply-customer-portal-auth.mjs', import.meta.url), 'utf8');
+  const verifier = readFileSync(new URL('../tools/verify-customer-login-contract.mjs', import.meta.url), 'utf8');
   assert.match(build, /applyCustomerPortalAuth/);
+  assert.match(build, /verifyCustomerLoginContract/);
   assert.ok(build.indexOf("await import('./bouw-v18-production-core.mjs')") < build.indexOf('applyCustomerPortalAuth()'));
+  assert.ok(build.indexOf('applyCustomerPortalAuth()') < build.indexOf('verifyCustomerLoginContract()'));
   assert.match(helper, /repairCustomerPortalAuth/);
   assert.match(helper, /writeFileSync/);
+  assert.match(verifier, /klant-login\.html/);
+  assert.match(verifier, /klantportaal\.html/);
+  assert.match(verifier, /bgMail/);
+  assert.match(verifier, /bgWw/);
+  assert.match(verifier, /klant-login\.html\?klant=/);
+});
+
+test('customer login architecture is documented as a non-regression rule', () => {
+  const doc = readFileSync(new URL('../docs/customer-login-architecture.md', import.meta.url), 'utf8');
+  assert.match(doc, /enige klantlogin/i);
+  assert.match(doc, /klant-login\.html/);
+  assert.match(doc, /klantportaal\.html/);
+  assert.match(doc, /Supabase/i);
+  assert.match(doc, /RLS/);
+  assert.match(doc, /niet.*inline/i);
 });
