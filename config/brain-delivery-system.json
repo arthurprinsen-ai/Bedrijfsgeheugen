@@ -33,6 +33,10 @@
       "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml", "docs/superpowers/specs/"]
     },
     {
+      "id": "canonical-seo-footer",
+      "paths": [".github/canoniek/voet.html", "site/footer-contract.json", "docs/canonical-seo-footer.md", "tests/footer-", "tests/v18-footer-boundary.test.mjs", "tests/shared-footer-agent-contract.test.mjs", "tools/apply-canonical-footer.mjs", "tools/validate-footer-seo.mjs", "tools/verify-public-footer.mjs", "tools/bouw-v18-production.mjs", ".github/workflows/production-seo-smoke.yml", ".github/workflows/v18-production-promotion.yml"]
+    },
+    {
       "id": "brain-governance",
       "paths": ["config/outcome-obligations.json", "docs/brain/component-registry.json"]
     },
@@ -73,7 +77,7 @@
     {
       "id": "website",
       "owner": "agent-website-ux",
-      "paths": ["components/", "assets/", "pages/", "site/", "index.html", "styles.css", "script.js"],
+      "paths": ["components/", "assets/", "pages/", "site/", "index.html", "styles.css", "script.js", ".github/canoniek/", "docs/canonical-seo-footer.md", "tests/footer-", "tests/v18-footer-boundary.test.mjs", "tests/shared-footer-agent-contract.test.mjs", "tools/apply-canonical-footer.mjs", "tools/validate-footer-seo.mjs", "tools/verify-public-footer.mjs", "tools/bouw-v18-production.mjs"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
