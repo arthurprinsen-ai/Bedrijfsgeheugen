@@ -1,0 +1,54 @@
+name: Writer certification reconcile
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'brain/evidence/writer-canary/*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: writer-certification-reconcile
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Reconcile canonical certification evidence into writer state
+        run: node scripts/brain/reconcile-writer-certifications.mjs --write
+
+      - name: Create candidate PR only when state changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- config/repository-writer-migration.json; then
+            echo 'NO_WRITER_CERTIFICATION_STATE_DRIFT'
+            exit 0
+          fi
+          branch="brain/writer-certification-reconcile/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$branch"
+          git add config/repository-writer-migration.json
+          git commit -m 'BRAIN: reconcile writer certification state'
+          git push origin "$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title 'BRAIN: reconcile writer certification state' \
+            --body 'Generated from canonical VERIFIED/COMPLETED evidence in brain/evidence/writer-canary. Candidate-only; no direct main write.'
