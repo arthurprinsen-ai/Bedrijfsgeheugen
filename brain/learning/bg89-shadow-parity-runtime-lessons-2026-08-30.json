@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "type": "POWERHOUSE_SHADOW_PARITY_RUNTIME_LEARNING",
   "date": "2026-08-30",
   "scope": ["make", "notion", "shadow-migration", "schema", "parity", "cost"],
@@ -21,7 +21,7 @@
       "rootCause": "Production scoring code can contain legacy/fallback property names even when the live Notion schema has evolved. Blindly converting every get('field') dependency into filter_properties[] treats code dependencies as proof of current schema existence.",
       "failedApproach": "Build projection directly from scorer source references without validating each property against the current Notion data-source schema.",
       "fix": "Compute projection = scorer dependencies intersect current schema properties, then add only current identity/idempotency fields. Missing legacy dependencies remain null/fallback at runtime exactly as production already experiences them.",
-      "evidence": "BG89 62/64 scorer dependency extraction plus live Datahub schema read found 437 properties and exactly one missing legacy dependency: Action Score. Including it caused execution 8a74d36936f6461c8c33698f9d914cec to fail 400. Removing only that proven missing property produced execution 86c800afaa6d46328cdf471734cb8ea2: 5 bounded eligible records, 2 ops, 3 credits, 45635 bytes, no writes.",
+      "evidence": "BG89 scorer dependency extraction plus live Datahub schema read found 437 properties and exactly one missing legacy dependency: Action Score. Including it caused execution 8a74d36936f6461c8c33698f9d914cec to fail 400. Removing only that proven missing property produced execution 86c800afaa6d46328cdf471734cb8ea2: 5 bounded eligible records, 2 ops, 3 credits, 45635 bytes, no writes.",
       "prevention": "Every generated Notion field projection performs dependency ∩ current-schema validation before canary or production promotion."
     },
     {
@@ -31,8 +31,26 @@
       "rootCause": "Large scorer modules are too error-prone to retype and connector summaries may truncate their source.",
       "failedApproach": "Manually reconstruct the 10k+ character scoring formula from snippets or memory.",
       "fix": "Read the exact current production blueprint through Make /v2/scenarios/{id}/blueprint, copy the scorer modules byte-for-byte into an isolated no-write parity scenario, and change only their input source/mappings required for shadow testing.",
-      "evidence": "Production BG89 module 2 code length 10145 and module 5 code length 3254 were extracted from the official blueprint. Transformer execution addaff55c3fd4d0498f727e096bab80c generated an exact no-write parity blueprint, and Make created inactive on-demand scenario 7164938 from it.",
+      "evidence": "Production BG89 module 2 code length 10145 and module 5 code length 3254 were extracted from the official blueprint. Transformer execution addaff55c3fd4d0498f727e096bab80c generated an exact no-write parity blueprint.",
       "prevention": "For long business-rule modules, source parity is blueprint-derived and code-length/hash checked; no manual rewrite is accepted as parity evidence."
+    },
+    {
+      "id": "MUTABLE_POST_WRITE_RECORD_IS_NOT_A_GOLDEN_FIXTURE",
+      "fingerprint": "shadow|parity|mutable-post-write-golden-fixture",
+      "symptom": "A later parity replay against a previously processed page produces different scores despite byte-identical scorer code.",
+      "rootCause": "The supposed golden fixture was mutated by the production scorer after the historical golden run; fields such as Evidence Score and Opportunity Score changed the later scorer input.",
+      "failedApproach": "Compare a current post-write page to an old pre-write scorer result and interpret differences as projection/scorer drift.",
+      "fix": "Parity must compare projected and full representations of the SAME immutable input in the SAME execution, before any business write occurs.",
+      "evidence": "Scenario 7164938 replayed a historical David Kriška page and differed because the page had since been enriched by BG89. The scenario was immediately deactivated and the fixture strategy was replaced rather than weakening the parity assertion.",
+      "prevention": "Never use mutable production rows as long-lived golden inputs unless their exact pre-write payload is snapshotted immutably. Prefer same-run A/B comparison."
+    },
+    {
+      "id": "SAME_INPUT_AB_PROJECTION_PARITY",
+      "fingerprint": "shadow|parity|same-input-projected-vs-full",
+      "symptom": "A projection optimization needs proof that omitted Notion properties cannot change business scoring.",
+      "fix": "In one no-write run: select one eligible unscored page through the projected query, GET that exact same page in full, normalize both to the production property-array shape, execute two byte-identical scorer pairs, and diff all outputs. Exclude only explicitly nondeterministic fields such as deadline derived from Date.now().",
+      "evidence": "TDD RED execution 1a59bfbebb33456ebd3e0a87daa275d2 returned AB_PARITY_NOT_IMPLEMENTED for page 3c5da36a-ac8a-8140-901e-fa42278f26cb. GREEN scenario 7165089 execution 7174c60f974342a39bdf7a37e444fdbd returned AB_PARITY_GREEN with signal_diff=[] and market_diff=[], write_enabled=false; 9 ops, 16 credits, 97325 bytes.",
+      "prevention": "Projection cutovers require runtime A/B parity on representative real record classes before production ownership moves. Query/read success alone is insufficient."
     }
   ],
   "protected_rule": "Shadow scenarios stay no-write and inactive/on-demand until exact output parity is proven on representative real records. Production ownership does not move on read/query success alone."
