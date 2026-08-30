@@ -1,0 +1,36 @@
+{
+  "version": "DELIVERY-LEARNING-v1",
+  "scope": "github-tool-sequencing",
+  "lessons": [
+    {
+      "fingerprint": "delivery-failure|pr|shared|create-pr-before-head-visible",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "pull request creation was attempted before the intended remote head ref was verified to exist at the expected SHA",
+      "rootCause": "the mutation sequence assumed branch/ref availability instead of reading the exact remote head identity before creating the PR",
+      "fix": "verify the remote head branch/ref exists and matches the intended exact SHA before create_pull_request; fail closed on missing or mismatched head",
+      "preventionRule": "VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|governance|shared|wrong-github-action-for-code-search",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "repository code discovery used a tool whose contract was not code search, producing incomplete or misleading capability results",
+      "rootCause": "the connector action was selected by intuition rather than by the action schema that explicitly supports repository code search",
+      "fix": "use GitHub.search for code discovery and use fetch_file only when an exact path is already known",
+      "preventionRule": "USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|pr|shared|draft-ready-transition-wrong-action",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "a draft pull request ready transition was attempted through generic PR mutation instead of the dedicated ready-for-review action",
+      "rootCause": "draft lifecycle semantics were conflated with ordinary pull request metadata updates",
+      "fix": "use mark_pull_request_ready_for_review for the semantic transition; if the known connector GraphQL schema failure occurs, apply RECREATE_READY_PR_ON_CONNECTOR_GRAPHQL_FAILURE on the identical tested head SHA",
+      "preventionRule": "USE_GITHUB_READY_FOR_REVIEW_ACTION",
+      "status": "PROVEN"
+    }
+  ]
+}
