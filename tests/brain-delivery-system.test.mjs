@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
-import {
-  createDeliveryPlan,
-  discoverBrainMembership,
-} from '../tools/brain-delivery-system.mjs';
+import * as deliverySystem from '../tools/brain-delivery-system.mjs';
+
+const { createDeliveryPlan, discoverBrainMembership } = deliverySystem;
 
 test('backend website and portal changes become one parallel delivery unit', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
@@ -95,4 +95,76 @@ test('unified workflow executes changed lanes in parallel and integrates once', 
   assert.match(workflow, /BG169/);
   assert.match(workflow, /BG168/);
   assert.match(workflow, /BG167/);
+});
+
+test('GitHub and Netlify are explicit governed Brain delivery platforms', async () => {
+  const registry = JSON.parse(await readFile('docs/brain/component-registry.json', 'utf8'));
+  const platforms = new Map(registry.components.map(component => [component.key, component]));
+
+  for (const key of ['PLATFORM_GITHUB', 'PLATFORM_NETLIFY']) {
+    assert.equal(platforms.get(key)?.status, 'active', `${key} must be active`);
+    assert.equal(platforms.get(key)?.brain_contract_version, 'brain.v1');
+    assert.equal(platforms.get(key)?.cortex, 'PRODUCTION_RELIABILITY');
+  }
+});
+
+test('Netlify deploy source rejects a linked worktree before upload', () => {
+  assert.equal(typeof deliverySystem.evaluateNetlifyDeploySource, 'function');
+  assert.deepEqual(deliverySystem.evaluateNetlifyDeploySource({
+    gitDir: '/repo/.git/worktrees/feature',
+    gitCommonDir: '/repo/.git',
+    headSha: 'a'.repeat(40),
+    expectedSha: 'a'.repeat(40),
+    treeSha: 'b'.repeat(40),
+  }), {
+    ok: false,
+    state: 'DEPLOY_SOURCE_REJECTED',
+    action: 'STAGE_STANDALONE_EXACT_SHA',
+    reason: 'linked_git_worktree',
+  });
+});
+
+test('Netlify deploy source accepts only a standalone exact-SHA checkout', () => {
+  assert.equal(typeof deliverySystem.evaluateNetlifyDeploySource, 'function');
+  assert.deepEqual(deliverySystem.evaluateNetlifyDeploySource({
+    gitDir: '/deploy/.git',
+    gitCommonDir: '/deploy/.git',
+    headSha: 'a'.repeat(40),
+    expectedSha: 'a'.repeat(40),
+    treeSha: 'b'.repeat(40),
+  }), {
+    ok: true,
+    state: 'DEPLOY_SOURCE_READY',
+    action: 'DEPLOY_EXACT_SHA',
+    headSha: 'a'.repeat(40),
+    treeSha: 'b'.repeat(40),
+  });
+
+  assert.deepEqual(deliverySystem.evaluateNetlifyDeploySource({
+    gitDir: '/deploy/.git',
+    gitCommonDir: '/deploy/.git',
+    headSha: 'c'.repeat(40),
+    expectedSha: 'a'.repeat(40),
+    treeSha: 'b'.repeat(40),
+  }), {
+    ok: false,
+    state: 'DEPLOY_SOURCE_REJECTED',
+    action: 'CHECKOUT_EXACT_SHA',
+    reason: 'head_sha_mismatch',
+  });
+});
+
+test('deploy-preflight CLI fails closed in a linked worktree and governance requires it', async () => {
+  const head = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
+  const result = spawnSync(process.execPath, [
+    'tools/brain-delivery-system.mjs',
+    'deploy-preflight',
+    '--sha',
+    head,
+  ], { encoding: 'utf8' });
+  const governance = await readFile('AGENTS.md', 'utf8');
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /STAGE_STANDALONE_EXACT_SHA/);
+  assert.match(governance, /brain-delivery-system\.mjs deploy-preflight --sha/);
 });

@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
-import { basename } from 'node:path';
+import { basename, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { DEFAULT_AGENT_TEAM } from '../platform/agents/agent-team.mjs';
 
@@ -55,6 +55,40 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   });
 }
 
+export function evaluateNetlifyDeploySource({ gitDir, gitCommonDir, headSha, expectedSha, treeSha }) {
+  const actualHead = String(headSha ?? '').trim();
+  const expectedHead = String(expectedSha ?? '').trim();
+  const tree = String(treeSha ?? '').trim();
+  if (!/^[a-f0-9]{40}$/i.test(actualHead) || !/^[a-f0-9]{40}$/i.test(expectedHead) || !/^[a-f0-9]{40}$/i.test(tree)) {
+    throw new TypeError('full headSha, expectedSha and treeSha are required');
+  }
+  if (actualHead !== expectedHead) {
+    return Object.freeze({
+      ok: false,
+      state: 'DEPLOY_SOURCE_REJECTED',
+      action: 'CHECKOUT_EXACT_SHA',
+      reason: 'head_sha_mismatch',
+    });
+  }
+  const actualGitDir = resolve(String(gitDir ?? '').trim());
+  const commonGitDir = resolve(String(gitCommonDir ?? '').trim());
+  if (actualGitDir !== commonGitDir) {
+    return Object.freeze({
+      ok: false,
+      state: 'DEPLOY_SOURCE_REJECTED',
+      action: 'STAGE_STANDALONE_EXACT_SHA',
+      reason: 'linked_git_worktree',
+    });
+  }
+  return Object.freeze({
+    ok: true,
+    state: 'DEPLOY_SOURCE_READY',
+    action: 'DEPLOY_EXACT_SHA',
+    headSha: actualHead,
+    treeSha: tree,
+  });
+}
+
 export function discoverBrainMembership({ registeredComponents = [], agents = [], workflows = [] }) {
   const rows = [];
   for (const component of registeredComponents) {
@@ -101,6 +135,26 @@ async function repositoryMembership() {
 async function main() {
   const [command = 'plan', ...args] = process.argv.slice(2);
   await mkdir('.artifacts', { recursive: true });
+  if (command === 'deploy-preflight') {
+    const shaIndex = args.indexOf('--sha');
+    const expectedSha = shaIndex >= 0 ? args[shaIndex + 1] : '';
+    const result = evaluateNetlifyDeploySource({
+      gitDir: execFileSync('git', ['rev-parse', '--git-dir'], { encoding: 'utf8' }).trim(),
+      gitCommonDir: execFileSync('git', ['rev-parse', '--git-common-dir'], { encoding: 'utf8' }).trim(),
+      headSha: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+      expectedSha,
+      treeSha: execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim(),
+    });
+    await writeFile('.artifacts/netlify-deploy-source.json', `${JSON.stringify(result, null, 2)}\n`);
+    const output = `${JSON.stringify(result)}\n`;
+    if (!result.ok) {
+      process.stderr.write(output);
+      process.exitCode = 1;
+      return;
+    }
+    process.stdout.write(output);
+    return;
+  }
   if (command === 'membership') {
     const membership = await repositoryMembership();
     await writeFile('.artifacts/brain-membership.json', `${JSON.stringify({ generatedAt: new Date().toISOString(), components: membership }, null, 2)}\n`);

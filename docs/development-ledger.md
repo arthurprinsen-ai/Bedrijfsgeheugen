@@ -334,3 +334,13 @@ When any production promotion regresses protected smoke/regression or metrics, a
 - **Regression:** unit- en contracttests dekken budgetgrenzen, automatische discovery, dedupe, normalized outcome cost, dagelijkse optimizer, Brain lineage, authz, veilige DOM-rendering, sitemap-exclusie, Notion-fallback en outcome obligations.
 - **Rollback:** herstel de vorige BG159-blueprint met exacte `lastEdit`-guard; voor repositoryproductie gebruikt BG169 de last-known-good tree. Geen betaalde capaciteit of permissie is autonoom gewijzigd.
 - **Expected effect:** periodieke herhaalruns verbruiken structureel circa 11 credits minder; nieuwe componenten kunnen het budget niet stilzwijgend omzeilen; verdere dagelijkse besparingen worden alleen behouden wanneer protected metrics groen blijven.
+
+## 2026-08-30 — RECOVERY — governed standalone Netlify deploy source
+- **Fingerprint:** `netlify|deploy|linked-worktree-gitdir|preparing-repo`
+- **Root cause:** a manual Netlify upload used a linked Git worktree whose `.git` file referenced an absolute common directory outside the uploaded source. Netlify therefore failed during repository preparation before the build could start.
+- **Before:** deploy `6a9409c5b662aa6153e324f6` failed during `preparing repo`; the source package was not self-contained.
+- **Recovery evidence:** the same governed tree was staged as a standalone `git clone --no-hardlinks` at exact SHA `0683a77b2a6046d5c8c076daf5fb96bd8f604229`; deploy `6a940a087a0d6508d92d874f` reached `ready` and production smoke checks passed.
+- **Prevention:** `BRAIN-DELIVERY-v1` now registers GitHub and Netlify as governed Brain platforms and fails closed before upload unless the source is a standalone repository at the exact BG169 SHA and tree. Rejected sources return `STAGE_STANDALONE_EXACT_SHA`.
+- **Expected cost/latency effect:** failed build preparation and duplicate upload/retry work are eliminated for this fingerprint; the deterministic local preflight uses no model tokens and negligible runtime.
+- **Regression:** pure classification tests cover linked worktree rejection, standalone exact-SHA acceptance and SHA mismatch; the CLI integration test proves the current linked worktree is rejected and records the governed result.
+- **Shared learning:** the original ERROR and successful RECOVERY were routed append-only through BG168 with separate fingerprints; the production contract change must also be routed after exact production verification.
