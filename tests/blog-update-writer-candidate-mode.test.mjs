@@ -31,6 +31,6 @@ test('operational verification is local, candidate-only and bypasses paid/extern
   assert.match(text, /VERIFICATION_REQUIRES_CANDIDATE_PR/);
   assert.match(text, /writer-verification-blog-update/);
   assert.match(text, /sitemap\.xml/);
-  assert.match(text, /Artikel bijwerken[\s\S]*?if:[^\n]*VERIFICATION_MODE/);
-  assert.match(text, /Notion op Goedgekeurd zetten[\s\S]*?VERIFICATION_MODE/);
+  assert.match(text, /Artikel bijwerken[\s\S]*?if:[^\n]*inputs\.verification_mode/);
+  assert.match(text, /Notion op Goedgekeurd zetten[\s\S]*?inputs\.verification_mode/);
 });
