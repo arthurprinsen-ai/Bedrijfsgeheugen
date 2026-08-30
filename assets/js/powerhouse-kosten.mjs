@@ -1,3 +1,5 @@
+import { getUser, login, logout } from '/assets/vendor/netlify-identity.mjs';
+
 const credits = new Intl.NumberFormat('nl-NL', { maximumFractionDigits: 1 });
 
 function setText(id, value) {
@@ -96,4 +98,35 @@ async function load() {
   }
 }
 
-load();
+function showAuthenticated(authenticated) {
+  document.getElementById('identity-login').hidden = authenticated;
+  document.getElementById('identity-logout').hidden = !authenticated;
+  document.getElementById('dashboard-content').hidden = !authenticated;
+}
+
+const loginForm = document.getElementById('identity-login');
+loginForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const status = document.getElementById('identity-status');
+  status.textContent = 'Inloggen…';
+  try {
+    await login(document.getElementById('identity-email').value, document.getElementById('identity-password').value);
+    document.getElementById('identity-password').value = '';
+    showAuthenticated(true);
+    status.textContent = 'Ingelogd.';
+    await load();
+  } catch {
+    showAuthenticated(false);
+    status.textContent = 'Inloggen mislukt. Controleer je interne account.';
+  }
+});
+
+document.getElementById('identity-logout').addEventListener('click', async () => {
+  await logout();
+  showAuthenticated(false);
+  document.getElementById('identity-status').textContent = 'Uitgelogd.';
+});
+
+const currentUser = await getUser();
+showAuthenticated(Boolean(currentUser));
+if (currentUser) await load();

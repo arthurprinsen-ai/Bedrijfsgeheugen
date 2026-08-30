@@ -20,7 +20,18 @@
     </div>
   </header>
 
-  <main>
+  <section class="auth-panel" id="auth-panel" aria-labelledby="auth-title">
+    <form id="identity-login">
+      <div><p class="eyebrow">Alleen intern</p><h2 id="auth-title">Log in op Bedrijfsgeheugen</h2></div>
+      <label>E-mailadres<input id="identity-email" name="email" type="email" autocomplete="username" required></label>
+      <label>Wachtwoord<input id="identity-password" name="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Inloggen</button>
+      <p id="identity-status" role="status" aria-live="polite">Gebruik je uitgenodigde interne account.</p>
+    </form>
+    <button id="identity-logout" type="button" hidden>Uitloggen</button>
+  </section>
+
+  <main id="dashboard-content" hidden>
     <section class="budget-grid" aria-labelledby="budget-title">
       <h2 id="budget-title" class="section-title">Budget nu</h2>
       <article class="metric"><span>Maandlimiet</span><strong id="monthly-limit">—</strong></article>

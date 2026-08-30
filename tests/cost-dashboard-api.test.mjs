@@ -25,7 +25,7 @@ test('wrong server-controlled role is forbidden', async () => {
 
 test('correct role receives only the sanitized current projection', async () => {
   const handler = createCostDashboardHandler({
-    getUser: async () => ({ id: 'U1', app_metadata: { roles: ['powerhouse-cost-admin'] } }),
+    getUser: async () => ({ id: 'U1', roles: ['powerhouse-cost-admin'], appMetadata: { roles: ['powerhouse-cost-admin'] } }),
     store: { get: async () => ({
       schemaVersion: 1,
       sourceUpdatedAt: '2026-08-30T08:00:00Z',

@@ -16,7 +16,7 @@
 
 [build]
   publish = "."
-  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
+  command = "node tools/bouw-powerhouse-auth.mjs && node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
 
 # Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
 # Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
@@ -304,7 +304,7 @@
 # Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
 # alternatieve preview-composer meer die een andere website kan tonen.
 [context.deploy-preview]
-  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
+  command = "node tools/bouw-powerhouse-auth.mjs && node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
 
 [[redirects]]
   from = "/aanmelden.html"

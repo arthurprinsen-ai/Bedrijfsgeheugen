@@ -22,7 +22,13 @@ export function createCostDashboardHandler({ getUser, store, now = () => new Dat
     if (request.method !== 'GET') return json({ error: 'METHOD_NOT_ALLOWED' }, 405, { allow: 'GET' });
     const user = await getUser();
     if (!user?.id) return json({ error: 'UNAUTHORIZED' }, 401);
-    const roles = Array.isArray(user.app_metadata?.roles) ? user.app_metadata.roles : [];
+    const roles = Array.isArray(user.roles)
+      ? user.roles
+      : Array.isArray(user.appMetadata?.roles)
+        ? user.appMetadata.roles
+        : Array.isArray(user.app_metadata?.roles)
+          ? user.app_metadata.roles
+          : [];
     if (!roles.includes('powerhouse-cost-admin')) return json({ error: 'FORBIDDEN' }, 403);
     const record = await store.get();
     if (!record) return json({ error: 'NOT_FOUND' }, 404);

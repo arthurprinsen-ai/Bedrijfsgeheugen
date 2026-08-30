@@ -8,6 +8,7 @@ import { spawnSync } from 'node:child_process';
 const html = await readFile('intern/powerhouse-kosten/index.html', 'utf8').catch(() => '');
 const client = await readFile('assets/js/powerhouse-kosten.mjs', 'utf8').catch(() => '');
 const config = await readFile('netlify.toml', 'utf8');
+const authBuild = await readFile('tools/bouw-powerhouse-auth.mjs', 'utf8').catch(() => '');
 
 test('internal dashboard shell contains no operational data and is noindex', () => {
   assert.match(html, /name="robots" content="noindex,nofollow,noarchive"/);
@@ -19,6 +20,17 @@ test('scenario-controlled values use safe DOM text rendering', () => {
   assert.match(client, /\.textContent\s*=/);
   assert.doesNotMatch(client, /\.innerHTML\s*=/);
   assert.match(client, /credentials:\s*'same-origin'/);
+});
+
+test('internal users can authenticate with the supported headless Identity client', () => {
+  assert.match(html, /id="identity-login"/);
+  assert.match(html, /type="email"/);
+  assert.match(html, /type="password"/);
+  assert.doesNotMatch(html, /sign.?up|registreren/i);
+  assert.match(client, /\/assets\/vendor\/netlify-identity\.mjs/);
+  assert.match(client, /\b(login|getUser|logout)\b/);
+  assert.match(authBuild, /@netlify\/identity\/dist\/main\.js/);
+  assert.match(config, /bouw-powerhouse-auth\.mjs/);
 });
 
 test('internal dashboard has private no-store and strict route headers', () => {
