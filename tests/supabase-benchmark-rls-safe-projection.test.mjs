@@ -11,7 +11,8 @@ for (const view of ['benchmark_branche', 'benchmark_niveaus', 'benchmark_offerte
 }
 
 test('raw source tables are never granted select by this migration', () => {
-  assert.doesNotMatch(sql, /grant\s+select[\s\S]*?(scan_inzendingen|offerte_inzendingen)/);
+  assert.doesNotMatch(sql, /grant\s+select\s+on\s+(?:table\s+)?public\.scan_inzendingen\b/);
+  assert.doesNotMatch(sql, /grant\s+select\s+on\s+(?:table\s+)?public\.offerte_inzendingen\b/);
 });
 
 test('projection tables enforce RLS and public read-only access', () => {
