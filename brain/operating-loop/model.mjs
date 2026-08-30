@@ -18,7 +18,21 @@ export function validateDoneOutcome(record){
   if(record.result===null||record.result===undefined||record.result==='') throw new Error('Done requires result');
   if(!Array.isArray(record.evidenceIds)||record.evidenceIds.length===0) throw new Error('Done requires evidence');return true;
 }
-function graphFrom(records){const nodes=new Map();const edges=[];for(const record of records){nodes.set(record.id,{id:record.id,kind:record.kind,subjectId:record.subjectId,tenantId:record.tenantId});nodes.set(record.subjectId,{id:record.subjectId,kind:'subject',tenantId:record.tenantId});edges.push({from:record.id,to:record.subjectId,relation:'about'});for(const ref of record.references||[]) edges.push({from:record.id,to:ref,relation:'supports_or_derives_from'});}return {nodes:[...nodes.values()],edges};}
+function graphFrom(records){
+  const nodes=new Map();const edges=[];
+  for(const record of records){
+    nodes.set(record.id,{id:record.id,kind:record.kind,subjectId:record.subjectId,tenantId:record.tenantId});
+    nodes.set(record.subjectId,{id:record.subjectId,kind:'subject',tenantId:record.tenantId});
+    edges.push({from:record.id,to:record.subjectId,relation:'about'});
+    for(const ref of record.references||[]) edges.push({from:record.id,to:ref,relation:'supports_or_derives_from'});
+    if(record.kind==='relation'&&record.payload?.from&&record.payload?.to){
+      const from=String(record.payload.from),to=String(record.payload.to);
+      nodes.set(from,{id:from,kind:'subject',tenantId:record.tenantId});nodes.set(to,{id:to,kind:'subject',tenantId:record.tenantId});
+      edges.push({from,to,relation:record.payload.relation||'related_to',weight:Number(record.payload.weight??1),evidenceIds:[...(record.evidenceIds||[])],relationRecordId:record.id});
+    }
+  }
+  return {nodes:[...nodes.values()],edges};
+}
 export function deriveLoopState(records){
   const normalized=records.map(r=>r?.schemaVersion==='brain-record.v1'?r:normalizeBrainRecord(r));const evidence=normalized.filter(r=>r.kind==='evidence');const decisions=normalized.filter(r=>r.kind==='decision');const actions=normalized.filter(r=>r.kind==='action');const outcomes=normalized.filter(r=>r.kind==='outcome');const learnings=normalized.filter(r=>r.kind==='learning');
   const advice=decisions.map(r=>({id:r.id,subjectId:r.subjectId,owner:r.owner,recommendation:r.payload?.recommendation||r.result||null,status:r.status})).filter(x=>x.recommendation);
