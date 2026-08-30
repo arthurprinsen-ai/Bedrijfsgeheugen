@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "canonicalSource": ".github/canoniek/voet.html",
+  "requiredScopes": [
+    "component:footer",
+    "area:seo"
+  ],
+  "governedGlobs": [
+    "*.html",
+    "blog/*/index.html"
+  ],
+  "exceptions": [
+    {
+      "file": "404.html",
+      "reason": "Noindex error surface, not a public marketing page."
+    },
+    {
+      "file": "klantportaal.html",
+      "reason": "Noindex authenticated customer application shell."
+    },
+    {
+      "file": "klantportaal-demo.html",
+      "reason": "Noindex application demo shell, not a public marketing page."
+    },
+    {
+      "file": "index-oud.html",
+      "reason": "Noindex archived non-canonical historical artifact."
+    }
+  ],
+  "strategicDestinations": [
+    "/bedrijfsgeheugen",
+    "/bedrijfsprocessen-automatiseren",
+    "/systemen-koppelen",
+    "/afas-koppeling",
+    "/exact-online-koppeling",
+    "/twinfield-koppeling",
+    "/api-koppeling-laten-maken",
+    "/ai-adoptie",
+    "/ai-governance",
+    "/ai-act",
+    "/data-soevereiniteit",
+    "/benchmark",
+    "/blog/",
+    "/over-ons",
+    "/contact",
+    "/privacy"
+  ],
+  "rules": {
+    "exactlyOneFooter": true,
+    "footerChangesRequireSeoGreen": true,
+    "anchorsMustMatchKeywordStrategy": true,
+    "noDeadFooterLinks": true,
+    "noKeywordCannibalization": true,
+    "v18OnlyFooterMayChange": true
+  }
+}
