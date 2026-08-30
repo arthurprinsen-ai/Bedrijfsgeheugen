@@ -180,6 +180,22 @@ jobs:
             -f candidate_branch="$PR_HEAD_REF"
           echo "SHADOW_DISPATCHED pr=$PR_NUMBER head=$PR_HEAD_SHA"
 
+      - name: Dispatch Unified Brain Delivery production-authority handoff
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_BASE_SHA: ${{ steps.pr.outputs.base_sha }}
+          PR_HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+          PR_HEAD_REF: ${{ steps.pr.outputs.head_ref }}
+        run: |
+          set -euo pipefail
+          gh workflow run unified-brain-delivery.yml --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$PR_BASE_SHA" \
+            -f head_sha="$PR_HEAD_SHA" \
+            -f candidate_branch="$PR_HEAD_REF"
+          echo "UNIFIED_BRAIN_DISPATCHED pr=$PR_NUMBER head=$PR_HEAD_SHA"
+
       - name: BRAIN v2 canary handoff
         run: |
           echo "writer=${{ steps.resolve.outputs.writer }}"

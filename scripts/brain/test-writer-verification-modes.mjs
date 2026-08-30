@@ -18,6 +18,7 @@ assert.match(canary,/createWriterCandidate/);
 assert.match(canary,/validateWriterCandidate/);
 assert.match(canary,/gh pr create/);
 assert.match(canary,/repo-writer-candidate-shadow\.yml/);
+assert.match(canary,/unified-brain-delivery\.yml/,'cheap canary must dispatch Unified Brain Delivery after immutable shadow dispatch');
 assert.match(canary,/-f pr_number=/);
 assert.match(canary,/-f base_sha=/);
 assert.match(canary,/-f head_sha=/);
