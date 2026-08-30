@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const CONTRACT_PATH = 'config/chat-learning-completeness-guard.json';
 const BROWSER_CONTRACT_PATH = 'config/browser-evidence-guard-contract.json';
+const SHARED_MEMORY_WORKFLOW = '.github/workflows/shared-agent-memory-tests.yml';
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
@@ -46,6 +47,11 @@ test('agents cannot stop on local green while material obligations remain open',
   assert.equal(rule.failedApproach, 'Stoppen na lokale technische groenstatus terwijl materiële outcome-, delivery-, recovery- of production-obligations nog open staan.');
   assert.match(rule.preventionRule, /alle materiële obligations/i);
   assert.equal(rule.status, 'GUARDED');
+});
+
+test('shared agent memory CI executes the chat-learning completeness guard', async () => {
+  const workflow = await readFile(SHARED_MEMORY_WORKFLOW, 'utf8');
+  assert.match(workflow, /tests\/brain-chat-learning-completeness\.test\.mjs/);
 });
 
 test('learning records preserve the full causal chain', async () => {
