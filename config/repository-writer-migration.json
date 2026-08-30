@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 3,
-  "mainProtectionReady": true,
+  "schemaVersion": 4,
+  "writerMigrationReady": true,
   "governingIssue": 175,
   "prCreationBoundary": {
     "status": "RESOLVED_VERIFIED",
@@ -37,19 +37,11 @@
         "baseSha": "deff83404d4a28058b241f320641150930ebfa46",
         "headSha": "da6fdb6eaec0e7d4aaf33fc8961c5c2bbc469213",
         "candidateBranch": "writer/approved-central-blog/a45ad06379906eb1",
-        "changedFiles": [
-          "blog/writer-verification-approved-central/index.html"
-        ],
+        "changedFiles": ["blog/writer-verification-approved-central/index.html"],
         "pathPolicyVerified": true,
         "exactHeadVerified": true
       },
-      "parityRollbackEvidence": {
-        "evidenceRef": "github-run:33331182252:writer:approved-central-blog",
-        "truth_status": "VERIFIED",
-        "status": "COMPLETED",
-        "outcome_router": "BG168",
-        "current_state_projection": "BG167"
-      }
+      "parityRollbackEvidence": {"evidenceRef":"github-run:33331182252:writer:approved-central-blog","truth_status":"VERIFIED","status":"COMPLETED","outcome_router":"BG168","current_state_projection":"BG167"}
     },
     {
       "name": "blog-bijwerken",
@@ -70,21 +62,11 @@
         "baseSha": "865871f17ec16e0a279c249f4d0ffa5dbb0ac3cf",
         "headSha": "e4eefd8f7973b2d2ddb4fbb8cd0aceaf4a3c2f12",
         "candidateBranch": "writer/blog-bijwerken/ed7f789b81251345",
-        "changedFiles": [
-          "blog/writer-verification-blog-update-seed/index.html",
-          "blog/writer-verification-blog-update/index.html",
-          "sitemap.xml"
-        ],
+        "changedFiles": ["blog/writer-verification-blog-update-seed/index.html","blog/writer-verification-blog-update/index.html","sitemap.xml"],
         "pathPolicyVerified": true,
         "exactHeadVerified": true
       },
-      "parityRollbackEvidence": {
-        "evidenceRef": "github-run:33331182252:writer:blog-bijwerken",
-        "truth_status": "VERIFIED",
-        "status": "COMPLETED",
-        "outcome_router": "BG168",
-        "current_state_projection": "BG167"
-      }
+      "parityRollbackEvidence": {"evidenceRef":"github-run:33331182252:writer:blog-bijwerken","truth_status":"VERIFIED","status":"COMPLETED","outcome_router":"BG168","current_state_projection":"BG167"}
     },
     {
       "name": "menu-balk-fix",
@@ -105,19 +87,11 @@
         "baseSha": "6240886f38ade95d61769048ce49e8280f8356cd",
         "headSha": "613ddfa3bae4d836aafa0e8546588923c391ca45",
         "candidateBranch": "writer/menu-balk-fix/5f1a11b96d1d4fc7",
-        "changedFiles": [
-          "writer-verification-menu-shadow-production-proof-20260830.html"
-        ],
+        "changedFiles": ["writer-verification-menu-shadow-production-proof-20260830.html"],
         "pathPolicyVerified": true,
         "exactHeadVerified": true
       },
-      "parityRollbackEvidence": {
-        "evidenceRef": "github-run:33331182252:writer:menu-balk-fix",
-        "truth_status": "VERIFIED",
-        "status": "COMPLETED",
-        "outcome_router": "BG168",
-        "current_state_projection": "BG167"
-      }
+      "parityRollbackEvidence": {"evidenceRef":"github-run:33331182252:writer:menu-balk-fix","truth_status":"VERIFIED","status":"COMPLETED","outcome_router":"BG168","current_state_projection":"BG167"}
     },
     {
       "name": "paginacontrole",
@@ -135,21 +109,13 @@
         "baseSha": "d888a495e3f2368442a618da0e3ad032ee444581",
         "headSha": "d5783314fda2b663a31e2933fc994f30af3e8a9b",
         "candidateBranch": "writer/paginacontrole/7b692b1b59021dba",
-        "changedFiles": [
-          "paginacontrole-canary.html"
-        ],
+        "changedFiles": ["paginacontrole-canary.html"],
         "pathPolicyVerified": true,
         "exactHeadVerified": true,
         "certificationEvidence": "brain/evidence/writer-canary/paginacontrole-operational-certification.json",
         "idempotencyKey": "writer-certification|paginacontrole|8439f40c1a3a9f25701ed1f61fb9d02b399720b4|33316041100"
       },
-      "parityRollbackEvidence": {
-        "evidenceRef": "github-run:33331182252:writer:paginacontrole",
-        "truth_status": "VERIFIED",
-        "status": "COMPLETED",
-        "outcome_router": "BG168",
-        "current_state_projection": "BG167"
-      }
+      "parityRollbackEvidence": {"evidenceRef":"github-run:33331182252:writer:paginacontrole","truth_status":"VERIFIED","status":"COMPLETED","outcome_router":"BG168","current_state_projection":"BG167"}
     },
     {
       "name": "regelgeving-bijwerken",
@@ -168,21 +134,13 @@
         "baseSha": "7e14fdb3ddde3491032a9d97a5673904c991613c",
         "headSha": "ecb9a5e9e973c366e852a7fd8d5dcb0819d74ce6",
         "candidateBranch": "writer/regelgeving-bijwerken/6ade39be30626266",
-        "changedFiles": [
-          "data/regelgeving.json"
-        ],
+        "changedFiles": ["data/regelgeving.json"],
         "pathPolicyVerified": true,
         "exactHeadVerified": true,
         "certificationEvidence": "brain/evidence/writer-canary/regelgeving-bijwerken-operational-certification.json",
         "idempotencyKey": "writer-certification:regelgeving-bijwerken:ecb9a5e9e973c366e852a7fd8d5dcb0819d74ce6"
       },
-      "parityRollbackEvidence": {
-        "evidenceRef": "github-run:33331182252:writer:regelgeving-bijwerken",
-        "truth_status": "VERIFIED",
-        "status": "COMPLETED",
-        "outcome_router": "BG168",
-        "current_state_projection": "BG167"
-      }
+      "parityRollbackEvidence": {"evidenceRef":"github-run:33331182252:writer:regelgeving-bijwerken","truth_status":"VERIFIED","status":"COMPLETED","outcome_router":"BG168","current_state_projection":"BG167"}
     },
     {
       "name": "seo-controle",
@@ -201,21 +159,13 @@
         "baseSha": "7e14fdb3ddde3491032a9d97a5673904c991613c",
         "headSha": "3cc5c257dc455d32f359a95b2d2decfb3a1c0463",
         "candidateBranch": "writer/seo-controle/ef6910dfb84a5014",
-        "changedFiles": [
-          "sitemap.xml"
-        ],
+        "changedFiles": ["sitemap.xml"],
         "pathPolicyVerified": true,
         "exactHeadVerified": true,
         "certificationEvidence": "brain/evidence/writer-canary/seo-controle-operational-certification.json",
         "idempotencyKey": "writer-certification:seo-controle:3cc5c257dc455d32f359a95b2d2decfb3a1c0463"
       },
-      "parityRollbackEvidence": {
-        "evidenceRef": "github-run:33331182252:writer:seo-controle",
-        "truth_status": "VERIFIED",
-        "status": "COMPLETED",
-        "outcome_router": "BG168",
-        "current_state_projection": "BG167"
-      }
+      "parityRollbackEvidence": {"evidenceRef":"github-run:33331182252:writer:seo-controle","truth_status":"VERIFIED","status":"COMPLETED","outcome_router":"BG168","current_state_projection":"BG167"}
     },
     {
       "name": "weekblog",
@@ -233,21 +183,13 @@
         "baseSha": "7e14fdb3ddde3491032a9d97a5673904c991613c",
         "headSha": "3472ef06b9bdeac695d2d988986803a96a1e1851",
         "candidateBranch": "writer/weekblog/9b10b092945fdf5d",
-        "changedFiles": [
-          "blog/writer-verification-weekblog-33323817141/index.html"
-        ],
+        "changedFiles": ["blog/writer-verification-weekblog-33323817141/index.html"],
         "pathPolicyVerified": true,
         "exactHeadVerified": true,
         "certificationEvidence": "brain/evidence/writer-canary/weekblog-operational-certification.json",
         "idempotencyKey": "writer-certification:weekblog:3472ef06b9bdeac695d2d988986803a96a1e1851"
       },
-      "parityRollbackEvidence": {
-        "evidenceRef": "github-run:33331182252:writer:weekblog",
-        "truth_status": "VERIFIED",
-        "status": "COMPLETED",
-        "outcome_router": "BG168",
-        "current_state_projection": "BG167"
-      }
+      "parityRollbackEvidence": {"evidenceRef":"github-run:33331182252:writer:weekblog","truth_status":"VERIFIED","status":"COMPLETED","outcome_router":"BG168","current_state_projection":"BG167"}
     }
   ]
 }
