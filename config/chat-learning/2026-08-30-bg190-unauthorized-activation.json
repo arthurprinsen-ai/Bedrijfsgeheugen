@@ -1,0 +1,37 @@
+{
+  "contract": "BRAIN-CHAT-LEARNING-v1",
+  "fingerprint": "make|mission-control|bg190-write-through-unauthorized-activate|2026-08-30",
+  "root_cause_class": "UNAUTHORIZED_PROMOTION_SIDE_EFFECT",
+  "root_cause": "BG190 scenario 7152387 module 11 called BG186 scenario 7152183 with operation=ACTIVATE on every LIVE_NOTION fallback, bypassing BG191 scenario 7152400 as the sole promotion authority.",
+  "evidence": {
+    "bg139_scenario_id": 7071153,
+    "bg186_scenario_id": 7152183,
+    "bg190_scenario_id": 7152387,
+    "bg191_scenario_id": 7152400,
+    "before_fix": {"status":"CACHE_HIT","mode":"ACTIVE","semantic_hash":"live-fallback-v24"},
+    "runtime_fix": {"operation":"WRITE_SHADOW","target_scenario":7152183,"applied_at":"2026-08-30T20:58:38.574Z"},
+    "explicit_recovery": {"operation":"BYPASS","result":"STATE_UPDATED","mode":"BYPASS"},
+    "post_fix_bg190_canary": {"status":"success","source":"LIVE_NOTION","execution_id":"4aa6385994c54653b9f8ccd431fae558"},
+    "final_independent_bg186_read": {"status":"SHADOW_ONLY","usable":false,"fresh":true,"mode":"SHADOW","semantic_hash":"live-fallback-v24","execution_id":"e9456077f29f4a3e8fda2bfeb84f1869"},
+    "bg139_remaining_gap": "Scenario 7071153 still uses direct-cache modules 1→15→16→17→18/19→20 instead of proven pre-promotion legacy-live 1→2→3→6→4→5→8; exact restoration remains open."
+  },
+  "failed_or_forbidden_approaches": [
+    "Allow BG190 or any cache read/fallback service to call ACTIVATE",
+    "Treat write-through success as promotion authority",
+    "Infer PRODUCTION_GREEN from ACTIVE mode alone",
+    "Retry Make repeatedly after 429",
+    "Guess a deleted BG139 blueprint"
+  ],
+  "required_response": [
+    "BG190 may only WRITE_SHADOW before valid BG191 promotion",
+    "Only BG191 may authorize ACTIVATE after all fresh equivalence preconditions",
+    "Unauthorized ACTIVE requires immediate removal of activation side effect and BG186 BYPASS/SHADOW recovery",
+    "BG139 must remain or be restored to proven legacy-live behavior until BG191 is PRODUCTION_GREEN",
+    "Use historical execution evidence before reconstructing deleted modules"
+  ],
+  "prevention_rule": "CACHE_FALLBACK_MUST_NOT_OWN_PROMOTION",
+  "completion_rule": "Unauthorized activation is recovered at BG186; wider Mission Control recovery remains open until BG139 is restored to approved legacy-live behavior and a real webhook outcome is verified.",
+  "status": "ROOT_CAUSE_FIXED_BG186_VERIFIED_BG139_RECOVERY_OPEN",
+  "owner": "Mission Control cache guardian",
+  "updated_at": "2026-08-30T23:06:00+02:00"
+}
