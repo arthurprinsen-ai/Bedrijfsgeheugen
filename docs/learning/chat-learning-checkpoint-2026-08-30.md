@@ -208,6 +208,34 @@ OpenArt connector is available. For video generation:
 
 Current chosen concept: variant 1 — peaceful premium 10s 1080p 16:9 drone flight over modern waterfront skyline at golden hour.
 
+## Customer portal auth / legacy UI recovery
+
+Canonical fingerprint: `portal|customer-auth|legacy-inline-login-jitter`.
+
+The IJsselmonde incident proved that mixed Netlify Identity, Supabase customer auth and legacy portal render ownership can create a false diagnosis trap: password auth, RLS and offer reads can all return healthy evidence while the editable login surface remains unusable on iOS because the large legacy document rebuilds auth DOM, loses focus and visibly jitters.
+
+Canonical recovery:
+- `klant-login.html` is the single editable customer-auth boundary;
+- Supabase performs password/magic-link authentication and RLS authorization;
+- customer session/state is persisted outside the legacy inline login lifecycle;
+- unauthenticated legacy `toonInlog` redirects to the isolated login instead of rendering `bgMail`/`bgWw`;
+- return to the same customer slug and existing portal after successful access verification;
+- preserve the existing offer/sprint/customer data path rather than replacing the portal as a side effect of an auth repair.
+
+Known failed approaches that must not be repeated without new evidence: only bypassing Netlify Identity, only changing reload/direct-open behavior, only adding session persistence, or stacking more inline-field patches while multiple auth/render owners remain. If backend auth and data are green but the UI is unstable, identify ownership boundaries before changing credentials, RLS or data logic.
+
+A device/UI incident closes only with device outcome evidence. HTTP 200, successful Supabase API calls, green CI and Netlify `READY` are supporting evidence but do not prove that an iOS user can actually type and complete login.
+
+## Shared-memory governance lessons from this chat
+
+Before proposing any new memory/learning subsystem, inspect the existing memory architecture before creating a new memory subsystem. This repo already has `AGENTS.md`, `docs/development-ledger.md`, `docs/self-healing-agents.md`, the Shared Agent Memory design, `config/brain-chat-learning-contract.json`, canonical chat checkpoints and BG166/BG167/BG168 writeback. New learning belongs in those existing truths unless evidence proves a genuine architectural gap.
+
+A real governance gap was found: Shared Agent Memory CI protected `automation/**` pushes and pull requests to `main`, but not direct pushes to `main`. As a result, direct pushes to `main` could change memory contracts without running the memory suite. The workflow now includes `main` under the push trigger, and `tests/development-doc-contract.test.mjs` verifies that trigger remains present.
+
+That push-trigger is detection after the write, not pre-write prevention. This chat produced a concrete incident at commit `1e33e684905bd187e44389d30433dd64cf872f9b`: an unsigned one-parent test commit landed directly on unprotected `main`; only afterwards did Shared Agent Memory run `33333597731`, which failed 142/143 because the canonical checkpoint had not been co-changed. Canonical fingerprint: `github|main-governance|post-push-ci-after-unauthorized-write`. Never interpret a post-push workflow as equivalent to native branch/ruleset protection.
+
+The first run after closing the earlier memory-trigger gap correctly went RED and exposed a test-quality issue: the memory assertion searched for `production evidence` case-sensitively while the ledger contained `Production evidence`. The repair was to make that semantic evidence assertion case-insensitive instead of changing valid production documentation merely to satisfy casing. Reusable rule: contract tests should be strict on meaning, identifiers, invariants and exact machine values, but not accidentally brittle on irrelevant prose capitalization.
+
 ## Development-speed rules
 
 To make future work faster:
