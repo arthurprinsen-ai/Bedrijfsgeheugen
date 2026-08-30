@@ -20,11 +20,15 @@ test('canonical footer governance inherits current shared Brain learning contrac
   assert.doesNotMatch(doc, /brain\/memory\/chat-learning-registry\.json/);
   assert.match(doc, /preview.*production|preview-before-production/i);
   assert.match(doc, /writeback.*done|writeback-before-done/i);
+  assert.match(doc, /maximaal twee|two identical retries/i);
+  assert.match(doc, /blog\/index\.html/);
+  assert.match(doc, /exception.*noindex|uitzonder.*noindex/i);
 
   assert.equal(brain.preflightRequired, true);
   assert.equal(brain.newAgentsMustReadBeforeExecution, true);
   assert.equal(brain.policy.writeNewMaterialLearningBack, true);
-  assert.ok(completeness.rules?.blockMaterialCompletionWhenLearningIsChatOnly || completeness.blockMaterialCompletionWhenLearningIsChatOnly || completeness.policy?.blockMaterialCompletionWhenLearningIsChatOnly);
+  assert.equal(completeness.completionPolicy.blockIfMaterialLearningOnlyInChat, true);
+  assert.equal(completeness.retryPolicy.maxIdenticalRetriesWithoutNewEvidence, 2);
   assert.deepEqual(footer.requiredScopes, ['component:footer', 'area:seo']);
   assert.equal(footer.rules.footerChangesRequireSeoGreen, true);
   assert.match(agents, /BRAIN chat-learning preflight/i);
