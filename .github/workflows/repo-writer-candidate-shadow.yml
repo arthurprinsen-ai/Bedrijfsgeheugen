@@ -4,32 +4,51 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Exact candidate PR number'
+        required: true
+        type: string
+      base_sha:
+        description: 'Exact candidate PR base SHA'
+        required: true
+        type: string
+      head_sha:
+        description: 'Exact candidate PR head SHA'
+        required: true
+        type: string
+      candidate_branch:
+        description: 'Exact writer candidate branch'
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   verify:
-    if: startsWith(github.head_ref, 'writer/')
+    if: startsWith(github.head_ref, 'writer/') || (github.event_name == 'workflow_dispatch' && startsWith(inputs.candidate_branch, 'writer/'))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Verify bounded writer candidate paths and emit immutable evidence
         env:
-          GITHUB_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          GITHUB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GITHUB_HEAD_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.candidate_branch || github.head_ref }}
+          GITHUB_PR_BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.base_sha || github.event.pull_request.base.sha }}
+          GITHUB_PR_HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
           REPO_WRITER_EVIDENCE_PATH: artifacts/repo-writer-shadow-evidence.json
         run: node scripts/ci/repo-writer-shadow-verify.mjs
       - name: Upload immutable writer shadow evidence
         uses: actions/upload-artifact@v4
         with:
-          name: repo-writer-shadow-evidence-${{ github.event.pull_request.number }}
+          name: repo-writer-shadow-evidence-${{ github.event_name == 'workflow_dispatch' && inputs.pr_number || github.event.pull_request.number }}
           path: artifacts/repo-writer-shadow-evidence.json
           if-no-files-found: error

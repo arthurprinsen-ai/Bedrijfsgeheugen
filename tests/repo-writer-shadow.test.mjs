@@ -36,8 +36,9 @@ test('shadow verification emits immutable exact-PR evidence as a read-only artif
   const workflow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   const verifier = fs.readFileSync('scripts/ci/repo-writer-shadow-verify.mjs', 'utf8');
 
-  assert.match(workflow, /GITHUB_PR_BASE_SHA:\s*\$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
-  assert.match(workflow, /GITHUB_PR_HEAD_SHA:\s*\$\{\{ github\.event\.pull_request\.head\.sha \}\}/);
+  assert.match(workflow, /GITHUB_PR_BASE_SHA:[^\n]*inputs\.base_sha[^\n]*github\.event\.pull_request\.base\.sha/);
+  assert.match(workflow, /GITHUB_PR_HEAD_SHA:[^\n]*inputs\.head_sha[^\n]*github\.event\.pull_request\.head\.sha/);
+  assert.match(workflow, /ref:[^\n]*inputs\.head_sha[^\n]*github\.event\.pull_request\.head\.sha/);
   assert.match(workflow, /REPO_WRITER_EVIDENCE_PATH:\s*artifacts\/repo-writer-shadow-evidence\.json/);
   assert.match(workflow, /uses:\s*actions\/upload-artifact@v4/);
   assert.match(workflow, /path:\s*artifacts\/repo-writer-shadow-evidence\.json/);
@@ -51,4 +52,23 @@ test('shadow verification emits immutable exact-PR evidence as a read-only artif
   assert.match(verifier, /candidateBranch/);
   assert.match(verifier, /writeFileSync/);
   assert.match(verifier, /schemaVersion:\s*1/);
+});
+
+test('writer-created PRs can explicitly self-dispatch read-only shadow verification', () => {
+  const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
+  const menu = fs.readFileSync('.github/workflows/menu-balk-fix.yml', 'utf8');
+
+  assert.match(shadow, /workflow_dispatch:/);
+  assert.match(shadow, /pr_number:/);
+  assert.match(shadow, /base_sha:/);
+  assert.match(shadow, /head_sha:/);
+  assert.match(shadow, /candidate_branch:/);
+  assert.match(shadow, /github\.event_name == 'workflow_dispatch'/);
+
+  assert.match(menu, /repo-writer-candidate-shadow\.yml/);
+  assert.match(menu, /gh workflow run/);
+  assert.match(menu, /-f pr_number=/);
+  assert.match(menu, /-f base_sha=/);
+  assert.match(menu, /-f head_sha=/);
+  assert.match(menu, /-f candidate_branch=/);
 });
