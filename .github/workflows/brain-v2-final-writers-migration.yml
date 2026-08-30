@@ -1,0 +1,53 @@
+name: BRAIN v2 final writers migration
+
+on:
+  push:
+    branches: [fix/brain-v2-final-writers]
+    paths:
+      - 'scripts/ci/migrate-final-writers-v2.py'
+      - '.github/workflows/brain-v2-final-writers-migration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: brain-v2-final-writers-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: fix/brain-v2-final-writers
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Apply deterministic candidate-only migration
+        run: python3 scripts/ci/migrate-final-writers-v2.py
+      - name: Verify migration contract before writeback
+        run: |
+          node --test \
+            tests/brain-v2-final-writers.test.mjs \
+            tests/repo-writer-governance.test.mjs \
+            tests/repository-writer-structural-parity.test.mjs \
+            tests/blog-update-writer-candidate-mode.test.mjs \
+            tests/weekblog-writer-candidate-mode.test.mjs \
+            tests/paginacontrole-writer-candidate-mode.test.mjs \
+            tests/content-writer-operational-fixture.test.mjs
+          grep -R "git push origin HEAD:main" .github/workflows && exit 1 || true
+      - name: Commit migration to isolated lane
+        run: |
+          set -euo pipefail
+          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo "Migration is already applied."
+            exit 0
+          fi
+          git config user.name "BRAIN v2 migration"
+          git config user.email "actions@users.noreply.github.com"
+          git add .github/workflows tests tools netlify.toml scripts/ci/migrate-final-writers-v2.py
+          git commit -m "BRAIN v2: make final repository writers candidate-only"
+          git push origin HEAD:fix/brain-v2-final-writers
