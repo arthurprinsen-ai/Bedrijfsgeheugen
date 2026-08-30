@@ -1,0 +1,27 @@
+{
+  "version": "BRANCH-DELIVERY-OWNERSHIP-GUARD-v1",
+  "failClosed": true,
+  "purpose": "Voorkom stale branch reuse, dubbele semantische PR-owners en ambigue successor-state in de deliveryketen.",
+  "preflight": {
+    "requireCurrentMainSha": true,
+    "rejectPreviouslyMergedOrSupersededBranch": true,
+    "searchOpenPrSemanticOverlap": true,
+    "requireCanonicalOwner": true,
+    "bindCandidateToExactBaseAndHeadSha": true,
+    "recheckCurrentMainBeforeHandoff": true
+  },
+  "onOverlap": "REUSE_MERGE_OR_SUPERSEDE",
+  "ambiguousSuccessorState": "FAIL_CLOSED",
+  "knownFailure": {
+    "fingerprint": "delivery|branch-pr|stale-reuse-or-duplicate-owner-v1",
+    "symptom": "Een reeds gebruikte of stale branch wordt opnieuw ingezet, of meerdere PR's proberen dezelfde semantische wijziging te bezitten.",
+    "rootCause": "Branch lifecycle, actuele main-identiteit, semantische scope en canonical ownership werden niet als één preflightcontract gecontroleerd.",
+    "failedApproach": "Een oude, stale of reeds gebruikte branch hergebruiken of een tweede overlappende PR openen zonder expliciete successor/owner-resolutie.",
+    "fix": "Start vanaf actuele main, inventariseer open PR-overlap, kies één canonical owner en reuse/merge/supersede bestaande delivery voordat nieuw werk start.",
+    "preventionRule": "CHECK_CURRENT_MAIN_BRANCH_LIFECYCLE_PR_OVERLAP_AND_CANONICAL_OWNER_BEFORE_DELIVERY",
+    "regressionContract": "tests/branch-delivery-ownership-guard.test.mjs",
+    "evidence": "2026-08-30 chat: een reeds gebruikte branch werd opnieuw ingezet en moest worden vervangen door een schone branch vanaf actuele main.",
+    "owner": "agent-reliability",
+    "status": "GUARDED"
+  }
+}
