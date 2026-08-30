@@ -9,11 +9,11 @@ test('primary chat-learning preflight directly loads completeness and browser gu
   assert.match(source, /browser-evidence-guard-contract\.json/);
 
   const decision = await loadDeliveryPreflight({ component: 'shared' });
-  const reused = new Set(decision.reusedLessons);
-  assert.ok(reused.has('learning|completion|material-learning-only-in-chat'));
-  assert.ok(reused.has('connector|mutation|probe-created-unwanted-artifacts'));
-  assert.ok(reused.has('browser-evidence|launchagent|node-path-missing'));
-  assert.ok(reused.has('browser-evidence|gate|fail-open'));
+  const guarded = new Set(decision.reusedGuards);
+  assert.ok(guarded.has('learning|completion|material-learning-only-in-chat'));
+  assert.ok(guarded.has('connector|mutation|probe-created-unwanted-artifacts'));
+  assert.ok(guarded.has('browser-evidence|launchagent|node-path-missing'));
+  assert.ok(guarded.has('browser-evidence|gate|fail-open'));
 });
 
 test('canonical completeness guard remains fail-closed for chat-only learning and probe mutations', async () => {
