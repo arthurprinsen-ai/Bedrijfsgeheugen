@@ -55,8 +55,9 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 2. `docs/development-operating-system.md`
 3. `docs/development-ledger.md`
 4. `docs/self-healing-agents.md`
-5. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
-6. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
+5. bij hero/video/iPhone/Safari/media: `docs/hero-video-iphone-contract.md`
+6. domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
+7. bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix of werkende architectuur al in de repo is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.
@@ -94,6 +95,7 @@ Een wijziging is pas klaar als:
 - Vermijd tijdelijke oplossingen die later handmatig moeten worden onthouden.
 - Als een fix twee keer terugkomt, automatiseer de preventie.
 - Als een agent een fout zelf veilig kan oplossen, doet hij dat direct in plaats van een actie bij de gebruiker neer te leggen.
+- Geen parallelle writes door meerdere agents op hetzelfde bestand of dezelfde semantische ownership-scope. Bij GitHub 409 of state drift: stop, lees nieuwste branchstate en voer één coherente write uit.
 
 ## Veiligheids-/omgevingregels
 - `main`/productie nooit mergen, overschrijven of vervangen zonder expliciete bevestiging.
@@ -113,13 +115,16 @@ De op 2026-08-28 fysiek op iPhone bevestigde werkende hero is een beschermde bas
 Referentie voor fysieke-device acceptatie: commit `3361ec315874c8ea4c3ceca844bb3e4c9e707be6`, Netlify deploy `6a919798b6397000080985a7`.
 
 Voor hero/video-wijzigingen geldt voortaan:
-1. verander de bewezen controller niet zonder aparte root-cause-hypothese;
-2. verander maximaal één mediavariabele per test;
-3. behoud de harde fallback-reset;
-4. behoud de iPhone-debugmodus;
-5. accepteer build/desktop-groen nooit als vervanging voor fysieke-device acceptatie wanneer playbackgedrag verandert;
-6. een nieuwe hero/video-baseline mag pas de golden baseline vervangen nadat een gebruiker de exacte immutable HTTPS-deploy op een echt iPhone-device werkend heeft bevestigd;
-7. bij regressie altijd eerst terugvallen op deze golden baseline en van daaruit één verschil tegelijk onderzoeken.
+1. lees eerst `docs/hero-video-iphone-contract.md`;
+2. verander de bewezen controller niet zonder aparte root-cause-hypothese;
+3. verander maximaal één mediavariabele per test;
+4. behoud de harde fallback-reset;
+5. behoud de iPhone-debugmodus;
+6. accepteer build/desktop-groen nooit als vervanging voor fysieke-device acceptatie wanneer playbackgedrag verandert;
+7. een nieuwe hero/video-baseline mag pas de golden baseline vervangen nadat een gebruiker de exacte immutable HTTPS-deploy op een echt iPhone-device werkend heeft bevestigd;
+8. bij regressie altijd eerst terugvallen op deze golden baseline en van daaruit één verschil tegelijk onderzoeken;
+9. OpenArt/AI-video-output is bronmedia, niet browser-ready bewijs. Raw output met afwijkende resolutie/fps/audio mag niet rechtstreeks de baseline vervangen; normaliseer eerst naar een candidateprofiel, test exact de media-invarianten en behoud de golden control;
+10. als een candidate faalt, niet de controller aanpassen om de media te “redden”; eerst candidate/delivery diagnosticeren.
 
 ## Kennisborging
 Nieuwe fouten en belangrijke beslissingen worden toegevoegd aan `docs/development-ledger.md` met:
@@ -132,5 +137,7 @@ Nieuwe fouten en belangrijke beslissingen worden toegevoegd aan `docs/developmen
 - regressietest/gate;
 - herbruikbare les;
 - relevante commit/deploy.
+
+Voor hero/video moet daarnaast `docs/hero-video-iphone-contract.md` worden bijgewerkt zodra een nieuwe failureklasse, nieuwe media-ingang of nieuwe fysiek geaccepteerde baseline ontstaat.
 
 De repo is het gedeelde geheugen. Agents moeten deze kennis uitbreiden en gebruiken.
