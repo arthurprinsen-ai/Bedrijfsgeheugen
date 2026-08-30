@@ -41,6 +41,7 @@ jobs:
           set -euo pipefail
           if git diff --quiet; then
             echo 'Migration already applied.'
+            echo "MIGRATION_COMMIT=$(git rev-parse HEAD)"
             exit 0
           fi
           git config user.name 'BRAIN v2 Migration'
@@ -55,4 +56,5 @@ jobs:
             tests/paginacontrole-writer-candidate-mode.test.mjs \
             tests/repository-writer-structural-parity.test.mjs
           git commit -m 'fix: migrate remaining repository writers to BRAIN v2'
+          echo "MIGRATION_COMMIT=$(git rev-parse HEAD)"
           git push origin HEAD:fix/brain-v2-migrate-remaining-writers
