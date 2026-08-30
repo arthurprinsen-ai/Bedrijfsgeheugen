@@ -19,12 +19,11 @@ on:
   workflow_dispatch:
     inputs:
       delivery_mode:
-        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        description: 'Maak uitsluitend een gecontroleerde BRAIN v2 candidate PR'
         type: choice
         required: true
-        default: direct
+        default: candidate-pr
         options:
-          - direct
           - candidate-pr
   schedule:
     - cron: '0 5 * * 1'
@@ -35,7 +34,7 @@ permissions:
   issues: write
 
 # PR-verificaties blijven per PR geïsoleerd en mogen een oudere run van dezelfde PR vervangen.
-# Alle niet-PR-runs kunnen naar main schrijven en delen daarom het niet-annuleerbare repo-slot.
+# Niet-PR-runs produceren alleen candidates; het gedeelde slot voorkomt dubbele writer-candidates.
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('paginacontrole-{0}', github.event.pull_request.number) || 'repo-schrijven' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -62,7 +61,7 @@ jobs:
         if: github.event_name != 'pull_request'
         shell: bash
         env:
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'candidate-pr' }}
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -142,12 +141,7 @@ jobs:
               blog/offertes-opvolgen-zonder-crm/index.html \
               blog/afas-api/index.html
             git commit -m "Herstel SEO-bronfouten uit paginacontrole"
-            if [ "$DELIVERY_MODE" = "direct" ]; then
-              git pull --rebase origin main
-              git push origin HEAD:main
-            else
-              echo "SEO-bronfix blijft lokaal in de candidate tot de PR is geverifieerd."
-            fi
+            echo "SEO-bronfix blijft lokaal in de BRAIN v2 candidate tot de PR is geverifieerd."
           else
             echo "Geen bekende SEO-bronfouten meer te herstellen."
           fi
@@ -171,7 +165,7 @@ jobs:
         if: always() && github.event_name != 'pull_request'
         shell: bash
         env:
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'candidate-pr' }}
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain seo-status.json)" ]; then
@@ -183,29 +177,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if [ "$DELIVERY_MODE" = "direct" ]; then
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/seo-status.json seo-status.json
-            if git diff --quiet -- seo-status.json; then
-              echo "seo-status.json is al door een parallelle run gepubliceerd"
-              exit 0
-            fi
+          cp /tmp/seo-status.json seo-status.json
+          if ! git diff --quiet -- seo-status.json; then
             git add -- seo-status.json
             git commit -m "seo-status.json bijgewerkt door de SEO-controle"
-            git push origin HEAD:main
-          else
-            cp /tmp/seo-status.json seo-status.json
-            if ! git diff --quiet -- seo-status.json; then
-              git add -- seo-status.json
-              git commit -m "seo-status.json bijgewerkt door de SEO-controle"
-            fi
-            echo "seo-status.json blijft onderdeel van dezelfde candidate PR."
           fi
+          echo "seo-status.json blijft onderdeel van dezelfde BRAIN v2 candidate PR."
 
       - name: Candidate branch en PR publiceren
         id: candidate
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.delivery_mode == 'candidate-pr'
+        if: always() && github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_SHA: ${{ steps.base.outputs.sha }}
