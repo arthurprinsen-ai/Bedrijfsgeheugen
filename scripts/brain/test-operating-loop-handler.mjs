@@ -5,7 +5,7 @@ const store={
   async append(input){calls.push(input);return {duplicate:false,record:input};},
   async getProjection(tenantId){return {tenantId,records:[],state:{stages:{}},advice:[]};}
 };
-const getUser=async request=>request.headers.get('x-test-user')?{id:'u1',app_metadata:{tenant_id:'tenant-a'}}:null;
+const getUser=async request=>request.headers.get('x-test-user')?{id:'u1',app_metadata:{tenantId:'tenant-a'}}:null;
 const handler=createOperatingLoopHandler({getUser,store});
 
 const unauth=await handler(new Request('https://example.test/api/brain-operating-loop'));
