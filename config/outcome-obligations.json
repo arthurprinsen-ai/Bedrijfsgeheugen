@@ -96,6 +96,16 @@
       "recoveryPolicy": "Keep certification AWAITING_OUTCOME, retain immutable evidence, rerun only the missing safe verification step, route through BG168 and do not mark BG167 VERIFIED until all evidence is complete."
     },
     {
+      "id": "supabase-performance-evidence-daily",
+      "domain": "performance",
+      "expected": "Every daily cycle and every relevant Supabase schema or performance change produces one comparable performance evidence snapshot and one governed trend decision without direct production mutation.",
+      "dueAt": "daily_and_after_relevant_supabase_change",
+      "ownerAgent": "agent-performance",
+      "evidencePolicy": "Each finding has a stable finding-key, comparable table/workload/p95 measurement and timestamp; two consecutive qualifying observations are required before CANDIDATE_INDEX, and any accepted change is remeasured on the exact production SHA before outcome learning is accepted.",
+      "idempotencyKey": "supabase-performance|finding-key|measurement-date|source-fingerprint",
+      "recoveryPolicy": "Keep the obligation AWAITING_OUTCOME, collect the missing comparable evidence, do not mutate production directly from a linter finding, and resume only through the governed candidate and exact production verification path."
+    },
+    {
       "id": "internal-dashboard-authz",
       "domain": "security",
       "expected": "The cost dashboard and API remain private, read-only and fail closed for anonymous or unauthorized users.",
