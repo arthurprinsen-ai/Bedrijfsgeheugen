@@ -1,0 +1,38 @@
+{
+  "version": "CONNECTOR-MUTATION-ROUTING-GUARD-v1",
+  "date": "2026-08-30",
+  "fingerprint": "connector|mutation|wrong-tool-or-resource-selected-v1",
+  "severity": "high",
+  "incident": "During GitHub learning persistence, an issue-update mutation was selected instead of the intended file update. Issue #1 was unintentionally reopened and immediately restored to closed/completed. Duplicate corrective close calls then repeated because the intended tool was still not selected.",
+  "rootCauses": [
+    "state-changing connector tool selected without final intent/resource assertion",
+    "mutation recipient differed from the artifact being discussed",
+    "corrective action was repeated without recognizing that readback already proved restoration"
+  ],
+  "requiredPreflight": [
+    "assert_mutation_tool_matches_intent",
+    "assert_resource_type_and_identifier",
+    "assert_expected_current_state_or_sha_when_available",
+    "forbid_unrelated_mutation_during_documentation_or_file_write_task"
+  ],
+  "recovery": [
+    "stop further mutations immediately",
+    "read back the exact accidentally mutated resource",
+    "restore the previous known state with the smallest reversible mutation",
+    "read back once to verify restoration",
+    "do not repeat the corrective mutation after verified restoration",
+    "persist fingerprint and regression rule"
+  ],
+  "releaseBlocks": [
+    "state_changing_connector_call_without_intent_resource_match",
+    "blind_repeat_of_corrective_mutation_after_verified_restore",
+    "file_write_task_mutates_issue_or_other_unrelated_resource"
+  ],
+  "evidence": {
+    "resource": "GitHub issue #1",
+    "accidentalState": "open",
+    "restoredState": "closed",
+    "restoredStateReason": "completed",
+    "productionCodeAffected": false
+  }
+}
