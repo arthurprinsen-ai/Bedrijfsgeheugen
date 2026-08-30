@@ -105,6 +105,18 @@
       "evidence": "2026-08-30 chat: herhaald verzoek om door te gaan en alle learning te borgen maakte zichtbaar dat lokale groene subresultaten niet als volledige completion mogen worden behandeld zolang de overkoepelende obligation open blijft.",
       "owner": "agent-reliability",
       "status": "GUARDED"
+    },
+    {
+      "fingerprint": "agent-fabric|completion|local-resolved-bypasses-global-obligations",
+      "symptom": "AgentWork kon van Verifying naar Resolved gaan terwijl een expliciet meegegeven materiële production-, delivery-, recovery- of outcome-obligation nog OPEN stond.",
+      "rootCause": "De Agent Fabric lifecycle valideerde alleen de lokale statusovergang en gebruikte de centrale evaluateCompletionReadiness-regel niet bij het binnengaan van een terminale work-item status.",
+      "failedApproach": "Behandel Verifying -> Resolved als voldoende bewijs van end-to-end completion zonder de globale obligation-state te evalueren.",
+      "fix": "Laat iedere overgang van een niet-terminale naar een terminale AgentWork-status fail-closed door de centrale evaluateCompletionReadiness uitvoeren op een expliciete completionContext.",
+      "preventionRule": "Geen AgentWork-terminalisatie zonder centrale completion-readiness: alle materiële obligations terminal/green of een expliciet bewezen hard boundary met evidence.",
+      "regressionContract": "tests/agent-fabric.test.mjs bewijst dat open obligations Resolved blokkeren, terminale obligations Resolved toestaan en alleen bewezen hard-boundary evidence een non-green terminalisatie toestaat.",
+      "evidence": "2026-08-30 TDD RED op PR #749, candidate 8bdd9b8f03f83063ba920ea115c99b68f08225fe: AgentWork met production-smoke=OPEN ging toch naar Resolved; Shared Agent Memory faalde exact op 'Missing expected exception'.",
+      "owner": "agent-reliability",
+      "status": "GUARDED"
     }
   ]
 }
