@@ -6,12 +6,14 @@
     "config/",
     "docs/brain/",
     "docs/development-",
+    "docs/learning/",
     "docs/outcome-obligations.md",
     "docs/superpowers/specs/",
     "scripts/brain/",
     "brain/contracts/",
     "brain/production/",
     "tools/brain-delivery-system.mjs",
+    "tests/development-doc-contract.test.mjs",
     ".github/workflows/"
   ],
   "ignoredPaths": [
@@ -65,7 +67,7 @@
     {
       "id": "backend",
       "owner": "agent-integration-make",
-      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tests/supabase-", "tests/brain-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-"],
+      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/delivery-", "tests/supabase-", "tests/brain-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
