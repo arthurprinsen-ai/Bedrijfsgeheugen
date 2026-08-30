@@ -38,11 +38,9 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-
       - name: Exacte basis vastleggen
         id: base
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
       - name: Seal or render exact approved article
         id: render
         env:
@@ -87,7 +85,6 @@ jobs:
           PY
             fi
           fi
-
       - name: Deterministic contract checks
         if: steps.render.outputs.changed == 'true'
         run: |
@@ -113,7 +110,6 @@ jobs:
           pathlib.Path('/tmp/validated-approved-blog-files').write_text('\n'.join(changed) + '\n', encoding='utf-8')
           print('CONTRACT_OK', article[0], m.group(1), changed)
           PY
-
       - name: Commit validated candidate
         id: commit
         if: steps.render.outputs.changed == 'true'
@@ -124,36 +120,22 @@ jobs:
           mapfile -t changed < /tmp/validated-approved-blog-files
           git config user.name "Bedrijfsgeheugen Publisher"
           git config user.email "actions@users.noreply.github.com"
-          for path in "${changed[@]}"; do
-            [ -n "$path" ] && git add -- "$path"
-          done
+          for path in "${changed[@]}"; do [ -n "$path" ] && git add -- "$path"; done
           git commit -m "blog: publish approved central article"
           export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
           CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
           import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
           const files = String(process.env.CHANGED_FILES || '').split('\n').filter(Boolean).sort();
-          const candidate = createWriterCandidate({
-            writer: 'approved-central-blog',
-            baseSha: process.env.BASE_SHA,
-            runId: process.env.GITHUB_RUN_ID,
-            changedFiles: files,
-            allowedFiles: files,
-            rollbackSha: process.env.BASE_SHA,
-          });
-          validateWriterCandidate(candidate);
-          console.log(candidate.branch);
+          const candidate = createWriterCandidate({writer:'approved-central-blog',baseSha:process.env.BASE_SHA,runId:process.env.GITHUB_RUN_ID,changedFiles:files,allowedFiles:files,rollbackSha:process.env.BASE_SHA});
+          validateWriterCandidate(candidate); console.log(candidate.branch);
           NODE
           )
           echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
-
       - name: Candidate branch publiceren
         if: steps.render.outputs.changed == 'true'
         env:
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
-        run: |
-          set -euo pipefail
-          git push origin "HEAD:$CANDIDATE_BRANCH"
-
+        run: git push origin "HEAD:$CANDIDATE_BRANCH"
       - name: Candidate PR openen
         id: pr
         if: steps.render.outputs.changed == 'true'
@@ -163,41 +145,26 @@ jobs:
           BASE_SHA: ${{ steps.base.outputs.sha }}
         run: |
           set -euo pipefail
-          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
-          if [ -n "$existing" ]; then
-            echo "Candidate PR bestaat al: #$existing"
-            echo "number=$existing" >> "$GITHUB_OUTPUT"
-            echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-            exit 0
+          number=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$number" ]; then
+            url=$(gh pr create --base main --head "$CANDIDATE_BRANCH" --title "Approved blog candidate $GITHUB_RUN_ID" --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn. De Notion queue blijft Pending totdat productie-uitkomst aantoonbaar is verwerkt.")
+            number=${url##*/}
           fi
-          url=$(gh pr create \
-            --base main \
-            --head "$CANDIDATE_BRANCH" \
-            --title "Approved blog candidate $GITHUB_RUN_ID" \
-            --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn. De Notion queue blijft Pending totdat productie-uitkomst aantoonbaar is verwerkt.")
-          number=${url##*/}
+          pr_base_sha=$(gh pr view "$number" --json baseRefOid --jq '.baseRefOid')
           echo "number=$number" >> "$GITHUB_OUTPUT"
+          echo "pr_base_sha=$pr_base_sha" >> "$GITHUB_OUTPUT"
           echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "Candidate PR geopend: $url"
-
       - name: Dispatch read-only shadow verification
         if: steps.render.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
-          BASE_SHA: ${{ steps.base.outputs.sha }}
+          BASE_SHA: ${{ steps.pr.outputs.pr_base_sha }}
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
         run: |
           set -euo pipefail
-          gh workflow run repo-writer-candidate-shadow.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref main \
-            -f pr_number="$PR_NUMBER" \
-            -f base_sha="$BASE_SHA" \
-            -f head_sha="$HEAD_SHA" \
-            -f candidate_branch="$CANDIDATE_BRANCH"
-
+          gh workflow run repo-writer-candidate-shadow.yml --repo "$GITHUB_REPOSITORY" --ref main -f pr_number="$PR_NUMBER" -f base_sha="$BASE_SHA" -f head_sha="$HEAD_SHA" -f candidate_branch="$CANDIDATE_BRANCH"
       - name: BRAIN v2 handoff evidence
         if: steps.render.outputs.changed == 'true'
         run: |
