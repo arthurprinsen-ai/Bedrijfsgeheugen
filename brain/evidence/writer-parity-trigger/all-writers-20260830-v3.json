@@ -1,0 +1,7 @@
+{
+  "contract": "BRAIN-DELIVERY-v2",
+  "verification_only": true,
+  "scope": "all-governed-repository-writers",
+  "reason": "persist verified scoped transport parity and exact rollback evidence",
+  "production_promotion": false
+}
