@@ -71,6 +71,8 @@ const CUSTOMER_LOGIN_BRIDGE = `  var AUTH_STORE = 'bg_customer_auth';
       bewaar(s, k, sessie.access_token);
       window.__KLANTEN__ = window.__KLANTEN__ || {};
       window.__KLANTEN__[s] = k;
+      var slot = document.getElementById('bgSlot');
+      if (slot) slot.remove();
       toonPortaal({email: mail || (sessie.user && sessie.user.email) || ''});
       return true;
     });
@@ -123,6 +125,13 @@ const OPEN_CUSTOMER_SUCCESS = `.then(function (sessie) {
           return openKlant(sessie, s, mail);
         })`;
 
+const LEGACY_CUSTOMER_START = /    var heeft = false;\n    try \{ heeft = !!sessionStorage\.getItem\(BEWAAR \+ s\); \} catch \(e\) \{\}\n\n    if \(heeft\) \{[\s\S]*?      verversen\(s\);\n      return;\n    \}\n\n    wissen\(\);\n    (?:toonInlog\(s\)|herstelAuth\(s\)\.catch\(function\(\)\{ toonInlog\(s\); \}\));/;
+
+const SINGLE_CUSTOMER_START = `    document.querySelectorAll('[aria-label="Uitloggen"]').forEach(function (b) {
+      b.addEventListener('click', function(){ wissen(); wisAuth(); }, true);
+    });
+    herstelAuth(s).catch(function(){ wissen(); toonInlog(s); });`;
+
 const OLD_LOGIN_FALLBACK = `    wissen();
     toonInlog(s);`;
 const RESTORING_LOGIN_FALLBACK = `    wissen();
@@ -170,11 +179,13 @@ export function repairCustomerPortalAuth(html) {
     }
   }
 
-  if (!repaired.includes(RESTORING_LOGIN_FALLBACK)) {
-    const occurrences = repaired.split(OLD_LOGIN_FALLBACK).length - 1;
-    if (occurrences !== 1) throw new Error(`Expected exactly one customer login fallback, found ${occurrences}`);
-    repaired = repaired.replace(OLD_LOGIN_FALLBACK, RESTORING_LOGIN_FALLBACK);
+  if (!repaired.includes(SINGLE_CUSTOMER_START)) {
+    const matches = repaired.match(LEGACY_CUSTOMER_START);
+    if (!matches) throw new Error('Expected legacy customer start controller');
+    repaired = repaired.replace(LEGACY_CUSTOMER_START, SINGLE_CUSTOMER_START);
   }
+
+  if (!repaired.includes(RESTORING_LOGIN_FALLBACK) && repaired.includes(OLD_LOGIN_FALLBACK)) repaired = repaired.replace(OLD_LOGIN_FALLBACK, RESTORING_LOGIN_FALLBACK);
 
   if (!repaired.includes(PERSISTENT_LOGOUT_HANDLER) && repaired.includes(OLD_LOGOUT_HANDLER)) repaired = repaired.replace(OLD_LOGOUT_HANDLER, PERSISTENT_LOGOUT_HANDLER);
 
@@ -184,12 +195,12 @@ export function repairCustomerPortalAuth(html) {
     repaired = repaired.replace(NETLIFY_CONTROLLER_START, NETLIFY_CONTROLLER_BYPASS);
   }
 
-  if (!repaired.includes(GUARDED_HANDLER) || !repaired.includes(CUSTOMER_LOGIN_BRIDGE) || !repaired.includes(OPEN_CUSTOMER_SUCCESS) || !repaired.includes(RESTORING_LOGIN_FALLBACK) || !repaired.includes(NETLIFY_CONTROLLER_BYPASS)) throw new Error('Customer portal auth repair was not fully applied');
+  if (!repaired.includes(GUARDED_HANDLER) || !repaired.includes(CUSTOMER_LOGIN_BRIDGE) || !repaired.includes(OPEN_CUSTOMER_SUCCESS) || !repaired.includes(SINGLE_CUSTOMER_START) || !repaired.includes(NETLIFY_CONTROLLER_BYPASS)) throw new Error('Customer portal auth repair was not fully applied');
   return repaired;
 }
 
 export const customerAuthRaceGuard = GUARDED_HANDLER;
 export const customerLoginBridge = CUSTOMER_LOGIN_BRIDGE;
 export const customerAuthSuccessHandler = OPEN_CUSTOMER_SUCCESS;
-export const customerAuthRestoreHandler = RESTORING_LOGIN_FALLBACK;
+export const customerAuthRestoreHandler = SINGLE_CUSTOMER_START;
 export const customerNetlifyBypassGuard = NETLIFY_CONTROLLER_BYPASS;
