@@ -6,7 +6,14 @@
 /blog/afas-koppeling/  /afas-koppeling  301!
 /data-ai-cockpit   /frisse-blik   301!
 /data-ai-cockpit.html   /frisse-blik   301!
-/klantportaal  /portal/  302!
+# Customer portal variants. Order matters: specific demo rewrites first.
+# 200 keeps /klantportaal?klant=... visible while serving the selected implementation.
+/klantportaal  klant=demo1  /klantportaal-demo.html  200!
+/klantportaal  klant=demoAI  /portal/  200!
+# Any real customer slug keeps using the current portal implementation.
+/klantportaal  klant=:klant  /portal/  302!
+# Frisse Blik hands off to /klantportaal#direct, so the no-query route is the legacy demo.
+/klantportaal  /klantportaal-demo.html  200!
 /werkwijze  /hoe-het-werkt  301!
 /voor-investeerders  /investeerders-ma  301!
 /voor-ma  /investeerders-ma  301!
