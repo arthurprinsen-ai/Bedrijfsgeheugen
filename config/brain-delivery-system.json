@@ -7,6 +7,7 @@
     "docs/brain/",
     "docs/development-",
     "docs/outcome-obligations.md",
+    "docs/superpowers/specs/",
     "scripts/brain/",
     "brain/contracts/",
     "brain/production/",
@@ -15,7 +16,7 @@
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
-    "docs/superpowers/"
+    "docs/superpowers/plans/"
   ],
   "branchPolicy": {
     "strategy": "conflict-aware-independent-lanes",
@@ -29,7 +30,7 @@
   "conflictContracts": [
     {
       "id": "delivery-control-plane",
-      "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml"]
+      "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml", "docs/superpowers/specs/"]
     },
     {
       "id": "brain-governance",
