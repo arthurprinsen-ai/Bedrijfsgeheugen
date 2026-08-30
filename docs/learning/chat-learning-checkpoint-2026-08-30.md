@@ -258,6 +258,29 @@ A real governance gap was found: Shared Agent Memory CI protected `automation/**
 
 The first run after closing that gap correctly went RED and exposed a test-quality issue: the memory assertion searched for `production evidence` case-sensitively while the ledger contained `Production evidence`. The repair was to make that semantic evidence assertion case-insensitive instead of changing valid production documentation merely to satisfy casing. Reusable rule: contract tests should be strict on meaning, identifiers, invariants and exact machine values, but not accidentally brittle on irrelevant prose capitalization.
 
+### Manual connector write governance
+
+Canonical fingerprint: `repository|manual-connector-write|default-main-bypass`.
+
+A second governance failure in this chat was not a missing rule but a gap between rule and execution path. The Brain already contained `NEVER_TDD_DIRECTLY_ON_MAIN`, yet a manual GitHub connector write with `branch omission` can fall back to the repository default branch. Because live GitHub readback showed `main` as `protected:false` with enforcement off, authorized connector capability could bypass the intended candidate/PR route even though later post-push CI still ran.
+
+Permanent prevention rule: `REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES`.
+
+Required behavior for every material manual repository mutation:
+- read current `main` first;
+- create a fresh non-`main` candidate branch from that exact SHA;
+- pass that candidate branch explicitly to every write action;
+- perform RED/GREEN on candidate SHAs only;
+- run the existing Shared Agent Memory and Unified BRAIN gates;
+- promote only the exact tested head and then read `main` back;
+- never treat successful post-push CI as proof that a direct write was prevented.
+
+Known failed approach: using an authorized connector `create_file`/`update_file` call without an explicit branch and assuming authorization equals governed delivery. It does not. Capability, governed delivery and platform enforcement are separate evidence classes.
+
+The machine-readable lesson and active prevention rule were promoted through PR #670. Candidate `268170f348df8200e75afe95f81b126946a2b85b` passed Shared Agent Memory and Unified BRAIN; exact-head merge produced `85c3e38972a930b06857d55594c478603d6ec5ee`, followed by a successful post-merge Shared Agent Memory run.
+
+Open hard boundary: native GitHub platform enforcement is not yet proven. Agent governance now requires candidate-only writes, but full prevention exists only when GitHub branch protection/ruleset enforcement independently rejects an unauthorized direct main-write before ref mutation. Until then `protected:false` remains explicit evidence that platform enforcement is incomplete.
+
 ## Instagram / Make native migration contract
 
 Deze leerregels zijn canoniek voor toekomstige chats, Make-agents, content-agents en iedere migratie van legacy publisher/analytics naar native platformconnectors:
