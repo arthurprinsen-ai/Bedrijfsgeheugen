@@ -18,6 +18,13 @@
     {"id":"VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
     {"id":"USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
     {"id":"USE_GITHUB_READY_FOR_REVIEW_ACTION","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
-    {"id":"REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE","active":true,"enforcedBy":"bg169-final-production-readback-contract","scope":"shared"}
+    {"id":"REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE","active":true,"enforcedBy":"bg169-final-production-readback-contract","scope":"shared"},
+    {"id":"REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK","active":true,"enforcedBy":"bg169-execution-readback-contract","scope":"shared"},
+    {"id":"BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE","active":true,"enforcedBy":"currentstate-capacity-gate-plus-production-authority","scope":"automation"},
+    {"id":"OPTIMIZE_SOURCE_CALLS_NOT_ONLY_CLIENT_CACHE","active":true,"enforcedBy":"make-cost-portfolio-plus-source-call-budget","scope":"automation"},
+    {"id":"NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE","active":true,"enforcedBy":"agent-contract-plus-read-only-branch-discovery","scope":"shared"},
+    {"id":"CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST","active":true,"enforcedBy":"chat-learning-continuity-regression","scope":"shared"},
+    {"id":"PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT","active":true,"enforcedBy":"delivery-context-compression-learning-test-plus-delivery-preflight","scope":"shared"},
+    {"id":"LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK","active":true,"enforcedBy":"delivery-context-compression-learning-test-plus-bg168-router","scope":"shared"}
   ]
 }
