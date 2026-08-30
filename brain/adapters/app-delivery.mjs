@@ -46,10 +46,25 @@ function createMemoryIdempotencyStore() {
   };
 }
 
-export function createAppDeliveryAdapter({ target, invoke, writeEvidence = async () => {}, idempotencyStore } = {}) {
+async function persistEvidence(writeEvidence, record) {
+  try {
+    await writeEvidence(record);
+    return null;
+  } catch (error) {
+    return Object.freeze({
+      ok: false,
+      target: record.target,
+      error_class: classifyAdapterError(error),
+      reason: String(error?.message ?? 'evidence write failed'),
+      deduplicated: false,
+    });
+  }
+}
+
+export function createAppDeliveryAdapter({ target, invoke, writeEvidence, idempotencyStore } = {}) {
   if (!SUPPORTED_APP_TARGETS.has(target)) throw new TypeError(`Unsupported app delivery target: ${target}`);
   if (typeof invoke !== 'function') throw new TypeError('adapter invoke function is required');
-  if (typeof writeEvidence !== 'function') throw new TypeError('writeEvidence must be a function');
+  if (typeof writeEvidence !== 'function') throw new TypeError('evidence writer is required');
 
   const store = idempotencyStore ?? createMemoryIdempotencyStore();
   if (typeof store.get !== 'function' || typeof store.put !== 'function') throw new TypeError('idempotencyStore requires get and put');
@@ -74,31 +89,54 @@ export function createAppDeliveryAdapter({ target, invoke, writeEvidence = async
         change_id: manifest.change_id,
         component_id: manifest.component_id,
         idempotency_key: idempotencyKey,
+        candidate_identity: manifest.candidate_identity ?? null,
+        tested_identity: manifest.tested_identity ?? null,
       };
 
+      let remote;
       try {
-        const remote = normalizeRemoteResult(await invoke({ manifest, payload, idempotency_key: idempotencyKey }));
-        if (!remote.ok) {
-          const errorClass = classifyAdapterError({ status: remote.status });
-          const failure = Object.freeze({ ok: false, target, status: remote.status, error_class: errorClass, reason: 'remote delivery rejected', deduplicated: false });
-          await writeEvidence({ ...evidenceBase, status: 'RED', error_class: errorClass, remote_status: remote.status });
-          return failure;
-        }
-
-        const success = Object.freeze({ ok: true, target, status: remote.status, remote_ref: remote.remote_ref, error_class: null, deduplicated: false });
-        await store.put(idempotencyKey, success);
-        await writeEvidence({ ...evidenceBase, status: 'GREEN', remote_status: remote.status, remote_ref: remote.remote_ref });
-        return success;
+        remote = normalizeRemoteResult(await invoke({ manifest, payload, idempotency_key: idempotencyKey }));
       } catch (error) {
         const errorClass = classifyAdapterError(error);
-        await writeEvidence({ ...evidenceBase, status: 'RED', error_class: errorClass, remote_status: Number(error?.status ?? 0) });
+        const evidenceFailure = await persistEvidence(writeEvidence, {
+          ...evidenceBase,
+          status: 'RED',
+          error_class: errorClass,
+          remote_status: Number(error?.status ?? 0),
+        });
+        if (evidenceFailure) return evidenceFailure;
         return Object.freeze({ ok: false, target, error_class: errorClass, reason: String(error?.message ?? 'remote delivery failed'), deduplicated: false });
       }
+
+      if (!remote.ok) {
+        const errorClass = classifyAdapterError({ status: remote.status });
+        const evidenceFailure = await persistEvidence(writeEvidence, {
+          ...evidenceBase,
+          status: 'RED',
+          error_class: errorClass,
+          remote_status: remote.status,
+        });
+        if (evidenceFailure) return evidenceFailure;
+        return Object.freeze({ ok: false, target, status: remote.status, error_class: errorClass, reason: 'remote delivery rejected', deduplicated: false });
+      }
+
+      const evidenceFailure = await persistEvidence(writeEvidence, {
+        ...evidenceBase,
+        status: 'GREEN',
+        remote_status: remote.status,
+        remote_ref: remote.remote_ref,
+      });
+      if (evidenceFailure) return evidenceFailure;
+
+      const success = Object.freeze({ ok: true, target, status: remote.status, remote_ref: remote.remote_ref, error_class: null, deduplicated: false });
+      await store.put(idempotencyKey, success);
+      return success;
     },
   });
 }
 
 export function createCanonicalAppAdapters({ notion, make, supabase, dataforseo, writeEvidence, idempotencyStore } = {}) {
+  if (typeof writeEvidence !== 'function') throw new TypeError('evidence writer is required');
   const invokers = { notion, make, supabase, dataforseo };
   return Object.freeze(Object.fromEntries(
     [...SUPPORTED_APP_TARGETS].map(target => [target, createAppDeliveryAdapter({
