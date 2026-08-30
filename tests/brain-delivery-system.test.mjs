@@ -61,6 +61,16 @@ test('shared contract changes fan out to every affected governance lane without 
   assert.equal(plan.integration.singleCandidate, false);
 });
 
+test('canonical architecture specs can never bypass BRAIN delivery or its conflict contract', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const canonicalPath = 'docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md';
+  const plan = createDeliveryPlan({ changedPaths:[canonicalPath], headSha:'deadcafe12345678', policy });
+  assert.deepEqual(plan.ignoredPaths, []);
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation','backend','portal','website']);
+  assert.deepEqual(deriveConflictContracts([canonicalPath], policy), ['delivery-control-plane']);
+  assert.equal(policy.ignoredPaths.includes('docs/superpowers/'), false);
+});
+
 test('new agents and workflow scenarios are automatically visible as Brain members', async () => {
   const membership = discoverBrainMembership({ registeredComponents:[{ key:'BG169', id:7137190, status:'active' }], agents:[{ id:'agent-new-builder', domains:['Website'] }], workflows:['.github/workflows/new-builder.yml'] });
   assert.deepEqual(membership.map(item => item.componentKey), ['agent:agent-new-builder','brain:BG169','github-workflow:new-builder']);
