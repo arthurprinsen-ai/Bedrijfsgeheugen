@@ -24,16 +24,21 @@ test('current Mission Control BG139 is identified by scenario id, not historical
   assert.match(bg139[0].notes, /namesake history only/i);
 });
 
-test('Mission Control cache owners are singular and bounded stale cache is explicit', () => {
+test('Mission Control shadow contract keeps BG139 legacy-live until BG191 promotion', () => {
   const c = registry.mission_control_cache_contract;
-  const owners = [c.request_owner, c.projection_owner, c.equivalence_owner, c.fallback_owner, c.promotion_owner];
+  const owners = [c.request_owner, c.projection_owner, c.equivalence_owner, c.cache_canary_owner, c.promotion_owner];
   assert.equal(new Set(owners).size, owners.length);
   assert.equal(c.request_owner, 7071153);
-  assert.equal(c.stale_grace_seconds, 21600);
-  assert.deepEqual(c.observable_sources, ['CACHE_FRESH', 'CACHE_STALE', 'MISS']);
-  assert.equal(c.synchronous_live_fallback_only_when_no_usable_payload, true);
-  assert.equal(c.duplicate_cache_stack_forbidden, true);
-  assert.equal(c.new_refresh_owner_requires_overlap_check, true);
+  assert.equal(c.cache_canary_owner, 7152387);
+  assert.equal(c.promotion_owner, 7152400);
+  assert.deepEqual(c.shadow_legacy_live_modules, [1, 2, 3, 6, 4, 5, 8]);
+  assert.deepEqual(c.projection_safe_modes_before_promotion, ['SHADOW', 'BYPASS']);
+  assert.match(c.promotion_precondition, /eq:<n>:EQUIVALENT/i);
+  assert.match(c.promotion_precondition, /n>=25/i);
+  assert.match(c.promotion_precondition, /fresh=true/i);
+  assert.equal(c.permanent_bg190_shadow_insert_forbidden, true);
+  assert.equal(c.bg191_only_active_authority, true);
+  assert.equal(c.exact_legacy_rollback_required, true);
 });
 
 test('prevention rules retain independent delivery, green-until-done, rate-limit and secret contracts', () => {
