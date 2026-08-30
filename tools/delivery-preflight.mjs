@@ -11,12 +11,36 @@ function actionableKnowledgeRecord(item, source = 'canonical-learning') {
     source: item.source || source,
     fingerprint: item.fingerprint,
     rootCause: item.rootCause || null,
-    fix: item.fix || item.requiredAction || null,
+    fix: item.fix || item.requiredAction || item.provenFix || null,
     preventionRule: item.preventionRule || null,
     regressionContract: item.regressionContract || null,
     owner: item.owner || null,
     status: item.status || null,
   });
+}
+
+function linkedLearningPath(source) {
+  if (typeof source !== 'string' || !/^brain\/learning\/[A-Za-z0-9._/-]+\.json$/.test(source) || source.includes('..')) {
+    throw new Error(`invalid linked learning source: ${String(source)}`);
+  }
+  return new URL(`../${source}`, import.meta.url);
+}
+
+function normalizedLinkedLessons(doc, source) {
+  const candidates = Array.isArray(doc?.lessons) ? doc.lessons : (doc?.fingerprint ? [doc] : []);
+  return candidates.filter(item => item?.fingerprint && (item.status === 'PROVEN' || doc?.status === 'PROVEN')).map(item => ({
+    fingerprint:item.fingerprint,
+    stage:item.stage || 'PIPELINE',
+    component:item.component || 'shared',
+    reason:item.reason || item.symptom || null,
+    rootCause:item.rootCause || null,
+    fix:item.fix || item.requiredAction || item.provenFix || null,
+    preventionRule:item.preventionRule || null,
+    regressionContract:item.regressionContract || null,
+    owner:item.owner || null,
+    status:'PROVEN',
+    source,
+  }));
 }
 
 export async function loadDeliveryPreflight({
@@ -69,6 +93,13 @@ export async function loadDeliveryPreflight({
   if (guardDiscovery.failClosed !== true || guardDiscovery.executionPolicy?.familyDiscoveryRequired !== true) throw new Error('guard regression discovery must remain fail-closed and family-discovered');
   if (guardRegistrySchema.failClosed !== true || guardRegistrySchema.schemaPolicy?.recursiveArbitraryObjectDiscoveryForbidden !== true) throw new Error('guard registry schema must remain explicit and fail-closed');
 
+  const linkedSources = [...new Set(rulesDoc.linked_learning_sources || [])];
+  const directlyLoaded = new Set(['brain/learning/current-execution-lessons-2026-08-30.json']);
+  const linkedDocs = await Promise.all(linkedSources.filter(source => !directlyLoaded.has(source)).map(async source => ({
+    source,
+    doc:JSON.parse(await readFile(linkedLearningPath(source), 'utf8')),
+  })));
+
   const activeRules = (rulesDoc.rules || []).filter(rule => rule?.active === true).map(rule => rule.id);
   const historicalLessons = (lessonsDoc.lessons || []).filter(lesson => lesson?.status === 'PROVEN');
   const chatLessons = [...(chatLessonsDoc.lessons || []), ...(continuityDoc.powerhouse_lessons || []), ...(executionLessonsDoc.lessons || []), ...(remediationOwnership.lessons || []), ...(ciEfficiency.lessons || [])].map(lesson => ({
@@ -76,11 +107,12 @@ export async function loadDeliveryPreflight({
     fix: lesson.requiredAction, preventionRule: lesson.preventionRule || (activeRules.includes(lesson.id) ? lesson.id : null), status: 'PROVEN',
     regressionContract: lesson.regressionContract || null, owner: lesson.owner || null,
   }));
+  const linkedLessons = linkedDocs.flatMap(({ doc, source }) => normalizedLinkedLessons(doc, source));
   const addendumLessons = completenessAddendum.failurePatterns.filter(lesson => lesson?.fingerprint).map(lesson => ({
     fingerprint: lesson.fingerprint, stage: 'PIPELINE', component: 'shared', reason: lesson.symptom, rootCause: lesson.rootCause,
     fix: lesson.requiredAction, preventionRule: null, status: 'PROVEN',
   }));
-  const provenLessons = [...historicalLessons, ...chatLessons, ...addendumLessons];
+  const provenLessons = [...historicalLessons, ...chatLessons, ...linkedLessons, ...addendumLessons];
   const missingRegistry = provenLessons.filter(lesson => lesson.preventionRule && !activeRules.includes(lesson.preventionRule));
   if (missingRegistry.length) throw new Error(`PROVEN delivery lessons missing active prevention rules: ${missingRegistry.map(lesson => lesson.preventionRule).join(', ')}`);
   const explainedRuleIds = new Set(provenLessons.map(lesson => lesson.preventionRule).filter(Boolean));
@@ -132,12 +164,10 @@ export async function loadDeliveryPreflight({
     ...baseDecision,
     reusedGuards: Object.freeze(uniqueReusedGuards),
     guardKnowledge: Object.freeze(guardKnowledge),
-    completionPolicy: Object.freeze({ ...completionPolicy })
+    completionPolicy: Object.freeze({
+      localGreenIsNotCompletion: completionPolicy.localGreenIsNotCompletion,
+      continueUntilAllMaterialObligationsTerminal: completionPolicy.continueUntilAllMaterialObligationsTerminal,
+      hardBoundaryMustBeExplicitlyProven: completionPolicy.hardBoundaryMustBeExplicitlyProven,
+    }),
   });
-}
-
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const component = process.argv[2] || 'shared';
-  const decision = await loadDeliveryPreflight({ component });
-  process.stdout.write(`${JSON.stringify(decision)}\n`);
 }
