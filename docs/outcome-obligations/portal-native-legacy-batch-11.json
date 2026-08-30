@@ -2,9 +2,25 @@
   "id":"portal-native-legacy-batch-11-offer-readonly",
   "domain":"portal_governance",
   "expected":true,
+  "status":"COMPLETED",
   "dueAt":"2026-08-30T23:59:59+02:00",
+  "completedAt":"2026-08-30T13:23:30+02:00",
   "ownerAgent":"Portal Migration Agent",
   "evidencePolicy":"Offerte bypasses the iframe bridge only after identity-scoped same-origin reads, native read-only rendering, no external write path, all native portal regression tests green, exact preview SHA ready and exact production merge SHA ready.",
   "idempotencyKey":"portal-native-legacy-batch-11-offer-readonly-v1",
-  "recoveryPolicy":"Keep the existing compatibility source and last-known-good production if the native view cannot prove identity scope or deploy health. New signing/acceptance remains BLOCKED_HARD_BOUNDARY because it is legally/financially binding."
+  "recoveryPolicy":"Keep the existing compatibility source and last-known-good production if the native view cannot prove identity scope or deploy health. New signing/acceptance remains BLOCKED_HARD_BOUNDARY because it is legally/financially binding.",
+  "evidence":{
+    "candidateSha":"a1b4c2c5945bebd3162e2d7ae00d19ef437216b9",
+    "pullRequest":293,
+    "mergeSha":"9470860739c299d122c4c96b0ed1684df338c343",
+    "previewDeploy":"6a94124f312ae500074b5be0",
+    "productionDeploy":"6a94129c0eb3110008a76b71",
+    "productionState":"ready",
+    "redirectRules":80,
+    "headerRules":17,
+    "functions":9,
+    "edgeFunctions":1,
+    "secretMatches":0,
+    "bindingAcceptance":"BLOCKED_HARD_BOUNDARY"
+  }
 }
