@@ -71,7 +71,7 @@
     {
       "id": "backend",
       "owner": "agent-integration-make",
-      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/delivery-", "tests/supabase-", "tests/brain-", "tests/branch-delivery-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-"],
+      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/delivery-", "tests/supabase-", "tests/brain-", "tests/branch-delivery-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-", "tests/chat-learning-", "tests/make-agent-learning-"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
