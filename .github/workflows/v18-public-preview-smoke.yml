@@ -52,8 +52,8 @@ jobs:
         run: |
           set -euo pipefail
           SOURCE_URL=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).userTestUrl")
-          SOURCE_COMMIT=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).sourceCommit")
-          SOURCE_DEPLOY=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).sourceDeployId")
+          SOURCE_COMMIT=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).acceptedSourceCommit")
+          SOURCE_DEPLOY=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).acceptedSourceDeployId")
           if [[ "$SOURCE_URL" == *"deploy-preview-"* ]] || [[ "$SOURCE_URL" == "https://www.bedrijfsgeheugen.nl"* ]]; then
             echo "::error::userTestUrl is mutable or production instead of the immutable accepted V18 deploy: $SOURCE_URL"
             exit 1
@@ -64,9 +64,14 @@ jobs:
           fi
           code=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -LsS -o /tmp/v18-source.html -w '%{http_code}' "$SOURCE_URL")
           echo "Accepted V18 source $SOURCE_COMMIT / $SOURCE_DEPLOY -> HTTP $code"
-          test "$code" -ge 200 -a "$code" -lt 400
-          grep -Fq 'view-home' /tmp/v18-source.html
-          grep -Fq 'view-product' /tmp/v18-source.html
+          if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
+            echo "::error::Immutable accepted V18 source is not public: HTTP $code"
+            exit 1
+          fi
+          if ! grep -Fq 'view-home' /tmp/v18-source.html || ! grep -Fq 'view-product' /tmp/v18-source.html; then
+            echo "::error::Immutable accepted V18 source lost its identity markers"
+            exit 1
+          fi
 
       - name: Prove preview root is V18 and not production-composed
         shell: bash
