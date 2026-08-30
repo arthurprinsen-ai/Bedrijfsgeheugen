@@ -24,7 +24,8 @@ test('production build order keeps footer after historical core, SEO and auth', 
   const build = readFileSync('tools/bouw-v18-production.mjs', 'utf8');
   const core = build.indexOf("bouw-v18-production-core.mjs");
   const seo = build.indexOf("apply-v18-seo.mjs");
-  const auth = build.indexOf('applyCustomerPortalAuth');
-  const footer = build.indexOf('applyCanonicalFootersToSite');
-  assert.ok(core >= 0 && seo > core && auth >= 0 && footer > seo);
+  const auth = build.lastIndexOf('applyCustomerPortalAuth()');
+  const verifyAuth = build.lastIndexOf('verifyCustomerLoginContract()');
+  const footer = build.lastIndexOf('applyCanonicalFootersToSite()');
+  assert.ok(core >= 0 && seo > core && auth > seo && verifyAuth > auth && footer > verifyAuth);
 });
