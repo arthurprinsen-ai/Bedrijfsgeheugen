@@ -69,17 +69,14 @@ test('migrated low-risk writers are candidate-only PR writers', () => {
   }
 });
 
-test('structural proof never claims parity or rollback and operational proof advances only as an independent evidence flag', () => {
+test('current permission boundary fails writer readiness closed without claiming parity or rollback', () => {
   const state = JSON.parse(fs.readFileSync('config/repository-writer-migration.json', 'utf8'));
-  for (const writer of state.writers) {
-    assert.equal(writer.structuralContractVerified, true, `${writer.name}: structural contract should be machine verified`);
-    assert.equal(typeof writer.operationalCandidateVerified, 'boolean', `${writer.name}: operational proof must be an explicit evidence flag`);
-    assert.equal(writer.parityVerified, false, `${writer.name}: structural/operational candidate proof must not claim parity`);
-    assert.equal(writer.rollbackVerified, false, `${writer.name}: structural/operational candidate proof must not claim rollback`);
-  }
-  assert.equal(state.writers.some((writer) => writer.operationalCandidateVerified === true), true,
-    'at least one writer must retain its evidence-backed operational progress');
-  assert.equal(state.writers.some((writer) => writer.operationalCandidateVerified === false), true,
-    'unverified writers must remain explicitly blocked');
+  assert.equal(state.prCreationBoundary?.status, 'BLOCKED_HARD_BOUNDARY');
   assert.equal(state.mainProtectionReady, false);
+  for (const writer of state.writers) {
+    assert.equal(writer.structuralContractVerified, true, `${writer.name}: structural contract should remain machine verified`);
+    assert.equal(writer.operationalCandidateVerified, false, `${writer.name}: current operational readiness must fail closed while Actions PR creation is blocked`);
+    assert.equal(writer.parityVerified, false, `${writer.name}: structural/history proof must not claim parity`);
+    assert.equal(writer.rollbackVerified, false, `${writer.name}: structural/history proof must not claim rollback`);
+  }
 });
