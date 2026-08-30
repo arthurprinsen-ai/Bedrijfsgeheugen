@@ -69,6 +69,14 @@ test('real customer start path has one auth authority and never calls the destru
   assert.doesNotMatch(html, /if \(heeft\)[\s\S]*?verversen\(s\)/);
 });
 
+test('iOS login initializes once and only exposes fields after the full page load', () => {
+  const html = repairCustomerPortalAuth(source);
+  assert.match(html, /if \(window\.__bgCustomerAuthStarted\) return;/);
+  assert.match(html, /window\.__bgCustomerAuthStarted = true;/);
+  assert.match(html, /document\.readyState === 'complete'/);
+  assert.match(html, /window\.addEventListener\('load', activeerKlantAuth, \{once:true\}\)/);
+});
+
 test('iOS in-app browser gets a first-party cookie fallback when localStorage is not retained', () => {
   const html = repairCustomerPortalAuth(source);
   assert.match(html, /AUTH_COOKIE\s*=\s*'bg_customer_auth'/);
