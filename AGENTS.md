@@ -25,6 +25,11 @@ Verplichte self-healing lus:
 
 Een agent mag dus niet eindigen met alleen “dit moet je aanpassen”, “controleer dit”, “hier is een advies”, “de build faalt” of “de deploy is rood” wanneer de agent de fout zelf veilig kan herstellen.
 
+## TDD en ontwikkeling zijn candidate-only
+TDD, RED-first regressietests en iedere andere ontwikkelmutatie worden nooit rechtstreeks op `main` of de default branch uitgevoerd. De falende test, de minimale fix en alle vervolgiteraties blijven op een geïsoleerde candidate branch totdat de relevante gates groen zijn.
+
+De candidate wordt alleen via de canonieke BRAIN-deliveryroute en BG169 gepromoveerd. `main`-push CI is uitsluitend detectie achteraf en nooit een vervanging voor candidate-isolatie, PR-gating of exact-SHA-promotie. Dit blijft verplicht zolang GitHub-native main protection uit staat en blijft ook daarna de ontwikkelstandaard.
+
 ## Accepted website baseline — protected invariant
 De **accepted website baseline** in `site/accepted-baseline.json` en `site/navigation-baseline.json` is bindend voor iedere huidige en toekomstige agent. Een route die nog bestaat en technisch/SEO-groen is, kan toch rood zijn wanneer de betekenis, propositie, het verhaal, verplichte inhoudsankers of de navigatiepositie onverwacht zijn gewijzigd.
 
