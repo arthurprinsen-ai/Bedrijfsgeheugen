@@ -61,6 +61,19 @@ test('AgentWork transitions through the shared lifecycle and rejects invalid jum
   assert.throws(() => fabric.transition({ workId:work.id, status:'Resolved' }), /invalid AgentWork transition/i);
 });
 
+test('AgentWork cannot enter execution without a READY chat-learning preflight', () => {
+  const fabric = createAgentFabric({ registry:registry() });
+  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'preflight-required', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Execution must consume chat learning first' });
+  fabric.transition({ workId:work.id, status:'Investigating' });
+  fabric.transition({ workId:work.id, status:'FixPrepared' });
+
+  assert.throws(
+    () => fabric.transition({ workId:work.id, status:'Executing' }),
+    /chat-learning preflight.*READY/i
+  );
+  assert.equal(fabric.getWork(work.id).status, 'FixPrepared');
+});
+
 test('AgentWork cannot resolve while a material obligation is still open', () => {
   const fabric = createAgentFabric({ registry:registry() });
   const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'production-regression', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Production regression' });
