@@ -25,6 +25,14 @@ test('backend website and portal changes become independently promotable v2 lane
   assert.equal(plan.registration.autoDiscover, true);
 });
 
+test('repository writer static assets are classified as website delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  for (const path of ['blog/writer-verification-weekblog-123/index.html','sitemap.xml','data/regelgeving.json']) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'feedface12345678', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['website'], `${path} must be website delivery work`);
+  }
+});
+
 test('non-overlapping main drift never causes a branch rebuild', () => {
   assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/render-offer.mjs','tests/portal-native-legacy-batch-11.test.mjs'], mainDriftPaths:['blog/index.html','assets/css/powerhouse-kosten.css'], featureContracts:[], mainDriftContracts:[], mergeable:true }), { action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:[], contractOverlap:[] });
 });
