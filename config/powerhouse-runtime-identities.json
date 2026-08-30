@@ -1,0 +1,34 @@
+{
+  "contract": "POWERHOUSE-RUNTIME-IDENTITY-v1",
+  "generated_at": "2026-08-30T23:06:00+02:00",
+  "identity_rule": "Resolve active ownership by scenario_id + canonical_role + latest_verified_state. Never use a BG label alone as runtime authority.",
+  "truth_precedence": [
+    "latest_verified_state_with_runtime_or_production_evidence",
+    "scenario_id_and_current_blueprint",
+    "canonical_role_registry",
+    "historical_chat_or_ledger_alias"
+  ],
+  "current": [
+    {"scenario_id":7071153,"label":"BG139","canonical_role":"Mission Control API","status":"active","notes":"During SHADOW this endpoint must remain on proven legacy-live modules 1→2→3→6→4→5→8. Cache cutover is allowed only after BG191 returns PRODUCTION_GREEN. Historical references to another BG139 function are namesake history only."},
+    {"scenario_id":7152183,"label":"BG186","canonical_role":"Mission Control Current State Projection v1","status":"active"},
+    {"scenario_id":7152314,"label":"BG188","canonical_role":"Mission Control Shadow Equivalence Guardian v1","status":"active"},
+    {"scenario_id":7152387,"label":"BG190","canonical_role":"Mission Control Cache-First Read Service v1","status":"active","notes":"Canary/fallback-only before promotion; write-through may WRITE_SHADOW but must never ACTIVATE the projection."},
+    {"scenario_id":7152400,"label":"BG191","canonical_role":"Mission Control Cache Promotion Executor v1","status":"active","notes":"Only Class-A authority allowed to activate the cache projection."}
+  ],
+  "mission_control_cache_contract": {
+    "request_owner":7071153,
+    "projection_owner":7152183,
+    "equivalence_owner":7152314,
+    "cache_canary_owner":7152387,
+    "promotion_owner":7152400,
+    "shadow_legacy_live_modules":[1,2,3,6,4,5,8],
+    "projection_safe_modes_before_promotion":["SHADOW","BYPASS"],
+    "promotion_precondition":"eq:<n>:EQUIVALENT with n>=25, mode=SHADOW, fresh=true, payload present, no divergence/error, and recent real BG139 webhook requests green",
+    "permanent_bg190_shadow_insert_forbidden":true,
+    "bg191_only_active_authority":true,
+    "cache_fallback_must_not_own_promotion":true,
+    "exact_legacy_rollback_required":true,
+    "duplicate_cache_stack_forbidden":true,
+    "new_refresh_owner_requires_overlap_check":true
+  }
+}
