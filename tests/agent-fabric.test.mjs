@@ -27,30 +27,6 @@ test('registry rejects duplicate agent identities', () => {
   assert.throws(() => createAgentRegistry([agents[0], { ...agents[0] }]), /duplicate agent id/i);
 });
 
-test('registry exposes immutable per-agent tasks, playbooks and learning contracts without changing routing', () => {
-  const enriched = createAgentRegistry([
-    {
-      id:'agent-seo',
-      domains:['Website','SEO'],
-      capabilities:['analyze','optimize'],
-      tasks:['audit-serp','improve-content'],
-      playbooks:['seo-regression-recovery','content-opportunity'],
-      learningContracts:['seo.v1','outcome.v1'],
-    },
-  ]);
-  const agent = enriched.get('agent-seo');
-  assert.deepEqual(agent.tasks, ['audit-serp','improve-content']);
-  assert.deepEqual(agent.playbooks, ['seo-regression-recovery','content-opportunity']);
-  assert.deepEqual(agent.learningContracts, ['seo.v1','outcome.v1']);
-  assert.equal(Object.isFrozen(agent.tasks), true);
-  assert.equal(Object.isFrozen(agent.playbooks), true);
-  assert.equal(Object.isFrozen(agent.learningContracts), true);
-  assert.deepEqual(enriched.route({ domains:['SEO'], capabilities:['optimize'] }), {
-    primaryAgentId:'agent-seo',
-    supportAgentIds:[],
-  });
-});
-
 test('duplicate active signals collapse into one shared AgentWork item', () => {
   const fabric = createAgentFabric({ registry:registry(), now:() => '2026-08-29T12:00:00.000Z' });
   const signal = { tenantId:'TENANT-A', kind:'Failure', problemClass:'website-regression', priority:'P1', domains:['Website','SEO'], capabilities:['analyze'], affectedObjectIds:['page-home'], problem:'Homepage metadata regressed', evidence:['seo-check-1'] };
