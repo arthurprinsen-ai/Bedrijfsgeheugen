@@ -1,14 +1,25 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "mainProtectionReady": false,
   "governingIssue": 175,
+  "prCreationBoundary": {
+    "status": "BLOCKED_HARD_BOUNDARY",
+    "provider": "github-actions",
+    "reason": "actions_pr_creation_policy_disabled",
+    "evidenceRunId": 33311807116,
+    "evidenceJobId": 99258105955,
+    "evidenceCandidateBranch": "writer/approved-central-blog/ce55cb9307ece2c2",
+    "evidenceCandidateSha": "5bba8489ebe9edf67460a3f8be3a35f82d280a21",
+    "appliesTo": "all-github-actions-self-created-candidate-prs",
+    "requiredResolution": "explicitly enable repository or organization policy allowing GitHub Actions to create pull requests, then rerun a fresh exact-main operational canary and immutable shadow proof"
+  },
   "writers": [
-    {"name":"approved-central-blog","candidateMode":"operational_candidate_verified","pullRequest":188,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"approved-central-blog","candidateMode":"blocked_permission","pullRequest":188,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
     {"name":"blog-bijwerken","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"menu-balk-fix","candidateMode":"merged_unverified","pullRequest":180,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"paginacontrole","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"regelgeving-bijwerken","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":181,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true},
-    {"name":"seo-controle","candidateMode":"merged_unverified","pullRequest":185,"originPullRequest":182,"structuralContractVerified":true,"operationalCandidateVerified":true,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"menu-balk-fix","candidateMode":"blocked_permission","pullRequest":180,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"paginacontrole","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"regelgeving-bijwerken","candidateMode":"blocked_permission","pullRequest":185,"originPullRequest":181,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
+    {"name":"seo-controle","candidateMode":"blocked_permission","pullRequest":185,"originPullRequest":182,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true},
     {"name":"weekblog","candidateMode":"merged_unverified","pullRequest":189,"structuralContractVerified":true,"operationalCandidateVerified":false,"parityVerified":false,"rollbackVerified":false,"merged":true}
   ]
 }
