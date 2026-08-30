@@ -4,12 +4,18 @@
   "writer": "paginacontrole",
   "component_id": "repository-writer:paginacontrole",
   "proof": "operational-candidate-shadow-flow",
-  "truth_status": "VERIFIED",
-  "status": "COMPLETED",
+  "truth_status": "SUPPORTED",
+  "status": "AWAITING_OUTCOME",
   "confidence": 1,
   "production_authority": "BG169",
   "outcome_router": "BG168",
   "current_state_projection": "BG167",
+  "projection_verification": {
+    "bg168_routed": false,
+    "bg167_visible": false,
+    "verified": false,
+    "reason": "No independent runtime acknowledgement or BG167 current-state version has been demonstrated yet."
+  },
   "verification_pr": 414,
   "verification_sha": "8439f40c1a3a9f25701ed1f61fb9d02b399720b4",
   "candidate_pr": 417,
@@ -23,9 +29,7 @@
   "shadow_checks": {
     "path_policy_verified": true,
     "exact_head_verified": true,
-    "changed_files": [
-      "paginacontrole-canary.html"
-    ]
+    "changed_files": ["paginacontrole-canary.html"]
   },
   "impact_policy": {
     "source_pr": 420,
@@ -35,6 +39,6 @@
     "diff_stats_required": true,
     "verified": true
   },
-  "evidence_policy": "Exact verification SHA, real writer candidate PR, immutable read-only shadow success artifact and bounded impact policy are all required before COMPLETED.",
+  "evidence_policy": "Mechanical writer evidence is supported. COMPLETED/VERIFIED additionally requires independent BG168 routing and BG167 current-state visibility acknowledgement.",
   "verified_at": "2026-08-30T14:17:52Z"
 }
