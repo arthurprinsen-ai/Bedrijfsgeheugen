@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { repairCustomerPortalAuth } from '../tools/customer-portal-auth-race.mjs';
 
 const redirects = readFileSync(new URL('../_redirects', import.meta.url), 'utf8');
 const frisseBlik = readFileSync(new URL('../frisse-blik.html', import.meta.url), 'utf8');
@@ -31,9 +32,10 @@ test('Frisse Blik bare portal handoff resolves to the legacy demo', () => {
   assert.match(redirects, /^\/klantportaal\s+\/klantportaal-demo\.html\s+200!$/m);
 });
 
-test('customer offer routes can never open the legacy Netlify Identity modal', () => {
+test('production transform prevents customer offer routes from opening Netlify Identity', () => {
+  const repaired = repairCustomerPortalAuth(klantportaal);
   assert.match(
-    klantportaal,
+    repaired,
     /const bl=document\.getElementById\('btnLogin'\);\s*if\(bl\) bl\.addEventListener\('click',function\(\)\{\s*if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\) return;/m
   );
 });
