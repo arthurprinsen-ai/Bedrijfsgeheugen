@@ -46,6 +46,10 @@ test('current chat learning is indexed and machine-readable before material agen
       assert.ok(lesson[field].trim(), `${id}.${field} must not be empty`);
     }
   }
+  assert.match(byId.get('GITHUB_PR_HEAD_MUST_EXIST_BEFORE_CREATE').requiredAction, /create_pull_request/);
+  assert.match(byId.get('GITHUB_CODE_SEARCH_USES_SEARCH_ACTION').requiredAction, /dedicated GitHub search action/i);
+  assert.match(byId.get('GITHUB_DRAFT_READY_USES_DEDICATED_ACTION').requiredAction, /mark_pull_request_ready_for_review/);
+
   const activeRules = new Set((rules.rules || []).filter((rule) => rule.active === true).map((rule) => rule.id));
   for (const id of requiredPreventionRules) assert.ok(activeRules.has(id), `missing active prevention rule ${id}`);
 
