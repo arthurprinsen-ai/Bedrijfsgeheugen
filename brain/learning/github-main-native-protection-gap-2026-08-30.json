@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "type": "POWERHOUSE_EXTERNAL_CONTROL_CURRENT_STATE",
   "date": "2026-08-30",
   "fingerprint": "github|main|native-protection-absent",
@@ -8,32 +8,65 @@
     "branch": "main"
   },
   "state": "UNRESOLVED_EXTERNAL_CONTROL",
+  "ownerIssue": 523,
+  "first_seen": "2026-08-30T20:25:17Z",
+  "last_seen": "2026-08-30T20:42:20Z",
+  "recurrence_count": 2,
+  "occurrences": [
+    {
+      "sha": "1e33e684905bd187e44389d30433dd64cf872f9b",
+      "observed_at": "2026-08-30T20:25:17Z",
+      "shape": "UNSIGNED_ONE_PARENT_DIRECT_MAIN_WRITE",
+      "sharedMemoryRunId": 33333597731,
+      "result": "RED_POST_WRITE_DETECTION",
+      "evidence": "Shared Agent Memory ran only after the main ref had already moved and failed 142/143 on the missing canonical checkpoint co-change."
+    },
+    {
+      "sha": "01ae7a0bc7c429010f00015e979c1a11af7b831e",
+      "observed_at": "2026-08-30T20:42:20Z",
+      "shape": "UNSIGNED_ONE_PARENT_DIRECT_MAIN_WRITE",
+      "result": "SECOND_RECURRENCE_NATIVE_PREVENTION_STILL_ABSENT",
+      "evidence": "A second direct one-parent main write was possible while branch protection and repository rulesets remained absent."
+    }
+  ],
+  "eradication": {
+    "currentMaturity": "DETECTED_AND_GUARDED",
+    "targetState": "STRUCTURALLY_IMPOSSIBLE",
+    "postPushDetectionIsPrevention": false,
+    "closeOnlyWhenNativePreventionProven": true,
+    "requiredPrevention": "GitHub-native branch protection or repository ruleset must reject unauthorized direct-main mutation before ref movement while all governed PR and authorized writer paths remain operational.",
+    "successorOwner": "P0 issue #523 / agent-reliability",
+    "recurrenceAction": "Deduplicate new occurrences into this failure class, increment recurrence_count/last_seen, retain exact SHA evidence, and do not create another remediation owner."
+  },
   "direct_evidence": {
     "branch_protected": false,
     "repository_rulesets_count": 0,
-    "observed_main_sha": "373b80496f89c7aa972497d01cd66efccbf57c84"
+    "observed_main_sha": "d5c8f3f4b6dc593b37ecce9b826db2179e383ea4",
+    "rulesets_readback": "[]"
   },
-  "interpretation": "Internal Brain/Shared-Memory/V18/BRAIN-delivery checks can be green while GitHub itself does not currently enforce native protection or a repository ruleset on main. Internal CI is not proof of native platform protection.",
+  "interpretation": "Internal Brain/Shared-Memory/V18/BRAIN-delivery checks can be green while GitHub itself does not currently enforce native protection or a repository ruleset on main. Post-push CI is detection after mutation and cannot make the direct-write failure class structurally impossible.",
   "current_safety": [
     "Continue using exact-head PR merges and required internal verification gates.",
     "Never treat protected=false or empty rulesets as green merely because CI passes.",
+    "Treat every direct-main occurrence as the same failure class and append evidence to owner #523.",
     "Do not weaken internal gates while native protection is absent."
   ],
   "blocked_action": {
     "reason": "The currently authorized GitHub connector exposes direct protection/ruleset reads but no native branch-protection/ruleset mutation action.",
     "required_capability": "Authorized GitHub branch protection or repository ruleset write capability.",
-    "forbidden_fallback": "Do not claim protection was enabled, do not simulate native protection with documentation, and do not bypass PR/exact-SHA governance."
+    "forbidden_fallback": "Do not claim protection was enabled, do not simulate native protection with documentation or post-push CI, and do not bypass PR/exact-SHA governance."
   },
   "resume_contract": [
     "Read main branch protection and repository rulesets directly again before acting; do not rely on this historical snapshot.",
     "If native protection remains absent and an authorized mutation capability is available, configure protection/ruleset according to the repository's required delivery checks without disabling the existing internal gates.",
     "After mutation, read native platform state back and prove the exact rule/protection configuration.",
-    "Run a non-destructive governance verification showing protected main rejects a disallowed path while the governed PR path remains usable.",
-    "Persist the resulting production evidence and close this fingerprint only after direct readback."
+    "Run a non-destructive governance verification showing protected main rejects a disallowed direct write before ref mutation while the governed PR path and authorized deterministic writers remain usable.",
+    "Persist the resulting production evidence and change eradication.currentMaturity to STRUCTURALLY_IMPOSSIBLE only after direct readback."
   ],
   "success_criteria": [
     "Direct GitHub evidence shows main is governed by intended native branch protection or matching repository ruleset.",
     "Required Brain/Shared-Memory/V18/BRAIN-delivery paths remain operable.",
+    "A non-destructive probe proves a disallowed direct-main write is rejected before ref mutation.",
     "No direct-main bypass path remains contrary to policy.",
     "Protection state is independently read back from GitHub after configuration."
   ]
