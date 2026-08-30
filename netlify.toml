@@ -18,9 +18,6 @@
   publish = "."
   command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
 
-# Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
-# Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
-# functie leest process.env. Zonder deze uitzondering faalt elke build.
 [build.environment]
   SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml"
 
@@ -28,7 +25,6 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# .html-varianten netjes doorsturen naar de schone URL (voorkomt duplicate content)
 [[redirects]]
   from = "/excel-als-crm.html"
   to = "/excel-als-crm"
@@ -155,7 +151,6 @@
   status = 301
   force = true
 
-# Blog zonder slash → met slash
 [[redirects]]
   from = "/blog"
   to = "/blog/"
@@ -178,9 +173,6 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Stijl en scripts korter cachen. Ze hebben een versienummer in de URL, dus een
-# nieuwe versie krijgt vanzelf een nieuw adres; deze regel is de vangnetlaag
-# voor bestanden die zonder versienummer worden opgevraagd.
 [[headers]]
   for = "/assets/*.css"
   [headers.values]
@@ -191,13 +183,9 @@
   [headers.values]
     Cache-Control = "public, max-age=3600, must-revalidate"
 
-# Slot op de interne map. De edge function vraagt om inloggegevens; die staan
-# als INTERN_GEBRUIKER en INTERN_WACHTWOORD in de Netlify-omgevingsvariabelen.
 [[edge_functions]]
   function = "intern-slot"
   path = "/intern/*"
-
-# .html-varianten die Google alsnog had opgepikt, doorsturen naar de schone URL
 
 [[redirects]]
   from = "/brochure.html"
@@ -289,11 +277,11 @@
   status = 301
   force = true
 
-# Deploy previews zijn bewust een exacte kopie van de productie-build.
-# Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
-# alternatieve preview-composer meer die een andere website kan tonen.
+# Deploy previews are intentionally different from production: they reconstruct
+# the pinned historical V18 baseline at the preview root. Production continues
+# to use the normal production composer above.
 [context.deploy-preview]
-  command = "node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs"
+  command = "node tools/bouw-v18-test-preview.mjs && node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs"
 
 [[redirects]]
   from = "/aanmelden.html"
