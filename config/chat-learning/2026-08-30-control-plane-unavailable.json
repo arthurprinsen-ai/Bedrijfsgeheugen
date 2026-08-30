@@ -1,0 +1,17 @@
+{
+  "version": "BRAIN-CHAT-LEARNING-v1",
+  "appendOnly": true,
+  "lessons": [
+    {
+      "id": "CONTROL_PLANE_UNAVAILABLE_PRESERVE_CANDIDATE",
+      "preventionRule": "PRESERVE_GREEN_CANDIDATE_WHEN_PRODUCTION_AUTHORITY_UNAVAILABLE",
+      "fingerprint": "delivery|production-authority|control-plane-unavailable|2026-08-30",
+      "symptom": "Een exact geteste kandidaat is groen en mergeable, maar de canonieke productieautoriteit/control-plane is tijdelijk niet betrouwbaar bereikbaar.",
+      "rootCause": "De delivery control-plane of connector is tijdelijk unavailable/rate-limited terwijl de candidate zelf geen productfout bevat.",
+      "failedApproach": "BG169 omzeilen, een tweede promotion owner bouwen, retry-stormen veroorzaken of een bewezen kandidaat weggooien alleen omdat onafhankelijke main-commits zijn geland.",
+      "requiredAction": "Bewaar dezelfde exact geteste candidate SHA als open outcome obligation; verifieer mergeability en echte overlap/conflict opnieuw en hervat met dezelfde SHA zodra BG169/control-plane beschikbaar is. Alleen bij daadwerkelijke changed-path, merge-, contract- of dependency-overlap wordt de betrokken delta opnieuw gesynchroniseerd en getest.",
+      "prevention": "De canonieke productieautoriteit niet omzeilen; onafhankelijke moving-main drift is geen blocker en control-plane outages blijven expliciete open obligations met bounded retry/readback.",
+      "evidenceRule": "PRODUCTION_GREEN bestaat pas na canonical-authority promotion plus exact production identity/runtime proof; tot die tijd blijft de kandidaat GREEN_AWAITING_PROMOTION en immutable."
+    }
+  ]
+}
