@@ -30,6 +30,26 @@ test('every required chat failure fingerprint remains PROVEN and backed by an ac
   }
 });
 
+test('coverage index contains every canonical PROVEN chat lesson so no learned failure can silently disappear', () => {
+  const required = new Set(manifest.requiredFailureFingerprints || []);
+  const proven = (lessons.lessons || []).filter((item) => item.status === 'PROVEN');
+  assert.ok(proven.length > 0, 'canonical Brain must contain proven lessons');
+  for (const lesson of proven) {
+    assert.ok(required.has(lesson.fingerprint), `coverage index missing PROVEN lesson: ${lesson.fingerprint}`);
+  }
+});
+
+test('every covered prevention rule remains active and every active rule referenced by a PROVEN lesson stays traceable', () => {
+  const covered = new Set(manifest.requiredFailureFingerprints || []);
+  for (const lesson of lessons.lessons || []) {
+    if (lesson.status !== 'PROVEN' || !lesson.preventionRule) continue;
+    const rule = ruleById.get(lesson.preventionRule);
+    assert.ok(rule, `missing prevention rule ${lesson.preventionRule}`);
+    assert.equal(rule.active, true, `inactive prevention rule ${lesson.preventionRule}`);
+    assert.ok(covered.has(lesson.fingerprint), `active learned prevention lost from coverage: ${lesson.fingerprint}`);
+  }
+});
+
 test('chat architecture invariants preserve one executable truth and fail-closed production evidence', () => {
   assert.deepEqual(manifest.architectureInvariants, {
     githubExecutableSSOT: true,
