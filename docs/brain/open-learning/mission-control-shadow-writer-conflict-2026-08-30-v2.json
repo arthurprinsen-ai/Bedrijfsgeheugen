@@ -1,0 +1,42 @@
+{
+  "version": "OPEN-LEARNING-v2",
+  "status": "OBSERVED",
+  "fingerprint": "mission-control|shadow-promotion-lifecycle-and-writer-conflict|2026-08-30-v2",
+  "supersedes": ["mission-control|shadow-threshold-reached-without-promotion-successor|2026-08-30-v1"],
+  "issue": 741,
+  "scenario_ids": {"api":7071153,"projection":7152183,"equivalence_guardian":7152314,"read_service":7152387,"promotion_executor":7152400},
+  "evidence": {
+    "quota_state": "organization/team paused; runtime fix not yet canary-verifiable",
+    "bg139_recent_execution": "b2ce6b3783914028820d5fb4393fab3b",
+    "bg191_precondition_execution": "5cebb8d52eeb47b0ad30a9c649accdce",
+    "bg191_observed_streak": 21,
+    "required_streak": 25,
+    "bg190_fallback_execution": "5f90cf3495994667a2af2a09bb24f6d1",
+    "bg190_fallback_cost": {"operations":7,"credits":9,"data_transfer_bytes":102844},
+    "bg190_shadow_write": "module 11 calls BG186 WRITE_SHADOW with semantic_hash=live-fallback-v24",
+    "bg188_streak_rule": "previous streak is parsed only from semantic_hash matching eq:<n>; absent marker yields previous_streak=0"
+  },
+  "root_cause": "BG188 owns semantic-equivalence streak calculation but lacks a successor call to BG191 when promotion_candidate becomes true. At the same time BG190 independently writes the same BG186 SHADOW record after live fallback using semantic_hash=live-fallback-v24. That competing write can replace BG188's eq:<n>:EQUIVALENT marker, so a later BG188 run can parse previous_streak as zero. Frequent BG139 polling therefore causes fallback activity that can prevent or delay reaching the 25-equivalence promotion threshold while SHADOW correctly remains non-usable.",
+  "correctness_constraints": [
+    "SHADOW must remain non-usable for normal reads",
+    "BG191 threshold remains 25+ equivalent states",
+    "BG191 must not become periodic polling",
+    "one canonical owner must preserve SHADOW equivalence metadata",
+    "BG191 ACTIVATE/readback/cache-canary/semantic-equality/rollback behavior remains unchanged"
+  ],
+  "proposed_fix": {
+    "writer_ownership": "Route BG190 live fallback payload through BG188, or otherwise prevent BG190 from overwriting canonical equivalence metadata.",
+    "successor": "After BG188 successfully writes SHADOW, invoke BG191 exactly once when promotion_candidate=true using an idempotent successor path."
+  },
+  "acceptance_criteria": [
+    "BG190 fallback cannot reset the canonical equivalence streak",
+    "streak below 25 causes no BG191 invocation",
+    "threshold crossing causes one BG191 promotion attempt",
+    "successful promotion yields ACTIVE and direct BG139 CACHE_HIT",
+    "failed promotion verification rolls back to BYPASS",
+    "repeated browser reads stop causing LIVE_NOTION fallback once ACTIVE is proven",
+    "before/after operations, credits and transfer are recorded",
+    "status advances to PROVEN only after real Make runtime canary"
+  ],
+  "next_state": "PROVEN after bounded post-quota runtime verification"
+}

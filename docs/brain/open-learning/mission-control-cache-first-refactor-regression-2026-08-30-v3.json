@@ -1,0 +1,54 @@
+{
+  "version": "OPEN-LEARNING-v3",
+  "status": "OBSERVED",
+  "root_cause_status": "PROVEN",
+  "fix_status": "UNVERIFIED_QUOTA_BLOCKED",
+  "fingerprint": "mission-control|cache-first-refactor-dropped-equivalence-handoff|2026-08-30-v3",
+  "supersedes": [
+    "mission-control|shadow-threshold-reached-without-promotion-successor|2026-08-30-v1",
+    "mission-control|shadow-promotion-lifecycle-and-writer-conflict|2026-08-30-v2"
+  ],
+  "issue": 741,
+  "scenario_ids": {
+    "api": 7071153,
+    "projection": 7152183,
+    "equivalence_guardian": 7152314,
+    "read_service": 7152387,
+    "promotion_executor": 7152400
+  },
+  "proven_evidence": {
+    "legacy_bg139_execution": "2468d5ec8563447d9e652beb7ceab1d4",
+    "legacy_handoff": "BG139 module 8 invoked scenario 7152314 with current_payload_json",
+    "bg188_history": "BG188 ran on the same approximate 7-8 minute cadence as BG139 and stopped after 2026-08-30T16:56:42Z-era traffic",
+    "current_bg139": "current cache-first blueprint has no BG188 successor module",
+    "current_bg190": "module 11 writes BG186 WRITE_SHADOW directly with semantic_hash=live-fallback-v24",
+    "bg191_last_promotion_attempt": {"execution_id":"5cebb8d52eeb47b0ad30a9c649accdce","result":"PRECONDITION_NOT_MET","streak":21,"required":25},
+    "recent_bg139_cache_behavior": "fresh payload exists in BG186 with status SHADOW; BG139 correctly returns MISS and calls BG190",
+    "quota_blocker": "Make organization/team is paused, so no post-fix runtime canary is currently possible"
+  },
+  "root_cause": "The BG139 cache-first refactor successfully removed expensive direct Notion reads from the public webhook path, but it also removed the legacy BG139-to-BG188 equivalence handoff. Fallback responsibility moved to BG190, which writes SHADOW directly with a generic semantic hash instead of sending the fresh payload through BG188. This both stops normal equivalence-streak advancement and can overwrite the prior eq:<n> marker. BG191 therefore is not reliably reached at the required streak of 25. BG186 remains SHADOW, BG139 correctly refuses it, and repeated polling continues to pay fallback cost.",
+  "preserve": [
+    "cache-first BG139 public read path",
+    "SHADOW remains non-usable",
+    "BG191 threshold remains 25+ equivalent states",
+    "BG191 remains event/successor driven, not periodic",
+    "BG191 ACTIVATE, readback, cache-service canary, semantic equality verification and rollback-to-BYPASS"
+  ],
+  "preferred_fix": [
+    "After BG190 builds a fresh LIVE_NOTION payload, call BG188 with current_payload_json instead of directly owning equivalence SHADOW metadata.",
+    "Keep BG188 as the single canonical equivalence/SHADOW metadata owner.",
+    "After BG188 successfully writes SHADOW, invoke BG191 exactly once when promotion_candidate=true through an idempotent successor path.",
+    "Retire BG190 direct generic WRITE_SHADOW only after the restored successor path is runtime verified."
+  ],
+  "acceptance_criteria": [
+    "BG190 fallback advances/preserves the canonical equivalence streak through BG188",
+    "no competing writer resets eq:<n> metadata",
+    "streak below 25 does not invoke BG191",
+    "threshold crossing invokes exactly one BG191 promotion attempt",
+    "successful promotion yields ACTIVE and direct BG139 CACHE_HIT",
+    "failed promotion verification rolls back to BYPASS",
+    "repeated browser polling stops causing LIVE_NOTION fallback after valid promotion",
+    "before/after operations, credits and data transfer show improvement",
+    "fix is not marked PROVEN until Make quota eligibility returns and a bounded canary succeeds"
+  ]
+}

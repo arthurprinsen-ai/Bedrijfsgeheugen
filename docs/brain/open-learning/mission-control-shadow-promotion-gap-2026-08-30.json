@@ -1,0 +1,41 @@
+{
+  "version": "OPEN-LEARNING-v1",
+  "status": "OBSERVED",
+  "fingerprint": "mission-control|shadow-threshold-reached-without-promotion-successor|2026-08-30-v1",
+  "component": "Mission Control",
+  "stage": "RUNTIME_COST",
+  "observed_at": "2026-08-30T23:45:00+02:00",
+  "issue": 741,
+  "scenario_ids": {
+    "api": 7071153,
+    "projection": 7152183,
+    "equivalence_guardian": 7152314,
+    "read_service": 7152387,
+    "promotion_executor": 7152400
+  },
+  "evidence": {
+    "quota_state": "Make organization/team execution paused; runtime fix cannot yet be canary verified",
+    "api_early_run": {"execution_id": "2468d5ec8563447d9e652beb7ceab1d4", "operations": 7, "credits": 8, "data_transfer_bytes": 71386},
+    "api_recent_run": {"execution_id": "b2ce6b3783914028820d5fb4393fab3b", "operations": 5, "credits": 6, "data_transfer_bytes": 22412},
+    "recent_cache_state": "mission-control:v24 payload existed and was fresh but status=SHADOW; BG139 correctly returned MISS and invoked BG190",
+    "promotion_run": {"execution_id": "5cebb8d52eeb47b0ad30a9c649accdce", "result": "NO_ACTION", "reason": "PRECONDITION_NOT_MET", "streak": 21},
+    "required_streak": 25
+  },
+  "root_cause": "BG188 computes promotion_candidate when the semantic equivalence streak reaches 25 and writes refreshed SHADOW state, but has no successor hook that invokes canonical promotion owner BG191 when promotion_candidate becomes true. BG191 therefore may not be retried after the threshold becomes reachable, while BG139 polling continues to fall back because SHADOW is intentionally non-usable.",
+  "correctness_constraints": [
+    "Do not treat SHADOW as a cache hit.",
+    "Do not lower BG191's 25+ equivalence threshold.",
+    "Do not make BG191 periodic.",
+    "Preserve BG191 ACTIVATE, readback, cache-service canary, semantic equality verification and rollback-to-BYPASS behavior."
+  ],
+  "proposed_fix": "After BG188 successfully writes SHADOW state, invoke BG191 exactly once when promotion_candidate=true through an idempotent successor path.",
+  "acceptance_criteria": [
+    "streak < 25 does not invoke BG191",
+    "threshold crossing invokes one BG191 promotion attempt",
+    "successful promotion produces ACTIVE + CACHE_HIT on the direct BG139 cache path",
+    "failed verification rolls back to BYPASS",
+    "before/after operations, credits and data transfer are recorded",
+    "quota eligibility is proven by a real Make execution before status can advance to PROVEN"
+  ],
+  "next_state": "PROVEN only after bounded runtime canary succeeds after Make quota eligibility is restored"
+}
