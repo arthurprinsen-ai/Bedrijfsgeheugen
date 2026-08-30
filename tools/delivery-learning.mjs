@@ -10,15 +10,7 @@ export function normalizeFailureReason(value) {
     .replace(/\s+/g, ' ');
 }
 
-export function createFailureLesson({
-  stage,
-  reason,
-  rootCause,
-  fix,
-  preventionRule,
-  component = 'shared',
-  headSha = '',
-}) {
+export function createFailureLesson({ stage, reason, rootCause, fix, preventionRule, component = 'shared', headSha = '' }) {
   const normalizedStage = String(stage ?? '').trim().toUpperCase();
   if (!DELIVERY_STAGES.has(normalizedStage)) throw new TypeError(`unsupported delivery stage: ${normalizedStage}`);
   const normalizedReason = normalizeFailureReason(reason);
@@ -27,11 +19,7 @@ export function createFailureLesson({
   if (!String(fix ?? '').trim()) throw new TypeError('fix is required');
   if (!String(preventionRule ?? '').trim()) throw new TypeError('preventionRule is required');
   const normalizedComponent = String(component ?? 'shared').trim().toLowerCase() || 'shared';
-  const digest = createHash('sha256')
-    .update(`${normalizedStage}|${normalizedComponent}|${normalizedReason}`)
-    .digest('hex')
-    .slice(0, 16);
-
+  const digest = createHash('sha256').update(`${normalizedStage}|${normalizedComponent}|${normalizedReason}`).digest('hex').slice(0, 16);
   return Object.freeze({
     type: 'DELIVERY_FAILURE_LESSON',
     fingerprint: `delivery-failure|${normalizedStage.toLowerCase()}|${normalizedComponent}|${digest}`,
@@ -50,24 +38,18 @@ export function createFailureLesson({
   });
 }
 
-export function createPreflightDecision({
-  component = 'shared',
-  stages = ['COMMIT', 'PR', 'MERGE', 'PIPELINE'],
-  knownLessons = [],
-  appliedPreventionRules = [],
-}) {
+export function createPreflightDecision({ component = 'shared', stages = ['COMMIT', 'PR', 'MERGE', 'PIPELINE'], knownLessons = [], appliedPreventionRules = [] }) {
   const normalizedComponent = String(component).trim().toLowerCase();
   const stageSet = new Set(stages.map(stage => String(stage).trim().toUpperCase()));
   const applied = new Set(appliedPreventionRules.map(rule => String(rule).trim()).filter(Boolean));
-  const relevant = knownLessons.filter(lesson =>
-    lesson?.status === 'PROVEN' &&
-    String(lesson.component ?? '').trim().toLowerCase() === normalizedComponent &&
-    stageSet.has(String(lesson.stage ?? '').trim().toUpperCase())
-  );
+  const relevant = knownLessons.filter(lesson => {
+    const lessonComponent = String(lesson?.component ?? '').trim().toLowerCase();
+    return lesson?.status === 'PROVEN' &&
+      (lessonComponent === normalizedComponent || lessonComponent === 'shared') &&
+      stageSet.has(String(lesson.stage ?? '').trim().toUpperCase());
+  });
   const missing = relevant.filter(lesson => lesson.preventionRule && !applied.has(lesson.preventionRule));
-  if (missing.length) {
-    throw new Error(`known delivery failure prevention missing: ${missing.map(lesson => lesson.preventionRule).join(', ')}`);
-  }
+  if (missing.length) throw new Error(`known delivery failure prevention missing: ${missing.map(lesson => lesson.preventionRule).join(', ')}`);
   return Object.freeze({
     ok: true,
     component: normalizedComponent,
@@ -77,23 +59,13 @@ export function createPreflightDecision({
   });
 }
 
-export function createObservedFailure({
-  stage,
-  reason,
-  component = 'shared',
-  headSha = '',
-  evidenceRef = '',
-}) {
+export function createObservedFailure({ stage, reason, component = 'shared', headSha = '', evidenceRef = '' }) {
   const normalizedStage = String(stage ?? '').trim().toUpperCase();
   if (!DELIVERY_STAGES.has(normalizedStage)) throw new TypeError(`unsupported delivery stage: ${normalizedStage}`);
   const normalizedReason = normalizeFailureReason(reason);
   if (!normalizedReason) throw new TypeError('failure reason is required');
   const normalizedComponent = String(component ?? 'shared').trim().toLowerCase() || 'shared';
-  const digest = createHash('sha256')
-    .update(`${normalizedStage}|${normalizedComponent}|${normalizedReason}`)
-    .digest('hex')
-    .slice(0, 16);
-
+  const digest = createHash('sha256').update(`${normalizedStage}|${normalizedComponent}|${normalizedReason}`).digest('hex').slice(0, 16);
   return Object.freeze({
     type: 'DELIVERY_FAILURE_OBSERVED',
     fingerprint: `delivery-failure|${normalizedStage.toLowerCase()}|${normalizedComponent}|${digest}`,
