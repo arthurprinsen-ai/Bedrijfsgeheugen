@@ -20,6 +20,25 @@ test('writer path policies accept intended files and reject cross-domain drift',
   assert.throws(() => validateWriterPaths('menu-balk-fix', ['index.html', 'package.json']), /UNAPPROVED_WRITER_PATH/);
 });
 
+test('paginacontrole rejects destructive impact even when the path itself is allowed', () => {
+  assert.throws(
+    () => validateWriterPaths(
+      'paginacontrole',
+      ['afmaakindex.html'],
+      [{ file: 'afmaakindex.html', additions: 4, deletions: 423 }],
+    ),
+    /WRITER_DIFF_IMPACT_EXCEEDED:afmaakindex\.html/,
+  );
+  assert.equal(validateWriterPaths(
+    'paginacontrole',
+    ['afmaakindex.html', 'seo-status.json'],
+    [
+      { file: 'afmaakindex.html', additions: 2, deletions: 2 },
+      { file: 'seo-status.json', additions: 1, deletions: 1 },
+    ],
+  ).ok, true);
+});
+
 test('shadow workflow is read-only and only verifies writer candidate PRs', () => {
   const text = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   assert.match(text, /pull_request:/);
