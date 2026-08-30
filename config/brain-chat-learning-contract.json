@@ -242,6 +242,56 @@
       "requiredAction": "Houd BG140 fail-closed; bewijs de werkelijk ondersteunde mapper-serialisatie via runtime-output of vervang de wrapper door een andere managed/native ondersteunde route zonder plaintext token.",
       "prevention": "Insights-contract vereist een echte non-error insight bundle plus downstream metric-write voordat de route verified of actief-groen mag zijn.",
       "evidenceRule": "De wrapper is niet verified totdat een echte provider insight bundle voor een bewezen native media-ID zonder error-handler is waargenomen."
+    },
+    {
+      "id": "FUTURE_COMPONENTS_AUTO_REGISTER_IN_BRAIN_AND_COST_DASHBOARD",
+      "fingerprint": "brain|registration|new-component-missing-from-governance-or-cost-view",
+      "symptom": "Een nieuw scenario, agent of AI-adapter werkt wel maar ontbreekt in gedeelde Brain-context, governance, health, learning of het kostendashboard.",
+      "rootCause": "Registratie en kostenprojectie waren handmatige nazorg in plaats van onderdeel van de Definition of Done.",
+      "failedApproach": "Een component live zetten en later los proberen toe te voegen aan agents, monitoring en dashboards.",
+      "requiredAction": "Registreer ieder nieuw component vóór productie in de canonieke registry en laat scenario- en usageprojecties nieuwe keys automatisch ontdekken.",
+      "prevention": "Delivery- en registration-gates blokkeren groen zolang Brain-, health-, cost-, learning- en dashboarddekking ontbreekt.",
+      "evidenceRule": "Een component is pas production-ready wanneer het automatisch in de gedeelde context en kostenprojectie verschijnt."
+    },
+    {
+      "id": "UNMETERED_PROVIDER_USAGE_IS_NEVER_ZERO",
+      "fingerprint": "cost|ai-tokens|unmetered-misreported-as-zero",
+      "symptom": "Een scenario lijkt nul tokens te gebruiken terwijl de providerroute geen exacte usage-counters terugschrijft.",
+      "rootCause": "Ontbrekende meetdekking werd als numerieke nul geïnterpreteerd.",
+      "failedApproach": "Kostenbesparing of budgetruimte claimen op basis van afwezige provider-usage.",
+      "requiredAction": "Toon onbekende usage als UNMETERED en sluit iedere nieuwe AI-adapter aan op het request-idempotente provider-usage-ledger.",
+      "prevention": "Dashboard- en budgettests onderscheiden RECORDED, UNAVAILABLE en UNMETERED expliciet.",
+      "evidenceRule": "Alleen door de provider teruggegeven en opgeslagen usage-counters gelden als exact tokenverbruik."
+    },
+    {
+      "id": "PRODUCTION_GREEN_REQUIRES_EXACT_DEPLOY_IDENTITY",
+      "fingerprint": "delivery|production|ready-deploy-with-wrong-commit",
+      "symptom": "Een hostingdeploy is READY maar hoort bij een eerdere commit dan de door BG169 gepromoveerde kandidaat.",
+      "rootCause": "Deploystatus en deployidentiteit werden niet gezamenlijk geverifieerd.",
+      "failedApproach": "De laatst zichtbare READY deploy als bewijs gebruiken zonder commit_ref tegen de exacte productie-SHA te controleren.",
+      "requiredAction": "Vereis READY plus commit_ref gelijk aan de geverifieerde main/production SHA, schone secret-scan en relevante smoke/protected metrics.",
+      "prevention": "BG169 mag PRODUCTION_GREEN uitsluitend opslaan na exacte deploy-identiteit en onafhankelijke readback.",
+      "evidenceRule": "READY zonder exacte commit_ref is geen production evidence voor de kandidaat."
+    },
+    {
+      "id": "PRIVATE_AUTH_PAGES_USE_AUTH_SCANS_NOT_PUBLIC_SEO_RULES",
+      "fingerprint": "seo-scan|private-noindex-auth|public-page-rules",
+      "symptom": "Een private noindex-login faalt op publieke header, footer, canonical of SEO-regels.",
+      "rootCause": "Publieke content-scanners en private authentication surfaces deelden dezelfde paginascope.",
+      "failedApproach": "Publieke site-chrome aan een geïsoleerde login toevoegen om de algemene scanner groen te maken.",
+      "requiredAction": "Sluit aantoonbaar private noindex-authpagina's uit van publieke SEO/site-chrome scans en behoud afzonderlijke auth-, role-, CSP-, no-store- en regressietests.",
+      "prevention": "Scans classificeren routes eerst als public content of private auth surface.",
+      "evidenceRule": "Private auth is groen op beveiligings- en authenticatie-evidence, niet op publieke SEO-layout."
+    },
+    {
+      "id": "REMOTE_WRITES_REQUIRE_AUTHORIZED_CONNECTOR",
+      "fingerprint": "delivery|remote-write|unverified-git-remote",
+      "symptom": "Een lokale git push wordt geblokkeerd omdat de remote niet onafhankelijk als geautoriseerd is vastgesteld.",
+      "rootCause": "Lokale remoteconfiguratie werd zonder connector-/accountbewijs als vertrouwde publicatieroute behandeld.",
+      "failedApproach": "Dezelfde push herhalen, beveiligingsreview omzeilen of de remote blind vertrouwen.",
+      "requiredAction": "Verifieer repository en actor via de geautoriseerde GitHub-connector en voer remote mutations alleen via die bewezen route uit.",
+      "prevention": "Remote-write preflight vereist allowlisted repository, actuele actorrechten en exacte kandidaatidentiteit.",
+      "evidenceRule": "Lokale gitconfig alleen bewijst geen toestemming voor een externe write."
     }
   ]
 }
