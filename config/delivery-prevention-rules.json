@@ -26,6 +26,7 @@
     {"id":"RESTORE_GENERATED_REPORT_BEFORE_REBASE","active":true,"enforcedBy":"paginacontrole-concurrent-push-regression","scope":"shared"},
     {"id":"DEDUPE_LEDGER_BY_EVENT_FINGERPRINT_NOT_HARDCODED_PR","active":true,"enforcedBy":"atomic-ledger-fingerprint-dedupe","scope":"shared"},
     {"id":"RECONCILE_MAIN_TO_EXACT_PRODUCTION_SHA","active":true,"enforcedBy":"production-promotion-guardian","scope":"shared"},
-    {"id":"REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN","active":true,"enforcedBy":"whole-brain-outcome-obligation-contract","scope":"shared"}
+    {"id":"REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN","active":true,"enforcedBy":"whole-brain-outcome-obligation-contract","scope":"shared"},
+    {"id":"SEPARATE_INTERNAL_READINESS_FROM_EXTERNAL_PLATFORM_ENFORCEMENT","active":true,"enforcedBy":"writer-readiness-truth-separation-plus-main-protection-certifier","scope":"shared"}
   ]
 }
