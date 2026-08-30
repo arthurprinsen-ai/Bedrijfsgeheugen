@@ -1,0 +1,13 @@
+{
+  "contract":"BRAIN-SOURCE-MAPPING-v1",
+  "allowed_canonical_types":["Evidence","Signal","Opportunity","Decision","Action","Outcome","Learning","Entity","Relation"],
+  "default_unknown_source":"fail_closed",
+  "sources":{
+    "make":{"mapping_version":"v1","preserve_raw":true,"unknown_field_policy":"preserve","canonical_types":["Evidence","Action","Outcome","Learning"],"identity_fields":["scenario_id","execution_id"],"freshness_field":"observed_at"},
+    "notion":{"mapping_version":"v1","preserve_raw":true,"unknown_field_policy":"preserve","canonical_types":["Entity","Evidence","Decision","Action","Learning"],"identity_fields":["page_id","database_id"],"freshness_field":"last_edited_time"},
+    "supabase":{"mapping_version":"v1","preserve_raw":true,"unknown_field_policy":"preserve","canonical_types":["Entity","Relation","Evidence","Outcome"],"identity_fields":["table","row_id"],"freshness_field":"updated_at"},
+    "dataforseo":{"mapping_version":"v1","preserve_raw":true,"unknown_field_policy":"preserve","canonical_types":["Evidence","Signal","Opportunity"],"identity_fields":["task_id","keyword","location_code"],"freshness_field":"observed_at"},
+    "github":{"mapping_version":"v1","preserve_raw":true,"unknown_field_policy":"preserve","canonical_types":["Evidence","Decision","Action","Outcome","Learning"],"identity_fields":["repository","sha","run_id"],"freshness_field":"updated_at"},
+    "netlify":{"mapping_version":"v1","preserve_raw":true,"unknown_field_policy":"preserve","canonical_types":["Evidence","Action","Outcome"],"identity_fields":["site_id","deploy_id","commit_ref"],"freshness_field":"published_at"}
+  }
+}

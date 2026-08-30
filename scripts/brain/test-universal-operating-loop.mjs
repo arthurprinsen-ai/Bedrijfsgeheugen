@@ -1,0 +1,12 @@
+import {normalizeBrainRecord,deriveLoopState,validateDoneOutcome} from '../../brain/operating-loop/model.mjs';
+const evidence=normalizeBrainRecord({tenantId:'t1',type:'Evidence',id:'e1',source:'dataforseo',subjectId:'market:seo',observedAt:'2026-08-30T15:45:00Z',payload:{signal:'search demand rising'}});
+if(evidence.kind!=='evidence'||evidence.provenance.source!=='dataforseo'||!evidence.graph.nodes.includes('market:seo')) throw new Error('canonical evidence/provenance/graph failed');
+const decision=normalizeBrainRecord({tenantId:'t1',type:'Decision',id:'d1',subjectId:'market:seo',evidenceIds:['e1'],owner:'BG158',status:'APPROVED',payload:{recommendation:'build landing page'}});
+const action=normalizeBrainRecord({tenantId:'t1',type:'Action',id:'a1',subjectId:'market:seo',decisionId:'d1',owner:'BG156',status:'EXECUTED'});
+const outcome=normalizeBrainRecord({tenantId:'t1',type:'Outcome',id:'o1',subjectId:'market:seo',actionId:'a1',owner:'BG156',executed:true,verified:true,result:'conversion +12%',evidenceIds:['e1']});
+const learning=normalizeBrainRecord({tenantId:'t1',type:'Learning',id:'l1',subjectId:'market:seo',outcomeId:'o1',owner:'BG168'});
+const state=deriveLoopState([evidence,decision,action,outcome,learning]);
+for(const stage of ['detect','verify','match','impact','prioritise','recommend','act','measure','learn']) if(state.stages[stage]!==true) throw new Error(`missing ${stage}`);
+if(state.memory.livingMemory.length!==5||state.graph.edges.length<4||state.advice.length<1) throw new Error('projection incomplete');
+if(validateDoneOutcome(outcome)!==true) throw new Error('done failed');let rejected=false;try{validateDoneOutcome({...outcome,verified:false});}catch{rejected=true;}if(!rejected) throw new Error('unverified outcome accepted');
+console.log('universal operating loop tests passed');

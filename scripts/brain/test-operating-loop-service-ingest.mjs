@@ -1,0 +1,17 @@
+import {createHash} from 'node:crypto';
+import {createServiceIngestHandler} from '../../platform/api/brain-operating-service-handler.mjs';
+const digest=v=>createHash('sha256').update(v).digest('hex');
+const calls=[];const store={async append(input){calls.push(input);return {duplicate:false,record:input};}};
+const handler=createServiceIngestHandler({store,credentials:[{serviceId:'make',tenantId:'tenant-a',tokenSha256:digest('secret-a')}]});
+if((await handler(new Request('https://x/api/brain-operating-ingest',{method:'POST'}))).status!==401) throw new Error('missing token must reject');
+if((await handler(new Request('https://x/api/brain-operating-ingest',{method:'POST',headers:{authorization:'Bearer wrong','content-type':'application/json'},body:'{}'}))).status!==401) throw new Error('wrong token must reject');
+const ok=await handler(new Request('https://x/api/brain-operating-ingest',{method:'POST',headers:{authorization:'Bearer secret-a','content-type':'application/json'},body:JSON.stringify({tenantId:'evil',type:'Evidence',id:'e1',idempotencyKey:'make:1',source:'make'})}));
+if(ok.status!==201) throw new Error('authorized canonical service write failed');
+if(calls[0].tenantId!=='tenant-a'||calls[0].serviceId!=='make') throw new Error('tenant/service must derive from credential');
+const raw=await handler(new Request('https://x/api/brain-operating-ingest',{method:'POST',headers:{authorization:'Bearer secret-a','content-type':'application/json'},body:JSON.stringify({tenantId:'evil',source:'make',canonicalType:'Outcome',id:'run:2',idempotencyKey:'make:2',raw:{scenario_id:7132648,execution_id:'run2',observed_at:'2026-08-30T17:00:00Z'},owner:'BG159',executed:true,verified:true,result:'captured',evidenceIds:['meter:2']})}));
+if(raw.status!==201) throw new Error('raw mapped service write failed');
+if(calls[1].tenantId!=='tenant-a'||calls[1].type!=='Outcome'||calls[1].sourceId!=='7132648:run2'||calls[1].payload.mappingVersion!=='v1') throw new Error('raw external payload must be transformed server-side');
+const invalid=await handler(new Request('https://x/api/brain-operating-ingest',{method:'POST',headers:{authorization:'Bearer secret-a','content-type':'application/json'},body:JSON.stringify({source:'unknown',canonicalType:'Evidence',id:'bad',idempotencyKey:'bad',raw:{}})}));
+if(invalid.status!==400) throw new Error('unknown mapped source must fail closed as invalid input');
+if((await handler(new Request('https://x/api/brain-operating-ingest',{method:'GET',headers:{authorization:'Bearer secret-a'}}))).status!==405) throw new Error('service ingress must be write-only');
+console.log('service ingest tests passed');
