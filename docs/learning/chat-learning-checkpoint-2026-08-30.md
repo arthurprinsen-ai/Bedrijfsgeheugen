@@ -261,6 +261,22 @@ Bekende fingerprints/preventiepatronen uit deze migratie:
 - `instagram|learning|duplicate-basic-metric-snapshot` → fingerprint/dedup vóór Datahub-write.
 - `instagram|legacy-retirement|retired-before-zero-legacy-proof` → pas retire na actuele zero-legacy evidence en bewezen successor coverage.
 
+## Website baseline / wrong-source recovery
+
+Canonical fingerprint: `website|baseline|prototype-view-mistaken-for-production-route`.
+
+PR #187 is the negative reference case. It used PR #110 / `prototype-v18-6.html` as if that prototype were the canonical production information architecture and derived standalone primary routes such as `/prijzen`. That source assumption was later proven wrong and PR #187 was closed without merge.
+
+Permanent prevention contract:
+- A prototype/test view is **never automatically a production route baseline**. Visual or homepage acceptance does not imply acceptance of every prototype view as a standalone production route.
+- Before restoring pages, menus or information architecture, inspect the actual historical production commits, route files, sitemap and navigation state. These outrank inferred prototype structure unless explicit acceptance proves otherwise.
+- A candidate can be technically green and still be wrong when it is built on the wrong business baseline. Source-of-truth selection is therefore a preflight gate, not a post-build detail.
+- When baseline evidence conflicts with user feedback or production history, stop promotion, retire the unsafe candidate and reconstruct from the real last-known-good production state.
+- Restore only the incorrect website/content/navigation layer. Preserve later Brain, portal, security, analytics and infrastructure improvements unless direct evidence says they are part of the regression.
+- After correction, encode the actual route/navigation catalog as a regression contract so future agents cannot silently resurrect rejected prototype-only routes.
+
+Known failed approach: making a candidate technically green first and only later discovering that the chosen baseline itself was wrong. Future agents must validate business/source truth before spending CI, Netlify, Make or agent budget on implementation and promotion.
+
 ## Development-speed rules
 
 To make future work faster:
@@ -270,6 +286,7 @@ To make future work faster:
 - use tiny clean diffs and exact-head PRs
 - separate test harnesses from merge candidates
 - close unsafe broad prototype PRs without merge
+- validate the accepted production/business baseline before building or optimizing a candidate
 - encode each discovered failure as a regression contract or fail-closed gate
 - treat cost, latency, security and production outcome as first-class evidence fields
 
@@ -277,14 +294,15 @@ To make future work faster:
 
 Before declaring a change complete:
 1. confirm current base/state
-2. reproduce or prove the actual root cause
-3. establish RED where practical
-4. make one minimal change
-5. establish GREEN on exact candidate
-6. verify no unrelated diff/config drift
-7. verify preview/runtime as relevant
-8. promote only exact tested candidate
-9. verify resulting production externally
-10. write outcome, fingerprint, fix and prevention into shared memory
+2. confirm the selected source/baseline is the actual accepted production/business truth
+3. reproduce or prove the actual root cause
+4. establish RED where practical
+5. make one minimal change
+6. establish GREEN on exact candidate
+7. verify no unrelated diff/config drift
+8. verify preview/runtime as relevant
+9. promote only exact tested candidate
+10. verify resulting production externally
+11. write outcome, fingerprint, fix and prevention into shared memory
 
 Any future agent that encounters one of the fingerprints or failure modes above should reuse the documented fix/prevention first and only form a new hypothesis when fresh evidence contradicts the existing one.
