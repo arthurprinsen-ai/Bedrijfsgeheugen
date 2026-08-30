@@ -1,0 +1,4 @@
+{
+  "phase": "RED",
+  "purpose": "Temporary TDD marker: canonical source linkage is intentionally not yet changed in this commit sequence. Remove or replace after the regression proves the gap."
+}
