@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { normalizeFooter } from './apply-canonical-footer.mjs';
 import { extractFooterLinks } from './validate-footer-seo.mjs';
+import { fetchWithBoundedRetry } from './public-fetch-retry.mjs';
 
 const base = String(process.argv[2] || '').replace(/\/$/, '');
 if (!/^https:\/\//.test(base)) throw new Error('usage: node tools/verify-public-footer.mjs https://deployment.example');
@@ -18,7 +19,7 @@ function footerFrom(html) {
 }
 
 for (const route of routes) {
-  const response = await fetch(`${base}${route}`, { redirect: 'follow' });
+  const response = await fetchWithBoundedRetry(`${base}${route}`);
   if (!response.ok) throw new Error(`public footer route failed route=${route} status=${response.status}`);
   const html = await response.text();
   if (normalizeFooter(footerFrom(html)) !== expected) throw new Error(`footer drift route=${route}`);
@@ -29,8 +30,9 @@ const required = new Set(contract.strategicDestinations.map(x => x.replace(/\/$/
 for (const route of required) {
   if (!links.some(x => (x.href.replace(/\/$/, '') || '/') === route)) throw new Error(`strategic footer destination missing ${route}`);
 }
-for (const { href } of links) {
-  const response = await fetch(`${base}${href}`, { redirect: 'follow' });
+const uniqueHrefs = [...new Set(links.map(x => x.href))];
+for (const href of uniqueHrefs) {
+  const response = await fetchWithBoundedRetry(`${base}${href}`);
   if (response.status >= 400) throw new Error(`dead public footer link href=${href} status=${response.status}`);
 }
-console.log(`PUBLIC_FOOTER_GREEN base=${base} routes=${routes.length} links=${links.length}`);
+console.log(`PUBLIC_FOOTER_GREEN base=${base} routes=${routes.length} links=${uniqueHrefs.length}`);
