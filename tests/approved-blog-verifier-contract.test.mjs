@@ -32,6 +32,15 @@ test('verifier has bounded public retries and exact success writeback', () => {
   assert.match(text, /Verified At/);
 });
 
+test('Notion writeback reuses the proven Python urllib transport', () => {
+  const text = workflow();
+  assert.match(text, /import json, os, urllib\.request/);
+  assert.match(text, /NOTION_TOKEN.*strip\(\)/s);
+  assert.match(text, /urllib\.request\.Request/);
+  assert.match(text, /urllib\.request\.urlopen/);
+  assert.equal(/curl[\s\S]{0,500}api\.notion\.com/i.test(text), false, 'Notion PATCH must not use the failing curl transport');
+});
+
 test('verifier cannot silently verify another article', () => {
   const text = workflow();
   assert.match(text, /EXPECTED_URL=.*\/blog\/\$\{SLUG\}\//);
