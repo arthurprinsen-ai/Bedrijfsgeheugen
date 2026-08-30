@@ -12,7 +12,7 @@ test('operational verifier hands remaining writers to immutable shadow without P
   assert.match(text, /writer\/\$WRITER\//);
   assert.match(text, /VERIFY_SHA/);
   assert.match(text, /gh pr list/);
-  assert.match(text, /contains\(\.body, \$verify\)/);
+  assert.match(text, /contains\(\$verify\)/);
   assert.match(text, /gh api "repos\/\$\{GITHUB_REPOSITORY\}\/pulls\/\$\{PR_NUMBER\}" --jq '\.base\.sha'/);
   assert.match(text, /gh api "repos\/\$\{GITHUB_REPOSITORY\}\/pulls\/\$\{PR_NUMBER\}" --jq '\.head\.sha'/);
   assert.match(text, /gh api "repos\/\$\{GITHUB_REPOSITORY\}\/pulls\/\$\{PR_NUMBER\}" --jq '\.head\.ref'/);
