@@ -11,7 +11,7 @@ Every commit, pull request, merge, pipeline, deploy and production promotion is 
 5. Commit, PR, merge and pipeline failures are material Brain outcomes and require BG168/BG167 writeback.
 6. The fastest path is targeted preflight first, parallel lane checks second, one integrated full gate last.
 7. Exact SHA identity remains mandatory from candidate through Netlify production verification.
-8. Before the final integrated gate, refresh against current `main`; a stale overlapping base is a merge failure, not a reason to continue on an obsolete branch.
+8. `main` may move continuously. Before the final gate compare candidate changes with everything added to `main` since the candidate base at both file and contract-domain level. Empty overlap means continue without rebuild or refresh; file or contract overlap requires refresh and revalidation against current `main`.
 9. Every `PROVEN` lesson must map to an active rule in `config/delivery-prevention-rules.json`; otherwise preflight fails closed.
 
 ## Failure record
