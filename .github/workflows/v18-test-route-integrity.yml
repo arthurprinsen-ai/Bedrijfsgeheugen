@@ -10,6 +10,7 @@ on:
       - 'sitemap.xml'
       - 'netlify.toml'
       - 'site/v18-test-source.json'
+      - 'docs/incidents/2026-08-30-v18-test-identity.md'
       - 'tools/bouw-v18-test-preview.mjs'
       - 'tests/v18-test-route-integrity.test.mjs'
       - 'tests/v18-preview-build-contract.test.mjs'
