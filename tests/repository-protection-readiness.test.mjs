@@ -60,3 +60,27 @@ test('prepared candidate PRs are not misrepresented as completed migration', () 
     assert.equal(writer.merged, false);
   }
 });
+
+test('writer readiness can never be misrepresented as live native main protection', () => {
+  const liveNativeProtection = {
+    observed: true,
+    protected: false,
+    rulesetsCount: 0,
+    observedMainSha: '8d7deda93fe400aa0aae129ceaf109abedb1cb2f',
+  };
+  assert.equal(
+    computeMainProtectionReady(state.writers, liveNativeProtection),
+    false,
+    'all writer migration proofs are insufficient while GitHub reports main as unprotected'
+  );
+});
+
+test('main protection readiness requires positive native GitHub protection evidence', () => {
+  const liveNativeProtection = {
+    observed: true,
+    protected: true,
+    rulesetsCount: 1,
+    observedMainSha: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  };
+  assert.equal(computeMainProtectionReady(state.writers, liveNativeProtection), true);
+});
