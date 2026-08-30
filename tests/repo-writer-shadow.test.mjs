@@ -72,3 +72,14 @@ test('writer-created PRs can explicitly self-dispatch read-only shadow verificat
   assert.match(menu, /-f head_sha=/);
   assert.match(menu, /-f candidate_branch=/);
 });
+
+test('workflow_dispatch never relies on protected GitHub default env for writer identity', () => {
+  const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
+  const verifier = fs.readFileSync('scripts/ci/repo-writer-shadow-verify.mjs', 'utf8');
+
+  assert.match(shadow, /REPO_WRITER_HEAD_REF:[^\n]*inputs\.candidate_branch[^\n]*github\.head_ref/);
+  assert.doesNotMatch(shadow, /^\s*GITHUB_HEAD_REF:/m);
+  assert.match(verifier, /process\.env\.REPO_WRITER_HEAD_REF/);
+  assert.match(verifier, /process\.env\.GITHUB_HEAD_REF/);
+  assert.match(verifier, /REPO_WRITER_HEAD_REF[^\n]*GITHUB_HEAD_REF|GITHUB_HEAD_REF[^\n]*REPO_WRITER_HEAD_REF/);
+});
