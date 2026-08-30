@@ -34,6 +34,16 @@ export function evaluateBranchDrift({ featurePaths = [], mainDriftPaths = [], fe
   return Object.freeze({ action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:Object.freeze([]), contractOverlap:Object.freeze([]) });
 }
 
+export function evaluatePromotionDispatchScope({ eventName = '', candidateBranch = '', verificationOnly = false } = {}) {
+  const event = String(eventName ?? '').trim();
+  const branch = String(candidateBranch ?? '').trim();
+  const verification = verificationOnly === true || String(verificationOnly ?? '').toLowerCase() === 'true';
+  if (event !== 'workflow_dispatch') return Object.freeze({ ok:true, productionEligible:false, reason:'not_workflow_dispatch' });
+  if (verification) return Object.freeze({ ok:true, productionEligible:false, reason:'verification_only' });
+  if (!branch.startsWith('writer/')) return Object.freeze({ ok:false, productionEligible:false, reason:'writer_scope_required' });
+  return Object.freeze({ ok:true, productionEligible:true, reason:'writer_dispatch' });
+}
+
 export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   if (!policy || !['BRAIN-DELIVERY-v1','BRAIN-DELIVERY-v2'].includes(policy.version)) throw new TypeError('BRAIN-DELIVERY-v1 or BRAIN-DELIVERY-v2 policy is required');
   if (policy.branchPolicy?.rebuildOnMainDrift !== false) throw new Error('branch policy must prohibit rebuilds for generic main drift');
@@ -127,6 +137,24 @@ function gitDiffNames(range) {
   return execFileSync('git', ['diff', '--name-only', range], { encoding:'utf8' }).split(/\r?\n/).filter(Boolean);
 }
 
+async function promotionScopeFromEnvironment() {
+  const eventName = String(process.env.GITHUB_EVENT_NAME || '').trim();
+  if (!eventName) return evaluatePromotionDispatchScope({});
+  let inputs = {};
+  const eventPath = String(process.env.GITHUB_EVENT_PATH || '').trim();
+  if (eventPath) {
+    try {
+      const event = JSON.parse(await readFile(eventPath, 'utf8'));
+      inputs = event?.inputs || {};
+    } catch {}
+  }
+  return evaluatePromotionDispatchScope({
+    eventName,
+    candidateBranch: inputs?.candidate_branch || '',
+    verificationOnly: inputs?.verification_only ?? false,
+  });
+}
+
 async function main() {
   const [command = 'plan', ...args] = process.argv.slice(2);
   await mkdir('.artifacts', { recursive: true });
@@ -154,13 +182,20 @@ async function main() {
     const head = argValue(args, '--head');
     const currentMain = argValue(args, '--current-main');
     if (!base || !head || !currentMain) throw new Error('branch-drift requires --base, --head and --current-main');
+    const promotionScope = await promotionScopeFromEnvironment();
+    await writeFile('.artifacts/bg169-promotion-scope.json', `${JSON.stringify(promotionScope, null, 2)}\n`);
+    if (!promotionScope.ok) {
+      process.stderr.write(`${JSON.stringify({ ok:false, error:'BG169_PROMOTION_SCOPE_BLOCKED', ...promotionScope })}\n`);
+      process.exitCode = 43;
+      return;
+    }
     const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
     const featurePaths = gitDiffNames(`${base}...${head}`);
     const mainDriftPaths = base === currentMain ? [] : gitDiffNames(`${base}..${currentMain}`);
     const featureContracts = deriveConflictContracts(featurePaths, policy);
     const mainDriftContracts = deriveConflictContracts(mainDriftPaths, policy);
     const result = evaluateBranchDrift({ featurePaths, mainDriftPaths, featureContracts, mainDriftContracts, mergeable:true });
-    const evidence = { ...result, base, head, currentMain, featureContracts, mainDriftContracts };
+    const evidence = { ...result, base, head, currentMain, featureContracts, mainDriftContracts, promotionScope };
     await writeFile('.artifacts/brain-branch-drift.json', `${JSON.stringify(evidence, null, 2)}\n`);
     process.stdout.write(`${JSON.stringify(evidence)}\n`);
     if (result.action === 'SYNC_REQUIRED') process.exitCode = 42;
