@@ -85,6 +85,19 @@ test('writer-created PRs explicitly self-dispatch read-only shadow verification'
   }
 });
 
+test('approved writer passes shadow the candidate PR exact base head and ref identity', () => {
+  const approved = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
+  assert.match(approved, /gh api .*pulls\/\$\{?number/);
+  assert.match(approved, /\.base\.sha/);
+  assert.match(approved, /\.head\.sha/);
+  assert.match(approved, /\.head\.ref/);
+  assert.match(approved, /PR_HEAD_REF_DRIFT/);
+  assert.match(approved, /echo "base_sha=\$pr_base_sha" >> "\$GITHUB_OUTPUT"/);
+  assert.match(approved, /echo "head_sha=\$pr_head_sha" >> "\$GITHUB_OUTPUT"/);
+  assert.match(approved, /BASE_SHA:\s*\$\{\{ steps\.pr\.outputs\.base_sha \}\}/);
+  assert.match(approved, /HEAD_SHA:\s*\$\{\{ steps\.pr\.outputs\.head_sha \}\}/);
+});
+
 test('workflow_dispatch never relies on protected GitHub default env for writer identity', () => {
   const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   const verifier = fs.readFileSync('scripts/ci/repo-writer-shadow-verify.mjs', 'utf8');

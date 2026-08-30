@@ -160,25 +160,28 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
-          BASE_SHA: ${{ steps.base.outputs.sha }}
+          SOURCE_SHA: ${{ steps.base.outputs.sha }}
         run: |
           set -euo pipefail
-          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
-          if [ -n "$existing" ]; then
-            echo "Candidate PR bestaat al: #$existing"
-            echo "number=$existing" >> "$GITHUB_OUTPUT"
-            echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-            exit 0
+          number=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$number" ]; then
+            url=$(gh pr create \
+              --base main \
+              --head "$CANDIDATE_BRANCH" \
+              --title "Approved blog candidate $GITHUB_RUN_ID" \
+              --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Source SHA: $SOURCE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn. De Notion queue blijft Pending totdat productie-uitkomst aantoonbaar is verwerkt.")
+            number=${url##*/}
+          else
+            echo "Candidate PR bestaat al: #$number"
           fi
-          url=$(gh pr create \
-            --base main \
-            --head "$CANDIDATE_BRANCH" \
-            --title "Approved blog candidate $GITHUB_RUN_ID" \
-            --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn. De Notion queue blijft Pending totdat productie-uitkomst aantoonbaar is verwerkt.")
-          number=${url##*/}
+          pr_base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.base.sha')
+          pr_head_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.head.sha')
+          pr_head_ref=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.head.ref')
+          [ "$pr_head_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$pr_head_ref"; exit 1; }
           echo "number=$number" >> "$GITHUB_OUTPUT"
-          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "Candidate PR geopend: $url"
+          echo "base_sha=$pr_base_sha" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$pr_head_sha" >> "$GITHUB_OUTPUT"
+          echo "Candidate PR identity: #$number base=$pr_base_sha head=$pr_head_sha ref=$pr_head_ref"
 
       - name: Dispatch read-only shadow verification
         if: steps.render.outputs.changed == 'true'
@@ -186,7 +189,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
-          BASE_SHA: ${{ steps.base.outputs.sha }}
+          BASE_SHA: ${{ steps.pr.outputs.base_sha }}
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
         run: |
           set -euo pipefail
@@ -201,9 +204,10 @@ jobs:
       - name: BRAIN v2 handoff evidence
         if: steps.render.outputs.changed == 'true'
         run: |
-          echo "candidate_sha=$(git rev-parse HEAD)"
+          echo "candidate_sha=${{ steps.pr.outputs.head_sha }}"
           echo "candidate_branch=${{ steps.commit.outputs.candidate_branch }}"
           echo "candidate_pr=${{ steps.pr.outputs.number }}"
+          echo "candidate_pr_base_sha=${{ steps.pr.outputs.base_sha }}"
           echo "production_authority=BG169"
           echo "queue_dispatch_state=pending_until_production_proof"
           echo "direct_main_push=false"
