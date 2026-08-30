@@ -5,6 +5,7 @@ import { buildPortalStateFromLegacy } from '../portal/legacy-state.mjs';
 
 const runtime=await readFile(new URL('../portal/legacy-runtime.mjs',import.meta.url),'utf8');
 const company=await readFile(new URL('../portal/render-company.mjs',import.meta.url),'utf8');
+const inputRenderer=await readFile(new URL('../portal/render-input.mjs',import.meta.url),'utf8');
 const app=await readFile(new URL('../portal/app.mjs',import.meta.url),'utf8');
 const serverState=await readFile(new URL('../platform/read-models/portal-server-state.mjs',import.meta.url),'utf8');
 
@@ -22,12 +23,13 @@ test('legacy raw input data survives projection into canonical portal state',()=
 
 test('server projection explicitly allows legacyInputs',()=>assert.match(serverState,/['\"]legacyInputs['\"]/));
 
-test('invoeren bypasses iframe bridge and renders native company form',()=>{
+test('invoeren bypasses iframe bridge and routes to isolated native input renderer',()=>{
  assert.match(runtime,/['\"]invoeren['\"]/);
  assert.match(company,/company\/legacy\/invoeren/);
- assert.match(company,/Je gegevens invullen/);
- assert.match(company,/data-input-key=/);
- assert.match(company,/data-portal-action="save-inputs"/);
+ assert.match(company,/renderLegacyInputs/);
+ assert.match(inputRenderer,/Je gegevens invullen/);
+ assert.match(inputRenderer,/data-input-key=/);
+ assert.match(inputRenderer,/data-portal-action="save-inputs"/);
 });
 
 test('native data entry stages changes and only commits on explicit save with read-back verification',()=>{
