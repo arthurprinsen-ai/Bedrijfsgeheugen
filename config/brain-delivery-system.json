@@ -16,7 +16,8 @@
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
-    "docs/superpowers/plans/"
+    "docs/superpowers/plans/",
+    "docs/powerhouse-chat-learning-checkpoint-"
   ],
   "branchPolicy": {
     "strategy": "conflict-aware-independent-lanes",
