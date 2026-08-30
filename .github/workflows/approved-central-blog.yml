@@ -172,22 +172,10 @@ jobs:
             --base main \
             --head "$CANDIDATE_BRANCH" \
             --title "Approved blog candidate $GITHUB_RUN_ID" \
-            --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn.")
+            --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn. De Notion queue blijft Pending totdat productie-uitkomst aantoonbaar is verwerkt.")
           number=${url##*/}
           echo "number=$number" >> "$GITHUB_OUTPUT"
           echo "Candidate PR geopend: $url"
-
-      - name: Mark queue dispatched after candidate PR handoff
-        if: steps.render.outputs.changed == 'true' && steps.render.outputs.queue_page != ''
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          QUEUE_PAGE: ${{ steps.render.outputs.queue_page }}
-          DISPATCH_ATTEMPT: ${{ steps.render.outputs.dispatch_attempt }}
-          RUN_ID: ${{ github.run_id }}
-          PYTHONDONTWRITEBYTECODE: '1'
-        run: |
-          set -euo pipefail
-          python3 -B scripts/publish_approved_blog_v2.py --mark-dispatched "$QUEUE_PAGE" "$DISPATCH_ATTEMPT" "$RUN_ID"
 
       - name: BRAIN v2 handoff evidence
         if: steps.render.outputs.changed == 'true'
@@ -196,4 +184,5 @@ jobs:
           echo "candidate_branch=${{ steps.commit.outputs.candidate_branch }}"
           echo "candidate_pr=${{ steps.pr.outputs.number }}"
           echo "production_authority=BG169"
+          echo "queue_dispatch_state=pending_until_production_proof"
           echo "direct_main_push=false"
