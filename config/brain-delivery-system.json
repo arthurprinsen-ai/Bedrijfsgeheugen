@@ -83,7 +83,7 @@
     {
       "id": "automation",
       "owner": "agent-integration-make",
-      "paths": ["automation/", "make/", "notion/", "tests/delivery-"],
+      "paths": ["automation/", "make/", "notion/", "tests/delivery-", "tests/chat-learning-"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     }
   ],
