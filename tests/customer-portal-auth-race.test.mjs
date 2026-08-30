@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { repairCustomerPortalAuth } from '../tools/customer-portal-auth-race.mjs';
 
 const source = `(function(){
@@ -50,4 +51,11 @@ test('customer auth persists and refreshes before showing login again', () => {
   assert.match(html, /localStorage\.setItem\(AUTH_STORE, JSON\.stringify\(sessie\)\)/);
   assert.match(html, /grant_type=refresh_token/);
   assert.match(html, /herstelAuth\(s\)\.catch\(function\(\)\{ toonInlog\(s\); \}\)/);
+});
+
+test('checked-in customer portal source already contains persistent auth before the Netlify build starts', () => {
+  const portal = readFileSync(new URL('../klantportaal.html', import.meta.url), 'utf8');
+  assert.match(portal, /AUTH_STORE\s*=\s*'bg_customer_auth'/);
+  assert.match(portal, /localStorage\.setItem\(AUTH_STORE, JSON\.stringify\(sessie\)\)/);
+  assert.match(portal, /herstelAuth\(s\)/);
 });
