@@ -8,6 +8,8 @@ test('chat-derived engineering learnings are machine-readable and mandatory for 
 
   assert.equal(registry.schemaVersion, 1);
   assert.equal(registry.contract, 'BRAIN-CHAT-LEARNING-v1');
+  assert.equal(registry.readBeforeMaterialWork, true);
+  assert.equal(registry.writebackRequiredBeforeDone, true);
   assert.ok(registry.learnings.length >= 10);
   assert.ok(registry.learnings.every(x => x.fingerprint && x.failureMode && x.rootCause && x.prevention && x.gate));
 
@@ -27,6 +29,7 @@ test('chat-derived engineering learnings are machine-readable and mandatory for 
     assert.ok(registry.learnings.some(x => x.fingerprint === fingerprint), `missing learning ${fingerprint}`);
   }
 
-  assert.match(agents, /brain\/memory\/chat-learning-registry\.json/);
-  assert.match(agents, /BRAIN-CHAT-LEARNING-v1/);
+  assert.match(agents, /Eén team, één geheugen/);
+  assert.match(agents, /repo en Powerhouse Team Memory vormen samen het gedeelde geheugen/i);
+  assert.match(agents, /Niet opnieuw ontdekken/);
 });
