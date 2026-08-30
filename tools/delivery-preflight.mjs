@@ -5,6 +5,20 @@ import { evaluateCompletionReadiness } from '../brain/policy/completion-readines
 
 export { evaluateCompletionReadiness };
 
+function actionableKnowledgeRecord(item, source = 'canonical-learning') {
+  if (!item || typeof item !== 'object' || typeof item.fingerprint !== 'string') return null;
+  return Object.freeze({
+    source: item.source || source,
+    fingerprint: item.fingerprint,
+    rootCause: item.rootCause || null,
+    fix: item.fix || item.requiredAction || null,
+    preventionRule: item.preventionRule || null,
+    regressionContract: item.regressionContract || null,
+    owner: item.owner || null,
+    status: item.status || null,
+  });
+}
+
 export async function loadDeliveryPreflight({
   lessonsPath = new URL('../docs/brain/delivery-failure-lessons.json', import.meta.url),
   chatLessonsPath = new URL('../config/brain-chat-learning-contract.json', import.meta.url),
@@ -79,7 +93,25 @@ export async function loadDeliveryPreflight({
     guardRegistrySchema.knownFailure?.fingerprint,
     ...guardInventory.fingerprints,
   ].filter(Boolean);
-  const guardKnowledge = guardInventory.guards.map(guard => Object.freeze({ ...guard }));
+
+  const knowledgeCandidates = [
+    ...guardInventory.guards,
+    ...(completenessGuard.knownFailureFingerprints || []).filter(item => item && typeof item === 'object'),
+    ...(browserGuard.actionableFailureKnowledge || []),
+    ...provenLessons,
+  ];
+  const knowledgeByFingerprint = new Map();
+  for (const candidate of knowledgeCandidates) {
+    const normalized = actionableKnowledgeRecord(candidate, 'delivery-preflight');
+    if (!normalized) continue;
+    const previous = knowledgeByFingerprint.get(normalized.fingerprint);
+    knowledgeByFingerprint.set(normalized.fingerprint, Object.freeze({
+      ...(previous || {}),
+      ...Object.fromEntries(Object.entries(normalized).filter(([, value]) => value !== null && value !== undefined)),
+    }));
+  }
+  const guardKnowledge = [...knowledgeByFingerprint.values()];
+
   return Object.freeze({
     ...baseDecision,
     reusedGuards: Object.freeze([...new Set(reusedGuards)]),

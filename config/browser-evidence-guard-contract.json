@@ -96,6 +96,99 @@
     "browser-evidence|gate|fail-open",
     "browser-evidence|worker-tabs|visible-side-effects"
   ],
+  "actionableFailureKnowledge": [
+    {
+      "fingerprint": "browser-evidence|cli|page-id-missing",
+      "rootCause": "Chrome DevTools CLI page-scoped commands were invoked without the required explicit LinkedIn page target, so the CLI rejected or misrouted the probe.",
+      "fix": "Resolve and select the LinkedIn page first, then pass its page id explicitly to every page-scoped snapshot, console, network and evaluate call; any targeting error fails closed.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|extensions-api|browser-context-missing",
+      "rootCause": "The Extensions DevTools API can lack a browser context even while the unpacked extension service worker and injected DOM are alive, making list_extensions an unreliable release signal.",
+      "fix": "Never use list_extensions as a release gate; triangulate extension service-worker identity, manifest/storage runtime health and Powerhouse DOM output instead.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|isolated-world|sentinel-false-negative",
+      "rootCause": "Chrome content scripts execute in an isolated world, so page-world window sentinels can be absent while the extension is actually active.",
+      "fix": "Do not use page-world globals as primary evidence; verify the extension service worker, live storage health and injected DOM overlays.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|candidate-session|wrong-daemon",
+      "rootCause": "Candidate commands can reach a default or different Chrome DevTools daemon when the candidate session is not explicitly pinned end to end.",
+      "fix": "Use one dedicated candidate session and profile, pass the same session id through installer, wrapper, monitor and gates, and verify runtime identity before accepting evidence.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|session-id|invalid-format",
+      "rootCause": "Chrome DevTools CLI session identifiers accept a constrained hex/hyphen format; human-readable identifiers outside that format are rejected.",
+      "fix": "Validate session identifiers before daemon startup and use the canonical valid candidate id ca11da7e unless a governed replacement is introduced.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|launchagent|chrome-devtools-path-missing",
+      "rootCause": "macOS LaunchAgents do not inherit the interactive shell npm-global PATH, so a wrapper that invokes bare chrome-devtools can fail with command not found.",
+      "fix": "Resolve chrome-devtools with command -v during installation, validate it exists, and pin that absolute executable path in the generated LaunchAgent wrapper.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|launchagent|node-path-missing",
+      "rootCause": "macOS LaunchAgent PATH differs from the interactive shell, so relying on a bare node executable can make scheduled browser evidence fail while manual commands work.",
+      "fix": "Resolve and validate the absolute Node executable or its containing directory during installation and inject it explicitly into the LaunchAgent runtime environment.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|webhook|markdown-url-contamination",
+      "rootCause": "Operator copy-paste can place Markdown link syntax or whitespace into webhook environment values when installers accept unvalidated strings.",
+      "fix": "Accept only plain validated Make HTTPS webhook URLs and fail installation immediately on Markdown or whitespace contamination.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "extension|runtime|context-invalidated-storage",
+      "rootCause": "chrome.storage calls can throw synchronously after an extension context is invalidated, so attaching only a Promise catch does not intercept the failure.",
+      "fix": "Wrap Chrome API invocation itself in try/catch, also handle Promise rejection, and stop persistence/timers from invalidated extension instances.",
+      "owner": "extension-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "extension|release|manifest-version-drift",
+      "rootCause": "Package or folder labels can advance while manifest.json remains on an older runtime version, creating false release identity and misleading verification.",
+      "fix": "Treat manifest.json as the canonical release identity and derive monitor, candidate and visible runtime version checks from that manifest value.",
+      "owner": "extension-release-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "chrome|stable|load-extension-assumption",
+      "rootCause": "Modern official Chrome no longer provides reliable unpacked-extension loading through the historical --load-extension command-line assumption.",
+      "fix": "Install the candidate extension through the supported Chrome DevTools extension API and prove it through live service-worker and runtime evidence rather than command-line flags.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|gate|fail-open",
+      "rootCause": "Earlier runtime gates could continue to PASS after CLI, evaluation or target-selection errors, converting missing evidence into false green.",
+      "fix": "Classify every CLI, protocol, evaluation or mandatory-signal failure as non-PASS and require grounded runtime triangulation before release acceptance.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "browser-evidence|worker-tabs|visible-side-effects",
+      "rootCause": "Diagnostics that navigate to extension or worker URLs can create visible tabs and interfere with the user's browser while trying to inspect background execution.",
+      "fix": "Target extension service workers directly through the DevTools service-worker context and regression-block any automatic visible worker-tab creation.",
+      "owner": "browser-runtime-reliability",
+      "status": "GUARDED"
+    }
+  ],
   "debuggingSequence": [
     "reproduce-and-preserve-raw-fingerprint",
     "verify-immutable-runtime-identity",

@@ -77,7 +77,7 @@
       "failedApproach": "Gebruik een muterende create-actie als capability-probe of schema-experiment.",
       "fix": "Stop verdere mutaties, inventariseer de onverwachte side-effects, gebruik read-only discovery en alleen een expliciet ondersteunde cleanup-route.",
       "preventionRule": "Capability discovery is read-only; mutations happen only through a confirmed action/schema and are followed by readback.",
-      "regressionContract": "Connector mutation tests require read-only discovery, confirmed write schema and post-write readback.",
+      "regressionContract": "tests/brain-chat-learning-completeness.test.mjs",
       "evidence": "2026-08-30 chat: vier lege tijdelijke Notion-databases ontstonden tijdens fout gerouteerde muterende discovery.",
       "owner": "agent-reliability",
       "status": "GUARDED"
@@ -89,7 +89,7 @@
       "failedApproach": "Een chat afronden met alleen een samenvatting zonder canonical writeback of regressieguard.",
       "fix": "Schrijf materiële learning naar canonical shared memory en voeg waar haalbaar een validator/regressietest toe vóór completion.",
       "preventionRule": "Geen completion zolang materiële learning alleen in chat bestaat.",
-      "regressionContract": "brain-chat-learning-completeness.test.mjs moet de completion policy afdwingen.",
+      "regressionContract": "tests/brain-chat-learning-completeness.test.mjs",
       "evidence": "BRAIN-CHAT-LEARNING-v1 en BROWSER-EVIDENCE-GUARD-v1 zijn bestaande canonical sources en worden door deze guard verplicht gekoppeld.",
       "owner": "agent-reliability",
       "status": "GUARDED"
@@ -101,7 +101,7 @@
       "failedApproach": "Stoppen na lokale technische groenstatus terwijl materiële outcome-, delivery-, recovery- of production-obligations nog open staan.",
       "fix": "Blijf de veilige repair/delivery/verification-loop uitvoeren totdat alle materiële obligations aantoonbaar terminal/green zijn of een expliciete hard boundary met actuele evidence is bewezen.",
       "preventionRule": "Completion is geblokkeerd zolang niet alle materiële obligations terminal/green zijn; alleen een expliciet bewezen hard boundary mag veilig stoppen zonder groen outcome-bewijs.",
-      "regressionContract": "brain-chat-learning-completeness.test.mjs afdwingt localGreenIsNotCompletion, continueUntilAllMaterialObligationsTerminal, hardBoundaryMustBeExplicitlyProven en verplichte uitvoering in Shared Agent Memory CI.",
+      "regressionContract": "tests/brain-chat-learning-completeness.test.mjs",
       "evidence": "2026-08-30 chat: herhaald verzoek om door te gaan en alle learning te borgen maakte zichtbaar dat lokale groene subresultaten niet als volledige completion mogen worden behandeld zolang de overkoepelende obligation open blijft.",
       "owner": "agent-reliability",
       "status": "GUARDED"
@@ -113,7 +113,7 @@
       "failedApproach": "Behandel Verifying -> Resolved als voldoende bewijs van end-to-end completion zonder de globale obligation-state te evalueren.",
       "fix": "Laat iedere overgang van een niet-terminale naar een terminale AgentWork-status fail-closed door de centrale evaluateCompletionReadiness uitvoeren op een expliciete completionContext.",
       "preventionRule": "Geen AgentWork-terminalisatie zonder centrale completion-readiness: alle materiële obligations terminal/green of een expliciet bewezen hard boundary met evidence.",
-      "regressionContract": "tests/agent-fabric.test.mjs bewijst dat open obligations Resolved blokkeren, terminale obligations Resolved toestaan en alleen bewezen hard-boundary evidence een non-green terminalisatie toestaat.",
+      "regressionContract": "tests/agent-fabric.test.mjs",
       "evidence": "2026-08-30 TDD RED op PR #749, candidate 8bdd9b8f03f83063ba920ea115c99b68f08225fe: AgentWork met production-smoke=OPEN ging toch naar Resolved; Shared Agent Memory faalde exact op 'Missing expected exception'.",
       "owner": "agent-reliability",
       "status": "GUARDED"
