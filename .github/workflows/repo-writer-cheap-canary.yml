@@ -1,0 +1,160 @@
+name: Repository Writer Cheap Canary
+
+on:
+  workflow_dispatch:
+    inputs:
+      writer:
+        description: 'Repository writer transport to certify without external/AI calls'
+        type: choice
+        required: true
+        options:
+          - regelgeving-bijwerken
+          - seo-controle
+          - weekblog
+      base_sha:
+        description: 'Optional exact base SHA; empty means current main'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: repo-writer-cheap-canary-${{ inputs.writer }}
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.base_sha || 'main' }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Record exact base
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create deterministic zero-external-call fixture
+        env:
+          WRITER: ${{ inputs.writer }}
+        run: |
+          set -euo pipefail
+          case "$WRITER" in
+            regelgeving-bijwerken)
+              python3 - <<'PY'
+          import json, os
+          path='data/regelgeving.json'
+          data=json.load(open(path,encoding='utf-8'))
+          data['_verification_canary']=f"{os.environ['GITHUB_RUN_ID']}-{os.environ['GITHUB_RUN_ATTEMPT']}"
+          with open(path,'w',encoding='utf-8') as f:
+              json.dump(data,f,ensure_ascii=False,indent=2)
+              f.write('\n')
+          PY
+              ;;
+            seo-controle)
+              printf '\n<!-- writer-verification-seo-%s-%s -->\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" >> sitemap.xml
+              ;;
+            weekblog)
+              dir="blog/writer-verification-weekblog-${GITHUB_RUN_ID}"
+              mkdir -p "$dir"
+              cat > "$dir/index.html" <<HTML
+          <!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Writer verification</title></head><body><main><h1>Weekblog writer verification</h1><p>${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}</p></main></body></html>
+          HTML
+              ;;
+            *) echo "::error::UNKNOWN_WRITER:$WRITER"; exit 2 ;;
+          esac
+
+      - name: Validate bounded writer path and create candidate commit
+        id: candidate
+        env:
+          WRITER: ${{ inputs.writer }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <({ git diff --name-only; git ls-files --others --exclude-standard; } | sed '/^$/d' | sort -u)
+          if [ "${#changed[@]}" -eq 0 ]; then
+            echo "::error::CANARY_DID_NOT_CHANGE_ANY_FILE"
+            exit 3
+          fi
+          export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+          node --input-type=module - <<'NODE'
+          import { validateWriterPaths } from './scripts/ci/repo-writer-policy.mjs';
+          const writer=process.env.WRITER;
+          const files=String(process.env.CHANGED_FILES||'').split('\n').filter(Boolean);
+          validateWriterPaths(writer,files);
+          console.log('CANARY_PATH_POLICY_OK',writer,files);
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "${changed[@]}"
+          git commit -m "BRAIN: ${WRITER} deterministic transport canary"
+          branch=$(node --input-type=module - <<'NODE'
+          import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
+          const writer=process.env.WRITER;
+          const files=String(process.env.CHANGED_FILES||'').split('\n').filter(Boolean);
+          const candidate=createWriterCandidate({writer,baseSha:process.env.BASE_SHA,runId:process.env.GITHUB_RUN_ID,changedFiles:files,allowedFiles:files,rollbackSha:process.env.BASE_SHA});
+          validateWriterCandidate(candidate);
+          console.log(candidate.branch);
+          NODE
+          )
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Publish candidate branch
+        env:
+          CANDIDATE_BRANCH: ${{ steps.candidate.outputs.branch }}
+        run: git push origin "HEAD:$CANDIDATE_BRANCH"
+
+      - name: Open candidate PR and resolve exact PR identity
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_BRANCH: ${{ steps.candidate.outputs.branch }}
+          WRITER: ${{ inputs.writer }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$existing" ]; then
+            gh pr create --base main --head "$CANDIDATE_BRANCH" \
+              --title "$WRITER deterministic writer canary" \
+              --body "BRAIN-DELIVERY-v2 zero-external-call transport canary. Base SHA: $BASE_SHA. DO NOT MERGE. Candidate/shadow evidence only."
+          fi
+          pr_json=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number,baseRefOid,headRefOid,headRefName --jq '.[0]')
+          test -n "$pr_json" && test "$pr_json" != null
+          echo "number=$(jq -r '.number' <<<"$pr_json")" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(jq -r '.baseRefOid' <<<"$pr_json")" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(jq -r '.headRefOid' <<<"$pr_json")" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$(jq -r '.headRefName' <<<"$pr_json")" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch immutable read-only shadow verification
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_BASE_SHA: ${{ steps.pr.outputs.base_sha }}
+          PR_HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+          PR_HEAD_REF: ${{ steps.pr.outputs.head_ref }}
+        run: |
+          set -euo pipefail
+          gh workflow run repo-writer-candidate-shadow.yml --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$PR_BASE_SHA" \
+            -f head_sha="$PR_HEAD_SHA" \
+            -f candidate_branch="$PR_HEAD_REF"
+          echo "SHADOW_DISPATCHED pr=$PR_NUMBER head=$PR_HEAD_SHA"
+
+      - name: BRAIN v2 canary handoff
+        run: |
+          echo "writer=${{ inputs.writer }}"
+          echo "production_authority=BG169"
+          echo "outcome_router=BG168"
+          echo "current_state_projection=BG167"
+          echo "external_calls=0"
+          echo "direct_main_push=false"
