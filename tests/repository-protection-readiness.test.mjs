@@ -21,19 +21,22 @@ test('migration state covers every governed direct-main writer exactly once', ()
 
 test('main protection cannot become ready before every writer has operational migration, parity, rollback and merge evidence', () => {
   const allReady = state.writers.every((writer) =>
-    writer.candidateMode === 'verified' &&
+    writer.candidateMode === 'operational_verified' &&
     writer.operationalCandidateVerified === true &&
     writer.parityVerified === true &&
     writer.rollbackVerified === true &&
     writer.merged === true
   );
   assert.equal(state.mainProtectionReady, allReady,
-    'mainProtectionReady must equal the evidence-derived operational readiness state');
+    'mainProtectionReady must equal the evidence-derived writer readiness state');
 });
 
-test('structural verification alone can never unlock main protection', () => {
+test('operational verification alone can never unlock main protection without parity and rollback', () => {
   assert.equal(state.writers.every((writer) => writer.structuralContractVerified === true), true);
-  assert.equal(state.writers.some((writer) => writer.operationalCandidateVerified !== true), true);
+  assert.equal(state.writers.every((writer) => writer.operationalCandidateVerified === true), true);
+  assert.equal(state.writers.every((writer) => writer.candidateMode === 'operational_verified'), true);
+  assert.equal(state.writers.some((writer) => writer.parityVerified !== true), true);
+  assert.equal(state.writers.some((writer) => writer.rollbackVerified !== true), true);
   assert.equal(state.mainProtectionReady, false);
 });
 
