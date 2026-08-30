@@ -1,0 +1,69 @@
+name: One-time customer auth race repair
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-customer-auth-race.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify regression test is red before repair
+        shell: bash
+        run: |
+          set +e
+          node --test tests/customer-portal-routing.test.mjs
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "Regression test unexpectedly passed before the repair."
+            exit 1
+          fi
+          echo "Expected RED confirmed."
+
+      - name: Apply minimal customer auth race guard
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('klantportaal.html')
+          text = p.read_text(encoding='utf-8')
+          old = """  const bl=document.getElementById('btnLogin');
+          if(bl) bl.addEventListener('click',function(){
+            if(window.netlifyIdentity && netlifyIdentity.open){ netlifyIdentity.open(); }
+            else { toonPortaal({email:'lokaal'}); }
+          });"""
+          new = """  const bl=document.getElementById('btnLogin');
+          if(bl) bl.addEventListener('click',function(){
+            if(new URLSearchParams(location.search).get('klant')) return;
+            if(window.netlifyIdentity && netlifyIdentity.open){ netlifyIdentity.open(); }
+            else { toonPortaal({email:'lokaal'}); }
+          });"""
+          count = text.count(old)
+          if count != 1:
+            raise SystemExit(f'Expected exactly one legacy login handler, found {count}')
+          p.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+      - name: Verify regression test is green after repair
+        run: node --test tests/customer-portal-routing.test.mjs
+
+      - name: Remove one-time workflow and commit repair
+        shell: bash
+        run: |
+          git rm .github/workflows/fix-customer-auth-race.yml
+          git add klantportaal.html tests/customer-portal-routing.test.mjs
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+            exit 1
+          fi
+          git config user.name "bedrijfsgeheugen-repair-agent"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix: prevent customer auth modal race"
+          git push origin HEAD:main
