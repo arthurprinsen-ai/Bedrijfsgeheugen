@@ -28,6 +28,9 @@ export async function loadDeliveryPreflight({
   const provenLessons = [...historicalLessons, ...chatLessons];
   const missingRegistry = provenLessons.filter(lesson => lesson.preventionRule && !activeRules.includes(lesson.preventionRule));
   if (missingRegistry.length) throw new Error(`PROVEN delivery lessons missing active prevention rules: ${missingRegistry.map(lesson => lesson.preventionRule).join(', ')}`);
+  const explainedRuleIds = new Set(provenLessons.map(lesson => lesson.preventionRule).filter(Boolean));
+  const orphanRules = activeRules.filter(ruleId => !explainedRuleIds.has(ruleId));
+  if (orphanRules.length) throw new Error(`active prevention rules missing PROVEN lesson: ${orphanRules.join(', ')}`);
   return createPreflightDecision({ component, stages, knownLessons: provenLessons, appliedPreventionRules: activeRules });
 }
 
