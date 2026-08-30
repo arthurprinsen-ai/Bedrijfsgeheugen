@@ -31,24 +31,15 @@ const base = {
   production_status: 'not_started'
 };
 
-test('paginacontrole publication paths synchronize with current main without stale-worktree races', async () => {
+test('paginacontrole publication paths hand off one candidate without mutating main', async () => {
   const workflow = await readFile(new URL('../.github/workflows/paginacontrole.yml', import.meta.url), 'utf8');
-  const sourceStart = workflow.indexOf('- name: Bekende SEO-bronfouten automatisch herstellen');
-  const sourceEnd = workflow.indexOf('- name: Playwright installeren', sourceStart);
-  assert.ok(sourceStart >= 0 && sourceEnd > sourceStart, 'source-repair step must exist');
-  const sourceRepair = workflow.slice(sourceStart, sourceEnd);
-  assert.match(sourceRepair, /git pull --rebase origin main/);
-  assert.match(sourceRepair, /git push(?: origin HEAD:main)?/);
-
-  const stepStart = workflow.indexOf('- name: seo-status.json verwerken als hij is veranderd');
-  const stepEnd = workflow.indexOf('- name: Candidate branch en PR publiceren', stepStart);
-  assert.ok(stepStart >= 0 && stepEnd > stepStart, 'seo-status publication step must exist');
-  const statusPublication = workflow.slice(stepStart, stepEnd);
-  assert.match(statusPublication, /git fetch origin main/);
-  assert.match(statusPublication, /git reset --hard origin\/main/);
-  assert.match(statusPublication, /cp \/tmp\/seo-status\.json seo-status\.json/);
-  assert.match(statusPublication, /git push origin HEAD:main/);
-  assert.doesNotMatch(statusPublication, /git pull --rebase origin main/);
+  assert.doesNotMatch(workflow, /git pull --rebase origin main/);
+  assert.doesNotMatch(workflow, /git push origin HEAD:main/);
+  assert.doesNotMatch(workflow, /git reset --hard origin\/main/);
+  assert.match(workflow, /createWriterCandidate/);
+  assert.match(workflow, /github\.event_name != 'pull_request'/);
+  assert.match(workflow, /gh pr create/);
+  assert.doesNotMatch(workflow, /gh\s+pr\s+merge/);
 });
 
 test('green exact candidate is ready for exact-SHA promotion', () => {
@@ -89,13 +80,7 @@ test('main drift requires candidate re-verification before promotion', () => {
 });
 
 test('production red uses persisted LKG and ignores caller supplied rollback pointer', () => {
-  const r = evaluatePromotion({
-    ...base,
-    production_status: 'red',
-    production_sha: 'main123',
-    current_main_sha: 'main123',
-    last_known_good_sha: 'malicious-caller-sha'
-  });
+  const r = evaluatePromotion({ ...base, production_status: 'red', production_sha: 'main123', current_main_sha: 'main123', last_known_good_sha: 'malicious-caller-sha' });
   assert.equal(r.state, 'ROLLBACK_REQUIRED');
   assert.equal(r.action, 'ROLLBACK_LAST_KNOWN_GOOD');
   assert.equal(r.rollback_sha, 'lkg123');
@@ -103,41 +88,19 @@ test('production red uses persisted LKG and ignores caller supplied rollback poi
 });
 
 test('production red fails closed when persisted LKG equals current main', () => {
-  const r = evaluatePromotion({
-    ...base,
-    production_status: 'red',
-    production_sha: 'main123',
-    current_main_sha: 'main123',
-    authoritative_production_state: {
-      ...authoritative,
-      last_known_good_sha: 'main123'
-    }
-  });
+  const r = evaluatePromotion({ ...base, production_status: 'red', production_sha: 'main123', current_main_sha: 'main123', authoritative_production_state: { ...authoritative, last_known_good_sha: 'main123' } });
   assert.equal(r.state, 'OPEN_REPAIR');
   assert.equal(r.action, 'VERIFY_PRODUCTION_STATE');
 });
 
 test('verified production exact SHA becomes green', () => {
-  const r = evaluatePromotion({
-    ...base,
-    production_status: 'green',
-    production_sha: 'candidate123',
-    production_deploy_status: 'ready'
-  });
+  const r = evaluatePromotion({ ...base, production_status: 'green', production_sha: 'candidate123', production_deploy_status: 'ready' });
   assert.equal(r.state, 'PRODUCTION_GREEN');
   assert.equal(r.action, 'PRODUCTION_GREEN');
 });
 
 test('verified rollback becomes ROLLED_BACK_GREEN only when restored tree equals persisted LKG tree', () => {
-  const r = evaluatePromotion({
-    ...base,
-    production_status: 'green',
-    production_sha: 'rollback-commit',
-    current_main_sha: 'rollback-commit',
-    production_deploy_status: 'ready',
-    rollback_completed: true,
-    production_tree_sha: 'tree-lkg'
-  });
+  const r = evaluatePromotion({ ...base, production_status: 'green', production_sha: 'rollback-commit', current_main_sha: 'rollback-commit', production_deploy_status: 'ready', rollback_completed: true, production_tree_sha: 'tree-lkg' });
   assert.equal(r.state, 'ROLLED_BACK_GREEN');
   assert.equal(r.action, 'ROLLED_BACK_GREEN');
   assert.equal(r.restored_tree_sha, 'tree-lkg');
@@ -145,15 +108,7 @@ test('verified rollback becomes ROLLED_BACK_GREEN only when restored tree equals
 });
 
 test('rollback completion with wrong tree remains open repair', () => {
-  const r = evaluatePromotion({
-    ...base,
-    production_status: 'green',
-    production_sha: 'rollback-commit',
-    current_main_sha: 'rollback-commit',
-    production_deploy_status: 'ready',
-    rollback_completed: true,
-    production_tree_sha: 'wrong-tree'
-  });
+  const r = evaluatePromotion({ ...base, production_status: 'green', production_sha: 'rollback-commit', current_main_sha: 'rollback-commit', production_deploy_status: 'ready', rollback_completed: true, production_tree_sha: 'wrong-tree' });
   assert.equal(r.state, 'OPEN_REPAIR');
   assert.equal(r.action, 'VERIFY_PRODUCTION_STATE');
 });
@@ -165,81 +120,25 @@ test('hard boundary is the only blocking terminal state', () => {
 });
 
 test('unsafe raw hero media is normalization-required and cannot promote', () => {
-  const r = evaluatePromotion({
-    ...base,
-    media_contract_required: true,
-    media_source: {
-      width: 1920,
-      height: 1088,
-      fps: 24,
-      codec: 'h264',
-      pixel_format: 'yuv420p',
-      has_audio: true,
-      faststart: false
-    }
-  });
+  const r = evaluatePromotion({ ...base, media_contract_required: true, media_source: { width: 1920, height: 1088, fps: 24, codec: 'h264', pixel_format: 'yuv420p', has_audio: true, faststart: false } });
   assert.equal(r.state, 'OPEN_REPAIR');
   assert.equal(r.action, 'NORMALIZE_MEDIA');
 });
 
 test('normalized media without validation remains in verification', () => {
-  const r = evaluatePromotion({
-    ...base,
-    media_contract_required: true,
-    media_source: { width: 1920, height: 1088, fps: 24, has_audio: true },
-    media_derivative: {
-      width: 1920,
-      height: 1080,
-      fps: 30,
-      codec: 'h264',
-      pixel_format: 'yuv420p',
-      has_audio: false,
-      faststart: true
-    },
-    media_derivative_validated: false
-  });
+  const r = evaluatePromotion({ ...base, media_contract_required: true, media_source: { width: 1920, height: 1088, fps: 24, has_audio: true }, media_derivative: { width: 1920, height: 1080, fps: 30, codec: 'h264', pixel_format: 'yuv420p', has_audio: false, faststart: true }, media_derivative_validated: false });
   assert.equal(r.state, 'OPEN_REPAIR');
   assert.equal(r.action, 'VERIFY_MEDIA');
 });
 
 test('validated derivative still requires iPhone runtime acceptance', () => {
-  const r = evaluatePromotion({
-    ...base,
-    media_contract_required: true,
-    media_source: { width: 1920, height: 1088, fps: 24, has_audio: true },
-    media_derivative: {
-      width: 1920,
-      height: 1080,
-      fps: 30,
-      codec: 'h264',
-      pixel_format: 'yuv420p',
-      has_audio: false,
-      faststart: true
-    },
-    media_derivative_validated: true,
-    iphone_runtime_status: 'pending'
-  });
+  const r = evaluatePromotion({ ...base, media_contract_required: true, media_source: { width: 1920, height: 1088, fps: 24, has_audio: true }, media_derivative: { width: 1920, height: 1080, fps: 30, codec: 'h264', pixel_format: 'yuv420p', has_audio: false, faststart: true }, media_derivative_validated: true, iphone_runtime_status: 'pending' });
   assert.equal(r.state, 'OPEN_REPAIR');
   assert.equal(r.action, 'VERIFY_IPHONE_RUNTIME');
 });
 
 test('validated iPhone-safe derivative is eligible for normal exact-SHA promotion', () => {
-  const r = evaluatePromotion({
-    ...base,
-    media_contract_required: true,
-    media_source: { width: 1920, height: 1088, fps: 24, has_audio: true },
-    media_derivative: {
-      width: 1920,
-      height: 1080,
-      fps: 30,
-      codec: 'h264',
-      pixel_format: 'yuv420p',
-      has_audio: false,
-      faststart: true
-    },
-    media_derivative_validated: true,
-    iphone_runtime_status: 'green'
-  });
+  const r = evaluatePromotion({ ...base, media_contract_required: true, media_source: { width: 1920, height: 1088, fps: 24, has_audio: true }, media_derivative: { width: 1920, height: 1080, fps: 30, codec: 'h264', pixel_format: 'yuv420p', has_audio: false, faststart: true }, media_derivative_validated: true, iphone_runtime_status: 'green' });
   assert.equal(r.state, 'PROMOTION_READY');
   assert.equal(r.action, 'PROMOTE_EXACT_SHA');
   assert.equal(r.last_known_good_sha, 'lkg123');
