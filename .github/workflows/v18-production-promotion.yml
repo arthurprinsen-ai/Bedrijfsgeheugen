@@ -23,6 +23,7 @@ jobs:
           node --test
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
+          tests/seo-production-guard.test.mjs
           tests/site-baseline-guardian.test.mjs
           tests/portal-server-state.test.mjs
           tests/portal-projection-layers.test.mjs
