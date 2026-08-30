@@ -66,6 +66,16 @@
       "recoveryPolicy": "Refresh inventory, deduplicate by component key and quarantine invalid or contradictory metering."
     },
     {
+      "id": "cost-portfolio-decision-daily",
+      "domain": "cost",
+      "expected": "Every daily BG159 fleet inventory refresh produces exactly one governed portfolio decision: SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY, with cost/outcome evidence and shared-current-state visibility.",
+      "dueAt": "daily_after_inventory_refresh",
+      "ownerAgent": "agent-cost",
+      "evidencePolicy": "The daily decision records SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY with inventory fingerprint, cost/outcome evidence and BG167 visibility for every material change.",
+      "idempotencyKey": "cost-portfolio|date|inventory-fingerprint",
+      "recoveryPolicy": "Refresh the inventory, reuse known fingerprints, deduplicate the candidate and decision, verify no duplicate external side effect exists, and resume recovery until the portfolio outcome is verified or a valid hard boundary remains."
+    },
+    {
       "id": "brain-budget-writeback",
       "domain": "data_sync",
       "expected": "Every material budget decision and verified optimization outcome is routed through BG168 and visible in BG167.",
