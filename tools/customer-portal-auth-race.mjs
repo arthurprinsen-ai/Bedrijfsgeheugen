@@ -21,6 +21,15 @@ const OPEN_CUSTOMER_SUCCESS = `.then(function (sessie) { return haalOfferte(sess
           toonPortaal({email:mail});
         }); })`;
 
+const NETLIFY_CONTROLLER_START = `(function(){
+  var par = new URLSearchParams(location.search);
+  var slug = (par.get('klant') || '').toLowerCase();`;
+
+const NETLIFY_CONTROLLER_BYPASS = `(function(){
+  var par = new URLSearchParams(location.search);
+  var slug = (par.get('klant') || '').toLowerCase();
+  if (slug && slug !== 'demo') return;`;
+
 export function repairCustomerPortalAuth(html) {
   let repaired = html;
 
@@ -40,7 +49,15 @@ export function repairCustomerPortalAuth(html) {
     repaired = repaired.replace(OLD_CUSTOMER_SUCCESS, OPEN_CUSTOMER_SUCCESS);
   }
 
-  if (!repaired.includes(GUARDED_HANDLER) || !repaired.includes(OPEN_CUSTOMER_SUCCESS)) {
+  if (!repaired.includes(NETLIFY_CONTROLLER_BYPASS)) {
+    const occurrences = repaired.split(NETLIFY_CONTROLLER_START).length - 1;
+    if (occurrences !== 1) {
+      throw new Error(`Expected exactly one legacy Netlify authorization controller, found ${occurrences}`);
+    }
+    repaired = repaired.replace(NETLIFY_CONTROLLER_START, NETLIFY_CONTROLLER_BYPASS);
+  }
+
+  if (!repaired.includes(GUARDED_HANDLER) || !repaired.includes(OPEN_CUSTOMER_SUCCESS) || !repaired.includes(NETLIFY_CONTROLLER_BYPASS)) {
     throw new Error('Customer portal auth repair was not fully applied');
   }
   return repaired;
@@ -48,3 +65,4 @@ export function repairCustomerPortalAuth(html) {
 
 export const customerAuthRaceGuard = GUARDED_HANDLER;
 export const customerAuthSuccessHandler = OPEN_CUSTOMER_SUCCESS;
+export const customerNetlifyBypassGuard = NETLIFY_CONTROLLER_BYPASS;
