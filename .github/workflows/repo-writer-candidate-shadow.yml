@@ -4,32 +4,69 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Exact candidate PR number'
+        required: true
+        type: string
+      base_sha:
+        description: 'Exact PR base SHA'
+        required: true
+        type: string
+      head_sha:
+        description: 'Exact PR head SHA'
+        required: true
+        type: string
+      head_ref:
+        description: 'Exact writer candidate branch'
+        required: true
+        type: string
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   verify:
-    if: startsWith(github.head_ref, 'writer/')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'writer/')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Validate explicitly dispatched PR identity
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          EXPECTED_BASE_SHA: ${{ inputs.base_sha }}
+          EXPECTED_HEAD_SHA: ${{ inputs.head_sha }}
+          EXPECTED_HEAD_REF: ${{ inputs.head_ref }}
+        run: |
+          set -euo pipefail
+          actual_base="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.base.sha')"
+          actual_head="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+          actual_ref="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.ref')"
+          [ "$actual_base" = "$EXPECTED_BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$EXPECTED_BASE_SHA:$actual_base"; exit 1; }
+          [ "$actual_head" = "$EXPECTED_HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$EXPECTED_HEAD_SHA:$actual_head"; exit 1; }
+          [ "$actual_ref" = "$EXPECTED_HEAD_REF" ] || { echo "::error::PR_HEAD_REF_DRIFT:$EXPECTED_HEAD_REF:$actual_ref"; exit 1; }
+
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Verify bounded writer candidate paths and emit immutable evidence
         env:
-          GITHUB_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          GITHUB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GITHUB_HEAD_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.head_ref || github.head_ref }}
+          GITHUB_PR_BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.base_sha || github.event.pull_request.base.sha }}
+          GITHUB_PR_HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
           REPO_WRITER_EVIDENCE_PATH: artifacts/repo-writer-shadow-evidence.json
         run: node scripts/ci/repo-writer-shadow-verify.mjs
       - name: Upload immutable writer shadow evidence
         uses: actions/upload-artifact@v4
         with:
-          name: repo-writer-shadow-evidence-${{ github.event.pull_request.number }}
+          name: repo-writer-shadow-evidence-${{ github.event_name == 'workflow_dispatch' && inputs.pr_number || github.event.pull_request.number }}
           path: artifacts/repo-writer-shadow-evidence.json
           if-no-files-found: error
