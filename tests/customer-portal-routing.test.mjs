@@ -32,11 +32,12 @@ test('Frisse Blik bare portal handoff resolves to the legacy demo', () => {
   assert.match(redirects, /^\/klantportaal\s+\/klantportaal-demo\.html\s+200!$/m);
 });
 
-test('production transform prevents customer offer routes from opening Netlify Identity', () => {
+test('production transform prevents customer offer routes from opening Netlify Identity and restores persistent Supabase auth first', () => {
   const repaired = repairCustomerPortalAuth(klantportaal);
   assert.match(
     repaired,
     /const bl=document\.getElementById\('btnLogin'\);\s*if\(bl\) bl\.addEventListener\('click',function\(\)\{\s*if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\)\{\s*if\(window\.__bgCustomerLogin\) window\.__bgCustomerLogin\(\);\s*return;/m
   );
-  assert.match(repaired, /window\.__bgCustomerLogin = function\(\)\{ var s=slug\(\); if\(s\) toonInlog\(s\); \};/);
+  assert.match(repaired, /var AUTH_STORE = 'bg_customer_auth';/);
+  assert.match(repaired, /window\.__bgCustomerLogin = function\(\)\{\s*var s=slug\(\);\s*if\(s\) herstelAuth\(s\)\.catch\(function\(\)\{ toonInlog\(s\); \}\);\s*\};/m);
 });
