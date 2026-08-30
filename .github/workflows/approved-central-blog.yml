@@ -25,6 +25,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 concurrency:
   group: repo-schrijven
@@ -176,6 +177,26 @@ jobs:
           number=${url##*/}
           echo "number=$number" >> "$GITHUB_OUTPUT"
           echo "Candidate PR geopend: $url"
+
+      - name: Dispatch immutable candidate shadow verification
+        if: steps.render.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          HEAD_SHA="$(git rev-parse HEAD)"
+          gh workflow run repo-writer-candidate-shadow.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$BASE_SHA" \
+            -f head_sha="$HEAD_SHA" \
+            -f head_ref="$CANDIDATE_BRANCH"
+          echo "shadow_dispatch_pr=$PR_NUMBER"
+          echo "shadow_dispatch_head=$HEAD_SHA"
 
       - name: BRAIN v2 handoff evidence
         if: steps.render.outputs.changed == 'true'
