@@ -21,8 +21,8 @@ test('demoAI serves the current AI portal without changing the public URL', () =
   assert.match(redirects, /^\/klantportaal\s+klant=demoAI\s+\/portal\/\s+200!$/m);
 });
 
-test('other customer slugs still go to the current portal', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=:klant\s+\/portal\/\s+302!$/m);
+test('all other customer slugs from scans serve the legacy full portal', () => {
+  assert.match(redirects, /^\/klantportaal\s+klant=:klant\s+\/klantportaal\.html\s+200!$/m);
 });
 
 test('Frisse Blik bare portal handoff resolves to the legacy demo', () => {
