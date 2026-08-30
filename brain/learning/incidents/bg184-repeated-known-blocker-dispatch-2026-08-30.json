@@ -1,0 +1,60 @@
+{
+  "version": "BG184-REPEATED-KNOWN-BLOCKER-DISPATCH-v1",
+  "date": "2026-08-30",
+  "fingerprint": "make|bg184|repeated-known-blocker-paid-redispatch-v1",
+  "pattern": "repeated-known-blocker-no-state-v1",
+  "severity": "high",
+  "status": "CONTAINED_IN_INACTIVE_STAGING_NOT_PROMOTED",
+  "observed": {
+    "productionScenarioId": 7147086,
+    "sameRecordId": "3c3da36a-ac8a-81ca-85b3-f18008f76169",
+    "sameBlockerFingerprint": "content|social-obligation|due-not-auto-repairable",
+    "sameRecordRepeatedExecutions": 2,
+    "confirmedRepeatedTimesUtc": ["2026-08-30T20:19:53.420Z", "2026-08-30T21:19:48.840Z"],
+    "productionParentCreditsPerConfirmedRun": 5,
+    "BG168ChildCreditsPerConfirmedRun": 3,
+    "recoveryOrchestratorChildCreditsPerConfirmedRun": 3,
+    "confirmedPaidCreditCostPerRepeatedStateAtLeast": 11,
+    "BG168ScenarioId": 7136176,
+    "recoveryOrchestratorScenarioId": 7135438
+  },
+  "rootCause": "BG184 polls hourly and treated an unchanged open social obligation as a fresh error every run. Its unresolved branch directly invoked BG168 and the GREEN-UNTIL-DONE recovery orchestrator without caller-side blocker state, aging or dedupe.",
+  "failedApproaches": [
+    "Rely on BG168 internal materiality or BG166 learning dedupe; the paid BG168 invocation and recovery-orchestrator invocation have already happened by then.",
+    "Slow the whole BG184 schedule merely to save credits; that degrades detection freshness for genuinely new obligations.",
+    "Use shared Notion Laatste run as a new blocker-dedupe ownership field without proving exclusive ownership.",
+    "Treat scenario inactive/paused status as the permanent solution; callable or later-reactivated control-plane paths still require internal guards.",
+    "Suppress the blocker forever after first observation; unresolved obligations still need bounded escalation and state-change responsiveness."
+  ],
+  "containment": {
+    "stagingScenarioId": 7165551,
+    "stagingName": "STAGING - BG184 Stateful Blocker Dedupe v2",
+    "stagingStatus": "paused",
+    "productionChanged": false,
+    "design": "Caller-side Make Data Store reservation before BG168 and recovery orchestration, keyed by record id, blocker state hash and six-hour bucket. Duplicate reservation terminates the unresolved branch before paid downstream dispatch. Changed state generates a new reservation identity immediately.",
+    "blueprintReadbackVerified": true,
+    "runtimeVerified": false
+  },
+  "preventionRules": [
+    "Persist a caller-side reservation before BG168 and recovery-orchestrator dispatch, keyed by record plus blocker state plus bounded time bucket.",
+    "Known unchanged blockers are stateful obligations, not new errors on every watcher tick.",
+    "Keep sensing cadence independent from expensive escalation cadence; do not reduce detection freshness just to lower cost.",
+    "A real blocker-state change must bypass prior-state dedupe by producing a new state hash.",
+    "Periodic escalation must remain bounded and explicit; six-hour buckets are the current staging policy, not an implicit infinite suppression.",
+    "Do not repurpose a shared business field for control-plane dedupe without proving field ownership.",
+    "Do not promote from blueprint readback or CI green alone; controlled runtime evidence and bounded credit slope are mandatory."
+  ],
+  "regressionContract": {
+    "sameStateWithinSixHours": "maximum one BG168 dispatch and one governed recovery dispatch",
+    "duplicateReservation": "zero BG168 calls and zero governed recovery calls",
+    "changedState": "new state hash may dispatch immediately",
+    "safeRepairBranch": "behaviorally equivalent to current BG184 production",
+    "notDueBranch": "behaviorally equivalent to current BG184 production",
+    "capacityBoundary": "no repeated runtime attempts and no autonomous paid-capacity increase while Make capacity is paused or exhausted"
+  },
+  "related": [
+    "make|multi-agent-context-learning-credit-storm|2026-08-30-v1",
+    "control-plane-credit-storm-prevention-v1",
+    "make|capacity|team-paused-operations-or-data-transfer-limit-v1"
+  ]
+}
