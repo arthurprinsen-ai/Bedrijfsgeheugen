@@ -19,6 +19,12 @@ const requiredLessonIds = [
   'ONE_SHARED_CONTEXT_BEFORE_SPECIALIST_WORK',
   'KEEP_ONE_TRUTH_AND_NO_SECOND_MEMORY',
   'NO_DIRECT_EXTERNAL_EXECUTION_FROM_AGENT_FABRIC',
+  'MAKE_SCENARIO_SUCCESS_REQUIRES_MODULE_OUTCOME_EVIDENCE',
+  'NOTION_ARRAY_IDS_MUST_BE_NORMALIZED_BEFORE_NATIVE_APIS',
+  'LEGACY_BUFFER_IDS_REQUIRE_DETERMINISTIC_NATIVE_BACKFILL',
+  'SOCIAL_PUBLISH_CREATE_VERIFY_COMMIT',
+  'SINGLE_CANONICAL_PUBLISHER_PER_CHANNEL',
+  'INSTAGRAM_INSIGHTS_WRAPPER_REQUIRES_RUNTIME_METRIC_PROOF',
 ];
 
 test('current chat learning is indexed and machine-readable before material agent work', async () => {
@@ -31,6 +37,7 @@ test('current chat learning is indexed and machine-readable before material agen
   assert.ok(Array.isArray(contract.canonicalSources));
   for (const source of [
     'docs/learning/chat-learning-checkpoint-2026-08-30.md',
+    'docs/powerhouse-chat-learning-checkpoint-2026-08-30.md',
     'docs/brain/delivery-failure-lessons.json',
     'config/delivery-prevention-rules.json',
     'brain/learning/chat-continuity-2026-08-30.json',
