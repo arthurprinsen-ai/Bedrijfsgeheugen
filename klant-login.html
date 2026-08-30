@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Inloggen | Bedrijfsgeheugen</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--grijs:#5C646E;--lijn:#DCDFE6;--blauw:#2742D6;--geel:#FFE86B;--rood:#D93025}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--papier);color:var(--inkt);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:460px;margin:0 auto;padding:clamp(2rem,8vh,5rem) 1.35rem 3rem}
+h1{font-size:clamp(2.2rem,9vw,3.6rem);line-height:.98;letter-spacing:-.045em;margin:0 0 1rem;font-weight:800}
+h1 span{background:linear-gradient(transparent 62%,var(--geel) 62%)}
+.lead{font-size:1.08rem;line-height:1.55;color:var(--grijs);margin:0 0 2rem}
+label{display:block;font-weight:700;margin:.85rem 0 .35rem;font-size:1rem}
+input{display:block;width:100%;min-height:56px;border:1.5px solid var(--lijn);border-radius:10px;background:#fff;padding:.8rem .9rem;font:inherit;font-size:16px;color:var(--inkt);-webkit-appearance:none;appearance:none}
+input:focus{outline:3px solid rgba(39,66,214,.16);border-color:var(--blauw)}
+button{width:100%;min-height:54px;border-radius:8px;font:inherit;font-size:1rem;cursor:pointer;margin-top:.9rem}
+#inloggen{border:0;background:var(--inkt);color:#fff}
+#link{background:#fff;color:var(--inkt);border:1.5px solid var(--lijn);margin-top:.55rem}
+button:disabled{opacity:.55;cursor:wait}
+.hulp{color:var(--grijs);font-size:.9rem;line-height:1.5;margin:.8rem 0 0}
+#melding{min-height:1.4rem;margin-top:.8rem;font-size:.92rem;line-height:1.45;color:var(--rood)}
+#melding.goed{color:#187a45}
+.voet{margin-top:2.3rem;padding-top:1.2rem;border-top:1px solid var(--lijn);font-size:.86rem;color:var(--grijs);line-height:1.55}
+</style>
+</head>
+<body>
+<main>
+  <h1>Jouw <span>bedrijfsgeheugen</span></h1>
+  <p class="lead" id="lead">Log in om je offerte, sprints, uren en projectinformatie te openen.</p>
+
+  <label for="mail">E-mailadres</label>
+  <input id="mail" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false">
+
+  <label for="ww">Wachtwoord</label>
+  <input id="ww" type="password" autocomplete="current-password">
+
+  <button id="inloggen" type="button">Inloggen</button>
+  <button id="link" type="button">Stuur me een inloglink</button>
+  <p class="hulp">Geen wachtwoord? Vul alleen je e-mailadres in en kies de inloglink.</p>
+  <div id="melding" role="alert" aria-live="polite"></div>
+  <p class="voet">Je logt rechtstreeks in via de beveiligde klantomgeving. Na een geldige login ga je automatisch terug naar je eigen portaal.</p>
+</main>
+<script>
+(function(){
+  'use strict';
+  var BASIS='https://adhjwmvyoixzjtmiroln.supabase.co';
+  var SLEUTEL='sb_publishable_W5aGMsfbZE4H7GraIR4oMQ_gV-x0xWL';
+  var slug=(new URLSearchParams(location.search).get('klant')||'').toLowerCase().trim();
+  var melding=document.getElementById('melding');
+  var inlog=document.getElementById('inloggen');
+  var link=document.getElementById('link');
+
+  if(!/^[a-z0-9-]+$/.test(slug)){
+    melding.textContent='Deze klantlink is niet geldig.';
+    inlog.disabled=true; link.disabled=true; return;
+  }
+  document.getElementById('lead').textContent='Log in om het portaal van '+slug+' te openen.';
+
+  function api(pad,opties){
+    opties=opties||{};
+    opties.headers=Object.assign({apikey:SLEUTEL,'Content-Type':'application/json'},opties.headers||{});
+    return fetch(BASIS+pad,opties).then(function(r){
+      return r.text().then(function(t){
+        var j=null; try{j=t?JSON.parse(t):null;}catch(e){}
+        if(r.ok) return j;
+        return Promise.reject(j||{message:'fout '+r.status});
+      });
+    });
+  }
+
+  function haalOfferte(token){
+    var kop={Authorization:'Bearer '+token};
+    return api('/rest/v1/organisaties?slug=eq.'+encodeURIComponent(slug)+'&select=id,naam',{headers:kop})
+      .then(function(orgs){
+        if(!orgs||!orgs.length) return Promise.reject({message:'onbekend portaal'});
+        return api('/rest/v1/offertes?organisatie_id=eq.'+orgs[0].id+'&select=inhoud,nummer,status&order=aangemaakt_op.desc&limit=1',{headers:kop})
+          .then(function(off){
+            if(!off||!off.length) return Promise.reject({message:'geen toegang'});
+            var k=off[0].inhoud||{}; k.naam=k.naam||orgs[0].naam; return k;
+          });
+      });
+  }
+
+  function bewaar(sessie,klant){
+    localStorage.setItem('bg_customer_auth',JSON.stringify(sessie));
+    try{document.cookie='bg_customer_auth='+encodeURIComponent(JSON.stringify(sessie))+'; Path=/; Max-Age=2592000; SameSite=Lax; Secure';}catch(e){}
+    sessionStorage.setItem('bg_klant_' + slug,JSON.stringify(klant));
+    sessionStorage.setItem('bg_token',sessie.access_token);
+  }
+
+  function fouttekst(e){
+    var m=String((e&&(e.error_description||e.msg||e.message||e.error))||'');
+    if(/credential|invalid login/i.test(m)) return 'Dit e-mailadres en wachtwoord horen niet bij elkaar.';
+    if(/email not confirmed/i.test(m)) return 'Bevestig eerst je e-mailadres via de mail die je hebt gekregen.';
+    if(/geen toegang/i.test(m)) return 'Je account hoort niet bij dit portaal.';
+    if(/onbekend portaal/i.test(m)) return 'Dit portaal bestaat niet.';
+    return 'Inloggen lukt nu niet. Probeer het zo nog eens.';
+  }
+
+  function login(){
+    var mail=(document.getElementById('mail').value||'').trim();
+    var ww=document.getElementById('ww').value||'';
+    if(!mail||!ww){melding.className='';melding.textContent='Vul je e-mailadres en wachtwoord in.';return;}
+    inlog.disabled=true; link.disabled=true; melding.className=''; melding.textContent='Bezig met inloggen…';
+    api('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:mail,password:ww})})
+      .then(function(sessie){
+        return haalOfferte(sessie.access_token).then(function(klant){bewaar(sessie,klant);});
+      })
+      .then(function(){
+        location.replace('https://www.bedrijfsgeheugen.nl/klantportaal?klant=' + encodeURIComponent(slug));
+      })
+      .catch(function(e){
+        inlog.disabled=false; link.disabled=false; melding.className=''; melding.textContent=fouttekst(e);
+      });
+  }
+
+  function magic(){
+    var mail=(document.getElementById('mail').value||'').trim();
+    if(!mail){melding.className='';melding.textContent='Vul eerst je e-mailadres in.';return;}
+    link.disabled=true; melding.className=''; melding.textContent='Bezig met versturen…';
+    var terug='https://www.bedrijfsgeheugen.nl/klant-login.html?klant='+encodeURIComponent(slug);
+    api('/auth/v1/otp?redirect_to='+encodeURIComponent(terug),{method:'POST',body:JSON.stringify({email:mail,create_user:true})})
+      .then(function(){melding.className='goed';melding.textContent='Verstuurd. Open de link in je mail.';})
+      .catch(function(){link.disabled=false;melding.className='';melding.textContent='Versturen lukt nu niet. Probeer het straks opnieuw.';});
+  }
+
+  function uitHash(){
+    var h=location.hash||''; if(h.indexOf('access_token=')<0) return null;
+    var p={}; h.replace(/^#/,'').split('&').forEach(function(deel){var i=deel.indexOf('=');if(i>0)p[deel.slice(0,i)]=decodeURIComponent(deel.slice(i+1));});
+    return p.access_token?{access_token:p.access_token,refresh_token:p.refresh_token||'',expires_in:+p.expires_in||3600,token_type:p.token_type||'bearer',user:null}:null;
+  }
+
+  var hashSessie=uitHash();
+  if(hashSessie){
+    inlog.disabled=true; link.disabled=true; melding.textContent='Je inloglink wordt gecontroleerd…';
+    history.replaceState(null,'',location.pathname+location.search);
+    haalOfferte(hashSessie.access_token).then(function(klant){bewaar(hashSessie,klant);location.replace('https://www.bedrijfsgeheugen.nl/klantportaal?klant='+encodeURIComponent(slug));})
+      .catch(function(e){inlog.disabled=false;link.disabled=false;melding.textContent=fouttekst(e);});
+  }
+
+  inlog.addEventListener('click',login);
+  link.addEventListener('click',magic);
+  document.getElementById('ww').addEventListener('keydown',function(e){if(e.key==='Enter')login();});
+})();
+</script>
+</body>
+</html>
