@@ -1,11 +1,11 @@
 {
-  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1",
+  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.1",
   "date": "2026-08-30",
   "purpose": "Bind all durable learnings from the Make credit-storm recovery thread into one machine-readable preflight surface.",
   "canonicalArtifacts": [
     "docs/learning/make-control-plane-credit-storm-2026-08-30.md",
     "brain/learning/incidents/make-control-plane-credit-storm-2026-08-30.json",
-    "brain/learning/incidents/connector-mutation-routing-guard-2026-08-30.json"
+    "brain/learning/incidents/connector-mutation-tool-routing-misfire-2026-08-30.json"
   ],
   "failurePatterns": [
     {
@@ -28,19 +28,38 @@
       "rootCause": "Mutation tool/resource/identifier/intent were not matched as a precondition before dispatch.",
       "requiredAction": "Before every mutation, verify tool action, resource type, exact identifier and requested intent; after an accidental mutation, restore exact prior state and read back once.",
       "regression": "No state-changing call may execute when resource type or intent is unresolved or mismatched."
+    },
+    {
+      "id": "OPTIONAL_LEARNING_MUST_NOT_OWN_PRIMARY_RETURN",
+      "fingerprint": "agent|learning-path|optional-learning-blocks-primary-return-v1",
+      "symptom": "A naive filter placed on the optional BG168 learning-share module would also suppress the downstream primary ReturnData module when the outcome is NO_ACTION/HEALTHY.",
+      "rootCause": "Primary result delivery and optional learning writeback are structurally coupled in a single linear path.",
+      "failedApproach": "Put a non-materiality filter directly on Share agent outcome with team learning while leaving the primary ReturnData downstream of that module.",
+      "requiredAction": "Materiality-before-dispatch must branch before BG168 while preserving an independent direct ReturnData path for non-material outcomes; learning failure or suppression must never remove the primary agent result.",
+      "regression": "For NO_ACTION/HEALTHY/verification-only outcomes, BG168 must receive zero calls and the caller must still return the exact primary agent result. For material outcomes, BG168 may run and primary result must still be returned even if learning is unavailable."
+    },
+    {
+      "id": "CANONICAL_ARTIFACT_REFERENCE_DRIFT",
+      "fingerprint": "learning|canonical-artifact|reference-path-drift-v1",
+      "symptom": "The completeness addendum referenced connector-mutation-routing-guard-2026-08-30.json while the real canonical artifact was connector-mutation-tool-routing-misfire-2026-08-30.json.",
+      "rootCause": "A canonical index path was written from intended naming rather than exact readback of the created artifact path.",
+      "requiredAction": "Every canonical artifact reference must be derived from or verified against the exact persisted path; CI must read every listed canonical artifact.",
+      "regression": "The completeness test must fail when any canonicalArtifacts path does not exist or is empty."
     }
   ],
   "runtimeState": {
     "BG167": {
       "scenarioId": 7136045,
-      "status": "SAFE_MODE_WITH_INTERNAL_ENTRY_GUARD",
+      "status": "SAFE_MODE_WITH_INTERNAL_ENTRY_GUARD_VERIFIED",
       "canonicalRefreshCaller": "BG166",
-      "requiredRequestMarkers": ["\"mode\":\"refresh\"","\"agent_id\":\"BG166\""]
+      "requiredRequestMarkers": ["\"mode\":\"refresh\"","\"agent_id\":\"BG166\""],
+      "latestPostGuardFullRunEvidence": "The observed post-guard full BG167 run was a canonical BG166 refresh request, not a free-form direct agent rebuild."
     },
     "BG168": {
       "scenarioId": 7136176,
-      "status": "SAFE_MODE_PENDING_CALLER_SIDE_MATERIALITY_GUARD",
-      "rule": "Materiality must be decided before paid subscenario dispatch; a classifier inside BG168 cannot eliminate the dispatch cost already incurred."
+      "status": "SAFE_MODE_PENDING_CALLER_SIDE_MATERIALITY_BRANCH",
+      "rule": "Materiality must be decided before paid subscenario dispatch; a classifier inside BG168 cannot eliminate the dispatch cost already incurred.",
+      "protectedInvariant": "Primary agent result delivery is independent of optional learning dispatch and remains available on NO_ACTION or learning failure."
     }
   },
   "completionGate": {
@@ -53,7 +72,9 @@
       "prevention and regression contract recorded",
       "runtime state distinguished from audit history",
       "open recovery obligations explicitly preserved",
-      "machine-readable CI/preflight coverage exists"
+      "machine-readable CI/preflight coverage exists",
+      "canonical artifact paths verified by exact readback",
+      "optional observability and learning paths cannot own primary business result delivery"
     ],
     "terminalRule": "A chat/run is not fully green while material learnings exist only in conversation text or while a discovered prevention gap is silently dropped."
   }
