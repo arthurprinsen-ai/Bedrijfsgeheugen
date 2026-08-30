@@ -23,6 +23,21 @@ Bij semantic content drift geldt verplicht dezelfde autonome herstelroute:
 
 Een protected pagina mag alleen inhoudelijk veranderen wanneer een expliciete machineleesbare scope de route dekt. Zonder explicit scope is iedere onverwachte semantic hash/anchor-drift rood, ook als HTTP, HTML, H1, canonical of SEO technisch geldig zijn.
 
+### Website-herstelregels uit de test-prototype recovery
+Deze regels zijn permanent en gelden voor toekomstige site-, route-, menu- en contentreleases:
+- **Exact accepted source first.** Bepaal vóór herstel de exacte geaccepteerde prototype/release-SHA en gebruik die als bewijsbron. Geen reconstructie uit geheugen wanneer een versioned bron bestaat.
+- **Route existence is not acceptance.** Een bestaand HTML-bestand bewijst niet dat de geaccepteerde pagina-ervaring nog bestaat. Verifieer route, semantic anchors, navigatie en runtime.
+- **One navigation owner.** Header, mobiele navigatie en menu-interactie hebben één canonieke eigenaar. Een herstelpagina mag geen tweede drawer/menu-implementatie introduceren wanneer `assets/js/menu.js` al eigenaar is.
+- **Critical structure may not arrive late.** Navigatie/controls die bij eerste interactie nodig zijn mogen niet afhankelijk zijn van een late runtime-injectie zonder expliciete lifecycle-garantie. Browserchecks testen dezelfde lifecycle die de gebruiker ziet.
+- **Source, artifact and runtime are different evidence layers.** Een browsergroene DOM maakt een source-SEO-fout niet groen en omgekeerd. Validators moeten expliciet aangeven welke representatie zij controleren. Gedeelde runtime-shells worden voor source-checks canoniek gematerialiseerd.
+- **Tests protect outcomes, not stale implementation details.** Wanneer architectuur bewust van inline/copy-paste naar shared ownership gaat, moet de regressietest in dezelfde change de nieuwe invariant beschermen. Een obsolete test mag niet worden “omzeild”; hij wordt vervangen door een sterkere outcome-/ownershipassertie.
+- **No orphan primary routes.** Een herstelde primaire pagina moet globaal vindbaar zijn en waar inhoudelijk passend minimaal één betekenisvolle interne inkomende route hebben.
+- **No duplicate behavior.** Voor iedere JS/CSS/agentfunctie eerst de bestaande owner bepalen. Duplicatie van dezelfde verantwoordelijkheid is regressierisico en kostenverspilling.
+- **No-op writes are defects.** Vergelijk gewenste bytes/state vóór write. Als inhoud/state al gelijk is, schrijf niet. Een no-op commit die volledige CI/Netlify-runs triggert telt als vermijdbare kosten/performance-regressie.
+- **Green evidence expires on write.** Na iedere commit/write is release-evidence van een voorganger niet voldoende voor promotie. Bind alle vereiste gates opnieuw aan de actuele exact candidate SHA.
+- **Inspect only failing evidence.** Als meerdere onafhankelijke gates groen zijn, analyseer niet opnieuw hun volledige logs. Lees alleen de rode gate/step en wijzig alleen de aantoonbare oorzaak.
+- **Parallelize independent verification.** Contracttests, browser smoke, SEO/source crawl en shared-memory tests mogen parallel lopen wanneer ze geen gedeelde mutable state hebben. Dit verkort red-to-green tijd.
+
 ## Standaardcyclus
 1. **Observe** — lees actuele runtime-, build-, deploy-, branch- en obligation/outcome-status.
 2. **Classify** — bepaal: code, data, config, asset, dependency, performance, kosten, externe storing, semantic content drift of gemiste obligation.
