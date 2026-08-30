@@ -86,6 +86,16 @@
       "recoveryPolicy": "Retry routing at most twice per hypothesis, then retain locally verified evidence and resume through the shared-memory recovery path."
     },
     {
+      "id": "repository-writer-operational-certification",
+      "domain": "governance",
+      "expected": "Every repository writer may be marked operationally certified only after its verified outcome is routed through BG168 and is visible in BG167 shared current state.",
+      "dueAt": "after_each_writer_operational_canary",
+      "ownerAgent": "agent-reliability",
+      "evidencePolicy": "Exact verification SHA, real writer candidate PR, immutable shadow evidence, exact-head and path-policy verification, bounded impact policy and BG167 visibility are required before COMPLETED.",
+      "idempotencyKey": "writer-certification|writer|verification-sha|shadow-run-id",
+      "recoveryPolicy": "Keep certification AWAITING_OUTCOME, retain immutable evidence, rerun only the missing safe verification step, route through BG168 and do not mark BG167 VERIFIED until all evidence is complete."
+    },
+    {
       "id": "internal-dashboard-authz",
       "domain": "security",
       "expected": "The cost dashboard and API remain private, read-only and fail closed for anonymous or unauthorized users.",
