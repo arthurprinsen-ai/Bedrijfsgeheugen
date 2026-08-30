@@ -82,6 +82,8 @@ test('parity runtime is agent-executable, zero-external and reconciles only veri
   for (const writer of ['approved-central-blog','blog-bijwerken','menu-balk-fix','paginacontrole','regelgeving-bijwerken','seo-controle','weekblog']) assert.match(workflow, new RegExp(writer.replaceAll('-', '\\-')));
   assert.match(workflow, /gh pr create/);
   assert.match(workflow, /git status --porcelain/);
+  assert.match(workflow, /HEAD:refs\/heads\/\$branch/);
+  assert.doesNotMatch(workflow, /git push origin "HEAD:\$branch"/);
   assert.doesNotMatch(workflow, /git diff --name-only/);
   assert.doesNotMatch(workflow, /ANTHROPIC_API_KEY|NOTION_TOKEN|NOTION_BLOG_DB|BG_SEO_WEBHOOK|api\.anthropic\.com/);
   assert.doesNotMatch(workflow, /gh pr merge|git push origin HEAD:main|git push origin main/);
