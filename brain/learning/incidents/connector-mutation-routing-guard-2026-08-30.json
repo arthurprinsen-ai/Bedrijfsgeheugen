@@ -1,0 +1,34 @@
+{
+  "version": "CONNECTOR-MUTATION-ROUTING-GUARD-v1",
+  "date": "2026-08-30",
+  "fingerprint": "connector|mutation|wrong-tool-or-resource-selected-v1",
+  "severity": "high",
+  "status": "PROVEN",
+  "symptom": "A state-changing connector action targeted the wrong resource and briefly reopened an unrelated GitHub issue.",
+  "rootCause": "Mutation tool, resource type, exact identifier and requested intent were not matched as a mandatory precondition before dispatch.",
+  "knownFailedApproach": "Using a mutation to discover or infer resource state or dispatching before resource identity and user intent are exact.",
+  "requiredPreflight": [
+    "select_exact_mutation_tool",
+    "verify_resource_type",
+    "verify_exact_identifier",
+    "verify_requested_intent",
+    "fail_closed_on_mismatch_or_ambiguity"
+  ],
+  "prevention": "Before every mutation, verify tool action, resource type, exact identifier and requested intent. Never use a write as discovery. After an accidental mutation, restore the exact prior state and perform one readback.",
+  "regressionContract": "No state-changing connector call may execute when tool action, resource type, exact identifier or requested intent is unresolved or mismatched.",
+  "recovery": {
+    "onAccidentalMutation": [
+      "stop additional writes",
+      "restore exact prior state",
+      "read back once",
+      "record fingerprint and root cause",
+      "add or reuse a prevention rule before retry"
+    ],
+    "terminalRule": "Only verified restored state closes the incident."
+  },
+  "relatedRules": [
+    "NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE",
+    "DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM",
+    "REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES"
+  ]
+}
