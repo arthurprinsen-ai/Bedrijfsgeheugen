@@ -1,5 +1,5 @@
 {
-  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.2",
+  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.3",
   "date": "2026-08-30",
   "purpose": "Bind all durable learnings from the Make credit-storm recovery thread into one machine-readable preflight surface.",
   "canonicalArtifacts": [
@@ -54,6 +54,15 @@
       "failedApproach": "Begin a multi-step live branch migration where patch 1 changes flow topology and patch 2 is required to restore complete semantics, especially while Make is rate-limiting.",
       "requiredAction": "For structural Make migrations, use one atomic scenario_patch whenever possible. If the tool cannot express the full migration atomically, build and validate on an inactive staging clone or ensure every intermediate state is functionally equivalent and safe. After 429/502, read back before retry; if partial topology exists, rollback to the exact pre-migration blueprint before further design work.",
       "regression": "No production scenario may be left in an intermediate topology that depends on a later mutation for correct primary return, learning, side effects or error handling."
+    },
+    {
+      "id": "CREATE_429_AMBIGUOUS_MUTATION",
+      "fingerprint": "make|scenario-create|429-ambiguous-mutation-v1",
+      "symptom": "Creation of an inactive Agent 14 staging canary returned HTTP 429. Exact scenario-name readback then proved that no staging scenario had been created.",
+      "rootCause": "A state-changing create call can fail at the client boundary while remote completion state is initially unknown; treating the error as definite non-creation would invite duplicate create retries.",
+      "failedApproach": "Blindly repeat scenario_create after 429 without first checking whether the named scenario already exists.",
+      "requiredAction": "Treat 429/502 from create/update/delete as ambiguous mutation state. Perform one exact readback using the strongest identity available (scenario id, exact name plus team, file SHA/path, remote key). If the object exists in the intended state, continue from readback; if absent, preserve the obligation and retry only after rate-limit recovery, with dedupe identity unchanged.",
+      "regression": "No duplicate staging or production scenario may be created by a blind retry after an ambiguous Make mutation response."
     }
   ],
   "runtimeState": {
@@ -74,6 +83,11 @@
       "scenarioId": 7088656,
       "status": "ROLLED_BACK_TO_PRE_MIGRATION_GREEN_TOPOLOGY",
       "evidence": "After a 429 on the multi-branch patch, readback showed only the earlier BasicIfElse had been saved. Module 12 was then removed and readback confirmed the original flow 4 -> 10 -> 3 with error handler 11 restored."
+    },
+    "PH_AGENT_14_STAGING_CANARY": {
+      "status": "NOT_CREATED_AFTER_429_READBACK",
+      "requestedName": "STAGING PH Agent 14 - caller-side BG168 materiality canary v1",
+      "evidence": "scenario_create returned 429; one exact scenario_list readback for the requested name returned zero scenarios. Production Agent 14 was not modified by this staging attempt."
     }
   },
   "completionGate": {
@@ -89,7 +103,8 @@
       "machine-readable CI/preflight coverage exists",
       "canonical artifact paths verified by exact readback",
       "optional observability and learning paths cannot own primary business result delivery",
-      "multi-step structural migrations are atomic or every intermediate state is independently safe"
+      "multi-step structural migrations are atomic or every intermediate state is independently safe",
+      "ambiguous state-changing connector responses require exact readback before any retry"
     ],
     "terminalRule": "A chat/run is not fully green while material learnings exist only in conversation text or while a discovered prevention gap is silently dropped."
   }
