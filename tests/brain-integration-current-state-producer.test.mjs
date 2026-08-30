@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createIntegrationCurrentState } from '../brain/operating-loop/integration-current-state.mjs';
+import { createIntegrationCurrentState, createIntegrationCurrentStateFromSource } from '../brain/operating-loop/integration-current-state.mjs';
 
 test('creates canonical CurrentState telemetry envelope for any registered platform', () => {
   const record=createIntegrationCurrentState({
@@ -41,4 +41,33 @@ test('producer fails closed when tenant, platform or component identity is missi
   assert.throws(()=>createIntegrationCurrentState({platform:'github',component:'repo'}),/tenantId/i);
   assert.throws(()=>createIntegrationCurrentState({tenantId:'t',component:'repo'}),/platform/i);
   assert.throws(()=>createIntegrationCurrentState({tenantId:'t',platform:'github'}),/component/i);
+});
+
+test('source-backed producer reuses registered source identity and freshness mappings', () => {
+  const record=createIntegrationCurrentStateFromSource({
+    tenantId:'tenant-a',
+    source:'make',
+    id:'make-bg139-state',
+    component:'BG139',
+    raw:{scenario_id:'7148743',execution_id:'exec-9',observed_at:'2026-08-30T18:20:00Z'},
+    health:'healthy',
+    owner:'BG159',
+    revision:'scenario-v12',
+    executionStatus:'ready',
+    verified:true
+  });
+
+  assert.equal(record.type,'CurrentState');
+  assert.equal(record.provenance.source,'make');
+  assert.equal(record.provenance.sourceId,'7148743:exec-9');
+  assert.equal(record.observedAt,'2026-08-30T18:20:00Z');
+  assert.equal(record.subjectId,'integration:make:BG139');
+  assert.deepEqual(record.payload.raw,{scenario_id:'7148743',execution_id:'exec-9',observed_at:'2026-08-30T18:20:00Z'});
+  assert.equal(record.payload.mappingVersion,'v1');
+  assert.equal(record.payload.integration.health,'healthy');
+});
+
+test('source-backed producer inherits fail-closed source and identity rules', () => {
+  assert.throws(()=>createIntegrationCurrentStateFromSource({tenantId:'t',source:'unknown',id:'x',component:'c',raw:{}}),/Unknown Brain source/);
+  assert.throws(()=>createIntegrationCurrentStateFromSource({tenantId:'t',source:'github',id:'x',component:'repo',raw:{repository:'r'}}),/identity incomplete/);
 });
