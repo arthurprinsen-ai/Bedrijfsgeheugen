@@ -164,6 +164,24 @@ jobs:
             -f head_sha="$HEAD_SHA" \
             -f candidate_branch="$CANDIDATE_BRANCH"
 
+      - name: Dispatch central immutable writer gates
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          PR_NUMBER: ${{ steps.candidate_pr.outputs.pr_number }}
+          BASE_SHA: ${{ steps.candidate_pr.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.candidate_pr.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          gh workflow run repo-writer-gate-dispatch.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$BASE_SHA" \
+            -f head_sha="$HEAD_SHA" \
+            -f candidate_branch="$CANDIDATE_BRANCH"
+
       - name: BRAIN v2 handoff evidence
         if: steps.commit.outputs.changed == 'true'
         run: |
