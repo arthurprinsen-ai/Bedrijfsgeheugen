@@ -1,0 +1,123 @@
+name: Repository Writer Gate Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Candidate PR number'
+        required: true
+        type: string
+      base_sha:
+        description: 'Immutable PR base SHA'
+        required: true
+        type: string
+      head_sha:
+        description: 'Immutable candidate head SHA'
+        required: true
+        type: string
+      candidate_branch:
+        description: 'Immutable candidate branch'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: write
+
+concurrency:
+  group: repo-writer-gates-${{ inputs.pr_number }}-${{ inputs.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate immutable PR identity
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+          actual_base="$(jq -r '.base.sha' <<<"$pr")"
+          actual_head="$(jq -r '.head.sha' <<<"$pr")"
+          actual_ref="$(jq -r '.head.ref' <<<"$pr")"
+          [ "$actual_base" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$actual_base"; exit 1; }
+          [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
+          [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
+
+  shared-memory:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Shared memory and writer contract regressions
+        run: |
+          node --test tests/shared-agent-*.test.mjs tests/repo-writer-*.test.mjs tests/brain-writer-event-driven-gates.test.mjs
+
+  brain-foundation:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Brain foundation verification
+        run: |
+          npm install --ignore-scripts --no-audit --no-fund
+          npm run test:brain
+          npm run check:agents-team-policy
+          npm run check:team-memory-contract
+          npm run check:ph-agent-recovery-loop
+          npm run check:zero-trust-autonomy
+          npm run v19:aiscan
+
+  v18-and-writer-operational:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: V18 and writer operational verification
+        run: |
+          npm install --ignore-scripts --no-audit --no-fund
+          npm run v18:verify
+          node --test tests/repo-writer-operational-harness.test.mjs tests/repo-writer-shadow.test.mjs
+
+  dispatch-unified:
+    needs: [validate, shared-memory, brain-foundation, v18-and-writer-operational]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch exact candidate to Unified Brain Delivery
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          gh workflow run unified-brain-delivery.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$BASE_SHA" \
+            -f head_sha="$HEAD_SHA" \
+            -f candidate_branch="$CANDIDATE_BRANCH"
