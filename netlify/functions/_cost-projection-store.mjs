@@ -5,6 +5,7 @@ import { buildComponentCatalog } from '../../platform/cost/component-catalog.mjs
 const STORE_NAME = 'brain-read-models';
 const STORE_KEY = 'POWERHOUSE/cost-dashboard/current';
 const COST_DATA_SOURCE_ID = '3d0a748e-62ea-4a5f-a888-b8426b8ec1f5';
+const DEFAULT_REVALIDATE_MS = 15 * 60 * 1_000;
 
 function textValue(property) {
   return (property?.rich_text ?? property?.title ?? []).map(part => part.plain_text ?? part.text?.content ?? '').join('');
@@ -105,6 +106,22 @@ function recordFromSnapshot(snapshot, sourceUpdatedAt) {
   };
 }
 
+function isFreshCache(record, currentTime, revalidateMs) {
+  const checkedAt = new Date(record?.projectionCacheCheckedAt ?? '').getTime();
+  const nowMs = new Date(currentTime).getTime();
+  return Number.isFinite(checkedAt) && Number.isFinite(nowMs) && Math.max(0, nowMs - checkedAt) < revalidateMs;
+}
+
+function newestRecord(blobRecord, notionRecord) {
+  if (!blobRecord) return notionRecord;
+  if (!notionRecord) return blobRecord;
+  const notionTime = new Date(notionRecord.sourceUpdatedAt ?? '').getTime();
+  const blobTime = new Date(blobRecord.sourceUpdatedAt ?? '').getTime();
+  if (!Number.isFinite(notionTime)) return blobRecord;
+  if (!Number.isFinite(blobTime)) return notionRecord;
+  return notionTime > blobTime ? notionRecord : blobRecord;
+}
+
 export function createNotionCostProjectionSource({ fetchImpl = fetch, token = process.env.NOTION_TOKEN, dataSourceId = COST_DATA_SOURCE_ID } = {}) {
   return Object.freeze({
     async get() {
@@ -133,19 +150,36 @@ export function createNotionCostProjectionSource({ fetchImpl = fetch, token = pr
   });
 }
 
-export function createCostProjectionStore(store = getStore({ name: STORE_NAME, consistency: 'strong' }), notionSource = createNotionCostProjectionSource()) {
+export function createCostProjectionStore(
+  store = getStore({ name: STORE_NAME, consistency: 'strong' }),
+  notionSource = createNotionCostProjectionSource(),
+  { now = () => new Date().toISOString(), revalidateMs = DEFAULT_REVALIDATE_MS } = {},
+) {
+  let revalidation = null;
+  const persistChecked = async record => {
+    if (!record) return null;
+    const checked = { ...record, projectionCacheCheckedAt: now() };
+    await store.setJSON(STORE_KEY, checked);
+    return checked;
+  };
+  const revalidate = blobRecord => {
+    if (revalidation) return revalidation;
+    revalidation = (async () => {
+      let notionRecord = null;
+      try { notionRecord = await notionSource.get(); } catch { notionRecord = null; }
+      const selected = newestRecord(blobRecord, notionRecord);
+      return selected ? persistChecked(selected) : null;
+    })();
+    return revalidation.finally(() => { revalidation = null; });
+  };
   return Object.freeze({
     async get() {
-      const [blobRecord, notionRecord] = await Promise.all([
-        store.get(STORE_KEY, { type: 'json', consistency: 'strong' }),
-        notionSource.get(),
-      ]);
-      if (!blobRecord) return notionRecord;
-      if (!notionRecord) return blobRecord;
-      return new Date(notionRecord.sourceUpdatedAt).getTime() > new Date(blobRecord.sourceUpdatedAt).getTime() ? notionRecord : blobRecord;
+      const blobRecord = await store.get(STORE_KEY, { type: 'json', consistency: 'strong' });
+      if (blobRecord && isFreshCache(blobRecord, now(), revalidateMs)) return blobRecord;
+      return revalidate(blobRecord);
     },
     async put(projection) {
-      return store.setJSON(STORE_KEY, projection);
+      return persistChecked(projection);
     },
   });
 }
