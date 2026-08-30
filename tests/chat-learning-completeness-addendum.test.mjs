@@ -7,7 +7,7 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   const raw = await readFile('brain/learning/chat-completeness-addendum-2026-08-30.json', 'utf8');
   const addendum = JSON.parse(raw);
 
-  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.5');
+  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.6');
   assert.equal(addendum.completionGate.id, 'chat-learning-completeness-gate-v1');
 
   const fingerprints = new Map(addendum.failurePatterns.map(x => [x.id, x.fingerprint]));
@@ -20,6 +20,7 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   assert.equal(fingerprints.get('CREATE_429_AMBIGUOUS_MUTATION'), 'make|scenario-create|429-ambiguous-mutation-v1');
   assert.equal(fingerprints.get('MAKE_VALIDATOR_WARNING_PATH_INCONSISTENCY'), 'make|validator|required-field-path-warning-inconsistent-with-module-spec-v1');
   assert.equal(fingerprints.get('BLUEPRINT_OR_CI_GREEN_WITHOUT_RUNTIME_EVIDENCE'), 'make|promotion|blueprint-or-ci-green-without-runtime-evidence-v1');
+  assert.equal(fingerprints.get('MAKE_CAPACITY_EXHAUSTION_HARD_BOUNDARY'), 'make|capacity|team-paused-operations-or-data-transfer-limit-v1');
 
   const credit = addendum.failurePatterns.find(x => x.id === 'CONTROL_PLANE_CREDIT_STORM');
   for (const guard of [
@@ -58,6 +59,11 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   assert.match(promotion.requiredAction, /runtime evidence/);
   assert.match(promotion.regression, /blueprint or CI green alone/);
 
+  const capacity = addendum.failurePatterns.find(x => x.id === 'MAKE_CAPACITY_EXHAUSTION_HARD_BOUNDARY');
+  assert.match(capacity.requiredAction, /must not buy or increase paid capacity autonomously/i);
+  assert.match(capacity.requiredAction, /zero executions/i);
+  assert.match(capacity.regression, /staging remains inactive/i);
+
   for (const value of ['OK', 'OK.', 'healthy', 'NO_ACTION', 'no change', 'Geen actie', 'Geen wijzigingen.']) {
     const result = classifyMaterialOutcome(value);
     assert.equal(result.isMaterial, false, `${value} must be non-material`);
@@ -81,9 +87,12 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   assert.match(addendum.runtimeState.BG168.protectedInvariant, /Primary agent result delivery is independent/);
   assert.match(addendum.runtimeState.PH_AGENT_14_CANARY.status, /ROLLED_BACK_TO_PRE_MIGRATION_GREEN_TOPOLOGY/);
   assert.equal(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.scenarioId, 7165093);
-  assert.match(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.status, /INACTIVE_BLUEPRINT_VALIDATED_RUNTIME_NOT_YET_PROVEN/);
+  assert.match(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.status, /INACTIVE_BLUEPRINT_VALIDATED_RUNTIME_BLOCKED_BY_CAPACITY/);
   assert.match(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.topology, /NON_MATERIAL -> direct Return without BG168/);
   assert.equal(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.promotionContract, 'config/make-agent-learning-promotion.json');
+  assert.equal(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.latestRuntimeAttempt.executionStarted, false);
+  assert.equal(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.latestRuntimeAttempt.stagingExecutionsObserved, 0);
+  assert.equal(addendum.runtimeState.PH_AGENT_14_STAGING_CANARY.latestRuntimeAttempt.BG168ExecutionsObserved, 0);
 
   assert.ok(addendum.canonicalArtifacts.includes('config/make-agent-learning-promotion.json'));
   for (const path of addendum.canonicalArtifacts) {
@@ -103,6 +112,7 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
     'ambiguous state-changing connector responses require exact readback before any retry',
     'contradictory validator warnings are reconciled against authoritative module schema and exact readback before mutation',
     'shared materiality classification is deterministic, conservative and centrally tested',
-    'runtime behavior evidence is distinct from blueprint and CI evidence'
+    'runtime behavior evidence is distinct from blueprint and CI evidence',
+    'capacity exhaustion is a hard boundary and never authorizes autonomous paid capacity expansion'
   ]) assert.ok(addendum.completionGate.requirements.includes(required), `completion gate missing: ${required}`);
 });
