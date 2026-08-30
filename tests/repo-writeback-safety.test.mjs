@@ -28,14 +28,19 @@ function hasChangedFileInventory(workflow) {
   return diff && untracked;
 }
 
-test('content workflows validate and publish deterministically after AI generation', () => {
+test('content workflows validate deterministically and hand off only governed candidates after AI generation', () => {
   for (const path of ['.github/workflows/weekblog.yml', '.github/workflows/blog-bijwerken.yml']) {
     const workflow = contents[path];
     assert.match(workflow, /name: Deterministic (?:publication|update) contract checks/);
     assert.equal(hasChangedFileInventory(workflow), true, `${path} must inventory tracked and untracked changes deterministically`);
     assert.match(workflow, /name: Commit validated changes/);
-    assert.match(workflow, /name: Direct publiceren op huidige veilige pad/);
     assert.match(workflow, /name: Candidate branch publiceren/);
+    assert.match(workflow, /gh pr create/);
+    assert.match(workflow, /createWriterCandidate/);
+    assert.match(workflow, /default:\s*candidate-pr/);
+    assert.doesNotMatch(workflow, /name: Direct publiceren op huidige veilige pad/);
+    assert.doesNotMatch(workflow, /git push origin HEAD:main/);
+    assert.doesNotMatch(workflow, /gh\s+pr\s+merge/);
     assert.match(workflow, /git add --/);
     assert.doesNotMatch(workflow, /git add -A/);
     assert.doesNotMatch(workflow, /git push --force|git push -f/);
