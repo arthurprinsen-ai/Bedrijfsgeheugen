@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { computeMainProtectionReady } from '../scripts/brain/writer-certification-state.mjs';
+import { computeMainProtectionReady, computeWriterMigrationReady } from '../scripts/brain/writer-certification-state.mjs';
 
 const state = JSON.parse(fs.readFileSync('config/repository-writer-migration.json', 'utf8'));
 const expected = [
@@ -20,7 +20,7 @@ test('migration state covers every governed direct-main writer exactly once', ()
   assert.equal(new Set(names).size, names.length);
 });
 
-test('main protection cannot become ready before every writer has operational migration, parity, rollback and merge evidence', () => {
+test('writer migration readiness remains evidence-derived and distinct from live native protection', () => {
   const allReady = state.writers.every((writer) =>
     writer.candidateMode === 'operational_verified' &&
     writer.operationalCandidateVerified === true &&
@@ -28,12 +28,14 @@ test('main protection cannot become ready before every writer has operational mi
     writer.rollbackVerified === true &&
     writer.merged === true
   );
-  assert.equal(state.mainProtectionReady, allReady,
-    'mainProtectionReady must equal the evidence-derived writer readiness state');
-  assert.equal(state.mainProtectionReady, computeMainProtectionReady(state.writers));
+  assert.equal(state.writerMigrationReady, allReady,
+    'writerMigrationReady must equal the evidence-derived writer readiness state');
+  assert.equal(state.writerMigrationReady, computeWriterMigrationReady(state.writers));
+  assert.equal(state.mainProtectionReady, false,
+    'mainProtectionReady must remain false while native GitHub protection is absent');
 });
 
-test('operational verification alone can never unlock main protection without parity and rollback', () => {
+test('operational verification alone can never unlock writer migration readiness without parity and rollback', () => {
   const operationalOnly = state.writers.map((writer) => ({
     ...writer,
     candidateMode:'operational_verified',
@@ -49,7 +51,7 @@ test('operational verification alone can never unlock main protection without pa
   assert.equal(operationalOnly.every((writer) => writer.candidateMode === 'operational_verified'), true);
   assert.equal(operationalOnly.some((writer) => writer.parityVerified !== true), true);
   assert.equal(operationalOnly.some((writer) => writer.rollbackVerified !== true), true);
-  assert.equal(computeMainProtectionReady(operationalOnly), false);
+  assert.equal(computeWriterMigrationReady(operationalOnly), false);
 });
 
 test('prepared candidate PRs are not misrepresented as completed migration', () => {
