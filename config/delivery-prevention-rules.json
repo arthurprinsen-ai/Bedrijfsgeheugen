@@ -17,6 +17,7 @@
     {"id":"VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE","active":true,"enforcedBy":"bg196-bg169-runScenarioWithInputs-contract","scope":"automation"},
     {"id":"FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS","active":true,"enforcedBy":"main-protection-certifier-plus-external-platform-invariants","scope":"shared"},
     {"id":"ISOLATE_NEGATIVE_TEST_FIXTURES","active":true,"enforcedBy":"repository-protection-readiness-contract-tests","scope":"shared"},
-    {"id":"SINGLE_CANONICAL_WRITER_HANDOFF","active":true,"enforcedBy":"writer-shadow-to-central-gates-contract","scope":"shared"}
+    {"id":"SINGLE_CANONICAL_WRITER_HANDOFF","active":true,"enforcedBy":"writer-shadow-to-central-gates-contract","scope":"shared"},
+    {"id":"NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN","active":true,"enforcedBy":"agent-contract-plus-candidate-only-delivery-plus-main-push-shared-memory-guard","scope":"shared"}
   ]
 }
