@@ -1,0 +1,98 @@
+{
+  "version": "MAKE-COST-PORTFOLIO-v1",
+  "delivery_contract": "BRAIN-DELIVERY-v2",
+  "owner_agent": "agent-cost",
+  "sensor": "BG159",
+  "governor": "BG162",
+  "class_a_executor": "BG160",
+  "production_authority": "BG169",
+  "shared_learning_path": ["BG168", "BG166", "BG167"],
+  "candidate_limit": 1,
+  "selection_mode": "TWO_STAGE_CHEAP_THEN_DEEP",
+  "stage_1": {
+    "source": "existing_single_fleet_inventory",
+    "new_fleet_wide_detail_calls_allowed": false,
+    "eligible_state": "active",
+    "prefer_daily_baseline": true,
+    "exclude_generic_mutation_for_control_plane": true,
+    "ranking_inputs": [
+      "daily_credits",
+      "daily_operations",
+      "daily_transfer",
+      "schedule_actionability",
+      "protected_control_plane",
+      "evidence_completeness"
+    ]
+  },
+  "stage_2": {
+    "deep_candidate_limit": 1,
+    "evidence": [
+      "recent_executions",
+      "actual_webhook_deliveries_when_applicable",
+      "live_blueprint",
+      "credits_per_verified_outcome",
+      "latency_per_verified_outcome",
+      "actual_outcome_success_rate"
+    ]
+  },
+  "required_evidence": [
+    "credits_per_verified_outcome",
+    "protected_outcome_verification",
+    "exact_rollback_state",
+    "positive_net_savings"
+  ],
+  "retention_rule": "KEEP_ONLY_IF_POSITIVE_NET_SAVINGS_AND_PROTECTED_OUTCOMES_EQUAL_OR_BETTER",
+  "max_identical_retries_per_hypothesis": 2,
+  "allowed_actions": [
+    {
+      "id": "SAFE_POLLING_CHANGE",
+      "enabled": true,
+      "class": "A",
+      "requires_exact_precondition": true,
+      "requires_exact_rollback": true
+    },
+    {
+      "id": "SAFE_SCHEDULE_CHANGE",
+      "enabled": true,
+      "class": "A",
+      "requires_exact_precondition": true,
+      "requires_exact_rollback": true
+    },
+    {
+      "id": "DEDUPE_ROUTE_CHANGE",
+      "enabled": false,
+      "class": "UNPROVEN"
+    },
+    {
+      "id": "NO_OP_WRITE_PREVENTION",
+      "enabled": false,
+      "class": "UNPROVEN"
+    },
+    {
+      "id": "FILTER_REORDER",
+      "enabled": false,
+      "class": "UNPROVEN"
+    },
+    {
+      "id": "CACHE_PROJECTION_ACTIVATION",
+      "enabled": false,
+      "class": "SPECIAL_CONTRACT_ONLY"
+    }
+  ],
+  "hard_boundaries": [
+    "credentials_or_account_connection",
+    "permissions",
+    "security_control_weakening",
+    "destructive_or_irreversible_data",
+    "paid_resource_increase",
+    "legal_or_financial_commitment"
+  ],
+  "mission_control_policy": {
+    "scenario_ids": [7071153, 7152183, 7152314, 7152387, 7152400],
+    "generic_cost_mutation_allowed": false,
+    "free_form_rewrite_allowed": false,
+    "promotion_executor": "BG191",
+    "shadow_insert_known_failed": true,
+    "legacy_live_during_shadow": "1->2->3->6->4->5->8"
+  }
+}
