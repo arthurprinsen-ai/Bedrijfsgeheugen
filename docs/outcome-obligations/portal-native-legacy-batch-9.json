@@ -1,0 +1,10 @@
+{
+  "id":"portal-native-legacy-batch-9-safe-import",
+  "domain":"data_sync",
+  "expected":true,
+  "dueAt":"2026-08-30T23:59:59+02:00",
+  "ownerAgent":"Portal Migration Agent",
+  "evidencePolicy":"Regression tests green, exact deploy preview SHA ready, exact production merge SHA ready, import requires preview plus explicit confirmation and preserves last-known-good on failed server write.",
+  "idempotencyKey":"portal-native-legacy-batch-9-safe-import-v1",
+  "recoveryPolicy":"Keep Openen on compatibility bridge until native safe import candidate is green; on production regression rollback to last-known-good and continue on feature branch."
+}
