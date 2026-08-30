@@ -120,7 +120,7 @@ jobs:
           git diff --cached --quiet && { echo '::error::EMPTY_PARITY_EVIDENCE_COMMIT'; exit 22; }
           git commit -m 'BRAIN: record writer parity rollback evidence'
           branch="brain/writer-parity-evidence/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git push origin "HEAD:$branch"
+          git push origin "HEAD:refs/heads/$branch"
           gh pr create \
             --base main \
             --head "$branch" \
