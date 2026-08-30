@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { createFailureLesson, createPreflightDecision, createObservedFailure, normalizeFailureReason } from '../tools/delivery-learning.mjs';
 
 test('failed commit PR merge and pipeline outcomes become reusable deterministic lessons', () => {
@@ -37,4 +38,26 @@ test('an unclassified workflow failure is captured as observed Brain evidence, n
   assert.equal(observed.outcomeWritebackRequired, true);
   assert.equal(observed.requiresRootCauseResolution, true);
   assert.equal(observed.evidenceRef, 'github-run:123');
+});
+
+test('chat-proven failure classes are persisted as PROVEN lessons with active prevention rules', () => {
+  const lessonsDoc = JSON.parse(fs.readFileSync('docs/brain/delivery-failure-lessons.json', 'utf8'));
+  const rulesDoc = JSON.parse(fs.readFileSync('config/delivery-prevention-rules.json', 'utf8'));
+  const expectedRules = [
+    'CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS',
+    'REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN',
+    'CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES',
+    'CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE',
+    'FULLY_QUALIFY_DETACHED_HEAD_PUSH_REFSPEC',
+    'VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE',
+    'FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS',
+    'ISOLATE_NEGATIVE_TEST_FIXTURES',
+    'SINGLE_CANONICAL_WRITER_HANDOFF',
+  ];
+  const provenRules = new Set((lessonsDoc.lessons || []).filter((lesson) => lesson.status === 'PROVEN').map((lesson) => lesson.preventionRule));
+  const activeRules = new Set((rulesDoc.rules || []).filter((rule) => rule.active === true).map((rule) => rule.id));
+  for (const rule of expectedRules) {
+    assert.equal(provenRules.has(rule), true, `${rule} must be backed by a PROVEN lesson`);
+    assert.equal(activeRules.has(rule), true, `${rule} must be active in prevention registry`);
+  }
 });
