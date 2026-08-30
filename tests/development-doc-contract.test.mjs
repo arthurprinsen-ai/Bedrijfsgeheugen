@@ -73,6 +73,20 @@ test('canonical chat checkpoint carries current portal and memory-CI lessons', a
   ]) assert.ok(checkpoint.includes(token), `canonical chat checkpoint missing ${token}`);
 });
 
+test('canonical chat checkpoint rejects prototype views as implicit production baseline', async () => {
+  const checkpoint = await readFile('docs/learning/chat-learning-checkpoint-2026-08-30.md', 'utf8');
+  for (const token of [
+    'website|baseline|prototype-view-mistaken-for-production-route',
+    'PR #187',
+    'prototype/test view',
+    'never automatically a production route baseline',
+    'historical production commits',
+    'route files',
+    'sitemap',
+    'wrong business baseline'
+  ]) assert.ok(checkpoint.includes(token), `website baseline learning missing ${token}`);
+});
+
 test('Powerhouse chat learning checkpoint preserves cross-platform failure prevention', async () => {
   const [checkpoint, ledger] = await Promise.all([
     readFile('docs/powerhouse-chat-learning-checkpoint-2026-08-30.md', 'utf8'),
