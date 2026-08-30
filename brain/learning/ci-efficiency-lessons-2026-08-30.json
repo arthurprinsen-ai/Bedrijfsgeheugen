@@ -1,0 +1,18 @@
+{
+  "version": "BRAIN-CHAT-LEARNING-v1",
+  "source": "ci-efficiency-chat-2026-08-30",
+  "appendOnly": true,
+  "lessons": [
+    {
+      "id": "SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS",
+      "preventionRule": "SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS",
+      "fingerprint": "ci-trigger-scope-ownership-mismatch-v1",
+      "symptom": "An expensive artifact-specific workflow runs for unrelated changes because its trigger watches a broad directory instead of the files and runtime it actually owns.",
+      "rootCause": "Workflow trigger scope evolved independently from the workflow's consumed files and artifact ownership, so a convenient broad glob became an unnecessary deploy and browser-test fan-out.",
+      "failedApproach": "Keep broad directory triggers such as tools/** for convenience even when the workflow reads or executes only a small owned subset.",
+      "requiredAction": "Inventory the files the workflow actually reads, executes or validates; scope pull-request triggers to those owned paths plus the workflow/config paths required for self-canary, while preserving all substantive runtime assertions.",
+      "prevention": "Expensive deploy, browser and artifact-specific workflows must trigger only from semantically owned or consumed paths; unrelated changes must not invoke them.",
+      "evidenceRule": "A proven scope fix requires both sides: an unrelated Brain-only tool change creates no artifact-specific preview run, while a direct owned V18 tool or workflow change still triggers and passes the exact-head canary."
+    }
+  ]
+}
