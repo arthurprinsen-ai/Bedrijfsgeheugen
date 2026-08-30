@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { computeWriterMigrationReady } from './writer-certification-state.mjs';
 
 const write=process.argv.includes('--write');
 const evidenceDir='brain/evidence/writer-canary';
@@ -67,7 +68,8 @@ for(const file of files){
   if(before!==after) changed=true;
 }
 
-migration.mainProtectionReady=migration.writers.every(writer=>writer.structuralContractVerified===true&&writer.operationalCandidateVerified===true&&writer.parityVerified===true&&writer.rollbackVerified===true);
+migration.writerMigrationReady=computeWriterMigrationReady(migration.writers);
+delete migration.mainProtectionReady;
 const output=JSON.stringify(migration,null,2)+'\n';
 if(write) fs.writeFileSync(migrationPath,output);
-process.stdout.write(JSON.stringify({changed,mainProtectionReady:migration.mainProtectionReady,certified:migration.writers.filter(w=>w.operationalCandidateVerified).map(w=>w.name)})+'\n');
+process.stdout.write(JSON.stringify({changed,writerMigrationReady:migration.writerMigrationReady,certified:migration.writers.filter(w=>w.operationalCandidateVerified).map(w=>w.name)})+'\n');
