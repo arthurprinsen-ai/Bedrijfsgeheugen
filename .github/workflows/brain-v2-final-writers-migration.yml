@@ -38,7 +38,7 @@ jobs:
             tests/weekblog-writer-candidate-mode.test.mjs \
             tests/paginacontrole-writer-candidate-mode.test.mjs \
             tests/content-writer-operational-fixture.test.mjs
-          grep -R "git push origin HEAD:main" .github/workflows && exit 1 || true
+          grep -RE 'git[[:space:]]+push[[:space:]]+origin[[:space:]]+HEAD:main' .github/workflows && exit 1 || true
       - name: Commit migration to isolated lane
         run: |
           set -euo pipefail
