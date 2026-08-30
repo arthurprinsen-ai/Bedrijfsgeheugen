@@ -17,13 +17,8 @@
     "tests/development-doc-contract.test.mjs",
     ".github/workflows/"
   ],
-  "nonExecutableSharedPaths": [
-    "docs/learning/"
-  ],
-  "ignoredPaths": [
-    "docs/development-ledger-events/",
-    "docs/superpowers/plans/"
-  ],
+  "nonExecutableSharedPaths": ["docs/learning/"],
+  "ignoredPaths": ["docs/development-ledger-events/", "docs/superpowers/plans/"],
   "branchPolicy": {
     "strategy": "conflict-aware-independent-lanes",
     "createFrom": "current-main",
@@ -34,64 +29,25 @@
     "maxRebuildsForNonOverlappingDrift": 0
   },
   "conflictContracts": [
-    {
-      "id": "delivery-control-plane",
-      "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml", "docs/superpowers/specs/"]
-    },
-    {
-      "id": "platform-adapter-contract",
-      "paths": ["config/brain-platform-adapters.json", "brain/contracts/platform-adapter-v1.schema.json", "tests/brain-platform-adapters.test.mjs"]
-    },
-    {
-      "id": "brain-governance",
-      "paths": ["config/outcome-obligations.json", "docs/brain/component-registry.json"]
-    },
-    {
-      "id": "supabase-schema",
-      "paths": ["supabase/migrations/", "supabase/schema/", "supabase/schema.sql"]
-    },
-    {
-      "id": "make-contract",
-      "paths": ["make/contracts/", "automation/contracts/"]
-    },
-    {
-      "id": "notion-contract",
-      "paths": ["notion/contracts/"]
-    },
-    {
-      "id": "dataforseo-contract",
-      "paths": ["dataforseo/contracts/", "integrations/dataforseo/contracts/"]
-    },
-    {
-      "id": "netlify-routing",
-      "paths": ["netlify.toml", "netlify/redirects/"]
-    }
+    {"id":"delivery-control-plane","paths":["AGENTS.md","config/brain-delivery-system.json","brain/contracts/delivery-v2.schema.json","brain/production/continuous-delivery-v2.mjs","tools/brain-delivery-system.mjs",".github/workflows/unified-brain-delivery.yml","docs/superpowers/specs/"]},
+    {"id":"platform-adapter-contract","paths":["config/brain-platform-adapters.json","brain/contracts/platform-adapter-v1.schema.json","tests/brain-platform-adapters.test.mjs"]},
+    {"id":"brain-governance","paths":["config/outcome-obligations.json","docs/brain/component-registry.json"]},
+    {"id":"supabase-schema","paths":["supabase/migrations/","supabase/schema/","supabase/schema.sql"]},
+    {"id":"make-contract","paths":["make/contracts/","automation/contracts/"]},
+    {"id":"notion-contract","paths":["notion/contracts/"]},
+    {"id":"dataforseo-contract","paths":["dataforseo/contracts/","integrations/dataforseo/contracts/"]},
+    {"id":"netlify-routing","paths":["netlify.toml","netlify/redirects/"]}
   ],
   "lanes": [
     {
       "id": "backend",
       "owner": "agent-integration-make",
-      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/delivery-", "tests/supabase-", "tests/brain-", "tests/agent-fabric", "tests/branch-delivery-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-", "tests/chat-learning-", "tests/make-agent-learning-", "tests/make-agent-resume-"],
+      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/main-write-integrity.mjs", "tools/delivery-", "tests/supabase-", "tests/brain-", "tests/agent-fabric", "tests/branch-delivery-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-", "tests/chat-learning-", "tests/make-agent-learning-", "tests/make-agent-resume-"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
-    {
-      "id": "portal",
-      "owner": "agent-product-opportunity",
-      "paths": ["portal/", "tests/portal-", "klantportaal.html", "netlify/functions/portaalvraag.mjs", "netlify/functions/portal-state.mjs"],
-      "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
-    },
-    {
-      "id": "website",
-      "owner": "agent-website-ux",
-      "paths": ["components/", "assets/", "pages/", "site/", "blog/", "index.html", "styles.css", "script.js", "seo-status.json", "sitemap.xml", "data/regelgeving.json", "tests/live-preview-trigger-scope.test.mjs"],
-      "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
-    },
-    {
-      "id": "automation",
-      "owner": "agent-integration-make",
-      "paths": ["automation/", "make/", "notion/", "tests/delivery-"],
-      "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
-    }
+    {"id":"portal","owner":"agent-product-opportunity","paths":["portal/","tests/portal-","klantportaal.html","netlify/functions/portaalvraag.mjs","netlify/functions/portal-state.mjs"],"requiredContracts":["BG166","BG167","BG168","BG169"]},
+    {"id":"website","owner":"agent-website-ux","paths":["components/","assets/","pages/","site/","blog/","index.html","styles.css","script.js","seo-status.json","sitemap.xml","data/regelgeving.json","tests/live-preview-trigger-scope.test.mjs"],"requiredContracts":["BG166","BG167","BG168","BG169"]},
+    {"id":"automation","owner":"agent-integration-make","paths":["automation/","make/","notion/","tests/delivery-"],"requiredContracts":["BG166","BG167","BG168","BG169"]}
   ],
   "integration": {
     "owner": "agent-reliability",
@@ -99,36 +55,11 @@
     "independentPromotion": true,
     "exactShaRequired": true,
     "productionAuthority": "BG169",
-    "productionAuthorityContract": {
-      "id": "BG169",
-      "fallbackPolicy": "primary_then_verified_failover",
-      "failoverRequiresSameContract": true,
-      "ackIsExecutionProof": false,
-      "exactShaRequired": true,
-      "sameRepositoryRequired": true,
-      "rollbackRequired": true,
-      "executionProofRequired": true,
-      "transports": [
-        {"id": "make", "priority": 1, "mode": "primary"},
-        {"id": "github-native", "priority": 2, "mode": "verified-failover"}
-      ]
-    },
+    "productionAuthorityContract": {"id":"BG169","fallbackPolicy":"primary_then_verified_failover","failoverRequiresSameContract":true,"ackIsExecutionProof":false,"exactShaRequired":true,"sameRepositoryRequired":true,"rollbackRequired":true,"executionProofRequired":true,"transports":[{"id":"make","priority":1,"mode":"primary"},{"id":"github-native","priority":2,"mode":"verified-failover"}]},
     "outcomeRouter": "BG168",
     "currentStateProjection": "BG167",
     "errorLedger": "BG166"
   },
-  "platformAdapterContract": {
-    "version": "BRAIN-PLATFORM-ADAPTER-v1",
-    "registry": "config/brain-platform-adapters.json",
-    "schema": "brain/contracts/platform-adapter-v1.schema.json",
-    "requiredForExternalProduction": true,
-    "compatibilityMappingRequired": true,
-    "regressionContractRequired": true,
-    "unknownAdapterAction": "fail_closed"
-  },
-  "registration": {
-    "required": true,
-    "autoDiscover": true,
-    "appliesTo": ["app", "agent", "make_scenario", "github_workflow", "website", "portal", "backend", "service", "notion_projection", "supabase_adapter", "dataforseo_adapter", "netlify_platform", "external_integration"]
-  }
+  "platformAdapterContract": {"version":"BRAIN-PLATFORM-ADAPTER-v1","registry":"config/brain-platform-adapters.json","schema":"brain/contracts/platform-adapter-v1.schema.json","requiredForExternalProduction":true,"compatibilityMappingRequired":true,"regressionContractRequired":true,"unknownAdapterAction":"fail_closed"},
+  "registration": {"required":true,"autoDiscover":true,"appliesTo":["app","agent","make_scenario","github_workflow","website","portal","backend","service","notion_projection","supabase_adapter","dataforseo_adapter","netlify_platform","external_integration"]}
 }
