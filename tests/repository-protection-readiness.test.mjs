@@ -13,6 +13,19 @@ const expected = [
   'seo-controle',
   'weekblog',
 ].sort();
+const REQUIRED_CHECKS = ['Shared Agent Memory Tests', 'BRAIN delivery'];
+const CURRENT_MAIN_SHA = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
+function protectedEvidence(overrides = {}) {
+  return {
+    observed: true,
+    protected: true,
+    rulesetsCount: 1,
+    observedMainSha: CURRENT_MAIN_SHA,
+    requiredChecks: [...REQUIRED_CHECKS],
+    ...overrides,
+  };
+}
 
 test('migration state covers every governed direct-main writer exactly once', () => {
   const names = state.writers.map((writer) => writer.name).sort();
@@ -62,14 +75,8 @@ test('prepared candidate PRs are not misrepresented as completed migration', () 
 });
 
 test('writer readiness can never be misrepresented as live native main protection', () => {
-  const liveNativeProtection = {
-    observed: true,
-    protected: false,
-    rulesetsCount: 0,
-    observedMainSha: '8d7deda93fe400aa0aae129ceaf109abedb1cb2f',
-  };
   assert.equal(
-    computeMainProtectionReady(state.writers, liveNativeProtection),
+    computeMainProtectionReady(state.writers, protectedEvidence({ protected:false, rulesetsCount:0 }), { currentMainSha:CURRENT_MAIN_SHA, requiredChecks:REQUIRED_CHECKS }),
     false,
     'all writer migration proofs are insufficient while GitHub reports main as unprotected'
   );
@@ -77,15 +84,33 @@ test('writer readiness can never be misrepresented as live native main protectio
 
 test('missing native GitHub evidence always fails closed even when legacy migration state is green', () => {
   assert.equal(state.mainProtectionReady, true);
-  assert.equal(computeMainProtectionReady(state.writers), false);
+  assert.equal(computeMainProtectionReady(state.writers, undefined, { currentMainSha:CURRENT_MAIN_SHA, requiredChecks:REQUIRED_CHECKS }), false);
 });
 
-test('main protection readiness requires positive native GitHub protection evidence', () => {
-  const liveNativeProtection = {
-    observed: true,
-    protected: true,
-    rulesetsCount: 1,
-    observedMainSha: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-  };
-  assert.equal(computeMainProtectionReady(state.writers, liveNativeProtection), true);
+test('ruleset evidence is mandatory for native main protection readiness', () => {
+  assert.equal(
+    computeMainProtectionReady(state.writers, protectedEvidence({ rulesetsCount:0 }), { currentMainSha:CURRENT_MAIN_SHA, requiredChecks:REQUIRED_CHECKS }),
+    false
+  );
+});
+
+test('stale native protection evidence from an older main SHA always fails closed', () => {
+  assert.equal(
+    computeMainProtectionReady(state.writers, protectedEvidence({ observedMainSha:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' }), { currentMainSha:CURRENT_MAIN_SHA, requiredChecks:REQUIRED_CHECKS }),
+    false
+  );
+});
+
+test('missing required protection checks always fails closed', () => {
+  assert.equal(
+    computeMainProtectionReady(state.writers, protectedEvidence({ requiredChecks:['Shared Agent Memory Tests'] }), { currentMainSha:CURRENT_MAIN_SHA, requiredChecks:REQUIRED_CHECKS }),
+    false
+  );
+});
+
+test('main protection readiness requires fresh native GitHub protection, ruleset and required-check evidence', () => {
+  assert.equal(
+    computeMainProtectionReady(state.writers, protectedEvidence(), { currentMainSha:CURRENT_MAIN_SHA, requiredChecks:REQUIRED_CHECKS }),
+    true
+  );
 });
