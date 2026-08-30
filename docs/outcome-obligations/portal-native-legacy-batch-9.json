@@ -6,5 +6,19 @@
   "ownerAgent":"Portal Migration Agent",
   "evidencePolicy":"Regression tests green, exact deploy preview SHA ready, exact production merge SHA ready, import requires preview plus explicit confirmation and preserves last-known-good on failed server write.",
   "idempotencyKey":"portal-native-legacy-batch-9-safe-import-v1",
-  "recoveryPolicy":"Keep Openen on compatibility bridge until native safe import candidate is green; on production regression rollback to last-known-good and continue on feature branch."
+  "recoveryPolicy":"Keep Openen on compatibility bridge until native safe import candidate is green; on production regression rollback to last-known-good and continue on feature branch.",
+  "status":"COMPLETED",
+  "completedAt":"2026-08-30T08:41:29Z",
+  "evidence":{
+    "candidateSha":"f4e439d636ae7f24afee2d334cc74115103247a8",
+    "previewDeploy":"6a93ec4caeb12000081c3bae",
+    "mergeSha":"57ea61eabf6fd235d5d453492405e2f493697d00",
+    "productionDeploy":"6a93ec8a10b9ec0008aa42a7",
+    "netlifyState":"ready",
+    "redirectRules":75,
+    "headerRules":16,
+    "functions":7,
+    "edgeFunctions":1,
+    "secretMatches":0
+  }
 }
