@@ -6,16 +6,15 @@ on:
   workflow_dispatch:
     inputs:
       slug:
-        description: 'Optioneel: publiceer exact deze goedgekeurde centrale slug'
+        description: 'Optioneel: verwerk exact deze goedgekeurde centrale slug'
         required: false
         default: ''
       delivery_mode:
-        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        description: 'BRAIN v2 staat alleen gecontroleerde candidate PR delivery toe'
         type: choice
         required: true
-        default: direct
+        default: candidate-pr
         options:
-          - direct
           - candidate-pr
       verification_mode:
         description: 'Gebruik uitsluitend de lokale operationele verificatie-fixture; nooit productiecontent'
@@ -49,15 +48,11 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           FORCE_SLUG: ${{ github.event.inputs.slug }}
           VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
+          DELIVERY_MODE: candidate-pr
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
           set -euo pipefail
           if [ "$VERIFICATION_MODE" = "true" ]; then
-            if [ "$DELIVERY_MODE" != "candidate-pr" ]; then
-              echo "::error::VERIFICATION_REQUIRES_CANDIDATE_PR"
-              exit 1
-            fi
             target="blog/writer-verification-approved-central/index.html"
             mkdir -p "$(dirname "$target")"
             cat > "$target" <<'HTML'
@@ -118,12 +113,11 @@ jobs:
           print('CONTRACT_OK', article[0], m.group(1), changed)
           PY
 
-      - name: Commit validated changes
+      - name: Commit validated candidate
         id: commit
         if: steps.render.outputs.changed == 'true'
         env:
           BASE_SHA: ${{ steps.base.outputs.sha }}
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
           set -euo pipefail
           mapfile -t changed < /tmp/validated-approved-blog-files
@@ -133,10 +127,8 @@ jobs:
             [ -n "$path" ] && git add -- "$path"
           done
           git commit -m "blog: publish approved central article"
-
-          if [ "$DELIVERY_MODE" = "candidate-pr" ]; then
-            export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
-            CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+          CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
           import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
           const files = String(process.env.CHANGED_FILES || '').split('\n').filter(Boolean).sort();
           const candidate = createWriterCandidate({
@@ -150,28 +142,11 @@ jobs:
           validateWriterCandidate(candidate);
           console.log(candidate.branch);
           NODE
-            )
-            echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
-            echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
-          else
-            echo "delivery=direct" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Direct publiceren op huidige veilige pad
-        if: steps.render.outputs.changed == 'true' && steps.commit.outputs.delivery == 'direct'
-        run: |
-          set -euo pipefail
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            git pull --rebase origin main
-          done
-          echo "::error::Push faalde na drie begrensde pogingen"
-          exit 1
+          )
+          echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
 
       - name: Candidate branch publiceren
-        if: steps.render.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        if: steps.render.outputs.changed == 'true'
         env:
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
         run: |
@@ -179,7 +154,8 @@ jobs:
           git push origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
-        if: steps.render.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        id: pr
+        if: steps.render.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
@@ -189,22 +165,24 @@ jobs:
           existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
             echo "Candidate PR bestaat al: #$existing"
+            echo "number=$existing" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          gh pr create \
+          url=$(gh pr create \
             --base main \
             --head "$CANDIDATE_BRANCH" \
             --title "Approved blog candidate $GITHUB_RUN_ID" \
-            --body "Gecontroleerde candidate uit approved-central-blog. Base SHA: $BASE_SHA. De Notion-queue is nog niet als dispatched gemarkeerd; dat gebeurt uitsluitend op het bestaande directe productiepad. Deze workflow merge't zichzelf niet."
+            --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn. De Notion queue blijft Pending totdat productie-uitkomst aantoonbaar is verwerkt.")
+          number=${url##*/}
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+          echo "Candidate PR geopend: $url"
 
-      - name: Mark queue dispatched after successful direct push
-        if: steps.render.outputs.changed == 'true' && steps.commit.outputs.delivery == 'direct'
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          QUEUE_PAGE: ${{ steps.render.outputs.queue_page }}
-          DISPATCH_ATTEMPT: ${{ steps.render.outputs.dispatch_attempt }}
-          RUN_ID: ${{ github.run_id }}
-          PYTHONDONTWRITEBYTECODE: '1'
+      - name: BRAIN v2 handoff evidence
+        if: steps.render.outputs.changed == 'true'
         run: |
-          set -euo pipefail
-          python3 -B scripts/publish_approved_blog_v2.py --mark-dispatched "$QUEUE_PAGE" "$DISPATCH_ATTEMPT" "$RUN_ID"
+          echo "candidate_sha=$(git rev-parse HEAD)"
+          echo "candidate_branch=${{ steps.commit.outputs.candidate_branch }}"
+          echo "candidate_pr=${{ steps.pr.outputs.number }}"
+          echo "production_authority=BG169"
+          echo "queue_dispatch_state=pending_until_production_proof"
+          echo "direct_main_push=false"

@@ -1,21 +1,19 @@
 name: Regelgeving bijwerken
 
 # De compliance-datums op /frisse-blik moeten altijd kloppen. Deze workflow zoekt
-# elke maandag de actuele stand op en commit die naar data/regelgeving.json, dat de
-# pagina bij het laden inleest. Faalt de run, dan mailt GitHub dat naar de eigenaar.
+# elke maandag de actuele stand op en levert onder BRAIN v2 uitsluitend een candidate PR.
 
 on:
   schedule:
-    - cron: '30 4 * * 1'   # elke maandag 04:30 UTC
+    - cron: '30 4 * * 1'
   workflow_dispatch:
     inputs:
       delivery_mode:
-        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        description: 'BRAIN v2 staat alleen gecontroleerde candidate PR delivery toe'
         type: choice
         required: true
-        default: direct
+        default: candidate-pr
         options:
-          - direct
           - candidate-pr
 
 permissions:
@@ -51,7 +49,6 @@ jobs:
         id: commit
         env:
           BASE_SHA: ${{ steps.base.outputs.sha }}
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
           set -euo pipefail
           changed=$(git diff --name-only)
@@ -71,8 +68,7 @@ jobs:
           git add data/regelgeving.json
           git commit -m "Regelgeving bijgewerkt (AI Act, NIS2, GPAI)"
 
-          if [ "$DELIVERY_MODE" = "candidate-pr" ]; then
-            CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
           import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
           const candidate = createWriterCandidate({
             writer: 'regelgeving-bijwerken',
@@ -85,23 +81,12 @@ jobs:
           validateWriterCandidate(candidate);
           console.log(candidate.branch);
           NODE
-            )
-            echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
-            echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
-          else
-            echo "delivery=direct" >> "$GITHUB_OUTPUT"
-          fi
+          )
+          echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
-      - name: Direct publiceren op huidige veilige pad
-        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'direct'
-        run: |
-          set -euo pipefail
-          git pull --rebase origin main
-          git push origin HEAD:main
-
       - name: Candidate branch publiceren
-        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        if: steps.commit.outputs.changed == 'true'
         env:
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
         run: |
@@ -109,7 +94,7 @@ jobs:
           git push origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
-        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
@@ -125,7 +110,7 @@ jobs:
             --base main \
             --head "$CANDIDATE_BRANCH" \
             --title "Regelgeving candidate $GITHUB_RUN_ID" \
-            --body "Gecontroleerde candidate uit regelgeving-bijwerken. Base SHA: $BASE_SHA. Deze workflow merge't zichzelf niet; normale repositorygates beslissen over promotie."
+            --body "BRAIN-DELIVERY-v2 candidate uit regelgeving-bijwerken. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit."
 
       - name: Ouderdom bewaken
         run: |
@@ -136,3 +121,9 @@ jobs:
             echo "::error::De regelgeving op /frisse-blik is $DAGEN dagen niet gecontroleerd."
             exit 1
           fi
+
+      - name: BRAIN v2 handoff evidence
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          echo "production_authority=BG169"
+          echo "direct_main_push=false"

@@ -1,0 +1,15 @@
+{
+  "date": "2026-08-30",
+  "type": "RECOVERY",
+  "fingerprint": "brain-v2|repo-writer|direct-main-push-bypass",
+  "symptom": "approved-central-blog workflow could push HEAD directly to main and BG193 dispatched delivery_mode=direct",
+  "impact": "GitHub-backed production change could bypass BG169 and exact candidate promotion",
+  "root_cause": "legacy writer delivery path predated BRAIN-DELIVERY-v2",
+  "fix": "BG193 now dispatches candidate-pr; approved-central-blog is candidate-only, opens a PR, never pushes or merges main directly",
+  "prevention": "tests/repo-writer-v2-no-direct-main.test.mjs scans workflows for explicit HEAD:main push bypass and asserts candidate-only approved blog delivery",
+  "owner_agent": "agent-reliability",
+  "production_authority": "BG169",
+  "learning_router": "BG168",
+  "context_projection": "BG167",
+  "status": "CANDIDATE"
+}
