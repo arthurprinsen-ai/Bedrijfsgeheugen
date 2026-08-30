@@ -25,7 +25,7 @@ test('missing strategic destination is blocked', async () => {
 });
 
 test('exact keyword anchor may not point to the wrong owner', async () => {
-  const broken = canonical.replace('>Data-soevereiniteit</a>', 'href="/over-ons">data soevereiniteit</a>');
+  const broken = canonical.replace('<a href="/data-soevereiniteit">Data-soevereiniteit</a>', '<a href="/over-ons">data soevereiniteit</a>');
   const errors = await validateFooterSeo({ footerHtml: broken, contract, seo, routeExists: async () => true });
   assert.ok(errors.some(x => x.includes('exact-anchor-wrong-owner')));
 });
