@@ -6,6 +6,8 @@
     {"id":"BOUNDED_GITHUB_PUBLIC_PROOF","active":true,"enforcedBy":"approved-publish-verification-contract","scope":"shared"},
     {"id":"CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST","active":true,"enforcedBy":"targeted-plus-integrated-test-gates","scope":"portal"},
     {"id":"REFRESH_BASE_BEFORE_FINAL_GATE","active":true,"enforcedBy":"unified-brain-delivery-current-main-check","scope":"shared"},
-    {"id":"BLOCK_WRITER_CANARY_WHEN_ACTIONS_PR_CREATION_DISABLED","active":true,"enforcedBy":"repository-writer-migration-boundary","scope":"shared"}
+    {"id":"BLOCK_WRITER_CANARY_WHEN_ACTIONS_PR_CREATION_DISABLED","active":true,"enforcedBy":"repository-writer-migration-boundary","scope":"shared"},
+    {"id":"EXPLICIT_WRITER_SHADOW_DISPATCH","active":true,"enforcedBy":"repository-writer-shadow-contract","scope":"shared"},
+    {"id":"BIND_SHADOW_TO_ACTUAL_PR_IDENTITY","active":true,"enforcedBy":"repository-writer-shadow-contract","scope":"shared"}
   ]
 }
