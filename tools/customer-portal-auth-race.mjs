@@ -24,17 +24,46 @@ const GUARDED_HANDLER = `  const bl=document.getElementById('btnLogin');
 const LOGIN_FUNCTION_START = `  function toonInlog(s) {`;
 const PREVIOUS_CUSTOMER_LOGIN_BRIDGE = `  window.__bgCustomerLogin = function(){ var s=slug(); if(s) toonInlog(s); };\n\n  function toonInlog(s) {`;
 const CUSTOMER_LOGIN_BRIDGE = `  var AUTH_STORE = 'bg_customer_auth';
+  var AUTH_COOKIE = 'bg_customer_auth';
+
+  function schrijfCookieAuth(sessie) {
+    try {
+      var waarde = encodeURIComponent(JSON.stringify(sessie));
+      document.cookie = AUTH_COOKIE + '=' + waarde + '; Path=/; Max-Age=2592000; SameSite=Lax; Secure';
+    } catch (e) {}
+  }
+
+  function leesCookieAuth() {
+    try {
+      var delen = document.cookie.split(';');
+      for (var i=0; i<delen.length; i++) {
+        var deel = delen[i].trim();
+        if (deel.indexOf(AUTH_COOKIE + '=') === 0) return JSON.parse(decodeURIComponent(deel.slice(AUTH_COOKIE.length + 1)));
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function wisCookieAuth() {
+    try { document.cookie = AUTH_COOKIE + '=; Path=/; Max-Age=0; SameSite=Lax; Secure'; } catch (e) {}
+  }
 
   function bewaarAuth(sessie) {
     try { localStorage.setItem(AUTH_STORE, JSON.stringify(sessie)); } catch (e) {}
+    schrijfCookieAuth(sessie);
   }
 
   function leesAuth() {
-    try { return JSON.parse(localStorage.getItem(AUTH_STORE) || 'null'); } catch (e) { return null; }
+    try {
+      var lokaal = JSON.parse(localStorage.getItem(AUTH_STORE) || 'null');
+      if (lokaal) return lokaal;
+    } catch (e) {}
+    return leesCookieAuth();
   }
 
   function wisAuth() {
     try { localStorage.removeItem(AUTH_STORE); } catch (e) {}
+    wisCookieAuth();
   }
 
   function openKlant(sessie, s, mail) {
@@ -147,9 +176,7 @@ export function repairCustomerPortalAuth(html) {
     repaired = repaired.replace(OLD_LOGIN_FALLBACK, RESTORING_LOGIN_FALLBACK);
   }
 
-  if (!repaired.includes(PERSISTENT_LOGOUT_HANDLER) && repaired.includes(OLD_LOGOUT_HANDLER)) {
-    repaired = repaired.replace(OLD_LOGOUT_HANDLER, PERSISTENT_LOGOUT_HANDLER);
-  }
+  if (!repaired.includes(PERSISTENT_LOGOUT_HANDLER) && repaired.includes(OLD_LOGOUT_HANDLER)) repaired = repaired.replace(OLD_LOGOUT_HANDLER, PERSISTENT_LOGOUT_HANDLER);
 
   if (!repaired.includes(NETLIFY_CONTROLLER_BYPASS)) {
     const occurrences = repaired.split(NETLIFY_CONTROLLER_START).length - 1;
@@ -157,9 +184,7 @@ export function repairCustomerPortalAuth(html) {
     repaired = repaired.replace(NETLIFY_CONTROLLER_START, NETLIFY_CONTROLLER_BYPASS);
   }
 
-  if (!repaired.includes(GUARDED_HANDLER) || !repaired.includes(CUSTOMER_LOGIN_BRIDGE) || !repaired.includes(OPEN_CUSTOMER_SUCCESS) || !repaired.includes(RESTORING_LOGIN_FALLBACK) || !repaired.includes(NETLIFY_CONTROLLER_BYPASS)) {
-    throw new Error('Customer portal auth repair was not fully applied');
-  }
+  if (!repaired.includes(GUARDED_HANDLER) || !repaired.includes(CUSTOMER_LOGIN_BRIDGE) || !repaired.includes(OPEN_CUSTOMER_SUCCESS) || !repaired.includes(RESTORING_LOGIN_FALLBACK) || !repaired.includes(NETLIFY_CONTROLLER_BYPASS)) throw new Error('Customer portal auth repair was not fully applied');
   return repaired;
 }
 
