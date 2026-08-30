@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { computeMainProtectionReady } from './writer-certification-state.mjs';
+import { computeWriterMigrationReady } from './writer-certification-state.mjs';
 
 const evidencePath='brain/evidence/writer-canary/paginacontrole-operational-certification.json';
 assert.ok(fs.existsSync(evidencePath),'paginacontrole writer certification evidence must exist');
@@ -51,7 +51,8 @@ if(pageWriter.parityVerified){
   assert.equal(pageWriter.parityRollbackEvidence?.outcome_router,'BG168');
   assert.equal(pageWriter.parityRollbackEvidence?.current_state_projection,'BG167');
 }
-assert.equal(migration.mainProtectionReady,computeMainProtectionReady(migration.writers),'mainProtectionReady must be derived from all writer proof dimensions');
+assert.equal(migration.writerMigrationReady,computeWriterMigrationReady(migration.writers),'writerMigrationReady must be derived from all writer proof dimensions');
+assert.equal(Object.hasOwn(migration,'mainProtectionReady'),false,'native main protection must never be inferred from writer migration evidence');
 
 const reconcileScript='scripts/brain/reconcile-writer-certifications.mjs';
 const reconcileWorkflow='.github/workflows/writer-certification-reconcile.yml';
@@ -67,4 +68,4 @@ assert.match(workflow,/brain\/evidence\/writer-canary\/\*\.json/);
 assert.match(workflow,/reconcile-writer-certifications\.mjs --write/);
 assert.doesNotMatch(workflow,/git push origin HEAD:main|git push origin main/);
 
-console.log('PASS writer certification readiness is derived from independent BG168/BG167 and parity/rollback proof state');
+console.log('PASS writer certification readiness is derived from independent BG168/BG167 and parity/rollback proof state without claiming native protection');
