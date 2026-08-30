@@ -93,7 +93,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
-          mapfile -t changed < <(git diff --name-only | sed '/^$/d' | sort -u)
+          mapfile -t changed < <(git status --porcelain --untracked-files=all | sed -E 's/^.. //' | sed '/^$/d' | sort -u)
           test "${#changed[@]}" -ge 8
           for file in "${changed[@]}"; do
             case "$file" in
