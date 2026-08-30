@@ -1,0 +1,25 @@
+{
+  "type": "brain-learning-extension",
+  "version": "agent-chat-learning-runtime-gate-2026-08-31",
+  "status": "PROVEN",
+  "scope": "shared-agent-runtime",
+  "fingerprint": "agent-fabric|chat-learning|policy-without-runtime-execution-gate",
+  "symptom": "Chat-learning policy and AGENTS preflight instructions can be present while the central Agent Fabric still permits FixPrepared or WaitingApproval to transition into Executing without a verified READY learning packet.",
+  "rootCause": "A documentation or caller-discipline contract is advisory unless the existing runtime owner enforces the same invariant at the material execution boundary.",
+  "failedApproach": "Rely on AGENTS.md or individual callers to remember the preflight, or create a second execution gateway or parallel memory store to compensate.",
+  "provenFix": "Gate FixPrepared/WaitingApproval -> Executing inside the existing Agent Fabric on BRAIN-CHAT-LEARNING-PREFLIGHT-v1; fail closed on missing provider, provider failure, incompatible version or invalid source-hash evidence, and wire the canonical compiler through createDefaultAgentFabric.",
+  "prevention": "Every material AgentWork execution must pass the canonical READY chat-learning preflight in the existing Agent Fabric owner; intake and read-only investigation may continue, but execution cannot. Persist only compact contract/version/source-hash/fingerprint evidence and never duplicate the memory or execution truth.",
+  "preventionRule": "REQUIRE_READY_CHAT_LEARNING_AT_AGENT_EXECUTION_BOUNDARY",
+  "regressionGuards": [
+    "tests/agent-fabric.test.mjs",
+    "tests/agent-fabric-team-memory.test.mjs",
+    "tests/brain-chat-learning-complete.test.mjs",
+    "tests/agent-chat-learning-runtime-gate-guard.test.mjs"
+  ],
+  "evidence": [
+    "RED: Shared Agent Memory proved execution succeeded without a preflight before the runtime gate existed.",
+    "GREEN: Shared Agent Memory proved missing/provider/version failures block before mutation and READY stores only compact evidence.",
+    "GREEN: createDefaultAgentFabric automatically injects the canonical filesystem-bounded compiler."
+  ],
+  "applyToFutureWork": true
+}
