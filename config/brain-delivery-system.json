@@ -22,11 +22,41 @@
     "strategy": "conflict-aware-independent-lanes",
     "createFrom": "current-main",
     "rebuildOnMainDrift": false,
-    "syncRequiredWhen": ["merge-conflict", "changed-path-overlap", "declared-dependency-conflict"],
+    "syncRequiredWhen": ["merge-conflict", "changed-path-overlap", "declared-contract-overlap", "declared-dependency-conflict"],
     "nonOverlappingDriftAction": "keep-tested-candidate",
     "preferredWriteMode": "atomic-tree-commit",
     "maxRebuildsForNonOverlappingDrift": 0
   },
+  "conflictContracts": [
+    {
+      "id": "delivery-control-plane",
+      "paths": ["AGENTS.md", "config/brain-delivery-system.json", "docs/superpowers/specs/", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml"]
+    },
+    {
+      "id": "brain-governance",
+      "paths": ["config/outcome-obligations.json", "docs/brain/component-registry.json"]
+    },
+    {
+      "id": "supabase-schema",
+      "paths": ["supabase/migrations/", "supabase/schema/"]
+    },
+    {
+      "id": "make-contract",
+      "paths": ["make/contracts/", "automation/contracts/"]
+    },
+    {
+      "id": "notion-contract",
+      "paths": ["notion/contracts/"]
+    },
+    {
+      "id": "dataforseo-contract",
+      "paths": ["dataforseo/contracts/", "integrations/dataforseo/contracts/"]
+    },
+    {
+      "id": "netlify-routing",
+      "paths": ["netlify.toml", "netlify/redirects/"]
+    }
+  ],
   "lanes": [
     {
       "id": "backend",
