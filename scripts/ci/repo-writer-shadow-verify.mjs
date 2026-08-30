@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { validateWriterPaths } from './repo-writer-policy.mjs';
 
-const headRef = String(process.env.GITHUB_HEAD_REF || '').trim();
+const headRef = String(process.env.REPO_WRITER_HEAD_REF || process.env.GITHUB_HEAD_REF || '').trim();
 const baseSha = String(process.env.GITHUB_PR_BASE_SHA || '').trim();
 const headSha = String(process.env.GITHUB_PR_HEAD_SHA || '').trim();
 const evidencePath = String(process.env.REPO_WRITER_EVIDENCE_PATH || 'artifacts/repo-writer-shadow-evidence.json').trim();
