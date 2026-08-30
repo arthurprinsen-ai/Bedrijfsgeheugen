@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+// RED trigger: the contract file and mandatory agent preflight do not exist yet on this candidate.
 const requiredLessonIds = [
   'MAKE_DATASTORE_READ_LIST_NOT_SINGLE_KEY_GET',
   'READBACK_AFTER_AMBIGUOUS_MUTATION_ERROR',
