@@ -152,7 +152,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run blog-bijwerken.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
+          gh workflow run blog-bijwerken.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr -f verification_mode=true
 
   dispatch-weekblog-candidate:
     if: startsWith(github.head_ref, 'verify/weekblog-') && github.event.pull_request.head.repo.full_name == github.repository
