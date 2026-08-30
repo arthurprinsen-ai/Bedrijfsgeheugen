@@ -1,12 +1,13 @@
 {
-  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.4",
+  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.5",
   "date": "2026-08-30",
   "purpose": "Bind all durable learnings from the Make credit-storm recovery thread into one machine-readable preflight surface.",
   "canonicalArtifacts": [
     "docs/learning/make-control-plane-credit-storm-2026-08-30.md",
     "brain/learning/incidents/make-control-plane-credit-storm-2026-08-30.json",
     "brain/learning/incidents/connector-mutation-tool-routing-misfire-2026-08-30.json",
-    "brain/guards/material-outcome-classifier.mjs"
+    "brain/guards/material-outcome-classifier.mjs",
+    "config/make-agent-learning-promotion.json"
   ],
   "failurePatterns": [
     {
@@ -72,6 +73,15 @@
       "rootCause": "Make create-time warning paths can be inconsistent with the authoritative module schema or saved blueprint representation.",
       "requiredAction": "Do not auto-rewrite a valid mapper field into parameters based only on this warning. Compare warning path against module_spec and exact saved module readback. Keep runtime verification separate; a schema-warning inconsistency is not itself proof that execution is healthy.",
       "regression": "Agents must not mutate a module into a schema-invalid shape merely to silence a contradictory warning."
+    },
+    {
+      "id": "BLUEPRINT_OR_CI_GREEN_WITHOUT_RUNTIME_EVIDENCE",
+      "fingerprint": "make|promotion|blueprint-or-ci-green-without-runtime-evidence-v1",
+      "symptom": "A Make staging blueprint and its repository CI can both be green while the required runtime behavior, downstream-call count, failure fallback and credit slope are still unproven.",
+      "rootCause": "Static blueprint validity and repository CI were at risk of being treated as equivalent to production/runtime outcome evidence.",
+      "failedApproach": "Promote a caller-side BG168 materiality change merely because scenario_get/module_get and repository tests are green.",
+      "requiredAction": "Keep promotion fail-closed under config/make-agent-learning-promotion.json until all required runtime evidence is proven on the exact staging identity, including zero BG168 calls for non-material outcomes, exact primary result preservation, material dispatch evidence, learning-failure fallback and bounded credit cost.",
+      "regression": "No production promotion is allowed from blueprint or CI green alone; missing runtime evidence keeps promotionAllowed=false and state=BLOCKED_PENDING_RUNTIME_EVIDENCE."
     }
   ],
   "runtimeState": {
@@ -100,10 +110,12 @@
       "topology": "AI -> deterministic materiality classifier -> IfElse; MATERIAL -> BG168 -> Return; BG168 error -> Return; NON_MATERIAL -> direct Return without BG168",
       "readbackEvidence": "scenario_get and scenario_module_get confirm both branches return the exact original answer and only the material branch contains BG168 scenario 7136176.",
       "classifier": "brain/guards/material-outcome-classifier.mjs",
+      "promotionContract": "config/make-agent-learning-promotion.json",
       "runtimeProofStillRequired": [
         "NO_ACTION or OK produces exact primary result and zero BG168 calls",
         "material output may call BG168 and still returns exact primary result",
-        "learning failure does not suppress primary result"
+        "learning failure does not suppress primary result",
+        "credit cost remains bounded versus baseline"
       ]
     }
   },
@@ -123,7 +135,8 @@
       "multi-step structural migrations are atomic or every intermediate state is independently safe",
       "ambiguous state-changing connector responses require exact readback before any retry",
       "contradictory validator warnings are reconciled against authoritative module schema and exact readback before mutation",
-      "shared materiality classification is deterministic, conservative and centrally tested"
+      "shared materiality classification is deterministic, conservative and centrally tested",
+      "runtime behavior evidence is distinct from blueprint and CI evidence"
     ],
     "terminalRule": "A chat/run is not fully green while material learnings exist only in conversation text or while a discovered prevention gap is silently dropped."
   }
