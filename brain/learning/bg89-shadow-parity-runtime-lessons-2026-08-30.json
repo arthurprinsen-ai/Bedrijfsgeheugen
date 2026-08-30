@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "type": "POWERHOUSE_SHADOW_PARITY_RUNTIME_LEARNING",
+  "date": "2026-08-30",
+  "scope": ["make", "notion", "shadow-migration", "schema", "parity", "cost"],
+  "lessons": [
+    {
+      "id": "GENERATED_MAKE_MAPPINGS_MUST_NOT_PREVALIDATE_IN_GENERATOR",
+      "fingerprint": "make|blueprint-generator|future-mapping-token-prevalidation",
+      "symptom": "A temporary blueprint transformer cannot initialize and reports multiple scenario validation problems before its generator code executes.",
+      "rootCause": "The generator's JavaScript source contained literal future mappings such as {{10.body}}, {{11.result.properties}} and {{12.result}}. Make parsed those tokens as mappings of the CURRENT generator scenario, where modules 10/11/12 do not exist.",
+      "failedApproach": "Embed literal {{futureModule.field}} tokens directly inside code that is itself stored in a Make mapper.",
+      "fix": "Construct future mapping tokens only at runtime, e.g. by concatenating brace characters and module/path strings. Keep current-scenario mappings literal only when the referenced module actually exists in the generator.",
+      "evidence": "TMP BG89 blueprint reader 7164847 previously failed run 7864154d78cc4a94a5805b6b4e8e5851 with four blueprint validation problems. After replacing literal future mapping tokens with runtime string construction, execution addaff55c3fd4d0498f727e096bab80c succeeded and returned PARITY_BLUEPRINT_READY with scorer code lengths 10145 and 3254.",
+      "prevention": "Generated Make blueprints must separate generator-time mappings from generated-scenario mappings; regression-test the generator itself before creating the target scenario."
+    },
+    {
+      "id": "SCORER_PROJECTION_MUST_INTERSECT_CURRENT_SCHEMA",
+      "fingerprint": "notion|projection|legacy-property-breaks-filter-properties",
+      "symptom": "A field-projected Notion query returns 400 malformed schema because a scorer dependency refers to a property no longer present in the current data-source schema.",
+      "rootCause": "Production scoring code can contain legacy/fallback property names even when the live Notion schema has evolved. Blindly converting every get('field') dependency into filter_properties[] treats code dependencies as proof of current schema existence.",
+      "failedApproach": "Build projection directly from scorer source references without validating each property against the current Notion data-source schema.",
+      "fix": "Compute projection = scorer dependencies intersect current schema properties, then add only current identity/idempotency fields. Missing legacy dependencies remain null/fallback at runtime exactly as production already experiences them.",
+      "evidence": "BG89 62/64 scorer dependency extraction plus live Datahub schema read found 437 properties and exactly one missing legacy dependency: Action Score. Including it caused execution 8a74d36936f6461c8c33698f9d914cec to fail 400. Removing only that proven missing property produced execution 86c800afaa6d46328cdf471734cb8ea2: 5 bounded eligible records, 2 ops, 3 credits, 45635 bytes, no writes.",
+      "prevention": "Every generated Notion field projection performs dependency ∩ current-schema validation before canary or production promotion."
+    },
+    {
+      "id": "EXACT_SCORER_PARITY_USES_PRODUCTION_BLUEPRINT_SOURCE",
+      "fingerprint": "shadow|parity|manual-formula-copy-drift",
+      "symptom": "A cost shadow migration risks silently changing business scoring when long deterministic formulas are manually copied or reconstructed from truncated connector output.",
+      "rootCause": "Large scorer modules are too error-prone to retype and connector summaries may truncate their source.",
+      "failedApproach": "Manually reconstruct the 10k+ character scoring formula from snippets or memory.",
+      "fix": "Read the exact current production blueprint through Make /v2/scenarios/{id}/blueprint, copy the scorer modules byte-for-byte into an isolated no-write parity scenario, and change only their input source/mappings required for shadow testing.",
+      "evidence": "Production BG89 module 2 code length 10145 and module 5 code length 3254 were extracted from the official blueprint. Transformer execution addaff55c3fd4d0498f727e096bab80c generated an exact no-write parity blueprint, and Make created inactive on-demand scenario 7164938 from it.",
+      "prevention": "For long business-rule modules, source parity is blueprint-derived and code-length/hash checked; no manual rewrite is accepted as parity evidence."
+    }
+  ],
+  "protected_rule": "Shadow scenarios stay no-write and inactive/on-demand until exact output parity is proven on representative real records. Production ownership does not move on read/query success alone."
+}
