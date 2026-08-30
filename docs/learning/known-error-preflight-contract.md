@@ -66,6 +66,21 @@ If an equivalent canonical capability exists, creation is blocked unless there i
 
 Production example: canonical `BG 201 - Radar Heartbeat Stale Sensor v1` is Make scenario `7164254`. Duplicate scenario `7164500` was retired and must not be reactivated.
 
+## Remediation ownership governance
+
+### `governance|obligation|duplicate-remediation-owner`
+Symptom: multiple open issues, agents, watchers or outcome obligations independently own the same root cause/platform-control repair.
+
+Root cause: discovery compared titles or local task scope, but did not compare semantic root cause, remediation owner and dependency graph before creating a new obligation.
+
+Failure effects: duplicate scans, duplicate retries, conflicting fixes, contradictory closure state, unnecessary platform/API cost and slower delivery.
+
+Required prevention: one root cause gets exactly one canonical remediation owner. Before creating a material incident/issue/outcome obligation, refresh open obligations and compare semantic scope + root cause + owner + external side effects. If the root cause already has an owner, update/reuse that owner. A separately useful business/production outcome may stay open only as an explicit dependency on the canonical owner; it must not execute the remediation independently.
+
+Historical consolidation examples: GitHub native main protection is canonically owned by issue #621; writer-migration prerequisite #175 was closed completed after 7/7 operational/parity/rollback proof; duplicate #393 was closed; #523 remains only a dependent BG169 outcome obligation. Supabase leaked-password protection is canonically owned by #394; duplicate #405 was closed and broad #377 references #394 for that Auth subproblem.
+
+Regression rule: `SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE` must remain active. A new remediation owner for an already-owned root cause is blocked unless an explicit successor/handoff decision supersedes the prior owner.
+
 ## Repository mutation governance
 
 ### `repository|manual-connector-write|default-main-bypass`
