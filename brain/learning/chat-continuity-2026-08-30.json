@@ -2,13 +2,14 @@
   "version": 1,
   "type": "CHAT_CONTINUITY_LEARNING_SET",
   "date": "2026-08-30",
-  "scope": ["website", "github", "netlify", "seo", "navigation", "agents", "release"],
+  "scope": ["website", "github", "netlify", "seo", "navigation", "agents", "release", "make", "notion", "security", "cost", "social"],
   "source": {
     "ledger_event": "docs/development-ledger-events/2026-08-30-chat-continuity-website-recovery.md",
     "accepted_test_source_pr": 110,
     "accepted_test_source_sha": "5a8cc121691200231f9b7a00eed5fdcff9764678",
     "recovery_pr": 187,
-    "verified_content_sha": "eb27982ecc5f25af06a71333a52a91f7d7a78b30"
+    "verified_content_sha": "eb27982ecc5f25af06a71333a52a91f7d7a78b30",
+    "powerhouse_checkpoint": "docs/powerhouse-chat-learning-checkpoint-2026-08-30.md"
   },
   "protected_primary_routes": [
     "/problemen",
@@ -63,6 +64,118 @@
       "prevent": "Use PR metadata actions for administrative changes; avoid source no-op commits that trigger new CI/Netlify work."
     }
   ],
+  "powerhouse_lessons": [
+    {
+      "id": "PLAINTEXT_SECRETS_REQUIRE_MANAGED_CONNECTIONS",
+      "fingerprint": "security|secret-leak|plaintext-credential-in-config",
+      "symptom": "Een PAT, API-key, bearer token of andere credential verschijnt in blueprint, URL, query, header, body of repositoryconfiguratie.",
+      "rootCause": "Een integratie gebruikt inline secrets in plaats van een managed OAuth/native connection of provider-supported secure credential store.",
+      "failedApproach": "Een plaintext credential terugzetten als tijdelijke workaround voor een defecte managed connector.",
+      "requiredAction": "Redacteer, zet de route fail-closed/hold, migreer naar managed auth en activeer pas na een veilige runtime-canary.",
+      "prevention": "Security preflight scant alle nieuwe en gewijzigde integratieroutes op plaintext credentials en blokkeert productie bij SECRET_LEAK.",
+      "evidenceRule": "Een route met plaintext secret is nooit production-ready, ook niet wanneer de API-call technisch werkt."
+    },
+    {
+      "id": "MAKE_CONFIG_ERRORS_SKIP_RESTART",
+      "fingerprint": "make|configuration-error|restart-cannot-repair",
+      "symptom": "Mapping-, validation-, JSON-, idempotency- of authconfiguratiefouten blijven terugkomen na restart/continuity.",
+      "rootCause": "Restart verandert geen foutieve blueprint, mapping of credentialconfiguratie.",
+      "failedApproach": "Een restart/continuity-agent inzetten op een deterministische configuratiefout.",
+      "requiredAction": "Routeer direct naar governed configuration repair, pas de minimale blueprintfix toe en canary daarna exact de gewijzigde route.",
+      "prevention": "Runtime classifier slaat continuity/restart over voor bekende configuratieklassen.",
+      "evidenceRule": "Een restart zonder configuratiewijziging levert geen nieuw bewijs voor een configuratiefingerprint."
+    },
+    {
+      "id": "NOTION_EMPTY_SEARCH_BUNDLE_REQUIRES_ID_GATE",
+      "fingerprint": "notion|search-zero-results|empty-bundle-propagation",
+      "symptom": "Een Notion Search met nul echte resultaten laat toch een leeg Make-bundle door naar code, AI of writes.",
+      "rootCause": "De connectorrepresentatie van zero results is niet hetzelfde als helemaal geen downstream bundle.",
+      "failedApproach": "Aannemen dat downstream modules nooit draaien wanneer de Notion-query niets vindt.",
+      "requiredAction": "Plaats vóór code/AI/write/API altijd een harde record/page-id-exists gate.",
+      "prevention": "Canonical Notion search pattern bevat standaard een identity gate vóór betaalde of muterende stappen.",
+      "evidenceRule": "Een leeg bundle zonder echte page/record identity is NO_ACTION en mag geen side effect veroorzaken."
+    },
+    {
+      "id": "NOTION_LONG_RICH_TEXT_REQUIRES_CHUNKED_READBACK",
+      "fingerprint": "notion|rich-text|over-2000-or-unverified-snapshot",
+      "symptom": "Lange approved/immutable tekst kan bij een enkele rich_text write falen of niet exact overeenkomen met de bedoelde snapshot.",
+      "rootCause": "Notion rich_text heeft praktische elementlimieten en de geschreven representatie kan afwijken van de vooraf berekende string.",
+      "failedApproach": "Een lange snapshot in één rich_text pushen en de hash alleen over de pre-write tekst berekenen.",
+      "requiredAction": "Chunk veilig, lees de opgeslagen snapshot terug, normaliseer en seal/hash exact die readback.",
+      "prevention": "Immutable publish queues gebruiken chunk-safe writer plus readback hash-contract.",
+      "evidenceRule": "Een source hash is alleen geldig wanneer hij de werkelijk teruggelezen genormaliseerde snapshot dekt."
+    },
+    {
+      "id": "MAKE_RATE_LIMIT_REQUIRES_COOLDOWN_AND_READBACK",
+      "fingerprint": "make|rate-limit|429-retry-pressure",
+      "symptom": "Make retourneert 429 tijdens discovery, edits of runs en herhaalde calls vergroten de druk of maken mutatie-uitkomst ambigu.",
+      "rootCause": "Te snelle opeenvolgende API-calls en het ontbreken van read-after-error discipline.",
+      "failedApproach": "Na 429 onmiddellijk blijven pollen of dezelfde mutatie opnieuw sturen.",
+      "requiredAction": "Stop calls, koel af, doe onafhankelijk werk, lees remote state terug en voer daarna maximaal één gerichte retry uit.",
+      "prevention": "Rate-limit policy begrenst retries en koppelt 429 aan cooldown plus readback-before-retry.",
+      "evidenceRule": "Na een 429 mag een muterende retry pas nadat actuele remote state is gecontroleerd."
+    },
+    {
+      "id": "BOUNDED_CANARY_NO_MANUAL_RUN_STORM",
+      "fingerprint": "make|manual-run|multiple-executions-or-cost-storm",
+      "symptom": "Eén handmatige test kan meerdere executions/upstream retries veroorzaken en onverwacht veel credits verbruiken.",
+      "rootCause": "Manual trigger, connector retry en downstream fan-out zijn niet altijd één-op-één waarneembaar.",
+      "failedApproach": "Dezelfde dure canary meerdere keren starten omdat de eerste run traag of onduidelijk lijkt.",
+      "requiredAction": "Gebruik één bounded canary, inspecteer execution history, stop/deactiveer bij storm en wijzig eerst de hypothese vóór een nieuwe run.",
+      "prevention": "Dure flows hebben een canary budget, execution dedupe en expliciete no-repeat-regel zonder nieuwe evidence.",
+      "evidenceRule": "Een nieuwe canary is alleen toegestaan wanneer de vorige executionstate bekend is of een nieuwe hypothese wordt getest."
+    },
+    {
+      "id": "AI_CONTEXT_MUST_BE_PROJECTED_BEFORE_MODEL",
+      "fingerprint": "ai|context|full-record-token-ballast",
+      "symptom": "Agents sturen volledige Notion-/telemetryrecords naar het model en betalen voor grote hoeveelheden irrelevante context.",
+      "rootCause": "Bronrecords worden niet vóór modelinference geprojecteerd naar de minimale evidencevelden.",
+      "failedApproach": "Volledige records of ruwe telemetry dumps rechtstreeks in Sonnet/LLM-prompts meesturen.",
+      "requiredAction": "Projecteer vóór AI alleen facts, fingerprint, evidence, repair class/action en strikt noodzakelijke contractvelden.",
+      "prevention": "AI-call contracts hebben bounded context schema's en meten transfer/tokens vóór en na wijzigingen.",
+      "evidenceRule": "Een groter contextpayload is alleen gerechtvaardigd wanneer concrete noodzakelijke evidence anders ontbreekt."
+    },
+    {
+      "id": "DETERMINISTIC_REDUCER_BEFORE_AI",
+      "fingerprint": "cost|ai|rules-used-after-model",
+      "symptom": "Een model verwerkt grote datasets of voert classificatie uit die volledig door vaste regels kan worden bepaald.",
+      "rootCause": "Deterministische filtering/reductie/classificatie gebeurt te laat of helemaal niet.",
+      "failedApproach": "AI inzetten vóór dedupe, exacte URL-match, thresholds of andere stabiele regels.",
+      "requiredAction": "Filter/reduceer/classificeer deterministisch vóór AI en verwijder de modelcall volledig wanneer regels het eindbesluit dekken.",
+      "prevention": "Cost gate vraagt voor iedere AI-call welk niet-deterministisch oordeel werkelijk overblijft.",
+      "evidenceRule": "AI-kosten zijn alleen gerechtvaardigd voor informatie die niet betrouwbaar uit expliciete regels kan worden afgeleid."
+    },
+    {
+      "id": "WATCHER_LOOKBACK_COVERS_SCHEDULE_INTERVAL",
+      "fingerprint": "monitoring|lookback|scheduler-blind-spot",
+      "symptom": "Een watcher draait bijvoorbeeld elke vier uur maar zoekt slechts ongeveer een uur terug en mist incidenten tussen runs.",
+      "rootCause": "Lookback window is korter dan schedulerinterval en heeft geen overlap voor timing/jitter.",
+      "failedApproach": "Een korte querywindow gebruiken omdat de scenariofrequentie elders staat geconfigureerd.",
+      "requiredAction": "Maak lookback minimaal schedulerinterval plus veilige overlap en filter TMP/RETIRED zo vroeg mogelijk.",
+      "prevention": "Monitoring contract valideert cadence versus lookback als één invariant.",
+      "evidenceRule": "Een watcher is niet volledig dekkend wanneer een incident theoretisch tussen twee zoekvensters kan vallen."
+    },
+    {
+      "id": "APPROVED_COPY_IMMUTABLE_NO_GENERATIVE_REWRITE",
+      "fingerprint": "publishing|approved-copy|generative-rewrite-drift",
+      "symptom": "Centraal goedgekeurde copy kan inhoudelijk veranderen wanneer een legacy/generatieve publisher hem opnieuw door AI laat schrijven.",
+      "rootCause": "Approval/source truth en generation/execution zijn niet strikt gescheiden.",
+      "failedApproach": "Approved central article via generative weekblog/Claude opnieuw laten formuleren of een willekeurig Gepland-item selecteren.",
+      "requiredAction": "Gebruik exact approved immutable snapshot, deterministic identity/slug, readback seal en public verification zonder rewrite.",
+      "prevention": "Approved Source Mode is geïsoleerd van legacy generation en publicatie is hash-/identity-gated.",
+      "evidenceRule": "Published approved content moet herleidbaar zijn naar exact dezelfde sealed approved snapshot."
+    },
+    {
+      "id": "EXPENSIVE_MEDIA_TRANSPORT_BEFORE_GENERATION",
+      "fingerprint": "media|generation|transport-unproven-repeat-cost",
+      "symptom": "Dure image/video generation wordt herhaald terwijl het echte defect in upload/body/transport naar GitHub of een andere bestemming zit.",
+      "rootCause": "Generatie en transport worden als één canary getest, waardoor elke transportpoging opnieuw betaalde media maakt.",
+      "failedApproach": "Gemini/OpenArt opnieuw laten genereren terwijl de uploadroute nog 400/validation errors geeft.",
+      "requiredAction": "Isoleer transport eerst met een tiny known payload; genereer pas één finale media-canary nadat upload/write bewezen is.",
+      "prevention": "Media pipeline splitst generator- en transport-certificering en heeft aparte goedkope canaries.",
+      "evidenceRule": "Nieuwe betaalde generatie is niet gerechtvaardigd zolang de transportlaag niet onafhankelijk groen is."
+    }
+  ],
   "canonical_owners": {
     "navigation_catalog": "site/navigation-baseline.json",
     "accepted_site_baseline": "site/accepted-baseline.json",
@@ -90,5 +203,5 @@
     "green means outcome verified, not merely technical success",
     "write every material new failure/fix/prevention back to shared memory"
   ],
-  "agent_instruction": "Before related website, SEO, GitHub, Netlify or recovery work, fingerprint-match this learning set and the development ledger. Reuse proven fixes and gates before inventing new recovery paths."
+  "agent_instruction": "Before related website, SEO, GitHub, Netlify, Make, Notion, social, security, cost or recovery work, fingerprint-match this learning set, the BRAIN chat-learning contract and the development ledger. Reuse proven fixes and gates before inventing new recovery paths."
 }

@@ -25,10 +25,22 @@ const requiredLessonIds = [
   'SOCIAL_PUBLISH_CREATE_VERIFY_COMMIT',
   'SINGLE_CANONICAL_PUBLISHER_PER_CHANNEL',
   'INSTAGRAM_INSIGHTS_WRAPPER_REQUIRES_RUNTIME_METRIC_PROOF',
+  'PLAINTEXT_SECRETS_REQUIRE_MANAGED_CONNECTIONS',
+  'MAKE_CONFIG_ERRORS_SKIP_RESTART',
+  'NOTION_EMPTY_SEARCH_BUNDLE_REQUIRES_ID_GATE',
+  'NOTION_LONG_RICH_TEXT_REQUIRES_CHUNKED_READBACK',
+  'MAKE_RATE_LIMIT_REQUIRES_COOLDOWN_AND_READBACK',
+  'BOUNDED_CANARY_NO_MANUAL_RUN_STORM',
+  'AI_CONTEXT_MUST_BE_PROJECTED_BEFORE_MODEL',
+  'DETERMINISTIC_REDUCER_BEFORE_AI',
+  'WATCHER_LOOKBACK_COVERS_SCHEDULE_INTERVAL',
+  'APPROVED_COPY_IMMUTABLE_NO_GENERATIVE_REWRITE',
+  'EXPENSIVE_MEDIA_TRANSPORT_BEFORE_GENERATION',
 ];
 
 test('current chat learning is indexed and machine-readable before material agent work', async () => {
   const contract = JSON.parse(await readFile('config/brain-chat-learning-contract.json', 'utf8'));
+  const continuity = JSON.parse(await readFile('brain/learning/chat-continuity-2026-08-30.json', 'utf8'));
   const agents = await readFile('AGENTS.md', 'utf8');
 
   assert.equal(contract.version, 'BRAIN-CHAT-LEARNING-v1');
@@ -43,7 +55,11 @@ test('current chat learning is indexed and machine-readable before material agen
     'brain/learning/chat-continuity-2026-08-30.json',
   ]) assert.ok(contract.canonicalSources.includes(source), `missing canonical source ${source}`);
 
-  const byId = new Map(contract.lessons.map((lesson) => [lesson.id, lesson]));
+  const lessons = [
+    ...(Array.isArray(contract.lessons) ? contract.lessons : []),
+    ...(Array.isArray(continuity.powerhouse_lessons) ? continuity.powerhouse_lessons : []),
+  ];
+  const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));
   for (const id of requiredLessonIds) {
     const lesson = byId.get(id);
     assert.ok(lesson, `missing reusable lesson ${id}`);
