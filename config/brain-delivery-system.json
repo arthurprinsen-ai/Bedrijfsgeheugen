@@ -33,6 +33,10 @@
       "paths": ["AGENTS.md", "config/brain-delivery-system.json", "brain/contracts/delivery-v2.schema.json", "brain/production/continuous-delivery-v2.mjs", "tools/brain-delivery-system.mjs", ".github/workflows/unified-brain-delivery.yml", "docs/superpowers/specs/"]
     },
     {
+      "id": "platform-adapter-contract",
+      "paths": ["config/brain-platform-adapters.json", "brain/contracts/platform-adapter-v1.schema.json", "tests/brain-platform-adapters.test.mjs"]
+    },
+    {
       "id": "brain-governance",
       "paths": ["config/outcome-obligations.json", "docs/brain/component-registry.json"]
     },
@@ -93,9 +97,18 @@
     "currentStateProjection": "BG167",
     "errorLedger": "BG166"
   },
+  "platformAdapterContract": {
+    "version": "BRAIN-PLATFORM-ADAPTER-v1",
+    "registry": "config/brain-platform-adapters.json",
+    "schema": "brain/contracts/platform-adapter-v1.schema.json",
+    "requiredForExternalProduction": true,
+    "compatibilityMappingRequired": true,
+    "regressionContractRequired": true,
+    "unknownAdapterAction": "fail_closed"
+  },
   "registration": {
     "required": true,
     "autoDiscover": true,
-    "appliesTo": ["app", "agent", "make_scenario", "github_workflow", "website", "portal", "backend", "service", "notion_projection"]
+    "appliesTo": ["app", "agent", "make_scenario", "github_workflow", "website", "portal", "backend", "service", "notion_projection", "supabase_adapter", "dataforseo_adapter", "netlify_platform", "external_integration"]
   }
 }
