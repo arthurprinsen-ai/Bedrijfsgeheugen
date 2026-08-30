@@ -5,12 +5,10 @@
   "requiredScopes": ["component:footer", "area:seo"],
   "governedGlobs": ["*.html", "blog/index.html", "blog/*/index.html"],
   "exceptions": [
-    {"file":"404.html","reason":"error surface"},
-    {"file":"bedankt.html","reason":"post-conversion utility page"},
-    {"file":"klantportaal.html","reason":"authenticated application shell"},
-    {"file":"klantportaal-demo.html","reason":"application/demo shell"},
-    {"file":"klantformulier.html","reason":"customer form application surface"},
-    {"file":"index-oud.html","reason":"non-canonical archived artifact"}
+    {"file":"404.html","reason":"error surface; noindex"},
+    {"file":"klantportaal.html","reason":"authenticated application shell; noindex"},
+    {"file":"klantportaal-demo.html","reason":"application/demo shell; noindex"},
+    {"file":"index-oud.html","reason":"non-canonical archived artifact; noindex"}
   ],
   "strategicDestinations": [
     "/bedrijfsgeheugen",
@@ -37,6 +35,7 @@
     "noDeadFooterLinks": true,
     "noKeywordCannibalization": true,
     "v18OnlyFooterMayChange": true,
-    "crawlableServerRenderedHtml": true
+    "crawlableServerRenderedHtml": true,
+    "exceptionsMustExistAndBeNoindex": true
   }
 }
