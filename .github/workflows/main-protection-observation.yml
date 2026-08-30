@@ -1,0 +1,96 @@
+name: Main Protection Observation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Read live GitHub governance state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          gh api "repos/${GITHUB_REPOSITORY}/branches/main" > .artifacts/main-branch.json
+          if ! gh api "repos/${GITHUB_REPOSITORY}/rulesets" > .artifacts/rulesets.json; then
+            printf '[]\n' > .artifacts/rulesets.json
+          fi
+
+      - name: Certify observed main protection
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { certifyMainProtection } from './scripts/brain/main-protection-certification.mjs';
+
+          const branch = JSON.parse(await readFile('.artifacts/main-branch.json', 'utf8'));
+          const rulesets = JSON.parse(await readFile('.artifacts/rulesets.json', 'utf8'));
+          const required = branch?.protection?.required_status_checks ?? {};
+          const requiredChecks = [
+            ...(Array.isArray(required.contexts) ? required.contexts : []),
+            ...(Array.isArray(required.checks) ? required.checks.map(item => item?.context) : []),
+          ].filter(Boolean);
+          const expectedChecks = [
+            'Brain foundation verify',
+            'Shared Agent Memory Tests',
+            'V18 Production Promotion',
+            'Unified Brain Delivery',
+          ];
+          const observedSha = branch?.commit?.sha ?? '';
+          const evidenceRef = `github-actions:${process.env.GITHUB_RUN_ID}:main-protection-observation`;
+          const result = certifyMainProtection({
+            branch: branch?.name,
+            protected: branch?.protected === true,
+            protectionEnabled: branch?.protection?.enabled === true,
+            enforcementLevel: required?.enforcement_level ?? 'unknown',
+            requiredChecks,
+            expectedChecks,
+            rulesets: Array.isArray(rulesets) ? rulesets : [],
+            observedSha,
+            evidenceRef,
+          });
+          const evidence = {
+            observed_at: new Date().toISOString(),
+            repository: process.env.GITHUB_REPOSITORY,
+            workflow_run_id: process.env.GITHUB_RUN_ID,
+            ...result,
+          };
+          await writeFile('.artifacts/main-protection-evidence.json', `${JSON.stringify(evidence, null, 2)}\n`);
+          await writeFile(process.env.GITHUB_STEP_SUMMARY, [
+            '## Main protection observation',
+            '',
+            `- truth_status: **${result.truth_status}**`,
+            `- mainProtectionReady: **${result.mainProtectionReady}**`,
+            `- observed SHA: \`${result.observedSha}\``,
+            `- blockers: ${result.blockers.length ? result.blockers.join(', ') : 'none'}`,
+          ].join('\n'), { flag: 'a' });
+          console.log(`truth_status=${result.truth_status}`);
+          console.log(`mainProtectionReady=${result.mainProtectionReady}`);
+          NODE
+
+      - name: Upload immutable observation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-protection-evidence-${{ github.run_id }}
+          path: .artifacts/main-protection-evidence.json
+          if-no-files-found: error
+          retention-days: 30
