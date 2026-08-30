@@ -3,21 +3,36 @@ name: Homepage Hero Video Verify
 on:
   push:
     branches:
-      - automation/openart-hero-homepage-integration
+      - 'automation/openart-hero-*'
     paths:
       - index.html
       - assets/openart-hero-iphone-safe-v1.mp4
       - assets/openart-hero-production.json
+      - docs/hero-video-device-acceptance.md
+      - scripts/media/hero-media-normalizer.mjs
+      - scripts/media/hero-media-executor.mjs
+      - tests/hero-media-normalizer.test.mjs
+      - tests/hero-media-executor.test.mjs
+      - tests/hero-device-acceptance-contract.test.mjs
       - tests/homepage-hero-video.test.mjs
+      - tools/bouw-v18-production.mjs
       - .github/workflows/homepage-hero-video-verify.yml
   pull_request:
     branches:
       - main
+      - test
     paths:
       - index.html
       - assets/openart-hero-iphone-safe-v1.mp4
       - assets/openart-hero-production.json
+      - docs/hero-video-device-acceptance.md
+      - scripts/media/hero-media-normalizer.mjs
+      - scripts/media/hero-media-executor.mjs
+      - tests/hero-media-normalizer.test.mjs
+      - tests/hero-media-executor.test.mjs
+      - tests/hero-device-acceptance-contract.test.mjs
       - tests/homepage-hero-video.test.mjs
+      - tools/bouw-v18-production.mjs
       - .github/workflows/homepage-hero-video-verify.yml
 
 permissions:
@@ -26,10 +41,17 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node tests/homepage-hero-video.test.mjs
+      - name: Verify media normalization contract
+        run: node --test tests/hero-media-normalizer.test.mjs tests/hero-media-executor.test.mjs
+      - name: Verify device acceptance evidence contract
+        run: node tests/hero-device-acceptance-contract.test.mjs
+      - name: Rebuild deterministic V18 homepage
+        run: node tools/bouw-v18-production.mjs
+      - name: Verify homepage hero contract
+        run: node tests/homepage-hero-video.test.mjs
