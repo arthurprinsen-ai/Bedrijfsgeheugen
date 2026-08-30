@@ -4,16 +4,57 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Candidate PR number'
+        required: false
+        type: string
+      base_sha:
+        description: 'Immutable PR base SHA'
+        required: false
+        type: string
+      head_sha:
+        description: 'Immutable candidate head SHA'
+        required: false
+        type: string
+      candidate_branch:
+        description: 'Immutable candidate branch'
+        required: false
+        type: string
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
-  group: unified-brain-delivery-${{ github.event.pull_request.number || github.ref }}
+  group: unified-brain-delivery-${{ inputs.pr_number || github.event.pull_request.number || github.ref }}-${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: true
 
 jobs:
+  candidate-identity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate explicitly dispatched PR identity
+        if: github.event_name == 'workflow_dispatch' && inputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          test -n "$BASE_SHA" && test -n "$HEAD_SHA" && test -n "$CANDIDATE_BRANCH"
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+          actual_base="$(jq -r '.base.sha' <<<"$pr")"
+          actual_head="$(jq -r '.head.sha' <<<"$pr")"
+          actual_ref="$(jq -r '.head.ref' <<<"$pr")"
+          [ "$actual_base" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$actual_base"; exit 1; }
+          [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
+          [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
+
   plan:
+    needs: candidate-identity
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
@@ -25,7 +66,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -38,7 +79,7 @@ jobs:
         shell: bash
         run: |
           node tools/brain-delivery-system.mjs membership
-          node tools/brain-delivery-system.mjs plan --base "${{ github.event.pull_request.base.sha || github.event.before }}" --head "${{ github.event.pull_request.head.sha || github.sha }}"
+          node tools/brain-delivery-system.mjs plan --base "${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before }}" --head "${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
           node --input-type=module - <<'NODE'
           import { readFile, appendFile } from 'node:fs/promises';
           const plan = JSON.parse(await readFile('.artifacts/brain-delivery-plan.json', 'utf8'));
@@ -60,7 +101,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ matrix.candidate_identity || github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -68,7 +109,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p .artifacts
-          expected="${{ matrix.candidate_identity || github.event.pull_request.head.sha || github.sha }}"
+          expected="${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
           test "$(git rev-parse HEAD)" = "$expected"
           set +e
           case "${{ matrix.id }}" in
@@ -113,7 +154,7 @@ jobs:
           NODE
         env:
           LANE: ${{ matrix.id }}
-          HEAD_SHA: ${{ matrix.candidate_identity || github.event.pull_request.head.sha || github.sha }}
+          HEAD_SHA: ${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
           RUN_ID: ${{ github.run_id }}
       - name: Publish failed lane evidence for BG168/BG167 writeback
         if: failure()
