@@ -37,6 +37,19 @@ Fingerprint: `notion|watchDatabaseItems|wide-page-no-projection`.
 - Cost-safe successor-architectuur: `scheduled start -> bounded Notion query -> only unprocessed eligible commercial/evidence records -> only consumed fields -> deterministic scoring -> one deduplicated write`.
 - Migratie uitsluitend shadow-first en output-equivalent getest op DM, research/SEO/measurement en action cases vóór cutover.
 
+### BG89_PROJECTED_SCORER_EQUIVALENCE
+Fingerprint: `bg89|projected-66-fields|merged-scorer-equivalent|2026-08-30-v1`.
+
+- Live BG89 blueprintanalyse bewees dat de twee scorers samen 64 unieke business-properties lezen; eligibility/write-compatibility brengt de projected contractset op 66 scorer-properties plus attributionvelden vóór cutover.
+- Repeated Notion `filter_properties[]` in de URL werkt betrouwbaar; een 4-property single-record probe was 2 ops / 3 credits / 3.1 KB.
+- Projected-vs-full comparator gebruikt exact de live BG89 stage-1 en stage-2 code uit de blueprint, niet een handmatige benadering.
+- Vier representatieve klassen waren exact equivalent, met nul diff-keys in beide stages: inbound LinkedIn DM, BG98 research, native social measurement en `post_reply_prepared` cockpitactie.
+- De twee live scorers zijn daarnaast in één code-operation gewrapt zonder formulewijziging; dezelfde vier klassen hadden nul merged-stage diff-keys.
+- Volledige 66-property projected eligible batch van 10 records: 3 ops / 5 credits / 70,744 bytes. Recente brede Watch-batch: ongeveer 931 KB. Dat is circa 92% minder read-transfer.
+- Read-only batch-shadow met projected query + één merged scorer per 10 kandidaten: 16 ops / 33 credits / 235,941 bytes. Dit bevat nog tijdelijke shadow-overhead voor live blueprint-read + code-build en geen writes; de uiteindelijke static successor hoort die overhead niet te hebben.
+- Cutoverregel: scorer moet statisch/versioned worden ingevroren; geen permanente runtime dependency op de retired/legacy BG89-blueprint.
+- Attribution Root Key/Touch Key moeten expliciet in de projection blijven, ook al gebruikt de scorer ze niet, omdat de writeback ze preservation-first doorgeeft.
+
 ### NO_PARALLEL_MANUAL_RUN_FOR_EVIDENCE
 Fingerprint: `make|verification|natural-run-preferred-over-parallel-canary`.
 
@@ -53,10 +66,12 @@ Fingerprint: `make|verification|natural-run-preferred-over-parallel-canary`.
 - Guard-window/due/dedupe/identity eerst evalueren, daarna pas inventory/Notion/AI/API.
 - Geen nieuwe AI-media generation zolang transportlaag niet onafhankelijk bewezen is.
 - Geen blind retries bij mogelijke externe side-effect success; eerst reconcile extern bewijs.
+- Voor projecties telt niet alleen scorer-consumption: ook downstream write-preservationvelden zoals attribution horen in het minimal contract.
 
 ## Open vervolg
-1. Bouw BG89 shadow read-path zonder writes.
-2. Vergelijk output-equivalentie op representatieve bestaande records.
-3. Pas na groen bewijs bounded projected queue + write-path toe en retire oude Watch-owner compatibility-first.
-4. Trace BG145 Chrome caller/timer; pas requestcadence alleen aan met exacte caller + freshness evidence.
-5. Voeg deze fingerprints uiteindelijk toe aan promotion/QA admission checks zodat regressies release-blocking worden.
+1. Freeze de bewezen merged BG89 scorer statisch in een inactive successor.
+2. Voeg Attribution Root Key en Attribution Touch Key toe aan de projected contractset en test preservation.
+3. Voer één bounded write-canary uit op één echt backlogrecord; vergelijk alle beschermde outputvelden en attribution.
+4. Pas daarna maximaal 10 per batch, activeer successor en retire oude Watch-owner compatibility-first.
+5. Trace BG145 Chrome caller/timer; pas requestcadence alleen aan met exacte caller + freshness evidence.
+6. Voeg deze fingerprints uiteindelijk toe aan promotion/QA admission checks zodat regressies release-blocking worden.
