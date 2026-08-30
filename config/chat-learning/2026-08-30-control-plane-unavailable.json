@@ -1,0 +1,38 @@
+{
+  "contract": "BRAIN-CHAT-LEARNING-v1",
+  "fingerprint": "delivery|production-authority|control-plane-unavailable|2026-08-30",
+  "scope": ["GitHub", "Make", "BG169", "production-promotion", "shared-memory"],
+  "symptom": "A candidate is fully green and mergeable, but the canonical production authority/control-plane cannot be reached reliably.",
+  "root_cause_class": "CONTROL_PLANE_UNAVAILABLE",
+  "failed_or_forbidden_approaches": [
+    "Bypass BG169 and merge directly merely because GitHub permits it",
+    "Create a second production authority or temporary parallel promotion route",
+    "Retry the unavailable Make control-plane repeatedly and create rate pressure",
+    "Discard a proven green candidate and rebuild solely because unrelated main commits landed"
+  ],
+  "required_response": [
+    "Keep the exact tested candidate SHA immutable and available",
+    "Verify CI, mergeability and absence of actual changed-path/contract/dependency conflict",
+    "Do not bypass the canonical production authority",
+    "Record the open production outcome obligation in shared memory",
+    "When the authority recovers, resume from the same candidate SHA unless a real conflict appeared",
+    "If a real overlap/conflict appeared, rebuild/rebase only the affected delta and rerun its gates",
+    "After promotion, verify exact production identity and protected runtime outcomes before PRODUCTION_GREEN"
+  ],
+  "moving_main_rule": "Unrelated commits on main do not invalidate a candidate. Only merge conflict, changed-path overlap, declared contract overlap or declared dependency conflict requires synchronization/rebuild.",
+  "retry_rule": "On connector/control-plane 429 or resource-unavailable behavior, stop discovery/retry pressure and make one targeted retry only after new evidence or recovery.",
+  "completion_rule": "A chat/run is not structurally complete while this outcome exists only in conversation text; the fingerprint, obligation, evidence and prevention must be in durable shared memory.",
+  "evidence": {
+    "superseded_pr": 641,
+    "active_candidate_pr": 649,
+    "candidate_sha": "3740a88e99aa95a7391ac815e9bae5f6c1990443",
+    "shared_agent_memory_ci": "success",
+    "mergeable": true,
+    "production_promoted": false,
+    "reason_not_promoted": "canonical BG169/Make production authority unavailable; authority intentionally not bypassed"
+  },
+  "status": "OPEN_OUTCOME_OBLIGATION",
+  "owner": "BG169 Production Promotion Controller",
+  "resume_condition": "BG169/Make control-plane becomes reachable and candidate still has no material conflict",
+  "created_at": "2026-08-30T22:45:00+02:00"
+}
