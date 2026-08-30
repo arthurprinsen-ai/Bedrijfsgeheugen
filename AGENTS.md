@@ -54,7 +54,7 @@ Een technisch succesvolle run is nooit voldoende wanneer het bedoelde resultaat 
 
 Een obligation mag alleen eindigen als `COMPLETED` met geldig outcome-bewijs of als `BLOCKED_HARD_BOUNDARY` volgens de harde grenzen hieronder. Side-effects worden altijd idempotent uitgevoerd en eerst gecontroleerd op bestaand extern bewijs om dubbel publiceren, dubbel mailen, dubbele writes of andere dubbele handelingen te voorkomen.
 
-## Groen-tot-klaar contract
+## groen-tot-klaar contract
 Voor veilig oplosbare kandidaatwijzigingen is `FAILED` geen terminale status maar een nieuwe diagnose-input.
 
 Agents blijven itereren totdat één van deze terminale toestanden is bereikt:
@@ -84,6 +84,15 @@ Voor iedere materiële taak geldt verplicht:
 Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `MISSED_OBLIGATION`, `AUTO_REPAIR`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` en `CONTRACT_CHANGE`.
 
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
+
+### BRAIN chat-learning preflight
+`config/brain-chat-learning-contract.json` (`BRAIN-CHAT-LEARNING-v1`) is verplichte gedeelde voorkennis voor iedere huidige en toekomstige agent, workflow en scenario die materieel werk uitvoert.
+
+- Laad de canonieke learning sources uit het contract vóór debuggen, ontwerpen, wijzigen of uitvoeren.
+- Match iedere relevante fingerprint vóór uitvoering en hergebruik eerst een bewezen fix/preventieregel.
+- Een bekende mislukte aanpak blijft geblokkeerd totdat nieuwe evidence aantoonbaar maakt dat de eerdere root cause of randvoorwaarde niet meer geldt.
+- Houd audit history en actuele operationele projection semantisch gescheiden; testcanaries/no-op false positives mogen de actuele teamcontext niet vervuilen.
+- Nieuwe materiële fout/fix/preventie wordt teruggeschreven en maakt pas daarna via de gedeelde context deel uit van de volgende agentpreflight.
 
 ## BRAIN Continuous CI/CD v2 — onafhankelijke delivery lanes
 Alle huidige en toekomstige apps, agents, Make-scenario's, GitHub-workflows, website-, portal-, backend- en servicecomponenten vallen onder `BRAIN-DELIVERY-v2` via `config/brain-delivery-system.json`, `brain/contracts/delivery-v2.schema.json`, `brain/production/continuous-delivery-v2.mjs` en `tools/brain-delivery-system.mjs`.
@@ -171,15 +180,16 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 
 ## Verplichte leesvolgorde
 1. `AGENTS.md`
-2. `docs/development-operating-system.md`
-3. `docs/development-ledger.md`
-4. `docs/self-healing-agents.md`
-5. `docs/outcome-obligations.md`
-6. `config/outcome-obligations.json`
-7. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
-8. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
-9. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
-10. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
+2. `config/brain-chat-learning-contract.json`
+3. `docs/development-operating-system.md`
+4. `docs/development-ledger.md`
+5. `docs/self-healing-agents.md`
+6. `docs/outcome-obligations.md`
+7. `config/outcome-obligations.json`
+8. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
+9. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
+10. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
+11. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-experiment al in de repo of gedeelde teamcontext is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.
