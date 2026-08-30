@@ -171,7 +171,7 @@ test('Make control-plane credit storm learning is retained and machine-readable'
   ]) assert.ok(doc.includes(token), `Make credit-storm learning missing ${token}`);
 
   const parsed = JSON.parse(guard);
-  assert.equal(parsed.version, 'MAKE-CONTROL-PLANE-CREDIT-STORM-v1');
+  assert.equal(parsed.version, 'MAKE-CONTROL-PLANE-CREDIT-STORM-v1.1');
   assert.equal(parsed.fingerprint, 'make|multi-agent-context-learning-credit-storm|2026-08-30-v1');
   assert.equal(parsed.guard, 'control-plane-credit-storm-prevention-v1');
   assert.equal(parsed.observed.dailyCreditsConsumed, 9165);
@@ -184,6 +184,7 @@ test('Make control-plane credit storm learning is retained and machine-readable'
     'state_hash_before_write',
     'bounded_credit_slope',
     'readback_before_retry_after_429_or_502',
-    'learning_write_fail_open_from_projection_refresh'
+    'learning_write_fail_open_from_projection_refresh',
+    'callee_entry_guard_not_status_toggle_only'
   ]) assert.ok(parsed.requiredPreflight.includes(requiredGuard), `credit-storm guard missing ${requiredGuard}`);
 });
