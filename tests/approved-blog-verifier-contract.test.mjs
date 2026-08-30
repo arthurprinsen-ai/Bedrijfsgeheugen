@@ -15,34 +15,25 @@ test('approved blog verifier is independent, bounded and non-generative', () => 
   for (const forbidden of ['anthropic', 'claude-code-action', 'api.openai.com', 'generatecontent', 'weekblog.yml/dispatches']) {
     assert.equal(lower.includes(forbidden), false, `forbidden verifier dependency: ${forbidden}`);
   }
-  for (const required of ['workflow_dispatch:', 'slug:', 'queue_page:', 'central_page:', 'content_id:', 'expected_title:', 'curl', 'canonical', 'verification attempt', 'notion_token']) {
-    assert.equal(lower.includes(required), true, `missing verifier contract marker: ${required}`);
+  for (const required of ['workflow_dispatch:', 'slug:', 'queue_page:', 'central_page:', 'content_id:', 'expected_title:', 'curl', 'canonical', 'verification attempt']) {
+    assert.equal(lower.includes(required), true, `missing approved-content contract marker: ${required}`);
   }
 });
 
-test('verifier has bounded public retries and exact success writeback', () => {
+test('verifier is proof-only; Make owns Notion writeback', () => {
   const text = workflow();
+  const lower = text.toLowerCase();
+  for (const forbidden of ['notion_token', 'api.notion.com', 'dispatch status', 'publicatielink', 'publish verified at', 'urllib.request']) {
+    assert.equal(lower.includes(forbidden), false, `GitHub verifier must not own Notion state: ${forbidden}`);
+  }
+  assert.match(text, /PUBLIC_PROOF_OK/);
+});
+
+test('verifier has bounded public retries and exact correlation identity', () => {
+  const text = workflow();
+  assert.match(text, /run-name:\s*Verify approved blog \$\{\{ inputs\.content_id \}\} \$\{\{ inputs\.slug \}\}/);
   assert.match(text, /for attempt in 1 2 3/);
   assert.match(text, /HTTP_CODE/);
-  assert.match(text, /PUBLIC_PROOF_OK/);
-  assert.match(text, /Dispatch status/);
-  assert.match(text, /Published/);
-  assert.match(text, /Publicatielink/);
-  assert.match(text, /Publish Verified At/);
-  assert.match(text, /Verified At/);
-});
-
-test('Notion writeback reuses the proven Python urllib transport', () => {
-  const text = workflow();
-  assert.match(text, /import json, os, urllib\.request/);
-  assert.match(text, /NOTION_TOKEN.*strip\(\)/s);
-  assert.match(text, /urllib\.request\.Request/);
-  assert.match(text, /urllib\.request\.urlopen/);
-  assert.equal(/curl[\s\S]{0,500}api\.notion\.com/i.test(text), false, 'Notion PATCH must not use the failing curl transport');
-});
-
-test('verifier cannot silently verify another article', () => {
-  const text = workflow();
   assert.match(text, /EXPECTED_URL=.*\/blog\/\$\{SLUG\}\//);
   assert.match(text, /EXPECTED_TITLE/);
   assert.match(text, /QUEUE_PAGE/);
