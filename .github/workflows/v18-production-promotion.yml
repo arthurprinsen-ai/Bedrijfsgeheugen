@@ -22,6 +22,7 @@ jobs:
         run: >-
           node --test
           tests/footer-contract.test.mjs
+          tests/footer-injection.test.mjs
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
           tests/site-baseline-guardian.test.mjs
