@@ -7,6 +7,7 @@ const rules=JSON.parse(fs.readFileSync('config/delivery-prevention-rules.json','
 const workflow=fs.readFileSync('.github/workflows/repo-writer-parity-rollback.yml','utf8');
 const delivery=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
 const readinessTest=fs.readFileSync('tests/repository-protection-readiness.test.mjs','utf8');
+const preflight=JSON.parse(fs.readFileSync('config/brain-chat-learning-contract.json','utf8'));
 
 const required=[
  ['delivery-failure|writeback|shared|git-diff-missed-untracked-evidence','CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE'],
@@ -16,7 +17,8 @@ const required=[
  ['delivery-failure|governance|shared|platform-control-assumed-green','FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS'],
  ['delivery-failure|pr|shared|parallel-identical-candidates-raced','CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES'],
  ['delivery-failure|verification|shared|duplicate-writer-handoff','SINGLE_CANONICAL_WRITER_HANDOFF'],
- ['delivery-failure|integration|automation|make-subscenario-input-envelope','VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE']
+ ['delivery-failure|integration|automation|make-subscenario-input-envelope','VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE'],
+ ['delivery-failure|governance|shared|red-first-test-pushed-directly-to-unprotected-main','NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN']
 ];
 
 test('chat recovery failures remain PROVEN lessons with active prevention rules',()=>{
@@ -42,4 +44,14 @@ test('readiness and protection regressions remain scenario-derived and classifie
  assert.ok(backend.paths.includes('tests/repository-protection-'));
  assert.match(readinessTest,/const operationalOnly = state\.writers\.map/);
  assert.match(readinessTest,/computeMainProtectionReady\(operationalOnly\), false/);
+});
+
+test('candidate-only TDD is part of mandatory Brain chat-learning preflight',()=>{
+ assert.equal(preflight.preflightRequired,true);
+ assert.equal(preflight.newAgentsMustReadBeforeExecution,true);
+ assert.ok(preflight.canonicalSources.includes('docs/brain/delivery-failure-lessons.json'));
+ assert.ok(preflight.canonicalSources.includes('config/delivery-prevention-rules.json'));
+ const lesson=lessons.find(x=>x.fingerprint==='delivery-failure|governance|shared|red-first-test-pushed-directly-to-unprotected-main');
+ assert.match(lesson.fix,/candidate branch/i);
+ assert.match(lesson.fix,/BG169/i);
 });
