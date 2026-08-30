@@ -20,6 +20,19 @@ test('backend website and portal changes become one parallel delivery unit', asy
   assert.equal(plan.branchPolicy.rebuildOnMainDrift, false);
 });
 
+test('universal policy releases the smallest safe change immediately without unrelated batching', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  assert.equal(policy.continuousPromotion.releaseUnit, 'smallest-independently-safe-change');
+  assert.equal(policy.continuousPromotion.batchUnrelatedChanges, false);
+  assert.equal(policy.continuousPromotion.activateImmediatelyWhenGreen, true);
+  assert.equal(policy.continuousPromotion.failureIsolation, true);
+  assert.equal(policy.platformPolicy.requireRegistration, true);
+  assert.equal(policy.platformPolicy.nonGitRequiresReadBackEvidence, true);
+  assert.equal(policy.contractConflictPolicy.behindByIsConflict, false);
+  assert.equal(policy.contractConflictPolicy.globalLockingAllowed, false);
+  assert.deepEqual(policy.platformPolicy.knownRequiredPlatforms, ['github','netlify','make','notion','supabase','dataforseo']);
+});
+
 test('non-overlapping main drift never causes a branch rebuild', () => {
   assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/render-offer.mjs','tests/portal-native-legacy-batch-11.test.mjs'], mainDriftPaths:['blog/index.html','assets/css/powerhouse-kosten.css'], mergeable:true }), { action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:[] });
 });
