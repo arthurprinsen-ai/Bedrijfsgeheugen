@@ -252,6 +252,39 @@ All new agents/scenarios must join this memory/verification/cost/security fabric
 13. Sending full raw Notion/telemetry records into AI when a compact contract suffices.
 14. Restarting scenarios to repair mapping, validation, auth or other configuration errors.
 
+## Make cost incident and development-budget contract — 2026-08-30
+
+### Fingerprint: `make-cost|runaway-successful-executions|control-plane-overhead-v1`
+A technically successful Make execution can still be economically red. During the incident, the Mission Control route currently identified as scenario ID `7071153` was observed roughly every 7–8 minutes. Legacy requests were about 7 credits; added shadow/control-plane instrumentation raised runs to 8–10 credits, and the tested cache-first shadow hot-path variant reached about 12 credits and 12.3 seconds versus roughly 7 credits and 5–7 seconds. That variant was rolled back and is a known failed hypothesis.
+
+Permanent prevention:
+- primary KPI is credits per verified successful outcome, not scenario-success count;
+- include AI/provider, logging, control-plane, shadow, memory-refresh, observability and canary overhead in total cost;
+- no-change paths should approach zero incremental Make work;
+- prefer event/webhook, cache and delta/query projection before polling/full reads;
+- deterministic checks precede AI and one specialist precedes broad agent fan-out;
+- define baseline, expected 7-day saving, maximum test budget, rollback and protected metrics before a cost experiment;
+- run one hypothesis, one candidate and one bounded canary; maximum two identical retries without new evidence;
+- stop when marginal evidence value is below the cost of obtaining it;
+- accept only measured net savings after all control-plane overhead.
+
+When burn rate is abnormal, first stop non-essential experiments/canaries, identify actual top consumers, distinguish business demand from internal retries/polling/fan-out, preserve last-known-good behavior and resume optimization only after the runaway source is bounded.
+
+### Fingerprint: `make-runtime|429-learning-writeback|no-blind-retry-v1`
+A BG168 shared-memory writeback from this incident returned `Too Many Requests`. Do not poll or retry harder. Keep the learning as an open writeback obligation, use repository memory as fail-safe, cool down, then perform exactly one targeted runtime writeback and verify BG168/BG166/BG167 visibility. Never create a retry storm to record that retry storms are forbidden.
+
+### Fingerprint: `make-governance|scenario-label-identity-collision-v1`
+Historical records used the label `BG139` for a different Instagram capability while the current Mission Control route is scenario ID `7071153`. Therefore a BG number is never sufficient identity. Canonical Make identity is `scenario_id + current scenario name + capability/owner`. Before mutation, fetch the exact live scenario and verify name, trigger, modules and owner. Historical BG-label-only evidence is ambiguous until mapped to an exact scenario ID.
+
+### Fingerprint: `shared-memory|chat-learning-completeness-gate-v1`
+A chat/run is not complete while material technical or operational learning exists only in conversation text. Durable capture must include fingerprints, root cause, proven fix, failed/forbidden approaches, prevention/regression contract, component ownership, runtime/production evidence, open obligations and measured cost/performance outcome. Repository memory is a valid fail-safe when runtime memory is rate-limited; runtime synchronization remains an open obligation until verified.
+
+### Fingerprint: `duplicate-periodic-obligation-owner-v1`
+Before creating, enabling or updating a periodic watcher/guardian, inventory active automations by semantic scope, cadence, owner and side effects. One canonical owner is required unless explicit orchestration/dedupe exists. Duplicate periodic owners create duplicate logs, costs, retries, races and potentially duplicate external side effects.
+
+### Fingerprint: `brain|delivery-classifier|canonical-memory-path-v1`
+PR #639 first failed BRAIN planning because a new arbitrary learning file path was not registered: `unclassified delivery path: docs/chat-learning-cost-incident-2026-08-30.md`. The safe fix is consolidation into this already canonical Brain memory artifact, not weakening the classifier just to make the PR green. New durable learning should prefer existing classified canonical memory locations; creating a new path requires deliberate Brain membership/classification in the same candidate. This prevents avoidable CI churn and makes future learning writeback faster.
+
 ## Current truth precedence
 
 This checkpoint records reusable learning. For component state, the newest `Powerhouse Latest Verified State` record with production evidence wins. Historical records and failed approaches remain available as prevention evidence and must not be deleted simply because a newer fix exists.
