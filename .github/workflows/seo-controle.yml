@@ -1,12 +1,7 @@
 name: Nieuwe pagina aanmelden (sitemap, 301, zoekwoord)
 
-# Aanvulling op paginacontrole.yml, die de inhoudelijke SEO al doet.
-# Deze workflow doet alleen wat daar niet in zit:
-#   1. een nieuwe pagina in sitemap.xml zetten
-#   2. de 301 van /pagina.html naar /pagina aanmaken in netlify.toml
-#   3. melden als een pagina geen focus-zoekwoord declareert of er een
-#      van een andere pagina afpakt
-# De melding komt als regel in het dagplan via Make BG 53.
+# Aanvulling op paginacontrole.yml. Onder BRAIN v2 levert deze writer uitsluitend
+# een gecontroleerde candidate PR; productiepromotie loopt via BG169.
 on:
   push:
     branches: [main]
@@ -18,19 +13,13 @@ on:
         type: boolean
         default: false
       delivery_mode:
-        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        description: 'BRAIN v2 staat alleen gecontroleerde candidate PR delivery toe'
         type: choice
         required: true
-        default: direct
+        default: candidate-pr
         options:
-          - direct
           - candidate-pr
 
-# GEDEELD SLOT. Deze workflow schrijft sitemap.xml terug naar main, en dat doen
-# seo-controle.yml, blog-bijwerken.yml en weekblog.yml alle drie. Draaien er twee
-# tegelijk, dan slaagt de eerste push en wordt de tweede geweigerd: exit code 1.
-# Daarom delen ze EEN groepsnaam. Een slot met een eigen naam per workflow houdt
-# alleen zichzelf tegen en is dus geen slot. Wijzig deze naam nooit los.
 concurrency:
   group: repo-schrijven
   cancel-in-progress: false
@@ -67,7 +56,6 @@ jobs:
         id: commit
         env:
           BASE_SHA: ${{ steps.base.outputs.sha }}
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
           set -euo pipefail
           mapfile -t changed < <(git diff --name-only -- sitemap.xml netlify.toml)
@@ -90,9 +78,8 @@ jobs:
           git add sitemap.xml netlify.toml
           git commit -m "SEO-poortwachter: sitemap en redirects bijgewerkt"
 
-          if [ "$DELIVERY_MODE" = "candidate-pr" ]; then
-            export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
-            CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+          CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
           import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
           const files = String(process.env.CHANGED_FILES || '').split('\n').filter(Boolean).sort();
           const candidate = createWriterCandidate({
@@ -106,32 +93,12 @@ jobs:
           validateWriterCandidate(candidate);
           console.log(candidate.branch);
           NODE
-            )
-            echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
-            echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
-          else
-            echo "delivery=direct" >> "$GITHUB_OUTPUT"
-          fi
+          )
+          echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
-      - name: Direct publiceren op huidige veilige pad
-        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'direct'
-        run: |
-          set -euo pipefail
-          for poging in 1 2 3; do
-            if git push origin HEAD:main; then
-              echo "Gepusht bij poging $poging."
-              exit 0
-            fi
-            echo "Push geweigerd, iemand was ons voor. Rebasen en opnieuw."
-            git pull --rebase origin main || { echo "::error::Rebasen op main mislukte. Los het handmatig op: de sitemap of een 301 is niet weggeschreven."; exit 1; }
-            sleep 3
-          done
-          echo "::error::Na drie pogingen kon de bijgewerkte sitemap/301 niet worden gepusht. Er is dus niets vastgelegd; draai deze workflow opnieuw."
-          exit 1
-
       - name: Candidate branch publiceren
-        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        if: steps.commit.outputs.changed == 'true'
         env:
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
         run: |
@@ -139,7 +106,7 @@ jobs:
           git push origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
-        if: steps.commit.outputs.changed == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
@@ -155,10 +122,16 @@ jobs:
             --base main \
             --head "$CANDIDATE_BRANCH" \
             --title "SEO candidate $GITHUB_RUN_ID" \
-            --body "Gecontroleerde candidate uit seo-controle. Base SHA: $BASE_SHA. Deze workflow merge't zichzelf niet; normale repositorygates beslissen over promotie."
+            --body "BRAIN-DELIVERY-v2 candidate uit seo-controle. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit."
 
       - name: Uitkomst in de samenvatting
         run: cat uitkomst.txt >> $GITHUB_STEP_SUMMARY
+
+      - name: BRAIN v2 handoff evidence
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          echo "production_authority=BG169"
+          echo "direct_main_push=false"
 
       - name: Falen bij een echte fout
         run: exit ${{ steps.controle.outcome == 'failure' && 1 || 0 }}
