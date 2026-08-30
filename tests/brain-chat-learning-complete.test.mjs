@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { loadDeliveryPreflight } from '../tools/delivery-preflight.mjs';
 
 const requiredLessonIds = [
   'MAKE_DATASTORE_READ_LIST_NOT_SINGLE_KEY_GET',
@@ -73,4 +74,28 @@ test('current chat learning is indexed and machine-readable before material agen
   assert.match(agents, /BRAIN-CHAT-LEARNING-v1/);
   assert.match(agents, /fingerprint[^\n]{0,180}(vóór|voor|before)[^\n]{0,180}(uitvoering|execution)/i);
   assert.match(agents, /(bekende|known)[^\n]{0,180}(mislukte|failed)[^\n]{0,180}(nieuwe evidence|new evidence)/i);
+});
+
+test('every canonical chat lesson is enforced by delivery preflight', async () => {
+  const [contract, continuity, rules, preflightSource] = await Promise.all([
+    readFile('config/brain-chat-learning-contract.json', 'utf8').then(JSON.parse),
+    readFile('brain/learning/chat-continuity-2026-08-30.json', 'utf8').then(JSON.parse),
+    readFile('config/delivery-prevention-rules.json', 'utf8').then(JSON.parse),
+    readFile('tools/delivery-preflight.mjs', 'utf8'),
+  ]);
+  assert.match(preflightSource, /brain-chat-learning-contract\.json/);
+  assert.match(preflightSource, /chat-continuity-2026-08-30\.json/);
+
+  const lessons = [
+    ...(Array.isArray(contract.lessons) ? contract.lessons : []),
+    ...(Array.isArray(continuity.powerhouse_lessons) ? continuity.powerhouse_lessons : []),
+  ];
+  const activeRules = new Set((rules.rules || []).filter((rule) => rule.active === true).map((rule) => rule.id));
+  const decision = await loadDeliveryPreflight({ component: 'shared' });
+  assert.equal(decision.ok, true);
+  const reused = new Set(decision.reusedLessons);
+  for (const lesson of lessons) {
+    assert.ok(activeRules.has(lesson.id), `chat prevention rule not active: ${lesson.id}`);
+    assert.ok(reused.has(lesson.fingerprint), `delivery preflight did not reuse ${lesson.id}`);
+  }
 });
