@@ -1,3 +1,5 @@
+import {evaluatePlatformPromotion} from './platform-promotion-policy.mjs';
+
 const REQUIRED=['contract','change_id','component_id','lane_id','component_type','candidate_identity','tested_identity'];
 
 export function validateDeliveryManifest(m={}){
@@ -29,6 +31,10 @@ export function evaluateDeliveryLane(s={}){
   if(s.candidate_identity!==s.tested_identity) return {decision:'RECOVERING',reason:'candidate_identity_mismatch'};
   const gates=[['contract','contract'],['quality','quality'],['security','security'],['cost_performance','cost_performance'],['preview','preview']];
   for(const [k,n] of gates) if(s.gates?.[k]!==true) return {decision:'RECOVERING',reason:`${n}_gate_red`};
+  if(s.platform){
+    const platformPolicy=evaluatePlatformPromotion({platform:s.platform,registry:s.platform_registry,capacity:s.platform_capacity,executionProof:s.execution_proof});
+    if(!platformPolicy.ok) return {decision:platformPolicy.decision,reason:platformPolicy.reason,platform:platformPolicy.platform};
+  }
   const p=s.production||{};
   if(String(p.status).toUpperCase()==='RED') return {decision:'ROLLBACK',reason:'production_red',rollback_identity:s.rollback_identity};
   if(String(p.status).toUpperCase()==='GREEN'){
