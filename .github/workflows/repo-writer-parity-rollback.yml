@@ -41,7 +41,7 @@ jobs:
           import { mkdir, readFile, writeFile } from 'node:fs/promises';
           import { proveGitTransportParity } from './scripts/brain/writer-git-parity-proof.mjs';
           import { certifyWriterParityRollback } from './scripts/brain/writer-parity-rollback-certification.mjs';
-          import { applyParityRollbackEvidence, computeMainProtectionReady } from './scripts/brain/writer-certification-state.mjs';
+          import { applyParityRollbackEvidence, computeWriterMigrationReady } from './scripts/brain/writer-certification-state.mjs';
           import { validateWriterPaths } from './scripts/ci/repo-writer-policy.mjs';
 
           const expected=['approved-central-blog','blog-bijwerken','menu-balk-fix','paginacontrole','regelgeving-bijwerken','seo-controle','weekblog'];
@@ -78,13 +78,14 @@ jobs:
           }
 
           if(generated.length!==expected.length) throw new Error('INCOMPLETE_PARITY_EVIDENCE_SET');
-          state.mainProtectionReady=computeMainProtectionReady(state.writers);
+          state.writerMigrationReady=computeWriterMigrationReady(state.writers);
+          delete state.mainProtectionReady;
           await mkdir('brain/evidence/writer-parity-rollback',{recursive:true});
           for(const evidence of generated){
             await writeFile(`brain/evidence/writer-parity-rollback/${evidence.writer}.json`,JSON.stringify(evidence,null,2)+'\n');
           }
           await writeFile('config/repository-writer-migration.json',JSON.stringify(state,null,2)+'\n');
-          console.log(`PARITY_ROLLBACK_VERIFIED writers=${generated.length} mainProtectionReady=${state.mainProtectionReady}`);
+          console.log(`PARITY_ROLLBACK_VERIFIED writers=${generated.length} writerMigrationReady=${state.writerMigrationReady}`);
           NODE
 
       - name: Create evidence-only reconciliation branch and PR
