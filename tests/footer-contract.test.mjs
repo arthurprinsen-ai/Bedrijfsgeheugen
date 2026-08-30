@@ -14,6 +14,10 @@ test('footer contract is machine-readable and SEO governed', () => {
   assert.equal(c.rules.v18OnlyFooterMayChange, true);
   assert.ok(Array.isArray(c.exceptions));
   assert.ok(c.exceptions.every(x => x.file && x.reason));
+  for (const exception of c.exceptions) {
+    assert.ok(existsSync(exception.file), `footer exception must exist: ${exception.file}`);
+    assert.match(read(exception.file), /<meta\s+name=["']robots["'][^>]*content=["'][^"']*noindex/i, `footer exception must be noindex: ${exception.file}`);
+  }
   assert.ok(c.governedGlobs.includes('blog/index.html'), 'blog landing must be explicitly governed');
   assert.ok(c.strategicDestinations.includes('/bedrijfsgeheugen'));
   assert.ok(c.strategicDestinations.includes('/afas-koppeling'));
