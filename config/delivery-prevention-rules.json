@@ -17,6 +17,11 @@
     {"id":"REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES","active":true,"enforcedBy":"brain-chat-learning-preflight-plus-candidate-only-manual-write-contract","scope":"shared"},
     {"id":"VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
     {"id":"USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
-    {"id":"USE_GITHUB_READY_FOR_REVIEW_ACTION","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"}
+    {"id":"USE_GITHUB_READY_FOR_REVIEW_ACTION","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
+    {"id":"REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK","active":true,"enforcedBy":"bg169-execution-proof-contract","scope":"shared"},
+    {"id":"BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE","active":true,"enforcedBy":"production-promotion-capacity-gate","scope":"automation"},
+    {"id":"OPTIMIZE_SOURCE_CALLS_NOT_ONLY_CLIENT_CACHE","active":true,"enforcedBy":"make-cost-source-call-metering","scope":"automation"},
+    {"id":"NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE","active":true,"enforcedBy":"repository-read-before-write-contract","scope":"shared"},
+    {"id":"CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST","active":true,"enforcedBy":"chat-learning-completeness-gate","scope":"shared"}
   ]
 }
