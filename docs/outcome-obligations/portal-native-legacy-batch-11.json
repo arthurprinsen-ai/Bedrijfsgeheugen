@@ -1,0 +1,10 @@
+{
+  "id":"portal-native-legacy-batch-11-offer-readonly",
+  "domain":"portal_governance",
+  "expected":true,
+  "dueAt":"2026-08-30T23:59:59+02:00",
+  "ownerAgent":"Portal Migration Agent",
+  "evidencePolicy":"Offerte bypasses the iframe bridge only after identity-scoped same-origin reads, native read-only rendering, no external write path, all native portal regression tests green, exact preview SHA ready and exact production merge SHA ready.",
+  "idempotencyKey":"portal-native-legacy-batch-11-offer-readonly-v1",
+  "recoveryPolicy":"Keep the existing compatibility source and last-known-good production if the native view cannot prove identity scope or deploy health. New signing/acceptance remains BLOCKED_HARD_BOUNDARY because it is legally/financially binding."
+}
