@@ -20,12 +20,23 @@ if (!writer) throw new Error('INVALID_WRITER_BRANCH');
 const checkedOutHead = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 if (checkedOutHead !== headSha) throw new Error(`HEAD_SHA_DRIFT:${checkedOutHead}:${headSha}`);
 
-const changedFiles = execFileSync('git', ['diff', '--name-only', `${baseSha}...${headSha}`], { encoding: 'utf8' })
+const diffRange = `${baseSha}...${headSha}`;
+const changedFiles = execFileSync('git', ['diff', '--name-only', diffRange], { encoding: 'utf8' })
   .split('\n')
   .map((value) => value.trim())
   .filter(Boolean);
+const diffStats = execFileSync('git', ['diff', '--numstat', diffRange], { encoding: 'utf8' })
+  .split('\n')
+  .map((value) => value.trim())
+  .filter(Boolean)
+  .map((line) => {
+    const [added, deleted, ...fileParts] = line.split('\t');
+    const file = fileParts.join('\t');
+    if (!file || added === '-' || deleted === '-') throw new Error(`UNSUPPORTED_WRITER_BINARY_DIFF:${file || line}`);
+    return Object.freeze({ file, additions: Number(added), deletions: Number(deleted) });
+  });
 
-const result = validateWriterPaths(writer, changedFiles);
+const result = validateWriterPaths(writer, changedFiles, diffStats);
 const evidence = Object.freeze({
   schemaVersion: 1,
   writer,
@@ -33,7 +44,9 @@ const evidence = Object.freeze({
   baseSha,
   headSha,
   changedFiles: result.files,
+  diffStats,
   pathPolicyVerified: true,
+  impactPolicyVerified: true,
   exactHeadVerified: true,
 });
 
