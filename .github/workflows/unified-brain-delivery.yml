@@ -26,6 +26,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Reuse proven delivery lessons before expensive work
+        run: |
+          node --test tests/delivery-learning.test.mjs tests/delivery-preflight.test.mjs
+          node tools/delivery-preflight.mjs shared
       - id: plan
         name: Discover changed lanes and Brain membership
         run: |
@@ -50,20 +54,55 @@ jobs:
         with:
           node-version: '22'
       - name: Verify changed lane
+        shell: bash
         run: |
+          mkdir -p .artifacts
+          set +e
           case "${{ matrix.id }}" in
             backend)
-              npm install --ignore-scripts --no-audit --no-fund
-              node scripts/brain/test-all.mjs
-              node --test tests/canonical-*.test.mjs tests/agent-fabric*.test.mjs tests/brain-*.test.mjs tests/cost-*.test.mjs
+              (npm install --ignore-scripts --no-audit --no-fund && node scripts/brain/test-all.mjs && node --test tests/canonical-*.test.mjs tests/agent-fabric*.test.mjs tests/brain-*.test.mjs tests/cost-*.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
               ;;
             portal)
-              node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
+              node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
               ;;
             website)
-              node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs
+              node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
               ;;
           esac
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            cp .artifacts/lane-${{ matrix.id }}.log .artifacts/lane-${{ matrix.id }}-failure.txt
+            exit "$status"
+          fi
+      - name: Capture failed lane as Brain learning evidence
+        if: failure()
+        shell: bash
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { createObservedFailure } from './tools/delivery-learning.mjs';
+          let reason = 'GitHub lane verification failed';
+          try {
+            const log = await readFile(`.artifacts/lane-${process.env.LANE}-failure.txt`, 'utf8');
+            const lines = log.split(/\r?\n/);
+            const failedAt = lines.findIndex(line => /^not ok\s+\d+\s+-\s+/.test(line.trim()));
+            reason = failedAt >= 0 ? lines.slice(Math.max(0, failedAt - 2), Math.min(lines.length, failedAt + 18)).join('\n').trim() : lines.slice(-120).join('\n').trim();
+          } catch {}
+          const event = createObservedFailure({ stage: 'PIPELINE', reason, component: process.env.LANE, headSha: process.env.HEAD_SHA, evidenceRef: `github-run:${process.env.RUN_ID}` });
+          await writeFile(`.artifacts/delivery-failure-${process.env.LANE}.json`, JSON.stringify(event, null, 2));
+          NODE
+        env:
+          LANE: ${{ matrix.id }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+      - name: Publish failed lane evidence for BG168/BG167 writeback
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-delivery-failure-${{ matrix.id }}
+          path: |
+            .artifacts/delivery-failure-${{ matrix.id }}.json
+            .artifacts/lane-${{ matrix.id }}-failure.txt
 
   integrate:
     needs: [plan, lanes]
@@ -71,16 +110,61 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Verify one integrated release candidate
+      - name: Refuse a stale main base before final gate
+        if: github.event_name == 'pull_request'
+        shell: bash
         run: |
-          npm install --ignore-scripts --no-audit --no-fund
-          node tools/brain-delivery-system.mjs membership
-          node --test --test-concurrency=1 tests/*.test.mjs
-          node scripts/brain/test-all.mjs
+          git fetch origin main --no-tags
+          current_main="$(git rev-parse origin/main)"
+          expected_base="${{ github.event.pull_request.base.sha }}"
+          if [ "$current_main" != "$expected_base" ]; then
+            echo "main advanced during candidate verification: expected $expected_base, current $current_main"
+            exit 42
+          fi
+      - name: Verify one integrated release candidate
+        shell: bash
+        run: |
+          mkdir -p .artifacts
+          set +e
+          (npm install --ignore-scripts --no-audit --no-fund && node tools/delivery-preflight.mjs shared && node tools/brain-delivery-system.mjs membership && node --test --test-concurrency=1 tests/*.test.mjs && node scripts/brain/test-all.mjs) 2>&1 | tee .artifacts/integrate.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            cp .artifacts/integrate.log .artifacts/integrate-failure.txt
+            exit "$status"
+          fi
+      - name: Capture integrated failure as Brain learning evidence
+        if: failure()
+        run: |
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { createObservedFailure } from './tools/delivery-learning.mjs';
+          let reason = 'GitHub integrated release verification failed';
+          try {
+            const log = await readFile('.artifacts/integrate-failure.txt', 'utf8');
+            const lines = log.split(/\r?\n/);
+            const failedAt = lines.findIndex(line => /^not ok\s+\d+\s+-\s+/.test(line.trim()));
+            reason = failedAt >= 0 ? lines.slice(Math.max(0, failedAt - 2), Math.min(lines.length, failedAt + 18)).join('\n').trim() : lines.slice(-160).join('\n').trim();
+          } catch {}
+          const event = createObservedFailure({ stage: 'PIPELINE', reason, component: 'shared', headSha: process.env.HEAD_SHA, evidenceRef: `github-run:${process.env.RUN_ID}` });
+          await writeFile('.artifacts/delivery-failure-integrate.json', JSON.stringify(event, null, 2));
+          NODE
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+      - name: Publish integrated failure evidence for BG168/BG167 writeback
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-delivery-failure-integrate
+          path: |
+            .artifacts/delivery-failure-integrate.json
+            .artifacts/integrate-failure.txt
       - name: Hand exact candidate to existing Brain production authority
         run: |
           echo "BG169 promotes only exact green SHA ${{ github.event.pull_request.head.sha || github.sha }}"
