@@ -45,7 +45,10 @@ test('readiness and protection regressions remain scenario-derived and classifie
  assert.ok(backend.paths.includes('tests/repository-protection-'));
  assert.match(readinessTest,/const operationalOnly = state\.writers\.map/);
  assert.match(readinessTest,/computeWriterMigrationReady\(operationalOnly\), false/);
- assert.match(readinessTest,/computeMainProtectionReady\(state\.writers, liveNativeProtection\)/);
+ assert.match(readinessTest,/computeMainProtectionReady\(state\.writers,[\s\S]*currentMainSha:CURRENT_MAIN_SHA,[\s\S]*requiredChecks:REQUIRED_CHECKS/);
+ assert.match(readinessTest,/ruleset evidence is mandatory for native main protection readiness/);
+ assert.match(readinessTest,/stale native protection evidence from an older main SHA always fails closed/);
+ assert.match(readinessTest,/missing required protection checks always fails closed/);
  assert.match(readinessTest,/missing native GitHub evidence always fails closed/);
 });
 
