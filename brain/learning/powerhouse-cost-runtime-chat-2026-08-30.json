@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "type": "POWERHOUSE_COST_RUNTIME_CHAT_LEARNING_TRANCHE",
+  "date": "2026-08-30",
+  "scope": ["make", "notion", "agents", "cost", "runtime", "control-plane", "commercial", "learning", "publishing-safety"],
+  "contracts": [
+    "detect -> root cause -> regression -> minimal fix -> retest -> deploy/readback verify -> ledger -> prevention",
+    "green means outcome verified, not technical success alone",
+    "one authoritative source -> bounded delta -> cached/projected state -> deterministic processing -> AI only on material uncertainty -> one deduplicated write",
+    "no blind mass mutation; one reversible hypothesis at a time",
+    "no duplicate periodic owner without explicit orchestration",
+    "protected publishing, approval, security, commercial freshness and idempotency contracts may not be traded away for cost"
+  ],
+  "lessons": [
+    {
+      "id": "MAKE_DATASTORE_EXACT_GET_UNSUPPORTED",
+      "fingerprint": "make|datastore|exact-get-404",
+      "symptom": "GET /v2/data-stores/{id}/data/{key} returns 404 even when the key exists.",
+      "rootCause": "Make datastore records support bounded list reads plus write/update by key, but exact GET-by-key is not a supported read contract in this environment.",
+      "failedApproach": "Re-attempt exact GET for mission-control/team-context cache because PATCH-by-key works.",
+      "fix": "Use bounded list GET with the smallest safe pg[limit], ideally a dedicated one-record datastore for hot projections.",
+      "evidence": "BG186/BG139 exact-key experiments returned 404; BG190 bounded list cache read succeeded; dedicated PH Team Context Cache v1 works with pg[limit]=1.",
+      "prevention": "Never infer read endpoints from write endpoints; verify API semantics before architecture changes."
+    },
+    {
+      "id": "MAKE_QUERY_ARRAYS_REQUIRE_URL_ENCODING",
+      "fingerprint": "make|api-query|duplicate-array-key-collapse",
+      "symptom": "Repeated id[]/cols[] query keys in makeApiCall qs collapse to only the last value.",
+      "rootCause": "Make mapper serialization does not preserve repeated query keys in qs.",
+      "failedApproach": "Send repeated id[] or cols[] entries through mapper qs.",
+      "fix": "Encode repeated array query parameters directly in the request URL.",
+      "evidence": "BG150 two-ID probe returned both scenarios only after repeated id%5B%5D/cols%5B%5D were encoded in URL; production run 2a2876e5803249d79adcc67761b0709a succeeded at 3 ops/4 credits/2091 bytes.",
+      "prevention": "Use explicit URL repetition for Make API array query params and regression-test count/fields."
+    },
+    {
+      "id": "BG159_DEDUPE_BEFORE_EXPENSIVE_INVENTORY",
+      "fingerprint": "cost|snapshot|dedupe-after-expensive-read",
+      "symptom": "Repeated daily cost snapshot invocations read a large Make scenario inventory before discovering today's snapshot already exists.",
+      "rootCause": "Idempotency check was placed after the expensive source read.",
+      "fix": "Notion precheck for today's snapshot first; only execute expensive inventory when absent.",
+      "evidence": "Duplicate BG159 run c35c7bbec62d4f4ea9e3b264c1310529: 2 ops/3 credits/13122 bytes versus historical ~4 ops/6 credits/~1 MB.",
+      "prevention": "Every scheduled snapshot/collector places stable-key existence check before broad source inventory."
+    },
+    {
+      "id": "MISSION_CONTROL_CACHE_FIRST",
+      "fingerprint": "api|mission-control|live-fanout-on-read",
+      "symptom": "Read-heavy cockpit/API paths fan out to Notion/Datahub on ordinary reads.",
+      "fix": "Cache-first bounded datastore read, TTL 3600, write-through on miss, browser cache 3600 with stale-while-revalidate.",
+      "evidence": "BG190 execution bdb6748984cf46a1b363a5f9741d30a8: CACHE source, 2 ops/3 credits/31387 bytes, no Notion fan-out; BG139 recent cache-hit ~4 ops/5 credits/~22 KB versus historical ~7/8/~71 KB.",
+      "prevention": "Normal read paths must be cache-first; cache hit must never invoke live source fan-out."
+    },
+    {
+      "id": "BG84_JSON_MAPPING_MIXED_LITERAL_ESCAPE",
+      "fingerprint": "make|json-mapping|mixed-expression-literal-invalid-body",
+      "symptom": "Notion idempotency API returns 400 Error parsing JSON body; rendered key contains escaped literal pipe between mapped expressions.",
+      "rootCause": "Hand-built JSON mixed mapped expressions and literal separators, causing invalid escaped JSON.",
+      "failedApproach": "concat() workaround where function is unavailable; hand-editing mapped JSON separators.",
+      "fix": "Build query body deterministically in JavaScript with JSON.stringify and pass the completed JSON string.",
+      "evidence": "Rebuilt BG84 v1.6 scenario 7163276 no-op execution 40382c74180e450eaab5ae3533b531c5 succeeded at 1 op/1 credit/27 bytes; old v1.5 deactivated.",
+      "prevention": "Complex API JSON bodies are serialized in code/JSON transformer, not assembled across mapping/literal boundaries."
+    },
+    {
+      "id": "DUMMY_NOTION_TRIGGER_IS_WASTE",
+      "fingerprint": "make|scheduled-flow|dummy-notion-read-as-trigger",
+      "symptom": "Scheduled intelligence flows read one Notion record solely to start execution although downstream does not reference it.",
+      "rootCause": "A data connector was used as a scheduler trigger instead of a deterministic scenario start.",
+      "fix": "Replace dummy read with StartSubscenario/scheduled deterministic root while preserving actual downstream queries.",
+      "evidence": "BG126, BG127, BG128 each dropped one operation/credit and material transfer after replacement.",
+      "prevention": "Scheduled scenarios use a zero-data deterministic trigger unless the trigger record itself is business input."
+    },
+    {
+      "id": "SHARED_AGENT_CONTEXT_DEDICATED_PROJECTION",
+      "fingerprint": "agents|shared-memory|broken-exact-read-or-full-context",
+      "symptom": "PH agents either fail exact datastore GET or ingest excessive full team context.",
+      "rootCause": "Hot shared context lived in a broad datastore and exact-key reads were assumed to work; worker prompts carried unnecessary team-wide JSON.",
+      "fix": "Dedicated one-record datastore PH Team Context Cache v1 (175713), BG167 dual-write for compatibility, worker list GET pg[limit]=1, mission-relevant context projection.",
+      "evidence": "BG167 execution 59213fcb34274195bb2ba7b0221250a6 proved dedicated write; PH01/PH04/PH14 runtime canaries read current TEAM-CONTRACT. PH01 compact canary 3124->1855 input tokens and 21.37->12.77 credits; PH11 4083->3203 input tokens and 27.21->21.65 credits.",
+      "prevention": "Separate stable shared state from request overlay; workers receive compact mission-specific context, not raw shared memory."
+    },
+    {
+      "id": "ROUTINE_CANARY_MUST_NOT_BECOME_LEARNING_ERROR",
+      "fingerprint": "learning|classifier|quoted-error-word-false-positive",
+      "symptom": "Healthy cache/canary responses are logged as AGENT_ERROR because output mentions the word error in quoted/contextual text.",
+      "rootCause": "Keyword-based classifier ignored semantic negation and healthy-canary patterns.",
+      "fix": "Classify verification/canary plus explicit no-change/healthy outcome as NO_ACTION; normalize healthy phrasing such as 'Shared team context available'.",
+      "evidence": "Previously false PH09/PH01 learning outputs reclassified to NO_MATERIAL_CHANGE; BG168 stops at 1 op/2 credits without BG166/Notion/BG167 fan-out.",
+      "prevention": "Learning materiality classifiers use semantic outcome state and negation before keyword error detection."
+    },
+    {
+      "id": "BG166_LONG_CONTEXT_AND_PROJECTED_DEDUPE",
+      "fingerprint": "learning|notion-richtext|oversized-context-or-wide-dedupe-read",
+      "symptom": "Learning write can exceed Notion rich_text limits; duplicate lookup returns a full page although only fingerprint existence is needed.",
+      "fix": "Bound learning context to safe length and project dedupe query to only Lering/fingerprint field.",
+      "evidence": "Oversized 4164-character regression event wrote successfully; duplicate fingerprint stopped at 3 ops/5 credits/~5.1 KB.",
+      "prevention": "Ledger payloads are bounded; dedupe existence queries retrieve only identity field."
+    },
+    {
+      "id": "BG162_ATOMIC_RESERVATION_FIRST",
+      "fingerprint": "governor|dedupe|broad-scan-before-reservation",
+      "symptom": "Cost governor performs a broad datastore scan before deciding an event is duplicate.",
+      "rootCause": "Dedupe was read-first instead of relying on unique-key reservation semantics.",
+      "fix": "Atomically POST reservation by fingerprint first; duplicate-key collision terminates via safe error handler before specialist chain.",
+      "evidence": "Unique event ~3 ops/4 credits/~3.6 KB; duplicate ~2 ops/3 credits/~2.1 KB; protected routes preserved after rebuild.",
+      "prevention": "Where store uniqueness is authoritative, prefer atomic reserve-first dedupe over broad pre-scan."
+    },
+    {
+      "id": "BG14_OVERLAPPING_AI_RUNS",
+      "fingerprint": "ai|concurrency|duplicate-candidate-overlap",
+      "symptom": "Multiple overlapping narrative runs process the same Notion candidate set through AI.",
+      "rootCause": "No run-level lock before candidate read/AI.",
+      "fix": "10-minute atomic run lock before Notion and AI; duplicate lock collision stops run.",
+      "evidence": "Three overlapping runs previously consumed ~292 credits; duplicate lock verification stops at 2 ops/3 credits with zero Notion/AI calls.",
+      "prevention": "Expensive scheduled AI pipelines require an overlap lock longer than normal runtime and shorter than legitimate cadence."
+    },
+    {
+      "id": "BG185_GUARD_WINDOW_BEFORE_INVENTORY",
+      "fingerprint": "guardian|time-window|inventory-before-window-check",
+      "symptom": "Guardian reads ~359 KB team inventory and only afterwards returns OUTSIDE_DAILY_GUARD_WINDOW.",
+      "rootCause": "Cheap time eligibility gate was placed after expensive inventory.",
+      "fix": "Evaluate guard window first; only then request projected scenario inventory fields id/name/lastEdit/isinvalid.",
+      "evidence": "Outside window reduced to 1 op/2 credits/147 bytes; projected inventory probe ~38 KB versus ~359 KB.",
+      "prevention": "All guardians put deterministic time/scope gates before remote inventory and request only consumed columns."
+    },
+    {
+      "id": "BG145_SEMANTIC_CONTROL_PLANE_CORRUPTION",
+      "fingerprint": "bg145|semantic-control-plane-corruption|commercial-writeback",
+      "symptom": "Control-plane JSON is schema-valid but runtime values contain commercial advice/channel fields instead of configuration values.",
+      "rootCause": "Generic commercial BG89 writeback treated Powerhouse Control Plane Runtime mirror rows as opportunities and overwrote runtime fields.",
+      "failedApproach": "Treat HTTP success/schema correctness as proof of control-plane correctness or merely cache the corrupt mirror more cheaply.",
+      "fix": "Exclude control-plane rows from BG89; restore 12 rows from intact canonical source; verify exact key/value/type/enabled invariants.",
+      "evidence": "Readback restored cacheSeconds=300, remoteRefreshSeconds=60 and governance booleans=true across 12/12 controls.",
+      "prevention": "Control-plane regression requires semantic invariants; generic Datahub writebacks use explicit record-class allowlists/exclusions."
+    },
+    {
+      "id": "BG89_GENERIC_DATAHUB_COMMERCIAL_SCORING",
+      "fingerprint": "bg89|generic-datahub-watch|noncommercial-record-scoring|2026-08-30-v2",
+      "symptom": "Health/test/control/operational Datahub events receive Opportunity scores, deadlines and commercial advice.",
+      "rootCause": "Generic Notion create-watch treated all new non-duplicate Datahub rows as commercial evidence; watchDatabaseItems transfers complete wide pages and offers no property projection.",
+      "failedApproach": "Assume shared schema means commercial eligibility; blanket-exclude whole mixed sources; increase polling to clear backlog.",
+      "fix": "Pre-scoring gate excludes Duplicate, Control Plane Runtime, Radar Heartbeat, Regression Test, network_snapshot and already Opportunity Updated; retain real inbound DM/action signals.",
+      "evidence": "Backlog measured 410 unscored records, including 234 Radar Heartbeats. Natural execution b97fc302e50346f3b658be9ec9886757 received 10 trigger rows and only 9 reached scoring after heartbeat exclusion. Fetched heartbeat states coverage health only/no AI; fetched DM sample contains real inbound action context.",
+      "prevention": "Every generic Datahub consumer declares eligible record classes/subtypes before code/AI/write. Migrate broad watch paths via shadow to bounded projected query and prove output equivalence before cutover."
+    },
+    {
+      "id": "DUPLICATE_PERIODIC_OBLIGATION_OWNER",
+      "fingerprint": "duplicate-periodic-obligation-owner-v1",
+      "symptom": "Multiple active watchers/guardians own overlapping periodic responsibility.",
+      "risk": "Duplicate cost/logs, races, retries and side effects.",
+      "prevention": "Exactly one periodic owner per invariant class unless explicit orchestrator partitions scope."
+    },
+    {
+      "id": "PUBLICATION_GATE_REQUIRED_VISUAL_MISSING",
+      "fingerprint": "post-gate-required-visual-missing-v1",
+      "symptom": "Content item is blocked because required visual/media is absent.",
+      "rule": "This is a valid production/approval gate, not a publisher failure; do not retry publisher. Produce visual, obtain approvals, then publish and verify public ID/URL.",
+      "prevention": "Cost optimization may never bypass required media/brand/narrative gates."
+    },
+    {
+      "id": "MISSION_CONTROL_UNAUTHORIZED_ACTIVE_STATE",
+      "fingerprint": "unauthorized-active-state-drift-v1",
+      "symptom": "BG186 reports ACTIVE/CACHE_HIT without current BG191 Class-A promotion evidence.",
+      "rule": "Treat as false green/unauthorized active drift; restore BYPASS and verify readback until promotion evidence exists.",
+      "prevention": "Operational state must be causally backed by current promotion evidence, not merely cached flag values."
+    }
+  ],
+  "agent_preflight": [
+    "fingerprint-match this file plus powerhouse-chat-learning-checkpoint before material Make/Notion/agent work",
+    "do not rediscover a known endpoint/configuration limitation",
+    "place cheapest deterministic eligibility/dedupe/time gate before broad reads, AI and writes",
+    "measure equivalent baseline/post executions; never compare a blocked path to a full-work path as if equivalent",
+    "record unverified gaps explicitly",
+    "after a material new failure/fix, append ledger evidence and refresh shared context"
+  ]
+}
