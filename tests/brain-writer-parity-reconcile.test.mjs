@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyParityRollbackEvidence, computeMainProtectionReady } from '../scripts/brain/writer-certification-state.mjs';
+import { applyParityRollbackEvidence, computeWriterMigrationReady } from '../scripts/brain/writer-certification-state.mjs';
 
 const writer=(name='weekblog')=>({name,candidateMode:'operational_verified',structuralContractVerified:true,operationalCandidateVerified:true,parityVerified:false,rollbackVerified:false,merged:true});
 const evidence=(name='weekblog')=>({contract:'BRAIN-DELIVERY-v2',truth_status:'VERIFIED',status:'COMPLETED',proof:'writer-parity-rollback',writer:name,parityVerified:true,rollbackVerified:true,outcome_router:'BG168',current_state_projection:'BG167',evidenceRef:`github-run:${name}`});
@@ -21,12 +21,12 @@ test('parity reconciliation fails closed on incomplete lineage or non-operationa
   assert.throws(()=>applyParityRollbackEvidence(writer(),e),/INVALID_PARITY_ROLLBACK_EVIDENCE/);
 });
 
-test('main protection readiness requires every writer proof dimension',()=>{
+test('writer migration readiness requires every writer proof dimension',()=>{
   const a=writer('a-writer'), b=writer('b-writer');
   applyParityRollbackEvidence(a,evidence('a-writer'));
   applyParityRollbackEvidence(b,evidence('b-writer'));
-  assert.equal(computeMainProtectionReady([a,b]),true);
+  assert.equal(computeWriterMigrationReady([a,b]),true);
   b.rollbackVerified=false;
-  assert.equal(computeMainProtectionReady([a,b]),false);
-  assert.equal(computeMainProtectionReady([]),false);
+  assert.equal(computeWriterMigrationReady([a,b]),false);
+  assert.equal(computeWriterMigrationReady([]),false);
 });
