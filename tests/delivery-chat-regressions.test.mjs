@@ -44,7 +44,9 @@ test('readiness and protection regressions remain scenario-derived and classifie
  const backend=delivery.lanes.find(l=>l.id==='backend');
  assert.ok(backend.paths.includes('tests/repository-protection-'));
  assert.match(readinessTest,/const operationalOnly = state\.writers\.map/);
- assert.match(readinessTest,/computeMainProtectionReady\(operationalOnly\), false/);
+ assert.match(readinessTest,/computeWriterMigrationReady\(operationalOnly\), false/);
+ assert.match(readinessTest,/computeMainProtectionReady\(state\.writers, liveNativeProtection\)/);
+ assert.match(readinessTest,/missing native GitHub evidence always fails closed/);
 });
 
 test('candidate-only TDD is part of mandatory Brain chat-learning preflight',()=>{
