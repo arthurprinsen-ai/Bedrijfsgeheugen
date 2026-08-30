@@ -66,7 +66,8 @@ export async function validateFooterSeo({ footerHtml, contract, seo, routeExists
       if (link.text === k && normRoute(link.href) !== route) errors.push(`FOOTER_SEO_ERROR href=${link.href} keyword=${k} rule=exact-anchor-wrong-owner`);
     }
   }
-  if ((footer.match(/class=["'][^"']*\bbgvoet\b/gi) || []).length !== 1) errors.push('FOOTER_SEO_ERROR rule=canonical-footer-identity');
+  const canonicalFooterCount = (footer.match(/<footer\b[^>]*class=["'][^"']*\bbgvoet(?:\s|["'])/gi) || []).length;
+  if (canonicalFooterCount !== 1) errors.push('FOOTER_SEO_ERROR rule=canonical-footer-identity');
   return errors;
 }
 
