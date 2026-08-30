@@ -28,8 +28,8 @@ function legacyCheck(s={}) {
 }
 
 export function checkInvariants(input={}) {
-  if(!Object.prototype.hasOwnProperty.call(input,'events') && !Object.prototype.hasOwnProperty.call(input,'currentStates')) return legacyCheck(input);
-  const {events=[], currentStates=[], now=new Date().toISOString(), heartbeatMaxAgeMs=15*60*1000}=input;
+  if(!Object.prototype.hasOwnProperty.call(input,'events') && !Object.prototype.hasOwnProperty.call(input,'currentStates') && !Object.prototype.hasOwnProperty.call(input,'platformControls')) return legacyCheck(input);
+  const {events=[], currentStates=[], platformControls=[], now=new Date().toISOString(), heartbeatMaxAgeMs=15*60*1000}=input;
   const violations=[];
   const ids=new Set(events.map(x=>x?.id).filter(Boolean));
   const seenIdempotency=new Map();
@@ -67,6 +67,20 @@ export function checkInvariants(input={}) {
     const maxAge=Number(s?.max_age_ms??60*60*1000);
     if(Number.isFinite(verifiedMs) && nowMs-verifiedMs>maxAge) violations.push({code:'STALE_CURRENT_STATE',severity:'medium',entity_ref:s?.entity_ref,state_type:s?.state_type});
   }
+
+  for (const control of platformControls) {
+    if (control?.required !== true) continue;
+    const controlId=String(control?.id||'').trim()||'unknown-platform-control';
+    if (control?.enforced === true) continue;
+    if (control?.enforced === false) {
+      const requestedSeverity=String(control?.severity||'high').toLowerCase();
+      const severity=['medium','high','critical'].includes(requestedSeverity)?requestedSeverity:'high';
+      violations.push({code:'EXTERNAL_PLATFORM_CONTROL_RED',severity,control_id:controlId,evidence_ref:control?.evidence_ref||null});
+      continue;
+    }
+    violations.push({code:'EXTERNAL_PLATFORM_CONTROL_UNKNOWN',severity:'critical',control_id:controlId,evidence_ref:control?.evidence_ref||null});
+  }
+
   const heartbeat=events.filter(e=>String(e?.type||e?.object_type||'')==='HEARTBEAT').sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))[0];
   if(!heartbeat || nowMs-new Date(heartbeat.created_at).getTime()>heartbeatMaxAgeMs) violations.push({code:'MISSING_HEARTBEAT',severity:'high'});
 
