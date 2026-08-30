@@ -1,0 +1,1 @@
+{"id":"brain-cicd-platform-make","domain":"automation","expected":true,"ownerAgent":"agent-integration-make","evidencePolicy":"Scenario revision, validation, safe runtime execution/read-back and BG168/BG167 outcome evidence.","idempotencyKey":"brain-cicd-platform-make-v1","recoveryPolicy":"Restore LKG blueprint or isolate affected scenario; unrelated scenarios continue."}

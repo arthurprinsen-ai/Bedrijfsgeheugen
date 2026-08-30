@@ -1,0 +1,22 @@
+{
+  "contract": "BRAIN-CONTINUOUS-CICD-v2.1-ALL-APPS",
+  "extends": "BRAIN-DELIVERY-v2",
+  "releaseUnit": "smallest-independently-safe-change",
+  "batchUnrelatedChanges": false,
+  "waitForUnrelatedChanges": false,
+  "activateImmediatelyWhenGreen": true,
+  "mainMayMove": true,
+  "rebuildOnUnrelatedMainDrift": false,
+  "failureIsolation": true,
+  "platformNativeAtomicity": true,
+  "productionAuthority": "BG169",
+  "currentContext": "BG167",
+  "outcomeLearning": "BG168",
+  "errorLedger": "BG166",
+  "minimumVerifiedPlatforms": ["github", "netlify", "make", "notion", "supabase", "dataforseo"],
+  "allRegisteredPlatformsInherit": true,
+  "targets": {
+    "unrelatedWaitMs": 0,
+    "branchRebuildsForUnrelatedDrift": 0
+  }
+}

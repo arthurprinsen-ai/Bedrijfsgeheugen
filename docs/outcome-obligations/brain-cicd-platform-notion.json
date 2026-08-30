@@ -1,0 +1,1 @@
+{"id":"brain-cicd-platform-notion","domain":"data_operations","expected":true,"ownerAgent":"agent-integration-make","evidencePolicy":"Exact object/schema identity, version-aware smallest safe write and post-write read-back.","idempotencyKey":"brain-cicd-platform-notion-v1","recoveryPolicy":"Restore prior safe object state where reversible; block only true dependents."}
