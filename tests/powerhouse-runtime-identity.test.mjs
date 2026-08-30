@@ -41,7 +41,7 @@ test('Mission Control shadow contract keeps BG139 legacy-live until BG191 promot
   assert.equal(c.exact_legacy_rollback_required, true);
 });
 
-test('prevention rules retain independent delivery, green-until-done, rate-limit and secret contracts', () => {
+test('prevention rules retain independent delivery, green-until-done, rate-limit, secret and authority-outage contracts', () => {
   assert.match(registry.prevention.branch_drift, /Generic main drift alone is not a blocker/i);
   assert.match(registry.prevention.branch_drift, /changed-path overlap/i);
   assert.match(registry.prevention.branch_drift, /contract overlap/i);
@@ -49,4 +49,7 @@ test('prevention rules retain independent delivery, green-until-done, rate-limit
   assert.match(registry.prevention.green_until_done, /two identical retries/i);
   assert.match(registry.prevention.rate_limit, /429/);
   assert.match(registry.prevention.secrets, /Never place API keys, PATs or tokens/i);
+  assert.match(registry.prevention.production_authority_unavailable, /do not bypass/i);
+  assert.match(registry.prevention.production_authority_unavailable, /Preserve exact candidate SHA/i);
+  assert.match(registry.prevention.production_authority_unavailable, /resume from the same identity/i);
 });
