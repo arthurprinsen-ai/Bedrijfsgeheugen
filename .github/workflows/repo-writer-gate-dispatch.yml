@@ -75,14 +75,7 @@ jobs:
         with:
           node-version: '22'
       - name: Brain foundation verification
-        run: |
-          npm install --ignore-scripts --no-audit --no-fund
-          npm run test:brain
-          npm run check:agents-team-policy
-          npm run check:team-memory-contract
-          npm run check:ph-agent-recovery-loop
-          npm run check:zero-trust-autonomy
-          npm run v19:aiscan
+        run: node scripts/brain/test-all.mjs
 
   v18-and-writer-operational:
     needs: validate
@@ -94,12 +87,25 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
-          node-version: '22'
-      - name: V18 and writer operational verification
-        run: |
-          npm install --ignore-scripts --no-audit --no-fund
-          npm run v18:verify
-          node --test tests/repo-writer-operational-harness.test.mjs tests/repo-writer-shadow.test.mjs
+          node-version: '20'
+      - name: V18 authoritative promotion verification
+        run: >-
+          node --test
+          tests/v18-production-promotion.test.mjs
+          tests/v18-seo-layer.test.mjs
+          tests/site-baseline-guardian.test.mjs
+          tests/portal-server-state.test.mjs
+          tests/portal-projection-layers.test.mjs
+          tests/canonical-portal-projector.test.mjs
+          tests/portal-question-handler.test.mjs
+          tests/portal-production-contract.test.mjs
+          tests/portal-data-adapter.test.mjs
+          tests/portal-legacy-state.test.mjs
+          tests/portal-native-legacy-batch-1.test.mjs
+          tests/portal-native-legacy-batch-2.test.mjs
+          tests/portal-native-legacy-batch-3.test.mjs
+      - name: Writer operational regressions
+        run: node --test tests/repo-writer-operational-harness.test.mjs tests/repo-writer-shadow.test.mjs
 
   dispatch-unified:
     needs: [validate, shared-memory, brain-foundation, v18-and-writer-operational]
