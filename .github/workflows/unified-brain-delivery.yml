@@ -205,7 +205,8 @@ jobs:
         run: echo "No executable delivery lanes; ignored-only change is a successful no-op."
       - name: Record verification-only non-promotion evidence
         if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only == true
-        run: echo "Verification-only delivery: production authority handoff intentionally skipped."
+        run: |
+          echo "Verification-only delivery: production authority handoff intentionally skipped."
       - name: Hand exact green lane identities to Brain production authority
         if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only != true
         env:
