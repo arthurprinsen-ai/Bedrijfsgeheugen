@@ -40,6 +40,7 @@ const requiredLessonIds = [
 
 test('current chat learning is indexed and machine-readable before material agent work', async () => {
   const contract = JSON.parse(await readFile('config/brain-chat-learning-contract.json', 'utf8'));
+  const continuity = JSON.parse(await readFile('brain/learning/chat-continuity-2026-08-30.json', 'utf8'));
   const agents = await readFile('AGENTS.md', 'utf8');
 
   assert.equal(contract.version, 'BRAIN-CHAT-LEARNING-v1');
@@ -54,7 +55,11 @@ test('current chat learning is indexed and machine-readable before material agen
     'brain/learning/chat-continuity-2026-08-30.json',
   ]) assert.ok(contract.canonicalSources.includes(source), `missing canonical source ${source}`);
 
-  const byId = new Map(contract.lessons.map((lesson) => [lesson.id, lesson]));
+  const lessons = [
+    ...(Array.isArray(contract.lessons) ? contract.lessons : []),
+    ...(Array.isArray(continuity.powerhouse_lessons) ? continuity.powerhouse_lessons : []),
+  ];
+  const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));
   for (const id of requiredLessonIds) {
     const lesson = byId.get(id);
     assert.ok(lesson, `missing reusable lesson ${id}`);
