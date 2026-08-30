@@ -1,0 +1,22 @@
+{
+  "version": "GUARD-REGISTRY-SCHEMA-v1",
+  "failClosed": true,
+  "purpose": "Voorkom dat guard-inventory generieke nested fingerprint/prose velden ten onrechte als canonieke guard-regressiecontracten interpreteert.",
+  "schemaPolicy": {
+    "canonicalFailureKeys": ["knownFailure", "knownFailures"],
+    "regressionContractMustMatch": "^tests/.*\\.test\\.mjs$",
+    "recursiveArbitraryObjectDiscoveryForbidden": true,
+    "naturalLanguageRegressionDescriptionsAreNotPaths": true
+  },
+  "knownFailure": {
+    "fingerprint": "learning|guard-registry|schema-overmatch-nonpath-regression-contract-v1",
+    "symptom": "De guard-inventory zag nested objecten met fingerprint/regressionContract-achtige velden als echte guardrecords en probeerde natuurlijke taal als testpad te openen.",
+    "rootCause": "De scanner gebruikte generieke recursieve objectdetectie in plaats van het expliciete guard-schema knownFailure/knownFailures.",
+    "failedApproach": "Iedere nested fingerprint of regressionContract in een *guard*.json als canoniek uitvoerbaar regressiecontract behandelen.",
+    "fix": "Lees uitsluitend expliciete knownFailure/knownFailures-records en eis repo-relatieve tests/*.test.mjs-paden voordat een regressiecontract uitvoerbaar wordt behandeld.",
+    "preventionRule": "PARSE_GUARD_REGISTRY_BY_EXPLICIT_SCHEMA_AND_VALIDATE_TEST_PATHS",
+    "regressionContract": "tests/branch-delivery-guard-registry-completeness.test.mjs",
+    "owner": "agent-reliability",
+    "status": "GUARDED"
+  }
+}
