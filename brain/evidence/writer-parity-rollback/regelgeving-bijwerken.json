@@ -1,0 +1,22 @@
+{
+  "contract": "BRAIN-DELIVERY-v2",
+  "truth_status": "VERIFIED",
+  "status": "COMPLETED",
+  "proof": "writer-parity-rollback",
+  "writer": "regelgeving-bijwerken",
+  "baseSha": "7e14fdb3ddde3491032a9d97a5673904c991613c",
+  "candidateHeadSha": "ecb9a5e9e973c366e852a7fd8d5dcb0819d74ce6",
+  "rollbackSha": "7e14fdb3ddde3491032a9d97a5673904c991613c",
+  "directOutputSha256": "f1e81e3419329ecf3e7cf340502d5be6b94e46e429ac778091ae6761c1554fa4",
+  "candidateOutputSha256": "f1e81e3419329ecf3e7cf340502d5be6b94e46e429ac778091ae6761c1554fa4",
+  "rollbackOutputSha256": "6dc7fc6528a6070fdf4bf2d05975b166cf76ce57a87a62879b5527b85468a3e9",
+  "baseOutputSha256": "6dc7fc6528a6070fdf4bf2d05975b166cf76ce57a87a62879b5527b85468a3e9",
+  "operationalCandidateVerified": true,
+  "pathPolicyVerified": true,
+  "exactHeadVerified": true,
+  "parityVerified": true,
+  "rollbackVerified": true,
+  "evidenceRef": "github-run:33328740055:writer:regelgeving-bijwerken",
+  "outcome_router": "BG168",
+  "current_state_projection": "BG167"
+}
