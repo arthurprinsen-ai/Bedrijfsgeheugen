@@ -1,0 +1,17 @@
+{
+  "version": "BRAIN-CHAT-LEARNING-v1",
+  "appendOnly": true,
+  "lessons": [
+    {
+      "id": "SINGLE_CANONICAL_REMEDIATION_OWNER",
+      "preventionRule": "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE",
+      "fingerprint": "governance|obligation|duplicate-remediation-owner",
+      "symptom": "Multiple open issues, agents, watchers or outcome obligations independently own the same root-cause remediation.",
+      "rootCause": "Preflight compared titles or local task scope instead of semantic root cause, canonical owner and dependency graph before creating a new obligation.",
+      "failedApproach": "Create another remediation issue or agent because the local task wording differs, while the same root cause already has an active owner.",
+      "requiredAction": "Refresh current obligations before create; reuse or update the canonical remediation owner for the same root cause and represent separately useful outcomes only as explicit dependencies.",
+      "prevention": "Exactly one canonical remediation owner per root cause; successor ownership requires an explicit handoff or supersession decision.",
+      "evidenceRule": "A new remediation owner is allowed only when fresh inventory proves no equivalent owner exists or explicit successor evidence supersedes the previous owner."
+    }
+  ]
+}
