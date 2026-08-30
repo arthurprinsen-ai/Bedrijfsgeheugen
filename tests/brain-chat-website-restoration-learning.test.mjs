@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { loadDeliveryPreflight } from '../tools/delivery-preflight.mjs';
 
 const REQUIRED = new Map([
   ['SHARED_SHELL_READY_BEFORE_DOMCONTENTLOADED','REQUIRE_SHARED_SHELL_BEFORE_DOMCONTENTLOADED'],
@@ -13,18 +14,19 @@ const REQUIRED = new Map([
   ['STABLE_CANDIDATE_RUNS_INDEPENDENT_GATES_IN_PARALLEL','PARALLELIZE_INDEPENDENT_GATES_AFTER_STABILIZATION'],
 ]);
 
-test('website restoration failures from the chat are durable Brain lessons with active prevention', async () => {
-  const [shard, rules, contract, agents, ledger] = await Promise.all([
-    readFile('brain/learning/current-execution-lessons-2026-08-30.json', 'utf8').then(JSON.parse),
+test('website restoration failures from the chat are durable Brain lessons with active prevention and preflight reuse', async () => {
+  const [shard, rules, ledger, preflight] = await Promise.all([
+    readFile('brain/learning/website-restoration-chat-2026-08-30.json', 'utf8').then(JSON.parse),
     readFile('config/delivery-prevention-rules.json', 'utf8').then(JSON.parse),
-    readFile('config/brain-chat-learning-contract.json', 'utf8').then(JSON.parse),
-    readFile('AGENTS.md', 'utf8'),
     readFile('docs/development-ledger-events/2026-08-30-website-restoration-chat-learning.md', 'utf8'),
+    loadDeliveryPreflight({ component: 'website' }),
   ]);
   const lessons = new Map((shard.lessons || []).map((lesson) => [lesson.id, lesson]));
   const activeRules = new Set((rules.rules || []).filter((rule) => rule.active).map((rule) => rule.id));
-  const fingerprints = new Set(contract.mandatory_shared_memory_fingerprints || []);
+  const reused = new Set(preflight.reusedLessons || []);
 
+  assert.equal(shard.appendOnly, true);
+  assert.equal(preflight.ok, true);
   for (const [lessonId, ruleId] of REQUIRED) {
     const lesson = lessons.get(lessonId);
     assert.ok(lesson, `missing website restoration lesson ${lessonId}`);
@@ -34,13 +36,12 @@ test('website restoration failures from the chat are durable Brain lessons with 
       assert.ok(lesson[field].trim(), `${lessonId}.${field} must not be empty`);
     }
     assert.ok(activeRules.has(ruleId), `inactive/missing prevention rule ${ruleId}`);
-    assert.ok(fingerprints.has(lesson.fingerprint), `Brain contract does not require fingerprint ${lesson.fingerprint}`);
+    assert.ok(reused.has(lesson.fingerprint), `delivery preflight did not reuse ${lessonId}`);
   }
 
-  assert.match(agents, /metadata[^\n]{0,120}no-?op|no-?op[^\n]{0,120}metadata/i);
-  assert.match(agents, /canonical[^\n]{0,160}owner|owner[^\n]{0,160}canonical/i);
   assert.match(ledger, /DOMContentLoaded/);
   assert.match(ledger, /no-op commit/i);
   assert.match(ledger, /orphan/i);
   assert.match(ledger, /exact SHA/i);
+  assert.match(ledger, /canonical owner/i);
 });

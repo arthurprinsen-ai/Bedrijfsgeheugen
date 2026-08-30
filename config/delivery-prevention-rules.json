@@ -12,6 +12,14 @@
     {"id":"CLASSIFY_PRIVATE_AUTH_BEFORE_PUBLIC_SEO_SCANS","active":true,"enforcedBy":"seo-route-scope-classifier","scope":"website"},
     {"id":"REQUIRE_AUTHORIZED_CONNECTOR_FOR_REMOTE_WRITES","active":true,"enforcedBy":"remote-write-authorization-contract","scope":"shared"},
     {"id":"REQUIRE_ACTIVE_RULE_FOR_REQUIRED_CHAT_LESSON","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
-    {"id":"DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"}
+    {"id":"DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
+    {"id":"REQUIRE_SHARED_SHELL_BEFORE_DOMCONTENTLOADED","active":true,"enforcedBy":"site-browser-readiness-contract","scope":"website"},
+    {"id":"MATERIALIZE_CANONICAL_SHELL_BEFORE_SOURCE_SCAN","active":true,"enforcedBy":"paginacontrole-canonical-shell-materialization","scope":"website"},
+    {"id":"ASSERT_CANONICAL_OWNER_NOT_DUPLICATE_IMPLEMENTATION","active":true,"enforcedBy":"ownership-aware-regression-contract","scope":"shared"},
+    {"id":"REQUIRE_CONTEXT_LINK_FOR_RESTORED_ROUTES","active":true,"enforcedBy":"site-route-connectivity-guardian","scope":"website"},
+    {"id":"FORBID_NOOP_SOURCE_COMMITS_FOR_METADATA","active":true,"enforcedBy":"github-metadata-noop-write-guard","scope":"shared"},
+    {"id":"PRESERVE_ACCEPTED_CONTENT_WITH_MODERN_SHELL","active":true,"enforcedBy":"accepted-site-baseline-plus-modern-shell-contract","scope":"website"},
+    {"id":"REQUIRE_ONE_EXACT_SHA_FOR_RELEASE_GATES","active":true,"enforcedBy":"exact-sha-release-evidence-contract","scope":"shared"},
+    {"id":"PARALLELIZE_INDEPENDENT_GATES_AFTER_STABILIZATION","active":true,"enforcedBy":"unified-brain-parallel-lane-contract","scope":"shared"}
   ]
 }
