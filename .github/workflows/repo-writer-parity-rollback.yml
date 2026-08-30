@@ -93,17 +93,31 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
-          mapfile -t changed < <(git status --porcelain --untracked-files=all | sed -E 's/^.. //' | sed '/^$/d' | sort -u)
-          test "${#changed[@]}" -ge 8
+          mapfile -t changed < <(git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //' | sed -E 's/^.* -> //' | sed '/^$/d' | sort -u)
+          test "${#changed[@]}" -eq 8
+          expected=(
+            config/repository-writer-migration.json
+            brain/evidence/writer-parity-rollback/approved-central-blog.json
+            brain/evidence/writer-parity-rollback/blog-bijwerken.json
+            brain/evidence/writer-parity-rollback/menu-balk-fix.json
+            brain/evidence/writer-parity-rollback/paginacontrole.json
+            brain/evidence/writer-parity-rollback/regelgeving-bijwerken.json
+            brain/evidence/writer-parity-rollback/seo-controle.json
+            brain/evidence/writer-parity-rollback/weekblog.json
+          )
           for file in "${changed[@]}"; do
             case "$file" in
               config/repository-writer-migration.json|brain/evidence/writer-parity-rollback/*.json) ;;
               *) echo "::error::UNAPPROVED_PARITY_EVIDENCE_FILE:$file"; exit 20 ;;
             esac
           done
+          for file in "${expected[@]}"; do
+            printf '%s\n' "${changed[@]}" | grep -Fxq -- "$file" || { echo "::error::MISSING_PARITY_EVIDENCE_FILE:$file"; exit 21; }
+          done
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add config/repository-writer-migration.json brain/evidence/writer-parity-rollback/*.json
+          git add "${expected[@]}"
+          git diff --cached --quiet && { echo '::error::EMPTY_PARITY_EVIDENCE_COMMIT'; exit 22; }
           git commit -m 'BRAIN: record writer parity rollback evidence'
           branch="brain/writer-parity-evidence/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git push origin "HEAD:$branch"
