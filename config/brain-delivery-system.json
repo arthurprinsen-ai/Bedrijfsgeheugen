@@ -61,7 +61,7 @@
     {
       "id": "backend",
       "owner": "agent-integration-make",
-      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "supabase/"],
+      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "supabase/", "tests/supabase-"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
