@@ -18,9 +18,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Verify promotion, SEO, portal security and accepted site baseline contracts
+      - name: Verify promotion, SEO, footer, portal security and accepted site baseline contracts
         run: >-
           node --test
+          tests/footer-contract.test.mjs
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
           tests/site-baseline-guardian.test.mjs
