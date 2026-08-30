@@ -1,0 +1,45 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+
+test('chat learning completeness addendum retains Make credit-storm recovery contracts', async () => {
+  const raw = await readFile('brain/learning/chat-completeness-addendum-2026-08-30.json', 'utf8');
+  const addendum = JSON.parse(raw);
+
+  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1');
+  assert.equal(addendum.completionGate.id, 'chat-learning-completeness-gate-v1');
+
+  const fingerprints = new Map(addendum.failurePatterns.map(x => [x.id, x.fingerprint]));
+  assert.equal(fingerprints.get('CONTROL_PLANE_CREDIT_STORM'), 'make|multi-agent-context-learning-credit-storm|2026-08-30-v1');
+  assert.equal(fingerprints.get('INACTIVE_ON_DEMAND_STILL_CALLABLE'), 'make|subscenario|inactive-still-callable-v1');
+  assert.equal(fingerprints.get('CONNECTOR_MUTATION_WRONG_RESOURCE'), 'connector|mutation|wrong-tool-or-resource-selected-v1');
+
+  const credit = addendum.failurePatterns.find(x => x.id === 'CONTROL_PLANE_CREDIT_STORM');
+  for (const guard of [
+    'canonical_owner',
+    'material_state_change_before_dispatch',
+    'global_single_flight',
+    'cache_first_worker_read',
+    'state_hash_before_write',
+    'bounded_credit_slope',
+    'readback_before_retry_after_429_or_502',
+    'learning_write_fail_open_from_projection_refresh'
+  ]) assert.ok(credit.requiredGuards.includes(guard), `missing credit guard ${guard}`);
+
+  assert.equal(addendum.runtimeState.BG167.canonicalRefreshCaller, 'BG166');
+  assert.match(addendum.runtimeState.BG167.status, /SAFE_MODE/);
+  assert.match(addendum.runtimeState.BG168.status, /PENDING_CALLER_SIDE_MATERIALITY_GUARD/);
+
+  for (const path of addendum.canonicalArtifacts) {
+    const content = await readFile(path, 'utf8');
+    assert.ok(content.length > 0, `canonical artifact missing or empty: ${path}`);
+  }
+
+  for (const required of [
+    'new durable fingerprint stored',
+    'root cause recorded',
+    'prevention and regression contract recorded',
+    'open recovery obligations explicitly preserved',
+    'machine-readable CI/preflight coverage exists'
+  ]) assert.ok(addendum.completionGate.requirements.includes(required), `completion gate missing: ${required}`);
+});
