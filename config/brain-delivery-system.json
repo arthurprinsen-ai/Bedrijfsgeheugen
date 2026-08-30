@@ -24,6 +24,23 @@
     "preferredWriteMode": "atomic-tree-commit",
     "maxRebuildsForNonOverlappingDrift": 0
   },
+  "continuousPromotion": {
+    "releaseUnit": "smallest-independently-safe-change",
+    "batchUnrelatedChanges": false,
+    "activateImmediatelyWhenGreen": true,
+    "failureIsolation": true
+  },
+  "platformPolicy": {
+    "requireRegistration": true,
+    "nonGitRequiresReadBackEvidence": true,
+    "knownRequiredPlatforms": ["github", "netlify", "make", "notion", "supabase", "dataforseo"]
+  },
+  "contractConflictPolicy": {
+    "behindByIsConflict": false,
+    "pathOverlapRequiresClassification": true,
+    "contractOverlapRequiresRevalidation": true,
+    "globalLockingAllowed": false
+  },
   "lanes": [
     {
       "id": "backend",
