@@ -22,6 +22,21 @@ This is the canonical execution flow for Bedrijfsgeheugen changes across develop
 ## Parallel delivery sequence
 `BRAIN-DELIVERY-v1` is the mandatory release envelope for repository development. The planner discovers changed scope, automatically projects Brain membership, runs only affected backend/website/portal lanes concurrently, then verifies one integrated exact-SHA candidate. A lane cannot publish independently. BG169 owns promotion, BG168 owns material outcome routing and BG167 owns refreshed current-state visibility.
 
+## Fast branch and concurrent-main rule
+`main` is expected to move continuously because publishers, agents and workflows can commit independently. A moving `main` is therefore **not** by itself a reason to rebuild, replay or recreate a feature branch.
+
+Mandatory rules for every agent, new project chat/work session, GitHub workflow and Make scenario that performs repository development:
+- create a feature branch directly from the current `main`; branch creation is an O(1) Git ref operation and should take seconds, not minutes;
+- prefer one atomic tree/commit for a bounded batch instead of serially rewriting many files through repeated API calls;
+- after `main` moves, compare changed paths and mergeability;
+- if feature paths and new-main paths do **not** overlap and GitHub reports the branch mergeable, continue using the already-tested feature SHA and merge it with the then-current `main`;
+- do **not** recreate, replay or rebase a branch merely to make `behind_by=0` when drift is non-overlapping;
+- synchronize/rebase only when there is an actual merge conflict or changed-path overlap that can affect the candidate;
+- if another agent already implemented an equivalent fix on `main`, dedupe and reuse it instead of copying it again;
+- exact production verification applies to the resulting merge commit, not to an artificial requirement that the feature head itself always contains every unrelated new `main` commit.
+
+This rule exists because a previous portal migration repeatedly rebuilt a green branch while `main` was receiving unrelated commits; during the rebuild `main` moved again, creating avoidable minutes of delay and duplicate work. That failure mode is permanently prohibited by `config/brain-delivery-system.json`, `tests/brain-delivery-system.test.mjs` and shared team memory.
+
 ## Protected invariants
 - `NO SILENT FAILURE`.
 - `NO LOST OBLIGATION`.

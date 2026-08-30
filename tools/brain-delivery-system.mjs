@@ -12,8 +12,19 @@ function matches(path, patterns = []) {
   return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern));
 }
 
+export function evaluateBranchDrift({ featurePaths = [], mainDriftPaths = [], mergeable = true } = {}) {
+  const feature = unique(featurePaths.map(value => String(value).trim()).filter(Boolean)).sort();
+  const drift = unique(mainDriftPaths.map(value => String(value).trim()).filter(Boolean)).sort();
+  const driftSet = new Set(drift);
+  const overlap = feature.filter(path => driftSet.has(path));
+  if (!mergeable) return Object.freeze({ action:'SYNC_REQUIRED', reason:'merge-conflict', overlap:Object.freeze(overlap) });
+  if (overlap.length) return Object.freeze({ action:'SYNC_REQUIRED', reason:'changed-path-overlap', overlap:Object.freeze(overlap) });
+  return Object.freeze({ action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:Object.freeze([]) });
+}
+
 export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   if (!policy || policy.version !== 'BRAIN-DELIVERY-v1') throw new TypeError('BRAIN-DELIVERY-v1 policy is required');
+  if (policy.branchPolicy?.rebuildOnMainDrift !== false) throw new Error('branch policy must prohibit rebuilds for generic main drift');
   const sha = String(headSha ?? '').trim();
   if (!/^[a-f0-9]{12,40}$/i.test(sha)) throw new TypeError('valid headSha is required');
   const paths = unique(changedPaths.map(value => String(value).trim()).filter(Boolean)).sort();
@@ -39,6 +50,7 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
     headSha: sha,
     changedPaths: Object.freeze(paths),
     ignoredPaths: Object.freeze(ignored),
+    branchPolicy: Object.freeze({ ...policy.branchPolicy }),
     lanes: Object.freeze(lanes),
     integration: Object.freeze({
       required: lanes.length > 0,
@@ -59,77 +71,31 @@ export function evaluateNetlifyDeploySource({ gitDir, gitCommonDir, headSha, exp
   const actualHead = String(headSha ?? '').trim();
   const expectedHead = String(expectedSha ?? '').trim();
   const tree = String(treeSha ?? '').trim();
-  if (!/^[a-f0-9]{40}$/i.test(actualHead) || !/^[a-f0-9]{40}$/i.test(expectedHead) || !/^[a-f0-9]{40}$/i.test(tree)) {
-    throw new TypeError('full headSha, expectedSha and treeSha are required');
-  }
-  if (actualHead !== expectedHead) {
-    return Object.freeze({
-      ok: false,
-      state: 'DEPLOY_SOURCE_REJECTED',
-      action: 'CHECKOUT_EXACT_SHA',
-      reason: 'head_sha_mismatch',
-    });
-  }
+  if (!/^[a-f0-9]{40}$/i.test(actualHead) || !/^[a-f0-9]{40}$/i.test(expectedHead) || !/^[a-f0-9]{40}$/i.test(tree)) throw new TypeError('full headSha, expectedSha and treeSha are required');
+  if (actualHead !== expectedHead) return Object.freeze({ ok:false, state:'DEPLOY_SOURCE_REJECTED', action:'CHECKOUT_EXACT_SHA', reason:'head_sha_mismatch' });
   const actualGitDir = resolve(String(gitDir ?? '').trim());
   const commonGitDir = resolve(String(gitCommonDir ?? '').trim());
-  if (actualGitDir !== commonGitDir) {
-    return Object.freeze({
-      ok: false,
-      state: 'DEPLOY_SOURCE_REJECTED',
-      action: 'STAGE_STANDALONE_EXACT_SHA',
-      reason: 'linked_git_worktree',
-    });
-  }
-  return Object.freeze({
-    ok: true,
-    state: 'DEPLOY_SOURCE_READY',
-    action: 'DEPLOY_EXACT_SHA',
-    headSha: actualHead,
-    treeSha: tree,
-  });
+  if (actualGitDir !== commonGitDir) return Object.freeze({ ok:false, state:'DEPLOY_SOURCE_REJECTED', action:'STAGE_STANDALONE_EXACT_SHA', reason:'linked_git_worktree' });
+  return Object.freeze({ ok:true, state:'DEPLOY_SOURCE_READY', action:'DEPLOY_EXACT_SHA', headSha:actualHead, treeSha:tree });
 }
 
 export function discoverBrainMembership({ registeredComponents = [], agents = [], workflows = [] }) {
   const rows = [];
-  for (const component of registeredComponents) {
-    rows.push({ componentKey: `brain:${component.key}`, kind: 'BRAIN_COMPONENT', active: component.status === 'active' });
-  }
-  for (const agent of agents) {
-    rows.push({ componentKey: `agent:${agent.id}`, kind: 'AGENT', active: true });
-  }
-  for (const workflow of workflows) {
-    rows.push({
-      componentKey: `github-workflow:${basename(workflow).replace(/\.ya?ml$/i, '')}`,
-      kind: 'DELIVERY_SCENARIO',
-      active: true,
-    });
-  }
+  for (const component of registeredComponents) rows.push({ componentKey:`brain:${component.key}`, kind:'BRAIN_COMPONENT', active:component.status === 'active' });
+  for (const agent of agents) rows.push({ componentKey:`agent:${agent.id}`, kind:'AGENT', active:true });
+  for (const workflow of workflows) rows.push({ componentKey:`github-workflow:${basename(workflow).replace(/\.ya?ml$/i, '')}`, kind:'DELIVERY_SCENARIO', active:true });
   const seen = new Set();
   return Object.freeze(rows.map(row => {
     if (seen.has(row.componentKey)) throw new Error(`duplicate Brain member: ${row.componentKey}`);
     seen.add(row.componentKey);
-    return Object.freeze({
-      ...row,
-      brainContractVersion: 'brain.v1',
-      sharedContextRequired: true,
-      outcomeWritebackRequired: true,
-      costManaged: true,
-      securityGoverned: true,
-      productionAuthority: 'BG169',
-    });
+    return Object.freeze({ ...row, brainContractVersion:'brain.v1', sharedContextRequired:true, outcomeWritebackRequired:true, costManaged:true, securityGoverned:true, productionAuthority:'BG169' });
   }).sort((left, right) => left.componentKey.localeCompare(right.componentKey)));
 }
 
 async function repositoryMembership() {
   const registry = JSON.parse(await readFile('docs/brain/component-registry.json', 'utf8'));
-  const workflowNames = (await readdir('.github/workflows'))
-    .filter(name => /\.ya?ml$/i.test(name))
-    .map(name => `.github/workflows/${name}`);
-  return discoverBrainMembership({
-    registeredComponents: registry.components,
-    agents: DEFAULT_AGENT_TEAM,
-    workflows: workflowNames,
-  });
+  const workflowNames = (await readdir('.github/workflows')).filter(name => /\.ya?ml$/i.test(name)).map(name => `.github/workflows/${name}`);
+  return discoverBrainMembership({ registeredComponents:registry.components, agents:DEFAULT_AGENT_TEAM, workflows:workflowNames });
 }
 
 async function main() {
@@ -139,50 +105,38 @@ async function main() {
     const shaIndex = args.indexOf('--sha');
     const expectedSha = shaIndex >= 0 ? args[shaIndex + 1] : '';
     const result = evaluateNetlifyDeploySource({
-      gitDir: execFileSync('git', ['rev-parse', '--git-dir'], { encoding: 'utf8' }).trim(),
-      gitCommonDir: execFileSync('git', ['rev-parse', '--git-common-dir'], { encoding: 'utf8' }).trim(),
-      headSha: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+      gitDir: execFileSync('git', ['rev-parse', '--git-dir'], { encoding:'utf8' }).trim(),
+      gitCommonDir: execFileSync('git', ['rev-parse', '--git-common-dir'], { encoding:'utf8' }).trim(),
+      headSha: execFileSync('git', ['rev-parse', 'HEAD'], { encoding:'utf8' }).trim(),
       expectedSha,
-      treeSha: execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding: 'utf8' }).trim(),
+      treeSha: execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { encoding:'utf8' }).trim(),
     });
     await writeFile('.artifacts/netlify-deploy-source.json', `${JSON.stringify(result, null, 2)}\n`);
     const output = `${JSON.stringify(result)}\n`;
-    if (!result.ok) {
-      process.stderr.write(output);
-      process.exitCode = 1;
-      return;
-    }
-    process.stdout.write(output);
-    return;
+    if (!result.ok) { process.stderr.write(output); process.exitCode = 1; return; }
+    process.stdout.write(output); return;
   }
   if (command === 'membership') {
     const membership = await repositoryMembership();
-    await writeFile('.artifacts/brain-membership.json', `${JSON.stringify({ generatedAt: new Date().toISOString(), components: membership }, null, 2)}\n`);
-    process.stdout.write(`${JSON.stringify({ ok: true, components: membership.length })}\n`);
-    return;
+    await writeFile('.artifacts/brain-membership.json', `${JSON.stringify({ generatedAt:new Date().toISOString(), components:membership }, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ ok:true, components:membership.length })}\n`); return;
   }
   if (command !== 'plan') throw new Error(`unknown command: ${command}`);
   const baseIndex = args.indexOf('--base');
   const headIndex = args.indexOf('--head');
   const base = baseIndex >= 0 ? args[baseIndex + 1] : 'HEAD^';
   const head = headIndex >= 0 ? args[headIndex + 1] : 'HEAD';
-  const headSha = execFileSync('git', ['rev-parse', head], { encoding: 'utf8' }).trim();
-  const changedPaths = execFileSync('git', ['diff', '--name-only', `${base}...${head}`], { encoding: 'utf8' })
-    .split(/\r?\n/).filter(Boolean);
+  const headSha = execFileSync('git', ['rev-parse', head], { encoding:'utf8' }).trim();
+  const changedPaths = execFileSync('git', ['diff', '--name-only', `${base}...${head}`], { encoding:'utf8' }).split(/\r?\n/).filter(Boolean);
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({ changedPaths, headSha, policy });
   await writeFile('.artifacts/brain-delivery-plan.json', `${JSON.stringify(plan, null, 2)}\n`);
-  const matrix = JSON.stringify({ include: plan.lanes.map(lane => ({ id: lane.id })) });
+  const matrix = JSON.stringify({ include:plan.lanes.map(lane => ({ id:lane.id })) });
   if (process.env.GITHUB_OUTPUT) {
     const { appendFile } = await import('node:fs/promises');
     await appendFile(process.env.GITHUB_OUTPUT, `matrix=${matrix}\ntrace_id=${plan.traceId}\n`);
   }
-  process.stdout.write(`${JSON.stringify({ ok: true, traceId: plan.traceId, matrix: JSON.parse(matrix) })}\n`);
+  process.stdout.write(`${JSON.stringify({ ok:true, traceId:plan.traceId, matrix:JSON.parse(matrix) })}\n`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch(error => {
-    process.stderr.write(`${JSON.stringify({ ok: false, error: error.message })}\n`);
-    process.exitCode = 1;
-  });
-}
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().catch(error => { process.stderr.write(`${JSON.stringify({ ok:false, error:error.message })}\n`); process.exitCode = 1; });
