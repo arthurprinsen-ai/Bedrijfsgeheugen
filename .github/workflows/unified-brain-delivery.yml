@@ -1,0 +1,87 @@
+name: Unified Brain Delivery
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unified-brain-delivery-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      trace_id: ${{ steps.plan.outputs.trace_id }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - id: plan
+        name: Discover changed lanes and Brain membership
+        run: |
+          node tools/brain-delivery-system.mjs membership
+          node tools/brain-delivery-system.mjs plan --base "${{ github.event.pull_request.base.sha || github.event.before }}" --head "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: brain-delivery-plan
+          path: .artifacts/
+
+  lanes:
+    needs: plan
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify changed lane
+        run: |
+          case "${{ matrix.id }}" in
+            backend)
+              npm install --ignore-scripts --no-audit --no-fund
+              node scripts/brain/test-all.mjs
+              node --test tests/canonical-*.test.mjs tests/agent-fabric*.test.mjs tests/brain-*.test.mjs tests/cost-*.test.mjs
+              ;;
+            portal)
+              node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
+              ;;
+            website)
+              node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs
+              ;;
+          esac
+
+  integrate:
+    needs: [plan, lanes]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify one integrated release candidate
+        run: |
+          npm install --ignore-scripts --no-audit --no-fund
+          node tools/brain-delivery-system.mjs membership
+          node --test --test-concurrency=1 tests/*.test.mjs
+          node scripts/brain/test-all.mjs
+      - name: Hand exact candidate to existing Brain production authority
+        run: |
+          echo "BG169 promotes only exact green SHA ${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "BG168 routes the production outcome and BG167 refreshes shared current state"

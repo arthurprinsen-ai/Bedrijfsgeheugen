@@ -4,6 +4,27 @@ This ledger is append-only operational memory for material engineering outcomes.
 
 Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` and `CONTRACT_CHANGE`.
 
+## 2026-08-30 — CONTRACT_CHANGE — unified-brain-delivery-v1
+- **Fingerprint:** `delivery|brain-membership|backend-website-portal-v1`
+- **Signal:** backend, website and portal had strong individual gates but no single machine-enforced delivery envelope; integration and live promotion therefore waited on serial hand-offs and new workflows could exist outside whole-Brain onboarding.
+- **Impact:** slower time-to-live, duplicate verification and risk of isolated agent/scenario truth.
+- **Root cause:** component isolation was website-specific while repository-wide membership, lane discovery and release assembly were not one contract.
+- **Fix:** add `BRAIN-DELIVERY-v1`, automatic repository membership discovery, fail-closed path classification, concurrent backend/portal/website lane jobs and one integrated exact-SHA candidate governed by BG169/BG168/BG167.
+- **Owner:** Architect/Integrator with Reliability, Website/UX, Product/Portal and Integration/Make specialists.
+- **Regression gate:** `tests/brain-delivery-system.test.mjs` and `.github/workflows/unified-brain-delivery.yml`.
+- **Rollback:** remove only the new unified workflow/policy/tool; existing specialist gates and last-known-good production remain unchanged.
+- **Reusable lesson:** parallel work becomes faster only when ownership is disjoint and integration identity is singular; adding workers without one release envelope increases waiting and conflict.
+
+## 2026-08-30 — RECOVERY — unified-gate-caught-customer-portal-auth-race
+- **Fingerprint:** `portal|customer-auth|reload-before-open`
+- **Signal:** all three delivery lanes passed, but the unified integration gate caught the newly added `customer-portal-auth-race` contract on current `main`.
+- **Root cause:** authenticated offer state was stored and then the document reloaded; the accepted portal-open transition was never called in the same verified session.
+- **Fix:** after the offer is stored, call `toonPortaal({email:mail})` directly and remove the reload race. Classify `klantportaal.html` permanently as portal-owned delivery scope.
+- **Regression gate:** `tests/customer-portal-auth-race.test.mjs` plus the portal-lane classification test in `tests/brain-delivery-system.test.mjs`.
+- **Rollback:** previous production remains last-known-good until the combined candidate is green.
+- **Reusable lesson:** an integrated gate must include concurrent main changes; otherwise individually green lanes can still promote a broken combined outcome.
+- **Second hypothesis/result:** the first direct-open repair exposed that the new regression test asserted adjacency while the canonical transformer also persists `window.__KLANTEN__` before opening. The test now consumes the exported canonical handler. The final integration suite uses `--test-concurrency=1` because legacy build-contract tests mutate and restore the same generated homepage; product lanes remain concurrent.
+
 ## 2026-08-28 — ERROR — required-knowledge-files-missing
 - **Fingerprint:** `docs-contract|required-files|missing-on-main`
 - **Signal:** `AGENTS.md` mandates `docs/development-operating-system.md`, `docs/development-ledger.md` and `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`, but these files were absent from `main` after the self-healing/team-memory promotion.

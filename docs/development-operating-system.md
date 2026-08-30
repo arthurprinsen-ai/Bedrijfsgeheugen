@@ -19,6 +19,9 @@ This is the canonical execution flow for Bedrijfsgeheugen changes across develop
 13. If production regresses, rollback immediately to last-known-good and continue repair on the safe route.
 14. Write ERROR/RECOVERY/IMPROVEMENT/MISSED_OBLIGATION/AUTO_REPAIR/PRODUCTION_PROMOTION/PRODUCTION_ROLLBACK to the repo ledger and shared learning.
 
+## Parallel delivery sequence
+`BRAIN-DELIVERY-v1` is the mandatory release envelope for repository development. The planner discovers changed scope, automatically projects Brain membership, runs only affected backend/website/portal lanes concurrently, then verifies one integrated exact-SHA candidate. A lane cannot publish independently. BG169 owns promotion, BG168 owns material outcome routing and BG167 owns refreshed current-state visibility.
+
 ## Protected invariants
 - `NO SILENT FAILURE`.
 - `NO LOST OBLIGATION`.

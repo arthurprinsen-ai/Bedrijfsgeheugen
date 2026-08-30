@@ -11354,8 +11354,12 @@ window.__BG_LOOPT__ = function(K, slug){
       fout.textContent = 'Bezig met inloggen…';
 
       inloggen(mail, ww)
-        .then(function (sessie) { return haalOfferte(sessie.access_token, s).then(function (k) { bewaar(s, k, sessie.access_token); }); })
-        .then(function () { location.reload(); })
+        .then(function (sessie) { return haalOfferte(sessie.access_token, s).then(function (k) {
+          bewaar(s, k, sessie.access_token);
+          window.__KLANTEN__ = window.__KLANTEN__ || {};
+          window.__KLANTEN__[s] = k;
+          toonPortaal({email:mail});
+        }); })
         .catch(function (e) {
           knop.disabled = false;
           var m = (e && (e.error_description || e.msg || e.message)) || '';

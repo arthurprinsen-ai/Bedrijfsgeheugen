@@ -1,0 +1,46 @@
+{
+  "version": "BRAIN-DELIVERY-v1",
+  "brainContractVersion": "brain.v1",
+  "sharedPaths": [
+    "AGENTS.md",
+    "config/",
+    "docs/brain/",
+    "docs/development-",
+    "docs/outcome-obligations.md",
+    "scripts/brain/",
+    "tools/brain-delivery-system.mjs",
+    ".github/workflows/"
+  ],
+  "ignoredPaths": [
+    "docs/development-ledger-events/",
+    "docs/superpowers/"
+  ],
+  "lanes": [
+    {
+      "id": "backend",
+      "owner": "agent-integration-make",
+      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/"],
+      "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
+    },
+    {
+      "id": "portal",
+      "owner": "agent-product-opportunity",
+      "paths": ["portal/", "klantportaal.html", "netlify/functions/portaalvraag.mjs", "netlify/functions/portal-state.mjs"],
+      "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
+    },
+    {
+      "id": "website",
+      "owner": "agent-website-ux",
+      "paths": ["components/", "assets/", "pages/", "site/", "index.html", "styles.css", "script.js"],
+      "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
+    }
+  ],
+  "integration": {
+    "owner": "agent-reliability",
+    "singleCandidate": true,
+    "exactShaRequired": true,
+    "productionAuthority": "BG169",
+    "outcomeRouter": "BG168",
+    "currentStateProjection": "BG167"
+  }
+}

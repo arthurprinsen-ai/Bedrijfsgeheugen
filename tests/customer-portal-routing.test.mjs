@@ -36,6 +36,7 @@ test('production transform prevents customer offer routes from opening Netlify I
   const repaired = repairCustomerPortalAuth(klantportaal);
   assert.match(
     repaired,
-    /const bl=document\.getElementById\('btnLogin'\);\s*if\(bl\) bl\.addEventListener\('click',function\(\)\{\s*if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\) return;/m
+    /const bl=document\.getElementById\('btnLogin'\);\s*if\(bl\) bl\.addEventListener\('click',function\(\)\{\s*if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\)\{\s*if\(window\.__bgCustomerLogin\) window\.__bgCustomerLogin\(\);\s*return;/m
   );
+  assert.match(repaired, /window\.__bgCustomerLogin = function\(\)\{ var s=slug\(\); if\(s\) toonInlog\(s\); \};/);
 });
