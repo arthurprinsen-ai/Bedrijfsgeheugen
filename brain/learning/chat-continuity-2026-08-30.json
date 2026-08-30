@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "type": "CHAT_CONTINUITY_LEARNING_SET",
+  "date": "2026-08-30",
+  "scope": ["website", "github", "netlify", "seo", "navigation", "agents", "release"],
+  "source": {
+    "ledger_event": "docs/development-ledger-events/2026-08-30-chat-continuity-website-recovery.md",
+    "accepted_test_source_pr": 110,
+    "accepted_test_source_sha": "5a8cc121691200231f9b7a00eed5fdcff9764678",
+    "recovery_pr": 187,
+    "verified_content_sha": "eb27982ecc5f25af06a71333a52a91f7d7a78b30"
+  },
+  "protected_primary_routes": [
+    "/problemen",
+    "/oplossingen",
+    "/bedrijfsgeheugen",
+    "/prijzen",
+    "/cases",
+    "/kennis",
+    "/over-ons"
+  ],
+  "protected_account_routes": ["/inloggen", "/aanmelden"],
+  "cta_route": "/frisse-blik",
+  "fingerprints": [
+    {
+      "id": "website|semantic-content-drift|technically-green-but-wrong",
+      "prevent": "Use accepted semantic/navigation baseline, not chronology, and block production on unexpected semantic drift."
+    },
+    {
+      "id": "website|recovery|slow-page-by-page-archaeology",
+      "prevent": "Start from accepted baseline, diff once, restore only proven drift, preserve non-conflicting technical improvements."
+    },
+    {
+      "id": "website|shared-shell|domcontentloaded-race",
+      "prevent": "Keep one canonical shell and explicitly materialize it for source-based CI consumers."
+    },
+    {
+      "id": "website|mobile-nav|duplicate-controller",
+      "prevent": "assets/js/menu.js is the sole mobile behavior owner; do not add a second drawer/controller."
+    },
+    {
+      "id": "website|seo|runtime-shell-vs-source-parser",
+      "prevent": "Make runtime/source representation transforms explicit and deterministic; never weaken the checker to hide representation drift."
+    },
+    {
+      "id": "website|seo|restored-route-orphan",
+      "prevent": "Restored routes need logical incoming internal links in addition to route existence."
+    },
+    {
+      "id": "tests|implementation-coupling|stale-assertion",
+      "prevent": "Test business/architecture invariants at the canonical owner; do not enforce obsolete copy-paste implementations."
+    },
+    {
+      "id": "delivery|debugging|speculative-fix-loop",
+      "prevent": "Read the exact red gate, isolate one concrete failure, apply minimum root-cause fix, rerun same candidate scope."
+    },
+    {
+      "id": "github|parallel-agents|moving-main",
+      "prevent": "Refresh base before state-dependent writes/merge; exact SHA is release identity; synchronize only on real overlap/dependency conflict."
+    },
+    {
+      "id": "delivery|no-op-commit|unnecessary-ci-rebuild",
+      "prevent": "Use PR metadata actions for administrative changes; avoid source no-op commits that trigger new CI/Netlify work."
+    }
+  ],
+  "canonical_owners": {
+    "navigation_catalog": "site/navigation-baseline.json",
+    "accepted_site_baseline": "site/accepted-baseline.json",
+    "mobile_navigation_behavior": "assets/js/menu.js",
+    "site_baseline_guardian": "tests/site-baseline-guardian.test.mjs",
+    "source_shell_materialization": ".github/scripts/sitecustomize.py"
+  },
+  "required_release_evidence": [
+    "exact commit SHA",
+    "exact Netlify deploy/artifact",
+    "V18 Production Promotion green",
+    "Live Preview Smoke green",
+    "Pagina- en SEO-controle green",
+    "Shared Agent Memory Tests green",
+    "desktop and mobile runtime evidence"
+  ],
+  "fast_path_rules": [
+    "accepted baseline first",
+    "one diff and route inventory before edits",
+    "one canonical owner per concern",
+    "parallelize independent gates",
+    "exact failure then minimal fix",
+    "avoid no-op commits",
+    "preview does not equal production acceptance",
+    "green means outcome verified, not merely technical success",
+    "write every material new failure/fix/prevention back to shared memory"
+  ],
+  "agent_instruction": "Before related website, SEO, GitHub, Netlify or recovery work, fingerprint-match this learning set and the development ledger. Reuse proven fixes and gates before inventing new recovery paths."
+}
