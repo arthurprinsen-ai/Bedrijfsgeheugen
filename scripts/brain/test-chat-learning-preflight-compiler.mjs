@@ -48,5 +48,11 @@ assert.match(
   /vóór (debuggen|materieel werk|ontwerpen|wijzigen|uitvoeren)/i,
   'AGENTS.md must require preflight before material execution'
 );
+assert.match(agentsContract, /status: READY/, 'AGENTS.md must require a READY preflight result');
+assert.match(
+  agentsContract,
+  /CHAT_LEARNING_PREFLIGHT_FAILED/,
+  'AGENTS.md must keep material execution fail-closed when preflight fails'
+);
 
 console.log(`PASS chat-learning preflight compiler: ${packet.sources.length} sources, ${packet.totalBytes} bytes`);
