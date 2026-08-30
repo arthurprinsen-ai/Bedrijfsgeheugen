@@ -1,0 +1,92 @@
+{
+  "version": 3,
+  "type": "POWERHOUSE_BLOCKED_CURRENT_STATE",
+  "date": "2026-08-30",
+  "fingerprint": "make|organization-limit|all-scenario-runs-blocked",
+  "component": {"platform":"Make","organization_id":8354941,"team_id":2138086,"zone":"eu1.make.com"},
+  "state": "BLOCKED_HARD_BOUNDARY",
+  "root_cause": "Make refuses scenario execution because the organization or team is paused after exceeding operations or data-transfer capacity. More paid capacity is outside autonomous agent authority.",
+  "current_behavior": [
+    "Scenario configuration/read/deactivation remains possible, but scenario execution is refused while the organization/team is paused.",
+    "Notion Query Data Source is independently unavailable with usage_limit_reached; that query is not evidence of an empty dataset.",
+    "Recovery load shedding has disabled selected non-P0 scheduled analysis/learning scenarios so they cannot immediately consume restored capacity."
+  ],
+  "safe_state": {
+    "bg89_production_filter_saved": true,
+    "bg89_production_filter_contract": "Interaction Key rich_text must not contain network- before commercial scoring/writeback.",
+    "bg89_production_active": false,
+    "bg89_projection_cutover_done": false,
+    "bg89_trigger_cursor_parity_verified": false,
+    "network_cleanup_captured_rows": 56,
+    "network_cleanup_applied_to_captured_rows": true,
+    "network_cleanup_exact_zero_count_verified": false,
+    "network_cleanup_zero_count_blocker": "Notion query_data_sources usage_limit_reached",
+    "temporary_bg89_scenarios_active": 0,
+    "ab_parity_scenario_id": 7165089,
+    "ab_parity_scenario_active": false
+  },
+  "recovery_load_shed": [
+    {"scenario_id":7036518,"name":"BG 89 - Signal Fusion Engine - delta efficient","isActive":false,"reason":"known correctness incident + highest observed transfer driver; require repaired-gate runtime proof before reactivation","lifetime_observed":{"credits":4183,"dataTransferBytes":78995448}},
+    {"scenario_id":6804589,"name":"BG 14 - Narrative calibration + adaptive learning controller v2 retry-safe","isActive":false,"reason":"non-P0 daily learning; keep atomic lock but delay automatic AI work until headroom exists","lifetime_observed":{"credits":1015.06,"dataTransferBytes":7179563}},
+    {"scenario_id":7038601,"name":"BG 97 - Powerhouse Trading Loop dispatcher v1.4 bounded5 fresh6h","isActive":false,"reason":"non-P0 trading analysis with repeated wide Notion transfer before local filtering","lifetime_observed":{"credits":1322,"dataTransferBytes":44532513}},
+    {"scenario_id":7053689,"name":"BG 98 v3.20 - Cost-Bounded Topic-Gated Research Registry Loop","isActive":false,"reason":"non-P0 external research; high lifetime credit/transfer footprint","lifetime_observed":{"credits":4862,"dataTransferBytes":46654573}},
+    {"scenario_id":7035987,"name":"BG 87 - SEO Learning native GSC+GA4 v4 deterministic","isActive":false,"reason":"weekly analytics/learning; can resume after critical runtime headroom is protected","lifetime_observed":{"credits":1231.42,"dataTransferBytes":2383886}},
+    {"scenario_id":7046838,"name":"BG 107 - Native LinkedIn Company Metrics v2","isActive":false,"reason":"daily social analytics, not P0 publishing/inbound","lifetime_observed":{"credits":146,"dataTransferBytes":3076716}},
+    {"scenario_id":7141270,"name":"BG 180 - Native Instagram Metrics + Scene Learning v2","isActive":false,"reason":"daily social analytics/learning, not P0 publishing/inbound","lifetime_observed":{"credits":98,"dataTransferBytes":1127795}}
+  ],
+  "verified_evidence": [
+    "Natural BG89 execution 72ca35e9e68b41ecbf199688db528a0a proved operational network-* rows were incorrectly commercially scored before the filter repair.",
+    "Blast-radius SQL count before cleanup was exactly 56 rows matching Interaction Key network-*, Modelversie OpportunityMarket-v2.1-attribution and Opportunity Updated present.",
+    "Direct-Notion cleanup canary on page 3cada36a-ac8a-8196-9498-c7e62b6b6782 cleared only BG89-owned fields while preserving operational network identity/payload fields.",
+    "All captured cleanup pages received the same clear operation; one typo request was atomically rejected and then corrected successfully.",
+    "A-B no-write parity is GREEN on real BG98 research, LinkedIn DM and LinkedIn company record classes with zero deterministic scorer diffs.",
+    "PR #694 merged to main as 1a3501a0e9e8e7af24759ecd06127f0025e0aa6c and contains durable failure/prevention lessons.",
+    "TMP BG89 inventory readback shows every TMP BG89 scenario isActive=false; BG89 A-B Projection Parity v1 no-write is also isActive=false.",
+    "BG14 historical burst executions 9211336029124695ac1be09d8388cd4d, bf55ccdb9a3c4bd7974a32cbca229ca3 and a3fa5160d3ba42e38dc0f40002234ee6 consumed 144.63, 99.72 and 47.26 credits.",
+    "After BG14 atomic run-lock, execution 86499e07b2f3422cb5e279cda8631dda stopped after modules 14+15 at 2 operations/3 credits; module15 produced duplicate-key for bg14-run:2980196 and no Notion/AI modules executed.",
+    "Fresh scenario-list readbacks verify all seven recovery_load_shed scenario IDs above are isActive=false."
+  ],
+  "proven_prevention_patterns": [
+    {"id":"ATOMIC_RESERVATION_BEFORE_EXPENSIVE_FANOUT","fingerprint":"make|overlap|duplicate-expensive-run","rule":"Before Notion/AI/paid fan-out, create a short-TTL atomic reservation on a stable time/idempotency key. Duplicate-key is an expected cheap terminal no-action, not an error to retry.","proof":"BG14 duplicate overlap reduced to 2 operations/3 credits and stopped before paid AI after a prior 144.63/99.72/47.26-credit burst."},
+    {"id":"FULL_NOTION_WATCH_TRANSFER_BEFORE_FILTER","fingerprint":"make|notion-watch|large-record-before-local-filter","rule":"A bounded Watch can still be transfer-expensive because full wide Datahub records arrive before local filtering. A candidate replacement is a bounded field-projected query only after trigger/cursor/backlog/freshness parity.","proof":"BG97 no-op successes used only 1 operation/1 credit but about 248-279 KB each; its current Notion watchDatabaseItems limit=5 sends the full properties array to local code."},
+    {"id":"CAPACITY_RECOVERY_REQUIRES_LOAD_SHEDDING","fingerprint":"make|hard-pause|all-schedules-resume-burst","rule":"Before capacity restoration can cause execution again, keep non-P0 scheduled analytics/research/learning disabled and restore them one-by-one only after protected critical headroom is proven.","proof":"Seven known non-P0/high-cost or unsafe-unverified scheduled scenarios were explicitly set isActive=false while Make remained capacity-paused."}
+  ],
+  "next_cost_candidates": [
+    {"scenario_id":7038601,"name":"BG 97 - Powerhouse Trading Loop dispatcher v1.4 bounded5 fresh6h","recent_noop_cost":"1 operation / 1 credit / approximately 248-279 KB","safe_next_step":"Derive scorer dependency projection and prove no-write same-input trigger/cursor/backlog/freshness parity before trigger replacement."},
+    {"scenario_id":6804589,"name":"BG 14 - Narrative calibration + adaptive learning controller v2 retry-safe","status":"atomic anti-overlap guard runtime-proven; preserve before paid fan-out."}
+  ],
+  "forbidden_while_blocked": [
+    "Do not retry Make scenario_run while the organization/team remains hard-paused.",
+    "Do not buy, upgrade or enable additional paid capacity autonomously.",
+    "Do not reactivate TMP/shadow/parity scenarios merely because capacity returns.",
+    "Do not reactivate the recovery_load_shed set all at once; restore one lane at a time after headroom proof.",
+    "Do not claim network cleanup remaining=0 until an exact fresh query proves it.",
+    "Do not reactivate BG89 until the saved network exclusion receives a fresh bounded runtime canary.",
+    "Do not cut BG89 production ownership to projected query until trigger/cursor/backlog/freshness parity is runtime-proven.",
+    "Do not remove/bypass atomic pre-fanout reservation to make a duplicate run proceed."
+  ],
+  "resume_contract": [
+    "First read Make organization/team runtime state; never infer recovery from elapsed time.",
+    "If still hard-paused: coalesce the same blocker fingerprint and perform no paid retries.",
+    "If capacity is restored: leave all TMP/parity and recovery_load_shed scenarios inactive initially.",
+    "Confirm critical publishing, inbound/commercial action handling, approvals and self-heal have protected runtime headroom before restoring analytics/learning.",
+    "For BG89, verify saved Interaction Key network- exclusion and run exactly one bounded production-equivalent canary before reactivation.",
+    "Verify BG89 trigger/cursor/backlog/freshness parity before any projected trigger cutover.",
+    "When Notion query_data_sources is available, execute exactly one count for network-* + BG89 Modelversie + Opportunity Updated present and require remaining=0.",
+    "Restore non-P0 scenarios one at a time, observe incremental credit/transfer burn and keep only lanes within budget/protected metrics.",
+    "For recurring paid/AI scenarios verify atomic reservation/dedupe occurs before expensive fan-out.",
+    "After material proof, update durable learning/current state and refresh shared team context through the governed learning route when Make is available."
+  ],
+  "ownership": {"primary":"cost/reliability owner agent","production_scenario_owner":"BG89 Signal Fusion Engine","promotion_authority":"BG169 for GitHub-backed production changes"},
+  "success_criteria": [
+    "Make platform capacity is directly observed available.",
+    "Critical P0/P1 production obligations have reserved/proven runtime headroom before noncritical restoration.",
+    "No temporary BG89 test scenario is active unless intentionally executing one bounded canary.",
+    "Network contamination exact remaining count is 0.",
+    "BG89 network exclusion is preserved and runtime-proven before reactivation.",
+    "Projected read cutover, if pursued, has scorer parity plus trigger/cursor/backlog/freshness parity.",
+    "Recurring expensive flows have pre-fanout dedupe/coalescing or evidence-backed exception.",
+    "Non-P0 recovery_load_shed lanes are restored one-by-one only within budget and protected metrics.",
+    "Any production change has exact candidate identity, rollback and fresh production evidence."
+  ]
+}
