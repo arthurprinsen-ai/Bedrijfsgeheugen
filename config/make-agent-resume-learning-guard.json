@@ -3,11 +3,13 @@
   "state": "BLOCKED_PENDING_CALLER_GUARDS_AND_RUNTIME_EVIDENCE",
   "resumeAllowed": false,
   "purpose": "Prevent Make team-capacity recovery from automatically re-exposing active PH agents that still invoke BG168 for every AI result, including non-material outcomes.",
-  "confirmedAffectedScenarioIds": [7088558, 7088574, 7088579, 7088656, 7089148],
+  "confirmedAffectedScenarioIds": [7088532,7088558,7088574,7088579,7088585,7088656,7089148],
   "confirmedAffectedAgents": [
+    "PH Agent 03 - Intelligence v3 stable runner",
     "PH Agent 09 - Telemetry Self-Healing v3 stable runner",
     "PH Agent 11 - QA Regression v3 stable runner",
     "PH Agent 12 - Knowledge Governance v3 stable runner",
+    "PH Agent 13 - Architect Integrator v3 stable runner",
     "PH Agent 14 - Make Cost Optimizer v3 stable runner",
     "PH Agent 16 - System Performance Optimizer v3 stable runner"
   ],
