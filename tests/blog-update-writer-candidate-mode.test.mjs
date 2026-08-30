@@ -24,3 +24,13 @@ test('automatic runs retain direct delivery and shared repository serialization'
   assert.match(text, /group:\s*repo-schrijven/);
   assert.match(text, /cancel-in-progress:\s*false/);
 });
+
+test('operational verification is local, candidate-only and bypasses paid/external generation', () => {
+  assert.match(text, /verification_mode:/);
+  assert.match(text, /VERIFICATION_MODE/);
+  assert.match(text, /VERIFICATION_REQUIRES_CANDIDATE_PR/);
+  assert.match(text, /writer-verification-blog-update/);
+  assert.match(text, /sitemap\.xml/);
+  assert.match(text, /Artikel bijwerken[\s\S]*?if:[^\n]*inputs\.verification_mode/);
+  assert.match(text, /Notion op Goedgekeurd zetten[\s\S]*?inputs\.verification_mode/);
+});

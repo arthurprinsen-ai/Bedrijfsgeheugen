@@ -22,6 +22,11 @@ on:
         options:
           - direct
           - candidate-pr
+      verification_mode:
+        description: 'Gebruik uitsluitend een lokale operationele fixture; nooit Notion of betaalde AI'
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: write
@@ -50,7 +55,46 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DB: ${{ secrets.NOTION_BLOG_DB }}
           FORCE_SLUG: ${{ github.event.inputs.slug }}
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
+          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
         run: |
+          set -euo pipefail
+          if [ "$VERIFICATION_MODE" = "true" ]; then
+            if [ "$DELIVERY_MODE" != "candidate-pr" ]; then
+              echo "::error::VERIFICATION_REQUIRES_CANDIDATE_PR"
+              exit 1
+            fi
+            slug="writer-verification-blog-update"
+            target="blog/$slug/index.html"
+            mkdir -p "$(dirname "$target")"
+            cat > "$target" <<'HTML'
+          <!doctype html>
+          <html lang="nl">
+          <head>
+            <meta charset="utf-8">
+            <title>Writer verification blog update</title>
+            <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/blog/writer-verification-blog-update/">
+            <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Writer verification blog update","datePublished":"2026-01-01","dateModified":"2026-08-30"}</script>
+          </head>
+          <body><h1>Writer verification blog update</h1><h2>Writer verification blog update</h2><p>Lokale operationele verificatie; nooit publiceren.</p></body>
+          </html>
+          HTML
+            printf '\n<!-- writer-verification-blog-update -->\n' >> sitemap.xml
+            {
+              echo "gevonden=true"
+              echo "page_id="
+              echo "slug=$slug"
+              echo "titel=Writer verification blog update"
+              echo "zoekwoord=writer verification blog update"
+              echo "meta=Lokale operationele verificatie"
+              echo "interne_links="
+              echo "seo_blok="
+              echo "paginatype=verification"
+              echo "cluster=verification"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           python3 - <<'PY'
           import json, os, urllib.request, pathlib, uuid
 
@@ -147,7 +191,7 @@ jobs:
           echo "lijst=$(ls -d blog/*/ 2>/dev/null | sed 's|blog/||;s|/||' | paste -sd', ')" >> "$GITHUB_OUTPUT"
 
       - name: Artikel bijwerken
-        if: steps.kalender.outputs.gevonden == 'true'
+        if: steps.kalender.outputs.gevonden == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -327,7 +371,7 @@ jobs:
             --body "Gecontroleerde candidate uit blog-bijwerken. Base SHA: $BASE_SHA. Notion blijft op Voorstel klaar totdat de wijziging werkelijk is gepromoveerd. Deze workflow merge't zichzelf niet."
 
       - name: Notion op Goedgekeurd zetten na succesvolle directe publicatie
-        if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != '' && steps.commit.outputs.delivery == 'direct'
+        if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != '' && steps.commit.outputs.delivery == 'direct' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           PAGE_ID: ${{ steps.kalender.outputs.page_id }}
