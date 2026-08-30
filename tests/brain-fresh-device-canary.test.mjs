@@ -17,3 +17,5 @@ test('fresh device canary runs on a clean hosted runner and certifies a non-prot
   assert.match(workflow, /GITHUB_TOKEN:\s*\$\{\{ secrets\.GITHUB_TOKEN \}\}/);
   assert.match(workflow, /actions\/upload-artifact@v4/);
 });
+
+// Operational re-certification trigger: 2026-08-30 current-main proof only; DO NOT MERGE.
