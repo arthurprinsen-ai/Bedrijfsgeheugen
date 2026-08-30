@@ -5,6 +5,12 @@
     {"id":"STRIP_SQL_COMMENTS_BEFORE_SEMANTIC_ASSERTIONS","active":true,"enforcedBy":"supabase-semantic-test-normalization-contract","scope":"backend"},{"id":"DO_NOT_AUTO_FIX_PERFORMANCE_INFO","active":true,"enforcedBy":"supabase-performance-governor","scope":"backend"},{"id":"REVOKE_ALL_BEFORE_LEAST_PRIVILEGE_GRANT","active":true,"enforcedBy":"supabase-strict-privilege-contract","scope":"backend"},{"id":"READ_LIVE_SCHEMA_BEFORE_EVIDENCE_WRITE","active":true,"enforcedBy":"brain-evidence-schema-contract","scope":"backend"},{"id":"REQUIRE_OBSERVED_SCHEDULER_RUN_BEFORE_AUTONOMY_CLAIM","active":true,"enforcedBy":"outcome-obligation-operational-certification","scope":"automation"},{"id":"NO_NOOP_MIGRATION_FOR_TRIGGER_PROOF","active":true,"enforcedBy":"supabase-trigger-proof-contract","scope":"backend"},{"id":"USE_EXACT_SHA_EVENT_FINGERPRINTS","active":true,"enforcedBy":"outcome-obligation-event-idempotency-contract","scope":"automation"},{"id":"CLASSIFY_NEW_RUNTIME_TOOL_PATHS","active":true,"enforcedBy":"brain-delivery-classifier-contract","scope":"shared"},
     {"id":"NETLIFY_DEPLOY_INSTRUCTION_IS_NOT_EXECUTION","active":true,"enforcedBy":"netlify-deploy-readback-contract","scope":"shared"},
     {"id":"RUNTIME_DNS_FAILURE_IS_INFRA_BOUNDARY","active":true,"enforcedBy":"runtime-infrastructure-boundary-contract","scope":"shared"},
-    {"id":"PRODUCTION_PARITY_MISMATCH_REQUIRES_RECOVERY","active":true,"enforcedBy":"production-promotion-guardian-plus-recovery-obligation","scope":"shared"}
+    {"id":"PRODUCTION_PARITY_MISMATCH_REQUIRES_RECOVERY","active":true,"enforcedBy":"production-promotion-guardian-plus-recovery-obligation","scope":"shared"},
+    {"id":"AUTO_REGISTER_FUTURE_COMPONENTS","active":true,"enforcedBy":"brain-registration-and-cost-membership-gates","scope":"shared"},
+    {"id":"MARK_UNMETERED_USAGE_NOT_ZERO","active":true,"enforcedBy":"provider-usage-ledger-plus-cost-dashboard-contract","scope":"shared"},
+    {"id":"REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN","active":true,"enforcedBy":"bg169-production-readback-contract","scope":"shared"},
+    {"id":"CLASSIFY_PRIVATE_AUTH_BEFORE_PUBLIC_SEO_SCANS","active":true,"enforcedBy":"seo-route-scope-classifier","scope":"website"},
+    {"id":"REQUIRE_AUTHORIZED_CONNECTOR_FOR_REMOTE_WRITES","active":true,"enforcedBy":"remote-write-authorization-contract","scope":"shared"},
+    {"id":"REQUIRE_ACTIVE_RULE_FOR_REQUIRED_CHAT_LESSON","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"}
   ]
 }
