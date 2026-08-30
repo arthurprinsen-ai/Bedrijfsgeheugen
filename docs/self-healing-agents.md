@@ -57,13 +57,30 @@ Golden baseline vanaf 2026-08-28:
 - geen playbackRate-hack, alternate controller, WebP-vervanging of IntersectionObserver-playback;
 - diagnose beschikbaar via `?video-debug=1`.
 
+Volledig failure- en acceptatiecontract: `docs/hero-video-iphone-contract.md`.
+
 Self-healregels voor deze baseline:
 1. bij een nieuwe hero-regressie eerst exact deze baseline als control herstellen/vergelijken;
 2. slechts één variabele tegelijk wijzigen;
 3. controller en fallback-reset als invarianten behandelen;
 4. build/runtime-diagnostiek verzamelen vóór bron- of architectuurwissels;
 5. geen nieuwe aanpak promoveren tot baseline zonder fysieke-device acceptatie van de exacte immutable HTTPS-deploy;
-6. indien een agent tegelijk aan dezelfde hero-builder/testbestanden werkt: conflicterende writer stoppen, nieuwste branchstate opnieuw lezen en één coherente wijziging uitvoeren; geen parallelle writes op dezelfde bestanden.
+6. indien een agent tegelijk aan dezelfde hero-builder/testbestanden werkt: conflicterende writer stoppen, nieuwste branchstate opnieuw lezen en één coherente wijziging uitvoeren; geen parallelle writes op dezelfde bestanden;
+7. AI/OpenArt-output altijd als onbetrouwbare bronmedia classificeren totdat metadata en webdeliveryprofiel zijn gevalideerd;
+8. raw OpenArt met afwijkende hoogte/fps/audio nooit rechtstreeks als hero promoten; eerst candidate-normalisatie naar de bewezen klasse, daarna preview + device-test;
+9. een falende candidate nooit proberen te redden door tegelijk controller/startlogica aan te passen; dat vernietigt de control;
+10. bij `GitHub 409`, onverwachte branch-head of veranderde QA-verwachting: geen retry-loop. Eerst ownership/state reconciliëren.
+
+## Writer ownership / agent-race preventie
+Periodieke guardians, self-healers en interactieve agents delen dezelfde repo en mogen daarom niet onafhankelijk dezelfde semantische obligation bezitten.
+
+Voor iedere write:
+- bepaal canonical owner voor bestand/scope;
+- inventariseer actuele branch-head en bestaande write-in-flight wanneer zichtbaar;
+- één writer per bestand/scope tegelijk;
+- na conflict altijd opnieuw fetchen; nooit schrijven met stale SHA;
+- builder en bijbehorende QA/gate gelden als één coherente wijzigingsunit;
+- een agent die een andere geldige write aantreft, integreert die state in plaats van hem blind te overschrijven.
 
 ## Stopgrenzen
 Autonome self-healing stopt uitsluitend wanneer de volgende stap één van deze grenzen raakt:
@@ -88,6 +105,9 @@ We sturen op:
 - aantal herhaalde foutklassen;
 - deploy success rate;
 - aantal handmatige interventies;
-- tijd van foutmelding tot groene preview.
+- tijd van foutmelding tot groene preview;
+- stale-write/409-conflicten;
+- aantal keren dat een golden baseline onnodig werd aangeraakt;
+- percentage media-candidates dat vóór device-test automatisch op profiel wordt afgekeurd.
 
 Doel: herhaalde foutklassen dalen richting nul en dezelfde fout wordt na één incident voortaan automatisch onderschept.
