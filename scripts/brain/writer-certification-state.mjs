@@ -43,6 +43,6 @@ export function computeWriterProofReady(writer){
     writer.merged===true);
 }
 
-export function computeMainProtectionReady(writers){
+export function computeWriterMigrationReady(writers){
   return Array.isArray(writers) && writers.length>0 && writers.every(computeWriterProofReady);
 }
