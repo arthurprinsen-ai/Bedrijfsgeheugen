@@ -1,0 +1,39 @@
+{
+  "version": "BG184-STATEFUL-BLOCKER-DEDUPE-v1",
+  "productionScenarioId": 7147086,
+  "stagingScenarioId": 7165551,
+  "state": "BLOCKED_PENDING_RUNTIME_EVIDENCE",
+  "promotionAllowed": false,
+  "purpose": "Prevent unchanged known BG184 blockers from repeatedly invoking paid BG168 learning and recovery orchestration while preserving immediate redispatch for changed blocker state and bounded periodic escalation.",
+  "reservation": {
+    "dataStoreId": 174105,
+    "windowSeconds": 21600,
+    "identityParts": ["record_id", "blocker_state_hash", "six_hour_bucket"],
+    "keyShape": "bg184-blocker:<record_id>:<state_hash>:<six_hour_bucket>",
+    "writeBeforePaidDispatch": true,
+    "duplicateBehavior": "COALESCED_KNOWN_BLOCKER",
+    "stateChangeCreatesNewIdentity": true
+  },
+  "invariants": {
+    "sameStateWithinWindowDownstreamDispatchesMax": 1,
+    "stateChangeMayDispatchImmediately": true,
+    "duplicateReservationRunsBG168": false,
+    "duplicateReservationRunsRecoveryOrchestrator": false,
+    "productionScenarioRemainsUnchangedUntilRuntimeProof": true,
+    "stagingMustRemainInactiveOutsideControlledProof": true,
+    "paidCapacityIncreaseAllowedAutonomously": false
+  },
+  "runtimeEvidence": {
+    "requiredBeforePromotion": true,
+    "required": [
+      "first unresolved state reserves successfully and dispatches BG168 plus governed recovery once",
+      "second identical unresolved state in the same six-hour bucket is coalesced before both paid downstream calls",
+      "changed blocker state generates a different state hash and may dispatch immediately",
+      "primary safe-auto-repair branch remains behaviorally equivalent to BG184 production",
+      "not-due branch remains behaviorally equivalent to BG184 production",
+      "credit consumption for an unchanged repeated blocker is lower than current production baseline",
+      "no 429 or capacity escalation occurs during controlled proof"
+    ]
+  },
+  "promotionRule": "Blueprint readback or repository CI green is not runtime green. Keep production unchanged and promotionAllowed=false until all runtime evidence is observed on staging scenario 7165551 under safe available capacity."
+}
