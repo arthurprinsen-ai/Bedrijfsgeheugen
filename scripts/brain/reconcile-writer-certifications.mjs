@@ -14,11 +14,30 @@ for(const file of files){
   let evidence;
   try { evidence=JSON.parse(fs.readFileSync(full,'utf8')); } catch { continue; }
   if(evidence.contract!=='BRAIN-DELIVERY-v2') continue;
-  if(evidence.truth_status!=='VERIFIED'||evidence.status!=='COMPLETED') continue;
   if(evidence.proof!=='operational-candidate-shadow-flow') continue;
   if(evidence.outcome_router!=='BG168'||evidence.current_state_projection!=='BG167') continue;
   const writer=writers.get(evidence.writer);
   if(!writer) throw new Error(`UNKNOWN_CERTIFIED_WRITER:${evidence.writer}`);
+
+  const projectionVerified=
+    evidence.projection_verification?.bg168_routed===true &&
+    evidence.projection_verification?.bg167_visible===true &&
+    evidence.projection_verification?.verified===true;
+  const certificationComplete=
+    evidence.truth_status==='VERIFIED' &&
+    evidence.status==='COMPLETED' &&
+    projectionVerified;
+
+  if(!certificationComplete){
+    if(writer.operationalEvidence?.certificationEvidence===full){
+      writer.candidateMode='merged_unverified';
+      writer.operationalCandidateVerified=false;
+      delete writer.operationalEvidence;
+      changed=true;
+    }
+    continue;
+  }
+
   const required=['verification_pr','candidate_pr','candidate_branch','candidate_base_sha','candidate_head_sha','shadow_run_id','shadow_artifact'];
   for(const key of required) if(evidence[key]===undefined||evidence[key]===null||evidence[key]==='') throw new Error(`INCOMPLETE_CERTIFICATION:${evidence.writer}:${key}`);
 
@@ -34,6 +53,7 @@ for(const file of files){
     exactHeadVerified:evidence.shadow_checks?.exact_head_verified===true,
     certificationEvidence:full,
     idempotencyKey:evidence.idempotency_key,
+    projectionVerification:evidence.projection_verification,
   };
   if(evidence.shadow_job_id!==undefined) nextEvidence.shadowJobId=Number(evidence.shadow_job_id);
   if(evidence.artifact_id!==undefined) nextEvidence.artifactId=Number(evidence.artifact_id);
@@ -49,6 +69,5 @@ for(const file of files){
 
 migration.mainProtectionReady=migration.writers.every(writer=>writer.structuralContractVerified===true&&writer.operationalCandidateVerified===true&&writer.parityVerified===true&&writer.rollbackVerified===true);
 const output=JSON.stringify(migration,null,2)+'\n';
-if(write&&changed) fs.writeFileSync(migrationPath,output);
-else if(write&&!changed) fs.writeFileSync(migrationPath,output);
+if(write) fs.writeFileSync(migrationPath,output);
 process.stdout.write(JSON.stringify({changed,mainProtectionReady:migration.mainProtectionReady,certified:migration.writers.filter(w=>w.operationalCandidateVerified).map(w=>w.name)})+'\n');
