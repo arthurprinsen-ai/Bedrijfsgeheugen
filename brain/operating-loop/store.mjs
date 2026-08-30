@@ -1,4 +1,5 @@
 import {normalizeBrainRecord,deriveLoopState} from './model.mjs';
+import {prioritizeIntelligence} from './intelligence.mjs';
 const enc=v=>encodeURIComponent(String(v));
 const prefixFor=tenantId=>`${enc(tenantId)}/records/`;
 const keyFor=(tenantId,id)=>`${prefixFor(tenantId)}${enc(id)}`;
@@ -12,8 +13,8 @@ export function createOperatingLoopStore(adapter,{now=()=>new Date().toISOString
       const envelope={idempotencyKey:String(input.idempotencyKey),storedAt:now(),record};await adapter.put(key,envelope);return {duplicate:false,record};
     },
     async getProjection(tenantId){
-      const entries=await adapter.list(prefixFor(tenantId));const records=entries.map(entry=>entry.value?.record).filter(Boolean).sort((a,b)=>String(a.observedAt).localeCompare(String(b.observedAt)));const state=deriveLoopState(records);
-      return {schemaVersion:'brain-operating-projection.v1',tenantId:String(tenantId),records,state,advice:state.advice};
+      const entries=await adapter.list(prefixFor(tenantId));const records=entries.map(entry=>entry.value?.record).filter(Boolean).sort((a,b)=>String(a.observedAt).localeCompare(String(b.observedAt)));const state=deriveLoopState(records);const prioritizedAdvice=prioritizeIntelligence(records);
+      return {schemaVersion:'brain-operating-projection.v1',tenantId:String(tenantId),records,state,advice:state.advice,prioritizedAdvice};
     }
   });
 }
