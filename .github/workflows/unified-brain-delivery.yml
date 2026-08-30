@@ -73,7 +73,7 @@ jobs:
           set +e
           case "${{ matrix.id }}" in
             backend)
-              (npm install --ignore-scripts --no-audit --no-fund && node scripts/brain/test-all.mjs && node --test tests/canonical-*.test.mjs tests/agent-fabric*.test.mjs tests/brain-*.test.mjs tests/cost-*.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              (npm install --ignore-scripts --no-audit --no-fund && node scripts/brain/test-all.mjs && node --test tests/canonical-*.test.mjs tests/agent-fabric*.test.mjs tests/brain-*.test.mjs tests/supabase-*.test.mjs tests/cost-*.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
               ;;
             portal)
               node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
