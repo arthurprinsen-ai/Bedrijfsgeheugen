@@ -12,6 +12,8 @@
     {"id":"CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS","active":true,"enforcedBy":"brain-delivery-classifier-plus-lane-test-commands","scope":"shared"},
     {"id":"REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN","active":true,"enforcedBy":"app-delivery-adapter-plus-supabase-evidence-store","scope":"shared"},
     {"id":"CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES","active":true,"enforcedBy":"moving-main-conflict-check-plus-agent-contract","scope":"shared"},
+    {"id":"SCOPE_PARITY_TO_VERIFIED_WRITER_PATHS","active":true,"enforcedBy":"writer-git-parity-proof-scoped-pathspec","scope":"shared"},
+    {"id":"FRESH_TRIGGER_FROM_CURRENT_MAIN_AFTER_RUNTIME_FIX","active":true,"enforcedBy":"verification-trigger-agent-contract","scope":"shared"},
     {"id":"CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE","active":true,"enforcedBy":"writer-parity-writeback-git-status-porcelain","scope":"shared"},
     {"id":"FULLY_QUALIFY_DETACHED_HEAD_PUSH_REFSPEC","active":true,"enforcedBy":"writer-parity-evidence-handoff","scope":"shared"},
     {"id":"VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE","active":true,"enforcedBy":"bg196-bg169-runScenarioWithInputs-contract","scope":"automation"},
