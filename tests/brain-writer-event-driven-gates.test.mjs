@@ -21,6 +21,16 @@ test('central writer gate orchestrator validates immutable PR identity and fans 
   mustContain(text, /unified-brain-delivery\.yml/);
 });
 
+test('central writer gates use authoritative commands rather than nonexistent npm aliases', () => {
+  const text = fs.readFileSync('.github/workflows/repo-writer-gate-dispatch.yml', 'utf8');
+  mustContain(text, /node scripts\/brain\/test-all\.mjs/);
+  mustContain(text, /tests\/v18-production-promotion\.test\.mjs/);
+  mustContain(text, /tests\/v18-seo-layer\.test\.mjs/);
+  mustContain(text, /tests\/site-baseline-guardian\.test\.mjs/);
+  assert.doesNotMatch(text, /npm run test:brain/);
+  assert.doesNotMatch(text, /npm run v18:verify/);
+});
+
 test('Unified Brain Delivery consumes explicit immutable writer candidate identity', () => {
   const text = fs.readFileSync('.github/workflows/unified-brain-delivery.yml', 'utf8');
   for (const input of ['pr_number:', 'base_sha:', 'head_sha:', 'candidate_branch:']) mustContain(text, new RegExp(input), `Unified missing ${input}`);
