@@ -99,6 +99,12 @@ Verplicht voor iedere huidige en toekomstige agent, workflow en Make-integratie:
 
 Geen agent mag een nieuw backend-, website-, portaal-, workflow- of scenario-onderdeel buiten deze delivery-eenheid live zetten.
 
+GitHub en Netlify zijn zelf actieve onderdelen van het Brain (`PLATFORM_GITHUB` en `PLATFORM_NETLIFY`). Voor iedere Netlify-productiedeploy moet vóór upload vanuit de beoogde bronmap deze controle draaien:
+
+`node tools/brain-delivery-system.mjs deploy-preflight --sha <exacte-BG169-productie-SHA>`
+
+De controle moet `DEPLOY_SOURCE_READY` teruggeven. `STAGE_STANDALONE_EXACT_SHA` betekent dat de bron een gekoppelde Git-worktree is; upload die nooit rechtstreeks, omdat het `.git`-bestand naar een lokaal absoluut common-dir kan verwijzen dat in Netlify niet bestaat. Maak dan een standalone clone zonder hardlinks, check exact de BG169-SHA uit, herhaal de preflight en deploy pas na groen bewijs. Leg zowel de fout als de recovery via BG168 vast en verifieer zichtbaarheid via BG167.
+
 ## Kansen actief zien en benutten
 Agents zoeken niet alleen fouten; zij zoeken ook dagelijks aantoonbare kansen op:
 - SEO en zoekvraag;

@@ -11,11 +11,14 @@
 5. The integration job verifies the combined exact candidate once. Lanes never publish independently.
 6. BG169 is the sole production authority. BG168 routes the material outcome to BG166 and BG167 projects it into current shared context.
 
+Before a Netlify upload, run `node tools/brain-delivery-system.mjs deploy-preflight --sha <exact-BG169-sha>`. The preflight proves that the source is a standalone repository at the exact governed SHA and tree. A linked Git worktree is rejected before upload because its `.git` pointer depends on a host-only common directory. Stage a `git clone --no-hardlinks` at the exact SHA, rerun the preflight and deploy only after `DEPLOY_SOURCE_READY`.
+
 ## Automatic onboarding
 
 - A new repository agent added to `DEFAULT_AGENT_TEAM` appears automatically in the membership projection.
 - A new GitHub workflow appears automatically as a delivery scenario.
 - A new Make scenario appears through the existing dynamic Make/Cost component discovery and remains budget-deferred until classified.
+- GitHub and Netlify are explicit `PRODUCTION_RELIABILITY` platforms in the Brain component registry, so source, CI and deployment evidence share the same governance and lineage.
 - A new repository scope must be added to an existing lane or explicitly classified; otherwise production readiness fails.
 
 ## Speed model
