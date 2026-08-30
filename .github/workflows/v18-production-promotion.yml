@@ -18,9 +18,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Verify promotion, SEO, portal security and accepted site baseline contracts
+      - name: Verify promotion, SEO, footer, portal security and accepted site baseline contracts
         run: >-
           node --test
+          tests/footer-contract.test.mjs
+          tests/footer-injection.test.mjs
+          tests/footer-seo.test.mjs
+          tests/v18-footer-boundary.test.mjs
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
           tests/site-baseline-guardian.test.mjs
@@ -34,3 +38,5 @@ jobs:
           tests/portal-native-legacy-batch-1.test.mjs
           tests/portal-native-legacy-batch-2.test.mjs
           tests/portal-native-legacy-batch-3.test.mjs
+      - name: Validate canonical footer SEO ownership and routes
+        run: node tools/validate-footer-seo.mjs
