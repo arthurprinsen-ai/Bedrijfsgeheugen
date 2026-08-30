@@ -17,6 +17,7 @@
     {"id":"REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES","active":true,"enforcedBy":"brain-chat-learning-preflight-plus-candidate-only-manual-write-contract","scope":"shared"},
     {"id":"VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
     {"id":"USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
-    {"id":"USE_GITHUB_READY_FOR_REVIEW_ACTION","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"}
+    {"id":"USE_GITHUB_READY_FOR_REVIEW_ACTION","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
+    {"id":"REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE","active":true,"enforcedBy":"bg169-final-production-readback-contract","scope":"shared"}
   ]
 }
