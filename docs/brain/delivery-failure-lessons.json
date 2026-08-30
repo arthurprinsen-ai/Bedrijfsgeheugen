@@ -1,0 +1,55 @@
+{
+  "version": "DELIVERY-LEARNING-v1",
+  "lessons": [
+    {
+      "fingerprint": "historical|pr|shared|ready-review-graphql-schema",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "ready-for-review connector GraphQL schema failure",
+      "rootCause": "the connector path used to mutate draft state was not reliable for this repository flow",
+      "fix": "replace the failed draft with a fresh ready PR on the exact tested head",
+      "preventionRule": "RECREATE_READY_PR_ON_CONNECTOR_GRAPHQL_FAILURE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "historical|pipeline|shared|github-notion-writeback-404",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "GitHub Actions direct Notion state writeback returned 404 after public verification succeeded",
+      "rootCause": "GitHub Actions used an unproven Notion write path while Make already owned a proven connection",
+      "fix": "keep GitHub verification read-only and route Notion state reconciliation through Make",
+      "preventionRule": "GITHUB_PUBLIC_PROOF_MAKE_STATE_WRITEBACK",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "historical|pipeline|shared|broken-make-http-verifier",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Make HTTP SEO verification path was broken",
+      "rootCause": "the verification transport was unreliable for the required public proof",
+      "fix": "use bounded GitHub public HTTP title and canonical verification and return the result to Make",
+      "preventionRule": "BOUNDED_GITHUB_PUBLIC_PROOF",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|pipeline|portal|persistent-auth-stale-test",
+      "stage": "PIPELINE",
+      "component": "portal",
+      "reason": "portal regressions expected previous auth literals after persistent Supabase session restore changed behavior",
+      "rootCause": "implementation and literal contract assertions changed in different commits, leaving related tests stale",
+      "fix": "keep persistent Supabase auth and update all directly related contract tests in the same candidate",
+      "preventionRule": "CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|merge|shared|stale-base-after-parallel-main-change",
+      "stage": "MERGE",
+      "component": "shared",
+      "reason": "PR became non-mergeable after parallel commits changed main during repair",
+      "rootCause": "the repair branch stayed on an old merge base while main continued changing overlapping customer-auth files",
+      "fix": "recreate the candidate from current main and reapply only validated deltas before rerunning gates",
+      "preventionRule": "REFRESH_BASE_BEFORE_FINAL_GATE",
+      "status": "PROVEN"
+    }
+  ]
+}
