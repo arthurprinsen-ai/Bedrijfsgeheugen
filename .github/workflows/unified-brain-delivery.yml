@@ -18,6 +18,8 @@ jobs:
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
       trace_id: ${{ steps.plan.outputs.trace_id }}
+      base_sha: ${{ steps.plan.outputs.base_sha }}
+      head_sha: ${{ steps.plan.outputs.head_sha }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -118,8 +120,32 @@ jobs:
     needs: [plan, lanes]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.plan.outputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Enforce current-main file and contract conflict index
+        shell: bash
+        run: |
+          git fetch origin main --no-tags
+          current_main="$(git rev-parse origin/main)"
+          node tools/brain-delivery-system.mjs branch-drift \
+            --base "${{ needs.plan.outputs.base_sha }}" \
+            --head "${{ needs.plan.outputs.head_sha }}" \
+            --current-main "$current_main"
+      - name: Publish moving-main evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-branch-drift
+          path: .artifacts/brain-branch-drift.json
+          if-no-files-found: ignore
       - name: Hand exact green lane identities to Brain production authority
         run: |
-          echo "BRAIN-DELIVERY-v2 trace ${{ needs.plan.outputs.trace_id }} is lane-green."
-          echo "Generic main drift is not a rebuild condition."
+          echo "BRAIN-DELIVERY-v2 trace ${{ needs.plan.outputs.trace_id }} is lane-green and drift-safe."
+          echo "Generic non-overlapping main drift is not a rebuild condition."
+          echo "File overlap or declared conflict-contract overlap requires synchronization."
           echo "BG169 evaluates exact tested identities; BG168 routes outcomes; BG167 refreshes shared current state."

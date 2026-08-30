@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import * as deliverySystem from '../tools/brain-delivery-system.mjs';
 
-const { createDeliveryPlan, discoverBrainMembership, evaluateBranchDrift } = deliverySystem;
+const { createDeliveryPlan, discoverBrainMembership, evaluateBranchDrift, deriveConflictContracts } = deliverySystem;
 
 test('backend website and portal changes become independently promotable v2 lanes', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
@@ -26,12 +26,32 @@ test('backend website and portal changes become independently promotable v2 lane
 });
 
 test('non-overlapping main drift never causes a branch rebuild', () => {
-  assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/render-offer.mjs','tests/portal-native-legacy-batch-11.test.mjs'], mainDriftPaths:['blog/index.html','assets/css/powerhouse-kosten.css'], mergeable:true }), { action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:[] });
+  assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/render-offer.mjs','tests/portal-native-legacy-batch-11.test.mjs'], mainDriftPaths:['blog/index.html','assets/css/powerhouse-kosten.css'], featureContracts:[], mainDriftContracts:[], mergeable:true }), { action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:[], contractOverlap:[] });
 });
 
-test('only actual overlap or merge conflict requires synchronization', () => {
-  assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/app.mjs'], mainDriftPaths:['portal/app.mjs','blog/index.html'], mergeable:true }), { action:'SYNC_REQUIRED', reason:'changed-path-overlap', overlap:['portal/app.mjs'] });
-  assert.equal(evaluateBranchDrift({ featurePaths:['portal/app.mjs'], mainDriftPaths:[], mergeable:false }).reason, 'merge-conflict');
+test('only actual file overlap or merge conflict requires synchronization', () => {
+  assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/app.mjs'], mainDriftPaths:['portal/app.mjs','blog/index.html'], featureContracts:[], mainDriftContracts:[], mergeable:true }), { action:'SYNC_REQUIRED', reason:'changed-path-overlap', overlap:['portal/app.mjs'], contractOverlap:[] });
+  assert.equal(evaluateBranchDrift({ featurePaths:['portal/app.mjs'], mainDriftPaths:[], featureContracts:[], mainDriftContracts:[], mergeable:false }).reason, 'merge-conflict');
+});
+
+test('different files in the same declared conflict contract require synchronization', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const featurePaths = ['tools/brain-delivery-system.mjs'];
+  const mainDriftPaths = ['brain/contracts/delivery-v2.schema.json'];
+  const featureContracts = deriveConflictContracts(featurePaths, policy);
+  const mainDriftContracts = deriveConflictContracts(mainDriftPaths, policy);
+  assert.ok(featureContracts.includes('delivery-control-plane'));
+  assert.ok(mainDriftContracts.includes('delivery-control-plane'));
+  assert.deepEqual(evaluateBranchDrift({ featurePaths, mainDriftPaths, featureContracts, mainDriftContracts, mergeable:true }), { action:'SYNC_REQUIRED', reason:'declared-contract-overlap', overlap:[], contractOverlap:['delivery-control-plane'] });
+});
+
+test('schema domains can conflict without touching the same file', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  assert.deepEqual(deriveConflictContracts(['supabase/migrations/20260830_roles.sql'], policy), ['supabase-schema']);
+  assert.deepEqual(deriveConflictContracts(['supabase/migrations/20260830_tenants.sql'], policy), ['supabase-schema']);
+  assert.deepEqual(deriveConflictContracts(['make/contracts/customer-sync.schema.json'], policy), ['make-contract']);
+  assert.deepEqual(deriveConflictContracts(['notion/contracts/customer-map.schema.json'], policy), ['notion-contract']);
+  assert.deepEqual(deriveConflictContracts(['integrations/dataforseo/contracts/search.schema.json'], policy), ['dataforseo-contract']);
 });
 
 test('shared contract changes fan out to every affected governance lane without one release candidate', async () => {
@@ -67,10 +87,12 @@ test('legacy customer portal changes belong to the portal lane', async () => {
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['portal']);
 });
 
-test('delivery workflow executes changed lanes in parallel and delegates production to Brain authority', async () => {
+test('delivery workflow executes changed lanes in parallel and enforces moving-main drift before production handoff', async () => {
   const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 'utf8');
   assert.match(workflow, /fromJSON\(needs\.plan\.outputs\.matrix\)/);
   assert.match(workflow, /needs:\s*plan/);
+  assert.match(workflow, /branch-drift/);
+  assert.match(workflow, /current_main/);
   assert.match(workflow, /node tools\/brain-delivery-system\.mjs/);
   assert.match(workflow, /node scripts\/brain\/test-all\.mjs/);
   assert.match(workflow, /BG169/);
