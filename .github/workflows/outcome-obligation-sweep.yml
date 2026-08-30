@@ -1,0 +1,69 @@
+name: Outcome Obligation Sweep
+
+on:
+  workflow_dispatch:
+    inputs:
+      obligation_id:
+        description: Optional single obligation id
+        required: false
+        type: string
+      trigger_type:
+        description: scheduled-sweep or event-trigger
+        required: false
+        default: scheduled-sweep
+        type: string
+      trigger_fingerprint:
+        description: Stable fingerprint for event replay/idempotency
+        required: false
+        type: string
+  schedule:
+    - cron: '23 4 * * *'
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact main or dispatched ref
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Run focused obligation contract tests
+        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs
+
+      - name: Evaluate obligations without production mutation
+        shell: bash
+        env:
+          OBLIGATION_ID: ${{ inputs.obligation_id }}
+          TRIGGER_TYPE: ${{ inputs.trigger_type }}
+          TRIGGER_FINGERPRINT: ${{ inputs.trigger_fingerprint }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          args=(sweep --trigger-type "${TRIGGER_TYPE:-scheduled-sweep}" --output .artifacts/outcome-obligation-decisions.json)
+          if [ -n "${OBLIGATION_ID:-}" ]; then
+            args+=(--obligation "$OBLIGATION_ID")
+          fi
+          if [ -n "${TRIGGER_FINGERPRINT:-}" ]; then
+            args+=(--fingerprint "$TRIGGER_FINGERPRINT")
+          fi
+          node tools/outcome-obligation-runtime.mjs "${args[@]}"
+
+      - name: Upload immutable decision artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: outcome-obligation-decisions-${{ github.run_id }}
+          path: .artifacts/outcome-obligation-decisions.json
+          if-no-files-found: error
+          retention-days: 30
