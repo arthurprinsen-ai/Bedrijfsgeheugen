@@ -3,7 +3,7 @@
   "status": "production-governance",
   "canonicalSource": ".github/canoniek/voet.html",
   "requiredScopes": ["component:footer", "area:seo"],
-  "governedGlobs": ["*.html", "blog/*/index.html"],
+  "governedGlobs": ["*.html", "blog/index.html", "blog/*/index.html"],
   "exceptions": [
     {"file":"404.html","reason":"error surface"},
     {"file":"bedankt.html","reason":"post-conversion utility page"},
