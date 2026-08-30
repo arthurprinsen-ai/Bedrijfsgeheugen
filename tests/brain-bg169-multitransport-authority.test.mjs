@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { evaluatePromotionDispatchScope } from '../tools/brain-delivery-system.mjs';
 
 const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 'utf8');
 const delivery = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
@@ -30,8 +31,18 @@ test('Make acknowledgement alone never suppresses verified failover', () => {
   assert.match(workflow, /BG169_PROMOTION_NOT_VERIFIED/);
 });
 
-test('production handoff stays inside the governed writer dispatch scope', () => {
-  const guardedScope = "github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only != true";
-  assert.match(workflow, new RegExp(guardedScope.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.doesNotMatch(workflow, /github\.event_name != 'workflow_dispatch'/);
+test('central delivery controller fails closed outside writer dispatch scope', () => {
+  assert.deepEqual(
+    evaluatePromotionDispatchScope({ eventName:'workflow_dispatch', candidateBranch:'writer/weekblog/abc', verificationOnly:false }),
+    { ok:true, productionEligible:true, reason:'writer_dispatch' },
+  );
+  assert.deepEqual(
+    evaluatePromotionDispatchScope({ eventName:'workflow_dispatch', candidateBranch:'brain/safety-fix', verificationOnly:false }),
+    { ok:false, productionEligible:false, reason:'writer_scope_required' },
+  );
+  assert.deepEqual(
+    evaluatePromotionDispatchScope({ eventName:'workflow_dispatch', candidateBranch:'brain/safety-fix', verificationOnly:true }),
+    { ok:true, productionEligible:false, reason:'verification_only' },
+  );
+  assert.ok(workflow.indexOf('branch-drift') < workflow.indexOf('BG169 primary Make transport with GitHub-native failover'));
 });
