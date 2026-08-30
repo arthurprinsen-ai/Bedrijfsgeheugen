@@ -1,6 +1,6 @@
 {
   "contract": "POWERHOUSE-RUNTIME-IDENTITY-v1",
-  "generated_at": "2026-08-30T22:43:00+02:00",
+  "generated_at": "2026-08-30T22:46:00+02:00",
   "identity_rule": "Resolve active ownership by scenario_id + canonical_role + latest_verified_state. Never use a BG label alone as runtime authority.",
   "truth_precedence": [
     "latest_verified_state_with_runtime_or_production_evidence",
@@ -35,6 +35,7 @@
     "green_until_done":"Failed build/test/deploy is intermediate unless a hard boundary is reached; at most two identical retries per hypothesis.",
     "security_continuity":"Do not stop core scenarios as normal remediation; use safe mode and restore verified full mode.",
     "rate_limit":"On 429, stop discovery/retry pressure, use alternate evidence, then one targeted retry.",
-    "secrets":"Never place API keys, PATs or tokens in URLs, querystrings, prompts, logs or scenario mappings."
+    "secrets":"Never place API keys, PATs or tokens in URLs, querystrings, prompts, logs or scenario mappings.",
+    "production_authority_unavailable":"If BG169 or the designated production authority is unavailable, do not bypass it, do not direct-merge, and do not rebuild a green candidate without new conflict evidence. Preserve exact candidate SHA, passed gates, mergeability, rollback target and pending production obligation; resume from the same identity when the authority is healthy again."
   }
 }
