@@ -1,0 +1,22 @@
+{
+  "version": "GUARD-REGRESSION-DISCOVERY-v1",
+  "failClosed": true,
+  "purpose": "Voorkom dat nieuwe guard- of governance-regressietests bestaan maar buiten de verplichte shared-memory uitvoering vallen.",
+  "executionPolicy": {
+    "familyDiscoveryRequired": true,
+    "workflowPattern": "tests/*guard*.test.mjs",
+    "manualFilenameListsAreInsufficient": true,
+    "newGuardTestsMustBeBrainClassified": true
+  },
+  "knownFailure": {
+    "fingerprint": "learning|guard-regression|test-not-executed-v1",
+    "symptom": "Een nieuwe guard/regressietest is aanwezig in de repository maar wordt niet uitgevoerd doordat CI uitsluitend een handmatig bijgehouden lijst met testbestanden gebruikt.",
+    "rootCause": "De prevention layer vertrouwde op expliciete bestandsnamen in plaats van automatische discovery van de guard-testfamilie.",
+    "failedApproach": "Een guard toevoegen en aannemen dat het bestaan van het testbestand voldoende is zonder te bewijzen dat de verplichte shared-memory workflow hem uitvoert.",
+    "fix": "Laat Shared Agent Memory Tests guard-regressies per familie ontdekken en eis dat de testfamilie zelf door BRAIN delivery wordt geclassificeerd.",
+    "preventionRule": "AUTO_DISCOVER_GUARD_REGRESSIONS_AND_CLASSIFY_THEIR_TEST_FAMILY",
+    "regressionContract": "tests/branch-delivery-guard-discovery.test.mjs",
+    "owner": "agent-reliability",
+    "status": "GUARDED"
+  }
+}
