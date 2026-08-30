@@ -18,6 +18,11 @@ on:
         type: string
   schedule:
     - cron: '23 4 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'supabase/migrations/**'
 
 permissions:
   contents: read
@@ -45,9 +50,9 @@ jobs:
       - name: Evaluate obligations without production mutation
         shell: bash
         env:
-          OBLIGATION_ID: ${{ inputs.obligation_id }}
-          TRIGGER_TYPE: ${{ inputs.trigger_type }}
-          TRIGGER_FINGERPRINT: ${{ inputs.trigger_fingerprint }}
+          OBLIGATION_ID: ${{ github.event_name == 'push' && 'supabase-performance-evidence-daily' || inputs.obligation_id }}
+          TRIGGER_TYPE: ${{ github.event_name == 'push' && 'event-trigger' || inputs.trigger_type }}
+          TRIGGER_FINGERPRINT: ${{ github.event_name == 'push' && format('supabase-migration:{0}', github.sha) || inputs.trigger_fingerprint }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
