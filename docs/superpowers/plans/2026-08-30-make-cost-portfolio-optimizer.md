@@ -35,187 +35,76 @@
 
 **Files:**
 - Create: `make/contracts/cost-portfolio-v1.json`
-- Create: `make/contracts/cost-portfolio-v1.test.mjs`
+- Create: `scripts/brain/test-make-cost-portfolio.mjs`
 
 **Interfaces:**
 - Consumes: BRAIN-DELIVERY-v2 automation lane and the approved design spec.
-- Produces: machine-readable contract fields `candidate_limit`, `selection_mode`, `protected_scenarios`, `required_evidence`, `allowed_actions`, `mission_control_policy`.
+- Produces: machine-readable contract fields `candidate_limit`, `selection_mode`, `required_evidence`, `allowed_actions`, `mission_control_policy`.
 
-- [ ] **Step 1: Write the failing contract test**
-
-The test must require the contract file, assert `candidate_limit === 1`, require a two-stage selection mode, require `credits_per_verified_outcome` in retained-decision evidence, prohibit Mission Control free-form rewrites, and require BG168/BG166/BG167 writeback.
-
-- [ ] **Step 2: Run the test and confirm RED**
-
-Run: `node --test make/contracts/cost-portfolio-v1.test.mjs`
-Expected: FAIL because `make/contracts/cost-portfolio-v1.json` does not yet exist.
-
-- [ ] **Step 3: Add the minimal contract**
-
-Create the JSON contract with the exact invariants from the approved spec and explicit action classes: `SAFE_POLLING_CHANGE`, `SAFE_SCHEDULE_CHANGE`, and future actions disabled until separately proven.
-
-- [ ] **Step 4: Run the test and confirm GREEN**
-
-Run: `node --test make/contracts/cost-portfolio-v1.test.mjs`
-Expected: PASS.
-
-- [ ] **Step 5: Commit**
-
-Commit only the contract and its test.
+- [x] **Step 1: Write the failing contract test**
+- [x] **Step 2: Run it through canonical Brain CI and confirm RED** — exact failure was missing `make/contracts/cost-portfolio-v1.json`.
+- [x] **Step 3: Add the minimal fail-closed contract**
+- [x] **Step 4: Re-run through BRAIN automation lane and confirm contract test GREEN**
 
 ### Task 2: Strengthen BG159 portfolio candidate selection without fleet-wide deep reads
 
 **Files:**
-- Modify live Make scenario: BG159 (`7132648`), code module 6 and only if necessary module 17.
-- Record exact before-state in shared learning after verification.
+- Modify live Make scenario: BG159 (`7132648`), code module 6 only.
 
 **Interfaces:**
 - Consumes: one existing fleet inventory result from module 4 plus previous daily snapshot.
-- Produces: exactly one candidate event with `ranking_mode`, `candidate`, `selection_evidence`, and explicit `deep_enrichment_required`.
+- Produces: exactly one candidate event with `ranking_mode`, `candidate`, `selection_evidence`, and `deep_enrichment_required`.
 
-- [ ] **Step 1: Capture fresh BG159 `lastEdit` and module configuration**
-
-Use Make `scenario_get` and `scenario_module_get`; persist the exact pre-change module mapping as rollback evidence.
-
-- [ ] **Step 2: Establish baseline evidence**
-
-Use recent BG159 execution evidence to record credits/run, operations/run, data transfer and whether the expensive enrichment path was skipped or executed.
-
-- [ ] **Step 3: Patch only module 6**
-
-Change the ranking from raw highest daily credits to a deterministic stage-1 score that uses already-available fleet fields only: active state, known daily credits, transfer, operations, schedule/actionability, protected-control-plane exclusion, and unresolved-evidence exclusion. Keep top-depth at one candidate so no new fleet-wide API calls are added.
-
-- [ ] **Step 4: Verify BG159 configuration exactly**
-
-Fetch the scenario again and verify the intended mapper changed and all unrelated modules/wiring remain unchanged.
-
-- [ ] **Step 5: Run BG159 once if safe and verify cost envelope**
-
-Expected: no extra fleet-wide detail calls; deep enrichment only when the daily snapshot creates a new actionable candidate. Compare operations/credits against baseline.
-
-- [ ] **Step 6: Roll back if optimizer overhead or outcome evidence regresses**
-
-Restore the exact captured mapper if the run is more expensive without a stronger decision or if protected behavior changes.
+- [x] **Step 1: Capture fresh BG159 `lastEdit` and module 6 rollback mapping** — pre-change `lastEdit=2026-08-30T13:23:04.888Z`.
+- [x] **Step 2: Establish baseline evidence** — successful early-exit runs used 4 operations and typically 6 credits; latest pre-change sample `d2e06...` used 4 operations/12 credits/747580 bytes.
+- [x] **Step 3: Patch only module 6 with fresh-lastEdit protection** — protected control plane/Mission Control excluded from generic mutation ranking; daily evidence preferred; no new fleet-wide detail calls; deep candidate limit remains one.
+- [x] **Step 4: Verify wiring remains unchanged** — post-change `lastEdit=2026-08-30T13:48:59.830Z` and only module 6 configuration changed.
+- [x] **Step 5: Run BG159 safely and verify cost envelope** — execution `0ad8ca01e9634ee4938ebf2a41f8cf85` succeeded in 5908ms, 4 operations, 6 credits, 748571 bytes, executing only modules 1/2/4/5/6 because today’s snapshot already existed.
+- [x] **Step 6: Retention decision** — KEEP for this bounded change: operations did not increase and credits matched the normal 6-credit early-exit baseline; no downstream side-effect was triggered in the verification run.
 
 ### Task 3: Tighten BG162 to fail closed on unsupported cost mutations
 
 **Files:**
-- Modify live Make scenario: BG162 (`7135438`), modules 2 and/or 22 only.
+- Live Make scenario BG162 (`7135438`), verification first; mutate only on proven contract gap.
 
-**Interfaces:**
-- Consumes: BG159 portfolio event.
-- Produces: `NO_ACTION`, `CACHE_FIRST_PROJECTION_REQUIRED`, or an exact allowlisted Class-A executor payload.
-
-- [ ] **Step 1: Capture fresh BG162 state and exact module mappings**
-
-Store module 2 and 22 before-state and `lastEdit` for drift protection.
-
-- [ ] **Step 2: Verify current supported actions**
-
-Confirm only proven Class-A actions are executable; cache/projection remains advisory unless a separate explicit promotion contract authorizes activation.
-
-- [ ] **Step 3: Patch the validator only if a gap exists**
-
-Add explicit rejection for any action not in the repository cost contract. Do not expand action types in this task.
-
-- [ ] **Step 4: Verify no unsupported action reaches BG160**
-
-Use an on-demand dry event or existing evidence path that does not trigger external side effects. Expected: unsupported actions return advisory/no-action.
+- [ ] Capture fresh BG162 state and exact module 2/22 mappings.
+- [ ] Verify only enabled contract actions can reach BG160 and cache/projection remains special-contract/advisory.
+- [ ] Patch only if a real mismatch exists.
+- [ ] Verify unsupported action cannot reach BG160.
 
 ### Task 4: Verify BG160 exact rollback executor remains the only Class-A mutation path
 
 **Files:**
-- Live Make scenario: BG160 (`7134976`), verification only unless a contract mismatch is found.
+- Live Make scenario BG160 (`7134976`), verification only unless stricter contract alignment requires a fix.
 
-**Interfaces:**
-- Consumes: exact `PASS_A` payload from BG162.
-- Produces: applied-and-verified or rolled-back-and-verified result plus learning writeback.
-
-- [ ] **Step 1: Re-read BG160 live state**
-
-Verify supported actions, protected scenario IDs, exact precondition check, reservation, verify, rollback, rollback verification and learning modules.
-
-- [ ] **Step 2: Compare against repository contract**
-
-If BG160 is stricter than or equal to the contract, make no change. If it is looser, tighten only the mismatching allowlist/precondition.
-
-- [ ] **Step 3: Verify no Mission Control scenario can be mutated by generic polling/schedule action**
-
-Expected: protected IDs fail closed.
+- [ ] Re-read BG160 live state.
+- [ ] Compare supported actions and protected IDs against repository contract.
+- [ ] Verify Mission Control cannot be mutated by generic polling/schedule action.
 
 ### Task 5: Add the daily portfolio outcome obligation
 
 **Files:**
 - Modify: `config/outcome-obligations.json`
-- Modify or extend: `make/contracts/cost-portfolio-v1.test.mjs`
+- Extend: `scripts/brain/test-make-cost-portfolio.mjs`
 
-**Interfaces:**
-- Produces obligation `cost-portfolio-decision-daily` owned by `agent-cost`.
-
-- [ ] **Step 1: Extend the test to require the obligation**
-
-Require daily evidence of one of: `SAFE_OPTIMIZATION_CANDIDATE`, `VERIFIED_NO_ACTION`, or `BLOCKED_HARD_BOUNDARY`, plus BG168/BG167 visibility for material changes.
-
-- [ ] **Step 2: Run RED**
-
-Expected: FAIL until obligation is registered.
-
-- [ ] **Step 3: Add the obligation**
-
-Use idempotency key `cost-portfolio|date|inventory-fingerprint` and recovery policy that refreshes inventory, reuses known fingerprints, and never performs duplicate side effects.
-
-- [ ] **Step 4: Run GREEN**
-
-Run the focused contract test plus existing outcome-obligation tests.
+- [x] Write obligation test first.
+- [x] Confirm RED in Brain Foundation verify: `cost-portfolio-decision-daily must be registered`.
+- [x] Add obligation with idempotency key `cost-portfolio|date|inventory-fingerprint` and required evidence states.
+- [x] Automation lane itself passed on exact head `a48c8e52...`; handoff then correctly blocked on declared `delivery-control-plane` overlap from concurrent `main` changes, requiring synchronization rather than blind promotion.
 
 ### Task 6: Automation-lane CI verification and PR
 
-**Files:**
-- No additional production code unless a gate reveals a root-cause defect.
-
-**Interfaces:**
-- Consumes: exact feature SHA.
-- Produces: BRAIN-DELIVERY-v2 automation-lane evidence.
-
-- [ ] **Step 1: Run focused tests**
-
-Run the new Make cost contract test and existing delivery/outcome tests.
-
-- [ ] **Step 2: Run automation lane suite**
-
-Equivalent gate: `node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs make/contracts/cost-portfolio-v1.test.mjs`.
-
-- [ ] **Step 3: Open PR to `main` from `automation/make-cost-portfolio-v1`**
-
-PR must state exact scope, Make live-state evidence, rollback identities, and that Mission Control special invariants were not changed.
-
-- [ ] **Step 4: Wait for exact GitHub CI evidence and inspect failures**
-
-Red is non-terminal. Fix only actual root causes; do not recreate the branch for non-overlapping `main` drift.
+- [x] Open draft PR #392 to `main`.
+- [x] Run relevant BRAIN lanes on exact candidate; portal/backend/website/automation lanes passed on `a48c8e52...`.
+- [x] Diagnose handoff failure as declared-contract overlap, not test failure.
+- [ ] Synchronize this affected lane with current main without force push.
+- [ ] Obtain fresh all-green handoff evidence after sync.
+- [ ] Update PR with live Make verification evidence and mark ready only when repository + Make evidence are green.
 
 ### Task 7: Production promotion and shared learning
 
-**Files:**
-- Repository merge/promotion only after exact green candidate evidence.
-
-**Interfaces:**
-- Consumes: exact green PR head and current-main drift evidence.
-- Produces: exact production identity, `PRODUCTION_PROMOTION` or rollback, and BG168/BG166/BG167 writeback.
-
-- [ ] **Step 1: Perform current-main path/contract conflict check**
-
-Non-overlapping drift keeps the tested candidate valid. Real overlap requires synchronization of this lane only.
-
-- [ ] **Step 2: Promote through BG169**
-
-No direct `main` writer bypass.
-
-- [ ] **Step 3: Verify exact production identity and all protected gates**
-
-A merge/commit alone is not completion.
-
-- [ ] **Step 4: Write material outcome and refresh shared context**
-
-Record verified savings behavior, no-action behavior, any failed hypotheses, rollback identity and reusable prevention rule through BG168/BG166; verify BG167 visibility.
-
-- [ ] **Step 5: Close only on `PRODUCTION_GREEN` or exact `ROLLED_BACK_GREEN`**
+- [ ] Perform final current-main path/contract conflict check.
+- [ ] Promote exact green candidate only through BG169.
+- [ ] Verify exact production identity and protected gates; merge alone is not completion.
+- [ ] Route material outcome through BG168/BG166 and verify BG167 refresh.
+- [ ] Close only on `PRODUCTION_GREEN` or exact `ROLLED_BACK_GREEN`.
