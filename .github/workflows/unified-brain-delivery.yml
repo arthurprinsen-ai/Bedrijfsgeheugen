@@ -26,6 +26,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify delivery-learning contract before expensive work
+        run: node --test tests/delivery-learning.test.mjs
       - id: plan
         name: Discover changed lanes and Brain membership
         run: |
@@ -64,6 +66,33 @@ jobs:
               node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs
               ;;
           esac
+      - name: Capture failed lane as Brain learning evidence
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { writeFile } from 'node:fs/promises';
+          import { createObservedFailure } from './tools/delivery-learning.mjs';
+          const event = createObservedFailure({
+            stage: 'PIPELINE',
+            reason: 'GitHub lane verification failed',
+            component: process.env.LANE,
+            headSha: process.env.HEAD_SHA,
+            evidenceRef: `github-run:${process.env.RUN_ID}`,
+          });
+          await writeFile(`.artifacts/delivery-failure-${process.env.LANE}.json`, JSON.stringify(event, null, 2));
+          NODE
+        env:
+          LANE: ${{ matrix.id }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+      - name: Publish failed lane evidence for BG168/BG167 writeback
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-delivery-failure-${{ matrix.id }}
+          path: .artifacts/delivery-failure-${{ matrix.id }}.json
 
   integrate:
     needs: [plan, lanes]
@@ -81,6 +110,31 @@ jobs:
           node tools/brain-delivery-system.mjs membership
           node --test --test-concurrency=1 tests/*.test.mjs
           node scripts/brain/test-all.mjs
+      - name: Capture integrated failure as Brain learning evidence
+        if: failure()
+        run: |
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { writeFile } from 'node:fs/promises';
+          import { createObservedFailure } from './tools/delivery-learning.mjs';
+          const event = createObservedFailure({
+            stage: 'PIPELINE',
+            reason: 'GitHub integrated release verification failed',
+            component: 'shared',
+            headSha: process.env.HEAD_SHA,
+            evidenceRef: `github-run:${process.env.RUN_ID}`,
+          });
+          await writeFile('.artifacts/delivery-failure-integrate.json', JSON.stringify(event, null, 2));
+          NODE
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+      - name: Publish integrated failure evidence for BG168/BG167 writeback
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-delivery-failure-integrate
+          path: .artifacts/delivery-failure-integrate.json
       - name: Hand exact candidate to existing Brain production authority
         run: |
           echo "BG169 promotes only exact green SHA ${{ github.event.pull_request.head.sha || github.sha }}"
