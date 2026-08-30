@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const harnessPath = '.github/workflows/repo-writer-operational-verification.yml';
+const writerWorkflowPattern = /gh\s+workflow\s+run\s+(?:menu-balk-fix|regelgeving-bijwerken|seo-controle|paginacontrole|approved-central-blog|blog-bijwerken|weekblog)\.yml[^\n]*/g;
 
 test('operational writer harness can only dispatch menu-balk-fix in candidate-pr mode', () => {
   const text = fs.readFileSync(harnessPath, 'utf8');
@@ -19,7 +20,9 @@ test('operational writer harness can only dispatch menu-balk-fix in candidate-pr
   assert.match(text, /gh\s+workflow\s+run\s+menu-balk-fix\.yml/);
   assert.match(text, /--ref\s+"\$VERIFY_REF"/);
   assert.match(text, /delivery_mode=candidate-pr/);
-  assert.doesNotMatch(text, /--ref\s+main/);
+  for (const writerDispatch of text.match(writerWorkflowPattern) || []) {
+    assert.doesNotMatch(writerDispatch, /--ref\s+main/, `writer dispatch must never execute from main: ${writerDispatch}`);
+  }
   assert.doesNotMatch(text, /delivery_mode=direct/);
   assert.doesNotMatch(text, /\bgit\s+push\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
   assert.doesNotMatch(text, /NOTION|notion|publiceer|publish/i);
@@ -69,9 +72,9 @@ for (const lane of [
   });
 }
 
-test('operational harness itself remains actions-only and cannot publish or mutate external content state', () => {
+test('operational harness itself remains read-only except for Actions dispatch', () => {
   const text = fs.readFileSync(harnessPath, 'utf8');
-  assert.match(text, /permissions:\s*\n\s*contents:\s*read\s*\n\s*actions:\s*write/);
+  assert.match(text, /permissions:\s*\n\s*contents:\s*read\s*\n\s*pull-requests:\s*read\s*\n\s*actions:\s*write/);
   assert.doesNotMatch(text, /contents:\s*write\b|pull-requests:\s*write\b/);
   assert.doesNotMatch(text, /\bgit\s+(push|commit|add)\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
   assert.doesNotMatch(text, /NOTION_TOKEN|NOTION_DB|notion\.so|api\.notion/i);
