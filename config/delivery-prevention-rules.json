@@ -6,6 +6,7 @@
     {"id":"NETLIFY_DEPLOY_INSTRUCTION_IS_NOT_EXECUTION","active":true,"enforcedBy":"netlify-deploy-readback-contract","scope":"shared"},
     {"id":"RUNTIME_DNS_FAILURE_IS_INFRA_BOUNDARY","active":true,"enforcedBy":"runtime-infrastructure-boundary-contract","scope":"shared"},
     {"id":"PRODUCTION_PARITY_MISMATCH_REQUIRES_RECOVERY","active":true,"enforcedBy":"production-promotion-guardian-plus-recovery-obligation","scope":"shared"},
+    {"id":"PRESERVE_GREEN_CANDIDATE_WHEN_PRODUCTION_AUTHORITY_UNAVAILABLE","active":true,"enforcedBy":"bg169-authority-outage-plus-chat-learning-completeness","scope":"shared"},
     {"id":"AUTO_REGISTER_FUTURE_COMPONENTS","active":true,"enforcedBy":"brain-registration-and-cost-membership-gates","scope":"shared"},
     {"id":"MARK_UNMETERED_USAGE_NOT_ZERO","active":true,"enforcedBy":"provider-usage-ledger-plus-cost-dashboard-contract","scope":"shared"},
     {"id":"REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN","active":true,"enforcedBy":"bg169-production-readback-contract","scope":"shared"},
