@@ -47,10 +47,27 @@ export function computeWriterMigrationReady(writers){
   return Array.isArray(writers) && writers.length>0 && writers.every(computeWriterProofReady);
 }
 
-export function computeMainProtectionReady(writers, nativeProtectionEvidence){
+export function computeMainProtectionReady(writers, nativeProtectionEvidence, { currentMainSha, requiredChecks = [] } = {}){
   const writerMigrationReady=computeWriterMigrationReady(writers);
-  const nativeProtectionReady=Boolean(nativeProtectionEvidence &&
+  const expectedMainSha=typeof currentMainSha==='string' ? currentMainSha.trim() : '';
+  const observedMainSha=typeof nativeProtectionEvidence?.observedMainSha==='string'
+    ? nativeProtectionEvidence.observedMainSha.trim()
+    : '';
+  const observedChecks=Array.isArray(nativeProtectionEvidence?.requiredChecks)
+    ? new Set(nativeProtectionEvidence.requiredChecks.map(check => String(check).trim()).filter(Boolean))
+    : new Set();
+  const requiredCheckList=Array.isArray(requiredChecks)
+    ? [...new Set(requiredChecks.map(check => String(check).trim()).filter(Boolean))]
+    : [];
+  const nativeProtectionReady=Boolean(
+    nativeProtectionEvidence &&
     nativeProtectionEvidence.observed===true &&
-    nativeProtectionEvidence.protected===true);
+    nativeProtectionEvidence.protected===true &&
+    Number.isInteger(nativeProtectionEvidence.rulesetsCount) &&
+    nativeProtectionEvidence.rulesetsCount>0 &&
+    /^[0-9a-f]{40}$/i.test(expectedMainSha) &&
+    observedMainSha===expectedMainSha &&
+    requiredCheckList.every(check => observedChecks.has(check))
+  );
   return writerMigrationReady && nativeProtectionReady;
 }
