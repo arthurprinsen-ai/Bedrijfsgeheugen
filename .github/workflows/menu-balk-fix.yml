@@ -81,7 +81,7 @@ jobs:
             case "$f" in
               *.html) ;;
               brain/evidence/writer-canary/menu-balk-fix-*.json) ;;
-              *) echo "::error::UNEXPECTED_WRITER_CHANGE:$f"; exit 1 ;;
+              *) echo "::error::NON_HTML_CHANGE:$f"; exit 1 ;;
             esac
           done
 
