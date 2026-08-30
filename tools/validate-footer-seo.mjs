@@ -15,13 +15,21 @@ async function fileExists(path) { try { await access(path); return true; } catch
 
 export async function loadRouteSet() {
   const redirects = await readFile('_redirects', 'utf8').catch(() => '');
+  const netlifyToml = await readFile('netlify.toml', 'utf8').catch(() => '');
   const set = new Set(['/']);
+
   for (const line of redirects.split(/\r?\n/)) {
     const s = line.trim();
     if (!s || s.startsWith('#')) continue;
     const from = s.split(/\s+/)[0];
     if (from?.startsWith('/') && !from.includes(':')) set.add(normRoute(from));
   }
+
+  for (const match of netlifyToml.matchAll(/^\s*from\s*=\s*["']([^"']+)["']/gm)) {
+    const from = match[1];
+    if (from.startsWith('/') && !from.includes(':') && !from.includes('*')) set.add(normRoute(from));
+  }
+
   return { set, async exists(route) {
     const r = normRoute(route);
     if (set.has(r)) return true;
