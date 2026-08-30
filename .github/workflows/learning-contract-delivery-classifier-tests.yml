@@ -1,0 +1,24 @@
+name: Learning Contract Delivery Classifier Tests
+
+on:
+  push:
+    branches:
+      - 'automation/classify-learning-contract-tests-v2-20260830'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/brain-learning-contract-delivery-classification.test.mjs
