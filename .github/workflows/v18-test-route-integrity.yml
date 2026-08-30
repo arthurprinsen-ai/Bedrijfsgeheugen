@@ -24,6 +24,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  pull-requests: read
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -43,6 +44,25 @@ jobs:
           fi
       - name: Run V18 route, merge and scope contract tests
         run: node --test tests/v18-test-route-integrity.test.mjs tests/v18-preview-build-contract.test.mjs tests/v18-component-registry.test.mjs tests/v18-merge-rule-guardian.test.mjs tests/v18-scope-policy.test.mjs
+      - name: Enforce declared component scope on PR changes
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BODY=$(jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH")
+          TAGS=$(printf '%s\n' "$BODY" | sed -n 's/^V18-SCOPE-TAGS:[[:space:]]*//p' | tail -n1)
+          if [ -z "$TAGS" ]; then
+            echo "::error::Missing V18-SCOPE-TAGS in PR body. Declare the smallest component/area scope before changing V18."
+            exit 1
+          fi
+          CHANGED=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
+          echo "Declared V18 scope: $TAGS"
+          echo "Changed files:"
+          printf '%s\n' "$CHANGED"
+          V18_DECLARED_TAGS="$TAGS" V18_CHANGED_FILES="$CHANGED" node tools/check-v18-scope.mjs
       - name: Verify pinned user-accepted V18 baseline is publicly reachable
         shell: bash
         run: |
