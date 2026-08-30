@@ -4,32 +4,27 @@ import test from 'node:test';
 
 const workflow = await readFile('.github/workflows/paginacontrole.yml', 'utf8');
 
-// Regression fingerprints:
-// - paginacontrole|git-push|non-fast-forward-concurrent-main-update
-// - paginacontrole|git-rebase|dirty-generated-seo-report
-// - paginacontrole|seo-status|stale-worktree-rebase
+// Supersedes legacy direct-main race fingerprints with one candidate identity.
+test('paginacontrole preserves concurrent main work by never mutating main from its worktree', () => {
+  assert.doesNotMatch(workflow, /git pull --rebase origin main/);
+  assert.doesNotMatch(workflow, /git push origin HEAD:main/);
 
-test('paginacontrole preserves concurrent main work for both automated publication paths', () => {
   const sourceStart = workflow.indexOf('- name: Bekende SEO-bronfouten automatisch herstellen');
   const sourceEnd = workflow.indexOf('- name: Playwright installeren', sourceStart);
   assert.ok(sourceStart >= 0 && sourceEnd > sourceStart, 'source-repair step must exist');
   const sourceRepair = workflow.slice(sourceStart, sourceEnd);
-  assert.match(sourceRepair, /git pull --rebase origin main/);
-  assert.match(sourceRepair, /git push(?: origin HEAD:main)?/);
+  assert.match(sourceRepair, /git commit -m "Herstel SEO-bronfouten uit paginacontrole"/);
+  assert.match(sourceRepair, /blijft lokaal in de candidate/);
 
   const stepStart = workflow.indexOf('- name: seo-status.json verwerken als hij is veranderd');
   const stepEnd = workflow.indexOf('- name: Candidate branch en PR publiceren', stepStart);
-  assert.ok(stepStart >= 0 && stepEnd > stepStart, 'seo-status publication step must exist');
+  assert.ok(stepStart >= 0 && stepEnd > stepStart, 'seo-status candidate step must exist');
+  const statusCandidate = workflow.slice(stepStart, stepEnd);
+  assert.match(statusCandidate, /cp \/tmp\/seo-status\.json seo-status\.json/);
+  assert.match(statusCandidate, /git diff --quiet -- seo-status\.json/);
+  assert.doesNotMatch(statusCandidate, /git fetch origin main|git reset --hard origin\/main|git push origin HEAD:main/);
 
-  const statusPublication = workflow.slice(stepStart, stepEnd);
-  assert.match(statusPublication, /git fetch origin main/);
-  assert.match(statusPublication, /git reset --hard origin\/main/);
-  assert.match(statusPublication, /cp \/tmp\/seo-status\.json seo-status\.json/);
-  assert.match(statusPublication, /git diff --quiet -- seo-status\.json/);
-  assert.match(statusPublication, /git push origin HEAD:main/);
-  assert.doesNotMatch(
-    statusPublication,
-    /git pull --rebase origin main/,
-    'derived status publication must not rebase the stale full workflow worktree',
-  );
+  const candidate = workflow.slice(stepEnd);
+  assert.match(candidate, /createWriterCandidate/);
+  assert.match(candidate, /gh pr create/);
 });
