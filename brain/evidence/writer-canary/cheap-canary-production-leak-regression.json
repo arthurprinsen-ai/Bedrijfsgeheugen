@@ -1,0 +1,14 @@
+{
+  "contract": "BRAIN-DELIVERY-v2",
+  "truth_status": "OBSERVED",
+  "status": "OPEN",
+  "type": "regression-guard",
+  "component": "repository-writer-cheap-canary",
+  "failure": "shadow-only transport canaries were dispatched into Unified Brain production delivery and promoted into main",
+  "observedProductionCandidates": [
+    "b8f982e0595592b4eb9fcab16edfeb88288a6f7d",
+    "6f480bb4f2e91e17182a1bd8cfcec0cd8d33966c",
+    "a42cf446a6243d2176bca2c6a9155c12c98bda8a"
+  ],
+  "requiredPrevention": "cheap transport canary remains shadow-only and never dispatches Unified Brain Delivery or BG169"
+}
