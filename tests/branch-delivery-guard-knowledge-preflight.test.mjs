@@ -60,3 +60,17 @@ test('delivery preflight fails closed when a reused guard has no actionable know
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test('unexplained reused guard failure is a canonical registered prevention guard', async () => {
+  const fingerprint = 'learning|preflight|reused-guard-without-actionable-knowledge-v1';
+  const [preflight, inventory] = await Promise.all([
+    loadDeliveryPreflight(),
+    buildGuardRegressionInventory(),
+  ]);
+
+  assert.ok(inventory.fingerprints.includes(fingerprint), 'runtime preflight knowledge failure must be in canonical guard inventory');
+  assert.ok(preflight.reusedGuards.includes(fingerprint), 'runtime preflight knowledge failure must be mandatory preflight knowledge');
+  const knowledge = preflight.guardKnowledge.find(item => item.fingerprint === fingerprint);
+  assert.equal(knowledge?.regressionContract, 'tests/branch-delivery-guard-knowledge-preflight.test.mjs');
+  assert.equal(knowledge?.owner, 'agent-reliability');
+});
