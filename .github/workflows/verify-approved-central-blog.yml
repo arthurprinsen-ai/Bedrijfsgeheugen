@@ -162,39 +162,48 @@ jobs:
           DISPATCH_ATTEMPT: ${{ inputs.dispatch_attempt }}
         run: |
           set -euo pipefail
-          [ -n "$NOTION_TOKEN" ] || { echo '::error::NOTION_TOKEN_MISSING'; exit 1; }
-          python3 - <<'PY' >/tmp/queue.json
-          import json, os
-          print(json.dumps({'properties': {
-            'Status': {'select': {'name': 'Gepubliceerd'}},
-            'Dispatch status': {'select': {'name': 'Published'}},
-            'Verified At': {'date': {'start': os.environ['VERIFIED_AT']}},
-            'Last verification': {'date': {'start': os.environ['VERIFIED_AT']}},
-            'Verification attempt': {'number': int(os.environ['VERIFICATION_ATTEMPT'])},
-            'Failure fingerprint': {'rich_text': []},
-            'URL': {'url': os.environ['PUBLIC_URL']},
-          }}))
+          python3 - <<'PY'
+          import json, os, urllib.request
+
+          API = 'https://api.notion.com/v1'
+          token = os.environ.get('NOTION_TOKEN', '').strip()
+          if not token:
+              raise SystemExit('NOTION_TOKEN_MISSING')
+
+          def patch(page_id, properties):
+              request = urllib.request.Request(
+                  f'{API}/pages/{page_id}',
+                  data=json.dumps({'properties': properties}).encode(),
+                  method='PATCH',
+                  headers={
+                      'Authorization': 'Bearer ' + token,
+                      'Notion-Version': '2025-09-03',
+                      'Content-Type': 'application/json',
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  if response.status != 200:
+                      raise RuntimeError(f'NOTION_PATCH_HTTP_{response.status}')
+                  return json.load(response)
+
+          verified_at = os.environ['VERIFIED_AT']
+          public_url = os.environ['PUBLIC_URL']
+
+          patch(os.environ['QUEUE_PAGE'], {
+              'Status': {'select': {'name': 'Gepubliceerd'}},
+              'Dispatch status': {'select': {'name': 'Published'}},
+              'Verified At': {'date': {'start': verified_at}},
+              'Last verification': {'date': {'start': verified_at}},
+              'Verification attempt': {'number': int(os.environ['VERIFICATION_ATTEMPT'])},
+              'Failure fingerprint': {'rich_text': []},
+              'URL': {'url': public_url},
+          })
+          patch(os.environ['CENTRAL_PAGE'], {
+              'Make status': {'select': {'name': 'Gepubliceerd'}},
+              'Publicatielink': {'url': public_url},
+              'Publish Attempt': {'number': int(os.environ['DISPATCH_ATTEMPT'])},
+              'Publish Verified At': {'date': {'start': verified_at}},
+              'Foutmelding': {'rich_text': []},
+          })
+          print(f"PUBLIC_PROOF_OK content_id={os.environ['CONTENT_ID']} slug={os.environ['SLUG']} url={public_url} verification attempt={os.environ['VERIFICATION_ATTEMPT']}")
           PY
-          python3 - <<'PY' >/tmp/central.json
-          import json, os
-          print(json.dumps({'properties': {
-            'Make status': {'select': {'name': 'Gepubliceerd'}},
-            'Publicatielink': {'url': os.environ['PUBLIC_URL']},
-            'Publish Attempt': {'number': int(os.environ['DISPATCH_ATTEMPT'])},
-            'Publish Verified At': {'date': {'start': os.environ['VERIFIED_AT']}},
-            'Foutmelding': {'rich_text': []},
-          }}))
-          PY
-          curl --fail-with-body --silent --show-error --request PATCH \
-            --url "https://api.notion.com/v1/pages/$QUEUE_PAGE" \
-            --header "Authorization: Bearer $NOTION_TOKEN" \
-            --header 'Notion-Version: 2025-09-03' \
-            --header 'Content-Type: application/json' \
-            --data-binary @/tmp/queue.json >/tmp/queue-response.json
-          curl --fail-with-body --silent --show-error --request PATCH \
-            --url "https://api.notion.com/v1/pages/$CENTRAL_PAGE" \
-            --header "Authorization: Bearer $NOTION_TOKEN" \
-            --header 'Notion-Version: 2025-09-03' \
-            --header 'Content-Type: application/json' \
-            --data-binary @/tmp/central.json >/tmp/central-response.json
-          echo "PUBLIC_PROOF_OK content_id=$CONTENT_ID slug=$SLUG url=$PUBLIC_URL verification attempt=$VERIFICATION_ATTEMPT"
