@@ -11,12 +11,15 @@ on:
       - 'netlify.toml'
       - 'site/v18-test-source.json'
       - 'site/v18-component-registry.json'
+      - 'site/v18-scope-policy.json'
       - 'docs/incidents/2026-08-30-v18-test-identity.md'
       - 'tools/bouw-v18-test-preview.mjs'
+      - 'tools/check-v18-scope.mjs'
       - 'tests/v18-test-route-integrity.test.mjs'
       - 'tests/v18-preview-build-contract.test.mjs'
       - 'tests/v18-component-registry.test.mjs'
       - 'tests/v18-merge-rule-guardian.test.mjs'
+      - 'tests/v18-scope-policy.test.mjs'
       - '.github/workflows/v18-test-route-integrity.yml'
   workflow_dispatch:
 permissions:
@@ -38,8 +41,8 @@ jobs:
             echo "::error::V18 integrity check is not running on the exact PR head SHA"
             exit 1
           fi
-      - name: Run V18 route and preview build contract tests
-        run: node --test tests/v18-test-route-integrity.test.mjs tests/v18-preview-build-contract.test.mjs tests/v18-component-registry.test.mjs tests/v18-merge-rule-guardian.test.mjs
+      - name: Run V18 route, merge and scope contract tests
+        run: node --test tests/v18-test-route-integrity.test.mjs tests/v18-preview-build-contract.test.mjs tests/v18-component-registry.test.mjs tests/v18-merge-rule-guardian.test.mjs tests/v18-scope-policy.test.mjs
       - name: Verify pinned user-accepted V18 baseline is publicly reachable
         shell: bash
         run: |
