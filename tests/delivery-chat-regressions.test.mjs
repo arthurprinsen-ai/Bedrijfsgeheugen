@@ -18,7 +18,8 @@ const required=[
  ['delivery-failure|pr|shared|parallel-identical-candidates-raced','CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES'],
  ['delivery-failure|verification|shared|duplicate-writer-handoff','SINGLE_CANONICAL_WRITER_HANDOFF'],
  ['delivery-failure|integration|automation|make-subscenario-input-envelope','VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE'],
- ['delivery-failure|governance|shared|red-first-test-pushed-directly-to-unprotected-main','NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN']
+ ['delivery-failure|governance|shared|red-first-test-pushed-directly-to-unprotected-main','NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN'],
+ ['delivery-failure|production-persistence|shared|stale-current-main-readback','REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE']
 ];
 
 test('chat recovery failures remain PROVEN lessons with active prevention rules',()=>{
@@ -54,4 +55,17 @@ test('candidate-only TDD is part of mandatory Brain chat-learning preflight',()=
  const lesson=lessons.find(x=>x.fingerprint==='delivery-failure|governance|shared|red-first-test-pushed-directly-to-unprotected-main');
  assert.match(lesson.fix,/candidate branch/i);
  assert.match(lesson.fix,/BG169/i);
+});
+
+test('final production persistence requires a fresh current-main readback',()=>{
+ const lesson=lessons.find(x=>x.fingerprint==='delivery-failure|production-persistence|shared|stale-current-main-readback');
+ assert.ok(lesson);
+ assert.equal(lesson.status,'PROVEN');
+ assert.match(lesson.rootCause,/reused after additional commits landed/i);
+ assert.match(lesson.fix,/re-read main immediately before final production persistence/i);
+ assert.match(lesson.fix,/never reuse the stale SHA/i);
+ const rule=rules.find(x=>x.id==='REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE');
+ assert.ok(rule);
+ assert.equal(rule.active,true);
+ assert.equal(rule.enforcedBy,'bg169-final-production-readback-contract');
 });
