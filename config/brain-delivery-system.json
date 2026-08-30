@@ -15,6 +15,15 @@
     "docs/development-ledger-events/",
     "docs/superpowers/"
   ],
+  "branchPolicy": {
+    "strategy": "conflict-aware-current-main",
+    "createFrom": "current-main",
+    "rebuildOnMainDrift": false,
+    "syncRequiredWhen": ["merge-conflict", "changed-path-overlap"],
+    "nonOverlappingDriftAction": "merge-with-current-main",
+    "preferredWriteMode": "atomic-tree-commit",
+    "maxRebuildsForNonOverlappingDrift": 0
+  },
   "lanes": [
     {
       "id": "backend",
