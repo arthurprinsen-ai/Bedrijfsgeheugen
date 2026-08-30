@@ -15,6 +15,7 @@ test('production SEO guard verifies the real public site after deploy', () => {
   assert.match(workflow, /view-home/);
   assert.match(workflow, /view-product/);
   assert.match(workflow, /noindex\|nofollow/i);
+  assert.match(workflow, /data-soevereiniteit/);
 });
 
 test('promotion gate executes and interprets the full existing static SEO checker', () => {
@@ -34,9 +35,13 @@ test('generated prototype cannot become a duplicate indexable production route',
   assert.match(redirects, /^\/prototype-v18-stable\.html\s+\/\s+301!/m);
 });
 
-test('data sovereignty title stays within search result length', () => {
-  const html = read('data-soevereiniteit.html');
-  const title = (html.match(/<title>([^<]+)<\/title>/) || [,''])[1];
-  assert.ok(title.length >= 30 && title.length <= 65, `title length is ${title.length}`);
-  assert.match(title.toLowerCase(), /data-soevereiniteit/);
+test('data sovereignty title override stays within search result length without body rewrite', () => {
+  const cfg = JSON.parse(read('site/seo-baseline.json'));
+  const override = cfg.pageOverrides.find(x => x.route === '/data-soevereiniteit');
+  assert.ok(override, 'data sovereignty SEO override missing');
+  assert.ok(override.title.length >= 30 && override.title.length <= 65, `title length is ${override.title.length}`);
+  assert.match(override.title.toLowerCase(), /data-soevereiniteit/);
+  const apply = read('tools/apply-v18-seo.mjs');
+  assert.match(apply, /applyPageOverride/);
+  assert.match(apply, /changed visible body/);
 });
