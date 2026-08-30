@@ -9,10 +9,12 @@ const harness = fs.readFileSync('.github/workflows/repo-writer-operational-verif
 test('approved central operational verification is fixture-only and candidate-only', () => {
   assert.match(approved, /verification_mode:[\s\S]*?default:\s*false/);
   assert.match(approved, /VERIFICATION_MODE/);
-  assert.match(approved, /VERIFICATION_REQUIRES_CANDIDATE_PR/);
+  assert.match(approved, /delivery_mode:[\s\S]*?default:\s*candidate-pr[\s\S]*?-\s*candidate-pr/);
+  assert.doesNotMatch(approved, /delivery_mode:[\s\S]*?-\s*direct\b/);
   assert.match(approved, /writer-verification-approved-central/);
   assert.match(approved, /if \[ "\$VERIFICATION_MODE" = "true" \]/);
   assert.match(approved, /else[\s\S]*?publish_approved_blog_v2\.py/);
+  assert.doesNotMatch(approved, /git\s+push\s+origin\s+(?:HEAD:)?main\b/);
 });
 
 test('trusted harness forces approved central verification fixture plus candidate delivery', () => {
