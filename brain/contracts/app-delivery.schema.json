@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "BRAIN-APP-DELIVERY-v1",
+  "title": "BRAIN external application delivery request",
+  "type": "object",
+  "required": ["manifest", "target", "idempotency_key", "payload"],
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "required": ["contract", "change_id", "component_id", "registered", "brain_context_loaded", "learning_writeback_configured", "gates"],
+      "properties": {
+        "contract": {"const": "BRAIN-DELIVERY-v2"},
+        "change_id": {"type": "string", "minLength": 1},
+        "component_id": {"type": "string", "minLength": 1},
+        "registered": {"const": true},
+        "brain_context_loaded": {"const": true},
+        "learning_writeback_configured": {"const": true},
+        "gates": {
+          "type": "object",
+          "required": ["contract", "quality", "security", "cost_performance", "preview"],
+          "properties": {
+            "contract": {"const": true},
+            "quality": {"const": true},
+            "security": {"const": true},
+            "cost_performance": {"const": true},
+            "preview": {"const": true}
+          }
+        }
+      }
+    },
+    "target": {"enum": ["notion", "make", "supabase", "dataforseo"]},
+    "idempotency_key": {"type": "string", "minLength": 1},
+    "payload": {},
+    "metadata": {"type": "object"}
+  },
+  "additionalProperties": false
+}
