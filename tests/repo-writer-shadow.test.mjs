@@ -143,3 +143,13 @@ test('workflow_dispatch never relies on protected GitHub default env for writer 
   assert.match(verifier, /process\.env\.GITHUB_HEAD_REF/);
   assert.match(verifier, /REPO_WRITER_HEAD_REF[^\n]*GITHUB_HEAD_REF|GITHUB_HEAD_REF[^\n]*REPO_WRITER_HEAD_REF/);
 });
+
+test('Unified Brain Delivery performs a real event-driven BG169 handoff after green gates', () => {
+  const workflow = fs.readFileSync('.github/workflows/unified-brain-delivery.yml', 'utf8');
+  assert.match(workflow, /BG169_HANDOFF_URL/);
+  assert.match(workflow, /curl[\s\S]*BG169_HANDOFF_URL/);
+  assert.match(workflow, /pr_number/);
+  assert.match(workflow, /candidate_sha/);
+  assert.match(workflow, /tested_head_sha/);
+  assert.doesNotMatch(workflow, /Hand exact green lane identities[\s\S]{0,800}BG169 evaluates exact tested identities; BG168 routes outcomes; BG167 refreshes shared current state\.\s*$/);
+});
