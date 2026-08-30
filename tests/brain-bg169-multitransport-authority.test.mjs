@@ -3,14 +3,15 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 'utf8');
-const platformAdapters = JSON.parse(await readFile('config/brain-platform-adapters.json', 'utf8'));
+const delivery = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
 
 test('BG169 remains one authority while supporting Make and GitHub-native transports', () => {
-  const authority = platformAdapters.production_authority;
+  const authority = delivery.integration?.productionAuthorityContract;
   assert.equal(authority?.id, 'BG169');
   assert.deepEqual(authority?.transports?.map(x => x.id), ['make', 'github-native']);
-  assert.equal(authority?.fallback_policy, 'primary_then_verified_failover');
-  assert.equal(authority?.failover_requires_same_contract, true);
+  assert.equal(authority?.fallbackPolicy, 'primary_then_verified_failover');
+  assert.equal(authority?.failoverRequiresSameContract, true);
+  assert.equal(authority?.ackIsExecutionProof, false);
 });
 
 test('GitHub-native BG169 failover is exact-SHA, same-repo and evidence gated', () => {
@@ -26,5 +27,5 @@ test('GitHub-native BG169 failover is exact-SHA, same-repo and evidence gated', 
 test('Make acknowledgement alone never suppresses verified failover', () => {
   assert.match(workflow, /BG169_HANDOFF_NOT_ACCEPTED/);
   assert.match(workflow, /github-native/);
-  assert.doesNotMatch(workflow, /exit 1; \}\s*# no failover/);
+  assert.match(workflow, /BG169_PROMOTION_NOT_VERIFIED/);
 });
