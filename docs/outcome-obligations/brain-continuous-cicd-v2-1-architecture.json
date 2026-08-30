@@ -1,0 +1,10 @@
+{
+  "id":"brain-continuous-cicd-v2-1-all-apps",
+  "domain":"production_reliability",
+  "expected":true,
+  "dueAt":"2026-08-31T23:59:59+02:00",
+  "ownerAgent":"Architecture Agent",
+  "evidencePolicy":"Universal all-app continuous delivery policy, platform registry/adapters, cross-platform conflict index, immediate per-change promotion, BG167/BG168/BG169 integration, full regressions and exact production evidence must all be green. Independent platform migrations may complete separately but hidden release islands are not allowed.",
+  "idempotencyKey":"brain-continuous-cicd-v2-1-all-apps-v1",
+  "recoveryPolicy":"Keep existing last-known-good delivery paths active while migrating adapters independently. Never batch unrelated changes or rebuild branches solely for non-overlapping main drift. A failing platform adapter blocks only itself and true dependents; unrelated green delivery continues."
+}
