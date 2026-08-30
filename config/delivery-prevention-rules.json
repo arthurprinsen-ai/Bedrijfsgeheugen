@@ -14,6 +14,7 @@
     {"id":"REQUIRE_AUTHORIZED_CONNECTOR_FOR_REMOTE_WRITES","active":true,"enforcedBy":"remote-write-authorization-contract","scope":"shared"},
     {"id":"REQUIRE_ACTIVE_RULE_FOR_REQUIRED_CHAT_LESSON","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
     {"id":"DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
-    {"id":"REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES","active":true,"enforcedBy":"brain-chat-learning-preflight-plus-candidate-only-manual-write-contract","scope":"shared"}
+    {"id":"REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES","active":true,"enforcedBy":"brain-chat-learning-preflight-plus-candidate-only-manual-write-contract","scope":"shared"},
+    {"id":"REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE","active":true,"enforcedBy":"bg169-final-production-readback-contract","scope":"shared"}
   ]
 }
