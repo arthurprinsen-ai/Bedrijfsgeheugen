@@ -20,8 +20,29 @@
     "uncertain_outcome_defaults_to_material",
     "no_live_multi_step_partial_topology",
     "readback_before_retry_after_429_or_502",
-    "no_production_promotion_from_blueprint_or_CI_alone"
+    "no_production_promotion_from_blueprint_or_CI_alone",
+    "capacity_exhaustion_never_authorizes_autonomous_paid_capacity_increase"
   ],
+  "runtimeEvidenceBlockers": [
+    "MAKE_TEAM_PAUSED_OPERATIONS_OR_DATA_TRANSFER_LIMIT"
+  ],
+  "latestRuntimeAttempt": {
+    "scenarioId": 7165093,
+    "requestedInput": "Runtime health check. Return exactly OK.",
+    "executionStarted": false,
+    "error": "Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again.",
+    "stagingExecutionsObserved": 0,
+    "BG168ExecutionsObserved": 0,
+    "stagingReturnedInactive": true,
+    "evidenceClass": "HARD_BOUNDARY_NO_RUNTIME_EXECUTION"
+  },
+  "capacityBoundary": {
+    "blockPromotionWhenTeamPaused": true,
+    "allowAutonomousPaidCapacityIncrease": false,
+    "requireZeroExecutionReadbackAfterBlockedRun": true,
+    "preserveStagingInactiveAfterBlockedRun": true,
+    "resumeRuntimeEvidenceOnlyAfterCapacityIsAvailableWithoutUnsafeSpendOrScopeExpansion": true
+  },
   "promotionStrategy": {
     "stagingFirst": true,
     "oneAgentAtATime": true,
@@ -34,7 +55,8 @@
     "allRequiredRuntimeEvidenceMustBeTrue": true,
     "stagingBlueprintMustMatchCanonicalClassifier": true,
     "sharedMemoryCIMustBeGreen": true,
-    "productionAgentMustRemainUnchangedUntilGatePasses": true
+    "productionAgentMustRemainUnchangedUntilGatePasses": true,
+    "runtimeEvidenceBlockersMustBeEmpty": true
   },
   "rollback": {
     "immediateOnPrimaryResultRegression": true,
