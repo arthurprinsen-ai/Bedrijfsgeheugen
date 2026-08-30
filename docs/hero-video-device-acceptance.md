@@ -13,6 +13,16 @@ De canonical V18 hero-player/controller is bewezen werkend op een fysieke iPhone
 - geen WebP/animated-image vervanging voor een videoprobleem;
 - geen wijziging van meerdere playbackvariabelen tegelijk.
 
+## OpenArt provenance — reproduceer zonder opnieuw credits te verbranden
+De huidige visuele kandidaat is één specifieke OpenArt-generatie en moet content-addressed worden hergebruikt in plaats van opnieuw gegenereerd:
+- provider: OpenArt;
+- model: `grok-imagine-1-5` (Grok Imagine 1.5);
+- history ID: `uUxKRWcQkzWIPosutXVF`;
+- generation intent: 8 seconden, 16:9, 1080p; lichte premium drone/architectuur; golden-hour; duidelijke rustige voorwaartse beweging/parallax; geen mensen, kantoorinterieur, donkere scene of bijna stilstaande camera;
+- ruwe output: 1920x1088, 24 fps, 8.041667 s, met audio.
+
+De exacte bron-URL, source SHA256, derivative SHA256 en probes staan in `assets/openart-hero-production.json`. Zolang die source-hash beschikbaar is, mag een agent niet opnieuw een betaalde generatie starten om dezelfde kandidaat te reconstrueren.
+
 ## Media-delivery contract
 AI/OpenArt-bronnen mogen niet rauw als hero worden gebruikt wanneer zij buiten het bewezen profiel vallen. De huidige OpenArt-bron kwam als 1920x1088, 24 fps en met audio. Voor iPhone-safe delivery wordt een lokale derivative gebruikt met exact:
 - 1920x1080;
@@ -75,6 +85,11 @@ Symptoom: manifest vermeldde `physical_iphone_runtime: PASS` voor een nieuwe Ope
 Root cause: acceptatiestatus was niet cryptografisch/content-addressed aan het geteste derivative-artifact gekoppeld.
 Preventie: regression gate vereist `physical_iphone_runtime_derivative_sha256 === derivative_sha256` plus expliciete evidence. Nieuwe kandidaat start altijd als `PENDING`.
 
+### `hero|duplicate-paid-generation|avoidable-cost`
+Symptoom: opnieuw een AI-video genereren terwijl dezelfde bron al bestaat.
+Impact: onnodige OpenArt-credits, extra wachttijd en nieuwe visuele/technische variatie.
+Preventie: zoek eerst generation history/provenance + source SHA; hergebruik de bestaande bron en normaliseer opnieuw indien nodig. Nieuwe betaalde generatie alleen als de visuele kandidaat inhoudelijk wordt afgekeurd of de bron aantoonbaar niet meer beschikbaar is.
+
 ## Diagnostiek
 Voor device-only fouten moet diagnostiek in dezelfde Safari-execution context worden uitgevoerd. Relevante velden/events:
 - `currentSrc`;
@@ -86,18 +101,19 @@ Voor device-only fouten moet diagnostiek in dezelfde Safari-execution context wo
 - `videoWidth`/`videoHeight`;
 - `loadedmetadata`, `loadeddata`, `canplay`, `play`, `playing`, `waiting`, `stalled`, `error`.
 
-Een groene Netlify-build is geen fysieke runtime-acceptatie.
+Een groene CI/build is geen fysieke runtime-acceptatie.
 
 ## Acceptatievolgorde
 1. Begin vanaf de actuele `test`/last-known-good lineage, niet vanaf een historische previewbranch.
 2. Behoud controller/player invarianten.
-3. Valideer bron en derivative technisch.
-4. Zet manifeststatus op `PENDING`.
-5. Bouw een geïsoleerde HTTPS-preview op exact commit SHA.
-6. Test op fysieke iPhone.
-7. Alleen bij expliciete acceptatie: bind PASS aan exact derivative SHA + evidence + commit/deploy.
-8. Voer daarna opnieuw alle regression/build-gates uit.
-9. Voor deze acceptatiekandidaat: geen `main`/productiepromotie zonder expliciete productiebevestiging.
+3. Hergebruik bestaande OpenArt-bron als source SHA/history al bekend zijn; genereer niet opnieuw.
+4. Valideer bron en derivative technisch.
+5. Zet manifeststatus op `PENDING`.
+6. Bouw een geïsoleerde HTTPS-preview op exact commit SHA.
+7. Test op fysieke iPhone.
+8. Alleen bij expliciete acceptatie: bind PASS aan exact derivative SHA + evidence + commit/deploy.
+9. Voer daarna opnieuw alle regression/build-gates uit.
+10. Voor deze acceptatiekandidaat: geen `main`/productiepromotie zonder expliciete productiebevestiging.
 
 ## Reusable rule
 **Een hero-video is pas bewezen als visuele acceptatie, technische media-validatie, exact artifact identity en fysieke-device runtime-acceptatie allemaal naar hetzelfde derivative-hash verwijzen.**
