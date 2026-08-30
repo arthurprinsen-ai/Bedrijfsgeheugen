@@ -1,0 +1,22 @@
+{
+  "contract":"BRAIN-UNIVERSAL-SERVICES-v1",
+  "operating_loop":["detect","verify","match","impact","prioritise","recommend","act","measure","learn"],
+  "services":{
+    "business_graph":{"record_types":["Entity","Relation","Evidence","Signal","Opportunity","Decision","Action","Outcome","Learning"],"projection":"canonical_graph"},
+    "living_memory":{"retains":["material_evidence","decisions","actions","outcomes","learnings","provenance"],"projection":"tenant_living_memory"},
+    "external_intelligence":{"input":"Evidence","outputs":["Signal","Opportunity"],"evidence_gated":true},
+    "change_impact":{"inputs":["Signal","Opportunity","Relation"],"outputs":["Decision"],"graph_aware":true},
+    "decision_lifecycle":{"inputs":["Evidence","Signal","Opportunity"],"outputs":["Decision"],"requires_owner":true},
+    "action_execution":{"input":"Decision","output":"Action","done_contract":"owner+executed+verified+result+evidence"},
+    "verified_value":{"input":"Outcome","requires":["realised","verified","evidence"],"projection":"executive_cockpit"},
+    "ai_governance":{"requires":["provenance","tenant_scope","evidence","owner","auditability"],"unknown_policy":"fail_closed"}
+  },
+  "persistence":{"endpoint":"/api/brain-operating-loop","store":"netlify_blobs:brain-operating-loop","tenant_binding":"server_identity","consistency":"strong","idempotency":"required"},
+  "memory":{"error_ledger":"BG166","current_state":"BG167","outcome_router":"BG168"},
+  "production":{"authority":"BG169","exact_revision_required":true},
+  "value_evaluation_days":[30,90,180],
+  "provenance_required":["source","source_id","observed_at","freshness","evidence_ids"],
+  "ingestion":{"preserve_raw_source":true,"compatibility_mapping":"versioned","unknown_source":"fail_closed","dedupe":"idempotency_key"},
+  "advice":{"requires":["evidence","impact","priority","recommendation","owner"],"must_link_to_business_graph":true},
+  "future_sources":{"inherit_contract":true,"auto_register":true,"production_without_adapter":false}
+}
