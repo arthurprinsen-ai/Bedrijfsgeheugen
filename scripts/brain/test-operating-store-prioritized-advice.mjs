@@ -1,0 +1,5 @@
+import {createOperatingLoopStore} from '../../brain/operating-loop/store.mjs';
+const map=new Map();const adapter={async get(k){return map.get(k)||null;},async put(k,v){map.set(k,v);},async list(p=''){return [...map].filter(([k])=>k.startsWith(p)).map(([key,value])=>({key,value}));}};const store=createOperatingLoopStore(adapter);
+await store.append({tenantId:'t1',type:'Opportunity',id:'o1',subjectId:'seo:x',owner:'agent-seo',evidenceIds:['e1'],idempotencyKey:'1',payload:{recommendation:'Build X',impact:.8,confidence:.8,urgency:.8}});
+await store.append({tenantId:'t1',type:'Opportunity',id:'o2',subjectId:'cost:y',owner:'agent-cost',evidenceIds:['e2'],idempotencyKey:'2',payload:{recommendation:'Fix Y',impact:.9,confidence:.9,urgency:.9}});
+const p=await store.getProjection('t1');if(!Array.isArray(p.prioritizedAdvice)||p.prioritizedAdvice.length!==2) throw new Error('projection must expose prioritized advice');if(p.prioritizedAdvice[0].sourceId!=='o2') throw new Error('projection advice must be priority sorted');console.log('operating store prioritized advice tests passed');
