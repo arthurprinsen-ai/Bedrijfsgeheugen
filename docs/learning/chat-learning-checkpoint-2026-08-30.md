@@ -234,6 +234,33 @@ A real governance gap was found: Shared Agent Memory CI protected `automation/**
 
 The first run after closing that gap correctly went RED and exposed a test-quality issue: the memory assertion searched for `production evidence` case-sensitively while the ledger contained `Production evidence`. The repair was to make that semantic evidence assertion case-insensitive instead of changing valid production documentation merely to satisfy casing. Reusable rule: contract tests should be strict on meaning, identifiers, invariants and exact machine values, but not accidentally brittle on irrelevant prose capitalization.
 
+## Instagram / Make native migration contract
+
+Deze leerregels zijn canoniek voor toekomstige chats, Make-agents, content-agents en iedere migratie van legacy publisher/analytics naar native platformconnectors:
+
+- Een create-response is niet hetzelfde als verified publicatie. `CreatePostPhoto` of `CreateAReelPost` moet gevolgd worden door native readback (`GetMedia`) en pas de geverifieerde platform-ID mag als gepubliceerd bewijs in Notion/Canonical State worden geschreven. Create ≠ verified.
+- Een Notion update mag alleen lopen als een echte Notion page-ID bestaat. Een lege search sentinel (`__IMTLENGTH__ = 0`) is geen record; guard downstream writes met een expliciete `id exists`-voorwaarde. Anders ontstaat de bekende `[400] Invalid request URL`-fout.
+- Native Instagram-ID's en Buffer/legacy-ID's blijven strikt gescheiden. Native records mogen nooit door de Buffer-route worden gestuurd; legacy analytics blijft alleen bestaan voor aantoonbaar legacy verkeer. Successor/compatibility mapping wordt vóór uitvoering geraadpleegd.
+- Na 429/502 of een andere ambiguë mutation failure geldt read-after-error: eerst scenario/execution/state teruglezen, daarna alleen retryen wanneer het bedoelde effect aantoonbaar ontbreekt. Geen blinde retries en geen dubbele betaalde runs.
+- Advanced Meta/Instagram Insights blijft fail-closed totdat de exacte moduleparameterisering en metrics per media type tegen echte live data zijn bewezen. Een connector-call die `metric is required` teruggeeft is geen geldige analytics-route; niet omzeilen met gokwerk of silent fallback naar Buffer.
+- Gebruik één canonical Instagram Business connection per productiechain voor create, verify en readback. Vermijd parallelle credentials voor dezelfde chain tenzij er expliciete failover-evidence en governance voor bestaat.
+- Tijdelijke diagnostics/probe-scenario's zijn testharnassen: read-only waar mogelijk, bounded, na bewijs weer inactief en nooit stil onderdeel van productie laten worden.
+- Native basic metrics mogen alleen naar Notion en learning/Datahub als post-ID en native-record matchen. Snapshot-dedup gebeurt vóór create/write; een identieke combinatie van post-ID + likes + comments produceert geen nieuw learning-record en geen extra context-refresh.
+- Een technisch succesvolle scenario-run zonder verschuldigde side-effect is alleen groen wanneer no-op semantisch correct is. Bij publishing is succes pas bewezen als status, publicatiecheck, geverifieerde post-ID/permalink, daadwerkelijke publicatietijd en actieve publisher-route aantoonbaar overeenkomen.
+- Retired/historical foutmeldingen zijn audit history, geen actuele productieproblemen zonder recente reproduceerbare evidence. Controleer scenario-status, `lastEdit` en post-fix executions voordat iets wordt gemuteerd.
+- Buffer/legacy analytics mag pas definitief retired worden nadat een actuele volledige run aantoonbaar zero-legacy/0 legacy verkeer verwerkt én de native successor zelfstandig de benodigde outcome- en learningverplichtingen afdekt.
+- Kostenregel: diagnostiek gebruikt eerst goedkope read-only existing-media checks; forceer nooit een publicatietest door QA/publicatiepoorten te verzwakken. Vermijd per-record AI-fan-out voor deterministische ID-, status-, dedupe- of metricschecks.
+
+Bekende fingerprints/preventiepatronen uit deze migratie:
+- `instagram|publish|create-without-readback-verification` → verplicht create → GetMedia verify → commit verified ID.
+- `instagram|notion|empty-search-sentinel-update` → downstream update vereist echte page-ID.
+- `instagram|routing|native-id-entered-buffer-legacy` → native marker/successor gate vóór legacy route.
+- `instagram|insights|metric-parameter-not-live-proven` → advanced insights uit/fail-closed totdat echte live proof bestaat.
+- `instagram|connection|parallel-credentials-same-production-chain` → consolideer op één canonical connection.
+- `instagram|diagnostic|temporary-scenario-left-active` → na bewijs deactiveren en niet als production truth projecteren.
+- `instagram|learning|duplicate-basic-metric-snapshot` → fingerprint/dedup vóór Datahub-write.
+- `instagram|legacy-retirement|retired-before-zero-legacy-proof` → pas retire na actuele zero-legacy evidence en bewezen successor coverage.
+
 ## Development-speed rules
 
 To make future work faster:
