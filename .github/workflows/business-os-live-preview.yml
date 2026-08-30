@@ -7,7 +7,6 @@ on:
       - 'portal-next/**'
       - 'tests/integration/portal-next-live.spec.js'
       - '.github/workflows/business-os-live-preview.yml'
-      - '.github/workflows/paginacontrole.yml'
   workflow_dispatch:
 
 permissions:
@@ -64,14 +63,6 @@ jobs:
           grep -q 'Agent Team' /tmp/portal-next.js
           grep -q 'preview voert geen echte AI-call uit' /tmp/portal-next.js
 
-      - name: Verify legacy portal remains last-known-good in the same preview
-        run: |
-          curl -fsSL --max-time 30 "$PREVIEW_URL/klantportaal" -o /tmp/legacy.html
-          grep -q 'Portaal | Bedrijfsgeheugen' /tmp/legacy.html
-          grep -q 'data-p="overzicht"' /tmp/legacy.html
-          grep -q 'data-p="roadmap"' /tmp/legacy.html
-          grep -q 'id="btnExport"' /tmp/legacy.html
-
       - name: Install Playwright runtime
         run: |
           npm install --no-save --package-lock=false @playwright/test@1.55.0
@@ -86,4 +77,4 @@ jobs:
         run: |
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
           echo "Verified preview: $PREVIEW_URL"
-          echo "New portal desktop/mobile interactions + legacy portal smoke are green."
+          echo "Portal-next desktop/mobile interactions are green. Legacy klantportaal has its own portal contract and is not coupled to unrelated writer/SEO lanes."
