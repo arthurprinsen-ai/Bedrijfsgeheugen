@@ -69,6 +69,9 @@ test('shadow verification emits immutable exact-PR evidence as a read-only artif
   assert.match(verifier, /headSha/);
   assert.match(verifier, /changedFiles/);
   assert.match(verifier, /candidateBranch/);
+  assert.match(verifier, /--numstat/);
+  assert.match(verifier, /diffStats/);
+  assert.match(verifier, /impactPolicyVerified/);
   assert.match(verifier, /writeFileSync/);
   assert.match(verifier, /schemaVersion:\s*1/);
 });
