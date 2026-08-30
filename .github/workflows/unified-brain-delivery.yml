@@ -207,6 +207,68 @@ jobs:
         if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only == true
         run: |
           echo "Verification-only delivery: production authority handoff intentionally skipped."
+      - name: Certify live main protection before production handoff
+        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only != true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          gh api "repos/${GITHUB_REPOSITORY}/branches/main" > .artifacts/main-branch-promotion.json
+          if ! gh api "repos/${GITHUB_REPOSITORY}/rulesets" > .artifacts/main-rulesets-promotion.json; then
+            printf '[]\n' > .artifacts/main-rulesets-promotion.json
+          fi
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { certifyMainProtection } from './scripts/brain/main-protection-certification.mjs';
+
+          const branch = JSON.parse(await readFile('.artifacts/main-branch-promotion.json', 'utf8'));
+          const rulesets = JSON.parse(await readFile('.artifacts/main-rulesets-promotion.json', 'utf8'));
+          const required = branch?.protection?.required_status_checks ?? {};
+          const requiredChecks = [
+            ...(Array.isArray(required.contexts) ? required.contexts : []),
+            ...(Array.isArray(required.checks) ? required.checks.map(item => item?.context) : []),
+          ].filter(Boolean);
+          const expectedChecks = [
+            'Brain foundation verify',
+            'Shared Agent Memory Tests',
+            'V18 Production Promotion',
+            'Unified Brain Delivery',
+          ];
+          const result = certifyMainProtection({
+            branch: branch?.name,
+            protected: branch?.protected === true,
+            protectionEnabled: branch?.protection?.enabled === true,
+            enforcementLevel: required?.enforcement_level ?? 'unknown',
+            requiredChecks,
+            expectedChecks,
+            rulesets: Array.isArray(rulesets) ? rulesets : [],
+            observedSha: branch?.commit?.sha ?? '',
+            evidenceRef: `github-actions:${process.env.GITHUB_RUN_ID}:main-protection-promotion-block`,
+          });
+          const evidence = {
+            observed_at: new Date().toISOString(),
+            repository: process.env.GITHUB_REPOSITORY,
+            workflow_run_id: process.env.GITHUB_RUN_ID,
+            purpose: 'main-protection-promotion-block',
+            ...result,
+          };
+          await writeFile('.artifacts/main-protection-promotion-block.json', `${JSON.stringify(evidence, null, 2)}\n`);
+          if (!result.mainProtectionReady) {
+            console.error(`::error::MAIN_PROTECTION_BLOCKED:${result.blockers.join(',') || 'UNVERIFIED'}`);
+            process.exit(78);
+          }
+          console.log(`MAIN_PROTECTION_VERIFIED:${result.observedSha}`);
+          NODE
+      - name: Publish main protection promotion evidence
+        if: always() && needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only != true
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-protection-promotion-block-${{ github.run_id }}
+          path: .artifacts/main-protection-promotion-block.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Hand exact green lane identities to Brain production authority
         if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only != true
         env:
