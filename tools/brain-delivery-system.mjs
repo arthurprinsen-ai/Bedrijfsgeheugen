@@ -25,6 +25,8 @@ export function evaluateBranchDrift({ featurePaths = [], mainDriftPaths = [], me
 export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   if (!policy || policy.version !== 'BRAIN-DELIVERY-v1') throw new TypeError('BRAIN-DELIVERY-v1 policy is required');
   if (policy.branchPolicy?.rebuildOnMainDrift !== false) throw new Error('branch policy must prohibit rebuilds for generic main drift');
+  if (policy.continuousPromotion?.batchUnrelatedChanges !== false) throw new Error('continuous promotion must prohibit unrelated batching');
+  if (policy.continuousPromotion?.activateImmediatelyWhenGreen !== true) throw new Error('continuous promotion must activate green changes immediately');
   const sha = String(headSha ?? '').trim();
   if (!/^[a-f0-9]{12,40}$/i.test(sha)) throw new TypeError('valid headSha is required');
   const paths = unique(changedPaths.map(value => String(value).trim()).filter(Boolean)).sort();
@@ -63,6 +65,11 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
       exactShaRequired: policy.integration.exactShaRequired === true,
       outcomeRouter: policy.integration.outcomeRouter,
       currentStateProjection: policy.integration.currentStateProjection,
+      batchRequired: policy.continuousPromotion.batchUnrelatedChanges === true,
+      activateImmediatelyWhenGreen: policy.continuousPromotion.activateImmediatelyWhenGreen === true,
+      waitForUnrelatedChanges: false,
+      releaseUnit: policy.continuousPromotion.releaseUnit,
+      failureIsolation: policy.continuousPromotion.failureIsolation === true,
     }),
   });
 }
@@ -88,7 +95,7 @@ export function discoverBrainMembership({ registeredComponents = [], agents = []
   return Object.freeze(rows.map(row => {
     if (seen.has(row.componentKey)) throw new Error(`duplicate Brain member: ${row.componentKey}`);
     seen.add(row.componentKey);
-    return Object.freeze({ ...row, brainContractVersion:'brain.v1', sharedContextRequired:true, outcomeWritebackRequired:true, costManaged:true, securityGoverned:true, productionAuthority:'BG169' });
+    return Object.freeze({ ...row, brainContractVersion:'brain.v1', sharedContextRequired:true, outcomeWritebackRequired:true, costManaged:true, securityGoverned:true, productionAuthority:'BG169', continuousDelivery:true });
   }).sort((left, right) => left.componentKey.localeCompare(right.componentKey)));
 }
 
