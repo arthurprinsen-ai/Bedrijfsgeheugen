@@ -73,6 +73,20 @@ test('canonical chat checkpoint carries current portal and memory-CI lessons', a
   ]) assert.ok(checkpoint.includes(token), `canonical chat checkpoint missing ${token}`);
 });
 
+test('canonical chat checkpoint rejects prototype views as implicit production baseline', async () => {
+  const checkpoint = await readFile('docs/learning/chat-learning-checkpoint-2026-08-30.md', 'utf8');
+  for (const token of [
+    'website|baseline|prototype-view-mistaken-for-production-route',
+    'PR #187',
+    'prototype/test view',
+    'never automatically a production route baseline',
+    'historical production commits',
+    'route files',
+    'sitemap',
+    'wrong business baseline'
+  ]) assert.ok(checkpoint.includes(token), `website baseline learning missing ${token}`);
+});
+
 test('Powerhouse chat learning checkpoint preserves cross-platform failure prevention', async () => {
   const [checkpoint, ledger] = await Promise.all([
     readFile('docs/powerhouse-chat-learning-checkpoint-2026-08-30.md', 'utf8'),
@@ -138,4 +152,38 @@ test('production promotion guardian contract is machine enforced', async () => {
   assert.equal(obligationsConfig.productionPromotion.safePromotionAndRollbackAreAutonomous, true);
 
   assert.match(workflow, /tests\/production-promotion-guardian\.test\.mjs/);
+});
+
+test('Make control-plane credit storm learning is retained and machine-readable', async () => {
+  const [doc, guard] = await Promise.all([
+    readFile('docs/learning/make-control-plane-credit-storm-2026-08-30.md', 'utf8'),
+    readFile('brain/learning/incidents/make-control-plane-credit-storm-2026-08-30.json', 'utf8')
+  ]);
+
+  for (const token of [
+    'make|multi-agent-context-learning-credit-storm|2026-08-30-v1',
+    'control-plane-credit-storm-prevention-v1',
+    'globally single-flight',
+    'state hash/version',
+    'One canonical owner',
+    'read back remote state before any retry',
+    'projection refresh is secondary and fail-open'
+  ]) assert.ok(doc.includes(token), `Make credit-storm learning missing ${token}`);
+
+  const parsed = JSON.parse(guard);
+  assert.equal(parsed.version, 'MAKE-CONTROL-PLANE-CREDIT-STORM-v1.1');
+  assert.equal(parsed.fingerprint, 'make|multi-agent-context-learning-credit-storm|2026-08-30-v1');
+  assert.equal(parsed.guard, 'control-plane-credit-storm-prevention-v1');
+  assert.equal(parsed.observed.dailyCreditsConsumed, 9165);
+  assert.equal(parsed.observed.rateLimitObserved, true);
+  assert.equal(parsed.recovery.paidCapacityIncreaseAllowedAutonomously, false);
+  for (const requiredGuard of [
+    'canonical_owner',
+    'material_state_change_before_dispatch',
+    'global_single_flight',
+    'state_hash_before_write',
+    'bounded_credit_slope',
+    'readback_before_retry_after_429_or_502',
+    'learning_write_fail_open_from_projection_refresh'
+  ]) assert.ok(parsed.requiredPreflight.includes(requiredGuard), `credit-storm guard missing ${requiredGuard}`);
 });
