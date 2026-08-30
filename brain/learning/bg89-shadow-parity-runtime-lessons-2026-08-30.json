@@ -1,77 +1,18 @@
 {
-  "version": 3,
+  "version": 4,
   "type": "POWERHOUSE_SHADOW_PARITY_RUNTIME_LEARNING",
   "date": "2026-08-30",
-  "scope": ["make", "notion", "shadow-migration", "schema", "parity", "cost", "commercial-boundaries", "cleanup"],
+  "scope": ["make", "notion", "shadow-migration", "schema", "parity", "cost", "commercial-boundaries", "cleanup", "resource-headroom"],
   "lessons": [
-    {
-      "id": "GENERATED_MAKE_MAPPINGS_MUST_NOT_PREVALIDATE_IN_GENERATOR",
-      "fingerprint": "make|blueprint-generator|future-mapping-token-prevalidation",
-      "rootCause": "Literal future {{module.field}} mappings embedded inside generator code are prevalidated as references in the current generator scenario.",
-      "fix": "Construct future mapping tokens at runtime; keep literal mappings only for modules that exist in the generator.",
-      "evidence": "Generator run 7864154d78cc4a94a5805b6b4e8e5851 failed validation; after runtime mapping construction, addaff55c3fd4d0498f727e096bab80c returned PARITY_BLUEPRINT_READY with scorer lengths 10145 and 3254.",
-      "prevention": "Separate generator-time mappings from generated-scenario mappings."
-    },
-    {
-      "id": "SCORER_PROJECTION_MUST_INTERSECT_CURRENT_SCHEMA",
-      "fingerprint": "notion|projection|legacy-property-breaks-filter-properties",
-      "rootCause": "Production scorers may reference legacy fallback fields no longer present in live Notion schema.",
-      "fix": "Projection = scorer dependencies intersect current schema properties, plus current identity/idempotency fields.",
-      "evidence": "437 live properties; one missing scorer dependency Action Score. Including it caused 400 in 8a74d36936f6461c8c33698f9d914cec; removing only it produced 86c800afaa6d46328cdf471734cb8ea2 at 2 ops/3 credits/45635 bytes.",
-      "prevention": "Schema-intersect every generated field projection."
-    },
-    {
-      "id": "EXACT_SCORER_PARITY_USES_PRODUCTION_BLUEPRINT_SOURCE",
-      "fingerprint": "shadow|parity|manual-formula-copy-drift",
-      "fix": "Read /v2/scenarios/{id}/blueprint and copy long business scorers byte-for-byte; never reconstruct from snippets.",
-      "evidence": "BG89 scorer code lengths 10145 and 3254 extracted from official blueprint and reused in generated parity harness.",
-      "prevention": "Source parity is blueprint-derived and code-length/hash checked."
-    },
-    {
-      "id": "MUTABLE_POST_WRITE_RECORD_IS_NOT_A_GOLDEN_FIXTURE",
-      "fingerprint": "shadow|parity|mutable-post-write-golden-fixture",
-      "rootCause": "A production row enriched after the original run is no longer the same scorer input.",
-      "fix": "Compare projected and full representations of the same pre-write input within one no-write execution.",
-      "evidence": "Historic David Kriška replay diverged after BG89 enrichment; fixture strategy was rejected and scenario deactivated.",
-      "prevention": "Use same-run A/B or immutable pre-write snapshots."
-    },
-    {
-      "id": "SAME_INPUT_AB_PROJECTION_PARITY",
-      "fingerprint": "shadow|parity|same-input-projected-vs-full",
-      "fix": "Projected query and full GET of exact same page feed two byte-identical scorer pairs; diff all deterministic fields and exclude only explicitly nondeterministic deadline from Date.now().",
-      "evidence": [
-        "TDD RED 1a59bfbebb33456ebd3e0a87daa275d2 = AB_PARITY_NOT_IMPLEMENTED.",
-        "BG98 real record GREEN 7174c60f974342a39bdf7a37e444fdbd: signal_diff=[], market_diff=[], no writes; 9 ops/16 credits/97325 bytes.",
-        "DM real record GREEN 638e316e0d5f4e26b4098a2b8fa3fa0c on page 3ccda36a-ac8a-81d3-8644-dfb650053b3b: signal_diff=[], market_diff=[], no writes; 9 ops/20 credits/91544 bytes.",
-        "LinkedIn company real record GREEN c441392a6d6045479cc8444e8299916f on page 3c7da36a-ac8a-8151-a0ba-cca7b15f8e64: signal_diff=[], market_diff=[], no writes."
-      ],
-      "prevention": "Projection cutover requires representative same-input A/B runtime parity, not query success alone."
-    },
-    {
-      "id": "NOTION_SQL_DATE_PROPERTIES_USE_EXPANDED_COLUMNS",
-      "fingerprint": "notion|sql|date-property-expanded-column",
-      "symptom": "SQL query using UI date property name Opportunity Updated fails no-such-column.",
-      "rootCause": "Notion SQL exposes date properties as date:<name>:start, date:<name>:end and date:<name>:is_datetime; the main UI property name is not queryable.",
-      "failedApproach": "WHERE \"Opportunity Updated\" IS NULL.",
-      "fix": "Fetch the data-source schema first and query \"date:Opportunity Updated:start\" IS NULL.",
-      "evidence": "Initial SQL returned validation_error; fetched schema explicitly documented expanded columns; corrected query returned real unscored DM rows.",
-      "prevention": "Never guess SQL column names from Notion UI labels; fetch querySqlColumns first."
-    },
-    {
-      "id": "BG89_NETWORK_SNAPSHOT_COMMERCIAL_CONTAMINATION",
-      "fingerprint": "bg89|record-class-gate|title-read-as-richtext|network-commercial-write",
-      "symptom": "Operational LinkedIn network_snapshot rows received Opportunity scores, action deadlines, recommendations and attribution fields from BG89.",
-      "rootCause": "BG89 filter tried to read the Interactie title property with rich_text[].plain_text. That condition was semantically dead, so rows with title 'Cockpit action | network_snapshot |' passed. Their stable machine identity is Interaction Key network-*.",
-      "failedApproach": "Classify operational records by a title field while reading it through the wrong Notion property type.",
-      "fix": "Gate on type-correct stable machine identity: Interaction Key rich_text must not contain network-. Production filter readback at lastEdit 2026-08-30T21:29:30.218Z confirms the new condition.",
-      "evidence": [
-        "Natural BG89 execution 72ca35e9e68b41ecbf199688db528a0a wrote network rows; module3 inputs included network-1787914600084, network-1787916401278 and network-1787918205825.",
-        "Notion page 3cada36a-ac8a-8196-9498-c7e62b6b6782 has Data Source Powerhouse Action Outcome | BG143, Interactie Cockpit action | network_snapshot |, Interaction Key network-1787914600084 and Modelversie OpportunityMarket-v2.1-attribution.",
-        "Blast-radius SQL count: 56 rows with Interaction Key network-*, Modelversie OpportunityMarket-v2.1-attribution and Opportunity Updated present."
-      ],
-      "cleanup_state": "PENDING_VERIFIED_DRY_RUN",
-      "prevention": "Generic Datahub consumers must classify on stable typed machine keys or explicit record class; test exclusion against real records and verify zero downstream writes."
-    }
+    {"id":"GENERATED_MAKE_MAPPINGS_MUST_NOT_PREVALIDATE_IN_GENERATOR","fingerprint":"make|blueprint-generator|future-mapping-token-prevalidation","fix":"Construct future mapping tokens at runtime; keep literal mappings only for modules that exist in the generator.","evidence":"7864154d78cc4a94a5805b6b4e8e5851 failed validation; addaff55c3fd4d0498f727e096bab80c succeeded after runtime token construction.","prevention":"Separate generator-time mappings from generated-scenario mappings."},
+    {"id":"SCORER_PROJECTION_MUST_INTERSECT_CURRENT_SCHEMA","fingerprint":"notion|projection|legacy-property-breaks-filter-properties","fix":"Projection = scorer dependencies intersect current schema properties plus current identity/idempotency fields.","evidence":"437 live properties; Action Score was the one missing dependency. 8a74d36936f6461c8c33698f9d914cec failed 400 with it; 86c800afaa6d46328cdf471734cb8ea2 succeeded without it at 2 ops/3 credits/45635 bytes.","prevention":"Schema-intersect every generated field projection."},
+    {"id":"EXACT_SCORER_PARITY_USES_PRODUCTION_BLUEPRINT_SOURCE","fingerprint":"shadow|parity|manual-formula-copy-drift","fix":"Read /v2/scenarios/{id}/blueprint and copy long business scorers byte-for-byte.","evidence":"BG89 scorer code lengths 10145 and 3254 extracted from official blueprint.","prevention":"No manual formula rewrite is accepted as parity evidence."},
+    {"id":"MUTABLE_POST_WRITE_RECORD_IS_NOT_A_GOLDEN_FIXTURE","fingerprint":"shadow|parity|mutable-post-write-golden-fixture","fix":"Compare projected and full representations of the same pre-write input in one no-write execution.","evidence":"Historic David Kriška replay diverged after production enrichment; fixture strategy was rejected.","prevention":"Use same-run A/B or immutable pre-write snapshots."},
+    {"id":"SAME_INPUT_AB_PROJECTION_PARITY","fingerprint":"shadow|parity|same-input-projected-vs-full","fix":"Projected query and full GET of exact same page feed two byte-identical scorer pairs; diff all deterministic fields, excluding only deadline derived from Date.now().","evidence":["RED 1a59bfbebb33456ebd3e0a87daa275d2 = AB_PARITY_NOT_IMPLEMENTED.","BG98 GREEN 7174c60f974342a39bdf7a37e444fdbd: zero diffs, no writes, 9 ops/16 credits/97325 bytes.","DM GREEN 638e316e0d5f4e26b4098a2b8fa3fa0c: zero diffs, no writes, 9 ops/20 credits/91544 bytes.","LinkedIn company GREEN c441392a6d6045479cc8444e8299916f: zero diffs, no writes."],"prevention":"Representative same-input A/B runtime parity before projection cutover."},
+    {"id":"NOTION_SQL_DATE_PROPERTIES_USE_EXPANDED_COLUMNS","fingerprint":"notion|sql|date-property-expanded-column","fix":"Fetch schema first and query date:<property>:start/end/is_datetime columns.","evidence":"UI-name SQL failed; date:Opportunity Updated:start query returned real unscored DM rows.","prevention":"Never infer SQL column names from UI labels."},
+    {"id":"BG89_NETWORK_SNAPSHOT_COMMERCIAL_CONTAMINATION","fingerprint":"bg89|record-class-gate|title-read-as-richtext|network-commercial-write","symptom":"Operational network_snapshot rows received commercial BG89 scores/actions.","rootCause":"Interactie is title but the filter read rich_text[].plain_text, making the title exclusion dead. Stable machine key is Interaction Key network-*.","fix":"Production filter now uses type-correct Interaction Key rich_text notcontain network-; saved/read back at lastEdit 2026-08-30T21:29:30.218Z.","evidence":["Natural run 72ca35e9e68b41ecbf199688db528a0a wrote network rows.","Blast radius was exactly 56 rows matching Interaction Key network-*, Modelversie OpportunityMarket-v2.1-attribution and Opportunity Updated present.","Direct-Notion cleanup canary on 3cada36a-ac8a-8196-9498-c7e62b6b6782 cleared BG89-owned fields while preserving Data Source, Interaction Key, Gebruikte tekst, Graph Why and network payload.","The captured remaining set was then cleared directly through Notion. All update calls succeeded except one request atomically rejected for an unknown misspelled property; the corrected request then succeeded."],"cleanup_state":"APPLIED_ALL_CAPTURED_56; EXACT_ZERO_COUNT_PENDING_NOTION_SQL_QUOTA_RESET","prevention":"Generic consumers classify on stable typed machine keys/record classes and verify exclusions against real records."},
+    {"id":"NOTION_UPDATE_UNKNOWN_PROPERTY_IS_ATOMIC_VALIDATION_FAILURE","fingerprint":"notion|update-properties|unknown-property-atomic-reject","symptom":"Cleanup request included misspelled Emerence Probability.","rootCause":"Hand-entered property name was not in live schema.","fix":"Correct schema property and resubmit only the rejected page.","evidence":"Notion returned 400 validation_error and no side effects; corrected Emergence Probability request succeeded.","prevention":"Generate bulk cleanup property names from source module/schema; treat unknown-property validation as atomic RED and never assume partial success."},
+    {"id":"MAKE_ORGANIZATION_RESOURCE_LIMIT_HARD_PAUSE","fingerprint":"make|organization-limit|all-scenario-runs-blocked","symptom":"Even no-write dry-run scenario cannot execute: organization or team is paused due exceeded operations or data transfer limit.","rootCause":"Make plan resource headroom reached a hard organization limit; official Make documentation states exceeding organization resources prevents scenarios from running.","failedApproach":"Retry scenario runs while the organization remains hard-paused.","fix":"Stop retries immediately; continue critical safe repairs through direct source connectors where possible; resume Make runtime only after resource capacity is restored.","evidence":"7165149 activation succeeded but run was refused with 'Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit'. BG89 scenario status simultaneously read paused.","prevention":"Continuously track plan headroom and predicted burn; reserve protected runtime capacity for P0 publishing/commercial/self-heal; throttle/disable noncritical workloads before hard pause."}
   ],
-  "protected_rule": "Shadow scenarios stay no-write and inactive/on-demand until exact parity is proven. Operational/control record classes are never allowed through generic commercial writebacks. Production ownership does not move on read/query success alone."
+  "protected_rule":"Shadow scenarios stay no-write and inactive/on-demand until exact parity is proven. Operational/control record classes never pass generic commercial writebacks. Cost governance must preserve enough Make headroom that critical production obligations cannot be globally paused."
 }
