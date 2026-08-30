@@ -1,0 +1,60 @@
+{
+  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1",
+  "date": "2026-08-30",
+  "purpose": "Bind all durable learnings from the Make credit-storm recovery thread into one machine-readable preflight surface.",
+  "canonicalArtifacts": [
+    "docs/learning/make-control-plane-credit-storm-2026-08-30.md",
+    "brain/learning/incidents/make-control-plane-credit-storm-2026-08-30.json",
+    "brain/learning/incidents/connector-mutation-tool-routing-misfire-2026-08-30.json"
+  ],
+  "failurePatterns": [
+    {
+      "id": "CONTROL_PLANE_CREDIT_STORM",
+      "fingerprint": "make|multi-agent-context-learning-credit-storm|2026-08-30-v1",
+      "requiredGuards": ["canonical_owner","material_state_change_before_dispatch","global_single_flight","cache_first_worker_read","state_hash_before_write","bounded_credit_slope","readback_before_retry_after_429_or_502","learning_write_fail_open_from_projection_refresh"]
+    },
+    {
+      "id": "INACTIVE_ON_DEMAND_STILL_CALLABLE",
+      "fingerprint": "make|subscenario|inactive-still-callable-v1",
+      "symptom": "An on-demand scenario continued executing when directly invoked by other scenarios even after its status was inactive.",
+      "rootCause": "Scenario activation state was treated as the only circuit breaker for a callable subscenario.",
+      "requiredAction": "Enforce an entry guard inside the callee and caller-side dispatch guards; inactive status alone is never sufficient containment for on-demand control-plane services.",
+      "regression": "A direct non-canonical call must terminate before the first expensive external read/write module; only the canonical owner with explicit refresh mode may enter the rebuild path."
+    },
+    {
+      "id": "CONNECTOR_MUTATION_WRONG_RESOURCE",
+      "fingerprint": "connector|mutation|wrong-tool-or-resource-selected-v1",
+      "symptom": "A state-changing connector action targeted the wrong resource and briefly reopened an unrelated GitHub issue.",
+      "rootCause": "Mutation tool/resource/identifier/intent were not matched as a precondition before dispatch.",
+      "requiredAction": "Before every mutation, verify tool action, resource type, exact identifier and requested intent; after an accidental mutation, restore exact prior state and read back once.",
+      "regression": "No state-changing call may execute when resource type or intent is unresolved or mismatched."
+    }
+  ],
+  "runtimeState": {
+    "BG167": {
+      "scenarioId": 7136045,
+      "status": "SAFE_MODE_WITH_INTERNAL_ENTRY_GUARD",
+      "canonicalRefreshCaller": "BG166",
+      "requiredRequestMarkers": ["\"mode\":\"refresh\"","\"agent_id\":\"BG166\""]
+    },
+    "BG168": {
+      "scenarioId": 7136176,
+      "status": "SAFE_MODE_PENDING_CALLER_SIDE_MATERIALITY_GUARD",
+      "rule": "Materiality must be decided before paid subscenario dispatch; a classifier inside BG168 cannot eliminate the dispatch cost already incurred."
+    }
+  },
+  "completionGate": {
+    "id": "chat-learning-completeness-gate-v1",
+    "requirements": [
+      "new durable fingerprint stored",
+      "root cause recorded",
+      "known failed approach recorded",
+      "proven or safe containment recorded",
+      "prevention and regression contract recorded",
+      "runtime state distinguished from audit history",
+      "open recovery obligations explicitly preserved",
+      "machine-readable CI/preflight coverage exists"
+    ],
+    "terminalRule": "A chat/run is not fully green while material learnings exist only in conversation text or while a discovered prevention gap is silently dropped."
+  }
+}
