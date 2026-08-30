@@ -97,6 +97,7 @@ export async function loadDeliveryPreflight({
   const knowledgeCandidates = [
     ...guardInventory.guards,
     ...(completenessGuard.knownFailureFingerprints || []).filter(item => item && typeof item === 'object'),
+    ...(browserGuard.actionableFailureKnowledge || []),
     ...provenLessons,
   ];
   const knowledgeByFingerprint = new Map();
