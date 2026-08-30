@@ -27,6 +27,13 @@ test('repository delivery ledger has an active prevention for every PROVEN lesso
   assert.ok(decision.reusedLessons.length >= 1);
 });
 
+test('delivery preflight reuses canonical GitHub tooling lessons before similar work', async () => {
+  const decision = await loadDeliveryPreflight({ component: 'shared', stages: ['PR', 'GOVERNANCE'] });
+  assert.ok(decision.reusedLessons.includes('delivery-failure|pr|shared|create-pr-before-head-visible'));
+  assert.ok(decision.reusedLessons.includes('delivery-failure|governance|shared|wrong-github-action-for-code-search'));
+  assert.ok(decision.reusedLessons.includes('delivery-failure|pr|shared|draft-ready-transition-wrong-action'));
+});
+
 test('preflight fails closed when a PROVEN lesson is missing from active prevention registry', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'delivery-preflight-'));
   const fixture = await createIsolatedLearningFixture(dir, {
