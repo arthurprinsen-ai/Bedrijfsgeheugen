@@ -49,6 +49,18 @@ test('agents cannot stop on local green while material obligations remain open',
   assert.equal(rule.status, 'GUARDED');
 });
 
+test('Agent Fabric terminal completion bypass remains canonical guarded learning', async () => {
+  const contract = await readJson(CONTRACT_PATH);
+  const rule = contract.knownFailureFingerprints.find(
+    x => x.fingerprint === 'agent-fabric|completion|local-resolved-bypasses-global-obligations'
+  );
+  assert.ok(rule, 'missing Agent Fabric completion-bypass fingerprint');
+  assert.match(rule.rootCause, /evaluateCompletionReadiness/);
+  assert.match(rule.preventionRule, /Geen AgentWork-terminalisatie/);
+  assert.match(rule.regressionContract, /tests\/agent-fabric\.test\.mjs/);
+  assert.equal(rule.status, 'GUARDED');
+});
+
 test('shared agent memory CI executes the chat-learning completeness guard', async () => {
   const workflow = await readFile(SHARED_MEMORY_WORKFLOW, 'utf8');
   assert.match(workflow, /tests\/brain-chat-learning-completeness\.test\.mjs/);
