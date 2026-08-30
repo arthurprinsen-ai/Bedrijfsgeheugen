@@ -1,5 +1,5 @@
 import { PORTAL_LAYERS } from './portal-projection-layers.mjs';
-const ALLOWED_KEYS=Object.freeze(['company','period','managementSummary','healthCards','roadmap','recommendedActions','monthlyImpact','activities','integrationStatus','quickLinks','graph','signals','decisions','actions','valueItems','memories','agents','audit','admin','sourceMeta']);
+const ALLOWED_KEYS=Object.freeze(['company','period','managementSummary','healthCards','roadmap','recommendedActions','monthlyImpact','activities','integrationStatus','quickLinks','graph','signals','decisions','actions','valueItems','memories','agents','audit','admin','legacyInputs','sourceMeta']);
 const cleanText=v=>typeof v==='string'?v.trim():'';
 export function resolveIdentityTenant(user){
   if(!user?.id) return null;
