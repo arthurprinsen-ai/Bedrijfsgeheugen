@@ -11,7 +11,22 @@ const agents = [
   { id:'agent-cost', domains:['Cost','Operations'], capabilities:['analyze','optimize'] },
 ];
 
+const READY_PREFLIGHT = Object.freeze({
+  version:'BRAIN-CHAT-LEARNING-PREFLIGHT-v1',
+  status:'READY',
+  contract:'config/brain-chat-learning-contract.json',
+  totalBytes:1234,
+  sources:Object.freeze([
+    Object.freeze({ path:'brain/learning/chat-checkpoint.json', sha256:'a'.repeat(64) })
+  ]),
+  fingerprints:Object.freeze(['known-failure-v1']),
+  preventions:Object.freeze(['reuse proven fix']),
+  blockers:Object.freeze([]),
+  resume_contracts:Object.freeze([]),
+});
+
 const registry = () => createAgentRegistry(agents);
+const readyFabric = () => createAgentFabric({ registry:registry(), learningPreflight:() => READY_PREFLIGHT });
 
 function advanceToVerifying(fabric, workId) {
   fabric.transition({ workId, status:'Investigating' });
@@ -61,58 +76,72 @@ test('AgentWork transitions through the shared lifecycle and rejects invalid jum
   assert.throws(() => fabric.transition({ workId:work.id, status:'Resolved' }), /invalid AgentWork transition/i);
 });
 
-test('AgentWork cannot resolve while a material obligation is still open', () => {
+test('AgentWork cannot enter execution without a READY chat-learning preflight', () => {
   const fabric = createAgentFabric({ registry:registry() });
+  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'preflight-required', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Execution must consume chat learning first' });
+  fabric.transition({ workId:work.id, status:'Investigating' });
+  fabric.transition({ workId:work.id, status:'FixPrepared' });
+  assert.throws(() => fabric.transition({ workId:work.id, status:'Executing' }), /chat-learning preflight.*READY/i);
+  assert.equal(fabric.getWork(work.id).status, 'FixPrepared');
+});
+
+test('AgentWork accepts READY preflight and stores only compact execution evidence', () => {
+  const fabric = readyFabric();
+  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'preflight-ready', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Ready packet authorizes bounded execution' });
+  fabric.transition({ workId:work.id, status:'Investigating' });
+  fabric.transition({ workId:work.id, status:'FixPrepared' });
+  const executing = fabric.transition({ workId:work.id, status:'Executing' });
+  assert.equal(executing.status, 'Executing');
+  const evidence = fabric.getMetadata(work.id).chatLearningPreflight;
+  assert.equal(evidence.status, 'READY');
+  assert.equal(evidence.version, 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1');
+  assert.equal(evidence.contract, 'config/brain-chat-learning-contract.json');
+  assert.equal(evidence.sourceCount, 1);
+  assert.deepEqual(evidence.sourceHashes, [{ path:'brain/learning/chat-checkpoint.json', sha256:'a'.repeat(64) }]);
+  assert.match(evidence.packetFingerprint, /^[a-f0-9]{64}$/);
+  assert.equal('preventions' in evidence, false);
+  assert.equal('fingerprints' in evidence, false);
+});
+
+test('AgentWork rejects an incompatible chat-learning preflight version', () => {
+  const fabric = createAgentFabric({ registry:registry(), learningPreflight:() => ({ ...READY_PREFLIGHT, version:'BRAIN-CHAT-LEARNING-PREFLIGHT-v0' }) });
+  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'preflight-version', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Stale preflight versions cannot authorize execution' });
+  fabric.transition({ workId:work.id, status:'Investigating' });
+  fabric.transition({ workId:work.id, status:'FixPrepared' });
+  assert.throws(() => fabric.transition({ workId:work.id, status:'Executing' }), /chat-learning preflight.*version/i);
+  assert.equal(fabric.getWork(work.id).status, 'FixPrepared');
+});
+
+test('AgentWork fails closed when the chat-learning preflight provider fails', () => {
+  const fabric = createAgentFabric({ registry:registry(), learningPreflight:() => { throw new Error('source unavailable'); } });
+  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'preflight-provider-failure', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Provider failure cannot authorize execution' });
+  fabric.transition({ workId:work.id, status:'Investigating' });
+  fabric.transition({ workId:work.id, status:'FixPrepared' });
+  assert.throws(() => fabric.transition({ workId:work.id, status:'Executing' }), /chat-learning preflight.*failed.*source unavailable/i);
+  assert.equal(fabric.getWork(work.id).status, 'FixPrepared');
+});
+
+test('AgentWork cannot resolve while a material obligation is still open', () => {
+  const fabric = readyFabric();
   const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'production-regression', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Production regression' });
   advanceToVerifying(fabric, work.id);
-
-  assert.throws(() => fabric.transition({
-    workId:work.id,
-    status:'Resolved',
-    completionContext:{
-      localGreen:true,
-      materialObligations:[
-        { id:'tests', status:'GREEN' },
-        { id:'production-smoke', status:'OPEN' }
-      ]
-    }
-  }), /completion readiness/i);
+  assert.throws(() => fabric.transition({ workId:work.id, status:'Resolved', completionContext:{ localGreen:true, materialObligations:[{ id:'tests', status:'GREEN' },{ id:'production-smoke', status:'OPEN' }] } }), /completion readiness/i);
   assert.equal(fabric.getWork(work.id).status, 'Verifying');
 });
 
 test('AgentWork resolves only when every material obligation is terminal', () => {
-  const fabric = createAgentFabric({ registry:registry() });
+  const fabric = readyFabric();
   const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'production-regression-green', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Verified production recovery' });
   advanceToVerifying(fabric, work.id);
-
-  const resolved = fabric.transition({
-    workId:work.id,
-    status:'Resolved',
-    completionContext:{
-      localGreen:true,
-      materialObligations:[
-        { id:'tests', status:'GREEN' },
-        { id:'production-smoke', status:'VERIFIED' }
-      ]
-    }
-  });
+  const resolved = fabric.transition({ workId:work.id, status:'Resolved', completionContext:{ localGreen:true, materialObligations:[{ id:'tests', status:'GREEN' },{ id:'production-smoke', status:'VERIFIED' }] } });
   assert.equal(resolved.status, 'Resolved');
 });
 
 test('AgentWork can stop non-green only at an explicitly proven hard boundary', () => {
-  const fabric = createAgentFabric({ registry:registry() });
+  const fabric = readyFabric();
   const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'external-hard-boundary', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'External control blocks recovery' });
   advanceToVerifying(fabric, work.id);
-
-  const resolved = fabric.transition({
-    workId:work.id,
-    status:'Resolved',
-    completionContext:{
-      localGreen:false,
-      materialObligations:[{ id:'production-smoke', status:'OPEN' }],
-      hardBoundary:{ present:true, proven:true, evidence:'External provider denied the required control change.' }
-    }
-  });
+  const resolved = fabric.transition({ workId:work.id, status:'Resolved', completionContext:{ localGreen:false, materialObligations:[{ id:'production-smoke', status:'OPEN' }], hardBoundary:{ present:true, proven:true, evidence:'External provider denied the required control change.' } } });
   assert.equal(resolved.status, 'Resolved');
 });
 
