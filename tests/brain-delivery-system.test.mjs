@@ -33,6 +33,15 @@ test('universal policy releases the smallest safe change immediately without unr
   assert.deepEqual(policy.platformPolicy.knownRequiredPlatforms, ['github','netlify','make','notion','supabase','dataforseo']);
 });
 
+test('delivery plan exposes immediate per-change promotion and never waits for unrelated work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({ changedPaths:['portal/app.mjs'], headSha:'abcdef1234567890', policy });
+  assert.equal(plan.production.batchRequired, false);
+  assert.equal(plan.production.activateImmediatelyWhenGreen, true);
+  assert.equal(plan.production.waitForUnrelatedChanges, false);
+  assert.equal(plan.production.releaseUnit, 'smallest-independently-safe-change');
+});
+
 test('non-overlapping main drift never causes a branch rebuild', () => {
   assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/render-offer.mjs','tests/portal-native-legacy-batch-11.test.mjs'], mainDriftPaths:['blog/index.html','assets/css/powerhouse-kosten.css'], mergeable:true }), { action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:[] });
 });
@@ -73,7 +82,7 @@ test('legacy customer portal changes belong to the portal lane', async () => {
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['portal']);
 });
 
-test('unified workflow executes changed lanes in parallel and integrates once', async () => {
+test('unified workflow executes changed lanes in parallel without stale-main equality blocking', async () => {
   const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 'utf8');
   assert.match(workflow, /fromJSON\(needs\.plan\.outputs\.matrix\)/);
   assert.match(workflow, /needs:\s*plan/);
@@ -84,6 +93,9 @@ test('unified workflow executes changed lanes in parallel and integrates once', 
   assert.match(workflow, /BG169/);
   assert.match(workflow, /BG168/);
   assert.match(workflow, /BG167/);
+  assert.doesNotMatch(workflow, /Refuse a stale main base before final gate/i);
+  assert.doesNotMatch(workflow, /current_main[^\n]*!=[^\n]*expected_base/);
+  assert.match(workflow, /Evaluate current-main relevance/i);
 });
 
 test('GitHub and Netlify are explicit governed Brain delivery platforms', async () => {
