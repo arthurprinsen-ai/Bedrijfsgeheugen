@@ -79,6 +79,21 @@ Dit ledger bewaart uitvoerbare kennis: wat ging mis, waarom, hoe het is opgelost
 - Preventie: oude mensenfallback is een verboden regressie; playback-rate hacks en alternatieve controllers blijven verboden tijdens iPhone-herstel; builder en QA moeten één coherente bron-/fallbackcontractversie delen.
 - Herbruikbare les: een groene build is geen browseracceptatie. Voor kritieke above-the-fold media is fysieke-device bevestiging de hoogste acceptatielaag en wordt die versie daarna de immutable golden baseline.
 
+## 2026-08-30 — Volledige hero-video leerketen geconsolideerd
+- Doel: alle verspreide chat-, commit- en device-learnings omzetten in één uitvoerbaar contract zodat toekomstige agents niet opnieuw dezelfde experimenten doen.
+- Nieuwe canonieke bron: `docs/hero-video-iphone-contract.md`.
+- Belangrijk gecorrigeerd geheugen: de vroege 48 KB/Base64-v2 is géén geldige movement proof; alleen expliciete actuele device-confirmatie telt.
+- Control-bewijs: originele rijke V18 + originele Pexels `15107522_1920_1080_30fps.mp4` + canonical `v18-4-video-controller` werkte fysiek op iPhone. Dit bewees dat de player/controller zelf niet de primaire fout was.
+- Failure-bewijs: lokale OpenArt-transcode faalde op iPhone ondanks byte-identieke controller. Dus source/delivery/container/encoding zijn onderdeel van het systeemcontract, niet alleen codecnaam.
+- Failure-bewijs: een Pexels CDN-URL werd eenmaal afgeleid/geconstrueerd in plaats van officieel resolved. Vanaf nu worden externe video-URLs nooit geraden; officiële download/redirect wordt gevolgd en vastgelegd.
+- Failure-bewijs: dezelfde CDN-familie maar andere media-eigenschappen (o.a. 25fps) kon nog steeds traag/stil gedrag geven. Dus providernaam alleen is geen compatibiliteitsbewijs.
+- CSS-root-cause: de oude personenfoto zat behalve in `poster` ook in een legacy hero-fallback. Daarom moet QA volledige HTML/CSS controleren op verboden fallbackbeelden, niet alleen het video-element.
+- Agent-race-root-cause: parallelle writers op builder/test veroorzaakten stale SHA/409 en incoherente contracten. Nieuwe regel: één canonical writer per bestand/scope; bij conflict nieuwste state lezen en semantisch reconciliëren.
+- Nieuwe OpenArt candidate: Grok Imagine 1.5 generation `uUxKRWcQkzWIPosutXVF`, 1920×1088, 24fps, circa 8.04s, audio aanwezig. Dit is creatieve bronmedia en mag niet direct de hero in.
+- Candidate-regel: normaliseer AI-video eerst richting bewezen webprofiel (1920×1080, 30fps, H.264, yuv420p, geen audio, faststart), gebruik versioned asset en verander alleen media source/poster. Dit is géén garantie; fysiek iPhone-bewijs blijft verplicht.
+- Promotion-regel: nieuwe video wordt pas baseline na build/QA groen, Netlify exact READY, immutable HTTPS-test, geen people-flash, zichtbare continue beweging, visuele acceptatie én expliciete echte-iPhone bevestiging.
+- Herbruikbare les: creatieve generatie, technische normalisatie, browserdelivery en fysieke acceptatie zijn vier afzonderlijke fasen en mogen niet meer door elkaar lopen.
+
 ## ADR — Preview reliability architecture
 - Context: iteraties op rijke V18-preview moesten snel én iPhone-betrouwbaar worden.
 - Besluit: build-time reconstructie/optimalisatie, statische same-origin eindassets, automatische regressiegates, immutable deploy-permalinks voor acceptatie.
