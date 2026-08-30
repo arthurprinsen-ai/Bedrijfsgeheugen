@@ -5,6 +5,7 @@
   "purpose": "Indexeer chat-afgeleide engineeringkennis en blokkeer herhaling van bekende fouten voordat een agent materieel werk uitvoert.",
   "canonicalSources": [
     "docs/learning/chat-learning-checkpoint-2026-08-30.md",
+    "docs/powerhouse-chat-learning-checkpoint-2026-08-30.md",
     "docs/brain/delivery-failure-lessons.json",
     "config/delivery-prevention-rules.json",
     "brain/learning/chat-continuity-2026-08-30.json",
@@ -181,6 +182,66 @@
       "requiredAction": "Agent Fabric plant/routeert/verzamelt evidence; externe changes lopen uitsluitend via Brain Runtime/Change Engine/autonomy/policy/verification gates.",
       "prevention": "Gateway exposeert geen execution bypass en tests blokkeren directe externe mutatiepaden.",
       "evidenceRule": "Geen Agent Fabric outcome geldt als uitgevoerde externe change zonder governance- en verification evidence van de execution authority."
+    },
+    {
+      "id": "MAKE_SCENARIO_SUCCESS_REQUIRES_MODULE_OUTCOME_EVIDENCE",
+      "fingerprint": "make|success-status|error-handler-consumed-failure",
+      "symptom": "Een Make execution eindigt als success terwijl de bedoelde module faalde en een error-handler de fout heeft geconsumeerd.",
+      "rootCause": "De terminale scenariostatus zegt alleen dat de execution is afgehandeld; hij bewijst niet dat het bedoelde business outcome is gerealiseerd.",
+      "failedApproach": "Een scenario groen verklaren op basis van status success zonder module-output of externe outcome-evidence te inspecteren.",
+      "requiredAction": "Inspecteer welke modules daadwerkelijk liepen, controleer target-output en verifieer het externe outcome voordat groen wordt toegekend.",
+      "prevention": "Verification contracts eisen module-/outcome-evidence naast scenario-status voor alle materiële acties.",
+      "evidenceRule": "Make success alleen is nooit bewijs dat het bedoelde side effect of resultaat bestaat."
+    },
+    {
+      "id": "NOTION_ARRAY_IDS_MUST_BE_NORMALIZED_BEFORE_NATIVE_APIS",
+      "fingerprint": "notion|rich-text-array|native-id-truncated",
+      "symptom": "Een native API ontvangt `urn` of een andere afgekorte/malformed identifier wanneer een Notion rich-text array rechtstreeks wordt gemapt.",
+      "rootCause": "Make kan gestructureerde Notion rich-text arrays anders serialiseren dan een downstream native API-ID veld verwacht.",
+      "failedApproach": "Een Notion property-array rechtstreeks in een LinkedIn/Instagram/native ID-parameter mappen.",
+      "requiredAction": "Join/normaliseer de property eerst naar één volledige string en valideer de provider-namespace vóór de downstream call.",
+      "prevention": "Gebruik één canonical native-ID normalizer voor Notion→provider routes en fail closed op ongeldige vorm.",
+      "evidenceRule": "Alleen een volledige gevalideerde `urn:li:*` of geldige numerieke Instagram media-ID mag als native identity gelden."
+    },
+    {
+      "id": "LEGACY_BUFFER_IDS_REQUIRE_DETERMINISTIC_NATIVE_BACKFILL",
+      "fingerprint": "social|legacy-buffer-id|native-api-mismatch",
+      "symptom": "Native LinkedIn/Instagram API's weigeren historische post-ID's die door Buffer zijn opgeslagen.",
+      "rootCause": "Buffer-ID's zijn externe scheduler-identifiers en niet hetzelfde identity-domein als native LinkedIn URN's of Instagram media-ID's.",
+      "failedApproach": "Een legacy Buffer hex-/post-ID rechtstreeks naar een native metrics- of readback-API sturen.",
+      "requiredAction": "Backfill alleen met deterministische provider-evidence: exacte public URL/URN of exacte caption plus datum/timestamp tegen de native feed.",
+      "prevention": "Valideer ID-namespace per provider en markeer legacy IDs expliciet als migratieplichtig vóór native API-gebruik.",
+      "evidenceRule": "Geen fuzzy match of gok is voldoende voor identity-migratie; backfill vereist exacte herleidbare evidence."
+    },
+    {
+      "id": "SOCIAL_PUBLISH_CREATE_VERIFY_COMMIT",
+      "fingerprint": "social|publish|create-without-verification",
+      "symptom": "Een create-response bestaat maar het uiteindelijke social post-outcome kan ontbreken of ambigu zijn.",
+      "rootCause": "Provider acknowledgement van create is niet hetzelfde als extern terugleesbare, correct gepubliceerde content.",
+      "failedApproach": "Direct `Geplaatst` schrijven zodra de create-module een ID teruggeeft.",
+      "requiredAction": "Voer `create -> provider readback verify -> verified native ID -> status/id commit` uit; bij verify failure eerst reconciliëren en niet blind opnieuw posten.",
+      "prevention": "Canonical publisher transaction contract blokkeert succeswrite totdat externe readback bewijs levert.",
+      "evidenceRule": "`Geplaatst` is alleen geldig na provider readback of equivalente externe verificatie van exact dezelfde post."
+    },
+    {
+      "id": "SINGLE_CANONICAL_PUBLISHER_PER_CHANNEL",
+      "fingerprint": "social|publisher|duplicate-active-owner",
+      "symptom": "Twee actieve scenario's kunnen dezelfde content naar hetzelfde kanaal publiceren en dubbele posts/kosten veroorzaken.",
+      "rootCause": "Een nieuwe publisher werd gebouwd zonder eerst de actieve ownership- en overlapset te auditen.",
+      "failedApproach": "BG139 naast BG179 actief laten of een tweede kanaalpublisher toevoegen zonder canonical-owner check.",
+      "requiredAction": "Audit actieve owners, kies precies één canonical publisher per kanaal/content-scope en retire/deactiveer duplicates vóór livegang.",
+      "prevention": "Publisher ownership/overlap is een verplichte preflight-gate voor iedere social- of content-executor.",
+      "evidenceRule": "Een kanaal/scope is alleen production-ready wanneer precies één actieve canonical publisher aantoonbaar eigenaar is."
+    },
+    {
+      "id": "INSTAGRAM_INSIGHTS_WRAPPER_REQUIRES_RUNTIME_METRIC_PROOF",
+      "fingerprint": "instagram|insights-wrapper|metric-serialization-missing",
+      "symptom": "BG140 rapporteert scenario success terwijl Meta via de error-handler `(#100) metric is required` teruggeeft, ook na een single `reach` mapper-poging.",
+      "rootCause": "De Make Instagram `GetMediaInsights` wrapper serialiseert/forwardt de metric in de huidige configuratie niet aantoonbaar correct naar Meta.",
+      "failedApproach": "Comma-separated metrics gebruiken, daarna één losse `reach` string proberen en vervolgens scenariostatus success als bewijs behandelen.",
+      "requiredAction": "Houd BG140 fail-closed; bewijs de werkelijk ondersteunde mapper-serialisatie via runtime-output of vervang de wrapper door een andere managed/native ondersteunde route zonder plaintext token.",
+      "prevention": "Insights-contract vereist een echte non-error insight bundle plus downstream metric-write voordat de route verified of actief-groen mag zijn.",
+      "evidenceRule": "De wrapper is niet verified totdat een echte provider insight bundle voor een bewezen native media-ID zonder error-handler is waargenomen."
     }
   ]
 }
