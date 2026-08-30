@@ -1,0 +1,10 @@
+import {buildValueEvaluationSchedule,dueValueEvaluations} from '../../brain/operating-loop/value-evaluation.mjs';
+const outcome={id:'o1',tenantId:'t1',observedAt:'2026-01-01T00:00:00.000Z',verified:true};
+const s=buildValueEvaluationSchedule(outcome);
+if(s.length!==3) throw new Error('must schedule 30/90/180 checkpoints');
+if(s.map(x=>x.days).join(',')!=='30,90,180') throw new Error('wrong horizons');
+if(s[0].dueAt!=='2026-01-31T00:00:00.000Z'||s[1].dueAt!=='2026-04-01T00:00:00.000Z'||s[2].dueAt!=='2026-06-30T00:00:00.000Z') throw new Error('UTC schedule drift');
+const due=dueValueEvaluations(s,{now:'2026-04-02T00:00:00.000Z',completedDays:[30]});
+if(due.map(x=>x.days).join(',')!=='90') throw new Error('due calculation must exclude completed and future checkpoints');
+let rejected=false;try{buildValueEvaluationSchedule({...outcome,verified:false});}catch{rejected=true;}if(!rejected) throw new Error('unverified outcomes must not create value checkpoints');
+console.log('value evaluation schedule tests passed');

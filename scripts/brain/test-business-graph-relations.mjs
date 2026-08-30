@@ -1,0 +1,10 @@
+import {normalizeBrainRecord,deriveLoopState} from '../../brain/operating-loop/model.mjs';
+const entityA=normalizeBrainRecord({tenantId:'t1',type:'Entity',id:'a',subjectId:'process:sales',source:'notion'});
+const entityB=normalizeBrainRecord({tenantId:'t1',type:'Entity',id:'b',subjectId:'system:crm',source:'supabase'});
+const relation=normalizeBrainRecord({tenantId:'t1',type:'Relation',id:'r1',subjectId:'relation:r1',source:'brain',evidenceIds:['e1'],payload:{from:'process:sales',to:'system:crm',relation:'depends_on',weight:.9}});
+const graph=deriveLoopState([entityA,entityB,relation]).graph;
+const edge=graph.edges.find(x=>x.from==='process:sales'&&x.to==='system:crm'&&x.relation==='depends_on');
+if(!edge) throw new Error('Relation record must become canonical Business Graph edge');
+if(edge.evidenceIds?.[0]!=='e1'||edge.weight!==.9||edge.relationRecordId!=='r1') throw new Error('Business Graph edge must retain relation evidence, weight and source record');
+const subjects=new Set(graph.nodes.map(x=>x.id));if(!subjects.has('process:sales')||!subjects.has('system:crm')) throw new Error('Business Graph relation endpoints must be nodes');
+console.log('business graph relation tests passed');
