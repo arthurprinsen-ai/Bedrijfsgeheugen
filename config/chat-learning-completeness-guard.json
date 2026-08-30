@@ -7,8 +7,16 @@
     "config/brain-chat-learning-contract.json",
     "config/browser-evidence-guard-contract.json",
     "docs/development-browser-evidence-candidate-chrome.md",
-    "docs/development-ledger.md"
+    "docs/development-ledger.md",
+    "docs/brain/delivery-failure-lessons.json",
+    "config/delivery-prevention-rules.json"
   ],
+  "crossSourceCompleteness": {
+    "requireEveryActivePreventionRuleHasProvenLesson": true,
+    "requireEveryProvenLessonHasActivePreventionRule": true,
+    "duplicateFingerprintsFailClosed": true,
+    "duplicatePreventionRuleIdsFailClosed": true
+  },
   "completionPolicy": {
     "blockIfMaterialLearningOnlyInChat": true,
     "requirePersistentSharedMemoryWriteback": true,
