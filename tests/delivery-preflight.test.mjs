@@ -12,6 +12,7 @@ async function createIsolatedLearningFixture(dir, { lessons = [], rules = [] } =
   const continuityPath = join(dir, 'continuity.json');
   const executionLessonsPath = join(dir, 'execution-lessons.json');
   const remediationOwnershipPath = join(dir, 'remediation-ownership.json');
+  const ciEfficiencyPath = join(dir, 'ci-efficiency.json');
   await Promise.all([
     writeFile(lessonsPath, JSON.stringify({ lessons })),
     writeFile(rulesPath, JSON.stringify({ rules })),
@@ -19,8 +20,9 @@ async function createIsolatedLearningFixture(dir, { lessons = [], rules = [] } =
     writeFile(continuityPath, JSON.stringify({ powerhouse_lessons: [] })),
     writeFile(executionLessonsPath, JSON.stringify({ version: 'BRAIN-CHAT-LEARNING-v1', appendOnly: true, lessons: [] })),
     writeFile(remediationOwnershipPath, JSON.stringify({ version: 'BRAIN-CHAT-LEARNING-v1', appendOnly: true, lessons: [] })),
+    writeFile(ciEfficiencyPath, JSON.stringify({ version: 'BRAIN-CHAT-LEARNING-v1', appendOnly: true, lessons: [] })),
   ]);
-  return { lessonsPath, rulesPath, chatLessonsPath, continuityPath, executionLessonsPath, remediationOwnershipPath };
+  return { lessonsPath, rulesPath, chatLessonsPath, continuityPath, executionLessonsPath, remediationOwnershipPath, ciEfficiencyPath };
 }
 
 test('repository delivery ledger has an active prevention for every PROVEN lesson', async () => {
