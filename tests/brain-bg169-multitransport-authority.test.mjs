@@ -29,3 +29,10 @@ test('Make acknowledgement alone never suppresses verified failover', () => {
   assert.match(workflow, /github-native/);
   assert.match(workflow, /BG169_PROMOTION_NOT_VERIFIED/);
 });
+
+test('multi-transport promotion preserves the existing governed writer-dispatch scope', () => {
+  assert.match(workflow, /github\.event_name == 'workflow_dispatch'/);
+  assert.match(workflow, /inputs\.pr_number != ''/);
+  assert.match(workflow, /startsWith\(inputs\.candidate_branch, 'writer\/'\)/);
+  assert.doesNotMatch(workflow, /github\.event_name != 'workflow_dispatch' \|\| inputs\.verification_only != true/);
+});
