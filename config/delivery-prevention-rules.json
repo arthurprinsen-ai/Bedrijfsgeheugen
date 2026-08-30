@@ -19,6 +19,13 @@
     {"id":"VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE","active":true,"enforcedBy":"bg196-bg169-runScenarioWithInputs-contract","scope":"automation"},
     {"id":"FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS","active":true,"enforcedBy":"main-protection-certifier-plus-external-platform-invariants","scope":"shared"},
     {"id":"ISOLATE_NEGATIVE_TEST_FIXTURES","active":true,"enforcedBy":"repository-protection-readiness-contract-tests","scope":"shared"},
-    {"id":"SINGLE_CANONICAL_WRITER_HANDOFF","active":true,"enforcedBy":"writer-shadow-to-central-gates-contract","scope":"shared"}
+    {"id":"SINGLE_CANONICAL_WRITER_HANDOFF","active":true,"enforcedBy":"writer-shadow-to-central-gates-contract","scope":"shared"},
+    {"id":"RECOVER_DUE_SOCIAL_ZERO_CANDIDATES_FROM_RELEASE_STATE","active":true,"enforcedBy":"social-outcome-obligation-guardian","scope":"automation"},
+    {"id":"VALIDATE_BG184_BG156_EVENT_ENVELOPE","active":true,"enforcedBy":"bg184-bg156-event-contract","scope":"automation"},
+    {"id":"TREAT_MAKE_ACCOUNT_CONNECT_400_AS_HARD_BOUNDARY","active":true,"enforcedBy":"hard-boundary-recovery-contract","scope":"automation"},
+    {"id":"RESTORE_GENERATED_REPORT_BEFORE_REBASE","active":true,"enforcedBy":"paginacontrole-concurrent-push-regression","scope":"shared"},
+    {"id":"DEDUPE_LEDGER_BY_EVENT_FINGERPRINT_NOT_HARDCODED_PR","active":true,"enforcedBy":"atomic-ledger-fingerprint-dedupe","scope":"shared"},
+    {"id":"RECONCILE_MAIN_TO_EXACT_PRODUCTION_SHA","active":true,"enforcedBy":"production-promotion-guardian","scope":"shared"},
+    {"id":"REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN","active":true,"enforcedBy":"whole-brain-outcome-obligation-contract","scope":"shared"}
   ]
 }
