@@ -5,7 +5,7 @@ import { classifyMaterialOutcome } from '../brain/guards/material-outcome-classi
 
 test('chat learning completeness addendum retains Make credit-storm recovery contracts', async () => {
   const addendum = JSON.parse(await readFile('brain/learning/chat-completeness-addendum-2026-08-30.json', 'utf8'));
-  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.6');
+  assert.equal(addendum.version, 'CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.7');
   assert.equal(addendum.completionGate.id, 'chat-learning-completeness-gate-v1');
 
   const fingerprints = new Map(addendum.failurePatterns.map(x => [x.id, x.fingerprint]));
@@ -19,7 +19,8 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
     ['CREATE_429_AMBIGUOUS_MUTATION','make|scenario-create|429-ambiguous-mutation-v1'],
     ['MAKE_VALIDATOR_WARNING_PATH_INCONSISTENCY','make|validator|required-field-path-warning-inconsistent-with-module-spec-v1'],
     ['BLUEPRINT_OR_CI_GREEN_WITHOUT_RUNTIME_EVIDENCE','make|promotion|blueprint-or-ci-green-without-runtime-evidence-v1'],
-    ['MAKE_CAPACITY_EXHAUSTION_HARD_BOUNDARY','make|capacity|team-paused-operations-or-data-transfer-limit-v1']
+    ['MAKE_CAPACITY_EXHAUSTION_HARD_BOUNDARY','make|capacity|team-paused-operations-or-data-transfer-limit-v1'],
+    ['SHARED_CI_WORKFLOW_HOTSPOT_OVERLAP','delivery|shared-ci-workflow|hotspot-overlap-v1']
   ]) assert.equal(fingerprints.get(id), fingerprint);
 
   const promotion = addendum.failurePatterns.find(x => x.id === 'BLUEPRINT_OR_CI_GREEN_WITHOUT_RUNTIME_EVIDENCE');
@@ -30,6 +31,11 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   assert.match(capacity.requiredAction, /must not buy or increase paid capacity autonomously/i);
   assert.match(capacity.requiredAction, /zero executions/i);
   assert.match(capacity.regression, /staging remains inactive/i);
+
+  const ciHotspot = addendum.failurePatterns.find(x => x.id === 'SHARED_CI_WORKFLOW_HOTSPOT_OVERLAP');
+  assert.match(ciHotspot.requiredAction, /dedicated workflow/i);
+  assert.match(ciHotspot.requiredAction, /shared workflow/i);
+  assert.match(ciHotspot.regression, /must not modify the central shared-memory workflow/i);
 
   for (const value of ['OK','OK.','healthy','NO_ACTION','no change','Geen actie','Geen wijzigingen.']) {
     assert.equal(classifyMaterialOutcome(value).isMaterial, false, `${value} must be non-material`);
@@ -54,6 +60,7 @@ test('chat learning completeness addendum retains Make credit-storm recovery con
   for (const required of [
     'runtime behavior evidence is distinct from blueprint and CI evidence',
     'capacity exhaustion is a hard boundary and never authorizes autonomous paid capacity expansion',
-    'optional observability and learning paths cannot own primary business result delivery'
+    'optional observability and learning paths cannot own primary business result delivery',
+    'feature-specific CI guards avoid modifying shared workflow hotspots when independent workflows suffice'
   ]) assert.ok(addendum.completionGate.requirements.includes(required), `completion gate missing: ${required}`);
 });
