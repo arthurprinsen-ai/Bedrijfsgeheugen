@@ -1,0 +1,6 @@
+{
+  "writer": "regelgeving-bijwerken",
+  "mode": "verification_only",
+  "purpose": "final end-to-end runtime certification after transitive safety propagation",
+  "base_sha": "7e14fdb3ddde3491032a9d97a5673904c991613c"
+}
