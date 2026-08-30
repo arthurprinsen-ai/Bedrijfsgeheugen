@@ -69,7 +69,7 @@ jobs:
           esac
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
-            tail -n 120 .artifacts/lane-${{ matrix.id }}.log > .artifacts/lane-${{ matrix.id }}-failure.txt
+            cp .artifacts/lane-${{ matrix.id }}.log .artifacts/lane-${{ matrix.id }}-failure.txt
             exit "$status"
           fi
       - name: Capture failed lane as Brain learning evidence
@@ -79,12 +79,15 @@ jobs:
           node --input-type=module - <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
           import { createObservedFailure } from './tools/delivery-learning.mjs';
-          let excerpt = 'GitHub lane verification failed';
-          try { excerpt = (await readFile(`.artifacts/lane-${process.env.LANE}-failure.txt`, 'utf8')).trim().slice(-4000) || excerpt; } catch {}
-          const event = createObservedFailure({
-            stage: 'PIPELINE', reason: excerpt, component: process.env.LANE,
-            headSha: process.env.HEAD_SHA, evidenceRef: `github-run:${process.env.RUN_ID}`,
-          });
+          let reason = 'GitHub lane verification failed';
+          try {
+            const log = await readFile(`.artifacts/lane-${process.env.LANE}-failure.txt`, 'utf8');
+            const lines = log.split(/\r?\n/);
+            const failedAt = lines.findIndex(line => /^not ok\s+\d+\s+-\s+/.test(line.trim()));
+            if (failedAt >= 0) reason = lines.slice(Math.max(0, failedAt - 2), Math.min(lines.length, failedAt + 18)).join('\n').trim();
+            else reason = lines.slice(-120).join('\n').trim() || reason;
+          } catch {}
+          const event = createObservedFailure({ stage: 'PIPELINE', reason, component: process.env.LANE, headSha: process.env.HEAD_SHA, evidenceRef: `github-run:${process.env.RUN_ID}` });
           await writeFile(`.artifacts/delivery-failure-${process.env.LANE}.json`, JSON.stringify(event, null, 2));
           NODE
         env:
@@ -118,7 +121,7 @@ jobs:
           (npm install --ignore-scripts --no-audit --no-fund && node tools/brain-delivery-system.mjs membership && node --test --test-concurrency=1 tests/*.test.mjs && node scripts/brain/test-all.mjs) 2>&1 | tee .artifacts/integrate.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
-            tail -n 160 .artifacts/integrate.log > .artifacts/integrate-failure.txt
+            cp .artifacts/integrate.log .artifacts/integrate-failure.txt
             exit "$status"
           fi
       - name: Capture integrated failure as Brain learning evidence
@@ -127,9 +130,14 @@ jobs:
           node --input-type=module - <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
           import { createObservedFailure } from './tools/delivery-learning.mjs';
-          let excerpt = 'GitHub integrated release verification failed';
-          try { excerpt = (await readFile('.artifacts/integrate-failure.txt', 'utf8')).trim().slice(-4000) || excerpt; } catch {}
-          const event = createObservedFailure({ stage: 'PIPELINE', reason: excerpt, component: 'shared', headSha: process.env.HEAD_SHA, evidenceRef: `github-run:${process.env.RUN_ID}` });
+          let reason = 'GitHub integrated release verification failed';
+          try {
+            const log = await readFile('.artifacts/integrate-failure.txt', 'utf8');
+            const lines = log.split(/\r?\n/);
+            const failedAt = lines.findIndex(line => /^not ok\s+\d+\s+-\s+/.test(line.trim()));
+            reason = failedAt >= 0 ? lines.slice(Math.max(0, failedAt - 2), Math.min(lines.length, failedAt + 18)).join('\n').trim() : lines.slice(-160).join('\n').trim();
+          } catch {}
+          const event = createObservedFailure({ stage: 'PIPELINE', reason, component: 'shared', headSha: process.env.HEAD_SHA, evidenceRef: `github-run:${process.env.RUN_ID}` });
           await writeFile('.artifacts/delivery-failure-integrate.json', JSON.stringify(event, null, 2));
           NODE
         env:
