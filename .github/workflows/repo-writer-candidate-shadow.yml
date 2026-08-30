@@ -25,6 +25,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   verify:
@@ -32,6 +33,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Validate explicitly dispatched PR identity
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          EXPECTED_BASE_SHA: ${{ inputs.base_sha }}
+          EXPECTED_HEAD_SHA: ${{ inputs.head_sha }}
+          EXPECTED_HEAD_REF: ${{ inputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          actual_base="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.base.sha')"
+          actual_head="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+          actual_ref="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.ref')"
+          [ "$actual_base" = "$EXPECTED_BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$EXPECTED_BASE_SHA:$actual_base"; exit 1; }
+          [ "$actual_head" = "$EXPECTED_HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$EXPECTED_HEAD_SHA:$actual_head"; exit 1; }
+          [ "$actual_ref" = "$EXPECTED_HEAD_REF" ] || { echo "::error::PR_HEAD_REF_DRIFT:$EXPECTED_HEAD_REF:$actual_ref"; exit 1; }
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
