@@ -35,7 +35,7 @@
 
 **Files:**
 - Create: `make/contracts/cost-portfolio-v1.json`
-- Create: `tests/make-cost-portfolio-contract.test.mjs`
+- Create: `make/contracts/cost-portfolio-v1.test.mjs`
 
 **Interfaces:**
 - Consumes: BRAIN-DELIVERY-v2 automation lane and the approved design spec.
@@ -47,7 +47,7 @@ The test must require the contract file, assert `candidate_limit === 1`, require
 
 - [ ] **Step 2: Run the test and confirm RED**
 
-Run: `node --test tests/make-cost-portfolio-contract.test.mjs`
+Run: `node --test make/contracts/cost-portfolio-v1.test.mjs`
 Expected: FAIL because `make/contracts/cost-portfolio-v1.json` does not yet exist.
 
 - [ ] **Step 3: Add the minimal contract**
@@ -56,7 +56,7 @@ Create the JSON contract with the exact invariants from the approved spec and ex
 
 - [ ] **Step 4: Run the test and confirm GREEN**
 
-Run: `node --test tests/make-cost-portfolio-contract.test.mjs`
+Run: `node --test make/contracts/cost-portfolio-v1.test.mjs`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -147,7 +147,7 @@ Expected: protected IDs fail closed.
 
 **Files:**
 - Modify: `config/outcome-obligations.json`
-- Modify or extend: `tests/make-cost-portfolio-contract.test.mjs`
+- Modify or extend: `make/contracts/cost-portfolio-v1.test.mjs`
 
 **Interfaces:**
 - Produces obligation `cost-portfolio-decision-daily` owned by `agent-cost`.
@@ -183,7 +183,7 @@ Run the new Make cost contract test and existing delivery/outcome tests.
 
 - [ ] **Step 2: Run automation lane suite**
 
-Equivalent gate: `node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs tests/make-cost-portfolio-contract.test.mjs`.
+Equivalent gate: `node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs make/contracts/cost-portfolio-v1.test.mjs`.
 
 - [ ] **Step 3: Open PR to `main` from `automation/make-cost-portfolio-v1`**
 
