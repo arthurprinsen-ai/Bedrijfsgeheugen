@@ -56,3 +56,17 @@ test('promotion requires exact staging identity and one-component-at-a-time roll
   assert.equal(contract.promotionStrategy.rollbackOnPrimaryResultRegression, true);
   assert.equal(contract.promotionStrategy.keepBG167CanonicalOwner, 'BG166');
 });
+
+test('Make capacity exhaustion is a hard promotion boundary, never an autonomous spend action', async () => {
+  const contract = await readContract();
+
+  assert.equal(contract.capacityBoundary.blockPromotionWhenTeamPaused, true);
+  assert.equal(contract.capacityBoundary.allowAutonomousPaidCapacityIncrease, false);
+  assert.equal(contract.capacityBoundary.requireZeroExecutionReadbackAfterBlockedRun, true);
+  assert.equal(contract.capacityBoundary.preserveStagingInactiveAfterBlockedRun, true);
+  assert.ok(contract.runtimeEvidenceBlockers.includes('MAKE_TEAM_PAUSED_OPERATIONS_OR_DATA_TRANSFER_LIMIT'));
+  assert.equal(contract.latestRuntimeAttempt.executionStarted, false);
+  assert.equal(contract.latestRuntimeAttempt.stagingExecutionsObserved, 0);
+  assert.equal(contract.latestRuntimeAttempt.BG168ExecutionsObserved, 0);
+  assert.match(contract.latestRuntimeAttempt.error, /paused/i);
+});
