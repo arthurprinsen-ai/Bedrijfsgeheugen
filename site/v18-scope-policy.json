@@ -26,6 +26,6 @@
     "area:scans": ["frisse-blik.html", "zelfscan.html", "ai-scan.html", "afmaakindex.html", "monitor.html", "benchmark.html"]
   },
   "governanceRules": {
-    "scope:governance": ["site/v18-component-registry.json", "site/v18-scope-policy.json", "site/v18-test-source.json", "tests/v18-*.test.mjs", ".github/workflows/v18-test-route-integrity.yml", ".github/workflows/v18-public-preview-smoke.yml", ".github/workflows/live-preview-smoke.yml", "docs/superpowers/**", "docs/incidents/**", "docs/bedrijfsgeheugen-learning-ledger.md", "netlify.toml", "_redirects", "sitemap.xml", "tools/bouw-v18-test-preview.mjs", "tools/check-v18-scope.mjs"]
+    "scope:governance": ["site/v18-component-registry.json", "site/v18-scope-policy.json", "site/v18-test-source.json", "tests/v18-*.test.mjs", ".github/pull_request_template.md", ".github/workflows/v18-test-route-integrity.yml", ".github/workflows/v18-public-preview-smoke.yml", ".github/workflows/live-preview-smoke.yml", "docs/superpowers/**", "docs/incidents/**", "docs/bedrijfsgeheugen-learning-ledger.md", "netlify.toml", "_redirects", "sitemap.xml", "tools/bouw-v18-test-preview.mjs", "tools/check-v18-scope.mjs"]
   }
 }
