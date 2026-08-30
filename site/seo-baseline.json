@@ -16,6 +16,13 @@
     "robots": "index, follow, max-image-preview:large, max-snippet:-1",
     "ogImage": "https://www.bedrijfsgeheugen.nl/og-image.png"
   },
+  "pageOverrides": [
+    {
+      "route": "/data-soevereiniteit",
+      "file": "data-soevereiniteit.html",
+      "title": "Data-soevereiniteit en ChatGPT-beleid | Bedrijfsgeheugen"
+    }
+  ],
   "keywordOwners": [
     {"keyword":"digitalisering mkb","route":"/"},
     {"keyword":"afas koppeling kosten","route":"/blog/wat-kost-een-afas-koppeling/"},
