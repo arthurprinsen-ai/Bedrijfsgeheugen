@@ -30,20 +30,33 @@ test('Unified Brain Delivery consumes explicit immutable writer candidate identi
   mustContain(text, /PR_HEAD_SHA_DRIFT/);
 });
 
-test('all repository writers converge on the same immutable shadow', () => {
-  const workflows = [
+test('all repository writers converge exactly once on the immutable shadow', () => {
+  const selfDispatch = [
     'approved-central-blog.yml',
     'blog-bijwerken.yml',
     'menu-balk-fix.yml',
+  ];
+  const genericDispatch = [
     'paginacontrole.yml',
     'regelgeving-bijwerken.yml',
     'seo-controle.yml',
     'weekblog.yml',
   ];
-  for (const file of workflows) {
+  const operational = fs.readFileSync('.github/workflows/repo-writer-operational-verification.yml', 'utf8');
+
+  for (const file of selfDispatch) {
     const text = fs.readFileSync(`.github/workflows/${file}`, 'utf8');
-    mustContain(text, /repo-writer-candidate-shadow\.yml/, `${file} must dispatch immutable shadow`);
+    mustContain(text, /repo-writer-candidate-shadow\.yml/, `${file} must self-dispatch immutable shadow`);
   }
+
+  for (const file of genericDispatch) {
+    const text = fs.readFileSync(`.github/workflows/${file}`, 'utf8');
+    assert.doesNotMatch(text, /repo-writer-candidate-shadow\.yml/, `${file} must not duplicate generic immutable shadow dispatch`);
+    const writer = file.replace(/\.yml$/, '');
+    mustContain(operational, new RegExp(`verify/${writer.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}-\\*`), `${file} missing generic verification route`);
+    mustContain(operational, new RegExp(`WRITER='${writer.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}';\\s*WORKFLOW='${file.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}';\\s*GENERIC_SHADOW='true'`), `${file} must use generic immutable shadow exactly once`);
+  }
+  mustContain(operational, /repo-writer-candidate-shadow\.yml/, 'generic handoff must dispatch immutable shadow');
 });
 
 test('immutable shadow is the single universal handoff into central writer gates', () => {
@@ -55,6 +68,8 @@ test('immutable shadow is the single universal handoff into central writer gates
   mustContain(shadow, /-f head_sha=\"\$HEAD_SHA\"/);
   mustContain(shadow, /-f candidate_branch=\"\$CANDIDATE_BRANCH\"/);
 
-  const menu = fs.readFileSync('.github/workflows/menu-balk-fix.yml', 'utf8');
-  assert.doesNotMatch(menu, /repo-writer-gate-dispatch\.yml/, 'writers must not duplicate the central gate dispatch');
+  for (const file of ['menu-balk-fix.yml', 'approved-central-blog.yml', 'blog-bijwerken.yml', 'paginacontrole.yml', 'regelgeving-bijwerken.yml', 'seo-controle.yml', 'weekblog.yml']) {
+    const text = fs.readFileSync(`.github/workflows/${file}`, 'utf8');
+    assert.doesNotMatch(text, /repo-writer-gate-dispatch\.yml/, `${file} must not duplicate central gate dispatch`);
+  }
 });
