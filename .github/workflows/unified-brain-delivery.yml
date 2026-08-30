@@ -211,14 +211,14 @@ jobs:
         run: |
           echo "Verification-only delivery: production authority handoff intentionally skipped."
       - name: BG169 primary Make transport with GitHub-native failover
-        if: needs.plan.outputs.has_lanes == 'true' && (github.event_name != 'workflow_dispatch' || inputs.verification_only != true)
+        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only != true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BG169_HANDOFF_URL: ${{ vars.BG169_HANDOFF_URL }}
-          PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
+          PR_NUMBER: ${{ inputs.pr_number }}
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}
           HEAD_SHA: ${{ needs.plan.outputs.head_sha }}
-          CANDIDATE_BRANCH: ${{ inputs.candidate_branch || github.event.pull_request.head.ref }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
           TRACE_ID: ${{ needs.plan.outputs.trace_id }}
           UNIFIED_RUN_ID: ${{ github.run_id }}
         shell: bash
@@ -252,7 +252,7 @@ jobs:
             --arg expected_head_sha "$HEAD_SHA" \
             --arg tested_head_sha "$HEAD_SHA" \
             --arg candidate_branch "$CANDIDATE_BRANCH" \
-            --arg lane_id "brain|${HEAD_SHA:0:12}" \
+            --arg lane_id "writer|${HEAD_SHA:0:12}" \
             --arg trace_id "$TRACE_ID" \
             --argjson unified_run_id "$UNIFIED_RUN_ID" \
             '{authority:"BG169",pr_number:$pr_number,base_sha:$base_sha,candidate_sha:$candidate_sha,expected_head_sha:$expected_head_sha,tested_head_sha:$tested_head_sha,candidate_branch:$candidate_branch,lane_id:$lane_id,trace_id:$trace_id,unified_run_id:$unified_run_id}')"
