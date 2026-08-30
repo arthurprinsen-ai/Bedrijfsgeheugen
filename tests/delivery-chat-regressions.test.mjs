@@ -49,5 +49,5 @@ test('readiness and protection regressions remain scenario-derived and classifie
 test('TDD and development stay candidate-only even while native main protection is unavailable',()=>{
  assert.match(agents,/TDD[^\n]{0,160}(main|default branch)/i);
  assert.match(agents,/(candidate|kandidaat)[^\n]{0,120}(BG169|promot)/i);
- assert.match(agents,/(main-push|main push)[^\n]{0,160}(detect|detectie|achteraf|substitute|vervanging)/i);
+ assert.match(agents,/main[^\n]{0,12}push CI[^\n]{0,160}(detect|detectie|achteraf|substitute|vervanging)/i);
 });
