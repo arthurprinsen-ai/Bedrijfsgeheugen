@@ -18,7 +18,7 @@ assert.match(canary,/createWriterCandidate/);
 assert.match(canary,/validateWriterCandidate/);
 assert.match(canary,/gh pr create/);
 assert.match(canary,/repo-writer-candidate-shadow\.yml/);
-assert.match(canary,/unified-brain-delivery\.yml/,'cheap canary must dispatch Unified Brain Delivery after immutable shadow dispatch');
+assert.doesNotMatch(canary,/unified-brain-delivery\.yml/,'cheap transport canary must remain shadow-only and must never dispatch production delivery');
 assert.match(canary,/-f pr_number=/);
 assert.match(canary,/-f base_sha=/);
 assert.match(canary,/-f head_sha=/);
@@ -30,4 +30,4 @@ assert.match(canary,/sitemap\.xml/);
 assert.doesNotMatch(canary,/ANTHROPIC_API_KEY|NOTION_TOKEN|NOTION_BLOG_DB|BG_SEO_WEBHOOK|api\.anthropic\.com/);
 assert.doesNotMatch(canary,/git push origin HEAD:main|git push origin main|gh pr merge/);
 
-console.log('PASS expensive/external writers use one deterministic candidate-only transport canary with agent-executable triggers');
+console.log('PASS expensive/external writers use one deterministic shadow-only transport canary with agent-executable triggers');
