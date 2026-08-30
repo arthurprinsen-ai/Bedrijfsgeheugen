@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const runtime=await readFile(new URL('../portal/legacy-runtime.mjs',import.meta.url),'utf8');
 const intelligence=await readFile(new URL('../portal/render-intelligence.mjs',import.meta.url),'utf8');
+const governance=await readFile(new URL('../portal/render-governance-legacy.mjs',import.meta.url),'utf8');
 
 for(const id of ['branche','onderzoek']){
  test(`${id} bypasses the iframe bridge`,()=>assert.match(runtime,new RegExp(`['\"]${id}['\"]`)));
@@ -19,6 +20,7 @@ test('Onderzoek renders natively in intelligence',()=>{
  assert.match(intelligence,/>Onderzoek</);
 });
 
-test('governance stays on compatibility bridge until split renderer is reviewed',()=>{
- assert.doesNotMatch(runtime,/['\"]beleid['\"]/);
+test('governance now bypasses the bridge through the reviewed split renderer',()=>{
+ assert.match(runtime,/['\"]beleid['\"]/);
+ assert.match(governance,/admin\/legacy\/beleid/);
 });
