@@ -31,3 +31,12 @@ test('disjoint component scopes are recognized as parallel-safe while overlappin
   assert.equal(scopesOverlap(['component:mobile-menu','area:navigation'], ['component:blog','area:knowledge']), false);
   assert.equal(scopesOverlap(['component:mobile-menu','area:navigation'], ['component:header','area:navigation']), true);
 });
+
+test('V18 PR template requires explicit scope tags and why', () => {
+  const templatePath = '.github/pull_request_template.md';
+  assert.ok(fs.existsSync(templatePath), 'V18 PR template ontbreekt');
+  const template = fs.readFileSync(templatePath, 'utf8');
+  assert.ok(template.includes('V18-SCOPE-TAGS:'), 'PR template mist V18-SCOPE-TAGS');
+  assert.ok(template.includes('Waarom deze scope'), 'PR template mist uitleg waarom de scope nodig is');
+  assert.ok(template.includes('Doelbranch: `v18-test`'), 'PR template maakt v18-test niet expliciet als integratiedoel');
+});
