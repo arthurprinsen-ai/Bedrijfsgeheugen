@@ -58,6 +58,13 @@ test('customer auth recovery is retained as reusable shared-memory knowledge', a
   assert.match(architecture, /focus/i);
 });
 
+test('shared memory workflow protects direct main pushes as well as pull requests', async () => {
+  const workflow = await readFile('.github/workflows/shared-agent-memory-tests.yml', 'utf8');
+  assert.match(workflow, /push:\s*\n\s*branches:\s*\n(?:\s*- .*\n)*\s*- main\b/m);
+  assert.match(workflow, /pull_request:\s*\n\s*branches:\s*\n\s*- main\b/m);
+  assert.match(workflow, /tests\/development-doc-contract\.test\.mjs/);
+});
+
 test('production promotion guardian contract is machine enforced', async () => {
   const [agents, os, selfHealing, obligations, policy, obligationPolicy, workflow] = await Promise.all([
     readFile('AGENTS.md', 'utf8'),
