@@ -30,6 +30,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
   id-token: write
 
 concurrency:
@@ -305,9 +306,8 @@ jobs:
           done
           git commit -m "blog bijgewerkt: $SLUG"
 
-          if [ "$DELIVERY_MODE" = "candidate-pr" ]; then
-            export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
-            CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
+          export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+          CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
           import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
           const files = String(process.env.CHANGED_FILES || '').split('\n').filter(Boolean).sort();
           const candidate = createWriterCandidate({
@@ -321,13 +321,9 @@ jobs:
           validateWriterCandidate(candidate);
           console.log(candidate.branch);
           NODE
-            )
-            echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
-            echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
-          else
-            echo "delivery=direct" >> "$GITHUB_OUTPUT"
-          fi
-
+          )
+          echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "delivery=candidate-pr" >> "$GITHUB_OUTPUT"
 
       - name: Candidate branch publiceren
         if: steps.kalender.outputs.gevonden == 'true'
@@ -338,25 +334,61 @@ jobs:
           git push origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
+        id: pr
         if: steps.kalender.outputs.gevonden == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
-          BASE_SHA: ${{ steps.base.outputs.sha }}
+          SOURCE_SHA: ${{ steps.base.outputs.sha }}
           SLUG: ${{ steps.kalender.outputs.slug }}
         run: |
           set -euo pipefail
-          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
-          if [ -n "$existing" ]; then
-            echo "Candidate PR bestaat al: #$existing"
-            exit 0
+          pr_number=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr_number" ]; then
+            pr_url=$(gh pr create \
+              --base main \
+              --head "$CANDIDATE_BRANCH" \
+              --title "Blog update candidate: $SLUG" \
+              --body "Gecontroleerde BRAIN-DELIVERY-v2 candidate uit blog-bijwerken. Source SHA: $SOURCE_SHA. Notion blijft op Voorstel klaar totdat productie-uitkomst exact is bewezen. Deze workflow merge't zichzelf niet; BG169 blijft productieautoriteit.")
+            pr_number="${pr_url##*/}"
+          else
+            echo "Candidate PR bestaat al: #$pr_number"
           fi
-          gh pr create \
-            --base main \
-            --head "$CANDIDATE_BRANCH" \
-            --title "Blog update candidate: $SLUG" \
-            --body "Gecontroleerde candidate uit blog-bijwerken. Base SHA: $BASE_SHA. Notion blijft op Voorstel klaar totdat de wijziging werkelijk is gepromoveerd. Deze workflow merge't zichzelf niet."
+          pr_base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.base.sha')
+          pr_head_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.head.sha')
+          pr_head_ref=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.head.ref')
+          [ "$pr_head_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$pr_head_ref"; exit 1; }
+          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$pr_base_sha" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$pr_head_sha" >> "$GITHUB_OUTPUT"
 
+      - name: Dispatch read-only shadow verification
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          BASE_SHA: ${{ steps.pr.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          gh workflow run repo-writer-candidate-shadow.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$BASE_SHA" \
+            -f head_sha="$HEAD_SHA" \
+            -f candidate_branch="$CANDIDATE_BRANCH"
+
+      - name: BRAIN v2 handoff evidence
+        if: steps.kalender.outputs.gevonden == 'true'
+        run: |
+          echo "candidate_sha=${{ steps.pr.outputs.head_sha }}"
+          echo "candidate_branch=${{ steps.commit.outputs.candidate_branch }}"
+          echo "candidate_pr=${{ steps.pr.outputs.number }}"
+          echo "production_authority=BG169"
+          echo "notion_state=pending_until_exact_production_proof"
+          echo "direct_main_push=false"
 
       - name: Niets te doen
         if: steps.kalender.outputs.gevonden != 'true'
