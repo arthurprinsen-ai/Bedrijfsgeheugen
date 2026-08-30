@@ -19,6 +19,14 @@ test('main protection observation is read-only and stores immutable evidence', a
   assert.doesNotMatch(yaml, /gh api\s+--method\s+(PUT|PATCH|POST|DELETE)/i);
 });
 
+test('governance observation reruns when its main-branch contract changes', async () => {
+  const yaml = await readFile(workflowPath, 'utf8');
+  assert.match(yaml, /push:/);
+  assert.match(yaml, /branches:\s*\[main\]/);
+  assert.match(yaml, /main-protection-observation\.yml/);
+  assert.match(yaml, /main-protection-certification\.mjs/);
+});
+
 test('blocked governance state is evidence, not a failed observation job', async () => {
   const yaml = await readFile(workflowPath, 'utf8');
   assert.match(yaml, /truth_status/);

@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 5 * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/main-protection-observation.yml'
+      - 'scripts/brain/main-protection-certification.mjs'
 
 permissions:
   contents: read
