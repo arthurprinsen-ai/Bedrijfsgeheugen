@@ -1,0 +1,15 @@
+# Development Ledger Event — 2026-08-30 — Writer bot PR action-required recovery
+
+## ERROR / RECOVERY — writer-generated candidate PR cannot execute checks
+- **Fingerprint:** `writer-bot-pr-action-required-v1`.
+- **Signal:** a repository writer successfully creates a `writer/<writer>/<id>` branch and opens a candidate PR, but the PR workflows resolve to `action_required` and `fetch_workflow_run_jobs` returns zero jobs.
+- **Observed instance:** `menu-balk-fix` writer run `33334211750` created PR #648 from verification source SHA `67dfde561f29581337b27a7d28f7b1da9389e050`, candidate branch `writer/menu-balk-fix/20016cbaf68b087a`, candidate head `5c99d2d4bcd96db2025ba4906788f9f2e80c5efb`. The candidate changed only `writer-menu-operational-canary.html`.
+- **Root cause classification:** the PR was opened by `github-actions[bot]`; GitHub did not execute the candidate PR jobs and surfaced `action_required` with zero jobs. A candidate PR existing is therefore not sufficient promotion evidence.
+- **Proved safe recovery:** close the bot-opened PR without merge; keep the exact writer-generated branch/head unchanged; rematerialize a governance verification PR from that exact branch through an authorized non-workflow identity; run the existing read-only shadow and central writer gates; close the rematerialized PR without merge.
+- **Recovery evidence:** PR #666 reused exact candidate head `5c99d2d4bcd96db2025ba4906788f9f2e80c5efb` unchanged. Shadow run `33334501687` succeeded and emitted artifact `9738608878`, digest `sha256:ed42798fa79485b38c31ded617402920e4826311aee6d6cd91df5f7ab479f231`; evidence reported `writer=menu-balk-fix`, changed file `writer-menu-operational-canary.html`, `pathPolicyVerified=true`, `impactPolicyVerified=true`, `exactHeadVerified=true`. Central Repository Writer Gate Dispatch run `33334509794` succeeded.
+- **Production safety evidence:** PR #648, PR #666 and verification PR #647 were all closed without merge. No candidate canary was promoted to `main`.
+- **Regression contract:** never classify `action_required`, missing jobs, or an unexecuted candidate check suite as green. Operational writer evidence requires executed successful shadow verification on the exact immutable writer head plus successful central writer gates.
+- **Prevention rule:** writer/orchestrator implementations must treat bot-created candidate PR workflow suppression/approval as a first-class handoff state, not as success. Preserve exact branch/head provenance and route verification through a governance identity or equivalent approved execution path; never bypass checks and never mutate the candidate to make checks run.
+- **Reuse rule:** before retrying or rebuilding a writer candidate after `action_required`, first inspect PR actor, job count, candidate SHA and branch. If the writer head is valid, reuse it unchanged rather than paying for/regenerating the candidate.
+- **Related learning:** `writer-operational-canary-source-ref-v1`, `writer-operational-harness-contract-selector-v1`, `connector-workflow-dispatch-boundary-v1`.
+- **Owner:** Repository Writer Governance + Production Authority + Shared Agent Learning.
