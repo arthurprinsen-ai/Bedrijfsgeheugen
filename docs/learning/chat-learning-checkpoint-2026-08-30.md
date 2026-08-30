@@ -208,6 +208,30 @@ OpenArt connector is available. For video generation:
 
 Current chosen concept: variant 1 — peaceful premium 10s 1080p 16:9 drone flight over modern waterfront skyline at golden hour.
 
+## Hero video failure fingerprints + current candidate
+
+The detailed canonical media contract is `docs/hero-video-iphone-contract.md` and must be read before hero/video/iPhone/Safari work.
+
+Durable fingerprints from this chat:
+- `hero|iphone|false-movement-proof`: the early 48 KB/Base64-v2 is not valid movement proof; only fresh device confirmation counts.
+- `hero|media|controller-good-source-bad`: original V18/Pexels playback worked physically while a local OpenArt-transcoded source failed under the byte-identical controller. Candidate media/delivery must be investigated before touching controller architecture.
+- `hero|pexels|guessed-cdn-url`: never derive a CDN filename from a provider pattern; resolve the official download/redirect and pin the actual result.
+- `hero|iphone|same-provider-different-profile`: same Pexels CDN family did not guarantee equivalent iPhone behavior; fps/resolution/container/delivery profile remain relevant.
+- `hero|fallback|legacy-people-flash`: the brief old-man flash came from a CSS fallback in addition to the `<video poster>`; QA must scan full generated HTML/CSS for forbidden legacy hero imagery.
+- `github|agent-race|hero-builder-qa-409`: concurrent writers on hero builder/QA produced stale SHA/409 and incoherent expectations. One canonical writer per file/semantic scope; on conflict fetch current state and reconcile, never blind retry.
+
+Baseline evolution:
+- historical first physically accepted preview control: commit `3361ec315874c8ea4c3ceca844bb3e4c9e707be6`, Netlify deploy `6a919798b6397000080985a7`;
+- later production control is the physically accepted OpenArt derivative SHA `a261792e9b0058802ab5b30ce107c7ac14e8b2291a3bd7ee78fdb5968bbe97fd` from source SHA `d4a516304adebbf8067bceb034046ddd65e3ff62fd8e34c800115aeb226c89e0`;
+- a new candidate never inherits physical acceptance from either control.
+
+New OpenArt/Grok Imagine 1.5 generation from this chat:
+- history id `uUxKRWcQkzWIPosutXVF`;
+- raw media 1920×1088, 24 fps, ~8.04 seconds, audio present;
+- raw URL `https://cdn.openart.ai/openart-ai/production/2026-08/create-video/WZvuT1BzGx566fWaFo8F/xai-video-143123ce-c19d-935c-a98f-0ffc678d4ae0_1787928916465_3c8704c8.mp4`.
+
+This raw asset is creative source media, not an accepted hero. It must not be deployed directly as the new baseline. Normalize only as a candidate toward 1920×1080, 30fps, H.264, yuv420p, no audio and faststart, keep canonical controller/fallback/startup behavior untouched, use a versioned/hash-pinned artifact, and require a new exact iPhone PASS before promotion. Candidate normalization is not proof; physical acceptance remains the final gate.
+
 ## Customer portal auth / legacy UI recovery
 
 Canonical fingerprint: `portal|customer-auth|legacy-inline-login-jitter`.
