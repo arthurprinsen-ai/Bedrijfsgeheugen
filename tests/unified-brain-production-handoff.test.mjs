@@ -6,11 +6,21 @@ const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 
 const marker = '- name: BG169 primary Make transport with GitHub-native failover';
 const handoff = workflow.split(marker)[1] || '';
 
-test('green executable pull requests can reach BG169 through its current authority contract', () => {
+test('green executable components can reach BG169 only through explicit production dispatch', () => {
   assert.ok(handoff, 'BG169 production authority step missing');
   const condition = handoff.match(/\n\s*if:\s*([^\n]+)/)?.[1] || '';
   assert.ok(condition.includes("needs.plan.outputs.has_lanes == 'true'"), 'handoff must require executable lanes');
-  assert.ok(!condition.includes("startsWith(inputs.candidate_branch, 'writer/')"), 'general Brain production handoff must not be writer-only');
+  assert.ok(condition.includes("github.event_name == 'workflow_dispatch'"), 'ordinary pull_request verification must never invoke BG169');
+  assert.ok(condition.includes("inputs.pr_number != ''"), 'BG169 must require an explicit PR number');
+  assert.ok(condition.includes('inputs.verification_only != true'), 'verification-only delivery must remain non-promoting');
+  assert.ok(!condition.includes("startsWith(inputs.candidate_branch, 'writer/')"), 'general Brain production handoff must remain component-generic');
+});
+
+test('live main protection is certified before BG169 production transport', () => {
+  const protection = workflow.indexOf('- name: Certify live main protection before production handoff');
+  const bg169 = workflow.indexOf(marker);
+  assert.ok(protection >= 0 && bg169 > protection, 'live main protection gate must precede BG169');
+  assert.match(workflow.slice(protection, bg169), /MAIN_PROTECTION_BLOCKED/);
 });
 
 test('verification-only writer dispatch remains explicitly non-promoting', () => {
