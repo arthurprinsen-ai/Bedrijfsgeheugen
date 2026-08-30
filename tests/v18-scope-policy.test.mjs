@@ -40,3 +40,9 @@ test('V18 PR template requires explicit scope tags and why', () => {
   assert.ok(template.includes('Waarom deze scope'), 'PR template mist uitleg waarom de scope nodig is');
   assert.ok(template.includes('Doelbranch: `v18-test`'), 'PR template maakt v18-test niet expliciet als integratiedoel');
 });
+
+test('governance scope owns the V18 PR template', async () => {
+  const { checkScope } = await loadChecker();
+  const result = checkScope({declaredTags:['scope:governance'], changedFiles:['.github/pull_request_template.md']});
+  assert.equal(result.ok, true, JSON.stringify(result));
+});
