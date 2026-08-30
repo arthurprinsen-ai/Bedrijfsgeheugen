@@ -1,0 +1,67 @@
+{
+  "version": "MAKE-AGENT-LEARNING-PROMOTION-v1",
+  "ownerAgent": "Powerhouse Production Promotion Guardian",
+  "stagingScenarioId": 7165093,
+  "targetLearningScenarioId": 7136176,
+  "state": "BLOCKED_PENDING_RUNTIME_EVIDENCE",
+  "blueprintGreenIsProductionGreen": false,
+  "ciGreenIsRuntimeGreen": false,
+  "promotionAllowed": false,
+  "requiredRuntimeEvidence": [
+    "non_material_exact_primary_result",
+    "non_material_zero_BG168_calls",
+    "material_exact_primary_result",
+    "material_BG168_dispatch_observed",
+    "learning_failure_preserves_primary_result",
+    "credit_cost_bounded_vs_baseline"
+  ],
+  "protectedInvariants": [
+    "primary_result_independent_of_optional_learning",
+    "uncertain_outcome_defaults_to_material",
+    "no_live_multi_step_partial_topology",
+    "readback_before_retry_after_429_or_502",
+    "no_production_promotion_from_blueprint_or_CI_alone",
+    "capacity_exhaustion_never_authorizes_autonomous_paid_capacity_increase"
+  ],
+  "runtimeEvidenceBlockers": [
+    "MAKE_TEAM_PAUSED_OPERATIONS_OR_DATA_TRANSFER_LIMIT"
+  ],
+  "latestRuntimeAttempt": {
+    "scenarioId": 7165093,
+    "requestedInput": "Runtime health check. Return exactly OK.",
+    "executionStarted": false,
+    "error": "Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again.",
+    "stagingExecutionsObserved": 0,
+    "BG168ExecutionsObserved": 0,
+    "stagingReturnedInactive": true,
+    "evidenceClass": "HARD_BOUNDARY_NO_RUNTIME_EXECUTION"
+  },
+  "capacityBoundary": {
+    "blockPromotionWhenTeamPaused": true,
+    "allowAutonomousPaidCapacityIncrease": false,
+    "requireZeroExecutionReadbackAfterBlockedRun": true,
+    "preserveStagingInactiveAfterBlockedRun": true,
+    "resumeRuntimeEvidenceOnlyAfterCapacityIsAvailableWithoutUnsafeSpendOrScopeExpansion": true
+  },
+  "promotionStrategy": {
+    "stagingFirst": true,
+    "oneAgentAtATime": true,
+    "requireExactScenarioReadback": true,
+    "rollbackOnCreditSlopeRegression": true,
+    "rollbackOnPrimaryResultRegression": true,
+    "keepBG167CanonicalOwner": "BG166"
+  },
+  "promotionGate": {
+    "allRequiredRuntimeEvidenceMustBeTrue": true,
+    "stagingBlueprintMustMatchCanonicalClassifier": true,
+    "sharedMemoryCIMustBeGreen": true,
+    "productionAgentMustRemainUnchangedUntilGatePasses": true,
+    "runtimeEvidenceBlockersMustBeEmpty": true
+  },
+  "rollback": {
+    "immediateOnPrimaryResultRegression": true,
+    "immediateOnCreditSlopeRegression": true,
+    "restoreExactPreMigrationTopology": true,
+    "preserveLearningObligationAfterRollback": true
+  }
+}

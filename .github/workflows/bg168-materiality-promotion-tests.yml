@@ -1,0 +1,24 @@
+name: BG168 Materiality Promotion Tests
+
+on:
+  push:
+    branches:
+      - 'automation/bg168-materiality-promotion-v4-20260830'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/make-agent-learning-promotion-contract.test.mjs tests/chat-learning-completeness-addendum.test.mjs
