@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { createAgentWork } from './agent-work.mjs';
 import { createLearningMemory } from './learning-memory.mjs';
 import { requireRunnableBudgetEnvelope } from '../cost/budget-policy.mjs';
-import { evaluateCompletionReadiness } from '../../tools/delivery-preflight.mjs';
+import { evaluateCompletionReadiness } from '../../brain/policy/completion-readiness.mjs';
 
 const TRANSITIONS = Object.freeze({
   Assigned:new Set(['Investigating']),
