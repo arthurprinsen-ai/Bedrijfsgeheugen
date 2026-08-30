@@ -1,0 +1,35 @@
+{
+  "version": "DELIVERY-LEARNING-v1",
+  "lessons": [
+    {
+      "fingerprint": "historical|pr|shared|ready-review-graphql-schema",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "ready-for-review connector GraphQL schema failure",
+      "rootCause": "the connector path used to mutate draft state was not reliable for this repository flow",
+      "fix": "replace the failed draft with a fresh ready PR on the exact tested head",
+      "preventionRule": "RECREATE_READY_PR_ON_CONNECTOR_GRAPHQL_FAILURE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "historical|pipeline|shared|github-notion-writeback-404",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "GitHub Actions direct Notion state writeback returned 404 after public verification succeeded",
+      "rootCause": "GitHub Actions used an unproven Notion write path while Make already owned a proven connection",
+      "fix": "keep GitHub verification read-only and route Notion state reconciliation through Make",
+      "preventionRule": "GITHUB_PUBLIC_PROOF_MAKE_STATE_WRITEBACK",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "historical|pipeline|shared|broken-make-http-verifier",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Make HTTP SEO verification path was broken",
+      "rootCause": "the verification transport was unreliable for the required public proof",
+      "fix": "use bounded GitHub public HTTP title and canonical verification and return the result to Make",
+      "preventionRule": "BOUNDED_GITHUB_PUBLIC_PROOF",
+      "status": "PROVEN"
+    }
+  ]
+}
