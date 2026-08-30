@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { loadDeliveryPreflight } from '../tools/delivery-preflight.mjs';
 
 const CONTRACT = 'config/branch-delivery-ownership-guard.json';
 
@@ -20,4 +21,11 @@ test('ambiguous successor state is never treated as safe delivery ownership', as
   assert.equal(contract.ambiguousSuccessorState, 'FAIL_CLOSED');
   assert.equal(contract.knownFailure.fingerprint, 'delivery|branch-pr|stale-reuse-or-duplicate-owner-v1');
   assert.match(contract.knownFailure.failedApproach, /oude|stale|reeds gebruikte/i);
+});
+
+test('mandatory delivery preflight ingests the ownership guard', async () => {
+  const source = await readFile('tools/delivery-preflight.mjs', 'utf8');
+  assert.match(source, /branch-delivery-ownership-guard\.json/);
+  const decision = await loadDeliveryPreflight({ component: 'shared' });
+  assert.ok(new Set(decision.reusedGuards).has('delivery|branch-pr|stale-reuse-or-duplicate-owner-v1'));
 });
