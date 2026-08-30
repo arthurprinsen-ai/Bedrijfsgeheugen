@@ -19,6 +19,7 @@ export function createAgentRegistry(agentDefinitions = []) {
       id:String(definition.id),
       domains:normalize(definition.domains),
       capabilities:normalize(definition.capabilities),
+      costProfile:definition.costProfile ? Object.freeze({ ...definition.costProfile }) : null,
     }));
   }
 

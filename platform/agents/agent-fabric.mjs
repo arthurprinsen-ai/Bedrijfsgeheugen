@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { createAgentWork } from './agent-work.mjs';
 import { createLearningMemory } from './learning-memory.mjs';
+import { requireRunnableBudgetEnvelope } from '../cost/budget-policy.mjs';
 
 const TRANSITIONS = Object.freeze({
   Assigned:new Set(['Investigating']),
@@ -74,6 +75,7 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
   function intake(signal) {
     if (!signal?.tenantId) throw new TypeError('tenantId is required');
     if (!signal?.problemClass) throw new TypeError('problemClass is required');
+    if (signal.optional === true) requireRunnableBudgetEnvelope(signal.budgetEnvelope);
     const key = fingerprint(signal);
     const existingId = activeByFingerprint.get(key);
     if (existingId) {
@@ -103,6 +105,8 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
       problemClass:signal.problemClass,
       domains:Object.freeze(normalize(signal.domains)),
       capabilities:Object.freeze(normalize(signal.capabilities)),
+      budgetDecision:signal.optional === true ? signal.budgetEnvelope.decision : null,
+      budgetSnapshotFingerprint:signal.optional === true ? String(signal.budgetEnvelope.snapshotFingerprint) : null,
       createdAt:now(),
     });
     workById.set(id, work);

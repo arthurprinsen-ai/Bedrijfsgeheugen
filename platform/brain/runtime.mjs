@@ -6,6 +6,7 @@ import { ACTIONS, DECISIONS, evaluatePolicy } from '../policy/policy-engine.mjs'
 import { AI_USE_CASE_STATES, canActivateAIUseCase } from '../policy/ai-register.mjs';
 import { canAgentExecute, createAgentWork } from '../agents/agent-work.mjs';
 import { planSelfHeal, verifyRecovery } from '../agents/self-heal.mjs';
+import { requireRunnableBudgetEnvelope } from '../cost/budget-policy.mjs';
 
 function required(value, name) {
   if (typeof value !== 'string' || !value.trim()) throw new TypeError(`${name} is required`);
@@ -98,6 +99,7 @@ export function createBrainRuntime({ policies = [], providerRegistry, aiUseCases
   }
 
   async function analyze(input) {
+    if (input?.optional === true) requireRunnableBudgetEnvelope(input.budgetEnvelope);
     const signal = sourceObjects.get(input?.signalId);
     if (!signal) throw new Error('signal not found');
     const requestedTenant = input.tenantId ?? signal.tenantId;
@@ -182,6 +184,7 @@ export function createBrainRuntime({ policies = [], providerRegistry, aiUseCases
   }
 
   async function executeChange(input) {
+    if (input?.optional === true) requireRunnableBudgetEnvelope(input.budgetEnvelope);
     const change = workingObjects.get(input?.changeId);
     if (!change || change.type !== 'Change') throw new Error('working change not found');
     const correlationId = next('CORR');

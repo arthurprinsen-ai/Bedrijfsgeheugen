@@ -191,6 +191,17 @@
   [headers.values]
     Cache-Control = "public, max-age=3600, must-revalidate"
 
+[[headers]]
+  for = "/intern/powerhouse-kosten/*"
+  [headers.values]
+    Cache-Control = "private, no-store"
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+
 # Slot op de interne map. De edge function vraagt om inloggegevens; die staan
 # als INTERN_GEBRUIKER en INTERN_WACHTWOORD in de Netlify-omgevingsvariabelen.
 [[edge_functions]]
