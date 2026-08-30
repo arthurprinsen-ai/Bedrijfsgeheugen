@@ -85,19 +85,26 @@ Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
 
-## Eén parallelle delivery-eenheid
-Backend, website en portaal zijn geen losse producten of releases. Iedere codewijziging loopt via `config/brain-delivery-system.json` en `tools/brain-delivery-system.mjs` als één `BRAIN-DELIVERY-v1` delivery-eenheid.
+## BRAIN Continuous CI/CD v2 — onafhankelijke delivery lanes
+Alle huidige en toekomstige apps, agents, Make-scenario's, GitHub-workflows, website-, portal-, backend- en servicecomponenten vallen onder `BRAIN-DELIVERY-v2` via `config/brain-delivery-system.json`, `brain/contracts/delivery-v2.schema.json`, `brain/production/continuous-delivery-v2.mjs` en `tools/brain-delivery-system.mjs`.
 
-Verplicht voor iedere huidige en toekomstige agent, workflow en Make-integratie:
-- automatische Brain-membership met `brain.v1`, shared-context read, cost management, security governance en material-outcome writeback;
-- automatische classificatie van iedere gewijzigde route of file naar `backend`, `website`, `portal` of een expliciet genegeerde documentklasse;
-- onbekende actieve scope faalt gesloten en mag niet naar productie;
-- onafhankelijke lanes bouwen en testen gelijktijdig;
-- integratie gebeurt één keer op exact hetzelfde kandidaat-SHA;
-- BG169 blijft de enige productieautoriteit; BG168 routeert de uitkomst en BG167 ververst de gedeelde actuele context;
-- nieuwe Make-scenario's blijven daarnaast automatisch zichtbaar via de dynamische Cost/Brain-componentcatalogus en krijgen vóór activatie een kostenklasse.
+De canonieke regel is **independent delivery, shared intelligence**:
+- ontwikkelen mag simultaan;
+- iedere lane heeft een eigen `change_id`, `component_id`, `lane_id`, scope, dependencies, kandidaatidentiteit en rollbackidentiteit;
+- iedere lane valideert uitsluitend zijn eigen scope plus expliciet gedeclareerde contract- en dependencychecks;
+- generieke drift op `main` is nooit op zichzelf een rebuild- of wachtreden;
+- alleen een aantoonbaar mergeconflict, changed-path overlap of declared dependency conflict vereist synchronisatie van de betrokken lane;
+- niet-conflicterende lanes blijven doorwerken en mogen onafhankelijk promoveren;
+- exact de geteste kandidaatidentiteit moet worden gepromoveerd; een andere SHA/artifact/revisie is automatisch niet groen;
+- BG169 blijft de enige productieautoriteit voor GitHub-backed productiepromoties; agents mogen die autoriteit niet stil omzeilen;
+- BG167/shared-context wordt vóór materiële uitvoering gelezen; BG168/BG166 ontvangen uitkomst, fout, root cause, fix en preventieleerpunt; daarna wordt de gedeelde context ververst;
+- contract/schema, kwaliteit/tests, security, kosten/performance, preview/runtime, rollback readiness en production verification zijn verplichte gates;
+- onbekende actieve scope of ongeregistreerde nieuwe component faalt gesloten vóór productie;
+- nieuwe componenten registreren automatisch in het gezamenlijke Brain en zijn niet production-ready zonder shared-context read, cost/security governance, rollback en learning writeback;
+- bestaande Make-scenario's blijven via de dynamische BG159 Cost/Brain-inventaris zichtbaar en worden compatibility-first onder deze centrale poorten gebracht; geen dure destructieve bulk-rewrite per scenario;
+- Notion is kennis-, audit- en projectielaag, nooit de autoriteit voor de werkelijk gedeployde identiteit.
 
-Geen agent mag een nieuw backend-, website-, portaal-, workflow- of scenario-onderdeel buiten deze delivery-eenheid live zetten.
+Geen agent, chat, workflow, scenario of toekomstige app/dienst mag een productieactie buiten deze v2-deliveryregels uitvoeren. Lopend werk hoeft niet opnieuw te worden gebouwd wanneer zijn exact geteste scope aantoonbaar niet conflicteert; bij de eerstvolgende productieactie gelden de v2-gates wel verplicht.
 
 GitHub en Netlify zijn zelf actieve onderdelen van het Brain (`PLATFORM_GITHUB` en `PLATFORM_NETLIFY`). Voor iedere Netlify-productiedeploy moet vóór upload vanuit de beoogde bronmap deze controle draaien:
 
@@ -170,8 +177,9 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 5. `docs/outcome-obligations.md`
 6. `config/outcome-obligations.json`
 7. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
-8. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
-9. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
+8. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
+9. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
+10. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-experiment al in de repo of gedeelde teamcontext is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.
