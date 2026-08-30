@@ -49,7 +49,7 @@ test('customer auth recovery is retained as reusable shared-memory knowledge', a
     'Known failed approaches',
     'klant-login.html',
     'iOS',
-    'production evidence',
+    'Production evidence',
     '9041bcb1e5cc4d6732cbc3b0d4879976cef3e350'
   ]) assert.ok(ledger.includes(token), `customer-auth learning missing ${token}`);
   assert.match(architecture, /enige klantlogin/);
