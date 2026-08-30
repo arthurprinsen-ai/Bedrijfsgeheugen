@@ -23,7 +23,7 @@ export function evaluateBranchDrift({ featurePaths = [], mainDriftPaths = [], me
 }
 
 export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
-  if (!policy || policy.version !== 'BRAIN-DELIVERY-v1') throw new TypeError('BRAIN-DELIVERY-v1 policy is required');
+  if (!policy || !['BRAIN-DELIVERY-v1','BRAIN-DELIVERY-v2'].includes(policy.version)) throw new TypeError('BRAIN-DELIVERY-v1 or BRAIN-DELIVERY-v2 policy is required');
   if (policy.branchPolicy?.rebuildOnMainDrift !== false) throw new Error('branch policy must prohibit rebuilds for generic main drift');
   const sha = String(headSha ?? '').trim();
   if (!/^[a-f0-9]{12,40}$/i.test(sha)) throw new TypeError('valid headSha is required');
@@ -34,8 +34,12 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
     .filter(lane => shared || paths.some(path => matches(path, lane.paths)))
     .map(lane => Object.freeze({
       id: lane.id,
+      laneId: `${lane.id}|${sha.slice(0, 12)}`,
+      candidateIdentity: sha,
+      testedIdentity: sha,
       owner: lane.owner,
       requiredContracts: Object.freeze([...lane.requiredContracts]),
+      independentPromotion: policy.version === 'BRAIN-DELIVERY-v2' && policy.integration?.independentPromotion === true,
     }))
     .sort((left, right) => left.id.localeCompare(right.id));
   const classified = paths.filter(path => shared || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)));
@@ -51,18 +55,21 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
     changedPaths: Object.freeze(paths),
     ignoredPaths: Object.freeze(ignored),
     branchPolicy: Object.freeze({ ...policy.branchPolicy }),
+    registration: Object.freeze({ ...(policy.registration || { required:false, autoDiscover:false }) }),
     lanes: Object.freeze(lanes),
     integration: Object.freeze({
       required: lanes.length > 0,
       owner: policy.integration.owner,
       dependsOn: Object.freeze(lanes.map(lane => lane.id)),
       singleCandidate: policy.integration.singleCandidate === true,
+      independentPromotion: policy.integration.independentPromotion === true,
     }),
     production: Object.freeze({
       authority: policy.integration.productionAuthority,
       exactShaRequired: policy.integration.exactShaRequired === true,
       outcomeRouter: policy.integration.outcomeRouter,
       currentStateProjection: policy.integration.currentStateProjection,
+      errorLedger: policy.integration.errorLedger || 'BG166',
     }),
   });
 }
@@ -88,7 +95,7 @@ export function discoverBrainMembership({ registeredComponents = [], agents = []
   return Object.freeze(rows.map(row => {
     if (seen.has(row.componentKey)) throw new Error(`duplicate Brain member: ${row.componentKey}`);
     seen.add(row.componentKey);
-    return Object.freeze({ ...row, brainContractVersion:'brain.v1', sharedContextRequired:true, outcomeWritebackRequired:true, costManaged:true, securityGoverned:true, productionAuthority:'BG169' });
+    return Object.freeze({ ...row, brainContractVersion:'brain.v1', deliveryContractVersion:'BRAIN-DELIVERY-v2', sharedContextRequired:true, outcomeWritebackRequired:true, costManaged:true, securityGoverned:true, productionAuthority:'BG169' });
   }).sort((left, right) => left.componentKey.localeCompare(right.componentKey)));
 }
 
@@ -131,7 +138,7 @@ async function main() {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({ changedPaths, headSha, policy });
   await writeFile('.artifacts/brain-delivery-plan.json', `${JSON.stringify(plan, null, 2)}\n`);
-  const matrix = JSON.stringify({ include:plan.lanes.map(lane => ({ id:lane.id })) });
+  const matrix = JSON.stringify({ include:plan.lanes.map(lane => ({ id:lane.id, lane_id:lane.laneId, candidate_identity:lane.candidateIdentity })) });
   if (process.env.GITHUB_OUTPUT) {
     const { appendFile } = await import('node:fs/promises');
     await appendFile(process.env.GITHUB_OUTPUT, `matrix=${matrix}\ntrace_id=${plan.traceId}\n`);

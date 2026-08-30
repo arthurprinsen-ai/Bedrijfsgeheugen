@@ -1,5 +1,5 @@
 {
-  "version": "BRAIN-DELIVERY-v1",
+  "version": "BRAIN-DELIVERY-v2",
   "brainContractVersion": "brain.v1",
   "sharedPaths": [
     "AGENTS.md",
@@ -8,6 +8,8 @@
     "docs/development-",
     "docs/outcome-obligations.md",
     "scripts/brain/",
+    "brain/contracts/",
+    "brain/production/",
     "tools/brain-delivery-system.mjs",
     ".github/workflows/"
   ],
@@ -16,11 +18,11 @@
     "docs/superpowers/"
   ],
   "branchPolicy": {
-    "strategy": "conflict-aware-current-main",
+    "strategy": "conflict-aware-independent-lanes",
     "createFrom": "current-main",
     "rebuildOnMainDrift": false,
-    "syncRequiredWhen": ["merge-conflict", "changed-path-overlap"],
-    "nonOverlappingDriftAction": "merge-with-current-main",
+    "syncRequiredWhen": ["merge-conflict", "changed-path-overlap", "declared-dependency-conflict"],
+    "nonOverlappingDriftAction": "keep-tested-candidate",
     "preferredWriteMode": "atomic-tree-commit",
     "maxRebuildsForNonOverlappingDrift": 0
   },
@@ -42,14 +44,27 @@
       "owner": "agent-website-ux",
       "paths": ["components/", "assets/", "pages/", "site/", "index.html", "styles.css", "script.js"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
+    },
+    {
+      "id": "automation",
+      "owner": "agent-integration-make",
+      "paths": ["automation/", "make/", "notion/"],
+      "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     }
   ],
   "integration": {
     "owner": "agent-reliability",
-    "singleCandidate": true,
+    "singleCandidate": false,
+    "independentPromotion": true,
     "exactShaRequired": true,
     "productionAuthority": "BG169",
     "outcomeRouter": "BG168",
-    "currentStateProjection": "BG167"
+    "currentStateProjection": "BG167",
+    "errorLedger": "BG166"
+  },
+  "registration": {
+    "required": true,
+    "autoDiscover": true,
+    "appliesTo": ["app", "agent", "make_scenario", "github_workflow", "website", "portal", "backend", "service", "notion_projection"]
   }
 }
