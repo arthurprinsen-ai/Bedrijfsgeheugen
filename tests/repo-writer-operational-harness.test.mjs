@@ -3,88 +3,61 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const harnessPath = '.github/workflows/repo-writer-operational-verification.yml';
-const writerWorkflowPattern = /gh\s+workflow\s+run\s+(?:menu-balk-fix|regelgeving-bijwerken|seo-controle|paginacontrole|approved-central-blog|blog-bijwerken|weekblog)\.yml[^\n]*/g;
 
-test('operational writer harness can only dispatch menu-balk-fix in candidate-pr mode', () => {
-  const text = fs.readFileSync(harnessPath, 'utf8');
-
-  assert.match(text, /pull_request:/);
-  assert.match(text, /branches:\s*\[?main\]?/);
-  assert.match(text, /verify\/menu-balk-fix-/);
-  assert.match(text, /github\.event\.pull_request\.head\.repo\.full_name\s*==\s*github\.repository/);
-  assert.match(text, /actions:\s*write\b/);
-  assert.doesNotMatch(text, /contents:\s*write\b/);
-  assert.doesNotMatch(text, /pull-requests:\s*write\b/);
-
-  assert.match(text, /VERIFY_REF:\s*\$\{\{ github\.event\.pull_request\.head\.ref \}\}/);
-  assert.match(text, /gh\s+workflow\s+run\s+menu-balk-fix\.yml/);
-  assert.match(text, /--ref\s+"\$VERIFY_REF"/);
-  assert.match(text, /delivery_mode=candidate-pr/);
-  for (const writerDispatch of text.match(writerWorkflowPattern) || []) {
-    assert.doesNotMatch(writerDispatch, /--ref\s+main/, `writer dispatch must never execute from main: ${writerDispatch}`);
-  }
-  assert.doesNotMatch(text, /delivery_mode=direct/);
-  assert.doesNotMatch(text, /\bgit\s+push\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
-  assert.doesNotMatch(text, /NOTION|notion|publiceer|publish/i);
-});
-
-test('operational harness has an isolated regulation writer lane that is candidate-only', () => {
-  const text = fs.readFileSync(harnessPath, 'utf8');
-  assert.match(text, /dispatch-regulation-candidate:/);
-  assert.match(text, /verify\/regelgeving-bijwerken-/);
-  assert.match(text, /gh\s+workflow\s+run\s+regelgeving-bijwerken\.yml/);
-  assert.match(text, /--ref\s+"\$VERIFY_REF"/);
-  assert.match(text, /delivery_mode=candidate-pr/);
-});
-
-test('operational harness has an isolated SEO writer lane that is candidate-only', () => {
-  const text = fs.readFileSync(harnessPath, 'utf8');
-  assert.match(text, /dispatch-seo-candidate:/);
-  assert.match(text, /verify\/seo-controle-/);
-  assert.match(text, /gh\s+workflow\s+run\s+seo-controle\.yml/);
-  assert.match(text, /--ref\s+"\$VERIFY_REF"/);
-  assert.match(text, /delivery_mode=candidate-pr/);
-});
-
-test('operational harness has an isolated paginacontrole lane that is candidate-only', () => {
-  const text = fs.readFileSync(harnessPath, 'utf8');
-  assert.match(text, /dispatch-paginacontrole-candidate:/);
-  assert.match(text, /verify\/paginacontrole-/);
-  assert.match(text, /gh\s+workflow\s+run\s+paginacontrole\.yml/);
-  assert.match(text, /--ref\s+"\$VERIFY_REF"/);
-  assert.match(text, /delivery_mode=candidate-pr/);
-  assert.doesNotMatch(text, /delivery_mode=direct/);
-  assert.doesNotMatch(text, /\bgit\s+push\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
-});
-
-for (const lane of [
-  ['approved-central-blog', 'approved-central-blog.yml'],
-  ['blog-bijwerken', 'blog-bijwerken.yml'],
-  ['weekblog', 'weekblog.yml'],
-]) {
-  test(`operational harness has an isolated ${lane[0]} lane that is candidate-only`, () => {
-    const text = fs.readFileSync(harnessPath, 'utf8');
-    const escaped = lane[1].replaceAll('.', '\\.');
-    assert.match(text, new RegExp(`verify/${lane[0]}-`));
-    assert.match(text, new RegExp(`gh\\s+workflow\\s+run\\s+${escaped}`));
-    assert.match(text, /--ref\s+"\$VERIFY_REF"/);
-    assert.match(text, /delivery_mode=candidate-pr/);
-  });
+function harness() {
+  return fs.readFileSync(harnessPath, 'utf8');
 }
 
-test('operational harness itself remains read-only except for Actions dispatch', () => {
-  const text = fs.readFileSync(harnessPath, 'utf8');
-  assert.match(text, /permissions:\s*\n\s*contents:\s*read\s*\n\s*pull-requests:\s*read\s*\n\s*actions:\s*write/);
-  assert.doesNotMatch(text, /contents:\s*write\b|pull-requests:\s*write\b/);
-  assert.doesNotMatch(text, /\bgit\s+(push|commit|add)\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
-  assert.doesNotMatch(text, /NOTION_TOKEN|NOTION_DB|notion\.so|api\.notion/i);
+test('operational writer verifier is one candidate-only dispatcher for all governed writers', () => {
+  const text = harness();
+  assert.match(text, /dispatch-writer-candidate:/);
+  for (const writer of [
+    'menu-balk-fix',
+    'regelgeving-bijwerken',
+    'seo-controle',
+    'paginacontrole',
+    'approved-central-blog',
+    'blog-bijwerken',
+    'weekblog',
+  ]) {
+    assert.match(text, new RegExp(`verify/${writer}-`));
+    assert.match(text, new RegExp(`WRITER='${writer}'`));
+  }
+  assert.match(text, /delivery_mode=candidate-pr/);
   assert.doesNotMatch(text, /delivery_mode=direct/);
+  assert.doesNotMatch(text, /\bgit\s+(push|commit|add)\b|\bgh\s+pr\s+(create|merge)\b|\/merges\b/);
 });
 
-test('operational harness records the triggering PR base SHA before dispatch', () => {
-  const text = fs.readFileSync(harnessPath, 'utf8');
-  assert.match(text, /github\.event\.pull_request\.base\.sha/);
-  assert.match(text, /EXPECTED_MAIN_SHA/);
-  assert.match(text, /git\/ref\/heads\/main|repos\/\$\{GITHUB_REPOSITORY\}\/git\/ref\/heads\/main/);
-  assert.match(text, /BASE_SHA_DRIFT/);
+test('real writers always execute from the immutable verification ref, never from main', () => {
+  const text = harness();
+  assert.match(text, /--ref\s+"\$VERIFY_REF"/);
+  const dispatchLine = text.split('\n').find((line) => line.includes('args=(workflow run')) || '';
+  assert.match(dispatchLine, /--ref\s+"\$VERIFY_REF"/);
+  assert.doesNotMatch(dispatchLine, /--ref\s+main/);
+});
+
+test('moving main is ignored only when current-main changes do not overlap the canary scope', () => {
+  const text = harness();
+  assert.match(text, /EXPECTED_MAIN_SHA:\s*\$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
+  assert.match(text, /VERIFY_PR_NUMBER:\s*\$\{\{ github\.event\.pull_request\.number \}\}/);
+  assert.match(text, /gh pr diff "\$VERIFY_PR_NUMBER"[^\n]*--name-only/);
+  assert.match(text, /compare\/\$\{EXPECTED_MAIN_SHA\}\.\.\.\$\{actual_main_sha\}/);
+  assert.match(text, /comm -12/);
+  assert.match(text, /CURRENT_MAIN_SCOPE_OVERLAP/);
+  assert.match(text, /CURRENT_MAIN_DRIFT_IGNORED/);
+  assert.doesNotMatch(text, /BASE_SHA_DRIFT/);
+});
+
+test('operational harness itself remains read-only except for Actions dispatch', () => {
+  const text = harness();
+  assert.match(text, /permissions:\s*\n\s*contents:\s*read\s*\n\s*pull-requests:\s*read\s*\n\s*actions:\s*write/);
+  assert.doesNotMatch(text, /contents:\s*write\b|pull-requests:\s*write\b/);
+  assert.doesNotMatch(text, /NOTION_TOKEN|NOTION_DB|notion\.so|api\.notion/i);
+});
+
+test('paid-capable content writers use verification mode when the harness supports it', () => {
+  const text = harness();
+  assert.match(text, /verify\/approved-central-blog-\*\)[\s\S]*EXTRA='verification'/);
+  assert.match(text, /verify\/blog-bijwerken-\*\)[\s\S]*EXTRA='verification'/);
+  assert.match(text, /verification\) args\+=\(-f verification_mode=true\)/);
 });

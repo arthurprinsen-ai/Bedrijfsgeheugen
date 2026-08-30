@@ -11,212 +11,101 @@ permissions:
   actions: write
 
 jobs:
-  dispatch-menu-balk-candidate:
-    if: startsWith(github.head_ref, 'verify/menu-balk-fix-') && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Verify exact main base
-        shell: bash
-        run: |
-          set -euo pipefail
-          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
-            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
-            exit 1
-          fi
-      - name: Dispatch existing menu writer in candidate mode only
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run menu-balk-fix.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
-
-  dispatch-regulation-candidate:
-    if: startsWith(github.head_ref, 'verify/regelgeving-bijwerken-') && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Verify exact main base
-        shell: bash
-        run: |
-          set -euo pipefail
-          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
-            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
-            exit 1
-          fi
-      - name: Dispatch existing regulation writer in candidate mode only
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run regelgeving-bijwerken.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
-
-  dispatch-seo-candidate:
-    if: startsWith(github.head_ref, 'verify/seo-controle-') && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Verify exact main base
-        shell: bash
-        run: |
-          set -euo pipefail
-          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
-            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
-            exit 1
-          fi
-      - name: Dispatch existing SEO writer in candidate mode only
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run seo-controle.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f alles=true -f delivery_mode=candidate-pr
-
-  dispatch-paginacontrole-candidate:
-    if: startsWith(github.head_ref, 'verify/paginacontrole-') && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Verify exact main base
-        shell: bash
-        run: |
-          set -euo pipefail
-          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
-            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
-            exit 1
-          fi
-      - name: Dispatch existing paginacontrole in candidate mode only
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run paginacontrole.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
-
-  dispatch-approved-central-blog-candidate:
-    if: startsWith(github.head_ref, 'verify/approved-central-blog-') && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Verify exact main base
-        shell: bash
-        run: |
-          set -euo pipefail
-          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
-            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
-            exit 1
-          fi
-      - name: Dispatch approved central blog writer in candidate mode only
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run approved-central-blog.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr -f verification_mode=true
-
-  dispatch-blog-bijwerken-candidate:
-    if: startsWith(github.head_ref, 'verify/blog-bijwerken-') && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Verify exact main base
-        shell: bash
-        run: |
-          set -euo pipefail
-          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
-            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
-            exit 1
-          fi
-      - name: Dispatch blog updater in candidate mode only
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run blog-bijwerken.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr -f verification_mode=true
-
-  dispatch-weekblog-candidate:
-    if: startsWith(github.head_ref, 'verify/weekblog-') && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - name: Verify exact main base
-        shell: bash
-        run: |
-          set -euo pipefail
-          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          if [ "$actual_main_sha" != "$EXPECTED_MAIN_SHA" ]; then
-            echo "::error::BASE_SHA_DRIFT:$EXPECTED_MAIN_SHA:$actual_main_sha"
-            exit 1
-          fi
-      - name: Dispatch weekblog writer in candidate mode only
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run weekblog.yml --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr
-
-  handoff-shadow-after-writer:
-    needs:
-      - dispatch-menu-balk-candidate
-      - dispatch-regulation-candidate
-      - dispatch-seo-candidate
-      - dispatch-paginacontrole-candidate
-      - dispatch-approved-central-blog-candidate
-      - dispatch-blog-bijwerken-candidate
-      - dispatch-weekblog-candidate
+  dispatch-writer-candidate:
     if: >-
-      always() && github.event.pull_request.head.repo.full_name == github.repository &&
-      (startsWith(github.head_ref, 'verify/paginacontrole-') ||
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (startsWith(github.head_ref, 'verify/menu-balk-fix-') ||
        startsWith(github.head_ref, 'verify/regelgeving-bijwerken-') ||
        startsWith(github.head_ref, 'verify/seo-controle-') ||
+       startsWith(github.head_ref, 'verify/paginacontrole-') ||
+       startsWith(github.head_ref, 'verify/approved-central-blog-') ||
+       startsWith(github.head_ref, 'verify/blog-bijwerken-') ||
        startsWith(github.head_ref, 'verify/weekblog-'))
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
+      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
       VERIFY_REF: ${{ github.event.pull_request.head.ref }}
       VERIFY_SHA: ${{ github.event.pull_request.head.sha }}
+      VERIFY_PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
-      - name: Resolve exact writer candidate PR
-        id: candidate
+      - name: Resolve writer contract
+        id: writer
         shell: bash
         run: |
           set -euo pipefail
           case "$VERIFY_REF" in
-            verify/paginacontrole-*) WRITER='paginacontrole' ;;
-            verify/regelgeving-bijwerken-*) WRITER='regelgeving-bijwerken' ;;
-            verify/seo-controle-*) WRITER='seo-controle' ;;
-            verify/weekblog-*) WRITER='weekblog' ;;
+            verify/menu-balk-fix-*)
+              WRITER='menu-balk-fix'; WORKFLOW='menu-balk-fix.yml'; GENERIC_SHADOW='false'; EXTRA='none' ;;
+            verify/regelgeving-bijwerken-*)
+              WRITER='regelgeving-bijwerken'; WORKFLOW='regelgeving-bijwerken.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
+            verify/seo-controle-*)
+              WRITER='seo-controle'; WORKFLOW='seo-controle.yml'; GENERIC_SHADOW='true'; EXTRA='seo-all' ;;
+            verify/paginacontrole-*)
+              WRITER='paginacontrole'; WORKFLOW='paginacontrole.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
+            verify/approved-central-blog-*)
+              WRITER='approved-central-blog'; WORKFLOW='approved-central-blog.yml'; GENERIC_SHADOW='false'; EXTRA='verification' ;;
+            verify/blog-bijwerken-*)
+              WRITER='blog-bijwerken'; WORKFLOW='blog-bijwerken.yml'; GENERIC_SHADOW='false'; EXTRA='verification' ;;
+            verify/weekblog-*)
+              WRITER='weekblog'; WORKFLOW='weekblog.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
             *) echo "::error::UNSUPPORTED_VERIFY_REF:$VERIFY_REF"; exit 1 ;;
           esac
           echo "writer=$WRITER" >> "$GITHUB_OUTPUT"
+          echo "workflow=$WORKFLOW" >> "$GITHUB_OUTPUT"
+          echo "generic_shadow=$GENERIC_SHADOW" >> "$GITHUB_OUTPUT"
+          echo "extra=$EXTRA" >> "$GITHUB_OUTPUT"
 
+      - name: Verify current-main scope compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$actual_main_sha" = "$EXPECTED_MAIN_SHA" ]; then
+            echo "CURRENT_MAIN_EXACT:$actual_main_sha"
+            exit 0
+          fi
+
+          pr_files="$(gh pr diff "$VERIFY_PR_NUMBER" --repo "$GITHUB_REPOSITORY" --name-only | sort -u)"
+          main_files="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${EXPECTED_MAIN_SHA}...${actual_main_sha}" --jq '.files[].filename' | sort -u)"
+          overlap="$(comm -12 <(printf '%s\n' "$pr_files" | sed '/^$/d') <(printf '%s\n' "$main_files" | sed '/^$/d') || true)"
+
+          if [ -n "$overlap" ]; then
+            echo "::error::CURRENT_MAIN_SCOPE_OVERLAP:$EXPECTED_MAIN_SHA:$actual_main_sha"
+            printf '%s\n' "$overlap"
+            exit 1
+          fi
+
+          echo "CURRENT_MAIN_DRIFT_IGNORED:$EXPECTED_MAIN_SHA:$actual_main_sha"
+          echo "Reason: independent BRAIN v2 lane; no changed-path overlap with current main."
+
+      - name: Dispatch real writer in candidate mode only
+        shell: bash
+        env:
+          WORKFLOW: ${{ steps.writer.outputs.workflow }}
+          EXTRA: ${{ steps.writer.outputs.extra }}
+        run: |
+          set -euo pipefail
+          args=(workflow run "$WORKFLOW" --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr)
+          case "$EXTRA" in
+            none) ;;
+            seo-all) args+=(-f alles=true) ;;
+            verification) args+=(-f verification_mode=true) ;;
+            *) echo "::error::UNSUPPORTED_WRITER_EXTRA:$EXTRA"; exit 1 ;;
+          esac
+          gh "${args[@]}"
+
+      - name: Resolve exact writer candidate PR
+        id: candidate
+        if: steps.writer.outputs.generic_shadow == 'true'
+        shell: bash
+        env:
+          WRITER: ${{ steps.writer.outputs.writer }}
+        run: |
+          set -euo pipefail
           PR_NUMBER=""
-          for attempt in $(seq 1 12); do
+          for attempt in $(seq 1 72); do
             matches="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --limit 100 --json number,headRefName,body | jq -r --arg prefix "writer/$WRITER/" --arg verify "$VERIFY_SHA" '.[] | select(.headRefName | startswith($prefix)) | select((.body // "") | contains($verify)) | .number')"
             count="$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')"
             if [ "$count" -gt 1 ]; then
@@ -248,6 +137,7 @@ jobs:
           echo "head_ref=$PR_HEAD_REF" >> "$GITHUB_OUTPUT"
 
       - name: Dispatch immutable read-only shadow
+        if: steps.writer.outputs.generic_shadow == 'true'
         shell: bash
         env:
           PR_NUMBER: ${{ steps.candidate.outputs.pr_number }}
