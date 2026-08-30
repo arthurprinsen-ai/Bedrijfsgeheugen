@@ -234,6 +234,12 @@ A real governance gap was found: Shared Agent Memory CI protected `automation/**
 
 The first run after closing that gap correctly went RED and exposed a test-quality issue: the memory assertion searched for `production evidence` case-sensitively while the ledger contained `Production evidence`. The repair was to make that semantic evidence assertion case-insensitive instead of changing valid production documentation merely to satisfy casing. Reusable rule: contract tests should be strict on meaning, identifiers, invariants and exact machine values, but not accidentally brittle on irrelevant prose capitalization.
 
+A deeper governance failure was then found in our own execution path. The BRAIN already contained `NEVER_TDD_DIRECTLY_ON_MAIN`, but handmatige GitHub connector-writes hadden eerder toch `main` gewijzigd omdat `branch` niet expliciet was opgegeven. Directe GitHub-readback liet zien dat `main` op dat moment `protected:false` was en dat native ruleset-enforcement ontbrak. Daardoor was de documentair/machineleesbaar bekende candidate-only regel niet genoeg om een geautoriseerde connector-write technisch te stoppen.
+
+Nieuwe verplichte regel: `MANUAL_CONNECTOR_WRITES_REQUIRE_CANDIDATE_BRANCH` / `REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES`. Voor iedere materiële handmatige repository-mutatie moet vóór de eerste write een niet-main candidate branch vanaf actuele `main` bestaan en moet die branch expliciet aan `create_file`, `update_file` of `delete_file` worden meegegeven. Een geautoriseerde connector bewijst alleen schrijfrecht; hij bewijst geen governed delivery. RED/GREEN, exact-SHA verificatie en promotie blijven op de candidate/PR-route. Het weglaten van `branch` of expliciet schrijven naar `main` is een governancefout, ook wanneer de write technisch slaagt en CI daarna groen wordt.
+
+Native branch protection is een aparte evidenceklasse. Repositorytests of agentregels mogen nooit impliceren dat GitHub zelf writes blokkeert wanneer actuele platform-readback `protected:false` toont. Tot native protection aantoonbaar aan staat, moeten agents de candidate-only connectorregel fail-closed toepassen en platform protection als afzonderlijke control-status blijven rapporteren.
+
 ## Development-speed rules
 
 To make future work faster:
