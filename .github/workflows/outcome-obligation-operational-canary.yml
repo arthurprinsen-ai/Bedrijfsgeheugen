@@ -1,0 +1,61 @@
+name: Outcome Obligation Operational Canary
+
+on:
+  push:
+    branches:
+      - verify/outcome-obligation-durable-runtime-20260830
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact canary head
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Verify focused durable runtime contracts
+        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs
+
+      - name: Run one durable performance obligation
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$SUPABASE_URL"
+          test -n "$SUPABASE_SERVICE_ROLE_KEY"
+          mkdir -p .artifacts
+          node tools/outcome-obligation-runtime.mjs sweep \
+            --obligation supabase-performance-evidence-daily \
+            --trigger-type scheduled-sweep \
+            --fingerprint operational-canary \
+            --output .artifacts/outcome-obligation-canary.json
+          node --input-type=module - <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          const artifact = JSON.parse(await readFile('.artifacts/outcome-obligation-canary.json', 'utf8'));
+          if (artifact.mode !== 'durable-supabase') throw new Error(`unexpected mode: ${artifact.mode}`);
+          if (artifact.productionMutation !== false) throw new Error('productionMutation must remain false');
+          if (artifact.decisions?.length !== 1) throw new Error('expected exactly one decision');
+          const decision = artifact.decisions[0];
+          if (decision.obligationId !== 'supabase-performance-evidence-daily') throw new Error('wrong obligation');
+          if (decision.ownerAgent !== 'agent-performance') throw new Error('wrong owner');
+          if (decision.status !== 'AWAITING_OUTCOME') throw new Error(`unexpected status: ${decision.status}`);
+          console.log(JSON.stringify({mode:artifact.mode,status:decision.status,idempotencyKey:decision.idempotencyKey,traceId:decision.traceId}));
+          NODE
+
+      - name: Upload immutable canary evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: outcome-obligation-operational-canary-${{ github.run_id }}
+          path: .artifacts/outcome-obligation-canary.json
+          if-no-files-found: error
+          retention-days: 30
