@@ -69,6 +69,26 @@ test('migrated low-risk writers are candidate-only PR writers', () => {
   }
 });
 
+test('writer-created PRs explicitly dispatch immutable shadow verification with exact identity', () => {
+  const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
+  assert.match(shadow, /workflow_dispatch:/, 'shadow verifier must support explicit dispatch because GITHUB_TOKEN PRs do not recursively trigger Actions');
+  for (const input of ['pr_number', 'base_sha', 'head_sha', 'head_ref']) {
+    assert.match(shadow, new RegExp(`${input}:`), `shadow verifier must require ${input}`);
+  }
+  assert.match(shadow, /github\.event\.inputs\.head_sha|inputs\.head_sha/, 'shadow checkout must bind exact dispatched head sha');
+  assert.match(shadow, /GITHUB_PR_BASE_SHA:[\s\S]*?(github\.event\.inputs\.base_sha|inputs\.base_sha)/);
+  assert.match(shadow, /GITHUB_PR_HEAD_SHA:[\s\S]*?(github\.event\.inputs\.head_sha|inputs\.head_sha)/);
+  assert.match(shadow, /GITHUB_HEAD_REF:[\s\S]*?(github\.event\.inputs\.head_ref|inputs\.head_ref)/);
+
+  const approved = text['approved-central-blog'];
+  assert.match(approved, /gh workflow run repo-writer-candidate-shadow\.yml/,
+    'writer must explicitly dispatch shadow verification after creating its candidate PR');
+  assert.match(approved, /-f pr_number=/);
+  assert.match(approved, /-f base_sha=/);
+  assert.match(approved, /-f head_sha=/);
+  assert.match(approved, /-f head_ref=/);
+});
+
 test('current permission boundary fails writer readiness closed without claiming parity or rollback', () => {
   const state = JSON.parse(fs.readFileSync('config/repository-writer-migration.json', 'utf8'));
   assert.equal(state.prCreationBoundary?.status, 'BLOCKED_HARD_BOUNDARY');
