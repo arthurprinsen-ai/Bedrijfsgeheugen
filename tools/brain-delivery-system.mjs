@@ -3,6 +3,7 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { DEFAULT_AGENT_TEAM } from '../platform/agents/agent-team.mjs';
+import { validatePlatformRegistry } from '../platform/delivery/platform-registry.mjs';
 
 function unique(values) {
   return [...new Set(values)];
@@ -86,13 +87,15 @@ export function evaluateNetlifyDeploySource({ gitDir, gitCommonDir, headSha, exp
   return Object.freeze({ ok:true, state:'DEPLOY_SOURCE_READY', action:'DEPLOY_EXACT_SHA', headSha:actualHead, treeSha:tree });
 }
 
-export function discoverBrainMembership({ registeredComponents = [], agents = [], workflows = [] }) {
+export function discoverBrainMembership({ registeredComponents = [], agents = [], workflows = [], platforms = [] }) {
   const rows = [];
   for (const component of registeredComponents) rows.push({ componentKey:`brain:${component.key}`, kind:'BRAIN_COMPONENT', active:component.status === 'active' });
   for (const agent of agents) rows.push({ componentKey:`agent:${agent.id}`, kind:'AGENT', active:true });
   for (const workflow of workflows) rows.push({ componentKey:`github-workflow:${basename(workflow).replace(/\.ya?ml$/i, '')}`, kind:'DELIVERY_SCENARIO', active:true });
+  for (const platform of platforms) if (platform?.status === 'active') rows.push({ componentKey:`platform:${String(platform.platform||'').trim().toLowerCase()}`, kind:'PLATFORM', active:true });
   const seen = new Set();
   return Object.freeze(rows.map(row => {
+    if (!row.componentKey || row.componentKey.endsWith(':')) throw new Error('Brain member key is required');
     if (seen.has(row.componentKey)) throw new Error(`duplicate Brain member: ${row.componentKey}`);
     seen.add(row.componentKey);
     return Object.freeze({ ...row, brainContractVersion:'brain.v1', sharedContextRequired:true, outcomeWritebackRequired:true, costManaged:true, securityGoverned:true, productionAuthority:'BG169', continuousDelivery:true });
@@ -100,9 +103,14 @@ export function discoverBrainMembership({ registeredComponents = [], agents = []
 }
 
 async function repositoryMembership() {
-  const registry = JSON.parse(await readFile('docs/brain/component-registry.json', 'utf8'));
+  const [registry, platformRegistry, policy] = await Promise.all([
+    readFile('docs/brain/component-registry.json', 'utf8').then(JSON.parse),
+    readFile('config/brain-platform-registry.json', 'utf8').then(JSON.parse),
+    readFile('config/brain-delivery-system.json', 'utf8').then(JSON.parse),
+  ]);
+  validatePlatformRegistry(platformRegistry, policy.platformPolicy?.knownRequiredPlatforms || []);
   const workflowNames = (await readdir('.github/workflows')).filter(name => /\.ya?ml$/i.test(name)).map(name => `.github/workflows/${name}`);
-  return discoverBrainMembership({ registeredComponents:registry.components, agents:DEFAULT_AGENT_TEAM, workflows:workflowNames });
+  return discoverBrainMembership({ registeredComponents:registry.components, agents:DEFAULT_AGENT_TEAM, workflows:workflowNames, platforms:platformRegistry.platforms });
 }
 
 async function main() {
