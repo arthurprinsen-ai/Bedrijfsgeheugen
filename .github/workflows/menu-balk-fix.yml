@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 concurrency:
   group: repo-schrijven
@@ -111,6 +112,7 @@ jobs:
           git push origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
+        id: candidate_pr
         if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -118,16 +120,37 @@ jobs:
           BASE_SHA: ${{ steps.base.outputs.sha }}
         run: |
           set -euo pipefail
-          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
-          if [ -n "$existing" ]; then
-            echo "Candidate PR bestaat al: #$existing"
-            exit 0
+          pr_number=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr_number" ]; then
+            pr_url=$(gh pr create \
+              --base main \
+              --head "$CANDIDATE_BRANCH" \
+              --title "Menu-balk candidate $GITHUB_RUN_ID" \
+              --body "BRAIN-DELIVERY-v2 candidate uit menu-balk-fix. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit.")
+            pr_number="${pr_url##*/}"
+          else
+            echo "Candidate PR bestaat al: #$pr_number"
           fi
-          gh pr create \
-            --base main \
-            --head "$CANDIDATE_BRANCH" \
-            --title "Menu-balk candidate $GITHUB_RUN_ID" \
-            --body "BRAIN-DELIVERY-v2 candidate uit menu-balk-fix. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit."
+          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch read-only shadow verification
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          PR_NUMBER: ${{ steps.candidate_pr.outputs.pr_number }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          HEAD_SHA: ${{ steps.candidate_pr.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          gh workflow run repo-writer-candidate-shadow.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$BASE_SHA" \
+            -f head_sha="$HEAD_SHA" \
+            -f candidate_branch="$CANDIDATE_BRANCH"
 
       - name: BRAIN v2 handoff evidence
         if: steps.commit.outputs.changed == 'true'
