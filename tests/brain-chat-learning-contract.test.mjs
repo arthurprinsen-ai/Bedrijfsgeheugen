@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { loadDeliveryPreflight } from '../tools/delivery-preflight.mjs';
 
 const requiredLessonIds = [
   'STALE_MAIN_REBUILD_DONT_FORCE',
@@ -42,9 +43,27 @@ test('chat-derived failures are machine-readable reusable BRAIN lessons', async 
   }
 });
 
-test('every agent is explicitly required to load chat learning before material work', async () => {
-  const agents = await readFile('AGENTS.md', 'utf8');
-  assert.match(agents, /config\/brain-chat-learning-contract\.json/);
-  assert.match(agents, /fingerprint[^\n]{0,160}(vóór|voor|before)[^\n]{0,160}(uitvoering|execution)/i);
-  assert.match(agents, /(zelfde|same)[^\n]{0,120}(fout|failure)[^\n]{0,120}(blokkeer|block|prevent)/i);
+test('mandatory delivery preflight reuses every chat-derived lesson before expensive work', async () => {
+  const [agents, workflow, preflightSource] = await Promise.all([
+    readFile('AGENTS.md', 'utf8'),
+    readFile('.github/workflows/unified-brain-delivery.yml', 'utf8'),
+    readFile('tools/delivery-preflight.mjs', 'utf8')
+  ]);
+  assert.match(agents, /controleer bestaande fouten[^\n]{0,120}fingerprint/i);
+  assert.match(agents, /Eerst bestaande kennis lezen, daarna pas debuggen/i);
+  assert.match(workflow, /Reuse proven delivery lessons before expensive work/);
+  assert.match(workflow, /node tools\/delivery-preflight\.mjs shared/);
+  assert.match(preflightSource, /brain-chat-learning-contract\.json/);
+
+  const decision = await loadDeliveryPreflight({ component: 'shared' });
+  assert.equal(decision.ok, true);
+  const reused = new Set(decision.reusedLessons);
+  const config = JSON.parse(await readFile('config/brain-chat-learning-contract.json', 'utf8'));
+  for (const lesson of config.lessons) assert.ok(reused.has(lesson.fingerprint), `preflight did not reuse ${lesson.id}`);
+});
+
+test('every chat-derived prevention rule is active in the canonical prevention registry', async () => {
+  const rules = JSON.parse(await readFile('config/delivery-prevention-rules.json', 'utf8'));
+  const active = new Set((rules.rules || []).filter((rule) => rule.active === true).map((rule) => rule.id));
+  for (const id of requiredLessonIds) assert.ok(active.has(id), `prevention rule not active: ${id}`);
 });
