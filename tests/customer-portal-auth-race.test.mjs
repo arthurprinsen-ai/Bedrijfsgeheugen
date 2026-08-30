@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import { repairCustomerPortalAuth } from '../tools/customer-portal-auth-race.mjs';
 
 const source = `(function(){
@@ -53,9 +52,12 @@ test('customer auth persists and refreshes before showing login again', () => {
   assert.match(html, /herstelAuth\(s\)\.catch\(function\(\)\{ toonInlog\(s\); \}\)/);
 });
 
-test('checked-in customer portal source already contains persistent auth before the Netlify build starts', () => {
-  const portal = readFileSync(new URL('../klantportaal.html', import.meta.url), 'utf8');
-  assert.match(portal, /AUTH_STORE\s*=\s*'bg_customer_auth'/);
-  assert.match(portal, /localStorage\.setItem\(AUTH_STORE, JSON\.stringify\(sessie\)\)/);
-  assert.match(portal, /herstelAuth\(s\)/);
+test('iOS in-app browser gets a first-party cookie fallback when localStorage is not retained', () => {
+  const html = repairCustomerPortalAuth(source);
+  assert.match(html, /AUTH_COOKIE\s*=\s*'bg_customer_auth'/);
+  assert.match(html, /document\.cookie\s*=\s*AUTH_COOKIE/);
+  assert.match(html, /Max-Age=2592000/);
+  assert.match(html, /SameSite=Lax/);
+  assert.match(html, /Secure/);
+  assert.match(html, /leesCookieAuth\(\)/);
 });
