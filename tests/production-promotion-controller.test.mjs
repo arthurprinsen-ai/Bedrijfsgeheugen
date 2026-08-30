@@ -31,24 +31,20 @@ const base = {
   production_status: 'not_started'
 };
 
-test('paginacontrole publication paths synchronize with current main without stale-worktree races', async () => {
+test('paginacontrole publication paths remain candidate-only until promotion authority acts', async () => {
   const workflow = await readFile(new URL('../.github/workflows/paginacontrole.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /default:\s*candidate-pr/);
+  assert.doesNotMatch(workflow, /git pull --rebase origin main/);
+  assert.doesNotMatch(workflow, /git push origin HEAD:main/);
   const sourceStart = workflow.indexOf('- name: Bekende SEO-bronfouten automatisch herstellen');
   const sourceEnd = workflow.indexOf('- name: Playwright installeren', sourceStart);
   assert.ok(sourceStart >= 0 && sourceEnd > sourceStart, 'source-repair step must exist');
-  const sourceRepair = workflow.slice(sourceStart, sourceEnd);
-  assert.match(sourceRepair, /git pull --rebase origin main/);
-  assert.match(sourceRepair, /git push(?: origin HEAD:main)?/);
-
-  const stepStart = workflow.indexOf('- name: seo-status.json verwerken als hij is veranderd');
-  const stepEnd = workflow.indexOf('- name: Candidate branch en PR publiceren', stepStart);
-  assert.ok(stepStart >= 0 && stepEnd > stepStart, 'seo-status publication step must exist');
-  const statusPublication = workflow.slice(stepStart, stepEnd);
-  assert.match(statusPublication, /git fetch origin main/);
-  assert.match(statusPublication, /git reset --hard origin\/main/);
-  assert.match(statusPublication, /cp \/tmp\/seo-status\.json seo-status\.json/);
-  assert.match(statusPublication, /git push origin HEAD:main/);
-  assert.doesNotMatch(statusPublication, /git pull --rebase origin main/);
+  assert.match(workflow.slice(sourceStart, sourceEnd), /blijft lokaal in de candidate/);
+  const candidateStart = workflow.indexOf('- name: Candidate branch en PR publiceren');
+  assert.ok(candidateStart >= 0, 'candidate publication step must exist');
+  const candidate = workflow.slice(candidateStart);
+  assert.match(candidate, /createWriterCandidate/);
+  assert.match(candidate, /gh pr create/);
 });
 
 test('green exact candidate is ready for exact-SHA promotion', () => {

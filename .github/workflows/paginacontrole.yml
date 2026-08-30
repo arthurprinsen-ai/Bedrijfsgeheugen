@@ -19,12 +19,11 @@ on:
   workflow_dispatch:
     inputs:
       delivery_mode:
-        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        description: 'BRAIN v2 staat alleen gecontroleerde candidate PR delivery toe'
         type: choice
         required: true
-        default: direct
+        default: candidate-pr
         options:
-          - direct
           - candidate-pr
   schedule:
     - cron: '0 5 * * 1'
@@ -62,7 +61,7 @@ jobs:
         if: github.event_name != 'pull_request'
         shell: bash
         env:
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
+          DELIVERY_MODE: candidate-pr
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -142,12 +141,7 @@ jobs:
               blog/offertes-opvolgen-zonder-crm/index.html \
               blog/afas-api/index.html
             git commit -m "Herstel SEO-bronfouten uit paginacontrole"
-            if [ "$DELIVERY_MODE" = "direct" ]; then
-              git pull --rebase origin main
-              git push origin HEAD:main
-            else
-              echo "SEO-bronfix blijft lokaal in de candidate tot de PR is geverifieerd."
-            fi
+            echo "SEO-bronfix blijft lokaal in de candidate tot de PR is geverifieerd."
           else
             echo "Geen bekende SEO-bronfouten meer te herstellen."
           fi
@@ -171,7 +165,7 @@ jobs:
         if: always() && github.event_name != 'pull_request'
         shell: bash
         env:
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
+          DELIVERY_MODE: candidate-pr
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain seo-status.json)" ]; then
@@ -183,29 +177,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if [ "$DELIVERY_MODE" = "direct" ]; then
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/seo-status.json seo-status.json
-            if git diff --quiet -- seo-status.json; then
-              echo "seo-status.json is al door een parallelle run gepubliceerd"
-              exit 0
-            fi
+          cp /tmp/seo-status.json seo-status.json
+          if ! git diff --quiet -- seo-status.json; then
             git add -- seo-status.json
             git commit -m "seo-status.json bijgewerkt door de SEO-controle"
-            git push origin HEAD:main
-          else
-            cp /tmp/seo-status.json seo-status.json
-            if ! git diff --quiet -- seo-status.json; then
-              git add -- seo-status.json
-              git commit -m "seo-status.json bijgewerkt door de SEO-controle"
-            fi
-            echo "seo-status.json blijft onderdeel van dezelfde candidate PR."
           fi
+          echo "seo-status.json blijft onderdeel van dezelfde candidate PR."
 
       - name: Candidate branch en PR publiceren
         id: candidate
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.delivery_mode == 'candidate-pr'
+        if: always() && github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_SHA: ${{ steps.base.outputs.sha }}
@@ -272,7 +253,7 @@ jobs:
         run: cat rapport.md || echo "geen rapport"
 
       - name: Melding maken bij problemen
-        if: (steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure') && github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.delivery_mode != 'candidate-pr')
+        if: (steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure') && github.event_name == 'push'
         uses: actions/github-script@v8
         with:
           script: |
@@ -296,7 +277,7 @@ jobs:
             }
 
       - name: Melding sluiten als alles goed is
-        if: steps.controle.outcome == 'success' && steps.seo.outcome == 'success' && github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.delivery_mode != 'candidate-pr')
+        if: steps.controle.outcome == 'success' && steps.seo.outcome == 'success' && github.event_name == 'push'
         uses: actions/github-script@v8
         with:
           script: |

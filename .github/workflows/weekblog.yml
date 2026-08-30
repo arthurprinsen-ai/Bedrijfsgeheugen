@@ -12,12 +12,11 @@ on:
         required: false
         default: ''
       delivery_mode:
-        description: 'Publiceer direct of maak alleen een gecontroleerde candidate PR'
+        description: 'BRAIN v2 staat alleen gecontroleerde candidate PR delivery toe'
         type: choice
         required: true
-        default: direct
+        default: candidate-pr
         options:
-          - direct
           - candidate-pr
 
 permissions:
@@ -333,7 +332,7 @@ jobs:
         env:
           SLUG: ${{ steps.kalender.outputs.slug }}
           BASE_SHA: ${{ steps.base.outputs.sha }}
-          DELIVERY_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_mode || 'direct' }}
+          DELIVERY_MODE: candidate-pr
         run: |
           set -euo pipefail
           mapfile -t changed < /tmp/validated-weekblog-files
@@ -367,21 +366,9 @@ jobs:
             echo "delivery=direct" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Direct publiceren op huidige veilige pad
-        if: steps.kalender.outputs.gevonden == 'true' && steps.commit.outputs.delivery == 'direct'
-        run: |
-          set -euo pipefail
-          for attempt in 1 2 3; do
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            git pull --rebase origin main
-          done
-          echo "::error::Push faalde na drie begrensde pogingen"
-          exit 1
 
       - name: Candidate branch publiceren
-        if: steps.kalender.outputs.gevonden == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        if: steps.kalender.outputs.gevonden == 'true'
         env:
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
         run: |
@@ -389,7 +376,7 @@ jobs:
           git push origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
-        if: steps.kalender.outputs.gevonden == 'true' && steps.commit.outputs.delivery == 'candidate-pr'
+        if: steps.kalender.outputs.gevonden == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
@@ -408,34 +395,6 @@ jobs:
             --title "Weekblog candidate: $SLUG" \
             --body "Gecontroleerde candidate uit weekblog. Base SHA: $BASE_SHA. Notion blijft Gepland totdat de wijziging werkelijk is gepromoveerd. Deze workflow merge't zichzelf niet."
 
-      - name: Notion bijwerken na succesvolle directe publicatie
-        if: steps.kalender.outputs.gevonden == 'true' && steps.kalender.outputs.page_id != '' && steps.commit.outputs.delivery == 'direct'
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          PAGE_ID: ${{ steps.kalender.outputs.page_id }}
-          SLUG: ${{ steps.kalender.outputs.slug }}
-        run: |
-          python3 - <<'PY'
-          import json, os, datetime, urllib.request
-
-          vandaag = datetime.date.today().isoformat()
-          body = {"properties": {
-              "Status": {"select": {"name": "Gepubliceerd"}},
-              "Publicatiedatum": {"date": {"start": vandaag}},
-              "URL": {"url": "https://www.bedrijfsgeheugen.nl/blog/%s/" % os.environ["SLUG"]},
-          }}
-          req = urllib.request.Request(
-              "https://api.notion.com/v1/pages/" + os.environ["PAGE_ID"],
-              data=json.dumps(body).encode(),
-              headers={
-                  "Authorization": "Bearer " + os.environ["NOTION_TOKEN"],
-                  "Notion-Version": "2022-06-28",
-                  "Content-Type": "application/json",
-              },
-              method="PATCH")
-          urllib.request.urlopen(req)
-          print("Notion bijgewerkt:", os.environ["SLUG"])
-          PY
 
       - name: Niets te doen
         if: steps.kalender.outputs.gevonden != 'true'
