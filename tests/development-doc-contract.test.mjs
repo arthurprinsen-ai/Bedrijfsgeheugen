@@ -37,6 +37,27 @@ test('ledger contains established material outcome vocabulary', async () => {
   }
 });
 
+test('customer auth recovery is retained as reusable shared-memory knowledge', async () => {
+  const [ledger, architecture] = await Promise.all([
+    readFile('docs/development-ledger.md', 'utf8'),
+    readFile('docs/customer-login-architecture.md', 'utf8')
+  ]);
+  for (const token of [
+    'portal|customer-auth|legacy-inline-login-jitter',
+    'mixed Netlify Identity',
+    'Supabase',
+    'Known failed approaches',
+    'klant-login.html',
+    'iOS',
+    'production evidence',
+    '9041bcb1e5cc4d6732cbc3b0d4879976cef3e350'
+  ]) assert.ok(ledger.includes(token), `customer-auth learning missing ${token}`);
+  assert.match(architecture, /enige klantlogin/);
+  assert.match(architecture, /Netlify Identity/);
+  assert.match(architecture, /symptoompatch/i);
+  assert.match(architecture, /focus/i);
+});
+
 test('production promotion guardian contract is machine enforced', async () => {
   const [agents, os, selfHealing, obligations, policy, obligationPolicy, workflow] = await Promise.all([
     readFile('AGENTS.md', 'utf8'),
