@@ -15,11 +15,15 @@ const source = `(function(){
   });
 
   function toonInlog(s) {
-  var poort = document.getElementById('poort');
-}
+    var poort = document.getElementById('poort');
+  }
 
-.then(function (sessie) { return haalOfferte(sessie.access_token, s).then(function (k) { bewaar(s, k, sessie.access_token); }); })
-        .then(function () { location.reload(); })`;
+  .then(function (sessie) { return haalOfferte(sessie.access_token, s).then(function (k) { bewaar(s, k, sessie.access_token); }); })
+        .then(function () { location.reload(); })
+
+    wissen();
+    toonInlog(s);
+})();`;
 
 test('real customer slug bypasses the legacy Netlify auth controller', () => {
   const html = repairCustomerPortalAuth(source);
@@ -28,13 +32,22 @@ test('real customer slug bypasses the legacy Netlify auth controller', () => {
 
 test('customer login button opens the Supabase customer login instead of becoming inert', () => {
   const html = repairCustomerPortalAuth(source);
-  assert.match(html, /if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\)\{\s*if\(window\.__bgCustomerLogin\) window\.__bgCustomerLogin\(\);\s*return;/s);
-  assert.match(html, /window\.__bgCustomerLogin = function\(\)\{ var s=slug\(\); if\(s\) toonInlog\(s\); \};/);
+  assert.match(html, /window\.__bgCustomerLogin/);
   assert.doesNotMatch(html, /if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\) return;/);
 });
 
-test('successful customer authentication stores the offer and opens the legacy portal directly', () => {
+test('successful customer authentication stores the session and opens the legacy portal directly', () => {
   const html = repairCustomerPortalAuth(source);
-  assert.match(html, /bewaar\(s, k, sessie\.access_token\);[\s\S]*window\.__KLANTEN__\[s\] = k;[\s\S]*toonPortaal\(\{email:mail\}\);/);
+  assert.match(html, /bewaarAuth\(sessie\)/);
+  assert.match(html, /window\.__KLANTEN__\[s\] = k/);
+  assert.match(html, /toonPortaal\(\{email:mail\}\)/);
   assert.doesNotMatch(html, /\.then\(function \(\) \{ location\.reload\(\); \}\)/);
+});
+
+test('customer auth persists and refreshes before showing login again', () => {
+  const html = repairCustomerPortalAuth(source);
+  assert.match(html, /AUTH_STORE\s*=\s*'bg_customer_auth'/);
+  assert.match(html, /localStorage\.setItem\(AUTH_STORE, JSON\.stringify\(sessie\)\)/);
+  assert.match(html, /grant_type=refresh_token/);
+  assert.match(html, /herstelAuth\(s\)\.catch\(function\(\)\{ toonInlog\(s\); \}\)/);
 });
