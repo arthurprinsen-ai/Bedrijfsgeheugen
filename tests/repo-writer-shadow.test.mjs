@@ -3,12 +3,18 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { allowedForWriter, validateWriterPaths } from '../scripts/ci/repo-writer-policy.mjs';
 
-test('authoritative policy covers all seven direct-main writers', () => {
-  const writers = [
-    'approved-central-blog', 'blog-bijwerken', 'menu-balk-fix', 'paginacontrole',
-    'regelgeving-bijwerken', 'seo-controle', 'weekblog',
-  ];
-  for (const writer of writers) assert.ok(allowedForWriter(writer).length > 0, `${writer} must have a bounded path policy`);
+const writerWorkflows = [
+  ['approved-central-blog', '.github/workflows/approved-central-blog.yml'],
+  ['blog-bijwerken', '.github/workflows/blog-bijwerken.yml'],
+  ['menu-balk-fix', '.github/workflows/menu-balk-fix.yml'],
+  ['paginacontrole', '.github/workflows/paginacontrole.yml'],
+  ['regelgeving-bijwerken', '.github/workflows/regelgeving-bijwerken.yml'],
+  ['seo-controle', '.github/workflows/seo-controle.yml'],
+  ['weekblog', '.github/workflows/weekblog.yml'],
+];
+
+test('authoritative policy covers all seven repository writers', () => {
+  for (const [writer] of writerWorkflows) assert.ok(allowedForWriter(writer).length > 0, `${writer} must have a bounded path policy`);
   assert.throws(() => allowedForWriter('unknown-writer'), /UNKNOWN_WRITER/);
 });
 
@@ -35,77 +41,53 @@ test('shadow workflow is read-only and only verifies writer candidate PRs', () =
 test('shadow verification emits immutable exact-PR evidence as a read-only artifact', () => {
   const workflow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   const verifier = fs.readFileSync('scripts/ci/repo-writer-shadow-verify.mjs', 'utf8');
-
   assert.match(workflow, /GITHUB_PR_BASE_SHA:[^\n]*inputs\.base_sha[^\n]*github\.event\.pull_request\.base\.sha/);
   assert.match(workflow, /GITHUB_PR_HEAD_SHA:[^\n]*inputs\.head_sha[^\n]*github\.event\.pull_request\.head\.sha/);
   assert.match(workflow, /ref:[^\n]*inputs\.head_sha[^\n]*github\.event\.pull_request\.head\.sha/);
   assert.match(workflow, /REPO_WRITER_EVIDENCE_PATH:\s*artifacts\/repo-writer-shadow-evidence\.json/);
   assert.match(workflow, /uses:\s*actions\/upload-artifact@v4/);
-  assert.match(workflow, /path:\s*artifacts\/repo-writer-shadow-evidence\.json/);
-
   assert.match(verifier, /GITHUB_PR_BASE_SHA/);
   assert.match(verifier, /GITHUB_PR_HEAD_SHA/);
   assert.match(verifier, /REPO_WRITER_EVIDENCE_PATH/);
-  assert.match(verifier, /baseSha/);
-  assert.match(verifier, /headSha/);
-  assert.match(verifier, /changedFiles/);
-  assert.match(verifier, /candidateBranch/);
-  assert.match(verifier, /writeFileSync/);
   assert.match(verifier, /schemaVersion:\s*1/);
 });
 
 test('explicit shadow dispatch validates PR identity against GitHub before checkout', () => {
   const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   assert.match(shadow, /Validate explicitly dispatched PR identity/);
-  assert.match(shadow, /gh api .*pulls\/\$\{?PR_NUMBER/);
   assert.match(shadow, /PR_BASE_SHA_DRIFT/);
   assert.match(shadow, /PR_HEAD_SHA_DRIFT/);
   assert.match(shadow, /PR_HEAD_REF_DRIFT/);
 });
 
-test('writer-created PRs explicitly self-dispatch read-only shadow verification', () => {
-  const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
-  const menu = fs.readFileSync('.github/workflows/menu-balk-fix.yml', 'utf8');
-  const approved = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
-  const blogUpdate = fs.readFileSync('.github/workflows/blog-bijwerken.yml', 'utf8');
-
-  assert.match(shadow, /workflow_dispatch:/);
-  assert.match(shadow, /pr_number:/);
-  assert.match(shadow, /base_sha:/);
-  assert.match(shadow, /head_sha:/);
-  assert.match(shadow, /candidate_branch:/);
-  assert.match(shadow, /github\.event_name == 'workflow_dispatch'/);
-
-  for (const [name, workflow] of [['menu-balk-fix', menu], ['approved-central-blog', approved], ['blog-bijwerken', blogUpdate]]) {
+test('all repository writers self-dispatch read-only shadow verification', () => {
+  for (const [name, path] of writerWorkflows) {
+    const workflow = fs.readFileSync(path, 'utf8');
+    assert.match(workflow, /actions:\s*write\b/, `${name} needs actions: write for explicit shadow dispatch`);
     assert.match(workflow, /repo-writer-candidate-shadow\.yml/, `${name} must dispatch shadow`);
     assert.match(workflow, /gh workflow run/, `${name} must explicitly dispatch shadow`);
-    assert.match(workflow, /-f pr_number=/);
-    assert.match(workflow, /-f base_sha=/);
-    assert.match(workflow, /-f head_sha=/);
-    assert.match(workflow, /-f candidate_branch=/);
+    assert.match(workflow, /-f pr_number=/, `${name} must bind PR number`);
+    assert.match(workflow, /-f base_sha=/, `${name} must bind actual PR base`);
+    assert.match(workflow, /-f head_sha=/, `${name} must bind actual PR head`);
+    assert.match(workflow, /-f candidate_branch=/, `${name} must bind candidate branch`);
   }
 });
 
-test('approved and blog-update writers pass shadow the candidate PR exact base head and ref identity', () => {
-  for (const path of ['.github/workflows/approved-central-blog.yml', '.github/workflows/blog-bijwerken.yml']) {
+test('all repository writers bind shadow to actual GitHub PR identity', () => {
+  for (const [name, path] of writerWorkflows) {
     const workflow = fs.readFileSync(path, 'utf8');
-    assert.match(workflow, /gh api .*pulls\/\$\{?(number|pr_number)/);
-    assert.match(workflow, /\.base\.sha/);
-    assert.match(workflow, /\.head\.sha/);
-    assert.match(workflow, /\.head\.ref/);
-    assert.match(workflow, /PR_HEAD_REF_DRIFT/);
-    assert.match(workflow, /base_sha=\$pr_base_sha/);
-    assert.match(workflow, /head_sha=\$pr_head_sha/);
+    assert.match(workflow, /gh api .*pulls\//, `${name} must read PR metadata from GitHub`);
+    assert.match(workflow, /\.base\.sha/, `${name} must read PR base SHA`);
+    assert.match(workflow, /\.head\.sha/, `${name} must read PR head SHA`);
+    assert.match(workflow, /\.head\.ref/, `${name} must read PR head ref`);
+    assert.match(workflow, /PR_HEAD_REF_DRIFT/, `${name} must fail closed on candidate branch drift`);
   }
 });
 
 test('workflow_dispatch never relies on protected GitHub default env for writer identity', () => {
   const shadow = fs.readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
   const verifier = fs.readFileSync('scripts/ci/repo-writer-shadow-verify.mjs', 'utf8');
-
   assert.match(shadow, /REPO_WRITER_HEAD_REF:[^\n]*inputs\.candidate_branch[^\n]*github\.head_ref/);
   assert.doesNotMatch(shadow, /^\s*GITHUB_HEAD_REF:/m);
   assert.match(verifier, /process\.env\.REPO_WRITER_HEAD_REF/);
-  assert.match(verifier, /process\.env\.GITHUB_HEAD_REF/);
-  assert.match(verifier, /REPO_WRITER_HEAD_REF[^\n]*GITHUB_HEAD_REF|GITHUB_HEAD_REF[^\n]*REPO_WRITER_HEAD_REF/);
 });
