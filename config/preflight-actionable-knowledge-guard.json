@@ -1,0 +1,16 @@
+{
+  "version": "PREFLIGHT-ACTIONABLE-KNOWLEDGE-GUARD-v1",
+  "failClosed": true,
+  "purpose": "Voorkom dat mandatory delivery preflight een bekende guardfingerprint hergebruikt zonder uitvoerbare oorzaak- en fixkennis.",
+  "knownFailure": {
+    "fingerprint": "learning|preflight|reused-guard-without-actionable-knowledge-v1",
+    "symptom": "Een guardfingerprint staat in reusedGuards, maar de agent krijgt geen bijbehorende root cause en bewezen fix en kan daardoor dezelfde analyse of fout opnieuw uitvoeren.",
+    "rootCause": "Fingerprintregistratie en actionable knowledge waren afzonderlijke paden; vóór de runtime gate kon een nieuwe reused fingerprint worden toegevoegd zonder dat een complete kennisrecord bestond.",
+    "failedApproach": "Alleen in CI controleren of de huidige bekende guardset compleet is; dat beschermt runtime preflight niet tegen een later of extern toegevoegd onverklaard fingerprint.",
+    "fix": "Delivery preflight bouwt één knowledge index en faalt direct wanneer een reused guard geen niet-lege rootCause en fix heeft; de regressie injecteert bewust een onbekende fingerprint en eist rejection.",
+    "preventionRule": "FAIL_PREFLIGHT_WHEN_REUSED_GUARD_LACKS_ACTIONABLE_KNOWLEDGE",
+    "regressionContract": "tests/branch-delivery-guard-knowledge-preflight.test.mjs",
+    "owner": "agent-reliability",
+    "status": "GUARDED"
+  }
+}
