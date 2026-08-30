@@ -2,6 +2,7 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { createDefaultAgentRegistry } from '../platform/agents/agent-team.mjs';
 import { evaluateOutcomeObligation, computeExecutionIdentity } from './outcome-obligation-executor.mjs';
+import { createSupabaseOutcomeObligationStores } from './outcome-obligation-supabase-store.mjs';
 
 function requireStore(store, name, methods) {
   if (!store || typeof store !== 'object') throw new TypeError(`${name} is required`);
@@ -104,24 +105,43 @@ function failClosedStores() {
   };
 }
 
-export async function runOutcomeObligationCli(argv = process.argv.slice(2)) {
+export function createOutcomeObligationCliStores({ env = process.env, fetchImpl = globalThis.fetch } = {}) {
+  const url = typeof env?.SUPABASE_URL === 'string' ? env.SUPABASE_URL.trim() : '';
+  const token = typeof env?.SUPABASE_SERVICE_ROLE_KEY === 'string' ? env.SUPABASE_SERVICE_ROLE_KEY.trim() : '';
+  if (url && token) {
+    return Object.freeze({
+      mode:'durable-supabase',
+      hardBoundary:null,
+      ...createSupabaseOutcomeObligationStores({ url, token, fetchImpl }),
+    });
+  }
+  return Object.freeze({
+    mode:'decision-only-fail-closed',
+    hardBoundary:'durable_work_store_not_configured',
+    ...failClosedStores(),
+  });
+}
+
+export async function runOutcomeObligationCli(argv = process.argv.slice(2), { env = process.env, fetchImpl = globalThis.fetch } = {}) {
   const args = parseCliArgs(argv);
   const triggerType = args.triggerType ?? (args.command === 'event' ? 'event-trigger' : 'scheduled-sweep');
   const trigger = { type:triggerType, fingerprint:args.fingerprint ?? (triggerType === 'event-trigger' ? 'manual-event' : 'scheduled') };
-  const stores = failClosedStores();
+  const stores = createOutcomeObligationCliStores({ env, fetchImpl });
   const runtime = createOutcomeObligationRuntime({
     registry:createDefaultAgentRegistry(),
-    ...stores,
+    workStore:stores.workStore,
+    evidenceStore:stores.evidenceStore,
+    recoveryStore:stores.recoveryStore,
     clock:() => new Date(args.now ?? Date.now()),
   });
   const decisions = await runtime.evaluateSweep({
     trigger,
     obligationIds:args.obligationIds,
-    hardBoundary:'durable_work_store_not_configured',
+    hardBoundary:stores.hardBoundary,
   });
   const artifact = Object.freeze({
     schemaVersion:1,
-    mode:'decision-only-fail-closed',
+    mode:stores.mode,
     productionMutation:false,
     decisions,
   });

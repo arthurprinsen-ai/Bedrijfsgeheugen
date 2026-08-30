@@ -40,7 +40,7 @@ jobs:
           node-version: 22
 
       - name: Run focused obligation contract tests
-        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs
+        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs
 
       - name: Evaluate obligations without production mutation
         shell: bash
@@ -48,6 +48,8 @@ jobs:
           OBLIGATION_ID: ${{ inputs.obligation_id }}
           TRIGGER_TYPE: ${{ inputs.trigger_type }}
           TRIGGER_FINGERPRINT: ${{ inputs.trigger_fingerprint }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts
