@@ -1,0 +1,60 @@
+{
+  "version": "MAKE-CONTROL-PLANE-CREDIT-STORM-v1",
+  "date": "2026-08-30",
+  "fingerprint": "make|multi-agent-context-learning-credit-storm|2026-08-30-v1",
+  "guard": "control-plane-credit-storm-prevention-v1",
+  "severity": "critical",
+  "observed": {
+    "dailyCreditsStart": 10000,
+    "dailyCreditsRemaining": 835,
+    "dailyCreditsConsumed": 9165,
+    "rateLimitObserved": true,
+    "rateLimitClass": "HTTP_429_TOO_MANY_REQUESTS",
+    "acuteComponents": [7136045, 7136176],
+    "containedComponents": [7136045, 7136176]
+  },
+  "rootCauses": [
+    "direct callers bypassed BG166-origin refresh coalescing",
+    "projection rebuild and cache writes occurred per BG167 invocation even without effective state change",
+    "BG168 materiality gating happened after dispatch cost was already incurred",
+    "no global single-flight and credit circuit breaker across control-plane callers",
+    "overlapping refresh ownership was not globally enforced",
+    "configuration drift can exist when throttling logic is duplicated across code and mapper"
+  ],
+  "requiredPreflight": [
+    "canonical_owner",
+    "material_state_change_before_dispatch",
+    "fingerprint_dedupe",
+    "global_single_flight",
+    "cache_first_worker_read",
+    "state_hash_before_write",
+    "bounded_credit_slope",
+    "idempotent_side_effects",
+    "readback_before_retry_after_429_or_502",
+    "learning_write_fail_open_from_projection_refresh"
+  ],
+  "releaseBlocks": [
+    "equivalent_refresh_more_than_once_per_window",
+    "unchanged_context_causes_write",
+    "non_material_outcome_dispatches_BG168",
+    "duplicate_periodic_or_refresh_owner",
+    "concurrent_test_causes_429_burst",
+    "projected_credit_burn_exceeds_budget_guard",
+    "BG167_failure_loses_BG166_learning",
+    "retry_after_429_or_502_without_readback",
+    "duplicated_control_rule_has_divergent_values"
+  ],
+  "recovery": {
+    "containment": "disable only runaway control-plane paths; keep unrelated production live",
+    "reactivation": "one component at a time after bounded concurrent regression evidence is green",
+    "rollback": "return component to safe mode immediately if credit slope or 429 rate regresses",
+    "paidCapacityIncreaseAllowedAutonomously": false
+  },
+  "relatedPatterns": [
+    "duplicate-periodic-obligation-owner-v1",
+    "make|mutation|502-or-429-may-have-succeeded",
+    "agent-memory|dedupe|duplicate-write-refresh",
+    "agent-memory|refresh|new-write-without-context-refresh",
+    "chat-learning-completeness-gate-v1"
+  ]
+}
