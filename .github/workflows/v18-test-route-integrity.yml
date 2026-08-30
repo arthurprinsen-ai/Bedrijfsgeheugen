@@ -8,7 +8,10 @@ on:
       - 'assets/v18-test.*'
       - '_redirects'
       - 'sitemap.xml'
+      - 'netlify.toml'
+      - 'tools/bouw-v18-test-preview.mjs'
       - 'tests/v18-test-route-integrity.test.mjs'
+      - 'tests/v18-preview-build-contract.test.mjs'
       - '.github/workflows/v18-test-route-integrity.yml'
   workflow_dispatch:
 permissions:
@@ -26,5 +29,5 @@ jobs:
       - name: Verify exact checked-out SHA
         if: github.event_name == 'pull_request'
         run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
-      - name: Run V18 route integrity tests
-        run: node --test tests/v18-test-route-integrity.test.mjs
+      - name: Run V18 route and preview build contract tests
+        run: node --test tests/v18-test-route-integrity.test.mjs tests/v18-preview-build-contract.test.mjs
