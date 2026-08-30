@@ -1,0 +1,10 @@
+{
+  "id":"portal-native-legacy-batch-10-data-entry",
+  "domain":"data_sync",
+  "expected":true,
+  "dueAt":"2026-08-30T23:59:59+02:00",
+  "ownerAgent":"Portal Migration Agent",
+  "evidencePolicy":"Native invoeren preserves raw legacyInputs, requires explicit save, writes authenticated server state, verifies inputEditId by read-back, and exact preview/production SHAs are ready.",
+  "idempotencyKey":"portal-native-legacy-batch-10-data-entry-v1",
+  "recoveryPolicy":"Keep last-known-good state on failed write/read-back; rollback production if exact production outcome is not green."
+}
