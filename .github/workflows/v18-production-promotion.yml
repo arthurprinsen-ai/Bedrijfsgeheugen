@@ -18,6 +18,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
       - name: Verify promotion, SEO, portal security and accepted site baseline contracts
         run: >-
           node --test
@@ -35,3 +38,5 @@ jobs:
           tests/portal-native-legacy-batch-1.test.mjs
           tests/portal-native-legacy-batch-2.test.mjs
           tests/portal-native-legacy-batch-3.test.mjs
+      - name: Verify complete keyword strategy, technical SEO and internal links
+        run: python .github/scripts/seocontrole.py
