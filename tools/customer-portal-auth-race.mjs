@@ -110,6 +110,12 @@ const CUSTOMER_LOGIN_BRIDGE = `  var AUTH_STORE = 'bg_customer_auth';
 
   function toonInlog(s) {`;
 
+const REDIRECT_LOGIN_FUNCTION = `  function toonInlog(s) {
+    location.replace('https://www.bedrijfsgeheugen.nl/klant-login.html?klant=' + encodeURIComponent(s));
+  }`;
+
+const INLINE_LOGIN_FUNCTION = /  function toonInlog\(s\) \{[\s\S]*?\n  \}\n\n  \/\* Elke keer dat de pagina opent/;
+
 const OLD_CUSTOMER_SUCCESS = `.then(function (sessie) { return haalOfferte(sessie.access_token, s).then(function (k) { bewaar(s, k, sessie.access_token); }); })
         .then(function () { location.reload(); })`;
 
@@ -183,13 +189,15 @@ export function repairCustomerPortalAuth(html) {
     }
   }
 
+  if (!repaired.includes(REDIRECT_LOGIN_FUNCTION)) {
+    const matches = repaired.match(INLINE_LOGIN_FUNCTION);
+    if (!matches) throw new Error('Expected inline customer login function');
+    repaired = repaired.replace(INLINE_LOGIN_FUNCTION, `${REDIRECT_LOGIN_FUNCTION}\n\n  /* Elke keer dat de pagina opent`);
+  }
+
   if (!repaired.includes(OPEN_CUSTOMER_SUCCESS)) {
     if (repaired.includes(PREVIOUS_OPEN_CUSTOMER_SUCCESS)) repaired = repaired.replace(PREVIOUS_OPEN_CUSTOMER_SUCCESS, OPEN_CUSTOMER_SUCCESS);
-    else {
-      const occurrences = repaired.split(OLD_CUSTOMER_SUCCESS).length - 1;
-      if (occurrences !== 1) throw new Error(`Expected exactly one customer login success handler, found ${occurrences}`);
-      repaired = repaired.replace(OLD_CUSTOMER_SUCCESS, OPEN_CUSTOMER_SUCCESS);
-    }
+    else if (repaired.includes(OLD_CUSTOMER_SUCCESS)) repaired = repaired.replace(OLD_CUSTOMER_SUCCESS, OPEN_CUSTOMER_SUCCESS);
   }
 
   if (!repaired.includes(SINGLE_CUSTOMER_START)) {
@@ -202,7 +210,6 @@ export function repairCustomerPortalAuth(html) {
   }
 
   if (!repaired.includes(RESTORING_LOGIN_FALLBACK) && repaired.includes(OLD_LOGIN_FALLBACK)) repaired = repaired.replace(OLD_LOGIN_FALLBACK, RESTORING_LOGIN_FALLBACK);
-
   if (!repaired.includes(PERSISTENT_LOGOUT_HANDLER) && repaired.includes(OLD_LOGOUT_HANDLER)) repaired = repaired.replace(OLD_LOGOUT_HANDLER, PERSISTENT_LOGOUT_HANDLER);
 
   if (!repaired.includes(NETLIFY_CONTROLLER_BYPASS)) {
@@ -211,12 +218,13 @@ export function repairCustomerPortalAuth(html) {
     repaired = repaired.replace(NETLIFY_CONTROLLER_START, NETLIFY_CONTROLLER_BYPASS);
   }
 
-  if (!repaired.includes(GUARDED_HANDLER) || !repaired.includes(CUSTOMER_LOGIN_BRIDGE) || !repaired.includes(OPEN_CUSTOMER_SUCCESS) || !repaired.includes(SINGLE_CUSTOMER_START) || !repaired.includes(NETLIFY_CONTROLLER_BYPASS)) throw new Error('Customer portal auth repair was not fully applied');
+  if (!repaired.includes(GUARDED_HANDLER) || !repaired.includes(CUSTOMER_LOGIN_BRIDGE) || !repaired.includes(REDIRECT_LOGIN_FUNCTION) || !repaired.includes(SINGLE_CUSTOMER_START) || !repaired.includes(NETLIFY_CONTROLLER_BYPASS)) throw new Error('Customer portal auth repair was not fully applied');
   return repaired;
 }
 
 export const customerAuthRaceGuard = GUARDED_HANDLER;
 export const customerLoginBridge = CUSTOMER_LOGIN_BRIDGE;
+export const customerAuthRedirect = REDIRECT_LOGIN_FUNCTION;
 export const customerAuthSuccessHandler = OPEN_CUSTOMER_SUCCESS;
 export const customerAuthRestoreHandler = SINGLE_CUSTOMER_START;
 export const customerNetlifyBypassGuard = NETLIFY_CONTROLLER_BYPASS;
