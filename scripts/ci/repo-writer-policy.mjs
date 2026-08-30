@@ -8,16 +8,39 @@ const POLICIES = Object.freeze({
   'weekblog': [/^blog\/.+/, /^sitemap\.xml$/],
 });
 
+const IMPACT_BUDGETS = Object.freeze({
+  // Paginacontrole only performs deterministic metadata/link/status repairs.
+  // A large rewrite on an otherwise allowed HTML path is therefore fail-closed.
+  'paginacontrole': Object.freeze({ maxChangedLinesPerFile: 50 }),
+});
+
 export function allowedForWriter(writer) {
   const policy = POLICIES[String(writer || '')];
   if (!policy) throw new Error(`UNKNOWN_WRITER:${writer || ''}`);
   return [...policy];
 }
 
-export function validateWriterPaths(writer, files = []) {
+export function validateWriterPaths(writer, files = [], diffStats = []) {
   const policy = allowedForWriter(writer);
   const normalized = [...new Set((Array.isArray(files) ? files : []).map(String).filter(Boolean))].sort();
   const rejected = normalized.filter((file) => !policy.some((matcher) => matcher.test(file)));
   if (rejected.length) throw new Error(`UNAPPROVED_WRITER_PATH:${rejected.join(',')}`);
+
+  const budget = IMPACT_BUDGETS[String(writer || '')];
+  if (budget && Array.isArray(diffStats)) {
+    for (const stat of diffStats) {
+      const file = String(stat?.file || '');
+      if (!normalized.includes(file)) continue;
+      const additions = Number(stat?.additions || 0);
+      const deletions = Number(stat?.deletions || 0);
+      if (!Number.isFinite(additions) || !Number.isFinite(deletions)) {
+        throw new Error(`INVALID_WRITER_DIFF_STAT:${file}`);
+      }
+      if (additions + deletions > budget.maxChangedLinesPerFile) {
+        throw new Error(`WRITER_DIFF_IMPACT_EXCEEDED:${file}:${additions + deletions}:${budget.maxChangedLinesPerFile}`);
+      }
+    }
+  }
+
   return Object.freeze({ ok: true, writer, files: normalized });
 }
