@@ -1,7 +1,18 @@
 {
   "schema_version": 2,
+  "generation_provider": "OpenArt",
+  "generation_model": "grok-imagine-1-5",
+  "generation_history_id": "uUxKRWcQkzWIPosutXVF",
+  "generation_intent": "8s 16:9 1080p lichte premium drone/architectuur hero met duidelijke rustige beweging en parallax; golden-hour; geen mensen, kantoorinterieur, donkere scene of bijna stilstaande camera",
   "source_url": "https://cdn.openart.ai/openart-ai/production/2026-08/create-video/WZvuT1BzGx566fWaFo8F/xai-video-143123ce-c19d-935c-a98f-0ffc678d4ae0_1787928916465_3c8704c8.mp4",
   "source_sha256": "d4a516304adebbf8067bceb034046ddd65e3ff62fd8e34c800115aeb226c89e0",
+  "source_probe": {
+    "width": 1920,
+    "height": 1088,
+    "fps": 24,
+    "duration_seconds": 8.041667,
+    "has_audio": true
+  },
   "derivative_url": "/assets/openart-hero-iphone-safe-v1.mp4",
   "derivative_sha256": "a261792e9b0058802ab5b30ce107c7ac14e8b2291a3bd7ee78fdb5968bbe97fd",
   "derivative_probe": {
