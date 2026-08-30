@@ -1,5 +1,5 @@
 {
-  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.1",
+  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.2",
   "date": "2026-08-30",
   "purpose": "Bind all durable learnings from the Make credit-storm recovery thread into one machine-readable preflight surface.",
   "canonicalArtifacts": [
@@ -45,6 +45,15 @@
       "rootCause": "A canonical index path was written from intended naming rather than exact readback of the created artifact path.",
       "requiredAction": "Every canonical artifact reference must be derived from or verified against the exact persisted path; CI must read every listed canonical artifact.",
       "regression": "The completeness test must fail when any canonicalArtifacts path does not exist or is empty."
+    },
+    {
+      "id": "LIVE_STRUCTURAL_MIGRATION_PARTIAL_STATE",
+      "fingerprint": "make|structural-migration|partial-branch-state-under-429-v1",
+      "symptom": "A first Make patch successfully inserted a BasicIfElse into Agent 14, while the follow-up patch that would move the learning/return branches returned 429. The scenario was temporarily left with an incomplete intermediate structure until explicit rollback.",
+      "rootCause": "A logically atomic routing migration was split across multiple live blueprint mutations whose intermediate state was not independently production-safe.",
+      "failedApproach": "Begin a multi-step live branch migration where patch 1 changes flow topology and patch 2 is required to restore complete semantics, especially while Make is rate-limiting.",
+      "requiredAction": "For structural Make migrations, use one atomic scenario_patch whenever possible. If the tool cannot express the full migration atomically, build and validate on an inactive staging clone or ensure every intermediate state is functionally equivalent and safe. After 429/502, read back before retry; if partial topology exists, rollback to the exact pre-migration blueprint before further design work.",
+      "regression": "No production scenario may be left in an intermediate topology that depends on a later mutation for correct primary return, learning, side effects or error handling."
     }
   ],
   "runtimeState": {
@@ -60,6 +69,11 @@
       "status": "SAFE_MODE_PENDING_CALLER_SIDE_MATERIALITY_BRANCH",
       "rule": "Materiality must be decided before paid subscenario dispatch; a classifier inside BG168 cannot eliminate the dispatch cost already incurred.",
       "protectedInvariant": "Primary agent result delivery is independent of optional learning dispatch and remains available on NO_ACTION or learning failure."
+    },
+    "PH_AGENT_14_CANARY": {
+      "scenarioId": 7088656,
+      "status": "ROLLED_BACK_TO_PRE_MIGRATION_GREEN_TOPOLOGY",
+      "evidence": "After a 429 on the multi-branch patch, readback showed only the earlier BasicIfElse had been saved. Module 12 was then removed and readback confirmed the original flow 4 -> 10 -> 3 with error handler 11 restored."
     }
   },
   "completionGate": {
@@ -74,7 +88,8 @@
       "open recovery obligations explicitly preserved",
       "machine-readable CI/preflight coverage exists",
       "canonical artifact paths verified by exact readback",
-      "optional observability and learning paths cannot own primary business result delivery"
+      "optional observability and learning paths cannot own primary business result delivery",
+      "multi-step structural migrations are atomic or every intermediate state is independently safe"
     ],
     "terminalRule": "A chat/run is not fully green while material learnings exist only in conversation text or while a discovered prevention gap is silently dropped."
   }
