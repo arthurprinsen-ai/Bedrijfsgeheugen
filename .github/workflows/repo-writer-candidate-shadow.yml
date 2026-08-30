@@ -41,7 +41,7 @@ jobs:
           node-version: '22'
       - name: Verify bounded writer candidate paths and emit immutable evidence
         env:
-          GITHUB_HEAD_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.candidate_branch || github.head_ref }}
+          REPO_WRITER_HEAD_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.candidate_branch || github.head_ref }}
           GITHUB_PR_BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.base_sha || github.event.pull_request.base.sha }}
           GITHUB_PR_HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
           REPO_WRITER_EVIDENCE_PATH: artifacts/repo-writer-shadow-evidence.json
