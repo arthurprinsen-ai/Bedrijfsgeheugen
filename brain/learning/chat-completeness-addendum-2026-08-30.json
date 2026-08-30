@@ -1,11 +1,12 @@
 {
-  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.3",
+  "version": "CHAT-LEARNING-COMPLETENESS-ADDENDUM-v1.4",
   "date": "2026-08-30",
   "purpose": "Bind all durable learnings from the Make credit-storm recovery thread into one machine-readable preflight surface.",
   "canonicalArtifacts": [
     "docs/learning/make-control-plane-credit-storm-2026-08-30.md",
     "brain/learning/incidents/make-control-plane-credit-storm-2026-08-30.json",
-    "brain/learning/incidents/connector-mutation-tool-routing-misfire-2026-08-30.json"
+    "brain/learning/incidents/connector-mutation-tool-routing-misfire-2026-08-30.json",
+    "brain/guards/material-outcome-classifier.mjs"
   ],
   "failurePatterns": [
     {
@@ -63,6 +64,14 @@
       "failedApproach": "Blindly repeat scenario_create after 429 without first checking whether the named scenario already exists.",
       "requiredAction": "Treat 429/502 from create/update/delete as ambiguous mutation state. Perform one exact readback using the strongest identity available (scenario id, exact name plus team, file SHA/path, remote key). If the object exists in the intended state, continue from readback; if absent, preserve the obligation and retry only after rate-limit recovery, with dedupe identity unchanged.",
       "regression": "No duplicate staging or production scenario may be created by a blind retry after an ambiguous Make mutation response."
+    },
+    {
+      "id": "MAKE_VALIDATOR_WARNING_PATH_INCONSISTENCY",
+      "fingerprint": "make|validator|required-field-path-warning-inconsistent-with-module-spec-v1",
+      "symptom": "scenario_create warned that parameters/url and parameters/scenario were missing even though module_spec defines url and scenario under mapper and exact readback showed the configured mapper fields present.",
+      "rootCause": "Make create-time warning paths can be inconsistent with the authoritative module schema or saved blueprint representation.",
+      "requiredAction": "Do not auto-rewrite a valid mapper field into parameters based only on this warning. Compare warning path against module_spec and exact saved module readback. Keep runtime verification separate; a schema-warning inconsistency is not itself proof that execution is healthy.",
+      "regression": "Agents must not mutate a module into a schema-invalid shape merely to silence a contradictory warning."
     }
   ],
   "runtimeState": {
@@ -75,7 +84,7 @@
     },
     "BG168": {
       "scenarioId": 7136176,
-      "status": "SAFE_MODE_PENDING_CALLER_SIDE_MATERIALITY_BRANCH",
+      "status": "SAFE_MODE_PENDING_RUNTIME_PROOF_OF_CALLER_SIDE_MATERIALITY_BRANCH",
       "rule": "Materiality must be decided before paid subscenario dispatch; a classifier inside BG168 cannot eliminate the dispatch cost already incurred.",
       "protectedInvariant": "Primary agent result delivery is independent of optional learning dispatch and remains available on NO_ACTION or learning failure."
     },
@@ -85,9 +94,17 @@
       "evidence": "After a 429 on the multi-branch patch, readback showed only the earlier BasicIfElse had been saved. Module 12 was then removed and readback confirmed the original flow 4 -> 10 -> 3 with error handler 11 restored."
     },
     "PH_AGENT_14_STAGING_CANARY": {
-      "status": "NOT_CREATED_AFTER_429_READBACK",
-      "requestedName": "STAGING PH Agent 14 - caller-side BG168 materiality canary v1",
-      "evidence": "scenario_create returned 429; one exact scenario_list readback for the requested name returned zero scenarios. Production Agent 14 was not modified by this staging attempt."
+      "scenarioId": 7165093,
+      "name": "STAGING - PH Agent 14 Materiality Gate Canary v1",
+      "status": "INACTIVE_BLUEPRINT_VALIDATED_RUNTIME_NOT_YET_PROVEN",
+      "topology": "AI -> deterministic materiality classifier -> IfElse; MATERIAL -> BG168 -> Return; BG168 error -> Return; NON_MATERIAL -> direct Return without BG168",
+      "readbackEvidence": "scenario_get and scenario_module_get confirm both branches return the exact original answer and only the material branch contains BG168 scenario 7136176.",
+      "classifier": "brain/guards/material-outcome-classifier.mjs",
+      "runtimeProofStillRequired": [
+        "NO_ACTION or OK produces exact primary result and zero BG168 calls",
+        "material output may call BG168 and still returns exact primary result",
+        "learning failure does not suppress primary result"
+      ]
     }
   },
   "completionGate": {
@@ -104,7 +121,9 @@
       "canonical artifact paths verified by exact readback",
       "optional observability and learning paths cannot own primary business result delivery",
       "multi-step structural migrations are atomic or every intermediate state is independently safe",
-      "ambiguous state-changing connector responses require exact readback before any retry"
+      "ambiguous state-changing connector responses require exact readback before any retry",
+      "contradictory validator warnings are reconciled against authoritative module schema and exact readback before mutation",
+      "shared materiality classification is deterministic, conservative and centrally tested"
     ],
     "terminalRule": "A chat/run is not fully green while material learnings exist only in conversation text or while a discovered prevention gap is silently dropped."
   }
