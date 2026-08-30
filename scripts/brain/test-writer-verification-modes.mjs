@@ -22,6 +22,7 @@ assert.match(canary,/-f pr_number=/);
 assert.match(canary,/-f base_sha=/);
 assert.match(canary,/-f head_sha=/);
 assert.match(canary,/-f candidate_branch=/);
+assert.match(canary,/git push origin "HEAD:refs\/heads\/\$CANDIDATE_BRANCH"/,'detached-head canary must publish an explicitly qualified branch ref');
 assert.match(canary,/data\/regelgeving\.json/);
 assert.match(canary,/blog\/writer-verification-weekblog/);
 assert.match(canary,/sitemap\.xml/);
