@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createAgentRegistry } from '../platform/agents/agent-registry.mjs';
 import { createAgentFabric } from '../platform/agents/agent-fabric.mjs';
-import { createDefaultAgentRegistry, DEFAULT_AGENT_TEAM } from '../platform/agents/agent-team.mjs';
+import { createDefaultAgentFabric, createDefaultAgentRegistry, DEFAULT_AGENT_TEAM } from '../platform/agents/agent-team.mjs';
 import { createTeamMemoryBridge } from '../platform/agents/team-memory-bridge.mjs';
 
 function eventSink() {
@@ -18,6 +18,28 @@ test('default team contains every approved specialist as one shared registry', (
   ];
   assert.deepEqual(DEFAULT_AGENT_TEAM.map(a=>a.id).sort(), expected.sort());
   assert.equal(createDefaultAgentRegistry().all().length, 11);
+});
+
+test('default Agent Fabric automatically consumes canonical chat-learning preflight before execution', () => {
+  const fabric=createDefaultAgentFabric();
+  const work=fabric.intake({
+    tenantId:'T1',
+    problemClass:'canonical-preflight-wiring',
+    domains:['Reliability'],
+    capabilities:['analyze'],
+    affectedObjectIds:['agent-runtime'],
+    problem:'Default Agent Fabric must not rely on callers to wire chat learning',
+  });
+  fabric.transition({workId:work.id,status:'Investigating'});
+  fabric.transition({workId:work.id,status:'FixPrepared'});
+  const executing=fabric.transition({workId:work.id,status:'Executing'});
+  assert.equal(executing.status,'Executing');
+  const evidence=fabric.getMetadata(work.id).chatLearningPreflight;
+  assert.equal(evidence.status,'READY');
+  assert.equal(evidence.version,'BRAIN-CHAT-LEARNING-PREFLIGHT-v1');
+  assert.equal(evidence.contract,'config/brain-chat-learning-contract.json');
+  assert.ok(evidence.sourceCount > 0);
+  assert.match(evidence.packetFingerprint,/^[a-f0-9]{64}$/);
 });
 
 test('Fabric emits coordination events for assignment, transition and learning reuse', () => {
