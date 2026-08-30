@@ -1,0 +1,114 @@
+name: Repository Writer Parity Rollback
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'brain/evidence/writer-parity-trigger/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: repo-writer-parity-rollback
+  cancel-in-progress: false
+
+jobs:
+  prove:
+    if: startsWith(github.head_ref, 'verify-parity/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      WRITERS: approved-central-blog,blog-bijwerken,menu-balk-fix,paginacontrole,regelgeving-bijwerken,seo-controle,weekblog
+    steps:
+      - name: Checkout exact trigger PR base
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Prove all writer parity and rollback from immutable Git history
+        env:
+          EVIDENCE_REF_PREFIX: github-run:${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import { proveGitTransportParity } from './scripts/brain/writer-git-parity-proof.mjs';
+          import { certifyWriterParityRollback } from './scripts/brain/writer-parity-rollback-certification.mjs';
+          import { applyParityRollbackEvidence, computeMainProtectionReady } from './scripts/brain/writer-certification-state.mjs';
+          import { validateWriterPaths } from './scripts/ci/repo-writer-policy.mjs';
+
+          const expected=['approved-central-blog','blog-bijwerken','menu-balk-fix','paginacontrole','regelgeving-bijwerken','seo-controle','weekblog'];
+          const state=JSON.parse(await readFile('config/repository-writer-migration.json','utf8'));
+          const names=state.writers.map(writer=>writer.name).sort();
+          if(JSON.stringify(names)!==JSON.stringify([...expected].sort())) throw new Error('WRITER_SET_MISMATCH');
+
+          const generated=[];
+          for(const writer of state.writers){
+            const op=writer.operationalEvidence||{};
+            if(writer.candidateMode!=='operational_verified' || writer.operationalCandidateVerified!==true) throw new Error(`OPERATIONAL_CANDIDATE_NOT_VERIFIED:${writer.name}`);
+            if(op.pathPolicyVerified!==true || op.exactHeadVerified!==true) throw new Error(`OPERATIONAL_IDENTITY_NOT_VERIFIED:${writer.name}`);
+            if(!Array.isArray(op.changedFiles) || op.changedFiles.length===0) throw new Error(`MISSING_CHANGED_FILES:${writer.name}`);
+            validateWriterPaths(writer.name,op.changedFiles);
+
+            const proof=await proveGitTransportParity({
+              repoDir:'.',
+              baseSha:op.baseSha,
+              candidateHeadSha:op.headSha,
+              changedFiles:op.changedFiles,
+            });
+            const evidence=certifyWriterParityRollback({
+              writer:writer.name,
+              ...proof,
+              operationalCandidateVerified:true,
+              pathPolicyVerified:true,
+              exactHeadVerified:true,
+              outcomeRouter:'BG168',
+              currentStateProjection:'BG167',
+              evidenceRef:`${process.env.EVIDENCE_REF_PREFIX}:writer:${writer.name}`,
+            });
+            applyParityRollbackEvidence(writer,evidence);
+            generated.push(evidence);
+          }
+
+          if(generated.length!==expected.length) throw new Error('INCOMPLETE_PARITY_EVIDENCE_SET');
+          state.mainProtectionReady=computeMainProtectionReady(state.writers);
+          await mkdir('brain/evidence/writer-parity-rollback',{recursive:true});
+          for(const evidence of generated){
+            await writeFile(`brain/evidence/writer-parity-rollback/${evidence.writer}.json`,JSON.stringify(evidence,null,2)+'\n');
+          }
+          await writeFile('config/repository-writer-migration.json',JSON.stringify(state,null,2)+'\n');
+          console.log(`PARITY_ROLLBACK_VERIFIED writers=${generated.length} mainProtectionReady=${state.mainProtectionReady}`);
+          NODE
+
+      - name: Create evidence-only reconciliation branch and PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git diff --name-only | sed '/^$/d' | sort -u)
+          test "${#changed[@]}" -ge 8
+          for file in "${changed[@]}"; do
+            case "$file" in
+              config/repository-writer-migration.json|brain/evidence/writer-parity-rollback/*.json) ;;
+              *) echo "::error::UNAPPROVED_PARITY_EVIDENCE_FILE:$file"; exit 20 ;;
+            esac
+          done
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add config/repository-writer-migration.json brain/evidence/writer-parity-rollback/*.json
+          git commit -m 'BRAIN: record writer parity rollback evidence'
+          branch="brain/writer-parity-evidence/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git push origin "HEAD:$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title 'BRAIN: record verified writer parity and rollback evidence' \
+            --body "Evidence-only reconciliation from zero-external Git-history proof. All seven governed repository writers passed exact base→candidate transport parity and exact reverse rollback. Evidence ref: github-run:${GITHUB_RUN_ID}. No writer candidate or trigger fixture is merged by this workflow. No BG169 production promotion is invoked. Live GitHub main protection remains an independent external gate."
