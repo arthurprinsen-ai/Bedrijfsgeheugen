@@ -30,10 +30,6 @@ function collectKnownFailures(doc, source) {
     const item = normalizeFailure(value, source);
     if (item) failures.push(item);
   }
-  for (const value of Array.isArray(doc?.knownFailureFingerprints) ? doc.knownFailureFingerprints : []) {
-    const item = normalizeFailure(value, source);
-    if (item) failures.push(item);
-  }
   return failures;
 }
 
