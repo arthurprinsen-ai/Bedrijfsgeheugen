@@ -28,7 +28,7 @@ jobs:
           node-version: '22'
       - name: Reuse proven delivery lessons before expensive work
         run: |
-          node --test tests/delivery-learning.test.mjs tests/delivery-preflight.test.mjs
+          node --test tests/delivery-learning.test.mjs tests/delivery-preflight.test.mjs tests/current-main-impact.test.mjs
           node tools/delivery-preflight.mjs shared
       - id: plan
         name: Discover changed lanes and Brain membership
@@ -115,21 +115,29 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Refuse a stale main base before final gate
+      - name: Check current main by file and contract impact
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
+          mkdir -p .artifacts
           git fetch origin main --no-tags
           current_main="$(git rev-parse origin/main)"
           expected_base="${{ github.event.pull_request.base.sha }}"
-          if [ "$current_main" != "$expected_base" ]; then
-            echo "main advanced during candidate verification: expected $expected_base, current $current_main"
+          candidate_head="${{ github.event.pull_request.head.sha }}"
+          if [ "$current_main" = "$expected_base" ]; then
+            echo '{"safe":true,"reason":"main-unchanged"}' | tee .artifacts/current-main-impact.json
+            exit 0
+          fi
+          echo "main advanced from $expected_base to $current_main; checking actual impact instead of forcing a rebuild"
+          set +e
+          node tools/current-main-impact.mjs --base "$expected_base" --head "$candidate_head" --current-main "$current_main" | tee .artifacts/current-main-impact.json
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -eq 42 ]; then
+            echo "Current main overlaps the candidate by file or contract; refresh/revalidation is required."
             exit 42
           fi
-          if ! git merge-base --is-ancestor "$expected_base" HEAD; then
-            echo "candidate does not contain current PR base $expected_base"
-            exit 43
-          fi
+          exit "$status"
       - name: Verify one integrated release candidate
         shell: bash
         run: |
@@ -169,6 +177,13 @@ jobs:
           path: |
             .artifacts/delivery-failure-integrate.json
             .artifacts/integrate-failure.txt
+      - name: Publish main-impact evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-current-main-impact
+          path: .artifacts/current-main-impact.json
+          if-no-files-found: ignore
       - name: Hand exact candidate to existing Brain production authority
         run: |
           echo "BG169 promotes only exact green SHA ${{ github.event.pull_request.head.sha || github.sha }}"
