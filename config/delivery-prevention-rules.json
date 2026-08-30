@@ -8,6 +8,10 @@
     {"id":"REFRESH_BASE_BEFORE_FINAL_GATE","active":true,"enforcedBy":"unified-brain-delivery-current-main-check","scope":"shared"},
     {"id":"BLOCK_WRITER_CANARY_WHEN_ACTIONS_PR_CREATION_DISABLED","active":true,"enforcedBy":"repository-writer-migration-boundary","scope":"shared"},
     {"id":"EXPLICIT_WRITER_SHADOW_DISPATCH","active":true,"enforcedBy":"repository-writer-shadow-contract","scope":"shared"},
-    {"id":"BIND_SHADOW_TO_ACTUAL_PR_IDENTITY","active":true,"enforcedBy":"repository-writer-shadow-contract","scope":"shared"}
+    {"id":"BIND_SHADOW_TO_ACTUAL_PR_IDENTITY","active":true,"enforcedBy":"repository-writer-shadow-contract","scope":"shared"},
+    {"id":"CAPTURE_UNTRACKED_EVIDENCE_WITH_STATUS","active":true,"enforcedBy":"repo-writer-parity-rollback-workflow-regression-test","scope":"shared"},
+    {"id":"FULLY_QUALIFY_DETACHED_HEAD_PUSH_REF","active":true,"enforcedBy":"repo-writer-parity-rollback-workflow-regression-test","scope":"shared"},
+    {"id":"DERIVE_READINESS_FROM_SCENARIO_FIXTURE","active":true,"enforcedBy":"repository-protection-readiness-regression-test","scope":"shared"},
+    {"id":"CLASSIFY_REPOSITORY_PROTECTION_TESTS","active":true,"enforcedBy":"brain-delivery-system-classification-regression-test","scope":"shared"}
   ]
 }
