@@ -45,7 +45,13 @@
     "delivery-failure|writeback|shared|atomic-ledger-hardcoded-pr139-dedupe",
     "delivery-failure|deploy|shared|main-production-sha-lag",
     "delivery-failure|verification|shared|technical-success-without-outcome",
-    "delivery-failure|governance|shared|red-first-test-pushed-directly-to-unprotected-main"
+    "delivery-failure|governance|shared|red-first-test-pushed-directly-to-unprotected-main",
+    "brain|registration|new-component-missing-from-governance-or-cost-view",
+    "cost|ai-tokens|unmetered-misreported-as-zero",
+    "delivery|production|ready-deploy-with-wrong-commit",
+    "seo-scan|private-noindex-auth|public-page-rules",
+    "delivery|remote-write|unverified-git-remote",
+    "brain-chat-learning|completeness|required-lesson-without-active-prevention-rule"
   ],
   "coveragePolicy": {
     "purpose": "Prevent regression or deletion of proven chat learnings while keeping canonical truth in the referenced ledgers.",
