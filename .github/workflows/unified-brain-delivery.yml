@@ -115,21 +115,40 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Refuse a stale main base before final gate
+      - name: Evaluate current-main relevance instead of blocking on drift
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
           git fetch origin main --no-tags
           current_main="$(git rev-parse origin/main)"
           expected_base="${{ github.event.pull_request.base.sha }}"
-          if [ "$current_main" != "$expected_base" ]; then
-            echo "main advanced during candidate verification: expected $expected_base, current $current_main"
-            exit 42
+          if [ "$current_main" = "$expected_base" ]; then
+            echo "No main drift; tested feature can continue."
+            exit 0
           fi
-          if ! git merge-base --is-ancestor "$expected_base" HEAD; then
-            echo "candidate does not contain current PR base $expected_base"
-            exit 43
+
+          git diff --name-only "$expected_base"...HEAD > /tmp/feature-paths.txt
+          git diff --name-only "$expected_base"..."$current_main" > /tmp/main-drift-paths.txt
+
+          set +e
+          git merge-tree --write-tree HEAD "$current_main" >/tmp/merge-tree.out 2>/tmp/merge-tree.err
+          merge_status=$?
+          set -e
+          if [ "$merge_status" -eq 0 ]; then
+            export MERGEABLE=true
+          else
+            export MERGEABLE=false
           fi
+
+          node --input-type=module - <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          import { evaluateBranchDrift } from './tools/brain-delivery-system.mjs';
+          const featurePaths=(await readFile('/tmp/feature-paths.txt','utf8')).split(/\r?\n/).filter(Boolean);
+          const mainDriftPaths=(await readFile('/tmp/main-drift-paths.txt','utf8')).split(/\r?\n/).filter(Boolean);
+          const result=evaluateBranchDrift({featurePaths,mainDriftPaths,mergeable:process.env.MERGEABLE==='true'});
+          console.log(JSON.stringify({currentMainDrift:true,...result}));
+          if(result.action==='SYNC_REQUIRED')process.exit(44);
+          NODE
       - name: Verify one integrated release candidate
         shell: bash
         run: |
@@ -169,7 +188,9 @@ jobs:
           path: |
             .artifacts/delivery-failure-integrate.json
             .artifacts/integrate-failure.txt
-      - name: Hand exact candidate to existing Brain production authority
+      - name: Hand green change to Brain production authority for immediate promotion
         run: |
-          echo "BG169 promotes only exact green SHA ${{ github.event.pull_request.head.sha || github.sha }}"
-          echo "BG168 routes the production outcome and BG167 refreshes shared current state"
+          echo "Feature SHA ${{ github.event.pull_request.head.sha || github.sha }} is individually green."
+          echo "BG169 may merge immediately with current main; the resulting exact merge SHA is the production candidate."
+          echo "No unrelated branch, app or scenario is a release dependency."
+          echo "BG168 routes the production outcome and BG167 refreshes shared current state."
