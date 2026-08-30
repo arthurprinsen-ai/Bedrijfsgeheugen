@@ -3,5 +3,6 @@
   "verification_only": true,
   "scope": "all-governed-repository-writers",
   "reason": "prove transport parity and exact rollback from immutable Git history",
-  "production_promotion": false
+  "production_promotion": false,
+  "attempt": 2
 }
