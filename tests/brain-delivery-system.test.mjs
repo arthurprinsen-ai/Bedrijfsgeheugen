@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import * as deliverySystem from '../tools/brain-delivery-system.mjs';
 
 const { createDeliveryPlan, discoverBrainMembership } = deliverySystem;
@@ -154,8 +155,11 @@ test('Netlify deploy source accepts only a standalone exact-SHA checkout', () =>
   });
 });
 
-test('deploy-preflight CLI fails closed in a linked worktree and governance requires it', async () => {
+test('deploy-preflight CLI reports the actual Git source topology and governance requires it', async () => {
   const head = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
+  const gitDir = spawnSync('git', ['rev-parse', '--git-dir'], { encoding: 'utf8' }).stdout.trim();
+  const commonDir = spawnSync('git', ['rev-parse', '--git-common-dir'], { encoding: 'utf8' }).stdout.trim();
+  const linked = resolve(gitDir) !== resolve(commonDir);
   const result = spawnSync(process.execPath, [
     'tools/brain-delivery-system.mjs',
     'deploy-preflight',
@@ -164,7 +168,7 @@ test('deploy-preflight CLI fails closed in a linked worktree and governance requ
   ], { encoding: 'utf8' });
   const governance = await readFile('AGENTS.md', 'utf8');
 
-  assert.equal(result.status, 1);
-  assert.match(result.stderr, /STAGE_STANDALONE_EXACT_SHA/);
+  assert.equal(result.status, linked ? 1 : 0);
+  assert.match(linked ? result.stderr : result.stdout, linked ? /STAGE_STANDALONE_EXACT_SHA/ : /DEPLOY_SOURCE_READY/);
   assert.match(governance, /brain-delivery-system\.mjs deploy-preflight --sha/);
 });
