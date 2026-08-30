@@ -36,8 +36,8 @@ test('main Supabase migration pushes wake the performance obligation with an exa
     '- main',
     'paths:',
     "- 'supabase/migrations/**'",
-    'github.event_name == \'push\'',
-    'supabase-migration:${{ github.sha }}',
+    "github.event_name == 'push'",
+    "format('supabase-migration:{0}', github.sha)",
     'event-trigger',
     'supabase-performance-evidence-daily',
   ]) assert.ok(yaml.includes(required), `${required} must be present`);
