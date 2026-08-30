@@ -1,5 +1,5 @@
 {
-  "version": "MAKE-CONTROL-PLANE-CREDIT-STORM-v1",
+  "version": "MAKE-CONTROL-PLANE-CREDIT-STORM-v1.1",
   "date": "2026-08-30",
   "fingerprint": "make|multi-agent-context-learning-credit-storm|2026-08-30-v1",
   "guard": "control-plane-credit-storm-prevention-v1",
@@ -11,7 +11,8 @@
     "rateLimitObserved": true,
     "rateLimitClass": "HTTP_429_TOO_MANY_REQUESTS",
     "acuteComponents": [7136045, 7136176],
-    "containedComponents": [7136045, 7136176]
+    "containedComponents": [7136045, 7136176],
+    "inactiveOnDemandStillInvoked": true
   },
   "rootCauses": [
     "direct callers bypassed BG166-origin refresh coalescing",
@@ -19,7 +20,8 @@
     "BG168 materiality gating happened after dispatch cost was already incurred",
     "no global single-flight and credit circuit breaker across control-plane callers",
     "overlapping refresh ownership was not globally enforced",
-    "configuration drift can exist when throttling logic is duplicated across code and mapper"
+    "configuration drift can exist when throttling logic is duplicated across code and mapper",
+    "Make inactive state does not act as a circuit breaker for an on-demand subscenario that is still invoked by another scenario; deactivation alone is therefore insufficient containment"
   ],
   "requiredPreflight": [
     "canonical_owner",
@@ -31,7 +33,8 @@
     "bounded_credit_slope",
     "idempotent_side_effects",
     "readback_before_retry_after_429_or_502",
-    "learning_write_fail_open_from_projection_refresh"
+    "learning_write_fail_open_from_projection_refresh",
+    "callee_entry_guard_not_status_toggle_only"
   ],
   "releaseBlocks": [
     "equivalent_refresh_more_than_once_per_window",
@@ -42,10 +45,19 @@
     "projected_credit_burn_exceeds_budget_guard",
     "BG167_failure_loses_BG166_learning",
     "retry_after_429_or_502_without_readback",
-    "duplicated_control_rule_has_divergent_values"
+    "duplicated_control_rule_has_divergent_values",
+    "inactive_toggle_used_as_only_subscenario_circuit_breaker"
+  ],
+  "runtimeFixes": [
+    {
+      "component": "BG167",
+      "scenarioId": 7136045,
+      "change": "entry filter now permits expensive projection rebuild only when request_json contains mode=refresh and agent_id=BG166",
+      "purpose": "direct read/rebuild callers terminate before Notion read and cache writes"
+    }
   ],
   "recovery": {
-    "containment": "disable only runaway control-plane paths; keep unrelated production live",
+    "containment": "disable runaway visible triggers AND install a callee-entry guard for on-demand subscenarios; keep unrelated production live",
     "reactivation": "one component at a time after bounded concurrent regression evidence is green",
     "rollback": "return component to safe mode immediately if credit slope or 429 rate regresses",
     "paidCapacityIncreaseAllowedAutonomously": false
@@ -55,6 +67,7 @@
     "make|mutation|502-or-429-may-have-succeeded",
     "agent-memory|dedupe|duplicate-write-refresh",
     "agent-memory|refresh|new-write-without-context-refresh",
+    "make|subscenario|inactive-still-callable-v1",
     "chat-learning-completeness-gate-v1"
   ]
 }
