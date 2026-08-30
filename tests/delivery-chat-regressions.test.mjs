@@ -7,6 +7,7 @@ const rules=JSON.parse(fs.readFileSync('config/delivery-prevention-rules.json','
 const workflow=fs.readFileSync('.github/workflows/repo-writer-parity-rollback.yml','utf8');
 const delivery=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
 const readinessTest=fs.readFileSync('tests/repository-protection-readiness.test.mjs','utf8');
+const nativeProtection=fs.readFileSync('scripts/brain/main-protection-certification.mjs','utf8');
 
 const required=[
  ['delivery-failure|writeback|shared|git-diff-missed-untracked-evidence','CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE'],
@@ -37,9 +38,13 @@ test('writer parity writeback permanently covers untracked evidence and detached
  assert.match(workflow,/UNAPPROVED_PARITY_EVIDENCE_FILE/);
 });
 
-test('readiness and protection regressions remain scenario-derived and classified',()=>{
+test('writer readiness and native protection regressions remain scenario-derived, separate and classified',()=>{
  const backend=delivery.lanes.find(l=>l.id==='backend');
  assert.ok(backend.paths.includes('tests/repository-protection-'));
  assert.match(readinessTest,/const operationalOnly = state\.writers\.map/);
- assert.match(readinessTest,/computeMainProtectionReady\(operationalOnly\), false/);
+ assert.match(readinessTest,/computeWriterMigrationReady\(operationalOnly\), false/);
+ assert.match(readinessTest,/Object\.hasOwn\(state, 'mainProtectionReady'\), false/);
+ assert.match(nativeProtection,/proof: 'github-main-protection'/);
+ assert.match(nativeProtection,/BRANCH_NOT_PROTECTED/);
+ assert.match(nativeProtection,/mainProtectionReady/);
 });
