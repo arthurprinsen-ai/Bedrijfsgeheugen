@@ -187,3 +187,24 @@ test('Make control-plane credit storm learning is retained and machine-readable'
     'learning_write_fail_open_from_projection_refresh'
   ]) assert.ok(parsed.requiredPreflight.includes(requiredGuard), `credit-storm guard missing ${requiredGuard}`);
 });
+
+test('manual connector-write governance is preserved in canonical checkpoint and ledger', async () => {
+  const [checkpoint, ledger] = await Promise.all([
+    readFile('docs/learning/chat-learning-checkpoint-2026-08-30.md', 'utf8'),
+    readFile('docs/development-ledger.md', 'utf8')
+  ]);
+  for (const token of [
+    'repository|manual-connector-write|default-main-bypass',
+    'REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES',
+    'branch omission',
+    'protected:false',
+    'post-push CI',
+    'platform enforcement'
+  ]) {
+    assert.ok(checkpoint.includes(token), `canonical checkpoint missing connector-write governance ${token}`);
+    assert.ok(ledger.includes(token), `development ledger missing connector-write governance ${token}`);
+  }
+  assert.match(checkpoint, /candidate branch/i);
+  assert.match(ledger, /RED.*GREEN/is);
+  assert.match(ledger, /85c3e38972a930b06857d55594c478603d6ec5ee/);
+});

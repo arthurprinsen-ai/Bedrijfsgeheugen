@@ -4,6 +4,21 @@ This ledger is append-only operational memory for material engineering outcomes.
 
 Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` and `CONTRACT_CHANGE`.
 
+## 2026-08-31 00:02 CEST — CONTRACT_CHANGE — manual connector writes require candidate branch
+- **Fingerprint:** `repository|manual-connector-write|default-main-bypass`
+- **Signal:** a handmatige GitHub connector-write zonder expliciete `branch` kan naar de default branch schrijven. In deze chat zijn daardoor geheugen-/testwijzigingen rechtstreeks op `main` beland terwijl de bestaande regel `NEVER_TDD_DIRECTLY_ON_MAIN` al gold.
+- **Impact:** candidate/PR-gates kunnen worden omzeild, RED-tests kunnen tijdelijk op productiebronwaarheid landen en post-push CI detecteert het probleem pas nadat de ref al is gewijzigd.
+- **Root cause:** authorized connector capability werd behandeld als governed delivery. GitHub `main` is live waargenomen als `protected:false` met enforcement off; branch omission valt daardoor terug op de default branch en native platform enforcement voorkomt de write niet.
+- **Evidence:** machine-readable lesson `MANUAL_CONNECTOR_WRITES_REQUIRE_CANDIDATE_BRANCH` en prevention rule `REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES` zijn via PR #670 gepromoveerd. Candidate `268170f348df8200e75afe95f81b126946a2b85b` had Shared Agent Memory GREEN en Unified BRAIN GREEN; exact-head merge resulteerde in `main` SHA `85c3e38972a930b06857d55594c478603d6ec5ee`; de post-merge Shared Agent Memory run op die SHA was success.
+- **Known failed approach:** connector `create_file`/`update_file` gebruiken met branch omission of `main` als target en vervolgens een succesvolle post-push CI-run als preventiebewijs behandelen. Post-push CI is detectie, geen pre-write prevention.
+- **Final fix:** iedere materiële handmatige repositorywrite moet eerst een verse niet-`main` candidate branch vanaf actuele `main` maken; iedere connectorwrite krijgt die branch expliciet; RED en GREEN zijn candidate-SHA evidence; daarna volgt Unified BRAIN, exact-head merge en post-merge readback. `branch omission` is geen governed delivery.
+- **Owner:** Knowledge/Governance + Architecture/Integrator + alle repository writers.
+- **Regression gate:** `tests/brain-chat-learning-complete.test.mjs` vereist de machine lesson/rule; `tests/development-doc-contract.test.mjs` vereist nu ook dat canonical checkpoint en ledger deze fingerprint, prevention rule en bewijsgrens behouden.
+- **Verification:** TDD voor deze auditlaag: RED Shared Agent Memory run `33338009485` op candidate SHA `58f9ad0138399766414ff2557fad8506e2e8c870` faalde voordat checkpoint/ledger de nieuwe auditinformatie bevatten. GREEN Shared Agent Memory run `33338187573` op candidate SHA `037271ea490a55cc295f5f22df5712252428e6a3` slaagde daarna; een latere evidence-only correctie vereist opnieuw exact-head GREEN vóór promotie.
+- **Platform enforcement boundary:** native GitHub branch protection/ruleset enforcement is nog niet bewezen en `main` is expliciet als `protected:false` waargenomen. Agent governance reduceert risico, maar volledige prevention is pas bewezen wanneer GitHub zelf een ongeautoriseerde directe main-write vóór ref-mutatie weigert.
+- **Rollback/last-known-good:** de machine-readable prevention op `85c3e38972a930b06857d55594c478603d6ec5ee` blijft behouden; audit-documentatie mag bij regressie alleen via een nieuwe candidate worden hersteld, nooit via branchless main-write.
+- **Reusable lesson:** onderscheid capability, governed delivery en platform enforcement. Een tool die mág schrijven is niet automatisch een veilige deliveryroute. Gebruik candidate branches als verplichte mutatiegrens en behandel post-push CI uitsluitend als detectie totdat native branch protection onafhankelijk bewezen is.
+
 ## 2026-08-30 21:33 CEST — CONTRACT_CHANGE — exact AI token budget metering
 - **Fingerprint:** `cost|ai-tokens|provider-usage-ledger-v1`
 - **Signal:** the shared cost dashboard governed Make credits but could not show exact AI-provider token consumption. The fixed 10.000-token monthly envelope could therefore not be enforced without treating unknown usage as if it were zero.
