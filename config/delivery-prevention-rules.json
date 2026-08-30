@@ -5,6 +5,6 @@
     {"id":"GITHUB_PUBLIC_PROOF_MAKE_STATE_WRITEBACK","active":true,"enforcedBy":"approved-publish-verification-contract","scope":"shared"},
     {"id":"BOUNDED_GITHUB_PUBLIC_PROOF","active":true,"enforcedBy":"approved-publish-verification-contract","scope":"shared"},
     {"id":"CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST","active":true,"enforcedBy":"targeted-plus-integrated-test-gates","scope":"portal"},
-    {"id":"REFRESH_BASE_BEFORE_FINAL_GATE","active":true,"enforcedBy":"unified-brain-delivery-current-main-check","scope":"shared"}
+    {"id":"REFRESH_ONLY_ON_FILE_OR_CONTRACT_OVERLAP","active":true,"enforcedBy":"current-main-file-contract-impact-gate","scope":"shared"}
   ]
 }
