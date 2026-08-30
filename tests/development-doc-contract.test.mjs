@@ -68,6 +68,7 @@ test('canonical chat checkpoint carries current portal and memory-CI lessons', a
     'Supabase',
     'device outcome evidence',
     'direct pushes to `main`',
+    'post-push CI is detection/recovery, not prevention',
     'inspect the existing memory architecture before creating a new memory subsystem',
     'case-insensitive'
   ]) assert.ok(checkpoint.includes(token), `canonical chat checkpoint missing ${token}`);
