@@ -210,6 +210,7 @@ jobs:
       - name: Hand exact green lane identities to Brain production authority
         if: needs.plan.outputs.has_lanes == 'true' && (github.event_name != 'workflow_dispatch' || inputs.verification_only != true)
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BG169_HANDOFF_URL: ${{ vars.BG169_HANDOFF_URL }}
           PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}
@@ -235,4 +236,19 @@ jobs:
             -H 'Content-Type: application/json' \
             --data "$payload" \
             "$BG169_HANDOFF_URL" >/tmp/bg169-handoff-response.json
-          echo "BRAIN-DELIVERY-v2 trace $TRACE_ID handed to BG169 adapter after exact green lane and drift verification."
+          cat /tmp/bg169-handoff-response.json
+          jq -e '.accepted == true and .production_authority == "BG169"' /tmp/bg169-handoff-response.json >/dev/null || { echo "::error::BG169_HANDOFF_NOT_ACCEPTED"; exit 1; }
+          promoted=false
+          for attempt in 1 2 3 4 5 6; do
+            pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+            if [ "$(jq -r '.merged' <<<"$pr")" = "true" ]; then
+              git fetch origin main --no-tags
+              if git merge-base --is-ancestor "$HEAD_SHA" origin/main; then
+                promoted=true
+                break
+              fi
+            fi
+            sleep 5
+          done
+          [ "$promoted" = "true" ] || { echo "::error::BG169_PROMOTION_NOT_VERIFIED:$HEAD_SHA"; exit 1; }
+          echo "BRAIN-DELIVERY-v2 trace $TRACE_ID promoted and verified exact candidate $HEAD_SHA in main."
