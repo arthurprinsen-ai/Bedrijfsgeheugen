@@ -195,7 +195,7 @@ jobs:
        startsWith(github.head_ref, 'verify/seo-controle-') ||
        startsWith(github.head_ref, 'verify/weekblog-'))
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 8
     env:
       GH_TOKEN: ${{ github.token }}
       VERIFY_REF: ${{ github.event.pull_request.head.ref }}
@@ -216,7 +216,7 @@ jobs:
           echo "writer=$WRITER" >> "$GITHUB_OUTPUT"
 
           PR_NUMBER=""
-          for attempt in $(seq 1 12); do
+          for attempt in $(seq 1 72); do
             matches="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --limit 100 --json number,headRefName,body | jq -r --arg prefix "writer/$WRITER/" --arg verify "$VERIFY_SHA" '.[] | select(.headRefName | startswith($prefix)) | select((.body // "") | contains($verify)) | .number')"
             count="$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')"
             if [ "$count" -gt 1 ]; then
