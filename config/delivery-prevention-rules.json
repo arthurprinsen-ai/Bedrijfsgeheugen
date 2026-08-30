@@ -13,6 +13,9 @@
     {"id":"CLASSIFY_PRIVATE_AUTH_BEFORE_PUBLIC_SEO_SCANS","active":true,"enforcedBy":"seo-route-scope-classifier","scope":"website"},
     {"id":"REQUIRE_AUTHORIZED_CONNECTOR_FOR_REMOTE_WRITES","active":true,"enforcedBy":"remote-write-authorization-contract","scope":"shared"},
     {"id":"REQUIRE_ACTIVE_RULE_FOR_REQUIRED_CHAT_LESSON","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
-    {"id":"DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"}
+    {"id":"DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
+    {"id":"VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
+    {"id":"USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"},
+    {"id":"USE_GITHUB_READY_FOR_REVIEW_ACTION","active":true,"enforcedBy":"brain-chat-learning-completeness-test","scope":"shared"}
   ]
 }
