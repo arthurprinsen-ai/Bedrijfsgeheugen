@@ -26,14 +26,16 @@ async function governedFiles(root) {
   const files = (await readdir(root)).filter(name => name.endsWith('.html')).map(name => join(root, name));
   const blog = join(root, 'blog');
   try {
+    const blogLanding = join(blog, 'index.html');
+    try { if ((await stat(blogLanding)).isFile()) files.push(blogLanding); } catch {}
     for (const entry of await readdir(blog)) {
       const dir = join(blog, entry);
-      if (!(await stat(dir)).isDirectory()) continue;
+      try { if (!(await stat(dir)).isDirectory()) continue; } catch { continue; }
       const index = join(dir, 'index.html');
       try { if ((await stat(index)).isFile()) files.push(index); } catch {}
     }
   } catch {}
-  return files;
+  return [...new Set(files)];
 }
 
 export async function applyCanonicalFootersToSite(root = repoRoot) {
