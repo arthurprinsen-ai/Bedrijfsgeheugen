@@ -9,6 +9,7 @@ on:
       - '_redirects'
       - 'sitemap.xml'
       - 'netlify.toml'
+      - 'site/v18-test-source.json'
       - 'tools/bouw-v18-test-preview.mjs'
       - 'tests/v18-test-route-integrity.test.mjs'
       - 'tests/v18-preview-build-contract.test.mjs'
@@ -28,6 +29,30 @@ jobs:
           node-version: '22'
       - name: Verify exact checked-out SHA
         if: github.event_name == 'pull_request'
-        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+        run: |
+          if [ "$(git rev-parse HEAD)" != "${{ github.event.pull_request.head.sha }}" ]; then
+            echo "::error::V18 integrity check is not running on the exact PR head SHA"
+            exit 1
+          fi
       - name: Run V18 route and preview build contract tests
         run: node --test tests/v18-test-route-integrity.test.mjs tests/v18-preview-build-contract.test.mjs
+      - name: Verify pinned user-accepted V18 baseline is publicly reachable
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL=$(node -p "JSON.parse(require('fs').readFileSync('site/v18-test-source.json','utf8')).userTestUrl")
+          code=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -LsS -o /tmp/v18-accepted.html -w '%{http_code}' "$URL")
+          echo "Pinned V18 baseline -> HTTP $code"
+          if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
+            echo "::error::Pinned user-accepted V18 baseline is not publicly reachable: HTTP $code — $URL"
+            exit 1
+          fi
+          if ! grep -Fq 'view-home' /tmp/v18-accepted.html; then
+            echo "::error::Pinned V18 baseline no longer contains the accepted V18 view-home marker: $URL"
+            exit 1
+          fi
+          if ! grep -Fq 'view-product' /tmp/v18-accepted.html; then
+            echo "::error::Pinned V18 baseline no longer contains the accepted V18 view-product marker: $URL"
+            exit 1
+          fi
+          echo "Accepted V18 user baseline is public and contains the expected V18 markers."
