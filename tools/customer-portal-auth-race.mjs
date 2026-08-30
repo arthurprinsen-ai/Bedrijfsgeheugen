@@ -127,10 +127,23 @@ const OPEN_CUSTOMER_SUCCESS = `.then(function (sessie) {
 
 const LEGACY_CUSTOMER_START = /    var heeft = false;\n    try \{ heeft = !!sessionStorage\.getItem\(BEWAAR \+ s\); \} catch \(e\) \{\}\n\n    if \(heeft\) \{[\s\S]*?      verversen\(s\);\n      return;\n    \}\n\n    wissen\(\);\n    (?:toonInlog\(s\)|herstelAuth\(s\)\.catch\(function\(\)\{ toonInlog\(s\); \}\));/;
 
-const SINGLE_CUSTOMER_START = `    document.querySelectorAll('[aria-label="Uitloggen"]').forEach(function (b) {
+const PREVIOUS_SINGLE_CUSTOMER_START = `    document.querySelectorAll('[aria-label="Uitloggen"]').forEach(function (b) {
       b.addEventListener('click', function(){ wissen(); wisAuth(); }, true);
     });
     herstelAuth(s).catch(function(){ wissen(); toonInlog(s); });`;
+
+const SINGLE_CUSTOMER_START = `    if (window.__bgCustomerAuthStarted) return;
+    window.__bgCustomerAuthStarted = true;
+
+    function activeerKlantAuth() {
+      document.querySelectorAll('[aria-label="Uitloggen"]').forEach(function (b) {
+        b.addEventListener('click', function(){ wissen(); wisAuth(); }, true);
+      });
+      herstelAuth(s).catch(function(){ wissen(); toonInlog(s); });
+    }
+
+    if (document.readyState === 'complete') activeerKlantAuth();
+    else window.addEventListener('load', activeerKlantAuth, {once:true});`;
 
 const OLD_LOGIN_FALLBACK = `    wissen();
     toonInlog(s);`;
@@ -180,9 +193,12 @@ export function repairCustomerPortalAuth(html) {
   }
 
   if (!repaired.includes(SINGLE_CUSTOMER_START)) {
-    const matches = repaired.match(LEGACY_CUSTOMER_START);
-    if (!matches) throw new Error('Expected legacy customer start controller');
-    repaired = repaired.replace(LEGACY_CUSTOMER_START, SINGLE_CUSTOMER_START);
+    if (repaired.includes(PREVIOUS_SINGLE_CUSTOMER_START)) repaired = repaired.replace(PREVIOUS_SINGLE_CUSTOMER_START, SINGLE_CUSTOMER_START);
+    else {
+      const matches = repaired.match(LEGACY_CUSTOMER_START);
+      if (!matches) throw new Error('Expected legacy customer start controller');
+      repaired = repaired.replace(LEGACY_CUSTOMER_START, SINGLE_CUSTOMER_START);
+    }
   }
 
   if (!repaired.includes(RESTORING_LOGIN_FALLBACK) && repaired.includes(OLD_LOGIN_FALLBACK)) repaired = repaired.replace(OLD_LOGIN_FALLBACK, RESTORING_LOGIN_FALLBACK);
