@@ -70,20 +70,17 @@ jobs:
             echo "Geen menu-wijzigingen nodig."
             exit 0
           fi
-
           for f in "${changed[@]}"; do
             case "$f" in
               *.html) ;;
               *) echo "::error::NON_HTML_CHANGE:$f"; exit 1 ;;
             esac
           done
-
           printf '%s\n' "${changed[@]}" > /tmp/menu-writer-files.txt
           git config user.name "site-fix"
           git config user.email "actions@users.noreply.github.com"
           git add -- "${changed[@]}"
           git commit -m "menu-balk: een kleur, verschijnt bij scrollen, mobiel uitgelijnd"
-
           export CHANGED_FILES="$(cat /tmp/menu-writer-files.txt)"
           CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
           import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
@@ -131,7 +128,9 @@ jobs:
           else
             echo "Candidate PR bestaat al: #$pr_number"
           fi
+          pr_base_sha=$(gh pr view "$pr_number" --json baseRefOid --jq '.baseRefOid')
           echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "pr_base_sha=$pr_base_sha" >> "$GITHUB_OUTPUT"
           echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Dispatch read-only shadow verification
@@ -140,7 +139,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
           PR_NUMBER: ${{ steps.candidate_pr.outputs.pr_number }}
-          BASE_SHA: ${{ steps.base.outputs.sha }}
+          BASE_SHA: ${{ steps.candidate_pr.outputs.pr_base_sha }}
           HEAD_SHA: ${{ steps.candidate_pr.outputs.head_sha }}
         run: |
           set -euo pipefail
