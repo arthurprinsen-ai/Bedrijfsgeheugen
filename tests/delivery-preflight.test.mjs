@@ -27,7 +27,7 @@ test('repository delivery ledger has an active prevention for every PROVEN lesso
   const decision = await loadDeliveryPreflight({ component: 'shared' });
   assert.equal(decision.ok, true);
   assert.ok(decision.reusedLessons.length >= 1);
-  assert.ok(decision.reusedLessons.some((lesson) => lesson.fingerprint === 'delivery|production-authority|control-plane-unavailable|2026-08-30'));
+  assert.ok(decision.reusedLessons.includes('delivery|production-authority|control-plane-unavailable|2026-08-30'));
 });
 
 test('preflight fails closed when a PROVEN lesson is missing from active prevention registry', async () => {
