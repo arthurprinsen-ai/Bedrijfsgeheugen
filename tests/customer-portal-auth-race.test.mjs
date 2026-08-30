@@ -42,10 +42,26 @@ test('real customer slug bypasses the legacy Netlify auth controller', () => {
   assert.match(html, /var slug = .*?;\s*if \(slug && slug !== 'demo'\) return;/s);
 });
 
-test('customer login button opens the Supabase customer login instead of becoming inert', () => {
+test('customer login button opens the customer auth flow instead of becoming inert', () => {
   const html = repairCustomerPortalAuth(source);
   assert.match(html, /window\.__bgCustomerLogin/);
   assert.doesNotMatch(html, /if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\) return;/);
+});
+
+test('legacy portal never renders editable customer login fields inline', () => {
+  const html = repairCustomerPortalAuth(source);
+  assert.match(html, /function toonInlog\(s\) \{\s*location\.replace\('https:\/\/www\.bedrijfsgeheugen\.nl\/klant-login\.html\?klant=' \+ encodeURIComponent\(s\)\);\s*\}/s);
+  assert.doesNotMatch(html, /<input id="bgMail"/);
+  assert.doesNotMatch(html, /<input id="bgWw"/);
+});
+
+test('dedicated customer login page signs in, stores session and returns to the legacy portal', () => {
+  const login = readFileSync(new URL('../klant-login.html', import.meta.url), 'utf8');
+  assert.match(login, /\/auth\/v1\/token\?grant_type=password/);
+  assert.match(login, /localStorage\.setItem\('bg_customer_auth'/);
+  assert.match(login, /sessionStorage\.setItem\('bg_klant_' \+ slug/);
+  assert.match(login, /sessionStorage\.setItem\('bg_token'/);
+  assert.match(login, /location\.replace\('https:\/\/www\.bedrijfsgeheugen\.nl\/klantportaal\?klant=' \+ encodeURIComponent\(slug\)\)/);
 });
 
 test('successful customer authentication stores the session and opens the legacy portal directly', () => {
@@ -67,14 +83,6 @@ test('real customer start path has one auth authority and never calls the destru
   const html = repairCustomerPortalAuth(source);
   assert.match(html, /herstelAuth\(s\)\.catch\(function\(\)\{ wissen\(\); toonInlog\(s\); \}\)/);
   assert.doesNotMatch(html, /if \(heeft\)[\s\S]*?verversen\(s\)/);
-});
-
-test('iOS login initializes once and only exposes fields after the full page load', () => {
-  const html = repairCustomerPortalAuth(source);
-  assert.match(html, /if \(window\.__bgCustomerAuthStarted\) return;/);
-  assert.match(html, /window\.__bgCustomerAuthStarted = true;/);
-  assert.match(html, /document\.readyState === 'complete'/);
-  assert.match(html, /window\.addEventListener\('load', activeerKlantAuth, \{once:true\}\)/);
 });
 
 test('iOS in-app browser gets a first-party cookie fallback when localStorage is not retained', () => {
