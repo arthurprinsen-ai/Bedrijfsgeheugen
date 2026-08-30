@@ -6,11 +6,13 @@
 /blog/afas-koppeling/  /afas-koppeling  301!
 /data-ai-cockpit   /frisse-blik   301!
 /data-ai-cockpit.html   /frisse-blik   301!
-# Customer portal variants. Order matters: specific demo rewrites first.
-# 200 keeps /klantportaal?klant=... visible while serving the selected implementation.
+# Customer portal variants. Order matters: specific legacy/customer rules first.
+# Keep demo1 on the legacy demo, canonicalize the old demo alias, and preserve demoAI separately.
+/klantportaal  klant=demo  /klantportaal?klant=demo1  301!
 /klantportaal  klant=demo1  /klantportaal-demo.html  200!
+/klantportaal  klant=ijsselmonde  /klantportaal.html  200!
 /klantportaal  klant=demoAI  /portal/  200!
-# Any real customer slug keeps using the current portal implementation.
+# Other real customer slugs continue on the current portal until explicitly classified as legacy.
 /klantportaal  klant=:klant  /portal/  302!
 # Frisse Blik hands off to /klantportaal#direct, so the no-query route is the legacy demo.
 /klantportaal  /klantportaal-demo.html  200!
