@@ -23,8 +23,16 @@ test('native import parser accepts canonical version 4 backup without mutating s
  const source={version:4,exportedAt:'2026-08-30T08:00:00.000Z',state:{company:{name:'Voorbeeld BV'},actions:[{id:'a1',title:'Actie'}]}};
  const original=JSON.stringify(source);
  const parsed=importState.parsePortalBackup(original);
+ assert.equal(parsed.kind,'canonical');
  assert.equal(parsed.state.company.name,'Voorbeeld BV');
  assert.equal(JSON.stringify(source),original);
+});
+
+test('native import parser preserves original version 1 legacy backups',()=>{
+ const legacy={versie:1,opgeslagen:'2026-08-30T08:00:00.000Z',niveaus:{sturing:3},taken:[{id:'t1',titel:'Borg proces'}],besluiten:[],docs:[],log:[]};
+ const parsed=importState.parsePortalBackup(JSON.stringify(legacy));
+ assert.equal(parsed.kind,'legacy-v1');
+ assert.equal(parsed.legacyState.niveaus.sturing,3);
 });
 
 test('preview summarizes changes before any commit action is exposed',()=>{
