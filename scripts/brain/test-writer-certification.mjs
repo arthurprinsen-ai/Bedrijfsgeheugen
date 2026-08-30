@@ -17,13 +17,16 @@ assert.equal(evidence.impact_policy.max_changed_lines_per_file,50);
 assert.equal(evidence.impact_policy.verified,true);
 assert.ok(typeof evidence.idempotency_key==='string' && evidence.idempotency_key.length>0);
 
-// Mechanical writer proof is real, but Brain completion must fail closed until
-// BG168 routing and BG167 projection are independently acknowledged.
-assert.equal(evidence.truth_status,'SUPPORTED');
-assert.equal(evidence.status,'AWAITING_OUTCOME');
-assert.equal(evidence.projection_verification?.bg168_routed,false);
-assert.equal(evidence.projection_verification?.bg167_visible,false);
-assert.equal(evidence.projection_verification?.verified,false);
+// Mechanical writer proof may become completed only after independent runtime
+// acknowledgement is present from both BG168 outcome routing and BG167 projection.
+assert.equal(evidence.truth_status,'VERIFIED');
+assert.equal(evidence.status,'COMPLETED');
+assert.equal(evidence.projection_verification?.bg168_routed,true);
+assert.equal(evidence.projection_verification?.bg167_visible,true);
+assert.equal(evidence.projection_verification?.verified,true);
+assert.equal(evidence.projection_verification?.fingerprint,'writer-certifications|2026-08-30|final-four');
+assert.equal(evidence.projection_verification?.bg168_execution_id,'1e42fe2f09414105ae91901353d63706');
+assert.equal(evidence.projection_verification?.bg167_execution_id,'3aaf37250fa14df384bb77997df1b01c');
 
 const obligations=JSON.parse(fs.readFileSync('config/outcome-obligations.json','utf8'));
 const obligation=obligations.registeredObligations.find(x=>x.id==='repository-writer-operational-certification');
@@ -35,9 +38,12 @@ assert.match(obligation.evidencePolicy,/BG167 visibility/i);
 const migration=JSON.parse(fs.readFileSync('config/repository-writer-migration.json','utf8'));
 const pageWriter=migration.writers.find(x=>x.name==='paginacontrole');
 assert.ok(pageWriter,'paginacontrole must exist in repository writer migration state');
-assert.equal(pageWriter.candidateMode,'merged_unverified');
-assert.equal(pageWriter.operationalCandidateVerified,false);
-assert.equal(pageWriter.operationalEvidence,undefined);
+assert.equal(pageWriter.candidateMode,'operational_verified');
+assert.equal(pageWriter.operationalCandidateVerified,true);
+assert.equal(pageWriter.operationalEvidence.certificationEvidence,evidencePath);
+assert.equal(pageWriter.parityVerified,false);
+assert.equal(pageWriter.rollbackVerified,false);
+assert.equal(migration.mainProtectionReady,false);
 
 const reconcileScript='scripts/brain/reconcile-writer-certifications.mjs';
 const reconcileWorkflow='.github/workflows/writer-certification-reconcile.yml';
@@ -53,4 +59,4 @@ assert.match(workflow,/brain\/evidence\/writer-canary\/\*\.json/);
 assert.match(workflow,/reconcile-writer-certifications\.mjs --write/);
 assert.doesNotMatch(workflow,/git push origin HEAD:main|git push origin main/);
 
-console.log('PASS writer certification fails closed until BG168 routing and BG167 visibility are independently verified');
+console.log('PASS writer certification completes only with independently verified BG168 routing and BG167 visibility');
