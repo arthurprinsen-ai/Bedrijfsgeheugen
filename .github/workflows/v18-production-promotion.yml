@@ -27,6 +27,7 @@ jobs:
           tests/footer-seo.test.mjs
           tests/v18-footer-boundary.test.mjs
           tests/footer-public-smoke-contract.test.mjs
+          tests/public-footer-fetch-retry.test.mjs
           tests/shared-footer-agent-contract.test.mjs
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
