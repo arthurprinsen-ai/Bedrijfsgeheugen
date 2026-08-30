@@ -19,6 +19,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 concurrency:
   group: repo-schrijven
@@ -57,26 +58,20 @@ jobs:
             echo "Geen wijziging."
             exit 0
           fi
-
           if [ "$changed" != "data/regelgeving.json" ]; then
             echo "::error::UNAPPROVED_CHANGED_FILE:$changed"
             exit 1
           fi
-
           git config user.name "bedrijfsgeheugen-bot"
           git config user.email "arthur@bedrijfsgeheugen.nl"
           git add data/regelgeving.json
           git commit -m "Regelgeving bijgewerkt (AI Act, NIS2, GPAI)"
-
           CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
           import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
           const candidate = createWriterCandidate({
-            writer: 'regelgeving-bijwerken',
-            baseSha: process.env.BASE_SHA,
-            runId: process.env.GITHUB_RUN_ID,
-            changedFiles: ['data/regelgeving.json'],
-            allowedFiles: ['data/regelgeving.json'],
-            rollbackSha: process.env.BASE_SHA,
+            writer: 'regelgeving-bijwerken', baseSha: process.env.BASE_SHA,
+            runId: process.env.GITHUB_RUN_ID, changedFiles: ['data/regelgeving.json'],
+            allowedFiles: ['data/regelgeving.json'], rollbackSha: process.env.BASE_SHA,
           });
           validateWriterCandidate(candidate);
           console.log(candidate.branch);
@@ -89,28 +84,43 @@ jobs:
         if: steps.commit.outputs.changed == 'true'
         env:
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
-        run: |
-          set -euo pipefail
-          git push origin "HEAD:$CANDIDATE_BRANCH"
+        run: git push origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
+        id: pr
         if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
-          BASE_SHA: ${{ steps.base.outputs.sha }}
+          SOURCE_SHA: ${{ steps.base.outputs.sha }}
         run: |
           set -euo pipefail
-          existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
-          if [ -n "$existing" ]; then
-            echo "Candidate PR bestaat al: #$existing"
-            exit 0
+          pr_number=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr_number" ]; then
+            pr_url=$(gh pr create --base main --head "$CANDIDATE_BRANCH" \
+              --title "Regelgeving candidate $GITHUB_RUN_ID" \
+              --body "BRAIN-DELIVERY-v2 candidate uit regelgeving-bijwerken. Source SHA: $SOURCE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit.")
+            pr_number="${pr_url##*/}"
           fi
-          gh pr create \
-            --base main \
-            --head "$CANDIDATE_BRANCH" \
-            --title "Regelgeving candidate $GITHUB_RUN_ID" \
-            --body "BRAIN-DELIVERY-v2 candidate uit regelgeving-bijwerken. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit."
+          pr_base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.base.sha')
+          pr_head_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.head.sha')
+          pr_head_ref=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.head.ref')
+          [ "$pr_head_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$pr_head_ref"; exit 1; }
+          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$pr_base_sha" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$pr_head_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch read-only shadow verification
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          BASE_SHA: ${{ steps.pr.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+        run: |
+          gh workflow run repo-writer-candidate-shadow.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f pr_number="$PR_NUMBER" -f base_sha="$BASE_SHA" -f head_sha="$HEAD_SHA" -f candidate_branch="$CANDIDATE_BRANCH"
 
       - name: Ouderdom bewaken
         run: |
@@ -125,5 +135,7 @@ jobs:
       - name: BRAIN v2 handoff evidence
         if: steps.commit.outputs.changed == 'true'
         run: |
+          echo "candidate_pr=${{ steps.pr.outputs.number }}"
+          echo "candidate_sha=${{ steps.pr.outputs.head_sha }}"
           echo "production_authority=BG169"
           echo "direct_main_push=false"
