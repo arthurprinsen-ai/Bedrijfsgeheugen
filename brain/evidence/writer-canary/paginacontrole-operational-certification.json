@@ -1,0 +1,40 @@
+{
+  "contract": "BRAIN-DELIVERY-v2",
+  "idempotency_key": "writer-certification|paginacontrole|8439f40c1a3a9f25701ed1f61fb9d02b399720b4|33316041100",
+  "writer": "paginacontrole",
+  "component_id": "repository-writer:paginacontrole",
+  "proof": "operational-candidate-shadow-flow",
+  "truth_status": "VERIFIED",
+  "status": "COMPLETED",
+  "confidence": 1,
+  "production_authority": "BG169",
+  "outcome_router": "BG168",
+  "current_state_projection": "BG167",
+  "verification_pr": 414,
+  "verification_sha": "8439f40c1a3a9f25701ed1f61fb9d02b399720b4",
+  "candidate_pr": 417,
+  "candidate_branch": "writer/paginacontrole/7b692b1b59021dba",
+  "candidate_base_sha": "d888a495e3f2368442a618da0e3ad032ee444581",
+  "candidate_head_sha": "d5783314fda2b663a31e2933fc994f30af3e8a9b",
+  "candidate_merged": false,
+  "shadow_run_id": "33316041100",
+  "shadow_run_conclusion": "success",
+  "shadow_artifact": "repo-writer-shadow-evidence-417",
+  "shadow_checks": {
+    "path_policy_verified": true,
+    "exact_head_verified": true,
+    "changed_files": [
+      "paginacontrole-canary.html"
+    ]
+  },
+  "impact_policy": {
+    "source_pr": 420,
+    "source_head_sha": "7b79935a9b673942b452a80e77bb1849bf436d37",
+    "merge_sha": "c3f9dd3a3852f3d17dfa01ca1bf01f1bfbfa0baa",
+    "max_changed_lines_per_file": 50,
+    "diff_stats_required": true,
+    "verified": true
+  },
+  "evidence_policy": "Exact verification SHA, real writer candidate PR, immutable read-only shadow success artifact and bounded impact policy are all required before COMPLETED.",
+  "verified_at": "2026-08-30T14:17:52Z"
+}
