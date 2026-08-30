@@ -17,6 +17,7 @@ const TRANSITIONS = Object.freeze({
 
 const TERMINAL = new Set(['Resolved','LearningRecorded']);
 const NOOP_EVENT_SINK = Object.freeze({ append:event => event });
+const CHAT_LEARNING_PREFLIGHT_VERSION = 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1';
 
 function normalize(values) {
   return [...new Set((values ?? []).map(value => String(value).trim()).filter(Boolean))].sort();
@@ -50,7 +51,45 @@ function opportunityPriority(signal) {
   return 'P3';
 }
 
-export function createAgentFabric({ registry, learningMemory = createLearningMemory(), eventSink = NOOP_EVENT_SINK, now = () => new Date().toISOString() } = {}) {
+function compactChatLearningPreflight(packet) {
+  if (!packet || packet.status !== 'READY') {
+    throw new Error('chat-learning preflight must be READY before execution');
+  }
+  if (packet.version !== CHAT_LEARNING_PREFLIGHT_VERSION) {
+    throw new Error(`chat-learning preflight version must be ${CHAT_LEARNING_PREFLIGHT_VERSION}`);
+  }
+  if (!Array.isArray(packet.sources) || packet.sources.length === 0) {
+    throw new Error('chat-learning preflight READY packet must include source hashes');
+  }
+
+  const sourceHashes = packet.sources.map(source => {
+    const sourcePath = typeof source?.path === 'string' ? source.path.trim() : '';
+    const sha256 = typeof source?.sha256 === 'string' ? source.sha256.trim().toLowerCase() : '';
+    if (!sourcePath || !/^[a-f0-9]{64}$/.test(sha256)) {
+      throw new Error('chat-learning preflight READY packet contains invalid source hash evidence');
+    }
+    return Object.freeze({ path:sourcePath, sha256 });
+  }).sort((left, right) => left.path.localeCompare(right.path) || left.sha256.localeCompare(right.sha256));
+
+  const contract = typeof packet.contract === 'string' ? packet.contract.trim() : '';
+  if (!contract) throw new Error('chat-learning preflight READY packet must identify its contract');
+  const identity = JSON.stringify({
+    version:packet.version,
+    contract,
+    sourceHashes,
+  });
+
+  return Object.freeze({
+    status:'READY',
+    version:packet.version,
+    contract,
+    sourceCount:sourceHashes.length,
+    sourceHashes:Object.freeze(sourceHashes),
+    packetFingerprint:createHash('sha256').update(identity).digest('hex'),
+  });
+}
+
+export function createAgentFabric({ registry, learningMemory = createLearningMemory(), eventSink = NOOP_EVENT_SINK, now = () => new Date().toISOString(), learningPreflight } = {}) {
   if (!registry?.route) throw new TypeError('registry is required');
   if (!learningMemory?.findMatches || !learningMemory?.recordVerified) throw new TypeError('learningMemory is invalid');
   if (!eventSink?.append) throw new TypeError('eventSink.append is required');
@@ -128,6 +167,20 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     const allowed = TRANSITIONS[current.status] ?? new Set();
     if (!allowed.has(status)) throw new Error(`invalid AgentWork transition: ${current.status} -> ${status}`);
 
+    let executionPreflight = null;
+    if (status === 'Executing' && (current.status === 'FixPrepared' || current.status === 'WaitingApproval')) {
+      if (typeof learningPreflight !== 'function') {
+        throw new Error('chat-learning preflight must be READY before execution');
+      }
+      let packet;
+      try {
+        packet = learningPreflight(Object.freeze({ work:current, metadata:metadata.get(workId) }));
+      } catch (error) {
+        throw new Error(`chat-learning preflight failed before execution: ${error?.message ?? String(error)}`);
+      }
+      executionPreflight = compactChatLearningPreflight(packet);
+    }
+
     if (!TERMINAL.has(current.status) && TERMINAL.has(status)) {
       const readiness = evaluateCompletionReadiness(completionContext ?? {});
       if (!readiness.canComplete) {
@@ -138,7 +191,11 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
 
     const next = createAgentWork({ ...current, ...patch, status });
     workById.set(workId, next);
-    const info = metadata.get(workId);
+    let info = metadata.get(workId);
+    if (executionPreflight) {
+      info = Object.freeze({ ...info, chatLearningPreflight:executionPreflight });
+      metadata.set(workId, info);
+    }
     emit('AGENT_WORK_TRANSITIONED', next, info, { fromStatus:current.status, toStatus:status });
     if (TERMINAL.has(status) && info) activeByFingerprint.delete(info.fingerprint);
     return next;
