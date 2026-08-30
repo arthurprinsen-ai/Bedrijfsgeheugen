@@ -18,6 +18,23 @@ De vaste keten is:
 - De productiebuild voert `applyCustomerPortalAuth()` uit nadat V18 is gegenereerd en voert daarna `verifyCustomerLoginContract()` uit.
 - Als één invariant ontbreekt, moet de Netlify-build falen in plaats van een regressie te publiceren.
 
+## Bekende foutklasse en beslisregel
+
+Fingerprint: `portal|customer-auth|legacy-inline-login-jitter`.
+
+Het incident bij IJsselmonde bewees dat mixed Netlify Identity + Supabase customer auth + een legacy portal render lifecycle meerdere auth-eigenaren creëert. Backend-success is dan niet hetzelfde als een bruikbare login. Op iOS kon de legacy DOM tijdens invoer opnieuw worden opgebouwd, waardoor focus verloren ging en de pagina zichtbaar trilde terwijl Supabase-auth en RLS zelf gezond waren.
+
+Daarom geldt voor iedere toekomstige agent:
+
+1. controleer eerst afzonderlijk backend-auth, autorisatie/RLS, datafetch en UI/runtime-evidence;
+2. als backend-auth en datafetch groen zijn maar loginvelden focus/jitterproblemen hebben, patch niet opnieuw blind de velden of reloads;
+3. zoek naar meerdere auth- of render-eigenaren;
+4. behoud één auth boundary: `klant-login.html`;
+5. sluit een mobiel/UI-incident alleen met runtime/device outcome evidence, nooit alleen met HTTP 200, een groene build of Netlify `ready`;
+6. hergebruik de bestaande regressietest en architectuur voordat een nieuwe authroute wordt ontworpen.
+
+Known failed approaches uit het incident: alleen Netlify Identity omzeilen, alleen reload/direct-open aanpassen, alleen sessiepersistentie toevoegen en meerdere symptoompatches in de grote legacy DOM. Deze verbeterden delen van de keten maar verwijderden niet de concurrerende auth/render ownership. De structurele oplossing was isolatie.
+
 ## Wijzigingsregel voor agents en ontwikkelaars
 
 Een agent, workflow, PR of build mag deze scheiding niet terugdraaien. Een wijziging aan klantauthenticatie vereist eerst een regressietest voor de hierboven beschreven keten. De legacy portal mag worden vervangen of gemoderniseerd, maar klantlogin blijft geïsoleerd totdat een nieuwe portalarchitectuur aantoonbaar dezelfde scheiding, Supabase-authenticatie en RLS-autorisatie behoudt.
