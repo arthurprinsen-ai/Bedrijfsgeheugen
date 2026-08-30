@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import path from 'node:path';
 
 const registry = JSON.parse(fs.readFileSync('site/v18-component-registry.json','utf8'));
 const byRoute = new Map(registry.routes.map(entry => [entry.route, entry]));
@@ -10,6 +9,7 @@ const normalizeRoute = href => {
   const raw = href.split('#')[0].split('?')[0];
   if (!raw || raw === '#') return null;
   if (/^(https?:|mailto:|tel:)/i.test(raw)) return null;
+  if (raw.startsWith('/assets/') || raw === '/favicon.png' || raw === '/apple-touch-icon.png') return null;
   if (raw.startsWith('javascript:')) return 'INVALID_JAVASCRIPT';
   if (!raw.startsWith('/')) return null;
   if (raw === '/blog') return '/blog/';
