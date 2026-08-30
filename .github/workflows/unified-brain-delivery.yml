@@ -20,6 +20,7 @@ jobs:
       trace_id: ${{ steps.plan.outputs.trace_id }}
       base_sha: ${{ steps.plan.outputs.base_sha }}
       head_sha: ${{ steps.plan.outputs.head_sha }}
+      has_lanes: ${{ steps.plan.outputs.has_lanes }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -34,9 +35,15 @@ jobs:
           node tools/delivery-preflight.mjs shared
       - id: plan
         name: Discover changed lanes and Brain membership
+        shell: bash
         run: |
           node tools/brain-delivery-system.mjs membership
           node tools/brain-delivery-system.mjs plan --base "${{ github.event.pull_request.base.sha || github.event.before }}" --head "${{ github.event.pull_request.head.sha || github.sha }}"
+          node --input-type=module - <<'NODE'
+          import { readFile, appendFile } from 'node:fs/promises';
+          const plan = JSON.parse(await readFile('.artifacts/brain-delivery-plan.json', 'utf8'));
+          await appendFile(process.env.GITHUB_OUTPUT, `has_lanes=${plan.lanes.length > 0}\n`);
+          NODE
       - uses: actions/upload-artifact@v4
         with:
           name: brain-delivery-plan
@@ -44,6 +51,7 @@ jobs:
 
   lanes:
     needs: plan
+    if: needs.plan.outputs.has_lanes == 'true'
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
@@ -118,6 +126,7 @@ jobs:
 
   handoff:
     needs: [plan, lanes]
+    if: always() && needs.plan.result == 'success' && (needs.lanes.result == 'success' || needs.lanes.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -128,6 +137,7 @@ jobs:
         with:
           node-version: '22'
       - name: Enforce current-main file and contract conflict index
+        if: needs.plan.outputs.has_lanes == 'true'
         shell: bash
         run: |
           git fetch origin main --no-tags
@@ -137,13 +147,17 @@ jobs:
             --head "${{ needs.plan.outputs.head_sha }}" \
             --current-main "$current_main"
       - name: Publish moving-main evidence
-        if: always()
+        if: needs.plan.outputs.has_lanes == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: brain-branch-drift
           path: .artifacts/brain-branch-drift.json
           if-no-files-found: ignore
+      - name: Record successful ignored-only no-op
+        if: needs.plan.outputs.has_lanes != 'true'
+        run: echo "No executable delivery lanes; ignored-only change is a successful no-op."
       - name: Hand exact green lane identities to Brain production authority
+        if: needs.plan.outputs.has_lanes == 'true'
         run: |
           echo "BRAIN-DELIVERY-v2 trace ${{ needs.plan.outputs.trace_id }} is lane-green and drift-safe."
           echo "Generic non-overlapping main drift is not a rebuild condition."
