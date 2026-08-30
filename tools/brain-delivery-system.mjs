@@ -40,10 +40,11 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   const sha = String(headSha ?? '').trim();
   if (!/^[a-f0-9]{12,40}$/i.test(sha)) throw new TypeError('valid headSha is required');
   const paths = unique(changedPaths.map(value => String(value).trim()).filter(Boolean)).sort();
-  const shared = paths.some(path => matches(path, policy.sharedPaths));
+  const nonExecutableShared = paths.filter(path => matches(path, policy.nonExecutableSharedPaths || []));
+  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, policy.nonExecutableSharedPaths || []));
   const ignored = paths.filter(path => matches(path, policy.ignoredPaths));
   const lanes = policy.lanes
-    .filter(lane => shared || paths.some(path => matches(path, lane.paths)))
+    .filter(lane => sharedExecutable || paths.some(path => !matches(path, policy.nonExecutableSharedPaths || []) && matches(path, lane.paths)))
     .map(lane => Object.freeze({
       id: lane.id,
       laneId: `${lane.id}|${sha.slice(0, 12)}`,
@@ -54,10 +55,11 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
       independentPromotion: policy.version === 'BRAIN-DELIVERY-v2' && policy.integration?.independentPromotion === true,
     }))
     .sort((left, right) => left.id.localeCompare(right.id));
-  const classified = paths.filter(path => shared || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)));
+  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)));
   const unclassified = paths.filter(path => !classified.includes(path));
   if (unclassified.length) throw new Error(`unclassified delivery path: ${unclassified.join(', ')}`);
-  if (!lanes.length && paths.length !== ignored.length) throw new Error('delivery unit has no executable lane');
+  const noLanePaths = unique([...ignored, ...nonExecutableShared]);
+  if (!lanes.length && paths.length !== noLanePaths.length) throw new Error('delivery unit has no executable lane');
 
   return Object.freeze({
     contractVersion: policy.version,
@@ -67,6 +69,7 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
     changedPaths: Object.freeze(paths),
     conflictContracts: Object.freeze(deriveConflictContracts(paths, policy)),
     ignoredPaths: Object.freeze(ignored),
+    nonExecutableSharedPaths: Object.freeze(nonExecutableShared),
     branchPolicy: Object.freeze({ ...policy.branchPolicy }),
     registration: Object.freeze({ ...(policy.registration || { required:false, autoDiscover:false }) }),
     lanes: Object.freeze(lanes),

@@ -17,6 +17,9 @@
     "tests/development-doc-contract.test.mjs",
     ".github/workflows/"
   ],
+  "nonExecutableSharedPaths": [
+    "docs/learning/"
+  ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
     "docs/superpowers/plans/"
