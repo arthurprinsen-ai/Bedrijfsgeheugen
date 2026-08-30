@@ -11,12 +11,12 @@
     "verified_value":{"input":"Outcome","requires":["realised","verified","evidence"],"projection":"executive_cockpit"},
     "ai_governance":{"requires":["provenance","tenant_scope","evidence","owner","auditability"],"unknown_policy":"fail_closed"}
   },
-  "persistence":{"endpoint":"/api/brain-operating-loop","store":"netlify_blobs:brain-operating-loop","tenant_binding":"server_identity","consistency":"strong","idempotency":"required"},
+  "persistence":{"endpoint":"/api/brain-operating-loop","service_ingest_endpoint":"/api/brain-operating-ingest","store":"netlify_blobs:brain-operating-loop","tenant_binding":"server_identity_or_service_credential","consistency":"strong","idempotency":"required","service_credentials_env":"BRAIN_SERVICE_CREDENTIALS_JSON","service_credentials_store":"sha256_only"},
   "memory":{"error_ledger":"BG166","current_state":"BG167","outcome_router":"BG168"},
   "production":{"authority":"BG169","exact_revision_required":true},
   "value_evaluation_days":[30,90,180],
   "provenance_required":["source","source_id","observed_at","freshness","evidence_ids"],
-  "ingestion":{"preserve_raw_source":true,"compatibility_mapping":"versioned","unknown_source":"fail_closed","dedupe":"idempotency_key"},
+  "ingestion":{"preserve_raw_source":true,"compatibility_mapping":"versioned","unknown_source":"fail_closed","dedupe":"idempotency_key","external_tenant_source":"credential_only"},
   "advice":{"requires":["evidence","impact","priority","recommendation","owner"],"must_link_to_business_graph":true},
   "future_sources":{"inherit_contract":true,"auto_register":true,"production_without_adapter":false}
 }
