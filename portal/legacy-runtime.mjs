@@ -3,7 +3,7 @@ import { resolvePortalRoute } from './legacy-map.mjs';
 import { renderLegacyBridge } from './render-legacy-bridge.mjs';
 import { bindLegacyFrames } from './legacy-frame.mjs';
 
-const NATIVE_LEGACY_WORKSPACES=new Set(['profiel','dataai','antwoorden','aiscan','business','cijfers','mensen','wijzigingen','advies','branche','onderzoek','strategie','bijhouden','roadmap','canvassen','dd','eindconclusie','waarde','beleid','aicap','dna','downloaden','afdrukken']);
+const NATIVE_LEGACY_WORKSPACES=new Set(['profiel','dataai','antwoorden','aiscan','business','cijfers','mensen','wijzigingen','advies','branche','onderzoek','strategie','bijhouden','roadmap','canvassen','dd','eindconclusie','waarde','beleid','aicap','dna','downloaden','afdrukken','openen']);
 
 const style=document.createElement('link');
 style.rel='stylesheet';
