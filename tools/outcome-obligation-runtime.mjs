@@ -1,4 +1,6 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
+import { createDefaultAgentRegistry } from '../platform/agents/agent-team.mjs';
 import { evaluateOutcomeObligation, computeExecutionIdentity } from './outcome-obligation-executor.mjs';
 
 function requireStore(store, name, methods) {
@@ -40,20 +42,7 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
     const evidence = await evidenceStore.list(identity.idempotencyKey);
     const isDue = due ?? defaultDue(obligation, trigger);
 
-    let decision = evaluateOutcomeObligation({
-      obligation,
-      now,
-      trigger,
-      agent,
-      due:isDue,
-      priorWork,
-      priorRecovery,
-      evidence,
-      hardBoundary,
-      evidenceDeadline,
-      productionProofRequired,
-      coalesceKey,
-    });
+    let decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
 
     if (decision.dispatch) {
       const persisted = await workStore.putIfAbsent({
@@ -64,43 +53,13 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
         executionWindow:decision.executionWindow,
       });
       priorWork = persisted.record;
-      decision = evaluateOutcomeObligation({
-        obligation,
-        now,
-        trigger,
-        agent,
-        due:isDue,
-        priorWork,
-        priorRecovery,
-        evidence,
-        hardBoundary,
-        evidenceDeadline,
-        productionProofRequired,
-        coalesceKey,
-      });
+      decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
     }
 
     if (decision.recovery) {
-      const persisted = await recoveryStore.putIfAbsent({
-        ...decision.recovery,
-        traceId:decision.traceId,
-        state:'RECOVERING',
-      });
+      const persisted = await recoveryStore.putIfAbsent({ ...decision.recovery, traceId:decision.traceId, state:'RECOVERING' });
       priorRecovery = persisted.record;
-      decision = evaluateOutcomeObligation({
-        obligation,
-        now,
-        trigger,
-        agent,
-        due:isDue,
-        priorWork,
-        priorRecovery,
-        evidence,
-        hardBoundary,
-        evidenceDeadline,
-        productionProofRequired,
-        coalesceKey,
-      });
+      decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
     }
 
     return Object.freeze({ ...decision });
@@ -117,10 +76,63 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
             return found;
           });
       const results = [];
-      for (const obligation of selected) {
-        results.push(await evaluateOne({ obligation, trigger, productionProofRequired, coalesceKey, due, evidenceDeadline, hardBoundary }));
-      }
+      for (const obligation of selected) results.push(await evaluateOne({ obligation, trigger, productionProofRequired, coalesceKey, due, evidenceDeadline, hardBoundary }));
       return Object.freeze(results);
     },
+  });
+}
+
+function parseCliArgs(argv) {
+  const args = { command:argv[0] ?? 'sweep', obligationIds:null, triggerType:null, fingerprint:null, now:null, output:'.artifacts/outcome-obligation-decisions.json' };
+  for (let i = 1; i < argv.length; i += 1) {
+    const value = argv[i + 1];
+    if (argv[i] === '--obligation' && value) { args.obligationIds = [value]; i += 1; }
+    else if (argv[i] === '--trigger-type' && value) { args.triggerType = value; i += 1; }
+    else if (argv[i] === '--fingerprint' && value) { args.fingerprint = value; i += 1; }
+    else if (argv[i] === '--now' && value) { args.now = value; i += 1; }
+    else if (argv[i] === '--output' && value) { args.output = value; i += 1; }
+    else throw new TypeError(`unknown or incomplete CLI argument: ${argv[i]}`);
+  }
+  return args;
+}
+
+function failClosedStores() {
+  return {
+    workStore:{ async get(){ return null; }, async putIfAbsent(){ throw new Error('durable_work_store_not_configured'); } },
+    evidenceStore:{ async list(){ return []; } },
+    recoveryStore:{ async get(){ return null; }, async putIfAbsent(){ throw new Error('durable_recovery_store_not_configured'); } },
+  };
+}
+
+export async function runOutcomeObligationCli(argv = process.argv.slice(2)) {
+  const args = parseCliArgs(argv);
+  const triggerType = args.triggerType ?? (args.command === 'event' ? 'event-trigger' : 'scheduled-sweep');
+  const trigger = { type:triggerType, fingerprint:args.fingerprint ?? (triggerType === 'event-trigger' ? 'manual-event' : 'scheduled') };
+  const stores = failClosedStores();
+  const runtime = createOutcomeObligationRuntime({
+    registry:createDefaultAgentRegistry(),
+    ...stores,
+    clock:() => new Date(args.now ?? Date.now()),
+  });
+  const decisions = await runtime.evaluateSweep({
+    trigger,
+    obligationIds:args.obligationIds,
+    hardBoundary:'durable_work_store_not_configured',
+  });
+  const artifact = Object.freeze({
+    schemaVersion:1,
+    mode:'decision-only-fail-closed',
+    productionMutation:false,
+    decisions,
+  });
+  await mkdir(args.output.split('/').slice(0, -1).join('/') || '.', { recursive:true });
+  await writeFile(args.output, `${JSON.stringify(artifact, null, 2)}\n`, 'utf8');
+  return artifact;
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  runOutcomeObligationCli().catch(error => {
+    console.error(error?.stack || error?.message || String(error));
+    process.exitCode = 1;
   });
 }
