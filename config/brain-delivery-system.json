@@ -89,6 +89,20 @@
     "independentPromotion": true,
     "exactShaRequired": true,
     "productionAuthority": "BG169",
+    "productionAuthorityContract": {
+      "id": "BG169",
+      "fallbackPolicy": "primary_then_verified_failover",
+      "failoverRequiresSameContract": true,
+      "ackIsExecutionProof": false,
+      "exactShaRequired": true,
+      "sameRepositoryRequired": true,
+      "rollbackRequired": true,
+      "executionProofRequired": true,
+      "transports": [
+        {"id": "make", "priority": 1, "mode": "primary"},
+        {"id": "github-native", "priority": 2, "mode": "verified-failover"}
+      ]
+    },
     "outcomeRouter": "BG168",
     "currentStateProjection": "BG167",
     "errorLedger": "BG166"
