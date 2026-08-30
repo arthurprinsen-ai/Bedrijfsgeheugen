@@ -91,6 +91,15 @@ test('unknown active delivery work fails closed before production', async () => 
   assert.throws(() => createDeliveryPlan({ changedPaths:['unowned/new-system.mjs'], headSha:'abcdef1234567890', policy }), /unclassified delivery path/);
 });
 
+test('canonical chat learning checkpoints are classified as docs-only operational memory', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const path = 'docs/powerhouse-chat-learning-checkpoint-2026-08-30.md';
+  const plan = createDeliveryPlan({ changedPaths:[path], headSha:'c0ffee1234567890', policy });
+  assert.deepEqual(plan.ignoredPaths, [path]);
+  assert.deepEqual(plan.lanes, []);
+  assert.equal(plan.integration.required, false);
+});
+
 test('a future workflow is automatically classified as shared Brain delivery work', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({ changedPaths:['.github/workflows/future-agent-scenario.yml'], headSha:'fedcba1234567890', policy });
