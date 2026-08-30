@@ -19,6 +19,11 @@ on:
         description: 'Immutable candidate branch'
         required: true
         type: string
+      verification_only:
+        description: 'Preserve non-production verification mode through Unified Brain'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -118,6 +123,7 @@ jobs:
           BASE_SHA: ${{ inputs.base_sha }}
           HEAD_SHA: ${{ inputs.head_sha }}
           CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+          VERIFICATION_ONLY: ${{ inputs.verification_only }}
         run: |
           set -euo pipefail
           gh workflow run unified-brain-delivery.yml \
@@ -126,4 +132,5 @@ jobs:
             -f pr_number="$PR_NUMBER" \
             -f base_sha="$BASE_SHA" \
             -f head_sha="$HEAD_SHA" \
-            -f candidate_branch="$CANDIDATE_BRANCH"
+            -f candidate_branch="$CANDIDATE_BRANCH" \
+            -f verification_only="$VERIFICATION_ONLY"
