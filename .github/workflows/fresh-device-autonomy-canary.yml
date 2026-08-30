@@ -1,0 +1,48 @@
+name: Fresh Device Autonomy Canary
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/fresh-device-autonomy-canary.yml"
+      - "scripts/brain/device-certify.mjs"
+      - "config/brain-delivery-system.json"
+      - "tests/brain-fresh-device-canary.test.mjs"
+      - ".github/workflows/repo-writer-candidate-shadow.yml"
+      - ".github/workflows/repo-writer-operational-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  certify:
+    name: fresh-device-certification
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Create non-protected canary branch
+        run: git switch -c "canary/device-${{ github.run_id }}"
+
+      - name: Certify clean device prerequisites
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p .artifacts
+          node scripts/brain/device-certify.mjs | tee .artifacts/fresh-device-certification.json
+
+      - name: Persist fresh-device evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: fresh-device-certification-${{ github.run_id }}
+          path: .artifacts/fresh-device-certification.json
+          if-no-files-found: error
