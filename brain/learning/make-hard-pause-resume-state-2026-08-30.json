@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "type": "POWERHOUSE_BLOCKED_CURRENT_STATE",
+  "date": "2026-08-30",
+  "fingerprint": "make|organization-limit|all-scenario-runs-blocked",
+  "component": {
+    "platform": "Make",
+    "organization_id": 8354941,
+    "team_id": 2138086,
+    "zone": "eu1.make.com"
+  },
+  "state": "BLOCKED_HARD_BOUNDARY",
+  "root_cause": "Make refuses scenario execution because the organization or team is paused after exceeding operations or data-transfer capacity. More paid capacity is outside autonomous agent authority.",
+  "current_behavior": [
+    "Scenario activation/configuration reads remain possible, but scenario execution is refused by the Make platform while the organization/team is paused.",
+    "BG89 production scenario 7036518 read back paused while the organization is capacity-blocked.",
+    "Notion Query Data Source is independently unavailable with usage_limit_reached; that query is not evidence of an empty dataset."
+  ],
+  "safe_state": {
+    "bg89_production_filter_saved": true,
+    "bg89_production_filter_contract": "Interaction Key rich_text must not contain network- before commercial scoring/writeback.",
+    "bg89_projection_cutover_done": false,
+    "bg89_trigger_cursor_parity_verified": false,
+    "network_cleanup_captured_rows": 56,
+    "network_cleanup_applied_to_captured_rows": true,
+    "network_cleanup_exact_zero_count_verified": false,
+    "network_cleanup_zero_count_blocker": "Notion query_data_sources usage_limit_reached",
+    "temporary_bg89_scenarios_active": 0,
+    "ab_parity_scenario_id": 7165089,
+    "ab_parity_scenario_active": false
+  },
+  "verified_evidence": [
+    "Natural BG89 execution 72ca35e9e68b41ecbf199688db528a0a proved operational network-* rows were incorrectly commercially scored before the filter repair.",
+    "Blast-radius SQL count before cleanup was exactly 56 rows matching Interaction Key network-*, Modelversie OpportunityMarket-v2.1-attribution, Opportunity Updated present.",
+    "Direct-Notion cleanup canary on page 3cada36a-ac8a-8196-9498-c7e62b6b6782 cleared only BG89-owned fields and preserved operational network identity/payload fields.",
+    "All captured cleanup pages received the same clear operation; one typo request was atomically rejected and then corrected successfully.",
+    "A-B no-write parity is GREEN on real BG98 research, LinkedIn DM and LinkedIn company record classes with zero deterministic scorer diffs.",
+    "PR #694 merged to main as 1a3501a0e9e8e7af24759ecd06127f0025e0aa6c and contains the durable failure/prevention lessons.",
+    "TMP BG89 scenario inventory readback shows every TMP BG89 scenario isActive=false; BG89 A-B Projection Parity v1 no-write is also isActive=false."
+  ],
+  "forbidden_while_blocked": [
+    "Do not retry Make scenario_run while the organization/team remains hard-paused.",
+    "Do not buy, upgrade or enable additional paid capacity autonomously.",
+    "Do not reactivate any TMP/shadow/parity scenario merely because platform capacity returns.",
+    "Do not claim network cleanup remaining=0 until an exact fresh query proves it.",
+    "Do not cut BG89 production ownership to the projected query until trigger/cursor/backlog/freshness parity is runtime-proven."
+  ],
+  "resume_contract": [
+    "First read Make organization/team runtime state; do not infer recovery from elapsed time.",
+    "If Make is still hard-paused: emit/coalesce the same blocker fingerprint and perform no paid retries.",
+    "If Make capacity is restored: keep all TMP/parity harnesses inactive by default.",
+    "Run exactly one bounded no-write verification canary only when needed for a new hypothesis or unresolved gate.",
+    "Verify BG89 saved network exclusion on Interaction Key before any production run.",
+    "Verify trigger/cursor parity against the current production Watch semantics before replacing the trigger with a projected query.",
+    "When Notion query_data_sources becomes available, execute exactly one count for network-* + BG89 Modelversie + Opportunity Updated present. Require remaining=0 before cleanup is marked complete.",
+    "After every material new proof, update durable learning/current state and refresh shared team context through the normal governed learning route when Make is available."
+  ],
+  "ownership": {
+    "primary": "cost/reliability owner agent",
+    "production_scenario_owner": "BG89 Signal Fusion Engine",
+    "promotion_authority": "BG169 for GitHub-backed production changes"
+  },
+  "success_criteria": [
+    "Make platform capacity is directly observed available.",
+    "No temporary BG89 test scenario is active unless intentionally executing one bounded canary.",
+    "Network contamination exact remaining count is 0.",
+    "BG89 network exclusion is preserved.",
+    "Projected read cutover, if pursued, has same-input scorer parity plus trigger/cursor/backlog/freshness parity.",
+    "Any production change has exact candidate identity, rollback and fresh production evidence."
+  ]
+}
