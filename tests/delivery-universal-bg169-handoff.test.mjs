@@ -6,11 +6,21 @@ const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 
 const marker = '- name: BG169 primary Make transport with GitHub-native failover';
 const handoff = workflow.split(marker)[1] || '';
 
-test('green executable pull requests reach the BG169 authority without writer-only gating', () => {
+test('all executable Brain lanes can reach BG169 only through explicit production dispatch', () => {
   assert.ok(handoff, 'BG169 multi-transport production handoff step missing');
   const condition = handoff.match(/\n\s*if:\s*([^\n]+)/)?.[1] || '';
   assert.ok(condition.includes("needs.plan.outputs.has_lanes == 'true'"), 'handoff must require executable lanes');
-  assert.ok(!condition.includes("startsWith(inputs.candidate_branch, 'writer/')"), 'general production handoff must not be writer-only');
+  assert.ok(condition.includes("github.event_name == 'workflow_dispatch'"), 'production handoff must require explicit workflow dispatch');
+  assert.ok(condition.includes("inputs.pr_number != ''"), 'production handoff must require explicit PR identity');
+  assert.ok(condition.includes('inputs.verification_only != true'), 'verification-only delivery must never promote');
+  assert.ok(!condition.includes("startsWith(inputs.candidate_branch, 'writer/')"), 'general Brain production handoff must remain available to every governed lane');
+});
+
+test('live main protection is certified before BG169 production handoff', () => {
+  const protectionMarker = '- name: Certify live main protection before production handoff';
+  assert.match(workflow, /Certify live main protection before production handoff/);
+  assert.match(workflow, /MAIN_PROTECTION_BLOCKED/);
+  assert.ok(workflow.indexOf(protectionMarker) < workflow.indexOf(marker), 'main protection certification must precede BG169');
 });
 
 test('verification-only writer dispatch remains explicitly non-promoting', () => {
@@ -19,11 +29,12 @@ test('verification-only writer dispatch remains explicitly non-promoting', () =>
   assert.match(handoff, /inputs\.verification_only != true/);
 });
 
-test('BG169 resolves immutable PR identity and rejects acknowledgement-only success', () => {
-  assert.match(handoff, /PR_NUMBER:\s*\$\{\{\s*inputs\.pr_number\s*\|\|\s*github\.event\.pull_request\.number\s*\}\}/);
+test('BG169 resolves immutable explicit dispatch identity and rejects acknowledgement-only success', () => {
+  assert.match(handoff, /PR_NUMBER:\s*\$\{\{\s*inputs\.pr_number\s*\}\}/);
   assert.match(handoff, /BASE_SHA:\s*\$\{\{\s*needs\.plan\.outputs\.base_sha\s*\}\}/);
   assert.match(handoff, /HEAD_SHA:\s*\$\{\{\s*needs\.plan\.outputs\.head_sha\s*\}\}/);
-  assert.match(handoff, /CANDIDATE_BRANCH:\s*\$\{\{\s*inputs\.candidate_branch\s*\|\|\s*github\.event\.pull_request\.head\.ref\s*\}\}/);
+  assert.match(handoff, /CANDIDATE_BRANCH:\s*\$\{\{\s*inputs\.candidate_branch\s*\}\}/);
+  assert.doesNotMatch(handoff, /github\.event\.pull_request\.(number|head\.ref)/);
   assert.match(handoff, /BG169_HANDOFF_NOT_ACCEPTED/);
 });
 
