@@ -110,11 +110,23 @@ export async function loadDeliveryPreflight({
       ...Object.fromEntries(Object.entries(normalized).filter(([, value]) => value !== null && value !== undefined)),
     }));
   }
+  const uniqueReusedGuards = [...new Set(reusedGuards)];
+  const missingActionableGuardKnowledge = uniqueReusedGuards.filter(fingerprint => {
+    const knowledge = knowledgeByFingerprint.get(fingerprint);
+    return !knowledge
+      || typeof knowledge.rootCause !== 'string'
+      || knowledge.rootCause.trim().length === 0
+      || typeof knowledge.fix !== 'string'
+      || knowledge.fix.trim().length === 0;
+  });
+  if (missingActionableGuardKnowledge.length) {
+    throw new Error(`actionable guard knowledge missing for reused guards: ${missingActionableGuardKnowledge.join(', ')}`);
+  }
   const guardKnowledge = [...knowledgeByFingerprint.values()];
 
   return Object.freeze({
     ...baseDecision,
-    reusedGuards: Object.freeze([...new Set(reusedGuards)]),
+    reusedGuards: Object.freeze(uniqueReusedGuards),
     guardKnowledge: Object.freeze(guardKnowledge),
     completionPolicy: Object.freeze({ ...completionPolicy })
   });
