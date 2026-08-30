@@ -220,6 +220,29 @@ To make future work faster:
 - encode each discovered failure as a regression contract or fail-closed gate
 - treat cost, latency, security and production outcome as first-class evidence fields
 
+## Portal/customer-auth continuity
+
+The proven customer-auth recovery fingerprint is `portal|customer-auth|legacy-inline-login-jitter`.
+
+- Root cause: mixed Netlify Identity and Supabase ownership plus the large legacy portal lifecycle caused the inline editable login DOM to re-render and lose focus/state on iOS.
+- Proven architecture: isolate the only editable customer login in `klant-login.html`; the legacy portal redirects to it instead of rendering competing inline fields.
+- Backend HTTP success is not enough. The incident closes only with device outcome evidence on the affected device/browser plus separate production/deploy evidence.
+- Reuse this architecture before introducing another auth path or symptom patch.
+
+## Chat-memory / CI continuity
+
+- Never allow RED-first development tests or ordinary development mutations as direct pushes to `main`; work on an isolated candidate and promote only an exact green candidate.
+- Before adding a memory layer, inspect the existing memory architecture before creating a new memory subsystem; extend canonical BG166/BG167/BG168/Company Graph memory instead of creating parallel truth.
+- Contract checks that search canonical text must be deliberately case-insensitive when capitalization is not semantically meaningful; do not rewrite correct knowledge merely to satisfy brittle casing.
+- Canonical checkpoint content and the contract test that requires it must change in the same candidate. A test-only push that makes `main` red is itself a governance failure.
+
+## Delivery continuity learnings
+
+- HTTP acknowledgement is not execution proof. A 200/accepted transport response must be followed by downstream execution/state readback and immutable outcome evidence.
+- Make capacity/quota is a production gate. If capacity is paused or quota-exceeded, block that transport and do not claim production green without a separately verified governed failover.
+- Client/browser caching alone does not reduce Make cost when source calls still execute. Cost optimization must reduce upstream invocations through events, deltas, shared cached state or other source-call elimination.
+- Repository branch discovery must be read-only. Never perform a write merely to learn whether a branch exists; inspect the branch/ref first, then mutate only the proven target.
+
 ## Regression checklist for future agents
 
 Before declaring a change complete:
