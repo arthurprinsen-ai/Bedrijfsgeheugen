@@ -90,7 +90,7 @@ EIGENAAR = {
     'begrippenlijst mkb': '/begrippen',
 }
 
-OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo'}
+OVERSLAAN = {'index-oud', 'klantportaal', 'klantformulier', 'klantportaal-demo', 'klant-login'}
 GEEN_KRUIMEL = {'index', '404'}
 GEEN_CANONICAL = {'404'}
 GEEN_H2 = {'404'}

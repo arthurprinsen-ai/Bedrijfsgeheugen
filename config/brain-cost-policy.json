@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "monthlyLimitCredits": 10000,
+  "monthlyTokenLimit": 10000,
   "timezone": "Europe/Amsterdam",
   "allocations": {
     "production_core": 4500,

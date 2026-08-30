@@ -1,9 +1,12 @@
 const COMPONENT_FIELDS = [
   'componentKey', 'name', 'kind', 'active', 'costClass', 'classificationState', 'runDecision',
   'creditsDelta', 'operationsDelta', 'dataTransferDelta', 'creditsPerVerifiedOutcome',
-  'latencyMsPerVerifiedOutcome', 'verifiedOutcomes', 'state',
+  'latencyMsPerVerifiedOutcome', 'verifiedOutcomes', 'tokensToday', 'tokensMonth', 'tokenCalls', 'tokenCoverage', 'state',
 ];
-const BUDGET_FIELDS = ['monthlyLimit', 'usedCredits', 'remainingCredits', 'dailyAllowance', 'paceRatio', 'state', 'decision'];
+const BUDGET_FIELDS = [
+  'monthlyLimit', 'usedCredits', 'remainingCredits', 'dailyAllowance', 'paceRatio', 'state', 'decision',
+  'monthlyTokenLimit', 'usedTokens', 'remainingTokens', 'tokensToday', 'dailyTokenAllowance', 'tokenPaceRatio', 'tokenState', 'tokenCoverage',
+];
 
 function select(source, fields) {
   const target = {};

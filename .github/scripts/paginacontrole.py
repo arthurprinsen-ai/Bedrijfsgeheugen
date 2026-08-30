@@ -16,7 +16,7 @@ POORT = 0  # het besturingssysteem kiest een vrije poort
 WORTEL = os.getcwd()
 
 # pagina's die bewust geen site-chrome hebben of niet publiek zijn
-OVERSLAAN = {'index-oud', 'klantportaal', 'klantportaal-demo'}
+OVERSLAAN = {'index-oud', 'klantportaal', 'klantportaal-demo', 'klant-login'}
 # pagina's die bewust geen kruimelpad hebben
 GEEN_KRUIMEL = {'index', '404'}
 # een foutpagina hoort niet naar zichzelf te verwijzen

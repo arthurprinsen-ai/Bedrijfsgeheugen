@@ -29,8 +29,8 @@ test('correct role receives only the sanitized current projection', async () => 
     store: { get: async () => ({
       schemaVersion: 1,
       sourceUpdatedAt: '2026-08-30T08:00:00Z',
-      budget: { monthlyLimit: 10_000, usedCredits: 2_000, state: 'GREEN', dailyAllowance: 300 },
-      components: [{ componentKey: 'make:159', name: 'BG159', kind: 'MAKE_SCENARIO', creditsDelta: 20, runDecision: 'RUN' }],
+      budget: { monthlyLimit: 10_000, usedCredits: 2_000, state: 'GREEN', dailyAllowance: 300, monthlyTokenLimit: 10_000, usedTokens: 370, remainingTokens: 9_630, tokensToday: 120, tokenCoverage: 'RECORDED_PROVIDER_CALLS_ONLY' },
+      components: [{ componentKey: 'make:159', name: 'BG159', kind: 'MAKE_SCENARIO', creditsDelta: 20, tokensToday: null, tokensMonth: null, tokenCoverage: 'UNMETERED', runDecision: 'RUN' }],
       savings: [{ componentKey: 'make:159', creditsSaved: 10, verified: true }],
       rawPrompt: 'SECRET',
       crmContact: 'PRIVATE',
@@ -42,6 +42,9 @@ test('correct role receives only the sanitized current projection', async () => 
 
   assert.equal(response.status, 200);
   assert.equal(body.budget.monthlyLimit, 10_000);
+  assert.equal(body.budget.usedTokens, 370);
+  assert.equal(body.budget.tokenCoverage, 'RECORDED_PROVIDER_CALLS_ONLY');
+  assert.equal(body.components[0].tokenCoverage, 'UNMETERED');
   assert.equal(body.components[0].componentKey, 'make:159');
   assert.equal(body.freshness, 'CURRENT');
   assert.equal(JSON.stringify(body).includes('SECRET'), false);

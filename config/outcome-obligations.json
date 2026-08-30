@@ -56,6 +56,16 @@
       "recoveryPolicy": "Defer optional work, preserve protected interrupts and re-evaluate after the next verified cost snapshot."
     },
     {
+      "id": "token-policy-10000-monthly",
+      "domain": "cost",
+      "expected": "Every governed AI provider call records exact returned token usage and optional AI work is deferred when the shared 10000-token monthly envelope is exhausted.",
+      "dueAt": "after_each_governed_provider_call_and_before_optional_ai_work",
+      "ownerAgent": "agent-cost",
+      "evidencePolicy": "The append-only provider usage ledger contains only sanitized token counters keyed by request id; the dashboard distinguishes RECORDED from UNMETERED components and the deterministic envelope uses the strictest credit or token state.",
+      "idempotencyKey": "ai-token-usage|provider-request-id",
+      "recoveryPolicy": "Keep the valid user outcome available when metering storage is transiently unavailable, mark coverage unavailable, retry bounded writeback and defer optional AI once verified usage reaches the limit."
+    },
+    {
       "id": "cost-ledger-all-scenarios-daily",
       "domain": "cost",
       "expected": "Every discovered Make scenario and registered Brain agent is classified and represented in the daily normalized cost ledger.",

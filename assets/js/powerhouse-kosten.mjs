@@ -11,6 +11,11 @@ function formatCredits(value) {
   return Number.isFinite(Number(value)) ? `${credits.format(Number(value))} cr` : '—';
 }
 
+function formatTokens(value, coverage = 'RECORDED') {
+  if (coverage === 'UNMETERED' || value === null || value === undefined) return 'Niet gemeten';
+  return Number.isFinite(Number(value)) ? `${credits.format(Number(value))} tok` : 'Niet gemeten';
+}
+
 function cell(row, value, className = '') {
   const node = document.createElement('td');
   node.textContent = value ?? '—';
@@ -28,6 +33,8 @@ function renderComponents(rows = []) {
     cell(row, component.kind === 'MAKE_SCENARIO' ? 'Make' : 'Agent');
     cell(row, component.costClass ?? 'Niet ingedeeld');
     cell(row, formatCredits(component.creditsDelta), 'numeric');
+    cell(row, formatTokens(component.tokensToday, component.tokenCoverage), 'numeric');
+    cell(row, formatTokens(component.tokensMonth, component.tokenCoverage), 'numeric');
     cell(row, formatCredits(component.creditsPerVerifiedOutcome), 'numeric');
     cell(row, component.runDecision ?? '—', `decision decision-${String(component.runDecision ?? '').toLowerCase()}`);
     body.append(row);
@@ -72,6 +79,11 @@ function render(data) {
   setText('remaining-credits', formatCredits(data.budget?.remainingCredits));
   setText('daily-allowance', formatCredits(data.budget?.dailyAllowance));
   setText('budget-state', data.budget?.state);
+  setText('monthly-token-limit', formatTokens(data.budget?.monthlyTokenLimit, data.budget?.tokenCoverage));
+  setText('used-tokens', formatTokens(data.budget?.usedTokens, data.budget?.tokenCoverage));
+  setText('remaining-tokens', formatTokens(data.budget?.remainingTokens, data.budget?.tokenCoverage));
+  setText('tokens-today', formatTokens(data.budget?.tokensToday, data.budget?.tokenCoverage));
+  setText('token-coverage', data.budget?.tokenCoverage === 'RECORDED_PROVIDER_CALLS_ONLY' ? 'Alleen gekoppelde providercalls' : 'Onvolledig');
   setText('freshness', `${data.freshness ?? 'ONBEKEND'} · ${data.sourceUpdatedAt ? new Date(data.sourceUpdatedAt).toLocaleString('nl-NL') : 'geen meting'}`);
   document.getElementById('status-dot').dataset.state = String(data.freshness ?? '').toLowerCase();
   setText('team-contract', data.contract?.teamContract);

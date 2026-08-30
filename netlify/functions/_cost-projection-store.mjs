@@ -1,6 +1,7 @@
 import { getStore } from '@netlify/blobs';
 import { createDefaultAgentRegistry } from '../../platform/agents/agent-team.mjs';
 import { buildComponentCatalog } from '../../platform/cost/component-catalog.mjs';
+import { createAiUsageStore } from './_ai-usage-store.mjs';
 
 const STORE_NAME = 'brain-read-models';
 const STORE_KEY = 'POWERHOUSE/cost-dashboard/current';
@@ -105,6 +106,62 @@ function recordFromSnapshot(snapshot, sourceUpdatedAt) {
   };
 }
 
+function recordWithTokenUsage(record, tokenUsage) {
+  if (!record) return null;
+  if (!tokenUsage) return {
+    ...record,
+    budget: { ...record.budget, monthlyTokenLimit:10_000, usedTokens:null, remainingTokens:null, tokensToday:null, dailyTokenAllowance:null, tokenPaceRatio:null, tokenState:'UNKNOWN', tokenCoverage:'UNAVAILABLE' },
+    components: (record.components ?? []).map(component => ({ ...component, tokensToday:null, tokensMonth:null, tokenCalls:null, tokenCoverage:'UNMETERED' })),
+  };
+  const byComponent = new Map((tokenUsage.components ?? []).map(component => [component.componentKey, component]));
+  const seen = new Set();
+  const components = (record.components ?? []).map(component => {
+    const measured = byComponent.get(component.componentKey);
+    seen.add(component.componentKey);
+    return {
+      ...component,
+      tokensToday: measured?.tokensToday ?? null,
+      tokensMonth: measured?.totalTokens ?? null,
+      tokenCalls: measured?.calls ?? null,
+      tokenCoverage: measured ? 'RECORDED' : 'UNMETERED',
+    };
+  });
+  for (const measured of tokenUsage.components ?? []) {
+    if (seen.has(measured.componentKey)) continue;
+    components.push({
+      componentKey: measured.componentKey,
+      name: measured.componentKey,
+      kind: measured.componentKey.startsWith('agent:') ? 'AGENT' : 'MAKE_SCENARIO',
+      active: true,
+      costClass: 'unclassified',
+      classificationState: 'UNCLASSIFIED',
+      runDecision: 'BUDGET_DEFERRED',
+      creditsDelta: null,
+      operationsDelta: null,
+      dataTransferDelta: null,
+      tokensToday: measured.tokensToday,
+      tokensMonth: measured.totalTokens,
+      tokenCalls: measured.calls,
+      tokenCoverage: 'RECORDED',
+    });
+  }
+  return {
+    ...record,
+    budget: {
+      ...record.budget,
+      monthlyTokenLimit: tokenUsage.monthlyLimitTokens,
+      usedTokens: tokenUsage.usedTokens,
+      remainingTokens: tokenUsage.remainingTokens,
+      tokensToday: tokenUsage.tokensToday,
+      dailyTokenAllowance: tokenUsage.dailyTokenAllowance,
+      tokenPaceRatio: tokenUsage.tokenPaceRatio,
+      tokenState: tokenUsage.tokenState,
+      tokenCoverage: tokenUsage.coverage,
+    },
+    components,
+  };
+}
+
 export function createNotionCostProjectionSource({ fetchImpl = fetch, token = process.env.NOTION_TOKEN, dataSourceId = COST_DATA_SOURCE_ID } = {}) {
   return Object.freeze({
     async get() {
@@ -133,16 +190,20 @@ export function createNotionCostProjectionSource({ fetchImpl = fetch, token = pr
   });
 }
 
-export function createCostProjectionStore(store = getStore({ name: STORE_NAME, consistency: 'strong' }), notionSource = createNotionCostProjectionSource()) {
+export function createCostProjectionStore(store = getStore({ name: STORE_NAME, consistency: 'strong' }), notionSource = createNotionCostProjectionSource(), aiUsageSource = createAiUsageStore()) {
   return Object.freeze({
     async get() {
-      const [blobRecord, notionRecord] = await Promise.all([
+      const [blobRecord, notionRecord, tokenUsage] = await Promise.all([
         store.get(STORE_KEY, { type: 'json', consistency: 'strong' }),
         notionSource.get(),
+        aiUsageSource.monthly({ monthlyLimitTokens:10_000 }).catch(() => null),
       ]);
-      if (!blobRecord) return notionRecord;
-      if (!notionRecord) return blobRecord;
-      return new Date(notionRecord.sourceUpdatedAt).getTime() > new Date(blobRecord.sourceUpdatedAt).getTime() ? notionRecord : blobRecord;
+      const newest = !blobRecord
+        ? notionRecord
+        : !notionRecord
+          ? blobRecord
+          : new Date(notionRecord.sourceUpdatedAt).getTime() > new Date(blobRecord.sourceUpdatedAt).getTime() ? notionRecord : blobRecord;
+      return recordWithTokenUsage(newest, tokenUsage);
     },
     async put(projection) {
       return store.setJSON(STORE_KEY, projection);
