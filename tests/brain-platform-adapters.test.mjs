@@ -1,0 +1,36 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const readJson = async p => JSON.parse(await readFile(p,'utf8'));
+
+test('all core platforms inherit compatibility regression and BG169 promotion', async () => {
+  const c = await readJson('config/brain-platform-adapters.json');
+  assert.equal(c.contract,'BRAIN-PLATFORM-ADAPTER-v1');
+  assert.equal(c.activation.mode,'fail_closed');
+  const m = new Map(c.platforms.map(x => [x.platform,x]));
+  for (const p of ['github','netlify','make','notion','supabase','dataforseo']) {
+    assert.ok(m.has(p), `${p} adapter missing`);
+    assert.equal(m.get(p).regression_contract,'required');
+    assert.ok(m.get(p).compatibility_mapping.startsWith('versioned'));
+    assert.equal(m.get(p).direct_promotion,true);
+    assert.equal(m.get(p).authority,'BG169');
+  }
+});
+
+test('future components fail closed until the universal adapter contract is met', async () => {
+  const c = await readJson('config/brain-platform-adapters.json');
+  assert.equal(c.future_components.inherit_automatically,true);
+  assert.equal(c.future_components.unknown_adapter,'fail_closed');
+  for (const requirement of ['compatibility_mapping','regression_contract','shared_memory','health_freshness_error_owner_cost_revision','exact_revision_evidence','rollback_verified']) assert.ok(c.activation.production_ready_requires.includes(requirement));
+});
+
+test('executive cockpit and outcome semantics are cross-platform', async () => {
+  const c = await readJson('config/brain-platform-adapters.json');
+  assert.deepEqual(c.telemetry_contract.required_fields,['health','freshness','error','owner','cost','revision','last_verified_at']);
+  assert.equal(c.telemetry_contract.projection,'executive_cockpit');
+  assert.equal(c.telemetry_contract.memory,'BG167');
+  assert.equal(c.telemetry_contract.error_ledger,'BG166');
+  assert.equal(c.telemetry_contract.outcome_router,'BG168');
+  assert.deepEqual(c.outcome_contract.done_requires,['owner','executed','verified','result','evidence']);
+  assert.deepEqual(c.outcome_contract.realised_value_requires,['realised','verified','evidence']);
+});
