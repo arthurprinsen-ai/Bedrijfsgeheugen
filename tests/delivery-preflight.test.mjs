@@ -19,3 +19,12 @@ test('preflight fails closed when a PROVEN lesson is missing from active prevent
   await writeFile(rulesPath, JSON.stringify({ rules: [] }));
   await assert.rejects(() => loadDeliveryPreflight({ lessonsPath, rulesPath }), /MISSING_RULE/);
 });
+
+test('preflight fails closed when an active prevention rule has no PROVEN lesson explaining it', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'delivery-preflight-orphan-rule-'));
+  const lessonsPath = join(dir, 'lessons.json');
+  const rulesPath = join(dir, 'rules.json');
+  await writeFile(lessonsPath, JSON.stringify({ lessons: [] }));
+  await writeFile(rulesPath, JSON.stringify({ rules: [{ id: 'ORPHAN_RULE', active: true, scope: 'shared' }] }));
+  await assert.rejects(() => loadDeliveryPreflight({ lessonsPath, rulesPath }), /active prevention rules missing PROVEN lesson: ORPHAN_RULE/);
+});
