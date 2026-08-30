@@ -65,16 +65,23 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t changed < <(git diff --name-only)
+          commit_message="menu-balk: een kleur, verschijnt bij scrollen, mobiel uitgelijnd"
+
           if [ "${#changed[@]}" -eq 0 ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "Geen menu-wijzigingen nodig."
-            exit 0
+            evidence="brain/evidence/writer-canary/menu-balk-fix-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+            mkdir -p "$(dirname "$evidence")"
+            printf '{"contract":"BRAIN-DELIVERY-v2","writer":"menu-balk-fix","proof":"no-op-candidate-flow","source_sha":"%s","run_id":"%s","run_attempt":"%s"}\n' \
+              "$BASE_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > "$evidence"
+            changed=("$evidence")
+            commit_message="menu-balk: candidate-flow verification evidence"
+            echo "Geen inhoudelijke menu-wijzigingen nodig; bewijs-candidate verplicht aangemaakt."
           fi
 
           for f in "${changed[@]}"; do
             case "$f" in
               *.html) ;;
-              *) echo "::error::NON_HTML_CHANGE:$f"; exit 1 ;;
+              brain/evidence/writer-canary/menu-balk-fix-*.json) ;;
+              *) echo "::error::UNEXPECTED_WRITER_CHANGE:$f"; exit 1 ;;
             esac
           done
 
@@ -82,7 +89,7 @@ jobs:
           git config user.name "site-fix"
           git config user.email "actions@users.noreply.github.com"
           git add -- "${changed[@]}"
-          git commit -m "menu-balk: een kleur, verschijnt bij scrollen, mobiel uitgelijnd"
+          git commit -m "$commit_message"
 
           export CHANGED_FILES="$(cat /tmp/menu-writer-files.txt)"
           CANDIDATE_BRANCH=$(node --input-type=module - <<'NODE'
@@ -162,3 +169,5 @@ jobs:
         run: |
           echo "production_authority=BG169"
           echo "direct_main_push=false"
+          echo "candidate_pr=${{ steps.candidate_pr.outputs.pr_number }}"
+          echo "candidate_head_sha=${{ steps.candidate_pr.outputs.head_sha }}"
