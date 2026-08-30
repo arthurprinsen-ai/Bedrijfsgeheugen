@@ -26,6 +26,7 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  actions: write
 
 jobs:
   verify:
@@ -70,3 +71,20 @@ jobs:
           name: repo-writer-shadow-evidence-${{ github.event_name == 'workflow_dispatch' && inputs.pr_number || github.event.pull_request.number }}
           path: artifacts/repo-writer-shadow-evidence.json
           if-no-files-found: error
+
+      - name: Dispatch central immutable writer gates
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event_name == 'workflow_dispatch' && inputs.pr_number || github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.base_sha || github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
+          CANDIDATE_BRANCH: ${{ github.event_name == 'workflow_dispatch' && inputs.candidate_branch || github.head_ref }}
+        run: |
+          set -euo pipefail
+          gh workflow run repo-writer-gate-dispatch.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f pr_number="$PR_NUMBER" \
+            -f base_sha="$BASE_SHA" \
+            -f head_sha="$HEAD_SHA" \
+            -f candidate_branch="$CANDIDATE_BRANCH"
