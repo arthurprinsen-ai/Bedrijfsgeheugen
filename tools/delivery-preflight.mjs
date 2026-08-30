@@ -60,10 +60,11 @@ export async function loadDeliveryPreflight({
   completenessGuardPath = new URL('../config/chat-learning-completeness-guard.json', import.meta.url),
   browserGuardPath = new URL('../config/browser-evidence-guard-contract.json', import.meta.url),
   ownershipGuardPath = new URL('../config/branch-delivery-ownership-guard.json', import.meta.url),
+  guardDiscoveryPath = new URL('../config/guard-regression-discovery-guard.json', import.meta.url),
   component = 'shared',
   stages = ['COMMIT', 'PR', 'MERGE', 'PIPELINE'],
 } = {}) {
-  const [lessonsDoc, chatLessonsDoc, continuityDoc, executionLessonsDoc, completenessAddendum, remediationOwnership, rulesDoc, completenessGuard, browserGuard, ownershipGuard] = await Promise.all([
+  const [lessonsDoc, chatLessonsDoc, continuityDoc, executionLessonsDoc, completenessAddendum, remediationOwnership, rulesDoc, completenessGuard, browserGuard, ownershipGuard, guardDiscovery] = await Promise.all([
     readFile(lessonsPath, 'utf8').then(JSON.parse),
     readFile(chatLessonsPath, 'utf8').then(JSON.parse),
     readFile(continuityPath, 'utf8').then(JSON.parse),
@@ -74,6 +75,7 @@ export async function loadDeliveryPreflight({
     readFile(completenessGuardPath, 'utf8').then(JSON.parse),
     readFile(browserGuardPath, 'utf8').then(JSON.parse),
     readFile(ownershipGuardPath, 'utf8').then(JSON.parse),
+    readFile(guardDiscoveryPath, 'utf8').then(JSON.parse),
   ]);
   if (chatLessonsDoc.preflightRequired !== true || chatLessonsDoc.newAgentsMustReadBeforeExecution !== true) throw new Error('chat learning contract must remain mandatory preflight knowledge');
   if (executionLessonsDoc.version !== chatLessonsDoc.version || executionLessonsDoc.appendOnly !== true) throw new Error('current execution lessons must remain an append-only BRAIN-CHAT-LEARNING-v1 shard');
@@ -89,6 +91,7 @@ export async function loadDeliveryPreflight({
   ) throw new Error('chat learning completeness guard must remain fail-closed through terminal obligation enforcement');
   if (browserGuard.failClosed !== true) throw new Error('browser evidence guard must remain fail-closed');
   if (ownershipGuard.failClosed !== true || ownershipGuard.ambiguousSuccessorState !== 'FAIL_CLOSED') throw new Error('branch delivery ownership guard must remain fail-closed');
+  if (guardDiscovery.failClosed !== true || guardDiscovery.executionPolicy?.familyDiscoveryRequired !== true) throw new Error('guard regression discovery must remain fail-closed and family-discovered');
 
   const activeRules = (rulesDoc.rules || []).filter(rule => rule?.active === true).map(rule => rule.id);
   const historicalLessons = (lessonsDoc.lessons || []).filter(lesson => lesson?.status === 'PROVEN');
@@ -112,6 +115,7 @@ export async function loadDeliveryPreflight({
     ...(completenessGuard.knownFailureFingerprints || []).map(item => typeof item === 'string' ? item : item?.fingerprint),
     ...(browserGuard.knownFailureFingerprints || []),
     ownershipGuard.knownFailure?.fingerprint,
+    guardDiscovery.knownFailure?.fingerprint,
   ].filter(Boolean);
   return Object.freeze({
     ...baseDecision,
