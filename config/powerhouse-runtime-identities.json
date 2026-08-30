@@ -29,7 +29,7 @@
     "new_refresh_owner_requires_overlap_check":true
   },
   "prevention": {
-    "branch_drift":"Rebuild candidate from current main and reapply only proven delta; exact-head gates before promotion.",
+    "branch_drift":"Generic main drift alone is not a blocker. Rebase or rebuild only for actual merge conflict, changed-path overlap, declared contract overlap or declared dependency conflict; always promote the exact tested candidate identity.",
     "green_until_done":"Failed build/test/deploy is intermediate unless a hard boundary is reached; at most two identical retries per hypothesis.",
     "security_continuity":"Do not stop core scenarios as normal remediation; use safe mode and restore verified full mode.",
     "rate_limit":"On 429, stop discovery/retry pressure, use alternate evidence, then one targeted retry.",
