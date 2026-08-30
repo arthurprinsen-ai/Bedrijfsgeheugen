@@ -1,3 +1,5 @@
+import { compileChatLearningPreflight } from '../../scripts/brain/chat-learning-preflight.mjs';
+import { createAgentFabric } from './agent-fabric.mjs';
 import { createAgentRegistry } from './agent-registry.mjs';
 
 const sharedLearning = Object.freeze(['outcome.v1','pattern.v1']);
@@ -95,4 +97,10 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
 
 export function createDefaultAgentRegistry() {
   return createAgentRegistry(DEFAULT_AGENT_TEAM);
+}
+
+export function createDefaultAgentFabric(options = {}) {
+  const registry = options.registry ?? createDefaultAgentRegistry();
+  const learningPreflight = options.learningPreflight ?? (() => compileChatLearningPreflight());
+  return createAgentFabric({ ...options, registry, learningPreflight });
 }
