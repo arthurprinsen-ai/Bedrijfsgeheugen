@@ -1,0 +1,30 @@
+name: Whole Brain Canonical Loop v2
+
+on:
+  push:
+    branches:
+      - feat/whole-brain-canonical-loop-v2
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Canonical loop contract
+        run: node --test tests/whole-brain-canonical-loop-v2.test.mjs
+      - name: Supabase record adapter contract
+        run: node --test tests/whole-brain-supabase-adapter.test.mjs
+      - name: Runtime evidence certifier
+        run: node --test scripts/brain/test-runtime-evidence-certifier.mjs
+      - name: Existing Brain acceptance regression
+        run: node --test tests/brain-acceptance.test.mjs
+      - name: Existing platform adapter regression
+        run: node --test tests/brain-platform-adapters.test.mjs
