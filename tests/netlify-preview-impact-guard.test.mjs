@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { evaluateNetlifyPreviewImpact } from '../tools/netlify-preview-impact.mjs';
 
 const shaA = 'a'.repeat(40);
@@ -72,4 +73,19 @@ test('invalid or equal commit refs fail safe to BUILD', () => {
     assert.equal(result.action, 'BUILD');
     assert.equal(result.exitCode, 1);
   }
+});
+
+test('Netlify wiring and reusable prevention knowledge remain coupled', async () => {
+  const [toml, guard, rules, lessons] = await Promise.all([
+    readFile('netlify.toml', 'utf8'),
+    readFile('config/netlify-preview-impact-guard.json', 'utf8').then(JSON.parse),
+    readFile('config/delivery-prevention-rules.json', 'utf8').then(JSON.parse),
+    readFile('brain/learning/ci-efficiency-lessons-2026-08-30.json', 'utf8').then(JSON.parse),
+  ]);
+  assert.match(toml, /\[context\.deploy-preview\][\s\S]*ignore\s*=\s*"node \.\/tools\/netlify-preview-impact\.mjs"/);
+  assert.equal(guard.failClosed, true);
+  assert.equal(guard.knownFailure.fingerprint, 'netlify-preview-provider-scope-mismatch-v1');
+  assert.equal(guard.knownFailure.regressionContract, 'tests/netlify-preview-impact-guard.test.mjs');
+  assert.ok(rules.rules.some(rule => rule.id === 'SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS' && rule.active === true));
+  assert.ok(lessons.lessons.some(lesson => lesson.fingerprint === 'netlify-preview-provider-scope-mismatch-v1'));
 });
