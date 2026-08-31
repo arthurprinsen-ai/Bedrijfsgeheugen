@@ -15,7 +15,11 @@
   "promotionProof":{
     "candidateTestedIdentityMustMatch":true,
     "currentMainOverlapRecheckRequired":true,
-    "productionAuthorityEvidenceRequired":true
+    "productionAuthorityEvidenceRequired":true,
+    "requiredEvidenceArtifact":"bg169-production-evidence",
+    "authorityExecutionReadbackRequired":true,
+    "skippedPromotionStepIsIncomplete":true,
+    "workflowSuccessWithoutPromotionEvidence":"INCOMPLETE"
   },
   "productionProof":{
     "exactRuntimeIdentityRequired":true,
