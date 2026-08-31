@@ -8,7 +8,8 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/policies/chat-to-brain-completeness-v1.json',
   'brain/learning/chat-continuity-2026-08-31.json',
   'brain/learning/chat-materialization-2026-08-31-v2.json',
-  'brain/learning/chat-materialization-2026-08-31-v3.json'
+  'brain/learning/chat-materialization-2026-08-31-v3.json',
+  'brain/learning/chat-runtime-writeback-obligation-2026-08-31.json'
 ];
 
 function normalizeSourcePath(rootDir, sourcePath) {
@@ -35,6 +36,7 @@ function collectSignals(value, signals, parentKey = '') {
   if (parentKey === 'fingerprints' && typeof value.id === 'string') signals.fingerprints.push(value.id);
   if (typeof value.prevention === 'string') signals.preventions.push(value.prevention);
   if (typeof value.prevent === 'string') signals.preventions.push(value.prevent);
+  if (typeof value.preventionRule === 'string') signals.preventions.push(value.preventionRule);
   if (typeof value.state === 'string' && /(BLOCKED|UNRESOLVED|PAUSED|HARD_BOUNDARY)/i.test(value.state)) {
     signals.blockers.push(value.state);
   }
