@@ -1,5 +1,5 @@
 {
-  "version": "MOVING-MAIN-PR-STATUS-STALE-READBACK-v1",
+  "version": "MOVING-MAIN-PR-STATUS-STALE-READBACK-v1.1",
   "date": "2026-08-31",
   "fingerprint": "github|pr|moving-main|stale-merge-status-caused-duplicate-reconstruction-v1",
   "severity": "medium",
@@ -14,15 +14,24 @@
     "mainWasMoving": true,
     "nativeMainProtected": false
   },
-  "symptom": "A replacement PR was reconstructed because the earlier PR appeared non-mergeable while main was moving, but a fresh PR readback shortly afterward showed the original PR had already merged.",
-  "rootCause": "PR mergeability and merge state were inferred from a transient moving-main snapshot instead of re-reading authoritative PR state immediately before creating a semantic replacement. GitHub mergeability can lag while merge state changes concurrently.",
-  "failedApproach": "Treat mergeable=false or a stale base/head snapshot as sufficient proof that an existing candidate must be replaced.",
-  "provenFix": "Before creating any replacement for an existing candidate, re-read the original PR and current main. If the original is merged or its exact validated blobs are already on main, close or avoid the duplicate and retain one semantic owner.",
+  "observations": [
+    {
+      "type": "PARALLEL_MERGE_INVALIDATED_RETIREMENT_SNAPSHOT",
+      "pullRequest": 823,
+      "observedAt": "2026-08-31T05:54:44Z",
+      "evidence": "A retirement mutation was prepared from an earlier open/stale interpretation, but authoritative mutation readback showed PR #823 had already merged at 2026-08-31T05:26:32Z. The stale assumption was corrected immediately and no destructive rollback was attempted."
+    }
+  ],
+  "symptom": "A replacement or lifecycle mutation can be based on stale PR state while main and parallel delivery are moving; fresh authoritative readback may show the original candidate has already merged.",
+  "rootCause": "PR mergeability, merge state and lifecycle state were inferred from a transient moving-main snapshot instead of re-reading authoritative PR state immediately before a semantic replacement or lifecycle mutation. GitHub state can change concurrently.",
+  "failedApproach": "Treat mergeable=false, an earlier open/closed snapshot or a stale base/head snapshot as sufficient proof that an existing candidate must be replaced, closed or superseded.",
+  "provenFix": "Before creating a semantic replacement or mutating PR lifecycle state, re-read the exact PR and current main. If the original is merged or its exact validated blobs are already on main, avoid duplicate reconstruction and do not write a contradictory retirement state.",
   "preventionRules": [
     "Never create a semantic replacement from mergeable=false alone.",
     "Re-read original PR state immediately before replacement creation.",
     "Re-read current main immediately before replacement creation.",
-    "If exact validated content is already on main, treat the work as delivered and close duplicate candidates.",
+    "Re-read exact PR state immediately before close, reopen, supersede or other lifecycle mutation.",
+    "If exact validated content is already on main, treat the work as delivered and close duplicate candidates only after authoritative readback.",
     "Preserve one canonical semantic owner per root cause and scope.",
     "Moving-main drift requires authoritative state refresh, not speculative reconstruction."
   ],
@@ -31,7 +40,8 @@
     "replacementRequiresFreshMainRead": true,
     "mergedOriginalBlocksReplacement": true,
     "equivalentContentAlreadyOnMainBlocksReplacement": true,
-    "duplicateCandidateMustBeClosed": true
+    "duplicateCandidateMustBeClosed": true,
+    "lifecycleMutationRequiresFreshPrRead": true
   },
   "relatedRules": [
     "REFRESH_BASE_BEFORE_FINAL_GATE",
