@@ -19,3 +19,11 @@ test('portal RUM emits each metric at most once per session and route', async ()
   assert.ok(runtime.includes('bg-rum-sent:'), 'RUM needs a durable per-session dedupe key');
   assert.ok(runtime.includes('sessionStorage.setItem'), 'successful scheduling must mark the metric as sent for the session');
 });
+
+test('portal RUM authenticates metric ingest with the current Netlify Identity JWT', async () => {
+  const runtime = await readFile(runtimeUrl, 'utf8');
+  assert.ok(runtime.includes('netlifyIdentity?.currentUser?.()'), 'RUM must resolve the authenticated Netlify Identity user');
+  assert.ok(runtime.includes('.jwt()'), 'RUM must obtain a fresh Identity JWT before metric ingest');
+  assert.ok(runtime.includes('authorization:`Bearer ${token}`'), 'RUM must send the JWT as an Authorization bearer token');
+  assert.ok(runtime.includes('if(!headers.authorization)return false'), 'RUM must fail closed rather than emit unauthenticated metrics');
+});
