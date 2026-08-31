@@ -23,7 +23,7 @@ if (sha256(base64) !== EXPECTED_BASE64_SHA256) throw new Error(`V18 payload inte
 let html = gunzipSync(Buffer.from(base64, 'base64')).toString('utf8');
 if (sha256(html) !== EXPECTED_HTML_SHA256) throw new Error(`V18 HTML integrity mismatch: ${sha256(html)}`);
 
-const resourceHints = `<link rel="dns-prefetch" href="//videos.pexels.com">\n<link rel="preconnect" href="${HERO_ORIGIN}">`;
+const resourceHints = `<link rel="dns-prefetch" href="//adhjwmvyoixzjtmiroln.supabase.co">\n<link rel="preconnect" href="${HERO_ORIGIN}">`;
 if (!html.includes(`rel="preconnect" href="${HERO_ORIGIN}"`)) {
   html = html.replace('</head>', `${resourceHints}\n</head>`);
 }
