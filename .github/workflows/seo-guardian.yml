@@ -74,4 +74,7 @@ jobs:
           gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file seo-comment.md
       - name: Enforce SEO gate
         if: steps.seo.outputs.exit_code != '0'
-        run: exit 1
+        shell: bash
+        run: |
+          echo '::error::SEO Guardian failed. See the Technical SEO contract report and PR diagnostics for the exact violations.'
+          exit 1
