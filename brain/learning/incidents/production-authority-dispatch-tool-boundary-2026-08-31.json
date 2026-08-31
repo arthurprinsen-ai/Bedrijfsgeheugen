@@ -1,0 +1,35 @@
+{
+  "type": "ProductionAuthorityToolBoundary",
+  "version": 1,
+  "fingerprint": "delivery|promotion-authority|dispatch-tool-unavailable-v1",
+  "state": "BLOCKED_HARD_BOUNDARY",
+  "observedAt": "2026-08-31T09:49:00+02:00",
+  "scope": ["delivery", "github-actions", "bg169", "agent-tooling", "production-authority"],
+  "rootCause": "The governed BG169 production path requires an explicit non-verification workflow_dispatch carrying immutable PR identity, while the active ChatGPT GitHub connector exposes read/rerun operations but no workflow-dispatch mutation; the alternate Make authority route became unavailable in-session.",
+  "evidence": {
+    "pr": 884,
+    "candidateBaseSha": "024d369b08e822e19a946502efb9a46e30bf51b3",
+    "candidateHeadSha": "28241991fa83258354051c1f1459ce296ffc758e",
+    "candidateBranch": "brain/chat-writeback-blocker-preflight-current-v1",
+    "pullRequestUnifiedBrainRun": 33370011946,
+    "pullRequestRunResult": "SUCCESS_VERIFICATION_ONLY",
+    "bg169TransportExecuted": false,
+    "bg169ProductionEvidenceCreated": false,
+    "movingMainDecision": "KEEP_TESTED_FEATURE",
+    "movingMainReason": "non-overlapping-main-drift"
+  },
+  "prevention": "PRESERVE_EXACT_CANDIDATE_WHEN_AUTHORITY_DISPATCH_UNAVAILABLE",
+  "handling": [
+    "Never reinterpret a successful pull_request verification run as BG169 production promotion evidence.",
+    "Never substitute manual merge, ordinary workflow rerun or an unrelated transport for the required explicit production-authority dispatch.",
+    "Preserve exact PR/base/head/branch identity and the verified gate evidence as one open outcome obligation.",
+    "Resume only through the canonical explicit production-authority route when a capable connector or runner is available, then require fresh main readback before closure.",
+    "If a state-changing connector call returns an ambiguous transport error, read back state before one bounded retry."
+  ],
+  "security": {
+    "secretsPersisted": false,
+    "credentialsPersisted": false,
+    "capabilityValuesPersisted": false,
+    "piiPersisted": false
+  }
+}
