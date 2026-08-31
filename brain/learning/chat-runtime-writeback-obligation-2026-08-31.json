@@ -1,0 +1,122 @@
+{
+  "id": "chat-runtime-writeback-obligation-2026-08-31",
+  "type": "BRAIN_CHAT_WRITEBACK_OUTCOME_OBLIGATION",
+  "version": 1,
+  "status": "BLOCKED_EXTERNAL_CAPACITY",
+  "createdAt": "2026-08-31T05:54:00Z",
+  "owner": "Powerhouse Learning / Brain writeback",
+  "purpose": "Preserve exact durable chat learnings for one canonical BG168 -> BG166 -> BG167 replay after Make capacity is restored. Repository materialization preserves continuity but is not a substitute for runtime shared-memory writeback.",
+  "route": {
+    "routerScenarioId": 7136176,
+    "routerName": "BG 168 - Multi-Agent Outcome & Learning Router v1",
+    "ledgerScenarioId": 7135971,
+    "ledgerName": "BG 166 - Error & Learning Ledger Writer v1.2 dedupe + coalesce",
+    "contextScenarioId": 7136045,
+    "contextName": "BG 167 - Shared Multi-Agent Team Context Hub v1.1 projected"
+  },
+  "blocker": {
+    "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+    "kind": "EXTERNAL_CAPACITY_BLOCKER",
+    "observedError": "Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again.",
+    "observedDuring": "BG168 canonical runtime writeback attempt",
+    "rootCause": "Make organization/team execution is paused by an exceeded operations or data-transfer limit. The canonical scenarios exist, but runtime mutation is refused before the learning route can execute.",
+    "preventionRule": "Do not retry a known Make team/org capacity pause. Persist one deduped open outcome obligation and replay once after direct evidence shows execution is available again.",
+    "notProofOfWriteback": [
+      "chat continuity",
+      "repository Brain files",
+      "green repository CI",
+      "scenario existence or configuration"
+    ]
+  },
+  "replay": {
+    "maxRunsAfterRecovery": 1,
+    "requireDedupe": true,
+    "requireBG167Readback": true,
+    "preconditions": [
+      "Read current Make organization/team execution state before mutation.",
+      "Do not replay while the same capacity blocker is still present.",
+      "Submit each event with its stable fingerprint through BG168 so BG166 dedupe remains canonical.",
+      "After writes, refresh/read BG167 and prove the fingerprints are visible to subsequent agents.",
+      "If an event is already present, accept the BG166 dedupe/no-action result rather than creating a duplicate."
+    ],
+    "completionState": "CLOSE_ONLY_AFTER_BG167_READBACK"
+  },
+  "events": [
+    {
+      "type": "RECOVERY",
+      "source": "chat-canonicalization",
+      "fingerprint": "portal|customer-auth|legacy-inline-login-jitter",
+      "severity": "high",
+      "owner_agent": "Product/Portal + QA/Regression + Knowledge/Governance",
+      "symptom": "Supabase password auth, RLS and offer reads were healthy while editable login fields inside the large legacy portal repeatedly re-rendered or jittered on iOS and could not reliably receive input.",
+      "rootCause": "Authentication ownership was split across legacy Netlify Identity control, Supabase customer auth and legacy portal render/lifecycle code. Backend HTTP 200 did not prove a usable device UI outcome.",
+      "failedApproach": "Repeated inline-field patches; only bypassing Netlify Identity; only changing reload/direct-open; persistence alone while fields remained in the legacy re-rendering DOM; treating backend 200 or Netlify READY as device proof.",
+      "fix": "Use klant-login.html as the single editable customer-auth boundary; Supabase password/magic-link auth plus RLS; persist session outside legacy inline lifecycle; unauthenticated legacy toonInlog redirects to isolated login; return to the same customer slug and preserve offer/sprint portal.",
+      "preventionRule": "When backend auth/data is green but legacy editable auth UI is unstable, stop stacking symptom patches, identify competing auth/render owners, isolate auth behind one stable boundary, and close mobile/iOS incidents only with device outcome evidence.",
+      "regressionContract": "tests/customer-portal-auth-race.test.mjs plus verifyCustomerLoginContract() and canonical customer-login architecture contract."
+    },
+    {
+      "type": "RECOVERY",
+      "source": "chat-canonicalization",
+      "fingerprint": "shared-memory|ci-scope|main-push-missing",
+      "severity": "high",
+      "owner_agent": "Knowledge/Governance + QA/Regression",
+      "symptom": "Shared Agent Memory CI ran for automation branches and pull requests to main but not for direct pushes to main, allowing memory-contract changes to land before the memory suite ran.",
+      "rootCause": "The workflow trigger did not include main under push branches.",
+      "failedApproach": "Treating PR-only/automation-only validation as complete production governance and assuming documentation references alone protected the memory contract.",
+      "fix": "Run Shared Agent Memory Tests on direct main pushes as well as candidate branches and PRs, and regression-test the workflow trigger.",
+      "preventionRule": "Every material memory-contract mutation must have a candidate gate and a post-merge/main gate; post-push CI is detection after ref mutation, not native pre-write protection.",
+      "regressionContract": "tests/development-doc-contract.test.mjs validates main push coverage and the shared memory workflow executes the contract suite."
+    },
+    {
+      "type": "CONTRACT_CHANGE",
+      "source": "chat-canonicalization",
+      "fingerprint": "repository|manual-connector-write|default-main-bypass",
+      "severity": "high",
+      "owner_agent": "Knowledge/Governance + Architecture/Integrator + repository writers",
+      "symptom": "A manual GitHub connector write without an explicit branch can fall back to the default branch even though NEVER_TDD_DIRECTLY_ON_MAIN already exists as policy.",
+      "rootCause": "Authorized connector capability was treated as governed delivery while GitHub main had no native protection enforcement. Branch omission therefore bypassed the intended candidate/PR route.",
+      "failedApproach": "create_file/update_file with branch omission or main target followed by successful post-push CI as if that proved prevention.",
+      "fix": "Read current main, create a fresh non-main candidate branch, pass it explicitly to every material write, perform RED/GREEN only on candidate SHAs, run Unified BRAIN, promote exact tested head, and read main back.",
+      "preventionRule": "REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES",
+      "regressionContract": "Machine learning/preflight plus canonical checkpoint and development ledger retain the candidate-only rule and platform-enforcement boundary."
+    },
+    {
+      "type": "RECOVERY",
+      "source": "chat-canonicalization",
+      "fingerprint": "repository|append-only-ledger|historical-evidence-mutated-by-full-rewrite",
+      "severity": "high",
+      "owner_agent": "Knowledge/Governance + QA/Regression",
+      "symptom": "While appending a new learning, a full-file ledger rewrite accidentally changed an existing historical Netlify deploy ID. PR diff review caught the mutation before merge and the historical value was restored.",
+      "rootCause": "Append-only operational memory was updated using a broad full-file replacement without a machine gate that explicitly forbade modifications to prior evidence records.",
+      "failedApproach": "Assuming a semantically small documentation change is safe when the transport replaces the complete append-only file, and relying only on content-presence tests rather than historical immutability checks.",
+      "fix": "Treat prior ledger/event/evidence records as immutable; append new entries or create explicit superseding/correction records; inspect the final diff for historical mutations before promotion and restore any accidental changes before rerunning exact-head gates.",
+      "preventionRule": "PRESERVE_APPEND_ONLY_HISTORY_AND_USE_EXPLICIT_CORRECTIONS",
+      "regressionContract": "Brain persistence invariant I205: no append-only usage/evidence/event correction via destructive overwrite; add focused immutable-history regression coverage when the ledger writer is changed."
+    },
+    {
+      "type": "ERROR",
+      "source": "chat-canonicalization",
+      "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+      "severity": "high",
+      "owner_agent": "Powerhouse Learning / Brain writeback",
+      "symptom": "Canonical BG168 runtime writeback was refused because the Make organization or team is paused after exceeding operations or data-transfer capacity.",
+      "rootCause": "External Make capacity state prevents scenario execution; this is not an application logic failure and not evidence that the canonical writeback route is missing.",
+      "failedApproach": "Retrying the same mutating scenario while capacity remains paused, or claiming repository/chat continuity equals completed BG166/BG167 runtime writeback.",
+      "fix": "Persist this deduped outcome obligation, stop retries while blocked, and replay exactly once through BG168 after direct capacity recovery evidence, followed by BG167 readback.",
+      "preventionRule": "NO_RETRY_STORM_ON_KNOWN_MAKE_CAPACITY_BLOCKER",
+      "regressionContract": "tests/chat-runtime-brain-writeback-guard.test.mjs keeps the blocker, canonical route, dedupe and readback completion contract machine-readable."
+    }
+  ],
+  "sourceContinuity": [
+    "brain/learning/chat-continuity-2026-08-31.json",
+    "brain/learning/chat-materialization-2026-08-31-v2.json",
+    "docs/learning/chat-learning-checkpoint-2026-08-30.md",
+    "docs/development-ledger.md"
+  ],
+  "security": {
+    "secretsPersisted": false,
+    "credentialsPersisted": false,
+    "piiPersisted": false
+  }
+}
