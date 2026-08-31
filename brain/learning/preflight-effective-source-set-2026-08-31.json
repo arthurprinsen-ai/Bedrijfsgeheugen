@@ -1,0 +1,26 @@
+{
+  "id": "preflight-effective-source-set-2026-08-31",
+  "type": "FailureClass",
+  "status": "PROVEN",
+  "fingerprint": "brain-preflight|source-readback|config-only-false-negative",
+  "symptom": "Een post-merge controle concludeert ten onrechte dat nieuwe Brain-learnings niet door de preflight worden ingelezen omdat ze niet letterlijk in `config/brain-chat-learning-contract.json.canonicalSources` staan.",
+  "rootCause": "De effectieve preflight-bronset wordt samengesteld uit drie lagen: contract canonicalSources, compiler-level mandatory supplemental sources en recursieve `linked_learning_sources`. Alleen de contractarray inspecteren is daarom onvolledige evidence.",
+  "failedApproach": "Alleen `canonicalSources` uitlezen en daaruit direct concluderen dat een learning operationeel niet gekoppeld is.",
+  "provenFix": "Verifieer de effectieve bronset via `compileChatLearningPreflight()` of inspecteer contract + `MANDATORY_SUPPLEMENTAL_SOURCES` + recursieve linked sources samen. Gebruik de regressietest die `packet.sources` controleert als executable proof.",
+  "prevention": "VERIFY_EFFECTIVE_PREFLIGHT_SOURCE_SET_NOT_CONFIG_ARRAY_ONLY",
+  "regressionContract": "Een claim over ontbrekende Brain-preflight learning vereist bewijs uit de gecompileerde preflight packet/source set; een config-only readback is onvoldoende.",
+  "evidence": {
+    "main_sha": "7163d400839aa4070c0427c482656d3f577d9990",
+    "compiler": "scripts/brain/chat-learning-preflight.mjs",
+    "regression_test": "tests/chat-to-brain-completeness.test.mjs",
+    "mandatory_sources": [
+      "brain/policies/chat-to-brain-completeness-v1.json",
+      "brain/learning/chat-continuity-2026-08-31.json"
+    ]
+  },
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false
+  }
+}
