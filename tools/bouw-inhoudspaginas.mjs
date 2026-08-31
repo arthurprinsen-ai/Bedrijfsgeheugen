@@ -78,6 +78,7 @@ const { voor, na } = zonderWeergaven(bron);
 
 for (const p of paginas) {
   let html = voor + inhoudBlok(p) + na;
+  html = html.replace('</head>', STIJL + '\n</head>');
   html = knoppenNaarLinks(html);
   html = routerLaatLinksDoor(html);
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${ontsnap(p.titel)}</title>`);
