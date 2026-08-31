@@ -17,6 +17,13 @@ test('chat-learning, Make agent and Netlify preview guard tests are classified a
   }
 });
 
+test('Netlify preview runtime inputs are delivery-classified without widening unknown paths', () => {
+  const toolPlan = createDeliveryPlan({ changedPaths:['tools/netlify-preview-impact.mjs'], headSha:'abc123def4567890', policy });
+  assert.deepEqual(toolPlan.lanes.map(lane => lane.id), ['backend']);
+  const configPlan = createDeliveryPlan({ changedPaths:['netlify.toml'], headSha:'abc123def4567890', policy });
+  assert.deepEqual(configPlan.lanes.map(lane => lane.id), ['website']);
+});
+
 test('unrelated unknown test families still fail closed', () => {
   assert.throws(
     () => createDeliveryPlan({ changedPaths:['tests/unowned-future-system.test.mjs'], headSha:'abc123def4567890', policy }),
