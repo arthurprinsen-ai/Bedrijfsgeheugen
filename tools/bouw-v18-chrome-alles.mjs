@@ -34,6 +34,8 @@ const basisCss = await readFile('assets/stijl.css', 'utf8');
 const bestanden = [];
 for await (const p of glob('*.html')) if (!OVERSLAAN.has(p)) bestanden.push(p);
 for await (const p of glob('blog/*/index.html')) bestanden.push(p);
+// de blogindex zelf valt buiten beide patronen hierboven
+if (!OVERSLAAN.has('blog/index.html')) bestanden.push('blog/index.html');
 bestanden.sort();
 
 function tussen(html, patroon) {
@@ -153,6 +155,18 @@ if (fouten.length) {
   const voet = voorbeeld.match(/<footer[\s\S]*?<\/footer>/);
   if (kop) await writeFile('.github/canoniek/kop.html', kop[0], 'utf8');
   if (voet) await writeFile('.github/canoniek/voet.html', voet[0], 'utf8');
+}
+
+// De losse bouwstenen onder components/ zijn fragmenten, geen pagina's. Ze
+// horen niet in Google: dunne inhoud die met echte pagina's concurreert.
+for await (const p of glob('components/*/*.html')) {
+  let h = await readFile(p, 'utf8');
+  if (!/name="robots"/i.test(h)) {
+    h = h.includes('</head>')
+      ? h.replace('</head>', '<meta name="robots" content="noindex, follow">\n</head>')
+      : '<meta name="robots" content="noindex, follow">\n' + h;
+    await writeFile(p, h, 'utf8');
+  }
 }
 
 // de sitemap als laatste, want pas nu bestaan alle pagina's
