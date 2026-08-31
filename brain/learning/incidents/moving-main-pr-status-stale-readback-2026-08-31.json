@@ -1,0 +1,42 @@
+{
+  "version": "MOVING-MAIN-PR-STATUS-STALE-READBACK-v1",
+  "date": "2026-08-31",
+  "fingerprint": "github|pr|moving-main|stale-merge-status-caused-duplicate-reconstruction-v1",
+  "severity": "medium",
+  "status": "PROVEN_AND_CONTAINED",
+  "observed": {
+    "originalPullRequest": 784,
+    "duplicatePullRequest": 791,
+    "originalHeadSha": "414047b72f0ba6b74c8842137f83d10794a1b330",
+    "originalMergedAt": "2026-08-30T22:29:22Z",
+    "duplicateCreatedAt": "2026-08-30T22:31:35Z",
+    "duplicateClosedAt": "2026-08-30T22:32:42Z",
+    "mainWasMoving": true,
+    "nativeMainProtected": false
+  },
+  "symptom": "A replacement PR was reconstructed because the earlier PR appeared non-mergeable while main was moving, but a fresh PR readback shortly afterward showed the original PR had already merged.",
+  "rootCause": "PR mergeability and merge state were inferred from a transient moving-main snapshot instead of re-reading authoritative PR state immediately before creating a semantic replacement. GitHub mergeability can lag while merge state changes concurrently.",
+  "failedApproach": "Treat mergeable=false or a stale base/head snapshot as sufficient proof that an existing candidate must be replaced.",
+  "provenFix": "Before creating any replacement for an existing candidate, re-read the original PR and current main. If the original is merged or its exact validated blobs are already on main, close or avoid the duplicate and retain one semantic owner.",
+  "preventionRules": [
+    "Never create a semantic replacement from mergeable=false alone.",
+    "Re-read original PR state immediately before replacement creation.",
+    "Re-read current main immediately before replacement creation.",
+    "If exact validated content is already on main, treat the work as delivered and close duplicate candidates.",
+    "Preserve one canonical semantic owner per root cause and scope.",
+    "Moving-main drift requires authoritative state refresh, not speculative reconstruction."
+  ],
+  "regressionContract": {
+    "replacementRequiresFreshOriginalPrRead": true,
+    "replacementRequiresFreshMainRead": true,
+    "mergedOriginalBlocksReplacement": true,
+    "equivalentContentAlreadyOnMainBlocksReplacement": true,
+    "duplicateCandidateMustBeClosed": true
+  },
+  "relatedRules": [
+    "REFRESH_BASE_BEFORE_FINAL_GATE",
+    "CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES",
+    "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE",
+    "REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE"
+  ]
+}
