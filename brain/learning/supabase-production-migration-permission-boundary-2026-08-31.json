@@ -1,0 +1,18 @@
+{
+  "id": "supabase-production-migration-permission-boundary-2026-08-31",
+  "type": "BlockerState",
+  "status": "OPEN",
+  "fingerprint": "supabase|production-migration|connector-permission-denied",
+  "severity": "HIGH",
+  "observedAt": "2026-08-31T08:55:00Z",
+  "symptom": "The authorized Supabase connector refused both production SQL read and apply_migration calls with permission denied after earlier successful access in the same execution line.",
+  "impact": "New governed database migrations can be merged and verified in GitHub but must not be represented as production-active until the official Supabase migration route is authorized again and readback succeeds.",
+  "prevention": [
+    "FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS",
+    "REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN",
+    "DO_NOT_BYPASS_MIGRATION_LEDGER_WITH_LOOSE_DDL"
+  ],
+  "nextAction": "Restore or re-authorize the official Supabase management permission, then apply exact merged migrations in order and perform production readback. Never substitute untracked direct DDL.",
+  "openOutcomeObligation": true,
+  "security": {"contains_secrets": false, "contains_credentials": false, "contains_pii": false}
+}
