@@ -26,6 +26,8 @@ jobs:
         run: node --test tests/whole-brain-decision-simulation.test.mjs
       - name: Universal platform activation gate
         run: node --test tests/whole-brain-platform-activation.test.mjs
+      - name: Legacy calculation parity gate
+        run: node --test tests/whole-brain-legacy-parity.test.mjs
       - name: Runtime evidence certifier
         run: node --test scripts/brain/test-runtime-evidence-certifier.mjs
       - name: Existing Brain acceptance regression
