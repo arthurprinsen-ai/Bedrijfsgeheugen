@@ -1,0 +1,67 @@
+{
+  "id": "chat-execution-index-v2-2026-08-31",
+  "type": "ExecutionLearningIndex",
+  "status": "ACTIVE",
+  "captured_at": "2026-08-31",
+  "conversation_is_canonical_truth": false,
+  "purpose": "Bounded current execution index for future Bedrijfsgeheugen agents. Detailed causal evidence remains in canonical Brain records and production evidence.",
+  "production_proven": [
+    "operation-idempotency",
+    "obligation-uniqueness",
+    "persistent-blocker-state",
+    "cost-attribution",
+    "production-truth",
+    "transactional-inbox-outbox",
+    "mutation-ownership",
+    "reconciliation",
+    "failure-learning-registry",
+    "minimal-command-api"
+  ],
+  "recovered": [
+    {
+      "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+      "status": "PROVEN_FIXED",
+      "evidence": "BG168 execution 23f7adaebd3e4ab09c7bfbbfa2ec954f returned LEARNING_DISPATCHED; BG166 execution 6060f7bf7a5e4c0ca2abe689173213cc returned learning_persisted=true and COALESCED_REFRESH. Do not replay the same learning because persistence is already proven."
+    },
+    {
+      "fingerprint": "supabase|production-migration|connector-permission-denied",
+      "status": "PROVEN_FIXED",
+      "evidence": "Official Supabase migrations for Mutation Ownership and the supporting control-plane succeeded and production acceptance was read back."
+    }
+  ],
+  "open_external_boundaries": [
+    {
+      "id": "github-native-main-protection",
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": "Direct GitHub branch readback on 2026-08-31 reports protected=false and required-status-check enforcement off.",
+      "required_action": "Enable native main protection/ruleset and independently read it back before claiming platform protection GREEN."
+    },
+    {
+      "id": "supabase-leaked-password-protection",
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": "Supabase Security Advisor reports Leaked Password Protection Disabled.",
+      "required_action": "Enable leaked-password protection in Supabase Auth and rerun Security Advisor."
+    },
+    {
+      "id": "make-worker-supabase-connection",
+      "status": "AWAITING_ACCOUNT_AUTHORIZATION",
+      "fingerprint": "make|worker-wrapper|supabase-connection-missing",
+      "evidence": "Make native Supabase module has no existing authorized connection; credential request 2e2974e5-6139-462b-b16e-088041acbbd5 remains pending.",
+      "required_action": "Authorize the Supabase connection through Make credential flow; never embed a service-role credential in scenario code."
+    }
+  ],
+  "runtime_invariants": [
+    "canonical persistence and shared-context projection are distinct; COALESCED_REFRESH after learning_persisted=true is not a write failure",
+    "no direct provider mutation without canonical ownership",
+    "RESULT_UNKNOWN requires reconciliation before retry",
+    "FAILED commands are recovered through reconciliation rather than blind command reclaim",
+    "side-effecting composite SQL functions must be evaluated exactly once",
+    "production GREEN requires external readback, not chat or CI assertion"
+  ],
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false,
+    "contains_raw_private_chat": false
+  }
+}
