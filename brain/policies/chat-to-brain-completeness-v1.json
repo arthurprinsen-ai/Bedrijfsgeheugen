@@ -10,7 +10,8 @@
     "brain/learning/bundle-maturity-must-not-overpromote-2026-08-31.json",
     "brain/learning/mission-control-live-learnings-2026-08-31.json",
     "brain/learning/netlify-credential-secret-classification-2026-08-31.json",
-    "brain/blockers/netlify-credential-secret-classification-open-2026-08-31.json"
+    "brain/blockers/netlify-credential-secret-classification-open-2026-08-31.json",
+    "brain/learning/full-chat-coverage-2026-08-31.json"
   ],
   "promotionEvidence": {
     "policy_merged_to_main": true,
@@ -111,6 +112,7 @@
     "open_blocker_must_retain_first_seen_last_seen_attempts_owner_next_action",
     "production_evidence_must_remain_distinct_from_chat_assertion",
     "new_regression_test_must_be_delivery_classified",
-    "effective_preflight_sources_must_be_verified_from_compiled_packet_not_config_only"
+    "effective_preflight_sources_must_be_verified_from_compiled_packet_not_config_only",
+    "full_durable_chat_coverage_must_have_zero_missing_fingerprints"
   ]
 }
