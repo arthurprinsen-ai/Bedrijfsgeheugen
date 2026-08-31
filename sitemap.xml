@@ -20,7 +20,6 @@
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/afas-api/</loc><lastmod>2026-08-21</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/afas-exact-koppelen/</loc><lastmod>2026-08-16</lastmod></url>
-  <url><loc>https://www.bedrijfsgeheugen.nl/blog/afas-koppeling/</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/automatiseren-zonder-traject/</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/bedrijfsopvolging-begin-bij-het-geheugen/</loc><lastmod>2026-08-26</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/eu-ai-act-mkb/</loc><lastmod>2026-08-16</lastmod></url>
@@ -56,11 +55,11 @@
   <url><loc>https://www.bedrijfsgeheugen.nl/wijzigingen</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/workshops</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/zelfscan</loc><lastmod>2026-08-16</lastmod></url>
-<url><loc>https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-<url><loc>https://www.bedrijfsgeheugen.nl/afas-pocket-koppelen</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren</loc><lastmod>2026-08-31</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://www.bedrijfsgeheugen.nl/afas-pocket-koppelen</loc><lastmod>2026-08-31</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://www.bedrijfsgeheugen.nl/brochure</loc><lastmod>2026-08-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://www.bedrijfsgeheugen.nl/cijfers-bedrijfsoverdracht</loc><lastmod>2026-08-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://www.bedrijfsgeheugen.nl/kennisverlies-vergrijzing-mkb</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.bedrijfsgeheugen.nl/kennisverlies-vergrijzing-mkb</loc><lastmod>2026-08-31</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 <url><loc>https://www.bedrijfsgeheugen.nl/ai-cijfers-mkb</loc><lastmod>2026-08-20</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
 <url><loc>https://www.bedrijfsgeheugen.nl/waarom-ai-projecten-mislukken</loc><lastmod>2026-08-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>https://www.bedrijfsgeheugen.nl/excel-als-crm</loc><lastmod>2026-08-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
