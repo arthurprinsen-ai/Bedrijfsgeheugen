@@ -17,7 +17,8 @@
     "brain/learning/bundle-maturity-must-not-overpromote-2026-08-31.json",
     "brain/learning/mission-control-live-learnings-2026-08-31.json",
     "brain/learning/netlify-credential-secret-classification-2026-08-31.json",
-    "brain/blockers/netlify-credential-secret-classification-open-2026-08-31.json"
+    "brain/blockers/netlify-credential-secret-classification-open-2026-08-31.json",
+    "brain/learning/chat-execution-index-v2-preflight-2026-08-31.json"
   ],
   "promotionEvidence": {
     "policy_merged_to_main": true,

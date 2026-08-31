@@ -45,6 +45,16 @@ function collectSignals(value, signals, parentKey = '') {
   for (const [key, child] of Object.entries(value)) collectSignals(child, signals, key);
 }
 
+function serializedPacketBytes(packet) {
+  let bytes = 0;
+  let candidate = { ...packet, totalBytes: 0 };
+  for (let i = 0; i < 3; i += 1) {
+    bytes = Buffer.byteLength(JSON.stringify(candidate), 'utf8');
+    candidate = { ...packet, totalBytes: bytes };
+  }
+  return bytes;
+}
+
 export function compileChatLearningPreflight({
   rootDir = process.cwd(),
   contractPath = DEFAULT_CONTRACT,
@@ -70,8 +80,7 @@ export function compileChatLearningPreflight({
   const visited = new Set();
   const sources = [];
   const signals = { fingerprints: [], preventions: [], blockers: [], resumeContracts: [] };
-  let totalBytes = Buffer.byteLength(contractRaw, 'utf8');
-  if (totalBytes > maxBytes) throw new Error(`maxBytes exceeded by contract: ${totalBytes} > ${maxBytes}`);
+  let sourceBytes = Buffer.byteLength(contractRaw, 'utf8');
 
   while (queue.length) {
     const requested = queue.shift();
@@ -82,8 +91,7 @@ export function compileChatLearningPreflight({
 
     const raw = fs.readFileSync(absolute, 'utf8');
     const bytes = Buffer.byteLength(raw, 'utf8');
-    totalBytes += bytes;
-    if (totalBytes > maxBytes) throw new Error(`maxBytes exceeded: ${totalBytes} > ${maxBytes}`);
+    sourceBytes += bytes;
 
     let parsed = null;
     if (normalized.endsWith('.json')) {
@@ -116,17 +124,20 @@ export function compileChatLearningPreflight({
     visited.add(normalized);
   }
 
-  return {
+  const packet = {
     version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1',
     status: 'READY',
     contract: contractPath,
-    totalBytes,
+    sourceBytes,
     sources,
     fingerprints: stableUnique(signals.fingerprints).sort(),
     preventions: stableUnique(signals.preventions).sort(),
     blockers: stableUnique(signals.blockers).sort(),
     resume_contracts: stableUnique(signals.resumeContracts)
   };
+  const totalBytes = serializedPacketBytes(packet);
+  if (totalBytes > maxBytes) throw new Error(`maxBytes exceeded: ${totalBytes} > ${maxBytes}`);
+  return { ...packet, totalBytes };
 }
 
 const isCli = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
