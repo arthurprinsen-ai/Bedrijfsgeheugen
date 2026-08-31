@@ -8,6 +8,7 @@ const SHARED_MEMORY_WORKFLOW = '.github/workflows/shared-agent-memory-tests.yml'
 const MOVING_MAIN_INCIDENT = 'brain/learning/incidents/moving-main-pr-status-stale-readback-2026-08-31.json';
 const CHAT_CHECKPOINT_PATH = 'brain/learning/chat-completeness-checkpoint-2026-08-31.json';
 const CHAT_LEARNING_CONTRACT_PATH = 'config/brain-chat-learning-contract.json';
+const CHAT_TO_BRAIN_POLICY_PATH = 'brain/policies/chat-to-brain-completeness-v1.json';
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
@@ -190,4 +191,16 @@ test('moving-main replacement requires fresh authoritative PR and main readback'
   );
   assert.ok(guarded, 'moving-main failure must be available to future preflight');
   assert.match(guarded.preventionRule, /re-read|lees.*opnieuw|authoritative/i);
+});
+
+test('chat-to-Brain semantics have one canonical policy and the completeness guard is enforcement projection only', async () => {
+  const policy = await readJson(CHAT_TO_BRAIN_POLICY_PATH);
+  const guard = await readJson(CONTRACT_PATH);
+  assert.equal(policy.authority.role, 'CANONICAL_POLICY');
+  assert.equal(policy.authority.semanticAuthority, true);
+  assert.equal(policy.authority.enforcementProjection, CONTRACT_PATH);
+  assert.equal(guard.authority.role, 'ENFORCEMENT_PROJECTION');
+  assert.equal(guard.authority.canonicalPolicy, CHAT_TO_BRAIN_POLICY_PATH);
+  assert.equal(guard.authority.conflictResolution, 'CANONICAL_POLICY_WINS');
+  assert.equal(guard.authority.mayNotCreateIndependentSemanticPolicy, true);
 });
