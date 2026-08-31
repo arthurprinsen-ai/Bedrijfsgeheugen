@@ -1,0 +1,45 @@
+{
+  "version":"PRODUCTION-EVIDENCE-v1",
+  "authority":"BRAIN-DELIVERY-v2",
+  "purpose":"Machine-readable proof requirements for capabilities that exist in code but must not be called production-proven without runtime evidence.",
+  "states":{
+    "BUILT_NOT_PROVEN":{"requiresRuntimeEvidence":false,"terminal":false},
+    "PROVEN":{"requiresRuntimeEvidence":true,"requiresIndependentReadback":true,"terminal":true},
+    "BLOCKED":{"requiresBlockerFingerprint":true,"terminal":false}
+  },
+  "evidenceClasses":{
+    "legacyParity":{
+      "required":["sourceInventory","sourceFingerprint","fixtures","exactDeliveryIdentity","governedTests"],
+      "currentStatus":"PROVEN",
+      "evidenceRefs":["commit:0b71158b3d73cd850bf14356a76344d408c9a492","tests/brain-whole-brain-real-legacy-parity.test.mjs"]
+    },
+    "rumPerformance":{
+      "targets":{"cachedMs":1000,"interactiveMs":2000},
+      "required":["window","percentile","observedAt","sourceRevision","sampleCount"],
+      "currentStatus":"BUILT_NOT_PROVEN",
+      "staleOrMissingEvidence":"FAIL_CLOSED_NOT_PROVEN"
+    },
+    "integrationObservability":{
+      "required":["health","freshness","lastError","owner","cost","revision"],
+      "currentStatus":"PARTIAL",
+      "perIntegration":true
+    },
+    "recoveryCoverage":{
+      "required":["failureFingerprint","operationIdentity","recoveryOwner","attemptBudget","terminalEvidence"],
+      "currentStatus":"BUILT_NOT_PROVEN",
+      "blindRetryForbidden":true
+    },
+    "productionIdentity":{
+      "required":["candidateIdentity","testedIdentity","promotedIdentity","runtimeIdentity","verifiedAt"],
+      "currentStatus":"BUILT_NOT_PROVEN",
+      "mergeShaAloneInsufficient":true
+    }
+  },
+  "evidenceRules":{
+    "documentationClaimIsEvidence":false,
+    "ciSuccessAloneIsProductionProof":false,
+    "http2xxAloneIsProductionProof":false,
+    "runtimeReadbackMayBeReplacedByProviderAcceptance":false,
+    "absenceOfEvidenceMeans":"BUILT_NOT_PROVEN"
+  }
+}

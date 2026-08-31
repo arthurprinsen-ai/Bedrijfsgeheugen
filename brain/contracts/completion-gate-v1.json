@@ -1,0 +1,37 @@
+{
+  "version":"COMPLETION-GATE-v1",
+  "authority":"BRAIN-DELIVERY-v2",
+  "failClosed":true,
+  "requiredStages":[
+    "registered",
+    "tested",
+    "exactPromoted",
+    "productionIdentityVerified",
+    "runtimeBusinessOutcomeVerified",
+    "learningPersisted",
+    "sharedStateRefreshed"
+  ],
+  "rejectedProofs":["mergeOnly","ciOnly","http2xxOnly","parentDispatchOnly"],
+  "promotionProof":{
+    "candidateTestedIdentityMustMatch":true,
+    "currentMainOverlapRecheckRequired":true,
+    "productionAuthorityEvidenceRequired":true
+  },
+  "productionProof":{
+    "exactRuntimeIdentityRequired":true,
+    "independentReadbackRequired":true,
+    "businessOrRuntimeOutcomeRequired":true
+  },
+  "learningProof":{
+    "route":"BG168→BG166",
+    "downstreamPersistenceRequired":true,
+    "parentDispatchSuccessSufficient":false,
+    "dedupeFingerprintRequired":true
+  },
+  "sharedStateProof":{
+    "authority":"BG167",
+    "refreshOrCoalescedReadbackRequired":true
+  },
+  "terminalRule":"COMPLETE only when every required stage has current evidence. Any absent, stale, blocked or ambiguous stage remains non-terminal with an owned outcome obligation.",
+  "humanBoundariesRemainInForce":true
+}

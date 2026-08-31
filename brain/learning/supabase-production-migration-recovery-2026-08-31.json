@@ -1,0 +1,27 @@
+{
+  "id":"supabase-production-migration-recovery-2026-08-31",
+  "type":"ResolutionAndLearning",
+  "status":"PROVEN",
+  "resolvesFingerprint":"supabase|production-migration|connector-permission-denied",
+  "observedAt":"2026-08-31T09:20:00Z",
+  "evidence":{
+    "project":"adhjwmvyoixzjtmiroln",
+    "migrationReadback":[
+      "20260831091634 brain_mutation_ownership",
+      "20260831091723 brain_supporting_control_plane"
+    ],
+    "schemaReadback":[
+      "brain_records","brain_decisions","brain_value_evaluations","brain_ai_governance_registry","brain_ai_governance_incidents","brain_operations","brain_obligations","brain_inbox","brain_outbox","brain_commands","brain_reconciliation_jobs","brain_failure_registry","brain_runtime_metrics","brain_runtime_slo","brain_production_truth"
+    ],
+    "populationReadback":{
+      "brain_records":37,"brain_operations":6,"brain_obligations":8,"brain_commands":1,"brain_production_truth":1,"brain_reconciliation_jobs":1,"brain_decisions":0,"brain_value_evaluations":0,"brain_ai_governance_registry":0,"brain_runtime_metrics":0,"brain_runtime_slo":0
+    }
+  },
+  "learning":"Connector permission failure is a stateful blocker, not a permanent capability claim. Close it only after the authorized migration ledger and independent production schema readback agree. Separately preserve empty-table or missing-business-evidence states as BUILT_NOT_PROVEN rather than treating schema recovery as full business proof.",
+  "prevention":[
+    "Do not keep a recovered permission blocker open after exact migration plus schema readback proves recovery.",
+    "Do not promote empty persisted services to operationally proven merely because their schema exists.",
+    "Separate platform capability recovery from business/runtime coverage proof."
+  ],
+  "security":{"contains_secrets":false,"contains_credentials":false,"contains_pii":false}
+}

@@ -1,0 +1,51 @@
+{
+  "version": "EXTERNAL-PRODUCER-ACTIVATION-v1",
+  "authority": "BRAIN-DELIVERY-v2",
+  "canonicalBrainOnly": true,
+  "failClosed": true,
+  "purpose": "Projection of existing BRAIN delivery, shared-memory, production-identity, evidence, cost/security and learning authorities into one mandatory activation chain for external producers; this is not a second delivery framework.",
+  "requiredStages": [
+    "registration",
+    "sharedContextRead",
+    "validation",
+    "promotionAuthority",
+    "productionIdentity",
+    "outcome",
+    "verification",
+    "costEvidence",
+    "securityEvidence",
+    "learningWriteback"
+  ],
+  "stageAuthorities": {
+    "registration": "existing component/platform registry",
+    "sharedContextRead": "BG167 shared current state",
+    "validation": "BRAIN-DELIVERY-v2 platform-specific gates",
+    "promotionAuthority": "BG169 or platform-authorized equivalent registered by BRAIN-DELIVERY-v2",
+    "productionIdentity": "exact immutable deploy/revision/runtime identity",
+    "outcome": "canonical operation/outcome lineage",
+    "verification": "independent readback or runtime/business evidence",
+    "costEvidence": "canonical cost fact linked to operation",
+    "securityEvidence": "least-privilege/security gate evidence",
+    "learningWriteback": "BG168 router → BG166 persistence → BG167 refresh/readback"
+  },
+  "platforms": {
+    "make": {"activationRequiresAllStages":true,"bypassAllowed":false,"executionRole":"thin worker/automation adapter"},
+    "notion": {"activationRequiresAllStages":true,"bypassAllowed":false,"executionRole":"knowledge/projection adapter; never production identity authority"},
+    "supabase": {"activationRequiresAllStages":true,"bypassAllowed":false,"executionRole":"canonical persistence adapter with governed migration/readback"},
+    "dataforseo": {"activationRequiresAllStages":true,"bypassAllowed":false,"executionRole":"external intelligence sensor/provider adapter"},
+    "future": {"activationRequiresAllStages":true,"bypassAllowed":false,"executionRole":"unclassified producer stays non-production until registered and all stages pass"}
+  },
+  "nonEvidence": ["scenarioSuccess","providerAccepted","http2xx","writeAttempted"],
+  "humanBoundaries": {
+    "legalFinancial": true,
+    "secretsPermissionsSecurityWeakening": true,
+    "destructive": true,
+    "paidActions": true
+  },
+  "blockedRules": {
+    "missingStage": "NOT_PRODUCTION_READY",
+    "unverifiedProductionIdentity": "BUILT_NOT_PROVEN",
+    "providerPermissionDenied": "BLOCKED_NO_BYPASS",
+    "learningParentDispatchWithoutDownstreamPersistence": "INCOMPLETE"
+  }
+}
