@@ -38,7 +38,7 @@ test('restored historical V18 stays untouched while protected production routes 
   assert.match(wrapper, /bouw-v18-production-core\.mjs/);
   assert.doesNotMatch(wrapper, /apply-site-baseline\.mjs/, 'historical V18 homepage must not be post-mutated by later semantic overlay');
   assert.match(core, /be938e95870994b89773d141a400318a1be3eac4829d69aac6bac48942bd230b/);
-  assert.match(core, /13761469-uhd_3840_2160_30fps\.mp4/);
+  assert.match(core, /media\/hero\/shanghai-v2\.mp4/);
   assert.match(core, /writeFile\('index\.html'/);
 });
 
