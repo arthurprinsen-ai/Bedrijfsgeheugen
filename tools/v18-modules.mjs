@@ -345,16 +345,12 @@ export const SPEELS_JS = `<script id="v18-speels-js">
     kaart.style.setProperty('--my', (e.clientY - r.top) + 'px');
   }, {passive:true});
 
-  // 5. wie 'geheugen' intypt krijgt geeltjes
-  var getikt = '';
-  addEventListener('keydown', function(e){
-    if (e.key.length !== 1) return;
-    getikt = (getikt + e.key.toLowerCase()).slice(-9);
-    if (getikt !== 'geheugen' && getikt.slice(-8) !== 'geheugen') return;
-    getikt = '';
-    for (var i = 0; i < 22; i++) {
+  // 5. geeltjes. Op een toetsenbord: typ 'geheugen'. Op een telefoon staat geen
+  //    toetsenbord open, dus daar telt vijf keer tikken op het woordmerk.
+  function strooiGeeltjes(aantal){
+    for (var i = 0; i < (aantal || 22); i++) {
       var g = document.createElement('span');
-      g.className = 'geeltje';
+      g.className = 'bgx-geeltje';
       g.style.left = Math.random() * 96 + 'vw';
       g.style.animationDuration = (2.4 + Math.random() * 2.2) + 's';
       g.style.animationDelay = (Math.random() * .7) + 's';
@@ -362,8 +358,27 @@ export const SPEELS_JS = `<script id="v18-speels-js">
       document.body.appendChild(g);
       setTimeout(function(el){ return function(){ el.remove(); }; }(g), 5200);
     }
+  }
+
+  var getikt = '';
+  addEventListener('keydown', function(e){
+    if (!e.key || e.key.length !== 1) return;
+    getikt = (getikt + e.key.toLowerCase()).slice(-8);
+    if (getikt !== 'geheugen') return;
+    getikt = '';
+    strooiGeeltjes(22);
   });
 
+  var merk = document.querySelector('.v17-header a') || document.querySelector('.v17-header');
+  if (merk) {
+    var tikken = 0, laatste = 0;
+    merk.addEventListener('click', function(){
+      var nu = Date.now();
+      tikken = (nu - laatste < 700) ? tikken + 1 : 1;
+      laatste = nu;
+      if (tikken >= 5) { tikken = 0; strooiGeeltjes(22); }
+    });
+  }
   document.addEventListener('scroll', streepBij, true);
   addEventListener('resize', streepBij);
   streepBij();
