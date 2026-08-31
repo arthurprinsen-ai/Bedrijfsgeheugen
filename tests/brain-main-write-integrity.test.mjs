@@ -45,6 +45,9 @@ test('direct-main incidents create or update one stateful deduplicated recovery 
   assert.match(workflow, /status=\$\{result\.status\}/);
   assert.match(workflow, /gh api/);
   assert.match(workflow, /issues\?state=open/);
+  assert.match(workflow, /jq --arg fingerprint/);
+  assert.match(workflow, /contains\(\$fingerprint\)/);
+  assert.doesNotMatch(workflow, /contains\(env\.FINGERPRINT\)/);
   assert.match(workflow, /last_seen_sha/);
   assert.match(workflow, /recoveryRequired/);
   assert.match(workflow, /if:\s*always\(\)/);
