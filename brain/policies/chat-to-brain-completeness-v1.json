@@ -10,7 +10,8 @@
     "brain/learning/bundle-maturity-must-not-overpromote-2026-08-31.json",
     "brain/learning/mission-control-live-learnings-2026-08-31.json",
     "brain/learning/netlify-credential-secret-classification-2026-08-31.json",
-    "brain/blockers/netlify-credential-secret-classification-open-2026-08-31.json"
+    "brain/blockers/netlify-credential-secret-classification-open-2026-08-31.json",
+    "brain/learning/full-chat-coverage-2026-08-31.json"
   ],
   "promotionEvidence": {
     "policy_merged_to_main": true,
@@ -33,63 +34,17 @@
       "shared_context_refresh_requested_or_completed"
     ]
   },
-  "normalizeMaterialLearningInto": [
-    "FailureClass",
-    "Learning",
-    "Pattern",
-    "AntiPattern",
-    "Policy",
-    "Invariant",
-    "RegressionContract",
-    "Dependency",
-    "Decision",
-    "OutcomeObligation",
-    "ProductionEvidence",
-    "BlockerState",
-    "OwnershipOrSuccessorMapping"
-  ],
+  "normalizeMaterialLearningInto": ["FailureClass","Learning","Pattern","AntiPattern","Policy","Invariant","RegressionContract","Dependency","Decision","OutcomeObligation","ProductionEvidence","BlockerState","OwnershipOrSuccessorMapping"],
   "materiality": {
-    "include": [
-      "new error fingerprints",
-      "root causes",
-      "proven fixes",
-      "failed or forbidden approaches",
-      "prevention rules",
-      "regression contracts",
-      "production or public evidence",
-      "cost and performance learnings",
-      "security learnings",
-      "workflow and outcome obligations",
-      "open blocker state",
-      "ownership and successor mappings",
-      "gate or sensor state",
-      "architecture decisions that constrain future work"
-    ],
-    "exclude": [
-      "secrets",
-      "credentials",
-      "PII",
-      "irrelevant conversational wording",
-      "ephemeral acknowledgements",
-      "duplicate learnings with no new evidence"
-    ]
+    "include": ["new error fingerprints","root causes","proven fixes","failed or forbidden approaches","prevention rules","regression contracts","production or public evidence","cost and performance learnings","security learnings","workflow and outcome obligations","open blocker state","ownership and successor mappings","gate or sensor state","architecture decisions that constrain future work"],
+    "exclude": ["secrets","credentials","PII","irrelevant conversational wording","ephemeral acknowledgements","duplicate learnings with no new evidence"]
   },
-  "pipeline": [
-    "extract",
-    "classify",
-    "fingerprint",
-    "deduplicate",
-    "link_evidence",
-    "normalize",
-    "persist_to_brain",
-    "refresh_shared_context",
-    "make_available_to_preflight"
-  ],
+  "pipeline": ["extract","classify","fingerprint","deduplicate","link_evidence","normalize","persist_to_brain","refresh_shared_context","make_available_to_preflight"],
   "dedupe": {
     "requiredBeforeWrite": true,
     "stableFingerprintRequired": true,
     "duplicateAction": "COALESCE_WITH_EXISTING_RECORD",
-    "duplicateMustNotTrigger": ["new_material_write", "duplicate_alert", "expensive_context_refresh"]
+    "duplicateMustNotTrigger": ["new_material_write","duplicate_alert","expensive_context_refresh"]
   },
   "crossChatRequirement": {
     "allFutureAgentsMustReadCanonicalBrainBeforeMaterialExecution": true,
@@ -111,6 +66,7 @@
     "open_blocker_must_retain_first_seen_last_seen_attempts_owner_next_action",
     "production_evidence_must_remain_distinct_from_chat_assertion",
     "new_regression_test_must_be_delivery_classified",
-    "effective_preflight_sources_must_be_verified_from_compiled_packet_not_config_only"
+    "effective_preflight_sources_must_be_verified_from_compiled_packet_not_config_only",
+    "full_durable_chat_coverage_must_have_zero_missing_and_real_preflight_sources"
   ]
 }
