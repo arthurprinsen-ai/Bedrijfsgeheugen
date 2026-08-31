@@ -12,8 +12,8 @@ const FILES = [
 const EXPECTED_BASE64_LENGTH = 108484;
 const EXPECTED_BASE64_SHA256 = '64c33847585fb3d93e3a4bbe8bfd33aee5221678a047f613f6144330f69e305b';
 const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6bac48942bd230b';
-const HERO_URL = 'https://adhjwmvyoixzjtmiroln.supabase.co/storage/v1/object/public/media/hero/shanghai-v2.mp4';
-const HERO_ORIGIN = 'https://adhjwmvyoixzjtmiroln.supabase.co';
+const HERO_URL = 'https://videos.pexels.com/video-files/13761469/13761469-uhd_3840_2160_30fps.mp4';
+const HERO_ORIGIN = 'https://videos.pexels.com';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
 const parts = await Promise.all(FILES.map(path => readFile(path, 'utf8')));
@@ -23,7 +23,7 @@ if (sha256(base64) !== EXPECTED_BASE64_SHA256) throw new Error(`V18 payload inte
 let html = gunzipSync(Buffer.from(base64, 'base64')).toString('utf8');
 if (sha256(html) !== EXPECTED_HTML_SHA256) throw new Error(`V18 HTML integrity mismatch: ${sha256(html)}`);
 
-const resourceHints = `<link rel="dns-prefetch" href="//adhjwmvyoixzjtmiroln.supabase.co">\n<link rel="preconnect" href="${HERO_ORIGIN}">`;
+const resourceHints = `<link rel="dns-prefetch" href="//videos.pexels.com">\n<link rel="preconnect" href="${HERO_ORIGIN}">`;
 if (!html.includes(`rel="preconnect" href="${HERO_ORIGIN}"`)) {
   html = html.replace('</head>', `${resourceHints}\n</head>`);
 }
