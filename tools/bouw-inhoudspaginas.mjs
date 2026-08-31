@@ -43,10 +43,13 @@ function routerLaatLinksDoor(html) {
 
 function inhoudBlok(p) {
   const blokken = (p.blokken || []).map(b => `<article><h2>${ontsnap(b.kop)}</h2><p>${ontsnap(b.tekst)}</p></article>`).join('\n');
-  const cta = p.cta ? `<p><a class="cta" href="${p.cta.href}">${ontsnap(p.cta.tekst)} →</a></p>` : '';
+  const cta = p.cta ? `<p><a class="cta" href="${p.cta.href}">${ontsnap(p.cta.tekst)} \u2192</a></p>` : '';
   const slot = p.slot ? `<p>${ontsnap(p.slot)}</p>` : '';
-  return `<div class="page active" id="view-inhoud">
+  const kruimelLabel = ontsnap(p.kruimel || p.kicker || p.h1);
+  const kruimelSchema = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"${kruimelLabel}","item":"https://www.bedrijfsgeheugen.nl${p.pad}"}]}<\/script>`;
+  return `<div class="page active" id="view-inhoud">${kruimelSchema}
 <section class="inhoud-kop"><div class="wrap">
+<nav class="kruimelpad" aria-label="Kruimelpad"><a href="/">Home</a> <span aria-hidden="true">\u203a</span> <span aria-current="page">${kruimelLabel}</span></nav>
 <div class="hero-kicker"><span></span> ${ontsnap(p.kicker || '')}</div>
 <h1>${ontsnap(p.h1)}</h1>
 <p>${ontsnap(p.intro)}</p>
@@ -65,6 +68,8 @@ const paginas = JSON.parse(await readFile('site/inhoudspaginas.json', 'utf8'));
 const STIJL = `<style id="inhoudspaginas-stijl">
 header a,header a:visited,header a:hover{color:#fff}
 .v17-header .brand,.v17-header .brand:visited{color:#fff;text-decoration:none}
+.kruimelpad{font-size:13px;color:rgba(255,255,255,.72);margin-bottom:16px}
+.kruimelpad a,.kruimelpad a:visited{color:rgba(255,255,255,.72);text-decoration:none}
 .inhoud-kop{background:#0a1117;color:#fff;padding:132px 0 64px}
 .inhoud-kop h1{color:#fff;margin:10px 0 18px}
 .inhoud-kop p{color:rgba(255,255,255,.84);max-width:72ch;font-size:18px;line-height:1.6}
