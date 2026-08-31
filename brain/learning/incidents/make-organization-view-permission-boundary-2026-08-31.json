@@ -1,0 +1,53 @@
+{
+  "version": "MAKE-ORGANIZATION-VIEW-PERMISSION-BOUNDARY-v1",
+  "date": "2026-08-31",
+  "fingerprint": "make|control-plane|organization-view-permission-denied-v1",
+  "stage": "INTEGRATION",
+  "component": "automation",
+  "reason": "Make control-plane read for BG167 returned Insufficient rights: admin permission organization view is needed.",
+  "rootCause": "The currently authorized Make connector identity lacks the organization-view permission required for control-plane scenario inspection. This is distinct evidence from the previously observed operations/data-transfer capacity pause.",
+  "failedApproach": "Do not repeat quota-pause canaries or infer recovery from GitHub/Netlify health; the current failure is authorization capability, not execution capacity.",
+  "fix": "Fail closed only for Make-dependent reads/writes, preserve GitHub/Netlify last-known-good and continue independent safe work. Do not modify OAuth, credentials, roles or permissions autonomously. Resume with one bounded readback only after external evidence shows organization-view permission has been restored.",
+  "preventionRule": "FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS",
+  "regressionRule": "MAKE_CONTROL_PLANE_REQUIRES_ORGANIZATION_VIEW_READBACK_BEFORE_RUNTIME_GREEN",
+  "evidence": {
+    "observedAt": "2026-08-31T07:06:56Z",
+    "scenarioId": 7136049,
+    "operation": "scenario_get",
+    "errorClass": "PERMISSION_DENIED",
+    "error": "Insufficient rights, admin permission organization view is needed.",
+    "evidenceHash": "1ea2a811856cc4ac55f7f1ef564aee3d3561abda778eaa431648d7dd13e28571",
+    "githubMainSha": "5f2648069917c0acdb89f91b07fde85c3ba63d83",
+    "netlifyProductionCommitRef": "5f2648069917c0acdb89f91b07fde85c3ba63d83",
+    "netlifyProductionState": "ready",
+    "netlifyProductionContext": "production",
+    "publicSmoke": "https://www.bedrijfsgeheugen.nl/ reachable"
+  },
+  "status": "BLOCKED_HARD_BOUNDARY",
+  "owner": "agent-reliability",
+  "successorOwner": "BG156 governed closed-loop orchestrator after permission restoration",
+  "blockerState": {
+    "first_seen": "2026-08-31T07:06:56Z",
+    "last_seen": "2026-08-31T07:06:56Z",
+    "last_changed": "2026-08-31T07:06:56Z",
+    "status": "BLOCKED_HARD_BOUNDARY",
+    "required_intervention": "Restore Make organization-view permission for the connected identity outside autonomous agent scope.",
+    "retry_budget": 1,
+    "evidence_hash": "1ea2a811856cc4ac55f7f1ef564aee3d3561abda778eaa431648d7dd13e28571",
+    "next_escalation_at": "on_permission_state_change_or_next_hourly_read_only_refresh"
+  },
+  "outcomeObligation": {
+    "expected": "BG167/BG168/BG166 control-plane state can be read and material learning can be written with independent readback.",
+    "current": "Make-dependent obligation remains open; no runtime green is claimed.",
+    "idempotencyKey": "make-org-view-permission|7136049|1ea2a811856cc4ac55f7f1ef564aee3d3561abda778eaa431648d7dd13e28571"
+  },
+  "productionEvidence": {
+    "repositoryProductionGreen": true,
+    "exactShaParity": true,
+    "mainSha": "5f2648069917c0acdb89f91b07fde85c3ba63d83",
+    "productionCommitRef": "5f2648069917c0acdb89f91b07fde85c3ba63d83",
+    "deployState": "ready",
+    "deployContext": "production",
+    "secretScanMatches": 0
+  }
+}
