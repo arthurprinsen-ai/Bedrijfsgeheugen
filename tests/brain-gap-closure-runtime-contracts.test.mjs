@@ -42,14 +42,23 @@ test('canonical lifecycle helpers preserve verification -> outcome -> value line
   assert.deepEqual(value.evidenceIds,['E1']);
 });
 
-test('AI governance stays fail-closed until evidence, owner, risk controls and review are complete', () => {
+test('AI governance stays fail-closed until evidence, approval, owner, risk controls and review are complete', () => {
   const now='2026-08-31T12:00:00Z';
-  const incomplete=projectAiGovernance([{kind:'governance',id:'G1',subjectId:'ai:1',owner:'UNASSIGNED',verified:false,evidenceIds:[],payload:{systemName:'Agent',provider:'Provider',model:'Model',purpose:'analysis',role:'deployer',riskLevel:'transparency'}}],{now});
+  const incomplete=projectAiGovernance([{kind:'governance',id:'G1',subjectId:'ai:1',owner:'UNASSIGNED',verified:false,evidenceIds:[],observedAt:'2026-08-31T10:00:00Z',payload:{systemName:'Agent',provider:'Provider',model:'Model',purpose:'analysis',role:'deployer',riskLevel:'LIMITED',approved:false}}],{now});
   assert.equal(incomplete.systems[0].readiness,'INCOMPLETE');
   assert.equal(incomplete.systems[0].productionAllowed,false);
-  const evidenced=projectAiGovernance([{kind:'governance',id:'G2',subjectId:'ai:2',owner:'AI Governance',verified:true,evidenceIds:['E1'],payload:{systemName:'Agent',provider:'Provider',model:'Model',purpose:'analysis',role:'deployer',riskLevel:'transparency',classificationSource:'EU AI Act assessment',humanOversight:{required:true,control:'Human approval'},transparencyControl:'AI disclosure',loggingControl:'Audit log',reviewDueAt:'2026-09-30T00:00:00Z'}}],{now});
+  const evidenced=projectAiGovernance([{kind:'governance',id:'G2',subjectId:'ai:2',owner:'AI Governance',verified:true,evidenceIds:['E1'],observedAt:'2026-08-31T11:00:00Z',payload:{systemName:'Agent',provider:'Provider',model:'Model',purpose:'analysis',role:'deployer',riskLevel:'LIMITED',classificationSource:'EU AI Act assessment',humanOversight:{required:true,control:'Human approval'},transparencyControl:'AI disclosure',loggingControl:'Audit log',reviewDueAt:'2026-09-30T00:00:00Z',approved:true,approvalEvidenceIds:['AE1']}}],{now});
+  assert.equal(evidenced.systems[0].riskLevel,'transparency');
   assert.equal(evidenced.systems[0].readiness,'EVIDENCED');
   assert.equal(evidenced.systems[0].productionAllowed,true);
+});
+
+test('AI governance projection keeps only the newest immutable revision per use case', () => {
+  const common={kind:'governance',subjectId:'ai:agent-1',owner:'AI Governance',verified:true,evidenceIds:['E1'],payload:{systemName:'Agent',provider:'Provider',model:'Model',purpose:'analysis',role:'deployer',riskLevel:'MINIMAL',classificationSource:'registry',humanOversight:{required:false,control:'policy'},transparencyControl:'not-required',loggingControl:'audit',reviewDueAt:'2026-09-30T00:00:00Z',approved:true,approvalEvidenceIds:['AE1']}};
+  const projection=projectAiGovernance([{...common,id:'G-old',observedAt:'2026-08-30T10:00:00Z'},{...common,id:'G-new',observedAt:'2026-08-31T10:00:00Z',payload:{...common.payload,model:'Model-v2'}}],{now:'2026-08-31T12:00:00Z'});
+  assert.equal(projection.summary.total,1);
+  assert.equal(projection.systems[0].id,'G-new');
+  assert.equal(projection.systems[0].model,'Model-v2');
 });
 
 test('Governance is a canonical type for the production AI registry source', async () => {
@@ -58,4 +67,8 @@ test('Governance is a canonical type for the production AI registry source', asy
   assert.ok(mappings.sources.supabase.canonical_types.includes('Governance'));
   assert.ok(mappings.sources.agent_runtime.canonical_types.includes('Governance'));
   assert.ok(mappings.sources.ai_model_services.canonical_types.includes('Governance'));
+  const migration=await readFile('supabase/migrations/20260831_brain_ai_governance_projection.sql','utf8');
+  assert.match(migration,/brain_sync_ai_governance_record/);
+  assert.match(migration,/record_type in \([^)]*'Governance'/s);
+  assert.match(migration,/after insert or update on public\.brain_ai_governance_registry/i);
 });
