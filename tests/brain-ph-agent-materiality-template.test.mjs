@@ -13,10 +13,22 @@ test('canonical PH agent materiality template is fail-closed and covers PH01-PH1
   assert.equal(contract.invariants.nonMaterialBg168Calls, 0);
   assert.equal(contract.invariants.materialBg168CallsMax, 1);
   assert.equal(contract.invariants.primaryResultIndependentOfLearning, true);
+  assert.equal(contract.invariants.classifierPreservesRawPrimary, true);
   assert.equal(contract.invariants.runtimeEvidenceRequired, true);
   assert.equal(contract.invariants.paidCapacityIncreaseAllowedAutonomously, false);
   assert.deepEqual(contract.agents.map(a => a.scenarioId).sort((a,b)=>a-b), expectedIds);
   assert.equal(contract.agents.every(a => a.state === 'UNGUARDED'), true);
+});
+
+test('staging canary is blueprint-guarded but explicitly not runtime-proven', async () => {
+  const contract = JSON.parse(await readFile(contractPath, 'utf8'));
+  assert.equal(contract.stagingCanary.scenarioId, 7165093);
+  assert.equal(contract.stagingCanary.state, 'GUARDED_BLUEPRINT');
+  assert.equal(contract.runtimeAcceptance.nonMaterialProven, false);
+  assert.equal(contract.runtimeAcceptance.materialProven, false);
+  assert.equal(contract.runtimeAcceptance.learningFailureProven, false);
+  assert.equal(contract.runtimeAcceptance.creditSlopeBounded, false);
+  assert.equal(contract.runtimeAcceptance.no429Burst, false);
 });
 
 test('resume cannot become allowed until every required agent is runtime proven or explicitly exempt', async () => {
