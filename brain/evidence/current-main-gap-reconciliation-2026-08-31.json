@@ -1,0 +1,27 @@
+{
+  "version": "CURRENT-MAIN-GAP-RECONCILIATION-v1",
+  "asOf": "2026-08-31",
+  "canonicalArchitecture": "BRAIN-DELIVERY-v2",
+  "sourceSnapshot": "Bedrijfsgeheugen_implementatiestatus_2026-08-30(3).md",
+  "truthOrder": ["production-runtime-evidence","machine-enforced-current-main","repository-contracts-tests","historical-status-snapshot"],
+  "items": [
+    {"id":"canonical-business-graph","status":"BUILT_NOT_PROVEN","owner":"Whole Brain canonical services","evidenceRefs":["PR#887","brain/operating-loop","Supabase persisted graph migrations"],"nextAction":"Verify exact production migrations and readback for persisted graph objects/relations across representative object classes."},
+    {"id":"change-impact-engine","status":"BUILT_NOT_PROVEN","owner":"Whole Brain impact service","evidenceRefs":["PR#887","brain/operating-loop"],"nextAction":"Capture production traversal/before-after/rollback evidence for a real change."},
+    {"id":"external-intelligence-closed-loop","status":"PARTIAL","owner":"Intelligence plane","evidenceRefs":["PR#887","DataForSEO sensors","BRAIN delivery registrations"],"nextAction":"Prove one cross-domain detect→verify→match→impact→prioritise→recommend→act→measure→learn outcome with exact source and cost evidence."},
+    {"id":"decision-engine-30-90-180","status":"BUILT_NOT_PROVEN","owner":"Decision service","evidenceRefs":["PR#887","decision simulation/outcome evaluator"],"nextAction":"Prove persisted decision lifecycle plus scheduled 30/90/180 evaluation against production data."},
+    {"id":"action-execution-store","status":"BUILT_NOT_PROVEN","owner":"Execution plane","evidenceRefs":["PR#887","PR#893 transactional inbox/outbox","PR#898 command/reconciliation control plane"],"nextAction":"Verify end-to-end external producer action→execution→result→verification lineage in production."},
+    {"id":"verified-value-evidence","status":"BUILT_NOT_PROVEN","owner":"Verified Value service","evidenceRefs":["PR#887","verified-realised evidence contract"],"nextAction":"Attach and read back real outcome/value evidence for at least one realised action."},
+    {"id":"living-memory","status":"BUILT_NOT_PROVEN","owner":"Living Memory","evidenceRefs":["PR#887","BG166/BG167/BG168 shared memory plane"],"nextAction":"Verify provenance/history query over production knowledge spanning document/source, decision, action and learning."},
+    {"id":"ai-governance-registry","status":"BUILT_NOT_PROVEN","owner":"AI Governance","evidenceRefs":["PR#887","AI governance registry/migrations"],"nextAction":"Verify production persisted model/system inventory, risk, oversight, incident and lifecycle readback."},
+    {"id":"universal-app-delivery-adapters","status":"PARTIAL","owner":"BRAIN delivery control plane","evidenceRefs":["BRAIN-DELIVERY-v2","PR#898 Make worker wrapper","existing platform registrations"],"nextAction":"Enforce one activation contract for Make, Notion, Supabase, DataForSEO and future producers; verify each registered current producer inherits it."},
+    {"id":"integration-observability","status":"PARTIAL","owner":"Integration control plane","evidenceRefs":["cost/health contracts","integration registrations"],"nextAction":"Require and populate health, freshness, last error, owner, cost and revision/deploy identity evidence for every production integration."},
+    {"id":"legacy-calculation-parity","status":"PROVEN","owner":"Legacy calculation registry","scope":"repository-contract","productionEvidence":true,"evidenceRefs":["commit:0b71158b3d73cd850bf14356a76344d408c9a492","tests/brain-whole-brain-real-legacy-parity.test.mjs","frisse-blik.html","zelfscan.html","klantportaal.html"],"note":"Real legacy calculation inventory and deterministic fixtures are registered and protected; production delivery head also passed governed CI/promotion workflows."},
+    {"id":"production-performance-rum","status":"BUILT_NOT_PROVEN","owner":"Portal/Performance","evidenceRefs":["PR#887 RUM/SLO contracts","<1s cached target","<2s interactive target"],"nextAction":"Collect continuous production RUM with percentile/window/source identity and fail closed when evidence is stale or absent."},
+    {"id":"executive-cockpit-projection","status":"PARTIAL","owner":"Executive cockpit","evidenceRefs":["portal cockpit renderers","Graph/Intelligence/Execution/Evidence/Memory services"],"nextAction":"Enforce projection-only invariant so cockpit cannot own or mutate independent business truth."},
+    {"id":"completion-gate","status":"PARTIAL","owner":"BRAIN delivery control plane","evidenceRefs":["BRAIN-DELIVERY-v2 DoD","BG169 promotion authority","BG166/BG167/BG168 learning plane"],"nextAction":"Make terminal completion machine-enforced across exact promotion, production identity, runtime/business outcome, persisted learning and shared-state refresh."},
+    {"id":"chat-learning-brain-writeback","status":"BUILT_NOT_PROVEN","owner":"Learning plane","evidenceRefs":["BG168 router","BG166 ledger writer","BG167 shared-state refresh","verified 2026-08-31 thematic writes"],"nextAction":"Keep downstream readback mandatory because parent BG168 dispatch success alone is insufficient; verify every material learning persistence and dedupe/coalesced refresh."}
+  ],
+  "hardBlockers": [
+    {"fingerprint":"supabase|production-migration|connector-permission-denied","status":"BLOCKED","rule":"Do not claim production-active database capabilities until exact merged migrations are applied through the authorized route and independently read back."}
+  ]
+}
