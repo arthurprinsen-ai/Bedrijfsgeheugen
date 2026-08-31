@@ -4,6 +4,7 @@ import {
   loadCanonicalPortalState,
   createRuntimeReporter,
 } from '../platform/client/portal-runtime.mjs';
+import { injectPortalRuntimeHook } from '../tools/portal-runtime-hook.mjs';
 
 test('canonical portal state wins through the authenticated production route', async () => {
   let fallbackCalls = 0;
@@ -56,4 +57,16 @@ test('runtime reporter posts genuine elapsed timings once per metric and revisio
   assert.ok(calls.every(call => call.body.revision === revision));
   assert.ok(calls.every(call => call.body.sessionId === 'session-1'));
   assert.ok(calls.every(call => call.body.surface === 'klantportaal'));
+});
+
+test('build hook injects exactly one authenticated portal runtime bootstrap', () => {
+  const source = '<html><body><main>portal</main></body></html>';
+  const once = injectPortalRuntimeHook(source);
+  const twice = injectPortalRuntimeHook(once);
+  assert.equal(once, twice);
+  assert.equal((once.match(/id="bg-portal-runtime"/g) || []).length, 1);
+  assert.match(once, /netlifyIdentity\.currentUser/);
+  assert.match(once, /loadCanonicalPortalState/);
+  assert.match(once, /reportElapsed\('cached_ms'/);
+  assert.match(once, /reportElapsed\('interactive_ms'/);
 });
