@@ -63,6 +63,8 @@ ${cta}
 const bron = await readFile('index.html', 'utf8');
 const paginas = JSON.parse(await readFile('site/inhoudspaginas.json', 'utf8'));
 const STIJL = `<style id="inhoudspaginas-stijl">
+header a,header a:visited,header a:hover{color:#fff}
+.v17-header .brand,.v17-header .brand:visited{color:#fff;text-decoration:none}
 .inhoud-kop{background:#0a1117;color:#fff;padding:132px 0 64px}
 .inhoud-kop h1{color:#fff;margin:10px 0 18px}
 .inhoud-kop p{color:rgba(255,255,255,.84);max-width:72ch;font-size:18px;line-height:1.6}
