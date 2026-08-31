@@ -1,0 +1,24 @@
+{
+  "version": "BRAIN-INCIDENT-v1",
+  "date": "2026-08-31",
+  "status": "OBSERVED",
+  "fingerprint": "github|pull-request|reused-head-pr-event-no-workflow-run-v1",
+  "component": "github-delivery",
+  "symptom": "A fresh ready pull request on an already existing GREEN commit SHA produced zero pull_request workflow runs. Closing and reopening that same PR on the same head also produced zero pull_request workflow runs. Creating a second fresh head ref pointing to the exact same commit and opening a new ready PR still initially showed zero pull_request workflow runs.",
+  "evidence": {
+    "greenHeadSha": "014fb9e20474aeb71e9a417c9d8506409395fee9",
+    "firstReadyPr": 810,
+    "canonicalPr": 811,
+    "pullRequestRunCountObserved": 0
+  },
+  "rootCause": "UNKNOWN_NOT_YET_PROVEN",
+  "failedApproaches": [
+    "create a fresh ready PR on the reused head and assume PR workflows will appear",
+    "close and reopen the same PR once and assume a reopened event will create the missing runs",
+    "create a new ref pointing at the same commit and assume commit identity alone is enough to force workflow scheduling"
+  ],
+  "safeContainment": "Do not merge from push-only evidence. Keep the production/delivery obligation open. Use a meaningful candidate change when new durable evidence exists, then require the normal exact-head PR gates on that new SHA. Never add an empty/no-op commit solely to fake verification activity.",
+  "preventionCandidate": "REQUIRE_ACTUAL_PR_WORKFLOW_RUN_BEFORE_REUSING_GREEN_HEAD_EVIDENCE",
+  "promotionRule": "Do not promote this prevention candidate to PROVEN until the scheduling cause and a deterministic recovery are reproduced and verified.",
+  "learningRule": "Observed platform anomalies are persisted without inventing a root cause; UNKNOWN remains explicit until evidence closes it."
+}
