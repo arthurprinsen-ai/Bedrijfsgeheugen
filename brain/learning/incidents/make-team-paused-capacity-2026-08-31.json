@@ -1,0 +1,24 @@
+{
+  "version": "BRAIN-INCIDENT-v1",
+  "fingerprint": "make|capacity|team-paused-runtime-learning-writeback",
+  "symptom": "BG168 runtime learning writeback cannot execute because Make reports that the organization or team is paused due to exceeded operations or data transfer capacity.",
+  "rootCause": "The Make organization/team capacity state prevents scenario execution even though the BG168 scenario and its connections remain configured and materially valid.",
+  "failedApproach": "Retry the same BG168 scenario execution repeatedly or reinterpret the execution refusal as loss of canonical learning.",
+  "fix": "Persist the learning first in canonical GitHub/BRAIN memory, mark runtime projection as deferred, block Make-dependent promotion/green claims while capacity is unavailable, and refresh BG168/BG166/BG167 only after capacity is restored and execution readback succeeds.",
+  "preventionRule": "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE",
+  "regressionContract": "tests/brain-chat-runtime-capacity-learning.test.mjs + external platform capacity gate",
+  "evidence": "2026-08-31 BG168 scenario_run returned: Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again.",
+  "owner": "agent-reliability",
+  "status": "GUARDED",
+  "canonicalPersistencePreserved": true,
+  "runtimeProjectionDeferred": true,
+  "affectedRuntime": "Make/BG168->BG166->BG167",
+  "canonicalSource": "GitHub/BRAIN",
+  "recovery": {
+    "retryCondition": "Make organization/team execution capacity is available again",
+    "requiredReadback": "BG168 successful execution plus BG166/BG167 learning visibility",
+    "maxBlindRetries": 0,
+    "doNotChangeCredentials": true,
+    "doNotDropLearning": true
+  }
+}
