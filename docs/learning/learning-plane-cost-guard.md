@@ -133,6 +133,53 @@ A new learning runbook created at `docs/learning-plane-cost-guard.md` failed the
 
 Docs-only/ignored-only work must still be classified deterministically. A known canonical namespace should be reused instead of expanding policy ad hoc for one file.
 
+## Governed docs are non-executable work
+
+Fingerprint: `github|brain-delivery|docs-learning-zero-lanes|2026-08-31-v1`.
+
+A second cost regression was found after the path-classification fix: `docs/learning/` was governed as a shared Brain path and therefore started all four executable delivery lanes for a documentation-only change.
+
+The production rule is now:
+
+- `docs/learning/**` remains Brain-governed and must never become `unclassified`;
+- it is explicitly non-executable shared work;
+- a docs-only learning change returns `integration.required=false` and `lanes=[]`;
+- mixed changes containing executable code/config still trigger their normal relevant lanes;
+- do not weaken shared-path governance merely to save CI cost.
+
+The fix was implemented TDD RED→GREEN, harmonizing both the new regression test and the older learning-path governance test, and merged to `main` via PR #721. This is the canonical pattern for reducing delivery cost without creating a policy bypass.
+
+## Portal cost projection is cache-first
+
+Fingerprint: `portal|cost-dashboard|blob-hit-no-notion|2026-08-31-v1`.
+
+Before changing a suspected cost hotspot, re-read current `main`. A previously identified cost-dashboard issue had already been resolved by concurrent work: `netlify/functions/_cost-projection-store.mjs` now reads the Blob projection first and only calls Notion when the Blob record is absent.
+
+Permanent regression contract:
+
+- valid `POWERHOUSE/cost-dashboard/current` Blob hit => zero Notion reads;
+- token-usage enrichment may run independently and must not force a Notion read;
+- missing Blob => exactly one bounded Notion fallback read;
+- do not rebuild an already-correct fix from stale chat/context assumptions.
+
+`tests/portal-cost-projection-store.test.mjs` enforces both the zero-Notion cache-hit path and the single-fallback cache-miss path on `main`.
+
+## Learning writeback when Make is paused
+
+Fingerprint: `learning-plane|make-paused-writeback-deferred|2026-08-31-v1`.
+
+On 2026-08-31 a BG168 learning-write attempt was refused because the Make organization/team was paused after exceeding operations or data-transfer limits.
+
+This is not a reason to blind-retry. Required behavior:
+
+- preserve the primary engineering result;
+- persist durable human-readable learning in the canonical repository documentation immediately;
+- keep one explicit replay obligation for BG168/BG166 when Make becomes writable again;
+- dedupe that obligation by stable fingerprint instead of treating every blocked attempt as a new incident;
+- verify Make state before replay and perform one bounded write attempt, not periodic retry traffic.
+
+This is the concrete fail-open application of `learning-fail-open-v1` and `repeated-known-blocker-no-state-v1` to the learning plane itself.
+
 ## Completion gate
 
 A chat, agent run or development task involving material technical/operational learning is not complete while the learning exists only in conversation text or transient logs. Completion requires:
