@@ -1,13 +1,24 @@
 {
   "id": "chat-to-brain-completeness-v1",
   "version": 1,
-  "status": "PROPOSED",
+  "status": "ACTIVE",
   "scope": ["chat", "agent", "workflow", "scenario", "development_run", "incident", "recovery", "production_verification"],
   "purpose": "Voorkom dat duurzame technische of operationele kennis alleen in conversatietekst blijft staan. Materiële learnings worden vóór completion genormaliseerd naar het centrale Bedrijfsgeheugen zodat iedere volgende chat, agent en workflow ze kan hergebruiken.",
   "linked_learning_sources": [
     "brain/learning/delivery-test-classification-cochange-2026-08-31.json",
-    "brain/learning/preflight-effective-source-set-2026-08-31.json"
+    "brain/learning/preflight-effective-source-set-2026-08-31.json",
+    "brain/learning/bundle-maturity-must-not-overpromote-2026-08-31.json"
   ],
+  "promotionEvidence": {
+    "policy_merged_to_main": true,
+    "preflight_compiler_includes_policy": true,
+    "continuity_snapshot_included_in_preflight": true,
+    "regression_test_present_on_main": true,
+    "brain_delivery_gate_passed": true,
+    "shared_agent_memory_gate_passed": true,
+    "brain_foundation_gate_passed": true,
+    "promotion_basis": "main readback plus exact-head green Brain gates from PRs #823 and #829"
+  },
   "completionGate": {
     "required": true,
     "rule": "NO_MATERIAL_LEARNING_ONLY_IN_CHAT",

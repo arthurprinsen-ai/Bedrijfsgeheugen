@@ -1,0 +1,24 @@
+{
+  "id": "bundle-maturity-must-not-overpromote-2026-08-31",
+  "type": "FailureClass",
+  "status": "PROVEN",
+  "fingerprint": "brain-learning|bundle-maturity|aggregate-promotion-overstates-evidence",
+  "symptom": "Een grote continuity-snapshot of learning-bundle wordt als geheel naar PROVEN/CANONICAL gepromoveerd omdat de container op main staat en door preflight wordt gelezen, terwijl individuele learnings in de bundle verschillende evidence-maturity hebben.",
+  "rootCause": "Container-level delivery evidence en per-learning evidencematurity worden als hetzelfde beschouwd.",
+  "failedApproach": "De maturity van alle gebundelde learnings afleiden uit het feit dat de snapshot zelf is gemerged, leesbaar en operationeel gekoppeld.",
+  "provenFix": "Promoveer de enforcement-policy alleen wanneer haar eigen werking bewezen is. Behoud een mixed-maturity learning bundle op een niet-overclaimende status totdat individuele entries hun eigen production/evidence maturity dragen of de bundle expliciet als index/container wordt gemodelleerd.",
+  "prevention": "SEPARATE_CONTAINER_DELIVERY_MATURITY_FROM_LEARNING_EVIDENCE_MATURITY",
+  "regressionContract": "Een bundle mag geen sterkere evidence-status aan individuele learnings impliceren dan hun eigen evidence ondersteunt.",
+  "evidence": {
+    "policy": "brain/policies/chat-to-brain-completeness-v1.json",
+    "bundle": "brain/learning/chat-continuity-2026-08-31.json",
+    "main_readback_verified": true,
+    "policy_enforcement_verified": true,
+    "bundle_contains_mixed_learning_classes": true
+  },
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false
+  }
+}
