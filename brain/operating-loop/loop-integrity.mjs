@@ -1,4 +1,4 @@
-export const WHOLE_BRAIN_STAGES=Object.freeze(['evidence','graph','intelligence','impact','decision','action','execution','verification','value','learning','memory','graph_feedback']);
+export const WHOLE_BRAIN_STAGES=Object.freeze(['evidence','graph','intelligence','impact','decision','action','execution','verification','outcome','value','learning','memory','graph_feedback']);
 
 function stageOf(record){
   if(record?.kind==='evidence') return 'evidence';
@@ -9,6 +9,7 @@ function stageOf(record){
   if(record?.kind==='action') return 'action';
   if(record?.kind==='execution') return 'execution';
   if(record?.kind==='verification') return 'verification';
+  if(record?.kind==='outcome') return 'outcome';
   if(record?.kind==='value') return 'value';
   if(record?.kind==='learning') return 'learning';
   if(record?.kind==='memory') return 'memory';

@@ -3,6 +3,7 @@ import {prioritizeIntelligence} from './intelligence.mjs';
 import {projectVerifiedValue} from './verified-value.mjs';
 import {projectLivingMemory} from './living-memory.mjs';
 import {projectIntegrationHealth} from './integration-health.mjs';
+import {projectAiGovernance} from './ai-governance.mjs';
 import {createBusinessGraphProjection,explainGraphObject} from './business-graph-service.mjs';
 import {buildExecutiveCockpit} from './executive-cockpit.mjs';
 import {filterAuthorizedRecords,assertCanWriteRecord} from './object-access-policy.mjs';
@@ -39,9 +40,9 @@ export function createOperatingLoopStore(adapter,{now=()=>new Date().toISOString
   }
   async function explain({tenantId,subjectId,principal=null}={}){const records=await recordsFor(tenantId,{principal});return explainGraphObject(records,{tenantId,subjectId});}
   async function getProjection(tenantId,{principal=null}={}){
-    const records=await recordsFor(tenantId,{principal});const state=deriveLoopState(records);const prioritizedAdvice=prioritizeIntelligence(records);const verifiedValue=projectVerifiedValue(records);const livingMemory=projectLivingMemory(records,{now:now()});const integrationHealth=projectIntegrationHealth(records);const businessGraph=createBusinessGraphProjection(records,{tenantId});
+    const records=await recordsFor(tenantId,{principal});const state=deriveLoopState(records);const prioritizedAdvice=prioritizeIntelligence(records);const verifiedValue=projectVerifiedValue(records);const livingMemory=projectLivingMemory(records,{now:now()});const integrationHealth=projectIntegrationHealth(records);const aiGovernance=projectAiGovernance(records,{now:now()});const businessGraph=createBusinessGraphProjection(records,{tenantId});
     const correlationIds=[...new Set(records.map(record=>record.correlationId).filter(Boolean))];const wholeBrainLoops=correlationIds.map(correlationId=>closedLoopStatus(records,{correlationId}));const loopSummary={complete:wholeBrainLoops.filter(loop=>loop.complete).length,incomplete:wholeBrainLoops.filter(loop=>!loop.complete).length,total:wholeBrainLoops.length};
-    const base={schemaVersion:'brain-operating-projection.v5',tenantId:String(tenantId),records,state,businessGraph,advice:state.advice,prioritizedAdvice,verifiedValue,livingMemory,integrationHealth,wholeBrainLoops,loopSummary};const executiveCockpit=buildExecutiveCockpit(base,{now:now()});return {...base,executiveCockpit};
+    const base={schemaVersion:'brain-operating-projection.v6',tenantId:String(tenantId),records,state,businessGraph,advice:state.advice,prioritizedAdvice,verifiedValue,livingMemory,integrationHealth,aiGovernance,wholeBrainLoops,loopSummary};const executiveCockpit=buildExecutiveCockpit(base,{now:now()});return {...base,executiveCockpit};
   }
   return Object.freeze({append,getProjection,certifyRuntime,explain});
 }

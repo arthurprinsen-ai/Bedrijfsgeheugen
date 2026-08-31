@@ -33,10 +33,24 @@ export function executionToVerification(execution,{id,owner,status,verified=fals
   return {...lineage(execution,id),type:'Verification',executionId:execution.id,actionId:execution.actionId,owner:String(owner||execution.owner||'UNASSIGNED'),status:status|| (verified?'VERIFIED':'FAILED'),executed:true,verified:verified===true,result,payload:{...payload}};
 }
 
+export function verificationToOutcome(verification,{id,owner,status='OBSERVED',result=null,payload={}}={}){
+  if(verification?.type!=='Verification'||!verification.id||!verification.tenantId||verification.verified!==true) throw new Error('Outcome requires verified Verification');
+  if(!id) throw new TypeError('Outcome requires id');
+  if(result===null||result===undefined||result==='') throw new Error('Outcome requires result');
+  return {...lineage(verification,id),type:'Outcome',verificationId:verification.id,executionId:verification.executionId,actionId:verification.actionId,owner:String(owner||verification.owner||'UNASSIGNED'),status,executed:true,verified:true,result,payload:{...payload}};
+}
+
+export function outcomeToValue(outcome,{id,owner,status='REALISED',realisedValue=0,valueUnit='count',result=null,payload={}}={}){
+  if(outcome?.type!=='Outcome'||!outcome.id||!outcome.tenantId||outcome.executed!==true||outcome.verified!==true) throw new Error('Value requires verified Outcome');
+  if(!id) throw new TypeError('Value requires id');
+  return {...lineage(outcome,id),type:'Value',outcomeId:outcome.id,verificationId:outcome.verificationId,executionId:outcome.executionId,actionId:outcome.actionId,owner:String(owner||outcome.owner||'UNASSIGNED'),status,executed:true,verified:true,result:result??outcome.result,payload:{...payload,realised:true,realisedValue:Number(realisedValue)||0,valueUnit:String(valueUnit||'count')}};
+}
+
+// Legacy compatibility only: new canonical producers must use verificationToOutcome -> outcomeToValue.
 export function verificationToValue(verification,{id,owner,status='REALISED',realisedValue=0,valueUnit='count',result=null,payload={}}={}){
   if(verification?.type!=='Verification'||!verification.id||!verification.tenantId||verification.verified!==true) throw new Error('Value requires verified Verification');
   if(!id) throw new TypeError('Value requires id');
-  return {...lineage(verification,id),type:'Value',verificationId:verification.id,executionId:verification.executionId,actionId:verification.actionId,owner:String(owner||verification.owner||'UNASSIGNED'),status,executed:true,verified:true,result:result??verification.result,payload:{...payload,realisedValue:Number(realisedValue)||0,valueUnit:String(valueUnit||'count')}};
+  return {...lineage(verification,id),type:'Value',verificationId:verification.id,executionId:verification.executionId,actionId:verification.actionId,owner:String(owner||verification.owner||'UNASSIGNED'),status,executed:true,verified:true,result:result??verification.result,payload:{...payload,realisedValue:Number(realisedValue)||0,valueUnit:String(valueUnit||'count'),legacyDirectVerificationValue:true}};
 }
 
 export function valueToLearning(value,{id,owner='BG168',status='LEARNED',payload={}}={}){
