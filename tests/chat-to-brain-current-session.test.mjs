@@ -23,6 +23,6 @@ test('latest material chat learnings are persisted in the canonical Brain prefli
   assert.ok(packet.fingerprints.includes('brain|preflight|full-canonical-source-exceeds-budget-v1'));
   assert.ok(packet.preventions.includes('CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS'));
   assert.ok(packet.preventions.includes('SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS'));
-  assert.ok(packet.preventions.includes('PH_AGENT_MATERIALITY_BEFORE_BG168'));
-  assert.ok(packet.preventions.includes('COMPACT_PREFLIGHT_PROJECTION_KEEP_BUDGET'));
+  assert.ok(packet.preventions.includes('MATERIALITY_BEFORE_BG168'));
+  assert.ok(packet.preventions.includes('BOUNDED_PREFLIGHT'));
 });
