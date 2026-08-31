@@ -1,0 +1,24 @@
+{
+  "version": "DIRECT-MAIN-POSTWRITE-GUARD-v1",
+  "failClosed": true,
+  "knownFailures": [
+    {
+      "fingerprint": "github|main-governance|post-push-ci-after-unauthorized-write",
+      "rootCause": "GitHub Actions on push runs only after the main ref has already changed; without native branch/ruleset protection it is detection, not pre-write prevention.",
+      "fix": "Keep candidate-only delivery mandatory, classify any direct main write as a governance incident, and retain the native main-protection hard boundary until fresh GitHub evidence proves pre-write enforcement.",
+      "preventionRule": "POST_PUSH_CI_IS_DETECTION_NOT_PREVENTION",
+      "regressionContract": "tests/direct-main-postwrite-guard-learning.test.mjs",
+      "owner": "Powerhouse Production Promotion Guardian",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|main-governance|unprotected-main-direct-write-requires-recovery",
+      "rootCause": "An unprotected main can accept a one-parent/manual/test write that bypasses candidate PR verification even when post-push memory CI later detects it.",
+      "fix": "Do not silently accept the write as governed delivery. Read current main, preserve useful content only through a fresh candidate when needed, verify downstream production parity, record incident evidence, and keep native protection remediation open until direct writes are structurally impossible.",
+      "preventionRule": "POST_PUSH_CI_IS_DETECTION_NOT_PREVENTION",
+      "regressionContract": "tests/direct-main-postwrite-guard-learning.test.mjs",
+      "owner": "Powerhouse Production Promotion Guardian",
+      "status": "PROVEN"
+    }
+  ]
+}
