@@ -23,6 +23,16 @@ const OVERSLAAN = new Set([
 const MAPPEN = ['.', 'blog'];
 
 const SLOTSTIJL = `<style id="uniforme-schil">
+.paginakop{background:#0a1117;color:#fff;padding:132px 0 62px;position:relative}
+.paginakop .wrap{max-width:1120px}
+.paginakop .bgkruim,.paginakop .bgkruim a,.paginakop .bgkruim span{color:rgba(255,255,255,.7);padding:0;font-size:13px}
+.paginakop .bgkruim a{text-decoration:none}
+.paginakop .bgkruim span[aria-hidden]{margin:0 8px}
+.paginakop .eyebrow{display:inline-block;margin:18px 0 10px;color:var(--lime,#d8ff68);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.paginakop h1{color:#fff;margin:0 0 18px;max-width:20ch}
+.paginakop h1 span{display:block}
+.paginakop p{color:rgba(255,255,255,.84);max-width:72ch;font-size:18px;line-height:1.6;margin:0}
+@media(max-width:768px){.paginakop{padding:104px 0 46px}}
 header.v17-header{background:rgba(12,16,20,.96);border-bottom:1px solid rgba(255,255,255,.10)}
 header a,header a:visited,header a:hover,header .brand,header .navbtn,header .login{color:#fff}
 header .brand{text-decoration:none}
@@ -96,13 +106,32 @@ function kruimelErbij(binnen, oud, pad) {
   return { binnen: nav + binnen, schema };
 }
 
+// Elke pagina opent met dezelfde donkere band: kruimelpad, bovenkopje, H1 en inleiding.
+function paginakop(binnen) {
+  let rest = binnen;
+  const pak = (re) => {
+    const m = rest.match(re);
+    if (!m) return '';
+    rest = rest.replace(m[0], '');
+    return m[0];
+  };
+  const kruimel = pak(/<nav class="bgkruim"[\s\S]*?<\/nav>/i);
+  const kop = pak(/<h1[^>]*>[\s\S]*?<\/h1>/i);
+  if (!kop) return binnen;
+  const bovenkop = pak(/<span class="eyebrow"[^>]*>[\s\S]*?<\/span>/i);
+  const inleiding = pak(/<p class="(?:p-intro|leid|lead)"[^>]*>[\s\S]*?<\/p>/i);
+  const band = `<section class="paginakop"><div class="wrap">${kruimel}${bovenkop}${kop}${inleiding}</div></section>\n`;
+  return band + rest;
+}
+
 function zetInSchil(schil, oud, pad) {
   const main = oud.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
   if (!main) return null;
   const eigen = eigenHoofd(oud);
 
   const kruimel = kruimelErbij(main[1], oud, pad);
-  let html = schil.voor + `<div class="page active" id="view-inhoud">\n<main>${kruimel.binnen}</main>\n</div>\n` + schil.na;
+  const opening = paginakop(kruimel.binnen);
+  let html = schil.voor + `<div class="page active" id="view-inhoud">\n<main>${opening}</main>\n</div>\n` + schil.na;
   if (kruimel.schema) eigen.data.push(kruimel.schema);
 
   if (eigen.titel) html = html.replace(/<title>[\s\S]*?<\/title>/i, eigen.titel);
