@@ -68,4 +68,4 @@ html.bgx-beweegt [data-op]:nth-child(4){transition-delay:.15s}
 .bgx-leesbalk{position:fixed;top:0;left:0;height:3px;width:0;background:var(--blue);z-index:100;transition:width .1s linear}
 </style>`;
 
-//__DEEL2__
+//__DEEL2__ (vervolg volgt)
