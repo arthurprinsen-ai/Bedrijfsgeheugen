@@ -1,0 +1,18 @@
+{
+  "version":"EXECUTIVE-COCKPIT-PROJECTION-v1",
+  "authority":"canonical Whole Brain services",
+  "systemOfRecord":false,
+  "independentBusinessTruthForbidden":true,
+  "directBusinessMutationForbidden":true,
+  "purpose":"The executive cockpit renders canonical truth; it never owns a competing management state, KPI truth, roadmap truth, action truth or timeline truth.",
+  "views":{
+    "managementSummary":{"sources":["Graph","Intelligence","Evidence","Memory"]},
+    "health":{"sources":["Graph","Evidence"]},
+    "opportunities":{"sources":["Intelligence","Graph","Evidence"]},
+    "roadmap":{"sources":["Execution","Graph"]},
+    "actions":{"sources":["Execution","Evidence"]},
+    "timeline":{"sources":["Execution","Evidence","Memory"]}
+  },
+  "writeRule":"All mutations must target the owning canonical service through its governed command/action interface; cockpit-local writes may contain only ephemeral UI state.",
+  "proofRule":"A rendered value is production-trustworthy only when its canonical source identity and freshness/evidence can be traced from the projection."
+}
