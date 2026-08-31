@@ -122,7 +122,9 @@ GEEN_TAALEIS = {'privacy', '404', 'index-oud', 'klantportaal', 'klantportaal-dem
 # verkeerde e-mailadres erin.
 CANONIEK_KOP = '.github/canoniek/kop.html'
 CANONIEK_VOET = '.github/canoniek/voet.html'
-GEEN_BALK = {'klantportaal', 'klantportaal-demo', 'index-oud'}
+# de homepage draagt dezelfde kop, maar met knoppen in plaats van links: daar
+# schakelt de eenpagina-app mee tussen weergaven. Vandaar hier een uitzondering.
+GEEN_BALK = {'klantportaal', 'klantportaal-demo', 'index-oud', 'index', 'prototype-v18-stable', 'klant-login'}
 
 MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
 MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
