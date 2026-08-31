@@ -20,6 +20,16 @@
         "observed_merged_at": "2026-08-30T21:47:41Z",
         "observed_merge_commit_sha": "78e65aa218711a56e919dcd9df94c1a53f9c84cb"
       },
+      "additionalEvidence": [
+        {
+          "repository": "arthurprinsen-ai/Bedrijfsgeheugen",
+          "pr": 853,
+          "observed_state": "closed",
+          "observed_merged": false,
+          "observation": "parallel-close-invalidated-earlier-snapshot",
+          "lesson": "A fresh provider read immediately before lifecycle handling showed the PR had already been closed by a parallel line; the earlier open-state snapshot could not authorize another close/supersede mutation."
+        }
+      ],
       "security": {
         "contains_secrets": false,
         "contains_credentials": false,
