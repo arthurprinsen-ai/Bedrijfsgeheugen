@@ -58,6 +58,12 @@
       "fingerprint": "governance|platform-control|internal-green-assumed-external-green",
       "root_cause": "Internal repository evidence is mistaken for native provider configuration or runtime truth.",
       "prevention": "Read current external platform state directly; unknown remains unknown; do not infer provider controls from CI."
+    },
+    {
+      "id": "repository-auto-merge-disabled-v1",
+      "fingerprint": "github|repository|auto-merge-disabled",
+      "root_cause": "The repository does not currently permit GitHub auto-merge, so a green PR cannot be assumed to merge automatically after checks.",
+      "prevention": "Treat native repository auto-merge capability as directly observed platform state. Do not bypass required gates or force a merge merely because auto-merge is unavailable; use the registered promotion authority or an explicitly governed merge step."
     }
   ],
   "delivery_rules": [
@@ -67,7 +73,8 @@
     "Docs-only or ignored-only changes with zero delivery lanes are a verified no-op, not a failure.",
     "Commit -> PR -> checks -> merge -> deployment -> independent production verification is the delivery chain.",
     "When red, agents record root cause, apply the smallest safe fix, add regression coverage, retest, redeploy, verify and write learning back.",
-    "No production action may bypass the registered promotion authority or change/evidence lineage."
+    "No production action may bypass the registered promotion authority or change/evidence lineage.",
+    "Repository-native merge capabilities such as auto-merge must be observed directly and may never be inferred from CI status."
   ],
   "wave1_control_plane": {
     "primitives": [
