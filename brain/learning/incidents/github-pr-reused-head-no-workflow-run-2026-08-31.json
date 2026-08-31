@@ -1,5 +1,5 @@
 {
-  "version": "BRAIN-INCIDENT-v1",
+  "version": "BRAIN-INCIDENT-v1.1",
   "date": "2026-08-31",
   "status": "OBSERVED",
   "fingerprint": "github|pull-request|reused-head-pr-event-no-workflow-run-v1",
@@ -11,14 +11,25 @@
     "canonicalPr": 811,
     "pullRequestRunCountObserved": 0
   },
+  "provenEvidence": [
+    "The affected stale and conflicted candidate lineage was observed roughly 148 commits behind current main and overlapped shared learning and prevention contracts.",
+    "A fresh candidate created from current main immediately received normal pull_request workflow runs.",
+    "The exact GitHub internal scheduling cause was not independently reproduced or proven."
+  ],
   "rootCause": "UNKNOWN_NOT_YET_PROVEN",
   "failedApproaches": [
     "create a fresh ready PR on the reused head and assume PR workflows will appear",
     "close and reopen the same PR once and assume a reopened event will create the missing runs",
-    "create a new ref pointing at the same commit and assume commit identity alone is enough to force workflow scheduling"
+    "create a new ref pointing at the same commit and assume commit identity alone is enough to force workflow scheduling",
+    "diagnose a GitHub scheduling defect before checking whether the candidate is stale, conflicted or semantically overlapping with current main"
   ],
-  "safeContainment": "Do not merge from push-only evidence. Keep the production/delivery obligation open. Use a meaningful candidate change when new durable evidence exists, then require the normal exact-head PR gates on that new SHA. Never add an empty/no-op commit solely to fake verification activity.",
+  "requiredPreDiagnosisChecks": [
+    "read current main SHA",
+    "check PR mergeability",
+    "check file and semantic overlap against current main"
+  ],
+  "safeContainment": "Do not merge from push-only evidence. Keep the production/delivery obligation open. Before diagnosing a workflow scheduling defect, read current main, check PR mergeability and check file or semantic overlap. If the lineage is stale or conflicted, reconcile it first and keep the platform root cause UNKNOWN. Use a meaningful candidate change when new durable evidence exists, then require the normal exact-head PR gates on that new SHA. Never add an empty/no-op commit solely to fake verification activity.",
   "preventionCandidate": "REQUIRE_ACTUAL_PR_WORKFLOW_RUN_BEFORE_REUSING_GREEN_HEAD_EVIDENCE",
-  "promotionRule": "Do not promote this prevention candidate to PROVEN until the scheduling cause and a deterministic recovery are reproduced and verified.",
-  "learningRule": "Observed platform anomalies are persisted without inventing a root cause; UNKNOWN remains explicit until evidence closes it."
+  "promotionRule": "Do not promote this prevention candidate to PROVEN until the scheduling cause and a deterministic recovery are reproduced and verified on a current, mergeable, non-overlapping candidate.",
+  "learningRule": "Observed platform anomalies are persisted without inventing a root cause. An agent must not diagnose workflow scheduling failure until stale lineage, mergeability and current-main overlap have been ruled out; UNKNOWN remains explicit until evidence closes it."
 }
