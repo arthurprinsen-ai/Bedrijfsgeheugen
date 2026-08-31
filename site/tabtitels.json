@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "status": "tabblad-baseline",
+  "pictogrammen": {
+    "icoon": "/favicon.png",
+    "appleTouch": "/apple-touch-icon.png"
+  },
+  "overslaan": [
+    "assets/blok-kop.html",
+    "assets/blok-voet.html",
+    "site/accepted-pages/over-ons-main.html"
+  ],
+  "panelen": [
+    {
+      "bestanden": ["index.html", "prototype-v18-stable.html"],
+      "panelen": ".page",
+      "actief": ".page.active",
+      "voorvoegsel": "view-",
+      "basis": "Digitalisering mkb | Kennis borgen en automatiseren",
+      "knop": "[data-view=\"{sleutel}\"]",
+      "achtervoegsel": " | Bedrijfsgeheugen",
+      "titels": {
+        "home": "Digitalisering mkb | Kennis borgen en automatiseren",
+        "solutions": "Oplossingen | Bedrijfsgeheugen",
+        "product": "Platform | Bedrijfsgeheugen",
+        "integrations": "Koppelingen | Bedrijfsgeheugen",
+        "pricing": "Prijzen | Bedrijfsgeheugen",
+        "resources": "Kennis | Bedrijfsgeheugen",
+        "start": "Starten | Bedrijfsgeheugen",
+        "selfscan": "Gratis zelfscan | Bedrijfsgeheugen",
+        "frisseblik-scan": "Frisse Blik Scan | Bedrijfsgeheugen",
+        "company": "Over ons | Bedrijfsgeheugen",
+        "cases": "Cases | Bedrijfsgeheugen",
+        "more": "Meer | Bedrijfsgeheugen",
+        "login": "Inloggen | Bedrijfsgeheugen",
+        "signup": "Aanmelden | Bedrijfsgeheugen"
+      }
+    },
+    {
+      "bestanden": ["klantportaal.html"],
+      "panelen": "[id^=\"p-\"]",
+      "actief": "[id^=\"p-\"].aan",
+      "voorvoegsel": "p-",
+      "basis": "Portaal | Bedrijfsgeheugen",
+      "knop": "[data-p=\"{sleutel}\"]",
+      "achtervoegsel": " · Portaal | Bedrijfsgeheugen",
+      "titels": {}
+    },
+    {
+      "bestanden": ["klantportaal-demo.html"],
+      "panelen": "[id^=\"p-\"]",
+      "actief": "[id^=\"p-\"].aan",
+      "voorvoegsel": "p-",
+      "basis": "Klantportaal — wijzigingen, klikbare demo | Bedrijfsgeheugen",
+      "knop": "[data-p=\"{sleutel}\"]",
+      "achtervoegsel": " · Klantportaal | Bedrijfsgeheugen",
+      "titels": {
+        "dashboard": "Dashboard · Klantportaal | Bedrijfsgeheugen",
+        "wijzigingen": "Wijzigingen · Klantportaal | Bedrijfsgeheugen",
+        "acties": "Acties · Klantportaal | Bedrijfsgeheugen",
+        "versies": "Versies · Klantportaal | Bedrijfsgeheugen",
+        "instellingen": "Instellingen · Klantportaal | Bedrijfsgeheugen"
+      }
+    }
+  ]
+}
