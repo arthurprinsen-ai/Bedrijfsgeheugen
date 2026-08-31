@@ -1,0 +1,51 @@
+{
+  "schema_version": "brain.v1",
+  "type": "RECOVERY",
+  "fingerprint": "delivery|main-write|material-single-parent-bypass-v1",
+  "stage": "GOVERNANCE",
+  "component": "shared",
+  "reason": "A material single-parent commit reached main outside the governed candidate/PR merge path.",
+  "rootCause": "Native branch protection is not enforcing candidate-only writes, so a valid content/tooling change could reach the unprotected default branch directly; post-push CI detects the bypass but cannot prevent it.",
+  "failedApproach": "Treating exact Netlify deployment identity or post-push CI detection as sufficient proof of governed production authority.",
+  "provenFix": "Preserve the valid delta, start one fresh candidate from the exact affected main SHA, record the recovery state machine-readably, require the normal exact-head delivery gates, merge only the governed candidate, then require exact production readback before closing recovery.",
+  "preventionRule": "REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES",
+  "regressionContract": "Main Write Integrity must continue to fail closed on material single-parent writes; candidate-only delivery and exact-SHA production verification remain mandatory. Native branch protection is an external hard boundary and must never be inferred from green CI.",
+  "owner": "Powerhouse Production Promotion Guardian",
+  "successorMapping": {
+    "statefulIncident": "GitHub issue #828",
+    "candidateBranch": "recovery/main-write-5777f1c1",
+    "productionAuthority": "BG169 (7137190)"
+  },
+  "blockerState": {
+    "status": "RECOVERING",
+    "first_seen": "2026-08-31T05:26:44Z",
+    "last_seen": "2026-08-31T17:57:07Z",
+    "last_changed": "2026-08-31T18:15:22Z",
+    "required_intervention": "Complete this governed candidate path and independently verify production authority/readback.",
+    "retry_budget": 0,
+    "evidence_hash": "sha256:a875ed9d8ddde5acbe1dc0f7cbd572a35ed0a82435f0a18c8b876fc00c21cfc4",
+    "next_escalation_at": "2026-08-31T19:13:00Z"
+  },
+  "outcomeObligation": {
+    "status": "RECOVERING",
+    "expected": "Governed provenance for the preserved valid delta and exact production verification",
+    "ownerAgent": "Powerhouse Production Promotion Guardian",
+    "idempotencyKey": "main-write-recovery:5777f1c18ee72e14b116c6116c67ba017fe55e39"
+  },
+  "evidence": {
+    "affectedMainSha": "5777f1c18ee72e14b116c6116c67ba017fe55e39",
+    "parentSha": "c63c391f9108b356508c261b54bd4560ad804eb8",
+    "changedFile": "tools/bouw-v18-chrome-alles.mjs",
+    "changedLines": 159,
+    "mainWriteIntegrityRun": "33422321817",
+    "testCheck": "success",
+    "observeCheck": "failure",
+    "productionDeployId": "6a95c06845ae9b0008f3df1d",
+    "productionCommitRef": "5777f1c18ee72e14b116c6116c67ba017fe55e39",
+    "productionState": "ready",
+    "productionContext": "production",
+    "secretScanMatches": 0,
+    "statefulIncident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/828"
+  },
+  "status": "RECOVERING"
+}
