@@ -3,6 +3,7 @@ import { verifyCustomerLoginContract } from './verify-customer-login-contract.mj
 
 await import('./bouw-v18-production-core.mjs');
 await import('./apply-v18-seo.mjs');
+await import('./bouw-losse-paginas.mjs');
 console.log(applyCustomerPortalAuth());
 console.log(verifyCustomerLoginContract());
 console.log('Accepted historical V18 production build complete with persistent SEO and customer auth');
