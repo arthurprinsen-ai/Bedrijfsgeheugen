@@ -14,6 +14,7 @@
     "brain/learning/incidents/delivery-learning-test-family-unclassified-2026-08-30.json",
     "brain/learning/incidents/github-pr-reused-head-no-workflow-run-2026-08-31.json",
     "brain/learning/incidents/make-agent-unconditional-bg168-resume-hazard-2026-08-31.json",
+    "brain/learning/chat-make-writeback-blocker-2026-08-31.json",
     "config/make-agent-resume-learning-guard.json",
     "brain/learning/ph-agent-materiality-preflight-v1.json"
   ],
@@ -30,6 +31,7 @@
   ],
   "open_obligations": [
     "Runtime-write of the new resume-hazard learning to BG166 is blocked while the Make organization/team is paused by capacity/data-transfer limits.",
+    "The exact 2026-08-31 BG168 writeback blocker is canonical under brain-writeback-make-team-paused-limit-v1; replay it exactly once only after direct capacity recovery evidence, then require BG166/shared-context readback before closure.",
     "Before Make resumes normally, inventory all PH-agent BG168 callers and prove caller-side materiality guards in staged runtime canaries with bounded credit slope.",
     "BG167/BG168/BG184 and affected PH agents remain fail-closed until their relevant runtime acceptance evidence exists."
   ],
