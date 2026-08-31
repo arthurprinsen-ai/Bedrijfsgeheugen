@@ -1,0 +1,36 @@
+{
+  "version": "POWERHOUSE-RECOVERY-EVENT-v1",
+  "fingerprint": "delivery|main-write|material-single-parent-bypass-v1",
+  "stage": "GOVERNANCE",
+  "component": "shared",
+  "reason": "material single-parent write reached main outside the governed candidate/PR merge path",
+  "rootCause": "a valid material change to tools/bouw-losse-paginas.mjs was committed directly to main instead of entering through the candidate-only BG169 promotion path",
+  "failedApproach": "do not blind-revert the valid change and do not treat exact Netlify deployment alone as production green",
+  "fix": "preserve the valid change unchanged, route recovery through a fresh candidate from exact current main, require exact-head gates, then hand off only through BG169",
+  "preventionRule": "NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN",
+  "status": "RECOVERING",
+  "owner": "Powerhouse Production Promotion Guardian",
+  "successor": "BG169",
+  "first_seen": "2026-08-31T05:26:44Z",
+  "last_seen": "2026-08-31T12:58:05.636Z",
+  "last_changed": "2026-08-31T12:58:05.636Z",
+  "required_intervention": "governed candidate recovery and exact production verification",
+  "retry_budget": 2,
+  "evidence_hash": "3695aca77a39b6639bc5c1f930b9a9a5da8af3a04f2fa3a27806bb8395229ca4",
+  "next_escalation_at": "2026-08-31T14:58:05Z",
+  "evidence": {
+    "main_sha": "b3238246004241147d8a2501d6f95c65ce882b60",
+    "observe_run_id": "33394411125",
+    "changed_paths": ["tools/bouw-losse-paginas.mjs"],
+    "production_commit_ref": "b3238246004241147d8a2501d6f95c65ce882b60",
+    "netlify_state": "ready",
+    "netlify_context": "production",
+    "secret_scan_matches": 0,
+    "state_issue": 828
+  },
+  "outcome_obligation": {
+    "type": "PRODUCTION_RECOVERY",
+    "status": "RECOVERING",
+    "completionEvidence": "governed merge/promotion, main SHA equals production commit_ref, observe/test and production smoke/regression/security protected metrics green"
+  }
+}
