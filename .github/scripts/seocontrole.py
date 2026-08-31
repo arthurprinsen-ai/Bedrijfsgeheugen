@@ -365,7 +365,7 @@ def main():
         if naam in GEEN_BALK:
             continue
         s = p['ruw']
-        m = re.search(r'<nav class="bgkop"[\s\S]*?</nav>', s)
+        m = re.search(r'<header class="v17-header"[\s\S]*?</header>', s)
         if ref_kop and (not m or schoon(m.group(0)) != ref_kop):
             bevindingen.append(('hoog', url,
                 'de menubalk wijkt af van .github/canoniek/kop.html'))
