@@ -1,0 +1,41 @@
+{
+  "version": "BRAIN-CHAT-EXECUTION-ADDENDUM-PREFLIGHT-v1",
+  "type": "CHAT_EXECUTION_PREFLIGHT_PROJECTION",
+  "source": "brain/learning/chat-execution-addendum-2026-08-31.json",
+  "purpose": "Bounded preflight projection for execution-specific learnings from the Bedrijfsgeheugen implementation chat. Full evidence and causal details remain in canonical referenced sources.",
+  "linked_learning_sources": [
+    "brain/learning/chat-execution-addendum-2026-08-31.json"
+  ],
+  "lessons": [
+    {"fingerprint":"delivery-failure|pipeline|shared|classified-change-test-not-executed","prevention":"CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS"},
+    {"fingerprint":"delivery-failure|verification|shared|green-without-persistent-evidence","prevention":"REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN"},
+    {"fingerprint":"delivery-failure|pr|shared|parallel-identical-candidates","prevention":"CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES"},
+    {"fingerprint":"delivery-failure|verification|shared|parity-range-contaminated-by-concurrent-history","prevention":"SCOPE_PARITY_TO_VERIFIED_WRITER_PATHS"},
+    {"fingerprint":"delivery-failure|verification|shared|stale-trigger-base-after-runtime-fix","prevention":"FRESH_TRIGGER_FROM_CURRENT_MAIN_AFTER_RUNTIME_FIX"},
+    {"fingerprint":"delivery-failure|writeback|shared|git-diff-missed-untracked-evidence","prevention":"CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE"},
+    {"fingerprint":"delivery-failure|writeback|shared|detached-head-short-push-refspec","prevention":"FULLY_QUALIFY_DETACHED_HEAD_PUSH_REFSPEC"},
+    {"fingerprint":"make|subscenario|input-envelope-mismatch","prevention":"VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE"},
+    {"fingerprint":"governance|platform-control|internal-green-external-red","prevention":"FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS"},
+    {"fingerprint":"regression|negative-fixture|coupled-to-live-state","prevention":"ISOLATE_NEGATIVE_TEST_FIXTURES"},
+    {"fingerprint":"writer|handoff|duplicate-central-dispatch","prevention":"SINGLE_CANONICAL_WRITER_HANDOFF"},
+    {"fingerprint":"outcome|technical-success|missing-material-evidence","prevention":"REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN"},
+    {"fingerprint":"repository|main|tdd-direct-default-branch","prevention":"NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN"},
+    {"fingerprint":"deploy|ready-state|wrong-commit-ref","prevention":"REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN"},
+    {"fingerprint":"production|persistence|stale-main-readback","prevention":"REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE"},
+    {"fingerprint":"verification|transport-ack|no-execution-proof","prevention":"REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK"},
+    {"fingerprint":"connector|capability|declared-unavailable-before-discovery","prevention":"DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM"},
+    {"fingerprint":"repository|manual-write|default-branch-bypass","prevention":"REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES"},
+    {"fingerprint":"github|pr|ready-recreation-identity-drift","prevention":"REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION"},
+    {"fingerprint":"github|contents-api|partial-replacement-risk","prevention":"REQUIRE_FULL_READ_TRANSFORM_WRITE_FOR_CONTENTS_API"},
+    {"fingerprint":"context|known-fix|lost-between-long-runs","prevention":"PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT"},
+    {"fingerprint":"connector|mutation|used-for-state-discovery","prevention":"NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE"},
+    {"fingerprint":"learning|checkpoint|contract-drift","prevention":"CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST"},
+    {"fingerprint":"ownership|parallel-remediation|duplicate-root-cause-owner","prevention":"SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE"},
+    {"fingerprint":"make|capacity|operations-or-transfer-paused","prevention":"BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE"}
+  ],
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false
+  }
+}
