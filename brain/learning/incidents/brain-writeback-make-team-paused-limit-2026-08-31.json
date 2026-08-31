@@ -1,0 +1,47 @@
+{
+  "type": "BrainWritebackBlocker",
+  "version": 1,
+  "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+  "state": "BLOCKED_HARD_BOUNDARY",
+  "scope": ["chat", "learning-plane", "make", "bg168", "bg166"],
+  "observedAt": "2026-08-31T07:55:00+02:00",
+  "observed": {
+    "routerScenarioId": 7136176,
+    "ledgerScenarioId": 7135971,
+    "routerStatus": "paused",
+    "routerIsActive": true,
+    "ledgerStatus": "paused",
+    "ledgerIsActive": true,
+    "connectionsHealthy": true,
+    "attemptResult": "REJECTED_BEFORE_EXECUTION",
+    "error": "Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again."
+  },
+  "rootCause": "Make organization/team capacity or data-transfer limits prevent canonical on-demand BG168 execution even though the BG168 and BG166 scenarios remain structurally active and their referenced connections report healthy.",
+  "prevention": "REPLAY_BRAIN_WRITEBACK_ONCE_AFTER_CAPACITY_RECOVERY",
+  "handling": [
+    "Do not retry the unchanged hard boundary on every agent run or burn additional Make credits.",
+    "Keep one stateful blocker keyed by this fingerprint and update its observations rather than creating duplicates.",
+    "After direct evidence that Make capacity is available again, replay the pending material learning exactly once through canonical BG168 -> BG166.",
+    "Use stable learning fingerprints and BG166 dedupe so replay cannot create duplicate durable learnings.",
+    "Close this blocker only after execution evidence plus ledger/shared-context readback proves the writeback outcome.",
+    "Do not autonomously purchase Make capacity or change credentials, permissions or security controls."
+  ],
+  "pendingLearningSources": [
+    "brain/learning/chat-continuity-2026-08-31.json",
+    "brain/learning/chat-materialization-2026-08-31-v2.json",
+    "brain/learning/chat-materialization-2026-08-31-v3.json"
+  ],
+  "evidence": {
+    "redCandidate": "91313ceab3ae12a3305703c2e58cc3f06b48d45c",
+    "unifiedBrainRun": 33362387979,
+    "backendJob": 99396166285,
+    "failureArtifactId": 9747125250,
+    "failureArtifactSha256": "8d868fcd18062a9729a98265f5ed8852eb3c0077027b33c1e56ebdde1a845420"
+  },
+  "security": {
+    "secretsPersisted": false,
+    "credentialsPersisted": false,
+    "capabilityValuesPersisted": false,
+    "piiPersisted": false
+  }
+}
