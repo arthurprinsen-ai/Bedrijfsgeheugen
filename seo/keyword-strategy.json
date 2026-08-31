@@ -1,0 +1,115 @@
+{
+  "version": "2026-08-31-v1",
+  "north_star": {
+    "revenue_12m_eur_ambition": 1000000,
+    "funnel": ["brand_awareness", "qualified_organic_traffic", "lead", "sql", "opportunity", "order", "revenue"],
+    "rule": "SEO is optimized for qualified demand and revenue contribution, never traffic volume in isolation. Revenue and ranking are ambitions, not guarantees."
+  },
+  "market": {
+    "country": "NL",
+    "language": "nl-NL",
+    "primary_icp": "Nederlandse mkb-bedrijven van circa 3-250 medewerkers met versnipperde kennis, handmatige processen en bestaande AFAS/Exact/Microsoft 365 omgevingen",
+    "buyers": ["ondernemer", "directeur", "MT", "operations", "finance", "IT/data", "investeerder/M&A"]
+  },
+  "measurement": {
+    "per_landing_page": ["impressions", "average_position", "organic_clicks", "ctr", "engaged_sessions", "cta_clicks", "lead_conversion_rate", "qualified_leads", "sql", "opportunities", "orders", "revenue"],
+    "decision_rule": "A page is not called successful because it ranks; it must contribute to qualified intent, conversion, pipeline or defensible brand authority."
+  },
+  "priority_clusters": [
+    {
+      "cluster": "process_automation",
+      "priority": 1,
+      "commercial_reason": "High commercial intent and strong CPC signal in current NL keyword data.",
+      "pillar": "/bedrijfsprocessen-automatiseren",
+      "primary_keyword": "bedrijfsprocessen automatiseren",
+      "intent": "commercial",
+      "supporting_keywords": ["processen automatiseren", "handmatig werk automatiseren", "workflow automatiseren mkb", "administratieve processen automatiseren"],
+      "supporting_content": ["/blog/automatiseren-zonder-traject/", "/blog/planning-in-excel-vervangen/", "/blog/offertes-opvolgen-zonder-crm/", "/blog/klantvragen-automatiseren-zonder-controle-te-verliezen/"],
+      "primary_cta": "/zelfscan"
+    },
+    {
+      "cluster": "afas_integration",
+      "priority": 2,
+      "pillar": "/afas-koppeling",
+      "primary_keyword": "afas koppeling",
+      "intent": "commercial",
+      "supporting_keywords": ["afas api koppeling", "afas koppeling laten maken", "afas koppeling kosten", "afas pocket koppelen"],
+      "supporting_content": ["/blog/afas-api/", "/blog/wat-kost-een-afas-koppeling/", "/blog/wat-kost-een-afas-partner/", "/afas-pocket-koppelen"],
+      "primary_cta": "/frisse-blik"
+    },
+    {
+      "cluster": "exact_online_integration",
+      "priority": 3,
+      "pillar": "/exact-online-koppeling",
+      "primary_keyword": "exact online koppeling",
+      "intent": "commercial",
+      "supporting_keywords": ["exact online api", "exact koppeling laten maken", "afas exact koppelen"],
+      "supporting_content": ["/blog/exact-online-api/", "/blog/afas-exact-koppelen/"],
+      "primary_cta": "/frisse-blik"
+    },
+    {
+      "cluster": "ai_for_sme",
+      "priority": 4,
+      "pillar": "/ai-adoptie",
+      "primary_keyword": "ai voor mkb",
+      "intent": "commercial",
+      "supporting_keywords": ["ai mkb", "ai implementeren mkb", "ai governance mkb", "ai scan mkb", "microsoft copilot mkb"],
+      "supporting_content": ["/ai-implementeren", "/ai-governance", "/ai-scan", "/blog/microsoft-copilot-mkb/", "/blog/eu-ai-act-mkb/", "/waarom-ai-projecten-mislukken"],
+      "primary_cta": "/ai-scan"
+    },
+    {
+      "cluster": "knowledge_continuity",
+      "priority": 5,
+      "pillar": "/bedrijfsgeheugen",
+      "primary_keyword": "kennismanagement mkb",
+      "intent": "informational_to_commercial",
+      "supporting_keywords": ["kennismanagement", "kennisborging", "kennis borgen", "kennis vastleggen medewerker vertrekt", "kennisverlies bedrijf"],
+      "supporting_content": ["/blog/wat-is-een-bedrijfsgeheugen/", "/blog/kennis-borgen-in-je-bedrijf/", "/kennisverlies-vergrijzing-mkb", "/zelfscan"],
+      "primary_cta": "/zelfscan"
+    },
+    {
+      "cluster": "management_information",
+      "priority": 6,
+      "pillar": "/product",
+      "primary_keyword": "managementinformatie mkb",
+      "intent": "commercial",
+      "supporting_keywords": ["managementinformatie", "stuurinformatie", "management dashboard mkb", "bedrijfsgezondheid"],
+      "supporting_content": ["/benchmark", "/monitor", "/business-case-ai"],
+      "primary_cta": "/frisse-blik"
+    },
+    {
+      "cluster": "business_transfer_ma",
+      "priority": 7,
+      "pillar": "/due-diligence",
+      "primary_keyword": "due diligence bedrijf",
+      "intent": "commercial",
+      "supporting_keywords": ["bedrijfsoverdracht", "bedrijfsopvolging familiebedrijf", "kennis borgen bedrijfsoverdracht", "due diligence mkb"],
+      "supporting_content": ["/investeerders-ma", "/cijfers-bedrijfsoverdracht", "/blog/bedrijfsopvolging-begin-bij-het-geheugen/"],
+      "primary_cta": "/frisse-blik"
+    }
+  ],
+  "anti_cannibalisation_contract": [
+    {
+      "commercial_page": "/afas-koppeling",
+      "owns": "afas koppeling",
+      "informational_page": "/blog/wat-kost-een-afas-koppeling/",
+      "owns_long_tail": "wat kost een afas koppeling"
+    },
+    {
+      "commercial_page": "/systemen-koppelen",
+      "owns": "systemen koppelen",
+      "informational_page": "/blog/systemen-koppelen-mkb/",
+      "owns_long_tail": "systemen koppelen mkb uitleg"
+    },
+    {
+      "commercial_page": "/due-diligence",
+      "owns": "due diligence bedrijf",
+      "informational_page": "/blog/bedrijfsopvolging-begin-bij-het-geheugen/",
+      "owns_long_tail": "bedrijfsopvolging familiebedrijf kennis borgen"
+    }
+  ],
+  "content_contract": {
+    "required_for_new_seo_landing_page": ["one_primary_search_intent", "unique_primary_keyword", "canonical", "unique_title", "meta_description", "one_h1", "structured_data_when_applicable", "internal_links_in", "internal_links_out", "conversion_cta", "measurement_event"],
+    "forbidden": ["orphan_page", "duplicate_canonical", "two_pages_owning_same_primary_keyword", "traffic_only_success_claim", "unverified_statistic", "indexing_or_ranking_guarantee"]
+  }
+}
