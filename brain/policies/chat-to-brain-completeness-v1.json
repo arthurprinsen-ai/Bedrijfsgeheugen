@@ -4,6 +4,12 @@
   "status": "ACTIVE",
   "scope": ["chat", "agent", "workflow", "scenario", "development_run", "incident", "recovery", "production_verification"],
   "purpose": "Voorkom dat duurzame technische of operationele kennis alleen in conversatietekst blijft staan. Materiële learnings worden vóór completion genormaliseerd naar het centrale Bedrijfsgeheugen zodat iedere volgende chat, agent en workflow ze kan hergebruiken.",
+  "enforcedBy": [
+    "config/chat-learning-completeness-guard.json",
+    "scripts/brain/chat-learning-preflight.mjs",
+    "tests/chat-to-brain-completeness.test.mjs",
+    "tests/brain-chat-learning-completeness.test.mjs"
+  ],
   "linked_learning_sources": [
     "brain/learning/delivery-test-classification-cochange-2026-08-31.json",
     "brain/learning/preflight-effective-source-set-2026-08-31.json",
