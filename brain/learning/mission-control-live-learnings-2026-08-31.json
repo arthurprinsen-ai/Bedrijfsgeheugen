@@ -1,0 +1,72 @@
+{
+  "id": "mission-control-live-learnings-2026-08-31",
+  "type": "LearningBundle",
+  "status": "MIXED_MATURITY",
+  "scope": ["Make", "Mission Control", "BG139", "BG186", "BG190", "BG191", "portal polling", "production truth", "cost"],
+  "learnings": [
+    {
+      "id": "MAKE_SCENARIO_ACTIVITY_STATE_AMBIGUOUS",
+      "type": "FailureClass",
+      "status": "PROVEN",
+      "fingerprint": "make|scenario-state|paused-and-isActive-ambiguous",
+      "symptom": "Make scenario metadata can report status=paused and isActive=true at the same time, so one status field cannot safely prove whether a scenario is an active mutator, callable service, frozen legacy path or retirement candidate.",
+      "rootCause": "Make metadata fields describe different lifecycle/runtime concepts and are not a single canonical activity truth.",
+      "failedApproach": "Infer ownership, cutover or retirement from one Make status field.",
+      "provenFix": "Determine operational activity from scenario metadata plus trigger/scheduling/webhook state, recent execution evidence and readback of actual callable/mutation behavior.",
+      "prevention": "MAKE_ACTIVITY_TRUTH_REQUIRES_COMPOSITE_READBACK",
+      "regressionContract": "No ownership/cutover/retirement decision may rely on status or isActive alone."
+    },
+    {
+      "id": "MISSION_CONTROL_PROJECTION_BURST",
+      "type": "FailureClass",
+      "status": "PROVEN",
+      "fingerprint": "mission-control|projection|burst-duplicate-fallback-rate-limit",
+      "symptom": "BG139/BG186 showed tightly clustered executions and a 429 organization rate-limit event; five near-simultaneous BG139 runs each started the same BG190 fallback.",
+      "rootCause": "Concurrent identical Mission Control requests can independently traverse cache miss/fallback paths without single-flight/request coalescing.",
+      "failedApproach": "Allow every concurrent cache miss to launch its own fallback/read/write chain or add more retry/watchers.",
+      "provenFix": "Use a stable single-flight key for the Mission Control snapshot so one caller resolves cache/live fallback while concurrent callers reuse the result; preserve bounded retry and explicit stale/miss semantics.",
+      "prevention": "MISSION_CONTROL_SINGLE_FLIGHT_BEFORE_LIVE_FALLBACK",
+      "regressionContract": "Concurrent equivalent Mission Control requests must not create multiple equivalent live fallback chains or duplicate projection writes."
+    },
+    {
+      "id": "BG190_DIRECT_ACTIVATE_BYPASS",
+      "type": "FailureClass",
+      "status": "PROVEN_FIXED_HISTORICAL",
+      "fingerprint": "mission-control|bg190|direct-activate-bypasses-bg191",
+      "symptom": "Historical BG190 execution evidence showed a direct ACTIVATE call into BG186, bypassing the BG191 promotion gate.",
+      "rootCause": "Projection write capability and promotion authority were not separated strongly enough at the write boundary.",
+      "failedApproach": "Let a live fallback worker both write shadow state and promote that state to ACTIVE.",
+      "provenFix": "Current BG190 configuration uses WRITE_SHADOW; BG191 remains the promotion route and promotion evidence must be independently verified.",
+      "prevention": "ONLY_PROMOTION_OWNER_MAY_ACTIVATE_PROJECTION",
+      "regressionContract": "Any BG186 ACTIVATE effect without authorized BG191 promotion evidence is UNAUTHORIZED_PROJECTION_ACTIVATION and cannot produce GREEN_VERIFIED."
+    },
+    {
+      "id": "MISSION_CONTROL_DUPLICATE_BROWSER_POLLERS",
+      "type": "FailureClass",
+      "status": "OBSERVED",
+      "fingerprint": "mission-control|portal|duplicate-browser-pollers",
+      "symptom": "BG139 accumulated a queued webhook backlog while incoming browser/portal GET requests arrived in a repeating pattern consistent with multiple periodic callers; inspected deliveries originated from browser contexts rather than a Make retry loop.",
+      "rootCause": "More than one client-side polling consumer appears to call the same Mission Control webhook without shared cadence/coalescing.",
+      "failedApproach": "Blindly resume/activate the queued webhook scenario before deduplicating callers, which can release the backlog as a burst.",
+      "requiredAction": "Trace portal/frontend callers, reduce to one canonical polling owner where polling is still needed, coalesce equivalent requests, and perform a queue-safe canary before restoring normal throughput.",
+      "prevention": "ONE_CANONICAL_CLIENT_POLL_OWNER_PER_SNAPSHOT",
+      "regressionContract": "A queued Mission Control webhook with unresolved duplicate caller evidence must not be blindly activated into an uncontrolled burst."
+    },
+    {
+      "id": "MISSION_CONTROL_STALE_CACHE_SEMANTICS",
+      "type": "Invariant",
+      "status": "PROVEN",
+      "fingerprint": "mission-control|cache|stale-within-grace-not-verified-green",
+      "symptom": "BG139 can intentionally serve a stale cache record within a grace window.",
+      "rootCause": "Availability fallback semantics can be confused with current verified production truth if freshness is not carried explicitly to consumers.",
+      "provenFix": "Expose source, freshness, verified_at/valid_until and production truth separately; stale cache may serve degraded availability but cannot imply current GREEN_VERIFIED evidence.",
+      "prevention": "STALE_CACHE_NEVER_EQUALS_CURRENT_VERIFIED_TRUTH",
+      "regressionContract": "CACHE_STALE cannot be projected as unconditional healthy/current state."
+    }
+  ],
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false
+  }
+}
