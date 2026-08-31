@@ -12,7 +12,7 @@ test('latest material chat learnings are persisted in the canonical Brain prefli
   const paths = new Set(packet.sources.map(source => source.path));
   assert.ok(paths.has('brain/learning/chat-materialization-2026-08-31-v2.json'));
   assert.ok(paths.has('brain/learning/chat-materialization-2026-08-31-v3.json'));
-  assert.ok(paths.has('brain/learning/incidents/brain-writeback-make-team-paused-limit-2026-08-31.json'));
+  assert.ok(paths.has('brain/learning/chat-make-writeback-blocker-2026-08-31.json'));
   assert.ok(packet.fingerprints.includes('netlify-preview-provider-scope-mismatch-v1'));
   assert.ok(packet.fingerprints.includes('delivery|runtime-path|unclassified-netlify-build-control-v1'));
   assert.ok(packet.fingerprints.includes('delivery|verification|provider-impact-guard-needs-two-sided-proof-v1'));
