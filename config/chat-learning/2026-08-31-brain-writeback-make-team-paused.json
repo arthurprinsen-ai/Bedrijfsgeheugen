@@ -1,0 +1,33 @@
+{
+  "contract": "BRAIN-WRITEBACK-CAPACITY-BLOCKER-v1",
+  "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+  "root_cause_class": "MAKE_TEAM_PAUSED_CAPACITY_LIMIT",
+  "canonical_router_scenario_id": 7136176,
+  "canonical_writer_scenario_id": 7135971,
+  "observed_at": "2026-08-31T07:56:00+02:00",
+  "observed_error": "Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again.",
+  "brain_writeback_verified": false,
+  "rules": {
+    "never_claim_success_without_execution_and_readback": true,
+    "no_retry_storm_while_team_paused": true,
+    "replay_exactly_once_after_capacity_recovery": true,
+    "dedupe_by_fingerprint": true,
+    "do_not_bypass_canonical_router_with_direct_notion_write": true,
+    "keep_normalized_learning_payload_as_open_obligation": true
+  },
+  "normalized_learning_scope": [
+    "no silent failure and no lost obligation",
+    "green requires verified real-world outcome evidence",
+    "external side effects require independent read-back",
+    "production promotion stays open until exact main SHA equals exact production commit_ref plus smoke regression security and protected metrics",
+    "main drift is allowed only without file or semantic contract overlap",
+    "security and main-protection gates must never be bypassed",
+    "BG190 cache fallback must never own ACTIVE promotion; BG191 is sole promotion authority",
+    "BG139 remains legacy-live during SHADOW until exact promotion preconditions and verification are satisfied",
+    "rate-limit and capacity blockers must not trigger retry storms",
+    "all durable learnings must be deduped coalesced and shared with the team memory"
+  ],
+  "open_obligation": "When Make organization/team capacity is restored, replay the retained normalized learning package exactly once through BG168 (7136176) -> BG166 (7135971), then verify execution success and central ledger/shared-context read-back before closing this obligation.",
+  "owner": "Powerhouse Learning/Brain writeback",
+  "status": "BLOCKED_HARD_BOUNDARY_REPLAY_REQUIRED"
+}
