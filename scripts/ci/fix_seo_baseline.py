@@ -3,7 +3,7 @@
 
 This script deliberately performs exact, narrow text mutations against complete
 files checked out by Git. It exists to avoid destructive whole-file updates
-from partial API reads.
+from partial API reads. Keep every mutation idempotent and exact-match guarded.
 """
 from pathlib import Path
 
