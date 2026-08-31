@@ -2,8 +2,11 @@
   "learning_id": "chat-make-writeback-blocker-2026-08-31",
   "captured_at": "2026-08-31T07:55:00+02:00",
   "status": "BLOCKED_REPLAY_PENDING",
+  "state": "BLOCKED_HARD_BOUNDARY",
   "scope": "Powerhouse/Bedrijfsgeheugen chat-to-Brain durability",
   "source": "current chat plus verified GitHub and Make execution evidence",
+  "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+  "prevention": "REPLAY_BRAIN_WRITEBACK_ONCE_AFTER_CAPACITY_RECOVERY",
   "canonical_truth": {
     "repository_writer_state": {
       "mainProtectionReady": true,
@@ -47,6 +50,7 @@
       "root_cause": "Make refused BG168 execution because the organization or team is paused after exceeding operations or data-transfer capacity.",
       "handling": "Treat as a hard runtime/capacity boundary. Do not spend retries. Never claim Brain writeback succeeded without execution evidence. Preserve the normalized payload as one open deduped replay obligation and replay exactly once through BG168 -> BG166 when Make is executable again.",
       "related_active_rule": "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE",
+      "prevention": "REPLAY_BRAIN_WRITEBACK_ONCE_AFTER_CAPACITY_RECOVERY",
       "status": "OPEN_HARD_BOUNDARY"
     }
   ],
@@ -65,6 +69,17 @@
     "dedupe_required": true,
     "payload_summary": "Persist the verified 7/7 repository-writer parity/rollback completion, the four proven writer verification/writeback failure fingerprints and prevention rules, and the Make capacity hard-boundary handling rule.",
     "completion_evidence_required": "successful BG168 execution plus downstream BG166 dispatch/readback or equivalent canonical ledger evidence"
+  },
+  "openObligations": [
+    "Wait for direct evidence that Make organization/team capacity is executable again.",
+    "Replay the pending canonical BG168 -> BG166 writeback exactly once with the existing idempotency key and stable fingerprint dedupe.",
+    "Require successful BG168 execution plus BG166/shared-context readback before marking runtime writeback complete."
+  ],
+  "security": {
+    "secretsPersisted": false,
+    "credentialsPersisted": false,
+    "capabilityValuesPersisted": false,
+    "piiPersisted": false
   },
   "continuity_rule": "Chat-only memory is not durable completion. Material learnings must be normalized, fingerprinted, deduplicated, committed to canonical Brain memory/evidence and, when the operational router is available, written through the canonical Brain route with execution evidence."
 }
