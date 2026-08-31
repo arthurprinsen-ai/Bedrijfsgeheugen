@@ -1,0 +1,24 @@
+{
+  "id": "delivery-test-classification-cochange-2026-08-31",
+  "type": "FailureClass",
+  "status": "PROVEN",
+  "fingerprint": "delivery|test-path|unclassified-regression-file",
+  "symptom": "De centrale BRAIN delivery plan-gate faalt op `unclassified delivery path` nadat een nieuwe regressietest is toegevoegd.",
+  "rootCause": "De regressietest en de delivery-membership/classifier zijn niet in dezelfde kandidaat gewijzigd, waardoor de test wel inhoudelijk bestaat maar niet aan een delivery lane kan worden toegewezen.",
+  "failedApproach": "Alleen de nieuwe test toevoegen en aannemen dat een bestaande test-prefix hem automatisch classificeert.",
+  "provenFix": "Voeg het concrete testpad of de juiste stabiele testfamilie tegelijk toe aan de canonical delivery lane-classificatie en laat daarna dezelfde centrale BRAIN delivery gate opnieuw draaien.",
+  "prevention": "CO_CHANGE_NEW_REGRESSION_TEST_AND_DELIVERY_MEMBERSHIP",
+  "regressionContract": "Nieuwe uitvoerbare regressietests moeten vóór merge aantoonbaar door `tools/brain-delivery-system.mjs plan` worden geclassificeerd en door een passende lane worden uitgevoerd.",
+  "evidence": {
+    "pr": 823,
+    "head_sha": "5e6b3c2b44d49b74d9065e530995eca49dc816a5",
+    "workflow_run": 33359974629,
+    "job": 99389318433,
+    "observed_error": "unclassified delivery path: tests/chat-to-brain-completeness.test.mjs"
+  },
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false
+  }
+}
