@@ -10,8 +10,8 @@
   "state": "UNRESOLVED_EXTERNAL_CONTROL",
   "ownerIssue": 523,
   "first_seen": "2026-08-30T20:25:17Z",
-  "last_seen": "2026-08-30T20:42:20Z",
-  "recurrence_count": 2,
+  "last_seen": "2026-08-31T04:19:00Z",
+  "recurrence_count": 3,
   "occurrences": [
     {
       "sha": "1e33e684905bd187e44389d30433dd64cf872f9b",
@@ -27,6 +27,13 @@
       "shape": "UNSIGNED_ONE_PARENT_DIRECT_MAIN_WRITE",
       "result": "SECOND_RECURRENCE_NATIVE_PREVENTION_STILL_ABSENT",
       "evidence": "A second direct one-parent main write was possible while branch protection and repository rulesets remained absent."
+    },
+    {
+      "sha": "abc51083a3c85706f7b7828bfc5bd9ecd7bada13",
+      "observed_at": "2026-08-31T04:19:00Z",
+      "shape": "FRESH_NATIVE_CONTROL_READBACK",
+      "result": "NATIVE_PREVENTION_STILL_ABSENT",
+      "evidence": "Fresh GitHub branch readback reports protected=false and protection.enabled=false for current main. Repository rulesets readback remains empty. Internal delivery guards may be green but native pre-mutation enforcement is still absent."
     }
   ],
   "eradication": {
@@ -41,7 +48,7 @@
   "direct_evidence": {
     "branch_protected": false,
     "repository_rulesets_count": 0,
-    "observed_main_sha": "1a999d01342d8f918e7e4fd95d39f63d843ad6ef",
+    "observed_main_sha": "abc51083a3c85706f7b7828bfc5bd9ecd7bada13",
     "rulesets_readback": "[]"
   },
   "interpretation": "Internal Brain/Shared-Memory/V18/BRAIN-delivery checks can be green while GitHub itself does not currently enforce native protection or a repository ruleset on main. Post-push CI is detection after mutation and cannot make the direct-write failure class structurally impossible.",
