@@ -1,0 +1,8 @@
+{
+  "version": "DELIVERY-PREVENTION-v1",
+  "appendOnly": true,
+  "rules": [
+    {"id":"PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT","active":true,"enforcedBy":"delivery-chat-learning-unified-continuity-test-plus-delivery-preflight","scope":"shared"},
+    {"id":"LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK","active":true,"enforcedBy":"delivery-chat-learning-unified-continuity-test-plus-bg168-router","scope":"shared"}
+  ]
+}
