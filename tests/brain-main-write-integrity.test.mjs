@@ -42,7 +42,7 @@ test('direct-main incidents create or update one stateful deduplicated recovery 
   const workflow = await readFile('.github/workflows/main-write-integrity.yml', 'utf8');
   assert.match(workflow, /issues:\s*write/);
   assert.match(workflow, /delivery\|main-write\|material-single-parent-bypass-v1/);
-  assert.match(workflow, /DIRECT_MAIN_WRITE_INCIDENT/);
+  assert.match(workflow, /status=\$\{result\.status\}/);
   assert.match(workflow, /gh api/);
   assert.match(workflow, /issues\?state=open/);
   assert.match(workflow, /last_seen_sha/);
