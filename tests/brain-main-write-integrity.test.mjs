@@ -22,7 +22,7 @@ test('candidate branch write does not trigger main incident', () => {
   assert.equal(result.status, 'NOT_MAIN');
 });
 
-test('main integrity workflow observes every main push and is read-only', async () => {
+test('main integrity workflow observes every main push and is read-only for repository content', async () => {
   const workflow = await readFile('.github/workflows/main-write-integrity.yml', 'utf8');
   assert.match(workflow, /push:\s*[\s\S]*branches:\s*\[main\]/);
   assert.match(workflow, /tools\/main-write-integrity\.mjs/);
@@ -36,4 +36,19 @@ test('direct-main recurrence remains actionable shared learning', async () => {
   const lessons = await readFile('brain/learning/current-execution-lessons-2026-08-30.json', 'utf8');
   assert.match(lessons, /github\|main-governance\|post-push-ci-after-unauthorized-write/);
   assert.match(preflight, /executionLessonsPath/);
+});
+
+test('direct-main incidents create or update one stateful deduplicated recovery issue', async () => {
+  const workflow = await readFile('.github/workflows/main-write-integrity.yml', 'utf8');
+  assert.match(workflow, /issues:\s*write/);
+  assert.match(workflow, /delivery\|main-write\|material-single-parent-bypass-v1/);
+  assert.match(workflow, /status=\$\{result\.status\}/);
+  assert.match(workflow, /gh api/);
+  assert.match(workflow, /issues\?state=open/);
+  assert.match(workflow, /jq --arg fingerprint/);
+  assert.match(workflow, /contains\(\$fingerprint\)/);
+  assert.doesNotMatch(workflow, /contains\(env\.FINGERPRINT\)/);
+  assert.match(workflow, /last_seen_sha/);
+  assert.match(workflow, /recoveryRequired/);
+  assert.match(workflow, /if:\s*always\(\)/);
 });
