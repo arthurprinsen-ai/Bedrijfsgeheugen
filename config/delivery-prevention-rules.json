@@ -27,6 +27,7 @@
     {"id":"SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE","active":true,"enforcedBy":"single-obligation-owner-learning-test","scope":"shared"},
     {"id":"REQUIRE_FULL_READ_TRANSFORM_WRITE_FOR_CONTENTS_API","active":true,"enforcedBy":"connector-file-update-safety-contract","scope":"shared"},
     {"id":"REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION","active":true,"enforcedBy":"unified-brain-delivery-candidate-identity","scope":"shared"},
-    {"id":"SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS","active":true,"enforcedBy":"ci-trigger-ownership-preflight-plus-live-preview-regression","scope":"shared"}
+    {"id":"SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS","active":true,"enforcedBy":"ci-trigger-ownership-preflight-plus-live-preview-regression","scope":"shared"},
+    {"id":"SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS","active":true,"enforcedBy":"netlify-preview-impact-guard","scope":"shared"}
   ]
 }
