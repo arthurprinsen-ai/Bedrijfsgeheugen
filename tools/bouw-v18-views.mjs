@@ -15,6 +15,9 @@ const PAD = {
   'frisseblik-scan': '/frisse-blik', start: '/start', more: '/meer'
 };
 
+
+
+
 function alleenDezeWeergave(html, view) {
   const grenzen = [];
   const re = /<div class="page(?: active)?" id="view-([a-z0-9-]+)">/g;
