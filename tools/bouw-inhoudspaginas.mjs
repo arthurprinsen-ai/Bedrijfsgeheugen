@@ -62,6 +62,18 @@ ${cta}
 
 const bron = await readFile('index.html', 'utf8');
 const paginas = JSON.parse(await readFile('site/inhoudspaginas.json', 'utf8'));
+const STIJL = `<style id="inhoudspaginas-stijl">
+.inhoud-kop{background:#0a1117;color:#fff;padding:132px 0 64px}
+.inhoud-kop h1{color:#fff;margin:10px 0 18px}
+.inhoud-kop p{color:rgba(255,255,255,.84);max-width:72ch;font-size:18px;line-height:1.6}
+.inhoud-body{padding:64px 0 104px}
+.inhoud-body article{max-width:74ch;margin:0 0 30px}
+.inhoud-body h2{margin:0 0 8px;font-size:22px}
+.inhoud-body p{line-height:1.65}
+.inhoud-body a.cta{display:inline-block;margin-top:14px;text-decoration:none}
+@media(max-width:768px){.inhoud-kop{padding:104px 0 48px}.inhoud-body{padding:48px 0 72px}}
+</style>`;
+
 const { voor, na } = zonderWeergaven(bron);
 
 for (const p of paginas) {
