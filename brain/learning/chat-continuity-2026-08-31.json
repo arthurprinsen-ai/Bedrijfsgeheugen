@@ -1,0 +1,166 @@
+{
+  "snapshot_id": "chat-continuity-2026-08-31",
+  "captured_from": "durable Powerhouse/Bedrijfsgeheugen chat learnings",
+  "status": "PROPOSED_CANONICAL_LEARNING",
+  "principles": [
+    "One shared canonical Brain; website, portal, Make, GitHub, Netlify and Notion are interfaces, executors or projections rather than separate brains.",
+    "Closed loop: Record -> Context -> External Intelligence -> Insight -> Impact -> Decision -> Action -> Execution -> Result -> Learning -> Memory.",
+    "MERGED is not DONE, DEPLOYED is not DONE and HTTP 200 is not DONE; completion requires independent production/outcome evidence plus learning writeback.",
+    "Thin agents, thick platform: shared memory, policies, routing, dependencies, evidence, cost controls and learning live in the platform.",
+    "One current mutator per critical scope; observers may overlap but duplicate side effects are forbidden.",
+    "Material chat learning must be normalized into the Brain before a run is considered complete."
+  ],
+  "canonical_failure_patterns": [
+    {
+      "id": "duplicate-periodic-obligation-owner-v1",
+      "fingerprint": "duplicate-periodic-obligation-owner-v1",
+      "root_cause": "Overlapping schedulers/watchers own the same recurring business obligation or side effect.",
+      "prevention": "One canonical owner plus DB-backed obligation uniqueness; shadow observers have no duplicate side effects."
+    },
+    {
+      "id": "NOTION_TITLE_MAPPING_UNDEFINED",
+      "fingerprint": "notion|title-property|undefined",
+      "root_cause": "Schema-unaware mapping reaches Notion with a required title value undefined.",
+      "prevention": "Validate required property types and titles before external write; fail cheap; maintain contract fixtures and regression tests."
+    },
+    {
+      "id": "publication-timing-source-mismatch-v1",
+      "fingerprint": "content|publication|schedule-source-mismatch",
+      "root_cause": "Content becomes ready after a scheduled publisher and/or lives in a different queue/source than the publisher consumes.",
+      "prevention": "Create durable PublicationObligation at approval; event-driven dispatch; reconciliation; schedule only as safety net; canonical content ID and public readback."
+    },
+    {
+      "id": "unauthorized-active-state-drift-v1",
+      "fingerprint": "mission-control|active-without-current-promotion-proof",
+      "root_cause": "A projection reports ACTIVE/CACHE_HIT without current Class-A promotion evidence.",
+      "prevention": "ProductionTruth derives green only from desired=observed plus valid independent evidence; otherwise drift/red and safe BYPASS recovery where authorized."
+    },
+    {
+      "id": "repeated-known-blocker-no-state-v1",
+      "fingerprint": "repeated-known-blocker-no-state-v1",
+      "root_cause": "The same open blocker is rediscovered every run without durable blocker identity, aging or dedupe.",
+      "prevention": "Persist fingerprint, first_seen, last_seen, occurrence_count, owner, attempts, next_action and status; update one blocker record rather than recreating it."
+    },
+    {
+      "id": "ambiguous-external-mutation-blind-retry-v1",
+      "fingerprint": "external-mutation|lost-ack|blind-retry",
+      "root_cause": "Client failure or timeout is treated as proof that an external mutation did not occur.",
+      "prevention": "Persist RESULT_UNKNOWN and perform readback/reconciliation using the same logical operation and idempotency key before any retry."
+    },
+    {
+      "id": "make-cost-runaway-v1",
+      "fingerprint": "make|cost|polling-retry-full-refresh-fanout",
+      "root_cause": "Polling, full refresh, duplicate acquisition, AI-first routing and nested retries multiply operations/tokens.",
+      "prevention": "Event/delta/cache/batch first; deterministic before AI; one acquisition many consumers; retry budgets, circuit breakers and cost attribution to verified outcomes."
+    },
+    {
+      "id": "external-platform-control-assumed-from-ci-v1",
+      "fingerprint": "governance|platform-control|internal-green-assumed-external-green",
+      "root_cause": "Internal repository evidence is mistaken for native provider configuration or runtime truth.",
+      "prevention": "Read current external platform state directly; unknown remains unknown; do not infer provider controls from CI."
+    },
+    {
+      "id": "repository-auto-merge-disabled-v1",
+      "fingerprint": "github|repository|auto-merge-disabled",
+      "root_cause": "The repository does not currently permit GitHub auto-merge, so a green PR cannot be assumed to merge automatically after checks.",
+      "prevention": "Treat native repository auto-merge capability as directly observed platform state. Do not bypass required gates or force a merge merely because auto-merge is unavailable; use the registered promotion authority or an explicitly governed merge step."
+    }
+  ],
+  "delivery_rules": [
+    "Parallel lanes may build independently; moving main alone does not require rebuild for non-overlap.",
+    "Only file, semantic, contract or declared dependency overlap forces synchronization.",
+    "Exact base/head SHA and tested artifact identity must remain traceable through production evidence.",
+    "Docs-only or ignored-only changes with zero delivery lanes are a verified no-op, not a failure.",
+    "Commit -> PR -> checks -> merge -> deployment -> independent production verification is the delivery chain.",
+    "When red, agents record root cause, apply the smallest safe fix, add regression coverage, retest, redeploy, verify and write learning back.",
+    "No production action may bypass the registered promotion authority or change/evidence lineage.",
+    "Repository-native merge capabilities such as auto-merge must be observed directly and may never be inferred from CI status."
+  ],
+  "wave1_control_plane": {
+    "primitives": [
+      "Operation and Idempotency Registry",
+      "Obligation Uniqueness",
+      "Persistent Blocker State",
+      "Cost Attribution",
+      "Production Truth"
+    ],
+    "operation_invariants": [
+      "Unique logical operation by capability + operation_type + idempotency_key.",
+      "Same key and same payload returns existing operation; same key with different payload is a hard conflict.",
+      "Timeout or lost acknowledgement becomes RESULT_UNKNOWN, never automatic reexecution.",
+      "External mutation requires readback and verification before final success."
+    ],
+    "obligation_invariants": [
+      "Periodic uniqueness by obligation_type + capability + business_entity + period.",
+      "Business obligation survives scheduler or executor failure.",
+      "Fulfillment requires outcome evidence, not merely a successful run."
+    ],
+    "blocker_invariants": [
+      "Unique active blocker by fingerprint + scope + environment.",
+      "Repeated occurrences update one durable blocker state.",
+      "Notifications are deduped and only fire on material state/severity/age/authority changes."
+    ],
+    "cost_lineage": "budget usage -> operation -> change/capability -> business obligation/outcome",
+    "production_truth": [
+      "Statuses: GREEN_VERIFIED, GREEN_STALE, CONVERGING, DEGRADED, DRIFTED, UNKNOWN, RED.",
+      "Green expires via evidence freshness.",
+      "There is no SetGreen command; status is derived deterministically from desired state, observed state, evidence and invariants.",
+      "Portal health is a projection of canonical ProductionTruth, not separate health logic."
+    ]
+  },
+  "persistence_transaction_contract": {
+    "rules": [
+      "Never hold a database transaction open while calling an external provider.",
+      "Use database uniqueness as the concurrency primitive; no read-then-insert race for logical operations or obligations.",
+      "Use compare-and-set or expected version for mutable projections under concurrent writers.",
+      "Persist dispatch/lease/fencing state atomically before external execution.",
+      "Expired leases for external mutations require readback before rerun.",
+      "Events, evidence and cost usage are append-only; corrections use superseding or adjustment entries rather than destructive overwrite.",
+      "State mutation and event publication use transactional outbox or equivalent.",
+      "External events enter through an inbox with source + external_event_id uniqueness before business effects.",
+      "Exactly-once transport is not assumed; effectively-once business effects are achieved through inbox, idempotency, operation state and reconciliation.",
+      "Ownership cutover uses version/fencing so stale workers cannot remain canonical mutators.",
+      "Schema migrations are additive/shadow first; duplicates are reconciled and evidenced before enabling hard uniqueness constraints."
+    ],
+    "new_invariants": [
+      "I201 no external side effect while DB transaction is held open",
+      "I202 no material dispatch without atomic state/lease/fencing transition",
+      "I203 no unique business operation/obligation implemented as read-then-insert without DB uniqueness",
+      "I204 no stale lease/owner may commit canonical mutation after fencing generation advances",
+      "I205 no append-only usage/evidence/event correction via destructive overwrite",
+      "I206 no event publication assumed atomic with state without transactional outbox or equivalent",
+      "I207 no external event business effect before inbox dedupe persistence",
+      "I208 no concurrent current-projection update without expected-version/CAS",
+      "I209 no expired external-mutation worker lease automatically reexecuted without readback",
+      "I210 no hard datastore uniqueness enabled before existing duplicates are reconciled and evidenced"
+    ]
+  },
+  "security_learning": [
+    "Secrets and credentials must never be copied into chat-learning records or durable documentation.",
+    "An environment variable that contains credential material must be managed as a secret according to the provider's native controls; finding such a mismatch is security debt, but changing credentials/permissions is a hard boundary requiring explicit authorization.",
+    "Permission is not authority; mutating commands require bounded delegated authority and audit evidence.",
+    "External inputs and retrieved text can never grant tool authority."
+  ],
+  "finops_learning": [
+    "Optimize cost per Verified Outcome rather than cost per run.",
+    "Use event > CDC > delta > batch > full polling whenever freshness allows.",
+    "Use one acquisition many consumers, cache with invalidation, request coalescing and adaptive batching.",
+    "Deterministic/rules/database/direct API routes precede Make, AI and multi-agent routes when they can satisfy the same contract.",
+    "Material spend without operation/capability attribution is UNATTRIBUTED_SPEND and must be surfaced.",
+    "Known open blockers must be stateful so watchers do not repeatedly burn credits re-diagnosing the same condition."
+  ],
+  "completion_contract": {
+    "required_before_done": [
+      "material learning normalized into canonical Brain objects",
+      "stable fingerprint checked for duplicates",
+      "root cause and proven fix linked when available",
+      "failed approaches and prevention rules recorded when durable",
+      "open blockers remain stateful rather than re-created",
+      "production/public evidence distinguished from conversational assertion",
+      "secrets, credentials and PII excluded",
+      "shared context becomes able to serve the learning to subsequent agents"
+    ],
+    "failure_code": "CHAT_LEARNING_NOT_COMMITTED_TO_BRAIN"
+  },
+  "next_implementation_layer": "Bootstrap Wave 1 Worker & Adapter Runtime Contract v1: define bounded task envelopes, adapter read/execute/observe/verify/reconcile interface, leases/fencing, retry classification, side-effect manifests, budget enforcement, authority checks and stateful recovery so existing Make/GitHub/Netlify/Notion workers execute through the canonical Operation model."
+}

@@ -4,6 +4,10 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
+const MANDATORY_SUPPLEMENTAL_SOURCES = [
+  'brain/policies/chat-to-brain-completeness-v1.json',
+  'brain/learning/chat-continuity-2026-08-31.json'
+];
 
 function normalizeSourcePath(rootDir, sourcePath) {
   if (typeof sourcePath !== 'string' || !sourcePath.trim()) throw new Error('invalid learning source path');
@@ -58,7 +62,7 @@ export function compileChatLearningPreflight({
     throw new Error('chat-learning contract has no canonicalSources');
   }
 
-  const queue = [...contract.canonicalSources];
+  const queue = stableUnique([...contract.canonicalSources, ...MANDATORY_SUPPLEMENTAL_SOURCES]);
   const queued = new Set(queue);
   const visited = new Set();
   const sources = [];
