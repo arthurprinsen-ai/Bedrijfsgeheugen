@@ -2,7 +2,7 @@
   "id": "brain-writeback-implementatiestatus-gap-closure-2026-08-31",
   "fingerprint": "bedrijfsgeheugen-implementatiestatus-gap-closure-2026-08-30-v1",
   "domain": "data_sync",
-  "status": "AWAITING_OUTCOME",
+  "status": "COMPLETED",
   "expected": "Persist the complete implementation-status gap-closure learning through canonical BG168 -> BG166 and verify shared-current-state visibility through BG167.",
   "dueAt": "immediately_after_verified_make_capacity_recovery",
   "ownerAgent": "Powerhouse Brain Completion",
@@ -19,7 +19,7 @@
     "error": "Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again.",
     "classification": "runtime_capacity_blocker",
     "boundedAttemptsObserved": 2,
-    "latestAttemptResult": "same_blocker_no_state_change"
+    "latestAttemptResult": "RECOVERED"
   },
   "sourceLearningPath": "brain/learning-ledger/2026-08-31-bedrijfsgeheugen-implementatiestatus-gap-closure-v1.md",
   "recoveryAutomation": {
@@ -29,6 +29,25 @@
     "cadence": "hourly",
     "completionGate": "WRITTEN_DURABLE && PROJECTED_CURRENT"
   },
+  "completionEvidence": {
+    "WRITTEN_DURABLE": {
+      "bg168ExecutionId": "1ad56297c59446228eb191249b653dcf",
+      "bg168Status": "success",
+      "bg168Result": "LEARNING_DISPATCHED",
+      "bg166ExecutionId": "9beabd3917ea4ec3bf040e4cb3227250",
+      "bg166Status": "success",
+      "bg166Result": "COALESCED_REFRESH",
+      "learningPersisted": true,
+      "fingerprint": "bedrijfsgeheugen-implementatiestatus-gap-closure-2026-08-30-v1"
+    },
+    "PROJECTED_CURRENT": {
+      "bg167ExecutionId": "d92c943bf6234e2caa175df81ca3816b",
+      "bg167Status": "success",
+      "visibleFingerprint": "bedrijfsgeheugen-implementatiestatus-gap-closure-2026-08-30-v1",
+      "visibleAt": "2026-08-31T11:22:00+02:00"
+    }
+  },
   "createdAt": "2026-08-31",
-  "lastVerifiedAt": "2026-08-31T10:22:52+02:00"
+  "lastVerifiedAt": "2026-08-31T11:24:01+02:00",
+  "completedAt": "2026-08-31T11:24:01+02:00"
 }
