@@ -50,7 +50,7 @@ jobs:
         run: |
           set -euo pipefail
           api="repos/${GITHUB_REPOSITORY}"
-          issue_number="$(gh api "${api}/issues?state=open&per_page=100" --paginate --jq '.[] | select(.pull_request == null) | select((.body // "") | contains(env.FINGERPRINT)) | .number' | head -n1)"
+          issue_number="$(gh api "${api}/issues?state=open&per_page=100" --paginate | jq --arg fingerprint "$FINGERPRINT" -r '.[] | select(.pull_request == null) | select((.body // "") | contains($fingerprint)) | .number' | head -n1)"
           body=$(cat <<EOF
           Status: \`RECOVERING\`
 
