@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
 
 const scriptTests=fs.readdirSync('scripts/brain').filter(f=>/^test-.*\.mjs$/.test(f)&&f!=='test-all.mjs').sort();
-const repoTests=fs.readdirSync('tests').filter(f=>/^chat-to-brain-.*\.test\.mjs$/.test(f)).sort().map(f=>`tests/${f}`);
+const repoTests=fs.readdirSync('tests').filter(f=>/^(chat-to-brain-.*|whole-brain-.*)\.test\.mjs$/.test(f)).sort().map(f=>`tests/${f}`);
 const files=[...scriptTests.map(f=>`scripts/brain/${f}`),...repoTests];
 let failed=0;
 for(const file of files){

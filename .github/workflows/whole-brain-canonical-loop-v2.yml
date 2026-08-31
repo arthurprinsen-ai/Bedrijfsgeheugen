@@ -1,0 +1,46 @@
+name: Whole Brain Canonical Loop v2
+
+on:
+  push:
+    branches:
+      - feat/whole-brain-canonical-loop-v2
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Canonical loop contract
+        run: node --test tests/whole-brain-canonical-loop-v2.test.mjs
+      - name: Canonical Business Graph
+        run: node --test tests/whole-brain-business-graph.test.mjs
+      - name: Executive cockpit projection
+        run: node --test tests/whole-brain-executive-cockpit.test.mjs
+      - name: Object-level ABAC enforcement
+        run: node --test tests/whole-brain-object-access.test.mjs
+      - name: Runtime telemetry contract
+        run: node --test tests/whole-brain-rum.test.mjs
+      - name: Supabase record adapter contract
+        run: node --test tests/whole-brain-supabase-adapter.test.mjs
+      - name: Decision simulation contract
+        run: node --test tests/whole-brain-decision-simulation.test.mjs
+      - name: Cross-domain intelligence loop
+        run: node --test tests/whole-brain-external-intelligence.test.mjs
+      - name: Universal platform activation gate
+        run: node --test tests/whole-brain-platform-activation.test.mjs
+      - name: Legacy calculation parity gate
+        run: node --test tests/whole-brain-legacy-parity.test.mjs
+      - name: Runtime evidence certifier
+        run: node --test scripts/brain/test-runtime-evidence-certifier.mjs
+      - name: Existing Brain acceptance regression
+        run: node --test tests/brain-acceptance.test.mjs
+      - name: Existing platform adapter regression
+        run: node --test tests/brain-platform-adapters.test.mjs

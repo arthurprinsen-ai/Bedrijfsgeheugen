@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "whole-brain-completion.v1",
+  "sourceDocument": "Bedrijfsgeheugen_implementatiestatus_2026-08-30.md",
+  "asOf": "2026-08-31",
+  "rule": "BUILT != PROVEN; PROVEN requires code/config plus production execution/readback evidence where applicable",
+  "canonicalLoop": ["evidence","graph","intelligence","impact","decision","action","execution","verification","value","learning","memory","graph_feedback"],
+  "gaps": [
+    {"id":1,"name":"Persisted canonical Business Graph","state":"BUILT_NOT_PROVEN","evidence":["brain_records live","business-graph-service","provenance explain path"],"remaining":["promote runtime store from Blob to canonical Supabase","production readback"]},
+    {"id":2,"name":"Universal Change & Impact Engine","state":"BUILT_NOT_PROVEN","evidence":["graph traversal","before/after","rollback required","evidence required","regression test"],"remaining":["cross-domain production executions"]},
+    {"id":3,"name":"Cross-domain External Intelligence","state":"BUILT_NOT_PROVEN","evidence":["market/competitor/customer/technology/regulation/seo canonical planner","verified-evidence gate"],"remaining":["production source-by-source execution/readback"]},
+    {"id":4,"name":"Persistent Decision Engine + 30/90/180","state":"BUILT_NOT_PROVEN","evidence":["decision-engine","brain_decisions live","30/90/180 persistent evaluator live"],"remaining":["cross-domain production outcome evaluations"]},
+    {"id":5,"name":"Universal Action/Execution store","state":"BUILT_NOT_PROVEN","evidence":["Action/Execution first-class brain_records","canonical lifecycle lineage"],"remaining":["all external producers must emit canonical execution evidence"]},
+    {"id":6,"name":"Verified Value/evidence service","state":"BUILT_NOT_PROVEN","evidence":["first-class verified Value projection","evidence/realised gates"],"remaining":["production value events across domains"]},
+    {"id":7,"name":"Company-wide Living Memory","state":"BUILT_NOT_PROVEN","evidence":["first-class Memory records","freshness/provenance","graph feedback","why-query"],"remaining":["all business domains must ingest documents/procedures/people/decisions as canonical objects"]},
+    {"id":8,"name":"Persistent AI Governance registry","state":"BUILT_NOT_PROVEN","evidence":["brain_ai_governance_registry live","incident table live","provider/model/revision/risk/oversight/retention/review fields"],"remaining":["inventory every active AI use case/provider and periodic audit"]},
+    {"id":9,"name":"Universal app delivery adapters","state":"BLOCKED_PARTIAL","evidence":["platform adapter contract","source mappings","universal fail-closed activation gate"],"remaining":["Make capacity recovery","Notion readback capability","production certification for Supabase/DataForSEO/website/portal/agents"]},
+    {"id":10,"name":"Dynamic integration health/freshness/error/owner/cost/revision","state":"BUILT_NOT_PROVEN","evidence":["integration-health projection","required telemetry contract","executive cockpit projection"],"remaining":["continuous producer coverage for every integration"]},
+    {"id":11,"name":"Full legacy calculation parity","state":"OPEN","evidence":["fail-closed parity registry/gate built"],"remaining":["complete legacy calculation inventory","fixtures and tolerance proof for every calculation"]},
+    {"id":12,"name":"Production performance telemetry","state":"BLOCKED_PARTIAL","evidence":["brain_runtime_metrics live","p95 SLO view live","privacy-minimal portal RUM built","authenticated metric endpoint built"],"remaining":["secure Netlify Supabase runtime config","production deploy","minimum real-user sample coverage for all routes","responsive/browser/device regression evidence"]}
+  ],
+  "hardBoundaries": [
+    "Make organization/team paused by operations/data-transfer limit",
+    "Notion data-source runtime query/readback plan-gated",
+    "Netlify Supabase service credentials not configured; never invent secrets",
+    "Credential-class Netlify Notion environment variable requires human-controlled rotation/secret hygiene",
+    "Automated signing remains intentionally prohibited"
+  ],
+  "completionGate": "No whole-brain completion until every non-intentional gap is PROVEN and every intentional hard boundary is represented as an enforced policy rather than bypassed."
+}

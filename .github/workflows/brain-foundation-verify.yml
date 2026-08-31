@@ -4,18 +4,26 @@ on:
   push:
     paths:
       - 'brain/**'
+      - 'config/brain-*.json'
+      - 'platform/api/brain-operating-*.mjs'
+      - 'netlify/functions/brain-operating-*.mjs'
       - 'scripts/brain/**'
       - 'tests/brain/**'
       - 'tests/chat-to-brain-*.test.mjs'
+      - 'tests/whole-brain-*.test.mjs'
       - 'supabase/migrations/**'
       - 'docs/brain/**'
       - '.github/workflows/brain-foundation-verify.yml'
   pull_request:
     paths:
       - 'brain/**'
+      - 'config/brain-*.json'
+      - 'platform/api/brain-operating-*.mjs'
+      - 'netlify/functions/brain-operating-*.mjs'
       - 'scripts/brain/**'
       - 'tests/brain/**'
       - 'tests/chat-to-brain-*.test.mjs'
+      - 'tests/whole-brain-*.test.mjs'
       - 'supabase/migrations/**'
       - 'docs/brain/**'
       - '.github/workflows/brain-foundation-verify.yml'
