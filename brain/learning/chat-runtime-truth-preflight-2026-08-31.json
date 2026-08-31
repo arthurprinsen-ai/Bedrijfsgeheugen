@@ -14,6 +14,10 @@
     {
       "fingerprint": "delivery|green-candidate|parallel-main-semantic-duplicate-v1",
       "prevention": "FRESH_MAIN_SEMANTIC_EQUIVALENCE_CHECK_BEFORE_MERGE"
+    },
+    {
+      "fingerprint": "brain|preflight|full-evidence-source-exceeds-bounded-context-v1",
+      "prevention": "USE_BOUNDED_ACTIONABLE_PROJECTION_FOR_AGENT_PREFLIGHT"
     }
   ],
   "security": {

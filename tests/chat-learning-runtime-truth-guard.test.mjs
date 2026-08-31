@@ -8,7 +8,8 @@ const learningPath = new URL('../brain/learning/chat-runtime-truth-lessons-2026-
 const requiredFingerprints = [
   'github|pr-terminal-state|stale-conversation-snapshot-v1',
   'github|git-data|connector-schema-mismatch-before-mutation-v1',
-  'delivery|green-candidate|parallel-main-semantic-duplicate-v1'
+  'delivery|green-candidate|parallel-main-semantic-duplicate-v1',
+  'brain|preflight|full-evidence-source-exceeds-bounded-context-v1'
 ];
 
 test('material runtime-truth learnings from chat are committed to canonical Brain memory', () => {

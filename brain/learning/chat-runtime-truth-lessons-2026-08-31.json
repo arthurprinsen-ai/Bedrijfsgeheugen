@@ -14,7 +14,6 @@
       "prevention": "READ_PROVIDER_TERMINAL_STATE_IMMEDIATELY_BEFORE_PR_MUTATION",
       "regressionContract": "tests/chat-learning-runtime-truth-guard.test.mjs",
       "evidence": {
-        "repository": "arthurprinsen-ai/Bedrijfsgeheugen",
         "pr": 747,
         "observed_merged": true,
         "observed_merged_at": "2026-08-30T21:47:41Z",
@@ -67,6 +66,31 @@
           "Shared Agent Memory executes the regression",
           "website delivery lane classifies the regression"
         ]
+      },
+      "security": {
+        "contains_secrets": false,
+        "contains_credentials": false,
+        "contains_pii": false
+      }
+    },
+    {
+      "id": "USE_BOUNDED_PROJECTION_FOR_AGENT_PREFLIGHT",
+      "fingerprint": "brain|preflight|full-evidence-source-exceeds-bounded-context-v1",
+      "status": "PROVEN",
+      "symptom": "Direct toevoegen van het volledige runtime-truth evidence-record aan de verplichte chat-learning preflight liet de bounded preflight falen met `maxBytes exceeded: 259643 > 256000`.",
+      "rootCause": "Audit-grade learningrecords bevatten root cause, mislukte aanpak, evidence en securitymetadata. Als ieder volledig record direct in mandatory agent preflight wordt geladen, groeit de context monotonisch en kan de expliciete maxBytes-grens worden overschreden terwijl de learning zelf geldig is.",
+      "failedApproach": "De preflightlimiet verhogen of volledige evidence-records blijven toevoegen aan `MANDATORY_SUPPLEMENTAL_SOURCES`.",
+      "provenFix": "Behoud het volledige canonieke evidence-record voor audit en root-cause, maar lever aan mandatory agent preflight een aparte compacte actionable projection met alleen stabiele fingerprint, prevention rule en source pointer. Laat `maxBytes` ongewijzigd en test dat de geprojecteerde fingerprints daadwerkelijk worden uitgegeven.",
+      "prevention": "USE_BOUNDED_ACTIONABLE_PROJECTION_FOR_AGENT_PREFLIGHT",
+      "regressionContract": "tests/chat-learning-runtime-truth-guard.test.mjs",
+      "evidence": {
+        "failed_head": "cbc586aa686f3b72db8ebd6208b49e1365a45f97",
+        "shared_agent_memory_run": 33362816944,
+        "shared_agent_memory_job": 99397377581,
+        "observed_total_bytes": 259643,
+        "configured_max_bytes": 256000,
+        "green_projection_head": "936306ba2f151bf20b1c8ee41b118894820bfaea",
+        "green_shared_agent_memory_run": 33362910056
       },
       "security": {
         "contains_secrets": false,
