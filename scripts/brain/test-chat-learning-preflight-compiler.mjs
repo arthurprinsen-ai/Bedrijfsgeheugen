@@ -20,7 +20,8 @@ assert.ok(Array.isArray(packet.fingerprints));
 assert.ok(Array.isArray(packet.preventions));
 assert.ok(Array.isArray(packet.blockers));
 assert.ok(Array.isArray(packet.resume_contracts));
-assert.ok(packet.totalBytes <= 256_000, 'packet must respect maxBytes');
+assert.ok(packet.totalBytes <= 256_000, 'emitted packet must respect maxBytes');
+assert.ok(packet.sourceBytes >= packet.totalBytes, 'canonical source corpus may exceed but never defines the emitted packet budget');
 
 assert.throws(
   () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 2, maxBytes: 256_000 }),
@@ -31,28 +32,16 @@ assert.throws(
 assert.throws(
   () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 100 }),
   /maxBytes/,
-  'byte limit must fail closed'
+  'packet byte limit must fail closed'
 );
 
 const again = compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 256_000 });
 assert.equal(JSON.stringify(packet), JSON.stringify(again), 'same repository state must compile deterministically');
 
 const agentsContract = fs.readFileSync('AGENTS.md', 'utf8');
-assert.match(
-  agentsContract,
-  /node scripts\/brain\/chat-learning-preflight\.mjs/,
-  'AGENTS.md must require the deterministic chat-learning preflight command'
-);
-assert.match(
-  agentsContract,
-  /vóór (debuggen|materieel werk|ontwerpen|wijzigen|uitvoeren)/i,
-  'AGENTS.md must require preflight before material execution'
-);
+assert.match(agentsContract, /node scripts\/brain\/chat-learning-preflight\.mjs/, 'AGENTS.md must require the deterministic chat-learning preflight command');
+assert.match(agentsContract, /vóór (debuggen|materieel werk|ontwerpen|wijzigen|uitvoeren)/i, 'AGENTS.md must require preflight before material execution');
 assert.match(agentsContract, /status: READY/, 'AGENTS.md must require a READY preflight result');
-assert.match(
-  agentsContract,
-  /CHAT_LEARNING_PREFLIGHT_FAILED/,
-  'AGENTS.md must keep material execution fail-closed when preflight fails'
-);
+assert.match(agentsContract, /CHAT_LEARNING_PREFLIGHT_FAILED/, 'AGENTS.md must keep material execution fail-closed when preflight fails');
 
-console.log(`PASS chat-learning preflight compiler: ${packet.sources.length} sources, ${packet.totalBytes} bytes`);
+console.log(`PASS chat-learning preflight compiler: ${packet.sources.length} sources, ${packet.totalBytes} packet bytes, ${packet.sourceBytes} source bytes`);
