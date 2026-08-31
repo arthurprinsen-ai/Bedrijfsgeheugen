@@ -8,7 +8,8 @@ test('executive cockpit is generated only from canonical projection',()=>{
  const c=buildExecutiveCockpit(projection,{now:'2026-08-31T08:00:00Z'});
  assert.equal(c.tenantId,'T1');
  assert.equal(c.managementSummary.verifiedValue.EUR,1000);
- assert.equal(c.businessHealth.status,'ATTENTION');
+ assert.equal(c.businessHealth.status,'AT_RISK');
+ assert.ok(c.businessHealth.score<.6);
  assert.equal(c.opportunities.length,1);
  assert.equal(c.threats.length,1);
  assert.equal(c.recommendedActions[0].owner,'sales');
