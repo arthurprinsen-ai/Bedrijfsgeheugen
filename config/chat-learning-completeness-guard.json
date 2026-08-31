@@ -12,9 +12,11 @@
     "config/delivery-prevention-rules.json",
     "brain/learning/current-execution-lessons-2026-08-30.json",
     "brain/learning/chat-completeness-addendum-2026-08-30.json",
+    "brain/learning/incidents/moving-main-pr-status-stale-readback-2026-08-31.json",
     "tools/delivery-preflight.mjs"
   ],
   "completionPolicy": {
+    "rule": "NO_MATERIAL_LEARNING_ONLY_IN_CHAT",
     "blockIfMaterialLearningOnlyInChat": true,
     "requirePersistentSharedMemoryWriteback": true,
     "requireRegressionGuardWhereFeasible": true,
@@ -27,6 +29,59 @@
     "documentationAloneMayReach": "MEMORY",
     "machineEnforcedValidatorRequiredFor": "GUARDED",
     "intendedRuntimeEvidenceRequiredFor": "PROVEN"
+  },
+  "normalizationPipeline": [
+    "extract",
+    "classify",
+    "fingerprint",
+    "deduplicate",
+    "link_evidence",
+    "normalize",
+    "persist_to_brain",
+    "refresh_shared_context",
+    "make_available_to_preflight"
+  ],
+  "dedupe": {
+    "requiredBeforeWrite": true,
+    "stableFingerprintRequired": true,
+    "duplicateAction": "COALESCE_WITH_EXISTING_RECORD",
+    "duplicateMustNotTrigger": [
+      "new_material_write",
+      "duplicate_alert",
+      "expensive_context_refresh"
+    ]
+  },
+  "crossChatRequirement": {
+    "allFutureAgentsMustReadCanonicalBrainBeforeMaterialExecution": true,
+    "conversationHistoryIsNotCanonicalTruth": true,
+    "localAgentMemoryIsProjectionOnly": true,
+    "canonicalBrainWinsOnConflict": true
+  },
+  "materiality": {
+    "include": [
+      "new error fingerprints",
+      "root causes",
+      "proven fixes",
+      "failed or forbidden approaches",
+      "prevention rules",
+      "regression contracts",
+      "production or public evidence",
+      "cost and performance learnings",
+      "security learnings",
+      "workflow and outcome obligations",
+      "open blocker state",
+      "ownership and successor mappings",
+      "gate or sensor state",
+      "architecture decisions that constrain future work"
+    ],
+    "exclude": [
+      "secrets",
+      "credentials",
+      "PII",
+      "irrelevant conversational wording",
+      "ephemeral acknowledgements",
+      "duplicate learnings with no new evidence"
+    ]
   },
   "requiredLearningFields": [
     "fingerprint",
@@ -115,6 +170,18 @@
       "preventionRule": "Geen AgentWork-terminalisatie zonder centrale completion-readiness: alle materiële obligations terminal/green of een expliciet bewezen hard boundary met evidence.",
       "regressionContract": "tests/agent-fabric.test.mjs",
       "evidence": "2026-08-30 TDD RED op PR #749, candidate 8bdd9b8f03f83063ba920ea115c99b68f08225fe: AgentWork met production-smoke=OPEN ging toch naar Resolved; Shared Agent Memory faalde exact op 'Missing expected exception'.",
+      "owner": "agent-reliability",
+      "status": "GUARDED"
+    },
+    {
+      "fingerprint": "github|pr|moving-main|stale-merge-status-caused-duplicate-reconstruction-v1",
+      "symptom": "Een semantisch vervangende PR werd onnodig opgebouwd omdat een bestaande PR tijdelijk non-mergeable leek terwijl main bewoog, terwijl verse readback liet zien dat de originele PR al merged was.",
+      "rootCause": "PR mergeability en merge state werden afgeleid uit een transient moving-main snapshot in plaats van de originele PR en actuele main onmiddellijk vóór replacement creation opnieuw authoritative te lezen.",
+      "failedApproach": "Behandel mergeable=false of een stale base/head snapshot als voldoende bewijs dat een bestaande kandidaat vervangen moet worden.",
+      "fix": "Re-read de originele PR en actuele main onmiddellijk vóór replacement creation; als de originele PR merged is of exact gevalideerde content al op main staat, maak geen duplicate en behoud één canonical semantic owner.",
+      "preventionRule": "Re-read authoritative original PR state and current main immediately before any semantic replacement; mergeable=false alone never authorizes duplicate reconstruction.",
+      "regressionContract": "tests/brain-chat-learning-completeness.test.mjs",
+      "evidence": "2026-08-30/31: original PR #784 merged terwijl een replacement #791 kort daarna op basis van stale moving-main status werd aangemaakt en vervolgens als duplicate gesloten.",
       "owner": "agent-reliability",
       "status": "GUARDED"
     }
