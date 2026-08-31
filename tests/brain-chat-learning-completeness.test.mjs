@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const CONTRACT_PATH = 'config/chat-learning-completeness-guard.json';
+const POLICY_PATH = 'brain/policies/chat-to-brain-completeness-v1.json';
 const BROWSER_CONTRACT_PATH = 'config/browser-evidence-guard-contract.json';
 const SHARED_MEMORY_WORKFLOW = '.github/workflows/shared-agent-memory-tests.yml';
 const MOVING_MAIN_INCIDENT = 'brain/learning/incidents/moving-main-pr-status-stale-readback-2026-08-31.json';
@@ -190,4 +191,21 @@ test('moving-main replacement requires fresh authoritative PR and main readback'
   );
   assert.ok(guarded, 'moving-main failure must be available to future preflight');
   assert.match(guarded.preventionRule, /re-read|lees.*opnieuw|authoritative/i);
+});
+
+test('chat completeness has one policy authority and one enforcement projection', async () => {
+  const policy = await readJson(POLICY_PATH);
+  const guard = await readJson(CONTRACT_PATH);
+  assert.equal(policy.status, 'ACTIVE');
+  assert.equal(guard.authority.canonicalPolicySource, POLICY_PATH);
+  assert.equal(guard.authority.role, 'ENFORCEMENT_PROJECTION');
+  assert.equal(policy.enforcedBy.includes(CONTRACT_PATH), true);
+  assert.equal(policy.completionGate.rule, guard.completionPolicy.rule);
+});
+
+test('PR lifecycle mutation requires fresh authoritative state readback', async () => {
+  const incident = await readJson(MOVING_MAIN_INCIDENT);
+  assert.equal(incident.regressionContract.lifecycleMutationRequiresFreshPrRead, true);
+  assert.ok(incident.preventionRules.some(rule => /before.*close|before.*supersede|lifecycle/i.test(rule)));
+  assert.ok(incident.observations.some(item => item.type === 'PARALLEL_MERGE_INVALIDATED_RETIREMENT_SNAPSHOT'));
 });
