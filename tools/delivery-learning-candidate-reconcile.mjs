@@ -1,6 +1,10 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
+const FINGERPRINT = /^delivery-failure\|(commit|pr|merge|pipeline|deploy|production)\|[a-z0-9._-]{1,64}\|[a-f0-9]{16}$/;
+const SHA = /^[a-f0-9]{40}$/;
+const RUN_ID = /^\d{1,20}$/;
+
 function text(value) {
   return String(value ?? '').trim();
 }
@@ -22,11 +26,30 @@ function marker(body, key) {
   return match?.[1]?.trim() ?? '';
 }
 
+function requireFingerprint(value) {
+  const fingerprint = text(value);
+  if (!FINGERPRINT.test(fingerprint)) throw new TypeError('invalid delivery learning fingerprint');
+  return fingerprint;
+}
+
+function safeSha(value) {
+  const sha = text(value).toLowerCase();
+  if (!sha) return '';
+  if (!SHA.test(sha)) throw new TypeError('invalid learning evidence SHA');
+  return sha;
+}
+
+function safeRunId(value) {
+  const runId = text(value);
+  if (!runId) return '';
+  if (!RUN_ID.test(runId)) throw new TypeError('invalid learning evidence run id');
+  return runId;
+}
+
 export function reconcileLearningCandidate({ route, issues = [], headSha = '', runId = '', now = new Date().toISOString() }) {
   if (!route || typeof route !== 'object') throw new TypeError('route is required');
   const routeType = text(route.type);
-  const fingerprint = text(route.fingerprint);
-  if (!fingerprint) throw new TypeError('fingerprint is required');
+  const fingerprint = requireFingerprint(route.fingerprint);
 
   if (routeType === 'REUSE_PROVEN_LESSON') {
     return Object.freeze({ action: 'NONE', type: 'REUSE_PROVEN_LESSON', fingerprint, deduplicated: true });
@@ -35,18 +58,31 @@ export function reconcileLearningCandidate({ route, issues = [], headSha = '', r
     return Object.freeze({ action: 'NONE', type: routeType || 'IGNORED', fingerprint, deduplicated: false });
   }
 
-  const candidateId = text(route.candidateId) || `learning-candidate|${fingerprint}`;
+  const expectedCandidateId = `learning-candidate|${fingerprint}`;
+  const suppliedCandidateId = text(route.candidateId);
+  if (suppliedCandidateId && suppliedCandidateId !== expectedCandidateId) throw new TypeError('candidate id does not match fingerprint');
+  const candidateId = expectedCandidateId;
+
+  const routeSha = safeSha(route.headSha);
+  const fallbackSha = safeSha(headSha);
+  const routeRunId = safeRunId(text(route.evidenceRef).replace(/^github-run:/, ''));
+  const fallbackRunId = safeRunId(runId);
+  const lastSeenSha = routeSha || fallbackSha;
+  const lastSeenRun = routeRunId || fallbackRunId;
+  if (!lastSeenSha || !lastSeenRun) throw new TypeError('exact learning evidence identity is required');
+
   const existingIssue = issues.find(issue => {
     const body = text(issue?.body);
     return marker(body, 'candidate_id') === candidateId || marker(body, 'fingerprint') === fingerprint;
   }) ?? null;
 
-  const firstSeenSha = existingIssue ? marker(existingIssue.body, 'first_seen_sha') || text(route.headSha) || text(headSha) : text(route.headSha) || text(headSha);
-  const firstSeenRun = existingIssue ? marker(existingIssue.body, 'first_seen_run') || text(route.evidenceRef).replace(/^github-run:/, '') || text(runId) : text(route.evidenceRef).replace(/^github-run:/, '') || text(runId);
-  const lastSeenSha = text(route.headSha) || text(headSha);
-  const lastSeenRun = text(route.evidenceRef).replace(/^github-run:/, '') || text(runId);
+  const persistedFirstSha = existingIssue ? safeSha(marker(existingIssue.body, 'first_seen_sha')) : '';
+  const persistedFirstRun = existingIssue ? safeRunId(marker(existingIssue.body, 'first_seen_run')) : '';
+  const firstSeenSha = persistedFirstSha || lastSeenSha;
+  const firstSeenRun = persistedFirstRun || lastSeenRun;
   const signature = sanitize(route.signature || 'Novel delivery failure; root cause not yet verified.');
-  const evidenceRef = text(route.evidenceRef) || `github-run:${lastSeenRun}`;
+  const evidenceRef = `github-run:${lastSeenRun}`;
+  const observedAt = text(now);
 
   const body = [
     'status: `UNVERIFIED`',
@@ -56,6 +92,7 @@ export function reconcileLearningCandidate({ route, issues = [], headSha = '', r
     `first_seen_run: \`${firstSeenRun}\``,
     `last_seen_sha: \`${lastSeenSha}\``,
     `last_seen_run: \`${lastSeenRun}\``,
+    `last_seen_at: \`${observedAt}\``,
     `evidence_ref: \`${evidenceRef}\``,
     '',
     'signature:',
@@ -64,7 +101,6 @@ export function reconcileLearningCandidate({ route, issues = [], headSha = '', r
     'This is a bounded BRAIN learning candidate. Root cause, fix and prevention remain UNVERIFIED until regression evidence promotes them through the canonical learning contract. No automatic promotion and no expensive AI/Make/Notion fan-out are permitted.',
   ].join('\n');
 
-  const suffix = fingerprint.length > 110 ? `${fingerprint.slice(0, 107)}...` : fingerprint;
   return Object.freeze({
     action: existingIssue ? 'UPDATE' : 'CREATE',
     type: existingIssue ? 'REUSE_LEARNING_CANDIDATE' : 'LEARNING_CANDIDATE',
@@ -72,7 +108,7 @@ export function reconcileLearningCandidate({ route, issues = [], headSha = '', r
     candidate_id: candidateId,
     fingerprint,
     issue_number: existingIssue?.number ?? null,
-    title: `UNVERIFIED learning candidate: ${suffix}`,
+    title: `UNVERIFIED learning candidate: ${fingerprint}`,
     body,
     first_seen_sha: firstSeenSha,
     first_seen_run: firstSeenRun,
