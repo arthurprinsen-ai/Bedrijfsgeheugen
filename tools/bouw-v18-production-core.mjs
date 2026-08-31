@@ -41,6 +41,8 @@ html = html.replace(/<script id="v18-stable-video-controller">[\s\S]*?<\/script>
 
 html = html.replace('url("https://images.pexels.com/videos/35402271/pexels-photo-35402271.jpeg?auto=compress&cs=tinysrgb&w=1920") center/cover no-repeat', 'linear-gradient(rgba(10,17,23,1),rgba(10,17,23,1)) center/cover no-repeat');
 
+html = html.replace('url("https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600") center/cover no-repeat', 'linear-gradient(rgba(10,17,23,1),rgba(10,17,23,1)) center/cover no-repeat');
+
 const style = `<style id="v18-stable-video-fix">
 .hero-video{background:#dbe7ee;overflow:hidden;position:relative}
 .hero-bg-video{display:block!important;opacity:1!important;visibility:visible!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;background:#dbe7ee;filter:brightness(1.06) saturate(.96);pointer-events:none}
