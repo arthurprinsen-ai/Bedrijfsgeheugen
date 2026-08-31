@@ -14,7 +14,8 @@
     "brain/learning/incidents/delivery-learning-test-family-unclassified-2026-08-30.json",
     "brain/learning/incidents/github-pr-reused-head-no-workflow-run-2026-08-31.json",
     "brain/learning/incidents/make-agent-unconditional-bg168-resume-hazard-2026-08-31.json",
-    "config/make-agent-resume-learning-guard.json"
+    "config/make-agent-resume-learning-guard.json",
+    "brain/learning/ph-agent-materiality-preflight-v1.json"
   ],
   "invariants": [
     "Conversation text is not canonical truth; durable material learnings must be reachable from Brain preflight.",

@@ -1,0 +1,1 @@
+{"fingerprint":"make|ph-agent-template|caller-side-materiality-v1","state":"BLOCKED","prevention":"MATERIALITY_BEFORE_BG168","c":"config/ph-agent-materiality-template-v1.json","b":{"fingerprint":"brain|preflight|full-canonical-source-exceeds-budget-v1","prevention":"BOUNDED_PREFLIGHT"}}
