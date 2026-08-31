@@ -26,6 +26,14 @@ export function analyzeChangeImpact(records,{tenantId,subjectId,maxDepth=3,hopDe
   return Object.freeze({tenantId:String(tenantId),subjectId:String(subjectId),maxDepth:depthLimit,impacts});
 }
 
+export function buildImpactChangePlan(records,{tenantId,subjectId,change,rollback,maxDepth=3,hopDecay=.9}={}){
+  if(!change||change.from===undefined||change.to===undefined) throw new Error('impact change plan requires change from and to state');
+  if(!rollback||typeof rollback!=='object'||Object.keys(rollback).length===0) throw new Error('impact change plan requires rollback plan');
+  const analysis=analyzeChangeImpact(records,{tenantId,subjectId,maxDepth,hopDecay});
+  const evidenceIds=unique(analysis.impacts.flatMap(impact=>Array.isArray(impact.evidenceIds)?impact.evidenceIds:[]));
+  return Object.freeze({tenantId:analysis.tenantId,subjectId:analysis.subjectId,before:change.from,after:change.to,rollback:Object.freeze({...rollback}),impacts:analysis.impacts,evidenceIds:Object.freeze(evidenceIds),rollbackReady:true});
+}
+
 export function buildChangeImpactAssessment(analysis,{changeId,correlationId=null,before,after,rollback,evidenceIds=[],owner='UNASSIGNED'}={}){
   if(!analysis?.tenantId||!analysis?.subjectId||!Array.isArray(analysis.impacts)) throw new TypeError('change impact assessment requires analysis');
   if(!changeId) throw new TypeError('change impact assessment requires changeId');
