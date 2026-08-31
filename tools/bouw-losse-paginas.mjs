@@ -81,6 +81,7 @@ for (const p of PAGINAS) {
   let html = alleenDezeWeergave(bron, p.view);
   html = knoppenNaarLinks(html);
   html = routerLaatLinksDoor(html);
+  html = html.replace('</head>', '<style id="kop-linkkleur">header a,header a:visited,header a:hover{color:#fff}\n.v17-header .brand,.v17-header .brand:visited{color:#fff;text-decoration:none}</style>\n</head>');
   html = vervangEen(html, /<title>[\s\S]*?<\/title>/i, `<title>${p.titel}</title>`, `${p.bestand} titel`);
   html = html.replace(/<meta name="description" content="[^"]*"\s*\/?>/i, `<meta name="description" content="${p.omschrijving}">`);
   if (/<link rel="canonical"/i.test(html)) {
