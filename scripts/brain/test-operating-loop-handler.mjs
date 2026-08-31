@@ -1,8 +1,11 @@
 import {createOperatingLoopHandler} from '../../platform/api/brain-operating-loop-handler.mjs';
-const calls=[];const store={async append(input){calls.push(input);return {duplicate:false,record:input};},async getProjection(tenantId){return {tenantId,records:[],state:{stages:{}},advice:[]};}};
+const calls=[];const store={async append(input){calls.push(input);return {duplicate:false,record:input};},async getProjection(tenantId){return {tenantId,records:[],state:{stages:{}},advice:[]};},async certifyRuntime(input){calls.push({certify:input});return {status:'NOT_PROVEN',green:false,platform:input.platform,correlationId:input.correlationId,missing:['exact_runtime_readback']};}};
 const getUser=async request=>request.headers.get('x-test-user')?{id:'u1',app_metadata:{tenantId:'tenant-a'}}:null;const handler=createOperatingLoopHandler({getUser,store});
 if((await handler(new Request('https://x/api/brain-operating-loop'))).status!==401) throw new Error('auth fail-open');
 const getRes=await handler(new Request('https://x/api/brain-operating-loop',{headers:{'x-test-user':'1'}}));if(getRes.status!==200||(await getRes.json()).tenantId!=='tenant-a') throw new Error('tenant projection failed');
 const post=await handler(new Request('https://x/api/brain-operating-loop',{method:'POST',headers:{'content-type':'application/json','x-test-user':'1'},body:JSON.stringify({tenantId:'evil',type:'Evidence',id:'e1',idempotencyKey:'k1',source:'seo'})}));if(post.status!==201||calls[0].tenantId!=='tenant-a') throw new Error('client tenant override accepted');
+const certification=await handler(new Request('https://x/api/brain-operating-loop',{method:'POST',headers:{'content-type':'application/json','x-test-user':'1'},body:JSON.stringify({command:'CERTIFY_RUNTIME',tenantId:'evil',platform:'make',correlationId:'corr-1',runtimeEvidence:{capacity:'paused'}})}));
+const certificationBody=await certification.json();if(certification.status!==200||certificationBody.status!=='NOT_PROVEN'||certificationBody.green!==false) throw new Error('runtime certification route failed');
+const certifyCall=calls.find(call=>call.certify)?.certify;if(certifyCall?.tenantId!=='tenant-a'||certifyCall?.platform!=='make') throw new Error('runtime certification tenant/source scoping failed');
 if((await handler(new Request('https://x/api/brain-operating-loop',{method:'PUT',headers:{'x-test-user':'1'}}))).status!==405) throw new Error('method fail-open');
 console.log('operating loop handler tests passed');
