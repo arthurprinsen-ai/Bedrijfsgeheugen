@@ -8,7 +8,8 @@
     "brain/learning/delivery-test-classification-cochange-2026-08-31.json",
     "brain/learning/preflight-effective-source-set-2026-08-31.json",
     "brain/learning/bundle-maturity-must-not-overpromote-2026-08-31.json",
-    "brain/learning/mission-control-live-learnings-2026-08-31.json"
+    "brain/learning/mission-control-live-learnings-2026-08-31.json",
+    "brain/learning/chat-materialization-2026-08-31-v2.json"
   ],
   "promotionEvidence": {
     "policy_merged_to_main": true,
@@ -24,65 +25,14 @@
     "required": true,
     "rule": "NO_MATERIAL_LEARNING_ONLY_IN_CHAT",
     "failureCode": "CHAT_LEARNING_NOT_COMMITTED_TO_BRAIN",
-    "terminalStatesAllowedOnlyWhen": [
-      "material_learnings_normalized",
-      "fingerprints_deduplicated",
-      "evidence_linked",
-      "shared_context_refresh_requested_or_completed"
-    ]
+    "terminalStatesAllowedOnlyWhen": ["material_learnings_normalized", "fingerprints_deduplicated", "evidence_linked", "shared_context_refresh_requested_or_completed"]
   },
-  "normalizeMaterialLearningInto": [
-    "FailureClass",
-    "Learning",
-    "Pattern",
-    "AntiPattern",
-    "Policy",
-    "Invariant",
-    "RegressionContract",
-    "Dependency",
-    "Decision",
-    "OutcomeObligation",
-    "ProductionEvidence",
-    "BlockerState",
-    "OwnershipOrSuccessorMapping"
-  ],
+  "normalizeMaterialLearningInto": ["FailureClass", "Learning", "Pattern", "AntiPattern", "Policy", "Invariant", "RegressionContract", "Dependency", "Decision", "OutcomeObligation", "ProductionEvidence", "BlockerState", "OwnershipOrSuccessorMapping"],
   "materiality": {
-    "include": [
-      "new error fingerprints",
-      "root causes",
-      "proven fixes",
-      "failed or forbidden approaches",
-      "prevention rules",
-      "regression contracts",
-      "production or public evidence",
-      "cost and performance learnings",
-      "security learnings",
-      "workflow and outcome obligations",
-      "open blocker state",
-      "ownership and successor mappings",
-      "gate or sensor state",
-      "architecture decisions that constrain future work"
-    ],
-    "exclude": [
-      "secrets",
-      "credentials",
-      "PII",
-      "irrelevant conversational wording",
-      "ephemeral acknowledgements",
-      "duplicate learnings with no new evidence"
-    ]
+    "include": ["new error fingerprints", "root causes", "proven fixes", "failed or forbidden approaches", "prevention rules", "regression contracts", "production or public evidence", "cost and performance learnings", "security learnings", "workflow and outcome obligations", "open blocker state", "ownership and successor mappings", "gate or sensor state", "architecture decisions that constrain future work"],
+    "exclude": ["secrets", "credentials", "PII", "irrelevant conversational wording", "ephemeral acknowledgements", "duplicate learnings with no new evidence"]
   },
-  "pipeline": [
-    "extract",
-    "classify",
-    "fingerprint",
-    "deduplicate",
-    "link_evidence",
-    "normalize",
-    "persist_to_brain",
-    "refresh_shared_context",
-    "make_available_to_preflight"
-  ],
+  "pipeline": ["extract", "classify", "fingerprint", "deduplicate", "link_evidence", "normalize", "persist_to_brain", "refresh_shared_context", "make_available_to_preflight"],
   "dedupe": {
     "requiredBeforeWrite": true,
     "stableFingerprintRequired": true,
@@ -101,14 +51,5 @@
     "failClosedOnMissingMaterialWriteback": true,
     "productionGreenDoesNotOverrideMissingLearningWriteback": true
   },
-  "regressionTests": [
-    "material_error_without_brain_writeback_must_fail_completion",
-    "duplicate_learning_must_coalesce",
-    "secret_or_credential_must_never_be_persisted_as_learning",
-    "known_failure_must_be_available_to_next_preflight",
-    "open_blocker_must_retain_first_seen_last_seen_attempts_owner_next_action",
-    "production_evidence_must_remain_distinct_from_chat_assertion",
-    "new_regression_test_must_be_delivery_classified",
-    "effective_preflight_sources_must_be_verified_from_compiled_packet_not_config_only"
-  ]
+  "regressionTests": ["material_error_without_brain_writeback_must_fail_completion", "duplicate_learning_must_coalesce", "secret_or_credential_must_never_be_persisted_as_learning", "known_failure_must_be_available_to_next_preflight", "open_blocker_must_retain_first_seen_last_seen_attempts_owner_next_action", "production_evidence_must_remain_distinct_from_chat_assertion", "new_regression_test_must_be_delivery_classified", "effective_preflight_sources_must_be_verified_from_compiled_packet_not_config_only"]
 }
