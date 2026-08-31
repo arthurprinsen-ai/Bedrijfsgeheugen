@@ -5,9 +5,10 @@ import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
 const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
 
-test('chat-learning and Make agent learning/resume contract tests are classified as backend governance work', () => {
+test('chat learning, chat policy and Make agent learning/resume contract tests are classified as backend governance work', () => {
   for (const path of [
     'tests/chat-learning-future-contract.test.mjs',
+    'tests/chat-policy-future-guard.test.mjs',
     'tests/make-agent-learning-future-contract.test.mjs',
     'tests/make-agent-resume-future-contract.test.mjs'
   ]) {
