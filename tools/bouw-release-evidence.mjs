@@ -1,4 +1,5 @@
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import { injectPortalRuntimeHook } from './portal-runtime-hook.mjs';
 
 const commitRef = String(process.env.COMMIT_REF || process.env.HEAD || '').trim();
 if (!/^[a-f0-9]{40}$/i.test(commitRef)) {
@@ -13,4 +14,11 @@ const evidence = {
   generated_at: new Date().toISOString(),
 };
 await writeFile('release.json', `${JSON.stringify(evidence, null, 2)}\n`);
+
+const portalPath='klantportaal.html';
+const portal=await readFile(portalPath,'utf8');
+const portalWithRuntime=injectPortalRuntimeHook(portal);
+if(portalWithRuntime!==portal) await writeFile(portalPath,portalWithRuntime,'utf8');
+
 console.log('RELEASE_EVIDENCE', commitRef);
+console.log('PORTAL_RUNTIME_HOOK', portalWithRuntime.includes('id="bg-portal-runtime"')?'present':'missing');
