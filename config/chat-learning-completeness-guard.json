@@ -2,6 +2,12 @@
   "version": "CHAT-LEARNING-COMPLETENESS-GUARD-v1",
   "failClosed": true,
   "purpose": "Voorkom dat materiële technische of operationele learnings alleen in conversatietekst blijven en voorkom herhaling van bekende fouten door verplichte shared-memory writeback en regressieguards.",
+  "authority": {
+    "role": "ENFORCEMENT_PROJECTION",
+    "canonicalPolicy": "brain/policies/chat-to-brain-completeness-v1.json",
+    "conflictResolution": "CANONICAL_POLICY_WINS",
+    "mayNotCreateIndependentSemanticPolicy": true
+  },
   "requiredCanonicalSources": [
     "AGENTS.md",
     "config/brain-chat-learning-contract.json",
