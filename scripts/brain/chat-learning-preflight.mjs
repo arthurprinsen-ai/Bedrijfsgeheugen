@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/policies/chat-to-brain-completeness-v1.json',
-  'brain/learning/chat-continuity-2026-08-31.json'
+  'brain/learning/chat-continuity-2026-08-31.json',
+  'brain/learning/chat-materialization-2026-08-31-v2.json'
 ];
 
 function normalizeSourcePath(rootDir, sourcePath) {
