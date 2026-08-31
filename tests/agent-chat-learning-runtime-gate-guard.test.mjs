@@ -23,3 +23,10 @@ test('runtime preflight transitively includes execution lessons and the executio
   assert.ok(paths.has(LESSON_SOURCE), `missing ${LESSON_SOURCE}`);
   assert.ok(packet.fingerprints.includes(FINGERPRINT), `missing reusable fingerprint ${FINGERPRINT}`);
 });
+
+test('runtime chat-learning guard family remains classified in BRAIN delivery', () => {
+  const policy = JSON.parse(readFileSync('config/brain-delivery-system.json', 'utf8'));
+  const backend = (policy.lanes ?? []).find((lane) => lane.id === 'backend');
+  assert.ok(backend, 'missing backend delivery lane');
+  assert.ok((backend.paths ?? []).includes('tests/agent-chat-learning-'), 'runtime chat-learning guard family is unclassified');
+});
