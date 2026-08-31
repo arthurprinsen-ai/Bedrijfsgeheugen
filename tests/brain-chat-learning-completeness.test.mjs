@@ -5,6 +5,8 @@ import { readFile } from 'node:fs/promises';
 const CONTRACT_PATH = 'config/chat-learning-completeness-guard.json';
 const BROWSER_CONTRACT_PATH = 'config/browser-evidence-guard-contract.json';
 const SHARED_MEMORY_WORKFLOW = '.github/workflows/shared-agent-memory-tests.yml';
+const SESSION_BUNDLE_PATH = 'brain/learning/chat-session-2026-08-30-31.json';
+const PREVENTION_RULES_PATH = 'config/delivery-prevention-rules.json';
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
@@ -111,4 +113,39 @@ test('browser evidence learning remains linked as guarded domain knowledge', asy
   assert.ok(contract.requiredCanonicalSources.includes(BROWSER_CONTRACT_PATH));
   assert.equal(browser.learningLifecycle.GUARDED, 'deterministic-regression-or-validator-enforced');
   assert.equal(browser.completionRule, 'NO_COMPLETION_WHILE_MATERIAL_LEARNING_EXISTS_ONLY_IN_CHAT');
+});
+
+test('material learnings from the 2026-08-30/31 implementation chat are persisted as a canonical Brain session bundle', async () => {
+  const contract = await readJson(CONTRACT_PATH);
+  const bundle = await readJson(SESSION_BUNDLE_PATH);
+  assert.ok(contract.requiredCanonicalSources.includes(SESSION_BUNDLE_PATH));
+  assert.equal(bundle.version, 'BRAIN-CHAT-SESSION-LEARNING-v1');
+  assert.equal(bundle.canonicalTruth, 'GitHub');
+  assert.equal(bundle.conversationIsCanonicalTruth, false);
+  assert.ok(bundle.learnings.length >= 18, 'session bundle must contain the material causal learnings from the implementation chat');
+  assert.ok(bundle.verifiedCapabilities.length >= 10, 'session bundle must preserve the proven capabilities, not only failures');
+  assert.ok(bundle.openHardBoundaries.length >= 1, 'external hard boundaries must remain explicit instead of being silently marked green');
+});
+
+test('every session learning has a full causal chain and an active prevention rule', async () => {
+  const contract = await readJson(CONTRACT_PATH);
+  const bundle = await readJson(SESSION_BUNDLE_PATH);
+  const rulesDoc = await readJson(PREVENTION_RULES_PATH);
+  const activeRules = new Set((rulesDoc.rules || []).filter(rule => rule.active === true).map(rule => rule.id));
+  for (const learning of bundle.learnings) {
+    for (const field of contract.requiredLearningFields) {
+      assert.ok(learning[field], `${learning.fingerprint || '<unknown>'} missing ${field}`);
+    }
+    assert.ok(activeRules.has(learning.preventionRule), `${learning.fingerprint} prevention rule ${learning.preventionRule} is not active`);
+  }
+});
+
+test('session bundle separates proven system capability from external platform enforcement', async () => {
+  const bundle = await readJson(SESSION_BUNDLE_PATH);
+  const writerReadiness = bundle.verifiedCapabilities.find(x => x.id === 'repository-writers-7-of-7-parity-rollback');
+  assert.equal(writerReadiness?.status, 'PROVEN');
+  const githubProtection = bundle.openHardBoundaries.find(x => x.id === 'github-native-main-protection');
+  assert.ok(githubProtection);
+  assert.equal(githubProtection.status, 'BLOCKED_EXTERNAL');
+  assert.equal(githubProtection.mustNotBeInferredFromInternalCi, true);
 });
