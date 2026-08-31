@@ -2,17 +2,33 @@
   "version": "MAKE-AGENT-RESUME-LEARNING-GUARD-v1",
   "state": "BLOCKED_PENDING_CALLER_GUARDS_AND_RUNTIME_EVIDENCE",
   "resumeAllowed": false,
-  "purpose": "Prevent Make team-capacity recovery from automatically re-exposing active PH agents that still invoke BG168 for every AI result, including non-material outcomes.",
-  "confirmedAffectedScenarioIds": [7088532,7088558,7088574,7088579,7088585,7088656,7089148],
+  "purpose": "Prevent Make team-capacity recovery from automatically re-exposing PH01-PH16 stable runners that currently invoke BG168 for every AI result, including non-material outcomes.",
+  "confirmedAffectedScenarioIds": [7088501,7088523,7088532,7088535,7088538,7088545,7088548,7088553,7088558,7088567,7088574,7088579,7088585,7088656,7089001,7089148],
   "confirmedAffectedAgents": [
+    "PH Agent 01 - Frontend UX v3 stable runner",
+    "PH Agent 02 - Frontend Wiring v3 stable runner",
     "PH Agent 03 - Intelligence v3 stable runner",
+    "PH Agent 04 - LinkedIn Feed v3 stable runner",
+    "PH Agent 05 - LinkedIn DM v3 stable runner",
+    "PH Agent 06 - Composer Human Send v3 stable runner",
+    "PH Agent 07 - Signal Ingest v3 stable runner",
+    "PH Agent 08 - DM History Backend v3 stable runner",
     "PH Agent 09 - Telemetry Self-Healing v3 stable runner",
+    "PH Agent 10 - Calendar Content v3 stable runner",
     "PH Agent 11 - QA Regression v3 stable runner",
     "PH Agent 12 - Knowledge Governance v3 stable runner",
     "PH Agent 13 - Architect Integrator v3 stable runner",
     "PH Agent 14 - Make Cost Optimizer v3 stable runner",
+    "PH Agent 15 - Post Guardian v3 stable runner",
     "PH Agent 16 - System Performance Optimizer v3 stable runner"
   ],
+  "inventory": {
+    "scope": "PH01-PH16 stable runners",
+    "confirmedAffected": 16,
+    "totalInScope": 16,
+    "complete": true,
+    "evidenceMethod": "individual Make scenario_get blueprint readback"
+  },
   "observedTeamState": {
     "status": "paused",
     "isActive": true,
@@ -32,7 +48,7 @@
   },
   "resumeGate": {
     "requiredBeforeNormalService": [
-      "Inventory all PH-agent BG168 callers and classify each as guarded or explicitly exempt with evidence.",
+      "Treat all PH01-PH16 stable runners as affected until each caller is guarded or explicitly exempt with exact evidence.",
       "Migrate the canonical agent template so materiality is decided before paid BG168 invocation.",
       "Verify NON_MATERIAL produces the exact primary result with zero BG168 calls.",
       "Verify MATERIAL produces at most one BG168 call and still returns the exact primary result.",
