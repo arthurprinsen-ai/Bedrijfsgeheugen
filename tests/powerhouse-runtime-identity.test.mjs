@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const registry = JSON.parse(fs.readFileSync('config/powerhouse-runtime-identities.json', 'utf8'));
 const incident = JSON.parse(fs.readFileSync('config/chat-learning/2026-08-30-bg190-unauthorized-activation.json', 'utf8'));
 const releaseEvidence = JSON.parse(fs.readFileSync('config/chat-learning/2026-08-30-release-side-effect-evidence.json', 'utf8'));
+const brainWritebackBlocker = JSON.parse(fs.readFileSync('config/chat-learning/2026-08-31-brain-writeback-make-team-paused.json', 'utf8'));
 
 test('runtime identity contract requires scenario id plus canonical role', () => {
   assert.equal(registry.contract, 'POWERHOUSE-RUNTIME-IDENTITY-v1');
@@ -57,4 +58,15 @@ test('release actions require real side-effect evidence and never bypass main pr
   assert.equal(releaseEvidence.evidence.rulesets_count, 0);
   assert.equal(releaseEvidence.evidence.netlify_deploy_trigger_verified, false);
   assert.match(releaseEvidence.required_response, /read-back/i);
+});
+
+test('Brain writeback capacity blocker remains a replayable non-silent obligation', () => {
+  assert.equal(brainWritebackBlocker.fingerprint, 'brain-writeback-make-team-paused-limit-v1');
+  assert.equal(brainWritebackBlocker.canonical_router_scenario_id, 7136176);
+  assert.equal(brainWritebackBlocker.canonical_writer_scenario_id, 7135971);
+  assert.equal(brainWritebackBlocker.brain_writeback_verified, false);
+  assert.equal(brainWritebackBlocker.rules.never_claim_success_without_execution_and_readback, true);
+  assert.equal(brainWritebackBlocker.rules.no_retry_storm_while_team_paused, true);
+  assert.equal(brainWritebackBlocker.rules.replay_exactly_once_after_capacity_recovery, true);
+  assert.match(brainWritebackBlocker.open_obligation, /BG168.*BG166/i);
 });
