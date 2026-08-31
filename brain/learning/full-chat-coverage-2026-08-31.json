@@ -38,7 +38,14 @@
     {"fingerprint":"delivery|runtime-path|unclassified-netlify-build-control-v1","cluster":"delivery-classification","canonicalSource":"brain/learning/chat-materialization-2026-08-31-v2.json"},
     {"fingerprint":"delivery|verification|provider-impact-guard-needs-two-sided-proof-v1","cluster":"verification-maturity","canonicalSource":"brain/learning/chat-materialization-2026-08-31-v2.json"},
     {"fingerprint":"delivery|candidate|stale-open-pr-after-material-main-drift-v1","cluster":"moving-main","canonicalSource":"brain/learning/chat-materialization-2026-08-31-v2.json"},
-    {"fingerprint":"delivery-failure|pipeline|shared|classified-change-test-not-executed","cluster":"test-execution-coverage","canonicalSource":"brain/learning/chat-materialization-2026-08-31-v2.json"}
+    {"fingerprint":"delivery-failure|pipeline|shared|classified-change-test-not-executed","cluster":"test-execution-coverage","canonicalSource":"brain/learning/chat-materialization-2026-08-31-v2.json"},
+    {"fingerprint":"chat-to-brain|make-control-plane-materialization|2026-08-31-v3","cluster":"make-control-plane-materialization","canonicalSource":"brain/learning/chat-materialization-2026-08-31-v3.json"},
+    {"fingerprint":"make|multi-agent-context-learning-credit-storm|2026-08-30-v1","cluster":"make-credit-storm","canonicalSource":"brain/learning/incidents/make-control-plane-credit-storm-2026-08-30.json"},
+    {"fingerprint":"make|bg184|repeated-known-blocker-paid-redispatch-v1","cluster":"make-blocker-dedupe","canonicalSource":"brain/learning/incidents/bg184-repeated-known-blocker-dispatch-2026-08-30.json"},
+    {"fingerprint":"connector|mutation|wrong-tool-or-resource-selected-v1","cluster":"connector-mutation-routing","canonicalSource":"brain/learning/incidents/connector-mutation-tool-routing-misfire-2026-08-30.json"},
+    {"fingerprint":"delivery|classifier|learning-test-family-unclassified-v1","cluster":"learning-test-classification","canonicalSource":"brain/learning/incidents/delivery-learning-test-family-unclassified-2026-08-30.json"},
+    {"fingerprint":"github|pull-request|reused-head-pr-event-no-workflow-run-v1","cluster":"github-pr-workflow-observation","canonicalSource":"brain/learning/incidents/github-pr-reused-head-no-workflow-run-2026-08-31.json"},
+    {"fingerprint":"make|agent-template|unconditional-bg168-dispatch-on-resume-v1","cluster":"make-agent-resume-cost","canonicalSource":"brain/learning/incidents/make-agent-unconditional-bg168-resume-hazard-2026-08-31.json"}
   ],
   "missing": [],
   "completionRule": "Coverage is green only when every indexed fingerprint exists in its canonical source and is visible in compiled chat-learning preflight; new durable chat learnings extend canonical sources first and this index second.",
