@@ -1,0 +1,120 @@
+[
+  {
+    "bestand": "partners.html",
+    "pad": "/partners",
+    "titel": "Partners — samen sterker uitvoeren | Bedrijfsgeheugen",
+    "omschrijving": "Met wie Bedrijfsgeheugen samenwerkt: accountants, softwarepartners, IT-beheerders en investeerders. En hoe een samenwerking eruitziet.",
+    "kicker": "PARTNERS",
+    "h1": "Samen sterker uitvoeren.",
+    "intro": "Digitalisering raakt bijna nooit één partij. Er is een accountant die de cijfers kent, een leverancier die het pakket beheert, een IT-partij die het netwerk doet en een directie die de knoop moet doorhakken. Wij werken daar tussenin, en dat gaat het best als iedereen weet wie waarvoor aan de lat staat.",
+    "blokken": [
+      { "kop": "Accountants en adviseurs", "tekst": "Jij kent de cijfers en de gesprekken achter die cijfers. Wij vertalen dat naar processen en systemen die het werk lichter maken. Je klant houdt één aanspreekpunt en jij houdt de regie op het advies." },
+      { "kop": "Softwarepartners en implementatiepartijen", "tekst": "Rond AFAS, Exact Online en Microsoft 365 loopt het vaak vast op wat er tússen de pakketten gebeurt. Daar bouwen wij de koppelingen en de werkafspraken, zonder aan jouw implementatie te komen." },
+      { "kop": "IT-beheerders", "tekst": "Wij vervangen geen beheer en nemen geen infrastructuur over. Wat wij opleveren, leveren we op zo'n manier dat jij het kunt beheren: gedocumenteerd, met heldere eigenaren en zonder verborgen afhankelijkheden." },
+      { "kop": "Investeerders en due-diligenceteams", "tekst": "Bij overnames is de vraag zelden of er systemen zijn, maar of de kennis van het bedrijf ook zonder de zittende directie overeind blijft. Daar doen wij onderzoek naar, met een rapport dat leesbaar is voor niet-techneuten." }
+    ],
+    "cta": { "tekst": "Neem contact op", "href": "/contact" },
+    "slot": "Denk je aan een samenwerking? Laat weten wat je klanten tegenkomen, dan kijken we of het past."
+  },
+  {
+    "bestand": "onderzoeken.html",
+    "pad": "/onderzoeken",
+    "titel": "Onderzoeken — data en inzichten voor betere keuzes | Bedrijfsgeheugen",
+    "omschrijving": "Onderzoek van Bedrijfsgeheugen naar digitalisering, kennisborging en AI in het Nederlandse mkb, plus de instrumenten waarmee je jezelf kunt vergelijken.",
+    "kicker": "ONDERZOEK",
+    "h1": "Data en inzichten voor betere keuzes.",
+    "intro": "Er wordt veel beweerd over digitalisering in het mkb en weinig gemeten. Wij verzamelen daarom zelf cijfers: waar kennis weglekt, wat automatisering echt oplevert en hoe ver bedrijven werkelijk zijn met AI. Wat we vinden publiceren we, ook als het ongemakkelijk uitpakt.",
+    "blokken": [
+      { "kop": "De benchmark", "tekst": "Vergelijk de volwassenheid van je organisatie met die van vergelijkbare bedrijven, op kennis, processen, systemen en AI. Je ziet waar je voorloopt en waar het potentieel zit." },
+      { "kop": "De monitor", "tekst": "Doorlopende cijfers over digitalisering en AI-gebruik in het Nederlandse mkb, bijgewerkt wanneer er nieuwe data is." },
+      { "kop": "Artikelen en analyses", "tekst": "Wat kost een koppeling werkelijk, waarom mislukken AI-projecten, wat gebeurt er met kennis bij vergrijzing en bedrijfsopvolging. De uitwerkingen staan in de kennisbank." }
+    ],
+    "cta": { "tekst": "Naar de benchmark", "href": "/benchmark" },
+    "slot": "Wil je meedoen aan het onderzoek of de ruwe uitkomsten voor je eigen sector? Vraag ze op via contact."
+  },
+  {
+    "bestand": "templates.html",
+    "pad": "/templates",
+    "titel": "Templates en tools — praktische formats en calculators | Bedrijfsgeheugen",
+    "omschrijving": "Praktische hulpmiddelen van Bedrijfsgeheugen: de zelfscan, de benchmark, de verliesberekening en formats om kennis vast te leggen.",
+    "kicker": "TEMPLATES & TOOLS",
+    "h1": "Praktische formats en calculators.",
+    "intro": "Niet elk vraagstuk vraagt om een traject. Soms helpt een goed format meer dan een adviesgesprek. Deze hulpmiddelen kun je zelf gebruiken, zonder dat je met ons in zee gaat.",
+    "blokken": [
+      { "kop": "De zelfscan", "tekst": "In een paar minuten zie je waar in jouw bedrijf kennis, processen en systemen knellen, en wat de eerste stap zou zijn." },
+      { "kop": "Bereken je verlies", "tekst": "Reken door wat zoeken, dubbel werk en wachten je per jaar kosten. Vaak schrikbarender dan de investering die je uitstelt." },
+      { "kop": "De benchmark", "tekst": "Zet je organisatie naast vergelijkbare bedrijven en zie waar het verschil zit." },
+      { "kop": "Formats om kennis vast te leggen", "tekst": "Werkinstructies, overdrachtsdocumenten en procesbeschrijvingen die kort genoeg zijn dat ze ook echt worden bijgehouden. Voorbeelden staan in de kennisbank." }
+    ],
+    "cta": { "tekst": "Doe de gratis zelfscan", "href": "/zelfscan" },
+    "slot": "Mis je een format? Laat het weten, dan maken we het en zetten we het erbij."
+  },
+  {
+    "bestand": "security.html",
+    "pad": "/security",
+    "titel": "Security — toegang, audittrail en eigenaarschap | Bedrijfsgeheugen",
+    "omschrijving": "Hoe Bedrijfsgeheugen omgaat met toegang, herleidbaarheid en eigenaarschap van je gegevens.",
+    "kicker": "SECURITY",
+    "h1": "Toegang, audittrail en eigenaarschap.",
+    "intro": "Een bedrijfsgeheugen is pas iets waard als je erop durft te vertrouwen. Dat begint bij een simpele vraag: wie kan erbij, wat is er gebeurd, en van wie is het? Dit zijn de uitgangspunten waarmee wij werken.",
+    "blokken": [
+      { "kop": "Je gegevens blijven van jou", "tekst": "Wat we vastleggen is van jouw organisatie. Bij het einde van een samenwerking krijg je alles mee in een bruikbaar formaat, niet in een export die niemand kan lezen." },
+      { "kop": "Toegang per rol", "tekst": "Niet iedereen hoeft alles te zien. Rechten worden ingericht op rol en op wat iemand voor zijn werk nodig heeft, en die inrichting leggen we vast zodat je hem kunt controleren." },
+      { "kop": "Herleidbaar", "tekst": "Bij ieder belangrijk antwoord hoort de bron. Je kunt zien waar iets vandaan komt, wanneer het is gewijzigd en door wie. Zonder dat blijft AI een gok." },
+      { "kop": "Menselijk toezicht", "tekst": "AI stelt voor, mensen beslissen. Zeker bij alles wat richting klanten, geld of personeel gaat. Hoe dat is ingericht staat beschreven bij AI Act en governance." }
+    ],
+    "cta": { "tekst": "Lees over data-soevereiniteit", "href": "/data-soevereiniteit" },
+    "slot": "Heb je een security-vragenlijst die ingevuld moet worden voor jouw inkoopproces? Stuur hem op, dan vullen we hem in."
+  },
+  {
+    "bestand": "juridisch.html",
+    "pad": "/juridisch",
+    "titel": "Juridisch — voorwaarden en afspraken | Bedrijfsgeheugen",
+    "omschrijving": "De juridische documenten van Bedrijfsgeheugen: algemene voorwaarden, verwerkersovereenkomst en privacyverklaring.",
+    "kicker": "JURIDISCH",
+    "h1": "Voorwaarden en afspraken.",
+    "intro": "Duidelijke afspraken vooraf schelen gedoe achteraf. Hieronder staat welke documenten van toepassing zijn en waar je ze vindt.",
+    "blokken": [
+      { "kop": "Algemene voorwaarden", "tekst": "Van toepassing op iedere opdracht en offerte, tenzij we schriftelijk iets anders afspreken. Opvraagbaar via contact; bij een voorstel gaan ze standaard mee." },
+      { "kop": "Verwerkersovereenkomst", "tekst": "Werken we met persoonsgegevens van jouw organisatie, dan sluiten we een verwerkersovereenkomst voordat we beginnen. Ook die kun je vooraf opvragen." },
+      { "kop": "Privacyverklaring", "tekst": "Wat we van websitebezoekers en klanten vastleggen, waarom, en hoe lang we het bewaren. Dat staat op de privacypagina." },
+      { "kop": "AI Act en governance", "tekst": "Wat de AI Act van organisaties vraagt en hoe wij daar in projecten mee omgaan, staat apart uitgewerkt." }
+    ],
+    "cta": { "tekst": "Naar de privacyverklaring", "href": "/privacy" },
+    "slot": "Vragen over een document of een aanpassing nodig voor jouw situatie? Neem contact op."
+  },
+  {
+    "bestand": "help.html",
+    "pad": "/help",
+    "titel": "Helpcentrum — antwoorden en uitleg | Bedrijfsgeheugen",
+    "omschrijving": "Antwoorden op veelgestelde vragen over Bedrijfsgeheugen: hoe het werkt, wat het kost, hoe lang het duurt en hoe je hulp krijgt.",
+    "kicker": "HELPCENTRUM",
+    "h1": "Antwoorden en uitleg.",
+    "intro": "De meeste vragen gaan over hetzelfde: wat het kost, hoe lang het duurt en of het naast de software past die je al hebt. Hieronder de korte antwoorden.",
+    "blokken": [
+      { "kop": "Moet ik mijn huidige software vervangen?", "tekst": "Nee. We koppelen aan wat je hebt — AFAS, Exact Online, Microsoft 365 en andere pakketten. Vervangen is duur, traag en zelden nodig." },
+      { "kop": "Hoe lang duurt het voordat ik iets merk?", "tekst": "We werken in stappen die binnen twee weken iets werkends opleveren. Geen traject van maanden voordat er iets te zien is." },
+      { "kop": "Wat kost het?", "tekst": "Een vaste prijs per stap, geen uurtje-factuurtje. Wat een stap kost weet je voordat hij begint. De pakketten staan bij prijzen." },
+      { "kop": "Wie kan erbij en waar staat het?", "tekst": "Toegang gaat per rol en je gegevens blijven van jouw organisatie. De uitgangspunten staan bij security." },
+      { "kop": "Ik heb een storing of een vraag over iets dat draait", "tekst": "Neem direct contact op. Je krijgt geen callcenter maar iemand die je situatie kent." }
+    ],
+    "cta": { "tekst": "Stel je vraag", "href": "/contact" },
+    "slot": "Staat je vraag er niet bij? Dan hoort hij hier waarschijnlijk wel thuis — laat het weten."
+  },
+  {
+    "bestand": "changelog.html",
+    "pad": "/changelog",
+    "titel": "Changelog — wat er nieuw en verbeterd is | Bedrijfsgeheugen",
+    "omschrijving": "Wat er nieuw is en verbeterd aan Bedrijfsgeheugen, en waar je de uitgebreide toelichting per wijziging vindt.",
+    "kicker": "CHANGELOG",
+    "h1": "Wat er nieuw en verbeterd is.",
+    "intro": "We bouwen in kleine stappen en zetten erbij wat er is veranderd. Niet omdat elke wijziging groot nieuws is, maar omdat je moet kunnen zien wat er met je omgeving gebeurt.",
+    "blokken": [
+      { "kop": "Alle wijzigingen", "tekst": "Het volledige overzicht van wat er is aangepast, met datum, staat op de wijzigingenpagina." },
+      { "kop": "Wijzigingen uitgelegd", "tekst": "Wil je weten waaróm iets is veranderd en wat het voor jouw werk betekent, dan staat daar de toelichting in gewone taal." },
+      { "kop": "Achtergrond en praktijk", "tekst": "Grotere ontwikkelingen en de gedachte erachter komen terug in de kennisbank." }
+    ],
+    "cta": { "tekst": "Bekijk alle wijzigingen", "href": "/wijzigingen" },
+    "slot": "Mis je iets in het overzicht, of wil je op de hoogte blijven van wat er verandert? Laat het weten via contact."
+  }
+]
