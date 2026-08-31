@@ -1,0 +1,17 @@
+{
+  "type": "brain-learning-extension",
+  "version": "preflight-consumer-linked-source-parity-2026-08-31",
+  "status": "PROVEN",
+  "scope": "shared-learning-control-plane",
+  "fingerprint": "brain-learning|preflight-consumer|linked-source-parity-gap",
+  "symptom": "De runtime chat-learning compiler hergebruikt een canonical linked learning source, terwijl delivery-preflight dezelfde source niet leest en daardoor een actieve prevention rule als orphan classificeert.",
+  "rootCause": "Meerdere preflight-consumers bouwden hun learning source graph onafhankelijk op: de runtime compiler volgde linked_learning_sources transitief, maar delivery-preflight had een deels hardcoded bronlijst.",
+  "failedApproach": "Nieuwe learning per consumer handmatig opnieuw registreren of dezelfde lesson dupliceren in meerdere legacy-bestanden.",
+  "requiredAction": "Laat iedere preflight-consumer dezelfde bounded canonical linked_learning_sources gebruiken, valideer source paths fail-closed en normaliseer alleen machineleesbare PROVEN lessons.",
+  "provenFix": "Delivery-preflight leest nu dezelfde allowlisted brain/learning/*.json linked sources als de runtime compiler en dedupliceert reeds direct geladen execution lessons.",
+  "prevention": "Een nieuwe canonical linked learning source moet automatisch door alle execution- en delivery-preflight consumers worden hergebruikt; regressietests bewijzen dezelfde fingerprint in beide preflight outputs.",
+  "preventionRule": "REQUIRE_CANONICAL_LINKED_LEARNING_PARITY_ACROSS_PREFLIGHTS",
+  "regressionContract": "tests/agent-chat-learning-runtime-gate-guard.test.mjs",
+  "evidenceRule": "De foutklasse is pas gesloten wanneer zowel compileChatLearningPreflight als loadDeliveryPreflight dezelfde nieuwe linked-source fingerprint aantoonbaar hergebruiken.",
+  "applyToFutureWork": true
+}
