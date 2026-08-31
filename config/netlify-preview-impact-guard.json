@@ -1,0 +1,21 @@
+{
+  "version": "NETLIFY-PREVIEW-IMPACT-GUARD-v1",
+  "failClosed": true,
+  "knownFailure": {
+    "fingerprint": "netlify-preview-provider-scope-mismatch-v1",
+    "rootCause": "GitHub Actions trigger ownership was narrowed independently, while linked Netlify Deploy Preview remained repository-wide and rebuilt governance-only pull requests.",
+    "fix": "Use an exact-diff, deploy-preview-only Netlify ignore guard that skips only explicit governance-only paths and defaults every unknown or site-impacting condition to BUILD; never skip production.",
+    "preventionRule": "SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS",
+    "regressionContract": "tests/netlify-preview-impact-guard.test.mjs",
+    "owner": "ci-governance",
+    "status": "GUARDED"
+  },
+  "invariants": {
+    "productionAlwaysBuilds": true,
+    "previewSkipRequiresExactDiff": true,
+    "previewSkipRequiresAllPathsExplicitlyNonSite": true,
+    "unknownPathAction": "BUILD",
+    "invalidRefAction": "BUILD",
+    "missingDiffAction": "BUILD"
+  }
+}
