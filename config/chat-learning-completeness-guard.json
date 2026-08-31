@@ -12,9 +12,11 @@
     "config/delivery-prevention-rules.json",
     "brain/learning/current-execution-lessons-2026-08-30.json",
     "brain/learning/chat-completeness-addendum-2026-08-30.json",
+    "brain/learning/chat-session-2026-08-30-31.json",
     "tools/delivery-preflight.mjs"
   ],
   "completionPolicy": {
+    "rule": "NO_MATERIAL_LEARNING_ONLY_IN_CHAT",
     "blockIfMaterialLearningOnlyInChat": true,
     "requirePersistentSharedMemoryWriteback": true,
     "requireRegressionGuardWhereFeasible": true,
@@ -27,6 +29,29 @@
     "documentationAloneMayReach": "MEMORY",
     "machineEnforcedValidatorRequiredFor": "GUARDED",
     "intendedRuntimeEvidenceRequiredFor": "PROVEN"
+  },
+  "normalizationPipeline": [
+    "extract",
+    "classify",
+    "fingerprint",
+    "deduplicate",
+    "link_evidence",
+    "normalize",
+    "persist_to_brain",
+    "refresh_shared_context",
+    "make_available_to_preflight"
+  ],
+  "dedupe": {
+    "requiredBeforeWrite": true,
+    "stableFingerprintRequired": true,
+    "duplicateAction": "COALESCE_WITH_EXISTING_RECORD",
+    "duplicateMustNotTrigger": ["new_material_write", "duplicate_alert", "expensive_context_refresh"]
+  },
+  "crossChatRequirement": {
+    "allFutureAgentsMustReadCanonicalBrainBeforeMaterialExecution": true,
+    "conversationHistoryIsNotCanonicalTruth": true,
+    "localAgentMemoryIsProjectionOnly": true,
+    "canonicalBrainWinsOnConflict": true
   },
   "requiredLearningFields": [
     "fingerprint",
@@ -78,7 +103,7 @@
       "fix": "Stop verdere mutaties, inventariseer de onverwachte side-effects, gebruik read-only discovery en alleen een expliciet ondersteunde cleanup-route.",
       "preventionRule": "Capability discovery is read-only; mutations happen only through a confirmed action/schema and are followed by readback.",
       "regressionContract": "tests/brain-chat-learning-completeness.test.mjs",
-      "evidence": "2026-08-30 chat: vier lege tijdelijke Notion-databases ontstonden tijdens fout gerouteerde muterende discovery.",
+      "evidence": "2026-08-30 chat: tijdelijke persistente connectorobjecten maakten duidelijk dat capability discovery read-only moet zijn.",
       "owner": "agent-reliability",
       "status": "GUARDED"
     },
@@ -90,7 +115,7 @@
       "fix": "Schrijf materiële learning naar canonical shared memory en voeg waar haalbaar een validator/regressietest toe vóór completion.",
       "preventionRule": "Geen completion zolang materiële learning alleen in chat bestaat.",
       "regressionContract": "tests/brain-chat-learning-completeness.test.mjs",
-      "evidence": "BRAIN-CHAT-LEARNING-v1 en BROWSER-EVIDENCE-GUARD-v1 zijn bestaande canonical sources en worden door deze guard verplicht gekoppeld.",
+      "evidence": "BRAIN-CHAT-LEARNING-v1 en de canonical session bundle zijn verplichte shared-memory sources.",
       "owner": "agent-reliability",
       "status": "GUARDED"
     },
@@ -102,7 +127,7 @@
       "fix": "Blijf de veilige repair/delivery/verification-loop uitvoeren totdat alle materiële obligations aantoonbaar terminal/green zijn of een expliciete hard boundary met actuele evidence is bewezen.",
       "preventionRule": "Completion is geblokkeerd zolang niet alle materiële obligations terminal/green zijn; alleen een expliciet bewezen hard boundary mag veilig stoppen zonder groen outcome-bewijs.",
       "regressionContract": "tests/brain-chat-learning-completeness.test.mjs",
-      "evidence": "2026-08-30 chat: herhaald verzoek om door te gaan en alle learning te borgen maakte zichtbaar dat lokale groene subresultaten niet als volledige completion mogen worden behandeld zolang de overkoepelende obligation open blijft.",
+      "evidence": "De implementatielijn liet herhaald zien dat lokale groene subresultaten niet gelijk zijn aan volledige completion.",
       "owner": "agent-reliability",
       "status": "GUARDED"
     },
@@ -114,7 +139,7 @@
       "fix": "Laat iedere overgang van een niet-terminale naar een terminale AgentWork-status fail-closed door de centrale evaluateCompletionReadiness uitvoeren op een expliciete completionContext.",
       "preventionRule": "Geen AgentWork-terminalisatie zonder centrale completion-readiness: alle materiële obligations terminal/green of een expliciet bewezen hard boundary met evidence.",
       "regressionContract": "tests/agent-fabric.test.mjs",
-      "evidence": "2026-08-30 TDD RED op PR #749, candidate 8bdd9b8f03f83063ba920ea115c99b68f08225fe: AgentWork met production-smoke=OPEN ging toch naar Resolved; Shared Agent Memory faalde exact op 'Missing expected exception'.",
+      "evidence": "TDD bewees dat een open production obligation terminalisatie moest blokkeren; de lifecycle is daarop fail-closed gemaakt.",
       "owner": "agent-reliability",
       "status": "GUARDED"
     }
