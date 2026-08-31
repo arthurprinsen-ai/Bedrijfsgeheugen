@@ -45,18 +45,46 @@ function collectSignals(value, signals, parentKey = '') {
   for (const [key, child] of Object.entries(value)) collectSignals(child, signals, key);
 }
 
+function finalizePacket(packetBase, maxBytes) {
+  let compiledBytes = 0;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const candidate = { ...packetBase, compiledBytes, totalBytes: compiledBytes };
+    const nextBytes = Buffer.byteLength(JSON.stringify(candidate), 'utf8');
+    if (nextBytes === compiledBytes) {
+      if (nextBytes > maxBytes) throw new Error(`maxBytes exceeded by compiled packet: ${nextBytes} > ${maxBytes}`);
+      return candidate;
+    }
+    compiledBytes = nextBytes;
+  }
+
+  const candidate = { ...packetBase, compiledBytes, totalBytes: compiledBytes };
+  const finalBytes = Buffer.byteLength(JSON.stringify(candidate), 'utf8');
+  if (finalBytes > maxBytes) throw new Error(`maxBytes exceeded by compiled packet: ${finalBytes} > ${maxBytes}`);
+  if (finalBytes !== compiledBytes) {
+    const stable = { ...packetBase, compiledBytes: finalBytes, totalBytes: finalBytes };
+    const stableBytes = Buffer.byteLength(JSON.stringify(stable), 'utf8');
+    if (stableBytes > maxBytes) throw new Error(`maxBytes exceeded by compiled packet: ${stableBytes} > ${maxBytes}`);
+    return stableBytes === finalBytes ? stable : { ...packetBase, compiledBytes: stableBytes, totalBytes: stableBytes };
+  }
+  return candidate;
+}
+
 export function compileChatLearningPreflight({
   rootDir = process.cwd(),
   contractPath = DEFAULT_CONTRACT,
   maxSources = 32,
-  maxBytes = 256_000
+  maxBytes = 256_000,
+  maxSourceBytes = 128_000
 } = {}) {
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
   if (!Number.isInteger(maxBytes) || maxBytes < 1) throw new Error('maxBytes must be a positive integer');
+  if (!Number.isInteger(maxSourceBytes) || maxSourceBytes < 1) throw new Error('maxSourceBytes must be a positive integer');
 
   const contractLocation = normalizeSourcePath(rootDir, contractPath);
   if (!fs.existsSync(contractLocation.absolute)) throw new Error(`missing chat-learning contract: ${contractPath}`);
   const contractRaw = fs.readFileSync(contractLocation.absolute, 'utf8');
+  const contractBytes = Buffer.byteLength(contractRaw, 'utf8');
+  if (contractBytes > maxSourceBytes) throw new Error(`maxSourceBytes exceeded for ${contractPath}: ${contractBytes} > ${maxSourceBytes}`);
   const contract = JSON.parse(contractRaw);
   if (contract.preflightRequired !== true || contract.newAgentsMustReadBeforeExecution !== true) {
     throw new Error('chat-learning preflight contract is not mandatory');
@@ -70,8 +98,7 @@ export function compileChatLearningPreflight({
   const visited = new Set();
   const sources = [];
   const signals = { fingerprints: [], preventions: [], blockers: [], resumeContracts: [] };
-  let totalBytes = Buffer.byteLength(contractRaw, 'utf8');
-  if (totalBytes > maxBytes) throw new Error(`maxBytes exceeded by contract: ${totalBytes} > ${maxBytes}`);
+  let sourceBytesRead = contractBytes;
 
   while (queue.length) {
     const requested = queue.shift();
@@ -82,8 +109,8 @@ export function compileChatLearningPreflight({
 
     const raw = fs.readFileSync(absolute, 'utf8');
     const bytes = Buffer.byteLength(raw, 'utf8');
-    totalBytes += bytes;
-    if (totalBytes > maxBytes) throw new Error(`maxBytes exceeded: ${totalBytes} > ${maxBytes}`);
+    if (bytes > maxSourceBytes) throw new Error(`maxSourceBytes exceeded for ${normalized}: ${bytes} > ${maxSourceBytes}`);
+    sourceBytesRead += bytes;
 
     let parsed = null;
     if (normalized.endsWith('.json')) {
@@ -116,17 +143,19 @@ export function compileChatLearningPreflight({
     visited.add(normalized);
   }
 
-  return {
+  const packetBase = {
     version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1',
     status: 'READY',
     contract: contractPath,
-    totalBytes,
+    sourceBytesRead,
     sources,
     fingerprints: stableUnique(signals.fingerprints).sort(),
     preventions: stableUnique(signals.preventions).sort(),
     blockers: stableUnique(signals.blockers).sort(),
     resume_contracts: stableUnique(signals.resumeContracts)
   };
+
+  return finalizePacket(packetBase, maxBytes);
 }
 
 const isCli = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
