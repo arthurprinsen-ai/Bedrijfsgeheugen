@@ -2,10 +2,7 @@
   "version": "BRAIN-CHAT-EXECUTION-ADDENDUM-PREFLIGHT-v1",
   "type": "CHAT_EXECUTION_PREFLIGHT_PROJECTION",
   "source": "brain/learning/chat-execution-addendum-2026-08-31.json",
-  "purpose": "Bounded preflight projection for execution-specific learnings from the Bedrijfsgeheugen implementation chat. Full evidence and causal details remain in canonical referenced sources.",
-  "linked_learning_sources": [
-    "brain/learning/chat-execution-addendum-2026-08-31.json"
-  ],
+  "purpose": "Bounded actionable projection for execution-specific learnings from the Bedrijfsgeheugen implementation chat. Full evidence remains in canonical Brain records and is validated separately by Shared Agent Memory CI.",
   "lessons": [
     {"fingerprint":"delivery-failure|pipeline|shared|classified-change-test-not-executed","prevention":"CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS"},
     {"fingerprint":"delivery-failure|verification|shared|green-without-persistent-evidence","prevention":"REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN"},
