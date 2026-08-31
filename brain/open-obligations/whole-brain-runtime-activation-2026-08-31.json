@@ -10,15 +10,28 @@
     "supabaseAppendCanary": "brain_append_record wrote and read one row inside a transaction; rollback left zero canary rows",
     "websitePortalCurrentProduction": "Netlify production ready at commit 1721b86399f56e5f9d52c48f47eed82b949b0120 with secret scan zero matches and brain-operating-ingest/brain-operating-loop/portal-state deployed",
     "notionGraphSchema": "Powerhouse Commercial Graph Entities and Edges schemas are readable and contain keys/confidence/evidence/freshness relationships",
-    "dataForSEOConfig": "BG17 uses native DataForSEO + Notion connections with status-code success gate; connections report ok"
+    "dataForSEOConfig": "BG17 uses native DataForSEO + Notion connections with status-code success gate; connections report ok",
+    "makeCapacityRecovery": {
+      "recoveredBlockerFingerprint": "brain-writeback-make-team-paused-limit-v1",
+      "verifiedActiveScenarios": [7136176, 7135971, 7136045],
+      "bg168ExecutionId": "847b52e4083f42898870b4e1d01af30a",
+      "bg166ExecutionId": "6f4ebfdf4a924ac3a12fb32e126aa3dc",
+      "bg166LearningPersisted": true,
+      "bg167ExecutionId": "89b98678b6cf44b49946a2619df73455",
+      "projectedFingerprint": "whole-brain-runtime-activation-v2",
+      "verifiedAt": "2026-08-31T11:24:01+02:00"
+    }
   },
-  "blockers": [
+  "recoveredBlockers": [
     {
       "fingerprint": "brain-writeback-make-team-paused-limit-v1",
       "platforms": ["make","dataforseo","agent_runtime"],
       "classification": "runtime_capacity_blocker",
-      "requiredIntervention": "restore Make organization/team operations or data-transfer capacity; then execute one bounded exact-revision canary and canonical BG168/BG166/BG167 readback"
-    },
+      "status": "RECOVERED",
+      "replayRule": "Fingerprint whole-brain-runtime-activation-v2 was replayed once after verified recovery and projected through BG167; do not replay again merely because BG166 coalesced refresh."
+    }
+  ],
+  "blockers": [
     {
       "fingerprint": "notion-query-entitlement-runtime-readback-v1",
       "platforms": ["notion"],
@@ -46,5 +59,6 @@
     }
   ],
   "completionPolicy": "No platform becomes green from code/config alone. Require code/config + active production revision + executionId + exact readback + whole-brain lineage + verified value/evidence. Unknown or blocked stays NOT_PROVEN.",
-  "createdAt": "2026-08-31"
+  "createdAt": "2026-08-31",
+  "lastVerifiedAt": "2026-08-31T11:24:01+02:00"
 }
