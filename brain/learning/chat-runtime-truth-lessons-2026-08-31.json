@@ -1,0 +1,78 @@
+{
+  "version": "BRAIN-CHAT-LEARNING-v1",
+  "source": "chat-runtime-truth-2026-08-31",
+  "appendOnly": true,
+  "lessons": [
+    {
+      "id": "READ_PROVIDER_PR_TERMINAL_STATE_BEFORE_ACTION",
+      "fingerprint": "github|pr-terminal-state|stale-conversation-snapshot-v1",
+      "status": "PROVEN",
+      "symptom": "Conversatiecontext behandelde PR #747 als nog open/merge-kandidaat, terwijl actuele GitHub-readback `merged=true` en een historische `merged_at`/merge-SHA terugleverde.",
+      "rootCause": "Chat- en agentcontext is een afgeleide snapshot en kan achterlopen op de provider-authority. Een terminale PR-status werd uit conversatiecontinuiteit afgeleid in plaats van vlak voor de actie opnieuw uit GitHub gelezen.",
+      "failedApproach": "Een PR sluiten, mergen, superseden of opnieuw opbouwen op basis van eerder opgeslagen chatstatus zonder actuele provider-readback van state, merged, merged_at, head SHA en merge commit SHA.",
+      "provenFix": "Lees direct vóór iedere terminale PR-actie de actuele GitHub PR-state terug en laat `merged_at`/merge-SHA zwaarder wegen dan conversatie- of cached status. Als providertruth al terminal is, voer geen tweede terminale mutatie uit; normaliseer alleen de lineage/evidence.",
+      "prevention": "READ_PROVIDER_TERMINAL_STATE_IMMEDIATELY_BEFORE_PR_MUTATION",
+      "regressionContract": "tests/chat-learning-runtime-truth-guard.test.mjs",
+      "evidence": {
+        "repository": "arthurprinsen-ai/Bedrijfsgeheugen",
+        "pr": 747,
+        "observed_merged": true,
+        "observed_merged_at": "2026-08-30T21:47:41Z",
+        "observed_merge_commit_sha": "78e65aa218711a56e919dcd9df94c1a53f9c84cb"
+      },
+      "security": {
+        "contains_secrets": false,
+        "contains_credentials": false,
+        "contains_pii": false
+      }
+    },
+    {
+      "id": "CONFIRM_CONNECTOR_GIT_DATA_SCHEMA_BEFORE_MUTATION",
+      "fingerprint": "github|git-data|connector-schema-mismatch-before-mutation-v1",
+      "status": "PROVEN",
+      "symptom": "GitHub Git Data calls were rejected locally because `create_tree` requires `tree_elements` rather than `tree`, and `create_commit` requires `parent_sha` rather than `parents`.",
+      "rootCause": "The caller used an assumed or stale argument shape instead of the connector's currently exposed schema. Validation failed before the external Git mutation was issued.",
+      "failedApproach": "Guess Git Data wrapper parameter names from raw GitHub REST conventions or prior tool versions, then retry by recreating already valid intermediate blobs/trees.",
+      "provenFix": "Inspect or reuse the currently loaded connector schema before Git Data mutation. Treat argument-validation failure as `NO_EXTERNAL_MUTATION`; correct only the rejected field names and reuse already-created blobs/tree objects rather than repeating successful work.",
+      "prevention": "CONFIRM_CURRENT_CONNECTOR_SCHEMA_AND_REUSE_SUCCESSFUL_INTERMEDIATES",
+      "regressionContract": "tests/chat-learning-runtime-truth-guard.test.mjs",
+      "evidence": {
+        "observed_create_tree_required_field": "tree_elements",
+        "observed_create_commit_required_field": "parent_sha",
+        "external_mutation_before_validation_failure": false
+      },
+      "security": {
+        "contains_secrets": false,
+        "contains_credentials": false,
+        "contains_pii": false
+      }
+    },
+    {
+      "id": "DEDUPE_GREEN_CANDIDATE_WHEN_MAIN_ALREADY_HAS_CONTRACT",
+      "fingerprint": "delivery|green-candidate|parallel-main-semantic-duplicate-v1",
+      "status": "PROVEN",
+      "symptom": "Een volledig groene exact-head kandidaat bleef als delivery-object bestaan terwijl parallel `main` inmiddels dezelfde functionele contracten bevatte: beperkte Live Preview toolscope, regressietest, Shared Agent Memory-uitvoering en website-lane-classificatie.",
+      "rootCause": "Een groene kandidaat is alleen bewijs dat zijn eigen head correct is; hij bewijst niet dat zijn verandering nog nodig is. Parallel werk kan dezelfde semantiek al canoniek op `main` hebben gebracht.",
+      "failedApproach": "Een volledig groene kandidaat automatisch mergen omdat alle checks groen zijn, zonder vlak voor merge actuele `main` op file-overlap én semantische contractequivalentie te controleren.",
+      "provenFix": "Lees direct voor merge actuele `main`, vergelijk de veranderde files en controleer vervolgens de concrete contractsemantiek. Als `main` het volledige bewezen contract al bevat, behandel de kandidaat als semantisch duplicate/superseded en voeg geen dubbele wijziging toe.",
+      "prevention": "FRESH_MAIN_SEMANTIC_EQUIVALENCE_CHECK_BEFORE_MERGE",
+      "regressionContract": "tests/chat-learning-runtime-truth-guard.test.mjs",
+      "evidence": {
+        "candidate_pr": 747,
+        "candidate_head": "cff86bd1b504e413acc0d514f1fc42aa140fb1bf",
+        "current_main_observed": "706fcadd781c5aa94621daea9035595e80c31c11",
+        "contract_already_present_on_main": [
+          "Live Preview Smoke watches only owned V18 build tools",
+          "tests/live-preview-trigger-scope.test.mjs exists",
+          "Shared Agent Memory executes the regression",
+          "website delivery lane classifies the regression"
+        ]
+      },
+      "security": {
+        "contains_secrets": false,
+        "contains_credentials": false,
+        "contains_pii": false
+      }
+    }
+  ]
+}
