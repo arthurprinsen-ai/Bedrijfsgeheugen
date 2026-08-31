@@ -1,0 +1,84 @@
+{
+  "version": "LIVE-PROOF-CLOSURE-v2",
+  "asOf": "2026-08-31",
+  "sourceRevision": "c8af01bacec808af8485ab3f79f9881fe3464016",
+  "truthOrder": ["production-runtime-evidence", "machine-enforced-current-main", "repository-contracts-tests"],
+  "proven": [
+    {
+      "id": "canonical-business-graph",
+      "status": "PROVEN",
+      "evidence": [
+        "Supabase brain_records production readback",
+        "verified predecessor chain Evidence -> Memory -> CurrentState",
+        "provenance and exact source_revision present"
+      ]
+    },
+    {
+      "id": "action-execution-store",
+      "status": "PROVEN",
+      "evidence": [
+        "ACTION-20260831-PROMOTE-WHOLE-BRAIN-V2",
+        "EXECUTION-20260831-PROMOTE-WHOLE-BRAIN-V2",
+        "VERIFICATION-20260831-PROMOTE-WHOLE-BRAIN-V2",
+        "exact GitHub promotion and Netlify production readback referenced in production records"
+      ]
+    },
+    {
+      "id": "living-memory",
+      "status": "PROVEN",
+      "evidence": [
+        "Evidence -> Memory -> CurrentState predecessor traversal",
+        "verified=true and provenance present",
+        "canonical writeback feedback_to_graph=true"
+      ]
+    },
+    {
+      "id": "make-native-supabase-connection",
+      "status": "PROVEN_RECOVERED",
+      "evidence": [
+        "Make native Supabase connection 10374590 status=ok",
+        "BG206 scenario 7173505",
+        "execution a18abfa04d9845d4af0eca420dcd6bd5 success",
+        "HTTP 200 read of brain_commands",
+        "independent Supabase readback selftest-command-v1=SUCCEEDED",
+        "1 operation, 1 credit, 1173 bytes"
+      ]
+    },
+    {
+      "id": "decision-engine-current-lifecycle",
+      "status": "PROVEN_CURRENT_LIFECYCLE",
+      "evidence": [
+        "DECISION-20260831-MAKE-SUPABASE-NATIVE-CONNECTION-V1 closed after real canary",
+        "30/90/180 value evaluations persisted and pending by design"
+      ],
+      "note": "30/90/180 outcome verification remains time-bound and must not be marked verified before due dates."
+    }
+  ],
+  "timeBoundVerification": [
+    {"horizonDays": 30, "dueDate": "2026-09-30", "status": "PENDING"},
+    {"horizonDays": 90, "dueDate": "2026-11-29", "status": "PENDING"},
+    {"horizonDays": 180, "dueDate": "2027-02-27", "status": "PENDING"}
+  ],
+  "stillOpen": [
+    "change-impact-engine",
+    "external-intelligence-closed-loop",
+    "verified-value-evidence: time-bound evaluations pending",
+    "ai-governance-registry",
+    "integration-observability",
+    "production-performance-rum",
+    "executive-cockpit-projection"
+  ],
+  "resolvedBlockers": [
+    {
+      "fingerprint": "make|worker-wrapper|supabase-connection-missing",
+      "status": "PROVEN_RECOVERED",
+      "resolution": "provider-native authorization plus single read-only canary and independent Supabase readback"
+    }
+  ],
+  "guardrails": {
+    "noDummyBusinessRows": true,
+    "noSyntheticRUMForProof": true,
+    "noRawSecretSupabaseWorkaround": true,
+    "noPrematureTimeBoundVerification": true
+  }
+}
