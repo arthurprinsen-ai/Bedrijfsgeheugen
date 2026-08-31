@@ -1,0 +1,96 @@
+{
+  "id": "chat-to-brain-completeness-v1",
+  "version": 1,
+  "status": "PROPOSED",
+  "scope": ["chat", "agent", "workflow", "scenario", "development_run", "incident", "recovery", "production_verification"],
+  "purpose": "Voorkom dat duurzame technische of operationele kennis alleen in conversatietekst blijft staan. Materiële learnings worden vóór completion genormaliseerd naar het centrale Bedrijfsgeheugen zodat iedere volgende chat, agent en workflow ze kan hergebruiken.",
+  "completionGate": {
+    "required": true,
+    "rule": "NO_MATERIAL_LEARNING_ONLY_IN_CHAT",
+    "failureCode": "CHAT_LEARNING_NOT_COMMITTED_TO_BRAIN",
+    "terminalStatesAllowedOnlyWhen": [
+      "material_learnings_normalized",
+      "fingerprints_deduplicated",
+      "evidence_linked",
+      "shared_context_refresh_requested_or_completed"
+    ]
+  },
+  "normalizeMaterialLearningInto": [
+    "FailureClass",
+    "Learning",
+    "Pattern",
+    "AntiPattern",
+    "Policy",
+    "Invariant",
+    "RegressionContract",
+    "Dependency",
+    "Decision",
+    "OutcomeObligation",
+    "ProductionEvidence",
+    "BlockerState",
+    "OwnershipOrSuccessorMapping"
+  ],
+  "materiality": {
+    "include": [
+      "new error fingerprints",
+      "root causes",
+      "proven fixes",
+      "failed or forbidden approaches",
+      "prevention rules",
+      "regression contracts",
+      "production or public evidence",
+      "cost and performance learnings",
+      "security learnings",
+      "workflow and outcome obligations",
+      "open blocker state",
+      "ownership and successor mappings",
+      "gate or sensor state",
+      "architecture decisions that constrain future work"
+    ],
+    "exclude": [
+      "secrets",
+      "credentials",
+      "PII",
+      "irrelevant conversational wording",
+      "ephemeral acknowledgements",
+      "duplicate learnings with no new evidence"
+    ]
+  },
+  "pipeline": [
+    "extract",
+    "classify",
+    "fingerprint",
+    "deduplicate",
+    "link_evidence",
+    "normalize",
+    "persist_to_brain",
+    "refresh_shared_context",
+    "make_available_to_preflight"
+  ],
+  "dedupe": {
+    "requiredBeforeWrite": true,
+    "stableFingerprintRequired": true,
+    "duplicateAction": "COALESCE_WITH_EXISTING_RECORD",
+    "duplicateMustNotTrigger": ["new_material_write", "duplicate_alert", "expensive_context_refresh"]
+  },
+  "crossChatRequirement": {
+    "allFutureAgentsMustReadCanonicalBrainBeforeMaterialExecution": true,
+    "conversationHistoryIsNotCanonicalTruth": true,
+    "localAgentMemoryIsProjectionOnly": true,
+    "canonicalBrainWinsOnConflict": true
+  },
+  "enforcement": {
+    "preflightRequired": true,
+    "postflightRequired": true,
+    "failClosedOnMissingMaterialWriteback": true,
+    "productionGreenDoesNotOverrideMissingLearningWriteback": true
+  },
+  "regressionTests": [
+    "material_error_without_brain_writeback_must_fail_completion",
+    "duplicate_learning_must_coalesce",
+    "secret_or_credential_must_never_be_persisted_as_learning",
+    "known_failure_must_be_available_to_next_preflight",
+    "open_blocker_must_retain_first_seen_last_seen_attempts_owner_next_action",
+    "production_evidence_must_remain_distinct_from_chat_assertion"
+  ]
+}
