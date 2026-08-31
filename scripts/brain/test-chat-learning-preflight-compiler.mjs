@@ -20,7 +20,9 @@ assert.ok(Array.isArray(packet.fingerprints));
 assert.ok(Array.isArray(packet.preventions));
 assert.ok(Array.isArray(packet.blockers));
 assert.ok(Array.isArray(packet.resume_contracts));
-assert.ok(packet.totalBytes <= 256_000, 'packet must respect maxBytes');
+assert.ok(Number.isInteger(packet.sourceBytes) && packet.sourceBytes > 0, 'compiler must report total bytes scanned from canonical sources');
+assert.ok(packet.sourceBytes > packet.totalBytes, 'canonical source corpus may exceed the compact execution packet');
+assert.ok(packet.totalBytes <= 256_000, 'compiled execution packet must respect maxBytes');
 
 assert.throws(
   () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 2, maxBytes: 256_000 }),
@@ -31,7 +33,7 @@ assert.throws(
 assert.throws(
   () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 100 }),
   /maxBytes/,
-  'byte limit must fail closed'
+  'compiled packet byte limit must fail closed'
 );
 
 const again = compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 256_000 });
@@ -55,4 +57,4 @@ assert.match(
   'AGENTS.md must keep material execution fail-closed when preflight fails'
 );
 
-console.log(`PASS chat-learning preflight compiler: ${packet.sources.length} sources, ${packet.totalBytes} bytes`);
+console.log(`PASS compact chat-learning preflight: ${packet.sources.length} sources, ${packet.sourceBytes} source bytes -> ${packet.totalBytes} packet bytes`);
