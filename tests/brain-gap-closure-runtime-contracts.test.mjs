@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { WHOLE_BRAIN_STAGES, assertClosedBrainLoop } from '../brain/operating-loop/loop-integrity.mjs';
 import { projectAiGovernance } from '../brain/operating-loop/ai-governance.mjs';
+import { verificationToOutcome, outcomeToValue } from '../brain/operating-loop/lifecycle.mjs';
 
 const stageRecord = (kind,id,predecessorIds=[]) => ({kind,id,correlationId:'C1',predecessorIds});
 
@@ -29,6 +31,17 @@ test('whole-brain completion requires an explicit outcome/result between verific
   assert.equal(assertClosedBrainLoop(records,{correlationId:'C1'}).complete,true);
 });
 
+test('canonical lifecycle helpers preserve verification -> outcome -> value lineage', () => {
+  const verification={tenantId:'T1',type:'Verification',id:'V1',subjectId:'seo:keyword',correlationId:'C2',owner:'SEO Agent',evidenceIds:['E1'],executed:true,verified:true,result:'SERP checked',executionId:'X1'};
+  const outcome=verificationToOutcome(verification,{id:'O1',result:'recommendation executed and result observed'});
+  const value=outcomeToValue(outcome,{id:'VAL1',realisedValue:1,valueUnit:'verified_outcome'});
+  assert.equal(outcome.type,'Outcome');
+  assert.deepEqual(outcome.predecessorIds,['V1']);
+  assert.equal(value.type,'Value');
+  assert.deepEqual(value.predecessorIds,['O1']);
+  assert.deepEqual(value.evidenceIds,['E1']);
+});
+
 test('AI governance stays fail-closed until evidence, owner, risk controls and review are complete', () => {
   const now='2026-08-31T12:00:00Z';
   const incomplete=projectAiGovernance([{kind:'governance',id:'G1',subjectId:'ai:1',owner:'UNASSIGNED',verified:false,evidenceIds:[],payload:{systemName:'Agent',provider:'Provider',model:'Model',purpose:'analysis',role:'deployer',riskLevel:'transparency'}}],{now});
@@ -37,4 +50,12 @@ test('AI governance stays fail-closed until evidence, owner, risk controls and r
   const evidenced=projectAiGovernance([{kind:'governance',id:'G2',subjectId:'ai:2',owner:'AI Governance',verified:true,evidenceIds:['E1'],payload:{systemName:'Agent',provider:'Provider',model:'Model',purpose:'analysis',role:'deployer',riskLevel:'transparency',classificationSource:'EU AI Act assessment',humanOversight:{required:true,control:'Human approval'},transparencyControl:'AI disclosure',loggingControl:'Audit log',reviewDueAt:'2026-09-30T00:00:00Z'}}],{now});
   assert.equal(evidenced.systems[0].readiness,'EVIDENCED');
   assert.equal(evidenced.systems[0].productionAllowed,true);
+});
+
+test('Governance is a canonical type for the production AI registry source', async () => {
+  const mappings=JSON.parse(await readFile('config/brain-source-mappings.json','utf8'));
+  assert.ok(mappings.allowed_canonical_types.includes('Governance'));
+  assert.ok(mappings.sources.supabase.canonical_types.includes('Governance'));
+  assert.ok(mappings.sources.agent_runtime.canonical_types.includes('Governance'));
+  assert.ok(mappings.sources.ai_model_services.canonical_types.includes('Governance'));
 });
