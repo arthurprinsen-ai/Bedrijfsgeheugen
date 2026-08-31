@@ -6,6 +6,8 @@ const CONTRACT_PATH = 'config/chat-learning-completeness-guard.json';
 const BROWSER_CONTRACT_PATH = 'config/browser-evidence-guard-contract.json';
 const SHARED_MEMORY_WORKFLOW = '.github/workflows/shared-agent-memory-tests.yml';
 const MOVING_MAIN_INCIDENT = 'brain/learning/incidents/moving-main-pr-status-stale-readback-2026-08-31.json';
+const CHAT_CHECKPOINT_PATH = 'brain/learning/chat-completeness-checkpoint-2026-08-31.json';
+const CHAT_LEARNING_CONTRACT_PATH = 'config/brain-chat-learning-contract.json';
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
@@ -33,6 +35,44 @@ test('completion is bound to the same canonical learning sources used by deliver
   }
   assert.equal(contract.completionPolicy.requireDeliveryPreflightGreen, true);
   assert.equal(contract.completionPolicy.blockOnOrphanActivePreventionRule, true);
+});
+
+test('all durable learnings from the active chat are indexed in canonical Brain memory', async () => {
+  const checkpoint = await readJson(CHAT_CHECKPOINT_PATH);
+  const completion = await readJson(CONTRACT_PATH);
+  const brainContract = await readJson(CHAT_LEARNING_CONTRACT_PATH);
+
+  assert.equal(checkpoint.version, 'CHAT-COMPLETENESS-CHECKPOINT-2026-08-31-v1');
+  assert.equal(checkpoint.chatOnlyMaterialLearningRemaining, 0);
+  assert.equal(checkpoint.policy.chatIsNotCanonicalMemory, true);
+  assert.equal(checkpoint.policy.futureAgentsMustUseCanonicalBrainSources, true);
+  assert.ok(completion.requiredCanonicalSources.includes(CHAT_CHECKPOINT_PATH));
+  assert.ok(brainContract.canonicalSources.includes(CHAT_CHECKPOINT_PATH));
+
+  const requiredFingerprints = [
+    'make|scenario-activity|ambiguous-status-fields-v1',
+    'repeated-known-blocker-no-state-v1',
+    'instagram|publish|create-without-readback-verification',
+    'instagram|notion|empty-search-sentinel-update',
+    'instagram|routing|native-id-entered-buffer-legacy',
+    'instagram|learning|duplicate-basic-metric-snapshot',
+    'delivery-failure|merge|shared|stale-base-after-parallel-main-change',
+    'github|pr|moving-main|stale-merge-status-caused-duplicate-reconstruction-v1',
+    'github|main|native-protection-absent',
+    'learning|completion|premature-stop-open-obligations',
+    'agent-fabric|completion|local-resolved-bypasses-global-obligations'
+  ];
+  const indexed = new Set(checkpoint.learnings.map(item => item.fingerprint));
+  for (const fingerprint of requiredFingerprints) {
+    assert.ok(indexed.has(fingerprint), `missing durable chat learning ${fingerprint}`);
+  }
+  for (const item of checkpoint.learnings) {
+    assert.equal(item.chatOnly, false, `learning must not remain chat-only: ${item.fingerprint}`);
+    assert.ok(Array.isArray(item.canonicalSources) && item.canonicalSources.length > 0,
+      `learning must point to canonical Brain sources: ${item.fingerprint}`);
+    assert.ok(item.preventionRule || item.regressionContract,
+      `learning needs prevention or regression coverage: ${item.fingerprint}`);
+  }
 });
 
 test('agents cannot stop on local green while material obligations remain open', async () => {
