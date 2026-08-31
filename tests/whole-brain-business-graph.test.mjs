@@ -22,6 +22,6 @@ test('why-query returns provenance, evidence and history for object',()=>{
  const explanation=explainGraphObject(records,{tenantId:'T1',subjectId:'customer:C1'});
  assert.equal(explanation.current.payload.status,'active');
  assert.deepEqual(explanation.evidenceIds,['E1','E2']);
- assert.deepEqual(explanation.sources.sort(),['crm:c1','notion:p1']);
+ assert.deepEqual([...explanation.sources].sort(),['crm:c1','notion:p1']);
  assert.equal(explanation.history.length,2);
 });
