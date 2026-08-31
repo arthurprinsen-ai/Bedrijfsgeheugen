@@ -24,6 +24,8 @@ jobs:
         run: node --test tests/whole-brain-supabase-adapter.test.mjs
       - name: Decision simulation contract
         run: node --test tests/whole-brain-decision-simulation.test.mjs
+      - name: Cross-domain intelligence loop
+        run: node --test tests/whole-brain-external-intelligence.test.mjs
       - name: Universal platform activation gate
         run: node --test tests/whole-brain-platform-activation.test.mjs
       - name: Legacy calculation parity gate
