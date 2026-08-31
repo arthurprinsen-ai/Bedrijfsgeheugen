@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-preflight.mjs';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(here, '..');
 
 test('blocked BG168 chat writeback remains a replayable Brain outcome obligation', async () => {
   const raw = await readFile('brain/learning/chat-runtime-writeback-obligation-2026-08-31.json', 'utf8');
@@ -27,4 +33,13 @@ test('blocked BG168 chat writeback remains a replayable Brain outcome obligation
   assert.equal(state.security.secretsPersisted, false);
   assert.equal(state.security.credentialsPersisted, false);
   assert.equal(state.security.piiPersisted, false);
+});
+
+test('runtime writeback obligation is discoverable by canonical Brain preflight', () => {
+  const packet = compileChatLearningPreflight({ rootDir });
+  const paths = new Set(packet.sources.map(source => source.path));
+  assert.ok(paths.has('brain/learning/chat-runtime-writeback-obligation-2026-08-31.json'));
+  assert.ok(packet.fingerprints.includes('brain-writeback-make-team-paused-limit-v1'));
+  assert.ok(packet.fingerprints.includes('portal|customer-auth|legacy-inline-login-jitter'));
+  assert.ok(packet.preventions.includes('NO_RETRY_STORM_ON_KNOWN_MAKE_CAPACITY_BLOCKER'));
 });
