@@ -15,11 +15,13 @@ export function transformSourceRecord(input){
   if(identity.length!==(mapping.identity_fields||[]).length){const e=new Error(`${source} source identity incomplete`);e.code='SOURCE_IDENTITY_INCOMPLETE';throw e;}
   const sourceId=identity.join(':');
   const observedAt=clean(raw[mapping.freshness_field])||input.observedAt||new Date().toISOString();
+  const correlationId=clean(input.correlationId||raw.correlation_id||raw.trace_id)||null;
+  const predecessorIds=Array.isArray(input.predecessorIds)?input.predecessorIds.map(clean).filter(Boolean):[];
   return {
-    tenantId:String(input.tenantId),type:canonicalType,id:String(input.id),subjectId:input.subjectId,
+    tenantId:String(input.tenantId),type:canonicalType,id:String(input.id),subjectId:input.subjectId,correlationId,predecessorIds,
     owner:input.owner,status:input.status,executed:input.executed===true,verified:input.verified===true,
     result:input.result??null,evidenceIds:Array.isArray(input.evidenceIds)?input.evidenceIds:[],
-    decisionId:input.decisionId,actionId:input.actionId,outcomeId:input.outcomeId,
+    decisionId:input.decisionId,actionId:input.actionId,executionId:input.executionId,verificationId:input.verificationId,outcomeId:input.outcomeId,valueId:input.valueId,learningId:input.learningId,memoryId:input.memoryId,
     source,sourceId,observedAt,
     payload:{...(input.payload||{}),raw,mappingVersion:mapping.mapping_version,sourceIdentity:sourceId}
   };
