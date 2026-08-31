@@ -7,7 +7,8 @@
   "linked_learning_sources": [
     "brain/learning/delivery-test-classification-cochange-2026-08-31.json",
     "brain/learning/preflight-effective-source-set-2026-08-31.json",
-    "brain/learning/bundle-maturity-must-not-overpromote-2026-08-31.json"
+    "brain/learning/bundle-maturity-must-not-overpromote-2026-08-31.json",
+    "brain/learning/chat-materialization-2026-08-31-v2.json"
   ],
   "promotionEvidence": {
     "policy_merged_to_main": true,
