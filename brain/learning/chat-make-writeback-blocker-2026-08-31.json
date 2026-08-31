@@ -1,0 +1,70 @@
+{
+  "learning_id": "chat-make-writeback-blocker-2026-08-31",
+  "captured_at": "2026-08-31T07:55:00+02:00",
+  "status": "BLOCKED_REPLAY_PENDING",
+  "scope": "Powerhouse/Bedrijfsgeheugen chat-to-Brain durability",
+  "source": "current chat plus verified GitHub and Make execution evidence",
+  "canonical_truth": {
+    "repository_writer_state": {
+      "mainProtectionReady": true,
+      "writers_verified": 7,
+      "parity_verified": 7,
+      "rollback_verified": 7,
+      "evidence_run": 33331182252,
+      "evidence_pull_request": 595,
+      "evidence_merge_commit": "d880464053e3e6a09c839fcdf016ddd62db694a2"
+    },
+    "brain_router": {
+      "scenario_id": 7136176,
+      "name": "BG 168 - Multi-Agent Outcome & Learning Router v1",
+      "downstream_ledger_scenario_id": 7135971,
+      "downstream_ledger_name": "BG 166 - Error & Learning Ledger Writer v1.2 dedupe + coalesce"
+    }
+  },
+  "durable_learnings": [
+    {
+      "fingerprint": "delivery-failure|verification|shared|parity-range-contaminated-by-concurrent-history",
+      "prevention_rule": "SCOPE_PARITY_TO_VERIFIED_WRITER_PATHS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|verification|shared|stale-trigger-base-after-runtime-fix",
+      "prevention_rule": "FRESH_TRIGGER_FROM_CURRENT_MAIN_AFTER_RUNTIME_FIX",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|writeback|shared|git-diff-missed-untracked-evidence",
+      "prevention_rule": "CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|writeback|shared|detached-head-short-push-refspec",
+      "prevention_rule": "FULLY_QUALIFY_DETACHED_HEAD_PUSH_REFSPEC",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+      "root_cause": "Make refused BG168 execution because the organization or team is paused after exceeding operations or data-transfer capacity.",
+      "handling": "Treat as a hard runtime/capacity boundary. Do not spend retries. Never claim Brain writeback succeeded without execution evidence. Preserve the normalized payload as one open deduped replay obligation and replay exactly once through BG168 -> BG166 when Make is executable again.",
+      "related_active_rule": "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE",
+      "status": "OPEN_HARD_BOUNDARY"
+    }
+  ],
+  "latest_writeback_attempt": {
+    "target_scenario_id": 7136176,
+    "result": "FAILED_HARD_BOUNDARY",
+    "error": "Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again.",
+    "retry_performed": false
+  },
+  "replay_obligation": {
+    "idempotency_key": "brain-writeback-make-team-paused-limit-v1|writer-parity-chat-learning|2026-08-31",
+    "owner": "Powerhouse Learning/Brain writeback",
+    "route": "BG168->BG166",
+    "trigger_condition": "Make organization/team becomes executable again",
+    "max_replays_after_recovery": 1,
+    "dedupe_required": true,
+    "payload_summary": "Persist the verified 7/7 repository-writer parity/rollback completion, the four proven writer verification/writeback failure fingerprints and prevention rules, and the Make capacity hard-boundary handling rule.",
+    "completion_evidence_required": "successful BG168 execution plus downstream BG166 dispatch/readback or equivalent canonical ledger evidence"
+  },
+  "continuity_rule": "Chat-only memory is not durable completion. Material learnings must be normalized, fingerprinted, deduplicated, committed to canonical Brain memory/evidence and, when the operational router is available, written through the canonical Brain route with execution evidence."
+}
