@@ -8,7 +8,8 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/policies/chat-to-brain-completeness-v1.json',
   'brain/learning/chat-continuity-2026-08-31.json',
   'brain/learning/chat-materialization-2026-08-31-v2.json',
-  'brain/learning/chat-materialization-2026-08-31-v3.json'
+  'brain/learning/chat-materialization-2026-08-31-v3.json',
+  'brain/learning/chat-make-writeback-blocker-2026-08-31.json'
 ];
 
 function normalizeSourcePath(rootDir, sourcePath) {
@@ -35,8 +36,13 @@ function collectSignals(value, signals, parentKey = '') {
   if (parentKey === 'fingerprints' && typeof value.id === 'string') signals.fingerprints.push(value.id);
   if (typeof value.prevention === 'string') signals.preventions.push(value.prevention);
   if (typeof value.prevent === 'string') signals.preventions.push(value.prevent);
+  if (typeof value.prevention_rule === 'string') signals.preventions.push(value.prevention_rule);
+  if (typeof value.preventionRule === 'string') signals.preventions.push(value.preventionRule);
   if (typeof value.state === 'string' && /(BLOCKED|UNRESOLVED|PAUSED|HARD_BOUNDARY)/i.test(value.state)) {
     signals.blockers.push(value.state);
+  }
+  if (typeof value.status === 'string' && /(BLOCKED|UNRESOLVED|PAUSED|HARD_BOUNDARY|OPEN_HARD_BOUNDARY)/i.test(value.status)) {
+    signals.blockers.push(value.status);
   }
   if (typeof value.resume_contract === 'string') signals.resumeContracts.push(value.resume_contract);
   if (Array.isArray(value.resume_contract)) signals.resumeContracts.push(...value.resume_contract.filter(item => typeof item === 'string'));
