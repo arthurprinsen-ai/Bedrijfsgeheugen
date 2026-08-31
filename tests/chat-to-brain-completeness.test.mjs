@@ -23,3 +23,11 @@ test('known durable failure fingerprints from the continuity snapshot are visibl
   assert.ok(packet.fingerprints.includes('make|cost|polling-retry-full-refresh-fanout'));
   assert.ok(packet.fingerprints.includes('github|repository|auto-merge-disabled'));
 });
+
+test('current chat Brain-writeback replay obligation is canonical and visible to every preflight', () => {
+  const packet = compileChatLearningPreflight({ rootDir });
+  const paths = new Set(packet.sources.map(source => source.path));
+
+  assert.ok(paths.has('brain/learning/chat-session-brain-writeback-2026-08-31.json'));
+  assert.ok(packet.fingerprints.includes('brain-writeback|bg168-bg166|make-capacity-paused-pending-replay-v1'));
+});
