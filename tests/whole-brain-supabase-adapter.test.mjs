@@ -17,7 +17,20 @@ function fakeClient(){
     },
     from(table){
       assert.equal(table,'brain_records');
-      return {select(){return {eq(column,value){return {order(){calls.push({kind:'list',column,value});return Promise.resolve({data:rows.filter(r=>r[column]===value),error:null});}}}}};
+      return {
+        select(){
+          return {
+            eq(column,value){
+              return {
+                order(){
+                  calls.push({kind:'list',column,value});
+                  return Promise.resolve({data:rows.filter(r=>r[column]===value),error:null});
+                }
+              };
+            }
+          };
+        }
+      };
     }
   };
 }
