@@ -1,0 +1,29 @@
+{
+  "version": "BRAIN-CHAT-LEARNING-v1",
+  "source": "current-execution-chat-continuity-2026-08-31",
+  "appendOnly": true,
+  "lessons": [
+    {
+      "id": "KNOWN_FIX_SURVIVES_CONTEXT_COMPRESSION",
+      "preventionRule": "PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT",
+      "fingerprint": "knowledge-preflight-context-compression-v1",
+      "symptom": "Een bewezen fix staat in append-only learning maar de compacte gedeelde context bevat alleen een verkorte pointer, waardoor een agent de oorzaak en oplossing opnieuw moet ontdekken.",
+      "rootCause": "Contextprojectie optimaliseerde omvang en recente samenvattingen zonder te garanderen dat bij een fingerprint-match het uitvoerbare root-cause/fix-contract beschikbaar bleef.",
+      "failedApproach": "Een fingerprintnaam of korte reden als voldoende geheugen behandelen en vervolgens opnieuw diagnosewerk en canaries uitvoeren.",
+      "requiredAction": "Projecteer bij fingerprint-match minimaal root cause, bewezen fix, mislukte aanpak en prevention; ontbreekt detail, haal dan gericht het canonical record op vóór een nieuwe hypothese of wijziging.",
+      "prevention": "Contextcompressie mag het uitvoerbare fix-contract niet verwijderen; preflight hergebruikt bekende oplossingen vóór nieuw duur onderzoek.",
+      "evidenceRule": "Known-fix reuse is alleen bewezen wanneer de uitvoerende agent vóór wijziging de concrete bestaande fix kan benoemen en toepassen zonder rediscovery."
+    },
+    {
+      "id": "LEARNING_WRITEBACK_FAILS_OPEN_TO_PRIMARY_WORK",
+      "preventionRule": "LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK",
+      "fingerprint": "learning-router|bg168|central-fail-open|2026-08-30-v1",
+      "symptom": "Primair agentwerk slaagt technisch maar de hele run eindigt als fout wanneer centrale learning-writeback rate-limited of tijdelijk onbeschikbaar is.",
+      "rootCause": "Optionele of secundaire learningtelemetrie was blokkerend gekoppeld aan het primaire resultaat.",
+      "failedApproach": "Een succesvol primair side-effect opnieuw uitvoeren alleen omdat BG168/BG166 logging faalde, met risico op dubbele kosten en dubbele externe effecten.",
+      "requiredAction": "Behoud het primaire resultaat, markeer learning deterministisch als LEARNING_DEFERRED, retry alleen bounded/asynchroon en verifieer later afzonderlijk dat shared context de learning bevat.",
+      "prevention": "Learning blijft verplicht voor uiteindelijke completion maar faalt open ten opzichte van veilig primair werk; alleen de learning-obligation blijft open en gededupliceerd.",
+      "evidenceRule": "Bewijs primary outcome en learning persistence afzonderlijk; writeback-failure mag nooit het primaire side-effect dupliceren en completion vereist uiteindelijk learning-readback."
+    }
+  ]
+}
