@@ -1,0 +1,53 @@
+{
+  "version": "LIVE-PROOF-CLOSURE-v1",
+  "asOf": "2026-08-31",
+  "sourceRevision": "2b3d028ee2e04e74295e47e82453f37da42245f4",
+  "truthOrder": ["production-runtime-evidence","machine-enforced-current-main","repository-contracts-tests"],
+  "proven": [
+    {
+      "id": "canonical-business-graph",
+      "status": "PROVEN",
+      "evidence": [
+        "Supabase brain_records production readback",
+        "verified predecessor chain Evidence -> Memory -> CurrentState",
+        "provenance and exact source_revision present"
+      ]
+    },
+    {
+      "id": "action-execution-store",
+      "status": "PROVEN",
+      "evidence": [
+        "ACTION-20260831-PROMOTE-WHOLE-BRAIN-V2",
+        "EXECUTION-20260831-PROMOTE-WHOLE-BRAIN-V2",
+        "VERIFICATION-20260831-PROMOTE-WHOLE-BRAIN-V2",
+        "exact GitHub promotion and Netlify production readback referenced in production records"
+      ]
+    },
+    {
+      "id": "living-memory",
+      "status": "PROVEN",
+      "evidence": [
+        "Evidence -> Memory -> CurrentState predecessor traversal",
+        "verified=true and provenance present",
+        "canonical writeback feedback_to_graph=true"
+      ]
+    }
+  ],
+  "stillOpen": [
+    "change-impact-engine",
+    "external-intelligence-closed-loop",
+    "decision-engine-30-90-180",
+    "verified-value-evidence",
+    "ai-governance-registry",
+    "universal-app-delivery-adapters: Make native Supabase authorization pending",
+    "integration-observability",
+    "production-performance-rum",
+    "executive-cockpit-projection"
+  ],
+  "guardrails": {
+    "noDummyBusinessRows": true,
+    "noSyntheticRUMForProof": true,
+    "noRawSecretSupabaseWorkaround": true,
+    "nativeMakeSupabaseAuthorizationRequired": true
+  }
+}
