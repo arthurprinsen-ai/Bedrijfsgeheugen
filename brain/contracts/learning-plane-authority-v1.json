@@ -1,0 +1,96 @@
+{
+  "version": "LEARNING-PLANE-AUTHORITY-v1",
+  "status": "CONFIGURATION_VERIFIED_RUNTIME_PROOF_REQUIRED",
+  "effective_date": "2026-08-31",
+  "purpose": "Prevent repeated learning-plane cost storms, identity spoofing, duplicate context rebuilds and stale component identity while preserving append-only learning.",
+  "canonical_components": {
+    "BG166": {
+      "scenario_id": 7135971,
+      "role": "Error & Learning Ledger Writer; fingerprint dedupe and refresh reservation owner"
+    },
+    "BG167": {
+      "scenario_id": 7136045,
+      "role": "Shared Multi-Agent Team Context projection builder; privileged expensive refresh target"
+    },
+    "BG168": {
+      "scenario_id": 7136176,
+      "role": "Multi-Agent Outcome & Learning Router; materiality/classification and fail-open dispatch"
+    },
+    "BG202": {
+      "scenario_id": 7165044,
+      "role": "Shared Team Context Cache Reader; canonical ordinary read path",
+      "supersedes_historical_label": "BG197 for scenario 7165044"
+    }
+  },
+  "invariants": [
+    {
+      "id": "claimed-identity-is-not-authority-v1",
+      "rule": "User-, agent-, LLM- or module-supplied identity fields such as agent_id, owner, role or source never independently authorize privileged writes, rebuilds or actions."
+    },
+    {
+      "id": "bg167-private-authority-v1",
+      "rule": "BG167 expensive rebuild requires the canonical BG166 refresh route plus a private capability. The capability value must never be persisted in documentation, learning payloads, logs intended for shared memory, or chat-learning artifacts."
+    },
+    {
+      "id": "bg166-hourly-refresh-reservation-v1",
+      "rule": "BG166 reserves at most one BG167 refresh per UTC hour using bucket YYYYMMDDHH and window_seconds=3600. Historical 10-second or 1-minute wording is stale metadata and must not be implemented as runtime policy."
+    },
+    {
+      "id": "bg202-cache-read-authority-v1",
+      "rule": "Ordinary shared-context reads use BG202 and the dedicated cache. Read requests must not execute Notion projection or cache-write rebuild modules."
+    },
+    {
+      "id": "learning-plane-cost-gate-v1",
+      "rule": "Learning/governance cost is part of GREEN. Duplicate or equivalent learning events must not cause repeated expensive context rebuilds."
+    },
+    {
+      "id": "make-capacity-containment-v1",
+      "rule": "When Make reports organization/team pause from operations or data-transfer limits, stop proof/retry bursts, keep open runtime obligations explicit and continue independent repository/documentation work."
+    },
+    {
+      "id": "mutation-readback-authority-v1",
+      "rule": "Connector mutation acknowledgements such as applied/success are not authoritative configuration evidence. Read-after-write/read-after-error decides current state."
+    }
+  ],
+  "known_failures": [
+    {
+      "fingerprint": "make|multi-agent-context-learning-credit-storm|2026-08-30-v1",
+      "evidence": {
+        "bg167_runs": 23,
+        "window_minutes_approx": 13,
+        "credits": 192,
+        "operations": 128
+      },
+      "prevention": "One canonical reservation owner, cache-only ordinary reads, fail-closed privileged refresh boundary and bounded proof runs."
+    },
+    {
+      "fingerprint": "bg167|self-asserted-caller-identity-bypass|2026-08-30-v1",
+      "root_cause": "BG167 trusted request text containing agent_id=BG166 and mode=refresh as authorization, allowing a direct caller to impersonate BG166.",
+      "prevention": "Self-asserted identity is insufficient; require non-public/private authority evidence in the canonical route."
+    },
+    {
+      "fingerprint": "make-scenario-set-module-config-label-noop-v1",
+      "root_cause": "A Make patch response reported applied while direct read-back still showed stale module label metadata.",
+      "prevention": "Never derive runtime semantics from mutation acknowledgement or stale UI labels; use read-back plus mapper/filter/runtime evidence."
+    }
+  ],
+  "runtime_green_acceptance": [
+    "A spoof/direct BG167 request without valid private authority stops before expensive projection modules.",
+    "Exactly one reservation-winning canonical BG166 request may cause a BG167 rebuild in a UTC-hour window.",
+    "Additional material learnings in the same UTC hour persist while refresh returns coalesced/no-action.",
+    "Ordinary shared-context reads execute through BG202 cache-only path.",
+    "Measured BG167 executions, credits and operations remain materially below the 23-run/192-credit/128-operation incident baseline.",
+    "No scenario is declared VERIFIED_RUNTIME_GREEN solely from CONFIGURED, PATCHED, applied, cached output or historical success evidence."
+  ],
+  "durable_sources": [
+    "docs/brain/learning-plane-authority-contract-v1.md",
+    "Notion Chat Learning Pack 3ccda36a-ac8a-8156-8450-f266c02572c7",
+    "Notion Direct Knowledge Base 3c7da36a-ac8a-817a-8bef-f480e45a2aef",
+    "Notion Engineering Registry 3cada36a-ac8a-8119-9e6c-fa9217bf5218",
+    "Notion Master Build/Borging/Go-Live 3c3da36a-ac8a-81dd-a3fe-c4fc12bba5df"
+  ],
+  "security": {
+    "persist_private_capability_value": false,
+    "secrets_in_learning": false
+  }
+}
