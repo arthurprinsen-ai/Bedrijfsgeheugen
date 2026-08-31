@@ -1,0 +1,47 @@
+name: SEO Guardian
+
+on:
+  pull_request:
+    paths:
+      - '**/*.html'
+      - 'robots.txt'
+      - 'sitemap.xml'
+      - '_redirects'
+      - '_headers'
+      - 'scripts/ci/seo_guardian.py'
+      - '.github/workflows/seo-guardian.yml'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.html'
+      - 'robots.txt'
+      - 'sitemap.xml'
+      - '_redirects'
+      - '_headers'
+      - 'scripts/ci/seo_guardian.py'
+      - '.github/workflows/seo-guardian.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-guardian-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  technical-seo:
+    name: Technical SEO contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate sitemap, indexability, metadata, schema and orphan pages
+        run: python scripts/ci/seo_guardian.py
