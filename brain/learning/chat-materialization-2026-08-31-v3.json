@@ -16,7 +16,8 @@
     "brain/learning/incidents/make-agent-unconditional-bg168-resume-hazard-2026-08-31.json",
     "config/make-agent-resume-learning-guard.json",
     "brain/learning/ph-agent-materiality-preflight-v1.json",
-    "brain/learning/chat-make-writeback-blocker-2026-08-31.json"
+    "brain/learning/chat-make-writeback-blocker-2026-08-31.json",
+    "brain/learning/incidents/production-authority-dispatch-tool-boundary-2026-08-31.json"
   ],
   "invariants": [
     "Conversation text is not canonical truth; durable material learnings must be reachable from Brain preflight.",
