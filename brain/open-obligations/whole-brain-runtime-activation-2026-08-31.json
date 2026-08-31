@@ -1,0 +1,50 @@
+{
+  "id": "whole-brain-runtime-activation-2026-08-31",
+  "fingerprint": "whole-brain-runtime-activation-v2",
+  "ownerAgent": "Powerhouse Brain Completion",
+  "status": "AWAITING_OUTCOME",
+  "definitionOfDone": "Make, Notion, Supabase, DataForSEO, website, portal and agent_runtime each have canonical source mapping, persistent brain_records write/read, exact whole-brain lineage, execution proof, exact revision readback, verified value evidence and graph feedback; production is certified PROVEN by runtime-evidence-certifier.",
+  "canonicalLoop": ["evidence","graph","intelligence","impact","decision","action","execution","verification","value","learning","memory","graph_feedback"],
+  "completedEvidence": {
+    "supabaseSchema": "public.brain_records migration applied successfully on project adhjwmvyoixzjtmiroln",
+    "supabaseAppendCanary": "brain_append_record wrote and read one row inside a transaction; rollback left zero canary rows",
+    "websitePortalCurrentProduction": "Netlify production ready at commit 1721b86399f56e5f9d52c48f47eed82b949b0120 with secret scan zero matches and brain-operating-ingest/brain-operating-loop/portal-state deployed",
+    "notionGraphSchema": "Powerhouse Commercial Graph Entities and Edges schemas are readable and contain keys/confidence/evidence/freshness relationships",
+    "dataForSEOConfig": "BG17 uses native DataForSEO + Notion connections with status-code success gate; connections report ok"
+  },
+  "blockers": [
+    {
+      "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+      "platforms": ["make","dataforseo","agent_runtime"],
+      "classification": "runtime_capacity_blocker",
+      "requiredIntervention": "restore Make organization/team operations or data-transfer capacity; then execute one bounded exact-revision canary and canonical BG168/BG166/BG167 readback"
+    },
+    {
+      "fingerprint": "notion-query-entitlement-runtime-readback-v1",
+      "platforms": ["notion"],
+      "classification": "external_plan_capability_blocker",
+      "requiredIntervention": "provide a supported Notion runtime readback route; current connector query_data_sources requires Business or higher. Do not purchase or upgrade autonomously."
+    },
+    {
+      "fingerprint": "netlify-supabase-runtime-credential-missing-v1",
+      "platforms": ["website","portal","supabase"],
+      "classification": "credential_hard_boundary",
+      "requiredIntervention": "provide/authorize managed Supabase runtime credentials for Netlify or an equivalent managed server-side bridge. Never invent, log or embed credentials."
+    },
+    {
+      "fingerprint": "netlify-notion-token-not-secret-classification-v1",
+      "platforms": ["website","portal","notion"],
+      "classification": "security_credential_configuration",
+      "severity": "P0",
+      "requiredIntervention": "rotate/reclassify the affected Netlify Notion credential through an authorized secrets workflow. Never copy the current value into code, logs, issues or Brain memory."
+    },
+    {
+      "fingerprint": "github-pr-create-safety-block-v1",
+      "platforms": ["github"],
+      "classification": "tool_hard_boundary",
+      "requiredIntervention": "use the governed merge/promotion lane when PR creation becomes available; do not bypass branch protection or BG169"
+    }
+  ],
+  "completionPolicy": "No platform becomes green from code/config alone. Require code/config + active production revision + executionId + exact readback + whole-brain lineage + verified value/evidence. Unknown or blocked stays NOT_PROVEN.",
+  "createdAt": "2026-08-31"
+}
