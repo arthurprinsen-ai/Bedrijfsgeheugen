@@ -16,15 +16,19 @@ const runtimeRequired = new Map([
 ]);
 
 test('all validated chat-learning continuity and context-safety lessons survive current-main consolidation', async () => {
-  const [deliveryRaw, runtimeRaw, rulesRaw, addendumRaw] = await Promise.all([
+  const [deliveryRaw, runtimeBaseRaw, runtimeContinuityRaw, rulesBaseRaw, rulesContinuityRaw, addendumRaw, preflightRaw, observedIncidentRaw] = await Promise.all([
     readFile('docs/brain/delivery-failure-lessons.json','utf8'),
     readFile('brain/learning/current-execution-lessons-2026-08-30.json','utf8'),
+    readFile('brain/learning/chat-continuity-runtime-2026-08-31.json','utf8'),
     readFile('config/delivery-prevention-rules.json','utf8'),
-    readFile('brain/learning/chat-completeness-addendum-2026-08-30.json','utf8')
+    readFile('config/delivery-prevention-rules-continuity-2026-08-31.json','utf8'),
+    readFile('brain/learning/chat-completeness-addendum-2026-08-30.json','utf8'),
+    readFile('tools/delivery-preflight.mjs','utf8'),
+    readFile('brain/learning/incidents/github-pr-reused-head-no-workflow-run-2026-08-31.json','utf8')
   ]);
   const delivery = JSON.parse(deliveryRaw).lessons;
-  const runtime = JSON.parse(runtimeRaw).lessons;
-  const rules = JSON.parse(rulesRaw).rules;
+  const runtime = [...JSON.parse(runtimeBaseRaw).lessons, ...JSON.parse(runtimeContinuityRaw).lessons];
+  const rules = [...JSON.parse(rulesBaseRaw).rules, ...JSON.parse(rulesContinuityRaw).rules];
   const active = new Set(rules.filter(rule => rule.active === true).map(rule => rule.id));
 
   for (const [fingerprint, preventionRule] of deliveryRequired) {
@@ -44,6 +48,14 @@ test('all validated chat-learning continuity and context-safety lessons survive 
     }
     assert.ok(active.has(preventionRule), `missing active prevention ${preventionRule}`);
   }
+
+  assert.match(preflightRaw, /chat-continuity-runtime-2026-08-31\.json/);
+  assert.match(preflightRaw, /delivery-prevention-rules-continuity-2026-08-31\.json/);
+
+  const observed = JSON.parse(observedIncidentRaw);
+  assert.equal(observed.status, 'OBSERVED');
+  assert.equal(observed.rootCause, 'UNKNOWN_NOT_YET_PROVEN');
+  assert.match(observed.promotionRule, /Do not promote/i);
 
   const addendum = JSON.parse(addendumRaw);
   assert.ok(addendum.failurePatterns.some(item => item.fingerprint === 'learning|canonical-artifact|reference-path-drift-v1'), 'current canonical artifact pointer-drift learning must be preserved');
