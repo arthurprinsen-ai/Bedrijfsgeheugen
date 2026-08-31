@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { normalizeBrainRecord, deriveLoopState } from '../brain/operating-loop/model.mjs';
 import { assertClosedBrainLoop, WHOLE_BRAIN_STAGES } from '../brain/operating-loop/loop-integrity.mjs';
+import { intelligenceToImpact, actionToExecution, executionToVerification, verificationToValue, valueToLearning, learningToMemory, memoryToGraphFeedback } from '../brain/operating-loop/lifecycle.mjs';
 
 const requiredStages = ['evidence','graph','intelligence','impact','decision','action','execution','verification','value','learning','memory','graph_feedback'];
 
@@ -43,6 +44,23 @@ test('closed-loop integrity refuses a skipped stage and accepts a complete linea
   assert.throws(() => assertClosedBrainLoop(records.filter(r => r.type !== 'Verification'),{correlationId:'CORR-LOOP'}), /missing|sequence|verification/i);
   const state = deriveLoopState(records);
   for (const stage of requiredStages) assert.equal(state.stages[stage], true, `${stage} must be explicit`);
+});
+
+test('whole-brain lifecycle helpers preserve correlation, evidence and predecessor lineage', () => {
+  const intelligence={tenantId:'T1',type:'Signal',id:'I1',subjectId:'customer:1',correlationId:'C1',owner:'agent',evidenceIds:['E1'],payload:{recommendation:'fix'}};
+  const impact=intelligenceToImpact(intelligence,{id:'IMP1',impactScore:.8});
+  const action={tenantId:'T1',type:'Action',id:'A1',subjectId:'customer:1',correlationId:'C1',owner:'agent',evidenceIds:['E1'],predecessorIds:['D1'],payload:{}};
+  const execution=actionToExecution(action,{id:'X1',result:'executed'});
+  const verification=executionToVerification(execution,{id:'V1',verified:true,result:'passed'});
+  const value=verificationToValue(verification,{id:'VAL1',realisedValue:100,valueUnit:'EUR'});
+  const learning=valueToLearning(value,{id:'L1'});
+  const memory=learningToMemory(learning,{id:'M1'});
+  const feedback=memoryToGraphFeedback(memory,{id:'GF1',targetSubjectId:'customer:1'});
+  assert.deepEqual([impact.type,execution.type,verification.type,value.type,learning.type,memory.type,feedback.type],['Impact','Execution','Verification','Value','Learning','Memory','Relation']);
+  assert.equal(feedback.payload.loopStage,'graph_feedback');
+  assert.equal(feedback.correlationId,'C1');
+  assert.deepEqual(feedback.predecessorIds,['M1']);
+  for (const record of [impact,execution,verification,value,learning,memory,feedback]) assert.deepEqual(record.evidenceIds,['E1']);
 });
 
 test('Make Notion Supabase DataForSEO website portal and agent runtime all inherit source and production adapter contracts', async () => {
