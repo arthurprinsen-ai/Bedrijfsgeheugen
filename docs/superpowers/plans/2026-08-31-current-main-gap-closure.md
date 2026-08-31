@@ -25,96 +25,57 @@
 ### Task 1: Current-main reconciliation ledger
 
 **Files:**
-- Create: `brain/evidence/current-main-gap-reconciliation-2026-08-31.json`
-- Create: `tests/brain-current-main-gap-reconciliation.test.mjs`
+- `brain/evidence/current-main-gap-reconciliation-2026-08-31.json`
+- `tests/brain-current-main-gap-reconciliation.test.mjs`
 
-**Interfaces:**
-- Consumes: 2026-08-30 implementation-status requirements and current repository contracts/tests.
-- Produces: one machine-readable ledger with every material gap assigned one allowed status, evidence refs, owner, and next action.
-
-- [ ] Write a failing test requiring all twelve historical product gaps plus cockpit/external-producer/completion requirements to appear exactly once.
-- [ ] Run the focused test and preserve RED evidence.
-- [ ] Add the reconciliation ledger using current-main evidence; never promote an item to `PROVEN` from documentation claims alone.
-- [ ] Run focused test GREEN.
-- [ ] Commit the smallest safe change.
+- [x] RED-first regression requires every historical gap plus cockpit/completion/learning coverage exactly once.
+- [x] Reconciliation ledger added with allowed statuses, evidence refs, owners and next actions.
+- [ ] Exact-head CI and production evidence still govern any later status promotion.
 
 ### Task 2: Universal producer activation contract
 
 **Files:**
-- Create or modify: `brain/contracts/external-producer-activation-v1.json`
-- Create: `tests/brain-external-producer-activation.test.mjs`
+- `brain/contracts/external-producer-activation-v1.json`
+- `tests/brain-external-producer-activation.test.mjs`
 
-**Interfaces:**
-- Consumes: existing BRAIN delivery, shared-context, production identity, cost/security, outcome and learning contracts.
-- Produces: mandatory activation fields and fail-closed rules for Make, Notion, Supabase, DataForSEO and future producers.
-
-- [ ] Write failing tests requiring registration, sharedContextRead, validation, promotionAuthority, productionIdentity, outcome, verification, costEvidence, securityEvidence and learningWriteback.
-- [ ] Verify RED.
-- [ ] Implement only missing universal contract requirements and explicit platform registrations.
-- [ ] Verify GREEN and existing shared-memory/delivery suites.
-- [ ] Commit.
+- [x] One mandatory activation chain for Make, Notion, Supabase, DataForSEO and future producers.
+- [x] Provider acceptance, scenario success, HTTP 2xx and write-attempt are explicit non-evidence.
+- [x] Human safety boundaries preserved.
 
 ### Task 3: Production evidence contract
 
 **Files:**
-- Create or modify: `brain/contracts/production-evidence-v1.json`
-- Create: `tests/brain-production-evidence.test.mjs`
+- `brain/contracts/production-evidence-v1.json`
+- `tests/brain-production-evidence.test.mjs`
 
-**Interfaces:**
-- Consumes: legacy parity registry, RUM/SLO contracts, integration registry, recovery/reconciliation contracts, exact SHA/revision identity.
-- Produces: machine-readable proof states for legacy parity, RUM `<1s cached` / `<2s interactive`, integration health/freshness/error/owner/cost/revision, recovery coverage and exact production identity.
-
-- [ ] Write failing tests that distinguish `BUILT_NOT_PROVEN` from `PROVEN` when runtime evidence is absent.
-- [ ] Verify RED.
-- [ ] Add evidence schema/registry and current evidence entries without fabricating unavailable observations.
-- [ ] Verify GREEN.
-- [ ] Commit.
+- [x] Evidence states distinguish `BUILT_NOT_PROVEN`, `PROVEN` and `BLOCKED`.
+- [x] Proof classes cover legacy parity, RUM, integration observability, recovery coverage and production identity.
+- [x] RUM targets remain `<1s cached` and `<2s interactive` and require window/percentile/time/revision/sample evidence.
 
 ### Task 4: Cockpit projection-only invariant
 
 **Files:**
-- Create or modify: `brain/contracts/executive-cockpit-projection-v1.json`
-- Create: `tests/brain-executive-cockpit-projection.test.mjs`
+- `brain/contracts/executive-cockpit-projection-v1.json`
+- `tests/brain-executive-cockpit-projection.test.mjs`
 
-**Interfaces:**
-- Consumes: Graph, Intelligence, Execution, Evidence and Memory canonical services.
-- Produces: a projection-only contract forbidding cockpit-owned business truth.
-
-- [ ] Write failing test requiring source classes for Management Summary, health, opportunities, roadmap, actions and timeline and forbidding independent mutation/system-of-record roles.
-- [ ] Verify RED.
-- [ ] Implement minimum projection-only contract and registration linkage.
-- [ ] Verify GREEN.
-- [ ] Commit.
+- [x] Management Summary, health, opportunities, roadmap, actions and timeline read only canonical Graph/Intelligence/Execution/Evidence/Memory truth classes.
+- [x] Cockpit cannot own independent business truth or perform direct business mutations.
 
 ### Task 5: Completion gate + learning closure
 
 **Files:**
-- Create or modify: `brain/contracts/completion-gate-v1.json`
-- Create: `tests/brain-completion-gate-v1.test.mjs`
+- `brain/contracts/completion-gate-v1.json`
+- `tests/brain-completion-gate-v1.test.mjs`
 
-**Interfaces:**
-- Consumes: delivery identity, runtime/business outcome, BG168/BG166 learning persistence and BG167 shared-state refresh evidence.
-- Produces: one terminal gate that cannot pass on merge/CI alone.
-
-- [ ] Write failing test requiring every completion stage and explicit rejection of `mergeOnly`, `ciOnly`, `http2xxOnly` and `parentDispatchOnly` proof.
-- [ ] Verify RED.
-- [ ] Implement minimal gate linked to existing BRAIN-DELIVERY-v2 and learning authority.
-- [ ] Verify GREEN and broad Brain regression suite.
-- [ ] Commit.
+- [x] Terminal DoD requires registered → tested → exact promoted → production identity verified → runtime/business outcome verified → learning persisted → shared state refreshed.
+- [x] Merge-only, CI-only, HTTP-2xx-only and parent-dispatch-only proof are rejected.
+- [x] BG168 parent success is insufficient without BG166 downstream persistence; BG167 refresh/readback remains required.
 
 ### Task 6: Delivery, production proof and blocker retention
 
-**Files:**
-- Modify only evidence/ledger files if observations change.
-
-**Interfaces:**
-- Consumes: exact PR head SHA, current `main`, CI, production runtime adapters.
-- Produces: verified status transitions; otherwise durable `BLOCKED`/`BUILT_NOT_PROVEN` obligations.
-
-- [ ] Recheck current `main` for file/semantic overlap immediately before delivery.
-- [ ] Run required GitHub gates on exact head and inspect failures rather than blind reruns.
+- [ ] Recheck current `main` for changed-path and semantic overlap immediately before delivery.
+- [ ] Require exact-head GitHub gates and inspect failures rather than blind reruns.
 - [ ] Merge only when governed gates permit and exact head is known.
-- [ ] Verify production identity and runtime/business outcome independently.
-- [ ] Keep Supabase production migration as `BLOCKED` until authorized exact migration + readback succeeds; do not bypass permissions.
-- [ ] Persist material learnings through canonical BG168→BG166 and verify downstream `learning_persisted`; refresh shared state through BG167/coalesced path.
-- [ ] Mark ledger items `PROVEN` only after their own evidence completes.
+- [ ] Verify exact production identity and runtime/business outcome independently.
+- [ ] Keep Supabase production migration `BLOCKED` until authorized migration + production readback succeeds; never bypass permissions.
+- [ ] Persist material learnings through canonical BG168→BG166 and verify downstream persistence; refresh shared state through BG167/coalesced path.
