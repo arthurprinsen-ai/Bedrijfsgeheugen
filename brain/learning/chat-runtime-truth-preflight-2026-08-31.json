@@ -1,0 +1,24 @@
+{
+  "version": "BRAIN-CHAT-LEARNING-PREFLIGHT-PROJECTION-v1",
+  "source": "brain/learning/chat-runtime-truth-lessons-2026-08-31.json",
+  "purpose": "Bounded actionable projection for mandatory agent preflight; full causal chain and evidence remain in the canonical source record.",
+  "lessons": [
+    {
+      "fingerprint": "github|pr-terminal-state|stale-conversation-snapshot-v1",
+      "prevention": "READ_PROVIDER_TERMINAL_STATE_IMMEDIATELY_BEFORE_PR_MUTATION"
+    },
+    {
+      "fingerprint": "github|git-data|connector-schema-mismatch-before-mutation-v1",
+      "prevention": "CONFIRM_CURRENT_CONNECTOR_SCHEMA_AND_REUSE_SUCCESSFUL_INTERMEDIATES"
+    },
+    {
+      "fingerprint": "delivery|green-candidate|parallel-main-semantic-duplicate-v1",
+      "prevention": "FRESH_MAIN_SEMANTIC_EQUIVALENCE_CHECK_BEFORE_MERGE"
+    }
+  ],
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false
+  }
+}
