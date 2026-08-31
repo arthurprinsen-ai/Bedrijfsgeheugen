@@ -8,7 +8,7 @@ assert.ok(fs.existsSync(compilerPath), `${compilerPath} must exist`);
 const { compileChatLearningPreflight } = await import('./chat-learning-preflight.mjs');
 assert.equal(typeof compileChatLearningPreflight, 'function', 'compiler must export compileChatLearningPreflight');
 
-const packet = compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 256_000 });
+const packet = compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 256_000, maxSourceBytes: 128_000 });
 assert.equal(packet.version, 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1');
 assert.equal(packet.status, 'READY');
 assert.ok(packet.sources.length > 0, 'preflight packet must contain sources');
@@ -16,25 +16,36 @@ assert.equal(new Set(packet.sources.map(source => source.path)).size, packet.sou
 assert.ok(packet.sources.some(source => source.path === 'brain/learning/bg89-shadow-parity-runtime-lessons-2026-08-30.json'));
 assert.ok(packet.sources.some(source => source.path === 'brain/learning/make-hard-pause-resume-state-2026-08-30.json'));
 assert.ok(packet.sources.some(source => source.path === 'brain/learning/github-main-native-protection-gap-2026-08-30.json'));
+assert.ok(packet.sources.some(source => source.path === 'brain/learning/chat-make-writeback-blocker-2026-08-31.json'));
 assert.ok(Array.isArray(packet.fingerprints));
 assert.ok(Array.isArray(packet.preventions));
 assert.ok(Array.isArray(packet.blockers));
 assert.ok(Array.isArray(packet.resume_contracts));
-assert.ok(packet.totalBytes <= 256_000, 'packet must respect maxBytes');
+assert.ok(Number.isInteger(packet.sourceBytesRead) && packet.sourceBytesRead > 0, 'source byte telemetry must remain explicit');
+assert.ok(Number.isInteger(packet.compiledBytes) && packet.compiledBytes > 0, 'compiled packet byte telemetry must remain explicit');
+assert.ok(packet.compiledBytes <= 256_000, 'compiled preflight packet must respect maxBytes');
+assert.equal(packet.totalBytes, packet.compiledBytes, 'legacy totalBytes must remain the bounded compiled packet size');
+assert.ok(packet.sourceBytesRead >= packet.compiledBytes, 'canonical sources may grow beyond the bounded compiled packet');
 
 assert.throws(
-  () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 2, maxBytes: 256_000 }),
+  () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 2, maxBytes: 256_000, maxSourceBytes: 128_000 }),
   /maxSources/,
-  'source limit must fail closed'
+  'source count limit must fail closed'
 );
 
 assert.throws(
-  () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 100 }),
+  () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 100, maxSourceBytes: 128_000 }),
   /maxBytes/,
-  'byte limit must fail closed'
+  'compiled packet byte limit must fail closed'
 );
 
-const again = compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 256_000 });
+assert.throws(
+  () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 256_000, maxSourceBytes: 100 }),
+  /maxSourceBytes/,
+  'individual source byte limit must fail closed'
+);
+
+const again = compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 32, maxBytes: 256_000, maxSourceBytes: 128_000 });
 assert.equal(JSON.stringify(packet), JSON.stringify(again), 'same repository state must compile deterministically');
 
 const agentsContract = fs.readFileSync('AGENTS.md', 'utf8');
@@ -55,4 +66,4 @@ assert.match(
   'AGENTS.md must keep material execution fail-closed when preflight fails'
 );
 
-console.log(`PASS chat-learning preflight compiler: ${packet.sources.length} sources, ${packet.totalBytes} bytes`);
+console.log(`PASS chat-learning preflight compiler: ${packet.sources.length} sources, ${packet.compiledBytes} compiled bytes from ${packet.sourceBytesRead} source bytes`);
