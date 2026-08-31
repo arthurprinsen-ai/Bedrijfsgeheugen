@@ -11,9 +11,12 @@ export const VIEWS = [
     omschrijving: 'Systemen koppelen, kennis borgen, AI verantwoord toepassen en due diligence: we beginnen bij het probleem dat aantoonbaar tijd of marge kost.',
     zoekwoord: 'digitalisering oplossingen mkb' },
   { view: 'integrations', bestand: 'systemen-koppelen.html', pad: '/systemen-koppelen', naam: 'Koppelingen',
-    titel: 'Systemen koppelen voor het mkb — niet vervangen, verbinden | Bedrijfsgeheugen',
+    titel: 'Systemen koppelen — niet vervangen, verbinden | Bedrijfsgeheugen',
     omschrijving: 'AFAS, Exact Online, Twinfield, webshops en Microsoft 365 aan elkaar knopen zodat dezelfde gegevens niet twee keer worden ingevoerd.',
-    zoekwoord: 'systemen koppelen mkb' },
+    // "systemen koppelen mkb" is in de zoekwoordstrategie toegewezen aan het blog:
+    // dat artikel telt 3.376 woorden en heeft vragenschema. De pijlerpagina pakt
+    // daarom de kortere variant en linkt door naar het blog.
+    zoekwoord: 'systemen koppelen' },
   { view: 'pricing', bestand: 'prijzen.html', pad: '/prijzen', naam: 'Prijzen',
     titel: 'Prijzen — vaste prijs, geen uurtje-factuurtje | Bedrijfsgeheugen',
     omschrijving: 'Wat Bedrijfsgeheugen kost: vaste prijzen per pakket, geen prijs per gebruiker, voor mkb-bedrijven van 3 tot 250 medewerkers.',
