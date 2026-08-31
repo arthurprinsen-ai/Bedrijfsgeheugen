@@ -16,7 +16,8 @@ function paginas(map = '.', diep = 0) {
   const uit = [];
   for (const naam of readdirSync(map)) {
     if (naam.startsWith('.') || naam === 'node_modules' || naam === 'assets' || naam === 'intern' ||
-        naam === 'tools' || naam === 'netlify' || naam === 'components') continue;
+        naam === 'tools' || naam === 'netlify' || naam === 'components' ||
+        naam === 'preview' || naam === 'site' || naam === 'v18-full') continue;
     const pad = join(map, naam);
     const st = statSync(pad);
     if (st.isDirectory() && diep < 2) uit.push(...paginas(pad, diep + 1));
