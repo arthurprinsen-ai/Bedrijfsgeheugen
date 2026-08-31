@@ -8,7 +8,7 @@
   "ownerAgent": "Powerhouse Brain Completion",
   "evidencePolicy": "COMPLETED requires a successful BG168 execution carrying this exact semantic fingerprint, successful BG166 material-learning persistence, and BG167/shared-current-state readback proving visibility. Repository persistence alone is continuity evidence, not canonical runtime completion.",
   "idempotencyKey": "brain-learning|bedrijfsgeheugen-implementatiestatus-gap-closure-2026-08-30-v1",
-  "recoveryPolicy": "Do not issue repeated identical retries while Make organization/team is paused by operations or data-transfer limits. The active Make Recovery Watch owns recovery detection. When runtime eligibility returns, replay exactly once via BG168, dedupe by fingerprint, verify BG167 readback, then close this obligation.",
+  "recoveryPolicy": "Do not issue repeated identical retries while Make organization/team is paused by operations or data-transfer limits. The active Brain Writeback Recovery condition watch is the single canonical recovery owner. When runtime eligibility returns, replay exactly once via BG168, dedupe by fingerprint, verify BG167 readback, then close this obligation.",
   "blocker": {
     "fingerprint": "brain-writeback-make-team-paused-limit-v1",
     "observedAt": "2026-08-31",
@@ -23,12 +23,12 @@
   },
   "sourceLearningPath": "brain/learning-ledger/2026-08-31-bedrijfsgeheugen-implementatiestatus-gap-closure-v1.md",
   "recoveryAutomation": {
-    "title": "Make Recovery Watch",
-    "automationId": "6a94a656f810819186725da6792a1bd2",
+    "title": "Brain Writeback Recovery",
+    "automationId": "6a95359184348191b11b1bcf6f4e4fda",
     "mode": "condition_watch",
     "cadence": "hourly",
     "completionGate": "WRITTEN_DURABLE && PROJECTED_CURRENT"
   },
   "createdAt": "2026-08-31",
-  "lastVerifiedAt": "2026-08-31T08:59:24+02:00"
+  "lastVerifiedAt": "2026-08-31T10:22:52+02:00"
 }
