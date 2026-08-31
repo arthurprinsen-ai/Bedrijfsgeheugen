@@ -4,6 +4,7 @@ import {projectVerifiedValue} from './verified-value.mjs';
 import {projectLivingMemory} from './living-memory.mjs';
 import {projectIntegrationHealth} from './integration-health.mjs';
 import {createBusinessGraphProjection,explainGraphObject} from './business-graph-service.mjs';
+import {buildExecutiveCockpit} from './executive-cockpit.mjs';
 import {closedLoopStatus} from './loop-integrity.mjs';
 import {certifyWholeBrainRuntime} from './runtime-evidence-certifier.mjs';
 const enc=v=>encodeURIComponent(String(v));
@@ -43,7 +44,9 @@ export function createOperatingLoopStore(adapter,{now=()=>new Date().toISOString
     const records=await recordsFor(tenantId);const state=deriveLoopState(records);const prioritizedAdvice=prioritizeIntelligence(records);const verifiedValue=projectVerifiedValue(records);const livingMemory=projectLivingMemory(records,{now:now()});const integrationHealth=projectIntegrationHealth(records);const businessGraph=createBusinessGraphProjection(records,{tenantId});
     const correlationIds=[...new Set(records.map(record=>record.correlationId).filter(Boolean))];const wholeBrainLoops=correlationIds.map(correlationId=>closedLoopStatus(records,{correlationId}));
     const loopSummary={complete:wholeBrainLoops.filter(loop=>loop.complete).length,incomplete:wholeBrainLoops.filter(loop=>!loop.complete).length,total:wholeBrainLoops.length};
-    return {schemaVersion:'brain-operating-projection.v3',tenantId:String(tenantId),records,state,businessGraph,advice:state.advice,prioritizedAdvice,verifiedValue,livingMemory,integrationHealth,wholeBrainLoops,loopSummary};
+    const base={schemaVersion:'brain-operating-projection.v4',tenantId:String(tenantId),records,state,businessGraph,advice:state.advice,prioritizedAdvice,verifiedValue,livingMemory,integrationHealth,wholeBrainLoops,loopSummary};
+    const executiveCockpit=buildExecutiveCockpit(base,{now:now()});
+    return {...base,executiveCockpit};
   }
   return Object.freeze({append,getProjection,certifyRuntime,explain});
 }
