@@ -26,6 +26,8 @@ jobs:
         run: node --test tests/whole-brain-executive-cockpit.test.mjs
       - name: Object-level ABAC enforcement
         run: node --test tests/whole-brain-object-access.test.mjs
+      - name: Runtime telemetry contract
+        run: node --test tests/whole-brain-rum.test.mjs
       - name: Supabase record adapter contract
         run: node --test tests/whole-brain-supabase-adapter.test.mjs
       - name: Decision simulation contract
