@@ -19,3 +19,11 @@ test('merge, CI, 2xx and parent dispatch are explicitly non-terminal',()=>{
   assert.equal(c.learningProof.parentDispatchSuccessSufficient,false);
   assert.equal(c.sharedStateProof.refreshOrCoalescedReadbackRequired,true);
 });
+
+test('workflow success cannot hide a skipped BG169 promotion',()=>{
+  const c=JSON.parse(fs.readFileSync(path,'utf8'));
+  assert.equal(c.promotionProof.requiredEvidenceArtifact,'bg169-production-evidence');
+  assert.equal(c.promotionProof.skippedPromotionStepIsIncomplete,true);
+  assert.equal(c.promotionProof.workflowSuccessWithoutPromotionEvidence,'INCOMPLETE');
+  assert.equal(c.promotionProof.authorityExecutionReadbackRequired,true);
+});
