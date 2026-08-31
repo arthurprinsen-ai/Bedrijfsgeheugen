@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 const CONTRACT_PATH = 'config/chat-learning-completeness-guard.json';
 const BROWSER_CONTRACT_PATH = 'config/browser-evidence-guard-contract.json';
 const SHARED_MEMORY_WORKFLOW = '.github/workflows/shared-agent-memory-tests.yml';
+const MOVING_MAIN_INCIDENT = 'brain/learning/incidents/moving-main-pr-status-stale-readback-2026-08-31.json';
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'));
@@ -111,4 +112,42 @@ test('browser evidence learning remains linked as guarded domain knowledge', asy
   assert.ok(contract.requiredCanonicalSources.includes(BROWSER_CONTRACT_PATH));
   assert.equal(browser.learningLifecycle.GUARDED, 'deterministic-regression-or-validator-enforced');
   assert.equal(browser.completionRule, 'NO_COMPLETION_WHILE_MATERIAL_LEARNING_EXISTS_ONLY_IN_CHAT');
+});
+
+test('chat-to-Brain normalization is explicit, deduplicating and cross-chat canonical', async () => {
+  const contract = await readJson(CONTRACT_PATH);
+  assert.equal(contract.completionPolicy.rule, 'NO_MATERIAL_LEARNING_ONLY_IN_CHAT');
+  assert.deepEqual(contract.normalizationPipeline, [
+    'extract',
+    'classify',
+    'fingerprint',
+    'deduplicate',
+    'link_evidence',
+    'normalize',
+    'persist_to_brain',
+    'refresh_shared_context',
+    'make_available_to_preflight'
+  ]);
+  assert.equal(contract.dedupe.requiredBeforeWrite, true);
+  assert.equal(contract.dedupe.duplicateAction, 'COALESCE_WITH_EXISTING_RECORD');
+  assert.equal(contract.crossChatRequirement.conversationHistoryIsNotCanonicalTruth, true);
+  assert.equal(contract.crossChatRequirement.canonicalBrainWinsOnConflict, true);
+  assert.ok(contract.materiality.exclude.includes('secrets'));
+  assert.ok(contract.materiality.exclude.includes('credentials'));
+  assert.ok(contract.materiality.exclude.includes('PII'));
+});
+
+test('moving-main replacement requires fresh authoritative PR and main readback', async () => {
+  const incident = await readJson(MOVING_MAIN_INCIDENT);
+  assert.equal(incident.fingerprint, 'github|pr|moving-main|stale-merge-status-caused-duplicate-reconstruction-v1');
+  assert.equal(incident.status, 'PROVEN_AND_CONTAINED');
+  assert.equal(incident.regressionContract.replacementRequiresFreshOriginalPrRead, true);
+  assert.equal(incident.regressionContract.replacementRequiresFreshMainRead, true);
+  assert.equal(incident.regressionContract.mergedOriginalBlocksReplacement, true);
+  assert.equal(incident.regressionContract.equivalentContentAlreadyOnMainBlocksReplacement, true);
+  const guarded = (await readJson(CONTRACT_PATH)).knownFailureFingerprints.find(
+    x => x.fingerprint === incident.fingerprint
+  );
+  assert.ok(guarded, 'moving-main failure must be available to future preflight');
+  assert.match(guarded.preventionRule, /re-read|lees.*opnieuw|authoritative/i);
 });
