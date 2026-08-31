@@ -300,11 +300,13 @@
   status = 301
   force = true
 
-# Deploy previews zijn bewust een exacte kopie van de productie-build.
-# Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
-# alternatieve preview-composer meer die een andere website kan tonen.
+# Deploy previews zijn bewust een exacte kopie van de productie-build wanneer
+# de PR de website, Netlify-config, functies of build-inputs kan beïnvloeden.
+# Governance-only wijzigingen mogen de dure preview overslaan; de guard is
+# allowlist-only en valt bij onbekende/mislukte diff-evidence terug op BUILD.
 [context.deploy-preview]
   command = "node tools/bouw-powerhouse-auth.mjs && node tools/bouw-sitemap.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/bouw-release-evidence.mjs"
+  ignore = "node ./tools/netlify-preview-impact.mjs"
 
 [[redirects]]
   from = "/aanmelden.html"
