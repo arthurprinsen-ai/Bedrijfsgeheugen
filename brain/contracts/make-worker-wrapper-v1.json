@@ -1,0 +1,41 @@
+{
+  "version": "MAKE-WORKER-WRAPPER-v1",
+  "status": "CANDIDATE",
+  "purpose": "Keep Make as a thin execution adapter around canonical Brain commands/outbox, not as an independent brain or retry owner.",
+  "providerIoOutsideDbTransaction": true,
+  "nestedRetriesForbidden": true,
+  "resultUnknownRequiresReconciliation": true,
+  "directBrainTableMutationForbidden": true,
+  "requiredFlow": [
+    "claim_command_or_outbox",
+    "validate_mutation_owner",
+    "perform_exactly_one_provider_attempt",
+    "capture_provider_identity_and_response",
+    "record_cost",
+    "ack_or_reconcile"
+  ],
+  "failureHandling": {
+    "knownValidationFailure": "fail_without_provider_call",
+    "providerResponseUnknown": "schedule_reconciliation_same_operation_identity",
+    "retryableFailure": "ack_failed_then_reconciliation_decides_next_action",
+    "duplicateDelivery": "reuse_stable_command_or_message_identity"
+  },
+  "costRules": {
+    "noChangeNoWork": true,
+    "oneAcquisitionManyConsumers": true,
+    "pollingWhenEventAvailableForbidden": true,
+    "allMaterialProviderCallsRequireCostAttribution": true
+  },
+  "security": {
+    "serviceRoleServerOnly": true,
+    "credentialsInBrainForbidden": true,
+    "rawPrivatePayloadLoggingForbidden": true
+  },
+  "productionAcceptance": [
+    "one worker can claim a command/message at a time",
+    "provider call occurs after durable claim commit",
+    "result unknown never causes blind rerun",
+    "cost fact links to canonical operation",
+    "successful side effect has independent readback before terminal green"
+  ]
+}
