@@ -9,6 +9,7 @@
     "docs/brain/delivery-failure-lessons.json",
     "config/delivery-prevention-rules.json",
     "brain/learning/chat-continuity-2026-08-30.json",
+    "brain/learning/chat-completeness-checkpoint-2026-08-31.json",
     "docs/development-ledger.md",
     "docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md"
   ],
