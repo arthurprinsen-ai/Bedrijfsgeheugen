@@ -13,6 +13,7 @@
     "brain/learning/current-execution-lessons-2026-08-30.json",
     "brain/learning/chat-completeness-addendum-2026-08-30.json",
     "brain/learning/incidents/moving-main-pr-status-stale-readback-2026-08-31.json",
+    "brain/learning/chat-completeness-checkpoint-2026-08-31.json",
     "tools/delivery-preflight.mjs"
   ],
   "completionPolicy": {
