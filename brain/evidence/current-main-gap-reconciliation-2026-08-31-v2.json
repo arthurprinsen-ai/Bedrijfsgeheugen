@@ -1,0 +1,46 @@
+{
+  "version": "CURRENT-MAIN-GAP-RECONCILIATION-v2",
+  "asOf": "2026-08-31T18:45:00+02:00",
+  "baseMainSha": "cc68944883d99d6e3d20e1bfbd7c42c87c1e36b3",
+  "canonicalArchitecture": "BRAIN-DELIVERY-v2",
+  "truthOrder": ["production-runtime-evidence", "machine-enforced-current-main", "repository-contracts-tests", "historical-status-snapshot"],
+  "supersedes": "brain/evidence/current-main-gap-reconciliation-2026-08-31.json",
+  "items": [
+    {"id":"canonical-business-graph","status":"PROVEN","evidence":["production relation/provenance traversal","Action→Execution→Verification→Evidence→Memory→CurrentState"]},
+    {"id":"change-impact-engine","status":"PROVEN","evidence":["CHANGE-IMPACT-20260831-V18-IMMUTABLE-BASELINE-V1","verified before/after deployment and rollback evidence"]},
+    {"id":"external-intelligence-sensor","status":"PROVEN","evidence":["Make scenario 6956153 BG53 active with live SERP provider path","DataForSEO canary d30f9993062b4b27ab9c57e38f77eae8","keyword=kennisborging","status_code=20000","tasks_error=0","items_count=11","provider_cost_usd=0.002","make_operations=1","make_credits=1"],"note":"Provider/sensor path is proven. Business outcome remains a separate outcome obligation and may not be fabricated."},
+    {"id":"external-intelligence-business-outcome","status":"PARTIAL","nextAction":"Use the proven SERP signal in a real prioritised SEO action and verify the later ranking/business effect through the normal BG53 measurement cycle."},
+    {"id":"decision-engine-lifecycle","status":"PROVEN","evidence":["DECISION-20260831-MAKE-SUPABASE-NATIVE-CONNECTION-V1 CLOSED","brain_decisions=1","brain_value_evaluations=3"]},
+    {"id":"decision-realised-value-30-90-180","status":"PARTIAL","reason":"TIME_BOUND","due":["2026-09-30","2026-11-29","2027-02-27"],"rule":"Never manufacture early realised-value evidence."},
+    {"id":"action-execution-store","status":"PROVEN","evidence":["verified Action→Execution→Verification lineage in production"]},
+    {"id":"living-memory","status":"PROVEN","evidence":["verified evidence→memory→current-state predecessor traversal"]},
+    {"id":"ai-governance-registry","status":"PROVEN","evidence":["Make active PH Agent inventory=16","brain_ai_governance_registry=16","all 16 lifecycle_status=ACTIVE","all 16 approved=true","all 16 have runtime evidence and approval evidence","canonical Governance records=16","migration brain_ai_governance_projection version 20260831164051"]},
+    {"id":"universal-app-delivery-contract","status":"PROVEN","evidence":["EXTERNAL-PRODUCER-ACTIVATION-v1 fail-closed contract","BRAIN-PLATFORM-ADAPTER-v1 auto-registration and no-production-without-contract"]},
+    {"id":"universal-app-production-coverage","status":"PARTIAL","reason":"EVIDENCE_BOUND","note":"Registered adapters without complete current production evidence remain fail-closed; registration alone is never readiness proof."},
+    {"id":"integration-observability-core","status":"PROVEN","evidence":["verified CurrentState records for Make, Supabase, Netlify, Notion and DataForSEO with health/freshness/error/owner/revision/capacity/execution status","DataForSEO has measured provider cost"]},
+    {"id":"integration-observability-all-registered-adapters","status":"PARTIAL","reason":"EVIDENCE_BOUND","note":"Non-current/future adapters are not promoted merely because they are registered."},
+    {"id":"legacy-calculation-parity","status":"PROVEN","evidence":["commit 0b71158b3d73cd850bf14356a76344d408c9a492","real fixtures for Frisse Blik, Zelfscan and portal calculations"]},
+    {"id":"portal-canonical-state","status":"PROVEN","evidence":["PR915 canonical server state priority","legacy migration only after authoritative 404","transient/auth/provider failures cannot overwrite canonical state"]},
+    {"id":"production-performance-rum-implementation","status":"PROVEN","evidence":["PR915","brain-runtime-metric deployed","real Navigation Timing only","per-session/route/metric dedupe","exact Netlify release commit_ref binding"]},
+    {"id":"production-performance-rum-slo","status":"BUILT_NOT_PROVEN","reason":"TRAFFIC_BOUND","evidence":["brain_runtime_metrics=0","brain_runtime_slo=0"],"rule":"Require genuine authenticated production sessions and minimum real sample window; never inject synthetic samples."},
+    {"id":"executive-cockpit-contract","status":"PROVEN","evidence":["canonical portal-state projection and source/freshness contract"]},
+    {"id":"executive-cockpit-authenticated-runtime","status":"PARTIAL","reason":"AUTHENTICATED_TRAFFIC_BOUND","nextAction":"Verify source identity/freshness on a genuine authenticated production cockpit session."},
+    {"id":"completion-gate-control-plane","status":"PROVEN","evidence":["PR919 final head 2f23581a2b148447e256d418870f09ea14122188 BRAIN delivery success","merge/main cc68944883d99d6e3d20e1bfbd7c42c87c1e36b3","Netlify deploy 6a95ae6c873e8d00086f63ad ready exact commit_ref cc68944883d99d6e3d20e1bfbd7c42c87c1e36b3","BG169 execution 94579ce8926743d0805f718bf5459272 PRODUCTION_GREEN exact SHA","BG166 execution 6ea73eef0fc343c78f43ad0d9cc1b3b5 learning_persisted=true COALESCED_REFRESH"]},
+    {"id":"chat-learning-brain-writeback","status":"PROVEN","evidence":["BG168→BG166 downstream persistence independently verified","BG167 refresh may coalesce inside the cost-recovery window"]}
+  ],
+  "resolvedBlockers": [
+    {"fingerprint":"supabase|production-migration|connector-permission-denied","status":"PROVEN_RECOVERED"},
+    {"fingerprint":"make|worker-wrapper|supabase-connection-missing","status":"PROVEN_RECOVERED","evidence":["Make native Supabase connection 10374590","selftest-command-v1=SUCCEEDED independent Supabase readback"]},
+    {"fingerprint":"brain|delivery-classifier|new-runtime-path-unclassified","status":"PROVEN_RECOVERED","evidence":["backend classifier includes tests/whole-brain-","BRAIN delivery PR919 final head success"]}
+  ],
+  "hardBlockers": [],
+  "openObligations": [
+    {"id":"external-intelligence-real-business-outcome","kind":"outcome-proof","status":"OPEN","due":"after real SEO action and subsequent measured outcome"},
+    {"id":"remaining-current-producer-activation-evidence","kind":"coverage-proof","status":"OPEN","due":"when a registered adapter becomes a current production producer"},
+    {"id":"portal-rum-real-samples","kind":"runtime-proof","status":"OPEN","due":"on genuine authenticated portal traffic"},
+    {"id":"executive-cockpit-authenticated-readback","kind":"runtime-proof","status":"OPEN","due":"on genuine authenticated cockpit traffic"},
+    {"id":"value-evaluation-30d","kind":"time-bound-proof","status":"OPEN","due":"2026-09-30T11:31:26.790295Z"},
+    {"id":"value-evaluation-90d","kind":"time-bound-proof","status":"OPEN","due":"2026-11-29T11:31:26.790295Z"},
+    {"id":"value-evaluation-180d","kind":"time-bound-proof","status":"OPEN","due":"2027-02-27T11:31:26.790295Z"}
+  ]
+}
