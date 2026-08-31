@@ -1,0 +1,18 @@
+{
+  "id": "make-supabase-worker-connection-blocker-2026-08-31",
+  "type": "BlockerState",
+  "status": "OPEN",
+  "fingerprint": "make|worker-wrapper|supabase-connection-missing",
+  "severity": "HIGH",
+  "observedAt": "2026-08-31T09:05:00Z",
+  "symptom": "Make exposes the native Supabase makeAnApiCall module, but module_spec reports existing connections = [].",
+  "impact": "The canonical Make Worker Wrapper cannot be activated safely because it cannot claim/ack Brain commands or outbox messages through an authorized Supabase account connection.",
+  "failedOrForbiddenApproach": [
+    "Do not embed a Supabase service-role secret in a raw HTTP module or public scenario configuration.",
+    "Do not create an active broad worker before the canonical database migrations and canary readback are production-proven."
+  ],
+  "nextAction": "Authorize a Make Supabase account connection through Make's provider-native authorization flow, then build an inactive canary worker against the canonical command/outbox RPCs and promote only after readback and cost evidence.",
+  "owner": "Powerhouse Control Plane / Make Worker activation",
+  "openOutcomeObligation": true,
+  "security": {"contains_secrets": false, "contains_credentials": false, "contains_pii": false}
+}
