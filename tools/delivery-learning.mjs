@@ -6,6 +6,14 @@ export function normalizeFailureReason(value) {
   return String(value ?? '').trim().toLowerCase().replace(/#\d+/g, '#').replace(/\s+/g, ' ');
 }
 
+function sanitizeFailureSignature(value) {
+  return String(value ?? '')
+    .replace(/(authorization\s*:\s*bearer\s+)[^\s,;]+/gi, '$1[redacted]')
+    .replace(/\bbearer\s+[^\s,;]+/gi, 'bearer [redacted]')
+    .replace(/\b(password|passwd|token|secret|api[_-]?key)\s*[=:]\s*([^\s,;]+)/gi, '$1=[redacted]')
+    .slice(0, 1000);
+}
+
 export function createFailureLesson({ stage, reason, rootCause, fix, preventionRule, component = 'shared', headSha = '' }) {
   const normalizedStage = String(stage ?? '').trim().toUpperCase();
   if (!DELIVERY_STAGES.has(normalizedStage)) throw new TypeError(`unsupported delivery stage: ${normalizedStage}`);
@@ -40,4 +48,55 @@ export function createObservedFailure({ stage, reason, component = 'shared', hea
   const normalizedComponent = String(component ?? 'shared').trim().toLowerCase() || 'shared';
   const digest = createHash('sha256').update(`${normalizedStage}|${normalizedComponent}|${normalizedReason}`).digest('hex').slice(0, 16);
   return Object.freeze({ type: 'DELIVERY_FAILURE_OBSERVED', fingerprint: `delivery-failure|${normalizedStage.toLowerCase()}|${normalizedComponent}|${digest}`, stage: normalizedStage, component: normalizedComponent, reason: String(reason).trim(), normalizedReason, headSha: String(headSha ?? '').trim(), evidenceRef: String(evidenceRef ?? '').trim(), status: 'OBSERVED', brainContractVersion: 'brain.v1', outcomeWritebackRequired: true, requiresRootCauseResolution: true, reuseBeforeSimilarChange: false });
+}
+
+export function routeObservedFailureToLearning({ observedFailure, knownLessons = [], existingCandidates = [] }) {
+  const fingerprint = String(observedFailure?.fingerprint ?? '').trim();
+  if (!fingerprint) throw new TypeError('observed failure fingerprint is required');
+
+  const known = knownLessons.find(lesson => lesson?.status === 'PROVEN' && lesson?.fingerprint === fingerprint);
+  if (known) {
+    return Object.freeze({
+      type: 'REUSE_PROVEN_LESSON',
+      fingerprint,
+      preventionRule: String(known.preventionRule ?? '').trim(),
+      outcomeWritebackRequired: true,
+      autoPromoteToProven: false,
+      expensiveFanoutAllowed: false,
+    });
+  }
+
+  const candidateId = `learning-candidate|${fingerprint}`;
+  const existing = existingCandidates.find(candidate => candidate?.fingerprint === fingerprint && candidate?.status !== 'PROVEN');
+  if (existing) {
+    return Object.freeze({
+      type: 'REUSE_LEARNING_CANDIDATE',
+      status: 'UNVERIFIED',
+      candidateId: String(existing.candidateId ?? candidateId),
+      fingerprint,
+      deduplicated: true,
+      outcomeWritebackRequired: true,
+      autoPromoteToProven: false,
+      expensiveFanoutAllowed: false,
+    });
+  }
+
+  const signature = sanitizeFailureSignature(observedFailure?.reason ?? observedFailure?.normalizedReason ?? '');
+  return Object.freeze({
+    type: 'LEARNING_CANDIDATE',
+    status: 'UNVERIFIED',
+    candidateId,
+    fingerprint,
+    stage: String(observedFailure?.stage ?? '').trim(),
+    component: String(observedFailure?.component ?? '').trim(),
+    signature,
+    headSha: String(observedFailure?.headSha ?? '').trim(),
+    evidenceRef: String(observedFailure?.evidenceRef ?? '').trim(),
+    requiresRootCauseResolution: true,
+    requiresRegressionEvidence: true,
+    outcomeWritebackRequired: true,
+    autoPromoteToProven: false,
+    expensiveFanoutAllowed: false,
+    brainContractVersion: 'brain.v1',
+  });
 }

@@ -147,7 +147,7 @@ jobs:
         run: |
           node --input-type=module - <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
-          import { createObservedFailure } from './tools/delivery-learning.mjs';
+          import { createObservedFailure, routeObservedFailureToLearning } from './tools/delivery-learning.mjs';
           let reason = 'GitHub lane verification failed';
           try {
             const log = await readFile(`.artifacts/lane-${process.env.LANE}-failure.txt`, 'utf8');
@@ -155,8 +155,15 @@ jobs:
             const failedAt = lines.findIndex(line => /^not ok\s+\d+\s+-\s+/.test(line.trim()));
             reason = failedAt >= 0 ? lines.slice(Math.max(0, failedAt - 2), Math.min(lines.length, failedAt + 18)).join('\n').trim() : lines.slice(-120).join('\n').trim();
           } catch {}
+          let knownLessons = [];
+          try {
+            const lessonsDoc = JSON.parse(await readFile('docs/brain/delivery-failure-lessons.json', 'utf8'));
+            knownLessons = Array.isArray(lessonsDoc) ? lessonsDoc : (Array.isArray(lessonsDoc.lessons) ? lessonsDoc.lessons : []);
+          } catch {}
           const event = createObservedFailure({ stage: 'PIPELINE', reason, component: process.env.LANE, headSha: process.env.HEAD_SHA, evidenceRef: `github-run:${process.env.RUN_ID}` });
+          const route = routeObservedFailureToLearning({ observedFailure: event, knownLessons, existingCandidates: [] });
           await writeFile(`.artifacts/delivery-failure-${process.env.LANE}.json`, JSON.stringify(event, null, 2));
+          await writeFile(`.artifacts/delivery-learning-route-${process.env.LANE}.json`, JSON.stringify(route, null, 2));
           NODE
         env:
           LANE: ${{ matrix.id }}
@@ -169,6 +176,7 @@ jobs:
           name: brain-delivery-failure-${{ matrix.id }}
           path: |
             .artifacts/delivery-failure-${{ matrix.id }}.json
+            .artifacts/delivery-learning-route-${{ matrix.id }}.json
             .artifacts/lane-${{ matrix.id }}-failure.txt
 
   handoff:
