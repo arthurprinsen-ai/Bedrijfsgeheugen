@@ -2,16 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('direct-main post-write detection is retained as reusable Brain knowledge', async () => {
-  const lessons = JSON.parse(await readFile('brain/learning/current-execution-lessons-2026-08-31.json', 'utf8'));
-  const ids = new Set(lessons.lessons.map((item) => item.id));
-  for (const id of [
-    'MAIN_PUSH_CI_IS_DETECTION_NOT_PREWRITE_PREVENTION',
-    'UNPROTECTED_MAIN_DIRECT_WRITE_REQUIRES_RECOVERY'
-  ]) assert.ok(ids.has(id), `missing Brain lesson ${id}`);
+test('direct-main post-write detection is retained as reusable Brain guard knowledge', async () => {
+  const guard = JSON.parse(await readFile('config/direct-main-postwrite-governance-guard.json', 'utf8'));
+  assert.equal(guard.failClosed, true);
+  const failures = new Map(guard.knownFailures.map((item) => [item.fingerprint, item]));
+
+  for (const fingerprint of [
+    'github|main-governance|post-push-ci-after-unauthorized-write',
+    'github|main-governance|unprotected-main-direct-write-requires-recovery'
+  ]) {
+    const failure = failures.get(fingerprint);
+    assert.ok(failure, `missing Brain guard fingerprint ${fingerprint}`);
+    assert.equal(failure.status, 'PROVEN');
+    assert.equal(failure.preventionRule, 'POST_PUSH_CI_IS_DETECTION_NOT_PREVENTION');
+    assert.equal(failure.regressionContract, 'tests/direct-main-postwrite-guard-learning.test.mjs');
+    assert.ok(failure.rootCause.length > 20);
+    assert.ok(failure.fix.length > 20);
+  }
 
   const rules = JSON.parse(await readFile('config/delivery-prevention-rules.json', 'utf8'));
-  const serialized = JSON.stringify(rules);
-  assert.match(serialized, /MAIN_PUSH_CI_IS_DETECTION_NOT_PREWRITE_PREVENTION/);
-  assert.match(serialized, /UNPROTECTED_MAIN_DIRECT_WRITE_REQUIRES_RECOVERY/);
+  const rule = rules.rules.find((item) => item.id === 'POST_PUSH_CI_IS_DETECTION_NOT_PREVENTION');
+  assert.equal(rule?.active, true);
 });
