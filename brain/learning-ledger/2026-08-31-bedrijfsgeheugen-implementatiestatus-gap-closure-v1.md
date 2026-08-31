@@ -6,8 +6,8 @@
 - Owner: `Powerhouse Brain Completion`
 - Classification: `CONTRACT_CHANGE` + `IMPROVEMENT` + `MISSED_OBLIGATION`
 - Canonical runtime writeback: `BG168 -> BG166 -> BG167`
-- Runtime writeback status: `BLOCKED_RUNTIME_CAPACITY`
-- Runtime blocker fingerprint: `brain-writeback-make-team-paused-limit-v1`
+- Runtime writeback status: `COMPLETED`
+- Runtime blocker fingerprint: `brain-writeback-make-team-paused-limit-v1` (recovered)
 
 ## Verified foundation already present
 
@@ -91,11 +91,15 @@ Do not spend completion capacity on additional isolated screens while these whol
 
 ## Runtime writeback evidence
 
-On 2026-08-31 a direct run of Make scenario `BG 168 - Multi-Agent Outcome & Learning Router v1` (`7136176`) was attempted with this learning payload. Make rejected execution with:
+Initial recovery attempts on 2026-08-31 were blocked while the Make organization/team was paused by operations/data-transfer limits. The recovery owner did not keep retrying the same blocked hypothesis.
 
-`Scenario cannot be run because its organization or team is paused. Resolve the exceeded operations or data transfer limit and try again.`
+At 2026-08-31T11:22+02:00 execution eligibility was verified restored: BG168, BG166 and BG167 all reported active. The exact semantic fingerprint was replayed once through BG168.
 
-`BG168` is on-demand and routes material learning to `BG166 - Error & Learning Ledger Writer v1.2 dedupe + coalesce` (`7135971`). Both scenarios expose the ambiguous Make metadata pattern `status=paused` with `isActive=true`. This is a capacity/runtime blocker, not successful Brain writeback.
+- BG168 execution: `1ad56297c59446228eb191249b653dcf` — success — `LEARNING_DISPATCHED`.
+- BG166 execution: `9beabd3917ea4ec3bf040e4cb3227250` — success — `COALESCED_REFRESH`, `learning_persisted=true`.
+- BG167 execution: `d92c943bf6234e2caa175df81ca3816b` — success; shared current-state projection visibly contains fingerprint `bedrijfsgeheugen-implementatiestatus-gap-closure-2026-08-30-v1`.
+
+Completion gate is therefore satisfied: `WRITTEN_DURABLE && PROJECTED_CURRENT`.
 
 ## Recovery / replay rule
 
@@ -103,4 +107,4 @@ On 2026-08-31 a direct run of Make scenario `BG 168 - Multi-Agent Outcome & Lear
 - Preserve this exact learning under its fingerprint.
 - On the first verified Make-capacity recovery, replay exactly once through `BG168 -> BG166`.
 - Verify visibility/readback through the shared current-state route (`BG167`) before marking runtime Brain writeback `COMPLETED`.
-- Dedupe by fingerprint so repository persistence + later runtime writeback never create duplicate semantic learnings.
+- `duplicate` or `coalesced` is successful idempotent reuse when the fingerprint already exists; never replay the same semantic fingerprint again merely because it deduped.
