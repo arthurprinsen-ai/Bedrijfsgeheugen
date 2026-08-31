@@ -1,47 +1,52 @@
 {
-  "peildatum": "24 augustus 2026",
-  "peildatumISO": "2026-08-24",
-  "omnibusStatus": "Definitief aangenomen als Regulation (EU) 2026/1744; gepubliceerd in het Publicatieblad op 24 juli 2026 en in werking getreden op 27 juli 2026 — geen verdere parlementaire stappen vereist.",
+  "peildatum": "31 augustus 2026",
+  "peildatumISO": "2026-08-31",
+  "omnibusStatus": "Definitief aangenomen: Verordening (EU) 2026/1744 gepubliceerd in het Publicatieblad van de EU op 24 juli 2026 en in werking getreden op 27 juli 2026 — geen voorstel meer maar geldend EU-recht.",
   "deadlines": [
     {
-      "date": "2026-08-02",
-      "label": "Art. 50 AI Act — transparantieverplichtingen (o.a. chatbots, deepfakes) van toepassing voor systemen op de markt ná 2 aug 2026; reeds verstreken",
-      "kort": "Art. 50 transparantie live"
+      "date": "2025-02-02",
+      "label": "Verboden AI-praktijken (Art. 5) van toepassing — sociaal scoren, subliminale manipulatie, real-time biometrische identificatie in publieke ruimte (met uitzonderingen); niet gewijzigd door Omnibus",
+      "kort": "Verboden AI van kracht"
+    },
+    {
+      "date": "2025-08-02",
+      "label": "GPAI-verplichtingen (transparantie, auteursrecht) van kracht voor nieuwe modellen; GPAI Code of Practice (vrijwillig) van toepassing; niet gewijzigd door Omnibus",
+      "kort": "GPAI-regels actief"
     },
     {
       "date": "2026-08-02",
-      "label": "GPAI handhaving actief — Europese Commissie kan vanaf vandaag boetes opleggen aan aanbieders van GPAI-modellen (art. 101 AI Act)",
-      "kort": "GPAI enforcement actief"
+      "label": "GPAI-handhaving: AI Office beschikt vanaf nu over volledige sanctiebevoegdheden (art. 101, boetes tot 3% wereldwijde omzet of €15 mln); Art. 50 transparantie- en watermerkverplichting voor generatieve AI van toepassing; niet uitgesteld door Omnibus",
+      "kort": "GPAI-handhaving + watermerken"
     },
     {
       "date": "2026-08-15",
-      "label": "Nederlandse Cyberbeveiligingswet (NIS2) in werking getreden — Eerste Kamer stemde 7 juli 2026 voor, wet van kracht per 15 augustus 2026",
-      "kort": "NIS2 NL van kracht"
+      "label": "Nederlandse Cyberbeveiligingswet (NIS2-implementatie) in werking getreden — Eerste Kamer stemde in op 7 juli 2026, koninklijk besluit stelde 15 augustus 2026 vast; verplichtingen voor ruim 8.000–10.000 organisaties",
+      "kort": "Cbw / NIS2 van kracht"
     },
     {
       "date": "2026-12-02",
-      "label": "Art. 50(2) watermerken AI-gegenereerde inhoud — deadline voor systemen die vóór 2 aug 2026 al op de markt waren; ook: nieuw verbod op NCII/CSAM-genererende AI (Omnibus art. 5)",
-      "kort": "Watermerken & NCII-verbod"
+      "label": "Nieuwe verboden (Omnibus, Art. 5 aanvulling): AI-systemen die realistische seksuele/intieme beeldinhoud zonder toestemming genereren (NCII) en CSAM verboden — definitief vastgesteld in Verordening (EU) 2026/1744",
+      "kort": "Nieuwe verboden NCII/CSAM"
     },
     {
       "date": "2027-02-02",
-      "label": "AI Act — lidstaten leggen handhavingsbevoegdheden en sanctieregels vast (verwacht, conform overgangsbepalingen AI Act)",
-      "kort": "Nationale sanctieregels verwacht"
+      "label": "Verwacht: Codes of Practice en richtsnoeren voor hoog-risico AI volledig operationeel; nationale toezichthouders volledig aangewezen (streefdatum EU AI Office)",
+      "kort": "Toezichtstructuur verwacht klaar"
     },
     {
       "date": "2027-08-02",
-      "label": "GPAI bestaande modellen — aanbieders van GPAI-modellen die vóór 2 aug 2025 op de markt waren moeten dan volledig voldoen aan hoofdstuk V AI Act",
-      "kort": "GPAI legacy-deadline"
+      "label": "GPAI-modellen vóór 2 augustus 2025 op markt gebracht moeten uiterlijk nu voldoen aan GPAI-verplichtingen (Chapter V AI Act) — uitgesteld voor bestaande modellen, niet gewijzigd door Omnibus",
+      "kort": "GPAI bestaande modellen deadline"
     },
     {
       "date": "2027-12-02",
-      "label": "Hoog-risico AI Annex III (uitgesteld via Omnibus) — standalone systemen zoals biometrie, HR/rekrutering, kredietscoring, onderwijs, kritieke infrastructuur",
-      "kort": "Annex III hoog-risico"
+      "label": "Hoog-risico AI Annex III (zelfstandige systemen: werk, onderwijs, krediet, wetshandhaving) van toepassing — uitgesteld van 2 augustus 2026 naar 2 december 2027 door Verordening (EU) 2026/1744",
+      "kort": "Annex III hoog-risico (uitgesteld)"
     },
     {
       "date": "2028-08-02",
-      "label": "Hoog-risico AI Annex I (uitgesteld via Omnibus) — AI ingebed in gereguleerde producten (machinerie, medische hulpmiddelen, luchtvaartuigen e.d.)",
-      "kort": "Annex I productgebonden"
+      "label": "Hoog-risico AI Annex I (ingebed in gereguleerde producten: medische hulpmiddelen, machines, speelgoed) van toepassing — uitgesteld van 2 augustus 2027 naar 2 augustus 2028 door Verordening (EU) 2026/1744",
+      "kort": "Annex I hoog-risico (uitgesteld)"
     }
   ],
   "fines": {
@@ -54,7 +59,7 @@
     "grootAI": "59,2%",
     "bedrijfAI2024": "22,7%",
     "bedrijfAI2023": "14%",
-    "afhaakErvaring": "74,6%",
-    "gartnerTop": "n.v.t. — geen CBS-bron beschikbaar voor dit cijfer op peildatum"
+    "afhaakErvaring": "75,0%",
+    "gartnerTop": "<5%"
   }
 }
