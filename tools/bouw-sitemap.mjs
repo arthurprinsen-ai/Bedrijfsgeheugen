@@ -16,7 +16,7 @@ function paginas(map = '.', diep = 0) {
   const uit = [];
   for (const naam of readdirSync(map)) {
     if (naam.startsWith('.') || naam === 'node_modules' || naam === 'assets' || naam === 'intern' ||
-        naam === 'tools' || naam === 'netlify') continue;
+        naam === 'tools' || naam === 'netlify' || naam === 'components') continue;
     const pad = join(map, naam);
     const st = statSync(pad);
     if (st.isDirectory() && diep < 2) uit.push(...paginas(pad, diep + 1));
@@ -33,11 +33,16 @@ for (const { pad, tijd } of paginas()) {
   // een pagina met noindex hoort er bewust niet in
   if (/<meta[^>]+name=["']robots["'][^>]*noindex/i.test(html)) continue;
 
+  // wijst de pagina canoniek naar een ander adres, dan is dat adres de pagina
+  // die Google moet indexeren. Beide aanmelden is een tegenstrijdig signaal.
+  const eigenCanon = html.match(/<link[^>]+rel="canonical"[^>]+href="([^"]+)"/i);
+
   let url;
   if (pad === 'index.html') url = '/';
   else if (naam === 'index.html') url = '/' + pad.slice(0, -'index.html'.length);
   else url = '/' + pad.slice(0, -'.html'.length);
   url = url.replace(/^\.\//, '/').replace(/\/{2,}/g, '/');
+  if (eigenCanon && eigenCanon[1].replace(BASIS, '').replace(/\/$/, '') !== url.replace(/\/$/, '')) continue;
 
   rijen.push(
     `  <url><loc>${BASIS}${url}</loc><lastmod>${tijd.toISOString().slice(0, 10)}</lastmod></url>`
