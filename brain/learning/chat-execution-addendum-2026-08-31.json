@@ -1,0 +1,94 @@
+{
+  "version": "BRAIN-CHAT-EXECUTION-ADDENDUM-v1",
+  "type": "CHAT_EXECUTION_LEARNING_INDEX",
+  "parentCheckpoint": "brain/learning/chat-completeness-checkpoint-2026-08-31.json",
+  "conversationIsCanonicalTruth": false,
+  "duplicateLessonBodies": false,
+  "purpose": "Traceable execution index for the Bedrijfsgeheugen implementation chat. Full causal lesson bodies remain in their existing canonical Brain sources; this addendum binds the proven execution rules, capabilities, evidence classes and hard boundaries into one reusable index for future agents.",
+  "canonicalReferences": [
+    "brain/learning/chat-completeness-checkpoint-2026-08-31.json",
+    "docs/brain/delivery-failure-lessons.json",
+    "config/delivery-prevention-rules.json",
+    "brain/learning/current-execution-lessons-2026-08-30.json",
+    "brain/learning/chat-runtime-truth-lessons-2026-08-31.json",
+    "config/repository-writer-migration.json",
+    "brain/learning/chat-make-writeback-blocker-2026-08-31.json"
+  ],
+  "linked_learning_sources": [
+    "brain/learning/chat-make-writeback-blocker-2026-08-31.json"
+  ],
+  "requiredPreventionRules": [
+    "CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS",
+    "REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN",
+    "CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES",
+    "SCOPE_PARITY_TO_VERIFIED_WRITER_PATHS",
+    "FRESH_TRIGGER_FROM_CURRENT_MAIN_AFTER_RUNTIME_FIX",
+    "CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE",
+    "FULLY_QUALIFY_DETACHED_HEAD_PUSH_REFSPEC",
+    "VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE",
+    "FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS",
+    "ISOLATE_NEGATIVE_TEST_FIXTURES",
+    "SINGLE_CANONICAL_WRITER_HANDOFF",
+    "REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN",
+    "NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN",
+    "REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN",
+    "REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE",
+    "REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK",
+    "DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM",
+    "REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES",
+    "REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION",
+    "REQUIRE_FULL_READ_TRANSFORM_WRITE_FOR_CONTENTS_API",
+    "PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT",
+    "NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE",
+    "CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST",
+    "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE",
+    "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE"
+  ],
+  "provenCapabilities": [
+    {"id":"brain-delivery-v2-parallel-lanes","status":"PROVEN","evidence":"backend, portal, website and automation lanes with conflict-aware moving-main handoff"},
+    {"id":"repository-writers-7-of-7-parity-rollback","status":"PROVEN","evidence":"config/repository-writer-migration.json records all seven writers operational_verified, parityVerified=true and rollbackVerified=true"},
+    {"id":"immutable-writer-shadow-evidence","status":"PROVEN","evidence":"writer candidate PR identity is independently checked by read-only shadow and immutable artifact evidence"},
+    {"id":"event-driven-central-writer-gates","status":"PROVEN","evidence":"single writer-to-shadow handoff with central gates dispatched after immutable verification"},
+    {"id":"universal-external-app-adapters","status":"PROVEN","evidence":"canonical Notion, Make, Supabase and DataForSEO adapter contract"},
+    {"id":"persistent-supabase-delivery-evidence","status":"PROVEN","evidence":"append-only server-only evidence store plus persistent external-target canaries"},
+    {"id":"fresh-device-hosted-runner-certification","status":"PROVEN","evidence":"clean ubuntu-24.04 hosted runner with Node 22 certification and stored artifact"},
+    {"id":"decision-explainability-projection","status":"PROVEN","evidence":"machine-readable why/evidence/alternatives/policy trace without raw private context"},
+    {"id":"agent-registry-playbooks-learning-contracts","status":"PROVEN","evidence":"11/11 canonical agents declare bounded tasks, playbooks and learning contracts"},
+    {"id":"github-bg196-bg169-production-handoff","status":"PROVEN","evidence":"real candidate identity reached BG196 and BG169 through event-driven handoff"},
+    {"id":"bg169-bg168-bg166-bg167-learning-loop","status":"PROVEN_WITH_CURRENT_RUNTIME_REPLAY_BLOCKED","evidence":"historically proven terminal outcome learning loop; current Make capacity blocks new runtime replay and is preserved as one deduped obligation"},
+    {"id":"exact-netlify-production-identity","status":"PROVEN","evidence":"PRODUCTION_GREEN required Netlify ready plus exact commit_ref matching promoted GitHub production SHA"},
+    {"id":"executive-integration-health","status":"PROVEN","evidence":"canonical CurrentState and Integration Health projection across external platforms"},
+    {"id":"source-backed-currentstate-ingest","status":"PROVEN","evidence":"source mapping to CurrentState to idempotent emitter to secured service ingest"},
+    {"id":"outcome-obligation-durable-runtime","status":"PROVEN","evidence":"generic executor, durable work/evidence/recovery stores and scheduled/manual sweep"},
+    {"id":"make-github-currentstate-without-extra-polling","status":"PROVEN","evidence":"existing BG159 Make snapshot and GitHub workflow evidence are reused for Integration Health"}
+  ],
+  "externalHardBoundaries": [
+    {
+      "id": "github-native-main-protection",
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": "Direct GitHub branch readback reports protected=false and required status checks enforcement=off.",
+      "mustNotBeInferredFromInternalCi": true,
+      "compensatingControl": "BRAIN observes the native state separately and production promotion fails closed when required protection is not proven."
+    },
+    {
+      "id": "supabase-leaked-password-protection",
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": "Supabase Security Advisor reports leaked-password protection disabled and the connected management surface has no Auth-config mutation action.",
+      "mustNotBeInferredFromInternalCi": true
+    },
+    {
+      "id": "make-runtime-capacity",
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": "BG168 execution was refused because the Make organization/team is paused after operations or data-transfer capacity was exceeded.",
+      "canonicalPersistencePreserved": true,
+      "runtimeProjectionDeferred": true,
+      "recoverySource": "brain/learning/chat-make-writeback-blocker-2026-08-31.json"
+    }
+  ],
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false,
+    "contains_irrelevant_chat_text": false
+  }
+}
