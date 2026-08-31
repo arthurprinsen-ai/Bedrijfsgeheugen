@@ -1,0 +1,37 @@
+{
+  "id": "chat-materialization-2026-08-31-v3",
+  "version": 3,
+  "status": "ACTIVE",
+  "type": "ChatToBrainMaterialization",
+  "scope": ["chat", "make", "control-plane", "cost", "recovery", "delivery", "security", "agent-resume"],
+  "purpose": "Maak de duurzame Make/Powerhouse control-plane learnings uit de actuele chat automatisch beschikbaar aan iedere toekomstige Brain-preflight zonder incidentinhoud te dupliceren.",
+  "fingerprint": "chat-to-brain|make-control-plane-materialization|2026-08-31-v3",
+  "linked_learning_sources": [
+    "brain/learning/chat-materialization-2026-08-31-v2.json",
+    "brain/learning/incidents/make-control-plane-credit-storm-2026-08-30.json",
+    "brain/learning/incidents/bg184-repeated-known-blocker-dispatch-2026-08-30.json",
+    "brain/learning/incidents/connector-mutation-tool-routing-misfire-2026-08-30.json",
+    "brain/learning/incidents/delivery-learning-test-family-unclassified-2026-08-30.json",
+    "brain/learning/incidents/github-pr-reused-head-no-workflow-run-2026-08-31.json",
+    "brain/learning/incidents/make-agent-unconditional-bg168-resume-hazard-2026-08-31.json",
+    "config/make-agent-resume-learning-guard.json"
+  ],
+  "invariants": [
+    "Conversation text is not canonical truth; durable material learnings must be reachable from Brain preflight.",
+    "Known blockers are stateful and deduplicated; unchanged blockers must not repeatedly trigger paid learning/recovery work.",
+    "Shared context and learning are control-plane services: cache-first, event-driven, globally coalesced and budget-bounded.",
+    "NON_MATERIAL agent outcomes invoke BG168 zero times; MATERIAL outcomes invoke it at most once and never suppress the primary result.",
+    "status=paused together with isActive=true is containment evidence, not proof of structural deactivation.",
+    "A moving main requires rebuild only on file/semantic/contract overlap; non-overlapping drift preserves the exact tested candidate.",
+    "State-changing connector calls that return ambiguous 429/5xx require readback before retry.",
+    "Secrets, credentials, tokens and capability values never enter learning artifacts or user-visible evidence.",
+    "No autonomous paid Make-capacity increase is permitted to obtain runtime proof."
+  ],
+  "open_obligations": [
+    "Runtime-write of the new resume-hazard learning to BG166 is blocked while the Make organization/team is paused by capacity/data-transfer limits.",
+    "Before Make resumes normally, inventory all PH-agent BG168 callers and prove caller-side materiality guards in staged runtime canaries with bounded credit slope.",
+    "BG167/BG168/BG184 and affected PH agents remain fail-closed until their relevant runtime acceptance evidence exists."
+  ],
+  "completion_rule": "Complete only when this v3 source is mandatory in compiled chat-learning preflight, its linked incident fingerprints are observable there, regression-tested through BRAIN delivery and read back from main after merge.",
+  "security": {"secretsPersisted": false, "credentialsPersisted": false, "capabilityValuesPersisted": false, "piiPersisted": false}
+}
