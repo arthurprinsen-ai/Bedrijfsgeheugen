@@ -7,20 +7,30 @@ import {closedLoopStatus} from './loop-integrity.mjs';
 const enc=v=>encodeURIComponent(String(v));
 const prefixFor=tenantId=>`${enc(tenantId)}/records/`;
 const keyFor=(tenantId,id)=>`${prefixFor(tenantId)}${enc(id)}`;
+const isRecordAdapter=adapter=>Boolean(adapter?.appendRecord&&adapter?.listRecords);
+const isKeyValueAdapter=adapter=>Boolean(adapter?.get&&adapter?.put&&adapter?.list);
 export function createOperatingLoopStore(adapter,{now=()=>new Date().toISOString()}={}){
-  if(!adapter?.get||!adapter?.put||!adapter?.list) throw new TypeError('Operating loop store requires get/put/list adapter');
-  return Object.freeze({
-    async append(input){
-      if(!input?.idempotencyKey) throw new TypeError('Brain record requires idempotencyKey');
-      const record=normalizeBrainRecord(input);const key=keyFor(record.tenantId,record.id);const existing=await adapter.get(key);
-      if(existing){if(existing.idempotencyKey!==input.idempotencyKey){const error=new Error('Brain record id conflict');error.code='BRAIN_RECORD_CONFLICT';throw error;}return {duplicate:true,record:existing.record};}
-      const envelope={idempotencyKey:String(input.idempotencyKey),storedAt:now(),record};await adapter.put(key,envelope);return {duplicate:false,record};
-    },
-    async getProjection(tenantId){
-      const entries=await adapter.list(prefixFor(tenantId));const records=entries.map(entry=>entry.value?.record).filter(Boolean).sort((a,b)=>String(a.observedAt).localeCompare(String(b.observedAt)));const state=deriveLoopState(records);const prioritizedAdvice=prioritizeIntelligence(records);const verifiedValue=projectVerifiedValue(records);const livingMemory=projectLivingMemory(records,{now:now()});const integrationHealth=projectIntegrationHealth(records);
-      const correlationIds=[...new Set(records.map(record=>record.correlationId).filter(Boolean))];const wholeBrainLoops=correlationIds.map(correlationId=>closedLoopStatus(records,{correlationId}));
-      const loopSummary={complete:wholeBrainLoops.filter(loop=>loop.complete).length,incomplete:wholeBrainLoops.filter(loop=>!loop.complete).length,total:wholeBrainLoops.length};
-      return {schemaVersion:'brain-operating-projection.v2',tenantId:String(tenantId),records,state,advice:state.advice,prioritizedAdvice,verifiedValue,livingMemory,integrationHealth,wholeBrainLoops,loopSummary};
+  if(!isRecordAdapter(adapter)&&!isKeyValueAdapter(adapter)) throw new TypeError('Operating loop store requires record adapter or get/put/list adapter');
+  async function append(input){
+    if(!input?.idempotencyKey) throw new TypeError('Brain record requires idempotencyKey');
+    const record=normalizeBrainRecord(input);
+    if(isRecordAdapter(adapter)){
+      const persisted=await adapter.appendRecord(record,{idempotencyKey:String(input.idempotencyKey),sourceRevision:input.sourceRevision||null});
+      return {duplicate:Boolean(persisted.duplicate),record:persisted.record};
     }
-  });
+    const key=keyFor(record.tenantId,record.id);const existing=await adapter.get(key);
+    if(existing){if(existing.idempotencyKey!==input.idempotencyKey){const error=new Error('Brain record id conflict');error.code='BRAIN_RECORD_CONFLICT';throw error;}return {duplicate:true,record:existing.record};}
+    const envelope={idempotencyKey:String(input.idempotencyKey),storedAt:now(),record};await adapter.put(key,envelope);return {duplicate:false,record};
+  }
+  async function recordsFor(tenantId){
+    if(isRecordAdapter(adapter)) return (await adapter.listRecords(String(tenantId))).sort((a,b)=>String(a.observedAt).localeCompare(String(b.observedAt)));
+    const entries=await adapter.list(prefixFor(tenantId));return entries.map(entry=>entry.value?.record).filter(Boolean).sort((a,b)=>String(a.observedAt).localeCompare(String(b.observedAt)));
+  }
+  async function getProjection(tenantId){
+    const records=await recordsFor(tenantId);const state=deriveLoopState(records);const prioritizedAdvice=prioritizeIntelligence(records);const verifiedValue=projectVerifiedValue(records);const livingMemory=projectLivingMemory(records,{now:now()});const integrationHealth=projectIntegrationHealth(records);
+    const correlationIds=[...new Set(records.map(record=>record.correlationId).filter(Boolean))];const wholeBrainLoops=correlationIds.map(correlationId=>closedLoopStatus(records,{correlationId}));
+    const loopSummary={complete:wholeBrainLoops.filter(loop=>loop.complete).length,incomplete:wholeBrainLoops.filter(loop=>!loop.complete).length,total:wholeBrainLoops.length};
+    return {schemaVersion:'brain-operating-projection.v2',tenantId:String(tenantId),records,state,advice:state.advice,prioritizedAdvice,verifiedValue,livingMemory,integrationHealth,wholeBrainLoops,loopSummary};
+  }
+  return Object.freeze({append,getProjection});
 }
