@@ -1,0 +1,72 @@
+{
+  "id": "chat-materialization-2026-08-31-v2",
+  "version": 2,
+  "status": "ACTIVE",
+  "scope": ["chat", "delivery", "netlify", "ci", "learning-plane"],
+  "purpose": "Normaliseer de nieuwste materiële learnings uit de actieve Bedrijfsgeheugen-chat naar canonieke machineleesbare Brain-state zodat toekomstige agents ze via preflight hergebruiken en niet opnieuw uit conversatietekst reconstrueren.",
+  "learnings": [
+    {
+      "fingerprint": "netlify-preview-provider-scope-mismatch-v1",
+      "kind": "CostAndDeliveryInvariant",
+      "status": "GUARDED",
+      "owner": "ci-governance",
+      "rootCause": "GitHub Actions trigger scope was narrowed while the linked Netlify provider still treated repository-root pull-request changes as site-impacting, causing unnecessary preview builds.",
+      "fix": "For Deploy Preview context only, evaluate the exact cached-to-current Git diff and skip only when every changed path is explicitly governance-only. Production always builds because release identity is exact COMMIT_REF-bound. Unknown refs, missing diff evidence, unknown paths, site paths, Netlify configuration, functions and build-tool changes fail safe to BUILD.",
+      "prevention": "SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS",
+      "preventionRule": "SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS",
+      "regressionContract": "tests/netlify-preview-impact-guard.test.mjs",
+      "evidence": ["PR #804 site/build-control candidate produced a real Netlify Deploy Preview on exact candidate SHA, proving the impact side still builds. Two-sided skip evidence is still required before PROVEN maturity."],
+      "openObligation": "Obtain external provider evidence that a governance-only Deploy Preview diff is actually skipped; do not promote maturity to PROVEN before both BUILD and SKIP sides are evidenced."
+    },
+    {
+      "fingerprint": "delivery|runtime-path|unclassified-netlify-build-control-v1",
+      "kind": "DeliveryClassificationFailure",
+      "status": "GUARDED",
+      "owner": "agent-reliability",
+      "rootCause": "A regression-test family can be classified while its newly introduced runtime or provider-control inputs remain outside the BRAIN delivery lane taxonomy. This occurred with netlify.toml and tools/netlify-preview-impact.mjs.",
+      "fix": "Co-classify runtime/control paths and their regression family in the owning delivery lanes. Netlify provider configuration belongs to website/Netlify delivery; Netlify governance/runtime impact tooling belongs to backend governance. All unknown remaining paths stay fail-closed.",
+      "prevention": "CLASSIFY_NEW_RUNTIME_TOOL_PATHS",
+      "preventionRule": "CLASSIFY_NEW_RUNTIME_TOOL_PATHS",
+      "regressionContract": "tests/brain-learning-contract-delivery-classification.test.mjs",
+      "evidence": ["Unified BRAIN rejected the candidate with: unclassified delivery path: netlify.toml, tools/netlify-preview-impact.mjs."]
+    },
+    {
+      "fingerprint": "delivery|verification|provider-impact-guard-needs-two-sided-proof-v1",
+      "kind": "VerificationInvariant",
+      "status": "GUARDED",
+      "owner": "agent-reliability",
+      "rootCause": "A cost/impact guard can appear correct after proving only that an impact-bearing change still executes. That does not prove the optimization path actually skips non-impact work at the external provider.",
+      "fix": "Require two-sided provider evidence before PROVEN status: a site/build-impact canary must BUILD and a proven governance-only canary must SKIP. Keep the guard at GUARDED or equivalent partial maturity until both are externally observed.",
+      "prevention": "REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN",
+      "preventionRule": "REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN",
+      "regressionContract": "tests/chat-to-brain-current-session.test.mjs",
+      "openObligation": "Run and read back a governance-only Netlify Deploy Preview canary after the provider guard is merged."
+    },
+    {
+      "fingerprint": "delivery|candidate|stale-open-pr-after-material-main-drift-v1",
+      "kind": "CandidateLifecycleInvariant",
+      "status": "PROVEN",
+      "owner": "agent-reliability",
+      "rootCause": "An open candidate was treated as reusable after main materially changed the same file or semantic contract required by the candidate implementation.",
+      "fix": "Refresh live main before GREEN/final promotion. If file or semantic/declared-contract overlap exists, close or supersede the stale candidate and rebuild from exact current main. Preserve prior RED evidence but never carry stale implementation forward as current truth.",
+      "prevention": "REFRESH_BASE_BEFORE_FINAL_GATE",
+      "preventionRule": "REFRESH_BASE_BEFORE_FINAL_GATE",
+      "regressionContract": "tests/chat-to-brain-current-session.test.mjs",
+      "evidence": ["PR #831, #833 and #835 were superseded after same-file policy drift; successor candidates were rebuilt from exact current main rather than overwriting newer canonical learning links."]
+    },
+    {
+      "fingerprint": "delivery-failure|pipeline|shared|classified-change-test-not-executed",
+      "kind": "ExistingFailureClassEvidence",
+      "status": "PROVEN",
+      "owner": "agent-reliability",
+      "rootCause": "Delivery membership/classification and the actual test executor evolved separately. tests/chat-to-brain-* was classified as backend work but the backend lane command did not execute that family, allowing a false-green run.",
+      "fix": "Co-change classifier ownership and executor discovery. The canonical Brain test runner auto-discovers tests/chat-to-brain-*.test.mjs so every classified chat-to-Brain regression is executed by the backend and automation verification paths.",
+      "prevention": "CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS",
+      "preventionRule": "CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS",
+      "regressionContract": "tests/chat-to-brain-current-session.test.mjs",
+      "evidence": ["Before executor repair the classified lane completed without running the new test. After scripts/brain/test-all.mjs was extended, exact head ea2d5da3b6117a2993cff24c27674dc6783c826a ran it and produced the intended RED because the canonical materialization source was absent."]
+    }
+  ],
+  "completionRule": "This materialization is complete only after the source is mandatory in canonical chat-learning preflight, visible in compiled output, regression-tested, delivered through BRAIN gates and read back from main after merge.",
+  "security": {"secretsPersisted": false, "credentialsPersisted": false, "piiPersisted": false}
+}
