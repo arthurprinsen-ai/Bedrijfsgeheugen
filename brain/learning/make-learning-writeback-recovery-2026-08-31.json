@@ -1,0 +1,26 @@
+{
+  "id": "make-learning-writeback-recovery-2026-08-31",
+  "type": "ResolutionAndLearning",
+  "status": "PROVEN",
+  "resolvesFingerprint": "brain-writeback-make-team-paused-limit-v1",
+  "newFingerprint": "brain-writeback|persisted-vs-projected|coalesced-refresh-is-not-write-failure",
+  "observedAt": "2026-08-31T09:10:15Z",
+  "evidence": {
+    "bg168Scenario": 7136176,
+    "bg168Execution": "23f7adaebd3e4ab09c7bfbbfa2ec954f",
+    "bg168Status": "success",
+    "bg168Result": "LEARNING_DISPATCHED",
+    "bg166Scenario": 7135971,
+    "bg166Execution": "6060f7bf7a5e4c0ca2abe689173213cc",
+    "bg166Status": "success",
+    "bg166LearningPersisted": true,
+    "bg166Result": "COALESCED_REFRESH"
+  },
+  "learning": "Canonical learning persistence and BG167 shared-context projection are distinct completion states. A BG166 result of COALESCED_REFRESH with learning_persisted=true is a successful canonical write, not a failed writeback; the projection refresh may be deliberately deferred by the cost-recovery window.",
+  "prevention": [
+    "Never replay a material learning merely because BG167 projection refresh was coalesced after BG166 confirmed learning_persisted=true.",
+    "Only replay the same learning after an actual canonical write failure or negative downstream readback, using the stable fingerprint for dedupe.",
+    "Treat Make scenario status plus successful execution evidence as recovery proof; do not infer recovery from isActive alone."
+  ],
+  "security": {"contains_secrets": false, "contains_credentials": false, "contains_pii": false}
+}
