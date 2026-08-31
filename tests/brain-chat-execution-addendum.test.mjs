@@ -46,17 +46,20 @@ test('Make paused-capacity refusal is durable learning with a deduped replay obl
   assert.equal(blocker.durable_learnings.some(x => x.related_active_rule === 'BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE'), true);
 });
 
-test('bounded agent preflight loads the execution addendum and Make blocker', () => {
+test('bounded agent preflight exposes every execution prevention without loading full evidence bodies', () => {
   assert.equal(existsSync(PREFLIGHT), true, 'missing bounded execution preflight projection');
+  const projection = json(PREFLIGHT);
+  assert.equal(Object.prototype.hasOwnProperty.call(projection, 'linked_learning_sources'), false, 'bounded projection must not recursively load full evidence bodies');
   const packet = compileChatLearningPreflight();
   const sources = new Set(packet.sources.map(source => source.path));
   assert.equal(sources.has(PREFLIGHT), true);
-  assert.equal(sources.has(ADDENDUM), true);
-  assert.equal(sources.has(MAKE_BLOCKER), true);
+  assert.equal(sources.has(ADDENDUM), false, 'full execution addendum must stay outside bounded runtime packet');
+  assert.equal(sources.has(MAKE_BLOCKER), false, 'full Make replay evidence must stay outside bounded runtime packet');
   const addendum = json(ADDENDUM);
   for (const rule of addendum.requiredPreventionRules) {
     assert.equal(packet.preventions.includes(rule), true, `mandatory agent preflight missing execution prevention ${rule}`);
   }
+  assert.ok(packet.totalBytes <= 256_000, `bounded preflight exceeded budget: ${packet.totalBytes}`);
 });
 
 test('Shared Agent Memory CI executes the execution addendum regression', () => {
