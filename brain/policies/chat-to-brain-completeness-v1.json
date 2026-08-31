@@ -4,6 +4,9 @@
   "status": "PROPOSED",
   "scope": ["chat", "agent", "workflow", "scenario", "development_run", "incident", "recovery", "production_verification"],
   "purpose": "Voorkom dat duurzame technische of operationele kennis alleen in conversatietekst blijft staan. Materiële learnings worden vóór completion genormaliseerd naar het centrale Bedrijfsgeheugen zodat iedere volgende chat, agent en workflow ze kan hergebruiken.",
+  "linked_learning_sources": [
+    "brain/learning/delivery-test-classification-cochange-2026-08-31.json"
+  ],
   "completionGate": {
     "required": true,
     "rule": "NO_MATERIAL_LEARNING_ONLY_IN_CHAT",
@@ -91,6 +94,7 @@
     "secret_or_credential_must_never_be_persisted_as_learning",
     "known_failure_must_be_available_to_next_preflight",
     "open_blocker_must_retain_first_seen_last_seen_attempts_owner_next_action",
-    "production_evidence_must_remain_distinct_from_chat_assertion"
+    "production_evidence_must_remain_distinct_from_chat_assertion",
+    "new_regression_test_must_be_delivery_classified"
   ]
 }
