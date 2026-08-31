@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
+import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-preflight.mjs';
 
 const learningPath = new URL('../brain/learning/chat-runtime-truth-lessons-2026-08-31.json', import.meta.url);
 
@@ -33,5 +34,18 @@ test('material runtime-truth learnings from chat are committed to canonical Brai
     assert.equal(lesson.security?.contains_secrets, false);
     assert.equal(lesson.security?.contains_credentials, false);
     assert.equal(lesson.security?.contains_pii, false);
+  }
+});
+
+test('future agents receive all runtime-truth fingerprints through mandatory chat-learning preflight', () => {
+  const packet = compileChatLearningPreflight();
+  const fingerprints = new Set(packet.fingerprints);
+
+  for (const fingerprint of requiredFingerprints) {
+    assert.equal(
+      fingerprints.has(fingerprint),
+      true,
+      `chat-learning preflight does not expose durable runtime-truth fingerprint: ${fingerprint}`
+    );
   }
 });
