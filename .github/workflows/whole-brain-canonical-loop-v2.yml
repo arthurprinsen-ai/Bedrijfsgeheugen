@@ -22,6 +22,8 @@ jobs:
         run: node --test tests/whole-brain-canonical-loop-v2.test.mjs
       - name: Canonical Business Graph
         run: node --test tests/whole-brain-business-graph.test.mjs
+      - name: Executive cockpit projection
+        run: node --test tests/whole-brain-executive-cockpit.test.mjs
       - name: Supabase record adapter contract
         run: node --test tests/whole-brain-supabase-adapter.test.mjs
       - name: Decision simulation contract
