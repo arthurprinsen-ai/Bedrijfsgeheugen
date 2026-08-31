@@ -3,6 +3,7 @@
   "failClosed": true,
   "purpose": "Voorkom dat materiële technische of operationele learnings alleen in conversatietekst blijven en voorkom herhaling van bekende fouten door verplichte shared-memory writeback en regressieguards.",
   "authority": {
+    "canonicalPolicy": "brain/policies/chat-to-brain-completeness-v1.json",
     "canonicalPolicySource": "brain/policies/chat-to-brain-completeness-v1.json",
     "role": "ENFORCEMENT_PROJECTION",
     "conflictRule": "CANONICAL_POLICY_WINS"
