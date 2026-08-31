@@ -14,24 +14,37 @@
     "mainWasMoving": true,
     "nativeMainProtected": false
   },
-  "symptom": "A replacement PR was reconstructed because the earlier PR appeared non-mergeable while main was moving, but a fresh PR readback shortly afterward showed the original PR had already merged.",
-  "rootCause": "PR mergeability and merge state were inferred from a transient moving-main snapshot instead of re-reading authoritative PR state immediately before creating a semantic replacement. GitHub mergeability can lag while merge state changes concurrently.",
-  "failedApproach": "Treat mergeable=false or a stale base/head snapshot as sufficient proof that an existing candidate must be replaced.",
-  "provenFix": "Before creating any replacement for an existing candidate, re-read the original PR and current main. If the original is merged or its exact validated blobs are already on main, close or avoid the duplicate and retain one semantic owner.",
+  "additionalEvidence": [
+    {
+      "pullRequest": 853,
+      "date": "2026-08-31",
+      "observation": "parallel-close-invalidated-earlier-snapshot",
+      "detail": "A fresh authoritative PR read immediately before lifecycle handling showed PR #853 had already been closed by a parallel line, invalidating the earlier open-state snapshot and proving that close/reopen/supersede decisions require readback immediately before mutation."
+    }
+  ],
+  "symptom": "A replacement or lifecycle action can be based on a stale PR snapshot while main or another agent changes the same PR concurrently.",
+  "rootCause": "PR mergeability, merge state or lifecycle state was inferred from a transient snapshot instead of re-reading authoritative PR state immediately before creating a replacement or mutating close/reopen/supersede state. GitHub PR state can change concurrently while agents are still acting on older evidence.",
+  "failedApproach": "Treat mergeable=false, open/closed state, or a stale base/head snapshot as durable enough to authorize replacement or lifecycle mutation without a fresh authoritative readback.",
+  "provenFix": "Immediately before any replacement, close, reopen or supersede mutation, re-read the target PR and current main. If the target state already changed or exact validated content is already on main, do not repeat or contradict the external mutation; retain one semantic owner and reconcile from observed state.",
   "preventionRules": [
     "Never create a semantic replacement from mergeable=false alone.",
     "Re-read original PR state immediately before replacement creation.",
     "Re-read current main immediately before replacement creation.",
-    "If exact validated content is already on main, treat the work as delivered and close duplicate candidates.",
+    "Re-read target PR state immediately before close, reopen or supersede mutation.",
+    "If the intended lifecycle state already exists, treat the mutation as an idempotent no-op and do not issue a duplicate write.",
+    "If exact validated content is already on main, treat the work as delivered and close duplicate candidates only after fresh PR readback.",
     "Preserve one canonical semantic owner per root cause and scope.",
-    "Moving-main drift requires authoritative state refresh, not speculative reconstruction."
+    "Moving-main or parallel-agent drift requires authoritative state refresh, not speculative reconstruction."
   ],
   "regressionContract": {
     "replacementRequiresFreshOriginalPrRead": true,
     "replacementRequiresFreshMainRead": true,
     "mergedOriginalBlocksReplacement": true,
     "equivalentContentAlreadyOnMainBlocksReplacement": true,
-    "duplicateCandidateMustBeClosed": true
+    "duplicateCandidateMustBeClosed": true,
+    "lifecycleMutationRequiresFreshPrRead": true,
+    "lifecycleMutationsCovered": ["close", "reopen", "supersede", "replace"],
+    "alreadyObservedTargetStateIsIdempotentNoOp": true
   },
   "relatedRules": [
     "REFRESH_BASE_BEFORE_FINAL_GATE",
