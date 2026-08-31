@@ -31,7 +31,6 @@
   ],
   "open_obligations": [
     "Runtime-write of the new resume-hazard learning to BG166 is blocked while the Make organization/team is paused by capacity/data-transfer limits.",
-    "The canonical brain-writeback-make-team-paused-limit-v1 obligation must be replayed exactly once through BG168 -> BG166 only after direct Make capacity recovery evidence, with downstream BG166/shared-context readback required before closure.",
     "Before Make resumes normally, inventory all PH-agent BG168 callers and prove caller-side materiality guards in staged runtime canaries with bounded credit slope.",
     "BG167/BG168/BG184 and affected PH agents remain fail-closed until their relevant runtime acceptance evidence exists."
   ],
