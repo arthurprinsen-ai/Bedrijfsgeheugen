@@ -1,1 +1,1 @@
-{"source":"brain/learning/chat-execution-index-v2-2026-08-31.json","fingerprints":["brain-writeback-make-team-paused-limit-v1","supabase|production-migration|connector-permission-denied"],"blockers":["github-native-main-protection","supabase-leaked-password-protection","make|worker-wrapper|supabase-connection-missing"],"preventions":["persisted+coalesced=>no-replay"]}
+{"blockers":["github-native-main-protection","supabase-leaked-password-protection","make|worker-wrapper|supabase-connection-missing"],"preventions":["make+supabase recovered;persisted+coalesced=no-replay"]}
