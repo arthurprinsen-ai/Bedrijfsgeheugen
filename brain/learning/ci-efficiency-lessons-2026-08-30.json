@@ -16,6 +16,20 @@
       "owner": "ci-governance",
       "status": "PROVEN",
       "evidenceRule": "A proven scope fix requires both sides: an unrelated Brain-only tool change creates no artifact-specific preview run, while a direct owned V18 tool or workflow change still triggers and passes the exact-head canary."
+    },
+    {
+      "id": "SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS",
+      "preventionRule": "SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS",
+      "fingerprint": "netlify-preview-provider-scope-mismatch-v1",
+      "symptom": "Netlify performs a complete Deploy Preview build, function upload and edge-function deployment for governance-only pull requests that cannot change the customer-facing site.",
+      "rootCause": "GitHub Actions trigger ownership was narrowed, but the linked Netlify provider still treated every pull request as site-impacting because repository-root changes had no provider-level impact gate.",
+      "failedApproach": "Assume GitHub workflow path filters also suppress linked-provider builds, or skip Netlify broadly by branch/title without exact diff evidence.",
+      "requiredAction": "For Deploy Preview context only, evaluate the exact cached-to-current Git diff and skip only when every changed path is explicitly classified governance-only; invalid refs, missing diff evidence, unknown paths and any site/Netlify/function/build-tool change must fail safe to BUILD. Production always builds because release evidence is exact-SHA-bound.",
+      "prevention": "Provider-level build ownership must be independently scoped; Netlify preview suppression is allowlist-only and never applies to production.",
+      "regressionContract": "tests/netlify-preview-impact-guard.test.mjs",
+      "owner": "ci-governance",
+      "status": "GUARDED",
+      "evidenceRule": "Promote to PROVEN only after exact-head tests pass, the Netlify ignore hook is active, one governance-only PR is observed skipped, and one site-impacting canary is observed building normally."
     }
   ]
 }
