@@ -8,6 +8,8 @@ export function projectLivingMemory(records,{now=new Date().toISOString(),defaul
     const status=observed===null?'unknown':ageMs<=maxAge?'fresh':'stale';
     return Object.freeze({...record,provenance:{...(record.provenance||{}),source,sourceId:record?.provenance?.sourceId||record?.id||'unknown'},freshness:{status,ageMs,maxAgeMs:maxAge,observedAt:record?.observedAt||null}});
   });
+  const memories=projected.filter(record=>record?.kind==='memory');
   const summary={fresh:0,stale:0,unknown:0};for(const record of projected) summary[record.freshness.status]++;
-  return Object.freeze({records:projected,summary});
+  const memorySummary={fresh:0,stale:0,unknown:0};for(const record of memories) memorySummary[record.freshness.status]++;
+  return Object.freeze({records:projected,memories,summary,memorySummary});
 }
