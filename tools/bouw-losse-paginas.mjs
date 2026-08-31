@@ -18,6 +18,13 @@ const PAGINAS = [
     titel: 'Prijzen — vaste prijs, geen uurtje-factuurtje | Bedrijfsgeheugen',
     omschrijving: 'Wat Bedrijfsgeheugen kost: vaste prijzen per pakket, zonder uurtje-factuurtje, voor mkb-bedrijven van 3 tot 250 medewerkers.',
     canoniek: 'https://www.bedrijfsgeheugen.nl/prijzen'
+  },
+  {
+    view: 'cases',
+    bestand: 'cases.html',
+    titel: 'Cases - van vastlopen naar werkend | Bedrijfsgeheugen',
+    omschrijving: 'Voorbeelden uit de praktijk: waar mkb-bedrijven op vastliepen en wat er veranderde toen kennis, processen en systemen op orde kwamen.',
+    canoniek: 'https://www.bedrijfsgeheugen.nl/cases'
   }
 ];
 
