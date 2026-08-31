@@ -1,0 +1,34 @@
+{
+  "version": "PR-WORKFLOW-STALE-LINEAGE-OBSERVATION-v1",
+  "date": "2026-08-31",
+  "fingerprint": "github|pull-request|missing-workflow-evidence-with-stale-lineage-confounder-v1",
+  "severity": "medium",
+  "status": "OBSERVED",
+  "rootCause": "UNKNOWN_NOT_YET_PROVEN",
+  "autoPromoteToProven": false,
+  "symptom": "Fresh ready PRs on reused or stale candidate heads appeared to have zero pull_request workflow runs, but later current-main reconciliation showed the affected lineages were heavily stale or conflicted.",
+  "provenEvidence": [
+    "A stale and conflicted candidate lineage was observed roughly 148 commits behind current main and overlapped shared learning and prevention contracts.",
+    "A fresh candidate created from current main immediately received normal pull_request workflow runs.",
+    "The exact GitHub internal scheduling cause was not independently reproduced or proven."
+  ],
+  "failedApproaches": [
+    "Treat zero head_sha workflow results as proof of a GitHub scheduling defect.",
+    "Close and reopen the same stale PR and repeat the same trigger hypothesis.",
+    "Create another ref on the same stale or conflicted commit before checking current-main lineage and mergeability."
+  ],
+  "requiredPreDiagnosisChecks": [
+    "read current main SHA",
+    "check PR mergeability",
+    "check file and semantic overlap against current main"
+  ],
+  "safeRule": "An agent must not diagnose a pull_request workflow scheduling failure until current-main freshness, PR mergeability, and file or semantic overlap have been checked. If stale or conflicted lineage exists, reconcile lineage first and keep the platform cause UNKNOWN.",
+  "promotionRule": "Promote this observation to PROVEN only after the scheduling cause and deterministic recovery are independently reproduced on a current, mergeable, non-overlapping candidate.",
+  "evidence": {
+    "staleEvidencePr": 811,
+    "freshCurrentMainPr": 814,
+    "freshReadyPr": 818,
+    "redObservationPr": 819,
+    "redObservationRun": 33359439790
+  }
+}
