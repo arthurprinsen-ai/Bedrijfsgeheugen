@@ -42,7 +42,14 @@ const requiredFingerprints = [
   'delivery|runtime-path|unclassified-netlify-build-control-v1',
   'delivery|verification|provider-impact-guard-needs-two-sided-proof-v1',
   'delivery|candidate|stale-open-pr-after-material-main-drift-v1',
-  'delivery-failure|pipeline|shared|classified-change-test-not-executed'
+  'delivery-failure|pipeline|shared|classified-change-test-not-executed',
+  'chat-to-brain|make-control-plane-materialization|2026-08-31-v3',
+  'make|multi-agent-context-learning-credit-storm|2026-08-30-v1',
+  'make|bg184|repeated-known-blocker-paid-redispatch-v1',
+  'connector|mutation|wrong-tool-or-resource-selected-v1',
+  'delivery|classifier|learning-test-family-unclassified-v1',
+  'github|pull-request|reused-head-pr-event-no-workflow-run-v1',
+  'make|agent-template|unconditional-bg168-dispatch-on-resume-v1'
 ];
 
 test('full durable learning coverage from the active chat is canonical and preflight-visible', async () => {
