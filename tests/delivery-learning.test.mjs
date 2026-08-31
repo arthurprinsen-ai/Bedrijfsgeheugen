@@ -88,6 +88,15 @@ test('learning candidates do not preserve obvious secret material from failure t
   assert.match(routed.signature, /\[redacted\]/i);
 });
 
+test('Unified BRAIN failed lanes route observed failure into bounded learning artifacts', () => {
+  const workflow = fs.readFileSync('.github/workflows/unified-brain-delivery.yml', 'utf8');
+  assert.match(workflow, /routeObservedFailureToLearning/);
+  assert.match(workflow, /docs\/brain\/delivery-failure-lessons\.json/);
+  assert.match(workflow, /delivery-learning-route-/);
+  assert.match(workflow, /learning-route-\$\{\{ matrix\.lane \}\}/);
+  assert.doesNotMatch(workflow, /autoPromoteToProven\s*:\s*true/);
+});
+
 test('chat-proven failure classes are persisted as PROVEN lessons with active prevention rules', () => {
   const lessonsDoc = JSON.parse(fs.readFileSync('docs/brain/delivery-failure-lessons.json', 'utf8'));
   const rulesDoc = JSON.parse(fs.readFileSync('config/delivery-prevention-rules.json', 'utf8'));
