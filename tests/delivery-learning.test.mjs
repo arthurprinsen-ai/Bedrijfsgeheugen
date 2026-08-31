@@ -93,7 +93,7 @@ test('Unified BRAIN failed lanes route observed failure into bounded learning ar
   assert.match(workflow, /routeObservedFailureToLearning/);
   assert.match(workflow, /docs\/brain\/delivery-failure-lessons\.json/);
   assert.match(workflow, /delivery-learning-route-/);
-  assert.match(workflow, /learning-route-\$\{\{ matrix\.lane \}\}/);
+  assert.match(workflow, /delivery-learning-route-\$\{\{ matrix\.id \}\}\.json/);
   assert.doesNotMatch(workflow, /autoPromoteToProven\s*:\s*true/);
 });
 
