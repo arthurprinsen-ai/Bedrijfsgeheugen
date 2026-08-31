@@ -37,6 +37,16 @@ test('material runtime-truth learnings from chat are committed to canonical Brai
   }
 });
 
+test('parallel PR lifecycle drift is coalesced as occurrence evidence under the existing provider-truth fingerprint', () => {
+  const record = JSON.parse(readFileSync(learningPath, 'utf8'));
+  const lesson = record.lessons.find((item) => item.fingerprint === 'github|pr-terminal-state|stale-conversation-snapshot-v1');
+  assert.ok(lesson);
+  assert.ok(Array.isArray(lesson.additionalEvidence));
+  assert.ok(lesson.additionalEvidence.some((item) =>
+    item.pr === 853 && item.observation === 'parallel-close-invalidated-earlier-snapshot'
+  ));
+});
+
 test('future agents receive all runtime-truth fingerprints through mandatory chat-learning preflight', () => {
   const packet = compileChatLearningPreflight();
   const fingerprints = new Set(packet.fingerprints);
