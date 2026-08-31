@@ -1,7 +1,7 @@
 {
   "contract":"BRAIN-PLATFORM-ADAPTER-v1",
   "activation":{"mode":"fail_closed","auto_registration":true,"production_ready_requires":["compatibility_mapping","regression_contract","shared_memory","health_freshness_error_owner_cost_revision","capacity_available","execution_proof","exact_revision_evidence","rollback_verified","whole_brain_lineage_verified"]},
-  "canonical_services":["business_graph","external_intelligence","change_impact","decision_lifecycle","action_execution","verification","verified_value","learning","living_memory","graph_feedback","ai_governance"],
+  "canonical_services":["business_graph","external_intelligence","change_impact","decision_lifecycle","action_execution","verification","outcome","verified_value","learning","living_memory","graph_feedback","ai_governance"],
   "platforms":[
     {"platform":"github","lane":"backend","compatibility_mapping":"versioned","regression_contract":"required","direct_promotion":true,"authority":"BG169","hard_boundary_policy":"respect_global"},
     {"platform":"netlify","lane":"backend","compatibility_mapping":"versioned","regression_contract":"required","direct_promotion":true,"authority":"BG169","hard_boundary_policy":"respect_global"},
@@ -30,6 +30,6 @@
   ],
   "telemetry_contract":{"required_fields":["health","freshness","error","owner","cost","revision","capacity","execution_status","last_verified_at"],"projection":"executive_cockpit","memory":"BG167","error_ledger":"BG166","outcome_router":"BG168"},
   "external_execution_contract":{"http_ack_is_not_execution_proof":true,"capacity_states":["available","degraded","paused","quota_exceeded","unknown"],"production_allowed_only_when_capacity":"available","execution_proof_requires":["accepted","executed","authority","candidate_revision","verified_at"],"unknown_or_unverified_action":"fail_closed","incident_stage":"PRODUCTION"},
-  "outcome_contract":{"done_requires":["owner","executed","verified","result","evidence"],"realised_value_requires":["realised","verified","evidence"],"recommendation_loop":["recommendation","owner","execution","verification","measurement","learning"],"canonical_loop":["evidence","graph","intelligence","impact","decision","action","execution","verification","value","learning","memory","graph_feedback"],"completion_requires":"whole_brain_lineage_verified"},
+  "outcome_contract":{"done_requires":["owner","executed","verified","result","evidence"],"realised_value_requires":["realised","verified","evidence"],"recommendation_loop":["recommendation","owner","execution","verification","outcome","measurement","learning"],"canonical_loop":["evidence","graph","intelligence","impact","decision","action","execution","verification","outcome","value","learning","memory","graph_feedback"],"completion_requires":"whole_brain_lineage_verified"},
   "future_components":{"inherit_automatically":true,"unknown_adapter":"fail_closed","no_production_without_contract":true,"required_platform":"agent_runtime"}
 }
