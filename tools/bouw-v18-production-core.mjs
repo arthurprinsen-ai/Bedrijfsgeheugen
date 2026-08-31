@@ -15,7 +15,7 @@ const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6
 // Eigen video uit OpenArt, in de repo en op iPhone getest (assets/openart-hero-production.json).
 // Stond eerder op een pexels-bestand; die werd bij elke build teruggezet.
 const HERO_URL = '/assets/openart-hero-iphone-safe-v1.mp4';
-const HERO_ORIGIN = 'https://videos.pexels.com';
+const HERO_ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
 const parts = await Promise.all(FILES.map(path => readFile(path, 'utf8')));
