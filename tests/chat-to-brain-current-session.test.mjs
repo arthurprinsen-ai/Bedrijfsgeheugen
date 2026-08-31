@@ -13,6 +13,7 @@ test('latest material chat learnings are persisted in the canonical Brain prefli
   assert.ok(paths.has('brain/learning/chat-materialization-2026-08-31-v2.json'));
   assert.ok(paths.has('brain/learning/chat-materialization-2026-08-31-v3.json'));
   assert.ok(paths.has('brain/learning/ph-agent-materiality-preflight-v1.json'));
+  assert.ok(paths.has('brain/learning/chat-make-writeback-blocker-2026-08-31.json'));
   assert.ok(packet.fingerprints.includes('netlify-preview-provider-scope-mismatch-v1'));
   assert.ok(packet.fingerprints.includes('delivery|runtime-path|unclassified-netlify-build-control-v1'));
   assert.ok(packet.fingerprints.includes('delivery|verification|provider-impact-guard-needs-two-sided-proof-v1'));
@@ -21,6 +22,7 @@ test('latest material chat learnings are persisted in the canonical Brain prefli
   assert.ok(packet.fingerprints.includes('make|agent-template|unconditional-bg168-dispatch-on-resume-v1'));
   assert.ok(packet.fingerprints.includes('make|ph-agent-template|caller-side-materiality-v1'));
   assert.ok(packet.fingerprints.includes('brain|preflight|full-canonical-source-exceeds-budget-v1'));
+  assert.ok(packet.fingerprints.includes('brain-writeback-make-team-paused-limit-v1'));
   assert.ok(packet.preventions.includes('CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS'));
   assert.ok(packet.preventions.includes('SKIP_NETLIFY_PREVIEW_ONLY_FOR_PROVEN_NON_SITE_DIFFS'));
   assert.ok(packet.preventions.includes('MATERIALITY_BEFORE_BG168'));
