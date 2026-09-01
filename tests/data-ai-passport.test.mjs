@@ -49,6 +49,52 @@ test('passport records Make EU zone evidence but does not infer storage country 
   assert.equal(passport.assertions.allDataWithinEer.status, PASSPORT_STATUS.NEEDS_EVIDENCE);
 });
 
+test('provider evidence cannot verify an unproven storage location', () => {
+  const passport = createDataAiPassport({
+    storage: [{
+      provider: 'Example Cloud',
+      country: 'Nederland',
+      requestedStatus: 'verified',
+      evidence: [evidence('PROVIDER-1')],
+    }],
+  });
+  assert.equal(passport.storage[0].providerStatus, PASSPORT_STATUS.VERIFIED);
+  assert.equal(passport.storage[0].status, PASSPORT_STATUS.NEEDS_EVIDENCE);
+
+  const verified = createDataAiPassport({
+    storage: [{
+      provider: 'Example Cloud',
+      country: 'Nederland',
+      providerRequestedStatus: 'verified',
+      evidence: [evidence('PROVIDER-1')],
+      locationRequestedStatus: 'verified',
+      locationEvidence: [evidence('REGION-CONFIG-1')],
+    }],
+  });
+  assert.equal(verified.storage[0].status, PASSPORT_STATUS.VERIFIED);
+});
+
+test('provider evidence cannot verify a model-training claim', () => {
+  const passport = createDataAiPassport({
+    aiSystems: [{
+      provider: 'Example AI', model: 'model-x', trainingUse: false,
+      requestedStatus: 'verified', evidence: [evidence('AI-PROVIDER-1')],
+    }],
+  });
+  assert.equal(passport.aiSystems[0].status, PASSPORT_STATUS.VERIFIED);
+  assert.equal(passport.aiSystems[0].trainingUseStatus, PASSPORT_STATUS.NEEDS_EVIDENCE);
+
+  const verified = createDataAiPassport({
+    aiSystems: [{
+      provider: 'Example AI', model: 'model-x', trainingUse: false,
+      requestedStatus: 'verified', evidence: [evidence('AI-PROVIDER-1')],
+      trainingUseRequestedStatus: 'verified',
+      trainingUseEvidence: [evidence('DPA-TRAINING-1')],
+    }],
+  });
+  assert.equal(verified.aiSystems[0].trainingUseStatus, PASSPORT_STATUS.VERIFIED);
+});
+
 test('AI Act use cases are classified per use case, never as one generic platform compliance boolean', () => {
   const passport = createDataAiPassport({
     tenantId: 'asteriq',
