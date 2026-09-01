@@ -1,0 +1,31 @@
+name: Universal Event Retention Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/universal-event-*.mjs'
+      - 'tools/universal-failure-*.mjs'
+      - 'tools/event-retention-*.mjs'
+      - 'tests/universal-event-*.test.mjs'
+      - 'tests/universal-failure-*.test.mjs'
+      - 'tests/event-retention-*.test.mjs'
+      - 'config/universal-event-producers.json'
+      - '.github/workflows/universal-event-retention-contract.yml'
+      - 'docs/superpowers/specs/2026-09-01-universal-brain-event-retention-loop-design.md'
+      - 'docs/superpowers/plans/2026-09-01-universal-brain-event-retention-loop.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Universal event, failure learning, retention, adapter and producer-contract tests
+        run: node --test tests/universal-event-envelope.test.mjs tests/universal-failure-learning.test.mjs tests/event-retention-policy.test.mjs tests/event-retention-expiry.test.mjs tests/universal-event-contract-check.test.mjs tests/universal-event-adapters.test.mjs

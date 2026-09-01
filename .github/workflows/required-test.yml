@@ -1,0 +1,30 @@
+name: Required test
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Run required Brain and universal delivery contracts
+        run: >-
+          node --test
+          tests/brain-adapter-conformance.test.mjs
+          tests/brain-platform-adapters.test.mjs
+          tests/universal-event-envelope.test.mjs
+          tests/event-retention-policy.test.mjs
+          tests/event-retention-expiry.test.mjs
+          tests/universal-event-contract-check.test.mjs
+          tests/universal-event-adapters.test.mjs
+          tests/universal-failure-learning.test.mjs

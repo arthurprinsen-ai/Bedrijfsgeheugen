@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {evaluateAdapterConformance} from '../brain/operating-loop/adapter-conformance.mjs';
 
 const registry=JSON.parse(await readFile('config/brain-platform-adapters.json','utf8'));
-const completeEvidence=platform=>({platform,compatibility_mapping:true,regression_contract:true,shared_memory:true,health:'healthy',freshness:'fresh',error:null,owner:'Integration Guardian',cost:0,revision:'a'.repeat(40),capacity:'available',execution_proof:{accepted:true,executed:true,authority:'BG169',candidate_revision:'a'.repeat(40),verified_at:'2026-09-01T06:00:00Z'},exact_revision_evidence:true,rollback_verified:true,whole_brain_lineage_verified:true,last_verified_at:'2026-09-01T06:00:00Z'});
+const completeEvidence=platform=>({platform,compatibility_mapping:true,regression_contract:true,shared_memory:true,universal_event_ingest:true,health:'healthy',freshness:'fresh',error:null,owner:'Integration Guardian',cost:0,revision:'a'.repeat(40),capacity:'available',execution_proof:{accepted:true,executed:true,authority:'BG169',candidate_revision:'a'.repeat(40),verified_at:'2026-09-01T06:00:00Z'},exact_revision_evidence:true,rollback_verified:true,whole_brain_lineage_verified:true,last_verified_at:'2026-09-01T06:00:00Z'});
 
 test('every registered adapter receives exactly one conformance result',()=>{
   const evidence=Object.fromEntries(registry.platforms.map(p=>[p.platform,completeEvidence(p.platform)]));
@@ -19,6 +19,7 @@ test('registration alone never proves production readiness',()=>{
   assert.ok(result.platforms.every(x=>x.productionReady===false));
   assert.ok(result.platforms.every(x=>x.status==='INCOMPLETE'));
   assert.ok(result.platforms.every(x=>x.missing.includes('health_freshness_error_owner_cost_revision')));
+  assert.ok(result.platforms.every(x=>x.missing.includes('universal_event_ingest')));
 });
 
 test('unavailable capacity or unverified execution blocks production',()=>{
