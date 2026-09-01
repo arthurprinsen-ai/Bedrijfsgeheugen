@@ -1,12 +1,18 @@
 import {getUser} from '@netlify/identity';
 import {createRuntimeMetricHandler} from '../../platform/api/runtime-metric-handler.mjs';
-const endpoint=()=>String(process.env.SUPABASE_URL||'').replace(/\/$/,'');
-const serviceKey=()=>String(process.env.SUPABASE_SERVICE_ROLE_KEY||'');
-async function writeMetric(metric){
-  const base=endpoint(),key=serviceKey();if(!base||!key){const error=new Error('metrics store unconfigured');error.code='METRICS_STORE_UNCONFIGURED';throw error;}
-  const response=await fetch(`${base}/rest/v1/brain_runtime_metrics`,{method:'POST',headers:{apikey:key,authorization:`Bearer ${key}`,'content-type':'application/json',prefer:'return=minimal'},body:JSON.stringify({tenant_id:metric.tenantId,surface:metric.surface,route:metric.route,metric_name:metric.metricName,metric_value_ms:metric.metricValueMs,cache_state:metric.cacheState,revision:metric.revision,session_id:metric.sessionId,metadata:metric.metadata})});
-  if(!response.ok) throw new Error(`runtime metric write failed: ${response.status}`);
+
+const ingestUrl=()=>String(process.env.BRAIN_RUNTIME_METRIC_INGEST_URL||'').trim();
+async function writeMetric(metric,authorization){
+  const url=ingestUrl();
+  if(!url){const error=new Error('metrics ingest unconfigured');error.code='METRICS_STORE_UNCONFIGURED';throw error;}
+  if(!String(authorization||'').startsWith('Bearer ')){const error=new Error('metric authorization unavailable');error.code='UNAUTHENTICATED';throw error;}
+  const response=await fetch(url,{method:'POST',headers:{authorization,'content-type':'application/json','accept':'application/json'},body:JSON.stringify(metric)});
+  if(!response.ok){const error=new Error(`runtime metric ingest failed: ${response.status}`);error.code=response.status===401?'UNAUTHENTICATED':'METRIC_PERSIST_FAILED';throw error;}
 }
-const handler=createRuntimeMetricHandler({getUser:()=>getUser(),writeMetric});
-export default async request=>handler(request);
+
+export default async request=>{
+  const authorization=request.headers.get('authorization')||'';
+  const handler=createRuntimeMetricHandler({getUser:()=>getUser(),writeMetric:metric=>writeMetric(metric,authorization)});
+  return handler(request);
+};
 export const config={path:'/api/brain-runtime-metric'};
