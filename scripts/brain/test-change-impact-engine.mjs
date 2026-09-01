@@ -12,4 +12,14 @@ if(result.impacts[0].subjectId!=='system:crm'||result.impacts[0].impactScore!==.
 if(Math.abs(result.impacts[1].impactScore-.648)>.000001) throw new Error('multi-hop impact score must decay deterministically');
 if(result.impacts[1].evidenceIds.join(',')!=='e1,e2') throw new Error('impact must preserve evidence chain');
 if(result.impacts[1].path.join('>')!=='process:sales>system:crm>team:sales') throw new Error('impact path missing');
+
+const lineage=[
+ {tenantId:'t1',kind:'evidence',type:'Evidence',id:'ev-1',subjectId:'integration:source',evidenceIds:['source-proof'],observedAt:'2026-09-01T06:00:00Z',payload:{}},
+ {tenantId:'t1',kind:'action',type:'Action',id:'act-1',subjectId:'change:release',predecessorIds:['ev-1'],evidenceIds:['action-proof'],observedAt:'2026-09-01T06:01:00Z',payload:{}},
+ {tenantId:'t1',kind:'verification',type:'Verification',id:'ver-1',subjectId:'production:release',predecessorIds:['act-1'],evidenceIds:['production-proof'],observedAt:'2026-09-01T06:02:00Z',payload:{}}
+];
+const lineageResult=analyzeChangeImpact(lineage,{tenantId:'t1',subjectId:'integration:source',maxDepth:3});
+if(lineageResult.impacts.map(x=>x.subjectId).join(',')!=='change:release,production:release') throw new Error('predecessor lineage must be traversed as canonical dependencies');
+if(lineageResult.impacts[1].path.join('>')!=='integration:source>change:release>production:release') throw new Error('lineage traversal path missing');
+if(!lineageResult.impacts[1].evidenceIds.includes('production-proof')) throw new Error('lineage impact must preserve successor evidence');
 console.log('change impact engine tests passed');

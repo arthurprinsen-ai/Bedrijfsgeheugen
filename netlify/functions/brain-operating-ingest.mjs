@@ -1,9 +1,6 @@
-import {getStore} from '@netlify/blobs';
-import {createOperatingLoopStore} from '../../brain/operating-loop/store.mjs';
-import {createBlobAdapter} from '../../brain/operating-loop/netlify-adapter.mjs';
-import {createServiceIngestHandler} from '../../platform/api/brain-operating-service-handler.mjs';
-const parseCredentials=()=>{try{const value=JSON.parse(process.env.BRAIN_SERVICE_CREDENTIALS_JSON||'[]');return Array.isArray(value)?value:[];}catch{return [];}};
-const blobs=getStore({name:'brain-operating-loop',consistency:'strong'});
-const store=createOperatingLoopStore(createBlobAdapter(blobs));
-export default async request=>createServiceIngestHandler({store,credentials:parseCredentials()})(request);
+const CANONICAL_BRAIN_SERVICE_INGEST='canonical-supabase-authority-only';
+export default async request=>{
+  if(request.method!=='POST') return new Response('Method Not Allowed',{status:405,headers:{allow:'POST'}});
+  return Response.json({error:'LEGACY_BRAIN_INGEST_RETIRED',authority:CANONICAL_BRAIN_SERVICE_INGEST,action:'use canonical Brain producer/BG168 path'},{status:410,headers:{'cache-control':'no-store'}});
+};
 export const config={path:'/api/brain-operating-ingest'};

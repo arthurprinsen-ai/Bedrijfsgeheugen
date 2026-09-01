@@ -1,10 +1,28 @@
 const clamp=v=>Math.max(0,Math.min(1,Number(v)||0));
 const unique=xs=>[...new Set(xs.filter(Boolean))];
+const isRelation=r=>r?.type==='Relation'||r?.kind==='relation';
+const subject=r=>String(r?.subjectId||r?.id||'').trim();
+
+function canonicalRelations(records,tenantId){
+  const scoped=(Array.isArray(records)?records:[]).filter(r=>String(r?.tenantId)===String(tenantId));
+  const explicit=scoped.filter(r=>isRelation(r)&&r.payload?.from&&r.payload?.to);
+  const byId=new Map(scoped.filter(r=>r?.id).map(r=>[String(r.id),r]));
+  const lineage=[];
+  for(const record of scoped.filter(r=>!isRelation(r))){
+    const to=subject(record); if(!to) continue;
+    for(const predecessorId of unique(Array.isArray(record.predecessorIds)?record.predecessorIds:[])){
+      const predecessor=byId.get(String(predecessorId)); if(!predecessor||isRelation(predecessor)) continue;
+      const from=subject(predecessor); if(!from||from===to) continue;
+      lineage.push({tenantId:String(tenantId),kind:'relation',type:'Relation',id:`lineage:${predecessorId}->${record.id}`,evidenceIds:unique([...(predecessor.evidenceIds||[]),...(record.evidenceIds||[])]),payload:{from,to,relation:'depends_on_lineage',weight:1}});
+    }
+  }
+  return [...explicit,...lineage];
+}
 
 export function analyzeChangeImpact(records,{tenantId,subjectId,maxDepth=3,hopDecay=.9}={}){
   if(!tenantId||!subjectId) throw new TypeError('impact analysis requires tenantId and subjectId');
   const depthLimit=Math.max(0,Math.min(10,Number(maxDepth)||0)); const decay=clamp(hopDecay);
-  const relations=(Array.isArray(records)?records:[]).filter(r=>r?.tenantId===tenantId&&r?.kind==='relation'&&r.payload?.from&&r.payload?.to);
+  const relations=canonicalRelations(records,tenantId);
   const outgoing=new Map();
   for(const relation of relations){
     const from=String(relation.payload.from); const edge={to:String(relation.payload.to),relation:relation.payload.relation||'related_to',weight:clamp(relation.payload.weight??1),evidenceIds:Array.isArray(relation.evidenceIds)?relation.evidenceIds:[],relationId:relation.id};

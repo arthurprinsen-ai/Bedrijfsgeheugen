@@ -71,7 +71,7 @@
     {
       "id": "backend",
       "owner": "agent-integration-make",
-      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/main-write-integrity.mjs", "tools/delivery-", "tests/supabase-", "tests/brain-", "tests/whole-brain-", "tests/agent-fabric", "tests/branch-delivery-", "tests/direct-main-postwrite-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-", "tests/chat-learning-", "tests/chat-to-brain-", "tests/make-agent-learning-", "tests/make-agent-resume-"],
+      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/main-write-integrity.mjs", "tools/delivery-", "tools/platform-promotion-", "tests/supabase-", "tests/brain-", "tests/whole-brain-", "tests/agent-fabric", "tests/branch-delivery-", "tests/direct-main-postwrite-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-", "tests/platform-promotion-", "tests/chat-learning-", "tests/chat-to-brain-", "tests/make-agent-learning-", "tests/make-agent-resume-"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
