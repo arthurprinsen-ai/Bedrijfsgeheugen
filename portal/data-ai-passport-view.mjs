@@ -14,7 +14,7 @@ export function renderDataAiPassport(state = {}) {
   return `<section class="passport-page">
     <header class="passport-head">
       <div>
-        <a class="passport-back" href="./index.html#/company/data">← Terug naar Data & systemen</a>
+        <a class="passport-back" href="https://www.bedrijfsgeheugen.nl/portal/index.html#/company/data">← Terug naar Data & systemen</a>
         <p class="eyebrow">DATA & AI PASSPORT</p>
         <h1>Bewijs boven aannames.</h1>
         <p>Dit overzicht toont uitsluitend wat aantoonbaar is. Een ontbrekende bron wordt nooit als compliance of zekerheid gepresenteerd.</p>
