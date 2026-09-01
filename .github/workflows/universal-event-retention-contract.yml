@@ -5,9 +5,9 @@ on:
     branches: [main]
     paths:
       - 'tools/universal-event-*.mjs'
-      - 'tools/event-retention-policy.mjs'
+      - 'tools/event-retention-*.mjs'
       - 'tests/universal-event-*.test.mjs'
-      - 'tests/event-retention-policy.test.mjs'
+      - 'tests/event-retention-*.test.mjs'
       - 'config/universal-event-producers.json'
       - '.github/workflows/universal-event-retention-contract.yml'
       - 'docs/superpowers/specs/2026-09-01-universal-brain-event-retention-loop-design.md'
@@ -26,4 +26,4 @@ jobs:
         with:
           node-version: '22'
       - name: Universal event, retention, adapter and producer-contract tests
-        run: node --test tests/universal-event-envelope.test.mjs tests/event-retention-policy.test.mjs tests/universal-event-contract-check.test.mjs tests/universal-event-adapters.test.mjs
+        run: node --test tests/universal-event-envelope.test.mjs tests/event-retention-policy.test.mjs tests/event-retention-expiry.test.mjs tests/universal-event-contract-check.test.mjs tests/universal-event-adapters.test.mjs
