@@ -5,7 +5,7 @@ on:
     paths:
       - 'config/universal-closed-loop-learning.json'
       - 'scripts/brain/validate-universal-closed-loop-learning.mjs'
-      - 'tests/universal-closed-loop-learning.test.mjs'
+      - 'tests/brain-universal-closed-loop-learning.test.mjs'
       - '.github/workflows/universal-closed-loop-learning.yml'
       - 'docs/superpowers/specs/2026-09-01-estate-wide-closed-loop-learning-design.md'
   push:
@@ -13,7 +13,7 @@ on:
     paths:
       - 'config/universal-closed-loop-learning.json'
       - 'scripts/brain/validate-universal-closed-loop-learning.mjs'
-      - 'tests/universal-closed-loop-learning.test.mjs'
+      - 'tests/brain-universal-closed-loop-learning.test.mjs'
 
 jobs:
   universal-closed-loop:
@@ -26,4 +26,4 @@ jobs:
       - name: Validate contract
         run: node scripts/brain/validate-universal-closed-loop-learning.mjs
       - name: Regression tests
-        run: node --test tests/universal-closed-loop-learning.test.mjs
+        run: node --test tests/brain-universal-closed-loop-learning.test.mjs
