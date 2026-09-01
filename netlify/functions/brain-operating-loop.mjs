@@ -8,6 +8,7 @@ const authorityUrl=()=>String(Netlify.env.get('BRAIN_OPERATING_AUTHORITY_URL')||
 
 export default async request=>{
   const authorization=request.headers.get('authorization')||'';
+  if(!/^Bearer\s+.+/i.test(authorization)) return Response.json({error:'UNAUTHENTICATED'},{status:401,headers:{'cache-control':'private, no-store'}});
   let store;
   try{
     store=createOperatingLoopStore(createRemoteRecordAdapter({baseUrl:authorityUrl(),authorization}),{adapterContract});
