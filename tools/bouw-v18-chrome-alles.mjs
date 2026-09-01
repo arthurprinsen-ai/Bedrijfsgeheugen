@@ -181,6 +181,40 @@ for await (const p of glob('components/*/*.html')) {
   }
 }
 
+// Sfeerfoto's kwamen van een fotosite. Een hotlink is trager, kan wegvallen en
+// telt mee in de laadtijd die Google meet. Ze staan nu in de repo; de build zet
+// de verwijzingen om, ook als er andere parameters achter de URL staan.
+{
+  const FOTOS = {
+    "3184360": "/assets/foto/sfeer-3184360.jpg",
+    "3184423": "/assets/foto/sfeer-3184423.jpg",
+    "3184465": "/assets/foto/sfeer-3184465.jpg",
+    "36733421": "/assets/foto/sfeer-36733421.jpg",
+    "5673494": "/assets/foto/sfeer-5673494.jpg",
+    "7710178": "/assets/foto/sfeer-7710178.jpg"
+};
+  for await (const p of [...await lijst('*.html'), ...await lijst('blog/*/index.html')]) {
+    let h = await readFile(p, 'utf8');
+    let veranderd = false;
+    for (const [nummer, doel] of Object.entries(FOTOS)) {
+      const patroon = new RegExp('https://images\\.pexels\\.com/photos/' + nummer + '/[^"\'\\s)]*', 'g');
+      if (patroon.test(h)) { h = h.replace(patroon, doel); veranderd = true; }
+    }
+    // laadt pas wanneer nodig; scheelt op een telefoon een halve seconde
+    if (h.includes('<img') && !h.includes('loading="lazy"')) {
+      h = h.replace(/<img (?![^>]*loading=)/g, '<img loading="lazy" decoding="async" ');
+      veranderd = true;
+    }
+    if (veranderd) await writeFile(p, h, 'utf8');
+  }
+}
+
+async function lijst(patroon) {
+  const uit = [];
+  for await (const p of glob(patroon)) uit.push(p);
+  return uit;
+}
+
 // Een zichtbaar bouwstempel onderaan elke pagina. Zonder dit is niet te zien of
 // je naar de nieuwe versie kijkt of naar een gecachte oude, en dat kost meer
 // tijd dan het stempel zelf.
