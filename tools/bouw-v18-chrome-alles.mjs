@@ -13,7 +13,9 @@ import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEEL
 
 // de gegevensbalk komt boven de kop; één keer, ook als de stap vaker draait
 function metGegevens(html) {
-  if (html.includes('bgx-gegevens')) return html;
+  // let op: de opmaak met .bgx-gegevens staat al in de pagina, dus controleren
+  // op het element zelf — anders slaat deze stap zichzelf over
+  if (html.includes('<div class="bgx-gegevens">')) return html;
   return html.replace('<header class="v17-header"', GEGEVENS + '<header class="v17-header"')
              .replace('</body>', LOCATIE_SCHEMA + '\n</body>');
 }
