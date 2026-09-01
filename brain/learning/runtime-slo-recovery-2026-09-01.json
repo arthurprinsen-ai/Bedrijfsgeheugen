@@ -1,0 +1,91 @@
+{
+  "id": "runtime-slo-recovery-2026-09-01",
+  "type": "FailureLearningBundle",
+  "status": "PROVEN_RECOVERY_WITH_OPEN_RUM_OBLIGATION",
+  "captured_at": "2026-09-01",
+  "scope": "Runtime RUM/SLO schema recovery and native protected-delivery learnings proven during the 2026-09-01 repair cycle.",
+  "failures": [
+    {
+      "fingerprint": "runtime-slo-relation-kind-preflight-missing-v1",
+      "status": "PROVEN_RECOVERED",
+      "component": "Supabase/runtime observability",
+      "stage": "schema migration",
+      "symptom": "A production migration failed because it attempted to create an index on brain_runtime_slo, which is a PostgreSQL view.",
+      "rootCause": "Information-schema column inspection plus absence of triggers/routines was incorrectly interpreted as table-backed missing aggregation. pg_class and pg_get_viewdef later proved brain_runtime_slo already existed as a canonical view over brain_runtime_metrics.",
+      "failedApproach": "Infer storage architecture from columns and missing triggers, then add table/index/trigger/upsert machinery without checking relation kind and view definition.",
+      "provenFix": "PR #942 preserved the existing view architecture with CREATE OR REPLACE VIEW; production migration runtime_slo_existing_view_matched_samples applied successfully and independent readback confirmed relkind=v.",
+      "prevention": "RELATION_KIND_AND_VIEW_DEFINITION_PREFLIGHT_BEFORE_DDL",
+      "regressionContract": "tests/supabase-runtime-slo-migration-contract.test.mjs"
+    },
+    {
+      "fingerprint": "runtime-slo-raw-count-overstates-matched-samples-v1",
+      "status": "PROVEN_RECOVERED",
+      "component": "brain_runtime_slo",
+      "stage": "runtime evidence",
+      "symptom": "The pre-existing view counted every cached_ms and interactive_ms row together, overstating complete SLO sample coverage.",
+      "rootCause": "count(*) treated heterogeneous metric rows as independently complete observations.",
+      "provenFix": "Production view now reports samples as LEAST(cached_ms count, interactive_ms count) while retaining p95 computation from genuine persisted metrics only.",
+      "prevention": "COUNT_MATCHED_MULTI_METRIC_COVERAGE_CONSERVATIVELY",
+      "regressionContract": "tests/supabase-runtime-slo-migration-contract.test.mjs"
+    },
+    {
+      "fingerprint": "native-up-to-date-protection-forces-fresh-candidate-v1",
+      "status": "PROVEN_RECOVERED",
+      "component": "GitHub delivery",
+      "stage": "merge/promotion",
+      "symptom": "PR #939 was green on its exact head but GitHub refused merge with required status check test expected after main advanced.",
+      "rootCause": "Native branch protection requires the candidate branch to be current with main; raw PR state was mergeable_state=behind, and the available connector has no update-branch merge action.",
+      "failedApproach": "Retry the same merge on the unchanged behind head after checks were green.",
+      "provenFix": "Compare main drift first, prove no file/contract overlap, close the behind PR as superseded, replay the exact delta from current protected main, rerun gates and merge the fresh candidate by expected head SHA.",
+      "prevention": "BEHIND_PLUS_REQUIRE_UP_TO_DATE_MEANS_REFRESH_CANDIDATE_NOT_RETRY_MERGE"
+    },
+    {
+      "fingerprint": "supabase-failed-migration-safe-no-mutation-v1",
+      "status": "PROVEN",
+      "component": "Supabase migration delivery",
+      "stage": "production apply",
+      "symptom": "The first runtime-SLO migration was rejected due to the view/table mismatch.",
+      "rootCause": "Wrong relation-kind assumption before DDL.",
+      "provenFix": "Treat the failed apply as non-success, independently read back schema state, correct source through protected PR delivery, then apply a new valid migration and verify the production definition.",
+      "prevention": "POST_FAILURE_SCHEMA_READBACK_BEFORE_MIGRATION_RECOVERY"
+    }
+  ],
+  "productionEvidence": {
+    "main": "3ca7b7b5b40c96f2f971b242187d2b52f837a319",
+    "mainProtected": true,
+    "requiredCheck": "test",
+    "pr": 942,
+    "netlifyDeploy": "6a96d98872992b00081666d3",
+    "netlifyState": "ready",
+    "netlifyContext": "production",
+    "netlifyCommitRef": "3ca7b7b5b40c96f2f971b242187d2b52f837a319",
+    "supabaseMigration": "runtime_slo_existing_view_matched_samples",
+    "runtimeMetricRows": 0,
+    "runtimeSloRows": 0,
+    "syntheticEvidenceCreated": false
+  },
+  "openObligations": [
+    {
+      "fingerprint": "authenticated-runtime-rum-evidence-v1",
+      "status": "WAITING_REAL_TRAFFIC",
+      "requirement": "Only genuine authenticated portal/browser sessions may create runtime metrics. Keep RUM/SLO NOT_PROVEN until real samples exist and the minimum matched-sample contract is met."
+    },
+    {
+      "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+      "status": "BLOCKED_HARD_BOUNDARY",
+      "requirement": "Replay this exact semantic learning bundle once via BG168->BG166 when Make becomes executable. Do not retry while the organization/team remains paused."
+    }
+  ],
+  "crossCuttingInvariants": [
+    "Inspect relation kind and canonical view definition before DDL against an existing database relation.",
+    "Absence of triggers does not prove absence of derived state; views and materialized views must be inspected.",
+    "A protected PR that is behind current main is refreshed or superseded, not repeatedly merged.",
+    "Runtime evidence remains real-user-only; migration correctness is not RUM proof."
+  ],
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false,
+    "contains_raw_private_chat": false
+  }
+}
