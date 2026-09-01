@@ -10,7 +10,7 @@
 export const ZOEKWOORD_PER_PAGINA = {
   "/blog/systemen-koppelen-mkb/": "systemen koppelen mkb",
   "/blog/wat-kost-digitalisering-mkb/": "wat kost digitalisering mkb",
-  "/blog/bedrijfsopvolging-begin-bij-het-geheugen/": "bedrijfsopvolging familiebedrijf kennis",
+  "/blog/bedrijfsopvolging-begin-bij-het-geheugen/": "bedrijfsopvolging",
   "/blog/eu-ai-act-mkb/": "eu ai act mkb",
   "/blog/wat-kost-een-afas-koppeling/": "afas koppeling kosten",
   "/afas-pocket-koppelen": "afas pocket app koppelen",
@@ -19,8 +19,8 @@ export const ZOEKWOORD_PER_PAGINA = {
   "/product": "kennisborging mkb",
   "/blog/werkinstructie-voorbeeld/": "werkinstructie voorbeeld",
   "/ai-adoptie": "ai adoptie mkb",
-  "/ai-act": "ai act compliance mkb",
-  "/workshops": "ai workshop mkb",
+  "/ai-act": "ai act",
+  "/workshops": "ai workshop",
   "/ai-governance": "ai governance mkb",
   "/ai-capability-model": "ai capability model",
   "/data-soevereiniteit": "data soevereiniteit",
@@ -29,16 +29,17 @@ export const ZOEKWOORD_PER_PAGINA = {
   "/ai-implementeren": "ai implementeren mkb",
   "/ai-poc": "ai pilot opzetten mkb",
   "/bedrijfsprocessen-automatiseren": "bedrijfsprocessen automatiseren",
-  "/exact-online-koppeling": "exact online koppeling",
-  "/api-koppeling-laten-maken": "api koppeling laten maken",
-  "/twinfield-koppeling": "twinfield koppeling",
+  "/exact-online-koppeling": "exact online api",
+  "/api-koppeling-laten-maken": "afas api",
+  "/twinfield-koppeling": "twinfield boekhouding",
   "/webshop-koppeling": "webshop koppelen boekhouding",
   "/ai-scan": "ai scan mkb",
   "/benchmark": "benchmark mkb digitalisering",
   "/afmaakindex": "afmaakindex",
   "/bedrijfsgeheugen": "bedrijfsgeheugen",
   "/blog/wat-is-een-bedrijfsgeheugen/": "kennisverlies mkb",
-  "/begrippen": "begrippenlijst mkb"
+  "/begrippen": "begrippenlijst mkb",
+  "/afas-koppeling": "afas koppeling"
 };
 
 // Het pad van een bestand terug naar het adres zoals het in de lijst staat.
