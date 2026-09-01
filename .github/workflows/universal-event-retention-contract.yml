@@ -1,0 +1,28 @@
+name: Universal Event Retention Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/universal-event-*.mjs'
+      - 'tools/event-retention-policy.mjs'
+      - 'tests/universal-event-*.test.mjs'
+      - 'tests/event-retention-policy.test.mjs'
+      - '.github/workflows/universal-event-retention-contract.yml'
+      - 'docs/superpowers/specs/2026-09-01-universal-brain-event-retention-loop-design.md'
+      - 'docs/superpowers/plans/2026-09-01-universal-brain-event-retention-loop.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Universal event envelope tests
+        run: node --test tests/universal-event-envelope.test.mjs
