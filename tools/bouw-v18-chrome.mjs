@@ -213,7 +213,7 @@ export async function bouwPagina({ schil, basisCss, bestand, doel, titel, omschr
       return alOmhuld ? m[0] : `<script${attrs}>(function(){\n${lijf}\n})();</script>`;
     }).join('\n');
 
-  const hero = `<section class="inhoud-kop">
+  const hero = `<section class="inhoud-kop" data-altijd>
 <video autoplay muted playsinline loop preload="metadata" aria-hidden="true"><source src="${HERO_URL}" type="video/mp4"></video>
 <div class="wrap">
 ${kicker ? `<div class="hero-kicker"><span></span> ${kicker}</div>` : ''}
