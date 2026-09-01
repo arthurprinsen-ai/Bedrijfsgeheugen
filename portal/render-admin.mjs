@@ -6,7 +6,7 @@ import { buildPlatformPassport } from './data-ai-passport-platform.mjs';
 
 const known=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
 const show=v=>known(v)?String(v):'—';
-const esc=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const esc=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const groups=()=>[...new Set(LEGACY_WORKSPACES.map(x=>x.group))].map(group=>({group,items:LEGACY_WORKSPACES.filter(x=>x.group===group)}));
 function currentOffer(){try{const slug=new URLSearchParams(globalThis.location?.search||'').get('klant')||'';const user=globalThis.netlifyIdentity?.currentUser?.()||null;return readLegacyOffer({storage:globalThis.sessionStorage,extraStorage:globalThis.localStorage,slug,user,allowDemo:true})}catch{return null}}
 
