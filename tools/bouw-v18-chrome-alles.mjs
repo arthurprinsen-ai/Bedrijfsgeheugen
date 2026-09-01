@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises';
 import { leesSchil, bouwPagina, zetKop, kruimelpad, INHOUD_CSS } from './bouw-v18-chrome.mjs';
 import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
 import { VERVANGEN } from './v18-views-lijst.mjs';
+import { zoekwoordVoor } from './zoekwoorden.mjs';
 import { knoppenNaarLinks } from './bouw-v18-chrome.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK } from './v18-modules.mjs';
 
@@ -102,7 +103,9 @@ for (const p of v18Paginas) {
   const omschrijving = tussen(html, /<meta name="description" content="([^"]*)"/i);
   const canoniek = tussen(html, /<link rel="canonical" href="([^"]+)"/i) || 'https://www.bedrijfsgeheugen.nl' + p.pad;
 
-  html = zetKop(html, titel, omschrijving, canoniek, tussen(html, /<meta name="bg-zoekwoord" content="([^"]*)"/i));
+  const eigenZoekwoord = zoekwoordVoor(p.bestand);
+  html = zetKop(html, titel, omschrijving, canoniek, eigenZoekwoord);
+  if (!eigenZoekwoord) html = html.replace(/<meta name="bg-zoekwoord"[^>]*>\s*/g, '');
 
   if (!html.includes('inhoud-kruim')) {
     const mainStart = html.indexOf('<main');
