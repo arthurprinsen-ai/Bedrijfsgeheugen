@@ -24,5 +24,5 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Universal event envelope tests
-        run: node --test tests/universal-event-envelope.test.mjs
+      - name: Universal event and retention tests
+        run: node --test tests/universal-event-envelope.test.mjs tests/event-retention-policy.test.mjs
