@@ -5,7 +5,7 @@ import { leesSchil, bouwPagina, zetKop, kruimelpad, INHOUD_CSS } from './bouw-v1
 import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
 import { VERVANGEN } from './v18-views-lijst.mjs';
 import { knoppenNaarLinks } from './bouw-v18-chrome.mjs';
-import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk } from './v18-modules.mjs';
+import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK } from './v18-modules.mjs';
 
 // Zet elke contentpagina in dezelfde v18-schil: kop, navigatie, videoband,
 // kruimelpad, voet en opmaak. Titel, omschrijving, canoniek en het zoekwoord
@@ -127,17 +127,26 @@ for (const p of v18Paginas) {
   await writeFile(p.bestand, html, 'utf8');
 }
 
-// de homepage krijgt alleen het organisatieschema erbij; die heeft haar eigen beweging
+// De homepage houdt haar eigen beweging, maar krijgt wel dezelfde speelse laag
+// als de rest: het lek-geeltje, de geeltjes bij 'geheugen' of vijf tikken op het
+// woordmerk, de gloed onder de muis, de leesbalk en de knop terug naar boven.
+// Zonder dit voelt de homepage anders aan dan elke pagina die erop volgt.
 {
   let home = await readFile('index.html', 'utf8');
   home = home.replace(/<img[^>]*portal-v18-full\.png[^>]*>/g, PORTAALBEELD);
-  home = home.includes('v18-modules') ? home : home.replace('</head>', MODULE_CSS + '\n</head>').replace('</body>', MODULE_JS + '\n</body>');
-  home = hoofdletterMerk(home);
-  await writeFile('index.html', home, 'utf8');
+  if (!home.includes('v18-modules')) {
+    home = home.replace('</head>', MODULE_CSS + '\n</head>').replace('</body>', MODULE_JS + '\n</body>');
+  }
+  if (!home.includes('v18-speels')) {
+    home = home.replace('</head>', SPEELS_CSS + '\n</head>');
+    home = home.replace('</main>', VERTREK + '</main>');
+    home = home.replace('</body>', LEK + '\n' + EXTRA_HTML + '\n' + SPEELS_JS + '\n' + INTERACTIE_JS + '\n</body>');
+  }
   if (!home.includes('"@type":"Organization"')) {
     home = home.replace('</body>', ORGANISATIE_SCHEMA + '\n</body>');
-    await writeFile('index.html', home, 'utf8');
   }
+  home = hoofdletterMerk(home);
+  await writeFile('index.html', home, 'utf8');
 }
 
 console.log(`V18-schil om ${goed} paginas gezet, ${v18Paginas.length} v18-paginas nagelopen`);
