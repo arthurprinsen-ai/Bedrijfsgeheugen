@@ -187,3 +187,44 @@ de gebruiker. Een opgevraagde URL in plaats van een geklikte link.
 
 De vaste volgorde is daarom: **bouw schoon → open in een browser → meet wat een
 bezoeker doet → controleer het versiestempel → pas dan melden dat het klaar is.**
+
+## Toevoegingen van 1 september, avond
+
+### "Commit geweigerd" heeft drie totaal verschillende oorzaken
+
+**Verschijnsel.** Vier commits geweigerd met *409 Conflict — het bestand wordt
+gewijzigd door een ander proces*. Ik concludeerde dat er iets anders tegelijk
+schreef. Dat klopte niet.
+
+**Oorzaak.** `main` is beschermd en vereist de statuscheck `test`. De
+Contents-API vertaalt dat naar een misleidende 409. Pas via de Git-database-API
+kwam de echte melding: *Required status check "test" is expected*.
+
+**Regel.** Onderscheid **build faalt**, **schrijfconflict** en **beschermde
+branch**. De Contents-API wijst de verkeerde kant op; ref → commit → tree →
+update geeft de echte reden. In deze repo loopt alles via een pull request: tak,
+PR, wachten tot `test` groen is, dan mergen.
+
+### Een controle die naar de verkeerde string kijkt slaat zichzelf over
+
+**Verschijnsel.** De gegevensbalk stond in de opmaak van elke pagina maar het
+element verscheen nergens. Ik telde `bgx-gegevens`, kreeg 7 treffers — allemaal
+CSS-regels — en concludeerde dat het werkte. Twee keer dezelfde meetfout, ook
+lokaal.
+
+**Oorzaak.** De guard luidde `if (html.includes('bgx-gegevens')) return html;`.
+Die tekst stond al in de pagina als stijlblok, dus de stap sloeg zichzelf over.
+
+**Regel.** Een controle op "is dit er al?" kijkt naar het **element**
+(`<div class="bgx-gegevens">`), nooit naar een naam die ook in de opmaak staat.
+En bij meten: tel elementen, niet strings.
+
+### Definitieve werkvolgorde
+
+1. Bouw lokaal vanuit een **schone checkout** — nooit in een map waar al gebouwd is
+2. Open het resultaat in een browser, op telefoonformaat én desktop
+3. Tel **elementen**, niet strings; klik wat een bezoeker klikt
+4. Tak + pull request; wacht tot `test` groen is
+5. Merge, wacht op de build
+6. Controleer dat **`/versie.txt` is opgeschoven**
+7. Pas dan melden dat het klaar is
