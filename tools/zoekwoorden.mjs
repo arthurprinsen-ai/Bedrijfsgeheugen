@@ -42,6 +42,9 @@ export const ZOEKWOORD_PER_PAGINA = {
 };
 
 // Het pad van een bestand terug naar het adres zoals het in de lijst staat.
+// het woord van de homepage: geen andere pagina mag dit claimen
+export const HOMEPAGE_WOORD = 'digitalisering mkb';
+
 export function zoekwoordVoor(bestand) {
   const pad = bestand === 'index.html'
     ? '/'
