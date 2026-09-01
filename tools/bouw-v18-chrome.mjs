@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { TABEL_CSS, INTERACTIE_CSS, INTERACTIE_JS, verrijkInhoud, opDezePagina, mensenblok, schemas, ORGANISATIE_SCHEMA, EXTRA_HTML, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
 import { zoekwoordVoor, HOMEPAGE_WOORD, titelVoor } from './zoekwoorden.mjs';
 import { clusterblok, CLUSTER_CSS } from './clusters.mjs';
+import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-beweging.mjs';
 import { CONTEXT_CSS, CONTEXT_JS, RING, legTermenUit, rolblok, MODULE_CSS, MODULE_JS, bouwModules, SPEELS_CSS, SPEELS_JS, LEK, VERTREK, zetStrepen, VRAAG_CSS, VRAAG_JS, VRAAGBALK, OVERTYP, hoofdletterMerk } from './v18-modules.mjs';
 
 // Zet elke pagina in de opmaak van de homepage: dezelfde kop, navigatie, voet,
@@ -247,6 +248,7 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
   if (overtypen) tussendoor.push(OVERTYP);
   const { body: rekenblok } = bouwModules('');
   tussendoor.push(rekenblok);
+  tussendoor.push(vergelijker(kaalTekst(titel).split('|')[0].trim().toLowerCase()));
   tussendoor.push(clusterblok(bestand));
   tussendoor.push(rolblok(kaalTekst(titel).split('|')[0].trim().toLowerCase()));
 
@@ -266,8 +268,8 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
     + LEK
     + schil.na;
 
-  html = html.replace('</head>', `${eigenStijl}\n${INHOUD_CSS}\n${INTERACTIE_CSS}\n${VOLGENDE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${TABEL_CSS}\n${CONTEXT_CSS}\n${CLUSTER_CSS}\n</head>`);
-  html = html.replace('</body>', `${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${ORGANISATIE_SCHEMA}\n${schemas({ isBlog, titel, omschrijving, canoniek, h1, body: levend })}\n</body>`);
+  html = html.replace('</head>', `${eigenStijl}\n${INHOUD_CSS}\n${INTERACTIE_CSS}\n${VOLGENDE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${TABEL_CSS}\n${CONTEXT_CSS}\n${BEWEGING_CSS}\n${CLUSTER_CSS}\n</head>`);
+  html = html.replace('</body>', `${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${BEWEGING_JS}\n${ORGANISATIE_SCHEMA}\n${schemas({ isBlog, titel, omschrijving, canoniek, h1, body: levend })}\n</body>`);
   html = knoppenNaarLinks(html);
   html = routerLaatLinksDoor(html);
   html = html.replace('</body>', `${scripts}\n</body>`);
@@ -280,6 +282,7 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
     || (geerfd && geerfd.toLowerCase() !== HOMEPAGE_WOORD ? geerfd : '');
   html = zetKop(html, titelVoor(bestand) || titel, omschrijving, canoniek, eigenZoekwoord);
   if (!eigenZoekwoord) html = html.replace(/<meta name="bg-zoekwoord"[^>]*>\s*/g, '');
+  html = maakBeweeglijk(html);
   html = hoofdletterMerk(html);
 
   await writeFile(doel, html, 'utf8');
