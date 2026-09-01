@@ -6,6 +6,7 @@ import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenbl
 import { VERVANGEN } from './v18-views-lijst.mjs';
 import { zoekwoordVoor, titelVoor } from './zoekwoorden.mjs';
 import { knoppenNaarLinks, HERO_URL } from './bouw-v18-chrome.mjs';
+import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-beweging.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK,
          VRAAGBALK, VRAAG_CSS, VRAAG_JS, CONTEXT_CSS, CONTEXT_JS, RING, rolblok, bouwModules } from './v18-modules.mjs';
 
@@ -157,7 +158,7 @@ for (const p of v18Paginas) {
   if (!home.includes('bgx-vraagbalk"')) {
     const { body: rekenaar } = bouwModules('');
     const blok = `<section class="inhoud-body" style="padding:44px 0"><div class="wrap">`
-      + VRAAGBALK + rekenaar + rolblok('bedrijfsgeheugen') + `</div></section>`;
+      + VRAAGBALK + rekenaar + rolblok('bedrijfsgeheugen') + vergelijker('een werkend bedrijfsgeheugen') + `</div></section>`;
     // direct onder de hero, niet onderaan: de homepage is dertig meter lang en
     // wat op de laatste meter staat ziet niemand
     const naHero = home.indexOf('</section>', home.indexOf('id="view-home"'));
@@ -170,8 +171,9 @@ for (const p of v18Paginas) {
   background:radial-gradient(120% 90% at 12% 0%,rgba(80,120,255,.34),transparent 60%),
              linear-gradient(180deg,rgba(7,26,60,.66),rgba(7,26,60,.92))!important}
 </style>`;
-    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n' + blauw + '\n</head>');
-    home = home.replace('</body>', RING + '\n' + VRAAG_JS + '\n' + CONTEXT_JS + '\n</body>');
+    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n' + BEWEGING_CSS + '\n' + blauw + '\n</head>');
+    home = home.replace('</body>', RING + '\n' + VRAAG_JS + '\n' + CONTEXT_JS + '\n' + BEWEGING_JS + '\n</body>');
+    home = maakBeweeglijk(home);
   }
 
   home = hoofdletterMerk(home);
