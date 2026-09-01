@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#f8faff">
+  <title>Data & AI Passport · Bedrijfsgeheugen</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172033;background:#f7f9fc}*{box-sizing:border-box}body{margin:0}.shell{max-width:1180px;margin:0 auto;padding:32px 22px 64px}.passport-head{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-bottom:24px}.passport-back{display:inline-block;margin-bottom:28px;color:#566075;text-decoration:none}.eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;color:#64748b}.passport-head h1{font-size:clamp(34px,5vw,64px);line-height:1;margin:8px 0 14px;letter-spacing:-.04em}.passport-head p{max-width:760px;color:#5b6475;line-height:1.65}.passport-score{min-width:190px;padding:24px;border-radius:20px;background:#172033;color:white}.passport-score strong{display:block;font-size:42px}.passport-score span{font-size:13px;color:#cbd5e1}.passport-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.passport-summary div,.passport-card{background:white;border:1px solid #e5eaf1;border-radius:18px}.passport-summary div{padding:18px}.passport-summary strong{font-size:28px;display:block}.passport-summary span{font-size:13px;color:#697386}.passport-disclaimer{margin:18px 0 28px;padding:14px 16px;border-radius:12px;background:#eef2ff;color:#44516b;font-size:13px}.passport-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.passport-card{padding:22px;border-left:5px solid #cbd5e1}.passport-card.status-verified{border-left-color:#16a34a}.passport-card.status-partially_verified{border-left-color:#d97706}.passport-card.status-action_required{border-left-color:#dc2626}.passport-card-head{display:flex;justify-content:space-between;gap:16px;font-size:12px;color:#64748b}.passport-card-head b{color:#334155}.passport-card h2{margin:12px 0 8px;font-size:21px}.passport-card p{color:#64748b;line-height:1.55}.passport-card dl{margin:18px 0 0}.passport-card dl div{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:9px 0;border-top:1px solid #eef2f7}.passport-card dt{font-size:12px;color:#64748b}.passport-card dd{margin:0;font-size:13px}.empty{max-width:680px;margin:15vh auto;background:white;border:1px solid #e5eaf1;border-radius:20px;padding:30px}.empty button{border:0;border-radius:10px;background:#172033;color:white;padding:12px 16px;font-weight:700}@media(max-width:760px){.passport-head{grid-template-columns:1fr}.passport-score{min-width:0}.passport-summary{grid-template-columns:repeat(2,1fr)}.passport-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body><main class="shell" id="passport-root"><div class="empty">Data & AI Passport laden…</div></main>
+<script type="module">
+  import { renderDataAiPassport } from './data-ai-passport-view.mjs';
+  const root=document.querySelector('#passport-root');
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function authHeaders(user){try{const token=await user?.jwt?.();return token?{authorization:`Bearer ${token}`}:{}}catch{return{}}}
+  async function load(user){if(!user){root.innerHTML='<div class="empty"><h1>Inloggen vereist</h1><p>Het passport gebruikt alleen de beveiligde bedrijfscontext van de ingelogde tenant.</p><button id="login">Inloggen</button></div>';document.querySelector('#login')?.addEventListener('click',()=>window.netlifyIdentity?.open?.());return}root.innerHTML='<div class="empty">Beveiligde bedrijfscontext laden…</div>';try{const headers=await authHeaders(user);const response=await fetch('/api/portal-state',{headers:{accept:'application/json',...headers},credentials:'same-origin'});if(!response.ok)throw new Error(`HTTP ${response.status}`);const state=await response.json();root.innerHTML=renderDataAiPassport(state)}catch(error){root.innerHTML=`<div class="empty"><h1>Passport niet beschikbaar</h1><p>Er is geen geverifieerde servercontext geladen. Er worden daarom geen complianceclaims getoond.</p><small>${esc(error?.message||'onbekende fout')}</small></div>`}}
+  window.netlifyIdentity?.on?.('init',load);window.netlifyIdentity?.on?.('login',user=>{window.netlifyIdentity?.close?.();load(user)});window.netlifyIdentity?.init?.();
+</script>
+</body>
+</html>
