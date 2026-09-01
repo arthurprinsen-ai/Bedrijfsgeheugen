@@ -25,5 +25,5 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Universal event, retention and producer-contract tests
-        run: node --test tests/universal-event-envelope.test.mjs tests/event-retention-policy.test.mjs tests/universal-event-contract-check.test.mjs
+      - name: Universal event, retention, adapter and producer-contract tests
+        run: node --test tests/universal-event-envelope.test.mjs tests/event-retention-policy.test.mjs tests/universal-event-contract-check.test.mjs tests/universal-event-adapters.test.mjs
