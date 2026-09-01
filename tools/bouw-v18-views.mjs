@@ -56,7 +56,7 @@ function knoppenNaarLinks(html) {
 function routerLaatLinksDoor(html) {
   const oud = "viewButtons.forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();showView(btn.dataset.view);";
   return html.includes(oud)
-    ? html.replace(oud, "viewButtons.forEach(btn=>btn.addEventListener('click',e=>{if(!document.getElementById('view-'+btn.dataset.view))return;e.preventDefault();showView(btn.dataset.view);")
+    ? html.replace(oud, "viewButtons.forEach(btn=>btn.addEventListener('click',e=>{var h=btn.getAttribute&&btn.getAttribute('href');if(h&&h!=='#'&&h.charAt(0)!=='#'){try{if(new URL(h,location.href).pathname.replace(/\/$/,'')!==location.pathname.replace(/\/$/,''))return;}catch(x){}}if(!document.getElementById('view-'+btn.dataset.view))return;e.preventDefault();showView(btn.dataset.view);")
     : html;
 }
 
