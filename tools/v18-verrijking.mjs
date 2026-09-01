@@ -202,6 +202,15 @@ export function volgendeStap(isBlog) {
 <a class="bgx-staptegel" href="/prijzen"><b>Wat het kost</b><span>Vaste prijs per pakket, geen prijs per gebruiker, geen uurtje-factuurtje.</span></a>
 <a class="bgx-staptegel" href="/cases"><b>Uit de praktijk</b><span>Wat er veranderde bij bedrijven die hiermee begonnen.</span></a>
 </div>
+<p class="bgx-ooknuttig">Ook goed om te weten:
+<a href="/help">veelgestelde vragen</a> ·
+<a href="/security">beveiliging en data</a> ·
+<a href="/juridisch">voorwaarden</a> ·
+<a href="/partners">partners</a> ·
+<a href="/onderzoeken">onderzoek en cijfers</a> ·
+<a href="/templates">sjablonen</a> ·
+<a href="/changelog">wat er verandert</a> ·
+<a href="/start">waar je begint</a></p>
 </section>`;
 }
 
