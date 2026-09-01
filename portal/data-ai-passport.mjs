@@ -50,6 +50,58 @@ function normalizeOwnership(input = {}) {
   });
 }
 
+function normalizeStorage(input = {}) {
+  const provider = input.provider || null;
+  const country = input.country || null;
+  const region = input.region || null;
+  const providerEvidence = normalizeEvidence(input.evidence);
+  const locationEvidence = normalizeEvidence(input.locationEvidence);
+  return Object.freeze({
+    provider,
+    country,
+    region,
+    purpose: input.purpose || null,
+    evidence: providerEvidence,
+    locationEvidence,
+    providerStatus: deriveEvidenceStatus({
+      value: provider,
+      requestedStatus: input.providerRequestedStatus || input.requestedStatus,
+      evidence: providerEvidence,
+    }),
+    status: deriveEvidenceStatus({
+      value: country || region,
+      requestedStatus: input.locationRequestedStatus,
+      evidence: locationEvidence,
+    }),
+  });
+}
+
+function normalizeProcessing(input = {}) {
+  const provider = input.provider || null;
+  const country = input.country || null;
+  const region = input.region || null;
+  const providerEvidence = normalizeEvidence(input.evidence);
+  const locationEvidence = normalizeEvidence(input.locationEvidence);
+  return Object.freeze({
+    provider,
+    country,
+    region,
+    purpose: input.purpose || null,
+    evidence: providerEvidence,
+    locationEvidence,
+    providerStatus: deriveEvidenceStatus({
+      value: provider,
+      requestedStatus: input.providerRequestedStatus || input.requestedStatus,
+      evidence: providerEvidence,
+    }),
+    status: deriveEvidenceStatus({
+      value: country || region,
+      requestedStatus: input.locationRequestedStatus,
+      evidence: locationEvidence,
+    }),
+  });
+}
+
 function normalizeAutomation(input = {}) {
   const evidence = normalizeEvidence(input.evidence);
   const provider = input.provider || null;
@@ -67,6 +119,12 @@ function normalizeAutomation(input = {}) {
 function normalizeAiSystem(input = {}) {
   const evidence = normalizeEvidence(input.evidence);
   const provider = input.provider || null;
+  const trainingUseEvidence = normalizeEvidence(input.trainingUseEvidence);
+  const processingRegionEvidence = normalizeEvidence(input.processingRegionEvidence);
+  const humanOversightEvidence = normalizeEvidence(input.humanOversightEvidence);
+  const trainingUse = hasValue(input.trainingUse) ? input.trainingUse : null;
+  const processingRegion = input.processingRegion || null;
+  const humanOversight = hasValue(input.humanOversight) ? input.humanOversight : null;
   const aiActInput = input.aiAct || {};
   const aiActEvidence = normalizeEvidence(aiActInput.evidence);
   const riskClass = aiActInput.riskClass || null;
@@ -74,9 +132,27 @@ function normalizeAiSystem(input = {}) {
     provider,
     model: input.model || null,
     purpose: input.purpose || null,
-    trainingUse: hasValue(input.trainingUse) ? input.trainingUse : null,
-    processingRegion: input.processingRegion || null,
-    humanOversight: input.humanOversight || null,
+    trainingUse,
+    trainingUseEvidence,
+    trainingUseStatus: deriveEvidenceStatus({
+      value: trainingUse,
+      requestedStatus: input.trainingUseRequestedStatus,
+      evidence: trainingUseEvidence,
+    }),
+    processingRegion,
+    processingRegionEvidence,
+    processingRegionStatus: deriveEvidenceStatus({
+      value: processingRegion,
+      requestedStatus: input.processingRegionRequestedStatus,
+      evidence: processingRegionEvidence,
+    }),
+    humanOversight,
+    humanOversightEvidence,
+    humanOversightStatus: deriveEvidenceStatus({
+      value: humanOversight,
+      requestedStatus: input.humanOversightRequestedStatus,
+      evidence: humanOversightEvidence,
+    }),
     evidence,
     status: deriveEvidenceStatus({ value: provider, requestedStatus: input.requestedStatus, evidence }),
     aiAct: Object.freeze({
@@ -105,8 +181,8 @@ export function createDataAiPassport(input = {}) {
     tenantName: input.tenantName || null,
     generatedAt: input.generatedAt || new Date().toISOString(),
     ownership: normalizeOwnership(input.ownership),
-    storage: normalizeArray(input.storage, item => normalizeRecord(item, 'provider')),
-    processing: normalizeArray(input.processing, item => normalizeRecord(item, 'provider')),
+    storage: normalizeArray(input.storage, normalizeStorage),
+    processing: normalizeArray(input.processing, normalizeProcessing),
     automation: normalizeArray(input.automation, normalizeAutomation),
     aiSystems: normalizeArray(input.aiSystems, normalizeAiSystem),
     subprocessors: normalizeArray(input.subprocessors, item => normalizeRecord(item, 'name')),
@@ -134,7 +210,10 @@ export function createDataAiPassport(input = {}) {
 function collectStatuses(value, output = []) {
   if (!value || typeof value !== 'object') return output;
   if (VALID_STATUS.has(value.status)) output.push(value.status);
-  for (const child of Object.values(value)) collectStatuses(child, output);
+  for (const [key, child] of Object.entries(value)) {
+    if (key !== 'status' && key.endsWith('Status') && VALID_STATUS.has(child)) output.push(child);
+    else collectStatuses(child, output);
+  }
   return output;
 }
 
@@ -160,8 +239,8 @@ function stripInternal(value) {
   const result = {};
   for (const [key, child] of Object.entries(value)) {
     if (key === 'scenarioIds' || key === 'tenantId') continue;
-    if (key === 'evidence') {
-      result.evidence = Array.isArray(child)
+    if (key === 'evidence' || key.endsWith('Evidence')) {
+      result[key] = Array.isArray(child)
         ? child.map(item => ({ type: item.type, source: item.source, checkedAt: item.checkedAt }))
         : [];
       continue;
