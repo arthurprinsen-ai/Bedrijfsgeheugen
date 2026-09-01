@@ -29,3 +29,4 @@ jobs:
           tests/universal-event-adapters.test.mjs
           tests/universal-failure-learning.test.mjs
           tests/make-cost-governor-policy.test.mjs
+          tests/make-cost-governance-contract.test.mjs
