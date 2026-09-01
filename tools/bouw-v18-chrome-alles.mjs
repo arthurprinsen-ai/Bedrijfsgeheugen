@@ -158,8 +158,19 @@ for (const p of v18Paginas) {
     const { body: rekenaar } = bouwModules('');
     const blok = `<section class="inhoud-body" style="padding:44px 0"><div class="wrap">`
       + VRAAGBALK + rekenaar + rolblok('bedrijfsgeheugen') + `</div></section>`;
-    home = home.replace('</main>', blok + '</main>');
-    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n</head>');
+    // direct onder de hero, niet onderaan: de homepage is dertig meter lang en
+    // wat op de laatste meter staat ziet niemand
+    const naHero = home.indexOf('</section>', home.indexOf('id="view-home"'));
+    home = naHero === -1
+      ? home.replace('</main>', blok + '</main>')
+      : home.slice(0, naHero + 10) + blok + home.slice(naHero + 10);
+    // dezelfde blauwe laag over de herovideo als op de andere pagina's
+    const blauw = `<style id="v18-home-blauw">
+.hero-video .hero-video-shade,.hero-inspiration .hero-video-shade{
+  background:radial-gradient(120% 90% at 12% 0%,rgba(80,120,255,.34),transparent 60%),
+             linear-gradient(180deg,rgba(7,26,60,.66),rgba(7,26,60,.92))!important}
+</style>`;
+    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n' + blauw + '\n</head>');
     home = home.replace('</body>', RING + '\n' + VRAAG_JS + '\n' + CONTEXT_JS + '\n</body>');
   }
 
