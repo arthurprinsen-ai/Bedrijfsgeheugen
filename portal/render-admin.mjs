@@ -11,11 +11,11 @@ const groups=()=>[...new Set(LEGACY_WORKSPACES.map(x=>x.group))].map(group=>({gr
 function currentOffer(){try{const slug=new URLSearchParams(globalThis.location?.search||'').get('klant')||'';const user=globalThis.netlifyIdentity?.currentUser?.()||null;return readLegacyOffer({storage:globalThis.sessionStorage,extraStorage:globalThis.localStorage,slug,user,allowDemo:true})}catch{return null}}
 
 const STATUS_META=Object.freeze({
- [PASSPORT_STATUS.VERIFIED]:{label:'Geverifieerd',cls:'verified-pill'},
- [PASSPORT_STATUS.CONFIGURED]:{label:'Geconfigureerd',cls:'count-badge'},
- [PASSPORT_STATUS.NEEDS_EVIDENCE]:{label:'Nog te bewijzen',cls:'attention-pill'},
+ [PASSPORT_STATUS.VERIFIED]:{label:'Geverifieerd',cls:'verified-pill',style:''},
+ [PASSPORT_STATUS.CONFIGURED]:{label:'Geconfigureerd',cls:'count-badge',style:''},
+ [PASSPORT_STATUS.NEEDS_EVIDENCE]:{label:'Nog te bewijzen',cls:'count-badge',style:'background:#fff7ed;color:#9a3412;border-color:#fdba74'},
 });
-function statusPill(status){const meta=STATUS_META[status]||STATUS_META[PASSPORT_STATUS.NEEDS_EVIDENCE];return`<span class="${meta.cls}">${meta.label}</span>`}
+function statusPill(status){const meta=STATUS_META[status]||STATUS_META[PASSPORT_STATUS.NEEDS_EVIDENCE];return`<span class="${meta.cls}"${meta.style?` style="${meta.style}"`:''}>${meta.label}</span>`}
 function passportRow(label,value,status,detail=''){return`<div class="card" style="padding:14px 16px;display:grid;grid-template-columns:minmax(150px,.75fr) minmax(180px,1.35fr) auto;gap:14px;align-items:center"><div><small>${esc(label)}</small></div><div><strong>${esc(value||'Niet vastgesteld')}</strong>${detail?`<p style="margin:.25rem 0 0">${esc(detail)}</p>`:''}</div>${statusPill(status)}</div>`}
 function renderDataAiPassport(vm){
  const passport=buildPlatformPassport({company:vm.company,user:vm.user,persisted:vm.dataAiPassport});
@@ -25,9 +25,9 @@ function renderDataAiPassport(vm){
  <div style="display:grid;gap:10px;margin-top:14px">
  ${passportRow('Data-eigenaar',view.ownership?.owner,view.ownership?.status,'Eigendom en privacyrol worden per verwerking contractueel vastgelegd.')}
  ${passportRow('Automatiseringslaag',make?.provider,make?.status,make?`Zone ${make.zone||'onbekend'} · runtime ${make.state||'onbekend'}`:'Geen orchestration evidence beschikbaar.')}
- ${passportRow('Opslagland',storage?.country||storage?.region,storage?.status,'Wordt pas groen na infrastructuur- of providerbewijs.')}
+ ${passportRow('Opslagland',storage?.country||storage?.region,storage?.status,'Een geverifieerde provider bewijst niet automatisch het opslagland.')}
  ${passportRow('AI-provider & model',ai?[ai.provider,ai.model].filter(Boolean).join(' · '):null,ai?.status,'Per use-case registreren; geen platformbrede AI Act-vink.')}
- ${passportRow('Modeltraining met klantdata',ai?.trainingUse===false?'Nee':ai?.trainingUse===true?'Ja':null,ai?.trainingUse===false?ai.status:PASSPORT_STATUS.NEEDS_EVIDENCE,'Alleen tonen als providerconfiguratie of contract dit bewijst.')}
+ ${passportRow('Modeltraining met klantdata',ai?.trainingUse===false?'Nee':ai?.trainingUse===true?'Ja':null,ai?.trainingUseStatus,'Providerbewijs is onvoldoende: traininggebruik vereist eigen contract- of configuratiebewijs.')}
  ${passportRow('Doorgifte buiten EER',transfer?.destination,transfer?.status,'Bestemming en transfermechanisme moeten aantoonbaar zijn.')}
  ${passportRow('Alle data binnen EU/EER',view.assertions?.allDataWithinEer?.value===true?'Ja':view.assertions?.allDataWithinEer?.value===false?'Nee':null,view.assertions?.allDataWithinEer?.status,'Geen EU/EER-claim zolang opslag én verwerking niet volledig bewezen zijn.')}
  </div>
