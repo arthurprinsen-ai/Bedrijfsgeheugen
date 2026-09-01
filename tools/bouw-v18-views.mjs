@@ -80,8 +80,12 @@ for (const p of VIEWS) {
 <p class="intro">${p.omschrijving}</p>
 </div></section>`;
 
+  const { body: rekenaar } = bouwModules('');
+  const bovenblok = `<section class="inhoud-body" style="padding:34px 0 6px"><div class="wrap">${VRAAGBALK}${rekenaar}</div></section>`;
+
   html = html.replace(`<div class="page active" id="view-${p.view}">`,
-    `<div class="page active" id="view-${p.view}">${hero}${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}`);
+    `<div class="page active" id="view-${p.view}">${hero}`
+    + `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}${bovenblok}`);
 
   // de secties van deze weergave komen op bij het scrollen, net als op de homepage
   {
@@ -96,13 +100,6 @@ for (const p of VIEWS) {
   html = html.replace(/<img[^>]*portal-v18-full\.png[^>]*>/g, PORTAALBEELD);
 
   html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${VOLGENDE_CSS}\n</head>`);
-  const { body: rekenaar } = bouwModules('');
-
-  // boven de weergave: iets om meteen mee te doen
-  html = html.replace(`${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}`,
-    `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}`
-    + `<section class="inhoud-body" style="padding:34px 0 6px"><div class="wrap">${VRAAGBALK}${rekenaar}</div></section>`);
-
   // onderaan: de afsluiting
   html = html.replace('</main>',
     `<section class="inhoud-body" style="padding:10px 0 96px"><div class="wrap">${VERTREK}`
