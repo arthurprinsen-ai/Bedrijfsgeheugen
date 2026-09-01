@@ -39,11 +39,50 @@ export const ZOEKWOORD_PER_PAGINA = {
   "/bedrijfsgeheugen": "bedrijfsgeheugen",
   "/blog/wat-is-een-bedrijfsgeheugen/": "kennisverlies mkb",
   "/begrippen": "begrippenlijst mkb",
-  "/afas-koppeling": "afas koppeling"
+  "/afas-koppeling": "afas koppeling",
+  "/blog/afas-api/": "afas api koppeling",
+  "/blog/exact-online-api/": "exact online koppeling maken",
+  "/blog/afas-exact-koppelen/": "afas exact koppelen",
+  "/blog/wat-kost-een-afas-partner/": "afas partner kosten",
+  "/blog/planning-in-excel-vervangen/": "planning excel vervangen",
+  "/blog/offertes-opvolgen-zonder-crm/": "offertes opvolgen zonder crm",
+  "/blog/kennis-borgen-in-je-bedrijf/": "kennis borgen bedrijf",
+  "/blog/microsoft-copilot-mkb/": "microsoft copilot mkb",
+  "/blog/klantvragen-automatiseren-zonder-controle-te-verliezen/": "klantvragen automatiseren",
+  "/blog/": "kennisbank digitalisering mkb",
+  "/connect": "shopify koppelen boekhouding",
+  "/due-diligence": "due diligence processen",
+  "/investeerders-ma": "due diligence overname mkb",
+  "/excel-als-crm": "excel als crm",
+  "/monitor": "digitaliseringsmonitor mkb",
+  "/kennisverlies-vergrijzing-mkb": "kennis borgen pensionering",
+  "/cijfers-bedrijfsoverdracht": "cijfers bedrijfsoverdracht",
+  "/ai-cijfers-mkb": "ai gebruik mkb cijfers",
+  "/ai-in-bi": "ai business intelligence mkb",
+  "/ai-in-data-engineering": "ai data engineering",
+  "/waarom-ai-projecten-mislukken": "waarom ai projecten mislukken",
+  "/voor-mkb": "digitalisering voor het mkb",
+  "/expertises": "expertises digitalisering",
+  "/hoe-het-werkt": "hoe digitalisering werkt",
+  "/wijzigingen": "wijziging doorvoeren impact",
+  "/wijzigingen-uitgelegd": "impactanalyse wijziging",
+  "/offerte": "power bi dashboard offerte",
+  "/brochure": "brochure digitalisering mkb",
+  "/onderzoeken": "onderzoek digitalisering mkb",
+  "/templates": "templates mkb automatisering",
+  "/security": "beveiliging bedrijfsdata mkb",
+  "/partners": "partners digitalisering",
+  "/help": "helpcentrum bedrijfsgeheugen",
+  "/changelog": "changelog bedrijfsgeheugen",
+  "/contact": "contact bedrijfsgeheugen",
+  "/start": "beginnen met digitaliseren",
+  "/meer": "overzicht bedrijfsgeheugen"
 };
 
 // Het pad van een bestand terug naar het adres zoals het in de lijst staat.
 // het woord van de homepage: geen andere pagina mag dit claimen
+// Bewust zonder zoekwoord: inloggen, aanmelden, privacy en juridisch horen
+// niet in Google te concurreren.
 export const HOMEPAGE_WOORD = 'digitalisering mkb';
 
 export function zoekwoordVoor(bestand) {
