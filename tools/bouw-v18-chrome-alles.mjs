@@ -181,5 +181,26 @@ for await (const p of glob('components/*/*.html')) {
   }
 }
 
+// Een zichtbaar bouwstempel onderaan elke pagina. Zonder dit is niet te zien of
+// je naar de nieuwe versie kijkt of naar een gecachte oude, en dat kost meer
+// tijd dan het stempel zelf.
+{
+  const nu = new Date();
+  const stempel = nu.toLocaleString('nl-NL', { timeZone: 'Europe/Amsterdam', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const merk = `<p class="bgx-stempel">versie ${stempel}</p>`;
+  const stijl = `<style id="v18-stempel">.bgx-stempel{margin:0;padding:14px 0 22px;text-align:center;font-size:11px;
+    letter-spacing:.06em;color:rgba(255,255,255,.34);font-family:'IBM Plex Mono',ui-monospace,monospace}</style>`;
+  for await (const p of glob('*.html')) await stempelOp(p);
+  for await (const p of glob('blog/*/index.html')) await stempelOp(p);
+
+  async function stempelOp(pad) {
+    let h = await readFile(pad, 'utf8');
+    if (h.includes('bgx-stempel') || !h.includes('</footer>')) return;
+    h = h.replace('</head>', stijl + '\n</head>');
+    h = h.replace('</footer>', merk + '</footer>');
+    await writeFile(pad, h, 'utf8');
+  }
+}
+
 // de sitemap als laatste, want pas nu bestaan alle pagina's
 await import('./bouw-sitemap.mjs');
