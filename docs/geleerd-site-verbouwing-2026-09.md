@@ -138,3 +138,52 @@ cacheregel die niet matcht — allemaal onzichtbaar tot iemand ernaar kijkt.
 De maatregel is niet "beter opletten" maar meten: bouw lokaal, open in een
 browser, tel wat er staat, en controleer bij twijfel de headers in plaats van de
 HTML.
+
+## Toevoegingen van 1 september, middag
+
+### Een geslaagde commit is geen geslaagde deploy
+
+**Verschijnsel.** Ik meldde uren "commit ok" terwijl er niets veranderde op de site.
+
+**Oorzaak.** Eén verkeerde import (`HERO_URL` uit het verkeerde bestand) liet de
+bouwstap met een fout eindigen. Netlify doet dan wat hij hoort te doen: de vorige
+versie blijft staan. Alles wat daarna gecommit werd, kwam nooit live.
+
+**Regel.** De controle na een commit is niet "staat het in de repo" maar **"is
+`/versie.txt` opgeschoven"**. En: bouw eerst lokaal vanuit een schone checkout —
+niet in een map waar al eerder gebouwd is, want dan stapelen bewerkingen zich op
+en zie je fouten die er in productie niet zijn (en andersom).
+
+### Een eenpagina-app en losse pagina's vechten om dezelfde adressen
+
+**Verschijnsel.** Elke pagina klopte als ik het adres rechtstreeks opvroeg, maar
+wie via het menu klikte kreeg de oude weergave zonder hero, video of onderdelen.
+Dat verschil hield dagenlang stand: ik testte URL's, de gebruiker klikte links.
+
+**Oorzaak.** De v18-app hangt een klikafhandelaar aan élk element met
+`data-view`, inclusief de gewone links in het menu, en roept `preventDefault()`
+aan. De browser navigeert dus niet; de app toont een weergave binnen de pagina
+waar je al bent. Die weergave zit in de payload van de homepage en heeft geen van
+de toevoegingen die in het losse bestand staan.
+
+**Regel.** Combineer je een eenpagina-app met echte pagina's onder dezelfde
+adressen, regel dan expliciet wie wint. Hier: heeft het element een `href` naar
+een ander pad, dan blijft de klik ongemoeid en navigeert de browser.
+**En test navigatie zoals een bezoeker hem gebruikt — klikken, niet URL's opvragen.**
+
+### Onderaan toevoegen is hetzelfde als niet toevoegen
+
+Op een pagina van dertig meter stonden de nieuwe onderdelen op 28.000 pixels.
+Ze waren er, en niemand zag ze. Blokken worden nu door de tekst verdeeld en op de
+homepage direct onder de hero geplaatst.
+
+### Het patroon achter al deze fouten
+
+Zeven van de tien fouten van deze twee dagen hebben dezelfde vorm: **ik nam aan
+dat een stap gelukt was, op grond van iets anders dan het eindresultaat.** Een
+commit in plaats van een deploy. Een string in de HTML in plaats van wat een
+browser toont. Een meting vanaf een server in plaats van vanaf het apparaat van
+de gebruiker. Een opgevraagde URL in plaats van een geklikte link.
+
+De vaste volgorde is daarom: **bouw schoon → open in een browser → meet wat een
+bezoeker doet → controleer het versiestempel → pas dan melden dat het klaar is.**
