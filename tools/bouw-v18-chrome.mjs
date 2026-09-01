@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { TABEL_CSS, INTERACTIE_CSS, INTERACTIE_JS, verrijkInhoud, opDezePagina, mensenblok, schemas, ORGANISATIE_SCHEMA, EXTRA_HTML, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
-import { zoekwoordVoor } from './zoekwoorden.mjs';
+import { zoekwoordVoor, HOMEPAGE_WOORD } from './zoekwoorden.mjs';
 import { CONTEXT_CSS, CONTEXT_JS, RING, legTermenUit, rolblok, MODULE_CSS, MODULE_JS, bouwModules, SPEELS_CSS, SPEELS_JS, LEK, VERTREK, zetStrepen, VRAAG_CSS, VRAAG_JS, VRAAGBALK, OVERTYP, hoofdletterMerk } from './v18-modules.mjs';
 
 // Zet elke pagina in de opmaak van de homepage: dezelfde kop, navigatie, voet,
@@ -273,7 +273,9 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
   // hier het woord dat zij volgens de strategie hoort te claimen; heeft ze er
   // geen, dan gaat de meta eruit in plaats van dat ze het woord van de
   // homepage erft.
-  const eigenZoekwoord = zoekwoordVoor(bestand) || zoekwoord || '';
+  const geerfd = (zoekwoord || '').trim();
+  const eigenZoekwoord = zoekwoordVoor(bestand)
+    || (geerfd && geerfd.toLowerCase() !== HOMEPAGE_WOORD ? geerfd : '');
   html = zetKop(html, titel, omschrijving, canoniek, eigenZoekwoord);
   if (!eigenZoekwoord) html = html.replace(/<meta name="bg-zoekwoord"[^>]*>\s*/g, '');
   html = hoofdletterMerk(html);
