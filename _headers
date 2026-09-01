@@ -1,6 +1,11 @@
+# HTML wordt bewust NIET bewaard door de browser (no-store). Met
+# max-age=0, must-revalidate bleef Safari op een oude versie hangen, ook na
+# verversen. Afbeeldingen, stijl en scripts houden hun eigen langere cache:
+# die regels staan verderop en zijn specifieker.
 /*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-store, max-age=0, must-revalidate
   Netlify-CDN-Cache-Control: public, max-age=30, stale-while-revalidate=30
+  Vary: *
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
