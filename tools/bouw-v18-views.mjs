@@ -4,7 +4,7 @@ import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenbl
 import { INHOUD_CSS, kruimelpad, zetKop, HERO_URL } from './bouw-v18-chrome.mjs';
 import { VIEWS } from './v18-views-lijst.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_CSS, VRAAG_JS, VRAAGBALK,
-         VERTREK, bouwModules, hoofdletterMerk } from './v18-modules.mjs';
+         VERTREK, bouwModules, hoofdletterMerk, CONTEXT_CSS, CONTEXT_JS, RING, rolblok } from './v18-modules.mjs';
 
 // De navigatie van de homepage is leidend. Elke weergave uit de eenpagina-app
 // wordt hier een echte pagina, met eigen titel, omschrijving en adres. Waar een
@@ -81,7 +81,7 @@ for (const p of VIEWS) {
 </div></section>`;
 
   const { body: rekenaar } = bouwModules('');
-  const bovenblok = `<section class="inhoud-body" style="padding:34px 0 6px"><div class="wrap">${VRAAGBALK}${rekenaar}</div></section>`;
+  const bovenblok = `<section class="inhoud-body" style="padding:34px 0 6px"><div class="wrap">${VRAAGBALK}${rekenaar}${rolblok(p.naam.toLowerCase())}</div></section>`;
 
   html = html.replace(`<div class="page active" id="view-${p.view}">`,
     `<div class="page active" id="view-${p.view}">${hero}`
@@ -99,12 +99,12 @@ for (const p of VIEWS) {
   // niet — vandaar het gebroken beeld. We tekenen het nu in de pagina zelf.
   html = html.replace(/<img[^>]*portal-v18-full\.png[^>]*>/g, PORTAALBEELD);
 
-  html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${VOLGENDE_CSS}\n</head>`);
+  html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${VOLGENDE_CSS}\n${CONTEXT_CSS}\n</head>`);
   // onderaan: de afsluiting
   html = html.replace('</main>',
     `<section class="inhoud-body" style="padding:10px 0 96px"><div class="wrap">${VERTREK}`
     + `${volgendeStap(false)}${mensenblok(false)}</div></section></main>`);
-  html = html.replace('</body>', `${EXTRA_HTML}\n${LEK}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${ORGANISATIE_SCHEMA}\n`
+  html = html.replace('</body>', `${EXTRA_HTML}\n${RING}\n${LEK}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${ORGANISATIE_SCHEMA}\n`
     + `${schemas({ isBlog: false, titel: p.titel, omschrijving: p.omschrijving, canoniek, h1: p.naam, body: html })}\n</body>`);
 
   // de hero levert de h1; een tweede h1 in de weergave zakt naar h2
