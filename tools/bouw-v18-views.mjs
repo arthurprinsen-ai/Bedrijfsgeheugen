@@ -3,6 +3,7 @@ import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenbl
          volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
 import { INHOUD_CSS, kruimelpad, zetKop, HERO_URL } from './bouw-v18-chrome.mjs';
 import { VIEWS } from './v18-views-lijst.mjs';
+import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-beweging.mjs';
 import { zoekwoordVoor, HOMEPAGE_WOORD, titelVoor } from './zoekwoorden.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_CSS, VRAAG_JS, VRAAGBALK,
          VERTREK, bouwModules, hoofdletterMerk, CONTEXT_CSS, CONTEXT_JS, RING, rolblok } from './v18-modules.mjs';
@@ -102,12 +103,12 @@ for (const p of VIEWS) {
   // niet — vandaar het gebroken beeld. We tekenen het nu in de pagina zelf.
   html = html.replace(/<img[^>]*portal-v18-full\.png[^>]*>/g, PORTAALBEELD);
 
-  html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${VOLGENDE_CSS}\n${CONTEXT_CSS}\n</head>`);
+  html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${VOLGENDE_CSS}\n${CONTEXT_CSS}\n${BEWEGING_CSS}\n</head>`);
   // onderaan: de afsluiting
   html = html.replace('</main>',
-    `<section class="inhoud-body" style="padding:10px 0 96px"><div class="wrap">${VERTREK}`
+    `<section class="inhoud-body" style="padding:10px 0 96px"><div class="wrap">${vergelijker(p.naam.toLowerCase())}${VERTREK}`
     + `${volgendeStap(false)}${mensenblok(false)}</div></section></main>`);
-  html = html.replace('</body>', `${EXTRA_HTML}\n${RING}\n${LEK}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${ORGANISATIE_SCHEMA}\n`
+  html = html.replace('</body>', `${EXTRA_HTML}\n${RING}\n${LEK}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${BEWEGING_JS}\n${ORGANISATIE_SCHEMA}\n`
     + `${schemas({ isBlog: false, titel: p.titel, omschrijving: p.omschrijving, canoniek, h1: p.naam, body: html })}\n</body>`);
 
   // de hero levert de h1; een tweede h1 in de weergave zakt naar h2
@@ -135,6 +136,7 @@ for (const p of VIEWS) {
     html = html.replace('</head>', '<meta name="robots" content="noindex, follow">\n</head>');
   }
 
+  html = maakBeweeglijk(html);
   html = hoofdletterMerk(html);
   await writeFile(p.bestand, html, 'utf8');
   gemaakt++;
