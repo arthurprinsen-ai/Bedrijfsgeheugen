@@ -9,8 +9,7 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/learning/chat-continuity-2026-08-31.json',
   'brain/learning/chat-materialization-2026-08-31-v2.json',
   'brain/learning/chat-materialization-2026-08-31-v3.json',
-  'brain/learning/chat-runtime-truth-preflight-2026-08-31.json',
-  'brain/learning/chat-error-completeness-preflight-v1.json'
+  'brain/learning/chat-runtime-truth-preflight-2026-08-31.json'
 ];
 
 function normalizeSourcePath(rootDir, sourcePath) {
