@@ -2,13 +2,21 @@ import { readFile } from 'node:fs/promises';
 import { glob } from 'node:fs/promises';
 import { writeFile } from 'node:fs/promises';
 import { leesSchil, bouwPagina, zetKop, kruimelpad, INHOUD_CSS } from './bouw-v18-chrome.mjs';
-import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
+import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, volgendeStap, VOLGENDE_CSS , GEGEVENS, LOCATIE_SCHEMA} from './v18-verrijking.mjs';
 import { VERVANGEN } from './v18-views-lijst.mjs';
 import { zoekwoordVoor, titelVoor } from './zoekwoorden.mjs';
 import { knoppenNaarLinks, HERO_URL, routerLaatLinksDoor } from './bouw-v18-chrome.mjs';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-beweging.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK,
          VRAAGBALK, VRAAG_CSS, VRAAG_JS, CONTEXT_CSS, CONTEXT_JS, RING, rolblok, bouwModules } from './v18-modules.mjs';
+
+
+// de gegevensbalk komt boven de kop; één keer, ook als de stap vaker draait
+function metGegevens(html) {
+  if (html.includes('bgx-gegevens')) return html;
+  return html.replace('<header class="v17-header"', GEGEVENS + '<header class="v17-header"')
+             .replace('</body>', LOCATIE_SCHEMA + '\n</body>');
+}
 
 // Zet elke contentpagina in dezelfde v18-schil: kop, navigatie, videoband,
 // kruimelpad, voet en opmaak. Titel, omschrijving, canoniek en het zoekwoord
@@ -176,6 +184,7 @@ for (const p of v18Paginas) {
     home = maakBeweeglijk(home);
   }
 
+  home = metGegevens(home);
   home = routerLaatLinksDoor(home);
   home = hoofdletterMerk(home);
   await writeFile('index.html', home, 'utf8');
