@@ -1,0 +1,105 @@
+{
+  "version": "powerhouse-universal-event-producers-v1",
+  "adapter": "BG211",
+  "producers": [
+    {
+      "producer_id": "bg156",
+      "source_system": "make",
+      "path_patterns": ["make/contracts/bg156/", "automation/contracts/bg156/"],
+      "adapter_owner": "BG211",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "incident_fingerprint+coalescing_window",
+      "outcome_evidence": "BG156 verified execution outcome",
+      "brain_writeback": "BG168/BG166",
+      "cost_guard": "deterministic gate+15m coalescing"
+    },
+    {
+      "producer_id": "bg184",
+      "source_system": "make",
+      "path_patterns": ["make/contracts/bg184/", "automation/contracts/bg184/"],
+      "adapter_owner": "BG211",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "social obligation+native post identity",
+      "outcome_evidence": "BG171/BG179 native publication readback",
+      "brain_writeback": "BG168/BG166",
+      "cost_guard": "bounded guardian+native idempotency"
+    },
+    {
+      "producer_id": "bg185",
+      "source_system": "make",
+      "path_patterns": ["make/contracts/bg185/", "automation/contracts/bg185/"],
+      "adapter_owner": "BG211",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "component key+contract fingerprint",
+      "outcome_evidence": "live blueprint validation",
+      "brain_writeback": "BG168/BG166",
+      "cost_guard": "changed-component inventory gate"
+    },
+    {
+      "producer_id": "bg202",
+      "source_system": "make",
+      "path_patterns": ["make/contracts/bg202/", "automation/contracts/bg202/"],
+      "adapter_owner": "BG211",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "opportunity/campaign attribution root",
+      "outcome_evidence": "channel/product execution evidence",
+      "brain_writeback": "BG168/BG166",
+      "cost_guard": "daily paid window+deterministic pre-gate"
+    },
+    {
+      "producer_id": "bg210",
+      "source_system": "make",
+      "path_patterns": ["make/contracts/bg210/", "automation/contracts/bg210/"],
+      "adapter_owner": "BG211",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "publish_command_id",
+      "outcome_evidence": "BG164/BG194 public proof",
+      "brain_writeback": "BG168/BG166",
+      "cost_guard": "2h bounded recovery sweep"
+    },
+    {
+      "producer_id": "unified-brain-delivery",
+      "source_system": "github",
+      "path_patterns": [".github/workflows/unified-brain-delivery.yml", "tools/delivery-", "tests/delivery-"],
+      "adapter_owner": "GitHub delivery artifact→BG211 adapter",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "head_sha+stage+component+failure fingerprint",
+      "outcome_evidence": "exact-head lane+handoff+production evidence",
+      "brain_writeback": "BG168/BG166 via existing delivery learning route",
+      "cost_guard": "changed-lane only+known-error preflight"
+    },
+    {
+      "producer_id": "weekblog",
+      "source_system": "github",
+      "path_patterns": [".github/workflows/weekblog.yml"],
+      "adapter_owner": "publication recovery→BG211",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "publish command+slug",
+      "outcome_evidence": "candidate PR+technical SEO+public proof",
+      "brain_writeback": "BG168/BG166",
+      "cost_guard": "candidate-only delivery+bounded recovery"
+    },
+    {
+      "producer_id": "blog-bijwerken",
+      "source_system": "github",
+      "path_patterns": [".github/workflows/blog-bijwerken.yml"],
+      "adapter_owner": "publication recovery→BG211",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "content identity+slug+candidate head",
+      "outcome_evidence": "candidate PR+technical SEO+public proof",
+      "brain_writeback": "BG168/BG166",
+      "cost_guard": "candidate-only delivery+bounded recovery"
+    },
+    {
+      "producer_id": "universal-event-contract",
+      "source_system": "github",
+      "path_patterns": [".github/workflows/universal-event-retention-contract.yml", "tools/universal-event-", "tools/event-retention-policy.mjs", "tests/universal-event-", "tests/event-retention-policy.test.mjs", "config/universal-event-producers.json"],
+      "adapter_owner": "BG211",
+      "retention_class": "tiered-v1",
+      "idempotency_key": "head_sha+contract test name",
+      "outcome_evidence": "GitHub Actions check result",
+      "brain_writeback": "BG168/BG166 on material failure/recovery",
+      "cost_guard": "path-scoped deterministic tests"
+    }
+  ]
+}
