@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { TABEL_CSS, INTERACTIE_CSS, INTERACTIE_JS, verrijkInhoud, opDezePagina, mensenblok, schemas, ORGANISATIE_SCHEMA, EXTRA_HTML, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
-import { MODULE_CSS, MODULE_JS, bouwModules, SPEELS_CSS, SPEELS_JS, LEK, VERTREK, zetStrepen, VRAAG_CSS, VRAAG_JS, VRAAGBALK, OVERTYP, hoofdletterMerk } from './v18-modules.mjs';
+import { CONTEXT_CSS, CONTEXT_JS, RING, legTermenUit, rolblok, MODULE_CSS, MODULE_JS, bouwModules, SPEELS_CSS, SPEELS_JS, LEK, VERTREK, zetStrepen, VRAAG_CSS, VRAAG_JS, VRAAGBALK, OVERTYP, hoofdletterMerk } from './v18-modules.mjs';
 
 // Zet elke pagina in de opmaak van de homepage: dezelfde kop, navigatie, voet,
 // dezelfde videohero, dezelfde letters, kleuren en kaarten.
@@ -197,8 +197,19 @@ export async function bouwPagina({ schil, basisCss, bestand, doel, titel, omschr
   // structuur van de oorspronkelijke pagina, gescoopt en ontdaan van eigen kleuren
   const paginaStijl = [...oud.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m =>m[1]).join('\n');const eigenStijl = `<style id="pagina-structuur">${zonderPaginaKleur(scoopCss(basisCss + '\n' + paginaStijl))}</style>`;
 
-  const scripts = [...oud.matchAll(/<script(?![^>]*application\/ld\+json)[^>]*>[\s\S]*?<\/script>/g)]
-    .map(m => m[0]).filter(s => !s.includes('/assets/js/menu.js')).join('\n');
+  // Staat er in een paginascript een top-level `const pages`, dan botst dat met
+  // dezelfde naam uit de schil: "Identifier has already been declared", waarna
+  // de rest van dat script niet meer draait. Elk script krijgt daarom een eigen
+  // omhulsel, zodat de namen daarbinnen blijven.
+  const scripts = [...oud.matchAll(/<script(?![^>]*application\/ld\+json)([^>]*)>([\s\S]*?)<\/script>/g)]
+    .filter(m => !m[0].includes('/assets/js/menu.js'))
+    .map(m => {
+      const attrs = m[1] || '';
+      const lijf = m[2] || '';
+      if (/\bsrc=/.test(attrs) || !lijf.trim()) return m[0];
+      const alOmhuld = /^\s*[;(]?\s*\(\s*(?:async\s*)?function/.test(lijf) || /^\s*\(\s*\(\s*\)\s*=>/.test(lijf);
+      return alOmhuld ? m[0] : `<script${attrs}>(function(){\n${lijf}\n})();</script>`;
+    }).join('\n');
 
   const hero = `<section class="inhoud-kop">
 <video autoplay muted playsinline loop preload="metadata" aria-hidden="true"><source src="${HERO_URL}" type="video/mp4"></video>
@@ -211,7 +222,7 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
   const isBlog = bestand.startsWith('blog/');
   const eigen = EIGEN_WERKING.has(bestand);
   // pagina's met eigen werking laten we met rust: hun knoppen en stappen doen al iets
-  const { body: metModules } = eigen ? { body } : bouwModules(zetStrepen(body));
+  const { body: metModules } = eigen ? { body } : bouwModules(legTermenUit(zetStrepen(body)));
   const { body: levend, koppen } = eigen ? { body: metModules, koppen: [] } : verrijkInhoud(metModules);
   const overtypen = /overtyp|overgetypt|dubbele invoer|handmatig in|opnieuw in/i.test(kaalTekst(body));
   // De blokken worden door de tekst heen verdeeld in plaats van er allemaal
@@ -234,6 +245,7 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
   if (overtypen) tussendoor.push(OVERTYP);
   const { body: rekenblok } = bouwModules('');
   tussendoor.push(rekenblok);
+  tussendoor.push(rolblok(kaalTekst(titel).split('|')[0].trim().toLowerCase()));
 
   const inhoud = eigen
     ? levend + volgendeStap(isBlog)
@@ -247,11 +259,12 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
     + `<section class="inhoud-body"><div class="wrap">${inhoud}</div></section>`
     + '</div>'
     + EXTRA_HTML
+    + RING
     + LEK
     + schil.na;
 
-  html = html.replace('</head>', `${eigenStijl}\n${INHOUD_CSS}\n${INTERACTIE_CSS}\n${VOLGENDE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${TABEL_CSS}\n</head>`);
-  html = html.replace('</body>', `${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${ORGANISATIE_SCHEMA}\n${schemas({ isBlog, titel, omschrijving, canoniek, h1, body: levend })}\n</body>`);
+  html = html.replace('</head>', `${eigenStijl}\n${INHOUD_CSS}\n${INTERACTIE_CSS}\n${VOLGENDE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${TABEL_CSS}\n${CONTEXT_CSS}\n</head>`);
+  html = html.replace('</body>', `${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${ORGANISATIE_SCHEMA}\n${schemas({ isBlog, titel, omschrijving, canoniek, h1, body: levend })}\n</body>`);
   html = knoppenNaarLinks(html);
   html = routerLaatLinksDoor(html);
   html = html.replace('</body>', `${scripts}\n</body>`);
