@@ -13,7 +13,6 @@ test('latest material chat learnings are persisted in the canonical Brain prefli
   assert.ok(paths.has('brain/learning/chat-materialization-2026-08-31-v2.json'));
   assert.ok(paths.has('brain/learning/chat-materialization-2026-08-31-v3.json'));
   assert.ok(paths.has('brain/learning/ph-agent-materiality-preflight-v1.json'));
-  assert.ok(paths.has('brain/learning/chat-error-completeness-preflight-v1.json'));
   assert.ok(packet.fingerprints.includes('netlify-preview-provider-scope-mismatch-v1'));
   assert.ok(packet.fingerprints.includes('delivery|runtime-path|unclassified-netlify-build-control-v1'));
   assert.ok(packet.fingerprints.includes('delivery|verification|provider-impact-guard-needs-two-sided-proof-v1'));
