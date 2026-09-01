@@ -8,6 +8,7 @@ on:
       - 'tools/event-retention-policy.mjs'
       - 'tests/universal-event-*.test.mjs'
       - 'tests/event-retention-policy.test.mjs'
+      - 'config/universal-event-producers.json'
       - '.github/workflows/universal-event-retention-contract.yml'
       - 'docs/superpowers/specs/2026-09-01-universal-brain-event-retention-loop-design.md'
       - 'docs/superpowers/plans/2026-09-01-universal-brain-event-retention-loop.md'
@@ -24,5 +25,5 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Universal event and retention tests
-        run: node --test tests/universal-event-envelope.test.mjs tests/event-retention-policy.test.mjs
+      - name: Universal event, retention and producer-contract tests
+        run: node --test tests/universal-event-envelope.test.mjs tests/event-retention-policy.test.mjs tests/universal-event-contract-check.test.mjs
