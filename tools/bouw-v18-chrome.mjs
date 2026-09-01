@@ -199,9 +199,31 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
   const { body: metModules } = eigen ? { body } : bouwModules(zetStrepen(body));
   const { body: levend, koppen } = eigen ? { body: metModules, koppen: [] } : verrijkInhoud(metModules);
   const overtypen = /overtyp|overgetypt|dubbele invoer|handmatig in|opnieuw in/i.test(kaalTekst(body));
+  // De blokken worden door de tekst heen verdeeld in plaats van er allemaal
+  // onderaan te staan. Op een pagina van vijftien meter lang ziet niemand wat
+  // op de laatste meter staat.
+  function verdeel(tekst, blokken) {
+    const koppenIn = [...tekst.matchAll(/<h2[^>]*>/g)].map(m => m.index);
+    if (koppenIn.length < blokken.length + 1) return tekst + blokken.join('');
+    const stap = Math.floor(koppenIn.length / (blokken.length + 1));
+    let uit = '', vorig = 0;
+    blokken.forEach((blok, n) => {
+      const punt = koppenIn[Math.min((n + 1) * stap, koppenIn.length - 1)];
+      uit += tekst.slice(vorig, punt) + blok;
+      vorig = punt;
+    });
+    return uit + tekst.slice(vorig);
+  }
+
+  const tussendoor = [];
+  if (overtypen) tussendoor.push(OVERTYP);
+  const { body: rekenblok } = bouwModules('');
+  tussendoor.push(rekenblok);
+
   const inhoud = eigen
     ? levend + volgendeStap(isBlog)
-    : VRAAGBALK + opDezePagina(koppen) + levend + (overtypen ? OVERTYP : '') + VERTREK + volgendeStap(isBlog) + mensenblok(isBlog);
+    : VRAAGBALK + opDezePagina(koppen) + verdeel(levend, tussendoor)
+      + VERTREK + volgendeStap(isBlog) + mensenblok(isBlog);
 
   let html = schil.voor
     + '<div class="page active" id="view-inhoud">'
