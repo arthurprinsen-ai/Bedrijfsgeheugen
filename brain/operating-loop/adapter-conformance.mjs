@@ -15,6 +15,7 @@ function evaluate(platformConfig,evidence,required){
     compatibility_mapping:Boolean(clean(platformConfig?.compatibility_mapping))&&e.compatibility_mapping===true,
     regression_contract:Boolean(clean(platformConfig?.regression_contract))&&e.regression_contract===true,
     shared_memory:e.shared_memory===true,
+    universal_event_ingest:e.universal_event_ingest===true,
     health_freshness_error_owner_cost_revision:telemetryComplete(e),
     capacity_available:clean(e.capacity)==='available',
     execution_proof:executionComplete(e),
