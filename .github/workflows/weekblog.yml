@@ -366,6 +366,14 @@ jobs:
             echo "delivery=direct" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Restore canonical GitHub credentials for candidate delivery
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git ls-remote --exit-code origin HEAD >/dev/null
 
       - name: Candidate branch publiceren
         if: steps.kalender.outputs.gevonden == 'true'
@@ -394,7 +402,6 @@ jobs:
             --head "$CANDIDATE_BRANCH" \
             --title "Weekblog candidate: $SLUG" \
             --body "Gecontroleerde candidate uit weekblog. Base SHA: $BASE_SHA. Notion blijft Gepland totdat de wijziging werkelijk is gepromoveerd. Deze workflow merge't zichzelf niet."
-
 
       - name: Niets te doen
         if: steps.kalender.outputs.gevonden != 'true'
