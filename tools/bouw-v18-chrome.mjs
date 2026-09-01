@@ -16,7 +16,8 @@ const PAD = {
   'frisseblik-scan': '/frisse-blik', start: '/start', more: '/meer'
 };
 
-export const HERO_URL = '/assets/openart-hero-iphone-safe-v1.mp4';
+// De herovideo staat in Supabase-opslag, dezelfde als op de homepage.
+export const HERO_URL = 'https://adhjwmvyoixzjtmiroln.supabase.co/storage/v1/object/public/media/hero/shanghai-v1.mp4';
 
 // pagina's die hun eigen werking hebben (scans, rekenmodules): daar blijft de
 // eigen opmaak staan, want die stuurt het tonen en verbergen van stappen
