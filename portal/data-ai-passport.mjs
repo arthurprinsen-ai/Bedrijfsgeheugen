@@ -7,6 +7,19 @@ export const PASSPORT_STATUSES = Object.freeze([
   'action_required',
 ]);
 
+export const DEFAULT_PASSPORT_CONTROLS = Object.freeze([
+  { id:'data-residency', label:'Data residency', category:'Data', description:'Waar bedrijfsdata wordt opgeslagen en verwerkt.' },
+  { id:'data-classification', label:'Dataclassificatie', category:'Data', description:'Welke gevoeligheidsklassen en omgangsregels zijn vastgelegd.' },
+  { id:'retention', label:'Bewaartermijnen', category:'Data', description:'Of bewaartermijnen aantoonbaar zijn vastgelegd en toegepast.' },
+  { id:'access-control', label:'Toegangsbeheer', category:'Security', description:'Wie toegang heeft tot data, modellen en AI-functionaliteit.' },
+  { id:'model-register', label:'AI- en modelregister', category:'AI governance', description:'Welke modellen, providers en use-cases aantoonbaar in gebruik zijn.' },
+  { id:'ai-risk-classification', label:'AI-risicoclassificatie', category:'AI governance', description:'Of AI-use-cases op risico en toepasselijke verplichtingen zijn geclassificeerd.' },
+  { id:'human-oversight', label:'Menselijk toezicht', category:'AI governance', description:'Waar menselijke controle, bevoegdheden en escalatie zijn ingericht.' },
+  { id:'privacy-impact', label:'Privacy- en impactbeoordeling', category:'Privacy', description:'Of relevante privacy- en impactbeoordelingen aantoonbaar aanwezig zijn.' },
+  { id:'supplier-assurance', label:'Leveranciersbewijs', category:'Third party', description:'Contractuele, security- en governance-evidence van relevante leveranciers.' },
+  { id:'monitoring-audit', label:'Monitoring & audit trail', category:'Operations', description:'Of beslissingen, modelgebruik, wijzigingen en incidenten herleidbaar worden vastgelegd.' },
+]);
+
 function evidenceList(input) {
   return (Array.isArray(input) ? input : []).map(normalizeEvidence);
 }
@@ -67,8 +80,14 @@ export function buildDataAiPassport(input = {}) {
 
 export function buildPassportFromState(state = {}) {
   const raw = state?.dataAiPassport || {};
+  const supplied = Array.isArray(raw.controls) ? raw.controls : [];
+  const suppliedById = new Map(supplied.map(item => [String(item?.id || ''), item]));
+  const controls = DEFAULT_PASSPORT_CONTROLS.map(base => ({ ...base, ...(suppliedById.get(base.id) || {}) }));
+  for (const item of supplied) {
+    if (!controls.some(control => control.id === item?.id)) controls.push(item);
+  }
   return buildDataAiPassport({
     generatedAt: raw.generatedAt || state?.sourceMeta?.updatedAt || null,
-    controls: raw.controls || [],
+    controls,
   });
 }
