@@ -92,7 +92,9 @@ for (const p of VIEWS) {
   {
     const start = html.indexOf(`<div class="page active" id="view-${p.view}">`);
     const eind = html.indexOf('</main>', start);
-    const stuk = html.slice(start, eind).replace(/<section(?![^>]*data-op)([^>]*)>/g, '<section$1 data-op>');
+    // de hero zelf krijgt géén data-op: die moet zichtbaar zijn ook als er
+    // geen JavaScript draait
+    const stuk = html.slice(start, eind).replace(/<section(?![^>]*data-op)(?![^>]*class="inhoud-kop")([^>]*)>/g, '<section$1 data-op>');
     html = html.slice(0, start) + stuk + html.slice(eind);
   }
 
