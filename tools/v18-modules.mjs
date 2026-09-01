@@ -563,8 +563,8 @@ export const CONTEXT_CSS = `<style id="v18-context">
   font-size:14.5px;font-weight:650;cursor:pointer;transition:.2s ease}
 .bgx-rol .knoppen button:hover{border-color:var(--blue);color:var(--blue)}
 .bgx-rol .knoppen button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
-.bgx-rol .antwoord{font-size:16.5px;line-height:1.7;color:var(--ink2);min-height:3.4em}
-.bgx-rol .antwoord b{color:var(--ink)}
+.bgx-rol .bgx-antwoord{font-size:16.5px;line-height:1.7;color:var(--ink2);min-height:3.4em}
+.bgx-rol .bgx-antwoord b{color:var(--ink)}
 
 .bgx-ring{position:fixed;right:18px;bottom:74px;z-index:69;width:46px;height:46px;border-radius:50%;background:var(--white);
   border:1px solid var(--line);box-shadow:var(--shadow);display:grid;place-items:center;font-size:11px;font-weight:800;
@@ -591,7 +591,7 @@ export const CONTEXT_JS = `<script id="v18-context-js">
 
   // wat betekent dit voor wie
   document.querySelectorAll('.bgx-rol').forEach(function(blok){
-    var uit = blok.querySelector('.antwoord');
+    var uit = blok.querySelector('.bgx-antwoord');
     var knoppen = blok.querySelectorAll('button');
     knoppen.forEach(function(k){
       k.addEventListener('click', function(){
@@ -616,7 +616,7 @@ export const CONTEXT_JS = `<script id="v18-context-js">
       var hoogte = Math.max(document.documentElement.scrollHeight - innerHeight, 1);
       var deel = Math.min(1, Math.max(0, top / hoogte));
       cirkel.style.strokeDashoffset = omtrek * (1 - deel);
-      ring.querySelector('.cijfer').textContent = Math.max(0, Math.ceil(totaal * (1 - deel))) + "'";
+      ring.querySelector('.bgx-cijfer').textContent = Math.max(0, Math.ceil(totaal * (1 - deel))) + "'";
       ring.classList.toggle('bgx-zichtbaar', top > 400);
     }
     document.addEventListener('scroll', bij, true);
@@ -627,7 +627,7 @@ export const CONTEXT_JS = `<script id="v18-context-js">
 
 export const RING = `<div class="bgx-ring" aria-hidden="true">
 <svg viewBox="0 0 46 46"><circle class="baan" cx="23" cy="23" r="20"></circle><circle class="voortgang" cx="23" cy="23" r="20"></circle></svg>
-<span class="cijfer"></span>
+<span class="bgx-cijfer"></span>
 </div>`;
 
 // vaktermen in de lopende tekst voorzien van uitleg — één keer per term
@@ -665,6 +665,6 @@ export function rolblok(onderwerp) {
 <div class="kop">Wat betekent dit voor jou?</div>
 <h3>Kies je rol</h3>
 <div class="knoppen">${knoppen}</div>
-<p class="antwoord"></p>
+<p class="bgx-antwoord"></p>
 </div>`;
 }
