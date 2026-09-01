@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import {
   PASSPORT_STATUSES,
   normalizePassportControl,
@@ -7,6 +8,8 @@ import {
   buildPassportFromState,
 } from '../portal/data-ai-passport.mjs';
 import { renderDataAiPassport } from '../portal/data-ai-passport-view.mjs';
+
+const DELIVERY_CONFIG = new URL('../config/brain-delivery-system.json', import.meta.url);
 
 test('passport never marks an unverified claim as verified', () => {
   const control = normalizePassportControl({
@@ -87,4 +90,14 @@ test('visible passport explicitly disclaims certification', () => {
   assert.match(html, /geen juridisch certificaat/i);
   assert.match(html, /Nog te bewijzen/);
   assert.doesNotMatch(html, /100%.*compliant/i);
+});
+
+test('delivery classifier owns the passport regression path', async () => {
+  const config = JSON.parse(await readFile(DELIVERY_CONFIG, 'utf8'));
+  const portal = config.lanes.find(lane => lane.id === 'portal');
+  assert.ok(portal, 'portal delivery lane must exist');
+  assert.ok(
+    portal.paths.some(prefix => 'tests/data-ai-passport.test.mjs'.startsWith(prefix)),
+    'Data & AI Passport regression tests must be classified in the portal delivery lane',
+  );
 });
