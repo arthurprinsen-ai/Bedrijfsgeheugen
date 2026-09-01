@@ -195,7 +195,7 @@ export function bouwModules(body) {
     for (const m of lijsten) {
       const items = [...m[2].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map(x => x[1]);
       const kort = items.filter(t => kaal(t).length > 12 && kaal(t).length < 160 && !/<(a|img|table)\b/.test(t));
-      if (items.length < 4 || kort.length !== items.length) continue;
+      if (items.length < 3 || kort.length !== items.length) continue;
       gebruikt.push('herken');
       const lijst = items.map(t => `<li><button type="button" aria-pressed="false">${t}</button></li>`).join('');
       body = body.replace(m[0], `<ul class="bgx-herken"${m[1]}>${lijst}</ul>
@@ -523,3 +523,148 @@ export const VRAAG_JS = `<script id="v18-vraag-js">
   }
 })();
 </script>`;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Contextuele onderdelen: ze volgen uit het onderwerp van de pagina, niet uit
+// een toevallig opmaakpatroon. Zo heeft elke pagina iets, ook een pagina zonder
+// lijstjes of genummerde stappen.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Vaktermen krijgen een uitleg. De term blijft gewoon in de tekst staan, dus
+// een zoekmachine leest hem als altijd; de uitleg komt eroverheen bij tikken.
+export const TERMEN = {
+  'AI Act': 'Europese wet die eisen stelt aan wie AI ontwikkelt of gebruikt. Bepaalt in welke risicoklasse je toepassing valt en wat je daarvoor moet vastleggen.',
+  'AFAS': 'Nederlands ERP-pakket voor administratie, HR en salaris. Veel mkb-bedrijven hebben er hun bron van waarheid in staan.',
+  'Exact Online': 'Boekhoud- en ERP-software in de cloud, veel gebruikt in het Nederlandse mkb.',
+  'API': 'Een afgesproken ingang waarmee twee systemen elkaars gegevens kunnen lezen en schrijven, zonder dat iemand iets overtypt.',
+  'webhook': 'Een berichtje dat een systeem automatisch stuurt zodra er iets gebeurt, zodat het andere systeem meteen kan reageren.',
+  'ERP': 'Het systeem waarin je administratie, voorraad, inkoop en verkoop samenkomen.',
+  'CRM': 'Het systeem waarin klantcontact, offertes en afspraken worden bijgehouden.',
+  'due diligence': 'Het onderzoek voorafgaand aan een overname: wat koop je precies, en waar zitten de risico’s.',
+  'SLA': 'Afspraak over wat er geleverd wordt en binnen welke tijd, inclusief wat er gebeurt als dat niet lukt.',
+  'RAG': 'Techniek waarbij een AI-model eerst je eigen documenten opzoekt en daarna pas antwoord geeft, met bron erbij.',
+  'AVG': 'De privacywet: welke persoonsgegevens je mag verwerken, waarvoor, en hoe lang je ze bewaart.'
+};
+
+export const CONTEXT_CSS = `<style id="v18-context">
+.bgx-term{border-bottom:2px dotted var(--blue);cursor:help;position:relative}
+.bgx-term:focus{outline:2px solid var(--blue);outline-offset:2px}
+.bgx-uitleg{position:absolute;left:0;top:calc(100% + 8px);z-index:40;width:min(320px,78vw);background:var(--ink);color:#fff;
+  border-radius:14px;padding:13px 15px;font-size:14px;line-height:1.5;font-weight:400;box-shadow:0 18px 44px rgba(7,21,35,.28);
+  opacity:0;transform:translateY(-4px);pointer-events:none;transition:.2s ease}
+.bgx-term:hover .bgx-uitleg,.bgx-term:focus .bgx-uitleg,.bgx-term[aria-expanded=true] .bgx-uitleg{opacity:1;transform:none;pointer-events:auto}
+
+.bgx-rol{max-width:none!important;background:var(--white);border:1px solid var(--line);border-radius:22px;padding:26px 28px;margin:34px 0;
+  box-shadow:0 1px 2px rgba(7,21,35,.04),0 16px 40px rgba(7,21,35,.06)}
+.bgx-rol .kop{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#C2410C}
+.bgx-rol h3{margin:8px 0 16px!important;font-size:21px}
+.bgx-rol .knoppen{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px}
+.bgx-rol .knoppen button{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:10px 18px;font:inherit;
+  font-size:14.5px;font-weight:650;cursor:pointer;transition:.2s ease}
+.bgx-rol .knoppen button:hover{border-color:var(--blue);color:var(--blue)}
+.bgx-rol .knoppen button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.bgx-rol .antwoord{font-size:16.5px;line-height:1.7;color:var(--ink2);min-height:3.4em}
+.bgx-rol .antwoord b{color:var(--ink)}
+
+.bgx-ring{position:fixed;right:18px;bottom:74px;z-index:69;width:46px;height:46px;border-radius:50%;background:var(--white);
+  border:1px solid var(--line);box-shadow:var(--shadow);display:grid;place-items:center;font-size:11px;font-weight:800;
+  font-variant-numeric:tabular-nums;color:var(--ink);opacity:0;transition:opacity .3s ease}
+.bgx-ring.bgx-zichtbaar{opacity:1}
+.bgx-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.bgx-ring circle{fill:none;stroke-width:3}
+.bgx-ring .baan{stroke:var(--line)}
+.bgx-ring .voortgang{stroke:var(--blue);stroke-linecap:round;transition:stroke-dashoffset .15s linear}
+@media(max-width:700px){.bgx-ring{bottom:70px;right:14px}}
+</style>`;
+
+export const CONTEXT_JS = `<script id="v18-context-js">
+(function(){
+  // begrippen: op een telefoon werkt hover niet, dus daar opent tikken de uitleg
+  document.querySelectorAll('.bgx-term').forEach(function(t){
+    t.addEventListener('click', function(e){
+      e.preventDefault();
+      var open = t.getAttribute('aria-expanded') === 'true';
+      document.querySelectorAll('.bgx-term[aria-expanded=true]').forEach(function(a){ a.setAttribute('aria-expanded','false'); });
+      t.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+  });
+
+  // wat betekent dit voor wie
+  document.querySelectorAll('.bgx-rol').forEach(function(blok){
+    var uit = blok.querySelector('.antwoord');
+    var knoppen = blok.querySelectorAll('button');
+    knoppen.forEach(function(k){
+      k.addEventListener('click', function(){
+        knoppen.forEach(function(a){ a.setAttribute('aria-pressed','false'); });
+        k.setAttribute('aria-pressed','true');
+        uit.innerHTML = k.getAttribute('data-tekst');
+      });
+    });
+    if (knoppen[0]) knoppen[0].click();
+  });
+
+  // leesvoortgang als ring, met de resterende leestijd erin
+  var ring = document.querySelector('.bgx-ring');
+  if (ring) {
+    var woorden = (document.body.innerText || '').trim().split(/\\s+/).length;
+    var totaal = Math.max(1, Math.round(woorden / 220));
+    var cirkel = ring.querySelector('.voortgang');
+    var omtrek = 2 * Math.PI * 20;
+    cirkel.style.strokeDasharray = omtrek;
+    function bij(){
+      var top = scrollY || document.documentElement.scrollTop || 0;
+      var hoogte = Math.max(document.documentElement.scrollHeight - innerHeight, 1);
+      var deel = Math.min(1, Math.max(0, top / hoogte));
+      cirkel.style.strokeDashoffset = omtrek * (1 - deel);
+      ring.querySelector('.cijfer').textContent = Math.max(0, Math.ceil(totaal * (1 - deel))) + "'";
+      ring.classList.toggle('bgx-zichtbaar', top > 400);
+    }
+    document.addEventListener('scroll', bij, true);
+    bij();
+  }
+})();
+</script>`;
+
+export const RING = `<div class="bgx-ring" aria-hidden="true">
+<svg viewBox="0 0 46 46"><circle class="baan" cx="23" cy="23" r="20"></circle><circle class="voortgang" cx="23" cy="23" r="20"></circle></svg>
+<span class="cijfer"></span>
+</div>`;
+
+// vaktermen in de lopende tekst voorzien van uitleg — één keer per term
+export function legTermenUit(body) {
+  let aantal = 0;
+  for (const term of Object.keys(TERMEN)) {
+    if (aantal >= 6) break;
+    const uitleg = TERMEN[term];
+    const veilig = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // alleen binnen een alinea, en niet als de term al is uitgelegd
+    const patroon = new RegExp('(<p[^>]*>[^<]{0,600}?)\\b(' + veilig + ')\\b');
+    const m = body.match(patroon);
+    if (!m) continue;
+    body = body.replace(patroon,
+      m[1] + '<span class="bgx-term" tabindex="0" role="button" aria-expanded="false">' + m[2]
+      + '<span class="bgx-uitleg">' + uitleg + '</span></span>');
+    aantal++;
+  }
+  return body;
+}
+
+// Wat betekent dit voor wie. De rollen zijn de vier mensen die bij een mkb-bedrijf
+// aan tafel zitten als hier een besluit over valt.
+export function rolblok(onderwerp) {
+  const t = onderwerp || 'dit';
+  const rollen = [
+    ['Directeur', `Je koopt geen software, je koopt rust. Bij ${t} gaat het om de vraag of het werk doorloopt als iemand wegvalt — en of je kunt aantonen waarom er is besloten wat er is besloten. Vaste prijs vooraf, eerst het probleem dat aantoonbaar geld kost.`],
+    ['IT of beheer', `Er komt geen extra pakket bij dat jij moet onderhouden. ${t.charAt(0).toUpperCase() + t.slice(1)} sluit aan op wat er al draait — AFAS, Exact Online, Microsoft 365 — en de koppeling wordt overgedragen met documentatie, niet als zwarte doos.`],
+    ['Financieel', `De winst zit in tijd die niet meer aan overtypen en zoeken opgaat, en in fouten die niet meer hersteld hoeven te worden. Reken het na met de rekenaar op deze pagina: bij 25 mensen loopt dat snel in de tonnen per jaar.`],
+    ['Uitvoering', `Jij merkt het als eerste: gegevens die al ergens stonden hoef je niet opnieuw in te voeren, en de afspraak met die ene klant staat niet meer in het hoofd van je collega. Wij beginnen bij waar jouw werk vastloopt, niet bij een pakket.`]
+  ];
+  const knoppen = rollen.map(([naam, tekst], n) =>
+    `<button type="button" aria-pressed="${n === 0 ? 'true' : 'false'}" data-tekst="${tekst.replace(/"/g, '&quot;')}">${naam}</button>`).join('');
+  return `<div class="bgx-rol" data-op>
+<div class="kop">Wat betekent dit voor jou?</div>
+<h3>Kies je rol</h3>
+<div class="knoppen">${knoppen}</div>
+<p class="antwoord"></p>
+</div>`;
+}
