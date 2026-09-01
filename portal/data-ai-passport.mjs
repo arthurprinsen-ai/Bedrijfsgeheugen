@@ -62,10 +62,11 @@ export function buildDataAiPassport(input = {}) {
   const actionRequired = count('action_required');
 
   return Object.freeze({
-    version: 1,
+    version: 2,
     kind: 'data-ai-passport',
     complianceClaim: 'evidence-status-only',
     generatedAt: input.generatedAt || null,
+    technicalFacts: Object.freeze({...input.technicalFacts}),
     controls,
     summary: Object.freeze({
       total,
@@ -74,20 +75,35 @@ export function buildDataAiPassport(input = {}) {
       unknown,
       actionRequired,
       coveragePct: total ? Math.round((verified / total) * 100) : 0,
+      evidenceCoveragePct: total ? Math.round(((verified + partiallyVerified) / total) * 100) : 0,
     }),
   });
 }
 
+function mergeControls(...lists){
+  const map=new Map();
+  for(const list of lists){
+    for(const item of Array.isArray(list)?list:[]){
+      const id=String(item?.id||''); if(!id) continue;
+      const previous=map.get(id)||{};
+      map.set(id,{...previous,...item,evidence:[...(previous.evidence||[]),...(item?.evidence||[])]});
+    }
+  }
+  return [...map.values()];
+}
+
 export function buildPassportFromState(state = {}) {
-  const raw = state?.dataAiPassport || {};
-  const supplied = Array.isArray(raw.controls) ? raw.controls : [];
-  const suppliedById = new Map(supplied.map(item => [String(item?.id || ''), item]));
+  const explicit = state?.dataAiPassport || {};
+  const runtime = state?.dataAiRuntime || {};
+  const merged = mergeControls(runtime.controls, explicit.controls);
+  const suppliedById = new Map(merged.map(item => [String(item?.id || ''), item]));
   const controls = DEFAULT_PASSPORT_CONTROLS.map(base => ({ ...base, ...(suppliedById.get(base.id) || {}) }));
-  for (const item of supplied) {
+  for (const item of merged) {
     if (!controls.some(control => control.id === item?.id)) controls.push(item);
   }
   return buildDataAiPassport({
-    generatedAt: raw.generatedAt || state?.sourceMeta?.updatedAt || null,
+    generatedAt: explicit.generatedAt || runtime.generatedAt || state?.sourceMeta?.updatedAt || null,
+    technicalFacts: runtime.technicalFacts || explicit.technicalFacts || {},
     controls,
   });
 }

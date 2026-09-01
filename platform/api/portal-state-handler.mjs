@@ -1,7 +1,8 @@
 import {resolveIdentityTenant,sanitizePortalProjection,portalProjectionToState} from '../read-models/portal-server-state.mjs';
+import {buildRuntimePassportEvidence} from '../read-models/data-ai-runtime-evidence.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
-export function createPortalStateHandler({getUser,store,maxBytes=1_500_000,now=()=>new Date().toISOString()}={}){
+export function createPortalStateHandler({getUser,store,maxBytes=1_500_000,now=()=>new Date().toISOString(),env=process.env}={}){
  if(typeof getUser!=='function') throw new TypeError('getUser is required');
  if(!store?.get||!store?.put) throw new TypeError('store get/put are required');
  return async function handle(request){
@@ -13,7 +14,9 @@ export function createPortalStateHandler({getUser,store,maxBytes=1_500_000,now=(
    if(request.method==='GET'){
      const record=await store.get(tenantId);
      if(!record) return json({error:'NOT_FOUND'},404);
-     return json(portalProjectionToState(record,user));
+     const state=portalProjectionToState(record,user);
+     const dataAiRuntime=buildRuntimePassportEvidence(state,{env,now});
+     return json({...state,dataAiRuntime});
    }
    const declared=Number(request.headers.get('content-length')||0);
    if(declared>maxBytes) return json({error:'PAYLOAD_TOO_LARGE'},413);
