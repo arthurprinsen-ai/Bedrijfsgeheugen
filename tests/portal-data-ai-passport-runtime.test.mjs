@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildRuntimePassportEvidence} from '../platform/read-models/data-ai-runtime-evidence.mjs';
 import {buildPassportFromState} from '../portal/data-ai-passport.mjs';
+import {renderCompany} from '../portal/render-company.mjs';
 
 test('runtime evidence verifies auth controls and reports real configured regions',()=>{
   const runtime=buildRuntimePassportEvidence({company:{name:'Acme'},audit:[{id:'a1'}],agents:[{name:'Copilot',provider:'OpenAI',model:'gpt-x',riskClass:'limited'}]}, {env:{AWS_REGION:'us-east-1',BG_PORTAL_STORAGE_REGION:'us-east-1'},now:()=> '2026-09-01T20:30:00.000Z'});
@@ -27,4 +28,11 @@ test('explicit tenant evidence augments runtime evidence without losing runtime 
   const retention=passport.controls.find(x=>x.id==='retention');
   assert.equal(retention.status,'verified');
   assert.equal(retention.claim,'30 dagen');
+});
+
+test('Data & systemen exposes the live Data AI Passport entry point',()=>{
+  const html=renderCompany({health:{cards:[],risks:[],actions:[]},graph:{nodes:[]},route:'company/data'});
+  assert.match(html,/DATA & AI · LIVE EVIDENCE/);
+  assert.match(html,/href="\/portal\/data-ai-passport\.html"/);
+  assert.match(html,/Open Data & AI Passport/);
 });
