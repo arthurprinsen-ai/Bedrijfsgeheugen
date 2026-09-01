@@ -1,0 +1,12 @@
+{
+  "version":"ADAPTER-CONFORMANCE-v1",
+  "authority":"BRAIN-PLATFORM-ADAPTER-v1",
+  "registrationIsReadiness":false,
+  "unknownAdapterState":"INCOMPLETE",
+  "failClosed":true,
+  "requiredEvidence":["compatibility_mapping","regression_contract","shared_memory","health_freshness_error_owner_cost_revision","capacity_available","execution_proof","exact_revision_evidence","rollback_verified","whole_brain_lineage_verified"],
+  "blockedWhen":["capacity_not_available","execution_explicitly_failed"],
+  "readyWhen":"every required evidence control is current and independently verifiable",
+  "futureAdaptersInherit":true,
+  "readinessStates":["READY","INCOMPLETE","BLOCKED"]
+}

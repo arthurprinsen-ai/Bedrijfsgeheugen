@@ -1,5 +1,6 @@
 {
   "contract":"BRAIN-PLATFORM-ADAPTER-v1",
+  "conformance_contract":"ADAPTER-CONFORMANCE-v1",
   "activation":{"mode":"fail_closed","auto_registration":true,"production_ready_requires":["compatibility_mapping","regression_contract","shared_memory","health_freshness_error_owner_cost_revision","capacity_available","execution_proof","exact_revision_evidence","rollback_verified","whole_brain_lineage_verified"]},
   "canonical_services":["business_graph","external_intelligence","change_impact","decision_lifecycle","action_execution","verification","outcome","verified_value","learning","living_memory","graph_feedback","ai_governance"],
   "platforms":[

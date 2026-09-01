@@ -1,0 +1,16 @@
+{
+  "version":"RUNTIME-RUM-INGEST-v2",
+  "authority":"BRAIN-DELIVERY-v2",
+  "syntheticSamplesForbidden":true,
+  "authenticationRequired":true,
+  "exactRevisionRequired":true,
+  "stages":["authenticated_ingest","raw_persistence","window_aggregation","slo_assessment","current_state","outcome_obligation","learning_writeback"],
+  "metrics":["cached_ms","interactive_ms"],
+  "targetsMs":{"cached_ms":1000,"interactive_ms":2000},
+  "minimumRealSamples":10,
+  "notEnoughSamplesState":"WAITING_FOR_REAL_TRAFFIC",
+  "breachState":"OPEN",
+  "dedupeScope":["session_id","surface","route","metric_name","revision"],
+  "readbackRequired":true,
+  "completionRule":"RUM is PROVEN only from genuine authenticated production sessions persisted under exact production revision and independently read back through an SLO window."
+}
