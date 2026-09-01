@@ -54,3 +54,28 @@ export function zoekwoordVoor(bestand) {
       : '/' + bestand.replace(/\.html$/, '');
   return ZOEKWOORD_PER_PAGINA[pad] || ZOEKWOORD_PER_PAGINA[pad.replace(/\/$/, '')] || '';
 }
+
+
+// Titels die te lang waren voor de zoekresultaten (Google kapt rond 65 tekens)
+// of die hun eigen zoekwoord niet noemden. Staat een pagina hier, dan wint deze
+// titel van wat er in het bestand of in de weergavelijst staat.
+export const TITEL_PER_PAGINA = {
+  "/product": "Kennisborging mkb: alles op één plek | Bedrijfsgeheugen",
+  "/zelfscan": "Gratis zelfscan: waar lekt je tijd weg? | Bedrijfsgeheugen",
+  "/frisse-blik": "Frisse blik: van gevoel naar agenda | Bedrijfsgeheugen",
+  "/security": "Beveiliging en eigenaarschap van je data | Bedrijfsgeheugen",
+  "/templates": "Templates en calculators voor het mkb | Bedrijfsgeheugen",
+  "/onderzoeken": "Onderzoek en cijfers over digitalisering | Bedrijfsgeheugen",
+  "/data-soevereiniteit": "Data-soevereiniteit: ChatGPT en je gegevens | Bedrijfsgeheugen",
+  "/cases": "Praktijkvoorbeelden digitalisering mkb | Bedrijfsgeheugen",
+  "/oplossingen": "Digitalisering oplossingen mkb | Bedrijfsgeheugen",
+  "/prijzen": "Kosten digitalisering mkb: vaste prijzen | Bedrijfsgeheugen",
+  "/api-koppeling-laten-maken": "AFAS API koppeling laten maken | Bedrijfsgeheugen"
+};
+
+export function titelVoor(bestand) {
+  const pad = bestand === 'index.html' ? '/'
+    : bestand.endsWith('/index.html') ? '/' + bestand.slice(0, -'index.html'.length)
+    : '/' + bestand.replace(/\.html$/, '');
+  return TITEL_PER_PAGINA[pad] || TITEL_PER_PAGINA[pad.replace(/\/$/, '')] || '';
+}
