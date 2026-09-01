@@ -1,6 +1,6 @@
 import { buildPassportFromState } from './data-ai-passport.mjs';
 
-const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const STATUS_LABELS = Object.freeze({verified:'Geverifieerd',partially_verified:'Gedeeltelijk geverifieerd',unknown:'Nog te bewijzen',action_required:'Actie nodig'});
 const fact=(label,value)=>`<div class="passport-fact"><span>${esc(label)}</span><strong>${esc(value||'Nog te bewijzen')}</strong></div>`;
 
