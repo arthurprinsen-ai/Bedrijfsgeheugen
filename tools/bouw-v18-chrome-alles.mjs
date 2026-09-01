@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises';
 import { leesSchil, bouwPagina, zetKop, kruimelpad, INHOUD_CSS } from './bouw-v18-chrome.mjs';
 import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
 import { VERVANGEN } from './v18-views-lijst.mjs';
-import { zoekwoordVoor } from './zoekwoorden.mjs';
+import { zoekwoordVoor, titelVoor } from './zoekwoorden.mjs';
 import { knoppenNaarLinks } from './bouw-v18-chrome.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK } from './v18-modules.mjs';
 
@@ -104,7 +104,7 @@ for (const p of v18Paginas) {
   const canoniek = tussen(html, /<link rel="canonical" href="([^"]+)"/i) || 'https://www.bedrijfsgeheugen.nl' + p.pad;
 
   const eigenZoekwoord = zoekwoordVoor(p.bestand);
-  html = zetKop(html, titel, omschrijving, canoniek, eigenZoekwoord);
+  html = zetKop(html, titelVoor(p.bestand) || titel, omschrijving, canoniek, eigenZoekwoord);
   if (!eigenZoekwoord) html = html.replace(/<meta name="bg-zoekwoord"[^>]*>\s*/g, '');
 
   if (!html.includes('inhoud-kruim')) {
@@ -193,7 +193,7 @@ for await (const p of glob('components/*/*.html')) {
     "5673494": "/assets/foto/sfeer-5673494.jpg",
     "7710178": "/assets/foto/sfeer-7710178.jpg"
 };
-  for await (const p of [...await lijst('*.html'), ...await lijst('blog/*/index.html')]) {
+  for (const p of await allePaginas()) {
     let h = await readFile(p, 'utf8');
     let veranderd = false;
     for (const [nummer, doel] of Object.entries(FOTOS)) {
@@ -209,10 +209,14 @@ for await (const p of glob('components/*/*.html')) {
   }
 }
 
-async function lijst(patroon) {
+// Alle pagina's, in één lijst. blog/index.html matcht noch '*.html' noch
+// 'blog/*/index.html' en viel daardoor al drie keer buiten een bewerking.
+async function allePaginas() {
   const uit = [];
-  for await (const p of glob(patroon)) uit.push(p);
-  return uit;
+  for await (const p of glob('*.html')) uit.push(p);
+  for await (const p of glob('blog/*/index.html')) uit.push(p);
+  uit.push('blog/index.html');
+  return [...new Set(uit)];
 }
 
 // Een zichtbaar bouwstempel onderaan elke pagina. Zonder dit is niet te zien of
@@ -224,8 +228,7 @@ async function lijst(patroon) {
   const merk = `<p class="bgx-stempel">versie ${stempel}</p>`;
   const stijl = `<style id="v18-stempel">.bgx-stempel{margin:0;padding:14px 0 22px;text-align:center;font-size:11px;
     letter-spacing:.06em;color:rgba(255,255,255,.34);font-family:'IBM Plex Mono',ui-monospace,monospace}</style>`;
-  for await (const p of glob('*.html')) await stempelOp(p);
-  for await (const p of glob('blog/*/index.html')) await stempelOp(p);
+  for (const p of await allePaginas()) await stempelOp(p);
 
   async function stempelOp(pad) {
     let h = await readFile(pad, 'utf8');
