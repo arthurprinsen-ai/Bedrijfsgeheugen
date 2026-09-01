@@ -41,6 +41,14 @@ test('future Supabase governance tools are automatically classified as backend d
   }
 });
 
+test('platform promotion gate and its regression test are backend delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  for (const path of ['tools/platform-promotion-activation-gate.mjs','tests/platform-promotion-activation-gate.test.mjs']) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend'], `${path} must be backend delivery work`);
+  }
+});
+
 test('Agent Fabric regression tests are backend delivery work', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   for (const path of ['tests/agent-fabric.test.mjs','tests/agent-fabric-gateway.test.mjs','tests/agent-fabric-team-memory.test.mjs']) {
