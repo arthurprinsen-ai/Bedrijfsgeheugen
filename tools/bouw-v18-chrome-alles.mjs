@@ -6,7 +6,8 @@ import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenbl
 import { VERVANGEN } from './v18-views-lijst.mjs';
 import { zoekwoordVoor, titelVoor } from './zoekwoorden.mjs';
 import { knoppenNaarLinks } from './bouw-v18-chrome.mjs';
-import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK } from './v18-modules.mjs';
+import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK,
+         VRAAGBALK, VRAAG_CSS, VRAAG_JS, CONTEXT_CSS, CONTEXT_JS, RING, rolblok, bouwModules, HERO_URL } from './v18-modules.mjs';
 
 // Zet elke contentpagina in dezelfde v18-schil: kop, navigatie, videoband,
 // kruimelpad, voet en opmaak. Titel, omschrijving, canoniek en het zoekwoord
@@ -148,6 +149,20 @@ for (const p of v18Paginas) {
   if (!home.includes('"@type":"Organization"')) {
     home = home.replace('</body>', ORGANISATIE_SCHEMA + '\n</body>');
   }
+  // dezelfde skyline als op de rest van de site
+  home = home.replace(/\/assets\/openart-hero-iphone-safe-v1\.mp4/g, HERO_URL);
+
+  // en dezelfde onderdelen om mee te doen: vraagbalk, rekenaar en rolkiezer.
+  // Zonder deze voelt de homepage anders dan elke pagina die erop volgt.
+  if (!home.includes('bgx-vraagbalk"')) {
+    const { body: rekenaar } = bouwModules('');
+    const blok = `<section class="inhoud-body" style="padding:44px 0"><div class="wrap">`
+      + VRAAGBALK + rekenaar + rolblok('bedrijfsgeheugen') + `</div></section>`;
+    home = home.replace('</main>', blok + '</main>');
+    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n</head>');
+    home = home.replace('</body>', RING + '\n' + VRAAG_JS + '\n' + CONTEXT_JS + '\n</body>');
+  }
+
   home = hoofdletterMerk(home);
   await writeFile('index.html', home, 'utf8');
 }
