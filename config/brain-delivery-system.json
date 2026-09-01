@@ -68,14 +68,14 @@
     },
     {
       "id": "universal-event-contract",
-      "paths": ["config/universal-event-producers.json", "tools/universal-event-", "tools/event-retention-policy.mjs", "tests/universal-event-", "tests/event-retention-policy.test.mjs", ".github/workflows/universal-event-retention-contract.yml"]
+      "paths": ["config/universal-event-producers.json", "tools/universal-event-", "tools/event-retention-", "tests/universal-event-", "tests/event-retention-", ".github/workflows/universal-event-retention-contract.yml"]
     }
   ],
   "lanes": [
     {
       "id": "backend",
       "owner": "agent-integration-make",
-      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/main-write-integrity.mjs", "tools/delivery-", "tools/platform-promotion-", "tools/universal-event-", "tools/event-retention-policy.mjs", "tests/supabase-", "tests/brain-", "tests/whole-brain-", "tests/agent-fabric", "tests/branch-delivery-", "tests/direct-main-postwrite-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-", "tests/platform-promotion-", "tests/chat-learning-", "tests/chat-to-brain-", "tests/make-agent-learning-", "tests/make-agent-resume-", "tests/universal-event-", "tests/event-retention-policy.test.mjs", "config/universal-event-producers.json"],
+      "paths": ["brain/", "platform/", "netlify/functions/", "scripts/brain/", "scripts/ci/repo-writer-", "supabase/", "tools/supabase-", "tools/outcome-obligation-", "tools/main-write-integrity.mjs", "tools/delivery-", "tools/platform-promotion-", "tools/universal-event-", "tools/event-retention-", "tests/supabase-", "tests/brain-", "tests/whole-brain-", "tests/agent-fabric", "tests/branch-delivery-", "tests/direct-main-postwrite-", "tests/repo-writer-", "tests/repository-protection-", "tests/unified-brain-", "tests/platform-promotion-", "tests/chat-learning-", "tests/chat-to-brain-", "tests/make-agent-learning-", "tests/make-agent-resume-", "tests/universal-event-", "tests/event-retention-", "config/universal-event-producers.json"],
       "requiredContracts": ["BG166", "BG167", "BG168", "BG169"]
     },
     {
