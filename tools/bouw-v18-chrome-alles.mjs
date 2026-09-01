@@ -5,9 +5,9 @@ import { leesSchil, bouwPagina, zetKop, kruimelpad, INHOUD_CSS } from './bouw-v1
 import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
 import { VERVANGEN } from './v18-views-lijst.mjs';
 import { zoekwoordVoor, titelVoor } from './zoekwoorden.mjs';
-import { knoppenNaarLinks } from './bouw-v18-chrome.mjs';
+import { knoppenNaarLinks, HERO_URL } from './bouw-v18-chrome.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK,
-         VRAAGBALK, VRAAG_CSS, VRAAG_JS, CONTEXT_CSS, CONTEXT_JS, RING, rolblok, bouwModules, HERO_URL } from './v18-modules.mjs';
+         VRAAGBALK, VRAAG_CSS, VRAAG_JS, CONTEXT_CSS, CONTEXT_JS, RING, rolblok, bouwModules } from './v18-modules.mjs';
 
 // Zet elke contentpagina in dezelfde v18-schil: kop, navigatie, videoband,
 // kruimelpad, voet en opmaak. Titel, omschrijving, canoniek en het zoekwoord
