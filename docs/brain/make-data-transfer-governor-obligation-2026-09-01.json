@@ -1,0 +1,16 @@
+{
+  "fingerprint": "make|capacity|data-transfer-governor-v1",
+  "state": "IMPLEMENTATION_IN_PROGRESS",
+  "owner": "BG82/BG159/BG162/PH14",
+  "canonical_event_ingest": "BG211",
+  "criticality": "CRITICAL_BRAIN",
+  "blocked_runtime_behavior": "No blind retries while Make team/org is paused or quota-exhausted",
+  "completion_contract": [
+    "repository policy tests green",
+    "BG82 dynamic zones saved and read back",
+    "BG159 anomaly attribution saved and read back",
+    "BG162/PH14 degradation order saved and read back",
+    "one bounded runtime canary when Make executable",
+    "BG211/BG205/BG168/BG166/BG167 evidence closure"
+  ]
+}
