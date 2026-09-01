@@ -1,0 +1,77 @@
+{
+  "id": "chat-error-bundle-2026-09-01",
+  "type": "FailureLearningBundle",
+  "status": "PROVEN_OR_GUARDED",
+  "captured_at": "2026-09-01",
+  "scope": "Durable errors and prevention rules from the current Bedrijfsgeheugen execution chat line. Duplicate historical learnings are referenced, not rewritten.",
+  "failures": [
+    {
+      "fingerprint": "delivery|stale-pr|recovered-blocker-retained-as-current-truth-v1",
+      "status": "PROVEN",
+      "symptom": "An older PR still described a Make capacity blocker as active after runtime recovery had already been proven.",
+      "rootCause": "Candidate content and blocker truth were not revalidated against current authoritative state immediately before promotion.",
+      "failedApproach": "Merge an old candidate because most of its content is still useful.",
+      "provenFix": "Re-read current main and current blocker/runtime evidence; preserve only still-valid deltas in a current-main successor and close the stale predecessor as superseded.",
+      "prevention": "REVALIDATE_BLOCKER_STATE_AND_CANDIDATE_TRUTH_BEFORE_PROMOTION",
+      "regressionContract": "config/branch-delivery-ownership-guard.json",
+      "evidence": ["PR #894 closed as superseded by merged PR #901", "brain/learning/chat-execution-index-v2-2026-08-31.json"]
+    },
+    {
+      "fingerprint": "brain-preflight|budget|canonical-source-bytes-confused-with-emitted-packet-bytes-v1",
+      "status": "PROVEN",
+      "symptom": "Shared Agent Memory repeatedly failed around the 256 KB limit even after shrinking one linked projection.",
+      "rootCause": "The compiler charged full canonical source-corpus bytes against the bounded agent preflight packet budget. Brain growth and emitted context size were conflated.",
+      "failedApproach": "Keep deleting useful projection content to get just below the byte ceiling.",
+      "provenFix": "Read, validate and hash all canonical sources, track sourceBytes separately for audit, and enforce maxBytes on the actually serialized emitted preflight packet only.",
+      "prevention": "SEPARATE_CANONICAL_SOURCE_CORPUS_SIZE_FROM_EMITTED_AGENT_PACKET_BUDGET",
+      "regressionContract": "Shared Agent Memory Tests plus chat-learning preflight maxBytes fail-closed tests",
+      "evidence": ["PR #901 exact-head Shared Agent Memory and Brain foundation gates green after compiler fix"]
+    },
+    {
+      "fingerprint": "workflow|failure-diagnostics|red-without-machine-readable-reason-v1",
+      "status": "PROVEN",
+      "symptom": "Configuratiewacht rejected the new SEO Guardian because it could fail without a durable machine-readable explanation of the reason.",
+      "rootCause": "A failing workflow relied on PR commentary/output rather than guaranteeing an error annotation or durable issue/update path in the same run.",
+      "failedApproach": "Treat a red job itself as sufficient observability.",
+      "provenFix": "Every workflow that can return non-zero must emit a machine-readable failure reason such as ::error:: or create/update a durable issue; detailed PR diagnostics may supplement but not replace this.",
+      "prevention": "FAILURES_MUST_BE_SELF_DESCRIBING",
+      "regressionContract": "tools/config-wacht.py::alarmen_met_inhoud",
+      "evidence": ["Configuratiewacht changed from failure to success after SEO Guardian emitted self-describing errors"]
+    },
+    {
+      "fingerprint": "brain-delivery|new-runtime-or-content-path-unclassified-v1",
+      "status": "PROVEN",
+      "symptom": "Unified BRAIN Delivery failed even though SEO-specific gates were green because scripts/ci/keyword_strategy_guardian.py, scripts/ci/seo_guardian.py, seo/keyword-strategy.json and zelfscan.html were unclassified.",
+      "rootCause": "New executable/content ownership paths were introduced without a same-change update to central delivery lane membership.",
+      "failedApproach": "Assume a feature-specific green workflow is sufficient for delivery eligibility.",
+      "provenFix": "Classify every new executable or governed content path in the canonical delivery system in the same candidate; then rerun exact-head central delivery.",
+      "prevention": "CO_CHANGE_NEW_PATHS_WITH_DELIVERY_CLASSIFICATION",
+      "regressionContract": "Learning Contract Delivery Classifier Tests and Unified BRAIN Delivery",
+      "evidence": ["BRAIN delivery PR #903 failed at plan with explicit unclassified-path diagnostics"]
+    },
+    {
+      "fingerprint": "delivery|legacy-self-writer|branch-specific-direct-push-bypasses-current-governance-v1",
+      "status": "GUARDED",
+      "symptom": "The older SEO candidate contained a branch-specific workflow that mutated and pushed repairs directly to its own branch.",
+      "rootCause": "Historical self-heal mechanics predated candidate-only centralized writer governance and retained direct write authority inside a feature workflow.",
+      "failedApproach": "Carry the whole stale implementation forward unchanged because its functional checks are useful.",
+      "provenFix": "Retain read-only guardians and deterministic diagnostics, remove embedded self-writer/direct-push behavior, and route mutations through the canonical candidate/promotion authority.",
+      "prevention": "READ_ONLY_GUARDIANS_NO_FEATURE_WORKFLOW_SELF_WRITES",
+      "regressionContract": "Repository writer governance plus candidate-only delivery preflight",
+      "evidence": ["SEO successor #903 explicitly removed seo-baseline-fixer.yml and fix_seo_baseline.py"]
+    }
+  ],
+  "cross_cutting_invariants": [
+    "Current authoritative runtime state wins over stale PR/body/history text.",
+    "Canonical Brain corpus may grow; bounded agent context must remain independently budgeted.",
+    "A red workflow without a machine-readable reason is an observability defect.",
+    "Feature-specific green does not override central delivery classification.",
+    "Guardians observe and diagnose; canonical writer/promotion authority owns mutations."
+  ],
+  "security": {
+    "contains_secrets": false,
+    "contains_credentials": false,
+    "contains_pii": false,
+    "contains_raw_private_chat": false
+  }
+}
