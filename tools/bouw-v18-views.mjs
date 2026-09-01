@@ -3,7 +3,7 @@ import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenbl
          volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
 import { INHOUD_CSS, kruimelpad, zetKop, HERO_URL } from './bouw-v18-chrome.mjs';
 import { VIEWS } from './v18-views-lijst.mjs';
-import { zoekwoordVoor } from './zoekwoorden.mjs';
+import { zoekwoordVoor, HOMEPAGE_WOORD } from './zoekwoorden.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_CSS, VRAAG_JS, VRAAGBALK,
          VERTREK, bouwModules, hoofdletterMerk, CONTEXT_CSS, CONTEXT_JS, RING, rolblok } from './v18-modules.mjs';
 
@@ -124,7 +124,9 @@ for (const p of VIEWS) {
     html = html.slice(0, start) + vervangen;
   }
 
-  const eigenZoekwoord = zoekwoordVoor(p.bestand) || p.zoekwoord || '';
+  const geerfd = (p.zoekwoord || '').trim();
+  const eigenZoekwoord = zoekwoordVoor(p.bestand)
+    || (geerfd && geerfd.toLowerCase() !== HOMEPAGE_WOORD ? geerfd : '');
   html = zetKop(html, p.titel, p.omschrijving, canoniek, eigenZoekwoord);
   if (!eigenZoekwoord) html = html.replace(/<meta name="bg-zoekwoord"[^>]*>\s*/g, '');
   if (p.geenIndex && !/name="robots"/.test(html)) {
