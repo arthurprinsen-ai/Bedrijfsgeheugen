@@ -1,0 +1,29 @@
+name: Universal Closed-loop Learning
+
+on:
+  pull_request:
+    paths:
+      - 'config/universal-closed-loop-learning.json'
+      - 'scripts/brain/validate-universal-closed-loop-learning.mjs'
+      - 'tests/universal-closed-loop-learning.test.mjs'
+      - '.github/workflows/universal-closed-loop-learning.yml'
+      - 'docs/superpowers/specs/2026-09-01-estate-wide-closed-loop-learning-design.md'
+  push:
+    branches: [main]
+    paths:
+      - 'config/universal-closed-loop-learning.json'
+      - 'scripts/brain/validate-universal-closed-loop-learning.mjs'
+      - 'tests/universal-closed-loop-learning.test.mjs'
+
+jobs:
+  universal-closed-loop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate contract
+        run: node scripts/brain/validate-universal-closed-loop-learning.mjs
+      - name: Regression tests
+        run: node --test tests/universal-closed-loop-learning.test.mjs
