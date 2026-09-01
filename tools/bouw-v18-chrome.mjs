@@ -111,10 +111,25 @@ export function routerLaatLinksDoor(html) {
 
 // ── inhoud uit de oude pagina halen ───────────────────────────────────────
 export function pluisInhoud(oud) {
-  const mainStart = oud.indexOf('<main');
-  const mainEind = oud.lastIndexOf('</main>');
+  // Is deze pagina al eens door deze stap gegaan, dan zit de oorspronkelijke
+  // inhoud in de binnenste <main>. Zonder deze controle stapelt elke ronde er
+  // een schil overheen: twee koppen, twee <main>-elementen en twee keer
+  // hetzelfde id, waar de router van de eenpagina-app op vastloopt.
+  const alGedaan = oud.includes('id="view-inhoud"');
+  const mainStart = alGedaan ? oud.lastIndexOf('<main') : oud.indexOf('<main');
+  const mainEind = alGedaan
+    ? oud.indexOf('</main>', mainStart)
+    : oud.lastIndexOf('</main>');
   if (mainStart === -1 || mainEind === -1) throw new Error('geen <main>');
   let body = oud.slice(oud.indexOf('>', mainStart) + 1, mainEind);
+
+  // en haal de blokken weg die deze stap zelf toevoegt, zodat ze niet verdubbelen
+  if (alGedaan) {
+    for (const klasse of ['bgx-vraagbalk', 'bgx-opdezepagina', 'bgx-vertrek', 'bgx-volgende',
+                          'bgx-mensen', 'bgx-rekenaar', 'bgx-overtyp', 'bgx-lek']) {
+      body = body.replace(new RegExp(`<(div|section|aside|nav)[^>]*class="[^"]*${klasse}[^"]*"[\\s\\S]*?<\\/\\1>`, 'g'), '');
+    }
+  }
 
   body = body.replace(/<nav class="bgkruim"[\s\S]*?<\/nav>/g, '');
   // een pagina die zelf een voettekst in de inhoud had: die van de site is er al
