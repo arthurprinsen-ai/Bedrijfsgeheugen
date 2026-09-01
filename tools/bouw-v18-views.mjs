@@ -97,8 +97,15 @@ for (const p of VIEWS) {
 
   html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${VOLGENDE_CSS}\n</head>`);
   const { body: rekenaar } = bouwModules('');
+
+  // boven de weergave: iets om meteen mee te doen
+  html = html.replace(`${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}`,
+    `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}`
+    + `<section class="inhoud-body" style="padding:34px 0 6px"><div class="wrap">${VRAAGBALK}${rekenaar}</div></section>`);
+
+  // onderaan: de afsluiting
   html = html.replace('</main>',
-    `<section class="inhoud-body"><div class="wrap">${VRAAGBALK}${rekenaar}${VERTREK}`
+    `<section class="inhoud-body" style="padding:10px 0 96px"><div class="wrap">${VERTREK}`
     + `${volgendeStap(false)}${mensenblok(false)}</div></section></main>`);
   html = html.replace('</body>', `${EXTRA_HTML}\n${LEK}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${ORGANISATIE_SCHEMA}\n`
     + `${schemas({ isBlog: false, titel: p.titel, omschrijving: p.omschrijving, canoniek, h1: p.naam, body: html })}\n</body>`);
