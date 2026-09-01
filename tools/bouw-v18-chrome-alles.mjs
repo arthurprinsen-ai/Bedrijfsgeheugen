@@ -226,6 +226,22 @@ async function allePaginas() {
   const nu = new Date();
   const stempel = nu.toLocaleString('nl-NL', { timeZone: 'Europe/Amsterdam', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   const merk = `<p class="bgx-stempel">versie ${stempel}</p>`;
+  const wachter = `<script id="v18-versiewachter">
+(function(){
+  var mijn = ${JSON.stringify(nu.toISOString())};
+  try {
+    if (sessionStorage.getItem('bg-herladen') === mijn) return;
+    fetch('/versie.txt', { cache: 'no-store' }).then(function(r){ return r.text(); }).then(function(t){
+      var live = (t || '').trim();
+      if (!live || live === mijn) return;
+      // deze pagina komt uit een cache en is ouder dan wat er nu live staat
+      sessionStorage.setItem('bg-herladen', mijn);
+      location.reload();
+    }).catch(function(){});
+  } catch (e) {}
+})();
+</script>`;
+  await writeFile('versie.txt', nu.toISOString(), 'utf8');
   const stijl = `<style id="v18-stempel">.bgx-stempel{margin:0;padding:14px 0 22px;text-align:center;font-size:11px;
     letter-spacing:.06em;color:rgba(255,255,255,.34);font-family:'IBM Plex Mono',ui-monospace,monospace}</style>`;
   for (const p of await allePaginas()) await stempelOp(p);
@@ -235,6 +251,7 @@ async function allePaginas() {
     if (h.includes('bgx-stempel') || !h.includes('</footer>')) return;
     h = h.replace('</head>', stijl + '\n</head>');
     h = h.replace('</footer>', merk + '</footer>');
+    h = h.replace('</body>', wachter + '\n</body>');
     await writeFile(pad, h, 'utf8');
   }
 }
