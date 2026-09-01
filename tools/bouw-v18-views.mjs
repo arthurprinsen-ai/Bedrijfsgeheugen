@@ -1,8 +1,10 @@
 import { readFile, writeFile, rm } from 'node:fs/promises';
-import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, schemas } from './v18-verrijking.mjs';
-import { INHOUD_CSS, kruimelpad, zetKop } from './bouw-v18-chrome.mjs';
+import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, schemas,
+         volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
+import { INHOUD_CSS, kruimelpad, zetKop, HERO_URL } from './bouw-v18-chrome.mjs';
 import { VIEWS } from './v18-views-lijst.mjs';
-import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_CSS, VRAAG_JS, hoofdletterMerk } from './v18-modules.mjs';
+import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_CSS, VRAAG_JS, VRAAGBALK,
+         VERTREK, bouwModules, hoofdletterMerk } from './v18-modules.mjs';
 
 // De navigatie van de homepage is leidend. Elke weergave uit de eenpagina-app
 // wordt hier een echte pagina, met eigen titel, omschrijving en adres. Waar een
@@ -67,8 +69,19 @@ for (const p of VIEWS) {
   const canoniek = 'https://www.bedrijfsgeheugen.nl' + p.pad;
 
   // kruimelpad direct onder de weergave, zodat bezoeker en zoekmachine de plek zien
+  // Elke pagina begint blauw, met dezelfde videohero als de rest van de site.
+  // De weergave heeft zelf al een kop; die zakt daaronder een niveau, zodat er
+  // precies één h1 op de pagina staat.
+  const hero = `<section class="inhoud-kop">
+<video autoplay muted playsinline loop preload="metadata" aria-hidden="true"><source src="${HERO_URL}" type="video/mp4"></video>
+<div class="wrap">
+<div class="hero-kicker"><span></span> ${p.naam.toUpperCase()}</div>
+<h1>${p.h1 || p.naam}</h1>
+<p class="intro">${p.omschrijving}</p>
+</div></section>`;
+
   html = html.replace(`<div class="page active" id="view-${p.view}">`,
-    `<div class="page active" id="view-${p.view}">${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}`);
+    `<div class="page active" id="view-${p.view}">${hero}${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}`);
 
   // de secties van deze weergave komen op bij het scrollen, net als op de homepage
   {
@@ -82,11 +95,21 @@ for (const p of VIEWS) {
   // niet — vandaar het gebroken beeld. We tekenen het nu in de pagina zelf.
   html = html.replace(/<img[^>]*portal-v18-full\.png[^>]*>/g, PORTAALBEELD);
 
-  html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n</head>`);
+  html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${VOLGENDE_CSS}\n</head>`);
+  const { body: rekenaar } = bouwModules('');
   html = html.replace('</main>',
-    `<section class="inhoud-body"><div class="wrap">${mensenblok(false)}</div></section></main>`);
+    `<section class="inhoud-body"><div class="wrap">${VRAAGBALK}${rekenaar}${VERTREK}`
+    + `${volgendeStap(false)}${mensenblok(false)}</div></section></main>`);
   html = html.replace('</body>', `${EXTRA_HTML}\n${LEK}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${ORGANISATIE_SCHEMA}\n`
     + `${schemas({ isBlog: false, titel: p.titel, omschrijving: p.omschrijving, canoniek, h1: p.naam, body: html })}\n</body>`);
+
+  // de hero levert de h1; een tweede h1 in de weergave zakt naar h2
+  {
+    const s = html.indexOf(`id="view-${p.view}"`);
+    const na = html.slice(s).replace(/<h1([^>]*)>([\s\S]*?)<\/h1>/, (heel, attrs, inhoud, off) =>
+      off > 1200 ? `<h2${attrs}>${inhoud}</h2>` : heel);
+    html = html.slice(0, s) + na;
+  }
 
   // elke pagina één h1: de weergaven beginnen met een h2
   if (!/<h1[\s>]/.test(html.slice(html.indexOf(`id="view-${p.view}"`)))) {
