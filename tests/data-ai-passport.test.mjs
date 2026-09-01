@@ -4,7 +4,9 @@ import {
   PASSPORT_STATUSES,
   normalizePassportControl,
   buildDataAiPassport,
+  buildPassportFromState,
 } from '../portal/data-ai-passport.mjs';
+import { renderDataAiPassport } from '../portal/data-ai-passport-view.mjs';
 
 test('passport never marks an unverified claim as verified', () => {
   const control = normalizePassportControl({
@@ -71,4 +73,18 @@ test('passport summary is conservative and evidence based', () => {
   assert.equal(passport.summary.actionRequired, 1);
   assert.equal(passport.summary.coveragePct, 33);
   assert.equal(passport.complianceClaim, 'evidence-status-only');
+});
+
+test('empty tenant state yields unknown defaults rather than green compliance', () => {
+  const passport = buildPassportFromState({});
+  assert.ok(passport.summary.total >= 8);
+  assert.equal(passport.summary.verified, 0);
+  assert.equal(passport.summary.unknown, passport.summary.total);
+});
+
+test('visible passport explicitly disclaims certification', () => {
+  const html = renderDataAiPassport({});
+  assert.match(html, /geen juridisch certificaat/i);
+  assert.match(html, /Nog te bewijzen/);
+  assert.doesNotMatch(html, /100%.*compliant/i);
 });
