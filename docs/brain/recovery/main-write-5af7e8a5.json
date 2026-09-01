@@ -1,0 +1,33 @@
+{
+  "version": "MAIN-WRITE-RECOVERY-v1",
+  "fingerprint": "delivery|main-write|material-single-parent-bypass-v1",
+  "stage": "GOVERNANCE",
+  "component": "shared",
+  "reason": "material single-parent write reached main outside the governed candidate/PR route before native branch protection was enabled",
+  "rootCause": "main branch protection and required status checks were not enforced, allowing direct writes to bypass the exact-SHA production authority path",
+  "failedApproach": "after-the-fact detection without preventive native enforcement allowed repeated recurrences",
+  "provenFix": "enable native main branch protection with enforcement for everyone, require test and observe checks, block force pushes and deletions, preserve the valid current main state, and reconcile it through a fresh governed candidate",
+  "preventionRule": "REQUIRE_NATIVE_MAIN_PROTECTION_AND_GOVERNED_EXACT_SHA_PROMOTION",
+  "owner": "Powerhouse Production Promotion Guardian",
+  "successor": "BG169 exact-SHA production authority",
+  "affectedMainSha": "5af7e8a599372c8da822c350d0727a831d70c59c",
+  "branchProtection": {
+    "protected": true,
+    "enforcement": "everyone",
+    "requiredChecks": ["test", "observe"],
+    "enforceAdmins": true,
+    "allowForcePushes": false,
+    "allowDeletions": false
+  },
+  "status": "RECOVERY_CANDIDATE",
+  "verificationRequired": [
+    "exact candidate checks green",
+    "current-main driftcheck",
+    "BG169 governed merge",
+    "main SHA equals production commit_ref",
+    "production context ready",
+    "smoke/regression/protected metrics green",
+    "secret scan clean",
+    "Brain learning writeback"
+  ]
+}
