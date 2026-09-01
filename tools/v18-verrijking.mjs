@@ -221,3 +221,30 @@ export const EXTRA_HTML = '<div class="bgx-leesbalk" aria-hidden="true"></div>\n
 // brede tabellen passen niet op een telefoon: ze krijgen een schuifbare houder,
 // met een schaduwrandje dat laat zien dat er meer naast staat
 export const TABEL_CSS = `<style id="v18-tabelhouder"> .bgx-tabelhouder{max-width:none!important;overflow-x:auto;margin:24px 0;-webkit-overflow-scrolling:touch;border-radius:20px}.bgx-tabelhouder table{margin:0;min-width:100%}.bgx-tabelhouder td,.bgx-tabelhouder th{white-space:normal;min-width:118px}</style>`;
+
+
+// Bedrijfsgegevens boven de kop. Wie wil bellen hoeft niet te zoeken, en Google
+// leest hier wie er achter de site zit — dat telt mee voor vertrouwen en voor
+// lokale zoekopdrachten.
+export const GEGEVENS = `<div class="bgx-gegevens">
+<div class="wrap">
+<span><b>Bedrijfsgeheugen</b> · Enschede</span>
+<span><a href="tel:+31627483345">06 27 48 33 45</a></span>
+<span><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a></span>
+<span>ma&ndash;vr 08:00&ndash;18:00</span>
+</div>
+</div>`;
+
+export const LOCATIE_SCHEMA = `<script type="application/ld+json">${JSON.stringify({
+  '@context': 'https://schema.org', '@type': 'ProfessionalService',
+  name: 'Bedrijfsgeheugen', url: 'https://www.bedrijfsgeheugen.nl/',
+  telephone: '+31627483345', email: 'arthur@bedrijfsgeheugen.nl',
+  address: { '@type': 'PostalAddress', addressLocality: 'Enschede', addressCountry: 'NL' },
+  areaServed: { '@type': 'Country', name: 'Nederland' },
+  openingHoursSpecification: [{
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'],
+    opens: '08:00', closes: '18:00'
+  }],
+  priceRange: '€€'
+})}</script>`;

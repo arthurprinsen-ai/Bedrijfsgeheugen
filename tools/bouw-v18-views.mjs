@@ -1,12 +1,20 @@
 import { readFile, writeFile, rm } from 'node:fs/promises';
 import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, schemas,
-         volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
+         volgendeStap, VOLGENDE_CSS , GEGEVENS, LOCATIE_SCHEMA} from './v18-verrijking.mjs';
 import { INHOUD_CSS, kruimelpad, zetKop, HERO_URL } from './bouw-v18-chrome.mjs';
 import { VIEWS } from './v18-views-lijst.mjs';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-beweging.mjs';
 import { zoekwoordVoor, HOMEPAGE_WOORD, titelVoor } from './zoekwoorden.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_CSS, VRAAG_JS, VRAAGBALK,
          VERTREK, bouwModules, hoofdletterMerk, CONTEXT_CSS, CONTEXT_JS, RING, rolblok } from './v18-modules.mjs';
+
+
+// de gegevensbalk komt boven de kop; één keer, ook als de stap vaker draait
+function metGegevens(html) {
+  if (html.includes('bgx-gegevens')) return html;
+  return html.replace('<header class="v17-header"', GEGEVENS + '<header class="v17-header"')
+             .replace('</body>', LOCATIE_SCHEMA + '\n</body>');
+}
 
 // De navigatie van de homepage is leidend. Elke weergave uit de eenpagina-app
 // wordt hier een echte pagina, met eigen titel, omschrijving en adres. Waar een
@@ -136,6 +144,7 @@ for (const p of VIEWS) {
     html = html.replace('</head>', '<meta name="robots" content="noindex, follow">\n</head>');
   }
 
+  html = metGegevens(html);
   html = maakBeweeglijk(html);
   html = hoofdletterMerk(html);
   await writeFile(p.bestand, html, 'utf8');
