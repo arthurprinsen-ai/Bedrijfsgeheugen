@@ -1,0 +1,19 @@
+name: Publisher auth contract
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/*.yml'
+      - 'scripts/ci/test-publisher-auth-contract.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publisher-auth-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Verify publisher authentication lifecycle
+        run: python3 scripts/ci/test-publisher-auth-contract.py
