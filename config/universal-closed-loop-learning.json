@@ -1,0 +1,72 @@
+{
+  "version": "BRAIN-CLOSED-LOOP-v1",
+  "scope": "estate-wide",
+  "canonical": {
+    "error_ingress": {"scenario_id": 7037844, "name": "BG 94 - Universele fout ingress en learning"},
+    "inventory": {"scenario_id": 7132648, "name": "BG 159 - Powerhouse Cost Snapshot Collector v1"},
+    "learning_router": {"scenario_id": 7136176, "name": "BG 168 - Multi-Agent Outcome & Learning Router v1"},
+    "learning_writer": {"scenario_id": 7135971, "name": "BG 166 - Error & Learning Ledger Writer v1.2 dedupe + coalesce"},
+    "shared_context": {"scenario_id": 7136045, "name": "BG 167"},
+    "production_authority": {"scenario_id": 7137190, "name": "BG 169 - Production Promotion Controller"}
+  },
+  "required_lifecycle": [
+    "detect",
+    "evidence",
+    "normalize",
+    "fingerprint",
+    "known_error_match",
+    "stateful_dedupe",
+    "owner_assignment",
+    "bounded_self_heal",
+    "regression_test",
+    "retest",
+    "idempotent_side_effect",
+    "outcome_verification",
+    "learning_writeback",
+    "shared_context_refresh",
+    "prevention_reuse"
+  ],
+  "required_learning_fields": [
+    "fingerprint","event_kind","stage","component_type","component_id","owner","reason","rootCause","failedApproach","fix","preventionRule","regressionTest","evidence","status","first_seen","last_seen","last_changed","evidence_hash","retry_budget","required_intervention","next_escalation_at"
+  ],
+  "material_event_kinds": [
+    "ERROR","RECOVERY","IMPROVEMENT","OPPORTUNITY","EXPERIMENT_RESULT","MISSED_OBLIGATION","AUTO_REPAIR","PRODUCTION_PROMOTION","PRODUCTION_ROLLBACK","CONTRACT_CHANGE"
+  ],
+  "policies": {
+    "read_shared_context_before_material_work": true,
+    "match_before_hypothesis": true,
+    "dedupe_before_write": true,
+    "dedupe_before_context_refresh": true,
+    "verify_external_outcome_before_green": true,
+    "max_identical_retries_per_hypothesis": 2,
+    "no_second_persistent_memory": true,
+    "new_components_inherit_contract": true,
+    "make_inventory_auto_discovers_components": true,
+    "event_driven_preferred": true,
+    "deep_inspection_only_on_changed_or_error_evidence": true
+  },
+  "cost_guards": {
+    "fleet_wide_per_scenario_polling_for_errors": false,
+    "retired_gmail_runtime_guards_may_be_reactivated": false,
+    "duplicate_learning_triggers_persistent_write": false,
+    "duplicate_learning_triggers_context_refresh": false,
+    "identical_retry_without_new_evidence": false
+  },
+  "forbidden": [
+    "parallel_isolated_agent_memory",
+    "technical_success_without_outcome_evidence",
+    "blind_retry_after_ambiguous_mutation",
+    "fleet_wide_expensive_error_polling",
+    "reintroduce_retired_runtime_error_guards",
+    "skip_bg168_for_material_learning",
+    "skip_bg166_dedupe_writer",
+    "production_green_without_bg169_and_exact_production_identity"
+  ],
+  "hard_boundaries": [
+    "credentials_oauth_permissions",
+    "security_weakening",
+    "destructive_irreversible_data",
+    "paid_resource_increase",
+    "legal_financial_commitment"
+  ]
+}
