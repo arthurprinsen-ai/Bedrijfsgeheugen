@@ -1,0 +1,13 @@
+{
+  "version":"OUTCOME-HORIZON-LOOP-v1",
+  "authority":"canonical Whole Brain outcome/value lifecycle",
+  "horizonsDays":[30,90,180],
+  "idempotency":"tenantId+outcomeId+horizonDays",
+  "prematureRealisedValueForbidden":true,
+  "dueEvaluationRequires":["verified_outcome","due_at_reached","current_evidence","result","owner"],
+  "missingEvidenceState":"WAITING_FOR_EVIDENCE",
+  "missingEvidenceRetry":{"bounded":true,"defaultAfterHours":24},
+  "verifiedFlow":["Outcome","HorizonEvaluation","Value","Learning","Memory"],
+  "syntheticValueForbidden":true,
+  "completionRule":"Scheduling proves lifecycle availability only. Realised value is PROVEN only after the due instant with current independently verifiable evidence."
+}
