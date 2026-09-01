@@ -1,16 +1,40 @@
 {
   "fingerprint": "make|capacity|data-transfer-governor-v1",
-  "state": "IMPLEMENTATION_IN_PROGRESS",
-  "owner": "BG82/BG159/BG162/PH14",
+  "state": "CONFIGURED_READBACK_GREEN_RUNTIME_PROOF_BLOCKED",
+  "owner": "BG82/BG159/BG162/PH14/BG185",
   "canonical_event_ingest": "BG211",
   "criticality": "CRITICAL_BRAIN",
-  "blocked_runtime_behavior": "No blind retries while Make team/org is paused or quota-exhausted",
+  "configured_floor": {
+    "monthly_credit_floor": 5000,
+    "monthly_data_transfer_floor_bytes": 2500000000,
+    "source": "Powerhouse conservative configured floor; not asserted as the exact current Make entitlement"
+  },
+  "latest_team_usage_evidence": {
+    "execution_id": "a50c95f0055b4dfe876fa17d80ae45e1",
+    "operations": 1556,
+    "data_transfer_bytes": 23362241,
+    "centicredits": 223689,
+    "rate_limit_remaining": 58
+  },
+  "repository_evidence": {
+    "intentional_red_required_test_run": "33553390958",
+    "green_required_test_run": "33553473035"
+  },
+  "saved_readback": [
+    "BG82 credit + transfer zone classifier and RED/HARD dispatch",
+    "BG159 bounded one-candidate transfer anomaly + criticality classification",
+    "BG162 criticality-aware degradation and BG211 event ingest",
+    "PH14 mandatory data-transfer optimization order",
+    "BG185 future Make producer cost-governance inheritance"
+  ],
+  "blocked_runtime_behavior": "No blind retries while Make team/org is paused or quota-exhausted; never buy or increase capacity autonomously.",
+  "resume_condition": "Make team/org is demonstrably executable without capacity/quota blocker",
   "completion_contract": [
-    "repository policy tests green",
-    "BG82 dynamic zones saved and read back",
-    "BG159 anomaly attribution saved and read back",
-    "BG162/PH14 degradation order saved and read back",
-    "one bounded runtime canary when Make executable",
-    "BG211/BG205/BG168/BG166/BG167 evidence closure"
+    "exact-head repository policy tests green",
+    "BG82/BG159/BG162/PH14/BG185 saved mappings read back",
+    "one bounded deterministic runtime canary when Make executable",
+    "BG211 acceptance and BG205 lineage evidence",
+    "BG168 dispatch and BG166 learning_persisted=true for proven durable learning",
+    "BG167 current projection/readback"
   ]
 }
