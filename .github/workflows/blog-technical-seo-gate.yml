@@ -1,0 +1,209 @@
+name: Blog Technical SEO Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'blog/**'
+      - 'sitemap.xml'
+      - 'robots.txt'
+      - '.github/workflows/weekblog.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blog-technical-seo-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: technical-seo-contract-100
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Validate changed blog technical SEO contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import html, json, pathlib, re, subprocess, sys
+          from urllib.parse import urlparse
+
+          ROOT = pathlib.Path('.')
+          BASE = '${{ github.event.pull_request.base.sha }}'.strip()
+          HEAD = '${{ github.event.pull_request.head.sha }}'.strip()
+          if not BASE or not HEAD:
+              changed = subprocess.check_output(['git','diff','--name-only','HEAD~1','HEAD'], text=True).splitlines()
+          else:
+              changed = subprocess.check_output(['git','diff','--name-only',BASE,HEAD], text=True).splitlines()
+
+          articles = sorted(p for p in changed if re.fullmatch(r'blog/[^/]+/index\.html', p))
+          if not articles:
+              print('Geen nieuwe/gewijzigde blogartikelen; technical SEO contract is een groene no-op.')
+              raise SystemExit(0)
+
+          robots = (ROOT/'robots.txt').read_text(encoding='utf-8')
+          assert re.search(r'(?im)^User-agent:\s*\*\s*$', robots), 'robots.txt mist User-agent: *'
+          assert re.search(r'(?im)^Allow:\s*/\s*$', robots), 'robots.txt staat crawling niet expliciet toe'
+          assert re.search(r'(?im)^Sitemap:\s*https://www\.bedrijfsgeheugen\.nl/sitemap\.xml\s*$', robots), 'robots.txt mist canonical sitemap'
+          sitemap = (ROOT/'sitemap.xml').read_text(encoding='utf-8')
+          blog_index = (ROOT/'blog/index.html').read_text(encoding='utf-8') if (ROOT/'blog/index.html').exists() else ''
+          rss = (ROOT/'blog/rss.xml').read_text(encoding='utf-8') if (ROOT/'blog/rss.xml').exists() else ''
+
+          def strip_tags(s):
+              s = re.sub(r'<script\b.*?</script>', ' ', s, flags=re.I|re.S)
+              s = re.sub(r'<style\b.*?</style>', ' ', s, flags=re.I|re.S)
+              return re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', s))).strip()
+
+          def attr(text, tag, attr_name, attr_value=None, value_attr='content'):
+              pattern = rf'<{tag}\b[^>]*{attr_name}=["\']{re.escape(attr_value)}["\'][^>]*{value_attr}=["\']([^"\']+)["\']' if attr_value else None
+              m = re.search(pattern, text, re.I) if pattern else None
+              if not m and attr_value:
+                  pattern2 = rf'<{tag}\b[^>]*{value_attr}=["\']([^"\']+)["\'][^>]*{attr_name}=["\']{re.escape(attr_value)}["\']'
+                  m = re.search(pattern2, text, re.I)
+              return m.group(1).strip() if m else ''
+
+          failures=[]
+          for path in articles:
+              slug = path.split('/')[1]
+              text = (ROOT/path).read_text(encoding='utf-8')
+              canonical = f'https://www.bedrijfsgeheugen.nl/blog/{slug}/'
+              visible = strip_tags(text)
+              first100 = ' '.join(visible.split()[:100]).lower()
+
+              def check(cond,msg):
+                  if not cond: failures.append(f'{path}: {msg}')
+
+              check(bool(re.search(r'<html\b[^>]*lang=["\']nl(?:-NL)?["\']', text, re.I)), 'html lang moet nl of nl-NL zijn')
+              check(bool(re.search(r'<meta\b[^>]*charset=["\']?utf-8', text, re.I)), 'UTF-8 charset ontbreekt')
+              check(bool(re.search(r'<meta\b[^>]*name=["\']viewport["\']', text, re.I)), 'viewport meta ontbreekt')
+              check(len(re.findall(r'<h1(?:\s|>)', text, re.I)) == 1, 'precies één H1 vereist')
+
+              title_m = re.search(r'<title>(.*?)</title>', text, re.I|re.S)
+              title = strip_tags(title_m.group(1)) if title_m else ''
+              check(1 <= len(title) <= 60, f'title moet 1-60 tekens zijn, nu {len(title)}')
+
+              desc = attr(text,'meta','name','description')
+              check(140 <= len(desc) <= 160, f'meta description moet 140-160 tekens zijn, nu {len(desc)}')
+
+              can_m = re.search(r'<link\b[^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)["\']', text, re.I)
+              if not can_m:
+                  can_m = re.search(r'<link\b[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\']canonical["\']', text, re.I)
+              check(bool(can_m) and can_m.group(1) == canonical, 'canonical moet exact de schone www-URL zijn')
+              check('.html' not in canonical, 'canonical mag geen .html bevatten')
+
+              robots_meta = attr(text,'meta','name','robots').lower()
+              check('noindex' not in robots_meta and 'nofollow' not in robots_meta, 'noindex/nofollow is verboden voor publiceerbare blog')
+
+              keyword = attr(text,'meta','name','bg-zoekwoord')
+              check(bool(keyword), 'bg-zoekwoord ontbreekt')
+              if keyword:
+                  kw=keyword.lower()
+                  check(kw in title.lower(), 'focus-zoekwoord ontbreekt in title')
+                  check(kw in desc.lower(), 'focus-zoekwoord ontbreekt in meta description')
+                  check(kw in first100, 'focus-zoekwoord ontbreekt in eerste 100 woorden')
+                  h2text=' '.join(strip_tags(x) for x in re.findall(r'<h2\b[^>]*>(.*?)</h2>', text, re.I|re.S)).lower()
+                  check(kw in h2text, 'focus-zoekwoord ontbreekt in H2')
+
+              check(attr(text,'meta','property','og:title') != '', 'og:title ontbreekt')
+              check(attr(text,'meta','property','og:description') != '', 'og:description ontbreekt')
+              check(attr(text,'meta','property','og:url') == canonical, 'og:url moet canonical evenaren')
+
+              ld_blocks = re.findall(r'<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', text, re.I|re.S)
+              parsed=[]
+              for block in ld_blocks:
+                  try: parsed.append(json.loads(block))
+                  except Exception as e: failures.append(f'{path}: JSON-LD ongeldig: {e}')
+              types=set()
+              for obj in parsed:
+                  nodes = obj.get('@graph',[]) if isinstance(obj,dict) and isinstance(obj.get('@graph'),list) else [obj]
+                  for node in nodes:
+                      if isinstance(node,dict):
+                          t=node.get('@type',[]); types.update(t if isinstance(t,list) else [t])
+              for required in ('BlogPosting','FAQPage','BreadcrumbList'):
+                  check(required in types, f'JSON-LD type {required} ontbreekt')
+
+              links = re.findall(r'<a\b[^>]*href=["\']([^"\']+)["\']', text, re.I)
+              internal=[]
+              for href in links:
+                  if href.startswith(('#','mailto:','tel:','javascript:')): continue
+                  u=urlparse(href)
+                  if u.scheme in ('http','https') and u.netloc not in ('bedrijfsgeheugen.nl','www.bedrijfsgeheugen.nl'): continue
+                  local=u.path if u.scheme else href.split('#')[0].split('?')[0]
+                  if not local.startswith('/'): continue
+                  internal.append(local)
+                  check('.html' not in local, f'interne link bevat .html: {local}')
+                  if local.startswith('/blog/') and local != '/blog/':
+                      target=ROOT/local.lstrip('/')/'index.html' if local.endswith('/') else ROOT/local.lstrip('/')/'index.html'
+                      check(target.exists(), f'interne bloglink bestaat niet: {local}')
+              check(len(set(internal)) >= 3, 'minimaal drie unieke interne links vereist')
+
+              check(sitemap.count(canonical) == 1, 'sitemap moet canonical exact één keer bevatten')
+              check(f'/blog/{slug}/' in blog_index, 'blog/index.html mist kaart/link naar artikel')
+              check(canonical in rss or f'/blog/{slug}/' in rss, 'blog/rss.xml mist artikel')
+
+              figures = re.findall(r'<figure\b.*?</figure>', text, re.I|re.S)
+              check(len(figures) >= 2, 'minimaal twee functionele figures vereist')
+              for i,fig in enumerate(figures,1):
+                  check(bool(re.search(r'<figcaption\b',fig,re.I)), f'figure {i} mist figcaption')
+                  if '<svg' in fig.lower():
+                      check(bool(re.search(r'<svg\b[^>]*role=["\']img["\']',fig,re.I)), f'SVG figure {i} mist role=img')
+                      check(bool(re.search(r'<title\b',fig,re.I)), f'SVG figure {i} mist title')
+                      check(bool(re.search(r'<svg\b[^>]*viewBox=',fig,re.I)), f'SVG figure {i} mist viewBox')
+
+              check('data:image/' not in text.lower(), 'inline base64-afbeeldingen zijn niet toegestaan')
+              check(len(text.encode('utf-8')) < 500_000, 'HTML groter dan 500 KB')
+
+          if failures:
+              print('\nTECHNICAL SEO CONTRACT: FAILED')
+              for f in failures: print(' -',f)
+              print(f'\nScore: 0% release-eligible ({len(failures)} contractfouten).')
+              sys.exit(1)
+          print(f'TECHNICAL SEO CONTRACT: 100% GREEN voor {len(articles)} artikel(en).')
+          PY
+
+  lighthouse:
+    name: lighthouse-seo-100
+    runs-on: ubuntu-latest
+    needs: contract
+    steps:
+      - uses: actions/checkout@v5
+      - name: Detect changed blog slug
+        id: slug
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='${{ github.event.pull_request.base.sha }}'
+          HEAD='${{ github.event.pull_request.head.sha }}'
+          slug=$(git diff --name-only "$BASE" "$HEAD" | sed -nE 's#^blog/([^/]+)/index\.html$#\1#p' | head -n1)
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+      - name: Serve static site
+        if: steps.slug.outputs.slug != ''
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          echo $! > /tmp/http.pid
+          sleep 2
+      - name: Lighthouse technical quality gate
+        if: steps.slug.outputs.slug != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes @lhci/cli@0.15.x collect --url="http://127.0.0.1:8000/blog/${{ steps.slug.outputs.slug }}/" --numberOfRuns=1 --settings.chromeFlags='--no-sandbox --headless' --outputPath=./.lighthouseci
+          report=$(find .lighthouseci -name 'lhr-*.json' | head -n1)
+          test -n "$report"
+          python3 - "$report" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          c=r['categories']
+          scores={k:round(v['score']*100) for k,v in c.items() if k in ('seo','performance','accessibility','best-practices')}
+          print('Lighthouse:',scores)
+          assert scores.get('seo',0)==100, f"Lighthouse SEO moet 100 zijn, nu {scores.get('seo')}"
+          assert scores.get('performance',0)>=90, f"Performance moet >=90 zijn, nu {scores.get('performance')}"
+          assert scores.get('accessibility',0)>=95, f"Accessibility moet >=95 zijn, nu {scores.get('accessibility')}"
+          assert scores.get('best-practices',0)>=95, f"Best Practices moet >=95 zijn, nu {scores.get('best-practices')}"
+          PY
