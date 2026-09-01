@@ -21,7 +21,7 @@ export const ZOEKWOORD_PER_PAGINA = {
   "/ai-adoptie": "ai adoptie mkb",
   "/ai-act": "ai act",
   "/workshops": "ai workshop",
-  "/ai-governance": "ai governance mkb",
+  "/ai-governance": "ai governance",
   "/ai-capability-model": "ai capability model",
   "/data-soevereiniteit": "data soevereiniteit",
   "/business-case-ai": "business case ai mkb",
@@ -76,7 +76,8 @@ export const ZOEKWOORD_PER_PAGINA = {
   "/changelog": "changelog bedrijfsgeheugen",
   "/contact": "contact bedrijfsgeheugen",
   "/start": "beginnen met digitaliseren",
-  "/meer": "overzicht bedrijfsgeheugen"
+  "/meer": "overzicht bedrijfsgeheugen",
+  "/systemen-koppelen": "exact online koppeling"
 };
 
 // Het pad van een bestand terug naar het adres zoals het in de lijst staat.
@@ -109,7 +110,14 @@ export const TITEL_PER_PAGINA = {
   "/cases": "Praktijkvoorbeelden digitalisering mkb | Bedrijfsgeheugen",
   "/oplossingen": "Digitalisering oplossingen mkb | Bedrijfsgeheugen",
   "/prijzen": "Kosten digitalisering mkb: vaste prijzen | Bedrijfsgeheugen",
-  "/api-koppeling-laten-maken": "AFAS API koppeling laten maken | Bedrijfsgeheugen"
+  "/api-koppeling-laten-maken": "AFAS API koppeling laten maken | Bedrijfsgeheugen",
+  "/ai-governance": "AI governance voor het mkb | Bedrijfsgeheugen",
+  "/systemen-koppelen": "Exact Online koppeling en andere systemen | Bedrijfsgeheugen",
+  "/blog/": "Kennisbank digitalisering mkb | Bedrijfsgeheugen",
+  "/investeerders-ma": "Due diligence bij overname in het mkb | Bedrijfsgeheugen",
+  "/voor-mkb": "Digitalisering voor het mkb | Bedrijfsgeheugen",
+  "/wijzigingen-uitgelegd": "Impactanalyse van een wijziging | Bedrijfsgeheugen",
+  "/meer": "Overzicht Bedrijfsgeheugen | Bedrijfsgeheugen"
 };
 
 export function titelVoor(bestand) {
