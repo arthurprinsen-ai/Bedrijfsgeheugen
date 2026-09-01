@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { TABEL_CSS, INTERACTIE_CSS, INTERACTIE_JS, verrijkInhoud, opDezePagina, mensenblok, schemas, ORGANISATIE_SCHEMA, EXTRA_HTML, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
-import { zoekwoordVoor, HOMEPAGE_WOORD } from './zoekwoorden.mjs';
+import { zoekwoordVoor, HOMEPAGE_WOORD, titelVoor } from './zoekwoorden.mjs';
 import { clusterblok, CLUSTER_CSS } from './clusters.mjs';
 import { CONTEXT_CSS, CONTEXT_JS, RING, legTermenUit, rolblok, MODULE_CSS, MODULE_JS, bouwModules, SPEELS_CSS, SPEELS_JS, LEK, VERTREK, zetStrepen, VRAAG_CSS, VRAAG_JS, VRAAGBALK, OVERTYP, hoofdletterMerk } from './v18-modules.mjs';
 
@@ -278,7 +278,7 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
   const geerfd = (zoekwoord || '').trim();
   const eigenZoekwoord = zoekwoordVoor(bestand)
     || (geerfd && geerfd.toLowerCase() !== HOMEPAGE_WOORD ? geerfd : '');
-  html = zetKop(html, titel, omschrijving, canoniek, eigenZoekwoord);
+  html = zetKop(html, titelVoor(bestand) || titel, omschrijving, canoniek, eigenZoekwoord);
   if (!eigenZoekwoord) html = html.replace(/<meta name="bg-zoekwoord"[^>]*>\s*/g, '');
   html = hoofdletterMerk(html);
 
