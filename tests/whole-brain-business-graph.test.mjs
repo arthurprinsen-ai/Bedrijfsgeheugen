@@ -25,3 +25,19 @@ test('why-query returns provenance, evidence and history for object',()=>{
  assert.deepEqual([...explanation.sources].sort(),['crm:c1','notion:p1']);
  assert.equal(explanation.history.length,2);
 });
+
+test('Business Graph projects every canonical subject as a node and predecessor lineage as dependency edges',()=>{
+ const canonical=[
+  {tenantId:'T1',type:'Evidence',kind:'evidence',id:'E10',subjectId:'integration:source',observedAt:'2026-09-01T06:00:00Z',owner:'brain',evidenceIds:['ext:1'],provenance:{source:'runtime'},payload:{health:'green'}},
+  {tenantId:'T1',type:'Action',kind:'action',id:'A10',subjectId:'change:release',observedAt:'2026-09-01T06:01:00Z',owner:'delivery',predecessorIds:['E10'],evidenceIds:['ext:2'],provenance:{source:'brain'},payload:{status:'ready'}},
+  {tenantId:'T2',type:'Evidence',kind:'evidence',id:'OTHER',subjectId:'other:tenant',observedAt:'2026-09-01T06:02:00Z',owner:'other',evidenceIds:[],provenance:{source:'other'},payload:{}}
+ ];
+ const graph=createBusinessGraphProjection(canonical,{tenantId:'T1'});
+ assert.deepEqual(graph.entities.map(x=>x.subjectId).sort(),['change:release','integration:source']);
+ assert.equal(graph.history['integration:source'].length,1);
+ const lineage=graph.relations.find(x=>x.payload?.relation==='depends_on_lineage');
+ assert.ok(lineage,'predecessor lineage must be projected as a graph relation');
+ assert.equal(lineage.payload.from,'integration:source');
+ assert.equal(lineage.payload.to,'change:release');
+ assert.equal(graph.entities.some(x=>x.subjectId==='other:tenant'),false,'tenant isolation must remain fail closed');
+});
