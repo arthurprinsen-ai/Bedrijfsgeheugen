@@ -1,0 +1,40 @@
+{
+  "version": "CHAT-ERROR-COMPLETENESS-2026-09-01-v1",
+  "status": "ACTIVE",
+  "scope": "current Powerhouse/Bedrijfsgeheugen chat error and recovery learning",
+  "rule": "Store normalized fingerprints, causes, prevention and current status; never raw chat, secrets, credentials or duplicate canonical truth.",
+  "errors": [
+    {"fingerprint":"browser-evidence|cli|page-id-missing","status":"GUARDED","prevention":"REQUIRE_EXPLICIT_PAGE_ID_FOR_PAGE_SCOPED_DEVTOOLS","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|extensions-api|browser-context-missing","status":"GUARDED","prevention":"RUNTIME_TRIANGULATION_NOT_LIST_EXTENSIONS","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|isolated-world|sentinel-false-negative","status":"GUARDED","prevention":"PAGE_WORLD_SENTINEL_NEVER_PRIMARY_PROOF","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|candidate-session|wrong-daemon","status":"GUARDED","prevention":"PIN_ONE_CANDIDATE_SESSION_END_TO_END","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|session-id|invalid-format","status":"GUARDED","prevention":"VALIDATE_SESSION_ID_BEFORE_DAEMON_START","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|launchagent|chrome-devtools-path-missing","status":"GUARDED","prevention":"RESOLVE_ABSOLUTE_CHROME_DEVTOOLS_PATH","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|launchagent|node-path-missing","status":"GUARDED","prevention":"PREFLIGHT_NODE_AND_CHROME_DEVTOOLS_IN_RUNTIME_ENV","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|webhook|markdown-url-contamination","status":"GUARDED","prevention":"VALIDATE_RAW_HTTPS_OPERATOR_INPUT","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"extension|runtime|context-invalidated-storage","status":"GUARDED","prevention":"HANDLE_SYNC_AND_ASYNC_EXTENSION_CONTEXT_INVALIDATION","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"extension|release|manifest-version-drift","status":"GUARDED","prevention":"MANIFEST_IS_CANONICAL_RELEASE_IDENTITY","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"chrome|stable|load-extension-assumption","status":"GUARDED","prevention":"VERIFY_RUNTIME_AFTER_EXTENSION_LOAD","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|gate|fail-open","status":"GUARDED","prevention":"COLLECTOR_ERRORS_NEVER_PASS_RELEASE_GATE","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|worker-tabs|visible-side-effects","status":"GUARDED","prevention":"NO_VISIBLE_AUTOMATIC_WORKER_TABS","canonical":"config/browser-evidence-guard-v1.json"},
+    {"fingerprint":"browser-evidence|logs|append-only-stale-tail-v1","status":"MEMORY","rootCause":"Append-only monitor logs can contain historical errors after a later run is healthy; tail-only diagnosis can misattribute stale lines to the current run.","prevention":"RUN_ID_TIMESTAMP_BEFORE_LOG_DIAGNOSIS"},
+    {"fingerprint":"connector|notion|wrong-mutation-recipient","status":"GUARDED","prevention":"VERIFY_MUTATION_TOOL_TARGET_AND_SCHEMA_THEN_READBACK","canonical":"brain/learning/incidents/connector-mutation-tool-routing-misfire-2026-08-30.json"},
+    {"fingerprint":"delivery|runtime-path|unclassified-learning-path-v1","status":"GUARDED","prevention":"CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS","canonical":"brain/learning/incidents/delivery-learning-test-family-unclassified-2026-08-30.json"},
+    {"fingerprint":"github|pr|moving-main|stale-merge-status-caused-duplicate-reconstruction-v1","status":"PROVEN_AND_CONTAINED","prevention":"AUTHORITATIVE_READBACK_BEFORE_REPLACEMENT_OR_DUPLICATE_WRITE","canonical":"brain/learning/incidents/moving-main-pr-status-stale-readback-2026-08-31.json"},
+    {"fingerprint":"brain|learning|duplicate-root-cause-before-authoritative-readback-v1","status":"GUARDED","rootCause":"A new remediation owner or incident can be created before checking whether equivalent content already merged or already owns the same root cause.","prevention":"AUTHORITATIVE_READBACK_BEFORE_REPLACEMENT_OR_DUPLICATE_WRITE","canonical":"brain/learning/incidents/moving-main-pr-status-stale-readback-2026-08-31.json"},
+    {"fingerprint":"brain|preflight|full-canonical-source-exceeds-budget-v1","status":"GUARDED_BY_COMPACT_PROJECTION","prevention":"BOUNDED_PREFLIGHT","canonical":"brain/learning/incidents/brain-preflight-full-contract-budget-overflow-2026-08-31.json"},
+    {"fingerprint":"brain|projection|stale-blocker-after-proven-recovery-v1","status":"MEMORY","rootCause":"A hot-path projection can retain an old blocker after later canonical execution evidence proves recovery.","prevention":"REFRESH_CURRENT_PROJECTION_FROM_AUTHORITATIVE_EXECUTION_INDEX","canonical":"brain/learning/chat-execution-index-v2-2026-08-31.json"},
+    {"fingerprint":"make|multi-agent-context-learning-credit-storm|2026-08-30-v1","status":"GUARDED","prevention":"STATEFUL_DEDUPE_BEFORE_PAID_CONTROL_PLANE_WORK","canonical":"brain/learning/incidents/make-control-plane-credit-storm-2026-08-30.json"},
+    {"fingerprint":"make|agent-template|unconditional-bg168-dispatch-on-resume-v1","status":"GUARDED","prevention":"MATERIALITY_BEFORE_BG168","canonical":"brain/learning/incidents/make-agent-unconditional-bg168-resume-hazard-2026-08-31.json"},
+    {"fingerprint":"brain-writeback-make-team-paused-limit-v1","status":"PROVEN_FIXED","prevention":"DO_NOT_REPLAY_RESOLVED_WRITEBACK_BLOCKER","canonical":"brain/learning/chat-execution-index-v2-2026-08-31.json"},
+    {"fingerprint":"connector|make|runtime-disabled-after-capability-discovery-v1","status":"OBSERVED_SESSION_BOUNDARY","rootCause":"A connector capability can become unavailable after discovery; repeated mutation attempts would add ambiguity without new evidence.","prevention":"STOP_CONNECTOR_CALLS_AFTER_RUNTIME_DISABLE_AND_USE_CANONICAL_READBACK"},
+    {"fingerprint":"operator-guidance|macos|darwin-21-misidentified-as-catalina-v1","status":"MEMORY","rootCause":"OS guidance can be wrong when a Darwin kernel version is mapped to the wrong macOS release.","prevention":"DERIVE_MACOS_VERSION_FROM_DARWIN_MAPPING_BEFORE_OS_SPECIFIC_GUIDANCE"}
+  ],
+  "currentTruth": {
+    "makeWritebackPausedLimit": "RECOVERED_DO_NOT_REPLAY",
+    "preflightBudget": "KEEP_BOUNDED_USE_COMPACT_PROJECTIONS",
+    "duplicateSemanticOwners": "AUTHORITATIVE_READBACK_FIRST",
+    "browserEvidence": "RUNTIME_IDENTITY_AND_TRIANGULATION_REQUIRED"
+  },
+  "security": {"rawChatPersisted":false,"secretsPersisted":false,"credentialsPersisted":false,"piiPersisted":false}
+}
