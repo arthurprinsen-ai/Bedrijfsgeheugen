@@ -5,7 +5,7 @@ import { leesSchil, bouwPagina, zetKop, kruimelpad, INHOUD_CSS } from './bouw-v1
 import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenblok, volgendeStap, VOLGENDE_CSS } from './v18-verrijking.mjs';
 import { VERVANGEN } from './v18-views-lijst.mjs';
 import { zoekwoordVoor, titelVoor } from './zoekwoorden.mjs';
-import { knoppenNaarLinks, HERO_URL } from './bouw-v18-chrome.mjs';
+import { knoppenNaarLinks, HERO_URL, routerLaatLinksDoor } from './bouw-v18-chrome.mjs';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-beweging.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK,
          VRAAGBALK, VRAAG_CSS, VRAAG_JS, CONTEXT_CSS, CONTEXT_JS, RING, rolblok, bouwModules } from './v18-modules.mjs';
@@ -176,6 +176,7 @@ for (const p of v18Paginas) {
     home = maakBeweeglijk(home);
   }
 
+  home = routerLaatLinksDoor(home);
   home = hoofdletterMerk(home);
   await writeFile('index.html', home, 'utf8');
 }
