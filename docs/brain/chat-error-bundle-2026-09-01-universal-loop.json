@@ -1,0 +1,81 @@
+{
+  "bundle_id": "chat-error-bundle|2026-09-01|universal-brain-loop-v1",
+  "status": "READY_FOR_CANONICAL_BRAIN_WRITEBACK",
+  "canonical_route": "BG211 -> BG168 -> BG166 -> BG167",
+  "dedupe_rule": "replay each fingerprint at most once after exact readback confirms Make capacity is executable",
+  "completion_rule": "No error is PROVEN learning without rootCause, failedApproach, fix, preventionRule, regressionContract and outcomeEvidence.",
+  "errors": [
+    {
+      "fingerprint": "make|bg211|parallel-router-blueprint-validation-v1",
+      "source_system": "make",
+      "component": "BG211",
+      "error": "BlueprintValidationError before module execution after parallel fanout router was added.",
+      "rootCause": "The parallel router topology was not accepted as a valid runnable blueprint in the composed BG211 scenario.",
+      "failedApproach": "Assuming save-time acceptance plus generic mapper warnings meant the multi-route fanout blueprint was executable.",
+      "fix": "Isolate the core path, prove normalize->dedupe->Datahub first, then replace parallel fanout with a mutually exclusive fail-closed decision tree.",
+      "preventionRule": "BUILD_AND_VERIFY_COMPLEX_MAKE_ROUTING_INCREMENTALLY_WITH_ZERO_OP_BLUEPRINT_FAILURE_ISOLATION",
+      "regressionContract": "BG211 core T1 canary succeeds; material T3 canary reaches BG205 and BG168; duplicate replay COALESCES before downstream fanout.",
+      "outcomeEvidence": "8486b957995149f4931ea0d45d544c88 success; e3641b867b0746c79eaf9415c6f0673d success; f3ea34c28f56428588bac3e5dc243eb5 COALESCED."
+    },
+    {
+      "fingerprint": "make|validator|required-field-path-warning-inconsistent-with-module-spec-v1",
+      "source_system": "make",
+      "component": "BG211/BG185",
+      "error": "Create/patch warnings claimed url/scenario parameters were missing while exact saved module readback showed valid mapper fields and connections.",
+      "rootCause": "Make create-time warning paths can diverge from authoritative module_spec and saved blueprint representation.",
+      "failedApproach": "Blindly rewriting mapper fields into parameters based on warning text alone.",
+      "fix": "Compare warning path to module_spec and exact scenario_module_get readback; only runtime-test after structural readback is consistent.",
+      "preventionRule": "VALIDATE_MAKE_WARNING_AGAINST_MODULE_SPEC_AND_SAVED_BLUEPRINT_BEFORE_REWRITE",
+      "regressionContract": "Saved module mapping equals working reference modules and bounded runtime canary succeeds.",
+      "outcomeEvidence": "BG211 mappings read back correctly and core/T3 canaries executed successfully."
+    },
+    {
+      "fingerprint": "make|capacity|team-paused-operations-or-data-transfer-limit-v1",
+      "source_system": "make",
+      "component": "Make estate",
+      "error": "Organization/team paused because operations or data-transfer capacity was exceeded.",
+      "rootCause": "External paid Make capacity was unavailable during runtime verification.",
+      "failedApproach": "Retrying paid executions while the team is paused would burn time/credits and cannot resolve the platform boundary.",
+      "fix": "Stop retries, continue independent GitHub/schema work, preserve exact dedupeable runtime-proof obligations and resume only after fresh capacity evidence.",
+      "preventionRule": "BLOCK_RUNTIME_RETRIES_AND_PROMOTION_WHEN_MAKE_CAPACITY_IS_PAUSED",
+      "regressionContract": "Read current Make capacity/state before any resume run; execute exactly one bounded canary after recovery.",
+      "outcomeEvidence": "Runtime attempts were stopped after the capacity error; independent GitHub work continued without additional Make runs."
+    },
+    {
+      "fingerprint": "brain|delivery-classifier|new-runtime-path-unclassified",
+      "source_system": "github",
+      "component": "BRAIN delivery",
+      "error": "BRAIN delivery run 33516203498 failed because tests/event-retention-expiry.test.mjs was unclassified.",
+      "rootCause": "The new event-retention test family was added without a generic prefix classification in config/brain-delivery-system.json.",
+      "failedApproach": "Registering only specific filenames or older test prefixes creates recurring delivery-classifier gaps.",
+      "fix": "Classify tools/tests event-retention and universal-failure families by prefix in both conflict contract and backend lane.",
+      "preventionRule": "CLASSIFY_AND_EXECUTE_RUNTIME_TEST_FAMILIES_BY_PREFIX",
+      "regressionContract": "Any new tests/event-retention-*.test.mjs and tests/universal-failure-*.test.mjs must be classified automatically and executed by the dedicated workflow.",
+      "outcomeEvidence": "GitHub job 99883770993 log: unclassified delivery path; classifier subsequently broadened by prefix."
+    },
+    {
+      "fingerprint": "github|test-discovery|workflow-green-with-new-test-not-executed-v1",
+      "source_system": "github",
+      "component": "Universal Event Retention Contract",
+      "error": "A workflow could report green while a newly added regression file was not included in its explicit node --test command.",
+      "rootCause": "Workflow trigger paths and test execution enumeration evolved independently.",
+      "failedApproach": "Treating workflow-trigger success as proof every changed regression test actually executed.",
+      "fix": "Co-change trigger family and test command; use family prefixes for classification and explicitly execute required contract files.",
+      "preventionRule": "CLASSIFY_AND_EXECUTE_CHANGED_TEST_FAMILIES_TOGETHER",
+      "regressionContract": "Dedicated workflow paths include universal-event, universal-failure and event-retention families and node --test includes their contract suites.",
+      "outcomeEvidence": "The workflow was updated after detecting the false-green risk; universal-failure is now an explicit executed suite."
+    },
+    {
+      "fingerprint": "github|merge-deploy|configuration-or-ci-green-not-production-proof-v1",
+      "source_system": "github/netlify",
+      "component": "merge/deploy",
+      "error": "A green configuration/check or merge acknowledgement can be mistaken for a successful deployed production outcome.",
+      "rootCause": "Repository mutation, CI status, Netlify deploy state and exact production commit identity are separate evidence layers.",
+      "failedApproach": "Declaring completion from PR merge, command/instruction response, deploy acknowledgement or a non-exact production state.",
+      "fix": "Require exact tested head, current-main readback after merge, Netlify current deploy readback with exact commit_ref, smoke/regression/security checks and durable outcome evidence before PRODUCTION_GREEN.",
+      "preventionRule": "MERGE_AND_DEPLOY_REQUIRE_EXACT_SHA_END_TO_END_READBACK",
+      "regressionContract": "candidate SHA == merged/main SHA == Netlify commit_ref; required CI and production smoke are green on that identity.",
+      "outcomeEvidence": "Existing BRAIN preflight lessons already enforce exact deploy identity, Netlify execution proof and main/production parity; this bundle makes the rule universal for all future delivery."
+    }
+  ]
+}
