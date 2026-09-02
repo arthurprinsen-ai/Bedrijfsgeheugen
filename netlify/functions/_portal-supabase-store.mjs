@@ -20,17 +20,25 @@ export function createSupabasePortalProjectionStore({
     const data=await gateway({action:'get',tenantId:String(tenantId),layer});
     return data.payload||null;
   }
+  async function getGovernance(tenantId){
+    const data=await gateway({action:'governance',tenantId:String(tenantId)});
+    return Array.isArray(data.governance)?data.governance:[];
+  }
   async function putLayer(tenantId,layer,next){
     const payload={...next,origin:layer};
     const data=await gateway({action:'put',tenantId:String(tenantId),layer,payload});
     return {stored:Boolean(data.stored),stale:Boolean(data.stale),record:data.record||payload};
   }
   return Object.freeze({
-    getLayer,
+    getLayer,getGovernance,
     async get(tenantId){
-      const [legacy,canonical]=await Promise.all([getLayer(tenantId,PORTAL_LAYERS.LEGACY),getLayer(tenantId,PORTAL_LAYERS.CANONICAL)]);
+      const [legacy,canonical,aiGovernance]=await Promise.all([
+        getLayer(tenantId,PORTAL_LAYERS.LEGACY),
+        getLayer(tenantId,PORTAL_LAYERS.CANONICAL),
+        getGovernance(tenantId)
+      ]);
       if(!legacy&&!canonical)return null;
-      const data=composePortalProjectionLayers({legacy,canonical});
+      const data={...composePortalProjectionLayers({legacy,canonical}),aiGovernance};
       const sourceUpdatedAt=data.sourceMeta?.updatedAt||canonical?.sourceUpdatedAt||legacy?.sourceUpdatedAt||'';
       return {schemaVersion:2,tenantId,origin:canonical?'composed':'legacy-migration',sourceUpdatedAt,updatedAt:sourceUpdatedAt,data};
     },
