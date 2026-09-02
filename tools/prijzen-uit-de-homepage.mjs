@@ -17,7 +17,7 @@ function vervangWeergave(html) {
   const open = '<div class="page" id="view-pricing">';
   const start = html.indexOf(open);
   if (start === -1) return html;
-  const na = html.indexOf('<div class="page', start + open.length);
+  const na = html.indexOf('<div class="page" id="view-', start + open.length);
   const eind = na === -1 ? html.indexOf('</main>', start) : na;
   if (eind === -1) return html;
   return html.slice(0, start) + open + '\n' + BLOK + '\n</div>\n' + html.slice(eind);
