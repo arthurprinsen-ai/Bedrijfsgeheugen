@@ -1,0 +1,23 @@
+{
+  "version": "make-cost-governance-v1",
+  "required_fields": [
+    "credit_budget",
+    "data_transfer_budget",
+    "max_payload_policy",
+    "page_batch_window_limit",
+    "dedupe_key",
+    "criticality_class",
+    "degradation_strategy",
+    "outcome_proof_signal",
+    "universal_event_ingest"
+  ],
+  "criticality_classes": [
+    "CRITICAL_PUBLISHING",
+    "CRITICAL_REVENUE_OUTCOME",
+    "CRITICAL_RECOVERY_SECURITY",
+    "CRITICAL_BRAIN",
+    "STANDARD_OPERATIONAL",
+    "DISCRETIONARY_ENRICHMENT"
+  ],
+  "note": "Numeric entitlements must be explicit or read from Make; never inferred silently."
+}
