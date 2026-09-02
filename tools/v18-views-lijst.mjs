@@ -17,10 +17,8 @@ export const VIEWS = [
     // dat artikel telt 3.376 woorden en heeft vragenschema. De pijlerpagina pakt
     // daarom de kortere variant en linkt door naar het blog.
     zoekwoord: 'systemen koppelen' },
-  { view: 'pricing', bestand: 'prijzen.html', pad: '/prijzen', naam: 'Prijzen',
-    titel: 'Prijzen — vaste prijs, geen uurtje-factuurtje | Bedrijfsgeheugen',
-    omschrijving: 'Wat Bedrijfsgeheugen kost: vaste prijzen per pakket, geen prijs per gebruiker, voor mkb-bedrijven van 3 tot 250 medewerkers.',
-    zoekwoord: 'kosten digitalisering mkb' },
+  // 'pricing' staat hier niet meer: /prijzen is een eigen pagina (prijzen.html) met
+  // vier pakketten, AI-niveaus en de zelfscan. De generator mag die niet overschrijven.
   { view: 'company', bestand: 'over-ons.html', pad: '/over-ons', naam: 'Over ons',
     titel: 'Over ons — waarom Bedrijfsgeheugen bestaat | Bedrijfsgeheugen',
     omschrijving: 'Een bedrijf hoort niet afhankelijk te zijn van wat mensen toevallig onthouden. Ons geloof, ons verhaal, onze uitgangspunten en onze visie.',
