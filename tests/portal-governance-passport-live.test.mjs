@@ -20,7 +20,7 @@ test('governance registry makes AI controls evidence-driven and verified',()=>{
   for(const id of ['model-register','ai-risk-classification','human-oversight','retention','data-classification','privacy-impact','supplier-assurance','monitoring-audit','training-use','cross-border-transfer']){
     assert.equal(passport.controls.find(c=>c.id===id)?.status,'verified',id);
   }
-  assert.match(passport.controls.find(c=>c.id==='training-use').claim,/niet.*training/i);
+  assert.match(passport.controls.find(c=>c.id==='training-use').claim,/niet gebruikt om foundation models te trainen/i);
   assert.match(passport.controls.find(c=>c.id==='cross-border-transfer').claim,/buiten.*EER/i);
 });
 
