@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSupabasePortalProjectionStore } from '../netlify/functions/_portal-supabase-store.mjs';
+import { PORTAL_LAYERS } from '../platform/read-models/portal-projection-layers.mjs';
 
 const response=(body,status=200)=>({ok:status>=200&&status<300,status,async json(){return body}});
 
@@ -19,8 +20,8 @@ function fakeClient(routes){
 
 test('reads portal projection layers from the Supabase EU RPC surface and composes them',async()=>{
   const client=fakeClient({
-    'bg_portal_state_get:legacy':()=>response([{payload:{sourceUpdatedAt:'2026-09-01T10:00:00.000Z',data:{company:{name:'Acme'},sourceMeta:{updatedAt:'2026-09-01T10:00:00.000Z'}}}}]),
-    'bg_portal_state_get:canonical':()=>response([{payload:{sourceUpdatedAt:'2026-09-01T11:00:00.000Z',data:{company:{lastSync:'2026-09-01T11:00:00.000Z'},sourceMeta:{updatedAt:'2026-09-01T11:00:00.000Z'}}}}])
+    [`bg_portal_state_get:${PORTAL_LAYERS.LEGACY}`]:()=>response([{payload:{sourceUpdatedAt:'2026-09-01T10:00:00.000Z',data:{company:{name:'Acme'},sourceMeta:{updatedAt:'2026-09-01T10:00:00.000Z'}}}}]),
+    [`bg_portal_state_get:${PORTAL_LAYERS.CANONICAL}`]:()=>response([{payload:{sourceUpdatedAt:'2026-09-01T11:00:00.000Z',data:{company:{lastSync:'2026-09-01T11:00:00.000Z'},sourceMeta:{updatedAt:'2026-09-01T11:00:00.000Z'}}}}])
   });
   const store=createSupabasePortalProjectionStore({fetchFn:client.fetchFn,baseUrl:'https://example.supabase.co',anonKey:'anon',serviceToken:'service'});
   const result=await store.get('tenant-1');
@@ -35,7 +36,7 @@ test('reads portal projection layers from the Supabase EU RPC surface and compos
 
 test('writes only through the authenticated Supabase RPC and preserves stale-write semantics',async()=>{
   const client=fakeClient({
-    'bg_portal_state_put:legacy':body=>response([{stored:true,stale:false,record:body.p_payload}])
+    [`bg_portal_state_put:${PORTAL_LAYERS.LEGACY}`]:body=>response([{stored:true,stale:false,record:body.p_payload}])
   });
   const store=createSupabasePortalProjectionStore({fetchFn:client.fetchFn,baseUrl:'https://example.supabase.co',anonKey:'anon',serviceToken:'service'});
   const next={sourceUpdatedAt:'2026-09-01T12:00:00.000Z',data:{sourceMeta:{updatedAt:'2026-09-01T12:00:00.000Z'}}};
@@ -43,9 +44,9 @@ test('writes only through the authenticated Supabase RPC and preserves stale-wri
   assert.equal(result.stored,true);
   const body=JSON.parse(client.calls[0].options.body);
   assert.equal(body.p_tenant_id,'tenant-1');
-  assert.equal(body.p_layer,'legacy');
+  assert.equal(body.p_layer,PORTAL_LAYERS.LEGACY);
   assert.equal(body.p_service_token,'service');
-  assert.equal(body.p_payload.origin,'legacy');
+  assert.equal(body.p_payload.origin,PORTAL_LAYERS.LEGACY);
 });
 
 test('fails closed when EU store credentials are missing',()=>{
