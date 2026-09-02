@@ -22,12 +22,14 @@ function explicitHumanOversight(state={}){
 }
 function runtimeRegion(env={}){return clean(env.BG_PORTAL_PROCESSING_REGION||env.AWS_REGION||env.NETLIFY_REGION||env.NETLIFY_FUNCTIONS_REGION);}
 function storageRegion(env={}){return clean(env.BG_PORTAL_STORAGE_REGION||env.NETLIFY_BLOBS_REGION);}
+function stateStore(env={}){return clean(env.BG_PORTAL_STATE_STORE)||'Netlify Blobs / brain-read-models';}
 
 export function buildRuntimePassportEvidence(state={}, {env=process.env, now=nowIso}={}){
   const generatedAt=now();
   const company=clean(state?.company?.name)||'Klantorganisatie';
   const processingRegion=runtimeRegion(env);
-  const blobRegion=storageRegion(env);
+  const storage=storageRegion(env);
+  const store=stateStore(env);
   const models=extractModels(state);
   const oversight=explicitHumanOversight(state);
   const audits=arr(state.audit);
@@ -40,12 +42,12 @@ export function buildRuntimePassportEvidence(state={}, {env=process.env, now=now
 
   controls.push({
     id:'data-residency', owner:'Bedrijfsgeheugen',
-    claim:`Portal API verwerking: ${processingRegion||'regio niet door runtime blootgegeven'}. Portal-state opslag: Netlify Blobs${blobRegion?` (${blobRegion})`:''}.`,
+    claim:`Portal API verwerking: ${processingRegion||'regio niet door runtime blootgegeven'}. Portal-state opslag: ${store}${storage?` (${storage})`:''}.`,
     evidence:[
       ev('portal-runtime-provider','Live portal draait op Netlify Functions'),
       processingRegion?ev('portal-processing-region',`Runtime processing region: ${processingRegion}`):ev('portal-processing-region','Runtime processing region ontbreekt',{verified:false,confidence:0}),
-      ev('portal-state-store','Portal-state gebruikt Netlify Blobs store brain-read-models'),
-      blobRegion?ev('portal-storage-region',`Geconfigureerde portal storage region: ${blobRegion}`):ev('portal-storage-region','Exacte Netlify Blobs storage region niet in portalconfig vastgelegd',{verified:false,confidence:0}),
+      ev('portal-state-store',`Portal-state store: ${store}`),
+      storage?ev('portal-storage-region',`Geconfigureerde portal storage region: ${storage}`):ev('portal-storage-region','Exacte portal storage region niet in portalconfig vastgelegd',{verified:false,confidence:0}),
     ],
     updatedAt:generatedAt,
   });
@@ -83,9 +85,10 @@ export function buildRuntimePassportEvidence(state={}, {env=process.env, now=now
 
   controls.push({
     id:'supplier-assurance', owner:'Bedrijfsgeheugen',
-    claim:`Technisch aangetroffen platform/provider: Netlify${integrationNames.length?`, ${integrationNames.join(', ')}`:''}. Contractuele DPA/subprocessor-evidence moet afzonderlijk worden geregistreerd.`,
+    claim:`Technisch aangetroffen platform/provider: Netlify, ${store}${integrationNames.length?`, ${integrationNames.join(', ')}`:''}. Contractuele DPA/subprocessor-evidence moet afzonderlijk worden geregistreerd.`,
     evidence:[
       ev('netlify-provider','Netlify is hosting/runtime provider'),
+      ev('portal-state-provider',`${store} is portal-state provider`),
       ...integrationNames.map((name,i)=>ev(`integration-${i+1}`,`Tenant integration geregistreerd: ${name}`,{sourceType:'tenant-state'})),
       ev('supplier-contracts','DPA/subprocessor assurance niet uit runtime afleidbaar',{verified:false,confidence:0,sourceType:'governance'}),
     ],updatedAt:generatedAt,
@@ -96,5 +99,5 @@ export function buildRuntimePassportEvidence(state={}, {env=process.env, now=now
   controls.push({id:'ai-risk-classification',owner:company,claim:riskClasses.length?`AI-risicoklassen: ${riskClasses.join(', ')}`:'Geen expliciete AI Act-risicoklasse aangetroffen.',evidence:riskClasses.map((x,i)=>ev(`risk-${i+1}`,`AI-risicoklasse: ${x}`,{sourceType:'tenant-state'})),updatedAt:generatedAt});
   controls.push({id:'privacy-impact',owner:company,claim:dpia?`Privacy/impact metadata aanwezig: ${clean(dpia)}`:'Geen DPIA/privacy-impact metadata aangetroffen in tenant-state.',evidence:dpia?[ev('privacy-impact-state',`Privacy-impact metadata: ${clean(dpia)}`,{sourceType:'tenant-state'})]:[],updatedAt:generatedAt});
 
-  return Object.freeze({generatedAt,technicalFacts:{hostingProvider:'Netlify',identityProvider:'Netlify Identity',stateStore:'Netlify Blobs / brain-read-models',processingRegion:processingRegion||null,storageRegion:blobRegion||null,tenantOwner:company},controls});
+  return Object.freeze({generatedAt,technicalFacts:{hostingProvider:'Netlify',identityProvider:'Netlify Identity',stateStore:store,processingRegion:processingRegion||null,storageRegion:storage||null,tenantOwner:company},controls});
 }

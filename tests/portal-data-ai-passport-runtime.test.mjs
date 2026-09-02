@@ -4,13 +4,15 @@ import {buildRuntimePassportEvidence} from '../platform/read-models/data-ai-runt
 import {buildPassportFromState} from '../portal/data-ai-passport.mjs';
 import {renderCompany} from '../portal/render-company.mjs';
 
-test('runtime evidence verifies auth controls and reports real configured regions',()=>{
-  const runtime=buildRuntimePassportEvidence({company:{name:'Acme'},audit:[{id:'a1'}],agents:[{name:'Copilot',provider:'OpenAI',model:'gpt-x',riskClass:'limited'}]}, {env:{AWS_REGION:'us-east-1',BG_PORTAL_STORAGE_REGION:'us-east-1'},now:()=> '2026-09-01T20:30:00.000Z'});
+test('runtime evidence verifies auth controls and reports real configured regions and state store',()=>{
+  const runtime=buildRuntimePassportEvidence({company:{name:'Acme'},audit:[{id:'a1'}],agents:[{name:'Copilot',provider:'OpenAI',model:'gpt-x',riskClass:'limited'}]}, {env:{AWS_REGION:'us-east-1',BG_PORTAL_STORAGE_REGION:'eu-central-1 · Duitsland (Frankfurt)',BG_PORTAL_STATE_STORE:'Supabase Postgres · eu-central-1'},now:()=> '2026-09-01T20:30:00.000Z'});
   assert.equal(runtime.technicalFacts.processingRegion,'us-east-1');
-  assert.equal(runtime.technicalFacts.storageRegion,'us-east-1');
+  assert.equal(runtime.technicalFacts.storageRegion,'eu-central-1 · Duitsland (Frankfurt)');
+  assert.equal(runtime.technicalFacts.stateStore,'Supabase Postgres · eu-central-1');
   const passport=buildPassportFromState({dataAiRuntime:runtime});
   assert.equal(passport.controls.find(x=>x.id==='access-control').status,'verified');
   assert.equal(passport.controls.find(x=>x.id==='data-residency').status,'verified');
+  assert.match(passport.controls.find(x=>x.id==='data-residency').claim,/Supabase Postgres/);
   assert.match(passport.controls.find(x=>x.id==='model-register').claim,/OpenAI \/ gpt-x/);
 });
 
