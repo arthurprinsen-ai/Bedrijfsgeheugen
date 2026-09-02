@@ -14,22 +14,29 @@ const governedState=()=>({company:{name:'Acme'},aiGovernance:[{
   evidence_ids:['e1'],approval_evidence_ids:['a1']
 }]});
 
+const runtimeState=()=>{const state=governedState();state.dataAiRuntime=buildRuntimePassportEvidence(state,{env:{BG_PORTAL_PROCESSING_REGION:'us-east-1 · Verenigde Staten',BG_PORTAL_STORAGE_REGION:'eu-central-1 · Frankfurt, Duitsland',BG_PORTAL_STATE_STORE:'Supabase Postgres / portal_state_layers'},now:()=> '2026-09-02T09:00:00.000Z'});return state};
+
 test('governance registry makes AI controls evidence-driven and verified',()=>{
-  const runtime=buildRuntimePassportEvidence(governedState(),{env:{BG_PORTAL_PROCESSING_REGION:'us-east-1',BG_PORTAL_STORAGE_REGION:'eu-central-1 · Frankfurt, Duitsland',BG_PORTAL_STATE_STORE:'Supabase Postgres / portal_state_layers'},now:()=> '2026-09-02T09:00:00.000Z'});
-  const passport=buildPassportFromState({dataAiRuntime:runtime});
-  for(const id of ['model-register','ai-risk-classification','human-oversight','retention','data-classification','privacy-impact','supplier-assurance','monitoring-audit','training-use','cross-border-transfer']){
-    assert.equal(passport.controls.find(c=>c.id===id)?.status,'verified',id);
-  }
+  const passport=buildPassportFromState(runtimeState());
+  for(const id of ['model-register','ai-risk-classification','human-oversight','retention','data-classification','privacy-impact','supplier-assurance','monitoring-audit','training-use','cross-border-transfer']) assert.equal(passport.controls.find(c=>c.id===id)?.status,'verified',id);
   assert.match(passport.controls.find(c=>c.id==='training-use').claim,/niet gebruikt om foundation models te trainen/i);
   assert.match(passport.controls.find(c=>c.id==='cross-border-transfer').claim,/buiten.*EER/i);
 });
 
 test('portal HTML visibly renders training and cross-border governance controls',()=>{
-  const state=governedState();
-  state.dataAiRuntime=buildRuntimePassportEvidence(state,{env:{BG_PORTAL_PROCESSING_REGION:'us-east-1',BG_PORTAL_STORAGE_REGION:'eu-central-1 · Frankfurt, Duitsland',BG_PORTAL_STATE_STORE:'Supabase Postgres / portal_state_layers'},now:()=> '2026-09-02T09:00:00.000Z'});
-  const html=renderDataAiPassport(state);
-  assert.match(html,/Training met klantdata/);
-  assert.match(html,/Doorgifte buiten EER/);
-  assert.match(html,/Amazon Web Services/);
-  assert.match(html,/Frankfurt, Duitsland/);
+  const html=renderDataAiPassport(runtimeState());
+  assert.match(html,/Training met klantdata/);assert.match(html,/Doorgifte buiten EER/);assert.match(html,/Amazon Web Services/);assert.match(html,/Frankfurt, Duitsland/);
+});
+
+test('passport renders an interactive evidence-driven spatial trust journey',()=>{
+  const html=renderDataAiPassport(runtimeState());
+  for(const step of ['Klantbron','Bedrijfsgeheugen','Workflow','AI','Opslag','Audit']) assert.match(html,new RegExp(`data-flow-step="[^"]+"[^>]*>[\\s\\S]*?${step}`,'i'),step);
+  assert.match(html,/class="passport-orbit"/);
+  assert.match(html,/data-flow-detail/);
+  assert.match(html,/aria-pressed="true"/);
+  assert.match(html,/us-east-1 · Verenigde Staten/);
+  assert.match(html,/eu-central-1 · Frankfurt, Duitsland/);
+  assert.match(html,/Amazon Bedrock/);
+  assert.match(html,/Verwerking buiten de EER is mogelijk/i);
+  assert.doesNotMatch(html,/alle data (blijft|blijven|staat) (in|binnen) (de )?(EU|EER)/i);
 });
