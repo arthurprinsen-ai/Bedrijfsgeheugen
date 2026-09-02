@@ -5,6 +5,7 @@
     "AGENTS.md",
     "config/",
     "docs/brain/",
+    "docs/changes/",
     "docs/development-",
     "docs/learning/",
     "docs/outcome-obligations.md",
@@ -18,6 +19,7 @@
     ".github/workflows/"
   ],
   "nonExecutableSharedPaths": [
+    "docs/changes/",
     "docs/learning/"
   ],
   "ignoredPaths": [
