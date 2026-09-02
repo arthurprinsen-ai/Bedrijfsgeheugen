@@ -15,8 +15,9 @@ function fakeClient(handler){
   return {fetchFn,calls};
 }
 
-test('reads portal projection layers through the hardened Supabase Edge gateway and composes them',async()=>{
+test('reads portal projection layers plus governance through the hardened Supabase Edge gateway',async()=>{
   const client=fakeClient(body=>{
+    if(body.action==='governance')return response({governance:[{use_case_id:'agent-1',provider:'Anthropic',model_id:'global.anthropic.claude-sonnet-5',approved:true}]});
     if(body.action!=='get')return response({error:'unexpected'},500);
     if(body.layer===PORTAL_LAYERS.LEGACY)return response({payload:{sourceUpdatedAt:'2026-09-01T10:00:00.000Z',data:{company:{name:'Acme'},sourceMeta:{updatedAt:'2026-09-01T10:00:00.000Z'}}}});
     if(body.layer===PORTAL_LAYERS.CANONICAL)return response({payload:{sourceUpdatedAt:'2026-09-01T11:00:00.000Z',data:{company:{lastSync:'2026-09-01T11:00:00.000Z'},sourceMeta:{updatedAt:'2026-09-01T11:00:00.000Z'}}}});
@@ -28,8 +29,10 @@ test('reads portal projection layers through the hardened Supabase Edge gateway 
   assert.equal(result.origin,'composed');
   assert.equal(result.data.company.name,'Acme');
   assert.equal(result.data.company.lastSync,'2026-09-01T11:00:00.000Z');
+  assert.equal(result.data.aiGovernance.length,1);
+  assert.equal(result.data.aiGovernance[0].use_case_id,'agent-1');
   assert.equal(result.sourceUpdatedAt,'2026-09-01T11:00:00.000Z');
-  assert.equal(client.calls.length,2);
+  assert.equal(client.calls.length,3);
   assert.ok(client.calls.every(call=>call.url==='https://example.supabase.co/functions/v1/portal-state-eu'));
   assert.ok(client.calls.every(call=>call.options.headers['x-bg-service-token']==='service'));
   assert.ok(client.calls.every(call=>!('apikey' in call.options.headers)));
