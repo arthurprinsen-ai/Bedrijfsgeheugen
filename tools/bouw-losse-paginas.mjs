@@ -13,13 +13,6 @@ const PAD = {
 
 const PAGINAS = [
   {
-    view: 'pricing',
-    bestand: 'prijzen.html',
-    titel: 'Prijzen — vaste prijs, geen uurtje-factuurtje | Bedrijfsgeheugen',
-    omschrijving: 'Wat Bedrijfsgeheugen kost: vaste prijzen per pakket, zonder uurtje-factuurtje, voor mkb-bedrijven van 3 tot 250 medewerkers.',
-    canoniek: 'https://www.bedrijfsgeheugen.nl/prijzen'
-  },
-  {
     view: 'cases',
     bestand: 'cases.html',
     titel: 'Cases - van vastlopen naar werkend | Bedrijfsgeheugen',
