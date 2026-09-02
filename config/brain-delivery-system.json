@@ -39,6 +39,7 @@
     {"id":"brain-governance","paths":["config/outcome-obligations.json","docs/brain/component-registry.json"]},
     {"id":"supabase-schema","paths":["supabase/migrations/","supabase/schema/","supabase/schema.sql"]},
     {"id":"make-contract","paths":["make/contracts/","automation/contracts/"]},
+    {"id":"make-cost-governance","paths":["config/make-cost-governance-contract.json","tools/make-cost-","tests/make-cost-"]},
     {"id":"notion-contract","paths":["notion/contracts/"]},
     {"id":"dataforseo-contract","paths":["dataforseo/contracts/","integrations/dataforseo/contracts/"]},
     {"id":"netlify-routing","paths":["netlify.toml","netlify/redirects/"]},
@@ -48,7 +49,7 @@
     {
       "id":"backend",
       "owner":"agent-integration-make",
-      "paths":["brain/","platform/","netlify/functions/","scripts/brain/","scripts/ci/repo-writer-","supabase/","tools/supabase-","tools/outcome-obligation-","tools/main-write-integrity.mjs","tools/delivery-","tools/platform-promotion-","tools/universal-event-","tools/universal-failure-","tools/event-retention-","tests/supabase-","tests/brain-","tests/whole-brain-","tests/agent-fabric","tests/branch-delivery-","tests/direct-main-postwrite-","tests/repo-writer-","tests/repository-protection-","tests/unified-brain-","tests/platform-promotion-","tests/chat-learning-","tests/chat-to-brain-","tests/make-agent-learning-","tests/make-agent-resume-","tests/universal-event-","tests/universal-failure-","tests/event-retention-","config/universal-event-producers.json"],
+      "paths":["brain/","platform/","netlify/functions/","scripts/brain/","scripts/ci/repo-writer-","supabase/","tools/supabase-","tools/outcome-obligation-","tools/main-write-integrity.mjs","tools/delivery-","tools/platform-promotion-","tools/universal-event-","tools/universal-failure-","tools/event-retention-","tools/make-cost-","tests/supabase-","tests/brain-","tests/whole-brain-","tests/agent-fabric","tests/branch-delivery-","tests/direct-main-postwrite-","tests/repo-writer-","tests/repository-protection-","tests/unified-brain-","tests/platform-promotion-","tests/chat-learning-","tests/chat-to-brain-","tests/make-agent-learning-","tests/make-agent-resume-","tests/universal-event-","tests/universal-failure-","tests/event-retention-","tests/make-cost-","config/universal-event-producers.json"],
       "requiredContracts":["BG166","BG167","BG168","BG169"]
     },
     {"id":"portal","owner":"agent-product-opportunity","paths":["portal/","tests/portal-","tests/data-ai-passport","klantportaal.html","netlify/functions/portaalvraag.mjs","netlify/functions/portal-state.mjs"],"requiredContracts":["BG166","BG167","BG168","BG169"]},
