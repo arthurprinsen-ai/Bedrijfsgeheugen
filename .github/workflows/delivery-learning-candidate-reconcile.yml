@@ -1,0 +1,98 @@
+name: Delivery Learning Candidate Reconcile
+
+on:
+  workflow_run:
+    workflows:
+      - Unified Brain Delivery
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+concurrency:
+  group: delivery-learning-candidate-reconcile-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Download bounded Unified BRAIN failure artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts/source
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --dir .artifacts/source
+          find .artifacts/source -maxdepth 3 -type f -name 'delivery-learning-route-*.json' -print > .artifacts/route-files.txt
+          if [ ! -s .artifacts/route-files.txt ]; then
+            echo 'No brain-delivery-failure-* learning routes found; nothing to reconcile.'
+          fi
+
+      - name: Reconcile one UNVERIFIED learning issue per fingerprint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts/reconciled
+          while IFS= read -r route_file; do
+            [ -n "$route_file" ] || continue
+            route_type="$(jq -r '.type // ""' "$route_file")"
+            if [ "$route_type" = 'REUSE_PROVEN_LESSON' ]; then
+              echo "Known PROVEN lesson reused; no UNVERIFIED issue required."
+              continue
+            fi
+            if [ "$route_type" != 'LEARNING_CANDIDATE' ] && [ "$route_type" != 'REUSE_LEARNING_CANDIDATE' ]; then
+              echo "Ignoring non-candidate route type: $route_type"
+              continue
+            fi
+
+            candidate_id="$(jq -r '.candidateId // ("learning-candidate|" + (.fingerprint // ""))' "$route_file")"
+            [ -n "$candidate_id" ] || { echo '::error::LEARNING_CANDIDATE_ID_MISSING'; exit 1; }
+
+            query="repo:${GITHUB_REPOSITORY} is:issue is:open \"${candidate_id}\""
+            gh api search/issues -f q="$query" -f per_page=20 > .artifacts/open-learning-issues.json
+
+            out=".artifacts/reconciled/$(basename "$route_file")"
+            node tools/delivery-learning-candidate-reconcile.mjs "$route_file" .artifacts/open-learning-issues.json "$out"
+            action="$(jq -r '.action' "$out")"
+            if [ "$action" = 'CREATE' ]; then
+              jq '{title,body}' "$out" > .artifacts/issue-write.json
+              gh api --method POST "repos/${GITHUB_REPOSITORY}/issues" --input .artifacts/issue-write.json >/dev/null
+              echo "Created stateful UNVERIFIED learning candidate: $candidate_id"
+            elif [ "$action" = 'UPDATE' ]; then
+              issue_number="$(jq -r '.issue_number' "$out")"
+              jq '{title,body}' "$out" > .artifacts/issue-write.json
+              gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/${issue_number}" --input .artifacts/issue-write.json >/dev/null
+              echo "Reused stateful learning candidate #${issue_number}: $candidate_id"
+            else
+              echo "No issue mutation required for $candidate_id"
+            fi
+          done < .artifacts/route-files.txt
+
+      - name: Publish immutable reconciliation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: delivery-learning-candidate-reconcile-${{ github.event.workflow_run.id }}
+          path: .artifacts/reconciled/
+          if-no-files-found: ignore
+          retention-days: 30
