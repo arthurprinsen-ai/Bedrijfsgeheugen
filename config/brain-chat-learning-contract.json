@@ -293,6 +293,36 @@
       "requiredAction": "Verifieer repository en actor via de geautoriseerde GitHub-connector en voer remote mutations alleen via die bewezen route uit.",
       "prevention": "Remote-write preflight vereist allowlisted repository, actuele actorrechten en exacte kandidaatidentiteit.",
       "evidenceRule": "Lokale gitconfig alleen bewijst geen toestemming voor een externe write."
+    },
+    {
+      "id": "BG169_PROMOTION_INPUT_REQUIRES_TESTED_HEAD_AND_CURRENT_MAIN",
+      "fingerprint": "delivery|bg169|candidate-identity-field-mismatch",
+      "symptom": "BG169 retourneert candidate_identity_mismatch terwijl kandidaat, PR en preview inhoudelijk bij elkaar horen.",
+      "rootCause": "De controller vergelijkt candidate_sha met tested_head_sha en gebruikt current_main_sha als actuele productiebase; aliassen zoals tested_sha vullen dat contract niet.",
+      "failedApproach": "De promotie opnieuw indienen met een niet-ondersteund veld of de fail-closed kandidaatcontrole omzeilen.",
+      "requiredAction": "Lees de actuele BG169-interface en lever candidate_sha, tested_head_sha en current_main_sha met exact geverifieerde SHA-identiteiten.",
+      "prevention": "Delivery-adapters valideren verplichte BG169-veldnamen en SHA-gelijkheid vóór een betaalde scenario-run.",
+      "evidenceRule": "Alleen PROMOTION_READY of een geverifieerde merge op exact dezelfde tested_head_sha telt als kandidaatacceptatie."
+    },
+    {
+      "id": "CHAT_LEARNING_REQUIRES_CANONICAL_BRAIN_READBACK",
+      "fingerprint": "brain|chat-learning|documented-without-canonical-readback",
+      "symptom": "Een chatlearning staat in gesprek, Notion of repository maar is niet aantoonbaar zichtbaar in de actuele gedeelde Brain-context.",
+      "rootCause": "Documentatie, codeborging en runtimegeheugen werden ten onrechte als onderling uitwisselbare bewijslagen behandeld.",
+      "failedApproach": "Volledige Brain-borging claimen na alleen chatmemory, Notion-update, commit of een ingestelde writeback.",
+      "requiredAction": "Routeer materiële learnings via BG168 naar BG166 en verifieer daarna fingerprint en outcome via BG167.",
+      "prevention": "Definition of Done vereist repository/contract, menselijke documentatie, succesvolle canonical writeback en actuele BG167-readback.",
+      "evidenceRule": "Zonder succesvolle execution evidence en BG167-zichtbaarheid blijft Brain-borging OPEN."
+    },
+    {
+      "id": "PAUSED_BRAIN_WRITEBACK_REQUIRES_SINGLE_DEDUP_REPLAY",
+      "fingerprint": "brain-writeback-make-team-paused-limit-v1",
+      "symptom": "BG168 of BG166 kan niet draaien omdat Make de organisatie of het team wegens operations- of datatransferlimiet heeft gepauzeerd.",
+      "rootCause": "De canonieke runtime-writeback is afhankelijk van beschikbare Make-capaciteit en kan door een externe betaalde limiet hard worden geblokkeerd.",
+      "failedApproach": "Herhaald blijven retryen, chatmemory als volledige Brain-writeback presenteren of de learning via een tweede schaduwgeheugen schrijven.",
+      "requiredAction": "Bewaar de genormaliseerde payload als open outcome obligation en replay exact één keer via BG168 naar BG166 zodra capaciteit terug is.",
+      "prevention": "Gebruik fingerprintdedupe, capacity-preflight en maximaal één replay na herstel; stop alle betaalde retries zolang team of organisatie gepauzeerd is.",
+      "evidenceRule": "De obligation sluit alleen na succesvolle BG168/BG166-execution en fingerprint-readback via BG167."
     }
   ]
 }
