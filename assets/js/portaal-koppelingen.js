@@ -6,7 +6,22 @@
   'use strict';
   var PAD = '/api/koppelingen';
 
-  function vak() { return document.getElementById('koppelingen-blok'); }
+  /* Het paneel #p-koppelingen wordt door het portaal zelf gevuld en blijft dat
+     controleren. We hangen ons blok er daarom pas onderaan bij zodra die vulling
+     klaar is, en zetten het terug als het wordt weggehaald. Nooit vervangen. */
+  function vak() {
+    var v = document.getElementById('koppelingen-blok');
+    if (v && v.isConnected) return v;
+    var paneel = document.getElementById('p-koppelingen');
+    if (!paneel) return null;
+    if (paneel.getAttribute('data-bg') !== 'klaar' && paneel.innerHTML.length < 300) return null;
+    v = document.createElement('section');
+    v.id = 'koppelingen-blok';
+    v.className = 'kaart';
+    v.style.marginTop = '1rem';
+    paneel.appendChild(v);
+    return v;
+  }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -88,6 +103,15 @@
     },
     verversen: start
   };
+
+  /* Blijven proberen zolang het paneel nog niet gevuld is, en daarna nog een
+     tijdje kijken of ons blok er nog hangt. Stopt vanzelf. */
+  var pogingen = 0;
+  var klok = setInterval(function () {
+    pogingen++;
+    if (vak()) { start(); }
+    if (pogingen > 60) clearInterval(klok);
+  }, 700);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
