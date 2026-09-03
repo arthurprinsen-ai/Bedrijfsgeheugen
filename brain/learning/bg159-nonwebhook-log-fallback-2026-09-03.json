@@ -1,0 +1,47 @@
+{
+  "fingerprint": "make|bg159|webhook-log-enrichment-nonwebhook-404-v1",
+  "event_kind": "AUTO_REPAIR",
+  "stage": "runtime_enrichment",
+  "component_type": "make_scenario",
+  "component_id": "BG159:7132648",
+  "owner": "Powerhouse Cost / Brain Recovery",
+  "reason": "BG159 selected a scheduled candidate scenario whose trigger-details endpoint returned an empty object, but the next module unconditionally constructed /v2/hooks/{{18.body.id}}/logs, producing /v2/hooks//logs and HTTP 404.",
+  "rootCause": "Webhook-log enrichment assumed every selected candidate had a webhook id. Scheduled/on-demand candidates can legitimately have no hook id, so trigger-type absence was not treated as valid state.",
+  "failedApproach": "Unconditional webhook-log lookup using 18.body.id for every candidate scenario.",
+  "fix": "Inserted deterministic resolver module 24 before module 19. It uses webhook logs only when a verified hook id exists; otherwise it falls back to the candidate scenario execution-log endpoint. Module 19 now reads the resolver's outcome_log_url. BG159 was reactivated after the patch.",
+  "preventionRule": "Before any Make hook-log read, require verified hook identity. For non-webhook candidates, use an explicitly typed non-hook evidence source; never construct or call /v2/hooks//logs.",
+  "regressionTest": "For a scheduled candidate whose /triggers response is {}, resolver output must set has_hook=false, evidence_class=EXECUTION_LOGS_FALLBACK and outcome_log_url=/v2/scenarios/<candidate_id>/logs; no request may contain /v2/hooks//logs.",
+  "evidence": {
+    "failed_execution_id": "0fc32f395dfd45a2bcb16fbbf5fa8d2d",
+    "failed_at": "2026-09-01T05:10:05.879Z",
+    "failed_module": 19,
+    "failed_request": "/v2/hooks//logs",
+    "selected_candidate_scenario_id": 6802405,
+    "selected_candidate_name": "BG 09 - Adaptive Narrative + Channel Portfolio Engine v7.2",
+    "selected_candidate_trigger_kind": "scheduled",
+    "trigger_details_response": {},
+    "patch_last_edit": "2026-09-03T07:05:30.030Z",
+    "reactivation": "scenario_activate succeeded",
+    "retest": "blocked because Make reports organization/team paused due exceeded operations or data-transfer limit",
+    "github_main_sha": "98cd8d4d3666211b78da2441bb62909e96aec46f",
+    "netlify_production_commit_ref": "98cd8d4d3666211b78da2441bb62909e96aec46f",
+    "netlify_state": "ready",
+    "netlify_context": "production"
+  },
+  "status": "BLOCKED_HARD_BOUNDARY",
+  "first_seen": "2026-09-01T05:10:18.283Z",
+  "last_seen": "2026-09-03T07:05:45Z",
+  "last_changed": "2026-09-03T07:05:30.030Z",
+  "evidence_hash": "bg159-7132648|exec-0fc32f395dfd45a2bcb16fbbf5fa8d2d|module19|hooks-empty|patch-20260903T070530Z|capacity-blocked",
+  "retry_budget": {
+    "identical_runtime_retries_remaining": 1,
+    "rule": "Do not retry again while the organization/team pause evidence is unchanged. Resume exactly once after capacity recovery is independently observed."
+  },
+  "required_intervention": "Restore Make organization/team runtime capacity by resolving the exceeded operations or data-transfer limit. No credential, OAuth, permission or paid-plan mutation is authorized here.",
+  "next_escalation_at": "2026-09-03T08:10:00Z",
+  "resume_condition": "Make permits scenario execution again; then run BG159 once, verify no /v2/hooks//logs request occurs, verify module 19 succeeds with WEBHOOK_LOGS or EXECUTION_LOGS_FALLBACK as appropriate, and route/persist the learning through BG168 -> BG166 with BG167 readback.",
+  "learning_writeback": {
+    "repo_candidate": "brain/bg159-nonwebhook-log-fallback-20260903",
+    "bg168_bg166_bg167": "OPEN_UNTIL_MAKE_RUNTIME_CAPACITY_RECOVERS"
+  }
+}
