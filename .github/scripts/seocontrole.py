@@ -32,7 +32,7 @@ CLUSTERS = {
         '/connect', '/systemen-koppelen'],
     '/blog/wat-kost-digitalisering-mkb/': [
         '/blog/wat-kost-een-afas-koppeling/', '/blog/wat-kost-een-afas-partner/',
-        '/blog/automatiseren-zonder-traject/', '/frisse-blik'],
+        '/blog/automatiseren-zonder-traject/', '/frisse-blik', '/prijzen'],
     '/blog/wat-is-een-bedrijfsgeheugen/': [
         '/blog/bedrijfsopvolging-begin-bij-het-geheugen/', '/product', '/zelfscan',
         '/blog/werkinstructie-voorbeeld/'],
@@ -50,6 +50,7 @@ EIGENAAR = {
     # Wijzig je een cluster of zoekwoord in Notion, werk dan deze lijst bij.
     'systemen koppelen mkb': '/blog/systemen-koppelen-mkb/',
     'wat kost digitalisering mkb': '/blog/wat-kost-digitalisering-mkb/',
+    'prijzen digitalisering mkb': '/prijzen',
     'bedrijfsopvolging familiebedrijf kennis': '/blog/bedrijfsopvolging-begin-bij-het-geheugen/',
     'eu ai act mkb': '/blog/eu-ai-act-mkb/',
     'afas koppeling kosten': '/blog/wat-kost-een-afas-koppeling/',
