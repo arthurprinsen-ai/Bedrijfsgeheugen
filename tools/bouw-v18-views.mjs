@@ -9,10 +9,10 @@ import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_
          VERTREK, bouwModules, hoofdletterMerk, CONTEXT_CSS, CONTEXT_JS, RING, rolblok } from './v18-modules.mjs';
 
 
-// de gegevensbalk komt boven de kop; één keer, ook als de stap vaker draait
+// de gegevensbalk komt boven de kop; Ã©Ã©n keer, ook als de stap vaker draait
 function metGegevens(html) {
   // let op: de opmaak met .bgx-gegevens staat al in de pagina, dus controleren
-  // op het element zelf — anders slaat deze stap zichzelf over
+  // op het element zelf â anders slaat deze stap zichzelf over
   if (html.includes('<div class="bgx-gegevens">')) return html;
   return html.replace('<header class="v17-header"', GEGEVENS + '<header class="v17-header"')
              .replace('</body>', LOCATIE_SCHEMA + '\n</body>');
@@ -20,7 +20,7 @@ function metGegevens(html) {
 
 // De navigatie van de homepage is leidend. Elke weergave uit de eenpagina-app
 // wordt hier een echte pagina, met eigen titel, omschrijving en adres. Waar een
-// oude pagina hetzelfde adres had, wordt die vervangen — niet naast elkaar gezet.
+// oude pagina hetzelfde adres had, wordt die vervangen â niet naast elkaar gezet.
 
 const PAD = {
   home: '/', product: '/product', pricing: '/prijzen', solutions: '/oplossingen',
@@ -83,7 +83,7 @@ for (const p of VIEWS) {
   // kruimelpad direct onder de weergave, zodat bezoeker en zoekmachine de plek zien
   // Elke pagina begint blauw, met dezelfde videohero als de rest van de site.
   // De weergave heeft zelf al een kop; die zakt daaronder een niveau, zodat er
-  // precies één h1 op de pagina staat.
+  // precies Ã©Ã©n h1 op de pagina staat.
   const hero = `<section class="inhoud-kop">
 <video autoplay muted playsinline loop preload="metadata" aria-hidden="true"><source src="${HERO_URL}" type="video/mp4"></video>
 <div class="wrap">
@@ -104,14 +104,14 @@ for (const p of VIEWS) {
   {
     const start = html.indexOf(`<div class="page active" id="view-${p.view}">`);
     const eind = html.indexOf('</main>', start);
-    // de hero zelf krijgt géén data-op: die moet zichtbaar zijn ook als er
+    // de hero zelf krijgt gÃ©Ã©n data-op: die moet zichtbaar zijn ook als er
     // geen JavaScript draait
     const stuk = html.slice(start, eind).replace(/<section(?![^>]*data-op)(?![^>]*class="inhoud-kop")([^>]*)>/g, '<section$1 data-op>');
     html = html.slice(0, start) + stuk + html.slice(eind);
   }
 
   // het portaalbeeld stond als plaatjebestand in de HTML, maar dat bestand bestaat
-  // niet — vandaar het gebroken beeld. We tekenen het nu in de pagina zelf.
+  // niet â vandaar het gebroken beeld. We tekenen het nu in de pagina zelf.
   html = html.replace(/<img[^>]*portal-v18-full\.png[^>]*>/g, PORTAALBEELD);
 
   html = html.replace('</head>', `${INHOUD_CSS}\n${INTERACTIE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${VOLGENDE_CSS}\n${CONTEXT_CSS}\n${BEWEGING_CSS}\n</head>`);
@@ -130,7 +130,7 @@ for (const p of VIEWS) {
     html = html.slice(0, s) + na;
   }
 
-  // elke pagina één h1: de weergaven beginnen met een h2
+  // elke pagina Ã©Ã©n h1: de weergaven beginnen met een h2
   if (!/<h1[\s>]/.test(html.slice(html.indexOf(`id="view-${p.view}"`)))) {
     const start = html.indexOf(`id="view-${p.view}"`);
     const stuk = html.slice(start);
