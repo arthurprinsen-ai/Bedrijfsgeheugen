@@ -92,12 +92,13 @@ for (const p of VIEWS) {
 <p class="intro">${p.omschrijving}</p>
 </div></section>`;
 
-  const { body: rekenaar } = bouwModules('');
-  const bovenblok = `<section class="inhoud-body" style="padding:34px 0 6px"><div class="wrap">${VRAAGBALK}${rekenaar}${rolblok(p.naam.toLowerCase())}</div></section>`;
+  // 3 sep 2026: de vraagbalk, de rekenmodule en het rolblok stonden op elke
+  // gegenereerde pagina. Weggehaald: een rekenmodule hoort alleen op /prijzen,
+  // die zijn eigen versie heeft. De gele teller (LEK) blijft wel overal staan.
 
   html = html.replace(`<div class="page active" id="view-${p.view}">`,
     `<div class="page active" id="view-${p.view}">${hero}`
-    + `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}${bovenblok}`);
+    + `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}`);
 
   // de secties van deze weergave komen op bij het scrollen, net als op de homepage
   {
