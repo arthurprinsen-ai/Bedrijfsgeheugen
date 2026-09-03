@@ -1,5 +1,5 @@
 {
- "bijgewerkt": "2026-08-30",
+ "bijgewerkt": "2026-09-03",
  "zoekwoorden": [
   {
    "zoekwoord": "afas koppeling kosten",
@@ -189,6 +189,13 @@
    "bestaat": true,
    "claimt": true,
    "type": "pijler"
+  },
+  {
+   "zoekwoord": "prijzen digitalisering mkb",
+   "pagina": "/prijzen",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
   },
   {
    "zoekwoord": "systemen koppelen mkb",
