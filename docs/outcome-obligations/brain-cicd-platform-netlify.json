@@ -1,0 +1,1 @@
+{"id":"brain-cicd-platform-netlify","domain":"production_reliability","expected":true,"ownerAgent":"agent-reliability","evidencePolicy":"Exact revision/deploy ready state, routing/function/security evidence and rollback proof.","idempotencyKey":"brain-cicd-platform-netlify-v1","recoveryPolicy":"Keep last-known-good deployment; block only affected runtime change."}

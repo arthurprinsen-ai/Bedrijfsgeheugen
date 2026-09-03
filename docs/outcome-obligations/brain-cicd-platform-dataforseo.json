@@ -1,0 +1,1 @@
+{"id":"brain-cicd-platform-dataforseo","domain":"seo_demand","expected":true,"ownerAgent":"agent-seo-demand","evidencePolicy":"Validated query/config contract, provenance, freshness, cost budget and provider evidence.","idempotencyKey":"brain-cicd-platform-dataforseo-v1","recoveryPolicy":"Restore LKG query/config; provider/rate-limit failure blocks only affected evidence path."}
