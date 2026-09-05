@@ -100,8 +100,8 @@ function internalArticleLinks(html) {
 }
 
 function ensureContractMeta(html) {
-  let out = String(html).replace(/\s*<meta\b[^>]*name=(?:"bg-order-contract"|'bg-order-contract')[^>]*>\s*/gi, '');
-  return out.replace(/<\/head>/i, `\n<meta name="bg-order-contract" content="v1">\n</head>`);
+  if (/<meta\b[^>]*name=(?:"bg-order-contract"|'bg-order-contract')[^>]*content=(?:"v1"|'v1')[^>]*>/i.test(headOf(html))) return String(html);
+  return String(html).replace(/<\/head>/i, `\n<meta name="bg-order-contract" content="v1">\n</head>`);
 }
 
 function escapeHtml(value) {
@@ -109,13 +109,14 @@ function escapeHtml(value) {
 }
 
 function ensureOrderStyle(html) {
+  if (/id=["']bg-order-content-style["']/i.test(headOf(html))) return String(html);
   const style = `<style id="bg-order-content-style">.bg-order-author{margin:1rem 0 1.5rem;padding:.85rem 1rem;border:1px solid rgba(39,66,214,.18);border-radius:12px;background:rgba(39,66,214,.04);font-size:.92rem}.bg-order-author a{font-weight:700}.bg-order-path{margin:2.5rem 0;padding:1.4rem;border:1px solid rgba(20,23,26,.14);border-radius:14px;background:#fff}.bg-order-path h2{margin:0 0 .45rem}.bg-order-actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}.bg-order-actions a{display:inline-block;padding:.7rem 1rem;border-radius:999px;text-decoration:none;font-weight:700}.bg-order-money{border:1px solid currentColor}.bg-order-primary{background:#2742D6;color:#fff}</style>`;
-  let out = String(html).replace(/\s*<style\b[^>]*id=["']bg-order-content-style["'][^>]*>[\s\S]*?<\/style>\s*/gi, '');
-  return out.replace(/<\/head>/i, `\n${style}\n</head>`);
+  return String(html).replace(/<\/head>/i, `\n${style}\n</head>`);
 }
 
 function ensureAuthorBlock(html, modified) {
-  let out = String(html).replace(/\s*<aside\b[^>]*id=["']bg-order-author["'][^>]*>[\s\S]*?<\/aside>\s*/gi, '');
+  if (/id=["']bg-order-author["']/i.test(bodyOf(html))) return String(html);
+  const out = String(html);
   const dateText = modified ? `<time datetime="${modified}">Inhoudelijk bijgewerkt ${modified}</time>` : '';
   const block = `<aside id="bg-order-author" class="bg-order-author" data-bg-author="arthur-prinsen" aria-label="Auteur en inhoudelijke review">Geschreven en inhoudelijk gereviewd door <a href="${ORIGIN}/over-ons">Arthur Prinsen</a>${dateText ? ` · ${dateText}` : ''}.</aside>`;
   if (/<article\b[^>]*>/i.test(out)) return out.replace(/<article\b[^>]*>/i, m => `${m}\n${block}`);
@@ -123,8 +124,9 @@ function ensureAuthorBlock(html, modified) {
   return out.replace(/<body\b[^>]*>/i, m => `${m}\n${block}`);
 }
 
-function ensureOrderPath(html, commercial, title) {
-  let out = String(html).replace(/\s*<section\b[^>]*id=["']bg-order-path["'][^>]*>[\s\S]*?<\/section>\s*/gi, '');
+function ensureOrderPath(html, commercial) {
+  if (/id=["']bg-order-path["']/i.test(bodyOf(html))) return String(html);
+  const out = String(html);
   if (!commercial) return out;
   const targetLabel = commercial.role === 'money' ? commercial.primary_intent : 'digitalisering voor het mkb';
   const cta = commercial.primary_cta || { action: 'zelfscan', url: `${ORIGIN}/zelfscan` };
@@ -145,7 +147,7 @@ export function inspectBlog(input, path, registry) {
   if (!modified || !new RegExp(`<time\\b[^>]*datetime=["']${modified}["']`, 'i').test(html)) fouten.push(`${path}: zichtbare inhoudsdatum ontbreekt`);
   if (!hasEvidence(html)) fouten.push(`${path}: bewijs/bronnen ontbreekt`);
   if (internal.length < 2) fouten.push(`${path}: minimaal twee contextuele interne links vereist`);
-  if (!commercial || !html.includes(`href="${commercial.route}"`) && !html.includes(`href='${commercial.route}'`)) fouten.push(`${path}: link naar dominante money page ontbreekt`);
+  if (!commercial || (!html.includes(`href="${commercial.route}"`) && !html.includes(`href='${commercial.route}'`))) fouten.push(`${path}: link naar dominante money page ontbreekt`);
   if (!/data-bg-order-cta(?:\s|=|>)/i.test(html)) fouten.push(`${path}: primaire CTA ontbreekt`);
   if (!/id=["']bg-seo-order-graph["']/i.test(html)) fouten.push(`${path}: SEO order graph ontbreekt`);
   if (!/<meta\b[^>]*name=(?:"bg-order-contract"|'bg-order-contract')[^>]*content=(?:"v1"|'v1')[^>]*>/i.test(headOf(html))) fouten.push(`${path}: bg-order-contract v1 ontbreekt`);
@@ -166,7 +168,7 @@ export function enrichBlog(input, path, registry) {
   html = ensureContractMeta(html);
   html = ensureOrderStyle(html);
   html = ensureAuthorBlock(html, modified);
-  html = ensureOrderPath(html, commercial, title);
+  html = ensureOrderPath(html, commercial);
   html = injectSeoGraph(html, {
     canonical,
     title,
