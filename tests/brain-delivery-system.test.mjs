@@ -33,6 +33,25 @@ test('repository writer static assets are classified as website delivery work', 
   }
 });
 
+test('canonical site shell tool family is bounded website delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const paths = [
+    'tools/site-shell/apply-shell.mjs',
+    'tools/site-shell/components.mjs',
+    'tools/site-shell/contracts.mjs',
+    'tools/site-shell/diagnose-shell-gate.mjs',
+    'tools/site-shell/test-shell-components.mjs',
+    'tools/controleer-site-ui.mjs',
+    'tools/normaliseer-site-ui.mjs',
+    'tools/prijzen-uit-de-homepage.mjs'
+  ];
+  for (const path of paths) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'51e5e11a12345678', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['website'], `${path} must be website delivery work`);
+  }
+  assert.throws(() => createDeliveryPlan({ changedPaths:['tools/unowned-future-runtime.mjs'], headSha:'51e5e11a12345678', policy }), /unclassified delivery path/, 'website classification must remain bounded and fail closed for unrelated tools');
+});
+
 test('future Supabase governance tools are automatically classified as backend delivery work', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   for (const path of ['tools/supabase-performance-governor.mjs','tools/supabase-future-optimizer.mjs']) {
