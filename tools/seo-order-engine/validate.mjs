@@ -14,9 +14,9 @@ function headOf(html){return String(html).match(/<head\b[^>]*>([\s\S]*?)<\/head>
 function canonicalOf(html){const tag=[...headOf(html).matchAll(/<link\b[^>]*>/gi)].find(m=>/(?:^|\s)canonical(?:\s|$)/i.test(attr(m[0],'rel')))?.[0]||'';return attr(tag,'href');}
 function noindex(html){const robots=[...headOf(html).matchAll(/<meta\b[^>]*>/gi)].find(m=>/^robots$/i.test(attr(m[0],'name')))?.[0]||'';return /(?:^|[,\s])noindex(?:[,\s]|$)/i.test(attr(robots,'content'));}
 function metaContent(html,name){const tag=[...headOf(html).matchAll(/<meta\b[^>]*>/gi)].find(m=>String(attr(m[0],'name')).toLowerCase()===String(name).toLowerCase())?.[0]||'';return attr(tag,'content');}
-function primaryPageForEntry(pages,entry){const candidates=(pages||[]).filter(page=>page.canonical===entry.route);if(!candidates.length)return null;const nonBlog=candidates.find(page=>!/^blog\//i.test(page.path||''));if(nonBlog)return nonBlog;if(entry.role==='blog-index')return candidates.find(page=>page.path==='blog/index.html')||candidates[0];return candidates[0];}
+function primaryPageForEntry(pages,entry){const candidates=(pages||[]).filter(page=>page.canonical===entry.route&&!isCanonicalAliasArticle(page,{pages:[entry]}));if(!candidates.length)return null;const nonBlog=candidates.find(page=>!/^blog\//i.test(page.path||''));if(nonBlog)return nonBlog;if(entry.role==='blog-index')return candidates.find(page=>page.path==='blog/index.html')||candidates[0];return candidates[0];}
 function isBlogArticle(path){return /^blog\/.+\/index\.html$/i.test(path||'')&&path!=='blog/index.html';}
-function isCanonicalAliasArticle(page,registry){if(!isBlogArticle(page.path))return false;return (registry?.pages||[]).some(entry=>entry.route===page.canonical&&entry.role!=='article');}
+function isCanonicalAliasArticle(page,registry){if(!isBlogArticle(page.path))return false;return (registry?.pages||[]).some(entry=>entry.route===page.canonical&&entry.role!=='article'&&entry.role!=='blog-index');}
 function isExcludedPath(path){return EXCLUDES.has(path)||EXCLUDES.has(path.split('/').at(-1))||EXCLUDED_PREFIXES.some(prefix=>path.startsWith(prefix))||/(?:^|\/)shell-gate-[^/]*\.html$/i.test(path);}
 function hasBodyAttr(html,name,value){const body=String(html).match(/<body\b[^>]*>/i)?.[0]||'';return attr(body,name)===value;}
 
@@ -25,6 +25,12 @@ function validateIntentOwnership(page,registry){
   const entry=(registry?.pages||[]).find(item=>item.route===page.canonical)||null;
   const owner=metaContent(page.html,'bg-intent-owner');
   const knownOwners=new Set((registry?.pages||[]).map(item=>item.route));
+  if(isCanonicalAliasArticle(page,registry)){
+    if(owner!==page.canonical)errors.push(`${page.path}: canonical alias moet intent-owner ${page.canonical} gebruiken`);
+    if(!hasBodyAttr(page.html,'data-bg-intent-role','supporting'))errors.push(`${page.path}: canonical alias moet supporting intent-role hebben`);
+    if(!hasBodyAttr(page.html,'data-bg-intent-owner',page.canonical))errors.push(`${page.path}: canonical alias supporting owner marker ontbreekt`);
+    return errors;
+  }
   if(entry){
     if(owner!==entry.route)errors.push(`${page.canonical}: primary intent-owner meta moet eigen canonical zijn`);
     if(!hasBodyAttr(page.html,'data-bg-intent-role','primary'))errors.push(`${page.canonical}: primary intent-role ontbreekt`);
