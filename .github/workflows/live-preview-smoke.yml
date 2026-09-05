@@ -8,6 +8,10 @@ on:
       - 'v18-full/**'
       - 'tools/bouw-v18-production-core.mjs'
       - 'tools/bouw-v18-production.mjs'
+      - 'tools/bouw-v18-chrome.mjs'
+      - 'tools/bouw-v18-chrome-alles.mjs'
+      - 'tools/normaliseer-site-ui.mjs'
+      - 'tools/site-shell/**'
       - 'site/seo-baseline.json'
       - 'assets/kop.css'
       - 'assets/js/menu.js'
@@ -74,8 +78,10 @@ jobs:
           const html = fs.readFileSync('/tmp/index.html', 'utf8');
           const head = (html.match(/<head\b[^>]*>[\s\S]*?<\/head>/i) || [''])[0];
           const cfg = JSON.parse(fs.readFileSync('site/seo-baseline.json', 'utf8')).home;
-          if (!html.includes('id="heroBackgroundVideo"')) throw new Error('historical V18 hero video element missing');
-          if (!html.includes('13761469-uhd_3840_2160_30fps.mp4')) throw new Error('historical V18 Pexels hero source missing');
+          const hero = (html.match(/<video\b[^>]*id="heroBackgroundVideo"[\s\S]*?<\/video>/i) || [''])[0];
+          if (!hero) throw new Error('historical V18 hero video element missing');
+          const acceptedHero = hero.includes('13761469-uhd_3840_2160_30fps.mp4') || hero.includes('https://adhjwmvyoixzjtmiroln.supabase.co/storage/v1/object/public/media/hero/shanghai-v1.mp4');
+          if (!acceptedHero) throw new Error('accepted canonical hero video source missing');
           if (!html.includes('view-home') || !html.includes('view-product')) throw new Error('historical V18 identity markers missing');
           if (html.includes('__BG_PRODUCTION_VERSION__') || html.includes('bgMobileNav')) throw new Error('later V18.8 overlay leaked into historical restore');
           if (!head.includes('BG_PERSISTENT_SEO_V1')) throw new Error('persistent SEO marker missing');
@@ -90,7 +96,7 @@ jobs:
           }
           if ((head.match(/<title>/g) || []).length !== 1) throw new Error('title must be unique');
           if ((head.match(/rel="canonical"/g) || []).length !== 1) throw new Error('canonical must be unique');
-          console.log('Historical V18 + persistent SEO live preview contract OK');
+          console.log('Historical V18 + canonical hero + persistent SEO live preview contract OK');
           NODE
 
       - name: Verify V18.8 production HTML contract

@@ -1,0 +1,48 @@
+name: Canonical brand shell full build
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - name: 1 Powerhouse auth
+        run: node tools/bouw-powerhouse-auth.mjs
+      - name: 2 Kennisindex
+        run: node tools/bouw-kennisindex.mjs
+      - name: 3 V18 production + canonical shell
+        run: node tools/bouw-v18-production.mjs
+      - name: 4 Tabbladen
+        run: node tools/apply-tabbladen.mjs
+      - name: 5 V18 views
+        run: node tools/bouw-v18-views.mjs
+      - name: 6 V18 chrome
+        run: node tools/bouw-v18-chrome-alles.mjs
+      - name: 7a Prijzen homepage verwijzing
+        run: BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+      - name: 7b Canonical page policy normalisatie
+        run: BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+      - name: 7c Estate-wide canonical shell gate
+        run: node tools/site-shell/diagnose-shell-gate.mjs
+      - name: Upload shell gate diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-shell-gate-diagnostic
+          path: |
+            shell-gate-diagnostic.txt
+            shell-gate-failed-page.html
+            shell-gate-canonical-source.html
+          if-no-files-found: ignore
+      - name: 8 Release evidence contract
+        env:
+          COMMIT_REF: ${{ github.event.pull_request.head.sha }}
+          CONTEXT: github-pull-request
+        run: node tools/bouw-release-evidence.mjs
