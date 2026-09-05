@@ -27,13 +27,13 @@ jobs:
         run: node tools/bouw-v18-chrome-alles.mjs
       - name: 7a Prijzen homepage verwijzing
         run: BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
-      - name: 7b Canonical page policy normalisatie
+      - name: 7b Canonical page policy + SEO order enrichment
         run: BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
       - name: 7c Estate-wide canonical shell gate
         run: node tools/site-shell/diagnose-shell-gate.mjs
-      - name: 7d Netlify-equivalent sitemap + technische SEO gate
+      - name: 7d Sitemap + technische SEO + SEO order gate
         run: BG_PRICING_STAGE=verify node tools/prijzen-uit-de-homepage.mjs
-      - name: Upload shell gate diagnostic
+      - name: Upload shell and SEO diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -42,6 +42,10 @@ jobs:
             shell-gate-diagnostic.txt
             shell-gate-failed-page.html
             shell-gate-canonical-source.html
+            blog/afas-api/index.html
+            blog/kennis-borgen-in-je-bedrijf/index.html
+            afas-koppeling.html
+            bedrijfsgeheugen.html
           if-no-files-found: ignore
       - name: 8 Release evidence contract
         env:

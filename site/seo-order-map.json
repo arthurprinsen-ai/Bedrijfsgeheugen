@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "origin": "https://www.bedrijfsgeheugen.nl",
+  "pages": [
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/",
+      "role": "pillar",
+      "primary_intent": "digitalisering mkb",
+      "primary_keyword": "digitalisering mkb",
+      "secondary_keywords": ["mkb digitaliseren", "digitalisering voor mkb", "bedrijfsprocessen digitaliseren"],
+      "funnel_stage": "discover",
+      "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/prijzen", "https://www.bedrijfsgeheugen.nl/product", "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen"],
+      "schema_type": "WebPage"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/prijzen",
+      "role": "money",
+      "primary_intent": "kosten digitalisering mkb",
+      "primary_keyword": "kosten digitalisering mkb",
+      "secondary_keywords": ["prijzen digitalisering mkb", "digitalisering mkb kosten", "kosten automatisering mkb"],
+      "funnel_stage": "decide",
+      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/", "https://www.bedrijfsgeheugen.nl/product"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/product",
+      "role": "money",
+      "primary_intent": "bedrijfsgeheugen platform",
+      "primary_keyword": "bedrijfsgeheugen platform",
+      "secondary_keywords": ["bedrijfskennis platform", "bedrijfsinformatie platform", "business operating intelligence"],
+      "funnel_stage": "consider",
+      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen", "https://www.bedrijfsgeheugen.nl/prijzen"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/afas-koppeling",
+      "role": "money",
+      "primary_intent": "afas koppeling",
+      "primary_keyword": "afas koppeling",
+      "secondary_keywords": ["afas api koppeling", "afas koppelen", "afas integratie"],
+      "funnel_stage": "decide",
+      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/blog/afas-api/", "https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/ai-adoptie",
+      "role": "money",
+      "primary_intent": "ai adoptie mkb",
+      "primary_keyword": "ai adoptie mkb",
+      "secondary_keywords": ["ai implementeren mkb", "ai invoeren bedrijf", "ai adoptie organisatie"],
+      "funnel_stage": "consider",
+      "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-act", "https://www.bedrijfsgeheugen.nl/"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/ai-act",
+      "role": "support",
+      "primary_intent": "eu ai act mkb",
+      "primary_keyword": "eu ai act mkb",
+      "secondary_keywords": ["ai act nederland mkb", "eu ai act bedrijf", "ai regelgeving mkb"],
+      "funnel_stage": "discover",
+      "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie"],
+      "schema_type": "WebPage"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen",
+      "role": "money",
+      "primary_intent": "bedrijfskennis borgen",
+      "primary_keyword": "bedrijfskennis borgen",
+      "secondary_keywords": ["kennis borgen bedrijf", "bedrijfskennis vastleggen", "kennisborging mkb"],
+      "funnel_stage": "consider",
+      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/", "https://www.bedrijfsgeheugen.nl/product"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/blog/",
+      "role": "blog-index",
+      "primary_intent": "digitalisering mkb kennisbank",
+      "primary_keyword": "digitalisering mkb kennisbank",
+      "secondary_keywords": ["kennisbank digitalisering", "mkb automatisering kennis"],
+      "funnel_stage": "discover",
+      "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/", "https://www.bedrijfsgeheugen.nl/prijzen"],
+      "schema_type": "CollectionPage"
+    }
+  ]
+}

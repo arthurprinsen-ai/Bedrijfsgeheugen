@@ -1,0 +1,25 @@
+name: SEO order engine
+
+on:
+  push:
+    branches:
+      - feat/seo-order-engine-20260905
+  pull_request:
+    paths:
+      - 'site/seo-order-map.json'
+      - 'tools/seo-order-engine/**'
+      - 'tests/seo-order-*.test.mjs'
+      - '.github/workflows/seo-order-engine.yml'
+      - 'tools/prijzen-uit-de-homepage.mjs'
+      - 'tools/controleer-technische-seo.mjs'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: SEO order contracts
+        run: node --test tests/seo-order-*.test.mjs
