@@ -2,16 +2,26 @@ function escapeAttr(value) {
   return String(value || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-export function markPrimaryConversions(input, entry) {
-  let html = String(input);
-  if (!entry?.primary_cta?.url || !entry?.primary_cta?.action) return html;
+function markAnchorInContent(content, entry) {
+  if (!entry?.primary_cta?.url || !entry?.primary_cta?.action) return content;
   const target = entry.primary_cta.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const re = new RegExp(`<a\\b([^>]*\\bhref=(?:"${target}"|'${target}')[^>]*)>`, 'i');
-  html = html.replace(re, (match, attrs) => {
+  return String(content).replace(re, (match, attrs) => {
     if (/\bdata-bg-conversion=/.test(match)) return match;
     return `<a${attrs} data-bg-conversion="${escapeAttr(entry.primary_cta.action)}" data-bg-page-role="${escapeAttr(entry.role)}" data-bg-funnel-stage="${escapeAttr(entry.funnel_stage)}">`;
   });
-  return html;
+}
+
+export function markPrimaryConversions(input, entry) {
+  const html = String(input);
+  if (!entry?.primary_cta?.url || !entry?.primary_cta?.action) return html;
+
+  // Conversie-attributen zijn pagina-context. De globale Brand Shell
+  // (header/mobile-menu/footer) moet byte-identiek blijven op alle pagina's.
+  const main = html.match(/<main\b[^>]*>[\s\S]*?<\/main>/i);
+  if (!main) return html;
+  const marked = markAnchorInContent(main[0], entry);
+  return marked === main[0] ? html : html.replace(main[0], marked);
 }
 
 export function injectConversionTracker(input) {
