@@ -1,0 +1,9 @@
+{
+  "version":"seo-search-sources-v1",
+  "sources":[
+    {"id":"google-search-console","kind":"organic-search-performance","priority":1,"paid":false,"required_fields":["query","canonical","impressions","clicks","ctr","position","period"]},
+    {"id":"dataforseo","kind":"serp-market-intelligence","priority":2,"paid":true,"required_fields":["query","canonical","position","period"],"cost_guard":"deterministic opportunity pre-gate + bounded paid canary; no estate-wide polling"}
+  ],
+  "unknown_query_policy":"retain as discovery candidate; never auto-create a landing page",
+  "join_key":"canonical + intent_id + period"
+}
