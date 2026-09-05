@@ -57,3 +57,21 @@ test('enrichment verzint geen bewijs: artikel zonder onderbouwing blijft geblokk
   const enriched = enrichBlog(basisBlog({ evidence: false }), 'blog/wat-kost-digitalisering-mkb/index.html', registry);
   assert.match(inspectBlog(enriched, 'blog/wat-kost-digitalisering-mkb/index.html', registry).join('\n'), /bewijs\/bronnen ontbreekt/i);
 });
+
+test('zichtbare Nederlandse publicatiedatum blijft bruikbaar als oude JSON-LD datum onderweg is verdwenen', () => {
+  const html = `<!doctype html><html lang="nl"><head>
+    <title>Wat kost digitalisering mkb?</title>
+    <meta name="description" content="Een concreet artikel over kosten en keuzes.">
+    <meta name="robots" content="index, follow">
+    <meta name="bg-zoekwoord" content="wat kost digitalisering mkb">
+    <link rel="canonical" href="${ORIGIN}/blog/wat-kost-digitalisering-mkb/">
+  </head><body><main><article>
+    <div class="artikelmeta"><span>19 augustus 2026</span><span>Arthur Prinsen</span></div>
+    <h1>Wat kost digitalisering mkb?</h1>
+    <section data-bg-evidence><h2>Voorbeeldberekening</h2><p>Een transparante berekening.</p></section>
+    <p><a href="${ORIGIN}/product">Platform</a> en <a href="${ORIGIN}/bedrijfsgeheugen">kennisborging</a>.</p>
+  </article></main></body></html>`;
+  const enriched = enrichBlog(html, 'blog/wat-kost-digitalisering-mkb/index.html', registry);
+  assert.ok(enriched.includes('datetime="2026-08-19"'), 'zichtbare datum wordt semantische <time>');
+  assert.deepEqual(inspectBlog(enriched, 'blog/wat-kost-digitalisering-mkb/index.html', registry), []);
+});
