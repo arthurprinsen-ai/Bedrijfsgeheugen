@@ -20,6 +20,8 @@ function basisBlog({ evidence = true } = {}) {
     <meta name="description" content="Een concreet artikel over kosten en keuzes.">
     <meta name="robots" content="index, follow">
     <meta name="bg-zoekwoord" content="wat kost digitalisering mkb">
+    <meta property="article:published_time" content="2026-09-01">
+    <meta property="article:modified_time" content="2026-09-05">
     <link rel="canonical" href="${ORIGIN}/blog/wat-kost-digitalisering-mkb/">
   </head><body>
     <nav aria-label="Kruimelpad"><a href="${ORIGIN}/">Home</a><a href="${ORIGIN}/blog/">Kennis</a></nav>
@@ -44,6 +46,7 @@ test('enrichment maakt een bewijsrijk blog idempotent publiceerbaar', () => {
   const twice = enrichBlog(once, 'blog/wat-kost-digitalisering-mkb/index.html', registry);
   assert.equal(once, twice);
   assert.ok(once.includes('data-bg-author="arthur-prinsen"'));
+  assert.ok(once.includes('datetime="2026-09-05"'));
   assert.ok(once.includes(`href="${ORIGIN}/prijzen"`));
   assert.ok(once.includes('data-bg-order-cta'));
   assert.ok(once.includes('id="bg-seo-order-graph"'));
