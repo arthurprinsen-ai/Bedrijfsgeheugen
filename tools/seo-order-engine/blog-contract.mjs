@@ -5,13 +5,13 @@ function stripTags(value) {
   return String(value || '').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function naamVeilig(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function attr(tag, name) {
   const m = String(tag).match(new RegExp(`\\b${naamVeilig(name)}=(?:"([^"]*)"|'([^']*)')`, 'i'));
   return m ? (m[1] ?? m[2] ?? '') : '';
-}
-
-function naamVeilig(value) {
-  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function headOf(html) {
@@ -113,6 +113,31 @@ function hasEvidence(html) {
   return external.length > 0;
 }
 
+function markPracticalEvidence(input) {
+  const html = String(input);
+  if (hasEvidence(html)) return html;
+  const bodyMatch = html.match(/<article\b[^>]*>[\s\S]*?<\/article>/i) || html.match(/<main\b[^>]*>[\s\S]*?<\/main>/i);
+  if (!bodyMatch || bodyMatch.index === undefined) return html;
+  const article = bodyMatch[0];
+  const headings = [...article.matchAll(/<h2\b([^>]*)>([\s\S]*?)<\/h2>/gi)];
+  for (let i = 0; i < headings.length; i++) {
+    const heading = headings[i];
+    const label = stripTags(heading[2]);
+    if (!/(?:borg|automatiseer|stappen?|aanpak|werkinstructie|proces|regel|checklist|zo werkt|zo voorkom|begin|leg vast)/i.test(label)) continue;
+    const start = (heading.index || 0) + heading[0].length;
+    const end = i + 1 < headings.length ? headings[i + 1].index : article.length;
+    const segment = article.slice(start, end);
+    const list = segment.match(/<(?:ul|ol)\b[^>]*>([\s\S]*?)<\/(?:ul|ol)>/i);
+    if (!list || (list[1].match(/<li\b/gi) || []).length < 3) continue;
+    const opening = heading[0].match(/^<h2\b[^>]*>/i)?.[0];
+    if (!opening) continue;
+    const markedOpening = opening.replace(/>$/, ' data-bg-evidence="praktijkmethode">');
+    const markedArticle = article.slice(0, heading.index) + heading[0].replace(opening, markedOpening) + article.slice((heading.index || 0) + heading[0].length);
+    return html.slice(0, bodyMatch.index) + markedArticle + html.slice(bodyMatch.index + article.length);
+  }
+  return html;
+}
+
 function internalArticleLinks(html) {
   return [...articleOf(html).matchAll(/<a\b[^>]*href=(?:"([^"]+)"|'([^']+)')[^>]*>/gi)]
     .map(m => m[1] ?? m[2] ?? '')
@@ -187,6 +212,7 @@ export function enrichBlog(input, path, registry) {
 
   html = ensureContractMeta(html);
   html = ensureOrderStyle(html);
+  html = markPracticalEvidence(html);
   html = ensureAuthorBlock(html, modified);
   html = ensureOrderPath(html, commercial);
   html = injectSeoGraph(html, {
