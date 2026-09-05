@@ -105,11 +105,12 @@ const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantp
 
 export async function normaliseerAllePaginas() {
   // Historische builders leveren alleen pagina-inhoud. Daarna wordt eerst de
-  // canonical shell geprojecteerd en vervolgens nog één keer uitsluitend de
-  // vier globale merkcomponenten. Zo kunnen ook technische indexpagina's zoals
-  // blog/index.html nooit een eigen Header, MobileMenu, TrustBar of Footer houden.
+  // canonical shell geprojecteerd. Elke pagina krijgt vervolgens eerst de
+  // minimale markers/policy die projectGlobalComponents nodig heeft. Pas dan
+  // projecteren we TrustBar/Header/MobileMenu/Footer definitief en voeren we
+  // dezelfde idempotente normalisatie nog één keer uit.
   await applyCanonicalShellToAllPages();
-  const canonicalSource = await readFile('over-ons.html', 'utf8');
+  const canonicalSource = normaliseerHtml(await readFile('over-ons.html', 'utf8'), 'over-ons.html');
 
   const bestanden = [];
   for await (const p of glob('*.html')) if (!MAG_NIET.has(p)) bestanden.push(p);
@@ -120,7 +121,17 @@ export async function normaliseerAllePaginas() {
   for (const bestand of [...new Set(bestanden)]) {
     let html; try { html = await readFile(bestand, 'utf8'); } catch { continue; }
     if (!html.includes('<body')) continue;
-    const metMerkcomponenten = bestand === 'over-ons.html' ? html : projectGlobalComponents(html, canonicalSource);
+
+    const voorbereid = normaliseerHtml(html, bestand);
+    let metMerkcomponenten;
+    try {
+      metMerkcomponenten = bestand === 'over-ons.html'
+        ? voorbereid
+        : projectGlobalComponents(voorbereid, canonicalSource);
+    } catch (error) {
+      throw new Error(`${bestand}: finale globale componentprojectie: ${error.message}`);
+    }
+
     const nieuw = normaliseerHtml(metMerkcomponenten, bestand);
     if (nieuw !== html) { await writeFile(bestand, nieuw, 'utf8'); gewijzigd++; }
   }
