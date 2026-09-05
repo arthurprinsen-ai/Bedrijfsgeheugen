@@ -1,0 +1,36 @@
+{
+  "version":"seo-growth-loop-v1",
+  "producer_id":"seo-growth-observation",
+  "adapter":"BG211",
+  "canonical_learning_path":"BG211 -> BG168 -> BG166 -> BG167",
+  "canonical_graph_path":"BG211 -> BG205",
+  "runtime_ingest":{
+    "browser_endpoint":"https://www.bedrijfsgeheugen.nl/api/growth-event",
+    "queue":"netlify-blobs:bg-growth-events",
+    "delivery":"server-side only",
+    "brain_success_requires":"BG211 execution plus durable target readback"
+  },
+  "privacy":{
+    "classification":"non-pii-analytics",
+    "forbidden_fields":["email","e-mail","phone","telefoon","name","naam","message","bericht","form","address","adres","ip","user_agent","useragent"],
+    "free_text":"forbidden"
+  },
+  "events":["page_view","organic_landing","money_link_click","primary_cta_click","secondary_cta_click","engaged_view","selfscan_start","frisse_blik_start","lead_outcome","order_outcome"],
+  "search_sources":{
+    "preferred":["google-search-console"],
+    "supplemental":["dataforseo"],
+    "paid_provider_guard":"deterministic opportunity pre-gate and bounded paid canary only"
+  },
+  "optimization":{
+    "mode":"bounded",
+    "allowlist_config":"config/seo-optimization-allowlist.json",
+    "objective":"visibility -> CTR -> engaged visit -> CTA -> lead -> order -> revenue",
+    "traffic_only_selection":false
+  },
+  "failure_policy":{
+    "unknown_producer":"fail_closed",
+    "paused_capacity":"persist dedupeable open learning obligation; no retry storm",
+    "browser_delivery":"best_effort_non_blocking",
+    "claim_runtime_learning_without_readback":false
+  }
+}

@@ -1,0 +1,33 @@
+name: SEO growth intelligence
+
+on:
+  pull_request:
+    paths:
+      - 'tools/seo-growth/**'
+      - 'tools/seo-order-engine/**'
+      - 'netlify/functions/growth-event.mjs'
+      - 'config/seo-growth-*'
+      - 'config/seo-search-sources.json'
+      - 'config/seo-optimization-allowlist.json'
+      - 'config/universal-event-producers.json'
+      - 'config/brain-delivery-system.json'
+      - 'tests/seo-growth-*.test.mjs'
+      - 'tests/seo-order-*.test.mjs'
+      - '.github/workflows/seo-growth-intelligence.yml'
+  push:
+    branches:
+      - main
+      - feat/seo-to-order-intelligence-loop-final-20260905
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install runtime dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: SEO growth contracts
+        run: node --test tests/seo-growth-*.test.mjs tests/seo-order-money-v2.test.mjs tests/seo-order-blog-v2.test.mjs tests/seo-order-measurement.test.mjs

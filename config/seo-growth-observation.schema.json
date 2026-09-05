@@ -1,0 +1,25 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://www.bedrijfsgeheugen.nl/schemas/seo-growth-observation-v1",
+  "title":"SEO Growth Observation",
+  "type":"object",
+  "required":["schema_version","source","kind","canonical","intent_id","fingerprint"],
+  "properties":{
+    "schema_version":{"const":"seo-growth-observation-v1"},
+    "source":{"type":"string","minLength":1},
+    "kind":{"enum":["behavior","search","outcome"]},
+    "canonical":{"type":"string","pattern":"^https://www\\.bedrijfsgeheugen\\.nl/"},
+    "intent_id":{"type":"string"},
+    "keyword_cluster":{"type":"string"},
+    "page_role":{"type":"string"},
+    "funnel_stage":{"type":"string"},
+    "period":{"type":"string"},
+    "event_id":{"type":"string"},
+    "occurred_at":{"type":"string"},
+    "attribution_root":{"type":"string"},
+    "metrics":{"type":"object"},
+    "evidence_refs":{"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "fingerprint":{"type":"string","pattern":"^seo-growth\\|"}
+  },
+  "additionalProperties":true
+}

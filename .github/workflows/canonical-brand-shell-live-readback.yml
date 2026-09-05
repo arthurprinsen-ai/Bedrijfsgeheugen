@@ -43,13 +43,15 @@ jobs:
             curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/?bg_readback=${nonce}" -o live-blog-index.html
             curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/afas-api/?bg_readback=${nonce}" -o live-blog-afas-api.html
             curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/kennis-borgen-in-je-bedrijf/?bg_readback=${nonce}" -o live-blog-kennis-borgen.html
-            if node tools/site-shell/check-live-production.mjs && node tools/seo-order-engine/live-readback.mjs; then
-              echo "Exact production shell + SEO order readback green for ${EXPECTED_COMMIT}"
+            growth_status="$(curl -sS -o /tmp/growth-health.txt -w '%{http_code}' -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/api/growth-event?bg_readback=${nonce}" || true)"
+            if node tools/site-shell/check-live-production.mjs && node tools/seo-order-engine/live-readback.mjs && [ "$growth_status" = "405" ]; then
+              echo "Exact production shell + SEO order + growth endpoint readback green for ${EXPECTED_COMMIT}"
               exit 0
             fi
-            echo "Production is not on ${EXPECTED_COMMIT} with all contracts yet; retry ${attempt}/16"
+            echo "Production is not on ${EXPECTED_COMMIT} with all contracts yet; growth endpoint status=${growth_status}; retry ${attempt}/16"
             sleep 15
           done
-          echo "Production never satisfied the exact shell + SEO order contract for ${EXPECTED_COMMIT}" >&2
+          echo "Production never satisfied the exact shell + SEO order + growth endpoint contract for ${EXPECTED_COMMIT}" >&2
           node tools/site-shell/check-live-production.mjs
           node tools/seo-order-engine/live-readback.mjs
+          test "$(curl -sS -o /tmp/growth-health.txt -w '%{http_code}' https://www.bedrijfsgeheugen.nl/api/growth-event || true)" = "405"

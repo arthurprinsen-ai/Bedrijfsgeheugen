@@ -13,6 +13,17 @@ function normaliseer(value) {
   return String(value ?? '').trim().toLocaleLowerCase('nl-NL');
 }
 
+function claimKeyword(claims, phrase, route, label, fouten) {
+  const keyword = normaliseer(phrase);
+  if (!keyword) return;
+  const owner = claims.get(keyword);
+  if (owner && owner.route !== route) {
+    fouten.push(`${label}: keyword-cluster collision; "${phrase}" is al owned door ${owner.route}`);
+    return;
+  }
+  if (!owner) claims.set(keyword, { route, label });
+}
+
 export function validateRegistry(registry) {
   const fouten = [];
   if (!registry || typeof registry !== 'object') return ['registry moet een object zijn'];
@@ -24,10 +35,12 @@ export function validateRegistry(registry) {
 
   const intents = new Map();
   const keywords = new Map();
+  const keywordClaims = new Map();
   const routes = new Set();
 
   for (const [index, entry] of registry.pages.entries()) {
     const label = `pages[${index}]`;
+    const route = entry?.route || label;
     if (!isAbsoluteInternalUrl(entry?.route)) fouten.push(`${label}.route moet absolute Bedrijfsgeheugen URL zijn`);
     else if (routes.has(entry.route)) fouten.push(`${label}.route duplicate: ${entry.route}`);
     else routes.add(entry.route);
@@ -46,7 +59,12 @@ export function validateRegistry(registry) {
     else if (keywords.has(keyword)) fouten.push(`${label}: duplicate primary_keyword met ${keywords.get(keyword)}`);
     else keywords.set(keyword, entry.route || label);
 
+    claimKeyword(keywordClaims, entry?.primary_keyword, route, `${label}.primary_keyword`, fouten);
+
     if (!Array.isArray(entry?.secondary_keywords)) fouten.push(`${label}.secondary_keywords moet een array zijn`);
+    else for (const secondary of entry.secondary_keywords) {
+      claimKeyword(keywordClaims, secondary, route, `${label}.secondary_keywords`, fouten);
+    }
 
     if (!entry?.primary_cta || typeof entry.primary_cta !== 'object') fouten.push(`${label}.primary_cta is verplicht`);
     else {
@@ -55,12 +73,12 @@ export function validateRegistry(registry) {
     }
 
     if (!Array.isArray(entry?.supporting_routes)) fouten.push(`${label}.supporting_routes moet een array zijn`);
-    else for (const route of entry.supporting_routes) {
-      if (!isAbsoluteInternalUrl(route)) fouten.push(`${label}.supporting_routes moeten absolute Bedrijfsgeheugen URLs zijn`);
+    else for (const supportingRoute of entry.supporting_routes) {
+      if (!isAbsoluteInternalUrl(supportingRoute)) fouten.push(`${label}.supporting_routes moeten absolute Bedrijfsgeheugen URLs zijn`);
     }
   }
 
-  return fouten;
+  return [...new Set(fouten)];
 }
 
 export async function loadRegistry(path = 'site/seo-order-map.json') {

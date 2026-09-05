@@ -79,7 +79,7 @@ function normalize(value) {
 
 function scoreEntry(entry, haystack) {
   const phrases = [entry.primary_keyword, ...(entry.secondary_keywords || [])].filter(Boolean);
-  let score = entry.role === 'money' ? 1 : 0;
+  let score = 0;
   for (const phrase of phrases) {
     const normalized = normalize(phrase);
     if (!normalized) continue;
@@ -98,7 +98,7 @@ export function dominantCommercialEntry(html, registry) {
   const ranked = candidates.map(entry => ({ entry, score: scoreEntry(entry, haystack) }))
     .sort((a, b) => b.score - a.score || (a.entry.role === 'money' ? -1 : 1) || a.entry.route.localeCompare(b.entry.route));
   if (ranked[0]?.score > 0) return ranked[0].entry;
-  return candidates.find(entry => entry.route === `${ORIGIN}/`) || candidates.find(entry => entry.role === 'money') || candidates[0];
+  return candidates.find(entry => entry.route === `${ORIGIN}/`) || candidates.find(entry => entry.role === 'pillar') || candidates.find(entry => entry.role === 'money') || candidates[0];
 }
 
 function hasEvidence(html) {

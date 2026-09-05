@@ -1,0 +1,7 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+
+test('SEO growth producer inherits canonical Powerhouse learning and graph paths',async()=>{const producers=JSON.parse(await readFile('config/universal-event-producers.json','utf8'));const loop=JSON.parse(await readFile('config/seo-growth-loop.json','utf8'));const p=producers.producers.find(x=>x.producer_id==='seo-growth-observation');assert.ok(p);assert.equal(producers.adapter,'BG211');assert.equal(producers.inheritance.canonical_learning_path,'BG211 -> BG168 -> BG166 -> BG167');assert.equal(producers.inheritance.canonical_graph_path,'BG211 -> BG205');assert.match(p.brain_writeback,/BG168\/BG166 via BG211/);assert.match(p.cost_guard,/dedupe/);assert.equal(loop.adapter,'BG211');assert.equal(loop.failure_policy.unknown_producer,'fail_closed');assert.equal(loop.failure_policy.claim_runtime_learning_without_readback,false);});
+
+test('SEO growth paths are classified into BRAIN delivery lanes',async()=>{const c=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));const contract=c.conflictContracts.find(x=>x.id==='seo-growth-intelligence');assert.ok(contract);assert.ok(contract.paths.includes('tools/seo-growth/'));assert.ok(c.lanes.find(x=>x.id==='website').paths.includes('tools/seo-growth/'));assert.ok(c.lanes.find(x=>x.id==='backend').paths.includes('tools/seo-growth/'));});
