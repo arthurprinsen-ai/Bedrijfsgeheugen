@@ -1,0 +1,48 @@
+name: Canonical brand shell live readback
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Test live shell contract
+        run: node tools/site-shell/test-live-contract.mjs
+
+  production-readback:
+    if: github.event_name != 'pull_request'
+    needs: contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Wait for exact Netlify production commit and verify canonical shell
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 16); do
+            nonce="${EXPECTED_COMMIT}-${attempt}-$(date +%s)"
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/?bg_readback=${nonce}" -o live-home.html
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?bg_readback=${nonce}" -o live-prijzen.html
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_readback=${nonce}" -o live-over-ons.html
+            if node tools/site-shell/check-live-production.mjs; then
+              echo "Exact production readback green for ${EXPECTED_COMMIT}"
+              exit 0
+            fi
+            echo "Production is not on ${EXPECTED_COMMIT} yet; retry ${attempt}/16"
+            sleep 15
+          done
+          echo "Production never satisfied the exact canonical shell contract for ${EXPECTED_COMMIT}" >&2
+          node tools/site-shell/check-live-production.mjs

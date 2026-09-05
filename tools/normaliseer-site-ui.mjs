@@ -8,6 +8,7 @@ import {
   ensureTrustBar, ensureFooterContact, ensureBrandShellCss, markPageSlots
 } from './site-shell/components.mjs';
 import { applyCanonicalShellToAllPages } from './site-shell/apply-shell.mjs';
+import { ensureReleaseMarker } from './site-shell/release-marker.mjs';
 
 function openDivMetKlasse(html, klasse, vanaf = 0) {
   const re = /<div\b[^>]*class="[^"]*"[^>]*>/gi;
@@ -88,6 +89,7 @@ export function normaliseerHtml(input, bestand) {
   html = ensureTrustBar(html);
   html = ensureFooterContact(html);
   html = ensureBrandShellCss(html);
+  html = ensureReleaseMarker(html);
   html = markPageSlots(html);
   return html;
 }
