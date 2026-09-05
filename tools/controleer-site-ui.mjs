@@ -3,6 +3,7 @@ import { readFile, glob } from 'node:fs/promises';
 
 const OVERSLAAN = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
 const TRUST = ['Vaste prijs, geen uurtje-factuurtje', 'In twee weken draaiend', 'Voor het Nederlandse mkb'];
+const heeftElement = (html, klasse) => new RegExp(`<div\\b[^>]*class="[^"]*\\b${klasse.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b[^"]*"`, 'i').test(html);
 
 export async function controleerSiteUi() {
   const bestanden = [];
@@ -17,23 +18,26 @@ export async function controleerSiteUi() {
     if (!html.includes('<body')) continue;
 
     for (const tekst of TRUST) assert.ok(html.includes(tekst), `${bestand}: trustbalk mist “${tekst}”`);
-    assert.ok(!html.includes('bgx-gegevens'), `${bestand}: oude contactbalk staat nog bovenaan`);
+    assert.ok(!heeftElement(html, 'bgx-gegevens'), `${bestand}: oude contactbalk staat nog bovenaan`);
 
     if (bestand === 'prijzen.html') {
-      assert.ok(html.includes('bgx-vraagbalk'), 'prijzen.html: vraagblok ontbreekt');
-      assert.ok(html.includes('bgx-rekenaar'), 'prijzen.html: rekenblok ontbreekt');
-      assert.ok(html.includes('bgx-rol'), 'prijzen.html: rolblok ontbreekt');
+      assert.ok(heeftElement(html, 'bgx-vraagbalk'), 'prijzen.html: vraagblok ontbreekt');
+      assert.ok(heeftElement(html, 'bgx-rekenaar'), 'prijzen.html: rekenblok ontbreekt');
+      assert.ok(heeftElement(html, 'bgx-rol'), 'prijzen.html: rolblok ontbreekt');
       for (const tekst of ['ONTDEKKEN', 'KENNIS &amp; BEDRIJF', 'START', '>Home<', '>Platform<', '>Prijzen<', '>Cases<', '>Gratis zelfscan<', '>Frisse Blik Scan<']) {
         assert.ok(html.includes(tekst), `prijzen.html: juiste mobiele menu mist ${tekst}`);
       }
-      const menu = html.match(/<div class="bgkop-mob" id="bgkopMob"[\s\S]*?<\/div>\s*<script id="bg-uniform-mobile-close-js">/)?.[0] || html;
+      const start = html.indexOf('<div class="bgkop-mob" id="bgkopMob"');
+      const eind = html.indexOf('<script id="bg-uniform-mobile-close-js">', start);
+      const menu = start >= 0 && eind > start ? html.slice(start, eind) : '';
+      assert.ok(menu, 'prijzen.html: mobiel menu kon niet worden afgebakend');
       for (const m of menu.matchAll(/href="([^"]+)"/g)) {
         assert.ok(/^https:\/\/www\.bedrijfsgeheugen\.nl\//.test(m[1]), `prijzen.html: menu-href niet absoluut: ${m[1]}`);
       }
     } else {
-      assert.ok(!html.includes('bgx-vraagbalk'), `${bestand}: vraagblok hoort alleen op prijzen`);
-      assert.ok(!html.includes('bgx-rekenaar'), `${bestand}: rekenblok hoort alleen op prijzen`);
-      assert.ok(!html.includes('bgx-rol'), `${bestand}: rolblok hoort alleen op prijzen`);
+      assert.ok(!heeftElement(html, 'bgx-vraagbalk'), `${bestand}: vraagblok hoort alleen op prijzen`);
+      assert.ok(!heeftElement(html, 'bgx-rekenaar'), `${bestand}: rekenblok hoort alleen op prijzen`);
+      assert.ok(!heeftElement(html, 'bgx-rol'), `${bestand}: rolblok hoort alleen op prijzen`);
     }
 
     if (html.includes('<footer')) {
