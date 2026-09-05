@@ -25,7 +25,11 @@ jobs:
         run: node tools/bouw-v18-views.mjs
       - name: 6 V18 chrome
         run: node tools/bouw-v18-chrome-alles.mjs
-      - name: 7 Prijzen policy + estate-wide shell gate
-        run: node tools/prijzen-uit-de-homepage.mjs
+      - name: 7a Prijzen homepage verwijzing
+        run: BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+      - name: 7b Canonical page policy normalisatie
+        run: BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+      - name: 7c Estate-wide canonical shell gate
+        run: BG_PRICING_STAGE=verify node tools/prijzen-uit-de-homepage.mjs
       - name: 8 Release evidence
         run: node tools/bouw-release-evidence.mjs
