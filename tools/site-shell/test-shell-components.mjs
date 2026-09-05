@@ -42,10 +42,10 @@ assert.equal(extractComponent(alleenHeader, 'footer'), oudeFooter, 'headerwissel
 assert.equal(extractComponent(alleenHeader, 'header'), nieuweHeader, 'alleen header moet vervangen worden');
 
 const productionBuilder = await readFile('tools/bouw-v18-production.mjs', 'utf8');
-assert.ok(productionBuilder.includes('applyCanonicalShellToAllPages'), 'productiebouw moet de canonical shell-engine daadwerkelijk uitvoeren');
 assert.ok(!productionBuilder.includes("await import('./uniforme-schil.mjs')"), 'oude volledige schilkopie mag niet meer de productie-entrypoint zijn');
 
 const normalizer = await readFile('tools/normaliseer-site-ui.mjs', 'utf8');
+assert.ok(normalizer.includes('await applyCanonicalShellToAllPages()'), 'finale page-policy moet eerst de actuele canonical shell projecteren');
 assert.ok(!normalizer.includes('PRICING_MOBILE_MENU_HTML'), 'pricing mag geen eigen mobiele menu-template meer hebben');
 assert.ok(!normalizer.includes('#bgkopMob.bgkop-mob'), 'pricing mag geen eigen mobiele menu-CSS meer hebben');
 
