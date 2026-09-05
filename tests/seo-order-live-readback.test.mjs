@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateLiveSeoOrderSet } from '../tools/seo-order-engine/live-readback.mjs';
+import { enrichMoneyPage } from '../tools/seo-order-engine/money-contract-v2.mjs';
+import { injectGrowthMeasurement } from '../tools/seo-order-engine/measurement.mjs';
+import { enrichBlog } from '../tools/seo-order-engine/blog-contract-v2.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const registry = {
@@ -11,9 +14,22 @@ const registry = {
   ]
 };
 
-const money = `<!doctype html><html><head><link rel="canonical" href="${ORIGIN}/prijzen"></head><body data-bg-page-role="money" data-bg-funnel-stage="decide"><main><section data-bg-evidence><h1>Prijzen</h1></section><a href="${ORIGIN}/frisse-blik" data-bg-conversion="frisse-blik">Plan</a></main><script id="bg-seo-order-graph" type="application/ld+json">{}</script></body></html>`;
-const blogIndex = `<!doctype html><html><head><link rel="canonical" href="${ORIGIN}/blog/"></head><body data-bg-page-role="blog-index" data-bg-funnel-stage="discover"><main><h1>Kennis</h1></main><script id="bg-seo-order-graph" type="application/ld+json">{}</script></body></html>`;
-const article = `<!doctype html><html><head><title>Artikel</title><meta name="description" content="Artikel"><meta name="bg-zoekwoord" content="kosten digitalisering mkb"><link rel="canonical" href="${ORIGIN}/blog/test/"><meta name="bg-order-contract" content="v1"></head><body><main><article><aside data-bg-author="arthur-prinsen"><time datetime="2026-09-05">5 september 2026</time></aside><h1>Artikel</h1><section data-bg-evidence><h2>Voorbeeld</h2></section><p><a href="${ORIGIN}/prijzen">Prijzen</a><a href="${ORIGIN}/product">Product</a></p><section id="bg-order-path"><a href="${ORIGIN}/prijzen">Aanpak</a><a href="${ORIGIN}/frisse-blik" data-bg-order-cta="frisse-blik">CTA</a></section></article></main><script id="bg-seo-order-graph" type="application/ld+json">{}</script></body></html>`;
+function withContext(html,{role,stage,intent,keyword}){
+  return html.replace(/<body\b([^>]*)>/i,`<body$1 data-bg-page-role="${role}" data-bg-funnel-stage="${stage}" data-bg-intent="${intent}" data-bg-keyword-cluster="${keyword}">`);
+}
+
+const moneyBase = `<!doctype html><html><head><link rel="canonical" href="${ORIGIN}/prijzen"><meta name="bg-intent" content="kosten digitalisering mkb"></head><body><main><section data-bg-evidence><h1>Prijzen</h1></section><a href="${ORIGIN}/frisse-blik" data-bg-conversion="frisse-blik">Plan</a></main><script id="bg-seo-order-graph" type="application/ld+json">{}</script></body></html>`;
+let money=enrichMoneyPage(moneyBase,registry.pages[0]);
+money=withContext(money,{role:'money',stage:'decide',intent:'kosten digitalisering mkb',keyword:'kosten digitalisering mkb'});
+money=injectGrowthMeasurement(money,{canonical:`${ORIGIN}/prijzen`,page_role:'money',funnel_stage:'decide',intent:'kosten digitalisering mkb',keyword_cluster:'kosten digitalisering mkb'});
+
+let blogIndex = `<!doctype html><html><head><link rel="canonical" href="${ORIGIN}/blog/"><meta name="bg-intent" content="kennisbank"></head><body><main><h1>Kennis</h1></main><script id="bg-seo-order-graph" type="application/ld+json">{}</script></body></html>`;
+blogIndex=withContext(blogIndex,{role:'blog-index',stage:'discover',intent:'kennisbank',keyword:'kennisbank'});
+blogIndex=injectGrowthMeasurement(blogIndex,{canonical:`${ORIGIN}/blog/`,page_role:'blog-index',funnel_stage:'discover',intent:'kennisbank',keyword_cluster:'kennisbank'});
+
+const articleBase = `<!doctype html><html><head><title>Artikel</title><meta name="description" content="Artikel"><meta name="bg-zoekwoord" content="kosten digitalisering mkb"><link rel="canonical" href="${ORIGIN}/blog/test/"><meta property="article:published_time" content="2026-09-05"></head><body><main><article><h1>Artikel over kosten</h1><p>5 september 2026</p><h2>Voorbeeld</h2><table><tr><th>Kosten</th></tr><tr><td>Voorbeeldberekening</td></tr></table><p><a href="${ORIGIN}/prijzen">Prijzen</a><a href="${ORIGIN}/product">Product</a></p></article></main><script id="bg-seo-order-graph" type="application/ld+json">{}</script></body></html>`;
+let article=enrichBlog(articleBase,'blog/test/index.html',registry);
+article=injectGrowthMeasurement(article,{canonical:`${ORIGIN}/blog/test/`,page_role:'article',funnel_stage:'discover',intent:'kosten digitalisering mkb',keyword_cluster:'kosten digitalisering mkb'});
 
 test('live readback accepteert money page blogindex en verrijkt artikel', () => {
   const pages = [
@@ -25,7 +41,7 @@ test('live readback accepteert money page blogindex en verrijkt artikel', () => 
 });
 
 test('live readback blokkeert money page zonder meetbare CTA of schema', () => {
-  const broken = money.replace(' data-bg-conversion="frisse-blik"', '').replace(/<script id="bg-seo-order-graph"[\s\S]*?<\/script>/, '');
+  const broken = money.replace(/ data-bg-conversion="frisse-blik"/g, '').replace(/<script id="bg-seo-order-graph"[\s\S]*?<\/script>/, '');
   const fouten = validateLiveSeoOrderSet([{ path: 'live-prijzen.html', canonical: `${ORIGIN}/prijzen`, html: broken }], registry).join('\n');
   assert.match(fouten, /SEO order graph ontbreekt/i);
   assert.match(fouten, /primaire CTA.*niet meetbaar/i);
