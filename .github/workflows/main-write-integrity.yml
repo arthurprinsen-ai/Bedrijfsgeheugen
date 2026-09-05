@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   issues: write
+  pull-requests: read
 
 jobs:
   observe:
@@ -21,6 +22,8 @@ jobs:
           node-version: 22
       - name: Classify main write provenance
         id: classify
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -33,8 +36,16 @@ jobs:
           const parentLine = execFileSync('git', ['rev-list', '--parents', '-n', '1', sha], { encoding: 'utf8' }).trim();
           const parentCount = Math.max(0, parentLine.split(/\s+/).length - 1);
           const changedPaths = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', sha], { encoding: 'utf8' }).split(/\r?\n/).map(v => v.trim()).filter(Boolean);
-          const result = classifyMainWrite({ branch: process.env.GITHUB_REF_NAME, parentCount, changedPaths, headSha: sha });
-          const evidence = { observedAt: new Date().toISOString(), repository: process.env.GITHUB_REPOSITORY, runId: process.env.GITHUB_RUN_ID, changedPaths, ...result };
+          let associatedPullRequests;
+          try {
+            const raw = execFileSync('gh', ['api', `repos/${process.env.GITHUB_REPOSITORY}/commits/${sha}/pulls`], { encoding: 'utf8', env: process.env });
+            associatedPullRequests = JSON.parse(raw).map(pr => ({ number: pr.number, merged: Boolean(pr.merged_at), baseRef: pr.base?.ref ?? null, mergeCommitSha: pr.merge_commit_sha ?? null }));
+          } catch (error) {
+            console.error(`Unable to verify PR association: ${error.message}`);
+            associatedPullRequests = undefined;
+          }
+          const result = classifyMainWrite({ branch: process.env.GITHUB_REF_NAME, parentCount, changedPaths, headSha: sha, associatedPullRequests });
+          const evidence = { observedAt: new Date().toISOString(), repository: process.env.GITHUB_REPOSITORY, runId: process.env.GITHUB_RUN_ID, changedPaths, associatedPullRequests: associatedPullRequests ?? null, ...result };
           await writeFile('.artifacts/main-write-integrity.json', `${JSON.stringify(evidence, null, 2)}\n`);
           await appendFile(process.env.GITHUB_OUTPUT, `status=${result.status}\nrecoveryRequired=${String(result.recoveryRequired)}\nfingerprint=${result.fingerprint ?? ''}\n`);
           console.log(JSON.stringify(evidence));
@@ -43,7 +54,7 @@ jobs:
         if: steps.classify.outputs.recoveryRequired == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          FINGERPRINT: delivery|main-write|material-single-parent-bypass-v1
+          FINGERPRINT: ${{ steps.classify.outputs.fingerprint }}
           HEAD_SHA: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
         shell: bash
@@ -59,7 +70,7 @@ jobs:
           last_seen_sha: \`${HEAD_SHA}\`
           last_seen_run: \`${RUN_ID}\`
 
-          A material single-parent write reached \`main\` outside the governed candidate/PR merge path. Do not blind-revert: inspect the actual change, preserve valid content, route any repair through a fresh candidate from current main, and keep production promotion non-green until provenance/recovery is independently verified. Native branch protection remains the preventative hard boundary; this issue is the stateful post-write recovery record.
+          A material single-parent write reached \`main\` without verifiable governed PR provenance. Do not blind-revert: inspect the actual change, preserve valid content, route any repair through a fresh candidate from current main, and keep production promotion non-green until provenance/recovery is independently verified. Native branch protection remains the preventative hard boundary; this issue is the stateful post-write recovery record.
           EOF
           )
           if [ -n "$issue_number" ]; then
