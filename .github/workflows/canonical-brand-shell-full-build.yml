@@ -1,0 +1,25 @@
+name: Canonical brand shell full build
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - name: Run exact Netlify build command
+        run: >-
+          node tools/bouw-powerhouse-auth.mjs &&
+          node tools/bouw-kennisindex.mjs &&
+          node tools/bouw-v18-production.mjs &&
+          node tools/apply-tabbladen.mjs &&
+          node tools/bouw-v18-views.mjs &&
+          node tools/bouw-v18-chrome-alles.mjs &&
+          node tools/prijzen-uit-de-homepage.mjs &&
+          node tools/bouw-release-evidence.mjs
