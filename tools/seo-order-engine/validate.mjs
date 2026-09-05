@@ -1,8 +1,9 @@
 import { readFile, glob } from 'node:fs/promises';
 import { validateRegistry, loadRegistry } from './registry.mjs';
 import { validateMoneyPages } from './link-graph.mjs';
-import { inspectBlog } from './blog-contract.mjs';
+import { inspectBlog } from './blog-contract-v2.mjs';
 import { inspectMoneyPage } from './money-contract-v2.mjs';
+import { hasGrowthMeasurement } from './measurement.mjs';
 import { PUBLIC_PAGE_EXCLUDES } from '../site-shell/contracts.mjs';
 
 const ORIGIN='https://www.bedrijfsgeheugen.nl';
@@ -16,6 +17,7 @@ function isCanonicalAliasArticle(page,registry){if(!/^blog\/[^/]+\/index\.html$/
 
 export function validateSeoOrderPages(pages,registry,options={}){
   const fouten=[...validateRegistry(registry),...validateMoneyPages(pages,registry)];
+  for(const page of pages||[]){if(!hasGrowthMeasurement(page.html))fouten.push(`${page.canonical}: growth measurement contract ontbreekt`);}
   for(const entry of registry?.pages||[]){
     const page=primaryPageForEntry(pages,entry); if(!page)continue;
     if(!/id=["']bg-seo-order-graph["']/i.test(page.html))fouten.push(`${entry.route}: SEO order graph ontbreekt`);
@@ -23,9 +25,9 @@ export function validateSeoOrderPages(pages,registry,options={}){
     if(entry.role==='money')fouten.push(...inspectMoneyPage(page.html,entry));
   }
   if(options.inspectBlogs!==false){for(const page of pages||[]){if(!/^blog\/[^/]+\/index\.html$/i.test(page.path||''))continue;if(isCanonicalAliasArticle(page,registry))continue;fouten.push(...inspectBlog(page.html,page.path,registry));}}
-  return fouten;
+  return [...new Set(fouten)];
 }
 
 async function estatePages(){const paths=[];for await(const p of glob('*.html'))if(!EXCLUDES.has(p)&&!/^shell-gate-/i.test(p))paths.push(p);for await(const p of glob('blog/*/index.html'))paths.push(p);paths.push('blog/index.html');const pages=[];for(const path of [...new Set(paths)]){let html;try{html=await readFile(path,'utf8');}catch{continue;}if(!/<body\b/i.test(html)||noindex(html))continue;const canonical=canonicalOf(html);if(!canonical.startsWith(`${ORIGIN}/`))continue;pages.push({path,canonical,html});}return pages;}
-export async function validateSeoOrderEngine(){const registry=await loadRegistry();const pages=await estatePages();const fouten=validateSeoOrderPages(pages,registry);if(fouten.length)throw new Error(`SEO order gate faalt (${fouten.length}):\n- ${fouten.join('\n- ')}`);console.log(`SEO order engine OK: ${pages.length} indexeerbare pagina's; intent, money-v2, blogs, linkgraaf, structured data en conversies gecontroleerd`);return {pages:pages.length,money:registry.pages.filter(p=>p.role==='money').length};}
+export async function validateSeoOrderEngine(){const registry=await loadRegistry();const pages=await estatePages();const fouten=validateSeoOrderPages(pages,registry);if(fouten.length)throw new Error(`SEO order gate faalt (${fouten.length}):\n- ${fouten.join('\n- ')}`);console.log(`SEO order engine OK: ${pages.length} indexeerbare pagina's; intent, money-v2, blog-v2, growth measurement, linkgraaf, structured data en conversies gecontroleerd`);return {pages:pages.length,money:registry.pages.filter(p=>p.role==='money').length};}
 if(process.argv[1]&&import.meta.url.endsWith(process.argv[1].replace(/\\/g,'/')))await validateSeoOrderEngine();
