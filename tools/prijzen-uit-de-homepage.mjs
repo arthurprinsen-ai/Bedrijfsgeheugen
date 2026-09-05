@@ -3,10 +3,9 @@ import { normaliseerAllePaginas } from './normaliseer-site-ui.mjs';
 import { controleerSiteUi } from './controleer-site-ui.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
-// /prijzen is sinds 2 september 2026 een eigen, handgemaakte pagina.
-// Deze stap haalt de oude weergave uit de app en laat de knoppen naar die
-// pagina wijzen, zodat er nooit twee prijsverhalen naast elkaar staan.
-// Draait als laatste, na alle stappen die index.html schrijven.
+// /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
+// canonical merk-shell. Deze stap verwijdert de oude homepage-weergave en
+// voert daarna de page-policy en estate-wide shell-gate uit.
 
 const DOEL = 'https://www.bedrijfsgeheugen.nl/prijzen';
 
@@ -33,17 +32,25 @@ function knoppenNaarLink(html) {
     });
 }
 
-let gedaan = 0;
-for (const bestand of ['index.html', 'prototype-v18-stable.html']) {
-  let html;
-  try { html = await readFile(bestand, 'utf8'); } catch { continue; }
-  const nieuw = knoppenNaarLink(vervangWeergave(html));
-  if (nieuw !== html) { await writeFile(bestand, nieuw, 'utf8'); gedaan++; }
+export async function bouwPrijsVerwijzing() {
+  let gedaan = 0;
+  for (const bestand of ['index.html', 'prototype-v18-stable.html']) {
+    let html;
+    try { html = await readFile(bestand, 'utf8'); } catch { continue; }
+    const nieuw = knoppenNaarLink(vervangWeergave(html));
+    if (nieuw !== html) { await writeFile(bestand, nieuw, 'utf8'); gedaan++; }
+  }
+  console.log(`Oude prijzenweergave uit de homepage gehaald: ${gedaan} bestand(en)`);
+  return gedaan;
 }
-console.log(`Oude prijzenweergave uit de homepage gehaald: ${gedaan} bestand(en)`);
 
-// Laatste build-gate: één zichtbare site-UI, ongeacht welke historische builder
-// de pagina heeft gemaakt. Dit voorkomt dat Prijzen of een losse contentpagina
-// opnieuw een afwijkend menu, contactbalk of generieke interactieblokken krijgt.
-await normaliseerAllePaginas();
-await controleerSiteUi();
+export async function voerPricingShellPipelineUit(stage = 'all') {
+  if (stage === 'all' || stage === 'rewrite') await bouwPrijsVerwijzing();
+  if (stage === 'all' || stage === 'normalize') await normaliseerAllePaginas();
+  if (stage === 'all' || stage === 'verify') await controleerSiteUi();
+}
+
+const stage = process.env.BG_PRICING_STAGE || 'all';
+if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))) {
+  await voerPricingShellPipelineUit(stage);
+}
