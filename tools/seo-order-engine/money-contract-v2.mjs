@@ -13,7 +13,7 @@ function hasSupportLink(html,entry){const links=new Set(anchors(mainOf(html)));r
 function marker(html,name){return new RegExp(`data-bg-money-section=["']${name}["']`,'i').test(html);}
 
 export function inspectMoneyPage(input,entry){
-  const html=String(input); const main=mainOf(html); const text=textOf(main); const errors=[];
+  const html=String(input); const main=mainOf(html); const errors=[];
   if(!entry||entry.role!=='money') return errors;
   if(!(marker(html,'problem')||hasHeading(main,['probleem','herken je','waar loopt','zonder','kost','verlies','risico']))) errors.push(`${entry.route}: probleem/intentie boven de vouw ontbreekt`);
   if(!(marker(html,'proposition')||hasHeading(main,['oplossing','wat we doen','wat het doet','zo helpt','platform','koppeling','aanpak']))) errors.push(`${entry.route}: unieke propositie/oplossing ontbreekt`);
@@ -26,6 +26,9 @@ export function inspectMoneyPage(input,entry){
   if(!hasPrimary(html,entry)) errors.push(`${entry.route}: primaire CTA is niet meetbaar gemarkeerd`);
   if(!hasMicro(html,entry)) errors.push(`${entry.route}: secundaire microconversie ontbreekt`);
   if((entry.supporting_routes||[]).length&&!hasSupportLink(html,entry)) errors.push(`${entry.route}: contextuele support-link ontbreekt`);
+  if(!new RegExp(`data-bg-intent-owner=["']${entry.route.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}["']`,'i').test(html)) errors.push(`${entry.route}: primaire intent-owner ontbreekt`);
+  if(!/data-bg-intent-role=["']primary["']/i.test(html)) errors.push(`${entry.route}: primary intent-role ontbreekt`);
+  if(!/data-bg-reviewer=["']arthur-prinsen["']/i.test(html)) errors.push(`${entry.route}: zichtbare auteur/reviewer ontbreekt`);
   return errors;
 }
 
@@ -35,7 +38,8 @@ export function enrichMoneyPage(input,entry){
   let html=String(input); if(!entry||entry.role!=='money'||/id=["']bg-money-v2["']/i.test(html)) return html;
   const support=safeSupport(entry); const primary=entry.primary_cta||{action:'zelfscan',url:`${ORIGIN}/zelfscan`};
   const links=support.map((url,i)=>`<a href="${esc(url)}" data-bg-money-support="${i+1}">${i===0?'Lees de verdieping':'Bekijk gerelateerde aanpak'}</a>`).join(' · ');
-  const block=`<section id="bg-money-v2" class="bg-money-v2" aria-label="Beslisinformatie" data-bg-money-contract="v2">
+  const block=`<section id="bg-money-v2" class="bg-money-v2" aria-label="Beslisinformatie" data-bg-money-contract="v2" data-bg-intent-role="primary" data-bg-intent-owner="${esc(entry.route)}">
+  <aside class="bg-money-v2-review" data-bg-reviewer="arthur-prinsen" aria-label="Inhoudelijke review">Inhoudelijk gereviewd door <a href="${ORIGIN}/over-ons">Arthur Prinsen</a>. Gebaseerd op implementaties met AFAS, Exact, Microsoft 365, Power BI en bedrijfsprocessen in Nederlandse organisaties.</aside>
   <div data-bg-money-section="problem"><h2>Van ${esc(entry.primary_intent)} naar een werkende aanpak</h2><p>Je zoekt geen losse technologie, maar een oplossing die in je organisatie werkt en aantoonbaar een volgende stap oplevert.</p></div>
   <div data-bg-money-section="proposition"><h2>Wat we doen</h2><p>We verbinden analyse, bedrijfskennis, data en uitvoering zodat je niet blijft hangen in advies alleen.</p></div>
   <div data-bg-money-section="how"><h2>Hoe het werkt</h2><ol><li>We brengen de huidige situatie en het echte knelpunt in beeld.</li><li>We bepalen de kleinste werkende oplossing en prioriteiten.</li><li>We maken de uitvoering meetbaar en sturen bij op uitkomst.</li></ol></div>
