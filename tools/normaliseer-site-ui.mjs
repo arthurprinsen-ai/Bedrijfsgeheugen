@@ -7,6 +7,7 @@ import {
 import {
   ensureTrustBar, ensureFooterContact, ensureBrandShellCss, markPageSlots
 } from './site-shell/components.mjs';
+import { applyCanonicalShellToAllPages } from './site-shell/apply-shell.mjs';
 
 function openDivMetKlasse(html, klasse, vanaf = 0) {
   const re = /<div\b[^>]*class="[^"]*"[^>]*>/gi;
@@ -88,6 +89,12 @@ export function normaliseerHtml(input, bestand) {
 const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html', 'afmaakindex.html']);
 
 export async function normaliseerAllePaginas() {
+  // Dit is bewust de finale projectie: eerst mogen alle historische builders hun
+  // pagina-inhoud maken, daarna wordt precies één actuele brand shell uit de
+  // gebouwde homepage om alle openbare pagina's gezet. Zo kan geen late builder
+  // Prijzen of een andere pagina weer een eigen header/menu/footer geven.
+  await applyCanonicalShellToAllPages();
+
   const bestanden = [];
   for await (const p of glob('*.html')) if (!MAG_NIET.has(p)) bestanden.push(p);
   for await (const p of glob('blog/*/index.html')) bestanden.push(p);
@@ -100,7 +107,7 @@ export async function normaliseerAllePaginas() {
     const nieuw = normaliseerHtml(html, bestand);
     if (nieuw !== html) { await writeFile(bestand, nieuw, 'utf8'); gewijzigd++; }
   }
-  console.log(`Canonical site-UI policy toegepast op ${gewijzigd} pagina's`);
+  console.log(`Canonical site-UI policy toegepast op ${gewijzigd} pagina's na finale shell-projectie`);
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))) await normaliseerAllePaginas();
