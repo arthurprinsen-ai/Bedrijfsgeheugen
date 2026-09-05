@@ -17,6 +17,24 @@ test('primaire CTA wordt meetbaar gemarkeerd zonder href te veranderen', () => {
   assert.ok(out.includes('data-bg-funnel-stage="decide"'));
 });
 
+test('conversion marking wijzigt nooit header mobile-menu of footer, alleen pagina-inhoud', () => {
+  const html = `<html><body>
+    <header data-bg-component="header"><a href="${ORIGIN}/frisse-blik">Header CTA</a></header>
+    <aside data-bg-component="mobile-menu"><a href="${ORIGIN}/frisse-blik">Mobile CTA</a></aside>
+    <main data-bg-component="main"><a href="${ORIGIN}/frisse-blik">Content CTA</a></main>
+    <footer data-bg-component="footer"><a href="${ORIGIN}/frisse-blik">Footer CTA</a></footer>
+  </body></html>`;
+  const out = markPrimaryConversions(html, entry);
+  const header = out.match(/<header[\s\S]*?<\/header>/i)?.[0] || '';
+  const mobile = out.match(/<aside[\s\S]*?<\/aside>/i)?.[0] || '';
+  const main = out.match(/<main[\s\S]*?<\/main>/i)?.[0] || '';
+  const footer = out.match(/<footer[\s\S]*?<\/footer>/i)?.[0] || '';
+  assert.doesNotMatch(header, /data-bg-conversion/);
+  assert.doesNotMatch(mobile, /data-bg-conversion/);
+  assert.match(main, /data-bg-conversion="frisse-blik"/);
+  assert.doesNotMatch(footer, /data-bg-conversion/);
+});
+
 test('conversion tracker is idempotent en verstuurt alleen intentmetadata', () => {
   const html = '<html><head></head><body><main><h1>X</h1></main></body></html>';
   const once = injectConversionTracker(html);
