@@ -17,6 +17,10 @@ test('weak money page fails the v2 conversion contract',()=>{
 test('safe enrichment completes structural decision information without inventing evidence',()=>{
   const out=enrichMoneyPage(base,entry);
   assert.match(out,/data-bg-money-contract="v2"/);
+  assert.match(out,/data-bg-intent-role="primary"/);
+  assert.match(out,/data-bg-intent-owner="https:\/\/www\.bedrijfsgeheugen\.nl\/afas-koppeling"/);
+  assert.match(out,/data-bg-reviewer="arthur-prinsen"/);
+  assert.match(out,/Gebaseerd op implementaties met AFAS, Exact, Microsoft 365, Power BI en bedrijfsprocessen in Nederlandse organisaties\./);
   assert.match(out,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/prijzen"/);
   assert.match(out,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/blog\/afas-api\/"/);
   assert.deepEqual(inspectMoneyPage(out,entry),[]);
