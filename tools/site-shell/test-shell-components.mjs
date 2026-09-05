@@ -19,7 +19,12 @@ assert.equal(componentHash(canonical, 'header'), componentHash(canonical, 'heade
 assert.doesNotThrow(() => verifyPageShell(canonical, 'voorbeeld.html'));
 assert.equal(CANONICAL_SHELL_SOURCE, 'over-ons.html');
 
-const target = canonical.replace('trust','oud trust').replace('<nav>nav</nav>','<nav>oud</nav>').replace('>menu<','>oud menu<').replace('>footer<','>oude footer<').replace('>body<','>homepage body<');
+const target = canonical
+  .replace('>trust<','>oud trust<')
+  .replace('<nav>nav</nav>','<nav>oud</nav>')
+  .replace('>menu<','>oud menu<')
+  .replace('>footer<','>oude footer<')
+  .replace('>body<','>homepage body<');
 const projected = projectGlobalComponents(target, canonical);
 for (const name of GLOBAL_COMPONENTS) assert.equal(componentHash(projected, name), componentHash(canonical, name), `${name} moet exact canonical worden`);
 assert.equal(extractComponent(projected, 'main'), extractComponent(target, 'main'), 'globale componentprojectie mag homepage main niet wijzigen');
