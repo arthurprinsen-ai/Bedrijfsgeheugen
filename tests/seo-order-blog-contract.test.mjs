@@ -75,3 +75,23 @@ test('zichtbare Nederlandse publicatiedatum blijft bruikbaar als oude JSON-LD da
   assert.ok(enriched.includes('datetime="2026-08-19"'), 'zichtbare datum wordt semantische <time>');
   assert.deepEqual(inspectBlog(enriched, 'blog/wat-kost-digitalisering-mkb/index.html', registry), []);
 });
+
+test('bestaande concrete praktijkmethode met meerdere stappen wordt als onderbouwing gemarkeerd', () => {
+  const html = `<!doctype html><html lang="nl"><head>
+    <title>Wat kost digitalisering mkb?</title>
+    <meta name="description" content="Praktische methode voor digitalisering.">
+    <meta name="robots" content="index, follow">
+    <meta name="bg-zoekwoord" content="wat kost digitalisering mkb">
+    <link rel="canonical" href="${ORIGIN}/blog/wat-kost-digitalisering-mkb/">
+  </head><body><main><article>
+    <div class="artikelmeta"><span>28-08-2026</span><span>Arthur Prinsen</span></div>
+    <h1>Wat kost digitalisering mkb?</h1>
+    <h2>Borg eerst de regel, automatiseer daarna de herhaling</h2>
+    <p>Neem één terugkerend proces en leg samen vast:</p>
+    <ul><li>wat de start is</li><li>welke informatie nodig is</li><li>welke controles gelden</li><li>wie beslist bij twijfel</li></ul>
+    <p><a href="${ORIGIN}/product">Platform</a> en <a href="${ORIGIN}/bedrijfsgeheugen">kennisborging</a>.</p>
+  </article></main></body></html>`;
+  const enriched = enrichBlog(html, 'blog/wat-kost-digitalisering-mkb/index.html', registry);
+  assert.match(enriched, /data-bg-evidence="praktijkmethode"/i);
+  assert.deepEqual(inspectBlog(enriched, 'blog/wat-kost-digitalisering-mkb/index.html', registry), []);
+});
