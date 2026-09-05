@@ -16,6 +16,10 @@ function absolutiseerInterneHref(html) {
   return String(html).replace(/href=(['"])\/(?!\/)([^'"]*)\1/gi, (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
 }
 
+function herstelTechnischeLinks(html) {
+  return String(html).replaceAll(`${ORIGIN}/wachtwoord-vergeten`, `${ORIGIN}/inloggen`);
+}
+
 function openDivMetKlasse(html, klasse, vanaf = 0) {
   const re = /<div\b[^>]*class="[^"]*"[^>]*>/gi;
   re.lastIndex = vanaf;
@@ -98,10 +102,11 @@ export function normaliseerHtml(input, bestand) {
   html = ensureReleaseMarker(html);
   html = markPageSlots(html);
   html = absolutiseerInterneHref(html);
+  html = herstelTechnischeLinks(html);
   return html;
 }
 
-const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html', 'afmaakindex.html']);
+const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
 
 export async function normaliseerAllePaginas() {
   // Historische builders leveren alleen pagina-inhoud. Daarna wordt eerst de
