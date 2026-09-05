@@ -41,5 +41,8 @@ jobs:
             shell-gate-failed-page.html
             shell-gate-canonical-source.html
           if-no-files-found: ignore
-      - name: 8 Release evidence
+      - name: 8 Release evidence contract
+        env:
+          COMMIT_REF: ${{ github.event.pull_request.head.sha }}
+          CONTEXT: github-pull-request
         run: node tools/bouw-release-evidence.mjs
