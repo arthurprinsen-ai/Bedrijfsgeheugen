@@ -6,8 +6,12 @@ function stripTags(value) {
 }
 
 function attr(tag, name) {
-  const m = String(tag).match(new RegExp(`\\b${name}=(?:"([^"]*)"|'([^']*)')`, 'i'));
+  const m = String(tag).match(new RegExp(`\\b${naamVeilig(name)}=(?:"([^"]*)"|'([^']*)')`, 'i'));
   return m ? (m[1] ?? m[2] ?? '') : '';
+}
+
+function naamVeilig(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function headOf(html) {
@@ -42,12 +46,27 @@ function canonicalOf(html) {
   return attr(tag, 'href');
 }
 
+const MAANDEN = new Map([
+  ['januari', '01'], ['februari', '02'], ['maart', '03'], ['april', '04'], ['mei', '05'], ['juni', '06'],
+  ['juli', '07'], ['augustus', '08'], ['september', '09'], ['oktober', '10'], ['november', '11'], ['december', '12']
+]);
+
+function isoDateFromVisibleText(html) {
+  const visible = stripTags(bodyOf(html));
+  let m = visible.match(/\b([0-3]?\d)[-/.]([01]?\d)[-/.](20\d{2})\b/);
+  if (m) return `${m[3]}-${String(m[2]).padStart(2, '0')}-${String(m[1]).padStart(2, '0')}`;
+  m = visible.match(/\b([0-3]?\d)\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})\b/i);
+  if (m) return `${m[3]}-${MAANDEN.get(m[2].toLocaleLowerCase('nl-NL'))}-${String(m[1]).padStart(2, '0')}`;
+  return '';
+}
+
 function dateFromHtml(html, property) {
   const direct = metaContent(html, m => attr(m[0], 'property').toLowerCase() === `article:${property}_time`);
   if (direct) return direct.slice(0, 10);
   const key = property === 'published' ? 'datePublished' : 'dateModified';
   const match = String(html).match(new RegExp(`"${key}"\\s*:\\s*"(\\d{4}-\\d{2}-\\d{2})`, 'i'));
-  return match?.[1] || '';
+  if (match?.[1]) return match[1];
+  return isoDateFromVisibleText(html);
 }
 
 function keywordOf(html) {
@@ -85,8 +104,9 @@ export function dominantCommercialEntry(html, registry) {
 function hasEvidence(html) {
   const article = articleOf(html);
   if (/data-bg-evidence(?:\s|=|>)/i.test(article)) return true;
-  if (/class=(?:"[^"]*\b(?:bronnen?|bewijs|onderbouwing|callout|tabelwrap|case|resultaat)\b[^"]*"|'[^']*\b(?:bronnen?|bewijs|onderbouwing|callout|tabelwrap|case|resultaat)\b[^']*')/i.test(article)) return true;
-  if (/<h[2-4]\b[^>]*>[^<]*(?:bronnen?|onderbouwing|berekening|methode|onderzoek|case|resultaat)[^<]*<\/h[2-4]>/i.test(article)) return true;
+  if (/<table\b/i.test(article)) return true;
+  if (/class=(?:"[^"]*\b(?:bronnen?|bewijs|onderbouwing|callout|tabelwrap|case|resultaat|praktijk|voorbeeld|methode|vergelijk)\b[^"]*"|'[^']*\b(?:bronnen?|bewijs|onderbouwing|callout|tabelwrap|case|resultaat|praktijk|voorbeeld|methode|vergelijk)\b[^']*')/i.test(article)) return true;
+  if (/<h[1-4]\b[^>]*>[^<]*(?:bronnen?|onderbouwing|berekening|methode|onderzoek|case|resultaat|voorbeeld|in de praktijk|uit de praktijk|vergelijking)[^<]*<\/h[1-4]>/i.test(article)) return true;
   const external = [...article.matchAll(/<a\b[^>]*href=(?:"([^"]+)"|'([^']+)')[^>]*>/gi)]
     .map(m => m[1] ?? m[2] ?? '')
     .filter(href => /^https:\/\//i.test(href) && !href.startsWith(`${ORIGIN}/`));
