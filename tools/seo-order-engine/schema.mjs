@@ -103,7 +103,7 @@ export function renderSeoGraph(meta) {
 
 export function injectSeoGraph(input, meta) {
   let html = String(input);
-  html = html.replace(/\s*<script\b[^>]*id=["']bg-seo-order-graph["'][^>]*>[\s\S]*?<\/script>/gi, '');
+  html = html.replace(/\s*<script\b[^>]*id=["']bg-seo-order-graph["'][^>]*>[\s\S]*?<\/script>\s*/gi, '');
   const json = JSON.stringify(renderSeoGraph(meta)).replace(/</g, '\\u003c');
   const script = `\n<script type="application/ld+json" id="bg-seo-order-graph">${json}</script>\n`;
   if (!/<\/head>/i.test(html)) throw new Error('HTML mist </head> voor SEO graph injectie');
