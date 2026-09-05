@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell } from './contracts.mjs';
+import { extractComponent, replaceComponent } from './components.mjs';
 
 const canonical = `<!doctype html><html><body>
 <div data-bg-component="trustbar">trust</div>
@@ -24,8 +25,17 @@ const pricingOk = canonical.replace('<main data-bg-component="main">body</main>'
 assert.doesNotThrow(() => verifyPageShell(pricingOk, 'prijzen.html'));
 assert.throws(() => verifyPageShell(pricingOk, 'over-ons.html'), /pricing|page-tools/i);
 
-const uniformeSchil = await readFile('tools/uniforme-schil.mjs', 'utf8');
-assert.ok(!/OVERSLAAN[\s\S]*'prijzen\.html'/.test(uniformeSchil), 'prijzen.html mag niet worden overgeslagen door de canonical shell');
+const oudeMain = extractComponent(canonical, 'main');
+const oudeFooter = extractComponent(canonical, 'footer');
+const nieuweHeader = '<header class="v17-header" data-bg-component="header"><nav>nieuw menu</nav><div data-bg-component="mobile-menu">menu</div></header>';
+const alleenHeader = replaceComponent(canonical, 'header', nieuweHeader);
+assert.equal(extractComponent(alleenHeader, 'main'), oudeMain, 'headerwissel mag main niet veranderen');
+assert.equal(extractComponent(alleenHeader, 'footer'), oudeFooter, 'headerwissel mag footer niet veranderen');
+assert.equal(extractComponent(alleenHeader, 'header'), nieuweHeader, 'alleen header moet vervangen worden');
+
+const productionBuilder = await readFile('tools/bouw-v18-production.mjs', 'utf8');
+assert.ok(productionBuilder.includes("./site-shell/apply-shell.mjs"), 'productiebouw moet de canonical shell-engine gebruiken');
+assert.ok(!productionBuilder.includes("./uniforme-schil.mjs"), 'oude volledige schilkopie mag niet meer de productie-entrypoint zijn');
 
 const normalizer = await readFile('tools/normaliseer-site-ui.mjs', 'utf8');
 assert.ok(!normalizer.includes('PRICING_MOBILE_MENU_HTML'), 'pricing mag geen eigen mobiele menu-template meer hebben');
