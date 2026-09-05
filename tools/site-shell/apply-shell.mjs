@@ -10,6 +10,7 @@ const PAD = {
   'frisseblik-scan': '/frisse-blik', start: '/aanmelden'
 };
 
+export const CANONICAL_SHELL_SOURCE = 'over-ons.html';
 const EXTRA_EXCLUDES = new Set(['index.html']);
 const MAPPEN = ['.', 'blog'];
 
@@ -39,12 +40,14 @@ function routerLaatLinksDoor(html) {
   return html.replace(oud, "viewButtons.forEach(btn=>btn.addEventListener('click',e=>{if(!document.getElementById('view-'+btn.dataset.view))return;e.preventDefault();showView(btn.dataset.view);");
 }
 
-function schilUitHomepage(homepage) {
-  const html = markPageSlots(homepage);
+function schilUitBron(bronHtml, bronPad) {
+  const html = markPageSlots(bronHtml);
   const eerste = html.search(/<div class="page(?: active)?" id="view-[a-z0-9-]+">/);
   const eindMain = html.indexOf('</main>');
-  if (eerste === -1 || eindMain === -1) throw new Error('canonical shell: homepage shell kon niet worden bepaald');
-  return { homepage: html, voor: html.slice(0, eerste), na: html.slice(eindMain) };
+  if (eerste === -1 || eindMain === -1) throw new Error(`canonical shell: bron ${bronPad} bevat geen projecteerbare v17/v18-schil`);
+  if (!/<header\b[^>]*class="[^"]*\bv17-header\b/i.test(html)) throw new Error(`canonical shell: bron ${bronPad} heeft geen canonical v17-header`);
+  if (!/<aside\b[^>]*class="[^"]*\bv18-mobile-drawer\b/i.test(html)) throw new Error(`canonical shell: bron ${bronPad} heeft geen canonical v18-mobile-drawer`);
+  return { bron: html, voor: html.slice(0, eerste), na: html.slice(eindMain) };
 }
 
 function eigenHoofd(oud) {
@@ -129,20 +132,21 @@ async function publiekePaginas() {
   return uit;
 }
 
-export async function applyCanonicalShellToAllPages() {
-  const homepageRaw = await readFile('index.html', 'utf8');
-  const shell = schilUitHomepage(homepageRaw);
-  await writeFile('index.html', shell.homepage, 'utf8');
+export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL_SOURCE) {
+  const sourceRaw = await readFile(sourcePath, 'utf8');
+  const shell = schilUitBron(sourceRaw, sourcePath);
+  await writeFile(sourcePath, shell.bron, 'utf8');
 
   let gelukt = 1, overgeslagen = 0;
   for (const pad of await publiekePaginas()) {
+    if (pad === sourcePath) continue;
     let oud; try { oud = await readFile(pad, 'utf8'); } catch { continue; }
     let nieuw;
     try { nieuw = applyCanonicalShell(oud, shell, pad); } catch (error) { console.warn(`Canonical shell overgeslagen (${pad}): ${error.message}`); overgeslagen++; continue; }
     if (!nieuw) { console.warn(`Canonical shell overgeslagen (${pad}): geen <main> gevonden`); overgeslagen++; continue; }
     await writeFile(pad, nieuw, 'utf8'); gelukt++;
   }
-  console.log(`Canonical brand shell toegepast op ${gelukt} pagina's, ${overgeslagen} overgeslagen`);
+  console.log(`Canonical brand shell uit ${sourcePath} toegepast op ${gelukt} pagina's, ${overgeslagen} overgeslagen`);
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))) await applyCanonicalShellToAllPages();
