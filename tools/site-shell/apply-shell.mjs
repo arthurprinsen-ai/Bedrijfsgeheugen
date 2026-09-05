@@ -50,6 +50,26 @@ function schilUitBron(bronHtml, bronPad) {
   return { bron: html, voor: html.slice(0, eerste), na: html.slice(eindMain) };
 }
 
+export function extractPageMain(input, pad = '') {
+  const html = String(input);
+  const main = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
+  if (main) return main[1];
+
+  // Historische prijzen.html is de enige publieke marketingpagina zonder <main>.
+  // Migreer alleen de echte pagina-inhoud: alles na de oude navigatie en vóór
+  // de oude footer. De legacy header/mobile-menu/footer worden dus niet meegenomen.
+  if (pad === 'prijzen.html') {
+    const body = html.match(/<body\b[^>]*>/i);
+    if (!body) return null;
+    const vanaf = body.index + body[0].length;
+    const navEind = html.indexOf('</nav>', vanaf);
+    const footerStart = html.indexOf('<footer', navEind >= 0 ? navEind : vanaf);
+    if (navEind < 0 || footerStart < 0 || footerStart <= navEind) return null;
+    return html.slice(navEind + '</nav>'.length, footerStart).trim();
+  }
+  return null;
+}
+
 function eigenHoofd(oud) {
   const titel = oud.match(/<title>[\s\S]*?<\/title>/i);
   const desc = oud.match(/<meta name="description" content="[^"]*"\s*\/?>/i);
@@ -100,10 +120,10 @@ function paginakop(binnen) {
 }
 
 export function applyCanonicalShell(html, shell, pad) {
-  const main = String(html).match(/<main[^>]*>([\s\S]*?)<\/main>/i);
-  if (!main) return null;
+  const binnen = extractPageMain(html, pad);
+  if (binnen === null) return null;
   const eigen = eigenHoofd(html);
-  const kruimel = kruimelErbij(main[1], html, pad);
+  const kruimel = kruimelErbij(binnen, html, pad);
   const opening = paginakop(kruimel.binnen);
   let uit = shell.voor + `<div class="page active" id="view-inhoud">\n<main data-bg-component="main">${opening}</main>\n</div>\n` + shell.na;
   if (kruimel.schema) eigen.data.push(kruimel.schema);
@@ -143,7 +163,7 @@ export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL
     let oud; try { oud = await readFile(pad, 'utf8'); } catch { continue; }
     let nieuw;
     try { nieuw = applyCanonicalShell(oud, shell, pad); } catch (error) { console.warn(`Canonical shell overgeslagen (${pad}): ${error.message}`); overgeslagen++; continue; }
-    if (!nieuw) { console.warn(`Canonical shell overgeslagen (${pad}): geen <main> gevonden`); overgeslagen++; continue; }
+    if (!nieuw) { console.warn(`Canonical shell overgeslagen (${pad}): geen migreerbare hoofdinhoud gevonden`); overgeslagen++; continue; }
     await writeFile(pad, nieuw, 'utf8'); gelukt++;
   }
   console.log(`Canonical brand shell uit ${sourcePath} toegepast op ${gelukt} pagina's, ${overgeslagen} overgeslagen`);
