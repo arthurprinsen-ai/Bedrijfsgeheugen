@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell, markCanonicalComponents } from './contracts.mjs';
 import { extractComponent, replaceComponent } from './components.mjs';
 import { CANONICAL_SHELL_SOURCE, extractPageMain } from './apply-shell.mjs';
+import { normaliseerHtml } from '../normaliseer-site-ui.mjs';
 
 const canonical = `<!doctype html><html><head></head><body>
 <div data-bg-component="trustbar">trust</div>
@@ -38,6 +39,9 @@ assert.equal(extractPageMain('<body><main><p>normaal</p></main></body>', 'normaa
 
 const alleenPricingCss = canonical.replace('</head>', '<style>.bgx-vraagbalk{display:grid}.bgx-rekenaar{display:block}.bgx-rol{display:flex}</style></head>');
 assert.doesNotThrow(() => verifyPageShell(alleenPricingCss, '404.html'), 'CSS selectors zijn geen zichtbare pricing-tools');
+const pricingNaNormalisatie = normaliseerHtml(alleenPricingCss, 'prijzen.html');
+assert.ok(/<[^>]+class="[^"]*\bbgx-vraagbalk\b/i.test(pricingNaNormalisatie), 'CSS-selector alleen mag vraagblok niet als bestaand element laten tellen');
+assert.ok(pricingNaNormalisatie.includes('data-bg-component="page-tools"'), 'Prijzen moet na normalisatie een echt page-tools component hebben');
 
 const oudeMain = extractComponent(canonical, 'main');
 const oudeFooter = extractComponent(canonical, 'footer');
