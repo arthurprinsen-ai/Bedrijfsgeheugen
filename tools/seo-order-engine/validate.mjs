@@ -29,17 +29,31 @@ function noindex(html) {
 function hasEvidence(html) {
   const body = String(html).match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] || '';
   return /data-bg-evidence(?:\s|=|>)/i.test(body)
-    || /class=(?:"[^"]*\b(?:bewijs|bronnen?|onderbouwing|case|resultaat|callout|tabelwrap)\b[^"]*"|'[^']*\b(?:bewijs|bronnen?|onderbouwing|case|resultaat|callout|tabelwrap)\b[^']*')/i.test(body)
-    || /<h[2-4]\b[^>]*>[^<]*(?:bewijs|bronnen?|onderbouwing|case|resultaat|wat krijg je|prijs|kosten)[^<]*<\/h[2-4]>/i.test(body);
+    || /<table\b/i.test(body)
+    || /class=(?:"[^"]*\b(?:bewijs|bronnen?|onderbouwing|case|resultaat|callout|tabelwrap|praktijk|voorbeeld|methode|vergelijk)\b[^"]*"|'[^']*\b(?:bewijs|bronnen?|onderbouwing|case|resultaat|callout|tabelwrap|praktijk|voorbeeld|methode|vergelijk)\b[^']*')/i.test(body)
+    || /<h[1-4]\b[^>]*>[^<]*(?:bewijs|bronnen?|onderbouwing|case|resultaat|wat krijg je|prijs|kosten|voorbeeld|in de praktijk|uit de praktijk|vergelijking|methode|berekening)[^<]*<\/h[1-4]>/i.test(body);
+}
+
+function primaryPageForEntry(pages, entry) {
+  const candidates = (pages || []).filter(page => page.canonical === entry.route);
+  if (!candidates.length) return null;
+  const nonBlog = candidates.find(page => !/^blog\//i.test(page.path || ''));
+  if (nonBlog) return nonBlog;
+  if (entry.role === 'blog-index') return candidates.find(page => page.path === 'blog/index.html') || candidates[0];
+  return candidates[0];
+}
+
+function isCanonicalAliasArticle(page, registry) {
+  if (!/^blog\/[^/]+\/index\.html$/i.test(page.path || '')) return false;
+  return (registry?.pages || []).some(entry => entry.route === page.canonical && entry.role !== 'article');
 }
 
 export function validateSeoOrderPages(pages, registry, options = {}) {
   const fouten = [...validateRegistry(registry)];
   fouten.push(...validateMoneyPages(pages, registry));
 
-  const map = new Map((pages || []).map(p => [p.canonical, p]));
   for (const entry of registry?.pages || []) {
-    const page = map.get(entry.route);
+    const page = primaryPageForEntry(pages, entry);
     if (!page) continue;
     if (!/id=["']bg-seo-order-graph["']/i.test(page.html)) fouten.push(`${entry.route}: SEO order graph ontbreekt`);
     if (entry.role === 'money') {
@@ -53,6 +67,7 @@ export function validateSeoOrderPages(pages, registry, options = {}) {
   if (options.inspectBlogs !== false) {
     for (const page of pages || []) {
       if (!/^blog\/[^/]+\/index\.html$/i.test(page.path || '')) continue;
+      if (isCanonicalAliasArticle(page, registry)) continue;
       fouten.push(...inspectBlog(page.html, page.path, registry));
     }
   }
