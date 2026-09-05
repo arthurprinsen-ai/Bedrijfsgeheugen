@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell, markCanonicalComponents } from './contracts.mjs';
 import { extractComponent, replaceComponent } from './components.mjs';
 
-const canonical = `<!doctype html><html><body>
+const canonical = `<!doctype html><html><head></head><body>
 <div data-bg-component="trustbar">trust</div>
 <header class="v17-header" data-bg-component="header"><nav>nav</nav></header>
 <aside class="v18-mobile-drawer" data-bg-component="mobile-menu">menu</aside>
