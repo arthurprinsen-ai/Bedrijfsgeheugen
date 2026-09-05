@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { GLOBAL_COMPONENTS, componentHash, verifyPageShell } from './contracts.mjs';
+
+const canonical = `<!doctype html><html><body>
+<div data-bg-component="trustbar">trust</div>
+<header class="v17-header" data-bg-component="header"><nav>nav</nav><div data-bg-component="mobile-menu">menu</div></header>
+<section data-bg-component="hero">hero</section>
+<main data-bg-component="main">body</main>
+<footer data-bg-component="footer">footer</footer>
+</body></html>`;
+
+assert.deepEqual(GLOBAL_COMPONENTS, ['trustbar','header','mobile-menu','footer']);
+assert.equal(componentHash(canonical, 'header'), componentHash(canonical, 'header'));
+assert.doesNotThrow(() => verifyPageShell(canonical, 'voorbeeld.html'));
+
+const afwijkend = canonical.replace('class="v17-header"', 'class="bgkop"');
+assert.throws(() => verifyPageShell(afwijkend, 'prijzen.html'), /legacy|header|canonical/i);
+
+const dubbeleFooter = canonical.replace('</body>', '<footer data-bg-component="footer">dubbel</footer></body>');
+assert.throws(() => verifyPageShell(dubbeleFooter, 'dubbel.html'), /footer/i);
+
+const pricingOk = canonical.replace('<main data-bg-component="main">body</main>', '<main data-bg-component="main">body<section data-bg-component="page-tools"><div class="bgx-vraagbalk"></div><div class="bgx-rekenaar"></div><div class="bgx-rol"></div></section></main>');
+assert.doesNotThrow(() => verifyPageShell(pricingOk, 'prijzen.html'));
+assert.throws(() => verifyPageShell(pricingOk, 'over-ons.html'), /pricing|page-tools/i);
+
+const uniformeSchil = await readFile('tools/uniforme-schil.mjs', 'utf8');
+assert.ok(!/OVERSLAAN[\s\S]*'prijzen\.html'/.test(uniformeSchil), 'prijzen.html mag niet worden overgeslagen door de canonical shell');
+
+const normalizer = await readFile('tools/normaliseer-site-ui.mjs', 'utf8');
+assert.ok(!normalizer.includes('PRICING_MOBILE_MENU_HTML'), 'pricing mag geen eigen mobiele menu-template meer hebben');
+assert.ok(!normalizer.includes('#bgkopMob.bgkop-mob'), 'pricing mag geen eigen mobiele menu-CSS meer hebben');
+
+console.log('canonical brand shell contract: OK');
