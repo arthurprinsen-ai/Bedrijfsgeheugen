@@ -30,6 +30,9 @@ const pricingOk = canonical.replace('<main data-bg-component="main">body</main>'
 assert.doesNotThrow(() => verifyPageShell(pricingOk, 'prijzen.html'));
 assert.throws(() => verifyPageShell(pricingOk, 'over-ons.html'), /pricing|page-tools/i);
 
+const alleenPricingCss = canonical.replace('</head>', '<style>.bgx-vraagbalk{display:grid}.bgx-rekenaar{display:block}.bgx-rol{display:flex}</style></head>');
+assert.doesNotThrow(() => verifyPageShell(alleenPricingCss, '404.html'), 'CSS selectors zijn geen zichtbare pricing-tools');
+
 const oudeMain = extractComponent(canonical, 'main');
 const oudeFooter = extractComponent(canonical, 'footer');
 const nieuweHeader = '<header class="v17-header" data-bg-component="header"><nav>nieuw menu</nav></header>';
