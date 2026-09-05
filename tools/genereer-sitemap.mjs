@@ -11,6 +11,10 @@ const xmlEscape = value => String(value)
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&apos;');
 
+function isExclude(pad) {
+  return EXCLUDES.has(pad) || /^shell-gate-.*\.html$/i.test(pad);
+}
+
 export function maakSitemap(urls) {
   const schoon = [...new Set((urls || []).filter(url => String(url).startsWith(`${ORIGIN}/`)))].sort((a, b) => a.localeCompare(b, 'nl'));
   const regels = schoon.map(url => `  <url><loc>${xmlEscape(url)}</loc></url>`);
@@ -31,7 +35,7 @@ function canonical(html) {
 
 async function htmlBestanden() {
   const bestanden = [];
-  for await (const p of glob('*.html')) if (!EXCLUDES.has(p)) bestanden.push(p);
+  for await (const p of glob('*.html')) if (!isExclude(p)) bestanden.push(p);
   for await (const p of glob('blog/*/index.html')) bestanden.push(p);
   bestanden.push('blog/index.html');
   return [...new Set(bestanden)];
