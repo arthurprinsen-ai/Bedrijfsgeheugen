@@ -3,11 +3,12 @@ import { join } from 'node:path';
 import { GLOBAL_COMPONENTS, PUBLIC_PAGE_EXCLUDES } from './contracts.mjs';
 import { ensureBrandShellCss, ensureFooterContact, ensureTrustBar, extractComponent, markPageSlots, replaceComponent } from './components.mjs';
 
+const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const PAD = {
-  home: '/', product: '/product', pricing: '/prijzen', solutions: '/oplossingen',
-  integrations: '/systemen-koppelen', resources: '/blog/', company: '/over-ons',
-  cases: '/cases', login: '/inloggen', signup: '/aanmelden', selfscan: '/zelfscan',
-  'frisseblik-scan': '/frisse-blik', start: '/aanmelden'
+  home: `${ORIGIN}/`, product: `${ORIGIN}/product`, pricing: `${ORIGIN}/prijzen`, solutions: `${ORIGIN}/oplossingen`,
+  integrations: `${ORIGIN}/systemen-koppelen`, resources: `${ORIGIN}/blog/`, company: `${ORIGIN}/over-ons`,
+  cases: `${ORIGIN}/cases`, login: `${ORIGIN}/inloggen`, signup: `${ORIGIN}/aanmelden`, selfscan: `${ORIGIN}/zelfscan`,
+  'frisseblik-scan': `${ORIGIN}/frisse-blik`, start: `${ORIGIN}/aanmelden`
 };
 
 export const CANONICAL_SHELL_SOURCE = 'over-ons.html';
@@ -24,6 +25,10 @@ const PAGE_SHELL_CSS = `<style id="canonical-page-shell">
 @media(max-width:768px){.paginakop{padding:104px 0 46px}}
 main,.page{background:var(--paper,#fff)}.page>main{padding:0}.bgkruim,.kruimelpad{font-size:13px;padding:18px 0 0}
 </style>`;
+
+function absolutiseerInterneHref(html) {
+  return String(html).replace(/href=(['"])\/(?!\/)([^'"]*)\1/gi, (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
+}
 
 function knoppenNaarLinks(html) {
   return html.replace(/<button([^>]*data-view="[a-z0-9-]+"[^>]*)>([\s\S]*?)<\/button>/g, (heel, attrs, inhoud) => {
@@ -95,8 +100,8 @@ const tekstUit = html => String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, '
 
 function kruimelSchemaVoor(label, pad) {
   if (pad === '404.html' || !label) return null;
-  const url = 'https://www.bedrijfsgeheugen.nl/' + pad.replace(/index\.html$/, '').replace(/\.html$/, '');
-  return `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"${label}","item":"${url}"}]}<\/script>`;
+  const url = `${ORIGIN}/` + pad.replace(/index\.html$/, '').replace(/\.html$/, '');
+  return `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"${ORIGIN}/"},{"@type":"ListItem","position":2,"name":"${label}","item":"${url}"}]}<\/script>`;
 }
 
 function kruimelErbij(binnen, oud, pad) {
@@ -113,18 +118,59 @@ function kruimelErbij(binnen, oud, pad) {
   if (!label) return { binnen, schema: null };
   if (label.length > 60) label = label.slice(0, 57).trim() + '...';
   const veilig = label.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  const nav = `<nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">›</span><span aria-current="page">${veilig}</span></nav>\n`;
+  const nav = `<nav class="bgkruim" aria-label="Kruimelpad"><a href="${ORIGIN}/">Home</a><span aria-hidden="true">›</span><span aria-current="page">${veilig}</span></nav>\n`;
   return { binnen: nav + binnen, schema: kruimelSchemaVoor(veilig, pad) };
 }
 
-function paginakop(binnen) {
+function legacyPricingHero(rest) {
+  const h1Index = rest.search(/<h1\b/i);
+  if (h1Index < 0) return null;
+  const voorH1 = rest.slice(0, h1Index);
+  const openingen = [...voorH1.matchAll(/<section\b[^>]*>/gi)];
+  const opening = openingen.at(-1);
+  if (!opening || opening.index === undefined || !/class="[^"]*\bheld\b/i.test(opening[0])) return null;
+
+  const start = opening.index;
+  const tags = /<section\b[^>]*>|<\/section\s*>/gi;
+  tags.lastIndex = start;
+  let diepte = 0;
+  let m;
+  while ((m = tags.exec(rest))) {
+    if (/^<section\b/i.test(m[0])) diepte += 1;
+    else diepte -= 1;
+    if (diepte === 0) return { start, end: tags.lastIndex, html: rest.slice(start, tags.lastIndex) };
+  }
+  return null;
+}
+
+function paginakop(binnen, pad) {
   let rest = binnen;
   const pak = re => { const m = rest.match(re); if (!m) return ''; rest = rest.replace(m[0], ''); return m[0]; };
   const kruimel = pak(/<nav class="bgkruim"[\s\S]*?<\/nav>/i);
-  const kop = pak(/<h1[^>]*>[\s\S]*?<\/h1>/i);
-  if (!kop) return binnen;
-  const bovenkop = pak(/<span class="eyebrow"[^>]*>[\s\S]*?<\/span>/i);
-  const inleiding = pak(/<p class="(?:p-intro|leid|lead)"[^>]*>[\s\S]*?<\/p>/i);
+
+  let bron = rest;
+  if (pad === 'prijzen.html') {
+    const legacy = legacyPricingHero(rest);
+    if (legacy) {
+      bron = legacy.html;
+      rest = rest.slice(0, legacy.start) + rest.slice(legacy.end);
+    }
+  }
+
+  const kopMatch = bron.match(/<h1[^>]*>[\s\S]*?<\/h1>/i);
+  if (!kopMatch) return binnen;
+  const bovenkopMatch = bron.match(/<span class="eyebrow"[^>]*>[\s\S]*?<\/span>/i);
+  const inleidingMatch = bron.match(/<p class="(?:p-intro|leid|lead)"[^>]*>[\s\S]*?<\/p>/i);
+  const kop = kopMatch[0];
+  const bovenkop = bovenkopMatch ? bovenkopMatch[0] : '';
+  const inleiding = inleidingMatch ? inleidingMatch[0] : '';
+
+  if (bron === rest) {
+    rest = rest.replace(kop, '');
+    if (bovenkop) rest = rest.replace(bovenkop, '');
+    if (inleiding) rest = rest.replace(inleiding, '');
+  }
+
   return `<section class="paginakop" data-bg-component="hero"><div class="wrap">${kruimel}${bovenkop}${kop}${inleiding}</div></section>\n${rest}`;
 }
 
@@ -133,7 +179,7 @@ export function applyCanonicalShell(html, shell, pad) {
   if (binnen === null) return null;
   const eigen = eigenHoofd(html);
   const kruimel = kruimelErbij(binnen, html, pad);
-  const opening = paginakop(kruimel.binnen);
+  const opening = paginakop(kruimel.binnen, pad);
   let uit = shell.voor + `<div class="page active" id="view-inhoud">\n<main data-bg-component="main">${opening}</main>\n</div>\n` + shell.na;
   if (kruimel.schema) eigen.data.push(kruimel.schema);
   if (eigen.titel) uit = uit.replace(/<title>[\s\S]*?<\/title>/i, eigen.titel);
@@ -145,6 +191,7 @@ export function applyCanonicalShell(html, shell, pad) {
   const eigenCss = eigen.koppel.concat(eigen.stijl).join('\n');
   uit = uit.replace('</head>', `${eigenCss}\n${PAGE_SHELL_CSS}\n</head>`);
   uit = routerLaatLinksDoor(knoppenNaarLinks(uit));
+  uit = absolutiseerInterneHref(uit);
   return markPageSlots(uit);
 }
 
@@ -164,11 +211,11 @@ export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL
   const sourceRaw = await readFile(sourcePath, 'utf8');
   const sourcePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(sourceRaw)));
   const shell = schilUitBron(sourcePrepared, sourcePath);
-  await writeFile(sourcePath, shell.bron, 'utf8');
+  await writeFile(sourcePath, absolutiseerInterneHref(shell.bron), 'utf8');
 
   const homeRaw = await readFile('index.html', 'utf8');
   const homePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(homeRaw)));
-  const homeProjected = projectGlobalComponents(homePrepared, shell.bron);
+  const homeProjected = absolutiseerInterneHref(projectGlobalComponents(homePrepared, shell.bron));
   await writeFile('index.html', homeProjected, 'utf8');
 
   let gelukt = 2, overgeslagen = 0;
