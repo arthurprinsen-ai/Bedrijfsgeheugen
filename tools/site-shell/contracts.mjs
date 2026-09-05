@@ -47,6 +47,11 @@ function extractMarkedElement(html, name) {
   throw new Error(`${name}: canonical component is not closed`);
 }
 
+function hasRenderedClass(html, className) {
+  const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`<[a-z0-9-]+\\b[^>]*class="[^"]*\\b${escaped}\\b[^"]*"[^>]*>`, 'i').test(String(html));
+}
+
 export function componentHash(html, name) {
   return createHash('sha256').update(extractMarkedElement(String(html), name)).digest('hex');
 }
@@ -66,10 +71,13 @@ export function verifyPageShell(input, path = '') {
       throw new Error(`${path}: legacy pricing header/menu shell detected`);
     }
     for (const cls of ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol']) {
-      if (!html.includes(cls)) throw new Error(`${path}: pricing page-tools missing ${cls}`);
+      if (!hasRenderedClass(html, cls)) throw new Error(`${path}: pricing page-tools missing ${cls}`);
     }
-  } else if (/data-bg-component="page-tools"/.test(html) || /\bbgx-(?:vraagbalk|rekenaar|rol)\b/.test(html)) {
-    throw new Error(`${path}: pricing page-tools are only allowed on prijzen.html`);
+  } else {
+    const pricingRendered = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'].some(cls => hasRenderedClass(html, cls));
+    if (/data-bg-component="page-tools"/.test(html) || pricingRendered) {
+      throw new Error(`${path}: pricing page-tools are only allowed on prijzen.html`);
+    }
   }
   return true;
 }
