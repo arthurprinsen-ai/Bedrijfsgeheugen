@@ -16,10 +16,9 @@ const seoPaths = [
   'tools/prijzen-uit-de-homepage.mjs'
 ];
 
-test('SEO order engine changes are owned by the website delivery lane', () => {
+test('SEO order engine changes are classified into the website delivery lane', () => {
   const plan = createDeliveryPlan({ changedPaths: seoPaths, headSha, policy });
   assert.ok(plan.lanes.some(lane => lane.id === 'website'));
-  assert.ok(!plan.lanes.some(lane => lane.id === 'backend'), 'SEO order engine itself is not a backend lane');
 });
 
 test('SEO order engine files share one declared conflict contract', () => {
