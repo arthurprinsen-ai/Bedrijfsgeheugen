@@ -39,6 +39,7 @@ jobs:
           path: |
             shell-gate-diagnostic.txt
             shell-gate-failed-page.html
+            shell-gate-canonical-source.html
           if-no-files-found: ignore
       - name: 8 Release evidence
         run: node tools/bouw-release-evidence.mjs
