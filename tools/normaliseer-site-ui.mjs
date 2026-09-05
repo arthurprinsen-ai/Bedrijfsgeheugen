@@ -43,6 +43,12 @@ function verwijderDivMetKlasse(input, klasse) {
   return html;
 }
 
+function heeftElementMetKlasse(html, klasse) {
+  const veilig = klasse.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`<[^>]+class="[^"]*(?:^|\\s)${veilig}(?:\\s|$)[^"]*"[^>]*>`, 'i');
+  return re.test(String(html));
+}
+
 function markeerPricingTools(input) {
   let html = input;
   html = html.replace(/<section\b(?![^>]*data-bg-component)([^>]*\bclass="[^"]*\bbg-pricing-tools\b[^"]*"[^>]*)>/i,
@@ -52,7 +58,7 @@ function markeerPricingTools(input) {
 
 function pricingTools(input) {
   let html = input;
-  const compleet = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'].every(k => html.includes(k));
+  const compleet = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'].every(k => heeftElementMetKlasse(html, k));
   if (!compleet) {
     const { body: rekenaar } = bouwModules('');
     const blok = `<section class="bg-pricing-tools" data-bg-component="page-tools" aria-label="Interactieve prijsinstrumenten"><div class="wrap">${VRAAGBALK}${rekenaar}${rolblok('prijzen')}</div></section>`;
@@ -89,10 +95,10 @@ export function normaliseerHtml(input, bestand) {
 const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html', 'afmaakindex.html']);
 
 export async function normaliseerAllePaginas() {
-  // Dit is bewust de finale projectie: eerst mogen alle historische builders hun
-  // pagina-inhoud maken, daarna wordt precies één actuele brand shell uit de
-  // gebouwde homepage om alle openbare pagina's gezet. Zo kan geen late builder
-  // Prijzen of een andere pagina weer een eigen header/menu/footer geven.
+  // Finale projectie: eerst maken historische builders hun pagina-inhoud,
+  // daarna wordt de actuele brand shell uit de canonical v18-contentpagina
+  // om alle openbare pagina's gezet. Zo kan geen late builder nog een eigen
+  // header, mobiel menu of footer terugbrengen.
   await applyCanonicalShellToAllPages();
 
   const bestanden = [];
