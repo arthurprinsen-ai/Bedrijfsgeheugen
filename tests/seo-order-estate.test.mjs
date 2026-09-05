@@ -38,3 +38,22 @@ test('high-level gate accepteert verbonden money page en supportpagina', () => {
   const pages = [{ canonical: `${ORIGIN}/prijzen`, path: 'prijzen.html', html: money }, support];
   assert.deepEqual(validateSeoOrderPages(pages, registry, { inspectBlogs: false }), []);
 });
+
+test('canonical alias blog mag de echte money page niet overschrijven in validatie', () => {
+  const entry = registry.pages[0];
+  const money = enrichRegisteredPage(moneyHtml, entry);
+  const alias = {
+    canonical: `${ORIGIN}/prijzen`,
+    path: 'blog/oude-prijzen/index.html',
+    html: `<html><head><link rel="canonical" href="${ORIGIN}/prijzen"></head><body><main><h1>Oud artikel</h1></main></body></html>`
+  };
+  const support = { canonical: `${ORIGIN}/blog/kosten/`, path: 'blog/kosten/index.html', html: `<html><body><main><h1>Kosten</h1><a href="${ORIGIN}/prijzen">Bekijk prijzen</a></main></body></html>` };
+  const pages = [
+    { canonical: `${ORIGIN}/prijzen`, path: 'prijzen.html', html: money },
+    support,
+    alias
+  ];
+  const fouten = validateSeoOrderPages(pages, registry, { inspectBlogs: false }).join('\n');
+  assert.doesNotMatch(fouten, /primaire CTA.*niet meetbaar/i);
+  assert.doesNotMatch(fouten, /money page mist zichtbaar bewijs/i);
+});
