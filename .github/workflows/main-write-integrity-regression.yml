@@ -1,0 +1,20 @@
+name: Main Write Integrity regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/main-write-integrity.mjs'
+      - 'tests/main-write-integrity-squash-pr.test.mjs'
+      - '.github/workflows/main-write-integrity.yml'
+      - '.github/workflows/main-write-integrity-regression.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: node --test tests/main-write-integrity-squash-pr.test.mjs
