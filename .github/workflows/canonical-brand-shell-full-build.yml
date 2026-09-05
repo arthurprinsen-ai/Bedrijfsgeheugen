@@ -33,7 +33,7 @@ jobs:
         run: node tools/site-shell/diagnose-shell-gate.mjs
       - name: 7d Sitemap + technische SEO + SEO order gate
         run: BG_PRICING_STAGE=verify node tools/prijzen-uit-de-homepage.mjs
-      - name: Upload shell gate diagnostic
+      - name: Upload shell and SEO diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -42,6 +42,10 @@ jobs:
             shell-gate-diagnostic.txt
             shell-gate-failed-page.html
             shell-gate-canonical-source.html
+            blog/afas-api/index.html
+            blog/kennis-borgen-in-je-bedrijf/index.html
+            afas-koppeling.html
+            bedrijfsgeheugen.html
           if-no-files-found: ignore
       - name: 8 Release evidence contract
         env:
