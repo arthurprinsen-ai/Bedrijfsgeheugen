@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell, markCanonicalComponents } from './contracts.mjs';
 import { extractComponent, replaceComponent } from './components.mjs';
-import { CANONICAL_SHELL_SOURCE } from './apply-shell.mjs';
+import { CANONICAL_SHELL_SOURCE, extractPageMain } from './apply-shell.mjs';
 
 const canonical = `<!doctype html><html><head></head><body>
 <div data-bg-component="trustbar">trust</div>
@@ -31,6 +31,10 @@ assert.throws(() => verifyPageShell(dubbeleFooter, 'dubbel.html'), /footer/i);
 const pricingOk = canonical.replace('<main data-bg-component="main">body</main>', '<main data-bg-component="main">body<section data-bg-component="page-tools"><div class="bgx-vraagbalk"></div><div class="bgx-rekenaar"></div><div class="bgx-rol"></div></section></main>');
 assert.doesNotThrow(() => verifyPageShell(pricingOk, 'prijzen.html'));
 assert.throws(() => verifyPageShell(pricingOk, 'over-ons.html'), /pricing|page-tools/i);
+
+const legacyPricing = '<!doctype html><html><body><nav class="bgkop">oud menu</nav><div class="held"><h1>Prijzen</h1></div><section id="pakketten">inhoud</section><footer class="bgvoet">oude voet</footer></body></html>';
+assert.equal(extractPageMain(legacyPricing, 'prijzen.html'), '<div class="held"><h1>Prijzen</h1></div><section id="pakketten">inhoud</section>', 'legacy Prijzen zonder main moet alleen de inhoud tussen oud menu en oude footer migreren');
+assert.equal(extractPageMain('<body><main><p>normaal</p></main></body>', 'normaal.html'), '<p>normaal</p>');
 
 const alleenPricingCss = canonical.replace('</head>', '<style>.bgx-vraagbalk{display:grid}.bgx-rekenaar{display:block}.bgx-rol{display:flex}</style></head>');
 assert.doesNotThrow(() => verifyPageShell(alleenPricingCss, '404.html'), 'CSS selectors zijn geen zichtbare pricing-tools');
