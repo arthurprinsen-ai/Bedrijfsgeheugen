@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell, markCanonicalComponents } from './contracts.mjs';
 import { extractComponent, replaceComponent } from './components.mjs';
+import { CANONICAL_SHELL_SOURCE } from './apply-shell.mjs';
 
 const canonical = `<!doctype html><html><head></head><body>
 <div data-bg-component="trustbar">trust</div>
@@ -15,6 +16,7 @@ const canonical = `<!doctype html><html><head></head><body>
 assert.deepEqual(GLOBAL_COMPONENTS, ['trustbar','header','mobile-menu','footer']);
 assert.equal(componentHash(canonical, 'header'), componentHash(canonical, 'header'));
 assert.doesNotThrow(() => verifyPageShell(canonical, 'voorbeeld.html'));
+assert.equal(CANONICAL_SHELL_SOURCE, 'over-ons.html', 'finale shell-projectie moet uit de na chrome gebouwde canonical contentpagina komen, niet uit de historische homepage-shell');
 
 const ruweV18 = `<!doctype html><body><header class="v17-header">header</header><aside class="v18-mobile-drawer" id="v18MobileDrawer">drawer</aside><footer>footer</footer></body>`;
 const gemarkeerd = markCanonicalComponents(ruweV18);
