@@ -1,11 +1,12 @@
 import { applyCustomerPortalAuth } from './apply-customer-portal-auth.mjs';
 import { verifyCustomerLoginContract } from './verify-customer-login-contract.mjs';
+import { applyCanonicalShellToAllPages } from './site-shell/apply-shell.mjs';
 
 await import('./bouw-v18-production-core.mjs');
 await import('./apply-v18-seo.mjs');
 await import('./bouw-losse-paginas.mjs');
 await import('./bouw-inhoudspaginas.mjs');
-await import('./site-shell/apply-shell.mjs');
+await applyCanonicalShellToAllPages();
 console.log(applyCustomerPortalAuth());
 console.log(verifyCustomerLoginContract());
 console.log('Accepted historical V18 production build complete with canonical brand shell, persistent SEO and customer auth');
