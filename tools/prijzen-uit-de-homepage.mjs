@@ -3,11 +3,14 @@ import { normaliseerAllePaginas } from './normaliseer-site-ui.mjs';
 import { controleerSiteUi } from './controleer-site-ui.mjs';
 import { genereerSitemap } from './genereer-sitemap.mjs';
 import { controleerTechnischeSeo } from './controleer-technische-seo.mjs';
+import { applySeoOrderEngine } from './seo-order-engine/apply.mjs';
+import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
-// canonical merk-shell. Deze stap verwijdert de oude homepage-weergave en
-// voert daarna de page-policy, sitemap en estate-wide releasegates uit.
+// canonical merk-shell. Na de page-policy volgt nu één centrale SEO-order
+// enrichment. Sitemap, UI, technische SEO en de commerciële intent/link/blog
+// contracten worden daarna op exact dezelfde gebouwde output gecontroleerd.
 
 const DOEL = 'https://www.bedrijfsgeheugen.nl/prijzen';
 
@@ -48,11 +51,15 @@ export async function bouwPrijsVerwijzing() {
 
 export async function voerPricingShellPipelineUit(stage = 'all') {
   if (stage === 'all' || stage === 'rewrite') await bouwPrijsVerwijzing();
-  if (stage === 'all' || stage === 'normalize') await normaliseerAllePaginas();
+  if (stage === 'all' || stage === 'normalize') {
+    await normaliseerAllePaginas();
+    await applySeoOrderEngine();
+  }
   if (stage === 'all' || stage === 'verify') {
     await genereerSitemap();
     await controleerSiteUi();
     await controleerTechnischeSeo();
+    await validateSeoOrderEngine();
   }
 }
 
