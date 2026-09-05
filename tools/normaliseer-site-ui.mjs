@@ -17,7 +17,9 @@ function absolutiseerInterneHref(html) {
 }
 
 function herstelTechnischeLinks(html) {
-  return String(html).replaceAll(`${ORIGIN}/wachtwoord-vergeten`, `${ORIGIN}/inloggen`);
+  return String(html)
+    .replaceAll(`${ORIGIN}/wachtwoord-vergeten`, `${ORIGIN}/inloggen`)
+    .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`);
 }
 
 function openDivMetKlasse(html, klasse, vanaf = 0) {
