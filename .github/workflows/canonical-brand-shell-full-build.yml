@@ -13,13 +13,19 @@ jobs:
         with:
           node-version: 24
       - run: npm install
-      - name: Run exact Netlify build command
-        run: >-
-          node tools/bouw-powerhouse-auth.mjs &&
-          node tools/bouw-kennisindex.mjs &&
-          node tools/bouw-v18-production.mjs &&
-          node tools/apply-tabbladen.mjs &&
-          node tools/bouw-v18-views.mjs &&
-          node tools/bouw-v18-chrome-alles.mjs &&
-          node tools/prijzen-uit-de-homepage.mjs &&
-          node tools/bouw-release-evidence.mjs
+      - name: 1 Powerhouse auth
+        run: node tools/bouw-powerhouse-auth.mjs
+      - name: 2 Kennisindex
+        run: node tools/bouw-kennisindex.mjs
+      - name: 3 V18 production + canonical shell
+        run: node tools/bouw-v18-production.mjs
+      - name: 4 Tabbladen
+        run: node tools/apply-tabbladen.mjs
+      - name: 5 V18 views
+        run: node tools/bouw-v18-views.mjs
+      - name: 6 V18 chrome
+        run: node tools/bouw-v18-chrome-alles.mjs
+      - name: 7 Prijzen policy + estate-wide shell gate
+        run: node tools/prijzen-uit-de-homepage.mjs
+      - name: 8 Release evidence
+        run: node tools/bouw-release-evidence.mjs
