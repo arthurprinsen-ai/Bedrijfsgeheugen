@@ -1,0 +1,16 @@
+{
+  "version":"seo-optimization-allowlist-v1",
+  "allowed_actions":[
+    "title-meta",
+    "cta-copy-position",
+    "internal-link",
+    "content-gap",
+    "supporting-blog-opportunity",
+    "cannibalization-proposal",
+    "keyword-cluster-expansion",
+    "evidence-gap"
+  ],
+  "auto_publish_requires":["no-new-factual-claim","evidence-safe","tests-green","preview-green","production-readback-enabled"],
+  "always_blocked_without_explicit_evidence":["testimonial","customer-result","price-change","guarantee","legal-claim","security-certification","rating","review","market-leadership-claim"],
+  "candidate_required_fields":["action","canonical","hypothesis","target_metric","rollback_condition","evidence_refs"]
+}
