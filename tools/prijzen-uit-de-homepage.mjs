@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { normaliseerAllePaginas } from './normaliseer-site-ui.mjs';
+import { controleerSiteUi } from './controleer-site-ui.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen, handgemaakte pagina.
@@ -45,3 +46,4 @@ console.log(`Oude prijzenweergave uit de homepage gehaald: ${gedaan} bestand(en)
 // de pagina heeft gemaakt. Dit voorkomt dat Prijzen of een losse contentpagina
 // opnieuw een afwijkend menu, contactbalk of generieke interactieblokken krijgt.
 await normaliseerAllePaginas();
+await controleerSiteUi();
