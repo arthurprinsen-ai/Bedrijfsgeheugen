@@ -102,10 +102,13 @@ export function renderSeoGraph(meta) {
 }
 
 export function injectSeoGraph(input, meta) {
-  let html = String(input);
-  html = html.replace(/\s*<script\b[^>]*id=["']bg-seo-order-graph["'][^>]*>[\s\S]*?<\/script>\s*/gi, '');
+  const html = String(input);
   const json = JSON.stringify(renderSeoGraph(meta)).replace(/</g, '\\u003c');
-  const script = `\n<script type="application/ld+json" id="bg-seo-order-graph">${json}</script>\n`;
+  const exact = `<script type="application/ld+json" id="bg-seo-order-graph">${json}</script>`;
+  const re = /<script\b[^>]*id=["']bg-seo-order-graph["'][^>]*>([\s\S]*?)<\/script>/i;
+  const existing = html.match(re);
+  if (existing && existing[0] === exact) return html;
+  if (existing) return html.replace(re, exact);
   if (!/<\/head>/i.test(html)) throw new Error('HTML mist </head> voor SEO graph injectie');
-  return html.replace(/<\/head>/i, `${script}</head>`);
+  return html.replace(/<\/head>/i, `\n${exact}\n</head>`);
 }
