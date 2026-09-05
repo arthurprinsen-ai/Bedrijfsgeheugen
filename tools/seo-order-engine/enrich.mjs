@@ -17,7 +17,7 @@ function visibleBreadcrumbContainer(html){ const body=bodyOf(html); return body.
 function breadcrumbItems(html,canonical,title){ const container=visibleBreadcrumbContainer(html); if(!container) return canonical===`${ORIGIN}/`?[{name:'Home',url:`${ORIGIN}/`}]:[]; const items=[]; for(const m of container.matchAll(/<a\b[^>]*href=(?:"([^"]+)"|'([^']+)')[^>]*>([\s\S]*?)<\/a>/gi)){const url=m[1]??m[2]??'';const name=stripTags(m[3]);if(url.startsWith(`${ORIGIN}/`)&&name)items.push({name,url:url.split('#')[0].split('?')[0]});} const lastText=stripTags(container.replace(/<a\b[^>]*>[\s\S]*?<\/a>/gi,' ')); if(canonical&&canonical!==`${ORIGIN}/`&&!items.some(i=>i.url===canonical))items.push({name:lastText||title||'Pagina',url:canonical}); return items; }
 export function inferSeoMeta(html){const canonical=canonicalOf(html);const title=titleOf(html);const description=descriptionOf(html);return {canonical,title,description,breadcrumbs:breadcrumbItems(html,canonical,title)};}
 
-function markPageContext(input,entry){ const html=String(input); if(!/<body\b/i.test(html))return html; return html.replace(/<body\b([^>]*)>/i,(_tag,attrs)=>{const clean=attrs.replace(/\sdata-bg-page-role=(?:"[^"]*"|'[^']*')/gi,'').replace(/\sdata-bg-funnel-stage=(?:"[^"]*"|'[^']*')/gi,'').replace(/\sdata-bg-intent=(?:"[^"]*"|'[^']*')/gi,'').replace(/\sdata-bg-keyword-cluster=(?:"[^"]*"|'[^']*')/gi,''); return `<body${clean} data-bg-page-role="${entry.role}" data-bg-funnel-stage="${entry.funnel_stage}" data-bg-intent="${entry.primary_intent}" data-bg-keyword-cluster="${entry.primary_keyword}">`; }); }
+function markPageContext(input,entry){ const html=String(input); if(!/<body\b/i.test(html))return html; return html.replace(/<body\b([^>]*)>/i,(_tag,attrs)=>{const clean=attrs.replace(/\sdata-bg-page-role=(?:"[^"]*"|'[^']*')/gi,'').replace(/\sdata-bg-funnel-stage=(?:"[^"]*"|'[^']*')/gi,'').replace(/\sdata-bg-intent=(?:"[^"]*"|'[^']*')/gi,'').replace(/\sdata-bg-keyword-cluster=(?:"[^"]*"|'[^']*')/gi,'').replace(/\sdata-bg-intent-role=(?:"[^"]*"|'[^']*')/gi,'').replace(/\sdata-bg-intent-owner=(?:"[^"]*"|'[^']*')/gi,''); return `<body${clean} data-bg-page-role="${entry.role}" data-bg-funnel-stage="${entry.funnel_stage}" data-bg-intent="${entry.primary_intent}" data-bg-keyword-cluster="${entry.primary_keyword}" data-bg-intent-role="primary" data-bg-intent-owner="${entry.route}">`; }); }
 function ensureMeta(input,name,value){let html=String(input);const re=new RegExp(`<meta\\b[^>]*name=(?:"${name}"|'${name}')[^>]*>`,'i');const tag=`<meta name="${name}" content="${String(value||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">`;return re.test(html)?html.replace(re,tag):html.replace(/<\/head>/i,`${tag}\n</head>`);}
 
 export function enrichRegisteredPage(input,entry){
@@ -26,6 +26,7 @@ export function enrichRegisteredPage(input,entry){
   html=markPageContext(html,entry);
   html=ensureMeta(html,'bg-intent',entry.primary_intent);
   html=ensureMeta(html,'bg-keyword-cluster',entry.primary_keyword);
+  html=ensureMeta(html,'bg-intent-owner',entry.route);
   html=enrichMoneyPage(html,entry);
   html=markPrimaryConversions(html,entry);
   html=injectConversionTracker(html);
