@@ -18,14 +18,8 @@
     "tests/development-doc-contract.test.mjs",
     ".github/workflows/"
   ],
-  "nonExecutableSharedPaths": [
-    "docs/changes/",
-    "docs/learning/"
-  ],
-  "ignoredPaths": [
-    "docs/development-ledger-events/",
-    "docs/superpowers/plans/"
-  ],
+  "nonExecutableSharedPaths": ["docs/changes/", "docs/learning/"],
+  "ignoredPaths": ["docs/development-ledger-events/", "docs/superpowers/plans/"],
   "branchPolicy": {
     "strategy": "conflict-aware-independent-lanes",
     "createFrom": "current-main",
@@ -48,17 +42,17 @@
     {"id":"customer-portal-identity","paths":["klantportaal.html","tools/bouw-powerhouse-auth.mjs","tools/customer-portal-","tools/fix-netlify-identity-","tests/netlify-identity-"]},
     {"id":"website-shell-contract","paths":["tools/site-shell/","tools/controleer-site-ui.mjs","tools/normaliseer-site-ui.mjs","tools/prijzen-uit-de-homepage.mjs",".github/workflows/canonical-brand-shell-contract.yml",".github/workflows/canonical-brand-shell-full-build.yml",".github/workflows/live-preview-smoke.yml"]},
     {"id":"seo-order-engine","paths":["site/seo-order-map.json","tools/seo-order-engine/","tools/prijzen-uit-de-homepage.mjs","tests/seo-order-",".github/workflows/seo-order-engine.yml",".github/workflows/canonical-brand-shell-full-build.yml",".github/workflows/canonical-brand-shell-live-readback.yml"]},
+    {"id":"seo-growth-intelligence","paths":["tools/seo-growth/","tools/seo-order-engine/measurement.mjs","netlify/functions/growth-event.mjs","config/seo-growth-observation.schema.json","config/seo-growth-loop.json","config/seo-search-sources.json","config/seo-optimization-allowlist.json","tests/seo-growth-","tests/seo-order-measurement.test.mjs",".github/workflows/seo-growth-intelligence.yml"]},
     {"id":"universal-event-contract","paths":["config/universal-event-producers.json","tools/universal-event-","tools/universal-failure-","tools/event-retention-","tests/universal-event-","tests/universal-failure-","tests/event-retention-",".github/workflows/universal-event-retention-contract.yml"]}
   ],
   "lanes": [
     {
-      "id":"backend",
-      "owner":"agent-integration-make",
-      "paths":["brain/","platform/","netlify/functions/","scripts/brain/","scripts/ci/repo-writer-","supabase/","tools/supabase-","tools/outcome-obligation-","tools/main-write-integrity.mjs","tools/delivery-","tools/platform-promotion-","tools/universal-event-","tools/universal-failure-","tools/event-retention-","tools/make-cost-","tests/supabase-","tests/brain-","tests/whole-brain-","tests/agent-fabric","tests/branch-delivery-","tests/direct-main-postwrite-","tests/repo-writer-","tests/repository-protection-","tests/unified-brain-","tests/platform-promotion-","tests/chat-learning-","tests/chat-to-brain-","tests/make-agent-learning-","tests/make-agent-resume-","tests/universal-event-","tests/universal-failure-","tests/event-retention-","tests/make-cost-","config/universal-event-producers.json"],
+      "id":"backend","owner":"agent-integration-make",
+      "paths":["brain/","platform/","netlify/functions/","scripts/brain/","scripts/ci/repo-writer-","supabase/","tools/supabase-","tools/outcome-obligation-","tools/main-write-integrity.mjs","tools/delivery-","tools/platform-promotion-","tools/universal-event-","tools/universal-failure-","tools/event-retention-","tools/make-cost-","tools/seo-growth/","tests/supabase-","tests/brain-","tests/whole-brain-","tests/agent-fabric","tests/branch-delivery-","tests/direct-main-postwrite-","tests/repo-writer-","tests/repository-protection-","tests/unified-brain-","tests/platform-promotion-","tests/chat-learning-","tests/chat-to-brain-","tests/make-agent-learning-","tests/make-agent-resume-","tests/universal-event-","tests/universal-failure-","tests/event-retention-","tests/make-cost-","tests/seo-growth-","config/universal-event-producers.json","config/seo-growth-observation.schema.json","config/seo-growth-loop.json","config/seo-search-sources.json","config/seo-optimization-allowlist.json"],
       "requiredContracts":["BG166","BG167","BG168","BG169"]
     },
     {"id":"portal","owner":"agent-product-opportunity","paths":["portal/","tests/portal-","tests/data-ai-passport","tests/eu-ai-act-","tests/netlify-identity-","klantportaal.html","tools/bouw-powerhouse-auth.mjs","tools/customer-portal-","tools/fix-netlify-identity-","netlify/functions/portaalvraag.mjs","netlify/functions/portal-state.mjs"],"requiredContracts":["BG166","BG167","BG168","BG169"]},
-    {"id":"website","owner":"agent-website-ux","paths":["components/","assets/","pages/","site/","blog/","index.html","styles.css","script.js","seo-status.json","sitemap.xml","data/regelgeving.json","tools/bouw-v18-","tools/site-shell/","tools/seo-order-engine/","tools/controleer-site-ui.mjs","tools/normaliseer-site-ui.mjs","tools/prijzen-uit-de-homepage.mjs",".github/scripts/","tests/seo-","tests/live-preview-trigger-scope.test.mjs"],"requiredContracts":["BG166","BG167","BG168","BG169"]},
+    {"id":"website","owner":"agent-website-ux","paths":["components/","assets/","pages/","site/","blog/","index.html","styles.css","script.js","seo-status.json","sitemap.xml","data/regelgeving.json","tools/bouw-v18-","tools/site-shell/","tools/seo-order-engine/","tools/seo-growth/","netlify/functions/growth-event.mjs","config/seo-growth-observation.schema.json","config/seo-growth-loop.json","config/seo-search-sources.json","config/seo-optimization-allowlist.json","tools/controleer-site-ui.mjs","tools/normaliseer-site-ui.mjs","tools/prijzen-uit-de-homepage.mjs",".github/scripts/","tests/seo-","tests/live-preview-trigger-scope.test.mjs"],"requiredContracts":["BG166","BG167","BG168","BG169"]},
     {"id":"automation","owner":"agent-integration-make","paths":["automation/","make/","notion/","tests/delivery-"],"requiredContracts":["BG166","BG167","BG168","BG169"]}
   ],
   "integration": {
