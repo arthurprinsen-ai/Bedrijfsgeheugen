@@ -10,6 +10,7 @@ on:
       - 'tools/*seo*.mjs'
       - 'tools/prijzen-uit-de-homepage.mjs'
       - 'tests/prijzen-hero-seo.test.mjs'
+      - 'tests/technical-seo-gate.test.mjs'
       - '.github/workflows/prijzen-hero-seo-regression.yml'
 
 jobs:
@@ -20,5 +21,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Reproduce pricing hero and link contract
-        run: node --test tests/prijzen-hero-seo.test.mjs
+      - name: Verify pricing hero and technical SEO contracts
+        run: node --test tests/prijzen-hero-seo.test.mjs tests/technical-seo-gate.test.mjs
