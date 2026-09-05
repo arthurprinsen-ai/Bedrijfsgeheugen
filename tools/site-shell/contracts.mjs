@@ -17,8 +17,8 @@ export function markCanonicalComponents(input) {
     (m, attrs) => addMarkerToOpeningTag(`<div${attrs}>`, 'trustbar'));
   html = html.replace(/<header\b([^>]*\bclass="[^"]*\bv17-header\b[^"]*"[^>]*)>/i,
     (m, attrs) => addMarkerToOpeningTag(`<header${attrs}>`, 'header'));
-  html = html.replace(/<(div|nav)\b([^>]*\bclass="[^"]*\bmobmenu\b[^"]*"[^>]*)>/i,
-    (m, tag, attrs) => addMarkerToOpeningTag(`<${tag}${attrs}>`, 'mobile-menu'));
+  html = html.replace(/<aside\b([^>]*\bclass="[^"]*\bv18-mobile-drawer\b[^"]*"[^>]*)>/i,
+    (m, attrs) => addMarkerToOpeningTag(`<aside${attrs}>`, 'mobile-menu'));
   html = html.replace(/<footer\b([^>]*)>/i,
     (m, attrs) => addMarkerToOpeningTag(`<footer${attrs}>`, 'footer'));
   return html;
