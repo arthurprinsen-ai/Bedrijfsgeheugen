@@ -1,4 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { normaliseerAllePaginas } from './normaliseer-site-ui.mjs';
+import { controleerSiteUi } from './controleer-site-ui.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen, handgemaakte pagina.
@@ -6,7 +8,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 // pagina wijzen, zodat er nooit twee prijsverhalen naast elkaar staan.
 // Draait als laatste, na alle stappen die index.html schrijven.
 
-const DOEL = '/prijzen';
+const DOEL = 'https://www.bedrijfsgeheugen.nl/prijzen';
 
 const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prijzen</span>
 <h2>De prijzen staan op een eigen pagina.</h2>
@@ -39,3 +41,9 @@ for (const bestand of ['index.html', 'prototype-v18-stable.html']) {
   if (nieuw !== html) { await writeFile(bestand, nieuw, 'utf8'); gedaan++; }
 }
 console.log(`Oude prijzenweergave uit de homepage gehaald: ${gedaan} bestand(en)`);
+
+// Laatste build-gate: één zichtbare site-UI, ongeacht welke historische builder
+// de pagina heeft gemaakt. Dit voorkomt dat Prijzen of een losse contentpagina
+// opnieuw een afwijkend menu, contactbalk of generieke interactieblokken krijgt.
+await normaliseerAllePaginas();
+await controleerSiteUi();
