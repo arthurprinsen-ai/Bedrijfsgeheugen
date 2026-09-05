@@ -1,7 +1,7 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { PUBLIC_PAGE_EXCLUDES } from './contracts.mjs';
-import { markPageSlots } from './components.mjs';
+import { GLOBAL_COMPONENTS, PUBLIC_PAGE_EXCLUDES } from './contracts.mjs';
+import { extractComponent, markPageSlots, replaceComponent } from './components.mjs';
 
 const PAD = {
   home: '/', product: '/product', pricing: '/prijzen', solutions: '/oplossingen',
@@ -50,14 +50,24 @@ function schilUitBron(bronHtml, bronPad) {
   return { bron: html, voor: html.slice(0, eerste), na: html.slice(eindMain) };
 }
 
+export function projectGlobalComponents(targetHtml, sourceHtml) {
+  let target = markPageSlots(String(targetHtml));
+  const source = markPageSlots(String(sourceHtml));
+  for (const name of GLOBAL_COMPONENTS) {
+    const replacement = extractComponent(source, name);
+    if (!replacement) throw new Error(`canonical shell source mist component ${name}`);
+    const current = extractComponent(target, name);
+    if (!current) throw new Error(`target mist component ${name}`);
+    target = replaceComponent(target, name, replacement);
+  }
+  return target;
+}
+
 export function extractPageMain(input, pad = '') {
   const html = String(input);
   const main = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
   if (main) return main[1];
 
-  // Historische prijzen.html is de enige publieke marketingpagina zonder <main>.
-  // Migreer alleen de echte pagina-inhoud: alles na de oude navigatie en vóór
-  // de oude footer. De legacy header/mobile-menu/footer worden dus niet meegenomen.
   if (pad === 'prijzen.html') {
     const body = html.match(/<body\b[^>]*>/i);
     if (!body) return null;
@@ -157,7 +167,13 @@ export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL
   const shell = schilUitBron(sourceRaw, sourcePath);
   await writeFile(sourcePath, shell.bron, 'utf8');
 
-  let gelukt = 1, overgeslagen = 0;
+  // Homepage behoudt eigen hero/body, maar krijgt exact dezelfde globale
+  // merkcomponenten als alle contentpagina's.
+  const homeRaw = await readFile('index.html', 'utf8');
+  const homeProjected = projectGlobalComponents(homeRaw, shell.bron);
+  await writeFile('index.html', homeProjected, 'utf8');
+
+  let gelukt = 2, overgeslagen = 0;
   for (const pad of await publiekePaginas()) {
     if (pad === sourcePath) continue;
     let oud; try { oud = await readFile(pad, 'utf8'); } catch { continue; }
