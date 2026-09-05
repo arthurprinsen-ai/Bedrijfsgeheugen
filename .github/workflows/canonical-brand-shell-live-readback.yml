@@ -17,6 +17,8 @@ jobs:
           node-version: 24
       - name: Test live shell contract
         run: node tools/site-shell/test-live-contract.mjs
+      - name: Test live SEO order contract
+        run: node --test tests/seo-order-live-readback.test.mjs
 
   production-readback:
     if: github.event_name != 'pull_request'
@@ -27,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Wait for exact Netlify production commit and verify canonical shell
+      - name: Wait for exact Netlify production commit and verify canonical shell + SEO order engine
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
         run: |
@@ -37,12 +39,17 @@ jobs:
             curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/?bg_readback=${nonce}" -o live-home.html
             curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?bg_readback=${nonce}" -o live-prijzen.html
             curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_readback=${nonce}" -o live-over-ons.html
-            if node tools/site-shell/check-live-production.mjs; then
-              echo "Exact production readback green for ${EXPECTED_COMMIT}"
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/afas-koppeling?bg_readback=${nonce}" -o live-afas.html
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/?bg_readback=${nonce}" -o live-blog-index.html
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/afas-api/?bg_readback=${nonce}" -o live-blog-afas-api.html
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/kennis-borgen-in-je-bedrijf/?bg_readback=${nonce}" -o live-blog-kennis-borgen.html
+            if node tools/site-shell/check-live-production.mjs && node tools/seo-order-engine/live-readback.mjs; then
+              echo "Exact production shell + SEO order readback green for ${EXPECTED_COMMIT}"
               exit 0
             fi
-            echo "Production is not on ${EXPECTED_COMMIT} yet; retry ${attempt}/16"
+            echo "Production is not on ${EXPECTED_COMMIT} with all contracts yet; retry ${attempt}/16"
             sleep 15
           done
-          echo "Production never satisfied the exact canonical shell contract for ${EXPECTED_COMMIT}" >&2
+          echo "Production never satisfied the exact shell + SEO order contract for ${EXPECTED_COMMIT}" >&2
           node tools/site-shell/check-live-production.mjs
+          node tools/seo-order-engine/live-readback.mjs
