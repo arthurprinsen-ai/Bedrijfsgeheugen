@@ -22,6 +22,11 @@ function measuredSupport(){
   html=injectGrowthMeasurement(html,{canonical:`${ORIGIN}/blog/kosten/`,page_role:'support',funnel_stage:'discover',intent:'kosten digitalisering uitleg',keyword_cluster:'kosten digitalisering uitleg',intent_owner:`${ORIGIN}/prijzen`});
   return {canonical:`${ORIGIN}/blog/kosten/`,path:'blog/kosten/index.html',html};
 }
+function measuredAlias(){
+  let html=`<html><head><link rel="canonical" href="${ORIGIN}/prijzen"><meta name="bg-intent-owner" content="${ORIGIN}/prijzen"></head><body data-bg-page-role="article" data-bg-funnel-stage="discover" data-bg-intent="oude prijzen uitleg" data-bg-keyword-cluster="oude prijzen uitleg" data-bg-intent-role="supporting" data-bg-intent-owner="${ORIGIN}/prijzen"><main><h1>Oud artikel</h1><a href="${ORIGIN}/prijzen">Canonical prijzen</a></main></body></html>`;
+  html=injectGrowthMeasurement(html,{canonical:`${ORIGIN}/prijzen`,page_role:'article',funnel_stage:'discover',intent:'oude prijzen uitleg',keyword_cluster:'oude prijzen uitleg',intent_owner:`${ORIGIN}/prijzen`});
+  return {canonical:`${ORIGIN}/prijzen`,path:'blog/oude-prijzen/index.html',html};
+}
 
 test('geregistreerde money page krijgt schema conversion context en tracker', () => {
   const entry = registry.pages[0];
@@ -49,19 +54,14 @@ test('high-level gate accepteert verbonden money page en supportpagina', () => {
   assert.deepEqual(validateSeoOrderPages(pages, registry, { inspectBlogs: false }), []);
 });
 
-test('canonical alias blog mag de echte money page niet overschrijven in validatie', () => {
-  const money = measuredMoney();
-  const alias = {
-    canonical: `${ORIGIN}/prijzen`,
-    path: 'blog/oude-prijzen/index.html',
-    html: injectGrowthMeasurement(`<html><head><link rel="canonical" href="${ORIGIN}/prijzen"><meta name="bg-intent-owner" content="${ORIGIN}/prijzen"></head><body data-bg-intent-role="primary" data-bg-intent-owner="${ORIGIN}/prijzen"><main><h1>Oud artikel</h1></main></body></html>`,{canonical:`${ORIGIN}/prijzen`,page_role:'money',funnel_stage:'decide',intent:'kosten digitalisering mkb',keyword_cluster:'kosten digitalisering mkb',intent_owner:`${ORIGIN}/prijzen`})
-  };
+test('canonical alias blog blijft supporting en wordt nooit tweede primary intent owner', () => {
   const pages = [
-    { canonical: `${ORIGIN}/prijzen`, path: 'prijzen.html', html: money },
+    { canonical: `${ORIGIN}/prijzen`, path: 'prijzen.html', html: measuredMoney() },
     measuredSupport(),
-    alias
+    measuredAlias()
   ];
   const fouten = validateSeoOrderPages(pages, registry, { inspectBlogs: false }).join('\n');
+  assert.doesNotMatch(fouten, /primary intent-role ontbreekt/i);
+  assert.doesNotMatch(fouten, /primary intent-owner body marker ontbreekt/i);
   assert.doesNotMatch(fouten, /primaire CTA.*niet meetbaar/i);
-  assert.doesNotMatch(fouten, /money page mist zichtbaar bewijs/i);
 });
