@@ -1,7 +1,7 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { GLOBAL_COMPONENTS, PUBLIC_PAGE_EXCLUDES } from './contracts.mjs';
-import { extractComponent, markPageSlots, replaceComponent } from './components.mjs';
+import { ensureBrandShellCss, ensureFooterContact, ensureTrustBar, extractComponent, markPageSlots, replaceComponent } from './components.mjs';
 
 const PAD = {
   home: '/', product: '/product', pricing: '/prijzen', solutions: '/oplossingen',
@@ -67,7 +67,6 @@ export function extractPageMain(input, pad = '') {
   const html = String(input);
   const main = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
   if (main) return main[1];
-
   if (pad === 'prijzen.html') {
     const body = html.match(/<body\b[^>]*>/i);
     if (!body) return null;
@@ -137,7 +136,6 @@ export function applyCanonicalShell(html, shell, pad) {
   const opening = paginakop(kruimel.binnen);
   let uit = shell.voor + `<div class="page active" id="view-inhoud">\n<main data-bg-component="main">${opening}</main>\n</div>\n` + shell.na;
   if (kruimel.schema) eigen.data.push(kruimel.schema);
-
   if (eigen.titel) uit = uit.replace(/<title>[\s\S]*?<\/title>/i, eigen.titel);
   if (eigen.desc) uit = uit.replace(/<meta name="description" content="[^"]*"\s*\/?>/i, eigen.desc);
   if (eigen.canon) uit = /<link rel="canonical"/i.test(uit) ? uit.replace(/<link rel="canonical" href="[^"]*"\s*\/?>/i, eigen.canon) : uit.replace('</head>', `${eigen.canon}\n</head>`);
@@ -164,13 +162,13 @@ async function publiekePaginas() {
 
 export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL_SOURCE) {
   const sourceRaw = await readFile(sourcePath, 'utf8');
-  const shell = schilUitBron(sourceRaw, sourcePath);
+  const sourcePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(sourceRaw)));
+  const shell = schilUitBron(sourcePrepared, sourcePath);
   await writeFile(sourcePath, shell.bron, 'utf8');
 
-  // Homepage behoudt eigen hero/body, maar krijgt exact dezelfde globale
-  // merkcomponenten als alle contentpagina's.
   const homeRaw = await readFile('index.html', 'utf8');
-  const homeProjected = projectGlobalComponents(homeRaw, shell.bron);
+  const homePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(homeRaw)));
+  const homeProjected = projectGlobalComponents(homePrepared, shell.bron);
   await writeFile('index.html', homeProjected, 'utf8');
 
   let gelukt = 2, overgeslagen = 0;
