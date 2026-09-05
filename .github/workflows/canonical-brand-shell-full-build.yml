@@ -36,6 +36,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: canonical-shell-gate-diagnostic
-          path: shell-gate-diagnostic.txt
+          path: |
+            shell-gate-diagnostic.txt
+            shell-gate-failed-page.html
+          if-no-files-found: ignore
       - name: 8 Release evidence
         run: node tools/bouw-release-evidence.mjs
