@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 export const GLOBAL_COMPONENTS = ['trustbar', 'header', 'mobile-menu', 'footer'];
 export const PUBLIC_PAGE_EXCLUDES = new Set([
   'index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html',
-  'klantportaal-demo.html', 'klant-login.html', 'afmaakindex.html'
+  'klantportaal-demo.html', 'klant-login.html'
 ]);
 
 function addMarkerToOpeningTag(tag, name) {

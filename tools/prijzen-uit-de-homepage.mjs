@@ -1,11 +1,13 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { normaliseerAllePaginas } from './normaliseer-site-ui.mjs';
 import { controleerSiteUi } from './controleer-site-ui.mjs';
+import { genereerSitemap } from './genereer-sitemap.mjs';
+import { controleerTechnischeSeo } from './controleer-technische-seo.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
 // canonical merk-shell. Deze stap verwijdert de oude homepage-weergave en
-// voert daarna de page-policy en estate-wide shell-gate uit.
+// voert daarna de page-policy, sitemap en estate-wide releasegates uit.
 
 const DOEL = 'https://www.bedrijfsgeheugen.nl/prijzen';
 
@@ -47,7 +49,11 @@ export async function bouwPrijsVerwijzing() {
 export async function voerPricingShellPipelineUit(stage = 'all') {
   if (stage === 'all' || stage === 'rewrite') await bouwPrijsVerwijzing();
   if (stage === 'all' || stage === 'normalize') await normaliseerAllePaginas();
-  if (stage === 'all' || stage === 'verify') await controleerSiteUi();
+  if (stage === 'all' || stage === 'verify') {
+    await genereerSitemap();
+    await controleerSiteUi();
+    await controleerTechnischeSeo();
+  }
 }
 
 const stage = process.env.BG_PRICING_STAGE || 'all';

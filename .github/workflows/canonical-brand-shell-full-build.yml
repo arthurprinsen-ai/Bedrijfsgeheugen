@@ -31,6 +31,8 @@ jobs:
         run: BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
       - name: 7c Estate-wide canonical shell gate
         run: node tools/site-shell/diagnose-shell-gate.mjs
+      - name: 7d Netlify-equivalent sitemap + technische SEO gate
+        run: BG_PRICING_STAGE=verify node tools/prijzen-uit-de-homepage.mjs
       - name: Upload shell gate diagnostic
         if: always()
         uses: actions/upload-artifact@v4

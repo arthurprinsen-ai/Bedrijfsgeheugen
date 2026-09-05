@@ -7,8 +7,20 @@ import {
 import {
   ensureTrustBar, ensureFooterContact, ensureBrandShellCss, markPageSlots
 } from './site-shell/components.mjs';
-import { applyCanonicalShellToAllPages } from './site-shell/apply-shell.mjs';
+import { applyCanonicalShellToAllPages, projectGlobalComponents } from './site-shell/apply-shell.mjs';
 import { ensureReleaseMarker } from './site-shell/release-marker.mjs';
+
+const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
+
+function absolutiseerInterneHref(html) {
+  return String(html).replace(/href=(['"])\/(?!\/)([^'"]*)\1/gi, (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
+}
+
+function herstelTechnischeLinks(html) {
+  return String(html)
+    .replaceAll(`${ORIGIN}/wachtwoord-vergeten`, `${ORIGIN}/inloggen`)
+    .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`);
+}
 
 function openDivMetKlasse(html, klasse, vanaf = 0) {
   const re = /<div\b[^>]*class="[^"]*"[^>]*>/gi;
@@ -91,17 +103,21 @@ export function normaliseerHtml(input, bestand) {
   html = ensureBrandShellCss(html);
   html = ensureReleaseMarker(html);
   html = markPageSlots(html);
+  html = absolutiseerInterneHref(html);
+  html = herstelTechnischeLinks(html);
   return html;
 }
 
-const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html', 'afmaakindex.html']);
+const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
 
 export async function normaliseerAllePaginas() {
-  // Finale projectie: eerst maken historische builders hun pagina-inhoud,
-  // daarna wordt de actuele brand shell uit de canonical v18-contentpagina
-  // om alle openbare pagina's gezet. Zo kan geen late builder nog een eigen
-  // header, mobiel menu of footer terugbrengen.
+  // Historische builders leveren alleen pagina-inhoud. Daarna wordt eerst de
+  // canonical shell geprojecteerd. Elke pagina krijgt vervolgens eerst de
+  // minimale markers/policy die projectGlobalComponents nodig heeft. Pas dan
+  // projecteren we TrustBar/Header/MobileMenu/Footer definitief en voeren we
+  // dezelfde idempotente normalisatie nog één keer uit.
   await applyCanonicalShellToAllPages();
+  const canonicalSource = normaliseerHtml(await readFile('over-ons.html', 'utf8'), 'over-ons.html');
 
   const bestanden = [];
   for await (const p of glob('*.html')) if (!MAG_NIET.has(p)) bestanden.push(p);
@@ -112,10 +128,21 @@ export async function normaliseerAllePaginas() {
   for (const bestand of [...new Set(bestanden)]) {
     let html; try { html = await readFile(bestand, 'utf8'); } catch { continue; }
     if (!html.includes('<body')) continue;
-    const nieuw = normaliseerHtml(html, bestand);
+
+    const voorbereid = normaliseerHtml(html, bestand);
+    let metMerkcomponenten;
+    try {
+      metMerkcomponenten = bestand === 'over-ons.html'
+        ? voorbereid
+        : projectGlobalComponents(voorbereid, canonicalSource);
+    } catch (error) {
+      throw new Error(`${bestand}: finale globale componentprojectie: ${error.message}`);
+    }
+
+    const nieuw = normaliseerHtml(metMerkcomponenten, bestand);
     if (nieuw !== html) { await writeFile(bestand, nieuw, 'utf8'); gewijzigd++; }
   }
-  console.log(`Canonical site-UI policy toegepast op ${gewijzigd} pagina's na finale shell-projectie`);
+  console.log(`Canonical site-UI policy toegepast op ${gewijzigd} pagina's; globale merkcomponenten finale keer geprojecteerd`);
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))) await normaliseerAllePaginas();
