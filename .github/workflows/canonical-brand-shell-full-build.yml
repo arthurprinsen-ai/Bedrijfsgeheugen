@@ -30,6 +30,12 @@ jobs:
       - name: 7b Canonical page policy normalisatie
         run: BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
       - name: 7c Estate-wide canonical shell gate
-        run: BG_PRICING_STAGE=verify node tools/prijzen-uit-de-homepage.mjs
+        run: node tools/site-shell/diagnose-shell-gate.mjs
+      - name: Upload shell gate diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-shell-gate-diagnostic
+          path: shell-gate-diagnostic.txt
       - name: 8 Release evidence
         run: node tools/bouw-release-evidence.mjs
