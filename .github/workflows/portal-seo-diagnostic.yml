@@ -4,7 +4,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   seo-diagnostic:
@@ -14,15 +14,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Run SEO control and preserve exit code
-        shell: bash
-        run: |
-          set +e
-          python .github/scripts/seocontrole.py
-          rc=$?
-          echo "SEO_EXIT_CODE=$rc"
-          cat seo-rapport.md 2>/dev/null || true
-          exit $rc
+      - name: Run SEO control
+        run: python .github/scripts/seocontrole.py
       - name: Upload SEO diagnostic report
         if: always()
         uses: actions/upload-artifact@v4
@@ -32,18 +25,17 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
-  page-diagnostic:
+  page-diagnostic-and-fix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: feature/klantenportaal-brain-powerhouse-v1
+          fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Install Playwright
-        run: |
-          pip install --quiet playwright
-          playwright install --with-deps chromium
-      - name: Hypothesis test - remove vertical re-centering from due-diligence hero
+      - name: Apply proven due-diligence CLS fix in candidate workspace
         shell: bash
         run: |
           python - <<'PY'
@@ -52,19 +44,30 @@ jobs:
           s = p.read_text(encoding='utf-8')
           old = '.p-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center}'
           new = '.p-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:start}'
-          if old not in s:
-              raise SystemExit('hypothesis selector not found')
-          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          if old in s:
+              p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          elif new not in s:
+              raise SystemExit('expected due-diligence hero selector not found')
           PY
-      - name: Run browser page control with hypothesis patch
+      - name: Install Playwright
+        run: |
+          pip install --quiet playwright
+          playwright install --with-deps chromium
+      - name: Verify full page control
+        run: python .github/scripts/paginacontrole.py
+      - name: Commit only after green verification
         shell: bash
         run: |
-          set +e
-          python .github/scripts/paginacontrole.py
-          rc=$?
-          echo "PAGE_EXIT_CODE=$rc"
-          cat rapport.md 2>/dev/null || true
-          exit $rc
+          set -euo pipefail
+          if git diff --quiet -- due-diligence.html; then
+            echo 'due-diligence fix already present'
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- due-diligence.html
+          git commit -m "fix: stabilize due-diligence hero layout"
+          git push origin HEAD:feature/klantenportaal-brain-powerhouse-v1
       - name: Upload page diagnostic report
         if: always()
         uses: actions/upload-artifact@v4
