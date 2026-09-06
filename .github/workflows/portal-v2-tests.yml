@@ -1,0 +1,34 @@
+name: Portal V2 Tests
+
+on:
+  push:
+    branches:
+      - feature/klantenportaal-brain-powerhouse-v1
+    paths:
+      - 'portal-v2/**'
+      - 'portal-next/portal-content-map.js'
+      - '.github/workflows/portal-v2-tests.yml'
+  pull_request:
+    paths:
+      - 'portal-v2/**'
+      - 'portal-next/portal-content-map.js'
+      - '.github/workflows/portal-v2-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: portal-v2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: portal-v2/package.json
+      - name: Run portal-v2 contract tests
+        run: npm test
