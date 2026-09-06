@@ -54,6 +54,27 @@ test('iedere primaire intent heeft precies één eigenaar', () => {
   assert.deepEqual(duplicates, [], `Dubbele intent-eigenaren: ${JSON.stringify(duplicates)}`);
 });
 
+test('ieder primary en secondary keyword-cluster heeft precies één pagina-eigenaar', () => {
+  const claims = new Map();
+  for (const item of map.pages) {
+    for (const keyword of [item.primary_keyword, ...(item.secondary_keywords ?? [])]) {
+      const key = String(keyword).trim().toLocaleLowerCase('nl-NL');
+      if (!key) continue;
+      const owners = claims.get(key) ?? new Set();
+      owners.add(item.route);
+      claims.set(key, owners);
+    }
+  }
+  const collisions = [...claims.entries()]
+    .filter(([, owners]) => owners.size > 1)
+    .map(([keyword, owners]) => [keyword, [...owners]]);
+  assert.deepEqual(collisions, [], `Keyword-cannibalisatie: ${JSON.stringify(collisions)}`);
+
+  const processPage = page('/bedrijfsprocessen-automatiseren');
+  assert.ok(processPage.secondary_keywords.includes('bedrijfsprocessen digitaliseren'));
+  assert.ok(!page('/').secondary_keywords.includes('bedrijfsprocessen digitaliseren'));
+});
+
 test('alle revenue-sprint routes en CTA-links zijn absolute Bedrijfsgeheugen-URLs', () => {
   for (const route of [
     '/afas-koppeling',
