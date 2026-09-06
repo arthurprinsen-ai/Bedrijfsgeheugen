@@ -89,25 +89,20 @@ export async function applySeoOrderEngine() {
     if (!/<body\b/i.test(html) || noindex(html)) continue;
     const canonical=canonicalOf(html); if(!canonical.startsWith(`${ORIGIN}/`)) continue;
     let out;
-    try {
-      if (isBlogArticle(path)) {
-        out=enrichBlog(html,path,registry);
-        out=injectConversionTracker(out);
-        out=injectGrowthMeasurement(out,{canonical,page_role:'article',funnel_stage:'discover',intent:metaContent(out,'bg-intent'),keyword_cluster:metaContent(out,'bg-keyword-cluster'),intent_owner:metaContent(out,'bg-intent-owner')});
-        blogs++;
-      } else {
-        const policy=classifyCanonical(canonical,registry);
-        if(!policy) throw new Error(`Ongeclassificeerde publieke pagina: ${canonical}. Voeg expliciet intent/rol/owner toe voordat deze pagina kan publiceren.`);
-        if(policy.registered){
-          const entry=policy.entry;
-          out=enrichRegisteredPage(html,entry);
-          out=injectGrowthMeasurement(out,{canonical,page_role:entry.role,funnel_stage:entry.funnel_stage,intent:entry.primary_intent,keyword_cluster:entry.primary_keyword,intent_owner:entry.route});
-          registered++;
-        } else { out=enrichPolicyPage(html,registry,policy); classified++; }
-      }
-    } catch (error) {
-      const message=error instanceof Error?error.message:String(error);
-      throw new Error(`SEO enrichment failed for ${path} (${canonical}): ${message}`, { cause:error });
+    if (isBlogArticle(path)) {
+      out=enrichBlog(html,path,registry);
+      out=injectConversionTracker(out);
+      out=injectGrowthMeasurement(out,{canonical,page_role:'article',funnel_stage:'discover',intent:metaContent(out,'bg-intent'),keyword_cluster:metaContent(out,'bg-keyword-cluster'),intent_owner:metaContent(out,'bg-intent-owner')});
+      blogs++;
+    } else {
+      const policy=classifyCanonical(canonical,registry);
+      if(!policy) throw new Error(`Ongeclassificeerde publieke pagina: ${canonical}. Voeg expliciet intent/rol/owner toe voordat deze pagina kan publiceren.`);
+      if(policy.registered){
+        const entry=policy.entry;
+        out=enrichRegisteredPage(html,entry);
+        out=injectGrowthMeasurement(out,{canonical,page_role:entry.role,funnel_stage:entry.funnel_stage,intent:entry.primary_intent,keyword_cluster:entry.primary_keyword,intent_owner:entry.route});
+        registered++;
+      } else { out=enrichPolicyPage(html,registry,policy); classified++; }
     }
     if(out!==html){await writeFile(path,out,'utf8');changed++;}
   }
