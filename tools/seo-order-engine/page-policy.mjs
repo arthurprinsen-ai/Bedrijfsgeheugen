@@ -30,13 +30,19 @@ const POLICY = new Map(Object.entries({
   [`${ORIGIN}/ai-capability-model`]: { page_class: 'support', owner: `${ORIGIN}/ai-adoptie` }
 }));
 
+const COMMERCIAL_SIGNAL = /(?:^|\/)(?:[^/]*koppeling|[^/]*automatiseren|ai-(?:implement|scan|poc|governance)|business-case|due-diligence|workshop|laten-maken|investeerders-ma|webshop-koppeling)(?:\/|$)/i;
+
 export function classifyCanonical(url, registry) {
   const entry = entryForCanonical(url, registry);
   if (entry) return { page_class: entry.role, owner: entry.route, registered: true, entry };
   const policy = POLICY.get(url);
-  if (!policy) return null;
-  const ownerEntry = entryForCanonical(policy.owner, registry);
-  return { ...policy, registered: false, ownerEntry };
+  if (policy) {
+    const ownerEntry = entryForCanonical(policy.owner, registry);
+    return { ...policy, registered: false, ownerEntry };
+  }
+  if (!url?.startsWith(`${ORIGIN}/`) || COMMERCIAL_SIGNAL.test(new URL(url).pathname)) return null;
+  const pillar=(registry.pages||[]).find(e=>e.role==='pillar')||null;
+  return { page_class:'support', owner:pillar?.route||`${ORIGIN}/`, registered:false, ownerEntry:pillar, auto:true };
 }
 
 export function explicitPolicyUrls() { return [...POLICY.keys()]; }
