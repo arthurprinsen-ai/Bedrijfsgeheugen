@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { PORTAL_SECTIONS, findPortalPage, buildStrategyTrace, buildChangeTrace } from '../portal-next/portal-content-map.js';
+const requiredSections=['overzicht','inzicht','vergelijken','denken','overname','doen','brein-powerhouse','beheer'];
+const requiredPages=['overzicht','profiel','data-ai','ai-scan','kansenkaart','gegevens-invullen','ingevulde-gegevens','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','strategiemodellen','modellen','canvassen','eindconclusie','due-diligence','exit','advies','offerte','roadmap','strategie-naar-maandagochtend','uitvoeringsladder','taken-werkstromen','actueel-houden','wijzigingen','koppelingen','gebruikers','documenten','instellingen','audit'];
+test('nieuwe IA bevat alle vereiste hoofddomeinen en pagina-identiteiten',()=>{assert.deepEqual(Object.keys(PORTAL_SECTIONS),requiredSections);for(const id of requiredPages)assert.ok(findPortalPage(id),`missing portal page: ${id}`)});
+test('strategie trace bevat volledige keten tot outcome',()=>assert.deepEqual(buildStrategyTrace({id:'premium-service'}).order,['strategie','thema','capability','afdeling','proces','systeem','data','ai','maatstaf','actie','outcome']));
+test('wijziging trace eindigt pas na outcome + brain update',()=>assert.deepEqual(buildChangeTrace({id:'change-1'}).order,['wijziging','geraakte-onderdelen','powerhouse-analyse','taak-actie','outcome','brain-update']));
