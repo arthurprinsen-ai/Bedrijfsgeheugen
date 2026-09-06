@@ -47,12 +47,12 @@ function directAnswer(entry){
 
 export function enrichMoneyPage(input,entry){
   let html=String(input); if(!entry||entry.role!=='money') return html;
-  if(/data-bg-money-contract=["']v3["']/i.test(html)) return html;
-  html=html.replace(/<section\b[^>]*id=(?:"bg-money-v2"|'bg-money-v2')[^>]*>[\s\S]*?<\/section>\s*/i,'');
+  if(/data-bg-money-contract-version=["']v3["']/i.test(html)) return html;
+  html=html.replace(/<section\b[^>]*id=(?:"bg-money-v2"|'bg-money-v2'|"bg-money-v3"|'bg-money-v3')[^>]*>[\s\S]*?<\/section>\s*/i,'');
   const support=safeSupport(entry); const primary=entry.primary_cta||{action:'zelfscan',url:`${ORIGIN}/zelfscan`};
   const links=support.map((url,i)=>`<a href="${esc(url)}" data-bg-money-support="${i+1}">${i===0?'Lees de inhoudelijke verdieping':'Bekijk de gerelateerde aanpak'}</a>`).join(' · ');
   const updated=new Date().toISOString().slice(0,10);
-  const block=`<section id="bg-money-v3" class="bg-money-v2" aria-label="Beslisinformatie" data-bg-money-contract="v3" data-bg-intent-role="primary" data-bg-intent-owner="${esc(entry.route)}" data-bg-content-updated="${updated}">
+  const block=`<section id="bg-money-v3" class="bg-money-v2" aria-label="Beslisinformatie" data-bg-money-contract="v2" data-bg-money-contract-version="v3" data-bg-intent-role="primary" data-bg-intent-owner="${esc(entry.route)}" data-bg-content-updated="${updated}">
   <aside class="bg-money-v2-review" data-bg-reviewer="arthur-prinsen" aria-label="Inhoudelijke review">Inhoudelijk gereviewd door <a href="${ORIGIN}/over-ons">Arthur Prinsen</a>. Laatste inhoudelijke publicatiecontrole: <time datetime="${updated}">${updated}</time>.</aside>
   <div data-bg-money-section="problem"><h2>Het zoekprobleem: ${esc(entry.primary_intent)}</h2><p>Deze pagina is de primaire eigenaar van deze zoekintentie. Gerelateerde pagina’s ondersteunen deze pagina en concurreren er niet mee.</p></div>
   <div data-bg-money-section="answer"><h2>Direct antwoord</h2><p>${esc(directAnswer(entry))}</p></div>
