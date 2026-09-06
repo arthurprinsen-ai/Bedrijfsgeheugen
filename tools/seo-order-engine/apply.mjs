@@ -50,19 +50,34 @@ function markKnownCtas(input, registry, role = 'support', funnel = 'discover') {
   return html;
 }
 
+function explicitSupportingOwner(canonical, registry) {
+  return (registry.pages || []).find(entry => entry.role === 'money' && (entry.supporting_routes || []).includes(canonical)) || null;
+}
+function hasAbsoluteLink(html, url) {
+  const escaped = String(url).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return new RegExp(`href=(?:"${escaped}"|'${escaped}')`, 'i').test(String(html));
+}
+function ensureSupportingOwnerLink(input, owner) {
+  let html=String(input); if(!owner?.route || hasAbsoluteLink(html,owner.route))return html;
+  const block=`<aside class="bg-contextual-next-step" data-bg-money-support="${esc(owner.primary_intent)}"><p><strong>Volgende stap:</strong> <a href="${owner.route}" data-bg-money-route="${esc(owner.primary_intent)}">Bekijk hoe Bedrijfsgeheugen ${esc(owner.primary_intent)} aanpakt.</a></p></aside>`;
+  if(/<\/main>/i.test(html))return html.replace(/<\/main>/i,`${block}\n</main>`);
+  return html.replace(/<\/body>/i,`${block}\n</body>`);
+}
+
 function enrichGenericPage(input, registry) {
   let html = String(input); const meta = inferSeoMeta(html);
-  const owner=dominantCommercialEntry(html,registry)||(registry.pages||[]).find(e=>e.role==='pillar')||null;
+  const owner=explicitSupportingOwner(meta.canonical,registry)||dominantCommercialEntry(html,registry)||(registry.pages||[]).find(e=>e.role==='pillar')||null;
   const intent=localIntent(meta);
   const keyword=intent;
   html = markBodyContext(html, 'support', 'discover', intent, keyword, 'supporting', owner?.route||'');
   html = ensureMeta(html,'bg-intent',intent);
   html = ensureMeta(html,'bg-keyword-cluster',keyword);
   html = ensureMeta(html,'bg-intent-owner',owner?.route||'');
+  html = ensureSupportingOwnerLink(html,owner);
   html = markKnownCtas(html, registry);
   html = injectConversionTracker(html);
   html = injectSeoGraph(html, { ...meta, schema_type: meta.canonical === `${ORIGIN}/blog/` ? 'CollectionPage' : 'WebPage' });
-  html = injectGrowthMeasurement(html,{canonical:meta.canonical,page_role:'support',funnel_stage:'discover',intent,keyword_cluster:keyword,intent_owner:owner?.route||''});
+  html = injectGrowthMeasurement(html,{canonical:meta.canonical,page_role:'support',funnel_stage:'discover',intent,keyword_cluster:keyword,intent_owner:owner?.route||'',search_intent:owner?.search_intent||'',business_goal:'assisted-conversion',target_page_type:'guide',priority:owner?.priority||''});
   return html;
 }
 
@@ -83,13 +98,14 @@ export async function applySeoOrderEngine() {
     if (isBlogArticle(path)) {
       out=enrichBlog(html,path,registry);
       out=injectConversionTracker(out);
-      out=injectGrowthMeasurement(out,{canonical,page_role:'article',funnel_stage:'discover',intent:metaContent(out,'bg-intent'),keyword_cluster:metaContent(out,'bg-keyword-cluster'),intent_owner:metaContent(out,'bg-intent-owner')});
+      const owner=(registry.pages||[]).find(e=>e.route===metaContent(out,'bg-intent-owner'))||null;
+      out=injectGrowthMeasurement(out,{canonical,page_role:'article',funnel_stage:'discover',intent:metaContent(out,'bg-intent'),keyword_cluster:metaContent(out,'bg-keyword-cluster'),intent_owner:owner?.route||metaContent(out,'bg-intent-owner'),search_intent:'informational',business_goal:'assisted-conversion',target_page_type:'guide',priority:owner?.priority||''});
       blogs++;
     } else {
       const entry=entryForCanonical(canonical,registry);
       if(entry){
         out=enrichRegisteredPage(html,entry);
-        out=injectGrowthMeasurement(out,{canonical,page_role:entry.role,funnel_stage:entry.funnel_stage,intent:entry.primary_intent,keyword_cluster:entry.primary_keyword,intent_owner:entry.route});
+        out=injectGrowthMeasurement(out,{canonical,page_role:entry.role,funnel_stage:entry.funnel_stage,intent:entry.primary_intent,keyword_cluster:entry.primary_keyword,intent_owner:entry.route,search_intent:entry.search_intent,business_goal:entry.business_goal,target_page_type:entry.target_page_type,priority:entry.priority});
         registered++;
       } else { out=enrichGenericPage(html,registry); generic++; }
     }

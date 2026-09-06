@@ -4,6 +4,9 @@ export const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const ROLES = new Set(['pillar', 'money', 'support', 'blog-index', 'article']);
 const FUNNEL = new Set(['discover', 'consider', 'decide']);
 const SCHEMA = new Set(['WebPage', 'Service', 'CollectionPage', 'Article']);
+const SEARCH_INTENTS = new Set(['commercial', 'informational', 'mixed', 'navigational']);
+const TARGET_PAGE_TYPES = new Set(['money', 'guide', 'pillar', 'trust', 'tool']);
+const BUSINESS_GOALS = new Set(['lead', 'assisted-conversion', 'trust', 'self-serve']);
 
 function isAbsoluteInternalUrl(value) {
   return typeof value === 'string' && (value === `${ORIGIN}/` || value.startsWith(`${ORIGIN}/`));
@@ -48,6 +51,18 @@ export function validateRegistry(registry) {
     if (!ROLES.has(entry?.role)) fouten.push(`${label}.role is ongeldig`);
     if (!FUNNEL.has(entry?.funnel_stage)) fouten.push(`${label}.funnel_stage is ongeldig`);
     if (!SCHEMA.has(entry?.schema_type)) fouten.push(`${label}.schema_type is ongeldig`);
+    if (!SEARCH_INTENTS.has(entry?.search_intent)) fouten.push(`${label}.search_intent is ongeldig`);
+    if (!TARGET_PAGE_TYPES.has(entry?.target_page_type)) fouten.push(`${label}.target_page_type is ongeldig`);
+    if (!BUSINESS_GOALS.has(entry?.business_goal)) fouten.push(`${label}.business_goal is ongeldig`);
+    if (!Number.isInteger(entry?.priority) || entry.priority < 1 || entry.priority > 5) fouten.push(`${label}.priority moet geheel getal 1..5 zijn`);
+
+    if (entry?.search_intent === 'commercial') {
+      if (entry?.role !== 'money') fouten.push(`${label}: commercial search_intent vereist role=money`);
+      if (entry?.target_page_type !== 'money') fouten.push(`${label}: commercial search_intent vereist target_page_type=money`);
+    }
+    if (entry?.role === 'money' && entry?.search_intent === 'informational') fouten.push(`${label}: money role mag niet informational zijn`);
+    if (entry?.role === 'pillar' && entry?.target_page_type !== 'pillar') fouten.push(`${label}: pillar role vereist target_page_type=pillar`);
+    if (entry?.role === 'blog-index' && entry?.target_page_type !== 'guide') fouten.push(`${label}: blog-index vereist target_page_type=guide`);
 
     const intent = normaliseer(entry?.primary_intent);
     if (!intent) fouten.push(`${label}.primary_intent is verplicht`);

@@ -6,17 +6,17 @@ const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 
 function geldigeRegistry() {
   return {
-    version: 1,
+    version: 2,
     pages: [
       {
         route: `${ORIGIN}/`, role: 'pillar', primary_intent: 'digitalisering mkb', primary_keyword: 'digitalisering mkb',
-        secondary_keywords: ['mkb digitaliseren'], funnel_stage: 'discover',
+        secondary_keywords: ['mkb digitaliseren'], funnel_stage: 'discover', search_intent: 'mixed', target_page_type: 'pillar', business_goal: 'assisted-conversion', priority: 5,
         primary_cta: { action: 'zelfscan', url: `${ORIGIN}/gratis-zelfscan` },
         supporting_routes: [`${ORIGIN}/prijzen`], schema_type: 'WebPage'
       },
       {
         route: `${ORIGIN}/prijzen`, role: 'money', primary_intent: 'kosten digitalisering mkb', primary_keyword: 'kosten digitalisering mkb',
-        secondary_keywords: ['prijzen digitalisering mkb'], funnel_stage: 'decide',
+        secondary_keywords: ['prijzen digitalisering mkb'], funnel_stage: 'decide', search_intent: 'commercial', target_page_type: 'money', business_goal: 'lead', priority: 5,
         primary_cta: { action: 'frisse-blik-scan', url: `${ORIGIN}/aanmelden` },
         supporting_routes: [`${ORIGIN}/`], schema_type: 'Service'
       }
