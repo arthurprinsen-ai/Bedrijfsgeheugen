@@ -10,6 +10,32 @@ function canonicalOf(html){const tag=[...headOf(html).matchAll(/<link\b[^>]*>/gi
 function metaContent(html,name){const tag=[...headOf(html).matchAll(/<meta\b[^>]*>/gi)].find(m=>String(attr(m[0],'name')).toLowerCase()===String(name).toLowerCase())?.[0]||'';return attr(tag,'content');}
 function isBlogArticle(path){return /^blog\/.+\/index\.html$/i.test(path||'')&&path!=='blog/index.html';}
 
+const HOMEPAGE_PRICING_ONLY_MARKERS = [
+  'vraag het deze pagina',
+  'reken het even na',
+  'kies je rol',
+];
+
+function visibleText(html){
+  return String(html||'')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ')
+    .replace(/<[^>]+>/g,' ')
+    .replace(/&nbsp;/gi,' ')
+    .replace(/\s+/g,' ')
+    .trim()
+    .toLowerCase();
+}
+
+function homepagePricingBoundaryErrors(page){
+  if(page?.canonical!=='https://www.bedrijfsgeheugen.nl/')return [];
+  const text=visibleText(page.html);
+  const gevonden=HOMEPAGE_PRICING_ONLY_MARKERS.filter(marker=>text.includes(marker));
+  return gevonden.length
+    ? [`${page.path}: pricing-only UI op homepage gevonden (${gevonden.join(', ')})`]
+    : [];
+}
+
 function registeredPageErrors(page,entry){
   const fouten=[];const html=String(page.html||'');
   if(!/id=["']bg-seo-order-graph["']/i.test(html))fouten.push(`${page.path}: SEO order graph ontbreekt`);
@@ -24,8 +50,8 @@ function registeredPageErrors(page,entry){
   return fouten;
 }
 
-export function validateLiveSeoOrderSet(pages,registry){const fouten=[];for(const page of pages||[]){if(!hasGrowthMeasurement(page.html))fouten.push(`${page.path}: growth measurement contract ontbreekt`);const entry=(registry?.pages||[]).find(item=>item.route===page.canonical);if(entry)fouten.push(...registeredPageErrors(page,entry));if(isBlogArticle(page.path)&&!entry)fouten.push(...inspectBlog(page.html,page.path,registry));}return [...new Set(fouten)];}
+export function validateLiveSeoOrderSet(pages,registry){const fouten=[];for(const page of pages||[]){fouten.push(...homepagePricingBoundaryErrors(page));if(!hasGrowthMeasurement(page.html))fouten.push(`${page.path}: growth measurement contract ontbreekt`);const entry=(registry?.pages||[]).find(item=>item.route===page.canonical);if(entry)fouten.push(...registeredPageErrors(page,entry));if(isBlogArticle(page.path)&&!entry)fouten.push(...inspectBlog(page.html,page.path,registry));}return [...new Set(fouten)];}
 
 async function readLivePages(){const files=[['live-home.html','live-home.html'],['live-prijzen.html','live-prijzen.html'],['live-afas.html','live-afas.html'],['live-blog-index.html','live-blog-index.html'],['live-blog-afas-api.html','blog/afas-api/index.html'],['live-blog-kennis-borgen.html','blog/kennis-borgen-in-je-bedrijf/index.html']];const pages=[];for(const [file,path] of files){const html=await readFile(file,'utf8');pages.push({path,canonical:canonicalOf(html),html});}return pages;}
-export async function checkLiveSeoOrder(){const registry=await loadRegistry();const pages=await readLivePages();const fouten=validateLiveSeoOrderSet(pages,registry);if(fouten.length)throw new Error(`Live SEO order/growth readback faalt (${fouten.length}):\n- ${fouten.join('\n- ')}`);console.log(`Live SEO order + growth readback OK: ${pages.length} representatieve productiepagina's inclusief intent ownership`);return {pages:pages.length};}
+export async function checkLiveSeoOrder(){const registry=await loadRegistry();const pages=await readLivePages();const fouten=validateLiveSeoOrderSet(pages,registry);if(fouten.length)throw new Error(`Live SEO order/growth readback faalt (${fouten.length}):\n- ${fouten.join('\n- ')}`);console.log(`Live SEO order + growth readback OK: ${pages.length} representatieve productiepagina's inclusief intent ownership en homepage pricing-boundary`);return {pages:pages.length};}
 if(process.argv[1]&&import.meta.url.endsWith(process.argv[1].replace(/\\/g,'/')))await checkLiveSeoOrder();
