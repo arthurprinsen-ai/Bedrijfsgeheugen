@@ -18,8 +18,6 @@ const MODULES=[
  ['koppelingen','∞','Koppelingen'],['taken','✓','Taken & werkstromen'],['uren','€','Uren & facturen'],['actueel','⟳','Actueel houden']
 ];
 
-// This branch is a review environment. The selected route is explicitly a preview,
-// never an assertion about live runtime execution.
 let selection={source:'documenten',module:'inzicht'};
 let previewMode=true;
 let runtime=null;
@@ -47,6 +45,21 @@ function mountModules(){
   wrap.appendChild(b);
  });
 }
+function mountPreviewControl(){
+ const live=document.querySelector('.live');
+ if(!live)return;
+ const b=document.createElement('button');
+ b.type='button';b.className='smallbtn ai';b.id='previewRoute';b.textContent='▶ Toon voorbeeldflow';
+ b.setAttribute('aria-label','Toon expliciet een voorbeeld van de gegevensstroom');
+ b.addEventListener('click',()=>{
+  selection.source=selection.source||'documenten';
+  selection.module=selection.module||'inzicht';
+  previewMode=true;
+  runtime=null;
+  render();
+ });
+ live.appendChild(b);
+}
 
 function renderFocus(){
  document.querySelectorAll('.source').forEach(node=>{
@@ -64,12 +77,14 @@ function renderFocus(){
 function renderCopy(flow){
  const source=selectedSource(), module=selectedModule();
  el('flowNowTitle').textContent=source?`Nu geselecteerd: ${source[2]}`:'Geen bron geselecteerd';
- el('flowNow').textContent=source?`${source[3]}. ${flow.sourceFlow?'De bron stroomt aantoonbaar door.':'Selectie alleen; zonder runtime-evidence wordt geen live stroom geclaimd.'}`:'Kies een bron.';
- el('flowBrain').textContent=flow.processingFlow?'Datahub, AI Brain en Powerhouse verwerken deze route.':flow.status==='blocked'?'De route is geblokkeerd en stopt vóór verdere verwerking.':'Geen bewezen verwerking actief.';
+ el('flowNow').textContent=source?`${source[3]}. ${flow.sourceFlow?'Voorbeeldroute zichtbaar.':'Selectie alleen; zonder runtime-evidence wordt geen live stroom geclaimd.'}`:'Kies een bron.';
+ el('flowBrain').textContent=flow.processingFlow?'Voorbeeld: Datahub, AI Brain en Powerhouse verwerken deze route.':flow.status==='blocked'?'De route is geblokkeerd en stopt vóór verdere verwerking.':'Geen bewezen verwerking actief.';
  el('flowResultTitle').textContent=module?`Bestemming: ${module[2]}`:'Geen portaalmodule geselecteerd';
- el('flowResult').textContent=module?(flow.outputFlow?`Output landt in ${module[2]}.`:`${module[2]} is geselecteerd, maar er loopt geen bewezen outputflow.`):'Kies een portaalmodule.';
+ el('flowResult').textContent=module?(flow.outputFlow?`Voorbeeldoutput landt in ${module[2]}.`:`${module[2]} is geselecteerd, maar er loopt geen bewezen outputflow.`):'Kies een portaalmodule.';
  const pill=document.querySelector('.livepill');
  if(pill) pill.textContent=`● ${statusLabel(flow.status)}`;
+ const previewBtn=el('previewRoute');
+ if(previewBtn) previewBtn.textContent=flow.status==='preview'?'● Voorbeeldflow actief':'▶ Toon voorbeeldflow';
  document.querySelectorAll('.cap').forEach(x=>x.classList.toggle('active',flow.processingFlow));
 }
 
@@ -114,11 +129,12 @@ function mountPages(){
  }
 }
 
-mountSources();mountModules();mountPages();
+mountSources();mountModules();mountPages();mountPreviewControl();
 document.querySelector('.brainimg')?.setAttribute('src','/portal-v2/brain.svg');
 el('showPages')?.addEventListener('click',()=>el('allPages').classList.add('open'));
 el('mobileMore')?.addEventListener('click',()=>el('allPages').classList.add('open'));
 el('closePages')?.addEventListener('click',()=>el('allPages').classList.remove('open'));
 el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages'))el('allPages').classList.remove('open')});
+addEventListener('keydown',e=>{if(e.key==='Escape')el('allPages')?.classList.remove('open')});
 addEventListener('resize',()=>render());
 render();
