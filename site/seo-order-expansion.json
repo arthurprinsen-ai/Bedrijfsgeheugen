@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/ai-implementeren",
+      "role": "money",
+      "primary_intent": "ai implementatie mkb",
+      "primary_keyword": "ai implementatie mkb",
+      "secondary_keywords": ["ai implementeren bedrijf", "ai implementatie bedrijf", "ai invoeren mkb"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie","https://www.bedrijfsgeheugen.nl/ai-governance"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/ai-scan",
+      "role": "money",
+      "primary_intent": "ai scan mkb",
+      "primary_keyword": "ai scan mkb",
+      "secondary_keywords": ["ai scan bedrijf", "ai readiness scan mkb", "ai kansen scan"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"zelfscan","url":"https://www.bedrijfsgeheugen.nl/zelfscan"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie","https://www.bedrijfsgeheugen.nl/ai-implementeren"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/ai-poc",
+      "role": "money",
+      "primary_intent": "ai poc mkb",
+      "primary_keyword": "ai poc mkb",
+      "secondary_keywords": ["ai proof of concept", "ai pilot mkb", "ai poc bedrijf"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-implementeren","https://www.bedrijfsgeheugen.nl/business-case-ai"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/ai-governance",
+      "role": "money",
+      "primary_intent": "ai governance mkb",
+      "primary_keyword": "ai governance mkb",
+      "secondary_keywords": ["ai governance bedrijf", "ai beleid mkb", "ai governance nederland"],
+      "funnel_stage": "consider",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-act","https://www.bedrijfsgeheugen.nl/data-soevereiniteit"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/business-case-ai",
+      "role": "money",
+      "primary_intent": "business case ai mkb",
+      "primary_keyword": "business case ai mkb",
+      "secondary_keywords": ["ai business case", "roi ai mkb", "ai investering onderbouwen"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-implementeren","https://www.bedrijfsgeheugen.nl/ai-poc"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/due-diligence",
+      "role": "money",
+      "primary_intent": "due diligence bedrijfskennis",
+      "primary_keyword": "due diligence bedrijfskennis",
+      "secondary_keywords": ["due diligence mkb kennis", "kennisrisico overname", "operationele due diligence mkb"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/investeerders-ma","https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/investeerders-ma",
+      "role": "money",
+      "primary_intent": "bedrijfskennis bij overname",
+      "primary_keyword": "bedrijfskennis bij overname",
+      "secondary_keywords": ["kennis borgen overname", "mkb overname kennisrisico", "m&a bedrijfskennis"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/due-diligence","https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/systemen-koppelen",
+      "role": "money",
+      "primary_intent": "systemen koppelen mkb",
+      "primary_keyword": "systemen koppelen mkb",
+      "secondary_keywords": ["software systemen koppelen", "bedrijfssoftware koppelen", "systemen integreren mkb"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken","https://www.bedrijfsgeheugen.nl/afas-koppeling"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/webshop-koppeling",
+      "role": "money",
+      "primary_intent": "webshop koppeling mkb",
+      "primary_keyword": "webshop koppeling mkb",
+      "secondary_keywords": ["webshop koppelen boekhouding", "webshop api koppeling", "webshop systemen koppelen"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken","https://www.bedrijfsgeheugen.nl/systemen-koppelen"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/workshops",
+      "role": "money",
+      "primary_intent": "ai workshop mkb",
+      "primary_keyword": "ai workshop mkb",
+      "secondary_keywords": ["ai workshop bedrijf", "ai training mkb", "ai workshop organisatie"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie","https://www.bedrijfsgeheugen.nl/ai-implementeren"],
+      "schema_type": "Service"
+    }
+  ]
+}
