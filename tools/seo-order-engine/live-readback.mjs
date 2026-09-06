@@ -3,6 +3,7 @@ import { loadRegistry } from './registry.mjs';
 import { inspectBlog } from './blog-contract-v2.mjs';
 import { inspectMoneyPage } from './money-contract-v2.mjs';
 import { hasGrowthMeasurement } from './measurement.mjs';
+import { homepagePricingIsolationFailuresForRoute } from '../homepage-pricing-isolation.mjs';
 
 function attr(tag,name){const m=String(tag||'').match(new RegExp(`\\b${name}=(?:"([^"]*)"|'([^']*)')`,'i'));return m?(m[1]??m[2]??''):'';}
 function headOf(html){return String(html).match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1]||'';}
@@ -24,8 +25,8 @@ function registeredPageErrors(page,entry){
   return fouten;
 }
 
-export function validateLiveSeoOrderSet(pages,registry){const fouten=[];for(const page of pages||[]){if(!hasGrowthMeasurement(page.html))fouten.push(`${page.path}: growth measurement contract ontbreekt`);const entry=(registry?.pages||[]).find(item=>item.route===page.canonical);if(entry)fouten.push(...registeredPageErrors(page,entry));if(isBlogArticle(page.path)&&!entry)fouten.push(...inspectBlog(page.html,page.path,registry));}return [...new Set(fouten)];}
+export function validateLiveSeoOrderSet(pages,registry){const fouten=[];for(const page of pages||[]){if(!hasGrowthMeasurement(page.html))fouten.push(`${page.path}: growth measurement contract ontbreekt`);fouten.push(...homepagePricingIsolationFailuresForRoute(page.html,page.canonical));const entry=(registry?.pages||[]).find(item=>item.route===page.canonical);if(entry)fouten.push(...registeredPageErrors(page,entry));if(isBlogArticle(page.path)&&!entry)fouten.push(...inspectBlog(page.html,page.path,registry));}return [...new Set(fouten)];}
 
 async function readLivePages(){const files=[['live-home.html','live-home.html'],['live-prijzen.html','live-prijzen.html'],['live-afas.html','live-afas.html'],['live-blog-index.html','live-blog-index.html'],['live-blog-afas-api.html','blog/afas-api/index.html'],['live-blog-kennis-borgen.html','blog/kennis-borgen-in-je-bedrijf/index.html']];const pages=[];for(const [file,path] of files){const html=await readFile(file,'utf8');pages.push({path,canonical:canonicalOf(html),html});}return pages;}
-export async function checkLiveSeoOrder(){const registry=await loadRegistry();const pages=await readLivePages();const fouten=validateLiveSeoOrderSet(pages,registry);if(fouten.length)throw new Error(`Live SEO order/growth readback faalt (${fouten.length}):\n- ${fouten.join('\n- ')}`);console.log(`Live SEO order + growth readback OK: ${pages.length} representatieve productiepagina's inclusief intent ownership`);return {pages:pages.length};}
+export async function checkLiveSeoOrder(){const registry=await loadRegistry();const pages=await readLivePages();const fouten=validateLiveSeoOrderSet(pages,registry);if(fouten.length)throw new Error(`Live SEO order/growth readback faalt (${fouten.length}):\n- ${fouten.join('\n- ')}`);console.log(`Live SEO order + growth readback OK: ${pages.length} representatieve productiepagina's inclusief intent ownership en homepage pricing-isolatie`);return {pages:pages.length};}
 if(process.argv[1]&&import.meta.url.endsWith(process.argv[1].replace(/\\/g,'/')))await checkLiveSeoOrder();
