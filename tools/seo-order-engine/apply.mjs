@@ -50,15 +50,30 @@ function markKnownCtas(input, registry, role = 'support', funnel = 'discover') {
   return html;
 }
 
+function explicitSupportingOwner(canonical, registry) {
+  return (registry.pages || []).find(entry => entry.role === 'money' && (entry.supporting_routes || []).includes(canonical)) || null;
+}
+function hasAbsoluteLink(html, url) {
+  const escaped = String(url).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return new RegExp(`href=(?:"${escaped}"|'${escaped}')`, 'i').test(String(html));
+}
+function ensureSupportingOwnerLink(input, owner) {
+  let html=String(input); if(!owner?.route || hasAbsoluteLink(html,owner.route))return html;
+  const block=`<aside class="bg-contextual-next-step" data-bg-money-support="${esc(owner.primary_intent)}"><p><strong>Volgende stap:</strong> <a href="${owner.route}" data-bg-money-route="${esc(owner.primary_intent)}">Bekijk hoe Bedrijfsgeheugen ${esc(owner.primary_intent)} aanpakt.</a></p></aside>`;
+  if(/<\/main>/i.test(html))return html.replace(/<\/main>/i,`${block}\n</main>`);
+  return html.replace(/<\/body>/i,`${block}\n</body>`);
+}
+
 function enrichGenericPage(input, registry) {
   let html = String(input); const meta = inferSeoMeta(html);
-  const owner=dominantCommercialEntry(html,registry)||(registry.pages||[]).find(e=>e.role==='pillar')||null;
+  const owner=explicitSupportingOwner(meta.canonical,registry)||dominantCommercialEntry(html,registry)||(registry.pages||[]).find(e=>e.role==='pillar')||null;
   const intent=localIntent(meta);
   const keyword=intent;
   html = markBodyContext(html, 'support', 'discover', intent, keyword, 'supporting', owner?.route||'');
   html = ensureMeta(html,'bg-intent',intent);
   html = ensureMeta(html,'bg-keyword-cluster',keyword);
   html = ensureMeta(html,'bg-intent-owner',owner?.route||'');
+  html = ensureSupportingOwnerLink(html,owner);
   html = markKnownCtas(html, registry);
   html = injectConversionTracker(html);
   html = injectSeoGraph(html, { ...meta, schema_type: meta.canonical === `${ORIGIN}/blog/` ? 'CollectionPage' : 'WebPage' });
