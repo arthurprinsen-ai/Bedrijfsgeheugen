@@ -8,16 +8,16 @@ import { validateRegistry } from '../tools/seo-order-engine/registry.mjs';
 
 const ORIGIN='https://www.bedrijfsgeheugen.nl';
 
-function registryFixture(){return {version:1,origin:ORIGIN,pages:[
-  {route:`${ORIGIN}/`,role:'pillar',primary_intent:'digitalisering mkb',primary_keyword:'digitalisering mkb',secondary_keywords:['mkb digitaliseren'],funnel_stage:'discover',primary_cta:{action:'zelfscan',url:`${ORIGIN}/zelfscan`},supporting_routes:[],schema_type:'WebPage'},
-  {route:`${ORIGIN}/afas-koppeling`,role:'money',primary_intent:'afas koppeling',primary_keyword:'afas koppeling',secondary_keywords:['afas api koppeling'],funnel_stage:'decide',primary_cta:{action:'frisse-blik',url:`${ORIGIN}/frisse-blik`},supporting_routes:[],schema_type:'Service'}
+function registryFixture(){return {version:2,origin:ORIGIN,pages:[
+  {route:`${ORIGIN}/`,role:'pillar',primary_intent:'digitalisering mkb',primary_keyword:'digitalisering mkb',secondary_keywords:['mkb digitaliseren'],funnel_stage:'discover',search_intent:'mixed',target_page_type:'pillar',business_goal:'assisted-conversion',priority:5,primary_cta:{action:'zelfscan',url:`${ORIGIN}/zelfscan`},supporting_routes:[],schema_type:'WebPage'},
+  {route:`${ORIGIN}/afas-koppeling`,role:'money',primary_intent:'afas koppeling',primary_keyword:'afas koppeling',secondary_keywords:['afas api koppeling'],funnel_stage:'decide',search_intent:'commercial',target_page_type:'money',business_goal:'lead',priority:5,primary_cta:{action:'frisse-blik',url:`${ORIGIN}/frisse-blik`},supporting_routes:[],schema_type:'Service'}
 ]};}
 
 function html(canonical,title='Proces automatiseren'){return `<!doctype html><html><head><title>${title}</title><meta name="description" content="${title}"><link rel="canonical" href="${canonical}"></head><body><main><h1>${title}</h1><a href="${ORIGIN}/">Home</a><a href="${ORIGIN}/zelfscan">Zelfscan</a></main></body></html>`;}
 
 test('registry blocks a future primary keyword that is already owned as a secondary keyword',()=>{
   const registry=registryFixture();
-  registry.pages.push({route:`${ORIGIN}/afas-api`,role:'money',primary_intent:'afas api koppeling',primary_keyword:'afas api koppeling',secondary_keywords:[],funnel_stage:'decide',primary_cta:{action:'frisse-blik',url:`${ORIGIN}/frisse-blik`},supporting_routes:[],schema_type:'Service'});
+  registry.pages.push({route:`${ORIGIN}/afas-api`,role:'money',primary_intent:'afas api koppeling',primary_keyword:'afas api koppeling',secondary_keywords:[],funnel_stage:'decide',search_intent:'commercial',target_page_type:'money',business_goal:'lead',priority:4,primary_cta:{action:'frisse-blik',url:`${ORIGIN}/frisse-blik`},supporting_routes:[],schema_type:'Service'});
   const errors=validateRegistry(registry);
   assert.ok(errors.some(error=>/keyword.*owned|cluster.*owned|keyword.*collision/i.test(error)),errors.join('\n'));
 });
