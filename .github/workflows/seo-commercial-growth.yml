@@ -1,0 +1,30 @@
+name: SEO commercial growth
+
+on:
+  pull_request:
+    paths:
+      - 'site/seo-order-map.json'
+      - 'tools/seo-order-engine/**'
+      - 'tests/seo-commercial-coverage.test.mjs'
+      - '.github/workflows/seo-commercial-growth.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'site/seo-order-map.json'
+      - 'tools/seo-order-engine/**'
+      - 'tests/seo-commercial-coverage.test.mjs'
+      - '.github/workflows/seo-commercial-growth.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Test commercial search coverage
+        run: node --test tests/seo-commercial-coverage.test.mjs
