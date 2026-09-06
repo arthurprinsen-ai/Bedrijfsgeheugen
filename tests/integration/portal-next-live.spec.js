@@ -41,7 +41,7 @@ async function assertMobileReady(page) {
   await expect(page.locator('#globalSearch')).toBeAttached();
 }
 
-test('next portal desktop navigation, drawers and command route work on live preview', async ({ page }) => {
+test('next portal desktop navigation, governance and command route work on live preview', async ({ page }) => {
   test.setTimeout(45000);
   const preview = process.env.PREVIEW_URL;
   if (!preview) throw new Error('PREVIEW_URL is required');
@@ -64,11 +64,7 @@ test('next portal desktop navigation, drawers and command route work on live pre
   await expect(page.getByRole('heading', { name: 'AI Register', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Agent Team', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Access Center', exact: true })).toBeVisible();
-
-  await page.getByRole('button', { name: /Waarom deze toegang/i }).click();
-  await expect(page.locator('#drawer')).toHaveClass(/open/);
-  await page.keyboard.press('Escape');
-  await expect(page.locator('#drawer')).not.toHaveClass(/open/);
+  await expect(page.getByText('View geeft niet automatisch Export of AI Process.', { exact: false })).toBeVisible();
 
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+K' : 'Control+K');
   await expect(page.locator('#globalSearch')).toBeFocused();
