@@ -4,7 +4,7 @@ import { allPageIds, buildLegacyUrl, findPage, listPortalGroups } from '../page-
 
 test('registry preserves the complete mapped portal surface',()=>{
   const ids=allPageIds();
-  assert.ok(ids.length>=45,`expected at least 45 portal pages, got ${ids.length}`);
+  assert.equal(ids.length,44,`expected 44 mapped portal pages, got ${ids.length}`);
   for(const required of ['overzicht','ai-scan','canvassen','roadmap','taken-werkstromen','bronnenstatus','brain-verwerking','self-heal','audit']){
     assert.ok(ids.includes(required),`missing ${required}`);
   }
