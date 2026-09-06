@@ -70,3 +70,11 @@
     style();hero(meta,main);decision(meta,main);event('money_page_view',meta);
   });
 })();
+
+/* Load the v2 money-page extension only for newly registered canonical commercial intents. */
+(function(){
+  var p=(location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/');
+  var routes=['/ai-implementatie-mkb','/kennis-borgen-bedrijf','/microsoft-365-koppeling','/power-bi-implementatie-mkb','/bedrijf-overdraagbaar-maken'];
+  if(routes.indexOf(p)===-1)return;
+  var s=document.createElement('script');s.src='/assets/money-page-intents-v2.js';s.async=false;document.head.appendChild(s);
+})();
