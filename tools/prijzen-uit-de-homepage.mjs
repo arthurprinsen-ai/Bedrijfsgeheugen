@@ -5,7 +5,10 @@ import { genereerSitemap } from './genereer-sitemap.mjs';
 import { controleerTechnischeSeo } from './controleer-technische-seo.mjs';
 import { applySeoOrderEngine } from './seo-order-engine/apply.mjs';
 import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
-import { homepagePricingIsolationFailures } from './homepage-pricing-isolation.mjs';
+import {
+  homepagePricingIsolationFailures,
+  stripHomepagePricingOnlyUi,
+} from './homepage-pricing-isolation.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
@@ -50,7 +53,7 @@ export async function bouwPrijsVerwijzing() {
   for (const bestand of ['index.html', 'prototype-v18-stable.html']) {
     let html;
     try { html = await readFile(bestand, 'utf8'); } catch { continue; }
-    const nieuw = knoppenNaarLink(vervangWeergave(html));
+    const nieuw = stripHomepagePricingOnlyUi(knoppenNaarLink(vervangWeergave(html)));
     assertHomepagePricingIsolation(nieuw, bestand);
     if (nieuw !== html) { await writeFile(bestand, nieuw, 'utf8'); gedaan++; }
   }
