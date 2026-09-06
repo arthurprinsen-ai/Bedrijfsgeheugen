@@ -7,7 +7,7 @@
       "role": "pillar",
       "primary_intent": "digitalisering mkb",
       "primary_keyword": "digitalisering mkb",
-      "secondary_keywords": ["mkb digitaliseren", "digitalisering voor mkb", "bedrijfsprocessen digitaliseren"],
+      "secondary_keywords": ["mkb digitaliseren", "digitalisering voor mkb", "mkb digitalisering aanpak"],
       "funnel_stage": "discover",
       "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
       "supporting_routes": ["https://www.bedrijfsgeheugen.nl/prijzen", "https://www.bedrijfsgeheugen.nl/product", "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen"],
