@@ -39,3 +39,40 @@ jobs:
           path: seo-rapport.md
           if-no-files-found: warn
           retention-days: 1
+
+  page-diagnostic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install Playwright
+        run: |
+          pip install --quiet playwright
+          playwright install --with-deps chromium
+      - name: Run browser page control and preserve exit code
+        id: page
+        shell: bash
+        run: |
+          set +e
+          python .github/scripts/paginacontrole.py
+          rc=$?
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          echo "PAGE_EXIT_CODE=$rc"
+          if [ -f rapport.md ]; then
+            echo '--- PAGE RAPPORT BEGIN ---'
+            cat rapport.md
+            echo '--- PAGE RAPPORT END ---'
+          else
+            echo 'rapport.md ontbreekt'
+          fi
+          exit $rc
+      - name: Upload page diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-page-diagnostic
+          path: rapport.md
+          if-no-files-found: warn
+          retention-days: 1
