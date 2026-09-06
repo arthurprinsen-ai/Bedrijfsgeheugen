@@ -115,6 +115,7 @@ function mountPages(){
 }
 
 mountSources();mountModules();mountPages();
+document.querySelector('.brainimg')?.setAttribute('src','/portal-v2/brain.svg');
 el('showPages')?.addEventListener('click',()=>el('allPages').classList.add('open'));
 el('mobileMore')?.addEventListener('click',()=>el('allPages').classList.add('open'));
 el('closePages')?.addEventListener('click',()=>el('allPages').classList.remove('open'));
