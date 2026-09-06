@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const preview=fs.readFileSync(new URL('../portal-next/index.html',import.meta.url),'utf8');
+const js=fs.readFileSync(new URL('../portal-next/portal-next.js',import.meta.url),'utf8');
+test('preview noemt voorbeeldinteractie expliciet',()=>assert.ok(preview.includes('geen productieclaim')));
+test('idle is default en demo-route is expliciet',()=>{assert.ok(js.includes('let demoMode=false'));assert.ok(preview.includes('Toon demo-route'))});
+test('geen hardcoded productie verified/completed status tokens',()=>{for(const token of ['data-runtime-status="verified" data-static="true"','data-agent-status="completed" data-static="true"'])assert.equal(preview.includes(token),false)});
+test('mobiele reduced-motion gate bestaat',()=>{const css=fs.readFileSync(new URL('../portal-next/portal-next.css',import.meta.url),'utf8');assert.ok(css.includes('prefers-reduced-motion'))});
