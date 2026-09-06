@@ -62,9 +62,7 @@ export function validateRegistry(registry) {
     claimKeyword(keywordClaims, entry?.primary_keyword, route, `${label}.primary_keyword`, fouten);
 
     if (!Array.isArray(entry?.secondary_keywords)) fouten.push(`${label}.secondary_keywords moet een array zijn`);
-    else for (const secondary of entry.secondary_keywords) {
-      claimKeyword(keywordClaims, secondary, route, `${label}.secondary_keywords`, fouten);
-    }
+    else for (const secondary of entry.secondary_keywords) claimKeyword(keywordClaims, secondary, route, `${label}.secondary_keywords`, fouten);
 
     if (!entry?.primary_cta || typeof entry.primary_cta !== 'object') fouten.push(`${label}.primary_cta is verplicht`);
     else {
@@ -73,16 +71,21 @@ export function validateRegistry(registry) {
     }
 
     if (!Array.isArray(entry?.supporting_routes)) fouten.push(`${label}.supporting_routes moet een array zijn`);
-    else for (const supportingRoute of entry.supporting_routes) {
-      if (!isAbsoluteInternalUrl(supportingRoute)) fouten.push(`${label}.supporting_routes moeten absolute Bedrijfsgeheugen URLs zijn`);
-    }
+    else for (const supportingRoute of entry.supporting_routes) if (!isAbsoluteInternalUrl(supportingRoute)) fouten.push(`${label}.supporting_routes moeten absolute Bedrijfsgeheugen URLs zijn`);
   }
 
   return [...new Set(fouten)];
 }
 
+async function readJson(path) { return JSON.parse(await readFile(path, 'utf8')); }
+
 export async function loadRegistry(path = 'site/seo-order-map.json') {
-  const registry = JSON.parse(await readFile(path, 'utf8'));
+  const base = await readJson(path);
+  let expansion = { pages: [] };
+  if (path === 'site/seo-order-map.json') {
+    try { expansion = await readJson('site/seo-order-expansion.json'); } catch (error) { if (error?.code !== 'ENOENT') throw error; }
+  }
+  const registry = { ...base, version: Math.max(base.version || 1, expansion.version || 1), pages: [...(base.pages || []), ...(expansion.pages || [])] };
   const fouten = validateRegistry(registry);
   if (fouten.length) throw new Error(`SEO intent registry ongeldig (${fouten.length}):\n- ${fouten.join('\n- ')}`);
   return registry;

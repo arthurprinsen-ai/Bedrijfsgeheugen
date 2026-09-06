@@ -1,9 +1,9 @@
 import { readFile, writeFile, glob } from 'node:fs/promises';
 import { PUBLIC_PAGE_EXCLUDES } from '../site-shell/contracts.mjs';
 import { loadRegistry, entryForCanonical, ORIGIN } from './registry.mjs';
+import { classifyCanonical } from './page-policy.mjs';
 import { enrichBlog } from './blog-contract-v2.mjs';
-import { dominantCommercialEntry } from './blog-contract.mjs';
-import { enrichRegisteredPage, inferSeoMeta } from './enrich.mjs';
+import { enrichRegisteredPage, enrichSupportHandoff, inferSeoMeta } from './enrich.mjs';
 import { injectSeoGraph } from './schema.mjs';
 import { markPrimaryConversions, injectConversionTracker } from './conversion.mjs';
 import { injectGrowthMeasurement } from './measurement.mjs';
@@ -25,17 +25,18 @@ function localIntent(meta){return String(meta?.title||meta?.canonical||'onderste
 function isBlogArticle(path){return /^blog\/.+\/index\.html$/i.test(path)&&path!=='blog/index.html';}
 function isExcludedPath(path){return EXCLUDES.has(path)||EXCLUDES.has(path.split('/').at(-1))||EXCLUDED_PREFIXES.some(prefix=>path.startsWith(prefix))||/(?:^|\/)shell-gate-[^/]*\.html$/i.test(path);}
 
-function markBodyContext(input, role, funnel, intent = '', keyword = '', intentRole = 'supporting', owner = '') {
+function markBodyContext(input, role, funnel, intent = '', keyword = '', intentRole = 'supporting', owner = '', pageClass = role) {
   const html = String(input);
   return html.replace(/<body\b([^>]*)>/i, (_tag, attrs) => {
     const clean = attrs
       .replace(/\sdata-bg-page-role=(?:"[^"]*"|'[^']*')/gi, '')
+      .replace(/\sdata-bg-page-class=(?:"[^"]*"|'[^']*')/gi, '')
       .replace(/\sdata-bg-funnel-stage=(?:"[^"]*"|'[^']*')/gi, '')
       .replace(/\sdata-bg-intent=(?:"[^"]*"|'[^']*')/gi, '')
       .replace(/\sdata-bg-keyword-cluster=(?:"[^"]*"|'[^']*')/gi, '')
       .replace(/\sdata-bg-intent-role=(?:"[^"]*"|'[^']*')/gi, '')
       .replace(/\sdata-bg-intent-owner=(?:"[^"]*"|'[^']*')/gi, '');
-    return `<body${clean} data-bg-page-role="${esc(role)}" data-bg-funnel-stage="${esc(funnel)}" data-bg-intent="${esc(intent)}" data-bg-keyword-cluster="${esc(keyword)}" data-bg-intent-role="${esc(intentRole)}" data-bg-intent-owner="${esc(owner)}">`;
+    return `<body${clean} data-bg-page-role="${esc(role)}" data-bg-page-class="${esc(pageClass)}" data-bg-funnel-stage="${esc(funnel)}" data-bg-intent="${esc(intent)}" data-bg-keyword-cluster="${esc(keyword)}" data-bg-intent-role="${esc(intentRole)}" data-bg-intent-owner="${esc(owner)}">`;
   });
 }
 
@@ -50,19 +51,27 @@ function markKnownCtas(input, registry, role = 'support', funnel = 'discover') {
   return html;
 }
 
-function enrichGenericPage(input, registry) {
+function enrichPolicyPage(input, registry, policy) {
   let html = String(input); const meta = inferSeoMeta(html);
-  const owner=dominantCommercialEntry(html,registry)||(registry.pages||[]).find(e=>e.role==='pillar')||null;
-  const intent=localIntent(meta);
-  const keyword=intent;
-  html = markBodyContext(html, 'support', 'discover', intent, keyword, 'supporting', owner?.route||'');
+  const owner=policy?.ownerEntry||entryForCanonical(policy?.owner,registry)||(registry.pages||[]).find(e=>e.role==='pillar')||null;
+  const intent=localIntent(meta); const keyword=intent;
+  const pageClass=policy?.page_class||'support';
+  const role=pageClass==='pillar'?'pillar':'support';
+  const funnel=pageClass==='conversion'?'decide':pageClass==='pillar'?'consider':'discover';
+  html = markBodyContext(html, role, funnel, intent, keyword, 'supporting', owner?.route||'', pageClass);
   html = ensureMeta(html,'bg-intent',intent);
   html = ensureMeta(html,'bg-keyword-cluster',keyword);
   html = ensureMeta(html,'bg-intent-owner',owner?.route||'');
-  html = markKnownCtas(html, registry);
+  html = ensureMeta(html,'bg-page-class',pageClass);
+  if(pageClass==='support' && owner?.route && owner.route!==meta.canonical){
+    const handoff={route:meta.canonical,role:'support',funnel_stage:'discover',primary_cta:{action:'commercial-handoff',url:owner.route}};
+    html=enrichSupportHandoff(html,handoff);
+    html=markPrimaryConversions(html,handoff);
+  }
+  html = markKnownCtas(html, registry, role, funnel);
   html = injectConversionTracker(html);
   html = injectSeoGraph(html, { ...meta, schema_type: meta.canonical === `${ORIGIN}/blog/` ? 'CollectionPage' : 'WebPage' });
-  html = injectGrowthMeasurement(html,{canonical:meta.canonical,page_role:'support',funnel_stage:'discover',intent,keyword_cluster:keyword,intent_owner:owner?.route||''});
+  html = injectGrowthMeasurement(html,{canonical:meta.canonical,page_role:role,funnel_stage:funnel,intent,keyword_cluster:keyword,intent_owner:owner?.route||''});
   return html;
 }
 
@@ -74,7 +83,7 @@ async function publicHtmlPaths() {
 }
 
 export async function applySeoOrderEngine() {
-  const registry = await loadRegistry(); let changed=0,blogs=0,registered=0,generic=0;
+  const registry = await loadRegistry(); let changed=0,blogs=0,registered=0,classified=0;
   for (const path of await publicHtmlPaths()) {
     let html; try { html=await readFile(path,'utf8'); } catch { continue; }
     if (!/<body\b/i.test(html) || noindex(html)) continue;
@@ -86,17 +95,19 @@ export async function applySeoOrderEngine() {
       out=injectGrowthMeasurement(out,{canonical,page_role:'article',funnel_stage:'discover',intent:metaContent(out,'bg-intent'),keyword_cluster:metaContent(out,'bg-keyword-cluster'),intent_owner:metaContent(out,'bg-intent-owner')});
       blogs++;
     } else {
-      const entry=entryForCanonical(canonical,registry);
-      if(entry){
+      const policy=classifyCanonical(canonical,registry);
+      if(!policy) throw new Error(`Ongeclassificeerde publieke pagina: ${canonical}. Voeg expliciet intent/rol/owner toe voordat deze pagina kan publiceren.`);
+      if(policy.registered){
+        const entry=policy.entry;
         out=enrichRegisteredPage(html,entry);
         out=injectGrowthMeasurement(out,{canonical,page_role:entry.role,funnel_stage:entry.funnel_stage,intent:entry.primary_intent,keyword_cluster:entry.primary_keyword,intent_owner:entry.route});
         registered++;
-      } else { out=enrichGenericPage(html,registry); generic++; }
+      } else { out=enrichPolicyPage(html,registry,policy); classified++; }
     }
     if(out!==html){await writeFile(path,out,'utf8');changed++;}
   }
-  console.log(`SEO order + growth enrichment toegepast: ${changed} gewijzigd; ${blogs} blogs, ${registered} registry-pages, ${generic} overige publieke pagina's`);
-  return {changed,blogs,registered,generic};
+  console.log(`SEO order + growth enrichment toegepast: ${changed} gewijzigd; ${blogs} blogs, ${registered} registry-pages, ${classified} expliciet geclassificeerde publieke pagina's`);
+  return {changed,blogs,registered,classified};
 }
 
 if(process.argv[1]&&import.meta.url.endsWith(process.argv[1].replace(/\\/g,'/')))await applySeoOrderEngine();
