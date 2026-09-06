@@ -71,10 +71,10 @@
   });
 })();
 
-/* Load the v2 money-page extension only for newly registered canonical commercial intents. */
+/* Load the canonical commercial-intent extension only on routes that need it. */
 (function(){
   var p=(location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/');
-  var routes=['/ai-implementatie-mkb','/kennis-borgen-bedrijf','/microsoft-365-koppeling','/power-bi-implementatie-mkb','/bedrijf-overdraagbaar-maken'];
+  var routes=['/ai-implementatie-mkb','/kennis-borgen-bedrijf','/microsoft-365-koppeling','/power-bi-implementatie-mkb','/bedrijf-overdraagbaar-maken','/api-koppeling-laten-maken','/ai-governance','/data-soevereiniteit'];
   if(routes.indexOf(p)===-1)return;
   var s=document.createElement('script');s.src='/assets/money-page-intents-v2.js';s.async=false;document.head.appendChild(s);
 })();
