@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Bedrijfsgeheugen · Klantenportaal V2</title>
-<link rel="stylesheet" href="/portal-v2/app.css">
+<link rel="stylesheet" href="./app.css">
 </head>
 <body>
 <div class="app">
@@ -53,13 +53,13 @@
       <div class="cap" data-cap="begrijpt"><i>⌕</i>Begrijpt</div><div class="cap" data-cap="verbindt"><i>⇄</i>Verbindt</div><div class="cap" data-cap="vat"><i>≡</i>Vat samen</div><div class="cap" data-cap="prioriteert"><i>☰</i>Prioriteert</div><div class="cap" data-cap="adviseert"><i>✦</i>Adviseert</div><div class="cap" data-cap="leert"><i>↺</i>Leert</div>
      </div>
      <div class="core">
-      <img class="brainimg" src="/portal-v2/brain.png" alt="">
+      <img class="brainimg" src="./brain.svg" alt="AI Brain visualisatie">
       <div class="stack"><div class="layer ai"><div><strong>AI Brain</strong><small>begrijpen · redeneren · adviseren · beslissen</small></div></div><div class="layer hub"><div><strong>Datahub</strong><small>verbinden · verrijken · structureren</small></div></div><div class="layer power"><div><strong>Powerhouse</strong><small>agents · acties · monitoring · self-heal</small></div></div></div>
       <div class="learn">↔ Leren en verbeteren<span>Outcome + evidence → learning → slimmer</span></div>
      </div>
     </section>
     <section><div class="coltitle">3. Klantenportaal</div><div class="modules" id="modules"></div></section>
-    <svg class="flowoverlay" id="flowSvg"></svg>
+    <svg class="flowoverlay" id="flowSvg" aria-hidden="true"></svg>
    </div>
    <div class="flowexplain">
     <div><span class="round">▤</span><div><b id="flowNowTitle">Nu in flow: Documenten</b><p id="flowNow">Contracten, notities en beleid worden ingelezen en geanalyseerd.</p></div></div>
@@ -85,9 +85,9 @@
 </main>
 </div>
 
-<button class="previewflag" id="showPages">Alle portalpagina’s</button>
-<div class="allpages" id="allPages"><div class="sheet"><div class="sheethead"><div><h3>Alle huidige portalinhoud blijft behouden</h3><small style="color:#7280a1">Nieuwe shell, bestaande functionaliteit en volledige Brain & Powerhouse-laag.</small></div><button id="closePages">×</button></div><div class="groups" id="groups"></div></div></div>
+<button class="previewflag" id="showPages" aria-haspopup="dialog" aria-controls="allPages" aria-expanded="false">Alle portalpagina’s</button>
+<div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Alle huidige portalinhoud blijft behouden</h3><small style="color:#7280a1">Nieuwe shell, bestaande functionaliteit en volledige Brain & Powerhouse-laag.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
 <nav class="mobilebar"><button class="active">⌂<br>Overzicht</button><button>▣<br>Portaal</button><button>✦<br>Data & AI</button><button>✓<br>Taken</button><button id="mobileMore">☰<br>Meer</button></nav>
-<script type="module" src="/portal-v2/app.js"></script>
+<script type="module" src="./app.js"></script>
 </body>
 </html>
