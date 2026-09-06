@@ -5,5 +5,6 @@ const preview=fs.readFileSync(new URL('../portal-next/index.html',import.meta.ur
 const js=fs.readFileSync(new URL('../portal-next/portal-next.js',import.meta.url),'utf8');
 test('preview noemt voorbeeldinteractie expliciet',()=>assert.ok(preview.includes('geen productieclaim')));
 test('idle is default en demo-route is expliciet',()=>{assert.ok(js.includes('let demoMode=false'));assert.ok(preview.includes('Toon demo-route'))});
+test('bron of module selecteren zet demo mode niet impliciet aan',()=>{assert.ok(js.includes("export function selectSource(id){selection=reducePortalSelection(selection,{type:'SELECT_SOURCE',id});renderCockpit()}"));assert.ok(js.includes("export function selectModule(id){selection=reducePortalSelection(selection,{type:'SELECT_MODULE',id});renderCockpit()}"));assert.equal(js.includes('if(!demoMode)demoMode=true'),false)});
 test('geen hardcoded productie verified/completed status tokens',()=>{for(const token of ['data-runtime-status="verified" data-static="true"','data-agent-status="completed" data-static="true"'])assert.equal(preview.includes(token),false)});
 test('mobiele reduced-motion gate bestaat',()=>{const css=fs.readFileSync(new URL('../portal-next/portal-next.css',import.meta.url),'utf8');assert.ok(css.includes('prefers-reduced-motion'))});
