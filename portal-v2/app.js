@@ -130,7 +130,7 @@ function mountPages(){
 }
 
 mountSources();mountModules();mountPages();mountPreviewControl();
-document.querySelector('.brainimg')?.setAttribute('src','/portal-v2/brain.svg');
+document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
 el('showPages')?.addEventListener('click',()=>el('allPages').classList.add('open'));
 el('mobileMore')?.addEventListener('click',()=>el('allPages').classList.add('open'));
 el('closePages')?.addEventListener('click',()=>el('allPages').classList.remove('open'));
