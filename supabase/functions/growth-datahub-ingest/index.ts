@@ -23,6 +23,19 @@ Deno.serve(async(req:Request)=>{
     if(error)return json({error:'OUTCOME_STORE_FAILED',detail:error.message.slice(0,300)},500);
     return json({datahub:'supabase:growth_outcomes',result:data},200);
   }
+  if(action==='brain_delivery'){
+    const queueId=String(body?.queue_id||'').trim();
+    const state=String(body?.state||'').trim().toUpperCase();
+    if(!queueId||!['DELIVERED','BLOCKED','QUEUED'].includes(state))return json({error:'INVALID_BRAIN_DELIVERY'},400);
+    const patch:any={state,updated_at:new Date().toISOString()};
+    if(state==='DELIVERED')patch.delivered_at=new Date().toISOString();
+    if(body?.attempted)patch.last_attempt_at=new Date().toISOString();
+    if(body?.attempted)patch.attempts=Number(body?.attempts||1);
+    if(body?.last_error)patch.last_error=String(body.last_error).slice(0,500);
+    const {data,error}=await client.from('growth_brain_queue').update(patch).eq('queue_id',queueId).select('queue_id,state,attempts,delivered_at,last_error').maybeSingle();
+    if(error)return json({error:'BRAIN_QUEUE_UPDATE_FAILED',detail:error.message.slice(0,300)},500);
+    return json({datahub:'supabase:growth_brain_queue',result:data},200);
+  }
   if(action==='status'){
     const [{count:eventCount,error:eventError},{count:outcomeCount,error:outcomeError},{count:queuedCount,error:queueError}]=await Promise.all([
       client.from('growth_events').select('*',{count:'exact',head:true}),
