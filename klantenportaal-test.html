@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Bedrijfsgeheugen · klantenportaal test</title>
+  <style>
+    html,body{margin:0;min-height:100%;background:#f4f7fc;font-family:system-ui,-apple-system,sans-serif;color:#142142}
+    .loading{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}
+    .loading div{max-width:520px;background:#fff;border:1px solid #e2e8f5;border-radius:24px;padding:28px;box-shadow:0 18px 50px rgba(31,54,105,.10)}
+    .loading strong{display:block;font-size:22px;margin-bottom:8px}.loading span{color:#6b7898;line-height:1.5}
+  </style>
+</head>
+<body>
+  <div class="loading"><div><strong>Klantenportaal testomgeving laden…</strong><span>Dit is de geïsoleerde Brain + Powerhouse preview. Het huidige live klantenportaal wordt niet vervangen.</span></div></div>
+  <script>
+  (async()=>{
+    try{
+      const response=await fetch('./portal-next/index.html',{cache:'no-store'});
+      if(!response.ok) throw new Error('Preview kon niet worden geladen ('+response.status+').');
+      let html=await response.text();
+      html=html
+        .replaceAll('href="/portal-next/','href="./portal-next/')
+        .replaceAll("href='/portal-next/","href='./portal-next/")
+        .replaceAll('src="/portal-next/','src="./portal-next/')
+        .replaceAll("src='/portal-next/","src='./portal-next/");
+
+      const testBridge=`<script>
+      document.addEventListener('click',function(e){
+        const button=e.target.closest('#legacyExternal');
+        if(button){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          const klant=new URLSearchParams(location.search).get('klant')||'ijsselmonde';
+          window.open('https://www.bedrijfsgeheugen.nl/klantportaal?klant='+encodeURIComponent(klant),'_blank','noopener');
+        }
+      },true);
+      <\/script>`;
+      html=html.replace('</body>',testBridge+'</body>');
+      document.open();document.write(html);document.close();
+    }catch(err){
+      document.body.innerHTML='<div class="loading"><div><strong>Testomgeving kon niet laden</strong><span>'+String(err.message||err)+'</span></div></div>';
+    }
+  })();
+  </script>
+</body>
+</html>
