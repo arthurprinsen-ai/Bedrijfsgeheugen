@@ -5,6 +5,10 @@ import { genereerSitemap } from './genereer-sitemap.mjs';
 import { controleerTechnischeSeo } from './controleer-technische-seo.mjs';
 import { applySeoOrderEngine } from './seo-order-engine/apply.mjs';
 import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
+import {
+  homepagePricingIsolationFailures,
+  stripHomepagePricingOnlyUi,
+} from './homepage-pricing-isolation.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
@@ -37,16 +41,31 @@ function knoppenNaarLink(html) {
     });
 }
 
+function assertHomepagePricingIsolation(html, bestand = 'index.html') {
+  const fouten = homepagePricingIsolationFailures(html);
+  if (fouten.length) {
+    throw new Error(`Homepage pricing-isolatie faalt voor ${bestand}:\n- ${fouten.join('\n- ')}`);
+  }
+}
+
 export async function bouwPrijsVerwijzing() {
   let gedaan = 0;
   for (const bestand of ['index.html', 'prototype-v18-stable.html']) {
     let html;
     try { html = await readFile(bestand, 'utf8'); } catch { continue; }
-    const nieuw = knoppenNaarLink(vervangWeergave(html));
+    const nieuw = stripHomepagePricingOnlyUi(knoppenNaarLink(vervangWeergave(html)));
+    assertHomepagePricingIsolation(nieuw, bestand);
     if (nieuw !== html) { await writeFile(bestand, nieuw, 'utf8'); gedaan++; }
   }
   console.log(`Oude prijzenweergave uit de homepage gehaald: ${gedaan} bestand(en)`);
   return gedaan;
+}
+
+export async function controleerHomepagePricingIsolation() {
+  const html = await readFile('index.html', 'utf8');
+  assertHomepagePricingIsolation(html, 'index.html');
+  console.log('Homepage pricing-isolatie OK: pricing-tools staan niet op /');
+  return true;
 }
 
 export async function voerPricingShellPipelineUit(stage = 'all') {
@@ -60,6 +79,7 @@ export async function voerPricingShellPipelineUit(stage = 'all') {
     await controleerSiteUi();
     await controleerTechnischeSeo();
     await validateSeoOrderEngine();
+    await controleerHomepagePricingIsolation();
   }
 }
 
