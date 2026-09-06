@@ -53,7 +53,7 @@ export function enrichMoneyPage(input,entry){
   const links=support.map((url,i)=>`<a href="${esc(url)}" data-bg-money-support="${i+1}">${i===0?'Lees de inhoudelijke verdieping':'Bekijk de gerelateerde aanpak'}</a>`).join(' · ');
   const updated=new Date().toISOString().slice(0,10);
   const block=`<section id="bg-money-v3" class="bg-money-v2" aria-label="Beslisinformatie" data-bg-money-contract="v2" data-bg-money-contract-version="v3" data-bg-intent-role="primary" data-bg-intent-owner="${esc(entry.route)}" data-bg-content-updated="${updated}">
-  <aside class="bg-money-v2-review" data-bg-reviewer="arthur-prinsen" aria-label="Inhoudelijke review">Inhoudelijk gereviewd door <a href="${ORIGIN}/over-ons">Arthur Prinsen</a>. Laatste inhoudelijke publicatiecontrole: <time datetime="${updated}">${updated}</time>.</aside>
+  <aside class="bg-money-v2-review" data-bg-reviewer="arthur-prinsen" aria-label="Inhoudelijke review">Inhoudelijk gereviewd door <a href="${ORIGIN}/over-ons">Arthur Prinsen</a>. Gebaseerd op implementaties met AFAS, Exact, Microsoft 365, Power BI en bedrijfsprocessen in Nederlandse organisaties. Laatste inhoudelijke publicatiecontrole: <time datetime="${updated}">${updated}</time>.</aside>
   <div data-bg-money-section="problem"><h2>Het zoekprobleem: ${esc(entry.primary_intent)}</h2><p>Deze pagina is de primaire eigenaar van deze zoekintentie. Gerelateerde pagina’s ondersteunen deze pagina en concurreren er niet mee.</p></div>
   <div data-bg-money-section="answer"><h2>Direct antwoord</h2><p>${esc(directAnswer(entry))}</p></div>
   <div data-bg-money-section="proposition"><h2>Wat we doen</h2><p>We verbinden analyse, bedrijfskennis, data en uitvoering zodat je niet blijft hangen in advies of losse tooling.</p></div>
