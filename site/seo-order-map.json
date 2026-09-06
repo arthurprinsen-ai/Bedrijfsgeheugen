@@ -65,7 +65,7 @@
       "secondary_keywords": ["exact online api koppeling", "exact online koppelen", "exact integratie"],
       "funnel_stage": "decide",
       "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken", "https://www.bedrijfsgeheugen.nl/prijzen"],
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"],
       "schema_type": "Service"
     },
     {
@@ -76,7 +76,7 @@
       "secondary_keywords": ["processen automatiseren mkb", "bedrijfsprocessen digitaliseren", "werkprocessen automatiseren"],
       "funnel_stage": "decide",
       "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/", "https://www.bedrijfsgeheugen.nl/prijzen", "https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"],
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"],
       "schema_type": "Service"
     },
     {
@@ -87,7 +87,7 @@
       "secondary_keywords": ["api koppeling bouwen", "software koppelen api", "koppeling laten bouwen"],
       "funnel_stage": "decide",
       "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/afas-koppeling", "https://www.bedrijfsgeheugen.nl/exact-online-koppeling", "https://www.bedrijfsgeheugen.nl/twinfield-koppeling"],
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/exact-online-koppeling", "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren", "https://www.bedrijfsgeheugen.nl/twinfield-koppeling"],
       "schema_type": "Service"
     },
     {
@@ -98,7 +98,7 @@
       "secondary_keywords": ["twinfield api koppeling", "twinfield koppelen", "twinfield integratie"],
       "funnel_stage": "decide",
       "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken", "https://www.bedrijfsgeheugen.nl/prijzen"],
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"],
       "schema_type": "Service"
     },
     {
