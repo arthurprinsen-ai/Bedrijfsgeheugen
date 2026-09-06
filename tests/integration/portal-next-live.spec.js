@@ -25,13 +25,13 @@ function collectInteractionErrors(page) {
 }
 
 async function assertDesktopReady(page) {
-  await expect(page.getByText('AI Management Summary')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'AI Management Summary', exact: true })).toBeVisible();
   await expect(exactButton(page, '.sidebar', 'Overzicht')).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('#command')).toBeVisible();
 }
 
 async function assertMobileReady(page) {
-  await expect(page.getByText('AI Management Summary')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'AI Management Summary', exact: true })).toBeVisible();
   await expect(page.locator('.mobile-nav')).toBeVisible();
   await expect(exactButton(page, '.mobile-nav', 'Home')).toBeVisible();
   await expect(page.locator('#command')).toBeVisible();
