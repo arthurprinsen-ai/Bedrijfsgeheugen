@@ -14,8 +14,12 @@ async function isolateProductFromPreviewChrome(page) {
   });
 }
 
-function exactButton(page, scope, name) {
-  return page.locator(scope).getByRole('button', { name, exact: true });
+function routeButton(page, route) {
+  return page.locator(`.sidebar [data-route="${route}"]`);
+}
+
+function mobileRouteButton(page, route) {
+  return page.locator(`.mobile-nav [data-mobile-route="${route}"]`);
 }
 
 function collectInteractionErrors(page) {
@@ -26,15 +30,15 @@ function collectInteractionErrors(page) {
 
 async function assertDesktopReady(page) {
   await expect(page.getByRole('heading', { name: 'AI Management Summary', exact: true })).toBeVisible();
-  await expect(exactButton(page, '.sidebar', 'Overzicht')).toHaveAttribute('aria-current', 'page');
-  await expect(page.locator('#command')).toBeVisible();
+  await expect(routeButton(page, 'Overzicht')).toHaveClass(/is-active/);
+  await expect(page.locator('#globalSearch')).toBeVisible();
 }
 
 async function assertMobileReady(page) {
   await expect(page.getByRole('heading', { name: 'AI Management Summary', exact: true })).toBeVisible();
   await expect(page.locator('.mobile-nav')).toBeVisible();
-  await expect(exactButton(page, '.mobile-nav', 'Home')).toBeVisible();
-  await expect(page.locator('#command')).toBeVisible();
+  await expect(mobileRouteButton(page, 'Overzicht')).toBeVisible();
+  await expect(page.locator('#globalSearch')).toBeAttached();
 }
 
 test('next portal desktop navigation, drawers and command route work on live preview', async ({ page }) => {
@@ -50,13 +54,13 @@ test('next portal desktop navigation, drawers and command route work on live pre
   const pageErrors = collectInteractionErrors(page);
 
   for (const route of ROUTES) {
-    const button = exactButton(page, '.sidebar', route);
+    const button = routeButton(page, route);
     await button.click();
-    await expect(page.locator('.workspace-hero h1')).toBeVisible();
-    await expect(button).toHaveAttribute('aria-current', 'page');
+    await expect(page.locator('.workspace-hero h2')).toBeVisible();
+    await expect(button).toHaveClass(/is-active/);
   }
 
-  await exactButton(page, '.sidebar', 'Trust & Governance').click();
+  await routeButton(page, 'Trust & Governance').click();
   await expect(page.getByRole('heading', { name: 'AI Register', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Agent Team', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Access Center', exact: true })).toBeVisible();
@@ -67,10 +71,10 @@ test('next portal desktop navigation, drawers and command route work on live pre
   await expect(page.locator('#drawer')).not.toHaveClass(/open/);
 
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+K' : 'Control+K');
-  await expect(page.locator('#command')).toBeFocused();
-  await page.locator('#command').fill('Strategie');
-  await page.locator('#command').press('Enter');
-  await expect(exactButton(page, '.sidebar', 'Strategie')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('#globalSearch')).toBeFocused();
+  await page.locator('#globalSearch').fill('Strategie');
+  await page.locator('#globalSearch').press('Enter');
+  await expect(routeButton(page, 'Strategie')).toHaveClass(/is-active/);
   expect(pageErrors).toEqual([]);
 });
 
@@ -84,11 +88,11 @@ test('next portal mobile navigation is task-focused and usable', async ({ page }
   await assertMobileReady(page);
   const pageErrors = collectInteractionErrors(page);
 
-  await exactButton(page, '.mobile-nav', 'Werk').click();
-  await expect(page.getByText('Eén persoonlijke inbox uit de hele Company Graph')).toBeVisible();
-  await exactButton(page, '.mobile-nav', 'Changes').click();
-  await expect(page.getByText('Van besluit naar geverifieerde impact')).toBeVisible();
-  await exactButton(page, '.mobile-nav', 'AI').click();
-  await expect(page.locator('#command')).toBeFocused();
+  await mobileRouteButton(page, 'Mijn werk').click();
+  await expect(page.getByRole('heading', { name: 'Alles wat nu jouw aandacht vraagt', exact: true })).toBeVisible();
+  await mobileRouteButton(page, 'Uitvoering').click();
+  await expect(page.getByRole('heading', { name: 'Uitvoeren met bewijs', exact: true })).toBeVisible();
+  await mobileRouteButton(page, 'AI').click();
+  await expect(page.locator('#aiPrompt')).toBeFocused();
   expect(pageErrors).toEqual([]);
 });
