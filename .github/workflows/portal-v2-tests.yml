@@ -20,15 +20,22 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: portal-v2
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: portal-v2/package.json
       - name: Run portal-v2 contract tests
+        working-directory: portal-v2
         run: npm test
+      - name: Verify V2 shell assets and wiring
+        run: |
+          test -f portal-v2/index.html
+          test -f portal-v2/app.css
+          test -f portal-v2/app.js
+          test -f portal-v2/page-shell.js
+          test -f portal-v2/interaction.css
+          test -f portal-v2/brain.svg
+          grep -q "./brain.svg" portal-v2/app.js
+          grep -q "enhancePortalShell" portal-v2/app.js
+          grep -q "openPortalPage" portal-v2/app.js
