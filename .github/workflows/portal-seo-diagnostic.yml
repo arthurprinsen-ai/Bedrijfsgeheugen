@@ -15,21 +15,13 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run SEO control and preserve exit code
-        id: seo
         shell: bash
         run: |
           set +e
           python .github/scripts/seocontrole.py
           rc=$?
-          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
           echo "SEO_EXIT_CODE=$rc"
-          if [ -f seo-rapport.md ]; then
-            echo '--- SEO RAPPORT BEGIN ---'
-            cat seo-rapport.md
-            echo '--- SEO RAPPORT END ---'
-          else
-            echo 'seo-rapport.md ontbreekt'
-          fi
+          cat seo-rapport.md 2>/dev/null || true
           exit $rc
       - name: Upload SEO diagnostic report
         if: always()
@@ -51,22 +43,27 @@ jobs:
         run: |
           pip install --quiet playwright
           playwright install --with-deps chromium
-      - name: Run browser page control and preserve exit code
-        id: page
+      - name: Hypothesis test - remove vertical re-centering from due-diligence hero
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('due-diligence.html')
+          s = p.read_text(encoding='utf-8')
+          old = '.p-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center}'
+          new = '.p-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:start}'
+          if old not in s:
+              raise SystemExit('hypothesis selector not found')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Run browser page control with hypothesis patch
         shell: bash
         run: |
           set +e
           python .github/scripts/paginacontrole.py
           rc=$?
-          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
           echo "PAGE_EXIT_CODE=$rc"
-          if [ -f rapport.md ]; then
-            echo '--- PAGE RAPPORT BEGIN ---'
-            cat rapport.md
-            echo '--- PAGE RAPPORT END ---'
-          else
-            echo 'rapport.md ontbreekt'
-          fi
+          cat rapport.md 2>/dev/null || true
           exit $rc
       - name: Upload page diagnostic report
         if: always()
