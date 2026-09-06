@@ -1,0 +1,41 @@
+name: Portal SEO diagnostic
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  seo-diagnostic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Run SEO control and preserve exit code
+        id: seo
+        shell: bash
+        run: |
+          set +e
+          python .github/scripts/seocontrole.py
+          rc=$?
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          echo "SEO_EXIT_CODE=$rc"
+          if [ -f seo-rapport.md ]; then
+            echo '--- SEO RAPPORT BEGIN ---'
+            cat seo-rapport.md
+            echo '--- SEO RAPPORT END ---'
+          else
+            echo 'seo-rapport.md ontbreekt'
+          fi
+          exit $rc
+      - name: Upload SEO diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-seo-diagnostic
+          path: seo-rapport.md
+          if-no-files-found: warn
+          retention-days: 1
