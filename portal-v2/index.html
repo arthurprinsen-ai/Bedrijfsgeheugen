@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Bedrijfsgeheugen · Klantenportaal V2</title>
+<link rel="stylesheet" href="/portal-v2/app.css">
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><span class="brandmark"><i></i><i></i><i></i></span>Bedrijfsgeheugen</div>
+ <nav class="nav">
+  <button class="active"><span class="ico">⌂</span>Overzicht</button>
+  <button><span class="ico">♡</span>Bedrijfsgezondheid</button>
+  <button><span class="ico">↗</span>Strategie & uitvoering</button>
+  <button><span class="ico">◎</span>Processen & organisatie</button>
+  <button><span class="ico">▤</span>Kennis</button>
+  <button><span class="ico">◫</span>Data & koppelingen</button>
+  <button><span class="ico">✦</span>AI & Insights</button>
+  <button><span class="ico">✓</span>Acties & impact</button>
+  <button><span class="ico">▣</span>Rapportages & beheer</button>
+ </nav>
+ <div class="scan"><strong>Frisse Blik Scan</strong><p>Ontdek in 6 minuten waar de grootste kansen voor jouw bedrijf liggen.</p><button>Plan een Frisse blik →</button></div>
+ <div class="profile"><span class="avatar">AP</span><div><strong>Arthur Prinsen</strong><small>Beheerder</small></div></div>
+</aside>
+<main class="main">
+ <section class="topbar">
+  <div class="welcome"><h1>Welkom terug, Arthur</h1><p>Grip op je bedrijf. Ruimte om te groeien.</p></div>
+  <div class="topactions">
+   <div class="searchrow"><input class="search" placeholder="⌕  Zoek in kennis, processen, data, systemen..."><button class="smallbtn">🔔</button><button class="smallbtn">?</button><button class="smallbtn">AP</button></div>
+   <div class="actionrow"><button class="smallbtn ai">✦ Vraag het Bedrijfsgeheugen AI</button><button class="smallbtn">Periode: Mei 2025⌄</button></div>
+  </div>
+ </section>
+
+ <section class="kpis">
+  <article class="kpi"><div class="kpihead"><span class="kpiicon">♡</span>Bedrijfsgezondheid</div><div class="num">72<small>/100</small></div><div class="delta">▲ +4 deze maand</div><div class="spark"></div></article>
+  <article class="kpi"><div class="kpihead"><span class="kpiicon">▤</span>Kennisborging</div><div class="num">61<small>/100</small></div><div class="delta down">▼ -3 deze maand</div><div class="spark"></div></article>
+  <article class="kpi"><div class="kpihead"><span class="kpiicon">⚙</span>Processen</div><div class="num">69<small>/100</small></div><div class="delta">▲ +6 deze maand</div><div class="spark"></div></article>
+  <article class="kpi"><div class="kpihead"><span class="kpiicon">◫</span>Data & systemen</div><div class="num">74<small>/100</small></div><div class="delta">▲ +3 deze maand</div><div class="spark"></div></article>
+  <article class="kpi"><div class="kpihead"><span class="kpiicon">✦</span>AI-volwassenheid</div><div class="num">54<small>/100</small></div><div class="delta">▲ +5 deze maand</div><div class="spark"></div></article>
+ </section>
+
+ <div class="dashboard">
+  <section class="card braincard">
+   <div class="brainhead"><div><h2>Het brein van je bedrijf ⓘ</h2><p>Van informatie naar inzicht — je bedrijfsgeheugen in werking.</p></div><div class="live"><span class="livepill">● Preview</span><span>Voorbeeldflow, geen productieclaim</span></div></div>
+   <div class="brainlayout" id="brainLayout">
+    <section><div class="coltitle">1. Bronnen</div><div class="sources" id="sources"></div></section>
+    <section class="center">
+     <div class="coltitle" style="text-align:center">2. Het bedrijfsgeheugen</div>
+     <div class="capbar" id="caps">
+      <div class="cap" data-cap="begrijpt"><i>⌕</i>Begrijpt</div><div class="cap" data-cap="verbindt"><i>⇄</i>Verbindt</div><div class="cap" data-cap="vat"><i>≡</i>Vat samen</div><div class="cap" data-cap="prioriteert"><i>☰</i>Prioriteert</div><div class="cap" data-cap="adviseert"><i>✦</i>Adviseert</div><div class="cap" data-cap="leert"><i>↺</i>Leert</div>
+     </div>
+     <div class="core">
+      <img class="brainimg" src="/portal-v2/brain.png" alt="">
+      <div class="stack"><div class="layer ai"><div><strong>AI Brain</strong><small>begrijpen · redeneren · adviseren · beslissen</small></div></div><div class="layer hub"><div><strong>Datahub</strong><small>verbinden · verrijken · structureren</small></div></div><div class="layer power"><div><strong>Powerhouse</strong><small>agents · acties · monitoring · self-heal</small></div></div></div>
+      <div class="learn">↔ Leren en verbeteren<span>Outcome + evidence → learning → slimmer</span></div>
+     </div>
+    </section>
+    <section><div class="coltitle">3. Klantenportaal</div><div class="modules" id="modules"></div></section>
+    <svg class="flowoverlay" id="flowSvg"></svg>
+   </div>
+   <div class="flowexplain">
+    <div><span class="round">▤</span><div><b id="flowNowTitle">Nu in flow: Documenten</b><p id="flowNow">Contracten, notities en beleid worden ingelezen en geanalyseerd.</p></div></div>
+    <div><span class="round">⚙</span><div><b>Het Bedrijfsgeheugen doet:</b><p id="flowBrain">Begrijpt, verbindt en adviseert op basis van alle data.</p></div></div>
+    <div><span class="round">▥</span><div><b id="flowResultTitle">Resultaat: Inzicht</b><p id="flowResult">Direct beschikbaar in het klantenportaal, klaar voor actie.</p></div></div>
+   </div>
+  </section>
+
+  <aside class="right">
+   <section class="card"><h3>AI Management Summary</h3><p>Op basis van alle beschikbare data en signalen vat het Bedrijfsgeheugen AI de stand van zaken samen en wat aandacht vraagt.</p><div class="summary"><div class="g"><span><b>Kansen</b><br><small>Grote groeikansen geïdentificeerd</small></span><strong>7</strong></div><div class="o"><span><b>Risico’s</b><br><small>Risico’s vragen om aandacht</small></span><strong>5</strong></div><div class="b"><span><b>Trends</b><br><small>Belangrijke ontwikkelingen gesignaleerd</small></span><strong>4</strong></div></div><p style="color:#0d5bef;font-weight:800;margin-top:9px">Bekijk volledig overzicht →</p></section>
+   <section class="card"><h3>Aanbevelingen <small style="float:right;color:#0d5bef">6 nieuw</small></h3><ul class="recs"><li>Automatiseer het offerteproces <span class="prio">🔴 Hoog</span></li><li>Borg kritieke kennis Finance <span class="prio">🔴 Hoog</span></li><li>Koppel Exact en CRM volledig <span class="prio">🟠 Middel</span></li><li>Verwijder dubbele klantdata <span class="prio">🟠 Middel</span></li><li>Optimaliseer onboarding proces <span class="prio">🔵 Laag</span></li><li>Update verouderde documentatie <span class="prio">🔵 Laag</span></li></ul><p style="color:#0d5bef;font-weight:800;margin-top:9px">Alle aanbevelingen bekijken →</p></section>
+   <section class="card"><h3>Snelle links</h3><div class="quick"><button><i>∞</i>Koppelingen beheren</button><button><i>⌘</i>Koppeling bouwen</button><button><i>€</i>Facturen & abonnement</button><button><i>▤</i>Mijn taken</button><button><i>▥</i>Kennisbank</button><button><i>▣</i>Rapportages</button><button><i>◎</i>Gebruikers</button><button><i>⚙</i>Instellingen</button></div></section>
+  </aside>
+ </div>
+
+ <section class="lower">
+  <article class="card"><div class="sectiontitle"><h3>Roadmap & voortgang</h3><a>Bekijk volledige roadmap →</a></div><div class="timeline"><span>Nu<b>6</b></span><span>Volgende<b>8</b></span><span>Gepland<b>14</b></span><span>Afgerond<b>23</b></span></div><div class="progresslist"><div class="prow"><span>Klantdata opschonen</span><span class="bar"><i style="width:75%"></i></span><b>75%</b></div><div class="prow"><span>Onboarding optimaliseren</span><span class="bar"><i style="width:60%"></i></span><b>60%</b></div><div class="prow"><span>Kennisborging Finance</span><span class="bar"><i style="width:20%"></i></span><b>20%</b></div><div class="prow"><span>CRM koppeling uitbreiden</span><span class="bar"><i style="width:10%"></i></span><b>10%</b></div></div></article>
+  <article class="card"><div class="sectiontitle"><h3>Kansen & bedreigingen</h3><a>Bekijk alles →</a></div><div class="ko"><div class="box chance"><b>Kansen</b><p>• Cross-sell potentieel €240K</p><p>• Automatisering bespaart 320 uur/maand</p><p>• Nieuwe marktsegmenten in sight</p></div><div class="box risk"><b>Bedreigingen</b><p>• Kennisafhankelijkheid Finance</p><p>• Datakwaliteit klantdata onvoldoende</p><p>• Wetgeving AVG impact stijgt</p></div></div></article>
+  <article class="card impactcard"><div class="sectiontitle"><h3>Impact overzicht</h3><a>Deze maand⌄</a></div><div class="impact"><div class="impactitem"><span class="round">◷</span><div><b>Tijdwinst</b><small>▲ +12% t.o.v. vorige maand</small></div></div><div class="impactitem"><span class="round">€</span><div><b>Kostenbesparing</b><small>▲ +8% t.o.v. vorige maand</small></div></div><div class="impactitem"><span class="round">↗</span><div><b>Gerealiseerde waarde € 1,24M</b><small>YTD 2025</small></div></div></div></article>
+ </section>
+
+ <section class="card activities"><div class="sectiontitle"><h3>Recente activiteiten</h3><a>Bekijk alle activiteiten →</a></div><div class="items"><div class="act"><i>👩</i><span>Proces “Offerte tot Order” geüpdatet<br><small>Sanne · 2 uur geleden</small></span></div><div class="act"><i>◫</i><span>Koppeling met Exact gesynchroniseerd<br><small>Systeem · 3 uur geleden</small></span></div><div class="act"><i>👨</i><span>Nieuw document toegevoegd<br><small>Mark · 5 uur geleden</small></span></div><div class="act"><i>✓</i><span>Actie “Onboarding optimaliseren” afgerond<br><small>Lotte · 1 dag geleden</small></span></div></div></section>
+</main>
+</div>
+
+<button class="previewflag" id="showPages">Alle portalpagina’s</button>
+<div class="allpages" id="allPages"><div class="sheet"><div class="sheethead"><div><h3>Alle huidige portalinhoud blijft behouden</h3><small style="color:#7280a1">Nieuwe shell, bestaande functionaliteit en volledige Brain & Powerhouse-laag.</small></div><button id="closePages">×</button></div><div class="groups" id="groups"></div></div></div>
+<nav class="mobilebar"><button class="active">⌂<br>Overzicht</button><button>▣<br>Portaal</button><button>✦<br>Data & AI</button><button>✓<br>Taken</button><button id="mobileMore">☰<br>Meer</button></nav>
+<script type="module" src="/portal-v2/app.js"></script>
+</body>
+</html>
