@@ -20,7 +20,7 @@
       "secondary_keywords": ["ai scan bedrijf", "ai readiness scan mkb", "ai kansen scan"],
       "funnel_stage": "decide",
       "primary_cta": {"action":"zelfscan","url":"https://www.bedrijfsgeheugen.nl/zelfscan"},
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie","https://www.bedrijfsgeheugen.nl/ai-implementeren"],
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie"],
       "schema_type": "Service"
     },
     {
@@ -75,7 +75,7 @@
       "secondary_keywords": ["kennis borgen overname", "mkb overname kennisrisico", "m&a bedrijfskennis"],
       "funnel_stage": "decide",
       "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/due-diligence","https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen"],
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/due-diligence"],
       "schema_type": "Service"
     },
     {
@@ -108,7 +108,7 @@
       "secondary_keywords": ["ai workshop bedrijf", "ai training mkb", "ai workshop organisatie"],
       "funnel_stage": "decide",
       "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie","https://www.bedrijfsgeheugen.nl/ai-implementeren"],
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie"],
       "schema_type": "Service"
     }
   ]
