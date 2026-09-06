@@ -28,7 +28,7 @@ function supportCopy(entry){
   if(entry?.primary_cta?.action==='zelfscan') return {title:'Wil je weten waar je bedrijf nu staat?',text:'Breng in een paar minuten in beeld waar kennis, processen, data of AI nu vastlopen en waar de grootste kans zit.',label:'Doe de gratis zelfscan'};
   return {title:'Klaar voor de volgende stap?',text:'Ga van uitleg naar een concrete vervolgstap voor je organisatie.',label:'Bekijk de volgende stap'};
 }
-function enrichSupportHandoff(input,entry){
+export function enrichSupportHandoff(input,entry){
   let html=String(input); const target=entry?.primary_cta?.url;
   if(entry?.role!=='support'||!target||!target.startsWith(`${ORIGIN}/`)||target===entry.route) return html;
   if(/data-bg-support-handoff=(?:"v1"|'v1')/i.test(html)||hasVisibleTargetLink(html,target)) return html;
