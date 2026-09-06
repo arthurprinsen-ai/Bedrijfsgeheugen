@@ -93,9 +93,7 @@ function pageNode(meta) {
 
 export function renderSeoGraph(meta) {
   if (!meta?.canonical?.startsWith(`${ORIGIN}/`)) throw new Error('canonical moet een absolute Bedrijfsgeheugen URL zijn');
-  if (!meta?.title || !meta?.description) {
-    throw new Error(`title en description zijn verplicht voor structured data; canonical=${meta?.canonical || '(leeg)'}; title=${meta?.title || '(leeg)'}; description=${meta?.description || '(leeg)'}`);
-  }
+  if (!meta?.title || !meta?.description) throw new Error('title en description zijn verplicht voor structured data');
   const graph = [organizationNode(), websiteNode()];
   if (meta.schema_type === 'Article') graph.push(personNode());
   graph.push(breadcrumbNode(meta));
