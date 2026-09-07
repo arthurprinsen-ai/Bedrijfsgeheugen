@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateSuccessorCreation } from '../tools/brain-delivery-system.mjs';
+import { evaluateSuccessorCreation, evaluatePullRequestSuccessorGuard } from '../tools/moving-main-successor-guard.mjs';
 
 test('main movement without overlap forbids creating a successor', () => {
   assert.deepEqual(evaluateSuccessorCreation({
@@ -33,5 +33,28 @@ test('successor is allowed only when sync is required and existing candidate can
     allowed: true,
     action: 'CREATE_SUCCESSOR',
     reason: 'sync-required-existing-candidate-unsynchronizable',
+  });
+});
+
+test('PR successor wording is fail-closed without machine handoff evidence', () => {
+  assert.deepEqual(evaluatePullRequestSuccessorGuard({
+    title:'Clean successor on current main',
+    body:'Main moved again so this was rebuilt from current main.'
+  }), {
+    ok:false,
+    state:'SUCCESSOR_BLOCKED',
+    action:'REUSE_OR_SYNC_EXISTING_CANDIDATE',
+    reason:'missing-sync-required-evidence'
+  });
+});
+
+test('PR successor is allowed only with sync, overlap and unsynchronizable evidence', () => {
+  assert.deepEqual(evaluatePullRequestSuccessorGuard({
+    title:'Successor after real overlap',
+    body:'Handoff-Decision: SYNC_REQUIRED\nHandoff-Evidence: changed-path-overlap\nExisting-Candidate-Synchronizable: false'
+  }), {
+    ok:true,
+    state:'SUCCESSOR_ALLOWED',
+    action:'CREATE_SUCCESSOR'
   });
 });
