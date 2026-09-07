@@ -26,8 +26,9 @@ export const BEWEGING_CSS = `<style id="v18-beweging">
   border:1px solid var(--line);background:var(--white);user-select:none;touch-action:pan-y}
 .bgx-vergelijk .zijde{padding:30px 28px;min-height:230px}
 .bgx-vergelijk .nu{background:#0a1117;color:rgba(255,255,255,.9)}
+.bgx-vergelijk .nu li{color:rgba(255,255,255,.9)!important}
 .bgx-vergelijk .straks{position:absolute;inset:0;background:var(--white);color:var(--ink);
-  clip-path:inset(0 0 0 var(--bgx-grens,50%))}
+  padding-left:calc(var(--bgx-grens,50%) + 28px);clip-path:inset(0 0 0 var(--bgx-grens,50%))}
 .bgx-vergelijk h4{margin:0 0 12px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
   font-family:'IBM Plex Mono',ui-monospace,monospace}
 .bgx-vergelijk .nu h4{color:#ff9b7a}
