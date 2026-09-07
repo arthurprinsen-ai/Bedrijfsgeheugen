@@ -55,3 +55,19 @@ jobs:
           node tools/site-shell/check-live-production.mjs
           node tools/seo-order-engine/live-readback.mjs
           test "$(curl -sS -o /tmp/growth-health.txt -w '%{http_code}' https://www.bedrijfsgeheugen.nl/api/growth-event || true)" = "405"
+      - name: Install production visual readback browser
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+      - name: Production UI visual regression readback
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+          UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
+        run: node tools/ui-visual-regression/browser-check.mjs
+      - name: Upload production visual regression diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-ui-visual-regression
+          path: artifacts/ui-visual-regression/
+          if-no-files-found: ignore
