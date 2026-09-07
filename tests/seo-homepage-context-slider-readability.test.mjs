@@ -51,6 +51,10 @@ test('de beschermde Required test sleept de echte deploy-preview naar beide uite
   assert.match(browserCheck, /data-bg-compare-compact/);
   assert.match(browserCheck, /compare-before \.compare-copy/);
   assert.match(browserCheck, /compare-after \.compare-copy/);
-  assert.match(browserCheck, /page\.mouse\.click/);
+  assert.match(browserCheck, /dragKnobTo/);
+  assert.match(browserCheck, /page\.mouse\.down/);
+  assert.match(browserCheck, /page\.mouse\.move/);
+  assert.match(browserCheck, /page\.mouse\.up/);
+  assert.doesNotMatch(browserCheck, /page\.mouse\.click/);
   assert.match(required, /homepage-context-slider-browser-check\.mjs/);
 });
