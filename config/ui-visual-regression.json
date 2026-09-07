@@ -36,6 +36,18 @@
       "required": ["main h1"],
       "protectedPairs": [],
       "interactions": []
+    },
+    {
+      "route": "/ai-act",
+      "required": ["header", "main h1"],
+      "protectedPairs": [],
+      "interactions": []
+    },
+    {
+      "route": "/benchmark",
+      "required": ["header", "main h1"],
+      "protectedPairs": [],
+      "interactions": []
     }
   ]
 }
