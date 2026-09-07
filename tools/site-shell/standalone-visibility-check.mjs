@@ -28,7 +28,10 @@ async function discoverMenuRoutes(browser) {
   try {
     const seedUrl = new URL('/ai-act', baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).href;
     await openReachable(page, seedUrl);
-    const hrefs = await page.$$eval('.bgkop a[href], .bgkop-mob a[href]', links => links.map(a => a.getAttribute('href')).filter(Boolean));
+    // Tijdens de migratie bestaan twee geldige canonical headers. De gate leest
+    // de routes uit beide, zodat een shell-wijziging nooit de dekking terugbrengt
+    // naar een handmatig lijstje van twee pagina's.
+    const hrefs = await page.$$eval('.bgkop a[href], .bgkop-mob a[href], .v17-header a[href], header.v17-header a[href]', links => links.map(a => a.getAttribute('href')).filter(Boolean));
     const base = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
     const routes = [...new Set(hrefs.flatMap(href => {
       if (/^(?:mailto:|tel:|javascript:|#)/i.test(href)) return [];
