@@ -1,0 +1,60 @@
+name: Interaction Production Readback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'v18-full/**'
+      - 'assets/**'
+      - 'tools/**'
+      - 'quality/**'
+      - 'tests/**'
+      - 'netlify.toml'
+      - '.github/workflows/interaction-production-readback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-readback:
+    name: interaction-production-readback
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Wait until production endpoint is available
+        run: |
+          for i in $(seq 1 24); do
+            if curl -fsS --max-time 20 https://www.bedrijfsgeheugen.nl/ -o /tmp/production-index.html; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Production endpoint unavailable after retry window"
+          exit 1
+
+      - name: Install Playwright runtime and Chromium
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run canonical interaction contracts against production
+        env:
+          BASE_URL: https://www.bedrijfsgeheugen.nl
+          INTERACTION_ENVIRONMENT: production
+        run: npx playwright test tests/integration/interaction-quality-gate.spec.js --workers=1 --reporter=line,html
+
+      - name: Upload production interaction diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: interaction-production-readback-artifacts
+          path: |
+            playwright-report/**
+            test-results/**
+          if-no-files-found: warn
