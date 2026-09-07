@@ -29,7 +29,8 @@ export function applyHomepageCompareSliderReadability(html) {
   }
 
   // Fail closed: een gedeeltelijke patch mag nooit stilletjes als opgelost doorbouwen.
-  if (!next.includes('Math.max(30,Math.min(70,') ||
+  // De gegenereerde V18-runtime bestaat zowel met als zonder spatie na de komma.
+  if (!/Math\.max\(30,\s*Math\.min\(70,/.test(next) ||
       !next.includes('aria-valuemax="70"') ||
       !next.includes('aria-valuemin="30"')) {
     throw new Error('Homepage compare-slider readability guard kon de runtime-eindpunten niet borgen');
