@@ -36,12 +36,9 @@ export function applyHomepageScrollStory(html) {
 @keyframes bgssPulse{0%,100%{box-shadow:0 0 0 0 rgba(88,214,141,0)}50%{box-shadow:0 0 0 7px rgba(88,214,141,.13)}}
 html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-events:none!important;transform:translateY(16px)!important;transition:opacity .18s ease,transform .18s ease!important}
 @media(min-width:1024px){
-  [data-bg-story-root]{min-height:360vh!important;padding-bottom:0!important}
-  [data-bg-story-stage]{position:sticky!important;top:0;z-index:2}
+  [data-bg-story-root]{padding-bottom:0!important}
 }
 @media(max-width:1023px){
-  [data-bg-story-root]{min-height:0!important}
-  [data-bg-story-stage]{position:relative!important;top:auto!important;min-height:0!important;display:block!important}
   [data-bg-story-overlay]{position:relative;inset:auto;display:none;margin-top:12px;min-height:280px;border-radius:20px}
   [data-bg-story-overlay][data-show="1"]{display:grid}
   [data-bg-story-step]{opacity:.72!important}
@@ -58,9 +55,7 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
   'use strict';
   var LABELS=['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat'];
   var FOURTH=['Effect wordt zichtbaar','Effect wordt gevolgd','Effect wordt gemeten','Impact wordt zichtbaar'];
-  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var desktop=window.matchMedia&&window.matchMedia('(min-width: 1024px)');
-  var state=0, ticking=false, root=null, stage=null, visual=null, steps=[], overlays=[];
+  var state=0,ticking=false,root=null,visual=null,steps=[],overlays=[];
 
   function txt(el){return (el&&el.textContent||'').replace(/\\s+/g,' ').trim();}
   function exact(label,scope){return Array.prototype.find.call((scope||document).querySelectorAll('h1,h2,h3,h4,h5,h6,b,strong,span,p,div'),function(el){return txt(el)===label;})||null;}
@@ -68,7 +63,6 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
   function containsOther(el,label){var t=txt(el);return LABELS.some(function(x){return x!==label&&t.indexOf(x)!==-1;});}
   function blockFor(el,label){var best=el;for(var n=el;n&&n.parentElement&&n.parentElement!==document.body;n=n.parentElement){var p=n.parentElement;if(containsOther(p,label))break;if(txt(p).length>520)break;best=p;}return best;}
   function smallestContaining(scope,needle){var found=null;Array.prototype.forEach.call((scope||document).querySelectorAll('div,aside,section'),function(el){var t=txt(el);if(t.indexOf(needle)===-1)return;if(!found||t.length<txt(found).length)found=el;});return found;}
-  function directChildContaining(parent,node){if(!parent||!node)return null;var n=node;while(n&&n.parentElement!==parent)n=n.parentElement;return n&&n.parentElement===parent?n:null;}
 
   function findRoot(first,third,cta){
     var r=common(first,third);
@@ -83,8 +77,7 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
 
   function findFourth(scope){
     for(var i=0;i<FOURTH.length;i++){var hit=exact(FOURTH[i],scope);if(hit)return hit;}
-    var candidates=Array.prototype.slice.call(scope.querySelectorAll('div,li,article'));
-    return candidates.find(function(el){var t=txt(el);return /^04(?:\\s|$)/.test(t)&&t.length<420;})||null;
+    return Array.prototype.slice.call(scope.querySelectorAll('div,li,article')).find(function(el){var t=txt(el);return /^04(?:\\s|$)/.test(t)&&t.length<420;})||null;
   }
 
   function markCostWidget(){
@@ -107,56 +100,41 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
     el.setAttribute('data-bg-story-overlay',String(index));
     el.setAttribute('aria-live','polite');
     el.innerHTML='<div class="bgss-kicker">'+kicker+'</div><h3>'+title+'</h3><p>'+body+'</p>'+inner;
-    visual.appendChild(el);
-    overlays[index]=el;
+    visual.appendChild(el);overlays[index]=el;
   }
 
   function createOverlays(){
-    overlay(1,'Stap 02 · Voorbeeldimpact','Context wordt begrepen.','Bedrijfsgeheugen legt eerst de verbanden vast voordat er een actie ontstaat.',
-      '<div class="bgss-grid"><div class="bgss-item"><b>Processen</b><span>Welke werkwijze is afhankelijk?</span></div><div class="bgss-item"><b>Rollen</b><span>Wie neemt kennis en eigenaarschap over?</span></div><div class="bgss-item"><b>Documenten</b><span>Welke instructies moeten actueel blijven?</span></div><div class="bgss-item"><b>KPI’s</b><span>Waar kan het effect zichtbaar worden?</span></div></div>');
-    overlay(2,'Stap 03 · Voorbeeldopvolging','Opvolging ontstaat.','De gevonden impact wordt vertaald naar concrete opvolging met eigenaar en status.',
-      '<div><div class="bgss-line"><i class="bgss-dot"></i><span>Kennisoverdracht vastleggen</span><span class="bgss-state">eigenaar bepalen</span></div><div class="bgss-line"><i class="bgss-dot"></i><span>Procesdocumentatie bijwerken</span><span class="bgss-state">open</span></div><div class="bgss-line"><i class="bgss-dot"></i><span>Afhankelijkheden controleren</span><span class="bgss-state">gepland</span></div></div>');
-    overlay(3,'Stap 04 · Readback','Effect blijft zichtbaar.','Niet alleen de actie, maar ook wat is bijgewerkt, wat nog wacht en waar opnieuw aandacht nodig is.',
-      '<div class="bgss-grid"><div class="bgss-item"><b>Bijgewerkt</b><span>Nieuwe context is vastgelegd</span></div><div class="bgss-item"><b>Open</b><span>Wat nog bevestiging nodig heeft</span></div><div class="bgss-item"><b>Geraakt</b><span>KPI’s en processen blijven gekoppeld</span></div><div class="bgss-item"><b>Readback</b><span>De wijziging blijft traceerbaar</span></div></div>');
+    overlay(1,'Stap 02 · Voorbeeldimpact','Context wordt begrepen.','Bedrijfsgeheugen legt eerst de verbanden vast voordat er een actie ontstaat.','<div class="bgss-grid"><div class="bgss-item"><b>Processen</b><span>Welke werkwijze is afhankelijk?</span></div><div class="bgss-item"><b>Rollen</b><span>Wie neemt kennis en eigenaarschap over?</span></div><div class="bgss-item"><b>Documenten</b><span>Welke instructies moeten actueel blijven?</span></div><div class="bgss-item"><b>KPI’s</b><span>Waar kan het effect zichtbaar worden?</span></div></div>');
+    overlay(2,'Stap 03 · Voorbeeldopvolging','Opvolging ontstaat.','De gevonden impact wordt vertaald naar concrete opvolging met eigenaar en status.','<div><div class="bgss-line"><i class="bgss-dot"></i><span>Kennisoverdracht vastleggen</span><span class="bgss-state">eigenaar bepalen</span></div><div class="bgss-line"><i class="bgss-dot"></i><span>Procesdocumentatie bijwerken</span><span class="bgss-state">open</span></div><div class="bgss-line"><i class="bgss-dot"></i><span>Afhankelijkheden controleren</span><span class="bgss-state">gepland</span></div></div>');
+    overlay(3,'Stap 04 · Readback','Effect blijft zichtbaar.','Niet alleen de actie, maar ook wat is bijgewerkt, wat nog wacht en waar opnieuw aandacht nodig is.','<div class="bgss-grid"><div class="bgss-item"><b>Bijgewerkt</b><span>Nieuwe context is vastgelegd</span></div><div class="bgss-item"><b>Open</b><span>Wat nog bevestiging nodig heeft</span></div><div class="bgss-item"><b>Geraakt</b><span>KPI’s en processen blijven gekoppeld</span></div><div class="bgss-item"><b>Readback</b><span>De wijziging blijft traceerbaar</span></div></div>');
   }
 
-  function setStoryState(next,source){
-    next=Math.max(0,Math.min(3,Number(next)||0));
-    state=next;
+  function setStoryState(next){
+    next=Math.max(0,Math.min(3,Number(next)||0));state=next;
     root.setAttribute('data-bg-story-state',String(next));
-    steps.forEach(function(step,i){
-      var status=i<next?'done':i===next?'active':'future';
-      step.setAttribute('data-bg-story-status',status);
-      if(i===next)step.setAttribute('aria-current','step');else step.removeAttribute('aria-current');
-    });
+    steps.forEach(function(step,i){var status=i<next?'done':i===next?'active':'future';step.setAttribute('data-bg-story-status',status);if(i===next)step.setAttribute('aria-current','step');else step.removeAttribute('aria-current');});
     overlays.forEach(function(el,i){if(el)el.setAttribute('data-show',i===next?'1':'0');});
-    if(source==='click'&&next>0&&overlays[next])overlays[next].focus&&overlays[next].focus({preventScroll:true});
   }
 
-  function scrollTargetFor(next){
+  function isRootInViewport(){
+    if(!root)return false;
     var rect=root.getBoundingClientRect();
-    var top=window.scrollY+rect.top;
-    var span=Math.max(1,root.offsetHeight-window.innerHeight);
-    return top+span*((next+.05)/4);
+    return rect.bottom>0&&rect.top<window.innerHeight;
   }
 
-  function onStepClick(i){return function(){
-    setStoryState(i,'click');
-    if(desktop&&desktop.matches)window.scrollTo({top:scrollTargetFor(i),behavior:reduced?'auto':'smooth'});
-  };}
+  function nearestStepToViewportCenter(){
+    if(!steps.length)return state;
+    var center=window.innerHeight/2,best=state,bestDistance=Infinity;
+    steps.forEach(function(step,i){var r=step.getBoundingClientRect();var stepCenter=r.top+r.height/2;var distance=Math.abs(stepCenter-center);if(distance<bestDistance){bestDistance=distance;best=i;}});
+    return best;
+  }
 
   function measure(){
     ticking=false;
-    if(!root)return;
-    var rect=root.getBoundingClientRect();
-    var active=rect.top<=window.innerHeight*.18&&rect.bottom>=window.innerHeight*.72;
+    var active=isRootInViewport();
     document.documentElement.setAttribute('data-bg-story-active',active?'1':'0');
-    if(!(desktop&&desktop.matches)||!active)return;
-    var span=Math.max(1,root.offsetHeight-window.innerHeight);
-    var progress=Math.max(0,Math.min(.9999,(-rect.top)/span));
-    setStoryState(Math.min(3,Math.floor(progress*4)),'scroll');
+    if(active)setStoryState(nearestStepToViewportCenter());
   }
-
   function schedule(){if(ticking)return;ticking=true;requestAnimationFrame(measure);}
 
   function init(){
@@ -165,34 +143,14 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
     if(!first||!second||!third)return;
     var ctas=Array.prototype.slice.call(document.querySelectorAll('a,button'));
     var cta=ctas.find(function(el){return txt(el).indexOf('Analyseer impact')!==-1;})||null;
-    root=findRoot(first,third,cta);
-    if(!root)return;
-    root.setAttribute('data-bg-story-root','');
-
+    root=findRoot(first,third,cta);if(!root)return;root.setAttribute('data-bg-story-root','');
     var labels=[first,second,third,findFourth(root)].filter(Boolean);
-    steps=labels.map(function(el,i){var b=blockFor(el,i<3?LABELS[i]:txt(el));b.setAttribute('data-bg-story-step',String(i));b.setAttribute('tabindex','0');b.addEventListener('click',onStepClick(i));b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();onStepClick(i)();}});return b;});
-
-    var anchor=cta||third;
-    var childA=directChildContaining(root,first),childB=directChildContaining(root,anchor);
-    stage=(childA&&childB&&childA===childB)?childA:common(first,anchor);
-    if(stage&&stage!==root)stage.setAttribute('data-bg-story-stage','');
-    else root.setAttribute('data-bg-story-stage','');
-
-    visual=chooseVisual(cta);
-    if(!visual)return;
-    visual.setAttribute('data-bg-story-visual','');
-    if(cta){cta.addEventListener('click',function(e){e.preventDefault();setStoryState(1,'click');if(desktop&&desktop.matches)window.scrollTo({top:scrollTargetFor(1),behavior:reduced?'auto':'smooth'});});}
-
-    var signal=smallestContaining(root,'AFAS')||smallestContaining(root,'Microsoft 365');
-    if(signal)signal.setAttribute('data-bg-story-signal','');
-    markCostWidget();
-    createOverlays();
-    setStoryState(0,'init');
-    document.documentElement.dataset.bgScrollStoryReady='1';
-    window.addEventListener('scroll',schedule,{passive:true});
-    window.addEventListener('resize',schedule,{passive:true});
-    if(desktop&&desktop.addEventListener)desktop.addEventListener('change',schedule);
-    schedule();
+    steps=labels.map(function(el,i){var b=blockFor(el,i<3?LABELS[i]:txt(el));b.setAttribute('data-bg-story-step',String(i));b.setAttribute('tabindex','0');b.addEventListener('click',function(){setStoryState(i);});b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();setStoryState(i);}});return b;});
+    visual=chooseVisual(cta);if(!visual)return;visual.setAttribute('data-bg-story-visual','');
+    if(cta)cta.addEventListener('click',function(e){e.preventDefault();setStoryState(1);});
+    var signal=smallestContaining(root,'AFAS')||smallestContaining(root,'Microsoft 365');if(signal)signal.setAttribute('data-bg-story-signal','');
+    markCostWidget();createOverlays();setStoryState(0);document.documentElement.dataset.bgScrollStoryReady='1';
+    window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule,{passive:true});schedule();
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
