@@ -15,6 +15,7 @@ function routeForPath(path) {
 
 export function classifyWebsiteReleaseRisk({ changedPaths = [], policy = {} } = {}) {
   const paths = [...new Set((changedPaths || []).filter(Boolean))];
+  const controlPlaneExact = policy.controlPlaneExactPaths || [];
   const menuExact = policy.menuExactPaths || [];
   const menuPrefixes = policy.menuPrefixes || [];
   const targetedExact = policy.targetedSurfaceExactPaths || [];
@@ -27,6 +28,9 @@ export function classifyWebsiteReleaseRisk({ changedPaths = [], policy = {} } = 
   const targetedPaths = [];
 
   for (const path of paths) {
+    if (matchesExact(path, controlPlaneExact)) {
+      continue;
+    }
     if (matchesExact(path, menuExact) || matchesPrefix(path, menuPrefixes)) {
       menuPaths.push(path);
       continue;
