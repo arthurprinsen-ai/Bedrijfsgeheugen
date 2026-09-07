@@ -1,11 +1,18 @@
 import { writeFile } from 'node:fs/promises';
 import { isolateStandalonePages } from './standalone-page-router.mjs';
+import { applyHomepageProcessProgress } from './homepage-process-progress.mjs';
 
 // Standalone URLs are real documents. They may inherit the historical homepage
 // one-page router through the canonical shell; that router can remove the active
 // view after a menu navigation and leave a completely white page. Strip only
 // that router at the final build boundary, after every shell/page transformer.
 await isolateStandalonePages();
+
+// The homepage process line is cumulative: once its moving blue edge passes
+// step 02, 03 or 04, that step and every previous step must remain fully visible.
+// Apply this last so the pinned V18 payload and later homepage transformers
+// cannot silently restore the old non-cumulative interaction.
+await applyHomepageProcessProgress();
 
 const commitRef = String(process.env.COMMIT_REF || process.env.HEAD || '').trim();
 if (!/^[a-f0-9]{40}$/i.test(commitRef)) {
