@@ -3,7 +3,6 @@ import { chromium } from 'playwright';
 const baseUrl = process.env.UI_VR_BASE_URL || process.argv[2];
 if (!baseUrl) throw new Error('UI_VR_BASE_URL/base URL is required');
 
-const routes = ['/ai-act', '/benchmark'];
 const viewports = [
   { name: 'phone', width: 390, height: 844 },
   { name: 'desktop', width: 1440, height: 900 },
@@ -23,9 +22,38 @@ async function openReachable(page, url) {
   throw last || new Error(`Could not load ${url}`);
 }
 
+async function discoverMenuRoutes(browser) {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await context.newPage();
+  try {
+    const seedUrl = new URL('/ai-act', baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).href;
+    await openReachable(page, seedUrl);
+    const hrefs = await page.$$eval('.bgkop a[href], .bgkop-mob a[href]', links => links.map(a => a.getAttribute('href')).filter(Boolean));
+    const base = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
+    const routes = [...new Set(hrefs.flatMap(href => {
+      if (/^(?:mailto:|tel:|javascript:|#)/i.test(href)) return [];
+      let url;
+      try { url = new URL(href, base); } catch { return []; }
+      if (url.origin !== base.origin) return [];
+      if (!/^https?:$/.test(url.protocol)) return [];
+      const path = url.pathname || '/';
+      if (path === '/' || path.startsWith('/intern/')) return [];
+      return [path.replace(/\/$/, '') || '/'];
+    }))].sort();
+    for (const required of ['/ai-act', '/benchmark']) if (!routes.includes(required)) routes.push(required);
+    routes.sort();
+    if (routes.length < 8) throw new Error(`Shared menu discovery returned only ${routes.length} internal routes: ${routes.join(', ')}`);
+    return routes;
+  } finally {
+    await context.close();
+  }
+}
+
 const browser = await chromium.launch({ headless: true });
 const failures = [];
+let routes = [];
 try {
+  routes = await discoverMenuRoutes(browser);
   for (const route of routes) {
     for (const viewport of viewports) {
       const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
@@ -34,7 +62,7 @@ try {
       try {
         await openReachable(page, url);
         await page.evaluate(() => document.fonts?.ready);
-        await sleep(500);
+        await sleep(350);
         const state = await page.evaluate(() => {
           const inspect = selector => {
             const el = document.querySelector(selector);
@@ -59,7 +87,7 @@ try {
             };
           };
           return {
-            header: inspect('header'),
+            header: inspect('header, .bgkop'),
             h1: inspect('main h1'),
             main: inspect('main'),
             textLength: (document.querySelector('main')?.innerText || '').trim().length,
@@ -88,4 +116,4 @@ try {
 }
 
 if (failures.length) throw new Error(`Standalone page visibility failed:\n${failures.join('\n')}`);
-console.log(`Standalone page visibility green: ${routes.join(', ')} on ${viewports.map(v => v.name).join(', ')}`);
+console.log(`All shared-menu pages visible: ${routes.length} routes on ${viewports.map(v => v.name).join(', ')}\n${routes.join('\n')}`);
