@@ -22,6 +22,8 @@ const RUNTIME = `<script ${MARKER}>
   var slider = document.getElementById('compareSlider');
   if(!slider) return;
   var knob = slider.querySelector('.compare-knob');
+  var dragging = false;
+
   function getLimits(){
     var r = slider.getBoundingClientRect();
     var compactThreshold = (MIN_COMPACT_PANE_PX * 2) + (HANDLE_GUTTER_PX * 2) + 88;
@@ -32,6 +34,7 @@ const RUNTIME = `<script ${MARKER}>
     var minPct = Math.min(45, safePanePx / Math.max(1,r.width) * 100);
     return {min:minPct,max:100-minPct,compact:false};
   }
+
   function apply(raw){
     var limits = getLimits();
     var value = limits.compact ? 50 : Math.max(limits.min, Math.min(limits.max, raw));
@@ -42,20 +45,63 @@ const RUNTIME = `<script ${MARKER}>
       knob.setAttribute('aria-valuenow', value.toFixed(0));
       knob.setAttribute('aria-disabled', limits.compact ? 'true' : 'false');
     }
+    return value;
   }
-  function normalize(){
+
+  function applyFromClientX(clientX){
+    var r = slider.getBoundingClientRect();
+    if(!r.width) return apply(50);
+    return apply(((clientX-r.left)/r.width)*100);
+  }
+
+  function current(){
     var raw = parseFloat(getComputedStyle(slider).getPropertyValue('--split'));
-    apply(Number.isFinite(raw) ? raw : 50);
+    return Number.isFinite(raw) ? raw : 50;
   }
-  ['pointerdown','pointermove','pointerup','pointercancel'].forEach(function(name){
-    slider.addEventListener(name,function(){setTimeout(normalize,0);});
-  });
-  window.addEventListener('pointermove',function(){setTimeout(normalize,0);});
+
+  function normalize(){ apply(current()); }
+
+  slider.addEventListener('pointerdown',function(e){
+    var limits = getLimits();
+    if(limits.compact) return;
+    dragging = true;
+    if(knob && e.target===knob) knob.setPointerCapture?.(e.pointerId);
+    applyFromClientX(e.clientX);
+    e.preventDefault();
+    e.stopPropagation();
+  },true);
+
+  window.addEventListener('pointermove',function(e){
+    if(!dragging) return;
+    applyFromClientX(e.clientX);
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  },true);
+
+  window.addEventListener('pointerup',function(e){
+    if(!dragging) return;
+    dragging=false;
+    applyFromClientX(e.clientX);
+  },true);
+
+  window.addEventListener('pointercancel',function(){ dragging=false; },true);
+
   if(knob){
     knob.addEventListener('keydown',function(e){
-      if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Home'||e.key==='End') setTimeout(normalize,0);
-    });
+      var limits=getLimits();
+      if(limits.compact) return;
+      var value=current();
+      if(e.key==='ArrowLeft') value-=3;
+      else if(e.key==='ArrowRight') value+=3;
+      else if(e.key==='Home') value=limits.min;
+      else if(e.key==='End') value=limits.max;
+      else return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      apply(value);
+    },true);
   }
+
   window.addEventListener('resize',normalize,{passive:true});
   normalize();
 })();
@@ -80,6 +126,7 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('MIN_DESKTOP_PANE_PX = 320') ||
      !next.includes('MIN_COMPACT_PANE_PX = 240') ||
      !next.includes('HANDLE_GUTTER_PX = 64') ||
+     !next.includes('applyFromClientX') ||
      !next.includes('data-bg-compare-compact') ||
      !next.includes(MARKER)) {
     throw new Error('Homepage context slider readability guard kon niet volledig worden toegepast');
