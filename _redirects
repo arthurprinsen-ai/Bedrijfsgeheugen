@@ -7,6 +7,7 @@
 /data-ai-cockpit   /frisse-blik   301!
 /data-ai-cockpit.html   /frisse-blik   301!
 # Customer portal variants. Order matters: specific routes first.
+/klantportaal-v2  /klantportaal-v2.html  200!
 # The old demo alias canonicalizes to demo1; demoAI is the only route to the new AI portal.
 /klantportaal  klant=demo  /klantportaal?klant=demo1  301!
 /klantportaal  klant=demo1  /klantportaal-demo.html  200!
