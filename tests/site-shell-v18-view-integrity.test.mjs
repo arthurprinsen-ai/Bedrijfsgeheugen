@@ -20,16 +20,21 @@ test('product.html: canonical shell bewaart de bestaande V18 hero en maakt geen 
   assert.equal((out.match(/<h1>Platform<\/h1>/g) || []).length, 1, 'de pagina houdt exact één eigen H1');
 });
 
-test('prijzen.html: eigen prijshero blijft volledig intact en wordt de canonical hero-slot', () => {
-  const html = '<!doctype html><html lang="nl"><head><title>Prijzen | Bedrijfsgeheugen</title><meta name="description" content="Prijzen"><link rel="canonical" href="https://www.bedrijfsgeheugen.nl/prijzen"></head><body><main><nav class="bgkruim" aria-label="Kruimelpad"><a href="https://www.bedrijfsgeheugen.nl/">Home</a><span aria-current="page">Prijzen</span></nav><section class="held"><div class="wrap"><span class="eyebrow">Prijzen</span><div class="pil">AI-gedreven. Menselijk gecontroleerd.</div><h1>Prijzen voor <span>digitalisering</span> in het mkb</h1><p class="lead">Eigen prijzenintro</p><div class="heldknoppen"><a class="hk geel" href="#pakketten">Bekijk pakketten</a><a class="hk wit" href="/frisse-blik">Doe de Frisse Blik</a></div></div></section><section id="pakketten"><h2>Pakketten</h2></section></main></body></html>';
+test('prijzen.html: echte div-held prijshero blijft intact en breadcrumb kan nooit als witte losse balk renderen', () => {
+  const html = '<!doctype html><html lang="nl"><head><title>Prijzen | Bedrijfsgeheugen</title><meta name="description" content="Prijzen"><link rel="canonical" href="https://www.bedrijfsgeheugen.nl/prijzen"><style>.bgkruim{background:#fff}.held{background:#0e2148}</style></head><body><main><div class="held"><div class="wrap"><span class="pil">AI-gedreven. Menselijk gecontroleerd.</span><h1>Prijzen voor <span>digitalisering</span> in het mkb</h1><p class="ondertitel">De AI doet het werk. Wij controleren het.</p><p class="payoff">Aanpakken zonder aanmodderen.</p><div class="heldknoppen"><a class="hk geel" href="#pakketten">Bekijk pakketten</a><a class="hk wit" href="/frisse-blik">Doe de Frisse Blik</a></div></div></div><nav class="bgkruim" aria-label="Kruimelpad"><div class="wrap"><a href="/">Home</a> › <a href="/product">Het portaal</a> › <span aria-current="page">Prijzen</span></div></nav><section id="pakketten"><h2>Pakketten</h2></section></main></body></html>';
   const out = applyCanonicalShell(html, shell, 'prijzen.html');
   assert.ok(out);
-  assert.doesNotMatch(out, /class="paginakop"/, 'prijzen mag niet worden teruggebracht tot een generieke paginakop');
-  assert.match(out, /class="held"[^>]*data-bg-component="hero"|data-bg-component="hero"[^>]*class="held"/, 'de bestaande prijshero moet zelf de canonical hero-slot zijn');
+  assert.doesNotMatch(out, /class="paginakop"/, 'prijzen mag nooit naar een generieke tweede hero worden omgezet');
+  assert.match(out, /<div\b[^>]*class="[^"]*\bheld\b[^"]*"[^>]*data-bg-component="hero"|<div\b[^>]*data-bg-component="hero"[^>]*class="[^"]*\bheld\b/, 'de echte div.held prijshero moet zelf de canonical hero-slot zijn');
   assert.equal((out.match(/class="held"/g) || []).length, 1, 'de prijshero blijft exact één keer staan');
-  assert.match(out, /AI-gedreven\. Menselijk gecontroleerd\./, 'de prijspropositie in de hero moet zichtbaar blijven');
-  assert.match(out, /Eigen prijzenintro/, 'de hero-intro mag niet verdwijnen');
-  assert.match(out, /Bekijk pakketten/, 'de primaire hero-CTA mag niet verdwijnen');
+  assert.equal((out.match(/<nav\b[^>]*class="[^"]*\bbgkruim\b/gi) || []).length, 1, 'SEO houdt exact één zichtbaar kruimelpad');
+  assert.match(out, /<div\b[^>]*class="[^"]*\bheld\b[^"]*"[^>]*data-bg-component="hero"[\s\S]*?<nav\b[^>]*class="[^"]*\bbgkruim\b[\s\S]*?<h1\b/i, 'het kruimelpad moet binnen dezelfde donkere hero staan, vóór de H1');
+  assert.match(out, /\.held\s+\.bgkruim\s*\{[^}]*background\s*:\s*transparent\s*!important/i, 'de canonical shell moet de oude witte breadcrumb-achtergrond hard overschrijven');
+  assert.match(out, /BreadcrumbList/, 'machineleesbare breadcrumb blijft voor SEO bestaan');
+  assert.match(out, /AI-gedreven\. Menselijk gecontroleerd\./, 'de prijspropositie blijft zichtbaar');
+  assert.match(out, /De AI doet het werk\. Wij controleren het\./, 'de hero-intro blijft zichtbaar');
+  assert.match(out, /Aanpakken zonder aanmodderen\./, 'de payoff blijft zichtbaar');
+  assert.match(out, /Bekijk pakketten/, 'de primaire hero-CTA blijft zichtbaar');
   assert.equal((out.match(/<h1\b/g) || []).length, 1, 'prijzen houdt exact één H1');
   assert.match(out, /<h2>Pakketten<\/h2>/, 'eigen prijsinhoud blijft behouden');
 });
