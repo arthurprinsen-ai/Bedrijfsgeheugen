@@ -1,0 +1,38 @@
+name: Production release readback
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-release-readback
+  cancel-in-progress: true
+
+jobs:
+  verify-production:
+    name: exact production SHA readback
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify readback contract
+        run: node --test tests/brain-production-release-readback.test.mjs
+      - name: Wait for exact production SHA
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+          RELEASE_URL: https://www.bedrijfsgeheugen.nl/release.json
+        run: |
+          deadline=$((SECONDS+420))
+          until node tools/site-shell/verify-production-release.mjs; do
+            if [ $SECONDS -ge $deadline ]; then
+              echo "Timed out waiting for exact production SHA $EXPECTED_SHA"
+              exit 1
+            fi
+            sleep 5
+          done
