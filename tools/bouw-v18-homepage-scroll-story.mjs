@@ -37,7 +37,7 @@ export function applyHomepageScrollStory(html) {
 html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-events:none!important;transform:translateY(16px)!important;transition:opacity .18s ease,transform .18s ease!important}
 @media(min-width:1024px){
   [data-bg-story-root]{min-height:360vh!important;padding-bottom:0!important}
-  [data-bg-story-stage]{position:sticky!important;top:0;min-height:100vh;display:flex;align-items:center;z-index:2}
+  [data-bg-story-stage]{position:sticky!important;top:0;z-index:2}
 }
 @media(max-width:1023px){
   [data-bg-story-root]{min-height:0!important}
