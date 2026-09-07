@@ -4,8 +4,8 @@ const SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
 const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider]{--split:50%;position:relative!important;overflow:hidden!important;touch-action:pan-y}
 [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
-[data-bg-compare-slider] .compare-before{clip-path:inset(0 var(--split,50%) 0 0)!important}
-[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 calc(100% - var(--split,50%)))!important}
+[data-bg-compare-slider] .compare-before{clip-path:inset(0 calc(100% - var(--split,50%)) 0 0)!important}
+[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--split,50%))!important}
 [data-bg-compare-slider] .compare-before .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:0!important;margin-right:auto!important;padding-right:24px!important;box-sizing:border-box}
 [data-bg-compare-slider] .compare-after .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:auto!important;margin-right:0!important;padding-left:24px!important;box-sizing:border-box}
 [data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--split,50%)!important;z-index:20!important}
@@ -185,16 +185,7 @@ function stripExistingGuard(html){
     .replace(/<script\s+data-bg-context-slider-readable\b[^>]*>[\s\S]*?<\/script>\s*/gi, '');
 }
 
-function hasCompareSliderMarkup(html){
-  var source=String(html||'');
-  return /id=(['"])compareSlider\1/i.test(source)||
-    /class=(['"])[^'"]*\bcompare-slider\b[^'"]*\1/i.test(source)||
-    /data-compare-slider\b/i.test(source)||
-    (/\bcompare-before\b/i.test(source)&&/\bcompare-after\b/i.test(source));
-}
-
 export function applyHomepageContextSliderReadability(html){
-  if(!hasCompareSliderMarkup(html))return html;
   let next=stripExistingGuard(normalizeLegacyBounds(html));
   next=next.replace('</head>',`${STYLE}\n</head>`);
   next=next.replace('</body>',`${RUNTIME}\n</body>`);
