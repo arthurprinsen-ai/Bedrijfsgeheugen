@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateSuccessorCreation, evaluatePullRequestSuccessorGuard } from '../tools/moving-main-successor-guard.mjs';
+import { evaluateSuccessorCreation, evaluatePullRequestSuccessorGuard } from '../scripts/brain/moving-main-successor-guard.mjs';
 
 test('main movement without overlap forbids creating a successor', () => {
   assert.deepEqual(evaluateSuccessorCreation({
