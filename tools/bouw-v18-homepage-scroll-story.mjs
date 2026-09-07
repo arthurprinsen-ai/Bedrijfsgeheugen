@@ -4,12 +4,29 @@ const HOME = 'index.html';
 const STYLE_ID = 'homepage-scroll-story-style';
 const SCRIPT_ID = 'homepage-scroll-story-script';
 
+function removeInjectedAsset(source, tag, id) {
+  let out = String(source || '');
+  const open = `<${tag} id="${id}">`;
+  const close = `</${tag}>`;
+  while (out.includes(open)) {
+    const start = out.indexOf(open);
+    const end = out.indexOf(close, start + open.length);
+    if (end === -1) break;
+    out = out.slice(0, start) + out.slice(end + close.length);
+  }
+  return out;
+}
+
 export function applyHomepageScrollStory(html) {
-  const source = String(html || '');
-  if (source.includes(`id="${SCRIPT_ID}"`)) return source;
+  let source = String(html || '');
   if (!source.includes('</head>') || !source.includes('</body>')) {
     throw new Error('Homepage scroll story: ongeldige HTML-shell');
   }
+
+  // Build output is used as input by later production builds. Always replace our
+  // own generated assets so obsolete layout rules can never survive a rebuild.
+  source = removeInjectedAsset(source, 'style', STYLE_ID);
+  source = removeInjectedAsset(source, 'script', SCRIPT_ID);
 
   const css = `<style id="${STYLE_ID}">
 [data-bg-story-root]{position:relative;isolation:isolate}
