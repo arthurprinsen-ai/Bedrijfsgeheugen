@@ -34,12 +34,24 @@ test('mobiel valt altijd terug op twee volledig leesbare kaarten',()=>{
   assert.match(fixer,/\.compare-handle\{display:none!important/);
 });
 
-test('oude geïnjecteerde guard wordt vervangen',()=>{
+test('wijzigingssectie borgt vier zichtbare checks op mobiel',()=>{
+  assert.match(fixer,/CHANGE_STEPS=\['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'\]/);
+  assert.match(fixer,/ensureFourChangeChecks/);
+  assert.match(fixer,/data-bg-change-step/);
+  assert.match(fixer,/data-bg-change-check-source/);
+  assert.match(fixer,/bg-change-check-fallback/);
+  assert.match(fixer,/left:18px;bottom:42px;width:42px;height:42px/);
+  assert.match(fixer,/new MutationObserver\(ensureFourChangeChecks\)/);
+});
+
+test('oude geïnjecteerde guard wordt vervangen en bevat vier-check contract',()=>{
   const stale='<!doctype html><html><head><style data-bg-context-slider-readable>STALE</style></head><body><div id="compareSlider"><div class="compare-before"><div class="compare-copy"></div></div><div class="compare-after"><div class="compare-copy"></div></div><div class="compare-handle"><button class="compare-knob"></button></div></div><script data-bg-context-slider-readable>STALE</script></body></html>';
   const upgraded=applyHomepageContextSliderReadability(stale);
   assert.doesNotMatch(upgraded,/>STALE</);
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
   assert.equal((upgraded.match(/<script data-bg-context-slider-readable>/g)||[]).length,1);
+  assert.match(upgraded,/Opvolging ontstaat/);
+  assert.match(upgraded,/Waarde wordt gemeten/);
 });
 
 test('website lane sleept echte knop en test gangbare telefoonbreedtes fail-closed',()=>{
