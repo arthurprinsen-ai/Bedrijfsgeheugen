@@ -20,6 +20,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Block unjustified moving-main successor rebuilds
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node scripts/brain/moving-main-successor-guard.mjs
       - id: scope
         name: Classify blocking suites and website risk depth
         env:
@@ -54,7 +60,7 @@ jobs:
           console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites, websiteRisk }));
           NODE
       - name: Verify shared release-lane contract
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs
       - name: Verify backend Brain and runtime contracts
         if: steps.scope.outputs.backend == 'true'
         run: >-
@@ -77,13 +83,14 @@ jobs:
         run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
       - name: Verify mandatory website baseline and risk contracts
         if: steps.scope.outputs.website == 'true'
-        run: node --test tests/site-baseline-guardian.test.mjs tests/website-release-risk.test.mjs tests/website-targeted-route-contract.test.mjs
+        run: node --test tests/site-baseline-guardian.test.mjs tests/website-release-risk.test.mjs tests/website-targeted-route-contract.test.mjs tests/release-gate-contract.test.mjs tests/production-release-readback.test.mjs
       - name: Verify normal/high-risk website static contracts
         if: steps.scope.outputs.website == 'true' && steps.scope.outputs.risk_lane != 'fast-fix'
         run: >-
           node --test
           tests/v18-vergelijker.test.mjs
           tests/site-shell-v18-view-integrity.test.mjs
+          tests/site-shell-public-route-inventory.test.mjs
           tests/seo-native-money-presentation.test.mjs
           tests/seo-homepage-platform-expertise-toggle.test.mjs
           tests/standalone-content-page-router-isolation.test.mjs
@@ -135,11 +142,11 @@ jobs:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
           EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: |
+          node tools/site-shell/v18-megamenu-browser-check.mjs
           node tools/site-shell/ui-visual-regression/browser-check.mjs
           node tools/site-shell/homepage-context-slider-browser-check.mjs
           node tools/site-shell/homepage-toggle-browser-check.mjs
           node tools/site-shell/standalone-visibility-check.mjs
-          node tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Upload visual regression diagnostics
         if: always()
         uses: actions/upload-artifact@v4
