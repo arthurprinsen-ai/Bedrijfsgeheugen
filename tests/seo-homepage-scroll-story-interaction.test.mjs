@@ -2,55 +2,49 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
-test('homepage scroll story is wired on the final built homepage output', () => {
-  const scriptPath = 'tools/bouw-v18-homepage-scroll-story.mjs';
-  assert.equal(existsSync(scriptPath), true, 'homepage scroll-story build step is missing');
+const STORY = 'tools/bouw-v18-homepage-scroll-story.mjs';
+const CHECK = 'tools/site-shell/homepage-story-browser-check.mjs';
 
+test('homepage story is projected on final output without runtime layout discovery', () => {
+  assert.equal(existsSync(STORY), true);
   const pipeline = readFileSync('tools/prijzen-uit-de-homepage.mjs', 'utf8');
-  assert.match(
-    pipeline,
-    /bouw-v18-homepage-scroll-story\.mjs/,
-    'scroll-story fix is not part of the final homepage build/verification pipeline',
-  );
-
-  const source = readFileSync(scriptPath, 'utf8');
-
-  for (const marker of [
-    'Signaal komt binnen',
-    'Context wordt begrepen',
-    'Opvolging ontstaat',
-    'Analyseer impact',
-  ]) {
-    assert.match(source, new RegExp(marker), `required story marker is missing: ${marker}`);
-  }
-
-  assert.match(source, /setStoryState/, 'scroll and click must share one canonical state setter');
-  assert.match(source, /requestAnimationFrame/, 'scroll updates must be frame-bounded');
-  assert.match(source, /addEventListener\('click'/, 'CTA and/or story steps must be clickable');
-  assert.match(source, /window\.scrollTo/, 'click navigation must move the sticky story to the corresponding state');
-  assert.match(source, /prefers-reduced-motion/, 'reduced-motion behavior is missing');
-  assert.match(source, /data-bg-story-state/, 'story state must be reflected in DOM state');
-  assert.match(source, /data-bg-story-step/, 'story steps must expose explicit state hooks');
-  assert.match(source, /data-bg-story-overlay/, 'cockpit must visibly change between story states');
-  assert.match(source, /Sinds deze pagina opende|Reken het na/, 'cost widget overlap guard is missing');
-  assert.match(source, /min-width:\s*1024px/, 'desktop sticky behavior must be desktop-only');
-  assert.match(source, /max-width:\s*1023px/, 'mobile must have a non-sticky fallback');
-  assert.match(source, /aria-current/, 'active step must expose its state accessibly');
+  assert.match(pipeline, /bouw-v18-homepage-scroll-story\.mjs/);
+  const source = readFileSync(STORY, 'utf8');
+  for (const marker of ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Analyseer impact']) assert.match(source,new RegExp(marker));
+  assert.match(source,/data-bg-story-root/);
+  assert.match(source,/markStorySection/);
+  assert.doesNotMatch(source,/function\s+findRoot\s*\(/);
+  assert.doesNotMatch(source,/function\s+chooseVisual\s*\(/);
+  assert.doesNotMatch(source,/appendChild\s*\(/);
+  assert.doesNotMatch(source,/window\.scrollTo\s*\(/);
+  assert.doesNotMatch(source,/position\s*:\s*sticky/i);
+  assert.doesNotMatch(source,/min-height\s*:\s*\d+(?:\.\d+)?vh/i);
+  assert.match(source,/min-height:0!important;/);
+  assert.match(source,/height:auto!important;/);
+  assert.match(source,/\[\$\{ROOT_ATTR\}\]>\*\{[^}]*height:auto!important[^}]*position:relative!important[^}]*top:auto!important/s);
+  assert.match(source,/\[\$\{ROOT_ATTR\}\]\s+\[data-bg-story-stage\]\{[^}]*position:relative!important[^}]*height:auto!important[^}]*min-height:0!important/s);
+  assert.match(source,/IntersectionObserver/);
+  assert.match(source,/aria-current/);
+  assert.match(source,/data-bg-story-cost/);
 });
 
-test('desktop scroll story never takes over the existing layout mode of its selected stage', () => {
-  const source = readFileSync('tools/bouw-v18-homepage-scroll-story.mjs', 'utf8');
-  const desktopBlock = source.match(/@media\(min-width:1024px\)\{([\s\S]*?)\n\}/)?.[1] || '';
+test('legacy motion story sticky owner is neutralized inside the canonical story root', () => {
+  const source = readFileSync(STORY, 'utf8');
+  assert.match(
+    source,
+    /\[\$\{ROOT_ATTR\}\]\s+\.motion-story-sticky\{[^}]*position:relative!important[^}]*top:auto!important[^}]*height:auto!important[^}]*min-height:0!important/s,
+    'the inherited .motion-story-sticky wrapper must not remain a viewport-sized sticky descendant inside the canonical story root',
+  );
+});
 
-  assert.match(desktopBlock, /\[data-bg-story-stage\]\{position:sticky!important;top:0;/, 'desktop stage must remain sticky');
-  assert.doesNotMatch(
-    desktopBlock,
-    /\[data-bg-story-stage\][^}]*display\s*:\s*flex/i,
-    'runtime may select an existing grid/layout container; forcing flex destroys the designed homepage geometry',
-  );
-  assert.doesNotMatch(
-    desktopBlock,
-    /\[data-bg-story-stage\][^}]*align-items\s*:/i,
-    'scroll-story behavior must not override alignment owned by the existing homepage layout',
-  );
+test('exact blank-screen regression is a required preview and production browser gate', () => {
+  assert.equal(existsSync(CHECK), true);
+  const check = readFileSync(CHECK,'utf8');
+  assert.match(check,/1536/); assert.match(check,/864/); assert.match(check,/data-bg-story-root/);
+  assert.match(check,/rootHeight|heightRatio/); assert.match(check,/Signaal komt binnen/); assert.match(check,/Analyseer impact/); assert.match(check,/blank|meaningful/i);
+  const required=readFileSync('.github/workflows/required-test.yml','utf8');
+  const production=readFileSync('.github/workflows/canonical-brand-shell-live-readback.yml','utf8');
+  assert.match(required,/seo-homepage-scroll-story-interaction\.test\.mjs/);
+  assert.match(required,/homepage-story-browser-check\.mjs/);
+  assert.match(production,/homepage-story-browser-check\.mjs/);
 });
