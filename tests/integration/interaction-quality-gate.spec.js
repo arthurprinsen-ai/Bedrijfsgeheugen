@@ -23,11 +23,11 @@ async function expectStoryState(page, expected) {
 }
 
 async function expectReadable(locator, minOpacity = 0.45) {
-  await expect.poll(async () => locator.evaluate(el => {
+  await expect.poll(async () => locator.evaluate((el, threshold) => {
     const style = getComputedStyle(el);
     const rect = el.getBoundingClientRect();
-    return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) >= minOpacity && rect.width > 0 && rect.height > 0;
-  })).toBe(true);
+    return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) >= threshold && rect.width > 0 && rect.height > 0;
+  }, minOpacity)).toBe(true);
   await assertVisibleAndReadable(locator, { minOpacity });
 }
 
