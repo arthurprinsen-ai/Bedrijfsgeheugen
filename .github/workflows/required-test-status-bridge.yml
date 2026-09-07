@@ -37,3 +37,6 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${REPO}/statuses/${SHA}" \
             -d '{"state":"success","context":"test","description":"Required test workflow completed successfully"}'
+      - name: Explain required-status bridge failure
+        if: failure()
+        run: echo "::error::Required test status bridge failed for ${{ github.event.pull_request.head.sha }}; inspect the Required test workflow conclusion before retrying."
