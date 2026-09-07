@@ -7,8 +7,10 @@ export const BEWEGING_CSS = `<style id="v18-beweging">
 .bgx-magneet{transition:transform .18s cubic-bezier(.22,.61,.36,1)}
 @media(hover:none){.bgx-magneet{transition:transform .12s ease}.bgx-magneet:active{transform:scale(.96)!important}}
 
-/* 2. kaarten kantelen mee met de cursor; op een telefoon met de stand van het toestel */
-.bgx-kantel{transform-style:preserve-3d;transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s ease;will-change:transform}
+/* 2. alleen echte kaarten mogen 3D kantelen. Geen permanente will-change-laag:
+   dat kan in Chrome/macOS grote delen van standalone pagina's leeg laten painten
+   tot een resize (zoals DevTools openen) de compositor opnieuw opbouwt. */
+.bgx-kantel{transform-style:preserve-3d;transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s ease}
 .bgx-kantel:hover{box-shadow:0 30px 80px rgba(7,21,35,.18)}
 
 /* 3. de hero beweegt trager dan de rest bij het scrollen */
@@ -204,13 +206,14 @@ export function vergelijker(onderwerp) {
 
 // klassen toekennen aan wat er al staat
 export function maakBeweeglijk(html) {
-  // let op: alleen toevoegen als het er nog niet staat, anders krijgt een
-  // element de klasse twee keer en groeit hij bij elke bouwronde verder
+  // Alleen echte interactieve/kaartcomponenten krijgen compositor-effecten.
+  // Een generieke structurele .blok-sectie mag nooit naar een eigen 3D-laag:
+  // dat was de oorzaak van de Chrome/macOS blank-paint die na resize verdween.
   html = html.replace(/class="([^"]*)"/g, (heel, klassen) => {
     if (/bgx-magneet|bgx-kantel/.test(klassen)) return heel;
     let uit = klassen;
     if (/\b(btn|knop|staptegel|cta)\b/.test(klassen)) uit += ' bgx-magneet';
-    else if (/\b(kaart|p-kaart|tegel|blok)\b/.test(klassen)) uit += ' bgx-kantel';
+    else if (/\b(kaart|p-kaart|tegel)\b/.test(klassen)) uit += ' bgx-kantel';
     return `class="${uit}"`;
   });
   return html;
