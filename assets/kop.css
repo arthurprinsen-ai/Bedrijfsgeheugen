@@ -79,6 +79,9 @@
 .bgkop-groep:hover .bgkop-paneel,.bgkop-groep:focus-within .bgkop-paneel{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
 .bgkop-paneel::before{content:"";position:absolute;top:-10px;left:0;right:0;height:10px}
 .bgkop-paneel a{display:block;padding:.5rem .7rem;border-radius:9px;border-bottom:0;white-space:normal}
+.bgkop-paneel > a:not([class]){color:var(--bg-inkt);font-weight:700}
+.bgkop-paneel > a:not([class]) b{color:var(--bg-inkt);font-weight:700}
+.bgkop-paneel > a:not([class]) span{font-weight:400}
 .bgkop-paneel a:hover{background:var(--bg-vlak,#F4F5F8)}
 .bgkop-paneel b{display:block;font-size:.86rem;font-weight:600}
 .bgkop-paneel span{display:block;font-size:.76rem;font-weight:400;color:var(--bg-grijs,#5C646E);margin-top:.1rem}
