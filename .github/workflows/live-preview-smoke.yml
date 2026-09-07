@@ -10,6 +10,8 @@ on:
       - 'tools/bouw-v18-production.mjs'
       - 'tools/bouw-v18-chrome.mjs'
       - 'tools/bouw-v18-chrome-alles.mjs'
+      - 'tools/bouw-v18-homepage-platform-expertise-toggle.mjs'
+      - 'tools/prijzen-uit-de-homepage.mjs'
       - 'tools/normaliseer-site-ui.mjs'
       - 'tools/site-shell/**'
       - 'site/seo-baseline.json'
