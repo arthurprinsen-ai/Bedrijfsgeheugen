@@ -1,12 +1,16 @@
 import './portal-navigation-complete.js';
 import './portal-business-os-navigation.js';
 
-if (typeof document !== 'undefined' && !document.querySelector('link[data-portal-navigation-complete]')) {
-  const link=document.createElement('link');
-  link.rel='stylesheet';
-  link.href='/portal-next/portal-navigation-complete.css';
-  link.dataset.portalNavigationComplete='';
-  document.head.append(link);
+if (typeof document !== 'undefined') {
+  const styles=[
+    ['portal-reference-match','/portal-next/reference-match.css'],
+    ['portal-navigation-complete','/portal-next/portal-navigation-complete.css'],
+    ['portal-design-contract','/portal-next/portal-design-contract.css']
+  ];
+  for(const [id,href] of styles){
+    if(document.querySelector(`link[data-${id}]`))continue;
+    const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.setAttribute(`data-${id}`,'');document.head.append(link);
+  }
 }
 
 const VALID = new Set(['idle','queued','running','waiting','blocked','failed','recovering','verified','completed','disconnected']);
