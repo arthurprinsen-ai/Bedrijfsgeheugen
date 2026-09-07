@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
+// Keep the live automation visual in normal document flow so it can never cover the copy.
 const HOME = 'index.html';
 const STYLE_ID = 'homepage-automation-layout-style';
 const SCRIPT_ID = 'homepage-automation-layout-script';
