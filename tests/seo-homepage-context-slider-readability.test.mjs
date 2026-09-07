@@ -36,6 +36,8 @@ test('mobiel leesvlak wordt niet bedekt door zwevende kostenkaart',()=>{
   const html='<!doctype html><html><head></head><body><div id="compareSlider"><div class="compare-before"><div class="compare-copy"></div></div><div class="compare-after"><div class="compare-copy"></div></div><div class="compare-handle"><button class="compare-knob"></button></div></div></body></html>';
   const upgraded=applyHomepageContextSliderReadability(html);
   assert.match(upgraded,/@media\(max-width:767px\)\{\[data-bg-story-cost\]\{display:none!important\}/);
+  assert.match(browserCheck,/\[data-bg-story-cost\]/);
+  assert.match(browserCheck,/zwevende kostenkaart mag content niet bedekken/);
 });
 
 test('oude geïnjecteerde guard wordt vervangen',()=>{
