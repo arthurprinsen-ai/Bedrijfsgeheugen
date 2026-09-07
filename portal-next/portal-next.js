@@ -13,7 +13,7 @@ export function reducePortalSelection(state, action) {
 export function getPortalCustomerSlug(search=typeof window!=='undefined'?window.location.search:''){return new URLSearchParams(search).get('klant')||null}
 export function withCustomer(path,klant=getPortalCustomerSlug()){const origin=typeof window!=='undefined'?window.location.origin:'https://www.bedrijfsgeheugen.nl';const url=new URL(path,origin);if(klant)url.searchParams.set('klant',klant);return url.pathname+url.search+url.hash}
 export function legacyTabForPage(pageId){return findPortalPage(pageId)?.legacyTab??null}
-export function buildLegacyPortalUrl(klant=getPortalCustomerSlug()){return withCustomer('/klantportaal',klant)}
+export function buildLegacyPortalUrl(klant=getPortalCustomerSlug()){return withCustomer('/klantportaal.html',klant)}
 
 const SOURCE_COPY={
  systemen:['Systemen','ERP, CRM, finance, e-mail en HR leveren operationele data aan.'],
