@@ -1,7 +1,14 @@
 {
   "private": true,
+  "scripts": {
+    "test:ui-visual": "node --test tests/ui-visual-regression-contract.test.mjs tests/ui-visual-regression-geometry.test.mjs tests/ui-visual-regression-browser.test.mjs",
+    "check:ui-visual": "node tools/ui-visual-regression/browser-check.mjs"
+  },
   "dependencies": {
     "@netlify/blobs": "11.0.2",
     "@netlify/identity": "2.0.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0"
   }
 }
