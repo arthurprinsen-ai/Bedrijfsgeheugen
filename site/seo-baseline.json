@@ -18,6 +18,7 @@
   },
   "keywordOwners": [
     {"keyword":"digitalisering mkb","route":"/"},
+    {"keyword":"prijzen digitalisering mkb","route":"/prijzen"},
     {"keyword":"afas koppeling kosten","route":"/blog/wat-kost-een-afas-koppeling/"},
     {"keyword":"afas pocket app koppelen","route":"/afas-pocket-koppelen"},
     {"keyword":"afmaakindex","route":"/afmaakindex"},
