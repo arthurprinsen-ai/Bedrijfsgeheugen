@@ -25,9 +25,12 @@ test('required test is a stable aggregator and preserves the protected test cont
 test('website lane keeps public visibility mandatory while broad checks are high-risk only', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   assert.match(website, /classifyWebsiteRelease/);
-  assert.match(website, /Verify all public pages are visibly rendered/);
-  const visibility = website.slice(website.indexOf('Verify all public pages are visibly rendered'));
-  assert.doesNotMatch(visibility.split('\n      - name:')[0], /high-risk|fast-fix|normal/);
+  const visibilityStart = website.indexOf('      - name: Verify all public pages are visibly rendered');
+  assert.notEqual(visibilityStart, -1);
+  const visibilityEnd = website.indexOf('\n\n  broad-browser:', visibilityStart);
+  assert.notEqual(visibilityEnd, -1);
+  const visibility = website.slice(visibilityStart, visibilityEnd);
+  assert.doesNotMatch(visibility, /if:.*(?:high-risk|fast-fix|normal)|risk_lane/);
   assert.match(website, /risk_lane == 'high-risk'/);
   assert.match(website, /verify-targeted-website-routes\.mjs/);
 });
