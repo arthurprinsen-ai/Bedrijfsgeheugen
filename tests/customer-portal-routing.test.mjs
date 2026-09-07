@@ -6,6 +6,7 @@ import { repairCustomerPortalAuth } from '../tools/customer-portal-auth-race.mjs
 const redirects = readFileSync(new URL('../_redirects', import.meta.url), 'utf8');
 const frisseBlik = readFileSync(new URL('../frisse-blik.html', import.meta.url), 'utf8');
 const klantportaal = readFileSync(new URL('../klantportaal.html', import.meta.url), 'utf8');
+const portalLive = readFileSync(new URL('../portal-live/index.html', import.meta.url), 'utf8');
 
 test('demo1 serves the legacy customer portal without changing the public URL', () => {
   assert.match(redirects, /^\/klantportaal\s+klant=demo1\s+\/klantportaal-demo\.html\s+200!$/m);
@@ -15,8 +16,17 @@ test('old demo alias redirects canonically to demo1', () => {
   assert.match(redirects, /^\/klantportaal\s+klant=demo\s+\/klantportaal\?klant=demo1\s+301!$/m);
 });
 
-test('Ijsselmonde serves the legacy full customer portal', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=ijsselmonde\s+\/klantportaal\.html\s+200!$/m);
+test('Ijsselmonde serves the production-safe Business OS shell', () => {
+  assert.match(redirects, /^\/klantportaal\s+klant=ijsselmonde\s+\/portal-live\/\s+200!$/m);
+  assert.match(portalLive, /fetch\('\/portal-next\/index\.html'/);
+  assert.match(portalLive, /Geverifieerde gebruiker/);
+  assert.match(portalLive, /Geen geverifieerde aandachtspunten beschikbaar/);
+  assert.match(portalLive, /unsanitized preview truth/);
+  assert.match(portalLive, /\/klantportaal\.html\?klant=/);
+  assert.match(portalLive, /MutationObserver/);
+  assert.match(portalLive, /Bedrijfsdata kon niet veilig worden geladen/);
+  assert.doesNotMatch(portalLive, /document\.write\(html\)/);
+  assert.match(portalLive, /document\.write\(sanitized\)/);
 });
 
 test('demoAI serves the current AI portal without changing the public URL', () => {
