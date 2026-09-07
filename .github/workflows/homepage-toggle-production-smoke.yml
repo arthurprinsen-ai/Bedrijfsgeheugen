@@ -7,7 +7,7 @@ on:
     paths:
       - 'tools/bouw-v18-homepage-platform-expertise-toggle.mjs'
       - 'tools/prijzen-uit-de-homepage.mjs'
-      - 'tests/integration/v18-live-runtime.spec.js'
+      - 'tests/seo-homepage-platform-expertise-live.spec.js'
       - '.github/workflows/homepage-toggle-production-smoke.yml'
   workflow_dispatch:
 
@@ -43,4 +43,4 @@ jobs:
       - name: Click Platform and Expertise on production
         env:
           PREVIEW_URL: https://www.bedrijfsgeheugen.nl
-        run: npx playwright test tests/integration/v18-live-runtime.spec.js --workers=1 -g "homepage Platform and Expertise toggle"
+        run: npx playwright test tests/seo-homepage-platform-expertise-live.spec.js --workers=1
