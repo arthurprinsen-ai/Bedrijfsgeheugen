@@ -61,13 +61,32 @@ const megaMenuContrastContract = `<style id="v18-megamenu-contrast-contract">
 (function(){
   var LABELS=['BEDRIJF','KENNIS','VERTROUWEN','SUPPORT'];
   function norm(value){return String(value||'').replace(/\\s+/g,' ').trim().toUpperCase();}
-  function inActualMegaMenu(el){var node=el.parentElement;for(var depth=0;node&&depth<12;depth+=1,node=node.parentElement){var text=norm(node.textContent);if(text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1&&text.indexOf('VOLLEDIGE WEBSITEKAART')!==-1)return true;}return false;}
+  function hasMenuContract(node){
+    var text=norm(node&&node.textContent);
+    if(text.indexOf('MENSEN EERST. DAN TECHNIEK.')===-1||text.indexOf('VOLLEDIGE WEBSITEKAART')===-1)return false;
+    for(var i=0;i<LABELS.length;i+=1)if(text.indexOf(LABELS[i])===-1)return false;
+    return true;
+  }
+  function findMenuRoot(){
+    var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');
+    for(var i=0;i<headings.length;i+=1){
+      if(norm(headings[i].textContent)!=='BEDRIJF')continue;
+      var node=headings[i].parentElement;
+      while(node&&node!==document.body&&node!==document.documentElement){
+        if(hasMenuContract(node))return node;
+        node=node.parentElement;
+      }
+    }
+    return null;
+  }
   function isPromoLink(link){var text=norm(link.textContent);return text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1||text.indexOf('BEDRIJFSGEHEUGEN')!==-1;}
   function apply(){
-    var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');
-    for(var i=0;i<headings.length;i+=1){var heading=headings[i];if(LABELS.indexOf(norm(heading.textContent))!==-1&&inActualMegaMenu(heading))heading.setAttribute('data-bg-megamenu-heading','true');}
-    var links=document.querySelectorAll('a');
-    for(var j=0;j<links.length;j+=1){var link=links[j];if(inActualMegaMenu(link)&&!isPromoLink(link))link.setAttribute('data-bg-megamenu-link','true');}
+    var root=findMenuRoot();
+    if(!root)return;
+    var headings=root.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');
+    for(var i=0;i<headings.length;i+=1){var heading=headings[i];if(LABELS.indexOf(norm(heading.textContent))!==-1)heading.setAttribute('data-bg-megamenu-heading','true');}
+    var links=root.querySelectorAll('a');
+    for(var j=0;j<links.length;j+=1){var link=links[j];if(!isPromoLink(link))link.setAttribute('data-bg-megamenu-link','true');}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
   new MutationObserver(apply).observe(document.documentElement,{childList:true,subtree:true});
