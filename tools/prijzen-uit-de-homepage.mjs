@@ -29,7 +29,6 @@ const SLIDER_ENDPOINT_STYLE = `<style data-bg-compare-slider-endpoints>
 [data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--split,50%)!important;z-index:20!important}
 @media(max-width:720px){
   [data-bg-compare-slider]{min-height:360px!important}
-  [data-bg-compare-slider] .compare-copy{width:calc(100% - 36px)!important;max-width:none!important;box-sizing:border-box!important}
   [data-bg-compare-slider] .compare-before .compare-copy{margin-left:0!important;margin-right:auto!important;padding-right:18px!important}
   [data-bg-compare-slider] .compare-after .compare-copy{margin-left:auto!important;margin-right:0!important;padding-left:18px!important}
 }
@@ -53,6 +52,19 @@ function knoppenNaarLink(html) {
     });
 }
 
+function forceCompareCopyWidth(html) {
+  const rule = 'width:min(460px,calc(100% - 36px))!important;max-width:none!important;box-sizing:border-box!important';
+  return html.replace(/<([a-z][\w:-]*)([^>]*\bclass=(['"])[^'"]*\bcompare-copy\b[^'"]*\3[^>]*)>/gi, (whole, tag, attrs) => {
+    let nextAttrs = attrs;
+    if (/\bstyle=(['"])/i.test(nextAttrs)) {
+      nextAttrs = nextAttrs.replace(/\bstyle=(['"])([\s\S]*?)\1/i, (_m, quote, style) => `style=${quote}${style.replace(/;?\s*$/, ';')}${rule}${quote}`);
+    } else {
+      nextAttrs += ` style="${rule}"`;
+    }
+    return `<${tag}${nextAttrs}>`;
+  });
+}
+
 function borgStatischeSliderEndpoints(input) {
   let html = String(input);
   html = html.replace(/<([a-z][\w:-]*)([^>]*\bid=(['"])compareSlider\3[^>]*)>/gi, (heel, tag, attrs) => {
@@ -63,6 +75,7 @@ function borgStatischeSliderEndpoints(input) {
     if (/\bdata-bg-compare-slider\b/i.test(attrs)) return heel;
     return `<${tag}${attrs} data-bg-compare-slider>`;
   });
+  html = forceCompareCopyWidth(html);
   html = html.replace(/<style\s+data-bg-compare-slider-endpoints\b[^>]*>[\s\S]*?<\/style>\s*/gi, '');
   html = html.replace('</head>', `${SLIDER_ENDPOINT_STYLE}\n</head>`);
   return html;
