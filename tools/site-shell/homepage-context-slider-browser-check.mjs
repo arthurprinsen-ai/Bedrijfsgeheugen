@@ -11,15 +11,29 @@ function fail(message, evidence = {}) { throw new Error(`${message}\n${JSON.stri
 async function readGeometry(page) {
   return page.evaluate(() => {
     const slider = document.querySelector('#compareSlider');
-    const before = slider?.querySelector('.compare-before .compare-copy');
-    const after = slider?.querySelector('.compare-after .compare-copy');
+    const beforeSide = slider?.querySelector('.compare-before');
+    const afterSide = slider?.querySelector('.compare-after');
+    const before = beforeSide?.querySelector('.compare-copy');
+    const after = afterSide?.querySelector('.compare-copy');
     const knob = slider?.querySelector('.compare-knob');
-    if (!slider || !before || !after || !knob) return null;
-    const sr = slider.getBoundingClientRect(), br = before.getBoundingClientRect(), ar = after.getBoundingClientRect();
+    if (!slider || !beforeSide || !afterSide || !before || !after || !knob) return null;
+    const sr = slider.getBoundingClientRect(), bsr = beforeSide.getBoundingClientRect(), asr = afterSide.getBoundingClientRect(), br = before.getBoundingClientRect(), ar = after.getBoundingClientRect();
     const split = parseFloat(getComputedStyle(slider).getPropertyValue('--split')) || 50;
     const dividerX = sr.left + sr.width * split / 100;
     const visible = el => { const cs=getComputedStyle(el), r=el.getBoundingClientRect(); return cs.display!=='none'&&cs.visibility!=='hidden'&&Number(cs.opacity||1)>0&&r.width>0&&r.height>0; };
-    return { slider:{left:sr.left,right:sr.right,top:sr.top,bottom:sr.bottom,width:sr.width,height:sr.height}, before:{left:br.left,right:br.right,width:br.width,visible:visible(before)}, after:{left:ar.left,right:ar.right,width:ar.width,visible:visible(after)}, dividerX, split, compact:slider.getAttribute('data-bg-compare-compact'), aria:{min:Number(knob.getAttribute('aria-valuemin')),max:Number(knob.getAttribute('aria-valuemax')),now:Number(knob.getAttribute('aria-valuenow'))}, handleDisplay:getComputedStyle(slider.querySelector('.compare-handle')||knob).display, beforeHeadingVisible:visible(before.querySelector('h3')), beforeParagraphVisible:visible(before.querySelector('p')), afterHeadingVisible:visible(after.querySelector('h3')), afterParagraphVisible:visible(after.querySelector('p')) };
+    return {
+      viewportWidth: window.innerWidth,
+      slider:{left:sr.left,right:sr.right,top:sr.top,bottom:sr.bottom,width:sr.width,height:sr.height},
+      beforeSide:{left:bsr.left,right:bsr.right,width:bsr.width,clipPath:getComputedStyle(beforeSide).clipPath},
+      afterSide:{left:asr.left,right:asr.right,width:asr.width,clipPath:getComputedStyle(afterSide).clipPath},
+      before:{left:br.left,right:br.right,width:br.width,visible:visible(before)},
+      after:{left:ar.left,right:ar.right,width:ar.width,visible:visible(after)},
+      dividerX, split, compact:slider.getAttribute('data-bg-compare-compact'),
+      aria:{min:Number(knob.getAttribute('aria-valuemin')),max:Number(knob.getAttribute('aria-valuemax')),now:Number(knob.getAttribute('aria-valuenow')),disabled:knob.getAttribute('aria-disabled'),tabIndex:knob.tabIndex},
+      handleDisplay:getComputedStyle(slider.querySelector('.compare-handle')||knob).display,
+      beforeHeadingVisible:visible(before.querySelector('h3')), beforeParagraphVisible:visible(before.querySelector('p')),
+      afterHeadingVisible:visible(after.querySelector('h3')), afterParagraphVisible:visible(after.querySelector('p'))
+    };
   });
 }
 
@@ -45,9 +59,26 @@ async function testDesktop(browser){
   if(!(left.split<50&&right.split>50)) fail('Desktop slider moet via de echte witte knop interactief blijven binnen de veilige zone',{left,right}); await page.close(); return {left:left.split,right:right.split};
 }
 
-async function testMobile(browser){
-  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true}); await page.goto(`${baseUrl}/`,{waitUntil:'networkidle'}); const slider=page.locator('#compareSlider'); await slider.waitFor({state:'visible'}); await page.waitForFunction(()=>document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-compact')); await slider.scrollIntoViewIfNeeded(); const g=await readGeometry(page); if(!g) fail('390px: compareSlider of tekstlagen ontbreken'); if(g.compact!=='true') fail('390px: smalle viewport moet fail-safe naar compact mode',g); if(!g.before.visible||!g.after.visible||!g.beforeHeadingVisible||!g.beforeParagraphVisible||!g.afterHeadingVisible||!g.afterParagraphVisible) fail('390px: beide gestapelde teksten moeten zichtbaar zijn',g); if(g.before.width<250||g.after.width<250) fail('390px: gestapelde tekstkolommen zijn te smal',g); if(g.handleDisplay!=='none') fail('390px: onbruikbare handle moet verborgen zijn',g); await page.close(); return {beforeWidth:g.before.width,afterWidth:g.after.width,compact:g.compact};
+function assertMobileGeometry(g,label){
+  if(!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
+  if(g.compact!=='true') fail(`${label}: smalle viewport moet fail-safe naar compact mode`,g);
+  if(!g.before.visible||!g.after.visible||!g.beforeHeadingVisible||!g.beforeParagraphVisible||!g.afterHeadingVisible||!g.afterParagraphVisible) fail(`${label}: beide gestapelde teksten moeten zichtbaar zijn`,g);
+  if(g.before.width<220||g.after.width<220) fail(`${label}: gestapelde tekstkolommen zijn te smal`,g);
+  if(g.handleDisplay!=='none') fail(`${label}: onbruikbare handle moet verborgen zijn`,g);
+  if(g.aria.disabled!=='true'||g.aria.tabIndex!==-1) fail(`${label}: verborgen mobiele handle mag niet focusbaar of actief blijven`,g);
+  if(g.beforeSide.clipPath!=='none'||g.afterSide.clipPath!=='none') fail(`${label}: mobiele kaarten mogen niet door clip-path worden afgesneden`,g);
+  if(g.beforeSide.width<g.slider.width-2||g.afterSide.width<g.slider.width-2) fail(`${label}: beide mobiele kaarten moeten de volledige sliderbreedte gebruiken`,g);
+  if(g.slider.left<-1||g.slider.right>g.viewportWidth+1) fail(`${label}: slider mag niet buiten de mobiele viewport vallen`,g);
+}
+
+async function testMobile(browser,width,height){
+  const page=await browser.newPage({viewport:{width,height},isMobile:true,hasTouch:true}); await page.goto(`${baseUrl}/`,{waitUntil:'networkidle'}); const slider=page.locator('#compareSlider'); await slider.waitFor({state:'visible'}); await page.waitForFunction(()=>document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-compact')); await slider.scrollIntoViewIfNeeded(); await page.waitForTimeout(80); const g=await readGeometry(page); assertMobileGeometry(g,`${width}px`); await page.close(); return {width,beforeWidth:g.before.width,afterWidth:g.after.width,compact:g.compact};
 }
 
 const browser=await chromium.launch({headless:true});
-try { console.log(JSON.stringify({ok:true,component:'#compareSlider',desktop:await testDesktop(browser),mobile:await testMobile(browser)})); } finally { await browser.close(); }
+try {
+  const desktop=await testDesktop(browser);
+  const mobile=[];
+  for(const [width,height] of [[320,720],[390,844],[430,932]]) mobile.push(await testMobile(browser,width,height));
+  console.log(JSON.stringify({ok:true,component:'#compareSlider',desktop,mobile}));
+} finally { await browser.close(); }

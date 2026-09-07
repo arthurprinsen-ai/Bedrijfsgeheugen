@@ -42,13 +42,19 @@ test('oude geïnjecteerde guard wordt vervangen',()=>{
   assert.equal((upgraded.match(/<script data-bg-context-slider-readable>/g)||[]).length,1);
 });
 
-test('website lane sleept echte knop en test mobiel',()=>{
+test('website lane sleept echte knop en test gangbare telefoonbreedtes fail-closed',()=>{
   assert.match(browserCheck,/#compareSlider/);
   assert.match(browserCheck,/1128/);
-  assert.match(browserCheck,/390/);
+  assert.match(browserCheck,/\[320,720\]/);
+  assert.match(browserCheck,/\[390,844\]/);
+  assert.match(browserCheck,/\[430,932\]/);
   assert.match(browserCheck,/page\.mouse\.down/);
   assert.match(browserCheck,/page\.mouse\.move/);
   assert.match(browserCheck,/page\.mouse\.up/);
+  assert.match(browserCheck,/clipPath/);
+  assert.match(browserCheck,/viewportWidth/);
+  assert.match(browserCheck,/aria\.disabled/);
+  assert.match(browserCheck,/aria\.tabIndex/);
   assert.match(websiteLane,/homepage-context-slider-browser-check\.mjs/);
 });
 
