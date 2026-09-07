@@ -162,8 +162,12 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
     if(document.documentElement.dataset.bgScrollStoryReady==='1')return;
     var first=exact(LABELS[0]),second=exact(LABELS[1]),third=exact(LABELS[2]);
     if(!first||!second||!third)return;
-    var ctas=Array.prototype.slice.call(document.querySelectorAll('a,button'));
-    var cta=ctas.find(function(el){return txt(el).indexOf('Analyseer impact')!==-1;})||null;
+    var cta=null;
+    Array.prototype.forEach.call(document.querySelectorAll('a,button,div,span,p,strong'),function(el){
+      var t=txt(el);
+      if(t.indexOf('Analyseer impact')===-1||t.length>120)return;
+      if(!cta||t.length<txt(cta).length)cta=el;
+    });
     root=findRoot(first,third,cta);
     if(!root)return;
     root.setAttribute('data-bg-story-root','');
