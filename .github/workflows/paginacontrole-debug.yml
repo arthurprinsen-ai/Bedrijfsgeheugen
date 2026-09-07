@@ -1,0 +1,26 @@
+name: Pagina- en SEO-controle diagnose
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Playwright installeren
+        run: |
+          pip install --quiet playwright
+          playwright install --with-deps chromium
+      - name: Pagina's controleren
+        run: python .github/scripts/paginacontrole.py
+      - name: SEO en interne links controleren
+        run: python .github/scripts/seocontrole.py

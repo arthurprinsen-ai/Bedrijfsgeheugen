@@ -3,7 +3,7 @@ import { PUBLIC_PAGE_EXCLUDES } from '../site-shell/contracts.mjs';
 import { loadRegistry, entryForCanonical, ORIGIN } from './registry.mjs';
 import { classifyCanonical } from './page-policy.mjs';
 import { enrichBlog } from './blog-contract-v2.mjs';
-import { enrichRegisteredPage, enrichSupportHandoff, inferSeoMeta } from './enrich.mjs';
+import { enrichRegisteredPage, enrichSupportHandoff, enrichDeclaredSupportingLinks, inferSeoMeta } from './enrich.mjs';
 import { injectSeoGraph } from './schema.mjs';
 import { markPrimaryConversions, injectConversionTracker } from './conversion.mjs';
 import { injectGrowthMeasurement } from './measurement.mjs';
@@ -104,6 +104,7 @@ export async function applySeoOrderEngine() {
         registered++;
       } else { out=enrichPolicyPage(html,registry,policy); classified++; }
     }
+    out=enrichDeclaredSupportingLinks(out,canonical,registry);
     if(out!==html){await writeFile(path,out,'utf8');changed++;}
   }
   console.log(`SEO order + growth enrichment toegepast: ${changed} gewijzigd; ${blogs} blogs, ${registered} registry-pages, ${classified} expliciet geclassificeerde publieke pagina's`);

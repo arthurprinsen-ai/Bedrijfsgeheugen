@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "pages": [
     {
       "route": "https://www.bedrijfsgeheugen.nl/ai-implementeren",
@@ -109,6 +109,50 @@
       "funnel_stage": "decide",
       "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
       "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/ai-automatisering-mkb",
+      "role": "money",
+      "primary_intent": "ai automatisering mkb",
+      "primary_keyword": "ai automatisering mkb",
+      "secondary_keywords": ["ai workflow mkb", "ai processen automatiseren", "ai automatisering bedrijf"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"ai-scan","url":"https://www.bedrijfsgeheugen.nl/ai-scan"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren","https://www.bedrijfsgeheugen.nl/ai-implementeren","https://www.bedrijfsgeheugen.nl/ai-adoptie"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/microsoft-365-koppeling",
+      "role": "money",
+      "primary_intent": "microsoft 365 koppeling",
+      "primary_keyword": "microsoft 365 koppeling",
+      "secondary_keywords": ["microsoft 365 integratie", "power automate koppeling", "microsoft 365 systemen koppelen"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"contact","url":"https://www.bedrijfsgeheugen.nl/contact"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/systemen-koppelen","https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/power-bi-implementatie",
+      "role": "money",
+      "primary_intent": "power bi implementatie mkb",
+      "primary_keyword": "power bi implementatie mkb",
+      "secondary_keywords": ["power bi laten bouwen", "power bi implementatie bedrijf", "power bi dashboard mkb"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"contact","url":"https://www.bedrijfsgeheugen.nl/contact"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/voor-mkb","https://www.bedrijfsgeheugen.nl/frisse-blik"],
+      "schema_type": "Service"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/bedrijf-overdraagbaar-maken",
+      "role": "money",
+      "primary_intent": "bedrijf overdraagbaar maken",
+      "primary_keyword": "bedrijf overdraagbaar maken",
+      "secondary_keywords": ["bedrijf minder eigenaarafhankelijk", "onderneming overdraagbaar maken", "bedrijf verkoopklaar maken processen"],
+      "funnel_stage": "decide",
+      "primary_cta": {"action":"frisse-blik","url":"https://www.bedrijfsgeheugen.nl/frisse-blik"},
+      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/due-diligence","https://www.bedrijfsgeheugen.nl/investeerders-ma","https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen"],
       "schema_type": "Service"
     }
   ]

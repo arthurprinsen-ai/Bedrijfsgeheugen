@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildLinkGraph, validateMoneyPages } from '../tools/seo-order-engine/link-graph.mjs';
+import { enrichDeclaredSupportingLinks } from '../tools/seo-order-engine/enrich.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const registry = {
@@ -34,6 +35,20 @@ test('supporting route moet daadwerkelijk naar zijn money page linken', () => {
   const fouten = validateMoneyPages(pages, registry).join('\n');
   assert.match(fouten, /blog\/kosten.*mist link.*prijzen/i);
   assert.doesNotMatch(fouten, /blog\/afas.*mist link/i);
+});
+
+test('declared supporting routes krijgen automatisch een zichtbare money-page link', () => {
+  const html = '<html><head></head><body><main><h1>Kosten</h1></main></body></html>';
+  const out = enrichDeclaredSupportingLinks(html, `${ORIGIN}/blog/kosten/`, registry);
+  assert.match(out, new RegExp(`href="${ORIGIN}/prijzen"`));
+  const pages = [page(`${ORIGIN}/prijzen`), { canonical: `${ORIGIN}/blog/kosten/`, html: out }, page(`${ORIGIN}/afas-koppeling`), page(`${ORIGIN}/blog/afas/`, [`${ORIGIN}/afas-koppeling`])];
+  assert.doesNotMatch(validateMoneyPages(pages, registry).join('\n'), /blog\/kosten.*mist link.*prijzen/i);
+});
+
+test('declared supporting link projector dupliceert bestaande links niet', () => {
+  const existing = `<html><head></head><body><main><a href="${ORIGIN}/prijzen">Prijzen</a></main></body></html>`;
+  const out = enrichDeclaredSupportingLinks(existing, `${ORIGIN}/blog/kosten/`, registry);
+  assert.equal((out.match(new RegExp(`href="${ORIGIN}/prijzen"`, 'g')) || []).length, 1);
 });
 
 test('link naar bekende canonical alias wordt geweigerd ten gunste van canonical landing', () => {
