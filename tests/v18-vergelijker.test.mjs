@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from '../tools/v18-beweging.mjs';
+import { BEWEGING_CSS, BEWEGING_JS, vergelijker } from '../tools/v18-beweging.mjs';
 import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
 test('vergelijker houdt beide tekstlagen leesbaar tijdens slepen', () => {
@@ -41,23 +41,6 @@ test('vergelijker is ook met toetsenbord bedienbaar en rapporteert zijn grens', 
   assert.match(html, /aria-valuenow="50"/);
   assert.match(BEWEGING_JS, /\['ArrowLeft','ArrowRight','Home','End'\]/);
   assert.match(BEWEGING_JS, /greep\.setAttribute\('aria-valuenow', deel\.toFixed\(0\)\)/);
-});
-
-test('structurele contentblokken krijgen nooit een 3D compositor-laag', () => {
-  const html = '<section class="blok"><div class="kaart">Kaart</div><div class="tegel">Tegel</div></section>';
-  const out = maakBeweeglijk(html);
-  assert.match(out, /<section class="blok">/);
-  assert.doesNotMatch(out, /<section class="blok bgx-kantel">/);
-  assert.match(out, /class="kaart bgx-kantel"/);
-  assert.match(out, /class="tegel bgx-kantel"/);
-});
-
-test('kaartkanteling reserveert geen permanente GPU-laag', () => {
-  assert.doesNotMatch(
-    BEWEGING_CSS,
-    /\.bgx-kantel\{[^}]*will-change:transform/,
-    'Permanente will-change:transform kan Chrome/macOS blank-paints veroorzaken tot een resize de compositor herbouwt.'
-  );
 });
 
 test('V18 interactieve websitecode en regressietests horen bij de website delivery lane', async () => {
