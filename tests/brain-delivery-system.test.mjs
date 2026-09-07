@@ -147,6 +147,14 @@ test('legacy customer portal changes belong to the portal lane', async () => {
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['portal']);
 });
 
+test('portal production handoff paths are explicitly classified', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const wrapper = createDeliveryPlan({ changedPaths:['klantportaal-v2.html'], headSha:'1234abcdef567890', policy });
+  assert.deepEqual(wrapper.lanes.map(lane => lane.id), ['portal']);
+  const routing = createDeliveryPlan({ changedPaths:['_redirects'], headSha:'1234abcdef567890', policy });
+  assert.deepEqual(routing.lanes.map(lane => lane.id), ['website']);
+});
+
 test('delivery workflow executes changed lanes in parallel and enforces moving-main drift before production handoff', async () => {
   const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 'utf8');
   assert.match(workflow, /fromJSON\(needs\.plan\.outputs\.matrix\)/);
