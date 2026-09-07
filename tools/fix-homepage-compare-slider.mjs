@@ -7,7 +7,7 @@ const READABLE_STYLE = `<style ${MARKER}>
 </style>`;
 
 export function applyHomepageCompareSliderReadability(html) {
-  if (!html.includes('id="compareSlider"')) return html;
+  if (!html.includes('id="compareSlider"') && !html.includes("id='compareSlider'")) return html;
 
   let next = html;
 
@@ -16,10 +16,10 @@ export function applyHomepageCompareSliderReadability(html) {
   next = next.replaceAll('Math.max(8,Math.min(92,', 'Math.max(30,Math.min(70,');
   next = next.replaceAll('Math.max(8, Math.min(92,', 'Math.max(30, Math.min(70,');
 
-  next = next.replace(
-    /aria-label="Vergelijk voor en na"\s+aria-valuemax="(?:92|70)"\s+aria-valuemin="(?:8|30)"/,
-    'aria-label="Vergelijk voor en na" aria-valuemax="70" aria-valuemin="30"'
-  );
+  // ARIA kan in de gegenereerde HTML in een andere attribuutvolgorde of quote-stijl staan.
+  // Normaliseer de twee grenzen daarom onafhankelijk en behoud de rest van de knopmarkup.
+  next = next.replace(/aria-valuemax=(['"])(?:92|70)\1/g, 'aria-valuemax="70"');
+  next = next.replace(/aria-valuemin=(['"])(?:8|30)\1/g, 'aria-valuemin="30"');
 
   if (!next.includes('.compare-before .compare-copy{width:min(45%,calc(var(--split) - 68px))}')) {
     next = next.replace('</head>', `${READABLE_STYLE}\n</head>`);
@@ -31,8 +31,8 @@ export function applyHomepageCompareSliderReadability(html) {
   // Fail closed: een gedeeltelijke patch mag nooit stilletjes als opgelost doorbouwen.
   // De gegenereerde V18-runtime bestaat zowel met als zonder spatie na de komma.
   if (!/Math\.max\(30,\s*Math\.min\(70,/.test(next) ||
-      !next.includes('aria-valuemax="70"') ||
-      !next.includes('aria-valuemin="30"')) {
+      !/aria-valuemax=(['"])70\1/.test(next) ||
+      !/aria-valuemin=(['"])30\1/.test(next)) {
     throw new Error('Homepage compare-slider readability guard kon de runtime-eindpunten niet borgen');
   }
 
