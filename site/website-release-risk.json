@@ -1,0 +1,22 @@
+{
+  "version": "WEBSITE-RELEASE-RISK-v1",
+  "highRiskPaths": [
+    ".github/workflows/",
+    "netlify.toml",
+    "_redirects",
+    "tools/site-shell/",
+    "tools/bouw-v18-",
+    "tools/normaliseer-site-ui.mjs",
+    "tools/controleer-site-ui.mjs",
+    "assets/js/menu.js",
+    "site/seo-baseline.json",
+    "site/navigation-baseline.json"
+  ],
+  "normalRootHtml": true,
+  "pageLocalAssets": {
+    "assets/pages/ai-act/": ["/ai-act"]
+  },
+  "fastFixRequiredTestSets": ["baseline", "preview", "targeted-browser", "public-visibility"],
+  "normalRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo"],
+  "highRiskRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo", "shared-contracts", "full-regression"]
+}
