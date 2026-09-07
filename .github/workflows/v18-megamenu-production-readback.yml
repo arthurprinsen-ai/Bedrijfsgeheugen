@@ -1,0 +1,51 @@
+name: V18 megamenu production readback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/bouw-v18-production-core.mjs'
+      - 'tools/site-shell/v18-megamenu-browser-check.mjs'
+      - 'tests/v18-megamenu-heading-contract.test.mjs'
+      - 'tests/v18-megamenu-regression-lock.test.mjs'
+      - '.github/workflows/required-test.yml'
+      - '.github/workflows/v18-megamenu-production-readback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v18-megamenu-production-readback
+  cancel-in-progress: true
+
+jobs:
+  production-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify live production menu after deploy
+        env:
+          UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 24); do
+            echo "Production readback attempt ${attempt}/24"
+            if node tools/site-shell/v18-megamenu-browser-check.mjs; then
+              echo "Live production megamenu contrast verified."
+              exit 0
+            fi
+            if [ "$attempt" -eq 24 ]; then
+              echo "Live production never satisfied the megamenu contrast contract."
+              exit 1
+            fi
+            sleep 15
+          done
