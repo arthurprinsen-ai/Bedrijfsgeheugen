@@ -3,15 +3,35 @@ name: Required test
 on:
   pull_request:
     branches: [main]
+  merge_group:
   workflow_dispatch:
 
 permissions:
   contents: read
+  statuses: read
+
+concurrency:
+  group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
-    name: test
+  scope:
+    name: classify release scope
     runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.scope.outputs.backend }}
+      portal: ${{ steps.scope.outputs.portal }}
+      website: ${{ steps.scope.outputs.website }}
+      automation: ${{ steps.scope.outputs.automation }}
+      pr_lanes: ${{ steps.scope.outputs.pr_lanes }}
+      tested_base: ${{ steps.scope.outputs.tested_base }}
+      head_sha: ${{ steps.scope.outputs.head_sha }}
+      browser_profile: ${{ steps.scope.outputs.browser_profile }}
+      browser_required: ${{ steps.scope.outputs.browser_required }}
+      menu_browser: ${{ steps.scope.outputs.menu_browser }}
+      targeted_browser: ${{ steps.scope.outputs.targeted_browser }}
+      full_browser: ${{ steps.scope.outputs.full_browser }}
+      routes_json: ${{ steps.scope.outputs.routes_json }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -26,10 +46,11 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/moving-main-successor-guard.mjs
       - id: scope
-        name: Classify blocking suites from changed delivery lanes
+        name: Classify lanes and browser depth
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
@@ -37,33 +58,45 @@ jobs:
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           import { classifyWebsiteReleaseRisk } from './tools/website-release-risk.mjs';
-          const head = process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const base = process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+
+          const head = process.env.PR_HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const base = process.env.PR_BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changedPaths = execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
-          const releaseRiskPolicy = JSON.parse(await readFile('config/website-release-risk.json','utf8'));
+          const riskPolicy = JSON.parse(await readFile('config/website-release-risk.json','utf8'));
           const plan = createDeliveryPlan({ changedPaths, headSha:head, policy });
-          const suites = deriveRequiredTestSuites({ lanes:plan.lanes.map(lane => lane.id) });
-          const websiteReleaseRisk = classifyWebsiteReleaseRisk({ changedPaths, policy: releaseRiskPolicy });
+          const lanes = plan.lanes.map(lane => lane.id);
+          const suites = deriveRequiredTestSuites({ lanes });
+          const risk = classifyWebsiteReleaseRisk({ changedPaths, policy:riskPolicy });
+
           for (const [key,value] of Object.entries(suites)) await appendFile(process.env.GITHUB_OUTPUT, `${key}=${value}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT, `browser_profile=${websiteReleaseRisk.profile}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT, `menu_browser=${websiteReleaseRisk.requiresMenuBrowser}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT, `full_browser=${websiteReleaseRisk.requiresFullBrowser}\n`);
-          const menuOnlyPaths = new Set([
-            'tools/bouw-v18-production-core.mjs',
-            'tools/site-shell/v18-megamenu-browser-check.mjs',
-            'tests/v18-megamenu-heading-contract.test.mjs',
-            'tests/site-shell-public-route-inventory.test.mjs',
-            '.github/workflows/required-test.yml'
-          ]);
-          const menuOnly = changedPaths.length > 0 && changedPaths.every(path => menuOnlyPaths.has(path));
-          await appendFile(process.env.GITHUB_OUTPUT, `menu_only=${menuOnly}\n`);
-          console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites, menuOnly, websiteReleaseRisk }));
+          await appendFile(process.env.GITHUB_OUTPUT, `pr_lanes=${JSON.stringify(lanes)}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `tested_base=${base}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `head_sha=${head}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `browser_profile=${risk.profile}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `browser_required=${risk.requiresBrowser}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `menu_browser=${risk.requiresMenuBrowser}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `targeted_browser=${risk.requiresTargetedBrowser}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `full_browser=${risk.requiresFullBrowser}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `routes_json=${JSON.stringify(risk.affectedRoutes || [])}\n`);
+          console.log(JSON.stringify({ changedPaths, lanes, suites, risk, testedBase:base, headSha:head }));
           NODE
-      - name: Verify shared release-lane contract
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/website-release-risk.test.mjs
+
+  static:
+    name: static contracts
+    needs: scope
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify shared release contracts
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/website-release-risk.test.mjs tests/release-base-guard.test.mjs
       - name: Verify backend Brain and runtime contracts
-        if: steps.scope.outputs.backend == 'true'
+        if: needs.scope.outputs.backend == 'true'
         run: >-
           node --test
           tests/brain-adapter-conformance.test.mjs
@@ -77,24 +110,16 @@ jobs:
           tests/make-cost-governor-policy.test.mjs
           tests/make-cost-governance-contract.test.mjs
       - name: Verify portal production contracts
-        if: steps.scope.outputs.portal == 'true'
+        if: needs.scope.outputs.portal == 'true'
         run: node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
       - name: Verify automation delivery contracts
-        if: steps.scope.outputs.automation == 'true'
+        if: needs.scope.outputs.automation == 'true'
         run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
-      - name: Install visual regression browser
-        if: steps.scope.outputs.website == 'true'
-        run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
-      - name: Verify website V18 SEO and UI contracts
-        if: steps.scope.outputs.website == 'true'
+      - name: Verify website static contracts
+        if: needs.scope.outputs.website == 'true'
         run: >-
           node --test
           tests/v18-vergelijker.test.mjs
-          tests/seo-ui-visual-regression-contract.test.mjs
-          tests/seo-ui-visual-regression-geometry.test.mjs
-          tests/seo-ui-visual-regression-browser.test.mjs
           tests/site-shell-v18-view-integrity.test.mjs
           tests/site-shell-public-route-inventory.test.mjs
           tests/seo-native-money-presentation.test.mjs
@@ -102,36 +127,133 @@ jobs:
           tests/standalone-content-page-router-isolation.test.mjs
           tests/v18-megamenu-heading-contract.test.mjs
           tests/seo-homepage-context-slider-readability.test.mjs
-      - name: Verify real megamenu headings are black and bold
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_browser == 'true'
+      - name: Verify full-risk visual regression contracts
+        if: needs.scope.outputs.full_browser == 'true'
+        run: node --test tests/seo-ui-visual-regression-contract.test.mjs tests/seo-ui-visual-regression-geometry.test.mjs
+
+  browser:
+    name: browser verification
+    needs: scope
+    if: github.event_name == 'pull_request' && needs.scope.outputs.browser_required == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Wait for exact deploy preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ needs.scope.outputs.head_sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          node --input-type=module - <<'NODE'
+          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.HEAD_SHA}/status`;
+          const deadline=Date.now()+6*60*1000;
+          while(Date.now()<deadline){
+            const response=await fetch(endpoint,{headers});
+            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
+            const body=await response.json();
+            const status=(body.statuses||[]).find(item=>item.context==='netlify/bedrijfsgeheugen/deploy-preview');
+            if(status?.state==='success') process.exit(0);
+            if(['failure','error'].includes(status?.state)) throw new Error(`Netlify preview ${status.state}: ${status.description||''}`);
+            await new Promise(resolve=>setTimeout(resolve,5000));
+          }
+          throw new Error('Timed out waiting for exact deploy preview');
+          NODE
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install browser only for browser-scoped changes
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify affected routes only
+        if: needs.scope.outputs.targeted_browser == 'true'
+        env:
+          BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+          ROUTES_JSON: ${{ needs.scope.outputs.routes_json }}
+        run: node tools/verify-targeted-website-routes.mjs
+      - name: Verify focused megamenu
+        if: needs.scope.outputs.menu_browser == 'true' && needs.scope.outputs.full_browser != 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/v18-megamenu-browser-check.mjs
-      - name: Fail closed on real deploy-preview visual regressions
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
+      - name: Run full website browser regression
+        if: needs.scope.outputs.full_browser == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-          EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-        run: node tools/site-shell/ui-visual-regression/browser-check.mjs
-      - name: Drag homepage context slider through safe extremes
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/homepage-context-slider-browser-check.mjs
-      - name: Click Platform and Expertise on the real deploy preview
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/homepage-toggle-browser-check.mjs
-      - name: Verify all public pages are visibly rendered
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/standalone-visibility-check.mjs
-      - name: Upload visual regression diagnostics
+          EXPECTED_COMMIT: ${{ needs.scope.outputs.head_sha }}
+        run: |
+          node --test tests/seo-ui-visual-regression-browser.test.mjs
+          node tools/site-shell/v18-megamenu-browser-check.mjs
+          node tools/site-shell/ui-visual-regression/browser-check.mjs
+          node tools/site-shell/homepage-context-slider-browser-check.mjs
+          node tools/site-shell/homepage-toggle-browser-check.mjs
+          node tools/site-shell/standalone-visibility-check.mjs
+      - name: Upload browser diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ui-visual-regression-required-test
+          name: required-test-browser-${{ github.event.pull_request.number }}
           path: artifacts/ui-visual-regression/
           if-no-files-found: ignore
+
+  test:
+    name: test
+    needs: [scope, static, browser]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Require selected suites to pass
+        env:
+          SCOPE_RESULT: ${{ needs.scope.result }}
+          STATIC_RESULT: ${{ needs.static.result }}
+          BROWSER_RESULT: ${{ needs.browser.result }}
+          BROWSER_REQUIRED: ${{ needs.scope.outputs.browser_required }}
+        run: |
+          test "$SCOPE_RESULT" = success
+          test "$STATIC_RESULT" = success
+          if [ "$BROWSER_REQUIRED" = true ]; then test "$BROWSER_RESULT" = success; fi
+      - name: Reject only relevant moving-main changes
+        if: github.event_name == 'pull_request'
+        env:
+          TESTED_BASE_SHA: ${{ needs.scope.outputs.tested_base }}
+          HEAD_SHA: ${{ needs.scope.outputs.head_sha }}
+          PR_LANES_JSON: ${{ needs.scope.outputs.pr_lanes }}
+        run: |
+          git fetch origin main --no-tags
+          CURRENT_MAIN_SHA="$(git rev-parse origin/main)"
+          export CURRENT_MAIN_SHA
+          if [ "$CURRENT_MAIN_SHA" = "$TESTED_BASE_SHA" ]; then
+            export MAIN_CHANGED_LANES_JSON='[]'
+          else
+            export MAIN_CHANGED_LANES_JSON="$(node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { readFileSync } from 'node:fs';
+          import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
+          const changedPaths=execFileSync('git',['diff','--name-only',process.env.TESTED_BASE_SHA,process.env.CURRENT_MAIN_SHA],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const policy=JSON.parse(readFileSync('config/brain-delivery-system.json','utf8'));
+          const plan=createDeliveryPlan({changedPaths,headSha:process.env.CURRENT_MAIN_SHA,policy});
+          process.stdout.write(JSON.stringify(plan.lanes.map(lane=>lane.id)));
+          NODE
+          )"
+          fi
+          node tools/release-base-guard.mjs
+      - name: Release evidence
+        run: |
+          echo "head=${{ needs.scope.outputs.head_sha }}"
+          echo "tested_base=${{ needs.scope.outputs.tested_base }}"
+          echo "lanes=${{ needs.scope.outputs.pr_lanes }}"
+          echo "browser_profile=${{ needs.scope.outputs.browser_profile }}"
