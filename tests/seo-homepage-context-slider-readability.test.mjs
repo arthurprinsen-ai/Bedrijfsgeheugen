@@ -46,6 +46,11 @@ test('algemene visual-regression gate beschermt de echte slider en geen verdwene
   assert.match(visualRegistry,/#compareSlider \.compare-before \.compare-copy/);
   assert.match(visualRegistry,/#compareSlider \.compare-after \.compare-copy/);
   assert.match(visualRegistry,/#compareSlider \.compare-knob/);
-  assert.doesNotMatch(visualRegistry,/data-bg-automation-copy/);
-  assert.doesNotMatch(visualRegistry,/data-bg-automation-visual/);
+  for (const staleMarker of [
+    'data-bg-automation-copy',
+    'data-bg-automation-visual',
+    'data-bg-automation-heading',
+    'data-bg-automation-description',
+    'data-bg-automation-card'
+  ]) assert.doesNotMatch(visualRegistry,new RegExp(staleMarker));
 });
