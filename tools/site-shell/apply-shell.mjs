@@ -143,20 +143,29 @@ function legacyPricingHero(rest) {
   return null;
 }
 
+function markeerHeroKlasse(binnen, klasse) {
+  const veilig = klasse.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(binnen).replace(
+    new RegExp(`<section\\b(?![^>]*data-bg-component)([^>]*\\bclass="[^"]*\\b${veilig}\\b[^"]*"[^>]*)>`, 'i'),
+    '<section$1 data-bg-component="hero">'
+  );
+}
+
 function paginakop(binnen, pad) {
+  // Een reeds gebouwde pagina-hero is leidend. De shell mag alleen globale
+  // componenten projecteren en nooit een tweede visuele header erboven bouwen.
+  if (/<section\b[^>]*class="[^"]*\binhoud-kop\b[^"]*"[^>]*>/i.test(binnen)) {
+    return markeerHeroKlasse(binnen, 'inhoud-kop');
+  }
+  if (pad === 'prijzen.html' && legacyPricingHero(binnen)) {
+    return markeerHeroKlasse(binnen, 'held');
+  }
+
   let rest = binnen;
   const pak = re => { const m = rest.match(re); if (!m) return ''; rest = rest.replace(m[0], ''); return m[0]; };
   const kruimel = pak(/<nav class="bgkruim"[\s\S]*?<\/nav>/i);
 
-  let bron = rest;
-  if (pad === 'prijzen.html') {
-    const legacy = legacyPricingHero(rest);
-    if (legacy) {
-      bron = legacy.html;
-      rest = rest.slice(0, legacy.start) + rest.slice(legacy.end);
-    }
-  }
-
+  const bron = rest;
   const kopMatch = bron.match(/<h1[^>]*>[\s\S]*?<\/h1>/i);
   if (!kopMatch) return binnen;
   const bovenkopMatch = bron.match(/<span class="eyebrow"[^>]*>[\s\S]*?<\/span>/i);
@@ -165,11 +174,9 @@ function paginakop(binnen, pad) {
   const bovenkop = bovenkopMatch ? bovenkopMatch[0] : '';
   const inleiding = inleidingMatch ? inleidingMatch[0] : '';
 
-  if (bron === rest) {
-    rest = rest.replace(kop, '');
-    if (bovenkop) rest = rest.replace(bovenkop, '');
-    if (inleiding) rest = rest.replace(inleiding, '');
-  }
+  rest = rest.replace(kop, '');
+  if (bovenkop) rest = rest.replace(bovenkop, '');
+  if (inleiding) rest = rest.replace(inleiding, '');
 
   return `<section class="paginakop" data-bg-component="hero"><div class="wrap">${kruimel}${bovenkop}${kop}${inleiding}</div></section>\n${rest}`;
 }

@@ -11,10 +11,31 @@ function hasPrimary(html,entry){const a=entry?.primary_cta?.action;return a?new 
 function hasMicro(html,entry){const main=mainOf(html);return anchors(main).some(h=>h.startsWith(`${ORIGIN}/`)&&h!==entry?.primary_cta?.url&&h!==entry?.route);}
 function hasSupportLink(html,entry){const links=new Set(anchors(mainOf(html)));return (entry?.supporting_routes||[]).some(r=>links.has(r));}
 function marker(html,name){return new RegExp(`data-bg-money-section=["']${name}["']`,'i').test(html);}
+function isNative(entry){return entry?.presentation==='native';}
+function hasNativeHero(main,entry){
+  if(/<section\b[^>]*class=(?:"[^"]*\binhoud-kop\b[^"]*"|'[^']*\binhoud-kop\b[^']*')/i.test(main)) return true;
+  return entry?.route===`${ORIGIN}/prijzen`&&/<section\b[^>]*class=(?:"[^"]*\bheld\b[^"]*"|'[^']*\bheld\b[^']*')/i.test(main);
+}
 
 export function inspectMoneyPage(input,entry){
   const html=String(input); const main=mainOf(html); const errors=[];
   if(!entry||entry.role!=='money') return errors;
+
+  // Product en Prijzen zijn ontworpen V18-conversiepagina's. Voor deze pagina's
+  // valideert het contract de bestaande pagina in plaats van er generieke SEO-copy
+  // onder te plakken. Zo blijven inhoud en presentatie één bron van waarheid.
+  if(isNative(entry)){
+    if(!/data-bg-money-contract-version=["']native-v1["']/i.test(html)) errors.push(`${entry.route}: native money-contract ontbreekt`);
+    if(!hasNativeHero(main,entry)) errors.push(`${entry.route}: eigen V18 hero ontbreekt`);
+    if(/id=["']bg-money-v3["']/i.test(html)||hasHeading(main,['het zoekprobleem:','methodologie en bronnenbeleid','veelgestelde vragen vóór je beslist'])) errors.push(`${entry.route}: generiek money-page beslisblok mag niet op een native pagina staan`);
+    if(!hasPrimary(html,entry)) errors.push(`${entry.route}: primaire CTA is niet meetbaar gemarkeerd`);
+    if(!hasMicro(html,entry)) errors.push(`${entry.route}: secundaire microconversie ontbreekt`);
+    if((entry.supporting_routes||[]).length&&!hasSupportLink(html,entry)) errors.push(`${entry.route}: contextuele support-link ontbreekt`);
+    if(!new RegExp(`data-bg-intent-owner=["']${entry.route.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}["']`,'i').test(html)) errors.push(`${entry.route}: primaire intent-owner ontbreekt`);
+    if(!/data-bg-intent-role=["']primary["']/i.test(html)) errors.push(`${entry.route}: primary intent-role ontbreekt`);
+    return errors;
+  }
+
   if(!(marker(html,'problem')||hasHeading(main,['probleem','herken je','waar loopt','zonder','kost','verlies','risico']))) errors.push(`${entry.route}: probleem/intentie boven de vouw ontbreekt`);
   if(!marker(html,'answer')) errors.push(`${entry.route}: direct antwoord ontbreekt`);
   if(!(marker(html,'proposition')||hasHeading(main,['oplossing','wat we doen','wat het doet','zo helpt','platform','koppeling','aanpak']))) errors.push(`${entry.route}: unieke propositie/oplossing ontbreekt`);
@@ -45,8 +66,20 @@ function directAnswer(entry){
   return 'Maak eerst het echte knelpunt, de eigenaar en de gewenste uitkomst expliciet. Kies daarna de kleinste werkende oplossing en meet of die aantoonbaar waarde levert.';
 }
 
+function nativeMoneyPage(input){
+  let html=String(input);
+  // Oude output opruimen als een reeds gebouwde pagina opnieuw door de pipeline gaat.
+  html=html.replace(/<section\b[^>]*id=(?:"bg-money-v2"|'bg-money-v2'|"bg-money-v3"|'bg-money-v3')[^>]*>[\s\S]*?<\/section>\s*/i,'');
+  if(/data-bg-money-contract-version=["']native-v1["']/i.test(html)) return html;
+  return html.replace(/<main\b([^>]*)>/i,(_tag,attrs)=>{
+    const clean=attrs.replace(/\sdata-bg-money-contract-version=(?:"[^"]*"|'[^']*')/gi,'');
+    return `<main${clean} data-bg-money-contract-version="native-v1">`;
+  });
+}
+
 export function enrichMoneyPage(input,entry){
   let html=String(input); if(!entry||entry.role!=='money') return html;
+  if(isNative(entry)) return nativeMoneyPage(html);
   if(/data-bg-money-contract-version=["']v3["']/i.test(html)) return html;
   html=html.replace(/<section\b[^>]*id=(?:"bg-money-v2"|'bg-money-v2'|"bg-money-v3"|'bg-money-v3')[^>]*>[\s\S]*?<\/section>\s*/i,'');
   const support=safeSupport(entry); const primary=entry.primary_cta||{action:'zelfscan',url:`${ORIGIN}/zelfscan`};
