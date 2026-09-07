@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { applyHomepageContextSliderReadability } from '../tools/site-shell/fix-homepage-context-slider.mjs';
 
 const read = async path => {
   try { return await readFile(new URL(`../${path}`, import.meta.url), 'utf8'); }
@@ -41,6 +42,16 @@ test('tekst, handle, compact fallback en accessibility delen één veilige grens
   assert.match(fixer, /aria-valuemax/);
   assert.match(fixer, /ArrowLeft/);
   assert.match(fixer, /ArrowRight/);
+});
+
+test('een bestaande oude guard wordt bij iedere build vervangen door de actuele canonical runtime', () => {
+  const stale = `<!doctype html><html><head><style data-bg-context-slider-readable>STALE_STYLE</style></head><body><div id="compareSlider"><div class="compare-before"><div class="compare-copy"><h3>Links</h3><p>tekst</p></div></div><div class="compare-after"><div class="compare-copy"><h3>Rechts</h3><p>tekst</p></div></div><div class="compare-handle"><button class="compare-knob" aria-valuemin="8" aria-valuemax="92" aria-valuenow="50"></button></div></div><script data-bg-context-slider-readable>STALE_RUNTIME</script></body></html>`;
+  const upgraded = applyHomepageContextSliderReadability(stale);
+  assert.doesNotMatch(upgraded, /STALE_STYLE|STALE_RUNTIME/);
+  assert.match(upgraded, /applyFromClientX/);
+  assert.match(upgraded, /MIN_DESKTOP_PANE_PX = 320/);
+  assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g) || []).length, 1);
+  assert.equal((upgraded.match(/<script data-bg-context-slider-readable>/g) || []).length, 1);
 });
 
 test('de beschermde Required test sleept de echte deploy-preview naar beide uitersten en test mobiel', () => {
