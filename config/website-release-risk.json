@@ -34,6 +34,7 @@
     "config/website-release-risk.json",
     "tools/website-release-risk.mjs",
     "tools/release-base-guard.mjs",
+    "tools/site-shell/verify-production-release.mjs",
     "tests/website-release-risk.test.mjs",
     "tests/release-base-guard.test.mjs",
     ".github/workflows/required-test.yml",
