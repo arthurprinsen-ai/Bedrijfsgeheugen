@@ -7,7 +7,9 @@ test('homepage build wires Platform/Expertise as a real accessible toggle', () =
   assert.equal(existsSync(scriptPath), true, 'toggle build step is missing');
 
   const netlify = readFileSync('netlify.toml', 'utf8');
-  assert.match(netlify, /node tools\/fix-homepage-platform-expertise-toggle\.mjs/, 'toggle fix is not part of the production build');
+  const pricingPipeline = readFileSync('tools/prijzen-uit-de-homepage.mjs', 'utf8');
+  assert.match(netlify, /node tools\/prijzen-uit-de-homepage\.mjs/, 'pricing/page-policy pipeline is not in the production build');
+  assert.match(pricingPipeline, /fix-homepage-platform-expertise-toggle\.mjs/, 'toggle fix is not part of the effective production build');
 
   const source = readFileSync(scriptPath, 'utf8');
   assert.match(source, /aria-selected/, 'toggle must expose selected state');
