@@ -22,9 +22,12 @@ test('401 geeft unauthorized',async()=>{
   assert.equal(result.project,null);
 });
 
-test('TENANT_NOT_CONFIGURED blijft zichtbaar als configuratieblocker en niet als lege klantdata',async()=>{
+test('TENANT_NOT_CONFIGURED wordt als zichtbare configuratieblocker getoond en niet als lege klantdata',async()=>{
   const result=await loadPortalProject({fetchFn:async()=>response(403,{error:'TENANT_NOT_CONFIGURED'})});
-  assert.deepEqual(result,{state:'tenant-unconfigured',project:null,error:'TENANT_NOT_CONFIGURED'});
+  assert.equal(result.state,'error');
+  assert.equal(result.project,null);
+  assert.match(result.error,/Tenantkoppeling ontbreekt/);
+  assert.match(result.error,/beheerder/);
 });
 
 test('netwerkfout blijft fail-closed',async()=>{
