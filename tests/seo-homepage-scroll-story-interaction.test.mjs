@@ -28,6 +28,15 @@ test('homepage story is projected on final output without runtime layout discove
   assert.match(source,/data-bg-story-cost/);
 });
 
+test('legacy motion story sticky owner is neutralized inside the canonical story root', () => {
+  const source = readFileSync(STORY, 'utf8');
+  assert.match(
+    source,
+    /\[\$\{ROOT_ATTR\}\]\s+\.motion-story-sticky\{[^}]*position:relative!important[^}]*top:auto!important[^}]*height:auto!important[^}]*min-height:0!important/s,
+    'the inherited .motion-story-sticky wrapper must not remain a viewport-sized sticky descendant inside the canonical story root',
+  );
+});
+
 test('exact blank-screen regression is a required preview and production browser gate', () => {
   assert.equal(existsSync(CHECK), true);
   const check = readFileSync(CHECK,'utf8');
