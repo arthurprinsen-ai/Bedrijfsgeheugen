@@ -13,6 +13,7 @@ test('customer portal v2, portal-next and their browser/contracts stay in the po
     'portal-v2/index.html',
     'portal-v2/tests/page-shell.test.mjs',
     'tests/integration/portal-next-live.spec.js',
+    'tests/integration/portal-v2-live.spec.js',
     'tests/klantportaal-cockpit-contract.test.mjs',
     'tests/klantportaal-v2-pages.test.mjs'
   ];
