@@ -1,0 +1,109 @@
+name: Production Release Readback
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: production-release-readback-${{ github.sha }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: read
+
+jobs:
+  production-readback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - id: provenance
+        name: Prove merged PR provenance and derive affected routes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          MERGE_SHA: ${{ github.sha }}
+        run: |
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { readFile, writeFile, appendFile } from 'node:fs/promises';
+          import { classifyWebsiteRelease } from './tools/website-release-risk.mjs';
+          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          const prsResponse=await fetch(`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.MERGE_SHA}/pulls`,{headers:{...headers,Accept:'application/vnd.github+json'}});
+          if(!prsResponse.ok) throw new Error(`PR provenance API ${prsResponse.status}`);
+          const prs=await prsResponse.json();
+          const merged=prs.find(pr=>pr.merged_at && pr.base?.ref==='main');
+          if(!merged) throw new Error('Main push has no merged PR provenance; production readback fails closed');
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const riskConfig=JSON.parse(await readFile('config/website-release-risk.json','utf8'));
+          const acceptedBaseline=JSON.parse(await readFile('site/accepted-baseline.json','utf8'));
+          const risk=classifyWebsiteRelease({changedPaths,riskConfig,acceptedBaseline});
+          let routes=[...risk.affected_routes];
+          if(routes.length===0) routes=risk.lane==='high-risk'?['/','/ai-act','/benchmark']:['/'];
+          const evidence={pr_number:merged.number,merge_sha:process.env.MERGE_SHA,changed_paths:changedPaths,risk_lane:risk.lane,routes};
+          await writeFile('.artifacts/production-release-scope.json',JSON.stringify(evidence,null,2)+'\n');
+          await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`pr=${merged.number}\n`);
+          console.log(JSON.stringify(evidence,null,2));
+          NODE
+      - id: deploy
+        name: Wait for Netlify production status on exact merge SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          MERGE_SHA: ${{ github.sha }}
+        run: |
+          node --input-type=module - <<'NODE'
+          import { appendFile } from 'node:fs/promises';
+          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.MERGE_SHA}/status`;
+          const deadline=Date.now()+15*60*1000;
+          while(Date.now()<deadline){
+            const response=await fetch(endpoint,{headers});
+            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
+            const body=await response.json();
+            const statuses=body.statuses||[];
+            const status=statuses.find(item=>['netlify/bedrijfsgeheugen/deploy','netlify/bedrijfsgeheugen/production'].includes(item.context));
+            if(status?.state==='success'){
+              await appendFile(process.env.GITHUB_OUTPUT,`deployed_sha=${process.env.MERGE_SHA}\nstatus=ready\ntarget_url=${status.target_url||''}\n`);
+              console.log(`Netlify production reports success on exact SHA ${process.env.MERGE_SHA}`);
+              process.exit(0);
+            }
+            if(['failure','error'].includes(status?.state)) throw new Error(`Netlify production ${status.state}: ${status.description||''}`);
+            await new Promise(resolve=>setTimeout(resolve,10000));
+          }
+          throw new Error('Timed out waiting for Netlify production status on exact merge SHA');
+          NODE
+      - name: Install production browser verifier
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - id: routes
+        name: Verify affected production routes
+        env:
+          BASE_URL: https://www.bedrijfsgeheugen.nl
+          ROUTES_JSON: ${{ steps.provenance.outputs.routes }}
+        run: node tools/verify-targeted-website-routes.mjs --output .artifacts/production-route-verification.json
+      - name: Evaluate immutable production truth
+        if: always() && steps.deploy.outcome == 'success'
+        run: >-
+          node tools/verify-production-release.mjs
+          --merge-sha '${{ github.sha }}'
+          --deployed-sha '${{ steps.deploy.outputs.deployed_sha }}'
+          --deploy-status '${{ steps.deploy.outputs.status }}'
+          --routes-json '${{ steps.provenance.outputs.routes }}'
+          --routes-ok '${{ steps.routes.outcome == 'success' }}'
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-release-readback-${{ github.sha }}
+          path: .artifacts/
+          retention-days: 30
