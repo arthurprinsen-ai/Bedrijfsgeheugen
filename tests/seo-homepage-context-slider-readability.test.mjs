@@ -24,6 +24,14 @@ test('slider bewaart leesbare paneelbreedte en gedeelde grenzen',()=>{
   assert.match(fixer,/aria-valuemax/);
 });
 
+test('mobiele compactmodus reset de werkelijk gerenderde voor- en napanelen',()=>{
+  const html='<!doctype html><html><head></head><body><div id="compareSlider"><div class="compare-before"><div class="compare-copy"></div></div><div class="compare-after"><div class="compare-copy"></div></div><div class="compare-handle"><button class="compare-knob"></button></div></div></body></html>';
+  const upgraded=applyHomepageContextSliderReadability(html);
+  assert.match(upgraded,/#compareSlider\[data-bg-compare-compact="true"\] \.compare-before,/);
+  assert.match(upgraded,/#compareSlider\[data-bg-compare-compact="true"\] \.compare-after\{/);
+  assert.doesNotMatch(upgraded,/#compareSlider\[data-bg-compare-compact="true"\] \.compare-side\{/);
+});
+
 test('oude geïnjecteerde guard wordt vervangen',()=>{
   const stale='<!doctype html><html><head><style data-bg-context-slider-readable>STALE</style></head><body><div id="compareSlider"><div class="compare-before"><div class="compare-copy"></div></div><div class="compare-after"><div class="compare-copy"></div></div><div class="compare-handle"><button class="compare-knob"></button></div></div><script data-bg-context-slider-readable>STALE</script></body></html>';
   const upgraded=applyHomepageContextSliderReadability(stale);
