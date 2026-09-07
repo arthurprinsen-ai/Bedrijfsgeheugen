@@ -64,9 +64,10 @@ export async function voerPricingShellPipelineUit(stage = 'all') {
     await borgHomepageAutomationLayout();
   }
   if (stage === 'all' || stage === 'verify') {
-    // Laatste homepage-interactie wordt op de daadwerkelijk gebouwde output gezet,
+    // Laatste homepage-interacties worden op de daadwerkelijk gebouwde output gezet,
     // zodat latere V18/page-policy stappen de event wiring niet meer kunnen verliezen.
     await import('./bouw-v18-homepage-platform-expertise-toggle.mjs');
+    await import('./bouw-v18-homepage-scroll-story.mjs');
     await genereerSitemap();
     await controleerSiteUi();
     await controleerTechnischeSeo();
