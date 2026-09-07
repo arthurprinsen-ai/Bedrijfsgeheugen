@@ -52,7 +52,8 @@ test('complete portal desktop keeps approved overview, all portal pages and Busi
   await expect(nativeLayerHeading(page, 'Managementbeeld')).toBeVisible();
   await expect(nativeLayerHeading(page, 'Operationele details')).toBeVisible();
   await expect(nativeLayerHeading(page, 'Trace & evidence')).toBeVisible();
-  await expect(page.locator('iframe.native-legacy-frame[data-legacy-tab="profiel"]')).toBeVisible();
+  await expect(page.locator('[data-native-page="profiel"] .native-live-content--new')).toBeVisible();
+  await expect(page.locator('iframe.native-legacy-frame')).toHaveCount(0);
 
   await page.locator('[data-native-back]').click();
   await expect(page.locator('#overviewView')).toHaveClass(/is-active/);
@@ -88,7 +89,8 @@ test('complete portal mobile has a real hamburger menu with all pages and Busine
   await expect(page.locator('#portalMobileNav [data-portal-page="outcomes-evidence"]')).toBeVisible();
   await page.locator('#portalMobileNav [data-portal-page="ai-scan"]').click();
   await expect(nativePageHeading(page, 'AI-scan: kansenkaart')).toBeVisible();
-  await expect(page.locator('iframe.native-legacy-frame[data-legacy-tab="aiscan"]')).toBeVisible();
+  await expect(page.locator('[data-native-page="ai-scan"] .native-live-content--new')).toBeVisible();
+  await expect(page.locator('iframe.native-legacy-frame')).toHaveCount(0);
 
   await openMobileMenu(page);
   await page.locator('#portalMobileNav [data-business-os-route="Mijn werk"]').click();
