@@ -22,7 +22,7 @@ const RUNTIME = `<script ${MARKER}>
   var slider = document.getElementById('compareSlider');
   if(!slider) return;
   var knob = slider.querySelector('.compare-knob');
-  function limits(){
+  function getLimits(){
     var r = slider.getBoundingClientRect();
     var compactThreshold = (MIN_COMPACT_PANE_PX * 2) + (HANDLE_GUTTER_PX * 2) + 88;
     var compact = r.width < compactThreshold;
@@ -33,14 +33,14 @@ const RUNTIME = `<script ${MARKER}>
     return {min:minPct,max:100-minPct,compact:false};
   }
   function apply(raw){
-    var limitsNow = limits();
-    var value = limitsNow.compact ? 50 : Math.max(limitsNow.min, Math.min(limitsNow.max, raw));
+    var limits = getLimits();
+    var value = limits.compact ? 50 : Math.max(limits.min, Math.min(limits.max, raw));
     slider.style.setProperty('--split', value.toFixed(2) + '%');
     if(knob){
-      knob.setAttribute('aria-valuemin', limitsNow.min.toFixed(0));
-      knob.setAttribute('aria-valuemax', limitsNow.max.toFixed(0));
+      knob.setAttribute('aria-valuemin', limits.min.toFixed(0));
+      knob.setAttribute('aria-valuemax', limits.max.toFixed(0));
       knob.setAttribute('aria-valuenow', value.toFixed(0));
-      knob.setAttribute('aria-disabled', limitsNow.compact ? 'true' : 'false');
+      knob.setAttribute('aria-disabled', limits.compact ? 'true' : 'false');
     }
   }
   function normalize(){
