@@ -86,3 +86,6 @@ jobs:
           path: .artifacts/
           if-no-files-found: ignore
           retention-days: 30
+      - name: Explain production readback failure
+        if: failure()
+        run: echo "::error::Production release readback failed for ${{ github.sha }}; inspect the failed step and uploaded readback artifact before retrying or promoting."
