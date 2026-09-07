@@ -129,21 +129,27 @@ function legacyPricingHero(rest) {
   const openingen = [...voorH1.matchAll(/<section\b[^>]*>/gi)];
   const opening = openingen.at(-1);
   if (!opening || opening.index === undefined || !/class="[^"]*\bheld\b/i.test(opening[0])) return null;
-
   const start = opening.index;
   const tags = /<section\b[^>]*>|<\/section\s*>/gi;
   tags.lastIndex = start;
-  let diepte = 0;
-  let m;
+  let diepte = 0, m;
   while ((m = tags.exec(rest))) {
-    if (/^<section\b/i.test(m[0])) diepte += 1;
-    else diepte -= 1;
+    if (/^<section\b/i.test(m[0])) diepte += 1; else diepte -= 1;
     if (diepte === 0) return { start, end: tags.lastIndex, html: rest.slice(start, tags.lastIndex) };
   }
   return null;
 }
 
+function markeerBestaandeV18Hero(binnen) {
+  return String(binnen).replace(
+    /<section\b(?![^>]*data-bg-component)([^>]*\bclass="[^"]*\binhoud-kop\b[^"]*"[^>]*)>/i,
+    '<section$1 data-bg-component="hero">'
+  );
+}
+
 function paginakop(binnen, pad) {
+  if (/<section\b[^>]*class="[^"]*\binhoud-kop\b[^"]*"[^>]*>/i.test(binnen)) return markeerBestaandeV18Hero(binnen);
+
   let rest = binnen;
   const pak = re => { const m = rest.match(re); if (!m) return ''; rest = rest.replace(m[0], ''); return m[0]; };
   const kruimel = pak(/<nav class="bgkruim"[\s\S]*?<\/nav>/i);
@@ -212,7 +218,6 @@ export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL
   const sourcePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(sourceRaw)));
   const shell = schilUitBron(sourcePrepared, sourcePath);
   await writeFile(sourcePath, absolutiseerInterneHref(shell.bron), 'utf8');
-
   const homeRaw = await readFile('index.html', 'utf8');
   const homePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(homeRaw)));
   const homeProjected = absolutiseerInterneHref(projectGlobalComponents(homePrepared, shell.bron));

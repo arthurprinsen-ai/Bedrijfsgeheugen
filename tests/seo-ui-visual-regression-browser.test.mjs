@@ -64,7 +64,7 @@ test('mobile-only overlap is caught at 390px', async () => {
 });
 
 test('late layout shift above threshold fails CLS rule', async () => {
-  const html = '<!doctype html><html><body><main><h1>Title</h1><div class="copy">Copy</div><div class="visual">Visual</div><p id="target">Target</p></main><script>setTimeout(()=>{const d=document.createElement("div");d.style.height="600px";d.textContent="late";document.body.insertBefore(d,document.body.firstChild)},100)</script></body></html>';
+  const html = '<!doctype html><html><body><main><h1>Title</h1><div class="copy">Copy</div><div class="visual">Visual</div><p id="target">Target</p></main><script>requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>{const d=document.createElement("div");d.style.height="600px";d.textContent="late";document.body.insertBefore(d,document.body.firstChild)},100)))</script></body></html>';
   const { dir, path } = await makeRegistry({ name: 'desktop', width: 1440, height: 900 });
   await withServer(html, async baseUrl => {
     await assert.rejects(runVisualRegression({ baseUrl, registryPath: path, outputDir: join(dir, 'out') }), /cls/);

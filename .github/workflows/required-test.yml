@@ -38,6 +38,8 @@ jobs:
           tests/seo-ui-visual-regression-contract.test.mjs
           tests/seo-ui-visual-regression-geometry.test.mjs
           tests/seo-ui-visual-regression-browser.test.mjs
+          tests/site-shell-v18-view-integrity.test.mjs
+          tests/seo-native-money-presentation.test.mjs
       - name: Fail closed on real deploy-preview visual regressions
         if: github.event_name == 'pull_request'
         env:

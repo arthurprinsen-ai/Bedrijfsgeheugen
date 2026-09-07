@@ -16,6 +16,7 @@
     {
       "route": "https://www.bedrijfsgeheugen.nl/prijzen",
       "role": "money",
+      "presentation": "native",
       "primary_intent": "kosten digitalisering mkb",
       "primary_keyword": "kosten digitalisering mkb",
       "secondary_keywords": ["prijzen digitalisering mkb", "digitalisering mkb kosten", "kosten automatisering mkb"],
@@ -27,6 +28,7 @@
     {
       "route": "https://www.bedrijfsgeheugen.nl/product",
       "role": "money",
+      "presentation": "native",
       "primary_intent": "bedrijfsgeheugen platform",
       "primary_keyword": "bedrijfsgeheugen platform",
       "secondary_keywords": ["bedrijfskennis platform", "bedrijfsinformatie platform", "business operating intelligence"],
