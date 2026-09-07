@@ -79,6 +79,11 @@ jobs:
           tests/seo-homepage-platform-expertise-toggle.test.mjs
           tests/standalone-content-page-router-isolation.test.mjs
           tests/v18-megamenu-heading-contract.test.mjs
+      - name: Verify real megamenu headings and active links have readable contrast
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: node tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Fail closed on real deploy-preview visual regressions
         if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
@@ -95,11 +100,6 @@ jobs:
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/standalone-visibility-check.mjs
-      - name: Verify real megamenu headings are black and bold
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Upload visual regression diagnostics
         if: always()
         uses: actions/upload-artifact@v4
