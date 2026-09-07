@@ -76,6 +76,13 @@ test('Agent Fabric regression tests are backend delivery work', async () => {
   }
 });
 
+test('customer portal routing regression belongs to the portal lane', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({ changedPaths:['tests/customer-portal-routing.test.mjs'], headSha:'cafe1234beef5678', policy });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['portal']);
+  assert.deepEqual(deriveConflictContracts(['tests/customer-portal-routing.test.mjs'], policy), ['customer-portal-identity']);
+});
+
 test('non-overlapping main drift never causes a branch rebuild', () => {
   assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/render-offer.mjs','tests/portal-native-legacy-batch-11.test.mjs'], mainDriftPaths:['blog/index.html','assets/css/powerhouse-kosten.css'], featureContracts:[], mainDriftContracts:[], mergeable:true }), { action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:[], contractOverlap:[] });
 });
