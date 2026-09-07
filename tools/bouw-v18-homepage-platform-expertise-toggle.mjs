@@ -121,6 +121,10 @@ export function applyHomepagePlatformExpertiseToggle(html) {
       expertisePanel.hidden=isPlatform;
       platform.classList.toggle('active',isPlatform);
       expertise.classList.toggle('active',!isPlatform);
+      platformPanel.classList.toggle('active',isPlatform);
+      expertisePanel.classList.toggle('active',!isPlatform);
+      platformPanel.setAttribute('aria-hidden',isPlatform?'false':'true');
+      expertisePanel.setAttribute('aria-hidden',isPlatform?'true':'false');
       if(focus)(isPlatform?platform:expertise).focus();
     }
 
