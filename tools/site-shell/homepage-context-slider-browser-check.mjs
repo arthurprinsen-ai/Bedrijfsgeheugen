@@ -3,12 +3,9 @@ import { chromium } from 'playwright';
 const baseUrl = process.env.UI_VR_BASE_URL;
 if (!baseUrl) throw new Error('UI_VR_BASE_URL ontbreekt');
 
-const GUTTER_MIN = 24;
-const MIN_VISIBLE_COPY = 220;
-
 function fail(message, evidence = {}) { throw new Error(`${message}\n${JSON.stringify(evidence, null, 2)}`); }
 
-async function readGeometry(page) {
+async function readState(page) {
   return page.evaluate(() => {
     const slider = document.querySelector('#compareSlider');
     const beforeSide = slider?.querySelector('.compare-before');
@@ -17,68 +14,105 @@ async function readGeometry(page) {
     const after = afterSide?.querySelector('.compare-copy');
     const knob = slider?.querySelector('.compare-knob');
     if (!slider || !beforeSide || !afterSide || !before || !after || !knob) return null;
-    const sr = slider.getBoundingClientRect(), bsr = beforeSide.getBoundingClientRect(), asr = afterSide.getBoundingClientRect(), br = before.getBoundingClientRect(), ar = after.getBoundingClientRect();
-    const split = parseFloat(getComputedStyle(slider).getPropertyValue('--split')) || 50;
-    const dividerX = sr.left + sr.width * split / 100;
-    const visible = el => { const cs=getComputedStyle(el), r=el.getBoundingClientRect(); return cs.display!=='none'&&cs.visibility!=='hidden'&&Number(cs.opacity||1)>0&&r.width>0&&r.height>0; };
+    const sr = slider.getBoundingClientRect();
+    const br = before.getBoundingClientRect();
+    const ar = after.getBoundingClientRect();
+    const split = parseFloat(getComputedStyle(slider).getPropertyValue('--split')) || 0;
+    const cx = Math.max(0, Math.min(window.innerWidth - 1, sr.left + sr.width / 2));
+    const cy = Math.max(0, Math.min(window.innerHeight - 1, sr.top + Math.min(sr.height / 2, 120)));
+    const hit = document.elementFromPoint(cx, cy);
+    const topSideAtCenter = hit?.closest('.compare-before') ? 'before' : hit?.closest('.compare-after') ? 'after' : null;
     return {
+      split,
       viewportWidth: window.innerWidth,
-      slider:{left:sr.left,right:sr.right,top:sr.top,bottom:sr.bottom,width:sr.width,height:sr.height},
-      beforeSide:{left:bsr.left,right:bsr.right,width:bsr.width,clipPath:getComputedStyle(beforeSide).clipPath},
-      afterSide:{left:asr.left,right:asr.right,width:asr.width,clipPath:getComputedStyle(afterSide).clipPath},
-      before:{left:br.left,right:br.right,width:br.width,visible:visible(before)},
-      after:{left:ar.left,right:ar.right,width:ar.width,visible:visible(after)},
-      dividerX, split, compact:slider.getAttribute('data-bg-compare-compact'),
-      aria:{min:Number(knob.getAttribute('aria-valuemin')),max:Number(knob.getAttribute('aria-valuemax')),now:Number(knob.getAttribute('aria-valuenow')),disabled:knob.getAttribute('aria-disabled'),tabIndex:knob.tabIndex},
-      handleDisplay:getComputedStyle(slider.querySelector('.compare-handle')||knob).display,
-      beforeHeadingVisible:visible(before.querySelector('h3')), beforeParagraphVisible:visible(before.querySelector('p')),
-      afterHeadingVisible:visible(after.querySelector('h3')), afterParagraphVisible:visible(after.querySelector('p'))
+      slider: { left: sr.left, right: sr.right, width: sr.width, height: sr.height },
+      before: { width: br.width, clipPath: getComputedStyle(beforeSide).clipPath },
+      after: { width: ar.width, clipPath: getComputedStyle(afterSide).clipPath },
+      aria: {
+        min: Number(knob.getAttribute('aria-valuemin')),
+        max: Number(knob.getAttribute('aria-valuemax')),
+        now: Number(knob.getAttribute('aria-valuenow')),
+        disabled: knob.getAttribute('aria-disabled'),
+        tabIndex: knob.tabIndex
+      },
+      handleDisplay: getComputedStyle(slider.querySelector('.compare-handle') || knob).display,
+      marked: slider.hasAttribute('data-bg-compare-slider'),
+      topSideAtCenter
     };
   });
 }
 
-function assertDesktopGeometry(g,label){
-  if(!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
-  if(g.compact!=='false') fail(`${label}: desktop mag niet in compact fallback staan`,g);
-  if(!g.before.visible||!g.after.visible||!g.beforeHeadingVisible||!g.beforeParagraphVisible||!g.afterHeadingVisible||!g.afterParagraphVisible) fail(`${label}: beide tekstlagen moeten volledig zichtbaar zijn`,g);
-  const leftClearance=g.dividerX-g.before.right,rightClearance=g.after.left-g.dividerX;
-  if(g.before.width<MIN_VISIBLE_COPY||g.after.width<MIN_VISIBLE_COPY) fail(`${label}: tekstkolom is smaller dan ${MIN_VISIBLE_COPY}px`,g);
-  if(leftClearance<GUTTER_MIN||rightClearance<GUTTER_MIN) fail(`${label}: handle/scheidingslijn overlapt de tekst`,{...g,leftClearance,rightClearance});
-  if(!(g.aria.now>=g.aria.min&&g.aria.now<=g.aria.max)) fail(`${label}: ARIA-waarde ligt buiten dezelfde veilige grens`,g);
+async function dragKnobTo(page, targetX) {
+  const knob = page.locator('#compareSlider .compare-knob');
+  await knob.scrollIntoViewIfNeeded();
+  const b = await knob.boundingBox();
+  if (!b) fail('sliderknop heeft geen geometry');
+  const x = b.x + b.width / 2;
+  const y = b.y + b.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(targetX, y, { steps: 10 });
+  await page.mouse.up();
+  await page.waitForTimeout(120);
 }
 
-async function dragKnobTo(page,targetX){
-  const knob=page.locator('#compareSlider .compare-knob'); await knob.scrollIntoViewIfNeeded(); const b=await knob.boundingBox(); if(!b) fail('sliderknop heeft geen geometry');
-  const x=b.x+b.width/2,y=b.y+b.height/2; await page.mouse.move(x,y); await page.mouse.down(); await page.mouse.move(targetX,y,{steps:8}); await page.mouse.up(); await page.waitForTimeout(120);
+function assertCommon(g, label) {
+  if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
+  if (!g.marked) fail(`${label}: slider mist generieke site-wide marker`, g);
+  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: ARIA bereik moet exact 0-100 zijn`, g);
+  if (g.aria.disabled === 'true' || g.aria.tabIndex < 0) fail(`${label}: slider moet op mobiel en desktop actief blijven`, g);
+  if (g.handleDisplay === 'none') fail(`${label}: echte sliderhandle mag niet verborgen zijn`, g);
+  if (g.slider.left < -1 || g.slider.right > g.viewportWidth + 1) fail(`${label}: slider mag niet buiten de viewport vallen`, g);
+  const minReadableWidth = Math.min(220, g.slider.width * 0.5);
+  if (g.before.width < minReadableWidth || g.after.width < minReadableWidth) {
+    fail(`${label}: tekstlagen moeten voldoende leesbare paneelbreedte behouden`, { ...g, minReadableWidth });
+  }
 }
 
-async function testDesktop(browser){
-  const page=await browser.newPage({viewport:{width:1128,height:653}}); await page.goto(`${baseUrl}/`,{waitUntil:'networkidle'}); const slider=page.locator('#compareSlider'); await slider.waitFor({state:'visible'}); await page.waitForFunction(()=>document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-compact')); await slider.scrollIntoViewIfNeeded(); await page.waitForTimeout(120); const box=await slider.boundingBox(); if(!box) fail('compareSlider heeft geen geometry');
-  await dragKnobTo(page,box.x+2); const left=await readGeometry(page); assertDesktopGeometry(left,'1128x653 uiterste links');
-  await dragKnobTo(page,box.x+box.width-2); const right=await readGeometry(page); assertDesktopGeometry(right,'1128x653 uiterste rechts');
-  if(!(left.split<50&&right.split>50)) fail('Desktop slider moet via de echte witte knop interactief blijven binnen de veilige zone',{left,right}); await page.close(); return {left:left.split,right:right.split};
+function assertLeftEndpoint(g, label) {
+  assertCommon(g, label);
+  if (!(g.split <= 1)) fail(`${label}: helemaal links moet 0% bereiken`, g);
+  if (g.aria.now > 1) fail(`${label}: ARIA now moet links 0 zijn`, g);
+  if (g.topSideAtCenter !== 'before') fail(`${label}: helemaal links moet alleen de linker/before laag bovenop tonen`, g);
 }
 
-function assertMobileGeometry(g,label){
-  if(!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
-  if(g.compact!=='true') fail(`${label}: smalle viewport moet fail-safe naar compact mode`,g);
-  if(!g.before.visible||!g.after.visible||!g.beforeHeadingVisible||!g.beforeParagraphVisible||!g.afterHeadingVisible||!g.afterParagraphVisible) fail(`${label}: beide gestapelde teksten moeten zichtbaar zijn`,g);
-  if(g.before.width<220||g.after.width<220) fail(`${label}: gestapelde tekstkolommen zijn te smal`,g);
-  if(g.handleDisplay!=='none') fail(`${label}: onbruikbare handle moet verborgen zijn`,g);
-  if(g.aria.disabled!=='true'||g.aria.tabIndex!==-1) fail(`${label}: verborgen mobiele handle mag niet focusbaar of actief blijven`,g);
-  if(g.beforeSide.clipPath!=='none'||g.afterSide.clipPath!=='none') fail(`${label}: mobiele kaarten mogen niet door clip-path worden afgesneden`,g);
-  if(g.beforeSide.width<g.slider.width-2||g.afterSide.width<g.slider.width-2) fail(`${label}: beide mobiele kaarten moeten de volledige sliderbreedte gebruiken`,g);
-  if(g.slider.left<-1||g.slider.right>g.viewportWidth+1) fail(`${label}: slider mag niet buiten de mobiele viewport vallen`,g);
+function assertRightEndpoint(g, label) {
+  assertCommon(g, label);
+  if (!(g.split >= 99)) fail(`${label}: helemaal rechts moet 100% bereiken`, g);
+  if (g.aria.now < 99) fail(`${label}: ARIA now moet rechts 100 zijn`, g);
+  if (g.topSideAtCenter !== 'after') fail(`${label}: helemaal rechts moet alleen de rechter/after laag bovenop tonen`, g);
 }
 
-async function testMobile(browser,width,height){
-  const page=await browser.newPage({viewport:{width,height},isMobile:true,hasTouch:true}); await page.goto(`${baseUrl}/`,{waitUntil:'networkidle'}); const slider=page.locator('#compareSlider'); await slider.waitFor({state:'visible'}); await page.waitForFunction(()=>document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-compact')); await slider.scrollIntoViewIfNeeded(); await page.waitForTimeout(80); const g=await readGeometry(page); assertMobileGeometry(g,`${width}px`); await page.close(); return {width,beforeWidth:g.before.width,afterWidth:g.after.width,compact:g.compact};
+async function testViewport(browser, width, height, mobile = false) {
+  const page = await browser.newPage({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
+  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
+  const slider = page.locator('#compareSlider');
+  await slider.waitFor({ state: 'visible' });
+  await slider.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(100);
+  const box = await slider.boundingBox();
+  if (!box) fail(`${width}px: slider heeft geen geometry`);
+
+  await dragKnobTo(page, box.x + 1);
+  const left = await readState(page);
+  assertLeftEndpoint(left, `${width}px uiterste links`);
+
+  await dragKnobTo(page, box.x + box.width - 1);
+  const right = await readState(page);
+  assertRightEndpoint(right, `${width}px uiterste rechts`);
+
+  await page.close();
+  return { width, left: left.split, right: right.split };
 }
 
-const browser=await chromium.launch({headless:true});
+const browser = await chromium.launch({ headless: true });
 try {
-  const desktop=await testDesktop(browser);
-  const mobile=[];
-  for(const [width,height] of [[320,720],[390,844],[430,932]]) mobile.push(await testMobile(browser,width,height));
-  console.log(JSON.stringify({ok:true,component:'#compareSlider',desktop,mobile}));
-} finally { await browser.close(); }
+  const desktop = await testViewport(browser, 1128, 653, false);
+  const mobile = [];
+  for (const [width, height] of [[320,720],[390,844],[430,932]]) {
+    mobile.push(await testViewport(browser, width, height, true));
+  }
+  console.log(JSON.stringify({ ok: true, component: '#compareSlider', desktop, mobile }));
+} finally {
+  await browser.close();
+}

@@ -21,6 +21,19 @@ const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prij
 <p>Vier pakketten, van &euro; 99 per maand tot een prijs op maat, met per pakket wat de AI voor je doet en hoe vers je gegevens zijn.</p>
 <p><a class="btn btn-primary" href="${DOEL}">Bekijk de prijzen &rarr;</a></p></div></div>`;
 
+const SLIDER_ENDPOINT_STYLE = `<style data-bg-compare-slider-endpoints>
+[data-bg-compare-slider]{position:relative!important;overflow:hidden!important;touch-action:pan-y}
+[data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
+[data-bg-compare-slider] .compare-before{clip-path:inset(0 var(--split,50%) 0 0)!important}
+[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 calc(100% - var(--split,50%)))!important}
+[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--split,50%)!important;z-index:20!important}
+@media(max-width:720px){
+  [data-bg-compare-slider]{min-height:360px!important}
+  [data-bg-compare-slider] .compare-before .compare-copy{margin-left:0!important;margin-right:auto!important;padding-right:18px!important}
+  [data-bg-compare-slider] .compare-after .compare-copy{margin-left:auto!important;margin-right:0!important;padding-left:18px!important}
+}
+</style>`;
+
 function vervangWeergave(html) {
   const open = '<div class="page" id="view-pricing">';
   const start = html.indexOf(open);
@@ -37,6 +50,35 @@ function knoppenNaarLink(html) {
       const attrs = (voor + na).replace(/\s*type="button"/g, '').replace(/\s+$/, '');
       return `<a href="${DOEL}"${attrs}>${inhoud}</a>`;
     });
+}
+
+function forceCompareCopyWidth(html) {
+  const rule = 'width:min(460px,calc(100% - 36px))!important;max-width:none!important;box-sizing:border-box!important';
+  return html.replace(/<([a-z][\w:-]*)([^>]*\bclass=(['"])[^'"]*\bcompare-copy\b[^'"]*\3[^>]*)>/gi, (whole, tag, attrs) => {
+    let nextAttrs = attrs;
+    if (/\bstyle=(['"])/i.test(nextAttrs)) {
+      nextAttrs = nextAttrs.replace(/\bstyle=(['"])([\s\S]*?)\1/i, (_m, quote, style) => `style=${quote}${style.replace(/;?\s*$/, ';')}${rule}${quote}`);
+    } else {
+      nextAttrs += ` style="${rule}"`;
+    }
+    return `<${tag}${nextAttrs}>`;
+  });
+}
+
+function borgStatischeSliderEndpoints(input) {
+  let html = String(input);
+  html = html.replace(/<([a-z][\w:-]*)([^>]*\bid=(['"])compareSlider\3[^>]*)>/gi, (heel, tag, attrs) => {
+    if (/\bdata-bg-compare-slider\b/i.test(attrs)) return heel;
+    return `<${tag}${attrs} data-bg-compare-slider>`;
+  });
+  html = html.replace(/<([a-z][\w:-]*)([^>]*\bclass=(['"])[^'"]*\bcompare-slider\b[^'"]*\3[^>]*)>/gi, (heel, tag, attrs) => {
+    if (/\bdata-bg-compare-slider\b/i.test(attrs)) return heel;
+    return `<${tag}${attrs} data-bg-compare-slider>`;
+  });
+  html = forceCompareCopyWidth(html);
+  html = html.replace(/<style\s+data-bg-compare-slider-endpoints\b[^>]*>[\s\S]*?<\/style>\s*/gi, '');
+  html = html.replace('</head>', `${SLIDER_ENDPOINT_STYLE}\n</head>`);
+  return html;
 }
 
 export async function bouwPrijsVerwijzing() {
@@ -59,7 +101,7 @@ async function borgHomepageAutomationLayout() {
 
 async function borgHomepageContextSlider() {
   const html = await readFile('index.html', 'utf8');
-  const next = applyHomepageContextSliderReadability(html);
+  const next = borgStatischeSliderEndpoints(applyHomepageContextSliderReadability(html));
   await writeFile('index.html', next, 'utf8');
 }
 
