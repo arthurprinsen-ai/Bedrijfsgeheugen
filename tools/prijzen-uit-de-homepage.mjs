@@ -56,6 +56,9 @@ export async function voerPricingShellPipelineUit(stage = 'all') {
     await applySeoOrderEngine();
   }
   if (stage === 'all' || stage === 'verify') {
+    // Laatste homepage-interactie wordt op de daadwerkelijk gebouwde output gezet,
+    // zodat latere V18/page-policy stappen de event wiring niet meer kunnen verliezen.
+    await import('./fix-homepage-platform-expertise-toggle.mjs');
     await genereerSitemap();
     await controleerSiteUi();
     await controleerTechnischeSeo();
