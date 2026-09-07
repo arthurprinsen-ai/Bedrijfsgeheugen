@@ -71,7 +71,7 @@ try {
           }
         }
         for (const [name, item] of Object.entries({ header: state.header, h1: state.h1 })) {
-          if (item.present && item.top < innerHeight && item.bottom > 0 && !item.unobscured) {
+          if (item.present && item.top < viewport.height && item.bottom > 0 && !item.unobscured) {
             failures.push(`${route} ${viewport.name}: ${name} is visually occluded by ${item.topElement}`);
           }
         }
