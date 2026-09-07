@@ -104,19 +104,18 @@
 .bgkop-mcta{margin-top:1.1rem;border:0!important;background:var(--bg-inkt);color:#fff!important;border-radius:999px;text-align:center;padding:.9rem 1.2rem!important}
 @media(min-width:1101px){.bgkop-mob{display:none!important}}
 
-/* /prijzen mobile: voorkom late webfont-swap in de above-the-fold hero.
-   De browsergate mat CLS 0.176 door fallback→webfont reflow. Gebruik een
-   simpele statische selector (geen :has) zodat de regel al op de eerste
-   layout matcht zodra de canonical build data-bg-component heeft gezet. */
+/* /prijzen mobile: stabilize the native source hero before the canonical
+   projector adds main/data-bg markers. The source already contains .heldknoppen,
+   so this selector matches on the first layout instead of after projection. */
 @media(max-width:768px){
-  main .held[data-bg-component="hero"] .bgkruim,
-  main .held[data-bg-component="hero"] .pil,
-  main .held[data-bg-component="hero"] h1,
-  main .held[data-bg-component="hero"] .ondertitel,
-  main .held[data-bg-component="hero"] .payoff,
-  main .held[data-bg-component="hero"] .intro,
-  main .held[data-bg-component="hero"] .heldknoppen,
-  main .held[data-bg-component="hero"] .bovenop{
+  body:has(.held .heldknoppen) .held .bgkruim,
+  body:has(.held .heldknoppen) .held .pil,
+  body:has(.held .heldknoppen) .held h1,
+  body:has(.held .heldknoppen) .held .ondertitel,
+  body:has(.held .heldknoppen) .held .payoff,
+  body:has(.held .heldknoppen) .held .intro,
+  body:has(.held .heldknoppen) .held .heldknoppen,
+  body:has(.held .heldknoppen) .held .bovenop{
     font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important;
   }
 }
