@@ -37,6 +37,7 @@ export const BEWEGING_CSS = `<style id="v18-beweging">
 .bgx-vergelijk li{margin:.45rem 0;font-size:16px;line-height:1.55}
 .bgx-vergelijk .greep{position:absolute;top:0;bottom:0;left:var(--bgx-grens,50%);width:3px;background:var(--lime);
   cursor:ew-resize;z-index:3}
+.bgx-vergelijk .greep:focus-visible{outline:3px solid var(--ink);outline-offset:5px}
 .bgx-vergelijk .greep::after{content:"⇤⇥";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   width:46px;height:46px;border-radius:50%;background:var(--lime);color:var(--ink);border:2px solid var(--ink);
   display:grid;place-items:center;font-size:14px;font-weight:800;letter-spacing:-.05em}
@@ -113,17 +114,51 @@ export const BEWEGING_JS = `<script id="v18-beweging-js">
     });
   }, 1600);
 
-  // 5. zonder / met: sleep de scheidslijn, met vinger of muis
+  // 5. zonder / met: sleep de scheidslijn, met vinger, muis of toetsenbord.
+  // Fail-safe: de scheidslijn mag nooit zo ver naar een rand dat één tekstpaneel onleesbaar wordt.
   document.querySelectorAll('.bgx-vergelijk').forEach(function(blok){
     var bezig = false;
-    function zet(x){
+    var greep = blok.querySelector('.greep');
+    function grenzen(){
       var r = blok.getBoundingClientRect();
-      var deel = Math.max(6, Math.min(94, (x - r.left) / r.width * 100));
-      blok.style.setProperty('--bgx-grens', deel.toFixed(1) + '%');
+      var minPanePx = Math.min(180, Math.max(132, r.width * .28));
+      var minPct = Math.min(45, minPanePx / Math.max(1, r.width) * 100);
+      return { r:r, min:minPct, max:100-minPct };
     }
+    function pasToe(deel){
+      var g = grenzen();
+      deel = Math.max(g.min, Math.min(g.max, deel));
+      blok.style.setProperty('--bgx-grens', deel.toFixed(1) + '%');
+      if (greep) {
+        greep.setAttribute('aria-valuemin', g.min.toFixed(0));
+        greep.setAttribute('aria-valuemax', g.max.toFixed(0));
+        greep.setAttribute('aria-valuenow', deel.toFixed(0));
+      }
+    }
+    function zet(x){
+      var g = grenzen();
+      pasToe((x - g.r.left) / Math.max(1, g.r.width) * 100);
+    }
+    pasToe(50);
     blok.addEventListener('pointerdown', function(e){ bezig = true; zet(e.clientX); blok.setPointerCapture(e.pointerId); });
     blok.addEventListener('pointermove', function(e){ if (bezig) zet(e.clientX); });
     ['pointerup','pointercancel'].forEach(function(n){ blok.addEventListener(n, function(){ bezig = false; }); });
+    if (greep) {
+      greep.addEventListener('keydown', function(e){
+        if (!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
+        e.preventDefault();
+        var g = grenzen();
+        var huidig = parseFloat(greep.getAttribute('aria-valuenow') || '50');
+        if (e.key === 'ArrowLeft') pasToe(huidig - 4);
+        if (e.key === 'ArrowRight') pasToe(huidig + 4);
+        if (e.key === 'Home') pasToe(g.min);
+        if (e.key === 'End') pasToe(g.max);
+      });
+    }
+    addEventListener('resize', function(){
+      var huidig = parseFloat((greep && greep.getAttribute('aria-valuenow')) || '50');
+      pasToe(huidig);
+    });
     // een duwtje bij het eerste zicht, zodat zichtbaar is dat je kunt slepen
     var getoond = false;
     function duwtje(){
@@ -134,8 +169,8 @@ export const BEWEGING_JS = `<script id="v18-beweging-js">
       var stap = 0;
       var loop = setInterval(function(){
         stap++;
-        blok.style.setProperty('--bgx-grens', (50 + Math.sin(stap/3) * 14).toFixed(1) + '%');
-        if (stap > 18) { clearInterval(loop); blok.style.setProperty('--bgx-grens', '50%'); }
+        pasToe(50 + Math.sin(stap/3) * 14);
+        if (stap > 18) { clearInterval(loop); pasToe(50); }
       }, 55);
     }
     document.addEventListener('scroll', duwtje, true);
@@ -162,7 +197,7 @@ export function vergelijker(onderwerp) {
   return `<div class="bgx-vergelijk" data-op aria-label="Vergelijking tussen de huidige situatie en de situatie met ${onderwerp}">
 <div class="zijde nu"><h4>Zoals het nu gaat</h4><ul>${nu.map(t => `<li>${t}</li>`).join('')}</ul></div>
 <div class="zijde straks"><h4>Zoals het wordt</h4><ul>${straks.map(t => `<li>${t}</li>`).join('')}</ul></div>
-<div class="greep" role="separator" aria-label="Sleep om te vergelijken"></div>
+<div class="greep" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Sleep om te vergelijken" aria-valuemin="35" aria-valuemax="65" aria-valuenow="50"></div>
 <div class="hint">sleep met je vinger</div>
 </div>`;
 }
