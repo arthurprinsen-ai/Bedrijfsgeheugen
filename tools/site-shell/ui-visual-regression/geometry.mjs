@@ -50,6 +50,16 @@ export function evaluateGeometry(sample, thresholds = {}) {
     const allowance = pair.allowance ?? thresholds.overlapMaxAreaPx2 ?? 0;
     if (area > allowance) violations.push({ ruleId: 'overlap', selectorPair: [pair.aSelector, pair.bSelector], actual: area, limit: allowance });
   }
+  for (const guard of sample.geometryGuards || []) {
+    if (!guard.present) {
+      violations.push({ ruleId: 'missing-geometry-guard', selector: guard.selector });
+      continue;
+    }
+    if (Number.isFinite(guard.maxHeightViewportRatio)) {
+      const ratio = guard.rect.height / Math.max(1, sample.viewport.height);
+      if (ratio > guard.maxHeightViewportRatio) violations.push({ ruleId: 'element-height-viewport-ratio', selector: guard.selector, actual: ratio, limit: guard.maxHeightViewportRatio });
+    }
+  }
   violations.push(...evaluateHorizontalOverflow(sample.document || {}, thresholds.horizontalOverflowMaxPx ?? 1));
   return violations;
 }
