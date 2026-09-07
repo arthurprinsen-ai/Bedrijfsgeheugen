@@ -8,7 +8,7 @@ function tel(html, re) {
   return [...String(html).matchAll(re)].length;
 }
 
-test('prijzen wordt één canonical hero zonder restant van de legacy hero', () => {
+test('prijzen bewaart één eigen canonical hero zonder dubbele generieke paginakop', () => {
   const shell = {
     voor: '<!doctype html><html lang="nl"><head><title>Shell</title><meta name="description" content="Shell"><link rel="canonical" href="https://www.bedrijfsgeheugen.nl/over-ons"></head><body><header class="v17-header"><a href="https://www.bedrijfsgeheugen.nl/">Bedrijfsgeheugen</a></header><aside class="v18-mobile-drawer"><a href="https://www.bedrijfsgeheugen.nl/prijzen">Prijzen</a></aside>',
     na: '<footer data-bg-component="footer"><a href="mailto:arthur@bedrijfsgeheugen.nl">Mail</a></footer></body></html>'
@@ -35,8 +35,9 @@ test('prijzen wordt één canonical hero zonder restant van de legacy hero', () 
   assert.ok(uit, 'pricing page moet projecteerbaar zijn');
   assert.equal(tel(uit, /<h1\b/gi), 1, 'er mag exact één H1 zijn');
   assert.equal(tel(uit, /data-bg-component="hero"/gi), 1, 'er mag exact één hero-component zijn');
-  assert.ok(!/<section\b[^>]*class="[^"]*\bheld\b/i.test(uit), 'legacy pricing hero mag niet achterblijven');
-  assert.ok(!uit.includes('AI-gedreven. Menselijk gecontroleerd.'), 'oude hero-inhoud mag niet als tweede hero blijven staan');
+  assert.equal(tel(uit, /class="[^"]*\bheld\b/gi), 1, 'de ontworpen prijzenhero moet exact één keer blijven bestaan');
+  assert.equal(tel(uit, /class="paginakop"/gi), 0, 'de shell mag geen tweede generieke paginakop toevoegen');
+  assert.ok(uit.includes('AI-gedreven. Menselijk gecontroleerd.'), 'eigen prijzenhero-inhoud moet behouden blijven');
   assert.ok(uit.includes('<h2>Vier pakketten</h2>'), 'prijsinhoud moet behouden blijven');
 });
 
