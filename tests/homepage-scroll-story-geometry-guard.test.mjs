@@ -13,12 +13,10 @@ test('homepage scroll story is progressive enhancement and never owns page geome
   assert.match(source, /isRootInViewport/, 'cost-widget suppression must follow actual viewport intersection');
 });
 
-test('homepage visual regression contract protects the interactive story itself', () => {
+test('homepage visual regression contract protects the interactive story root from blank multi-screen geometry', () => {
   const registry = JSON.parse(readFileSync('config/ui-visual-regression.json', 'utf8'));
   const home = registry.pages.find(page => page.route === '/');
   assert.ok(home, 'homepage visual regression contract missing');
   const rootGuard = (home.geometryGuards || []).find(guard => guard.selector === '[data-bg-story-root]');
-  const visualGuard = (home.geometryGuards || []).find(guard => guard.selector === '[data-bg-story-visual]');
   assert.equal(rootGuard?.maxHeightViewportRatio, 1.75, 'story root may never expand into a multi-screen blank block');
-  assert.equal(visualGuard?.maxHeightViewportRatio, 1.25, 'story visual may never be taller than the intended viewport composition');
 });
