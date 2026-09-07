@@ -24,6 +24,16 @@ test('slider bewaart leesbare paneelbreedte en gedeelde grenzen',()=>{
   assert.match(fixer,/aria-valuemax/);
 });
 
+test('mobiel valt altijd terug op twee volledig leesbare kaarten',()=>{
+  assert.match(fixer,/MOBILE_BREAKPOINT_PX\s*=\s*720/);
+  assert.match(fixer,/@media\(max-width:720px\)/);
+  assert.match(fixer,/window\.matchMedia\('\(max-width: 720px\)'\)\.matches/);
+  assert.match(fixer,/height:auto!important/);
+  assert.match(fixer,/clip-path:none!important/);
+  assert.match(fixer,/\.compare-copy\{width:100%!important/);
+  assert.match(fixer,/\.compare-handle\{display:none!important/);
+});
+
 test('oude geïnjecteerde guard wordt vervangen',()=>{
   const stale='<!doctype html><html><head><style data-bg-context-slider-readable>STALE</style></head><body><div id="compareSlider"><div class="compare-before"><div class="compare-copy"></div></div><div class="compare-after"><div class="compare-copy"></div></div><div class="compare-handle"><button class="compare-knob"></button></div></div><script data-bg-context-slider-readable>STALE</script></body></html>';
   const upgraded=applyHomepageContextSliderReadability(stale);
