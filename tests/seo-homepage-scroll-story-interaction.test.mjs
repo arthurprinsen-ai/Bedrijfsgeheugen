@@ -37,3 +37,20 @@ test('homepage scroll story is wired on the final built homepage output', () => 
   assert.match(source, /max-width:\s*1023px/, 'mobile must have a non-sticky fallback');
   assert.match(source, /aria-current/, 'active step must expose its state accessibly');
 });
+
+test('desktop scroll story never takes over the existing layout mode of its selected stage', () => {
+  const source = readFileSync('tools/bouw-v18-homepage-scroll-story.mjs', 'utf8');
+  const desktopBlock = source.match(/@media\(min-width:1024px\)\{([\s\S]*?)\n\}/)?.[1] || '';
+
+  assert.match(desktopBlock, /\[data-bg-story-stage\]\{position:sticky!important;top:0;/, 'desktop stage must remain sticky');
+  assert.doesNotMatch(
+    desktopBlock,
+    /\[data-bg-story-stage\][^}]*display\s*:\s*flex/i,
+    'runtime may select an existing grid/layout container; forcing flex destroys the designed homepage geometry',
+  );
+  assert.doesNotMatch(
+    desktopBlock,
+    /\[data-bg-story-stage\][^}]*align-items\s*:/i,
+    'scroll-story behavior must not override alignment owned by the existing homepage layout',
+  );
+});
