@@ -61,7 +61,7 @@ const megaMenuContrastContract = `<style id="v18-megamenu-contrast-contract">
 (function(){
   var LABELS=['BEDRIJF','KENNIS','VERTROUWEN','SUPPORT'];
   function norm(value){return String(value||'').replace(/\\s+/g,' ').trim().toUpperCase();}
-  function inActualMegaMenu(el){var node=el.parentElement;for(var depth=0;node&&depth<8;depth+=1,node=node.parentElement){var text=norm(node.textContent);if(text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1&&text.indexOf('VOLLEDIGE WEBSITEKAART')!==-1)return true;}return false;}
+  function inActualMegaMenu(el){var node=el.parentElement;for(var depth=0;node&&depth<12;depth+=1,node=node.parentElement){var text=norm(node.textContent);if(text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1&&text.indexOf('VOLLEDIGE WEBSITEKAART')!==-1)return true;}return false;}
   function isPromoLink(link){var text=norm(link.textContent);return text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1||text.indexOf('BEDRIJFSGEHEUGEN')!==-1;}
   function apply(){
     var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');
