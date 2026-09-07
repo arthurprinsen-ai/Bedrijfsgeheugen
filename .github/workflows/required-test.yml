@@ -95,7 +95,7 @@ jobs:
           tests/standalone-content-page-router-isolation.test.mjs
           tests/v18-megamenu-heading-contract.test.mjs
           tests/seo-homepage-context-slider-readability.test.mjs
-      - name: Verify real megamenu headings and active links have readable contrast
+      - name: Verify real megamenu headings are black and bold
         if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
