@@ -1,0 +1,22 @@
+name: Compare slider readability
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/*.html'
+      - 'tools/site-shell/compare-slider-readability.mjs'
+      - 'tools/site-shell/verify-compare-slider-readability.mjs'
+      - 'tests/v18-compare-slider-readability.test.mjs'
+      - '.github/workflows/compare-slider-readability.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test tests/v18-compare-slider-readability.test.mjs
+      - run: node tools/site-shell/verify-compare-slider-readability.mjs
