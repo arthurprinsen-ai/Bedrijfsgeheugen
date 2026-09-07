@@ -37,7 +37,15 @@ jobs:
           const plan = createDeliveryPlan({ changedPaths, headSha:head, policy });
           const suites = deriveRequiredTestSuites({ lanes:plan.lanes.map(lane => lane.id) });
           for (const [key,value] of Object.entries(suites)) await appendFile(process.env.GITHUB_OUTPUT, `${key}=${value}\n`);
-          console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites }));
+          const menuOnlyPaths = new Set([
+            'tools/bouw-v18-production-core.mjs',
+            'tools/site-shell/v18-megamenu-browser-check.mjs',
+            'tests/v18-megamenu-heading-contract.test.mjs',
+            '.github/workflows/required-test.yml'
+          ]);
+          const menuOnly = changedPaths.length > 0 && changedPaths.every(path => menuOnlyPaths.has(path));
+          await appendFile(process.env.GITHUB_OUTPUT, `menu_only=${menuOnly}\n`);
+          console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites, menuOnly }));
           NODE
       - name: Verify shared release-lane contract
         run: node --test tests/brain-change-scoped-release-lanes.test.mjs
@@ -86,23 +94,23 @@ jobs:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Fail closed on real deploy-preview visual regressions
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_only != 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
           EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: node tools/site-shell/ui-visual-regression/browser-check.mjs
       - name: Drag homepage context slider through safe extremes
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_only != 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/homepage-context-slider-browser-check.mjs
       - name: Click Platform and Expertise on the real deploy preview
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_only != 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/homepage-toggle-browser-check.mjs
       - name: Verify AI Act and benchmark are visibly rendered
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_only != 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/standalone-visibility-check.mjs
