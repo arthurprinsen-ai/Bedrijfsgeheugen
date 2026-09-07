@@ -2,13 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-test('release pipeline strips the inherited homepage SPA router from standalone pages', () => {
-  const netlify = readFileSync('netlify.toml', 'utf8');
+test('final release stage strips the inherited homepage SPA router from standalone pages', () => {
+  const release = readFileSync('tools/bouw-release-evidence.mjs', 'utf8');
   assert.match(
-    netlify,
-    /node tools\/standalone-page-router\.mjs/,
-    'final Netlify build must isolate standalone pages after all shell/build transformations',
+    release,
+    /standalone-page-router\.mjs/,
+    'final release stage must import standalone page router isolation',
   );
+  assert.match(release, /isolateStandalonePages\(\)/, 'router isolation must run before release evidence is emitted');
 });
 
 test('standalone page router isolation preserves ordinary scripts and content', async () => {
