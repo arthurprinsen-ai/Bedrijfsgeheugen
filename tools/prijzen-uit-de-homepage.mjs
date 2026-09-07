@@ -6,6 +6,7 @@ import { controleerTechnischeSeo } from './controleer-technische-seo.mjs';
 import { applySeoOrderEngine } from './seo-order-engine/apply.mjs';
 import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
 import { applyHomepageAutomationLayout } from './fix-homepage-automation-layout.mjs';
+import { applyHomepageCompareSliderReadability } from './fix-homepage-compare-slider.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
@@ -56,12 +57,19 @@ async function borgHomepageAutomationLayout() {
   await writeFile('index.html', next, 'utf8');
 }
 
+async function borgHomepageCompareSlider() {
+  const html = await readFile('index.html', 'utf8');
+  const next = applyHomepageCompareSliderReadability(html);
+  await writeFile('index.html', next, 'utf8');
+}
+
 export async function voerPricingShellPipelineUit(stage = 'all') {
   if (stage === 'all' || stage === 'rewrite') await bouwPrijsVerwijzing();
   if (stage === 'all' || stage === 'normalize') {
     await normaliseerAllePaginas();
     await applySeoOrderEngine();
     await borgHomepageAutomationLayout();
+    await borgHomepageCompareSlider();
   }
   if (stage === 'all' || stage === 'verify') {
     // Laatste homepage-interactie wordt op de daadwerkelijk gebouwde output gezet,
