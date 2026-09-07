@@ -22,13 +22,22 @@ test('standalone page router isolation preserves ordinary scripts and content', 
   assert.match(result, /id="view-inhoud"/, 'standalone content itself must remain intact');
 });
 
+test('standalone documents are decoupled from the homepage .page/.active state machine', async () => {
+  const { ontkoppelStandalonePageState } = await import('../tools/standalone-page-router.mjs');
+  const html = '<main><div class="page active" id="view-inhoud"><h1>AI Act</h1><p>Visible content</p></div></main>';
+  const result = ontkoppelStandalonePageState(html);
+  assert.doesNotMatch(result, /class="page active"/, 'standalone page must not remain addressable by homepage .page CSS/JS');
+  assert.match(result, /class="bg-standalone-page" id="view-inhoud"/, 'standalone content gets an isolated wrapper');
+  assert.match(result, /<h1>AI Act<\/h1>/, 'content must be preserved');
+});
+
 test('standalone pages receive a fail-safe that keeps the real page visible even when stale inherited CSS or JS hides it', async () => {
   const { borgStandaloneVisibility } = await import('../tools/standalone-page-router.mjs');
-  const html = '<!doctype html><html><head><style>body{opacity:0} main{visibility:hidden}</style></head><body><header>Menu</header><main><h1>AI Act</h1></main><footer>Footer</footer></body></html>';
+  const html = '<!doctype html><html><head><style>body{opacity:0} main{visibility:hidden}</style></head><body><header>Menu</header><main><div class="bg-standalone-page"><h1>AI Act</h1></div></main><footer>Footer</footer></body></html>';
   const result = borgStandaloneVisibility(html);
   assert.match(result, /id="bg-standalone-visibility-guard"/);
   assert.match(result, /html,body\{opacity:1!important;visibility:visible!important\}/);
-  assert.match(result, /body>header,body>main,body>footer\{display:block!important\}/);
+  assert.match(result, /\.bg-standalone-page\{display:block!important;transform:none!important\}/);
   assert.equal((result.match(/bg-standalone-visibility-guard/g) || []).length, 1, 'visibility guard must be idempotent');
   assert.equal((borgStandaloneVisibility(result).match(/bg-standalone-visibility-guard/g) || []).length, 1, 'second pass must not duplicate the guard');
 });
