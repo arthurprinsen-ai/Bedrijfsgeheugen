@@ -19,6 +19,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Block unjustified moving-main successor rebuilds
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node tools/moving-main-successor-guard.mjs
       - id: scope
         name: Classify blocking suites from changed delivery lanes
         env:
@@ -40,7 +46,7 @@ jobs:
           console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites }));
           NODE
       - name: Verify shared release-lane contract
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs
       - name: Verify backend Brain and runtime contracts
         if: steps.scope.outputs.backend == 'true'
         run: >-
