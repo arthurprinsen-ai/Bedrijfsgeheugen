@@ -85,7 +85,6 @@ async function testViewport(browser, width, height, mobile = false) {
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
   const slider = page.locator('#compareSlider');
   await slider.waitFor({ state: 'visible' });
-  await page.waitForFunction(() => document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-slider'));
   await slider.scrollIntoViewIfNeeded();
   await page.waitForTimeout(100);
   const box = await slider.boundingBox();
