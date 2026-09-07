@@ -23,6 +23,9 @@
           "maxIntersectionAreaPx2": 0
         }
       ],
+      "geometryGuards": [
+        { "selector": "[data-bg-story-root]", "maxHeightViewportRatio": 1.75 }
+      ],
       "interactions": []
     },
     {
