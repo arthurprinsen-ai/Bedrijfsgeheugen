@@ -6,7 +6,7 @@ import { controleerTechnischeSeo } from './controleer-technische-seo.mjs';
 import { applySeoOrderEngine } from './seo-order-engine/apply.mjs';
 import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
 import { applyHomepageAutomationLayout } from './fix-homepage-automation-layout.mjs';
-import { applyHomepageContextSliderReadability } from './fix-homepage-context-slider.mjs';
+import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage-context-slider.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
