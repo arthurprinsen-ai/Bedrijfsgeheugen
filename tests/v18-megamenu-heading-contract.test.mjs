@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const core = await readFile(new URL('../tools/bouw-v18-production-core.mjs', import.meta.url), 'utf8');
-const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
+const workflow = await readFile(new URL('../.github/workflows/lane-website.yml', import.meta.url), 'utf8');
 const browserCheck = await readFile(new URL('../tools/site-shell/v18-megamenu-browser-check.mjs', import.meta.url), 'utf8');
 
 async function readProductionReadback() {
@@ -25,8 +25,9 @@ test('V18 production builder owns the complete real-megamenu contrast contract',
   for (const label of ['BEDRIJF', 'KENNIS', 'VERTROUWEN', 'SUPPORT']) assert.ok(core.includes(label), `missing ${label}`);
 });
 
-test('required deploy-preview gate checks headings and ordinary menu links', () => {
+test('website release lane checks headings and ordinary menu links', () => {
   assert.match(workflow, /v18-megamenu-browser-check\.mjs/);
+  assert.match(workflow, /Verify broad high-risk browser contracts/);
   assert.match(browserCheck, /ordinaryLinks/);
   assert.match(browserCheck, /expected black/);
   assert.match(browserCheck, /expected bold >=700/);

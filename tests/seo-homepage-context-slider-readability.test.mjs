@@ -7,7 +7,7 @@ const read = async path => { try { return await readFile(new URL(`../${path}`, i
 const pipeline=await read('tools/prijzen-uit-de-homepage.mjs');
 const fixer=await read('tools/site-shell/fix-homepage-context-slider.mjs');
 const browserCheck=await read('tools/site-shell/homepage-context-slider-browser-check.mjs');
-const required=await read('.github/workflows/required-test.yml');
+const websiteLane=await read('.github/workflows/lane-website.yml');
 const visualRegistry=await read('config/ui-visual-regression.json');
 
 test('slider guard draait na laatste homepage-builder',()=>{
@@ -32,14 +32,14 @@ test('oude geïnjecteerde guard wordt vervangen',()=>{
   assert.equal((upgraded.match(/<script data-bg-context-slider-readable>/g)||[]).length,1);
 });
 
-test('required gate sleept echte knop en test mobiel',()=>{
+test('website lane sleept echte knop en test mobiel',()=>{
   assert.match(browserCheck,/#compareSlider/);
   assert.match(browserCheck,/1128/);
   assert.match(browserCheck,/390/);
   assert.match(browserCheck,/page\.mouse\.down/);
   assert.match(browserCheck,/page\.mouse\.move/);
   assert.match(browserCheck,/page\.mouse\.up/);
-  assert.match(required,/homepage-context-slider-browser-check\.mjs/);
+  assert.match(websiteLane,/homepage-context-slider-browser-check\.mjs/);
 });
 
 test('algemene visual-regression gate beschermt de echte slider en geen verdwenen automation-markers',()=>{
