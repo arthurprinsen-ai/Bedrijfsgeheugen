@@ -78,7 +78,22 @@ export function applyHomepageScrollStory(html) {
   padding-bottom:clamp(48px,6vw,96px)!important;
   isolation:isolate;
 }
-[${ROOT_ATTR}]>*{min-height:0!important}
+[${ROOT_ATTR}]>*{
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  position:relative!important;
+  top:auto!important;
+  bottom:auto!important;
+}
+[${ROOT_ATTR}] [data-bg-story-stage]{
+  position:relative!important;
+  top:auto!important;
+  bottom:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+}
 [${ROOT_ATTR}] [data-bg-story-step]{transition:opacity .18s ease,color .18s ease,transform .18s ease}
 [${ROOT_ATTR}] [data-bg-story-step][data-bg-story-status="future"]{opacity:.58!important}
 [${ROOT_ATTR}] [data-bg-story-step][data-bg-story-status="active"]{opacity:1!important;transform:translateX(3px)}
