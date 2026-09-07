@@ -22,8 +22,17 @@ const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prij
 <p><a class="btn btn-primary" href="${DOEL}">Bekijk de prijzen &rarr;</a></p></div></div>`;
 
 const SLIDER_ENDPOINT_STYLE = `<style data-bg-compare-slider-endpoints>
+[data-bg-compare-slider]{position:relative!important;overflow:hidden!important;touch-action:pan-y}
+[data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
 [data-bg-compare-slider] .compare-before{clip-path:inset(0 var(--split,50%) 0 0)!important}
 [data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 calc(100% - var(--split,50%)))!important}
+[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--split,50%)!important;z-index:20!important}
+@media(max-width:720px){
+  [data-bg-compare-slider]{min-height:360px!important}
+  [data-bg-compare-slider] .compare-copy{width:calc(100% - 36px)!important;max-width:none!important;box-sizing:border-box!important}
+  [data-bg-compare-slider] .compare-before .compare-copy{margin-left:0!important;margin-right:auto!important;padding-right:18px!important}
+  [data-bg-compare-slider] .compare-after .compare-copy{margin-left:auto!important;margin-right:0!important;padding-left:18px!important}
+}
 </style>`;
 
 function vervangWeergave(html) {
