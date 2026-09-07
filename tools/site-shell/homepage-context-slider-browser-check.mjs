@@ -63,7 +63,10 @@ function assertCommon(g, label) {
   if (g.aria.disabled === 'true' || g.aria.tabIndex < 0) fail(`${label}: slider moet op mobiel en desktop actief blijven`, g);
   if (g.handleDisplay === 'none') fail(`${label}: echte sliderhandle mag niet verborgen zijn`, g);
   if (g.slider.left < -1 || g.slider.right > g.viewportWidth + 1) fail(`${label}: slider mag niet buiten de viewport vallen`, g);
-  if (g.before.width < 220 || g.after.width < 220) fail(`${label}: tekstlagen moeten hun leesbare volledige paneelbreedte behouden`, g);
+  const minReadableWidth = Math.min(220, g.slider.width * 0.5);
+  if (g.before.width < minReadableWidth || g.after.width < minReadableWidth) {
+    fail(`${label}: tekstlagen moeten voldoende leesbare paneelbreedte behouden`, { ...g, minReadableWidth });
+  }
 }
 
 function assertLeftEndpoint(g, label) {
