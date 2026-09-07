@@ -2,17 +2,25 @@ const MARKER = 'data-bg-context-slider-readable';
 const MIN_DESKTOP_PANE_PX = 320;
 const MIN_COMPACT_PANE_PX = 240;
 const HANDLE_GUTTER_PX = 64;
+const MOBILE_MIN_PCT = 18;
+const MOBILE_MAX_PCT = 82;
 
 const STYLE = `<style ${MARKER}>
 #compareSlider{--bg-compare-gutter:${HANDLE_GUTTER_PX}px}
 #compareSlider .compare-before .compare-copy{width:min(460px,calc(var(--split,50%) - 108px));max-width:none;padding-right:var(--bg-compare-gutter);box-sizing:border-box}
 #compareSlider .compare-after .compare-copy{width:min(460px,calc(100% - var(--split,50%) - 108px));max-width:none;margin-left:auto;padding-left:var(--bg-compare-gutter);box-sizing:border-box}
 #compareSlider .compare-handle{z-index:8}
-#compareSlider[data-bg-compare-compact="true"]{height:auto!important;overflow:visible!important;display:grid!important;grid-template-columns:1fr!important;gap:14px!important;background:transparent!important;box-shadow:none!important}
+#compareSlider[data-bg-compare-compact="true"]{position:relative!important;display:block!important;height:clamp(430px,122vw,540px)!important;min-height:430px!important;overflow:hidden!important;background:transparent!important;box-shadow:none!important;touch-action:pan-y!important}
 #compareSlider[data-bg-compare-compact="true"] .compare-before,
-#compareSlider[data-bg-compare-compact="true"] .compare-after{position:relative!important;inset:auto!important;clip-path:none!important;width:100%!important;height:auto!important;padding:24px!important;border-radius:24px!important;min-height:0!important;transform:none!important}
-#compareSlider[data-bg-compare-compact="true"] .compare-copy{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;position:relative!important;inset:auto!important;transform:none!important}
-#compareSlider[data-bg-compare-compact="true"] .compare-handle{display:none!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-after{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;padding:24px!important;border-radius:24px!important;min-height:0!important;transform:none!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-before{clip-path:inset(0 calc(100% - var(--split,50%)) 0 0)!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-after{clip-path:inset(0 0 0 var(--split,50%))!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-before .compare-copy,
+#compareSlider[data-bg-compare-compact="true"] .compare-after .compare-copy{width:calc(100% - 48px)!important;max-width:none!important;padding:0!important;position:absolute!important;top:24px!important;transform:none!important;box-sizing:border-box!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-before .compare-copy{left:24px!important;right:auto!important;margin:0!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-after .compare-copy{right:24px!important;left:auto!important;margin:0!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-handle{display:flex!important;z-index:12!important;touch-action:none!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-knob{display:flex!important;touch-action:none!important;-webkit-user-select:none!important;user-select:none!important}
 @media(max-width:767px){[data-bg-story-cost]{display:none!important}}
 </style>`;
 
@@ -21,9 +29,12 @@ const RUNTIME = `<script ${MARKER}>
   var MIN_DESKTOP_PANE_PX = ${MIN_DESKTOP_PANE_PX};
   var MIN_COMPACT_PANE_PX = ${MIN_COMPACT_PANE_PX};
   var HANDLE_GUTTER_PX = ${HANDLE_GUTTER_PX};
+  var MOBILE_MIN_PCT = ${MOBILE_MIN_PCT};
+  var MOBILE_MAX_PCT = ${MOBILE_MAX_PCT};
   var slider = document.getElementById('compareSlider');
   if(!slider) return;
   var knob = slider.querySelector('.compare-knob');
+  var handle = slider.querySelector('.compare-handle');
   var dragging = false;
 
   function getLimits(){
@@ -31,7 +42,7 @@ const RUNTIME = `<script ${MARKER}>
     var compactThreshold = (MIN_COMPACT_PANE_PX * 2) + (HANDLE_GUTTER_PX * 2) + 88;
     var compact = r.width < compactThreshold;
     slider.setAttribute('data-bg-compare-compact', compact ? 'true' : 'false');
-    if(compact) return {min:50,max:50,compact:true};
+    if(compact) return {min:MOBILE_MIN_PCT,max:MOBILE_MAX_PCT,compact:true};
     var safePanePx = MIN_DESKTOP_PANE_PX + HANDLE_GUTTER_PX + 44;
     var minPct = Math.min(45, safePanePx / Math.max(1,r.width) * 100);
     return {min:minPct,max:100-minPct,compact:false};
@@ -39,13 +50,13 @@ const RUNTIME = `<script ${MARKER}>
 
   function apply(raw){
     var limits = getLimits();
-    var value = limits.compact ? 50 : Math.max(limits.min, Math.min(limits.max, raw));
+    var value = Math.max(limits.min, Math.min(limits.max, raw));
     slider.style.setProperty('--split', value.toFixed(2) + '%');
     if(knob){
       knob.setAttribute('aria-valuemin', limits.min.toFixed(0));
       knob.setAttribute('aria-valuemax', limits.max.toFixed(0));
       knob.setAttribute('aria-valuenow', value.toFixed(0));
-      knob.setAttribute('aria-disabled', limits.compact ? 'true' : 'false');
+      knob.setAttribute('aria-disabled', 'false');
     }
     return value;
   }
@@ -65,9 +76,10 @@ const RUNTIME = `<script ${MARKER}>
 
   slider.addEventListener('pointerdown',function(e){
     var limits = getLimits();
-    if(limits.compact) return;
+    var hitHandle = !!(handle && (e.target===handle || handle.contains(e.target)));
+    if(limits.compact && !hitHandle) return;
     dragging = true;
-    if(knob && e.target===knob) knob.setPointerCapture?.(e.pointerId);
+    if(knob && hitHandle) knob.setPointerCapture?.(e.pointerId);
     applyFromClientX(e.clientX);
     e.preventDefault();
     e.stopPropagation();
@@ -91,7 +103,6 @@ const RUNTIME = `<script ${MARKER}>
   if(knob){
     knob.addEventListener('keydown',function(e){
       var limits=getLimits();
-      if(limits.compact) return;
       var value=current();
       if(e.key==='ArrowLeft') value-=3;
       else if(e.key==='ArrowRight') value+=3;
@@ -134,6 +145,8 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('MIN_DESKTOP_PANE_PX = 320') ||
      !next.includes('MIN_COMPACT_PANE_PX = 240') ||
      !next.includes('HANDLE_GUTTER_PX = 64') ||
+     !next.includes('MOBILE_MIN_PCT = 18') ||
+     !next.includes('MOBILE_MAX_PCT = 82') ||
      !next.includes('applyFromClientX') ||
      !next.includes('data-bg-compare-compact') ||
      (next.match(/<style data-bg-context-slider-readable>/g) || []).length !== 1 ||
