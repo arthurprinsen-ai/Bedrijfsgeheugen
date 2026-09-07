@@ -105,6 +105,11 @@ function kruimelSchemaVoor(label, pad) {
 }
 
 function kruimelErbij(binnen, oud, pad) {
+  if (pad === 'prijzen.html') {
+    const h1 = oud.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+    const label = h1 ? tekstUit(h1[1]).replace(/&/g, '&amp;').replace(/"/g, '&quot;') : 'Prijzen';
+    return { binnen, schema: /BreadcrumbList/.test(oud) ? null : kruimelSchemaVoor(label, pad) };
+  }
   if (/aria-label="Kruimelpad"/i.test(binnen)) {
     if (/BreadcrumbList/.test(oud)) return { binnen, schema: null };
     const laatste = binnen.match(/aria-current="page"[^>]*>([\s\S]*?)<\/span>/i);
@@ -147,8 +152,16 @@ function markeerBestaandeV18Hero(binnen) {
   );
 }
 
+function markeerBestaandePrijsHero(binnen) {
+  return String(binnen).replace(
+    /<section\b(?![^>]*data-bg-component)([^>]*\bclass="[^"]*\bheld\b[^"]*"[^>]*)>/i,
+    '<section$1 data-bg-component="hero">'
+  );
+}
+
 function paginakop(binnen, pad) {
   if (/<section\b[^>]*class="[^"]*\binhoud-kop\b[^"]*"[^>]*>/i.test(binnen)) return markeerBestaandeV18Hero(binnen);
+  if (pad === 'prijzen.html' && /<section\b[^>]*class="[^"]*\bheld\b[^"]*"[^>]*>/i.test(binnen)) return markeerBestaandePrijsHero(binnen);
 
   let rest = binnen;
   const pak = re => { const m = rest.match(re); if (!m) return ''; rest = rest.replace(m[0], ''); return m[0]; };
