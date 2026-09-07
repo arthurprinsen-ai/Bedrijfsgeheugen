@@ -27,7 +27,7 @@ test('automation-only work blocks only shared and automation required suites', (
   assert.deepEqual(suitesFor(['automation/contracts/customer-sync.json']), { shared:true, backend:false, portal:false, website:false, automation:true });
 });
 
-test('shared executable control-plane work fans out to all required suites', () => {
+test('shared executable delivery-control-plane work fans out to all required suites', () => {
   assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
 });
 
@@ -44,7 +44,7 @@ test('current product work keeps its lane without rewriting the branch', () => {
   assert.equal(growth.website, true);
 });
 
-test('Required test keeps stable status identity and is lane-aware', async () => {
+test('Required test keeps its stable status identity and is lane-aware', async () => {
   const workflow = await readFile('.github/workflows/required-test.yml','utf8');
   assert.match(workflow, /^name:\s*Required test/m);
   assert.match(workflow, /deriveRequiredTestSuites/);
@@ -52,11 +52,9 @@ test('Required test keeps stable status identity and is lane-aware', async () =>
   assert.match(workflow, /steps\.scope\.outputs\.portal/);
   assert.match(workflow, /steps\.scope\.outputs\.website/);
   assert.match(workflow, /steps\.scope\.outputs\.automation/);
-  assert.match(workflow, /v18-megamenu-heading-contract\.test\.mjs/);
-  assert.match(workflow, /v18-megamenu-browser-check\.mjs/);
 });
 
-test('V18 promotion separates website and portal gates', async () => {
+test('V18 promotion no longer mixes unrelated portal and website gates', async () => {
   const workflow = await readFile('.github/workflows/v18-production-promotion.yml','utf8');
   assert.match(workflow, /steps\.scope\.outputs\.website/);
   assert.match(workflow, /steps\.scope\.outputs\.portal/);

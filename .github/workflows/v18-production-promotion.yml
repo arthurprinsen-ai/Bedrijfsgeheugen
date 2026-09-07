@@ -33,9 +33,9 @@ jobs:
           import { readFile, appendFile } from 'node:fs/promises';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
-          const head = process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const base = process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changedPaths = execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const head = process.env.HEAD_SHA || execFileSync('git', ['rev-parse','HEAD'], { encoding:'utf8' }).trim();
+          const base = process.env.BASE_SHA || execFileSync('git', ['rev-parse','HEAD^'], { encoding:'utf8' }).trim();
+          const changedPaths = execFileSync('git', ['diff','--name-only',`${base}...${head}`], { encoding:'utf8' }).split(/\r?\n/).filter(Boolean);
           const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan = createDeliveryPlan({ changedPaths, headSha:head, policy });
           const suites = deriveRequiredTestSuites({ lanes:plan.lanes.map(lane => lane.id) });
@@ -49,7 +49,7 @@ jobs:
           tests/v18-seo-layer.test.mjs
           tests/site-baseline-guardian.test.mjs
       - name: Verify portal production contracts
-        if: always() && steps.scope.outputs.portal == 'true'
+        if: steps.scope.outputs.portal == 'true'
         run: >-
           node --test
           tests/portal-server-state.test.mjs
