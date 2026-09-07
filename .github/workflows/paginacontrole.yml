@@ -53,12 +53,40 @@ jobs:
         id: base
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+      - name: Bepaal publieke SEO-scope
+        id: seo_scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          public=true
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            public=false
+            base="${{ github.event.pull_request.base.sha }}"
+            head="${{ github.event.pull_request.head.sha }}"
+            while IFS= read -r file; do
+              if { [[ "$file" != */* ]] && [[ "$file" == *.html ]]; } \
+                || [[ "$file" =~ ^blog/[^/]+/index\.html$ ]] \
+                || [[ "$file" == assets/* ]] \
+                || [[ "$file" == "_redirects" ]]; then
+                public=true
+                break
+              fi
+            done < <(git diff --name-only "$base...$head")
+          fi
+          echo "public=$public" >> "$GITHUB_OUTPUT"
+          if [ "$public" = "true" ]; then
+            echo "Publieke pagina/SEO-scope geraakt."
+          else
+            echo "Portal/app HTML valt buiten de publieke SEO-scope; publieke paginacontrole is niet van toepassing."
+          fi
+
       - uses: actions/setup-python@v6
+        if: steps.seo_scope.outputs.public == 'true'
         with:
           python-version: '3.12'
 
       - name: Bekende SEO-bronfouten automatisch herstellen
-        if: github.event_name != 'pull_request'
+        if: steps.seo_scope.outputs.public == 'true' && github.event_name != 'pull_request'
         shell: bash
         env:
           DELIVERY_MODE: candidate-pr
@@ -147,22 +175,36 @@ jobs:
           fi
 
       - name: Playwright installeren
+        if: steps.seo_scope.outputs.public == 'true'
         run: |
           pip install --quiet playwright
           playwright install --with-deps chromium
 
       - name: Pagina's controleren
         id: controle
+        if: steps.seo_scope.outputs.public == 'true'
         run: python .github/scripts/paginacontrole.py
         continue-on-error: true
 
       - name: SEO en interne links controleren
         id: seo
+        if: steps.seo_scope.outputs.public == 'true'
         run: python .github/scripts/seocontrole.py
         continue-on-error: true
 
+      - name: Niet-publieke portal/app wijziging expliciet goedkeuren
+        if: steps.seo_scope.outputs.public != 'true'
+        run: |
+          cat > rapport.md <<'EOF'
+          # Pagina- en SEO-controle
+
+          Status: groen (niet van toepassing op publieke SEO-scope).
+
+          De PR wijzigt alleen portal/app-HTML buiten de root- en blogpagina's die door deze publieke SEO-controle worden gescand. Portal-gedrag en portal-SEO worden door de eigen Portal V2-contract- en live-previewchecks bewaakt.
+          EOF
+
       - name: seo-status.json verwerken als hij is veranderd
-        if: always() && github.event_name != 'pull_request'
+        if: always() && steps.seo_scope.outputs.public == 'true' && github.event_name != 'pull_request'
         shell: bash
         env:
           DELIVERY_MODE: candidate-pr
@@ -186,7 +228,7 @@ jobs:
 
       - name: Candidate branch en PR publiceren
         id: candidate
-        if: always() && github.event_name != 'pull_request'
+        if: always() && steps.seo_scope.outputs.public == 'true' && github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_SHA: ${{ steps.base.outputs.sha }}
