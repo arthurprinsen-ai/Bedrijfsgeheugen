@@ -27,6 +27,13 @@ export function applyHomepageAutomationLayout(html) {
   }
 
   const css = `<style id="${STYLE_ID}">
+/* The homepage must use one metric-stable font stack from first paint onward.
+   This prevents external webfont swaps from moving hero copy, navigation and CTAs. */
+html,
+body,
+body *{
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
 [data-bg-automation-layout]{
   display:grid!important;
   grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)!important;

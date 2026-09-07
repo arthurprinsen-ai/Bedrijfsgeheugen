@@ -1,0 +1,41 @@
+{
+  "version": "UI-VISUAL-REGRESSION-v1",
+  "defaults": {
+    "clsMax": 0.1,
+    "visibleRatioMin": 0.98,
+    "horizontalOverflowMaxPx": 1,
+    "overlapMaxAreaPx2": 0,
+    "viewports": [
+      { "name": "phone", "width": 390, "height": 844 },
+      { "name": "tablet", "width": 768, "height": 1024 },
+      { "name": "small-desktop", "width": 1024, "height": 768 },
+      { "name": "desktop", "width": 1440, "height": 900 }
+    ]
+  },
+  "pages": [
+    {
+      "route": "/",
+      "required": ["main h1"],
+      "protectedPairs": [
+        {
+          "a": "[data-bg-automation-copy]",
+          "b": "[data-bg-automation-visual]",
+          "maxIntersectionAreaPx2": 0
+        }
+      ],
+      "interactions": []
+    },
+    {
+      "route": "/prijzen",
+      "required": ["main h1"],
+      "protectedPairs": [],
+      "interactions": []
+    },
+    {
+      "route": "/due-diligence",
+      "required": ["main h1"],
+      "protectedPairs": [],
+      "interactions": []
+    }
+  ]
+}
