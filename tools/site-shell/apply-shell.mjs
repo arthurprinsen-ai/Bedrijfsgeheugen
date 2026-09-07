@@ -129,43 +129,40 @@ function legacyPricingHero(rest) {
   const openingen = [...voorH1.matchAll(/<section\b[^>]*>/gi)];
   const opening = openingen.at(-1);
   if (!opening || opening.index === undefined || !/class="[^"]*\bheld\b/i.test(opening[0])) return null;
-
   const start = opening.index;
   const tags = /<section\b[^>]*>|<\/section\s*>/gi;
   tags.lastIndex = start;
-  let diepte = 0;
-  let m;
+  let diepte = 0, m;
   while ((m = tags.exec(rest))) {
-    if (/^<section\b/i.test(m[0])) diepte += 1;
-    else diepte -= 1;
+    if (/^<section\b/i.test(m[0])) diepte += 1; else diepte -= 1;
     if (diepte === 0) return { start, end: tags.lastIndex, html: rest.slice(start, tags.lastIndex) };
   }
   return null;
 }
 
-function markeerHeroKlasse(binnen, klasse) {
-  const veilig = klasse.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function markeerBestaandeV18Hero(binnen) {
   return String(binnen).replace(
-    new RegExp(`<section\\b(?![^>]*data-bg-component)([^>]*\\bclass="[^"]*\\b${veilig}\\b[^"]*"[^>]*)>`, 'i'),
+    /<section\b(?![^>]*data-bg-component)([^>]*\bclass="[^"]*\binhoud-kop\b[^"]*"[^>]*)>/i,
     '<section$1 data-bg-component="hero">'
   );
 }
 
 function paginakop(binnen, pad) {
-  // Een reeds gebouwde pagina-hero is leidend. De shell mag alleen globale
-  // componenten projecteren en nooit een tweede visuele header erboven bouwen.
-  if (/<section\b[^>]*class="[^"]*\binhoud-kop\b[^"]*"[^>]*>/i.test(binnen)) {
-    return markeerHeroKlasse(binnen, 'inhoud-kop');
-  }
-  if (pad === 'prijzen.html' && legacyPricingHero(binnen)) {
-    return markeerHeroKlasse(binnen, 'held');
-  }
+  if (/<section\b[^>]*class="[^"]*\binhoud-kop\b[^"]*"[^>]*>/i.test(binnen)) return markeerBestaandeV18Hero(binnen);
 
   let rest = binnen;
   const pak = re => { const m = rest.match(re); if (!m) return ''; rest = rest.replace(m[0], ''); return m[0]; };
   const kruimel = pak(/<nav class="bgkruim"[\s\S]*?<\/nav>/i);
 
-  const bron = rest;
+  let bron = rest;
+  if (pad === 'prijzen.html') {
+    const legacy = legacyPricingHero(rest);
+    if (legacy) {
+      bron = legacy.html;
+      rest = rest.slice(0, legacy.start) + rest.slice(legacy.end);
+    }
+  }
+
   const kopMatch = bron.match(/<h1[^>]*>[\s\S]*?<\/h1>/i);
   if (!kopMatch) return binnen;
   const bovenkopMatch = bron.match(/<span class="eyebrow"[^>]*>[\s\S]*?<\/span>/i);
@@ -174,9 +171,11 @@ function paginakop(binnen, pad) {
   const bovenkop = bovenkopMatch ? bovenkopMatch[0] : '';
   const inleiding = inleidingMatch ? inleidingMatch[0] : '';
 
-  rest = rest.replace(kop, '');
-  if (bovenkop) rest = rest.replace(bovenkop, '');
-  if (inleiding) rest = rest.replace(inleiding, '');
+  if (bron === rest) {
+    rest = rest.replace(kop, '');
+    if (bovenkop) rest = rest.replace(bovenkop, '');
+    if (inleiding) rest = rest.replace(inleiding, '');
+  }
 
   return `<section class="paginakop" data-bg-component="hero"><div class="wrap">${kruimel}${bovenkop}${kop}${inleiding}</div></section>\n${rest}`;
 }
@@ -219,7 +218,6 @@ export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL
   const sourcePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(sourceRaw)));
   const shell = schilUitBron(sourcePrepared, sourcePath);
   await writeFile(sourcePath, absolutiseerInterneHref(shell.bron), 'utf8');
-
   const homeRaw = await readFile('index.html', 'utf8');
   const homePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(homeRaw)));
   const homeProjected = absolutiseerInterneHref(projectGlobalComponents(homePrepared, shell.bron));
