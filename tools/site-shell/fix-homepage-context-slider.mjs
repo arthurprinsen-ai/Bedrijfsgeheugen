@@ -8,9 +8,10 @@ const STYLE = `<style ${MARKER}>
 #compareSlider .compare-before .compare-copy{width:min(460px,calc(var(--split,50%) - 108px));max-width:none;padding-right:var(--bg-compare-gutter);box-sizing:border-box}
 #compareSlider .compare-after .compare-copy{width:min(460px,calc(100% - var(--split,50%) - 108px));max-width:none;margin-left:auto;padding-left:var(--bg-compare-gutter);box-sizing:border-box}
 #compareSlider .compare-handle{z-index:8}
-#compareSlider[data-bg-compare-compact="true"]{height:auto!important;overflow:visible!important;display:grid!important;gap:14px!important;background:transparent!important;box-shadow:none!important}
-#compareSlider[data-bg-compare-compact="true"] .compare-side{position:relative!important;inset:auto!important;clip-path:none!important;padding:24px!important;border-radius:24px!important;min-height:0!important}
-#compareSlider[data-bg-compare-compact="true"] .compare-copy{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+#compareSlider[data-bg-compare-compact="true"]{height:auto!important;overflow:visible!important;display:grid!important;grid-template-columns:1fr!important;gap:14px!important;background:transparent!important;box-shadow:none!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-before,
+#compareSlider[data-bg-compare-compact="true"] .compare-after{position:relative!important;inset:auto!important;clip-path:none!important;width:100%!important;height:auto!important;padding:24px!important;border-radius:24px!important;min-height:0!important;transform:none!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-copy{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;position:relative!important;inset:auto!important;transform:none!important}
 #compareSlider[data-bg-compare-compact="true"] .compare-handle{display:none!important}
 </style>`;
 
