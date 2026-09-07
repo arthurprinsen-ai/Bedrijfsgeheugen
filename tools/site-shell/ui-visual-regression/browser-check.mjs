@@ -37,6 +37,33 @@ async function installClsObserver(page) {
       return `${node.tagName.toLowerCase()}${classes}`;
     };
     const rect = r => r ? { x: r.x, y: r.y, width: r.width, height: r.height } : null;
+    const sourceDiagnostics = node => {
+      if (!node || node.nodeType !== 1) return null;
+      let style = null;
+      try { style = getComputedStyle(node); } catch {}
+      return {
+        tag: node.tagName?.toLowerCase() || null,
+        id: node.id || null,
+        className: typeof node.className === 'string' ? node.className : null,
+        text: (node.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 240),
+        html: (node.outerHTML || '').replace(/\s+/g, ' ').trim().slice(0, 700),
+        style: style ? {
+          display: style.display,
+          position: style.position,
+          visibility: style.visibility,
+          opacity: style.opacity,
+          fontFamily: style.fontFamily,
+          fontSize: style.fontSize,
+          lineHeight: style.lineHeight,
+          width: style.width,
+          height: style.height,
+          marginTop: style.marginTop,
+          marginBottom: style.marginBottom,
+          paddingTop: style.paddingTop,
+          paddingBottom: style.paddingBottom
+        } : null
+      };
+    };
     try {
       new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
@@ -48,7 +75,8 @@ async function installClsObserver(page) {
               sources: Array.from(entry.sources || []).map(source => ({
                 selector: selectorFor(source.node),
                 previousRect: rect(source.previousRect),
-                currentRect: rect(source.currentRect)
+                currentRect: rect(source.currentRect),
+                diagnostics: sourceDiagnostics(source.node)
               }))
             });
           }
