@@ -49,3 +49,6 @@ jobs:
             fi
             sleep 15
           done
+      - name: Explain megamenu production readback failure
+        if: failure()
+        run: echo "::error::V18 megamenu production readback failed; live production did not satisfy the verified megamenu contract or an earlier browser step failed."
