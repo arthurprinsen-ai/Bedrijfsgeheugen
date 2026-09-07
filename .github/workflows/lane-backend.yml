@@ -1,0 +1,32 @@
+name: Backend release lane
+
+on:
+  workflow_call:
+    inputs:
+      head_sha:
+        required: true
+        type: string
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify backend Brain and runtime contracts
+        run: >-
+          node --test
+          tests/brain-adapter-conformance.test.mjs
+          tests/brain-platform-adapters.test.mjs
+          tests/universal-event-envelope.test.mjs
+          tests/event-retention-policy.test.mjs
+          tests/event-retention-expiry.test.mjs
+          tests/universal-event-contract-check.test.mjs
+          tests/universal-event-adapters.test.mjs
+          tests/universal-failure-learning.test.mjs
+          tests/make-cost-governor-policy.test.mjs
+          tests/make-cost-governance-contract.test.mjs
