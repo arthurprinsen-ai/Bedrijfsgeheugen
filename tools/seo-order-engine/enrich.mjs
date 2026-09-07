@@ -40,6 +40,27 @@ export function enrichSupportHandoff(input,entry){
   return html.replace(/<\/body>/i,`${block}\n</body>`);
 }
 
+function relatedLabel(entry){
+  const intent=String(entry?.primary_intent||'').trim();
+  if(!intent) return 'Bekijk de oplossing';
+  return `Bekijk ${intent}`;
+}
+
+export function enrichDeclaredSupportingLinks(input, sourceCanonical, registry){
+  let html=String(input);
+  if(!sourceCanonical||!sourceCanonical.startsWith(`${ORIGIN}/`)) return html;
+  const targets=(registry?.pages||[])
+    .filter(entry=>entry?.role==='money'&&entry.route!==sourceCanonical&&(entry.supporting_routes||[]).includes(sourceCanonical))
+    .filter(entry=>!hasVisibleTargetLink(html,entry.route));
+  if(!targets.length) return html;
+  const links=targets.map(entry=>`<a href="${esc(entry.route)}" data-bg-money-target="${esc(entry.route)}">${esc(relatedLabel(entry))} →</a>`).join('');
+  const style=`<style id="bg-declared-support-links-style">.bg-declared-support-links{max-width:1120px;margin:2rem auto 3rem;padding:1.25rem 1.4rem;border:1px solid #dcdfe6;border-radius:16px;background:#fff}.bg-declared-support-links h2{margin:0 0 .35rem;font-size:clamp(1.2rem,3vw,1.6rem)}.bg-declared-support-links p{margin:0 0 1rem;max-width:72ch;color:#5c646e}.bg-declared-support-links__links{display:flex;flex-wrap:wrap;gap:.65rem}.bg-declared-support-links a{display:inline-flex;align-items:center;min-height:44px;padding:.65rem .9rem;border-radius:10px;border:1px solid #2742d6;color:#2742d6!important;font-weight:700;text-decoration:none}.bg-declared-support-links a:hover{background:#f3f5ff}</style>`;
+  if(!/id=(?:"bg-declared-support-links-style"|'bg-declared-support-links-style')/i.test(html)) html=html.replace(/<\/head>/i,`${style}\n</head>`);
+  const block=`<section class="bg-declared-support-links" data-bg-declared-support-links="v1" aria-label="Gerelateerde oplossingen"><h2>Van inzicht naar uitvoering</h2><p>Deze pagina ondersteunt de volgende concrete oplossing${targets.length===1?'':'en'}.</p><div class="bg-declared-support-links__links">${links}</div></section>`;
+  if(/<\/main>/i.test(html)) return html.replace(/<\/main>/i,`${block}\n</main>`);
+  return html.replace(/<\/body>/i,`${block}\n</body>`);
+}
+
 export function enrichRegisteredPage(input,entry){
   let html=String(input); if(!entry?.route)return html;
   const meta=inferSeoMeta(html); if(meta.canonical!==entry.route)throw new Error(`Registry route ${entry.route} past niet op canonical ${meta.canonical||'(leeg)'}`);

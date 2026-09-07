@@ -2,7 +2,7 @@
 
 (function(){
   var KEY='bg_consent';
-  function applyConsent(state){try{if(typeof gtag==='function'){gtag('consent','update',{analytics_storage:(state==='granted'?'granted':'denied'),ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});}}catch(e){}}
+  function applyConsent(state){try{if(typeof gtag==='function')gtag('consent','update',{analytics_storage:(state==='granted'?'granted':'denied'),ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});}catch(e){}}
   function el(){return document.getElementById('bgCookie');}
   function show(){var b=el();if(b)b.classList.add('bgShow');}
   function hide(){var b=el();if(b)b.classList.remove('bgShow');}
@@ -48,6 +48,22 @@
     document.head.appendChild(s);
   }
   function button(cls,label,href,kind,meta){var a=document.createElement('a');a.className='bg-money-btn'+(cls?' '+cls:'');a.href=href;a.textContent=label;a.setAttribute('data-bg-cta',kind);a.addEventListener('click',function(){event(kind==='primary'?'money_page_primary_cta':'money_page_secondary_cta',meta);});return a;}
+  function trackExistingCta(a,kind,meta){
+    if(!a)return;
+    a.setAttribute('data-bg-cta',kind);
+    if(a.getAttribute('data-bg-money-bound')==='1')return;
+    a.setAttribute('data-bg-money-bound','1');
+    a.addEventListener('click',function(){event(kind==='primary'?'money_page_primary_cta':'money_page_secondary_cta',meta);});
+  }
+  function hydrateExistingHero(meta,main){
+    var existing=main.querySelector('.p-hero');if(!existing)return false;
+    existing.setAttribute('data-bg-money-contract',CONTRACT);
+    existing.setAttribute('data-bg-money-intent',meta.intent);
+    var ctas=existing.querySelectorAll('.p-cta a');
+    trackExistingCta(ctas[0],'primary',meta);
+    trackExistingCta(ctas[1],'secondary',meta);
+    return true;
+  }
   function hero(meta,main){
     if(document.querySelector('.bg-money-hero'))return;
     var h1=main.querySelector('h1');if(!h1)return;
@@ -64,9 +80,17 @@
     var acts=box.querySelector('.bg-money-actions');acts.appendChild(button('',meta.primary,meta.href,'primary',meta));acts.appendChild(button('alt',meta.secondary,meta.secondaryHref,'secondary',meta));
     main.appendChild(box);
   }
-  document.addEventListener('DOMContentLoaded',function(){
-    var meta=pages[normPath()];if(!meta)return;
+  function initMoneyPage(){
+    var path=normPath();
+    var meta=pages[path];if(!meta)return;
     var main=document.querySelector('main');if(!main)return;
-    style();hero(meta,main);decision(meta,main);event('money_page_view',meta);
-  });
+    style();
+    if(path==='/due-diligence')hydrateExistingHero(meta,main);else hero(meta,main);
+    decision(meta,main);event('money_page_view',meta);
+  }
+  if(document.readyState==='loading'&&!document.querySelector('main')){
+    document.addEventListener('DOMContentLoaded',initMoneyPage,{once:true});
+  }else{
+    initMoneyPage();
+  }
 })();
