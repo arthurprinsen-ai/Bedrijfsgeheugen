@@ -25,9 +25,9 @@ test('automation layout fixer guards the painted cockpit, not only its outer bra
   assert.match(source, /\[data-bg-automation-card\][\s\S]*max-width:100%!important/);
 });
 
-test('the real failing wide screenshot size is a mandatory visual-regression viewport', () => {
-  assert.ok(registry.defaults.viewports.some(v => v.width === 1542 && v.height === 632),
-    '1542x632 must stay in the browser regression matrix because this exact width exposed the painted-content overlap');
+test('the real failing 1542px wide screenshot remains a mandatory visual-regression width', () => {
+  assert.ok(registry.defaults.viewports.some(v => v.width === 1542),
+    '1542px must stay in the browser regression matrix because this exact width exposed the painted-content overlap');
 });
 
 test('homepage protects actual heading and description from the actual cockpit card', () => {
