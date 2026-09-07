@@ -27,8 +27,6 @@ export function applyHomepageAutomationLayout(html) {
   }
 
   const css = `<style id="${STYLE_ID}">
-/* The homepage must use one metric-stable font stack from first paint onward.
-   This prevents external webfont swaps from moving hero copy, navigation and CTAs. */
 html,
 body,
 body *{
@@ -48,9 +46,15 @@ body *{
   position:relative!important;
   z-index:2!important;
 }
-[data-bg-automation-copy] h1,
-[data-bg-automation-copy] h2{
+[data-bg-automation-heading],
+[data-bg-automation-description]{
   max-width:100%!important;
+  position:relative!important;
+  z-index:2!important;
+}
+[data-bg-automation-heading]{
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
   text-wrap:balance!important;
 }
 [data-bg-automation-visual]{
@@ -69,12 +73,24 @@ body *{
   margin:0!important;
   z-index:1!important;
 }
-[data-bg-automation-visual]>*{
+[data-bg-automation-card]{
+  box-sizing:border-box!important;
   min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  position:relative!important;
+  inset:auto!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  translate:none!important;
+  margin:0!important;
+}
+[data-bg-automation-card]>*{
   max-width:100%!important;
 }
-/* Between tablet and wide desktop the product card is wider than the safe
-   visual column. Stack before that intrinsic width can enter the copy area. */
 @media(max-width:1180px){
   [data-bg-automation-layout]{grid-template-columns:1fr!important;row-gap:2.25rem!important}
   [data-bg-automation-copy]{max-width:42rem!important}
@@ -92,9 +108,7 @@ body *{
     return Array.prototype.find.call(document.querySelectorAll(selector),function(el){return text(el)===value;})||null;
   }
   function findContaining(value){
-    return Array.prototype.find.call(document.querySelectorAll('h1,h2,h3,h4,h5,h6,strong,b,p,span,div'),function(el){
-      return text(el)===value;
-    })||null;
+    return Array.prototype.find.call(document.querySelectorAll('h1,h2,h3,h4,h5,h6,strong,b,p,span,div'),function(el){return text(el)===value;})||null;
   }
   function commonAncestor(a,b){
     var seen=[];var n=a;
@@ -108,6 +122,16 @@ body *{
     while(n && n.parentElement && n.parentElement!==root)n=n.parentElement;
     return n && n.parentElement===root ? n : null;
   }
+  function smallestAncestorContaining(node,stop,markers){
+    var n=node;
+    while(n && n!==stop){
+      var value=text(n);
+      var ok=markers.every(function(marker){return value.indexOf(marker)!==-1;});
+      if(ok)return n;
+      n=n.parentElement;
+    }
+    return stop||null;
+  }
   function init(){
     if(document.documentElement.dataset.bgAutomationLayoutReady==='1')return;
     var heading=findExact('h1,h2,h3,h4','Terwijl jij je bedrijf runt.');
@@ -120,15 +144,22 @@ body *{
     var visual=branchBelow(root,signal);
     if(!copy||!visual||copy===visual)return;
 
+    var markers=['Nieuwe CAO-regel gevonden','Offerteflow geoptimaliseerd','Proces zonder eigenaar','3 kennisitems bijgewerkt','Bedrijfsgezondheid'];
     var rootText=text(root);
-    if(rootText.indexOf('Offerteflow geoptimaliseerd')===-1 ||
-       rootText.indexOf('Proces zonder eigenaar')===-1 ||
-       rootText.indexOf('3 kennisitems bijgewerkt')===-1 ||
-       rootText.indexOf('Bedrijfsgezondheid')===-1) return;
+    if(!markers.every(function(marker){return rootText.indexOf(marker)!==-1;}))return;
+
+    var description=Array.prototype.find.call(copy.querySelectorAll('p'),function(el){
+      return text(el).indexOf('Het productbeeld beweegt mee met echte bedrijfssignalen.')===0;
+    })||null;
+    var card=smallestAncestorContaining(signal,visual,markers);
+    if(!description||!card)return;
 
     root.setAttribute('data-bg-automation-layout','');
     copy.setAttribute('data-bg-automation-copy','');
     visual.setAttribute('data-bg-automation-visual','');
+    heading.setAttribute('data-bg-automation-heading','');
+    description.setAttribute('data-bg-automation-description','');
+    card.setAttribute('data-bg-automation-card','');
     document.documentElement.dataset.bgAutomationLayoutReady='1';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
