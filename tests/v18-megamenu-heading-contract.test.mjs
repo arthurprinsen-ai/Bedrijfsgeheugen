@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const core = await readFile(new URL('../tools/bouw-v18-production-core.mjs', import.meta.url), 'utf8');
 const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
+const productionReadback = await readFile(new URL('../.github/workflows/v18-megamenu-production-readback.yml', import.meta.url), 'utf8');
 const browserCheck = await readFile(new URL('../tools/site-shell/v18-megamenu-browser-check.mjs', import.meta.url), 'utf8');
 
 test('V18 production builder owns the complete real-megamenu contrast contract', () => {
@@ -34,4 +35,13 @@ test('menu-only delivery is isolated from unrelated slow page gates without weak
   assert.match(workflow, /Drag homepage context slider through safe extremes[\s\S]*menu_only != 'true'/);
   assert.match(workflow, /Verify all public pages are visibly rendered[\s\S]*menu_only != 'true'/);
   assert.ok(true, 'menu-only release isolation stays explicit and fail-closed on the dedicated contrast gate');
+});
+
+test('main pushes are verified again against the real production domain', () => {
+  assert.match(productionReadback, /push:[\s\S]*branches:\s*\[main\]/);
+  assert.match(productionReadback, /UI_VR_BASE_URL:\s*https:\/\/www\.bedrijfsgeheugen\.nl/);
+  assert.match(productionReadback, /v18-megamenu-browser-check\.mjs/);
+  assert.match(productionReadback, /seq 1 24/);
+  assert.match(productionReadback, /sleep 15/);
+  assert.match(productionReadback, /Live production never satisfied the megamenu contrast contract/);
 });
