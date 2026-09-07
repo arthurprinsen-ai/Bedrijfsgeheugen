@@ -19,6 +19,37 @@ test('V18.8 production runtime is indexable and uses accepted hero media', async
   expect(head).toContain('https://bedrijfsgeheugen.nl/');
 });
 
+test('homepage Platform and Expertise toggle changes the visible card set', async ({ page }) => {
+  await openV18(page);
+
+  const platform = page.locator('#homepage-platform-tab');
+  const expertise = page.locator('#homepage-expertise-tab');
+  const platformPanel = page.locator('#homepage-platform-panel');
+  const expertisePanel = page.locator('#homepage-expertise-panel');
+
+  await expect(platform).toHaveAttribute('aria-selected', 'true');
+  await expect(expertise).toHaveAttribute('aria-selected', 'false');
+  await expect(platformPanel).toBeVisible();
+  await expect(expertisePanel).toBeHidden();
+  await expect(platformPanel.getByRole('heading', { name: 'AI-copilot' })).toBeVisible();
+  await expect(platformPanel.getByRole('heading', { name: 'Organisatiebeheersing' })).toBeVisible();
+  await expect(platformPanel.getByRole('heading', { name: 'Externe signalen & acties' })).toBeVisible();
+
+  await expertise.click();
+
+  await expect(platform).toHaveAttribute('aria-selected', 'false');
+  await expect(expertise).toHaveAttribute('aria-selected', 'true');
+  await expect(platformPanel).toBeHidden();
+  await expect(expertisePanel).toBeVisible();
+  await expect(expertisePanel.getByRole('heading', { name: 'Frisse Blik' })).toBeVisible();
+  await expect(expertisePanel.getByRole('heading', { name: 'Launch' })).toBeVisible();
+  await expect(expertisePanel.getByRole('heading', { name: 'Continuous Improvement' })).toBeVisible();
+
+  await platform.click();
+  await expect(platformPanel).toBeVisible();
+  await expect(expertisePanel).toBeHidden();
+});
+
 test('desktop mega menus expose reliable open and close state', async ({ page }) => {
   await openV18(page);
   const solutionsItem = page.locator('.navitem[data-mega]').filter({ has: page.locator('.v17-solutions-mega') });
