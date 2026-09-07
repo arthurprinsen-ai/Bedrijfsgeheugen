@@ -47,6 +47,7 @@ jobs:
             'tools/bouw-v18-production-core.mjs',
             'tools/site-shell/v18-megamenu-browser-check.mjs',
             'tests/v18-megamenu-heading-contract.test.mjs',
+            'tests/site-shell-public-route-inventory.test.mjs',
             '.github/workflows/required-test.yml'
           ]);
           const menuOnly = changedPaths.length > 0 && changedPaths.every(path => menuOnlyPaths.has(path));
@@ -117,7 +118,7 @@ jobs:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/homepage-toggle-browser-check.mjs
       - name: Verify all public pages are visibly rendered
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_only != 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/standalone-visibility-check.mjs
