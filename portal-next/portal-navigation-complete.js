@@ -60,6 +60,11 @@ export function legacyFrameUrl(search=typeof location!=='undefined'?location.sea
   const klant=params.get('klant');if(klant)url.searchParams.set('klant',klant);return url.pathname+url.search;
 }
 
+export function initialPortalPage(search=typeof location!=='undefined'?location.search:''){
+  const requested=new URLSearchParams(search).get('page')||'overzicht';
+  return PORTAL_PAGE_INDEX[requested]?'offerte'===requested?'offerte':requested:'overzicht';
+}
+
 function pageTrace(page){return `<div class="native-trace-chain"><span>Bron</span><i>→</i><span>Datahub</span><i>→</i><span>AI Brain</span><i>→</i><span>Powerhouse</span><i>→</i><span>${page.label}</span><i>→</i><span>Actie</span><i>→</i><span>Outcome</span><i>→</i><span>Learning</span></div>`;}
 function parityHtml(page){
   if(!page.legacyTab)return `<section class="native-live-content native-live-content--new"><div class="native-live-head"><div><span class="eyebrow">Nieuwe Business OS-module</span><h3>${page.label}</h3><p>Deze module heeft geen legacy-tab. Status en inhoud blijven fail-closed totdat er geautoriseerde runtime-evidence beschikbaar is.</p></div></div></section>`;
@@ -81,5 +86,5 @@ function showOverview(){q('#overviewView')?.classList.add('is-active');q('#works
 function showNativePage(id){if(id==='overzicht'){showOverview();return;}const page=PORTAL_PAGE_INDEX[id];if(!page)return;const overview=q('#overviewView'),workspace=q('#workspaceView'),content=q('#workspaceContent');overview?.classList.remove('is-active');workspace?.classList.add('is-active');if(content)content.innerHTML=nativePageHtml(page);if(q('#routeTitle'))q('#routeTitle').textContent=page.label;if(q('#routeSubtitle'))q('#routeSubtitle').textContent=PAGE_COPY[id]?.[1]||'';qa('[data-primary-page]').forEach(b=>b.classList.toggle('is-active',b.dataset.primaryPage===id));bindEmbeddedFrame(page);setDrawer(false);setDrawer(false,true);window.scrollTo({top:0,behavior:'smooth'});}
 function openLegacy(id){const page=PORTAL_PAGE_INDEX[id],url=new URL(legacyFrameUrl(),location.origin);if(page?.legacyTab)url.hash=`#${page.legacyTab}`;window.open(url.toString(),'_blank','noopener');}
 function bind(){document.addEventListener('click',e=>{const pageButton=e.target.closest('[data-portal-page],[data-primary-page]');if(pageButton){showNativePage(pageButton.dataset.portalPage||pageButton.dataset.primaryPage);return;}if(e.target.closest('[data-portal-menu-toggle]')){setDrawer(true);return;}if(e.target.closest('#mobileMenuToggle')){setDrawer(true,true);return;}if(e.target.closest('[data-portal-menu-close]')){setDrawer(false);return;}if(e.target.closest('[data-mobile-menu-close]')){setDrawer(false,true);return;}if(e.target.closest('[data-native-back]')){showOverview();return;}const legacy=e.target.closest('[data-open-legacy]');if(legacy){openLegacy(legacy.dataset.openLegacy);return;}if(e.target.closest('[data-mobile-ai]'))q('#aiCommand')?.click();});}
-export function mountCompletePortalNavigation(){mountDesktopPrimaryNav();mountDesktopDrawer();mountMobileNavigation();bind();}
+export function mountCompletePortalNavigation(){mountDesktopPrimaryNav();mountDesktopDrawer();mountMobileNavigation();bind();showNativePage(initialPortalPage());}
 if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountCompletePortalNavigation);else mountCompletePortalNavigation();}
