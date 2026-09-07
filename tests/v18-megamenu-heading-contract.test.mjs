@@ -13,7 +13,8 @@ test('V18 production builder owns the real megamenu heading visual contract', ()
   for (const label of ['BEDRIJF', 'KENNIS', 'VERTROUWEN', 'SUPPORT']) assert.ok(core.includes(label), `missing ${label}`);
 });
 
-test('required deploy-preview gate verifies the actual visible megamenu headings', () => {
+test('high-risk deploy-preview gate verifies the actual visible megamenu headings', () => {
+  assert.match(workflow, /Run broad real-preview website checks only for high-risk changes/);
+  assert.match(workflow, /steps\.scope\.outputs\.risk_lane == 'high-risk'/);
   assert.match(workflow, /v18-megamenu-browser-check\.mjs/);
-  assert.match(workflow, /Verify real megamenu headings are black and bold/);
 });
