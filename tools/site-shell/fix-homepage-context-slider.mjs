@@ -116,11 +116,17 @@ function normalizeLegacyBounds(html){
     .replace(/aria-valuemax=(['"])(?:100|94|92|70)\1/g, 'aria-valuemax="60"');
 }
 
+function stripExistingGuard(html){
+  return html
+    .replace(/<style\s+data-bg-context-slider-readable\b[^>]*>[\s\S]*?<\/style>\s*/gi, '')
+    .replace(/<script\s+data-bg-context-slider-readable\b[^>]*>[\s\S]*?<\/script>\s*/gi, '');
+}
+
 export function applyHomepageContextSliderReadability(html){
   if(!/id=(['"])compareSlider\1/.test(html)) return html;
-  let next = normalizeLegacyBounds(html);
-  if(!next.includes(`<style ${MARKER}>`)) next = next.replace('</head>', `${STYLE}\n</head>`);
-  if(!next.includes(`<script ${MARKER}>`)) next = next.replace('</body>', `${RUNTIME}\n</body>`);
+  let next = stripExistingGuard(normalizeLegacyBounds(html));
+  next = next.replace('</head>', `${STYLE}\n</head>`);
+  next = next.replace('</body>', `${RUNTIME}\n</body>`);
   if(!next.includes('.compare-before .compare-copy') ||
      !next.includes('.compare-after .compare-copy') ||
      !next.includes('MIN_DESKTOP_PANE_PX = 320') ||
@@ -128,7 +134,8 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('HANDLE_GUTTER_PX = 64') ||
      !next.includes('applyFromClientX') ||
      !next.includes('data-bg-compare-compact') ||
-     !next.includes(MARKER)) {
+     (next.match(/<style data-bg-context-slider-readable>/g) || []).length !== 1 ||
+     (next.match(/<script data-bg-context-slider-readable>/g) || []).length !== 1) {
     throw new Error('Homepage context slider readability guard kon niet volledig worden toegepast');
   }
   return next;
