@@ -1,0 +1,221 @@
+name: Website release lane
+
+on:
+  workflow_call:
+    inputs:
+      base_sha:
+        required: true
+        type: string
+      head_sha:
+        required: true
+        type: string
+      pr_number:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    outputs:
+      risk_lane: ${{ steps.risk.outputs.risk_lane }}
+      routes: ${{ steps.risk.outputs.routes }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - id: risk
+        name: Classify website blast radius
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+        run: |
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { readFile, appendFile } from 'node:fs/promises';
+          import { classifyWebsiteRelease } from './tools/site-shell/website-release-risk.mjs';
+          const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const riskConfig=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
+          const acceptedBaseline=JSON.parse(await readFile('site/accepted-baseline.json','utf8'));
+          const result=classifyWebsiteRelease({changedPaths,riskConfig,acceptedBaseline});
+          let routes=[...result.affected_routes];
+          if(routes.length===0) routes=result.lane==='high-risk'?['/','/ai-act','/benchmark']:['/'];
+          await appendFile(process.env.GITHUB_OUTPUT,`risk_lane=${result.lane}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
+          console.log(JSON.stringify({...result,affected_routes:routes},null,2));
+          NODE
+
+  baseline:
+    needs: classify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify mandatory website baseline and release-risk contracts
+        run: node --test tests/site-baseline-guardian.test.mjs tests/site-shell-public-route-inventory.test.mjs tests/site-shell-website-release-risk.test.mjs tests/targeted-website-route-regression.test.mjs
+
+  static:
+    needs: classify
+    if: needs.classify.outputs.risk_lane != 'fast-fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify normal and high-risk website static contracts
+        run: >-
+          node --test
+          tests/v18-vergelijker.test.mjs
+          tests/site-shell-v18-view-integrity.test.mjs
+          tests/seo-native-money-presentation.test.mjs
+          tests/seo-homepage-platform-expertise-toggle.test.mjs
+          tests/standalone-content-page-router-isolation.test.mjs
+          tests/v18-megamenu-heading-contract.test.mjs
+          tests/seo-homepage-context-slider-readability.test.mjs
+
+  page-seo:
+    needs: classify
+    if: needs.classify.outputs.risk_lane != 'fast-fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install page-check browser runtime
+        run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Verify page and SEO contracts
+        run: |
+          python .github/scripts/paginacontrole.py
+          python .github/scripts/seocontrole.py
+
+  full-regression:
+    needs: classify
+    if: needs.classify.outputs.risk_lane == 'high-risk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install full-regression test runtime
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify high-risk full website regression contracts
+        run: >-
+          node --test
+          tests/seo-ui-visual-regression-contract.test.mjs
+          tests/seo-ui-visual-regression-geometry.test.mjs
+          tests/seo-ui-visual-regression-browser.test.mjs
+
+  preview-ready:
+    needs: classify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for exact deploy preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          node --input-type=module - <<'NODE'
+          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.HEAD_SHA}/status`;
+          const deadline=Date.now()+10*60*1000;
+          while(Date.now()<deadline){
+            const response=await fetch(endpoint,{headers});
+            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
+            const body=await response.json();
+            const status=(body.statuses||[]).find(item=>item.context==='netlify/bedrijfsgeheugen/deploy-preview');
+            if(status?.state==='success'){ console.log(`Exact preview ready for ${process.env.HEAD_SHA}`); process.exit(0); }
+            if(['failure','error'].includes(status?.state)) throw new Error(`Netlify preview ${status.state}: ${status.description||''}`);
+            await new Promise(resolve=>setTimeout(resolve,10000));
+          }
+          throw new Error('Timed out waiting for exact deploy preview');
+          NODE
+
+  targeted-browser:
+    needs: [classify, preview-ready]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install targeted browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify affected routes on desktop and mobile
+        env:
+          BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          BASELINE_URL: https://www.bedrijfsgeheugen.nl
+          ROUTES_JSON: ${{ needs.classify.outputs.routes }}
+        run: node tools/site-shell/verify-targeted-website-routes.mjs
+
+  public-visibility:
+    needs: [classify, preview-ready]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install public visibility browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify all public pages are visibly rendered
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+        run: node tools/site-shell/standalone-visibility-check.mjs
+
+  broad-browser:
+    needs: [classify, preview-ready]
+    if: needs.classify.outputs.risk_lane == 'high-risk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install high-risk browser suite
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify broad high-risk browser contracts
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          EXPECTED_COMMIT: ${{ inputs.head_sha }}
+        run: |
+          node tools/site-shell/v18-megamenu-browser-check.mjs
+          node tools/site-shell/ui-visual-regression/browser-check.mjs
+          node tools/site-shell/homepage-context-slider-browser-check.mjs
+          node tools/site-shell/homepage-toggle-browser-check.mjs

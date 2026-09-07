@@ -26,17 +26,17 @@ test('public route inventory de-duplicates and normalizes absolute/relative URLs
   assert.deepEqual(routesFromSitemap(xml, 'https://www.bedrijfsgeheugen.nl'), ['/ai-act', '/prijzen']);
 });
 
-test('required test can never skip the all-public-pages visibility gate for menu-only website changes', async () => {
-  const workflow = await readFile('.github/workflows/required-test.yml', 'utf8');
+test('website lane can never skip the all-public-pages visibility gate', async () => {
+  const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
   const marker = '- name: Verify all public pages are visibly rendered';
   const start = workflow.indexOf(marker);
-  assert.notEqual(start, -1, 'all-public-pages visibility step must exist');
+  assert.notEqual(start, -1, 'all-public-pages visibility step must exist in website lane');
   const tail = workflow.slice(start);
   const nextStep = tail.indexOf('\n      - name:', marker.length);
   const step = nextStep === -1 ? tail : tail.slice(0, nextStep);
-  assert.match(step, /steps\.scope\.outputs\.website == 'true'/, 'visibility crawl must run for website changes');
   assert.doesNotMatch(step, /menu_only/, 'visibility crawl must not be bypassed for menu-only changes');
   assert.match(step, /standalone-visibility-check\.mjs/, 'visibility crawl must execute the full public-page checker');
+  assert.match(workflow, /public-visibility:\n\s+needs: \[classify, preview-ready\]/, 'visibility crawl must wait for the exact deploy preview');
 });
 
 // Keep this regression contract in the website lane so the fail-closed crawl can never silently disappear.

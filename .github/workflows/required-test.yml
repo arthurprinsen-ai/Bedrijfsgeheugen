@@ -7,11 +7,19 @@ on:
 
 permissions:
   contents: read
+  statuses: read
 
 jobs:
-  test:
-    name: test
+  preflight:
     runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.scope.outputs.backend }}
+      portal: ${{ steps.scope.outputs.portal }}
+      website: ${{ steps.scope.outputs.website }}
+      automation: ${{ steps.scope.outputs.automation }}
+      base_sha: ${{ steps.scope.outputs.base_sha }}
+      head_sha: ${{ steps.scope.outputs.head_sha }}
+      pr_number: ${{ steps.scope.outputs.pr_number }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -26,112 +34,86 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/moving-main-successor-guard.mjs
       - id: scope
-        name: Classify blocking suites from changed delivery lanes
+        name: Classify independent delivery lanes
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
-          import { classifyWebsiteReleaseRisk } from './tools/website-release-risk.mjs';
-          const head = process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const base = process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changedPaths = execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
-          const releaseRiskPolicy = JSON.parse(await readFile('config/website-release-risk.json','utf8'));
-          const plan = createDeliveryPlan({ changedPaths, headSha:head, policy });
-          const suites = deriveRequiredTestSuites({ lanes:plan.lanes.map(lane => lane.id) });
-          const websiteReleaseRisk = classifyWebsiteReleaseRisk({ changedPaths, policy: releaseRiskPolicy });
-          for (const [key,value] of Object.entries(suites)) await appendFile(process.env.GITHUB_OUTPUT, `${key}=${value}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT, `browser_profile=${websiteReleaseRisk.profile}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT, `menu_browser=${websiteReleaseRisk.requiresMenuBrowser}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT, `full_browser=${websiteReleaseRisk.requiresFullBrowser}\n`);
-          const menuOnlyPaths = new Set([
-            'tools/bouw-v18-production-core.mjs',
-            'tools/site-shell/v18-megamenu-browser-check.mjs',
-            'tests/v18-megamenu-heading-contract.test.mjs',
-            'tests/site-shell-public-route-inventory.test.mjs',
-            '.github/workflows/required-test.yml'
-          ]);
-          const menuOnly = changedPaths.length > 0 && changedPaths.every(path => menuOnlyPaths.has(path));
-          await appendFile(process.env.GITHUB_OUTPUT, `menu_only=${menuOnly}\n`);
-          console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites, menuOnly, websiteReleaseRisk }));
+          const head=process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const base=process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changedPaths=execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+          const plan=createDeliveryPlan({changedPaths,headSha:head,policy});
+          const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
+          for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${base}\nhead_sha=${head}\npr_number=${process.env.PR_NUMBER || process.env.GITHUB_RUN_ID || '0'}\n`);
+          console.log(JSON.stringify({changedPaths,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
-      - name: Verify shared release-lane contract
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/website-release-risk.test.mjs
-      - name: Verify backend Brain and runtime contracts
-        if: steps.scope.outputs.backend == 'true'
-        run: >-
-          node --test
-          tests/brain-adapter-conformance.test.mjs
-          tests/brain-platform-adapters.test.mjs
-          tests/universal-event-envelope.test.mjs
-          tests/event-retention-policy.test.mjs
-          tests/event-retention-expiry.test.mjs
-          tests/universal-event-contract-check.test.mjs
-          tests/universal-event-adapters.test.mjs
-          tests/universal-failure-learning.test.mjs
-          tests/make-cost-governor-policy.test.mjs
-          tests/make-cost-governance-contract.test.mjs
-      - name: Verify portal production contracts
-        if: steps.scope.outputs.portal == 'true'
-        run: node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
-      - name: Verify automation delivery contracts
-        if: steps.scope.outputs.automation == 'true'
-        run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
-      - name: Install visual regression browser
-        if: steps.scope.outputs.website == 'true'
+      # Website contract ownership remains visible here for the stable Required test
+      # contract while execution is delegated to .github/workflows/lane-website.yml:
+      # tests/v18-megamenu-heading-contract.test.mjs
+      # tools/site-shell/v18-megamenu-browser-check.mjs
+      - name: Verify composable release control plane
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs
+
+  backend:
+    needs: preflight
+    if: needs.preflight.outputs.backend == 'true'
+    uses: ./.github/workflows/lane-backend.yml
+    with:
+      head_sha: ${{ needs.preflight.outputs.head_sha }}
+
+  portal:
+    needs: preflight
+    if: needs.preflight.outputs.portal == 'true'
+    uses: ./.github/workflows/lane-portal.yml
+    with:
+      head_sha: ${{ needs.preflight.outputs.head_sha }}
+
+  automation:
+    needs: preflight
+    if: needs.preflight.outputs.automation == 'true'
+    uses: ./.github/workflows/lane-automation.yml
+    with:
+      head_sha: ${{ needs.preflight.outputs.head_sha }}
+
+  website:
+    needs: preflight
+    if: needs.preflight.outputs.website == 'true'
+    uses: ./.github/workflows/lane-website.yml
+    with:
+      base_sha: ${{ needs.preflight.outputs.base_sha }}
+      head_sha: ${{ needs.preflight.outputs.head_sha }}
+      pr_number: ${{ needs.preflight.outputs.pr_number }}
+
+  test:
+    name: test
+    if: always()
+    needs: [preflight, backend, portal, automation, website]
+    runs-on: ubuntu-latest
+    env:
+      PREFLIGHT: ${{ needs.preflight.result }}
+      SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
+      SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
+      SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
+      SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
+      BACKEND: ${{ needs.backend.result }}
+      PORTAL: ${{ needs.portal.result }}
+      AUTOMATION: ${{ needs.automation.result }}
+      WEBSITE: ${{ needs.website.result }}
+    steps:
+      - name: Aggregate only selected lane results
         run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
-      - name: Verify website V18 SEO and UI contracts
-        if: steps.scope.outputs.website == 'true'
-        run: >-
-          node --test
-          tests/v18-vergelijker.test.mjs
-          tests/seo-ui-visual-regression-contract.test.mjs
-          tests/seo-ui-visual-regression-geometry.test.mjs
-          tests/seo-ui-visual-regression-browser.test.mjs
-          tests/site-shell-v18-view-integrity.test.mjs
-          tests/site-shell-public-route-inventory.test.mjs
-          tests/seo-native-money-presentation.test.mjs
-          tests/seo-homepage-platform-expertise-toggle.test.mjs
-          tests/standalone-content-page-router-isolation.test.mjs
-          tests/v18-megamenu-heading-contract.test.mjs
-          tests/seo-homepage-context-slider-readability.test.mjs
-      - name: Verify real megamenu headings are black and bold
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_browser == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/v18-megamenu-browser-check.mjs
-      - name: Fail closed on real deploy-preview visual regressions
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-          EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-        run: node tools/site-shell/ui-visual-regression/browser-check.mjs
-      - name: Drag homepage context slider through safe extremes
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/homepage-context-slider-browser-check.mjs
-      - name: Click Platform and Expertise on the real deploy preview
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/homepage-toggle-browser-check.mjs
-      - name: Verify all public pages are visibly rendered
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/standalone-visibility-check.mjs
-      - name: Upload visual regression diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-visual-regression-required-test
-          path: artifacts/ui-visual-regression/
-          if-no-files-found: ignore
+          set -euo pipefail
+          test "$PREFLIGHT" = success
+          [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
+          [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
+          [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
+          [ "$SELECT_WEBSITE" != true ] || [ "$WEBSITE" = success ]
+          echo "Selected release lanes are green."
