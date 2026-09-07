@@ -20,7 +20,7 @@ export const interactionContracts = [
   {
     id: 'homepage-platform-expertise-toggle',
     route: '/',
-    root: '[data-bg-platform-expertise-toggle]',
+    root: '#homepage-platform-tab',
     viewports: ['desktop', 'mobile'],
     states: ['platform', 'expertise'],
     triggers: ['click', 'keyboard'],
@@ -31,8 +31,8 @@ export const interactionContracts = [
     },
     hooks: {
       state: 'aria-selected',
-      step: 'role=tab',
-      overlay: 'role=tabpanel',
+      step: 'data-bg-home-tab',
+      overlay: 'data-bg-home-panel',
     },
   },
 ];
