@@ -3,19 +3,21 @@ import assert from 'node:assert/strict';
 
 const baseUrl = process.env.UI_VR_BASE_URL || 'https://www.bedrijfsgeheugen.nl';
 const labels = ['BEDRIJF', 'KENNIS', 'VERTROUWEN', 'SUPPORT'];
-const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-try {
-  await page.goto(baseUrl, { waitUntil: 'networkidle', timeout: 90_000 });
-  const meer = page.getByRole('button', { name: /^Meer(?:\s*▼)?$/i }).first();
-  await meer.waitFor({ state: 'visible', timeout: 30_000 });
-  await meer.click();
-  await page.waitForTimeout(250);
+const maxAttempts = Number.parseInt(process.env.MEGAMENU_CHECK_ATTEMPTS || '12', 10);
+const retryDelayMs = Number.parseInt(process.env.MEGAMENU_CHECK_RETRY_MS || '5000', 10);
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  const result = await page.evaluate((expectedLabels) => {
+async function inspectMegamenu(page) {
+  await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+  const meer = page.getByRole('button', { name: /^Meer(?:\s*▼)?$/i }).first();
+  await meer.waitFor({ state: 'visible', timeout: 10_000 });
+  await meer.click();
+  await page.waitForTimeout(300);
+
+  return page.evaluate((expectedLabels) => {
     const visible = (el) => { const s=getComputedStyle(el),r=el.getBoundingClientRect(); return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)>0&&r.width>0&&r.height>0; };
     const norm = (v) => String(v||'').replace(/\s+/g,' ').trim().toUpperCase();
-    const inMenu = (el) => { let n=el.parentElement; for(let d=0;n&&d<8;d+=1,n=n.parentElement){const t=norm(n.textContent);if(t.includes('MENSEN EERST. DAN TECHNIEK.')&&t.includes('VOLLEDIGE WEBSITEKAART'))return true;} return false; };
+    const inMenu = (el) => { let n=el.parentElement; for(let d=0;n&&d<12;d+=1,n=n.parentElement){const t=norm(n.textContent);if(t.includes('MENSEN EERST. DAN TECHNIEK.')&&t.includes('VOLLEDIGE WEBSITEKAART'))return true;} return false; };
     const isPromoLink = (el) => { const t=norm(el.textContent); return t.includes('MENSEN EERST. DAN TECHNIEK.')||t.includes('BEDRIJFSGEHEUGEN'); };
 
     const headings = expectedLabels.map((label)=>{
@@ -27,11 +29,17 @@ try {
 
     const ordinaryLinks = [...document.querySelectorAll('a')]
       .filter((el)=>visible(el)&&inMenu(el)&&!isPromoLink(el))
-      .map((el)=>{const s=getComputedStyle(el);return{text:norm(el.textContent),color:s.color,fontWeight:s.fontWeight,marked:el.hasAttribute('data-bg-megamenu-link')};});
+      .map((el)=>{
+        const s=getComputedStyle(el);
+        const descendants=[...el.querySelectorAll('*')].filter(visible).map((child)=>{const cs=getComputedStyle(child);return{tag:child.tagName,color:cs.color,fontWeight:cs.fontWeight};});
+        return{text:norm(el.textContent),color:s.color,fontWeight:s.fontWeight,marked:el.hasAttribute('data-bg-megamenu-link'),descendants};
+      });
 
     return { headings, ordinaryLinks };
   }, labels);
+}
 
+function assertMegamenu(result) {
   for (const item of result.headings) {
     assert.equal(item.found, true, `${item.label}: visible real-menu heading not found`);
     assert.equal(item.color, 'rgb(0, 0, 0)', `${item.label}: expected black, got ${item.color}`);
@@ -43,7 +51,33 @@ try {
     assert.equal(item.marked, true, `${item.text}: missing contrast marker`);
     assert.equal(item.color, 'rgb(0, 0, 0)', `${item.text}: expected black, got ${item.color}`);
     assert.ok(Number.parseInt(item.fontWeight,10)>=700, `${item.text}: expected bold >=700, got ${item.fontWeight}`);
+    for (const child of item.descendants) {
+      assert.equal(child.color, 'rgb(0, 0, 0)', `${item.text}/${child.tag}: expected black, got ${child.color}`);
+      assert.ok(Number.parseInt(child.fontWeight,10)>=700, `${item.text}/${child.tag}: expected bold >=700, got ${child.fontWeight}`);
+    }
   }
+}
 
-  console.log('V18 megamenu contrast browser contract passed:', JSON.stringify(result));
-} finally { await browser.close(); }
+const browser = await chromium.launch({ headless: true });
+let lastError;
+try {
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    try {
+      const result = await inspectMegamenu(page);
+      assertMegamenu(result);
+      console.log(`V18 megamenu contrast browser contract passed on attempt ${attempt}:`, JSON.stringify(result));
+      lastError = null;
+      break;
+    } catch (error) {
+      lastError = error;
+      console.warn(`V18 megamenu check attempt ${attempt}/${maxAttempts} failed: ${error?.message || error}`);
+      if (attempt < maxAttempts) await sleep(retryDelayMs);
+    } finally {
+      await page.close();
+    }
+  }
+  if (lastError) throw lastError;
+} finally {
+  await browser.close();
+}
