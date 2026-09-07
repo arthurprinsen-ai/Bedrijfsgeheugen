@@ -22,7 +22,7 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.match(fixer,/#compareSlider/);
   assert.match(fixer,/\.compare-slider/);
   assert.match(fixer,/\[data-compare-slider\]/);
-  assert.match(fixer,/min:0,max:100/);
+  assert.match(fixer,/Math\.max\(0,Math\.min\(100/);
   assert.match(fixer,/aria-valuemin[^\n]*['"]0['"]/);
   assert.match(fixer,/aria-valuemax[^\n]*['"]100['"]/);
   assert.doesNotMatch(fixer,/safePanePx/);
@@ -44,7 +44,7 @@ test('wijzigingssectie borgt vier zichtbare checks op mobiel',()=>{
   assert.match(fixer,/data-bg-change-check-source/);
   assert.match(fixer,/bg-change-check-fallback/);
   assert.match(fixer,/left:18px;bottom:42px;width:42px;height:42px/);
-  assert.match(fixer,/new MutationObserver\(ensureFourChangeChecks\)/);
+  assert.match(fixer,/ensureFourChangeChecks\(\);ensureSliders\(\)/);
 });
 
 test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-markup',()=>{
@@ -67,8 +67,8 @@ test('browsercheck verifieert uiterste links en rechts op desktop en gangbare te
   assert.match(browserCheck,/page\.mouse\.up/);
   assert.match(browserCheck,/split\s*<=\s*1/);
   assert.match(browserCheck,/split\s*>=\s*99/);
-  assert.match(browserCheck,/aria\.min\s*===\s*0/);
-  assert.match(browserCheck,/aria\.max\s*===\s*100/);
+  assert.match(browserCheck,/g\.aria\.min\s*!==\s*0/);
+  assert.match(browserCheck,/g\.aria\.max\s*!==\s*100/);
   assert.match(websiteLane,/homepage-context-slider-browser-check\.mjs/);
 });
 
