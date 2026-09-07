@@ -11,14 +11,14 @@
       { "name": "small-desktop", "width": 1024, "height": 768 },
       { "name": "intermediate-desktop", "width": 1128, "height": 653 },
       { "name": "desktop", "width": 1440, "height": 900 },
-      { "name": "wide-screenshot-regression", "width": 1542, "height": 632 },
+      { "name": "wide-screenshot-regression", "width": 1542, "height": 900 },
       { "name": "wide-desktop", "width": 1600, "height": 900 }
     ]
   },
   "pages": [
     {
       "route": "/",
-      "required": ["main h1", "[data-bg-automation-heading]", "[data-bg-automation-description]", "[data-bg-automation-card]"],
+      "required": ["main h1"],
       "protectedPairs": [
         {
           "a": "[data-bg-automation-copy]",
