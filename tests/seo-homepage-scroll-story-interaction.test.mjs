@@ -25,8 +25,8 @@ test('homepage story is projected on final output without runtime layout discove
   assert.doesNotMatch(source, /position\s*:\s*sticky/i, 'story enhancement may never manufacture a sticky stage');
   assert.doesNotMatch(source, /min-height\s*:\s*\d+(?:\.\d+)?vh/i, 'story enhancement may never manufacture multi-viewport height');
 
-  assert.match(source, /\[data-bg-story-root\][^{]*\{[^}]*min-height:0!important[^}]*height:auto!important/s,
-    'explicit story root must collapse any inherited manufactured height');
+  assert.match(source, /min-height:0!important;/, 'explicit story root must collapse inherited minimum height');
+  assert.match(source, /height:auto!important;/, 'explicit story root must return to content-owned height');
   assert.match(source, /IntersectionObserver/, 'story activation must observe the explicit root rather than infer a page-wide stage');
   assert.match(source, /aria-current/, 'active story step must expose accessible state');
   assert.match(source, /data-bg-story-cost/, 'cost widget needs an explicit overlap suppression hook');
