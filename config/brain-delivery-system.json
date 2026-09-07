@@ -15,7 +15,9 @@
     "brain/contracts/",
     "brain/production/",
     "tools/brain-delivery-system.mjs",
+    "tools/website-release-risk.mjs",
     "tests/development-doc-contract.test.mjs",
+    "tests/website-release-risk.test.mjs",
     ".github/workflows/"
   ],
   "nonExecutableSharedPaths": ["docs/changes/", "docs/learning/"],
