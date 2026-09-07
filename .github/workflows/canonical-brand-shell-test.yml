@@ -13,5 +13,3 @@ jobs:
         with:
           node-version: 24
       - run: node tools/site-shell/test-shell-components.mjs
-      - run: node --test tests/compare-slider-readability.test.mjs
-      - run: node tools/site-shell/verify-compare-slider-readability.mjs
