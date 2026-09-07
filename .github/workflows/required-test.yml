@@ -17,6 +17,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Install visual regression dependencies
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
       - name: Run required Brain, delivery and UI regression contracts
         run: >-
           node --test
@@ -31,3 +35,19 @@ jobs:
           tests/make-cost-governor-policy.test.mjs
           tests/make-cost-governance-contract.test.mjs
           tests/v18-vergelijker.test.mjs
+          tests/ui-visual-regression-contract.test.mjs
+          tests/ui-visual-regression-geometry.test.mjs
+          tests/ui-visual-regression-browser.test.mjs
+      - name: Fail closed on real deploy-preview visual regressions
+        if: github.event_name == 'pull_request'
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+          EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: node tools/ui-visual-regression/browser-check.mjs
+      - name: Upload visual regression diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-visual-regression-required-test
+          path: artifacts/ui-visual-regression/
+          if-no-files-found: ignore
