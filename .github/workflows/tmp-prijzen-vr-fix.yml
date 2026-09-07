@@ -1,0 +1,56 @@
+name: Temporary prijzen visual gate repair
+
+on:
+  push:
+    branches:
+      - fix/prijzen-mobile-whitebar-guard
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/prijzen-mobile-whitebar-guard
+          fetch-depth: 0
+      - name: Repair truthful visual contract and font stability
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          cfg_path = Path('config/ui-visual-regression.json')
+          cfg = json.loads(cfg_path.read_text())
+          for page in cfg['pages']:
+              if page.get('route') == '/prijzen':
+                  page['required'] = [
+                      'main .held[data-bg-component="hero"] .bgkruim',
+                      'main .held[data-bg-component="hero"] h1',
+                      'main .held[data-bg-component="hero"] .pil',
+                  ]
+          cfg_path.write_text(json.dumps(cfg, indent=2, ensure_ascii=False) + '\n')
+
+          p = Path('prijzen.html')
+          html = p.read_text()
+          old = 'family=Instrument+Sans:wght@400;500;600&display=swap'
+          # Existing URL may omit display entirely. Make font swapping optional so
+          # a late webfont cannot shift the large pricing hero on first view.
+          if '&display=swap' in html:
+              html = html.replace('&display=swap', '&display=optional', 1)
+          elif 'family=Instrument+Sans:wght@400;500;600" rel="stylesheet"' in html:
+              html = html.replace('family=Instrument+Sans:wght@400;500;600" rel="stylesheet"', 'family=Instrument+Sans:wght@400;500;600&display=optional" rel="stylesheet"', 1)
+          p.write_text(html)
+          PY
+      - name: Remove temporary workflow
+        run: rm .github/workflows/tmp-prijzen-vr-fix.yml
+      - name: Commit repair
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/ui-visual-regression.json prijzen.html .github/workflows/tmp-prijzen-vr-fix.yml
+          git commit -m "fix: make prijzen mobile visual gate production-truthful"
+          git push origin HEAD:fix/prijzen-mobile-whitebar-guard
