@@ -7,7 +7,7 @@ export async function loadPortalProject({fetchFn=globalThis.fetch,endpoint='/api
     if(response.status===401)return {state:'unauthorized',project:null,error:null};
     if(response.status===403){
       const payload=await response.json().catch(()=>({}));
-      if(payload?.error==='TENANT_NOT_CONFIGURED')return {state:'tenant-unconfigured',project:null,error:'TENANT_NOT_CONFIGURED'};
+      if(payload?.error==='TENANT_NOT_CONFIGURED')return {state:'error',project:null,error:'Tenantkoppeling ontbreekt. Laat de beheerder deze gebruiker aan de juiste organisatie koppelen.'};
       return {state:'unauthorized',project:null,error:null};
     }
     if(response.status===404)return {state:'empty',project:null,error:null};
