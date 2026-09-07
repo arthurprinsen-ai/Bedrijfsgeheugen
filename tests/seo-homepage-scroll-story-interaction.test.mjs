@@ -26,6 +26,8 @@ test('homepage scroll story is wired on the final built homepage output', () => 
 
   assert.match(source, /setStoryState/, 'scroll and click must share one canonical state setter');
   assert.match(source, /requestAnimationFrame/, 'scroll updates must be frame-bounded');
+  assert.match(source, /addEventListener\('click'/, 'CTA and/or story steps must be clickable');
+  assert.match(source, /window\.scrollTo/, 'click navigation must move the sticky story to the corresponding state');
   assert.match(source, /prefers-reduced-motion/, 'reduced-motion behavior is missing');
   assert.match(source, /data-bg-story-state/, 'story state must be reflected in DOM state');
   assert.match(source, /data-bg-story-step/, 'story steps must expose explicit state hooks');
