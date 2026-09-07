@@ -26,16 +26,17 @@ test('new portal keeps evidence trace visible on native page views',()=>{
   for(const label of ['Managementbeeld','Operationele details','Trace & evidence','Bron','Datahub','AI Brain','Powerhouse','Actie','Outcome','Learning']) assert.match(js,new RegExp(label));
 });
 
-test('legacy-backed pages render their complete existing content inline, not only as an external link',()=>{
-  assert.match(js,/native-legacy-frame/);
-  assert.match(js,/\/klantportaal\.html/);
-  assert.match(js,/data-legacy-tab/);
-  assert.match(js,/querySelector\(`\[data-p=/);
-  assert.match(js,/styleLegacyDocument/);
-  assert.match(css,/\.native-legacy-frame/);
+test('project-backed pages render natively without a visible legacy bridge',()=>{
+  assert.match(js,/renderProjectPage/);
+  assert.match(js,/PROJECT_PAGES/);
+  assert.doesNotMatch(js,/native-legacy-frame/);
+  assert.doesNotMatch(js,/\/klantportaal\.html/);
+  assert.doesNotMatch(js,/data-legacy-tab/);
+  assert.doesNotMatch(js,/styleLegacyDocument/);
+  assert.doesNotMatch(css,/\.native-legacy-frame/);
 });
 
 test('approved overview remains the canonical dashboard instead of becoming a generic page',()=>{
-  assert.match(js,/if\(id==='overzicht'\)\{showOverview\(\);return;\}/);
+  assert.match(js,/if\(id==='overzicht'\)\{showOverview\(\{historyMode\}\);return;\}/);
   assert.match(js,/Grip op je bedrijf\. Van context naar besluit, actie, bewijs en leren\./);
 });
