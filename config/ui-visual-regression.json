@@ -9,6 +9,7 @@
       { "name": "phone", "width": 390, "height": 844 },
       { "name": "tablet", "width": 768, "height": 1024 },
       { "name": "small-desktop", "width": 1024, "height": 768 },
+      { "name": "intermediate-desktop", "width": 1128, "height": 653 },
       { "name": "desktop", "width": 1440, "height": 900 }
     ]
   },
@@ -22,6 +23,9 @@
           "b": "[data-bg-automation-visual]",
           "maxIntersectionAreaPx2": 0
         }
+      ],
+      "geometryGuards": [
+        { "selector": "[data-bg-story-root]", "maxHeightViewportRatio": 1.75 }
       ],
       "interactions": []
     },

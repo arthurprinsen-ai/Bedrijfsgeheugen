@@ -69,13 +69,19 @@ body *{
   margin:0!important;
   z-index:1!important;
 }
-@media(max-width:1180px){
-  [data-bg-automation-layout]{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;column-gap:2.5rem!important}
+[data-bg-automation-visual]>*{
+  min-width:0!important;
+  max-width:100%!important;
 }
-@media(max-width:980px){
-  [data-bg-automation-layout]{grid-template-columns:1fr!important;row-gap:2rem!important}
+/* Between tablet and wide desktop the product card is wider than the safe
+   visual column. Stack before that intrinsic width can enter the copy area. */
+@media(max-width:1180px){
+  [data-bg-automation-layout]{grid-template-columns:1fr!important;row-gap:2.25rem!important}
   [data-bg-automation-copy]{max-width:42rem!important}
   [data-bg-automation-visual]{max-width:46rem!important;justify-self:start!important}
+}
+@media(max-width:980px){
+  [data-bg-automation-layout]{row-gap:2rem!important}
 }
 </style>`;
 

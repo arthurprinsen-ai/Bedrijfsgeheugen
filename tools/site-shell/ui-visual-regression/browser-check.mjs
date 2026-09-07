@@ -104,10 +104,20 @@ async function measure(page, pageContract, viewport) {
         allowance: pair.maxIntersectionAreaPx2
       };
     });
+    const geometryGuards = (pageContract.geometryGuards || []).map(guard => {
+      const el = document.querySelector(guard.selector);
+      return {
+        selector: guard.selector,
+        present: Boolean(el),
+        rect: el ? rectFor(el) : null,
+        maxHeightViewportRatio: guard.maxHeightViewportRatio
+      };
+    });
     return {
       viewport,
       required,
       pairs,
+      geometryGuards,
       document: { scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth },
       cls: window.__bgUiVrCls || { value: 0, entries: [] }
     };
