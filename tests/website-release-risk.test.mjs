@@ -14,6 +14,10 @@ test('pure release control-plane changes do not require deploy-preview UI checks
   assert.equal(profile(['config/website-release-risk.json','tools/website-release-risk.mjs','tests/website-release-risk.test.mjs','.github/workflows/required-test.yml']), 'none');
 });
 
+test('production release verifier remains control-plane even inside the site-shell namespace', () => {
+  assert.equal(profile(['tools/site-shell/verify-production-release.mjs']), 'none');
+});
+
 test('megamenu implementation changes require the focused menu browser gate', () => {
   assert.equal(profile(['tools/bouw-v18-production-core.mjs']), 'menu');
   assert.equal(profile(['tools/site-shell/v18-megamenu-heading-contract.mjs']), 'menu');
