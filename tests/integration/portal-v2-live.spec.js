@@ -53,8 +53,21 @@ test('portal-v2 keeps the same design language on a phone without horizontal pag
   await expect(page.locator('.sidebar')).toBeHidden();
   await expect(page.locator('.mobilebar')).toBeVisible();
   await expect(page.getByRole('heading', { name: /Het brein van je bedrijf/ })).toBeVisible();
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  expect(overflow).toBeLessThanOrEqual(1);
   await page.screenshot({ path: 'artifacts/portal-v2-mobile.png', fullPage: true });
+
+  const diagnosis = await page.evaluate(() => {
+    const width = document.documentElement.clientWidth;
+    const overflow = document.documentElement.scrollWidth - width;
+    const offenders = [...document.querySelectorAll('body *')].map(el => {
+      const r = el.getBoundingClientRect();
+      const s = getComputedStyle(el);
+      return {
+        selector: `${el.tagName.toLowerCase()}${el.id ? '#'+el.id : ''}${el.className && typeof el.className === 'string' ? '.'+el.className.trim().split(/\s+/).filter(Boolean).slice(0,3).join('.') : ''}`,
+        left: Math.round(r.left), right: Math.round(r.right), width: Math.round(r.width), overflowX: s.overflowX, position: s.position
+      };
+    }).filter(x => x.right > width + 1 || x.left < -1).slice(0,20);
+    return { width, scrollWidth: document.documentElement.scrollWidth, overflow, offenders };
+  });
+  expect(diagnosis.overflow, JSON.stringify(diagnosis)).toBeLessThanOrEqual(1);
   expect(errors).toEqual([]);
 });
