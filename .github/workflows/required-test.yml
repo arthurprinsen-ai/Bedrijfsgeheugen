@@ -55,7 +55,7 @@ jobs:
           console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites, menuOnly }));
           NODE
       - name: Verify shared release-lane contract
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs
       - name: Verify backend Brain and runtime contracts
         if: steps.scope.outputs.backend == 'true'
         run: >-
