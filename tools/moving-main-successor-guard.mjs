@@ -16,7 +16,7 @@ export function evaluateSuccessorCreation({ priorCandidateOpen = true, existingC
 
 export function evaluatePullRequestSuccessorGuard({ title = '', body = '' } = {}) {
   const text = `${title}\n${body}`;
-  const claimsSuccessor = /\b(successor|supersed(?:e|es|ed)|rebuilt?\s+(?:from|on)|rebas(?:e|ed|ing)\s+(?:on|to)|moving[- ]main|main\s+moved|current\s+main)\b/i.test(text);
+  const claimsSuccessor = /(?:\bclean\s+successor\b|\bsuccessor\s+to\s+#?\d+\b|\bsupersed(?:e|es|ed)\s+#?\d+\b|\brebuilt?\s+(?:from|on)\s+(?:the\s+)?current\s+main\b|\brebas(?:e|ed|ing)\s+(?:on|to)\s+(?:the\s+)?current\s+main\b|\bmain\s+moved\s+again\b|\bmoving[- ]main\s+(?:handoff|conflict|protection)\b)/i.test(text);
   if (!claimsSuccessor) return Object.freeze({ ok:true, state:'NOT_A_SUCCESSOR', action:'CONTINUE' });
   const syncRequired = /Handoff-Decision:\s*SYNC_REQUIRED\b/i.test(body);
   const unsynchronizable = /Existing-Candidate-Synchronizable:\s*false\b/i.test(body);
