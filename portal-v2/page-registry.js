@@ -14,7 +14,7 @@ export function findPage(pageId) {
   return PORTAL_PAGE_INDEX[pageId] || null;
 }
 
-export function buildLegacyUrl(pageId, klantSlug='ijsselmonde', base='https://www.bedrijfsgeheugen.nl/klantportaal') {
+export function buildLegacyUrl(pageId, klantSlug='ijsselmonde', base='https://www.bedrijfsgeheugen.nl/klantportaal.html') {
   const page = findPage(pageId);
   if (!page) return null;
   const url = new URL(base, 'https://www.bedrijfsgeheugen.nl');
