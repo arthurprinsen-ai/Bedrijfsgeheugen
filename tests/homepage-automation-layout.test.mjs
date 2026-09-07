@@ -19,5 +19,7 @@ test('automation layout fixer exists and is wired before final verification', as
   assert.match(source, /grid-template-columns/);
   assert.match(source, /position:relative!important/);
   assert.match(source, /transform:none!important/);
-  assert.match(source, /@media\(max-width:980px\)/);
+  assert.match(source, /@media\(max-width:1180px\)[\s\S]*grid-template-columns:1fr!important/,
+    'At <=1180px the automation section must stack so the fixed-size product card cannot enter the copy column');
+  assert.match(source, /\[data-bg-automation-visual\]>\*/);
 });
