@@ -14,14 +14,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Install visual regression browser
+      - id: scope
+        name: Classify blocking suites from changed delivery lanes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
-      - name: Run required Brain, delivery and UI regression contracts
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { readFile, appendFile } from 'node:fs/promises';
+          import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
+          import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
+          const head = process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const base = process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changedPaths = execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+          const plan = createDeliveryPlan({ changedPaths, headSha:head, policy });
+          const suites = deriveRequiredTestSuites({ lanes:plan.lanes.map(lane => lane.id) });
+          for (const [key,value] of Object.entries(suites)) await appendFile(process.env.GITHUB_OUTPUT, `${key}=${value}\n`);
+          console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites }));
+          NODE
+      - name: Verify shared release-lane contract
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs
+      - name: Verify backend Brain and runtime contracts
+        if: steps.scope.outputs.backend == 'true'
         run: >-
           node --test
           tests/brain-adapter-conformance.test.mjs
@@ -34,6 +55,21 @@ jobs:
           tests/universal-failure-learning.test.mjs
           tests/make-cost-governor-policy.test.mjs
           tests/make-cost-governance-contract.test.mjs
+      - name: Verify portal production contracts
+        if: steps.scope.outputs.portal == 'true'
+        run: node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
+      - name: Verify automation delivery contracts
+        if: steps.scope.outputs.automation == 'true'
+        run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
+      - name: Install visual regression browser
+        if: steps.scope.outputs.website == 'true'
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify website V18 SEO and UI contracts
+        if: steps.scope.outputs.website == 'true'
+        run: >-
+          node --test
           tests/v18-vergelijker.test.mjs
           tests/seo-ui-visual-regression-contract.test.mjs
           tests/seo-ui-visual-regression-geometry.test.mjs
@@ -44,23 +80,23 @@ jobs:
           tests/standalone-content-page-router-isolation.test.mjs
           tests/v18-megamenu-heading-contract.test.mjs
       - name: Fail closed on real deploy-preview visual regressions
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
           EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: node tools/site-shell/ui-visual-regression/browser-check.mjs
       - name: Click Platform and Expertise on the real deploy preview
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/homepage-toggle-browser-check.mjs
       - name: Verify AI Act and benchmark are visibly rendered
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify real megamenu headings are black and bold
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/v18-megamenu-browser-check.mjs
