@@ -1,4 +1,5 @@
 const field=(key,label,type='string',required=false,confidenceThreshold=.8)=>({key,label,type,required,confidenceThreshold});
+const map=(sourceField,targetField=sourceField,type='none')=>({sourceField,targetField,transformation:{type}});
 
 export const SOURCE_ADAPTERS=[
   {id:'email',label:'E-mail / gedeelde mailbox',supportsConfig:true,runtimeCapability:'server-provider-required'},
@@ -25,7 +26,7 @@ export const TARGET_ADAPTERS=[
   {id:'supabase',label:'Supabase / Postgres',supportsConfig:true,runtimeCapability:'server-provider-required'},
   {id:'sql',label:'SQL database',supportsConfig:true,runtimeCapability:'server-provider-required'},
   {id:'sharepoint',label:'SharePoint',supportsConfig:true,runtimeCapability:'server-provider-required'},
-  {id:'datahub',label:'Bedrijfsgeheugen Datahub',supportsConfig:true,runtimeCapability:'server-provider-required'},
+  {id:'datahub',label:'Bedrijfsgeheugen Datahub',supportsConfig:true,runtimeCapability:'native-safe-test'},
   {id:'rest',label:'REST API',supportsConfig:true,runtimeCapability:'server-provider-required'},
   {id:'webhook',label:'Webhook',supportsConfig:true,runtimeCapability:'server-provider-required'},
   {id:'make',label:'Make',supportsConfig:true,runtimeCapability:'server-provider-required'},
@@ -64,7 +65,7 @@ const base=(id,name)=>({
   id,name,
   source:{type:'upload',config:{}},
   documentSchema:{id:`${id}-schema`,version:1,name,fields:[]},
-  lookups:[],mappings:[],target:{type:'datahub',config:{}},
+  lookups:[],validationRules:[],mappings:[],target:{type:'datahub',config:{}},
   reviewPolicy:{requiredBelowConfidence:.8},
   dedupe:{strategy:'content-hash'}
 });
@@ -74,10 +75,39 @@ export const CONNECTOR_TEMPLATES=[
     ...base('email-pdf-afas','E-mail PDF → AFAS Document Intake'),
     source:{type:'email',acceptedMimeTypes:['application/pdf'],config:{}},
     documentSchema:{id:'afas-document-intake-schema',version:1,name:'AFAS Document Intake',fields:[field('document_type','Documenttype','string',true,.9),field('subject','Onderwerp','string',true,.8)]},
+    mappings:[map('document_type','document_type','trim'),map('subject','subject','trim')],
     target:{type:'afas',profile:'KnSubject',config:{}},
     legacy:{solutionPattern:'AFAS Document Intake',flowPattern:'PA - Intake - Loonbeslag Email to AFAS',reviewPattern:'AFAS Document Intake Review'}
   },
-  {...base('purchase-invoice','Inkoopfactuur'),documentSchema:{id:'purchase-invoice-schema',version:1,name:'Inkoopfactuur',fields:invoiceFields}},
-  {...base('iso-document','ISO-document'),documentSchema:{id:'iso-document-schema',version:1,name:'ISO-certificaat / audit',fields:isoFields}},
+  {
+    ...base('purchase-invoice','Inkoopfactuur'),
+    documentSchema:{id:'purchase-invoice-schema',version:1,name:'Inkoopfactuur',fields:invoiceFields},
+    lookups:[
+      {id:'invoice_duplicate',adapter:'supabase',sourceField:'invoice_number',match:'exact',required:false},
+      {id:'purchase_order',adapter:'supabase',sourceField:'purchase_order_number',match:'exact',required:false}
+    ],
+    validationRules:[
+      {type:'block_lookup_match',lookupId:'invoice_duplicate',code:'DUPLICATE_INVOICE'},
+      {type:'require_lookup_match_when_present',lookupId:'purchase_order',field:'purchase_order_number',code:'PO_NOT_RESOLVED'},
+      {type:'sum_matches',fields:['subtotal','vat_amount'],totalField:'total_amount',tolerance:.02,code:'AMOUNT_VAT_MISMATCH'}
+    ],
+    mappings:[
+      map('supplier_name','supplier_name','trim'),
+      map('invoice_number','invoice_number','trim'),
+      map('invoice_date'),
+      map('total_amount'),
+      map('currency','currency','uppercase')
+    ]
+  },
+  {
+    ...base('iso-document','ISO-document'),
+    documentSchema:{id:'iso-document-schema',version:1,name:'ISO-certificaat / audit',fields:isoFields},
+    mappings:[
+      map('standard','standard','trim'),
+      map('certificate_number','certificate_number','trim'),
+      map('scope','scope','trim'),
+      map('expiry_date')
+    ]
+  },
   {...base('blank','Lege koppeling'),documentSchema:{id:'custom-document-schema',version:1,name:'Eigen documenttype',fields:[]}}
 ];
