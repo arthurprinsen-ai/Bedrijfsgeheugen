@@ -15,6 +15,10 @@ export function newPageErrors(previewErrors = [], baselineErrors = []) {
   return [...new Set(previewErrors.map(value => String(value)).filter(value => !accepted.has(value)))];
 }
 
+export function productionPageErrors(observedErrors = [], allowExisting = false) {
+  return allowExisting ? [] : [...new Set(observedErrors.map(value => String(value)))];
+}
+
 export function summarizeRouteResult({ visibleText = '', html = '', pageErrors = [], failedAssets = [], httpOk = true, identityOk = true } = {}) {
   const hasVisibleContent = String(visibleText).trim().length > 0 && String(html).trim().length > 0;
   const ok = Boolean(httpOk && identityOk && hasVisibleContent && pageErrors.length === 0 && failedAssets.length === 0);
@@ -64,9 +68,11 @@ async function observeRoute(browser, baseUrl, route, viewport) {
   } finally { await page.close(); }
 }
 
-async function verifyRoute(browser, baseUrl, route, viewport, baselinePageErrors = []) {
+async function verifyRoute(browser, baseUrl, route, viewport, { baselinePageErrors = [], allowExistingPageErrors = false } = {}) {
   const observation = await observeRoute(browser, baseUrl, route, viewport);
-  const pageErrors = newPageErrors(observation.observedPageErrors, baselinePageErrors);
+  const pageErrors = allowExistingPageErrors
+    ? productionPageErrors(observation.observedPageErrors, true)
+    : newPageErrors(observation.observedPageErrors, baselinePageErrors);
   const summary = summarizeRouteResult({
     visibleText:observation.visibleText,
     html:observation.html,
@@ -76,13 +82,14 @@ async function verifyRoute(browser, baseUrl, route, viewport, baselinePageErrors
     identityOk:observation.identity.ok,
   });
   const { visibleText, html, httpOk, ...evidence } = observation;
-  return { ...evidence, baselinePageErrors:[...baselinePageErrors], ...summary };
+  return { ...evidence, baselinePageErrors:[...baselinePageErrors], allowExistingPageErrors, ...summary };
 }
 
 export async function runCli(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
   const baseUrl = args['base-url'] || process.env.BASE_URL;
   const baselineUrl = args['baseline-url'] || process.env.BASELINE_URL || null;
+  const allowExistingPageErrors = String(args['allow-existing-page-errors'] || process.env.ALLOW_EXISTING_PAGE_ERRORS || '').toLowerCase() === 'true';
   const routes = JSON.parse(args.routes || process.env.ROUTES_JSON || '[]');
   if (!baseUrl || !Array.isArray(routes) || routes.length === 0) throw new TypeError('BASE_URL and a non-empty routes JSON array are required');
   const { chromium } = await import('playwright');
@@ -106,11 +113,11 @@ export async function runCli(argv = process.argv.slice(2)) {
             failedAssets:baselineObservation.failedAssets,
           });
         }
-        results.push(await verifyRoute(browser, baseUrl, route, viewport, baselinePageErrors));
+        results.push(await verifyRoute(browser, baseUrl, route, viewport, { baselinePageErrors, allowExistingPageErrors }));
       }
     }
   } finally { await browser.close(); }
-  const evidence = { baseUrl, baselineUrl, routes:[...new Set(routes)].sort(), ok:results.every(item => item.ok), baseline, results };
+  const evidence = { baseUrl, baselineUrl, allowExistingPageErrors, routes:[...new Set(routes)].sort(), ok:results.every(item => item.ok), baseline, results };
   const output = args.output || '.artifacts/targeted-route-verification.json';
   await mkdir(dirname(output), { recursive:true });
   await writeFile(output, `${JSON.stringify(evidence, null, 2)}\n`);
