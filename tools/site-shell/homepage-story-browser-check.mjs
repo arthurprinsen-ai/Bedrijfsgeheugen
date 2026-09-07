@@ -34,17 +34,36 @@ try {
       const r = el.getBoundingClientRect();
       return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > .05 && r.width > 4 && r.height > 4 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
     };
+    const descriptor = el => {
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      const cs = getComputedStyle(el);
+      return {
+        tag: el.tagName,
+        id: el.id || '',
+        className: typeof el.className === 'string' ? el.className : '',
+        rect: { x: r.x, y: r.y, width: r.width, height: r.height },
+        position: cs.position,
+        display: cs.display,
+        minHeight: cs.minHeight,
+        height: cs.height,
+        overflow: cs.overflow,
+        text: text(el).slice(0, 90),
+      };
+    };
 
     const labels = ['Signaal komt binnen', 'Context wordt begrepen', 'Opvolging ontstaat'];
-    const visibleLabels = labels.map(label => ({ label, visible: visible(exact(label)) }));
+    const labelEls = labels.map(label => exact(label));
+    const visibleLabels = labels.map((label, i) => ({ label, visible: visible(labelEls[i]), node: descriptor(labelEls[i]) }));
     const cta = containing('Analyseer impact');
     const ctaVisible = visible(cta);
 
-    const stickyDescendants = Array.from(root.querySelectorAll('*')).filter(el => {
+    const stickyNodes = Array.from(root.querySelectorAll('*')).filter(el => {
       const cs = getComputedStyle(el);
       const r = el.getBoundingClientRect();
       return cs.position === 'sticky' && r.width > 0 && r.height > 0;
-    }).length;
+    });
+    const stickyDescendants = stickyNodes.length;
 
     const cost = document.querySelector('[data-bg-story-cost]');
     const costStyle = cost ? getComputedStyle(cost) : null;
@@ -58,12 +77,16 @@ try {
 
     return {
       ok,
+      root: descriptor(root),
       rootHeight,
       heightRatio,
       rootTop: rootRect.top,
       rootBottom: rootRect.bottom,
+      directChildren: Array.from(root.children).map(descriptor),
+      stickyNodes: stickyNodes.slice(0, 8).map(descriptor),
       visibleLabels,
       ctaVisible,
+      cta: descriptor(cta),
       meaningfulVisibleCount,
       blankViewport,
       stickyDescendants,
