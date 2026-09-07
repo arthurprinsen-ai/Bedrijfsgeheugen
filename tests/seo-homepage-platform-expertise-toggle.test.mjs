@@ -19,3 +19,14 @@ test('homepage build wires Platform/Expertise as a real accessible toggle', () =
   assert.match(source, /Frisse Blik/, 'Expertise panel anchor is missing');
   assert.match(source, /hidden/, 'inactive panel must actually be hidden');
 });
+
+test('homepage toggle scopes the Platform button to the same local control as Expertise', () => {
+  const source = readFileSync('tools/bouw-v18-homepage-platform-expertise-toggle.mjs', 'utf8');
+  assert.match(source, /findLocalTogglePair/, 'toggle must resolve Platform and Expertise as a local pair');
+  assert.doesNotMatch(
+    source,
+    /buttons\.find\(function\(b\)\{return txt\(b\)==='Platform';\}\)/,
+    'document-wide first Platform button is unsafe because the navigation also contains Platform',
+  );
+  assert.match(source, /querySelectorAll\('button'\)/, 'local pair resolver must inspect buttons inside candidate ancestors');
+});
