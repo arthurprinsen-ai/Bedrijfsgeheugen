@@ -14,6 +14,7 @@ async function openHome(page, viewport = 'desktop', reducedMotion = 'no-preferen
   await page.setViewportSize(viewports[viewport]);
   await page.emulateMedia({ reducedMotion });
   await page.goto(`${baseUrl.replace(/\/$/, '')}/`, { waitUntil: 'domcontentloaded' });
+  await page.addStyleTag({ content: '[data-netlify-deploy-id], iframe[title="Netlify Drawer"]{pointer-events:none!important}' });
   await page.waitForSelector('[data-bg-story-root]');
   await page.waitForSelector('#homepage-platform-tab');
 }
@@ -53,6 +54,16 @@ for (const viewport of ['desktop', 'mobile']) {
       await expect(steps).toHaveCount(4);
       await expectStoryState(page, 0);
 
+      if (viewport === 'desktop') {
+        const cta = page.getByText('Analyseer impact', { exact: false }).first();
+        if (await cta.count()) {
+          await cta.click();
+          await expectStoryState(page, 1);
+          await steps.nth(0).click();
+          await expectStoryState(page, 0);
+        }
+      }
+
       for (let state = 0; state < 4; state += 1) {
         await steps.nth(state).click();
         await expectStoryState(page, state);
@@ -75,11 +86,6 @@ for (const viewport of ['desktop', 'mobile']) {
         const positions = await stages.evaluateAll(elements => elements.map(el => getComputedStyle(el).position));
         expect(positions.every(position => position !== 'sticky')).toBe(true);
       } else {
-        const cta = page.getByText('Analyseer impact', { exact: false }).first();
-        if (await cta.count()) {
-          await cta.click();
-          await expectStoryState(page, 1);
-        }
         const cost = page.locator('[data-bg-story-cost]');
         if (await cost.count()) {
           expect(Number(await cost.first().evaluate(el => getComputedStyle(el).opacity))).toBeLessThanOrEqual(0.05);
