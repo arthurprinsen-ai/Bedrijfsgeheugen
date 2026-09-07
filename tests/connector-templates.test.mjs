@@ -29,6 +29,28 @@ test('purchase invoice and ISO templates expose editable extraction schemas',()=
   assert.equal(iso.documentSchema.fields.some(f=>f.key==='expiry_date'),true);
 });
 
+test('purchase invoice template carries declarative duplicate PO and amount validation rules',()=>{
+  const invoice=CONNECTOR_TEMPLATES.find(t=>t.id==='purchase-invoice');
+  assert.equal(invoice.lookups.some(r=>r.id==='invoice_duplicate'),true);
+  assert.equal(invoice.lookups.some(r=>r.id==='purchase_order'),true);
+  assert.equal(invoice.validationRules.some(r=>r.code==='DUPLICATE_INVOICE'),true);
+  assert.equal(invoice.validationRules.some(r=>r.code==='PO_NOT_RESOLVED'),true);
+  assert.equal(invoice.validationRules.some(r=>r.code==='AMOUNT_VAT_MISMATCH'),true);
+  for(const key of ['supplier_name','invoice_number','invoice_date','total_amount','currency'])assert.equal(invoice.mappings.some(m=>m.sourceField===key),true);
+});
+
+test('ISO template maps core certificate fields but does not claim an alert scheduler',()=>{
+  const iso=CONNECTOR_TEMPLATES.find(t=>t.id==='iso-document');
+  for(const key of ['standard','certificate_number','scope','expiry_date'])assert.equal(iso.mappings.some(m=>m.sourceField===key),true);
+  assert.equal(JSON.stringify(iso).includes('alertScheduled'),false);
+  assert.equal(JSON.stringify(iso).includes('scheduler'),false);
+});
+
+test('Datahub adapter metadata matches its native safe-test runtime capability',()=>{
+  const datahub=TARGET_ADAPTERS.find(a=>a.id==='datahub');
+  assert.equal(datahub.runtimeCapability,'native-safe-test');
+});
+
 test('adapter registries expose capability metadata without credentials',()=>{
   for(const registry of [SOURCE_ADAPTERS,LOOKUP_ADAPTERS,TARGET_ADAPTERS]){
     assert.equal(Array.isArray(registry),true);
