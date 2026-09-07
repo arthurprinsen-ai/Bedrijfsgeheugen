@@ -19,7 +19,36 @@ test('leest alleen identity tenant en negeert browser klantparameter',async()=>{
   assert.equal(seen,TENANT_ID);
 });
 
-test('faalt expliciet wanneer identity geen project-tenant heeft in plaats van lege klantdata te suggereren',async()=>{
+test('resolveert ontbrekende identity tenant alleen via server-side geaccepteerd lidmaatschap',async()=>{
+  let resolvedUser=null;
+  let seenTenant='';
+  const h=createPortalProjectHandler({
+    getUser:async()=>({id:'netlify-user-1',email:'arthur@bedrijfsgeheugen.nl'}),
+    store:{
+      resolveTenant:async user=>(resolvedUser=user,TENANT_ID),
+      get:async tenantId=>(seenTenant=tenantId,{customer:{name:'IJsselmonde'},quote:{nummer:'OF-IJS-001'},runtime:null})
+    }
+  });
+  const response=await h(new Request('https://x/api/portal-project?klant=andere-klant'));
+  assert.equal(response.status,200);
+  assert.equal(resolvedUser.email,'arthur@bedrijfsgeheugen.nl');
+  assert.equal(seenTenant,TENANT_ID);
+  assert.equal((await response.json()).quote.nummer,'OF-IJS-001');
+});
+
+test('faalt expliciet wanneer identity geen project-tenant heeft en server-side lidmaatschap ontbreekt',async()=>{
+  let getCalled=false;
+  const h=createPortalProjectHandler({
+    getUser:async()=>({id:'u1',email:'onbekend@example.com'}),
+    store:{resolveTenant:async()=>null,get:async()=>{getCalled=true;return null}}
+  });
+  const response=await h(new Request('https://x/api/portal-project?klant=ijsselmonde'));
+  assert.equal(response.status,403);
+  assert.deepEqual(await response.json(),{error:'TENANT_NOT_CONFIGURED'});
+  assert.equal(getCalled,false);
+});
+
+test('faalt expliciet wanneer identity geen project-tenant heeft en store geen resolver ondersteunt',async()=>{
   let storeCalled=false;
   const h=createPortalProjectHandler({
     getUser:async()=>({id:'u1'}),
