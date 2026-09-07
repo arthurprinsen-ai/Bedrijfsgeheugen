@@ -5,7 +5,7 @@ import { genereerSitemap } from './genereer-sitemap.mjs';
 import { controleerTechnischeSeo } from './controleer-technische-seo.mjs';
 import { applySeoOrderEngine } from './seo-order-engine/apply.mjs';
 import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
-import { fixHomepageAutomationLayout } from './fix-homepage-automation-layout.mjs';
+import { applyHomepageAutomationLayout } from './fix-homepage-automation-layout.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
@@ -50,12 +50,18 @@ export async function bouwPrijsVerwijzing() {
   return gedaan;
 }
 
+async function borgHomepageAutomationLayout() {
+  const html = await readFile('index.html', 'utf8');
+  const next = applyHomepageAutomationLayout(html);
+  await writeFile('index.html', next, 'utf8');
+}
+
 export async function voerPricingShellPipelineUit(stage = 'all') {
   if (stage === 'all' || stage === 'rewrite') await bouwPrijsVerwijzing();
   if (stage === 'all' || stage === 'normalize') {
     await normaliseerAllePaginas();
     await applySeoOrderEngine();
-    await fixHomepageAutomationLayout();
+    await borgHomepageAutomationLayout();
   }
   if (stage === 'all' || stage === 'verify') {
     await genereerSitemap();
