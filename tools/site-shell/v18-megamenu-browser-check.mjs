@@ -40,29 +40,48 @@ async function inspectMegamenu(page) {
   return page.evaluate((expectedLabels) => {
     const visible = (el) => { const s=getComputedStyle(el),r=el.getBoundingClientRect(); return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)>0&&r.width>0&&r.height>0; };
     const norm = (v) => String(v||'').replace(/\s+/g,' ').trim().toUpperCase();
-    const inMenu = (el) => { let n=el.parentElement; for(let d=0;n&&d<12;d+=1,n=n.parentElement){const t=norm(n.textContent);if(t.includes('MENSEN EERST. DAN TECHNIEK.')&&t.includes('VOLLEDIGE WEBSITEKAART'))return true;} return false; };
+    const hasMenuContract = (node) => {
+      const text=norm(node&&node.textContent);
+      return text.includes('MENSEN EERST. DAN TECHNIEK.')
+        && text.includes('VOLLEDIGE WEBSITEKAART')
+        && expectedLabels.every(label => text.includes(label));
+    };
+    const findMenuRoot = () => {
+      const bedrijfsHeading=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]')]
+        .find((node)=>norm(node.textContent)==='BEDRIJF'&&visible(node));
+      if(!bedrijfsHeading)return null;
+      let node=bedrijfsHeading.parentElement;
+      while(node&&node!==document.body&&node!==document.documentElement){
+        if(hasMenuContract(node))return node;
+        node=node.parentElement;
+      }
+      return null;
+    };
     const isPromoLink = (el) => { const t=norm(el.textContent); return t.includes('MENSEN EERST. DAN TECHNIEK.')||t.includes('BEDRIJFSGEHEUGEN'); };
+    const root=findMenuRoot();
+    if(!root)return { headings: expectedLabels.map(label=>({label,found:false})), ordinaryLinks: [], rootFound:false };
 
     const headings = expectedLabels.map((label)=>{
-      const el=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]')].find((node)=>norm(node.textContent)===label&&visible(node)&&inMenu(node));
+      const el=[...root.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]')].find((node)=>norm(node.textContent)===label&&visible(node));
       if(!el)return{label,found:false};
       const s=getComputedStyle(el);
       return{label,found:true,color:s.color,fontWeight:s.fontWeight,tag:el.tagName,className:el.className};
     });
 
-    const ordinaryLinks = [...document.querySelectorAll('a')]
-      .filter((el)=>visible(el)&&inMenu(el)&&!isPromoLink(el))
+    const ordinaryLinks = [...root.querySelectorAll('a')]
+      .filter((el)=>visible(el)&&!isPromoLink(el))
       .map((el)=>{
         const s=getComputedStyle(el);
         const descendants=[...el.querySelectorAll('*')].filter(visible).map((child)=>{const cs=getComputedStyle(child);return{tag:child.tagName,color:cs.color,fontWeight:cs.fontWeight};});
         return{text:norm(el.textContent),color:s.color,fontWeight:s.fontWeight,marked:el.hasAttribute('data-bg-megamenu-link'),descendants};
       });
 
-    return { headings, ordinaryLinks };
+    return { headings, ordinaryLinks, rootFound:true };
   }, labels);
 }
 
 function assertMegamenu(result) {
+  assert.equal(result.rootFound, true, 'actual V18 megamenu root not found');
   for (const item of result.headings) {
     assert.equal(item.found, true, `${item.label}: visible real-menu heading not found`);
     assert.equal(item.color, 'rgb(0, 0, 0)', `${item.label}: expected black, got ${item.color}`);
