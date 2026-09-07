@@ -20,13 +20,16 @@ test('product.html: canonical shell bewaart de bestaande V18 hero en maakt geen 
   assert.equal((out.match(/<h1>Platform<\/h1>/g) || []).length, 1, 'de pagina houdt exact één eigen H1');
 });
 
-test('prijzen.html: legacy held wordt vervangen door exact één canonical paginakop', () => {
-  const html = '<!doctype html><html lang="nl"><head><title>Prijzen | Bedrijfsgeheugen</title><meta name="description" content="Prijzen"><link rel="canonical" href="https://www.bedrijfsgeheugen.nl/prijzen"></head><body><main><nav class="bgkruim" aria-label="Kruimelpad"><a href="https://www.bedrijfsgeheugen.nl/">Home</a><span aria-current="page">Prijzen</span></nav><section class="held"><div class="wrap"><span class="eyebrow">Prijzen</span><div class="pil">AI-gedreven. Menselijk gecontroleerd.</div><h1>Prijzen voor <span>digitalisering</span> in het mkb</h1><p class="lead">Eigen prijzenintro</p></div></section><section><h2>Pakketten</h2></section></main></body></html>';
+test('prijzen.html: eigen prijshero blijft volledig intact en wordt de canonical hero-slot', () => {
+  const html = '<!doctype html><html lang="nl"><head><title>Prijzen | Bedrijfsgeheugen</title><meta name="description" content="Prijzen"><link rel="canonical" href="https://www.bedrijfsgeheugen.nl/prijzen"></head><body><main><nav class="bgkruim" aria-label="Kruimelpad"><a href="https://www.bedrijfsgeheugen.nl/">Home</a><span aria-current="page">Prijzen</span></nav><section class="held"><div class="wrap"><span class="eyebrow">Prijzen</span><div class="pil">AI-gedreven. Menselijk gecontroleerd.</div><h1>Prijzen voor <span>digitalisering</span> in het mkb</h1><p class="lead">Eigen prijzenintro</p><div class="heldknoppen"><a class="hk geel" href="#pakketten">Bekijk pakketten</a><a class="hk wit" href="/frisse-blik">Doe de Frisse Blik</a></div></div></section><section id="pakketten"><h2>Pakketten</h2></section></main></body></html>';
   const out = applyCanonicalShell(html, shell, 'prijzen.html');
   assert.ok(out);
-  assert.match(out, /class="paginakop"[^>]*data-bg-component="hero"/, 'prijzen moet de canonical paginakop gebruiken');
-  assert.doesNotMatch(out, /class="held"/, 'legacy prijzenhero mag niet achterblijven');
-  assert.doesNotMatch(out, /AI-gedreven\. Menselijk gecontroleerd\./, 'legacy hero-copy mag niet als tweede header blijven staan');
+  assert.doesNotMatch(out, /class="paginakop"/, 'prijzen mag niet worden teruggebracht tot een generieke paginakop');
+  assert.match(out, /class="held"[^>]*data-bg-component="hero"|data-bg-component="hero"[^>]*class="held"/, 'de bestaande prijshero moet zelf de canonical hero-slot zijn');
+  assert.equal((out.match(/class="held"/g) || []).length, 1, 'de prijshero blijft exact één keer staan');
+  assert.match(out, /AI-gedreven\. Menselijk gecontroleerd\./, 'de prijspropositie in de hero moet zichtbaar blijven');
+  assert.match(out, /Eigen prijzenintro/, 'de hero-intro mag niet verdwijnen');
+  assert.match(out, /Bekijk pakketten/, 'de primaire hero-CTA mag niet verdwijnen');
   assert.equal((out.match(/<h1\b/g) || []).length, 1, 'prijzen houdt exact één H1');
   assert.match(out, /<h2>Pakketten<\/h2>/, 'eigen prijsinhoud blijft behouden');
 });
