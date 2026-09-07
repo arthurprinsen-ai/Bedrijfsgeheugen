@@ -1,5 +1,6 @@
 const required=(value,label)=>{if(!value)throw new Error(`Portal project store configuration missing: ${label}`);return value};
 const safeUuid=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value||''))?String(value):'';
+const cleanEmail=value=>String(value||'').trim().toLowerCase();
 
 export function createPortalProjectStore({
   fetchFn=globalThis.fetch,
@@ -16,6 +17,13 @@ export function createPortalProjectStore({
     return Array.isArray(data)?data:[];
   }
   return Object.freeze({
+    async resolveTenant(user){
+      const email=cleanEmail(user?.email);
+      if(!email)return null;
+      const invites=await select(`uitnodigingen?email=ilike.${encodeURIComponent(email)}&gebruikt_op=not.is.null&select=organisatie_id,gebruikt_op&order=gebruikt_op.desc&limit=10`);
+      const tenants=[...new Set(invites.map(row=>safeUuid(row?.organisatie_id)).filter(Boolean))];
+      return tenants.length===1?tenants[0]:null;
+    },
     async get(tenantId){
       const organizationId=safeUuid(tenantId);
       if(!organizationId)return null;
