@@ -21,8 +21,13 @@
       "required": ["main h1"],
       "protectedPairs": [
         {
-          "a": "[data-bg-automation-copy]",
-          "b": "[data-bg-automation-visual]",
+          "a": "#compareSlider .compare-before .compare-copy",
+          "b": "#compareSlider .compare-knob",
+          "maxIntersectionAreaPx2": 0
+        },
+        {
+          "a": "#compareSlider .compare-after .compare-copy",
+          "b": "#compareSlider .compare-knob",
           "maxIntersectionAreaPx2": 0
         },
         {
