@@ -2,16 +2,24 @@ const MARKER = 'data-bg-context-slider-readable';
 const MIN_DESKTOP_PANE_PX = 320;
 const MIN_COMPACT_PANE_PX = 240;
 const HANDLE_GUTTER_PX = 64;
+const MOBILE_BREAKPOINT_PX = 720;
 
 const STYLE = `<style ${MARKER}>
-#compareSlider{--bg-compare-gutter:${HANDLE_GUTTER_PX}px}
+#compareSlider{--bg-compare-gutter:${HANDLE_GUTTER_PX}px;touch-action:pan-y}
 #compareSlider .compare-before .compare-copy{width:min(460px,calc(var(--split,50%) - 108px));max-width:none;padding-right:var(--bg-compare-gutter);box-sizing:border-box}
 #compareSlider .compare-after .compare-copy{width:min(460px,calc(100% - var(--split,50%) - 108px));max-width:none;margin-left:auto;padding-left:var(--bg-compare-gutter);box-sizing:border-box}
 #compareSlider .compare-handle{z-index:8}
-#compareSlider[data-bg-compare-compact="true"]{height:auto!important;overflow:visible!important;display:grid!important;gap:14px!important;background:transparent!important;box-shadow:none!important}
-#compareSlider[data-bg-compare-compact="true"] .compare-side{position:relative!important;inset:auto!important;clip-path:none!important;padding:24px!important;border-radius:24px!important;min-height:0!important}
-#compareSlider[data-bg-compare-compact="true"] .compare-copy{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+#compareSlider[data-bg-compare-compact="true"]{height:auto!important;overflow:visible!important;display:grid!important;grid-template-columns:1fr!important;gap:14px!important;background:transparent!important;box-shadow:none!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-side{position:relative!important;inset:auto!important;clip-path:none!important;width:100%!important;padding:24px!important;border-radius:24px!important;min-height:0!important}
+#compareSlider[data-bg-compare-compact="true"] .compare-copy{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;overflow:visible!important}
 #compareSlider[data-bg-compare-compact="true"] .compare-handle{display:none!important}
+@media(max-width:${MOBILE_BREAKPOINT_PX}px){
+  #compareSlider{height:auto!important;overflow:visible!important;display:grid!important;grid-template-columns:1fr!important;gap:14px!important;background:transparent!important;box-shadow:none!important;--split:50%!important}
+  #compareSlider .compare-side{position:relative!important;inset:auto!important;clip-path:none!important;width:100%!important;max-width:none!important;padding:22px!important;border-radius:22px!important;min-height:0!important;transform:none!important}
+  #compareSlider .compare-copy{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;overflow:visible!important;transform:none!important}
+  #compareSlider .compare-copy h2,#compareSlider .compare-copy h3,#compareSlider .compare-copy p,#compareSlider .compare-copy li{max-width:none!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:auto}
+  #compareSlider .compare-handle{display:none!important}
+}
 </style>`;
 
 const RUNTIME = `<script ${MARKER}>
@@ -19,6 +27,7 @@ const RUNTIME = `<script ${MARKER}>
   var MIN_DESKTOP_PANE_PX = ${MIN_DESKTOP_PANE_PX};
   var MIN_COMPACT_PANE_PX = ${MIN_COMPACT_PANE_PX};
   var HANDLE_GUTTER_PX = ${HANDLE_GUTTER_PX};
+  var MOBILE_BREAKPOINT_PX = ${MOBILE_BREAKPOINT_PX};
   var slider = document.getElementById('compareSlider');
   if(!slider) return;
   var knob = slider.querySelector('.compare-knob');
@@ -26,8 +35,9 @@ const RUNTIME = `<script ${MARKER}>
 
   function getLimits(){
     var r = slider.getBoundingClientRect();
+    var forceMobileCompact = window.matchMedia('(max-width: 720px)').matches;
     var compactThreshold = (MIN_COMPACT_PANE_PX * 2) + (HANDLE_GUTTER_PX * 2) + 88;
-    var compact = r.width < compactThreshold;
+    var compact = forceMobileCompact || r.width < compactThreshold;
     slider.setAttribute('data-bg-compare-compact', compact ? 'true' : 'false');
     if(compact) return {min:50,max:50,compact:true};
     var safePanePx = MIN_DESKTOP_PANE_PX + HANDLE_GUTTER_PX + 44;
@@ -44,6 +54,7 @@ const RUNTIME = `<script ${MARKER}>
       knob.setAttribute('aria-valuemax', limits.max.toFixed(0));
       knob.setAttribute('aria-valuenow', value.toFixed(0));
       knob.setAttribute('aria-disabled', limits.compact ? 'true' : 'false');
+      knob.tabIndex = limits.compact ? -1 : 0;
     }
     return value;
   }
@@ -103,6 +114,7 @@ const RUNTIME = `<script ${MARKER}>
   }
 
   window.addEventListener('resize',normalize,{passive:true});
+  if(window.visualViewport) window.visualViewport.addEventListener('resize',normalize,{passive:true});
   normalize();
 })();
 </script>`;
@@ -132,6 +144,9 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('MIN_DESKTOP_PANE_PX = 320') ||
      !next.includes('MIN_COMPACT_PANE_PX = 240') ||
      !next.includes('HANDLE_GUTTER_PX = 64') ||
+     !next.includes('MOBILE_BREAKPOINT_PX = 720') ||
+     !next.includes('@media(max-width:720px)') ||
+     !next.includes("window.matchMedia('(max-width: 720px)').matches") ||
      !next.includes('applyFromClientX') ||
      !next.includes('data-bg-compare-compact') ||
      (next.match(/<style data-bg-context-slider-readable>/g) || []).length !== 1 ||
