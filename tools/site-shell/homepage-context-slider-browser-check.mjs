@@ -68,8 +68,20 @@ function assertDesktopGeometry(g, label) {
   }
 }
 
+async function bringSliderIntoView(page) {
+  const slider = page.locator('#compareSlider');
+  await slider.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(120);
+  const box = await slider.boundingBox();
+  if (!box) fail('compareSlider heeft geen geometry na scrollIntoViewIfNeeded');
+  if (box.y < -2 || box.y > 653) fail('compareSlider is niet in de viewport gebracht', box);
+  return box;
+}
+
 async function dragKnobTo(page, targetX) {
-  const knobBox = await page.locator('#compareSlider .compare-knob').boundingBox();
+  const knob = page.locator('#compareSlider .compare-knob');
+  await knob.scrollIntoViewIfNeeded();
+  const knobBox = await knob.boundingBox();
   if (!knobBox) fail('1128x653: sliderknop heeft geen geometry');
   const startX = knobBox.x + knobBox.width / 2;
   const startY = knobBox.y + knobBox.height / 2;
@@ -85,8 +97,7 @@ async function testDesktop(browser) {
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
   await page.locator('#compareSlider').waitFor({ state: 'visible' });
   await page.waitForFunction(() => document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-compact'));
-  const box = await page.locator('#compareSlider').boundingBox();
-  if (!box) fail('1128x653: slider heeft geen geometry');
+  const box = await bringSliderIntoView(page);
 
   await dragKnobTo(page, box.x + 2);
   const left = await readGeometry(page);
@@ -108,6 +119,8 @@ async function testMobile(browser) {
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
   await page.locator('#compareSlider').waitFor({ state: 'visible' });
   await page.waitForFunction(() => document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-compact'));
+  await page.locator('#compareSlider').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(120);
   const g = await readGeometry(page);
   if (!g) fail('390px: compareSlider of tekstlagen ontbreken');
   if (g.compact !== 'true') fail('390px: smalle viewport moet fail-safe naar compact mode', g);
