@@ -27,6 +27,10 @@ test('homepage story is projected on final output without runtime layout discove
 
   assert.match(source, /min-height:0!important;/, 'explicit story root must collapse inherited minimum height');
   assert.match(source, /height:auto!important;/, 'explicit story root must return to content-owned height');
+  assert.match(source, /\[\$\{ROOT_ATTR\}\]>\*\{[^}]*height:auto!important[^}]*position:relative!important[^}]*top:auto!important/s,
+    'direct story children must not retain manufactured scroll height or sticky positioning');
+  assert.match(source, /\[\$\{ROOT_ATTR\}\]\s+\[data-bg-story-stage\]\{[^}]*position:relative!important[^}]*height:auto!important[^}]*min-height:0!important/s,
+    'legacy story stage must be neutralized instead of remaining sticky/multi-screen');
   assert.match(source, /IntersectionObserver/, 'story activation must observe the explicit root rather than infer a page-wide stage');
   assert.match(source, /aria-current/, 'active story step must expose accessible state');
   assert.match(source, /data-bg-story-cost/, 'cost widget needs an explicit overlap suppression hook');
