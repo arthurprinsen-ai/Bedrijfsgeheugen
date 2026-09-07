@@ -12,9 +12,16 @@ function hasMicro(html,entry){const main=mainOf(html);return anchors(main).some(
 function hasSupportLink(html,entry){const links=new Set(anchors(mainOf(html)));return (entry?.supporting_routes||[]).some(r=>links.has(r));}
 function marker(html,name){return new RegExp(`data-bg-money-section=["']${name}["']`,'i').test(html);}
 function isNative(entry){return entry?.presentation==='native';}
+function hasClassedHero(main,className){
+  const cls=className.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const classAttr=`class=(?:"[^"]*\\b${cls}\\b[^"]*"|'[^']*\\b${cls}\\b[^']*')`;
+  const heroAttr='data-bg-component=(?:"hero"|\'hero\')';
+  return new RegExp(`<(?:section|div)\\b(?=[^>]*${classAttr})(?=[^>]*${heroAttr})[^>]*>`,'i').test(main);
+}
 function hasNativeHero(main,entry){
-  if(/<section\b[^>]*class=(?:"[^"]*\binhoud-kop\b[^"]*"|'[^']*\binhoud-kop\b[^']*')/i.test(main)) return true;
-  return entry?.route===`${ORIGIN}/prijzen`&&/<section\b[^>]*class=(?:"[^"]*\bpaginakop\b[^"]*"|'[^']*\bpaginakop\b[^']*')[^>]*data-bg-component=(?:"hero"|'hero')/i.test(main);
+  if(hasClassedHero(main,'inhoud-kop')) return true;
+  if(entry?.route===`${ORIGIN}/prijzen`) return hasClassedHero(main,'held');
+  return false;
 }
 
 export function inspectMoneyPage(input,entry){

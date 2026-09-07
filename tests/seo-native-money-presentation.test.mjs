@@ -14,8 +14,9 @@ for (const route of [
     assert.ok(entry, `registry-entry ontbreekt voor ${route}`);
     assert.equal(entry.presentation, 'native', 'product en prijzen moeten expliciet als native presentatie zijn geregistreerd');
 
-    const heroClass = route.endsWith('/prijzen') ? 'paginakop' : 'inhoud-kop';
-    const html = `<!doctype html><html lang="nl"><head><title>Pagina</title></head><body><main><section class="${heroClass}" data-bg-component="hero"><h1>Eigen pagina-hero</h1></section><section class="inhoud-body"><h2>Eigen commerciële inhoud</h2><p>De ontworpen pagina blijft leidend.</p><a href="https://www.bedrijfsgeheugen.nl/frisse-blik" data-bg-conversion="frisse-blik">Plan een Frisse Blik</a><a href="https://www.bedrijfsgeheugen.nl/product">Bekijk platform</a><a href="https://www.bedrijfsgeheugen.nl/">Home</a></section></main></body></html>`;
+    const heroClass = route.endsWith('/prijzen') ? 'held' : 'inhoud-kop';
+    const heroTag = route.endsWith('/prijzen') ? 'div' : 'section';
+    const html = `<!doctype html><html lang="nl"><head><title>Pagina</title></head><body><main><${heroTag} class="${heroClass}" data-bg-component="hero"><h1>Eigen pagina-hero</h1></${heroTag}><section class="inhoud-body"><h2>Eigen commerciële inhoud</h2><p>De ontworpen pagina blijft leidend.</p><a href="https://www.bedrijfsgeheugen.nl/frisse-blik" data-bg-conversion="frisse-blik">Plan een Frisse Blik</a><a href="https://www.bedrijfsgeheugen.nl/product">Bekijk platform</a><a href="https://www.bedrijfsgeheugen.nl/">Home</a></section></main></body></html>`;
     const out = enrichMoneyPage(html, entry)
       .replace('<main ', `<main data-bg-intent-owner="${entry.route}" data-bg-intent-role="primary" `);
 
@@ -28,3 +29,9 @@ for (const route of [
     assert.doesNotMatch(fouten.join('\n'), /eigen V18 hero ontbreekt/, `${route}: de canonical eigen hero moet als native hero worden geaccepteerd`);
   });
 }
+
+test('prijzen accepteert geen generieke paginakop als vervanging van de native prijshero', () => {
+  const entry = registry.pages.find(page => page.route === 'https://www.bedrijfsgeheugen.nl/prijzen');
+  const html = '<!doctype html><html><body><main data-bg-money-contract-version="native-v1" data-bg-intent-owner="https://www.bedrijfsgeheugen.nl/prijzen" data-bg-intent-role="primary"><section class="paginakop" data-bg-component="hero"><h1>Prijzen</h1></section><a href="https://www.bedrijfsgeheugen.nl/frisse-blik" data-bg-conversion="frisse-blik">Plan</a><a href="https://www.bedrijfsgeheugen.nl/product">Product</a></main></body></html>';
+  assert.match(inspectMoneyPage(html, entry).join('\n'), /eigen V18 hero ontbreekt/, 'een generieke paginakop mag de echte prijshero niet meer maskeren');
+});
