@@ -1,0 +1,44 @@
+{
+  "version": "WEBSITE-RELEASE-RISK-v1",
+  "profiles": ["none", "menu", "full"],
+  "menuExactPaths": [
+    "tools/bouw-v18-production-core.mjs",
+    "tools/site-shell/v18-megamenu-browser-check.mjs"
+  ],
+  "menuPrefixes": [
+    "tools/site-shell/v18-megamenu-"
+  ],
+  "fullSurfaceExactPaths": [
+    "index.html",
+    "expertises.html",
+    "ai-automatisering-mkb.html",
+    "microsoft-365-koppeling.html",
+    "power-bi-implementatie.html",
+    "bedrijf-overdraagbaar-maken.html",
+    "data-soevereiniteit.html",
+    "styles.css",
+    "script.js",
+    "sitemap.xml"
+  ],
+  "fullSurfacePrefixes": [
+    "assets/",
+    "components/",
+    "pages/",
+    "site/",
+    "blog/",
+    "tools/site-shell/",
+    "tools/bouw-v18-",
+    "tools/v18-",
+    "tools/controleer-site-ui.mjs",
+    "tools/normaliseer-site-ui.mjs",
+    "tools/prijzen-uit-de-homepage.mjs",
+    "tools/fix-homepage-automation-layout.mjs"
+  ],
+  "controlPlaneExactPaths": [
+    "config/website-release-risk.json",
+    "tools/website-release-risk.mjs",
+    "tests/website-release-risk.test.mjs",
+    ".github/workflows/required-test.yml",
+    "config/brain-delivery-system.json"
+  ]
+}
