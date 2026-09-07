@@ -47,6 +47,11 @@ jobs:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
           EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: node tools/site-shell/ui-visual-regression/browser-check.mjs
+      - name: Verify AI Act and benchmark are visibly rendered
+        if: github.event_name == 'pull_request'
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: node tools/site-shell/standalone-visibility-check.mjs
       - name: Upload visual regression diagnostics
         if: always()
         uses: actions/upload-artifact@v4
