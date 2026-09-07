@@ -8,6 +8,7 @@ const pipeline=await read('tools/prijzen-uit-de-homepage.mjs');
 const fixer=await read('tools/site-shell/fix-homepage-context-slider.mjs');
 const browserCheck=await read('tools/site-shell/homepage-context-slider-browser-check.mjs');
 const required=await read('.github/workflows/required-test.yml');
+const visualRegistry=await read('config/ui-visual-regression.json');
 
 test('slider guard draait na laatste homepage-builder',()=>{
   assert.match(pipeline,/applyHomepageContextSliderReadability/);
@@ -39,4 +40,12 @@ test('required gate sleept echte knop en test mobiel',()=>{
   assert.match(browserCheck,/page\.mouse\.move/);
   assert.match(browserCheck,/page\.mouse\.up/);
   assert.match(required,/homepage-context-slider-browser-check\.mjs/);
+});
+
+test('algemene visual-regression gate beschermt de echte slider en geen verdwenen automation-markers',()=>{
+  assert.match(visualRegistry,/#compareSlider \.compare-before \.compare-copy/);
+  assert.match(visualRegistry,/#compareSlider \.compare-after \.compare-copy/);
+  assert.match(visualRegistry,/#compareSlider \.compare-knob/);
+  assert.doesNotMatch(visualRegistry,/data-bg-automation-copy/);
+  assert.doesNotMatch(visualRegistry,/data-bg-automation-visual/);
 });
