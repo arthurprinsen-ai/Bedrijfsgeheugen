@@ -1,4 +1,4 @@
-import './connector-builder-element.js';
+if(typeof window!=='undefined'&&typeof customElements!=='undefined') import('./connector-builder-element.js');
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const money=value=>Number.isFinite(Number(value))?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(value)):'Niet beschikbaar';
