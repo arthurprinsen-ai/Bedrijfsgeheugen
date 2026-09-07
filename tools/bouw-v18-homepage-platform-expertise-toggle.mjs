@@ -103,6 +103,8 @@ export function applyHomepagePlatformExpertiseToggle(html) {
       expertise.tabIndex=isPlatform?-1:0;
       platformPanel.hidden=!isPlatform;
       expertisePanel.hidden=isPlatform;
+      platformPanel.classList.toggle('active',isPlatform);
+      expertisePanel.classList.toggle('active',!isPlatform);
       platform.classList.toggle('active',isPlatform);
       expertise.classList.toggle('active',!isPlatform);
       if(focus)(isPlatform?platform:expertise).focus();
