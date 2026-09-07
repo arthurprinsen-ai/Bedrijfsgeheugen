@@ -21,6 +21,11 @@ const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prij
 <p>Vier pakketten, van &euro; 99 per maand tot een prijs op maat, met per pakket wat de AI voor je doet en hoe vers je gegevens zijn.</p>
 <p><a class="btn btn-primary" href="${DOEL}">Bekijk de prijzen &rarr;</a></p></div></div>`;
 
+const SLIDER_ENDPOINT_STYLE = `<style data-bg-compare-slider-endpoints>
+[data-bg-compare-slider] .compare-before{clip-path:inset(0 var(--split,50%) 0 0)!important}
+[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 calc(100% - var(--split,50%)))!important}
+</style>`;
+
 function vervangWeergave(html) {
   const open = '<div class="page" id="view-pricing">';
   const start = html.indexOf(open);
@@ -37,6 +42,21 @@ function knoppenNaarLink(html) {
       const attrs = (voor + na).replace(/\s*type="button"/g, '').replace(/\s+$/, '');
       return `<a href="${DOEL}"${attrs}>${inhoud}</a>`;
     });
+}
+
+function borgStatischeSliderEndpoints(input) {
+  let html = String(input);
+  html = html.replace(/<([a-z][\w:-]*)([^>]*\bid=(['"])compareSlider\3[^>]*)>/gi, (heel, tag, attrs) => {
+    if (/\bdata-bg-compare-slider\b/i.test(attrs)) return heel;
+    return `<${tag}${attrs} data-bg-compare-slider>`;
+  });
+  html = html.replace(/<([a-z][\w:-]*)([^>]*\bclass=(['"])[^'"]*\bcompare-slider\b[^'"]*\3[^>]*)>/gi, (heel, tag, attrs) => {
+    if (/\bdata-bg-compare-slider\b/i.test(attrs)) return heel;
+    return `<${tag}${attrs} data-bg-compare-slider>`;
+  });
+  html = html.replace(/<style\s+data-bg-compare-slider-endpoints\b[^>]*>[\s\S]*?<\/style>\s*/gi, '');
+  html = html.replace('</head>', `${SLIDER_ENDPOINT_STYLE}\n</head>`);
+  return html;
 }
 
 export async function bouwPrijsVerwijzing() {
@@ -59,7 +79,7 @@ async function borgHomepageAutomationLayout() {
 
 async function borgHomepageContextSlider() {
   const html = await readFile('index.html', 'utf8');
-  const next = applyHomepageContextSliderReadability(html);
+  const next = borgStatischeSliderEndpoints(applyHomepageContextSliderReadability(html));
   await writeFile('index.html', next, 'utf8');
 }
 
