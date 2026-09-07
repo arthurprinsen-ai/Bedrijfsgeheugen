@@ -25,7 +25,8 @@ const PAGE_SHELL_CSS = `<style id="canonical-page-shell">
 .held .bgkruim{background:transparent!important;color:rgba(255,255,255,.72)!important;padding:0 0 18px!important;margin:0!important;border:0!important;box-shadow:none!important}
 .held .bgkruim a,.held .bgkruim span{background:transparent!important;color:inherit!important}
 .held .bgkruim a{text-decoration:none}
-@media(max-width:768px){.paginakop{padding:104px 0 46px}.held .bgkruim{padding-bottom:14px!important}}
+@media(max-width:768px){.paginakop{padding:104px 0 46px}.held .bgkruim{padding-bottom:14px!important}
+body:has(.held .heldknoppen) .held .bgkruim,body:has(.held .heldknoppen) .held .pil,body:has(.held .heldknoppen) .held h1,body:has(.held .heldknoppen) .held .ondertitel,body:has(.held .heldknoppen) .held .payoff,body:has(.held .heldknoppen) .held .intro,body:has(.held .heldknoppen) .held .heldknoppen,body:has(.held .heldknoppen) .held .bovenop{font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important}}
 main,.page{background:var(--paper,#fff)}.page>main{padding:0}.bgkruim,.kruimelpad{font-size:13px;padding:18px 0 0}
 </style>`;
 

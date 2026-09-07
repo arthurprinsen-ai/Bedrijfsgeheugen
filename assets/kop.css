@@ -103,19 +103,3 @@
 .bgkop-mob>a{padding:.95rem 0;border-bottom:1px solid var(--bg-lijn);font-size:1rem;font-weight:600;color:var(--bg-inkt);text-decoration:none}
 .bgkop-mcta{margin-top:1.1rem;border:0!important;background:var(--bg-inkt);color:#fff!important;border-radius:999px;text-align:center;padding:.9rem 1.2rem!important}
 @media(min-width:1101px){.bgkop-mob{display:none!important}}
-
-/* /prijzen mobile: stabilize the native source hero before the canonical
-   projector adds main/data-bg markers. The source already contains .heldknoppen,
-   so this selector matches on the first layout instead of after projection. */
-@media(max-width:768px){
-  body:has(.held .heldknoppen) .held .bgkruim,
-  body:has(.held .heldknoppen) .held .pil,
-  body:has(.held .heldknoppen) .held h1,
-  body:has(.held .heldknoppen) .held .ondertitel,
-  body:has(.held .heldknoppen) .held .payoff,
-  body:has(.held .heldknoppen) .held .intro,
-  body:has(.held .heldknoppen) .held .heldknoppen,
-  body:has(.held .heldknoppen) .held .bovenop{
-    font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important;
-  }
-}
