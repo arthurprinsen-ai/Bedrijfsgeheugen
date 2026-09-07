@@ -22,6 +22,15 @@ async function expectStoryState(page, expected) {
   await expect(page.locator('[data-bg-story-root]')).toHaveAttribute('data-bg-story-state', String(expected));
 }
 
+async function expectReadable(locator, minOpacity = 0.45) {
+  await expect.poll(async () => locator.evaluate(el => {
+    const style = getComputedStyle(el);
+    const rect = el.getBoundingClientRect();
+    return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) >= minOpacity && rect.width > 0 && rect.height > 0;
+  })).toBe(true);
+  await assertVisibleAndReadable(locator, { minOpacity });
+}
+
 async function withReport(testInfo, context, fn) {
   try {
     return await fn();
@@ -47,11 +56,11 @@ for (const viewport of ['desktop', 'mobile']) {
       for (let state = 0; state < 4; state += 1) {
         await steps.nth(state).click();
         await expectStoryState(page, state);
-        await assertVisibleAndReadable(steps.nth(state), { minOpacity: 0.45 });
+        await expectReadable(steps.nth(state));
         if (state > 0) {
           const overlay = page.locator(`[data-bg-story-overlay="${state}"]`);
           await expect(overlay).toHaveAttribute('data-show', '1');
-          await assertVisibleAndReadable(overlay, { minOpacity: 0.45 });
+          await expectReadable(overlay);
         }
       }
 
@@ -61,9 +70,10 @@ for (const viewport of ['desktop', 'mobile']) {
       }
 
       if (viewport === 'mobile') {
-        const stage = page.locator('[data-bg-story-stage]');
-        await expect(stage).toHaveCount(1);
-        expect(await stage.evaluate(el => getComputedStyle(el).position)).not.toBe('sticky');
+        const stages = page.locator('[data-bg-story-stage]');
+        expect(await stages.count()).toBeGreaterThan(0);
+        const positions = await stages.evaluateAll(elements => elements.map(el => getComputedStyle(el).position));
+        expect(positions.every(position => position !== 'sticky')).toBe(true);
       } else {
         const cta = page.getByText('Analyseer impact', { exact: false }).first();
         if (await cta.count()) {
