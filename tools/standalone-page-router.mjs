@@ -4,8 +4,9 @@ const EXCLUDES = new Set(['index.html', 'prototype-v18-stable.html']);
 const VISIBILITY_GUARD = `<style id="bg-standalone-visibility-guard">
 html,body{opacity:1!important;visibility:visible!important}
 body{display:block!important}
-body>header,body>main,body>footer,.bgtop,.bgkop,.bgvoet{opacity:1!important;visibility:visible!important}
-body>header,body>main,body>footer{display:block!important}
+body>header,body>main,body>footer,.bgtop,.bgkop,.bgvoet,.bg-standalone-page{opacity:1!important;visibility:visible!important}
+body>header,body>main,body>footer,.bg-standalone-page{display:block!important;transform:none!important}
+.bg-standalone-page>*{visibility:visible!important}
 </style>`;
 
 function isHomepageSpaRouter(script) {
@@ -20,6 +21,14 @@ export function verwijderHomepageSpaRouter(input) {
     if (/\bsrc\s*=/.test(attrs || '') || !isHomepageSpaRouter(body)) return whole;
     return '<!-- standalone-page: inherited homepage SPA router removed -->';
   });
+}
+
+export function ontkoppelStandalonePageState(input) {
+  return String(input || '')
+    .replace(/<div\s+class="page\s+active"\s+id="view-inhoud">/gi,
+      '<div class="bg-standalone-page" id="view-inhoud">')
+    .replace(/<div\s+id="view-inhoud"\s+class="page\s+active">/gi,
+      '<div class="bg-standalone-page" id="view-inhoud">');
 }
 
 export function borgStandaloneVisibility(input) {
@@ -40,13 +49,15 @@ export async function isolateStandalonePages() {
     let html;
     try { html = await readFile(file, 'utf8'); } catch { continue; }
     if (!html.includes('<body')) continue;
-    const next = borgStandaloneVisibility(verwijderHomepageSpaRouter(html));
+    const next = borgStandaloneVisibility(
+      ontkoppelStandalonePageState(verwijderHomepageSpaRouter(html))
+    );
     if (next !== html) {
       await writeFile(file, next, 'utf8');
       changed += 1;
     }
   }
-  console.log(`Standalone page isolation + visibility guard applied to ${changed} page(s)`);
+  console.log(`Standalone page isolation + state decoupling + visibility guard applied to ${changed} page(s)`);
   return changed;
 }
 
