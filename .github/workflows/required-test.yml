@@ -24,7 +24,7 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
-        run: node tools/moving-main-successor-guard.mjs
+        run: node scripts/brain/moving-main-successor-guard.mjs
       - id: scope
         name: Classify blocking suites from changed delivery lanes
         env:
