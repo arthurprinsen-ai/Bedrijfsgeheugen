@@ -38,7 +38,13 @@
     },
     {
       "route": "/prijzen",
-      "required": ["main h1"],
+      "required": [
+        "main .held[data-bg-component=\"hero\"]",
+        "main .held[data-bg-component=\"hero\"] .bgkruim",
+        "main .held[data-bg-component=\"hero\"] h1",
+        "main .held[data-bg-component=\"hero\"] .pil",
+        "main .held[data-bg-component=\"hero\"] .heldknoppen"
+      ],
       "protectedPairs": [],
       "interactions": []
     },

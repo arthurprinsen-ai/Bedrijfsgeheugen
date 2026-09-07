@@ -22,7 +22,10 @@ const PAGE_SHELL_CSS = `<style id="canonical-page-shell">
 .paginakop .eyebrow{display:inline-block;margin:18px 0 10px;color:var(--lime,#d8ff68);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
 .paginakop h1{color:#fff;margin:0 0 18px;max-width:20ch}.paginakop h1 span{display:block}
 .paginakop p{color:rgba(255,255,255,.84);max-width:72ch;font-size:18px;line-height:1.6;margin:0}
-@media(max-width:768px){.paginakop{padding:104px 0 46px}}
+.held .bgkruim{background:transparent!important;color:rgba(255,255,255,.72)!important;padding:0 0 18px!important;margin:0!important;border:0!important;box-shadow:none!important}
+.held .bgkruim a,.held .bgkruim span{background:transparent!important;color:inherit!important}
+.held .bgkruim a{text-decoration:none}
+@media(max-width:768px){.paginakop{padding:104px 0 46px}.held .bgkruim{padding-bottom:14px!important}}
 main,.page{background:var(--paper,#fff)}.page>main{padding:0}.bgkruim,.kruimelpad{font-size:13px;padding:18px 0 0}
 </style>`;
 
@@ -104,11 +107,30 @@ function kruimelSchemaVoor(label, pad) {
   return `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"${ORIGIN}/"},{"@type":"ListItem","position":2,"name":"${label}","item":"${url}"}]}<\/script>`;
 }
 
+function plaatsPrijsKruimelInHero(binnen, label) {
+  let rest = String(binnen);
+  const bestaand = rest.match(/<nav\b[^>]*class="[^"]*\bbgkruim\b[^"]*"[^>]*>[\s\S]*?<\/nav>/i);
+  let nav = bestaand ? bestaand[0] : `<nav class="bgkruim" aria-label="Kruimelpad"><a href="${ORIGIN}/">Home</a><span aria-hidden="true">›</span><span aria-current="page">${label}</span></nav>`;
+  if (bestaand) rest = rest.replace(bestaand[0], '');
+  if (!/aria-label=(?:"Kruimelpad"|'Kruimelpad')/i.test(nav)) nav = nav.replace(/<nav\b([^>]*)>/i, '<nav$1 aria-label="Kruimelpad">');
+
+  const held = rest.match(/<(?:section|div)\b[^>]*class="[^"]*\bheld\b[^"]*"[^>]*>/i);
+  if (!held || held.index === undefined) return nav + rest;
+  const heldEnd = held.index + held[0].length;
+  const naHeld = rest.slice(heldEnd);
+  const wrap = naHeld.match(/^\s*<div\b[^>]*class="[^"]*\bwrap\b[^"]*"[^>]*>/i);
+  if (wrap) {
+    const insertAt = heldEnd + wrap.index + wrap[0].length;
+    return rest.slice(0, insertAt) + nav + rest.slice(insertAt);
+  }
+  return rest.slice(0, heldEnd) + nav + rest.slice(heldEnd);
+}
+
 function kruimelErbij(binnen, oud, pad) {
   if (pad === 'prijzen.html') {
     const h1 = oud.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
     const label = h1 ? tekstUit(h1[1]).replace(/&/g, '&amp;').replace(/"/g, '&quot;') : 'Prijzen';
-    return { binnen, schema: /BreadcrumbList/.test(oud) ? null : kruimelSchemaVoor(label, pad) };
+    return { binnen: plaatsPrijsKruimelInHero(binnen, label), schema: /BreadcrumbList/.test(oud) ? null : kruimelSchemaVoor(label, pad) };
   }
   if (/aria-label="Kruimelpad"/i.test(binnen)) {
     if (/BreadcrumbList/.test(oud)) return { binnen, schema: null };
@@ -154,14 +176,14 @@ function markeerBestaandeV18Hero(binnen) {
 
 function markeerBestaandePrijsHero(binnen) {
   return String(binnen).replace(
-    /<section\b(?![^>]*data-bg-component)([^>]*\bclass="[^"]*\bheld\b[^"]*"[^>]*)>/i,
-    '<section$1 data-bg-component="hero">'
+    /<(section|div)\b(?![^>]*data-bg-component)([^>]*\bclass="[^"]*\bheld\b[^"]*"[^>]*)>/i,
+    '<$1$2 data-bg-component="hero">'
   );
 }
 
 function paginakop(binnen, pad) {
   if (/<section\b[^>]*class="[^"]*\binhoud-kop\b[^"]*"[^>]*>/i.test(binnen)) return markeerBestaandeV18Hero(binnen);
-  if (pad === 'prijzen.html' && /<section\b[^>]*class="[^"]*\bheld\b[^"]*"[^>]*>/i.test(binnen)) return markeerBestaandePrijsHero(binnen);
+  if (pad === 'prijzen.html' && /<(?:section|div)\b[^>]*class="[^"]*\bheld\b[^"]*"[^>]*>/i.test(binnen)) return markeerBestaandePrijsHero(binnen);
 
   let rest = binnen;
   const pak = re => { const m = rest.match(re); if (!m) return ''; rest = rest.replace(m[0], ''); return m[0]; };
