@@ -7,12 +7,35 @@ const maxAttempts = Number.parseInt(process.env.MEGAMENU_CHECK_ATTEMPTS || '12',
 const retryDelayMs = Number.parseInt(process.env.MEGAMENU_CHECK_RETRY_MS || '5000', 10);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+async function openVisibleMegamenu(page) {
+  const candidates = page.getByText(/^Meer(?:\s*▼)?$/i, { exact: true });
+  const count = await candidates.count();
+  let lastClickError;
+
+  for (let i = 0; i < count; i += 1) {
+    const candidate = candidates.nth(i);
+    if (!(await candidate.isVisible().catch(() => false))) continue;
+    try {
+      await candidate.click({ timeout: 3000 });
+      await page.waitForTimeout(250);
+      const menuVisible = await page.evaluate(() => {
+        const visible = (el) => { const s=getComputedStyle(el),r=el.getBoundingClientRect(); return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)>0&&r.width>0&&r.height>0; };
+        const norm = (v) => String(v||'').replace(/\s+/g,' ').trim().toUpperCase();
+        return [...document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]')]
+          .some((el) => norm(el.textContent)==='BEDRIJF' && visible(el));
+      });
+      if (menuVisible) return;
+    } catch (error) {
+      lastClickError = error;
+    }
+  }
+
+  throw lastClickError || new Error(`visible Meer trigger not found/openable; candidates=${count}`);
+}
+
 async function inspectMegamenu(page) {
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
-  const meer = page.getByRole('button', { name: /^Meer(?:\s*▼)?$/i }).first();
-  await meer.waitFor({ state: 'visible', timeout: 10_000 });
-  await meer.click();
-  await page.waitForTimeout(300);
+  await openVisibleMegamenu(page);
 
   return page.evaluate((expectedLabels) => {
     const visible = (el) => { const s=getComputedStyle(el),r=el.getBoundingClientRect(); return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)>0&&r.width>0&&r.height>0; };
