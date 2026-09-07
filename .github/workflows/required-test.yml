@@ -75,6 +75,7 @@ jobs:
           tests/seo-ui-visual-regression-geometry.test.mjs
           tests/seo-ui-visual-regression-browser.test.mjs
           tests/site-shell-v18-view-integrity.test.mjs
+          tests/site-shell-public-route-inventory.test.mjs
           tests/seo-native-money-presentation.test.mjs
           tests/seo-homepage-platform-expertise-toggle.test.mjs
           tests/standalone-content-page-router-isolation.test.mjs
@@ -96,7 +97,7 @@ jobs:
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/homepage-toggle-browser-check.mjs
-      - name: Verify AI Act and benchmark are visibly rendered
+      - name: Verify all public pages are visibly rendered
         if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
