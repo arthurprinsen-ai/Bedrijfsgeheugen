@@ -2,32 +2,129 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {handlePortalConnectorsRequest} from '../platform/api/portal-connectors-handler.mjs';
 
-const connector={id:'11111111-1111-4111-8111-111111111111',version:1,name:'Invoice',state:'Draft'};
-const store={configured:true,async get(t,id){return t==='tenant-a'&&id===connector.id?{...connector}:null;},async saveDraft(_t,d){Object.assign(connector,d);return {...connector};},async saveExecution(_t,e){return {...e,id:'exec-row'};},async listExecutions(){return[{id:'e1'}];},async listReviewQueue(){return[{id:'r1'}];},async saveReview(_t,r){return r;},async list(){return[];}};
+const CONNECTOR_ID='11111111-1111-4111-8111-111111111111';
+const EXECUTION_ID='22222222-2222-4222-8222-222222222222';
+const REVIEW_ID='33333333-3333-4333-8333-333333333333';
 const request=(method,path,body)=>({method,path,body});
-const user={id:'u1',tenantId:'tenant-a'};
+const user={id:'u1',tenantId:'tenant-a',email:'member@example.nl'};
+const passingEvidence={configVersion:1,testExecutionId:'engine-run-1',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true,reference:'dry-1'}};
 
-test('test endpoint persists safe-test evidence',async()=>{
-  const engine={runTest:async()=>({status:'TEST_PASSED',evidence:{configVersion:1,testExecutionId:'test-1',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}}})};
-  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${connector.id}/test`,{sample:{x:1}}),user,store,engine});
-  assert.equal(res.status,200);assert.equal((await res.json()).status,'TEST_PASSED');
+function makeStore(){
+  const connector={id:CONNECTOR_ID,version:1,name:'Invoice',state:'Draft',runtime:{}};
+  const executions=new Map();
+  const reviews=new Map([[REVIEW_ID,{id:REVIEW_ID,connector_id:CONNECTOR_ID,organisatie_id:'tenant-a',status:'pending',payload:{}}]]);
+  return {
+    configured:true,
+    calls:[],
+    connector,
+    executions,
+    reviews,
+    async resolveTenant(identity){this.calls.push(['resolveTenant',identity?.email]);return identity?.email==='member@example.nl'?'tenant-a':null;},
+    async get(tenant,id){this.calls.push(['get',tenant,id]);return tenant==='tenant-a'&&id===connector.id?structuredClone(connector):null;},
+    async saveDraft(tenant,draft){this.calls.push(['saveDraft',tenant,draft.state]);Object.assign(connector,structuredClone(draft));return structuredClone(connector);},
+    async saveExecution(tenant,e){this.calls.push(['saveExecution',tenant,e.status]);const row={id:EXECUTION_ID,organisatie_id:tenant,connector_id:e.connectorId,connector_versie:e.connectorVersion,status:e.status,evidence:structuredClone(e.evidence),dedupe_key:e.dedupeKey||null,fout:e.error||null};executions.set(EXECUTION_ID,row);return structuredClone(row);},
+    async getExecution(tenant,connectorId,id){this.calls.push(['getExecution',tenant,connectorId,id]);const row=executions.get(id);return row&&row.organisatie_id===tenant&&row.connector_id===connectorId?structuredClone(row):null;},
+    async listExecutions(tenant,connectorId){return [...executions.values()].filter(row=>row.organisatie_id===tenant&&row.connector_id===connectorId).map(structuredClone);},
+    async listReviewQueue(tenant){return [...reviews.values()].filter(row=>row.organisatie_id===tenant&&row.status==='pending').map(structuredClone);},
+    async saveReview(tenant,r){const row={id:REVIEW_ID,organisatie_id:tenant,connector_id:r.connectorId,execution_id:r.executionId||null,status:r.status||'pending',payload:structuredClone(r.payload||{})};reviews.set(REVIEW_ID,row);return structuredClone(row);},
+    async getReview(tenant,id){const row=reviews.get(id);return row&&row.organisatie_id===tenant?structuredClone(row):null;},
+    async decideReview(tenant,id,decision){const row=reviews.get(id);if(!row||row.organisatie_id!==tenant)return null;Object.assign(row,{status:decision.decision==='reject'?'rejected':'approved',beslissing:structuredClone(decision),afgehandeld_op:'2026-09-07T21:30:00.000Z'});return structuredClone(row);},
+    async list(){return[];}
+  };
+}
+
+test('test endpoint persists safe-test evidence and returns persisted execution identity',async()=>{
+  const store=makeStore();
+  const engine={runTest:async()=>({status:'TEST_PASSED',evidence:structuredClone(passingEvidence),dedupeKey:'h1',completedAt:'2026-09-07T21:20:00.000Z'})};
+  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${CONNECTOR_ID}/test`,{sample:{x:1}}),user,store,engine});
+  assert.equal(res.status,200);
+  const body=await res.json();
+  assert.equal(body.status,'TEST_PASSED');
+  assert.equal(body.evidence.testExecutionId,EXECUTION_ID);
+  assert.equal(body.evidence.runtimeExecutionId,'engine-run-1');
+  assert.equal(store.executions.get(EXECUTION_ID).status,'TEST_PASSED');
 });
 
-test('activation fails closed without passing evidence',async()=>{
-  const engine={activationEligibility:()=>({eligible:false,reason:'TEST_EVIDENCE_REQUIRED'})};
-  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${connector.id}/activate`,{}),user,store,engine});
-  assert.equal(res.status,409);assert.equal((await res.json()).error,'TEST_EVIDENCE_REQUIRED');
-});
-
-test('activation changes state only when evidence evaluator passes',async()=>{
+test('activation fails closed without a persisted test execution id',async()=>{
+  const store=makeStore();
   const engine={activationEligibility:()=>({eligible:true,reason:'ELIGIBLE'})};
-  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${connector.id}/activate`,{evidence:{ok:true}}),user,store,engine});
-  assert.equal(res.status,200);assert.equal((await res.json()).state,'Active');
+  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${CONNECTOR_ID}/activate`,{evidence:passingEvidence}),user,store,engine});
+  assert.equal(res.status,409);
+  assert.equal((await res.json()).error,'TEST_EVIDENCE_REQUIRED');
+  assert.equal(store.connector.state,'Draft');
+});
+
+test('client cannot activate with fabricated evidence or unknown execution id',async()=>{
+  const store=makeStore();
+  const engine={activationEligibility:()=>({eligible:true,reason:'ELIGIBLE'})};
+  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${CONNECTOR_ID}/activate`,{testExecutionId:EXECUTION_ID,evidence:passingEvidence}),user,store,engine});
+  assert.equal(res.status,409);
+  assert.equal((await res.json()).error,'TEST_EVIDENCE_NOT_FOUND');
+  assert.equal(store.connector.state,'Draft');
+});
+
+test('activation uses only persisted passing evidence for the same connector version and stamps server evidence',async()=>{
+  const store=makeStore();
+  await store.saveExecution('tenant-a',{connectorId:CONNECTOR_ID,connectorVersion:1,status:'TEST_PASSED',evidence:passingEvidence});
+  const engine={activationEligibility:(_connector,evidence)=>evidence.targetSafeTestResult?.ok?{eligible:true,reason:'ELIGIBLE'}:{eligible:false,reason:'TEST_EVIDENCE_INCOMPLETE'}};
+  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${CONNECTOR_ID}/activate`,{testExecutionId:EXECUTION_ID,evidence:{fabricated:true}}),user,store,engine});
+  assert.equal(res.status,200);
+  const body=await res.json();
+  assert.equal(body.state,'Active');
+  assert.equal(body.runtime.activationEvidence.testExecutionId,EXECUTION_ID);
+  assert.equal(body.runtime.activationEvidence.activatedBy,'u1');
+  assert.match(body.runtime.activationEvidence.activatedAt,/^\d{4}-\d{2}-\d{2}T/);
+  assert.equal(body.runtime.activationEvidence.fabricated,undefined);
+});
+
+test('activation rejects passing evidence from a different connector version',async()=>{
+  const store=makeStore();
+  await store.saveExecution('tenant-a',{connectorId:CONNECTOR_ID,connectorVersion:2,status:'TEST_PASSED',evidence:{...passingEvidence,configVersion:2}});
+  const engine={activationEligibility:()=>({eligible:true,reason:'ELIGIBLE'})};
+  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${CONNECTOR_ID}/activate`,{testExecutionId:EXECUTION_ID}),user,store,engine});
+  assert.equal(res.status,409);
+  assert.equal((await res.json()).error,'TEST_EVIDENCE_VERSION_MISMATCH');
+});
+
+test('pause preserves evidence history and creates an open recovery obligation',async()=>{
+  const store=makeStore();
+  store.connector.state='Active';
+  store.connector.runtime={activationEvidence:{testExecutionId:EXECUTION_ID}};
+  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/${CONNECTOR_ID}/pause`,{reason:'AUTH_FAILURE'}),user,store});
+  assert.equal(res.status,200);
+  const body=await res.json();
+  assert.equal(body.state,'Paused');
+  assert.equal(body.runtime.activationEvidence.testExecutionId,EXECUTION_ID);
+  assert.equal(body.runtime.recoveryObligation.status,'open');
+  assert.equal(body.runtime.recoveryObligation.reason,'AUTH_FAILURE');
+});
+
+test('review decision is tenant scoped and creates controlled replay obligation for approval',async()=>{
+  const store=makeStore();
+  const res=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/reviews/${REVIEW_ID}/decision`,{decision:'approve',corrections:{supplier_id:'S-1'}}),user,store});
+  assert.equal(res.status,200);
+  const body=await res.json();
+  assert.equal(body.status,'approved');
+  assert.equal(body.replayObligation.required,true);
+  assert.equal(body.replayObligation.maxAttempts,1);
+
+  const denied=await handlePortalConnectorsRequest({request:request('POST',`/api/connectors/reviews/${REVIEW_ID}/decision`,{decision:'reject'}),user:{id:'u2',tenantId:'tenant-b'},store});
+  assert.equal(denied.status,404);
+});
+
+test('tenant can resolve server-side from accepted membership when identity metadata is absent',async()=>{
+  const store=makeStore();
+  const noTenantUser={id:'u1',email:'member@example.nl'};
+  const res=await handlePortalConnectorsRequest({request:request('GET','/api/connectors?tenant=evil'),user:noTenantUser,store});
+  assert.equal(res.status,200);
+  assert.deepEqual(store.calls[0],['resolveTenant','member@example.nl']);
 });
 
 test('execution and review queue reads remain tenant scoped',async()=>{
-  const executions=await handlePortalConnectorsRequest({request:request('GET',`/api/connectors/${connector.id}/executions`),user,store});
-  assert.equal(executions.status,200);assert.equal((await executions.json())[0].id,'e1');
+  const store=makeStore();
+  await store.saveExecution('tenant-a',{connectorId:CONNECTOR_ID,connectorVersion:1,status:'TEST_PASSED',evidence:passingEvidence});
+  const executions=await handlePortalConnectorsRequest({request:request('GET',`/api/connectors/${CONNECTOR_ID}/executions`),user,store});
+  assert.equal(executions.status,200);assert.equal((await executions.json())[0].id,EXECUTION_ID);
   const reviews=await handlePortalConnectorsRequest({request:request('GET','/api/connectors/review-queue'),user,store});
-  assert.equal(reviews.status,200);assert.equal((await reviews.json())[0].id,'r1');
+  assert.equal(reviews.status,200);assert.equal((await reviews.json())[0].id,REVIEW_ID);
 });
