@@ -24,6 +24,7 @@ const vm = {
     {id:'data',label:'Dashboards',meta:'KPI · BI'},
   ],edges:[]},
   agents:[{id:'a1',name:'Detectie',status:'verified',evidenceId:'ev-1'}],
+  runtimeFlow:{source:'systems',module:'today',capabilities:['Begrijpt context','Prioriteert']},
   roadmap:[{title:'Kennis Finance borgen',status:'Nu',progress:65}],
   recommendedActions:[{title:'Automatiseer het offerteproces',priority:'Hoog'}],
   monthlyImpact:[{label:'Tijdwinst',value:'+12%',delta:'+4%'}],
@@ -35,8 +36,7 @@ const vm = {
 test('Vandaag volgt het goedgekeurde klantenportaal-design', () => {
   const html = renderToday(vm);
   for (const required of [
-    'Welkom terug, Arthur',
-    'Grip op je bedrijf. Ruimte om te groeien.',
+    'Welkom terug, Arthur','Grip op je bedrijf. Ruimte om te groeien.',
     'Bedrijfsgezondheid','Kennisborging','Processen','Data &amp; systemen','AI-volwassenheid',
     'Het brein van je bedrijf','1. Bronnen','2. Het bedrijfsgeheugen','AI Brain','Datahub','Powerhouse','3. Klantenportaal',
     'AI Management Summary','Aanbevelingen','Snelle links','Roadmap &amp; voortgang','Kansen &amp; bedreigingen','Impact overzicht','Recente activiteiten'
@@ -46,11 +46,26 @@ test('Vandaag volgt het goedgekeurde klantenportaal-design', () => {
 test('dashboard markeert flow niet actief zonder bewijsbare runtime', () => {
   const html = renderToday({...vm, agents:[]});
   assert.match(html,/data-flow-active="false"/);
-  assert.doesNotMatch(html,/data-flow-active="true"/);
 });
 
-test('dashboard activeert runtime-flow alleen met verified evidence', () => {
+test('verified agent zonder expliciete bron en bestemming tekent geen end-to-end flow', () => {
+  const html = renderToday({...vm,runtimeFlow:null});
+  assert.match(html,/data-flow-active="false"/);
+  assert.match(html,/data-source-flow-active="false"/);
+  assert.match(html,/data-portal-flow-active="false"/);
+});
+
+test('expliciete bron en module plus evidence activeren de flow', () => {
   const html = renderToday(vm);
   assert.match(html,/data-flow-active="true"/);
+  assert.match(html,/data-source-flow-active="true"/);
+  assert.match(html,/data-portal-flow-active="true"/);
   assert.ok(html.includes('ev-1'));
+});
+
+test('alleen gebruikte AI-capabilities lichten op', () => {
+  const html = renderToday(vm);
+  assert.match(html,/class="on"[^>]*><i>✦<\/i>Begrijpt context/);
+  assert.match(html,/class="on"[^>]*><i>✦<\/i>Prioriteert/);
+  assert.doesNotMatch(html,/class="on"[^>]*><i>✦<\/i>Simuleert/);
 });
