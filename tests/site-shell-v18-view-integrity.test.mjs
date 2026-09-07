@@ -35,10 +35,10 @@ test('prijzen.html: eigen prijshero blijft volledig intact en wordt de canonical
   assert.match(out, /<h2>Pakketten<\/h2>/, 'eigen prijsinhoud blijft behouden');
 });
 
-test('real-browser visibility gate covers every internal page linked from the shared menu', () => {
+test('real-browser visibility gate covers every public page in the deployed sitemap', () => {
   const checker = readFileSync('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
-  assert.match(checker, /discoverMenuRoutes/, 'browser gate must discover the menu routes instead of checking only a hand-picked pair');
-  assert.match(checker, /\.bgkop\s+a\[href\]/, 'browser gate must derive routes from the actual shared menu');
+  assert.match(checker, /discoverPublicRoutes/, 'browser gate must discover the public route estate instead of checking a hand-picked pair');
+  assert.match(checker, /sitemap\.xml/, 'the deployed sitemap must be the authoritative public route inventory');
   assert.doesNotMatch(checker, /const routes = \['\/ai-act', '\/benchmark'\]/, 'AI Act and benchmark cannot be the only protected routes');
-  assert.match(checker, /routes\.length\s*<\s*8/, 'gate must fail closed if menu discovery unexpectedly returns too few pages');
+  assert.match(checker, /routes\.length\s*<\s*40/, 'gate must fail closed if sitemap discovery unexpectedly loses most public pages');
 });
