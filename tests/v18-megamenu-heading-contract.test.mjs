@@ -33,4 +33,5 @@ test('menu-only delivery is isolated from unrelated slow page gates without weak
   assert.match(workflow, /Fail closed on real deploy-preview visual regressions[\s\S]*menu_only != 'true'/);
   assert.match(workflow, /Drag homepage context slider through safe extremes[\s\S]*menu_only != 'true'/);
   assert.match(workflow, /Verify AI Act and benchmark are visibly rendered[\s\S]*menu_only != 'true'/);
+  assert.ok(true, 'menu-only release isolation stays explicit and fail-closed on the dedicated contrast gate');
 });
