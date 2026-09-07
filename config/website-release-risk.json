@@ -1,6 +1,6 @@
 {
-  "version": "WEBSITE-RELEASE-RISK-v1",
-  "profiles": ["none", "menu", "full"],
+  "version": "WEBSITE-RELEASE-RISK-v2",
+  "profiles": ["none", "menu", "targeted", "full"],
   "menuExactPaths": [
     "tools/bouw-v18-production-core.mjs",
     "tools/site-shell/v18-megamenu-browser-check.mjs"
@@ -8,24 +8,29 @@
   "menuPrefixes": [
     "tools/site-shell/v18-megamenu-"
   ],
-  "fullSurfaceExactPaths": [
+  "targetedSurfaceExactPaths": [
     "index.html",
     "expertises.html",
     "ai-automatisering-mkb.html",
     "microsoft-365-koppeling.html",
     "power-bi-implementatie.html",
     "bedrijf-overdraagbaar-maken.html",
-    "data-soevereiniteit.html",
+    "data-soevereiniteit.html"
+  ],
+  "targetedSurfacePrefixes": [
+    "pages/",
+    "blog/"
+  ],
+  "fullSurfaceExactPaths": [
     "styles.css",
     "script.js",
-    "sitemap.xml"
+    "sitemap.xml",
+    "netlify.toml"
   ],
   "fullSurfacePrefixes": [
     "assets/",
     "components/",
-    "pages/",
     "site/",
-    "blog/",
     "tools/site-shell/",
     "tools/bouw-v18-",
     "tools/v18-",
@@ -37,8 +42,12 @@
   "controlPlaneExactPaths": [
     "config/website-release-risk.json",
     "tools/website-release-risk.mjs",
+    "tools/release-base-guard.mjs",
     "tests/website-release-risk.test.mjs",
+    "tests/release-base-guard.test.mjs",
     ".github/workflows/required-test.yml",
+    ".github/workflows/release-gate.yml",
+    ".github/workflows/production-release-readback.yml",
     "config/brain-delivery-system.json"
   ]
 }
