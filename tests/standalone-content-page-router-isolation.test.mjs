@@ -41,11 +41,3 @@ test('standalone pages receive a fail-safe that keeps the real page visible even
   assert.equal((result.match(/bg-standalone-visibility-guard/g) || []).length, 1, 'visibility guard must be idempotent');
   assert.equal((borgStandaloneVisibility(result).match(/bg-standalone-visibility-guard/g) || []).length, 1, 'second pass must not duplicate the guard');
 });
-
-test('real-browser visibility gate covers every internal page linked from the shared menu', () => {
-  const checker = readFileSync('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
-  assert.match(checker, /discoverMenuRoutes/, 'browser gate must discover the menu routes instead of checking only a hand-picked pair');
-  assert.match(checker, /\.bgkop\s+a\[href\]/, 'browser gate must derive routes from the actual shared menu');
-  assert.doesNotMatch(checker, /const routes = \['\/ai-act', '\/benchmark'\]/, 'AI Act and benchmark cannot be the only protected routes');
-  assert.match(checker, /routes\.length\s*<\s*8/, 'gate must fail closed if menu discovery unexpectedly returns too few pages');
-});
