@@ -24,13 +24,14 @@ try{
     const visibleLabels=labels.map(label=>({label,visible:visible(exact(label))}));
     const ctaVisible=visible(containing('Analyseer impact'));
     const stickyNodes=Array.from(root.querySelectorAll('*')).filter(el=>{const cs=getComputedStyle(el),r=el.getBoundingClientRect();return cs.position==='sticky'&&r.width>0&&r.height>0;});
-    const stickyBlockers=stickyNodes.filter(el=>{const r=el.getBoundingClientRect();return r.height>=vh*.7||r.width>=vw*.7;});
+    const stickyBlockerNodes=stickyNodes.filter(el=>{const r=el.getBoundingClientRect();return r.height>=vh*.7||r.width>=vw*.7;});
+    const stickyDiagnostics=stickyBlockerNodes.map(el=>{const r=el.getBoundingClientRect();return{tag:el.tagName.toLowerCase(),id:el.id||'',className:String(el.className||''),attrs:Array.from(el.attributes).filter(a=>a.name.startsWith('data-')).reduce((out,a)=>(out[a.name]=a.value,out),{}),top:r.top,bottom:r.bottom,width:r.width,height:r.height,text:text(el).slice(0,180)};});
     const cost=document.querySelector('[data-bg-story-cost]'), costStyle=cost?getComputedStyle(cost):null;
     const costHidden=!cost||costStyle.visibility==='hidden'||Number(costStyle.opacity||1)<.05||costStyle.display==='none';
     const meaningfulVisibleCount=visibleLabels.filter(x=>x.visible).length+(ctaVisible?1:0);
     const blankViewport=meaningfulVisibleCount<3;
-    const ok=rr.bottom>0&&rr.top<innerHeight&&rootHeight>180&&heightRatio<=1.35&&!blankViewport&&ctaVisible&&stickyBlockers.length===0&&costHidden;
-    return{ok,rootHeight,heightRatio,rootTop:rr.top,rootBottom:rr.bottom,visibleLabels,ctaVisible,meaningfulVisibleCount,blankViewport,stickyDescendants:stickyNodes.length,stickyBlockers:stickyBlockers.length,costHidden};
+    const ok=rr.bottom>0&&rr.top<innerHeight&&rootHeight>180&&heightRatio<=1.35&&!blankViewport&&ctaVisible&&stickyBlockerNodes.length===0&&costHidden;
+    return{ok,rootHeight,heightRatio,rootTop:rr.top,rootBottom:rr.bottom,visibleLabels,ctaVisible,meaningfulVisibleCount,blankViewport,stickyDescendants:stickyNodes.length,stickyBlockers:stickyBlockerNodes.length,stickyDiagnostics,costHidden};
   });
   if(!result.ok){await page.screenshot({path:`${artifactDir}/homepage-story-regression.png`,fullPage:true});throw new Error(`Homepage story blank/geometry regression: ${JSON.stringify(result)}`);}
   console.log(`Homepage story browser check: groen ${JSON.stringify(result)}`);
