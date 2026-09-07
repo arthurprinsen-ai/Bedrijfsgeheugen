@@ -27,6 +27,14 @@ async function openMobileMenu(page) {
   await expect(page.locator('#portalMobileNav')).toBeVisible();
 }
 
+function nativePageHeading(page, text) {
+  return page.locator('#workspaceContent .native-page-hero h2', { hasText: text });
+}
+
+function nativeLayerHeading(page, text) {
+  return page.locator('#workspaceContent .native-layer h3', { hasText: text });
+}
+
 test('complete portal desktop keeps approved overview, all portal pages and Business OS workspaces', async ({ page }) => {
   test.setTimeout(60000);
   const preview = process.env.PREVIEW_URL;
@@ -40,10 +48,10 @@ test('complete portal desktop keeps approved overview, all portal pages and Busi
   await expect(page.locator('#overviewView')).toHaveClass(/is-active/);
 
   await page.locator('.sidebar [data-primary-page="profiel"]').click();
-  await expect(page.getByRole('heading', { name: 'Profiel per onderdeel', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Managementbeeld', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Operationele details', exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Trace & evidence', exact: true })).toBeVisible();
+  await expect(nativePageHeading(page, 'Profiel per onderdeel')).toBeVisible();
+  await expect(nativeLayerHeading(page, 'Managementbeeld')).toBeVisible();
+  await expect(nativeLayerHeading(page, 'Operationele details')).toBeVisible();
+  await expect(nativeLayerHeading(page, 'Trace & evidence')).toBeVisible();
   await expect(page.locator('iframe.native-legacy-frame[data-legacy-tab="profiel"]')).toBeVisible();
 
   await page.locator('[data-native-back]').click();
@@ -79,7 +87,7 @@ test('complete portal mobile has a real hamburger menu with all pages and Busine
   await expect(page.locator('#portalMobileNav [data-portal-page="ai-scan"]')).toBeVisible();
   await expect(page.locator('#portalMobileNav [data-portal-page="outcomes-evidence"]')).toBeVisible();
   await page.locator('#portalMobileNav [data-portal-page="ai-scan"]').click();
-  await expect(page.getByRole('heading', { name: 'AI-scan: kansenkaart', exact: true })).toBeVisible();
+  await expect(nativePageHeading(page, 'AI-scan: kansenkaart')).toBeVisible();
   await expect(page.locator('iframe.native-legacy-frame[data-legacy-tab="aiscan"]')).toBeVisible();
 
   await openMobileMenu(page);
