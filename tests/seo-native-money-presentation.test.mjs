@@ -14,8 +14,8 @@ for (const route of [
     assert.ok(entry, `registry-entry ontbreekt voor ${route}`);
     assert.equal(entry.presentation, 'native', 'product en prijzen moeten expliciet als native presentatie zijn geregistreerd');
 
-    const heroClass = route.endsWith('/prijzen') ? 'held' : 'inhoud-kop';
-    const html = `<!doctype html><html lang="nl"><head><title>Pagina</title></head><body><main><section class="${heroClass}"><h1>Eigen V18 hero</h1></section><section class="inhoud-body"><h2>Eigen commerciële inhoud</h2><p>De ontworpen pagina blijft leidend.</p><a href="https://www.bedrijfsgeheugen.nl/frisse-blik" data-bg-conversion="frisse-blik">Plan een Frisse Blik</a><a href="https://www.bedrijfsgeheugen.nl/product">Bekijk platform</a><a href="https://www.bedrijfsgeheugen.nl/">Home</a></section></main></body></html>`;
+    const heroClass = route.endsWith('/prijzen') ? 'paginakop' : 'inhoud-kop';
+    const html = `<!doctype html><html lang="nl"><head><title>Pagina</title></head><body><main><section class="${heroClass}" data-bg-component="hero"><h1>Eigen pagina-hero</h1></section><section class="inhoud-body"><h2>Eigen commerciële inhoud</h2><p>De ontworpen pagina blijft leidend.</p><a href="https://www.bedrijfsgeheugen.nl/frisse-blik" data-bg-conversion="frisse-blik">Plan een Frisse Blik</a><a href="https://www.bedrijfsgeheugen.nl/product">Bekijk platform</a><a href="https://www.bedrijfsgeheugen.nl/">Home</a></section></main></body></html>`;
     const out = enrichMoneyPage(html, entry)
       .replace('<main ', `<main data-bg-intent-owner="${entry.route}" data-bg-intent-role="primary" `);
 
@@ -25,6 +25,6 @@ for (const route of [
     assert.match(out, /data-bg-money-contract-version="native-v1"/, 'native money-page krijgt wel een machineleesbaar contractsignaal');
 
     const fouten = inspectMoneyPage(out, entry);
-    assert.doesNotMatch(fouten.join('\n'), /eigen V18 hero ontbreekt/, `${route}: de bestaande eigen hero moet als native hero worden geaccepteerd`);
+    assert.doesNotMatch(fouten.join('\n'), /eigen V18 hero ontbreekt/, `${route}: de canonical eigen hero moet als native hero worden geaccepteerd`);
   });
 }
