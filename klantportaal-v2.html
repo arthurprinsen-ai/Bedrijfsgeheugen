@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Klantenportaal V2 | Bedrijfsgeheugen</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<style>
+  :root{color-scheme:light}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f6f8fc;color:#0b1744}
+  body.ready{overflow:hidden}
+  #portalGate{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 10%,#eef4ff 0,#f7f9fd 46%,#f6f8fc 100%)}
+  .gateCard{width:min(440px,100%);background:#fff;border:1px solid #e4e9f5;border-radius:22px;padding:28px;box-shadow:0 18px 55px rgba(22,50,110,.10)}
+  .brand{font-weight:900;font-size:19px;margin-bottom:26px}.brand:before{content:'✦';color:#0e63ff;margin-right:9px}
+  h1{font-size:28px;line-height:1.1;margin:0 0 10px}p{color:#66769b;line-height:1.55;margin:0 0 18px}
+  .login{border:0;border-radius:12px;background:linear-gradient(135deg,#0e63ff,#6c4cff);color:#fff;font:inherit;font-weight:800;padding:13px 16px;width:100%;cursor:pointer}
+  .status{margin-top:12px;font-size:12px;color:#7180a4;min-height:18px}
+  #portalFrame{display:none;position:fixed;inset:0;width:100%;height:100dvh;border:0;background:#f6f8fc}
+  body.ready #portalGate{display:none}body.ready #portalFrame{display:block}
+</style>
+</head>
+<body>
+<section id="portalGate" aria-live="polite">
+  <div class="gateCard">
+    <div class="brand">Bedrijfsgeheugen</div>
+    <h1>Klantenportaal</h1>
+    <p>Log in om de nieuwe klantenportaal-ervaring te openen. De bestaande portalinhoud en functies blijven vanuit het nieuwe ontwerp beschikbaar.</p>
+    <button class="login" id="portalLogin" type="button">Inloggen</button>
+    <div class="status" id="portalStatus"></div>
+  </div>
+</section>
+<iframe id="portalFrame" title="Bedrijfsgeheugen klantenportaal V2" referrerpolicy="same-origin"></iframe>
+<script>
+(function(){
+  const gate=document.getElementById('portalGate');
+  const frame=document.getElementById('portalFrame');
+  const login=document.getElementById('portalLogin');
+  const status=document.getElementById('portalStatus');
+
+  function portalUrl(){
+    const url=new URL('/portal-v2/index.html', location.origin);
+    for(const [key,value] of new URLSearchParams(location.search)) url.searchParams.append(key,value);
+    return url.pathname + url.search;
+  }
+
+  function openPortal(user){
+    if(!user) return;
+    status.textContent='Portaal openen…';
+    if(!frame.src) frame.src=portalUrl();
+    document.body.classList.add('ready');
+    gate.setAttribute('aria-hidden','true');
+  }
+
+  login.addEventListener('click',function(){
+    if(window.netlifyIdentity && netlifyIdentity.open){
+      status.textContent='Inlogvenster openen…';
+      netlifyIdentity.open('login');
+    }else{
+      status.textContent='Inloggen is tijdelijk niet beschikbaar. Probeer de pagina opnieuw te laden.';
+    }
+  });
+
+  if(window.netlifyIdentity){
+    netlifyIdentity.on('init',function(user){ if(user) openPortal(user); });
+    netlifyIdentity.on('login',function(user){ netlifyIdentity.close(); openPortal(user); });
+    netlifyIdentity.on('logout',function(){ location.reload(); });
+  }else{
+    status.textContent='Inloggen kon niet worden geladen.';
+  }
+})();
+</script>
+</body>
+</html>
