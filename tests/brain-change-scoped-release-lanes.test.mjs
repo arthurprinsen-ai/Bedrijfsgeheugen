@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { createDeliveryPlan, deriveRequiredTestSuites } from '../tools/brain-delivery-system.mjs';
+import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
+import { deriveRequiredTestSuites } from '../tools/delivery-required-test-suites.mjs';
 
 const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
 
@@ -51,4 +52,12 @@ test('Required test keeps its stable status identity and is lane-aware', async (
   assert.match(workflow, /steps\.scope\.outputs\.portal/);
   assert.match(workflow, /steps\.scope\.outputs\.website/);
   assert.match(workflow, /steps\.scope\.outputs\.automation/);
+});
+
+test('V18 promotion no longer mixes unrelated portal and website gates', async () => {
+  const workflow = await readFile('.github/workflows/v18-production-promotion.yml','utf8');
+  assert.match(workflow, /steps\.scope\.outputs\.website/);
+  assert.match(workflow, /steps\.scope\.outputs\.portal/);
+  assert.match(workflow, /Verify website V18 production contracts/);
+  assert.match(workflow, /Verify portal production contracts/);
 });
