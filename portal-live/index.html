@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Bedrijfsgeheugen · Klantenportaal</title>
+<style>html,body{margin:0;min-height:100%;font-family:Inter,system-ui,sans-serif;background:#f4f7fc;color:#172033}.safe-load{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.safe-load div{max-width:560px}.safe-load h1{font-size:24px;margin:0 0 10px}.safe-load p{line-height:1.55;color:#53617a}</style>
+</head>
+<body>
+<div class="safe-load"><div><h1>Bedrijfsgeheugen laden…</h1><p>Alleen geverifieerde bedrijfsdata wordt als feit weergegeven.</p></div></div>
+<script>
+(async()=>{
+  try{
+    const response=await fetch('/portal-next/index.html',{cache:'no-store',credentials:'same-origin'});
+    if(!response.ok) throw new Error('portal-next unavailable');
+    let sanitized=await response.text();
+
+    const replacements=[
+      ['<span class="avatar">AP</span><div><strong>Arthur Prinsen</strong><small>Beheerder</small></div>','<span class="avatar">—</span><div><strong>Geverifieerde gebruiker</strong><small>Beheerder</small></div>'],
+      ['Periode: Mei 2025','Periode: actuele data'],
+      ['Preview · voorbeelddata · geen actieve bedrijfswaarheid. Live flows, acties en outcomes worden alleen als actief getoond met runtime-evidence.','Productie · alleen geverifieerde bedrijfsdata wordt als feit getoond. Flows, acties en outcomes worden uitsluitend actief bij runtime-evidence.'],
+      ['72<small>/100</small>','—<small>/100</small>'],
+      ['61<small>/100</small>','—<small>/100</small>'],
+      ['69<small>/100</small>','—<small>/100</small>'],
+      ['74<small>/100</small>','—<small>/100</small>'],
+      ['54<small>/100</small>','—<small>/100</small>'],
+      ['<em>voorbeeld</em>','<em>Geen geverifieerde data</em>'],
+      ['<span class="preview-chip">Voorbeeld</span>','<span class="preview-chip">Geen geverifieerde data</span>'],
+      ['<article><b>01</b><strong>Kennisrisico Finance</strong><p>Kritieke kennis is onvoldoende geborgd. Onderzoek eigenaar, afhankelijkheden en borgingsactie.</p></article><article><b>02</b><strong>Datakwaliteit klantbeeld</strong><p>Dubbele en onvolledige records beperken besluitkwaliteit en automatisering.</p></article><article><b>03</b><strong>Uitvoering loopt achter</strong><p>Prioriteiten zijn bekend, maar eigenaarschap en evidence sluiten nog niet volledig.</p></article>','<article><b>—</b><strong>Geen geverifieerde aandachtspunten beschikbaar</strong><p>Zodra geautoriseerde runtime-evidence beschikbaar is, verschijnen hier herleidbare managementsignalen.</p></article>'],
+      ['Voorbeeldweergave van kansen, risico’s en trends. Geen actuele bedrijfswaarheid zonder bron/evidence.','Geen geverifieerde managementsignalen beschikbaar zonder bron en evidence.'],
+      ['<div class="summary-row green"><b>Kansen</b><strong>7</strong></div><div class="summary-row orange"><b>Risico’s</b><strong>5</strong></div><div class="summary-row blue"><b>Trends</b><strong>4</strong></div>','<div class="summary-row green"><b>Kansen</b><strong>—</strong></div><div class="summary-row orange"><b>Risico’s</b><strong>—</strong></div><div class="summary-row blue"><b>Trends</b><strong>—</strong></div>'],
+      ['<div class="section-title"><h3>Aanbevelingen</h3><span>voorbeeld</span></div><ul><li>Automatiseer offerteproces <em>Hoog</em></li><li>Borg kritieke kennis Finance <em>Hoog</em></li><li>Verbeter datakwaliteit <em>Middel</em></li><li>Maak eigenaarschap expliciet <em>Middel</em></li></ul>','<div class="section-title"><h3>Aanbevelingen</h3><span>evidence vereist</span></div><p>Geen geverifieerde aanbevelingen beschikbaar.</p>'],
+      ['<div class="roadmap-counts"><span>Nu <b>6</b></span><span>Volgende <b>8</b></span><span>Gepland <b>14</b></span><span>Afgerond <b>23</b></span></div>','<div class="roadmap-counts"><span>Nu <b>—</b></span><span>Volgende <b>—</b></span><span>Gepland <b>—</b></span><span>Afgerond <b>—</b></span></div>'],
+      ['<div class="op-block green"><b>Kansen</b><p>Groeikansen, automatisering en marktontwikkeling.</p></div><div class="op-block orange"><b>Bedreigingen</b><p>Kennisafhankelijkheid, datakwaliteit en compliance.</p></div>','<div class="op-block green"><b>Kansen</b><p>Geen geverifieerde data.</p></div><div class="op-block orange"><b>Bedreigingen</b><p>Geen geverifieerde data.</p></div>'],
+      ['<div class="section-title"><h3>Impact</h3><span>voorbeeld</span></div>','<div class="section-title"><h3>Impact</h3><span>evidence vereist</span></div>']
+    ];
+
+    for(const [sample,safe] of replacements) sanitized=sanitized.replaceAll(sample,safe);
+
+    const forbidden=['Arthur Prinsen','Periode: Mei 2025','Kennisrisico Finance','Automatiseer offerteproces','<strong>72<small>/100</small></strong>','<strong>61<small>/100</small></strong>','<strong>69<small>/100</small></strong>','<strong>74<small>/100</small></strong>','<strong>54<small>/100</small></strong>'];
+    if(forbidden.some(value=>sanitized.includes(value))) throw new Error('unsanitized preview truth');
+
+    document.open();
+    document.write(sanitized);
+    document.close();
+  }catch(error){
+    console.error('[portal-live] fail-closed',error);
+    document.body.innerHTML='<div class="safe-load"><div><h1>Bedrijfsdata kon niet veilig worden geladen</h1><p>Het portaal toont geen voorbeeldwaarden als bedrijfswaarheid. Probeer het later opnieuw of open het bestaande portaal via support.</p></div></div>';
+  }
+})();
+</script>
+</body>
+</html>
