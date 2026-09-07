@@ -9,7 +9,8 @@ export function createPortalProjectHandler({getUser,store}={}){
     if(request.method!=='GET')return new Response('Method Not Allowed',{status:405,headers:{allow:'GET'}});
     const user=await getUser();
     if(!user?.id)return json({error:'UNAUTHORIZED'},401);
-    const tenantId=resolveIdentityTenant(user);
+    let tenantId=resolveIdentityTenant(user);
+    if(!isProjectTenantId(tenantId)&&typeof store.resolveTenant==='function')tenantId=await store.resolveTenant(user);
     if(!isProjectTenantId(tenantId))return json({error:'TENANT_NOT_CONFIGURED'},403);
     const record=await store.get(tenantId);
     return record?json(record):json({error:'NOT_FOUND'},404);
