@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { validateProtectedPageCoverage, validateVisualRegressionRegistry, scanDangerousLayoutPatterns } from '../tools/site-shell/ui-visual-regression/contract.mjs';
 
 const valid = {
@@ -13,6 +14,7 @@ const valid = {
       { name: 'phone', width: 390, height: 844 },
       { name: 'tablet', width: 768, height: 1024 },
       { name: 'small-desktop', width: 1024, height: 768 },
+      { name: 'intermediate-desktop', width: 1128, height: 653 },
       { name: 'desktop', width: 1440, height: 900 }
     ]
   },
@@ -26,6 +28,14 @@ const valid = {
 test('registry accepts required critical routes', () => {
   assert.deepEqual(validateVisualRegressionRegistry(valid), []);
   assert.deepEqual(validateProtectedPageCoverage(valid, ['/', '/prijzen', '/due-diligence']), []);
+});
+
+test('production registry covers the intermediate desktop width that exposed the homepage overlap', async () => {
+  const registry = JSON.parse(await readFile(new URL('../config/ui-visual-regression.json', import.meta.url), 'utf8'));
+  assert.ok(
+    registry.defaults.viewports.some(viewport => viewport.width === 1128 && viewport.height === 653),
+    'UI visual regression registry must cover 1128x653, the real viewport where the automation card covered the homepage copy'
+  );
 });
 
 test('duplicate routes fail closed', () => {
