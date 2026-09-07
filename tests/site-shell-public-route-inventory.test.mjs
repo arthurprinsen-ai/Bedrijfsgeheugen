@@ -38,3 +38,5 @@ test('required test can never skip the all-public-pages visibility gate for menu
   assert.doesNotMatch(step, /menu_only/, 'visibility crawl must not be bypassed for menu-only changes');
   assert.match(step, /standalone-visibility-check\.mjs/, 'visibility crawl must execute the full public-page checker');
 });
+
+// Keep this regression contract in the website lane so the fail-closed crawl can never silently disappear.
