@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { applyCanonicalShell } from '../tools/site-shell/apply-shell.mjs';
 
 const shell = {
@@ -32,4 +33,12 @@ test('prijzen.html: eigen prijshero blijft volledig intact en wordt de canonical
   assert.match(out, /Bekijk pakketten/, 'de primaire hero-CTA mag niet verdwijnen');
   assert.equal((out.match(/<h1\b/g) || []).length, 1, 'prijzen houdt exact één H1');
   assert.match(out, /<h2>Pakketten<\/h2>/, 'eigen prijsinhoud blijft behouden');
+});
+
+test('real-browser visibility gate covers every internal page linked from the shared menu', () => {
+  const checker = readFileSync('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
+  assert.match(checker, /discoverMenuRoutes/, 'browser gate must discover the menu routes instead of checking only a hand-picked pair');
+  assert.match(checker, /\.bgkop\s+a\[href\]/, 'browser gate must derive routes from the actual shared menu');
+  assert.doesNotMatch(checker, /const routes = \['\/ai-act', '\/benchmark'\]/, 'AI Act and benchmark cannot be the only protected routes');
+  assert.match(checker, /routes\.length\s*<\s*8/, 'gate must fail closed if menu discovery unexpectedly returns too few pages');
 });
