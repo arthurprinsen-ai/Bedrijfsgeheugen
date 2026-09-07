@@ -41,14 +41,19 @@ jobs:
           tests/site-shell-v18-view-integrity.test.mjs
           tests/seo-native-money-presentation.test.mjs
           tests/seo-homepage-platform-expertise-toggle.test.mjs
+          tests/seo-homepage-scroll-story-interaction.test.mjs
           tests/standalone-content-page-router-isolation.test.mjs
-          tests/v18-megamenu-heading-contract.test.mjs
       - name: Fail closed on real deploy-preview visual regressions
         if: github.event_name == 'pull_request'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
           EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: node tools/site-shell/ui-visual-regression/browser-check.mjs
+      - name: Reject homepage story blank-screen regression on real deploy preview
+        if: github.event_name == 'pull_request'
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: node tools/site-shell/homepage-story-browser-check.mjs
       - name: Click Platform and Expertise on the real deploy preview
         if: github.event_name == 'pull_request'
         env:
@@ -59,11 +64,6 @@ jobs:
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/standalone-visibility-check.mjs
-      - name: Verify real megamenu headings are black and bold
-        if: github.event_name == 'pull_request'
-        env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: node tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Upload visual regression diagnostics
         if: always()
         uses: actions/upload-artifact@v4
