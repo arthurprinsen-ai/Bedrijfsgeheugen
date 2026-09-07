@@ -1,4 +1,5 @@
 import './portal-navigation-complete.js';
+import './portal-business-os-navigation.js';
 
 if (typeof document !== 'undefined' && !document.querySelector('link[data-portal-navigation-complete]')) {
   const link=document.createElement('link');
