@@ -16,8 +16,8 @@ test('old demo alias redirects canonically to demo1', () => {
   assert.match(redirects, /^\/klantportaal\s+klant=demo\s+\/klantportaal\?klant=demo1\s+301!$/m);
 });
 
-test('Ijsselmonde serves the legacy full customer portal', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=ijsselmonde\s+\/klantportaal\.html\s+200!$/m);
+test('Ijsselmonde serves the production-safe Business OS shell', () => {
+  assert.match(redirects, /^\/klantportaal\s+klant=ijsselmonde\s+\/portal-live\/\s+200!$/m);
 });
 
 test('Portal Next legacy comparison bypasses the public klantportaal rewrite', () => {
