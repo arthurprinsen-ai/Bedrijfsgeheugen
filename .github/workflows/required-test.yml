@@ -95,6 +95,11 @@ jobs:
           tests/standalone-content-page-router-isolation.test.mjs
           tests/v18-megamenu-heading-contract.test.mjs
           tests/seo-homepage-context-slider-readability.test.mjs
+      - name: Install browser dependencies before browser-regression contracts
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.risk_lane == 'high-risk'
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
       - name: Verify high-risk full website regression contracts
         if: steps.scope.outputs.website == 'true' && steps.scope.outputs.risk_lane == 'high-risk'
         run: >-
@@ -125,7 +130,7 @@ jobs:
           throw new Error('Timed out waiting for exact deploy preview');
           NODE
       - name: Install browser for selected website verification
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.risk_lane != 'high-risk'
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
