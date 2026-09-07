@@ -1,0 +1,42 @@
+name: Temporary classify prijzen page
+
+on:
+  push:
+    branches:
+      - fix/prijzen-mobile-whitebar-guard
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/prijzen-mobile-whitebar-guard
+          fetch-depth: 0
+      - name: Classify prijzen.html as website delivery
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('config/brain-delivery-system.json')
+          d=json.loads(p.read_text())
+          lane=next(x for x in d['lanes'] if x['id']=='website')
+          if 'prijzen.html' not in lane['paths']:
+              marker='expertises.html'
+              i=lane['paths'].index(marker)+1 if marker in lane['paths'] else len(lane['paths'])
+              lane['paths'].insert(i,'prijzen.html')
+          p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+          PY
+      - name: Remove temporary workflow
+        run: rm .github/workflows/tmp-classify-prijzen-page.yml
+      - name: Commit classifier repair
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/brain-delivery-system.json .github/workflows/tmp-classify-prijzen-page.yml
+          git commit -m "fix: classify prijzen page as website delivery"
+          git push origin HEAD:fix/prijzen-mobile-whitebar-guard
