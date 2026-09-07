@@ -1,0 +1,76 @@
+name: Interaction Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'v18-full/**'
+      - 'assets/**'
+      - 'tools/**'
+      - 'quality/**'
+      - 'tests/**'
+      - 'netlify.toml'
+      - '.github/workflows/interaction-quality-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  interaction-quality-gate:
+    name: interaction-quality-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Run static interaction contracts
+        run: >-
+          node --test
+          tests/interaction-contract-registry.test.mjs
+          tests/interaction-final-build-wiring.test.mjs
+          tests/interaction-browser-helpers.test.mjs
+          tests/seo-homepage-scroll-story-interaction.test.mjs
+          tests/seo-homepage-platform-expertise-toggle.test.mjs
+      - name: Wait for Netlify deploy preview
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for i in $(seq 1 36); do
+            json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
+            state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
+            if [ "$state" = "success" ]; then exit 0; fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "::error::Netlify preview failed for $HEAD_SHA: $state"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "::error::Timed out waiting for Netlify deploy preview for $HEAD_SHA"
+          exit 1
+      - name: Install Playwright runtime and Chromium
+        if: github.event_name == 'pull_request'
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Run interaction browser gate
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: npx playwright test tests/integration/interaction-quality-gate.spec.js --workers=1 --reporter=line,html
+      - name: Upload interaction diagnostics
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: interaction-quality-gate-artifacts
+          path: |
+            playwright-report/**
+            test-results/**
+          if-no-files-found: warn
