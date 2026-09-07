@@ -16,12 +16,15 @@ test('404 geeft neutrale empty state zonder demo data',async()=>{
   assert.deepEqual(result,{state:'empty',project:null,error:null});
 });
 
-test('401 en 403 geven unauthorized',async()=>{
-  for(const status of [401,403]){
-    const result=await loadPortalProject({fetchFn:async()=>response(status,{error:'NO'})});
-    assert.equal(result.state,'unauthorized');
-    assert.equal(result.project,null);
-  }
+test('401 geeft unauthorized',async()=>{
+  const result=await loadPortalProject({fetchFn:async()=>response(401,{error:'UNAUTHORIZED'})});
+  assert.equal(result.state,'unauthorized');
+  assert.equal(result.project,null);
+});
+
+test('TENANT_NOT_CONFIGURED blijft zichtbaar als configuratieblocker en niet als lege klantdata',async()=>{
+  const result=await loadPortalProject({fetchFn:async()=>response(403,{error:'TENANT_NOT_CONFIGURED'})});
+  assert.deepEqual(result,{state:'tenant-unconfigured',project:null,error:'TENANT_NOT_CONFIGURED'});
 });
 
 test('netwerkfout blijft fail-closed',async()=>{
