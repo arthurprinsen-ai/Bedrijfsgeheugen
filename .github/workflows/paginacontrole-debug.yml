@@ -24,3 +24,13 @@ jobs:
         run: python .github/scripts/paginacontrole.py
       - name: SEO en interne links controleren
         run: python .github/scripts/seocontrole.py
+      - name: Diagnoserapport bewaren
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagina-seo-diagnose
+          if-no-files-found: warn
+          retention-days: 1
+          path: |
+            rapport.md
+            seo-rapport.md
