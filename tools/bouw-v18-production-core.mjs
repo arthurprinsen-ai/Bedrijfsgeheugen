@@ -51,21 +51,30 @@ const style = `<style id="v18-stable-video-fix">
 </style>`;
 
 // Visual contract for the actual V18 "Meer" mega menu, not the legacy .bgkop dropdown.
-const megaMenuHeadingContract = `<style id="v18-megamenu-heading-contract">
+// The whole ordinary menu link (title + description) must stay black and bold on the white panel.
+// The dark promotional card on the right is deliberately excluded so its white-on-dark styling stays intact.
+const megaMenuContrastContract = `<style id="v18-megamenu-contrast-contract">
 [data-bg-megamenu-heading]{color:#000!important;font-weight:800!important}
+[data-bg-megamenu-link],[data-bg-megamenu-link] *{color:#000!important;font-weight:700!important}
 </style>
-<script id="v18-megamenu-heading-marker">
+<script id="v18-megamenu-contrast-marker">
 (function(){
   var LABELS=['BEDRIJF','KENNIS','VERTROUWEN','SUPPORT'];
   function norm(value){return String(value||'').replace(/\\s+/g,' ').trim().toUpperCase();}
   function inActualMegaMenu(el){var node=el.parentElement;for(var depth=0;node&&depth<8;depth+=1,node=node.parentElement){var text=norm(node.textContent);if(text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1&&text.indexOf('VOLLEDIGE WEBSITEKAART')!==-1)return true;}return false;}
-  function apply(){var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');for(var i=0;i<headings.length;i+=1){var heading=headings[i];if(LABELS.indexOf(norm(heading.textContent))!==-1&&inActualMegaMenu(heading))heading.setAttribute('data-bg-megamenu-heading','true');}}
+  function isPromoLink(link){var text=norm(link.textContent);return text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1||text.indexOf('BEDRIJFSGEHEUGEN')!==-1;}
+  function apply(){
+    var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');
+    for(var i=0;i<headings.length;i+=1){var heading=headings[i];if(LABELS.indexOf(norm(heading.textContent))!==-1&&inActualMegaMenu(heading))heading.setAttribute('data-bg-megamenu-heading','true');}
+    var links=document.querySelectorAll('a');
+    for(var j=0;j<links.length;j+=1){var link=links[j];if(inActualMegaMenu(link)&&!isPromoLink(link))link.setAttribute('data-bg-megamenu-link','true');}
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
   new MutationObserver(apply).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>`;
 
-html = html.replace('</body>', `${style}\n${megaMenuHeadingContract}\n</body>`);
+html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n</body>`);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
