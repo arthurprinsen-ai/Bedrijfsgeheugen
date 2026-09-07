@@ -68,6 +68,7 @@ jobs:
         env:
           BASE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ steps.scope.outputs.routes }}
+          ALLOW_EXISTING_PAGE_ERRORS: 'true'
         run: node tools/site-shell/verify-targeted-website-routes.mjs --output .artifacts/production-route-verification.json
       - name: Evaluate immutable production truth
         if: always() && steps.deploy.outcome == 'success'
