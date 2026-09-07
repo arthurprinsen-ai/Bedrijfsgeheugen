@@ -1,221 +1,138 @@
-const HEALTH = [
-  ['Strategie',82],['Groei',74],['Operatie',68],['Organisatie',71],['Kennis',63],['Data & technologie',76],['Finance',81],['Risk & compliance',69],
-];
+import { normalizePortalFlowState } from './portal-flow-state.js';
+import { renderPortalFlow, renderStatusClass } from './portal-flow-renderer.js';
+import { mapRuntimeSnapshotToPortalFlow } from './portal-powerhouse-adapter.js';
+import { PORTAL_SECTIONS, PORTAL_PAGE_INDEX, findPortalPage } from './portal-content-map.js';
 
-const content = document.querySelector('.content');
-const drawer = document.querySelector('#drawer');
-const drawerContent = document.querySelector('#drawerContent');
-const drawerClose = document.querySelector('#drawerClose');
-const command = document.querySelector('#command');
-
-function mountHealthGrid() {
-  const healthGrid = document.querySelector('#healthGrid');
-  if (!healthGrid || healthGrid.children.length) return;
-  for (const [name, score] of HEALTH) {
-    const card = document.createElement('button');
-    card.className = 'card health';
-    card.type = 'button';
-    card.dataset.drawer = `health:${name}`;
-    card.innerHTML = `<div class="health-top"><span>${name}</span><strong>${score}</strong></div><div class="bar" aria-hidden="true"><i style="width:${score}%"></i></div>`;
-    healthGrid.append(card);
-  }
+export function reducePortalSelection(state, action) {
+  const current={source:state?.source??null,module:state?.module??null};
+  if(action?.type==='SELECT_SOURCE') return {...current,source:current.source===action.id?null:action.id};
+  if(action?.type==='SELECT_MODULE') return {...current,module:current.module===action.id?null:action.id};
+  if(action?.type==='CLEAR') return {source:null,module:null};
+  return current;
 }
-mountHealthGrid();
-const OVERVIEW_HTML = content.innerHTML;
+export function getPortalCustomerSlug(search=typeof window!=='undefined'?window.location.search:''){return new URLSearchParams(search).get('klant')||null}
+export function withCustomer(path,klant=getPortalCustomerSlug()){const origin=typeof window!=='undefined'?window.location.origin:'https://www.bedrijfsgeheugen.nl';const url=new URL(path,origin);if(klant)url.searchParams.set('klant',klant);return url.pathname+url.search+url.hash}
+export function legacyTabForPage(pageId){return findPortalPage(pageId)?.legacyTab??null}
+export function buildLegacyPortalUrl(klant=getPortalCustomerSlug()){return withCustomer('/klantportaal',klant)}
 
-const DRAWERS = {
-  health: ['Bedrijfsstatus 72','Demo-opbouw: score → drivers → evidence → eigenaar → acties. In productie wordt deze projection permission-aware berekend uit het canonical read model.'],
-  crm: ['CRM-integratie','Business diff, directe/dependente/voorspelde impact, owner, bewijs, tests en rollback verschijnen hier voordat een change kan worden geactiveerd.'],
-  opportunity: ['AI-governance propositie','Extern signaal wordt pas managementinformatie na bronvertrouwen, contextmatch, relevantie en impactanalyse.'],
-  knowledge: ['Kennisrisico','Toon betrokken processen, kennishouders, back-ups, freshness, bewijs en herstelacties zonder verborgen people-inference.'],
-  trust: ['AI-verwerking','Purpose · dataklassen · geminimaliseerde velden · provider/model · retention · policy · outputtype · evidence. Geen persistente modelmemory.'],
-  decision: ['Decision workspace','Alternatieven, rationale, affected goals, evidence, approvers en besluitstatus blijven bij elkaar zodat later zichtbaar is waarom een keuze is gemaakt.'],
-  change: ['Business change','WORKING en ACTIVE blijven gescheiden. Review toont diff, impact, dependencies, tests, approvals, verificatie en rollback.'],
-  agent: ['Agent Team','Alle specialisten werken via dezelfde AgentWork-objecten, policies, evidence, verificatie en learning. Geen eigen agentwaarheid.'],
-  access: ['Effective Access','Toegang wordt berekend uit rol, team, object, veld, purpose, dataclass en tijdelijke grants. View geeft niet automatisch Export of AI Process.'],
-  evidence: ['Evidence','Elke materiële conclusie is herleidbaar naar toegestane bronnen, freshness, verificatie en confidence.'],
+const SOURCE_COPY={
+ systemen:['Systemen','ERP, CRM, finance, e-mail en HR leveren operationele data aan.'],
+ documenten:['Documenten','Contracten, notities, rapporten en beleid leveren ongestructureerde kennis aan.'],
+ processen:['Processen','Werkstromen, procedures en taken laten zien hoe werk werkelijk loopt.'],
+ mensen:['Mensen','Expertise, verantwoordelijkheid en impliciete kennis worden zichtbaar.'],
+ dashboards:['Dashboards','KPI’s en rapportages geven het cijfermatige beeld van de organisatie.'],
+ extern:['Externe data','Markt, concurrentie en regelgeving voegen context van buiten toe.'],
+ modellen:['Modellen','Rekenmodellen en scenario’s laten mogelijke impact van keuzes zien.'],
+ canvassen:['Canvassen','Strategie en plannen geven richting en maken gewenste verandering expliciet.']
+};
+const MODULE_COPY={
+ inzicht:['Inzicht','Managementsamenvatting, signalen en stand van zaken.'],vergelijken:['Vergelijken','Opties, verschillen en afwegingen naast elkaar.'],denken:['Denken','Redeneren, verklaren en advies.'],overname:['Overname','Due diligence, kansen en risico’s.'],doen:['Doen','Acties, eigenaarschap en opvolging.'],dna:['Strategy DNA','Richting, keuzes en strategische fit.'],canvas:['Execution Canvas','Afhankelijkheden en uitvoering.'],roadmap:['Roadmap','Volgorde, planning en milestones.'],documenten:['Documenten','Vastgelegde kennis en context.'],notities:['Notities','Observaties en besluiten.'],activiteit:['Activiteit','Wie deed wat en wanneer.'],wijzigingen:['Wijzigingen','Nieuwe signalen en mutaties.'],koppelingen:['Koppelingen','Status van bronnen en synchronisaties.'],taken:['Taken & werkstromen','Van inzicht naar toegewezen uitvoering.'],uren:['Uren & facturen','Tijd, administratie en opbrengst.'],actueel:['Actueel houden','Feedback, actualisatie en leren.']
 };
 
-function escapeHtml(value='') {
-  return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function openDrawer(key) {
-  const [title, text] = DRAWERS[key] ?? [`${key}`,'Contextuele objectdetails worden hier uit het permission-aware read model geladen.'];
-  drawerContent.innerHTML = `<div class="eyebrow">Context</div><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p><div class="processing"><strong>Waarom?</strong><br>Evidence, relaties, permissions en change history zijn altijd één interactie verwijderd.</div>`;
-  drawer.classList.add('open');
-  drawer.setAttribute('aria-hidden','false');
-  drawerClose.focus();
-}
-function closeDrawer(){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true');}
-
-const DOMAIN_VIEWS = {
-  'Strategie': () => workspace({
-    eyebrow:'Strategie', title:'Van keuze naar meetbaar resultaat', text:'Strategie, doelen, KPI’s, aannames, constraints en besluiten delen één traceerbare keten.',
-    stats:[['82','strategy health'],['4','actieve doelen'],['2','besluiten nodig'],['3','aannames review']],
-    sections:[
-      ['Strategische richting', cards([
-        ['North Star','Meer grip en lagere afhankelijkheid','Strategy · ACTIVE v4.2','evidence'],
-        ['Goal 2027','Recurring revenue naar 70%','KPI coverage 4/5','decision'],
-        ['Strategic choice','Enterprise focus boven losse consultancy','Menselijk goedgekeurd','evidence'],
-      ])],
-      ['Aannames & alignment', `<div class="split"><article class="card detail-card"><span class="tag risk">REVIEW</span><h3>Implementatiecapaciteit groeit mee</h3><p>Confidence 61% · 2 ondersteunende bronnen · 1 tegengesteld capaciteitsignaal.</p><button class="link-btn" data-drawer="evidence">Bekijk bewijs →</button></article><article class="card detail-card"><span class="tag opportunity">ALIGNED</span><h3>Website → propositie → roadmap</h3><p>De kernpropositie en actieve groeidoelen verwijzen naar dezelfde canonical objects.</p></article></div>`],
-      ['Decision Inbox', table(['Besluit','Impact','Owner','Status'], [['CRM-integratie versnellen','Hoog','Directie','Review'],['Scale pricing experiment','Midden','Growth','Concept']])]
-    ]
-  }),
-  'Groei': () => workspace({
-    eyebrow:'Groei', title:'Revenue Engine', text:'Markt → segment → behoefte → propositie → offering → prijs → klant → opportunity → contract → revenue.',
-    stats:[['€410K','opportunity potential'],['3.2×','qualified pipeline'],['€38K','pricing leakage'],['92%','top opportunity fit']],
-    sections:[
-      ['Commercial control', cards([['Pricing','4 actieve plannen','1 experiment · 1 review','change'],['Pipeline','€640K qualified','2 opportunities risk','evidence'],['Customer','14 expansion signals','3 churn risks','opportunity']])],
-      ['Pricing consistency', `<article class="card detail-card"><div class="flow-row"><b>Canonical PricePlan €349</b><span>···→</span><b>Website €349</b><span>···→</span><b>Billing €299</b></div><p class="muted">Derived Finding: billing wijkt af van ACTIVE PricePlan. Het systeem corrigeert dit niet stilletjes.</p><button class="link-btn" data-drawer="change">Maak change proposal →</button></article>`],
-      ['External opportunities', table(['Signaal','Contextmatch','Confidence','Actie'], [['AI governance vraag groeit','3 objecten','81%','Onderzoeken'],['Subsidie digitalisering','2 initiatives','74%','Kwalificeren']])]
-    ]
-  }),
-  'Operatie': () => workspace({
-    eyebrow:'Operatie', title:'Operationele Digital Twin', text:'Processen, capaciteit, bottlenecks, kwaliteit, leveranciers, systemen en kennis worden als één keten bestuurd.',
-    stats:[['68','operations health'],['2','bottlenecks'],['8.2h','langste wachttijd'],['31%','rework hotspot']],
-    sections:[
-      ['Order-to-Cash', `<div class="card process-map"><button data-drawer="evidence">Order</button><span>···→</span><button class="warn-node" data-drawer="change">Validatie</button><span>···→</span><button>Approval</button><span>···→</span><button>Delivery</button><span>···→</span><button>Billing</button></div>`],
-      ['Wat remt?', cards([['Validatie','8.2 uur gemiddelde wachttijd','31% rework · 2 systems','change'],['Knowledge handoff','1 kritieke kennishouder','3 processes affected','knowledge'],['Supplier API','Freshness attention','Laatst verified 47 min geleden','evidence']])],
-      ['Automation opportunities', table(['Proces','Potentieel','Risico','Autonomie'], [['Invoice matching','6u/week','Laag','Prepare'],['Customer onboarding','9u/week','Midden','Approval']])]
-    ]
-  }),
-  'Organisatie': () => workspace({
-    eyebrow:'Organisatie', title:'Capabilities, ownership en kennis', text:'Niet alleen organogrammen: welke capabilities zijn nodig, wie draagt verantwoordelijkheid en waar zit operationele afhankelijkheid?',
-    stats:[['71','organization health'],['63','knowledge health'],['3','ownership gaps'],['2','bus-factor risks']],
-    sections:[
-      ['Capability gaps', table(['Capability','Nu','Nodig','Gap'], [['Enterprise Sales','2.8','4.1','1.3'],['Implementation','3.2','3.8','0.6'],['AI Governance','2.4','4.0','1.6']])],
-      ['Knowledge resilience', cards([['Finance closing','1 primaire expert','Freshness 18d · High criticality','knowledge'],['CRM configuration','2 experts','Document coverage 84%','evidence'],['Pricing rationale','Owner aanwezig','Review over 21d','decision']])],
-      ['Ownership', `<article class="card detail-card"><div class="flow-row"><b>Goal</b><span>···→</span><b>Capability</b><span>···→</span><b>Process</b><span>···→</span><b>Role</b><span>···→</span><b>Team</b></div><p class="muted">Accountable, Responsible, Contributors, Reviewer en Approver blijven expliciete relaties.</p></article>`]
-    ]
-  }),
-  'Data & Technologie': () => workspace({
-    eyebrow:'Data & Technologie', title:'Systemen, data, integraties en AI', text:'Technische gezondheid wordt vertaald naar bedrijfsimpact, lineage, datakwaliteit, kosten en beheersbare autonomie.',
-    stats:[['29','integraties healthy'],['2','degraded'],['76','data/tech health'],['0','failed']],
-    sections:[
-      ['Integration Health', table(['Integratie','Status','Freshness','Impact'], [['CRM → Portal','Healthy','2 min','Revenue'],['ERP → Finance','Healthy','8 min','Finance'],['Supplier API','Attention','47 min','Operations']])],
-      ['Data lineage', `<article class="card detail-card"><div class="flow-row"><b>Revenue KPI</b><span>←</span><b>Metric</b><span>←</span><b>Dataset</b><span>←</span><b>Integration</b><span>←</span><b>ERP</b></div><button class="link-btn" data-drawer="evidence">Bekijk lineage →</button></article>`],
-      ['AI Systems', table(['Use-case','Data','Autonomie','Governance'], [['Management Summary','Internal/Confidential','Advise','Approved'],['Integration recovery','Internal','L5 safe patterns','Approved'],['HR candidate ranking','Restricted','None','BLOCKED']])]
-    ]
-  }),
-  'Uitvoering': () => workspace({
-    eyebrow:'Uitvoering', title:'Van besluit naar geverifieerde impact', text:'Decision → Initiative → Project → Roadmap Item → Action → Change → Verification → Impact → Learning.',
-    stats:[['12','open changes'],['4','review'],['2','high impact'],['1','blocked']],
-    sections:[
-      ['Change Center', cards([['BG-204 · CRM Integration','v8.3 → v8.4','HIGH IMPACT · Review nodig','change'],['BG-207 · Pricing experiment','Scale plan working version','Impact analysis','change'],['BG-209 · SEO schema fix','Verified','No regression','evidence']])],
-      ['Roadmap & dependencies', `<article class="card detail-card"><div class="flow-row"><b>CRM</b><span>···→</span><b>Sales efficiency</b><span>···→</span><b>Onboarding</b><span>···→</span><b>Revenue goal</b></div><p class="muted">€310K expected value deelt dezelfde CRM-afhankelijkheid. Scenario-state blijft apart van ACTIVE.</p><button class="link-btn" data-drawer="change">Simuleer herplanning →</button></article>`],
-      ['Impact', table(['Change','Expected','Observed','Verified'], [['CRM pilot','€110K','€84K','€79K · 80%'],['Onboarding automation','9u/week','7.8u/week','7.1u/week · 88%']])]
-    ]
-  }),
-  'Mijn werk': () => workspace({
-    eyebrow:'Mijn werk', title:'Eén persoonlijke inbox uit de hele Company Graph', text:'Acties, besluiten, reviews, approvals, blockers, AI-voorstellen en access reviews komen samen op prioriteit.',
-    stats:[['4','vandaag'],['2','besluiten'],['3','reviews'],['1','blocked']],
-    sections:[['Vandaag', table(['Werk','Bron','Deadline','Status'], [['Review CRM change','Change BG-204','Vandaag','Review'],['Besluit Scale pricing','Decision DEC-18','Morgen','Open'],['Access review externe adviseur','Trust','3 sep','Review'],['Kennisrisk owner toewijzen','Process Finance','5 sep','Open']])],['AI-voorstellen', cards([['Automatiseer safe token refresh','18 eerdere incidenten · 100% verified','Voorstel autonomie L5','agent'],['Consolideer pricing evidence','2 conflicterende bronnen','Prepare','evidence']])]
-    ]
-  }),
-  'Model Library': () => workspace({
-    eyebrow:'Model Library', title:'Alle modellen en canvassen blijven intact', text:'Het universele workspace-contract voegt owner, versie, completeness, quality, confidence, freshness, AI Review, evidence en history toe zonder modelvelden plat te slaan.',
-    stats:[['12','modellen'],['8','active'],['3','review nodig'],['1','stale']],
-    sections:[['Library', table(['Model','Completeness','Quality','Freshness'], [['Strategy DNA','92%','High','Current'],['Execution Canvas','84%','Medium','Current'],['AI Capability Model','78%','High','Review 4d'],['Due Diligence Canvas','69%','Medium','Stale']])],['AI Review', cards([['Strategy DNA','2 zwakke assumptions','Evidence review','evidence'],['Execution Canvas','1 ownership gap','Create action','decision'],['AI Capability','3 dependencies','Context available','evidence']])]
-    ]
-  }),
-  'Trust & Governance': () => workspace({
-    eyebrow:'Trust & Governance', title:'Wie mag wat, met welke data en welke AI?', text:'Access, privacy, AI Register, Agent Control, policies, compliance en evidence delen één governance graph.',
-    stats:[['94','trust score'],['1','AI review'],['0','critical access risks'],['91%','evidence current']],
-    sections:[
-      ['Trust Map', `<div class="card process-map trust-map"><button data-drawer="access">People</button><span>···→</span><button data-drawer="access">Roles</button><span>···→</span><button data-drawer="trust">Data</button><span>···→</span><button data-drawer="trust">AI</button><span>···→</span><button data-drawer="agent">Agents</button><span>···→</span><button data-drawer="change">Systems</button></div>`],
-      ['AI Register', table(['Use-case','Risk','Human oversight','Status'], [['Management Summary','Transparency','Available','Approved'],['Website Agent','Other','Policy-based','Approved'],['HR candidate ranking','Potential High Risk','Undefined','BLOCKED']])],
-      ['Agent Team', cards([['Integration Specialist','L5 safe recovery','Verifying CRM health','agent'],['Risk Specialist','Advise/Prepare','Impact assessed','agent'],['QA Guardian','Verify','All protected gates green','agent']])],
-      ['Access Center', `<article class="card detail-card"><h3>Effective Access · voorbeeldgebruiker</h3><div class="permission-grid"><span>Strategie <b>Full</b></span><span>Finance <b>View</b></span><span>HR <b>None</b></span><span>AI Process <b>3 use-cases</b></span></div><button class="link-btn" data-drawer="access">Waarom deze toegang? →</button></article>`]
-    ]
-  }),
-  'Beheer': () => workspace({
-    eyebrow:'Beheer', title:'Organisatie-instellingen en administratie', text:'Configuratie blijft gescheiden van dagelijkse managementaandacht. Gevoelige wijzigingen lopen via dezelfde Change- en Policy-engine.',
-    stats:[['12','gebruikers'],['7','rollen'],['4','integraties'],['0','overdue invoices']],
-    sections:[['Beheer', cards([['Gebruikers & rollen','Effective access en reviews','Policy controlled','access'],['Koppelingen','Bouwen en configureren','Health & cost','change'],['Facturen','Abonnement en facturen','Restricted permission','evidence']])],['Platform', table(['Onderdeel','Status','Laatste check'], [['Canonical contracts','Healthy','Nu'],['AI Data Gateway','Healthy','Nu'],['Portal parity','Healthy','Nu'],['Live preview smoke','Healthy','Nu']])]
-    ]
-  }),
+const WORKSPACES={
+ 'Strategie':{eyebrow:'Richting & keuzes',title:'Strategie die doorwerkt tot maandag',intro:'Verbind ambitie, Strategy DNA, canvassen, scenario’s en besluiten met concrete uitvoering.',cards:[['Strategy DNA','Maak richting, principes en strategische keuzes expliciet.'],['Scenario Simulator','Vergelijk opties en aannames zonder een voorspelling als feit te presenteren.'],['Besluitlog','Bewaar waarom een keuze is gemaakt, door wie en op basis van welk bewijs.']],legacy:['strategie-dna','scenario-simulator','canvas']},
+ 'Groei':{eyebrow:'Commercie & waarde',title:'Groei met zicht op oorzaak en effect',intro:'Combineer klant-, markt-, funnel- en externe signalen met modellen om kansen te prioriteren.',cards:[['Kansenkaart','Bundel commerciële signalen en waardehypothesen.'],['Marktcontext','Voeg externe data, trends en concurrentiesignalen toe.'],['Impact','Koppel groei-initiatieven aan Expected, Observed en Verified outcome.']],legacy:['vergelijk','scenario-simulator','impact']},
+ 'Operatie':{eyebrow:'Processen & performance',title:'Zie waar werk stroomt of vastloopt',intro:'Breng processen, uitzonderingen, capaciteit, taken en operationele signalen bij elkaar.',cards:[['Processen','Van werkwijze naar meetbare flow en knelpunt.'],['Werkstromen','Maak overdrachten, wachttijd en eigenaarschap zichtbaar.'],['Afwijkingen','Signaleer wat aandacht nodig heeft zonder automatisch causaliteit te claimen.']],legacy:['profiel','taken-werkstromen','activiteit']},
+ 'Organisatie':{eyebrow:'Mensen & kennis',title:'Kennis blijft in het bedrijf',intro:'Maak expertise, rollen, afhankelijkheden, notities en kennisborging onderdeel van besturing.',cards:[['Expertise','Zie waar kennis zit en waar afhankelijkheid ontstaat.'],['Kennisborging','Verbind documenten, mensen en processen.'],['Eigenaarschap','Maak verantwoordelijke, reviewer en opvolging zichtbaar.']],legacy:['documenten','notities','gebruikers']},
+ 'Data & Technologie':{eyebrow:'Bronnen & architectuur',title:'Eén contextlaag over versnipperde systemen',intro:'Datahub verbindt, normaliseert en verrijkt geautoriseerde bronnen zonder te doen alsof integratie niet nodig is.',cards:[['Bronnenstatus','Systemen, documenten, dashboards, modellen, canvassen en externe data.'],['Datahub','Structureren, verbinden en verrijken met herleidbare herkomst.'],['Koppelingen','Beheer autorisatie, synchronisatie en datakwaliteit.']],legacy:['koppelingen','datamodel','bronnenstatus']},
+ 'Uitvoering':{eyebrow:'Van besluit naar resultaat',title:'Uitvoeren met bewijs',intro:'Maak van prioriteiten concrete acties, recovery obligations en aantoonbare outcomes.',cards:[['Acties','Eigenaarschap, status en volgende stap.'],['Recovery','Containment is nooit het eindpunt; herstel blijft open tot verificatie en veilige heractivatie.'],['Evidence','WORKING en ACTIVE blijven gescheiden. Expected, Observed en Verified worden apart vastgelegd.']],legacy:['taken-werkstromen','actieve-acties','outcomes-evidence']},
+ 'Mijn werk':{eyebrow:'Persoonlijke cockpit',title:'Alles wat nu jouw aandacht vraagt',intro:'Taken, besluiten, reviews, open obligations en relevante context in één werkvoorraad.',cards:[['Nu doen','Prioriteit en eerstvolgende veilige actie.'],['Wachten op','Afhankelijkheden, approvals en externe blokkades.'],['Review','Werk dat bewijs of menselijke beoordeling nodig heeft.']],legacy:['taken-werkstromen','activiteit','wijzigingen']},
+ 'Model Library':{eyebrow:'Modellen & canvassen',title:'Herbruikbare denk- en beslismodellen',intro:'Gebruik modellen en canvassen met expliciete aannames, versie, eigenaar en toepassingscontext.',cards:[['Modellen','Rekenmodellen, scenario’s en analyses.'],['Canvassen','Business Model, strategie, business case en execution canvassen.'],['Versies','Herleid welke variant bij welk besluit is gebruikt.']],legacy:['model-library','canvassen','scenario-simulator']},
+ 'Trust & Governance':{eyebrow:'Controle & vertrouwen',title:'AI die bestuurbaar blijft',intro:'Autorisatie, use cases, agents, audit en datarechten vormen één governanceketen.',cards:[['AI Register','Welke AI-use-cases bestaan, met doel, eigenaar en risico.'],['Agent Team','Welke agent waarvoor bevoegd is en welk bewijs bij uitvoering hoort.'],['Access Center','View geeft niet automatisch Export of AI Process. Rechten blijven expliciet en doelgebonden.']],legacy:['ai-register','agentstatus','audittrail']},
+ 'Beheer':{eyebrow:'Configuratie & audit',title:'Beheer zonder verborgen systeemgedrag',intro:'Koppelingen, gebruikers, wijzigingen, facturatie en audit zijn terugvindbaar en controleerbaar.',cards:[['Gebruikers & rechten','Rollen, toegang en klantcontext.'],['Wijzigingen','Versies, mutaties en auditsporen.'],['Kosten & abonnement','Uren, facturen, abonnement en operationele grenzen.']],legacy:['gebruikers','wijzigingen','uren-facturen']}
 };
 
-function cards(items) {
-  return `<div class="attention">${items.map(([title,text,meta,drawerKey]) => `<article class="card detail-card"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(text)}</p><div class="meta-line">${escapeHtml(meta)}</div>${drawerKey?`<button class="link-btn" data-drawer="${escapeHtml(drawerKey)}">Open →</button>`:''}</article>`).join('')}</div>`;
+let selection={source:null,module:null};
+let runtimeState=normalizePortalFlowState({});
+let demoMode=false;
+let currentRoute='Overzicht';
+let legacyRequestedPage='overzicht';
+let legacyPoll=null;
+
+function buildPreviewState(){
+ if(!demoMode)return normalizePortalFlowState({});
+ return mapRuntimeSnapshotToPortalFlow({source:{id:selection.source??'documenten',status:'running',lastSync:'voorbeeld',quality:'preview'},datahub:{status:'verified'},brain:{status:'running',capabilities:['begrijpt-context','legt-verbanden','vat-samen','prioriteert','adviseert']},agents:[{id:'monitor',name:'Detectie',category:'detectie',status:'completed',evidence:['preview-evidence-monitor']},{id:'analyse',name:'Analyse',category:'analyse',status:'running',evidence:[]},{id:'execute',name:'Uitvoering',category:'uitvoering',status:'waiting',evidence:[]},{id:'verify',name:'Verificatie',category:'verificatie',status:'waiting',evidence:[]},{id:'heal',name:'Self-heal',category:'self-heal',status:'idle',evidence:[]},{id:'learning',name:'Learning/writeback',category:'learning',status:'waiting',evidence:[],learningPending:true}],module:{id:selection.module??'inzicht',status:'running'},action:{status:'queued',label:'Bekijk en beoordeel de nieuwe inzichten'},outcome:{status:'waiting',evidenceId:null},learning:{status:'waiting'},updatedAt:new Date().toISOString()});
+}
+function statusText(status){return({idle:'Idle',queued:'In wachtrij',running:'Actief',waiting:'Wacht',blocked:'Geblokkeerd',failed:'Fout',recovering:'Herstelt',verified:'Geverifieerd',completed:'Afgerond',disconnected:'Niet gekoppeld'})[status]??status}
+function applyNodeStatus(node,status){if(!node)return;node.classList.remove('is-idle','is-queued','is-running','is-waiting','is-blocked','is-failed','is-recovering','is-verified','is-completed','is-disconnected');node.classList.add(renderStatusClass(status))}
+function renderSelections(state){
+ document.querySelectorAll('[data-source-id],[data-module-id]').forEach(node=>applyNodeStatus(node,'idle'));
+ document.querySelector('[data-source-selector]')?.classList.toggle('has-selection',!!selection.source);
+ document.querySelector('[data-module-selector]')?.classList.toggle('has-selection',!!selection.module);
+ document.querySelectorAll('[data-source-id]').forEach(node=>node.classList.toggle('is-selected',node.dataset.sourceId===selection.source));
+ document.querySelectorAll('[data-module-id]').forEach(node=>node.classList.toggle('is-selected',node.dataset.moduleId===selection.module));
+ if(state.source)applyNodeStatus(document.querySelector(`[data-source-id="${state.source.id}"]`),state.source.status);
+ applyNodeStatus(document.querySelector('[data-flow-node="datahub"]'),state.datahub.status);
+ applyNodeStatus(document.querySelector('[data-flow-node="brain"]'),state.brain.status);
+ if(state.module)applyNodeStatus(document.querySelector(`[data-module-id="${state.module.id}"]`),state.module.status);
+}
+function renderCapabilities(state){document.querySelectorAll('[data-capability]').forEach(node=>node.classList.toggle('is-active',state.brain.capabilities.includes(node.dataset.capability)))}
+function renderAgents(state){const slots=[...document.querySelectorAll('#agentList .agent')],mapped=new Map(state.powerhouse.map(agent=>[agent.category,agent])),categories=['detectie','analyse','uitvoering','verificatie','self-heal','learning'];slots.forEach((slot,index)=>{const agent=mapped.get(categories[index]);const status=agent?.status??'idle';applyNodeStatus(slot,status);slot.querySelector('small').textContent=statusText(status);slot.title=agent?[agent.triggerReason,agent.error,agent.recoveryObligation?.reason].filter(Boolean).join(' · '):'Geen runtime-status beschikbaar'})}
+function renderStage(state){
+ const activeAgents=state.powerhouse.filter(agent=>agent.status!=='idle');
+ document.getElementById('stageSource').textContent=state.source?`${SOURCE_COPY[state.source.id]?.[0]??state.source.id}: ${statusText(state.source.status)}`:'Geen actieve bron';
+ document.getElementById('stageHub').textContent=statusText(state.datahub.status);document.getElementById('stageBrain').textContent=statusText(state.brain.status);
+ document.getElementById('stagePowerhouse').textContent=activeAgents.length?`${activeAgents.length} agent(s) · ${statusText(activeAgents[0].status)}`:'Geen agent actief';
+ document.getElementById('stageModule').textContent=state.module?`${MODULE_COPY[state.module.id]?.[0]??state.module.id}: ${statusText(state.module.status)}`:'Geen outputmodule';
+ document.getElementById('stageOutcome').textContent=state.outcome?.evidenceId?'Evidence aanwezig':'Geen evidence';
+ document.querySelectorAll('.stage-strip>div').forEach(node=>node.classList.remove('is-active'));
+ if(state.source)document.querySelector('[data-stage="source"]')?.classList.add('is-active');if(state.datahub.status!=='idle')document.querySelector('[data-stage="datahub"]')?.classList.add('is-active');if(state.brain.status!=='idle')document.querySelector('[data-stage="brain"]')?.classList.add('is-active');if(activeAgents.length)document.querySelector('[data-stage="powerhouse"]')?.classList.add('is-active');if(state.module)document.querySelector('[data-stage="module"]')?.classList.add('is-active');if(state.outcome?.evidenceId)document.querySelector('[data-stage="outcome"]')?.classList.add('is-active');
+}
+function renderExplanation(state){
+ const source=state.source?SOURCE_COPY[state.source.id]:null,module=state.module?MODULE_COPY[state.module.id]:null;
+ document.getElementById('explainSource').textContent=source?`${source[0]} (${statusText(state.source.status)})`:'Niets actief';
+ document.getElementById('explainSourceText').textContent=source?.[1]??(selection.source?`${SOURCE_COPY[selection.source]?.[0]??selection.source} is geselecteerd, maar zonder runtime-evidence wordt geen actieve stroom geclaimd.`:'Selecteer een bron of gebruik de expliciete voorbeeldroute.');
+ document.getElementById('explainBrain').textContent=state.brain.status==='idle'?'Geen actieve verwerking':`AI Brain: ${statusText(state.brain.status)}`;
+ document.getElementById('explainBrainText').textContent=state.brain.status==='idle'?'Zonder runtime-evidence wordt geen verwerking geclaimd.':`Voorbeeld-capabilities: ${state.brain.capabilities.map(x=>x.replaceAll('-',' ')).join(', ')}.`;
+ document.getElementById('explainModule').textContent=module?`${module[0]} (${statusText(state.module.status)})`:'Geen module actief';
+ document.getElementById('explainModuleText').textContent=module?.[1]??(selection.module?`${MODULE_COPY[selection.module]?.[0]??selection.module} is geselecteerd, maar ontvangt zonder runtime-evidence geen outputflow.`:'Geen outputflow zolang er geen actieve module is.');
+ document.getElementById('actionText').textContent=state.action?.label??'Geen actie actief';document.getElementById('outcomeText').textContent=state.outcome?.evidenceId?'Geverifieerd met evidence':'Niet geverifieerd';document.getElementById('learningText').textContent=statusText(state.learning.status);
+}
+function renderMobileSheet(state,tab='info'){const target=document.getElementById('mobileSheetContent');if(!target)return;if(tab==='info')target.textContent=state.source?`${SOURCE_COPY[state.source.id]?.[0]}: ${SOURCE_COPY[state.source.id]?.[1]}`:(selection.source?`${SOURCE_COPY[selection.source]?.[0]} geselecteerd · geen bewezen actieve flow.`:'Geen actieve bron.');if(tab==='processing')target.textContent=state.brain.status==='idle'?'Geen actieve verwerking.':`Datahub ${statusText(state.datahub.status)} · AI Brain ${statusText(state.brain.status)} · ${state.powerhouse.filter(x=>x.status!=='idle').length} Powerhouse-agent(s) in voorbeeldstatus.`;if(tab==='result')target.textContent=state.module?`${MODULE_COPY[state.module.id]?.[0]}: ${MODULE_COPY[state.module.id]?.[1]} Outcome: ${state.outcome?.evidenceId?'geverifieerd':'nog niet geverifieerd'}.`:(selection.module?`${MODULE_COPY[selection.module]?.[0]} geselecteerd · nog geen bewezen output.`:'Geen portaalmodule actief.')}
+export function renderCockpit(){runtimeState=buildPreviewState();const root=document.getElementById('brain-cockpit');if(!root)return;renderSelections(runtimeState);renderCapabilities(runtimeState);renderAgents(runtimeState);renderStage(runtimeState);renderExplanation(runtimeState);renderPortalFlow(root,runtimeState);renderMobileSheet(runtimeState,document.querySelector('[data-mobile-tab].is-active')?.dataset.mobileTab??'info')}
+export function selectSource(id){selection=reducePortalSelection(selection,{type:'SELECT_SOURCE',id});demoMode=false;renderCockpit()}
+export function selectModule(id){selection=reducePortalSelection(selection,{type:'SELECT_MODULE',id});demoMode=false;renderCockpit()}
+export function clearFlowSelection(){selection=reducePortalSelection(selection,{type:'CLEAR'});demoMode=false;renderCockpit()}
+
+function workspaceHtml(label,config){return `<div class="workspace-shell"><header class="workspace-hero"><div><span class="eyebrow">${config.eyebrow}</span><h2>${config.title}</h2><p>${config.intro}</p></div><button type="button" class="workspace-back" data-route-back>← Overzicht</button></header><div class="workspace-grid">${config.cards.map(([title,text],index)=>`<article class="workspace-card"><span>0${index+1}</span><h3>${title}</h3><p>${text}</p><button type="button" data-workspace-card="${title}">Inspecteer →</button></article>`).join('')}</div><section class="workspace-context"><div><span class="eyebrow">Context & governance</span><h3>Van bron tot bewijs</h3><p>In deze reviewomgeving zijn waarden voorbeelddata. Productiestatus ontstaat pas na geautoriseerde runtime-evidence en readback.</p></div><div class="governance-chain"><span>Bron</span><i>→</i><span>Context</span><i>→</i><span>Besluit</span><i>→</i><span>Actie</span><i>→</i><span>Evidence</span><i>→</i><span>Learning</span></div></section></div>`}
+export function renderRoute(label=currentRoute){
+ const overview=document.getElementById('overviewView'),workspace=document.getElementById('workspaceView'),content=document.getElementById('workspaceContent');if(!overview||!workspace)return;
+ if(label==='Overzicht'){overview.classList.add('is-active');workspace.classList.remove('is-active');if(content)content.innerHTML='';return}
+ const config=WORKSPACES[label];if(!config)return;
+ overview.classList.remove('is-active');workspace.classList.add('is-active');content.innerHTML=workspaceHtml(label,config);
+ content.querySelector('[data-route-back]')?.addEventListener('click',()=>setCurrentRoute('Overzicht'));
+ content.querySelectorAll('[data-workspace-card]').forEach(button=>button.addEventListener('click',()=>{button.closest('.workspace-card')?.classList.toggle('is-selected')}));
+}
+export function setCurrentRoute(label){
+ if(label==='AI'){openAiPanel();return}
+ if(label!=='Overzicht'&&!WORKSPACES[label])return false;
+ currentRoute=label;document.getElementById('routeTitle').textContent=label;document.getElementById('routeSubtitle').textContent=label==='Overzicht'?'Grip op je bedrijf. Van context naar besluit, actie, bewijs en leren.':WORKSPACES[label].intro;
+ document.querySelectorAll('[data-route]').forEach(button=>button.classList.toggle('is-active',button.dataset.route===label));document.querySelectorAll('[data-mobile-route]').forEach(button=>button.classList.toggle('is-active',button.dataset.mobileRoute===label));renderRoute(label);window.scrollTo({top:0,behavior:'smooth'});return true;
 }
 
-function table(headers, rows) {
-  return `<div class="card table-wrap"><table class="data-table"><thead><tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map((cell,i)=>`<${i===0?'th':'td'}>${escapeHtml(cell)}</${i===0?'th':'td'}>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+function bindBusinessGraph(){const copy={Strategie:'Richting bepaalt welke signalen en acties materieel zijn.',Klanten:'Klantgedrag verbindt groei, operatie, service en waarde.',Processen:'Procesdata laat zien waar overdracht, wachttijd en uitzonderingen ontstaan.',Mensen:'Expertise en eigenaarschap verbinden kennis met uitvoering.',Data:'Datakwaliteit bepaalt hoeveel vertrouwen analyses en automatisering verdienen.',Technologie:'Systemen en koppelingen leveren context, maar autorisatie en herkomst blijven expliciet.',Uitvoering:'Acties worden pas waarde wanneer outcome en evidence terugkomen.'};document.querySelectorAll('#businessGraph [data-node]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('#businessGraph [data-node]').forEach(node=>node.classList.toggle('is-selected',node===button));document.getElementById('graphExplain').textContent=copy[button.dataset.node]}))}
+function openAiPanel(){const panel=document.getElementById('aiPanel');panel?.classList.add('is-open');panel?.setAttribute('aria-hidden','false');setTimeout(()=>document.getElementById('aiPrompt')?.focus(),0)}
+function closeAiPanel(){const panel=document.getElementById('aiPanel');panel?.classList.remove('is-open');panel?.setAttribute('aria-hidden','true')}
+function bindAi(){document.getElementById('aiCommand')?.addEventListener('click',openAiPanel);document.querySelectorAll('[data-ai-close]').forEach(button=>button.addEventListener('click',closeAiPanel));document.getElementById('aiPreviewAnswer')?.addEventListener('click',()=>{const prompt=document.getElementById('aiPrompt')?.value.trim();document.getElementById('aiAnswer').textContent=prompt?'Voorbeeldantwoord: ik zou eerst relevante bronnen, bevoegdheden, aannames en evidence ophalen. Governed runtime path: Permission Engine → AI Use Case → Context Broker → approved provider → Result Gateway. Deze preview voert geen echte AI-call uit.':'Typ eerst een vraag.'})}
+
+function bridgeStyle(){if(document.getElementById('legacy-bridge-style'))return;const style=document.createElement('style');style.id='legacy-bridge-style';style.textContent=`.portal-library-btn{border:1px solid var(--line);background:#fff;border-radius:13px;padding:10px 12px;font-weight:800;color:var(--ink);cursor:pointer}.portal-workspace{position:fixed;inset:0;z-index:80;background:#f4f7fc;display:grid;grid-template-rows:auto 1fr;transform:translateY(105%);transition:transform .24s ease}.portal-workspace.is-open{transform:none}.portal-workspace__head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line)}.portal-workspace__head button{border:1px solid var(--line);background:#fff;border-radius:11px;padding:9px 11px;font-weight:800}.portal-workspace__close{margin-left:auto}.portal-workspace__body{min-height:0;display:grid;grid-template-columns:270px 1fr}.portal-library{overflow:auto;padding:12px;background:#fbfcff;border-right:1px solid var(--line)}.portal-library section{margin-bottom:14px}.portal-library h4{margin:0 0 6px;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6175aa}.portal-library button{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:10px;padding:8px 10px;font-size:12px;color:var(--ink)}.portal-library button:hover,.portal-library button.is-active{background:#eaf2ff;color:#064fd3;font-weight:800}.portal-frame{width:100%;height:100%;border:0;background:#fff}@media(max-width:760px){.portal-workspace__body{grid-template-columns:1fr}.portal-library{display:flex;gap:5px;overflow:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}.portal-library section{display:flex;gap:5px;margin:0}.portal-library h4{display:none}.portal-library button{width:auto;white-space:nowrap;border:1px solid var(--line);background:#fff}}`;document.head.append(style)}
+function mountPortalLibrary(){if(document.getElementById('legacyWorkspace'))return;bridgeStyle();const opener=document.createElement('button');opener.id='allPortalPages';opener.className='portal-library-btn';opener.textContent='Alle portalpagina’s';document.querySelector('.head-actions')?.append(opener);const workspace=document.createElement('aside');workspace.id='legacyWorkspace';workspace.className='portal-workspace';workspace.setAttribute('aria-hidden','true');workspace.innerHTML=`<header class="portal-workspace__head"><strong id="legacyTitle">Bestaande portalinhoud</strong><small id="legacySubtitle">Bestaande live functionaliteit blijft beschikbaar.</small><button id="legacyExternal">Open volledig portaal ↗</button><button id="legacyClose" class="portal-workspace__close" aria-label="Sluiten">×</button></header><div class="portal-workspace__body"><nav id="fullPortalNav" class="portal-library" aria-label="Alle bestaande portalpagina's"></nav><iframe id="legacyFrame" class="portal-frame" title="Bestaand klantenportaal"></iframe></div>`;document.body.append(workspace);renderPortalLibraryNav();opener.addEventListener('click',()=>openLegacyPortalPage('overzicht'));document.getElementById('legacyClose')?.addEventListener('click',closeLegacyWorkspace);document.getElementById('legacyExternal')?.addEventListener('click',()=>window.open(buildLegacyPortalUrl(),'_blank','noopener'));document.getElementById('legacyFrame')?.addEventListener('load',activateRequestedLegacyTab)}
+function renderPortalLibraryNav(){const nav=document.getElementById('fullPortalNav');if(!nav)return;nav.innerHTML='';for(const section of Object.values(PORTAL_SECTIONS)){const group=document.createElement('section'),h=document.createElement('h4');h.textContent=section.label;group.append(h);for(const pageId of section.pages){const page=PORTAL_PAGE_INDEX[pageId],button=document.createElement('button');button.type='button';button.dataset.pageId=pageId;button.textContent=page.label+(page.legacyTab?'':' · nieuw');button.addEventListener('click',()=>page.legacyTab?openLegacyPortalPage(pageId):focusNewCockpitPage(pageId));group.append(button)}nav.append(group)}}
+function focusNewCockpitPage(pageId){const page=findPortalPage(pageId);closeLegacyWorkspace();if(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail'].includes(pageId)){setCurrentRoute(pageId==='bronnenstatus'||pageId==='datahubstatus'?'Data & Technologie':pageId==='actieve-acties'||pageId==='recovery-obligations'||pageId==='outcomes-evidence'?'Uitvoering':'Trust & Governance');return true}return Boolean(page)}
+export function activateLegacyTabInDocument(doc,pageId){const tab=legacyTabForPage(pageId);if(!tab||!doc)return false;const button=doc.querySelector(`[data-p="${tab}"]`);if(!button)return false;button.click();return true}
+function activateRequestedLegacyTab(){const frame=document.getElementById('legacyFrame');if(!frame)return;clearInterval(legacyPoll);let attempts=0;legacyPoll=setInterval(()=>{attempts++;try{if(activateLegacyTabInDocument(frame.contentDocument,legacyRequestedPage)||attempts>=40)clearInterval(legacyPoll)}catch{clearInterval(legacyPoll)}},500)}
+export function openLegacyPortalPage(pageId){const page=findPortalPage(pageId);if(!page?.legacyTab)return false;legacyRequestedPage=pageId;const workspace=document.getElementById('legacyWorkspace'),frame=document.getElementById('legacyFrame');if(!workspace||!frame)return false;workspace.classList.add('is-open');workspace.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';document.querySelectorAll('#fullPortalNav button').forEach(button=>button.classList.toggle('is-active',button.dataset.pageId===pageId));document.getElementById('legacyTitle').textContent=page.label;document.getElementById('legacySubtitle').textContent=`Bestaande live pagina · ${PORTAL_SECTIONS[page.sectionId].label} · klantcontext blijft behouden.`;const src=buildLegacyPortalUrl();if(frame.getAttribute('src')!==src)frame.setAttribute('src',src);else activateRequestedLegacyTab();return true}
+export function closeLegacyWorkspace(){const workspace=document.getElementById('legacyWorkspace');workspace?.classList.remove('is-open');workspace?.setAttribute('aria-hidden','true');if(typeof document!=='undefined')document.body.style.overflow=''}
+
+function bind(){
+ const action=document.getElementById('actionText')?.parentElement,outcome=document.getElementById('outcomeText')?.parentElement,learning=document.getElementById('learningText')?.parentElement;if(action)action.dataset.flowNode='action';if(outcome)outcome.dataset.flowNode='outcome';if(learning)learning.dataset.flowNode='learning';
+ document.querySelectorAll('[data-source-id]').forEach(node=>node.addEventListener('click',()=>selectSource(node.dataset.sourceId)));document.querySelectorAll('[data-module-id]').forEach(node=>node.addEventListener('click',()=>selectModule(node.dataset.moduleId)));
+ document.getElementById('demoRoute')?.addEventListener('click',()=>{selection={source:'documenten',module:'inzicht'};demoMode=true;renderCockpit()});document.getElementById('clearRoute')?.addEventListener('click',clearFlowSelection);
+ document.querySelectorAll('[data-mobile-tab]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-mobile-tab]').forEach(x=>x.classList.toggle('is-active',x===button));renderMobileSheet(runtimeState,button.dataset.mobileTab)}));
+ document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>setCurrentRoute(button.dataset.route)));document.querySelectorAll('[data-route-jump]').forEach(button=>button.addEventListener('click',()=>setCurrentRoute(button.dataset.routeJump)));
+ document.querySelectorAll('[data-mobile-route]').forEach(button=>button.addEventListener('click',()=>{const label=button.dataset.mobileRoute;if(label === 'AI')openAiPanel();else setCurrentRoute(label)}));
+ const search=document.getElementById('globalSearch');document.addEventListener('keydown',event=>{if((event.metaKey || event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();search?.focus()}if(event.key==='Escape'){closeLegacyWorkspace();closeAiPanel();if(currentRoute!=='Overzicht')setCurrentRoute('Overzicht')}});
+ search?.addEventListener('keydown',event=>{if(event.key==='Enter'){const q=search.value.toLocaleLowerCase('nl');const match=Object.keys(WORKSPACES).find(label=>label.toLocaleLowerCase('nl').includes(q));if(match)setCurrentRoute(match);else openAiPanel()}});
+ window.addEventListener('resize',()=>renderPortalFlow(document.getElementById('brain-cockpit'),runtimeState));bindBusinessGraph();bindAi();mountPortalLibrary();
 }
-
-function workspace({eyebrow,title,text,stats,sections}) {
-  return `<div class="eyebrow">Preview · voorbeelddata · geen actieve bedrijfswaarheid</div><section class="workspace-hero"><div><div class="eyebrow">${escapeHtml(eyebrow)}</div><h1>${escapeHtml(title)}</h1><p>${escapeHtml(text)}</p></div><button class="context-ai" data-drawer="evidence">AI Review · Waarom?</button></section><div class="metrics workspace-metrics">${stats.map(([value,label])=>`<div class="metric"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`).join('')}</div>${sections.map(([heading,body])=>`<section class="section"><div class="section-head"><h2>${escapeHtml(heading)}</h2></div>${body}</section>`).join('')}`;
-}
-
-function setCurrentRoute(label) {
-  document.querySelectorAll('.sidebar button').forEach(button => {
-    if (button.textContent.trim() === label) button.setAttribute('aria-current','page');
-    else button.removeAttribute('aria-current');
-  });
-}
-
-function renderRoute(label) {
-  closeDrawer();
-  if (label === 'Overzicht') {
-    content.innerHTML = OVERVIEW_HTML;
-    mountHealthGrid();
-  } else if (DOMAIN_VIEWS[label]) {
-    content.innerHTML = DOMAIN_VIEWS[label]();
-  } else return false;
-  setCurrentRoute(label);
-  document.querySelector('.main')?.scrollTo?.({top:0,behavior:'instant'});
-  return true;
-}
-
-const ROUTE_ALIASES = new Map([
-  ['home','Overzicht'],['overzicht','Overzicht'],['strategie','Strategie'],['groei','Groei'],['operatie','Operatie'],['organisatie','Organisatie'],
-  ['data & technologie','Data & Technologie'],['data en technologie','Data & Technologie'],['uitvoering','Uitvoering'],['wijzigingen','Uitvoering'],['changes','Uitvoering'],
-  ['mijn werk','Mijn werk'],['werk','Mijn werk'],['model library','Model Library'],['trust & governance','Trust & Governance'],['trust','Trust & Governance'],['beheer','Beheer'],['meer','Beheer'],
-]);
-
-function routeFromText(text) { return ROUTE_ALIASES.get(text.trim().toLowerCase()) ?? null; }
-
-document.addEventListener('click', event => {
-  const sidebarButton = event.target.closest('.sidebar button');
-  if (sidebarButton && renderRoute(sidebarButton.textContent.trim())) return;
-
-  const mobileButton = event.target.closest('.mobile-nav button');
-  if (mobileButton) {
-    const label = mobileButton.textContent.trim();
-    if (label === 'AI') { command?.focus(); return; }
-    const route = routeFromText(label);
-    if (route) renderRoute(route);
-    return;
-  }
-
-  const topButton = event.target.closest('.top-actions button');
-  if (topButton?.getAttribute('aria-label') === 'Wijzigingen') { renderRoute('Uitvoering'); return; }
-
-  const trigger = event.target.closest('[data-drawer]');
-  if (trigger) { openDrawer(trigger.dataset.drawer); return; }
-  const node = event.target.closest('[data-node]');
-  if (node) {
-    document.querySelectorAll('[data-node]').forEach(n => n.setAttribute('aria-pressed', String(n===node)));
-    document.querySelectorAll('#businessGraph .edge').forEach(e => e.classList.add('active'));
-    openDrawer(node.dataset.node);
-  }
-});
-
-drawerClose?.addEventListener('click', closeDrawer);
-document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') closeDrawer();
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase()==='k') { event.preventDefault(); command?.focus(); }
-});
-
-command?.addEventListener('keydown', event => {
-  if (event.key !== 'Enter') return;
-  const query = event.currentTarget.value.trim();
-  if (!query) return;
-  const directRoute = [...ROUTE_ALIASES.entries()].find(([alias]) => query.toLowerCase() === alias)?.[1];
-  if (directRoute) { renderRoute(directRoute); event.currentTarget.value=''; return; }
-  drawerContent.innerHTML = `<div class="eyebrow">Vraag Bedrijfsgeheugen</div><h2>${escapeHtml(query)}</h2><p>Deze preview voert geen echte AI-call uit. De productievariant stuurt de vraag uitsluitend via Permission Engine → AI Use Case → Context Broker → approved provider → Result Gateway.</p><div class="processing"><strong>Preview safety</strong><br>Geen bedrijfsdata wordt vanuit deze demo naar een model gestuurd.</div>`;
-  drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); drawerClose.focus();
-});
+if(typeof document!=='undefined'){bind();renderCockpit();renderRoute('Overzicht')}

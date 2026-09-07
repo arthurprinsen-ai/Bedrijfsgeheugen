@@ -3,12 +3,31 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { classifyMainWrite } from '../tools/main-write-integrity.mjs';
 
-test('material single-parent write to main is a governance incident', () => {
-  const result = classifyMainWrite({ branch: 'main', parentCount: 1, changedPaths: ['tests/development-doc-contract.test.mjs'], headSha: '1e33e684905bd187e44389d30433dd64cf872f9b' });
+test('verified material single-parent write to main without PR association is a governance incident', () => {
+  const result = classifyMainWrite({
+    branch: 'main',
+    parentCount: 1,
+    changedPaths: ['tests/development-doc-contract.test.mjs'],
+    headSha: '1e33e684905bd187e44389d30433dd64cf872f9b',
+    associatedPullRequests: [],
+  });
   assert.equal(result.status, 'DIRECT_MAIN_WRITE_INCIDENT');
   assert.equal(result.productionGreenAllowed, false);
   assert.equal(result.recoveryRequired, true);
   assert.equal(result.fingerprint, 'delivery|main-write|material-single-parent-bypass-v1');
+});
+
+test('material single-parent write with unverifiable PR association fails closed', () => {
+  const result = classifyMainWrite({
+    branch: 'main',
+    parentCount: 1,
+    changedPaths: ['tests/development-doc-contract.test.mjs'],
+    headSha: '1e33e684905bd187e44389d30433dd64cf872f9b',
+  });
+  assert.equal(result.status, 'UNKNOWN_MAIN_WRITE');
+  assert.equal(result.productionGreenAllowed, false);
+  assert.equal(result.recoveryRequired, true);
+  assert.equal(result.fingerprint, 'delivery|main-write|unverifiable-pr-association-v1');
 });
 
 test('github merge commit on main is not classified as direct-main bypass', () => {
@@ -38,10 +57,11 @@ test('direct-main recurrence remains actionable shared learning', async () => {
   assert.match(preflight, /executionLessonsPath/);
 });
 
-test('direct-main incidents create or update one stateful deduplicated recovery issue', async () => {
+test('main-write incidents create or update one stateful deduplicated recovery issue using classifier fingerprint', async () => {
   const workflow = await readFile('.github/workflows/main-write-integrity.yml', 'utf8');
   assert.match(workflow, /issues:\s*write/);
-  assert.match(workflow, /delivery\|main-write\|material-single-parent-bypass-v1/);
+  assert.match(workflow, /fingerprint=\$\{result\.fingerprint\s*\?\?/);
+  assert.match(workflow, /FINGERPRINT:\s*\$\{\{\s*steps\.classify\.outputs\.fingerprint\s*\}\}/);
   assert.match(workflow, /status=\$\{result\.status\}/);
   assert.match(workflow, /gh api/);
   assert.match(workflow, /issues\?state=open/);
