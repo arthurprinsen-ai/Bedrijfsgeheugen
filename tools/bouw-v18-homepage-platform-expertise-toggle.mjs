@@ -62,16 +62,32 @@ export function applyHomepagePlatformExpertiseToggle(html) {
   function findByExactText(root,selector,value){
     return Array.prototype.find.call((root||document).querySelectorAll(selector),function(el){return txt(el)===value;})||null;
   }
+  function findLocalTogglePair(){
+    var expertises=Array.prototype.filter.call(document.querySelectorAll('button'),function(b){return txt(b)==='Expertise';});
+    for(var i=0;i<expertises.length;i++){
+      var expertise=expertises[i];
+      var root=expertise.parentElement;
+      while(root && root!==document.body){
+        var localButtons=Array.prototype.slice.call(root.querySelectorAll('button'));
+        var platforms=localButtons.filter(function(b){return txt(b)==='Platform';});
+        if(platforms.length){
+          return {platform:platforms[platforms.length-1],expertise:expertise,controlsRoot:root};
+        }
+        root=root.parentElement;
+      }
+    }
+    return null;
+  }
   function init(){
     if(document.documentElement.dataset.bgHomeToggleReady==='1')return;
-    var buttons=Array.prototype.slice.call(document.querySelectorAll('button'));
-    var platform=buttons.find(function(b){return txt(b)==='Platform';});
-    var expertise=buttons.find(function(b){return txt(b)==='Expertise';});
-    if(!platform||!expertise)return;
+    var pair=findLocalTogglePair();
+    if(!pair)return;
+    var platform=pair.platform;
+    var expertise=pair.expertise;
 
     var root=closestCommon(platform,expertise);
     while(root && root!==document.body && !(txt(root).indexOf('AI-copilot')!==-1 && txt(root).indexOf('Frisse Blik')!==-1)) root=root.parentElement;
-    if(!root)return;
+    if(!root || root===document.body)return;
 
     var platformAnchor=findByExactText(root,'h1,h2,h3,h4,h5,h6,strong,b,div,span,p','AI-copilot');
     var expertiseAnchor=findByExactText(root,'h1,h2,h3,h4,h5,h6,strong,b,div,span,p','Frisse Blik');
@@ -80,6 +96,7 @@ export function applyHomepagePlatformExpertiseToggle(html) {
     var platformPanel=deepestPanel(platformAnchor,['AI-copilot','Organisatiebeheersing','Externe signalen & acties'],'Frisse Blik');
     var expertisePanel=deepestPanel(expertiseAnchor,['Frisse Blik','Launch','Continuous Improvement'],'AI-copilot');
     if(!platformPanel||!expertisePanel||platformPanel===expertisePanel)return;
+    if(platformPanel.contains(expertisePanel)||expertisePanel.contains(platformPanel))return;
 
     platform.id='homepage-platform-tab';
     expertise.id='homepage-expertise-tab';
@@ -92,8 +109,7 @@ export function applyHomepagePlatformExpertiseToggle(html) {
     [platformPanel,expertisePanel].forEach(function(panel){panel.setAttribute('role','tabpanel');panel.setAttribute('data-bg-home-panel','');});
     platformPanel.setAttribute('aria-labelledby',platform.id);
     expertisePanel.setAttribute('aria-labelledby',expertise.id);
-    var tablist=closestCommon(platform,expertise);
-    if(tablist)tablist.setAttribute('role','tablist');
+    pair.controlsRoot.setAttribute('role','tablist');
 
     function select(which,focus){
       var isPlatform=which==='platform';
