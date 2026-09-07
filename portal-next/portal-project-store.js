@@ -4,7 +4,12 @@ export async function loadPortalProject({fetchFn=globalThis.fetch,endpoint='/api
   if(typeof fetchFn!=='function')return {state:'error',project:null,error:'Fetch niet beschikbaar'};
   try{
     const response=await fetchFn(endpoint,{method:'GET',headers:{accept:'application/json'},credentials:'same-origin'});
-    if(response.status===401||response.status===403)return {state:'unauthorized',project:null,error:null};
+    if(response.status===401)return {state:'unauthorized',project:null,error:null};
+    if(response.status===403){
+      const payload=await response.json().catch(()=>({}));
+      if(payload?.error==='TENANT_NOT_CONFIGURED')return {state:'error',project:null,error:'Tenantkoppeling ontbreekt. Laat de beheerder deze gebruiker aan de juiste organisatie koppelen.'};
+      return {state:'unauthorized',project:null,error:null};
+    }
     if(response.status===404)return {state:'empty',project:null,error:null};
     if(!response.ok)return {state:'error',project:null,error:`Projectdata kon niet worden geladen (${response.status})`};
     const payload=await response.json();
