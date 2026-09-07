@@ -50,7 +50,7 @@ test('PR successor wording is fail-closed without machine handoff evidence', () 
 
 test('PR successor is allowed only with sync, overlap and unsynchronizable evidence', () => {
   assert.deepEqual(evaluatePullRequestSuccessorGuard({
-    title:'Successor after real overlap',
+    title:'Clean successor to #1087',
     body:'Handoff-Decision: SYNC_REQUIRED\nHandoff-Evidence: changed-path-overlap\nExisting-Candidate-Synchronizable: false'
   }), {
     ok:true,
