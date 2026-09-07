@@ -10,17 +10,29 @@
       { "name": "tablet", "width": 768, "height": 1024 },
       { "name": "small-desktop", "width": 1024, "height": 768 },
       { "name": "intermediate-desktop", "width": 1128, "height": 653 },
-      { "name": "desktop", "width": 1440, "height": 900 }
+      { "name": "desktop", "width": 1440, "height": 900 },
+      { "name": "wide-screenshot-regression", "width": 1542, "height": 632 },
+      { "name": "wide-desktop", "width": 1600, "height": 900 }
     ]
   },
   "pages": [
     {
       "route": "/",
-      "required": ["main h1"],
+      "required": ["main h1", "[data-bg-automation-heading]", "[data-bg-automation-description]", "[data-bg-automation-card]"],
       "protectedPairs": [
         {
           "a": "[data-bg-automation-copy]",
           "b": "[data-bg-automation-visual]",
+          "maxIntersectionAreaPx2": 0
+        },
+        {
+          "a": "[data-bg-automation-heading]",
+          "b": "[data-bg-automation-card]",
+          "maxIntersectionAreaPx2": 0
+        },
+        {
+          "a": "[data-bg-automation-description]",
+          "b": "[data-bg-automation-card]",
           "maxIntersectionAreaPx2": 0
         }
       ],
