@@ -14,16 +14,12 @@ function marker(html,name){return new RegExp(`data-bg-money-section=["']${name}[
 function isNative(entry){return entry?.presentation==='native';}
 function hasNativeHero(main,entry){
   if(/<section\b[^>]*class=(?:"[^"]*\binhoud-kop\b[^"]*"|'[^']*\binhoud-kop\b[^']*')/i.test(main)) return true;
-  return entry?.route===`${ORIGIN}/prijzen`&&/<section\b[^>]*class=(?:"[^"]*\bheld\b[^"]*"|'[^']*\bheld\b[^']*')/i.test(main);
+  return entry?.route===`${ORIGIN}/prijzen`&&/<section\b[^>]*class=(?:"[^"]*\bpaginakop\b[^"]*"|'[^']*\bpaginakop\b[^']*')[^>]*data-bg-component=(?:"hero"|'hero')/i.test(main);
 }
 
 export function inspectMoneyPage(input,entry){
   const html=String(input); const main=mainOf(html); const errors=[];
   if(!entry||entry.role!=='money') return errors;
-
-  // Product en Prijzen zijn ontworpen V18-conversiepagina's. Voor deze pagina's
-  // valideert het contract de bestaande pagina in plaats van er generieke SEO-copy
-  // onder te plakken. Zo blijven inhoud en presentatie één bron van waarheid.
   if(isNative(entry)){
     if(!/data-bg-money-contract-version=["']native-v1["']/i.test(html)) errors.push(`${entry.route}: native money-contract ontbreekt`);
     if(!hasNativeHero(main,entry)) errors.push(`${entry.route}: eigen V18 hero ontbreekt`);
@@ -68,7 +64,6 @@ function directAnswer(entry){
 
 function nativeMoneyPage(input){
   let html=String(input);
-  // Oude output opruimen als een reeds gebouwde pagina opnieuw door de pipeline gaat.
   html=html.replace(/<section\b[^>]*id=(?:"bg-money-v2"|'bg-money-v2'|"bg-money-v3"|'bg-money-v3')[^>]*>[\s\S]*?<\/section>\s*/i,'');
   if(/data-bg-money-contract-version=["']native-v1["']/i.test(html)) return html;
   return html.replace(/<main\b([^>]*)>/i,(_tag,attrs)=>{
