@@ -11,7 +11,6 @@ concurrency:
 permissions:
   contents: read
   pull-requests: read
-  statuses: read
 
 jobs:
   production-readback:
@@ -36,7 +35,7 @@ jobs:
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
           import { classifyWebsiteRelease } from './tools/website-release-risk.mjs';
           const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-          const prsResponse=await fetch(`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.MERGE_SHA}/pulls`,{headers:{...headers,Accept:'application/vnd.github+json'}});
+          const prsResponse=await fetch(`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.MERGE_SHA}/pulls`,{headers});
           if(!prsResponse.ok) throw new Error(`PR provenance API ${prsResponse.status}`);
           const prs=await prsResponse.json();
           const merged=prs.find(pr=>pr.merged_at && pr.base?.ref==='main');
@@ -55,33 +54,27 @@ jobs:
           console.log(JSON.stringify(evidence,null,2));
           NODE
       - id: deploy
-        name: Wait for Netlify production status on exact merge SHA
+        name: Wait for exact live release marker
         env:
-          GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-          MERGE_SHA: ${{ github.sha }}
+          EXPECTED_COMMIT: ${{ github.sha }}
         run: |
-          node --input-type=module - <<'NODE'
-          import { appendFile } from 'node:fs/promises';
-          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-          const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.MERGE_SHA}/status`;
-          const deadline=Date.now()+15*60*1000;
-          while(Date.now()<deadline){
-            const response=await fetch(endpoint,{headers});
-            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
-            const body=await response.json();
-            const statuses=body.statuses||[];
-            const status=statuses.find(item=>['netlify/bedrijfsgeheugen/deploy','netlify/bedrijfsgeheugen/production'].includes(item.context));
-            if(status?.state==='success'){
-              await appendFile(process.env.GITHUB_OUTPUT,`deployed_sha=${process.env.MERGE_SHA}\nstatus=ready\ntarget_url=${status.target_url||''}\n`);
-              console.log(`Netlify production reports success on exact SHA ${process.env.MERGE_SHA}`);
-              process.exit(0);
-            }
-            if(['failure','error'].includes(status?.state)) throw new Error(`Netlify production ${status.state}: ${status.description||''}`);
-            await new Promise(resolve=>setTimeout(resolve,10000));
-          }
-          throw new Error('Timed out waiting for Netlify production status on exact merge SHA');
-          NODE
+          set -euo pipefail
+          for attempt in $(seq 1 40); do
+            nonce="${EXPECTED_COMMIT}-${attempt}-$(date +%s)"
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/?bg_release_readback=${nonce}" -o live-home.html
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?bg_release_readback=${nonce}" -o live-prijzen.html
+            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_release_readback=${nonce}" -o live-over-ons.html
+            if EXPECTED_COMMIT="${EXPECTED_COMMIT}" node tools/site-shell/check-live-production.mjs; then
+              echo "deployed_sha=${EXPECTED_COMMIT}" >> "$GITHUB_OUTPUT"
+              echo "status=ready" >> "$GITHUB_OUTPUT"
+              echo "Exact live release marker verified for ${EXPECTED_COMMIT}"
+              exit 0
+            fi
+            echo "Production marker not on ${EXPECTED_COMMIT} yet; retry ${attempt}/40"
+            sleep 15
+          done
+          echo "Production never exposed release marker ${EXPECTED_COMMIT}" >&2
+          exit 1
       - name: Install production browser verifier
         run: |
           npm install --no-save playwright@1.55.0
