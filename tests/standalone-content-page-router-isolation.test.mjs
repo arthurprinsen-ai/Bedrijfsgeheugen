@@ -21,3 +21,14 @@ test('standalone page router isolation preserves ordinary scripts and content', 
   assert.doesNotMatch(result, /viewButtons|showView\(/, 'legacy SPA router must not survive on a standalone page');
   assert.match(result, /id="view-inhoud"/, 'standalone content itself must remain intact');
 });
+
+test('standalone pages receive a fail-safe that keeps the real page visible even when stale inherited CSS or JS hides it', async () => {
+  const { borgStandaloneVisibility } = await import('../tools/standalone-page-router.mjs');
+  const html = '<!doctype html><html><head><style>body{opacity:0} main{visibility:hidden}</style></head><body><header>Menu</header><main><h1>AI Act</h1></main><footer>Footer</footer></body></html>';
+  const result = borgStandaloneVisibility(html);
+  assert.match(result, /id="bg-standalone-visibility-guard"/);
+  assert.match(result, /html,body\{opacity:1!important;visibility:visible!important\}/);
+  assert.match(result, /body>header,body>main,body>footer\{display:block!important\}/);
+  assert.equal((result.match(/bg-standalone-visibility-guard/g) || []).length, 1, 'visibility guard must be idempotent');
+  assert.equal((borgStandaloneVisibility(result).match(/bg-standalone-visibility-guard/g) || []).length, 1, 'second pass must not duplicate the guard');
+});

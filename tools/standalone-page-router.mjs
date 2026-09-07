@@ -1,6 +1,12 @@
 import { readFile, writeFile, glob } from 'node:fs/promises';
 
 const EXCLUDES = new Set(['index.html', 'prototype-v18-stable.html']);
+const VISIBILITY_GUARD = `<style id="bg-standalone-visibility-guard">
+html,body{opacity:1!important;visibility:visible!important}
+body{display:block!important}
+body>header,body>main,body>footer,.bgtop,.bgkop,.bgvoet{opacity:1!important;visibility:visible!important}
+body>header,body>main,body>footer{display:block!important}
+</style>`;
 
 function isHomepageSpaRouter(script) {
   const s = String(script || '');
@@ -16,6 +22,13 @@ export function verwijderHomepageSpaRouter(input) {
   });
 }
 
+export function borgStandaloneVisibility(input) {
+  const html = String(input || '');
+  if (html.includes('id="bg-standalone-visibility-guard"')) return html;
+  if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, `${VISIBILITY_GUARD}\n</head>`);
+  return `${VISIBILITY_GUARD}\n${html}`;
+}
+
 export async function isolateStandalonePages() {
   const files = [];
   for await (const p of glob('*.html')) if (!EXCLUDES.has(p)) files.push(p);
@@ -27,13 +40,13 @@ export async function isolateStandalonePages() {
     let html;
     try { html = await readFile(file, 'utf8'); } catch { continue; }
     if (!html.includes('<body')) continue;
-    const next = verwijderHomepageSpaRouter(html);
+    const next = borgStandaloneVisibility(verwijderHomepageSpaRouter(html));
     if (next !== html) {
       await writeFile(file, next, 'utf8');
       changed += 1;
     }
   }
-  console.log(`Standalone page router isolation applied to ${changed} page(s)`);
+  console.log(`Standalone page isolation + visibility guard applied to ${changed} page(s)`);
   return changed;
 }
 
