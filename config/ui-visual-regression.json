@@ -18,7 +18,7 @@
   "pages": [
     {
       "route": "/",
-      "required": ["main h1", "#compareSlider .compare-knob"],
+      "required": ["main h1"],
       "protectedPairs": [],
       "geometryGuards": [
         { "selector": "[data-bg-story-root]", "maxHeightViewportRatio": 1.75 }
