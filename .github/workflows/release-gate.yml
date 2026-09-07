@@ -1,0 +1,168 @@
+name: Release Gate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-gate-pr-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    outputs:
+      lane: ${{ steps.risk.outputs.lane }}
+      routes: ${{ steps.risk.outputs.routes }}
+      required: ${{ steps.risk.outputs.required }}
+      head: ${{ steps.risk.outputs.head }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Brain learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
+      - id: risk
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { readFile, writeFile, appendFile } from 'node:fs/promises';
+          import { classifyWebsiteRelease } from './tools/website-release-risk.mjs';
+          const base=process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const head=process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const changedPaths=execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const riskConfig=JSON.parse(await readFile('config/website-release-risk.json','utf8'));
+          const acceptedBaseline=JSON.parse(await readFile('site/accepted-baseline.json','utf8'));
+          const result=classifyWebsiteRelease({changedPaths,riskConfig,acceptedBaseline});
+          let routes=[...result.affected_routes];
+          if (routes.length===0 && result.lane==='high-risk') routes=['/','/ai-act','/benchmark'];
+          const evidence={...result,affected_routes:routes,base_sha:base,head_sha:head};
+          await writeFile('.artifacts/website-release-risk.json',JSON.stringify(evidence,null,2)+'\n');
+          await appendFile(process.env.GITHUB_OUTPUT,`lane=${result.lane}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`required=${JSON.stringify(result.required_test_sets)}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`head=${head}\n`);
+          console.log(JSON.stringify(evidence,null,2));
+          NODE
+      - name: Accepted baseline cannot be bypassed
+        run: node --test tests/site-baseline-guardian.test.mjs tests/website-release-risk.test.mjs tests/website-targeted-route-contract.test.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-classifier
+          path: .artifacts/website-release-risk.json
+
+  preview:
+    needs: classify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.classify.outputs.head }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Wait for exact Netlify deploy-preview status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ needs.classify.outputs.head }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          node --input-type=module - <<'NODE'
+          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.HEAD_SHA}/status`;
+          const deadline=Date.now()+10*60*1000;
+          while(Date.now()<deadline){
+            const response=await fetch(endpoint,{headers});
+            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
+            const body=await response.json();
+            const status=(body.statuses||[]).find(item=>item.context==='netlify/bedrijfsgeheugen/deploy-preview');
+            if(status?.state==='success'){ console.log(`Exact preview ready for ${process.env.HEAD_SHA}`); process.exit(0); }
+            if(['failure','error'].includes(status?.state)) throw new Error(`Netlify preview ${status.state}: ${status.description||''}`);
+            await new Promise(resolve=>setTimeout(resolve,10000));
+          }
+          throw new Error('Timed out waiting for exact Netlify deploy-preview status');
+          NODE
+      - name: Install targeted browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify only affected routes on exact preview
+        env:
+          BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+          ROUTES_JSON: ${{ needs.classify.outputs.routes }}
+        run: node tools/verify-targeted-website-routes.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-targeted-browser
+          path: .artifacts/targeted-route-verification.json
+          if-no-files-found: error
+
+  page-seo:
+    needs: classify
+    if: contains(needs.classify.outputs.required, 'page-seo')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.classify.outputs.head }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Page and SEO control
+        run: |
+          python .github/scripts/paginacontrole.py
+          python .github/scripts/seocontrole.py
+
+  full-regression:
+    needs: classify
+    if: contains(needs.classify.outputs.required, 'full-regression')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.classify.outputs.head }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: High-risk shared release contracts
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-delivery-system.test.mjs tests/delivery-*.test.mjs tests/v18-megamenu-heading-contract.test.mjs
+
+  release-gate:
+    name: release-gate
+    if: always()
+    needs: [classify, preview, page-seo, full-regression]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Aggregate selected lane only
+        env:
+          CLASSIFY: ${{ needs.classify.result }}
+          PREVIEW: ${{ needs.preview.result }}
+          PAGE_SEO: ${{ needs.page-seo.result }}
+          FULL: ${{ needs.full-regression.result }}
+          REQUIRED: ${{ needs.classify.outputs.required }}
+        run: |
+          node --input-type=module - <<'NODE'
+          const required=process.env.REQUIRED||'[]';
+          const bad=(name,value)=>{if(value!=='success')throw new Error(`${name} was ${value}`)};
+          bad('classify',process.env.CLASSIFY);
+          bad('preview',process.env.PREVIEW);
+          if(required.includes('page-seo')) bad('page-seo',process.env.PAGE_SEO);
+          if(required.includes('full-regression')) bad('full-regression',process.env.FULL);
+          console.log('release-gate green for selected risk depth');
+          NODE
