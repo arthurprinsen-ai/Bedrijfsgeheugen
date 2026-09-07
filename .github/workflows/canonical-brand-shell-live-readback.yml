@@ -59,6 +59,10 @@ jobs:
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
+      - name: Verify every public production page is visibly rendered
+        env:
+          UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
+        run: node tools/site-shell/standalone-visibility-check.mjs
       - name: Production UI visual regression readback
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
