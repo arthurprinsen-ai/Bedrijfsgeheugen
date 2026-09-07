@@ -44,16 +44,16 @@ test('current product work keeps its lane without rewriting the branch', () => {
   assert.equal(growth.website, true);
 });
 
-test('Required test keeps stable status identity and is lane-aware', async () => {
+test('Required test keeps stable status identity and delegates to composable lanes', async () => {
   const workflow = await readFile('.github/workflows/required-test.yml','utf8');
   assert.match(workflow, /^name:\s*Required test/m);
-  assert.match(workflow, /deriveRequiredTestSuites/);
-  assert.match(workflow, /steps\.scope\.outputs\.backend/);
-  assert.match(workflow, /steps\.scope\.outputs\.portal/);
-  assert.match(workflow, /steps\.scope\.outputs\.website/);
-  assert.match(workflow, /steps\.scope\.outputs\.automation/);
-  assert.match(workflow, /v18-megamenu-heading-contract\.test\.mjs/);
-  assert.match(workflow, /v18-megamenu-browser-check\.mjs/);
+  assert.match(workflow, /createDeliveryPlan/);
+  assert.match(workflow, /name:\s*test/);
+  for (const lane of ['backend','portal','website','automation']) {
+    assert.match(workflow, new RegExp(`uses:\\s*\\./\\.github/workflows/lane-${lane}\\.yml`));
+  }
+  assert.doesNotMatch(workflow, /v18-megamenu-heading-contract\.test\.mjs/);
+  assert.doesNotMatch(workflow, /v18-megamenu-browser-check\.mjs/);
 });
 
 test('V18 promotion separates website and portal gates', async () => {
