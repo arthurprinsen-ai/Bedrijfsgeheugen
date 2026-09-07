@@ -25,3 +25,12 @@ test('required deploy-preview gate checks the actual benchmark current-menu stat
   assert.match(browserCheck, /rgb\(17, 24, 39\)/);
   assert.match(browserCheck, /rgb\(238, 242, 247\)/);
 });
+
+test('menu-only delivery is isolated from unrelated slow page gates without weakening the menu gate', () => {
+  assert.match(workflow, /menuOnlyPaths/);
+  assert.match(workflow, /menu_only=/);
+  assert.match(workflow, /Verify real megamenu headings and active links have readable contrast/);
+  assert.match(workflow, /Fail closed on real deploy-preview visual regressions[\s\S]*menu_only != 'true'/);
+  assert.match(workflow, /Drag homepage context slider through safe extremes[\s\S]*menu_only != 'true'/);
+  assert.match(workflow, /Verify AI Act and benchmark are visibly rendered[\s\S]*menu_only != 'true'/);
+});
