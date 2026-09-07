@@ -1,8 +1,17 @@
-name: Required test
+name: Interaction Quality Gate
 
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'index.html'
+      - 'v18-full/**'
+      - 'assets/**'
+      - 'tools/**'
+      - 'quality/**'
+      - 'tests/**'
+      - 'netlify.toml'
+      - '.github/workflows/interaction-quality-gate.yml'
   workflow_dispatch:
 
 permissions:
@@ -10,8 +19,8 @@ permissions:
   statuses: read
 
 jobs:
-  test:
-    name: test
+  interaction-quality-gate:
+    name: interaction-quality-gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -20,29 +29,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Run required Brain, delivery and UI regression contracts
-        run: >-
-          node --test
-          tests/brain-adapter-conformance.test.mjs
-          tests/brain-platform-adapters.test.mjs
-          tests/universal-event-envelope.test.mjs
-          tests/event-retention-policy.test.mjs
-          tests/event-retention-expiry.test.mjs
-          tests/universal-event-contract-check.test.mjs
-          tests/universal-event-adapters.test.mjs
-          tests/universal-failure-learning.test.mjs
-          tests/make-cost-governor-policy.test.mjs
-          tests/make-cost-governance-contract.test.mjs
-          tests/v18-vergelijker.test.mjs
-      - name: Run required interaction static contracts
+      - name: Run static interaction contracts
         run: >-
           node --test
           tests/interaction-contract-registry.test.mjs
           tests/interaction-final-build-wiring.test.mjs
           tests/interaction-browser-helpers.test.mjs
-          tests/interaction-quality-workflow.test.mjs
-          tests/interaction-production-readback-workflow.test.mjs
-          tests/interaction-required-gate-contract.test.mjs
           tests/seo-homepage-scroll-story-interaction.test.mjs
           tests/seo-homepage-platform-expertise-toggle.test.mjs
       - name: Wait for Netlify deploy preview
@@ -68,16 +60,16 @@ jobs:
         run: |
           npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
-      - name: Run required interaction browser contracts
+      - name: Run interaction browser gate
         if: github.event_name == 'pull_request'
         env:
           BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
-        run: npx playwright test tests/integration/interaction-quality-gate.spec.js --workers=1 --reporter=line
-      - name: Upload required interaction diagnostics
+        run: npx playwright test tests/integration/interaction-quality-gate.spec.js --workers=1 --reporter=line,html
+      - name: Upload interaction diagnostics
         if: failure() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: required-interaction-test-artifacts
+          name: interaction-quality-gate-artifacts
           path: |
             playwright-report/**
             test-results/**

@@ -36,12 +36,12 @@ export function applyHomepageScrollStory(html) {
 @keyframes bgssPulse{0%,100%{box-shadow:0 0 0 0 rgba(88,214,141,0)}50%{box-shadow:0 0 0 7px rgba(88,214,141,.13)}}
 html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-events:none!important;transform:translateY(16px)!important;transition:opacity .18s ease,transform .18s ease!important}
 @media(min-width:1024px){
-  [data-bg-story-root]{min-height:360vh!important;padding-bottom:0!important}
-  [data-bg-story-stage]{position:sticky!important;top:0;min-height:100vh;display:flex;align-items:center;z-index:2}
+  [data-bg-story-root]{min-height:360vh!important;padding-bottom:0!important;align-items:start!important}
+  [data-bg-story-stage]{position:sticky!important;top:84px!important;align-self:start!important;z-index:2}
 }
 @media(max-width:1023px){
   [data-bg-story-root]{min-height:0!important}
-  [data-bg-story-stage]{position:relative!important;top:auto!important;min-height:0!important;display:block!important}
+  [data-bg-story-stage]{position:relative!important;top:auto!important;min-height:0!important}
   [data-bg-story-overlay]{position:relative;inset:auto;display:none;margin-top:12px;min-height:280px;border-radius:20px}
   [data-bg-story-overlay][data-show="1"]{display:grid}
   [data-bg-story-step]{opacity:.72!important}
@@ -57,15 +57,15 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
 (function(){
   'use strict';
   var LABELS=['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat'];
-  var FOURTH=['Effect wordt zichtbaar','Effect wordt gevolgd','Effect wordt gemeten','Impact wordt zichtbaar'];
+  var FOURTH=['Waarde wordt gemeten','Effect wordt zichtbaar','Effect wordt gevolgd','Effect wordt gemeten','Impact wordt zichtbaar'];
   var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var desktop=window.matchMedia&&window.matchMedia('(min-width: 1024px)');
-  var state=0, ticking=false, root=null, stage=null, visual=null, steps=[], overlays=[];
+  var state=0, ticking=false, root=null, visual=null, steps=[], overlays=[];
 
   function txt(el){return (el&&el.textContent||'').replace(/\\s+/g,' ').trim();}
   function exact(label,scope){return Array.prototype.find.call((scope||document).querySelectorAll('h1,h2,h3,h4,h5,h6,b,strong,span,p,div'),function(el){return txt(el)===label;})||null;}
   function common(a,b){var seen=[];for(var n=a;n;n=n.parentElement)seen.push(n);for(var m=b;m;m=m.parentElement)if(seen.indexOf(m)!==-1)return m;return null;}
-  function containsOther(el,label){var t=txt(el);return LABELS.some(function(x){return x!==label&&t.indexOf(x)!==-1;});}
+  function containsOther(el,label){var t=txt(el);return LABELS.concat(FOURTH).some(function(x){return x!==label&&t.indexOf(x)!==-1;});}
   function blockFor(el,label){var best=el;for(var n=el;n&&n.parentElement&&n.parentElement!==document.body;n=n.parentElement){var p=n.parentElement;if(containsOther(p,label))break;if(txt(p).length>520)break;best=p;}return best;}
   function smallestContaining(scope,needle){var found=null;Array.prototype.forEach.call((scope||document).querySelectorAll('div,aside,section'),function(el){var t=txt(el);if(t.indexOf(needle)===-1)return;if(!found||t.length<txt(found).length)found=el;});return found;}
   function directChildContaining(parent,node){if(!parent||!node)return null;var n=node;while(n&&n.parentElement!==parent)n=n.parentElement;return n&&n.parentElement===parent?n:null;}
@@ -116,7 +116,7 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
       '<div class="bgss-grid"><div class="bgss-item"><b>Processen</b><span>Welke werkwijze is afhankelijk?</span></div><div class="bgss-item"><b>Rollen</b><span>Wie neemt kennis en eigenaarschap over?</span></div><div class="bgss-item"><b>Documenten</b><span>Welke instructies moeten actueel blijven?</span></div><div class="bgss-item"><b>KPI’s</b><span>Waar kan het effect zichtbaar worden?</span></div></div>');
     overlay(2,'Stap 03 · Voorbeeldopvolging','Opvolging ontstaat.','De gevonden impact wordt vertaald naar concrete opvolging met eigenaar en status.',
       '<div><div class="bgss-line"><i class="bgss-dot"></i><span>Kennisoverdracht vastleggen</span><span class="bgss-state">eigenaar bepalen</span></div><div class="bgss-line"><i class="bgss-dot"></i><span>Procesdocumentatie bijwerken</span><span class="bgss-state">open</span></div><div class="bgss-line"><i class="bgss-dot"></i><span>Afhankelijkheden controleren</span><span class="bgss-state">gepland</span></div></div>');
-    overlay(3,'Stap 04 · Readback','Effect blijft zichtbaar.','Niet alleen de actie, maar ook wat is bijgewerkt, wat nog wacht en waar opnieuw aandacht nodig is.',
+    overlay(3,'Stap 04 · Readback','Waarde wordt gemeten.','Niet alleen de actie, maar ook wat is bijgewerkt, wat nog wacht en waar opnieuw aandacht nodig is.',
       '<div class="bgss-grid"><div class="bgss-item"><b>Bijgewerkt</b><span>Nieuwe context is vastgelegd</span></div><div class="bgss-item"><b>Open</b><span>Wat nog bevestiging nodig heeft</span></div><div class="bgss-item"><b>Geraakt</b><span>KPI’s en processen blijven gekoppeld</span></div><div class="bgss-item"><b>Readback</b><span>De wijziging blijft traceerbaar</span></div></div>');
   }
 
@@ -130,7 +130,6 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
       if(i===next)step.setAttribute('aria-current','step');else step.removeAttribute('aria-current');
     });
     overlays.forEach(function(el,i){if(el)el.setAttribute('data-show',i===next?'1':'0');});
-    if(source==='click'&&next>0&&overlays[next])overlays[next].focus&&overlays[next].focus({preventScroll:true});
   }
 
   function scrollTargetFor(next){
@@ -163,20 +162,27 @@ html[data-bg-story-active="1"] [data-bg-story-cost]{opacity:0!important;pointer-
     if(document.documentElement.dataset.bgScrollStoryReady==='1')return;
     var first=exact(LABELS[0]),second=exact(LABELS[1]),third=exact(LABELS[2]);
     if(!first||!second||!third)return;
-    var ctas=Array.prototype.slice.call(document.querySelectorAll('a,button'));
-    var cta=ctas.find(function(el){return txt(el).indexOf('Analyseer impact')!==-1;})||null;
+    var cta=null;
+    Array.prototype.forEach.call(document.querySelectorAll('a,button,div,span,p,strong'),function(el){
+      var t=txt(el);
+      if(t.indexOf('Analyseer impact')===-1||t.length>120)return;
+      if(!cta||t.length<txt(cta).length)cta=el;
+    });
     root=findRoot(first,third,cta);
     if(!root)return;
     root.setAttribute('data-bg-story-root','');
 
-    var labels=[first,second,third,findFourth(root)].filter(Boolean);
-    steps=labels.map(function(el,i){var b=blockFor(el,i<3?LABELS[i]:txt(el));b.setAttribute('data-bg-story-step',String(i));b.setAttribute('tabindex','0');b.addEventListener('click',onStepClick(i));b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();onStepClick(i)();}});return b;});
+    var fourth=findFourth(root);
+    if(!fourth)return;
+    var labels=[first,second,third,fourth];
+    steps=labels.map(function(el,i){var label=i<3?LABELS[i]:txt(el);var b=blockFor(el,label);b.setAttribute('data-bg-story-step',String(i));b.setAttribute('tabindex','0');b.addEventListener('click',onStepClick(i));b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();onStepClick(i)();}});return b;});
 
     var anchor=cta||third;
     var childA=directChildContaining(root,first),childB=directChildContaining(root,anchor);
-    stage=(childA&&childB&&childA===childB)?childA:common(first,anchor);
-    if(stage&&stage!==root)stage.setAttribute('data-bg-story-stage','');
-    else root.setAttribute('data-bg-story-stage','');
+    if(childA&&childB){
+      childA.setAttribute('data-bg-story-stage','');
+      if(childB!==childA)childB.setAttribute('data-bg-story-stage','');
+    }
 
     visual=chooseVisual(cta);
     if(!visual)return;
