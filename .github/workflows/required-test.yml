@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Run required Brain and universal delivery contracts
+      - name: Run required Brain, delivery and UI regression contracts
         run: >-
           node --test
           tests/brain-adapter-conformance.test.mjs
@@ -33,6 +33,7 @@ jobs:
           tests/universal-failure-learning.test.mjs
           tests/make-cost-governor-policy.test.mjs
           tests/make-cost-governance-contract.test.mjs
+          tests/v18-vergelijker.test.mjs
       - name: Run required interaction static contracts
         run: >-
           node --test
@@ -41,6 +42,7 @@ jobs:
           tests/interaction-browser-helpers.test.mjs
           tests/interaction-quality-workflow.test.mjs
           tests/interaction-production-readback-workflow.test.mjs
+          tests/interaction-required-gate-contract.test.mjs
           tests/seo-homepage-scroll-story-interaction.test.mjs
           tests/seo-homepage-platform-expertise-toggle.test.mjs
       - name: Wait for Netlify deploy preview
