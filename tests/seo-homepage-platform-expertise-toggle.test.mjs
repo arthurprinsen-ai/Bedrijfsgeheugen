@@ -30,3 +30,11 @@ test('homepage toggle scopes the Platform button to the same local control as Ex
   );
   assert.match(source, /querySelectorAll\('button'\)/, 'local pair resolver must inspect buttons inside candidate ancestors');
 });
+
+test('selected content panel receives the active state required by the homepage card CSS', () => {
+  const source = readFileSync('tools/bouw-v18-homepage-platform-expertise-toggle.mjs', 'utf8');
+  assert.match(source, /platformPanel\.classList\.toggle\('active',isPlatform\)/, 'Platform panel must receive active state');
+  assert.match(source, /expertisePanel\.classList\.toggle\('active',!isPlatform\)/, 'Expertise panel must receive active state');
+  assert.match(source, /platformPanel\.setAttribute\('aria-hidden',isPlatform\?'false':'true'\)/, 'Platform panel aria-hidden must follow state');
+  assert.match(source, /expertisePanel\.setAttribute\('aria-hidden',isPlatform\?'true':'false'\)/, 'Expertise panel aria-hidden must follow state');
+});
