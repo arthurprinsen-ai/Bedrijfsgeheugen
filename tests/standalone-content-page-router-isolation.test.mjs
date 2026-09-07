@@ -2,14 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-test('standalone content pages strip the inherited homepage SPA router before release', () => {
-  const chrome = readFileSync('tools/bouw-v18-chrome.mjs', 'utf8');
-  const views = readFileSync('tools/bouw-v18-views.mjs', 'utf8');
-  const shell = readFileSync('tools/site-shell/apply-shell.mjs', 'utf8');
-
-  for (const [name, source] of [['content composer', chrome], ['view composer', views], ['canonical shell', shell]]) {
-    assert.match(source, /verwijderHomepageSpaRouter/, `${name} must explicitly remove the inherited homepage SPA router`);
-  }
+test('release pipeline strips the inherited homepage SPA router from standalone pages', () => {
+  const netlify = readFileSync('netlify.toml', 'utf8');
+  assert.match(
+    netlify,
+    /node tools\/standalone-page-router\.mjs/,
+    'final Netlify build must isolate standalone pages after all shell/build transformations',
+  );
 });
 
 test('standalone page router isolation preserves ordinary scripts and content', async () => {
