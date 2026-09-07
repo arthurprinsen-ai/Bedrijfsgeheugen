@@ -13,6 +13,7 @@ const STYLE = `<style ${MARKER}>
 #compareSlider[data-bg-compare-compact="true"] .compare-after{position:relative!important;inset:auto!important;clip-path:none!important;width:100%!important;height:auto!important;padding:24px!important;border-radius:24px!important;min-height:0!important;transform:none!important}
 #compareSlider[data-bg-compare-compact="true"] .compare-copy{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;position:relative!important;inset:auto!important;transform:none!important}
 #compareSlider[data-bg-compare-compact="true"] .compare-handle{display:none!important}
+@media(max-width:767px){[data-bg-story-cost]{display:none!important}}
 </style>`;
 
 const RUNTIME = `<script ${MARKER}>
