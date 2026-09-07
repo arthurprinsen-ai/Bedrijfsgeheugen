@@ -51,35 +51,21 @@ const style = `<style id="v18-stable-video-fix">
 </style>`;
 
 // Visual contract for the actual V18 "Meer" mega menu, not the legacy .bgkop dropdown.
-// The menu uses its own active/current styling; descendants could therefore stay white on
-// a pale current-page tile even when the column heading itself was fixed. We mark the
-// actual rendered menu and own the complete text-state contract here.
-const megaMenuContract = `<style id="v18-megamenu-heading-contract">
-[data-bg-megamenu-heading]{color:#000!important;font-weight:800!important;opacity:1!important;text-shadow:none!important;filter:none!important}
-[data-bg-megamenu-link],[data-bg-megamenu-link] *{color:#334155!important;opacity:1!important;text-shadow:none!important;mix-blend-mode:normal!important;filter:none!important}
-[data-bg-megamenu-link]:hover,[data-bg-megamenu-link]:focus-visible{color:#111827!important;background:#eef2f7!important}
-[data-bg-megamenu-link][data-bg-megamenu-current="true"],[data-bg-megamenu-link][aria-current="page"]{color:#111827!important;background:#eef2f7!important;font-weight:600!important}
-[data-bg-megamenu-link][data-bg-megamenu-current="true"] *,[data-bg-megamenu-link][aria-current="page"] *{color:#111827!important;opacity:1!important;text-shadow:none!important;mix-blend-mode:normal!important;filter:none!important}
+const megaMenuHeadingContract = `<style id="v18-megamenu-heading-contract">
+[data-bg-megamenu-heading]{color:#000!important;font-weight:800!important}
 </style>
 <script id="v18-megamenu-heading-marker">
 (function(){
   var LABELS=['BEDRIJF','KENNIS','VERTROUWEN','SUPPORT'];
   function norm(value){return String(value||'').replace(/\\s+/g,' ').trim().toUpperCase();}
-  function cleanPath(value){var path=String(value||'/').replace(/\\?.*$/,'').replace(/#.*$/,'').replace(/\\/index\\.html$/,'/').replace(/\\.html$/,'');return path.length>1?path.replace(/\\/$/,''):path;}
-  function actualMegaMenuRoot(el){var node=el;for(var depth=0;node&&depth<9;depth+=1,node=node.parentElement){var text=norm(node.textContent);if(text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1&&text.indexOf('VOLLEDIGE WEBSITEKAART')!==-1)return node;}return null;}
-  function isCurrent(link){try{return cleanPath(new URL(link.href,location.href).pathname)===cleanPath(location.pathname);}catch(error){return false;}}
-  function apply(){
-    var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');
-    for(var i=0;i<headings.length;i+=1){var heading=headings[i];if(LABELS.indexOf(norm(heading.textContent))!==-1&&actualMegaMenuRoot(heading))heading.setAttribute('data-bg-megamenu-heading','true');}
-    var links=document.querySelectorAll('a[href]');
-    for(var j=0;j<links.length;j+=1){var link=links[j];if(actualMegaMenuRoot(link)){link.setAttribute('data-bg-megamenu-link','true');if(isCurrent(link))link.setAttribute('data-bg-megamenu-current','true');else link.removeAttribute('data-bg-megamenu-current');}}
-  }
+  function inActualMegaMenu(el){var node=el.parentElement;for(var depth=0;node&&depth<8;depth+=1,node=node.parentElement){var text=norm(node.textContent);if(text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1&&text.indexOf('VOLLEDIGE WEBSITEKAART')!==-1)return true;}return false;}
+  function apply(){var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');for(var i=0;i<headings.length;i+=1){var heading=headings[i];if(LABELS.indexOf(norm(heading.textContent))!==-1&&inActualMegaMenu(heading))heading.setAttribute('data-bg-megamenu-heading','true');}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
   new MutationObserver(apply).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>`;
 
-html = html.replace('</body>', `${style}\n${megaMenuContract}\n</body>`);
+html = html.replace('</body>', `${style}\n${megaMenuHeadingContract}\n</body>`);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');

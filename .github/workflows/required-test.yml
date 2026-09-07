@@ -19,6 +19,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Block unjustified moving-main successor rebuilds
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node scripts/brain/moving-main-successor-guard.mjs
       - id: scope
         name: Classify blocking suites from changed delivery lanes
         env:
@@ -48,7 +54,7 @@ jobs:
           console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites, menuOnly }));
           NODE
       - name: Verify shared release-lane contract
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs
       - name: Verify backend Brain and runtime contracts
         if: steps.scope.outputs.backend == 'true'
         run: >-
@@ -89,7 +95,7 @@ jobs:
           tests/standalone-content-page-router-isolation.test.mjs
           tests/v18-megamenu-heading-contract.test.mjs
           tests/seo-homepage-context-slider-readability.test.mjs
-      - name: Verify real megamenu headings and active links have readable contrast
+      - name: Verify real megamenu headings are black and bold
         if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
