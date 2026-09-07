@@ -81,16 +81,15 @@ jobs:
       - name: Verify automation delivery contracts
         if: steps.scope.outputs.automation == 'true'
         run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
-      - name: Verify mandatory website baseline and risk contracts
+      - name: Verify mandatory website baseline, risk and visibility contracts
         if: steps.scope.outputs.website == 'true'
-        run: node --test tests/site-baseline-guardian.test.mjs tests/website-release-risk.test.mjs tests/website-targeted-route-contract.test.mjs tests/release-gate-contract.test.mjs tests/production-release-readback.test.mjs
+        run: node --test tests/site-baseline-guardian.test.mjs tests/site-shell-public-route-inventory.test.mjs tests/website-release-risk.test.mjs tests/website-targeted-route-contract.test.mjs tests/release-gate-contract.test.mjs tests/production-release-readback.test.mjs
       - name: Verify normal/high-risk website static contracts
         if: steps.scope.outputs.website == 'true' && steps.scope.outputs.risk_lane != 'fast-fix'
         run: >-
           node --test
           tests/v18-vergelijker.test.mjs
           tests/site-shell-v18-view-integrity.test.mjs
-          tests/site-shell-public-route-inventory.test.mjs
           tests/seo-native-money-presentation.test.mjs
           tests/seo-homepage-platform-expertise-toggle.test.mjs
           tests/standalone-content-page-router-isolation.test.mjs
@@ -136,6 +135,11 @@ jobs:
           BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
           ROUTES_JSON: ${{ steps.scope.outputs.risk_routes }}
         run: node tools/verify-targeted-website-routes.mjs
+      - name: Verify all public pages are visibly rendered
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: node tools/site-shell/standalone-visibility-check.mjs
       - name: Run broad real-preview website checks only for high-risk changes
         if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.risk_lane == 'high-risk'
         env:
@@ -146,7 +150,6 @@ jobs:
           node tools/site-shell/ui-visual-regression/browser-check.mjs
           node tools/site-shell/homepage-context-slider-browser-check.mjs
           node tools/site-shell/homepage-toggle-browser-check.mjs
-          node tools/site-shell/standalone-visibility-check.mjs
       - name: Upload visual regression diagnostics
         if: always()
         uses: actions/upload-artifact@v4
