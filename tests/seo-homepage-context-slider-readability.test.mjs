@@ -72,12 +72,13 @@ test('browsercheck verifieert uiterste links en rechts op desktop en gangbare te
   assert.match(websiteLane,/homepage-context-slider-browser-check\.mjs/);
 });
 
-test('algemene visual-regression gate bewaakt aanwezigheid en laat reveal-overlap aan de endpoint-browsercheck',()=>{
+test('algemene visual-regression gate bewaakt hero-layout; endpointbrowsercheck bezit slider-revealcontract',()=>{
   const registry=JSON.parse(visualRegistry);
   const home=registry.pages.find(page=>page.route==='/');
   assert.ok(home);
-  assert.ok(home.required.includes('#compareSlider .compare-knob'));
+  assert.deepEqual(home.required,['main h1']);
   assert.deepEqual(home.protectedPairs,[]);
+  assert.match(browserCheck,/topSideAtCenter/);
   for (const staleMarker of [
     'data-bg-automation-copy',
     'data-bg-automation-visual',
