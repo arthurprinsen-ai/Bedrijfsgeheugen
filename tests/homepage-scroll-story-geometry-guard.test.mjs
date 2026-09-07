@@ -17,7 +17,8 @@ test('homepage visual regression contract protects the interactive story itself'
   const registry = JSON.parse(readFileSync('config/ui-visual-regression.json', 'utf8'));
   const home = registry.pages.find(page => page.route === '/');
   assert.ok(home, 'homepage visual regression contract missing');
-  assert.ok(home.required.includes('[data-bg-story-root]'), 'story root must be measured in browser readback');
-  assert.ok(home.required.includes('[data-bg-story-visual]'), 'story cockpit/visual must be measured in browser readback');
-  assert.equal(home.maxElementHeightViewportRatio?.['[data-bg-story-root]'], 1.75, 'story may never expand into a multi-screen blank block');
+  const rootGuard = (home.geometryGuards || []).find(guard => guard.selector === '[data-bg-story-root]');
+  const visualGuard = (home.geometryGuards || []).find(guard => guard.selector === '[data-bg-story-visual]');
+  assert.equal(rootGuard?.maxHeightViewportRatio, 1.75, 'story root may never expand into a multi-screen blank block');
+  assert.equal(visualGuard?.maxHeightViewportRatio, 1.25, 'story visual may never be taller than the intended viewport composition');
 });
