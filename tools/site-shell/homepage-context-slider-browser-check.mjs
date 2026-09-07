@@ -68,6 +68,18 @@ function assertDesktopGeometry(g, label) {
   }
 }
 
+async function dragKnobTo(page, targetX) {
+  const knobBox = await page.locator('#compareSlider .compare-knob').boundingBox();
+  if (!knobBox) fail('1128x653: sliderknop heeft geen geometry');
+  const startX = knobBox.x + knobBox.width / 2;
+  const startY = knobBox.y + knobBox.height / 2;
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(targetX, startY, { steps: 8 });
+  await page.mouse.up();
+  await page.waitForTimeout(120);
+}
+
 async function testDesktop(browser) {
   const page = await browser.newPage({ viewport: { width: 1128, height: 653 } });
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
@@ -76,18 +88,16 @@ async function testDesktop(browser) {
   const box = await page.locator('#compareSlider').boundingBox();
   if (!box) fail('1128x653: slider heeft geen geometry');
 
-  await page.mouse.click(box.x + 2, box.y + box.height / 2);
-  await page.waitForTimeout(120);
+  await dragKnobTo(page, box.x + 2);
   const left = await readGeometry(page);
   assertDesktopGeometry(left, '1128x653 uiterste links');
 
-  await page.mouse.click(box.x + box.width - 2, box.y + box.height / 2);
-  await page.waitForTimeout(120);
+  await dragKnobTo(page, box.x + box.width - 2);
   const right = await readGeometry(page);
   assertDesktopGeometry(right, '1128x653 uiterste rechts');
 
   if (!(left.split < 50 && right.split > 50)) {
-    fail('Desktop slider moet nog interactief zijn binnen de veilige zone', { left, right });
+    fail('Desktop slider moet via de echte witte knop interactief blijven binnen de veilige zone', { left, right });
   }
   await page.close();
   return { left: left.split, right: right.split };
