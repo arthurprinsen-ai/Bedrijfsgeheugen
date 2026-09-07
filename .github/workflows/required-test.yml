@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Run required Brain and universal delivery contracts
+      - name: Run required Brain, delivery and UI regression contracts
         run: >-
           node --test
           tests/brain-adapter-conformance.test.mjs
@@ -30,3 +30,4 @@ jobs:
           tests/universal-failure-learning.test.mjs
           tests/make-cost-governor-policy.test.mjs
           tests/make-cost-governance-contract.test.mjs
+          tests/v18-vergelijker.test.mjs
