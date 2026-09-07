@@ -36,13 +36,19 @@ jobs:
           import { readFile, appendFile } from 'node:fs/promises';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
+          import { classifyWebsiteReleaseRisk } from './tools/website-release-risk.mjs';
           const head = process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const base = process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changedPaths = execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+          const releaseRiskPolicy = JSON.parse(await readFile('config/website-release-risk.json','utf8'));
           const plan = createDeliveryPlan({ changedPaths, headSha:head, policy });
           const suites = deriveRequiredTestSuites({ lanes:plan.lanes.map(lane => lane.id) });
+          const websiteReleaseRisk = classifyWebsiteReleaseRisk({ changedPaths, policy: releaseRiskPolicy });
           for (const [key,value] of Object.entries(suites)) await appendFile(process.env.GITHUB_OUTPUT, `${key}=${value}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `browser_profile=${websiteReleaseRisk.profile}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `menu_browser=${websiteReleaseRisk.requiresMenuBrowser}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `full_browser=${websiteReleaseRisk.requiresFullBrowser}\n`);
           const menuOnlyPaths = new Set([
             'tools/bouw-v18-production-core.mjs',
             'tools/site-shell/v18-megamenu-browser-check.mjs',
@@ -52,10 +58,10 @@ jobs:
           ]);
           const menuOnly = changedPaths.length > 0 && changedPaths.every(path => menuOnlyPaths.has(path));
           await appendFile(process.env.GITHUB_OUTPUT, `menu_only=${menuOnly}\n`);
-          console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites, menuOnly }));
+          console.log(JSON.stringify({ changedPaths, lanes:plan.lanes.map(lane => lane.id), suites, menuOnly, websiteReleaseRisk }));
           NODE
       - name: Verify shared release-lane contract
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/website-release-risk.test.mjs
       - name: Verify backend Brain and runtime contracts
         if: steps.scope.outputs.backend == 'true'
         run: >-
@@ -97,28 +103,28 @@ jobs:
           tests/v18-megamenu-heading-contract.test.mjs
           tests/seo-homepage-context-slider-readability.test.mjs
       - name: Verify real megamenu headings are black and bold
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_browser == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Fail closed on real deploy-preview visual regressions
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_only != 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
           EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: node tools/site-shell/ui-visual-regression/browser-check.mjs
       - name: Drag homepage context slider through safe extremes
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_only != 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/homepage-context-slider-browser-check.mjs
       - name: Click Platform and Expertise on the real deploy preview
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.menu_only != 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/homepage-toggle-browser-check.mjs
       - name: Verify all public pages are visibly rendered
-        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true'
+        if: github.event_name == 'pull_request' && steps.scope.outputs.website == 'true' && steps.scope.outputs.full_browser == 'true'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/standalone-visibility-check.mjs
