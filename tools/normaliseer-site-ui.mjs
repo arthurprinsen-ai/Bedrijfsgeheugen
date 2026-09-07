@@ -9,6 +9,7 @@ import {
 } from './site-shell/components.mjs';
 import { applyCanonicalShellToAllPages, projectGlobalComponents } from './site-shell/apply-shell.mjs';
 import { ensureReleaseMarker } from './site-shell/release-marker.mjs';
+import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage-context-slider.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 
@@ -105,6 +106,7 @@ export function normaliseerHtml(input, bestand) {
   html = markPageSlots(html);
   html = absolutiseerInterneHref(html);
   html = herstelTechnischeLinks(html);
+  html = applyHomepageContextSliderReadability(html);
   return html;
 }
 
