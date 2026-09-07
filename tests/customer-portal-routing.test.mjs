@@ -21,10 +21,8 @@ test('Ijsselmonde serves the legacy full customer portal', () => {
 });
 
 test('Portal Next legacy comparison bypasses the public klantportaal rewrite', () => {
-  assert.match(
-    portalNextJs,
-    /export function buildLegacyPortalUrl\([^)]*\)\{return withCustomer\('\/klantportaal\.html',klant\)\}/
-  );
+  assert.match(portalNextJs, /return withCustomer\('\/klantportaal\.html',klant\)/);
+  assert.doesNotMatch(portalNextJs, /return withCustomer\('\/klantportaal',klant\)/);
 });
 
 test('demoAI serves the current AI portal without changing the public URL', () => {
