@@ -78,10 +78,10 @@ const RUNTIME = `<script ${MARKER}>
     var rows=CHANGE_STEPS.map(function(label){var h=findHeading(section,label);return h?changeStepContainer(h,section):null;});
     if(rows.some(function(row){return !row;}))return;
     rows.forEach(function(row,index){
-      row.setAttribute('data-bg-change-step',String(index+1));
+      if(row.getAttribute('data-bg-change-step')!==String(index+1))row.setAttribute('data-bg-change-step',String(index+1));
       var check=findCheck(row);
       if(check){
-        check.setAttribute('data-bg-change-check-source','true');
+        if(check.getAttribute('data-bg-change-check-source')!=='true')check.setAttribute('data-bg-change-check-source','true');
         var old=row.querySelector('.bg-change-check-fallback');if(old)old.remove();
       }else ensureFallback(row);
     });
@@ -167,7 +167,7 @@ const RUNTIME = `<script ${MARKER}>
 
   ensureFourChangeChecks();
   ensureSliders();
-  new MutationObserver(function(){ensureFourChangeChecks();ensureSliders();}).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','hidden']});
+  new MutationObserver(function(){ensureFourChangeChecks();ensureSliders();}).observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('resize',ensureFourChangeChecks,{passive:true});
 })();
 </script>`;
