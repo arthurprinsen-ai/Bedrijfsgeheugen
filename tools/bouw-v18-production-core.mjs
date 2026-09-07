@@ -42,7 +42,6 @@ html = html.replace(/<style id="v18-10-video-fix">[\s\S]*?<\/style>\s*<script id
 html = html.replace(/<script id="v18-stable-video-controller">[\s\S]*?<\/script>\s*/, '');
 
 html = html.replace('url("https://images.pexels.com/videos/35402271/pexels-photo-35402271.jpeg?auto=compress&cs=tinysrgb&w=1920") center/cover no-repeat', 'linear-gradient(rgba(10,17,23,1),rgba(10,17,23,1)) center/cover no-repeat');
-
 html = html.replace('url("https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600") center/cover no-repeat', 'linear-gradient(rgba(10,17,23,1),rgba(10,17,23,1)) center/cover no-repeat');
 
 const style = `<style id="v18-stable-video-fix">
@@ -50,7 +49,23 @@ const style = `<style id="v18-stable-video-fix">
 .hero-bg-video{display:block!important;opacity:1!important;visibility:visible!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;background:#dbe7ee;filter:brightness(1.06) saturate(.96);pointer-events:none}
 @media(max-width:768px){.hero-bg-video{object-position:center center!important}}
 </style>`;
-html = html.replace('</body>', `${style}\n</body>`);
+
+// Visual contract for the actual V18 "Meer" mega menu, not the legacy .bgkop dropdown.
+const megaMenuHeadingContract = `<style id="v18-megamenu-heading-contract">
+[data-bg-megamenu-heading]{color:#000!important;font-weight:800!important}
+</style>
+<script id="v18-megamenu-heading-marker">
+(function(){
+  var LABELS=['BEDRIJF','KENNIS','VERTROUWEN','SUPPORT'];
+  function norm(value){return String(value||'').replace(/\\s+/g,' ').trim().toUpperCase();}
+  function inActualMegaMenu(el){var node=el.parentElement;for(var depth=0;node&&depth<8;depth+=1,node=node.parentElement){var text=norm(node.textContent);if(text.indexOf('MENSEN EERST. DAN TECHNIEK.')!==-1&&text.indexOf('VOLLEDIGE WEBSITEKAART')!==-1)return true;}return false;}
+  function apply(){var headings=document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');for(var i=0;i<headings.length;i+=1){var heading=headings[i];if(LABELS.indexOf(norm(heading.textContent))!==-1&&inActualMegaMenu(heading))heading.setAttribute('data-bg-megamenu-heading','true');}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+  new MutationObserver(apply).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>`;
+
+html = html.replace('</body>', `${style}\n${megaMenuHeadingContract}\n</body>`);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
