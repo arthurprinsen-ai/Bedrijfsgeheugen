@@ -4,11 +4,11 @@ import { readFile } from 'node:fs/promises';
 
 const pipeline = await readFile(new URL('../tools/prijzen-uit-de-homepage.mjs', import.meta.url), 'utf8');
 let fixer = '';
-try { fixer = await readFile(new URL('../tools/fix-homepage-context-slider.mjs', import.meta.url), 'utf8'); } catch {}
+try { fixer = await readFile(new URL('../tools/site-shell/fix-homepage-context-slider.mjs', import.meta.url), 'utf8'); } catch {}
 
 test('de echte homepage compareSlider wordt in de finale build fail-closed geborgd', () => {
   assert.match(pipeline, /applyHomepageContextSliderReadability/);
-  assert.match(pipeline, /fix-homepage-context-slider/);
+  assert.match(pipeline, /site-shell\/fix-homepage-context-slider/);
   assert.match(fixer, /compareSlider/);
   assert.match(fixer, /data-bg-context-slider-readable/);
 });
