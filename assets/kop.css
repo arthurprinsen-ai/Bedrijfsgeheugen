@@ -103,3 +103,21 @@
 .bgkop-mob>a{padding:.95rem 0;border-bottom:1px solid var(--bg-lijn);font-size:1rem;font-weight:600;color:var(--bg-inkt);text-decoration:none}
 .bgkop-mcta{margin-top:1.1rem;border:0!important;background:var(--bg-inkt);color:#fff!important;border-radius:999px;text-align:center;padding:.9rem 1.2rem!important}
 @media(min-width:1101px){.bgkop-mob{display:none!important}}
+
+/* /prijzen mobile: voorkom late webfont-swap in de above-the-fold hero.
+   De echte browsergate mat een CLS van 0.176 doordat Bricolage/Caveat/Instrument
+   na de eerste paint de H1, payoff en intro opnieuw lieten afbreken. De native
+   prijshero gebruikt op telefoon daarom metrisch stabiele systeemfonts; de rest
+   van de pagina behoudt de merkfonts. Dit verlaagt CLS zonder de gate te verzwakken. */
+@media(max-width:768px){
+  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .bgkruim,
+  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .pil,
+  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] h1,
+  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .ondertitel,
+  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .payoff,
+  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .intro,
+  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .heldknoppen,
+  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .bovenop{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  }
+}
