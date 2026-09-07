@@ -29,16 +29,6 @@
           "a": "#compareSlider .compare-after .compare-copy",
           "b": "#compareSlider .compare-knob",
           "maxIntersectionAreaPx2": 0
-        },
-        {
-          "a": "[data-bg-automation-heading]",
-          "b": "[data-bg-automation-card]",
-          "maxIntersectionAreaPx2": 0
-        },
-        {
-          "a": "[data-bg-automation-description]",
-          "b": "[data-bg-automation-card]",
-          "maxIntersectionAreaPx2": 0
         }
       ],
       "geometryGuards": [
