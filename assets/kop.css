@@ -105,19 +105,18 @@
 @media(min-width:1101px){.bgkop-mob{display:none!important}}
 
 /* /prijzen mobile: voorkom late webfont-swap in de above-the-fold hero.
-   De echte browsergate mat een CLS van 0.176 doordat Bricolage/Caveat/Instrument
-   na de eerste paint de H1, payoff en intro opnieuw lieten afbreken. De native
-   prijshero gebruikt op telefoon daarom metrisch stabiele systeemfonts; de rest
-   van de pagina behoudt de merkfonts. Dit verlaagt CLS zonder de gate te verzwakken. */
+   De browsergate mat CLS 0.176 door fallback→webfont reflow. Gebruik een
+   simpele statische selector (geen :has) zodat de regel al op de eerste
+   layout matcht zodra de canonical build data-bg-component heeft gezet. */
 @media(max-width:768px){
-  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .bgkruim,
-  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .pil,
-  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] h1,
-  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .ondertitel,
-  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .payoff,
-  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .intro,
-  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .heldknoppen,
-  body:has(main .held[data-bg-component="hero"] .heldknoppen) main .held[data-bg-component="hero"] .bovenop{
+  main .held[data-bg-component="hero"] .bgkruim,
+  main .held[data-bg-component="hero"] .pil,
+  main .held[data-bg-component="hero"] h1,
+  main .held[data-bg-component="hero"] .ondertitel,
+  main .held[data-bg-component="hero"] .payoff,
+  main .held[data-bg-component="hero"] .intro,
+  main .held[data-bg-component="hero"] .heldknoppen,
+  main .held[data-bg-component="hero"] .bovenop{
     font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important;
   }
 }
