@@ -7,14 +7,15 @@
 /data-ai-cockpit   /frisse-blik   301!
 /data-ai-cockpit.html   /frisse-blik   301!
 # Customer portal variants. Order matters: specific routes first.
-# The old demo alias canonicalizes to demo1; demoAI is the only route to the new AI portal.
+# The old demo alias canonicalizes to demo1. Production customers use the tenant-aware portal.
 /klantportaal  klant=demo  /klantportaal?klant=demo1  301!
 /klantportaal  klant=demo1  /klantportaal-demo.html  200!
-/klantportaal  klant=ijsselmonde  /klantportaal.html  200!
-/klantportaal  klant=demoAI  /portal/  200!
-# All normal customer slugs produced by scans use the legacy full customer portal.
-/klantportaal  klant=:klant  /klantportaal.html  200!
-# Frisse Blik bare handoff stays on the legacy demo experience.
+/klantportaal  klant=ijsselmonde  /portal/  302!
+/klantportaal  klant=demoAI  /portal/  302!
+# Normal customer slugs enter the canonical tenant-aware portal. Browser slug is compatibility context only;
+# tenant authorization is resolved server-side from authenticated membership.
+/klantportaal  klant=:klant  /portal/  302!
+# Frisse Blik bare handoff stays on the separate demo experience.
 /klantportaal  /klantportaal-demo.html  200!
 /werkwijze  /hoe-het-werkt  301!
 /voor-investeerders  /investeerders-ma  301!
