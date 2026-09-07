@@ -41,7 +41,22 @@ try {
             if (!el) return { present: false };
             const r = el.getBoundingClientRect();
             const s = getComputedStyle(el);
-            return { present: true, width: r.width, height: r.height, display: s.display, visibility: s.visibility, opacity: Number(s.opacity) };
+            const x = Math.max(0, Math.min(innerWidth - 1, r.left + Math.min(r.width / 2, Math.max(1, r.width - 1))));
+            const y = Math.max(0, Math.min(innerHeight - 1, r.top + Math.min(r.height / 2, Math.max(1, r.height - 1))));
+            const top = document.elementFromPoint(x, y);
+            const unobscured = !!top && (el === top || el.contains(top) || top.contains(el));
+            return {
+              present: true,
+              width: r.width,
+              height: r.height,
+              top: r.top,
+              bottom: r.bottom,
+              display: s.display,
+              visibility: s.visibility,
+              opacity: Number(s.opacity),
+              unobscured,
+              topElement: top ? `${top.tagName.toLowerCase()}${top.id ? `#${top.id}` : ''}${top.className && typeof top.className === 'string' ? `.${top.className.trim().replace(/\s+/g,'.')}` : ''}` : 'none',
+            };
           };
           return {
             header: inspect('header'),
@@ -53,6 +68,11 @@ try {
         for (const [name, item] of Object.entries({ header: state.header, main: state.main, h1: state.h1 })) {
           if (!item.present || item.width < 1 || item.height < 1 || item.display === 'none' || item.visibility === 'hidden' || item.opacity <= 0) {
             failures.push(`${route} ${viewport.name}: ${name} is not visibly rendered`);
+          }
+        }
+        for (const [name, item] of Object.entries({ header: state.header, h1: state.h1 })) {
+          if (item.present && item.top < innerHeight && item.bottom > 0 && !item.unobscured) {
+            failures.push(`${route} ${viewport.name}: ${name} is visually occluded by ${item.topElement}`);
           }
         }
         if (state.textLength < 120) failures.push(`${route} ${viewport.name}: main content is effectively empty (${state.textLength} chars)`);
