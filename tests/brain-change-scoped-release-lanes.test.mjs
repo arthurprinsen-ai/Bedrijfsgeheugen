@@ -44,16 +44,44 @@ test('current product work keeps its lane without rewriting the branch', () => {
   assert.equal(growth.website, true);
 });
 
-test('Required test keeps stable status identity and is lane-aware', async () => {
+test('Required test keeps stable protected status identity and parallel lane-aware jobs', async () => {
   const workflow = await readFile('.github/workflows/required-test.yml','utf8');
   assert.match(workflow, /^name:\s*Required test/m);
+  assert.match(workflow, /\n  scope:\n[\s\S]*?name:\s*classify release scope/);
+  assert.match(workflow, /\n  static:\n[\s\S]*?needs:\s*scope/);
+  assert.match(workflow, /\n  browser:\n[\s\S]*?needs:\s*scope/);
+  assert.match(workflow, /\n  test:\n\s+name:\s*test\n\s+needs:\s*\[scope, static, browser\]/);
+  assert.match(workflow, /needs\.scope\.outputs\.backend/);
+  assert.match(workflow, /needs\.scope\.outputs\.portal/);
+  assert.match(workflow, /needs\.scope\.outputs\.website/);
+  assert.match(workflow, /needs\.scope\.outputs\.automation/);
   assert.match(workflow, /deriveRequiredTestSuites/);
-  assert.match(workflow, /steps\.scope\.outputs\.backend/);
-  assert.match(workflow, /steps\.scope\.outputs\.portal/);
-  assert.match(workflow, /steps\.scope\.outputs\.website/);
-  assert.match(workflow, /steps\.scope\.outputs\.automation/);
-  assert.match(workflow, /v18-megamenu-heading-contract\.test\.mjs/);
+});
+
+test('browser verification is risk-selected and unrelated lanes do not acquire browser work', async () => {
+  const workflow = await readFile('.github/workflows/required-test.yml','utf8');
+  assert.match(workflow, /browser:\n[\s\S]*?if:\s*github\.event_name == 'pull_request' && needs\.scope\.outputs\.browser_required == 'true'/);
+  assert.match(workflow, /Verify affected routes on desktop and mobile[\s\S]*?if:\s*needs\.scope\.outputs\.targeted_browser == 'true'/);
+  assert.match(workflow, /Verify focused megamenu[\s\S]*?if:\s*needs\.scope\.outputs\.menu_browser == 'true' && needs\.scope\.outputs\.full_browser != 'true'/);
+  assert.match(workflow, /Run full website browser regression[\s\S]*?if:\s*needs\.scope\.outputs\.full_browser == 'true'/);
+  assert.doesNotMatch(workflow, /steps\.scope\.outputs\.menu_only/);
+});
+
+test('full browser regression remains fail-closed for global website surface changes', async () => {
+  const workflow = await readFile('.github/workflows/required-test.yml','utf8');
+  assert.match(workflow, /Run full website browser regression/);
+  assert.match(workflow, /seo-ui-visual-regression-browser\.test\.mjs/);
   assert.match(workflow, /v18-megamenu-browser-check\.mjs/);
+  assert.match(workflow, /ui-visual-regression\/browser-check\.mjs/);
+  assert.match(workflow, /standalone-visibility-check\.mjs/);
+});
+
+test('moving-main evidence is checked after selected suites and preserves non-overlapping candidates', async () => {
+  const workflow = await readFile('.github/workflows/required-test.yml','utf8');
+  assert.match(workflow, /Keep green evidence only across non-overlapping main drift/);
+  assert.match(workflow, /deriveConflictContracts, evaluateBranchDrift/);
+  assert.match(workflow, /evaluateReleaseBase/);
+  assert.match(workflow, /git fetch origin main --no-tags/);
 });
 
 test('V18 promotion separates website and portal gates', async () => {
