@@ -41,6 +41,7 @@ jobs:
             'tools/bouw-v18-production-core.mjs',
             'tools/site-shell/v18-megamenu-browser-check.mjs',
             'tests/v18-megamenu-heading-contract.test.mjs',
+            '.github/workflows/v18-megamenu-production-readback.yml',
             '.github/workflows/required-test.yml'
           ]);
           const menuOnly = changedPaths.length > 0 && changedPaths.every(path => menuOnlyPaths.has(path));
