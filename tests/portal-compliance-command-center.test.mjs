@@ -45,6 +45,15 @@ test('Bedrijfsgeheugen supports per-control applicability instead of forcing one
   assert.equal(roleRisk.applicability,'unknown');
 });
 
+test('Bedrijfsgeheugen markup visibly lists what is already implemented with concrete evidence',()=>{
+  const controls=buildBedrijfsgeheugenControls({controls:{'CBW-IAM':{implemented:true,evidence:[{id:'EV-IAM',label:'Netlify Identity + tenant-isolatie',verified:true,href:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen'}],verifiedAt:'2026-09-08T10:00:00Z'}}});
+  const selfMarkup=buildComplianceCommandCenterMarkup({controls,scope:'bedrijfsgeheugen',now:NOW});
+  const customerMarkup=buildComplianceCommandCenterMarkup({controls:buildCustomerControls({}),scope:'customer',now:NOW});
+  assert.match(selfMarkup,/Wat Bedrijfsgeheugen al aantoonbaar doet/);
+  assert.match(selfMarkup,/Netlify Identity \+ tenant-isolatie/);
+  assert.doesNotMatch(customerMarkup,/Wat Bedrijfsgeheugen al aantoonbaar doet/);
+});
+
 test('legacy portal policy answers are reused without turning them into evidence',()=>{
   const input=deriveLegacyPortalComplianceInput({beleid:{aibeleid:2,toegang:3,incident:2,backup:3,continu:3,leverancier:2,verwerker:2,avg:2}});
   assert.equal(input.humanOversight,true);
