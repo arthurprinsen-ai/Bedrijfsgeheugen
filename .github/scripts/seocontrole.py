@@ -131,12 +131,34 @@ MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
 MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
 GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact'}
 SLECHTE_ANKERS = {'lees meer', 'klik hier', 'meer info', 'hier', 'lees verder', 'meer'}
+ORIGIN = 'https://www.bedrijfsgeheugen.nl'
 
 
 def norm(t):
     t = html.unescape(re.sub(r'<[^>]+>', ' ', t or '')).lower()
     t = ''.join(c for c in unicodedata.normalize('NFD', t) if unicodedata.category(c) != 'Mn')
     return re.sub(r'\s+', ' ', re.sub(r'[^a-z0-9 ]', ' ', t)).strip()
+
+
+def intern_pad(href):
+    """Normaliseert relative én absolute same-origin hrefs naar één intern pad."""
+    waarde = html.unescape((href or '').strip())
+    if waarde.startswith(ORIGIN):
+        waarde = waarde[len(ORIGIN):] or '/'
+    elif not waarde.startswith('/') or waarde.startswith('//'):
+        return None
+    return waarde.split('#')[0].split('?')[0].rstrip('/') or '/'
+
+
+def interne_links_en_ankers(hoofd):
+    links, ankers = set(), []
+    for href, anker in re.findall(r'<a\b[^>]*\bhref="([^"]*)"[^>]*>(.*?)</a>', hoofd, re.S | re.I):
+        pad = intern_pad(href)
+        if pad is None:
+            continue
+        links.add(pad)
+        ankers.append(anker)
+    return links, ankers
 
 
 MERK = 'bedrijfsgeheugen'
@@ -193,6 +215,7 @@ def lees_paginas():
             hoofd = s[s.find('<main'):s.find('</main>')]
         else:
             hoofd = s
+        links, ankers = interne_links_en_ankers(hoofd)
         paginas[url.rstrip('/') or '/'] = {
             'bestand': f, 'url': url, 'ruw': s, 'hoofd': hoofd,
             'titel': html.unescape((re.search(r'<title>(.*?)</title>', s, re.S) or [None, ''])[1]),
@@ -202,9 +225,8 @@ def lees_paginas():
             'h2': [norm(x) for x in re.findall(r'<h2[^>]*>(.*?)</h2>', s, re.S)],
             'canon': (re.search(r'<link rel="canonical" href="(.*?)"', s) or [None, ''])[1],
             'og': bool(re.search(r'property="og:title"', s)),
-            'links': set(x.split('#')[0].split('?')[0].rstrip('/') or '/'
-                         for x in re.findall(r'href="(/[^"]*)"', hoofd)),
-            'ankers': re.findall(r'<a [^>]*href="/[^"]*"[^>]*>(.*?)</a>', hoofd, re.S),
+            'links': links,
+            'ankers': ankers,
         }
     return paginas
 
