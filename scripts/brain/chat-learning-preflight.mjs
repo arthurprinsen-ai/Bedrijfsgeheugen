@@ -75,7 +75,10 @@ export function compileChatLearningPreflight({
     throw new Error('chat-learning contract has no canonicalSources');
   }
 
-  const queue = stableUnique([...contract.canonicalSources, ...MANDATORY_SUPPLEMENTAL_SOURCES]);
+  const requiredSources = stableUnique([...contract.canonicalSources, ...MANDATORY_SUPPLEMENTAL_SOURCES]);
+  if (requiredSources.length > maxSources) throw new Error(`maxSources exceeded: ${requiredSources.length} > ${maxSources}`);
+  const requiredSourceSet = new Set(requiredSources);
+  const queue = [...requiredSources];
   const queued = new Set(queue);
   const visited = new Set();
   const sources = [];
@@ -86,7 +89,10 @@ export function compileChatLearningPreflight({
     const requested = queue.shift();
     const { normalized, absolute } = normalizeSourcePath(rootDir, requested);
     if (visited.has(normalized)) continue;
-    if (visited.size + 1 > maxSources) throw new Error(`maxSources exceeded: ${visited.size + 1} > ${maxSources}`);
+    if (visited.size + 1 > maxSources) {
+      if (requiredSourceSet.has(normalized)) throw new Error(`maxSources exceeded: ${visited.size + 1} > ${maxSources}`);
+      continue;
+    }
     if (!fs.existsSync(absolute)) throw new Error(`missing learning source: ${normalized}`);
 
     const raw = fs.readFileSync(absolute, 'utf8');
