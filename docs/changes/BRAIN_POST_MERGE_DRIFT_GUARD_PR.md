@@ -1,0 +1,1 @@
+Temporary delivery note for PR validation of the post-merge drift guard. Remove or consolidate after merge if no longer needed.
