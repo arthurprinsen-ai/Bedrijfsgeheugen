@@ -15,7 +15,9 @@
     "brain/contracts/",
     "brain/production/",
     "tools/brain-delivery-system.mjs",
+    "tools/ci/workflow-topology.mjs",
     "tools/website-release-risk.mjs",
+    "tests/ci-workflow-topology.test.mjs",
     "tests/development-doc-contract.test.mjs",
     "tests/website-release-risk.test.mjs",
     ".github/workflows/"
