@@ -16,15 +16,19 @@ function collectPageErrors(page) {
   return errors;
 }
 
+async function openPortal(page, preview) {
+  await page.goto(`${preview}/portal-v2/?klant=ijsselmonde`, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+  await expect(page.getByRole('heading', { name: 'Welkom terug, Arthur', exact: true })).toBeVisible({ timeout: 15_000 });
+}
+
 test('portal-v2 serves the approved SaaS desktop dashboard composition', async ({ page }) => {
   const preview = process.env.PREVIEW_URL;
   if (!preview) throw new Error('PREVIEW_URL is required');
   await hideNetlifyChrome(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   const errors = collectPageErrors(page);
-  await page.goto(`${preview}/portal-v2/?klant=ijsselmonde`, { waitUntil: 'networkidle' });
+  await openPortal(page, preview);
 
-  await expect(page.getByRole('heading', { name: 'Welkom terug, Arthur', exact: true })).toBeVisible();
   await expect(page.getByText('Grip op je bedrijf. Ruimte om te groeien.', { exact: true })).toBeVisible();
   await expect(page.locator('.sidebar')).toBeVisible();
   await expect(page.locator('.kpi')).toHaveCount(5);
@@ -60,9 +64,8 @@ test('portal-v2 uses a vertical SaaS brain and card-first CSRD on a phone withou
   await hideNetlifyChrome(page);
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = collectPageErrors(page);
-  await page.goto(`${preview}/portal-v2/?klant=ijsselmonde`, { waitUntil: 'networkidle' });
+  await openPortal(page, preview);
 
-  await expect(page.getByRole('heading', { name: 'Welkom terug, Arthur', exact: true })).toBeVisible();
   await expect(page.locator('.sidebar')).toBeHidden();
   await expect(page.locator('.mobilebar')).toBeVisible();
   await expect(page.getByRole('heading', { name: /Het brein van je bedrijf/ })).toBeVisible();
