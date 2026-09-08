@@ -14,7 +14,6 @@ const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider] .compare-after .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:auto!important;margin-right:0!important;padding-left:24px!important;box-sizing:border-box}
 [data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--bg-compare-split,50%)!important;z-index:20!important;pointer-events:none!important}
 [data-bg-compare-slider] .compare-knob{pointer-events:none!important}
-[data-bg-compare-slider] .bg-compare-range{position:absolute!important;left:0!important;right:0!important;top:50%!important;transform:translateY(-50%)!important;width:100%!important;height:112px!important;margin:0!important;padding:0!important;box-sizing:border-box!important;opacity:0!important;z-index:40!important;cursor:ew-resize!important;touch-action:none!important}
 
 [data-bg-change-flow]{--bg-change-progress:0;--bg-change-rail-width:64px;position:relative!important;max-width:100%!important}
 [data-bg-change-flow] [data-bg-change-step]{--bg-step-progress:0;display:grid!important;grid-template-columns:var(--bg-change-rail-width) minmax(0,1fr)!important;column-gap:18px!important;align-items:stretch!important;position:relative!important;max-width:100%!important;opacity:.48!important;filter:saturate(.45);transition:opacity .22s ease,filter .22s ease}
@@ -47,7 +46,6 @@ const STYLE = `<style ${MARKER}>
   [data-bg-compare-slider][data-bg-readable-side="after"] .compare-before .compare-copy{opacity:0!important;visibility:hidden!important}
   [data-bg-compare-slider][data-bg-readable-side="before"] .compare-before .compare-copy,[data-bg-compare-slider][data-bg-readable-side="after"] .compare-after .compare-copy{opacity:1!important;visibility:visible!important}
   [data-bg-compare-slider] .compare-handle{display:block!important}
-  [data-bg-compare-slider] .bg-compare-range{left:-28px!important;right:-28px!important;width:calc(100% + 56px)!important;height:132px!important}
   [data-bg-change-flow]{--bg-change-rail-width:54px}
   [data-bg-change-flow] [data-bg-change-step]{column-gap:12px!important}
   .bg-change-flow-check{width:38px;height:38px;font-size:21px}
@@ -76,11 +74,9 @@ const STYLE = `<style ${MARKER}>
 
 const RUNTIME_TAG = `<script ${MARKER} src="${RUNTIME_SRC}"></script>`;
 
-// iOS/Safari: native <input type="range"> owns the actual horizontal gesture.
-// We clone once after the canonical runtime initialized, which removes its old
-// pointer/touch listeners. The canonical owner/version markers stay intact so
-// its MutationObserver will NOT attach those listeners again.
-const FALLBACK_TAG = `<script ${FALLBACK_MARKER}>(function(){'use strict';var q='${SLIDER_SELECTOR}',T=8;function n(v){v=Math.max(0,Math.min(100,Number(v)||0));return v<=T?0:v>=100-T?100:v}function r(el,v){v=n(v);el.setAttribute('data-bg-readable-side',v>=50?'before':'after');var p=v.toFixed(2)+'%',b=el.querySelector('.compare-before'),a=el.querySelector('.compare-after'),h=el.querySelector('.compare-handle'),k=el.querySelector('.compare-knob'),g=el.querySelector('.bg-compare-range');el.style.setProperty('--split',p);el.style.setProperty('--bg-compare-split',p);if(b)b.style.setProperty('clip-path','inset(0 '+(100-v).toFixed(2)+'% 0 0)','important');if(a)a.style.setProperty('clip-path','inset(0 0 0 '+v.toFixed(2)+'%)','important');if(h)h.style.setProperty('left',p,'important');if(k){k.setAttribute('aria-valuemin','0');k.setAttribute('aria-valuemax','100');k.setAttribute('aria-valuenow',String(Math.round(v)));k.setAttribute('aria-disabled','false');k.tabIndex=-1}if(g&&g.value!==String(Math.round(v)))g.value=String(Math.round(v));return v}function ensureNativeRange(el){var old=el.querySelector('.bg-compare-range');if(old)return old;var g=document.createElement('input');g.type='range';g.min='0';g.max='100';g.step='1';g.className='bg-compare-range';g.setAttribute('aria-label','Vergelijking: sleep volledig naar links of rechts');var raw=parseFloat(getComputedStyle(el).getPropertyValue('--bg-compare-split'));if(!Number.isFinite(raw))raw=parseFloat(getComputedStyle(el).getPropertyValue('--split'));g.value=String(Math.round(n(Number.isFinite(raw)?raw:50)));g.addEventListener('input',function(){r(el,Number(g.value))});g.addEventListener('change',function(){var mobile=window.matchMedia&&window.matchMedia('(max-width:720px)').matches;r(el,mobile?(Number(g.value)<50?0:100):Number(g.value))});el.appendChild(g);return g}function own(el){if(el.getAttribute('data-bg-native-range-ready')==='true')return el;var clone=el.cloneNode(true);clone.querySelectorAll('.bg-compare-range').forEach(function(x){x.remove()});clone.setAttribute('data-bg-compare-slider','');clone.setAttribute('data-bg-compare-ready','true');clone.setAttribute('data-bg-compare-owner','canonical');clone.setAttribute('data-bg-native-range-ready','true');clone.removeAttribute('data-bg-fallback-ready');el.replaceWith(clone);return clone}function init(el){if(!el||!el.querySelector('.compare-before')||!el.querySelector('.compare-after'))return;if(el.getAttribute('data-bg-native-range-ready')!=='true')el=own(el);var g=ensureNativeRange(el);r(el,Number(g.value))}function all(){document.querySelectorAll(q).forEach(init);document.querySelectorAll('.compare-before').forEach(function(b){var p=b.parentElement;if(p&&p.querySelector('.compare-after'))init(p)})}all();new MutationObserver(all).observe(document.documentElement,{childList:true,subtree:true})})();</script>`;
+// Parse-safe Pointer Events fallback. It only attaches when the external runtime
+// did not initialize a slider. No native range/thumb is introduced.
+const FALLBACK_TAG = `<script ${FALLBACK_MARKER}>(function(){'use strict';var q='${SLIDER_SELECTOR}',T=8;function n(v){v=Math.max(0,Math.min(100,Number(v)||0));return v<=T?0:v>=100-T?100:v}function r(el,v){v=n(v);el.setAttribute('data-bg-readable-side',v>=50?'before':'after');var p=v.toFixed(2)+'%',b=el.querySelector('.compare-before'),a=el.querySelector('.compare-after'),h=el.querySelector('.compare-handle'),k=el.querySelector('.compare-knob');el.style.setProperty('--split',p);el.style.setProperty('--bg-compare-split',p);if(b)b.style.setProperty('clip-path','inset(0 '+(100-v).toFixed(2)+'% 0 0)','important');if(a)a.style.setProperty('clip-path','inset(0 0 0 '+v.toFixed(2)+'%)','important');if(h)h.style.setProperty('left',p,'important');if(k){k.setAttribute('role','slider');k.setAttribute('aria-valuemin','0');k.setAttribute('aria-valuemax','100');k.setAttribute('aria-valuenow',String(Math.round(v)));k.setAttribute('aria-disabled','false');k.tabIndex=0}return v}function p(el,x){var g=el.getBoundingClientRect();if(!g.width)return r(el,50);var d=Math.max(0,Math.min(g.width,x-g.left));return r(el,(d/g.width)*100)}function i(el){if(!el||!el.querySelector('.compare-before')||!el.querySelector('.compare-after'))return;if(el.getAttribute('data-bg-compare-version'))return;if(el.getAttribute('data-bg-pointer-fallback-ready')==='true')return;el.setAttribute('data-bg-compare-slider','');el.setAttribute('data-bg-compare-ready','true');el.setAttribute('data-bg-pointer-fallback-ready','true');var id=null,k=el.querySelector('.compare-knob'),raw=parseFloat(getComputedStyle(el).getPropertyValue('--bg-compare-split'));if(!Number.isFinite(raw))raw=parseFloat(getComputedStyle(el).getPropertyValue('--split'));r(el,Number.isFinite(raw)?raw:50);el.addEventListener('pointerdown',function(e){if(e.isPrimary===false)return;id=e.pointerId;if(el.setPointerCapture)try{el.setPointerCapture(e.pointerId)}catch(_e){}p(el,e.clientX);e.stopImmediatePropagation()},true);el.addEventListener('pointermove',function(e){if(id!==e.pointerId)return;p(el,e.clientX);e.stopImmediatePropagation()},true);el.addEventListener('pointerup',function(e){if(id!==e.pointerId)return;p(el,e.clientX);id=null;if(el.releasePointerCapture)try{el.releasePointerCapture(e.pointerId)}catch(_e){}e.stopImmediatePropagation()},true);el.addEventListener('pointercancel',function(e){if(id===e.pointerId)id=null},true);if(k)k.addEventListener('keydown',function(e){var v=parseFloat(el.style.getPropertyValue('--bg-compare-split'));if(!Number.isFinite(v))v=50;if(e.key==='ArrowLeft')v-=5;else if(e.key==='ArrowRight')v+=5;else if(e.key==='Home')v=0;else if(e.key==='End')v=100;else return;e.preventDefault();r(el,v)},true)}function all(){document.querySelectorAll(q).forEach(i);document.querySelectorAll('.compare-before').forEach(function(b){var el=b.parentElement;if(el&&el.querySelector('.compare-after'))i(el)})}all();new MutationObserver(all).observe(document.documentElement,{childList:true,subtree:true})})();</script>`;
 
 function normalizeLegacyBounds(html){
   return html
@@ -106,10 +102,10 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('[aria-valuenow="94"]')||
      !next.includes(RUNTIME_SRC)||
      !next.includes(FALLBACK_MARKER)||
-     !next.includes('ensureNativeRange')||
-     !next.includes('data-bg-native-range-ready')||
+     !next.includes('data-bg-pointer-fallback-ready')||
      !next.includes('data-bg-readable-side')||
-     !next.includes('bg-compare-range')||
+     !next.includes('setPointerCapture')||
+     !next.includes('getBoundingClientRect')||
      !next.includes('data-bg-change-flow')||
      !next.includes('data-bg-change-progress')||
      !next.includes('data-bg-change-status')||
@@ -117,6 +113,8 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('bg-change-step-rail')||
      !next.includes('bg-change-step-content')||
      !next.includes('bgx-lek-uit-flow')||
+     next.includes('bg-compare-range')||
+     next.includes('ensureNativeRange')||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-aria-fallback>/g)||[]).length!==1){
