@@ -108,6 +108,7 @@ jobs:
           node tools/bouw-losse-paginas.mjs
           node tools/bouw-inhoudspaginas.mjs
           node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
           node tools/normaliseer-site-ui.mjs
       - name: Install page-check browser runtime
         run: |
