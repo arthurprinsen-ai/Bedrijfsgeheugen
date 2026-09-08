@@ -9,10 +9,21 @@ test('Brain and Powerhouse pages render natively without inventing live evidence
   assert.match(view.evidenceLabel,/runtime-evidence/i);
 });
 
-test('mapped existing portal pages retain the legacy bridge',()=>{
+test('mapped portal pages are native and expose page-specific V2 blocks',()=>{
   const view=pagePresentation('roadmap');
-  assert.equal(view.kind,'legacy');
-  assert.equal(view.legacyTab,'roadmap');
+  assert.equal(view.kind,'native-v2');
+  assert.ok(Array.isArray(view.blocks));
+  assert.ok(view.blocks.length>=3);
+  assert.ok(view.blocks.some(block=>block.type==='metrics'));
+  assert.ok(view.blocks.some(block=>block.type==='worklist'));
+  assert.ok(view.blocks.some(block=>block.type==='actions'));
+});
+
+test('different portal pages expose different native content contracts',()=>{
+  const roadmap=pagePresentation('roadmap');
+  const people=pagePresentation('mensen');
+  assert.notDeepEqual(roadmap.blocks,people.blocks);
+  assert.notEqual(roadmap.primaryAction,people.primaryAction);
 });
 
 test('portal search finds content across groups',()=>{
