@@ -37,17 +37,27 @@ test('website lane keeps public visibility mandatory while broad checks are high
   assert.match(website, /verify-targeted-website-routes\.mjs/);
 });
 
-test('page and SEO contracts run against materialized canonical output', () => {
+test('page and SEO contracts run against built and materialized canonical output', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   const pageSeoStart = website.indexOf('\n  page-seo:');
   const previewStart = website.indexOf('\n  preview-ready:', pageSeoStart);
   assert.notEqual(pageSeoStart, -1);
   assert.notEqual(previewStart, -1);
   const pageSeo = website.slice(pageSeoStart, previewStart);
-  assert.match(pageSeo, /name: Materialize canonical site output/);
-  assert.match(pageSeo, /node tools\/normaliseer-site-ui\.mjs/);
+  assert.match(pageSeo, /name: Build canonical SEO input/);
+  for (const command of [
+    'node tools/bouw-v18-production-core.mjs',
+    'node tools/apply-v18-seo.mjs',
+    'node tools/bouw-losse-paginas.mjs',
+    'node tools/bouw-inhoudspaginas.mjs',
+    'node tools/normaliseer-site-ui.mjs',
+  ]) assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.ok(
-    pageSeo.indexOf('name: Materialize canonical site output') < pageSeo.indexOf('name: Verify page and SEO contracts'),
+    pageSeo.indexOf('node tools/bouw-v18-production-core.mjs') < pageSeo.indexOf('node tools/normaliseer-site-ui.mjs'),
+    'site builders must run before canonical output materialization',
+  );
+  assert.ok(
+    pageSeo.indexOf('node tools/normaliseer-site-ui.mjs') < pageSeo.indexOf('name: Verify page and SEO contracts'),
     'canonical output must be materialized before page/SEO verification',
   );
 });
