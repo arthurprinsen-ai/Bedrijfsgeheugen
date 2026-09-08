@@ -5,8 +5,10 @@ import { fileURLToPath } from 'node:url';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
+  'docs/brain/learning-plane-authority-contract-v1.md',
   'brain/policies/chat-to-brain-completeness-v1.json',
   'brain/learning/chat-continuity-2026-08-31.json',
+  'brain/learning/chat-materialization-2026-08-31-v2.json',
   'brain/learning/chat-materialization-2026-08-31-v3.json',
   'brain/learning/chat-runtime-truth-preflight-2026-08-31.json',
   'brain/learning/homepage-video-release-preflight-2026-09-08.json'
@@ -58,7 +60,7 @@ function serializedPacketBytes(packet) {
 export function compileChatLearningPreflight({
   rootDir = process.cwd(),
   contractPath = DEFAULT_CONTRACT,
-  maxSources = 32,
+  maxSources = 40,
   maxBytes = 256_000
 } = {}) {
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
@@ -75,10 +77,7 @@ export function compileChatLearningPreflight({
     throw new Error('chat-learning contract has no canonicalSources');
   }
 
-  const requiredSources = stableUnique([...contract.canonicalSources, ...MANDATORY_SUPPLEMENTAL_SOURCES]);
-  if (requiredSources.length > maxSources) throw new Error(`maxSources exceeded: ${requiredSources.length} > ${maxSources}`);
-  const requiredSourceSet = new Set(requiredSources);
-  const queue = [...requiredSources];
+  const queue = stableUnique([...contract.canonicalSources, ...MANDATORY_SUPPLEMENTAL_SOURCES]);
   const queued = new Set(queue);
   const visited = new Set();
   const sources = [];
@@ -89,10 +88,7 @@ export function compileChatLearningPreflight({
     const requested = queue.shift();
     const { normalized, absolute } = normalizeSourcePath(rootDir, requested);
     if (visited.has(normalized)) continue;
-    if (visited.size + 1 > maxSources) {
-      if (requiredSourceSet.has(normalized)) throw new Error(`maxSources exceeded: ${visited.size + 1} > ${maxSources}`);
-      continue;
-    }
+    if (visited.size + 1 > maxSources) throw new Error(`maxSources exceeded: ${visited.size + 1} > ${maxSources}`);
     if (!fs.existsSync(absolute)) throw new Error(`missing learning source: ${normalized}`);
 
     const raw = fs.readFileSync(absolute, 'utf8');
