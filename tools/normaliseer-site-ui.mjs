@@ -32,6 +32,20 @@ function verwijderDefecteLegacyDemonstrator(input) {
   });
 }
 
+function maakWijzigingenStapnavigatieNullSafe(input, bestand) {
+  if (bestand !== 'wijzigingen-uitgelegd.html') return String(input);
+  let html = String(input);
+  html = html.replace(
+    "    vorige.disabled = nu === 0;\n    volgende.disabled = nu === panelen.length - 1;\n    volgende.textContent = nu === panelen.length - 1 ? 'Klaar' : 'Volgende';\n    telling.textContent = (nu + 1) + ' van ' + panelen.length;",
+    "    if (vorige) vorige.disabled = nu === 0;\n    if (volgende) {\n      volgende.disabled = nu === panelen.length - 1;\n      volgende.textContent = nu === panelen.length - 1 ? 'Klaar' : 'Volgende';\n    }\n    if (telling) telling.textContent = (nu + 1) + ' van ' + panelen.length;"
+  );
+  html = html.replace(
+    "  vorige.addEventListener('click', function(){ toon(nu - 1); });\n  volgende.addEventListener('click', function(){ toon(nu + 1); });",
+    "  if (vorige) vorige.addEventListener('click', function(){ toon(nu - 1); });\n  if (volgende) volgende.addEventListener('click', function(){ toon(nu + 1); });"
+  );
+  return html;
+}
+
 function openDivMetKlasse(html, klasse, vanaf = 0) {
   const re = /<div\b[^>]*class="[^"]*"[^>]*>/gi;
   re.lastIndex = vanaf;
@@ -97,6 +111,7 @@ function pricingTools(input) {
 export function normaliseerHtml(input, bestand) {
   const isPrijzen = bestand === 'prijzen.html';
   let html = verwijderDefecteLegacyDemonstrator(input);
+  html = maakWijzigingenStapnavigatieNullSafe(html, bestand);
 
   html = verwijderDivMetKlasse(html, 'bgx-gegevens');
   if (isPrijzen) {
