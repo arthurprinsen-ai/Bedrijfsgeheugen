@@ -34,8 +34,13 @@ function parseArgs(argv) {
 async function observeRoute(browser, baseUrl, route, viewport) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
+  const pageErrorDetails = [];
   const failedAssets = [];
-  page.on('pageerror', error => observedPageErrors.push(String(error?.message || error)));
+  page.on('pageerror', error => {
+    const message = String(error?.message || error);
+    observedPageErrors.push(message);
+    pageErrorDetails.push({ message, stack:String(error?.stack || '') });
+  });
   page.on('requestfailed', request => {
     try {
       const url = new URL(request.url());
@@ -62,6 +67,7 @@ async function observeRoute(browser, baseUrl, route, viewport) {
       visibleText,
       html,
       observedPageErrors:[...new Set(observedPageErrors)],
+      pageErrorDetails,
       failedAssets:[...new Set(failedAssets)],
       httpOk:Boolean(response && response.ok()),
     };
@@ -110,6 +116,7 @@ export async function runCli(argv = process.argv.slice(2)) {
             status:baselineObservation.status,
             finalUrl:baselineObservation.finalUrl,
             pageErrors:baselineObservation.observedPageErrors,
+            pageErrorDetails:baselineObservation.pageErrorDetails,
             failedAssets:baselineObservation.failedAssets,
           });
         }
