@@ -18,4 +18,10 @@ jobs:
         with:
           node-version: '22'
       - name: Verify automation delivery contracts
-        run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
+        run: >-
+          node --test
+          tests/delivery-*.test.mjs
+          tests/brain-delivery-system.test.mjs
+          tests/make-agent-learning-promotion-contract.test.mjs
+          tests/chat-learning-completeness-addendum.test.mjs
+          tests/brain-learning-contract-delivery-classification.test.mjs
