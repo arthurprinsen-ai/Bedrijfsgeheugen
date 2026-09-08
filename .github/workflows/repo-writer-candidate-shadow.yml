@@ -1,9 +1,6 @@
 name: Repository Writer Candidate Shadow
 
 on:
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       pr_number:
@@ -35,12 +32,11 @@ permissions:
 
 jobs:
   verify:
-    if: startsWith(github.head_ref, 'writer/') || (github.event_name == 'workflow_dispatch' && startsWith(inputs.candidate_branch, 'writer/'))
+    if: startsWith(inputs.candidate_branch, 'writer/')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Validate explicitly dispatched PR identity
-        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ inputs.pr_number }}
@@ -55,36 +51,34 @@ jobs:
           [ "$actual_base" = "$EXPECTED_BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$EXPECTED_BASE_SHA:$actual_base"; exit 1; }
           [ "$actual_head" = "$EXPECTED_HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$EXPECTED_HEAD_SHA:$actual_head"; exit 1; }
           [ "$actual_ref" = "$EXPECTED_HEAD_REF" ] || { echo "::error::PR_HEAD_REF_DRIFT:$EXPECTED_HEAD_REF:$actual_ref"; exit 1; }
-
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
+          ref: ${{ inputs.head_sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Verify bounded writer candidate paths and emit immutable evidence
         env:
-          REPO_WRITER_HEAD_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.candidate_branch || github.head_ref }}
-          GITHUB_PR_BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.base_sha || github.event.pull_request.base.sha }}
-          GITHUB_PR_HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
+          REPO_WRITER_HEAD_REF: ${{ inputs.candidate_branch }}
+          GITHUB_PR_BASE_SHA: ${{ inputs.base_sha }}
+          GITHUB_PR_HEAD_SHA: ${{ inputs.head_sha }}
           REPO_WRITER_EVIDENCE_PATH: artifacts/repo-writer-shadow-evidence.json
         run: node scripts/ci/repo-writer-shadow-verify.mjs
       - name: Upload immutable writer shadow evidence
         uses: actions/upload-artifact@v4
         with:
-          name: repo-writer-shadow-evidence-${{ github.event_name == 'workflow_dispatch' && inputs.pr_number || github.event.pull_request.number }}
+          name: repo-writer-shadow-evidence-${{ inputs.pr_number }}
           path: artifacts/repo-writer-shadow-evidence.json
           if-no-files-found: error
-
       - name: Dispatch central immutable writer gates
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event_name == 'workflow_dispatch' && inputs.pr_number || github.event.pull_request.number }}
-          BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.base_sha || github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
-          CANDIDATE_BRANCH: ${{ github.event_name == 'workflow_dispatch' && inputs.candidate_branch || github.head_ref }}
-          VERIFICATION_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_only || false }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+          VERIFICATION_ONLY: ${{ inputs.verification_only }}
         run: |
           set -euo pipefail
           gh workflow run repo-writer-gate-dispatch.yml \
