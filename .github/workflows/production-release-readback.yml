@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: production-release-readback
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -47,14 +47,16 @@ jobs:
           set -euo pipefail
           for attempt in $(seq 1 40); do
             nonce="${EXPECTED_COMMIT}-${attempt}-$(date +%s)"
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/?bg_release_readback=${nonce}" -o live-home.html
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?bg_release_readback=${nonce}" -o live-prijzen.html
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_release_readback=${nonce}" -o live-over-ons.html
-            if EXPECTED_COMMIT="${EXPECTED_COMMIT}" node tools/site-shell/check-live-production.mjs; then
-              echo "deployed_sha=${EXPECTED_COMMIT}" >> "$GITHUB_OUTPUT"
-              echo "status=ready" >> "$GITHUB_OUTPUT"
-              exit 0
+            if curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/?bg_release_readback=${nonce}" -o live-home.html \
+              && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?bg_release_readback=${nonce}" -o live-prijzen.html \
+              && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_release_readback=${nonce}" -o live-over-ons.html; then
+              if EXPECTED_COMMIT="${EXPECTED_COMMIT}" node tools/site-shell/check-live-production.mjs; then
+                echo "deployed_sha=${EXPECTED_COMMIT}" >> "$GITHUB_OUTPUT"
+                echo "status=ready" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
             fi
+            echo "Production is not ready for ${EXPECTED_COMMIT}; retry ${attempt}/40"
             sleep 15
           done
           echo "Production never exposed release marker ${EXPECTED_COMMIT}" >&2
