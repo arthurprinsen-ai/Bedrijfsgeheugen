@@ -25,13 +25,21 @@ async function readState(page) {
     const cy = Math.max(0, Math.min(window.innerHeight - 1, sr.top + Math.min(sr.height / 2, 120)));
     const hit = document.elementFromPoint(cx, cy);
     const topSideAtCenter = hit?.closest('.compare-before') ? 'before' : hit?.closest('.compare-after') ? 'after' : null;
+    const guardScripts = [...document.querySelectorAll('script[data-bg-context-slider-readable]')];
     return {
       split,
       legacySplit: Number.isFinite(legacyRaw) ? legacyRaw : null,
+      controlledInline: slider.style.getPropertyValue('--bg-compare-split') || null,
+      legacyInline: slider.style.getPropertyValue('--split') || null,
+      guard: {
+        scriptCount: guardScripts.length,
+        hasSyncLoop: guardScripts.some(script => script.textContent.includes('syncLoop')),
+        ready: slider.getAttribute('data-bg-compare-ready')
+      },
       viewportWidth: window.innerWidth,
       slider: { left: sr.left, right: sr.right, width: sr.width, height: sr.height },
-      before: { width: br.width, clipPath: getComputedStyle(beforeSide).clipPath },
-      after: { width: ar.width, clipPath: getComputedStyle(afterSide).clipPath },
+      before: { width: br.width, clipPath: getComputedStyle(beforeSide).clipPath, inlineClip: beforeSide.style.getPropertyValue('clip-path') || null },
+      after: { width: ar.width, clipPath: getComputedStyle(afterSide).clipPath, inlineClip: afterSide.style.getPropertyValue('clip-path') || null },
       aria: {
         min: Number(knob.getAttribute('aria-valuemin')),
         max: Number(knob.getAttribute('aria-valuemax')),
@@ -89,6 +97,8 @@ function assertRightEndpoint(g, label) {
 
 async function testViewport(browser, width, height, mobile = false) {
   const page = await browser.newPage({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
   const slider = page.locator('#compareSlider');
   await slider.waitFor({ state: 'visible' });
@@ -100,11 +110,13 @@ async function testViewport(browser, width, height, mobile = false) {
   const nearLeft = box.x + box.width * 0.06;
   await dragKnobTo(page, nearLeft);
   const left = await readState(page);
+  if (left) left.pageErrors = pageErrors;
   assertLeftEndpoint(left, `${width}px praktisch uiterste links`);
 
   const nearRight = box.x + box.width * 0.94;
   await dragKnobTo(page, nearRight);
   const right = await readState(page);
+  if (right) right.pageErrors = pageErrors;
   assertRightEndpoint(right, `${width}px praktisch uiterste rechts`);
 
   await page.close();
