@@ -49,4 +49,8 @@ if (touches('.github/workflows/canonical-brand-shell-test.yml', '.github/workflo
   run('canonical-release-evidence', 'node', ['tools/bouw-release-evidence.mjs'], { COMMIT_REF: head, CONTEXT: 'github-pull-request' });
 }
 
-process.stdout.write(`${JSON.stringify({ ok: true, version: 'consolidated-pr-contracts-v2', changedCount: changed.length })}\n`);
+if (touches('.github/workflows/v18-production-promotion.yml', 'v18-full/', 'tools/bouw-v18-', 'tests/v18-production-promotion.test.mjs', 'tests/v18-seo-layer.test.mjs', 'site/accepted-baseline.json')) {
+  run('v18-production-contracts', 'node', ['--test', 'tests/v18-production-promotion.test.mjs', 'tests/v18-seo-layer.test.mjs', 'tests/site-baseline-guardian.test.mjs']);
+}
+
+process.stdout.write(`${JSON.stringify({ ok: true, version: 'consolidated-pr-contracts-v3', changedCount: changed.length })}\n`);
