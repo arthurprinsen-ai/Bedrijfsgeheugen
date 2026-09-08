@@ -4,6 +4,9 @@ import { mountLegacyParity } from './legacy-parity.js';
 import { DESKTOP_NAV_ITEMS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
 import { groupedHubPages, hubDefinition } from './hubs.js';
+import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
+import { mountGlobalActions } from './global-actions-ui.js';
+import { applyCustomerBranding } from './customer-branding.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -125,7 +128,9 @@ function ensureNavigationStyles(){
  const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css';document.head.appendChild(style);
 }
 
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});
+const portalStateClient=createPortalStateClient();
+portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
  openPage:openPortalPage,
  openHub,
@@ -138,3 +143,8 @@ el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overz
 el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){closeHub();navigatePortal('overzicht',{replace:true})}});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&el('allPages')?.classList.contains('open')){closeHub();navigatePortal('overzicht',{replace:true})}});
 addEventListener('resize',render);render();
+ensureIdentityWidget().then(identity=>{
+ identity?.on?.('login',()=>portalStateClient.load());
+ identity?.on?.('logout',()=>portalStateClient.load());
+ portalStateClient.load();
+});
