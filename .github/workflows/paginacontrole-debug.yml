@@ -10,15 +10,31 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Dezelfde canonical production state als Required opbouwen
+        run: |
+          npm install
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+          BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+      - name: Dezelfde retired legacy SEO-reference als Required verwijderen
+        run: rm -f .github/canoniek/kop.html
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Playwright installeren
         run: |
-          pip install --quiet playwright
+          pip install --quiet playwright==1.55.0
           playwright install --with-deps chromium
       - name: Pagina's controleren
         run: python .github/scripts/paginacontrole.py
