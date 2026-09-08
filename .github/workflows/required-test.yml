@@ -39,6 +39,11 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/moving-main-successor-guard.mjs
+      - name: Run preserved legacy release contracts on this runner
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node tools/ci/single-flight-preserved-contracts.mjs
       - name: Execute single-flight release plan
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
