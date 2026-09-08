@@ -38,3 +38,24 @@ test('command center links relevant existing trust and audit context with absolu
   const html = await read('portal-next/compliance.html');
   for (const href of ['https://www.bedrijfsgeheugen.nl/ai-act','https://www.bedrijfsgeheugen.nl/ai-governance','https://www.bedrijfsgeheugen.nl/data-soevereiniteit','https://www.bedrijfsgeheugen.nl/privacy','https://www.bedrijfsgeheugen.nl/due-diligence']) assert.match(html, new RegExp(`href=["']${href}["']`));
 });
+
+test('generated reference composition is represented in the production command center shell', async () => {
+  const html = await read('portal-next/compliance.html');
+  const js = await read('portal-next/compliance-command-center.js');
+  const css = await read('portal-next/compliance-command-center.css');
+  for (const token of ['cc-app-shell','cc-sidebar','cc-topbar','cc-global-search','cc-user-profile']) assert.match(html, new RegExp(token));
+  for (const token of ['Executive Pulse','Compliance Constellation','AI Copilot','Control Matrix','Remediation Flightplan','Audit Room','Waarom nu?','Print / bewaar als PDF']) assert.match(js, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  for (const token of ['cc-summary-strip','cc-copilot','cc-orbit-stage','cc-matrix-toolbar','cc-flight-horizontal','cc-audit-grid']) assert.match(css, new RegExp(token));
+});
+
+test('reference interactions stay functional and keyboard/reduced-motion friendly', async () => {
+  const js = await read('portal-next/compliance-command-center.js');
+  const css = await read('portal-next/compliance-command-center.css');
+  assert.match(js, /data-compliance-risk-toggle/);
+  assert.match(js, /data-compliance-search/);
+  assert.match(js, /data-copilot-prompt/);
+  assert.match(js, /data-compliance-print/);
+  assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /focus-visible/);
+}
+);
