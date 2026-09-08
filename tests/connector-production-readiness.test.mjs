@@ -26,15 +26,17 @@ test('document extractor uses the configured server safe-test endpoint and repor
       async json(){return {type:'invoice',confidence:0.98,fields:{invoiceNumber:{value:'INV-1',confidence:0.99}}};}
     };
   };
-  const providers=createEnvironmentConnectorProviders({fetchFn,env:{DOCUMENT_EXTRACTOR_URL:'https://extractor.example/safe-test'}});
+  const providers=createEnvironmentConnectorProviders({fetchFn,env:{DOCUMENT_EXTRACTOR_URL:'https://extractor.example/safe-test',CONNECTOR_SAFE_TEST_TOKEN:'server-secret'}});
   const result=await providers.extractor.extract({sample:{content:'pdf-bytes'}});
   assert.equal(request.url,'https://extractor.example/safe-test');
   assert.equal(request.options.method,'POST');
   assert.equal(request.options.headers['x-bg-safe-test'],'1');
+  assert.equal(request.options.headers['x-bg-safe-test-token'],'server-secret');
   assert.equal(result.type,'invoice');
   assert.equal(result.fields.invoiceNumber.value,'INV-1');
   assert.deepEqual(providers.readiness.extractor,{configured:true,state:'server-safe-test'});
   assert.equal(JSON.stringify(providers.readiness).includes('https://extractor.example/safe-test'),false);
+  assert.equal(JSON.stringify(providers.readiness).includes('server-secret'),false);
 });
 
 test('provider readiness reports external target as not configured without a safe-test endpoint', () => {
@@ -43,31 +45,35 @@ test('provider readiness reports external target as not configured without a saf
   assert.equal(providers.readiness.targets.exact.state,'not-configured');
 });
 
-test('document extractor provider rejects requests without the safe-test header', async () => {
-  const handler=createDocumentExtractorHandler({anthropicApiKey:'test-key',fetchFn:async()=>{throw new Error('must not call provider')}});
-  const response=await handler(new Request('https://example.test/api/connectors/document-extractor',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({content:'Invoice 123'})}));
-  assert.equal(response.status,403);
+test('document extractor provider rejects requests without valid safe-test authentication', async () => {
+  const handler=createDocumentExtractorHandler({anthropicApiKey:'test-key',safeTestToken:'server-secret',fetchFn:async()=>{throw new Error('must not call provider')}});
+  const missing=await handler(new Request('https://example.test/api/connectors/document-extractor',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({content:'Invoice 123'})}));
+  assert.equal(missing.status,403);
+  const wrong=await handler(new Request('https://example.test/api/connectors/document-extractor',{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1','x-bg-safe-test-token':'wrong'},body:JSON.stringify({content:'Invoice 123'})}));
+  assert.equal(wrong.status,403);
 });
 
 test('document extractor provider returns normalized fields from Anthropic JSON output', async () => {
   let outbound;
-  const handler=createDocumentExtractorHandler({anthropicApiKey:'test-key',fetchFn:async(url,init)=>{
+  const handler=createDocumentExtractorHandler({anthropicApiKey:'test-key',safeTestToken:'server-secret',fetchFn:async(url,init)=>{
     outbound={url,init};
-    return new Response(JSON.stringify({content:[{type:'text',text:'{"type":"invoice","confidence":0.98,"fields":{"invoiceNumber":{"value":"INV-123","confidence":0.99}}}'}]}),{status:200,headers:{'content-type':'application/json'}});
+    return new Response(JSON.stringify({content:[{type:'text',text:'{"type":"invoice","confidence":0.98,"fields":{"invoiceNumber":{"value":"INV-123","confidence":0.99}}}'}]}),{status:200,headers:{'content-type':'application/json','request-id':'anthropic-123'}});
   }});
-  const response=await handler(new Request('https://example.test/api/connectors/document-extractor',{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1'},body:JSON.stringify({content:'Invoice INV-123'})}));
+  const response=await handler(new Request('https://example.test/api/connectors/document-extractor',{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1','x-bg-safe-test-token':'server-secret'},body:JSON.stringify({content:'Invoice INV-123'})}));
   assert.equal(response.status,200);
   assert.equal(outbound.url,'https://api.anthropic.com/v1/messages');
   assert.equal(outbound.init.method,'POST');
   assert.equal(outbound.init.headers['x-api-key'],'test-key');
+  assert.equal(outbound.init.headers['anthropic-version'],'2023-06-01');
+  assert.equal(response.headers.get('x-execution-id'),'anthropic-123');
   const body=await response.json();
   assert.equal(body.type,'invoice');
   assert.equal(body.fields.invoiceNumber.value,'INV-123');
   assert.equal(body.fields.invoiceNumber.confidence,0.99);
 });
 
-test('document extractor provider fails closed when provider key is missing', async () => {
-  const handler=createDocumentExtractorHandler({anthropicApiKey:'',fetchFn:async()=>{throw new Error('must not call provider')}});
+test('document extractor provider fails closed when provider configuration is missing', async () => {
+  const handler=createDocumentExtractorHandler({anthropicApiKey:'',safeTestToken:'',fetchFn:async()=>{throw new Error('must not call provider')}});
   const response=await handler(new Request('https://example.test/api/connectors/document-extractor',{method:'POST',headers:{'x-bg-safe-test':'1','content-type':'application/json'},body:JSON.stringify({content:'Invoice'})}));
   assert.equal(response.status,503);
   assert.equal((await response.json()).error,'DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED');
