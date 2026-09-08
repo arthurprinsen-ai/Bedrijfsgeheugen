@@ -1,0 +1,45 @@
+name: Portal V2 Production DOM Readback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'portal-v2/**'
+      - 'tests/integration/portal-v2-production-csrd.spec.js'
+      - '.github/workflows/portal-v2-production-dom-readback.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: portal-v2-production-dom-readback-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  production-dom-readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install Chromium verifier
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Read back live Portal V2 DOM and CSRD assets
+        env:
+          PRODUCTION_URL: https://www.bedrijfsgeheugen.nl
+        run: npx playwright test tests/integration/portal-v2-production-csrd.spec.js --workers=1
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-v2-production-dom-readback-${{ github.sha }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 30
