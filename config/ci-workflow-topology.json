@@ -5,6 +5,7 @@
   "productionConcurrencyGroups": ["production-release-readback"],
   "queueSloMs": 300000,
   "policy": {
+    "activePrIngressCount": 1,
     "broadPrIngressCount": 1,
     "requirePrScopedSupersession": true,
     "forbidRepositoryGlobalPrLock": true,
