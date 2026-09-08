@@ -23,6 +23,15 @@ function herstelTechnischeLinks(html) {
     .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`);
 }
 
+function verwijderDefecteLegacyDemonstrator(input) {
+  return String(input).replace(/<script\b([^>]*)>([\s\S]*?)<\/script>\s*/gi, (heel, attrs, body) => {
+    if (/\bsrc\s*=/i.test(attrs)) return heel;
+    const isLegacyDemonstrator = body.includes('Animated demonstrator only; production should bind to validated savings data')
+      && body.includes('Actions in hero animate as if the workflow was executed');
+    return isLegacyDemonstrator ? '' : heel;
+  });
+}
+
 function openDivMetKlasse(html, klasse, vanaf = 0) {
   const re = /<div\b[^>]*class="[^"]*"[^>]*>/gi;
   re.lastIndex = vanaf;
@@ -87,7 +96,7 @@ function pricingTools(input) {
 
 export function normaliseerHtml(input, bestand) {
   const isPrijzen = bestand === 'prijzen.html';
-  let html = String(input);
+  let html = verwijderDefecteLegacyDemonstrator(input);
 
   html = verwijderDivMetKlasse(html, 'bgx-gegevens');
   if (isPrijzen) {
