@@ -39,11 +39,15 @@ test('wizard definition safely flows Outlook PDF sample through extraction to Da
     valuta:'EUR'
   });
   assert.equal(result.extraction.mode,'safe-test-sample');
+  assert.deepEqual(result.stages.map(stage=>stage.name),['source','extractor','validation','target']);
+  assert.ok(result.stages.every(stage=>stage.ok===true&&stage.at&&stage.evidenceId));
+  assert.ok(result.executionId);
+  assert.equal(result.executionId,result.evidence.testExecutionId);
+  assert.equal(JSON.stringify(result).match(/secret|token|password|api[_-]?key/i),null);
   assert.equal(result.evidence.sourceReadSuccess,true);
   assert.equal(result.evidence.extractionResult.ok,true);
   assert.equal(result.evidence.validationResult.ok,true);
   assert.equal(result.evidence.targetSafeTestResult.ok,true);
-  assert.ok(result.evidence.testExecutionId);
   assert.deepEqual(runtime.activationEligibility(connector,result.evidence),{eligible:true,reason:'ELIGIBLE'});
 });
 
