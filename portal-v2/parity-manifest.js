@@ -5,6 +5,13 @@ const item = (legacyId, v2Pages, requiredBehaviors) => Object.freeze({
   status: 'open'
 });
 
+const globalItem = (id, requiredBehaviors) => Object.freeze({
+  id,
+  v2Pages: Object.freeze([]),
+  requiredBehaviors: Object.freeze([...requiredBehaviors]),
+  status: 'open'
+});
+
 export const LEGACY_PARITY_ITEMS = Object.freeze([
   item('overzicht', ['overzicht'], ['KPI overview', 'company state', 'maturity', 'blockers', 'progress', 'advice']),
   item('profiel', ['profiel'], ['per-domain assessment', 'inspectable detail']),
@@ -33,19 +40,19 @@ export const LEGACY_PARITY_ITEMS = Object.freeze([
 ]);
 
 export const GLOBAL_PARITY_CAPABILITIES = Object.freeze([
-  item('auth', [], ['authenticated access boundary']),
-  item('logout', [], ['authenticated logout']),
-  item('export', [], ['deterministic customer/project data export']),
-  item('import', [], ['validated safe import']),
-  item('print', [], ['permission-gated print/report action']),
-  item('feedback', [], ['contextual feedback submission']),
-  item('customer-branding', [], ['customer name or mark with safe fallback']),
-  item('mobile-navigation', [], ['five functional primary navigation controls'])
+  globalItem('auth', ['authenticated access boundary']),
+  globalItem('logout', ['authenticated logout']),
+  globalItem('export', ['deterministic customer/project data export']),
+  globalItem('import', ['validated safe import']),
+  globalItem('print', ['permission-gated print/report action']),
+  globalItem('feedback', ['contextual feedback submission']),
+  globalItem('customer-branding', ['customer name or mark with safe fallback']),
+  globalItem('mobile-navigation', ['five functional primary navigation controls'])
 ]);
 
 const PARITY_BY_ID = new Map([
   ...LEGACY_PARITY_ITEMS.map(record => [record.legacyId, record]),
-  ...GLOBAL_PARITY_CAPABILITIES.map(record => [record.legacyId, record])
+  ...GLOBAL_PARITY_CAPABILITIES.map(record => [record.id, record])
 ]);
 
 export function getParityItem(id) {
