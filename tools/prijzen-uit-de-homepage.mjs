@@ -21,19 +21,16 @@ const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prij
 <p>Vier pakketten, van &euro; 99 per maand tot een prijs op maat, met per pakket wat de AI voor je doet en hoe vers je gegevens zijn.</p>
 <p><a class="btn btn-primary" href="${DOEL}">Bekijk de prijzen &rarr;</a></p></div></div>`;
 
-// Finale endpoint-policy. Dit blok staat bewust ná alle homepage-builders zodat
-// oudere slider-CSS de richting of het bereik niet opnieuw kan omdraaien.
-// 0–8% snapt visueel naar 0%; 92–100% snapt naar 100%. Daardoor zijn de
-// volledige teksten ook op iPhone praktisch bereikbaar zonder de schermrand
-// exact te hoeven raken.
+// Finale endpoint-policy. Dit blok staat bewust ná alle homepage-builders, maar
+// gebruikt exact dezelfde canonieke splitvariabele als de slider-runtime. Zo is
+// er één waarheid voor reveal, ARIA, touch en desktop en kan late CSS de richting
+// of het bereik niet opnieuw omdraaien.
 const SLIDER_ENDPOINT_STYLE = `<style data-bg-compare-slider-endpoints>
-[data-bg-compare-slider]{--bg-final-split:var(--split,50%);position:relative!important;overflow:hidden!important;touch-action:pan-y}
-[data-bg-compare-slider]:has(.compare-knob:is([aria-valuenow="0"],[aria-valuenow="1"],[aria-valuenow="2"],[aria-valuenow="3"],[aria-valuenow="4"],[aria-valuenow="5"],[aria-valuenow="6"],[aria-valuenow="7"],[aria-valuenow="8"])){--bg-final-split:0%}
-[data-bg-compare-slider]:has(.compare-knob:is([aria-valuenow="92"],[aria-valuenow="93"],[aria-valuenow="94"],[aria-valuenow="95"],[aria-valuenow="96"],[aria-valuenow="97"],[aria-valuenow="98"],[aria-valuenow="99"],[aria-valuenow="100"])){--bg-final-split:100%}
+[data-bg-compare-slider]{position:relative!important;overflow:hidden!important;touch-action:pan-y}
 [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
-[data-bg-compare-slider] .compare-before{clip-path:inset(0 calc(100% - var(--bg-final-split,50%)) 0 0)!important}
-[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--bg-final-split,50%))!important}
-[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--bg-final-split,50%),calc(100% - 24px))!important;z-index:20!important}
+[data-bg-compare-slider] .compare-before{clip-path:inset(0 calc(100% - var(--bg-compare-split,50%)) 0 0)!important}
+[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--bg-compare-split,50%))!important}
+[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--bg-compare-split,50%),calc(100% - 24px))!important;z-index:20!important}
 @media(max-width:720px){
   [data-bg-compare-slider]{min-height:360px!important}
   [data-bg-compare-slider] .compare-before .compare-copy{margin-left:0!important;margin-right:auto!important;padding-right:18px!important}
