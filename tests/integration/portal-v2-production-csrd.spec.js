@@ -18,7 +18,7 @@ test('production Portal V2 renders the canonical CSRD & Impact module', async ({
 
   await expect(page.getByText('CSRD Readiness', { exact: true })).toBeVisible();
   await expect(page.getByText('Voorbeelddata · geen live claim', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Sluiten' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sluit CSRD dashboard' })).toBeVisible();
 
   const bodyText = await page.locator('body').innerText();
   expect(bodyText).toContain('CO₂ & Klimaat');
