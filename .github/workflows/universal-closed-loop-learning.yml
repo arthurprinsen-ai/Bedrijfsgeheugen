@@ -1,19 +1,13 @@
 name: Universal Closed-loop Learning
 
 on:
-  pull_request:
-    paths:
-      - 'config/universal-closed-loop-learning.json'
-      - 'scripts/brain/validate-universal-closed-loop-learning.mjs'
-      - 'tests/brain-universal-closed-loop-learning.test.mjs'
-      - '.github/workflows/universal-closed-loop-learning.yml'
-      - 'docs/superpowers/specs/2026-09-01-estate-wide-closed-loop-learning-design.md'
   push:
     branches: [main]
     paths:
       - 'config/universal-closed-loop-learning.json'
       - 'scripts/brain/validate-universal-closed-loop-learning.mjs'
       - 'tests/brain-universal-closed-loop-learning.test.mjs'
+  workflow_dispatch:
 
 jobs:
   universal-closed-loop:
