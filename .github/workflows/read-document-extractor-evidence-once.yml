@@ -1,0 +1,24 @@
+name: Read document extractor evidence once
+
+on:
+  push:
+    branches:
+      - ops/read-document-extractor-evidence
+
+permissions:
+  contents: read
+
+jobs:
+  read-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch production evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://www.bedrijfsgeheugen.nl/connector-canary-evidence.json"
+          body="$(curl --fail --silent --show-error --location "$url")"
+          echo "$body" | jq -e '.status == "DOCUMENT_EXTRACTOR_CANARY_OK"'
+          echo "$body" | jq -e '.providerExecutionId | type == "string" and length > 0'
+          echo "$body" | jq -e '.invoiceNumber == "INV-BG-LIVE-20260908"'
+          echo "DOCUMENT_EXTRACTOR_EVIDENCE=$body"
