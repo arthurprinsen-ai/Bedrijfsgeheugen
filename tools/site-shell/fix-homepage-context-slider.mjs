@@ -8,7 +8,7 @@ const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--split,50%))!important}
 [data-bg-compare-slider] .compare-before .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:0!important;margin-right:auto!important;padding-right:24px!important;box-sizing:border-box}
 [data-bg-compare-slider] .compare-after .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:auto!important;margin-right:0!important;padding-left:24px!important;box-sizing:border-box}
-[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--split,50%)!important;z-index:20!important}
+[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--split,50%),calc(100% - 24px))!important;z-index:20!important}
 [data-bg-compare-slider] .compare-knob{pointer-events:auto!important}
 [data-bg-change-check-source="true"]{opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important}
 .bg-change-check-fallback{display:none}
@@ -26,6 +26,7 @@ const STYLE = `<style ${MARKER}>
 const RUNTIME = `<script ${MARKER}>
 (function(){
   var SLIDER_SELECTOR = ${JSON.stringify(SLIDER_SELECTOR)};
+  var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE='Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS=['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
 
@@ -102,9 +103,11 @@ const RUNTIME = `<script ${MARKER}>
     slider.setAttribute('data-bg-compare-ready','true');
     var knob=slider.querySelector('.compare-knob');
     var dragging=false;
+    var touchDragging=false;
 
     function apply(raw){
       var value=Math.max(0,Math.min(100,Number(raw)||0));
+      value=value<=SNAP_THRESHOLD?0:value>=100-SNAP_THRESHOLD?100:value;
       slider.style.setProperty('--split',value.toFixed(2)+'%');
       if(knob){
         knob.setAttribute('aria-valuemin','0');
@@ -145,6 +148,23 @@ const RUNTIME = `<script ${MARKER}>
       e.stopImmediatePropagation();
     },true);
     window.addEventListener('pointercancel',function(){dragging=false;},true);
+
+    slider.addEventListener('touchstart',function(e){
+      if(!e.touches||!e.touches[0])return;
+      touchDragging=true;
+      applyFromClientX(e.touches[0].clientX);
+    },{capture:true,passive:true});
+    window.addEventListener('touchmove',function(e){
+      if(!touchDragging||!e.touches||!e.touches[0])return;
+      applyFromClientX(e.touches[0].clientX);
+    },{capture:true,passive:true});
+    window.addEventListener('touchend',function(e){
+      if(!touchDragging)return;
+      touchDragging=false;
+      var point=e.changedTouches&&e.changedTouches[0];
+      if(point)applyFromClientX(point.clientX);
+    },{capture:true,passive:true});
+    window.addEventListener('touchcancel',function(){touchDragging=false;},{capture:true,passive:true});
 
     if(knob){
       knob.addEventListener('keydown',function(e){
@@ -192,9 +212,13 @@ export function applyHomepageContextSliderReadability(html){
   if(!next.includes('SLIDER_SELECTOR')||
      !next.includes('#compareSlider,.compare-slider,[data-compare-slider]')||
      !next.includes('data-bg-compare-slider')||
+     !next.includes('SNAP_THRESHOLD = 8')||
      !next.includes("aria-valuemin','0")||
      !next.includes("aria-valuemax','100")||
      !next.includes('Math.max(0,Math.min(100')||
+     !next.includes('touchstart')||
+     !next.includes('touchmove')||
+     !next.includes('touchend')||
      !next.includes('ensureFourChangeChecks')||
      !next.includes('Opvolging ontstaat')||
      !next.includes('Waarde wordt gemeten')||
