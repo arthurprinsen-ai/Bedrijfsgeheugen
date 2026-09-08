@@ -18,7 +18,7 @@ export const DEFAULT_IMPACT_SNAPSHOT = Object.freeze({
     ['Dubbele materialiteit',true],['ESRS datapunten',false],['Ketenanalyse',true],['Rapportage & audit',false]
   ],
   realtime:[
-    ['⚡','12,4 kWh','energieverbruik (nu)'],['☁','2,1 kg','CO₂-uitstoot (nu)'],['●','183 liter','waterverbruik (nu)'],['⌁','98%','hernieuwbare energie']
+    ['⚡','12,4 kWh','energieverbruik (voorbeeld)'],['☁','2,1 kg','CO₂-uitstoot (voorbeeld)'],['●','183 liter','waterverbruik (voorbeeld)'],['⌁','98%','hernieuwbare energie (voorbeeld)']
   ],
   social:[['Medewerkertevredenheid','9,1','+0,8'],['Diversiteit (v/m/x)','32%','+6%'],['Uren maatschappelijke inzet','1.240','+28%'],['Ziekteverzuim','3,7%','-1,2%']],
   actions:[
@@ -59,8 +59,8 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
         <div class="csrd-orbit">PEOPLE <b>+</b> PLANET <b>+</b> PROGRESS</div>
       </div>
       <aside class="csrd-side">
-        <article class="csrd-panel readiness"><div class="csrd-panelhead"><h3>CSRD Readiness</h3><span>audit-ready</span></div><div class="csrd-readyrow">${meter(data.readiness,'','%')}<p>Op weg naar volledige rapportage</p></div><ul>${readiness(data)}</ul><button type="button" data-csrd-open="audit">Bekijk details →</button></article>
-        <article class="csrd-panel"><div class="csrd-panelhead"><h3>Impact in real time</h3><span class="live-dot">● Live data</span></div><div class="csrd-live">${data.realtime.map(([ic,v,s])=>`<div><i>${ic}</i><span><b>${v}</b><small>${s}</small></span></div>`).join('')}</div></article>
+        <article class="csrd-panel readiness"><div class="csrd-panelhead"><h3>CSRD Readiness</h3><span>readiness-overzicht</span></div><div class="csrd-readyrow">${meter(data.readiness,'','%')}<p>Op weg naar volledige rapportage</p></div><ul>${readiness(data)}</ul><button type="button" data-csrd-open="audit">Bekijk details →</button></article>
+        <article class="csrd-panel"><div class="csrd-panelhead"><h3>Impactmetingen</h3><span>Voorbeelddata</span></div><div class="csrd-live">${data.realtime.map(([ic,v,s])=>`<div><i>${ic}</i><span><b>${v}</b><small>${s}</small></span></div>`).join('')}</div></article>
       </aside>
     </section>
     <section class="csrd-grid">
