@@ -2,7 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v4-mobile-flow';
+  var VERSION = 'full-endpoints-v5-mobile-flow';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -188,6 +188,15 @@
     });
   }
 
+  function takeCanonicalOwnership(slider){
+    if(slider.getAttribute('data-bg-compare-owner') === 'canonical') return slider;
+    var clone = slider.cloneNode(true);
+    clone.setAttribute('data-bg-compare-owner','canonical');
+    clone.removeAttribute('data-bg-compare-version');
+    slider.replaceWith(clone);
+    return clone;
+  }
+
   function initSlider(slider){
     if(slider.getAttribute('data-bg-compare-version') === VERSION) return;
     slider.setAttribute('data-bg-compare-slider','');
@@ -205,13 +214,16 @@
       var value = Math.max(0, Math.min(100, Number(raw) || 0));
       return value <= SNAP_THRESHOLD ? 0 : value >= 100 - SNAP_THRESHOLD ? 100 : value;
     }
-    function readLegacy(){
-      var raw = parseFloat(getComputedStyle(slider).getPropertyValue('--split'));
-      return Number.isFinite(raw) ? raw : 50;
+    function initialValue(){
+      var css = getComputedStyle(slider);
+      var controlled = parseFloat(css.getPropertyValue('--bg-compare-split'));
+      if(Number.isFinite(controlled)) return snap(controlled);
+      var legacy = parseFloat(css.getPropertyValue('--split'));
+      return Number.isFinite(legacy) ? snap(legacy) : 50;
     }
     function readControlled(){
-      var raw = parseFloat(getComputedStyle(slider).getPropertyValue('--bg-compare-split'));
-      return Number.isFinite(raw) ? raw : snap(readLegacy());
+      var raw = parseFloat(slider.style.getPropertyValue('--bg-compare-split'));
+      return Number.isFinite(raw) ? raw : initialValue();
     }
     function syncAria(value){
       if(!knob) return;
@@ -226,74 +238,59 @@
       var value = snap(raw);
       var pct = value.toFixed(2) + '%';
       slider.style.setProperty('--bg-compare-split', pct);
+      slider.style.setProperty('--split', pct);
       if(beforeSide) beforeSide.style.setProperty('clip-path', 'inset(0 ' + (100 - value).toFixed(2) + '% 0 0)', 'important');
       if(afterSide) afterSide.style.setProperty('clip-path', 'inset(0 0 0 ' + value.toFixed(2) + '%)', 'important');
-      if(handle) handle.style.setProperty('left', 'clamp(24px,' + pct + ',calc(100% - 24px))', 'important');
+      if(handle) handle.style.setProperty('left', pct, 'important');
       syncAria(value);
       return value;
     }
-    function mirrorLegacy(){ renderControlled(readLegacy()); }
-    function apply(raw){
-      var value = snap(raw);
-      slider.style.setProperty('--split', value.toFixed(2) + '%');
-      return renderControlled(value);
-    }
     function applyFromClientX(clientX){
       var r = slider.getBoundingClientRect();
-      if(!r.width) return apply(50);
-      return apply(((clientX - r.left) / r.width) * 100);
-    }
-    function settleFromClientX(clientX){
-      applyFromClientX(clientX);
-      requestAnimationFrame(function(){
-        applyFromClientX(clientX);
-        requestAnimationFrame(function(){ applyFromClientX(clientX); });
-      });
+      if(!r.width) return renderControlled(50);
+      return renderControlled(((clientX - r.left) / r.width) * 100);
     }
     function current(){ return readControlled(); }
 
-    new MutationObserver(mirrorLegacy).observe(slider,{attributes:true,attributeFilter:['style']});
-    if(knob){
-      new MutationObserver(function(){ syncAria(); }).observe(knob,{attributes:true,attributeFilter:['aria-valuenow','aria-valuemin','aria-valuemax','aria-disabled','tabindex']});
-    }
-
     slider.addEventListener('pointerdown',function(e){
       dragging = true;
-      if(knob && e.target === knob && knob.setPointerCapture) knob.setPointerCapture(e.pointerId);
-      settleFromClientX(e.clientX);
+      if(slider.setPointerCapture) try{ slider.setPointerCapture(e.pointerId); }catch(_e){}
+      applyFromClientX(e.clientX);
       e.preventDefault();
       e.stopImmediatePropagation();
     },true);
-    window.addEventListener('pointermove',function(e){
+    slider.addEventListener('pointermove',function(e){
       if(!dragging) return;
-      settleFromClientX(e.clientX);
+      applyFromClientX(e.clientX);
       e.preventDefault();
       e.stopImmediatePropagation();
     },true);
-    window.addEventListener('pointerup',function(e){
+    slider.addEventListener('pointerup',function(e){
       if(!dragging) return;
       dragging = false;
-      settleFromClientX(e.clientX);
+      applyFromClientX(e.clientX);
+      if(slider.releasePointerCapture) try{ slider.releasePointerCapture(e.pointerId); }catch(_e){}
       e.stopImmediatePropagation();
     },true);
-    window.addEventListener('pointercancel',function(){ dragging = false; },true);
+    slider.addEventListener('pointercancel',function(){ dragging = false; },true);
 
     slider.addEventListener('touchstart',function(e){
       if(!e.touches || !e.touches[0]) return;
       touchDragging = true;
-      settleFromClientX(e.touches[0].clientX);
+      applyFromClientX(e.touches[0].clientX);
+      e.stopImmediatePropagation();
     },{capture:true,passive:true});
-    window.addEventListener('touchmove',function(e){
+    document.addEventListener('touchmove',function(e){
       if(!touchDragging || !e.touches || !e.touches[0]) return;
-      settleFromClientX(e.touches[0].clientX);
+      applyFromClientX(e.touches[0].clientX);
     },{capture:true,passive:true});
-    window.addEventListener('touchend',function(e){
+    document.addEventListener('touchend',function(e){
       if(!touchDragging) return;
       touchDragging = false;
       var point = e.changedTouches && e.changedTouches[0];
-      if(point) settleFromClientX(point.clientX);
+      if(point) applyFromClientX(point.clientX);
     },{capture:true,passive:true});
-    window.addEventListener('touchcancel',function(){ touchDragging = false; },{capture:true,passive:true});
+    document.addEventListener('touchcancel',function(){ touchDragging = false; },{capture:true,passive:true});
 
     if(knob){
       knob.addEventListener('keydown',function(e){
@@ -305,14 +302,16 @@
         else return;
         e.preventDefault();
         e.stopImmediatePropagation();
-        apply(value);
+        renderControlled(value);
       },true);
     }
 
-    mirrorLegacy();
+    renderControlled(initialValue());
   }
 
-  function ensureSliders(){ collectSliders().forEach(initSlider); }
+  function ensureSliders(){
+    collectSliders().forEach(function(slider){ initSlider(takeCanonicalOwnership(slider)); });
+  }
 
   initChangeFlow();
   ensureSliders();
