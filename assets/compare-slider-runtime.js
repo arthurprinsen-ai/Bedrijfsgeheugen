@@ -7,6 +7,7 @@
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
   var IMPACT_LABELS = ['Processen','Rollen','Documenten','KPI’s','Acties'];
+  var CHANGE_PROGRESS_MARKER = 'data-bg-change-progress';
 
   function norm(v){ return String(v || '').replace(/\s+/g, ' ').trim(); }
   function allHeadings(root){ return Array.prototype.slice.call(root.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]')); }
@@ -67,6 +68,7 @@
     var rail = document.createElement('span');
     rail.className = 'bg-change-step-rail';
     rail.setAttribute('aria-hidden','true');
+    rail.setAttribute(CHANGE_PROGRESS_MARKER,'');
 
     var check = document.createElement('span');
     check.className = 'bg-change-flow-check';
