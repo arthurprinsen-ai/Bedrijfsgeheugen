@@ -97,6 +97,7 @@ async function seoBestanden() {
   for await (const p of glob('*.html')) if (!isSeoExclude(p)) bestanden.push(p);
   for await (const p of glob('blog/*/index.html')) bestanden.push(p);
   bestanden.push('blog/index.html');
+  bestanden.push('kennis/index.html');
   return [...new Set(bestanden)];
 }
 

@@ -9,6 +9,7 @@ on:
       - 'assets/**'
       - 'site/**'
       - 'tools/site-shell/**'
+      - 'tools/normaliseer-site-ui.mjs'
       - '.github/canoniek/**'
       - '.github/scripts/paginacontrole.py'
       - '.github/scripts/seocontrole.py'
@@ -21,9 +22,29 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - name: Production build — Powerhouse auth
+        run: node tools/bouw-powerhouse-auth.mjs
+      - name: Production build — Kennisindex
+        run: node tools/bouw-kennisindex.mjs
+      - name: Production build — V18 + canonical shell
+        run: node tools/bouw-v18-production.mjs
+      - name: Production build — tabbladen
+        run: node tools/apply-tabbladen.mjs
+      - name: Production build — V18 views
+        run: node tools/bouw-v18-views.mjs
+      - name: Production build — V18 chrome
+        run: node tools/bouw-v18-chrome-alles.mjs
+      - name: Production build — pricing rewrite
+        run: BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+      - name: Production build — canonical policy + SEO enrichment
+        run: BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
