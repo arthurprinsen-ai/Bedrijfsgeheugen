@@ -26,7 +26,7 @@ const STYLE = `<style ${MARKER}>
   [data-bg-compare-slider][data-bg-readable-side="after"] .compare-before .compare-copy{opacity:0!important;visibility:hidden!important}
   [data-bg-compare-slider][data-bg-readable-side="before"] .compare-before .compare-copy,[data-bg-compare-slider][data-bg-readable-side="after"] .compare-after .compare-copy{opacity:1!important;visibility:visible!important}
   [data-bg-compare-slider] .compare-handle{display:block!important}
-  [data-bg-compare-slider] .bg-compare-range{height:132px!important}
+  [data-bg-compare-slider] .bg-compare-range{left:-28px!important;right:-28px!important;width:calc(100% + 56px)!important;height:132px!important}
 
   [data-bg-change-flow]{--bg-change-progress:0;position:relative!important}
   [data-bg-change-flow] [data-bg-change-step]{position:relative!important;opacity:.48!important;filter:saturate(.45);transition:opacity .22s ease,filter .22s ease}
