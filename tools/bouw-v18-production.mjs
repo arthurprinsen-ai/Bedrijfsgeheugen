@@ -16,15 +16,16 @@ await import('./bouw-inhoudspaginas.mjs');
 // dimmed 02/03/04 behavior.
 await applyHomepageProcessProgress();
 
-// Normalize the actual canonical shell source before the final page-policy
-// stage projects it across the public site. This keeps Kennisbank and Blog as
-// separate destinations without relying on the legacy .github/canoniek copy.
-const shellSource = await readFile('over-ons.html', 'utf8');
+// `bouw-v18-chrome-alles.mjs` reads its real site-wide shell from index.html.
+// Normalize that exact source before the later V18 chrome pass copies it to
+// every public page. This is deliberately not based on over-ons.html or the
+// generated .github/canoniek snapshot: those are downstream artifacts.
+const shellSource = await readFile('index.html', 'utf8');
 const shellWithKnowledge = ensureKnowledgeNavigation(shellSource);
 if (!verifyKnowledgeNavigation(shellWithKnowledge)) {
-  throw new Error('Kennisbank navigation contract could not be projected into the canonical shell source');
+  throw new Error('Kennisbank navigation contract could not be projected into the V18 index shell source');
 }
-await writeFile('over-ons.html', shellWithKnowledge, 'utf8');
+await writeFile('index.html', shellWithKnowledge, 'utf8');
 
 console.log(applyCustomerPortalAuth());
 console.log(verifyCustomerLoginContract());
