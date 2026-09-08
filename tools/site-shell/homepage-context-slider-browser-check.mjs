@@ -14,8 +14,7 @@ async function readState(page) {
     const after = afterSide?.querySelector('.compare-copy');
     const knob = slider?.querySelector('.compare-knob');
     const handle = slider?.querySelector('.compare-handle');
-    const range = slider?.querySelector('.bg-compare-range');
-    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle || !range) return null;
+    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle) return null;
 
     const sr = slider.getBoundingClientRect();
     const br = before.getBoundingClientRect();
@@ -41,10 +40,11 @@ async function readState(page) {
         now: Number(knob.getAttribute('aria-valuenow')),
         disabled: knob.getAttribute('aria-disabled')
       },
-      range: { min: Number(range.min), max: Number(range.max), value: Number(range.value), disabled: range.disabled },
       handleDisplay: getComputedStyle(handle).display,
       handleLeft: parseFloat(getComputedStyle(handle).left),
       marked: slider.hasAttribute('data-bg-compare-slider'),
+      owner: slider.getAttribute('data-bg-compare-owner') || (slider.hasAttribute('data-bg-pointer-fallback-ready') ? 'pointer-fallback' : null),
+      nativeRangeCount: slider.querySelectorAll('.bg-compare-range,input[type="range"]').length,
       topSideAtCenter
     };
   });
@@ -130,11 +130,12 @@ async function dragTouchTo(page, targetX) {
 }
 
 function assertCommon(g, label) {
-  if (!g) fail(`${label}: compareSlider, tekstlagen of native range ontbreken`);
+  if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
   if (!g.marked) fail(`${label}: slider mist generieke site-wide marker`, g);
-  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: gespiegeld ARIA bereik moet exact 0-100 zijn`, g);
+  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: ARIA bereik moet exact 0-100 zijn`, g);
   if (g.aria.disabled === 'true') fail(`${label}: slider mag niet disabled zijn`, g);
-  if (g.range.min !== 0 || g.range.max !== 100 || g.range.disabled) fail(`${label}: native range moet actief 0-100 zijn`, g);
+  if (g.nativeRangeCount !== 0) fail(`${label}: native range overlay is verboden; Pointer Events moet enige gesture owner zijn`, g);
+  if (!g.owner) fail(`${label}: pointer gesture owner ontbreekt`, g);
   if (g.handleDisplay === 'none') fail(`${label}: echte sliderhandle mag niet verborgen zijn`, g);
   if (g.slider.left < -1 || g.slider.right > g.viewportWidth + 1) fail(`${label}: slider mag niet buiten de viewport vallen`, g);
   const minReadableWidth = Math.min(220, g.slider.width * 0.5);
@@ -144,7 +145,7 @@ function assertCommon(g, label) {
 function assertLeftEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split <= 1)) fail(`${label}: helemaal links moet 0% bereiken`, g);
-  if (g.range.value > 1 || g.aria.now > 1) fail(`${label}: range en ARIA moeten links 0 zijn`, g);
+  if (g.aria.now > 1) fail(`${label}: ARIA moet links 0 zijn`, g);
   if (g.handleLeft > 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal links staan`, g);
   if (g.topSideAtCenter !== 'after') fail(`${label}: links moet alleen de after-laag tonen`, g);
 }
@@ -152,7 +153,7 @@ function assertLeftEndpoint(g, label) {
 function assertRightEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split >= 99)) fail(`${label}: helemaal rechts moet 100% bereiken`, g);
-  if (g.range.value < 99 || g.aria.now < 99) fail(`${label}: range en ARIA moeten rechts 100 zijn`, g);
+  if (g.aria.now < 99) fail(`${label}: ARIA moet rechts 100 zijn`, g);
   if (g.handleLeft < g.slider.width - 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal rechts staan`, g);
   if (g.topSideAtCenter !== 'before') fail(`${label}: rechts moet alleen de before-laag tonen`, g);
 }
