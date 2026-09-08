@@ -56,7 +56,7 @@ jobs:
             sleep 10
           done
           if [ "$ready" -ne 1 ]; then
-            echo "Portal V2 readback target did not become reachable: ${PORTAL_READBACK_URL}" >&2
+            echo "::error::Portal V2 readback target did not become reachable: ${PORTAL_READBACK_URL}"
             exit 1
           fi
       - name: Read back Portal V2 DOM, standalone routing and CSRD assets
