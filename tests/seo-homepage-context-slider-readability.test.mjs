@@ -1,12 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { Script } from 'node:vm';
 import { applyHomepageContextSliderReadability } from '../tools/site-shell/fix-homepage-context-slider.mjs';
 
 const read = async path => { try { return await readFile(new URL(`../${path}`, import.meta.url),'utf8'); } catch { return ''; } };
 const pipeline=await read('tools/prijzen-uit-de-homepage.mjs');
 const normalizer=await read('tools/normaliseer-site-ui.mjs');
 const fixer=await read('tools/site-shell/fix-homepage-context-slider.mjs');
+const runtime=await read('assets/compare-slider-runtime.js');
 const browserCheck=await read('tools/site-shell/homepage-context-slider-browser-check.mjs');
 const websiteLane=await read('.github/workflows/lane-website.yml');
 const visualRegistry=await read('config/ui-visual-regression.json');
@@ -22,11 +24,19 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.match(fixer,/#compareSlider/);
   assert.match(fixer,/\.compare-slider/);
   assert.match(fixer,/\[data-compare-slider\]/);
-  assert.match(fixer,/Math\.max\(0,Math\.min\(100/);
-  assert.match(fixer,/aria-valuemin[^\n]*['"]0['"]/);
-  assert.match(fixer,/aria-valuemax[^\n]*['"]100['"]/);
-  assert.doesNotMatch(fixer,/safePanePx/);
-  assert.doesNotMatch(fixer,/compactThreshold/);
+  assert.match(runtime,/SLIDER_SELECTOR\s*=\s*['"]#compareSlider,\.compare-slider,\[data-compare-slider\]['"]/);
+  assert.match(runtime,/Math\.max\(0,\s*Math\.min\(100/);
+  assert.match(runtime,/aria-valuemin['"],?\s*['"]0['"]/);
+  assert.match(runtime,/aria-valuemax['"],?\s*['"]100['"]/);
+  assert.doesNotMatch(runtime,/safePanePx/);
+  assert.doesNotMatch(runtime,/compactThreshold/);
+});
+
+test('external slider-runtime is parsebaar als gewone browser-JavaScript',()=>{
+  assert.doesNotThrow(()=>new Script(runtime));
+  assert.match(fixer,/RUNTIME_SRC\s*=\s*['"]\/assets\/compare-slider-runtime\.js['"]/);
+  const upgraded=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
+  assert.match(upgraded,/<script data-bg-context-slider-readable src="\/assets\/compare-slider-runtime\.js" defer><\/script>/);
 });
 
 test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand',()=>{
@@ -42,15 +52,15 @@ test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand',()=>
 });
 
 test('alle sliders maken de uitersten op touch praktisch bereikbaar en snappen naar volledige tekst',()=>{
-  assert.match(fixer,/SNAP_THRESHOLD\s*=\s*8/);
-  assert.match(fixer,/value\s*<=\s*SNAP_THRESHOLD\s*\?\s*0/);
-  assert.match(fixer,/value\s*>=\s*100-SNAP_THRESHOLD\s*\?\s*100/);
-  assert.match(fixer,/touchstart/);
-  assert.match(fixer,/touchmove/);
-  assert.match(fixer,/touchend/);
-  assert.match(fixer,/left:clamp\(/);
-  assert.match(fixer,/function syncLoop\(\)\{mirrorLegacy\(\);requestAnimationFrame\(syncLoop\);\}/);
-  assert.match(fixer,/requestAnimationFrame\(syncLoop\)/);
+  assert.match(runtime,/SNAP_THRESHOLD\s*=\s*8/);
+  assert.match(runtime,/value\s*<=\s*SNAP_THRESHOLD\s*\?\s*0/);
+  assert.match(runtime,/value\s*>=\s*100\s*-\s*SNAP_THRESHOLD\s*\?\s*100/);
+  assert.match(runtime,/touchstart/);
+  assert.match(runtime,/touchmove/);
+  assert.match(runtime,/touchend/);
+  assert.match(runtime,/clamp\(24px/);
+  assert.match(runtime,/new MutationObserver\(mirrorLegacy\)/);
+  assert.match(runtime,/renderControlled\(readLegacy\(\)\)/);
 });
 
 test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde kaarten omgebouwd',()=>{
@@ -62,13 +72,14 @@ test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde k
 });
 
 test('wijzigingssectie borgt vier zichtbare checks op mobiel',()=>{
-  assert.match(fixer,/CHANGE_STEPS=\['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'\]/);
-  assert.match(fixer,/ensureFourChangeChecks/);
-  assert.match(fixer,/data-bg-change-step/);
-  assert.match(fixer,/data-bg-change-check-source/);
-  assert.match(fixer,/bg-change-check-fallback/);
+  assert.match(runtime,/CHANGE_STEPS\s*=\s*\['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'\]/);
+  assert.match(runtime,/ensureFourChangeChecks/);
+  assert.match(runtime,/data-bg-change-step/);
+  assert.match(runtime,/data-bg-change-check-source/);
+  assert.match(runtime,/bg-change-check-fallback/);
   assert.match(fixer,/left:18px;bottom:42px;width:42px;height:42px/);
-  assert.match(fixer,/ensureFourChangeChecks\(\);ensureSliders\(\)/);
+  assert.match(runtime,/ensureFourChangeChecks\(\);/);
+  assert.match(runtime,/ensureSliders\(\);/);
 });
 
 test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-markup',()=>{
@@ -76,7 +87,7 @@ test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-
   const upgraded=applyHomepageContextSliderReadability(stale);
   assert.doesNotMatch(upgraded,/>STALE</);
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
-  assert.equal((upgraded.match(/<script data-bg-context-slider-readable>/g)||[]).length,1);
+  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"\s+defer><\/script>/g)||[]).length,1);
   assert.match(upgraded,/data-bg-compare-slider/);
 });
 
