@@ -59,6 +59,22 @@ jobs:
           done
           echo "Production never exposed release marker ${EXPECTED_COMMIT}" >&2
           exit 1
+      - name: Verify live connector readiness contract
+        run: |
+          set -euo pipefail
+          curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/api/connectors/readiness?bg_release_readback=${{ github.sha }}" -o live-connector-readiness.json
+          node --input-type=module - <<'NODE'
+          import {readFile} from 'node:fs/promises';
+          const text=await readFile('live-connector-readiness.json','utf8');
+          const body=JSON.parse(text);
+          if(!body || typeof body!=='object' || !body.sources || !body.targets || !body.extractor){
+            throw new Error('Live connector readiness response misses capability-state sections');
+          }
+          if(/SECRET|TOKEN|PASSWORD|API_KEY/i.test(text)){
+            throw new Error('Live connector readiness response exposes a secret-like key');
+          }
+          console.log(JSON.stringify(body));
+          NODE
       - name: Install production browser verifier
         run: |
           npm install --no-save playwright@1.55.0
