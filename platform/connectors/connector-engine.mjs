@@ -2,6 +2,7 @@ import {validateExtractedFields,extractedValues} from './document-extraction.mjs
 import {requireAdapter} from './connector-adapters.mjs';
 
 const now=()=>new Date().toISOString();
+const stage=(executionId,name,ok,extra={})=>Object.freeze({name,ok,at:now(),evidenceId:`${executionId}:${name}`,...extra});
 function applyTransform(value,transformation={type:'none'}){
   switch(transformation.type||'none'){
     case 'none':return value;
@@ -46,11 +47,16 @@ export function evaluateActivationEvidence(connector,evidence){
 }
 
 export async function runConnectorTest({connector,input,adapters,seenDedupeKeys=new Set(),executionId=`test-${Date.now()}`}={}){
-  const startedAt=now();
+  const startedAt=now(),stages=[];
   const source=await requireAdapter(adapters,'source').read(input,connector?.source||{});
+  stages.push(stage(executionId,'source',true));
   const dedupeKey=source?.hash||source?.messageId||null;
-  if(dedupeKey&&seenDedupeKeys.has(dedupeKey))return {status:'DUPLICATE',dedupeKey,startedAt,completedAt:now(),evidence:{configVersion:connector?.version,testExecutionId:executionId,sourceReadSuccess:true,extractionResult:{ok:false},validationResult:{ok:false},targetSafeTestResult:{ok:false}}};
+  if(dedupeKey&&seenDedupeKeys.has(dedupeKey)){
+    const evidence={configVersion:connector?.version,testExecutionId:executionId,sourceReadSuccess:true,extractionResult:{ok:false},validationResult:{ok:false},targetSafeTestResult:{ok:false}};
+    return {status:'DUPLICATE',executionId,stages,dedupeKey,startedAt,completedAt:now(),evidence};
+  }
   const extraction=await requireAdapter(adapters,'extractor').extract(source,connector?.documentSchema||{},connector);
+  stages.push(stage(executionId,'extractor',true,{mode:extraction?.mode||null}));
   const validation=validateExtractedFields(connector?.documentSchema,extraction);
   const reviewReasons=[...validation.reasons],values=extractedValues(extraction),lookupValues={},lookupResults=new Map();
   for(const rule of connector?.lookups||[]){
@@ -61,9 +67,16 @@ export async function runConnectorTest({connector,input,adapters,seenDedupeKeys=
   }
   reviewReasons.push(...evaluateValidationRules(connector,values,lookupResults));
   if(Number(extraction?.confidence??1)<Number(connector?.reviewPolicy?.requiredBelowConfidence??0))reviewReasons.push({code:'LOW_CLASSIFICATION_CONFIDENCE',confidence:extraction?.confidence});
+  const validationOk=reviewReasons.length===0;
+  stages.push(stage(executionId,'validation',validationOk,{reasonCount:reviewReasons.length}));
   const proposedPayload=buildPayload(connector,values,lookupValues);
-  if(reviewReasons.length)return {status:'REVIEW_REQUIRED',reviewReasons,proposedPayload,dedupeKey,startedAt,completedAt:now(),extraction,evidence:{configVersion:connector?.version,testExecutionId:executionId,sourceReadSuccess:true,extractionResult:{ok:true,documentType:extraction?.type||null},validationResult:{ok:false,reasons:reviewReasons},targetSafeTestResult:{ok:false,skipped:true}}};
+  if(reviewReasons.length){
+    stages.push(stage(executionId,'target',false,{skipped:true}));
+    const evidence={configVersion:connector?.version,testExecutionId:executionId,sourceReadSuccess:true,extractionResult:{ok:true,documentType:extraction?.type||null},validationResult:{ok:false,reasons:reviewReasons},targetSafeTestResult:{ok:false,skipped:true}};
+    return {status:'REVIEW_REQUIRED',executionId,stages,reviewReasons,proposedPayload,dedupeKey,startedAt,completedAt:now(),extraction,evidence};
+  }
   const safeResult=await requireAdapter(adapters,'target').safeTest(proposedPayload,{connector,input,source,extraction});
+  stages.push(stage(executionId,'target',safeResult?.ok===true,{reference:safeResult?.reference||safeResult?.targetRef||null}));
   const evidence={configVersion:connector?.version,testExecutionId:executionId,sourceReadSuccess:true,extractionResult:{ok:true,documentType:extraction?.type||null},validationResult:{ok:true},targetSafeTestResult:{ok:safeResult?.ok===true,reference:safeResult?.reference||safeResult?.targetRef||null}};
-  return {status:safeResult?.ok===true?'TEST_PASSED':'TEST_FAILED',reviewReasons:[],proposedPayload,dedupeKey,startedAt,completedAt:now(),extraction,evidence};
+  return {status:safeResult?.ok===true?'TEST_PASSED':'TEST_FAILED',executionId,stages,reviewReasons:[],proposedPayload,dedupeKey,startedAt,completedAt:now(),extraction,evidence};
 }
