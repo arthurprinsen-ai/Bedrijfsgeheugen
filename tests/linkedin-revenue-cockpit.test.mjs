@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const pagePath = new URL('../portal-v2/linkedin-revenue.html', import.meta.url);
-const dataPath = new URL('../portal-v2/linkedin-revenue-data.json', import.meta.url);
+const pagePath = new URL('../intern/linkedin-revenue/index.html', import.meta.url);
+const scriptPath = new URL('../intern/linkedin-revenue/cockpit.js', import.meta.url);
+const functionPath = new URL('../netlify/functions/linkedin-revenue-cockpit.mjs', import.meta.url);
 
-test('LinkedIn revenue cockpit production page exists', () => {
-  assert.equal(fs.existsSync(pagePath), true, 'portal-v2/linkedin-revenue.html must exist');
+test('protected LinkedIn revenue cockpit production page exists', () => {
+  assert.equal(fs.existsSync(pagePath), true, 'intern/linkedin-revenue/index.html must exist');
 });
 
 test('cockpit exposes the complete revenue workflow and a hard 12-action cap', () => {
@@ -27,18 +28,10 @@ test('cockpit refuses generic feed URLs and ungrounded sales copy', () => {
   assert.match(html, /Context aanvullen/);
 });
 
-test('cockpit snapshot is explicit, bounded and contains only real profile URLs', () => {
-  assert.equal(fs.existsSync(dataPath), true, 'cockpit data snapshot missing');
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-  assert.equal(data.schemaVersion, 'linkedin-revenue-cockpit-v1');
-  assert.ok(data.generatedAt);
-  assert.ok(Array.isArray(data.actions));
-  assert.ok(data.actions.length <= 12, 'today queue must never exceed 12 actions');
-  for (const action of data.actions) {
-    assert.ok(action.person, 'every action needs a person');
-    assert.match(action.linkedinUrl, /^https:\/\/www\.linkedin\.com\/in\//, `invalid profile URL for ${action.person}`);
-    if (action.readyText) {
-      assert.ok(action.contextEvidence && action.contextEvidence !== 'generic-feed', `ready text without evidence for ${action.person}`);
-    }
-  }
+test('cockpit loads runtime data instead of committing a private CRM snapshot', () => {
+  assert.equal(fs.existsSync(scriptPath), true, 'cockpit client missing');
+  assert.equal(fs.existsSync(functionPath), true, 'protected runtime function missing');
+  const client = fs.readFileSync(scriptPath, 'utf8');
+  assert.match(client, /\/intern\/api\/linkedin-revenue/);
+  assert.ok(!fs.existsSync(new URL('../intern/linkedin-revenue/data.json', import.meta.url)), 'private CRM snapshot must not be committed');
 });
