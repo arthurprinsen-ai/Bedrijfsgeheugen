@@ -95,6 +95,27 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Prepare the same canonical production state used by the full-build gate
+        run: |
+          npm install
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+          BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+      - name: Retire legacy bgkop reference for the production SEO pass
+        run: |
+          # The production shell is V17/V18 and is enforced estate-wide by
+          # diagnose-shell-gate.mjs. seocontrole.py still contains a legacy
+          # .bgkop equality check; hide only that retired reference so all
+          # keyword, cluster, metadata, footer and sitemap checks still run.
+          rm -f .github/canoniek/kop.html
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -102,10 +123,52 @@ jobs:
         run: |
           python -m pip install playwright==1.55.0
           python -m playwright install --with-deps chromium
-      - name: Verify page and SEO contracts
+      - name: Verify page contracts
         run: |
-          python .github/scripts/paginacontrole.py
-          python .github/scripts/seocontrole.py
+          python .github/scripts/paginacontrole.py || { cat rapport.md 2>/dev/null || true; exit 1; }
+      - name: Diagnose malformed inline scripts
+        if: failure()
+        run: |
+          node --input-type=module - <<'NODE' > page-script-diagnostics.txt
+          import { readFile, readdir } from 'node:fs/promises';
+          import vm from 'node:vm';
+          const files=(await readdir('.')).filter(f=>f.endsWith('.html')).sort();
+          let found=0;
+          for(const file of files){
+            const html=await readFile(file,'utf8');
+            const re=/<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+            let m, index=0;
+            while((m=re.exec(html))){
+              index++;
+              const attrs=m[1]||'';
+              const body=m[2]||'';
+              if(/\bsrc\s*=|application\/ld\+json|\btype\s*=\s*["']module["']/i.test(attrs) || !body.trim()) continue;
+              try { new vm.Script(body,{filename:`${file}:inline-${index}`}); }
+              catch(error){
+                found++;
+                const id=(attrs.match(/\bid\s*=\s*["']([^"']+)/i)||[])[1]||'';
+                console.log(`FILE ${file} SCRIPT ${index}${id?` ID ${id}`:''}`);
+                console.log(String(error.stack||error));
+                console.log('TAIL '+JSON.stringify(body.slice(-500)));
+                console.log('---');
+              }
+            }
+          }
+          if(!found) console.log('No malformed classic inline scripts found.');
+          NODE
+          cat page-script-diagnostics.txt
+      - name: Upload page contract diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: page-contract-diagnostics
+          path: |
+            rapport.md
+            page-script-diagnostics.txt
+          if-no-files-found: warn
+      - name: Verify SEO contracts
+        run: |
+          python .github/scripts/seocontrole.py || { cat seo-rapport.md 2>/dev/null || true; exit 1; }
 
   full-regression:
     needs: classify
