@@ -25,8 +25,16 @@ test('public compliance status page exposes Bedrijfsgeheugen own status transpar
   assert.match(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/ai-act/);
 });
 
-test('trust center is linked from over-ons, AI Act and Portal V2 with absolute URLs', () => {
-  for (const file of ['over-ons.html', 'ai-act.html', 'portal-v2/index.html']) {
-    assert.match(read(file), /href="https:\/\/www\.bedrijfsgeheugen\.nl\/compliance-status"/i, `${file} mist compliance-status link`);
-  }
+test('shared public shell exposes trust center from over-ons and AI Act', () => {
+  const shell = read('assets/stijl.js');
+  assert.match(shell, /https:\/\/www\.bedrijfsgeheugen\.nl\/compliance-status/);
+  assert.match(shell, /\/over-ons/);
+  assert.match(shell, /\/ai-act/);
+  assert.match(shell, /Hoe staat Bedrijfsgeheugen zelf ervoor|Vertrouwen & compliance/i);
+});
+
+test('Portal V2 links to Bedrijfsgeheugen own compliance status with an absolute URL', () => {
+  const portal = read('portal-v2/index.html');
+  assert.match(portal, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/compliance-status"/i);
+  assert.match(portal, /Compliance Bedrijfsgeheugen/i);
 });
