@@ -29,6 +29,16 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.doesNotMatch(fixer,/compactThreshold/);
 });
 
+test('late pricing-shell CSS mag de canonieke sliderstand niet terug overschrijven',()=>{
+  assert.match(pipeline,/SLIDER_ENDPOINT_STYLE/);
+  assert.match(pipeline,/--bg-compare-split/);
+  assert.match(pipeline,/compare-before\{clip-path:inset\(0 calc\(100% - var\(--bg-compare-split,50%\)\) 0 0\)!important\}/);
+  assert.match(pipeline,/compare-after\{clip-path:inset\(0 0 0 var\(--bg-compare-split,50%\)\)!important\}/);
+  assert.match(pipeline,/compare-handle\{display:block!important;position:absolute!important;left:clamp\(24px,var\(--bg-compare-split,50%\),calc\(100% - 24px\)\)!important/);
+  assert.doesNotMatch(pipeline,/compare-before\{clip-path:inset\(0 var\(--split,50%\) 0 0\)!important\}/);
+  assert.doesNotMatch(pipeline,/compare-after\{clip-path:inset\(0 0 0 calc\(100% - var\(--split,50%\)\)\)!important\}/);
+});
+
 test('alle sliders maken de uitersten op touch praktisch bereikbaar en snappen naar volledige tekst',()=>{
   assert.match(fixer,/SNAP_THRESHOLD\s*=\s*8/);
   assert.match(fixer,/value\s*<=\s*SNAP_THRESHOLD\s*\?\s*0/);
