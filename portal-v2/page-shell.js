@@ -1,4 +1,5 @@
 import { findPage, listPortalGroups } from './page-registry.js';
+import { nativePageContent } from './native-pages.js';
 import { renderCsrdImpact } from './csrd-impact.js';
 
 const COPY = {
@@ -50,16 +51,24 @@ const COPY = {
   audittrail:['Audittrail','Maak besluiten, acties, wijzigingen en bewijs terugvindbaar in één traceerbare keten.']
 };
 
+const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
+
 export function pagePresentation(pageId) {
   const page=findPage(pageId);
   if(!page) return null;
   const [title,description]=COPY[pageId] || [page.label,`${page.label} is een standaardonderdeel van Portal V2.`];
+  const content=nativePageContent(pageId);
   return {
     ...page,
+    ...content,
     title,
     description,
     kind:'native-v2',
-    evidenceLabel: pageId==='csrd-impact' ? 'Impactdata + evidence in één traceerbare cockpit' : 'Native Portal V2 · geen legacy-portaal afhankelijkheid'
+    evidenceLabel: pageId==='csrd-impact'
+      ? 'Impactdata + evidence in één traceerbare cockpit'
+      : BRAIN_PAGES.has(pageId)
+        ? 'Native Portal V2 · status alleen met runtime-evidence'
+        : 'Native Portal V2 · zelfstandige module zonder legacy-afhankelijkheid'
   };
 }
 
@@ -87,8 +96,28 @@ export function closePortalPage(){
   document.documentElement.classList.remove('portalview-open');
 }
 
+function esc(value=''){
+  return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function renderMetrics(block){
+  return `<section class="pvmodule pvmetrics"><div class="pvmodulehead"><span>01</span><h3>${esc(block.title)}</h3></div><div class="pvmetricgrid">${block.items.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div></section>`;
+}
+function renderWorklist(block){
+  return `<section class="pvmodule"><div class="pvmodulehead"><span>02</span><h3>${esc(block.title)}</h3></div><div class="pvworklist">${block.items.map(([label,value])=>`<article><div><b>${esc(label)}</b><p>${esc(value)}</p></div><span>→</span></article>`).join('')}</div></section>`;
+}
+function renderActions(block){
+  return `<section class="pvmodule"><div class="pvmodulehead"><span>03</span><h3>${esc(block.title)}</h3></div><div class="pvactions">${block.items.map(([label,pageId],index)=>`<button type="button" data-pv-page="${esc(pageId)}" class="${index===0?'primary':''}"><span>${esc(label)}</span><i>→</i></button>`).join('')}</div></section>`;
+}
+
 function renderNative(native,view){
-  native.innerHTML=`<div class="pvsteps"><article><b>1 · Context</b><span>Bronnen, invoer en samenhang</span></article><article><b>2 · Inzicht</b><span>Analyse, risico, prioriteit en advies</span></article><article><b>3 · Uitvoering</b><span>Actie, eigenaar, evidence en learning</span></article></div><div class="pvevidence"><b>${view.title} is onderdeel van V2</b><p>${view.description}</p><p>Dit onderdeel gebruikt de V2-shell en V2-datalaag. Er wordt niet doorgeschakeld naar, ingebed vanuit of afhankelijk gemaakt van het oude klantenportaal.</p></div>`;
+  const blocks=Array.isArray(view.blocks)?view.blocks:[];
+  native.innerHTML=`<div class="pvnativehero"><div><span>Zelfstandig onderdeel</span><h3>${esc(view.title)}</h3><p>${esc(view.description)}</p></div><button type="button" class="pvprimary">${esc(view.primaryAction || 'Open onderdeel')} <span>→</span></button></div>${blocks.map(block=>block.type==='metrics'?renderMetrics(block):block.type==='worklist'?renderWorklist(block):block.type==='actions'?renderActions(block):'').join('')}<div class="pvevidence"><b>Native V2 contract</b><p>Deze module draait binnen dezelfde Portal V2-shell, gebruikt dezelfde V2-context en schakelt niet door naar een tweede portaal. Live-status wordt alleen getoond wanneer runtime-evidence beschikbaar is.</p></div>`;
+  native.querySelectorAll('[data-pv-page]').forEach(btn=>btn.addEventListener('click',()=>openPortalPage(btn.dataset.pvPage)));
+  native.querySelector('.pvprimary')?.addEventListener('click',()=>{
+    const first=blocks.find(block=>block.type==='actions')?.items?.[0]?.[1];
+    if(first) openPortalPage(first);
+  });
 }
 
 export function openPortalPage(pageId){
@@ -122,6 +151,7 @@ export function enhancePortalShell(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
+  bindTextButton('.nav button','bedrijfsgezondheid','profiel');
   bindTextButton('.nav button','strategie','strategie-naar-maandagochtend');
   bindTextButton('.nav button','processen','profiel');
   bindTextButton('.nav button','kennis','documenten');
@@ -147,7 +177,7 @@ export function enhancePortalShell(){
   if(search){
     const results=document.createElement('div');results.className='pvsearchresults';search.parentElement.appendChild(results);
     const render=()=>{
-      const term=search.value; if(!term.trim()){results.classList.remove('open');results.innerHTML='';return;}
+      const term=search.value;if(!term.trim()){results.classList.remove('open');results.innerHTML='';return;}
       const hits=searchPortalPages(term);results.innerHTML=hits.length?hits.map(p=>`<button type="button" data-page="${p.id}"><b>${p.label}</b><span>${p.groupLabel}</span></button>`).join(''):'<div class="pvempty">Geen portalonderdeel gevonden</div>';
       results.classList.add('open');results.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{openPortalPage(b.dataset.page);results.classList.remove('open')}));
     };
