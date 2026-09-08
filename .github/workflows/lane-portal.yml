@@ -18,4 +18,4 @@ jobs:
         with:
           node-version: '22'
       - name: Verify portal production contracts
-        run: node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
+        run: node --test tests/portal-*.test.mjs tests/connector-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
