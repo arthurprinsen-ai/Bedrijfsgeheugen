@@ -89,13 +89,14 @@ jobs:
           grep -q 'AI Register' /tmp/portal-next.js
           grep -q 'Agent Team' /tmp/portal-next.js
           grep -q 'preview voert geen echte AI-call uit' /tmp/portal-next.js
-      - name: Verify approved desktop and mobile portal composition
+      - name: Verify approved desktop, mobile and CSRD preview composition
         env:
           PREVIEW_URL: ${{ env.PREVIEW_URL }}
+          PRODUCTION_URL: ${{ env.PREVIEW_URL }}
         run: |
           npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
-          npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-next-live.spec.js --workers=1
+          npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-next-live.spec.js tests/integration/portal-v2-production-csrd.spec.js --workers=1
       - name: Upload portal visual evidence
         if: always()
         uses: actions/upload-artifact@v4
