@@ -8,7 +8,6 @@
 <title>Bedrijfsgeheugen · Klantenportaal V2</title>
 <link rel="stylesheet" href="./app.css">
 <link rel="stylesheet" href="./saas-theme.css">
-<link rel="stylesheet" href="./csrd-mobile-saas.css">
 </head>
 <body>
 <div class="app">
@@ -94,5 +93,13 @@
 <div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Portal V2 bevat alle portalonderdelen standaard</h3><small style="color:#7280a1">Eén zelfstandige V2-shell met native functionaliteit, Brain, Datahub en Powerhouse — zonder koppeling met een tweede portaal.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
 <nav class="mobilebar"><button class="active">⌂<br>Overzicht</button><button>▣<br>Portaal</button><button>✦<br>Data & AI</button><button>✓<br>Taken</button><button id="mobileMore">☰<br>Meer</button></nav>
 <script type="module" src="./app.js"></script>
+<script>
+addEventListener('DOMContentLoaded',()=>{
+  const href='./csrd-mobile-saas.css';
+  const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')===href);
+  if(existing) existing.remove();
+  const style=document.createElement('link');style.rel='stylesheet';style.href=href;document.head.appendChild(style);
+});
+</script>
 </body>
 </html>
