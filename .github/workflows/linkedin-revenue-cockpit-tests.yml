@@ -1,0 +1,19 @@
+name: LinkedIn Revenue Cockpit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cockpit-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify revenue cockpit contract
+        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs
