@@ -31,6 +31,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Mandatory chat-learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Verify learning materiality and delivery classification contracts
+        run: node --test tests/make-agent-learning-promotion-contract.test.mjs tests/chat-learning-completeness-addendum.test.mjs tests/brain-learning-contract-delivery-classification.test.mjs
       - name: Block unjustified moving-main successor rebuilds
         if: github.event_name == 'pull_request'
         env:
