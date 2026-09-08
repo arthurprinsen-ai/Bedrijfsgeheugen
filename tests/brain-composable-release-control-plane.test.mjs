@@ -25,14 +25,55 @@ test('required test is a stable aggregator and preserves the protected test cont
 test('website lane keeps public visibility mandatory while broad checks are high-risk only', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   assert.match(website, /classifyWebsiteRelease/);
+  assert.match(website, /\n  browser:/);
   const visibilityStart = website.indexOf('      - name: Verify all public pages are visibly rendered');
   assert.notEqual(visibilityStart, -1);
-  const visibilityEnd = website.indexOf('\n\n  broad-browser:', visibilityStart);
-  assert.notEqual(visibilityEnd, -1);
-  const visibility = website.slice(visibilityStart, visibilityEnd);
+  const broadStart = website.indexOf('      - name: Verify broad high-risk browser contracts', visibilityStart);
+  assert.notEqual(broadStart, -1);
+  const visibility = website.slice(visibilityStart, broadStart);
   assert.doesNotMatch(visibility, /if:.*(?:high-risk|fast-fix|normal)|risk_lane/);
-  assert.match(website, /risk_lane == 'high-risk'/);
+  const broad = website.slice(broadStart);
+  assert.match(broad, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
   assert.match(website, /verify-targeted-website-routes\.mjs/);
+});
+
+test('page and SEO contracts use the same artifact-producing build chain as Netlify', () => {
+  const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+  const pageSeoStart = website.indexOf('\n  page-seo:');
+  const previewStart = website.indexOf('\n  preview-ready:', pageSeoStart);
+  assert.notEqual(pageSeoStart, -1);
+  assert.notEqual(previewStart, -1);
+  const pageSeo = website.slice(pageSeoStart, previewStart);
+  assert.match(pageSeo, /name: Install Netlify build dependencies/);
+  assert.match(pageSeo, /run: npm install/);
+  assert.match(pageSeo, /name: Build exact Netlify website artifact/);
+  const commands = [
+    'node tools/bouw-powerhouse-auth.mjs',
+    'node tools/bouw-kennisindex.mjs',
+    'node tools/bouw-v18-production.mjs',
+    'node tools/apply-tabbladen.mjs',
+    'node tools/bouw-v18-views.mjs',
+    'node tools/bouw-v18-chrome-alles.mjs',
+    'node tools/prijzen-uit-de-homepage.mjs',
+  ];
+  for (const command of commands) {
+    assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  assert.ok(
+    pageSeo.indexOf('name: Install Netlify build dependencies') < pageSeo.indexOf(commands[0]),
+    'Netlify build dependencies must be installed before artifact production',
+  );
+  for (let index = 1; index < commands.length; index += 1) {
+    assert.ok(
+      pageSeo.indexOf(commands[index - 1]) < pageSeo.indexOf(commands[index]),
+      `Netlify build order must preserve ${commands[index - 1]} before ${commands[index]}`,
+    );
+  }
+  assert.doesNotMatch(pageSeo, /node tools\/normaliseer-site-ui\.mjs/, 'page-seo must not invent a second local build composition');
+  assert.ok(
+    pageSeo.indexOf('node tools/prijzen-uit-de-homepage.mjs') < pageSeo.indexOf('name: Verify page and SEO contracts'),
+    'page and SEO checks must run only after the Netlify artifact-producing build chain',
+  );
 });
 
 test('production readback is serialized and never cancelled mid-flight', () => {

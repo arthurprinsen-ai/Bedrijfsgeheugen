@@ -95,9 +95,23 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install Netlify build dependencies
+        run: npm install
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Build exact Netlify website artifact
+        run: |
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          node tools/prijzen-uit-de-homepage.mjs
       - name: Install page-check browser runtime
         run: |
           python -m pip install playwright==1.55.0
@@ -106,28 +120,6 @@ jobs:
         run: |
           python .github/scripts/paginacontrole.py
           python .github/scripts/seocontrole.py
-
-  full-regression:
-    needs: classify
-    if: needs.classify.outputs.risk_lane == 'high-risk'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ inputs.head_sha }}
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-      - name: Install full-regression test runtime
-        run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
-      - name: Verify high-risk full website regression contracts
-        run: >-
-          node --test
-          tests/seo-ui-visual-regression-contract.test.mjs
-          tests/seo-ui-visual-regression-geometry.test.mjs
-          tests/seo-ui-visual-regression-browser.test.mjs
 
   preview-ready:
     needs: classify
@@ -155,7 +147,7 @@ jobs:
           throw new Error('Timed out waiting for exact deploy preview');
           NODE
 
-  targeted-browser:
+  browser:
     needs: [classify, preview-ready]
     runs-on: ubuntu-latest
     steps:
@@ -165,52 +157,29 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Install targeted browser
+      - name: Install shared website browser runtime
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
+      - name: Verify high-risk full website regression contracts
+        if: needs.classify.outputs.risk_lane == 'high-risk'
+        run: >-
+          node --test
+          tests/seo-ui-visual-regression-contract.test.mjs
+          tests/seo-ui-visual-regression-geometry.test.mjs
+          tests/seo-ui-visual-regression-browser.test.mjs
       - name: Verify affected routes on desktop and mobile
         env:
           BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
           BASELINE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: node tools/site-shell/verify-targeted-website-routes.mjs
-
-  public-visibility:
-    needs: [classify, preview-ready]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ inputs.head_sha }}
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-      - name: Install public visibility browser
-        run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
       - name: Verify all public pages are visibly rendered
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/standalone-visibility-check.mjs
-
-  broad-browser:
-    needs: [classify, preview-ready]
-    if: needs.classify.outputs.risk_lane == 'high-risk'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ inputs.head_sha }}
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-      - name: Install high-risk browser suite
-        run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
       - name: Verify broad high-risk browser contracts
+        if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
           EXPECTED_COMMIT: ${{ inputs.head_sha }}
