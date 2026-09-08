@@ -13,7 +13,7 @@ on:
 jobs:
   portal:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
         with:
@@ -64,7 +64,7 @@ jobs:
           done
           echo "::error::Timed out waiting for Netlify preview on exact head SHA"
           exit 1
-      - name: Verify exact portal-v2 assets are served
+      - name: Verify exact portal assets are served
         run: |
           set -euo pipefail
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/" -o /tmp/portal-v2.html
@@ -76,18 +76,31 @@ jobs:
           grep -q 'AI Management Summary' /tmp/portal-v2.html
           grep -q 'Powerhouse' /tmp/portal-v2.html
           grep -q 'Alle portalpagina’s' /tmp/portal-v2.html
-      - name: Verify approved desktop and mobile portal-v2 composition
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/" -o /tmp/portal-next.html
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.css" -o /tmp/portal-next.css
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/workspaces.css" -o /tmp/workspaces.css
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.js" -o /tmp/portal-next.js
+          node --check /tmp/portal-next.js
+          grep -q 'AI Management Summary' /tmp/portal-next.html
+          grep -q 'Preview · voorbeelddata · geen actieve bedrijfswaarheid' /tmp/portal-next.html
+          grep -q 'Trust & Governance' /tmp/portal-next.html
+          grep -q 'prefers-reduced-motion:reduce' /tmp/portal-next.css
+          grep -q 'focus-visible' /tmp/workspaces.css
+          grep -q 'AI Register' /tmp/portal-next.js
+          grep -q 'Agent Team' /tmp/portal-next.js
+          grep -q 'preview voert geen echte AI-call uit' /tmp/portal-next.js
+      - name: Verify approved desktop and mobile portal composition
         env:
           PREVIEW_URL: ${{ env.PREVIEW_URL }}
         run: |
           npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
-          npx playwright test tests/integration/portal-v2-live.spec.js --workers=1
+          npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-next-live.spec.js --workers=1
       - name: Upload portal visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: portal-v2-visual-evidence-${{ inputs.head_sha }}
-          path: artifacts/portal-v2-*.png
+          name: portal-visual-evidence-${{ inputs.head_sha }}
+          path: artifacts/portal-*.png
           if-no-files-found: warn
           retention-days: 14
