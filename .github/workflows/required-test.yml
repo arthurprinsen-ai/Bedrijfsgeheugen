@@ -87,6 +87,7 @@ jobs:
     uses: ./.github/workflows/lane-portal.yml
     with:
       head_sha: ${{ needs.preflight.outputs.head_sha }}
+      pr_number: ${{ needs.preflight.outputs.pr_number }}
 
   automation:
     needs: preflight
