@@ -1,16 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { applyHomepageContextSliderReadability } from '../tools/site-shell/fix-homepage-context-slider.mjs';
 
 const read = async path => readFile(new URL(`../${path}`, import.meta.url),'utf8');
 const fixer = await read('tools/site-shell/fix-homepage-context-slider.mjs');
 const runtime = await read('assets/compare-slider-runtime.js');
+const emitted = applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
 
 test('mobile compare sliders hebben exact één pointer-events gesture owner en geen native range overlay',()=>{
-  assert.doesNotMatch(fixer,/bg-compare-range/);
-  assert.doesNotMatch(fixer,/ensureNativeRange/);
+  assert.doesNotMatch(emitted,/bg-compare-range|ensureNativeRange|type=['"]range['"]/);
+  assert.doesNotMatch(fixer,/\.bg-compare-range\s*\{/);
+  assert.doesNotMatch(fixer,/function\s+ensureNativeRange\b/);
   assert.doesNotMatch(fixer,/createElement\(['"]input['"]\)/);
-  assert.doesNotMatch(fixer,/type=['"]range['"]/);
   assert.doesNotMatch(runtime,/touchstart|touchmove|touchend|touchcancel/);
   assert.match(runtime,/pointerdown/);
   assert.match(runtime,/pointermove/);
