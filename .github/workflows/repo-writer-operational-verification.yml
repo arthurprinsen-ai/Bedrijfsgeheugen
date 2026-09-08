@@ -1,9 +1,16 @@
 name: Repository Writer Operational Verification
 
 on:
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - 'verify/menu-balk-fix-*'
+      - 'verify/regelgeving-bijwerken-*'
+      - 'verify/seo-controle-*'
+      - 'verify/paginacontrole-*'
+      - 'verify/approved-central-blog-*'
+      - 'verify/blog-bijwerken-*'
+      - 'verify/weekblog-*'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,44 +19,44 @@ permissions:
 
 jobs:
   dispatch-writer-candidate:
-    if: >-
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      (startsWith(github.head_ref, 'verify/menu-balk-fix-') ||
-       startsWith(github.head_ref, 'verify/regelgeving-bijwerken-') ||
-       startsWith(github.head_ref, 'verify/seo-controle-') ||
-       startsWith(github.head_ref, 'verify/paginacontrole-') ||
-       startsWith(github.head_ref, 'verify/approved-central-blog-') ||
-       startsWith(github.head_ref, 'verify/blog-bijwerken-') ||
-       startsWith(github.head_ref, 'verify/weekblog-'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-      VERIFY_SHA: ${{ github.event.pull_request.head.sha }}
-      VERIFY_PR_NUMBER: ${{ github.event.pull_request.number }}
+      VERIFY_REF: ${{ github.ref_name }}
+      VERIFY_SHA: ${{ github.sha }}
     steps:
+      - name: Resolve exact verify PR identity
+        id: verify_pr
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR_NUMBER=""
+          for attempt in $(seq 1 72); do
+            PR_NUMBER="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head "$VERIFY_REF" --state open --limit 5 --json number --jq '.[0].number // empty')"
+            [ -z "$PR_NUMBER" ] || break
+            sleep 5
+          done
+          [ -n "$PR_NUMBER" ] || { echo "::error::VERIFY_PR_NOT_FOUND:$VERIFY_REF:$VERIFY_SHA"; exit 1; }
+          PR_BASE_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.base.sha')"
+          PR_HEAD_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+          [ "$PR_HEAD_SHA" = "$VERIFY_SHA" ] || { echo "::error::VERIFY_HEAD_SHA_DRIFT:$VERIFY_SHA:$PR_HEAD_SHA"; exit 1; }
+          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$PR_BASE_SHA" >> "$GITHUB_OUTPUT"
+
       - name: Resolve writer contract
         id: writer
         shell: bash
         run: |
           set -euo pipefail
           case "$VERIFY_REF" in
-            verify/menu-balk-fix-*)
-              WRITER='menu-balk-fix'; WORKFLOW='menu-balk-fix.yml'; GENERIC_SHADOW='false'; EXTRA='none' ;;
-            verify/regelgeving-bijwerken-*)
-              WRITER='regelgeving-bijwerken'; WORKFLOW='regelgeving-bijwerken.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
-            verify/seo-controle-*)
-              WRITER='seo-controle'; WORKFLOW='seo-controle.yml'; GENERIC_SHADOW='true'; EXTRA='seo-all' ;;
-            verify/paginacontrole-*)
-              WRITER='paginacontrole'; WORKFLOW='paginacontrole.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
-            verify/approved-central-blog-*)
-              WRITER='approved-central-blog'; WORKFLOW='approved-central-blog.yml'; GENERIC_SHADOW='false'; EXTRA='verification' ;;
-            verify/blog-bijwerken-*)
-              WRITER='blog-bijwerken'; WORKFLOW='blog-bijwerken.yml'; GENERIC_SHADOW='false'; EXTRA='verification' ;;
-            verify/weekblog-*)
-              WRITER='weekblog'; WORKFLOW='weekblog.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
+            verify/menu-balk-fix-*) WRITER='menu-balk-fix'; WORKFLOW='menu-balk-fix.yml'; GENERIC_SHADOW='false'; EXTRA='none' ;;
+            verify/regelgeving-bijwerken-*) WRITER='regelgeving-bijwerken'; WORKFLOW='regelgeving-bijwerken.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
+            verify/seo-controle-*) WRITER='seo-controle'; WORKFLOW='seo-controle.yml'; GENERIC_SHADOW='true'; EXTRA='seo-all' ;;
+            verify/paginacontrole-*) WRITER='paginacontrole'; WORKFLOW='paginacontrole.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
+            verify/approved-central-blog-*) WRITER='approved-central-blog'; WORKFLOW='approved-central-blog.yml'; GENERIC_SHADOW='false'; EXTRA='verification' ;;
+            verify/blog-bijwerken-*) WRITER='blog-bijwerken'; WORKFLOW='blog-bijwerken.yml'; GENERIC_SHADOW='false'; EXTRA='verification' ;;
+            verify/weekblog-*) WRITER='weekblog'; WORKFLOW='weekblog.yml'; GENERIC_SHADOW='true'; EXTRA='none' ;;
             *) echo "::error::UNSUPPORTED_VERIFY_REF:$VERIFY_REF"; exit 1 ;;
           esac
           echo "writer=$WRITER" >> "$GITHUB_OUTPUT"
@@ -58,6 +65,9 @@ jobs:
           echo "extra=$EXTRA" >> "$GITHUB_OUTPUT"
 
       - name: Verify current-main scope compatibility
+        env:
+          VERIFY_PR_NUMBER: ${{ steps.verify_pr.outputs.number }}
+          EXPECTED_MAIN_SHA: ${{ steps.verify_pr.outputs.base_sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -66,25 +76,21 @@ jobs:
             echo "CURRENT_MAIN_EXACT:$actual_main_sha"
             exit 0
           fi
-
           pr_files="$(gh pr diff "$VERIFY_PR_NUMBER" --repo "$GITHUB_REPOSITORY" --name-only | sort -u)"
           main_files="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${EXPECTED_MAIN_SHA}...${actual_main_sha}" --jq '.files[].filename' | sort -u)"
           overlap="$(comm -12 <(printf '%s\n' "$pr_files" | sed '/^$/d') <(printf '%s\n' "$main_files" | sed '/^$/d') || true)"
-
           if [ -n "$overlap" ]; then
             echo "::error::CURRENT_MAIN_SCOPE_OVERLAP:$EXPECTED_MAIN_SHA:$actual_main_sha"
             printf '%s\n' "$overlap"
             exit 1
           fi
-
           echo "CURRENT_MAIN_DRIFT_IGNORED:$EXPECTED_MAIN_SHA:$actual_main_sha"
-          echo "Reason: independent BRAIN v2 lane; no changed-path overlap with current main."
 
       - name: Dispatch real writer in candidate mode only
-        shell: bash
         env:
           WORKFLOW: ${{ steps.writer.outputs.workflow }}
           EXTRA: ${{ steps.writer.outputs.extra }}
+        shell: bash
         run: |
           set -euo pipefail
           args=(workflow run "$WORKFLOW" --repo "$GITHUB_REPOSITORY" --ref "$VERIFY_REF" -f delivery_mode=candidate-pr)
@@ -99,38 +105,24 @@ jobs:
       - name: Resolve exact writer candidate PR
         id: candidate
         if: steps.writer.outputs.generic_shadow == 'true'
-        shell: bash
         env:
           WRITER: ${{ steps.writer.outputs.writer }}
+        shell: bash
         run: |
           set -euo pipefail
           PR_NUMBER=""
           for attempt in $(seq 1 72); do
             matches="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --limit 100 --json number,headRefName,body | jq -r --arg prefix "writer/$WRITER/" --arg verify "$VERIFY_SHA" '.[] | select(.headRefName | startswith($prefix)) | select((.body // "") | contains($verify)) | .number')"
             count="$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')"
-            if [ "$count" -gt 1 ]; then
-              echo "::error::AMBIGUOUS_WRITER_PR:$WRITER:$VERIFY_SHA:$matches"
-              exit 1
-            fi
-            if [ "$count" -eq 1 ]; then
-              PR_NUMBER="$(printf '%s\n' "$matches" | sed '/^$/d')"
-              break
-            fi
+            [ "$count" -le 1 ] || { echo "::error::AMBIGUOUS_WRITER_PR:$WRITER:$VERIFY_SHA:$matches"; exit 1; }
+            if [ "$count" -eq 1 ]; then PR_NUMBER="$(printf '%s\n' "$matches" | sed '/^$/d')"; break; fi
             sleep 5
           done
-          if [ -z "$PR_NUMBER" ]; then
-            echo "::error::WRITER_PR_NOT_FOUND:$WRITER:$VERIFY_SHA"
-            exit 1
-          fi
-
+          [ -n "$PR_NUMBER" ] || { echo "::error::WRITER_PR_NOT_FOUND:$WRITER:$VERIFY_SHA"; exit 1; }
           PR_BASE_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.base.sha')"
           PR_HEAD_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
           PR_HEAD_REF="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.ref')"
-          if [[ "$PR_HEAD_REF" != "writer/$WRITER/"* ]]; then
-            echo "::error::WRITER_PR_HEAD_REF_DRIFT:$WRITER:$PR_HEAD_REF"
-            exit 1
-          fi
-
+          [[ "$PR_HEAD_REF" == "writer/$WRITER/"* ]] || { echo "::error::WRITER_PR_HEAD_REF_DRIFT:$WRITER:$PR_HEAD_REF"; exit 1; }
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "base_sha=$PR_BASE_SHA" >> "$GITHUB_OUTPUT"
           echo "head_sha=$PR_HEAD_SHA" >> "$GITHUB_OUTPUT"
@@ -138,12 +130,12 @@ jobs:
 
       - name: Dispatch immutable read-only shadow
         if: steps.writer.outputs.generic_shadow == 'true'
-        shell: bash
         env:
           PR_NUMBER: ${{ steps.candidate.outputs.pr_number }}
           PR_BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
           PR_HEAD_SHA: ${{ steps.candidate.outputs.head_sha }}
           PR_HEAD_REF: ${{ steps.candidate.outputs.head_ref }}
+        shell: bash
         run: |
           set -euo pipefail
           gh workflow run repo-writer-candidate-shadow.yml \
