@@ -5,6 +5,7 @@ import { createAgentRegistry } from '../platform/agents/agent-registry.mjs';
 import { createAgentFabric } from '../platform/agents/agent-fabric.mjs';
 import { createDefaultAgentRegistry, DEFAULT_AGENT_TEAM } from '../platform/agents/agent-team.mjs';
 import { createTeamMemoryBridge } from '../platform/agents/team-memory-bridge.mjs';
+import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-preflight.mjs';
 
 function eventSink() {
   const events=[];
@@ -81,8 +82,8 @@ test('bridge converts bounded BG167 briefing records into tenant-scoped evidence
 });
 
 test('mandatory chat-learning preflight includes the canonical learning-plane authority contract', () => {
-  const contract=JSON.parse(readFileSync(new URL('../config/brain-chat-learning-contract.json', import.meta.url), 'utf8'));
+  const packet=compileChatLearningPreflight();
   const authority=readFileSync(new URL('../docs/brain/learning-plane-authority-contract-v1.md', import.meta.url), 'utf8');
-  assert.ok(contract.canonicalSources.includes('docs/brain/learning-plane-authority-contract-v1.md'));
+  assert.ok(packet.sources.some(source=>source.path==='docs/brain/learning-plane-authority-contract-v1.md'));
   assert.match(authority, /^Status: CANONICAL CONTRACT$/m);
 });
