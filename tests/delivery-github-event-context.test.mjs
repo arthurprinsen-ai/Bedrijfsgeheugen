@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeGitHubDeliveryEvent } from '../tools/delivery/github-event-context.mjs';
+import { normalizeGitHubDeliveryEvent } from '../tools/delivery-github-event-context.mjs';
 
 const sha = char => char.repeat(40);
 
