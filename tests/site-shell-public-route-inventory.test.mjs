@@ -40,4 +40,16 @@ test('website lane can never skip the all-public-pages visibility gate', async (
   assert.match(workflow, /\n  browser:\n\s+needs: \[classify, syntax-preflight, preview-ready\]/, 'shared browser job must wait for syntax preflight and the exact deploy preview');
 });
 
-// Keep this regression contract in the website lane so the fail-closed crawl can never silently disappear.
+test('final website pipeline re-applies Kennisbank navigation before sitemap and SEO verification', async () => {
+  const source = await readFile('tools/prijzen-uit-de-homepage.mjs', 'utf8');
+  assert.match(source, /ensureKnowledgeNavigation/);
+  assert.match(source, /verifyKnowledgeNavigation/);
+  const finalizer = source.indexOf('await borgFinaleKennisNavigatie()');
+  const sitemap = source.indexOf('await genereerSitemap()', finalizer);
+  const technicalSeo = source.indexOf('await controleerTechnischeSeo()', sitemap);
+  assert.ok(finalizer >= 0, 'finale Kennisbank-normalisatie moet onderdeel zijn van de website verify-stage');
+  assert.ok(sitemap > finalizer, 'sitemap moet de definitieve Kennisbank-navigatie zien');
+  assert.ok(technicalSeo > sitemap, 'technische SEO moet de definitieve sitemap en navigatie controleren');
+});
+
+// Keep these regression contracts in the website lane so final public output cannot silently regress.
