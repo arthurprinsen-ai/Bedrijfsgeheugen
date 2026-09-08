@@ -15,11 +15,6 @@ on:
         description: 'Optional exact base SHA; empty means current main'
         required: false
         default: ''
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'brain/evidence/writer-canary-trigger/*.json'
 
 permissions:
   contents: write
@@ -27,41 +22,29 @@ permissions:
   actions: write
 
 concurrency:
-  group: repo-writer-cheap-canary-${{ inputs.writer || github.head_ref }}
+  group: repo-writer-cheap-canary-${{ inputs.writer }}
   cancel-in-progress: false
 
 jobs:
   candidate:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      startsWith(github.head_ref, 'verify-cheap/regelgeving-bijwerken-') ||
-      startsWith(github.head_ref, 'verify-cheap/seo-controle-') ||
-      startsWith(github.head_ref, 'verify-cheap/weekblog-')
     runs-on: ubuntu-latest
     steps:
       - name: Resolve requested writer
         id: resolve
         env:
-          EVENT_NAME: ${{ github.event_name }}
           INPUT_WRITER: ${{ inputs.writer }}
-          HEAD_REF: ${{ github.head_ref }}
         run: |
           set -euo pipefail
-          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-            writer="$INPUT_WRITER"
-          else
-            case "$HEAD_REF" in
-              verify-cheap/regelgeving-bijwerken-*) writer='regelgeving-bijwerken' ;;
-              verify-cheap/seo-controle-*) writer='seo-controle' ;;
-              verify-cheap/weekblog-*) writer='weekblog' ;;
-              *) echo "::error::INVALID_CHEAP_CANARY_HEAD:$HEAD_REF"; exit 2 ;;
-            esac
-          fi
+          writer="$INPUT_WRITER"
+          case "$writer" in
+            regelgeving-bijwerken|seo-controle|weekblog) ;;
+            *) echo "::error::UNKNOWN_WRITER:$writer"; exit 2 ;;
+          esac
           echo "writer=$writer" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || inputs.base_sha || 'main' }}
+          ref: ${{ inputs.base_sha || 'main' }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v5
