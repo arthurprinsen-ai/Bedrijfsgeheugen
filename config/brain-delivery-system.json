@@ -15,9 +15,12 @@
     "brain/contracts/",
     "brain/production/",
     "tools/brain-delivery-system.mjs",
+    "tools/ci/",
     "tools/website-release-risk.mjs",
     "tests/development-doc-contract.test.mjs",
     "tests/website-release-risk.test.mjs",
+    "tests/single-flight-",
+    "tests/agents-delivery-contract.test.mjs",
     ".github/workflows/"
   ],
   "nonExecutableSharedPaths": ["docs/changes/", "docs/learning/"],
@@ -32,7 +35,7 @@
     "maxRebuildsForNonOverlappingDrift": 0
   },
   "conflictContracts": [
-    {"id":"delivery-control-plane","paths":["AGENTS.md","config/brain-delivery-system.json","brain/contracts/delivery-v2.schema.json","brain/production/continuous-delivery-v2.mjs","tools/brain-delivery-system.mjs",".github/workflows/unified-brain-delivery.yml","docs/superpowers/specs/"]},
+    {"id":"delivery-control-plane","paths":["AGENTS.md","config/brain-delivery-system.json","brain/contracts/delivery-v2.schema.json","brain/production/continuous-delivery-v2.mjs","tools/brain-delivery-system.mjs","tools/ci/","tests/single-flight-","tests/agents-delivery-contract.test.mjs",".github/workflows/unified-brain-delivery.yml",".github/workflows/required-test.yml","docs/superpowers/specs/"]},
     {"id":"platform-adapter-contract","paths":["config/brain-platform-adapters.json","brain/contracts/platform-adapter-v1.schema.json","tests/brain-platform-adapters.test.mjs"]},
     {"id":"brain-governance","paths":["config/outcome-obligations.json","docs/brain/component-registry.json"]},
     {"id":"supabase-schema","paths":["supabase/migrations/","supabase/schema/","supabase/schema.sql"]},
