@@ -19,11 +19,29 @@ test('pull request keeps immutable change head but tests the current merge candi
   assert.equal(context.headSha, sha('c'));
 });
 
-test('Required classifies the branch diff but executes lanes against the merge candidate', () => {
+test('Required classifies branch diff but executes code against merge candidate', () => {
   const workflow = readFileSync('.github/workflows/required-test.yml', 'utf8');
   assert.match(workflow, /change_head_sha=\$\{context\.changeHeadSha\}/);
   assert.match(workflow, /candidate_sha=\$\{context\.candidateSha\}/);
   assert.match(workflow, /context\.baseSha}\.\.\.\$\{context\.changeHeadSha}/);
   assert.match(workflow, /head_sha:\s*\$\{\{ needs\.preflight\.outputs\.candidate_sha \}\}/);
+  assert.match(workflow, /change_head_sha:\s*\$\{\{ needs\.preflight\.outputs\.change_head_sha \}\}/);
+  assert.match(workflow, /candidate_sha:\s*\$\{\{ needs\.preflight\.outputs\.candidate_sha \}\}/);
   assert.doesNotMatch(workflow, /Block unjustified moving-main successor rebuilds/);
+});
+
+test('website lane separates candidate build identity from Netlify preview identity', () => {
+  const workflow = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+  assert.match(workflow, /change_head_sha:/);
+  assert.match(workflow, /candidate_sha:/);
+  assert.match(workflow, /ref:\s*\$\{\{ inputs\.candidate_sha \}\}/);
+  assert.match(workflow, /HEAD_SHA:\s*\$\{\{ inputs\.change_head_sha \}\}/);
+  assert.match(workflow, /EXPECTED_COMMIT:\s*\$\{\{ inputs\.change_head_sha \}\}/);
+});
+
+test('BRAIN delivery validates merge candidate and does not hard-block on branch drift', () => {
+  const workflow = readFileSync('.github/workflows/unified-brain-delivery.yml', 'utf8');
+  assert.match(workflow, /github\.event_name == 'pull_request' && github\.sha/);
+  assert.doesNotMatch(workflow, /name: Enforce current-main file and contract conflict index/);
+  assert.match(workflow, /name: Record current-main drift evidence/);
 });
