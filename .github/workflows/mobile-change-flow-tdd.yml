@@ -1,0 +1,23 @@
+name: Mobile change flow TDD
+
+on:
+  pull_request:
+    paths:
+      - 'tools/site-shell/fix-homepage-context-slider.mjs'
+      - 'tools/site-shell/test-mobile-change-flow.mjs'
+      - '.github/workflows/mobile-change-flow-tdd.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Mobile 01-04 progress contract
+        run: node --test tools/site-shell/test-mobile-change-flow.mjs
