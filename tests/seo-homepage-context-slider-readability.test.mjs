@@ -32,11 +32,24 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.doesNotMatch(runtime,/compactThreshold/);
 });
 
-test('external slider-runtime is parsebaar als gewone browser-JavaScript',()=>{
+test('external slider-runtime is parsebaar en wordt synchroon vóór fallback geladen',()=>{
   assert.doesNotThrow(()=>new Script(runtime));
   assert.match(fixer,/RUNTIME_SRC\s*=\s*['"]\/assets\/compare-slider-runtime\.js['"]/);
   const upgraded=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
-  assert.match(upgraded,/<script data-bg-context-slider-readable src="\/assets\/compare-slider-runtime\.js" defer><\/script>/);
+  assert.match(upgraded,/<script data-bg-context-slider-readable src="\/assets\/compare-slider-runtime\.js"><\/script>/);
+  assert.doesNotMatch(upgraded,/compare-slider-runtime\.js" defer/);
+});
+
+test('fallback is zelf een volledige 0-100 slider als external runtime uitvalt',()=>{
+  assert.match(fixer,/data-bg-compare-owner','fallback/);
+  assert.match(fixer,/pointerdown/);
+  assert.match(fixer,/pointermove/);
+  assert.match(fixer,/touchstart/);
+  assert.match(fixer,/touchmove/);
+  assert.match(fixer,/touchend/);
+  assert.match(fixer,/--bg-compare-split/);
+  assert.match(fixer,/clip-path/);
+  assert.match(fixer,/aria-valuenow/);
 });
 
 test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand en geen randclamp',()=>{
@@ -111,7 +124,7 @@ test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-
   const upgraded=applyHomepageContextSliderReadability(stale);
   assert.doesNotMatch(upgraded,/>STALE</);
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
-  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"\s+defer><\/script>/g)||[]).length,1);
+  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length,1);
   assert.match(upgraded,/data-bg-compare-slider/);
 });
 
