@@ -36,15 +36,19 @@ test('real writers always execute from the immutable verification ref, never fro
   assert.doesNotMatch(dispatchLine, /--ref\s+main/);
 });
 
-test('moving main is ignored only when current-main changes do not overlap the canary scope', () => {
+test('dispatch-only harness derives immutable PR identity before checking moving-main compatibility', () => {
   const text = harness();
-  assert.match(text, /EXPECTED_MAIN_SHA:\s*\$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
-  assert.match(text, /VERIFY_PR_NUMBER:\s*\$\{\{ github\.event\.pull_request\.number \}\}/);
+  assert.match(text, /workflow_dispatch:/);
+  assert.match(text, /pr_number:/);
+  assert.match(text, /VERIFY_PR_NUMBER:\s*\$\{\{ inputs\.pr_number \}\}/);
+  assert.match(text, /gh api "repos\/\$\{GITHUB_REPOSITORY\}\/pulls\/\$\{VERIFY_PR_NUMBER\}"/);
+  assert.match(text, /EXPECTED_MAIN_SHA="\$\(jq -r '\.base\.sha'/);
   assert.match(text, /gh pr diff "\$VERIFY_PR_NUMBER"[^\n]*--name-only/);
   assert.match(text, /compare\/\$\{EXPECTED_MAIN_SHA\}\.\.\.\$\{actual_main_sha\}/);
   assert.match(text, /comm -12/);
   assert.match(text, /CURRENT_MAIN_SCOPE_OVERLAP/);
   assert.match(text, /CURRENT_MAIN_DRIFT_IGNORED/);
+  assert.doesNotMatch(text, /github\.event\.pull_request/);
   assert.doesNotMatch(text, /BASE_SHA_DRIFT/);
 });
 
