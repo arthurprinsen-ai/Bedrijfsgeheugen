@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, glob } from 'node:fs/promises';
 import { normaliseerAllePaginas } from './normaliseer-site-ui.mjs';
 import { controleerSiteUi } from './controleer-site-ui.mjs';
 import { genereerSitemap } from './genereer-sitemap.mjs';
@@ -7,24 +7,16 @@ import { applySeoOrderEngine } from './seo-order-engine/apply.mjs';
 import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
 import { applyHomepageAutomationLayout } from './fix-homepage-automation-layout.mjs';
 import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage-context-slider.mjs';
-
-// De homepage-app had een eigen prijzenweergave met verouderde bedragen.
-// /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
-// canonical merk-shell. Na de page-policy volgt nu één centrale SEO-order
-// enrichment. Sitemap, UI, technische SEO en de commerciële intent/link/blog
-// contracten worden daarna op exact dezelfde gebouwde output gecontroleerd.
+import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './site-shell/ensure-knowledge-nav.mjs';
 
 const DOEL = 'https://www.bedrijfsgeheugen.nl/prijzen';
+const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
 
 const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prijzen</span>
 <h2>De prijzen staan op een eigen pagina.</h2>
 <p>Vier pakketten, van &euro; 99 per maand tot een prijs op maat, met per pakket wat de AI voor je doet en hoe vers je gegevens zijn.</p>
 <p><a class="btn btn-primary" href="${DOEL}">Bekijk de prijzen &rarr;</a></p></div></div>`;
 
-// Finale endpoint-policy. Dit blok staat bewust ná alle homepage-builders, maar
-// gebruikt exact dezelfde canonieke splitvariabele als de slider-runtime. Zo is
-// er één waarheid voor reveal, ARIA, touch en desktop en kan late CSS de richting
-// of het bereik niet opnieuw omdraaien.
 const SLIDER_ENDPOINT_STYLE = `<style data-bg-compare-slider-endpoints>
 [data-bg-compare-slider]{position:relative!important;overflow:hidden!important;touch-action:pan-y}
 [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
@@ -109,6 +101,27 @@ async function borgHomepageContextSlider() {
   await writeFile('index.html', next, 'utf8');
 }
 
+async function borgFinaleKennisNavigatie() {
+  const bestanden = [];
+  for await (const pad of glob('*.html')) if (!MAG_NIET.has(pad)) bestanden.push(pad);
+  for await (const pad of glob('blog/*/index.html')) bestanden.push(pad);
+  bestanden.push('blog/index.html');
+
+  let gecontroleerd = 0;
+  for (const bestand of [...new Set(bestanden)]) {
+    let html;
+    try { html = await readFile(bestand, 'utf8'); } catch { continue; }
+    if (!html.includes('<body')) continue;
+    const next = ensureKnowledgeNavigation(html);
+    if (!verifyKnowledgeNavigation(next)) {
+      throw new Error(`${bestand}: finale Kennisbank/Blog-navigatie ontbreekt`);
+    }
+    if (next !== html) await writeFile(bestand, next, 'utf8');
+    gecontroleerd += 1;
+  }
+  console.log(`Finale Kennisbank/Blog-navigatie estate-wide geborgd op ${gecontroleerd} pagina's`);
+}
+
 export async function voerPricingShellPipelineUit(stage = 'all') {
   if (stage === 'all' || stage === 'rewrite') await bouwPrijsVerwijzing();
   if (stage === 'all' || stage === 'normalize') {
@@ -121,6 +134,7 @@ export async function voerPricingShellPipelineUit(stage = 'all') {
     await import('./bouw-v18-homepage-platform-expertise-toggle.mjs');
     await import('./bouw-v18-homepage-scroll-story.mjs');
     await borgHomepageContextSlider();
+    await borgFinaleKennisNavigatie();
     await genereerSitemap();
     await controleerSiteUi();
     await controleerTechnischeSeo();
