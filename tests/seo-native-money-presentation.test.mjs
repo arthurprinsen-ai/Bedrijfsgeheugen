@@ -80,3 +80,10 @@ test('wijzigingen-uitgelegd houdt rail en panelen actief wanneer optionele navig
   assert.match(html, /if \(volgende\) volgende\.addEventListener\('click'/, 'volgende-listener mag alleen op bestaand element worden gebonden');
   assert.doesNotMatch(html, /if\s*\(\s*!rail\s*\|\|[\s\S]*!telling[\s\S]*\)\s*return/, 'ontbrekende optionele controls mogen de railinteractie niet volledig uitschakelen');
 });
+
+test('site-normalisatie behoudt relatieve inhoudslinks zodat SEO-linkgrafiek de production state kan lezen', () => {
+  const html = '<!doctype html><html><head><title>Test</title></head><body><main><a href="/product">Product</a><a href="/frisse-blik?bron=test#start">Frisse blik</a></main></body></html>';
+  const out = normaliseerHtml(html, 'test.html');
+  assert.match(out, /href="\/product"/, 'relatieve inhoudslinks moeten relatief blijven');
+  assert.match(out, /href="\/frisse-blik\?bron=test#start"/, 'query en fragment op relatieve inhoudslinks moeten behouden blijven');
+});
