@@ -14,7 +14,9 @@ async function readState(page) {
     const after = afterSide?.querySelector('.compare-copy');
     const knob = slider?.querySelector('.compare-knob');
     const handle = slider?.querySelector('.compare-handle');
-    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle) return null;
+    const range = slider?.querySelector('.bg-compare-range');
+    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle || !range) return null;
+
     const sr = slider.getBoundingClientRect();
     const br = before.getBoundingClientRect();
     const ar = after.getBoundingClientRect();
@@ -27,6 +29,7 @@ async function readState(page) {
     const hit = document.elementFromPoint(cx, cy);
     const topSideAtCenter = hit?.closest('.compare-before') ? 'before' : hit?.closest('.compare-after') ? 'after' : null;
     const guardScripts = [...document.querySelectorAll('script[data-bg-context-slider-readable]')];
+
     return {
       split,
       legacySplit: Number.isFinite(legacyRaw) ? legacyRaw : null,
@@ -49,6 +52,13 @@ async function readState(page) {
         now: Number(knob.getAttribute('aria-valuenow')),
         disabled: knob.getAttribute('aria-disabled'),
         tabIndex: knob.tabIndex
+      },
+      range: {
+        min: Number(range.min),
+        max: Number(range.max),
+        value: Number(range.value),
+        disabled: range.disabled,
+        tabIndex: range.tabIndex
       },
       handleDisplay: getComputedStyle(handle).display,
       handleLeft: parseFloat(getComputedStyle(handle).left),
@@ -126,11 +136,13 @@ async function dragTouchTo(page, targetX) {
 }
 
 function assertCommon(g, label) {
-  if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
+  if (!g) fail(`${label}: compareSlider, tekstlagen of native range ontbreken`);
   if (!g.marked) fail(`${label}: slider mist generieke site-wide marker`, g);
   if (!['canonical','fallback'].includes(g.guard.owner)) fail(`${label}: slider moet door canonical runtime of functionele fallback worden beheerd`, g);
-  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: ARIA bereik moet exact 0-100 zijn`, g);
-  if (g.aria.disabled === 'true' || g.aria.tabIndex < 0) fail(`${label}: slider moet op mobiel en desktop actief blijven`, g);
+  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: gespiegeld ARIA bereik moet exact 0-100 zijn`, g);
+  if (g.aria.disabled === 'true') fail(`${label}: slider mag niet disabled zijn`, g);
+  if (g.range.min !== 0 || g.range.max !== 100) fail(`${label}: native range moet exact 0-100 zijn`, g);
+  if (g.range.disabled || g.range.tabIndex < 0) fail(`${label}: native range moet actief en focusbaar zijn`, g);
   if (g.handleDisplay === 'none') fail(`${label}: echte sliderhandle mag niet verborgen zijn`, g);
   if (g.slider.left < -1 || g.slider.right > g.viewportWidth + 1) fail(`${label}: slider mag niet buiten de viewport vallen`, g);
   const minReadableWidth = Math.min(220, g.slider.width * 0.5);
@@ -142,6 +154,7 @@ function assertCommon(g, label) {
 function assertLeftEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split <= 1)) fail(`${label}: helemaal links moet 0% bereiken`, g);
+  if (g.range.value > 1) fail(`${label}: native range moet links 0 zijn`, g);
   if (g.aria.now > 1) fail(`${label}: ARIA now moet links 0 zijn`, g);
   if (g.handleLeft > 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal links staan`, g);
   if (g.topSideAtCenter !== 'after') fail(`${label}: helemaal links moet alleen de witte/rechter after-laag tonen`, g);
@@ -150,6 +163,7 @@ function assertLeftEndpoint(g, label) {
 function assertRightEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split >= 99)) fail(`${label}: helemaal rechts moet 100% bereiken`, g);
+  if (g.range.value < 99) fail(`${label}: native range moet rechts 100 zijn`, g);
   if (g.aria.now < 99) fail(`${label}: ARIA now moet rechts 100 zijn`, g);
   if (g.handleLeft < g.slider.width - 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal rechts staan`, g);
   if (g.topSideAtCenter !== 'before') fail(`${label}: helemaal rechts moet alleen de blauwe/linker before-laag tonen`, g);
@@ -215,7 +229,18 @@ async function testViewport(browser, width, height, mobile = false) {
 
   const changeFlow = mobile ? await testMobileChangeFlow(page, `${width}px wijzigingsflow`) : null;
   await page.close();
-  return { width, nearLeft, nearRight, left: left.split, right: right.split, leftHandle: left.handleLeft, rightHandle: right.handleLeft, changeFlow };
+  return {
+    width,
+    nearLeft,
+    nearRight,
+    left: left.split,
+    right: right.split,
+    leftRange: left.range.value,
+    rightRange: right.range.value,
+    leftHandle: left.handleLeft,
+    rightHandle: right.handleLeft,
+    changeFlow
+  };
 }
 
 const browser = await chromium.launch({ headless: true });
