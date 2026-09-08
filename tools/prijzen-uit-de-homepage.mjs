@@ -21,12 +21,16 @@ const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prij
 <p>Vier pakketten, van &euro; 99 per maand tot een prijs op maat, met per pakket wat de AI voor je doet en hoe vers je gegevens zijn.</p>
 <p><a class="btn btn-primary" href="${DOEL}">Bekijk de prijzen &rarr;</a></p></div></div>`;
 
+// Finale endpoint-policy. Dit blok staat bewust ná alle homepage-builders, maar
+// gebruikt exact dezelfde canonieke splitvariabele als de slider-runtime. Zo is
+// er één waarheid voor reveal, ARIA, touch en desktop en kan late CSS de richting
+// of het bereik niet opnieuw omdraaien.
 const SLIDER_ENDPOINT_STYLE = `<style data-bg-compare-slider-endpoints>
 [data-bg-compare-slider]{position:relative!important;overflow:hidden!important;touch-action:pan-y}
 [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
-[data-bg-compare-slider] .compare-before{clip-path:inset(0 var(--split,50%) 0 0)!important}
-[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 calc(100% - var(--split,50%)))!important}
-[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--split,50%)!important;z-index:20!important}
+[data-bg-compare-slider] .compare-before{clip-path:inset(0 calc(100% - var(--bg-compare-split,50%)) 0 0)!important}
+[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--bg-compare-split,50%))!important}
+[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--bg-compare-split,50%),calc(100% - 24px))!important;z-index:20!important}
 @media(max-width:720px){
   [data-bg-compare-slider]{min-height:360px!important}
   [data-bg-compare-slider] .compare-before .compare-copy{margin-left:0!important;margin-right:auto!important;padding-right:18px!important}
