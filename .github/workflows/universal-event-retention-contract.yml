@@ -1,19 +1,6 @@
 name: Universal Event Retention Contract
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'tools/universal-event-*.mjs'
-      - 'tools/universal-failure-*.mjs'
-      - 'tools/event-retention-*.mjs'
-      - 'tests/universal-event-*.test.mjs'
-      - 'tests/universal-failure-*.test.mjs'
-      - 'tests/event-retention-*.test.mjs'
-      - 'config/universal-event-producers.json'
-      - '.github/workflows/universal-event-retention-contract.yml'
-      - 'docs/superpowers/specs/2026-09-01-universal-brain-event-retention-loop-design.md'
-      - 'docs/superpowers/plans/2026-09-01-universal-brain-event-retention-loop.md'
   workflow_dispatch:
 
 permissions:
