@@ -10,35 +10,24 @@ import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-be
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, hoofdletterMerk, SPEELS_CSS, SPEELS_JS, LEK, VERTREK,
          VRAAGBALK, VRAAG_CSS, VRAAG_JS, CONTEXT_CSS, CONTEXT_JS, RING, rolblok, bouwModules } from './v18-modules.mjs';
 
-
-// de gegevensbalk komt boven de kop; één keer, ook als de stap vaker draait
 function metGegevens(html) {
-  // let op: de opmaak met .bgx-gegevens staat al in de pagina, dus controleren
-  // op het element zelf — anders slaat deze stap zichzelf over
   if (html.includes('<div class="bgx-gegevens">')) return html;
   return html.replace('<header class="v17-header"', '<header class="v17-header"')
              .replace('</body>', LOCATIE_SCHEMA + '\n</body>');
 }
 
-// Zet elke contentpagina in dezelfde v18-schil: kop, navigatie, videoband,
-// kruimelpad, voet en opmaak. Titel, omschrijving, canoniek en het zoekwoord
-// blijven van de pagina zelf — die zijn per pagina bepaald in de zoekwoordstrategie.
-//
-// Draait tijdens de build, ná bouw-v18-production.mjs. De bestanden in de repo
-// blijven de leesbare bron; de v18-schil komt er in de build omheen.
-
-// deze staan al in v18 of horen geen sitekop te hebben
 const OVERSLAAN = new Set([
   'index.html', 'prototype-v18-stable.html', 'prijzen.html', 'cases.html',
   'index-oud.html',
-  'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html'
+  'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html',
+  // Volledig zelfstandige canonical trust-centerpagina: behoud bronmarkup,
+  // shell, structured data en eigen audit/print-interactie exact zoals getest.
+  'compliance-status.html'
 ]);
 
-// de pagina's die de v18-build zelf schrijft dragen de schil al
 for (const p of JSON.parse(await readFile('site/inhoudspaginas.json', 'utf8'))) {
   OVERSLAAN.add(p.bestand);
 }
-// en de weergaven uit de navigatie: die zijn hun eigen pagina geworden
 for (const b of VERVANGEN) OVERSLAAN.add(b);
 
 const schil = await leesSchil('index.html');
@@ -47,7 +36,6 @@ const basisCss = await readFile('assets/stijl.css', 'utf8');
 const bestanden = [];
 for await (const p of glob('*.html')) if (!OVERSLAAN.has(p)) bestanden.push(p);
 for await (const p of glob('blog/*/index.html')) bestanden.push(p);
-// de blogindex zelf valt buiten beide patronen hierboven
 if (!OVERSLAAN.has('blog/index.html')) bestanden.push('blog/index.html');
 bestanden.sort();
 
@@ -61,7 +49,6 @@ function padVan(bestand) {
   return '/' + bestand.replace(/\.html$/, '');
 }
 
-// het kruimelpad van de pagina zelf overnemen; anders er een afleiden
 function kruimelsVan(html, bestand) {
   const blok = html.match(/<nav class="bgkruim"[^>]*>([\s\S]*?)<\/nav>/);
   if (blok) {
@@ -101,9 +88,6 @@ for (const bestand of bestanden) {
   }
 }
 
-// ── de pagina's die de v18-build zelf schrijft: deelkaarten en kruimelpad ──
-// Zij erven de kop en voet al, maar dragen de og-tags van de homepage en
-// hebben geen kruimelpad. Dat trekken we hier recht.
 const v18Paginas = [
   ...JSON.parse(await readFile('site/inhoudspaginas.json', 'utf8')).map(p => ({ bestand: p.bestand, pad: p.pad, naam: p.h1 || p.kicker })),
 ];
@@ -127,7 +111,6 @@ for (const p of v18Paginas) {
       + html.slice(na);
     html = html.replace('</head>', INHOUD_CSS + '\n</head>');
   }
-  // zonder h1 weet Google niet waar de pagina over gaat: de eerste h2 wordt kop
   if (!/<h1[\s>]/.test(html)) {
     html = html.replace(/<h2([^>]*)>([\s\S]*?)<\/h2>/, (heel, attrs, inhoud) => `<h1${attrs}>${inhoud}</h1>`);
   }
@@ -142,10 +125,6 @@ for (const p of v18Paginas) {
   await writeFile(p.bestand, html, 'utf8');
 }
 
-// De homepage houdt haar eigen beweging, maar krijgt wel dezelfde speelse laag
-// als de rest: het lek-geeltje, de geeltjes bij 'geheugen' of vijf tikken op het
-// woordmerk, de gloed onder de muis, de leesbalk en de knop terug naar boven.
-// Zonder dit voelt de homepage anders aan dan elke pagina die erop volgt.
 {
   let home = await readFile('index.html', 'utf8');
   home = home.replace(/<img[^>]*portal-v18-full\.png[^>]*>/g, PORTAALBEELD);
@@ -160,22 +139,16 @@ for (const p of v18Paginas) {
   if (!home.includes('"@type":"Organization"')) {
     home = home.replace('</body>', ORGANISATIE_SCHEMA + '\n</body>');
   }
-  // dezelfde skyline als op de rest van de site
   home = home.replace(/\/assets\/openart-hero-iphone-safe-v1\.mp4/g, HERO_URL);
 
-  // en dezelfde onderdelen om mee te doen: vraagbalk, rekenaar en rolkiezer.
-  // Zonder deze voelt de homepage anders dan elke pagina die erop volgt.
   if (!home.includes('bgx-vraagbalk"')) {
     const { body: rekenaar } = bouwModules('');
     const blok = `<section class="inhoud-body" style="padding:44px 0"><div class="wrap">`
       + VRAAGBALK + rekenaar + rolblok('bedrijfsgeheugen') + vergelijker('een werkend bedrijfsgeheugen') + `</div></section>`;
-    // direct onder de hero, niet onderaan: de homepage is dertig meter lang en
-    // wat op de laatste meter staat ziet niemand
     const naHero = home.indexOf('</section>', home.indexOf('id="view-home"'));
     home = naHero === -1
       ? home.replace('</main>', blok + '</main>')
       : home.slice(0, naHero + 10) + blok + home.slice(naHero + 10);
-    // dezelfde blauwe laag over de herovideo als op de andere pagina's
     const blauw = `<style id="v18-home-blauw">
 .hero-video .hero-video-shade,.hero-inspiration .hero-video-shade{
   background:radial-gradient(120% 90% at 12% 0%,rgba(80,120,255,.34),transparent 60%),
@@ -198,10 +171,7 @@ if (fouten.length) {
   process.exit(1);
 }
 
-// de norm voor de controle komt uit de gebouwde homepage, zodat kop en voet
-// nooit uit de pas lopen met wat er live staat
 {
-  // uit een omgezette pagina, niet uit de homepage: daar staan nog knoppen
   const voorbeeld = await readFile('over-ons.html', 'utf8');
   const kop = voorbeeld.match(/<header class="v17-header"[\s\S]*?<\/header>/);
   const voet = voorbeeld.match(/<footer[\s\S]*?<\/footer>/);
@@ -209,8 +179,6 @@ if (fouten.length) {
   if (voet) await writeFile('.github/canoniek/voet.html', voet[0], 'utf8');
 }
 
-// De losse bouwstenen onder components/ zijn fragmenten, geen pagina's. Ze
-// horen niet in Google: dunne inhoud die met echte pagina's concurreert.
 for await (const p of glob('components/*/*.html')) {
   let h = await readFile(p, 'utf8');
   if (!/name="robots"/i.test(h)) {
@@ -221,9 +189,6 @@ for await (const p of glob('components/*/*.html')) {
   }
 }
 
-// Sfeerfoto's kwamen van een fotosite. Een hotlink is trager, kan wegvallen en
-// telt mee in de laadtijd die Google meet. Ze staan nu in de repo; de build zet
-// de verwijzingen om, ook als er andere parameters achter de URL staan.
 {
   const FOTOS = {
     "3184360": "/assets/foto/sfeer-3184360.jpg",
@@ -240,7 +205,6 @@ for await (const p of glob('components/*/*.html')) {
       const patroon = new RegExp('https://images\\.pexels\\.com/photos/' + nummer + '/[^"\'\\s)]*', 'g');
       if (patroon.test(h)) { h = h.replace(patroon, doel); veranderd = true; }
     }
-    // laadt pas wanneer nodig; scheelt op een telefoon een halve seconde
     if (h.includes('<img') && !h.includes('loading="lazy"')) {
       h = h.replace(/<img (?![^>]*loading=)/g, '<img loading="lazy" decoding="async" ');
       veranderd = true;
@@ -249,8 +213,6 @@ for await (const p of glob('components/*/*.html')) {
   }
 }
 
-// Alle pagina's, in één lijst. blog/index.html matcht noch '*.html' noch
-// 'blog/*/index.html' en viel daardoor al drie keer buiten een bewerking.
 async function allePaginas() {
   const uit = [];
   for await (const p of glob('*.html')) uit.push(p);
@@ -259,9 +221,6 @@ async function allePaginas() {
   return [...new Set(uit)];
 }
 
-// Een zichtbaar bouwstempel onderaan elke pagina. Zonder dit is niet te zien of
-// je naar de nieuwe versie kijkt of naar een gecachte oude, en dat kost meer
-// tijd dan het stempel zelf.
 {
   const nu = new Date();
   const stempel = nu.toLocaleString('nl-NL', { timeZone: 'Europe/Amsterdam', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -274,7 +233,6 @@ async function allePaginas() {
     fetch('/versie.txt', { cache: 'no-store' }).then(function(r){ return r.text(); }).then(function(t){
       var live = (t || '').trim();
       if (!live || live === mijn) return;
-      // deze pagina komt uit een cache en is ouder dan wat er nu live staat
       sessionStorage.setItem('bg-herladen', mijn);
       location.reload();
     }).catch(function(){});
@@ -296,5 +254,4 @@ async function allePaginas() {
   }
 }
 
-// de sitemap als laatste, want pas nu bestaan alle pagina's
 await import('./bouw-sitemap.mjs');
