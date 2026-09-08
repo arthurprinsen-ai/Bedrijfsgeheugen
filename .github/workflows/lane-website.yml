@@ -62,20 +62,29 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Verify mandatory website baseline and release-risk contracts
+      - name: Verify site baseline and release-risk contracts
         run: >-
           node --test
           tests/site-baseline-guardian.test.mjs
           tests/site-shell-public-route-inventory.test.mjs
           tests/site-shell-website-release-risk.test.mjs
           tests/targeted-website-route-regression.test.mjs
+      - name: Verify homepage and pricing boundary contracts
+        run: >-
+          node --test
           tests/homepage-pricing-boundary-readback.test.mjs
           tests/homepage-hero-video.test.mjs
           tests/prijzen-hero-seo.test.mjs
+      - name: Verify technical SEO contracts
+        run: >-
+          node --test
           tests/technical-seo-gate.test.mjs
+          tests/seo-order-*.test.mjs
+      - name: Verify V18 promotion contracts
+        run: >-
+          node --test
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
-          tests/seo-order-*.test.mjs
       - name: Verify Netlify and routing configuration
         run: python3 tools/config-wacht.py
       - name: Verify accepted hero media binary contract
