@@ -5,12 +5,13 @@ async function readJson(response){const data=await response.json().catch(()=>({}
 
 export function createConnectorBuilderStore({fetchFn=globalThis.fetch}={}){
   if(typeof fetchFn!=='function')throw new TypeError('fetchFn required');
-  const state={connectors:[],draft:null,testResult:null,executions:[],reviewQueue:[],status:'idle',error:null};
+  const state={connectors:[],readiness:null,draft:null,testResult:null,executions:[],reviewQueue:[],status:'idle',error:null};
   const api=async(path,options={})=>readJson(await fetchFn(path,{credentials:'include',headers:{'content-type':'application/json',...(options.headers||{})},...options}));
   const replaceConnector=saved=>{const index=state.connectors.findIndex(c=>c.id===saved.id);if(index>=0)state.connectors[index]=saved;else if(saved?.id)state.connectors.unshift(saved);};
   return {
     getState:()=>state,
     async load(){state.status='loading';try{state.connectors=await api('/api/connectors');state.status='ready';state.error=null;return state.connectors;}catch(error){state.status='error';state.error=error;throw error;}},
+    async loadReadiness(){try{state.readiness=await api('/api/connectors/readiness');return state.readiness;}catch(error){state.readiness=null;throw error;}},
     startTemplate(templateId){state.draft=createConnectorDraft(templateId);state.testResult=null;state.executions=[];state.error=null;return state.draft;},
     updateDraft(mutator){if(!state.draft)throw new Error('DRAFT_REQUIRED');const working=clone(state.draft);const result=mutator(working);state.draft=normalizeConnectorDraft(result||working);state.testResult=null;return state.draft;},
     setSource(source){return this.updateDraft(d=>{d.source={...(d.source||{}),...clone(source),config:{...(d.source?.config||{}),...(source?.config||{})}};return d;});},
