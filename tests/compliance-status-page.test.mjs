@@ -52,9 +52,9 @@ test('trust center strengthens the relevant Excel-as-CRM knowledge cluster', () 
   assert.match(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/excel-als-crm"/i);
 });
 
-test('a normal public HTML page links statically to the trust center', () => {
+test('a normal public HTML page links statically and crawlably to the trust center', () => {
   const contact = read('contact.html');
-  assert.match(contact, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/compliance-status"/i);
+  assert.match(contact, /href="\/compliance-status"/i);
 });
 
 test('shared public shell exposes trust center from over-ons and AI Act', () => {
