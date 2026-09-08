@@ -23,19 +23,18 @@ test('production Portal V2 is standalone and never routes into the legacy portal
   await expect(page.locator('a[href*="/klantportaal"]')).toHaveCount(0);
   await expect(page.locator('a[href*="/portal-next/"]')).toHaveCount(0);
 
-  const nativeTargets = [
-    ['roadmap', 'Roadmap'],
-    ['ai-scan', 'AI Scan'],
-    ['wijzigingen', 'Wijzigingen'],
-  ];
-
-  for (const [pageId] of nativeTargets) {
+  const nativeTargets = ['roadmap', 'ai-scan', 'wijzigingen'];
+  for (const pageId of nativeTargets) {
     const trigger = page.locator(`[data-open-page="${pageId}"]`).first();
     await expect(trigger, `${pageId} must have a native V2 trigger`).toBeVisible();
+    await expect(trigger).toHaveAttribute('href', new RegExp(`^https://www\\.bedrijfsgeheugen\\.nl/portal-v2/\\?page=${pageId}$`));
     await trigger.click();
     await expect(page).toHaveURL(/\/portal-v2\//);
     expect(page.url()).not.toContain('/klantportaal');
+    await expect(page.locator('#portalView')).toHaveAttribute('data-page-id', pageId);
     await expect(page.locator('iframe')).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#portalView')).toHaveAttribute('aria-hidden', 'true');
   }
 
   expect(legacyRequests, 'Portal V2 must not request legacy portal routes').toEqual([]);
