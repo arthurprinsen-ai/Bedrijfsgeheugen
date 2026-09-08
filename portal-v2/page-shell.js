@@ -1,15 +1,46 @@
-import { findPage, listPortalGroups, buildLegacyUrl } from './page-registry.js';
-import { customerSlug, canEmbedLegacy } from './legacy-bridge.js';
+import { findPage, listPortalGroups } from './page-registry.js';
+import { nativePageContent } from './native-pages.js';
 import { renderCsrdImpact } from './csrd-impact.js';
-
-const BRAIN_PAGES = new Set([
-  'bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties',
-  'recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail'
-]);
-const NATIVE_PAGES = new Set(['csrd-impact', ...BRAIN_PAGES]);
+import { renderStrategyDna } from './strategy-dna.js';
 
 const COPY = {
+  overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
+  profiel:['Profiel per onderdeel','Bekijk de actuele stand per bedrijfsdomein, inclusief onderbouwing, risico’s en aanbevolen vervolgstappen.'],
+  'data-ai':['Data en AI','Breng bronnen, datakwaliteit, AI-kansen en uitvoerbare verbeteringen samen.'],
+  'ai-scan':['AI-scan: kansenkaart','Prioriteer AI-kansen op waarde, haalbaarheid, risico en benodigde data.'],
+  kansenkaart:['Kansenkaart','Eén overzicht van commerciële, operationele en digitale verbeterkansen.'],
   'csrd-impact':['CSRD & Impact','Van CO₂, water en circulariteit tot social, governance, readiness, acties en auditbewijs in één klantwaardige impactcockpit.'],
+  'gegevens-invullen':['Je gegevens invullen','Vul ontbrekende bedrijfscontext direct in V2 aan en zie onmiddellijk wat dat verandert in scores, risico’s en advies.'],
+  'ingevulde-gegevens':['Wat je hebt ingevuld','Controleer alle vastgelegde bedrijfsgegevens, bron, eigenaar, actualiteit en volledigheid.'],
+  businesscase:['Businesscase','Vertaal verbeterkansen naar investering, baten, tijdwinst, risico en terugverdientijd.'],
+  'cijfers-maatstaven':['Cijfers en maatstaven','Vergelijk KPI’s, benchmarks en trends en maak afwijkingen direct bespreekbaar.'],
+  'waarde-financiering':['Waarde en financiering','Maak financiële waarde, scenario’s, investeringsruimte en financieringsimpact zichtbaar.'],
+  mensen:['Mensen','Breng rollen, capaciteit, expertise, afhankelijkheden en kennisrisico’s in kaart.'],
+  'branche-markt':['Branche en markt','Vergelijk de organisatie met marktontwikkelingen, concurrentie en relevante benchmarks.'],
+  onderzoek:['Onderzoek','Bundel analyses, hypotheses, bevindingen, bronnen en conclusies in één traceerbaar overzicht.'],
+  'compliance-governance':['Compliance, security en governance','Volg verplichtingen, controls, risico’s, bewijs en acties voor onder meer AI Act, NIS2, privacy en security.'],
+  'compliance-command-center':['Compliance Command Center','Eén operationele cockpit voor compliance-readiness, bewijs, open risico’s en auditacties.'],
+  'ai-capabilities':['AI-capabilities','Zie welke AI-capabilities beschikbaar, gewenst, verantwoord en aantoonbaar operationeel zijn.'],
+  'strategy-dna':['Strategy DNA','Leg ambitie, klantbelofte, strategische keuzes, capabilities, bewijs en uitvoeringsritme vast en vertaal dit direct naar uitvoering.'],
+  strategiemodellen:['Strategiemodellen','Gebruik strategische modellen binnen dezelfde V2-context en koppel ze direct aan uitvoering.'],
+  modellen:['Alle modellen','Werk met alle relevante analyse- en beslismodellen zonder het portaal te verlaten.'],
+  canvassen:['Canvassen','Leg strategie, organisatie, klantwaarde en uitvoering vast in interactieve canvassen.'],
+  eindconclusie:['De eindconclusie','Vat bewijs, analyses, risico’s, kansen en prioriteiten samen tot één bestuurlijke conclusie.'],
+  'due-diligence':['Due diligence','Onderzoek organisatie, data, processen, technologie, risico’s en verbeterpotentieel vanuit één V2-dossier.'],
+  exit:['Exit','Maak overdraagbaarheid, afhankelijkheden, risico’s, waardedrijvers en exit-readiness zichtbaar.'],
+  'strategie-naar-maandagochtend':['Van strategie naar maandagochtend','Vertaal richting naar concrete thema’s, capabilities, processen, systemen, data, acties en outcomes.'],
+  'actueel-houden':['Actueel houden','Laat zien welke informatie veroudert, wie eigenaar is en welke update nodig is.'],
+  wijzigingen:['Wijzigingen','Volg wat veranderde, welk onderdeel geraakt wordt en welke opvolging nodig is.'],
+  advies:['Advies','Zet analyse om in geprioriteerd, uitlegbaar en uitvoerbaar advies met eigenaar en bewijs.'],
+  offerte:['Offerte','Vertaal scope en gewenste uitkomst naar een concrete aanpak en voorstel.'],
+  roadmap:['Roadmap','Plan initiatieven, afhankelijkheden, mijlpalen, voortgang en gerealiseerde waarde.'],
+  uitvoeringsladder:['Uitvoeringsladder','Maak zichtbaar waar een onderwerp staat van tellen en vastleggen tot koppelen, meten, borgen en resultaat.'],
+  'taken-werkstromen':['Taken & werkstromen','Stuur acties, eigenaren, deadlines, afhankelijkheden, status en bewijs vanuit V2.'],
+  koppelingen:['Koppelingen','Beheer databronnen en systemen als native onderdeel van V2, inclusief readiness, synchronisatie, foutstatus en evidence.'],
+  gebruikers:['Gebruikers','Beheer gebruikers, rollen, rechten en verantwoordelijkheden binnen V2.'],
+  documenten:['Documenten','Beheer bedrijfsdocumenten, metadata, actualiteit, bron, eigenaar en AI-verwerking in V2.'],
+  instellingen:['Instellingen','Beheer organisatie-, portaal-, notificatie-, data- en governance-instellingen vanuit één plek.'],
+  audit:['Audit','Maak besluiten, wijzigingen, bewijs, controles en verantwoordelijkheden auditbaar.'],
   bronnenstatus:['Bronnenstatus','Zie welke bronnen beschikbaar zijn, welke aandacht vragen en waar bewijs ontbreekt.'],
   datahubstatus:['Datahubstatus','Volg structurering, verrijking en verbinding van bedrijfsdata zonder onbewezen live-status te tonen.'],
   'brain-verwerking':['Brain-verwerking','Maak zichtbaar wat het bedrijfsbrein met context doet: begrijpen, verbinden, prioriteren en adviseren.'],
@@ -22,17 +53,24 @@ const COPY = {
   audittrail:['Audittrail','Maak besluiten, acties, wijzigingen en bewijs terugvindbaar in één traceerbare keten.']
 };
 
+const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
+
 export function pagePresentation(pageId) {
   const page=findPage(pageId);
   if(!page) return null;
-  const brain=BRAIN_PAGES.has(pageId);
-  const [title,description]=COPY[pageId] || [page.label, brain?'Onderdeel van de Brain & Powerhouse-laag.':`Open ${page.label} in de bestaande portalfunctionaliteit.`];
+  const [title,description]=COPY[pageId] || [page.label,`${page.label} is een standaardonderdeel van Portal V2.`];
+  const content=nativePageContent(pageId) || {};
   return {
     ...page,
+    ...content,
     title,
     description,
-    kind: NATIVE_PAGES.has(pageId) ? 'native-v2' : (page.legacyTab ? 'legacy' : 'native-v2'),
-    evidenceLabel: pageId==='csrd-impact' ? 'Impactdata + evidence in één traceerbare cockpit' : (brain ? 'Status alleen met runtime-evidence' : 'Bestaande portalinhoud behouden')
+    kind:'native-v2',
+    evidenceLabel: pageId==='csrd-impact'
+      ? 'Impactdata + evidence in één traceerbare cockpit'
+      : BRAIN_PAGES.has(pageId)
+        ? 'Native Portal V2 · status alleen met runtime-evidence'
+        : 'Native Portal V2 · zelfstandige module zonder legacy-afhankelijkheid'
   };
 }
 
@@ -48,7 +86,7 @@ function ensureShell(){
   if(root) return root;
   root=document.createElement('div');
   root.id='portalView';root.className='portalview';root.setAttribute('aria-hidden','true');
-  root.innerHTML=`<div class="pvbackdrop" data-close></div><section class="pvpanel" role="dialog" aria-modal="true" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Klantenportaal</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Sluiten">×</button></header><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"><div class="pvsteps"><article><b>1 · Context</b><span>Bronnen en samenhang</span></article><article><b>2 · Intelligentie</b><span>Analyse, besluit en prioriteit</span></article><article><b>3 · Uitvoering</b><span>Actie, bewijs en learning</span></article></div><div class="pvevidence"><b>Geen cosmetische live-status</b><p>V2 toont alleen een actieve productieflow wanneer daar runtime-evidence voor beschikbaar is. In reviewmodus blijft dit expliciet een product-/UX-weergave.</p></div></div><div class="pvlegacy" id="pvLegacy"><iframe id="pvFrame" title="Bestaande klantenportaalpagina"></iframe><div class="pvfallback" id="pvFallback"><p>Deze reviewomgeving kan de live klantenportal niet veilig inbedden.</p><a id="pvOpen" href="https://www.bedrijfsgeheugen.nl/klantportaal" target="_blank" rel="noopener">Open bestaande functionaliteit ↗</a></div></div></div></section>`;
+  root.innerHTML=`<div class="pvbackdrop" data-close></div><section class="pvpanel" role="dialog" aria-modal="true" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Sluiten">×</button></header><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"></div></div></section>`;
   document.body.appendChild(root);
   root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',closePortalPage));
   return root;
@@ -60,34 +98,43 @@ export function closePortalPage(){
   document.documentElement.classList.remove('portalview-open');
 }
 
-function resetNative(native){
-  native.innerHTML=`<div class="pvsteps"><article><b>1 · Context</b><span>Bronnen en samenhang</span></article><article><b>2 · Intelligentie</b><span>Analyse, besluit en prioriteit</span></article><article><b>3 · Uitvoering</b><span>Actie, bewijs en learning</span></article></div><div class="pvevidence"><b>Geen cosmetische live-status</b><p>V2 toont alleen een actieve productieflow wanneer daar runtime-evidence voor beschikbaar is. In reviewmodus blijft dit expliciet een product-/UX-weergave.</p></div>`;
+function esc(value=''){
+  return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function renderMetrics(block){
+  return `<section class="pvmodule pvmetrics"><div class="pvmodulehead"><span>01</span><h3>${esc(block.title)}</h3></div><div class="pvmetricgrid">${block.items.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div></section>`;
+}
+function renderWorklist(block){
+  return `<section class="pvmodule"><div class="pvmodulehead"><span>02</span><h3>${esc(block.title)}</h3></div><div class="pvworklist">${block.items.map(([label,value])=>`<article><div><b>${esc(label)}</b><p>${esc(value)}</p></div><span>→</span></article>`).join('')}</div></section>`;
+}
+function renderActions(block){
+  return `<section class="pvmodule"><div class="pvmodulehead"><span>03</span><h3>${esc(block.title)}</h3></div><div class="pvactions">${block.items.map(([label,pageId],index)=>`<button type="button" data-pv-page="${esc(pageId)}" class="${index===0?'primary':''}"><span>${esc(label)}</span><i>→</i></button>`).join('')}</div></section>`;
+}
+
+function renderNative(native,view){
+  const blocks=Array.isArray(view.blocks)?view.blocks:[];
+  native.innerHTML=`<div class="pvnativehero"><div><span>Zelfstandig onderdeel</span><h3>${esc(view.title)}</h3><p>${esc(view.description)}</p></div><button type="button" class="pvprimary">${esc(view.primaryAction || 'Open onderdeel')} <span>→</span></button></div>${blocks.map(block=>block.type==='metrics'?renderMetrics(block):block.type==='worklist'?renderWorklist(block):block.type==='actions'?renderActions(block):'').join('')}<div class="pvevidence"><b>Native V2 contract</b><p>Deze module draait binnen dezelfde Portal V2-shell, gebruikt dezelfde V2-context en schakelt niet door naar een tweede portaal. Live-status wordt alleen getoond wanneer runtime-evidence beschikbaar is.</p></div>`;
+  native.querySelectorAll('[data-pv-page]').forEach(btn=>btn.addEventListener('click',()=>openPortalPage(btn.dataset.pvPage)));
+  native.querySelector('.pvprimary')?.addEventListener('click',()=>{
+    const first=blocks.find(block=>block.type==='actions')?.items?.[0]?.[1];
+    if(first) openPortalPage(first);
+  });
 }
 
 export function openPortalPage(pageId){
   const view=pagePresentation(pageId);if(!view)return false;
   const root=ensureShell();
   root.classList.toggle('impact-mode',pageId==='csrd-impact');
-  root.querySelector('#pvKicker').textContent=view.sectionId==='brein-powerhouse'?'Brein & Powerhouse':'Klantenportaal';
+  root.querySelector('#pvKicker').textContent=view.sectionId==='brein-powerhouse'?'Brein & Powerhouse':'Portal V2';
   root.querySelector('#pvTitle').textContent=view.title;
   root.querySelector('#pvDescription').textContent=view.description;
   root.querySelector('#pvStatus').textContent=view.evidenceLabel;
   root.dataset.pageId=pageId;
-  const native=root.querySelector('#pvNative'),legacy=root.querySelector('#pvLegacy');
-  const frame=root.querySelector('#pvFrame'),fallback=root.querySelector('#pvFallback'),link=root.querySelector('#pvOpen');
-  if(view.kind==='legacy'){
-    native.hidden=true;legacy.hidden=false;
-    const url=buildLegacyUrl(pageId,customerSlug());
-    link.href=url || 'https://www.bedrijfsgeheugen.nl/klantportaal';
-    if(canEmbedLegacy(location)){
-      frame.hidden=false;fallback.hidden=true;frame.src=url;
-    }else{
-      frame.hidden=true;fallback.hidden=false;frame.removeAttribute('src');
-    }
-  }else{
-    legacy.hidden=true;native.hidden=false;
-    if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage}); else resetNative(native);
-  }
+  const native=root.querySelector('#pvNative');
+  if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage});
+  else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
+  else renderNative(native,view);
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
 }
@@ -108,6 +155,7 @@ export function enhancePortalShell(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
+  bindTextButton('.nav button','bedrijfsgezondheid','profiel');
   bindTextButton('.nav button','strategie','strategie-naar-maandagochtend');
   bindTextButton('.nav button','processen','profiel');
   bindTextButton('.nav button','kennis','documenten');
@@ -117,16 +165,23 @@ export function enhancePortalShell(){
   bindTextButton('.nav button','rapportages','audit');
 
   bindTextButton('.quick button','koppelingen','koppelingen');
+  bindTextButton('.quick button','koppeling bouwen','koppelingen');
   bindTextButton('.quick button','taken','taken-werkstromen');
   bindTextButton('.quick button','kennisbank','documenten');
+  bindTextButton('.quick button','rapportages','audit');
   bindTextButton('.quick button','gebruikers','gebruikers');
   bindTextButton('.quick button','instellingen','instellingen');
+
+  document.querySelectorAll('[data-open-page]').forEach(node=>node.addEventListener('click',event=>{
+    event.preventDefault();
+    openPortalPage(node.dataset.openPage);
+  }));
 
   const search=document.querySelector('.search');
   if(search){
     const results=document.createElement('div');results.className='pvsearchresults';search.parentElement.appendChild(results);
     const render=()=>{
-      const term=search.value; if(!term.trim()){results.classList.remove('open');results.innerHTML='';return;}
+      const term=search.value;if(!term.trim()){results.classList.remove('open');results.innerHTML='';return;}
       const hits=searchPortalPages(term);results.innerHTML=hits.length?hits.map(p=>`<button type="button" data-page="${p.id}"><b>${p.label}</b><span>${p.groupLabel}</span></button>`).join(''):'<div class="pvempty">Geen portalonderdeel gevonden</div>';
       results.classList.add('open');results.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{openPortalPage(b.dataset.page);results.classList.remove('open')}));
     };

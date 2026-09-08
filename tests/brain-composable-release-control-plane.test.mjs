@@ -35,9 +35,9 @@ test('website lane keeps public visibility mandatory while broad checks are high
   assert.match(website, /verify-targeted-website-routes\.mjs/);
 });
 
-test('production readback serializes only latest production verification', () => {
+test('production readback is serialized and never cancelled mid-flight', () => {
   const production = readFileSync('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(production, /group:\s*production-release-readback\s*$/m);
-  assert.match(production, /cancel-in-progress:\s*true/);
+  assert.match(production, /cancel-in-progress:\s*false/);
   assert.doesNotMatch(required, /concurrency:[\s\S]*production-release-readback/);
 });
