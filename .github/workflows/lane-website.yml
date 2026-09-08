@@ -73,6 +73,8 @@ jobs:
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
           tests/seo-order-live-readback.test.mjs
+      - name: Verify canonical shell component contract
+        run: node tools/site-shell/test-shell-components.mjs
       - name: Verify canonical live shell contract
         run: node tools/site-shell/test-live-contract.mjs
 
