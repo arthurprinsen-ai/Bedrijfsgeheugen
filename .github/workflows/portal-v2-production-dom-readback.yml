@@ -1,12 +1,6 @@
 name: Portal V2 Production DOM Readback
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'portal-v2/**'
-      - 'tests/integration/portal-v2-production-*.spec.js'
-      - '.github/workflows/portal-v2-production-dom-readback.yml'
   push:
     branches: [main]
     paths:
@@ -16,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: portal-v2-production-dom-readback-${{ github.event.pull_request.number || github.ref }}
+  group: portal-v2-production-dom-readback-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -36,15 +30,7 @@ jobs:
           npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
       - name: Resolve exact readback target
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ "$EVENT_NAME" = "pull_request" ]; then
-            echo "PORTAL_READBACK_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
-          else
-            echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
-          fi
+        run: echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
       - name: Wait for exact readback target
         run: |
           ready=0

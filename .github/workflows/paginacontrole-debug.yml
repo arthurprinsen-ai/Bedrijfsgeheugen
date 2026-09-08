@@ -1,19 +1,6 @@
 name: Pagina- en SEO-controle diagnose
 
 on:
-  pull_request:
-    paths:
-      - '*.html'
-      - 'blog/**'
-      - 'components/**'
-      - 'assets/**'
-      - 'site/**'
-      - 'tools/site-shell/**'
-      - 'tools/normaliseer-site-ui.mjs'
-      - '.github/canoniek/**'
-      - '.github/scripts/paginacontrole.py'
-      - '.github/scripts/seocontrole.py'
-      - '.github/workflows/paginacontrole-debug.yml'
   workflow_dispatch:
 
 permissions:

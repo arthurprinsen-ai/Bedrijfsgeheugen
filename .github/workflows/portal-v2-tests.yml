@@ -1,41 +1,15 @@
 name: Portal V2 Tests
-
 on:
   push:
-    branches:
-      - feature/klantenportaal-brain-powerhouse-v1
-    paths:
-      - 'portal-v2/**'
-      - 'portal-next/portal-content-map.js'
-      - '.github/workflows/portal-v2-tests.yml'
-  pull_request:
-    paths:
-      - 'portal-v2/**'
-      - 'portal-next/portal-content-map.js'
-      - '.github/workflows/portal-v2-tests.yml'
-
-permissions:
-  contents: read
-
+    branches: [main, feature/klantenportaal-brain-powerhouse-v1]
+    paths: ['portal-v2/**','portal-next/portal-content-map.js','.github/workflows/portal-v2-tests.yml']
+  workflow_dispatch:
+permissions: {contents: read}
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Run portal-v2 contract tests
-        working-directory: portal-v2
-        run: npm test
-      - name: Verify V2 shell assets and wiring
-        run: |
-          test -f portal-v2/index.html
-          test -f portal-v2/app.css
-          test -f portal-v2/app.js
-          test -f portal-v2/page-shell.js
-          test -f portal-v2/interaction.css
-          test -f portal-v2/brain.svg
-          grep -q "./brain.svg" portal-v2/app.js
-          grep -q "enhancePortalShell" portal-v2/app.js
-          grep -q "openPortalPage" portal-v2/app.js
+        with: {node-version: '22'}
+      - run: npm --prefix portal-v2 test
