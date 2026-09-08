@@ -15,7 +15,7 @@ test('wizard skips target choice when template has one safe default target',()=>
   assert.equal(nextQuestion(state).key,'confirmSchedule');
 });
 
-test('generated definition keeps technical config internal and uses safe defaults',()=>{
+test('generated definition matches the connector engine contract',()=>{
   let state=createWizardState(findTemplate('outlook-pdf-facturen'));
   state=applyAnswer(state,'connection','m365-1');
   state=applyAnswer(state,'confirmSchedule',true);
@@ -24,7 +24,12 @@ test('generated definition keeps technical config internal and uses safe default
   assert.equal(definition.source.connectionId,'m365-1');
   assert.equal(definition.target.type,'datahub');
   assert.equal(definition.schedule,'dag');
-  assert.equal(definition.documentType,'invoice');
+  assert.equal(definition.documentSchema.type,'invoice');
+  assert.deepEqual(definition.documentSchema.fields.map(field=>field.key),findTemplate('outlook-pdf-facturen').fields);
+  assert.ok(definition.documentSchema.fields.every(field=>field.required===false&&field.confidenceThreshold===0.8));
+  assert.ok(definition.mappings.length>0);
+  assert.ok(definition.mappings.every(mapping=>mapping.sourceField===mapping.targetField&&mapping.transformation.type==='none'));
+  assert.equal(definition.reviewPolicy.requiredBelowConfidence,0.8);
   assert.equal(definition.activation,'test-required');
   assert.equal('credentials' in definition,false);
 });
