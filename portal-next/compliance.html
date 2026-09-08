@@ -8,31 +8,83 @@
 <title>Compliance Command Center · Bedrijfsgeheugen</title>
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/portal-next/compliance.html">
 <link rel="icon" href="https://www.bedrijfsgeheugen.nl/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://www.bedrijfsgeheugen.nl/portal-next/compliance-command-center.css">
-<style>
-.cc-contextbar{max-width:1560px;margin:0 auto;padding:18px 28px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 13px/1.4 Inter,system-ui,sans-serif}.cc-contextbar nav{display:flex;gap:7px;flex-wrap:wrap}.cc-contextbar a{color:#173f35;text-decoration:none;border:1px solid #dce3e0;background:#fff;border-radius:999px;padding:8px 11px}.cc-contextbar strong{display:block}.cc-contextbar small{display:block;color:#65716d;font-weight:500}.cc-trust-context{max-width:1504px;margin:0 auto 10px;padding:0 28px;display:flex;gap:7px;flex-wrap:wrap;font:700 11px/1.4 Inter,system-ui,sans-serif}.cc-trust-context a{color:#44514c;text-decoration:none;border-bottom:1px solid #b9c5c0;padding:7px 2px}@media(max-width:700px){.cc-contextbar{padding:12px 14px 0;align-items:flex-start;flex-direction:column}.cc-trust-context{padding:0 14px}}
-</style>
 </head>
 <body>
-<header class="cc-contextbar">
-  <div><strong>Bedrijfsgeheugen · Business OS · Trust & Governance</strong><small id="ccCustomerContext">Compliance-context laden…</small></div>
-  <nav aria-label="Portaalcontext"><a id="ccBackPortal" href="https://www.bedrijfsgeheugen.nl/klantportaal">← Portaal</a><a href="https://www.bedrijfsgeheugen.nl/portal-next/">Business OS</a></nav>
-</header>
-<nav class="cc-trust-context" aria-label="Gerelateerde trust informatie">
-  <a href="https://www.bedrijfsgeheugen.nl/ai-act">EU AI Act</a>
-  <a href="https://www.bedrijfsgeheugen.nl/ai-governance">AI Governance</a>
-  <a href="https://www.bedrijfsgeheugen.nl/data-soevereiniteit">Data-soevereiniteit</a>
-  <a href="https://www.bedrijfsgeheugen.nl/privacy">Privacy</a>
-  <a href="https://www.bedrijfsgeheugen.nl/due-diligence">Due diligence</a>
+<div class="cc-app-shell">
+  <aside class="cc-sidebar" aria-label="Bedrijfsgeheugen navigatie">
+    <a class="cc-brand" href="https://www.bedrijfsgeheugen.nl/portal-next/" aria-label="Bedrijfsgeheugen Business OS">
+      <span class="cc-brandmark" aria-hidden="true"><i></i><b></b></span>
+      <span><strong>Bedrijfsgeheugen</strong><small>Van kennis naar voortgang</small></span>
+    </a>
+    <nav class="cc-side-nav">
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">⌂ <span>Overzicht</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">◇ <span>Strategie</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">↗ <span>Groei</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">⚙ <span>Operatie</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">◎ <span>Organisatie</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">◫ <span>Data & Technologie</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">▶ <span>Uitvoering</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">✓ <span>Mijn werk</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">▦ <span>Model Library</span></a>
+      <a class="is-active" href="https://www.bedrijfsgeheugen.nl/portal-next/compliance.html" aria-current="page">▣ <span>Trust & Governance</span></a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-next/">⚙ <span>Beheer</span></a>
+    </nav>
+    <div class="cc-side-story" aria-hidden="true">
+      <div class="cc-mountain"></div>
+      <strong>Duurzaam vooruit.</strong>
+      <span>Met kennis die blijft.</span>
+    </div>
+  </aside>
+
+  <div class="cc-stage">
+    <header class="cc-topbar">
+      <label class="cc-global-search">
+        <span aria-hidden="true">⌕</span>
+        <input id="ccGlobalSearch" type="search" placeholder="Zoeken in Bedrijfsgeheugen..." autocomplete="off">
+        <kbd>⌘ K</kbd>
+      </label>
+      <div class="cc-top-actions">
+        <button class="cc-icon-button" type="button" aria-label="Meldingen">♢<i></i></button>
+        <button class="cc-user-profile" type="button" aria-label="Profiel">
+          <span class="cc-avatar">JD</span>
+          <span><strong>Jan de Vries</strong><small>Acme B.V.</small></span>
+          <b>⌄</b>
+        </button>
+      </div>
+    </header>
+
+    <div class="cc-pagebar">
+      <div class="cc-breadcrumbs"><a href="https://www.bedrijfsgeheugen.nl/portal-next/">Trust & Governance</a><span>›</span><strong>Compliance Command Center</strong></div>
+      <div class="cc-page-context"><span>Van inzicht<br>naar vertrouwen.</span><i>↘</i><small>Vandaag<br>veiliger dan gisteren.</small></div>
+    </div>
+
+    <bg-compliance-command-center scope="customer"></bg-compliance-command-center>
+
+    <footer class="cc-footer">
+      <span>Bedrijfsgeheugen <i>·</i> Compliance Command Center <i>·</i> v1.0.0</span>
+      <span>Kennis vandaag. Een sterker morgen. <b></b> Alle systemen operationeel</span>
+    </footer>
+  </div>
+</div>
+
+<nav class="cc-mobile-nav" aria-label="Mobiele hoofdnavigatie">
+  <a href="https://www.bedrijfsgeheugen.nl/portal-next/">⌂<span>Overzicht</span></a>
+  <a href="https://www.bedrijfsgeheugen.nl/portal-next/">▶<span>Uitvoering</span></a>
+  <a class="is-active" href="https://www.bedrijfsgeheugen.nl/portal-next/compliance.html">▣<span>Trust</span></a>
+  <a href="https://www.bedrijfsgeheugen.nl/portal-next/">✓<span>Mijn werk</span></a>
+  <a href="https://www.bedrijfsgeheugen.nl/portal-next/">⚙<span>Beheer</span></a>
 </nav>
-<bg-compliance-command-center scope="customer"></bg-compliance-command-center>
+
 <script>
 (function(){
   const params=new URLSearchParams(window.location.search);const klant=params.get('klant');
-  const context=document.getElementById('ccCustomerContext');const back=document.getElementById('ccBackPortal');
-  if(klant){context.textContent='Klantcontext: '+klant+' · status uitsluitend op basis van beschikbare invoer en evidence';back.href='https://www.bedrijfsgeheugen.nl/klantportaal?klant='+encodeURIComponent(klant);}
-  else context.textContent='Geen specifieke klantcontext · kies Bedrijfsgeheugen of vul klantinformatie/evidence in';
   window.BG_COMPLIANCE_CONTEXT={customerSlug:klant||null};
+  const input=document.getElementById('ccGlobalSearch');
+  document.addEventListener('keydown',function(event){if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();input?.focus();}});
 })();
 </script>
 <script type="module" src="https://www.bedrijfsgeheugen.nl/portal-next/compliance-command-center.js"></script>
