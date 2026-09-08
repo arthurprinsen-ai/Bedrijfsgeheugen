@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "linkedin-revenue-cockpit-v1",
+  "generatedAt": "2026-09-08T16:45:00+02:00",
+  "privacyMode": "server-side-private-data-required",
+  "maxActions": 12,
+  "actions": []
+}
