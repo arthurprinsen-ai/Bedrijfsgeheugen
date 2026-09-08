@@ -13,6 +13,13 @@ test('workflow topology has one canonical broad PR ingress', async () => {
   assert.deepEqual(topology.broadPullRequestWorkflows, [policy.canonicalPrWorkflow]);
 });
 
+test('closed-only writer production reconciliation is post-merge, not PR capacity ingress', async () => {
+  const topology = await inspectWorkflowTopology({ workflowDir, canonicalPrWorkflow: policy.canonicalPrWorkflow });
+  assert.ok(topology.postMergePullRequestWorkflows.includes('writer-production-reconcile.yml'));
+  assert.ok(!topology.broadPullRequestWorkflows.includes('writer-production-reconcile.yml'));
+  assert.ok(!topology.scopedPullRequestWorkflows.includes('writer-production-reconcile.yml'));
+});
+
 test('required test supersedes only older runs of the same PR', async () => {
   const required = await readFile('.github/workflows/required-test.yml', 'utf8');
   assert.match(required, /concurrency:/);
