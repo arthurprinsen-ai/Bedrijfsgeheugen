@@ -37,7 +37,7 @@ test('website lane can never skip the all-public-pages visibility gate', async (
   assert.doesNotMatch(step, /menu_only/, 'visibility crawl must not be bypassed for menu-only changes');
   assert.doesNotMatch(step, /\n\s+if:/, 'visibility crawl must remain unconditional inside the browser job');
   assert.match(step, /standalone-visibility-check\.mjs/, 'visibility crawl must execute the full public-page checker');
-  assert.match(workflow, /\n  browser:\n\s+needs: \[classify, preview-ready\]/, 'shared browser job must wait for the exact deploy preview');
+  assert.match(workflow, /\n  browser:\n\s+needs: \[classify, syntax-preflight, preview-ready\]/, 'shared browser job must wait for syntax preflight and the exact deploy preview');
 });
 
 // Keep this regression contract in the website lane so the fail-closed crawl can never silently disappear.
