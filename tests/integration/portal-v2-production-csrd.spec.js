@@ -3,17 +3,18 @@ import { test, expect } from '@playwright/test';
 const BASE_URL = process.env.PRODUCTION_URL || 'https://www.bedrijfsgeheugen.nl';
 
 test('production Portal V2 renders the canonical CSRD & Impact module', async ({ page, request }) => {
+  test.setTimeout(60_000);
   const nonce = `${Date.now()}`;
   const response = await page.goto(`${BASE_URL}/portal-v2/?bg_dom_readback=${nonce}`, {
-    waitUntil: 'networkidle',
-    timeout: 60_000,
+    waitUntil: 'domcontentloaded',
+    timeout: 30_000,
   });
 
   expect(response, 'Portal V2 must return an HTTP response').not.toBeNull();
   expect(response.status(), 'Portal V2 must be reachable in production').toBeLessThan(400);
 
   const csrdNav = page.getByRole('button', { name: /CSRD & Impact/ }).first();
-  await expect(csrdNav).toBeVisible();
+  await expect(csrdNav).toBeVisible({ timeout: 15_000 });
   await csrdNav.click();
 
   await expect(page.getByText('CSRD Readiness', { exact: true })).toBeVisible();

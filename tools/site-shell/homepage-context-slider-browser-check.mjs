@@ -5,6 +5,22 @@ if (!baseUrl) throw new Error('UI_VR_BASE_URL ontbreekt');
 
 function fail(message, evidence = {}) { throw new Error(`${message}\n${JSON.stringify(evidence, null, 2)}`); }
 
+async function gotoWithRetry(page, url, attempts = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.locator('#compareSlider').waitFor({ state: 'visible', timeout: 15000 });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt === attempts) break;
+      await page.waitForTimeout(750 * attempt);
+    }
+  }
+  throw lastError;
+}
+
 async function readState(page) {
   return page.evaluate(() => {
     const slider = document.querySelector('#compareSlider');
@@ -196,9 +212,8 @@ async function testViewport(browser, width, height, mobile, orientation) {
   const page = await browser.newPage({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
-  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
+  await gotoWithRetry(page, `${baseUrl}/`);
   const slider = page.locator('#compareSlider');
-  await slider.waitFor({ state: 'visible' });
   await slider.scrollIntoViewIfNeeded();
   await page.waitForTimeout(140);
   const box = await slider.boundingBox();
