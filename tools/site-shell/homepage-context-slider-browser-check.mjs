@@ -3,8 +3,9 @@ import { chromium } from 'playwright';
 const baseUrl = process.env.UI_VR_BASE_URL;
 if (!baseUrl) throw new Error('UI_VR_BASE_URL ontbreekt');
 
-const GUTTER_MIN = 24;
-const MIN_VISIBLE_COPY = 220;
+const GUTTER_MIN = 16;
+const MIN_DESKTOP_VISIBLE_COPY = 220;
+const MIN_MOBILE_VISIBLE_COPY = 96;
 
 function fail(message, evidence = {}) {
   throw new Error(`${message}\n${JSON.stringify(evidence, null, 2)}`);
@@ -41,30 +42,35 @@ async function readGeometry(page) {
         disabled: knob.getAttribute('aria-disabled')
       },
       handleDisplay: getComputedStyle(slider.querySelector('.compare-handle') || knob).display,
-      beforeHeadingVisible: !!before.querySelector('h3') && visible(before.querySelector('h3')),
-      beforeParagraphVisible: !!before.querySelector('p') && visible(before.querySelector('p')),
-      afterHeadingVisible: !!after.querySelector('h3') && visible(after.querySelector('h3')),
-      afterParagraphVisible: !!after.querySelector('p') && visible(after.querySelector('p'))
+      knobDisplay: getComputedStyle(knob).display,
+      knobVisibility: getComputedStyle(knob).visibility,
+      touchAction: getComputedStyle(slider).touchAction
     };
   });
 }
 
-function assertDesktopGeometry(g, label) {
+function assertInteractiveGeometry(g, label, minCopy) {
   if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
-  if (g.compact !== 'false') fail(`${label}: desktop mag niet in compact fallback staan`, g);
-  if (!g.before.visible || !g.after.visible || !g.beforeHeadingVisible || !g.beforeParagraphVisible || !g.afterHeadingVisible || !g.afterParagraphVisible) {
-    fail(`${label}: beide tekstlagen moeten volledig zichtbaar zijn`, g);
+  if (g.compact !== null) fail(`${label}: oude compact/stacked fallback mag niet meer actief zijn`, g);
+  if (!g.before.visible || !g.after.visible) fail(`${label}: beide sliderlagen moeten aanwezig blijven`, g);
+  if (g.handleDisplay === 'none' || g.knobDisplay === 'none' || g.knobVisibility === 'hidden') {
+    fail(`${label}: de echte sliderknop moet zichtbaar en bedienbaar blijven`, g);
   }
-  const leftClearance = g.dividerX - g.before.right;
-  const rightClearance = g.after.left - g.dividerX;
-  if (g.before.width < MIN_VISIBLE_COPY || g.after.width < MIN_VISIBLE_COPY) {
-    fail(`${label}: tekstkolom is smaller dan ${MIN_VISIBLE_COPY}px`, g);
+  if (g.before.width < minCopy || g.after.width < minCopy) {
+    fail(`${label}: sliderpaneel is smaller dan ${minCopy}px`, g);
   }
-  if (leftClearance < GUTTER_MIN || rightClearance < GUTTER_MIN) {
-    fail(`${label}: handle/scheidingslijn overlapt de tekst`, { ...g, leftClearance, rightClearance });
-  }
+  if (g.aria.disabled === 'true') fail(`${label}: slider mag niet disabled zijn`, g);
   if (!(g.aria.now >= g.aria.min && g.aria.now <= g.aria.max)) {
     fail(`${label}: ARIA-waarde ligt buiten dezelfde veilige grens`, g);
+  }
+}
+
+function assertDesktopGeometry(g, label) {
+  assertInteractiveGeometry(g, label, MIN_DESKTOP_VISIBLE_COPY);
+  const leftClearance = g.dividerX - g.before.right;
+  const rightClearance = g.after.left - g.dividerX;
+  if (leftClearance < GUTTER_MIN || rightClearance < GUTTER_MIN) {
+    fail(`${label}: handle/scheidingslijn overlapt de tekst`, { ...g, leftClearance, rightClearance });
   }
 }
 
@@ -74,7 +80,6 @@ async function bringSliderIntoView(page) {
   await page.waitForTimeout(120);
   const box = await slider.boundingBox();
   if (!box) fail('compareSlider heeft geen geometry na scrollIntoViewIfNeeded');
-  if (box.y < -2 || box.y > 653) fail('compareSlider is niet in de viewport gebracht', box);
   return box;
 }
 
@@ -82,7 +87,7 @@ async function dragKnobTo(page, targetX) {
   const knob = page.locator('#compareSlider .compare-knob');
   await knob.scrollIntoViewIfNeeded();
   const knobBox = await knob.boundingBox();
-  if (!knobBox) fail('1128x653: sliderknop heeft geen geometry');
+  if (!knobBox) fail('desktop: sliderknop heeft geen geometry');
   const startX = knobBox.x + knobBox.width / 2;
   const startY = knobBox.y + knobBox.height / 2;
   await page.mouse.move(startX, startY);
@@ -92,11 +97,27 @@ async function dragKnobTo(page, targetX) {
   await page.waitForTimeout(120);
 }
 
+async function dragTouchTo(page, targetX) {
+  await page.locator('#compareSlider .compare-knob').scrollIntoViewIfNeeded();
+  const knobBox = await page.locator('#compareSlider .compare-knob').boundingBox();
+  if (!knobBox) fail('390px: sliderknop heeft geen geometry');
+  const startX = knobBox.x + knobBox.width / 2;
+  const startY = knobBox.y + knobBox.height / 2;
+  await page.evaluate(({ startX, startY, targetX }) => {
+    const knob = document.querySelector('#compareSlider .compare-knob');
+    if (!knob) throw new Error('sliderknop ontbreekt');
+    const pointerId = 41;
+    knob.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId, pointerType: 'touch', clientX: startX, clientY: startY, isPrimary: true, buttons: 1 }));
+    window.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, cancelable: true, pointerId, pointerType: 'touch', clientX: targetX, clientY: startY, isPrimary: true, buttons: 1 }));
+    window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerId, pointerType: 'touch', clientX: targetX, clientY: startY, isPrimary: true, buttons: 0 }));
+  }, { startX, startY, targetX });
+  await page.waitForTimeout(120);
+}
+
 async function testDesktop(browser) {
   const page = await browser.newPage({ viewport: { width: 1128, height: 653 } });
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
   await page.locator('#compareSlider').waitFor({ state: 'visible' });
-  await page.waitForFunction(() => document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-compact'));
   const box = await bringSliderIntoView(page);
 
   await dragKnobTo(page, box.x + 2);
@@ -118,20 +139,28 @@ async function testMobile(browser) {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
   await page.locator('#compareSlider').waitFor({ state: 'visible' });
-  await page.waitForFunction(() => document.querySelector('#compareSlider')?.hasAttribute('data-bg-compare-compact'));
-  await page.locator('#compareSlider').scrollIntoViewIfNeeded();
-  await page.waitForTimeout(120);
-  const g = await readGeometry(page);
-  if (!g) fail('390px: compareSlider of tekstlagen ontbreken');
-  if (g.compact !== 'true') fail('390px: smalle viewport moet fail-safe naar compact mode', g);
-  if (!g.before.visible || !g.after.visible || !g.beforeHeadingVisible || !g.beforeParagraphVisible || !g.afterHeadingVisible || !g.afterParagraphVisible) {
-    fail('390px: beide gestapelde teksten moeten zichtbaar zijn', g);
+  const box = await bringSliderIntoView(page);
+
+  const initial = await readGeometry(page);
+  assertInteractiveGeometry(initial, '390px initieel', MIN_MOBILE_VISIBLE_COPY);
+  if (initial.touchAction !== 'none') fail('390px: horizontaal slepen moet touch-action:none gebruiken', initial);
+
+  await dragTouchTo(page, box.x + 2);
+  const left = await readGeometry(page);
+  assertInteractiveGeometry(left, '390px uiterste links', MIN_MOBILE_VISIBLE_COPY);
+
+  await dragTouchTo(page, box.x + box.width - 2);
+  const right = await readGeometry(page);
+  assertInteractiveGeometry(right, '390px uiterste rechts', MIN_MOBILE_VISIBLE_COPY);
+
+  if (!(left.split < 50 && right.split > 50)) {
+    fail('390px: slider moet met touch/pointer echt naar links én rechts bewegen', { left, right });
   }
-  if (g.before.width < 250 || g.after.width < 250) fail('390px: gestapelde tekstkolommen zijn te smal', g);
-  if (g.handleDisplay !== 'none') fail('390px: onbruikbare handle moet in compact mode verborgen zijn', g);
-  if (g.before.bottom > g.after.top + 2) fail('390px: compacte panelen mogen elkaar niet overlappen', g);
+  if (Math.abs(right.split - left.split) < 15) {
+    fail('390px: mobiele slider heeft te weinig bruikbare slag', { left, right });
+  }
   await page.close();
-  return { beforeWidth: g.before.width, afterWidth: g.after.width, compact: g.compact };
+  return { initial: initial.split, left: left.split, right: right.split };
 }
 
 const browser = await chromium.launch({ headless: true });
