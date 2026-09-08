@@ -1,17 +1,11 @@
 name: Pagina- en SEO-controle
 
-# Loopt elke publieke pagina langs in een echte browser en kijkt of er iets stuk is.
-# Daarnaast draait de SEO-controle tegen de zoekwoordstrategie.
-# Bekende, eenduidig herstelbare SEO-metadatafouten worden eerst automatisch hersteld.
+# PR-verificatie is canoniek eigendom van Required test -> lane-website.yml.
+# Deze workflow blijft voor main/schedule/manual herstel, rapportage en productie-obligaties.
 
 on:
   push:
     branches: [main]
-    paths:
-      - '**.html'
-      - 'assets/**'
-      - '_redirects'
-  pull_request:
     paths:
       - '**.html'
       - 'assets/**'
@@ -33,17 +27,14 @@ permissions:
   pull-requests: write
   issues: write
 
-# PR-verificaties blijven per PR geïsoleerd en mogen een oudere run van dezelfde PR vervangen.
-# Alle niet-PR-runs kunnen naar main schrijven en delen daarom het niet-annuleerbare repo-slot.
 concurrency:
-  group: ${{ github.event_name == 'pull_request' && format('paginacontrole-{0}', github.event.pull_request.number) || 'repo-schrijven' }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: repo-schrijven
+  cancel-in-progress: false
 
 jobs:
   controle:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - uses: actions/checkout@v5
         with:
@@ -53,40 +44,11 @@ jobs:
         id: base
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Bepaal publieke SEO-scope
-        id: seo_scope
-        shell: bash
-        run: |
-          set -euo pipefail
-          public=true
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            public=false
-            base="${{ github.event.pull_request.base.sha }}"
-            head="${{ github.event.pull_request.head.sha }}"
-            while IFS= read -r file; do
-              if { [[ "$file" != */* ]] && [[ "$file" == *.html ]]; } \
-                || [[ "$file" =~ ^blog/[^/]+/index\.html$ ]] \
-                || [[ "$file" == assets/* ]] \
-                || [[ "$file" == "_redirects" ]]; then
-                public=true
-                break
-              fi
-            done < <(git diff --name-only "$base...$head")
-          fi
-          echo "public=$public" >> "$GITHUB_OUTPUT"
-          if [ "$public" = "true" ]; then
-            echo "Publieke pagina/SEO-scope geraakt."
-          else
-            echo "Portal/app HTML valt buiten de publieke SEO-scope; publieke paginacontrole is niet van toepassing."
-          fi
-
       - uses: actions/setup-python@v6
-        if: steps.seo_scope.outputs.public == 'true'
         with:
           python-version: '3.12'
 
       - name: Bekende SEO-bronfouten automatisch herstellen
-        if: steps.seo_scope.outputs.public == 'true' && github.event_name != 'pull_request'
         shell: bash
         env:
           DELIVERY_MODE: candidate-pr
@@ -169,66 +131,40 @@ jobs:
               blog/offertes-opvolgen-zonder-crm/index.html \
               blog/afas-api/index.html
             git commit -m "Herstel SEO-bronfouten uit paginacontrole"
-            echo "SEO-bronfix blijft lokaal in de candidate tot de PR is geverifieerd."
           else
             echo "Geen bekende SEO-bronfouten meer te herstellen."
           fi
 
       - name: Playwright installeren
-        if: steps.seo_scope.outputs.public == 'true'
         run: |
           pip install --quiet playwright
           playwright install --with-deps chromium
 
       - name: Pagina's controleren
         id: controle
-        if: steps.seo_scope.outputs.public == 'true'
         run: python .github/scripts/paginacontrole.py
         continue-on-error: true
 
       - name: SEO en interne links controleren
         id: seo
-        if: steps.seo_scope.outputs.public == 'true'
         run: python .github/scripts/seocontrole.py
         continue-on-error: true
 
-      - name: Niet-publieke portal/app wijziging expliciet goedkeuren
-        if: steps.seo_scope.outputs.public != 'true'
-        run: |
-          cat > rapport.md <<'EOF'
-          # Pagina- en SEO-controle
-
-          Status: groen (niet van toepassing op publieke SEO-scope).
-
-          De PR wijzigt alleen portal/app-HTML buiten de root- en blogpagina's die door deze publieke SEO-controle worden gescand. Portal-gedrag en portal-SEO worden door de eigen Portal V2-contract- en live-previewchecks bewaakt.
-          EOF
-
       - name: seo-status.json verwerken als hij is veranderd
-        if: always() && steps.seo_scope.outputs.public == 'true' && github.event_name != 'pull_request'
+        if: always()
         shell: bash
-        env:
-          DELIVERY_MODE: candidate-pr
         run: |
           set -euo pipefail
-          if [ -z "$(git status --porcelain seo-status.json)" ]; then
-            echo "seo-status.json ongewijzigd"
-            exit 0
-          fi
-
-          cp seo-status.json /tmp/seo-status.json
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          cp /tmp/seo-status.json seo-status.json
-          if ! git diff --quiet -- seo-status.json; then
+          if [ -n "$(git status --porcelain seo-status.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -- seo-status.json
             git commit -m "seo-status.json bijgewerkt door de SEO-controle"
           fi
-          echo "seo-status.json blijft onderdeel van dezelfde candidate PR."
 
       - name: Candidate branch en PR publiceren
         id: candidate
-        if: always() && steps.seo_scope.outputs.public == 'true' && github.event_name != 'pull_request'
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_SHA: ${{ steps.base.outputs.sha }}
@@ -301,21 +237,11 @@ jobs:
           script: |
             const fs = require('fs');
             const body = fs.readFileSync('rapport.md', 'utf8');
-            const titel = 'Paginacontrole: problemen gevonden';
-            const open = await github.rest.issues.listForRepo({
-              owner: context.repo.owner, repo: context.repo.repo,
-              state: 'open', labels: 'paginacontrole'
-            });
+            const open = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'paginacontrole' });
             if (open.data.length) {
-              await github.rest.issues.update({
-                owner: context.repo.owner, repo: context.repo.repo,
-                issue_number: open.data[0].number, body
-              });
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: open.data[0].number, body });
             } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner, repo: context.repo.repo,
-                title: titel, body, labels: ['paginacontrole']
-              });
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: 'Paginacontrole: problemen gevonden', body, labels: ['paginacontrole'] });
             }
 
       - name: Melding sluiten als alles goed is
@@ -323,23 +249,12 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const open = await github.rest.issues.listForRepo({
-              owner: context.repo.owner, repo: context.repo.repo,
-              state: 'open', labels: 'paginacontrole'
-            });
+            const open = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'paginacontrole' });
             for (const i of open.data) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner, repo: context.repo.repo,
-                issue_number: i.number, body: 'Opgelost — de controle liep zonder problemen door.'
-              });
-              await github.rest.issues.update({
-                owner: context.repo.owner, repo: context.repo.repo,
-                issue_number: i.number, state: 'closed'
-              });
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: i.number, body: 'Opgelost — de controle liep zonder problemen door.' });
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: i.number, state: 'closed' });
             }
 
       - name: Falen doorgeven
         if: steps.controle.outcome == 'failure' || steps.seo.outcome == 'failure'
-        run: |
-          echo "Er staat een melding open met label paginacontrole. Daarin staat wat er mis is."
-          exit 1
+        run: exit 1
