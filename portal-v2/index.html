@@ -7,7 +7,6 @@
 <meta name="description" content="Interactieve preview van het Bedrijfsgeheugen klantenportaal: bronnen, Datahub, AI Brain, Powerhouse, acties, outcomes en learning in één cockpit.">
 <title>Bedrijfsgeheugen · Klantenportaal V2</title>
 <link rel="stylesheet" href="./app.css">
-<link rel="stylesheet" href="./saas-theme.css">
 </head>
 <body>
 <div class="app">
@@ -47,22 +46,21 @@
 
  <div class="dashboard">
   <section class="card braincard">
-   <div class="brainhead"><div><h2>Het brein van je bedrijf ⓘ</h2><p>Van losse signalen naar context, besluit en aantoonbare uitkomst.</p></div><div class="live"><span class="livepill">● Preview</span><span>Voorbeeldflow, geen productieclaim</span></div></div>
+   <div class="brainhead"><div><h2>Het brein van je bedrijf ⓘ</h2><p>Van informatie naar inzicht — je bedrijfsgeheugen in werking.</p></div><div class="live"><span class="livepill">● Preview</span><span>Voorbeeldflow, geen productieclaim</span></div></div>
    <div class="brainlayout" id="brainLayout">
-    <div class="brainflow" aria-label="Bedrijfsgeheugen verwerkingsflow">
-     <article class="brainnode" data-stage="sources"><span class="nodeicon">▤</span><strong>Bronnen</strong><small>Documenten, systemen, processen, mensen en externe signalen.</small></article>
-     <article class="brainnode" data-stage="datahub"><span class="nodeicon">⇄</span><strong>Datahub</strong><small>Verbindt, verrijkt en structureert de context voor hergebruik.</small></article>
-     <article class="brainnode" data-stage="brain"><span class="nodeicon">✦</span><div class="layer ai"><strong>AI Brain</strong><small>Begrijpt, redeneert, prioriteert en adviseert.</small></div></article>
-     <article class="brainnode" data-stage="powerhouse"><span class="nodeicon">⚡</span><strong>Powerhouse</strong><small>Agents zetten inzicht om in acties, monitoring en herstel.</small></article>
-     <article class="brainnode" data-stage="outcomes"><span class="nodeicon">✓</span><strong>Acties & outcomes</strong><small>Evidence, resultaat en learning sluiten de feedbackloop.</small></article>
-    </div>
-    <div class="braincapchips" id="caps">
-      <div class="cap braincapchip" data-cap="begrijpt"><i>⌕</i>Begrijpt</div><div class="cap braincapchip" data-cap="verbindt"><i>⇄</i>Verbindt</div><div class="cap braincapchip" data-cap="vat"><i>≡</i>Vat samen</div><div class="cap braincapchip" data-cap="prioriteert"><i>☰</i>Prioriteert</div><div class="cap braincapchip" data-cap="adviseert"><i>✦</i>Adviseert</div><div class="cap braincapchip" data-cap="leert"><i>↺</i>Leert</div>
-    </div>
-    <div class="brainselectors">
-      <section class="brainselector"><div class="coltitle">Kies een bron</div><div class="sources" id="sources"></div></section>
-      <section class="brainselector"><div class="coltitle">Kies waar het landt</div><div class="modules" id="modules"></div></section>
-    </div>
+    <section><div class="coltitle">1. Bronnen</div><div class="sources" id="sources"></div></section>
+    <section class="center">
+     <div class="coltitle" style="text-align:center">2. Het bedrijfsgeheugen</div>
+     <div class="capbar" id="caps">
+      <div class="cap" data-cap="begrijpt"><i>⌕</i>Begrijpt</div><div class="cap" data-cap="verbindt"><i>⇄</i>Verbindt</div><div class="cap" data-cap="vat"><i>≡</i>Vat samen</div><div class="cap" data-cap="prioriteert"><i>☰</i>Prioriteert</div><div class="cap" data-cap="adviseert"><i>✦</i>Adviseert</div><div class="cap" data-cap="leert"><i>↺</i>Leert</div>
+     </div>
+     <div class="core">
+      <img class="brainimg" src="./brain.svg" alt="AI Brain visualisatie">
+      <div class="stack"><div class="layer ai"><div><strong>AI Brain</strong><small>begrijpen · redeneren · adviseren · beslissen</small></div></div><div class="layer hub"><div><strong>Datahub</strong><small>verbinden · verrijken · structureren</small></div></div><div class="layer power"><div><strong>Powerhouse</strong><small>agents · acties · monitoring · self-heal</small></div></div></div>
+      <div class="learn">↔ Leren en verbeteren<span>Outcome + evidence → learning → slimmer</span></div>
+     </div>
+    </section>
+    <section><div class="coltitle">3. Klantenportaal</div><div class="modules" id="modules"></div></section>
     <svg class="flowoverlay" id="flowSvg" aria-hidden="true"></svg>
    </div>
    <div class="flowexplain">
@@ -73,19 +71,19 @@
   </section>
 
   <aside class="right">
-   <section class="card"><h3>AI Management Summary</h3><p>Op basis van alle beschikbare data en signalen vat het Bedrijfsgeheugen AI de stand van zaken samen en wat aandacht vraagt.</p><div class="summary"><div class="g"><span><b>Kansen</b><br><small>Grote groeikansen geïdentificeerd</small></span><strong>7</strong></div><div class="o"><span><b>Risico’s</b><br><small>Risico’s vragen om aandacht</small></span><strong>5</strong></div><div class="b"><span><b>Trends</b><br><small>Belangrijke ontwikkelingen gesignaleerd</small></span><strong>4</strong></div></div><p style="color:#0d5bef;font-weight:800;margin-top:9px"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/compliance.html" style="text-decoration:none">Compliance & audit →</a></p></section>
+   <section class="card"><h3>AI Management Summary</h3><p>Op basis van alle beschikbare data en signalen vat het Bedrijfsgeheugen AI de stand van zaken samen en wat aandacht vraagt.</p><div class="summary"><div class="g"><span><b>Kansen</b><br><small>Grote groeikansen geïdentificeerd</small></span><strong>7</strong></div><div class="o"><span><b>Risico’s</b><br><small>Risico’s vragen om aandacht</small></span><strong>5</strong></div><div class="b"><span><b>Trends</b><br><small>Belangrijke ontwikkelingen gesignaleerd</small></span><strong>4</strong></div></div><p style="color:#0d5bef;font-weight:800;margin-top:9px"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/compliance.html" style="text-decoration:none">Compliance & audit →</a></p><p style="color:#0d5bef;font-weight:800;margin-top:6px"><a href="https://www.bedrijfsgeheugen.nl/compliance-status" style="text-decoration:none">Compliance Bedrijfsgeheugen →</a></p></section>
    <section class="card"><h3>Aanbevelingen <small style="float:right;color:#0d5bef">6 nieuw</small></h3><ul class="recs"><li>Automatiseer het offerteproces <span class="prio">🔴 Hoog</span></li><li>Borg kritieke kennis Finance <span class="prio">🔴 Hoog</span></li><li>Koppel Exact en CRM volledig <span class="prio">🟠 Middel</span></li><li>Verwijder dubbele klantdata <span class="prio">🟠 Middel</span></li><li>Optimaliseer onboarding proces <span class="prio">🔵 Laag</span></li><li>Update verouderde documentatie <span class="prio">🔵 Laag</span></li></ul><p style="color:#0d5bef;font-weight:800;margin-top:9px">Alle aanbevelingen bekijken →</p></section>
    <section class="card"><h3>Snelle links</h3><div class="quick"><button><i>∞</i>Koppelingen beheren</button><button><i>⌘</i>Koppeling bouwen</button><button><i>€</i>Facturen & abonnement</button><button><i>▤</i>Mijn taken</button><button><i>▥</i>Kennisbank</button><button><i>▣</i>Rapportages</button><button><i>◎</i>Gebruikers</button><button><i>⚙</i>Instellingen</button></div></section>
   </aside>
  </div>
 
  <section class="lower">
-  <article class="card"><div class="sectiontitle"><h3>Roadmap & voortgang</h3><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=roadmap" data-open-page="roadmap">Bekijk volledige roadmap →</a></div><div class="timeline"><span>Nu<b>6</b></span><span>Volgende<b>8</b></span><span>Gepland<b>14</b></span><span>Afgerond<b>23</b></span></div><div class="progresslist"><div class="prow"><span>Klantdata opschonen</span><span class="bar"><i style="width:75%"></i></span><b>75%</b></div><div class="prow"><span>Onboarding optimaliseren</span><span class="bar"><i style="width:60%"></i></span><b>60%</b></div><div class="prow"><span>Kennisborging Finance</span><span class="bar"><i style="width:20%"></i></span><b>20%</b></div><div class="prow"><span>CRM koppeling uitbreiden</span><span class="bar"><i style="width:10%"></i></span><b>10%</b></div></div></article>
-  <article class="card"><div class="sectiontitle"><h3>Kansen & bedreigingen</h3><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=ai-scan" data-open-page="ai-scan">Bekijk alles →</a></div><div class="ko"><div class="box chance"><b>Kansen</b><p>• Cross-sell potentieel €240K</p><p>• Automatisering bespaart 320 uur/maand</p><p>• Nieuwe marktsegmenten in sight</p></div><div class="box risk"><b>Bedreigingen</b><p>• Kennisafhankelijkheid Finance</p><p>• Datakwaliteit klantdata onvoldoende</p><p>• Wetgeving AVG impact stijgt</p></div></div></article>
+  <article class="card"><div class="sectiontitle"><h3>Roadmap & voortgang</h3><a href="#" data-open-page="roadmap">Bekijk volledige roadmap →</a></div><div class="timeline"><span>Nu<b>6</b></span><span>Volgende<b>8</b></span><span>Gepland<b>14</b></span><span>Afgerond<b>23</b></span></div><div class="progresslist"><div class="prow"><span>Klantdata opschonen</span><span class="bar"><i style="width:75%"></i></span><b>75%</b></div><div class="prow"><span>Onboarding optimaliseren</span><span class="bar"><i style="width:60%"></i></span><b>60%</b></div><div class="prow"><span>Kennisborging Finance</span><span class="bar"><i style="width:20%"></i></span><b>20%</b></div><div class="prow"><span>CRM koppeling uitbreiden</span><span class="bar"><i style="width:10%"></i></span><b>10%</b></div></div></article>
+  <article class="card"><div class="sectiontitle"><h3>Kansen & bedreigingen</h3><a href="#" data-open-page="ai-scan">Bekijk alles →</a></div><div class="ko"><div class="box chance"><b>Kansen</b><p>• Cross-sell potentieel €240K</p><p>• Automatisering bespaart 320 uur/maand</p><p>• Nieuwe marktsegmenten in sight</p></div><div class="box risk"><b>Bedreigingen</b><p>• Kennisafhankelijkheid Finance</p><p>• Datakwaliteit klantdata onvoldoende</p><p>• Wetgeving AVG impact stijgt</p></div></div></article>
   <article class="card impactcard"><div class="sectiontitle"><h3>Impact overzicht</h3><span>Deze maand⌄</span></div><div class="impact"><div class="impactitem"><span class="round">◷</span><div><b>Tijdwinst</b><small>▲ +12% t.o.v. vorige maand</small></div></div><div class="impactitem"><span class="round">€</span><div><b>Kostenbesparing</b><small>▲ +8% t.o.v. vorige maand</small></div></div><div class="impactitem"><span class="round">↗</span><div><b>Gerealiseerde waarde € 1,24M</b><small>YTD 2025</small></div></div></div></article>
  </section>
 
- <section class="card activities"><div class="sectiontitle"><h3>Recente activiteiten</h3><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=wijzigingen" data-open-page="wijzigingen">Bekijk alle activiteiten →</a></div><div class="items"><div class="act"><i>👩</i><span>Proces “Offerte tot Order” geüpdatet<br><small>Sanne · 2 uur geleden</small></span></div><div class="act"><i>◫</i><span>Koppeling met Exact gesynchroniseerd<br><small>Systeem · 3 uur geleden</small></span></div><div class="act"><i>👨</i><span>Nieuw document toegevoegd<br><small>Mark · 5 uur geleden</small></span></div><div class="act"><i>✓</i><span>Actie “Onboarding optimaliseren” afgerond<br><small>Lotte · 1 dag geleden</small></span></div></div></section>
+ <section class="card activities"><div class="sectiontitle"><h3>Recente activiteiten</h3><a href="#" data-open-page="wijzigingen">Bekijk alle activiteiten →</a></div><div class="items"><div class="act"><i>👩</i><span>Proces “Offerte tot Order” geüpdatet<br><small>Sanne · 2 uur geleden</small></span></div><div class="act"><i>◫</i><span>Koppeling met Exact gesynchroniseerd<br><small>Systeem · 3 uur geleden</small></span></div><div class="act"><i>👨</i><span>Nieuw document toegevoegd<br><small>Mark · 5 uur geleden</small></span></div><div class="act"><i>✓</i><span>Actie “Onboarding optimaliseren” afgerond<br><small>Lotte · 1 dag geleden</small></span></div></div></section>
 </main>
 </div>
 
@@ -93,13 +91,5 @@
 <div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Portal V2 bevat alle portalonderdelen standaard</h3><small style="color:#7280a1">Eén zelfstandige V2-shell met native functionaliteit, Brain, Datahub en Powerhouse — zonder koppeling met een tweede portaal.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
 <nav class="mobilebar"><button class="active">⌂<br>Overzicht</button><button>▣<br>Portaal</button><button>✦<br>Data & AI</button><button>✓<br>Taken</button><button id="mobileMore">☰<br>Meer</button></nav>
 <script type="module" src="./app.js"></script>
-<script>
-addEventListener('DOMContentLoaded',()=>{
-  const href='./csrd-mobile-saas.css';
-  const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')===href);
-  if(existing) existing.remove();
-  const style=document.createElement('link');style.rel='stylesheet';style.href=href;document.head.appendChild(style);
-});
-</script>
 </body>
 </html>
