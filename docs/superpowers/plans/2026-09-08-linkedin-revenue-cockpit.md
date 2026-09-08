@@ -2,44 +2,66 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a safe, mobile-first LinkedIn Revenue Cockpit inside portal-v2 that shows at most 12 evidence-backed next actions.
+**Goal:** Ship a protected, mobile-first LinkedIn Revenue Cockpit that shows at most 12 evidence-backed next actions from the existing Notion/Powerhouse commercial state.
 
-**Architecture:** Add a standalone portal-v2 page using the existing shell visual language. Data shown in the first production version is represented through an explicit action-contract JS file so the UI is deterministic and fail-closed; Powerhouse/Notion ingestion can populate the same contract without changing UI behavior. Generic feed URLs or missing evidence never become send-ready actions.
+**Architecture:** Put the UI under the existing `/intern/*` Netlify Edge authentication boundary. Keep all real CRM/DM data out of the public repository; a server-side Netlify function reads the four existing Notion data sources with the already configured `NOTION_TOKEN`, normalizes/ranks candidates through a pure module, and returns only authenticated `no-store` JSON. The UI remains human-in-the-loop for LinkedIn execution.
 
-**Tech Stack:** static HTML/CSS/ES modules, Node contract tests, GitHub Actions, Netlify.
+**Tech Stack:** static HTML/CSS/ES modules, Netlify Functions, Notion API, Node 22 contract/unit tests, GitHub Actions, existing BRAIN delivery gates.
 
 **Spec:** `docs/superpowers/specs/2026-09-08-linkedin-revenue-cockpit-design.md`
 
 ## Global Constraints
-- Existing portal architecture only; no parallel CRM.
+- Existing Bedrijfsgeheugen architecture only; no parallel CRM.
 - Max 12 priority actions.
-- Score 0–100 and explicit channel.
+- Real contact/DM data never committed to this public repo.
+- Existing `/intern/*` Basic Auth plus independent function auth.
 - LinkedIn actions remain human-executed.
 - No scraping, auto-comments, auto-DMs or DOM overlays.
+- `linkedin.com/feed/` is never a concrete evidence source.
 - Fail closed on missing post/thread/person context.
+- No secret or permission changes.
 
 ---
 
-### Task 1: Release contract test
-**Files:** Create `tests/linkedin-revenue-cockpit.test.mjs`.
+### Task 1: Release and runtime contract tests
+**Files:** `tests/linkedin-revenue-cockpit.test.mjs`, create `tests/linkedin-revenue-runtime.test.mjs`, modify `.github/workflows/linkedin-revenue-cockpit-tests.yml`.
 
-- [ ] Write tests that require the new route, source contract, <=12 cards, fail-closed copy and portal navigation link.
-- [ ] Commit tests before production implementation so CI demonstrates RED.
+- [x] Add route/UI contract test and prove RED on PR #1186 before implementation.
+- [ ] Add pure runtime tests for evidence gating, ranking cap and Basic Auth comparison.
+- [ ] Run the PR workflow and verify the missing implementation keeps RED.
 
-### Task 2: Cockpit data contract and page
-**Files:** Create `portal-v2/linkedin-revenue-data.js`, `portal-v2/linkedin-revenue.html`, `portal-v2/linkedin-revenue.css`, `portal-v2/linkedin-revenue.js`; modify `portal-v2/index.html`.
+### Task 2: Decision engine
+**Files:** Create `platform/linkedin-revenue-cockpit.mjs`.
 
-**Interfaces:** `linkedin-revenue-data.js` exports `actions` and `normalizeAction(action)`; normalized actions are `ready` or `context_required`.
+**Interfaces:** exports `isConcreteLinkedInSource(url)`, `isSendReady(candidate)`, `scoreCandidate(candidate)`, `buildPriorityQueue(candidates,{limit})`, `basicAuthMatches(header,user,password)` and Notion property helpers.
 
-- [ ] Implement minimum page/data code needed for Task 1 tests to pass.
-- [ ] Keep LinkedIn actions manual: Open LinkedIn, Kopieer tekst, Markeer uitgevoerd.
-- [ ] Render context-required cards without send-ready copy.
-- [ ] Verify mobile-first layout and keyboard-accessible controls.
+- [ ] Implement only enough pure logic to satisfy Task 1 runtime tests.
+- [ ] Confirm generic Radar copy and feed-only sources remain blocked.
+- [ ] Confirm queue is deterministic and capped at 12.
 
-### Task 3: Full gates and production
-- [ ] Run required PR workflows on exact head.
-- [ ] Repair any relevant regression without weakening gates.
-- [ ] Squash merge exact tested head.
-- [ ] Verify Netlify production deploy uses merge SHA.
-- [ ] Read back `/portal-v2/linkedin-revenue.html` in production.
-- [ ] Record production evidence and prevention learning.
+### Task 3: Protected Notion runtime endpoint
+**Files:** Create `netlify/functions/linkedin-revenue-cockpit.mjs`; modify `_redirects`.
+
+- [ ] Validate the existing internal Basic Auth in the function as defense in depth.
+- [ ] Query the four canonical Notion data sources through `/v1/data_sources/{id}/query` with `Notion-Version: 2025-09-03`.
+- [ ] Normalize successful sources; retain per-source health on partial failure.
+- [ ] Return 503 if all runtime sources are unavailable; never expose token/credentials.
+- [ ] Add `/intern/api/linkedin-revenue` rewrite to the function so the existing Edge Function protects the friendly route too.
+
+### Task 4: Cockpit UI
+**Files:** Create `intern/linkedin-revenue/index.html`, `intern/linkedin-revenue/cockpit.js`; update the UI contract test to the protected route.
+
+- [ ] Render Vandaag, Inbox & DM, Connecties, Posts, Follow-up and Revenue.
+- [ ] Render `Context aanvullen` instead of send-ready text when evidence is insufficient.
+- [ ] Render full concrete LinkedIn URLs and private Notion cockpit URL where applicable.
+- [ ] Copy text only for grounded ready actions.
+- [ ] Mobile and desktop use the same ordered action model.
+
+### Task 5: Gates and production
+- [ ] Get Chat Learning preflight, LinkedIn cockpit contract, Required tests and BRAIN delivery green on the same exact head.
+- [ ] Repair relevant regressions without weakening any gate.
+- [ ] Merge only the exact tested candidate through the existing production authority.
+- [ ] Verify Netlify production deploy identity.
+- [ ] Verify unauthenticated `/intern/linkedin-revenue/` returns 401.
+- [ ] Verify authenticated cockpit/data readback without exposing credentials in logs.
+- [ ] Record production outcome and prevention learning.
