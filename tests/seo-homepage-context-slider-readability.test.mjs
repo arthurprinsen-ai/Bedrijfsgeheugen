@@ -48,6 +48,16 @@ test('wijzigingssectie is op mobiel een cumulatieve verticale voortgangsflow',()
   assert.doesNotMatch(fixer,/left:18px;bottom:42px;width:42px;height:42px/,'checks mogen niet meer los absoluut onder elke rij zweven');
 });
 
+test('browsercheck bewijst op echte mobiele viewports dat de flow 1 naar 4 cumulatief afrondt',()=>{
+  assert.match(browserCheck,/readMobileChangeFlow/);
+  assert.match(browserCheck,/data-bg-change-flow/);
+  assert.match(browserCheck,/data-bg-change-step="4"/);
+  assert.match(browserCheck,/doneCount\s*!==\s*4/);
+  assert.match(browserCheck,/progress\s*<\s*\.98/);
+  assert.match(browserCheck,/naTerug\.progress\s*\+\s*\.001\s*<\s*voltooid\.progress/);
+  assert.match(browserCheck,/Processen.*Rollen.*Documenten.*KPI.*Acties/s);
+});
+
 test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-markup',()=>{
   const stale='<!doctype html><html><head><style data-bg-context-slider-readable>STALE</style></head><body><div class="compare-slider"><div class="compare-before"><div class="compare-copy"><h3>Links</h3><p>Voor</p></div></div><div class="compare-after"><div class="compare-copy"><h3>Rechts</h3><p>Na</p></div></div><div class="compare-handle"><button class="compare-knob"></button></div></div><script data-bg-context-slider-readable>STALE</script></body></html>';
   const upgraded=applyHomepageContextSliderReadability(stale);
