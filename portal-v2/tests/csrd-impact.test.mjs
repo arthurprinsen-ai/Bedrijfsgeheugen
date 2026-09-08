@@ -22,10 +22,23 @@ test('customer view removes internal evidence metadata without mutating source d
 test('dashboard contains the six approved impact lenses and audit/action affordances', () => {
   assert.deepEqual(CSRD_TABS.map(x => x[1]), ['Totaal','CO₂ & Klimaat','Water','Circulariteit','Social','Governance']);
   const html = csrdImpactMarkup(DEFAULT_IMPACT_SNAPSHOT);
-  for (const label of ['CSRD Readiness','Impact in real time','CO₂-uitstoot','Waterverbruik','Social impact','Circulariteit','Bekijk alle acties']) {
+  for (const label of ['CSRD Readiness','Impactmetingen','CO₂-uitstoot','Waterverbruik','Social impact','Circulariteit','Bekijk alle acties']) {
     assert.match(html, new RegExp(label));
   }
   assert.match(html, /data-csrd-open="outcomes-evidence"/);
+});
+
+test('fallback dashboard is explicit preview data and never claims unsupported live data', () => {
+  const html = csrdImpactMarkup(DEFAULT_IMPACT_SNAPSHOT);
+  assert.match(html,/Voorbeelddata/);
+  assert.doesNotMatch(html,/Live data/);
+  assert.doesNotMatch(html,/audit-ready/);
+});
+
+test('full-screen dashboard exposes a deterministic close control', () => {
+  const html = csrdImpactMarkup(DEFAULT_IMPACT_SNAPSHOT);
+  assert.match(html,/data-csrd-close/);
+  assert.match(html,/aria-label="Sluit CSRD dashboard"/);
 });
 
 test('customer markup never renders internal evidence metadata', () => {
