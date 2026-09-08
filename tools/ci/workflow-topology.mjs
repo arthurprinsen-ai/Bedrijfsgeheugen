@@ -18,6 +18,20 @@ function eventBlock(block, eventName) {
   return out.join('\n');
 }
 
+function pullRequestTypes(pr) {
+  const inline = pr.match(/^\s{4}types:\s*\[([^\]]+)\]/m);
+  if (inline) return inline[1].split(',').map(value => value.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
+  const lines = pr.split(/\r?\n/);
+  const start = lines.findIndex(line => /^\s{4}types:\s*$/.test(line));
+  if (start < 0) return [];
+  const types = [];
+  for (let i = start + 1; i < lines.length; i += 1) {
+    if (!/^\s{6}-\s*/.test(lines[i])) break;
+    types.push(lines[i].replace(/^\s{6}-\s*/, '').trim().replace(/^['"]|['"]$/g, ''));
+  }
+  return types.filter(Boolean);
+}
+
 export async function inspectWorkflowTopology({ workflowDir, canonicalPrWorkflow }) {
   const entries = (await readdir(workflowDir)).filter(file => /\.ya?ml$/i.test(file)).sort();
   const workflows = [];
@@ -25,10 +39,15 @@ export async function inspectWorkflowTopology({ workflowDir, canonicalPrWorkflow
     const text = await readFile(join(workflowDir, file), 'utf8');
     const block = onBlock(text);
     const pr = eventBlock(block, 'pull_request');
+    const types = pullRequestTypes(pr);
+    const postMergeOnly = Boolean(pr && types.length > 0 && types.every(type => type === 'closed'));
+    const activePullRequest = Boolean(pr && !postMergeOnly);
     workflows.push({
       file: basename(file),
       hasPullRequest: Boolean(pr),
-      pullRequestScoped: Boolean(pr && /\n\s{4}(?:paths|paths-ignore):/.test(pr)),
+      activePullRequest,
+      postMergeOnly,
+      pullRequestScoped: Boolean(activePullRequest && /\n\s{4}(?:paths|paths-ignore):/.test(pr)),
       reusable: /^\s{2}workflow_call:/m.test(block),
       scheduled: /^\s{2}schedule:/m.test(block),
       push: /^\s{2}push:/m.test(block),
@@ -37,8 +56,9 @@ export async function inspectWorkflowTopology({ workflowDir, canonicalPrWorkflow
   return {
     canonicalPrWorkflow,
     workflows,
-    broadPullRequestWorkflows: workflows.filter(w => w.hasPullRequest && !w.pullRequestScoped).map(w => w.file),
-    scopedPullRequestWorkflows: workflows.filter(w => w.hasPullRequest && w.pullRequestScoped).map(w => w.file),
+    broadPullRequestWorkflows: workflows.filter(w => w.activePullRequest && !w.pullRequestScoped).map(w => w.file),
+    scopedPullRequestWorkflows: workflows.filter(w => w.activePullRequest && w.pullRequestScoped).map(w => w.file),
+    postMergePullRequestWorkflows: workflows.filter(w => w.postMergeOnly).map(w => w.file),
     reusableWorkflows: workflows.filter(w => w.reusable).map(w => w.file),
     scheduledWorkflows: workflows.filter(w => w.scheduled).map(w => w.file),
     pushWorkflows: workflows.filter(w => w.push).map(w => w.file),
