@@ -1,0 +1,24 @@
+{
+  "version":"POWERHOUSE-UKC-PREFLIGHT-PROJECTION-v1",
+  "type":"PREVENTION_PROJECTION",
+  "purpose":"Bounded preflight projection for the homepage-video runtime and GitHub required-status learnings; full evidence remains in the two canonical learning records.",
+  "fingerprints":[
+    {"id":"homepage-hero-video-autoplay-lifecycle-recovery-v1"},
+    {"id":"github-required-test-synthetic-merge-ref-status-gap-v1"}
+  ],
+  "lessons":[
+    {
+      "fingerprint":"homepage-hero-video-autoplay-lifecycle-recovery-v1",
+      "prevention":"Treat hero-video playback as a runtime lifecycle contract; static autoplay attributes are insufficient without recovery and browser regression evidence."
+    },
+    {
+      "fingerprint":"github-required-test-synthetic-merge-ref-status-gap-v1",
+      "prevention":"If exact-head test is green but GitHub says the required check is expected on a synthetic merge ref, do not rerun substantive tests or disable the required check; diagnose provider/ref association first."
+    }
+  ],
+  "canonical_detail_sources":[
+    "brain/learning/homepage-hero-video-autoplay-lifecycle-recovery-v1.json",
+    "brain/learning/github-required-test-synthetic-merge-ref-status-gap-v1.json"
+  ],
+  "security":{"contains_secrets":false,"contains_credentials":false,"contains_pii":false}
+}
