@@ -41,6 +41,11 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/moving-main-successor-guard.mjs
+      - name: Run consolidated displaced PR contracts
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node tools/ci/consolidated-pr-contracts.mjs
       - name: Enforce CI capacity topology contract
         run: node --test tests/ci-workflow-topology.test.mjs
       - id: scope
@@ -65,10 +70,6 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${base}\nhead_sha=${head}\npr_number=${process.env.PR_NUMBER || process.env.GITHUB_RUN_ID || '0'}\n`);
           console.log(JSON.stringify({changedPaths,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
-      # Website contract ownership remains visible here for the stable Required test
-      # contract while execution is delegated to .github/workflows/lane-website.yml:
-      # tests/v18-megamenu-heading-contract.test.mjs
-      # tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Verify composable release control plane and agent completion contract
         run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs
 
