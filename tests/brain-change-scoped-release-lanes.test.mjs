@@ -15,6 +15,10 @@ test('website-only work blocks only shared and website required suites', () => {
   assert.deepEqual(suitesFor(['index.html']), { shared:true, backend:false, portal:false, website:true, automation:false });
 });
 
+test('canonical shell source is classified as website-only', () => {
+  assert.deepEqual(suitesFor(['.github/canoniek/kop.html']), { shared:true, backend:false, portal:false, website:true, automation:false });
+});
+
 test('backend-only work blocks only shared and backend required suites', () => {
   assert.deepEqual(suitesFor(['platform/api/brain-gateway.mjs']), { shared:true, backend:true, portal:false, website:false, automation:false });
 });
