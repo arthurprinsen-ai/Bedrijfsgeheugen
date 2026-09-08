@@ -3,7 +3,7 @@ export const CSRD_TABS = Object.freeze([
 ]);
 
 export const DEFAULT_IMPACT_SNAPSHOT = Object.freeze({
-  period:'2025 (YTD)',
+  period:'2026 (YTD)',
   impactScore:83,
   impactDelta:12,
   readiness:76,
@@ -46,7 +46,7 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
   return `<div class="csrd-cockpit" data-customer-view="${customerView}">
     <header class="csrd-top">
       <div><span class="csrd-kicker">CSRD & Impact</span><h2>Vandaag maken we morgen tastbaar.</h2><p>Inzicht. Actie. Impact. Voor jouw bedrijf, je mensen en de wereld.</p></div>
-      <div class="csrd-controls"><label>Bedrijf<select aria-label="Bedrijf"><option>Demo MKB B.V.</option></select></label><label>Periode<select aria-label="Periode"><option>${data.period}</option></select></label><button class="csrd-outline" type="button" data-csrd-customer>${customerView?'Interne weergave':'Klantweergave'} ↗</button><button class="csrd-outline" type="button" data-csrd-benchmark>Vergelijk met sector</button></div>
+      <div class="csrd-controls"><label>Bedrijf<select aria-label="Bedrijf"><option>Demo MKB B.V.</option></select></label><label>Periode<select aria-label="Periode"><option>${data.period}</option></select></label><button class="csrd-outline" type="button" data-csrd-customer>${customerView?'Interne weergave':'Klantweergave'} ↗</button><button class="csrd-outline" type="button" data-csrd-benchmark>Vergelijk met sector</button><button class="csrd-outline csrd-close" type="button" data-csrd-close aria-label="Sluit CSRD dashboard">×</button></div>
     </header>
     <nav class="csrd-tabs" aria-label="Impact domeinen">${CSRD_TABS.map(([id,label],i)=>`<button type="button" class="${i===0?'active':''}" data-csrd-tab="${id}">${label}</button>`).join('')}</nav>
     <section class="csrd-stage">
@@ -74,10 +74,11 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
   </div>`;
 }
 
-export function renderCsrdImpact(root,{openPage=()=>{},snapshot=DEFAULT_IMPACT_SNAPSHOT}={}){
+export function renderCsrdImpact(root,{openPage=()=>{},closePage=()=>{},snapshot=DEFAULT_IMPACT_SNAPSHOT}={}){
   let customerView=false;
   const render=()=>{
     root.innerHTML=csrdImpactMarkup(snapshot,{customerView});
+    root.querySelector('[data-csrd-close]')?.addEventListener('click',closePage);
     root.querySelector('[data-csrd-customer]')?.addEventListener('click',()=>{customerView=!customerView;render()});
     root.querySelector('[data-csrd-benchmark]')?.addEventListener('click',()=>openPage('cijfers-maatstaven'));
     root.querySelectorAll('[data-csrd-open]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.csrdOpen)));
