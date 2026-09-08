@@ -5,18 +5,29 @@ import { applyHomepageContextSliderReadability } from '../tools/site-shell/fix-h
 
 const read = async path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const fixer = await read('tools/site-shell/fix-homepage-context-slider.mjs');
+const runtime = await read('assets/compare-slider-runtime.js');
 
-test('compare slider gebruikt één finale Pointer Events eigenaar zonder verborgen native range', () => {
-  assert.match(fixer, /pointerdown/);
-  assert.match(fixer, /pointermove/);
-  assert.match(fixer, /pointerup/);
-  assert.match(fixer, /setPointerCapture/);
-  assert.match(fixer, /releasePointerCapture/);
-  assert.match(fixer, /getBoundingClientRect\(\)/);
-  assert.match(fixer, /clientX-r\.left/);
-  assert.match(fixer, /Math\.max\(0,Math\.min\(r\.width,clientX-r\.left\)\)/);
-  assert.match(fixer, /data-bg-pointer-owner-ready/);
+test('canonical runtime is the single mobile Pointer Events owner with window fallback', () => {
+  assert.match(runtime, /pointerdown/);
+  assert.match(runtime, /pointermove/);
+  assert.match(runtime, /pointerup/);
+  assert.match(runtime, /setPointerCapture/);
+  assert.match(runtime, /releasePointerCapture/);
+  assert.match(runtime, /window\.addEventListener\('pointermove'/);
+  assert.match(runtime, /window\.addEventListener\('pointerup'/);
+  assert.match(runtime, /getBoundingClientRect\(\)/);
+  assert.match(runtime, /Math\.max\(0,\s*Math\.min\(r\.width,\s*clientX\s*-\s*r\.left\)\)/);
+  assert.match(runtime, /\(x\s*\/\s*r\.width\)\s*\*\s*100/);
+  assert.match(runtime, /data-bg-pointer-owner-ready/);
+  assert.match(runtime, /data-bg-pointer-listeners/);
+  assert.doesNotMatch(runtime, /touchstart/);
+  assert.doesNotMatch(runtime, /touchmove/);
+  assert.doesNotMatch(runtime, /touchend/);
+  assert.doesNotMatch(runtime, /bg-compare-range/);
+  assert.doesNotMatch(runtime, /type=['\"]range['\"]/);
+});
 
+test('fallback contains no native range or touch owner that can fight the canonical runtime', () => {
   assert.doesNotMatch(fixer, /touchstart/);
   assert.doesNotMatch(fixer, /touchmove/);
   assert.doesNotMatch(fixer, /touchend/);
@@ -26,7 +37,7 @@ test('compare slider gebruikt één finale Pointer Events eigenaar zonder verbor
   assert.doesNotMatch(fixer, /type=['\"]range['\"]/);
 });
 
-test('gegenereerde pagina laadt de canonieke runtime plus één pointer-owner zonder native range', () => {
+test('gegenereerde pagina laadt de canonieke runtime plus pointer fallback zonder native range', () => {
   const html = applyHomepageContextSliderReadability('<!doctype html><html><head></head><body><div id="compareSlider"><div class="compare-before"></div><div class="compare-after"></div><div class="compare-handle"><button class="compare-knob"></button></div></div></body></html>');
   assert.equal((html.match(/compare-slider-runtime\.js/g) || []).length, 1);
   assert.match(html, /data-bg-pointer-owner-ready/);
