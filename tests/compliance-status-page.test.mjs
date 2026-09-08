@@ -31,10 +31,16 @@ test('public compliance status uses the governed functional customer portal entr
   assert.doesNotMatch(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2(?:\/|\b)/i);
 });
 
-test('public compliance status carries the canonical public shell, breadcrumb and structured data', () => {
+test('public compliance status embeds the exact canonical public shell', () => {
   const html = read('compliance-status.html');
-  assert.match(html, /<nav[^>]*class="[^"]*\bbgkop\b[^"]*"/i);
-  assert.match(html, /<footer[^>]*class="[^"]*\bbgvoet\b[^"]*"/i);
+  const canonicalHeader = read('.github/canoniek/kop.html').trim();
+  const canonicalFooter = read('.github/canoniek/voet.html').trim();
+  assert.ok(html.includes(canonicalHeader), 'compliance-status.html must contain .github/canoniek/kop.html verbatim');
+  assert.ok(html.includes(canonicalFooter), 'compliance-status.html must contain .github/canoniek/voet.html verbatim');
+});
+
+test('public compliance status carries breadcrumb and structured data', () => {
+  const html = read('compliance-status.html');
   assert.match(html, /class="bgkruim"/i);
   assert.match(html, /aria-label="Kruimelpad"/i);
   assert.match(html, /<script[^>]*type="application\/ld\+json"[^>]*>/i);
@@ -44,6 +50,11 @@ test('public compliance status carries the canonical public shell, breadcrumb an
 test('trust center strengthens the relevant Excel-as-CRM knowledge cluster', () => {
   const html = read('compliance-status.html');
   assert.match(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/excel-als-crm"/i);
+});
+
+test('a normal public HTML page links statically to the trust center', () => {
+  const contact = read('contact.html');
+  assert.match(contact, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/compliance-status"/i);
 });
 
 test('shared public shell exposes trust center from over-ons and AI Act', () => {
