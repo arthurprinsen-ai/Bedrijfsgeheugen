@@ -13,12 +13,13 @@ test('workflow topology has one canonical broad PR ingress', async () => {
   assert.deepEqual(topology.broadPullRequestWorkflows, [policy.canonicalPrWorkflow]);
 });
 
-test('required test supersedes only older runs of the same PR', async () => {
+test('required test supersedes only work within the same PR or merge-group identity', async () => {
   const required = await readFile('.github/workflows/required-test.yml', 'utf8');
   assert.match(required, /concurrency:/);
   assert.match(required, /github\.repository/);
   assert.match(required, /github\.event\.pull_request\.number/);
-  assert.match(required, /cancel-in-progress:\s*\$\{\{\s*github\.event_name == 'pull_request'\s*\}\}/);
+  assert.match(required, /github\.event\.merge_group\.head_sha/);
+  assert.match(required, /cancel-in-progress:\s*true/);
   assert.doesNotMatch(required, /group:\s*(?:repo|repository|pr-validation)\s*$/m);
   assert.doesNotMatch(required, /production-release-readback/);
 });
