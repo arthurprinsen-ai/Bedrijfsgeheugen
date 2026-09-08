@@ -25,14 +25,31 @@ test('required test is a stable aggregator and preserves the protected test cont
 test('website lane keeps public visibility mandatory while broad checks are high-risk only', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   assert.match(website, /classifyWebsiteRelease/);
+  assert.match(website, /\n  browser:/);
   const visibilityStart = website.indexOf('      - name: Verify all public pages are visibly rendered');
   assert.notEqual(visibilityStart, -1);
-  const visibilityEnd = website.indexOf('\n\n  broad-browser:', visibilityStart);
-  assert.notEqual(visibilityEnd, -1);
-  const visibility = website.slice(visibilityStart, visibilityEnd);
+  const broadStart = website.indexOf('      - name: Verify broad high-risk browser contracts', visibilityStart);
+  assert.notEqual(broadStart, -1);
+  const visibility = website.slice(visibilityStart, broadStart);
   assert.doesNotMatch(visibility, /if:.*(?:high-risk|fast-fix|normal)|risk_lane/);
-  assert.match(website, /risk_lane == 'high-risk'/);
+  const broad = website.slice(broadStart);
+  assert.match(broad, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
   assert.match(website, /verify-targeted-website-routes\.mjs/);
+});
+
+test('page and SEO contracts run against materialized canonical output', () => {
+  const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+  const pageSeoStart = website.indexOf('\n  page-seo:');
+  const previewStart = website.indexOf('\n  preview-ready:', pageSeoStart);
+  assert.notEqual(pageSeoStart, -1);
+  assert.notEqual(previewStart, -1);
+  const pageSeo = website.slice(pageSeoStart, previewStart);
+  assert.match(pageSeo, /name: Materialize canonical site output/);
+  assert.match(pageSeo, /node tools\/normaliseer-site-ui\.mjs/);
+  assert.ok(
+    pageSeo.indexOf('name: Materialize canonical site output') < pageSeo.indexOf('name: Verify page and SEO contracts'),
+    'canonical output must be materialized before page/SEO verification',
+  );
 });
 
 test('production readback is serialized and never cancelled mid-flight', () => {
