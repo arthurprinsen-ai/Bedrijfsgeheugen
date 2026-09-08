@@ -14,6 +14,10 @@ on:
       - 'portal-next/portal-content-map.js'
       - '.github/workflows/portal-v2-tests.yml'
 
+concurrency:
+  group: portal-v2-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
