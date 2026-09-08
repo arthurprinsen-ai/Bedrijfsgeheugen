@@ -70,6 +70,9 @@ jobs:
           if(!body || typeof body!=='object' || !body.sources || !body.targets || !body.extractor){
             throw new Error('Live connector readiness response misses capability-state sections');
           }
+          if(body.extractor.configured !== true || body.extractor.state !== 'server-safe-test'){
+            throw new Error(`Live document extractor is not server-configured: ${JSON.stringify(body.extractor)}`);
+          }
           if(/SECRET|TOKEN|PASSWORD|API_KEY/i.test(text)){
             throw new Error('Live connector readiness response exposes a secret-like key');
           }
