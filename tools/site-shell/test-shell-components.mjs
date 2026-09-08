@@ -67,6 +67,10 @@ assert.ok(normalizer.includes('await applyCanonicalShellToAllPages()'));
 assert.ok(!normalizer.includes('PRICING_MOBILE_MENU_HTML'));
 assert.ok(!normalizer.includes('#bgkopMob.bgkop-mob'));
 
+const deliveryPolicy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+const websiteLane = deliveryPolicy.lanes.find(lane => lane.id === 'website');
+assert.ok(websiteLane?.paths.includes('.github/canoniek/'), 'canonical shell-bronnen moeten als website-deliverypad geclassificeerd zijn');
+
 const canonicalHeader = await readFile('.github/canoniek/kop.html', 'utf8');
 assert.ok(
   canonicalHeader.includes('<div class="bgkop-paneel"><a href="https://www.bedrijfsgeheugen.nl/kennis/"><b>Kennisbank</b>') &&
