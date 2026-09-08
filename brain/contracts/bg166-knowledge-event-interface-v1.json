@@ -1,0 +1,10 @@
+{
+  "version":"BG166-KNOWLEDGE-EVENT-INTERFACE-v1",
+  "scenario_id":7135971,
+  "authority":"durable-error-learning-ledger",
+  "input":"event_json",
+  "preserve_fields":["schema_version","event_id","dedupe_key","fingerprint","source_type","source_refs","actor","component","architecture_layer","intent","decision","action","evidence","outcome","root_cause","learning","guard_prevention","regression","architecture_impact","rollback","next_decision","writeback","readback"],
+  "dedupe_before_write":true,
+  "dedupe_before_bg167_refresh":true,
+  "output":{"fields":["written","deduped","event_id","fingerprint","bg166_ref","bg167_refresh"]}
+}
