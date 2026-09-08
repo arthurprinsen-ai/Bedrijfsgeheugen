@@ -49,3 +49,12 @@ test('missing configured persistent store fails explicitly instead of using fake
   assert.equal(res.status,503);
   assert.deepEqual(await res.json(),{error:'CONNECTOR_STORE_NOT_CONFIGURED'});
 });
+
+test('readiness endpoint exposes only server capability state and no provider secrets',async()=>{
+  const store=makeStore();
+  const engine={readiness:{sources:{email:{configured:true,state:'native-safe-test'}},extractor:{configured:false,state:'sample-only'},targets:{afas:{configured:false,state:'not-configured'},datahub:{configured:true,state:'native-safe-test'}}}};
+  const res=await handlePortalConnectorsRequest({request:req('GET','/api/connectors/readiness'),user:{id:'u1',tenantId:'tenant-a'},store,engine});
+  assert.equal(res.status,200);
+  assert.deepEqual(await res.json(),engine.readiness);
+  assert.equal(store.calls.length,0);
+});
