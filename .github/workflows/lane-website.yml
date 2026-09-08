@@ -76,6 +76,8 @@ jobs:
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
           tests/seo-order-*.test.mjs
+      - name: Verify Netlify and routing configuration
+        run: python3 tools/config-wacht.py
       - name: Verify accepted hero media binary contract
         run: |
           node - <<'NODE'
