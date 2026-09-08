@@ -42,7 +42,7 @@ test('prijzen accepteert geen generieke paginakop als vervanging van de native p
 
 // Regression contract: generated classic scripts must stay parseable before estate-wide projection.
 test('growth measurement injecteert alleen syntactisch geldige classic JavaScript', () => {
-  const html = injectGrowthMeasurement('<!doctype html><html><head></head><body><main><a data-bg-conversion="frisse-blik" href="/frisse-blik">Plan</a></main></body></html>', {
+  const html = injectGrowthMeasurement('<!doctype html><html><head></head><body><main><a data-bg-conversion="frisse-blik" href="https://www.bedrijfsgeheugen.nl/frisse-blik">Plan</a></main></body></html>', {
     canonical: 'https://www.bedrijfsgeheugen.nl/test',
     page_role: 'support',
     funnel_stage: 'discover',
@@ -82,11 +82,12 @@ test('wijzigingen-uitgelegd houdt rail en panelen actief wanneer optionele navig
   assert.doesNotMatch(html, /if\s*\(\s*!rail\s*\|\|[\s\S]*!telling[\s\S]*\)\s*return/, 'ontbrekende optionele controls mogen de railinteractie niet volledig uitschakelen');
 });
 
-test('site-normalisatie behoudt relatieve inhoudslinks zodat SEO-linkgrafiek de production state kan lezen', () => {
+test('site-normalisatie maakt interne inhoudslinks absoluut en behoudt query en fragment', () => {
   const html = '<!doctype html><html><head><title>Test</title></head><body><main><a href="/product">Product</a><a href="/frisse-blik?bron=test#start">Frisse blik</a></main></body></html>';
   const out = normaliseerHtml(html, 'test.html');
-  assert.match(out, /href="\/product"/, 'relatieve inhoudslinks moeten relatief blijven');
-  assert.match(out, /href="\/frisse-blik\?bron=test#start"/, 'query en fragment op relatieve inhoudslinks moeten behouden blijven');
+  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/product"/, 'interne inhoudslinks moeten finaal absoluut zijn');
+  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/frisse-blik\?bron=test#start"/, 'query en fragment moeten op absolute interne hrefs behouden blijven');
+  assert.doesNotMatch(out, /href="\//, 'site-normalisatie mag geen relatieve interne hrefs terugschrijven');
 });
 
 test('SEO-order write-back maakt interne hrefs finaal absoluut zonder query of fragment te verliezen', () => {
