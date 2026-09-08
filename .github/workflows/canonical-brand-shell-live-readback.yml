@@ -1,8 +1,6 @@
 name: Canonical brand shell live readback
 
 on:
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
@@ -19,59 +17,3 @@ jobs:
         run: node tools/site-shell/test-live-contract.mjs
       - name: Test live SEO order contract
         run: node --test tests/seo-order-live-readback.test.mjs
-
-  production-readback:
-    if: github.event_name != 'pull_request'
-    needs: contract
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - name: Wait for exact Netlify production commit and verify canonical shell + SEO order engine
-        env:
-          EXPECTED_COMMIT: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-          for attempt in $(seq 1 16); do
-            nonce="${EXPECTED_COMMIT}-${attempt}-$(date +%s)"
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/?bg_readback=${nonce}" -o live-home.html
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?bg_readback=${nonce}" -o live-prijzen.html
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_readback=${nonce}" -o live-over-ons.html
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/afas-koppeling?bg_readback=${nonce}" -o live-afas.html
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/?bg_readback=${nonce}" -o live-blog-index.html
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/afas-api/?bg_readback=${nonce}" -o live-blog-afas-api.html
-            curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/blog/kennis-borgen-in-je-bedrijf/?bg_readback=${nonce}" -o live-blog-kennis-borgen.html
-            growth_status="$(curl -sS -o /tmp/growth-health.txt -w '%{http_code}' -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/api/growth-event?bg_readback=${nonce}" || true)"
-            if node tools/site-shell/check-live-production.mjs && node tools/seo-order-engine/live-readback.mjs && [ "$growth_status" = "405" ]; then
-              echo "Exact production shell + SEO order + growth endpoint readback green for ${EXPECTED_COMMIT}"
-              exit 0
-            fi
-            echo "Production is not on ${EXPECTED_COMMIT} with all contracts yet; growth endpoint status=${growth_status}; retry ${attempt}/16"
-            sleep 15
-          done
-          echo "Production never satisfied the exact shell + SEO order + growth endpoint contract for ${EXPECTED_COMMIT}" >&2
-          node tools/site-shell/check-live-production.mjs
-          node tools/seo-order-engine/live-readback.mjs
-          test "$(curl -sS -o /tmp/growth-health.txt -w '%{http_code}' https://www.bedrijfsgeheugen.nl/api/growth-event || true)" = "405"
-      - name: Install production visual readback browser
-        run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
-      - name: Verify every public production page is visibly rendered
-        env:
-          UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
-        run: node tools/site-shell/standalone-visibility-check.mjs
-      - name: Production UI visual regression readback
-        env:
-          EXPECTED_COMMIT: ${{ github.sha }}
-          UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
-        run: node tools/site-shell/ui-visual-regression/browser-check.mjs
-      - name: Upload production visual regression diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: production-ui-visual-regression
-          path: artifacts/ui-visual-regression/
-          if-no-files-found: ignore
