@@ -13,14 +13,12 @@ import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 
-function absolutiseerInterneHref(html) {
-  return String(html).replace(/href=(['"])\/(?!\/)([^'"]*)\1/gi, (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
-}
-
 function herstelTechnischeLinks(html) {
   return String(html)
     .replaceAll(`${ORIGIN}/wachtwoord-vergeten`, `${ORIGIN}/inloggen`)
-    .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`);
+    .replaceAll('/wachtwoord-vergeten', '/inloggen')
+    .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`)
+    .replaceAll('/blog/afas-koppeling/', '/afas-koppeling');
 }
 
 function verwijderDefecteLegacyDemonstrator(input) {
@@ -128,7 +126,8 @@ export function normaliseerHtml(input, bestand) {
   html = ensureBrandShellCss(html);
   html = ensureReleaseMarker(html);
   html = markPageSlots(html);
-  html = absolutiseerInterneHref(html);
+  // Houd inhoudslinks relatief: de SEO-linkgrafiek controleert de echte interne
+  // structuur. De canonical header zelf bevat al absolute hrefs en blijft zo.
   html = herstelTechnischeLinks(html);
   html = applyHomepageContextSliderReadability(html);
   return html;
