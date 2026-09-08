@@ -54,6 +54,8 @@ const STYLE = `<style ${MARKER}>
   .bg-change-step-rail::after,.bg-change-step-fill{top:38px;width:3px}
   .bg-change-impact{gap:6px;margin-top:14px}
   .bg-change-impact span{font-size:11.5px;padding:5px 8px}
+  .bgx-lek{bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}
+  .bgx-lek.bgx-lek-uit-flow{transform:translateY(calc(140% + 24px)) rotate(-2deg)!important;pointer-events:none!important}
 }
 @media(max-width:420px){
   [data-bg-change-flow]{--bg-change-rail-width:46px}
@@ -114,6 +116,7 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('--bg-change-rail-width')||
      !next.includes('bg-change-step-rail')||
      !next.includes('bg-change-step-content')||
+     !next.includes('bgx-lek-uit-flow')||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-aria-fallback>/g)||[]).length!==1){
