@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - 'automation/bg168-materiality-promotion-v4-20260830'
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
