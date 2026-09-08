@@ -106,19 +106,31 @@ export function buildCustomerControls(customerData = {}) {
 
 export function buildBedrijfsgeheugenControls(evidenceData = {}) {
   return COMPLIANCE_CONTROL_TEMPLATES.map(template => {
-    const scope = evidenceData?.scopeDecisions?.[template.framework];
-    if (scope === 'not_applicable') return notApplicable(template, 'Formele scopebeslissing geregistreerd als niet van toepassing.');
-    if (scope !== 'applicable') return unknown(template, `Voor Bedrijfsgeheugen is voor ${template.framework} nog geen formele, evidence-backed toepasselijkheidsbeslissing gekoppeld.`);
-    const implementation = evidenceData?.controls?.[template.id];
-    return {
+    const implementation = evidenceData?.controls?.[template.id] || null;
+    const perControlScope = implementation?.applicability;
+    const frameworkScope = evidenceData?.scopeDecisions?.[template.framework];
+    const scope = ['applicable','not_applicable','unknown'].includes(perControlScope)
+      ? perControlScope
+      : (['applicable','not_applicable','unknown'].includes(frameworkScope) ? frameworkScope : 'unknown');
+
+    if (scope === 'not_applicable') {
+      return notApplicable(template, implementation?.reason || 'Formele scopebeslissing geregistreerd als niet van toepassing.');
+    }
+
+    const projected = {
       ...template,
-      applicability: 'applicable',
+      applicability: scope,
       control: implementation ? { implemented: implementation.implemented === true } : null,
       evidence: Array.isArray(implementation?.evidence) ? implementation.evidence : [],
       verifiedAt: implementation?.verifiedAt || null,
       reason: implementation?.reason || template.reason,
       nextAction: implementation?.nextAction || template.nextAction
     };
+
+    if (scope === 'unknown') {
+      projected.reason = implementation?.reason || `Voor Bedrijfsgeheugen is voor ${template.framework} nog geen formele, evidence-backed toepasselijkheidsbeslissing gekoppeld. Bestaande technische controls en evidence blijven hieronder zichtbaar als feitelijke context.`;
+    }
+    return projected;
   });
 }
 
