@@ -2,7 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v5-mobile-flow';
+  var VERSION = 'full-endpoints-v6-responsive-flow';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -56,18 +56,37 @@
     var nodes = Array.prototype.slice.call(row.querySelectorAll('img,svg,span,i,div'));
     return nodes.find(explicitCheck) || nodes.find(visualCheck) || null;
   }
-  function ensureFlowCheck(row){
-    var check = row.querySelector('.bg-change-flow-check');
-    if(check) return check;
-    check = document.createElement('span');
+  function ensureStepLayout(row){
+    var existingRail = row.querySelector(':scope > .bg-change-step-rail');
+    var existingContent = row.querySelector(':scope > .bg-change-step-content');
+    if(existingRail && existingContent) return { rail: existingRail, content: existingContent, check: existingRail.querySelector('.bg-change-flow-check') };
+
+    var source = findCheck(row);
+    if(source) source.setAttribute('data-bg-change-check-source','true');
+
+    var rail = document.createElement('span');
+    rail.className = 'bg-change-step-rail';
+    rail.setAttribute('aria-hidden','true');
+
+    var check = document.createElement('span');
     check.className = 'bg-change-flow-check';
-    check.setAttribute('aria-hidden','true');
     check.textContent = '✓';
-    row.appendChild(check);
-    return check;
+    rail.appendChild(check);
+
+    var fill = document.createElement('span');
+    fill.className = 'bg-change-step-fill';
+    rail.appendChild(fill);
+
+    var content = document.createElement('div');
+    content.className = 'bg-change-step-content';
+    while(row.firstChild) content.appendChild(row.firstChild);
+
+    row.appendChild(rail);
+    row.appendChild(content);
+    return { rail: rail, content: content, check: check };
   }
-  function ensureImpact(row){
-    if(row.querySelector('.bg-change-impact')) return;
+  function ensureImpact(content){
+    if(content.querySelector('.bg-change-impact')) return;
     var impact = document.createElement('div');
     impact.className = 'bg-change-impact';
     impact.setAttribute('aria-label','Geraakte context: ' + IMPACT_LABELS.join(', '));
@@ -82,18 +101,7 @@
         impact.appendChild(arrow);
       }
     });
-    row.appendChild(impact);
-  }
-  function alignFlowChecks(rows){
-    rows.forEach(function(row,index){
-      var heading = findChangeLabel(row,CHANGE_STEPS[index]);
-      var check = row.querySelector('.bg-change-flow-check');
-      if(!heading || !check) return;
-      var rr = row.getBoundingClientRect();
-      var hr = heading.getBoundingClientRect();
-      var size = check.getBoundingClientRect().height || 42;
-      check.style.top = Math.max(18, hr.top - rr.top + (hr.height - size) / 2) + 'px';
-    });
+    content.appendChild(impact);
   }
   function initChangeFlow(){
     var title = findHeading(document, CHANGE_TITLE);
@@ -107,52 +115,39 @@
     if(rows.some(function(row){ return !row; })) return;
 
     section.setAttribute('data-bg-change-flow','');
-    rows.forEach(function(row,index){
+    var layouts = rows.map(function(row,index){
       row.setAttribute('data-bg-change-step', String(index + 1));
       if(!row.hasAttribute('data-bg-change-status')) row.setAttribute('data-bg-change-status', index === 0 ? 'done' : index === 1 ? 'active' : 'future');
-      var source = findCheck(row);
-      if(source && !source.classList.contains('bg-change-flow-check')) source.setAttribute('data-bg-change-check-source','true');
-      ensureFlowCheck(row);
+      return ensureStepLayout(row);
     });
-    ensureImpact(rows[1]);
+    ensureImpact(layouts[1].content);
 
-    var progress = section.querySelector('.bg-change-progress');
-    if(!progress){
-      progress = document.createElement('span');
-      progress.className = 'bg-change-progress';
-      progress.setAttribute('data-bg-change-progress','');
-      progress.setAttribute('aria-hidden','true');
-      var fill = document.createElement('span');
-      fill.className = 'bg-change-progress-fill';
-      progress.appendChild(fill);
-      section.appendChild(progress);
-    }
     if(section.getAttribute('data-bg-change-flow-ready') === 'true') return;
     section.setAttribute('data-bg-change-flow-ready','true');
 
     var maxProgress = 0;
     var raf = 0;
     function layout(){
-      alignFlowChecks(rows);
-      var sr = section.getBoundingClientRect();
-      var checks = rows.map(function(row){ return row.querySelector('.bg-change-flow-check').getBoundingClientRect(); });
-      var centers = checks.map(function(c){ return c.top + c.height / 2; });
-      var first = centers[0];
-      var last = centers[centers.length - 1];
-      var firstCheck = checks[0];
-      progress.style.left = (firstCheck.left - sr.left + firstCheck.width / 2 - 2) + 'px';
-      progress.style.top = (first - sr.top) + 'px';
-      progress.style.height = Math.max(4,last - first) + 'px';
       var rect = section.getBoundingClientRect();
       if(rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+      var centers = rows.map(function(row){
+        var r = row.getBoundingClientRect();
+        return r.top + Math.min(34, Math.max(20, r.height * .12));
+      });
+      var first = centers[0];
+      var last = centers[centers.length - 1];
       var trigger = window.innerHeight * .58;
       var current = Math.max(0, Math.min(1, (trigger - first) / Math.max(1,last - first)));
       maxProgress = Math.max(maxProgress,current);
       section.style.setProperty('--bg-change-progress', maxProgress.toFixed(4));
+
       var active = -1;
       rows.forEach(function(row,index){
         var threshold = index / (rows.length - 1);
         var done = maxProgress + .015 >= threshold;
+        var nextThreshold = index === rows.length - 1 ? 1 : (index + 1) / (rows.length - 1);
+        var segment = index === rows.length - 1 ? 1 : Math.max(0, Math.min(1, (maxProgress - threshold) / Math.max(.0001,nextThreshold - threshold)));
+        row.style.setProperty('--bg-step-progress', segment.toFixed(4));
         if(done){
           row.setAttribute('data-bg-change-status','done');
           row.removeAttribute('aria-current');
@@ -173,6 +168,12 @@
     }
     window.addEventListener('scroll',schedule,{passive:true});
     window.addEventListener('resize',schedule,{passive:true});
+    window.addEventListener('orientationchange',schedule,{passive:true});
+    if(window.ResizeObserver){
+      var ro = new ResizeObserver(schedule);
+      ro.observe(section);
+      rows.forEach(function(row){ ro.observe(row); });
+    }
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(schedule).catch(function(){});
     schedule();
   }
