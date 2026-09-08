@@ -35,7 +35,7 @@
   };
 
   function normPath(){var p=location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';return p;}
-  function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'})[c];});}
+  function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
   function event(name,meta){
     try{if(typeof window.bgEvent==='function')window.bgEvent(name);}catch(e){}
     try{if(typeof gtag==='function')gtag('event',name,{money_page:meta.intent,contract:CONTRACT,page_path:location.pathname});}catch(e){}
