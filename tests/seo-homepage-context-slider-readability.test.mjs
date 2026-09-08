@@ -40,18 +40,42 @@ test('external slider-runtime is parsebaar en wordt synchroon geladen',()=>{
   assert.doesNotMatch(upgraded,/compare-slider-runtime\.js" defer/);
 });
 
-test('mobiele interactie heeft één Pointer Events eigenaar en geen verborgen native range',()=>{
+test('één pointer owner wordt vóór de externe runtime geïnstalleerd zodat twee gesture-engines niet kunnen vechten',()=>{
+  assert.match(fixer,/RUNTIME_VERSION\s*=\s*['"]full-endpoints-v7-responsive-flow['"]/);
+  assert.match(runtime,/VERSION\s*=\s*['"]full-endpoints-v7-responsive-flow['"]/);
+  assert.match(fixer,/POINTER_OWNER_MARKER/);
+  assert.match(fixer,/data-bg-compare-pointer-owner/);
+  assert.match(fixer,/data-bg-compare-version/);
+  const upgraded=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
+  const pointerOwner=upgraded.indexOf('data-bg-compare-pointer-owner');
+  const externalRuntime=upgraded.indexOf('src="/assets/compare-slider-runtime.js"');
+  assert.ok(pointerOwner>=0 && externalRuntime>pointerOwner,'pointer owner moet vóór externe runtime staan');
+  assert.equal((upgraded.match(/data-bg-compare-pointer-owner/g)||[]).length,1);
+  assert.equal((upgraded.match(/src="\/assets\/compare-slider-runtime\.js"/g)||[]).length,1);
+});
+
+test('mobiele interactie gebruikt een dedicated full-card hit layer met Pointer Events en geen verborgen native range',()=>{
+  assert.match(fixer,/className='bg-compare-hit'/);
+  assert.match(fixer,/\.bg-compare-hit\{position:absolute!important;inset:0!important/);
   assert.match(fixer,/setPointerCapture/);
   assert.match(fixer,/releasePointerCapture/);
-  assert.match(fixer,/pointerdown/);
-  assert.match(fixer,/pointermove/);
-  assert.match(fixer,/pointerup/);
+  assert.match(fixer,/hit\.addEventListener\('pointerdown'/);
+  assert.match(fixer,/hit\.addEventListener\('pointermove'/);
+  assert.match(fixer,/hit\.addEventListener\('pointerup'/);
   assert.match(fixer,/getBoundingClientRect\(\)/);
   assert.match(fixer,/clientX\s*-\s*r\.left/);
   assert.match(fixer,/data-bg-pointer-owner-ready/);
   assert.doesNotMatch(fixer,/ensureNativeRange/);
   assert.doesNotMatch(fixer,/bg-compare-range/);
   assert.doesNotMatch(fixer,/data-bg-native-range-ready/);
+});
+
+test('mobiele edge-zones maken 0 en 100 praktisch bereikbaar met een vinger',()=>{
+  assert.match(fixer,/EDGE_SNAP_PX\s*=\s*48/);
+  assert.match(fixer,/clientX\s*<=\s*r\.left\s*\+\s*EDGE_SNAP_PX/);
+  assert.match(fixer,/clientX\s*>=\s*r\.right\s*-\s*EDGE_SNAP_PX/);
+  assert.match(fixer,/return render\(slider,0\)/);
+  assert.match(fixer,/return render\(slider,100\)/);
 });
 
 test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand en geen randclamp',()=>{
@@ -157,7 +181,7 @@ test('oude geïnjecteerde guard wordt vervangen zonder verborgen range-control',
   assert.doesNotMatch(upgraded,/>STALE</);
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
   assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length,1);
-  assert.match(upgraded,/data-bg-compare-slider/);
+  assert.equal((upgraded.match(/<script data-bg-compare-pointer-owner>/g)||[]).length,1);
   assert.match(upgraded,/data-bg-pointer-owner-ready/);
   assert.doesNotMatch(upgraded,/bg-compare-range/);
 });
