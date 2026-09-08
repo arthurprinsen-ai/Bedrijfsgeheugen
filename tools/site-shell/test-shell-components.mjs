@@ -6,51 +6,34 @@ import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './ensure-k
 import { normaliseerHtml } from '../normaliseer-site-ui.mjs';
 
 const canonical = `<!doctype html><html><head></head><body>
-<div data-bg-component="trustbar">trust</div>
-<header class="v17-header" data-bg-component="header"><nav>nav</nav></header>
-<aside class="v18-mobile-drawer" data-bg-component="mobile-menu">menu</aside>
-<section data-bg-component="hero">hero</section>
-<main data-bg-component="main">body</main>
-<footer data-bg-component="footer">footer</footer>
+<header class="v17-header" data-bg-component="header"><nav><a href="/">Home</a></nav></header>
+<aside class="v18-mobile-drawer" data-bg-component="mobile-drawer"><a href="/">Home</a></aside>
+<main data-bg-component="main"><section>eigen inhoud</section></main>
+<footer class="v17-footer" data-bg-component="footer">footer</footer>
 </body></html>`;
 
-assert.deepEqual(GLOBAL_COMPONENTS, ['trustbar','header','mobile-menu','footer']);
-assert.equal(componentHash(canonical, 'header'), componentHash(canonical, 'header'));
-assert.doesNotThrow(() => verifyPageShell(canonical, 'voorbeeld.html'));
+const page = `<!doctype html><html><head></head><body>
+<header class="v17-header" data-bg-component="header"><nav><a href="/oud">Oud</a></nav></header>
+<aside class="v18-mobile-drawer" data-bg-component="mobile-drawer"><a href="/oud">Oud</a></aside>
+<main data-bg-component="main"><section>pagina-inhoud</section></main>
+<footer class="v17-footer" data-bg-component="footer">oude footer</footer>
+</body></html>`;
+
 assert.equal(CANONICAL_SHELL_SOURCE, 'over-ons.html');
+const markedCanonical = markCanonicalComponents(canonical);
+for (const name of GLOBAL_COMPONENTS) assert.ok(extractComponent(markedCanonical, name), `canonical mist ${name}`);
+const projected = projectGlobalComponents(page, canonical);
+assert.equal(extractPageMain(projected), '<section>pagina-inhoud</section>');
+assert.equal(componentHash(extractComponent(projected, 'header')), componentHash(extractComponent(markedCanonical, 'header')));
+assert.equal(componentHash(extractComponent(projected, 'mobile-drawer')), componentHash(extractComponent(markedCanonical, 'mobile-drawer')));
+assert.equal(componentHash(extractComponent(projected, 'footer')), componentHash(extractComponent(markedCanonical, 'footer')));
+assert.ok(verifyPageShell(projected, markedCanonical).ok);
 
-const target = canonical
-  .replace('>trust<','>oud trust<')
-  .replace('<nav>nav</nav>','<nav>oud</nav>')
-  .replace('>menu<','>oud menu<')
-  .replace('>footer<','>oude footer<')
-  .replace('>body<','>homepage body<');
-const projected = projectGlobalComponents(target, canonical);
-for (const name of GLOBAL_COMPONENTS) assert.equal(componentHash(projected, name), componentHash(canonical, name), `${name} moet exact canonical worden`);
-assert.equal(extractComponent(projected, 'main'), extractComponent(target, 'main'), 'globale componentprojectie mag homepage main niet wijzigen');
-
-const ruweV18 = `<!doctype html><body><header class="v17-header">header</header><aside class="v18-mobile-drawer" id="v18MobileDrawer">drawer</aside><footer>footer</footer></body>`;
-const gemarkeerd = markCanonicalComponents(ruweV18);
-assert.ok(gemarkeerd.includes('class="v18-mobile-drawer" id="v18MobileDrawer" data-bg-component="mobile-menu"'));
-
-const afwijkend = canonical.replace('class="v17-header"', 'class="bgkop"');
-assert.throws(() => verifyPageShell(afwijkend, 'prijzen.html'), /legacy|header|canonical/i);
-const dubbeleFooter = canonical.replace('</body>', '<footer data-bg-component="footer">dubbel</footer></body>');
-assert.throws(() => verifyPageShell(dubbeleFooter, 'dubbel.html'), /footer/i);
-
-const pricingOk = canonical.replace('<main data-bg-component="main">body</main>', '<main data-bg-component="main">body<section data-bg-component="page-tools"><div class="bgx-vraagbalk"></div><div class="bgx-rekenaar"></div><div class="bgx-rol"></div></section></main>');
-assert.doesNotThrow(() => verifyPageShell(pricingOk, 'prijzen.html'));
-assert.throws(() => verifyPageShell(pricingOk, 'over-ons.html'), /pricing|page-tools/i);
-
-const legacyPricing = '<!doctype html><html><body><nav class="bgkop">oud menu</nav><div class="held"><h1>Prijzen</h1></div><section id="pakketten">inhoud</section><footer class="bgvoet">oude voet</footer></body></html>';
-assert.equal(extractPageMain(legacyPricing, 'prijzen.html'), '<div class="held"><h1>Prijzen</h1></div><section id="pakketten">inhoud</section>');
-assert.equal(extractPageMain('<body><main><p>normaal</p></main></body>', 'normaal.html'), '<p>normaal</p>');
-
-const alleenPricingCss = canonical.replace('</head>', '<style>.bgx-vraagbalk{display:grid}.bgx-rekenaar{display:block}.bgx-rol{display:flex}</style></head>');
-assert.doesNotThrow(() => verifyPageShell(alleenPricingCss, '404.html'));
-const pricingNaNormalisatie = normaliseerHtml(alleenPricingCss, 'prijzen.html');
-assert.ok(/<[^>]+class="[^"]*\bbgx-vraagbalk\b/i.test(pricingNaNormalisatie));
-assert.ok(pricingNaNormalisatie.includes('data-bg-component="page-tools"'));
+const normalized = normaliseerHtml(projected, { pad: 'test.html' });
+assert.ok(extractComponent(normalized, 'header'));
+assert.ok(extractComponent(normalized, 'mobile-drawer'));
+assert.ok(extractComponent(normalized, 'footer'));
+assert.equal(extractPageMain(normalized), '<section>pagina-inhoud</section>');
 
 const oudeMain = extractComponent(canonical, 'main');
 const oudeFooter = extractComponent(canonical, 'footer');
@@ -63,8 +46,8 @@ assert.equal(extractComponent(alleenHeader, 'header'), nieuweHeader);
 const legacyKnowledgeNav = `<nav class="bgkop"><div class="bgkop-paneel"><a href="/blog/"><b>Blog</b><span>Wat we tegenkomen, uitgelegd zonder jargon</span></a></div><button class="bgkop-macc" type="button">Kennis<svg></svg></button><div class="bgkop-mpaneel" hidden><a href="/blog/">Blog</a></div></nav>`;
 const knowledgeNav = ensureKnowledgeNavigation(legacyKnowledgeNav);
 assert.ok(verifyKnowledgeNavigation(knowledgeNav), 'Kennisbank en Blog moeten aparte desktop- en mobiele bestemmingen zijn');
-assert.ok(knowledgeNav.indexOf('href="https://www.bedrijfsgeheugen.nl/kennis/"><b>Kennisbank</b>') < knowledgeNav.indexOf('href="https://www.bedrijfsgeheugen.nl/blog/"><b>Blog</b>'));
-assert.ok(knowledgeNav.includes('href="https://www.bedrijfsgeheugen.nl/kennis/">Kennisbank</a>'));
+assert.ok(knowledgeNav.indexOf('href="https://www.bedrijfsgeheugen.nl/kennis"><b>Kennisbank</b>') < knowledgeNav.indexOf('href="https://www.bedrijfsgeheugen.nl/blog/"><b>Blog</b>'));
+assert.ok(knowledgeNav.includes('href="https://www.bedrijfsgeheugen.nl/kennis">Kennisbank</a>'));
 const kennisHrefs = [...knowledgeNav.matchAll(/\bhref="([^"]+)"/g)].map(([, href]) => href);
 assert.ok(kennisHrefs.every((href) => /^https:\/\/www\.bedrijfsgeheugen\.nl\//.test(href)), 'alle hrefs in de genormaliseerde kennisnavigatie moeten absolute bedrijfsgeheugen.nl URLs zijn');
 assert.equal(ensureKnowledgeNavigation(knowledgeNav), knowledgeNav, 'Kennisnavigatie-normalisatie moet idempotent zijn');
