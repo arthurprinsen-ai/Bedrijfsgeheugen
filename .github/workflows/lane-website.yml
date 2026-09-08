@@ -63,7 +63,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify mandatory website baseline and release-risk contracts
-        run: node --test tests/site-baseline-guardian.test.mjs tests/site-shell-public-route-inventory.test.mjs tests/site-shell-website-release-risk.test.mjs tests/targeted-website-route-regression.test.mjs tests/homepage-pricing-boundary-readback.test.mjs
+        run: node --test tests/site-baseline-guardian.test.mjs tests/site-shell-public-route-inventory.test.mjs tests/site-shell-website-release-risk.test.mjs tests/targeted-website-route-regression.test.mjs tests/homepage-pricing-boundary-readback.test.mjs tests/prijzen-hero-seo.test.mjs tests/technical-seo-gate.test.mjs
 
   static:
     needs: classify
