@@ -2,6 +2,7 @@ const MARKER = 'data-bg-context-slider-readable';
 const LEGACY_FALLBACK_MARKER = 'data-bg-context-slider-aria-fallback';
 const SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
 const RUNTIME_SRC = '/assets/compare-slider-runtime.js';
+const POINTER_RUNTIME_SRC = '/assets/compare-slider-pointer-runtime.js';
 
 const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider]{--split:50%;--bg-compare-split:var(--split,50%);position:relative!important;overflow:hidden!important;touch-action:pan-y;cursor:ew-resize!important;user-select:none!important;-webkit-user-select:none!important}
@@ -72,7 +73,7 @@ const STYLE = `<style ${MARKER}>
 }
 </style>`;
 
-const RUNTIME_TAG = `<script ${MARKER} src="${RUNTIME_SRC}"></script>`;
+const RUNTIME_TAG = `<script ${MARKER} src="${RUNTIME_SRC}"></script>\n<script ${MARKER} src="${POINTER_RUNTIME_SRC}"></script>`;
 
 function normalizeLegacyBounds(html){
   return html
@@ -97,6 +98,7 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('[aria-valuenow="6"]')||
      !next.includes('[aria-valuenow="94"]')||
      !next.includes(RUNTIME_SRC)||
+     !next.includes(POINTER_RUNTIME_SRC)||
      !next.includes('touch-action:pan-y')||
      !next.includes('data-bg-readable-side')||
      !next.includes('data-bg-change-flow')||
@@ -110,10 +112,11 @@ export function applyHomepageContextSliderReadability(html){
      next.includes('ensureNativeRange')||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length!==1||
+     (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-pointer-runtime\.js"><\/script>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-aria-fallback>/g)||[]).length!==0){
     throw new Error('Compare-slider pointer guard kon niet volledig worden toegepast');
   }
   return next;
 }
 
-export { SLIDER_SELECTOR, RUNTIME_SRC, LEGACY_FALLBACK_MARKER };
+export { SLIDER_SELECTOR, RUNTIME_SRC, POINTER_RUNTIME_SRC, LEGACY_FALLBACK_MARKER };
