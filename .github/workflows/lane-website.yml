@@ -6,7 +6,10 @@ on:
       base_sha:
         required: true
         type: string
-      head_sha:
+      change_head_sha:
+        required: true
+        type: string
+      candidate_sha:
         required: true
         type: string
       pr_number:
@@ -26,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ inputs.head_sha }}
+          ref: ${{ inputs.candidate_sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
@@ -35,13 +38,13 @@ jobs:
         name: Classify website blast radius
         env:
           BASE_SHA: ${{ inputs.base_sha }}
-          HEAD_SHA: ${{ inputs.head_sha }}
+          CHANGE_HEAD_SHA: ${{ inputs.change_head_sha }}
         run: |
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
           import { classifyWebsiteRelease } from './tools/site-shell/website-release-risk.mjs';
-          const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.CHANGE_HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const riskConfig=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
           const acceptedBaseline=JSON.parse(await readFile('site/accepted-baseline.json','utf8'));
           const result=classifyWebsiteRelease({changedPaths,riskConfig,acceptedBaseline});
@@ -58,7 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ inputs.head_sha }}
+          ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -72,7 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ inputs.head_sha }}
+          ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -94,7 +97,7 @@ jobs:
       - name: Wait for exact deploy preview
         env:
           GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ inputs.head_sha }}
+          HEAD_SHA: ${{ inputs.change_head_sha }}
           REPOSITORY: ${{ github.repository }}
         run: |
           node --input-type=module - <<'NODE'
@@ -120,7 +123,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ inputs.head_sha }}
+          ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -142,7 +145,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ inputs.head_sha }}
+          ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -171,7 +174,7 @@ jobs:
         if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
-          EXPECTED_COMMIT: ${{ inputs.head_sha }}
+          EXPECTED_COMMIT: ${{ inputs.change_head_sha }}
         run: |
           node tools/site-shell/v18-megamenu-browser-check.mjs
           node tools/site-shell/ui-visual-regression/browser-check.mjs
