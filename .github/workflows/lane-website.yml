@@ -109,6 +109,7 @@ jobs:
           node tools/bouw-v18-chrome-alles.mjs
           BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
           BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+          node tools/normaliseer-site-ui.mjs
       - name: Retire legacy bgkop reference for the production SEO pass
         run: |
           rm -f .github/canoniek/kop.html
