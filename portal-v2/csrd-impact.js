@@ -60,7 +60,7 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
       </div>
       <aside class="csrd-side">
         <article class="csrd-panel readiness"><div class="csrd-panelhead"><h3>CSRD Readiness</h3><span>readiness-overzicht</span></div><div class="csrd-readyrow">${meter(data.readiness,'','%')}<p>Op weg naar volledige rapportage</p></div><ul>${readiness(data)}</ul><button type="button" data-csrd-open="audit">Bekijk details →</button></article>
-        <article class="csrd-panel"><div class="csrd-panelhead"><h3>Impactmetingen</h3><span>Voorbeelddata</span></div><div class="csrd-live">${data.realtime.map(([ic,v,s])=>`<div><i>${ic}</i><span><b>${v}</b><small>${s}</small></span></div>`).join('')}</div></article>
+        <article class="csrd-panel"><div class="csrd-panelhead"><h3>Impact in real time</h3><span>Voorbeelddata · geen live claim</span></div><div class="csrd-live">${data.realtime.map(([ic,v,s])=>`<div><i>${ic}</i><span><b>${v}</b><small>${s}</small></span></div>`).join('')}</div></article>
       </aside>
     </section>
     <section class="csrd-grid">
