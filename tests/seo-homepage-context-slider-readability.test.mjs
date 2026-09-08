@@ -29,16 +29,14 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.doesNotMatch(fixer,/compactThreshold/);
 });
 
-test('late pricing-shell CSS borgt dezelfde revealrichting en praktische eindstanden',()=>{
+test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand',()=>{
   assert.match(pipeline,/SLIDER_ENDPOINT_STYLE/);
-  assert.match(pipeline,/--bg-final-split:var\(--split,50%\)/);
-  assert.match(pipeline,/:has\(\.compare-knob:is\(\[aria-valuenow="0"\]/);
-  assert.match(pipeline,/\[aria-valuenow="8"\]/);
-  assert.match(pipeline,/\[aria-valuenow="92"\]/);
-  assert.match(pipeline,/\[aria-valuenow="100"\]/);
-  assert.match(pipeline,/compare-before\{clip-path:inset\(0 calc\(100% - var\(--bg-final-split,50%\)\) 0 0\)!important\}/);
-  assert.match(pipeline,/compare-after\{clip-path:inset\(0 0 0 var\(--bg-final-split,50%\)\)!important\}/);
-  assert.match(pipeline,/compare-handle\{display:block!important;position:absolute!important;left:clamp\(24px,var\(--bg-final-split,50%\),calc\(100% - 24px\)\)!important/);
+  assert.match(pipeline,/--bg-compare-split/);
+  assert.match(pipeline,/compare-before\{clip-path:inset\(0 calc\(100% - var\(--bg-compare-split,50%\)\) 0 0\)!important\}/);
+  assert.match(pipeline,/compare-after\{clip-path:inset\(0 0 0 var\(--bg-compare-split,50%\)\)!important\}/);
+  assert.match(pipeline,/compare-handle\{display:block!important;position:absolute!important;left:clamp\(24px,var\(--bg-compare-split,50%\),calc\(100% - 24px\)\)!important/);
+  assert.doesNotMatch(pipeline,/--bg-final-split/);
+  assert.doesNotMatch(pipeline,/:has\(\.compare-knob/);
   assert.doesNotMatch(pipeline,/compare-before\{clip-path:inset\(0 var\(--split,50%\) 0 0\)!important\}/);
   assert.doesNotMatch(pipeline,/compare-after\{clip-path:inset\(0 0 0 calc\(100% - var\(--split,50%\)\)\)!important\}/);
 });
