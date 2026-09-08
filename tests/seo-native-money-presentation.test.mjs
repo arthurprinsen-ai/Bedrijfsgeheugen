@@ -69,3 +69,12 @@ test('finale site-normalisatie verwijdert de defecte legacy demonstrator voordat
     assert.doesNotThrow(() => new vm.Script(match[2]), 'alle overblijvende classic inline scripts moeten compileerbaar zijn');
   }
 });
+
+test('wijzigingen-uitgelegd initialiseert de stapnavigatie alleen wanneer alle bedieningscontrols bestaan', async () => {
+  const html = await readFile(new URL('../wijzigingen-uitgelegd.html', import.meta.url), 'utf8');
+  assert.match(
+    html,
+    /if\s*\(\s*!rail\s*\|\|\s*!vorige\s*\|\|\s*!volgende\s*\|\|\s*!telling\s*\|\|\s*!panelen\.length\s*\)\s*return\s*;/,
+    'de interactieve stapnavigatie moet veilig stoppen wanneer globale shell-projectie een optionele control niet bevat'
+  );
+});
