@@ -60,7 +60,17 @@ jobs:
       # tests/v18-megamenu-heading-contract.test.mjs
       # tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Verify composable release control plane
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs
+        run: >-
+          node --test
+          tests/brain-change-scoped-release-lanes.test.mjs
+          tests/brain-moving-main-successor-guard.test.mjs
+          tests/brain-composable-release-control-plane.test.mjs
+          tests/ci-workflow-topology.test.mjs
+          tests/ci-learning-gate-routing.test.mjs
+          tests/ci-website-gate-routing.test.mjs
+          tests/ci-v18-promotion-routing.test.mjs
+          tests/ci-required-status-contract.test.mjs
+          tests/ci-queue-health.test.mjs
 
   backend:
     needs: preflight
