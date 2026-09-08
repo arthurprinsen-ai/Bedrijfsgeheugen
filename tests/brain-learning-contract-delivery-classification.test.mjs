@@ -16,6 +16,12 @@ test('chat-learning and Make agent learning/resume contract tests are classified
   }
 });
 
+test('canonical website shell source is classified as website delivery work', () => {
+  const path = '.github/canoniek/kop.html';
+  const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['website'], `${path} must be website delivery work`);
+});
+
 test('unrelated unknown test families still fail closed', () => {
   assert.throws(
     () => createDeliveryPlan({ changedPaths:['tests/unowned-future-system.test.mjs'], headSha:'abc123def4567890', policy }),
