@@ -95,9 +95,14 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: Materialize canonical site output
+        run: node tools/normaliseer-site-ui.mjs
       - name: Install page-check browser runtime
         run: |
           python -m pip install playwright==1.55.0
