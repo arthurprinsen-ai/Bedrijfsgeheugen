@@ -87,8 +87,34 @@ jobs:
           tests/v18-megamenu-heading-contract.test.mjs
           tests/seo-homepage-context-slider-readability.test.mjs
 
-  page-seo:
+  preview-ready:
     needs: classify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for exact deploy preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          node --input-type=module - <<'NODE'
+          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.HEAD_SHA}/status`;
+          const deadline=Date.now()+10*60*1000;
+          while(Date.now()<deadline){
+            const response=await fetch(endpoint,{headers});
+            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
+            const body=await response.json();
+            const status=(body.statuses||[]).find(item=>item.context==='netlify/bedrijfsgeheugen/deploy-preview');
+            if(status?.state==='success'){ console.log(`Exact preview ready for ${process.env.HEAD_SHA}`); process.exit(0); }
+            if(['failure','error'].includes(status?.state)) throw new Error(`Netlify preview ${status.state}: ${status.description||''}`);
+            await new Promise(resolve=>setTimeout(resolve,10000));
+          }
+          throw new Error('Timed out waiting for exact deploy preview');
+          NODE
+
+  page-seo:
+    needs: [classify, preview-ready]
     if: needs.classify.outputs.risk_lane != 'fast-fix'
     runs-on: ubuntu-latest
     steps:
@@ -117,35 +143,11 @@ jobs:
           python -m pip install playwright==1.55.0
           python -m playwright install --with-deps chromium
       - name: Verify page and SEO contracts
+        env:
+          PAGINA_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
         run: |
           python .github/scripts/paginacontrole.py
           python .github/scripts/seocontrole.py
-
-  preview-ready:
-    needs: classify
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for exact deploy preview
-        env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ inputs.head_sha }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          node --input-type=module - <<'NODE'
-          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-          const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.HEAD_SHA}/status`;
-          const deadline=Date.now()+10*60*1000;
-          while(Date.now()<deadline){
-            const response=await fetch(endpoint,{headers});
-            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
-            const body=await response.json();
-            const status=(body.statuses||[]).find(item=>item.context==='netlify/bedrijfsgeheugen/deploy-preview');
-            if(status?.state==='success'){ console.log(`Exact preview ready for ${process.env.HEAD_SHA}`); process.exit(0); }
-            if(['failure','error'].includes(status?.state)) throw new Error(`Netlify preview ${status.state}: ${status.description||''}`);
-            await new Promise(resolve=>setTimeout(resolve,10000));
-          }
-          throw new Error('Timed out waiting for exact deploy preview');
-          NODE
 
   browser:
     needs: [classify, preview-ready]
