@@ -3,7 +3,9 @@ const SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
 const RUNTIME_SRC = '/assets/compare-slider-runtime.js';
 
 const STYLE = `<style ${MARKER}>
-[data-bg-compare-slider]{--split:50%;--bg-compare-split:50%;position:relative!important;overflow:hidden!important;touch-action:pan-y}
+[data-bg-compare-slider]{--split:50%;--bg-compare-split:var(--split,50%);position:relative!important;overflow:hidden!important;touch-action:pan-y}
+[data-bg-compare-slider]:has(.compare-knob:is([aria-valuenow="0"],[aria-valuenow="1"],[aria-valuenow="2"],[aria-valuenow="3"],[aria-valuenow="4"],[aria-valuenow="5"],[aria-valuenow="6"],[aria-valuenow="7"],[aria-valuenow="8"])){--bg-compare-split:0%}
+[data-bg-compare-slider]:has(.compare-knob:is([aria-valuenow="92"],[aria-valuenow="93"],[aria-valuenow="94"],[aria-valuenow="95"],[aria-valuenow="96"],[aria-valuenow="97"],[aria-valuenow="98"],[aria-valuenow="99"],[aria-valuenow="100"])){--bg-compare-split:100%}
 [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
 [data-bg-compare-slider] .compare-before{clip-path:inset(0 calc(100% - var(--bg-compare-split,50%)) 0 0)!important}
 [data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--bg-compare-split,50%))!important}
@@ -44,7 +46,9 @@ export function applyHomepageContextSliderReadability(html){
   next=next.replace('</head>',`${STYLE}\n</head>`);
   next=next.replace('</body>',`${RUNTIME_TAG}\n</body>`);
   if(!next.includes('data-bg-compare-slider')||
-     !next.includes('--bg-compare-split')||
+     !next.includes('--bg-compare-split:var(--split,50%)')||
+     !next.includes('[aria-valuenow="6"]')||
+     !next.includes('[aria-valuenow="94"]')||
      !next.includes(RUNTIME_SRC)||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"\s+defer><\/script>/g)||[]).length!==1){
