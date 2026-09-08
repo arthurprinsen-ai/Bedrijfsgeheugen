@@ -249,7 +249,7 @@ async function allePaginas() {
     if (h.includes('bgx-stempel') || !h.includes('</footer>')) return;
     h = h.replace('</head>', stijl + '\n</head>');
     h = h.replace('</footer>', merk + '</footer>');
-    h = h.replace('</body>', wachter + '\n</body>');
+    if (!OVERSLAAN.has(pad)) h = h.replace('</body>', wachter + '\n</body>');
     await writeFile(pad, h, 'utf8');
   }
 }
