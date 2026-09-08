@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 import { enrichMoneyPage, inspectMoneyPage } from '../tools/seo-order-engine/money-contract-v2.mjs';
 import { injectGrowthMeasurement } from '../tools/seo-order-engine/measurement.mjs';
+import { absolutiseerSeoOrderInterneHrefs } from '../tools/seo-order-engine/apply.mjs';
 import { normaliseerHtml } from '../tools/normaliseer-site-ui.mjs';
 
 const registry = JSON.parse(await readFile(new URL('../site/seo-order-map.json', import.meta.url), 'utf8'));
@@ -86,4 +87,13 @@ test('site-normalisatie behoudt relatieve inhoudslinks zodat SEO-linkgrafiek de 
   const out = normaliseerHtml(html, 'test.html');
   assert.match(out, /href="\/product"/, 'relatieve inhoudslinks moeten relatief blijven');
   assert.match(out, /href="\/frisse-blik\?bron=test#start"/, 'query en fragment op relatieve inhoudslinks moeten behouden blijven');
+});
+
+test('SEO-order write-back maakt interne hrefs finaal absoluut zonder query of fragment te verliezen', () => {
+  const html = '<main><a href="/product">Product</a><a href="/frisse-blik?bron=test#start">Frisse blik</a><a href="https://example.com/x">Extern</a></main>';
+  const out = absolutiseerSeoOrderInterneHrefs(html);
+  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/product"/);
+  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/frisse-blik\?bron=test#start"/);
+  assert.match(out, /href="https:\/\/example\.com\/x"/, 'externe links moeten ongemoeid blijven');
+  assert.doesNotMatch(out, /href="\//, 'SEO-order output mag geen relatieve interne hrefs terugschrijven');
 });
