@@ -38,6 +38,16 @@ function meter(value, label, sub='van 100'){
 function metricCard([id,m]){
   return `<article class="csrd-float metric-${id}" data-domain="${id}"><span class="csrd-metric-icon ${m.tone}">${m.icon}</span><div><small>${m.label}</small><strong>${m.value}</strong><span>${m.sub}</span></div></article>`;
 }
+function mobileDomainCard([id,m]){
+  const descriptions={
+    climate:'Uitstoot daalt, maar ketenemissies en bewijs blijven de volgende focus.',
+    water:'Verbruik per FTE verbetert; maak locaties en brondata auditbaar.',
+    circularity:'Circulariteit ligt op koers; sluit de resterende materiaalstromen.',
+    social:'Medewerkerimpact is sterk; borg trend, diversiteit en inzet met evidence.',
+    governance:'Governance staat op koers; houd controls en rapportage aantoonbaar actueel.'
+  };
+  return `<article class="csrd-mobile-domain" data-domain="${id}"><div class="domain-head"><span class="domain-icon">${m.icon}</span><div><small>${m.label}</small><strong>${m.value}</strong><small>${m.sub}</small></div></div><p>${descriptions[id]}</p><button type="button" data-csrd-focus="${id}">Bekijk ${m.label.toLowerCase()} →</button></article>`;
+}
 function sparkBars(values=[82,70,58,42,32]){return `<div class="csrd-bars">${values.map((v,i)=>`<i style="--h:${v}%" title="${2021+i}: ${v}"></i>`).join('')}</div>`}
 function readiness(snapshot){return snapshot.readinessItems.map(([label,done])=>`<li><span class="${done?'done':'todo'}">${done?'✓':'○'}</span>${label}</li>`).join('')}
 
@@ -49,12 +59,17 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
       <div class="csrd-controls"><label>Bedrijf<select aria-label="Bedrijf"><option>Demo MKB B.V.</option></select></label><label>Periode<select aria-label="Periode"><option>${data.period}</option></select></label><button class="csrd-outline" type="button" data-csrd-customer>${customerView?'Interne weergave':'Klantweergave'} ↗</button><button class="csrd-outline" type="button" data-csrd-benchmark>Vergelijk met sector</button><button class="csrd-outline csrd-close" type="button" data-csrd-close aria-label="Sluit CSRD dashboard">×</button></div>
     </header>
     <nav class="csrd-tabs" aria-label="Impact domeinen">${CSRD_TABS.map(([id,label],i)=>`<button type="button" class="${i===0?'active':''}" data-csrd-tab="${id}">${label}</button>`).join('')}</nav>
+    <section class="csrd-mobile-summary" aria-label="Mobiele CSRD samenvatting">
+      <article><small>Totale impactscore</small><strong>${data.impactScore}/100</strong><span>↑ +${data.impactDelta} t.o.v. vorig jaar</span></article>
+      <article><small>CSRD readiness</small><strong>${data.readiness}%</strong><span>Rapportagegereedheid</span></article>
+      <article><small>Prioriteit</small><strong>${data.actions.filter(([, ,prio])=>prio==='Hoog').length} hoog</strong><span>Directe acties</span></article>
+    </section>
     <section class="csrd-stage">
       <aside class="csrd-score-card">${meter(data.impactScore,'Onze totale impactscore')}<div class="csrd-delta">↑ +${data.impactDelta} <span>t.o.v. vorig jaar</span></div><p class="csrd-course">⌁ Op koers naar een toekomstbestendig bedrijf</p></aside>
       <div class="csrd-world">
         <div class="csrd-sky"></div><div class="csrd-sun"></div><div class="csrd-hills"></div><div class="csrd-city"></div><div class="csrd-river"></div><div class="csrd-wind w1">✣</div><div class="csrd-wind w2">✣</div><div class="csrd-solar">▦ ▦ ▦</div>
         <div class="csrd-building"><span>BEDRIJFSGEHEUGEN</span></div>
-        <div class="csrd-worldcopy"><strong>Een veerkrachtige wereld<br>begint bij wat je vandaag doet.</strong></div>
+        <div class="csrd-worldcopy"><strong>Je impact in één oogopslag.</strong><br><small>Van klimaat en water tot social, governance en bewijs.</small></div>
         ${Object.entries(data.metrics).map(metricCard).join('')}
         <div class="csrd-orbit">PEOPLE <b>+</b> PLANET <b>+</b> PROGRESS</div>
       </div>
@@ -63,6 +78,7 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
         <article class="csrd-panel"><div class="csrd-panelhead"><h3>Impact in real time</h3><span>Voorbeelddata · geen live claim</span></div><div class="csrd-live">${data.realtime.map(([ic,v,s])=>`<div><i>${ic}</i><span><b>${v}</b><small>${s}</small></span></div>`).join('')}</div></article>
       </aside>
     </section>
+    <section class="csrd-mobile-domains" aria-label="Impact per domein">${Object.entries(data.metrics).map(mobileDomainCard).join('')}</section>
     <section class="csrd-grid">
       <article class="csrd-panel domain-card" data-domain="climate"><h3>CO₂-uitstoot <small>(ton CO₂e)</small></h3>${sparkBars([84,65,49,37,31])}<footer><span>2021</span><span>2022</span><span>2023</span><span>2024</span><b>Doel 2030</b></footer></article>
       <article class="csrd-panel domain-card" data-domain="water"><h3>Waterverbruik <small>(m³)</small></h3>${sparkBars([90,71,54,39,28])}<footer><span>2021</span><span>2022</span><span>2023</span><span>2024</span><b>Doel 2030</b></footer></article>
@@ -82,6 +98,12 @@ export function renderCsrdImpact(root,{openPage=()=>{},closePage=()=>{},snapshot
     root.querySelector('[data-csrd-customer]')?.addEventListener('click',()=>{customerView=!customerView;render()});
     root.querySelector('[data-csrd-benchmark]')?.addEventListener('click',()=>openPage('cijfers-maatstaven'));
     root.querySelectorAll('[data-csrd-open]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.csrdOpen)));
+    root.querySelectorAll('[data-csrd-focus]').forEach(btn=>btn.addEventListener('click',()=>{
+      const domain=btn.dataset.csrdFocus;
+      const tab=root.querySelector(`[data-csrd-tab="${domain}"]`);
+      tab?.click();
+      tab?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    }));
     root.querySelectorAll('[data-csrd-tab]').forEach(btn=>btn.addEventListener('click',()=>{
       root.querySelectorAll('[data-csrd-tab]').forEach(x=>x.classList.toggle('active',x===btn));
       const domain=btn.dataset.csrdTab;
