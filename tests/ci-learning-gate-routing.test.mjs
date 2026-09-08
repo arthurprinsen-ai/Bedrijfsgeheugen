@@ -19,10 +19,13 @@ test('learning contract suites remain in canonical automation lane', () => {
   ]) assert.match(automation, new RegExp(file.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
 });
 
-test('standalone learning workflows do not consume broad PR runners', async () => {
-  for (const file of ['bg168-materiality-promotion-tests.yml','learning-contract-delivery-classifier-tests.yml']) {
+test('standalone learning workflows do not consume PR runners', async () => {
+  for (const file of [
+    'bg168-materiality-promotion-tests.yml',
+    'learning-contract-delivery-classifier-tests.yml',
+    'chat-learning-preflight-pr.yml',
+  ]) {
     const text = await readFile(`.github/workflows/${file}`,'utf8');
     assert.equal(hasPullRequestTrigger(text), false, `${file} must not own pull_request`);
   }
-  await assert.rejects(readFile('.github/workflows/chat-learning-preflight-pr.yml','utf8'), /ENOENT/);
 });
