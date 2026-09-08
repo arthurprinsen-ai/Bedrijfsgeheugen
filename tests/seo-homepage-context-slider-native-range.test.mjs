@@ -33,7 +33,14 @@ test('native range bestrijkt de volle sliderbreedte zonder visuele randclamp', (
   assert.doesNotMatch(fixer, /\.bg-compare-range[^}]*clamp\(/s);
 });
 
-test('bestaande browsertest blijft fysieke 0 en 100 eindstanden afdwingen', () => {
+test('browsertest bewaakt de echte native range en fysieke 0-100 eindstanden', () => {
+  assert.match(browserCheck, /bg-compare-range/);
+  assert.match(browserCheck, /range:\s*\{/);
+  assert.match(browserCheck, /g\.range\.min\s*!==\s*0/);
+  assert.match(browserCheck, /g\.range\.max\s*!==\s*100/);
+  assert.match(browserCheck, /g\.range\.tabIndex\s*<\s*0/);
+  assert.match(browserCheck, /g\.range\.value\s*>\s*1/);
+  assert.match(browserCheck, /g\.range\.value\s*<\s*99/);
   assert.match(browserCheck, /split\s*<=\s*1/);
   assert.match(browserCheck, /split\s*>=\s*99/);
   assert.match(browserCheck, /handleLeft\s*>\s*1\.5/);
