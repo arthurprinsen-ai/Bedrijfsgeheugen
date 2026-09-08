@@ -12,7 +12,7 @@ const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--bg-compare-split,50%))!important}
 [data-bg-compare-slider] .compare-before .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:0!important;margin-right:auto!important;padding-right:24px!important;box-sizing:border-box}
 [data-bg-compare-slider] .compare-after .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:auto!important;margin-right:0!important;padding-left:24px!important;box-sizing:border-box}
-[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--bg-compare-split,50%),calc(100% - 24px))!important;z-index:20!important}
+[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--bg-compare-split,50%)!important;z-index:20!important}
 [data-bg-compare-slider] .compare-knob{pointer-events:auto!important}
 [data-bg-change-check-source="true"]{opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important}
 .bg-change-check-fallback{display:none}
