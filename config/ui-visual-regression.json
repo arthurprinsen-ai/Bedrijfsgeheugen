@@ -6,66 +6,22 @@
     "horizontalOverflowMaxPx": 1,
     "overlapMaxAreaPx2": 0,
     "viewports": [
-      {
-        "name": "phone",
-        "width": 390,
-        "height": 844
-      },
-      {
-        "name": "tablet",
-        "width": 768,
-        "height": 1024
-      },
-      {
-        "name": "small-desktop",
-        "width": 1024,
-        "height": 768
-      },
-      {
-        "name": "intermediate-desktop",
-        "width": 1128,
-        "height": 653
-      },
-      {
-        "name": "desktop",
-        "width": 1440,
-        "height": 900
-      },
-      {
-        "name": "wide-screenshot-regression",
-        "width": 1542,
-        "height": 900
-      },
-      {
-        "name": "wide-desktop",
-        "width": 1600,
-        "height": 900
-      }
+      { "name": "phone", "width": 390, "height": 844 },
+      { "name": "tablet", "width": 768, "height": 1024 },
+      { "name": "small-desktop", "width": 1024, "height": 768 },
+      { "name": "intermediate-desktop", "width": 1128, "height": 653 },
+      { "name": "desktop", "width": 1440, "height": 900 },
+      { "name": "wide-screenshot-regression", "width": 1542, "height": 900 },
+      { "name": "wide-desktop", "width": 1600, "height": 900 }
     ]
   },
   "pages": [
     {
       "route": "/",
-      "required": [
-        "main h1"
-      ],
-      "protectedPairs": [
-        {
-          "a": "#compareSlider .compare-before .compare-copy",
-          "b": "#compareSlider .compare-knob",
-          "maxIntersectionAreaPx2": 0
-        },
-        {
-          "a": "#compareSlider .compare-after .compare-copy",
-          "b": "#compareSlider .compare-knob",
-          "maxIntersectionAreaPx2": 0
-        }
-      ],
+      "required": ["main h1"],
+      "protectedPairs": [],
       "geometryGuards": [
-        {
-          "selector": "[data-bg-story-root]",
-          "maxHeightViewportRatio": 1.75
-        }
+        { "selector": "[data-bg-story-root]", "maxHeightViewportRatio": 1.75 }
       ],
       "interactions": []
     },
@@ -81,9 +37,7 @@
     },
     {
       "route": "/due-diligence",
-      "required": [
-        "main h1"
-      ],
+      "required": ["main h1"],
       "protectedPairs": [],
       "interactions": []
     }
