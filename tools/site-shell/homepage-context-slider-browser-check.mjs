@@ -200,6 +200,7 @@ async function testViewport(browser, width, height, mobile, orientation) {
   // Een deploy-preview kan analytics/third-party requests openhouden. Wacht daarom
   // op de DOM en op het daadwerkelijke component in plaats van op globale network-idle.
   await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.waitForFunction(() => document.readyState !== 'loading', null, { timeout: 15000 });
   const slider = page.locator('#compareSlider');
   await slider.waitFor({ state: 'visible', timeout: 15000 });
   await slider.scrollIntoViewIfNeeded();
