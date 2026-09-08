@@ -5,6 +5,7 @@
 (function () {
   'use strict';
   var PAD = '/api/koppelingen';
+  var wizardMountBezig = false;
 
   /* Het paneel #p-koppelingen wordt door het portaal zelf gevuld en blijft dat
      controleren. We hangen ons blok er daarom pas onderaan bij zodra die vulling
@@ -34,10 +35,45 @@
   }
   var RITME = { kwartier: 'elk kwartier', uur: 'elk uur', dag: 'dagelijks', week: 'wekelijks', maand: 'maandelijks', hand: 'handmatig' };
 
-  function toon(html) { var v = vak(); if (v) v.innerHTML = html; }
+  function zorgWizardVak(v) {
+    if (!v) return null;
+    var w = v.querySelector('[data-bg-wizard-host]');
+    if (!w) {
+      w = document.createElement('div');
+      w.setAttribute('data-bg-wizard-host', '1');
+      v.appendChild(w);
+    }
+    return w;
+  }
+
+  function mountWizard() {
+    var v = vak();
+    var host = zorgWizardVak(v);
+    if (!host || host.querySelector('[data-bg-wizard]') || wizardMountBezig) return;
+    wizardMountBezig = true;
+    import('/assets/js/koppelingen/view.js')
+      .then(function (m) { if (host.isConnected && !host.querySelector('[data-bg-wizard]')) m.mountConnectorWizard(host); })
+      .catch(function () {
+        if (host.isConnected) host.innerHTML = '<p class="sub">De koppelbouwer kon niet worden geladen. Je bestaande koppelingen blijven beschikbaar.</p>';
+      })
+      .finally(function () { wizardMountBezig = false; });
+  }
+
+  function toonOverzicht(html) {
+    var v = vak();
+    if (!v) return;
+    var overzicht = v.querySelector('[data-bg-koppelingen-overzicht]');
+    if (!overzicht) {
+      overzicht = document.createElement('div');
+      overzicht.setAttribute('data-bg-koppelingen-overzicht', '1');
+      v.insertBefore(overzicht, v.firstChild);
+    }
+    overzicht.innerHTML = html;
+    mountWizard();
+  }
 
   function tekenLeeg() {
-    toon(
+    toonOverzicht(
       '<h2>Je koppelingen</h2>' +
       '<p>Hier staat nog niets. Zodra er een koppeling draait, zie je per bron wanneer de laatste ronde was ' +
       'en hoeveel er is binnengehaald.</p>'
@@ -61,7 +97,7 @@
         (mis ? '<span data-mislukt="1"> · ' + mis + ' mislukt, even nakijken</span>' : '') +
         '</li>';
     }).join('');
-    toon(
+    toonOverzicht(
       '<h2>Je koppelingen</h2>' +
       '<p>' + draait + ' van ' + lijst.length + ' koppelingen draaien' +
       (bijgewerkt ? ' · bijgewerkt ' + esc(datum(bijgewerkt)) : '') + '.</p>' +
@@ -80,11 +116,12 @@
 
   function start() {
     if (!vak()) return;
+    mountWizard();
     haal().then(function (data) {
       if (!data) { tekenLeeg(); return; }
       teken(data.koppelingen || [], data.updatedAt);
     }).catch(function () {
-      toon('<h2>Je koppelingen</h2><p>Je koppelingen zijn nu even niet op te halen. Probeer het later opnieuw.</p>');
+      toonOverzicht('<h2>Je koppelingen</h2><p>Je koppelingen zijn nu even niet op te halen. Probeer het later opnieuw.</p>');
     });
   }
 
