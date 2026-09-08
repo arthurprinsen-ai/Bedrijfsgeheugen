@@ -18,6 +18,9 @@ test('desktop navigation uses explicit targets rather than decorative buttons', 
 });
 
 test('mobile navigation keeps 44px touch target baseline', () => {
-  const css = fs.readFileSync('portal-v2/app.css','utf8');
+  const css = [
+    fs.readFileSync('portal-v2/app.css','utf8'),
+    fs.readFileSync('portal-v2/navigation.css','utf8')
+  ].join('\n');
   assert.match(css, /\.mobilebar[\s\S]*?button[\s\S]*?min-height:\s*44px/);
 });
