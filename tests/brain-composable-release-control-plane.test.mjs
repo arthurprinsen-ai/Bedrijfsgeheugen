@@ -13,7 +13,11 @@ for (const file of ['lane-website.yml','lane-portal.yml','lane-backend.yml','lan
 test('required test is a stable aggregator and preserves the protected test context', () => {
   assert.match(required, /name:\s*Required test/);
   assert.match(required, /name:\s*test/);
-  assert.match(required, /moving-main-successor-guard\.mjs/);
+  assert.match(required, /delivery-driftless-merge-candidate\.test\.mjs/);
+  assert.match(required, /change_head_sha/);
+  assert.match(required, /candidate_sha/);
+  assert.doesNotMatch(required, /moving-main-successor-guard\.mjs/);
+  assert.doesNotMatch(required, /Block unjustified moving-main successor rebuilds/);
   for (const lane of ['website','portal','backend','automation']) {
     assert.match(required, new RegExp(`uses:\\s*\\./\\.github/workflows/lane-${lane}\\.yml`));
   }

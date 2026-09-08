@@ -24,7 +24,8 @@ export function normalizeGitHubDeliveryEvent({
   let mode;
   let changeId;
   let baseSha;
-  let headSha;
+  let changeHeadSha;
+  let candidateSha;
   let prNumber;
 
   if (eventName === 'pull_request') {
@@ -34,30 +35,39 @@ export function normalizeGitHubDeliveryEvent({
     mode = 'pull_request';
     changeId = `pr-${number}`;
     baseSha = pr.base?.sha;
-    headSha = pr.head?.sha;
+    changeHeadSha = pr.head?.sha;
+    candidateSha = githubSha;
     prNumber = number;
   } else if (eventName === 'merge_group') {
     const group = event.merge_group || {};
     mode = 'merge_group';
     baseSha = group.base_sha;
-    headSha = group.head_sha || githubSha;
+    changeHeadSha = group.head_sha || githubSha;
+    candidateSha = group.head_sha || githubSha;
     prNumber = safeRunId;
-    changeId = `merge-group-${String(headSha || '').slice(0, 12)}`;
+    changeId = `merge-group-${String(candidateSha || '').slice(0, 12)}`;
   } else if (eventName === 'workflow_dispatch') {
     mode = 'workflow_dispatch';
     baseSha = fallbackBaseSha;
-    headSha = githubSha;
+    changeHeadSha = githubSha;
+    candidateSha = githubSha;
     prNumber = safeRunId;
     changeId = `dispatch-${safeRunId}`;
   } else {
     throw new Error(`unsupported GitHub delivery event: ${eventName || 'unknown'}`);
   }
 
+  const normalizedBaseSha = requireSha('baseSha', baseSha);
+  const normalizedChangeHeadSha = requireSha('changeHeadSha', changeHeadSha);
+  const normalizedCandidateSha = requireSha('candidateSha', candidateSha);
+
   return Object.freeze({
     mode,
     changeId,
-    baseSha: requireSha('baseSha', baseSha),
-    headSha: requireSha('headSha', headSha),
+    baseSha: normalizedBaseSha,
+    changeHeadSha: normalizedChangeHeadSha,
+    candidateSha: normalizedCandidateSha,
+    headSha: normalizedCandidateSha,
     prNumber,
   });
 }
