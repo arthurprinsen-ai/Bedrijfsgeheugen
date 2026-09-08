@@ -63,10 +63,21 @@ jobs:
         with:
           node-version: '22'
       - name: Verify mandatory website baseline and release-risk contracts
-        run: node --test tests/site-baseline-guardian.test.mjs tests/site-shell-public-route-inventory.test.mjs tests/site-shell-website-release-risk.test.mjs tests/targeted-website-route-regression.test.mjs
+        run: >-
+          node --test
+          tests/site-baseline-guardian.test.mjs
+          tests/site-shell-public-route-inventory.test.mjs
+          tests/site-shell-website-release-risk.test.mjs
+          tests/targeted-website-route-regression.test.mjs
+          tests/homepage-pricing-boundary-readback.test.mjs
+          tests/v18-production-promotion.test.mjs
+          tests/v18-seo-layer.test.mjs
+          tests/seo-order-live-readback.test.mjs
+      - name: Verify canonical live shell contract
+        run: node tools/site-shell/test-live-contract.mjs
 
   static:
-    needs: classify
+    needs: [classify, baseline]
     if: needs.classify.outputs.risk_lane != 'fast-fix'
     runs-on: ubuntu-latest
     steps:
@@ -88,7 +99,7 @@ jobs:
           tests/seo-homepage-context-slider-readability.test.mjs
 
   page-seo:
-    needs: classify
+    needs: [classify, baseline]
     if: needs.classify.outputs.risk_lane != 'fast-fix'
     runs-on: ubuntu-latest
     steps:
@@ -107,8 +118,46 @@ jobs:
           python .github/scripts/paginacontrole.py
           python .github/scripts/seocontrole.py
 
+  shell-build:
+    needs: [classify, baseline]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: npm install
+      - name: Build canonical website shell and release evidence
+        env:
+          COMMIT_REF: ${{ inputs.head_sha }}
+          CONTEXT: github-pull-request
+        run: |
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+          BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+          node tools/site-shell/diagnose-shell-gate.mjs
+          BG_PRICING_STAGE=verify node tools/prijzen-uit-de-homepage.mjs
+          node tools/bouw-release-evidence.mjs
+      - name: Upload shell and SEO diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-shell-gate-diagnostic-${{ inputs.head_sha }}
+          path: |
+            shell-gate-diagnostic.txt
+            shell-gate-failed-page.html
+            shell-gate-canonical-source.html
+          if-no-files-found: ignore
+
   full-regression:
-    needs: classify
+    needs: [classify, baseline]
     if: needs.classify.outputs.risk_lane == 'high-risk'
     runs-on: ubuntu-latest
     steps:
@@ -130,7 +179,7 @@ jobs:
           tests/seo-ui-visual-regression-browser.test.mjs
 
   preview-ready:
-    needs: classify
+    needs: [classify, baseline]
     runs-on: ubuntu-latest
     steps:
       - name: Wait for exact deploy preview
@@ -156,7 +205,7 @@ jobs:
           NODE
 
   targeted-browser:
-    needs: [classify, preview-ready]
+    needs: [classify, baseline, preview-ready]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -177,7 +226,7 @@ jobs:
         run: node tools/site-shell/verify-targeted-website-routes.mjs
 
   public-visibility:
-    needs: [classify, preview-ready]
+    needs: [classify, baseline, preview-ready]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -196,7 +245,7 @@ jobs:
         run: node tools/site-shell/standalone-visibility-check.mjs
 
   broad-browser:
-    needs: [classify, preview-ready]
+    needs: [classify, baseline, preview-ready]
     if: needs.classify.outputs.risk_lane == 'high-risk'
     runs-on: ubuntu-latest
     steps:
