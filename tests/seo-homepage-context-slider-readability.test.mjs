@@ -57,8 +57,9 @@ test('pointer runtime is de enige mobiele gesture-eigenaar en gebruikt pointer c
   assert.doesNotMatch(pointerRuntime,/touchstart/);
   assert.doesNotMatch(pointerRuntime,/touchmove/);
   assert.doesNotMatch(pointerRuntime,/touchend/);
-  assert.doesNotMatch(fixer,/ensureNativeRange/);
-  assert.doesNotMatch(fixer,/bg-compare-range/);
+  const rendered=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
+  assert.doesNotMatch(rendered,/ensureNativeRange/);
+  assert.doesNotMatch(rendered,/bg-compare-range/);
 });
 
 test('pointerpositie wordt rechtstreeks en exact naar sliderbreedte geclamped',()=>{
