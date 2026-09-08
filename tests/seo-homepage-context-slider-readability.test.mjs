@@ -49,6 +49,8 @@ test('alle sliders maken de uitersten op touch praktisch bereikbaar en snappen n
   assert.match(fixer,/touchmove/);
   assert.match(fixer,/touchend/);
   assert.match(fixer,/left:clamp\(/);
+  assert.match(fixer,/function syncLoop\(\)\{mirrorLegacy\(\);requestAnimationFrame\(syncLoop\);\}/);
+  assert.match(fixer,/requestAnimationFrame\(syncLoop\)/);
 });
 
 test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde kaarten omgebouwd',()=>{
