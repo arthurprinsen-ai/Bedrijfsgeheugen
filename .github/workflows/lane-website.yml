@@ -86,6 +86,7 @@ jobs:
           tests/standalone-content-page-router-isolation.test.mjs
           tests/v18-megamenu-heading-contract.test.mjs
           tests/seo-homepage-context-slider-readability.test.mjs
+          tests/seo-homepage-pointer-slider-contract.test.mjs
 
   page-seo:
     needs: classify
