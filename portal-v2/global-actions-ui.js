@@ -1,7 +1,7 @@
-import {exportPortalState,stagePortalImport,applyStagedPortalImport,printPortalReport,submitPortalFeedback,updateCustomerBrand,logoutPortalUser} from './portal-actions.js';
+import {exportPortalState,stagePortalImport,applyStagedPortalImport,printPortalReport,submitPortalFeedback,updateCustomerBrand,loginPortalUser,logoutPortalUser} from './portal-actions.js';
 import {applyCustomerBranding,deriveCustomerBrand} from './customer-branding.js';
 
-const esc=value=>String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=value=>String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 function ensureStyle(){if(document.querySelector('style[data-global-actions-style]'))return;const s=document.createElement('style');s.dataset.globalActionsStyle='true';s.textContent=`.v2utilities{display:flex;gap:8px;flex-wrap:wrap}.v2utilities .smallbtn{min-height:44px}.v2actiondialog{border:0;border-radius:18px;box-shadow:0 28px 80px rgba(16,30,54,.24);padding:0;max-width:min(92vw,560px);width:100%}.v2actiondialog::backdrop{background:rgba(13,28,54,.42);backdrop-filter:blur(3px)}.v2dialogbody{padding:22px}.v2dialogbody h3{margin:0 0 6px}.v2dialogbody p{color:#64748b}.v2dialogbody label{display:grid;gap:7px;font-weight:700}.v2dialogbody textarea,.v2dialogbody input{width:100%;box-sizing:border-box;border:1px solid #d9e1ef;border-radius:12px;padding:12px;font:inherit;min-height:44px}.v2dialogactions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.v2dialogactions button{min-height:44px;border:0;border-radius:12px;padding:0 16px;font-weight:800}.v2dialogactions .primary{background:#0d5bef;color:#fff}.v2globalstatus{font-size:12px;color:#52627c;min-height:18px}.v2globalstatus.error{color:#b42318}`;document.head.appendChild(s)}
 function button(label,capability){const b=document.createElement('button');b.type='button';b.className='smallbtn';b.dataset.capability=capability;b.textContent=label;return b}
 function closeDialog(dialog){if(dialog?.open)dialog.close()}
@@ -9,8 +9,9 @@ function closeDialog(dialog){if(dialog?.open)dialog.close()}
 export function mountGlobalActions({stateClient,identityProvider=()=>window.netlifyIdentity||null}={}){
  const host=document.querySelector('.actionrow');if(!host||host.querySelector('[data-native-global-actions]'))return null;ensureStyle();
  const wrap=document.createElement('div');wrap.className='v2utilities';wrap.dataset.nativeGlobalActions='true';
- const actions=[['Export','export'],['Import','import'],['Print','print-permission'],['Feedback','feedback'],['Klantmerk','customer-branding'],['Uitloggen','identity-login-logout']];
+ const actions=[['Export','export'],['Import','import'],['Print','print-permission'],['Feedback','feedback'],['Klantmerk','customer-branding'],['Inloggen','identity-login-logout']];
  for(const [label,cap] of actions)wrap.appendChild(button(label,cap));
+ const sessionButton=wrap.querySelector('[data-capability="identity-login-logout"]');
  const input=document.createElement('input');input.type='file';input.accept='application/json';input.hidden=true;wrap.appendChild(input);host.appendChild(wrap);
  const status=document.createElement('div');status.className='v2globalstatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');host.appendChild(status);
  const dialog=document.createElement('dialog');dialog.className='v2actiondialog';document.body.appendChild(dialog);
@@ -18,6 +19,7 @@ export function mountGlobalActions({stateClient,identityProvider=()=>window.netl
  const setStatus=(text,error=false)=>{status.textContent=text||'';status.classList.toggle('error',Boolean(error))};
  const current=()=>stateClient?.getSnapshot?.()||{mode:'preview',state:null,user:null};
  const user=()=>stateClient?.currentUser?.()||identityProvider()?.currentUser?.()||null;
+ const refreshSessionButton=()=>{if(sessionButton)sessionButton.textContent=user()?'Uitloggen':'Inloggen'};
  const requireAuth=()=>{if(current().mode!=='authenticated'){setStatus('Log in om deze actie veilig uit te voeren.',true);return false}return true};
  const openForm=html=>{dialog.innerHTML=`<div class="v2dialogbody">${html}</div>`;dialog.showModal();dialog.querySelector('[data-cancel]')?.addEventListener('click',()=>closeDialog(dialog))};
 
@@ -27,7 +29,8 @@ export function mountGlobalActions({stateClient,identityProvider=()=>window.netl
  wrap.querySelector('[data-capability="print-permission"]')?.addEventListener('click',()=>{try{printPortalReport({user:user()});setStatus('Afdrukweergave geopend.')}catch(error){setStatus(error.message==='PRINT_PERMISSION_REQUIRED'?'Je rol heeft geen toestemming om dit rapport af te drukken.':error.message,true)}});
  wrap.querySelector('[data-capability="feedback"]')?.addEventListener('click',()=>{if(!requireAuth())return;openForm(`<h3>Feedback</h3><p>Deze feedback wordt tenant-scoped opgeslagen bij je portaalcontext.</p><label>Wat wil je doorgeven?<textarea maxlength="2000" rows="6" data-feedback-text></textarea></label><div class="v2dialogactions"><button data-cancel>Annuleren</button><button class="primary" data-submit-feedback>Versturen</button></div>`);dialog.querySelector('[data-submit-feedback]')?.addEventListener('click',async()=>{const text=dialog.querySelector('[data-feedback-text]')?.value||'';try{await submitPortalFeedback({text,user:user(),context:{page:new URLSearchParams(location.search).get('page')||'overzicht'},fetchImpl:fetch});setStatus('Feedback veilig opgeslagen.');closeDialog(dialog)}catch(error){setStatus(`Feedback niet opgeslagen: ${error.message}`,true)}})});
  wrap.querySelector('[data-capability="customer-branding"]')?.addEventListener('click',()=>{if(!requireAuth())return;const brand=deriveCustomerBrand(current().state,user());openForm(`<h3>Klantmerk</h3><p>Pas alleen de portaalweergave aan; de onderliggende organisatienaam blijft behouden.</p><label>Weergavenaam<input maxlength="120" value="${esc(brand.customerName)}" data-brand-name></label><div class="v2dialogactions"><button data-cancel>Annuleren</button><button class="primary" data-save-brand>Opslaan</button></div>`);dialog.querySelector('[data-save-brand]')?.addEventListener('click',async()=>{try{const name=dialog.querySelector('[data-brand-name]')?.value||'';const snap=await updateCustomerBrand({name,stateClient});applyCustomerBranding({state:snap.state,user:user()});setStatus('Klantmerk opgeslagen en teruggelezen.');closeDialog(dialog)}catch(error){setStatus(`Klantmerk niet opgeslagen: ${error.message}`,true)}})});
- wrap.querySelector('[data-capability="identity-login-logout"]')?.addEventListener('click',async()=>{try{await logoutPortalUser({identity:identityProvider()});setStatus('Uitgelogd.');await stateClient?.load?.()}catch(error){setStatus(error.message==='NO_ACTIVE_SESSION'?'Er is geen actieve sessie.':error.message,true)}});
- const unsubscribe=stateClient?.subscribe?.(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user||user()}));
+ sessionButton?.addEventListener('click',async()=>{const identity=identityProvider();try{if(identity?.currentUser?.()){await logoutPortalUser({identity});setStatus('Uitgelogd.');await stateClient?.load?.()}else{loginPortalUser({identity});setStatus('Loginvenster geopend.')}}catch(error){setStatus(error.message,true)}finally{refreshSessionButton()}});
+ const unsubscribe=stateClient?.subscribe?.(snap=>{applyCustomerBranding({state:snap.state||{},user:snap.user||user()});refreshSessionButton()});
+ refreshSessionButton();
  return{destroy(){unsubscribe?.();wrap.remove();status.remove();dialog.remove()},dialog};
 }
