@@ -56,7 +56,7 @@ jobs:
           import { readFile, appendFile } from 'node:fs/promises';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
-          import { normalizeGitHubDeliveryEvent } from './tools/delivery/github-event-context.mjs';
+          import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const context=normalizeGitHubDeliveryEvent({
             eventName: process.env.EVENT_NAME,
