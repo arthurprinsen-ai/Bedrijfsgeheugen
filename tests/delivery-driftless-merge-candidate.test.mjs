@@ -39,9 +39,8 @@ test('website lane separates candidate build identity from Netlify preview ident
   assert.match(workflow, /EXPECTED_COMMIT:\s*\$\{\{ inputs\.change_head_sha \}\}/);
 });
 
-test('BRAIN delivery validates merge candidate and does not hard-block on branch drift', () => {
-  const workflow = readFileSync('.github/workflows/unified-brain-delivery.yml', 'utf8');
-  assert.match(workflow, /github\.event_name == 'pull_request' && github\.sha/);
-  assert.doesNotMatch(workflow, /name: Enforce current-main file and contract conflict index/);
-  assert.match(workflow, /name: Record current-main drift evidence/);
+test('BRAIN drift evidence never requires branch rewrite for a mergeable candidate', () => {
+  const tool = readFileSync('tools/brain-delivery-system.mjs', 'utf8');
+  assert.match(tool, /REVALIDATE_MERGE_CANDIDATE/);
+  assert.doesNotMatch(tool, /if \(result\.action === 'SYNC_REQUIRED'\) process\.exitCode = 42/);
 });
