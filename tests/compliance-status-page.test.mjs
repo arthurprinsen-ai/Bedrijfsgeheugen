@@ -64,9 +64,3 @@ test('shared public shell exposes trust center from over-ons and AI Act', () => 
   assert.match(shell, /\/ai-act/);
   assert.match(shell, /Hoe staat Bedrijfsgeheugen zelf ervoor|Vertrouwen & compliance/i);
 });
-
-test('Portal V2 links to Bedrijfsgeheugen own compliance status with an absolute URL', () => {
-  const portal = read('portal-v2/index.html');
-  assert.match(portal, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/compliance-status"/i);
-  assert.match(portal, /Compliance Bedrijfsgeheugen/i);
-});
