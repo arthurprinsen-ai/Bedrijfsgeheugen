@@ -10,5 +10,5 @@ test('mobiele compare-slider laat geen tekstkolom van enkele woorden ontstaan in
   assert.match(fixer, /v>=50\?'before':'after'/);
   assert.match(fixer, /\[data-bg-readable-side="before"\]\s+\.compare-after\s+\.compare-copy\{[^}]*opacity:0!important[^}]*visibility:hidden!important/s);
   assert.match(fixer, /\[data-bg-readable-side="after"\]\s+\.compare-before\s+\.compare-copy\{[^}]*opacity:0!important[^}]*visibility:hidden!important/s);
-  assert.match(fixer, /addEventListener\('change',function\(\)\{r\(el,Number\(g\.value\)<50\?0:100\)\}\)/);
+  assert.match(fixer, /matchMedia\('\(max-width:720px\)'\).*Number\(g\.value\)<50\?0:100/s);
 });
