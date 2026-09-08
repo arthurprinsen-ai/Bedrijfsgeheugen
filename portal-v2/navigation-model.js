@@ -10,13 +10,13 @@ export const DESKTOP_NAV_ITEMS = Object.freeze([
   Object.freeze({ id:'overview', target:'overzicht' }),
   Object.freeze({ id:'csrd-impact', target:'csrd-impact' }),
   Object.freeze({ id:'health', target:'profiel' }),
-  Object.freeze({ id:'strategy', target:'strategiemodellen' }),
-  Object.freeze({ id:'processes', target:'taken-werkstromen' }),
+  Object.freeze({ id:'strategy', target:'strategie-naar-maandagochtend' }),
+  Object.freeze({ id:'processes', target:'profiel' }),
   Object.freeze({ id:'knowledge', target:'documenten' }),
-  Object.freeze({ id:'data', target:'hub:data-ai' }),
-  Object.freeze({ id:'ai', target:'ai-scan' }),
-  Object.freeze({ id:'actions', target:'hub:tasks' }),
-  Object.freeze({ id:'reports', target:'hub:more' })
+  Object.freeze({ id:'data', target:'koppelingen' }),
+  Object.freeze({ id:'ai', target:'brain-verwerking' }),
+  Object.freeze({ id:'actions', target:'actieve-acties' }),
+  Object.freeze({ id:'reports', target:'audit' })
 ]);
 
 export function mobileTarget(id){
