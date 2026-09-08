@@ -17,13 +17,17 @@ async function readState(page) {
     const sr = slider.getBoundingClientRect();
     const br = before.getBoundingClientRect();
     const ar = after.getBoundingClientRect();
-    const split = parseFloat(getComputedStyle(slider).getPropertyValue('--split')) || 0;
+    const css = getComputedStyle(slider);
+    const controlledRaw = parseFloat(css.getPropertyValue('--bg-compare-split'));
+    const legacyRaw = parseFloat(css.getPropertyValue('--split'));
+    const split = Number.isFinite(controlledRaw) ? controlledRaw : (Number.isFinite(legacyRaw) ? legacyRaw : 0);
     const cx = Math.max(0, Math.min(window.innerWidth - 1, sr.left + sr.width / 2));
     const cy = Math.max(0, Math.min(window.innerHeight - 1, sr.top + Math.min(sr.height / 2, 120)));
     const hit = document.elementFromPoint(cx, cy);
     const topSideAtCenter = hit?.closest('.compare-before') ? 'before' : hit?.closest('.compare-after') ? 'after' : null;
     return {
       split,
+      legacySplit: Number.isFinite(legacyRaw) ? legacyRaw : null,
       viewportWidth: window.innerWidth,
       slider: { left: sr.left, right: sr.right, width: sr.width, height: sr.height },
       before: { width: br.width, clipPath: getComputedStyle(beforeSide).clipPath },
@@ -53,7 +57,7 @@ async function dragKnobTo(page, targetX) {
   await page.mouse.down();
   await page.mouse.move(targetX, y, { steps: 10 });
   await page.mouse.up();
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(180);
 }
 
 function assertCommon(g, label) {
