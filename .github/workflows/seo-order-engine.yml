@@ -6,18 +6,7 @@ on:
       - main
       - feat/seo-order-engine-20260905
       - feat/seo-to-order-intelligence-loop-final-20260905
-  pull_request:
-    paths:
-      - 'site/seo-order-map.json'
-      - 'tools/seo-order-engine/**'
-      - 'tools/seo-growth/**'
-      - 'netlify/functions/growth-event.mjs'
-      - 'config/seo-growth-*'
-      - 'tests/seo-order-*.test.mjs'
-      - 'tests/seo-growth-*.test.mjs'
-      - '.github/workflows/seo-order-engine.yml'
-      - 'tools/prijzen-uit-de-homepage.mjs'
-      - 'tools/controleer-technische-seo.mjs'
+  workflow_dispatch:
 
 jobs:
   test:
