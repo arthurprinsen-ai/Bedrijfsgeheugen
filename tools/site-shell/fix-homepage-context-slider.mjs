@@ -148,6 +148,7 @@ const RUNTIME = `<script ${MARKER}>
       return value;
     }
     function mirrorLegacy(){renderControlled(readLegacy());}
+    function syncLoop(){mirrorLegacy();requestAnimationFrame(syncLoop);}
     function apply(raw){
       var value=snap(raw);
       slider.style.setProperty('--split',value.toFixed(2)+'%');
@@ -223,6 +224,7 @@ const RUNTIME = `<script ${MARKER}>
     }
 
     mirrorLegacy();
+    requestAnimationFrame(syncLoop);
   }
 
   function ensureSliders(){collectSliders().forEach(initSlider);}
@@ -259,6 +261,7 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('--bg-compare-split')||
      !next.includes('SNAP_THRESHOLD = 8')||
      !next.includes('mirrorLegacy')||
+     !next.includes('syncLoop')||
      !next.includes("setProperty('clip-path'")||
      !next.includes('settleFromClientX')||
      !next.includes('requestAnimationFrame')||
