@@ -67,4 +67,16 @@ assert.ok(normalizer.includes('await applyCanonicalShellToAllPages()'));
 assert.ok(!normalizer.includes('PRICING_MOBILE_MENU_HTML'));
 assert.ok(!normalizer.includes('#bgkopMob.bgkop-mob'));
 
+const canonicalHeader = await readFile('.github/canoniek/kop.html', 'utf8');
+const knowledgeDesktop = canonicalHeader.match(/>Kennis<[^]*?<div class="bgkop-paneel">([^]*?)<\/div>/)?.[1] || '';
+const knowledgeMobile = canonicalHeader.match(/>Kennis<[^]*?<div class="bgkop-mpaneel" hidden>([^]*?)<\/div>/)?.[1] || '';
+for (const block of [knowledgeDesktop, knowledgeMobile]) {
+  assert.ok(block.includes('https://www.bedrijfsgeheugen.nl/kennis/'), 'Kennisbank moet in Kennis-menu staan');
+  assert.ok(block.includes('https://www.bedrijfsgeheugen.nl/blog/'), 'Blog moet als aparte Kennis-bestemming blijven staan');
+  assert.ok(block.indexOf('/kennis/') < block.indexOf('/blog/'), 'Kennisbank moet vóór Blog staan');
+}
+for (const href of canonicalHeader.matchAll(/href="([^"]+)"/g)) {
+  assert.ok(href[1].startsWith('https://www.bedrijfsgeheugen.nl/'), `canonical header href moet absoluut zijn: ${href[1]}`);
+}
+
 console.log('canonical brand shell contract: OK');
