@@ -60,6 +60,20 @@ assert.equal(extractComponent(alleenHeader, 'main'), oudeMain);
 assert.equal(extractComponent(alleenHeader, 'footer'), oudeFooter);
 assert.equal(extractComponent(alleenHeader, 'header'), nieuweHeader);
 
+const canonicalHeader = await readFile('.github/canoniek/kop.html', 'utf8');
+const kennisHref = 'href="https://www.bedrijfsgeheugen.nl/kennis/"';
+const blogHref = 'href="https://www.bedrijfsgeheugen.nl/blog/"';
+const kennisPositie = canonicalHeader.indexOf(kennisHref);
+const blogPositie = canonicalHeader.indexOf(blogHref);
+assert.ok(kennisPositie >= 0, 'canonical Kennis-menu moet naar de zelfstandige /kennis/ hub linken');
+assert.ok(blogPositie >= 0, 'canonical Kennis-menu moet Blog als aparte /blog/ bestemming behouden');
+assert.ok(kennisPositie < blogPositie, 'Kennisbank moet vóór Blog staan in het canonical Kennis-menu');
+assert.ok(canonicalHeader.includes(`${kennisHref}><b>Kennisbank</b>`), 'desktop Kennis-menu moet Kennisbank expliciet benoemen');
+assert.ok(canonicalHeader.includes(`${kennisHref}>Kennisbank</a>`), 'mobiel Kennis-menu moet Kennisbank expliciet benoemen');
+const canonicalHrefs = [...canonicalHeader.matchAll(/\bhref="([^"]+)"/g)].map(([, href]) => href);
+assert.ok(canonicalHrefs.length > 0, 'canonical header moet navigatielinks bevatten');
+assert.ok(canonicalHrefs.every((href) => /^https:\/\/www\.bedrijfsgeheugen\.nl\//.test(href)), 'alle hrefs in de canonical header moeten absolute bedrijfsgeheugen.nl URLs zijn');
+
 const productionBuilder = await readFile('tools/bouw-v18-production.mjs', 'utf8');
 assert.ok(!productionBuilder.includes("await import('./uniforme-schil.mjs')"));
 const normalizer = await readFile('tools/normaliseer-site-ui.mjs', 'utf8');
