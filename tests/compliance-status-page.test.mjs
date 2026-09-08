@@ -25,6 +25,12 @@ test('public compliance status page exposes Bedrijfsgeheugen own status transpar
   assert.match(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/ai-act/);
 });
 
+test('public compliance status links to the canonical portal entry, not the private noindex audit document', () => {
+  const html = read('compliance-status.html');
+  assert.match(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/"/i);
+  assert.doesNotMatch(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/compliance\.html"/i);
+});
+
 test('shared public shell exposes trust center from over-ons and AI Act', () => {
   const shell = read('assets/stijl.js');
   assert.match(shell, /https:\/\/www\.bedrijfsgeheugen\.nl\/compliance-status/);
