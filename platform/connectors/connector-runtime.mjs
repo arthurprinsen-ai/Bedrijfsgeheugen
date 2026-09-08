@@ -23,8 +23,8 @@ export function createEnvironmentConnectorProviders({fetchFn=globalThis.fetch,en
   const extractor={extract:async source=>{
     const sample=source?.sample||{};
     if(sample.extractedFields)return {type:sample.documentType||'custom',confidence:Number(sample.classificationConfidence??1),fields:Object.fromEntries(Object.entries(sample.extractedFields).map(([key,value])=>[key,typeof value==='object'&&value&&'value'in value?value:{value,confidence:1}]))};
-    if(!env.DOCUMENT_EXTRACTOR_URL)throw Object.assign(new Error('Document extraction provider is not configured; provide explicit safe-test extractedFields or configure a server extractor.'),{code:'DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED'});
-    const response=await fetchFn(env.DOCUMENT_EXTRACTOR_URL,{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1'},body:JSON.stringify(sample)});
+    if(!env.DOCUMENT_EXTRACTOR_URL||!env.CONNECTOR_SAFE_TEST_TOKEN)throw Object.assign(new Error('Document extraction provider is not configured; provide explicit safe-test extractedFields or configure a server extractor.'),{code:'DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED'});
+    const response=await fetchFn(env.DOCUMENT_EXTRACTOR_URL,{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1','x-bg-safe-test-token':env.CONNECTOR_SAFE_TEST_TOKEN},body:JSON.stringify(sample)});
     if(!response.ok)throw Object.assign(new Error('Document extraction safe-test failed'),{code:'DOCUMENT_EXTRACTION_SAFE_TEST_FAILED',status:response.status});
     const result=await response.json();
     if(!result||typeof result!=='object'||!result.fields||typeof result.fields!=='object')throw Object.assign(new Error('Document extraction safe-test returned an invalid response'),{code:'DOCUMENT_EXTRACTION_INVALID_RESPONSE'});
@@ -35,7 +35,7 @@ export function createEnvironmentConnectorProviders({fetchFn=globalThis.fetch,en
   if(env.EXACT_SAFE_TEST_URL)targets.exact={safeTest:async payload=>{const response=await fetchFn(env.EXACT_SAFE_TEST_URL,{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1'},body:JSON.stringify(payload)});return {ok:response.ok,reference:response.headers.get('x-execution-id')||null};}};
   const readiness={
     sources:{upload:{configured:true,state:'native-safe-test'},email:{configured:true,state:'native-safe-test'}},
-    extractor:env.DOCUMENT_EXTRACTOR_URL?{configured:true,state:'server-safe-test'}:{configured:false,state:'sample-only'},
+    extractor:env.DOCUMENT_EXTRACTOR_URL&&env.CONNECTOR_SAFE_TEST_TOKEN?{configured:true,state:'server-safe-test'}:{configured:false,state:'sample-only'},
     targets:{datahub:{configured:true,state:'native-safe-test'},afas:configuredState(Boolean(env.AFAS_SAFE_TEST_URL)),exact:configuredState(Boolean(env.EXACT_SAFE_TEST_URL))}
   };
   return {sources,extractor,targets,lookups:null,readiness};
