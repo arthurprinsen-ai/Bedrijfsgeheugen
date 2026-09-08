@@ -1,0 +1,3 @@
+.mobilebar button{min-width:44px;min-height:44px;touch-action:manipulation}
+.mobilebar button[aria-current="page"],.mobilebar button.active{color:var(--blue);font-weight:900}
+.nav button[aria-current="page"],.nav button.active{background:#edf3ff;color:#115be8}

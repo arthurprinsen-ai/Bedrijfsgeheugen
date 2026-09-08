@@ -1,0 +1,51 @@
+import {exportPortalState,stagePortalImport,applyStagedPortalImport,printPortalReport,submitPortalFeedback,updateCustomerBrand,loginPortalUser,logoutPortalUser} from './portal-actions.js';
+import {applyCustomerBranding,deriveCustomerBrand} from './customer-branding.js';
+
+const esc=value=>String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MOBILE_ACTIONS=Object.freeze([
+ ['Export','export'],['Import','import'],['Print','print-permission'],['Feedback','feedback'],['Klantmerk','customer-branding'],['Account','identity-login-logout']
+]);
+function ensureStyle(){if(document.querySelector('style[data-global-actions-style]'))return;const s=document.createElement('style');s.dataset.globalActionsStyle='true';s.textContent=`.v2utilities{display:flex;gap:8px;flex-wrap:wrap}.v2utilities .smallbtn{min-height:44px}.v2actiondialog{border:0;border-radius:18px;box-shadow:0 28px 80px rgba(16,30,54,.24);padding:0;max-width:min(92vw,560px);width:100%}.v2actiondialog::backdrop{background:rgba(13,28,54,.42);backdrop-filter:blur(3px)}.v2dialogbody{padding:22px}.v2dialogbody h3{margin:0 0 6px}.v2dialogbody p{color:#64748b}.v2dialogbody label{display:grid;gap:7px;font-weight:700}.v2dialogbody textarea,.v2dialogbody input{width:100%;box-sizing:border-box;border:1px solid #d9e1ef;border-radius:12px;padding:12px;font:inherit;min-height:44px}.v2dialogactions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.v2dialogactions button{min-height:44px;border:0;border-radius:12px;padding:0 16px;font-weight:800}.v2dialogactions .primary{background:#0d5bef;color:#fff}.v2globalstatus,.v2mobileglobalstatus{font-size:12px;color:#52627c;min-height:18px}.v2globalstatus.error,.v2mobileglobalstatus.error{color:#b42318}.v2mobileutilities{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v2mobileutilities h4,.v2mobileglobalstatus{grid-column:1/-1}.v2mobileutilities .smallbtn{min-height:44px;width:100%}@media(min-width:761px){.v2mobileutilities{grid-template-columns:repeat(3,minmax(0,1fr))}}`;document.head.appendChild(s)}
+function button(label,capability){const b=document.createElement('button');b.type='button';b.className='smallbtn';b.dataset.capability=capability;b.textContent=label;return b}
+function closeDialog(dialog){if(dialog?.open)dialog.close()}
+
+export function mountGlobalActions({stateClient,identityProvider=()=>window.netlifyIdentity||null}={}){
+ const host=document.querySelector('.actionrow');if(!host||host.querySelector('[data-native-global-actions]'))return null;ensureStyle();
+ const wrap=document.createElement('div');wrap.className='v2utilities';wrap.dataset.nativeGlobalActions='true';
+ const actions=[['Export','export'],['Import','import'],['Print','print-permission'],['Feedback','feedback'],['Klantmerk','customer-branding'],['Inloggen','identity-login-logout']];
+ for(const [label,cap] of actions)wrap.appendChild(button(label,cap));
+ const sessionButton=wrap.querySelector('[data-capability="identity-login-logout"]');
+ const input=document.createElement('input');input.type='file';input.accept='application/json';input.hidden=true;wrap.appendChild(input);host.appendChild(wrap);
+ const status=document.createElement('div');status.className='v2globalstatus';status.setAttribute('role','status');status.setAttribute('aria-live','polite');host.appendChild(status);
+ const dialog=document.createElement('dialog');dialog.className='v2actiondialog';document.body.appendChild(dialog);
+ let staged=null;
+ const setStatus=(text,error=false)=>{status.textContent=text||'';status.classList.toggle('error',Boolean(error))};
+ const current=()=>stateClient?.getSnapshot?.()||{mode:'preview',state:null,user:null};
+ const user=()=>stateClient?.currentUser?.()||identityProvider()?.currentUser?.()||null;
+ const refreshSessionButton=()=>{if(sessionButton)sessionButton.textContent=user()?'Uitloggen':'Inloggen'};
+ const requireAuth=()=>{if(current().mode!=='authenticated'){setStatus('Log in om deze actie veilig uit te voeren.',true);return false}return true};
+ const openForm=html=>{dialog.innerHTML=`<div class="v2dialogbody">${html}</div>`;dialog.showModal();dialog.querySelector('[data-cancel]')?.addEventListener('click',()=>closeDialog(dialog))};
+
+ wrap.querySelector('[data-capability="export"]')?.addEventListener('click',()=>{if(!requireAuth())return;exportPortalState(current().state);setStatus('Beveiligde portaalback-up geëxporteerd.')});
+ wrap.querySelector('[data-capability="import"]')?.addEventListener('click',()=>{if(requireAuth())input.click()});
+ input.addEventListener('change',async()=>{const file=input.files?.[0];input.value='';if(!file)return;try{staged=await stagePortalImport(file,{currentState:current().state||{}});openForm(`<h3>Import controleren</h3><p>Bestand: <strong>${esc(staged.fileName)}</strong>. Er wordt nog niets gewijzigd.</p><p>Acties: ${staged.preview.actions} · Roadmap: ${staged.preview.roadmap} · Geheugenitems: ${staged.preview.memories}</p><div class="v2dialogactions"><button data-cancel>Annuleren</button><button class="primary" data-confirm-import>Import toepassen</button></div>`);dialog.querySelector('[data-confirm-import]')?.addEventListener('click',async()=>{try{await applyStagedPortalImport(staged,{stateClient});setStatus('Import toegepast en server-readback geverifieerd.');closeDialog(dialog)}catch(error){setStatus(`Import niet toegepast: ${error.message}`,true)}})}catch(error){setStatus(`Import geweigerd: ${error.message}`,true)}});
+ wrap.querySelector('[data-capability="print-permission"]')?.addEventListener('click',()=>{try{printPortalReport({user:user()});setStatus('Afdrukweergave geopend.')}catch(error){setStatus(error.message==='PRINT_PERMISSION_REQUIRED'?'Je rol heeft geen toestemming om dit rapport af te drukken.':error.message,true)}});
+ wrap.querySelector('[data-capability="feedback"]')?.addEventListener('click',()=>{if(!requireAuth())return;openForm(`<h3>Feedback</h3><p>Deze feedback wordt tenant-scoped opgeslagen bij je portaalcontext.</p><label>Wat wil je doorgeven?<textarea maxlength="2000" rows="6" data-feedback-text></textarea></label><div class="v2dialogactions"><button data-cancel>Annuleren</button><button class="primary" data-submit-feedback>Versturen</button></div>`);dialog.querySelector('[data-submit-feedback]')?.addEventListener('click',async()=>{const text=dialog.querySelector('[data-feedback-text]')?.value||'';try{await submitPortalFeedback({text,user:user(),context:{page:new URLSearchParams(location.search).get('page')||'overzicht'},fetchImpl:fetch});setStatus('Feedback veilig opgeslagen.');closeDialog(dialog)}catch(error){setStatus(`Feedback niet opgeslagen: ${error.message}`,true)}})});
+ wrap.querySelector('[data-capability="customer-branding"]')?.addEventListener('click',()=>{if(!requireAuth())return;const brand=deriveCustomerBrand(current().state,user());openForm(`<h3>Klantmerk</h3><p>Pas alleen de portaalweergave aan; de onderliggende organisatienaam blijft behouden.</p><label>Weergavenaam<input maxlength="120" value="${esc(brand.customerName)}" data-brand-name></label><div class="v2dialogactions"><button data-cancel>Annuleren</button><button class="primary" data-save-brand>Opslaan</button></div>`);dialog.querySelector('[data-save-brand]')?.addEventListener('click',async()=>{try{const name=dialog.querySelector('[data-brand-name]')?.value||'';const snap=await updateCustomerBrand({name,stateClient});applyCustomerBranding({state:snap.state,user:user()});setStatus('Klantmerk opgeslagen en teruggelezen.');closeDialog(dialog)}catch(error){setStatus(`Klantmerk niet opgeslagen: ${error.message}`,true)}})});
+ sessionButton?.addEventListener('click',async()=>{const identity=identityProvider();try{if(identity?.currentUser?.()){await logoutPortalUser({identity});setStatus('Uitgelogd.');await stateClient?.load?.()}else{loginPortalUser({identity});setStatus('Loginvenster geopend.')}}catch(error){setStatus(error.message,true)}finally{refreshSessionButton()}});
+
+ const syncMobileStatus=()=>document.querySelectorAll('[data-mobile-global-status]').forEach(node=>{node.textContent=status.textContent;node.classList.toggle('error',status.classList.contains('error'))});
+ const ensureMobileUtilities=()=>{
+  const sheet=document.querySelector('#allPages');const groups=document.querySelector('#groups');
+  if(!sheet||!groups||sheet.dataset.hub!=='more'||groups.querySelector('[data-mobile-global-actions]'))return;
+  const section=document.createElement('section');section.className='group v2mobileutilities';section.dataset.mobileGlobalActions='true';
+  const heading=document.createElement('h4');heading.textContent='Portaalacties';section.appendChild(heading);
+  for(const [label,capability] of MOBILE_ACTIONS){const proxy=document.createElement('button');proxy.type='button';proxy.className='smallbtn';proxy.dataset.mobileCapability=capability;proxy.textContent=label;proxy.addEventListener('click',()=>wrap.querySelector(`[data-capability="${capability}"]`)?.click());section.appendChild(proxy)}
+  const mirror=document.createElement('div');mirror.className='v2mobileglobalstatus';mirror.dataset.mobileGlobalStatus='true';mirror.setAttribute('role','status');mirror.setAttribute('aria-live','polite');section.appendChild(mirror);groups.appendChild(section);syncMobileStatus();
+ };
+ const mobileObserver=new MutationObserver(ensureMobileUtilities);const sheet=document.querySelector('#allPages');const groups=document.querySelector('#groups');if(sheet)mobileObserver.observe(sheet,{attributes:true,attributeFilter:['data-hub']});if(groups)mobileObserver.observe(groups,{childList:true});
+ const statusObserver=new MutationObserver(syncMobileStatus);statusObserver.observe(status,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['class']});
+ const unsubscribe=stateClient?.subscribe?.(snap=>{applyCustomerBranding({state:snap.state||{},user:snap.user||user()});refreshSessionButton()});
+ refreshSessionButton();ensureMobileUtilities();
+ return{destroy(){unsubscribe?.();mobileObserver.disconnect();statusObserver.disconnect();wrap.remove();status.remove();dialog.remove()},dialog};
+}

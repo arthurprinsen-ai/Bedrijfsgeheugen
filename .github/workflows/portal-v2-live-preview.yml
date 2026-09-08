@@ -49,6 +49,8 @@ jobs:
           set -euo pipefail
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/" -o /tmp/portal-v2.html
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.css" -o /tmp/portal-v2.css
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/saas-theme.css" -o /tmp/portal-v2-saas.css
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/csrd-mobile-saas.css" -o /tmp/portal-v2-csrd-saas.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.js" -o /tmp/portal-v2.js
           node --check /tmp/portal-v2.js
           grep -q 'Welkom terug, Arthur' /tmp/portal-v2.html
@@ -56,6 +58,10 @@ jobs:
           grep -q 'AI Management Summary' /tmp/portal-v2.html
           grep -q 'Powerhouse' /tmp/portal-v2.html
           grep -q 'Alle portalpagina’s' /tmp/portal-v2.html
+          grep -q -- '--saas-accent:' /tmp/portal-v2-saas.css
+          grep -q 'brainflow' /tmp/portal-v2-saas.css
+          grep -q 'csrd-mobile-summary' /tmp/portal-v2-csrd-saas.css
+          grep -q 'csrd-mobile-domain' /tmp/portal-v2-csrd-saas.css
 
       - name: Install Playwright runtime
         run: |

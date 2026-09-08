@@ -1,0 +1,62 @@
+const API_URL='/api/portal-state';
+export const PORTAL_STATE_MODES=Object.freeze(['authenticated','preview','empty','error']);
+
+function snapshot(mode,state=null,error=null,user=null){return Object.freeze({mode,state,error,user,updatedAt:new Date().toISOString()})}
+function identityUser(identity){try{return identity?.currentUser?.()||null}catch{return null}}
+async function authToken(user){try{return await user?.jwt?.()||''}catch{return''}}
+
+export function ensureIdentityWidget(){
+ if(globalThis.window?.netlifyIdentity)return Promise.resolve(globalThis.window.netlifyIdentity);
+ if(!globalThis.document)return Promise.resolve(null);
+ return new Promise(resolve=>{
+  const existing=document.querySelector('script[data-v2-identity]');
+  if(existing){existing.addEventListener('load',()=>resolve(globalThis.window?.netlifyIdentity||null),{once:true});return;}
+  const script=document.createElement('script');
+  script.src='https://identity.netlify.com/v1/netlify-identity-widget.js';
+  script.async=true;script.dataset.v2Identity='true';
+  script.addEventListener('load',()=>resolve(globalThis.window?.netlifyIdentity||null),{once:true});
+  script.addEventListener('error',()=>resolve(null),{once:true});
+  document.head.appendChild(script);
+ });
+}
+
+export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProvider=()=>globalThis.window?.netlifyIdentity||null}={}){
+ let current=snapshot('preview');
+ const listeners=new Set();
+ const publish=next=>{current=next;for(const fn of listeners){try{fn(current)}catch{}}return current};
+ const headersFor=async user=>{const token=await authToken(user);return token?{accept:'application/json',authorization:`Bearer ${token}`}:{accept:'application/json'}};
+
+ async function load(){
+  const identity=identityProvider();const user=identityUser(identity);
+  if(!user)return publish(snapshot('preview',null,null,null));
+  const headers=await headersFor(user);
+  if(!headers.authorization)return publish(snapshot('error',null,'AUTH_TOKEN_UNAVAILABLE',user));
+  try{
+   const response=await fetchImpl(API_URL,{method:'GET',headers,credentials:'same-origin'});
+   if(response.status===404)return publish(snapshot('empty',null,null,user));
+   if(!response.ok)return publish(snapshot('error',null,`PORTAL_STATE_${response.status}`,user));
+   const state=await response.json();
+   return publish(snapshot('authenticated',state,null,user));
+  }catch(error){return publish(snapshot('error',null,error?.message||'PORTAL_STATE_UNAVAILABLE',user))}
+ }
+
+ async function write(nextState){
+  const identity=identityProvider();const user=identityUser(identity);
+  if(!user)throw new Error('AUTH_REQUIRED');
+  const headers=await headersFor(user);
+  if(!headers.authorization)throw new Error('AUTH_TOKEN_UNAVAILABLE');
+  const response=await fetchImpl(API_URL,{method:'POST',headers:{...headers,'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(nextState||{})});
+  const body=await response.json().catch(()=>({}));
+  if(!response.ok||body?.stored===false)throw new Error(body?.error||`PORTAL_STATE_WRITE_${response.status}`);
+  return load();
+ }
+
+ return Object.freeze({
+  apiUrl:API_URL,
+  getSnapshot:()=>current,
+  subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)},
+  load,write,
+  currentUser:()=>identityUser(identityProvider()),
+  authHeaders:async()=>headersFor(identityUser(identityProvider()))
+ });
+}

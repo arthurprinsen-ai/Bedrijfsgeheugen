@@ -5,6 +5,22 @@ if (!baseUrl) throw new Error('UI_VR_BASE_URL ontbreekt');
 
 function fail(message, evidence = {}) { throw new Error(`${message}\n${JSON.stringify(evidence, null, 2)}`); }
 
+async function gotoWithRetry(page, url, attempts = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.locator('#compareSlider').waitFor({ state: 'visible', timeout: 15000 });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt === attempts) break;
+      await page.waitForTimeout(750 * attempt);
+    }
+  }
+  throw lastError;
+}
+
 async function readState(page) {
   return page.evaluate(() => {
     const slider = document.querySelector('#compareSlider');
@@ -14,8 +30,7 @@ async function readState(page) {
     const after = afterSide?.querySelector('.compare-copy');
     const knob = slider?.querySelector('.compare-knob');
     const handle = slider?.querySelector('.compare-handle');
-    const range = slider?.querySelector('.bg-compare-range');
-    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle || !range) return null;
+    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle) return null;
 
     const sr = slider.getBoundingClientRect();
     const br = before.getBoundingClientRect();
@@ -41,10 +56,10 @@ async function readState(page) {
         now: Number(knob.getAttribute('aria-valuenow')),
         disabled: knob.getAttribute('aria-disabled')
       },
-      range: { min: Number(range.min), max: Number(range.max), value: Number(range.value), disabled: range.disabled },
       handleDisplay: getComputedStyle(handle).display,
       handleLeft: parseFloat(getComputedStyle(handle).left),
       marked: slider.hasAttribute('data-bg-compare-slider'),
+      pointerOwner: slider.getAttribute('data-bg-pointer-owner-ready') === 'true',
       topSideAtCenter
     };
   });
@@ -91,25 +106,25 @@ async function readMobileChangeFlow(page) {
   });
 }
 
-async function dragKnobTo(page, targetX) {
-  const knob = page.locator('#compareSlider .compare-knob');
-  await knob.scrollIntoViewIfNeeded();
-  const b = await knob.boundingBox();
-  if (!b) fail('sliderknop heeft geen geometry');
+async function dragMouseTo(page, targetX) {
+  const slider = page.locator('#compareSlider');
+  await slider.scrollIntoViewIfNeeded();
+  const b = await slider.boundingBox();
+  if (!b) fail('slider heeft geen mouse-geometry');
   const x = b.x + b.width / 2;
   const y = b.y + b.height / 2;
   await page.mouse.move(x, y);
   await page.mouse.down();
-  await page.mouse.move(targetX, y, { steps: 12 });
+  await page.mouse.move(targetX, y, { steps: 16 });
   await page.mouse.up();
   await page.waitForTimeout(180);
 }
 
 async function dragTouchTo(page, targetX) {
-  const knob = page.locator('#compareSlider .compare-knob');
-  await knob.scrollIntoViewIfNeeded();
-  const b = await knob.boundingBox();
-  if (!b) fail('sliderknop heeft geen touch-geometry');
+  const slider = page.locator('#compareSlider');
+  await slider.scrollIntoViewIfNeeded();
+  const b = await slider.boundingBox();
+  if (!b) fail('slider heeft geen touch-geometry');
   const startX = b.x + b.width / 2;
   const y = b.y + b.height / 2;
   const client = await page.context().newCDPSession(page);
@@ -117,8 +132,8 @@ async function dragTouchTo(page, targetX) {
     type: 'touchStart',
     touchPoints: [{ x: startX, y, radiusX: 8, radiusY: 8, force: 1, id: 1 }]
   });
-  for (let i = 1; i <= 12; i++) {
-    const x = startX + (targetX - startX) * (i / 12);
+  for (let i = 1; i <= 16; i++) {
+    const x = startX + (targetX - startX) * (i / 16);
     await client.send('Input.dispatchTouchEvent', {
       type: 'touchMove',
       touchPoints: [{ x, y, radiusX: 8, radiusY: 8, force: 1, id: 1 }]
@@ -130,11 +145,11 @@ async function dragTouchTo(page, targetX) {
 }
 
 function assertCommon(g, label) {
-  if (!g) fail(`${label}: compareSlider, tekstlagen of native range ontbreken`);
+  if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
   if (!g.marked) fail(`${label}: slider mist generieke site-wide marker`, g);
-  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: gespiegeld ARIA bereik moet exact 0-100 zijn`, g);
+  if (!g.pointerOwner) fail(`${label}: pointer-capture owner is niet actief`, g);
+  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: ARIA bereik moet exact 0-100 zijn`, g);
   if (g.aria.disabled === 'true') fail(`${label}: slider mag niet disabled zijn`, g);
-  if (g.range.min !== 0 || g.range.max !== 100 || g.range.disabled) fail(`${label}: native range moet actief 0-100 zijn`, g);
   if (g.handleDisplay === 'none') fail(`${label}: echte sliderhandle mag niet verborgen zijn`, g);
   if (g.slider.left < -1 || g.slider.right > g.viewportWidth + 1) fail(`${label}: slider mag niet buiten de viewport vallen`, g);
   const minReadableWidth = Math.min(220, g.slider.width * 0.5);
@@ -144,7 +159,7 @@ function assertCommon(g, label) {
 function assertLeftEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split <= 1)) fail(`${label}: helemaal links moet 0% bereiken`, g);
-  if (g.range.value > 1 || g.aria.now > 1) fail(`${label}: range en ARIA moeten links 0 zijn`, g);
+  if (g.aria.now > 1) fail(`${label}: ARIA moet links 0 zijn`, g);
   if (g.handleLeft > 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal links staan`, g);
   if (g.topSideAtCenter !== 'after') fail(`${label}: links moet alleen de after-laag tonen`, g);
 }
@@ -152,7 +167,7 @@ function assertLeftEndpoint(g, label) {
 function assertRightEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split >= 99)) fail(`${label}: helemaal rechts moet 100% bereiken`, g);
-  if (g.range.value < 99 || g.aria.now < 99) fail(`${label}: range en ARIA moeten rechts 100 zijn`, g);
+  if (g.aria.now < 99) fail(`${label}: ARIA moet rechts 100 zijn`, g);
   if (g.handleLeft < g.slider.width - 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal rechts staan`, g);
   if (g.topSideAtCenter !== 'before') fail(`${label}: rechts moet alleen de before-laag tonen`, g);
 }
@@ -197,22 +212,23 @@ async function testViewport(browser, width, height, mobile, orientation) {
   const page = await browser.newPage({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
-  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
+  await gotoWithRetry(page, `${baseUrl}/`);
   const slider = page.locator('#compareSlider');
-  await slider.waitFor({ state: 'visible' });
   await slider.scrollIntoViewIfNeeded();
   await page.waitForTimeout(140);
   const box = await slider.boundingBox();
   if (!box) fail(`${width}px: slider heeft geen geometry`);
 
-  const nearLeft = box.x + 1;
-  if (mobile) await dragTouchTo(page, nearLeft); else await dragKnobTo(page, nearLeft);
+  // Deliberately drag beyond both physical edges. Pointer capture must keep
+  // delivering movement while the clamp maps it to exact 0 and 100.
+  const nearLeft = box.x - 64;
+  if (mobile) await dragTouchTo(page, nearLeft); else await dragMouseTo(page, nearLeft);
   const left = await readState(page);
   if (left) left.pageErrors = pageErrors;
   assertLeftEndpoint(left, `${width}x${height} fysiek uiterste links`);
 
-  const nearRight = box.x + box.width - 1;
-  if (mobile) await dragTouchTo(page, nearRight); else await dragKnobTo(page, nearRight);
+  const nearRight = box.x + box.width + 64;
+  if (mobile) await dragTouchTo(page, nearRight); else await dragMouseTo(page, nearRight);
   const right = await readState(page);
   if (right) right.pageErrors = pageErrors;
   assertRightEndpoint(right, `${width}x${height} fysiek uiterste rechts`);

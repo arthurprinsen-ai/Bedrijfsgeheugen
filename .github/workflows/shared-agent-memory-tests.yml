@@ -8,6 +8,29 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'tests/development-doc-contract.test.mjs'
+      - 'tests/delivery-chat-*.test.mjs'
+      - 'tests/team-*.test.mjs'
+      - 'tests/opportunity-scout.test.mjs'
+      - 'tests/production-promotion-*.test.mjs'
+      - 'tests/hero-media-*.test.mjs'
+      - 'tests/paginacontrole-*.test.mjs'
+      - 'tests/repo-*.test.mjs'
+      - 'tests/*writer*.test.mjs'
+      - 'tests/repository-*.test.mjs'
+      - 'tests/whole-brain-obligation-contract.test.mjs'
+      - 'tests/agent-fabric*.test.mjs'
+      - 'tests/*chat-learning*.test.mjs'
+      - 'tests/*guard*.test.mjs'
+      - 'tests/live-preview-trigger-scope.test.mjs'
+      - 'tests/brain-cost-membership.test.mjs'
+      - 'tests/cost-component-catalog.test.mjs'
+      - 'scripts/brain/**'
+      - 'tools/brain-*.mjs'
+      - 'config/**'
+      - 'AGENTS.md'
+      - '.github/workflows/shared-agent-memory-tests.yml'
   workflow_dispatch:
 
 permissions:
