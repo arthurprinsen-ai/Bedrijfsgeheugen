@@ -30,3 +30,7 @@ jobs:
           tests/universal-failure-learning.test.mjs
           tests/make-cost-governor-policy.test.mjs
           tests/make-cost-governance-contract.test.mjs
+      - name: Install growth runtime dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Verify SEO growth and order contracts
+        run: node --test tests/seo-growth-*.test.mjs tests/seo-order-*.test.mjs
