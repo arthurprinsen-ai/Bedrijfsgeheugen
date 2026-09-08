@@ -16,37 +16,16 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - id: scope
-        name: Classify V18 promotion scope
-        env:
-          HEAD_SHA: ${{ github.sha }}
-        run: |
-          node --input-type=module - <<'NODE'
-          import { execFileSync } from 'node:child_process';
-          import { readFile, appendFile } from 'node:fs/promises';
-          import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
-          import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
-          const head = process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const base = execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changedPaths = execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
-          const plan = createDeliveryPlan({ changedPaths, headSha:head, policy });
-          const suites = deriveRequiredTestSuites({ lanes:plan.lanes.map(lane => lane.id) });
-          for (const key of ['website','portal']) await appendFile(process.env.GITHUB_OUTPUT, `${key}=${suites[key]}\n`);
-          NODE
       - name: Verify website V18 production contracts
-        if: steps.scope.outputs.website == 'true'
         run: >-
           node --test
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
           tests/site-baseline-guardian.test.mjs
       - name: Verify portal production contracts
-        if: always() && steps.scope.outputs.portal == 'true'
         run: >-
           node --test
           tests/portal-server-state.test.mjs
@@ -59,6 +38,3 @@ jobs:
           tests/portal-native-legacy-batch-1.test.mjs
           tests/portal-native-legacy-batch-2.test.mjs
           tests/portal-native-legacy-batch-3.test.mjs
-      - name: Record not-applicable promotion lane
-        if: steps.scope.outputs.website != 'true' && steps.scope.outputs.portal != 'true'
-        run: echo 'V18/portal promotion checks are not applicable to this change.'

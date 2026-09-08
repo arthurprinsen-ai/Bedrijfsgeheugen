@@ -62,11 +62,70 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Verify mandatory website baseline and release-risk contracts
-        run: node --test tests/site-baseline-guardian.test.mjs tests/site-shell-public-route-inventory.test.mjs tests/site-shell-website-release-risk.test.mjs tests/targeted-website-route-regression.test.mjs tests/homepage-pricing-boundary-readback.test.mjs tests/prijzen-hero-seo.test.mjs tests/technical-seo-gate.test.mjs
+      - name: Verify site baseline and release-risk contracts
+        run: >-
+          node --test
+          tests/site-baseline-guardian.test.mjs
+          tests/site-shell-public-route-inventory.test.mjs
+          tests/site-shell-website-release-risk.test.mjs
+          tests/targeted-website-route-regression.test.mjs
+      - name: Verify homepage and pricing boundary contracts
+        run: >-
+          node --test
+          tests/homepage-pricing-boundary-readback.test.mjs
+          tests/homepage-hero-video.test.mjs
+          tests/prijzen-hero-seo.test.mjs
+      - name: Verify technical SEO contracts
+        run: >-
+          node --test
+          tests/technical-seo-gate.test.mjs
+          tests/seo-order-*.test.mjs
+      - name: Verify V18 promotion contracts
+        run: >-
+          node --test
+          tests/v18-production-promotion.test.mjs
+          tests/v18-seo-layer.test.mjs
+      - name: Verify Netlify and routing configuration
+        run: python3 tools/config-wacht.py
+      - name: Verify accepted hero media binary contract
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const expected = 'a261792e9b0058802ab5b30ce107c7ac14e8b2291a3bd7ee78fdb5968bbe97fd';
+          const path = 'assets/openart-hero-iphone-safe-v1.mp4';
+          if (!fs.existsSync(path)) throw new Error('accepted hero binary missing');
+          const bytes = fs.readFileSync(path);
+          const sha = crypto.createHash('sha256').update(bytes).digest('hex');
+          if (sha !== expected) throw new Error(`hero binary hash mismatch: ${sha}`);
+          const manifest = JSON.parse(fs.readFileSync('assets/openart-hero-production.json','utf8'));
+          if (manifest.derivative_sha256 !== expected) throw new Error('manifest derivative hash mismatch');
+          if (manifest.physical_iphone_runtime !== 'PASS') throw new Error('physical iPhone acceptance missing');
+          if (manifest.promotion_state !== 'MEDIA_READY') throw new Error('media is not MEDIA_READY');
+          const p = manifest.derivative_probe || {};
+          const exact = p.width === 1920 && p.height === 1080 && p.fps === 30 && p.codec === 'h264' && p.pixel_format === 'yuv420p' && p.has_audio === false && p.faststart === true;
+          if (!exact) throw new Error(`manifest media profile mismatch: ${JSON.stringify(p)}`);
+          console.log(`Hero static media contract PASS: ${sha}; bytes=${bytes.length}`);
+          NODE
+      - name: Verify component foundation contracts
+        run: >-
+          node --test
+          tests/parallel-ownership.test.mjs
+          tests/change-classes.test.mjs
+          tests/page-composition.test.mjs
+          tests/component-preview-composition.test.mjs
+          tests/component-boundaries.test.mjs
+          tests/change-scope.test.mjs
+          tests/component-hash-protection.test.mjs
+          tests/detect-changed-components.test.mjs
+          tests/component-preview-workflow-contract.test.mjs
+      - name: Verify canonical shell component contract
+        run: node tools/site-shell/test-shell-components.mjs
+      - name: Verify canonical live shell contract
+        run: node tools/site-shell/test-live-contract.mjs
 
   static:
-    needs: classify
+    needs: [classify, baseline]
     if: needs.classify.outputs.risk_lane != 'fast-fix'
     runs-on: ubuntu-latest
     steps:
@@ -88,7 +147,7 @@ jobs:
           tests/seo-homepage-context-slider-readability.test.mjs
 
   page-seo:
-    needs: classify
+    needs: [classify, baseline]
     if: needs.classify.outputs.risk_lane != 'fast-fix'
     runs-on: ubuntu-latest
     steps:
@@ -107,8 +166,46 @@ jobs:
           python .github/scripts/paginacontrole.py
           python .github/scripts/seocontrole.py
 
+  shell-build:
+    needs: [classify, baseline]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - run: npm install
+      - name: Build canonical website shell and release evidence
+        env:
+          COMMIT_REF: ${{ inputs.head_sha }}
+          CONTEXT: github-pull-request
+        run: |
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+          BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+          node tools/site-shell/diagnose-shell-gate.mjs
+          BG_PRICING_STAGE=verify node tools/prijzen-uit-de-homepage.mjs
+          node tools/bouw-release-evidence.mjs
+      - name: Upload shell and SEO diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-shell-gate-diagnostic-${{ inputs.head_sha }}
+          path: |
+            shell-gate-diagnostic.txt
+            shell-gate-failed-page.html
+            shell-gate-canonical-source.html
+          if-no-files-found: ignore
+
   full-regression:
-    needs: classify
+    needs: [classify, baseline]
     if: needs.classify.outputs.risk_lane == 'high-risk'
     runs-on: ubuntu-latest
     steps:
@@ -130,7 +227,7 @@ jobs:
           tests/seo-ui-visual-regression-browser.test.mjs
 
   preview-ready:
-    needs: classify
+    needs: [classify, baseline]
     runs-on: ubuntu-latest
     steps:
       - name: Wait for exact deploy preview
@@ -156,7 +253,7 @@ jobs:
           NODE
 
   targeted-browser:
-    needs: [classify, preview-ready]
+    needs: [classify, baseline, preview-ready]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -167,7 +264,7 @@ jobs:
           node-version: '22'
       - name: Install targeted browser
         run: |
-          npm install --no-save playwright@1.55.0
+          npm install --no-save playwright@1.55.0 @playwright/test@1.55.0
           npx playwright install --with-deps chromium
       - name: Verify affected routes on desktop and mobile
         env:
@@ -175,9 +272,13 @@ jobs:
           BASELINE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: node tools/site-shell/verify-targeted-website-routes.mjs
+      - name: Verify exact V18 live runtime
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+        run: npx playwright test tests/integration/v18-live-runtime.spec.js --workers=1
 
   public-visibility:
-    needs: [classify, preview-ready]
+    needs: [classify, baseline, preview-ready]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -196,7 +297,7 @@ jobs:
         run: node tools/site-shell/standalone-visibility-check.mjs
 
   broad-browser:
-    needs: [classify, preview-ready]
+    needs: [classify, baseline, preview-ready]
     if: needs.classify.outputs.risk_lane == 'high-risk'
     runs-on: ubuntu-latest
     steps:

@@ -49,5 +49,5 @@ jobs:
       - name: 8 Release evidence contract
         env:
           COMMIT_REF: ${{ github.sha }}
-          CONTEXT: workflow-dispatch
+          CONTEXT: github-workflow-dispatch
         run: node tools/bouw-release-evidence.mjs

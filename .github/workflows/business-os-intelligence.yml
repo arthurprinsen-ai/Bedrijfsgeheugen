@@ -1,22 +1,6 @@
 name: Business OS Intelligence
 
 on:
-  pull_request:
-    paths:
-      - 'platform/intelligence/**'
-      - 'platform/agents/**'
-      - 'platform/brain/**'
-      - 'platform/api/brain-gateway.mjs'
-      - 'platform/api/agent-fabric-gateway.mjs'
-      - 'netlify/functions/**'
-      - 'tests/intelligence-agent-runtime.test.mjs'
-      - 'tests/brain-acceptance.test.mjs'
-      - 'tests/brain-api-gateway.test.mjs'
-      - 'tests/brain-production-ai.test.mjs'
-      - 'tests/brain-storage-port.test.mjs'
-      - 'tests/agent-fabric.test.mjs'
-      - 'tests/agent-fabric-gateway.test.mjs'
-      - '.github/workflows/business-os-intelligence.yml'
   workflow_dispatch:
 
 permissions:
