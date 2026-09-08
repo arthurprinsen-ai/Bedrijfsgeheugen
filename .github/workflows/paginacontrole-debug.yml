@@ -1,7 +1,6 @@
 name: Pagina- en SEO-controle diagnose
 
 on:
-  pull_request:
   workflow_dispatch:
 
 permissions:
