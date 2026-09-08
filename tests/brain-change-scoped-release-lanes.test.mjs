@@ -44,22 +44,27 @@ test('current product work keeps its lane without rewriting the branch', () => {
   assert.equal(growth.website, true);
 });
 
-test('Required test keeps stable status identity and is lane-aware', async () => {
+test('Required test keeps stable status identity and delegates lane ownership', async () => {
   const workflow = await readFile('.github/workflows/required-test.yml','utf8');
+  const website = await readFile('.github/workflows/lane-website.yml','utf8');
   assert.match(workflow, /^name:\s*Required test/m);
   assert.match(workflow, /deriveRequiredTestSuites/);
   assert.match(workflow, /steps\.scope\.outputs\.backend/);
   assert.match(workflow, /steps\.scope\.outputs\.portal/);
   assert.match(workflow, /steps\.scope\.outputs\.website/);
   assert.match(workflow, /steps\.scope\.outputs\.automation/);
-  assert.match(workflow, /v18-megamenu-heading-contract\.test\.mjs/);
-  assert.match(workflow, /v18-megamenu-browser-check\.mjs/);
+  assert.match(workflow, /uses:\s*\.\/\.github\/workflows\/lane-website\.yml/);
+  assert.match(workflow, /name:\s*test/);
+  assert.match(website, /v18-megamenu-heading-contract\.test\.mjs/);
+  assert.match(website, /v18-megamenu-browser-check\.mjs/);
 });
 
-test('V18 promotion separates website and portal gates', async () => {
-  const workflow = await readFile('.github/workflows/v18-production-promotion.yml','utf8');
-  assert.match(workflow, /steps\.scope\.outputs\.website/);
-  assert.match(workflow, /steps\.scope\.outputs\.portal/);
-  assert.match(workflow, /Verify website V18 production contracts/);
-  assert.match(workflow, /Verify portal production contracts/);
+test('V18 promotion contracts are owned by canonical website and portal lanes', async () => {
+  const standalone = await readFile('.github/workflows/v18-production-promotion.yml','utf8');
+  const website = await readFile('.github/workflows/lane-website.yml','utf8');
+  const portal = await readFile('.github/workflows/lane-portal.yml','utf8');
+  assert.doesNotMatch(standalone, /(^|\n)\s{0,2}pull_request\s*:/m);
+  assert.match(website, /tests\/v18-production-promotion\.test\.mjs/);
+  assert.match(website, /tests\/v18-seo-layer\.test\.mjs/);
+  assert.match(portal, /tests\/portal-/);
 });

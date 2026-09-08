@@ -1,12 +1,6 @@
 name: Portal Native Regression Tests
 
 on:
-  pull_request:
-    paths:
-      - 'portal/**'
-      - 'platform/**'
-      - 'tests/portal-native-legacy-batch-*.test.mjs'
-      - '.github/workflows/portal-native-regression-tests.yml'
   push:
     branches: [main]
     paths:

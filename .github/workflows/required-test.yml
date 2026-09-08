@@ -5,13 +5,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: required-test-${{ github.repository }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
   statuses: read
-
-concurrency:
-  group: required-test-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
   preflight:
@@ -37,6 +37,8 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/moving-main-successor-guard.mjs
+      - name: Mandatory chat-learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
       - id: scope
         name: Classify independent delivery lanes
         env:
@@ -59,12 +61,19 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${base}\nhead_sha=${head}\npr_number=${process.env.PR_NUMBER || process.env.GITHUB_RUN_ID || '0'}\n`);
           console.log(JSON.stringify({changedPaths,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
-      # Website contract ownership remains visible here for the stable Required test
-      # contract while execution is delegated to .github/workflows/lane-website.yml:
-      # tests/v18-megamenu-heading-contract.test.mjs
-      # tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Verify composable release control plane and agent completion contract
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs
+        run: >-
+          node --test
+          tests/brain-change-scoped-release-lanes.test.mjs
+          tests/brain-moving-main-successor-guard.test.mjs
+          tests/brain-composable-release-control-plane.test.mjs
+          tests/brain-agents-delivery-contract.test.mjs
+          tests/ci-workflow-topology.test.mjs
+          tests/ci-learning-gate-routing.test.mjs
+          tests/ci-website-gate-routing.test.mjs
+          tests/ci-v18-promotion-routing.test.mjs
+          tests/ci-required-status-contract.test.mjs
+          tests/ci-queue-health.test.mjs
 
   backend:
     needs: preflight
@@ -79,6 +88,7 @@ jobs:
     uses: ./.github/workflows/lane-portal.yml
     with:
       head_sha: ${{ needs.preflight.outputs.head_sha }}
+      pr_number: ${{ needs.preflight.outputs.pr_number }}
 
   automation:
     needs: preflight

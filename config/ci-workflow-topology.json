@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "canonicalPrWorkflow": "required-test.yml",
+  "allowedBroadPullRequestWorkflows": ["required-test.yml"],
+  "productionConcurrencyGroups": ["production-release-readback"],
+  "queueSloMs": 300000,
+  "policy": {
+    "activePrIngressCount": 1,
+    "broadPrIngressCount": 1,
+    "requirePrScopedSupersession": true,
+    "forbidRepositoryGlobalPrLock": true,
+    "diagnosticsOnPr": false,
+    "autoRerunOnCapacityIncident": false
+  }
+}

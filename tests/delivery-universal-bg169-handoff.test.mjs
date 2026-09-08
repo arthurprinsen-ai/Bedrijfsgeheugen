@@ -5,12 +5,14 @@ import { readFile } from 'node:fs/promises';
 const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 'utf8');
 const marker = '- name: BG169 primary Make transport with GitHub-native failover';
 const handoff = workflow.split(marker)[1] || '';
+const triggerBlock = workflow.match(/\non:\n([\s\S]*?)\npermissions:/)?.[1] || '';
 
 test('green executable components reach BG169 only through explicit production dispatch', () => {
   assert.ok(handoff, 'BG169 multi-transport production handoff step missing');
+  assert.match(triggerBlock, /^\s*workflow_dispatch:/m, 'BG169 workflow must expose explicit workflow_dispatch');
+  assert.doesNotMatch(triggerBlock, /^\s*(pull_request|push|schedule|workflow_run):/m, 'BG169 production authority must remain dispatch-only');
   const condition = handoff.match(/\n\s*if:\s*([^\n]+)/)?.[1] || '';
   assert.ok(condition.includes("needs.plan.outputs.has_lanes == 'true'"), 'handoff must require executable lanes');
-  assert.ok(condition.includes("github.event_name == 'workflow_dispatch'"), 'BG169 must require explicit workflow_dispatch');
   assert.ok(condition.includes("inputs.pr_number != ''"), 'BG169 must require immutable PR identity');
   assert.ok(condition.includes('inputs.verification_only != true'), 'verification-only dispatch must never promote');
   assert.ok(!condition.includes("startsWith(inputs.candidate_branch, 'writer/')"), 'production handoff remains component-generic, not writer-only');

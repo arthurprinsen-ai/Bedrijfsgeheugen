@@ -1,13 +1,6 @@
 name: Business OS Trust
 
 on:
-  pull_request:
-    paths:
-      - 'platform/policy/**'
-      - 'platform/intelligence/**'
-      - 'tests/policy-engine.test.mjs'
-      - 'tests/trust-*.test.mjs'
-      - '.github/workflows/business-os-trust.yml'
   workflow_dispatch:
 
 permissions:
