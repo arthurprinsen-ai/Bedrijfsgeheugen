@@ -37,17 +37,16 @@ test('website lane keeps public visibility mandatory while broad checks are high
   assert.match(website, /verify-targeted-website-routes\.mjs/);
 });
 
-test('page and SEO contracts use the Netlify build chain after exact preview readiness', () => {
+test('page and SEO contracts stay static while exact-preview runtime is owned by the browser lane', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
-  const previewStart = website.indexOf('\n  preview-ready:');
-  const pageSeoStart = website.indexOf('\n  page-seo:', previewStart);
+  const pageSeoStart = website.indexOf('\n  page-seo:');
   const browserStart = website.indexOf('\n  browser:', pageSeoStart);
-  assert.notEqual(previewStart, -1);
   assert.notEqual(pageSeoStart, -1);
   assert.notEqual(browserStart, -1);
-  assert.ok(previewStart < pageSeoStart, 'page-seo must wait until the exact deploy preview is ready');
   const pageSeo = website.slice(pageSeoStart, browserStart);
-  assert.match(pageSeo, /needs:\s*\[classify, preview-ready\]/);
+  const browser = website.slice(browserStart);
+
+  assert.match(pageSeo, /needs:\s*classify/);
   assert.match(pageSeo, /name: Install Netlify build dependencies/);
   assert.match(pageSeo, /run: npm install/);
   assert.match(pageSeo, /name: Build exact Netlify website artifact/);
@@ -74,11 +73,10 @@ test('page and SEO contracts use the Netlify build chain after exact preview rea
     );
   }
   assert.doesNotMatch(pageSeo, /node tools\/normaliseer-site-ui\.mjs/, 'page-seo must not invent a second local build composition');
-  assert.match(pageSeo, /PAGINA_BASE_URL:\s*https:\/\/deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
-  assert.ok(
-    pageSeo.indexOf('node tools/prijzen-uit-de-homepage.mjs') < pageSeo.indexOf('name: Verify page and SEO contracts'),
-    'page and SEO checks must run only after the Netlify artifact-producing build chain',
-  );
+  assert.match(pageSeo, /python \.github\/scripts\/seocontrole\.py/);
+  assert.doesNotMatch(pageSeo, /PAGINA_BASE_URL|paginacontrole\.py|playwright/);
+  assert.match(browser, /needs:\s*\[classify, preview-ready\]/);
+  assert.match(browser, /deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
 });
 
 test('production readback is serialized and never cancelled mid-flight', () => {
