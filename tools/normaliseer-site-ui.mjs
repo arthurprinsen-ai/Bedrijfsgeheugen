@@ -20,7 +20,32 @@ function absolutiseerInterneHref(html) {
 function herstelTechnischeLinks(html) {
   return String(html)
     .replaceAll(`${ORIGIN}/wachtwoord-vergeten`, `${ORIGIN}/inloggen`)
-    .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`);
+    .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`)
+    .replaceAll('href="/wachtwoord-vergeten"', 'href="/inloggen"')
+    .replaceAll('href="/blog/afas-koppeling/"', 'href="/afas-koppeling"');
+}
+
+function verwijderDefecteLegacyDemonstrator(input) {
+  return String(input).replace(/<script\b([^>]*)>([\s\S]*?)<\/script>\s*/gi, (heel, attrs, body) => {
+    if (/\bsrc\s*=/i.test(attrs)) return heel;
+    const isLegacyDemonstrator = body.includes('Animated demonstrator only; production should bind to validated savings data')
+      && body.includes('Actions in hero animate as if the workflow was executed');
+    return isLegacyDemonstrator ? '' : heel;
+  });
+}
+
+function maakWijzigingenStapnavigatieNullSafe(input, bestand) {
+  if (bestand !== 'wijzigingen-uitgelegd.html') return String(input);
+  let html = String(input);
+  html = html.replace(
+    "    vorige.disabled = nu === 0;\n    volgende.disabled = nu === panelen.length - 1;\n    volgende.textContent = nu === panelen.length - 1 ? 'Klaar' : 'Volgende';\n    telling.textContent = (nu + 1) + ' van ' + panelen.length;",
+    "    if (vorige) vorige.disabled = nu === 0;\n    if (volgende) {\n      volgende.disabled = nu === panelen.length - 1;\n      volgende.textContent = nu === panelen.length - 1 ? 'Klaar' : 'Volgende';\n    }\n    if (telling) telling.textContent = (nu + 1) + ' van ' + panelen.length;"
+  );
+  html = html.replace(
+    "  vorige.addEventListener('click', function(){ toon(nu - 1); });\n  volgende.addEventListener('click', function(){ toon(nu + 1); });",
+    "  if (vorige) vorige.addEventListener('click', function(){ toon(nu - 1); });\n  if (volgende) volgende.addEventListener('click', function(){ toon(nu + 1); });"
+  );
+  return html;
 }
 
 function openDivMetKlasse(html, klasse, vanaf = 0) {
@@ -87,7 +112,8 @@ function pricingTools(input) {
 
 export function normaliseerHtml(input, bestand) {
   const isPrijzen = bestand === 'prijzen.html';
-  let html = String(input);
+  let html = verwijderDefecteLegacyDemonstrator(input);
+  html = maakWijzigingenStapnavigatieNullSafe(html, bestand);
 
   html = verwijderDivMetKlasse(html, 'bgx-gegevens');
   if (isPrijzen) {
@@ -113,11 +139,6 @@ export function normaliseerHtml(input, bestand) {
 const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
 
 export async function normaliseerAllePaginas() {
-  // Historische builders leveren alleen pagina-inhoud. Daarna wordt eerst de
-  // canonical shell geprojecteerd. Elke pagina krijgt vervolgens eerst de
-  // minimale markers/policy die projectGlobalComponents nodig heeft. Pas dan
-  // projecteren we TrustBar/Header/MobileMenu/Footer definitief en voeren we
-  // dezelfde idempotente normalisatie nog één keer uit.
   await applyCanonicalShellToAllPages();
   const canonicalSource = normaliseerHtml(await readFile('over-ons.html', 'utf8'), 'over-ons.html');
 
