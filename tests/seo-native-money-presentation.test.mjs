@@ -39,6 +39,7 @@ test('prijzen accepteert geen generieke paginakop als vervanging van de native p
   assert.match(inspectMoneyPage(html, entry).join('\n'), /eigen V18 hero ontbreekt/, 'een generieke paginakop mag de echte prijshero niet meer maskeren');
 });
 
+// Regression contract: generated classic scripts must stay parseable before estate-wide projection.
 test('growth measurement injecteert alleen syntactisch geldige classic JavaScript', () => {
   const html = injectGrowthMeasurement('<!doctype html><html><head></head><body><main><a data-bg-conversion="frisse-blik" href="/frisse-blik">Plan</a></main></body></html>', {
     canonical: 'https://www.bedrijfsgeheugen.nl/test',
