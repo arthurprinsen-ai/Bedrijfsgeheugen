@@ -73,14 +73,14 @@ function assertLeftEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split <= 1)) fail(`${label}: helemaal links moet 0% bereiken`, g);
   if (g.aria.now > 1) fail(`${label}: ARIA now moet links 0 zijn`, g);
-  if (g.topSideAtCenter !== 'before') fail(`${label}: helemaal links moet alleen de linker/before laag bovenop tonen`, g);
+  if (g.topSideAtCenter !== 'after') fail(`${label}: helemaal links moet alleen de witte/rechter after-laag tonen`, g);
 }
 
 function assertRightEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split >= 99)) fail(`${label}: helemaal rechts moet 100% bereiken`, g);
   if (g.aria.now < 99) fail(`${label}: ARIA now moet rechts 100 zijn`, g);
-  if (g.topSideAtCenter !== 'after') fail(`${label}: helemaal rechts moet alleen de rechter/after laag bovenop tonen`, g);
+  if (g.topSideAtCenter !== 'before') fail(`${label}: helemaal rechts moet alleen de blauwe/linker before-laag tonen`, g);
 }
 
 async function testViewport(browser, width, height, mobile = false) {
@@ -93,16 +93,18 @@ async function testViewport(browser, width, height, mobile = false) {
   const box = await slider.boundingBox();
   if (!box) fail(`${width}px: slider heeft geen geometry`);
 
-  await dragKnobTo(page, box.x + 1);
+  const nearLeft = box.x + box.width * 0.06;
+  await dragKnobTo(page, nearLeft);
   const left = await readState(page);
-  assertLeftEndpoint(left, `${width}px uiterste links`);
+  assertLeftEndpoint(left, `${width}px praktisch uiterste links`);
 
-  await dragKnobTo(page, box.x + box.width - 1);
+  const nearRight = box.x + box.width * 0.94;
+  await dragKnobTo(page, nearRight);
   const right = await readState(page);
-  assertRightEndpoint(right, `${width}px uiterste rechts`);
+  assertRightEndpoint(right, `${width}px praktisch uiterste rechts`);
 
   await page.close();
-  return { width, left: left.split, right: right.split };
+  return { width, nearLeft, nearRight, left: left.split, right: right.split };
 }
 
 const browser = await chromium.launch({ headless: true });
