@@ -2,7 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v7-responsive-flow';
+  var VERSION = 'full-endpoints-v8-pointer-capture';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -229,13 +229,15 @@
     slider.setAttribute('data-bg-compare-slider','');
     slider.setAttribute('data-bg-compare-ready','true');
     slider.setAttribute('data-bg-compare-version',VERSION);
+    slider.setAttribute('data-bg-pointer-owner-ready','true');
+    slider.setAttribute('data-bg-pointer-listeners','true');
 
     var beforeSide = slider.querySelector('.compare-before');
     var afterSide = slider.querySelector('.compare-after');
     var handle = slider.querySelector('.compare-handle');
     var knob = slider.querySelector('.compare-knob');
     var dragging = false;
-    var touchDragging = false;
+    var pointerId = null;
 
     function snap(raw){
       var value = Math.max(0, Math.min(100, Number(raw) || 0));
@@ -275,49 +277,56 @@
     function applyFromClientX(clientX){
       var r = slider.getBoundingClientRect();
       if(!r.width) return renderControlled(50);
-      return renderControlled(((clientX - r.left) / r.width) * 100);
+      var x = Math.max(0, Math.min(r.width, clientX - r.left));
+      return renderControlled((x / r.width) * 100);
     }
     function current(){ return readControlled(); }
+    function samePointer(e){ return dragging && (pointerId === null || e.pointerId === pointerId); }
+
+    function finish(e){
+      if(!samePointer(e)) return;
+      applyFromClientX(e.clientX);
+      dragging = false;
+      if(slider.releasePointerCapture) try{ slider.releasePointerCapture(e.pointerId); }catch(_e){}
+      pointerId = null;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
 
     slider.addEventListener('pointerdown',function(e){
+      if(e.isPrimary === false) return;
       dragging = true;
+      pointerId = e.pointerId;
       if(slider.setPointerCapture) try{ slider.setPointerCapture(e.pointerId); }catch(_e){}
       applyFromClientX(e.clientX);
       e.preventDefault();
       e.stopImmediatePropagation();
     },true);
+
     slider.addEventListener('pointermove',function(e){
-      if(!dragging) return;
+      if(!samePointer(e)) return;
       applyFromClientX(e.clientX);
       e.preventDefault();
       e.stopImmediatePropagation();
     },true);
-    slider.addEventListener('pointerup',function(e){
-      if(!dragging) return;
-      dragging = false;
-      applyFromClientX(e.clientX);
-      if(slider.releasePointerCapture) try{ slider.releasePointerCapture(e.pointerId); }catch(_e){}
-      e.stopImmediatePropagation();
-    },true);
-    slider.addEventListener('pointercancel',function(){ dragging = false; },true);
 
-    slider.addEventListener('touchstart',function(e){
-      if(!e.touches || !e.touches[0]) return;
-      touchDragging = true;
-      applyFromClientX(e.touches[0].clientX);
-      e.stopImmediatePropagation();
-    },{capture:true,passive:true});
-    document.addEventListener('touchmove',function(e){
-      if(!touchDragging || !e.touches || !e.touches[0]) return;
-      applyFromClientX(e.touches[0].clientX);
-    },{capture:true,passive:true});
-    document.addEventListener('touchend',function(e){
-      if(!touchDragging) return;
-      touchDragging = false;
-      var point = e.changedTouches && e.changedTouches[0];
-      if(point) applyFromClientX(point.clientX);
-    },{capture:true,passive:true});
-    document.addEventListener('touchcancel',function(){ touchDragging = false; },{capture:true,passive:true});
+    slider.addEventListener('pointerup',finish,true);
+    slider.addEventListener('pointercancel',function(e){
+      if(pointerId !== null && e.pointerId !== pointerId) return;
+      dragging = false;
+      pointerId = null;
+    },true);
+
+    window.addEventListener('pointermove',function(e){
+      if(!samePointer(e)) return;
+      applyFromClientX(e.clientX);
+    },true);
+    window.addEventListener('pointerup',finish,true);
+    window.addEventListener('pointercancel',function(e){
+      if(pointerId !== null && e.pointerId !== pointerId) return;
+      dragging = false;
+      pointerId = null;
+    },true);
 
     if(knob){
       knob.addEventListener('keydown',function(e){
