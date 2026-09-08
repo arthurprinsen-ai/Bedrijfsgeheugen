@@ -4,6 +4,7 @@ const notConfigured=name=>Object.assign(new Error(`${name} runtime is not config
 const configuredState=configured=>({configured:Boolean(configured),state:configured?'configured':'not-configured'});
 export function createConnectorRuntime({providers={}}={}){
   return Object.freeze({
+    readiness:providers.readiness||{sources:{},extractor:{configured:false,state:'not-configured'},targets:{}},
     async runTest({connector,input}){
       const sourceProvider=providers.sources?.[connector?.source?.type],extractorProvider=providers.extractor,targetProvider=providers.targets?.[connector?.target?.type],lookupProvider=providers.lookups;
       if(!sourceProvider)throw notConfigured(`Source ${connector?.source?.type||'unknown'}`);
