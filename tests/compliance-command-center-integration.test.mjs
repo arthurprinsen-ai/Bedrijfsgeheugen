@@ -18,6 +18,14 @@ test('portal navigation exposes Compliance Command Center after Trust & Governan
   assert.match(nav, /https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\/compliance\.html/);
 });
 
+test('legacy customer portal injects command center beside existing governance input', async () => {
+  const bridge = await read('assets/js/portaal-koppelingen.js');
+  assert.match(bridge, /data-p=["']beleid["']/);
+  assert.match(bridge, /data-bg-compliance-command-center/);
+  assert.match(bridge, /https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\/compliance\.html/);
+  assert.match(bridge, /klant/);
+});
+
 test('command center page loads canonical CSS, module and customer context bridge', async () => {
   const html = await read('portal-next/compliance.html');
   assert.match(html, /https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\/compliance-command-center\.css/);
