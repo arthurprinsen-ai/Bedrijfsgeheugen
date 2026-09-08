@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, unlink } from 'node:fs/promises';
 import { controleerSiteUi } from '../controleer-site-ui.mjs';
 import { CANONICAL_SHELL_SOURCE } from './apply-shell.mjs';
 
@@ -9,9 +9,17 @@ async function schrijfBronDiagnose() {
   } catch {}
 }
 
+async function ruimSuccesDiagnoseOp() {
+  for (const bestand of ['shell-gate-canonical-source.html', 'shell-gate-failed-page.html']) {
+    try { await unlink(bestand); } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+  }
+}
+
 try {
   await controleerSiteUi();
-  await schrijfBronDiagnose();
+  await ruimSuccesDiagnoseOp();
   await writeFile('shell-gate-diagnostic.txt', 'OK\n', 'utf8');
   console.log('Canonical shell diagnostic: OK');
 } catch (error) {
