@@ -70,11 +70,13 @@ test('finale site-normalisatie verwijdert de defecte legacy demonstrator voordat
   }
 });
 
-test('wijzigingen-uitgelegd initialiseert de stapnavigatie alleen wanneer alle bedieningscontrols bestaan', async () => {
-  const html = await readFile(new URL('../wijzigingen-uitgelegd.html', import.meta.url), 'utf8');
-  assert.match(
-    html,
-    /if\s*\(\s*!rail\s*\|\|\s*!vorige\s*\|\|\s*!volgende\s*\|\|\s*!telling\s*\|\|\s*!panelen\.length\s*\)\s*return\s*;/,
-    'de interactieve stapnavigatie moet veilig stoppen wanneer globale shell-projectie een optionele control niet bevat'
-  );
+test('wijzigingen-uitgelegd houdt rail en panelen actief wanneer optionele navigatiecontrols ontbreken', async () => {
+  const bron = await readFile(new URL('../wijzigingen-uitgelegd.html', import.meta.url), 'utf8');
+  const html = normaliseerHtml(bron, 'wijzigingen-uitgelegd.html');
+  assert.match(html, /if \(vorige\) vorige\.disabled = nu === 0;/, 'vorige-control moet optioneel zijn');
+  assert.match(html, /if \(volgende\) \{[\s\S]*?volgende\.textContent = nu === panelen\.length - 1 \? 'Klaar' : 'Volgende';[\s\S]*?\}/, 'volgende-control moet optioneel zijn');
+  assert.match(html, /if \(telling\) telling\.textContent = \(nu \+ 1\) \+ ' van ' \+ panelen\.length;/, 'telling-control moet optioneel zijn');
+  assert.match(html, /if \(vorige\) vorige\.addEventListener\('click'/, 'vorige-listener mag alleen op bestaand element worden gebonden');
+  assert.match(html, /if \(volgende\) volgende\.addEventListener\('click'/, 'volgende-listener mag alleen op bestaand element worden gebonden');
+  assert.doesNotMatch(html, /if\s*\(\s*!rail\s*\|\|[\s\S]*!telling[\s\S]*\)\s*return/, 'ontbrekende optionele controls mogen de railinteractie niet volledig uitschakelen');
 });
