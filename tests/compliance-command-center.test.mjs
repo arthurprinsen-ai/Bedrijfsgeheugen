@@ -10,6 +10,7 @@ import {
 } from '../portal-next/compliance-engine.js';
 import { COMPLIANCE_CONTROL_TEMPLATES } from '../portal-next/compliance-registry.js';
 import { buildCustomerControls, buildBedrijfsgeheugenControls } from '../portal-next/compliance-input-adapter.js';
+import { COMPLIANCE_WORKSPACE_SECTIONS, buildComplianceCommandCenterMarkup } from '../portal-next/compliance-command-center.js';
 
 const NOW = new Date('2026-09-08T12:00:00Z');
 
@@ -82,4 +83,22 @@ test('Bedrijfsgeheugen projection stays fail-closed without legal scope or evide
   const controls = buildBedrijfsgeheugenControls({});
   assert.ok(controls.every(item => item.applicability === 'unknown' || item.applicability === 'not_applicable'));
   assert.equal(evaluatePortfolio(controls, { now: NOW, scope: 'bedrijfsgeheugen' }).coverage, null);
+});
+
+test('command center exposes all five workspace layers', () => {
+  assert.deepEqual(COMPLIANCE_WORKSPACE_SECTIONS, ['executive-pulse','compliance-constellation','control-matrix','remediation-flightplan','audit-room']);
+  const markup = buildComplianceCommandCenterMarkup({ controls: buildCustomerControls({}), scope: 'customer', now: NOW });
+  for (const id of COMPLIANCE_WORKSPACE_SECTIONS) assert.match(markup, new RegExp(`data-compliance-section=["']${id}["']`));
+  assert.match(markup, /Waarom nu\?/);
+  assert.match(markup, /EU AI Act/);
+  assert.match(markup, /NIS2 \/ Cbw/);
+  assert.match(markup, /Audit Room/);
+});
+
+test('command center markup offers both self and customer perspectives plus print audit action', () => {
+  const markup = buildComplianceCommandCenterMarkup({ controls: buildCustomerControls({}), scope: 'customer', now: NOW });
+  assert.match(markup, /Bedrijfsgeheugen/);
+  assert.match(markup, /Uw organisatie/);
+  assert.match(markup, /data-compliance-print/);
+  assert.match(markup, /accountant|auditor/i);
 });
