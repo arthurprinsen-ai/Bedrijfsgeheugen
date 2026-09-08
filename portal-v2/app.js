@@ -1,7 +1,9 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
 import { listPortalGroups } from './page-registry.js';
-import { enhancePortalShell, openPortalPage } from './page-shell.js';
+import { enhancePortalShell, openPortalPage, closePortalPage } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
+import { DESKTOP_NAV_ITEMS } from './navigation-model.js';
+import { bindPortalNavigation, navigatePortal } from './router.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -86,16 +88,44 @@ function mountPages(){
  const groups=el('groups');
  for(const group of listPortalGroups()){
   const section=document.createElement('section');section.className='group';section.innerHTML=`<h4>${group.label}</h4>`;
-  for(const page of group.pages){const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=page.id;b.addEventListener('click',()=>{el('allPages')?.classList.remove('open');openPortalPage(page.id)});section.appendChild(b)}
+  for(const page of group.pages){const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=page.id;b.addEventListener('click',()=>{el('allPages')?.classList.remove('open');navigatePortal(page.id)});section.appendChild(b)}
   groups.appendChild(section);
  }
 }
 
-mountSources();mountModules();mountPages();mountPreviewControl();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});
+function markNavigationControls(){
+ const desktop=[...document.querySelectorAll('.nav button')];
+ DESKTOP_NAV_ITEMS.forEach((item,index)=>{if(desktop[index])desktop[index].dataset.navTarget=item.target});
+ const mobile=[...document.querySelectorAll('.mobilebar button')];
+ ['overview','portal','data-ai','tasks','more'].forEach((id,index)=>{if(mobile[index])mobile[index].dataset.mobileNav=id});
+}
+function openHub(hubId){
+ const sheet=el('allPages');if(!sheet)return;
+ sheet.dataset.hub=hubId;
+ sheet.classList.add('open');
+ sheet.setAttribute('aria-hidden','false');
+}
+function closeHub(){
+ const sheet=el('allPages');if(!sheet)return;
+ sheet.classList.remove('open');
+ sheet.removeAttribute('data-hub');
+ sheet.setAttribute('aria-hidden','true');
+}
+function ensureNavigationStyles(){
+ if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')==='./navigation.css'))return;
+ const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css';document.head.appendChild(style);
+}
+
+mountSources();mountModules();mountPages();mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});
+bindPortalNavigation({
+ openPage:openPortalPage,
+ openHub,
+ closeHub,
+ showOverview:()=>{closePortalPage();closeHub()}
+});
 document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
-el('showPages')?.addEventListener('click',()=>el('allPages').classList.add('open'));
-el('mobileMore')?.addEventListener('click',()=>el('allPages').classList.add('open'));
-el('closePages')?.addEventListener('click',()=>el('allPages').classList.remove('open'));
-el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages'))el('allPages').classList.remove('open')});
-addEventListener('keydown',e=>{if(e.key==='Escape')el('allPages')?.classList.remove('open')});
+el('showPages')?.addEventListener('click',()=>navigatePortal('hub:portal'));
+el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overzicht',{replace:true})});
+el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){closeHub();navigatePortal('overzicht',{replace:true})}});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&el('allPages')?.classList.contains('open')){closeHub();navigatePortal('overzicht',{replace:true})}});
 addEventListener('resize',render);render();
