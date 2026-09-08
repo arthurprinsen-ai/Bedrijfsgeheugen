@@ -8,11 +8,7 @@ on:
       - 'portal-v2/**'
       - 'portal-next/portal-content-map.js'
       - '.github/workflows/portal-v2-tests.yml'
-  pull_request:
-    paths:
-      - 'portal-v2/**'
-      - 'portal-next/portal-content-map.js'
-      - '.github/workflows/portal-v2-tests.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
