@@ -26,6 +26,7 @@ const STYLE = `<style ${MARKER}>
 const RUNTIME = `<script ${MARKER}>
 (function(){
   var SLIDER_SELECTOR = ${JSON.stringify(SLIDER_SELECTOR)};
+  var VERSION = 'full-endpoints-v2';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE='Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS=['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -98,9 +99,10 @@ const RUNTIME = `<script ${MARKER}>
   }
 
   function initSlider(slider){
-    if(slider.getAttribute('data-bg-compare-ready')==='true')return;
+    if(slider.getAttribute('data-bg-compare-version')===VERSION)return;
     slider.setAttribute('data-bg-compare-slider','');
     slider.setAttribute('data-bg-compare-ready','true');
+    slider.setAttribute('data-bg-compare-version',VERSION);
     var beforeSide=slider.querySelector('.compare-before');
     var afterSide=slider.querySelector('.compare-after');
     var handle=slider.querySelector('.compare-handle');
@@ -146,7 +148,6 @@ const RUNTIME = `<script ${MARKER}>
       return value;
     }
     function mirrorLegacy(){renderControlled(readLegacy());}
-    function syncLoop(){mirrorLegacy();requestAnimationFrame(syncLoop);}
     function apply(raw){
       var value=snap(raw);
       slider.style.setProperty('--split',value.toFixed(2)+'%');
@@ -222,7 +223,6 @@ const RUNTIME = `<script ${MARKER}>
     }
 
     mirrorLegacy();
-    requestAnimationFrame(syncLoop);
   }
 
   function ensureSliders(){collectSliders().forEach(initSlider);}
@@ -254,10 +254,11 @@ export function applyHomepageContextSliderReadability(html){
   if(!next.includes('SLIDER_SELECTOR')||
      !next.includes('#compareSlider,.compare-slider,[data-compare-slider]')||
      !next.includes('data-bg-compare-slider')||
+     !next.includes("VERSION = 'full-endpoints-v2'")||
+     !next.includes('data-bg-compare-version')||
      !next.includes('--bg-compare-split')||
      !next.includes('SNAP_THRESHOLD = 8')||
      !next.includes('mirrorLegacy')||
-     !next.includes('syncLoop')||
      !next.includes("setProperty('clip-path'")||
      !next.includes('settleFromClientX')||
      !next.includes('requestAnimationFrame')||
