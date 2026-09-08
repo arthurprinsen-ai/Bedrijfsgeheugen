@@ -12,7 +12,7 @@ permissions:
   statuses: read
 
 concurrency:
-  group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
+  group: required-test-${{ github.repository }}-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -33,12 +33,18 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Mandatory chat-learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Verify learning materiality and delivery classification contracts
+        run: node --test tests/make-agent-learning-promotion-contract.test.mjs tests/chat-learning-completeness-addendum.test.mjs tests/brain-learning-contract-delivery-classification.test.mjs
       - name: Block unjustified moving-main successor rebuilds
         if: github.event_name == 'pull_request'
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/moving-main-successor-guard.mjs
+      - name: Enforce CI capacity topology contract
+        run: node --test tests/ci-workflow-topology.test.mjs
       - id: scope
         name: Classify independent delivery lanes
         env:
@@ -94,8 +100,17 @@ jobs:
       # contract while execution is delegated to .github/workflows/lane-website.yml:
       # tests/v18-megamenu-heading-contract.test.mjs
       # tools/site-shell/v18-megamenu-browser-check.mjs
-      - name: Verify composable release control plane and agent completion contract
-        run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs
+      - name: Verify composable release control plane and capacity contracts
+        run: >-
+          node --test
+          tests/delivery-github-event-context.test.mjs
+          tests/delivery-branch-hygiene-guard.test.mjs
+          tests/delivery-required-branch-hygiene-wiring.test.mjs
+          tests/brain-change-scoped-release-lanes.test.mjs
+          tests/brain-moving-main-successor-guard.test.mjs
+          tests/brain-composable-release-control-plane.test.mjs
+          tests/brain-agents-delivery-contract.test.mjs
+          tests/ci-workflow-topology.test.mjs
 
   backend:
     needs: preflight
@@ -110,6 +125,7 @@ jobs:
     uses: ./.github/workflows/lane-portal.yml
     with:
       head_sha: ${{ needs.preflight.outputs.head_sha }}
+      pr_number: ${{ needs.preflight.outputs.pr_number }}
 
   automation:
     needs: preflight

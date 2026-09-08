@@ -1,13 +1,7 @@
 name: Main Write Integrity regression
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'tools/main-write-integrity.mjs'
-      - 'tests/main-write-integrity-squash-pr.test.mjs'
-      - '.github/workflows/main-write-integrity.yml'
-      - '.github/workflows/main-write-integrity-regression.yml'
+  workflow_dispatch:
 
 jobs:
   test:

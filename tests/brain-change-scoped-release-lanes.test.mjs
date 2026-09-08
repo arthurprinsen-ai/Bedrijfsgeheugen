@@ -31,6 +31,13 @@ test('shared executable control-plane work fans out to all required suites', () 
   assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
 });
 
+test('CI topology control-plane files are shared executable work', () => {
+  assert.deepEqual(
+    suitesFor(['tests/ci-workflow-topology.test.mjs', 'tools/ci/workflow-topology.mjs']),
+    { shared:true, backend:true, portal:true, website:true, automation:true }
+  );
+});
+
 test('unknown suite lanes fail closed', () => {
   assert.throws(() => deriveRequiredTestSuites({ lanes:['website','unknown-future-lane'] }), /unknown required-test lane/i);
 });

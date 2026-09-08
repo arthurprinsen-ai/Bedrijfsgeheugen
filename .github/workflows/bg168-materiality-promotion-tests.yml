@@ -4,15 +4,6 @@ on:
   push:
     branches:
       - 'automation/bg168-materiality-promotion-v4-20260830'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'tests/make-agent-learning-promotion-contract.test.mjs'
-      - 'tests/chat-learning-completeness-addendum.test.mjs'
-      - 'scripts/brain/**'
-      - 'config/**'
-      - '.github/workflows/bg168-materiality-promotion-tests.yml'
   workflow_dispatch:
 
 permissions:

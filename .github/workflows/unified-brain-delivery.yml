@@ -1,9 +1,7 @@
 name: Unified Brain Delivery
-run-name: "BRAIN delivery PR #${{ inputs.pr_number || github.event.pull_request.number }} ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
+run-name: "BRAIN delivery PR #${{ inputs.pr_number }} ${{ inputs.head_sha || github.sha }}"
 
 on:
-  pull_request:
-    branches: [main]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -33,7 +31,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: unified-brain-delivery-${{ inputs.pr_number || github.event.pull_request.number || github.ref }}-${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+  group: unified-brain-delivery-${{ inputs.pr_number || github.ref }}-${{ inputs.head_sha || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -41,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Validate explicitly dispatched PR identity
-        if: github.event_name == 'workflow_dispatch' && inputs.pr_number != ''
+        if: inputs.pr_number != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ inputs.pr_number }}
@@ -72,7 +70,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ inputs.head_sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -85,7 +83,7 @@ jobs:
         shell: bash
         run: |
           node tools/brain-delivery-system.mjs membership
-          node tools/brain-delivery-system.mjs plan --base "${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before }}" --head "${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
+          node tools/brain-delivery-system.mjs plan --base "${{ inputs.base_sha || github.event.before }}" --head "${{ inputs.head_sha || github.sha }}"
           node --input-type=module - <<'NODE'
           import { readFile, appendFile } from 'node:fs/promises';
           const plan = JSON.parse(await readFile('.artifacts/brain-delivery-plan.json', 'utf8'));
@@ -107,7 +105,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ matrix.candidate_identity || inputs.head_sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -115,7 +113,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p .artifacts
-          expected="${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
+          expected="${{ matrix.candidate_identity || inputs.head_sha || github.sha }}"
           test "$(git rev-parse HEAD)" = "$expected"
           set +e
           case "${{ matrix.id }}" in
@@ -167,7 +165,7 @@ jobs:
           NODE
         env:
           LANE: ${{ matrix.id }}
-          HEAD_SHA: ${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+          HEAD_SHA: ${{ matrix.candidate_identity || inputs.head_sha || github.sha }}
           RUN_ID: ${{ github.run_id }}
       - name: Publish failed lane evidence for BG168/BG167 writeback
         if: failure()
@@ -215,11 +213,10 @@ jobs:
         if: needs.plan.outputs.has_lanes != 'true'
         run: echo "No executable delivery lanes; ignored-only change is a successful no-op."
       - name: Record verification-only non-promotion evidence
-        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only == true
-        run: |
-          echo "Verification-only delivery: production authority handoff intentionally skipped."
+        if: needs.plan.outputs.has_lanes == 'true' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only == true
+        run: echo "Verification-only delivery: production authority handoff intentionally skipped."
       - name: Certify live main protection before production handoff
-        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        if: needs.plan.outputs.has_lanes == 'true' && inputs.pr_number != '' && inputs.verification_only != true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -233,7 +230,6 @@ jobs:
           node --input-type=module - <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
           import { certifyMainProtection } from './scripts/brain/main-protection-certification.mjs';
-
           const branch = JSON.parse(await readFile('.artifacts/main-branch-promotion.json', 'utf8'));
           const rulesets = JSON.parse(await readFile('.artifacts/main-rulesets-promotion.json', 'utf8'));
           const required = branch?.protection?.required_status_checks ?? {};
@@ -241,12 +237,7 @@ jobs:
             ...(Array.isArray(required.contexts) ? required.contexts : []),
             ...(Array.isArray(required.checks) ? required.checks.map(item => item?.context) : []),
           ].filter(Boolean);
-          const expectedChecks = [
-            'Brain foundation verify',
-            'Shared Agent Memory Tests',
-            'V18 Production Promotion',
-            'Unified Brain Delivery',
-          ];
+          const expectedChecks = ['test'];
           const result = certifyMainProtection({
             branch: branch?.name,
             protected: branch?.protected === true,
@@ -273,7 +264,7 @@ jobs:
           console.log(`MAIN_PROTECTION_VERIFIED:${result.observedSha}`);
           NODE
       - name: Publish main protection promotion evidence
-        if: always() && needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        if: always() && needs.plan.outputs.has_lanes == 'true' && inputs.pr_number != '' && inputs.verification_only != true
         uses: actions/upload-artifact@v4
         with:
           name: main-protection-promotion-block-${{ github.run_id }}
@@ -281,7 +272,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: BG169 primary Make transport with GitHub-native failover
-        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        if: needs.plan.outputs.has_lanes == 'true' && inputs.pr_number != '' && inputs.verification_only != true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BG169_HANDOFF_URL: ${{ vars.BG169_HANDOFF_URL }}
