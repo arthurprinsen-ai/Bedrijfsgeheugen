@@ -55,11 +55,21 @@ const RUNTIME = `<script ${MARKER}>
   function norm(v){return String(v||'').replace(/\\s+/g,' ').trim();}
   function allHeadings(root){return [].slice.call(root.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]'));}
   function findHeading(root,label){return allHeadings(root).find(function(h){return norm(h.textContent)===label;})||null;}
+  function findChangeLabel(root,label){
+    var heading=findHeading(root,label);if(heading)return heading;
+    var nodes=[].slice.call(root.querySelectorAll('strong,b,span,p,[role="heading"]'));
+    var exact=nodes.find(function(el){return norm(el.textContent)===label;});
+    if(exact)return exact;
+    var prefix=nodes.filter(function(el){return norm(el.textContent).indexOf(label)===0;});
+    prefix.sort(function(a,b){return norm(a.textContent).length-norm(b.textContent).length;});
+    return prefix[0]||null;
+  }
   function changeStepContainer(kop,section){
     var node=kop;
     while(node.parentElement&&node.parentElement!==section){
       var parent=node.parentElement;
-      var count=allHeadings(parent).filter(function(h){return CHANGE_STEPS.indexOf(norm(h.textContent))!==-1;}).length;
+      var text=norm(parent.textContent);
+      var count=CHANGE_STEPS.filter(function(label){return text.indexOf(label)!==-1;}).length;
       if(count!==1)break;
       node=parent;
     }
@@ -84,7 +94,7 @@ const RUNTIME = `<script ${MARKER}>
     return green(s.color)||green(s.backgroundColor)||(p&&(green(p.color)||green(p.backgroundColor)));
   }
   function findCheck(row){
-    var nodes=[].slice.call(row.querySelectorAll('img,svg,span,i,div'));
+    var nodes=[].slice.call(row.querySelectorAll('img,svg,span,i'));
     return nodes.find(explicitCheck)||nodes.find(visualCheck)||null;
   }
   function ensureFlowCheck(row){
@@ -110,7 +120,7 @@ const RUNTIME = `<script ${MARKER}>
   }
   function alignFlowChecks(rows){
     rows.forEach(function(row,index){
-      var heading=findHeading(row,CHANGE_STEPS[index]);
+      var heading=findChangeLabel(row,CHANGE_STEPS[index]);
       var check=row.querySelector('.bg-change-flow-check');
       if(!heading||!check)return;
       var rr=row.getBoundingClientRect(),hr=heading.getBoundingClientRect();
@@ -121,7 +131,7 @@ const RUNTIME = `<script ${MARKER}>
   function initChangeFlow(){
     var title=findHeading(document,CHANGE_TITLE);if(!title)return;
     var section=title.closest('section')||title.parentElement;if(!section)return;
-    var rows=CHANGE_STEPS.map(function(label){var h=findHeading(section,label);return h?changeStepContainer(h,section):null;});
+    var rows=CHANGE_STEPS.map(function(label){var h=findChangeLabel(section,label);return h?changeStepContainer(h,section):null;});
     if(rows.some(function(row){return !row;}))return;
     section.setAttribute('data-bg-change-flow','');
     rows.forEach(function(row,index){
