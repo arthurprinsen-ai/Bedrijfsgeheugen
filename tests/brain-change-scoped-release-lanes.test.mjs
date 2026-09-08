@@ -44,6 +44,20 @@ test('current product work keeps its lane without rewriting the branch', () => {
   assert.equal(growth.website, true);
 });
 
+test('protected LinkedIn revenue cockpit component is delivery-classified', () => {
+  const suites = suitesFor([
+    '_redirects',
+    'intern/linkedin-revenue/index.html',
+    'intern/linkedin-revenue/cockpit.js',
+    'platform/linkedin-revenue-cockpit.mjs',
+    'netlify/functions/linkedin-revenue-cockpit.mjs',
+    'tests/linkedin-revenue-cockpit.test.mjs',
+    'tests/linkedin-revenue-runtime.test.mjs'
+  ]);
+  assert.equal(suites.portal, true);
+  assert.equal(suites.backend, true);
+});
+
 test('Required test keeps stable status identity and is lane-aware', async () => {
   const workflow = await readFile('.github/workflows/required-test.yml','utf8');
   assert.match(workflow, /^name:\s*Required test/m);
