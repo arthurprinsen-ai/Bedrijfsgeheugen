@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: required-test-pr-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
+  group: required-test-pr-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -33,16 +33,12 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies once
         run: npm install
+      - name: Fail fast on broken website JavaScript
+        run: node tools/site-shell/website-static-syntax-preflight.mjs
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
-      - name: Block unjustified moving-main successor rebuilds
-        if: github.event_name == 'pull_request'
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-        run: node scripts/brain/moving-main-successor-guard.mjs
       - id: scope
-        name: Classify delivery lanes inside the single runner
+        name: Normalize exact head, enforce hygiene, and classify lanes
         env:
           EVENT_NAME: ${{ github.event_name }}
           GITHUB_SHA_VALUE: ${{ github.sha }}
@@ -50,6 +46,8 @@ jobs:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           MERGE_GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
@@ -59,10 +57,12 @@ jobs:
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
+          import { parseScopeMetadata, evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const exactGithubSha=process.env.EVENT_NAME === 'pull_request' ? process.env.PR_HEAD_SHA : process.env.GITHUB_SHA_VALUE;
           const context=normalizeGitHubDeliveryEvent({
             eventName: process.env.EVENT_NAME,
-            githubSha: process.env.GITHUB_SHA_VALUE,
+            githubSha: exactGithubSha,
             runId: process.env.RUN_ID,
             fallbackBaseSha,
             event: {
@@ -70,136 +70,29 @@ jobs:
               merge_group: process.env.EVENT_NAME === 'merge_group' ? { base_sha: process.env.MERGE_GROUP_BASE_SHA, head_sha: process.env.MERGE_GROUP_HEAD_SHA } : undefined,
             },
           });
-          const changedPaths=execFileSync('git',['diff','--name-only',`${context.baseSha}...${context.headSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const changedPaths=execFileSync('git',['diff','--name-only',`${context.baseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          if(process.env.EVENT_NAME === 'pull_request') {
+            const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
+            const metadata=parseScopeMetadata(process.env.PR_BODY || '');
+            const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
+            console.log(JSON.stringify({hygiene},null,2));
+            if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
+          }
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
-          const plan=createDeliveryPlan({changedPaths,headSha:context.headSha,policy});
+          const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${context.baseSha}\nhead_sha=${context.headSha}\npr_number=${context.prNumber}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${context.baseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\nhead_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
           console.log(JSON.stringify({context,changedPaths,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
-      - name: Enforce branch hygiene on the exact PR delta
-        if: github.event_name == 'pull_request'
+      - name: Verify current release-control-plane regressions
+        run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/website-static-syntax-preflight.test.mjs
+      - name: Verify LinkedIn Revenue Cockpit contract on this runner
+        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs
+      - name: Run preserved legacy release contracts on this runner
         env:
           BASE_SHA: ${{ steps.scope.outputs.base_sha }}
           HEAD_SHA: ${{ steps.scope.outputs.head_sha }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-          PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
-        run: |
-          node --input-type=module - <<'NODE'
-          import { execFileSync } from 'node:child_process';
-          import { parseScopeMetadata, evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
-          const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
-          const metadata=parseScopeMetadata(process.env.PR_BODY || '');
-          const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
-          console.log(JSON.stringify({changedPaths,hygiene},null,2));
-          if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
-          NODE
-      # Website contract ownership remains explicit while execution stays in this one runner:
-      # tests/v18-megamenu-heading-contract.test.mjs
-      # tools/site-shell/v18-megamenu-browser-check.mjs
-      - name: Verify current release-control-plane regressions
-        run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs
-      - name: Verify LinkedIn Revenue Cockpit contract on this runner
-        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs
-      - name: Preserved A1 — BG184 stateful dedupe
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: bg184-stateful-dedupe }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved A2a.0 — Brain foundation scripts shard 0/4
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_SHARD: "0/4" }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved A2a.1 — Brain foundation scripts shard 1/4
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_SHARD: "1/4" }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-
-      - name: Diagnose s2 business graph relations
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-business-graph-relations.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 chat learning preflight compiler
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-chat-learning-preflight-compiler.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 contracts
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-contracts.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 decision policy
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-decision-policy.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 health quality
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-health-quality.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 knowledge architecture impact
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-knowledge-architecture-impact.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 living memory provenance
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-living-memory-provenance.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 minimal command api
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-minimal-command-api.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 operating loop handler
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-operating-loop-handler.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 operation obligation identity hardening
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-operation-obligation-identity-hardening.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 production truth
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-production-truth.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 source mappings
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-source-mappings.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 universal capture adapters
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-universal-capture-adapters.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 universal services contract
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-universal-services-contract.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Diagnose s2 writer verification modes
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_ONLY: test-writer-verification-modes.mjs }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-
-      - name: Preserved A2a.3 — Brain foundation scripts shard 3/4
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: scripts, BRAIN_TEST_SHARD: "3/4" }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved A2b — Brain foundation repo tests
-        if: always()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: brain-foundation, BRAIN_TEST_SCOPE: repo }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved A3 — Business OS contracts
-        if: success()
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: business-os-contracts }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved A4 — Portal parity
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: portal-parity }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved A5 — Config watch
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: config-watch }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved contracts B — device media and portal
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: "fresh-device-contract,hero-media-static,homepage-hero-video,main-write-integrity,portal-native-regression,portal-v2-contracts" }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved contracts C — SEO and closed loop
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: "pricing-hero-seo,seo-order-growth,closed-loop-validator,closed-loop-regression,universal-event-retention" }
-        run: node tools/ci/single-flight-preserved-contracts.mjs
-      - name: Preserved contracts D — blog and delivery completion
-        env: { BASE_SHA: "${{ steps.scope.outputs.base_sha }}", HEAD_SHA: "${{ steps.scope.outputs.head_sha }}", PRESERVED_CONTRACT_ONLY: "approved-blog-verifier,blog-technical-seo,blog-seo-readback,agent-completion-contract" }
         run: node tools/ci/single-flight-preserved-contracts.mjs
       - name: Execute single-flight release plan
         env:
@@ -211,8 +104,4 @@ jobs:
           SELECT_WEBSITE: ${{ steps.scope.outputs.website }}
           SELECT_AUTOMATION: ${{ steps.scope.outputs.automation }}
           GH_TOKEN: ${{ github.token }}
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          base="${BASE_SHA:-HEAD^}"
-          node tools/ci/single-flight-release-kernel.mjs run --base "$base" --head "$HEAD_SHA" --pr "$PR_NUMBER"
+        run: node tools/ci/single-flight-release-kernel.mjs run --base "$BASE_SHA" --head "$HEAD_SHA" --pr "$PR_NUMBER"
