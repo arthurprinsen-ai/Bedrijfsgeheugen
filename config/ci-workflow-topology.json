@@ -5,6 +5,7 @@
   "productionConcurrencyGroups": ["production-release-readback"],
   "queueSloMs": 300000,
   "migration": "canonical-pr-ingress-2026-09-08",
+  "migrationScope": "repository-wide-ci-control-plane",
   "policy": {
     "activePrIngressCount": 1,
     "broadPrIngressCount": 1,
