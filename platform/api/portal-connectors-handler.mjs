@@ -6,6 +6,8 @@ function normalizedRequest(request){const rawPath=request?.path||request?.url||'
 async function requestBody(request,normalized){if(normalized.body!==undefined){if(typeof normalized.body==='string'){try{return JSON.parse(normalized.body);}catch{return {};}}return normalized.body||{};}if(typeof request?.json==='function'){try{return await request.json();}catch{return {};}}return {};}
 function executionVersion(row){return Number(row?.connector_versie??row?.connectorVersion??0);}
 function executionEvidence(row){return row?.evidence&&typeof row.evidence==='object'?row.evidence:{};}
+const fingerprintPart=value=>String(value||'unknown').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'unknown';
+function recoveryFingerprint(connectorId,failedStage,errorClass){return `connector-${fingerprintPart(connectorId)}-${fingerprintPart(failedStage)}-${fingerprintPart(errorClass)}`;}
 
 export async function handlePortalConnectorsRequest({request,user,store,engine}={}){
   if(!user?.id)return json({error:'UNAUTHORIZED'},401);
@@ -34,13 +36,35 @@ export async function handlePortalConnectorsRequest({request,user,store,engine}=
     if(typeof engine?.runTest!=='function')return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
     const body=clean(await requestBody(request,normalized));let result;
-    try{result=await engine.runTest({tenantId,connector,input:body.sample,user});}catch(error){const classification=typeof engine?.classifyError==='function'?engine.classifyError(error):null;return json({error:error?.code||'CONNECTOR_TEST_FAILED',message:String(error?.message||error),classification},422);}
+    try{
+      result=await engine.runTest({tenantId,connector,input:body.sample,user});
+    }catch(error){
+      const classification=typeof engine?.classifyError==='function'?engine.classifyError(error):{retryable:false,maxAttempts:0,recoveryRequired:true,class:'runtime'};
+      const failedStage=String(error?.failedStage||'runtime');
+      const evidenceId=String(error?.executionId||`failure-${Date.now()}`);
+      const fingerprint=recoveryFingerprint(id,failedStage,classification?.class||'runtime');
+      const failureEvidence={evidenceId,failedStage,classification:{class:classification?.class||'runtime',retryable:Boolean(classification?.retryable),maxAttempts:Number(classification?.maxAttempts)||0},recoveryRequired:true};
+      let persistedFailure=null;
+      if(typeof store.saveExecution==='function')persistedFailure=await store.saveExecution(tenantId,{connectorId:id,connectorVersion:connector.version,status:'TEST_FAILED',dedupeKey:null,evidence:failureEvidence,error:{code:error?.code||'CONNECTOR_TEST_FAILED',class:classification?.class||'runtime'},completedAt:new Date().toISOString()});
+      const recoveryObligation={
+        status:'open',reason:error?.code||'CONNECTOR_TEST_FAILED',failedStage,evidenceId:persistedFailure?.id||evidenceId,fingerprint,openedAt:new Date().toISOString(),owner:user.id,
+        retry:{allowed:Boolean(classification?.retryable),maxAttempts:Number(classification?.maxAttempts)||0},
+        writeback:{status:'queued',route:'BG168→BG166',fingerprint,maxAttempts:1}
+      };
+      if(typeof store.saveDraft==='function')await store.saveDraft(tenantId,{...connector,id,runtime:{...(connector.runtime||{}),recoveryObligation}});
+      return json({error:error?.code||'CONNECTOR_TEST_FAILED',message:String(error?.message||error),classification:clean(classification),failedStage,evidenceId:persistedFailure?.id||evidenceId,recoveryRequired:true,recoveryObligation:clean(recoveryObligation)},422);
+    }
     let persisted=null;
     if(typeof store.saveExecution==='function')persisted=await store.saveExecution(tenantId,{connectorId:id,connectorVersion:connector.version,status:result.status,dedupeKey:result.dedupeKey,evidence:result.evidence,error:result.error||null,completedAt:result.completedAt});
-    const runtimeExecutionId=result?.evidence?.testExecutionId||null;
+    const runtimeExecutionId=result?.evidence?.testExecutionId||result?.executionId||null;
     const persistedId=persisted?.id||runtimeExecutionId;
-    const returned={...result,evidence:{...(result.evidence||{}),runtimeExecutionId,testExecutionId:persistedId}};
+    const returned={...result,executionId:persistedId||result?.executionId||null,evidence:{...(result.evidence||{}),runtimeExecutionId,testExecutionId:persistedId}};
     if(result.status==='REVIEW_REQUIRED'&&typeof store.saveReview==='function')await store.saveReview(tenantId,{connectorId:id,executionId:persisted?.id||null,status:'pending',payload:{reasons:result.reviewReasons,proposedPayload:result.proposedPayload,evidence:returned.evidence}});
+    if(result.status==='TEST_PASSED'&&connector?.runtime?.recoveryObligation?.status==='open'&&typeof store.saveDraft==='function'){
+      const resolved={...connector.runtime.recoveryObligation,status:'resolved',resolvedAt:new Date().toISOString(),resolvedByExecutionId:persistedId||runtimeExecutionId};
+      await store.saveDraft(tenantId,{...connector,id,runtime:{...(connector.runtime||{}),recoveryObligation:resolved}});
+      returned.recoveryObligation=resolved;
+    }
     return json(clean(returned));
   }
   if(normalized.method==='POST'&&id&&action==='activate'){
