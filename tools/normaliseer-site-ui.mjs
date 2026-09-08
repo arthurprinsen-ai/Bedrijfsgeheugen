@@ -13,10 +13,6 @@ import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 
-function absolutiseerInterneHref(html) {
-  return String(html).replace(/href=(['"])\/(?!\/)([^'"]*)\1/gi, (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
-}
-
 function herstelTechnischeLinks(html) {
   return String(html)
     .replaceAll(`${ORIGIN}/wachtwoord-vergeten`, `${ORIGIN}/inloggen`)
@@ -130,7 +126,9 @@ export function normaliseerHtml(input, bestand) {
   html = ensureBrandShellCss(html);
   html = ensureReleaseMarker(html);
   html = markPageSlots(html);
-  html = absolutiseerInterneHref(html);
+  // Houd inhoudslinks in deze normalisatiefase relatief. De SEO-linkgrafiek
+  // leest deze production state; pas de finale SEO-order write-back maakt
+  // interne hrefs absoluut zonder querystrings of fragmenten te verliezen.
   html = herstelTechnischeLinks(html);
   html = applyHomepageContextSliderReadability(html);
   return html;
