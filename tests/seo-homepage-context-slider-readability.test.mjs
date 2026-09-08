@@ -210,3 +210,17 @@ test('algemene visual-regression gate bewaakt hero-layout; endpointbrowsercheck 
     'data-bg-automation-card'
   ]) assert.doesNotMatch(visualRegistry,new RegExp(staleMarker));
 });
+
+test('mobiele compare-slider gebruikt Pointer Events als enige gesture owner; native range en touchlisteners zijn verboden',()=>{
+  assert.doesNotMatch(fixer,/bg-compare-range|ensureNativeRange|createElement\(['"]input['"]\)|type=['"]range['"]/);
+  assert.doesNotMatch(runtime,/touchstart|touchmove|touchend|touchcancel/);
+  assert.match(runtime,/pointerdown/);
+  assert.match(runtime,/pointermove/);
+  assert.match(runtime,/pointerup/);
+  assert.match(runtime,/pointercancel/);
+  assert.match(runtime,/setPointerCapture/);
+  assert.match(runtime,/releasePointerCapture/);
+  assert.match(runtime,/clientX\s*-\s*r\.left/);
+  assert.match(runtime,/Math\.max\(0,\s*Math\.min\(r\.width/);
+  assert.match(runtime,/\(x\s*\/\s*r\.width\)\s*\*\s*100/);
+});
