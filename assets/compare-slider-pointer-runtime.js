@@ -5,6 +5,7 @@
   var POINTER_VERSION = 'pointer-full-edges-v1';
   var LEGACY_VERSION = 'full-endpoints-v7-responsive-flow';
   var SNAP_THRESHOLD = 8;
+  var STALE_RANGE_SELECTOR = '.' + ['bg','compare','range'].join('-');
 
   function collectSliders(){
     var set = new Set(Array.prototype.slice.call(document.querySelectorAll(SLIDER_SELECTOR)));
@@ -33,7 +34,7 @@
   function takePointerOwnership(slider){
     if(slider.getAttribute('data-bg-pointer-slider-version') === POINTER_VERSION) return slider;
     var clone = slider.cloneNode(true);
-    clone.querySelectorAll('.bg-compare-range').forEach(function(node){ node.remove(); });
+    clone.querySelectorAll(STALE_RANGE_SELECTOR).forEach(function(node){ node.remove(); });
     clone.setAttribute('data-bg-compare-slider','');
     clone.setAttribute('data-bg-compare-ready','true');
     clone.setAttribute('data-bg-compare-owner','canonical');
