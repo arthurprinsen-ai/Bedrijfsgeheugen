@@ -45,7 +45,9 @@ async function observeRoute(browser, baseUrl, route, viewport) {
     } catch {}
   });
   try {
-    const response = await page.goto(`${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`, { waitUntil:'networkidle', timeout:90_000 });
+    const response = await page.goto(`${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`, { waitUntil:'domcontentloaded', timeout:45_000 });
+    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+    await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
     const visibleText = await page.locator('body').innerText().catch(() => '');
