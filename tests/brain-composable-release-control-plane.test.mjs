@@ -44,6 +44,8 @@ test('page and SEO contracts use the same artifact-producing build chain as Netl
   assert.notEqual(pageSeoStart, -1);
   assert.notEqual(previewStart, -1);
   const pageSeo = website.slice(pageSeoStart, previewStart);
+  assert.match(pageSeo, /name: Install Netlify build dependencies/);
+  assert.match(pageSeo, /run: npm install/);
   assert.match(pageSeo, /name: Build exact Netlify website artifact/);
   const commands = [
     'node tools/bouw-powerhouse-auth.mjs',
@@ -57,6 +59,10 @@ test('page and SEO contracts use the same artifact-producing build chain as Netl
   for (const command of commands) {
     assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
+  assert.ok(
+    pageSeo.indexOf('name: Install Netlify build dependencies') < pageSeo.indexOf(commands[0]),
+    'Netlify build dependencies must be installed before artifact production',
+  );
   for (let index = 1; index < commands.length; index += 1) {
     assert.ok(
       pageSeo.indexOf(commands[index - 1]) < pageSeo.indexOf(commands[index]),
