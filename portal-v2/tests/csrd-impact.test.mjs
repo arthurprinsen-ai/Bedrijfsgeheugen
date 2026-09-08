@@ -22,16 +22,16 @@ test('customer view removes internal evidence metadata without mutating source d
 test('dashboard contains the six approved impact lenses and audit/action affordances', () => {
   assert.deepEqual(CSRD_TABS.map(x => x[1]), ['Totaal','CO₂ & Klimaat','Water','Circulariteit','Social','Governance']);
   const html = csrdImpactMarkup(DEFAULT_IMPACT_SNAPSHOT);
-  for (const label of ['CSRD Readiness','Impactmetingen','CO₂-uitstoot','Waterverbruik','Social impact','Circulariteit','Bekijk alle acties']) {
+  for (const label of ['CSRD Readiness','Impact in real time','CO₂-uitstoot','Waterverbruik','Social impact','Circulariteit','Bekijk alle acties']) {
     assert.match(html, new RegExp(label));
   }
   assert.match(html, /data-csrd-open="outcomes-evidence"/);
 });
 
-test('fallback dashboard is explicit preview data and never claims unsupported live data', () => {
+test('fallback dashboard preserves realtime design language but never claims unsupported live data', () => {
   const html = csrdImpactMarkup(DEFAULT_IMPACT_SNAPSHOT);
-  assert.match(html,/Voorbeelddata/);
-  assert.doesNotMatch(html,/Live data/);
+  assert.match(html,/Voorbeelddata · geen live claim/);
+  assert.doesNotMatch(html,/>Live data</);
   assert.doesNotMatch(html,/audit-ready/);
 });
 
