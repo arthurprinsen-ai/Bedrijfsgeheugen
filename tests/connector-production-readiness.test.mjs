@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createEnvironmentConnectorProviders } from '../platform/connectors/connector-runtime.mjs';
 import { createDocumentExtractorHandler } from '../platform/connectors/document-extractor-provider.mjs';
+import { runDocumentExtractorProductionCanary } from '../platform/connectors/document-extractor-production-canary.mjs';
 
 test('email source can execute a safe test from an explicit webhook sample without mailbox credentials', async () => {
   const providers=createEnvironmentConnectorProviders({env:{}});
@@ -78,6 +79,24 @@ test('document extractor provider fails closed when provider configuration is mi
   const response=await handler(new Request('https://example.test/api/connectors/document-extractor',{method:'POST',headers:{'x-bg-safe-test':'1','content-type':'application/json'},body:JSON.stringify({content:'Invoice'})}));
   assert.equal(response.status,503);
   assert.equal((await response.json()).error,'DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED');
+});
+
+test('production extractor canary skips by default and exposes only provider execution evidence when enabled', async () => {
+  const logs=[];
+  const skipped=await runDocumentExtractorProductionCanary({env:{},log:value=>logs.push(value)});
+  assert.deepEqual(skipped,{skipped:true});
+  let factoryConfig=null;
+  const handlerFactory=config=>{
+    factoryConfig=config;
+    return async request=>{
+      assert.equal(request.headers.get('x-bg-safe-test'),'1');
+      return new Response(JSON.stringify({type:'invoice',fields:{invoiceNumber:{value:'INV-BG-LIVE-20260908',confidence:0.99}}}),{status:200,headers:{'content-type':'application/json','x-execution-id':'anthropic-live-123'}});
+    };
+  };
+  const evidence=await runDocumentExtractorProductionCanary({env:{DOCUMENT_EXTRACTOR_CANARY_ONCE:'1',ANTHROPIC_API_KEY:'server-only-key'},handlerFactory,log:value=>logs.push(value)});
+  assert.equal(factoryConfig.anthropicApiKey,'server-only-key');
+  assert.equal(evidence.providerExecutionId,'anthropic-live-123');
+  assert.equal(JSON.stringify(evidence).includes('server-only-key'),false);
 });
 
 test('production release readback fails closed unless live document extraction is server-configured', async () => {
