@@ -36,6 +36,20 @@
     "authority":"BG167",
     "refreshOrCoalescedReadbackRequired":true
   },
+  "knowledgeProof":{
+    "schema":"powerhouse.knowledge-event.v1",
+    "requiredForMaterialTechnicalChange":["source_refs","evidence","outcome","architecture_mapping","rollback","projection","brain_writeback","bg167_readback"],
+    "unmappedArchitectureIsIncomplete":true,
+    "blockedExternalRuntimeLeavesOwnedObligation":true,
+    "blockedExternalRuntimeMayNotBeReportedComplete":true,
+    "bg168OrBg166AcknowledgementAloneIsInsufficient":true,
+    "bg167ReadbackRequiredForClosure":true
+  },
+  "requiredStatusDiagnostics":{
+    "distinguish":["failed","queued","success","success_but_not_recognized","expected_on_synthetic_ref","provider_mismatch"],
+    "neverDisableRequiredTestToUnblock":true,
+    "doNotRerunSubstantiveTestsForSyntheticRefMismatch":true
+  },
   "terminalRule":"COMPLETE only when every required stage has current evidence. Any absent, stale, blocked or ambiguous stage remains non-terminal with an owned outcome obligation.",
   "humanBoundariesRemainInForce":true
 }

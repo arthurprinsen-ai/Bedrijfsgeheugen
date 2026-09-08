@@ -1,0 +1,13 @@
+{
+  "version":"BG168-KNOWLEDGE-EVENT-INTERFACE-v1",
+  "scenario_id":7136176,
+  "authority":"material-learning-promotion",
+  "legacy_inputs":["agent_id","task","result"],
+  "inputs":["agent_id","task","result","event_json"],
+  "event_json_optional":true,
+  "legacy_compatibility_required":true,
+  "materiality_owner":"BG168",
+  "output":{"fields":["status","event_id","fingerprint","material","dispatched","bg166_ref","deferred_reason"]},
+  "idempotency":{"before_bg166":true,"window_minutes":60},
+  "fail_open_relative_to_primary_agent_result":true
+}

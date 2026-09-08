@@ -1,0 +1,18 @@
+{
+  "version":"KNOWLEDGE-REPLAY-SPOOL-v1",
+  "authority":"Powerhouse Universal Knowledge Capture",
+  "purpose":"Durable transport/recovery obligation for material knowledge events when BG168/BG166/BG167 cannot complete.",
+  "states":["OPEN","CLAIMED","WRITTEN","VERIFIED"],
+  "dedupeKeyRequired":true,
+  "verifiedRequires":{"state":"WRITTEN","bg167_ref":true,"verified_at":true},
+  "rules":{
+    "duplicateDeferCoalesces":true,
+    "immediateRecursiveRetryForbidden":true,
+    "makeCapacityFailureDefersOnce":true,
+    "bg168AcknowledgementDoesNotClose":true,
+    "bg166WriteDoesNotClose":true,
+    "bg167ReadbackRequiredForClosure":true
+  },
+  "productionStore":"public.powerhouse_knowledge_replay_spool",
+  "security":{"serverOnly":true,"rls":true,"anon":false,"authenticated":false,"serviceRole":true}
+}

@@ -1,0 +1,19 @@
+{
+  "type":"PROVEN_LEARNING",
+  "version":"powerhouse.learning.v1",
+  "fingerprint":"homepage-hero-video-autoplay-lifecycle-recovery-v1",
+  "component":"website:homepage-hero-video",
+  "symptom":"Homepage hero video could remain paused or fail to resume after autoplay/browser lifecycle interruptions despite static autoplay markup.",
+  "rootCause":"Static autoplay, muted and playsinline attributes alone do not guarantee continued playback after iOS/Safari-like lifecycle, visibility or autoplay interruptions.",
+  "fix":"Add runtime lifecycle recovery in assets/js/menu.js through initHeroVideoRecovery with muted/defaultMuted, playsInline, autoplay, loop and bounded play retries on readiness, pause, pageshow, visibilitychange and first safe user interaction.",
+  "prevention":"Treat homepage hero video playback as a runtime contract, not markup-only; regression must validate required attributes, recovery wiring and browser playback progress where automation permits.",
+  "regressionContract":"Homepage hero-video contract verifies .hero-product-video source and autoplay/muted/playsinline/loop plus initHeroVideoRecovery lifecycle recovery; targeted and broad browser gates stay green.",
+  "source_refs":[
+    {"system":"github","kind":"pull_request","id":"1159"},
+    {"system":"github","kind":"merge_commit","id":"7695e386ed7b234391dfa4d8ef0de7479dd48aa5","sha":"7695e386ed7b234391dfa4d8ef0de7479dd48aa5"},
+    {"system":"netlify","kind":"production_deploy","id":"6a9fe513a7af0e0008661320","deploy_id":"6a9fe513a7af0e0008661320"},
+    {"system":"repository","kind":"code","id":"assets/js/menu.js#initHeroVideoRecovery"}
+  ],
+  "status":"PROVEN",
+  "security":{"contains_secrets":false,"contains_credentials":false,"contains_pii":false}
+}

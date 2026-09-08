@@ -1,3 +1,5 @@
+import { diagnoseRequiredStatus } from '../../brain/guards/github-required-status-diagnostics.mjs';
+
 const SHA40 = /^[a-f0-9]{40}$/i;
 
 function uniqueStrings(values = []) {
@@ -34,6 +36,9 @@ export function certifyMainProtection(input = {}) {
   if (missingChecks.length > 0) blockers.push('REQUIRED_CHECKS_MISSING');
   if (!activeBranchRuleset && input.protected !== true) blockers.push('NO_ACTIVE_BRANCH_RULESET');
 
+  const requiredStatusDiagnostic = input.requiredStatusEvidence
+    ? diagnoseRequiredStatus(input.requiredStatusEvidence)
+    : null;
   const mainProtectionReady = blockers.length === 0;
   return Object.freeze({
     contract: 'BRAIN-DELIVERY-v2',
@@ -48,6 +53,7 @@ export function certifyMainProtection(input = {}) {
     expectedChecks: Object.freeze(expectedChecks),
     missingChecks: Object.freeze(missingChecks),
     activeBranchRuleset,
+    requiredStatusDiagnostic,
     blockers: Object.freeze(blockers),
     mainProtectionReady,
     truth_status: mainProtectionReady ? 'VERIFIED' : 'BLOCKED',

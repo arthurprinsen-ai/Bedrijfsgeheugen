@@ -1,0 +1,31 @@
+{
+  "$id": "powerhouse.knowledge-event.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "event_id",
+    "id",
+    "captured_at",
+    "created_at",
+    "source_type",
+    "source_refs",
+    "producer",
+    "component",
+    "intent",
+    "outcome",
+    "provenance",
+    "writeback",
+    "readback"
+  ],
+  "properties": {
+    "schema_version": {"const": "powerhouse.knowledge-event.v1"},
+    "event_id": {"type": "string", "minLength": 1},
+    "source_type": {"enum": ["chat","agent","github","netlify","make","notion","portal","crm","human","other"]},
+    "source_refs": {"type": "array", "minItems": 1},
+    "outcome": {
+      "type": "object",
+      "required": ["status","summary"],
+      "properties": {"status": {"enum": ["success","failed","partial","blocked","open"]}}
+    }
+  }
+}
