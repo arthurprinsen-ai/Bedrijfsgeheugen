@@ -1,9 +1,9 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
-import { listPortalGroups } from './page-registry.js';
 import { enhancePortalShell, openPortalPage, closePortalPage } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
 import { DESKTOP_NAV_ITEMS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
+import { groupedHubPages, hubDefinition } from './hubs.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -84,15 +84,20 @@ function drawFlow(flow){
  if(brain&&module)appendCurve(svg,pointWithin(brain,box,'right'),pointWithin(module,box,'left'),flow.outputFlow);
 }
 function render(){const flow=deriveFlowState({source:selection.source,module:selection.module,runtime,preview:previewMode});renderFocus();renderCopy(flow);requestAnimationFrame(()=>drawFlow(flow))}
-function mountPages(){
- const groups=el('groups');
- for(const group of listPortalGroups()){
+
+function renderHubGroups(hubId='portal'){
+ const groups=el('groups');if(!groups)return;
+ groups.innerHTML='';
+ for(const group of groupedHubPages(hubId)){
   const section=document.createElement('section');section.className='group';section.innerHTML=`<h4>${group.label}</h4>`;
-  for(const page of group.pages){const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=page.id;b.addEventListener('click',()=>{el('allPages')?.classList.remove('open');navigatePortal(page.id)});section.appendChild(b)}
+  for(const page of group.pages){
+   const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=page.id;
+   b.addEventListener('click',()=>{closeHub();navigatePortal(page.id)});
+   section.appendChild(b);
+  }
   groups.appendChild(section);
  }
 }
-
 function markNavigationControls(){
  const desktop=[...document.querySelectorAll('.nav button')];
  DESKTOP_NAV_ITEMS.forEach((item,index)=>{if(desktop[index])desktop[index].dataset.navTarget=item.target});
@@ -101,6 +106,10 @@ function markNavigationControls(){
 }
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
+ const definition=hubDefinition(hubId) || hubDefinition('portal');
+ renderHubGroups(hubId);
+ const heading=sheet.querySelector('.sheethead h3');if(heading)heading.textContent=definition.label;
+ const description=sheet.querySelector('.sheethead small');if(description)description.textContent=definition.description;
  sheet.dataset.hub=hubId;
  sheet.classList.add('open');
  sheet.setAttribute('aria-hidden','false');
@@ -116,7 +125,7 @@ function ensureNavigationStyles(){
  const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css';document.head.appendChild(style);
 }
 
-mountSources();mountModules();mountPages();mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});
 bindPortalNavigation({
  openPage:openPortalPage,
  openHub,
