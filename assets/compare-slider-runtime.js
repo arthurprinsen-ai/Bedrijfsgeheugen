@@ -2,7 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v6-responsive-flow';
+  var VERSION = 'full-endpoints-v7-responsive-flow';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -105,6 +105,29 @@
     });
     content.appendChild(impact);
   }
+  function connectLeakYield(section){
+    var leak = document.querySelector('.bgx-lek');
+    if(!leak || leak.getAttribute('data-bg-change-flow-yield-ready') === 'true') return;
+    leak.setAttribute('data-bg-change-flow-yield-ready','true');
+    function setYield(inFlow){
+      leak.classList.toggle('bgx-lek-uit-flow', !!inFlow);
+    }
+    if('IntersectionObserver' in window){
+      var observer = new IntersectionObserver(function(entries){
+        var visible = entries.some(function(entry){ return entry.isIntersecting && entry.intersectionRatio > 0; });
+        setYield(visible);
+      },{root:null,threshold:[0,.01,.25]});
+      observer.observe(section);
+    } else {
+      function measure(){
+        var r = section.getBoundingClientRect();
+        setYield(r.bottom > 0 && r.top < window.innerHeight);
+      }
+      window.addEventListener('scroll',measure,{passive:true});
+      window.addEventListener('resize',measure,{passive:true});
+      measure();
+    }
+  }
   function initChangeFlow(){
     var title = findHeading(document, CHANGE_TITLE);
     if(!title) return;
@@ -117,6 +140,7 @@
     if(rows.some(function(row){ return !row; })) return;
 
     section.setAttribute('data-bg-change-flow','');
+    connectLeakYield(section);
     var layouts = rows.map(function(row,index){
       row.setAttribute('data-bg-change-step', String(index + 1));
       if(!row.hasAttribute('data-bg-change-status')) row.setAttribute('data-bg-change-status', index === 0 ? 'done' : index === 1 ? 'active' : 'future');
