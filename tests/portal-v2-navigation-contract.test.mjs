@@ -1,20 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { PORTAL_NAV_ITEMS, DESKTOP_NAV_ITEMS } from '../portal-v2/navigation-model.js';
 
-const html = fs.readFileSync('portal-v2/index.html','utf8');
 const app = fs.readFileSync('portal-v2/app.js','utf8');
 
 test('all five mobile nav items are real routed controls', () => {
-  for (const id of ['overview','portal','data-ai','tasks','more']) {
-    assert.match(html, new RegExp(`data-mobile-nav="${id}"`), `missing routed mobile control ${id}`);
-  }
-  assert.match(app, /navigatePortal|mountPortalNavigation|bindPortalNavigation/, 'app must bind shared routed navigation');
+  assert.deepEqual(PORTAL_NAV_ITEMS.map(item=>item.id), ['overview','portal','data-ai','tasks','more']);
+  assert.match(app, /dataset\.mobileNav/);
+  assert.match(app, /bindPortalNavigation/);
 });
 
-test('desktop navigation uses explicit targets rather than decorative buttons', () => {
-  const matches = [...html.matchAll(/<button[^>]+data-nav-target="([^"]+)"/g)].map(match => match[1]);
-  assert.ok(matches.length >= 10, `expected at least 10 routed desktop controls, got ${matches.length}`);
+test('desktop navigation uses the same explicit routing model rather than decorative buttons', () => {
+  assert.equal(DESKTOP_NAV_ITEMS.length, 10);
+  assert.ok(DESKTOP_NAV_ITEMS.every(item=>item.target), 'every desktop item needs an explicit target');
+  assert.match(app, /dataset\.navTarget/);
+  assert.match(app, /DESKTOP_NAV_ITEMS/);
 });
 
 test('mobile navigation keeps 44px touch target baseline', () => {
