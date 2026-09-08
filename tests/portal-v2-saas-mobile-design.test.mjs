@@ -24,14 +24,16 @@ test('Portal V2 exposes a premium SaaS visual system and brain flow contract', a
   assert.match(html, /data-stage="outcomes"/);
 });
 
-test('CSRD mobile layout is card-first and does not depend on shrinking the desktop world visual', async () => {
+test('CSRD mobile layout is card-first and its SaaS overrides load after native CSRD styles', async () => {
   const [css, js, html] = await Promise.all([
     read('portal-v2/csrd-mobile-saas.css'),
     read('portal-v2/csrd-impact.js'),
     read('portal-v2/index.html'),
   ]);
 
-  assert.match(html, /href="\.\/csrd-mobile-saas\.css"/);
+  assert.match(html, /DOMContentLoaded/);
+  assert.match(html, /const href='\.\/csrd-mobile-saas\.css'/);
+  assert.match(html, /document\.head\.appendChild\(style\)/);
   assert.match(js, /csrd-mobile-summary/);
   assert.match(js, /csrd-mobile-domain/);
   assert.match(css, /\.csrd-mobile-summary/);
