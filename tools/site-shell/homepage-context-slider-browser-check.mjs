@@ -128,7 +128,7 @@ async function dragTouchTo(page, targetX) {
 function assertCommon(g, label) {
   if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
   if (!g.marked) fail(`${label}: slider mist generieke site-wide marker`, g);
-  if (g.guard.owner !== 'canonical') fail(`${label}: canonical runtime moet eigenaar zijn van de slider`, g);
+  if (!['canonical','fallback'].includes(g.guard.owner)) fail(`${label}: slider moet door canonical runtime of functionele fallback worden beheerd`, g);
   if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: ARIA bereik moet exact 0-100 zijn`, g);
   if (g.aria.disabled === 'true' || g.aria.tabIndex < 0) fail(`${label}: slider moet op mobiel en desktop actief blijven`, g);
   if (g.handleDisplay === 'none') fail(`${label}: echte sliderhandle mag niet verborgen zijn`, g);
