@@ -210,12 +210,23 @@ jobs:
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Verify broad high-risk browser contracts
+      - name: Diagnose megamenu browser contract
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
           EXPECTED_COMMIT: ${{ inputs.head_sha }}
-        run: |
-          node tools/site-shell/v18-megamenu-browser-check.mjs
-          node tools/site-shell/ui-visual-regression/browser-check.mjs
-          node tools/site-shell/homepage-context-slider-browser-check.mjs
-          node tools/site-shell/homepage-toggle-browser-check.mjs
+        run: node tools/site-shell/v18-megamenu-browser-check.mjs
+      - name: Diagnose visual-regression browser contract
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          EXPECTED_COMMIT: ${{ inputs.head_sha }}
+        run: node tools/site-shell/ui-visual-regression/browser-check.mjs
+      - name: Diagnose homepage change-flow browser contract
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          EXPECTED_COMMIT: ${{ inputs.head_sha }}
+        run: node tools/site-shell/homepage-context-slider-browser-check.mjs
+      - name: Diagnose homepage toggle browser contract
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          EXPECTED_COMMIT: ${{ inputs.head_sha }}
+        run: node tools/site-shell/homepage-toggle-browser-check.mjs
