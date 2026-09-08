@@ -61,6 +61,8 @@ test('protected LinkedIn revenue cockpit component is delivery-classified', () =
 test('Required test keeps stable status identity and is lane-aware', async () => {
   const workflow = await readFile('.github/workflows/required-test.yml','utf8');
   assert.match(workflow, /^name:\s*Required test/m);
+  assert.match(workflow, /merge_group:\s*\n\s+types:\s*\[checks_requested\]/);
+  assert.match(workflow, /github-event-context\.mjs/);
   assert.match(workflow, /deriveRequiredTestSuites/);
   assert.match(workflow, /steps\.scope\.outputs\.backend/);
   assert.match(workflow, /steps\.scope\.outputs\.portal/);
