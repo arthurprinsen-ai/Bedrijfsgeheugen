@@ -12,7 +12,6 @@ const runtime=await read('assets/compare-slider-runtime.js');
 const browserCheck=await read('tools/site-shell/homepage-context-slider-browser-check.mjs');
 const websiteLane=await read('.github/workflows/lane-website.yml');
 const visualRegistry=await read('config/ui-visual-regression.json');
-const modules=await read('tools/v18-modules.mjs');
 
 test('compare-slider guard wordt site-wide toegepast tijdens normale paginanormalisatie',()=>{
   assert.match(normalizer,/applyHomepageContextSliderReadability/);
@@ -141,10 +140,10 @@ test('wijzigingsflow gebruikt op alle formaten een echte railkolom zonder absolu
 });
 
 test('gele zoektijdteller respecteert safe-area en wijkt voor de change-flow',()=>{
-  assert.match(modules,/bottom:calc\(12px \+ env\(safe-area-inset-bottom,0px\)\)/);
-  assert.match(modules,/bgx-lek-uit-flow/);
-  assert.match(modules,/IntersectionObserver/);
-  assert.match(modules,/data-bg-change-flow/);
+  assert.match(fixer,/bottom:calc\(12px \+ env\(safe-area-inset-bottom,0px\)\)/);
+  assert.match(fixer,/bgx-lek-uit-flow/);
+  assert.match(runtime,/IntersectionObserver/);
+  assert.match(runtime,/data-bg-change-flow/);
 });
 
 test('browsercheck dekt telefoon tablet desktop orientatie overlap en horizontale overflow',()=>{
