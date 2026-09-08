@@ -68,14 +68,12 @@ assert.ok(!normalizer.includes('PRICING_MOBILE_MENU_HTML'));
 assert.ok(!normalizer.includes('#bgkopMob.bgkop-mob'));
 
 const canonicalHeader = await readFile('.github/canoniek/kop.html', 'utf8');
-const desktopKnowledge = canonicalHeader.match(/>Kennis<[^]*?<div class="bgkop-paneel">([^]*?)<\/div>/i)?.[1] || '';
-const mobileKnowledge = canonicalHeader.match(/>Kennis<[^]*?<div class="bgkop-mpaneel" hidden>([^]*?)<\/div>/i)?.[1] || '';
-for (const panel of [desktopKnowledge, mobileKnowledge]) {
-  assert.ok(panel.includes('https://www.bedrijfsgeheugen.nl/kennis/'), 'Kennisbank ontbreekt in Kennis-menu');
-  assert.ok(panel.includes('https://www.bedrijfsgeheugen.nl/blog/'), 'Blog ontbreekt in Kennis-menu');
-  assert.ok(panel.indexOf('https://www.bedrijfsgeheugen.nl/kennis/') < panel.indexOf('https://www.bedrijfsgeheugen.nl/blog/'), 'Kennisbank moet vóór Blog staan');
-}
-assert.ok(desktopKnowledge.includes('<b>Kennisbank</b>'));
-assert.ok(mobileKnowledge.includes('>Kennisbank</a>'));
+const desktopSequence = '<div class="bgkop-paneel"><a href="https://www.bedrijfsgeheugen.nl/kennis/"><b>Kennisbank</b>';
+const mobileSequence = '<div class="bgkop-mpaneel" hidden><a href="https://www.bedrijfsgeheugen.nl/kennis/">Kennisbank</a><a href="https://www.bedrijfsgeheugen.nl/blog/">Blog</a>';
+assert.ok(canonicalHeader.includes(desktopSequence), 'Kennisbank moet eerste desktopbestemming onder Kennis zijn');
+const desktopKennis = canonicalHeader.indexOf(desktopSequence);
+const desktopBlog = canonicalHeader.indexOf('<a href="https://www.bedrijfsgeheugen.nl/blog/"><b>Blog</b>', desktopKennis);
+assert.ok(desktopBlog > desktopKennis, 'Blog moet na Kennisbank staan op desktop');
+assert.ok(canonicalHeader.includes(mobileSequence), 'Kennisbank moet eerste mobiele bestemming onder Kennis zijn, vóór Blog');
 
 console.log('canonical brand shell contract: OK');
