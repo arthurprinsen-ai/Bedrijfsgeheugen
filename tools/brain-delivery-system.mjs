@@ -13,7 +13,8 @@ export function deriveConflictContracts(paths = [], policy = {}) {
   return unique((policy.conflictContracts || []).filter(contract => changed.some(path => matches(path, contract.paths || []))).map(contract => String(contract.id || '').trim()).filter(Boolean)).sort();
 }
 
-export function evaluateBranchDrift({ featurePaths = [], mainDriftPaths = [], featureContracts = [], mainDriftContracts = [], mergeable = true } = {}) {
+export function evaluateBranchDrift({ featurePaths = [], mainDriftPaths = [], featureContracts = [], mainDriftContracts = [], mergeable = true, headIntegrated = false } = {}) {
+  if (headIntegrated) return Object.freeze({ action:'KEEP_TESTED_FEATURE', reason:'head-already-integrated', overlap:Object.freeze([]), contractOverlap:Object.freeze([]) });
   const feature = unique(featurePaths.map(value => String(value).trim()).filter(Boolean)).sort();
   const drift = unique(mainDriftPaths.map(value => String(value).trim()).filter(Boolean)).sort();
   const driftSet = new Set(drift);
@@ -72,6 +73,10 @@ async function repositoryMembership() {
 }
 function argValue(args, name, fallback = '') { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : fallback; }
 function gitDiffNames(range) { return execFileSync('git', ['diff', '--name-only', range], { encoding:'utf8' }).split(/\r?\n/).filter(Boolean); }
+function gitIsAncestor(ancestor, descendant) {
+  try { execFileSync('git', ['merge-base', '--is-ancestor', ancestor, descendant], { stdio:'ignore' }); return true; }
+  catch (error) { if (error?.status === 1) return false; throw error; }
+}
 
 async function main() {
   const [command = 'plan', ...args] = process.argv.slice(2); await mkdir('.artifacts', { recursive: true });
@@ -83,7 +88,7 @@ async function main() {
   if (command === 'membership') { const membership = await repositoryMembership(); await writeFile('.artifacts/brain-membership.json', `${JSON.stringify({ generatedAt:new Date().toISOString(), components:membership }, null, 2)}\n`); process.stdout.write(`${JSON.stringify({ ok:true, components:membership.length })}\n`); return; }
   if (command === 'branch-drift') {
     const base = argValue(args, '--base'); const head = argValue(args, '--head'); const currentMain = argValue(args, '--current-main'); if (!base || !head || !currentMain) throw new Error('branch-drift requires --base, --head and --current-main');
-    const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8')); const featurePaths = gitDiffNames(`${base}...${head}`); const mainDriftPaths = base === currentMain ? [] : gitDiffNames(`${base}..${currentMain}`); const featureContracts = deriveConflictContracts(featurePaths, policy); const mainDriftContracts = deriveConflictContracts(mainDriftPaths, policy); const result = evaluateBranchDrift({ featurePaths, mainDriftPaths, featureContracts, mainDriftContracts, mergeable:true }); const evidence = { ...result, base, head, currentMain, featureContracts, mainDriftContracts }; await writeFile('.artifacts/brain-branch-drift.json', `${JSON.stringify(evidence, null, 2)}\n`); process.stdout.write(`${JSON.stringify(evidence)}\n`); if (result.action === 'SYNC_REQUIRED') process.exitCode = 42; return;
+    const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8')); const featurePaths = gitDiffNames(`${base}...${head}`); const headIntegrated = gitIsAncestor(head, currentMain); const mainDriftPaths = headIntegrated || base === currentMain ? [] : gitDiffNames(`${base}..${currentMain}`); const featureContracts = deriveConflictContracts(featurePaths, policy); const mainDriftContracts = deriveConflictContracts(mainDriftPaths, policy); const result = evaluateBranchDrift({ featurePaths, mainDriftPaths, featureContracts, mainDriftContracts, mergeable:true, headIntegrated }); const evidence = { ...result, base, head, currentMain, headIntegrated, featureContracts, mainDriftContracts }; await writeFile('.artifacts/brain-branch-drift.json', `${JSON.stringify(evidence, null, 2)}\n`); process.stdout.write(`${JSON.stringify(evidence)}\n`); if (result.action === 'SYNC_REQUIRED') process.exitCode = 42; return;
   }
   if (command !== 'plan') throw new Error(`unknown command: ${command}`);
   const base = argValue(args, '--base', 'HEAD^'); const head = argValue(args, '--head', 'HEAD');

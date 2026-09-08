@@ -32,23 +32,47 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.doesNotMatch(runtime,/compactThreshold/);
 });
 
-test('external slider-runtime is parsebaar als gewone browser-JavaScript',()=>{
+test('external slider-runtime is parsebaar en wordt synchroon vóór fallback geladen',()=>{
   assert.doesNotThrow(()=>new Script(runtime));
   assert.match(fixer,/RUNTIME_SRC\s*=\s*['"]\/assets\/compare-slider-runtime\.js['"]/);
   const upgraded=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
-  assert.match(upgraded,/<script data-bg-context-slider-readable src="\/assets\/compare-slider-runtime\.js" defer><\/script>/);
+  assert.match(upgraded,/<script data-bg-context-slider-readable src="\/assets\/compare-slider-runtime\.js"><\/script>/);
+  assert.doesNotMatch(upgraded,/compare-slider-runtime\.js" defer/);
 });
 
-test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand',()=>{
+test('fallback is zelf een volledige 0-100 slider als external runtime uitvalt',()=>{
+  assert.match(fixer,/data-bg-compare-owner','fallback/);
+  assert.match(fixer,/pointerdown/);
+  assert.match(fixer,/pointermove/);
+  assert.match(fixer,/touchstart/);
+  assert.match(fixer,/touchmove/);
+  assert.match(fixer,/touchend/);
+  assert.match(fixer,/--bg-compare-split/);
+  assert.match(fixer,/clip-path/);
+  assert.match(fixer,/aria-valuenow/);
+});
+
+test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand en geen randclamp',()=>{
   assert.match(pipeline,/SLIDER_ENDPOINT_STYLE/);
   assert.match(pipeline,/--bg-compare-split/);
   assert.match(pipeline,/compare-before\{clip-path:inset\(0 calc\(100% - var\(--bg-compare-split,50%\)\) 0 0\)!important\}/);
   assert.match(pipeline,/compare-after\{clip-path:inset\(0 0 0 var\(--bg-compare-split,50%\)\)!important\}/);
-  assert.match(pipeline,/compare-handle\{display:block!important;position:absolute!important;left:clamp\(24px,var\(--bg-compare-split,50%\),calc\(100% - 24px\)\)!important/);
+  assert.match(pipeline,/compare-handle\{display:block!important;position:absolute!important;left:var\(--bg-compare-split,50%\)!important/);
   assert.doesNotMatch(pipeline,/--bg-final-split/);
   assert.doesNotMatch(pipeline,/:has\(\.compare-knob/);
-  assert.doesNotMatch(pipeline,/compare-before\{clip-path:inset\(0 var\(--split,50%\) 0 0\)!important\}/);
-  assert.doesNotMatch(pipeline,/compare-after\{clip-path:inset\(0 0 0 calc\(100% - var\(--split,50%\)\)\)!important\}/);
+  assert.doesNotMatch(pipeline,/left:clamp\(24px/);
+});
+
+test('canonical runtime bezit de slider en legacy listeners kunnen eindstanden niet terugklemmen',()=>{
+  assert.match(runtime,/takeCanonicalOwnership/);
+  assert.match(runtime,/cloneNode\(true\)/);
+  assert.match(runtime,/replaceWith\(clone\)/);
+  assert.match(runtime,/data-bg-compare-owner/);
+  assert.doesNotMatch(runtime,/new MutationObserver\(mirrorLegacy\)/);
+  assert.doesNotMatch(runtime,/function mirrorLegacy/);
+  assert.doesNotMatch(runtime,/clamp\(24px/);
+  assert.doesNotMatch(fixer,/left:clamp\(24px/);
+  assert.match(runtime,/handle\.style\.setProperty\('left', pct, 'important'\)/);
 });
 
 test('alle sliders maken de uitersten op touch praktisch bereikbaar en snappen naar volledige tekst',()=>{
@@ -58,9 +82,8 @@ test('alle sliders maken de uitersten op touch praktisch bereikbaar en snappen n
   assert.match(runtime,/touchstart/);
   assert.match(runtime,/touchmove/);
   assert.match(runtime,/touchend/);
-  assert.match(runtime,/clamp\(24px/);
-  assert.match(runtime,/new MutationObserver\(mirrorLegacy\)/);
-  assert.match(runtime,/renderControlled\(readLegacy\(\)\)/);
+  assert.match(runtime,/slider\.style\.setProperty\('--split', pct\)/);
+  assert.match(runtime,/slider\.style\.setProperty\('--bg-compare-split', pct\)/);
 });
 
 test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde kaarten omgebouwd',()=>{
@@ -101,25 +124,29 @@ test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-
   const upgraded=applyHomepageContextSliderReadability(stale);
   assert.doesNotMatch(upgraded,/>STALE</);
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
-  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"\s+defer><\/script>/g)||[]).length,1);
+  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length,1);
   assert.match(upgraded,/data-bg-compare-slider/);
 });
 
-test('browsercheck verifieert uiterste links en rechts op desktop en gangbare telefoonbreedtes',()=>{
+test('browsercheck gebruikt echte touch-events en verifieert fysieke uiterste links en rechts',()=>{
   assert.match(browserCheck,/#compareSlider/);
   assert.match(browserCheck,/1128/);
   assert.match(browserCheck,/\[320,720\]/);
   assert.match(browserCheck,/\[390,844\]/);
   assert.match(browserCheck,/\[430,932\]/);
-  assert.match(browserCheck,/page\.mouse\.down/);
-  assert.match(browserCheck,/page\.mouse\.move/);
-  assert.match(browserCheck,/page\.mouse\.up/);
+  assert.match(browserCheck,/newCDPSession/);
+  assert.match(browserCheck,/Input\.dispatchTouchEvent/);
+  assert.match(browserCheck,/touchStart/);
+  assert.match(browserCheck,/touchMove/);
+  assert.match(browserCheck,/touchEnd/);
+  assert.match(browserCheck,/box\.x \+ 1/);
+  assert.match(browserCheck,/box\.x \+ box\.width - 1/);
   assert.match(browserCheck,/split\s*<=\s*1/);
   assert.match(browserCheck,/split\s*>=\s*99/);
+  assert.match(browserCheck,/handleLeft\s*>\s*1\.5/);
+  assert.match(browserCheck,/handleLeft\s*<\s*g\.slider\.width - 1\.5/);
   assert.match(browserCheck,/g\.aria\.min\s*!==\s*0/);
   assert.match(browserCheck,/g\.aria\.max\s*!==\s*100/);
-  assert.match(browserCheck,/nearLeft/);
-  assert.match(browserCheck,/nearRight/);
   assert.match(websiteLane,/homepage-context-slider-browser-check\.mjs/);
 });
 
