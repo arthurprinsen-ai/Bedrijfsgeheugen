@@ -29,7 +29,7 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.match(pointerRuntime,/Math\.max\(0,\s*Math\.min\(100/);
   assert.match(pointerRuntime,/aria-valuemin['"],?\s*['"]0['"]/);
   assert.match(pointerRuntime,/aria-valuemax['"],?\s*['"]100['"]/);
-  assert.doesNotMatch(pointerRuntime,/safePanePx|compactThreshold|bg-compare-range/);
+  assert.doesNotMatch(pointerRuntime,/safePanePx|compactThreshold/);
 });
 
 test('change-flow runtime en pointer runtime zijn parsebaar en pointer runtime laadt als laatste slider-eigenaar',()=>{
@@ -45,7 +45,7 @@ test('change-flow runtime en pointer runtime zijn parsebaar en pointer runtime l
 });
 
 test('native range workaround is volledig verwijderd uit de actieve sliderlaag',()=>{
-  assert.doesNotMatch(fixer,/ensureNativeRange|bg-compare-range|touch-action:none!important/);
+  assert.doesNotMatch(fixer,/\.bg-compare-range\s*\{|ensureNativeRange\s*\(|touch-action:none!important/);
   assert.doesNotMatch(pointerRuntime,/createElement\(['"]input['"]\)|touchstart|touchmove|touchend/);
   assert.match(pointerRuntime,/pointerdown/);
   assert.match(pointerRuntime,/pointermove/);
@@ -70,7 +70,8 @@ test('pointer runtime neemt definitief ownership en voorkomt dat oude listeners 
   assert.match(pointerRuntime,/data-bg-compare-version/);
   assert.match(pointerRuntime,/full-endpoints-v7-responsive-flow/);
   assert.match(pointerRuntime,/data-bg-pointer-slider-version/);
-  assert.match(pointerRuntime,/querySelectorAll\('\.bg-compare-range'\)/);
+  assert.match(pointerRuntime,/STALE_RANGE_SELECTOR/);
+  assert.match(pointerRuntime,/querySelectorAll\(STALE_RANGE_SELECTOR\)/);
 });
 
 test('pointerpositie is geometrisch geclampt op de fysieke kaartbreedte',()=>{
@@ -148,7 +149,7 @@ test('oude geïnjecteerde guard en native fallback worden vervangen',()=>{
   assert.equal((upgraded.match(/compare-slider-pointer-runtime\.js/g)||[]).length,1);
 });
 
-test('browsercheck gebruikt echte touchinput en verifieert fysieke uiterste links en rechts zonder native range',()=>{
+test('browsercheck gebruikt echte touchinput en verifieert fysieke uiterste links en rechts zonder native rangebediening',()=>{
   assert.match(browserCheck,/#compareSlider/);
   assert.match(browserCheck,/1128/);
   assert.match(browserCheck,/\[320,720\]/);
@@ -161,7 +162,8 @@ test('browsercheck gebruikt echte touchinput en verifieert fysieke uiterste link
   assert.match(browserCheck,/handleLeft\s*>\s*1\.5/);
   assert.match(browserCheck,/handleLeft\s*<\s*g\.slider\.width - 1\.5/);
   assert.match(browserCheck,/data-bg-pointer-slider-ready/);
-  assert.doesNotMatch(browserCheck,/native range moet|range\.value|\.bg-compare-range/);
+  assert.match(browserCheck,/nativeRangeCount\s*!==\s*0/);
+  assert.doesNotMatch(browserCheck,/range\.value|range\.min|range\.max/);
   assert.match(websiteLane,/homepage-context-slider-browser-check\.mjs/);
 });
 
