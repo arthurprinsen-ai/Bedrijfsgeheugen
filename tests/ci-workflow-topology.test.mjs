@@ -23,8 +23,9 @@ test('required test supersedes only older runs of the same PR', async () => {
   assert.doesNotMatch(required, /production-release-readback/);
 });
 
-test('production readback remains isolated from PR validation concurrency', async () => {
+test('production readback remains isolated, serialized and non-cancellable', async () => {
   const production = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(production, /group:\s*production-release-readback\s*$/m);
-  assert.match(production, /cancel-in-progress:\s*true/);
+  assert.match(production, /cancel-in-progress:\s*false/);
+  assert.doesNotMatch(production, /pull_request:/);
 });
