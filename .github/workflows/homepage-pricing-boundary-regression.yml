@@ -1,12 +1,7 @@
 name: Homepage pricing boundary regression
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'tests/homepage-pricing-boundary-readback.test.mjs'
-      - 'tools/seo-order-engine/**'
-      - '.github/workflows/homepage-pricing-boundary-regression.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read

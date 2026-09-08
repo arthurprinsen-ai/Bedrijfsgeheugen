@@ -1,0 +1,8 @@
+{
+  "version": "single-flight-v1",
+  "protectedContext": "test",
+  "maxPullRequestRunnerWorkflows": 1,
+  "requiredWorkflow": ".github/workflows/required-test.yml",
+  "staleHeadPolicy": "cancel-in-progress",
+  "promotionIdentity": "exact-tested-head"
+}

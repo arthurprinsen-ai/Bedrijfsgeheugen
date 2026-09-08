@@ -1,8 +1,7 @@
 name: Canonical brand shell full build
 
 on:
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -49,6 +48,6 @@ jobs:
           if-no-files-found: ignore
       - name: 8 Release evidence contract
         env:
-          COMMIT_REF: ${{ github.event.pull_request.head.sha }}
-          CONTEXT: github-pull-request
+          COMMIT_REF: ${{ github.sha }}
+          CONTEXT: workflow-dispatch
         run: node tools/bouw-release-evidence.mjs
