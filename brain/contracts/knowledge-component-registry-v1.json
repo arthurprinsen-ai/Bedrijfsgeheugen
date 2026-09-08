@@ -1,0 +1,54 @@
+{
+  "version":"KNOWLEDGE-COMPONENT-REGISTRY-v1",
+  "components":[
+    {
+      "id":"website:homepage-hero-video",
+      "layer":"frontend",
+      "paths":["assets/js/menu.js","index.html"],
+      "routes":["/"],
+      "docs":["Powerhouse Direct Knowledge Base","Architecture & Operations Runbook"],
+      "tests":["website / targeted-browser","website / broad-browser","Brain foundation verify"],
+      "blastRadius":["homepage hero","mobile Safari autoplay","homepage conversion experience"],
+      "rollbackOwner":"Website Release"
+    },
+    {
+      "id":"brain:bg168",
+      "layer":"control-plane",
+      "scenarios":["7136176"],
+      "paths":["brain/guards/material-outcome-classifier.mjs","brain/contracts/bg168-knowledge-event-interface-v1.json"],
+      "docs":["Powerhouse Direct Knowledge Base"],
+      "tests":["BG168 Materiality Promotion Tests","Brain foundation verify"],
+      "blastRadius":["material learning routing","agent outcome capture"],
+      "rollbackOwner":"Powerhouse Learning"
+    },
+    {
+      "id":"brain:bg166",
+      "layer":"knowledge",
+      "scenarios":["7135971"],
+      "paths":["brain/contracts/bg166-knowledge-event-interface-v1.json"],
+      "docs":["Powerhouse Direct Knowledge Base","Error Register"],
+      "tests":["Brain foundation verify"],
+      "blastRadius":["durable error and learning ledger","dedupe"],
+      "rollbackOwner":"Powerhouse Learning"
+    },
+    {
+      "id":"brain:bg167",
+      "layer":"knowledge",
+      "scenarios":["7136045"],
+      "paths":["brain/context/**","brain/contracts/bg167-knowledge-readback-interface-v1.json"],
+      "docs":["Powerhouse Direct Knowledge Base"],
+      "tests":["Shared Agent Memory Tests","Brain foundation verify"],
+      "blastRadius":["shared agent context","knowledge readback"],
+      "rollbackOwner":"Powerhouse Learning"
+    },
+    {
+      "id":"brain:universal-knowledge-capture",
+      "layer":"knowledge",
+      "paths":["brain/knowledge/**","brain/adapters/knowledge-*","brain/contracts/knowledge-*"],
+      "docs":["Powerhouse Universal Knowledge Capture v1 Design"],
+      "tests":["Brain foundation verify"],
+      "blastRadius":["chat capture","agent capture","release evidence","knowledge projections"],
+      "rollbackOwner":"Powerhouse / Bedrijfsgeheugen"
+    }
+  ]
+}
