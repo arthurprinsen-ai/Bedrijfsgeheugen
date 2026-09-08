@@ -75,6 +75,15 @@ jobs:
           tests/*guard*.test.mjs
           tests/delivery-preflight-completion.test.mjs
           tests/live-preview-trigger-scope.test.mjs
+      - name: Verify final governance contracts formerly owned by PR side-runners
+        run: >-
+          node --test
+          tests/brain-bg184-stateful-blocker-dedupe.test.mjs
+          tests/brain-universal-closed-loop-learning.test.mjs
+          tests/main-write-integrity-squash-pr.test.mjs
+          tests/approved-blog-verifier-contract.test.mjs
+      - name: Validate universal closed-loop contract
+        run: node scripts/brain/validate-universal-closed-loop-learning.mjs
       - name: Verify Brain cost membership
         run: node --test tests/brain-cost-membership.test.mjs tests/cost-component-catalog.test.mjs
       - name: Verify Brain foundation
