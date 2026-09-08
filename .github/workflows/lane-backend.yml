@@ -81,13 +81,18 @@ jobs:
         run: node scripts/brain/test-all.mjs
       - name: Verify SEO growth contracts
         run: node --test tests/seo-growth-*.test.mjs tests/seo-order-money-v2.test.mjs tests/seo-order-blog-v2.test.mjs tests/seo-order-measurement.test.mjs
-      - name: Verify Business OS migration contracts
+      - name: Verify Business OS contracts
         run: >-
           node --test
           tests/business-os-migration.test.mjs
           tests/paginacontrole-concurrency.test.mjs
           tests/portal-next-shell.test.mjs
           tests/intelligence-agent-runtime.test.mjs
+          tests/brain-acceptance.test.mjs
+          tests/brain-api-gateway.test.mjs
+          tests/brain-production-ai.test.mjs
+          tests/brain-storage-port.test.mjs
+          tests/monitor-brain-ingest.test.mjs
           tests/policy-engine.test.mjs
           tests/trust-*.test.mjs
           tests/canonical-*.test.mjs
