@@ -1,8 +1,6 @@
 name: Canonical brand shell live readback
 
 on:
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
@@ -21,7 +19,6 @@ jobs:
         run: node --test tests/seo-order-live-readback.test.mjs
 
   production-readback:
-    if: github.event_name != 'pull_request'
     needs: contract
     runs-on: ubuntu-latest
     steps:
