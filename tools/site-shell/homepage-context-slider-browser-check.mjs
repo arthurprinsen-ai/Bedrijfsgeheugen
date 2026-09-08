@@ -13,7 +13,8 @@ async function readState(page) {
     const before = beforeSide?.querySelector('.compare-copy');
     const after = afterSide?.querySelector('.compare-copy');
     const knob = slider?.querySelector('.compare-knob');
-    if (!slider || !beforeSide || !afterSide || !before || !after || !knob) return null;
+    const handle = slider?.querySelector('.compare-handle');
+    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle) return null;
     const sr = slider.getBoundingClientRect();
     const br = before.getBoundingClientRect();
     const ar = after.getBoundingClientRect();
@@ -34,7 +35,9 @@ async function readState(page) {
       guard: {
         scriptCount: guardScripts.length,
         hasSyncLoop: guardScripts.some(script => script.textContent.includes('syncLoop')),
-        ready: slider.getAttribute('data-bg-compare-ready')
+        ready: slider.getAttribute('data-bg-compare-ready'),
+        owner: slider.getAttribute('data-bg-compare-owner'),
+        version: slider.getAttribute('data-bg-compare-version')
       },
       viewportWidth: window.innerWidth,
       slider: { left: sr.left, right: sr.right, width: sr.width, height: sr.height },
@@ -47,7 +50,8 @@ async function readState(page) {
         disabled: knob.getAttribute('aria-disabled'),
         tabIndex: knob.tabIndex
       },
-      handleDisplay: getComputedStyle(slider.querySelector('.compare-handle') || knob).display,
+      handleDisplay: getComputedStyle(handle).display,
+      handleLeft: parseFloat(getComputedStyle(handle).left),
       marked: slider.hasAttribute('data-bg-compare-slider'),
       topSideAtCenter
     };
@@ -63,14 +67,39 @@ async function dragKnobTo(page, targetX) {
   const y = b.y + b.height / 2;
   await page.mouse.move(x, y);
   await page.mouse.down();
-  await page.mouse.move(targetX, y, { steps: 10 });
+  await page.mouse.move(targetX, y, { steps: 12 });
   await page.mouse.up();
   await page.waitForTimeout(180);
+}
+
+async function dragTouchTo(page, targetX) {
+  const knob = page.locator('#compareSlider .compare-knob');
+  await knob.scrollIntoViewIfNeeded();
+  const b = await knob.boundingBox();
+  if (!b) fail('sliderknop heeft geen touch-geometry');
+  const startX = b.x + b.width / 2;
+  const y = b.y + b.height / 2;
+  const client = await page.context().newCDPSession(page);
+  await client.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [{ x: startX, y, radiusX: 8, radiusY: 8, force: 1, id: 1 }]
+  });
+  for (let i = 1; i <= 12; i++) {
+    const x = startX + (targetX - startX) * (i / 12);
+    await client.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: [{ x, y, radiusX: 8, radiusY: 8, force: 1, id: 1 }]
+    });
+  }
+  await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await client.detach();
+  await page.waitForTimeout(220);
 }
 
 function assertCommon(g, label) {
   if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
   if (!g.marked) fail(`${label}: slider mist generieke site-wide marker`, g);
+  if (g.guard.owner !== 'canonical') fail(`${label}: canonical runtime moet eigenaar zijn van de slider`, g);
   if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: ARIA bereik moet exact 0-100 zijn`, g);
   if (g.aria.disabled === 'true' || g.aria.tabIndex < 0) fail(`${label}: slider moet op mobiel en desktop actief blijven`, g);
   if (g.handleDisplay === 'none') fail(`${label}: echte sliderhandle mag niet verborgen zijn`, g);
@@ -85,6 +114,7 @@ function assertLeftEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split <= 1)) fail(`${label}: helemaal links moet 0% bereiken`, g);
   if (g.aria.now > 1) fail(`${label}: ARIA now moet links 0 zijn`, g);
+  if (g.handleLeft > 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal links staan`, g);
   if (g.topSideAtCenter !== 'after') fail(`${label}: helemaal links moet alleen de witte/rechter after-laag tonen`, g);
 }
 
@@ -92,6 +122,7 @@ function assertRightEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split >= 99)) fail(`${label}: helemaal rechts moet 100% bereiken`, g);
   if (g.aria.now < 99) fail(`${label}: ARIA now moet rechts 100 zijn`, g);
+  if (g.handleLeft < g.slider.width - 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal rechts staan`, g);
   if (g.topSideAtCenter !== 'before') fail(`${label}: helemaal rechts moet alleen de blauwe/linker before-laag tonen`, g);
 }
 
@@ -103,24 +134,24 @@ async function testViewport(browser, width, height, mobile = false) {
   const slider = page.locator('#compareSlider');
   await slider.waitFor({ state: 'visible' });
   await slider.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(140);
   const box = await slider.boundingBox();
   if (!box) fail(`${width}px: slider heeft geen geometry`);
 
-  const nearLeft = box.x + box.width * 0.06;
-  await dragKnobTo(page, nearLeft);
+  const nearLeft = box.x + 1;
+  if (mobile) await dragTouchTo(page, nearLeft); else await dragKnobTo(page, nearLeft);
   const left = await readState(page);
   if (left) left.pageErrors = pageErrors;
-  assertLeftEndpoint(left, `${width}px praktisch uiterste links`);
+  assertLeftEndpoint(left, `${width}px fysiek uiterste links`);
 
-  const nearRight = box.x + box.width * 0.94;
-  await dragKnobTo(page, nearRight);
+  const nearRight = box.x + box.width - 1;
+  if (mobile) await dragTouchTo(page, nearRight); else await dragKnobTo(page, nearRight);
   const right = await readState(page);
   if (right) right.pageErrors = pageErrors;
-  assertRightEndpoint(right, `${width}px praktisch uiterste rechts`);
+  assertRightEndpoint(right, `${width}px fysiek uiterste rechts`);
 
   await page.close();
-  return { width, nearLeft, nearRight, left: left.split, right: right.split };
+  return { width, nearLeft, nearRight, left: left.split, right: right.split, leftHandle: left.handleLeft, rightHandle: right.handleLeft };
 }
 
 const browser = await chromium.launch({ headless: true });
