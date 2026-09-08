@@ -4,9 +4,7 @@ on:
   push:
     branches:
       - automation/v18-production-promotion
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,15 +16,14 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
       - id: scope
         name: Classify V18 promotion scope
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_SHA: ${{ github.sha }}
         run: |
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
@@ -34,7 +31,7 @@ jobs:
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           const head = process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const base = process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const base = execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changedPaths = execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan = createDeliveryPlan({ changedPaths, headSha:head, policy });
