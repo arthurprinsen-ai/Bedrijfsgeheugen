@@ -32,7 +32,7 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.doesNotMatch(runtime,/compactThreshold/);
 });
 
-test('external slider-runtime is parsebaar en wordt synchroon vóór native range guard geladen',()=>{
+test('external slider-runtime is parsebaar en wordt synchroon vóór pointer fallback geladen',()=>{
   assert.doesNotThrow(()=>new Script(runtime));
   assert.match(fixer,/RUNTIME_SRC\s*=\s*['"]\/assets\/compare-slider-runtime\.js['"]/);
   const upgraded=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
@@ -40,19 +40,16 @@ test('external slider-runtime is parsebaar en wordt synchroon vóór native rang
   assert.doesNotMatch(upgraded,/compare-slider-runtime\.js" defer/);
 });
 
-test('native range guard blijft zelf een volledige 0-100 slider als custom gesturecode faalt',()=>{
-  assert.match(fixer,/ensureNativeRange/);
-  assert.match(fixer,/createElement\('input'\)/);
-  assert.match(fixer,/g\.type='range'/);
-  assert.match(fixer,/g\.min='0'/);
-  assert.match(fixer,/g\.max='100'/);
-  assert.match(fixer,/g\.step='1'/);
-  assert.match(fixer,/addEventListener\('input'/);
-  assert.match(fixer,/addEventListener\('change'/);
+test('pointer fallback blijft zelf een volledige 0-100 slider als externe runtime faalt',()=>{
+  assert.match(fixer,/data-bg-pointer-fallback-ready/);
+  assert.match(fixer,/setPointerCapture/);
+  assert.match(fixer,/releasePointerCapture/);
+  assert.match(fixer,/getBoundingClientRect/);
+  assert.match(fixer,/Math\.max\(0,Math\.min\(g\.width,x-g\.left\)\)/);
   assert.match(fixer,/--bg-compare-split/);
   assert.match(fixer,/clip-path/);
   assert.match(fixer,/aria-valuenow/);
-  assert.match(fixer,/data-bg-native-range-ready/);
+  assert.doesNotMatch(fixer,/bg-compare-range|ensureNativeRange|type=['"]range['"]/);
 });
 
 test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand en geen randclamp',()=>{
@@ -78,17 +75,22 @@ test('canonical runtime bezit de slider en legacy listeners kunnen eindstanden n
   assert.match(runtime,/handle\.style\.setProperty\('left', pct, 'important'\)/);
 });
 
-test('alle sliders maken de uitersten op touch praktisch bereikbaar en snappen naar volledige tekst',()=>{
+test('alle sliders maken de uitersten via Pointer Events praktisch bereikbaar en snappen naar volledige tekst',()=>{
   assert.match(runtime,/SNAP_THRESHOLD\s*=\s*8/);
   assert.match(runtime,/value\s*<=\s*SNAP_THRESHOLD\s*\?\s*0/);
   assert.match(runtime,/value\s*>=\s*100\s*-\s*SNAP_THRESHOLD\s*\?\s*100/);
-  assert.match(runtime,/touchstart/);
-  assert.match(runtime,/touchmove/);
-  assert.match(runtime,/touchend/);
+  assert.match(runtime,/pointerdown/);
+  assert.match(runtime,/pointermove/);
+  assert.match(runtime,/pointerup/);
+  assert.match(runtime,/pointercancel/);
+  assert.match(runtime,/setPointerCapture/);
+  assert.match(runtime,/releasePointerCapture/);
   assert.match(runtime,/slider\.style\.setProperty\('--split', pct\)/);
   assert.match(runtime,/slider\.style\.setProperty\('--bg-compare-split', pct\)/);
-  assert.match(fixer,/\.bg-compare-range/);
-  assert.match(fixer,/touch-action:none!important/);
+  assert.match(runtime,/var x = Math\.max\(0, Math\.min\(r\.width, clientX - r\.left\)\)/);
+  assert.match(runtime,/\(x \/ r\.width\) \* 100/);
+  assert.doesNotMatch(runtime,/touchstart|touchmove|touchend|touchcancel/);
+  assert.doesNotMatch(fixer,/bg-compare-range|touch-action:none!important/);
 });
 
 test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde kaarten omgebouwd',()=>{
@@ -99,13 +101,11 @@ test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde k
   assert.doesNotMatch(fixer,/\.compare-handle\{display:none!important/);
 });
 
-test('mobiele tussenstand toont geen onleesbare smalle minderheidskolom en landt na loslaten op een volledige zijde',()=>{
+test('mobiele tussenstand toont geen onleesbare smalle minderheidskolom',()=>{
   assert.match(fixer,/data-bg-readable-side/);
-  assert.match(fixer,/v>=50\?'before':'after'/);
+  assert.match(runtime,/slider\.setAttribute\('data-bg-readable-side',value >= 50 \? 'before' : 'after'\)/);
   assert.match(fixer,/\[data-bg-compare-slider\]\[data-bg-readable-side="before"\] \.compare-after \.compare-copy\{opacity:0!important;visibility:hidden!important\}/);
   assert.match(fixer,/\[data-bg-compare-slider\]\[data-bg-readable-side="after"\] \.compare-before \.compare-copy\{opacity:0!important;visibility:hidden!important\}/);
-  assert.match(fixer,/matchMedia\('\(max-width:720px\)'\)\.matches/);
-  assert.match(fixer,/mobile\?\(Number\(g\.value\)<50\?0:100\):Number\(g\.value\)/);
 });
 
 test('wijzigingssectie is op mobiel een cumulatieve verticale voortgangsflow',()=>{
@@ -170,10 +170,11 @@ test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
   assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length,1);
   assert.match(upgraded,/data-bg-compare-slider/);
-  assert.match(upgraded,/bg-compare-range/);
+  assert.match(upgraded,/data-bg-pointer-fallback-ready/);
+  assert.doesNotMatch(upgraded,/bg-compare-range/);
 });
 
-test('browsercheck gebruikt echte touch-events en verifieert fysieke uiterste links en rechts',()=>{
+test('browsercheck gebruikt echte touch-input en verifieert fysieke uiterste links en rechts',()=>{
   assert.match(browserCheck,/#compareSlider/);
   assert.match(browserCheck,/1128/);
   assert.match(browserCheck,/\[320,720\]/);
@@ -221,6 +222,6 @@ test('mobiele compare-slider gebruikt Pointer Events als enige gesture owner; na
   assert.match(runtime,/setPointerCapture/);
   assert.match(runtime,/releasePointerCapture/);
   assert.match(runtime,/clientX\s*-\s*r\.left/);
-  assert.match(runtime,/Math\.max\(0,\s*Math\.min\(r\.width/);
-  assert.match(runtime,/\(x\s*\/\s*r\.width\)\s*\*\s*100/);
+  assert.match(runtime,/Math\.max\(0, Math\.min\(r\.width, clientX - r\.left\)\)/);
+  assert.match(runtime,/\(x \/ r\.width\) \* 100/);
 });
