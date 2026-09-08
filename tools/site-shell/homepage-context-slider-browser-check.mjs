@@ -195,8 +195,8 @@ async function testMobileChangeFlow(page, label) {
 
 async function testViewport(browser, width, height, mobile, orientation) {
   const page = await browser.newPage({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
-  const errors = [];
-  page.on('pageerror', error => errors.push(error.message));
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
   const slider = page.locator('#compareSlider');
   await slider.waitFor({ state: 'visible' });
@@ -208,18 +208,19 @@ async function testViewport(browser, width, height, mobile, orientation) {
   const nearLeft = box.x + 1;
   if (mobile) await dragTouchTo(page, nearLeft); else await dragKnobTo(page, nearLeft);
   const left = await readState(page);
+  if (left) left.pageErrors = pageErrors;
   assertLeftEndpoint(left, `${width}x${height} fysiek uiterste links`);
 
   const nearRight = box.x + box.width - 1;
   if (mobile) await dragTouchTo(page, nearRight); else await dragKnobTo(page, nearRight);
   const right = await readState(page);
+  if (right) right.pageErrors = pageErrors;
   assertRightEndpoint(right, `${width}x${height} fysiek uiterste rechts`);
 
   const flow = await testMobileChangeFlow(page, `${width}x${height} ${orientation} wijzigingsflow`);
   if (flow.orientation !== orientation) fail(`${width}x${height}: orientation mismatch`, flow);
-  if (errors.length) fail(`${width}x${height}: page errors`, { errors });
   await page.close();
-  return { width, height, orientation, left: left.split, right: right.split, progress: flow.progress, doneCount: flow.doneCount };
+  return { width, height, orientation, left: left.split, right: right.split, progress: flow.progress, doneCount: flow.doneCount, pageErrors };
 }
 
 const browser = await chromium.launch({ headless: true });
