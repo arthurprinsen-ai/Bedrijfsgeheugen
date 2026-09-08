@@ -1,18 +1,6 @@
 name: Pagina- en SEO-controle diagnose
 
 on:
-  pull_request:
-    paths:
-      - '*.html'
-      - 'blog/**'
-      - 'components/**'
-      - 'assets/**'
-      - 'site/**'
-      - 'tools/site-shell/**'
-      - '.github/canoniek/**'
-      - '.github/scripts/paginacontrole.py'
-      - '.github/scripts/seocontrole.py'
-      - '.github/workflows/paginacontrole-debug.yml'
   workflow_dispatch:
 
 permissions:
@@ -21,27 +9,17 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Playwright installeren
+      - name: Installeer Playwright
         run: |
-          pip install --quiet playwright
-          playwright install --with-deps chromium
+          python -m pip install --upgrade pip
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
       - name: Pagina's controleren
-        run: python .github/scripts/paginacontrole.py
+        run: python tools/paginacontrole.py
       - name: SEO en interne links controleren
-        run: python .github/scripts/seocontrole.py
-      - name: Diagnoserapport bewaren
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pagina-seo-diagnose
-          if-no-files-found: warn
-          retention-days: 1
-          path: |
-            rapport.md
-            seo-rapport.md
+        run: python tools/seo_controle.py

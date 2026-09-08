@@ -3,28 +3,24 @@ name: BG168 Materiality Promotion Tests
 on:
   push:
     branches:
-      - 'automation/bg168-materiality-promotion-v4-20260830'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'tests/make-agent-learning-promotion-contract.test.mjs'
-      - 'tests/chat-learning-completeness-addendum.test.mjs'
-      - 'scripts/brain/**'
-      - 'config/**'
-      - '.github/workflows/bg168-materiality-promotion-tests.yml'
+      - 'automation/make-agent-learning-policy'
+      - 'automation/brain-core-registry'
+      - 'automation/brain-knowledge-config'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  test:
+  contract-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: node --test tests/make-agent-learning-promotion-contract.test.mjs tests/chat-learning-completeness-addendum.test.mjs
+      - run: |
+          node --test tests/make-agent-learning-promotion-contract.test.mjs
+          node --test tests/chat-learning-completeness-addendum.test.mjs
+          node --test tests/brain-component-memory-registry.test.mjs
+          node --test tests/brain-knowledge-index-architecture.test.mjs

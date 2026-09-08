@@ -1,12 +1,6 @@
 name: Portal V2 Production DOM Readback
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'portal-v2/**'
-      - 'tests/integration/portal-v2-production-*.spec.js'
-      - '.github/workflows/portal-v2-production-dom-readback.yml'
   push:
     branches: [main]
     paths:
@@ -16,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: portal-v2-production-dom-readback-${{ github.event.pull_request.number || github.ref }}
+  group: portal-v2-production-dom-readback-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -35,30 +29,16 @@ jobs:
         run: |
           npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
-      - name: Resolve exact readback target
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ "$EVENT_NAME" = "pull_request" ]; then
-            echo "PORTAL_READBACK_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
-          else
-            echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
-          fi
-      - name: Wait for exact readback target
+      - name: Resolve production readback target
+        run: echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
+      - name: Wait for production readback target
         run: |
           ready=0
           for attempt in $(seq 1 30); do
-            if curl -fsS "${PORTAL_READBACK_URL}/portal-v2/?bg_preview_ready=${GITHUB_SHA}-${attempt}" >/dev/null; then
-              ready=1
-              break
-            fi
+            if curl -fsS "${PORTAL_READBACK_URL}/portal-v2/?bg_preview_ready=${GITHUB_SHA}-${attempt}" >/dev/null; then ready=1; break; fi
             sleep 10
           done
-          if [ "$ready" -ne 1 ]; then
-            echo "::error::Portal V2 readback target did not become reachable: ${PORTAL_READBACK_URL}"
-            exit 1
-          fi
+          if [ "$ready" -ne 1 ]; then echo "::error::Portal V2 production readback target did not become reachable"; exit 1; fi
       - name: Read back Portal V2 DOM, standalone routing and CSRD assets
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}

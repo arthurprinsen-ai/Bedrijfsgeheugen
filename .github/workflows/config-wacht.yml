@@ -1,13 +1,8 @@
 name: Configuratiewacht
 
 # Kijkt bij elke wijziging of netlify.toml, _redirects en sitemap.xml nog
-# leesbaar zijn. Aanleiding: op 20 augustus 2026 stond de inhoud van _redirects
-# twee keer in netlify.toml. Netlify kwam niet verder dan "Reading and parsing
-# configuration files" en elke build faalde - urenlang, terwijl de commits
-# gewoon doorliepen en de site op de oude versie bleef staan.
-#
-# Op een pull request is dit een rem: de fout kan niet gemerged worden.
-# Op main is het een melding: de fout staat er dan al, en je wilt hem meteen zien.
+# leesbaar zijn. De pre-merge contractcheck loopt via Required test / website lane.
+# Op main en volgens schema blijft dit de operationele waarschuwing/self-heal ingang.
 
 on:
   push:
@@ -20,14 +15,8 @@ on:
       - 'tools/config-wacht.py'
       - '.github/workflows/*.yml'
       - '.github/workflows/config-wacht.yml'
-  pull_request:
-    paths:
-      - 'netlify.toml'
-      - '_redirects'
-      - 'sitemap.xml'
   workflow_dispatch:
   schedule:
-    # elke werkdag 07:10 Nederlandse tijd, ook als er niets gepusht is
     - cron: '10 5 * * 1-5'
 
 permissions:
@@ -61,7 +50,7 @@ jobs:
         run: cat config-rapport.md >> $GITHUB_STEP_SUMMARY
 
       - name: Melding maken als er iets mis is
-        if: steps.wacht.outputs.code != '0' && github.event_name != 'pull_request'
+        if: steps.wacht.outputs.code != '0'
         uses: actions/github-script@v8
         with:
           script: |
@@ -87,7 +76,7 @@ jobs:
             }
 
       - name: Melding sluiten als alles goed is
-        if: steps.wacht.outputs.code == '0' && github.event_name != 'pull_request'
+        if: steps.wacht.outputs.code == '0'
         uses: actions/github-script@v8
         with:
           script: |

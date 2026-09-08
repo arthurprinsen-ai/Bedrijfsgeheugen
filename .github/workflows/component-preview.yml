@@ -7,12 +7,7 @@ on:
     paths:
       - 'components/**'
       - 'assets/hero/**'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'components/**'
-      - 'assets/hero/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -33,11 +28,7 @@ jobs:
         name: Detect independently changed components
         shell: bash
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            BASE="${{ github.event.pull_request.base.sha }}"
-          else
-            BASE="${{ github.event.before }}"
-          fi
+          BASE="${{ github.event.before }}"
           mapfile -t CHANGED < <(git diff --name-only "$BASE" "$GITHUB_SHA")
           COMPONENTS="$(node tools/detect-changed-components.mjs "${CHANGED[@]}")"
           echo "components=$COMPONENTS" >> "$GITHUB_OUTPUT"
