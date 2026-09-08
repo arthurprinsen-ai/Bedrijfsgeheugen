@@ -7,6 +7,7 @@ import { applySeoOrderEngine } from './seo-order-engine/apply.mjs';
 import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
 import { applyHomepageAutomationLayout } from './fix-homepage-automation-layout.mjs';
 import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage-context-slider.mjs';
+import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './site-shell/ensure-knowledge-nav.mjs';
 
 // De homepage-app had een eigen prijzenweergave met verouderde bedragen.
 // /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
@@ -21,10 +22,6 @@ const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prij
 <p>Vier pakketten, van &euro; 99 per maand tot een prijs op maat, met per pakket wat de AI voor je doet en hoe vers je gegevens zijn.</p>
 <p><a class="btn btn-primary" href="${DOEL}">Bekijk de prijzen &rarr;</a></p></div></div>`;
 
-// Finale endpoint-policy. Dit blok staat bewust ná alle homepage-builders, maar
-// gebruikt exact dezelfde canonieke splitvariabele als de slider-runtime. Zo is
-// er één waarheid voor reveal, ARIA, touch en desktop en kan late CSS de richting
-// of het bereik niet opnieuw omdraaien.
 const SLIDER_ENDPOINT_STYLE = `<style data-bg-compare-slider-endpoints>
 [data-bg-compare-slider]{position:relative!important;overflow:hidden!important;touch-action:pan-y}
 [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
@@ -109,6 +106,15 @@ async function borgHomepageContextSlider() {
   await writeFile('index.html', next, 'utf8');
 }
 
+async function borgFinaleKennisNavigatie() {
+  const html = await readFile('index.html', 'utf8');
+  const next = ensureKnowledgeNavigation(html);
+  if (!verifyKnowledgeNavigation(next)) {
+    throw new Error('Finale Kennisbank/Blog-navigatie ontbreekt in het publiceerbare website-artifact');
+  }
+  await writeFile('index.html', next, 'utf8');
+}
+
 export async function voerPricingShellPipelineUit(stage = 'all') {
   if (stage === 'all' || stage === 'rewrite') await bouwPrijsVerwijzing();
   if (stage === 'all' || stage === 'normalize') {
@@ -121,6 +127,7 @@ export async function voerPricingShellPipelineUit(stage = 'all') {
     await import('./bouw-v18-homepage-platform-expertise-toggle.mjs');
     await import('./bouw-v18-homepage-scroll-story.mjs');
     await borgHomepageContextSlider();
+    await borgFinaleKennisNavigatie();
     await genereerSitemap();
     await controleerSiteUi();
     await controleerTechnischeSeo();
