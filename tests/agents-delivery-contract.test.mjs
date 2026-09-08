@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const AGENTS_PATH = new URL('../AGENTS.md', import.meta.url);
+const COMPLETION_CONTRACT_PATH = new URL('../config/nonterminal-ci-completion-contract.json', import.meta.url);
 
 test('AGENTS delivery synchronization rule includes semantic contract overlap', async () => {
   const agents = await readFile(AGENTS_PATH, 'utf8');
@@ -14,27 +15,58 @@ test('AGENTS delivery synchronization rule includes semantic contract overlap', 
   );
 });
 
-test('AGENTS forbids treating running CI or missing production readback as completion', async () => {
+test('nonterminal CI completion contract forbids stopping before verified production outcome', async () => {
   const agents = await readFile(AGENTS_PATH, 'utf8');
+  const contract = JSON.parse(await readFile(COMPLETION_CONTRACT_PATH, 'utf8'));
 
-  assert.match(
-    agents,
-    /queued, pending, in_progress, een rode check, een open PR, merge-wachtstatus, deploy in progress of ontbrekende productie-readback is nooit terminaal/,
-    'running CI/deploy states must be explicitly non-terminal',
-  );
-  assert.match(
-    agents,
-    /PRODUCTION_GREEN\/LIVE_VERIFIED/,
-    'production completion must require exact live verification',
-  );
-  assert.match(
-    agents,
-    /BLOCKED_HARD_BOUNDARY/,
-    'only a genuine hard boundary may terminate unresolved work',
-  );
-  assert.match(
-    agents,
-    /preview inhoudelijk gecontroleerd.*gates groen.*PR gemerged.*exacte productie-SHA.*live productie-readback/s,
-    'the complete delivery chain must be stated explicitly',
-  );
+  assert.match(agents, /RED MEANS AGENTS KEEP WORKING/);
+  assert.equal(contract.version, 'NONTERMINAL-CI-COMPLETION-v1');
+  assert.equal(contract.policy.ciPendingIsTerminal, false);
+  assert.equal(contract.policy.ciFailureIsTerminal, false);
+  assert.equal(contract.policy.openPrIsTerminal, false);
+  assert.equal(contract.policy.mergeWaitIsTerminal, false);
+  assert.equal(contract.policy.deployInProgressIsTerminal, false);
+  assert.equal(contract.policy.missingProductionReadbackIsTerminal, false);
+
+  for (const state of [
+    'queued',
+    'pending',
+    'in_progress',
+    'failed_check',
+    'open_pr',
+    'merge_wait',
+    'deploy_in_progress',
+    'production_drift',
+    'missing_production_readback',
+  ]) {
+    assert.ok(contract.nonTerminalStates.includes(state), `${state} must remain non-terminal`);
+  }
+
+  assert.deepEqual(contract.requiredSequence, [
+    'build_or_fix',
+    'persist_prevention',
+    'preview_content_readback',
+    'all_required_gates_green',
+    'pr_merged_or_candidate_promoted',
+    'exact_production_sha_deployed',
+    'live_production_readback',
+    'outcome_verified',
+  ]);
+  assert.deepEqual(contract.terminalSuccessStates, ['PRODUCTION_GREEN', 'LIVE_VERIFIED']);
+  assert.equal(contract.terminalBlockedState, 'BLOCKED_HARD_BOUNDARY');
+
+  for (const message of [
+    'CI loopt nog',
+    'wachten op deploy',
+    'PR is nog open',
+    'nog één check rood',
+    'ik doe nu de readback',
+  ]) {
+    assert.ok(contract.prohibitedTerminalMessages.includes(message));
+  }
+
+  assert.equal(contract.handoffOnRuntimeOrContextLimit.required, true);
+  for (const field of ['pr', 'head_sha', 'run_ids', 'failing_step_or_assertion', 'remaining_gate', 'production_readback_step', 'do_not_ask_again']) {
+    assert.ok(contract.handoffOnRuntimeOrContextLimit.fields.includes(field), `${field} must be preserved in handoff`);
+  }
 });
