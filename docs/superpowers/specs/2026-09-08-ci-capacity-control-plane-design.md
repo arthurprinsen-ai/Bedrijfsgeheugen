@@ -2,7 +2,7 @@
 
 Date: 2026-09-08
 Repository: `arthurprinsen-ai/Bedrijfsgeheugen`
-Status: Proposed design approved in chat; implementation not started
+Status: Design approved; awaiting written-spec review before implementation planning
 
 ## Problem
 
@@ -100,7 +100,7 @@ Long-running current-head work is not cancelled merely because it is slow. Stale
 
 ### 8. Queue watchdog and SLO
 
-Add a lightweight queue-health monitor that detects current-head release-critical jobs that remain queued beyond a defined threshold without executing steps.
+Add a lightweight queue-health monitor that detects current-head release-critical jobs that remain queued without executing their first runner step.
 
 The monitor must distinguish:
 
@@ -111,7 +111,7 @@ The monitor must distinguish:
 
 It records evidence and opens/escalates one deduplicated operational signal rather than repeatedly creating queue noise.
 
-Initial operational SLO: PR preflight should obtain runner capacity promptly; any current-head required preflight/classifier that remains queued without starting beyond the agreed threshold is a CI incident.
+Operational SLO: a current-head required preflight/classifier must begin executing a runner step within **5 minutes** of being queued. If it remains queued with no executed runner step for 5 minutes, that is a CI-capacity incident. Superseded runs do not count toward this SLO and should be cancelled automatically.
 
 ### 9. Status bridges
 
@@ -188,7 +188,8 @@ The implementation must include automated tests that validate at least:
 8. `Required test` succeeds only if every selected lane is green or explicitly not applicable;
 9. a superseded SHA cannot later become the branch-protection decision for the current PR head;
 10. independent PRs do not share a global lock;
-11. queue-health detection deduplicates incidents and does not create retry storms.
+11. queue-health detection deduplicates incidents and does not create retry storms;
+12. a current-head required preflight/classifier queued for 5 minutes without a first runner step is classified as a capacity incident, while a superseded run is not.
 
 ## Acceptance criteria
 
@@ -204,6 +205,7 @@ The change is complete only when all of the following are true:
 8. Live evidence shows a materially lower number of runner-consuming workflows for a focused PR than the pre-change baseline observed on PR #1159.
 9. Post-merge deployment and live readback still execute on the exact merged SHA.
 10. The resulting operational learning is written back to the repository/Bedrijfsgeheugen governance path used for release-system learnings.
+11. The queue watchdog detects a synthetic/current-head >5-minute queue starvation case without creating duplicate incident noise.
 
 ## Rollback
 
