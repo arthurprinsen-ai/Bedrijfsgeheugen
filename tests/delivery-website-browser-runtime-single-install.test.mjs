@@ -19,7 +19,7 @@ test('single browser job retains targeted, visibility, and high-risk broad exact
   const browserStart = workflow.indexOf('\n  browser:');
   assert.notEqual(browserStart, -1);
   const browser = workflow.slice(browserStart);
-  assert.match(browser, /needs:\s*\[classify, preview-ready\]/);
+  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
   assert.match(browser, /name: Verify affected routes on desktop and mobile/);
   assert.match(browser, /name: Verify all public pages are visibly rendered/);
   assert.match(browser, /Verify broad high-risk browser contracts/);
@@ -33,7 +33,7 @@ test('page-seo only builds the exact artifact and never starts legacy duplicate 
   assert.notEqual(pageSeoStart, -1);
   assert.notEqual(browserStart, -1);
   const pageSeo = workflow.slice(pageSeoStart, browserStart);
-  assert.match(pageSeo, /needs:\s*classify/);
+  assert.match(pageSeo, /needs:\s*\[classify, syntax-preflight\]/);
   assert.match(pageSeo, /name: Build and verify exact Netlify website artifact/);
   assert.doesNotMatch(pageSeo, /playwright|PAGINA_BASE_URL|paginacontrole\.py|seocontrole\.py/);
 });

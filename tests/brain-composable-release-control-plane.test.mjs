@@ -41,6 +41,14 @@ test('website lane keeps public visibility mandatory while broad checks are high
   assert.match(website, /verify-targeted-website-routes\.mjs/);
 });
 
+test('static syntax preflight blocks preview, artifact build and browser execution', () => {
+  const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+  assert.match(website, /\n  syntax-preflight:[\s\S]*Fail fast on broken inline JavaScript[\s\S]*website-static-syntax-preflight\.mjs/);
+  assert.match(website, /\n  preview-ready:\n\s+needs:\s*\[classify, syntax-preflight\]/);
+  assert.match(website, /\n  page-seo:\n\s+needs:\s*\[classify, syntax-preflight\]/);
+  assert.match(website, /\n  browser:\n\s+needs:\s*\[classify, syntax-preflight, preview-ready\]/);
+});
+
 test('exact artifact build owns modern SEO validation while exact-preview runtime is owned by the browser lane', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   const pageSeoStart = website.indexOf('\n  page-seo:');
@@ -50,7 +58,7 @@ test('exact artifact build owns modern SEO validation while exact-preview runtim
   const pageSeo = website.slice(pageSeoStart, browserStart);
   const browser = website.slice(browserStart);
 
-  assert.match(pageSeo, /needs:\s*classify/);
+  assert.match(pageSeo, /needs:\s*\[classify, syntax-preflight\]/);
   assert.match(pageSeo, /name: Install Netlify build dependencies/);
   assert.match(pageSeo, /run: npm install/);
   assert.match(pageSeo, /name: Build and verify exact Netlify website artifact/);
@@ -77,7 +85,7 @@ test('exact artifact build owns modern SEO validation while exact-preview runtim
     );
   }
   assert.doesNotMatch(pageSeo, /normaliseer-site-ui\.mjs|seocontrole\.py|paginacontrole\.py|playwright|PAGINA_BASE_URL/);
-  assert.match(browser, /needs:\s*\[classify, preview-ready\]/);
+  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
   assert.match(browser, /deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
 });
 

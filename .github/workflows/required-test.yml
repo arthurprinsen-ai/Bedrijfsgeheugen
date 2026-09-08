@@ -90,7 +90,7 @@ jobs:
       # tests/v18-megamenu-heading-contract.test.mjs
       # tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Verify composable release control plane and agent completion contract
-        run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs
+        run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/website-static-syntax-preflight.test.mjs
 
   backend:
     needs: preflight
