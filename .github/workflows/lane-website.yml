@@ -163,9 +163,17 @@ jobs:
             rapport.md
             page-script-diagnostics.txt
           if-no-files-found: warn
-      - name: Verify SEO contracts
+      - id: verify-seo
+        name: Verify SEO contracts
         run: |
           python .github/scripts/seocontrole.py || { cat seo-rapport.md 2>/dev/null || true; exit 1; }
+      - name: Upload SEO contract diagnostics
+        if: failure() && steps.verify-seo.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-contract-diagnostics
+          path: seo-rapport.md
+          if-no-files-found: error
 
   full-regression:
     needs: classify
