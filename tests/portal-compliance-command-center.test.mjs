@@ -26,6 +26,25 @@ test('missing customer input creates UNKNOWN with reason and one concrete next a
 test('customer answers can establish applicability but never manufacture evidence',()=>{const controls=buildCustomerControls({usesAI:true,aiInventoryPresent:true});const aiInventory=controls.find(item=>item.id==='AI-INVENTORY');assert.equal(aiInventory.applicability,'applicable');assert.equal(aiInventory.control.implemented,true);assert.deepEqual(aiInventory.evidence,[]);assert.equal(evaluateControl(aiInventory,{now:NOW}).status,'EVIDENCE_MISSING');});
 test('Bedrijfsgeheugen projection stays fail-closed without legal scope or evidence',()=>{const controls=buildBedrijfsgeheugenControls({});assert.ok(controls.every(item=>item.applicability==='unknown'||item.applicability==='not_applicable'));assert.equal(evaluatePortfolio(controls,{now:NOW,scope:'bedrijfsgeheugen'}).coverage,null);});
 
+test('Bedrijfsgeheugen keeps already implemented controls and evidence visible while legal scope is still unknown',()=>{
+  const controls=buildBedrijfsgeheugenControls({controls:{'CBW-IAM':{implemented:true,evidence:[{id:'EV-IAM',label:'Role based portal access',verified:true}],verifiedAt:'2026-09-08T10:00:00Z',reason:'Technical access control exists.'}}});
+  const iam=controls.find(item=>item.id==='CBW-IAM');
+  assert.equal(iam.applicability,'unknown');
+  assert.equal(iam.control?.implemented,true);
+  assert.equal(iam.evidence.length,1);
+  assert.equal(iam.evidence[0].id,'EV-IAM');
+  assert.equal(evaluateControl(iam,{now:NOW}).status,'UNKNOWN');
+});
+
+test('Bedrijfsgeheugen supports per-control applicability instead of forcing one framework-wide legal conclusion',()=>{
+  const controls=buildBedrijfsgeheugenControls({controls:{'AI-INVENTORY':{applicability:'applicable',implemented:true,evidence:[{id:'EV-AI',label:'AI inventory',verified:true}],verifiedAt:'2026-09-08T10:00:00Z'}}});
+  const ai=controls.find(item=>item.id==='AI-INVENTORY');
+  assert.equal(ai.applicability,'applicable');
+  assert.equal(evaluateControl(ai,{now:NOW}).status,'VERIFIED');
+  const roleRisk=controls.find(item=>item.id==='AI-ROLE-RISK');
+  assert.equal(roleRisk.applicability,'unknown');
+});
+
 test('legacy portal policy answers are reused without turning them into evidence',()=>{
   const input=deriveLegacyPortalComplianceInput({beleid:{aibeleid:2,toegang:3,incident:2,backup:3,continu:3,leverancier:2,verwerker:2,avg:2}});
   assert.equal(input.humanOversight,true);
