@@ -81,29 +81,20 @@ test('document extractor provider fails closed when provider configuration is mi
   assert.equal((await response.json()).error,'DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED');
 });
 
-test('production extractor canary skips by default and persists only provider execution evidence when enabled', async () => {
+test('production extractor canary stays inert even when legacy flag and provider key are present', async () => {
+  let factoryCalled=false;
+  let evidenceWritten=false;
   const logs=[];
-  const skipped=await runDocumentExtractorProductionCanary({env:{},log:value=>logs.push(value)});
-  assert.deepEqual(skipped,{skipped:true});
-  let factoryConfig=null;
-  let persisted=null;
-  const handlerFactory=config=>{
-    factoryConfig=config;
-    return async request=>{
-      assert.equal(request.headers.get('x-bg-safe-test'),'1');
-      return new Response(JSON.stringify({type:'invoice',fields:{invoiceNumber:{value:'INV-BG-LIVE-20260908',confidence:0.99}}}),{status:200,headers:{'content-type':'application/json','x-execution-id':'anthropic-live-123'}});
-    };
-  };
-  const evidence=await runDocumentExtractorProductionCanary({
+  const result=await runDocumentExtractorProductionCanary({
     env:{DOCUMENT_EXTRACTOR_CANARY_ONCE:'1',ANTHROPIC_API_KEY:'server-only-key'},
-    handlerFactory,
-    log:value=>logs.push(value),
-    writeEvidence:async value=>{persisted=value;}
+    handlerFactory:()=>{factoryCalled=true; throw new Error('must not create provider');},
+    writeEvidence:async()=>{evidenceWritten=true;},
+    log:value=>logs.push(value)
   });
-  assert.equal(factoryConfig.anthropicApiKey,'server-only-key');
-  assert.equal(evidence.providerExecutionId,'anthropic-live-123');
-  assert.deepEqual(persisted,evidence);
-  assert.equal(JSON.stringify(persisted).includes('server-only-key'),false);
+  assert.deepEqual(result,{skipped:true,retired:true});
+  assert.equal(factoryCalled,false);
+  assert.equal(evidenceWritten,false);
+  assert.equal(JSON.stringify(logs).includes('server-only-key'),false);
 });
 
 test('production release readback fails closed unless live document extraction is server-configured', async () => {

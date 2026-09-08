@@ -6,6 +6,27 @@
   'use strict';
   var PAD = '/api/koppelingen';
   var wizardMountBezig = false;
+  var COMPLIANCE_URL = 'https://www.bedrijfsgeheugen.nl/portal-next/compliance.html';
+
+  function klantSlug() {
+    try { return new URLSearchParams(window.location.search).get('klant') || ''; }
+    catch (_) { return ''; }
+  }
+
+  function zorgComplianceEntry() {
+    var beleidTrigger = document.querySelector('[data-p="beleid"], [data-p=beleid]');
+    if (!beleidTrigger) return;
+    var bestaand = document.querySelector('[data-bg-compliance-command-center]');
+    if (bestaand) return;
+    var link = document.createElement('a');
+    var klant = klantSlug();
+    link.setAttribute('data-bg-compliance-command-center', '1');
+    link.className = beleidTrigger.className || '';
+    link.href = COMPLIANCE_URL + (klant ? '?klant=' + encodeURIComponent(klant) : '');
+    link.textContent = 'Compliance Command Center';
+    link.setAttribute('aria-label', 'Open Compliance Command Center');
+    beleidTrigger.insertAdjacentElement('afterend', link);
+  }
 
   /* Het paneel #p-koppelingen wordt door het portaal zelf gevuld en blijft dat
      controleren. We hangen ons blok er daarom pas onderaan bij zodra die vulling
@@ -115,6 +136,7 @@
   }
 
   function start() {
+    zorgComplianceEntry();
     if (!vak()) return;
     mountWizard();
     haal().then(function (data) {
@@ -125,8 +147,6 @@
     });
   }
 
-  /* Publiek, zodat andere schermen een ronde of wijziging kunnen melden zonder
-     dit bestand te hoeven kennen. Faalt stil als er niets is ingericht. */
   window.bgKoppelingen = {
     lijst: haal,
     meld: function (payload) {
@@ -141,11 +161,10 @@
     verversen: start
   };
 
-  /* Blijven proberen zolang het paneel nog niet gevuld is, en daarna nog een
-     tijdje kijken of ons blok er nog hangt. Stopt vanzelf. */
   var pogingen = 0;
   var klok = setInterval(function () {
     pogingen++;
+    zorgComplianceEntry();
     if (vak()) { start(); }
     if (pogingen > 60) clearInterval(klok);
   }, 700);
