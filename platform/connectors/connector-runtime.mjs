@@ -22,13 +22,13 @@ export function createEnvironmentConnectorProviders({fetchFn=globalThis.fetch,en
   const sources={upload,email};
   const extractor={extract:async source=>{
     const sample=source?.sample||{};
-    if(sample.extractedFields)return {type:sample.documentType||'custom',confidence:Number(sample.classificationConfidence??1),fields:Object.fromEntries(Object.entries(sample.extractedFields).map(([key,value])=>[key,typeof value==='object'&&value&&'value'in value?value:{value,confidence:1}]))};
+    if(sample.extractedFields)return {type:sample.documentType||'custom',confidence:Number(sample.classificationConfidence??1),fields:Object.fromEntries(Object.entries(sample.extractedFields).map(([key,value])=>[key,typeof value==='object'&&value&&'value'in value?value:{value,confidence:1}])),mode:'safe-test-sample'};
     if(!env.DOCUMENT_EXTRACTOR_URL||!env.CONNECTOR_SAFE_TEST_TOKEN)throw Object.assign(new Error('Document extraction provider is not configured; provide explicit safe-test extractedFields or configure a server extractor.'),{code:'DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED'});
     const response=await fetchFn(env.DOCUMENT_EXTRACTOR_URL,{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1','x-bg-safe-test-token':env.CONNECTOR_SAFE_TEST_TOKEN},body:JSON.stringify(sample)});
     if(!response.ok)throw Object.assign(new Error('Document extraction safe-test failed'),{code:'DOCUMENT_EXTRACTION_SAFE_TEST_FAILED',status:response.status});
     const result=await response.json();
     if(!result||typeof result!=='object'||!result.fields||typeof result.fields!=='object')throw Object.assign(new Error('Document extraction safe-test returned an invalid response'),{code:'DOCUMENT_EXTRACTION_INVALID_RESPONSE'});
-    return result;
+    return {...result,mode:'server-safe-test'};
   }};
   const targets={datahub:{safeTest:async payload=>({ok:true,reference:'datahub-safe-test',payload})}};
   if(env.AFAS_SAFE_TEST_URL)targets.afas={safeTest:async payload=>{const response=await fetchFn(env.AFAS_SAFE_TEST_URL,{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1'},body:JSON.stringify(payload)});return {ok:response.ok,reference:response.headers.get('x-execution-id')||null};}};
