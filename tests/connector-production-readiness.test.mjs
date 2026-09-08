@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { createEnvironmentConnectorProviders } from '../platform/connectors/connector-runtime.mjs';
 import { createDocumentExtractorHandler } from '../platform/connectors/document-extractor-provider.mjs';
 
@@ -77,4 +78,11 @@ test('document extractor provider fails closed when provider configuration is mi
   const response=await handler(new Request('https://example.test/api/connectors/document-extractor',{method:'POST',headers:{'x-bg-safe-test':'1','content-type':'application/json'},body:JSON.stringify({content:'Invoice'})}));
   assert.equal(response.status,503);
   assert.equal((await response.json()).error,'DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED');
+});
+
+test('production release readback fails closed unless live document extraction is server-configured', async () => {
+  const workflow=await readFile(new URL('../.github/workflows/production-release-readback.yml',import.meta.url),'utf8');
+  assert.match(workflow,/body\.extractor\.configured\s*!==\s*true/);
+  assert.match(workflow,/body\.extractor\.state\s*!==\s*'server-safe-test'/);
+  assert.match(workflow,/Live document extractor is not server-configured/);
 });
