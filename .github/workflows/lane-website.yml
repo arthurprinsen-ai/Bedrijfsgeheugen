@@ -101,15 +101,15 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - name: Build canonical SEO input
+      - name: Build exact Netlify website artifact
         run: |
-          node tools/bouw-v18-production-core.mjs
-          node tools/apply-v18-seo.mjs
-          node tools/bouw-losse-paginas.mjs
-          node tools/bouw-inhoudspaginas.mjs
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
-          node tools/normaliseer-site-ui.mjs
+          node tools/prijzen-uit-de-homepage.mjs
       - name: Install page-check browser runtime
         run: |
           python -m pip install playwright==1.55.0

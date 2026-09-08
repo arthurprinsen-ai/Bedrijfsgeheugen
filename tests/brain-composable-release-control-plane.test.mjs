@@ -37,34 +37,36 @@ test('website lane keeps public visibility mandatory while broad checks are high
   assert.match(website, /verify-targeted-website-routes\.mjs/);
 });
 
-test('page and SEO contracts run against built and materialized canonical output', () => {
+test('page and SEO contracts use the same artifact-producing build chain as Netlify', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   const pageSeoStart = website.indexOf('\n  page-seo:');
   const previewStart = website.indexOf('\n  preview-ready:', pageSeoStart);
   assert.notEqual(pageSeoStart, -1);
   assert.notEqual(previewStart, -1);
   const pageSeo = website.slice(pageSeoStart, previewStart);
-  assert.match(pageSeo, /name: Build canonical SEO input/);
-  for (const command of [
-    'node tools/bouw-v18-production-core.mjs',
-    'node tools/apply-v18-seo.mjs',
-    'node tools/bouw-losse-paginas.mjs',
-    'node tools/bouw-inhoudspaginas.mjs',
+  assert.match(pageSeo, /name: Build exact Netlify website artifact/);
+  const commands = [
+    'node tools/bouw-powerhouse-auth.mjs',
+    'node tools/bouw-kennisindex.mjs',
+    'node tools/bouw-v18-production.mjs',
+    'node tools/apply-tabbladen.mjs',
     'node tools/bouw-v18-views.mjs',
     'node tools/bouw-v18-chrome-alles.mjs',
-    'node tools/normaliseer-site-ui.mjs',
-  ]) assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    'node tools/prijzen-uit-de-homepage.mjs',
+  ];
+  for (const command of commands) {
+    assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  for (let index = 1; index < commands.length; index += 1) {
+    assert.ok(
+      pageSeo.indexOf(commands[index - 1]) < pageSeo.indexOf(commands[index]),
+      `Netlify build order must preserve ${commands[index - 1]} before ${commands[index]}`,
+    );
+  }
+  assert.doesNotMatch(pageSeo, /node tools\/normaliseer-site-ui\.mjs/, 'page-seo must not invent a second local build composition');
   assert.ok(
-    pageSeo.indexOf('node tools/bouw-v18-views.mjs') < pageSeo.indexOf('node tools/bouw-v18-chrome-alles.mjs'),
-    'standalone V18 views such as over-ons must exist before estate-wide chrome projection',
-  );
-  assert.ok(
-    pageSeo.indexOf('node tools/bouw-v18-chrome-alles.mjs') < pageSeo.indexOf('node tools/normaliseer-site-ui.mjs'),
-    'all public pages including blog/index.html must have chrome before canonical output materialization',
-  );
-  assert.ok(
-    pageSeo.indexOf('node tools/normaliseer-site-ui.mjs') < pageSeo.indexOf('name: Verify page and SEO contracts'),
-    'canonical output must be materialized before page/SEO verification',
+    pageSeo.indexOf('node tools/prijzen-uit-de-homepage.mjs') < pageSeo.indexOf('name: Verify page and SEO contracts'),
+    'page and SEO checks must run only after the Netlify artifact-producing build chain',
   );
 });
 
