@@ -1,10 +1,13 @@
 name: Repository Writer Parity Rollback
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'brain/evidence/writer-parity-trigger/**'
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: 'Optional exact base SHA; empty means current main'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: write
@@ -16,21 +19,24 @@ concurrency:
 
 jobs:
   prove:
-    if: startsWith(github.head_ref, 'verify-parity/')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       WRITERS: approved-central-blog,blog-bijwerken,menu-balk-fix,paginacontrole,regelgeving-bijwerken,seo-controle,weekblog
     steps:
-      - name: Checkout exact trigger PR base
+      - name: Checkout exact requested base
         uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ inputs.base_sha || 'main' }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+
+      - name: Resolve exact base SHA
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Prove all writer parity and rollback from immutable Git history
         env:
@@ -90,7 +96,7 @@ jobs:
       - name: Create evidence-only reconciliation branch and PR
         env:
           GH_TOKEN: ${{ github.token }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
         run: |
           set -euo pipefail
           mapfile -t changed < <(git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //' | sed -E 's/^.* -> //' | sed '/^$/d' | sort -u)
