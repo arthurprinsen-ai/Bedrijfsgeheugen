@@ -1,15 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import readinessHandler,{config} from '../netlify/functions/connector-readiness.mjs';
 
-const netlify = readFileSync(new URL('../netlify.toml', import.meta.url), 'utf8');
-const portalFunction = readFileSync(new URL('../netlify/functions/portal-connectors.mjs', import.meta.url), 'utf8');
+test('connector readiness has an exact production route and exposes capability state only', async () => {
+  assert.equal(config.path,'/api/connectors/readiness');
 
-test('connector readiness has an explicit production route to the Netlify function', () => {
-  assert.match(portalFunction, /path:\s*['"]\/api\/connectors\/\*['"]/);
-  assert.match(
-    netlify,
-    /from\s*=\s*['"]\/api\/connectors\/\*['"][\s\S]*?to\s*=\s*['"]\/\.netlify\/functions\/portal-connectors['"][\s\S]*?status\s*=\s*200/,
-    'netlify.toml must proxy /api/connectors/* to portal-connectors so the public route cannot silently 404'
-  );
+  const response=await readinessHandler();
+  assert.equal(response.status,200);
+  assert.match(response.headers.get('content-type')||'',/^application\/json/);
+
+  const body=await response.json();
+  assert.equal(typeof body,'object');
+  assert.ok(body.sources);
+  assert.ok(body.targets);
+  assert.ok(body.extractor);
+
+  const serialized=JSON.stringify(body);
+  assert.equal(/SECRET|TOKEN|PASSWORD|API_KEY/i.test(serialized),false);
 });
