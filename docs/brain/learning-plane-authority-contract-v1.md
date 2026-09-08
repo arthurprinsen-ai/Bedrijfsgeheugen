@@ -1,6 +1,6 @@
 # BRAIN Learning Plane Authority Contract v1
 
-Status: CANONICAL CONTRACT CANDIDATE
+Status: CANONICAL CONTRACT
 Scope: BG166, BG167, BG168, BG202, all current/future agents, chats, workers and automation callers.
 
 ## Purpose

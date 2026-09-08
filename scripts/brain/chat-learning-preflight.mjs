@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
+  'docs/brain/learning-plane-authority-contract-v1.md',
   'brain/policies/chat-to-brain-completeness-v1.json',
   'brain/learning/chat-continuity-2026-08-31.json',
   'brain/learning/chat-materialization-2026-08-31-v2.json',
@@ -58,7 +59,7 @@ function serializedPacketBytes(packet) {
 export function compileChatLearningPreflight({
   rootDir = process.cwd(),
   contractPath = DEFAULT_CONTRACT,
-  maxSources = 32,
+  maxSources = 40,
   maxBytes = 256_000
 } = {}) {
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
