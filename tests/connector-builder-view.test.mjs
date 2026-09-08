@@ -11,6 +11,15 @@ test('overview separates planned integrations, built connectors and templates',(
   assert.doesNotMatch(html,/Invoice intake[\s\S]{0,100}>Actief</);
 });
 
+test('overview shows evidence-backed provider readiness and keeps unconfigured AFAS visibly blocked',()=>{
+  const html=renderConnectorOverview({readiness:{sources:{email:{configured:true,state:'native-safe-test'}},extractor:{configured:false,state:'sample-only'},targets:{datahub:{configured:true,state:'native-safe-test'},afas:{configured:false,state:'not-configured'},exact:{configured:false,state:'not-configured'}}}});
+  assert.match(html,/Runtime gereedheid/);
+  assert.match(html,/E-mail[\s\S]{0,100}Veilige test beschikbaar/);
+  assert.match(html,/Documentextractie[\s\S]{0,100}Alleen samplevelden/);
+  assert.match(html,/AFAS[\s\S]{0,100}Niet geconfigureerd/);
+  assert.doesNotMatch(html,/AFAS[\s\S]{0,100}>Actief</);
+});
+
 test('overview never presents configured server-required adapters as active',()=>{
   const html=renderConnectorOverview({connectors:[{id:'c1',name:'AFAS intake',state:'Configured',runtime:{adapterState:'not-configured'}}]});
   assert.match(html,/Configured/);

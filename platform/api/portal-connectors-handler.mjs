@@ -15,6 +15,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine}=
   const suffix=normalized.path.startsWith(base)?normalized.path.slice(base.length):'';
   const segments=suffix.replace(/^\//,'').split('/').filter(Boolean),id=segments[0]||null,action=segments[1]||null,subaction=segments[2]||null;
 
+  if(normalized.method==='GET'&&id==='readiness'&&!action){if(!engine?.readiness)return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);return json(clean(engine.readiness));}
   if(normalized.method==='GET'&&id==='review-queue'){if(typeof store?.listReviewQueue!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.listReviewQueue(tenantId)));}
   if(normalized.method==='POST'&&id==='reviews'&&action&&subaction==='decision'){
     if(typeof store?.getReview!=='function'||typeof store?.decideReview!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);

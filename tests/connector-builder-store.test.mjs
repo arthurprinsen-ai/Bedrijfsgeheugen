@@ -13,6 +13,16 @@ test('client store loads connector list from authenticated API only',async()=>{
   assert.equal(calls[0][0].includes('tenant='),false);
 });
 
+test('client store loads server readiness without tenant or provider secrets',async()=>{
+  const calls=[];
+  const readiness={sources:{email:{configured:true,state:'native-safe-test'}},extractor:{configured:false,state:'sample-only'},targets:{afas:{configured:false,state:'not-configured'}}};
+  const store=createConnectorBuilderStore({fetchFn:async url=>{calls.push(url);return json(url.endsWith('/readiness')?readiness:[]);}});
+  await store.loadReadiness();
+  assert.deepEqual(store.getState().readiness,readiness);
+  assert.equal(calls[0],'/api/connectors/readiness');
+  assert.equal(calls[0].includes('tenant='),false);
+});
+
 test('template starts an editable isolated draft',()=>{
   const store=createConnectorBuilderStore({fetchFn:async()=>json([])});
   const draft=store.startTemplate('purchase-invoice');
