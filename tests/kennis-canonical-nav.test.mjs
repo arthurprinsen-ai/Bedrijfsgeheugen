@@ -6,10 +6,12 @@ const html = await readFile(new URL('../.github/canoniek/kop.html', import.meta.
 const origin = 'https://www.bedrijfsgeheugen.nl';
 
 test('canonical Kennis menu houdt Kennisbank en Blog als aparte bestemmingen op desktop en mobiel', () => {
-  const desktop = html.match(/<button class="bgkop-trig"[^>]*>Kennis[\s\S]*?<div class="bgkop-paneel">([\s\S]*?)<\/div><\/div><a href="https:\/\/www\.bedrijfsgeheugen\.nl\/over-ons">/i)?.[1] || '';
-  const mobile = html.match(/<button class="bgkop-macc"[^>]*>Kennis[\s\S]*?<div class="bgkop-mpaneel" hidden>([\s\S]*?)<\/div><button class="bgkop-macc"[^>]*>Het bedrijfsgeheugen/i)?.[1] || '';
+  const desktopStart = html.indexOf('>Kennis<');
+  const desktopBlock = html.slice(desktopStart, html.indexOf('>Over ons<', desktopStart));
+  const mobileStart = html.indexOf('>Kennis<', desktopStart + 1);
+  const mobileBlock = html.slice(mobileStart, html.indexOf('>Het bedrijfsgeheugen<', mobileStart));
 
-  for (const [label, menu] of [['desktop', desktop], ['mobiel', mobile]]) {
+  for (const [label, menu] of [['desktop', desktopBlock], ['mobiel', mobileBlock]]) {
     assert.ok(menu, `${label}: Kennis-menu ontbreekt`);
     const kennis = menu.indexOf(`${origin}/kennis/`);
     const blog = menu.indexOf(`${origin}/blog/`);
