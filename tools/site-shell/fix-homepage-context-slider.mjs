@@ -12,7 +12,7 @@ const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--bg-compare-split,50%))!important}
 [data-bg-compare-slider] .compare-before .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:0!important;margin-right:auto!important;padding-right:24px!important;box-sizing:border-box}
 [data-bg-compare-slider] .compare-after .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:auto!important;margin-right:0!important;padding-left:24px!important;box-sizing:border-box}
-[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--bg-compare-split,50%),calc(100% - 24px))!important;z-index:20!important}
+[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:var(--bg-compare-split,50%)!important;z-index:20!important}
 [data-bg-compare-slider] .compare-knob{pointer-events:auto!important}
 [data-bg-change-check-source="true"]{opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important}
 .bg-change-progress,.bg-change-flow-check,.bg-change-impact{display:none}
@@ -49,8 +49,13 @@ const STYLE = `<style ${MARKER}>
 }
 </style>`;
 
-const RUNTIME_TAG = `<script ${MARKER} src="${RUNTIME_SRC}" defer></script>`;
-const FALLBACK_TAG = `<script ${FALLBACK_MARKER}>(function(){var q='${SLIDER_SELECTOR}';function n(v){v=Math.max(0,Math.min(100,Number(v)||0));return v<=8?0:v>=92?100:v}function s(el){if(!el)return;el.setAttribute('data-bg-compare-slider','');el.setAttribute('data-bg-compare-ready','true');var k=el.querySelector('.compare-knob');if(!k)return;var v=n(parseFloat(getComputedStyle(el).getPropertyValue('--split')));k.setAttribute('aria-valuemin','0');k.setAttribute('aria-valuemax','100');k.setAttribute('aria-valuenow',String(Math.round(v)));k.setAttribute('aria-disabled','false');if(k.tabIndex<0)k.tabIndex=0}function a(){document.querySelectorAll(q).forEach(function(el){s(el);if(el.getAttribute('data-bg-aria-observed')==='true')return;el.setAttribute('data-bg-aria-observed','true');new MutationObserver(function(){s(el)}).observe(el,{attributes:true,attributeFilter:['style']})})}a();new MutationObserver(a).observe(document.documentElement,{childList:true,subtree:true});})();</script>`;
+// Staat aan het einde van <body>; synchroon laden voorkomt dat de fallback de
+// legacy slider eerst laat winnen voordat de canonieke runtime eigenaarschap neemt.
+const RUNTIME_TAG = `<script ${MARKER} src="${RUNTIME_SRC}"></script>`;
+
+// Fail-safe: als de externe runtime door netwerk/CSP/parse-fout niet actief wordt,
+// blijft elke compare-slider alsnog volledig 0-100 bruikbaar op pointer, touch en keyboard.
+const FALLBACK_TAG = `<script ${FALLBACK_MARKER}>(function(){'use strict';var q='${SLIDER_SELECTOR}',T=8;function n(v){v=Math.max(0,Math.min(100,Number(v)||0));return v<=T?0:v>=100-T?100:v}function r(el,v){v=n(v);var p=v.toFixed(2)+'%',b=el.querySelector('.compare-before'),a=el.querySelector('.compare-after'),h=el.querySelector('.compare-handle'),k=el.querySelector('.compare-knob');el.style.setProperty('--split',p);el.style.setProperty('--bg-compare-split',p);if(b)b.style.setProperty('clip-path','inset(0 '+(100-v).toFixed(2)+'% 0 0)','important');if(a)a.style.setProperty('clip-path','inset(0 0 0 '+v.toFixed(2)+'%)','important');if(h)h.style.setProperty('left',p,'important');if(k){k.setAttribute('aria-valuemin','0');k.setAttribute('aria-valuemax','100');k.setAttribute('aria-valuenow',String(Math.round(v)));k.setAttribute('aria-disabled','false');k.tabIndex=0}return v}function x(el,c){var g=el.getBoundingClientRect();return r(el,g.width?((c-g.left)/g.width)*100:50)}function init(el){if(!el||!el.querySelector('.compare-before')||!el.querySelector('.compare-after'))return;el.setAttribute('data-bg-compare-slider','');el.setAttribute('data-bg-compare-ready','true');if(el.getAttribute('data-bg-compare-owner')==='canonical')return;if(el.getAttribute('data-bg-fallback-ready')==='true')return;el.setAttribute('data-bg-compare-owner','fallback');el.setAttribute('data-bg-fallback-ready','true');var d=false,t=false,k=el.querySelector('.compare-knob');var raw=parseFloat(getComputedStyle(el).getPropertyValue('--bg-compare-split'));if(!Number.isFinite(raw))raw=parseFloat(getComputedStyle(el).getPropertyValue('--split'));r(el,Number.isFinite(raw)?raw:50);el.addEventListener('pointerdown',function(e){d=true;x(el,e.clientX);e.preventDefault();e.stopImmediatePropagation()},true);el.addEventListener('pointermove',function(e){if(!d)return;x(el,e.clientX);e.preventDefault();e.stopImmediatePropagation()},true);el.addEventListener('pointerup',function(e){if(!d)return;d=false;x(el,e.clientX);e.stopImmediatePropagation()},true);el.addEventListener('pointercancel',function(){d=false},true);el.addEventListener('touchstart',function(e){if(!e.touches||!e.touches[0])return;t=true;x(el,e.touches[0].clientX);e.stopImmediatePropagation()},{capture:true,passive:true});document.addEventListener('touchmove',function(e){if(!t||!e.touches||!e.touches[0])return;x(el,e.touches[0].clientX)},{capture:true,passive:true});document.addEventListener('touchend',function(e){if(!t)return;t=false;var p=e.changedTouches&&e.changedTouches[0];if(p)x(el,p.clientX)},{capture:true,passive:true});document.addEventListener('touchcancel',function(){t=false},{capture:true,passive:true});if(k)k.addEventListener('keydown',function(e){var v=parseFloat(el.style.getPropertyValue('--bg-compare-split'))||50;if(e.key==='ArrowLeft')v-=5;else if(e.key==='ArrowRight')v+=5;else if(e.key==='Home')v=0;else if(e.key==='End')v=100;else return;e.preventDefault();e.stopImmediatePropagation();r(el,v)},true)}function all(){document.querySelectorAll(q).forEach(init);document.querySelectorAll('.compare-before').forEach(function(b){var p=b.parentElement;if(p&&p.querySelector('.compare-after'))init(p)})}all();new MutationObserver(all).observe(document.documentElement,{childList:true,subtree:true})})();</script>`;
 
 function normalizeLegacyBounds(html){
   return html
@@ -76,12 +81,13 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('[aria-valuenow="94"]')||
      !next.includes(RUNTIME_SRC)||
      !next.includes(FALLBACK_MARKER)||
+     !next.includes("data-bg-compare-owner','fallback")||
      !next.includes("aria-valuenow',String(Math.round(v))")||
      !next.includes('data-bg-change-flow')||
      !next.includes('data-bg-change-progress')||
      !next.includes('data-bg-change-status')||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
-     (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"\s+defer><\/script>/g)||[]).length!==1||
+     (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-aria-fallback>/g)||[]).length!==1){
     throw new Error('Compare-slider readability guard kon niet volledig worden toegepast');
   }

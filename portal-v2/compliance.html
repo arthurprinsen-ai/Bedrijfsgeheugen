@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Compliance- en auditoverzicht voor EU AI Act, NIS2 en NIS-legacy in het Bedrijfsgeheugen klantenportaal.">
+<title>Compliance & audit · Bedrijfsgeheugen</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17213a;background:#f5f7fb;--blue:#0d5bef;--navy:#14213d;--line:#dfe5ef;--muted:#66748f;--red:#b42318;--orange:#b54708;--green:#067647}*{box-sizing:border-box}body{margin:0}.shell{max-width:1440px;margin:auto;padding:28px}.top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--blue)}h1{margin:4px 0 7px;font-size:34px;letter-spacing:-.035em}p{color:var(--muted);line-height:1.55}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;color:var(--navy)}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.back{display:inline-block;margin-bottom:12px;color:var(--blue);font-weight:800;text-decoration:none}.notice{padding:12px 14px;background:#eef4ff;border:1px solid #c9dcff;border-radius:12px;color:#29456f;font-size:13px}.grid{display:grid;gap:16px}.hero{grid-template-columns:1.15fr 2fr;margin:18px 0}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 8px 28px rgba(24,37,61,.04)}.readiness{display:flex;align-items:center;gap:20px}.score{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--blue) calc(var(--score)*1%),#edf1f7 0);position:relative}.score:after{content:"";position:absolute;width:82px;height:82px;background:#fff;border-radius:50%}.score strong{z-index:1;font-size:28px}.score small{font-size:12px}.metrics{grid-template-columns:repeat(5,1fr)}.metric b{font-size:25px;display:block;color:var(--navy)}.metric span{font-size:12px;color:var(--muted)}.frameworks{grid-template-columns:repeat(3,1fr)}.framework h3{margin:0 0 6px}.bar{height:8px;border-radius:999px;background:#edf1f7;overflow:hidden;margin:14px 0}.bar i{display:block;height:100%;background:var(--blue)}.meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.two{grid-template-columns:1.2fr .8fr;margin-top:16px}.risk{border-left:4px solid var(--orange);padding:14px 14px 14px 16px;margin-top:10px;background:#fffaf5;border-radius:10px}.risk.critical{border-color:var(--red);background:#fff5f4}.risk.high{border-color:#d92d20}.risk.medium{border-color:var(--orange)}.risk.low{border-color:#175cd3;background:#f5f8ff}.badge{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.risk h4{margin:5px 0}.risk p{font-size:13px;margin:5px 0}.detail{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;font-size:12px}.detail div{background:#fff;border:1px solid #eadfd7;border-radius:8px;padding:8px}.next{counter-reset:item}.next article{display:grid;grid-template-columns:32px 1fr;gap:9px;padding:12px 0;border-bottom:1px solid var(--line)}.next article:before{counter-increment:item;content:counter(item);width:28px;height:28px;display:grid;place-items:center;background:#eef4ff;color:var(--blue);border-radius:8px;font-weight:900}.next b{display:block}.next small{color:var(--muted)}.auditmeta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:12px}.auditmeta div{background:#f7f9fc;padding:9px;border-radius:8px}.empty{padding:26px;text-align:center;border:1px dashed #c8d0df;border-radius:12px}.tablewrap{overflow:auto}.matrix{width:100%;border-collapse:collapse;font-size:12px}.matrix th,.matrix td{padding:9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.matrix th{color:var(--muted);font-size:11px;text-transform:uppercase}.yes{color:var(--green);font-weight:900}.no{color:var(--red);font-weight:900}.footer{font-size:11px;color:var(--muted);margin-top:18px}
+@media(max-width:900px){.shell{padding:16px}.top{display:block}.actions{margin-top:14px}.hero,.two,.frameworks,.metrics{grid-template-columns:1fr}.readiness{align-items:flex-start}.auditmeta{grid-template-columns:1fr}.detail{grid-template-columns:1fr}h1{font-size:28px}}
+@media print{body{background:#fff}.shell{max-width:none;padding:0}.back,.actions,.notice{display:none!important}.card{box-shadow:none;break-inside:avoid}.risk{break-inside:avoid}.hero,.two{grid-template-columns:1fr}.frameworks{grid-template-columns:repeat(3,1fr)}.metrics{grid-template-columns:repeat(5,1fr)}@page{size:A4;margin:12mm}}
+</style>
+</head>
+<body>
+<main class="shell">
+<a class="back" href="https://www.bedrijfsgeheugen.nl/portal-v2/">← Terug naar klantenportaal</a>
+<section class="top">
+ <div><div class="eyebrow">Compliance & audit</div><h1>AI Act, NIS2 en NIS-legacy</h1><p>Live readiness op basis van vastgelegde antwoorden, maatregelen, bewijs, review en goedkeuring. Ontbrekende informatie wordt zichtbaar als risico met een concrete vervolgstap.</p></div>
+ <div class="actions"><button class="btn" id="copyAudit">Kopieer auditoverzicht</button><button class="btn primary" id="printAudit">Print / PDF</button></div>
+</section>
+<div class="notice"><strong>Readiness is geen automatisch juridisch oordeel.</strong> 100% ingevuld wordt pas audit-ready wanneer toepasselijkheid, maatregelen, bewijs en review aantoonbaar zijn vastgelegd.</div>
+<section class="grid hero">
+ <article class="card readiness"><div class="score" id="score" style="--score:0"><strong id="readiness">0%</strong></div><div><div class="eyebrow">Audit readiness</div><h2 id="headline">Nog te beoordelen</h2><p id="riskSummary">De status wordt opgebouwd uit het compliance-dossier.</p></div></article>
+ <article class="card"><div class="grid metrics"><div class="metric"><b id="mCompletion">0%</b><span>Ingevuld</span></div><div class="metric"><b id="mMeasures">0%</b><span>Maatregelen</span></div><div class="metric"><b id="mEvidence">0%</b><span>Bewijs</span></div><div class="metric"><b id="mReview">0%</b><span>Review</span></div><div class="metric"><b id="mApproval">0%</b><span>Goedkeuring</span></div></div></article>
+</section>
+<section class="grid frameworks" id="frameworks"></section>
+<section class="grid two">
+ <article class="card"><div class="eyebrow">Wat vraagt nu aandacht?</div><h2>Open risico’s</h2><div id="risks"></div></article>
+ <article class="card"><div class="eyebrow">Waarom nu?</div><h2>Volgende stappen</h2><div class="next" id="nextSteps"></div></article>
+</section>
+<section class="card" style="margin-top:16px">
+ <div class="eyebrow">Audit snapshot</div><h2>Deelbaar dossieroverzicht</h2><div class="auditmeta" id="auditMeta"></div>
+ <div class="tablewrap" style="margin-top:14px"><table class="matrix"><thead><tr><th>Framework</th><th>Control</th><th>Ingevuld</th><th>Maatregel</th><th>Bewijs</th><th>Review</th><th>Goedkeuring</th><th>Status</th></tr></thead><tbody id="matrix"></tbody></table></div>
+</section>
+<p class="footer">Het auditoverzicht is een tijdgebonden snapshot van de beschikbare portalinformatie. Een auditor of toezichthouder moet de onderliggende bewijsstukken en toepasselijkheidsbesluiten zelfstandig kunnen herleiden.</p>
+</main>
+<script type="module">
+import { assessCompliance, buildAuditSnapshot, loadComplianceControls } from './compliance-state.js';
+
+const FRAMEWORK_VERSIONS = Object.freeze({'AI Act':'EU 2024/1689 · consolidatie 2026-07-27','NIS2':'EU 2022/2555','NIS':'EU 2016/1148 · legacy'});
+const CATALOG = [
+ {id:'AI-01',framework:'AI Act',title:'AI-systemenregister en doelgebruik',severity:'high',why:'Zonder volledige inventaris kan toepasselijkheid en risicoklasse niet betrouwbaar worden bepaald.',nextStep:'Registreer alle gebruikte of aangeboden AI-systemen, doel, eigenaar en leverancier.',evidenceNeeded:'AI-register met eigenaar, doel, leverancier en gebruikscontext'},
+ {id:'AI-02',framework:'AI Act',title:'Rol en toepasselijkheid vastgesteld',severity:'high',why:'Verplichtingen verschillen per rol en toepassing.',nextStep:'Leg per AI-systeem rol, toepasselijkheid en gemotiveerde classificatie vast.',evidenceNeeded:'Classificatiebesluit met datum en reviewer'},
+ {id:'AI-03',framework:'AI Act',title:'Verboden en hoog-risico toepassingen beoordeeld',severity:'critical',why:'Onjuiste classificatie kan materiële compliance- en gebruiksrisico’s veroorzaken.',nextStep:'Voer en review de risico- en verbodentoets uit voor relevante AI-systemen.',evidenceNeeded:'Risicobeoordeling en besluitlog'},
+ {id:'AI-04',framework:'AI Act',title:'Data, transparantie en menselijk toezicht',severity:'high',why:'Governance moet aantoonbaar aansluiten op de concrete inzet van AI.',nextStep:'Leg dataherkomst, transparantiemaatregelen en menselijk toezicht vast.',evidenceNeeded:'Data-/transparantie-/oversight dossier'},
+ {id:'AI-05',framework:'AI Act',title:'Logging, monitoring en incidenten',severity:'medium',nextStep:'Koppel logging, monitoring en incidentafhandeling aan ieder relevant AI-systeem.',evidenceNeeded:'Log-/monitoringbewijs en incidentprocedure'},
+ {id:'AI-06',framework:'AI Act',title:'AI-geletterdheid en verantwoordelijkheden',severity:'medium',nextStep:'Leg rollen, training en AI-geletterdheidsmaatregelen vast.',evidenceNeeded:'RACI, training en deelnamebewijs'},
+ {id:'N2-01',framework:'NIS2',title:'Toepasselijkheid en scope',severity:'high',nextStep:'Leg vast of en waarom de organisatie/entiteit binnen de NIS2-scope valt.',evidenceNeeded:'Scope- en toepasselijkheidsbesluit'},
+ {id:'N2-02',framework:'NIS2',title:'Cyberrisicobeheersing en governance',severity:'critical',nextStep:'Leg bestuurlijke verantwoordelijkheid en cyberrisicobeheersmaatregelen vast.',evidenceNeeded:'Securitybeleid, risicoanalyse, governancebesluit'},
+ {id:'N2-03',framework:'NIS2',title:'Incidentrespons en meldingsgereedheid',severity:'critical',why:'Zonder geoefend incidentproces ontbreekt aantoonbare operationele gereedheid.',nextStep:'Leg incidentrespons, escalatie, meldingsworkflow en oefenbewijs vast.',evidenceNeeded:'IR-plan, contactlijst, oefen-/incidentbewijs'},
+ {id:'N2-04',framework:'NIS2',title:'Continuïteit, back-up en crisisbeheer',severity:'high',nextStep:'Koppel continuïteits- en herstelmaatregelen aan kritieke diensten en systemen.',evidenceNeeded:'BCP/DR, back-uptests, herstelbewijs'},
+ {id:'N2-05',framework:'NIS2',title:'Supply-chain en leveranciersrisico',severity:'high',nextStep:'Beoordeel kritieke leveranciers en leg securityverplichtingen en monitoring vast.',evidenceNeeded:'Leveranciersregister, beoordelingen en contractcontrols'},
+ {id:'N2-06',framework:'NIS2',title:'Toegang, kwetsbaarheden en cryptografie',severity:'high',nextStep:'Leg IAM, kwetsbaarheidsbeheer, patching en passende cryptografie aantoonbaar vast.',evidenceNeeded:'IAM-/patch-/vulnerability-/crypto bewijs'},
+ {id:'N2-07',framework:'NIS2',title:'Awareness en training',severity:'medium',nextStep:'Borg periodieke securitytraining en rolgerichte bewustwording.',evidenceNeeded:'Trainingsplan en deelnamebewijs'},
+ {id:'NIS-L1',framework:'NIS',title:'Historische NIS-mapping',severity:'low',nextStep:'Koppel eventuele historische NIS-controls aan de actuele NIS2-controls.',evidenceNeeded:'Legacy mapping of gemotiveerd niet van toepassing'}
+];
+
+function overlay(catalog, filled) {
+ const byId = new Map(filled.map(item => [item.id,item]));
+ return catalog.map(base => ({ applicable:true,answered:false,measure:false,evidence:false,reviewed:false,approved:false,...base,...(byId.get(base.id)||{}) }));
+}
+const controls = overlay(CATALOG, loadComplianceControls());
+const assessment = assessCompliance(controls);
+const snapshot = buildAuditSnapshot({organisation:localStorage.getItem('bg.organisation.name')||'Organisatie',frameworkVersions:FRAMEWORK_VERSIONS,assessment});
+
+const $=id=>document.getElementById(id); const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+$('readiness').textContent=`${assessment.readiness}%`; $('score').style.setProperty('--score',assessment.readiness);
+$('mCompletion').textContent=`${assessment.completion}%`; $('mMeasures').textContent=`${assessment.measures}%`; $('mEvidence').textContent=`${assessment.evidence}%`; $('mReview').textContent=`${assessment.review}%`; $('mApproval').textContent=`${assessment.approval}%`;
+const critical=assessment.findings.filter(x=>x.severity==='critical').length, high=assessment.findings.filter(x=>x.severity==='high').length;
+$('headline').textContent=assessment.readiness>=90?'Bijna audit-ready':assessment.readiness>=70?'Gerichte verbeteringen nodig':assessment.readiness>=40?'Materiële gaten aanwezig':'Dossier onvoldoende onderbouwd';
+$('riskSummary').textContent=`${assessment.findings.length} open bevindingen · ${critical} kritisch · ${high} hoog.`;
+$('frameworks').innerHTML=Object.entries(FRAMEWORK_VERSIONS).map(([name,version])=>{const s=assessment.byFramework[name]||{readiness:0,controls:0,openRisks:0};return `<article class="card framework"><div class="eyebrow">${esc(version)}</div><h3>${esc(name)}</h3><div class="bar"><i style="width:${s.readiness}%"></i></div><div class="meta"><span>${s.readiness}% readiness</span><span>${s.openRisks} open risico's</span></div></article>`}).join('');
+$('risks').innerHTML=assessment.findings.length?assessment.findings.slice(0,12).map(r=>`<section class="risk ${r.severity}"><span class="badge">${esc(r.severity)} · ${esc(r.framework)}</span><h4>${esc(r.title)}</h4><p><strong>Waarom:</strong> ${esc(r.why)}</p><p><strong>Volgende stap:</strong> ${esc(r.nextStep)}</p><div class="detail"><div><strong>Bewijs nodig</strong><br>${esc(r.evidenceNeeded)}</div><div><strong>Eigenaar / deadline</strong><br>${esc(r.owner)}${r.dueDate?' · '+esc(r.dueDate):''}</div></div></section>`).join(''):'<div class="empty">Geen open risico’s op basis van het huidige dossier.</div>';
+$('nextSteps').innerHTML=snapshot.nextActions.length?snapshot.nextActions.slice(0,8).map((a,i)=>`<article><div><b>${esc(a)}</b><small>${i===0?'Hoogste actuele prioriteit op basis van risicoseverity en ontbrekend bewijs.':'Sluit een open control en verhoogt de audit traceability.'}</small></div></article>`).join(''):'<div class="empty">Geen vervolgstappen open.</div>';
+$('auditMeta').innerHTML=[['Snapshot',snapshot.snapshotId],['Gegenereerd',new Date(snapshot.generatedAt).toLocaleString('nl-NL')],['Organisatie',snapshot.organisation],['Scope',snapshot.scope],['AI Act',FRAMEWORK_VERSIONS['AI Act']],['NIS2',FRAMEWORK_VERSIONS.NIS2]].map(([k,v])=>`<div><strong>${esc(k)}</strong><br>${esc(v)}</div>`).join('');
+const yn=v=>v?'<span class="yes">Ja</span>':'<span class="no">Nee</span>';
+$('matrix').innerHTML=controls.map(c=>{const na=c.applicable===false;const validNa=na&&c.naReason&&c.naDecidedBy&&c.naDecidedAt;return `<tr><td>${esc(c.framework)}</td><td>${esc(c.id)} · ${esc(c.title)}</td><td>${yn(c.answered||validNa)}</td><td>${yn(c.measure||validNa)}</td><td>${yn(c.evidence||validNa)}</td><td>${yn(c.reviewed||validNa)}</td><td>${yn(c.approved||validNa)}</td><td>${validNa?'N.v.t. met besluit':(c.answered&&c.measure&&c.evidence&&c.reviewed&&c.approved?'Audit-ready':'Open')}</td></tr>`}).join('');
+
+$('printAudit').addEventListener('click',()=>window.print());
+$('copyAudit').addEventListener('click',async()=>{const lines=[`${snapshot.organisation} — Compliance & audit`,`${snapshot.snapshotId} · readiness ${snapshot.readiness}%`,`Open risico’s: ${snapshot.openRisks.length}`,...snapshot.openRisks.slice(0,10).map(r=>`- ${r.severity.toUpperCase()} ${r.framework}: ${r.title} — ${r.nextStep}`)];try{await navigator.clipboard.writeText(lines.join('\n'));$('copyAudit').textContent='Gekopieerd';setTimeout(()=>$('copyAudit').textContent='Kopieer auditoverzicht',1600)}catch{$('copyAudit').textContent='Kopiëren niet beschikbaar'}});
+</script>
+</body>
+</html>

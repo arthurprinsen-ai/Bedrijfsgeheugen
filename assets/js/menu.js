@@ -3,6 +3,62 @@
    no-JS navigatie; op mobiel bouwen we daar een duidelijke drill-down laag
    bovenop met grote touch-targets en een herkenbare Menu-pill. */
 (function () {
+  /* Homepage hero-video: browsers (met name iOS/Safari) kunnen een geldige
+     muted autoplay alsnog onderbreken na page restore, visibility changes of
+     een trage externe media response. Maak starten daarom idempotent en
+     herstelbaar, zonder geluid of user-interaction te forceren. */
+  (function initHeroVideoRecovery() {
+    var video = document.querySelector('.hero-product-video');
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+
+    var retryTimer = 0;
+    function startVideo() {
+      if (document.hidden || video.ended) return;
+      if (video.readyState === 0) {
+        try { video.load(); } catch (e) {}
+      }
+      var attempt;
+      try { attempt = video.play(); } catch (e) { attempt = null; }
+      if (attempt && typeof attempt.catch === 'function') {
+        attempt.catch(function () {
+          clearTimeout(retryTimer);
+          retryTimer = setTimeout(function () {
+            try { video.play(); } catch (e) {}
+          }, 700);
+        });
+      }
+    }
+
+    ['loadedmetadata', 'loadeddata', 'canplay'].forEach(function (eventName) {
+      video.addEventListener(eventName, startVideo, { passive: true });
+    });
+    video.addEventListener('pause', function () {
+      if (!document.hidden && !video.ended) {
+        clearTimeout(retryTimer);
+        retryTimer = setTimeout(startVideo, 250);
+      }
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) startVideo();
+    });
+    addEventListener('pageshow', startVideo, { passive: true });
+    document.addEventListener('touchstart', startVideo, { once: true, passive: true });
+    document.addEventListener('pointerdown', startVideo, { once: true, passive: true });
+
+    startVideo();
+    setTimeout(startVideo, 350);
+    setTimeout(startVideo, 1200);
+  })();
+
   var knop = document.getElementById('bgkopKnop');
   var bron = document.getElementById('bgkopMob');
   if (!knop || !bron) return;
