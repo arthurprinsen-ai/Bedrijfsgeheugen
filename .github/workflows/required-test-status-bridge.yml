@@ -1,8 +1,7 @@
 name: Required test status bridge
 
 on:
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   actions: read
@@ -13,30 +12,5 @@ jobs:
   publish-required-status:
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for Required test and publish legacy test status
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          set -euo pipefail
-          api="https://api.github.com/repos/${REPO}/actions/workflows/required-test.yml/runs?head_sha=${SHA}&event=pull_request&per_page=20"
-          conclusion=""
-          for attempt in $(seq 1 60); do
-            payload="$(curl -fsSL -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "${api}")"
-            conclusion="$(python -c 'import json,sys; d=json.load(sys.stdin); runs=d.get("workflow_runs",[]); done=[r for r in runs if r.get("status")=="completed"]; print(done[0].get("conclusion","") if done else "")' <<<"${payload}")"
-            if [ -n "${conclusion}" ]; then break; fi
-            sleep 10
-          done
-          if [ "${conclusion}" != "success" ]; then
-            echo "Required test did not complete successfully: ${conclusion:-not completed}"
-            exit 1
-          fi
-          curl -fsSL -X POST \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${REPO}/statuses/${SHA}" \
-            -d '{"state":"success","context":"test","description":"Required test workflow completed successfully"}'
-      - name: Explain required-status bridge failure
-        if: failure()
-        run: echo "::error::Required test status bridge failed for ${{ github.event.pull_request.head.sha }}; inspect the Required test workflow conclusion before retrying."
+      - name: Legacy bridge is manual-only after canonical test cutover
+        run: echo "Required test publishes the branch-protected test check directly; no polling PR runner is required."
