@@ -5,21 +5,19 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: required-test-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   statuses: read
 
 jobs:
-  preflight:
+  test:
+    name: test
     runs-on: ubuntu-latest
-    outputs:
-      backend: ${{ steps.scope.outputs.backend }}
-      portal: ${{ steps.scope.outputs.portal }}
-      website: ${{ steps.scope.outputs.website }}
-      automation: ${{ steps.scope.outputs.automation }}
-      base_sha: ${{ steps.scope.outputs.base_sha }}
-      head_sha: ${{ steps.scope.outputs.head_sha }}
-      pr_number: ${{ steps.scope.outputs.pr_number }}
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
         with:
@@ -27,93 +25,27 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install dependencies once
+        run: npm install
+      - name: Mandatory chat-learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
       - name: Block unjustified moving-main successor rebuilds
         if: github.event_name == 'pull_request'
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/moving-main-successor-guard.mjs
-      - id: scope
-        name: Classify independent delivery lanes
+      - name: Execute single-flight release plan
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          node --input-type=module - <<'NODE'
-          import { execFileSync } from 'node:child_process';
-          import { readFile, appendFile } from 'node:fs/promises';
-          import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
-          import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
-          const head=process.env.HEAD_SHA || execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const base=process.env.BASE_SHA || execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changedPaths=execFileSync('git',['diff','--name-only',`${base}...${head}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
-          const plan=createDeliveryPlan({changedPaths,headSha:head,policy});
-          const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
-          for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${base}\nhead_sha=${head}\npr_number=${process.env.PR_NUMBER || process.env.GITHUB_RUN_ID || '0'}\n`);
-          console.log(JSON.stringify({changedPaths,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
-          NODE
-      # Website contract ownership remains visible here for the stable Required test
-      # contract while execution is delegated to .github/workflows/lane-website.yml:
-      # tests/v18-megamenu-heading-contract.test.mjs
-      # tools/site-shell/v18-megamenu-browser-check.mjs
-      - name: Verify composable release control plane
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs
-
-  backend:
-    needs: preflight
-    if: needs.preflight.outputs.backend == 'true'
-    uses: ./.github/workflows/lane-backend.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.head_sha }}
-
-  portal:
-    needs: preflight
-    if: needs.preflight.outputs.portal == 'true'
-    uses: ./.github/workflows/lane-portal.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.head_sha }}
-
-  automation:
-    needs: preflight
-    if: needs.preflight.outputs.automation == 'true'
-    uses: ./.github/workflows/lane-automation.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.head_sha }}
-
-  website:
-    needs: preflight
-    if: needs.preflight.outputs.website == 'true'
-    uses: ./.github/workflows/lane-website.yml
-    with:
-      base_sha: ${{ needs.preflight.outputs.base_sha }}
-      head_sha: ${{ needs.preflight.outputs.head_sha }}
-      pr_number: ${{ needs.preflight.outputs.pr_number }}
-
-  test:
-    name: test
-    if: always()
-    needs: [preflight, backend, portal, automation, website]
-    runs-on: ubuntu-latest
-    env:
-      PREFLIGHT: ${{ needs.preflight.result }}
-      SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
-      SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
-      SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
-      SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
-      BACKEND: ${{ needs.backend.result }}
-      PORTAL: ${{ needs.portal.result }}
-      AUTOMATION: ${{ needs.automation.result }}
-      WEBSITE: ${{ needs.website.result }}
-    steps:
-      - name: Aggregate only selected lane results
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number || 0 }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          test "$PREFLIGHT" = success
-          [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
-          [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
-          [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
-          [ "$SELECT_WEBSITE" != true ] || [ "$WEBSITE" = success ]
-          echo "Selected release lanes are green."
+          base="${BASE_SHA:-HEAD^}"
+          node tools/ci/single-flight-release-kernel.mjs run --base "$base" --head "$HEAD_SHA" --pr "$PR_NUMBER"
