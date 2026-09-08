@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, glob } from 'node:fs/promises';
 import { normaliseerAllePaginas } from './normaliseer-site-ui.mjs';
 import { controleerSiteUi } from './controleer-site-ui.mjs';
 import { genereerSitemap } from './genereer-sitemap.mjs';
@@ -9,13 +9,8 @@ import { applyHomepageAutomationLayout } from './fix-homepage-automation-layout.
 import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage-context-slider.mjs';
 import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './site-shell/ensure-knowledge-nav.mjs';
 
-// De homepage-app had een eigen prijzenweergave met verouderde bedragen.
-// /prijzen is sinds 2 september 2026 een eigen contentpagina binnen dezelfde
-// canonical merk-shell. Na de page-policy volgt nu één centrale SEO-order
-// enrichment. Sitemap, UI, technische SEO en de commerciële intent/link/blog
-// contracten worden daarna op exact dezelfde gebouwde output gecontroleerd.
-
 const DOEL = 'https://www.bedrijfsgeheugen.nl/prijzen';
+const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
 
 const BLOK = `<div class="pagehero"><div class="wrap"><span class="eyebrow">Prijzen</span>
 <h2>De prijzen staan op een eigen pagina.</h2>
@@ -107,12 +102,24 @@ async function borgHomepageContextSlider() {
 }
 
 async function borgFinaleKennisNavigatie() {
-  const html = await readFile('index.html', 'utf8');
-  const next = ensureKnowledgeNavigation(html);
-  if (!verifyKnowledgeNavigation(next)) {
-    throw new Error('Finale Kennisbank/Blog-navigatie ontbreekt in het publiceerbare website-artifact');
+  const bestanden = [];
+  for await (const pad of glob('*.html')) if (!MAG_NIET.has(pad)) bestanden.push(pad);
+  for await (const pad of glob('blog/*/index.html')) bestanden.push(pad);
+  bestanden.push('blog/index.html');
+
+  let gecontroleerd = 0;
+  for (const bestand of [...new Set(bestanden)]) {
+    let html;
+    try { html = await readFile(bestand, 'utf8'); } catch { continue; }
+    if (!html.includes('<body')) continue;
+    const next = ensureKnowledgeNavigation(html);
+    if (!verifyKnowledgeNavigation(next)) {
+      throw new Error(`${bestand}: finale Kennisbank/Blog-navigatie ontbreekt`);
+    }
+    if (next !== html) await writeFile(bestand, next, 'utf8');
+    gecontroleerd += 1;
   }
-  await writeFile('index.html', next, 'utf8');
+  console.log(`Finale Kennisbank/Blog-navigatie estate-wide geborgd op ${gecontroleerd} pagina's`);
 }
 
 export async function voerPricingShellPipelineUit(stage = 'all') {
