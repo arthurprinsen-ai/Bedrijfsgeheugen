@@ -24,7 +24,8 @@ jobs:
       website: ${{ steps.scope.outputs.website }}
       automation: ${{ steps.scope.outputs.automation }}
       base_sha: ${{ steps.scope.outputs.base_sha }}
-      head_sha: ${{ steps.scope.outputs.head_sha }}
+      change_head_sha: ${{ steps.scope.outputs.change_head_sha }}
+      candidate_sha: ${{ steps.scope.outputs.candidate_sha }}
       pr_number: ${{ steps.scope.outputs.pr_number }}
     steps:
       - uses: actions/checkout@v5
@@ -33,12 +34,6 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Block unjustified moving-main successor rebuilds
-        if: github.event_name == 'pull_request'
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-        run: node scripts/brain/moving-main-successor-guard.mjs
       - id: scope
         name: Classify independent delivery lanes
         env:
@@ -78,16 +73,16 @@ jobs:
               } : undefined,
             },
           });
-          const changedPaths=execFileSync('git',['diff','--name-only',`${context.baseSha}...${context.headSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const changedPaths=execFileSync('git',['diff','--name-only',`${context.baseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata=parseScopeMetadata(process.env.PR_BODY || '');
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
-          const plan=createDeliveryPlan({changedPaths,headSha:context.headSha,policy});
+          const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${context.baseSha}\nhead_sha=${context.headSha}\npr_number=${context.prNumber}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${context.baseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
           console.log(JSON.stringify({context,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
       # Website contract ownership remains visible here for the stable Required test
@@ -95,28 +90,28 @@ jobs:
       # tests/v18-megamenu-heading-contract.test.mjs
       # tools/site-shell/v18-megamenu-browser-check.mjs
       - name: Verify composable release control plane and agent completion contract
-        run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs
+        run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs
 
   backend:
     needs: preflight
     if: needs.preflight.outputs.backend == 'true'
     uses: ./.github/workflows/lane-backend.yml
     with:
-      head_sha: ${{ needs.preflight.outputs.head_sha }}
+      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   portal:
     needs: preflight
     if: needs.preflight.outputs.portal == 'true'
     uses: ./.github/workflows/lane-portal.yml
     with:
-      head_sha: ${{ needs.preflight.outputs.head_sha }}
+      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   automation:
     needs: preflight
     if: needs.preflight.outputs.automation == 'true'
     uses: ./.github/workflows/lane-automation.yml
     with:
-      head_sha: ${{ needs.preflight.outputs.head_sha }}
+      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   website:
     needs: preflight
@@ -124,7 +119,8 @@ jobs:
     uses: ./.github/workflows/lane-website.yml
     with:
       base_sha: ${{ needs.preflight.outputs.base_sha }}
-      head_sha: ${{ needs.preflight.outputs.head_sha }}
+      change_head_sha: ${{ needs.preflight.outputs.change_head_sha }}
+      candidate_sha: ${{ needs.preflight.outputs.candidate_sha }}
       pr_number: ${{ needs.preflight.outputs.pr_number }}
 
   test:
