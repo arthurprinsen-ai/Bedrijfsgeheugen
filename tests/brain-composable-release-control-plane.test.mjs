@@ -41,3 +41,12 @@ test('production readback is serialized and never cancelled mid-flight', () => {
   assert.match(production, /cancel-in-progress:\s*false/);
   assert.doesNotMatch(required, /concurrency:[\s\S]*production-release-readback/);
 });
+
+test('production deploy polling tolerates transient HTTP failures until retry budget is exhausted', () => {
+  const production = readFileSync('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(production, /if ! curl -fsSL[^\n]+live-home\.html; then\s*continue\s*fi/s);
+  assert.match(production, /if ! curl -fsSL[^\n]+live-prijzen\.html; then\s*continue\s*fi/s);
+  assert.match(production, /if ! curl -fsSL[^\n]+live-over-ons\.html; then\s*continue\s*fi/s);
+  assert.match(production, /sleep 15/);
+  assert.match(production, /Production never exposed release marker/);
+});
