@@ -15,15 +15,37 @@ const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--bg-compare-split,50%),calc(100% - 24px))!important;z-index:20!important}
 [data-bg-compare-slider] .compare-knob{pointer-events:auto!important}
 [data-bg-change-check-source="true"]{opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important}
-.bg-change-check-fallback{display:none}
+.bg-change-progress,.bg-change-flow-check,.bg-change-impact{display:none}
 @media(max-width:720px){
   [data-bg-compare-slider]{min-height:360px!important;overflow:hidden!important}
   [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important;transform:none!important}
   [data-bg-compare-slider] .compare-copy{width:calc(100% - 36px)!important;max-width:none!important;overflow:visible!important;transform:none!important}
   [data-bg-compare-slider] .compare-copy h2,[data-bg-compare-slider] .compare-copy h3,[data-bg-compare-slider] .compare-copy p,[data-bg-compare-slider] .compare-copy li{max-width:none!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:auto}
   [data-bg-compare-slider] .compare-handle{display:block!important}
-  [data-bg-change-step]{position:relative!important}
-  .bg-change-check-fallback{position:absolute;left:18px;bottom:42px;width:42px;height:42px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:#e4f8ed;color:#087a4b;font:900 25px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;z-index:3;box-sizing:border-box}
+
+  [data-bg-change-flow]{--bg-change-progress:0;position:relative!important}
+  [data-bg-change-flow] [data-bg-change-step]{position:relative!important;opacity:.48!important;filter:saturate(.45);transition:opacity .22s ease,filter .22s ease}
+  [data-bg-change-flow] [data-bg-change-step][data-bg-change-status="active"],
+  [data-bg-change-flow] [data-bg-change-step][data-bg-change-status="done"]{opacity:1!important;filter:none!important}
+  [data-bg-change-flow] [data-bg-change-check-source="true"]{display:none!important}
+  [data-bg-change-progress].bg-change-progress{position:absolute;display:block;width:4px;border-radius:999px;background:rgba(151,161,171,.24);z-index:1;pointer-events:none;overflow:hidden}
+  .bg-change-progress-fill{display:block;width:100%;height:calc(var(--bg-change-progress,0) * 100%);min-height:4px;border-radius:999px;background:#FFE86B;transition:height .14s linear}
+  .bg-change-flow-check{position:absolute;left:54px;top:28px;width:42px;height:42px;border-radius:999px;display:grid;place-items:center;border:2px solid #5d6670;background:#171b1f;color:transparent;font:900 23px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;z-index:2;box-sizing:border-box;transition:background .2s ease,border-color .2s ease,color .2s ease}
+  [data-bg-change-step][data-bg-change-status="active"] .bg-change-flow-check{border-color:#FFE86B;box-shadow:0 0 0 4px rgba(255,232,107,.12)}
+  [data-bg-change-step][data-bg-change-status="active"] .bg-change-flow-check::after{content:"";width:9px;height:9px;border-radius:999px;background:#FFE86B}
+  [data-bg-change-step][data-bg-change-status="done"] .bg-change-flow-check{background:#E4F8ED;border-color:#E4F8ED;color:#087A4B;box-shadow:none}
+  [data-bg-change-step][data-bg-change-status="done"] .bg-change-flow-check::after{content:none}
+  .bg-change-impact{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:18px 0 4px;color:#B8C2CB;font-size:12px;font-weight:700;line-height:1.2}
+  .bg-change-impact span{display:inline-flex;align-items:center;min-height:30px;padding:6px 9px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.045);white-space:nowrap}
+  .bg-change-impact i{font-style:normal;color:#FFE86B;font-weight:900}
+}
+@media(max-width:380px){
+  .bg-change-flow-check{left:48px;width:38px;height:38px;font-size:21px}
+  .bg-change-impact{gap:5px}
+  .bg-change-impact span{font-size:11px;padding:5px 7px}
+}
+@media(prefers-reduced-motion:reduce){
+  [data-bg-change-flow] [data-bg-change-step],.bg-change-progress-fill,.bg-change-flow-check{transition:none!important}
 }
 </style>`;
 
@@ -55,6 +77,9 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes(RUNTIME_SRC)||
      !next.includes(FALLBACK_MARKER)||
      !next.includes("aria-valuenow',String(Math.round(v))")||
+     !next.includes('data-bg-change-flow')||
+     !next.includes('data-bg-change-progress')||
+     !next.includes('data-bg-change-status')||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"\s+defer><\/script>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-aria-fallback>/g)||[]).length!==1){

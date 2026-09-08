@@ -2,19 +2,31 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v3';
+  var VERSION = 'full-endpoints-v4-mobile-flow';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
+  var IMPACT_LABELS = ['Processen','Rollen','Documenten','KPI’s','Acties'];
 
   function norm(v){ return String(v || '').replace(/\s+/g, ' ').trim(); }
   function allHeadings(root){ return Array.prototype.slice.call(root.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]')); }
   function findHeading(root,label){ return allHeadings(root).find(function(h){ return norm(h.textContent) === label; }) || null; }
+  function findChangeLabel(root,label){
+    var heading = findHeading(root,label);
+    if(heading) return heading;
+    var nodes = Array.prototype.slice.call(root.querySelectorAll('strong,b,span,p,[role="heading"]'));
+    var exact = nodes.find(function(el){ return norm(el.textContent) === label; });
+    if(exact) return exact;
+    var prefix = nodes.filter(function(el){ return norm(el.textContent).indexOf(label) === 0; });
+    prefix.sort(function(a,b){ return norm(a.textContent).length - norm(b.textContent).length; });
+    return prefix[0] || null;
+  }
   function changeStepContainer(kop,section){
     var node = kop;
     while(node.parentElement && node.parentElement !== section){
       var parent = node.parentElement;
-      var count = allHeadings(parent).filter(function(h){ return CHANGE_STEPS.indexOf(norm(h.textContent)) !== -1; }).length;
+      var text = norm(parent.textContent);
+      var count = CHANGE_STEPS.filter(function(label){ return text.indexOf(label) !== -1; }).length;
       if(count !== 1) break;
       node = parent;
     }
@@ -44,35 +56,125 @@
     var nodes = Array.prototype.slice.call(row.querySelectorAll('img,svg,span,i,div'));
     return nodes.find(explicitCheck) || nodes.find(visualCheck) || null;
   }
-  function ensureFallback(row){
-    if(row.querySelector('.bg-change-check-fallback')) return;
-    var el = document.createElement('span');
-    el.className = 'bg-change-check-fallback';
-    el.setAttribute('aria-hidden','true');
-    el.textContent = '✓';
-    row.appendChild(el);
+  function ensureFlowCheck(row){
+    var check = row.querySelector('.bg-change-flow-check');
+    if(check) return check;
+    check = document.createElement('span');
+    check.className = 'bg-change-flow-check';
+    check.setAttribute('aria-hidden','true');
+    check.textContent = '✓';
+    row.appendChild(check);
+    return check;
   }
-  function ensureFourChangeChecks(){
+  function ensureImpact(row){
+    if(row.querySelector('.bg-change-impact')) return;
+    var impact = document.createElement('div');
+    impact.className = 'bg-change-impact';
+    impact.setAttribute('aria-label','Geraakte context: ' + IMPACT_LABELS.join(', '));
+    IMPACT_LABELS.forEach(function(label,index){
+      var pill = document.createElement('span');
+      pill.textContent = label;
+      impact.appendChild(pill);
+      if(index < IMPACT_LABELS.length - 1){
+        var arrow = document.createElement('i');
+        arrow.textContent = '→';
+        arrow.setAttribute('aria-hidden','true');
+        impact.appendChild(arrow);
+      }
+    });
+    row.appendChild(impact);
+  }
+  function alignFlowChecks(rows){
+    rows.forEach(function(row,index){
+      var heading = findChangeLabel(row,CHANGE_STEPS[index]);
+      var check = row.querySelector('.bg-change-flow-check');
+      if(!heading || !check) return;
+      var rr = row.getBoundingClientRect();
+      var hr = heading.getBoundingClientRect();
+      var size = check.getBoundingClientRect().height || 42;
+      check.style.top = Math.max(18, hr.top - rr.top + (hr.height - size) / 2) + 'px';
+    });
+  }
+  function initChangeFlow(){
     var title = findHeading(document, CHANGE_TITLE);
     if(!title) return;
     var section = title.closest('section') || title.parentElement;
     if(!section) return;
     var rows = CHANGE_STEPS.map(function(label){
-      var h = findHeading(section,label);
+      var h = findChangeLabel(section,label);
       return h ? changeStepContainer(h,section) : null;
     });
     if(rows.some(function(row){ return !row; })) return;
+
+    section.setAttribute('data-bg-change-flow','');
     rows.forEach(function(row,index){
       row.setAttribute('data-bg-change-step', String(index + 1));
-      var check = findCheck(row);
-      if(check){
-        check.setAttribute('data-bg-change-check-source','true');
-        var old = row.querySelector('.bg-change-check-fallback');
-        if(old) old.remove();
-      } else {
-        ensureFallback(row);
-      }
+      if(!row.hasAttribute('data-bg-change-status')) row.setAttribute('data-bg-change-status', index === 0 ? 'done' : index === 1 ? 'active' : 'future');
+      var source = findCheck(row);
+      if(source && !source.classList.contains('bg-change-flow-check')) source.setAttribute('data-bg-change-check-source','true');
+      ensureFlowCheck(row);
     });
+    ensureImpact(rows[1]);
+
+    var progress = section.querySelector('.bg-change-progress');
+    if(!progress){
+      progress = document.createElement('span');
+      progress.className = 'bg-change-progress';
+      progress.setAttribute('data-bg-change-progress','');
+      progress.setAttribute('aria-hidden','true');
+      var fill = document.createElement('span');
+      fill.className = 'bg-change-progress-fill';
+      progress.appendChild(fill);
+      section.appendChild(progress);
+    }
+    if(section.getAttribute('data-bg-change-flow-ready') === 'true') return;
+    section.setAttribute('data-bg-change-flow-ready','true');
+
+    var maxProgress = 0;
+    var raf = 0;
+    function layout(){
+      alignFlowChecks(rows);
+      var sr = section.getBoundingClientRect();
+      var checks = rows.map(function(row){ return row.querySelector('.bg-change-flow-check').getBoundingClientRect(); });
+      var centers = checks.map(function(c){ return c.top + c.height / 2; });
+      var first = centers[0];
+      var last = centers[centers.length - 1];
+      var firstCheck = checks[0];
+      progress.style.left = (firstCheck.left - sr.left + firstCheck.width / 2 - 2) + 'px';
+      progress.style.top = (first - sr.top) + 'px';
+      progress.style.height = Math.max(4,last - first) + 'px';
+      var rect = section.getBoundingClientRect();
+      if(rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+      var trigger = window.innerHeight * .58;
+      var current = Math.max(0, Math.min(1, (trigger - first) / Math.max(1,last - first)));
+      maxProgress = Math.max(maxProgress,current);
+      section.style.setProperty('--bg-change-progress', maxProgress.toFixed(4));
+      var active = -1;
+      rows.forEach(function(row,index){
+        var threshold = index / (rows.length - 1);
+        var done = maxProgress + .015 >= threshold;
+        if(done){
+          row.setAttribute('data-bg-change-status','done');
+          row.removeAttribute('aria-current');
+        } else if(active === -1){
+          active = index;
+          row.setAttribute('data-bg-change-status','active');
+          row.setAttribute('aria-current','step');
+        } else {
+          row.setAttribute('data-bg-change-status','future');
+          row.removeAttribute('aria-current');
+        }
+      });
+      if(active === -1) rows.forEach(function(row){ row.removeAttribute('aria-current'); });
+    }
+    function schedule(){
+      if(raf) return;
+      raf = requestAnimationFrame(function(){ raf = 0; layout(); });
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule,{passive:true});
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(schedule).catch(function(){});
+    schedule();
   }
 
   function collectSliders(){
@@ -212,8 +314,7 @@
 
   function ensureSliders(){ collectSliders().forEach(initSlider); }
 
-  ensureFourChangeChecks();
+  initChangeFlow();
   ensureSliders();
-  new MutationObserver(function(){ ensureFourChangeChecks(); ensureSliders(); }).observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener('resize',function(){ ensureFourChangeChecks(); ensureSliders(); },{passive:true});
+  new MutationObserver(function(){ initChangeFlow(); ensureSliders(); }).observe(document.documentElement,{childList:true,subtree:true});
 })();

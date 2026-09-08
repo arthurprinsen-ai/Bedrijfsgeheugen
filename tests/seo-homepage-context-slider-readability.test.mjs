@@ -71,15 +71,29 @@ test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde k
   assert.doesNotMatch(fixer,/\.compare-handle\{display:none!important/);
 });
 
-test('wijzigingssectie borgt vier zichtbare checks op mobiel',()=>{
+test('wijzigingssectie is op mobiel een cumulatieve verticale voortgangsflow',()=>{
   assert.match(runtime,/CHANGE_STEPS\s*=\s*\['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'\]/);
-  assert.match(runtime,/ensureFourChangeChecks/);
-  assert.match(runtime,/data-bg-change-step/);
-  assert.match(runtime,/data-bg-change-check-source/);
-  assert.match(runtime,/bg-change-check-fallback/);
-  assert.match(fixer,/left:18px;bottom:42px;width:42px;height:42px/);
-  assert.match(runtime,/ensureFourChangeChecks\(\);/);
-  assert.match(runtime,/ensureSliders\(\);/);
+  assert.match(runtime,/IMPACT_LABELS\s*=\s*\['Processen','Rollen','Documenten','KPI’s','Acties'\]/);
+  assert.match(runtime,/initChangeFlow/);
+  assert.match(runtime,/data-bg-change-flow/);
+  assert.match(runtime,/data-bg-change-progress/);
+  assert.match(runtime,/data-bg-change-status/);
+  assert.match(runtime,/maxProgress\s*=\s*Math\.max\(maxProgress,current\)/,'een kleine scroll terug mag afgeronde stappen niet resetten');
+  assert.match(fixer,/\.bg-change-progress/);
+  assert.match(fixer,/\.bg-change-flow-check/);
+  assert.match(fixer,/\.bg-change-impact/);
+  assert.match(fixer,/prefers-reduced-motion/);
+  assert.doesNotMatch(fixer,/left:18px;bottom:42px;width:42px;height:42px/,'checks mogen niet meer los absoluut onder elke rij zweven');
+});
+
+test('browsercheck bewijst op echte mobiele viewports dat de flow 1 naar 4 cumulatief afrondt',()=>{
+  assert.match(browserCheck,/readMobileChangeFlow/);
+  assert.match(browserCheck,/data-bg-change-flow/);
+  assert.match(browserCheck,/data-bg-change-step="4"/);
+  assert.match(browserCheck,/doneCount\s*!==\s*4/);
+  assert.match(browserCheck,/progress\s*<\s*\.98/);
+  assert.match(browserCheck,/naTerug\.progress\s*\+\s*\.001\s*<\s*voltooid\.progress/);
+  assert.match(browserCheck,/Processen.*Rollen.*Documenten.*KPI.*Acties/s);
 });
 
 test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-markup',()=>{

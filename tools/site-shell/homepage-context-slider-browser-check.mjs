@@ -54,6 +54,35 @@ async function readState(page) {
   });
 }
 
+async function readMobileChangeFlow(page) {
+  return page.evaluate(() => {
+    const root = document.querySelector('[data-bg-change-flow]');
+    if (!root) return null;
+    const steps = [...root.querySelectorAll('[data-bg-change-step]')];
+    const progress = parseFloat(getComputedStyle(root).getPropertyValue('--bg-change-progress')) || 0;
+    const statuses = steps.map(step => step.getAttribute('data-bg-change-status'));
+    const checks = steps.map(step => {
+      const el = step.querySelector('.bg-change-flow-check');
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return { display: style.display, width: r.width, height: r.height };
+    });
+    const impact = (root.querySelector('.bg-change-impact')?.textContent || '').replace(/\s+/g, ' ').trim();
+    const rail = root.querySelector('[data-bg-change-progress]');
+    const rr = rail?.getBoundingClientRect();
+    return {
+      progress,
+      doneCount: statuses.filter(status => status === 'done').length,
+      statuses,
+      checkCount: checks.filter(Boolean).length,
+      checksVisible: checks.every(check => check && check.display !== 'none' && check.width >= 36 && check.height >= 36),
+      impact,
+      railHeight: rr?.height || 0
+    };
+  });
+}
+
 async function dragKnobTo(page, targetX) {
   const knob = page.locator('#compareSlider .compare-knob');
   await knob.scrollIntoViewIfNeeded();
@@ -95,6 +124,40 @@ function assertRightEndpoint(g, label) {
   if (g.topSideAtCenter !== 'before') fail(`${label}: helemaal rechts moet alleen de blauwe/linker before-laag tonen`, g);
 }
 
+async function testMobileChangeFlow(page, label) {
+  const root = page.locator('[data-bg-change-flow]');
+  await root.waitFor({ state: 'visible' });
+  await root.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(160);
+
+  const start = await readMobileChangeFlow(page);
+  if (!start) fail(`${label}: mobiele wijzigingsflow ontbreekt`);
+  if (start.checkCount !== 4 || !start.checksVisible) fail(`${label}: vier checks moeten zichtbaar en direct aan de vier stappen gekoppeld zijn`, start);
+  if (start.railHeight < 100) fail(`${label}: verticale voortgangsrail ontbreekt of is te kort`, start);
+  for (const expected of ['Processen','Rollen','Documenten','KPI','Acties']) {
+    if (!start.impact.includes(expected)) fail(`${label}: impactketen mist ${expected}`, start);
+  }
+
+  await page.locator('[data-bg-change-step="4"]').evaluate(el => {
+    const r = el.getBoundingClientRect();
+    window.scrollBy({ top: r.top - window.innerHeight * 0.42, behavior: 'auto' });
+  });
+  await page.waitForTimeout(220);
+  const voltooid = await readMobileChangeFlow(page);
+  if (!voltooid) fail(`${label}: wijzigingsflow verdween tijdens scroll`);
+  if (voltooid.doneCount !== 4) fail(`${label}: na doorlopen moeten alle vier checks afgerond blijven`, voltooid);
+  if (voltooid.progress < .98) fail(`${label}: voortgangslijn moet tot stap 04 gevuld zijn`, voltooid);
+
+  await page.evaluate(() => window.scrollBy({ top: -120, behavior: 'auto' }));
+  await page.waitForTimeout(140);
+  const naTerug = await readMobileChangeFlow(page);
+  if (!naTerug) fail(`${label}: wijzigingsflow verdween na kleine terugscroll`);
+  if (naTerug.progress + .001 < voltooid.progress) fail(`${label}: kleine terugscroll mag cumulatieve voortgang niet resetten`, { voltooid, naTerug });
+  if (naTerug.doneCount !== 4) fail(`${label}: afgeronde checks mogen na kleine terugscroll niet verdwijnen`, { voltooid, naTerug });
+
+  return { startProgress: start.progress, progress: voltooid.progress, doneCount: voltooid.doneCount };
+}
+
 async function testViewport(browser, width, height, mobile = false) {
   const page = await browser.newPage({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
   const pageErrors = [];
@@ -119,8 +182,9 @@ async function testViewport(browser, width, height, mobile = false) {
   if (right) right.pageErrors = pageErrors;
   assertRightEndpoint(right, `${width}px praktisch uiterste rechts`);
 
+  const changeFlow = mobile ? await testMobileChangeFlow(page, `${width}px wijzigingsflow`) : null;
   await page.close();
-  return { width, nearLeft, nearRight, left: left.split, right: right.split };
+  return { width, nearLeft, nearRight, left: left.split, right: right.split, changeFlow };
 }
 
 const browser = await chromium.launch({ headless: true });
