@@ -1,12 +1,15 @@
 import { findPage, listPortalGroups, buildLegacyUrl } from './page-registry.js';
 import { customerSlug, canEmbedLegacy } from './legacy-bridge.js';
+import { renderCsrdImpact } from './csrd-impact.js';
 
 const BRAIN_PAGES = new Set([
   'bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties',
   'recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail'
 ]);
+const NATIVE_PAGES = new Set(['csrd-impact', ...BRAIN_PAGES]);
 
 const COPY = {
+  'csrd-impact':['CSRD & Impact','Van CO₂, water en circulariteit tot social, governance, readiness, acties en auditbewijs in één klantwaardige impactcockpit.'],
   bronnenstatus:['Bronnenstatus','Zie welke bronnen beschikbaar zijn, welke aandacht vragen en waar bewijs ontbreekt.'],
   datahubstatus:['Datahubstatus','Volg structurering, verrijking en verbinding van bedrijfsdata zonder onbewezen live-status te tonen.'],
   'brain-verwerking':['Brain-verwerking','Maak zichtbaar wat het bedrijfsbrein met context doet: begrijpen, verbinden, prioriteren en adviseren.'],
@@ -28,8 +31,8 @@ export function pagePresentation(pageId) {
     ...page,
     title,
     description,
-    kind: brain ? 'native-v2' : (page.legacyTab ? 'legacy' : 'native-v2'),
-    evidenceLabel: brain ? 'Status alleen met runtime-evidence' : 'Bestaande portalinhoud behouden'
+    kind: NATIVE_PAGES.has(pageId) ? 'native-v2' : (page.legacyTab ? 'legacy' : 'native-v2'),
+    evidenceLabel: pageId==='csrd-impact' ? 'Impactdata + evidence in één traceerbare cockpit' : (brain ? 'Status alleen met runtime-evidence' : 'Bestaande portalinhoud behouden')
   };
 }
 
@@ -53,13 +56,18 @@ function ensureShell(){
 
 export function closePortalPage(){
   const root=document.getElementById('portalView');if(!root)return;
-  root.classList.remove('open');root.setAttribute('aria-hidden','true');
+  root.classList.remove('open','impact-mode');root.setAttribute('aria-hidden','true');
   document.documentElement.classList.remove('portalview-open');
+}
+
+function resetNative(native){
+  native.innerHTML=`<div class="pvsteps"><article><b>1 · Context</b><span>Bronnen en samenhang</span></article><article><b>2 · Intelligentie</b><span>Analyse, besluit en prioriteit</span></article><article><b>3 · Uitvoering</b><span>Actie, bewijs en learning</span></article></div><div class="pvevidence"><b>Geen cosmetische live-status</b><p>V2 toont alleen een actieve productieflow wanneer daar runtime-evidence voor beschikbaar is. In reviewmodus blijft dit expliciet een product-/UX-weergave.</p></div>`;
 }
 
 export function openPortalPage(pageId){
   const view=pagePresentation(pageId);if(!view)return false;
   const root=ensureShell();
+  root.classList.toggle('impact-mode',pageId==='csrd-impact');
   root.querySelector('#pvKicker').textContent=view.sectionId==='brein-powerhouse'?'Brein & Powerhouse':'Klantenportaal';
   root.querySelector('#pvTitle').textContent=view.title;
   root.querySelector('#pvDescription').textContent=view.description;
@@ -78,6 +86,7 @@ export function openPortalPage(pageId){
     }
   }else{
     legacy.hidden=true;native.hidden=false;
+    if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage}); else resetNative(native);
   }
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
@@ -87,11 +96,18 @@ function bindTextButton(selector,needle,pageId){
   [...document.querySelectorAll(selector)].find(btn=>btn.textContent.toLocaleLowerCase('nl').includes(needle))?.addEventListener('click',()=>openPortalPage(pageId));
 }
 
+function ensureStylesheet(href){
+  if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')===href)) return;
+  const style=document.createElement('link');style.rel='stylesheet';style.href=href;document.head.appendChild(style);
+}
+
 export function enhancePortalShell(){
   ensureShell();
-  const style=document.createElement('link');style.rel='stylesheet';style.href='./interaction.css';document.head.appendChild(style);
+  ensureStylesheet('./interaction.css');
+  ensureStylesheet('./csrd-impact.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
+  bindTextButton('.nav button','csrd','csrd-impact');
   bindTextButton('.nav button','strategie','strategie-naar-maandagochtend');
   bindTextButton('.nav button','processen','profiel');
   bindTextButton('.nav button','kennis','documenten');
