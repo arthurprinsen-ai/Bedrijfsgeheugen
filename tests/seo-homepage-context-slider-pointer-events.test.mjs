@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { applyHomepageContextSliderReadability } from '../tools/site-shell/fix-homepage-context-slider.mjs';
 
 const read = async path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const fixer = await read('tools/site-shell/fix-homepage-context-slider.mjs');
@@ -18,9 +19,11 @@ test('mobiele compare-slider heeft één pointer-event eigenaar zonder native ra
   assert.doesNotMatch(pointerRuntime, /touchstart/);
   assert.doesNotMatch(pointerRuntime, /touchmove/);
   assert.doesNotMatch(pointerRuntime, /touchend/);
-  assert.doesNotMatch(fixer, /ensureNativeRange/);
-  assert.doesNotMatch(fixer, /bg-compare-range/);
-  assert.doesNotMatch(fixer, /type=['"]range['"]/);
+  const rendered = applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
+  assert.doesNotMatch(rendered, /ensureNativeRange/);
+  assert.doesNotMatch(rendered, /bg-compare-range/);
+  assert.doesNotMatch(rendered, /type=['"]range['"]/);
+  assert.doesNotMatch(fixer, /createElement\(['"]input['"]\)/);
 });
 
 test('dezelfde pointerwaarde bestuurt reveal, gele lijn en ARIA over exact 0-100', () => {
