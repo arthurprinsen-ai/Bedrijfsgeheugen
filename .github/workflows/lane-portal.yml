@@ -22,6 +22,8 @@ jobs:
           python-version: '3.12'
       - name: Verify portal production contracts
         run: node --test tests/portal-*.test.mjs tests/connector-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs tests/canonical-portal-projector.test.mjs
+      - name: Verify LinkedIn revenue cockpit contracts
+        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs
       - name: Verify Portal V2 contracts
         working-directory: portal-v2
         run: npm test
