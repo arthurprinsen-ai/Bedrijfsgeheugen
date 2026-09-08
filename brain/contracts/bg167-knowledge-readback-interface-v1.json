@@ -1,0 +1,11 @@
+{
+  "version":"BG167-KNOWLEDGE-READBACK-INTERFACE-v1",
+  "scenario_id":7136045,
+  "authority":"shared-context-and-canonical-readback",
+  "request_modes":["refresh","readback"],
+  "refresh_guard_unchanged":true,
+  "readback_keys":["event_id","fingerprint"],
+  "readback_requires_one_key":true,
+  "output":{"fields":["found","event_id","fingerprint","projection_ref","verified_at"]},
+  "closure_rule":"A Universal Knowledge Event is not closed until readback returns found=true for its event_id or fingerprint."
+}
