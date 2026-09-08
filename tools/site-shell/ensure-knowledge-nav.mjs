@@ -1,5 +1,5 @@
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
-const KENNIS_HREF = `${ORIGIN}/kennis`;
+const KENNIS_HREF = `${ORIGIN}/kennis/`;
 const BLOG_HREF = `${ORIGIN}/blog/`;
 
 function absolutiseerInterneHref(html) {
