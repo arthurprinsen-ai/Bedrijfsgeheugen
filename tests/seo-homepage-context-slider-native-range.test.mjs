@@ -6,7 +6,7 @@ const read = async path => readFile(new URL(`../${path}`, import.meta.url), 'utf
 const fixer = await read('tools/site-shell/fix-homepage-context-slider.mjs');
 const browserCheck = await read('tools/site-shell/homepage-context-slider-browser-check.mjs');
 
-test('alle compare-sliders krijgen na legacy listeners één native range eigenaar', () => {
+test('alle compare-sliders krijgen na legacy listeners één native range gesture-control', () => {
   assert.match(fixer, /ensureNativeRange/);
   assert.match(fixer, /createElement\(['"]input['"]\)/);
   assert.match(fixer, /\.type=['"]range['"]/);
@@ -17,7 +17,9 @@ test('alle compare-sliders krijgen na legacy listeners één native range eigena
   assert.match(fixer, /addEventListener\(['"]input['"]/);
   assert.match(fixer, /addEventListener\(['"]change['"]/);
   assert.match(fixer, /cloneNode\(true\)/);
-  assert.match(fixer, /data-bg-compare-owner','native-range/);
+  assert.match(fixer, /data-bg-native-range-ready/);
+  assert.match(fixer, /data-bg-compare-owner','canonical/);
+  assert.doesNotMatch(fixer, /removeAttribute\('data-bg-compare-version'\)/);
 });
 
 test('native range bestrijkt de volle sliderbreedte zonder visuele randclamp', () => {
@@ -27,6 +29,7 @@ test('native range bestrijkt de volle sliderbreedte zonder visuele randclamp', (
   assert.match(fixer, /width:100%!important/);
   assert.match(fixer, /opacity:0!important/);
   assert.match(fixer, /z-index:40!important/);
+  assert.match(fixer, /touch-action:none!important/);
   assert.doesNotMatch(fixer, /\.bg-compare-range[^}]*clamp\(/s);
 });
 
