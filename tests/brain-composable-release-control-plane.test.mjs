@@ -51,11 +51,16 @@ test('page and SEO contracts run against built and materialized canonical output
     'node tools/bouw-losse-paginas.mjs',
     'node tools/bouw-inhoudspaginas.mjs',
     'node tools/bouw-v18-views.mjs',
+    'node tools/bouw-v18-chrome-alles.mjs',
     'node tools/normaliseer-site-ui.mjs',
   ]) assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.ok(
-    pageSeo.indexOf('node tools/bouw-v18-views.mjs') < pageSeo.indexOf('node tools/normaliseer-site-ui.mjs'),
-    'standalone V18 views such as over-ons must exist before canonical output materialization',
+    pageSeo.indexOf('node tools/bouw-v18-views.mjs') < pageSeo.indexOf('node tools/bouw-v18-chrome-alles.mjs'),
+    'standalone V18 views such as over-ons must exist before estate-wide chrome projection',
+  );
+  assert.ok(
+    pageSeo.indexOf('node tools/bouw-v18-chrome-alles.mjs') < pageSeo.indexOf('node tools/normaliseer-site-ui.mjs'),
+    'all public pages including blog/index.html must have chrome before canonical output materialization',
   );
   assert.ok(
     pageSeo.indexOf('node tools/normaliseer-site-ui.mjs') < pageSeo.indexOf('name: Verify page and SEO contracts'),
