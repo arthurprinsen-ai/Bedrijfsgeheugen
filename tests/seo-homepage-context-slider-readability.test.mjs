@@ -114,6 +114,29 @@ test('wijzigingssectie is op mobiel een cumulatieve verticale voortgangsflow',()
   assert.doesNotMatch(fixer,/left:18px;bottom:42px;width:42px;height:42px/,'checks mogen niet meer los absoluut onder elke rij zweven');
 });
 
+test('wijzigingsflow gebruikt op alle formaten een echte railkolom zonder absolute tekst-overlap hacks',()=>{
+  assert.match(fixer,/--bg-change-rail-width/);
+  assert.match(fixer,/grid-template-columns:var\(--bg-change-rail-width\) minmax\(0,1fr\)/);
+  assert.match(fixer,/\.bg-change-step-rail/);
+  assert.match(fixer,/\.bg-change-step-content/);
+  assert.match(runtime,/ensureStepLayout/);
+  assert.match(runtime,/bg-change-step-rail/);
+  assert.match(runtime,/bg-change-step-content/);
+  assert.match(runtime,/appendChild\(rail\)/);
+  assert.match(runtime,/appendChild\(content\)/);
+  assert.doesNotMatch(fixer,/\.bg-change-flow-check\{[^}]*left:\s*\d+px/s);
+  assert.doesNotMatch(fixer,/\.bg-change-flow-check\{[^}]*top:\s*\d+px/s);
+  assert.doesNotMatch(runtime,/check\.style\.top/);
+  assert.doesNotMatch(runtime,/progress\.style\.left/);
+});
+
+test('browsercheck dekt telefoon tablet desktop orientatie overlap en horizontale overflow',()=>{
+  for(const token of ['320','360','390','430','768','1024','1440']) assert.match(browserCheck,new RegExp(token));
+  assert.match(browserCheck,/railTextOverlap/);
+  assert.match(browserCheck,/horizontalOverflow/);
+  assert.match(browserCheck,/orientation/);
+});
+
 test('browsercheck bewijst op echte mobiele viewports dat de flow 1 naar 4 cumulatief afrondt',()=>{
   assert.match(browserCheck,/readMobileChangeFlow/);
   assert.match(browserCheck,/data-bg-change-flow/);
