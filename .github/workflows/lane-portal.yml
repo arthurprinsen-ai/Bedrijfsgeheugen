@@ -6,16 +6,88 @@ on:
       head_sha:
         required: true
         type: string
+      pr_number:
+        required: true
+        type: string
 
 jobs:
   portal:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.head_sha }}
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
       - name: Verify portal production contracts
         run: node --test tests/portal-*.test.mjs tests/connector-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
+      - name: Verify portal-v2 contracts and shell wiring
+        run: |
+          (cd portal-v2 && npm test)
+          test -f portal-v2/index.html
+          test -f portal-v2/app.css
+          test -f portal-v2/app.js
+          test -f portal-v2/page-shell.js
+          test -f portal-v2/interaction.css
+          test -f portal-v2/brain.svg
+          grep -q "./brain.svg" portal-v2/app.js
+          grep -q "enhancePortalShell" portal-v2/app.js
+          grep -q "openPortalPage" portal-v2/app.js
+      - name: Verify protected portal parity baseline
+        run: python .github/scripts/portal_parity.py
+      - name: Wait for exact Netlify preview SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 48); do
+            json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${REPOSITORY}/commits/${HEAD_SHA}/status")
+            state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
+            target=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .target_url' | head -n1)
+            if [ "$state" = "success" ]; then
+              echo "PREVIEW_URL=$target" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "::error::Netlify preview failed for $HEAD_SHA: $state"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "::error::Timed out waiting for Netlify preview on exact head SHA"
+          exit 1
+      - name: Verify exact portal-v2 assets are served
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/" -o /tmp/portal-v2.html
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.css" -o /tmp/portal-v2.css
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.js" -o /tmp/portal-v2.js
+          node --check /tmp/portal-v2.js
+          grep -q 'Welkom terug, Arthur' /tmp/portal-v2.html
+          grep -q 'Het brein van je bedrijf' /tmp/portal-v2.html
+          grep -q 'AI Management Summary' /tmp/portal-v2.html
+          grep -q 'Powerhouse' /tmp/portal-v2.html
+          grep -q 'Alle portalpagina’s' /tmp/portal-v2.html
+      - name: Verify approved desktop and mobile portal-v2 composition
+        env:
+          PREVIEW_URL: ${{ env.PREVIEW_URL }}
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+          npx playwright test tests/integration/portal-v2-live.spec.js --workers=1
+      - name: Upload portal visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-v2-visual-evidence-${{ inputs.head_sha }}
+          path: artifacts/portal-v2-*.png
+          if-no-files-found: warn
+          retention-days: 14
