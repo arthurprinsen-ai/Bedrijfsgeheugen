@@ -81,11 +81,12 @@ test('document extractor provider fails closed when provider configuration is mi
   assert.equal((await response.json()).error,'DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED');
 });
 
-test('production extractor canary skips by default and exposes only provider execution evidence when enabled', async () => {
+test('production extractor canary skips by default and persists only provider execution evidence when enabled', async () => {
   const logs=[];
   const skipped=await runDocumentExtractorProductionCanary({env:{},log:value=>logs.push(value)});
   assert.deepEqual(skipped,{skipped:true});
   let factoryConfig=null;
+  let persisted=null;
   const handlerFactory=config=>{
     factoryConfig=config;
     return async request=>{
@@ -93,10 +94,16 @@ test('production extractor canary skips by default and exposes only provider exe
       return new Response(JSON.stringify({type:'invoice',fields:{invoiceNumber:{value:'INV-BG-LIVE-20260908',confidence:0.99}}}),{status:200,headers:{'content-type':'application/json','x-execution-id':'anthropic-live-123'}});
     };
   };
-  const evidence=await runDocumentExtractorProductionCanary({env:{DOCUMENT_EXTRACTOR_CANARY_ONCE:'1',ANTHROPIC_API_KEY:'server-only-key'},handlerFactory,log:value=>logs.push(value)});
+  const evidence=await runDocumentExtractorProductionCanary({
+    env:{DOCUMENT_EXTRACTOR_CANARY_ONCE:'1',ANTHROPIC_API_KEY:'server-only-key'},
+    handlerFactory,
+    log:value=>logs.push(value),
+    writeEvidence:async value=>{persisted=value;}
+  });
   assert.equal(factoryConfig.anthropicApiKey,'server-only-key');
   assert.equal(evidence.providerExecutionId,'anthropic-live-123');
-  assert.equal(JSON.stringify(evidence).includes('server-only-key'),false);
+  assert.deepEqual(persisted,evidence);
+  assert.equal(JSON.stringify(persisted).includes('server-only-key'),false);
 });
 
 test('production release readback fails closed unless live document extraction is server-configured', async () => {
