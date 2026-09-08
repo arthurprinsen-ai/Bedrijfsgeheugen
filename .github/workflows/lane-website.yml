@@ -73,6 +73,18 @@ jobs:
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
           tests/seo-order-live-readback.test.mjs
+      - name: Verify component foundation contracts
+        run: >-
+          node --test
+          tests/parallel-ownership.test.mjs
+          tests/change-classes.test.mjs
+          tests/page-composition.test.mjs
+          tests/component-preview-composition.test.mjs
+          tests/component-boundaries.test.mjs
+          tests/change-scope.test.mjs
+          tests/component-hash-protection.test.mjs
+          tests/detect-changed-components.test.mjs
+          tests/component-preview-workflow-contract.test.mjs
       - name: Verify canonical shell component contract
         run: node tools/site-shell/test-shell-components.mjs
       - name: Verify canonical live shell contract
