@@ -135,6 +135,7 @@ const RUNTIME = `<script ${MARKER}>
     if(!progress){
       progress=document.createElement('span');
       progress.className='bg-change-progress';
+      progress.setAttribute('data-bg-change-progress','');
       progress.setAttribute('aria-hidden','true');
       var fill=document.createElement('span');fill.className='bg-change-progress-fill';progress.appendChild(fill);section.appendChild(progress);
     }
@@ -144,9 +145,10 @@ const RUNTIME = `<script ${MARKER}>
     function layout(){
       alignFlowChecks(rows);
       var sr=section.getBoundingClientRect();
-      var centers=rows.map(function(row){var c=row.querySelector('.bg-change-flow-check').getBoundingClientRect();return c.top+c.height/2;});
-      var first=centers[0],last=centers[centers.length-1];
-      progress.style.left=(rows[0].querySelector('.bg-change-flow-check').getBoundingClientRect().left-sr.left+19)+'px';
+      var checks=rows.map(function(row){return row.querySelector('.bg-change-flow-check').getBoundingClientRect();});
+      var centers=checks.map(function(c){return c.top+c.height/2;});
+      var first=centers[0],last=centers[centers.length-1],firstCheck=checks[0];
+      progress.style.left=(firstCheck.left-sr.left+firstCheck.width/2-2)+'px';
       progress.style.top=(first-sr.top)+'px';
       progress.style.height=Math.max(4,last-first)+'px';
       var rect=section.getBoundingClientRect();
