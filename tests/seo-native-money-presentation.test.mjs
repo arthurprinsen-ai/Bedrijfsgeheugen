@@ -82,12 +82,11 @@ test('wijzigingen-uitgelegd houdt rail en panelen actief wanneer optionele navig
   assert.doesNotMatch(html, /if\s*\(\s*!rail\s*\|\|[\s\S]*!telling[\s\S]*\)\s*return/, 'ontbrekende optionele controls mogen de railinteractie niet volledig uitschakelen');
 });
 
-test('site-normalisatie maakt interne inhoudslinks absoluut en behoudt query en fragment', () => {
+test('site-normalisatie behoudt relatieve inhoudslinks voor het SEO-linkgrafiekcontract', () => {
   const html = '<!doctype html><html><head><title>Test</title></head><body><main><a href="/product">Product</a><a href="/frisse-blik?bron=test#start">Frisse blik</a></main></body></html>';
   const out = normaliseerHtml(html, 'test.html');
-  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/product"/, 'interne inhoudslinks moeten finaal absoluut zijn');
-  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/frisse-blik\?bron=test#start"/, 'query en fragment moeten op absolute interne hrefs behouden blijven');
-  assert.doesNotMatch(out, /href="\//, 'site-normalisatie mag geen relatieve interne hrefs terugschrijven');
+  assert.match(out, /href="\/product"/, 'inhoudslinks moeten in de normalisatiefase relatief blijven');
+  assert.match(out, /href="\/frisse-blik\?bron=test#start"/, 'query en fragment op relatieve inhoudslinks moeten behouden blijven');
 });
 
 test('SEO-order write-back maakt interne hrefs finaal absoluut zonder query of fragment te verliezen', () => {
