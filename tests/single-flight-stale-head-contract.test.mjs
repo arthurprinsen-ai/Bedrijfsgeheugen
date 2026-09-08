@@ -12,9 +12,10 @@ test('current head identity is accepted and stale head identity is rejected', ()
   assert.throws(() => assertCurrentHead({ plannedHeadSha: 'abc', observedHeadSha: 'def' }), /STALE_HEAD_SUPERSEDED/);
 });
 
-test('Required test cancels superseded work per PR', () => {
+test('Required test cancels superseded work per PR and checks out the exact PR head', () => {
   assert.match(requiredWorkflow, /group:\s*required-test-pr-\$\{\{\s*github\.event\.pull_request\.number\s*\|\|\s*github\.ref\s*\}\}/);
   assert.match(requiredWorkflow, /cancel-in-progress:\s*true/);
+  assert.match(requiredWorkflow, /ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\|\|\s*github\.sha\s*\}\}/);
   assert.equal(config.staleHeadPolicy, 'cancel-in-progress');
   assert.equal(config.promotionIdentity, 'exact-tested-head');
 });
