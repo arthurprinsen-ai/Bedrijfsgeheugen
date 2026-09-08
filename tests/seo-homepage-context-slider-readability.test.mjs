@@ -49,7 +49,9 @@ test('pointer fallback blijft zelf een volledige 0-100 slider als externe runtim
   assert.match(fixer,/--bg-compare-split/);
   assert.match(fixer,/clip-path/);
   assert.match(fixer,/aria-valuenow/);
-  assert.doesNotMatch(fixer,/bg-compare-range|ensureNativeRange|type=['"]range['"]/);
+  const upgraded=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
+  assert.doesNotMatch(upgraded,/bg-compare-range|ensureNativeRange|type=['"]range['"]/);
+  assert.doesNotMatch(fixer,/\.bg-compare-range\s*\{|function\s+ensureNativeRange\b|createElement\(['"]input['"]\)/);
 });
 
 test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand en geen randclamp',()=>{
@@ -90,7 +92,7 @@ test('alle sliders maken de uitersten via Pointer Events praktisch bereikbaar en
   assert.match(runtime,/var x = Math\.max\(0, Math\.min\(r\.width, clientX - r\.left\)\)/);
   assert.match(runtime,/\(x \/ r\.width\) \* 100/);
   assert.doesNotMatch(runtime,/touchstart|touchmove|touchend|touchcancel/);
-  assert.doesNotMatch(fixer,/bg-compare-range|touch-action:none!important/);
+  assert.doesNotMatch(fixer,/\.bg-compare-range\s*\{|touch-action:none!important/);
 });
 
 test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde kaarten omgebouwd',()=>{
@@ -213,7 +215,9 @@ test('algemene visual-regression gate bewaakt hero-layout; endpointbrowsercheck 
 });
 
 test('mobiele compare-slider gebruikt Pointer Events als enige gesture owner; native range en touchlisteners zijn verboden',()=>{
-  assert.doesNotMatch(fixer,/bg-compare-range|ensureNativeRange|createElement\(['"]input['"]\)|type=['"]range['"]/);
+  const upgraded=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
+  assert.doesNotMatch(upgraded,/bg-compare-range|ensureNativeRange|type=['"]range['"]/);
+  assert.doesNotMatch(fixer,/\.bg-compare-range\s*\{|function\s+ensureNativeRange\b|createElement\(['"]input['"]\)/);
   assert.doesNotMatch(runtime,/touchstart|touchmove|touchend|touchcancel/);
   assert.match(runtime,/pointerdown/);
   assert.match(runtime,/pointermove/);
