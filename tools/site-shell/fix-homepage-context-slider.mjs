@@ -2,13 +2,13 @@ const MARKER = 'data-bg-context-slider-readable';
 const SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
 
 const STYLE = `<style ${MARKER}>
-[data-bg-compare-slider]{--split:50%;position:relative!important;overflow:hidden!important;touch-action:pan-y}
+[data-bg-compare-slider]{--split:50%;--bg-compare-split:50%;position:relative!important;overflow:hidden!important;touch-action:pan-y}
 [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
-[data-bg-compare-slider] .compare-before{clip-path:inset(0 calc(100% - var(--split,50%)) 0 0)!important}
-[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--split,50%))!important}
+[data-bg-compare-slider] .compare-before{clip-path:inset(0 calc(100% - var(--bg-compare-split,50%)) 0 0)!important}
+[data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--bg-compare-split,50%))!important}
 [data-bg-compare-slider] .compare-before .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:0!important;margin-right:auto!important;padding-right:24px!important;box-sizing:border-box}
 [data-bg-compare-slider] .compare-after .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:auto!important;margin-right:0!important;padding-left:24px!important;box-sizing:border-box}
-[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--split,50%),calc(100% - 24px))!important;z-index:20!important}
+[data-bg-compare-slider] .compare-handle{display:block!important;position:absolute!important;left:clamp(24px,var(--bg-compare-split,50%),calc(100% - 24px))!important;z-index:20!important}
 [data-bg-compare-slider] .compare-knob{pointer-events:auto!important}
 [data-bg-change-check-source="true"]{opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important}
 .bg-change-check-fallback{display:none}
@@ -105,17 +105,27 @@ const RUNTIME = `<script ${MARKER}>
     var dragging=false;
     var touchDragging=false;
 
+    function readControlled(){
+      var raw=parseFloat(getComputedStyle(slider).getPropertyValue('--bg-compare-split'));
+      if(Number.isFinite(raw))return raw;
+      raw=parseFloat(getComputedStyle(slider).getPropertyValue('--split'));
+      return Number.isFinite(raw)?raw:50;
+    }
+    function syncAria(){
+      if(!knob)return;
+      var value=readControlled();
+      knob.setAttribute('aria-valuemin','0');
+      knob.setAttribute('aria-valuemax','100');
+      if(knob.getAttribute('aria-valuenow')!==value.toFixed(0))knob.setAttribute('aria-valuenow',value.toFixed(0));
+      knob.setAttribute('aria-disabled','false');
+      knob.tabIndex=0;
+    }
     function apply(raw){
       var value=Math.max(0,Math.min(100,Number(raw)||0));
       value=value<=SNAP_THRESHOLD?0:value>=100-SNAP_THRESHOLD?100:value;
+      slider.style.setProperty('--bg-compare-split',value.toFixed(2)+'%');
       slider.style.setProperty('--split',value.toFixed(2)+'%');
-      if(knob){
-        knob.setAttribute('aria-valuemin','0');
-        knob.setAttribute('aria-valuemax','100');
-        knob.setAttribute('aria-valuenow',value.toFixed(0));
-        knob.setAttribute('aria-disabled','false');
-        knob.tabIndex=0;
-      }
+      syncAria();
       return value;
     }
     function applyFromClientX(clientX){
@@ -130,10 +140,7 @@ const RUNTIME = `<script ${MARKER}>
         requestAnimationFrame(function(){applyFromClientX(clientX);});
       });
     }
-    function current(){
-      var raw=parseFloat(getComputedStyle(slider).getPropertyValue('--split'));
-      return Number.isFinite(raw)?raw:50;
-    }
+    function current(){return readControlled();}
 
     slider.addEventListener('pointerdown',function(e){
       dragging=true;
@@ -174,6 +181,7 @@ const RUNTIME = `<script ${MARKER}>
     window.addEventListener('touchcancel',function(){touchDragging=false;},{capture:true,passive:true});
 
     if(knob){
+      new MutationObserver(syncAria).observe(knob,{attributes:true,attributeFilter:['aria-valuenow','aria-valuemin','aria-valuemax','aria-disabled','tabindex']});
       knob.addEventListener('keydown',function(e){
         var value=current();
         if(e.key==='ArrowLeft')value-=5;
@@ -219,6 +227,7 @@ export function applyHomepageContextSliderReadability(html){
   if(!next.includes('SLIDER_SELECTOR')||
      !next.includes('#compareSlider,.compare-slider,[data-compare-slider]')||
      !next.includes('data-bg-compare-slider')||
+     !next.includes('--bg-compare-split')||
      !next.includes('SNAP_THRESHOLD = 8')||
      !next.includes('settleFromClientX')||
      !next.includes('requestAnimationFrame')||
