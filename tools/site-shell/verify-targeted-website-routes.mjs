@@ -31,11 +31,53 @@ function parseArgs(argv) {
   return out;
 }
 
+async function scriptSyntaxDiagnostics(page) {
+  return page.evaluate(async () => {
+    const currentOrigin = location.origin;
+    const scripts = Array.from(document.scripts);
+    const findings = [];
+    for (let index = 0; index < scripts.length; index += 1) {
+      const script = scripts[index];
+      const type = String(script.getAttribute('type') || '').trim().toLowerCase();
+      if (type && !['text/javascript','application/javascript'].includes(type)) continue;
+      let code = '';
+      let source = `inline-script:${index}${script.id ? `#${script.id}` : ''}`;
+      const src = script.getAttribute('src');
+      if (src) {
+        let url;
+        try { url = new URL(src, location.href); } catch { continue; }
+        if (url.origin !== currentOrigin) continue;
+        source = `${url.pathname}${url.search}`;
+        try {
+          const response = await fetch(url.href, { cache:'no-store' });
+          if (!response.ok) continue;
+          code = await response.text();
+        } catch { continue; }
+      } else {
+        code = script.textContent || '';
+      }
+      if (!code.trim()) continue;
+      try {
+        // Classic scripts only; module scripts are excluded above.
+        new Function(code);
+      } catch (error) {
+        findings.push({ source, message:String(error?.message || error), tail:code.slice(-180) });
+      }
+    }
+    return findings;
+  }).catch(() => []);
+}
+
 async function observeRoute(browser, baseUrl, route, viewport) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
+  const pageErrorDetails = [];
   const failedAssets = [];
-  page.on('pageerror', error => observedPageErrors.push(String(error?.message || error)));
+  page.on('pageerror', error => {
+    const message = String(error?.message || error);
+    observedPageErrors.push(message);
+    pageErrorDetails.push({ message, stack:String(error?.stack || '') });
+  });
   page.on('requestfailed', request => {
     try {
       const url = new URL(request.url());
@@ -51,6 +93,9 @@ async function observeRoute(browser, baseUrl, route, viewport) {
     const visibleText = await page.locator('body').innerText().catch(() => '');
     const html = await page.content();
     const identity = routeIdentity({ route, canonical: canonical || page.url(), title });
+    const scriptSyntaxErrors = observedPageErrors.some(message => /unexpected end|syntaxerror|unexpected token/i.test(message))
+      ? await scriptSyntaxDiagnostics(page)
+      : [];
     return {
       route,
       viewport,
@@ -62,6 +107,8 @@ async function observeRoute(browser, baseUrl, route, viewport) {
       visibleText,
       html,
       observedPageErrors:[...new Set(observedPageErrors)],
+      pageErrorDetails,
+      scriptSyntaxErrors,
       failedAssets:[...new Set(failedAssets)],
       httpOk:Boolean(response && response.ok()),
     };
@@ -110,6 +157,8 @@ export async function runCli(argv = process.argv.slice(2)) {
             status:baselineObservation.status,
             finalUrl:baselineObservation.finalUrl,
             pageErrors:baselineObservation.observedPageErrors,
+            pageErrorDetails:baselineObservation.pageErrorDetails,
+            scriptSyntaxErrors:baselineObservation.scriptSyntaxErrors,
             failedAssets:baselineObservation.failedAssets,
           });
         }

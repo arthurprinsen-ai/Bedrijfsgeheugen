@@ -12,9 +12,17 @@ import { ensureReleaseMarker } from './site-shell/release-marker.mjs';
 import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage-context-slider.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
+const SHARED_SCRIPT_VERSION = '20260908-syntaxfix';
 
 function absolutiseerInterneHref(html) {
   return String(html).replace(/href=(['"])\/(?!\/)([^'"]*)\1/gi, (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
+}
+
+function versieerGedeeldeSiteScript(html) {
+  return String(html).replace(
+    /src=(['"])\/assets\/stijl\.js(?:\?[^'"]*)?\1/gi,
+    (_heel, quote) => `src=${quote}/assets/stijl.js?v=${SHARED_SCRIPT_VERSION}${quote}`
+  );
 }
 
 function herstelTechnischeLinks(html) {
@@ -105,6 +113,7 @@ export function normaliseerHtml(input, bestand) {
   html = ensureReleaseMarker(html);
   html = markPageSlots(html);
   html = absolutiseerInterneHref(html);
+  html = versieerGedeeldeSiteScript(html);
   html = herstelTechnischeLinks(html);
   html = applyHomepageContextSliderReadability(html);
   return html;
