@@ -36,16 +36,21 @@ test('real writers always execute from the immutable verification ref, never fro
   assert.doesNotMatch(dispatchLine, /--ref\s+main/);
 });
 
-test('moving main is ignored only when current-main changes do not overlap the canary scope', () => {
+test('moving main is checked against the exact verify PR identity resolved from the immutable verify ref', () => {
   const text = harness();
-  assert.match(text, /EXPECTED_MAIN_SHA:\s*\$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
-  assert.match(text, /VERIFY_PR_NUMBER:\s*\$\{\{ github\.event\.pull_request\.number \}\}/);
+  assert.match(text, /id:\s*verify_pr/);
+  assert.match(text, /PR_BASE_SHA=.*pulls\/\$\{PR_NUMBER\}/);
+  assert.match(text, /PR_HEAD_SHA=.*pulls\/\$\{PR_NUMBER\}/);
+  assert.match(text, /VERIFY_HEAD_SHA_DRIFT/);
+  assert.match(text, /EXPECTED_MAIN_SHA:\s*\$\{\{ steps\.verify_pr\.outputs\.base_sha \}\}/);
+  assert.match(text, /VERIFY_PR_NUMBER:\s*\$\{\{ steps\.verify_pr\.outputs\.number \}\}/);
   assert.match(text, /gh pr diff "\$VERIFY_PR_NUMBER"[^\n]*--name-only/);
   assert.match(text, /compare\/\$\{EXPECTED_MAIN_SHA\}\.\.\.\$\{actual_main_sha\}/);
   assert.match(text, /comm -12/);
   assert.match(text, /CURRENT_MAIN_SCOPE_OVERLAP/);
   assert.match(text, /CURRENT_MAIN_DRIFT_IGNORED/);
   assert.doesNotMatch(text, /BASE_SHA_DRIFT/);
+  assert.doesNotMatch(text, /^\s{2}pull_request:/m);
 });
 
 test('operational harness itself remains read-only except for Actions dispatch', () => {
