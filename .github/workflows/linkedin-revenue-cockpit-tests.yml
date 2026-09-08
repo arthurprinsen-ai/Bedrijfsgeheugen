@@ -1,7 +1,16 @@
 name: LinkedIn Revenue Cockpit
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'intern/linkedin-revenue/**'
+      - 'platform/linkedin-revenue-cockpit.mjs'
+      - 'netlify/functions/linkedin-revenue-cockpit.mjs'
+      - 'tests/linkedin-revenue-cockpit.test.mjs'
+      - 'tests/linkedin-revenue-runtime.test.mjs'
+      - '.github/workflows/linkedin-revenue-cockpit-tests.yml'
+      - '_redirects'
 
 permissions:
   contents: read
