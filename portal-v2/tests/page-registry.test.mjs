@@ -4,8 +4,8 @@ import { allPageIds, findPage, listPortalGroups } from '../page-registry.js';
 
 test('registry preserves the complete standalone portal surface',()=>{
   const ids=allPageIds();
-  assert.equal(ids.length,46,`expected 46 mapped portal pages, got ${ids.length}`);
-  for(const required of ['overzicht','ai-scan','csrd-impact','compliance-command-center','canvassen','roadmap','taken-werkstromen','bronnenstatus','brain-verwerking','self-heal','audit']){
+  assert.equal(ids.length,47,`expected 47 mapped portal pages, got ${ids.length}`);
+  for(const required of ['overzicht','ai-scan','csrd-impact','compliance-command-center','strategy-dna','canvassen','roadmap','taken-werkstromen','bronnenstatus','brain-verwerking','self-heal','audit']){
     assert.ok(ids.includes(required),`missing ${required}`);
   }
 });

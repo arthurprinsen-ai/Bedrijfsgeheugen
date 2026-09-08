@@ -1,6 +1,7 @@
 import { findPage, listPortalGroups } from './page-registry.js';
 import { nativePageContent } from './native-pages.js';
 import { renderCsrdImpact } from './csrd-impact.js';
+import { renderStrategyDna } from './strategy-dna.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -20,6 +21,7 @@ const COPY = {
   'compliance-governance':['Compliance, security en governance','Volg verplichtingen, controls, risico’s, bewijs en acties voor onder meer AI Act, NIS2, privacy en security.'],
   'compliance-command-center':['Compliance Command Center','Eén operationele cockpit voor compliance-readiness, bewijs, open risico’s en auditacties.'],
   'ai-capabilities':['AI-capabilities','Zie welke AI-capabilities beschikbaar, gewenst, verantwoord en aantoonbaar operationeel zijn.'],
+  'strategy-dna':['Strategy DNA','Leg ambitie, klantbelofte, strategische keuzes, capabilities, bewijs en uitvoeringsritme vast en vertaal dit direct naar uitvoering.'],
   strategiemodellen:['Strategiemodellen','Gebruik strategische modellen binnen dezelfde V2-context en koppel ze direct aan uitvoering.'],
   modellen:['Alle modellen','Werk met alle relevante analyse- en beslismodellen zonder het portaal te verlaten.'],
   canvassen:['Canvassen','Leg strategie, organisatie, klantwaarde en uitvoering vast in interactieve canvassen.'],
@@ -57,7 +59,7 @@ export function pagePresentation(pageId) {
   const page=findPage(pageId);
   if(!page) return null;
   const [title,description]=COPY[pageId] || [page.label,`${page.label} is een standaardonderdeel van Portal V2.`];
-  const content=nativePageContent(pageId);
+  const content=nativePageContent(pageId) || {};
   return {
     ...page,
     ...content,
@@ -130,7 +132,9 @@ export function openPortalPage(pageId){
   root.querySelector('#pvStatus').textContent=view.evidenceLabel;
   root.dataset.pageId=pageId;
   const native=root.querySelector('#pvNative');
-  if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage}); else renderNative(native,view);
+  if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage});
+  else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
+  else renderNative(native,view);
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
 }

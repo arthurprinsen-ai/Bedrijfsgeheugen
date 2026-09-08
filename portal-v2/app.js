@@ -1,6 +1,7 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
 import { listPortalGroups } from './page-registry.js';
 import { enhancePortalShell, openPortalPage } from './page-shell.js';
+import { mountLegacyParity } from './legacy-parity.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -42,7 +43,10 @@ function mountModules(){
  MODULES.forEach(([id,ic,name])=>{
   const b=document.createElement('button');b.type='button';b.className='mod';b.dataset.id=id;
   b.innerHTML=`<span>${ic}</span><b>${name}</b><span class="portalbadge">Actief</span>`;
-  b.addEventListener('click',()=>{selection.module=selection.module===id?null:id;previewMode=false;render()});
+  b.addEventListener('click',()=>{
+   if(id==='dna'){openPortalPage('strategy-dna');return;}
+   selection.module=selection.module===id?null:id;previewMode=false;render();
+  });
   wrap.appendChild(b);
  });
 }
@@ -87,7 +91,7 @@ function mountPages(){
  }
 }
 
-mountSources();mountModules();mountPages();mountPreviewControl();enhancePortalShell();
+mountSources();mountModules();mountPages();mountPreviewControl();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});
 document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
 el('showPages')?.addEventListener('click',()=>el('allPages').classList.add('open'));
 el('mobileMore')?.addEventListener('click',()=>el('allPages').classList.add('open'));
