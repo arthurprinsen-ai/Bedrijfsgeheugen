@@ -1,0 +1,96 @@
+{
+  "version": "NONTERMINAL-CI-COMPLETION-v1",
+  "fingerprint": "delivery|completion|pending-ci-is-not-terminal-v1",
+  "scope": [
+    "website",
+    "portal",
+    "backend",
+    "automation",
+    "agents",
+    "production-promotion"
+  ],
+  "policy": {
+    "ciPendingIsTerminal": false,
+    "ciFailureIsTerminal": false,
+    "openPrIsTerminal": false,
+    "mergeWaitIsTerminal": false,
+    "deployInProgressIsTerminal": false,
+    "missingProductionReadbackIsTerminal": false,
+    "stopAtDiagnosisAllowed": false,
+    "stopAtPreviewAllowed": false
+  },
+  "nonTerminalStates": [
+    "queued",
+    "pending",
+    "in_progress",
+    "failed_check",
+    "open_pr",
+    "merge_wait",
+    "deploy_in_progress",
+    "production_drift",
+    "missing_production_readback"
+  ],
+  "requiredSequence": [
+    "build_or_fix",
+    "persist_prevention",
+    "preview_content_readback",
+    "all_required_gates_green",
+    "pr_merged_or_candidate_promoted",
+    "exact_production_sha_deployed",
+    "live_production_readback",
+    "outcome_verified"
+  ],
+  "terminalSuccessStates": [
+    "PRODUCTION_GREEN",
+    "LIVE_VERIFIED"
+  ],
+  "terminalBlockedState": "BLOCKED_HARD_BOUNDARY",
+  "hardBoundaryClasses": [
+    "secrets_credentials_permissions",
+    "security_control_weakening",
+    "destructive_irreversible_data",
+    "paid_external_resource_increase",
+    "legal_or_financial_commitment"
+  ],
+  "prohibitedTerminalMessages": [
+    "CI loopt nog",
+    "wachten op deploy",
+    "PR is nog open",
+    "nog één check rood",
+    "ik doe nu de readback"
+  ],
+  "onRed": [
+    "read_logs_and_annotations",
+    "isolate_root_cause",
+    "reuse_or_add_regression_contract",
+    "apply_minimal_safe_fix",
+    "rerun_and_verify",
+    "continue_release_loop"
+  ],
+  "onGreen": [
+    "merge_or_promote",
+    "wait_for_exact_production_identity",
+    "verify_live_routes_and_browser_contracts",
+    "close_only_after_immutable_production_truth"
+  ],
+  "handoffOnRuntimeOrContextLimit": {
+    "required": true,
+    "fields": [
+      "pr",
+      "branch",
+      "head_sha",
+      "main_sha",
+      "run_ids",
+      "job_ids",
+      "failing_step_or_assertion",
+      "changed_files",
+      "root_cause",
+      "proven_fix",
+      "remaining_gate",
+      "merge_step",
+      "deploy_step",
+      "production_readback_step",
+      "do_not_ask_again"
+    ]
+  }
+}
