@@ -25,6 +25,11 @@ function localIntent(meta){return String(meta?.title||meta?.canonical||'onderste
 function isBlogArticle(path){return /^blog\/.+\/index\.html$/i.test(path)&&path!=='blog/index.html';}
 function isExcludedPath(path){return EXCLUDES.has(path)||EXCLUDES.has(path.split('/').at(-1))||EXCLUDED_PREFIXES.some(prefix=>path.startsWith(prefix))||/(?:^|\/)shell-gate-[^/]*\.html$/i.test(path);}
 
+export function absolutiseerSeoOrderInterneHrefs(input) {
+  return String(input).replace(/\bhref=(["'])\/(?!\/)([^"']*)\1/gi,
+    (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
+}
+
 function markBodyContext(input, role, funnel, intent = '', keyword = '', intentRole = 'supporting', owner = '', pageClass = role) {
   const html = String(input);
   return html.replace(/<body\b([^>]*)>/i, (_tag, attrs) => {
@@ -105,6 +110,9 @@ export async function applySeoOrderEngine() {
       } else { out=enrichPolicyPage(html,registry,policy); classified++; }
     }
     out=enrichDeclaredSupportingLinks(out,canonical,registry);
+    // SEO-linkanalyse mag met relatieve paden werken, maar de publieke write-back
+    // moet voldoen aan het technische SEO-contract: interne hrefs zijn absoluut.
+    out=absolutiseerSeoOrderInterneHrefs(out);
     if(out!==html){await writeFile(path,out,'utf8');changed++;}
   }
   console.log(`SEO order + growth enrichment toegepast: ${changed} gewijzigd; ${blogs} blogs, ${registered} registry-pages, ${classified} expliciet geclassificeerde publieke pagina's`);

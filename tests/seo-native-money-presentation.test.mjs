@@ -1,7 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 import { enrichMoneyPage, inspectMoneyPage } from '../tools/seo-order-engine/money-contract-v2.mjs';
+import { injectGrowthMeasurement } from '../tools/seo-order-engine/measurement.mjs';
+import { absolutiseerSeoOrderInterneHrefs } from '../tools/seo-order-engine/apply.mjs';
+import { normaliseerHtml } from '../tools/normaliseer-site-ui.mjs';
 
 const registry = JSON.parse(await readFile(new URL('../site/seo-order-map.json', import.meta.url), 'utf8'));
 
@@ -34,4 +38,63 @@ test('prijzen accepteert geen generieke paginakop als vervanging van de native p
   const entry = registry.pages.find(page => page.route === 'https://www.bedrijfsgeheugen.nl/prijzen');
   const html = '<!doctype html><html><body><main data-bg-money-contract-version="native-v1" data-bg-intent-owner="https://www.bedrijfsgeheugen.nl/prijzen" data-bg-intent-role="primary"><section class="paginakop" data-bg-component="hero"><h1>Prijzen</h1></section><a href="https://www.bedrijfsgeheugen.nl/frisse-blik" data-bg-conversion="frisse-blik">Plan</a><a href="https://www.bedrijfsgeheugen.nl/product">Product</a></main></body></html>';
   assert.match(inspectMoneyPage(html, entry).join('\n'), /eigen V18 hero ontbreekt/, 'een generieke paginakop mag de echte prijshero niet meer maskeren');
+});
+
+// Regression contract: generated classic scripts must stay parseable before estate-wide projection.
+test('growth measurement injecteert alleen syntactisch geldige classic JavaScript', () => {
+  const html = injectGrowthMeasurement('<!doctype html><html><head></head><body><main><a data-bg-conversion="frisse-blik" href="https://www.bedrijfsgeheugen.nl/frisse-blik">Plan</a></main></body></html>', {
+    canonical: 'https://www.bedrijfsgeheugen.nl/test',
+    page_role: 'support',
+    funnel_stage: 'discover',
+    intent: 'test',
+    keyword_cluster: 'test'
+  });
+  const script = html.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/i);
+  assert.ok(script, 'growth measurement script ontbreekt');
+  assert.doesNotThrow(() => new vm.Script(script[1]), 'growth measurement mag geen ongeldige regex literal genereren');
+});
+
+test('finale site-normalisatie verwijdert de defecte legacy demonstrator voordat die estate-wide wordt geprojecteerd', () => {
+  const malformed = `<script>
+    var howSteps=document.querySelectorAll('.how-step'),howIndex=0;
+    if(howSteps.length){setInterval(()=>{howSteps.forEach(s=>s.classList.remove('active')); howSteps.forEach((step,i)=>step.addEventListener('click',()=>{howSteps.forEach(s=>s.classList.remove('active'));step.classList.add('active')})); howIndex=(howIndex+1)%howSteps.length; howSteps[howIndex].classList.add('active')},3000)}
+    // Animated demonstrator only; production should bind to validated savings data
+    // Actions in hero animate as if the workflow was executed
+    document.querySelectorAll('.demo-action').forEach(btn=>btn.addEventListener('click',()=>{const old=btn.textContent;btn.textContent='✓ Acties gemaakt';btn.style.background='#67d9d0';setTimeout(()=>{btn.textContent=old;btn.style.background=''},2200)}));
+  </script>`;
+  const html = `<!doctype html><html><head><title>Test</title></head><body><main>${malformed}</main></body></html>`;
+  const out = normaliseerHtml(html, 'test.html');
+  assert.doesNotMatch(out, /Animated demonstrator only/, 'de defecte demonstrator mag niet in productie-output blijven staan');
+  for (const match of out.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    if (/application\/ld\+json|\bsrc\s*=/i.test(match[1]) || !match[2].trim()) continue;
+    assert.doesNotThrow(() => new vm.Script(match[2]), 'alle overblijvende classic inline scripts moeten compileerbaar zijn');
+  }
+});
+
+test('wijzigingen-uitgelegd houdt rail en panelen actief wanneer optionele navigatiecontrols ontbreken', async () => {
+  const bron = await readFile(new URL('../wijzigingen-uitgelegd.html', import.meta.url), 'utf8');
+  const html = normaliseerHtml(bron, 'wijzigingen-uitgelegd.html');
+  assert.match(html, /if \(vorige\) vorige\.disabled = nu === 0;/, 'vorige-control moet optioneel zijn');
+  assert.match(html, /if \(volgende\) \{[\s\S]*?volgende\.textContent = nu === panelen\.length - 1 \? 'Klaar' : 'Volgende';[\s\S]*?\}/, 'volgende-control moet optioneel zijn');
+  assert.match(html, /if \(telling\) telling\.textContent = \(nu \+ 1\) \+ ' van ' \+ panelen\.length;/, 'telling-control moet optioneel zijn');
+  assert.match(html, /if \(vorige\) vorige\.addEventListener\('click'/, 'vorige-listener mag alleen op bestaand element worden gebonden');
+  assert.match(html, /if \(volgende\) volgende\.addEventListener\('click'/, 'volgende-listener mag alleen op bestaand element worden gebonden');
+  assert.doesNotMatch(html, /if\s*\(\s*!rail\s*\|\|[\s\S]*!telling[\s\S]*\)\s*return/, 'ontbrekende optionele controls mogen de railinteractie niet volledig uitschakelen');
+});
+
+test('site-normalisatie maakt interne inhoudslinks absoluut en behoudt query en fragment', () => {
+  const html = '<!doctype html><html><head><title>Test</title></head><body><main><a href="/product">Product</a><a href="/frisse-blik?bron=test#start">Frisse blik</a></main></body></html>';
+  const out = normaliseerHtml(html, 'test.html');
+  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/product"/, 'interne inhoudslinks moeten finaal absoluut zijn');
+  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/frisse-blik\?bron=test#start"/, 'query en fragment moeten op absolute interne hrefs behouden blijven');
+  assert.doesNotMatch(out, /href="\//, 'site-normalisatie mag geen relatieve interne hrefs terugschrijven');
+});
+
+test('SEO-order write-back maakt interne hrefs finaal absoluut zonder query of fragment te verliezen', () => {
+  const html = '<main><a href="/product">Product</a><a href="/frisse-blik?bron=test#start">Frisse blik</a><a href="https://example.com/x">Extern</a></main>';
+  const out = absolutiseerSeoOrderInterneHrefs(html);
+  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/product"/);
+  assert.match(out, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/frisse-blik\?bron=test#start"/);
+  assert.match(out, /href="https:\/\/example\.com\/x"/, 'externe links moeten ongemoeid blijven');
+  assert.doesNotMatch(out, /href="\//, 'SEO-order output mag geen relatieve interne hrefs terugschrijven');
 });

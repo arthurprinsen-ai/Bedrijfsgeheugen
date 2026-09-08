@@ -13,14 +13,35 @@ import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 
-function absolutiseerInterneHref(html) {
-  return String(html).replace(/href=(['"])\/(?!\/)([^'"]*)\1/gi, (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
-}
-
 function herstelTechnischeLinks(html) {
   return String(html)
     .replaceAll(`${ORIGIN}/wachtwoord-vergeten`, `${ORIGIN}/inloggen`)
-    .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`);
+    .replaceAll(`${ORIGIN}/blog/afas-koppeling/`, `${ORIGIN}/afas-koppeling`)
+    .replaceAll('href="/wachtwoord-vergeten"', 'href="/inloggen"')
+    .replaceAll('href="/blog/afas-koppeling/"', 'href="/afas-koppeling"');
+}
+
+function verwijderDefecteLegacyDemonstrator(input) {
+  return String(input).replace(/<script\b([^>]*)>([\s\S]*?)<\/script>\s*/gi, (heel, attrs, body) => {
+    if (/\bsrc\s*=/i.test(attrs)) return heel;
+    const isLegacyDemonstrator = body.includes('Animated demonstrator only; production should bind to validated savings data')
+      && body.includes('Actions in hero animate as if the workflow was executed');
+    return isLegacyDemonstrator ? '' : heel;
+  });
+}
+
+function maakWijzigingenStapnavigatieNullSafe(input, bestand) {
+  if (bestand !== 'wijzigingen-uitgelegd.html') return String(input);
+  let html = String(input);
+  html = html.replace(
+    "    vorige.disabled = nu === 0;\n    volgende.disabled = nu === panelen.length - 1;\n    volgende.textContent = nu === panelen.length - 1 ? 'Klaar' : 'Volgende';\n    telling.textContent = (nu + 1) + ' van ' + panelen.length;",
+    "    if (vorige) vorige.disabled = nu === 0;\n    if (volgende) {\n      volgende.disabled = nu === panelen.length - 1;\n      volgende.textContent = nu === panelen.length - 1 ? 'Klaar' : 'Volgende';\n    }\n    if (telling) telling.textContent = (nu + 1) + ' van ' + panelen.length;"
+  );
+  html = html.replace(
+    "  vorige.addEventListener('click', function(){ toon(nu - 1); });\n  volgende.addEventListener('click', function(){ toon(nu + 1); });",
+    "  if (vorige) vorige.addEventListener('click', function(){ toon(nu - 1); });\n  if (volgende) volgende.addEventListener('click', function(){ toon(nu + 1); });"
+  );
+  return html;
 }
 
 function openDivMetKlasse(html, klasse, vanaf = 0) {
@@ -87,7 +108,8 @@ function pricingTools(input) {
 
 export function normaliseerHtml(input, bestand) {
   const isPrijzen = bestand === 'prijzen.html';
-  let html = String(input);
+  let html = verwijderDefecteLegacyDemonstrator(input);
+  html = maakWijzigingenStapnavigatieNullSafe(html, bestand);
 
   html = verwijderDivMetKlasse(html, 'bgx-gegevens');
   if (isPrijzen) {
@@ -104,7 +126,9 @@ export function normaliseerHtml(input, bestand) {
   html = ensureBrandShellCss(html);
   html = ensureReleaseMarker(html);
   html = markPageSlots(html);
-  html = absolutiseerInterneHref(html);
+  // Houd inhoudslinks in deze normalisatiefase relatief. De SEO-linkgrafiek
+  // leest deze production state; pas de finale SEO-order write-back maakt
+  // interne hrefs absoluut zonder querystrings of fragmenten te verliezen.
   html = herstelTechnischeLinks(html);
   html = applyHomepageContextSliderReadability(html);
   return html;
