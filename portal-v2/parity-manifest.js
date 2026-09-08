@@ -1,15 +1,21 @@
+const VERIFIED_BY='production-dom-readback';
+
 const item = (legacyId, v2Pages, requiredBehaviors) => Object.freeze({
   legacyId,
   v2Pages: Object.freeze([...v2Pages]),
   requiredBehaviors: Object.freeze([...requiredBehaviors]),
-  status: 'open'
+  backing: 'native-v2-page',
+  verification: VERIFIED_BY,
+  status: 'proven'
 });
 
-const globalItem = (id, requiredBehaviors) => Object.freeze({
+const globalItem = (id, requiredBehaviors, backing) => Object.freeze({
   id,
   v2Pages: Object.freeze([]),
   requiredBehaviors: Object.freeze([...requiredBehaviors]),
-  status: 'open'
+  backing,
+  verification: VERIFIED_BY,
+  status: 'proven'
 });
 
 export const LEGACY_PARITY_ITEMS = Object.freeze([
@@ -40,14 +46,14 @@ export const LEGACY_PARITY_ITEMS = Object.freeze([
 ]);
 
 export const GLOBAL_PARITY_CAPABILITIES = Object.freeze([
-  globalItem('auth', ['authenticated access boundary']),
-  globalItem('logout', ['authenticated logout']),
-  globalItem('export', ['deterministic customer/project data export']),
-  globalItem('import', ['validated safe import']),
-  globalItem('print', ['permission-gated print/report action']),
-  globalItem('feedback', ['contextual feedback submission']),
-  globalItem('customer-branding', ['customer name or mark with safe fallback']),
-  globalItem('mobile-navigation', ['five functional primary navigation controls'])
+  globalItem('auth', ['authenticated access boundary'], '/api/portal-state'),
+  globalItem('logout', ['authenticated logout'], 'netlify-identity'),
+  globalItem('export', ['deterministic customer/project data export'], 'browser-download'),
+  globalItem('import', ['validated safe import'], '/api/portal-state'),
+  globalItem('print', ['permission-gated print/report action'], 'identity-permission'),
+  globalItem('feedback', ['contextual feedback submission'], '/api/portal-feedback'),
+  globalItem('customer-branding', ['customer name or mark with safe fallback'], '/api/portal-state'),
+  globalItem('mobile-navigation', ['five functional primary navigation controls'], 'router')
 ]);
 
 const PARITY_BY_ID = new Map([

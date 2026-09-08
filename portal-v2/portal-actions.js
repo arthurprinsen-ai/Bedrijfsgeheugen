@@ -81,6 +81,11 @@ export async function updateCustomerBrand({name,stateClient}={}){
  return stateClient.write(candidate);
 }
 
+export function loginPortalUser({identity=globalThis.window?.netlifyIdentity}={}){
+ if(!identity?.open)throw new Error('IDENTITY_UNAVAILABLE');
+ identity.open('login');return true;
+}
+
 export async function logoutPortalUser({identity=globalThis.window?.netlifyIdentity}={}){
  if(!identity?.currentUser?.())throw new Error('NO_ACTIVE_SESSION');
  await identity.logout();return true;
