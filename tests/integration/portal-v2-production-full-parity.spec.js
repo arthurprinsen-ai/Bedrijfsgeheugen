@@ -35,7 +35,9 @@ test('all global capabilities are native, mobile-safe and fail closed without au
  expect(response?.status()).toBeLessThan(400);
  const mobile=page.locator('[data-mobile-nav]');await expect(mobile).toHaveCount(5);
  for(let i=0;i<5;i++){const box=await mobile.nth(i).boundingBox();expect(box?.height||0,`mobile nav ${i}`).toBeGreaterThanOrEqual(44)}
- await page.locator('[data-mobile-nav="more"]').click();
+ // Netlify injects a preview-only Drawer iframe that can intercept pointer coordinates.
+ // Dispatch through the app-owned element so the test verifies Portal routing, not preview chrome.
+ await page.locator('[data-mobile-nav="more"]').evaluate(element=>element.click());
  await expect(page.locator('#allPages')).toHaveAttribute('data-hub','more');
  const expected=['export','import','print-permission','feedback','customer-branding','identity-login-logout'];
  for(const capability of expected){
