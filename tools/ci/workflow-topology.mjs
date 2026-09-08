@@ -56,6 +56,7 @@ export async function inspectWorkflowTopology({ workflowDir, canonicalPrWorkflow
   return {
     canonicalPrWorkflow,
     workflows,
+    activePullRequestWorkflows: workflows.filter(w => w.activePullRequest).map(w => w.file),
     broadPullRequestWorkflows: workflows.filter(w => w.activePullRequest && !w.pullRequestScoped).map(w => w.file),
     scopedPullRequestWorkflows: workflows.filter(w => w.activePullRequest && w.pullRequestScoped).map(w => w.file),
     postMergePullRequestWorkflows: workflows.filter(w => w.postMergeOnly).map(w => w.file),
@@ -76,6 +77,13 @@ export function evaluateTopology(topology, policy) {
   }
   if (topology.broadPullRequestWorkflows.length !== (policy.policy?.broadPrIngressCount ?? 1)) {
     violations.push(`broad pull_request ingress count is ${topology.broadPullRequestWorkflows.length}, expected ${policy.policy?.broadPrIngressCount ?? 1}`);
+  }
+  const expectedActive = policy.policy?.activePrIngressCount ?? 1;
+  if (topology.activePullRequestWorkflows.length !== expectedActive) {
+    violations.push(`active pull_request ingress count is ${topology.activePullRequestWorkflows.length}, expected ${expectedActive}: ${topology.activePullRequestWorkflows.join(', ')}`);
+  }
+  if (!topology.activePullRequestWorkflows.includes(policy.canonicalPrWorkflow)) {
+    violations.push(`canonical PR workflow missing active pull_request trigger: ${policy.canonicalPrWorkflow}`);
   }
   return { ok: violations.length === 0, violations };
 }
