@@ -34,7 +34,7 @@ jobs:
           tests/universal-failure-learning.test.mjs
           tests/make-cost-governor-policy.test.mjs
           tests/make-cost-governance-contract.test.mjs
-      - name: Verify shared agent memory and governance contracts
+      - name: Verify shared agent memory contracts
         run: >-
           node --test
           tests/development-doc-contract.test.mjs
@@ -46,6 +46,12 @@ jobs:
           tests/production-promotion-guardian.test.mjs
           tests/hero-media-normalizer.test.mjs
           tests/hero-media-executor.test.mjs
+          tests/agent-fabric.test.mjs
+          tests/agent-fabric-gateway.test.mjs
+          tests/agent-fabric-team-memory.test.mjs
+      - name: Verify repository writer governance contracts
+        run: >-
+          node --test
           tests/paginacontrole-concurrent-push.test.mjs
           tests/paginacontrole-concurrency.test.mjs
           tests/repo-writeback-safety.test.mjs
@@ -64,9 +70,9 @@ jobs:
           tests/repo-writer-operational-harness.test.mjs
           tests/content-writer-operational-fixture.test.mjs
           tests/whole-brain-obligation-contract.test.mjs
-          tests/agent-fabric.test.mjs
-          tests/agent-fabric-gateway.test.mjs
-          tests/agent-fabric-team-memory.test.mjs
+      - name: Verify chat-learning and guard contracts
+        run: >-
+          node --test
           tests/brain-chat-learning-complete.test.mjs
           tests/instagram-chat-learning-contract.test.mjs
           tests/chat-learning-completeness-addendum.test.mjs
