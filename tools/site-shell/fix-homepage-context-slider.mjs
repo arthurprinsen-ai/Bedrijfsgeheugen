@@ -136,7 +136,7 @@ const RUNTIME = `<script ${MARKER}>
     section.setAttribute('data-bg-change-flow','');
     rows.forEach(function(row,index){
       row.setAttribute('data-bg-change-step',String(index+1));
-      row.setAttribute('data-bg-change-status',index===0?'done':index===1?'active':'future');
+      if(!row.hasAttribute('data-bg-change-status'))row.setAttribute('data-bg-change-status',index===0?'done':index===1?'active':'future');
       var source=findCheck(row);if(source&&!source.classList.contains('bg-change-flow-check'))source.setAttribute('data-bg-change-check-source','true');
       ensureFlowCheck(row);
     });
