@@ -59,8 +59,8 @@ jobs:
       # contract while execution is delegated to .github/workflows/lane-website.yml:
       # tests/v18-megamenu-heading-contract.test.mjs
       # tools/site-shell/v18-megamenu-browser-check.mjs
-      - name: Verify composable release control plane
-        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs
+      - name: Verify composable release control plane and agent completion contract
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/agents-delivery-contract.test.mjs
 
   backend:
     needs: preflight
