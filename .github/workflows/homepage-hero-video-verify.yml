@@ -10,15 +10,7 @@ on:
       - assets/openart-hero-production.json
       - tests/homepage-hero-video.test.mjs
       - .github/workflows/homepage-hero-video-verify.yml
-  pull_request:
-    branches:
-      - main
-    paths:
-      - index.html
-      - assets/openart-hero-iphone-safe-v1.mp4
-      - assets/openart-hero-production.json
-      - tests/homepage-hero-video.test.mjs
-      - .github/workflows/homepage-hero-video-verify.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
