@@ -22,5 +22,19 @@ jobs:
           python-version: '3.12'
       - name: Verify portal production contracts
         run: node --test tests/portal-*.test.mjs tests/connector-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs tests/canonical-portal-projector.test.mjs
+      - name: Verify Portal V2 contracts
+        working-directory: portal-v2
+        run: npm test
+      - name: Verify Portal V2 shell assets and wiring
+        run: |
+          test -f portal-v2/index.html
+          test -f portal-v2/app.css
+          test -f portal-v2/app.js
+          test -f portal-v2/page-shell.js
+          test -f portal-v2/interaction.css
+          test -f portal-v2/brain.svg
+          grep -q "./brain.svg" portal-v2/app.js
+          grep -q "enhancePortalShell" portal-v2/app.js
+          grep -q "openPortalPage" portal-v2/app.js
       - name: Verify protected portal parity baseline
         run: python .github/scripts/portal_parity.py
