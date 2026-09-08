@@ -25,10 +25,10 @@ test('public compliance status page exposes Bedrijfsgeheugen own status transpar
   assert.match(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/ai-act/);
 });
 
-test('public compliance status links to the canonical portal entry, not the private noindex audit document', () => {
+test('public compliance status uses the governed functional customer portal entry', () => {
   const html = read('compliance-status.html');
-  assert.match(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/"/i);
-  assert.doesNotMatch(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/compliance\.html"/i);
+  assert.match(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/klantportaal"/i);
+  assert.doesNotMatch(html, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2(?:\/|\b)/i);
 });
 
 test('shared public shell exposes trust center from over-ons and AI Act', () => {
