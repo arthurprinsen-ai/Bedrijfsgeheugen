@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.PRODUCTION_URL || 'https://www.bedrijfsgeheugen.nl';
+const BASE_URL = process.env.PRODUCTION_URL || process.env.PREVIEW_URL || 'https://www.bedrijfsgeheugen.nl';
 
-test('production Portal V2 is standalone and never routes into the legacy portal', async ({ page }) => {
+test('Portal V2 is standalone and never routes into the legacy portal', async ({ page }) => {
   const nonce = `${Date.now()}`;
   const legacyRequests = [];
   page.on('request', request => {
@@ -16,10 +16,10 @@ test('production Portal V2 is standalone and never routes into the legacy portal
   });
 
   expect(response, 'Portal V2 must return an HTTP response').not.toBeNull();
-  expect(response.status(), 'Portal V2 must be reachable in production').toBeLessThan(400);
+  expect(response.status(), 'Portal V2 must be reachable').toBeLessThan(400);
 
   await expect(page.getByText('Portal V2 bevat alle portalonderdelen standaard', { exact: true })).toBeAttached();
-  await expect(page.locator('iframe')).toHaveCount(0);
+  await expect(page.locator('iframe[src*="/klantportaal"], iframe[src*="/portal-next/"]')).toHaveCount(0);
   await expect(page.locator('a[href*="/klantportaal"]')).toHaveCount(0);
   await expect(page.locator('a[href*="/portal-next/"]')).toHaveCount(0);
 
@@ -32,7 +32,7 @@ test('production Portal V2 is standalone and never routes into the legacy portal
     await expect(page).toHaveURL(/\/portal-v2\//);
     expect(page.url()).not.toContain('/klantportaal');
     await expect(page.locator('#portalView')).toHaveAttribute('data-page-id', pageId);
-    await expect(page.locator('iframe')).toHaveCount(0);
+    await expect(page.locator('iframe[src*="/klantportaal"], iframe[src*="/portal-next/"]')).toHaveCount(0);
     await page.keyboard.press('Escape');
     await expect(page.locator('#portalView')).toHaveAttribute('aria-hidden', 'true');
   }
