@@ -1,0 +1,51 @@
+name: Required SEO diagnose
+
+on:
+  push:
+    branches:
+      - fix/kennis-canonical-nav
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose-required-seo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Build exact Required production state
+        run: |
+          npm install
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+          BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+          rm -f .github/canoniek/kop.html
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Run SEO contracts and preserve report
+        id: seo
+        continue-on-error: true
+        run: python .github/scripts/seocontrole.py
+      - name: Show SEO report
+        if: always()
+        run: cat seo-rapport.md 2>/dev/null || true
+      - name: Upload SEO report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: required-seo-diagnostics
+          path: seo-rapport.md
+          if-no-files-found: error
+      - name: Fail when SEO contracts failed
+        if: steps.seo.outcome == 'failure'
+        run: exit 1
