@@ -21,6 +21,8 @@ const STYLE = `<style ${MARKER}>
 [data-bg-change-flow] [data-bg-change-step][data-bg-change-status="active"],
 [data-bg-change-flow] [data-bg-change-step][data-bg-change-status="done"]{opacity:1!important;filter:none!important}
 [data-bg-change-flow] [data-bg-change-check-source="true"]{display:none!important}
+[data-bg-change-progress]{min-width:0}
+.bg-change-progress{display:none}
 .bg-change-step-rail{grid-column:1;grid-row:1;position:relative;display:flex;justify-content:center;align-items:flex-start;min-width:0;overflow:visible;padding-top:2px}
 .bg-change-step-content{grid-column:2;grid-row:1;min-width:0;max-width:100%;overflow:visible}
 .bg-change-flow-check{position:relative;width:42px;height:42px;border-radius:999px;display:grid;place-items:center;border:2px solid #5d6670;background:#171b1f;color:transparent;font:900 23px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;z-index:2;box-sizing:border-box;transition:background .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease;flex:none}
