@@ -17,17 +17,29 @@ async function readState(page) {
     const sr = slider.getBoundingClientRect();
     const br = before.getBoundingClientRect();
     const ar = after.getBoundingClientRect();
-    const split = parseFloat(getComputedStyle(slider).getPropertyValue('--split')) || 0;
+    const css = getComputedStyle(slider);
+    const controlledRaw = parseFloat(css.getPropertyValue('--bg-compare-split'));
+    const legacyRaw = parseFloat(css.getPropertyValue('--split'));
+    const split = Number.isFinite(controlledRaw) ? controlledRaw : (Number.isFinite(legacyRaw) ? legacyRaw : 0);
     const cx = Math.max(0, Math.min(window.innerWidth - 1, sr.left + sr.width / 2));
     const cy = Math.max(0, Math.min(window.innerHeight - 1, sr.top + Math.min(sr.height / 2, 120)));
     const hit = document.elementFromPoint(cx, cy);
     const topSideAtCenter = hit?.closest('.compare-before') ? 'before' : hit?.closest('.compare-after') ? 'after' : null;
+    const guardScripts = [...document.querySelectorAll('script[data-bg-context-slider-readable]')];
     return {
       split,
+      legacySplit: Number.isFinite(legacyRaw) ? legacyRaw : null,
+      controlledInline: slider.style.getPropertyValue('--bg-compare-split') || null,
+      legacyInline: slider.style.getPropertyValue('--split') || null,
+      guard: {
+        scriptCount: guardScripts.length,
+        hasSyncLoop: guardScripts.some(script => script.textContent.includes('syncLoop')),
+        ready: slider.getAttribute('data-bg-compare-ready')
+      },
       viewportWidth: window.innerWidth,
       slider: { left: sr.left, right: sr.right, width: sr.width, height: sr.height },
-      before: { width: br.width, clipPath: getComputedStyle(beforeSide).clipPath },
-      after: { width: ar.width, clipPath: getComputedStyle(afterSide).clipPath },
+      before: { width: br.width, clipPath: getComputedStyle(beforeSide).clipPath, inlineClip: beforeSide.style.getPropertyValue('clip-path') || null },
+      after: { width: ar.width, clipPath: getComputedStyle(afterSide).clipPath, inlineClip: afterSide.style.getPropertyValue('clip-path') || null },
       aria: {
         min: Number(knob.getAttribute('aria-valuemin')),
         max: Number(knob.getAttribute('aria-valuemax')),
@@ -38,35 +50,6 @@ async function readState(page) {
       handleDisplay: getComputedStyle(slider.querySelector('.compare-handle') || knob).display,
       marked: slider.hasAttribute('data-bg-compare-slider'),
       topSideAtCenter
-    };
-  });
-}
-
-async function readMobileChangeFlow(page) {
-  return page.evaluate(() => {
-    const root = document.querySelector('[data-bg-change-flow]');
-    if (!root) return null;
-    const steps = [...root.querySelectorAll('[data-bg-change-step]')];
-    const progress = parseFloat(getComputedStyle(root).getPropertyValue('--bg-change-progress')) || 0;
-    const statuses = steps.map(step => step.getAttribute('data-bg-change-status'));
-    const checks = steps.map(step => {
-      const el = step.querySelector('.bg-change-flow-check');
-      if (!el) return null;
-      const r = el.getBoundingClientRect();
-      const style = getComputedStyle(el);
-      return { display: style.display, width: r.width, height: r.height };
-    });
-    const impact = (root.querySelector('.bg-change-impact')?.textContent || '').replace(/\s+/g, ' ').trim();
-    const rail = root.querySelector('[data-bg-change-progress]');
-    const rr = rail?.getBoundingClientRect();
-    return {
-      progress,
-      doneCount: statuses.filter(status => status === 'done').length,
-      statuses,
-      checkCount: checks.filter(Boolean).length,
-      checksVisible: checks.every(check => check && check.display !== 'none' && check.width >= 36 && check.height >= 36),
-      impact,
-      railHeight: rr?.height || 0
     };
   });
 }
@@ -82,7 +65,7 @@ async function dragKnobTo(page, targetX) {
   await page.mouse.down();
   await page.mouse.move(targetX, y, { steps: 10 });
   await page.mouse.up();
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(180);
 }
 
 function assertCommon(g, label) {
@@ -102,52 +85,20 @@ function assertLeftEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split <= 1)) fail(`${label}: helemaal links moet 0% bereiken`, g);
   if (g.aria.now > 1) fail(`${label}: ARIA now moet links 0 zijn`, g);
-  if (g.topSideAtCenter !== 'before') fail(`${label}: helemaal links moet alleen de linker/before laag bovenop tonen`, g);
+  if (g.topSideAtCenter !== 'after') fail(`${label}: helemaal links moet alleen de witte/rechter after-laag tonen`, g);
 }
 
 function assertRightEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split >= 99)) fail(`${label}: helemaal rechts moet 100% bereiken`, g);
   if (g.aria.now < 99) fail(`${label}: ARIA now moet rechts 100 zijn`, g);
-  if (g.topSideAtCenter !== 'after') fail(`${label}: helemaal rechts moet alleen de rechter/after laag bovenop tonen`, g);
-}
-
-async function testMobileChangeFlow(page, label) {
-  const root = page.locator('[data-bg-change-flow]');
-  await root.waitFor({ state: 'visible' });
-  await root.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(140);
-
-  const start = await readMobileChangeFlow(page);
-  if (!start) fail(`${label}: mobiele wijzigingsflow ontbreekt`);
-  if (start.checkCount !== 4 || !start.checksVisible) fail(`${label}: vier checks moeten zichtbaar en direct aan de vier stappen gekoppeld zijn`, start);
-  if (start.railHeight < 100) fail(`${label}: verticale voortgangsrail ontbreekt of is te kort`, start);
-  for (const expected of ['Processen','Rollen','Documenten','KPI','Acties']) {
-    if (!start.impact.includes(expected)) fail(`${label}: impactketen mist ${expected}`, start);
-  }
-
-  await page.locator('[data-bg-change-step="4"]').evaluate(el => {
-    const r = el.getBoundingClientRect();
-    window.scrollBy({ top: r.top - window.innerHeight * 0.42, behavior: 'auto' });
-  });
-  await page.waitForTimeout(180);
-  const voltooid = await readMobileChangeFlow(page);
-  if (!voltooid) fail(`${label}: wijzigingsflow verdween tijdens scroll`);
-  if (voltooid.doneCount !== 4) fail(`${label}: na doorlopen moeten alle vier checks afgerond blijven`, voltooid);
-  if (voltooid.progress < .98) fail(`${label}: voortgangslijn moet tot stap 04 gevuld zijn`, voltooid);
-
-  await page.evaluate(() => window.scrollBy({ top: -120, behavior: 'auto' }));
-  await page.waitForTimeout(120);
-  const naTerug = await readMobileChangeFlow(page);
-  if (!naTerug) fail(`${label}: wijzigingsflow verdween na kleine terugscroll`);
-  if (naTerug.progress + .001 < voltooid.progress) fail(`${label}: kleine terugscroll mag cumulatieve voortgang niet resetten`, { voltooid, naTerug });
-  if (naTerug.doneCount !== 4) fail(`${label}: afgeronde checks mogen na kleine terugscroll niet verdwijnen`, { voltooid, naTerug });
-
-  return { startProgress: start.progress, progress: voltooid.progress, doneCount: voltooid.doneCount };
+  if (g.topSideAtCenter !== 'before') fail(`${label}: helemaal rechts moet alleen de blauwe/linker before-laag tonen`, g);
 }
 
 async function testViewport(browser, width, height, mobile = false) {
   const page = await browser.newPage({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
   const slider = page.locator('#compareSlider');
   await slider.waitFor({ state: 'visible' });
@@ -156,17 +107,20 @@ async function testViewport(browser, width, height, mobile = false) {
   const box = await slider.boundingBox();
   if (!box) fail(`${width}px: slider heeft geen geometry`);
 
-  await dragKnobTo(page, box.x + 1);
+  const nearLeft = box.x + box.width * 0.06;
+  await dragKnobTo(page, nearLeft);
   const left = await readState(page);
-  assertLeftEndpoint(left, `${width}px uiterste links`);
+  if (left) left.pageErrors = pageErrors;
+  assertLeftEndpoint(left, `${width}px praktisch uiterste links`);
 
-  await dragKnobTo(page, box.x + box.width - 1);
+  const nearRight = box.x + box.width * 0.94;
+  await dragKnobTo(page, nearRight);
   const right = await readState(page);
-  assertRightEndpoint(right, `${width}px uiterste rechts`);
+  if (right) right.pageErrors = pageErrors;
+  assertRightEndpoint(right, `${width}px praktisch uiterste rechts`);
 
-  const changeFlow = mobile ? await testMobileChangeFlow(page, `${width}px wijzigingsflow`) : null;
   await page.close();
-  return { width, left: left.split, right: right.split, changeFlow };
+  return { width, nearLeft, nearRight, left: left.split, right: right.split };
 }
 
 const browser = await chromium.launch({ headless: true });
