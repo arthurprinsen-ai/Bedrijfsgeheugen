@@ -197,9 +197,11 @@ async function testViewport(browser, width, height, mobile, orientation) {
   const page = await browser.newPage({ viewport: { width, height }, isMobile: mobile, hasTouch: mobile });
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
-  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' });
+  // Een deploy-preview kan analytics/third-party requests openhouden. Wacht daarom
+  // op de DOM en op het daadwerkelijke component in plaats van op globale network-idle.
+  await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded', timeout: 30000 });
   const slider = page.locator('#compareSlider');
-  await slider.waitFor({ state: 'visible' });
+  await slider.waitFor({ state: 'visible', timeout: 15000 });
   await slider.scrollIntoViewIfNeeded();
   await page.waitForTimeout(140);
   const box = await slider.boundingBox();
