@@ -100,6 +100,15 @@ test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde k
   assert.doesNotMatch(fixer,/\.compare-handle\{display:none!important/);
 });
 
+test('mobiele tussenstand toont geen onleesbare smalle minderheidskolom en landt na loslaten op een volledige zijde',()=>{
+  assert.match(fixer,/data-bg-readable-side/);
+  assert.match(fixer,/v>=50\?'before':'after'/);
+  assert.match(fixer,/\[data-bg-compare-slider\]\[data-bg-readable-side="before"\] \.compare-after \.compare-copy\{opacity:0!important;visibility:hidden!important\}/);
+  assert.match(fixer,/\[data-bg-compare-slider\]\[data-bg-readable-side="after"\] \.compare-before \.compare-copy\{opacity:0!important;visibility:hidden!important\}/);
+  assert.match(fixer,/matchMedia\('\(max-width:720px\)'\)\.matches/);
+  assert.match(fixer,/mobile\?\(Number\(g\.value\)<50\?0:100\):Number\(g\.value\)/);
+});
+
 test('wijzigingssectie is op mobiel een cumulatieve verticale voortgangsflow',()=>{
   assert.match(runtime,/CHANGE_STEPS\s*=\s*\['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'\]/);
   assert.match(runtime,/IMPACT_LABELS\s*=\s*\['Processen','Rollen','Documenten','KPI’s','Acties'\]/);
