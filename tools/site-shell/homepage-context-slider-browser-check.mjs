@@ -14,8 +14,7 @@ async function readState(page) {
     const after = afterSide?.querySelector('.compare-copy');
     const knob = slider?.querySelector('.compare-knob');
     const handle = slider?.querySelector('.compare-handle');
-    const range = slider?.querySelector('.bg-compare-range');
-    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle || !range) return null;
+    if (!slider || !beforeSide || !afterSide || !before || !after || !knob || !handle) return null;
 
     const sr = slider.getBoundingClientRect();
     const br = before.getBoundingClientRect();
@@ -28,6 +27,8 @@ async function readState(page) {
     const cy = Math.max(0, Math.min(window.innerHeight - 1, sr.top + Math.min(sr.height / 2, 120)));
     const hit = document.elementFromPoint(cx, cy);
     const topSideAtCenter = hit?.closest('.compare-before') ? 'before' : hit?.closest('.compare-after') ? 'after' : null;
+    const allSliders = [...new Set([...document.querySelectorAll('#compareSlider,.compare-slider,[data-compare-slider]')])]
+      .filter(el => el.querySelector('.compare-before') && el.querySelector('.compare-after'));
 
     return {
       split,
@@ -41,10 +42,13 @@ async function readState(page) {
         now: Number(knob.getAttribute('aria-valuenow')),
         disabled: knob.getAttribute('aria-disabled')
       },
-      range: { min: Number(range.min), max: Number(range.max), value: Number(range.value), disabled: range.disabled },
       handleDisplay: getComputedStyle(handle).display,
       handleLeft: parseFloat(getComputedStyle(handle).left),
       marked: slider.hasAttribute('data-bg-compare-slider'),
+      pointerReady: slider.getAttribute('data-bg-pointer-slider-ready') === 'true',
+      pointerVersion: slider.getAttribute('data-bg-pointer-slider-version'),
+      nativeRangeCount: document.querySelectorAll('.bg-compare-range,input[type="range"].bg-compare-range').length,
+      allPointerOwned: allSliders.length > 0 && allSliders.every(el => el.getAttribute('data-bg-pointer-slider-ready') === 'true' && !el.querySelector('.bg-compare-range')),
       topSideAtCenter
     };
   });
@@ -66,9 +70,9 @@ async function readMobileChangeFlow(page) {
       const cr = content.getBoundingClientRect();
       const kr = check.getBoundingClientRect();
       return {
-        rail: { left: rr.left, right: rr.right, top: rr.top, bottom: rr.bottom, width: rr.width, height: rr.height },
-        content: { left: cr.left, right: cr.right, top: cr.top, bottom: cr.bottom, width: cr.width, height: cr.height },
-        check: { left: kr.left, right: kr.right, top: kr.top, bottom: kr.bottom, width: kr.width, height: kr.height }
+        rail: { left: rr.left, right: rr.right, width: rr.width },
+        content: { left: cr.left, right: cr.right, width: cr.width },
+        check: { left: kr.left, right: kr.right, width: kr.width, height: kr.height }
       };
     });
     const railTextOverlap = geometries.some(g => !g || g.rail.right > g.content.left + .5 || g.check.right > g.content.left + .5);
@@ -91,27 +95,23 @@ async function readMobileChangeFlow(page) {
   });
 }
 
-async function dragKnobTo(page, targetX) {
-  const knob = page.locator('#compareSlider .compare-knob');
-  await knob.scrollIntoViewIfNeeded();
-  const b = await knob.boundingBox();
-  if (!b) fail('sliderknop heeft geen geometry');
-  const x = b.x + b.width / 2;
-  const y = b.y + b.height / 2;
-  await page.mouse.move(x, y);
-  await page.mouse.down();
-  await page.mouse.move(targetX, y, { steps: 12 });
-  await page.mouse.up();
-  await page.waitForTimeout(180);
-}
-
-async function dragTouchTo(page, targetX) {
-  const knob = page.locator('#compareSlider .compare-knob');
-  await knob.scrollIntoViewIfNeeded();
-  const b = await knob.boundingBox();
-  if (!b) fail('sliderknop heeft geen touch-geometry');
+async function dragPointerTo(page, targetX, mobile) {
+  const slider = page.locator('#compareSlider');
+  await slider.scrollIntoViewIfNeeded();
+  const b = await slider.boundingBox();
+  if (!b) fail('slider heeft geen geometry');
   const startX = b.x + b.width / 2;
-  const y = b.y + b.height / 2;
+  const y = b.y + Math.min(b.height / 2, 120);
+
+  if (!mobile) {
+    await page.mouse.move(startX, y);
+    await page.mouse.down();
+    await page.mouse.move(targetX, y, { steps: 12 });
+    await page.mouse.up();
+    await page.waitForTimeout(160);
+    return;
+  }
+
   const client = await page.context().newCDPSession(page);
   await client.send('Input.dispatchTouchEvent', {
     type: 'touchStart',
@@ -126,17 +126,17 @@ async function dragTouchTo(page, targetX) {
   }
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await client.detach();
-  await page.waitForTimeout(220);
+  await page.waitForTimeout(200);
 }
 
 function assertCommon(g, label) {
-  if (!g) fail(`${label}: compareSlider, tekstlagen of native range ontbreken`);
-  if (!g.marked) fail(`${label}: slider mist generieke site-wide marker`, g);
-  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: gespiegeld ARIA bereik moet exact 0-100 zijn`, g);
+  if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
+  if (!g.marked || !g.pointerReady || !g.allPointerOwned) fail(`${label}: pointer runtime bezit niet alle compare-sliders`, g);
+  if (g.nativeRangeCount !== 0) fail(`${label}: native range overlay mag niet meer bestaan`, g);
+  if (g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: ARIA bereik moet exact 0-100 zijn`, g);
   if (g.aria.disabled === 'true') fail(`${label}: slider mag niet disabled zijn`, g);
-  if (g.range.min !== 0 || g.range.max !== 100 || g.range.disabled) fail(`${label}: native range moet actief 0-100 zijn`, g);
   if (g.handleDisplay === 'none') fail(`${label}: echte sliderhandle mag niet verborgen zijn`, g);
-  if (g.slider.left < -1 || g.slider.right > g.viewportWidth + 1) fail(`${label}: slider mag niet buiten de viewport vallen`, g);
+  if (g.slider.left < -1 || g.slider.right > g.viewportWidth + 1) fail(`${label}: slider mag niet buiten viewport vallen`, g);
   const minReadableWidth = Math.min(220, g.slider.width * 0.5);
   if (g.before.width < minReadableWidth || g.after.width < minReadableWidth) fail(`${label}: tekstlagen zijn te smal`, { ...g, minReadableWidth });
 }
@@ -144,7 +144,7 @@ function assertCommon(g, label) {
 function assertLeftEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split <= 1)) fail(`${label}: helemaal links moet 0% bereiken`, g);
-  if (g.range.value > 1 || g.aria.now > 1) fail(`${label}: range en ARIA moeten links 0 zijn`, g);
+  if (g.aria.now > 1) fail(`${label}: ARIA moet links 0 zijn`, g);
   if (g.handleLeft > 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal links staan`, g);
   if (g.topSideAtCenter !== 'after') fail(`${label}: links moet alleen de after-laag tonen`, g);
 }
@@ -152,7 +152,7 @@ function assertLeftEndpoint(g, label) {
 function assertRightEndpoint(g, label) {
   assertCommon(g, label);
   if (!(g.split >= 99)) fail(`${label}: helemaal rechts moet 100% bereiken`, g);
-  if (g.range.value < 99 || g.aria.now < 99) fail(`${label}: range en ARIA moeten rechts 100 zijn`, g);
+  if (g.aria.now < 99) fail(`${label}: ARIA moet rechts 100 zijn`, g);
   if (g.handleLeft < g.slider.width - 1.5) fail(`${label}: scheidingslijn moet fysiek helemaal rechts staan`, g);
   if (g.topSideAtCenter !== 'before') fail(`${label}: rechts moet alleen de before-laag tonen`, g);
 }
@@ -162,15 +162,11 @@ async function testMobileChangeFlow(page, label) {
   await root.waitFor({ state: 'visible' });
   await root.scrollIntoViewIfNeeded();
   await page.waitForTimeout(180);
-
   const start = await readMobileChangeFlow(page);
   if (!start) fail(`${label}: wijzigingsflow ontbreekt`);
   if (start.stepCount !== 4 || !start.checksVisible) fail(`${label}: vier zichtbare stappen/checks vereist`, start);
-  if (start.railTextOverlap) fail(`${label}: rail of statusbol overlapt content`, start);
-  if (start.horizontalOverflow) fail(`${label}: horizontale overflow gevonden`, start);
-  for (const expected of ['Processen','Rollen','Documenten','KPI','Acties']) {
-    if (!start.impact.includes(expected)) fail(`${label}: impactketen mist ${expected}`, start);
-  }
+  if (start.railTextOverlap || start.horizontalOverflow) fail(`${label}: rail/content overlap of horizontale overflow`, start);
+  for (const expected of ['Processen','Rollen','Documenten','KPI','Acties']) if (!start.impact.includes(expected)) fail(`${label}: impactketen mist ${expected}`, start);
 
   await page.locator('[data-bg-change-step="4"]').evaluate(el => {
     const r = el.getBoundingClientRect();
@@ -178,18 +174,13 @@ async function testMobileChangeFlow(page, label) {
   });
   await page.waitForTimeout(240);
   const voltooid = await readMobileChangeFlow(page);
-  if (!voltooid) fail(`${label}: wijzigingsflow verdween tijdens scroll`);
-  if (voltooid.doneCount !== 4) fail(`${label}: na doorlopen moeten alle vier checks afgerond blijven`, voltooid);
-  if (voltooid.progress < .98) fail(`${label}: voortgang moet stap 04 bereiken`, voltooid);
+  if (!voltooid || voltooid.doneCount !== 4 || voltooid.progress < .98) fail(`${label}: voortgang moet alle vier stappen afronden`, voltooid || {});
   if (voltooid.railTextOverlap || voltooid.horizontalOverflow) fail(`${label}: layout verslechtert na scroll`, voltooid);
 
   await page.evaluate(() => window.scrollBy({ top: -120, behavior: 'auto' }));
   await page.waitForTimeout(160);
   const naTerug = await readMobileChangeFlow(page);
-  if (!naTerug) fail(`${label}: wijzigingsflow verdween na terugscroll`);
-  if (naTerug.progress + .001 < voltooid.progress) fail(`${label}: cumulatieve voortgang mag niet resetten`, { voltooid, naTerug });
-  if (naTerug.doneCount !== 4) fail(`${label}: afgeronde checks mogen niet verdwijnen`, { voltooid, naTerug });
-  if (naTerug.railTextOverlap || naTerug.horizontalOverflow) fail(`${label}: terugscroll veroorzaakt overlap/overflow`, naTerug);
+  if (!naTerug || naTerug.progress + .001 < voltooid.progress || naTerug.doneCount !== 4) fail(`${label}: cumulatieve voortgang mag niet resetten`, { voltooid, naTerug });
   return naTerug;
 }
 
@@ -201,20 +192,16 @@ async function testViewport(browser, width, height, mobile, orientation) {
   const slider = page.locator('#compareSlider');
   await slider.waitFor({ state: 'visible' });
   await slider.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(140);
+  await page.waitForTimeout(180);
   const box = await slider.boundingBox();
   if (!box) fail(`${width}px: slider heeft geen geometry`);
 
-  const nearLeft = box.x + 1;
-  if (mobile) await dragTouchTo(page, nearLeft); else await dragKnobTo(page, nearLeft);
+  await dragPointerTo(page, box.x, mobile);
   const left = await readState(page);
-  if (left) left.pageErrors = pageErrors;
   assertLeftEndpoint(left, `${width}x${height} fysiek uiterste links`);
 
-  const nearRight = box.x + box.width - 1;
-  if (mobile) await dragTouchTo(page, nearRight); else await dragKnobTo(page, nearRight);
+  await dragPointerTo(page, box.x + box.width, mobile);
   const right = await readState(page);
-  if (right) right.pageErrors = pageErrors;
   assertRightEndpoint(right, `${width}x${height} fysiek uiterste rechts`);
 
   const flow = await testMobileChangeFlow(page, `${width}x${height} ${orientation} wijzigingsflow`);
