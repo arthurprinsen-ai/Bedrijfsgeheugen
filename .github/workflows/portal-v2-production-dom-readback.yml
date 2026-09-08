@@ -1,12 +1,6 @@
 name: Portal V2 Production DOM Readback
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'portal-v2/**'
-      - 'tests/integration/portal-v2-production-csrd.spec.js'
-      - '.github/workflows/portal-v2-production-dom-readback.yml'
   push:
     branches: [main]
     paths:
@@ -16,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: portal-v2-production-dom-readback-${{ github.event.pull_request.number || github.ref }}
+  group: portal-v2-production-dom-readback-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
