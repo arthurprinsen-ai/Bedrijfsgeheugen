@@ -10,8 +10,8 @@ permissions:
   statuses: read
 
 concurrency:
-  group: required-test-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: required-test-${{ github.repository }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   preflight:
@@ -37,6 +37,8 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/moving-main-successor-guard.mjs
+      - name: Enforce CI capacity topology contract
+        run: node --test tests/ci-workflow-topology.test.mjs
       - id: scope
         name: Classify independent delivery lanes
         env:
