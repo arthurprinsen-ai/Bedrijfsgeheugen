@@ -35,7 +35,7 @@
   };
 
   function normPath(){var p=location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';return p;}
-  function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+  function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'})[c];});}
   function event(name,meta){
     try{if(typeof window.bgEvent==='function')window.bgEvent(name);}catch(e){}
     try{if(typeof gtag==='function')gtag('event',name,{money_page:meta.intent,contract:CONTRACT,page_path:location.pathname});}catch(e){}
@@ -93,4 +93,27 @@
   }else{
     initMoneyPage();
   }
+})();
+
+/* Public trust-center entry — Bedrijfsgeheugen own compliance status */
+(function(){
+  var URL='https://www.bedrijfsgeheugen.nl/compliance-status';
+  function norm(){return location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';}
+  function addFooterLink(){
+    document.querySelectorAll('.bgvoet-kolom').forEach(function(col){
+      var head=col.querySelector('.bgvoet-kop');
+      if(!head||head.textContent.trim()!=='Over ons'||col.querySelector('a[href="'+URL+'"]'))return;
+      var a=document.createElement('a');a.href=URL;a.textContent='Vertrouwen & compliance';col.appendChild(a);
+    });
+  }
+  function addTrustCallout(){
+    var path=norm();if(path!=='/over-ons'&&path!=='/ai-act')return;
+    var main=document.querySelector('main');if(!main||document.getElementById('bgTrustStatus'))return;
+    var section=document.createElement('section');section.id='bgTrustStatus';section.setAttribute('aria-label','Compliance-status Bedrijfsgeheugen');
+    section.style.cssText='max-width:1120px;margin:2rem auto;padding:0 1.5rem';
+    section.innerHTML='<div style="background:#fff;border:2px solid #14171A;border-radius:16px;padding:1.25rem 1.35rem;display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap"><div><b style="font-family:Bricolage Grotesque,sans-serif;font-size:1.08rem">Hoe staat Bedrijfsgeheugen zelf ervoor?</b><p style="margin:.25rem 0 0;color:#5C646E;max-width:62ch;font-size:.9rem">Bekijk onze actuele status voor AI Act, NIS2, data, hosting, bewijs en open verbeterpunten.</p></div><a href="'+URL+'" style="font-weight:800;color:#2742D6;text-decoration:none">Vertrouwen & compliance →</a></div>';
+    main.appendChild(section);
+  }
+  function init(){addFooterLink();addTrustCallout();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
