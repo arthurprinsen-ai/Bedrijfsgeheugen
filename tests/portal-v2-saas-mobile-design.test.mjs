@@ -6,7 +6,7 @@ const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 
 test('Portal V2 exposes a premium SaaS visual system and brain flow contract', async () => {
   const [css, html] = await Promise.all([
-    read('portal-v2/app.css'),
+    read('portal-v2/saas-theme.css'),
     read('portal-v2/index.html'),
   ]);
 
@@ -15,6 +15,7 @@ test('Portal V2 exposes a premium SaaS visual system and brain flow contract', a
   assert.match(css, /\.brainflow/);
   assert.match(css, /\.brainnode/);
   assert.match(css, /\.braincapchips/);
+  assert.match(html, /href="\.\/saas-theme\.css"/);
   assert.match(html, /class="brainflow"/);
   assert.match(html, /class="brainnode[^\"]*"[^>]*data-stage="sources"/);
   assert.match(html, /data-stage="datahub"/);
@@ -24,11 +25,13 @@ test('Portal V2 exposes a premium SaaS visual system and brain flow contract', a
 });
 
 test('CSRD mobile layout is card-first and does not depend on shrinking the desktop world visual', async () => {
-  const [css, js] = await Promise.all([
-    read('portal-v2/csrd-impact.css'),
+  const [css, js, html] = await Promise.all([
+    read('portal-v2/csrd-mobile-saas.css'),
     read('portal-v2/csrd-impact.js'),
+    read('portal-v2/index.html'),
   ]);
 
+  assert.match(html, /href="\.\/csrd-mobile-saas\.css"/);
   assert.match(js, /csrd-mobile-summary/);
   assert.match(js, /csrd-mobile-domain/);
   assert.match(css, /\.csrd-mobile-summary/);
