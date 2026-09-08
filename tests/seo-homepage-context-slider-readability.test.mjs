@@ -37,14 +37,15 @@ test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde k
   assert.doesNotMatch(fixer,/\.compare-handle\{display:none!important/);
 });
 
-test('wijzigingssectie borgt vier zichtbare checks op mobiel',()=>{
+test('wijzigingssectie is op mobiel een cumulatieve verticale voortgangsflow',()=>{
   assert.match(fixer,/CHANGE_STEPS=\['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'\]/);
-  assert.match(fixer,/ensureFourChangeChecks/);
-  assert.match(fixer,/data-bg-change-step/);
-  assert.match(fixer,/data-bg-change-check-source/);
-  assert.match(fixer,/bg-change-check-fallback/);
-  assert.match(fixer,/left:18px;bottom:42px;width:42px;height:42px/);
-  assert.match(fixer,/ensureFourChangeChecks\(\);ensureSliders\(\)/);
+  assert.match(fixer,/data-bg-change-flow/);
+  assert.match(fixer,/data-bg-change-progress/);
+  assert.match(fixer,/data-bg-change-status/);
+  assert.match(fixer,/Processen.*Rollen.*Documenten.*KPI.*Acties/s);
+  assert.match(fixer,/maxProgress\s*=\s*Math\.max\(maxProgress/,'een kleine scroll terug mag afgeronde stappen niet resetten');
+  assert.match(fixer,/prefers-reduced-motion/);
+  assert.doesNotMatch(fixer,/left:18px;bottom:42px;width:42px;height:42px/,'checks mogen niet meer los absoluut onder elke rij zweven');
 });
 
 test('oude geïnjecteerde guard wordt vervangen en ondersteunt generieke slider-markup',()=>{
