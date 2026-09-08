@@ -1,0 +1,19 @@
+{
+  "type":"PROVEN_LEARNING",
+  "version":"powerhouse.learning.v1",
+  "fingerprint":"github-required-test-synthetic-merge-ref-status-gap-v1",
+  "component":"release:github",
+  "symptom":"GitHub merge API reported Required status check \"test\" is expected while the exact PR head had a successful Required test job and successful test status from the GitHub Actions app.",
+  "rootCause":"Protected-branch status recognition was coupled to a synthetic/up-to-date merge-ref context on which GitHub exposed no corresponding check-runs, not to a substantive test failure.",
+  "failedApproach":"Rerunning substantive test suites or disabling the required test gate would not repair the status/ref association and creates unnecessary queue load or weaker protection.",
+  "fix":"Keep test required, distinguish exact-head status from synthetic merge-ref status, and only relax the up-to-date/synthetic-ref requirement when direct GitHub evidence proves that mismatch.",
+  "prevention":"Release diagnostics classify failed, queued, success, success_but_not_recognized, expected_on_synthetic_ref and provider_mismatch before deciding whether any test rerun is justified.",
+  "regressionContract":"When exact head test/status is success from app_id 15368, synthetic merge check-runs are empty and merge API says test is expected, classification must be expected_on_synthetic_ref with rerunTests=false and disableRequiredCheck=false.",
+  "source_refs":[
+    {"system":"github","kind":"pull_request","id":"1159"},
+    {"system":"github","kind":"feature_head","id":"f74cfdfa1225ba1ad8427e5719ec7b4f1f18c84a","sha":"f74cfdfa1225ba1ad8427e5719ec7b4f1f18c84a"},
+    {"system":"github","kind":"merge_commit","id":"7695e386ed7b234391dfa4d8ef0de7479dd48aa5","sha":"7695e386ed7b234391dfa4d8ef0de7479dd48aa5"}
+  ],
+  "status":"PROVEN",
+  "security":{"contains_secrets":false,"contains_credentials":false,"contains_pii":false}
+}
