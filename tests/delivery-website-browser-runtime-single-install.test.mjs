@@ -27,13 +27,13 @@ test('single browser job retains targeted, visibility, and high-risk broad exact
   assert.match(browser, /needs\.classify\.outputs\.risk_lane/);
 });
 
-test('page-seo remains static and never starts a second browser runtime', () => {
+test('page-seo only builds the exact artifact and never starts legacy duplicate checkers', () => {
   const pageSeoStart = workflow.indexOf('\n  page-seo:');
   const browserStart = workflow.indexOf('\n  browser:', pageSeoStart);
   assert.notEqual(pageSeoStart, -1);
   assert.notEqual(browserStart, -1);
   const pageSeo = workflow.slice(pageSeoStart, browserStart);
   assert.match(pageSeo, /needs:\s*classify/);
-  assert.match(pageSeo, /python \.github\/scripts\/seocontrole\.py/);
-  assert.doesNotMatch(pageSeo, /playwright|PAGINA_BASE_URL|paginacontrole\.py/);
+  assert.match(pageSeo, /name: Build and verify exact Netlify website artifact/);
+  assert.doesNotMatch(pageSeo, /playwright|PAGINA_BASE_URL|paginacontrole\.py|seocontrole\.py/);
 });

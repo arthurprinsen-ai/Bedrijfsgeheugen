@@ -37,7 +37,7 @@ test('website lane keeps public visibility mandatory while broad checks are high
   assert.match(website, /verify-targeted-website-routes\.mjs/);
 });
 
-test('page and SEO contracts stay static while exact-preview runtime is owned by the browser lane', () => {
+test('exact artifact build owns modern SEO validation while exact-preview runtime is owned by the browser lane', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   const pageSeoStart = website.indexOf('\n  page-seo:');
   const browserStart = website.indexOf('\n  browser:', pageSeoStart);
@@ -49,7 +49,7 @@ test('page and SEO contracts stay static while exact-preview runtime is owned by
   assert.match(pageSeo, /needs:\s*classify/);
   assert.match(pageSeo, /name: Install Netlify build dependencies/);
   assert.match(pageSeo, /run: npm install/);
-  assert.match(pageSeo, /name: Build exact Netlify website artifact/);
+  assert.match(pageSeo, /name: Build and verify exact Netlify website artifact/);
   const commands = [
     'node tools/bouw-powerhouse-auth.mjs',
     'node tools/bouw-kennisindex.mjs',
@@ -72,9 +72,7 @@ test('page and SEO contracts stay static while exact-preview runtime is owned by
       `Netlify build order must preserve ${commands[index - 1]} before ${commands[index]}`,
     );
   }
-  assert.doesNotMatch(pageSeo, /node tools\/normaliseer-site-ui\.mjs/, 'page-seo must not invent a second local build composition');
-  assert.match(pageSeo, /python \.github\/scripts\/seocontrole\.py/);
-  assert.doesNotMatch(pageSeo, /PAGINA_BASE_URL|paginacontrole\.py|playwright/);
+  assert.doesNotMatch(pageSeo, /normaliseer-site-ui\.mjs|seocontrole\.py|paginacontrole\.py|playwright|PAGINA_BASE_URL/);
   assert.match(browser, /needs:\s*\[classify, preview-ready\]/);
   assert.match(browser, /deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
 });

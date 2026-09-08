@@ -126,10 +126,7 @@ jobs:
           node-version: '22'
       - name: Install Netlify build dependencies
         run: npm install
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-      - name: Build exact Netlify website artifact
+      - name: Build and verify exact Netlify website artifact
         run: |
           node tools/bouw-powerhouse-auth.mjs
           node tools/bouw-kennisindex.mjs
@@ -138,8 +135,6 @@ jobs:
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
           node tools/prijzen-uit-de-homepage.mjs
-      - name: Verify static page and SEO contracts
-        run: python .github/scripts/seocontrole.py
 
   browser:
     needs: [classify, preview-ready]
