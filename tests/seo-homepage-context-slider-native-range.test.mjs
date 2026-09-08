@@ -3,20 +3,21 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const read = async path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
-const runtime = await read('assets/compare-slider-runtime.js');
 const fixer = await read('tools/site-shell/fix-homepage-context-slider.mjs');
 const browserCheck = await read('tools/site-shell/homepage-context-slider-browser-check.mjs');
 
-test('alle compare-sliders krijgen een native range als primaire iOS drag-control', () => {
-  assert.match(runtime, /ensureNativeRange/);
-  assert.match(runtime, /createElement\(['"]input['"]\)/);
-  assert.match(runtime, /type\s*=\s*['"]range['"]/);
-  assert.match(runtime, /min\s*=\s*['"]0['"]/);
-  assert.match(runtime, /max\s*=\s*['"]100['"]/);
-  assert.match(runtime, /step\s*=\s*['"]1['"]/);
-  assert.match(runtime, /bg-compare-range/);
-  assert.match(runtime, /addEventListener\(['"]input['"]/);
-  assert.match(runtime, /addEventListener\(['"]change['"]/);
+test('alle compare-sliders krijgen na legacy listeners één native range eigenaar', () => {
+  assert.match(fixer, /ensureNativeRange/);
+  assert.match(fixer, /createElement\(['"]input['"]\)/);
+  assert.match(fixer, /\.type=['"]range['"]/);
+  assert.match(fixer, /\.min=['"]0['"]/);
+  assert.match(fixer, /\.max=['"]100['"]/);
+  assert.match(fixer, /\.step=['"]1['"]/);
+  assert.match(fixer, /bg-compare-range/);
+  assert.match(fixer, /addEventListener\(['"]input['"]/);
+  assert.match(fixer, /addEventListener\(['"]change['"]/);
+  assert.match(fixer, /cloneNode\(true\)/);
+  assert.match(fixer, /data-bg-compare-owner','native-range/);
 });
 
 test('native range bestrijkt de volle sliderbreedte zonder visuele randclamp', () => {
@@ -29,9 +30,10 @@ test('native range bestrijkt de volle sliderbreedte zonder visuele randclamp', (
   assert.doesNotMatch(fixer, /\.bg-compare-range[^}]*clamp\(/s);
 });
 
-test('browsercheck verifieert ook native range endpoints 0 en 100', () => {
-  assert.match(browserCheck, /bg-compare-range/);
-  assert.match(browserCheck, /rangeValue/);
-  assert.match(browserCheck, /rangeValue\s*!==\s*0/);
-  assert.match(browserCheck, /rangeValue\s*!==\s*100/);
+test('bestaande browsertest blijft fysieke 0 en 100 eindstanden afdwingen', () => {
+  assert.match(browserCheck, /split\s*<=\s*1/);
+  assert.match(browserCheck, /split\s*>=\s*99/);
+  assert.match(browserCheck, /handleLeft\s*>\s*1\.5/);
+  assert.match(browserCheck, /handleLeft\s*<\s*g\.slider\.width - 1\.5/);
+  assert.match(browserCheck, /Input\.dispatchTouchEvent/);
 });
