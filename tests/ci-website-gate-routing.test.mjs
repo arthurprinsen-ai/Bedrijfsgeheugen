@@ -9,7 +9,6 @@ for (const token of [
   '.github/scripts/paginacontrole.py',
   '.github/scripts/seocontrole.py',
   'tools/site-shell/test-live-contract.mjs',
-  'tests/seo-order-live-readback.test.mjs',
   'tools/bouw-powerhouse-auth.mjs',
   'tools/bouw-kennisindex.mjs',
   'tools/bouw-v18-production.mjs',
@@ -21,6 +20,10 @@ for (const token of [
 ]) {
   test(`website lane owns ${token}`, () => assert.match(website, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'))));
 }
+
+test('website lane owns SEO order regression family including live readback', () => {
+  assert.match(website, /tests\/seo-order-\*\.test\.mjs/);
+});
 
 test('expensive website jobs depend on cheap prerequisites', () => {
   assert.match(website, /shell-build:\n\s+needs:\s*\[?classify,?\s*baseline\]?/);
