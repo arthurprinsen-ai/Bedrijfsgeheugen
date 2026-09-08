@@ -50,11 +50,12 @@ test('page and SEO contracts run against built and materialized canonical output
     'node tools/apply-v18-seo.mjs',
     'node tools/bouw-losse-paginas.mjs',
     'node tools/bouw-inhoudspaginas.mjs',
+    'node tools/bouw-v18-views.mjs',
     'node tools/normaliseer-site-ui.mjs',
   ]) assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.ok(
-    pageSeo.indexOf('node tools/bouw-v18-production-core.mjs') < pageSeo.indexOf('node tools/normaliseer-site-ui.mjs'),
-    'site builders must run before canonical output materialization',
+    pageSeo.indexOf('node tools/bouw-v18-views.mjs') < pageSeo.indexOf('node tools/normaliseer-site-ui.mjs'),
+    'standalone V18 views such as over-ons must exist before canonical output materialization',
   );
   assert.ok(
     pageSeo.indexOf('node tools/normaliseer-site-ui.mjs') < pageSeo.indexOf('name: Verify page and SEO contracts'),
