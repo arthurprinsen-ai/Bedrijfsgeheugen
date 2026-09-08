@@ -18,7 +18,11 @@ test('Portal V2 has no legacy portal runtime dependency', async () => {
   assert.doesNotMatch(source, /canEmbedLegacy/);
   assert.doesNotMatch(source, /<iframe/i);
   assert.doesNotMatch(registry, /portal-next/);
+  assert.doesNotMatch(index, /\/klantportaal(?:\?|["'])/i);
   assert.match(shell, /kind:'native-v2'/);
   assert.match(shell, /Native Portal V2/);
   assert.match(index, /portal-v2\/compliance\.html/);
+  assert.match(index, /data-open-page="roadmap"/);
+  assert.match(index, /data-open-page="ai-scan"/);
+  assert.match(index, /data-open-page="wijzigingen"/);
 });
