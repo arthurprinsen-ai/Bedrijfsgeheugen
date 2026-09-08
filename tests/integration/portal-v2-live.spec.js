@@ -97,3 +97,44 @@ test('portal-v2 uses a vertical SaaS brain and card-first CSRD on a phone withou
   expect(rootOverflow).toBeLessThanOrEqual(1);
   expect(errors).toEqual([]);
 });
+
+test('mobile primary navigation routes all five controls on supported phone widths', async ({ page }) => {
+  const preview = process.env.PREVIEW_URL;
+  if (!preview) throw new Error('PREVIEW_URL is required');
+  await hideNetlifyChrome(page);
+
+  for (const [width,height] of [[320,720],[390,844],[430,932]]) {
+    await page.setViewportSize({ width, height });
+    await openPortalV2(page, preview);
+    const bar=page.locator('.mobilebar');
+    await expect(bar).toBeVisible();
+    const buttons=bar.locator('button');
+    await expect(buttons).toHaveCount(5);
+    for(let index=0;index<5;index++){
+      const box=await buttons.nth(index).boundingBox();
+      expect(box, `${width}px button ${index} must have geometry`).toBeTruthy();
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+    }
+
+    const expected=[
+      ['overview', null, null],
+      ['portal', 'hub', 'portal'],
+      ['data-ai', 'hub', 'data-ai'],
+      ['tasks', 'hub', 'tasks'],
+      ['more', 'hub', 'more']
+    ];
+    for(const [id,param,value] of expected){
+      await page.evaluate(({id})=>document.querySelector(`[data-mobile-nav="${id}"]`)?.click(),{id});
+      await expect(page.locator(`[data-mobile-nav="${id}"]`)).toHaveAttribute('aria-current','page');
+      const url=new URL(page.url());
+      if(param) expect(url.searchParams.get(param)).toBe(value); else {
+        expect(url.searchParams.get('hub')).toBeNull();
+        expect(url.searchParams.get('page')).toBeNull();
+      }
+    }
+
+    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(1);
+  }
+});
