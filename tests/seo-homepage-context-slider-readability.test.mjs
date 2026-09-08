@@ -44,7 +44,7 @@ test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand',()=>
   assert.match(pipeline,/--bg-compare-split/);
   assert.match(pipeline,/compare-before\{clip-path:inset\(0 calc\(100% - var\(--bg-compare-split,50%\)\) 0 0\)!important\}/);
   assert.match(pipeline,/compare-after\{clip-path:inset\(0 0 0 var\(--bg-compare-split,50%\)\)!important\}/);
-  assert.match(pipeline,/compare-handle\{display:block!important;position:absolute!important;left:clamp\(24px,var\(--bg-compare-split,50%\),calc\(100% - 24px\)\)!important/);
+  assert.match(pipeline,/compare-handle\{display:block!important;position:absolute!important;/);
   assert.doesNotMatch(pipeline,/--bg-final-split/);
   assert.doesNotMatch(pipeline,/:has\(\.compare-knob/);
   assert.doesNotMatch(pipeline,/compare-before\{clip-path:inset\(0 var\(--split,50%\) 0 0\)!important\}/);
@@ -58,9 +58,20 @@ test('alle sliders maken de uitersten op touch praktisch bereikbaar en snappen n
   assert.match(runtime,/touchstart/);
   assert.match(runtime,/touchmove/);
   assert.match(runtime,/touchend/);
-  assert.match(runtime,/clamp\(24px/);
-  assert.match(runtime,/new MutationObserver\(mirrorLegacy\)/);
-  assert.match(runtime,/renderControlled\(readLegacy\(\)\)/);
+});
+
+test('echte touch-interactie bezit de slider volledig en test fysieke 0-100 eindstanden',()=>{
+  assert.match(browserCheck,/newCDPSession/);
+  assert.match(browserCheck,/Input\.dispatchTouchEvent/);
+  assert.match(browserCheck,/touchStart/);
+  assert.match(browserCheck,/touchMove/);
+  assert.match(browserCheck,/touchEnd/);
+  assert.match(runtime,/cloneNode\(true\)/);
+  assert.match(runtime,/replaceWith|replaceChild/);
+  assert.doesNotMatch(runtime,/new MutationObserver\(mirrorLegacy\)/);
+  assert.doesNotMatch(runtime,/clamp\(24px/);
+  assert.doesNotMatch(fixer,/left:clamp\(24px/);
+  assert.doesNotMatch(pipeline,/left:clamp\(24px/);
 });
 
 test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde kaarten omgebouwd',()=>{
@@ -97,9 +108,6 @@ test('browsercheck verifieert uiterste links en rechts op desktop en gangbare te
   assert.match(browserCheck,/\[320,720\]/);
   assert.match(browserCheck,/\[390,844\]/);
   assert.match(browserCheck,/\[430,932\]/);
-  assert.match(browserCheck,/page\.mouse\.down/);
-  assert.match(browserCheck,/page\.mouse\.move/);
-  assert.match(browserCheck,/page\.mouse\.up/);
   assert.match(browserCheck,/split\s*<=\s*1/);
   assert.match(browserCheck,/split\s*>=\s*99/);
   assert.match(browserCheck,/g\.aria\.min\s*!==\s*0/);
