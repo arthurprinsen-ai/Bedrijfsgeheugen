@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - 'automation/classify-learning-contract-tests-v2-20260830'
-  pull_request:
-    branches:
       - main
   workflow_dispatch:
 
