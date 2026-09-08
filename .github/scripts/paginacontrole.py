@@ -146,11 +146,15 @@ def main():
                 if js_fouten:
                     fouten.append('JavaScript-fout: %s' % js_fouten[0])
 
+                # De browser valideert de werkelijk gerenderde canonical shell.
+                # data-bg-component is het build-contract; v17-header/footer zijn
+                # de zichtbare productiecomponenten en blijven dus ook geldig als
+                # een serialisatiestap de marker niet bewaart.
                 koppen = pagina.eval_on_selector_all(
-                    '[data-bg-component="header"], .bgkop', 'e=>e.length'
+                    '[data-bg-component="header"], header.v17-header', 'e=>e.length'
                 )
                 voeten = pagina.eval_on_selector_all(
-                    '[data-bg-component="footer"], footer.bgvoet', 'e=>e.length'
+                    '[data-bg-component="footer"], footer', 'e=>e.length'
                 )
                 h1s = pagina.eval_on_selector_all('h1', 'e=>e.length')
 
@@ -162,7 +166,7 @@ def main():
                     fouten.append('%d keer een h1 — er hoort er precies één te zijn' % h1s)
 
                 if naam not in GEEN_KRUIMEL and not pagina.eval_on_selector_all(
-                    '[aria-label="Kruimelpad"], .bgkruim', 'e=>e.length'
+                    '[aria-label="Kruimelpad"], .bgkruim, .p-kruim', 'e=>e.length'
                 ):
                     fouten.append('kruimelpad ontbreekt')
 
