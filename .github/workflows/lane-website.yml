@@ -70,9 +70,32 @@ jobs:
           tests/site-shell-website-release-risk.test.mjs
           tests/targeted-website-route-regression.test.mjs
           tests/homepage-pricing-boundary-readback.test.mjs
+          tests/homepage-hero-video.test.mjs
+          tests/prijzen-hero-seo.test.mjs
+          tests/technical-seo-gate.test.mjs
           tests/v18-production-promotion.test.mjs
           tests/v18-seo-layer.test.mjs
-          tests/seo-order-live-readback.test.mjs
+          tests/seo-order-*.test.mjs
+      - name: Verify accepted hero media binary contract
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const expected = 'a261792e9b0058802ab5b30ce107c7ac14e8b2291a3bd7ee78fdb5968bbe97fd';
+          const path = 'assets/openart-hero-iphone-safe-v1.mp4';
+          if (!fs.existsSync(path)) throw new Error('accepted hero binary missing');
+          const bytes = fs.readFileSync(path);
+          const sha = crypto.createHash('sha256').update(bytes).digest('hex');
+          if (sha !== expected) throw new Error(`hero binary hash mismatch: ${sha}`);
+          const manifest = JSON.parse(fs.readFileSync('assets/openart-hero-production.json','utf8'));
+          if (manifest.derivative_sha256 !== expected) throw new Error('manifest derivative hash mismatch');
+          if (manifest.physical_iphone_runtime !== 'PASS') throw new Error('physical iPhone acceptance missing');
+          if (manifest.promotion_state !== 'MEDIA_READY') throw new Error('media is not MEDIA_READY');
+          const p = manifest.derivative_probe || {};
+          const exact = p.width === 1920 && p.height === 1080 && p.fps === 30 && p.codec === 'h264' && p.pixel_format === 'yuv420p' && p.has_audio === false && p.faststart === true;
+          if (!exact) throw new Error(`manifest media profile mismatch: ${JSON.stringify(p)}`);
+          console.log(`Hero static media contract PASS: ${sha}; bytes=${bytes.length}`);
+          NODE
       - name: Verify component foundation contracts
         run: >-
           node --test
@@ -230,7 +253,7 @@ jobs:
           node-version: '22'
       - name: Install targeted browser
         run: |
-          npm install --no-save playwright@1.55.0
+          npm install --no-save playwright@1.55.0 @playwright/test@1.55.0
           npx playwright install --with-deps chromium
       - name: Verify affected routes on desktop and mobile
         env:
@@ -238,6 +261,10 @@ jobs:
           BASELINE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: node tools/site-shell/verify-targeted-website-routes.mjs
+      - name: Verify exact V18 live runtime
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+        run: npx playwright test tests/integration/v18-live-runtime.spec.js --workers=1
 
   public-visibility:
     needs: [classify, baseline, preview-ready]
