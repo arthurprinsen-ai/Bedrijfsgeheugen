@@ -29,6 +29,16 @@ test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
   assert.doesNotMatch(fixer,/compactThreshold/);
 });
 
+test('alle sliders maken de uitersten op touch praktisch bereikbaar en snappen naar volledige tekst',()=>{
+  assert.match(fixer,/SNAP_THRESHOLD\s*=\s*8/);
+  assert.match(fixer,/value\s*<=\s*SNAP_THRESHOLD\s*\?\s*0/);
+  assert.match(fixer,/value\s*>=\s*100-SNAP_THRESHOLD\s*\?\s*100/);
+  assert.match(fixer,/touchstart/);
+  assert.match(fixer,/touchmove/);
+  assert.match(fixer,/touchend/);
+  assert.match(fixer,/left:clamp\(/);
+});
+
 test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde kaarten omgebouwd',()=>{
   assert.match(fixer,/touch-action:pan-y/);
   assert.match(fixer,/clip-path/);
@@ -69,6 +79,8 @@ test('browsercheck verifieert uiterste links en rechts op desktop en gangbare te
   assert.match(browserCheck,/split\s*>=\s*99/);
   assert.match(browserCheck,/g\.aria\.min\s*!==\s*0/);
   assert.match(browserCheck,/g\.aria\.max\s*!==\s*100/);
+  assert.match(browserCheck,/nearLeft/);
+  assert.match(browserCheck,/nearRight/);
   assert.match(websiteLane,/homepage-context-slider-browser-check\.mjs/);
 });
 
