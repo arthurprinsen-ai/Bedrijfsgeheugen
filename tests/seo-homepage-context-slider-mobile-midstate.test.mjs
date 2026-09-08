@@ -4,11 +4,10 @@ import { readFile } from 'node:fs/promises';
 
 const read = async path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const fixer = await read('tools/site-shell/fix-homepage-context-slider.mjs');
-const runtime = await read('assets/compare-slider-runtime.js');
 
 test('mobiele compare-slider laat geen tekstkolom van enkele woorden ontstaan in een smalle minderheidshelft', () => {
-  assert.match(runtime, /data-bg-readable-side/);
-  assert.match(runtime, /value\s*>=\s*50\s*\?\s*['"]before['"]\s*:\s*['"]after['"]/);
+  assert.match(fixer, /data-bg-readable-side/);
+  assert.match(fixer, /v>=50\?'before':'after'/);
   assert.match(fixer, /\[data-bg-readable-side="before"\]\s+\.compare-after\s+\.compare-copy\{[^}]*opacity:0!important[^}]*visibility:hidden!important/s);
   assert.match(fixer, /\[data-bg-readable-side="after"\]\s+\.compare-before\s+\.compare-copy\{[^}]*opacity:0!important[^}]*visibility:hidden!important/s);
   assert.match(fixer, /\[data-bg-readable-side="before"\]\s+\.compare-before\s+\.compare-copy\{[^}]*width:calc\(var\(--bg-compare-split,50%\) - 36px\)!important/s);
