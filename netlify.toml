@@ -195,7 +195,7 @@
   for = "/intern/powerhouse-kosten/*"
   [headers.values]
     Cache-Control = "private, no-store"
-    X-Robots-Tag = "noindex, nofollow,noarchive"
+    X-Robots-Tag = "noindex, nofollow, noarchive"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "no-referrer"
