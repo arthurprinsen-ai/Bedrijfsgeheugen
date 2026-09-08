@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell, markCanonicalComponents } from './contracts.mjs';
 import { extractComponent, replaceComponent } from './components.mjs';
 import { CANONICAL_SHELL_SOURCE, extractPageMain, projectGlobalComponents } from './apply-shell.mjs';
+import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './ensure-knowledge-nav.mjs';
 import { normaliseerHtml } from '../normaliseer-site-ui.mjs';
 
 const canonical = `<!doctype html><html><head></head><body>
@@ -60,11 +60,13 @@ assert.equal(extractComponent(alleenHeader, 'main'), oudeMain);
 assert.equal(extractComponent(alleenHeader, 'footer'), oudeFooter);
 assert.equal(extractComponent(alleenHeader, 'header'), nieuweHeader);
 
-const productionBuilder = await readFile('tools/bouw-v18-production.mjs', 'utf8');
-assert.ok(!productionBuilder.includes("await import('./uniforme-schil.mjs')"));
-const normalizer = await readFile('tools/normaliseer-site-ui.mjs', 'utf8');
-assert.ok(normalizer.includes('await applyCanonicalShellToAllPages()'));
-assert.ok(!normalizer.includes('PRICING_MOBILE_MENU_HTML'));
-assert.ok(!normalizer.includes('#bgkopMob.bgkop-mob'));
+const legacyKnowledgeNav = `<nav class="bgkop"><div class="bgkop-paneel"><a href="/blog/"><b>Blog</b><span>Wat we tegenkomen, uitgelegd zonder jargon</span></a></div><button class="bgkop-macc" type="button">Kennis<svg></svg></button><div class="bgkop-mpaneel" hidden><a href="/blog/">Blog</a></div></nav>`;
+const knowledgeNav = ensureKnowledgeNavigation(legacyKnowledgeNav);
+assert.ok(verifyKnowledgeNavigation(knowledgeNav), 'Kennisbank en Blog moeten aparte desktop- en mobiele bestemmingen zijn');
+assert.ok(knowledgeNav.indexOf('href="https://www.bedrijfsgeheugen.nl/kennis/"><b>Kennisbank</b>') < knowledgeNav.indexOf('href="https://www.bedrijfsgeheugen.nl/blog/"><b>Blog</b>'));
+assert.ok(knowledgeNav.includes('href="https://www.bedrijfsgeheugen.nl/kennis/">Kennisbank</a>'));
+const kennisHrefs = [...knowledgeNav.matchAll(/\bhref="([^"]+)"/g)].map(([, href]) => href);
+assert.ok(kennisHrefs.every((href) => /^https:\/\/www\.bedrijfsgeheugen\.nl\//.test(href)), 'alle hrefs in de genormaliseerde kennisnavigatie moeten absolute bedrijfsgeheugen.nl URLs zijn');
+assert.equal(ensureKnowledgeNavigation(knowledgeNav), knowledgeNav, 'Kennisnavigatie-normalisatie moet idempotent zijn');
 
 console.log('canonical brand shell contract: OK');

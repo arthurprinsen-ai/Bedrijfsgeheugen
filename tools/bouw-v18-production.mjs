@@ -1,7 +1,9 @@
+import { readFile, writeFile } from 'node:fs/promises';
 import { applyCustomerPortalAuth } from './apply-customer-portal-auth.mjs';
 import { verifyCustomerLoginContract } from './verify-customer-login-contract.mjs';
 import { applyHomepageProcessProgress } from './bouw-v18-homepage-process-progress.mjs';
 import { runDocumentExtractorProductionCanary } from '../platform/connectors/document-extractor-production-canary.mjs';
+import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './site-shell/ensure-knowledge-nav.mjs';
 
 await import('./bouw-v18-production-core.mjs');
 await import('./apply-v18-seo.mjs');
@@ -13,6 +15,16 @@ await import('./bouw-inhoudspaginas.mjs');
 // historical V18 builder so later page transformers cannot restore the old
 // dimmed 02/03/04 behavior.
 await applyHomepageProcessProgress();
+
+// Normalize the actual canonical shell source before the final page-policy
+// stage projects it across the public site. This keeps Kennisbank and Blog as
+// separate destinations without relying on the legacy .github/canoniek copy.
+const shellSource = await readFile('over-ons.html', 'utf8');
+const shellWithKnowledge = ensureKnowledgeNavigation(shellSource);
+if (!verifyKnowledgeNavigation(shellWithKnowledge)) {
+  throw new Error('Kennisbank navigation contract could not be projected into the canonical shell source');
+}
+await writeFile('over-ons.html', shellWithKnowledge, 'utf8');
 
 console.log(applyCustomerPortalAuth());
 console.log(verifyCustomerLoginContract());
