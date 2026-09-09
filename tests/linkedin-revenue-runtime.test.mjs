@@ -32,9 +32,9 @@ test('send-ready text requires person, concrete source, evidence and personalize
   assert.equal(isSendReady({ ...base, contactPolicy: 'Niet benaderen' }), false);
 });
 
-test('priority queue is deterministic, suppresses blocked contacts and caps at 12', async () => {
+test('priority queue is deterministic, suppresses blocked contacts and caps at 15', async () => {
   const { buildPriorityQueue } = await loadRuntime();
-  const candidates = Array.from({ length: 16 }, (_, index) => ({
+  const candidates = Array.from({ length: 20 }, (_, index) => ({
     id: `c-${index}`,
     person: `Person ${index}`,
     linkedinUrl: `https://www.linkedin.com/in/person-${index}`,
@@ -45,9 +45,9 @@ test('priority queue is deterministic, suppresses blocked contacts and caps at 1
     expectedValue: 1000 + index * 100,
     contactPolicy: index === 2 ? 'Niet benaderen' : 'Vrij'
   }));
-  const queueA = buildPriorityQueue(candidates, { limit: 12 });
-  const queueB = buildPriorityQueue([...candidates].reverse(), { limit: 12 });
-  assert.equal(queueA.length, 12);
+  const queueA = buildPriorityQueue(candidates, { limit: 15 });
+  const queueB = buildPriorityQueue([...candidates].reverse(), { limit: 15 });
+  assert.equal(queueA.length, 15);
   assert.deepEqual(queueA.map(item => item.id), queueB.map(item => item.id));
   assert.ok(!queueA.some(item => item.id === 'c-2'));
   assert.equal(queueA[0].waitingOnMe, true);
