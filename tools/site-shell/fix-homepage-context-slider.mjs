@@ -1,6 +1,6 @@
 const MARKER = 'data-bg-context-slider-readable';
 const SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-const RUNTIME_SRC = '/assets/compare-slider-runtime.js';
+const RUNTIME_SRC = '/assets/compare-slider-runtime-native-range-v13.js';
 
 const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider]{--split:50%;--bg-compare-split:var(--split,50%);position:relative!important;overflow:hidden!important;cursor:ew-resize!important}
@@ -108,7 +108,7 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('bgx-lek-uit-flow')||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
      (next.match(/<script data-bg-compare-bootstrap>/g)||[]).length!==1||
-     (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length!==1){
+     (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime-native-range-v13\.js"><\/script>/g)||[]).length!==1){
     throw new Error('Compare-slider readability guard kon niet volledig worden toegepast');
   }
   return next;
