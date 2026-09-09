@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { LEGACY_FUNCTIONAL_INVENTORY } from '../legacy-functional-inventory.js';
 import { getCapabilityContract, listFunctionalContracts } from '../capability-contracts.js';
 import { workspaceModel } from '../workspace-shell.js';
@@ -39,4 +40,13 @@ test('workspace model exposes SaaS work tabs and save state without changing dom
 test('builder and proven specialist pages keep specialist renderer identities',()=>{
   assert.equal(getCapabilityContract('koppelingen')?.renderer,'connector-builder');
   assert.equal(getCapabilityContract('strategy-dna')?.renderer,'strategy-dna');
+});
+
+test('page shell dispatches protected parity pages through the functional workspace shell',()=>{
+  const source=fs.readFileSync(new URL('../page-shell.js',import.meta.url),'utf8');
+  assert.match(source,/getCapabilityContract/);
+  assert.match(source,/mountWorkspace/);
+  assert.match(source,/const contract=getCapabilityContract\(pageId\)/);
+  assert.match(source,/contract\?\.legacyCapability/);
+  assert.match(source,/mountWorkspace\(native,contract/);
 });
