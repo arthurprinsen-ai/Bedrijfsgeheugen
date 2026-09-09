@@ -1,0 +1,1 @@
+Future content decisions consume a versioned learning context derived from observed blog/social outcomes. Low-support evidence falls back to policy defaults; commercial outcomes dominate; 20% of deterministic schedule slots remain exploratory so the system can discover new winning patterns.
