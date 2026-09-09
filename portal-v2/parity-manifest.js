@@ -1,6 +1,8 @@
 import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
+import { FUNCTIONAL_PARITY_MANIFEST } from './parity-manifest-functional.js';
 
 const VERIFIED_BY='production-dom-readback';
+const FUNCTIONAL_STATUS_BY_LEGACY=new Map(FUNCTIONAL_PARITY_MANIFEST.map(record=>[record.legacyCapability,record.status]));
 
 const item = (legacyId, v2Pages, requiredBehaviors) => Object.freeze({
   legacyId,
@@ -10,7 +12,7 @@ const item = (legacyId, v2Pages, requiredBehaviors) => Object.freeze({
   verification: VERIFIED_BY,
   status: 'proven',
   functionalInventory: LEGACY_FUNCTIONAL_INVENTORY[legacyId] || null,
-  functionalParityStatus: 'open'
+  functionalParityStatus: FUNCTIONAL_STATUS_BY_LEGACY.get(legacyId) || 'open'
 });
 
 const globalItem = (id, requiredBehaviors, backing) => Object.freeze({

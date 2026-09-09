@@ -1,0 +1,36 @@
+name: Native content growth contracts
+
+on:
+  pull_request:
+    paths:
+      - 'tools/content-growth/**'
+      - 'config/content-growth-policy.json'
+      - 'data/content-publication-ledger.json'
+      - 'data/content-growth-learning.json'
+      - 'data/content-growth-events.json'
+      - 'tests/content-growth-*.test.mjs'
+      - '.github/workflows/daily-blog-publisher.yml'
+      - '.github/workflows/content-growth-learning.yml'
+      - '.github/workflows/daily-blog-live-watchdog.yml'
+      - '.github/workflows/content-growth-ci.yml'
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Native content growth tests
+        run: node --test tests/content-growth-*.test.mjs
+      - name: Policy validation
+        run: node tools/content-growth/validate-policy.mjs
+      - name: Existing SEO growth/order regression
+        run: node --test tests/seo-growth-*.test.mjs tests/seo-order-*.test.mjs

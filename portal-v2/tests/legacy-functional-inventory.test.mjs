@@ -5,6 +5,7 @@ import {
   assertFunctionalInventoryComplete,
 } from '../legacy-functional-inventory.js';
 import { LEGACY_PARITY_ITEMS, listOpenFunctionalParityItems } from '../parity-manifest.js';
+import { FUNCTIONAL_PARITY_MANIFEST, openObligations } from '../parity-manifest-functional.js';
 
 const required = [
   'overzicht','profiel','dataai','aiscan','invoeren','antwoorden',
@@ -36,11 +37,18 @@ test('legacy global capabilities and overview semantic invariants are inventorie
   assert.ok(overview.semanticInvariants?.includes('46-week-annualization'));
 });
 
-test('page-presence parity and full functional parity are not conflated', () => {
+test('page-presence and functional parity use independent proof contracts without status drift', () => {
   assert.equal(LEGACY_PARITY_ITEMS.length, 24);
-  assert.equal(listOpenFunctionalParityItems().length, 24);
+  assert.equal(openObligations().length, 0);
+  assert.equal(listOpenFunctionalParityItems().length, 0);
+  const proven = new Map(FUNCTIONAL_PARITY_MANIFEST.map(item => [item.legacyCapability, item]));
   for (const item of LEGACY_PARITY_ITEMS) {
+    assert.equal(item.status, 'proven', `${item.legacyId} page presence must remain proven`);
     assert.ok(item.functionalInventory, `${item.legacyId} must point to its functional inventory`);
-    assert.equal(item.functionalParityStatus, 'open', `${item.legacyId} must stay open until its real workspace is proven`);
+    const proof = proven.get(item.legacyId);
+    assert.ok(proof?.implementation, `${item.legacyId} must have a functional implementation proof`);
+    assert.ok(proof?.browserProof, `${item.legacyId} must have browser proof`);
+    assert.ok(proof?.stateProof, `${item.legacyId} must have state proof`);
+    assert.equal(item.functionalParityStatus, proof.status, `${item.legacyId} canonical status must mirror the functional proof manifest`);
   }
 });

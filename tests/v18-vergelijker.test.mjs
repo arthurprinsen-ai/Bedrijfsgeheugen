@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from '../tools/v18-beweging.mjs';
 import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
+// Chrome visibility is a release invariant: public content wins over animation.
 test('vergelijker houdt beide tekstlagen leesbaar tijdens slepen', () => {
   assert.match(
     BEWEGING_CSS,
@@ -57,6 +58,28 @@ test('kaartkanteling reserveert geen permanente GPU-laag', () => {
     BEWEGING_CSS,
     /\.bgx-kantel\{[^}]*will-change:transform/,
     'Permanente will-change:transform kan Chrome/macOS blank-paints veroorzaken tot een resize de compositor herbouwt.'
+  );
+});
+
+test('V18 publieke pagina-effecten gebruiken geen 3D compositor-primitieven', () => {
+  assert.doesNotMatch(BEWEGING_CSS, /transform-style\s*:\s*preserve-3d/i, 'preserve-3d kan Chrome/macOS opnieuw in de blank-paint toestand brengen.');
+  assert.doesNotMatch(BEWEGING_CSS, /translate3d\s*\(/i, 'de hero mag geen geforceerde 3D compositor-laag krijgen.');
+  assert.doesNotMatch(BEWEGING_JS, /perspective\s*\(/i, 'kaartinteractie mag geen perspective-laag maken.');
+  assert.doesNotMatch(BEWEGING_JS, /rotate[XY]\s*\(/i, 'kaartinteractie mag geen rotateX/rotateY-laag maken.');
+});
+
+test('oude structurele bgx-kantel-klassen worden tijdens de build opgeschoond', () => {
+  const html = '<main><section class="inhoud-body blok bgx-kantel"><h2>Tekst blijft zichtbaar</h2></section></main>';
+  const out = maakBeweeglijk(html);
+  assert.match(out, /class="inhoud-body blok"/);
+  assert.doesNotMatch(out, /\bblok\s+bgx-kantel\b/);
+});
+
+test('desktop Chrome mag publieke data-op inhoud nooit onzichtbaar maken', () => {
+  assert.match(
+    BEWEGING_CSS,
+    /html\.bgx-beweegt \[data-op\]\s*\{[^}]*opacity:\s*1\s*!important[^}]*transform:\s*none\s*!important/s,
+    'data-op inhoud mag nooit wachten op IntersectionObserver, scroll of een DevTools-resize om zichtbaar te worden.'
   );
 });
 

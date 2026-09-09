@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import { rankCandidates } from './learning.mjs';
+const [candidatesPath, learningPath='data/content-growth-learning.json', policyPath='config/content-growth-policy.json', date=''] = process.argv.slice(2);
+if (!candidatesPath) throw new Error('candidates path required');
+const candidates=JSON.parse(fs.readFileSync(candidatesPath,'utf8'));
+const learning=JSON.parse(fs.readFileSync(learningPath,'utf8'));
+const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+const ranked=rankCandidates({candidates,learning,policy,date});
+if (!ranked.length) process.exit(3);
+console.log(JSON.stringify(ranked[0]));
