@@ -19,8 +19,15 @@ const COLLECTIONS={
 };
 const DNA={dnaVrij:'freeText',dnaZoek:'search',ecNaam:'name',ecDim:'dimension',ecAfd:'department',ecProc:'process',ecData:'data',ecSys:'system',ecAi:'ai',ecGov:'governance',ecKpi:'kpi',ecProj:'project',ecThema:'theme'};
 
+export function hasLegacyPortalData(input={}){
+ const source=isObject(input?.legacy)?input.legacy:input;
+ const keys=['mw','uur','bDoel','bUitstel','bInvest','cOmzet','cEbitda','wWacc','asTarief','mVerzuim','nTitel','asRijen','ddInhoud','dnaVrij','beleidLijst','canvasKaarten','wijzigingen'];
+ return keys.some(key=>source?.[key]!==undefined);
+}
+
 export function upgradeLegacyPortalState(input={}){
  const original=isObject(input)?clone(input):{};
+ if(!hasLegacyPortalData(original))return original;
  const legacy=isObject(original.legacy)?original.legacy:original;
  const scalar=migrateLegacyState(legacy);
  let upgraded=mergeMissing(original,scalar);
@@ -30,10 +37,4 @@ export function upgradeLegacyPortalState(input={}){
  upgraded.portal??={};
  upgraded.portal.migration={...(upgraded.portal.migration||{}),legacyV1Applied:true,version:'2026-09-09-v1'};
  return upgraded;
-}
-
-export function hasLegacyPortalData(input={}){
- const source=isObject(input?.legacy)?input.legacy:input;
- const keys=['mw','uur','bDoel','cOmzet','wWacc','asTarief','mVerzuim','nTitel','asRijen','ddInhoud','dnaVrij'];
- return keys.some(key=>source?.[key]!==undefined);
 }
