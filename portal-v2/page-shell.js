@@ -163,6 +163,7 @@ function ensureStylesheet(href){
 export function enhancePortalShell(){
   ensureShell();
   ensureStylesheet('./interaction.css');
+  ensureStylesheet('./workspace.css');
   ensureStylesheet('./csrd-impact.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
