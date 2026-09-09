@@ -12,6 +12,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - run: npm install
       - run: node tools/site-shell/test-shell-components.mjs
       - run: node --test tests/site-shell-compare-slider-physical-edges.test.mjs
       - name: Build canonical production output
