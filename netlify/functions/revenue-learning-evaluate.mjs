@@ -4,6 +4,16 @@ import {revenueMetricVector,selectRevenueMetric,transitionRevenueLearningState} 
 
 const DEFAULT={promotion:{minSampleSize:5,minPublicationDates:2,minConfidence:.75},metricPriority:['revenue','orders','proposals','qualified_leads','meetings','leads','clicks','substantive_interactions']};
 const idFor=f=>`revenue:${createHash('sha256').update(String(f)).digest('hex').slice(0,24)}`;
+const rank=l=>Number(l.confidence||0)*Math.abs(Number(l.effectSize||0));
+
+async function refreshProjection(active,now){
+  const current=await active.listCurrentLearnings();
+  const learnings=current.filter(l=>l.status==='PROVEN').sort((a,b)=>rank(b)-rank(a)).slice(0,8);
+  const generatedAt=now().toISOString();
+  const projection={version:`revenue-${generatedAt}`,generatedAt,learnings};
+  await active.putProjection(projection);
+  return projection;
+}
 
 export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date()}={}){
   return async()=>{
@@ -26,7 +36,8 @@ export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date()}
       await active.markEvidenceEvaluated(target.evidenceId,validatedAt);
       evaluated++;
     }
-    return {evaluated,total:due.length};
+    const projection=await refreshProjection(active,now);
+    return {evaluated,total:due.length,projectionVersion:projection.version,projectedLearnings:projection.learnings.length};
   };
 }
 
