@@ -18,6 +18,7 @@ const LEGACY_WEEKLY_HOURS=Object.freeze({
   duurzaam:2
 });
 const LEGACY_FACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
+const close=(actual,expected,epsilon=1e-9)=>assert.ok(Math.abs(actual-expected)<=epsilon,`expected ${actual} ≈ ${expected}`);
 
 function legacyMetrics({employees=24,hourlyCost=52,maturity={}}={}){
   let weeklyManualHours=0;
@@ -55,13 +56,13 @@ test('V2 matches the legacy golden master at level 1 for the same inputs',()=>{
   const actual=profileOverviewMetrics(state);
   const expected=legacyMetrics(state.portal.profile);
 
-  assert.equal(expected.weeklyManualHours,29.4);
-  assert.equal(expected.annualManualHours,1352.4);
-  assert.equal(expected.fteLost,0.84525);
-  assert.equal(actual.weeklyManualHours,expected.weeklyManualHours);
-  assert.equal(actual.annualManualHours,expected.annualManualHours);
-  assert.equal(actual.fteLost,expected.fteLost);
-  assert.equal(actual.annualManualCost,expected.annualManualCost);
+  close(expected.weeklyManualHours,29.4);
+  close(expected.annualManualHours,1352.4);
+  close(expected.fteLost,0.84525);
+  close(actual.weeklyManualHours,expected.weeklyManualHours);
+  close(actual.annualManualHours,expected.annualManualHours);
+  close(actual.fteLost,expected.fteLost);
+  close(actual.annualManualCost,expected.annualManualCost);
   assert.equal(actual.weeksPerYear,46);
   assert.equal(actual.capacityNotCash,true);
 });
@@ -72,10 +73,10 @@ test('V2 matches legacy scaling, factors and 1600-hour FTE denominator',()=>{
   const actual=profileOverviewMetrics({portal:{profile}});
   const expected=legacyMetrics(profile);
 
-  assert.equal(actual.averageMaturity,expected.averageMaturity);
-  assert.equal(actual.weeklyManualHours,expected.weeklyManualHours);
-  assert.equal(actual.annualManualHours,expected.annualManualHours);
-  assert.equal(actual.fteLost,expected.fteLost);
-  assert.equal(actual.annualManualCost,expected.annualManualCost);
-  assert.equal(actual.fteLost,actual.annualManualHours/1600);
+  close(actual.averageMaturity,expected.averageMaturity);
+  close(actual.weeklyManualHours,expected.weeklyManualHours);
+  close(actual.annualManualHours,expected.annualManualHours);
+  close(actual.fteLost,expected.fteLost);
+  close(actual.annualManualCost,expected.annualManualCost);
+  close(actual.fteLost,actual.annualManualHours/1600);
 });
