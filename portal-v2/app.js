@@ -8,6 +8,7 @@ import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js
 import { createPortalDomainState } from './domain-state.js';
 import { mountGlobalActions } from './global-actions-ui.js';
 import { applyCustomerBranding } from './customer-branding.js';
+import { applyOverviewDashboard } from './modules/overview.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -133,6 +134,7 @@ const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
 configurePortalShell({domainState:portalDomainState});
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
+portalDomainState.subscribe(snap=>applyOverviewDashboard(document,snap.state||{}));
 mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
  openPage:openPortalPage,
