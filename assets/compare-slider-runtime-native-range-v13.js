@@ -6,10 +6,7 @@
   function load(src,onload){
     var existing=document.querySelector('script[src="'+src+'"]');
     if(existing){
-      if(onload){
-        if(existing.getAttribute('data-bg-loaded')==='true') onload();
-        else existing.addEventListener('load',onload,{once:true});
-      }
+      if(onload) onload();
       return;
     }
     var script=document.createElement('script');
