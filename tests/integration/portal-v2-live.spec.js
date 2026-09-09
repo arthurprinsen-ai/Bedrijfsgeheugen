@@ -164,3 +164,34 @@ test('koppelingen opens the existing connector builder inside Portal V2', async 
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   expect(errors).toEqual([]);
 });
+
+test('profile is a real responsive V2 workspace with the protected legacy fields', async ({ page }) => {
+  const preview = process.env.PREVIEW_URL;
+  if (!preview) throw new Error('PREVIEW_URL is required');
+  await hideNetlifyChrome(page);
+  const errors = collectPageErrors(page);
+
+  for (const [width,height] of [[1440,1000],[320,720],[390,844],[430,932]]) {
+    await page.setViewportSize({ width, height });
+    await openPortalV2(page, preview);
+    await page.evaluate(() => {
+      const button=[...document.querySelectorAll('.nav button')].find(node=>node.textContent.includes('Bedrijfsgezondheid'));
+      button?.click();
+    });
+    await expect(page.locator('#portalView')).toHaveClass(/open/);
+    await expect(page.locator('#portalView')).toHaveAttribute('data-page-id','profiel');
+    await expect(page.locator('[data-workspace="profiel"]')).toBeVisible();
+    await expect(page.locator('[data-workspace-tab]')).toHaveCount(4);
+    await expect(page.locator('[data-field-id="employees"]')).toBeVisible();
+    await expect(page.locator('[data-field-id="hourlyCost"]')).toBeVisible();
+    await expect(page.locator('[data-field-id="sturing"]')).toBeVisible();
+    await expect(page.locator('[data-field-id="duurzaam"]')).toBeVisible();
+    await expect(page.locator('[data-field-type="range"]')).toHaveCount(13);
+    const fieldHeight=await page.locator('[data-field-id="employees"]').evaluate(node=>node.getBoundingClientRect().height);
+    expect(fieldHeight).toBeGreaterThanOrEqual(44);
+    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(1);
+    await page.locator('[data-close]').last().click();
+  }
+  expect(errors).toEqual([]);
+});
