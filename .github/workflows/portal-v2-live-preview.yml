@@ -22,6 +22,16 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Verify exact checked-out head SHA
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          actual=$(git rev-parse HEAD)
+          test "$actual" = "$HEAD_SHA" || { echo "::error::Checked-out SHA $actual does not match PR head $HEAD_SHA"; exit 1; }
 
       - name: Wait for exact Netlify preview SHA
         env:
