@@ -10,8 +10,7 @@ async function boot(page,preview){
    const response=await page.goto(`${preview}/portal-v2/?bg_algorithm_parity=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45000});
    expect(response,'portal preview response').not.toBeNull();
    expect(response.status(),'portal preview status').toBeLessThan(400);
-   await page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true}).waitFor({state:'visible',timeout:15000});
-   await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__),{timeout:30000});
+   await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30000});
    return;
   }catch(error){lastError=error;}
  }
