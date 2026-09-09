@@ -3,6 +3,12 @@
 // uitweg als het apparaat of de voorkeur van de bezoeker het niet wil.
 
 export const BEWEGING_CSS = `<style id="v18-beweging">
+/* Chrome desktop fail-safe. De gedeelde reveal-laag zet [data-op] eerst op
+   opacity:0 en maakt die later via IntersectionObserver zichtbaar. Op sommige
+   Chrome/macOS sessies bleef inhoud zo verborgen totdat DevTools een resize
+   veroorzaakte. Publieke inhoud mag nooit van zo'n repaint afhangen. */
+html.bgx-beweegt [data-op]{opacity:1!important;transform:none!important}
+
 /* 1. magnetische knoppen: de knop komt naar de cursor toe */
 .bgx-magneet{transition:transform .18s cubic-bezier(.22,.61,.36,1)}
 @media(hover:none){.bgx-magneet{transition:transform .12s ease}.bgx-magneet:active{transform:scale(.96)!important}}
