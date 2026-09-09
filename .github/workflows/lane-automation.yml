@@ -17,5 +17,5 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Verify automation delivery contracts
-        run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
+      - name: Verify automation delivery and content-learning contracts
+        run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs tests/content-learning-*.test.mjs
