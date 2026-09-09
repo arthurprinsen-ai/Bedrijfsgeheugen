@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { requireRuleContext } from '../lib/content-learning/rule-preflight.mjs';
 import policy from '../config/content-growth-policy.json' with { type: 'json' };
 
@@ -83,7 +85,8 @@ async function main() {
   process.stdout.write(`${serialized}\n`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+const invokedAsScript = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+if (invokedAsScript) {
   main().catch((error) => {
     console.error(String(error?.message || error));
     process.exit(1);
