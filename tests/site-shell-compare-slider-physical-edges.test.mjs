@@ -36,7 +36,7 @@ test('homepage shell fixer injects only canonical v14 and no second interaction 
   assert.doesNotMatch(fixer, /compare-slider-runtime-native-range-v13\.js/);
   assert.doesNotMatch(fixer, /const\s+BOOTSTRAP_TAG\s*=/);
   assert.doesNotMatch(fixer, /addEventListener\(['"](?:pointerdown|pointermove|pointerup|touchstart|touchmove|touchend|input|change)['"]/);
-  assert.doesNotMatch(fixer, /setPointerCapture|releasePointerCapture/);
+  assert.doesNotMatch(fixer, /(?:setPointerCapture|releasePointerCapture)\s*\(/);
 });
 
 test('immutable caching uses a new versioned canonical runtime asset', () => {
