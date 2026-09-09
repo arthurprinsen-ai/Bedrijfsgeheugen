@@ -1,0 +1,39 @@
+{
+  "id": "first-time-right-release-live-2026-09-09",
+  "type": "release_learning",
+  "date": "2026-09-09",
+  "status": "closed_production_verified",
+  "subject": "First-time-right release acceleration live",
+  "production": {
+    "branch": "main",
+    "merge_sha": "3f93609b7f095df3d3470fd91e132b68af558393",
+    "pull_request": 1242,
+    "netlify_site": "bedrijfsgeheugen",
+    "netlify_deploy_id": "6aa072fd5cfc1d0008455d48",
+    "netlify_state": "ready",
+    "context": "production",
+    "primary_url": "https://www.bedrijfsgeheugen.nl",
+    "published_at": "2026-09-08T20:42:10.495Z"
+  },
+  "implemented": [
+    "Zero-dependency inline JavaScript syntax preflight before preview, build and Playwright/browser execution",
+    "Malformed shared/page inline JavaScript fails early before expensive CI starts",
+    "Regression contracts cover unterminated inline JavaScript and release ordering",
+    "Website regression tests are classified into the website delivery lane",
+    "Required test status bridge removed because it consumed a runner while polling the Required test it was waiting for",
+    "Protected test gate retained; browser, visibility, SEO, desktop/mobile and high-risk coverage retained"
+  ],
+  "verified": [
+    "Required gate green on exact PR head before merge",
+    "main points to merge SHA 3f93609b7f095df3d3470fd91e132b68af558393",
+    "Netlify production deploy is ready on the same SHA",
+    "Public production domain readback completed"
+  ],
+  "permanent_release_invariant": "Prevent cheap failures before expensive CI. Never weaken branch protection or runtime/browser gates to gain speed. Shared-shell and JavaScript changes must fail fast on syntax and then pass impact-aware browser validation before release.",
+  "open_follow_up": {
+    "id": "ci-single-flight-fanout-reduction",
+    "priority": "high",
+    "reason": "Multiple standalone pull_request workflows still create runner fan-out and queue latency around Required test.",
+    "required_outcome": "Move duplicate PR ingress coverage behind the canonical Required test control plane while preserving all effective coverage and branch protection."
+  }
+}
