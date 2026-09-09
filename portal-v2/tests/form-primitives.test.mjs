@@ -9,6 +9,7 @@ test('shared form primitives render every approved functional input type',()=>{
     const html=fieldMarkup({id:`f-${type}`,label:`Veld ${type}`,type,options:['A','B'],min:1,max:5},type==='range'?3:'');
     assert.match(html,new RegExp(`data-field-id="f-${type}"`));
     assert.match(html,/v2field/);
+    assert.match(html,/min-height:44px/);
   }
 });
 
