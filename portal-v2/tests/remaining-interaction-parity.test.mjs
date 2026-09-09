@@ -57,7 +57,7 @@ test('remaining interaction parity obligations are proven only after native impl
 });
 
 test('mobile parity controls have at least a 44px touch target',()=>{
-  const css=fs.readFileSync('interaction.css','utf8');
+  const css=fs.readFileSync('modules/interaction-parity-style.js','utf8');
   assert.match(css,/\.v2strategycontrols[\s\S]*min-(?:width|height):44px/);
   assert.match(css,/\.v2overviewcontrols[\s\S]*min-(?:width|height):44px/);
 });
