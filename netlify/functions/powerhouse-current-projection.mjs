@@ -9,6 +9,9 @@ export function normalizeCoreAction(action={}){
   return {
     id:action.action_id||action.dedupe_key,
     actionId:action.action_id||'',
+    person:clean(action.person_name||evidence.person_name||evidence.personName),
+    company:clean(action.company_name||evidence.company_name||evidence.companyName),
+    role:clean(action.role||evidence.role),
     personKey:action.person_key||'',
     companyKey:action.company_key||'',
     contentKey:action.content_key||'',
