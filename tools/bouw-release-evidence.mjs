@@ -1,11 +1,17 @@
 import { writeFile } from 'node:fs/promises';
 import { isolateStandalonePages } from './standalone-page-router.mjs';
+import { finalizeSiteContracts } from './site-shell/finalize-site-contracts.mjs';
 
 // Standalone URLs are real documents. They may inherit the historical homepage
 // one-page router through the canonical shell; that router can remove the active
 // view after a menu navigation and leave a completely white page. Strip only
 // that router at the final build boundary, after every shell/page transformer.
 await isolateStandalonePages();
+
+// Dit is bewust de allerlaatste HTML-contractlaag. Geen enkele writer mag hierna
+// nog Kennis terug naar /blog/ kunnen zetten. Release-evidence wordt pas daarna
+// geschreven, zodat de evidence exact bij de gevalideerde deploy-output hoort.
+await finalizeSiteContracts();
 
 const commitRef = String(process.env.COMMIT_REF || process.env.HEAD || '').trim();
 if (!/^[a-f0-9]{40}$/i.test(commitRef)) {
