@@ -1,3 +1,5 @@
+import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
+
 const VERIFIED_BY='production-dom-readback';
 
 const item = (legacyId, v2Pages, requiredBehaviors) => Object.freeze({
@@ -6,7 +8,9 @@ const item = (legacyId, v2Pages, requiredBehaviors) => Object.freeze({
   requiredBehaviors: Object.freeze([...requiredBehaviors]),
   backing: 'native-v2-page',
   verification: VERIFIED_BY,
-  status: 'proven'
+  status: 'proven',
+  functionalInventory: LEGACY_FUNCTIONAL_INVENTORY[legacyId] || null,
+  functionalParityStatus: 'open'
 });
 
 const globalItem = (id, requiredBehaviors, backing) => Object.freeze({
@@ -67,4 +71,8 @@ export function getParityItem(id) {
 
 export function listOpenParityItems() {
   return [...LEGACY_PARITY_ITEMS, ...GLOBAL_PARITY_CAPABILITIES].filter(record => record.status !== 'proven');
+}
+
+export function listOpenFunctionalParityItems() {
+  return LEGACY_PARITY_ITEMS.filter(record => record.functionalParityStatus !== 'proven');
 }
