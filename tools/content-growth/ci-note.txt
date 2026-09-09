@@ -1,0 +1,1 @@
+PR gates are authoritative for integration; targeted content-growth tests are required by the added workflow contract.
