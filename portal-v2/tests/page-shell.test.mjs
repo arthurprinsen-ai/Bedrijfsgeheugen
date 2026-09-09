@@ -10,18 +10,24 @@ test('Brain and Powerhouse pages render natively without inventing live evidence
 });
 
 test('mapped portal pages are native and expose page-specific V2 blocks',()=>{
-  const view=pagePresentation('roadmap');
-  assert.equal(view.kind,'native-v2');
-  assert.ok(Array.isArray(view.blocks));
-  assert.ok(view.blocks.length>=3);
-  assert.ok(view.blocks.some(block=>block.type==='metrics'));
-  assert.ok(view.blocks.some(block=>block.type==='worklist'));
-  assert.ok(view.blocks.some(block=>block.type==='actions'));
+  const empty=pagePresentation('roadmap',{});
+  assert.equal(empty.kind,'native-v2');
+  assert.ok(Array.isArray(empty.blocks));
+  assert.ok(empty.blocks.length>=3);
+  assert.ok(empty.blocks.some(block=>block.type==='metrics'));
+  assert.ok(empty.blocks.some(block=>block.type==='actions'));
+  // zonder klantdata geen werklijst maar een expliciete lege staat
+  assert.ok(empty.blocks.some(block=>block.type==='empty'));
+  assert.equal(empty.derived,false);
+
+  const filled=pagePresentation('roadmap',{portal:{roadmap:{items:[{title:'Klantdata',start:1,duration:3,progress:40}]}}});
+  assert.ok(filled.blocks.some(block=>block.type==='worklist'));
+  assert.equal(filled.derived,true);
 });
 
 test('different portal pages expose different native content contracts',()=>{
-  const roadmap=pagePresentation('roadmap');
-  const people=pagePresentation('mensen');
+  const roadmap=pagePresentation('roadmap',{});
+  const people=pagePresentation('mensen',{});
   assert.notDeepEqual(roadmap.blocks,people.blocks);
   assert.notEqual(roadmap.primaryAction,people.primaryAction);
 });

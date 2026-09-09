@@ -1,5 +1,7 @@
 import { findPage, listPortalGroups } from './page-registry.js';
 import { nativePageContent } from './native-pages.js';
+import { pageVisual } from './page-visuals.js';
+import { mountAskPortal } from './ask-portal.js';
 import { renderCsrdImpact } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
@@ -67,14 +69,21 @@ export function configurePortalShell(context={}){
   return portalContext;
 }
 
-export function pagePresentation(pageId) {
+function portalStateSnapshot(){
+  try{return portalContext.domainState?.get?.()||globalThis.__BG_PORTAL_DOMAIN_STATE__?.get?.()||{};}catch{return {};}
+}
+
+export function pagePresentation(pageId, state) {
   const page=findPage(pageId);
   if(!page) return null;
   const [title,description]=COPY[pageId] || [page.label,`${page.label} is een standaardonderdeel van Portal V2.`];
-  const content=nativePageContent(pageId) || {};
+  const model=state ?? portalStateSnapshot();
+  const content=nativePageContent(pageId, model) || {};
+  const visual=pageVisual(pageId, model);
   return {
     ...page,
     ...content,
+    visual,
     title,
     description,
     kind:'native-v2',
@@ -82,7 +91,9 @@ export function pagePresentation(pageId) {
       ? 'Impactdata + evidence in één traceerbare cockpit'
       : BRAIN_PAGES.has(pageId)
         ? 'Native Portal V2 · status alleen met runtime-evidence'
-        : 'Native Portal V2 · zelfstandige module zonder legacy-afhankelijkheid'
+        : content.derived
+          ? 'Native Portal V2 · cijfers berekend op je eigen gegevens'
+          : 'Native Portal V2 · nog geen eigen gegevens ingevuld'
   };
 }
 
@@ -113,13 +124,16 @@ export function closePortalPage(){
 function esc(value=''){
   return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
-function renderMetrics(block){return `<section class="pvmodule pvmetrics"><div class="pvmodulehead"><span>01</span><h3>${esc(block.title)}</h3></div><div class="pvmetricgrid">${block.items.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div></section>`;}
+function renderMetrics(block){return `<section class="pvmodule pvmetrics" data-derived="${block.derived?'true':'false'}"><div class="pvmodulehead"><span>01</span><h3>${esc(block.title)}</h3></div><div class="pvmetricgrid">${block.items.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div></section>`;}
 function renderWorklist(block){return `<section class="pvmodule"><div class="pvmodulehead"><span>02</span><h3>${esc(block.title)}</h3></div><div class="pvworklist">${block.items.map(([label,value])=>`<article><div><b>${esc(label)}</b><p>${esc(value)}</p></div><span>→</span></article>`).join('')}</div></section>`;}
 function renderActions(block){return `<section class="pvmodule"><div class="pvmodulehead"><span>03</span><h3>${esc(block.title)}</h3></div><div class="pvactions">${block.items.map(([label,pageId],index)=>`<button type="button" data-pv-page="${esc(pageId)}" class="${index===0?'primary':''}"><span>${esc(label)}</span><i>→</i></button>`).join('')}</div></section>`;}
 
+function renderEmpty(block){return `<section class="pvmodule pvempty"><div class="pvmodulehead"><span>—</span><h3>${esc(block.title)}</h3></div><p class="pvemptycopy">${esc(block.copy)}</p></section>`;}
+
 function renderNative(native,view){
   const blocks=Array.isArray(view.blocks)?view.blocks:[];
-  native.innerHTML=`<div class="pvnativehero"><div><span>Zelfstandig onderdeel</span><h3>${esc(view.title)}</h3><p>${esc(view.description)}</p></div><button type="button" class="pvprimary">${esc(view.primaryAction || 'Open onderdeel')} <span>→</span></button></div>${blocks.map(block=>block.type==='metrics'?renderMetrics(block):block.type==='worklist'?renderWorklist(block):block.type==='actions'?renderActions(block):'').join('')}<div class="pvevidence"><b>Native V2 contract</b><p>Deze module draait binnen dezelfde Portal V2-shell, gebruikt dezelfde V2-context en schakelt niet door naar een tweede portaal. Live-status wordt alleen getoond wanneer runtime-evidence beschikbaar is.</p></div>`;
+  const visual=view.visual?`<section class="pvmodule pvvisual"><div class="pvmodulehead"><span>◷</span><h3>Beeld bij deze cijfers</h3></div><div class="v2visualgrid">${view.visual}</div></section>`:'';
+  native.innerHTML=`<div class="pvnativehero"><div><span>Zelfstandig onderdeel</span><h3>${esc(view.title)}</h3><p>${esc(view.description)}</p></div><button type="button" class="pvprimary">${esc(view.primaryAction || 'Open onderdeel')} <span>→</span></button></div>${blocks.map(block=>block.type==='metrics'?renderMetrics(block):block.type==='worklist'?renderWorklist(block):block.type==='empty'?renderEmpty(block):block.type==='actions'?renderActions(block):'').join('')}${visual}<div class="pvevidence"><b>Herkomst van deze cijfers</b><p>${view.derived?'Alle getallen hierboven zijn berekend op je eigen ingevoerde gegevens, met dezelfde formules als het vorige portaal.':'Er staan nog geen eigen gegevens in dit onderdeel. Het portaal toont bewust geen voorbeeldcijfers.'}</p></div>`;
   native.querySelectorAll('[data-pv-page]').forEach(btn=>btn.addEventListener('click',()=>openPortalPage(btn.dataset.pvPage)));
   native.querySelector('.pvprimary')?.addEventListener('click',()=>{
     const first=blocks.find(block=>block.type==='actions')?.items?.[0]?.[1];
@@ -173,6 +187,7 @@ export function openPortalPage(pageId){
   else if(contract?.legacyCapability){
     mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:'idle',render:content=>renderNative(content,view)});
   } else renderNative(native,view);
+  mountAskPortal(root.querySelector('.pvbody'),{currentPage:()=>pageId});
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
 }

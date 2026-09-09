@@ -1,0 +1,360 @@
+import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
+
+const EMPTY='—';
+const num=(value,digits=0)=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(Number(value)||0);
+const euro=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(value)||0);
+const pct=value=>`${num(value,0)}%`;
+const arr=value=>Array.isArray(value)?value:[];
+const at=(state,path)=>String(path||'').split('.').filter(Boolean).reduce((value,key)=>value==null?undefined:value[key],state);
+const filled=value=>value!==undefined&&value!==null&&value!==''&&!(Array.isArray(value)&&!value.length)&&!(typeof value==='object'&&!Array.isArray(value)&&!Object.keys(value).length);
+
+function calc(id,state){
+  try{return calculateLegacyEquivalent(id,state);}catch{return null;}
+}
+
+/**
+ * Elke pagina beschrijft: welke state-slice hem voedt, hoe de vier kerncijfers
+ * heten en worden berekend, en waar de werklijst vandaan komt. Zonder klantdata
+ * geeft een pagina EMPTY terug — nooit een verzonnen getal.
+ */
+const PAGES=Object.freeze({
+  overzicht:{slice:'portal.profile',
+    metrics:s=>[
+      ['Gemiddelde volwassenheid',`${num(calc('average-maturity',s),1)}/5`],
+      ['Handmatig werk per jaar',euro(calc('manual-work-annual',s))],
+      ['Vermijdbare capaciteit',`${num(calc('fte-lost',s),1)} fte`],
+      ['Stand van het bedrijf',String(calc('company-state',s)||EMPTY)]
+    ],
+    worklist:s=>arr(calc('blocker-ranking',s)).slice(0,3).map(item=>[String(item.name||item.title||'Blokkade'),`impact ${num(item.impact)}`])},
+
+  profiel:{slice:'portal.profile',
+    metrics:s=>{const scores=arr(calc('dimension-maturity',s));return [
+      ['Gemiddeld niveau',`${num(calc('profile-average',s),1)}/5`],
+      ['Onderdelen beoordeeld',String(scores.length)],
+      ['Handmatig werk',euro(calc('manual-work-impact',s))],
+      ['Onder niveau 3',String(scores.filter(score=>Number(score)<3).length)]
+    ];},
+    worklist:s=>arr(calc('dimension-maturity',s)).map((score,index)=>[`Onderdeel ${index+1}`,`niveau ${num(score,1)}`]).filter(([,label])=>parseFloat(label.replace(/\D/g,''))<3).slice(0,3)},
+
+  'data-ai':{slice:'portal.dataAi',
+    metrics:s=>[
+      ['Data & AI volwassenheid',`${num(calc('data-ai-maturity',s),1)}/5`],
+      ['Implementatiefase',String(at(s,'portal.dataAi.phase')||EMPTY)],
+      ['Veranderbereidheid',`${num(calc('change-readiness',s),1)}/5`],
+      ['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`]
+    ]},
+
+  'ai-scan':{slice:'portal.aiScan',
+    metrics:s=>[
+      ['Taken in beeld',String(arr(at(s,'portal.aiScan.tasks')).length)],
+      ['Jaarlijkse taakkosten',euro(calc('annual-task-cost',s))],
+      ['Ondersteunbaar deel',pct(calc('supportable-share',s))],
+      ['Risicogewogen baat',euro(calc('risk-adjusted-benefit',s))]
+    ],
+    worklist:s=>arr(at(s,'portal.aiScan.tasks')).slice(0,3).map(task=>[String(task.task||'Taak'),`${num(task.hoursPerWeek)} uur/week · ${task.repetition||EMPTY}`])},
+
+  kansenkaart:{slice:'portal.aiScan',
+    metrics:s=>[
+      ['Kansen',String(arr(at(s,'portal.aiScan.tasks')).length)],
+      ['Kansscore',num(calc('opportunity-score',s),1)],
+      ['Risicogewogen baat',euro(calc('risk-adjusted-benefit',s))],
+      ['Jaarlijkse taakkosten',euro(calc('annual-task-cost',s))]
+    ],
+    worklist:s=>arr(at(s,'portal.aiScan.tasks')).slice(0,3).map(task=>[String(task.task||'Kans'),`data readiness ${num(task.dataReadiness)}/5`])},
+
+  'gegevens-invullen':{slice:'portal.inputs',
+    metrics:s=>[
+      ['Ingevuld',pct(calc('input-completeness',s))],
+      ['Velden bekend',String(Object.keys(at(s,'portal.inputs')||{}).length)],
+      ['Doorgerekend',String(calc('downstream-recalculation',s)??0)],
+      ['Opslag','Server-bevestigd']
+    ]},
+
+  'ingevulde-gegevens':{slice:'portal.inputs',
+    metrics:s=>[
+      ['Compleetheid',pct(calc('answer-completeness',s))],
+      ['Records',String(Object.keys(at(s,'portal.inputs')||{}).length)],
+      ['Herkomst','Eigen invoer'],
+      ['Opslag','Server-bevestigd']
+    ]},
+
+  businesscase:{slice:'portal.businessCase',
+    metrics:s=>[
+      ['Baat op doelniveau',euro(calc('benefit-at-target-maturity',s))],
+      ['Kosten van uitstel',euro(calc('delay-cost',s))],
+      ['Netto resultaat',euro(calc('investment-net-result',s))],
+      ['Terugverdientijd',`${num(calc('payback',s),1)} mnd`]
+    ]},
+
+  'cijfers-maatstaven':{slice:'portal.metrics',
+    metrics:s=>[
+      ['Brutomarge',pct(calc('gross-margin',s))],
+      ['EBITDA-marge',pct(calc('ebitda-margin',s))],
+      ['DSO',`${num(calc('dso',s))} dgn`],
+      ['Klantconcentratie',pct(calc('customer-concentration',s))]
+    ],
+    worklist:s=>[
+      ['Loonquote',pct(calc('wage-ratio',s))],
+      ['IT-quote',pct(calc('it-ratio',s))],
+      ['Omzet per medewerker',euro(calc('productivity',s))]
+    ]},
+
+  'waarde-financiering':{slice:'portal.valueFinance',
+    metrics:s=>[
+      ['Ondernemingswaarde',euro(calc('enterprise-value',s))],
+      ['Aandeelhouderswaarde',euro(calc('equity-value',s))],
+      ['Altman Z',num(calc('altman-z',s),2)],
+      ['Break-even omzet',euro(calc('break-even',s))]
+    ],
+    worklist:s=>[
+      ['DCF-waarde',euro(calc('dcf',s))],
+      ['Rentedekking',`${num(calc('interest-coverage',s),1)}x`],
+      ['Veiligheidsmarge',pct(calc('safety-margin',s))]
+    ]},
+
+  mensen:{slice:'portal.people',
+    metrics:s=>[
+      ['Verzuim',pct(at(s,'portal.people.absence'))],
+      ['Verloop',pct(at(s,'portal.people.turnover'))],
+      ['eNPS',num(at(s,'portal.people.enps'))],
+      ['Vacaturedruk',pct(calc('vacancy-pressure',s))]
+    ],
+    worklist:s=>arr(at(s,'portal.people.roles')).filter(role=>!role.backup).slice(0,3).map(role=>[String(role.name||role.role||'Rol'),'geen back-up vastgelegd'])},
+
+  'branche-markt':{slice:'portal.market',
+    metrics:s=>{const deltas=arr(calc('industry-benchmark-deltas',s));return [
+      ['Benchmarks',String(deltas.length)],
+      ['Boven markt',String(deltas.filter(item=>item.delta>0).length)],
+      ['Onder markt',String(deltas.filter(item=>item.delta<0).length)],
+      ['Branche',String(at(s,'portal.market.industry')||EMPTY)]
+    ];},
+    worklist:s=>arr(calc('industry-benchmark-deltas',s)).filter(item=>item.delta<0).slice(0,3).map(item=>[String(item.metric||'Maatstaf'),`${num(item.delta,1)} t.o.v. benchmark`])},
+
+  onderzoek:{slice:'portal.research',
+    metrics:s=>{const items=arr(at(s,'portal.research.hypotheses'));return [
+      ['Hypotheses',String(items.length)],
+      ['Met bewijs',String(items.filter(item=>filled(item.evidence)).length)],
+      ['Zonder bron',String(items.filter(item=>!filled(item.source)).length)],
+      ['Kosten van niets doen',euro(calc('do-nothing-cost',s))]
+    ];},
+    worklist:s=>arr(at(s,'portal.research.hypotheses')).filter(item=>!filled(item.evidence)).slice(0,3).map(item=>[String(item.hypothesis||'Hypothese'),'bewijs ontbreekt'])},
+
+  'compliance-governance':{slice:'portal.compliance',
+    metrics:s=>[
+      ['Beleid compleet',pct(calc('policy-completeness',s))],
+      ['Governance-volwassenheid',`${num(calc('governance-maturity',s),1)}/5`],
+      ['ESG readiness',`${num(calc('esg-readiness',s),1)}/5`],
+      ['Restrisico',pct(calc('compliance-risk',s))]
+    ],
+    worklist:s=>Object.entries(at(s,'portal.compliance.policies')||{}).filter(([,status])=>status==='ontbreekt').slice(0,3).map(([index])=>[`Beleidsstuk ${Number(index)+1}`,'ontbreekt'])},
+
+  'compliance-command-center':{slice:'portal.compliance',
+    metrics:s=>[
+      ['Beleid compleet',pct(calc('policy-completeness',s))],
+      ['Restrisico',pct(calc('compliance-risk',s))],
+      ['ESG readiness',`${num(calc('esg-readiness',s),1)}/5`],
+      ['Technologie readiness',`${num(calc('technology-readiness',s),1)}/5`]
+    ]},
+
+  'ai-capabilities':{slice:'portal.aiCapabilities',
+    metrics:s=>[
+      ['Capability readiness',`${num(calc('ai-capability-readiness',s),1)}/5`],
+      ['Resterende afstand',`${num(calc('ai-capability-gap',s),1)}`],
+      ['Beoordeeld',String(Object.keys(at(s,'portal.aiCapabilities')||{}).length)],
+      ['Technologie readiness',`${num(calc('technology-readiness',s),1)}/5`]
+    ]},
+
+  'strategy-dna':{slice:'portal.strategyDna',
+    metrics:s=>[
+      ['Laagvolwassenheid',`${num(calc('layer-maturity',s),1)}/5`],
+      ['Actieve thema’s',String(calc('theme-impact',s)??0)],
+      ['Capability-volwassenheid',`${num(calc('capability-maturity',s),1)}/5`],
+      ['Lagen beoordeeld',String(Object.keys(at(s,'portal.strategyDna.layers')||{}).length)]
+    ]},
+
+  strategiemodellen:{slice:'portal.strategy',
+    metrics:s=>[
+      ['Bevindingen',String(arr(at(s,'portal.strategy.findings')).length)],
+      ['Waarde in bevindingen',euro(calc('model-finding-value',s))],
+      ['Na filter',String(arr(calc('priority-filter',s)).length)],
+      ['Horizon',String(at(s,'portal.strategy.horizon')||EMPTY)]
+    ]},
+
+  'strategie-naar-maandagochtend':{slice:'portal.strategy',
+    metrics:s=>[
+      ['Bevindingen',String(arr(at(s,'portal.strategy.findings')).length)],
+      ['Waarde',euro(calc('model-finding-value',s))],
+      ['Binnen filter',String(arr(calc('priority-filter',s)).length)],
+      ['Minimumwaarde',euro(at(s,'portal.strategy.minimumValue'))]
+    ],
+    worklist:s=>arr(calc('priority-filter',s)).slice(0,3).map(item=>[String(item.finding||'Bevinding'),`${euro(item.value)} · ${item.horizon||EMPTY}`])},
+
+  modellen:{slice:'portal.strategy',
+    metrics:s=>[
+      ['Bevindingen',String(arr(at(s,'portal.strategy.findings')).length)],
+      ['Canvascompleetheid',pct(calc('canvas-completeness',s))],
+      ['Consensus',pct(calc('cross-source-consensus',s))],
+      ['Waarde',euro(calc('model-finding-value',s))]
+    ]},
+
+  canvassen:{slice:'portal.canvases',
+    metrics:s=>[
+      ['Canvascompleetheid',pct(calc('canvas-completeness',s))],
+      ['Consensus',pct(calc('canvas-consensus',s))],
+      ['Ingevuld',String(Object.values(at(s,'portal.canvases')||{}).filter(item=>filled(item?.answer)).length)],
+      ['Met eigenaar',String(Object.values(at(s,'portal.canvases')||{}).filter(item=>filled(item?.owner)).length)]
+    ]},
+
+  eindconclusie:{slice:'portal.finalConclusion',
+    metrics:s=>{const synthesis=calc('final-synthesis',s)||{};return [
+      ['Consensus',pct(synthesis.consensus)],
+      ['Waarde',euro(synthesis.value)],
+      ['Capaciteit',`${num(synthesis.capacity,1)} fte`],
+      ['Restrisico',pct(synthesis.risk)]
+    ];},
+    worklist:s=>arr(calc('recommendation-priority',s)).slice(0,3).map(item=>[String(item.advice||'Advies'),`prioriteit ${num(item.priority)}`])},
+
+  'due-diligence':{slice:'portal.dueDiligence',
+    metrics:s=>[
+      ['Dossier-readiness',pct(calc('dd-readiness',s))],
+      ['Materialiteit',num(calc('materiality',s),1)],
+      ['Red flags',String(calc('red-flags',s)??0)],
+      ['Overdraagbaarheid',pct(calc('transferability',s))]
+    ],
+    worklist:s=>arr(at(s,'portal.dueDiligence.findings')).filter(item=>item.redFlag===true).slice(0,3).map(item=>[String(item.area||'Onderdeel'),String(item.finding||'red flag')])},
+
+  exit:{slice:'portal.dueDiligence',
+    metrics:s=>[
+      ['Exit-readiness',pct(calc('transferability',s))],
+      ['Red flags',String(calc('red-flags',s)??0)],
+      ['Aandeelhouderswaarde',euro(calc('equity-value',s))],
+      ['Dossier-readiness',pct(calc('dd-readiness',s))]
+    ]},
+
+  'actueel-houden':{slice:'portal.freshness',
+    metrics:s=>[
+      ['Actualiteit',pct(calc('freshness',s))],
+      ['Verlopen items',String(calc('expired-items',s)??0)],
+      ['Met eigenaar',pct(calc('ownership-completeness',s))],
+      ['Laatste review',String(at(s,'portal.freshness.reviewDate')||EMPTY)]
+    ]},
+
+  wijzigingen:{slice:'portal.changes',
+    metrics:s=>{const items=arr(at(s,'portal.changes.items'));return [
+      ['Wijzigingen',String(items.length)],
+      ['Gemiddelde impact',`${num(calc('change-impact',s),1)}/5`],
+      ['Opvolging geborgd',pct(calc('follow-up-status',s))],
+      ['Open',String(items.filter(item=>item.status==='Open').length)]
+    ];},
+    worklist:s=>arr(at(s,'portal.changes.items')).filter(item=>item.status!=='Geborgd').slice(0,3).map(item=>[String(item.change||'Wijziging'),`${item.area||EMPTY} · ${item.status||'Open'}`])},
+
+  advies:{slice:'portal.advice',
+    metrics:s=>{const items=arr(at(s,'portal.advice.items'));return [
+      ['Adviezen',String(items.length)],
+      ['Hoge prioriteit',String(items.filter(item=>Number(item.priority)>=4).length)],
+      ['Totale waarde',euro(items.reduce((sum,item)=>sum+(Number(item.value)||0),0))],
+      ['Met eigenaar',String(items.filter(item=>filled(item.owner)).length)]
+    ];},
+    worklist:s=>arr(calc('advice-priority',s)).slice(0,3).map(item=>[String(item.advice||'Advies'),`${euro(item.value)} · ${num(item.duration)} wk`])},
+
+  offerte:{slice:'portal.offer',
+    metrics:s=>[
+      ['Pakket',String(at(s,'portal.offer.package')||EMPTY)],
+      ['Doorlooptijd',`${num((Number(at(s,'portal.offer.sprints'))||0)*2)} weken`],
+      ['Totaal',euro(calc('offer-total',s))],
+      ['Akkoord',at(s,'portal.offer.approval.agreed')===true?`door ${at(s,'portal.offer.approval.name')||'klant'}`:'nog niet gegeven']
+    ],
+    worklist:s=>arr(at(s,'portal.offer.additionalWork')).slice(0,3).map(item=>[String(item.description||'Meerwerk'),`${euro(item.price)} · ${item.status||'Open'}`])},
+
+  roadmap:{slice:'portal.roadmap',
+    metrics:s=>{const items=arr(at(s,'portal.roadmap.items'));return [
+      ['Items',String(items.length)],
+      ['Voortgang',pct(calc('completion-progress',s))],
+      ['Totale duur',`${num(calc('duration',s))} mnd`],
+      ['Waarde',euro(calc('roadmap-value',s))]
+    ];},
+    worklist:s=>arr(at(s,'portal.roadmap.items')).filter(item=>item.done!==true).slice(0,3).map(item=>[String(item.title||'Item'),`${num(item.progress)}% · ${item.owner||'geen eigenaar'}`])},
+
+  uitvoeringsladder:{slice:'portal.roadmap',
+    metrics:s=>{const items=arr(at(s,'portal.roadmap.items'));return [
+      ['Items',String(items.length)],
+      ['Geborgd',String(items.filter(item=>item.done===true).length)],
+      ['Voortgang',pct(calc('completion-progress',s))],
+      ['Zonder eigenaar',String(items.filter(item=>!filled(item.owner)).length)]
+    ];}},
+
+  'taken-werkstromen':{slice:'portal.tasks',
+    metrics:s=>{const items=arr(at(s,'portal.tasks.items'));return [
+      ['Open taken',String(items.filter(item=>item.status!=='Klaar').length)],
+      ['Totaal',String(items.length)],
+      ['Geblokkeerd',String(items.filter(item=>item.status==='Geblokkeerd').length)],
+      ['Zonder eigenaar',String(items.filter(item=>!filled(item.owner)).length)]
+    ];},
+    worklist:s=>arr(at(s,'portal.tasks.items')).filter(item=>item.status!=='Klaar').slice(0,3).map(item=>[String(item.title||'Taak'),`${item.owner||'geen eigenaar'} · ${item.due||'geen datum'}`])},
+
+  'csrd-impact':{slice:'portal.compliance',
+    metrics:s=>[
+      ['ESG readiness',`${num(calc('esg-readiness',s),1)}/5`],
+      ['Beleid compleet',pct(calc('policy-completeness',s))],
+      ['Restrisico',pct(calc('compliance-risk',s))],
+      ['Domeinen beoordeeld',String(Object.keys(at(s,'portal.compliance.esg')||{}).length)]
+    ]}
+});
+
+/** Pagina's die alleen iets mogen tonen als er runtime-evidence is. */
+const RUNTIME_PAGES=Object.freeze({
+  bronnenstatus:'portal.runtime.sources', datahubstatus:'portal.runtime.datahub',
+  'brain-verwerking':'portal.runtime.brain', agentstatus:'portal.runtime.agents',
+  'actieve-acties':'portal.runtime.actions', 'recovery-obligations':'portal.runtime.recovery',
+  'outcomes-evidence':'portal.runtime.outcomes', 'learning-writeback':'portal.runtime.learning',
+  'self-heal':'portal.runtime.selfHeal', audittrail:'portal.runtime.audit',
+  koppelingen:'portal.connectors', gebruikers:'portal.admin.users',
+  documenten:'portal.admin.documents', instellingen:'portal.admin.settings', audit:'portal.admin.audit'
+});
+
+function runtimeMetrics(pageId,state){
+  const items=arr(at(state,`${RUNTIME_PAGES[pageId]}.items`));
+  if(!items.length)return null;
+  return [
+    ['Records',String(items.length)],
+    ['Gezond',String(items.filter(item=>item.status==='ok'||item.healthy===true).length)],
+    ['Aandacht',String(items.filter(item=>item.status&&item.status!=='ok').length)],
+    ['Bijgewerkt',String(at(state,`${RUNTIME_PAGES[pageId]}.updatedAt`)||EMPTY)]
+  ];
+}
+
+export function hasPageData(pageId,state={}){
+  if(RUNTIME_PAGES[pageId])return arr(at(state,`${RUNTIME_PAGES[pageId]}.items`)).length>0;
+  const slice=PAGES[pageId]?.slice;
+  return slice?filled(at(state,slice)):false;
+}
+
+/**
+ * Kerncijfers voor een pagina. Zonder klantdata: vier keer EMPTY, geen aanname.
+ */
+export function pageMetrics(pageId,state={}){
+  if(RUNTIME_PAGES[pageId]){
+    return runtimeMetrics(pageId,state)||[['Records',EMPTY],['Gezond',EMPTY],['Aandacht',EMPTY],['Bijgewerkt',EMPTY]];
+  }
+  const definition=PAGES[pageId];
+  if(!definition)return [];
+  if(!hasPageData(pageId,state))return definition.metrics({}).map(([label])=>[label,EMPTY]);
+  try{return definition.metrics(state);}catch{return definition.metrics({}).map(([label])=>[label,EMPTY]);}
+}
+
+/**
+ * Werklijst: alleen echte openstaande punten uit de eigen data.
+ */
+export function pageWorklist(pageId,state={}){
+  const definition=PAGES[pageId];
+  if(!definition?.worklist||!hasPageData(pageId,state))return [];
+  try{return definition.worklist(state).filter(row=>Array.isArray(row)&&row.length===2);}catch{return [];}
+}
+
+export function emptyStateCopy(pageId){
+  if(RUNTIME_PAGES[pageId])return 'Nog geen runtime-evidence voor dit onderdeel. Er wordt geen status getoond die niet gemeten is.';
+  return 'Nog geen gegevens ingevuld voor dit onderdeel. Zodra je de velden invult, rekent het portaal deze cijfers door.';
+}
+
+export function listMetricPages(){return [...Object.keys(PAGES),...Object.keys(RUNTIME_PAGES)];}
+export const METRIC_EMPTY=EMPTY;
