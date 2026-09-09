@@ -55,8 +55,8 @@ export function scoreCandidate(candidate = {}) {
   return Math.max(0, Math.min(100, Math.round(score)));
 }
 
-export function buildPriorityQueue(candidates = [], { limit = 12 } = {}) {
-  const boundedLimit = Math.max(1, Math.min(12, Number(limit) || 12));
+export function buildPriorityQueue(candidates = [], { limit = 15 } = {}) {
+  const boundedLimit = Math.max(1, Math.min(15, Number(limit) || 15));
   const deduped = new Map();
   for (const raw of candidates) {
     if (!raw || raw.contactPolicy === 'Niet benaderen') continue;

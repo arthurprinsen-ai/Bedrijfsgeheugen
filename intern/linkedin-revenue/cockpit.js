@@ -1,171 +1,41 @@
-const API_URL = '/intern/api/linkedin-revenue';
-const laneIds = ['today', 'inbox', 'connections', 'posts', 'followUp', 'revenue'];
-let model = null;
+const API_URL='/intern/api/linkedin-revenue';
+const laneIds=['orderQueue','radar','conversations','relations','content','deals','learning','system'];
+let model=null;
+const el=id=>document.getElementById(id);
+const setText=(id,value)=>{const x=el(id);if(x)x.textContent=String(value??'—')};
+const node=(tag,className,text)=>{const x=document.createElement(tag);if(className)x.className=className;if(text!==undefined)x.textContent=text;return x};
+const num=v=>Number.isFinite(Number(v))?Number(v):0;
+const pct=v=>`${Math.round(num(v)*100)}%`;
+const money=v=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(num(v));
+function switchLane(lane){if(!laneIds.includes(lane))return;document.querySelectorAll('[data-panel]').forEach(x=>x.classList.toggle('active',x.dataset.panel===lane));document.querySelectorAll('[data-lane]').forEach(x=>x.classList.toggle('active',x.dataset.lane===lane))}
+document.querySelectorAll('[data-lane]').forEach(x=>x.addEventListener('click',()=>switchLane(x.dataset.lane)));
+function safeLink(url,label,primary=false){if(!/^https:\/\//i.test(url||'')||/^https:\/\/(?:www\.)?linkedin\.com\/feed\/?$/i.test(url||''))return null;const a=node('a',`linkbtn${primary?' primary':''}`,label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a}
 
-const el = id => document.getElementById(id);
+async function postCommand(payload){const r=await fetch(API_URL,{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify(payload)});const body=await r.json().catch(()=>({}));if(!r.ok)throw new Error(body.reason||body.status||`HTTP ${r.status}`);if(body.snapshot)applyModel(body.snapshot);else await loadCockpit();return body}
 
-function setText(id, value) {
-  const node = el(id);
-  if (node) node.textContent = String(value ?? '—');
+function mini(label,value){const box=node('div','mini');box.append(node('span','',label),node('strong','',value));return box}
+function outcomeButton(action,label,outcomeType,{win=false,loss=false,revenue=false}={}){const b=node('button',`${win?'win ':''}${loss?'loss ':''}`.trim(),label);b.type='button';b.addEventListener('click',async()=>{let revenueEur=0;if(revenue){const raw=window.prompt('Omzetbedrag in euro');if(raw===null)return;revenueEur=Math.max(0,Number(String(raw).replace(',','.'))||0)}const previous=b.textContent;b.disabled=true;b.textContent='Schrijven…';try{await postCommand({actionId:action.actionId||action.id,outcomeType,revenueEur,evidence:{ui:'powerhouse-revenue-command-center',at:new Date().toISOString()}})}catch(error){b.disabled=false;b.textContent=`Mislukt · ${String(error.message).slice(0,45)}`;setTimeout(()=>{b.textContent=previous},2600)}});return b}
+
+function renderAction(action,index=0){
+  const card=node('article',`card${index===0?' hero':''}`);
+  const top=node('div','cardtop');const who=node('div','who');who.append(node('h3','',action.person||'Onbekende relatie'),node('p','',[action.role,action.company].filter(Boolean).join(' · ')||'Opportunity'));
+  const val=node('div','value',money(action.expectedRevenueValue));val.append(node('small','','verwachte omzet'));top.append(who,val);card.append(top);
+  const tags=node('div','tags');tags.append(node('span','tag stage',action.stage||'opportunity'),node('span','tag',action.channel||'Kanaal onbekend'),node('span',`tag ${action.contextState==='ready'?'ready':'blocked'}`,action.contextState==='ready'?'✓ Tekst klaar':'⚠ Context nodig'));card.append(tags);
+  const rg=node('div','revenuegrid');rg.append(mini('Orderwaarde',money(action.expectedValue)),mini('Conversiekans',pct(action.probability)),mini('Vertrouwen',pct(action.confidence)));card.append(rg);
+  const why=node('div','why');why.append(node('b','','Waarom nu'),node('p','',action.whyNow||action.nextAction||'Evidence-backed commerciële actie.'));card.append(why);
+  const draft=node('div',`draft ${action.contextState==='ready'?'ready':'blocked'}`);if(action.contextState==='ready'&&action.readyText){draft.append(node('b','','Voorgestelde tekst'),node('p','',action.readyText))}else{draft.append(node('b','','Context aanvullen'),node('p','',action.nextAction||'Open eerst de concrete bron. Geen tekst zonder bewijs.'))}card.append(draft);
+  const actions=node('div','cardactions');const open=safeLink(action.sourceUrl||action.linkedinUrl,'Open bron ↗',true);if(open)actions.append(open);if(action.readyText){const copy=node('button','btn','Kopieer tekst');copy.type='button';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(action.readyText);copy.textContent='Gekopieerd ✓';setTimeout(()=>copy.textContent='Kopieer tekst',1400)}catch{copy.textContent='Kopiëren mislukt'}});actions.append(copy)}card.append(actions);
+  const outcomes=node('div','outcomes');outcomes.append(outcomeButton(action,'Uitgevoerd','executed'),outcomeButton(action,'Reactie','reply_received',{win:true}),outcomeButton(action,'Afspraak','meeting_booked',{win:true}),outcomeButton(action,'Offerte','offer_created',{win:true}),outcomeButton(action,'Order','order_won',{win:true}),outcomeButton(action,'Omzet','revenue_observed',{win:true,revenue:true}),outcomeButton(action,'Geen reactie','no_response',{loss:true}),outcomeButton(action,'Niet relevant','not_relevant',{loss:true}),outcomeButton(action,'Later','defer'));card.append(outcomes);return card
 }
+function empty(container,text='Geen evidence-backed items in deze view.'){container.replaceChildren(node('div','empty',text))}
+function renderCards(id,items=[]){const c=el(id);if(!c)return;c.replaceChildren();if(!items.length)return empty(c);items.forEach((x,i)=>c.append(renderAction(x,i)))}
+function renderOpportunity(o){const card=node('article','card');const top=node('div','cardtop');const who=node('div','who');who.append(node('h3','',o.company||o.person||o.opportunityKey||'Opportunity'),node('p','',`${o.stage||'opportunity'} · ${o.status||'open'}`));const val=node('div','value',money(o.expectedRevenueValue));val.append(node('small','','verwachte omzet'));top.append(who,val);card.append(top);const rg=node('div','revenuegrid');rg.append(mini('Potentieel',money(o.expectedValue)),mini('Conversiekans',pct(o.probability)),mini('Vertrouwen',pct(o.confidence)));card.append(rg);const why=node('div','why');why.append(node('b','','Evidence'),node('p','',o.evidence?.latest_reason||o.evidence?.latest_type||'Opportunity opgebouwd uit cross-channel evidence.'));card.append(why);return card}
+function renderOpportunities(id,items=[]){const c=el(id);if(!c)return;c.replaceChildren();if(!items.length)return empty(c);items.forEach(x=>c.append(renderOpportunity(x)))}
+function renderContent(items=[]){const c=el('content');if(!c)return;c.replaceChildren();if(!items.length)return empty(c,'Nog geen content recommendation met voldoende downstream evidence.');items.slice(0,40).forEach(x=>{const r=node('div','learnrow');r.append(node('strong','',x.topic_key||x.component_scope||x.claim||'Content learning'),node('small','',x.reason||x.claim||`Kanaal: ${x.target_channel||x.kind||'cross-channel'}`));c.append(r)})}
+function renderLearning(items=[]){const c=el('learning');if(!c)return;c.replaceChildren();if(!items.length)return empty(c,'Nog onvoldoende learning evidence.');items.slice(0,60).forEach(x=>{const r=node('div','learnrow');const conf=num(x.confidence);const sample=num(x.sample_size);r.append(node('strong','',x.hypothesis||x.claim||x.fingerprint||'Learning'),node('small','',`${x.source||x.scope||'core'} · vertrouwen ${Math.round(conf*100)}% · n=${sample||'—'} · ${x.status||''}`));c.append(r)})}
+function renderSystem(system={}){const c=el('system');if(!c)return;c.replaceChildren();const core=system.core||{};const rows=[['Runtime',`${core.runtime||'—'} · ${core.version||'—'}`],['Unified core',core.unifiedCore===true?'JA':'ONBEKEND'],['Make kritisch pad',core.makeCriticalPath===false?'NEE':'ONBEKEND'],['Learning feedback',core.learningFeedback===true?'ACTIEF':'ONBEKEND'],['Revenue first',core.revenueFirst===true?'JA':'ONBEKEND']];for(const [k,v] of rows){const r=node('div','systemrow');r.append(node('strong','',k),node('small','',v));c.append(r)}const sources=system.coreHealth||{};for(const [name,state] of Object.entries(sources)){const r=node('div','systemrow');r.append(node('strong','',`Core · ${name}`),node('small','',state.ok?'OK':`DEGRADED · ${state.error||''}`));c.append(r)}const notion=system.notion||{};for(const [name,state] of Object.entries(notion)){const r=node('div','systemrow');r.append(node('strong','',`Notion · ${name}`),node('small','',state.ok?`OK · ${state.count||0}`:`DEGRADED · ${state.error||''}`));c.append(r)}}
 
-function switchLane(lane) {
-  if (!laneIds.includes(lane)) return;
-  document.querySelectorAll('[data-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.panel === lane));
-  document.querySelectorAll('[data-lane]').forEach(button => button.classList.toggle('active', button.dataset.lane === lane));
-}
-
-document.querySelectorAll('[data-lane]').forEach(button => button.addEventListener('click', () => switchLane(button.dataset.lane)));
-
-function node(tag, className, text) {
-  const result = document.createElement(tag);
-  if (className) result.className = className;
-  if (text !== undefined) result.textContent = text;
-  return result;
-}
-
-function safeExternalLink(url, label, primary = false) {
-  if (!/^https:\/\//i.test(url || '')) return null;
-  const link = node('a', `linkbtn${primary ? ' primary' : ''}`, label);
-  link.href = url;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  return link;
-}
-
-function money(value) {
-  const number = Number(value || 0);
-  if (!number) return '';
-  return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(number);
-}
-
-function renderCard(action) {
-  const card = node('article', 'card');
-  const top = node('div', 'cardtop');
-  const who = node('div', 'who');
-  who.append(node('h3', '', action.person || 'Onbekende connectie'));
-  who.append(node('p', '', [action.role, action.company].filter(Boolean).join(' · ') || 'Relatie uit Notion'));
-  top.append(who, node('div', 'score', String(action.score ?? 0)));
-  card.append(top);
-
-  const tags = node('div', 'tags');
-  tags.append(node('span', 'tag', action.channel || 'LinkedIn'));
-  tags.append(node('span', `tag ${action.contextState === 'ready' ? 'ready' : 'blocked'}`, action.contextState === 'ready' ? '✓ Tekst klaar' : '⚠ Context nodig'));
-  if (action.proposition) tags.append(node('span', 'tag', action.proposition));
-  if (action.expectedValue) tags.append(node('span', 'tag', money(action.expectedValue)));
-  card.append(tags);
-
-  const why = node('div', 'why');
-  why.append(node('b', '', 'Waarom nu'));
-  why.append(node('p', '', action.whyNow || action.nextAction || 'Relatiesignaal aanwezig; controleer de context voordat je contact opneemt.'));
-  card.append(why);
-
-  const draft = node('div', `draft ${action.contextState === 'ready' ? 'ready' : 'blocked'}`);
-  if (action.contextState === 'ready' && action.readyText) {
-    draft.append(node('b', '', 'Voorgestelde tekst'));
-    draft.append(node('p', '', action.readyText));
-  } else {
-    draft.append(node('b', '', 'Context aanvullen'));
-    draft.append(node('p', '', action.nextAction || 'Open LinkedIn en lees eerst de concrete post of laatste boodschap. Geen tekst zonder bewijs.'));
-  }
-  card.append(draft);
-
-  const buttons = node('div', 'cardactions');
-  const openUrl = action.sourceUrl && action.sourceUrl !== 'https://www.linkedin.com/feed/' ? action.sourceUrl : action.linkedinUrl;
-  const open = safeExternalLink(openUrl, action.source === 'posts' ? 'Open post ↗' : 'Open LinkedIn ↗', true);
-  if (open) buttons.append(open);
-
-  if (action.contextState === 'ready' && action.readyText) {
-    const copy = node('button', 'btn', 'Kopieer tekst');
-    copy.type = 'button';
-    copy.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(action.readyText);
-        copy.textContent = 'Gekopieerd ✓';
-        setTimeout(() => { copy.textContent = 'Kopieer tekst'; }, 1600);
-      } catch {
-        copy.textContent = 'Kopiëren mislukt';
-      }
-    });
-    buttons.append(copy);
-  }
-
-  const done = node('button', 'btn', 'Gedaan');
-  done.type = 'button';
-  done.addEventListener('click', () => {
-    const key = `linkedin-revenue-done:${action.id}`;
-    localStorage.setItem(key, new Date().toISOString());
-    card.style.opacity = '.48';
-    done.textContent = 'Lokaal gemarkeerd ✓';
-  });
-  buttons.append(done);
-  card.append(buttons);
-  return card;
-}
-
-function emptyState(container, lane) {
-  const box = node('div', 'empty');
-  box.append(node('strong', '', lane === 'posts' ? 'Nog geen concrete postkansen' : 'Geen acties in deze lane'));
-  box.append(node('span', '', lane === 'posts' ? 'De algemene LinkedIn-feed telt niet. Zodra een directe post-URL met inhoud is vastgelegd, verschijnt die hier.' : 'Deze lane blijft leeg totdat de bron een evidence-backed actie oplevert.'));
-  container.append(box);
-}
-
-function renderLane(lane, actions = []) {
-  const container = el(lane);
-  if (!container) return;
-  container.replaceChildren();
-  if (!actions.length) return emptyState(container, lane);
-  actions.forEach(action => container.append(renderCard(action)));
-}
-
-function applyModel(data) {
-  model = data;
-  const summary = data.summary || {};
-  setText('mToday', summary.today ?? 0);
-  setText('mWaiting', summary.waitingOnMe ?? 0);
-  setText('mReady', summary.sendReady ?? 0);
-  setText('mContext', summary.contextRequired ?? 0);
-  setText('mPosts', summary.groundedPosts ?? 0);
-  setText('statusText', data.status === 'READY' ? 'Alle bronnen bereikbaar' : 'Deels beschikbaar');
-  const dot = el('statusDot');
-  if (dot) dot.className = `dot ${data.status === 'READY' ? 'ok' : 'warn'}`;
-
-  const lanes = data.lanes || {};
-  for (const lane of laneIds) renderLane(lane, Array.isArray(lanes[lane]) ? lanes[lane] : []);
-}
-
-function showError(message) {
-  setText('statusText', 'Data niet beschikbaar');
-  const dot = el('statusDot');
-  if (dot) dot.className = 'dot warn';
-  const container = el('today');
-  if (!container) return;
-  container.replaceChildren();
-  const error = node('div', 'errorbox');
-  error.append(node('strong', '', 'Cockpitdata kon niet veilig worden geladen.'));
-  error.append(node('div', '', message || 'Controleer de interne toegang en de Notion-bronkoppeling.'));
-  container.append(error);
-  for (const lane of laneIds.filter(item => item !== 'today')) renderLane(lane, []);
-}
-
-async function loadCockpit() {
-  const refresh = el('refresh');
-  if (refresh) { refresh.disabled = true; refresh.textContent = 'Laden…'; }
-  try {
-    const response = await fetch(API_URL, { method: 'GET', credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json' } });
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      const reason = body.reason || body.status || `HTTP ${response.status}`;
-      throw new Error(reason);
-    }
-    if (body.schemaVersion !== 'linkedin-revenue-cockpit-v1') throw new Error('Onverwacht datacontract');
-    applyModel(body);
-  } catch (error) {
-    showError(String(error?.message || 'Onbekende fout'));
-  } finally {
-    if (refresh) { refresh.disabled = false; refresh.textContent = '↻ Vernieuwen'; }
-  }
-}
-
-el('refresh')?.addEventListener('click', loadCockpit);
-loadCockpit();
+function applyModel(data){model=data;const summary=data.summary||{};setText('mQueue',summary.orderQueue??0);setText('mExpected',money(summary.expectedRevenueValue));setText('mPipeline',money(summary.pipelineValue));setText('mReady',summary.sendReady??0);setText('mOpps',summary.openOpportunities??0);setText('statusText',data.status==='READY'?'Kern volledig bereikbaar':'Deels beschikbaar');const dot=el('statusDot');if(dot)dot.className=`dot ${data.status==='READY'?'ok':'warn'}`;const v=data.views||{};renderCards('orderQueue',v.orderQueue||[]);renderOpportunities('radar',v.radar||[]);renderCards('conversations',v.conversations||[]);renderCards('relations',v.relations||[]);renderContent(v.content||[]);renderOpportunities('deals',v.deals||[]);renderLearning(v.learning||[]);renderSystem(v.system||{})}
+function showError(message){setText('statusText','Data niet beschikbaar');const dot=el('statusDot');if(dot)dot.className='dot warn';const c=el('orderQueue');if(c)c.replaceChildren(node('div','errorbox',`Command Center kon niet veilig laden: ${message}`));for(const id of laneIds.filter(x=>x!=='orderQueue')){const x=el(id);if(x)x.replaceChildren()}}
+async function loadCockpit(){const b=el('refresh');if(b){b.disabled=true;b.textContent='Laden…'}try{const r=await fetch(API_URL,{method:'GET',credentials:'same-origin',cache:'no-store',headers:{accept:'application/json'}});const body=await r.json().catch(()=>({}));if(!r.ok)throw new Error(body.reason||body.status||`HTTP ${r.status}`);if(body.schemaVersion!=='powerhouse-revenue-command-center-v1')throw new Error('Onverwacht datacontract');applyModel(body)}catch(error){showError(String(error?.message||'Onbekende fout'))}finally{if(b){b.disabled=false;b.textContent='↻ Vernieuwen'}}}
+el('refresh')?.addEventListener('click',loadCockpit);el('runDaily')?.addEventListener('click',async()=>{const b=el('runDaily');b.disabled=true;b.textContent='Prioriteren…';try{await postCommand({command:'refresh'})}catch(error){window.alert(`Dagrun mislukt: ${error.message}`)}finally{b.disabled=false;b.textContent='Dag opnieuw prioriteren'}});loadCockpit();
