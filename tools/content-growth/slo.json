@@ -1,8 +1,0 @@
-{
-  "timeZone": "Europe/Amsterdam",
-  "requiredPerCalendarDay": 1,
-  "successState": "live",
-  "requiresHttp200": true,
-  "requiresCanonicalMatch": true,
-  "requiresContentIdMatch": true
-}

@@ -1,1 +1,0 @@
-No new runtime package dependency is introduced by the content-growth layer.

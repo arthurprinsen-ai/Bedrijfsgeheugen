@@ -1,1 +1,0 @@
-First-touch, last-touch and assisted-touch are evidence dimensions. Canonical order/revenue totals are deduplicated by stable order/event identity and must not be multiplied by the number of attributed touches.

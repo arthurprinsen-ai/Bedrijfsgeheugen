@@ -1,1 +1,0 @@
-`content-publication-ledger.json` is canonical daily publication state. `content-growth-learning.json` is bounded learned evidence. `content-growth-events.json` is a repository fixture/bounded event source and must not contain personal data.

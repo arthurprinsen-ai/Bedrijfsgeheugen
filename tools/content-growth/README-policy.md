@@ -1,1 +1,0 @@
-Content is optimized for attributable commercial outcomes, not vanity metrics. Revenue/order evidence dominates qualified leads, leads, CTAs, clicks, engagement and reach. Attribution evidence may be first-touch, last-touch or assisted-touch, but canonical order/revenue totals are deduplicated.
