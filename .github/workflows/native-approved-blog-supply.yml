@@ -1,0 +1,191 @@
+name: Native approved blog supply
+
+on:
+  schedule:
+    - cron: '45 4 * * *'
+  workflow_dispatch:
+    inputs:
+      business_date:
+        description: 'Optionele Europe/Amsterdam business date (YYYY-MM-DD)'
+        required: false
+        default: ''
+      verification_mode:
+        description: 'Valideer alleen met lokale fixture; schrijf niet naar Notion'
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-approved-blog-supply
+  cancel-in-progress: false
+
+env:
+  BUSINESS_TIME_ZONE: Europe/Amsterdam
+  NOTION_QUEUE_ID: 70706495-cc0c-44ed-84bc-493df00651f1
+  CONTENT_LEARNING_URL: https://www.bedrijfsgeheugen.nl/api/content-learning
+
+jobs:
+  supply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Resolve business date
+        id: day
+        env:
+          REQUESTED_DATE: ${{ github.event.inputs.business_date }}
+        run: |
+          set -euo pipefail
+          date="${REQUESTED_DATE:-}"
+          if [ -z "$date" ]; then
+            date="$(node --input-type=module -e "import {businessDate} from './tools/content-growth/daily-blog.mjs'; console.log(businessDate(new Date(),'Europe/Amsterdam'))")"
+          fi
+          node -e "if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(process.argv[1])) process.exit(1)" "$date"
+          echo "date=$date" >> "$GITHUB_OUTPUT"
+
+      - name: Read BRAIN content learning context
+        env:
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
+        run: |
+          set -euo pipefail
+          mkdir -p tmp
+          if [ "$VERIFICATION_MODE" = "true" ]; then
+            cat > tmp/brain-content-learning.json <<'JSON'
+          {"learning":{"generated_at":"2026-09-09T00:00:00.000Z","commercial_totals":{"orders":2,"revenue":5800,"currency":"EUR"},"exploit_candidates":[{"content_id":"blog:bedrijfskennis-borgen","score":118,"orders":2,"revenue":5800}],"exploration_hypotheses":[],"confidence":{"proven_items":1,"observed_items":3}}}
+          JSON
+          else
+            curl --fail --silent --show-error --retry 2 --max-time 20 "$CONTENT_LEARNING_URL" -o tmp/brain-content-learning.json
+          fi
+          node -e "const x=require('./tmp/brain-content-learning.json'); if(!(x.learning||x.context||x.candidate_scores||x.exploit_candidates)) process.exit(1)"
+
+      - name: Check whether central Approved Blogtekst stock already covers this date
+        id: stock
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          DATE: ${{ steps.day.outputs.date }}
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
+        run: |
+          set -euo pipefail
+          if [ "$VERIFICATION_MODE" = "true" ]; then
+            echo "covered=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          python3 - <<'PY'
+          import json, os, urllib.request
+          token=os.environ['NOTION_TOKEN'].strip(); date=os.environ['DATE']; queue=os.environ['NOTION_QUEUE_ID']
+          if not token: raise SystemExit('NOTION_TOKEN ontbreekt')
+          body={"filter":{"and":[
+            {"property":"Source Mode","select":{"equals":"Approved central article"}},
+            {"property":"Dispatch status","select":{"equals":"Pending"}},
+            {"property":"Autopublish toegestaan","checkbox":{"equals":True}},
+            {"property":"Quality gate","select":{"equals":"Geslaagd"}},
+            {"property":"Herzien","select":{"equals":"Goedgekeurd"}},
+            {"property":"Publicatiedatum","date":{"equals":date}}
+          ]},"page_size":1}
+          req=urllib.request.Request(f'https://api.notion.com/v1/data_sources/{queue}/query',data=json.dumps(body).encode(),method='POST',headers={'Authorization':'Bearer '+token,'Notion-Version':'2025-09-03','Content-Type':'application/json'})
+          with urllib.request.urlopen(req,timeout=30) as r: covered=bool((json.load(r).get('results') or []))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('covered='+('true' if covered else 'false')+'\n')
+          print('approved_stock_covered=',covered,'date=',date)
+          PY
+
+      - name: Stop when approved stock already covers this date
+        if: steps.stock.outputs.covered == 'true'
+        run: echo "NO_ACTION_APPROVED_STOCK_EXISTS:${{ steps.day.outputs.date }}"
+
+      - name: Generate one BRAIN-led approved blog candidate
+        if: steps.stock.outputs.covered != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--model claude-sonnet-5 --max-turns 20 --allowedTools Read,Write"
+          prompt: |
+            Maak precies één Nederlandstalig blogartikel voor Bedrijfsgeheugen.nl en schrijf uitsluitend geldig JSON naar tmp/native-approved-blog.json.
+
+            Gebruik tmp/brain-content-learning.json als verplichte BRAIN/Powerhouse-input. Optimaliseer primair voor order/omzet, daarna qualified lead, lead/conversie, CTA/click en pas daarna engagement/reach. Neem bewezen commerciële patronen over zonder eerdere tekst te kopiëren. Gebruik exploration alleen wanneer de learning-context daar aanleiding toe geeft.
+
+            JSON-schema:
+            {
+              "title":"...",
+              "slug":"lowercase-kebab-case",
+              "keyword":"...",
+              "meta":"120-170 tekens",
+              "blogtext":"markdownachtige tekst met alinea's en ## tussenkoppen",
+              "brain_reason":"korte concrete reden vanuit learning-context"
+            }
+
+            Inhoudseisen: 900-1500 woorden, concreet voor Nederlands MKB, geen verzonnen cijfers/cases/testimonials, geen holle AI-taal, duidelijke zakelijke probleemstelling, bruikbare aanpak en natuurlijke CTA richting Frisse Blik of Frisse Blik Scan. Eén hoofdonderwerp, geen keyword stuffing. Schrijf het bestand en wijzig verder niets.
+
+      - name: Build deterministic verification candidate
+        if: steps.stock.outputs.covered != 'true' && github.event_name == 'workflow_dispatch' && inputs.verification_mode
+        run: |
+          mkdir -p tmp
+          cat > tmp/native-approved-blog.json <<'JSON'
+          {"title":"Bedrijfskennis borgen zonder losse lijstjes","slug":"bedrijfskennis-borgen-zonder-losse-lijstjes","keyword":"bedrijfskennis borgen","meta":"Bedrijfskennis borgen zonder losse lijstjes: ontdek hoe je kritieke kennis structureert, overdraagbaar maakt en omzet in een werkbare aanpak.","blogtext":"Bedrijfskennis zit vaak verspreid over mensen, documenten en systemen. Dat werkt totdat iemand uitvalt, vertrekt of een proces moet overnemen. Dan blijkt dat informatie wel bestaat, maar niet als werkbaar geheugen van het bedrijf.\n\n## Begin bij kritieke kennis\n\nMaak eerst zichtbaar welke kennis direct invloed heeft op klanten, omzet, continuïteit en besluitvorming. Leg niet alles vast. Begin waar overdracht of verlies merkbaar risico geeft.\n\n## Maak kennis uitvoerbaar\n\nEen document alleen is geen borging. Koppel kennis aan processen, rollen, beslissingen, eigenaarschap en terugkerende controles. Zo wordt informatie bruikbaar in het dagelijkse werk.\n\n## Meet of het werkt\n\nControleer of iemand anders het proces kan uitvoeren zonder mondelinge uitleg. Waar dat niet lukt, zit nog impliciete kennis. Werk die gericht weg.\n\nWil je weten waar in jouw organisatie de grootste kennisrisico's zitten? Start met de Frisse Blik en bepaal daarna welke onderdelen als eerste geborgd moeten worden.","brain_reason":"Verification fixture based on commercial-priority learning contract."}
+          JSON
+
+      - name: Validate candidate and write directly to central Approved Blogtekst stock
+        if: steps.stock.outputs.covered != 'true'
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          DATE: ${{ steps.day.outputs.date }}
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re, urllib.request, uuid
+          p=pathlib.Path('tmp/native-approved-blog.json')
+          data=json.loads(p.read_text(encoding='utf-8'))
+          title=str(data.get('title','')).strip(); slug=str(data.get('slug','')).strip(); keyword=str(data.get('keyword','')).strip(); meta=str(data.get('meta','')).strip(); blogtext=str(data.get('blogtext','')).strip(); reason=str(data.get('brain_reason','')).strip()
+          if not (12 <= len(title) <= 80): raise SystemExit('title contract failed')
+          if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*',slug): raise SystemExit('slug contract failed')
+          if not (3 <= len(keyword) <= 80): raise SystemExit('keyword contract failed')
+          if not (120 <= len(meta) <= 170): raise SystemExit('meta contract failed')
+          words=re.findall(r'\b\w+\b',blogtext,flags=re.UNICODE)
+          verification=os.environ.get('VERIFICATION_MODE')=='true'
+          if not verification and not (900 <= len(words) <= 1500): raise SystemExit(f'blog length contract failed: {len(words)}')
+          if blogtext.count('## ') < 2: raise SystemExit('at least two H2-style sections required')
+          if not reason: raise SystemExit('brain_reason required')
+          date=os.environ['DATE']; source=f'native-brain-blog:{date}:{slug}'; cmd=f'seo-publish|{source}|{slug}'
+          payload='\n'.join([source,slug,title,keyword,meta,blogtext]); source_hash=hashlib.sha256(payload.encode()).hexdigest()
+          approved={"date":date,"source":source,"cmd":cmd,"hash":source_hash,"title":title,"slug":slug,"keyword":keyword,"meta":meta,"blogtext":blogtext,"brain_reason":reason}
+          pathlib.Path('tmp/native-approved-blog-validated.json').write_text(json.dumps(approved,ensure_ascii=False,indent=2),encoding='utf-8')
+          if verification:
+            print('NATIVE_APPROVED_BLOG_VERIFICATION_OK',slug,source_hash); raise SystemExit(0)
+          token=os.environ['NOTION_TOKEN'].strip(); queue=os.environ['NOTION_QUEUE_ID']
+          if not token: raise SystemExit('NOTION_TOKEN ontbreekt')
+          def rich(value,limit=1900):
+            return [{'type':'text','text':{'content':value[i:i+limit]}} for i in range(0,len(value),limit)] or [{'type':'text','text':{'content':''}}]
+          properties={
+            'Status':{'select':{'name':'Gepland'}},
+            'Source Mode':{'select':{'name':'Approved central article'}},
+            'Dispatch status':{'select':{'name':'Pending'}},
+            'Autopublish toegestaan':{'checkbox':True},
+            'Quality gate':{'select':{'name':'Geslaagd'}},
+            'Herzien':{'select':{'name':'Goedgekeurd'}},
+            'Publicatiedatum':{'date':{'start':date}},
+            'Titel':{'rich_text':rich(title)},
+            'Slug':{'rich_text':rich(slug)},
+            'Focus-zoekwoord':{'rich_text':rich(keyword)},
+            'Meta-omschrijving':{'rich_text':rich(meta)},
+            'Approved Blogtekst':{'rich_text':rich(blogtext)},
+            'Bron Content ID':{'rich_text':rich(source)},
+            'Publish Command ID':{'rich_text':rich(cmd)},
+            'Approved Source Hash':{'rich_text':rich(source_hash)},
+            'Dispatch attempt':{'number':0}
+          }
+          body={'parent':{'type':'data_source_id','data_source_id':queue},'properties':properties}
+          req=urllib.request.Request('https://api.notion.com/v1/pages',data=json.dumps(body).encode(),method='POST',headers={'Authorization':'Bearer '+token,'Notion-Version':'2025-09-03','Content-Type':'application/json'})
+          with urllib.request.urlopen(req,timeout=30) as r: created=json.load(r)
+          print('NATIVE_APPROVED_BLOG_CREATED',created.get('id'),date,slug,source_hash)
+          PY
+
+      - name: Clean transient generation files
+        if: always()
+        run: rm -rf tmp
