@@ -115,7 +115,7 @@ export const CLUSTER_CSS = `<style id="v18-cluster">
 
 /* Chrome desktop fail-safe: publieke inhoud mag nooit afhankelijk zijn van
    IntersectionObserver, scroll of een resize om zichtbaar te worden. DevTools
-   openen veroorzaakt precies zo'n resize; deze laatste cascade-regel maakt dat
-   verschil onmogelijk en geeft inhoud altijd voorrang boven reveal-animatie. */
+   openen veroorzaakt precies zo'n resize; als laatste in de cascade krijgt
+   zichtbare inhoud daarom altijd voorrang boven de reveal-animatie. */
 html.bgx-beweegt [data-op]{opacity:1!important;transform:none!important}
 </style>`;
