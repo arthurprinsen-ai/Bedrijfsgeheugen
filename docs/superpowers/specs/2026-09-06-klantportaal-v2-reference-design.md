@@ -14,8 +14,8 @@ Bij visuele afwijking wordt de implementatie aangepast aan de referentie; niet a
 ## Harde visuele regels
 - Desktopcompositie: vaste linker navigatie, header/search/AI/periode, vijf KPI-kaarten, centrale Brain-cockpit, rechterrail, Roadmap/Kansen/Impact en Recente activiteiten.
 - De vijf KPI's zijn zichtbaar als één herkenbare managementrij: Bedrijfsgezondheid, Kennisborging, Processen, Data & systemen en AI-volwassenheid.
-- Centrale cockpit is altijd: **Bronnen → Het bedrijfsgeheugen → Klantenportaal**.
-- Het bedrijfsgeheugen toont visueel **AI Brain → Datahub → Powerhouse** met learning-loop.
+- Centrale cockpit volgt de actuele canonieke V2-flow: **Bronnen → Datahub → AI Brain → Powerhouse → Acties & outcomes**.
+- De cockpit maakt de gesloten learning-loop zichtbaar zonder runtime-activiteit of productie-evidence te verzinnen.
 - Rechterrail bevat minimaal: AI Management Summary, Aanbevelingen en Snelle links.
 - Onder de cockpit staan minimaal: Roadmap & voortgang, Kansen & bedreigingen, Impact overzicht en Recente activiteiten.
 - Actief element heeft blauwe focus, statusbadge en zichtbare dotted flow. Niet-actief blijft zichtbaar maar wordt gedimd/geblurd.
