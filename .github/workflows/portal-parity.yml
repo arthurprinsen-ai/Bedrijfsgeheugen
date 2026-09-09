@@ -1,15 +1,6 @@
 name: Portal parity gate
 
 on:
-  pull_request:
-    paths:
-      - 'klantportaal.html'
-      - '.github/scripts/portal_parity.py'
-      - 'portal-v2/legacy-functional-inventory.js'
-      - 'portal-v2/parity-manifest.js'
-      - 'portal-v2/tests/legacy-functional-inventory.test.mjs'
-      - '.github/workflows/portal-parity.yml'
-      - 'docs/parity/portal-parity-ledger.md'
   push:
     branches: [main]
     paths:

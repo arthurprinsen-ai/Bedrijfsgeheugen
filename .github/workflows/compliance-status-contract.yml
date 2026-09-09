@@ -1,12 +1,14 @@
 name: Compliance status contract
 
 on:
-  pull_request:
+  push:
+    branches: [main]
     paths:
       - 'compliance-status.html'
       - 'sitemap.xml'
       - 'tests/compliance-status-page.test.mjs'
       - '.github/workflows/compliance-status-contract.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read

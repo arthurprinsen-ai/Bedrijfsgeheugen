@@ -16,8 +16,10 @@
     "brain/production/",
     "tools/brain-delivery-system.mjs",
     "tools/website-release-risk.mjs",
+    "tools/ci/",
     "tests/development-doc-contract.test.mjs",
     "tests/website-release-risk.test.mjs",
+    "tests/single-flight-",
     ".github/workflows/"
   ],
   "nonExecutableSharedPaths": ["docs/changes/", "docs/learning/"],
@@ -32,7 +34,7 @@
     "maxRebuildsForNonOverlappingDrift": 0
   },
   "conflictContracts": [
-    {"id":"delivery-control-plane","paths":["AGENTS.md","config/brain-delivery-system.json","brain/contracts/delivery-v2.schema.json","brain/production/continuous-delivery-v2.mjs","tools/brain-delivery-system.mjs","tools/delivery/",".github/workflows/unified-brain-delivery.yml","docs/superpowers/specs/"]},
+    {"id":"delivery-control-plane","paths":["AGENTS.md","config/brain-delivery-system.json","config/single-flight-release-kernel.json","brain/contracts/delivery-v2.schema.json","brain/production/continuous-delivery-v2.mjs","tools/brain-delivery-system.mjs","tools/delivery/","tools/ci/","tests/single-flight-",".github/workflows/required-test.yml",".github/workflows/unified-brain-delivery.yml","docs/superpowers/specs/"]},
     {"id":"platform-adapter-contract","paths":["config/brain-platform-adapters.json","brain/contracts/platform-adapter-v1.schema.json","tests/brain-platform-adapters.test.mjs"]},
     {"id":"brain-governance","paths":["config/outcome-obligations.json","docs/brain/component-registry.json"]},
     {"id":"supabase-schema","paths":["supabase/migrations/","supabase/schema/","supabase/schema.sql"]},
@@ -46,7 +48,7 @@
     {"id":"seo-order-engine","paths":["site/seo-order-map.json","tools/seo-order-engine/","tools/controleer-technische-seo.mjs","tools/prijzen-uit-de-homepage.mjs","tests/seo-order-",".github/workflows/seo-order-engine.yml",".github/workflows/canonical-brand-shell-full-build.yml",".github/workflows/canonical-brand-shell-live-readback.yml"]},
     {"id":"seo-growth-intelligence","paths":["tools/seo-growth/","tools/seo-order-engine/measurement.mjs","netlify/functions/growth-event.mjs","config/seo-growth-observation.schema.json","config/seo-growth-loop.json","config/seo-search-sources.json","config/seo-optimization-allowlist.json","tests/seo-growth-","tests/seo-order-measurement.test.mjs",".github/workflows/seo-growth-intelligence.yml"]},
     {"id":"universal-event-contract","paths":["config/universal-event-producers.json","tools/universal-event-","tools/universal-failure-","tools/event-retention-","tests/universal-event-","tests/universal-failure-","tests/event-retention-",".github/workflows/universal-event-retention-contract.yml"]},
-    {"id":"linkedin-revenue-cockpit","paths":["intern/linkedin-revenue/","tests/linkedin-revenue-","netlify/functions/linkedin-revenue-cockpit.mjs","_redirects"]}
+    {"id":"linkedin-revenue-cockpit","paths":["intern/linkedin-revenue/","tests/linkedin-revenue-","netlify/functions/linkedin-revenue-cockpit.mjs","platform/linkedin-revenue-cockpit.mjs","_redirects"]}
   ],
   "lanes": [
     {

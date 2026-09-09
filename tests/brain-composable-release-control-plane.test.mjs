@@ -10,16 +10,20 @@ for (const file of ['lane-website.yml','lane-portal.yml','lane-backend.yml','lan
   });
 }
 
-test('required test is a stable aggregator and preserves the protected test context', () => {
+test('required test keeps one protected runner and preserves lane-aware control-plane semantics', () => {
   assert.match(required, /name:\s*Required test/);
+  assert.match(required, /jobs:\s*\n\s+test:/);
   assert.match(required, /name:\s*test/);
   assert.match(required, /delivery-driftless-merge-candidate\.test\.mjs/);
-  assert.match(required, /change_head_sha/);
-  assert.match(required, /candidate_sha/);
-  assert.doesNotMatch(required, /moving-main-successor-guard\.mjs/);
-  assert.doesNotMatch(required, /Block unjustified moving-main successor rebuilds/);
+  assert.match(required, /delivery-github-event-context\.mjs/);
+  assert.match(required, /deriveRequiredTestSuites/);
+  assert.match(required, /single-flight-release-kernel\.mjs\s+run/);
+  assert.match(required, /exactGithubSha=process\.env\.EVENT_NAME === 'pull_request' \? process\.env\.PR_HEAD_SHA : process\.env\.GITHUB_SHA_VALUE/);
+  assert.match(required, /head_sha=\$\{context\.candidateSha\}/);
+  assert.equal((required.match(/\bruns-on:\s*ubuntu-latest\b/g) || []).length, 1, 'Required test must allocate exactly one runner');
   for (const lane of ['website','portal','backend','automation']) {
-    assert.match(required, new RegExp(`uses:\\s*\\./\\.github/workflows/lane-${lane}\\.yml`));
+    assert.doesNotMatch(required, new RegExp(`uses:\\s*\\./\\.github/workflows/lane-${lane}\\.yml`));
+    assert.match(required, new RegExp(`steps\\.scope\\.outputs\\.${lane}`));
   }
   assert.doesNotMatch(required, /v18-vergelijker\.test\.mjs/);
   assert.doesNotMatch(required, /tests\/portal-\*\.test\.mjs/);
@@ -28,65 +32,19 @@ test('required test is a stable aggregator and preserves the protected test cont
 
 test('website lane keeps public visibility mandatory while broad checks are high-risk only', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+  const kernel = readFileSync('tools/ci/single-flight-release-kernel.mjs', 'utf8');
   assert.match(website, /classifyWebsiteRelease/);
-  assert.match(website, /\n  browser:/);
   const visibilityStart = website.indexOf('      - name: Verify all public pages are visibly rendered');
   assert.notEqual(visibilityStart, -1);
   const broadStart = website.indexOf('      - name: Verify broad high-risk browser contracts', visibilityStart);
   assert.notEqual(broadStart, -1);
   const visibility = website.slice(visibilityStart, broadStart);
   assert.doesNotMatch(visibility, /if:.*(?:high-risk|fast-fix|normal)|risk_lane/);
-  const broad = website.slice(broadStart);
-  assert.match(broad, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
+  assert.match(website.slice(broadStart), /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
   assert.match(website, /verify-targeted-website-routes\.mjs/);
-});
-
-test('static syntax preflight blocks preview, artifact build and browser execution', () => {
-  const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
-  assert.match(website, /\n  syntax-preflight:[\s\S]*Fail fast on broken inline JavaScript[\s\S]*website-static-syntax-preflight\.mjs/);
-  assert.match(website, /\n  preview-ready:\n\s+needs:\s*\[classify, syntax-preflight\]/);
-  assert.match(website, /\n  page-seo:\n\s+needs:\s*\[classify, syntax-preflight\]/);
-  assert.match(website, /\n  browser:\n\s+needs:\s*\[classify, syntax-preflight, preview-ready\]/);
-});
-
-test('exact artifact build owns modern SEO validation while exact-preview runtime is owned by the browser lane', () => {
-  const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
-  const pageSeoStart = website.indexOf('\n  page-seo:');
-  const browserStart = website.indexOf('\n  browser:', pageSeoStart);
-  assert.notEqual(pageSeoStart, -1);
-  assert.notEqual(browserStart, -1);
-  const pageSeo = website.slice(pageSeoStart, browserStart);
-  const browser = website.slice(browserStart);
-
-  assert.match(pageSeo, /needs:\s*\[classify, syntax-preflight\]/);
-  assert.match(pageSeo, /name: Install Netlify build dependencies/);
-  assert.match(pageSeo, /run: npm install/);
-  assert.match(pageSeo, /name: Build and verify exact Netlify website artifact/);
-  const commands = [
-    'node tools/bouw-powerhouse-auth.mjs',
-    'node tools/bouw-kennisindex.mjs',
-    'node tools/bouw-v18-production.mjs',
-    'node tools/apply-tabbladen.mjs',
-    'node tools/bouw-v18-views.mjs',
-    'node tools/bouw-v18-chrome-alles.mjs',
-    'node tools/prijzen-uit-de-homepage.mjs',
-  ];
-  for (const command of commands) {
-    assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  }
-  assert.ok(
-    pageSeo.indexOf('name: Install Netlify build dependencies') < pageSeo.indexOf(commands[0]),
-    'Netlify build dependencies must be installed before artifact production',
-  );
-  for (let index = 1; index < commands.length; index += 1) {
-    assert.ok(
-      pageSeo.indexOf(commands[index - 1]) < pageSeo.indexOf(commands[index]),
-      `Netlify build order must preserve ${commands[index - 1]} before ${commands[index]}`,
-    );
-  }
-  assert.doesNotMatch(pageSeo, /normaliseer-site-ui\.mjs|seocontrole\.py|paginacontrole\.py|playwright|PAGINA_BASE_URL/);
-  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
-  assert.match(browser, /deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(kernel, /id:\s*'website-public-visibility'[\s\S]*requiresPreview:\s*true/);
+  assert.doesNotMatch(kernel.match(/\{ id:\s*'website-public-visibility'[^\n]+/s)?.[0] || '', /when:\s*'high-risk'/);
+  assert.match(kernel, /id:\s*'website-megamenu-browser'[\s\S]*when:\s*'high-risk'/);
 });
 
 test('production readback is serialized and never cancelled mid-flight', () => {

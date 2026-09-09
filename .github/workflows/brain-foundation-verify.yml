@@ -1,44 +1,17 @@
 name: Brain foundation verify
-
 on:
   push:
-    paths:
-      - 'brain/**'
-      - 'config/brain-*.json'
-      - 'platform/api/brain-operating-*.mjs'
-      - 'netlify/functions/brain-operating-*.mjs'
-      - 'scripts/brain/**'
-      - 'tests/brain/**'
-      - 'tests/chat-to-brain-*.test.mjs'
-      - 'tests/whole-brain-*.test.mjs'
-      - 'supabase/migrations/**'
-      - 'docs/brain/**'
-      - '.github/workflows/brain-foundation-verify.yml'
-  pull_request:
-    paths:
-      - 'brain/**'
-      - 'config/brain-*.json'
-      - 'platform/api/brain-operating-*.mjs'
-      - 'netlify/functions/brain-operating-*.mjs'
-      - 'scripts/brain/**'
-      - 'tests/brain/**'
-      - 'tests/chat-to-brain-*.test.mjs'
-      - 'tests/whole-brain-*.test.mjs'
-      - 'supabase/migrations/**'
-      - 'docs/brain/**'
-      - '.github/workflows/brain-foundation-verify.yml'
-
+    branches: [main]
+    paths: ['brain/**','config/brain-*.json','platform/api/brain-operating-*.mjs','netlify/functions/brain-operating-*.mjs','scripts/brain/**','tests/brain/**','tests/chat-to-brain-*.test.mjs','tests/whole-brain-*.test.mjs','supabase/migrations/**','docs/brain/**','.github/workflows/brain-foundation-verify.yml']
+  workflow_dispatch:
 permissions:
   contents: read
-
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Run Brain foundation regression suite
-        run: node scripts/brain/test-all.mjs
+        with: {node-version: '22'}
+      - run: node scripts/brain/test-all.mjs

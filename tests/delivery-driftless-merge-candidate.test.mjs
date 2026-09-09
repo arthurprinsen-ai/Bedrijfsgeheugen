@@ -19,14 +19,17 @@ test('pull request keeps immutable change head but tests the current merge candi
   assert.equal(context.headSha, sha('c'));
 });
 
-test('Required classifies branch diff but executes code against merge candidate', () => {
+test('Required classifies branch diff and promotes the exact tested PR head in one job', () => {
   const workflow = readFileSync('.github/workflows/required-test.yml', 'utf8');
+  assert.match(workflow, /exactGithubSha=process\.env\.EVENT_NAME === 'pull_request' \? process\.env\.PR_HEAD_SHA : process\.env\.GITHUB_SHA_VALUE/);
   assert.match(workflow, /change_head_sha=\$\{context\.changeHeadSha\}/);
   assert.match(workflow, /candidate_sha=\$\{context\.candidateSha\}/);
+  assert.match(workflow, /head_sha=\$\{context\.candidateSha\}/);
   assert.match(workflow, /context\.baseSha}\.\.\.\$\{context\.changeHeadSha}/);
-  assert.match(workflow, /head_sha:\s*\$\{\{ needs\.preflight\.outputs\.candidate_sha \}\}/);
-  assert.match(workflow, /change_head_sha:\s*\$\{\{ needs\.preflight\.outputs\.change_head_sha \}\}/);
-  assert.match(workflow, /candidate_sha:\s*\$\{\{ needs\.preflight\.outputs\.candidate_sha \}\}/);
+  assert.match(workflow, /HEAD_SHA:\s*\$\{\{ steps\.scope\.outputs\.head_sha \}\}/);
+  assert.match(workflow, /BASE_SHA:\s*\$\{\{ steps\.scope\.outputs\.base_sha \}\}/);
+  assert.match(workflow, /single-flight-release-kernel\.mjs\s+run/);
+  assert.doesNotMatch(workflow, /needs\.preflight\.outputs/);
   assert.doesNotMatch(workflow, /Block unjustified moving-main successor rebuilds/);
 });
 

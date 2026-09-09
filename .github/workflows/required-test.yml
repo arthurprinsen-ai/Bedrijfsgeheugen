@@ -7,35 +7,38 @@ on:
     types: [checks_requested]
   workflow_dispatch:
 
+concurrency:
+  group: required-test-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   statuses: read
 
-concurrency:
-  group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  preflight:
+  test:
+    name: test
     runs-on: ubuntu-latest
-    outputs:
-      backend: ${{ steps.scope.outputs.backend }}
-      portal: ${{ steps.scope.outputs.portal }}
-      website: ${{ steps.scope.outputs.website }}
-      automation: ${{ steps.scope.outputs.automation }}
-      base_sha: ${{ steps.scope.outputs.base_sha }}
-      change_head_sha: ${{ steps.scope.outputs.change_head_sha }}
-      candidate_sha: ${{ steps.scope.outputs.candidate_sha }}
-      pr_number: ${{ steps.scope.outputs.pr_number }}
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install dependencies once
+        run: npm install
+      - name: Fail fast on broken website JavaScript
+        run: node tools/site-shell/website-static-syntax-preflight.mjs
+      - name: Mandatory chat-learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
       - id: scope
-        name: Classify independent delivery lanes
+        name: Normalize exact head, enforce hygiene, and classify lanes
         env:
           EVENT_NAME: ${{ github.event_name }}
           GITHUB_SHA_VALUE: ${{ github.sha }}
@@ -56,95 +59,57 @@ jobs:
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
           import { parseScopeMetadata, evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const exactGithubSha=process.env.EVENT_NAME === 'pull_request' ? process.env.PR_HEAD_SHA : process.env.GITHUB_SHA_VALUE;
           const context=normalizeGitHubDeliveryEvent({
             eventName: process.env.EVENT_NAME,
-            githubSha: process.env.GITHUB_SHA_VALUE,
+            githubSha: exactGithubSha,
             runId: process.env.RUN_ID,
             fallbackBaseSha,
             event: {
-              pull_request: process.env.EVENT_NAME === 'pull_request' ? {
-                number: process.env.PR_NUMBER,
-                base: { sha: process.env.PR_BASE_SHA },
-                head: { sha: process.env.PR_HEAD_SHA },
-              } : undefined,
-              merge_group: process.env.EVENT_NAME === 'merge_group' ? {
-                base_sha: process.env.MERGE_GROUP_BASE_SHA,
-                head_sha: process.env.MERGE_GROUP_HEAD_SHA,
-              } : undefined,
+              pull_request: process.env.EVENT_NAME === 'pull_request' ? { number: process.env.PR_NUMBER, base: { sha: process.env.PR_BASE_SHA }, head: { sha: process.env.PR_HEAD_SHA } } : undefined,
+              merge_group: process.env.EVENT_NAME === 'merge_group' ? { base_sha: process.env.MERGE_GROUP_BASE_SHA, head_sha: process.env.MERGE_GROUP_HEAD_SHA } : undefined,
             },
           });
           const changedPaths=execFileSync('git',['diff','--name-only',`${context.baseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
-          const metadata=parseScopeMetadata(process.env.PR_BODY || '');
-          const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
-          if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
+          if(process.env.EVENT_NAME === 'pull_request') {
+            const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
+            const metadata=parseScopeMetadata(process.env.PR_BODY || '');
+            const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
+            console.log(JSON.stringify({hygiene},null,2));
+            if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
+          }
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${context.baseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
-          console.log(JSON.stringify({context,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${context.baseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\nhead_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
+          console.log(JSON.stringify({context,changedPaths,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
-      # Website contract ownership remains visible here for the stable Required test
-      # contract while execution is delegated to .github/workflows/lane-website.yml:
-      # tests/v18-megamenu-heading-contract.test.mjs
-      # tools/site-shell/v18-megamenu-browser-check.mjs
-      - name: Verify composable release control plane and agent completion contract
+      - name: Verify current release-control-plane regressions
         run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/website-static-syntax-preflight.test.mjs
-
-  backend:
-    needs: preflight
-    if: needs.preflight.outputs.backend == 'true'
-    uses: ./.github/workflows/lane-backend.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
-
-  portal:
-    needs: preflight
-    if: needs.preflight.outputs.portal == 'true'
-    uses: ./.github/workflows/lane-portal.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
-
-  automation:
-    needs: preflight
-    if: needs.preflight.outputs.automation == 'true'
-    uses: ./.github/workflows/lane-automation.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
-
-  website:
-    needs: preflight
-    if: needs.preflight.outputs.website == 'true'
-    uses: ./.github/workflows/lane-website.yml
-    with:
-      base_sha: ${{ needs.preflight.outputs.base_sha }}
-      change_head_sha: ${{ needs.preflight.outputs.change_head_sha }}
-      candidate_sha: ${{ needs.preflight.outputs.candidate_sha }}
-      pr_number: ${{ needs.preflight.outputs.pr_number }}
-
-  test:
-    name: test
-    if: always()
-    needs: [preflight, backend, portal, automation, website]
-    runs-on: ubuntu-latest
-    env:
-      PREFLIGHT: ${{ needs.preflight.result }}
-      SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
-      SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
-      SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
-      SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
-      BACKEND: ${{ needs.backend.result }}
-      PORTAL: ${{ needs.portal.result }}
-      AUTOMATION: ${{ needs.automation.result }}
-      WEBSITE: ${{ needs.website.result }}
-    steps:
-      - name: Aggregate only selected lane results
-        run: |
-          set -euo pipefail
-          test "$PREFLIGHT" = success
-          [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
-          [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
-          [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
-          [ "$SELECT_WEBSITE" != true ] || [ "$WEBSITE" = success ]
-          echo "Selected release lanes are green."
+      - name: Verify LinkedIn Revenue Cockpit contract on this runner
+        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs
+      - name: Run preserved legacy release contracts on this runner
+        env:
+          BASE_SHA: ${{ steps.scope.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.scope.outputs.head_sha }}
+        run: node tools/ci/single-flight-preserved-contracts.mjs
+      - name: Execute single-flight release plan
+        env:
+          BASE_SHA: ${{ steps.scope.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.scope.outputs.head_sha }}
+          PR_NUMBER: ${{ steps.scope.outputs.pr_number }}
+          SELECT_BACKEND: ${{ steps.scope.outputs.backend }}
+          SELECT_PORTAL: ${{ steps.scope.outputs.portal }}
+          SELECT_WEBSITE: ${{ steps.scope.outputs.website }}
+          SELECT_AUTOMATION: ${{ steps.scope.outputs.automation }}
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/ci/single-flight-release-kernel.mjs run --base "$BASE_SHA" --head "$HEAD_SHA" --pr "$PR_NUMBER"
+      - name: Upload single-flight failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: single-flight-failure-${{ steps.scope.outputs.head_sha }}
+          path: .single-flight-failure.json
+          if-no-files-found: ignore
+          retention-days: 7

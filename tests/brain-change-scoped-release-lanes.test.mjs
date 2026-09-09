@@ -62,8 +62,9 @@ test('protected LinkedIn revenue cockpit component is delivery-classified', () =
   assert.equal(suites.backend, true);
 });
 
-test('Required test keeps stable status identity and is lane-aware', async () => {
+test('Required test keeps stable status identity and delegates lane contracts to the single-flight kernel', async () => {
   const workflow = await readFile('.github/workflows/required-test.yml','utf8');
+  const kernel = await readFile('tools/ci/single-flight-release-kernel.mjs','utf8');
   assert.match(workflow, /^name:\s*Required test/m);
   assert.match(workflow, /merge_group:\s*\n\s+types:\s*\[checks_requested\]/);
   assert.match(workflow, /github-event-context\.mjs/);
@@ -72,8 +73,9 @@ test('Required test keeps stable status identity and is lane-aware', async () =>
   assert.match(workflow, /steps\.scope\.outputs\.portal/);
   assert.match(workflow, /steps\.scope\.outputs\.website/);
   assert.match(workflow, /steps\.scope\.outputs\.automation/);
-  assert.match(workflow, /v18-megamenu-heading-contract\.test\.mjs/);
-  assert.match(workflow, /v18-megamenu-browser-check\.mjs/);
+  assert.match(workflow, /single-flight-release-kernel\.mjs\s+run/);
+  assert.match(kernel, /v18-megamenu-heading-contract\.test\.mjs/);
+  assert.match(kernel, /v18-megamenu-browser-check\.mjs/);
 });
 
 test('V18 promotion separates website and portal gates', async () => {
