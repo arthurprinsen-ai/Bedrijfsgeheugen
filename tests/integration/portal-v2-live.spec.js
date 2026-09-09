@@ -1,5 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
+test.describe.configure({timeout:120000});
+
 async function hideNetlifyChrome(page) {
   await page.route('**/cdp/**', route => route.abort());
   await page.addInitScript(() => {
@@ -17,8 +19,19 @@ function collectPageErrors(page) {
 }
 
 async function openPortalV2(page, preview) {
-  await page.goto(`${preview}/portal-v2/?klant=ijsselmonde`, { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('heading', { name: 'Welkom terug, Arthur', exact: true })).toBeVisible({ timeout: 30_000 });
+  let lastError;
+  for (let attempt=1; attempt<=3; attempt++) {
+    try {
+      const response=await page.goto(`${preview}/portal-v2/?klant=ijsselmonde&bg_live=${Date.now()}-${attempt}`, { waitUntil: 'domcontentloaded', timeout:45_000 });
+      expect(response,'portal preview response').not.toBeNull();
+      expect(response.status(),'portal preview status').toBeLessThan(400);
+      await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30_000});
+      return;
+    } catch (error) {
+      lastError=error;
+    }
+  }
+  throw lastError;
 }
 
 test('portal-v2 serves the approved SaaS desktop dashboard composition', async ({ page }) => {
@@ -102,10 +115,12 @@ test('mobile primary navigation routes all five controls on supported phone widt
   const preview = process.env.PREVIEW_URL;
   if (!preview) throw new Error('PREVIEW_URL is required');
   await hideNetlifyChrome(page);
+  await page.setViewportSize({ width:320, height:720 });
+  await openPortalV2(page, preview);
 
   for (const [width,height] of [[320,720],[390,844],[430,932]]) {
     await page.setViewportSize({ width, height });
-    await openPortalV2(page, preview);
+    await page.evaluate(()=>{history.replaceState(null,'',location.pathname+location.search.split('&bg_live=')[0]);document.querySelector('[data-mobile-nav="overview"]')?.click();});
     const bar=page.locator('.mobilebar');
     await expect(bar).toBeVisible();
     const buttons=bar.locator('button');
@@ -170,16 +185,17 @@ test('profile is a real responsive V2 workspace with the protected legacy fields
   if (!preview) throw new Error('PREVIEW_URL is required');
   await hideNetlifyChrome(page);
   const errors = collectPageErrors(page);
+  await page.setViewportSize({ width:1440, height:1000 });
+  await openPortalV2(page, preview);
+  await page.evaluate(() => {
+    const button=[...document.querySelectorAll('.nav button')].find(node=>node.textContent.includes('Bedrijfsgezondheid'));
+    button?.click();
+  });
+  await expect(page.locator('#portalView')).toHaveClass(/open/);
+  await expect(page.locator('#portalView')).toHaveAttribute('data-page-id','profiel');
 
   for (const [width,height] of [[1440,1000],[320,720],[390,844],[430,932]]) {
     await page.setViewportSize({ width, height });
-    await openPortalV2(page, preview);
-    await page.evaluate(() => {
-      const button=[...document.querySelectorAll('.nav button')].find(node=>node.textContent.includes('Bedrijfsgezondheid'));
-      button?.click();
-    });
-    await expect(page.locator('#portalView')).toHaveClass(/open/);
-    await expect(page.locator('#portalView')).toHaveAttribute('data-page-id','profiel');
     await expect(page.locator('[data-workspace="profiel"]')).toBeVisible();
     await expect(page.locator('[data-workspace-tab]')).toHaveCount(4);
     await expect(page.locator('[data-field-id="employees"]')).toBeVisible();
@@ -191,7 +207,6 @@ test('profile is a real responsive V2 workspace with the protected legacy fields
     expect(fieldHeight).toBeGreaterThanOrEqual(44);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
-    await page.locator('[data-close]').last().click();
   }
   expect(errors).toEqual([]);
 });

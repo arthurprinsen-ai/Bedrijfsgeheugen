@@ -25,6 +25,13 @@ function loadFunctionalStyles(){
  if(existing){if(existing.sheet)return Promise.resolve();return new Promise(resolve=>{existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',resolve,{once:true});});}
  return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href='./functional-suite.css';link.addEventListener('load',resolve,{once:true});link.addEventListener('error',resolve,{once:true});document.head.appendChild(link);});
 }
+async function attachLegacyAlgorithmParity(root,contract){
+ if(!contract?.legacyCapability)return;
+ try{
+  const module=await import('./legacy-parity-evidence.js');
+  module.mountLegacyParityEvidence?.(root,{legacyCapability:contract.legacyCapability,domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null});
+ }catch(error){console.error('LEGACY_ALGORITHM_PARITY_LOAD_FAILED',error);}
+}
 
 export function mountWorkspace(root,contract,context={}){
  if(!root?.replaceChildren)throw new TypeError('WORKSPACE_ROOT_REQUIRED');
@@ -42,11 +49,12 @@ export function mountWorkspace(root,contract,context={}){
  const api=Object.freeze({shell,content,model,setSaveStatus(status){const badge=shell.querySelector('.v2savestatus');if(badge){badge.dataset.saveStatus=status;badge.textContent=saveStatusLabel(status);}}});
  if(contract?.legacyCapability&&!root.dataset.functionalDelegating){
   const modulePath=contract.id==='roadmap'?'./modules/roadmap-workspace.js':'./modules/functional-suite.js';
-  Promise.all([loadFunctionalStyles(),import(modulePath)]).then(([,module])=>{
+  Promise.all([loadFunctionalStyles(),import(modulePath)]).then(async([,module])=>{
    root.dataset.functionalDelegating='1';
    try{
     if(contract.id==='roadmap')module.mountRoadmapWorkspace?.(root,{contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
     else if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
+    await attachLegacyAlgorithmParity(root,contract);
    } finally{delete root.dataset.functionalDelegating;}
   }).catch(error=>{console.error('FUNCTIONAL_WORKSPACE_LOAD_FAILED',error);});
  }

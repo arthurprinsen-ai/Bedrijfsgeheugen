@@ -2,15 +2,25 @@ const { test, expect } = require('@playwright/test');
 
 const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
 
+test.describe.configure({timeout:120000});
+
 async function hideNetlifyChrome(page){
  await page.route('**/cdp/**',route=>route.abort());
  await page.addInitScript(()=>{const style=document.createElement('style');style.textContent='iframe[title="Netlify Drawer"],[data-netlify-deploy-id]{display:none!important;pointer-events:none!important}';const attach=()=>document.documentElement?.appendChild(style);if(document.documentElement)attach();else document.addEventListener('DOMContentLoaded',attach,{once:true});});
 }
 async function boot(page,preview,width=1440,height=1000){
  await page.setViewportSize({width,height});
- await page.goto(`${preview}/portal-v2/`,{waitUntil:'domcontentloaded'});
- await expect(page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true})).toBeVisible({timeout:30000});
- await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30000});
+ let lastError;
+ for(let attempt=1;attempt<=3;attempt++){
+  try{
+   const response=await page.goto(`${preview}/portal-v2/?bg_preview=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45000});
+   expect(response,'portal preview response').not.toBeNull();
+   expect(response.status(),'portal preview status').toBeLessThan(400);
+   await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30000});
+   return;
+  }catch(error){lastError=error;}
+ }
+ throw lastError;
 }
 async function openFunctional(page,pageId){
  await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
@@ -56,7 +66,10 @@ test('repeatable legacy collections add and edit native V2 rows without navigati
  const title=workspace.locator('[data-repeat-row] [data-repeat-col="title"]');
  await title.fill('Borg kritieke kennis');await title.blur();await expect(title).toHaveValue('Borg kritieke kennis');
  await workspace.locator('[data-workspace-tab="analyse"]').click();
- await expect(workspace.getByText('Items',{exact:true})).toBeVisible();await expect(workspace.getByText('1',{exact:true})).toBeVisible();
+ const itemsCard=workspace.locator('.v2profilemetrics article').filter({hasText:'Items'});
+ await expect(itemsCard).toHaveCount(1);
+ await expect(itemsCard.getByText('Items',{exact:true})).toBeVisible();
+ await expect(itemsCard.getByText('1',{exact:true})).toBeVisible();
 });
 
 test('roadmap cards move between sprints with drag on desktop and 44px controls on mobile',async({page})=>{

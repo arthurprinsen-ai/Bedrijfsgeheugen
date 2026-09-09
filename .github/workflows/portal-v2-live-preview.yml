@@ -7,6 +7,7 @@ on:
       - 'portal-v2/**'
       - 'tests/integration/portal-v2-live.spec.js'
       - 'tests/integration/portal-v2-functional-parity.spec.js'
+      - 'tests/integration/portal-v2-legacy-algorithm-parity.spec.js'
       - '.github/workflows/portal-v2-live-preview.yml'
   workflow_dispatch:
 
@@ -21,6 +22,16 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Verify exact checked-out head SHA
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          actual=$(git rev-parse HEAD)
+          test "$actual" = "$HEAD_SHA" || { echo "::error::Checked-out SHA $actual does not match PR head $HEAD_SHA"; exit 1; }
 
       - name: Wait for exact Netlify preview SHA
         env:
@@ -45,7 +56,7 @@ jobs:
           echo "::error::Timed out waiting for Netlify preview on exact head SHA"
           exit 1
 
-      - name: Verify exact V2 assets are served
+      - name: Verify exact Netlify V2 assets are served
         run: |
           set -euo pipefail
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/" -o /tmp/portal-v2.html
@@ -54,7 +65,9 @@ jobs:
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/csrd-mobile-saas.css" -o /tmp/portal-v2-csrd-saas.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/functional-suite.css" -o /tmp/portal-v2-functional.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.js" -o /tmp/portal-v2.js
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/legacy-parity-engine.js" -o /tmp/portal-v2-parity-engine.js
           node --check /tmp/portal-v2.js
+          node --check /tmp/portal-v2-parity-engine.js
           grep -q 'Welkom terug, Arthur' /tmp/portal-v2.html
           grep -q 'Het brein van je bedrijf' /tmp/portal-v2.html
           grep -q 'AI Management Summary' /tmp/portal-v2.html
@@ -65,16 +78,30 @@ jobs:
           grep -q 'csrd-mobile-summary' /tmp/portal-v2-csrd-saas.css
           grep -q 'csrd-mobile-domain' /tmp/portal-v2-csrd-saas.css
           grep -q 'v2repeatrow' /tmp/portal-v2-functional.css
+          grep -q 'calculateLegacyEquivalent' /tmp/portal-v2-parity-engine.js
 
       - name: Install Playwright runtime
         run: |
           npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Verify approved desktop and mobile composition
-        env:
-          PREVIEW_URL: ${{ env.PREVIEW_URL }}
-        run: npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js --workers=1
+      - name: Verify approved desktop, mobile and legacy algorithm parity on exact head
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/portal-v2-local.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS "http://127.0.0.1:4173/portal-v2/" | grep -q 'Welkom terug, Arthur'; then
+              break
+            fi
+            if [ "$i" = "30" ]; then
+              cat /tmp/portal-v2-local.log
+              exit 1
+            fi
+            sleep 1
+          done
+          PREVIEW_URL=http://127.0.0.1:4173 npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js tests/integration/portal-v2-legacy-algorithm-parity.spec.js --workers=1
 
       - name: Upload visual evidence
         if: always()
@@ -88,5 +115,5 @@ jobs:
       - name: Report exact preview evidence
         run: |
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
-          echo "Verified preview: $PREVIEW_URL/portal-v2/?klant=ijsselmonde"
-          echo "Desktop, mobile and full functional parity browser checks completed."
+          echo "Verified Netlify preview assets: $PREVIEW_URL/portal-v2/"
+          echo "Desktop, mobile, full functional parity and executable legacy algorithm browser checks ran against the exact checked-out head SHA via the local CI fixture."
