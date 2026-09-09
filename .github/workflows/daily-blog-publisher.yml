@@ -67,12 +67,65 @@ jobs:
         if: steps.day.outputs.state != 'live'
         run: node tools/content-growth/validate-policy.mjs
 
+      - name: Select BRAIN and Powerhouse advised candidate
+        id: selection
+        if: steps.day.outputs.state != 'live' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          REQUESTED_SLUG: ${{ github.event.inputs.slug }}
+          DATE: ${{ steps.day.outputs.date }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          set -euo pipefail
+          if [ -n "${REQUESTED_SLUG:-}" ]; then
+            node -e "if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(process.argv[1])) process.exit(1)" "$REQUESTED_SLUG"
+            echo "slug=$REQUESTED_SLUG" >> "$GITHUB_OUTPUT"
+            echo "mode=manual_override" >> "$GITHUB_OUTPUT"
+            echo "DAILY_SELECTION mode=manual_override slug=$REQUESTED_SLUG"
+            exit 0
+          fi
+
+          python3 -B scripts/publish_approved_blog_v2.py --list-candidates > /tmp/daily-blog-candidates.json
+          node -e "const x=require('/tmp/daily-blog-candidates.json'); if(!Array.isArray(x)||x.length===0) process.exit(3)"
+
+          learning_state="unavailable"
+          if curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/api/content-learning -o /tmp/content-learning.json; then
+            if node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const x=JSON.parse(fs.readFileSync('/tmp/content-learning.json','utf8'));
+          const generated=Date.parse(x.generated_at||'');
+          const ageHours=(Date.now()-generated)/3600000;
+          if(!Number.isFinite(generated)||ageHours<0||ageHours>26) process.exit(2);
+          if(!x.candidate_scores||!Array.isArray(x.exploit_candidates)) process.exit(3);
+          console.log(`CONTENT_LEARNING_FRESH generated_at=${x.generated_at} age_hours=${ageHours.toFixed(2)}`);
+          NODE
+            then
+              learning_state="fresh"
+            else
+              learning_state="stale"
+            fi
+          fi
+
+          if [ "$learning_state" = "fresh" ]; then
+            selected="$(node tools/content-growth/select-candidate.mjs /tmp/daily-blog-candidates.json /tmp/content-learning.json config/content-growth-policy.json "$DATE")"
+            slug="$(node -e "const x=JSON.parse(process.argv[1]); if(!x.slug) process.exit(1); console.log(x.slug)" "$selected")"
+            score="$(node -e "const x=JSON.parse(process.argv[1]); console.log(Number(x.score||0))" "$selected")"
+            echo "slug=$slug" >> "$GITHUB_OUTPUT"
+            echo "mode=brain_learning" >> "$GITHUB_OUTPUT"
+            echo "DAILY_SELECTION mode=brain_learning slug=$slug score=$score"
+          else
+            slug="$(node -e "const x=require('/tmp/daily-blog-candidates.json'); if(!x[0]?.slug) process.exit(3); console.log(x[0].slug)")"
+            echo "slug=$slug" >> "$GITHUB_OUTPUT"
+            echo "mode=cold_start_fallback" >> "$GITHUB_OUTPUT"
+            echo "CONTENT_LEARNING_STALE_OR_UNAVAILABLE state=$learning_state; cold-start fallback=oldest-approved slug=$slug"
+          fi
+
       - name: Render or seal exactly one approved central blog
         id: render
         if: steps.day.outputs.state != 'live'
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          FORCE_SLUG: ${{ github.event.inputs.slug }}
+          FORCE_SLUG: ${{ steps.selection.outputs.slug }}
           VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
@@ -87,6 +140,10 @@ jobs:
             echo "content_id=blog:$slug" >> "$GITHUB_OUTPUT"
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
+            if [ -z "${FORCE_SLUG:-}" ]; then
+              echo "::error::LEARNING_DRIVEN_SELECTION_REQUIRED"
+              exit 4
+            fi
             python3 -B scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/native-daily-publish.txt
             if grep -Eq '^(NO_ACTION:|SEALED:)' /tmp/native-daily-publish.txt; then
               echo "::error::NO_ELIGIBLE_DAILY_BLOG:${{ steps.day.outputs.date }}"

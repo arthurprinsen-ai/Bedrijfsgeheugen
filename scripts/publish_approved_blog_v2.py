@@ -116,7 +116,9 @@ def instrument_content_id(html, slug):
 
 
 def render(force=''):
-    if force and not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', force):
+    if not force:
+        base.fail('learning-driven selection required; render must receive an exact approved slug')
+    if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', force):
         base.fail('Ongeldige geforceerde slug')
     row = get_queue(force)
     if not row:
