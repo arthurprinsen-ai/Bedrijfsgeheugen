@@ -9,6 +9,7 @@ const pipeline=await read('tools/prijzen-uit-de-homepage.mjs');
 const normalizer=await read('tools/normaliseer-site-ui.mjs');
 const fixer=await read('tools/site-shell/fix-homepage-context-slider.mjs');
 const runtime=await read('assets/compare-slider-runtime.js');
+const pointerRuntime=await read('assets/compare-slider-pointer-capture-v14.js');
 const browserCheck=await read('tools/site-shell/homepage-context-slider-browser-check.mjs');
 const websiteLane=await read('.github/workflows/lane-website.yml');
 const visualRegistry=await read('config/ui-visual-regression.json');
@@ -195,4 +196,40 @@ test('algemene visual-regression gate bewaakt hero-layout; endpointbrowsercheck 
     'data-bg-automation-description',
     'data-bg-automation-card'
   ]) assert.doesNotMatch(visualRegistry,new RegExp(staleMarker));
+});
+
+test('pointer-capture v14 is de canonieke mobiele eindpuntfix en vervangt range-thumb workarounds',()=>{
+  assert.match(fixer,/compare-slider-pointer-capture-v14\.js/);
+  assert.match(pointerRuntime,/setPointerCapture\(event\.pointerId\)/);
+  assert.match(pointerRuntime,/releasePointerCapture\(event\.pointerId\)/);
+  assert.match(pointerRuntime,/event\.clientX\s*-\s*rect\.left/);
+  assert.match(pointerRuntime,/Math\.max\(0,\s*Math\.min\(rect\.width/);
+  assert.match(pointerRuntime,/x\s*\/\s*rect\.width\s*\*\s*100/);
+  assert.match(pointerRuntime,/pointerdown/);
+  assert.match(pointerRuntime,/pointermove/);
+  assert.match(pointerRuntime,/pointerup/);
+  assert.match(pointerRuntime,/pointercancel/);
+  assert.doesNotMatch(pointerRuntime,/bg-compare-range|type\s*=\s*['"]range['"]/);
+  assert.match(fixer,/touch-action:pan-y!important/);
+});
+
+test('pointer-capture v14 laat één waarde reveal divider handle en aria exact sturen',()=>{
+  assert.match(pointerRuntime,/--bg-compare-split/);
+  assert.match(pointerRuntime,/--split/);
+  assert.match(pointerRuntime,/clip-path/);
+  assert.match(pointerRuntime,/divider\.style\.setProperty\('left',pct,'important'\)/);
+  assert.match(pointerRuntime,/handle\.style\.setProperty\('left',pct,'important'\)/);
+  assert.match(pointerRuntime,/aria-valuemin/);
+  assert.match(pointerRuntime,/aria-valuemax/);
+  assert.match(pointerRuntime,/aria-valuenow/);
+  assert.match(pointerRuntime,/value\s*===\s*0\s*\?\s*'start'/);
+  assert.match(pointerRuntime,/value\s*===\s*100\s*\?\s*'end'/);
+});
+
+test('browsercheck moet echte pointerdrag buiten beide kaartgrenzen bewijzen',()=>{
+  assert.match(browserCheck,/pointerdown/);
+  assert.match(browserCheck,/pointermove/);
+  assert.match(browserCheck,/pointerup/);
+  assert.match(browserCheck,/rect\.left\s*-\s*40/);
+  assert.match(browserCheck,/rect\.right\s*\+\s*40/);
 });
