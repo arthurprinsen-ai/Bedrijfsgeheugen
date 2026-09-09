@@ -1,0 +1,35 @@
+name: Revenue Learning
+
+on:
+  pull_request:
+    paths:
+      - 'netlify/functions/_revenue-learning-*.mjs'
+      - 'netlify/functions/revenue-learning-*.mjs'
+      - 'supabase/functions/revenue-learning-store/**'
+      - 'supabase/migrations/*revenue_learning*.sql'
+      - 'tests/revenue-learning-*.test.mjs'
+      - '.github/workflows/revenue-learning.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'netlify/functions/_revenue-learning-*.mjs'
+      - 'netlify/functions/revenue-learning-*.mjs'
+      - 'supabase/functions/revenue-learning-store/**'
+      - 'supabase/migrations/*revenue_learning*.sql'
+      - 'tests/revenue-learning-*.test.mjs'
+      - '.github/workflows/revenue-learning.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  revenue-learning:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Verify unified revenue learning contracts
+        run: node --test tests/revenue-learning-*.test.mjs
