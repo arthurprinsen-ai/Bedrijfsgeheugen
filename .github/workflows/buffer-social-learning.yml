@@ -26,5 +26,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Install runtime dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
       - name: Verify Buffer-first collector contracts
         run: node --test tests/social-learning-buffer-collector.test.mjs tests/social-learning-buffer-schedule.test.mjs
