@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import { persistBrainEvent } from './_brain-event-store.mjs';
 import { createSocialLearningStore } from './_social-learning-store.mjs';
 import { normalizeMetricSnapshot } from './_social-learning-model.mjs';
@@ -7,18 +8,23 @@ export function normalizeOutcomeEnvelope(input){
   return raw&&typeof raw==='object'?raw:{};
 }
 
+function tokenMatches(actual,expected){
+  if(!actual||!expected)return false;
+  const a=Buffer.from(String(actual));const b=Buffer.from(String(expected));
+  return a.length===b.length&&timingSafeEqual(a,b);
+}
 function validate(event){
   const required=['eventId','tenantId','idempotencyKey','platform','externalPostId','observedAt','source','metrics'];
   const missing=required.filter(k=>event?.[k]===undefined||event?.[k]===null||event?.[k]==='');
   if(missing.length) throw new TypeError(`Missing required social outcome fields: ${missing.join(', ')}`);
   if(typeof event.metrics!=='object'||Array.isArray(event.metrics)) throw new TypeError('metrics must be an object');
 }
-
 function snapshotId(event){return `${event.externalPostId}:${event.observedAt}`;}
 
-export function createSocialOutcomeHandler({persistEvent=persistBrainEvent,store}={}){
+export function createSocialOutcomeHandler({persistEvent=persistBrainEvent,store,serviceToken=process.env.BG_SOCIAL_LEARNING_SERVICE_TOKEN||process.env.BG_PORTAL_EU_SERVICE_TOKEN}={}){
   return async request=>{
     if(request.method!=='POST') return new Response('Method Not Allowed',{status:405,headers:{allow:'POST'}});
+    if(!tokenMatches(request.headers.get('x-bg-service-token'),serviceToken)) return Response.json({error:'UNAUTHORIZED'},{status:401,headers:{'cache-control':'no-store'}});
     let payload;
     try{payload=normalizeOutcomeEnvelope(await request.json());validate(payload);}catch(error){return Response.json({error:'INVALID_SOCIAL_OUTCOME',message:error.message},{status:400,headers:{'cache-control':'no-store'}});}
     const normalized={...payload,metrics:normalizeMetricSnapshot(payload.metrics)};
