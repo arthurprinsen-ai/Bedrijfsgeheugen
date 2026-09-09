@@ -112,4 +112,10 @@ export const CLUSTER_CSS = `<style id="v18-cluster">
   font-size:14.5px;font-weight:650;text-decoration:none;color:var(--ink);transition:.2s ease}
 .bgx-links a:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-2px)}
 .bgx-links a.bgx-pijler{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* Chrome desktop fail-safe: publieke inhoud mag nooit afhankelijk zijn van
+   IntersectionObserver, scroll of een resize om zichtbaar te worden. DevTools
+   openen veroorzaakt precies zo'n resize; deze laatste cascade-regel maakt dat
+   verschil onmogelijk en geeft inhoud altijd voorrang boven reveal-animatie. */
+html.bgx-beweegt [data-op]{opacity:1!important;transform:none!important}
 </style>`;
