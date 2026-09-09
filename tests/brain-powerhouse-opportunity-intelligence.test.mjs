@@ -1,3 +1,4 @@
+// TDD RED contract for opportunity-first Powerhouse intelligence.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { pathToFileURL } from 'node:url';
