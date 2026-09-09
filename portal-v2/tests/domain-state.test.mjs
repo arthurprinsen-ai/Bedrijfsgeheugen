@@ -77,3 +77,22 @@ test('reload reopens server-confirmed state and clears transient error state', a
   assert.equal(reopened.get('profile.name'),'B');
   assert.equal(reopened.status(),'idle');
 });
+
+test('an edit made while a save is in flight is never overwritten by server readback', async () => {
+  let release;
+  const pending=new Promise(resolve=>{release=resolve});
+  const store=createDomainState({
+    load:async()=>({profile:{name:'A'}}),
+    save:async value=>{await pending;return clone(value);}
+  });
+  await store.init();
+  store.set('profile.name','B');
+  const saving=store.flush();
+  assert.equal(store.status(),'saving');
+  store.set('profile.name','C');
+  assert.equal(store.status(),'dirty');
+  release();
+  await saving;
+  assert.equal(store.get('profile.name'),'C');
+  assert.equal(store.status(),'dirty');
+});
