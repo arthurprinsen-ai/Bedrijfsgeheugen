@@ -80,6 +80,8 @@ test('native delivery board preserves feature and story relations while moving t
   assert.equal(movedStory.stories.find(s=>s.id==='s1').feature,'f2');
   assert.equal(movedStory.stories.find(s=>s.id==='s1').role,'manager');
   assert.equal(movedStory.features.find(f=>f.id==='f2').value,3000);
+  const invalidMove=moveStoryToFeature(movedStory,'s1','missing-feature');
+  assert.equal(invalidMove.stories.find(s=>s.id==='s1').feature,'f2','invalid targets must not orphan stories');
 });
 
 test('roadmap workspace mounts the native delivery board in the same canonical state', () => {
