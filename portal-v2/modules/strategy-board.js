@@ -1,3 +1,5 @@
+import { ensureInteractionParityStyles } from './interaction-parity-style.js';
+
 const DEFAULT_CARDS=Object.freeze([
   Object.freeze({id:'ambitie',label:'Ambitie',help:'Waar wil de organisatie aantoonbaar naartoe?'}),
   Object.freeze({id:'klant',label:'Klantbelofte',help:'Welke klantwaarde moet altijd herkenbaar zijn?'}),
@@ -31,6 +33,7 @@ function markup(cards){
 export function mountStrategyBoard(root,{domainState,onSaveStatus}={}){
   if(!root?.replaceChildren)throw new TypeError('STRATEGY_BOARD_ROOT_REQUIRED');
   if(!domainState?.get||!domainState?.set)throw new TypeError('STRATEGY_DOMAIN_STATE_REQUIRED');
+  ensureInteractionParityStyles(root.ownerDocument||globalThis.document);
   let cards=orderedCards(domainState.get('portal.strategy.cardOrder'),domainState.get('portal.strategy.dna')||{});let draggedId=null;let saveTimer=null;
   const flush=()=>{clearTimeout(saveTimer);saveTimer=setTimeout(()=>domainState.flush?.().then(()=>onSaveStatus?.(domainState.status?.()||'saved')).catch(()=>onSaveStatus?.('error')),250);};
   const persistOrder=next=>{cards=cloneCards(next);domainState.set('portal.strategy.cardOrder',cards.map(card=>card.id));onSaveStatus?.(domainState.status?.()||'dirty');flush();render();};
