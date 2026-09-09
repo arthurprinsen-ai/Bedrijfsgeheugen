@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { notionConnectionToCoreEvent } from '../netlify/functions/powerhouse-notion-sync.mjs';
 import { parseSitemap } from '../netlify/functions/powerhouse-content-observer.mjs';
 
@@ -26,6 +27,11 @@ test('Notion priority connection becomes one evidence-grounded core activation e
   assert.equal(event.email,'ada@example.com');
   assert.equal(event.expectedValue,5000);
   assert.equal(event.source,'notion-connections');
+});
+
+test('Notion sync defaults to the canonical Connecties-nooit-benaderd data source',async()=>{
+  const code=await readFile(new URL('../netlify/functions/powerhouse-notion-sync.mjs',import.meta.url),'utf8');
+  assert.match(code,/3b2da36a-ac8a-8098-9f46-000b0de25a33/);
 });
 
 test('sitemap parser discovers only blog and knowledge assets',()=>{
