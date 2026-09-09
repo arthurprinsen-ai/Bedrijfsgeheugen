@@ -15,6 +15,7 @@ export function createRevenueLearningStore({fetchFn=globalThis.fetch,baseUrl=pro
     upsertEvidence:evidence=>gateway({action:'upsert_evidence',evidence,idempotencyKey:`evidence:${evidence.evidenceId}`}),
     listDueEvidence:async(now)=>(await gateway({action:'list_due_evidence',now})).evidence||[],
     listCohort:async(query)=>(await gateway({action:'list_cohort',query})).evidence||[],
+    markEvidenceEvaluated:(evidenceId,evaluatedAt)=>gateway({action:'mark_evidence_evaluated',evidenceId,evaluatedAt,idempotencyKey:`evaluated:${evidenceId}:${evaluatedAt}`}),
     upsertLearning:learning=>gateway({action:'upsert_learning',learning,idempotencyKey:`learning:${learning.learningId||learning.fingerprint}`}),
     listCurrentLearnings:async()=>(await gateway({action:'list_current_learnings'})).learnings||[],
     recordApplication:application=>gateway({action:'record_application',application,idempotencyKey:`application:${application.applicationId}`}),
