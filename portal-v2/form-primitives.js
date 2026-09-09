@@ -18,7 +18,7 @@ export function normalizeFieldValue(field={},raw){
 }
 
 export function fieldMarkup(field={},value=''){
- const id=esc(field.id||field.path||'field');const label=esc(field.label||field.id||'Veld');const type=field.type||'text';const common=`id="${id}" data-field-id="${id}" data-field-type="${esc(type)}"`;
+ const id=esc(field.id||field.path||'field');const label=esc(field.label||field.id||'Veld');const type=field.type||'text';const common=`id="${id}" data-field-id="${id}" data-field-type="${esc(type)}" style="min-height:44px"`;
  let control='';
  if(type==='textarea')control=`<textarea ${common} rows="4">${esc(value)}</textarea>`;
  else if(type==='select')control=`<select ${common}>${optionMarkup(field.options,value)}</select>`;
