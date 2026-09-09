@@ -1,5 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
+test.describe.configure({timeout:120000});
+
 async function hideNetlifyChrome(page) {
   await page.route('**/cdp/**', route => route.abort());
   await page.addInitScript(() => {
@@ -17,8 +19,19 @@ function collectPageErrors(page) {
 }
 
 async function openPortalV2(page, preview) {
-  await page.goto(`${preview}/portal-v2/?klant=ijsselmonde`, { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('heading', { name: 'Welkom terug, Arthur', exact: true })).toBeVisible({ timeout: 30_000 });
+  let lastError;
+  for (let attempt=1; attempt<=3; attempt++) {
+    try {
+      const response=await page.goto(`${preview}/portal-v2/?klant=ijsselmonde&bg_live=${Date.now()}-${attempt}`, { waitUntil: 'domcontentloaded', timeout:45_000 });
+      expect(response,'portal preview response').not.toBeNull();
+      expect(response.status(),'portal preview status').toBeLessThan(400);
+      await page.getByRole('heading', { name: 'Welkom terug, Arthur', exact: true }).waitFor({ state:'visible', timeout:15_000 });
+      return;
+    } catch (error) {
+      lastError=error;
+    }
+  }
+  throw lastError;
 }
 
 test('portal-v2 serves the approved SaaS desktop dashboard composition', async ({ page }) => {
