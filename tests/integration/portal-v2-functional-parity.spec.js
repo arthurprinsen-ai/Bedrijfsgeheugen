@@ -4,36 +4,39 @@ const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-fin
 
 async function hideNetlifyChrome(page){
  await page.route('**/cdp/**',route=>route.abort());
- await page.addInitScript(()=>{const style=document.createElement('style');style.textContent='iframe[title="Netlify Drawer"],[data-netlify-deploy-id]{display:none!important;pointer-events:none!important}';document.addEventListener('DOMContentLoaded',()=>document.documentElement.appendChild(style),{once:true});});
+ await page.addInitScript(()=>{const style=document.createElement('style');style.textContent='iframe[title="Netlify Drawer"],[data-netlify-deploy-id]{display:none!important;pointer-events:none!important}';const attach=()=>document.documentElement?.appendChild(style);if(document.documentElement)attach();else document.addEventListener('DOMContentLoaded',attach,{once:true});});
 }
-
-async function openFunctional(page,preview,pageId,width=1440,height=1000){
+async function boot(page,preview,width=1440,height=1000){
  await page.setViewportSize({width,height});
- await page.goto(`${preview}/portal-v2/?page=${encodeURIComponent(pageId)}`,{waitUntil:'domcontentloaded'});
- await expect(page.locator('#portalView')).toHaveClass(/open/,{timeout:30000});
- await expect(page.locator(`[data-functional-workspace="${pageId}"]`)).toBeVisible({timeout:30000});
+ await page.goto(`${preview}/portal-v2/`,{waitUntil:'domcontentloaded'});
+ await expect(page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true})).toBeVisible({timeout:30000});
+}
+async function openFunctional(page,pageId){
+ await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
+ await expect(page.locator('#portalView')).toHaveClass(/open/,{timeout:10000});
+ await expect(page.locator(`[data-functional-workspace="${pageId}"]`)).toBeVisible({timeout:10000});
 }
 
 test('all remaining protected legacy capabilities open as native editable V2 workspaces',async({page})=>{
  const preview=process.env.PREVIEW_URL;if(!preview)throw new Error('PREVIEW_URL is required');
- await hideNetlifyChrome(page);
+ await hideNetlifyChrome(page);await boot(page,preview);
  for(const pageId of PAGES){
-  await openFunctional(page,preview,pageId);
+  await openFunctional(page,pageId);
   await expect(page.locator('#portalView')).toHaveAttribute('data-page-id',pageId);
-  await expect(page.locator(`[data-functional-workspace="${pageId}"] [data-workspace-tab]`)).toHaveCount(4);
-  const editable=page.locator(`[data-functional-workspace="${pageId}"] input, [data-functional-workspace="${pageId}"] select, [data-functional-workspace="${pageId}"] textarea, [data-functional-workspace="${pageId}"] [data-repeat-add]`);
-  expect(await editable.count(),`${pageId} must be editable`).toBeGreaterThan(0);
-  const legacyRuntime=await page.locator(`[data-functional-workspace="${pageId}"] a[href*="klantportaal"], [data-functional-workspace="${pageId}"] iframe[src*="klantportaal"]`).count();
-  expect(legacyRuntime,`${pageId} must not use legacy runtime`).toBe(0);
+  const workspace=page.locator(`[data-functional-workspace="${pageId}"]`);
+  await expect(workspace.locator('[data-workspace-tab]')).toHaveCount(4);
+  expect(await workspace.locator('input,select,textarea,[data-repeat-add]').count(),`${pageId} must be editable`).toBeGreaterThan(0);
+  expect(await workspace.locator('a[href*="klantportaal"],iframe[src*="klantportaal"]').count(),`${pageId} must not use legacy runtime`).toBe(0);
  }
 });
 
 test('functional workspaces remain touch-safe and overflow-free at supported phone widths',async({page})=>{
  const preview=process.env.PREVIEW_URL;if(!preview)throw new Error('PREVIEW_URL is required');
- await hideNetlifyChrome(page);
+ await hideNetlifyChrome(page);await boot(page,preview,320,720);
  for(const [width,height] of [[320,720],[390,844],[430,932]]){
+  await page.setViewportSize({width,height});
   for(const pageId of ['ai-scan','cijfers-maatstaven','compliance-governance','canvassen','due-diligence','roadmap']){
-   await openFunctional(page,preview,pageId,width,height);
+   await openFunctional(page,pageId);
    const workspace=page.locator(`[data-functional-workspace="${pageId}"]`);
    const firstControl=workspace.locator('input,select,textarea,button').first();
    const box=await firstControl.boundingBox();expect(box,`${pageId}@${width}`).toBeTruthy();expect(box.height).toBeGreaterThanOrEqual(44);
@@ -45,15 +48,12 @@ test('functional workspaces remain touch-safe and overflow-free at supported pho
 
 test('repeatable legacy collections add and edit native V2 rows without navigation fallback',async({page})=>{
  const preview=process.env.PREVIEW_URL;if(!preview)throw new Error('PREVIEW_URL is required');
- await hideNetlifyChrome(page);
- await openFunctional(page,preview,'roadmap',390,844);
+ await hideNetlifyChrome(page);await boot(page,preview,390,844);await openFunctional(page,'roadmap');
  const workspace=page.locator('[data-functional-workspace="roadmap"]');
  await workspace.locator('[data-repeat-add]').click();
  await expect(workspace.locator('[data-repeat-row]')).toHaveCount(1);
  const title=workspace.locator('[data-repeat-row] [data-repeat-col="title"]');
- await title.fill('Borg kritieke kennis');
- await expect(title).toHaveValue('Borg kritieke kennis');
+ await title.fill('Borg kritieke kennis');await expect(title).toHaveValue('Borg kritieke kennis');
  await workspace.locator('[data-workspace-tab="analyse"]').click();
- await expect(workspace.getByText('Items',{exact:true})).toBeVisible();
- await expect(workspace.getByText('1',{exact:true})).toBeVisible();
+ await expect(workspace.getByText('Items',{exact:true})).toBeVisible();await expect(workspace.getByText('1',{exact:true})).toBeVisible();
 });
