@@ -11,6 +11,30 @@ function diagnose(bucket) {
   return null;
 }
 
+function tokens(value) {
+  return new Set(String(value || '').toLowerCase().replace(/^blog:/, '').split(/[^a-z0-9]+/).filter((x) => x.length >= 3));
+}
+
+function topicSimilarity(candidate, learned) {
+  const a=tokens([candidate.slug,candidate.keyword,candidate.title].filter(Boolean).join(' '));
+  const b=tokens(learned.content_id);
+  if(!a.size||!b.size)return 0;
+  let overlap=0;for(const t of a)if(b.has(t))overlap+=1;
+  return overlap/Math.max(a.size,b.size);
+}
+
+function transferredScore(candidate, learning) {
+  const exact=Number(learning?.candidate_scores?.[candidate.content_id]);
+  if(Number.isFinite(exact))return exact;
+  let best=0;
+  for(const learned of learning?.exploit_candidates||[]){
+    const similarity=topicSimilarity(candidate,learned);
+    if(similarity<=0)continue;
+    best=Math.max(best,similarity*Number(learned.score||0));
+  }
+  return best+Number(candidate.score||0);
+}
+
 export function buildLearningContext({ performance, now = new Date(), policy = {} }) {
   const entries = Object.values(performance?.content || {}).map((bucket) => ({
     content_id: bucket.content_id,
@@ -54,9 +78,8 @@ export function explorationForDate(date, policy = {}) {
 }
 
 export function rankCandidates({ candidates = [], learning = {}, policy = {}, date }) {
-  const scores = learning.candidate_scores || {};
   const explore = explorationForDate(date, policy);
-  return candidates.map((c) => ({ ...c, score: Number(scores[c.content_id] ?? c.score ?? 0) }))
+  return candidates.map((c) => ({ ...c, score: transferredScore(c,learning) }))
     .sort((a, b) => {
       if (explore && Boolean(a.exploration) !== Boolean(b.exploration)) return a.exploration ? -1 : 1;
       if (!explore && Boolean(a.exploration) !== Boolean(b.exploration)) return a.exploration ? 1 : -1;
