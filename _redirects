@@ -1,4 +1,4 @@
-/g/:sleutel  /.netlify/functions/g-attribution-redirect?s=:sleutel  200!
+/g/:sleutel  /.netlify/functions/g-attribution-redirect?key=:sleutel  200!
 /contact  /contact.html  200
 /intern/koppelingskiezer  /intern/koppelingskiezer.html  200
 /intern/koppelingen-klant  /intern/koppelingen-klant.html  200
