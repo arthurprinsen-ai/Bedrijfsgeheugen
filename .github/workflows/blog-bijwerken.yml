@@ -190,6 +190,16 @@ jobs:
         run: |
           echo "lijst=$(ls -d blog/*/ 2>/dev/null | sed 's|blog/||;s|/||' | paste -sd', ')" >> "$GITHUB_OUTPUT"
 
+      - name: Content rules preflight
+        id: rule_context
+        if: steps.kalender.outputs.gevonden == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
+        env:
+          CONTENT_LEARNING_URL: https://www.bedrijfsgeheugen.nl/api/content-learning
+        run: |
+          set -euo pipefail
+          node scripts/content-rule-context.mjs
+          echo "CONTENT_RULE_CONTEXT_JSON validated: positive_rules avoid_rules experiment_allocation"
+
       - name: Artikel bijwerken
         if: steps.kalender.outputs.gevonden == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         uses: anthropics/claude-code-action@v1
@@ -199,6 +209,13 @@ jobs:
           prompt: |
             Werk één BESTAAND blogartikel bij op www.bedrijfsgeheugen.nl. Je schrijft geen nieuw
             artikel: je past een bestaand bestand aan omdat de zoekwoordstrategie is gewijzigd.
+
+            CONTENT_RULE_CONTEXT_JSON
+            ${{ steps.rule_context.outputs.context }}
+
+            Pas positive_rules als bewezen richting toe, respecteer avoid_rules en gebruik
+            experiment_allocation alleen voor gecontroleerde variatie. Als deze context ontbreekt,
+            mag je niet schrijven; de voorafgaande preflight hoort dan al fail-closed te stoppen.
 
             BESTAND: blog/${{ steps.kalender.outputs.slug }}/index.html
 

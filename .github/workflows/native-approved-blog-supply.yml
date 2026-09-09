@@ -50,21 +50,6 @@ jobs:
           node -e "if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(process.argv[1])) process.exit(1)" "$date"
           echo "date=$date" >> "$GITHUB_OUTPUT"
 
-      - name: Read BRAIN content learning context
-        env:
-          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
-        run: |
-          set -euo pipefail
-          mkdir -p tmp
-          if [ "$VERIFICATION_MODE" = "true" ]; then
-            cat > tmp/brain-content-learning.json <<'JSON'
-          {"learning":{"generated_at":"2026-09-09T00:00:00.000Z","commercial_totals":{"orders":2,"revenue":5800,"currency":"EUR"},"exploit_candidates":[{"content_id":"blog:bedrijfskennis-borgen","score":118,"orders":2,"revenue":5800}],"exploration_hypotheses":[],"confidence":{"proven_items":1,"observed_items":3}}}
-          JSON
-          else
-            curl --fail --silent --show-error --retry 2 --max-time 20 "$CONTENT_LEARNING_URL" -o tmp/brain-content-learning.json
-          fi
-          node -e "const x=require('./tmp/brain-content-learning.json'); if(!(x.learning||x.context||x.candidate_scores||x.exploit_candidates)) process.exit(1)"
-
       - name: Check whether central Approved Blogtekst stock already covers this date
         id: stock
         env:
@@ -99,6 +84,14 @@ jobs:
         if: steps.stock.outputs.covered == 'true'
         run: echo "NO_ACTION_APPROVED_STOCK_EXISTS:${{ steps.day.outputs.date }}"
 
+      - name: Content rules preflight
+        id: rule_context
+        if: steps.stock.outputs.covered != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
+        run: |
+          set -euo pipefail
+          node scripts/content-rule-context.mjs
+          echo "CONTENT_RULE_CONTEXT_JSON validated: positive_rules avoid_rules experiment_allocation"
+
       - name: Generate one BRAIN-led approved blog candidate
         if: steps.stock.outputs.covered != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         uses: anthropics/claude-code-action@v1
@@ -108,7 +101,10 @@ jobs:
           prompt: |
             Maak precies één Nederlandstalig blogartikel voor Bedrijfsgeheugen.nl en schrijf uitsluitend geldig JSON naar tmp/native-approved-blog.json.
 
-            Gebruik tmp/brain-content-learning.json als verplichte BRAIN/Powerhouse-input. Optimaliseer primair voor order/omzet, daarna qualified lead, lead/conversie, CTA/click en pas daarna engagement/reach. Neem bewezen commerciële patronen over zonder eerdere tekst te kopiëren. Gebruik exploration alleen wanneer de learning-context daar aanleiding toe geeft.
+            CONTENT_RULE_CONTEXT_JSON
+            ${{ steps.rule_context.outputs.context }}
+
+            Deze gevalideerde BRAIN/Powerhouse-context is verplicht. Optimaliseer primair voor order/omzet, daarna qualified lead, lead/conversie, CTA/click en pas daarna engagement/reach. Gebruik positive_rules als bewezen richting, respecteer avoid_rules, en gebruik experiment_allocation alleen voor gecontroleerde exploratie. Neem bewezen commerciële patronen over zonder eerdere tekst te kopiëren. Als de context ontbreekt of stale is, mag je niet schrijven; de preflight moet dan fail-closed stoppen.
 
             JSON-schema:
             {
