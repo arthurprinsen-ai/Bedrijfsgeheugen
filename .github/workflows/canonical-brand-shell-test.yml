@@ -13,3 +13,4 @@ jobs:
         with:
           node-version: 24
       - run: node tools/site-shell/test-shell-components.mjs
+      - run: node --test tests/site-shell-compare-slider-physical-edges.test.mjs
