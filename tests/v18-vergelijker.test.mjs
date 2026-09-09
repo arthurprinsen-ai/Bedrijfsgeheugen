@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from '../tools/v18-beweging.mjs';
 import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
+// Chrome visibility is a release invariant: public content wins over animation.
 test('vergelijker houdt beide tekstlagen leesbaar tijdens slepen', () => {
   assert.match(
     BEWEGING_CSS,
