@@ -84,6 +84,15 @@ def seal_or_validate(row):
     return q
 
 
+def instrument_content_id(html, slug):
+    content_id = f'blog:{slug}'
+    if re.search(r'data-content-id=["\'][^"\']+["\']', html):
+        return re.sub(r'data-content-id=["\'][^"\']+["\']', f'data-content-id="{content_id}"', html, count=1)
+    if not re.search(r'<body(?:\s|>)', html, re.I):
+        base.fail('Blogtemplate mist body voor content_id-instrumentatie')
+    return re.sub(r'<body(?=\s|>)', f'<body data-content-id="{content_id}"', html, count=1, flags=re.I)
+
+
 def render(force=''):
     if force and not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', force):
         base.fail('Ongeldige geforceerde slug')
@@ -98,9 +107,10 @@ def render(force=''):
     if not base.TEMPLATE.exists():
         base.fail(f'Template ontbreekt: {base.TEMPLATE}')
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(base.article(base.TEMPLATE.read_text(encoding='utf-8'), q), encoding='utf-8')
+    html = base.article(base.TEMPLATE.read_text(encoding='utf-8'), q)
+    target.write_text(instrument_content_id(html, q['slug']), encoding='utf-8')
     base.updates(q)
-    print(json.dumps({'status': 'RENDERED', 'slug': q['slug'], 'content_id': q['source'], 'command_id': q['cmd'], 'source_hash': q['source_hash'], 'queue_page': q['page'], 'dispatch_attempt': q['attempt'] + 1}, ensure_ascii=False))
+    print(json.dumps({'status': 'RENDERED', 'slug': q['slug'], 'content_id': q['source'], 'growth_content_id': f"blog:{q['slug']}", 'command_id': q['cmd'], 'source_hash': q['source_hash'], 'queue_page': q['page'], 'dispatch_attempt': q['attempt'] + 1}, ensure_ascii=False))
 
 
 def mark_dispatched(page_id, attempt, run_id=''):
