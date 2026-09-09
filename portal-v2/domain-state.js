@@ -54,13 +54,19 @@ export function createDomainState({load,save}={}){
   for(const listener of listeners){try{listener(snap)}catch{}}
   return snap;
  };
+ const asError=(error,fallback)=>error instanceof Error?error:new Error(String(error||fallback));
  const markDirty=()=>{revision+=1;currentStatus='dirty';currentError=null;publish();};
 
  async function init(){
-  const loaded=await load();
-  state=normalizeState(loaded);
-  currentStatus='idle';currentError=null;revision=0;initialized=true;
-  return publish();
+  try{
+   const loaded=await load();
+   state=normalizeState(loaded);
+   currentStatus='idle';currentError=null;revision=0;initialized=true;
+   return publish();
+  }catch(error){
+   state={};initialized=false;currentStatus='error';currentError=asError(error,'DOMAIN_STATE_LOAD_FAILED');
+   publish();throw currentError;
+  }
  }
 
  function get(path=''){
@@ -87,16 +93,12 @@ export function createDomainState({load,save}={}){
   currentStatus='saving';currentError=null;publish();
   try{
    const confirmed=normalizeState(await save(candidate));
-   if(revision===saveRevision){
-    state=confirmed;
-    currentStatus='saved';
-   }else{
-    currentStatus='dirty';
-   }
+   if(revision===saveRevision){state=confirmed;currentStatus='saved';}
+   else currentStatus='dirty';
    currentError=null;
    return publish();
   }catch(error){
-   currentError=error instanceof Error?error:new Error(String(error||'DOMAIN_STATE_SAVE_FAILED'));
+   currentError=asError(error,'DOMAIN_STATE_SAVE_FAILED');
    currentStatus='error';publish();throw currentError;
   }
  }
