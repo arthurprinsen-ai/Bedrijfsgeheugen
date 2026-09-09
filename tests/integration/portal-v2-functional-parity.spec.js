@@ -56,7 +56,10 @@ test('repeatable legacy collections add and edit native V2 rows without navigati
  const title=workspace.locator('[data-repeat-row] [data-repeat-col="title"]');
  await title.fill('Borg kritieke kennis');await title.blur();await expect(title).toHaveValue('Borg kritieke kennis');
  await workspace.locator('[data-workspace-tab="analyse"]').click();
- await expect(workspace.getByText('Items',{exact:true})).toBeVisible();await expect(workspace.getByText('1',{exact:true})).toBeVisible();
+ const itemsCard=workspace.getByRole('article').filter({has:workspace.getByText('Items',{exact:true})});
+ await expect(itemsCard).toHaveCount(1);
+ await expect(itemsCard.getByText('Items',{exact:true})).toBeVisible();
+ await expect(itemsCard.getByText('1',{exact:true})).toBeVisible();
 });
 
 test('roadmap cards move between sprints with drag on desktop and 44px controls on mobile',async({page})=>{
