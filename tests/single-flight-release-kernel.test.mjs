@@ -91,3 +91,11 @@ test('preserved product contracts are source-scoped, not workflow-migration-scop
   assert.match(preserved, /touched\('platform\/','portal-next\/'\)/);
   assert.match(preserved, /touched\('config\/brain-delivery-system\.json'/);
 });
+
+test('single-flight command failures emit actionable GitHub annotations', async () => {
+  const kernel = await text('tools/ci/single-flight-release-kernel.mjs');
+  assert.match(kernel, /::error title=Single-flight command failed/);
+  assert.match(kernel, /command\.id/);
+  assert.match(kernel, /result\.status/);
+  assert.match(kernel, /stderrTail/);
+});
