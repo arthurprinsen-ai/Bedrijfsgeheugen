@@ -5,6 +5,7 @@ import { DESKTOP_NAV_ITEMS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
 import { groupedHubPages, hubDefinition } from './hubs.js';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
+import { createPortalDomainState } from './domain-state.js';
 import { mountGlobalActions } from './global-actions-ui.js';
 import { applyCustomerBranding } from './customer-branding.js';
 
@@ -129,6 +130,7 @@ function ensureNavigationStyles(){
 }
 
 const portalStateClient=createPortalStateClient();
+const portalDomainState=createPortalDomainState(portalStateClient);
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
 mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
@@ -144,7 +146,8 @@ el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){close
 addEventListener('keydown',e=>{if(e.key==='Escape'&&el('allPages')?.classList.contains('open')){closeHub();navigatePortal('overzicht',{replace:true})}});
 addEventListener('resize',render);render();
 ensureIdentityWidget().then(identity=>{
- identity?.on?.('login',()=>portalStateClient.load());
- identity?.on?.('logout',()=>portalStateClient.load());
- portalStateClient.load();
+ const refreshDomainState=()=>portalDomainState.init().catch(()=>null);
+ identity?.on?.('login',refreshDomainState);
+ identity?.on?.('logout',refreshDomainState);
+ refreshDomainState();
 });
