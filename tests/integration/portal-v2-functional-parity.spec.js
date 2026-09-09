@@ -78,3 +78,33 @@ test('roadmap cards move between sprints with drag on desktop and 44px controls 
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
  expect(overflow).toBeLessThanOrEqual(1);
 });
+
+test('deliveryboard moves features across backlog/sprints and stories across features without legacy fallback',async({page})=>{
+ const preview=process.env.PREVIEW_URL;if(!preview)throw new Error('PREVIEW_URL is required');
+ await hideNetlifyChrome(page);await boot(page,preview,1440,1000);
+ await page.evaluate(async()=>{
+  const domain=globalThis.__BG_PORTAL_DOMAIN_STATE__;
+  domain.set('portal.roadmap.delivery',{sprints:4,features:[{id:'f1',title:'Bronnen koppelen',sprint:'backlog',epic:'Data'},{id:'f2',title:'Dashboard',sprint:2,epic:'Inzicht'}],stories:[{id:'s1',feature:'f1',role:'manager',wish:'status zien',reason:'ik kan sturen'},{id:'s2',feature:'f2',role:'medewerker',wish:'minder overtypen',reason:'ik tijd bespaar'}]});
+  const module=await import('/portal-v2/page-shell.js');module.openPortalPage('roadmap');
+ });
+ const workspace=page.locator('[data-functional-workspace="roadmap"]');
+ await workspace.locator('[data-roadmap-mode="delivery"]').click();
+ await expect(workspace.locator('[data-delivery-board]')).toBeVisible();
+ const feature=workspace.locator('[data-feature="f1"]');
+ await feature.dragTo(workspace.locator('.v2deliverydrop[data-sprint="3"]'));
+ await expect(workspace.locator('.v2deliverydrop[data-sprint="3"] [data-feature="f1"]')).toHaveCount(1);
+ const story=workspace.locator('[data-story="s1"]');
+ await story.dragTo(workspace.locator('[data-story-target="f2"]'));
+ await expect(workspace.locator('[data-feature="f2"] [data-story="s1"]')).toHaveCount(1);
+ expect(await workspace.locator('a[href*="klantportaal"],iframe[src*="klantportaal"]').count()).toBe(0);
+
+ await page.setViewportSize({width:390,height:844});
+ const moveFeature=workspace.locator('[data-feature="f1"] [data-move-feature="right"]').first();
+ const moveBox=await moveFeature.boundingBox();expect(moveBox).toBeTruthy();expect(moveBox.height).toBeGreaterThanOrEqual(44);expect(moveBox.width).toBeGreaterThanOrEqual(44);
+ const moveStory=workspace.locator('[data-feature="f2"] [data-story="s1"] [data-move-story]');
+ const storyBox=await moveStory.boundingBox();expect(storyBox).toBeTruthy();expect(storyBox.height).toBeGreaterThanOrEqual(44);
+ await moveStory.selectOption('f1');
+ await expect(workspace.locator('[data-feature="f1"] [data-story="s1"]')).toHaveCount(1);
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+ expect(overflow).toBeLessThanOrEqual(1);
+});
