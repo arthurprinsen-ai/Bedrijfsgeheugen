@@ -5,6 +5,7 @@ import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
 import { getCapabilityContract } from './capability-contracts.js';
 import { mountWorkspace } from './workspace-shell.js';
+import { mountCompanyInput, renderProfileAnalysis } from './modules/company-input.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -57,6 +58,13 @@ const COPY = {
 };
 
 const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
+const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
+const portalContext={domainState:null};
+
+export function configurePortalShell(context={}){
+  portalContext.domainState=context.domainState||null;
+  return portalContext;
+}
 
 export function pagePresentation(pageId) {
   const page=findPage(pageId);
@@ -104,16 +112,9 @@ export function closePortalPage(){
 function esc(value=''){
   return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
-
-function renderMetrics(block){
-  return `<section class="pvmodule pvmetrics"><div class="pvmodulehead"><span>01</span><h3>${esc(block.title)}</h3></div><div class="pvmetricgrid">${block.items.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div></section>`;
-}
-function renderWorklist(block){
-  return `<section class="pvmodule"><div class="pvmodulehead"><span>02</span><h3>${esc(block.title)}</h3></div><div class="pvworklist">${block.items.map(([label,value])=>`<article><div><b>${esc(label)}</b><p>${esc(value)}</p></div><span>→</span></article>`).join('')}</div></section>`;
-}
-function renderActions(block){
-  return `<section class="pvmodule"><div class="pvmodulehead"><span>03</span><h3>${esc(block.title)}</h3></div><div class="pvactions">${block.items.map(([label,pageId],index)=>`<button type="button" data-pv-page="${esc(pageId)}" class="${index===0?'primary':''}"><span>${esc(label)}</span><i>→</i></button>`).join('')}</div></section>`;
-}
+function renderMetrics(block){return `<section class="pvmodule pvmetrics"><div class="pvmodulehead"><span>01</span><h3>${esc(block.title)}</h3></div><div class="pvmetricgrid">${block.items.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div></section>`;}
+function renderWorklist(block){return `<section class="pvmodule"><div class="pvmodulehead"><span>02</span><h3>${esc(block.title)}</h3></div><div class="pvworklist">${block.items.map(([label,value])=>`<article><div><b>${esc(label)}</b><p>${esc(value)}</p></div><span>→</span></article>`).join('')}</div></section>`;}
+function renderActions(block){return `<section class="pvmodule"><div class="pvmodulehead"><span>03</span><h3>${esc(block.title)}</h3></div><div class="pvactions">${block.items.map(([label,pageId],index)=>`<button type="button" data-pv-page="${esc(pageId)}" class="${index===0?'primary':''}"><span>${esc(label)}</span><i>→</i></button>`).join('')}</div></section>`;}
 
 function renderNative(native,view){
   const blocks=Array.isArray(view.blocks)?view.blocks:[];
@@ -122,6 +123,33 @@ function renderNative(native,view){
   native.querySelector('.pvprimary')?.addEventListener('click',()=>{
     const first=blocks.find(block=>block.type==='actions')?.items?.[0]?.[1];
     if(first) openPortalPage(first);
+  });
+}
+
+function renderCompanyWorkspace(native,contract,view,pageId){
+  const domainState=portalContext.domainState;
+  let workspace;
+  const empty=(content,title,copy)=>{content.innerHTML=`<section class="v2tabempty"><h4>${esc(title)}</h4><p>${esc(copy)}</p></section>`;};
+  const renderTab=(tab,content)=>{
+    if(tab==='analyse'){renderProfileAnalysis(content,{domainState});return;}
+    if(tab==='acties'){
+      content.innerHTML='<div class="pvactions"><button type="button" data-pv-page="businesscase" class="primary"><span>Open businesscase</span><i>→</i></button><button type="button" data-pv-page="advies"><span>Naar advies</span><i>→</i></button><button type="button" data-pv-page="roadmap"><span>Naar roadmap</span><i>→</i></button></div>';
+      content.querySelectorAll('[data-pv-page]').forEach(btn=>btn.addEventListener('click',()=>openPortalPage(btn.dataset.pvPage)));
+      return;
+    }
+    if(tab==='bewijs'){
+      mountCompanyInput(content,{pageId:'ingevulde-gegevens',domainState});
+      return;
+    }
+    if(!domainState){empty(content,'Beveiligde context laden','De invoerwerkruimte wordt beschikbaar zodra je klantcontext is geladen.');return;}
+    mountCompanyInput(content,{pageId,domainState,onSaveStatus:status=>workspace?.setSaveStatus(status)});
+  };
+  workspace=mountWorkspace(native,contract,{
+    title:view.title,
+    description:view.description,
+    saveStatus:domainState?.status?.()||'idle',
+    render:content=>renderTab('invullen',content),
+    onTabChange:(tab,content)=>renderTab(tab,content)
   });
 }
 
@@ -138,14 +166,10 @@ export function openPortalPage(pageId){
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage});
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
-  else if(pageId==='koppelingen'){ native.innerHTML=''; mountConnectorWizard(native); }
+  else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
+  else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
   else if(contract?.legacyCapability){
-    mountWorkspace(native,contract,{
-      title:view.title,
-      description:view.description,
-      saveStatus:'idle',
-      render:content=>renderNative(content,view)
-    });
+    mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:'idle',render:content=>renderNative(content,view)});
   } else renderNative(native,view);
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
@@ -154,9 +178,8 @@ export function openPortalPage(pageId){
 function bindTextButton(selector,needle,pageId){
   [...document.querySelectorAll(selector)].find(btn=>btn.textContent.toLocaleLowerCase('nl').includes(needle))?.addEventListener('click',()=>openPortalPage(pageId));
 }
-
 function ensureStylesheet(href){
-  if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')===href)) return;
+  if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')===href))return;
   const style=document.createElement('link');style.rel='stylesheet';style.href=href;document.head.appendChild(style);
 }
 
@@ -164,6 +187,7 @@ export function enhancePortalShell(){
   ensureShell();
   ensureStylesheet('./interaction.css');
   ensureStylesheet('./workspace.css');
+  ensureStylesheet('./company-input.css');
   ensureStylesheet('./csrd-impact.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
@@ -185,10 +209,7 @@ export function enhancePortalShell(){
   bindTextButton('.quick button','gebruikers','gebruikers');
   bindTextButton('.quick button','instellingen','instellingen');
 
-  document.querySelectorAll('[data-open-page]').forEach(node=>node.addEventListener('click',event=>{
-    event.preventDefault();
-    openPortalPage(node.dataset.openPage);
-  }));
+  document.querySelectorAll('[data-open-page]').forEach(node=>node.addEventListener('click',event=>{event.preventDefault();openPortalPage(node.dataset.openPage);}));
 
   const search=document.querySelector('.search');
   if(search){
@@ -203,5 +224,5 @@ export function enhancePortalShell(){
   }
 
   const ai=document.querySelector('.smallbtn.ai');
-  if(ai && !ai.id) ai.addEventListener('click',()=>openPortalPage('brain-verwerking'));
+  if(ai && !ai.id)ai.addEventListener('click',()=>openPortalPage('brain-verwerking'));
 }
