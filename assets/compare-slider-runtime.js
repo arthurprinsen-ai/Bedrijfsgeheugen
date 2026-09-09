@@ -2,7 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v9-physical-edges';
+  var VERSION = 'full-endpoints-v11-physical-handle';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -231,6 +231,7 @@
     slider.setAttribute('data-bg-compare-version',VERSION);
     slider.setAttribute('data-bg-pointer-owner-ready','true');
     slider.setAttribute('data-bg-pointer-listeners','true');
+    slider.style.setProperty('touch-action','none','important');
 
     var beforeSide = slider.querySelector('.compare-before');
     var afterSide = slider.querySelector('.compare-after');
@@ -252,6 +253,7 @@
     divider.style.setProperty('pointer-events','none','important');
     var dragging = false;
     var pointerId = null;
+    var touching = false;
 
     function snap(raw){
       var value = Math.max(0, Math.min(100, Number(raw) || 0));
@@ -293,7 +295,10 @@
       slider.style.setProperty('--split', pct);
       if(beforeSide) beforeSide.style.setProperty('clip-path', 'inset(0 ' + (100 - value).toFixed(2) + '% 0 0)', 'important');
       if(afterSide) afterSide.style.setProperty('clip-path', 'inset(0 0 0 ' + value.toFixed(2) + '%)', 'important');
-      if(handle) handle.style.setProperty('left', pct, 'important');
+      if(handle){
+        handle.style.setProperty('left', pct, 'important');
+        handle.style.setProperty('transform', endpoint === 'start' ? 'translateX(0)' : endpoint === 'end' ? 'translateX(-100%)' : 'translateX(-50%)','important');
+      }
       divider.style.setProperty('left',pct,'important');
       divider.style.setProperty('transform', endpoint === 'start' ? 'translateX(0)' : endpoint === 'end' ? 'translateX(-100%)' : 'translateX(-50%)','important');
       syncReadableSide(value);
@@ -320,7 +325,7 @@
     }
 
     slider.addEventListener('pointerdown',function(e){
-      if(e.isPrimary === false) return;
+      if(touching || e.isPrimary === false) return;
       dragging = true;
       pointerId = e.pointerId;
       if(slider.setPointerCapture) try{ slider.setPointerCapture(e.pointerId); }catch(_e){}
@@ -353,6 +358,35 @@
       dragging = false;
       pointerId = null;
     },true);
+
+    function firstTouch(list){ return list && list.length ? list[0] : null; }
+    slider.addEventListener('touchstart',function(e){
+      var touch = firstTouch(e.touches);
+      if(!touch) return;
+      touching = true;
+      dragging = false;
+      pointerId = null;
+      applyFromClientX(touch.clientX);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    },{capture:true,passive:false});
+    slider.addEventListener('touchmove',function(e){
+      if(!touching) return;
+      var touch = firstTouch(e.touches);
+      if(!touch) return;
+      applyFromClientX(touch.clientX);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    },{capture:true,passive:false});
+    slider.addEventListener('touchend',function(e){
+      if(!touching) return;
+      var touch = firstTouch(e.changedTouches);
+      if(touch) applyFromClientX(touch.clientX);
+      touching = false;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    },{capture:true,passive:false});
+    slider.addEventListener('touchcancel',function(){ touching = false; },{capture:true,passive:false});
 
     if(knob){
       knob.addEventListener('keydown',function(e){
