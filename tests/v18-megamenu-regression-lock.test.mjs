@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 
 const core = await readFile(new URL('../tools/bouw-v18-production-core.mjs', import.meta.url), 'utf8');
 const browserCheck = await readFile(new URL('../tools/site-shell/v18-megamenu-browser-check.mjs', import.meta.url), 'utf8');
+const contrastCheck = await readFile(new URL('../tools/site-shell/v18-header-menu-contrast-check.mjs', import.meta.url), 'utf8');
+const websiteLane = await readFile(new URL('../.github/workflows/lane-website.yml', import.meta.url), 'utf8');
 const required = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
 
 async function readProductionReadback() {
@@ -40,4 +42,27 @@ test('production readback rechecks the real site after main deploy', async () =>
   assert.match(productionReadback, /branches:\s*\[main\]/);
   assert.match(productionReadback, /https:\/\/www\.bedrijfsgeheugen\.nl/);
   assert.match(productionReadback, /v18-megamenu-browser-check\.mjs/);
+});
+
+test('solutions megamenu links carry their own readable colour', () => {
+  assert.match(core, /\.v17-solutions-mega \.v17-mega-route/);
+  assert.match(core, /\.v17-mega-route b\{color:#14171a\}/);
+});
+
+test('every header panel is measured for contrast, not just the known menus', () => {
+  assert.match(contrastCheck, /PANEL_SELECTOR/);
+  assert.match(contrastCheck, /luminance/);
+  assert.match(contrastCheck, /minimumRatio/);
+  assert.match(contrastCheck, /backgroundOf/);
+});
+
+test('header menu contrast runs on every website change, not only high-risk ones', () => {
+  const step = websiteLane.split('- name: Verify every header menu panel is readable')[1] || '';
+  assert.match(step, /v18-header-menu-contrast-check\.mjs/);
+  assert.doesNotMatch(step.split('- name:')[0], /risk_lane/);
+});
+
+test('production readback also rechecks header menu contrast', async () => {
+  const productionReadback = await readProductionReadback();
+  assert.match(productionReadback, /v18-header-menu-contrast-check\.mjs/);
 });
