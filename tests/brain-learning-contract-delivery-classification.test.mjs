@@ -21,6 +21,7 @@ test('content-learning runtime and regression tests are bounded backend delivery
     'lib/content-learning/ga4-observations.mjs',
     'lib/content-learning/post-features.mjs',
     'lib/content-learning/rule-preflight.mjs',
+    'scripts/content-rule-context.mjs',
     'tests/content-learning-ga4-observations.test.mjs',
     'tests/content-learning-post-features.test.mjs',
     'tests/content-learning-rule-preflight.test.mjs'
@@ -31,7 +32,11 @@ test('content-learning runtime and regression tests are bounded backend delivery
 });
 
 test('unrelated unknown test and runtime families still fail closed', () => {
-  for (const path of ['tests/unowned-future-system.test.mjs', 'lib/unowned-future-runtime.mjs']) {
+  for (const path of [
+    'tests/unowned-future-system.test.mjs',
+    'lib/unowned-future-runtime.mjs',
+    'scripts/unowned-future-runtime.mjs'
+  ]) {
     assert.throws(
       () => createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy }),
       /unclassified delivery path/,
