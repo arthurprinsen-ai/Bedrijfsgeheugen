@@ -41,6 +41,13 @@ test('profile and operational thresholds preserve known legacy dimensions',()=>{
   }
 });
 
+test('legacy backup advice stays active at level 1 and clears only above level 1',()=>{
+  const one=structuredClone(baseState);one.portal.compliance={incident:1,backup:1,aiPolicy:1,dataDefinitions:1};
+  const two=structuredClone(baseState);two.portal.compliance={incident:1,backup:2,aiPolicy:1,dataDefinitions:1};
+  assert.equal(generateLegacyExecutionSignals(one).filter(x=>x.source==='Beleid'&&x.dimension==='security').length,1);
+  assert.equal(generateLegacyExecutionSignals(two).filter(x=>x.source==='Beleid'&&x.dimension==='security').length,0);
+});
+
 test('execution selector input includes automatic legacy signals without deduplicating frequency',()=>{
   const state=structuredClone(baseState);
   state.portal.strategy.execution={signalDimensions:['security']};
