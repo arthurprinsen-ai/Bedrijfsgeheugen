@@ -12,9 +12,9 @@ export const PROFILE_DIMENSIONS=Object.freeze([
  {id:'governance',label:'Governance',weeklyHours:1.2,top:3},
  {id:'tech',label:'Systemen en AI',weeklyHours:4.1,top:4},
  {id:'culture',label:'Organisatie en cultuur',weeklyHours:1.1,top:3},
- {id:'service',label:'Klantenservice',weeklyHours:2.4,top:4},
- {id:'security',label:'Beveiliging',weeklyHours:1.3,top:4},
- {id:'duurzaam',label:'Duurzaamheid en CSRD',weeklyHours:1.0,top:3}
+ {id:'service',label:'Klantenservice',weeklyHours:2.0,top:4},
+ {id:'security',label:'Beveiliging',weeklyHours:2.0,top:4},
+ {id:'duurzaam',label:'Duurzaamheid en CSRD',weeklyHours:2.0,top:3}
 ]);
 
 const FACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
