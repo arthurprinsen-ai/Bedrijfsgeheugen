@@ -14,9 +14,9 @@ const files=[
   '../supabase/functions/powerhouse-runtime/index.ts',
 ];
 
-test('Powerhouse runtime has no Make or legacy alternate learning route',async()=>{
+test('Powerhouse runtime has no Make or legacy alternate delivery/learning route',async()=>{
   for(const rel of files){
     const code=await readFile(new URL(rel,import.meta.url),'utf8');
-    assert.doesNotMatch(code,/hook\.eu\d+\.make\.com|api\.make\.com|BG16[6789]|legacyFallback|BG_LEGACY_SOCIAL_FALLBACK|_social-learning-store|legacyIngest/i,rel);
+    assert.doesNotMatch(code,/hook\.eu\d+\.make\.com|api\.make\.com|BG16[6789]|BG211_WEBHOOK_URL|BG_LEGACY_BG211_FALLBACK|attemptLegacyBg211|legacyFallback|BG_LEGACY_SOCIAL_FALLBACK|_social-learning-store|legacyIngest/i,rel);
   }
 });
