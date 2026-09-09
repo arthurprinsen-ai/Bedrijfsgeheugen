@@ -61,3 +61,9 @@ test('mobile parity controls have at least a 44px touch target',()=>{
   assert.match(css,/\.v2strategycontrols[\s\S]*min-(?:width|height):44px/);
   assert.match(css,/\.v2overviewcontrols[\s\S]*min-(?:width|height):44px/);
 });
+
+test('overview reorder controls reserve their own vertical space instead of covering links and content',()=>{
+  const css=fs.readFileSync('modules/interaction-parity-style.js','utf8');
+  assert.match(css,/\[data-overview-block\]\{[^}]*padding-top:(?:6[0-9]|[7-9][0-9]|[1-9][0-9]{2,})px/);
+  assert.match(css,/\.v2overviewcontrols\{[^}]*position:absolute/);
+});
