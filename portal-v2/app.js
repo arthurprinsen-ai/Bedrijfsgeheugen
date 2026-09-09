@@ -1,5 +1,5 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
-import { enhancePortalShell, openPortalPage, closePortalPage } from './page-shell.js';
+import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
 import { DESKTOP_NAV_ITEMS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
@@ -131,6 +131,7 @@ function ensureNavigationStyles(){
 
 const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
+configurePortalShell({domainState:portalDomainState});
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
 mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
