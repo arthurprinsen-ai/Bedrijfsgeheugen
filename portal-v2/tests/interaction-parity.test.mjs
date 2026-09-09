@@ -17,8 +17,9 @@ test('interaction parity manifest makes every known legacy gesture explicit and 
   const proven = new Set(module.INTERACTION_PARITY_MANIFEST.filter(item=>item.status==='proven').map(item=>item.id));
   assert.ok(proven.has('roadmap-card-reorder'));
   assert.ok(proven.has('roadmap-card-sprint-move'));
+  assert.ok(proven.has('feature-story-drag'));
   const open = new Set(module.openInteractionObligations().map(item=>item.id));
-  for (const id of ['feature-story-drag','strategy-card-reorder','overview-block-reorder']) assert.ok(open.has(id), `${id} must remain open until implemented`);
+  for (const id of ['strategy-card-reorder','overview-block-reorder']) assert.ok(open.has(id), `${id} must remain open until implemented`);
 });
 
 test('roadmap has a native interactive board, not only editable rows', () => {
