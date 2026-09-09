@@ -26,15 +26,23 @@ test('fails closed when rules are stale', async () => {
   await assert.rejects(() => requireRuleContext(async () => ({ snapshot_id: 'old', expires_at: '2026-09-09T17:00:00.000Z' }), { now: new Date('2026-09-09T18:00:00.000Z') }), /CONTENT_RULE_CONTEXT_STALE/);
 });
 
-test('active AI blog writer fails closed on rule context before Claude receives a prompt', () => {
-  const workflow = fs.readFileSync(new URL('../.github/workflows/blog-bijwerken.yml', import.meta.url), 'utf8');
+function assertWriterPreflight(path, label) {
+  const workflow = fs.readFileSync(new URL(path, import.meta.url), 'utf8');
   const preflight = workflow.indexOf('CONTENT_RULE_CONTEXT_JSON');
   const writer = workflow.indexOf('uses: anthropics/claude-code-action@v1');
-  assert.ok(preflight >= 0, 'blog writer must load and validate CONTENT_RULE_CONTEXT_JSON');
-  assert.ok(writer >= 0, 'active Claude writer step must remain present');
-  assert.ok(preflight < writer, 'rule preflight must run before Claude');
+  assert.ok(preflight >= 0, `${label} must load and validate CONTENT_RULE_CONTEXT_JSON`);
+  assert.ok(writer >= 0, `${label} Claude writer step must remain present`);
+  assert.ok(preflight < writer, `${label} rule preflight must run before Claude`);
   assert.match(workflow, /CONTENT_RULE_CONTEXT_JSON[\s\S]*positive_rules/);
   assert.match(workflow, /CONTENT_RULE_CONTEXT_JSON[\s\S]*avoid_rules/);
   assert.match(workflow, /CONTENT_RULE_CONTEXT_JSON[\s\S]*experiment_allocation/);
   assert.match(workflow, /CONTENT_RULE_CONTEXT_JSON[\s\S]*\$\{\{ steps\.rule_context\.outputs\.context \}\}/);
+}
+
+test('active AI blog update writer fails closed on rule context before Claude receives a prompt', () => {
+  assertWriterPreflight('../.github/workflows/blog-bijwerken.yml', 'blog update writer');
+});
+
+test('native daily blog writer fails closed on rule context before Claude receives a prompt', () => {
+  assertWriterPreflight('../.github/workflows/native-approved-blog-supply.yml', 'native blog writer');
 });
