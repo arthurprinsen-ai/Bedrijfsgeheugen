@@ -1,3 +1,5 @@
+import { upgradeLegacyPortalState, hasLegacyPortalData } from './legacy-state-migration.js';
+
 const clone=value=>value==null?value:structuredClone(value);
 const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
 const normalizeState=value=>isObject(value)?clone(value):{};
@@ -42,11 +44,11 @@ export function createDomainState({load,save}={}){
  const publish=()=>{const snap=publicSnapshot(state,currentStatus,currentError);for(const listener of listeners){try{listener(snap)}catch{}}return snap;};
  const asError=(error,fallback)=>error instanceof Error?error:new Error(String(error||fallback));
  const markDirty=()=>{revision+=1;currentStatus='dirty';currentError=null;publish();};
- async function init(){try{const loaded=await load();state=normalizeState(loaded);currentStatus='idle';currentError=null;revision=0;initialized=true;return publish();}catch(error){state={};initialized=false;currentStatus='error';currentError=asError(error,'DOMAIN_STATE_LOAD_FAILED');publish();throw currentError;}}
+ async function init(){try{const loaded=normalizeState(await load());const needsMigration=hasLegacyPortalData(loaded);state=upgradeLegacyPortalState(loaded);if(needsMigration){currentStatus='saving';publish();state=upgradeLegacyPortalState(normalizeState(await save(clone(state))));currentStatus='saved';}else currentStatus='idle';currentError=null;revision=0;initialized=true;return publish();}catch(error){state={};initialized=false;currentStatus='error';currentError=asError(error,'DOMAIN_STATE_LOAD_FAILED');publish();throw currentError;}}
  function get(path=''){return path?readPath(state,path):clone(state);}
  function set(path,value){state=writePath(state,path,value);markDirty();return get(path);}
  function patch(path,value){if(!isObject(value))throw new TypeError('DOMAIN_STATE_PATCH_OBJECT_REQUIRED');state=writePath(state,path,value,{merge:true});markDirty();return get(path);}
- async function performFlush(){if(currentStatus!=='dirty'&&currentStatus!=='error')return publicSnapshot(state,currentStatus,currentError);const saveRevision=revision;const candidate=clone(state);currentStatus='saving';currentError=null;publish();try{const confirmed=normalizeState(await save(candidate));if(revision===saveRevision){state=confirmed;currentStatus='saved';}else currentStatus='dirty';currentError=null;return publish();}catch(error){currentError=asError(error,'DOMAIN_STATE_SAVE_FAILED');currentStatus='error';publish();throw currentError;}}
+ async function performFlush(){if(currentStatus!=='dirty'&&currentStatus!=='error')return publicSnapshot(state,currentStatus,currentError);const saveRevision=revision;const candidate=clone(state);currentStatus='saving';currentError=null;publish();try{const confirmed=normalizeState(await save(candidate));if(revision===saveRevision){state=upgradeLegacyPortalState(confirmed);currentStatus='saved';}else currentStatus='dirty';currentError=null;return publish();}catch(error){currentError=asError(error,'DOMAIN_STATE_SAVE_FAILED');currentStatus='error';publish();throw currentError;}}
  function flush(){if(activeFlush)return activeFlush;activeFlush=performFlush().finally(()=>{activeFlush=null});return activeFlush;}
  return Object.freeze({init,initialized:()=>initialized,get,set,patch,flush,status:()=>currentStatus,error:()=>currentError,snapshot:()=>publicSnapshot(state,currentStatus,currentError),subscribe(listener){if(typeof listener!=='function')throw new TypeError('DOMAIN_STATE_SUBSCRIBER_REQUIRED');listeners.add(listener);return()=>listeners.delete(listener);}});
 }
