@@ -4,8 +4,8 @@ export const INTERACTION_PARITY_MANIFEST=Object.freeze([
  interaction('roadmap-card-reorder','roadmap','proven','portal-v2/tests/interaction-parity.test.mjs'),
  interaction('roadmap-card-sprint-move','roadmap','proven','tests/integration/portal-v2-interaction-parity.spec.js'),
  interaction('feature-story-drag','strategy-execution','proven','portal-v2/tests/delivery-interaction-parity.test.mjs'),
- interaction('strategy-card-reorder','strategy','open','legacy drag contract identified; native V2 implementation pending'),
- interaction('overview-block-reorder','overzicht','open','legacy drag contract identified; native V2 implementation pending')
+ interaction('strategy-card-reorder','strategy','proven','portal-v2/tests/remaining-interaction-parity.test.mjs'),
+ interaction('overview-block-reorder','overzicht','proven','portal-v2/tests/remaining-interaction-parity.test.mjs')
 ]);
 
 export function openInteractionObligations(){
