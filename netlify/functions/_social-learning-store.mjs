@@ -18,6 +18,7 @@ export function createSocialLearningStore({fetchFn=globalThis.fetch,baseUrl=proc
     listDuePosts:async now=>(await gateway({action:'list_due_posts',now})).posts||[],
     getCohort:async query=>(await gateway({action:'get_cohort',tenantId:query?.post?.tenantId||tenantId,query})).posts||[],
     putEvaluation:evaluation=>gateway({action:'put_evaluation',tenantId:evaluation.tenantId||tenantId,evaluation,idempotencyKey:evaluation.evaluationId}),
+    upsertExperiment:experiment=>gateway({action:'upsert_experiment',tenantId:experiment.tenantId||tenantId,experiment,idempotencyKey:`experiment:${experiment.experimentId}`}),
     upsertLearning:learning=>gateway({action:'upsert_learning',tenantId:learning.tenantId||tenantId,learning,idempotencyKey:`learning:${learning.learningId||learning.fingerprint}`}),
     listCurrentLearnings:async selectedTenantId=>(await gateway({action:'list_current_learnings',tenantId:selectedTenantId||tenantId})).learnings||[],
     recordApplication:application=>gateway({action:'record_application',tenantId:application.tenantId||tenantId,application,idempotencyKey:`application:${application.applicationId||`${application.postId}:${application.learningId}`}`}),
