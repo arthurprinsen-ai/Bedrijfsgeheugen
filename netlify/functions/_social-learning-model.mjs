@@ -20,13 +20,19 @@ export function metricVector(snapshot={}){
   return {
     ...s,
     substantive_interactions:substantive,
+    revenue_per_impression:rate(s.revenue,exposure),
+    order_rate:rate(s.orders,exposure),
+    offer_rate:rate(s.offers,exposure),
+    qualified_lead_rate:rate(s.qualified_leads,exposure),
+    meeting_rate:rate(s.meetings,exposure),
+    dm_rate:rate(s.dms,exposure),
+    lead_rate:rate(s.leads,exposure),
+    substantive_interaction_rate:rate(substantive,exposure),
+    click_rate:rate(s.clicks,exposure),
+    like_rate:rate(s.likes,exposure),
     comment_rate:rate(s.comments,exposure),
     share_rate:rate(s.shares,exposure),
-    save_rate:rate(s.saves,exposure),
-    click_rate:rate(s.clicks,exposure),
-    substantive_interaction_rate:rate(substantive,exposure),
-    lead_rate:rate(s.leads,exposure),
-    qualified_lead_rate:rate(s.qualified_leads,exposure)
+    save_rate:rate(s.saves,exposure)
   };
 }
 
@@ -38,9 +44,39 @@ export function selectEvaluationWindow({publishedAt,observedAt,windows=[24,48,72
   return best;
 }
 
+export function selectSnapshotForWindow({snapshots=[],publishedAt,windowHours,toleranceHours=6}){
+  const target=Number(windowHours);
+  let best=null,bestDelta=Infinity;
+  for(const snapshot of snapshots){
+    const age=(new Date(snapshot.observedAt)-new Date(publishedAt))/36e5;
+    const delta=Math.abs(age-target);
+    if(Number.isFinite(delta)&&delta<=toleranceHours&&delta<bestDelta){best=snapshot;bestDelta=delta;}
+  }
+  return best;
+}
+
 export function buildCohort(posts=[],target={}){
   const keys=['platform','accountType','format','funnelStage','contentPillar'];
-  return posts.filter(post=>post?.postId!==target?.postId&&keys.every(k=>target?.[k]==null||post?.[k]==null||post[k]===target[k]));
+  return posts.filter(post=>post?.postId!==target?.postId&&keys.every(k=>target?.[k]==null||post?.[k]===target[k]));
+}
+
+const metricKey={revenue:'revenue_per_impression',orders:'order_rate',offers:'offer_rate',qualified_leads:'qualified_lead_rate',meetings:'meeting_rate',dms:'dm_rate',substantive_interactions:'substantive_interaction_rate',clicks:'click_rate',likes:'like_rate'};
+const effect=(current,baseline)=>baseline===0?(current>0?1:current<0?-1:0):(current-baseline)/Math.abs(baseline);
+
+export function selectOptimizationMetric(targetVector={},cohortVectors=[],priority=[]){
+  const effects=[];
+  for(const metric of priority){
+    const key=metricKey[metric]||metric;
+    const current=targetVector[key];
+    if(!Number.isFinite(current)) continue;
+    const comparable=cohortVectors.map(v=>v[key]).filter(Number.isFinite);
+    if(!comparable.length) continue;
+    const baseline=comparable.reduce((a,b)=>a+b,0)/comparable.length;
+    effects.push({metric,key,current,baseline,effectSize:effect(current,baseline)});
+  }
+  if(!effects.length) return null;
+  const selected=effects[0];
+  return {...selected,higherPriorityContradiction:false,allEffects:effects};
 }
 
 export function evaluateLearningCandidate(input={},config={}){
@@ -74,6 +110,6 @@ export function chooseDecisionMode(history=[],config={}){
 }
 
 export function metricPriorityWinner(vector={},priority=[]){
-  for(const key of priority){const value=vector[key];if(value!==null&&value!==undefined)return {metric:key,value};}
+  for(const key of priority){const value=vector[metricKey[key]||key];if(value!==null&&value!==undefined)return {metric:key,value};}
   return null;
 }
