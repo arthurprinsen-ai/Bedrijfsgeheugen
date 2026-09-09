@@ -13,7 +13,7 @@ const dateOnly=value=>String(value||'').slice(0,10);
 function deriveEvidence(target,cohort){
   const targetVector=metricVector(target.metrics||{});
   const vectors=cohort.map(x=>metricVector(x.metrics||x)).filter(Boolean);
-  const metric=targetVector.substantive_interaction_rate!==null?'substantive_interaction_rate':targetVector.qualified_lead_rate!==null?'qualified_lead_rate':null;
+  const metric=targetVector.qualified_lead_rate!==null?'qualified_lead_rate':targetVector.substantive_interaction_rate!==null?'substantive_interaction_rate':null;
   if(!metric||!vectors.length) return null;
   const comparable=vectors.map(v=>v[metric]).filter(v=>Number.isFinite(v));
   if(!comparable.length) return null;
@@ -30,34 +30,36 @@ export async function runEvaluation({store,now=new Date(),config=defaultConfig()
   const due=await store.listDuePosts(now.toISOString?.()||String(now));
   let evaluated=0,missedObligations=0,learningsUpdated=0;
   for(const post of due){
+    const tenantId=post.tenantId||'canonical';
     const windowHours=Number(post.dueWindow||post.windowHours||24);
     const snapshots=await store.getSnapshots(post.postId);
     const snapshot=latestSnapshot(snapshots.filter(s=>new Date(s.observedAt)>=new Date(post.publishedAt||0)));
     if(!snapshot){
       missedObligations++;
-      if(store.recordObligation) await store.recordObligation({id:`social-snapshot:${post.postId}:${windowHours}`,type:'MISSED_OBLIGATION',owner:'POWERHOUSE_SOCIAL_LEARNING',postId:post.postId,windowHours,dueAt:new Date(new Date(post.publishedAt).getTime()+windowHours*36e5).toISOString()});
+      if(store.recordObligation) await store.recordObligation({tenantId,id:`social-snapshot:${post.postId}:${windowHours}`,type:'MISSED_OBLIGATION',owner:'POWERHOUSE_SOCIAL_LEARNING',postId:post.postId,windowHours,dueAt:new Date(new Date(post.publishedAt).getTime()+windowHours*36e5).toISOString()});
       continue;
     }
     const evaluationId=`evaluation:${post.postId}:${windowHours}`;
     const cohortRaw=store.getCohort?await store.getCohort({post,windowHours}):[];
     const cohort=buildCohort(cohortRaw,post);
     const evidence=deriveEvidence(snapshot,cohort);
-    const evaluation={evaluationId,postId:post.postId,tenantId:post.tenantId||snapshot.tenantId||null,windowHours,observedAt:snapshot.observedAt,metricVector:metricVector(snapshot.metrics||{}),cohortSize:cohort.length,evidence};
+    const evaluation={evaluationId,postId:post.postId,tenantId,windowHours,observedAt:snapshot.observedAt,metricVector:metricVector(snapshot.metrics||{}),cohortSize:cohort.length,evidence};
     await store.putEvaluation(evaluation);
     evaluated++;
     if(evidence&&store.upsertLearning){
       const fingerprint=[post.platform,post.hookType,post.narrativeType,post.emotion,post.ctaType].filter(Boolean).join('|')||`post:${post.postId}`;
       const status=transitionLearningState(post.learningStatus||'CANDIDATE',evidence,config);
-      await store.upsertLearning({learningId:post.learningId||`learning:${fingerprint}`,fingerprint,componentScope:'social_components',claim:`${fingerprint} effect on ${evidence.metric}`,effectMetric:evidence.metric,effectSize:evidence.effectSize,sampleSize:evidence.sampleSize,confidence:evidence.confidence,status,lastValidatedAt:new Date(now).toISOString(),evidenceRefs:[evaluationId]});
+      await store.upsertLearning({tenantId,learningId:post.learningId||`learning:${fingerprint}`,fingerprint,componentScope:'social_components',claim:`${fingerprint} effect on ${evidence.metric}`,effectMetric:evidence.metric,effectSize:evidence.effectSize,sampleSize:evidence.sampleSize,confidence:evidence.confidence,status,lastValidatedAt:new Date(now).toISOString(),evidenceRefs:[evaluationId]});
       learningsUpdated++;
     }
-    if(store.reconcileApplications) await store.reconcileApplications({postId:post.postId,windowHours,evaluationId,effect:evidence?.effectSize??null,verificationStatus:evidence?'VERIFIED':'INSUFFICIENT_EVIDENCE'});
+    if(store.reconcileApplications) await store.reconcileApplications({tenantId,postId:post.postId,windowHours,evaluationId,effect:evidence?.effectSize??null,verificationStatus:evidence?'VERIFIED':'INSUFFICIENT_EVIDENCE'});
   }
   return {evaluated,missedObligations,learningsUpdated};
 }
 
-export default async request=>{
-  if(request.method!=='POST'&&request.method!=='GET') return new Response('Method Not Allowed',{status:405});
-  try{return Response.json(await runEvaluation({store:createSocialLearningStore()}),{headers:{'cache-control':'no-store'}});}
-  catch(error){return Response.json({error:'SOCIAL_LEARNING_EVALUATION_FAILED',message:error.message},{status:503,headers:{'cache-control':'no-store'}});}
+export default async ()=>{
+  try{await runEvaluation({store:createSocialLearningStore()});return new Response(null,{status:204});}
+  catch(error){console.error('SOCIAL_LEARNING_EVALUATION_FAILED',error);return new Response(null,{status:500});}
 };
+
+export const config={schedule:'@hourly'};
