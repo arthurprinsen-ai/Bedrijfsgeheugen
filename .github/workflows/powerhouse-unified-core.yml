@@ -15,7 +15,7 @@ on:
       - 'tests/powerhouse-*.test.mjs'
       - '.github/workflows/powerhouse-unified-core.yml'
   push:
-    branches: [main]
+    branches: [main, powerhouse-unified-revenue-growth-core]
     paths:
       - 'supabase/functions/powerhouse-runtime/**'
       - 'supabase/migrations/*powerhouse*'
@@ -52,5 +52,6 @@ jobs:
           tests/powerhouse-daily-cycle.test.mjs
           tests/powerhouse-current-projection.test.mjs
           tests/powerhouse-notion-content-adapters.test.mjs
+          tests/powerhouse-no-make-runtime.test.mjs
           tests/linkedin-revenue-runtime.test.mjs
           tests/linkedin-revenue-cockpit.test.mjs
