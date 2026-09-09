@@ -1,0 +1,57 @@
+name: Powerhouse Unified Revenue Growth Core
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/functions/powerhouse-runtime/**'
+      - 'supabase/migrations/*powerhouse*'
+      - 'netlify/functions/_powerhouse-core-client.mjs'
+      - 'netlify/functions/buffer-social-collect.mjs'
+      - 'netlify/functions/growth-event.mjs'
+      - 'netlify/functions/powerhouse-*.mjs'
+      - 'tools/seo-growth/powerhouse-core-map.mjs'
+      - 'platform/linkedin-revenue-cockpit.mjs'
+      - 'tests/powerhouse-*.test.mjs'
+      - '.github/workflows/powerhouse-unified-core.yml'
+  push:
+    branches: [main, powerhouse-unified-revenue-growth-core]
+    paths:
+      - 'supabase/functions/powerhouse-runtime/**'
+      - 'supabase/migrations/*powerhouse*'
+      - 'netlify/functions/_powerhouse-core-client.mjs'
+      - 'netlify/functions/buffer-social-collect.mjs'
+      - 'netlify/functions/growth-event.mjs'
+      - 'netlify/functions/powerhouse-*.mjs'
+      - 'tools/seo-growth/powerhouse-core-map.mjs'
+      - 'platform/linkedin-revenue-cockpit.mjs'
+      - 'tests/powerhouse-*.test.mjs'
+      - '.github/workflows/powerhouse-unified-core.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  unified-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install runtime dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Verify unified Powerhouse core contracts
+        run: >-
+          node --test
+          tests/powerhouse-v96-supabase-native.test.mjs
+          tests/powerhouse-unified-growth-core.test.mjs
+          tests/powerhouse-buffer-core-adapter.test.mjs
+          tests/powerhouse-growth-event-core.test.mjs
+          tests/powerhouse-daily-cycle.test.mjs
+          tests/powerhouse-current-projection.test.mjs
+          tests/powerhouse-notion-content-adapters.test.mjs
+          tests/powerhouse-no-make-runtime.test.mjs
+          tests/linkedin-revenue-runtime.test.mjs
+          tests/linkedin-revenue-cockpit.test.mjs
