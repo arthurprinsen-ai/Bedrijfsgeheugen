@@ -7,15 +7,16 @@ export const BEWEGING_CSS = `<style id="v18-beweging">
 .bgx-magneet{transition:transform .18s cubic-bezier(.22,.61,.36,1)}
 @media(hover:none){.bgx-magneet{transition:transform .12s ease}.bgx-magneet:active{transform:scale(.96)!important}}
 
-/* 2. alleen echte kaarten mogen 3D kantelen. Geen permanente will-change-laag:
-   dat kan in Chrome/macOS grote delen van standalone pagina's leeg laten painten
-   tot een resize (zoals DevTools openen) de compositor opnieuw opbouwt. */
-.bgx-kantel{transform-style:preserve-3d;transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s ease}
-.bgx-kantel:hover{box-shadow:0 30px 80px rgba(7,21,35,.18)}
+/* 2. kaarten krijgen alleen een lichte 2D lift. Publieke content wordt bewust
+   niet meer naar 3D compositor-lagen gepromoveerd: op Chrome/macOS kon dat
+   complete standalone pagina's wit laten painten totdat een resize/DevTools
+   de compositor opnieuw opbouwde. */
+.bgx-kantel{transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s ease}
+.bgx-kantel:hover{transform:translateY(-3px);box-shadow:0 30px 80px rgba(7,21,35,.18)}
 
-/* 3. de hero beweegt trager dan de rest bij het scrollen */
-.inhoud-kop video{transform:translate3d(0,var(--bgx-diepte,0),0) scale(1.08);transition:transform .1s linear}
-.inhoud-kop .wrap{transform:translate3d(0,calc(var(--bgx-diepte,0px) * -.35),0)}
+/* 3. de hero beweegt trager dan de rest bij het scrollen, uitsluitend 2D */
+.inhoud-kop video{transform:translateY(var(--bgx-diepte,0)) scale(1.08);transition:transform .1s linear}
+.inhoud-kop .wrap{transform:translateY(calc(var(--bgx-diepte,0px) * -.35))}
 
 /* 4. koppen komen woord voor woord binnen */
 .bgx-woord{display:inline-block;opacity:0;transform:translateY(.4em) rotate(2deg);
@@ -65,18 +66,8 @@ export const BEWEGING_JS = `<script id="v18-beweging-js">
     });
   }
 
-  // 2. kaarten kantelen
-  if (!rustig && !raakt) {
-    document.querySelectorAll('.bgx-kantel').forEach(function(kaart){
-      kaart.addEventListener('pointermove', function(e){
-        var r = kaart.getBoundingClientRect();
-        var x = (e.clientX - r.left) / r.width - .5;
-        var y = (e.clientY - r.top) / r.height - .5;
-        kaart.style.transform = 'perspective(900px) rotateX(' + (-y*5).toFixed(2) + 'deg) rotateY(' + (x*6).toFixed(2) + 'deg) translateY(-3px)';
-      });
-      kaart.addEventListener('pointerleave', function(){ kaart.style.transform = ''; });
-    });
-  }
+  // 2. kaarten blijven bewust 2D. De hover-lift staat in CSS; geen pointer-
+  // gestuurde 3D-laag meer, zodat Chrome/macOS de pagina niet kan blank-painten.
 
   // 3. de hero beweegt trager dan de pagina
   var hero = document.querySelector('.inhoud-kop');
@@ -206,15 +197,21 @@ export function vergelijker(onderwerp) {
 
 // klassen toekennen aan wat er al staat
 export function maakBeweeglijk(html) {
-  // Alleen echte interactieve/kaartcomponenten krijgen compositor-effecten.
-  // Een generieke structurele .blok-sectie mag nooit naar een eigen 3D-laag:
-  // dat was de oorzaak van de Chrome/macOS blank-paint die na resize verdween.
+  // Bouw ook oude gegenereerde markup defensief schoon. Een structurele .blok
+  // mag geen achtergebleven bgx-kantel houden; echte kaartcomponenten wel.
   html = html.replace(/class="([^"]*)"/g, (heel, klassen) => {
-    if (/bgx-magneet|bgx-kantel/.test(klassen)) return heel;
-    let uit = klassen;
-    if (/\b(btn|knop|staptegel|cta)\b/.test(klassen)) uit += ' bgx-magneet';
-    else if (/\b(kaart|p-kaart|tegel)\b/.test(klassen)) uit += ' bgx-kantel';
-    return `class="${uit}"`;
+    let tokens = klassen.split(/\s+/).filter(Boolean);
+    const heeftKaart = tokens.some(token => /^(kaart|p-kaart|tegel)$/.test(token));
+    if (tokens.includes('blok') && !heeftKaart) {
+      tokens = tokens.filter(token => token !== 'bgx-kantel');
+    }
+
+    const heeftMagneet = tokens.includes('bgx-magneet');
+    const heeftKantel = tokens.includes('bgx-kantel');
+    const samengevoegd = tokens.join(' ');
+    if (!heeftMagneet && /\b(btn|knop|staptegel|cta)\b/.test(samengevoegd)) tokens.push('bgx-magneet');
+    else if (!heeftKantel && /\b(kaart|p-kaart|tegel)\b/.test(samengevoegd)) tokens.push('bgx-kantel');
+    return `class="${tokens.join(' ')}"`;
   });
   return html;
 }

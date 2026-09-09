@@ -60,6 +60,20 @@ test('kaartkanteling reserveert geen permanente GPU-laag', () => {
   );
 });
 
+test('V18 publieke pagina-effecten gebruiken geen 3D compositor-primitieven', () => {
+  assert.doesNotMatch(BEWEGING_CSS, /transform-style\s*:\s*preserve-3d/i, 'preserve-3d kan Chrome/macOS opnieuw in de blank-paint toestand brengen.');
+  assert.doesNotMatch(BEWEGING_CSS, /translate3d\s*\(/i, 'de hero mag geen geforceerde 3D compositor-laag krijgen.');
+  assert.doesNotMatch(BEWEGING_JS, /perspective\s*\(/i, 'kaartinteractie mag geen perspective-laag maken.');
+  assert.doesNotMatch(BEWEGING_JS, /rotate[XY]\s*\(/i, 'kaartinteractie mag geen rotateX/rotateY-laag maken.');
+});
+
+test('oude structurele bgx-kantel-klassen worden tijdens de build opgeschoond', () => {
+  const html = '<main><section class="inhoud-body blok bgx-kantel"><h2>Tekst blijft zichtbaar</h2></section></main>';
+  const out = maakBeweeglijk(html);
+  assert.match(out, /class="inhoud-body blok"/);
+  assert.doesNotMatch(out, /\bblok\s+bgx-kantel\b/);
+});
+
 test('V18 interactieve websitecode en regressietests horen bij de website delivery lane', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   for (const path of ['tools/v18-beweging.mjs', 'tests/v18-vergelijker.test.mjs']) {
