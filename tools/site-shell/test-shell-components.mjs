@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell, markCanonicalComponents } from './contracts.mjs';
 import { extractComponent, replaceComponent } from './components.mjs';
-import { CANONICAL_SHELL_SOURCE, extractPageMain, projectGlobalComponents } from './apply-shell.mjs';
+import { CANONICAL_SHELL_SOURCE, applyCanonicalShell, extractPageMain, projectGlobalComponents } from './apply-shell.mjs';
 import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './ensure-knowledge-nav.mjs';
 import { normaliseerHtml } from '../normaliseer-site-ui.mjs';
 
@@ -68,5 +68,12 @@ assert.ok(knowledgeNav.includes('href="https://www.bedrijfsgeheugen.nl/kennis/">
 const kennisHrefs = [...knowledgeNav.matchAll(/\bhref="([^"]+)"/g)].map(([, href]) => href);
 assert.ok(kennisHrefs.every((href) => /^https:\/\/www\.bedrijfsgeheugen\.nl\//.test(href)), 'alle hrefs in de genormaliseerde kennisnavigatie moeten absolute bedrijfsgeheugen.nl URLs zijn');
 assert.equal(ensureKnowledgeNavigation(knowledgeNav), knowledgeNav, 'Kennisnavigatie-normalisatie moet idempotent zijn');
+
+const v18ShellMetVerkeerdeResources = {
+  voor: `<!doctype html><html><head><title>Bron</title></head><body><div data-bg-component="trustbar">trust</div><header class="v17-header" data-bg-component="header"><button type="button" data-view="resources">Kennis</button><a href="/blog/">Blog &amp; kennisbank</a></header><aside class="v18-mobile-drawer" data-bg-component="mobile-menu"><button type="button" data-view="resources">Kennis</button><a href="/blog/">Blog &amp; kennisbank</a></aside>`,
+  na: `<footer data-bg-component="footer">footer</footer></body></html>`
+};
+const paginaMetKennis = applyCanonicalShell('<!doctype html><html><head><title>Test</title></head><body><main><h1>Test</h1><p>Inhoud</p></main></body></html>', v18ShellMetVerkeerdeResources, 'test.html');
+assert.ok(verifyKnowledgeNavigation(paginaMetKennis), 'de echte canonical shell-pipeline moet Kennis naar /kennis/ sturen en Blog apart houden');
 
 console.log('canonical brand shell contract: OK');

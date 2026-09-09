@@ -31,6 +31,9 @@ if (touched('platform/','portal-next/')) {
   run('portal-parity','python3',['.github/scripts/portal_parity.py']);
 }
 
+if (touched('compliance-status.html','sitemap.xml','tests/compliance-status-page.test.mjs'))
+  run('compliance-status-contract','node',['--test','tests/compliance-status-page.test.mjs']);
+
 if (touched('netlify.toml','_redirects','sitemap.xml','tools/config-wacht.py'))
   run('config-watch','python3',['tools/config-wacht.py']);
 
@@ -79,4 +82,4 @@ if (touched('blog/','robots.txt','sitemap.xml')) {
 if (touched('.github/workflows/required-test.yml','tests/brain-agents-delivery-contract.test.mjs','tools/brain-delivery-system.mjs','config/brain-delivery-system.json'))
   run('agent-completion-contract','node',['--test','tests/brain-agents-delivery-contract.test.mjs']);
 
-process.stdout.write(`${JSON.stringify({ ok: true, version: 'single-flight-preserved-contracts-v5', changedCount: changed.length, selected: [...selected] })}\n`);
+process.stdout.write(`${JSON.stringify({ ok: true, version: 'single-flight-preserved-contracts-v6', changedCount: changed.length, selected: [...selected] })}\n`);

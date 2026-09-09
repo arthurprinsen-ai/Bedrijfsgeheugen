@@ -1,5 +1,6 @@
 import { readFile, writeFile, glob } from 'node:fs/promises';
 import { PUBLIC_PAGE_EXCLUDES } from './site-shell/contracts.mjs';
+import { finalizeSiteContracts } from './site-shell/finalize-site-contracts.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const EXCLUDES = new Set([...PUBLIC_PAGE_EXCLUDES, '404.html']);
@@ -37,11 +38,16 @@ async function htmlBestanden() {
   const bestanden = [];
   for await (const p of glob('*.html')) if (!isExclude(p)) bestanden.push(p);
   for await (const p of glob('blog/*/index.html')) bestanden.push(p);
-  bestanden.push('blog/index.html');
+  bestanden.push('blog/index.html', 'kennis/index.html');
   return [...new Set(bestanden)];
 }
 
 export async function genereerSitemap(bestand = 'sitemap.xml') {
+  // Dit is de eerste stap ná alle late website-writers. Dwing hier eerst het
+  // definitieve outputcontract af, zodat sitemap, UI- en SEO-gates exact de
+  // HTML controleren die Netlify daarna publiceert.
+  await finalizeSiteContracts();
+
   const urls = [];
   for (const pad of await htmlBestanden()) {
     let html;

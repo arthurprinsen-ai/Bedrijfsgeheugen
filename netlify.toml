@@ -347,3 +347,9 @@
   to = "/problemen"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/compliance-status.html"
+  to = "/compliance-status"
+  status = 301
+  force = true
