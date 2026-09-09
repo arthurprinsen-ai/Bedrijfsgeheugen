@@ -97,6 +97,10 @@ Deno.serve(async (req: Request) => {
   const dataSource = Deno.env.get('NOTION_MEDIA_DATA_SOURCE_ID') || DEFAULT_DATA_SOURCE;
   const model = Deno.env.get('BG_CONTENT_MODEL') || 'gpt-5';
   if (!supabaseUrl || !serviceKey || !notionToken || !openaiKey) return json({ ok: false, error: 'NATIVE_GENERATOR_CONFIG_UNAVAILABLE', missing: { supabase: !supabaseUrl || !serviceKey, notion: !notionToken, openai: !openaiKey } }, 503);
+  const callerAuthorization = req.headers.get('authorization') || '';
+  if (callerAuthorization !== `Bearer ${serviceKey}`) {
+    return json({ ok: false, error: 'SERVICE_ROLE_REQUIRED' }, 401);
+  }
 
   const db = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: rules, error: ruleError } = await db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,onderbouwing,bewijs_n,vertrouwen,status,bijgewerkt_op').order('vertrouwen', { ascending: false });
