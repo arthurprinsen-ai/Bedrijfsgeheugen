@@ -2,7 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v8-pointer-capture';
+  var VERSION = 'full-endpoints-v9-readable-extremes';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -263,6 +263,16 @@
       knob.setAttribute('aria-disabled','false');
       knob.tabIndex = 0;
     }
+    function syncReadableSide(value){
+      var mobile = window.matchMedia && window.matchMedia('(max-width:720px)').matches;
+      if(!mobile){
+        slider.removeAttribute('data-bg-readable-side');
+        return;
+      }
+      if(value <= 20) slider.setAttribute('data-bg-readable-side','after');
+      else if(value >= 80) slider.setAttribute('data-bg-readable-side','before');
+      else slider.removeAttribute('data-bg-readable-side');
+    }
     function renderControlled(raw){
       var value = snap(raw);
       var pct = value.toFixed(2) + '%';
@@ -271,6 +281,7 @@
       if(beforeSide) beforeSide.style.setProperty('clip-path', 'inset(0 ' + (100 - value).toFixed(2) + '% 0 0)', 'important');
       if(afterSide) afterSide.style.setProperty('clip-path', 'inset(0 0 0 ' + value.toFixed(2) + '%)', 'important');
       if(handle) handle.style.setProperty('left', pct, 'important');
+      syncReadableSide(value);
       syncAria(value);
       return value;
     }
