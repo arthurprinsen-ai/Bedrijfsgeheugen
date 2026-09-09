@@ -24,7 +24,7 @@ function metGegevens(html) {
 
 const PAD = {
   home: '/', product: '/product', pricing: '/prijzen', solutions: '/oplossingen',
-  integrations: '/systemen-koppelen', resources: '/blog/', company: '/over-ons',
+  integrations: '/systemen-koppelen', resources: '/kennis/', company: '/over-ons',
   cases: '/cases', login: '/inloggen', signup: '/aanmelden', selfscan: '/zelfscan',
   'frisseblik-scan': '/frisse-blik', start: '/start', more: '/meer'
 };
