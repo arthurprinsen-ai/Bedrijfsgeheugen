@@ -2,8 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v12-zero-width-anchor';
-  var SNAP_THRESHOLD = 8;
+  var VERSION = 'native-range-v13';
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
   var IMPACT_LABELS = ['Processen','Rollen','Documenten','KPI’s','Acties'];
@@ -215,29 +214,21 @@
     });
   }
 
-  function takeCanonicalOwnership(slider){
-    if(slider.getAttribute('data-bg-compare-owner') === 'canonical') return slider;
-    var clone = slider.cloneNode(true);
-    clone.setAttribute('data-bg-compare-owner','canonical');
-    clone.removeAttribute('data-bg-compare-version');
-    slider.replaceWith(clone);
-    return clone;
-  }
-
   function initSlider(slider){
     if(slider.getAttribute('data-bg-compare-version') === VERSION) return;
     slider.setAttribute('data-bg-compare-slider','');
     slider.setAttribute('data-bg-compare-ready','true');
     slider.setAttribute('data-bg-compare-version',VERSION);
-    slider.setAttribute('data-bg-pointer-owner-ready','true');
-    slider.setAttribute('data-bg-pointer-listeners','true');
-    slider.style.setProperty('touch-action','none','important');
+    slider.removeAttribute('data-bg-pointer-owner-ready');
+    slider.removeAttribute('data-bg-pointer-listeners');
 
     var beforeSide = slider.querySelector('.compare-before');
     var afterSide = slider.querySelector('.compare-after');
     var handle = slider.querySelector('.compare-handle');
     var knob = slider.querySelector('.compare-knob');
     var divider = slider.querySelector('.bg-compare-divider');
+    var range = slider.querySelector('.bg-compare-range');
+
     if(!divider){
       divider = document.createElement('span');
       divider.className = 'bg-compare-divider';
@@ -251,33 +242,45 @@
     divider.style.setProperty('background','#FFE86B','important');
     divider.style.setProperty('z-index','21','important');
     divider.style.setProperty('pointer-events','none','important');
-    var dragging = false;
-    var pointerId = null;
-    var touching = false;
 
-    function snap(raw){
-      var value = Math.max(0, Math.min(100, Number(raw) || 0));
-      return value <= SNAP_THRESHOLD ? 0 : value >= 100 - SNAP_THRESHOLD ? 100 : value;
+    if(!range){
+      range = document.createElement('input');
+      range.className = 'bg-compare-range';
+      range.type = 'range';
+      range.min = '0';
+      range.max = '100';
+      range.step = '1';
+      range.setAttribute('aria-label','Vergelijk huidige en gewenste situatie');
+      slider.appendChild(range);
+    }
+    range.style.setProperty('position','absolute','important');
+    range.style.setProperty('inset','0','important');
+    range.style.setProperty('width','100%','important');
+    range.style.setProperty('height','100%','important');
+    range.style.setProperty('margin','0','important');
+    range.style.setProperty('padding','0','important');
+    range.style.setProperty('opacity','0.001','important');
+    range.style.setProperty('z-index','30','important');
+    range.style.setProperty('cursor','ew-resize','important');
+
+    if(handle) handle.style.setProperty('display','none','important');
+    if(knob){
+      knob.setAttribute('aria-hidden','true');
+      knob.tabIndex = -1;
+      knob.style.setProperty('pointer-events','none','important');
+    }
+
+    function clamp(raw){
+      var numeric = Number(raw);
+      if(!Number.isFinite(numeric)) numeric = 50;
+      return Math.max(0,Math.min(100,Math.round(numeric)));
     }
     function initialValue(){
       var css = getComputedStyle(slider);
       var controlled = parseFloat(css.getPropertyValue('--bg-compare-split'));
-      if(Number.isFinite(controlled)) return snap(controlled);
+      if(Number.isFinite(controlled)) return clamp(controlled);
       var legacy = parseFloat(css.getPropertyValue('--split'));
-      return Number.isFinite(legacy) ? snap(legacy) : 50;
-    }
-    function readControlled(){
-      var raw = parseFloat(slider.style.getPropertyValue('--bg-compare-split'));
-      return Number.isFinite(raw) ? raw : initialValue();
-    }
-    function syncAria(value){
-      if(!knob) return;
-      value = Number.isFinite(value) ? value : readControlled();
-      knob.setAttribute('aria-valuemin','0');
-      knob.setAttribute('aria-valuemax','100');
-      knob.setAttribute('aria-valuenow', value.toFixed(0));
-      knob.setAttribute('aria-disabled','false');
-      knob.tabIndex = 0;
+      return Number.isFinite(legacy) ? clamp(legacy) : 50;
     }
     function syncReadableSide(value){
       var mobile = window.matchMedia && window.matchMedia('(max-width:720px)').matches;
@@ -287,128 +290,30 @@
       else slider.removeAttribute('data-bg-readable-side');
     }
     function renderControlled(raw){
-      var value = snap(raw);
+      var value = clamp(raw);
       var pct = value.toFixed(2) + '%';
       var endpoint = value === 0 ? 'start' : value === 100 ? 'end' : 'middle';
+      range.value = String(Math.round(value));
       slider.setAttribute('data-bg-compare-endpoint',endpoint);
       slider.style.setProperty('--bg-compare-split', pct);
       slider.style.setProperty('--split', pct);
       if(beforeSide) beforeSide.style.setProperty('clip-path', 'inset(0 ' + (100 - value).toFixed(2) + '% 0 0)', 'important');
       if(afterSide) afterSide.style.setProperty('clip-path', 'inset(0 0 0 ' + value.toFixed(2) + '%)', 'important');
-      if(handle){
-        handle.style.setProperty('left', pct, 'important');
-        handle.style.setProperty('right', 'auto', 'important');
-        handle.style.setProperty('width', '0', 'important');
-        handle.style.setProperty('transform', 'none', 'important');
-      }
       divider.style.setProperty('left',pct,'important');
       divider.style.setProperty('transform', endpoint === 'start' ? 'translateX(0)' : endpoint === 'end' ? 'translateX(-100%)' : 'translateX(-50%)','important');
       syncReadableSide(value);
-      syncAria(value);
       return value;
     }
-    function applyFromClientX(clientX){
-      var r = slider.getBoundingClientRect();
-      if(!r.width) return renderControlled(50);
-      var x = Math.max(0, Math.min(r.width, clientX - r.left));
-      return renderControlled((x / r.width) * 100);
-    }
-    function current(){ return readControlled(); }
-    function samePointer(e){ return dragging && (pointerId === null || e.pointerId === pointerId); }
 
-    function finish(e){
-      if(!samePointer(e)) return;
-      applyFromClientX(e.clientX);
-      dragging = false;
-      if(slider.releasePointerCapture) try{ slider.releasePointerCapture(e.pointerId); }catch(_e){}
-      pointerId = null;
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    }
-
-    slider.addEventListener('pointerdown',function(e){
-      if(touching || e.isPrimary === false) return;
-      dragging = true;
-      pointerId = e.pointerId;
-      if(slider.setPointerCapture) try{ slider.setPointerCapture(e.pointerId); }catch(_e){}
-      applyFromClientX(e.clientX);
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    },true);
-
-    slider.addEventListener('pointermove',function(e){
-      if(!samePointer(e)) return;
-      applyFromClientX(e.clientX);
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    },true);
-
-    slider.addEventListener('pointerup',finish,true);
-    slider.addEventListener('pointercancel',function(e){
-      if(pointerId !== null && e.pointerId !== pointerId) return;
-      dragging = false;
-      pointerId = null;
-    },true);
-
-    window.addEventListener('pointermove',function(e){
-      if(!samePointer(e)) return;
-      applyFromClientX(e.clientX);
-    },true);
-    window.addEventListener('pointerup',finish,true);
-    window.addEventListener('pointercancel',function(e){
-      if(pointerId !== null && e.pointerId !== pointerId) return;
-      dragging = false;
-      pointerId = null;
-    },true);
-
-    function firstTouch(list){ return list && list.length ? list[0] : null; }
-    slider.addEventListener('touchstart',function(e){
-      var touch = firstTouch(e.touches);
-      if(!touch) return;
-      touching = true;
-      dragging = false;
-      pointerId = null;
-      applyFromClientX(touch.clientX);
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    },{capture:true,passive:false});
-    slider.addEventListener('touchmove',function(e){
-      if(!touching) return;
-      var touch = firstTouch(e.touches);
-      if(!touch) return;
-      applyFromClientX(touch.clientX);
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    },{capture:true,passive:false});
-    slider.addEventListener('touchend',function(e){
-      if(!touching) return;
-      var touch = firstTouch(e.changedTouches);
-      if(touch) applyFromClientX(touch.clientX);
-      touching = false;
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    },{capture:true,passive:false});
-    slider.addEventListener('touchcancel',function(){ touching = false; },{capture:true,passive:false});
-
-    if(knob){
-      knob.addEventListener('keydown',function(e){
-        var value = current();
-        if(e.key === 'ArrowLeft') value -= 5;
-        else if(e.key === 'ArrowRight') value += 5;
-        else if(e.key === 'Home') value = 0;
-        else if(e.key === 'End') value = 100;
-        else return;
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        renderControlled(value);
-      },true);
-    }
-
-    renderControlled(initialValue());
+    function syncFromRange(){ renderControlled(Number(range.value)); }
+    range.value = String(initialValue());
+    range.addEventListener('input',syncFromRange);
+    range.addEventListener('change',syncFromRange);
+    renderControlled(Number(range.value));
   }
 
   function ensureSliders(){
-    collectSliders().forEach(function(slider){ initSlider(takeCanonicalOwnership(slider)); });
+    collectSliders().forEach(initSlider);
   }
 
   initChangeFlow();
