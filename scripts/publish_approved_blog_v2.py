@@ -9,7 +9,7 @@ import sys
 import publish_approved_blog as base
 
 
-def get_queue(force=''):
+def queue_conditions(force=''):
     conditions = [
         {'property': 'Source Mode', 'select': {'equals': 'Approved central article'}},
         {'property': 'Dispatch status', 'select': {'equals': 'Pending'}},
@@ -20,11 +20,19 @@ def get_queue(force=''):
     ]
     if force:
         conditions.append({'property': 'Slug', 'rich_text': {'equals': force}})
-    rows = base.req(f'/data_sources/{base.QUEUE}/query', 'POST', {
-        'filter': {'and': conditions},
+    return conditions
+
+
+def get_rows(force='', page_size=100):
+    return base.req(f'/data_sources/{base.QUEUE}/query', 'POST', {
+        'filter': {'and': queue_conditions(force)},
         'sorts': [{'property': 'Publicatiedatum', 'direction': 'ascending'}],
-        'page_size': 2,
+        'page_size': page_size,
     }).get('results') or []
+
+
+def get_queue(force=''):
+    rows = get_rows(force, 2 if force else 100)
     if not rows:
         return None
     if force and len(rows) != 1:
@@ -46,6 +54,23 @@ def snapshot_from_row(row):
         'meta': base.txt(p, 'Meta-omschrijving'),
         'source_hash': base.txt(p, 'Approved Source Hash'),
     }
+
+
+def list_candidates():
+    candidates=[]
+    for row in get_rows('',100):
+        q=queue_contract(row)
+        candidates.append({
+            'content_id': f"blog:{q['slug']}",
+            'slug': q['slug'],
+            'source_content_id': q['source'],
+            'title': q['title'],
+            'keyword': q['keyword'],
+            'eligible': True,
+            'score': 0,
+            'exploration': False,
+        })
+    print(json.dumps(candidates,ensure_ascii=False))
 
 
 def actual_hash(q):
@@ -75,9 +100,6 @@ def seal_or_validate(row):
         base.req(f"/pages/{q['page']}", 'PATCH', {
             'properties': {'Approved Source Hash': {'rich_text': [{'type': 'text', 'text': {'content': actual}}]}}
         })
-        # The hash is computed from the exact snapshot just read back from Notion.
-        # Only the hash property is changed by this PATCH, so continuing with this
-        # same snapshot is deterministic and avoids waiting for a second workflow run.
         q['source_hash'] = actual
     elif q['source_hash'] != actual:
         base.fail('Approved Source Hash mismatch; snapshot is gewijzigd na sealing')
@@ -128,6 +150,8 @@ def mark_dispatched(page_id, attempt, run_id=''):
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == '--list-candidates':
+        list_candidates(); return
     if len(sys.argv) > 1 and sys.argv[1] == '--mark-dispatched':
         if len(sys.argv) < 4:
             base.fail('Gebruik --mark-dispatched <page_id> <attempt> [run_id]')
