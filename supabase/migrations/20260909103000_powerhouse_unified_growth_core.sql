@@ -10,6 +10,9 @@ alter table public.powerhouse_sales_actions add column if not exists topic_key t
 alter table public.powerhouse_sales_actions add column if not exists campaign_key text;
 alter table public.powerhouse_sales_actions add column if not exists opportunity_key text;
 alter table public.powerhouse_sales_actions add column if not exists expected_value_eur numeric not null default 0;
+alter table public.powerhouse_sales_actions add column if not exists person_name text;
+alter table public.powerhouse_sales_actions add column if not exists company_name text;
+alter table public.powerhouse_sales_actions add column if not exists role text;
 
 alter table public.powerhouse_sales_outcomes add column if not exists content_key text;
 alter table public.powerhouse_sales_outcomes add column if not exists topic_key text;
@@ -67,6 +70,28 @@ grant all on public.powerhouse_daily_runs to service_role;
 update public.powerhouse_device_tokens
 set scopes=(select array_agg(distinct s) from unnest(scopes || array['daily']::text[]) s)
 where not ('daily'=any(scopes));
+
+create or replace function public.powerhouse_fill_action_identity()
+returns trigger language plpgsql security definer set search_path=public as $$
+declare v_context jsonb;
+begin
+  if new.event_id is not null and (new.person_name is null or new.company_name is null or new.role is null) then
+    select context into v_context from public.powerhouse_runtime_events where event_id=new.event_id;
+    new.person_name=coalesce(new.person_name,nullif(v_context->>'personName',''),nullif(v_context->>'person_name',''),nullif(v_context->>'author',''));
+    new.company_name=coalesce(new.company_name,nullif(v_context->>'company',''),nullif(v_context->>'companyName',''),nullif(v_context->>'company_name',''));
+    new.role=coalesce(new.role,nullif(v_context->>'role',''),nullif(v_context->>'functie',''));
+  end if;
+  return new;
+end; $$;
+
+drop trigger if exists powerhouse_fill_action_identity_trigger on public.powerhouse_sales_actions;
+create trigger powerhouse_fill_action_identity_trigger before insert or update of event_id,person_name,company_name,role on public.powerhouse_sales_actions for each row execute function public.powerhouse_fill_action_identity();
+
+update public.powerhouse_sales_actions a
+set person_name=coalesce(a.person_name,nullif(e.context->>'personName',''),nullif(e.context->>'person_name',''),nullif(e.context->>'author','')),
+    company_name=coalesce(a.company_name,nullif(e.context->>'company',''),nullif(e.context->>'companyName',''),nullif(e.context->>'company_name','')),
+    role=coalesce(a.role,nullif(e.context->>'role',''),nullif(e.context->>'functie',''))
+from public.powerhouse_runtime_events e where a.event_id=e.event_id and (a.person_name is null or a.company_name is null or a.role is null);
 
 create or replace function public.powerhouse_record_outcome(p_action_id uuid,p_dedupe_key text,p_outcome_type text,p_evidence jsonb default '{}'::jsonb,p_revenue_eur numeric default 0)
 returns public.powerhouse_sales_outcomes language plpgsql security definer set search_path=public as $$
