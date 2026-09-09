@@ -14,3 +14,13 @@ test('canonical compare slider renders the divider flush with both physical card
   assert.match(runtime, /window\.addEventListener\(['"]pointermove['"]/);
   assert.match(runtime, /Math\.max\(0,\s*Math\.min\(r\.width/);
 });
+
+test('canonical compare slider has a non-passive iOS touch fallback that drives the same full-width renderer', () => {
+  assert.match(runtime, /addEventListener\(['"]touchstart['"]/);
+  assert.match(runtime, /addEventListener\(['"]touchmove['"]/);
+  assert.match(runtime, /addEventListener\(['"]touchend['"]/);
+  assert.match(runtime, /passive\s*:\s*false/);
+  assert.match(runtime, /changedTouches/);
+  assert.match(runtime, /touches/);
+  assert.match(runtime, /applyFromClientX/);
+});
