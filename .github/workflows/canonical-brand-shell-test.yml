@@ -16,4 +16,4 @@ jobs:
       - run: node --test tests/site-shell-compare-slider-physical-edges.test.mjs
       - name: Build canonical production output
         run: node tools/bouw-powerhouse-auth.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/apply-tabbladen.mjs && node tools/bouw-v18-views.mjs && node tools/bouw-v18-chrome-alles.mjs && node tools/prijzen-uit-de-homepage.mjs && node tools/bouw-release-evidence.mjs
-      - run: node --test tests/site-wide-compare-slider-inventory.test.mjs
+      - run: node --test tests/site-shell-compare-slider-inventory.test.mjs
