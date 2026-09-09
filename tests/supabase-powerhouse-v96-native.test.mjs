@@ -37,11 +37,11 @@ test('WhatsApp is only selected with a real phone number and explicit permission
   assert.match(code, /return'LinkedIn DM'/);
 });
 
-test('learning outcome feeds the next priority decision', async () => {
+test('learning outcome feeds the next priority decision across subject, topic and channel', async () => {
   const code = await source();
-  assert.match(code, /async function learnedAdjustment/);
+  assert.match(code, /async function crossChannelAdjustment\(subject:string,topic:string,channel:string\)/);
   assert.match(code, /effect\?\.priority_delta/);
-  assert.match(code, /const learned=await learnedAdjustment\(subject\)/);
+  assert.match(code, /const learned=await crossChannelAdjustment\(id\.subject,id\.topic,channel\|\|''\)/);
   assert.match(code, /basePriority\(e\)\+learned/);
   assert.match(code, /learned_priority_delta:learned/);
 });
