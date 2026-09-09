@@ -37,7 +37,7 @@ html.bgx-beweegt [data-op]{opacity:1!important;transform:none!important}
 .bgx-vergelijk .nu{background:#0a1117;color:rgba(255,255,255,.9)}
 .bgx-vergelijk .nu li{color:rgba(255,255,255,.9)!important}
 .bgx-vergelijk .straks{position:absolute;inset:0;background:var(--white);color:var(--ink);
-  padding-left:calc(var(--bgx-grens,50%) + 28px);clip-path:inset(0 0 0 var(--bgx-grens,50%))}
+  padding:30px 28px;clip-path:inset(0 0 0 var(--bgx-grens,50%))}
 .bgx-vergelijk h4{margin:0 0 12px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
   font-family:'IBM Plex Mono',ui-monospace,monospace}
 .bgx-vergelijk .nu h4{color:#ff9b7a}
@@ -113,30 +113,18 @@ export const BEWEGING_JS = `<script id="v18-beweging-js">
     });
   }, 1600);
 
-  // 5. zonder / met: sleep de scheidslijn, met vinger, muis of toetsenbord.
-  // Fail-safe: de scheidslijn mag nooit zo ver naar een rand dat één tekstpaneel onleesbaar wordt.
+  // 5. zonder / met: sleep de scheidslijn volledig van 0 tot 100 procent.
   document.querySelectorAll('.bgx-vergelijk').forEach(function(blok){
     var bezig = false;
     var greep = blok.querySelector('.greep');
-    function grenzen(){
-      var r = blok.getBoundingClientRect();
-      var minPanePx = Math.min(180, Math.max(132, r.width * .28));
-      var minPct = Math.min(45, minPanePx / Math.max(1, r.width) * 100);
-      return { r:r, min:minPct, max:100-minPct };
-    }
     function pasToe(deel){
-      var g = grenzen();
-      deel = Math.max(g.min, Math.min(g.max, deel));
+      deel = Math.max(0, Math.min(100, deel));
       blok.style.setProperty('--bgx-grens', deel.toFixed(1) + '%');
-      if (greep) {
-        greep.setAttribute('aria-valuemin', g.min.toFixed(0));
-        greep.setAttribute('aria-valuemax', g.max.toFixed(0));
-        greep.setAttribute('aria-valuenow', deel.toFixed(0));
-      }
+      if (greep) greep.setAttribute('aria-valuenow', deel.toFixed(0));
     }
     function zet(x){
-      var g = grenzen();
-      pasToe((x - g.r.left) / Math.max(1, g.r.width) * 100);
+      var r = blok.getBoundingClientRect();
+      pasToe((x - r.left) / Math.max(1, r.width) * 100);
     }
     pasToe(50);
     blok.addEventListener('pointerdown', function(e){ bezig = true; zet(e.clientX); blok.setPointerCapture(e.pointerId); });
@@ -146,12 +134,11 @@ export const BEWEGING_JS = `<script id="v18-beweging-js">
       greep.addEventListener('keydown', function(e){
         if (!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
         e.preventDefault();
-        var g = grenzen();
         var huidig = parseFloat(greep.getAttribute('aria-valuenow') || '50');
         if (e.key === 'ArrowLeft') pasToe(huidig - 4);
         if (e.key === 'ArrowRight') pasToe(huidig + 4);
-        if (e.key === 'Home') pasToe(g.min);
-        if (e.key === 'End') pasToe(g.max);
+        if (e.key === 'Home') pasToe(0);
+        if (e.key === 'End') pasToe(100);
       });
     }
     addEventListener('resize', function(){
@@ -196,7 +183,7 @@ export function vergelijker(onderwerp) {
   return `<div class="bgx-vergelijk" data-op aria-label="Vergelijking tussen de huidige situatie en de situatie met ${onderwerp}">
 <div class="zijde nu"><h4>Zoals het nu gaat</h4><ul>${nu.map(t => `<li>${t}</li>`).join('')}</ul></div>
 <div class="zijde straks"><h4>Zoals het wordt</h4><ul>${straks.map(t => `<li>${t}</li>`).join('')}</ul></div>
-<div class="greep" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Sleep om te vergelijken" aria-valuemin="35" aria-valuemax="65" aria-valuenow="50"></div>
+<div class="greep" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Sleep om te vergelijken" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
 <div class="hint">sleep met je vinger</div>
 </div>`;
 }
