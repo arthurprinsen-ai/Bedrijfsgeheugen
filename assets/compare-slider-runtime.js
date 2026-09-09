@@ -2,7 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v11-physical-handle';
+  var VERSION = 'full-endpoints-v12-zero-width-anchor';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -297,7 +297,9 @@
       if(afterSide) afterSide.style.setProperty('clip-path', 'inset(0 0 0 ' + value.toFixed(2) + '%)', 'important');
       if(handle){
         handle.style.setProperty('left', pct, 'important');
-        handle.style.setProperty('transform', endpoint === 'start' ? 'translateX(0)' : endpoint === 'end' ? 'translateX(-100%)' : 'translateX(-50%)','important');
+        handle.style.setProperty('right', 'auto', 'important');
+        handle.style.setProperty('width', '0', 'important');
+        handle.style.setProperty('transform', 'none', 'important');
       }
       divider.style.setProperty('left',pct,'important');
       divider.style.setProperty('transform', endpoint === 'start' ? 'translateX(0)' : endpoint === 'end' ? 'translateX(-100%)' : 'translateX(-50%)','important');

@@ -15,9 +15,12 @@ test('canonical compare slider renders the divider flush with both physical card
   assert.match(runtime, /Math\.max\(0,\s*Math\.min\(r\.width/);
 });
 
-test('canonical compare slider moves the visible handle itself fully onto both card edges', () => {
+test('canonical compare slider uses a zero-width handle anchor so endpoint positioning cannot be reduced by handle width', () => {
   assert.match(runtime, /handle\.style\.setProperty\(['"]left['"],\s*pct/);
-  assert.match(runtime, /handle\.style\.setProperty\(['"]transform['"],\s*endpoint\s*===\s*['"]start['"]\s*\?\s*['"]translateX\(0\)['"]\s*:\s*endpoint\s*===\s*['"]end['"]\s*\?\s*['"]translateX\(-100%\)['"]\s*:\s*['"]translateX\(-50%\)['"]/);
+  assert.match(runtime, /handle\.style\.setProperty\(['"]width['"],\s*['"]0['"],\s*['"]important['"]\)/);
+  assert.match(runtime, /handle\.style\.setProperty\(['"]right['"],\s*['"]auto['"],\s*['"]important['"]\)/);
+  assert.match(runtime, /handle\.style\.setProperty\(['"]transform['"],\s*['"]none['"],\s*['"]important['"]\)/);
+  assert.doesNotMatch(runtime, /handle\.style\.setProperty\(['"]transform['"],\s*endpoint\s*===/);
 });
 
 test('canonical compare slider has a non-passive iOS touch fallback that drives the same full-width renderer', () => {
