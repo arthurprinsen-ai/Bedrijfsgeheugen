@@ -12,7 +12,6 @@ function envConfig(){
     targetServices:splitCsv(process.env.BUFFER_TARGET_SERVICES||'linkedin,instagram'),
     tenantId:process.env.BG_SOCIAL_LEARNING_TENANT_ID||'canonical',
     lookbackDays:Number(process.env.BUFFER_LOOKBACK_DAYS||8),
-    legacyFallback:process.env.BG_LEGACY_SOCIAL_FALLBACK==='true',
   };
 }
 
@@ -38,16 +37,7 @@ async function registerCredentialObligation(store,now){
   });
 }
 
-async function legacyIngest(envelope,{serviceToken,store}={}){
-  const [{createSocialOutcomeHandler},{createSocialLearningStore}]=await Promise.all([import('./social-outcome-ingest.mjs'),import('./_social-learning-store.mjs')]);
-  const activeStore=store||createSocialLearningStore();
-  if(!serviceToken)throw new Error('BG_SOCIAL_LEARNING_SERVICE_TOKEN_REQUIRED');
-  const handler=createSocialOutcomeHandler({store:activeStore,serviceToken});
-  const response=await handler(new Request('https://internal.invalid/api/social-outcome-ingest',{method:'POST',headers:{'content-type':'application/json','x-bg-service-token':serviceToken},body:JSON.stringify(envelope)}));
-  if(!response.ok&&response.status!==409)throw new Error(`BUFFER_LEGACY_FALLBACK_${response.status}`);
-}
-
-export async function runBufferCollection({apiKey,organizationId=null,channelIds=[],targetServices=['linkedin','instagram'],tenantId='canonical',lookbackDays=8,fetchFn=globalThis.fetch,ingest,coreOptions={},legacyFallback=false,serviceToken=null,store=null,now=new Date()}={}){
+export async function runBufferCollection({apiKey,organizationId=null,channelIds=[],targetServices=['linkedin','instagram'],tenantId='canonical',lookbackDays=8,fetchFn=globalThis.fetch,ingest,coreOptions={},store=null,now=new Date()}={}){
   if(!apiKey){
     await registerCredentialObligation(store,now);
     return {ok:false,reason:'BUFFER_API_KEY_REQUIRED',posts:0,pages:0};
@@ -55,12 +45,7 @@ export async function runBufferCollection({apiKey,organizationId=null,channelIds
   const scope=await discoverBufferScope({apiKey,fetchFn,organizationId,channelIds:channelIds?.length?channelIds:null,targetServices});
   const services=Object.fromEntries(scope.channels.map(channel=>[channel.id,channel.service]));
   const activeIngest=ingest||(async envelope=>{
-    try{
-      for(const event of bufferEnvelopeToCoreEvents(envelope))await ingestPowerhouseEvent(event,{...coreOptions,fetchFn});
-    }catch(error){
-      if(!legacyFallback)throw error;
-      await legacyIngest(envelope,{serviceToken,store});
-    }
+    for(const event of bufferEnvelopeToCoreEvents(envelope))await ingestPowerhouseEvent(event,{...coreOptions,fetchFn});
   });
   const result=await collectBufferPosts({apiKey,organizationId:scope.organizationId,channelIds:scope.channels.map(channel=>channel.id),channelServices:services,tenantId,fetchFn,ingest:activeIngest,now,since:isoSince(now,lookbackDays)});
   return {ok:true,core:'powerhouse-unified',organizationId:scope.organizationId,channels:scope.channels.map(channel=>({id:channel.id,service:channel.service})),...result};
