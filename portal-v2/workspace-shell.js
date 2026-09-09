@@ -4,7 +4,7 @@ const TABS=Object.freeze([
   Object.freeze({id:'acties',label:'Acties'}),
   Object.freeze({id:'bewijs',label:'Bewijs'})
 ]);
-const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 export function workspaceModel(contract,{title='',description='',saveStatus='idle',state={}}={}){
  if(!contract?.id)throw new TypeError('WORKSPACE_CONTRACT_REQUIRED');
@@ -19,6 +19,12 @@ function navigateWithinV2(pageId){
  if(typeof location==='undefined')return;
  const url=new URL(location.href);url.searchParams.delete('hub');url.searchParams.set('page',pageId);location.assign(url.toString());
 }
+function loadFunctionalStyles(){
+ if(typeof document==='undefined')return Promise.resolve();
+ const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')==='./functional-suite.css'||link.href.endsWith('/portal-v2/functional-suite.css'));
+ if(existing){if(existing.sheet)return Promise.resolve();return new Promise(resolve=>{existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',resolve,{once:true});});}
+ return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href='./functional-suite.css';link.addEventListener('load',resolve,{once:true});link.addEventListener('error',resolve,{once:true});document.head.appendChild(link);});
+}
 
 export function mountWorkspace(root,contract,context={}){
  if(!root?.replaceChildren)throw new TypeError('WORKSPACE_ROOT_REQUIRED');
@@ -32,12 +38,10 @@ export function mountWorkspace(root,contract,context={}){
   shell.dataset.activeTab=button.dataset.workspaceTab;
   context.onTabChange?.(button.dataset.workspaceTab,content,model);
  }));
- shell.dataset.activeTab='invullen';
- context.render?.(content,model);
+ shell.dataset.activeTab='invullen';context.render?.(content,model);
  const api=Object.freeze({shell,content,model,setSaveStatus(status){const badge=shell.querySelector('.v2savestatus');if(badge){badge.dataset.saveStatus=status;badge.textContent=saveStatusLabel(status);}}});
-
  if(contract?.legacyCapability&&!root.dataset.functionalDelegating){
-  import('./modules/functional-suite.js').then(module=>{
+  Promise.all([loadFunctionalStyles(),import('./modules/functional-suite.js')]).then(([,module])=>{
    if(!module.functionalDefinition?.(contract.id))return;
    root.dataset.functionalDelegating='1';
    try{module.mountFunctionalWorkspace(root,{pageId:contract.id,contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});}
