@@ -20,10 +20,7 @@ test('domain state tracks dirty values and confirms persistence before saved', a
 });
 
 test('domain state patches nested objects without dropping sibling values', async () => {
-  const store=createDomainState({
-    load:async()=>({profile:{name:'A',employees:20}}),
-    save:async value=>clone(value)
-  });
+  const store=createDomainState({load:async()=>({profile:{name:'A',employees:20}}),save:async value=>clone(value)});
   await store.init();
   store.patch('profile',{employees:21,sector:'bouw'});
   assert.deepEqual(store.get('profile'),{name:'A',employees:21,sector:'bouw'});
@@ -31,10 +28,7 @@ test('domain state patches nested objects without dropping sibling values', asyn
 
 test('failed save retains edited data and exposes recoverable error status', async () => {
   let fail=true;
-  const store=createDomainState({
-    load:async()=>({profile:{name:'A'}}),
-    save:async value=>{if(fail)throw new Error('WRITE_FAILED');return clone(value);}
-  });
+  const store=createDomainState({load:async()=>({profile:{name:'A'}}),save:async value=>{if(fail)throw new Error('WRITE_FAILED');return clone(value);}});
   await store.init();
   store.set('profile.name','B');
   await assert.rejects(store.flush(),/WRITE_FAILED/);
@@ -46,12 +40,17 @@ test('failed save retains edited data and exposes recoverable error status', asy
   assert.equal(store.status(),'saved');
 });
 
+test('load failure becomes observable error state without inventing data', async () => {
+  const store=createDomainState({load:async()=>{throw new Error('LOAD_FAILED')},save:async value=>clone(value)});
+  await assert.rejects(store.init(),/LOAD_FAILED/);
+  assert.equal(store.status(),'error');
+  assert.equal(store.error()?.message,'LOAD_FAILED');
+  assert.deepEqual(store.get(),{});
+});
+
 test('subscriptions receive deterministic status and state transitions', async () => {
   const events=[];
-  const store=createDomainState({
-    load:async()=>({profile:{name:'A'}}),
-    save:async value=>clone(value)
-  });
+  const store=createDomainState({load:async()=>({profile:{name:'A'}}),save:async value=>clone(value)});
   const unsubscribe=store.subscribe(snapshot=>events.push({status:snapshot.status,name:snapshot.state?.profile?.name}));
   await store.init();
   store.set('profile.name','B');
@@ -65,10 +64,7 @@ test('subscriptions receive deterministic status and state transitions', async (
 
 test('reload reopens server-confirmed state and clears transient error state', async () => {
   let persisted={profile:{name:'A'}};
-  const store=createDomainState({
-    load:async()=>clone(persisted),
-    save:async value=>{persisted=clone(value);return clone(value);}
-  });
+  const store=createDomainState({load:async()=>clone(persisted),save:async value=>{persisted=clone(value);return clone(value);}});
   await store.init();
   store.set('profile.name','B');
   await store.flush();
@@ -81,10 +77,7 @@ test('reload reopens server-confirmed state and clears transient error state', a
 test('an edit made while a save is in flight is never overwritten by server readback', async () => {
   let release;
   const pending=new Promise(resolve=>{release=resolve});
-  const store=createDomainState({
-    load:async()=>({profile:{name:'A'}}),
-    save:async value=>{await pending;return clone(value);}
-  });
+  const store=createDomainState({load:async()=>({profile:{name:'A'}}),save:async value=>{await pending;return clone(value);}});
   await store.init();
   store.set('profile.name','B');
   const saving=store.flush();
