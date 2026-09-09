@@ -1,5 +1,5 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
-import { enhancePortalShell, openPortalPage, closePortalPage } from './page-shell.js';
+import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
 import { DESKTOP_NAV_ITEMS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
@@ -8,6 +8,7 @@ import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js
 import { createPortalDomainState } from './domain-state.js';
 import { mountGlobalActions } from './global-actions-ui.js';
 import { applyCustomerBranding } from './customer-branding.js';
+import { applyOverviewDashboard } from './modules/overview.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -131,7 +132,9 @@ function ensureNavigationStyles(){
 
 const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
+configurePortalShell({domainState:portalDomainState});
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
+portalDomainState.subscribe(snap=>applyOverviewDashboard(document,snap.state||{}));
 mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
  openPage:openPortalPage,
