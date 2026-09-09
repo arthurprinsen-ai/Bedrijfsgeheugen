@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const core = await readFile(new URL('../tools/bouw-v18-production-core.mjs', import.meta.url), 'utf8');
+const chrome = await readFile(new URL('../tools/bouw-v18-chrome.mjs', import.meta.url), 'utf8');
 const workflow = await readFile(new URL('../.github/workflows/lane-website.yml', import.meta.url), 'utf8');
 const browserCheck = await readFile(new URL('../tools/site-shell/v18-megamenu-browser-check.mjs', import.meta.url), 'utf8');
 
@@ -23,6 +24,11 @@ test('V18 production builder owns the complete real-megamenu contrast contract',
   assert.match(core, /font-weight:\s*700\s*!important/);
   assert.match(core, /isPromoLink/);
   for (const label of ['BEDRIJF', 'KENNIS', 'VERTROUWEN', 'SUPPORT']) assert.ok(core.includes(label), `missing ${label}`);
+});
+
+test('final V18 resources route is Kennis and never Blog', () => {
+  assert.match(chrome, /resources:\s*['"]\/kennis\/['"]/);
+  assert.doesNotMatch(chrome, /resources:\s*['"]\/blog\/['"]/);
 });
 
 test('website release lane checks headings and ordinary menu links', () => {
