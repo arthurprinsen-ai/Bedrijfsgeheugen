@@ -1,0 +1,37 @@
+{
+  "id": "compare-slider-full-range-production-2026-09-09",
+  "type": "production_learning",
+  "date": "2026-09-09",
+  "status": "closed_production_verified",
+  "subject": "Compare sliders must remain true full-range sliders on desktop and mobile",
+  "source": {
+    "pull_request": 1173,
+    "merge_sha": "64501db9fcc17fe80759a20bc2884cc6f3629f2f",
+    "production_lineage_verified_through_main": "0316825acb193ddf339620f2e4aea294fbcbab2c"
+  },
+  "root_cause": "Legacy/custom gesture handling and edge clamping could prevent the visual handle from reaching the physical 0% and 100% endpoints, especially on iOS/touch, leaving one side's content unreadable.",
+  "permanent_invariants": [
+    "Every compare slider uses one canonical 0-100 state model.",
+    "Desktop and mobile remain true reveal sliders; mobile must never be replaced by stacked cards as a workaround.",
+    "The active gesture surface must allow physical access to both endpoints, not merely report 0 or 100 internally.",
+    "A native full-width range control provides the fail-safe touch/keyboard path and must span the complete slider width without edge clamp.",
+    "ARIA min/max/current values must stay synchronized with the canonical slider state.",
+    "Legacy listeners may not regain ownership or re-clamp the endpoints after canonical initialization.",
+    "Late page/build CSS may not introduce a separate slider variable or endpoint clamp.",
+    "A release is not complete until real browser/touch validation proves left and right physical endpoints and production readback is green."
+  ],
+  "regression_guards": [
+    "tests/seo-homepage-context-slider-native-range.test.mjs",
+    "tests/seo-homepage-context-slider-readability.test.mjs",
+    "tools/site-shell/homepage-context-slider-browser-check.mjs",
+    ".github/workflows/lane-website.yml"
+  ],
+  "verified_evidence": [
+    "PR #1173 merged the native full-range iOS/touch fix.",
+    "Protected test checks passed on the release head.",
+    "Production readback on the merge SHA completed successfully.",
+    "A later main production readback also passed, proving the fix survived subsequent repository drift."
+  ],
+  "prevention_rule": "Never accept a slider fix based only on CSS appearance or numeric state. Require canonical state ownership, physical 0/100 endpoint reachability on real browser/touch automation, readable content at both extremes, and exact production readback before declaring the issue closed.",
+  "fingerprint": "compare-slider-full-range-physical-endpoints-production-v1"
+}
