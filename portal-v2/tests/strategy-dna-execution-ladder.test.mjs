@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { executionValueMetrics, STANDARD_EXECUTION_SHARES, EXECUTION_REALIZABILITY, profileExecutionThemes } from '../modules/strategy-dna-execution.js';
 
 const close=(actual,expected,epsilon=1e-9)=>assert.ok(Math.abs(actual-expected)<=epsilon,`expected ${actual} ≈ ${expected}`);
@@ -23,4 +24,14 @@ test('profile execution theme costs preserve legacy 46-week profile math',()=>{
   const themes=Object.fromEntries(profileExecutionThemes(state).map(item=>[item.id,item]));
   close(themes.tech.annualManualCost,4.1*.78*46*52);
   close(themes.finance.annualManualCost,3.6*.78*46*52);
+});
+
+test('Strategy DNA mounts the native execution workspace and persists canonical V2 execution state',()=>{
+  const page=readFileSync(new URL('../strategy-dna.js',import.meta.url),'utf8');
+  const module=readFileSync(new URL('../modules/strategy-dna-execution.js',import.meta.url),'utf8');
+  assert.match(page,/mountStrategyExecution/);
+  assert.match(page,/data-strategy-execution-root/);
+  assert.match(module,/portal\.strategy\.execution\.themeIds/);
+  assert.match(module,/portal\.strategy\.execution\.completed/);
+  assert.match(module,/domainState\.flush/);
 });
