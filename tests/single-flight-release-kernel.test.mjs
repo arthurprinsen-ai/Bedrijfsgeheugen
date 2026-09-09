@@ -99,3 +99,14 @@ test('single-flight command failures emit actionable GitHub annotations', async 
   assert.match(kernel, /result\.status/);
   assert.match(kernel, /stderrTail/);
 });
+
+test('single-flight failures persist a machine-readable diagnostic artifact', async () => {
+  const kernel = await text('tools/ci/single-flight-release-kernel.mjs');
+  const requiredWorkflow = await text('.github/workflows/required-test.yml');
+  assert.match(kernel, /\.single-flight-failure\.json/);
+  assert.match(kernel, /single-flight-failure-v1/);
+  assert.match(kernel, /exitCode/);
+  assert.match(requiredWorkflow, /actions\/upload-artifact@v4/);
+  assert.match(requiredWorkflow, /\.single-flight-failure\.json/);
+  assert.match(requiredWorkflow, /if-no-files-found:\s*ignore/);
+});
