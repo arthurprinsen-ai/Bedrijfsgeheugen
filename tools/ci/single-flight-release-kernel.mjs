@@ -230,6 +230,10 @@ async function waitForPreview({ headSha, repository, token }) {
   throw new Error(`Timed out waiting for exact deploy preview for ${headSha}`);
 }
 
+function workflowEscape(value) {
+  return String(value ?? '').replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+}
+
 function executeCommand(command, { plan, websiteRisk }) {
   const previewUrl = `https://deploy-preview-${plan.prNumber}--bedrijfsgeheugen.netlify.app`;
   const routesJson = JSON.stringify(websiteRisk?.affected_routes || ['/']);
@@ -245,9 +249,21 @@ function executeCommand(command, { plan, websiteRisk }) {
     ROUTES_JSON: routesJson,
   };
   process.stdout.write(`${JSON.stringify({ event: 'single-flight-command', id: command.id, lane: command.lane, headSha: plan.headSha, riskLane: websiteRisk?.lane ?? null })}\n`);
-  const result = spawnSync(command.command, command.args, { stdio: 'inherit', env });
+  const result = spawnSync(command.command, command.args, {
+    encoding: 'utf8',
+    env,
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: ['inherit', 'pipe', 'pipe'],
+  });
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
   if (result.error) throw result.error;
-  if (result.status !== 0) throw new Error(`SINGLE_FLIGHT_COMMAND_FAILED:${command.id}:exit=${result.status}`);
+  if (result.status !== 0) {
+    const stderrTail = String(result.stderr || result.stdout || '').slice(-4000);
+    const detail = `id=${command.id}; lane=${command.lane}; exit=${result.status}; stderr=${stderrTail || 'no captured output'}`;
+    process.stderr.write(`::error title=Single-flight command failed::${workflowEscape(detail)}\n`);
+    throw new Error(`SINGLE_FLIGHT_COMMAND_FAILED:${command.id}:exit=${result.status}`);
+  }
 }
 
 async function buildRuntimePlan({ base, head, pr }) {
