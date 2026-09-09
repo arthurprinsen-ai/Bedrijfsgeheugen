@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { PROFILE_DIMENSIONS, profileOverviewMetrics, companyInputSchema } from '../modules/company-input.js';
 
 test('profile restores all 13 protected legacy maturity dimensions plus employees and hourly cost',()=>{
@@ -26,4 +27,13 @@ test('raising maturity reduces derived manual work',()=>{
   const low={portal:{profile:{employees:24,hourlyCost:52,maturity:Object.fromEntries(PROFILE_DIMENSIONS.map(item=>[item.id,1]))}}};
   const high={portal:{profile:{employees:24,hourlyCost:52,maturity:Object.fromEntries(PROFILE_DIMENSIONS.map(item=>[item.id,4]))}}};
   assert.ok(profileOverviewMetrics(high).annualManualHours < profileOverviewMetrics(low).annualManualHours);
+});
+
+test('page shell and app wire company input to the canonical domain state',()=>{
+  const shell=fs.readFileSync(new URL('../page-shell.js',import.meta.url),'utf8');
+  const app=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
+  assert.match(shell,/mountCompanyInput/);
+  assert.match(shell,/configurePortalShell/);
+  assert.match(shell,/portalContext\.domainState/);
+  assert.match(app,/configurePortalShell\(\{domainState:portalDomainState\}\)/);
 });
