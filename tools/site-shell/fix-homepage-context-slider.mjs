@@ -1,9 +1,9 @@
 const MARKER = 'data-bg-context-slider-readable';
 const SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-const RUNTIME_SRC = '/assets/compare-slider-runtime-native-range-v13.js';
+const RUNTIME_SRC = '/assets/compare-slider-pointer-bridge-v14.js';
 
 const STYLE = `<style ${MARKER}>
-[data-bg-compare-slider]{--split:50%;--bg-compare-split:var(--split,50%);position:relative!important;overflow:hidden!important;cursor:ew-resize!important}
+[data-bg-compare-slider]{--split:50%;--bg-compare-split:var(--split,50%);position:relative!important;overflow:hidden!important;cursor:ew-resize!important;touch-action:pan-y!important}
 [data-bg-compare-slider] .compare-side{position:absolute!important;inset:0!important;width:100%!important;max-width:none!important}
 [data-bg-compare-slider] .compare-before{clip-path:inset(0 calc(100% - var(--bg-compare-split,50%)) 0 0)!important}
 [data-bg-compare-slider] .compare-after{clip-path:inset(0 0 0 var(--bg-compare-split,50%))!important}
@@ -11,6 +11,7 @@ const STYLE = `<style ${MARKER}>
 [data-bg-compare-slider] .compare-after .compare-copy{width:min(460px,calc(100% - 44px))!important;max-width:none!important;margin-left:auto!important;margin-right:0!important;padding-left:24px!important;box-sizing:border-box}
 [data-bg-compare-slider] .compare-handle,[data-bg-compare-slider] .compare-knob{pointer-events:none!important}
 [data-bg-compare-slider] .bg-compare-range{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;padding:0!important;z-index:30!important;opacity:.001!important;cursor:ew-resize!important}
+[data-bg-compare-slider][data-bg-pointer-capture-v14="true"] .bg-compare-range{pointer-events:none!important}
 [data-bg-compare-slider] .bg-compare-divider{position:absolute!important;top:0!important;bottom:0!important;left:var(--bg-compare-split,50%)!important;width:4px!important;background:#FFE86B!important;z-index:20!important;pointer-events:none!important;transform:translateX(-50%)!important}
 [data-bg-compare-slider][data-bg-compare-endpoint="start"] .bg-compare-divider{transform:translateX(0)!important}
 [data-bg-compare-slider][data-bg-compare-endpoint="end"] .bg-compare-divider{transform:translateX(-100%)!important}
@@ -108,7 +109,7 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('bgx-lek-uit-flow')||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
      (next.match(/<script data-bg-compare-bootstrap>/g)||[]).length!==1||
-     (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime-native-range-v13\.js"><\/script>/g)||[]).length!==1){
+     (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-pointer-bridge-v14\.js"><\/script>/g)||[]).length!==1){
     throw new Error('Compare-slider readability guard kon niet volledig worden toegepast');
   }
   return next;
