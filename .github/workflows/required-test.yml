@@ -105,3 +105,11 @@ jobs:
           SELECT_AUTOMATION: ${{ steps.scope.outputs.automation }}
           GH_TOKEN: ${{ github.token }}
         run: node tools/ci/single-flight-release-kernel.mjs run --base "$BASE_SHA" --head "$HEAD_SHA" --pr "$PR_NUMBER"
+      - name: Upload single-flight failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: single-flight-failure-${{ steps.scope.outputs.head_sha }}
+          path: .single-flight-failure.json
+          if-no-files-found: ignore
+          retention-days: 7
