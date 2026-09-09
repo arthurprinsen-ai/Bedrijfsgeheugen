@@ -1,0 +1,21 @@
+{
+  "version": "SOCIAL-LEARNING-v1",
+  "windowsHours": [24, 48, 72],
+  "promotion": {
+    "minSampleSize": 5,
+    "minPublicationDates": 2,
+    "minConfidence": 0.75
+  },
+  "explorationTarget": 0.2,
+  "metricPriority": [
+    "revenue",
+    "orders",
+    "offers",
+    "qualified_leads",
+    "meetings",
+    "dms",
+    "substantive_interactions",
+    "clicks",
+    "likes"
+  ]
+}
