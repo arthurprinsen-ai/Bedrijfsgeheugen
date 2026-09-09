@@ -3,6 +3,8 @@ import { nativePageContent } from './native-pages.js';
 import { renderCsrdImpact } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
+import { getCapabilityContract } from './capability-contracts.js';
+import { mountWorkspace } from './workspace-shell.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -133,10 +135,18 @@ export function openPortalPage(pageId){
   root.querySelector('#pvStatus').textContent=view.evidenceLabel;
   root.dataset.pageId=pageId;
   const native=root.querySelector('#pvNative');
+  const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage});
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(pageId==='koppelingen'){ native.innerHTML=''; mountConnectorWizard(native); }
-  else renderNative(native,view);
+  else if(contract?.legacyCapability){
+    mountWorkspace(native,contract,{
+      title:view.title,
+      description:view.description,
+      saveStatus:'idle',
+      render:content=>renderNative(content,view)
+    });
+  } else renderNative(native,view);
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
 }
