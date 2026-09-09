@@ -83,6 +83,18 @@ test('desktop Chrome mag publieke data-op inhoud nooit onzichtbaar maken', () =>
   );
 });
 
+test('standalone build verwijdert reveal-triggers uit gewone content', () => {
+  const html = '<main><section class="blok" data-op><h2 data-op>Altijd zichtbaar</h2><p data-op>Tekst</p></section></main>';
+  const out = maakBeweeglijk(html);
+  assert.doesNotMatch(out, /\sdata-op(?:\s|>|=)/, 'Publieke content mag niet afhankelijk blijven van een reveal-trigger.');
+  assert.match(out, /Altijd zichtbaar/);
+  assert.match(out, />Tekst</);
+});
+
+test('woordanimatie heeft een zichtbare basistoestand', () => {
+  assert.match(BEWEGING_CSS, /\.bgx-woord\{[^}]*opacity:\s*1[^}]*transform:\s*none/s);
+});
+
 test('V18 interactieve websitecode en regressietests horen bij de website delivery lane', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   for (const path of ['tools/v18-beweging.mjs', 'tests/v18-vergelijker.test.mjs']) {
