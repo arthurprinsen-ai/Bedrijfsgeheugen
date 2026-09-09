@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import {
   finalizeNavigationHtml,
   verifyFinalNavigationHtml,
@@ -34,5 +35,11 @@ assert.throws(() => assertIndexableRouteHtml(kennisRoute.replace('index, follow'
 
 assert.ok(PUBLIC_PAGE_EXCLUDES.has('shell-gate-canonical-source.html'), 'canonical shell diagnostic source mag nooit als publieke route worden gevalideerd');
 assert.ok(PUBLIC_PAGE_EXCLUDES.has('shell-gate-failed-page.html'), 'canonical shell failed-page artifact mag nooit als publieke route worden gevalideerd');
+
+const releaseScript = await readFile(new URL('../tools/bouw-release-evidence.mjs', import.meta.url), 'utf8');
+const isolatePos = releaseScript.indexOf('await isolateStandalonePages()');
+const finalizePos = releaseScript.indexOf('await finalizeSiteContracts()');
+assert.ok(isolatePos >= 0, 'release boundary moet standalone pagina-transformer blijven uitvoeren');
+assert.ok(finalizePos > isolatePos, 'final navigation contract moet NA de laatste HTML-transformer draaien');
 
 console.log('final site navigation contract: OK');
