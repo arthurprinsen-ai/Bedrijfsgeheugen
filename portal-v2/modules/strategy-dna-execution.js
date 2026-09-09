@@ -17,7 +17,35 @@ export function profileExecutionThemes(state={}){
   const level=clampLevel(profile.maturity?.[item.id]);
   const annualManualCost=item.weeklyHours*FACTOR[level]*(employees/24)*46*hourlyCost;
   return Object.freeze({id:item.id,label:item.label,annualManualCost,shares:STANDARD_EXECUTION_SHARES,level});
- }).sort((a,b)=>b.annualManualCost-a.annualManualCost);
+ });
+}
+
+export function executionSignalDimensions(state={}){
+ const execution=state?.portal?.strategy?.execution||{};
+ const findings=Array.isArray(state?.portal?.strategy?.findings)?state.portal.strategy.findings:[];
+ const advice=Array.isArray(state?.portal?.advice?.items)?state.portal.advice.items:[];
+ return [
+  ...(Array.isArray(execution.signalDimensions)?execution.signalDimensions:[]),
+  ...findings.map(item=>item?.dimension??item?.dim).filter(Boolean),
+  ...advice.map(item=>item?.dimension??item?.dim).filter(Boolean),
+ ].map(String);
+}
+
+export function selectExecutionThemeIds(themes=[],signalDimensions=[],themeCount=3){
+ const valid=(Array.isArray(themes)?themes:[]).filter(theme=>theme?.id);
+ if(!valid.length)return [];
+ const weakest=[...valid].sort((a,b)=>(Number(a.level)||2)-(Number(b.level)||2))[0];
+ const mostExpensive=[...valid].sort((a,b)=>(Number(b.annualManualCost)||0)-(Number(a.annualManualCost)||0))[0];
+ const validIds=new Set(valid.map(theme=>String(theme.id)));
+ const counts={};
+ for(const raw of Array.isArray(signalDimensions)?signalDimensions:[]){const id=String(raw);if(validIds.has(id))counts[id]=(counts[id]||0)+1;}
+ let mostReferenced=null,most=0;
+ for(const [id,count] of Object.entries(counts)){if(count>most){most=count;mostReferenced=id;}}
+ const selected=[];
+ const add=id=>{if(id&&validIds.has(String(id))&&!selected.includes(String(id))&&selected.length<themeCount)selected.push(String(id));};
+ add(weakest?.id);add(mostExpensive?.id);add(mostReferenced);
+ [...valid].sort((a,b)=>(Number(b.annualManualCost)||0)-(Number(a.annualManualCost)||0)).forEach(theme=>add(theme.id));
+ return selected;
 }
 
 export function executionValueMetrics({themes=[],completion={}}={}){
@@ -44,9 +72,10 @@ function render(root,themes,completion){
 export function mountStrategyExecution(root,{domainState,onSaveStatus,themeCount=3}={}){
  if(!root?.querySelectorAll)throw new TypeError('STRATEGY_EXECUTION_ROOT_REQUIRED');
  if(!domainState?.get||!domainState?.set)throw new TypeError('STRATEGY_EXECUTION_STATE_REQUIRED');
- let all=profileExecutionThemes(domainState.get());
+ const state=domainState.get();
+ const all=profileExecutionThemes(state);
  const configured=domainState.get('portal.strategy.execution.themeIds');
- const selectedIds=Array.isArray(configured)&&configured.length?configured:all.slice(0,themeCount).map(item=>item.id);
+ const selectedIds=Array.isArray(configured)&&configured.length?configured:selectExecutionThemeIds(all,executionSignalDimensions(state),themeCount);
  const byId=new Map(all.map(item=>[item.id,item]));
  const themes=selectedIds.map(id=>byId.get(id)).filter(Boolean);
  if(!Array.isArray(configured)||!configured.length)domainState.set('portal.strategy.execution.themeIds',selectedIds);
@@ -61,6 +90,6 @@ export function mountStrategyExecution(root,{domainState,onSaveStatus,themeCount
   }));
   return metrics;
  };
- const metrics=paint();
+ paint();
  return Object.freeze({themes:[...themes],metrics:()=>executionValueMetrics({themes,completion}),refresh:paint});
 }
