@@ -10,6 +10,7 @@ async function boot(page,preview,width=1440,height=1000){
  await page.setViewportSize({width,height});
  await page.goto(`${preview}/portal-v2/`,{waitUntil:'domcontentloaded'});
  await expect(page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true})).toBeVisible({timeout:30000});
+ await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30000});
 }
 async function openFunctional(page,pageId){
  await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
