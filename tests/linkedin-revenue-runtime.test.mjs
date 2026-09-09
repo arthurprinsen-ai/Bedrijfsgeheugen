@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+// Revenue Command Center release gate: queue remains bounded to 15 evidence-backed actions.
 const modulePath = new URL('../platform/linkedin-revenue-cockpit.mjs', import.meta.url);
 
 async function loadRuntime() {
