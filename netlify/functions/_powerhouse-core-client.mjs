@@ -27,5 +27,4 @@ export const recordPowerhouseOutcome=(outcome,options={})=>callCore('outcomes',{
 export const getPowerhouseActions=(limit=15,options={})=>callCore(`actions?limit=${Math.max(1,Math.min(50,Number(limit)||15))}`,options);
 export const runPowerhouseDaily=(runDate=null,options={})=>callCore('daily',{...options,method:'POST',body:runDate?{runDate}:{}});
 export const getPowerhouseLearning=(options={})=>callCore('learning',options);
-export const getPowerhouseRecommendations=(limit=10,options={})=>callCore(`content?limit=${Math.max(1,Math.min(50,Number(limit)||10))}`,options);
 export const getPowerhouseHealth=(options={})=>callCore('health',options);
