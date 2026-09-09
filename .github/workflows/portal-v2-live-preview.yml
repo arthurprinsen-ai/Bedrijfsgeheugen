@@ -6,6 +6,7 @@ on:
     paths:
       - 'portal-v2/**'
       - 'tests/integration/portal-v2-live.spec.js'
+      - 'tests/integration/portal-v2-functional-parity.spec.js'
       - '.github/workflows/portal-v2-live-preview.yml'
   workflow_dispatch:
 
@@ -51,6 +52,7 @@ jobs:
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.css" -o /tmp/portal-v2.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/saas-theme.css" -o /tmp/portal-v2-saas.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/csrd-mobile-saas.css" -o /tmp/portal-v2-csrd-saas.css
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/functional-suite.css" -o /tmp/portal-v2-functional.css
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.js" -o /tmp/portal-v2.js
           node --check /tmp/portal-v2.js
           grep -q 'Welkom terug, Arthur' /tmp/portal-v2.html
@@ -62,6 +64,7 @@ jobs:
           grep -q 'brainflow' /tmp/portal-v2-saas.css
           grep -q 'csrd-mobile-summary' /tmp/portal-v2-csrd-saas.css
           grep -q 'csrd-mobile-domain' /tmp/portal-v2-csrd-saas.css
+          grep -q 'v2repeatrow' /tmp/portal-v2-functional.css
 
       - name: Install Playwright runtime
         run: |
@@ -71,7 +74,7 @@ jobs:
       - name: Verify approved desktop and mobile composition
         env:
           PREVIEW_URL: ${{ env.PREVIEW_URL }}
-        run: npx playwright test tests/integration/portal-v2-live.spec.js --workers=1
+        run: npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js --workers=1
 
       - name: Upload visual evidence
         if: always()
@@ -86,4 +89,4 @@ jobs:
         run: |
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
           echo "Verified preview: $PREVIEW_URL/portal-v2/?klant=ijsselmonde"
-          echo "Desktop and mobile screenshots uploaded as portal-v2-visual-evidence."
+          echo "Desktop, mobile and full functional parity browser checks completed."
