@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bedrijfsgeheugen.nl/brain/contracts/social-learning-event.schema.json",
+  "title": "Social Learning Outcome Event",
+  "type": "object",
+  "required": ["eventId", "tenantId", "idempotencyKey", "platform", "externalPostId", "observedAt", "metrics", "source"],
+  "properties": {
+    "eventId": {"type": "string", "minLength": 1},
+    "tenantId": {"type": "string", "minLength": 1},
+    "idempotencyKey": {"type": "string", "minLength": 1},
+    "platform": {"type": "string", "enum": ["linkedin_personal", "linkedin_company", "instagram"]},
+    "externalPostId": {"type": "string", "minLength": 1},
+    "observedAt": {"type": "string", "format": "date-time"},
+    "source": {"type": "string", "minLength": 1},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {"type": ["number", "null"]}
+    }
+  },
+  "additionalProperties": true
+}
