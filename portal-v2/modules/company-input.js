@@ -18,6 +18,7 @@ export const PROFILE_DIMENSIONS=Object.freeze([
 ]);
 
 const FACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
+const LEGACY_DEFAULT_MATURITY=2;
 const profilePath=key=>`portal.profile.${key}`;
 const maturityPath=id=>`portal.profile.maturity.${id}`;
 
@@ -33,7 +34,7 @@ export function companyInputSchema(pageId='profiel'){
 }
 
 function valueAt(state,path){return String(path).split('.').reduce((value,key)=>value==null?undefined:value[key],state)}
-function safeLevel(value){const n=Math.round(Number(value)||1);return Math.max(1,Math.min(5,n))}
+function safeLevel(value){const n=Math.round(Number(value)||LEGACY_DEFAULT_MATURITY);return Math.max(1,Math.min(5,n))}
 
 export function profileOverviewMetrics(state={}){
  const profile=state?.portal?.profile||{};
@@ -70,7 +71,7 @@ function renderReview(root,state,schema){
 }
 
 function renderForm(root,state,schema){
- root.innerHTML=`<div class="v2completion"></div><div class="v2formgrid">${schema.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?1:''))).join('')}</div><div class="v2formactions"><button type="button" class="pvprimary" data-save-company>Opslaan</button><span data-save-message>Wijzigingen worden in je beveiligde portaalstatus opgeslagen.</span></div>`;
+ root.innerHTML=`<div class="v2completion"></div><div class="v2formgrid">${schema.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?LEGACY_DEFAULT_MATURITY:''))).join('')}</div><div class="v2formactions"><button type="button" class="pvprimary" data-save-company>Opslaan</button><span data-save-message>Wijzigingen worden in je beveiligde portaalstatus opgeslagen.</span></div>`;
  const completion=calculateCompletion(schema,state);const box=root.querySelector('.v2completion');if(box)box.innerHTML=`<strong>${completion.percentage}% compleet</strong><span>${completion.complete} van ${completion.total} verplichte velden ingevuld</span>`;
 }
 
