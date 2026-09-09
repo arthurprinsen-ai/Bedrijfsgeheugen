@@ -56,6 +56,7 @@ const style = `<style id="v18-stable-video-fix">
 const megaMenuContrastContract = `<style id="v18-megamenu-contrast-contract">
 [data-bg-megamenu-heading]{color:#000!important;font-weight:800!important}
 [data-bg-megamenu-link],[data-bg-megamenu-link] *{color:#000!important;font-weight:700!important}
+.v17-solutions-mega .v17-mega-route,.v17-solutions-mega .v17-mega-route b{color:#14171a}
 </style>
 <script id="v18-megamenu-contrast-marker">
 (function(){
