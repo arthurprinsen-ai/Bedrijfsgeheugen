@@ -7,8 +7,11 @@ on:
       - 'intern/linkedin-revenue/**'
       - 'platform/linkedin-revenue-cockpit.mjs'
       - 'netlify/functions/linkedin-revenue-cockpit.mjs'
+      - 'supabase/functions/powerhouse-runtime/**'
+      - 'supabase/migrations/*powerhouse_v96_supabase_native_runtime.sql'
       - 'tests/linkedin-revenue-cockpit.test.mjs'
       - 'tests/linkedin-revenue-runtime.test.mjs'
+      - 'tests/powerhouse-v96-supabase-native.test.mjs'
       - '.github/workflows/linkedin-revenue-cockpit-tests.yml'
       - '_redirects'
 
@@ -25,4 +28,4 @@ jobs:
         with:
           node-version: '22'
       - name: Verify revenue cockpit contract
-        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs
+        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs tests/powerhouse-v96-supabase-native.test.mjs
