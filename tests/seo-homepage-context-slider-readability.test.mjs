@@ -9,7 +9,8 @@ const pipeline=await read('tools/prijzen-uit-de-homepage.mjs');
 const normalizer=await read('tools/normaliseer-site-ui.mjs');
 const fixer=await read('tools/site-shell/fix-homepage-context-slider.mjs');
 const runtime=await read('assets/compare-slider-runtime.js');
-const bridge=await read('assets/compare-slider-runtime-native-range-v13.js');
+const v13=await read('assets/compare-slider-runtime-native-range-v13.js');
+const bridge=await read('assets/compare-slider-pointer-bridge-v14.js');
 const pointerRuntime=await read('assets/compare-slider-pointer-capture-v14.js');
 const browserCheck=await read('tools/site-shell/homepage-context-slider-browser-check.mjs');
 const websiteLane=await read('.github/workflows/lane-website.yml');
@@ -31,14 +32,15 @@ test('alle compare-sliders delen dezelfde generieke selector en 0-100 state',()=
   assert.match(pointerRuntime,/Math\.max\(0, Math\.min\(100, value\)\)/);
 });
 
-test('base runtime en pointer runtime zijn parsebaar en bridge laadt pointer pas na base runtime',()=>{
+test('v13 blijft immutable en v14 bridge laadt v13 gevolgd door pointer capture',()=>{
+  assert.equal(v13,runtime);
   assert.doesNotThrow(()=>new Script(runtime));
   assert.doesNotThrow(()=>new Script(pointerRuntime));
   assert.doesNotThrow(()=>new Script(bridge));
-  assert.match(fixer,/RUNTIME_SRC\s*=\s*['"]\/assets\/compare-slider-runtime-native-range-v13\.js['"]/);
-  assert.match(bridge,/BASE='\/assets\/compare-slider-runtime\.js'/);
+  assert.match(fixer,/RUNTIME_SRC\s*=\s*['"]\/assets\/compare-slider-pointer-bridge-v14\.js['"]/);
+  assert.match(bridge,/BASE='\/assets\/compare-slider-runtime-native-range-v13\.js'/);
   assert.match(bridge,/POINTER='\/assets\/compare-slider-pointer-capture-v14\.js'/);
-  assert.match(bridge,/load\(BASE,loadPointer\)/);
+  assert.match(bridge,/append\(BASE,function\(\)\{ append\(POINTER\); \}\)/);
 });
 
 test('pointer capture is primaire mobiele transportlaag; native range is alleen passieve fallback',()=>{
@@ -56,6 +58,7 @@ test('pointer capture is primaire mobiele transportlaag; native range is alleen 
   assert.match(pointerRuntime,/input\[type="range"\]/);
   assert.match(pointerRuntime,/pointer-events','none'/);
   assert.match(pointerRuntime,/range\.tabIndex = -1/);
+  assert.match(fixer,/touch-action:pan-y!important/);
 });
 
 test('één pointerwaarde stuurt reveal divider handle endpoint en ARIA exact naar 0 en 100',()=>{
@@ -107,12 +110,12 @@ test('wijzigingssectie blijft een cumulatieve verticale voortgangsflow',()=>{
   assert.match(browserCheck,/progress < \.98/);
 });
 
-test('oude guard wordt vervangen en canonieke bridge blijft exact één keer aanwezig',()=>{
+test('oude guard wordt vervangen en canonieke v14 bridge blijft exact één keer aanwezig',()=>{
   const stale='<!doctype html><html><head><style data-bg-context-slider-readable>STALE</style></head><body><div class="compare-slider"><div class="compare-before"><div class="compare-copy"><h3>Links</h3><p>Voor</p></div></div><div class="compare-after"><div class="compare-copy"><h3>Rechts</h3><p>Na</p></div></div><div class="compare-handle"><button class="compare-knob"></button></div></div><script data-bg-context-slider-readable>STALE</script></body></html>';
   const upgraded=applyHomepageContextSliderReadability(stale);
   assert.doesNotMatch(upgraded,/>STALE</);
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
-  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime-native-range-v13\.js"><\/script>/g)||[]).length,1);
+  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-pointer-bridge-v14\.js"><\/script>/g)||[]).length,1);
   assert.match(upgraded,/data-bg-compare-slider/);
 });
 
