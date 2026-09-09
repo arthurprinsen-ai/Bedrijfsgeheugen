@@ -5,14 +5,6 @@ begin
   end if;
 end $$;
 
-select cron.schedule(
-  'bg-native-content-generate-daily',
-  '15 2 * * *',
-  $$
-    select http_post(
-      'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-native-content-generate',
-      '{}'::jsonb,
-      '{"content-type":"application/json"}'::jsonb
-    ) as http_result;
-  $$
-);
+-- The daily content-learning runner moved to GitHub Actions so the mutating
+-- Edge Functions are invoked only with the repository-held Supabase
+-- service-role credential. Never schedule an anonymous HTTP request here.
