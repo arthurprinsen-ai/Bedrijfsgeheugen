@@ -22,10 +22,11 @@ export const EXECUTION_LADDER_SHARES=Object.freeze({
 
 const byId=new Map(PROFILE_DIMENSIONS.map(item=>[item.id,item]));
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const level=value=>Math.max(1,Math.min(5,Math.round(Number(value)||2));
+const level=value=>Math.max(1,Math.min(5,Math.round(Number(value)||2)));
 const pct=value=>new Intl.NumberFormat('nl-NL',{style:'percent',maximumFractionDigits:0}).format(value||0);
 const euro=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value||0);
 const boolSteps=value=>Array.from({length:5},(_,i)=>Boolean(Array.isArray(value)&&value[i]));
+const valueAt=(state,path)=>String(path||'').split('.').filter(Boolean).reduce((value,key)=>value==null?undefined:value[key],state);
 
 export function executionThemeMetrics(state={},dimensionId){
   const item=byId.get(String(dimensionId));
@@ -72,7 +73,7 @@ function selectedThemes(state={}){
   return clean.length?clean:defaultExecutionThemes(state,3);
 }
 
-function themeSelector(state,selected){
+function themeSelector(selected){
   return `<div class="v2executionthemes" role="group" aria-label="Uitvoeringsthema's">${PROFILE_DIMENSIONS.map(item=>{
     const active=selected.includes(item.id);
     return `<button type="button" data-execution-theme="${esc(item.id)}" aria-pressed="${active?'true':'false'}" ${!active&&selected.length>=3?'disabled':''}>${esc(item.label)}</button>`;
@@ -88,11 +89,17 @@ export function mountStrategyExecution(root,{domainState,onSaveStatus}={}){
   if(!domainState?.get||!domainState?.set)throw new TypeError('STRATEGY_EXECUTION_STATE_REQUIRED');
   ensureInteractionParityStyles(root.ownerDocument||globalThis.document);
   let saveTimer=null;
-  const flush=()=>{clearTimeout(saveTimer);saveTimer=setTimeout(()=>domainState.flush?.().then(()=>onSaveStatus?.(domainState.status?.()||'saved')).catch(()=>onSaveStatus?.('error')),250);};
+  const flush=()=>{
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(async()=>{
+      try{await domainState.flush?.();onSaveStatus?.(domainState.status?.()||'saved');}
+      catch{onSaveStatus?.('error');}
+    },250);
+  };
   const dirty=()=>{onSaveStatus?.(domainState.status?.()||'dirty');flush();};
   const render=()=>{
     const state=domainState.get()||{};const selected=selectedThemes(state);const summary=executionValueSummary(state,selected);
-    root.innerHTML=`<section class="pvmodule v2execution"><div class="pvmodulehead"><span>5. Uitvoeren</span><h3>Van strategie naar aantoonbaar vrijgespeelde capaciteit</h3><p>Kies maximaal drie thema's. Legacy-semantiek: maximaal 70% van het huidige handwerk geldt als realiseerbaar; waarde telt pas mee zodra een uitvoeringsstap is afgerond.</p></div><div class="v2profilemetrics"><article><small>Realiseerbaar potentieel</small><strong>${euro(summary.potentialValue)}</strong><span>70% van huidig handwerk in gekozen thema's</span></article><article><small>Gerealiseerd</small><strong>${euro(summary.realizedValue)}</strong><span>${summary.completedSteps} van ${summary.totalSteps} treden afgerond</span></article></div>${themeSelector(state,selected)}<div class="v2executiongrid">${summary.themes.map(themeCard).join('')}</div></section>`;
+    root.innerHTML=`<section class="pvmodule v2execution"><div class="pvmodulehead"><span>5. Uitvoeren</span><h3>Van strategie naar aantoonbaar vrijgespeelde capaciteit</h3><p>Kies maximaal drie thema's. Legacy-semantiek: maximaal 70% van het huidige handwerk geldt als realiseerbaar; waarde telt pas mee zodra een uitvoeringsstap is afgerond.</p></div><div class="v2profilemetrics"><article><small>Realiseerbaar potentieel</small><strong>${euro(summary.potentialValue)}</strong><span>70% van huidig handwerk in gekozen thema's</span></article><article><small>Gerealiseerd</small><strong>${euro(summary.realizedValue)}</strong><span>${summary.completedSteps} van ${summary.totalSteps} treden afgerond</span></article></div>${themeSelector(selected)}<div class="v2executiongrid">${summary.themes.map(themeCard).join('')}</div></section>`;
     root.querySelectorAll('[data-execution-theme]').forEach(button=>button.addEventListener('click',()=>{
       const id=button.dataset.executionTheme;let next=[...selected];
       if(next.includes(id))next=next.filter(value=>value!==id);else if(next.length<3)next.push(id);
@@ -102,7 +109,9 @@ export function mountStrategyExecution(root,{domainState,onSaveStatus}={}){
     root.querySelectorAll('[data-execution-card]').forEach(card=>{
       const id=card.dataset.executionCard;
       card.querySelectorAll('[data-execution-step]').forEach(input=>input.addEventListener('change',()=>{
-        const index=Number(input.dataset.executionStep);const current=boolSteps(domainState.get(`portal.strategy.execution.${id}`));current[index]=input.checked;
+        const index=Number(input.dataset.executionStep);
+        const current=boolSteps(valueAt(domainState.get()||{},`portal.strategy.execution.${id}`));
+        current[index]=input.checked;
         domainState.set(`portal.strategy.execution.${id}`,current);dirty();render();
       }));
     });
