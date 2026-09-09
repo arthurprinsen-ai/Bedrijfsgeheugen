@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+// Keep this test under tests/supabase-* so the canonical delivery classifier assigns the backend lane.
 const edgeUrl = new URL('../supabase/functions/powerhouse-runtime/index.ts', import.meta.url);
 const migrationUrl = new URL('../supabase/migrations/20260909090000_powerhouse_v96_supabase_native_runtime.sql', import.meta.url);
 
