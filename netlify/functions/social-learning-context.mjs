@@ -1,13 +1,16 @@
+import { timingSafeEqual } from 'node:crypto';
 import { createSocialLearningStore } from './_social-learning-store.mjs';
 
 const byValue=(a,b)=>(Number(b.confidence||0)*Math.abs(Number(b.effectSize||0)))-(Number(a.confidence||0)*Math.abs(Number(a.effectSize||0)));
 const compact=l=>({learningId:l.learningId,claim:l.claim||'',componentScope:l.componentScope||'',effectMetric:l.effectMetric||'',effectSize:Number(l.effectSize||0),sampleSize:Number(l.sampleSize||0),confidence:Number(l.confidence||0),status:l.status,lastValidatedAt:l.lastValidatedAt||''});
+function tokenMatches(actual,expected){if(!actual||!expected)return false;const a=Buffer.from(String(actual));const b=Buffer.from(String(expected));return a.length===b.length&&timingSafeEqual(a,b);}
 
-export function createSocialLearningContextHandler({store,maxLearnings=6}={}){
+export function createSocialLearningContextHandler({store,maxLearnings=6,serviceToken=process.env.BG_SOCIAL_LEARNING_SERVICE_TOKEN||process.env.BG_PORTAL_EU_SERVICE_TOKEN,defaultTenantId=process.env.BG_SOCIAL_LEARNING_TENANT_ID||'canonical'}={}){
   return async request=>{
-    const activeStore=store||createSocialLearningStore();
+    if(!tokenMatches(request.headers.get('x-bg-service-token'),serviceToken))return Response.json({error:'UNAUTHORIZED'},{status:401,headers:{'cache-control':'no-store'}});
+    const activeStore=store||createSocialLearningStore({tenantId:defaultTenantId});
     if(request.method==='GET'){
-      const tenantId=new URL(request.url).searchParams.get('tenantId')||'default';
+      const tenantId=new URL(request.url).searchParams.get('tenantId')||defaultTenantId;
       try{
         const learnings=(await activeStore.listCurrentLearnings(tenantId)).filter(l=>l.status==='PROVEN'&&Number(l.confidence||0)>=0.75).sort(byValue).slice(0,maxLearnings).map(compact);
         const projection={version:`social-learning:${new Date().toISOString().slice(0,10)}`,tenantId,learnings};
