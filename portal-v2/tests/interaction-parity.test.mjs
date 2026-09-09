@@ -49,8 +49,11 @@ test('roadmap move and reorder preserve all card data', async () => {
   assert.equal(reordered[1].owner,'QA');
 });
 
-test('functional suite delegates roadmap input to the native board', () => {
-  const source=fs.readFileSync('portal-v2/modules/functional-suite.js','utf8');
-  assert.match(source,/mountRoadmapBoard/);
-  assert.match(source,/pageId==='roadmap'/);
+test('workspace shell delegates roadmap to its specialist interactive workspace', () => {
+  assert.ok(fs.existsSync('portal-v2/modules/roadmap-workspace.js'));
+  const shell=fs.readFileSync('portal-v2/workspace-shell.js','utf8');
+  const workspace=fs.readFileSync('portal-v2/modules/roadmap-workspace.js','utf8');
+  assert.match(shell,/roadmap-workspace\.js/);
+  assert.match(workspace,/mountRoadmapBoard/);
+  assert.match(workspace,/data-functional-workspace/);
 });
