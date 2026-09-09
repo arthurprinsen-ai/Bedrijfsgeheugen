@@ -1,7 +1,7 @@
 import { fieldMarkup, bindFields, normalizeFieldValue } from '../form-primitives.js';
 import { calculateCompletion } from '../completion.js';
 import { mountWorkspace } from '../workspace-shell.js';
-import { profileOverviewMetrics } from './company-input.js';
+import { profileOverviewMetrics, PROFILE_DIMENSIONS } from './company-input.js';
 
 const f=(id,legacyFieldId,label,type,path,extra={})=>Object.freeze({id,legacyFieldId,label,type,path,required:true,...extra});
 const repeat=(id,legacyFieldId,label,path,columns)=>Object.freeze({id,legacyFieldId,label,type:'repeatable',path,required:false,columns:Object.freeze(columns)});
@@ -23,7 +23,7 @@ const DEFINITIONS=Object.freeze({
    f('hourlyRate','asTarief','Uurtarief (€)','currency','portal.aiScan.hourlyRate',{min:0}),
    repeat('tasks','asRijen:*','AI-kansen per taak','portal.aiScan.tasks',[col('task','Taak'),col('owner','Eigenaar'),col('hoursPerWeek','Uren/week','number',{min:0}),col('repetition','Herhaling','select',{options:['Dagelijks','Wekelijks','Maandelijks','Incidenteel']}),col('dataReadiness','Data readiness','range',{min:1,max:5}),col('errorRisk','Foutrisico','range',{min:1,max:5})])],
    models:['AI opportunity matrix','per-task benefit/timing','benchmark checkpoint','priority order'],actions:[['Naar Data & AI','data-ai'],['Businesscase','businesscase']]},
- businesscase:{slice:'portal.businessCase',fields:[f('target','bDoel','Doelniveau','range','portal.businessCase.target',{min:1,max:5}),f('delay','bUitstel','Uitstel (maanden)','number','portal.businessCase.delay',{min:0,max:60}),f('investment','bInvest','Investering (€)','currency','portal.businessCase.investment',{min:0})],models:['cumulative net result','adoption curve'],actions:[['Naar roadmap','roadmap'],['Cijfers','cijfers-maatstaven']]},
+ businesscase:{slice:'portal.businessCase',fields:[f('target','bDoel','Doelniveau','range','portal.businessCase.target',{min:2,max:5,defaultValue:4}),f('delay','bUitstel','Uitstel (maanden)','number','portal.businessCase.delay',{min:0,max:18,step:3,defaultValue:12}),f('investment','bInvest','Investering (€)','currency','portal.businessCase.investment',{min:1000,step:1000,defaultValue:12000})],models:['cumulative net result','adoption curve'],actions:[['Naar roadmap','roadmap'],['Cijfers','cijfers-maatstaven']]},
  'cijfers-maatstaven':{slice:'portal.metrics',fields:[
    f('revenue','cOmzet','Omzet (€ x 1.000)','currency','portal.metrics.revenue',{min:0}),f('grossMargin','cBrutomarge','Brutomarge (%)','percentage','portal.metrics.grossMargin',{min:0,max:100}),f('ebitda','cEbitda','EBITDA (€ x 1.000)','currency','portal.metrics.ebitda'),f('wages','cLoon','Loonkosten (€ x 1.000)','currency','portal.metrics.wages',{min:0}),f('customers','cKlanten','Aantal klanten','number','portal.metrics.customers',{min:0}),f('largestCustomer','cGrootste','Grootste klant (%)','percentage','portal.metrics.largestCustomer',{min:0,max:100}),f('marketing','cMarketing','Marketing (€ x 1.000)','currency','portal.metrics.marketing',{min:0}),f('newCustomers','cNieuw','Nieuwe klanten','number','portal.metrics.newCustomers',{min:0}),f('dso','cDso','DSO (dagen)','number','portal.metrics.dso',{min:0}),f('it','cIt','IT-kosten (€ x 1.000)','currency','portal.metrics.it',{min:0}),f('nps','kNps','NPS','number','portal.metrics.nps',{min:-100,max:100}),f('satisfaction','kTevreden','Tevredenheid (%)','percentage','portal.metrics.satisfaction',{min:0,max:100}),f('repeat','kHerhaal','Herhaalaankopen (%)','percentage','portal.metrics.repeat',{min:0,max:100}),f('complaints','kKlacht','Klachten','number','portal.metrics.complaints',{min:0}),f('measurementDate','mtDatum','Meetdatum','date','portal.metrics.measurement.date'),f('measurementType','mtSoort','Meting','text','portal.metrics.measurement.type'),f('measurementValue','mtWaarde','Waarde','number','portal.metrics.measurement.value'),f('measurementNote','mtNotitie','Notitie','textarea','portal.metrics.measurement.note')],models:['KPI benchmark comparison','trusted-advisor ladder','productivity','measurements over time'],actions:[['Waarde & financiering','waarde-financiering'],['Branche','branche-markt']]},
  'waarde-financiering':{slice:'portal.valueFinance',fields:[f('debt','wSchuld','Schuld (€ x 1.000)','currency','portal.valueFinance.debt'),f('cash','wCash','Cash (€ x 1.000)','currency','portal.valueFinance.cash'),f('equity','wEV','Eigen vermogen (€ x 1.000)','currency','portal.valueFinance.equity'),f('balance','wBalans','Balanstotaal (€ x 1.000)','currency','portal.valueFinance.balance'),f('fixed','wVast','Vaste kosten (€ x 1.000)','currency','portal.valueFinance.fixed'),f('interest','wRente','Rentelasten (€ x 1.000)','currency','portal.valueFinance.interest'),f('multiple','wMultiple','EBITDA multiple','number','portal.valueFinance.multiple',{min:0}),f('wacc','wWacc','WACC (%)','percentage','portal.valueFinance.wacc',{min:0,max:100})],models:['EBITDA multiple','DCF perpetuity','DuPont','Altman Z','interest coverage','DSCR','break-even','sensitivity'],actions:[['Due diligence','due-diligence'],['Businesscase','businesscase']]},
@@ -53,6 +53,29 @@ export function functionalDefinition(pageId){return DEFINITIONS[pageId]||null}
 export function functionalSchema(pageId){return [...(DEFINITIONS[pageId]?.fields||[])]}
 export function listFunctionalSuitePages(){return Object.keys(DEFINITIONS)}
 
+const BUSINESSCASE_FACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
+const safeBusinessLevel=value=>Math.max(1,Math.min(5,Math.round(Number(value)||2)));
+const hasValue=value=>value!==undefined&&value!==null&&value!=='';
+
+export function businessCaseMetrics(state={}){
+ const profile=state?.portal?.profile||{},bc=state?.portal?.businessCase||{};
+ const employees=Math.max(1,Number(profile.employees)||24),hourlyCost=Math.max(0,Number(profile.hourlyCost)||52);
+ const target=Math.max(2,Math.min(5,Math.round(Number(bc.target)||4)));
+ const delayMonths=Math.max(0,Math.min(18,hasValue(bc.delay)?Number(bc.delay)||0:12));
+ const investment=hasValue(bc.investment)?Number(bc.investment)||12000:12000;
+ let currentAnnualCost=0,targetAnnualCost=0;
+ for(const item of PROFILE_DIMENSIONS){
+  const currentLevel=safeBusinessLevel(profile.maturity?.[item.id]);
+  const targetLevel=Math.max(currentLevel,target);
+  const annualBase=item.weeklyHours*(employees/24)*46*hourlyCost;
+  currentAnnualCost+=annualBase*BUSINESSCASE_FACTOR[currentLevel];
+  targetAnnualCost+=annualBase*BUSINESSCASE_FACTOR[targetLevel];
+ }
+ const annualBenefit=Math.max(currentAnnualCost-targetAnnualCost,0),monthlyBenefit=annualBenefit/12;
+ const delayCost=monthlyBenefit*delayMonths,paybackMonths=monthlyBenefit>0?investment/monthlyBenefit:99;
+ return Object.freeze({currentAnnualCost,targetAnnualCost,annualBenefit,delayCost,investment,paybackMonths,netThreeYear:annualBenefit*3-investment,target,delayMonths});
+}
+
 function genericReadiness(definition,state){
  const fields=definition.fields.filter(field=>field.type!=='repeatable');
  if(!fields.length)return 0;
@@ -63,9 +86,8 @@ function genericReadiness(definition,state){
 export function computeFunctionalAnalysis(pageId,state={}){
  const d=DEFINITIONS[pageId];if(!d)return [];
  if(pageId==='businesscase'){
-  const p=profileOverviewMetrics(state);const bc=state?.portal?.businessCase||{};const target=Math.max(1,Math.min(5,Number(bc.target)||4));
-  const targetFactor=[0,1,.78,.5,.22,.06][target];const annualBenefit=p.annualManualCost*(1-targetFactor);const delayCost=annualBenefit/12*(Number(bc.delay)||0);const investment=Number(bc.investment)||0;const payback=annualBenefit>0?investment/(annualBenefit/12):0;
-  return [['Jaarpotentieel',euro(annualBenefit)],['Kosten van uitstel',euro(delayCost)],['Investering',euro(investment)],['Terugverdientijd',`${number(payback,1)} mnd`]];
+  const result=businessCaseMetrics(state);
+  return [['Jaarpotentieel',euro(result.annualBenefit)],['Kosten van uitstel',euro(result.delayCost)],['Investering',euro(result.investment)],['Terugverdientijd',`${number(result.paybackMonths,1)} mnd`],['Netto na 3 jaar',euro(result.netThreeYear)]];
  }
  if(pageId==='cijfers-maatstaven'){
   const m=state?.portal?.metrics||{};const revenue=Number(m.revenue)||0;const ebitda=Number(m.ebitda)||0;const wages=Number(m.wages)||0;const marketing=Number(m.marketing)||0;const it=Number(m.it)||0;
@@ -125,7 +147,7 @@ function bindRepeatables(root,definition,domainState,onDirty){
 
 function renderForm(content,definition,domainState,onSaveStatus){
  const state=domainState?.get?.()||{};const normal=definition.fields.filter(field=>field.type!=='repeatable');const repeating=definition.fields.filter(field=>field.type==='repeatable');
- content.innerHTML=`<div class="v2completion"></div>${normal.length?`<div class="v2formgrid">${normal.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?1:''))).join('')}</div>`:''}${repeating.map(field=>repeatableMarkup(field,valueAt(state,field.path))).join('')}<div class="v2formactions"><button type="button" class="pvprimary" data-functional-save>Opslaan</button><span data-functional-save-message>Wijzigingen worden tenant-scoped opgeslagen.</span></div>`;
+ content.innerHTML=`<div class="v2completion"></div>${normal.length?`<div class="v2formgrid">${normal.map(field=>fieldMarkup(field,valueAt(state,field.path)??field.defaultValue??(field.type==='range'?1:''))).join('')}</div>`:''}${repeating.map(field=>repeatableMarkup(field,valueAt(state,field.path))).join('')}<div class="v2formactions"><button type="button" class="pvprimary" data-functional-save>Opslaan</button><span data-functional-save-message>Wijzigingen worden tenant-scoped opgeslagen.</span></div>`;
  const updateCompletion=()=>{const c=calculateCompletion(definition.fields,domainState?.get?.()||{});const box=content.querySelector('.v2completion');if(box)box.innerHTML=`<strong>${c.percentage}% compleet</strong><span>${c.complete} van ${c.total} verplichte onderdelen ingevuld</span>`;};updateCompletion();
  const dirty=()=>{onSaveStatus?.(domainState?.status?.()||'dirty');updateCompletion();};
  bindFields(content,normal,{onChange:(field,value)=>{domainState?.set?.(field.path,value);dirty();}});if(domainState)bindRepeatables(content,definition,domainState,dirty);
