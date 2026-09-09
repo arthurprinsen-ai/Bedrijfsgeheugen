@@ -84,6 +84,10 @@ Deno.serve(async (req: Request) => {
   if (!url || !serviceKey || !composioKey || !connectedAccountId || !/^properties\/\d+$/.test(property)) {
     return json({ error: 'ANALYTICS_SYNC_CONFIG_UNAVAILABLE' }, 503);
   }
+  const callerAuthorization = req.headers.get('authorization') || '';
+  if (callerAuthorization !== `Bearer ${serviceKey}`) {
+    return json({ error: 'SERVICE_ROLE_REQUIRED' }, 401);
+  }
 
   const client = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const runId = crypto.randomUUID();
