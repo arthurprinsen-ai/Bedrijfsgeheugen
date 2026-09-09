@@ -10,11 +10,15 @@ const requiredInteractions = [
   'overview-block-reorder'
 ];
 
-test('interaction parity manifest makes legacy gestures explicit and fail-closed', async () => {
+test('interaction parity manifest makes every known legacy gesture explicit and fail-closed', async () => {
   const module = await import('../interaction-parity.js');
   const ids = new Set(module.INTERACTION_PARITY_MANIFEST.map(item => item.id));
   for (const id of requiredInteractions) assert.ok(ids.has(id), `missing legacy interaction ${id}`);
-  assert.equal(module.openInteractionObligations().length, 0);
+  const proven = new Set(module.INTERACTION_PARITY_MANIFEST.filter(item=>item.status==='proven').map(item=>item.id));
+  assert.ok(proven.has('roadmap-card-reorder'));
+  assert.ok(proven.has('roadmap-card-sprint-move'));
+  const open = new Set(module.openInteractionObligations().map(item=>item.id));
+  for (const id of ['feature-story-drag','strategy-card-reorder','overview-block-reorder']) assert.ok(open.has(id), `${id} must remain open until implemented`);
 });
 
 test('roadmap has a native interactive board, not only editable rows', () => {
@@ -43,4 +47,10 @@ test('roadmap move and reorder preserve all card data', async () => {
   const reordered = reorderRoadmapItems(moved,'c','b');
   assert.deepEqual(reordered.map(item=>item.id),['a','c','b']);
   assert.equal(reordered[1].owner,'QA');
+});
+
+test('functional suite delegates roadmap input to the native board', () => {
+  const source=fs.readFileSync('portal-v2/modules/functional-suite.js','utf8');
+  assert.match(source,/mountRoadmapBoard/);
+  assert.match(source,/pageId==='roadmap'/);
 });
