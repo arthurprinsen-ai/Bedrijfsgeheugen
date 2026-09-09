@@ -1,8 +1,6 @@
 import { mountWorkspace } from '../workspace-shell.js';
 import { mountRoadmapBoard } from './roadmap-board.js';
 
-const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-
 function ensureStyles(){
  if(typeof document==='undefined'||document.querySelector('link[data-roadmap-board-style]'))return;
  const link=document.createElement('link');link.rel='stylesheet';link.href='./roadmap-board.css';link.dataset.roadmapBoardStyle='true';document.head.appendChild(link);
@@ -12,7 +10,7 @@ function analysis(content,domainState){
  const done=items.filter(item=>item.done===true).length;
  const progress=items.length?Math.round(items.reduce((sum,item)=>sum+(Number(item.progress)||0),0)/items.length):0;
  const owners=new Set(items.map(item=>String(item.owner||'').trim()).filter(Boolean)).size;
- content.innerHTML=`<div class="v2profilemetrics"><article><small>Roadmap-items</small><strong>${items.length}</strong></article><article><small>Afgerond</small><strong>${done}</strong></article><article><small>Gem. voortgang</small><strong>${progress}%</strong></article><article><small>Eigenaren</small><strong>${owners}</strong></article></div>`;
+ content.innerHTML=`<div class="v2profilemetrics"><article><small>Items</small><strong>${items.length}</strong></article><article><small>Afgerond</small><strong>${done}</strong></article><article><small>Gem. voortgang</small><strong>${progress}%</strong></article><article><small>Eigenaren</small><strong>${owners}</strong></article></div>`;
 }
 function actions(content,openPage){
  content.innerHTML='<div class="pvactions"><button type="button" class="primary" data-page="advies"><span>Naar advies</span><i>→</i></button><button type="button" data-page="strategie-naar-maandagochtend"><span>Naar strategie</span><i>→</i></button></div>';
