@@ -79,11 +79,20 @@ export function scoopCss(css, scope = '.inhoud-body') {
       const selectors = kop.split(',').map(s => {
         const t = s.trim();
         if (!t) return t;
-        if (/^(html|:root)\b/.test(t)) return scope;
+        // Scrollbarpseudo's horen bij het venster zelf. Ze meescopen maakte er
+        // `.inhoud-body{width:12px}` van: de hele inhoudskolom klapte dan op
+        // desktop dicht en de pagina oogde wit. Deze regels vallen weg.
+        if (/::-webkit-scrollbar/.test(t)) return '';
+        // html/:root met een pseudo erachter (html::selection, html:hover) mag
+        // niet tot de kale scope worden platgeslagen: de pseudo blijft staan.
+        if (/^(html|:root)$/.test(t)) return scope;
+        if (/^(html|:root)\b/.test(t)) return t.replace(/^(html|:root)/, scope);
         if (/^body\b/.test(t)) return t.replace(/^body/, scope);
         return `${scope} ${t}`;
       }).filter(Boolean).join(',');
-      uit += selectors + '{' + lijf + '}';
+      // Blijft er geen selector over, dan valt de hele regel weg. Zonder deze
+      // controle zou `{...}` overblijven en de volgende regel opeten.
+      if (selectors) uit += selectors + '{' + lijf + '}';
     }
     i = j + 1;
   }
@@ -97,7 +106,7 @@ export function zonderPaginaKleur(css, scope = '.inhoud-body') {
   const re = new RegExp('(' + scope.replace('.', '\\.') + ')\\s*\\{([^}]*)\\}', 'g');
   return css.replace(re, (heel, sel, lijf) => {
     const schoon = lijf.split(';')
-      .filter(d => !/^\s*(background|background-color|background-image|color|font-family|min-height|height)\s*:/i.test(d))
+      .filter(d => !/^\s*(background|background-color|background-image|color|font-family|min-height|height|width)\s*:/i.test(d))
       .join(';');
     return sel + '{' + schoon + '}';
   });
