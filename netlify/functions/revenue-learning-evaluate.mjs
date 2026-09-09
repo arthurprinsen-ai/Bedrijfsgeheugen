@@ -19,8 +19,12 @@ export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date()}
       const confidence=Math.min(.99,.5+cohort.length*.1);
       const evidence={sampleSize:cohort.length,publicationDates:dates,confidence,effectSize:selected.effectSize,directionConsistent:selected.effectSize>0,higherPriorityContradiction:selected.higherPriorityContradiction};
       const status=transitionRevenueLearningState(target.currentLearningStatus||'CANDIDATE',evidence,config);
-      const learning={learningId:idFor(target.componentFingerprint||target.contentId),fingerprint:target.componentFingerprint||target.contentId,componentScope:target.channel||'cross_channel',claim:`${target.componentFingerprint||target.contentId} affects ${selected.metric}`,effectMetric:selected.metric,effectSize:selected.effectSize,sampleSize:cohort.length,confidence,status,baselineDefinition:`mean cohort ${selected.metric}=${selected.baseline}`,evidenceWindow:`${target.windowHours||0}h`,firstSeenAt:target.publishedAt||now().toISOString(),lastValidatedAt:now().toISOString(),expiresOrReviewAt:new Date(now().getTime()+30*864e5).toISOString(),evidenceRefs:[target.evidenceId,...cohort.map(x=>x.evidenceId)]};
-      await active.upsertLearning(learning);await active.reconcileApplications({contentId:target.contentId,windowHours:target.windowHours,effect:selected.effectSize,verificationStatus:'VERIFIED'});evaluated++;
+      const validatedAt=now().toISOString();
+      const learning={learningId:idFor(target.componentFingerprint||target.contentId),fingerprint:target.componentFingerprint||target.contentId,componentScope:target.channel||'cross_channel',claim:`${target.componentFingerprint||target.contentId} affects ${selected.metric}`,effectMetric:selected.metric,effectSize:selected.effectSize,sampleSize:cohort.length,confidence,status,baselineDefinition:`mean cohort ${selected.metric}=${selected.baseline}`,evidenceWindow:`${target.windowHours||0}h`,firstSeenAt:target.publishedAt||validatedAt,lastValidatedAt:validatedAt,expiresOrReviewAt:new Date(now().getTime()+30*864e5).toISOString(),evidenceRefs:[target.evidenceId,...cohort.map(x=>x.evidenceId)]};
+      await active.upsertLearning(learning);
+      await active.reconcileApplications({contentId:target.contentId,windowHours:target.windowHours,effect:selected.effectSize,verificationStatus:'VERIFIED'});
+      await active.markEvidenceEvaluated(target.evidenceId,validatedAt);
+      evaluated++;
     }
     return {evaluated,total:due.length};
   };
