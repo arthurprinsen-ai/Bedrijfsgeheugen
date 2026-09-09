@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "publisher": ".github/workflows/daily-blog-publisher.yml",
+  "learning": ".github/workflows/content-growth-learning.yml",
+  "watchdog": ".github/workflows/daily-blog-live-watchdog.yml",
+  "make_required": false,
+  "time_zone": "Europe/Amsterdam"
+}
