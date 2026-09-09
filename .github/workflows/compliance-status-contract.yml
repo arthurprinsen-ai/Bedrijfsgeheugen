@@ -1,0 +1,23 @@
+name: Compliance status contract
+
+on:
+  pull_request:
+    paths:
+      - 'compliance-status.html'
+      - 'sitemap.xml'
+      - 'tests/compliance-status-page.test.mjs'
+      - '.github/workflows/compliance-status-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compliance-status-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify public trust center contract
+        run: node --test tests/compliance-status-page.test.mjs
