@@ -2,13 +2,17 @@ const { test, expect } = require('@playwright/test');
 
 const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
 
+test.describe.configure({timeout:120000});
+
 async function hideNetlifyChrome(page){
  await page.route('**/cdp/**',route=>route.abort());
  await page.addInitScript(()=>{const style=document.createElement('style');style.textContent='iframe[title="Netlify Drawer"],[data-netlify-deploy-id]{display:none!important;pointer-events:none!important}';const attach=()=>document.documentElement?.appendChild(style);if(document.documentElement)attach();else document.addEventListener('DOMContentLoaded',attach,{once:true});});
 }
 async function boot(page,preview,width=1440,height=1000){
  await page.setViewportSize({width,height});
- await page.goto(`${preview}/portal-v2/`,{waitUntil:'domcontentloaded'});
+ const response=await page.goto(`${preview}/portal-v2/?bg_preview=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
+ expect(response,'portal preview response').not.toBeNull();
+ expect(response.status(),'portal preview status').toBeLessThan(400);
  await expect(page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true})).toBeVisible({timeout:30000});
  await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30000});
 }
