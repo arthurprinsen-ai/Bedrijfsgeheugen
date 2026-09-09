@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from '../tools/v18-beweging.mjs';
+import { CLUSTER_CSS } from '../tools/clusters.mjs';
 import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
 test('vergelijker houdt beide tekstlagen leesbaar tijdens slepen', () => {
@@ -72,6 +73,14 @@ test('oude structurele bgx-kantel-klassen worden tijdens de build opgeschoond', 
   const out = maakBeweeglijk(html);
   assert.match(out, /class="inhoud-body blok"/);
   assert.doesNotMatch(out, /\bblok\s+bgx-kantel\b/);
+});
+
+test('desktop Chrome mag publieke data-op inhoud nooit onzichtbaar maken', () => {
+  assert.match(
+    CLUSTER_CSS,
+    /html\.bgx-beweegt \[data-op\]\s*\{[^}]*opacity:\s*1\s*!important[^}]*transform:\s*none\s*!important/s,
+    'data-op inhoud mag nooit wachten op IntersectionObserver, scroll of een DevTools-resize om zichtbaar te worden.'
+  );
 });
 
 test('V18 interactieve websitecode en regressietests horen bij de website delivery lane', async () => {
