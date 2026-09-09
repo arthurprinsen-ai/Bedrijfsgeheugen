@@ -89,7 +89,7 @@ test('preserved product contracts are source-scoped, not workflow-migration-scop
   }
 
   assert.match(preserved, /touched\('platform\/','portal-next\/'\)/);
-  assert.match(preserved, /touched\('config\/brain-delivery-system\.json'/);
+  assert.match(preserved, /touched\([^)]*'config\/brain-delivery-system\.json'[^)]*\)/s);
 });
 
 test('single-flight command failures emit actionable GitHub annotations', async () => {
