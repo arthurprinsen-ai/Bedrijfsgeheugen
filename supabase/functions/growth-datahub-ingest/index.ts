@@ -3,6 +3,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function sha256(value:string){const bytes=new TextEncoder().encode(value);const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+function blogContentId(canonical:string,payload:any){const explicit=String(payload?.content_id||'').trim();if(explicit)return explicit;try{const path=new URL(String(canonical||'')).pathname;const match=path.match(/^\/blog\/([a-z0-9-]+)\/?$/);return match?`blog:${match[1]}`:'';}catch{return '';}}
+function eventType(type:string){const t=String(type||'').trim();if(t==='page_view'||t==='organic_landing')return 'visit';if(t==='money_link_click'||t==='primary_cta_click'||t==='secondary_cta_click')return 'cta';if(t==='engaged_view')return 'engagement';if(t==='lead_outcome'||t==='frisse_blik_start'||t==='selfscan_start')return 'lead';return t;}
 
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
@@ -35,6 +37,18 @@ Deno.serve(async(req:Request)=>{
     const {data,error}=await client.from('growth_brain_queue').update(patch).eq('queue_id',queueId).select('queue_id,state,attempts,delivered_at,last_error').maybeSingle();
     if(error)return json({error:'BRAIN_QUEUE_UPDATE_FAILED',detail:error.message.slice(0,300)},500);
     return json({datahub:'supabase:growth_brain_queue',result:data},200);
+  }
+  if(action==='learning_export'){
+    const limit=Math.min(5000,Math.max(100,Number(body?.limit||5000)));
+    const [{data:events,error:eventError},{data:outcomes,error:outcomeError}]=await Promise.all([
+      client.from('growth_events').select('event_id,event_type,canonical,source,medium,campaign,occurred_at,payload').order('occurred_at',{ascending:false}).limit(limit),
+      client.from('growth_outcomes').select('outcome_id,stage,canonical,occurred_at,revenue_eur,payload').order('occurred_at',{ascending:false}).limit(1000)
+    ]);
+    if(eventError||outcomeError)return json({error:'LEARNING_EXPORT_FAILED',detail:(eventError?.message||outcomeError?.message||'read failed').slice(0,300)},500);
+    const normalized:any[]=[];
+    for(const row of events||[]){const content_id=blogContentId(row.canonical,row.payload);if(!content_id)continue;normalized.push({event_id:String(row.event_id),occurred_at:row.occurred_at,content_id,content_type:String(row.payload?.content_type||'blog'),channel:String(row.payload?.channel||row.source||'website'),source:row.source||'',medium:row.medium||'',campaign:row.campaign||'',event_type:eventType(row.event_type),value:0,journey_id:null,order_id:null,attribution:null});}
+    for(const row of outcomes||[]){const content_id=blogContentId(row.canonical,row.payload);if(!content_id)continue;const stage=String(row.stage||'').toLowerCase();const commercialType=stage==='won_order'?'order':stage==='revenue'?'revenue':stage==='qualified_lead'?'qualified_lead':stage==='lead'?'lead':stage==='proposal'||stage==='appointment'?'opportunity':'lead';normalized.push({event_id:`outcome:${row.outcome_id}`,occurred_at:row.occurred_at,content_id,content_type:String(row.payload?.content_type||'blog'),channel:String(row.payload?.channel||'website'),source:'commercial-outcome',medium:'',campaign:'',event_type:commercialType,value:commercialType==='revenue'?Number(row.revenue_eur||0):0,journey_id:null,order_id:String(row.payload?.order_id||row.outcome_id),attribution:String(row.payload?.attribution||'last_touch')});}
+    return json({version:1,generated_at:new Date().toISOString(),events:normalized,counts:{source_events:(events||[]).length,source_outcomes:(outcomes||[]).length,normalized:normalized.length}},200);
   }
   if(action==='status'){
     const [{count:eventCount,error:eventError},{count:outcomeCount,error:outcomeError},{count:queuedCount,error:queueError}]=await Promise.all([
