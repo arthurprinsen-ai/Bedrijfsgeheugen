@@ -1,8 +1,12 @@
 const { test, expect } = require('@playwright/test');
 
+test.describe.configure({timeout:120000});
+
 async function boot(page,preview){
  await page.route('**/cdp/**',route=>route.abort());
- await page.goto(`${preview}/portal-v2/`,{waitUntil:'domcontentloaded'});
+ const response=await page.goto(`${preview}/portal-v2/?bg_algorithm_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
+ expect(response,'portal preview response').not.toBeNull();
+ expect(response.status(),'portal preview status').toBeLessThan(400);
  await expect(page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true})).toBeVisible({timeout:30000});
  await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__),{timeout:30000});
 }
