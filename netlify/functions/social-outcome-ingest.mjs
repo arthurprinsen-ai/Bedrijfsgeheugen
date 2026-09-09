@@ -16,16 +16,17 @@ function validate(event){
 
 function snapshotId(event){return `${event.externalPostId}:${event.observedAt}`;}
 
-export function createSocialOutcomeHandler({persistEvent=persistBrainEvent,store=createSocialLearningStore()}={}){
+export function createSocialOutcomeHandler({persistEvent=persistBrainEvent,store}={}){
   return async request=>{
     if(request.method!=='POST') return new Response('Method Not Allowed',{status:405,headers:{allow:'POST'}});
     let payload;
     try{payload=normalizeOutcomeEnvelope(await request.json());validate(payload);}catch(error){return Response.json({error:'INVALID_SOCIAL_OUTCOME',message:error.message},{status:400,headers:{'cache-control':'no-store'}});}
     const normalized={...payload,metrics:normalizeMetricSnapshot(payload.metrics)};
+    const activeStore=store||createSocialLearningStore();
     try{
       await persistEvent({...normalized,eventType:'SOCIAL_OUTCOME'},{status:'RECEIVED'});
-      await store.putPost({postId:normalized.postId||normalized.externalPostId,tenantId:normalized.tenantId,platform:normalized.platform,externalPostId:normalized.externalPostId,publishedAt:normalized.publishedAt||null,contentHash:normalized.contentHash||null,topic:normalized.topic||null,contentPillar:normalized.contentPillar||null,audience:normalized.audience||null,funnelStage:normalized.funnelStage||null,format:normalized.format||null,hookType:normalized.hookType||null,narrativeType:normalized.narrativeType||null,emotion:normalized.emotion||null,ctaType:normalized.ctaType||null,sourceCampaignId:normalized.sourceCampaignId||null});
-      await store.appendSnapshot({snapshotId:snapshotId(normalized),postId:normalized.postId||normalized.externalPostId,tenantId:normalized.tenantId,observedAt:normalized.observedAt,source:normalized.source,sourceEventId:normalized.eventId,dataQuality:normalized.dataQuality||'OBSERVED',metrics:normalized.metrics});
+      await activeStore.putPost({postId:normalized.postId||normalized.externalPostId,tenantId:normalized.tenantId,platform:normalized.platform,externalPostId:normalized.externalPostId,publishedAt:normalized.publishedAt||null,contentHash:normalized.contentHash||null,topic:normalized.topic||null,contentPillar:normalized.contentPillar||null,audience:normalized.audience||null,funnelStage:normalized.funnelStage||null,format:normalized.format||null,hookType:normalized.hookType||null,narrativeType:normalized.narrativeType||null,emotion:normalized.emotion||null,ctaType:normalized.ctaType||null,sourceCampaignId:normalized.sourceCampaignId||null});
+      await activeStore.appendSnapshot({snapshotId:snapshotId(normalized),postId:normalized.postId||normalized.externalPostId,tenantId:normalized.tenantId,observedAt:normalized.observedAt,source:normalized.source,sourceEventId:normalized.eventId,dataQuality:normalized.dataQuality||'OBSERVED',metrics:normalized.metrics});
       return Response.json({accepted:true,eventId:normalized.eventId,postId:normalized.postId||normalized.externalPostId,snapshotId:snapshotId(normalized)},{status:202,headers:{'cache-control':'no-store'}});
     }catch(error){
       const status=error?.code==='EVENT_ID_CONFLICT'||error?.status===409?409:503;
@@ -34,5 +35,5 @@ export function createSocialOutcomeHandler({persistEvent=persistBrainEvent,store
   };
 }
 
-export default createSocialOutcomeHandler();
+export default async request=>createSocialOutcomeHandler()(request);
 export const config={path:'/api/social-outcome-ingest'};
