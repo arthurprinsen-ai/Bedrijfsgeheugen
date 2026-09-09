@@ -2,6 +2,7 @@ import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { GLOBAL_COMPONENTS, PUBLIC_PAGE_EXCLUDES } from './contracts.mjs';
 import { ensureBrandShellCss, ensureFooterContact, ensureTrustBar, extractComponent, markPageSlots, replaceComponent } from './components.mjs';
+import { ensureKnowledgeNavigation } from './ensure-knowledge-nav.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const PAD = {
@@ -232,7 +233,7 @@ export function applyCanonicalShell(html, shell, pad) {
   if (eigen.data.length) uit = uit.replace('</head>', eigen.data.join('\n') + '\n</head>');
   const eigenCss = eigen.koppel.concat(eigen.stijl).join('\n');
   uit = uit.replace('</head>', `${eigenCss}\n${PAGE_SHELL_CSS}\n</head>`);
-  uit = routerLaatLinksDoor(knoppenNaarLinks(uit));
+  uit = ensureKnowledgeNavigation(routerLaatLinksDoor(knoppenNaarLinks(uit)));
   uit = absolutiseerInterneHref(uit);
   return markPageSlots(uit);
 }
@@ -253,10 +254,11 @@ export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL
   const sourceRaw = await readFile(sourcePath, 'utf8');
   const sourcePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(sourceRaw)));
   const shell = schilUitBron(sourcePrepared, sourcePath);
-  await writeFile(sourcePath, absolutiseerInterneHref(shell.bron), 'utf8');
+  const sourceCanonical = ensureKnowledgeNavigation(absolutiseerInterneHref(shell.bron));
+  await writeFile(sourcePath, sourceCanonical, 'utf8');
   const homeRaw = await readFile('index.html', 'utf8');
   const homePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(homeRaw)));
-  const homeProjected = absolutiseerInterneHref(projectGlobalComponents(homePrepared, shell.bron));
+  const homeProjected = ensureKnowledgeNavigation(absolutiseerInterneHref(projectGlobalComponents(homePrepared, sourceCanonical)));
   await writeFile('index.html', homeProjected, 'utf8');
 
   let gelukt = 2, overgeslagen = 0;
