@@ -5,12 +5,20 @@ on:
     paths:
       - 'klantportaal.html'
       - '.github/scripts/portal_parity.py'
+      - 'portal-v2/legacy-functional-inventory.js'
+      - 'portal-v2/parity-manifest.js'
+      - 'portal-v2/tests/legacy-functional-inventory.test.mjs'
+      - '.github/workflows/portal-parity.yml'
       - 'docs/parity/portal-parity-ledger.md'
   push:
     branches: [main]
     paths:
       - 'klantportaal.html'
       - '.github/scripts/portal_parity.py'
+      - 'portal-v2/legacy-functional-inventory.js'
+      - 'portal-v2/parity-manifest.js'
+      - 'portal-v2/tests/legacy-functional-inventory.test.mjs'
+      - '.github/workflows/portal-parity.yml'
       - 'docs/parity/portal-parity-ledger.md'
   workflow_dispatch:
 
@@ -26,5 +34,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Verify protected portal baseline
+      - name: Verify protected legacy and V2 functional baseline
         run: python .github/scripts/portal_parity.py
