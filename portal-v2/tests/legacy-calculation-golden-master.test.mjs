@@ -24,7 +24,7 @@ function legacyMetrics({employees=24,hourlyCost=52,maturity={}}={}){
   let weeklyManualHours=0;
   let maturityTotal=0;
   for(const item of PROFILE_DIMENSIONS){
-    const level=Math.max(1,Math.min(5,Math.round(Number(maturity[item.id])||1)));
+    const level=Math.max(1,Math.min(5,Math.round(Number(maturity[item.id])||2)));
     maturityTotal+=level;
     weeklyManualHours+=(LEGACY_WEEKLY_HOURS[item.id]??2)*LEGACY_FACTOR[level]*(employees/24);
   }
@@ -65,6 +65,23 @@ test('V2 matches the legacy golden master at level 1 for the same inputs',()=>{
   close(actual.annualManualCost,expected.annualManualCost);
   assert.equal(actual.weeksPerYear,46);
   assert.equal(actual.capacityNotCash,true);
+});
+
+test('V2 matches the legacy baseline when maturity values are still missing',()=>{
+  const profile={employees:24,hourlyCost:52,maturity:{}};
+  const actual=profileOverviewMetrics({portal:{profile}});
+  const expected=legacyMetrics(profile);
+
+  close(expected.averageMaturity,2);
+  close(expected.weeklyManualHours,22.932);
+  close(expected.annualManualHours,1054.872);
+  close(expected.fteLost,0.659295);
+  close(expected.annualManualCost,54853.344);
+  close(actual.averageMaturity,expected.averageMaturity);
+  close(actual.weeklyManualHours,expected.weeklyManualHours);
+  close(actual.annualManualHours,expected.annualManualHours);
+  close(actual.fteLost,expected.fteLost);
+  close(actual.annualManualCost,expected.annualManualCost);
 });
 
 test('V2 matches legacy scaling, factors and 1600-hour FTE denominator',()=>{
