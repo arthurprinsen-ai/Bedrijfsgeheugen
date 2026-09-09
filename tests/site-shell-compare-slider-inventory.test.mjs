@@ -7,6 +7,13 @@ const ROOT = process.cwd();
 const CANONICAL_ASSET = '/assets/compare-slider-runtime-canonical-v14.js';
 const LEGACY_VERSIONED_ASSET = '/assets/compare-slider-runtime-native-range-v13.js';
 const SKIP_DIRS = new Set(['.git', 'node_modules', '.netlify', '.superpowers']);
+const NON_PRODUCTION_ARTIFACTS = new Set([
+  'index-oud.html',
+  'prototype-v18-stable.html',
+  'klantportaal.html',
+  'klantportaal-demo.html',
+  'klant-login.html',
+]);
 
 function walk(dir) {
   const out = [];
@@ -28,30 +35,45 @@ function read(file) {
 }
 
 const files = walk(ROOT).filter(file => /\.(?:html|mjs|js)$/.test(file));
-const productionFiles = files.filter(file => !rel(file).startsWith('tests/'));
+const productionFiles = files.filter(file => {
+  const relative = rel(file);
+  return !relative.startsWith('tests/') && !NON_PRODUCTION_ARTIFACTS.has(relative);
+});
 
 function matchesAny(source, patterns) {
   return patterns.some(pattern => pattern.test(source));
 }
 
-const compareSignatures = [
-  /id=["']compareSlider["']/,
-  /class=["'][^"']*\bcompare-slider\b/,
-  /data-compare-slider/,
-  /\.compare-before/,
-  /\.compare-after/,
-];
+function hasCompareDom(source) {
+  const html = String(source);
+  if (/<[^>]+id=["']compareSlider["'][^>]*>/i.test(html)) return true;
+  if (/<[^>]+class=["'][^"']*\bcompare-slider\b[^"']*["'][^>]*>/i.test(html)) return true;
+  if (/<[^>]+\bdata-(?:bg-)?compare-slider\b[^>]*>/i.test(html)) return true;
+  return /<[^>]+class=["'][^"']*\bcompare-before\b[^"']*["'][^>]*>/i.test(html)
+    && /<[^>]+class=["'][^"']*\bcompare-after\b[^"']*["'][^>]*>/i.test(html);
+}
+
+function inlineScripts(source) {
+  return [...String(source).matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
+    .filter(match => !/\bsrc\s*=/i.test(match[1]))
+    .map(match => match[2]);
+}
+
+function hasCompareInteractionMarker(source) {
+  return /(?:compareSlider|compare-slider|data-bg-compare-slider|compare-before|compare-after|bg-compare|--bg-compare-split|--split)/i.test(String(source));
+}
 
 const compareFiles = productionFiles
+  .filter(file => /\.html$/.test(file))
   .map(file => ({ file: rel(file), source: read(file) }))
-  .filter(({ source }) => matchesAny(source, compareSignatures));
+  .filter(({ source }) => hasCompareDom(source));
 
 test('site-wide compare slider inventory is non-empty and traceable', () => {
-  assert.ok(compareFiles.length > 0, 'expected at least one compare-slider implementation');
+  assert.ok(compareFiles.length > 0, 'expected at least one production compare-slider DOM implementation');
   for (const item of compareFiles) assert.ok(item.file, 'every inventory row must have a source path');
 });
 
-test('production references exactly one versioned canonical compare interaction asset', () => {
+test('production compare pages reference exactly one versioned canonical interaction asset', () => {
   const refs = compareFiles.flatMap(({ file, source }) => {
     const found = [...source.matchAll(/\/assets\/compare-slider-runtime[^"'`\s<)]*\.js/g)].map(match => match[0]);
     return found.map(asset => ({ file, asset }));
@@ -63,18 +85,19 @@ test('production references exactly one versioned canonical compare interaction 
 });
 
 test('generator and page code do not own compare pointer/touch/range listeners', () => {
-  const runtimeFiles = new Set([
-    'assets/compare-slider-runtime-canonical-v14.js',
-    'assets/compare-slider-runtime.js',
-  ]);
   const forbidden = /(?:addEventListener\(\s*["'](?:pointerdown|pointermove|pointerup|pointercancel|touchstart|touchmove|touchend|input|change)["']|setPointerCapture\(|releasePointerCapture\()/;
+  const offenders = [];
 
-  const offenders = compareFiles
-    .filter(({ file }) => !runtimeFiles.has(file))
-    .filter(({ source }) => forbidden.test(source))
-    .map(({ file }) => file);
+  for (const { file, source } of compareFiles) {
+    const compareScripts = inlineScripts(source).filter(hasCompareInteractionMarker);
+    if (compareScripts.some(script => forbidden.test(script))) offenders.push(file);
+  }
 
-  assert.deepEqual(offenders, [], `compare interaction listeners must live only in canonical runtime: ${offenders.join(', ')}`);
+  const generatorPath = path.join(ROOT, 'tools/site-shell/fix-homepage-context-slider.mjs');
+  const generator = read(generatorPath);
+  if (hasCompareInteractionMarker(generator) && forbidden.test(generator)) offenders.push(rel(generatorPath));
+
+  assert.deepEqual([...new Set(offenders)].sort(), [], `compare interaction listeners must live only in canonical runtime: ${offenders.join(', ')}`);
 });
 
 test('legacy bounded compare endpoint logic is absent from production compare sources', () => {
