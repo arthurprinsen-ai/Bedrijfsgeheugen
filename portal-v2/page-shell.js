@@ -2,6 +2,7 @@ import { findPage, listPortalGroups } from './page-registry.js';
 import { nativePageContent } from './native-pages.js';
 import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
+import { mountChangeWizard } from './modules/change-wizard.js';
 import { renderCsrdImpact } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
@@ -187,6 +188,11 @@ export function openPortalPage(pageId){
   else if(contract?.legacyCapability){
     mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:'idle',render:content=>renderNative(content,view)});
   } else renderNative(native,view);
+  if(pageId==='wijzigingen'&&portalContext.domainState?.get){
+    const wizard=document.createElement('div');
+    native.prepend(wizard);
+    mountChangeWizard(wizard,{domainState:portalContext.domainState,onSaved:()=>openPortalPage('wijzigingen')});
+  }
   mountAskPortal(root.querySelector('.pvbody'),{currentPage:()=>pageId});
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;

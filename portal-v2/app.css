@@ -20,3 +20,36 @@
 .v2askout{display:block;margin-top:.6rem;font-size:.86rem;line-height:1.55}
 .v2hint{opacity:.6;font-weight:400}
 .v2checkline{display:flex;align-items:center;gap:.5rem}
+
+/* Wijzigingswizard en bouwstenenkast (2026-09-09) */
+.wzsub{margin:.2rem 0 .7rem;font-size:.84rem;line-height:1.5;opacity:.7}
+.wzsteps{display:flex;gap:.4rem;margin-bottom:.9rem}
+.wzsteps i{flex:1;height:5px;border-radius:3px;background:var(--saas-line,#e7e9f6);transition:background .2s}
+.wzsteps i.aan{background:var(--saas-accent,#4f46e5)}
+.wzform{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.wzveld{display:flex;flex-direction:column;gap:.3rem;font-size:.82rem}
+.wzveld.wzvol{grid-column:1/-1}
+.wzveld>span{font-weight:600;opacity:.78}
+.wzveld input,.wzveld select,.wzveld textarea{padding:.55rem .7rem;border:1px solid var(--saas-line,#e7e9f6);border-radius:9px;font:inherit;background:var(--saas-surface,#fff)}
+.wzveld input[readonly]{opacity:.6}
+.wzimpact{margin-top:1rem;padding:.8rem .9rem;border:1px solid var(--saas-line,#e7e9f6);border-radius:12px;background:var(--saas-surface-soft,#f7f8ff)}
+.wzimpact>b{font-size:.84rem}
+.wzstats{display:flex;flex-wrap:wrap;gap:.9rem;margin:.6rem 0 .2rem}
+.wzstat{display:flex;flex-direction:column;line-height:1.2}
+.wzstat b{font-size:1.1rem}
+.wzstat span{font-size:.74rem;opacity:.66}
+.wzout{display:block;margin-top:.6rem;font-size:.84rem;color:var(--saas-mint,#10b981)}
+.dnazoek{width:100%;padding:.6rem .8rem;border:1px solid var(--saas-line,#e7e9f6);border-radius:10px;font:inherit;margin-bottom:.8rem}
+.dnabieb{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.dnakaart{padding:.8rem .9rem;border:1px solid var(--saas-line,#e7e9f6);border-radius:12px;background:var(--saas-surface,#fff)}
+.dnakaart header{display:flex;justify-content:space-between;gap:.5rem;align-items:baseline;margin-bottom:.4rem}
+.dnakaart header span{font-size:.72rem;opacity:.62}
+.dnahit{margin:0 0 .4rem;font-size:.74rem;color:var(--saas-accent,#4f46e5)}
+.dnavelden{display:grid;gap:.3rem}
+.dnaveld{font-size:.76rem;line-height:1.4}
+.dnaveld span{opacity:.6;margin-right:.3rem}
+.dnavrijrij{display:flex;gap:.5rem;flex-wrap:wrap}
+.dnavrijrij input{flex:1;min-width:14rem;padding:.6rem .8rem;border:1px solid var(--saas-line,#e7e9f6);border-radius:10px;font:inherit}
+.dnavrijuit{display:block;margin-top:.7rem}
+.dnavertaal{margin:.3rem 0 0;padding-left:1.1rem;font-size:.84rem;line-height:1.6}
+@media(max-width:640px){.wzform,.dnabieb{grid-template-columns:1fr}}
