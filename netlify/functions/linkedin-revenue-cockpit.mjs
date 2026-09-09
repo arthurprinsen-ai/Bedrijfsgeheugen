@@ -1,5 +1,5 @@
 import { basicAuthMatches } from '../../platform/linkedin-revenue-cockpit.mjs';
-import { getPowerhouseActions, getPowerhouseLearning, getPowerhouseHealth } from './_powerhouse-core-client.mjs';
+import { getPowerhouseActions, getPowerhouseLearning, getPowerhouseHealth, recordPowerhouseOutcome } from './_powerhouse-core-client.mjs';
 import { buildPowerhouseProjection } from './powerhouse-current-projection.mjs';
 
 const secureHeaders={
@@ -64,14 +64,30 @@ function legacyLaneShape(projection){
   };
 }
 
-export async function handler(event){
-  if(event.httpMethod==='OPTIONS')return response(204,{});
-  if(event.httpMethod!=='GET')return response(405,{status:'METHOD_NOT_ALLOWED'},{Allow:'GET'});
-
+function authorized(event){
   const user=process.env.INTERN_GEBRUIKER||'';
   const password=process.env.INTERN_WACHTWOORD||'';
   const authorization=event.headers?.authorization||event.headers?.Authorization||'';
-  if(!basicAuthMatches(authorization,user,password))return response(401,{status:'UNAUTHORIZED'},{'WWW-Authenticate':'Basic realm="Intern - Bedrijfsgeheugen", charset="UTF-8"'});
+  return basicAuthMatches(authorization,user,password);
+}
+
+export async function handler(event){
+  if(event.httpMethod==='OPTIONS')return response(204,{});
+  if(!['GET','POST'].includes(event.httpMethod))return response(405,{status:'METHOD_NOT_ALLOWED'},{Allow:'GET, POST'});
+  if(!authorized(event))return response(401,{status:'UNAUTHORIZED'},{'WWW-Authenticate':'Basic realm="Intern - Bedrijfsgeheugen", charset="UTF-8"'});
+
+  if(event.httpMethod==='POST'){
+    let input;try{input=JSON.parse(event.body||'{}');}catch{return response(400,{status:'INVALID_JSON'});}
+    const actionId=String(input.actionId||'').trim();
+    const outcomeType=String(input.outcomeType||'').trim();
+    if(!actionId||!outcomeType)return response(422,{status:'ACTION_AND_OUTCOME_REQUIRED'});
+    const allowed=new Set(['executed','skipped','no_response','reply_received','meeting_booked','offer_created','order_won','revenue_observed']);
+    if(!allowed.has(outcomeType))return response(422,{status:'OUTCOME_NOT_ALLOWED'});
+    try{
+      const result=await recordPowerhouseOutcome({actionId,outcomeType,revenueEur:Number(input.revenueEur||0),evidence:{source:'cockpit',note:String(input.note||''),recordedAt:new Date().toISOString()}});
+      return response(201,{status:'RECORDED',makeCriticalPath:false,...result});
+    }catch(error){return response(503,{status:'UNIFIED_CORE_UNAVAILABLE',reason:String(error?.message||error),makeCriticalPath:false});}
+  }
 
   try{
     const [healthResult,actionsResult,learningResult]=await Promise.all([
