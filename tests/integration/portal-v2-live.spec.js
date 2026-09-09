@@ -138,3 +138,29 @@ test('mobile primary navigation routes all five controls on supported phone widt
     expect(overflow).toBeLessThanOrEqual(1);
   }
 });
+
+test('koppelingen opens the existing connector builder inside Portal V2', async ({ page }) => {
+  const preview = process.env.PREVIEW_URL;
+  if (!preview) throw new Error('PREVIEW_URL is required');
+  await hideNetlifyChrome(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errors = collectPageErrors(page);
+  await openPortalV2(page, preview);
+
+  await page.evaluate(() => {
+    const button = [...document.querySelectorAll('.quick button')].find(node => node.textContent.toLocaleLowerCase('nl').includes('koppeling bouwen'));
+    button?.click();
+  });
+
+  await expect(page.locator('#portalView')).toHaveClass(/open/);
+  await expect(page.locator('#portalView')).toHaveAttribute('data-page-id','koppelingen');
+  await expect(page.locator('[data-bg-wizard]')).toBeVisible();
+  await expect(page.locator('[data-bg-route]')).toHaveCount(3);
+  await expect(page.locator('[data-bg-route="ai"]')).toBeVisible();
+  await expect(page.locator('[data-bg-route="template"]')).toBeVisible();
+  await expect(page.locator('[data-bg-route="manual"]')).toBeVisible();
+  await expect(page.locator('[data-bg-activate]')).toBeDisabled();
+  await expect(page.getByText('Eerst een veilige test uitvoeren.', { exact: false })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  expect(errors).toEqual([]);
+});
