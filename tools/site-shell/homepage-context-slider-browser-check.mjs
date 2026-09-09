@@ -11,7 +11,7 @@ async function gotoWithRetry(page, url, attempts = 3) {
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
       await page.locator('#compareSlider').waitFor({ state: 'visible', timeout: 15000 });
-      await page.locator('#compareSlider .bg-compare-range').waitFor({ state: 'attached', timeout: 15000 });
+      await page.waitForFunction(() => document.querySelector('#compareSlider')?.getAttribute('data-bg-pointer-capture-v14') === 'true', null, { timeout: 15000 });
       return;
     } catch (error) {
       lastError = error;
@@ -29,13 +29,14 @@ async function readState(page) {
     const afterSide = slider?.querySelector('.compare-after');
     const before = beforeSide?.querySelector('.compare-copy');
     const after = afterSide?.querySelector('.compare-copy');
-    const range = slider?.querySelector('.bg-compare-range');
     const divider = slider?.querySelector('.bg-compare-divider');
-    if (!slider || !beforeSide || !afterSide || !before || !after || !range || !divider) return null;
+    const handle = slider?.querySelector('.compare-handle');
+    const knob = slider?.querySelector('.compare-knob');
+    if (!slider || !beforeSide || !afterSide || !before || !after || !divider) return null;
 
     const sr = slider.getBoundingClientRect();
-    const rr = range.getBoundingClientRect();
     const dr = divider.getBoundingClientRect();
+    const hr = handle?.getBoundingClientRect() || null;
     const br = before.getBoundingClientRect();
     const ar = after.getBoundingClientRect();
     const css = getComputedStyle(slider);
@@ -50,26 +51,36 @@ async function readState(page) {
     return {
       split,
       endpoint: slider.getAttribute('data-bg-compare-endpoint'),
+      pointerReady: slider.getAttribute('data-bg-pointer-capture-v14') === 'true',
       viewportWidth: window.innerWidth,
       slider: { left: sr.left, right: sr.right, width: sr.width, height: sr.height },
-      range: { left: rr.left, right: rr.right, width: rr.width, height: rr.height, value: Number(range.value), min: Number(range.min), max: Number(range.max), step: Number(range.step) },
       divider: { left: dr.left, right: dr.right, width: dr.width },
+      handle: hr ? { left: hr.left, right: hr.right, width: hr.width } : null,
       before: { width: br.width },
       after: { width: ar.width },
       marked: slider.hasAttribute('data-bg-compare-slider'),
-      version: slider.getAttribute('data-bg-compare-version'),
-      pointerOwner: slider.hasAttribute('data-bg-pointer-owner-ready'),
+      aria: knob ? { min: Number(knob.getAttribute('aria-valuemin')), max: Number(knob.getAttribute('aria-valuemax')), now: Number(knob.getAttribute('aria-valuenow')) } : null,
       topSideAtCenter
     };
   });
 }
 
-async function setNativeValue(page, value) {
-  await page.locator('#compareSlider .bg-compare-range').evaluate((range, next) => {
-    range.value = String(next);
-    range.dispatchEvent(new Event('input', { bubbles: true }));
-    range.dispatchEvent(new Event('change', { bubbles: true }));
-  }, value);
+async function dragPointer(page, side) {
+  const slider = page.locator('#compareSlider');
+  const rect = await slider.boundingBox();
+  if (!rect) fail('compareSlider heeft geen bounding box');
+  const y = rect.y + Math.min(rect.height / 2, 140);
+  const startX = rect.x + rect.width / 2;
+  const viewportWidth = page.viewportSize()?.width || Math.ceil(rect.x + rect.width);
+  const leftTarget = Math.max(0, rect.left - 40 || rect.x - 40);
+  const rightEdge = rect.right || rect.x + rect.width;
+  const rightTarget = Math.min(viewportWidth - 1, rightEdge + 40);
+  const targetX = side === 'left' ? leftTarget : rightTarget;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(targetX, y, { steps: 8 });
+  await page.mouse.up();
   await page.waitForTimeout(80);
 }
 
@@ -115,26 +126,23 @@ async function readMobileChangeFlow(page) {
 }
 
 function assertCommon(g, label) {
-  if (!g) fail(`${label}: compareSlider, native range of tekstlagen ontbreken`);
-  if (!g.marked) fail(`${label}: slider mist generieke site-wide marker`, g);
-  if (g.pointerOwner) fail(`${label}: legacy pointer-owner mag niet meer actief zijn`, g);
-  if (g.range.min !== 0 || g.range.max !== 100 || g.range.step !== 1) fail(`${label}: native range moet exact 0-100 stap 1 zijn`, g);
-  if (Math.abs(g.range.width - g.slider.width) > 1 || Math.abs(g.range.left - g.slider.left) > 1 || Math.abs(g.range.right - g.slider.right) > 1) fail(`${label}: native range moet de volledige fysieke kaartbreedte beslaan`, g);
+  if (!g) fail(`${label}: compareSlider of tekstlagen ontbreken`);
+  if (!g.marked || !g.pointerReady) fail(`${label}: pointer-capture runtime is niet actief`, g);
   if (g.slider.left < -1 || g.slider.right > g.viewportWidth + 1) fail(`${label}: slider mag niet buiten de viewport vallen`, g);
   const minReadableWidth = Math.min(220, g.slider.width * 0.5);
   if (g.before.width < minReadableWidth || g.after.width < minReadableWidth) fail(`${label}: tekstlagen zijn te smal`, { ...g, minReadableWidth });
-  if (g.version !== 'native-range-v13') fail(`${label}: verkeerde compare-runtime actief`, g);
+  if (!g.aria || g.aria.min !== 0 || g.aria.max !== 100) fail(`${label}: ARIA sliderbereik moet 0-100 zijn`, g);
 }
 
 function assertLeftEndpoint(g, label) {
   assertCommon(g, label);
-  if (g.range.value !== 0 || g.split > .01 || g.endpoint !== 'start') fail(`${label}: native 0 moet exact fysieke start renderen`, g);
+  if (g.split > .01 || g.endpoint !== 'start' || g.aria.now !== 0) fail(`${label}: pointerdrag moet exact 0 bereiken`, g);
   if (Math.abs(g.divider.left - g.slider.left) > 1.5) fail(`${label}: gele scheidingslijn moet fysiek helemaal links staan`, g);
 }
 
 function assertRightEndpoint(g, label) {
   assertCommon(g, label);
-  if (g.range.value !== 100 || g.split < 99.99 || g.endpoint !== 'end') fail(`${label}: native 100 moet exact fysieke eindrand renderen`, g);
+  if (g.split < 99.99 || g.endpoint !== 'end' || g.aria.now !== 100) fail(`${label}: pointerdrag moet exact 100 bereiken`, g);
   if (Math.abs(g.divider.right - g.slider.right) > 1.5) fail(`${label}: gele scheidingslijn moet fysiek helemaal rechts staan`, g);
 }
 
@@ -183,19 +191,19 @@ async function testViewport(browser, width, height, mobile, orientation) {
   await slider.scrollIntoViewIfNeeded();
   await page.waitForTimeout(140);
 
-  await setNativeValue(page, 0);
+  await dragPointer(page, 'left');
   const left = await readState(page);
-  assertLeftEndpoint(left, `${width}x${height} native uiterste links`);
+  assertLeftEndpoint(left, `${width}x${height} pointer uiterste links`);
 
-  await setNativeValue(page, 100);
+  await dragPointer(page, 'right');
   const right = await readState(page);
-  assertRightEndpoint(right, `${width}x${height} native uiterste rechts`);
+  assertRightEndpoint(right, `${width}x${height} pointer uiterste rechts`);
 
   const flow = await testMobileChangeFlow(page, `${width}x${height} ${orientation} wijzigingsflow`);
   if (flow.orientation !== orientation) fail(`${width}x${height}: orientation mismatch`, flow);
   if (pageErrors.length) fail(`${width}x${height}: JavaScript page errors`, { pageErrors });
   await page.close();
-  return { width, height, orientation, left: left.split, right: right.split, rangeWidth: right.range.width, sliderWidth: right.slider.width, progress: flow.progress, doneCount: flow.doneCount };
+  return { width, height, orientation, left: left.split, right: right.split, progress: flow.progress, doneCount: flow.doneCount };
 }
 
 const browser = await chromium.launch({ headless: true });
@@ -207,7 +215,7 @@ try {
   results.push(await testViewport(browser,1024,768,true,'landscape'));
   const desktop = await testViewport(browser,1128,653,false,'landscape');
   const wide = await testViewport(browser,1440,900,false,'landscape');
-  console.log(JSON.stringify({ ok: true, component: '#compareSlider .bg-compare-range', desktop, wide, results }));
+  console.log(JSON.stringify({ ok: true, component: '#compareSlider pointer-capture-v14', desktop, wide, results }));
 } finally {
   await browser.close();
 }
