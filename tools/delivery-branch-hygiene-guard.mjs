@@ -11,6 +11,21 @@ function globMatches(path, pattern) {
   return cleanPath === cleanPattern;
 }
 
+// Verificatie-artefacten bestaan alleen om een wijziging te bewijzen: tests en
+// productie-readbacks. Ze horen bij de wijziging zelf, dus ze vervuilen de scope
+// niet en tellen niet mee in het Scope-Budget. Zonder deze uitzondering blokkeert
+// de poort precies het borgen dat we bij elke wijziging willen.
+const VERIFICATION_PATTERNS = [
+  /^tests\//,
+  /\.test\.(mjs|js|cjs)$/,
+  /^\.github\/workflows\/[^/]*readback[^/]*\.ya?ml$/,
+];
+
+export function isVerificationArtifact(path) {
+  const cleanPath = normalizePath(path);
+  return VERIFICATION_PATTERNS.some(pattern => pattern.test(cleanPath));
+}
+
 export function parseScopeMetadata(body = '') {
   const result = {};
   for (const rawLine of String(body).split(/\r?\n/)) {
@@ -30,25 +45,30 @@ export function evaluateBranchHygiene({ changedPaths = [], metadata = {}, labels
   const expectedPaths = Array.isArray(metadata.expectedPaths) ? metadata.expectedPaths.map(normalizePath).filter(Boolean) : [];
   const maxFiles = Number.isInteger(metadata.maxFiles) && metadata.maxFiles > 0 ? metadata.maxFiles : null;
 
+  const verificationPaths = paths.filter(isVerificationArtifact);
+  const deliveryPaths = paths.filter(path => !isVerificationArtifact(path));
+
   const unexpectedPaths = expectedPaths.length
-    ? paths.filter(path => !expectedPaths.some(pattern => globMatches(path, pattern)))
+    ? deliveryPaths.filter(path => !expectedPaths.some(pattern => globMatches(path, pattern)))
     : [];
 
   if (unexpectedPaths.length) {
     return Object.freeze({
       ok: false,
       state: 'SCOPE_CONTAMINATED',
-      changedFileCount: paths.length,
+      changedFileCount: deliveryPaths.length,
       unexpectedPaths,
+      verificationPaths,
     });
   }
 
-  if (maxFiles && paths.length > maxFiles) {
+  if (maxFiles && deliveryPaths.length > maxFiles) {
     return Object.freeze({
       ok: false,
       state: 'SCOPE_BUDGET_EXCEEDED',
-      changedFileCount: paths.length,
+      changedFileCount: deliveryPaths.length,
       unexpectedPaths: [],
+      verificationPaths,
       maxFiles,
     });
   }
@@ -59,6 +79,7 @@ export function evaluateBranchHygiene({ changedPaths = [], metadata = {}, labels
       state: 'HARD_SCOPE_LIMIT_EXCEEDED',
       changedFileCount: paths.length,
       unexpectedPaths: [],
+      verificationPaths,
       hardMaxFiles,
     });
   }
@@ -66,8 +87,9 @@ export function evaluateBranchHygiene({ changedPaths = [], metadata = {}, labels
   return Object.freeze({
     ok: true,
     state: 'SCOPE_CLEAN',
-    changedFileCount: paths.length,
+    changedFileCount: deliveryPaths.length,
     unexpectedPaths: [],
+    verificationPaths,
   });
 }
 
