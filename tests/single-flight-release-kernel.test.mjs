@@ -57,3 +57,37 @@ test('only Required test consumes runners automatically for pull requests', asyn
   offenders.sort();
   assert.deepEqual(offenders, ['.github/workflows/required-test.yml']);
 });
+
+test('preserved product contracts are source-scoped, not workflow-migration-scoped', async () => {
+  const preserved = await text('tools/ci/single-flight-preserved-contracts.mjs');
+  const migratedStandaloneWorkflows = [
+    '.github/workflows/bg184-stateful-blocker-dedupe-tests.yml',
+    '.github/workflows/brain-foundation-verify.yml',
+    '.github/workflows/business-os-experience.yml',
+    '.github/workflows/business-os-foundation.yml',
+    '.github/workflows/business-os-intelligence.yml',
+    '.github/workflows/business-os-migration.yml',
+    '.github/workflows/business-os-trust.yml',
+    '.github/workflows/config-wacht.yml',
+    '.github/workflows/fresh-device-autonomy-canary.yml',
+    '.github/workflows/hero-media-production-verify.yml',
+    '.github/workflows/homepage-hero-video-verify.yml',
+    '.github/workflows/main-write-integrity-regression.yml',
+    '.github/workflows/portal-native-regression-tests.yml',
+    '.github/workflows/portal-v2-tests.yml',
+    '.github/workflows/prijzen-hero-seo-regression.yml',
+    '.github/workflows/seo-growth-intelligence.yml',
+    '.github/workflows/seo-order-engine.yml',
+    '.github/workflows/universal-closed-loop-learning.yml',
+    '.github/workflows/universal-event-retention-contract.yml',
+    '.github/workflows/verify-approved-central-blog.yml',
+    '.github/workflows/blog-technical-seo-gate.yml'
+  ];
+
+  for (const workflow of migratedStandaloneWorkflows) {
+    assert.equal(preserved.includes(`'${workflow}'`), false, `${workflow} must not trigger a preserved product suite by itself`);
+  }
+
+  assert.match(preserved, /touched\('platform\/','portal-next\/'\)/);
+  assert.match(preserved, /touched\('config\/brain-delivery-system\.json'/);
+});
