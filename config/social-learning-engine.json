@@ -1,6 +1,7 @@
 {
   "version": "SOCIAL-LEARNING-v1",
   "windowsHours": [24, 48, 72],
+  "windowToleranceHours": 6,
   "promotion": {
     "minSampleSize": 5,
     "minPublicationDates": 2,
