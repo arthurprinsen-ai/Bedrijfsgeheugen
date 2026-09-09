@@ -7,6 +7,12 @@ body{display:block!important}
 body>header,body>main,body>footer,.bgtop,.bgkop,.bgvoet,.bg-standalone-page{opacity:1!important;visibility:visible!important}
 body>header,body>main,body>footer,.bg-standalone-page{display:block!important;transform:none!important}
 .bg-standalone-page>*{visibility:visible!important}
+/* Legacy standalone CSS is scoped below .inhoud-body. Root-only desktop rules such
+   as html{overflow-y:scroll;scrollbar-gutter:stable} must never become a nested
+   scroll container there: Chrome/macOS can otherwise leave the content paint
+   blank until a resize/DevTools forces a new layout. Platform does not use this
+   legacy standalone scoping path and is therefore the control condition. */
+.bg-standalone-page .inhoud-body{overflow-y:visible!important;scrollbar-gutter:auto!important}
 </style>`;
 
 function isHomepageSpaRouter(script) {
