@@ -29,7 +29,12 @@
     slider.style.setProperty('touch-action','pan-y','important');
     slider.style.setProperty('cursor','ew-resize','important');
 
-    Array.prototype.slice.call(slider.querySelectorAll('.bg-compare-range')).forEach(function(range){ range.remove(); });
+    Array.prototype.slice.call(slider.querySelectorAll('input[type="range"]')).forEach(function(range){
+      range.style.setProperty('pointer-events','none','important');
+      range.style.setProperty('opacity','0','important');
+      range.setAttribute('aria-hidden','true');
+      range.tabIndex = -1;
+    });
 
     var before = slider.querySelector('.compare-before');
     var after = slider.querySelector('.compare-after');
