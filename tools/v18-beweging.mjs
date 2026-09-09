@@ -3,11 +3,10 @@
 // uitweg als het apparaat of de voorkeur van de bezoeker het niet wil.
 
 export const BEWEGING_CSS = `<style id="v18-beweging">
-/* Chrome desktop fail-safe. De gedeelde reveal-laag zet [data-op] eerst op
-   opacity:0 en maakt die later via IntersectionObserver zichtbaar. Op sommige
-   Chrome/macOS sessies bleef inhoud zo verborgen totdat DevTools een resize
-   veroorzaakte. Publieke inhoud mag nooit van zo'n repaint afhangen. */
-html.bgx-beweegt [data-op]{opacity:1!important;transform:none!important}
+/* Chrome desktop fail-safe. Publieke inhoud is altijd zichtbaar. De oude
+   gedeelde reveal-laag gebruikte [data-op] + opacity:0 en kon op Chrome/macOS
+   blijven hangen totdat DevTools of een resize een reflow forceerde. */
+html.bgx-beweegt [data-op]{opacity:1!important;visibility:visible!important;transform:none!important}
 
 /* 1. magnetische knoppen: de knop komt naar de cursor toe */
 .bgx-magneet{transition:transform .18s cubic-bezier(.22,.61,.36,1)}
@@ -24,8 +23,8 @@ html.bgx-beweegt [data-op]{opacity:1!important;transform:none!important}
 .inhoud-kop video{transform:translateY(var(--bgx-diepte,0)) scale(1.08);transition:transform .1s linear}
 .inhoud-kop .wrap{transform:translateY(calc(var(--bgx-diepte,0px) * -.35))}
 
-/* 4. koppen komen woord voor woord binnen */
-.bgx-woord{display:inline-block;opacity:0;transform:translateY(.4em) rotate(2deg);
+/* 4. koppen zijn zichtbaar zonder JS; animatie mag zichtbaarheid nooit bepalen. */
+.bgx-woord{display:inline-block;opacity:1;transform:none;
   transition:opacity .5s ease,transform .5s cubic-bezier(.22,.61,.36,1)}
 .bgx-woord.bgx-aan{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.bgx-woord{opacity:1!important;transform:none!important}}
@@ -86,32 +85,17 @@ export const BEWEGING_JS = `<script id="v18-beweging-js">
     diepte();
   }
 
-  // 4. koppen woord voor woord
+  // 4. koppen woord voor woord. Dit is uitsluitend decoratief: de woorden zijn
+  // in CSS al zichtbaar, dus een gemiste observer/reflow kan nooit tekst wissen.
   var koppen = [].slice.call(document.querySelectorAll('.inhoud-body h2'));
   koppen.forEach(function(k){
     if (k.querySelector('.bgx-woord') || k.children.length) return;
     var woorden = (k.textContent || '').trim().split(/\\s+/);
     if (woorden.length < 2 || woorden.length > 14) return;
     k.innerHTML = woorden.map(function(w, i){
-      return '<span class="bgx-woord" style="transition-delay:' + (i*45) + 'ms">' + w + '</span>';
+      return '<span class="bgx-woord bgx-aan" style="transition-delay:' + (i*45) + 'ms">' + w + '</span>';
     }).join(' ');
   });
-  function toonKoppen(){
-    koppen.forEach(function(k){
-      var r = k.getBoundingClientRect();
-      if (r.top < (innerHeight || 800) * .88 && r.bottom > 0) {
-        k.querySelectorAll('.bgx-woord').forEach(function(w){ w.classList.add('bgx-aan'); });
-      }
-    });
-  }
-  document.addEventListener('scroll', toonKoppen, true);
-  addEventListener('resize', toonKoppen);
-  toonKoppen();
-  setTimeout(function(){
-    document.querySelectorAll('.bgx-woord:not(.bgx-aan)').forEach(function(w){
-      if (w.getBoundingClientRect().top < (innerHeight||800)) w.classList.add('bgx-aan');
-    });
-  }, 1600);
 
   // 5. zonder / met: sleep de scheidslijn, met vinger, muis of toetsenbord.
   // Fail-safe: de scheidslijn mag nooit zo ver naar een rand dat één tekstpaneel onleesbaar wordt.
@@ -158,7 +142,6 @@ export const BEWEGING_JS = `<script id="v18-beweging-js">
       var huidig = parseFloat((greep && greep.getAttribute('aria-valuenow')) || '50');
       pasToe(huidig);
     });
-    // een duwtje bij het eerste zicht, zodat zichtbaar is dat je kunt slepen
     var getoond = false;
     function duwtje(){
       if (getoond) return;
@@ -178,8 +161,6 @@ export const BEWEGING_JS = `<script id="v18-beweging-js">
 })();
 </script>`;
 
-// Het blok zelf. De teksten volgen het onderwerp van de pagina: links hoe het
-// nu gaat, rechts hoe het wordt.
 export function vergelijker(onderwerp) {
   const nu = [
     'De afspraak staat in de mailbox van één collega',
@@ -193,7 +174,7 @@ export function vergelijker(onderwerp) {
     'Het werk loopt door, ook als iemand er niet is',
     'Elk besluit heeft een bron, een eigenaar en een datum'
   ];
-  return `<div class="bgx-vergelijk" data-op aria-label="Vergelijking tussen de huidige situatie en de situatie met ${onderwerp}">
+  return `<div class="bgx-vergelijk" aria-label="Vergelijking tussen de huidige situatie en de situatie met ${onderwerp}">
 <div class="zijde nu"><h4>Zoals het nu gaat</h4><ul>${nu.map(t => `<li>${t}</li>`).join('')}</ul></div>
 <div class="zijde straks"><h4>Zoals het wordt</h4><ul>${straks.map(t => `<li>${t}</li>`).join('')}</ul></div>
 <div class="greep" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Sleep om te vergelijken" aria-valuemin="35" aria-valuemax="65" aria-valuenow="50"></div>
@@ -201,8 +182,11 @@ export function vergelijker(onderwerp) {
 </div>`;
 }
 
-// klassen toekennen aan wat er al staat
 export function maakBeweeglijk(html) {
+  // Reveal-markers worden uit de uiteindelijke publieke markup verwijderd.
+  // Beweging is enhancement; tekstweergave mag nooit van JS of viewport-events afhangen.
+  html = html.replace(/\sdata-op(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?/g, '');
+
   // Bouw ook oude gegenereerde markup defensief schoon. Een structurele .blok
   // mag geen achtergebleven bgx-kantel houden; echte kaartcomponenten wel.
   html = html.replace(/class="([^"]*)"/g, (heel, klassen) => {

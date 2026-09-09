@@ -40,6 +40,7 @@ test('vergelijker is ook met toetsenbord bedienbaar en rapporteert zijn grens', 
   assert.match(html, /tabindex="0"/);
   assert.match(html, /aria-orientation="vertical"/);
   assert.match(html, /aria-valuenow="50"/);
+  assert.doesNotMatch(html, /\sdata-op(?:\s|>|=)/, 'Ook de interactieve vergelijker mag niet via de reveal-laag verborgen starten.');
   assert.match(BEWEGING_JS, /\['ArrowLeft','ArrowRight','Home','End'\]/);
   assert.match(BEWEGING_JS, /greep\.setAttribute\('aria-valuenow', deel\.toFixed\(0\)\)/);
 });
@@ -81,6 +82,18 @@ test('desktop Chrome mag publieke data-op inhoud nooit onzichtbaar maken', () =>
     /html\.bgx-beweegt \[data-op\]\s*\{[^}]*opacity:\s*1\s*!important[^}]*transform:\s*none\s*!important/s,
     'data-op inhoud mag nooit wachten op IntersectionObserver, scroll of een DevTools-resize om zichtbaar te worden.'
   );
+});
+
+test('standalone build verwijdert reveal-triggers uit gewone content', () => {
+  const html = '<main><section class="blok" data-op><h2 data-op>Altijd zichtbaar</h2><p data-op>Tekst</p></section></main>';
+  const out = maakBeweeglijk(html);
+  assert.doesNotMatch(out, /\sdata-op(?:\s|>|=)/, 'Publieke content mag niet afhankelijk blijven van een reveal-trigger.');
+  assert.match(out, /Altijd zichtbaar/);
+  assert.match(out, />Tekst</);
+});
+
+test('woordanimatie heeft een zichtbare basistoestand', () => {
+  assert.match(BEWEGING_CSS, /\.bgx-woord\{[^}]*opacity:\s*1[^}]*transform:\s*none/s);
 });
 
 test('V18 interactieve websitecode en regressietests horen bij de website delivery lane', async () => {
