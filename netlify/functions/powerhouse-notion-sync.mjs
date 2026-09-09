@@ -2,7 +2,7 @@ import { textFromProperty } from '../../platform/linkedin-revenue-cockpit.mjs';
 import { ingestPowerhouseEvent } from './_powerhouse-core-client.mjs';
 
 const NOTION_VERSION='2025-09-03';
-const CONNECTIONS_SOURCE=process.env.POWERHOUSE_NOTION_CONNECTIONS_SOURCE||'3b2da36a-ac8a-80f1-a78d-000b4766fd4c';
+const CONNECTIONS_SOURCE=process.env.POWERHOUSE_NOTION_CONNECTIONS_SOURCE||'3b2da36a-ac8a-8098-9f46-000b0de25a33';
 
 async function queryConnections(token,fetchFn=globalThis.fetch){
   const response=await fetchFn(`https://api.notion.com/v1/data_sources/${CONNECTIONS_SOURCE}/query`,{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json','Notion-Version':NOTION_VERSION},body:JSON.stringify({page_size:100,filter:{and:[{property:'Prioriteit',select:{equals:'1 — Nu'}},{property:'Bal ligt bij',select:{equals:'Nog niet benaderd'}}]}}),signal:AbortSignal.timeout(9000)});
