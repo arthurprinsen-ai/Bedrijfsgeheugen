@@ -110,3 +110,11 @@ test('single-flight failures persist a machine-readable diagnostic artifact', as
   assert.match(requiredWorkflow, /\.single-flight-failure\.json/);
   assert.match(requiredWorkflow, /if-no-files-found:\s*ignore/);
 });
+
+test('spawn and orchestration failures also persist diagnostics', async () => {
+  const kernel = await text('tools/ci/single-flight-release-kernel.mjs');
+  assert.match(kernel, /writeFailureDiagnostic/);
+  assert.match(kernel, /phase:\s*'command-spawn'/);
+  assert.match(kernel, /phase:\s*'orchestration'/);
+  assert.match(kernel, /result\.error/);
+});
