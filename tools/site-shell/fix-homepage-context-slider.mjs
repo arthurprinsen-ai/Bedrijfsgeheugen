@@ -88,8 +88,17 @@ function stripExistingGuard(html){
     .replace(/<script\s+data-bg-change-flow-runtime\b[^>]*>[\s\S]*?<\/script>\s*/gi, '');
 }
 
+function stripLegacyCompareInteractionOwners(html){
+  const compareMarker = /(?:compareSlider|compare-slider|data-bg-compare-slider|compare-before|compare-after|bg-compare|--bg-compare-split|--split)/i;
+  const interactionOwner = /(?:addEventListener\(\s*['"](?:pointerdown|pointermove|pointerup|pointercancel|touchstart|touchmove|touchend|input|change)['"]|setPointerCapture\(|releasePointerCapture\()/;
+  return String(html).replace(/<script\b([^>]*)>([\s\S]*?)<\/script>\s*/gi, (whole, attrs, body) => {
+    if (/\bsrc\s*=/i.test(attrs)) return whole;
+    return compareMarker.test(body) && interactionOwner.test(body) ? '' : whole;
+  });
+}
+
 export function applyHomepageContextSliderReadability(html){
-  let next=stripExistingGuard(normalizeLegacyBounds(html));
+  let next=stripExistingGuard(stripLegacyCompareInteractionOwners(normalizeLegacyBounds(html)));
   next=next.replace('</head>',`${STYLE}\n</head>`);
   next=next.replace('</body>',`${RUNTIME_TAG}\n${CHANGE_FLOW_TAG}\n</body>`);
   if(!next.includes('--bg-compare-split:var(--split,50%)')||
