@@ -1,15 +1,29 @@
 name: Portal parity gate
+
 on:
   push:
     branches: [main]
-    paths: ['klantportaal.html','.github/scripts/portal_parity.py','docs/parity/portal-parity-ledger.md']
+    paths:
+      - 'klantportaal.html'
+      - '.github/scripts/portal_parity.py'
+      - 'portal-v2/legacy-functional-inventory.js'
+      - 'portal-v2/parity-manifest.js'
+      - 'portal-v2/tests/legacy-functional-inventory.test.mjs'
+      - '.github/workflows/portal-parity.yml'
+      - 'docs/parity/portal-parity-ledger.md'
   workflow_dispatch:
-permissions: {contents: read}
+
+permissions:
+  contents: read
+
 jobs:
   parity:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: {python-version: '3.12'}
-      - run: python .github/scripts/portal_parity.py
+        with:
+          python-version: '3.12'
+      - name: Verify protected legacy and V2 functional baseline
+        run: python .github/scripts/portal_parity.py
