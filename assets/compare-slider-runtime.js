@@ -2,7 +2,7 @@
   'use strict';
 
   var SLIDER_SELECTOR = '#compareSlider,.compare-slider,[data-compare-slider]';
-  var VERSION = 'full-endpoints-v8-pointer-capture';
+  var VERSION = 'full-endpoints-v9-physical-edges';
   var SNAP_THRESHOLD = 8;
   var CHANGE_TITLE = 'Eén wijziging. Overal doorgewerkt.';
   var CHANGE_STEPS = ['Signaal komt binnen','Context wordt begrepen','Opvolging ontstaat','Waarde wordt gemeten'];
@@ -236,6 +236,20 @@
     var afterSide = slider.querySelector('.compare-after');
     var handle = slider.querySelector('.compare-handle');
     var knob = slider.querySelector('.compare-knob');
+    var divider = slider.querySelector('.bg-compare-divider');
+    if(!divider){
+      divider = document.createElement('span');
+      divider.className = 'bg-compare-divider';
+      divider.setAttribute('aria-hidden','true');
+      slider.appendChild(divider);
+    }
+    divider.style.setProperty('position','absolute','important');
+    divider.style.setProperty('top','0','important');
+    divider.style.setProperty('bottom','0','important');
+    divider.style.setProperty('width','4px','important');
+    divider.style.setProperty('background','#FFE86B','important');
+    divider.style.setProperty('z-index','21','important');
+    divider.style.setProperty('pointer-events','none','important');
     var dragging = false;
     var pointerId = null;
 
@@ -263,14 +277,26 @@
       knob.setAttribute('aria-disabled','false');
       knob.tabIndex = 0;
     }
+    function syncReadableSide(value){
+      var mobile = window.matchMedia && window.matchMedia('(max-width:720px)').matches;
+      if(!mobile){ slider.removeAttribute('data-bg-readable-side'); return; }
+      if(value <= 20) slider.setAttribute('data-bg-readable-side','after');
+      else if(value >= 80) slider.setAttribute('data-bg-readable-side','before');
+      else slider.removeAttribute('data-bg-readable-side');
+    }
     function renderControlled(raw){
       var value = snap(raw);
       var pct = value.toFixed(2) + '%';
+      var endpoint = value === 0 ? 'start' : value === 100 ? 'end' : 'middle';
+      slider.setAttribute('data-bg-compare-endpoint',endpoint);
       slider.style.setProperty('--bg-compare-split', pct);
       slider.style.setProperty('--split', pct);
       if(beforeSide) beforeSide.style.setProperty('clip-path', 'inset(0 ' + (100 - value).toFixed(2) + '% 0 0)', 'important');
       if(afterSide) afterSide.style.setProperty('clip-path', 'inset(0 0 0 ' + value.toFixed(2) + '%)', 'important');
       if(handle) handle.style.setProperty('left', pct, 'important');
+      divider.style.setProperty('left',pct,'important');
+      divider.style.setProperty('transform', endpoint === 'start' ? 'translateX(0)' : endpoint === 'end' ? 'translateX(-100%)' : 'translateX(-50%)','important');
+      syncReadableSide(value);
       syncAria(value);
       return value;
     }
