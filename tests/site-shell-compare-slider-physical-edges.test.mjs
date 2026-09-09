@@ -34,7 +34,7 @@ test('physical endpoint rendering is independent of handle or knob width', () =>
 test('homepage shell fixer injects only canonical v14 and no second interaction owner', () => {
   assert.match(fixer, /\/assets\/compare-slider-runtime-canonical-v14\.js/);
   assert.doesNotMatch(fixer, /compare-slider-runtime-native-range-v13\.js/);
-  assert.doesNotMatch(fixer, /data-bg-compare-bootstrap/);
+  assert.doesNotMatch(fixer, /const\s+BOOTSTRAP_TAG\s*=/);
   assert.doesNotMatch(fixer, /addEventListener\(['"](?:pointerdown|pointermove|pointerup|touchstart|touchmove|touchend|input|change)['"]/);
   assert.doesNotMatch(fixer, /setPointerCapture|releasePointerCapture/);
 });
