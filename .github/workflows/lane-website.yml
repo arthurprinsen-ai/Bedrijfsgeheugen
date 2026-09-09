@@ -183,6 +183,10 @@ jobs:
         env:
           UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
         run: node tools/site-shell/standalone-visibility-check.mjs
+      - name: Verify every header menu panel is readable
+        env:
+          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+        run: node tools/site-shell/v18-header-menu-contrast-check.mjs
       - name: Verify broad high-risk browser contracts
         if: needs.classify.outputs.risk_lane == 'high-risk'
         env:

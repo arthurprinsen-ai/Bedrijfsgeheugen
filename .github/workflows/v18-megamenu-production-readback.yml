@@ -6,6 +6,7 @@ on:
     paths:
       - 'tools/bouw-v18-production-core.mjs'
       - 'tools/site-shell/v18-megamenu-browser-check.mjs'
+      - 'tools/site-shell/v18-header-menu-contrast-check.mjs'
       - 'tests/v18-megamenu-heading-contract.test.mjs'
       - 'tests/v18-megamenu-regression-lock.test.mjs'
       - '.github/workflows/required-test.yml'
@@ -39,7 +40,7 @@ jobs:
           set -euo pipefail
           for attempt in $(seq 1 24); do
             echo "Production readback attempt ${attempt}/24"
-            if node tools/site-shell/v18-megamenu-browser-check.mjs; then
+            if node tools/site-shell/v18-megamenu-browser-check.mjs && node tools/site-shell/v18-header-menu-contrast-check.mjs; then
               echo "Live production megamenu contrast verified."
               exit 0
             fi
