@@ -24,6 +24,20 @@ export function bufferEnvelopeToCoreEvents(envelope={}){
   return [published,metric];
 }
 
+async function registerCredentialObligation(store,now){
+  if(!store?.recordObligation)return;
+  await store.recordObligation({
+    id:'buffer-social-learning:credential',
+    type:'credential',
+    source:'buffer',
+    state:'blocked',
+    fingerprint:'buffer-social-learning:credential',
+    reason:'BUFFER_API_KEY_REQUIRED',
+    next_action:'Configure BUFFER_API_KEY and rerun the native Buffer collector.',
+    created_at:new Date(now).toISOString(),
+  });
+}
+
 async function legacyIngest(envelope,{serviceToken,store}={}){
   const [{createSocialOutcomeHandler},{createSocialLearningStore}]=await Promise.all([import('./social-outcome-ingest.mjs'),import('./_social-learning-store.mjs')]);
   const activeStore=store||createSocialLearningStore();
@@ -34,7 +48,10 @@ async function legacyIngest(envelope,{serviceToken,store}={}){
 }
 
 export async function runBufferCollection({apiKey,organizationId=null,channelIds=[],targetServices=['linkedin','instagram'],tenantId='canonical',lookbackDays=8,fetchFn=globalThis.fetch,ingest,coreOptions={},legacyFallback=false,serviceToken=null,store=null,now=new Date()}={}){
-  if(!apiKey)return {ok:false,reason:'BUFFER_API_KEY_REQUIRED',posts:0,pages:0};
+  if(!apiKey){
+    await registerCredentialObligation(store,now);
+    return {ok:false,reason:'BUFFER_API_KEY_REQUIRED',posts:0,pages:0};
+  }
   const scope=await discoverBufferScope({apiKey,fetchFn,organizationId,channelIds:channelIds?.length?channelIds:null,targetServices});
   const services=Object.fromEntries(scope.channels.map(channel=>[channel.id,channel.service]));
   const activeIngest=ingest||(async envelope=>{
@@ -50,7 +67,7 @@ export async function runBufferCollection({apiKey,organizationId=null,channelIds
 }
 
 export default async function bufferCollect(input={}){
-  const dependencyInjection=input&&typeof input==='object'&&!(input instanceof Request)&&('apiKey' in input||'ingest' in input||'coreOptions' in input);
+  const dependencyInjection=input&&typeof input==='object'&&!(input instanceof Request)&&('apiKey' in input||'ingest' in input||'coreOptions' in input||'store' in input);
   const options=dependencyInjection?input:envConfig();
   try{const result=await runBufferCollection(options);if(!result.ok)return Response.json(result,{status:503,headers:{'cache-control':'no-store'}});return Response.json(result,{status:200,headers:{'cache-control':'no-store'}});}catch(error){console.error('BUFFER_SOCIAL_COLLECTION_FAILED',error);return Response.json({ok:false,error:'BUFFER_SOCIAL_COLLECTION_FAILED',message:error.message},{status:503,headers:{'cache-control':'no-store'}});}
 }
