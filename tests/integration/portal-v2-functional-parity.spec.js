@@ -54,7 +54,27 @@ test('repeatable legacy collections add and edit native V2 rows without navigati
  await workspace.locator('[data-repeat-add]').click();
  await expect(workspace.locator('[data-repeat-row]')).toHaveCount(1);
  const title=workspace.locator('[data-repeat-row] [data-repeat-col="title"]');
- await title.fill('Borg kritieke kennis');await expect(title).toHaveValue('Borg kritieke kennis');
+ await title.fill('Borg kritieke kennis');await title.blur();await expect(title).toHaveValue('Borg kritieke kennis');
  await workspace.locator('[data-workspace-tab="analyse"]').click();
  await expect(workspace.getByText('Items',{exact:true})).toBeVisible();await expect(workspace.getByText('1',{exact:true})).toBeVisible();
+});
+
+test('roadmap cards move between sprints with drag on desktop and 44px controls on mobile',async({page})=>{
+ const preview=process.env.PREVIEW_URL;if(!preview)throw new Error('PREVIEW_URL is required');
+ await hideNetlifyChrome(page);await boot(page,preview,1440,1000);await openFunctional(page,'roadmap');
+ let workspace=page.locator('[data-functional-workspace="roadmap"]');
+ await workspace.locator('[data-repeat-add]').click();
+ const card=workspace.locator('[data-repeat-row]').first();
+ await expect(card).toHaveAttribute('data-sprint','1');
+ await card.dragTo(workspace.locator('.v2roadmapdrop[data-sprint="3"]'));
+ await expect(workspace.locator('.v2roadmapdrop[data-sprint="3"] [data-repeat-row]')).toHaveCount(1);
+
+ await page.setViewportSize({width:390,height:844});
+ workspace=page.locator('[data-functional-workspace="roadmap"]');
+ const moveRight=workspace.locator('.v2roadmapdrop[data-sprint="3"] [data-move-right]').first();
+ const box=await moveRight.boundingBox();expect(box).toBeTruthy();expect(box.height).toBeGreaterThanOrEqual(44);expect(box.width).toBeGreaterThanOrEqual(44);
+ await moveRight.click();
+ await expect(workspace.locator('.v2roadmapdrop[data-sprint="4"] [data-repeat-row]')).toHaveCount(1);
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+ expect(overflow).toBeLessThanOrEqual(1);
 });
