@@ -37,10 +37,10 @@ test('alle compare-sliders gebruiken één native volledig 0-100 bereik',()=>{
 
 test('external slider-runtime is parsebaar en wordt synchroon geladen',()=>{
   assert.doesNotThrow(()=>new Script(runtime));
-  assert.match(fixer,/RUNTIME_SRC\s*=\s*['"]\/assets\/compare-slider-runtime\.js['"]/);
+  assert.match(fixer,/RUNTIME_SRC\s*=\s*['"]\/assets\/compare-slider-runtime-native-range-v13\.js['"]/);
   const upgraded=applyHomepageContextSliderReadability('<!doctype html><html><head></head><body></body></html>');
-  assert.match(upgraded,/<script data-bg-context-slider-readable src="\/assets\/compare-slider-runtime\.js"><\/script>/);
-  assert.doesNotMatch(upgraded,/compare-slider-runtime\.js" defer/);
+  assert.match(upgraded,/<script data-bg-context-slider-readable src="\/assets\/compare-slider-runtime-native-range-v13\.js"><\/script>/);
+  assert.doesNotMatch(upgraded,/compare-slider-runtime-native-range-v13\.js" defer/);
 });
 
 test('mobiele interactie heeft één native range eigenaar en geen custom gesture transport',()=>{
@@ -155,7 +155,7 @@ test('oude geïnjecteerde guard wordt vervangen door native-range styling en é�
   const upgraded=applyHomepageContextSliderReadability(stale);
   assert.doesNotMatch(upgraded,/>STALE</);
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
-  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length,1);
+  assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime-native-range-v13\.js"><\/script>/g)||[]).length,1);
   assert.match(upgraded,/data-bg-compare-slider/);
   assert.match(upgraded,/bg-compare-range/);
   assert.doesNotMatch(upgraded,/data-bg-pointer-owner-ready|data-bg-context-slider-aria-fallback/);
