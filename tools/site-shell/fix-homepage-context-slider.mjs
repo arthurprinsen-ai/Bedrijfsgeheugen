@@ -69,6 +69,7 @@ const STYLE = `<style ${MARKER}>
 }
 </style>`;
 
+const BOOTSTRAP_TAG = `<script data-bg-compare-bootstrap>(function(){function mount(){document.querySelectorAll('#compareSlider,.compare-slider,[data-compare-slider]').forEach(function(slider){if(!slider.querySelector('.compare-before')||!slider.querySelector('.compare-after'))return;slider.setAttribute('data-bg-compare-slider','');var range=slider.querySelector('.bg-compare-range');if(!range){range=document.createElement('input');range.className='bg-compare-range';range.type='range';range.min='0';range.max='100';range.step='1';range.value='50';range.setAttribute('aria-label','Vergelijk huidige en gewenste situatie');slider.appendChild(range);}function render(){var value=Math.max(0,Math.min(100,Number(range.value)||0));var pct=value.toFixed(2)+'%';slider.style.setProperty('--bg-compare-split',pct);slider.style.setProperty('--split',pct);var before=slider.querySelector('.compare-before');var after=slider.querySelector('.compare-after');if(before)before.style.setProperty('clip-path','inset(0 '+(100-value).toFixed(2)+'% 0 0)','important');if(after)after.style.setProperty('clip-path','inset(0 0 0 '+value.toFixed(2)+'%)','important');slider.setAttribute('data-bg-compare-endpoint',value===0?'start':value===100?'end':'middle');}range.addEventListener('input',render);range.addEventListener('change',render);render();});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();})();</script>`;
 const RUNTIME_TAG = `<script ${MARKER} src="${RUNTIME_SRC}"></script>`;
 
 function normalizeLegacyBounds(html){
@@ -81,16 +82,18 @@ function normalizeLegacyBounds(html){
 function stripExistingGuard(html){
   return html
     .replace(/<style\s+data-bg-context-slider-readable\b[^>]*>[\s\S]*?<\/style>\s*/gi, '')
+    .replace(/<script\s+data-bg-compare-bootstrap\b[^>]*>[\s\S]*?<\/script>\s*/gi, '')
     .replace(/<script\s+data-bg-context-slider-readable\b[^>]*>[\s\S]*?<\/script>\s*/gi, '');
 }
 
 export function applyHomepageContextSliderReadability(html){
   let next=stripExistingGuard(normalizeLegacyBounds(html));
   next=next.replace('</head>',`${STYLE}\n</head>`);
-  next=next.replace('</body>',`${RUNTIME_TAG}\n</body>`);
+  next=next.replace('</body>',`${BOOTSTRAP_TAG}\n${RUNTIME_TAG}\n</body>`);
   if(!next.includes('data-bg-compare-slider')||
      !next.includes('--bg-compare-split:var(--split,50%)')||
      !next.includes('bg-compare-range')||
+     !next.includes('data-bg-compare-bootstrap')||
      !next.includes(RUNTIME_SRC)||
      !next.includes('data-bg-change-flow')||
      !next.includes('data-bg-change-progress')||
@@ -100,6 +103,7 @@ export function applyHomepageContextSliderReadability(html){
      !next.includes('bg-change-step-content')||
      !next.includes('bgx-lek-uit-flow')||
      (next.match(/<style data-bg-context-slider-readable>/g)||[]).length!==1||
+     (next.match(/<script data-bg-compare-bootstrap>/g)||[]).length!==1||
      (next.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length!==1){
     throw new Error('Compare-slider readability guard kon niet volledig worden toegepast');
   }
