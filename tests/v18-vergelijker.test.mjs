@@ -40,6 +40,7 @@ test('vergelijker is ook met toetsenbord bedienbaar en rapporteert zijn grens', 
   assert.match(html, /tabindex="0"/);
   assert.match(html, /aria-orientation="vertical"/);
   assert.match(html, /aria-valuenow="50"/);
+  assert.doesNotMatch(html, /\sdata-op(?:\s|>|=)/, 'Ook de interactieve vergelijker mag niet via de reveal-laag verborgen starten.');
   assert.match(BEWEGING_JS, /\['ArrowLeft','ArrowRight','Home','End'\]/);
   assert.match(BEWEGING_JS, /greep\.setAttribute\('aria-valuenow', deel\.toFixed\(0\)\)/);
 });
