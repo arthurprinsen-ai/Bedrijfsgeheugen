@@ -1,0 +1,1 @@
+Revenue Command Center execution uses a clean implementation branch from current main. The spec/plan branch remains design evidence only so `docs/superpowers/specs/**` does not contaminate executable delivery-lane classification.
