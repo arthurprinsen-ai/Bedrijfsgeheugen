@@ -35,8 +35,9 @@ function legacyLaneShape(projection){
   const compact=item=>({
     id:item.id,
     actionId:item.actionId,
-    person:item.personKey,
-    company:item.companyKey,
+    person:item.person||item.personKey,
+    company:item.company||item.companyKey,
+    role:item.role||'',
     linkedinUrl:item.sourceUrl,
     sourceUrl:item.sourceUrl,
     channel:item.channel,
