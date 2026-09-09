@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from '../tools/v18-beweging.mjs';
+import { isolateStandaloneHtml } from '../tools/standalone-page-router.mjs';
 import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
 // Chrome visibility is a release invariant: public content wins over animation.
@@ -80,6 +81,16 @@ test('desktop Chrome mag publieke data-op inhoud nooit onzichtbaar maken', () =>
     BEWEGING_CSS,
     /html\.bgx-beweegt \[data-op\]\s*\{[^}]*opacity:\s*1\s*!important[^}]*transform:\s*none\s*!important/s,
     'data-op inhoud mag nooit wachten op IntersectionObserver, scroll of een DevTools-resize om zichtbaar te worden.'
+  );
+});
+
+test('standalone content mag desktop root-scroll CSS nooit erven', () => {
+  const html = '<!doctype html><html><head></head><body><div class="bg-standalone-page"><section class="inhoud-body"><section class="blok" data-op>zichtbaar</section></section></div></body></html>';
+  const out = isolateStandaloneHtml(html, 'ai-act.html');
+  assert.match(
+    out,
+    /\.bg-standalone-page \.inhoud-body\{[^}]*overflow-y:visible!important[^}]*scrollbar-gutter:auto!important/s,
+    'Standalone content moet het desktop root-scroll gedrag neutraliseren; anders kan Chrome/macOS pas na resize of DevTools repainten.'
   );
 });
 
