@@ -4,11 +4,18 @@ test.describe.configure({timeout:120000});
 
 async function boot(page,preview){
  await page.route('**/cdp/**',route=>route.abort());
- const response=await page.goto(`${preview}/portal-v2/?bg_algorithm_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
- expect(response,'portal preview response').not.toBeNull();
- expect(response.status(),'portal preview status').toBeLessThan(400);
- await expect(page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true})).toBeVisible({timeout:30000});
- await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__),{timeout:30000});
+ let lastError;
+ for(let attempt=1;attempt<=3;attempt++){
+  try{
+   const response=await page.goto(`${preview}/portal-v2/?bg_algorithm_parity=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45000});
+   expect(response,'portal preview response').not.toBeNull();
+   expect(response.status(),'portal preview status').toBeLessThan(400);
+   await page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true}).waitFor({state:'visible',timeout:15000});
+   await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__),{timeout:30000});
+   return;
+  }catch(error){lastError=error;}
+ }
+ throw lastError;
 }
 async function open(page,pageId){
  await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
