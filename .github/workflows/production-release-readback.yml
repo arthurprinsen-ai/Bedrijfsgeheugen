@@ -33,7 +33,9 @@ jobs:
           const changedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const riskConfig=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
           const acceptedBaseline=JSON.parse(await readFile('site/accepted-baseline.json','utf8'));
-          const risk=classifyWebsiteRelease({changedPaths,riskConfig,acceptedBaseline});
+          const risk=changedPaths.length
+            ? classifyWebsiteRelease({changedPaths,riskConfig,acceptedBaseline})
+            : {lane:'no-op',affected_routes:[]};
           let routes=[...risk.affected_routes];
           if(routes.length===0) routes=risk.lane==='high-risk'?['/','/ai-act','/benchmark']:['/'];
           await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
