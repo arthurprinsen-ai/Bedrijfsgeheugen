@@ -1,0 +1,207 @@
+name: Native daily blog publisher
+
+on:
+  schedule:
+    - cron: '35 5 * * *'
+  workflow_dispatch:
+    inputs:
+      business_date:
+        description: 'Optionele Europe/Amsterdam business date (YYYY-MM-DD)'
+        required: false
+        default: ''
+      slug:
+        description: 'Optioneel: forceer exact deze approved slug'
+        required: false
+        default: ''
+      verification_mode:
+        description: 'Lokale fixture-only verificatie; nooit publiceren'
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: native-daily-blog-publisher
+  cancel-in-progress: false
+
+env:
+  BUSINESS_TIME_ZONE: Europe/Amsterdam
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Resolve Europe/Amsterdam business date and existing state
+        id: day
+        env:
+          REQUESTED_DATE: ${{ github.event.inputs.business_date }}
+        run: |
+          set -euo pipefail
+          date="${REQUESTED_DATE:-}"
+          if [ -z "$date" ]; then
+            date="$(node --input-type=module -e "import {businessDate} from './tools/content-growth/daily-blog.mjs'; console.log(businessDate(new Date(),'Europe/Amsterdam'))")"
+          fi
+          node -e "if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(process.argv[1])) process.exit(1)" "$date"
+          echo "date=$date" >> "$GITHUB_OUTPUT"
+          state="$(node -e "const x=require('./data/content-publication-ledger.json'); console.log(x.days?.[process.argv[1]]?.state||'')" "$date")"
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+          echo "business_date=$date state=${state:-none} time_zone=Europe/Amsterdam"
+
+      - name: Stop idempotently when this date is already live
+        if: steps.day.outputs.state == 'live'
+        run: echo "NO_ACTION_LIVE:${{ steps.day.outputs.date }}"
+
+      - name: Validate native growth policy
+        if: steps.day.outputs.state != 'live'
+        run: node tools/content-growth/validate-policy.mjs
+
+      - name: Render or seal exactly one approved central blog
+        id: render
+        if: steps.day.outputs.state != 'live'
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          FORCE_SLUG: ${{ github.event.inputs.slug }}
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          set -euo pipefail
+          if [ "$VERIFICATION_MODE" = "true" ]; then
+            slug="writer-verification-native-daily"
+            mkdir -p "blog/$slug"
+            cat > "blog/$slug/index.html" <<'HTML'
+          <!doctype html><html lang="nl"><head><title>Native daily verification</title><link rel="canonical" href="https://www.bedrijfsgeheugen.nl/blog/writer-verification-native-daily/"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Native daily verification"}</script></head><body data-content-id="blog:writer-verification-native-daily"><h1>Native daily verification</h1></body></html>
+          HTML
+            echo "slug=$slug" >> "$GITHUB_OUTPUT"
+            echo "content_id=blog:$slug" >> "$GITHUB_OUTPUT"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            python3 -B scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/native-daily-publish.txt
+            if grep -Eq '^(NO_ACTION:|SEALED:)' /tmp/native-daily-publish.txt; then
+              echo "::error::NO_ELIGIBLE_DAILY_BLOG:${{ steps.day.outputs.date }}"
+              exit 3
+            fi
+            python3 - <<'PY'
+          import json, os, pathlib, re
+          lines=[x for x in pathlib.Path('/tmp/native-daily-publish.txt').read_text().splitlines() if x.strip()]
+          data=json.loads(lines[-1])
+          slug=data.get('slug') or data.get('article_slug') or ''
+          if not slug:
+              changed=[]
+              import subprocess
+              changed=subprocess.check_output(['git','status','--porcelain'], text=True).splitlines()
+              article=[re.sub(r'^.. ','',x) for x in changed if re.search(r'blog/[a-z0-9-]+/index\.html$',x)]
+              if len(article)==1: slug=article[0].split('/')[1]
+          if not slug or not re.fullmatch(r'[a-z0-9-]+',slug): raise SystemExit('publisher did not expose one valid slug')
+          out=pathlib.Path(os.environ['GITHUB_OUTPUT'])
+          with out.open('a') as f:
+              f.write(f'slug={slug}\ncontent_id=blog:{slug}\nchanged=true\n')
+          PY
+          fi
+
+      - name: Instrument stable content_id and daily ledger selection
+        if: steps.render.outputs.changed == 'true'
+        env:
+          DATE: ${{ steps.day.outputs.date }}
+          SLUG: ${{ steps.render.outputs.slug }}
+          CONTENT_ID: ${{ steps.render.outputs.content_id }}
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { instrumentBlogHtml } from './tools/content-growth/content-id.mjs';
+          const slug=process.env.SLUG;
+          const path=`blog/${slug}/index.html`;
+          fs.writeFileSync(path, instrumentBlogHtml(fs.readFileSync(path,'utf8'), slug));
+          NODE
+          existing="$(node -e "const x=require('./data/content-publication-ledger.json'); console.log(x.days?.[process.argv[1]]?.content_id||'')" "$DATE")"
+          if [ -n "$existing" ] && [ "$existing" != "$CONTENT_ID" ]; then
+            echo "::error::DAILY_CONTENT_ID_CONFLICT:$DATE:$existing:$CONTENT_ID"
+            exit 1
+          fi
+          if [ -z "$existing" ]; then
+            event="$(node -e "console.log(JSON.stringify({date:process.argv[1],content_id:process.argv[2],slug:process.argv[3],state:'selected',selected_at:new Date().toISOString()}))" "$DATE" "$CONTENT_ID" "$SLUG")"
+            node tools/content-growth/update-ledger.mjs --date="$DATE" --event="$event"
+          fi
+
+      - name: Deterministic article and changed-file contract
+        id: contract
+        if: steps.render.outputs.changed == 'true'
+        env:
+          SLUG: ${{ steps.render.outputs.slug }}
+          DATE: ${{ steps.day.outputs.date }}
+          CONTENT_ID: ${{ steps.render.outputs.content_id }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, re, subprocess
+          tracked=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()
+          changed=sorted(set(tracked+untracked))
+          slug=os.environ['SLUG']
+          article=f'blog/{slug}/index.html'
+          allowed={article,'blog/index.html','blog/rss.xml','sitemap.xml','data/content-publication-ledger.json'}
+          unexpected=[p for p in changed if p not in allowed]
+          assert article in changed, f'article not changed: {changed}'
+          assert not unexpected, f'unexpected files: {unexpected}'
+          text=pathlib.Path(article).read_text(encoding='utf-8')
+          assert len(re.findall(r'<h1(?:\\s|>)',text))==1, 'exactly one h1 required'
+          expected=f'https://www.bedrijfsgeheugen.nl/blog/{slug}/'
+          assert expected in text, 'canonical missing/mismatched'
+          assert f'data-content-id="{os.environ["CONTENT_ID"]}"' in text, 'content_id marker missing'
+          pathlib.Path('/tmp/native-daily-files').write_text('\n'.join(changed)+'\n')
+          print('NATIVE_DAILY_CONTRACT_OK',os.environ['DATE'],os.environ['CONTENT_ID'],changed)
+          PY
+
+      - name: Commit validated native candidate
+        id: commit
+        if: steps.render.outputs.changed == 'true'
+        env:
+          BASE_SHA: ${{ github.sha }}
+          DATE: ${{ steps.day.outputs.date }}
+        run: |
+          set -euo pipefail
+          mapfile -t changed < /tmp/native-daily-files
+          git config user.name "Bedrijfsgeheugen Native Daily Publisher"
+          git config user.email "actions@users.noreply.github.com"
+          for path in "${changed[@]}"; do [ -n "$path" ] && git add -- "$path"; done
+          git commit -m "blog: publish native daily article $DATE"
+          export CHANGED_FILES="$(printf '%s\n' "${changed[@]}")"
+          branch=$(node --input-type=module - <<'NODE'
+          import { createWriterCandidate, validateWriterCandidate } from './scripts/ci/repo-writer-candidate.mjs';
+          const files=String(process.env.CHANGED_FILES||'').split('\n').filter(Boolean).sort();
+          const candidate=createWriterCandidate({writer:'native-daily-blog',baseSha:process.env.BASE_SHA,runId:process.env.GITHUB_RUN_ID,changedFiles:files,allowedFiles:files,rollbackSha:process.env.BASE_SHA});
+          validateWriterCandidate(candidate); console.log(candidate.branch);
+          NODE
+          )
+          echo "candidate_branch=$branch" >> "$GITHUB_OUTPUT"
+          git push origin "HEAD:$branch"
+
+      - name: Open candidate PR and dispatch BRAIN v2 shadow
+        id: pr
+        if: steps.render.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          DATE: ${{ steps.day.outputs.date }}
+          CONTENT_ID: ${{ steps.render.outputs.content_id }}
+        run: |
+          set -euo pipefail
+          url=$(gh pr create --base main --head "$CANDIDATE_BRANCH" --title "Native daily blog $DATE" --body "Native daily publisher. business_date=$DATE content_id=$CONTENT_ID. BRAIN-DELIVERY-v2 candidate-only; no direct main push. Production success requires exact live readback.")
+          number=${url##*/}
+          base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.base.sha')
+          head_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.head.sha')
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+          gh workflow run repo-writer-candidate-shadow.yml --repo "$GITHUB_REPOSITORY" --ref main -f pr_number="$number" -f base_sha="$base_sha" -f head_sha="$head_sha" -f candidate_branch="$CANDIDATE_BRANCH"
+          echo "candidate_pr=$number content_id=$CONTENT_ID production_authority=BG169 direct_main_push=false"

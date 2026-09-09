@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["content_id", "event_type"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "occurred_at": {"type": ["string", "null"]},
+    "content_id": {"type": "string", "minLength": 1},
+    "content_type": {"enum": ["blog", "linkedin", "social"]},
+    "channel": {"type": "string"},
+    "source": {"type": ["string", "null"]},
+    "medium": {"type": ["string", "null"]},
+    "campaign": {"type": ["string", "null"]},
+    "event_type": {"enum": ["reach", "impression", "engagement", "click", "visit", "cta", "lead", "qualified_lead", "opportunity", "order", "revenue"]},
+    "value": {"type": "number"},
+    "currency": {"type": "string"},
+    "journey_id": {"type": ["string", "null"]},
+    "order_id": {"type": ["string", "null"]},
+    "attribution": {"enum": ["first_touch", "last_touch", "assisted_touch", null]}
+  },
+  "additionalProperties": true
+}
