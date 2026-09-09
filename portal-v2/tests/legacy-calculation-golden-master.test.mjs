@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PROFILE_DIMENSIONS, profileOverviewMetrics } from '../modules/company-input.js';
+import { computeFunctionalAnalysis } from '../modules/functional-suite.js';
 
 const LEGACY_WEEKLY_HOURS=Object.freeze({
   sturing:1.6,
@@ -36,6 +37,29 @@ function legacyMetrics({employees=24,hourlyCost=52,maturity={}}={}){
     annualManualCost:annualManualHours*hourlyCost,
     fteLost:annualManualHours/1600
   };
+}
+
+function legacyBusinessCase({employees=24,hourlyCost=52,maturity={},target=4,delay=12,investment=12000}={}){
+  let current=0;
+  let future=0;
+  for(const item of PROFILE_DIMENSIONS){
+    const level=Math.max(1,Math.min(5,Math.round(Number(maturity[item.id])||2)));
+    const targetLevel=Math.max(level,Math.max(2,Math.min(5,Math.round(Number(target)||4))));
+    const scaledHours=(LEGACY_WEEKLY_HOURS[item.id]??2)*(employees/24);
+    current+=scaledHours*LEGACY_FACTOR[level]*46*hourlyCost;
+    future+=scaledHours*LEGACY_FACTOR[targetLevel]*46*hourlyCost;
+  }
+  const annualBenefit=Math.max(current-future,0);
+  return {
+    annualBenefit,
+    delayCost:annualBenefit/12*delay,
+    investment,
+    paybackMonths:annualBenefit>0?investment/(annualBenefit/12):0
+  };
+}
+
+function euroValue(text){
+  return Number(String(text).replace(/[^0-9,-]/g,'').replace(/\./g,'').replace(',','.'));
 }
 
 function stateFor({employees=24,hourlyCost=52,level=1}={}){
@@ -96,4 +120,40 @@ test('V2 matches legacy scaling, factors and 1600-hour FTE denominator',()=>{
   close(actual.fteLost,expected.fteLost);
   close(actual.annualManualCost,expected.annualManualCost);
   close(actual.fteLost,actual.annualManualHours/1600);
+});
+
+test('V2 businesscase matches legacy per-dimension target math and never degrades dimensions already above target',()=>{
+  const maturity=Object.fromEntries(PROFILE_DIMENSIONS.map((item,index)=>[item.id,(index%5)+1]));
+  const profile={employees:48,hourlyCost:67,maturity};
+  const businessCase={target:4,delay:9,investment:18000};
+  const state={portal:{profile,businessCase}};
+  const expected=legacyBusinessCase({...profile,...businessCase});
+  const rows=Object.fromEntries(computeFunctionalAnalysis('businesscase',state));
+
+  assert.equal(euroValue(rows['Jaarpotentieel']),Math.round(expected.annualBenefit));
+  assert.equal(euroValue(rows['Kosten van uitstel']),Math.round(expected.delayCost));
+  assert.equal(euroValue(rows['Investering']),18000);
+  close(Number(rows['Terugverdientijd'].replace(' mnd','').replace(',','.')),expected.paybackMonths,.11);
+});
+
+test('V2 businesscase preserves legacy defaults: target 4, 12 months delay and €12k investment',()=>{
+  const profile={employees:24,hourlyCost:52,maturity:{}};
+  const state={portal:{profile,businessCase:{}}};
+  const expected=legacyBusinessCase(profile);
+  const rows=Object.fromEntries(computeFunctionalAnalysis('businesscase',state));
+
+  assert.equal(euroValue(rows['Jaarpotentieel']),Math.round(expected.annualBenefit));
+  assert.equal(euroValue(rows['Kosten van uitstel']),Math.round(expected.delayCost));
+  assert.equal(euroValue(rows['Investering']),12000);
+  close(Number(rows['Terugverdientijd'].replace(' mnd','').replace(',','.')),expected.paybackMonths,.11);
+});
+
+test('legacy 70% realizability stays an execution-ladder rule and is not applied to businesscase potential',()=>{
+  const profile={employees:24,hourlyCost:52,maturity:Object.fromEntries(PROFILE_DIMENSIONS.map(item=>[item.id,2]))};
+  const businessCase={target:4,delay:12,investment:12000};
+  const expected=legacyBusinessCase({...profile,...businessCase});
+  const rows=Object.fromEntries(computeFunctionalAnalysis('businesscase',{portal:{profile,businessCase}}));
+
+  assert.equal(euroValue(rows['Jaarpotentieel']),Math.round(expected.annualBenefit));
+  assert.notEqual(euroValue(rows['Jaarpotentieel']),Math.round(expected.annualBenefit*.7));
 });
