@@ -1,0 +1,1 @@
+Implementation will proceed on `powerhouse-revenue-command-center` cut fresh from protected `main`; spec/plan remain on this design branch.
