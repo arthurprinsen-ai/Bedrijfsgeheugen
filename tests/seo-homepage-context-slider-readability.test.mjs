@@ -19,15 +19,18 @@ test('compare-slider guard wordt site-wide toegepast tijdens normale paginanorma
   assert.match(pipeline,/applyHomepageContextSliderReadability/);
 });
 
-test('alle compare-sliders gebruiken hetzelfde volledige 0-100 bereik',()=>{
+test('alle compare-sliders gebruiken één native volledig 0-100 bereik',()=>{
   assert.match(fixer,/SLIDER_SELECTOR/);
   assert.match(fixer,/#compareSlider/);
   assert.match(fixer,/\.compare-slider/);
   assert.match(fixer,/\[data-compare-slider\]/);
   assert.match(runtime,/SLIDER_SELECTOR\s*=\s*['"]#compareSlider,\.compare-slider,\[data-compare-slider\]['"]/);
-  assert.match(runtime,/Math\.max\(0,\s*Math\.min\(100/);
-  assert.match(runtime,/aria-valuemin['"],?\s*['"]0['"]/);
-  assert.match(runtime,/aria-valuemax['"],?\s*['"]100['"]/);
+  assert.match(runtime,/bg-compare-range/);
+  assert.match(runtime,/range\.type\s*=\s*['"]range['"]/);
+  assert.match(runtime,/range\.min\s*=\s*['"]0['"]/);
+  assert.match(runtime,/range\.max\s*=\s*['"]100['"]/);
+  assert.match(runtime,/range\.step\s*=\s*['"]1['"]/);
+  assert.match(runtime,/Math\.max\(0,Math\.min\(100,Math\.round\(numeric\)\)\)/);
   assert.doesNotMatch(runtime,/safePanePx/);
   assert.doesNotMatch(runtime,/compactThreshold/);
 });
@@ -40,18 +43,17 @@ test('external slider-runtime is parsebaar en wordt synchroon geladen',()=>{
   assert.doesNotMatch(upgraded,/compare-slider-runtime\.js" defer/);
 });
 
-test('mobiele interactie heeft één Pointer Events eigenaar en geen verborgen native range',()=>{
-  assert.match(fixer,/setPointerCapture/);
-  assert.match(fixer,/releasePointerCapture/);
-  assert.match(fixer,/pointerdown/);
-  assert.match(fixer,/pointermove/);
-  assert.match(fixer,/pointerup/);
-  assert.match(fixer,/getBoundingClientRect\(\)/);
-  assert.match(fixer,/clientX\s*-\s*r\.left/);
-  assert.match(fixer,/data-bg-pointer-owner-ready/);
-  assert.doesNotMatch(fixer,/ensureNativeRange/);
-  assert.doesNotMatch(fixer,/bg-compare-range/);
-  assert.doesNotMatch(fixer,/data-bg-native-range-ready/);
+test('mobiele interactie heeft één native range eigenaar en geen custom gesture transport',()=>{
+  assert.match(runtime,/bg-compare-range/);
+  assert.match(runtime,/range\.addEventListener\('input'/);
+  assert.match(runtime,/range\.addEventListener\('change'/);
+  assert.match(fixer,/\.bg-compare-range\{[^}]*inset:0!important;[^}]*width:100%!important;[^}]*height:100%!important/s);
+  assert.doesNotMatch(runtime,/setPointerCapture|releasePointerCapture|takeCanonicalOwnership|cloneNode\(true\)/);
+  assert.doesNotMatch(runtime,/addEventListener\(['"]pointer(?:down|move|up)['"]/);
+  assert.doesNotMatch(runtime,/addEventListener\(['"]touch(?:start|move|end)['"]/);
+  assert.doesNotMatch(fixer,/setPointerCapture|releasePointerCapture|data-bg-pointer-owner-ready/);
+  assert.doesNotMatch(fixer,/addEventListener\(['"]pointer(?:down|move|up)['"]/);
+  assert.doesNotMatch(fixer,/addEventListener\(['"]touch(?:start|move|end)['"]/);
 });
 
 test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand en geen randclamp',()=>{
@@ -65,35 +67,32 @@ test('late pricing-shell CSS gebruikt exact dezelfde canonieke sliderstand en ge
   assert.doesNotMatch(pipeline,/left:clamp\(24px/);
 });
 
-test('canonical runtime bezit de slider en legacy listeners kunnen eindstanden niet terugklemmen',()=>{
-  assert.match(runtime,/takeCanonicalOwnership/);
-  assert.match(runtime,/cloneNode\(true\)/);
-  assert.match(runtime,/replaceWith\(clone\)/);
-  assert.match(runtime,/data-bg-compare-owner/);
-  assert.doesNotMatch(runtime,/new MutationObserver\(mirrorLegacy\)/);
-  assert.doesNotMatch(runtime,/function mirrorLegacy/);
-  assert.doesNotMatch(runtime,/clamp\(24px/);
+test('canonical runtime gebruikt native range als enige numerieke bron zonder clone-owner',()=>{
+  assert.match(runtime,/range\.value\s*=\s*String\(Math\.round\(value\)\)/);
+  assert.match(runtime,/function syncFromRange\(\)\{ renderControlled\(Number\(range\.value\)\); \}/);
+  assert.match(runtime,/slider\.style\.setProperty\('--bg-compare-split', pct\)/);
+  assert.match(runtime,/slider\.style\.setProperty\('--split', pct\)/);
+  assert.match(runtime,/data-bg-compare-endpoint/);
+  assert.doesNotMatch(runtime,/takeCanonicalOwnership|cloneNode\(true\)|replaceWith\(clone\)|data-bg-compare-owner/);
+  assert.doesNotMatch(runtime,/new MutationObserver\(mirrorLegacy\)|function mirrorLegacy|clamp\(24px/);
   assert.doesNotMatch(fixer,/left:clamp\(24px/);
-  assert.match(runtime,/handle\.style\.setProperty\('left', pct, 'important'\)/);
 });
 
-test('Pointer Events eigenaar clamped vingerpositie exact tegen beide fysieke randen',()=>{
-  assert.match(fixer,/Math\.max\(0,Math\.min\(r\.width,clientX-r\.left\)\)/);
-  assert.match(fixer,/\(x\/r\.width\)\*100/);
-  assert.match(fixer,/slider\.style\.setProperty\('--split',p\)/);
-  assert.match(fixer,/slider\.style\.setProperty\('--bg-compare-split',p\)/);
-  assert.match(fixer,/touch-action:pan-y/);
-  assert.doesNotMatch(fixer,/touchstart/);
-  assert.doesNotMatch(fixer,/touchmove/);
-  assert.doesNotMatch(fixer,/touchend/);
+test('native range waarde rendert exact beide fysieke randen',()=>{
+  assert.match(runtime,/value === 0 \? 'start' : value === 100 \? 'end' : 'middle'/);
+  assert.match(runtime,/divider\.style\.setProperty\('left',pct,'important'\)/);
+  assert.match(runtime,/endpoint === 'start' \? 'translateX\(0\)' : endpoint === 'end' \? 'translateX\(-100%\)'/);
+  assert.match(runtime,/clip-path', 'inset\(0 ' \+ \(100 - value\)\.toFixed\(2\) \+ '% 0 0\)'/);
+  assert.match(runtime,/clip-path', 'inset\(0 0 0 ' \+ value\.toFixed\(2\) \+ '%\)'/);
+  assert.doesNotMatch(runtime,/clientX\s*-\s*r\.left|applyFromClientX/);
 });
 
-test('mobiel blijft een echte reveal-slider en wordt niet naar twee gestapelde kaarten omgebouwd',()=>{
-  assert.match(fixer,/touch-action:pan-y/);
+test('mobiel blijft een echte reveal-slider met een native range over de volle kaart',()=>{
   assert.match(fixer,/clip-path/);
   assert.match(fixer,/data-bg-compare-slider/);
+  assert.match(fixer,/\.bg-compare-range\{[^}]*position:absolute!important;[^}]*inset:0!important;[^}]*width:100%!important;[^}]*height:100%!important/s);
+  assert.match(fixer,/\.compare-handle\{display:none!important/);
   assert.doesNotMatch(fixer,/grid-template-columns:1fr!important/);
-  assert.doesNotMatch(fixer,/\.compare-handle\{display:none!important/);
 });
 
 test('wijzigingssectie is op mobiel een cumulatieve verticale voortgangsflow',()=>{
@@ -151,37 +150,34 @@ test('browsercheck bewijst op echte mobiele viewports dat de flow 1 naar 4 cumul
   assert.match(browserCheck,/Processen.*Rollen.*Documenten.*KPI.*Acties/s);
 });
 
-test('oude geïnjecteerde guard wordt vervangen zonder verborgen range-control',()=>{
+test('oude geïnjecteerde guard wordt vervangen door native-range styling en één externe runtime',()=>{
   const stale='<!doctype html><html><head><style data-bg-context-slider-readable>STALE</style></head><body><div class="compare-slider"><div class="compare-before"><div class="compare-copy"><h3>Links</h3><p>Voor</p></div></div><div class="compare-after"><div class="compare-copy"><h3>Rechts</h3><p>Na</p></div></div><div class="compare-handle"><button class="compare-knob"></button></div></div><script data-bg-context-slider-readable>STALE</script></body></html>';
   const upgraded=applyHomepageContextSliderReadability(stale);
   assert.doesNotMatch(upgraded,/>STALE</);
   assert.equal((upgraded.match(/<style data-bg-context-slider-readable>/g)||[]).length,1);
   assert.equal((upgraded.match(/<script data-bg-context-slider-readable\s+src="\/assets\/compare-slider-runtime\.js"><\/script>/g)||[]).length,1);
   assert.match(upgraded,/data-bg-compare-slider/);
-  assert.match(upgraded,/data-bg-pointer-owner-ready/);
-  assert.doesNotMatch(upgraded,/bg-compare-range/);
+  assert.match(upgraded,/bg-compare-range/);
+  assert.doesNotMatch(upgraded,/data-bg-pointer-owner-ready|data-bg-context-slider-aria-fallback/);
 });
 
-test('browsercheck gebruikt echte touch-events, sleept buiten de kaart en verifieert fysieke uiterste links en rechts',()=>{
-  assert.match(browserCheck,/#compareSlider/);
+test('browsercheck zet native range op 0 en 100 en verifieert fysieke kaartbreedte en endpoints',()=>{
+  assert.match(browserCheck,/#compareSlider \.bg-compare-range/);
   assert.match(browserCheck,/1128/);
   assert.match(browserCheck,/\[320,720\]/);
   assert.match(browserCheck,/\[390,844\]/);
   assert.match(browserCheck,/\[430,932\]/);
-  assert.match(browserCheck,/newCDPSession/);
-  assert.match(browserCheck,/Input\.dispatchTouchEvent/);
-  assert.match(browserCheck,/touchStart/);
-  assert.match(browserCheck,/touchMove/);
-  assert.match(browserCheck,/touchEnd/);
-  assert.match(browserCheck,/box\.x\s*-\s*64/);
-  assert.match(browserCheck,/box\.x\s*\+\s*box\.width\s*\+\s*64/);
-  assert.match(browserCheck,/split\s*<=\s*1/);
-  assert.match(browserCheck,/split\s*>=\s*99/);
-  assert.match(browserCheck,/handleLeft\s*>\s*1\.5/);
-  assert.match(browserCheck,/handleLeft\s*<\s*g\.slider\.width - 1\.5/);
-  assert.match(browserCheck,/g\.aria\.min\s*!==\s*0/);
-  assert.match(browserCheck,/g\.aria\.max\s*!==\s*100/);
-  assert.doesNotMatch(browserCheck,/bg-compare-range/);
+  assert.match(browserCheck,/setNativeValue/);
+  assert.match(browserCheck,/range\.dispatchEvent\(new Event\('input'/);
+  assert.match(browserCheck,/range\.dispatchEvent\(new Event\('change'/);
+  assert.match(browserCheck,/Math\.abs\(g\.range\.width - g\.slider\.width\) > 1/);
+  assert.match(browserCheck,/g\.range\.value !== 0/);
+  assert.match(browserCheck,/g\.range\.value !== 100/);
+  assert.match(browserCheck,/g\.endpoint !== 'start'/);
+  assert.match(browserCheck,/g\.endpoint !== 'end'/);
+  assert.match(browserCheck,/Math\.abs\(g\.divider\.left - g\.slider\.left\) > 1\.5/);
+  assert.match(browserCheck,/Math\.abs\(g\.divider\.right - g\.slider\.right\) > 1\.5/);
+  assert.doesNotMatch(browserCheck,/newCDPSession|Input\.dispatchTouchEvent|touchStart|touchMove|touchEnd/);
   assert.match(websiteLane,/homepage-context-slider-browser-check\.mjs/);
 });
 
