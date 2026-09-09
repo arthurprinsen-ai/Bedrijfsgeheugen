@@ -1,8 +1,10 @@
 import { profileOverviewMetrics } from './company-input.js';
+import { mountOverviewReorder } from './overview-reorder.js';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);
 const euro=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value||0);
+let overviewReorderController=null;
 
 export function overviewViewModel(state={}){
  const profile=state?.portal?.profile;
@@ -20,7 +22,14 @@ export function overviewViewModel(state={}){
  });
 }
 
+function ensureOverviewReorder(root){
+ const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__;
+ if(!overviewReorderController&&domainState?.get&&domainState?.set&&root?.querySelector?.('.main'))overviewReorderController=mountOverviewReorder(root,{domainState});
+ return overviewReorderController;
+}
+
 export function applyOverviewDashboard(root=document,state={}){
+ ensureOverviewReorder(root);
  const model=overviewViewModel(state);
  if(!model||!root?.querySelectorAll)return false;
  const cards=[...root.querySelectorAll('.kpis .kpi')].slice(0,4);
