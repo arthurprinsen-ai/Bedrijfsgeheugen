@@ -1,0 +1,30 @@
+name: Content growth learning
+
+on:
+  schedule:
+    - cron: '20 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  learn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Materialize bounded blog linkedin social learning
+        run: |
+          set -euo pipefail
+          node tools/content-growth/materialize-learning.mjs data/content-growth-events.json config/content-growth-policy.json /tmp/content-growth-learning.json
+          node -e "const x=require('/tmp/content-growth-learning.json'); if(!x.version) process.exit(1)"
+          echo 'content_types=blog,linkedin,social'
+      - name: Upload learning evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-growth-learning
+          path: /tmp/content-growth-learning.json
+          retention-days: 30
