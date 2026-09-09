@@ -29,9 +29,11 @@ function complianceFlags(state={}){
   const c=state?.portal?.compliance||{};
   const policies=Array.isArray(c.policies)?c.policies:[];
   const absent=value=>value===undefined||value===null||value===''||value===0||value==='ontbreekt';
+  const backupValue=c.backup??policies[3];
+  const backupMissing=typeof backupValue==='number'?backupValue<=1:absent(backupValue)||backupValue==='concept';
   return {
     incident: absent(c.incident??policies[2]),
-    backup: absent(c.backup??policies[3]),
+    backup: backupMissing,
     aiPolicy: absent(c.aiPolicy??policies[6]),
     dataDefinitions: absent(c.dataDefinitions??policies[7]),
   };
@@ -66,7 +68,6 @@ export function generateLegacyExecutionSignals(state={}){
   const hard=(level(maturity,'tech')+level(maturity,'analytics')+level(maturity,'quality'))/3;
   const soft=(level(maturity,'culture')+level(maturity,'mensen'))/2;
 
-  // Eigen gegevens / profiel.
   add('Profiel',expensive?.id);
   add('Profiel','mensen',level(maturity,'mensen')<3);
   add('Cijfers','commercie',num(metrics.largestCustomer)>=25);
@@ -75,7 +76,6 @@ export function generateLegacyExecutionSignals(state={}){
   add('Mensen','mensen',num(people.turnover)>b.turnoverNorm+4);
   add('Mensen','culture',!people.mto||people.mto==='Geen meting');
 
-  // Beleid / governance.
   const flags=complianceFlags(state);
   add('Beleid','security',flags.incident);
   add('Beleid','security',flags.backup);
@@ -84,7 +84,6 @@ export function generateLegacyExecutionSignals(state={}){
   if(signals.length) add('Branche','finance');
   add('Branche','mensen',b.laborTightness==='zeer krap'&&level(maturity,'mensen')<4);
 
-  // Financiële modellen.
   const revenue=num(metrics.revenue)*1000;
   const ebitda=num(metrics.ebitda)*1000;
   const balance=num(finance.balance)*1000;
@@ -95,13 +94,11 @@ export function generateLegacyExecutionSignals(state={}){
   add('Model EBITDA-multiple','finance',revenue>0);
   add('Model DSCR','finance',interest>0&&(ebitda||revenue*b.ebitdaMargin/100)/interest<1.3);
 
-  // Canvassen / klantbeeld.
   add('Mensen','service',metrics.nps===undefined||metrics.nps===null||metrics.nps==='');
   add('Mensen','service',num(metrics.nps)<0&&metrics.nps!==undefined&&metrics.nps!==null&&metrics.nps!=='');
   add('Branche','commercie',canvasMissing(state,'merk'));
   add('Cijfers','finance',canvasMissing(state,'bmc'));
 
-  // Strategiemodellen.
   add('Model 7S','culture',hard-soft>.7);
   add('Model 7S','tech',soft-hard>.7);
   add('Model Theory of Constraints',weakest?.id,level(maturity,weakest?.id)<3);
@@ -115,7 +112,6 @@ export function generateLegacyExecutionSignals(state={}){
   add('Model Blue Ocean','commercie');
   add('Model drie horizonten','sturing');
 
-  // Modellen per functie.
   add('Model Ulrich','mensen',level(maturity,'mensen')<3);
   add('Model SIPOC','operatie',level(maturity,'operatie')<4);
   add('Model RACI','sturing',employees>=16);
@@ -125,7 +121,6 @@ export function generateLegacyExecutionSignals(state={}){
   add('Model Kraljic','operatie');
   add('Model Pareto','finance',num(metrics.dso)>30);
 
-  // Overige financiële modellen en branchepositie.
   add('Model DuPont','finance',balance>0&&revenue>0&&revenue/balance<1);
   add('Model Altman Z','finance',balance>0&&equity/balance<.2);
   if(revenue>0&&num(metrics.grossMargin)>0){
