@@ -28,10 +28,13 @@ test('all protected legacy overview capabilities are present in V2',()=>{
 
 test('Strategy DNA is an interactive native V2 module',async()=>{
   const source=await readFile(new URL('../strategy-dna.js',import.meta.url),'utf8');
-  assert.match(source,/data-dna-field/);
-  assert.match(source,/localStorage/);
+  const board=await readFile(new URL('../modules/strategy-board.js',import.meta.url),'utf8');
+  assert.match(source,/mountStrategyBoard/);
+  assert.match(board,/data-strategy-field/);
+  assert.match(board,/portal\.strategy\.dna/);
+  assert.match(board,/domainState\.flush/);
   assert.match(source,/strategie-naar-maandagochtend/);
-  assert.doesNotMatch(source,/klantportaal|iframe|legacy-bridge/i);
+  assert.doesNotMatch(`${source}\n${board}`,/klantportaal|iframe|legacy-bridge/i);
 });
 
 test('legacy parity implementation never routes back to the old portal',async()=>{
