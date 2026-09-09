@@ -1,0 +1,130 @@
+name: Native daily blog live watchdog
+
+on:
+  schedule:
+    - cron: '30 17 * * *'
+  workflow_dispatch:
+    inputs:
+      business_date:
+        description: 'Optionele Europe/Amsterdam business date'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: native-daily-blog-live-watchdog
+  cancel-in-progress: false
+
+env:
+  BUSINESS_TIME_ZONE: Europe/Amsterdam
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Resolve exact daily ledger record
+        id: record
+        env:
+          REQUESTED_DATE: ${{ github.event.inputs.business_date }}
+        run: |
+          set -euo pipefail
+          date="${REQUESTED_DATE:-}"
+          if [ -z "$date" ]; then date="$(node --input-type=module -e "import {businessDate} from './tools/content-growth/daily-blog.mjs'; console.log(businessDate(new Date(),'Europe/Amsterdam'))")"; fi
+          json="$(node -e "const x=require('./data/content-publication-ledger.json'); const r=x.days?.[process.argv[1]]; if(!r) process.exit(2); console.log(JSON.stringify(r))" "$date")"
+          slug="$(node -e "console.log(JSON.parse(process.argv[1]).slug)" "$json")"
+          content_id="$(node -e "console.log(JSON.parse(process.argv[1]).content_id)" "$json")"
+          state="$(node -e "console.log(JSON.parse(process.argv[1]).state)" "$json")"
+          echo "date=$date" >> "$GITHUB_OUTPUT"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "content_id=$content_id" >> "$GITHUB_OUTPUT"
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+
+      - name: Exact production live-readback
+        id: proof
+        env:
+          SLUG: ${{ steps.record.outputs.slug }}
+          CONTENT_ID: ${{ steps.record.outputs.content_id }}
+        run: |
+          set -euo pipefail
+          url="https://www.bedrijfsgeheugen.nl/blog/$SLUG/"
+          for attempt in $(seq 1 8); do
+            if node tools/content-growth/live-readback.mjs "$url" "$CONTENT_ID" "$SLUG" > /tmp/daily-live-proof.json; then
+              cat /tmp/daily-live-proof.json
+              echo "ok=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::DAILY_BLOG_NOT_LIVE:${{ steps.record.outputs.date }}:$CONTENT_ID:$url"
+          exit 1
+
+      - name: Stop when ledger already records live proof
+        if: steps.record.outputs.state == 'live'
+        run: node tools/content-growth/assert-live-ledger.mjs data/content-publication-ledger.json "${{ steps.record.outputs.date }}"
+
+      - name: Materialize live proof into ledger
+        if: steps.record.outputs.state != 'live' && steps.proof.outputs.ok == 'true'
+        env:
+          DATE: ${{ steps.record.outputs.date }}
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const path='data/content-publication-ledger.json';
+          const ledger=JSON.parse(fs.readFileSync(path,'utf8'));
+          const date=process.env.DATE;
+          const proof=JSON.parse(fs.readFileSync('/tmp/daily-live-proof.json','utf8'));
+          const current=ledger.days[date];
+          if (!current) throw new Error(`missing ledger record ${date}`);
+          ledger.days[date]={...current,state:'live',merged_at:current.merged_at||new Date().toISOString(),live_at:new Date().toISOString(),live_url:proof.url,live_proof:proof};
+          fs.writeFileSync(path,JSON.stringify(ledger,null,2)+'\n');
+          NODE
+          git diff --exit-code -- data/content-publication-ledger.json && { echo "::error::LIVE_LEDGER_PROOF_NOT_MATERIALIZED"; exit 1; } || true
+
+      - name: Commit proof candidate only
+        id: commit
+        if: steps.record.outputs.state != 'live' && steps.proof.outputs.ok == 'true'
+        env:
+          BASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name "Bedrijfsgeheugen Daily Proof"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/content-publication-ledger.json
+          git commit -m "proof: daily blog is live ${{ steps.record.outputs.date }}"
+          export CHANGED_FILES='data/content-publication-ledger.json'
+          branch=$(node --input-type=module - <<'NODE'
+          import {createWriterCandidate,validateWriterCandidate} from './scripts/ci/repo-writer-candidate.mjs';
+          const files=['data/content-publication-ledger.json'];
+          const candidate=createWriterCandidate({writer:'native-daily-blog-proof',baseSha:process.env.BASE_SHA,runId:process.env.GITHUB_RUN_ID,changedFiles:files,allowedFiles:files,rollbackSha:process.env.BASE_SHA});
+          validateWriterCandidate(candidate); console.log(candidate.branch);
+          NODE
+          )
+          echo "candidate_branch=$branch" >> "$GITHUB_OUTPUT"
+          git push origin "HEAD:$branch"
+
+      - name: Open proof PR and dispatch BRAIN shadow
+        if: steps.record.outputs.state != 'live' && steps.proof.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          DATE: ${{ steps.record.outputs.date }}
+        run: |
+          set -euo pipefail
+          url=$(gh pr create --base main --head "$BRANCH" --title "Daily blog live proof $DATE" --body "Exact production readback is green. Candidate-only ledger proof; no direct main push.")
+          number=${url##*/}
+          base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.base.sha')
+          head_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.head.sha')
+          gh workflow run repo-writer-candidate-shadow.yml --repo "$GITHUB_REPOSITORY" --ref main -f pr_number="$number" -f base_sha="$base_sha" -f head_sha="$head_sha" -f candidate_branch="$BRANCH"
+          echo "LIVE_PROOF_CANDIDATE:$number:$DATE"
