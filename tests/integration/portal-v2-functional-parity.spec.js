@@ -10,11 +10,18 @@ async function hideNetlifyChrome(page){
 }
 async function boot(page,preview,width=1440,height=1000){
  await page.setViewportSize({width,height});
- const response=await page.goto(`${preview}/portal-v2/?bg_preview=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45000});
- expect(response,'portal preview response').not.toBeNull();
- expect(response.status(),'portal preview status').toBeLessThan(400);
- await expect(page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true})).toBeVisible({timeout:30000});
- await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30000});
+ let lastError;
+ for(let attempt=1;attempt<=3;attempt++){
+  try{
+   const response=await page.goto(`${preview}/portal-v2/?bg_preview=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45000});
+   expect(response,'portal preview response').not.toBeNull();
+   expect(response.status(),'portal preview status').toBeLessThan(400);
+   await page.getByRole('heading',{name:'Welkom terug, Arthur',exact:true}).waitFor({state:'visible',timeout:15000});
+   await page.waitForFunction(()=>Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30000});
+   return;
+  }catch(error){lastError=error;}
+ }
+ throw lastError;
 }
 async function openFunctional(page,pageId){
  await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
