@@ -353,3 +353,27 @@
   to = "/compliance-status"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/ai-automatisering-mkb.html"
+  to = "/ai-automatisering-mkb"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/bedrijf-overdraagbaar-maken.html"
+  to = "/bedrijf-overdraagbaar-maken"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/microsoft-365-koppeling.html"
+  to = "/microsoft-365-koppeling"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/power-bi-implementatie.html"
+  to = "/power-bi-implementatie"
+  status = 301
+  force = true
