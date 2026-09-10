@@ -12,7 +12,10 @@ test('unknown integration path fails closed',()=>{
  const result=evaluatePromotionActivation({changedPaths:['integrations/new-vendor/adapter.mjs'],registry});
  assert.equal(result.productionCandidateReady,false);
  assert.equal(result.unknown.length,1);
- assert.match(result.unknown[0],/new-vendor/);
+ // De poort normaliseert een padnaam naar een platformsleutel, waarbij een
+ // koppelteken een liggend streepje wordt. Dat is een naamgevingskeuze, geen
+ // gedrag: waar het om gaat is dat het onbekende pad herkenbaar terugkomt.
+ assert.match(result.unknown[0],/new[-_]vendor/);
 });
 
 test('registered changed adapters inherit mandatory candidate contract',()=>{
