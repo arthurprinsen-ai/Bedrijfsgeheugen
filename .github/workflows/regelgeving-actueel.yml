@@ -1,0 +1,55 @@
+name: Regelgeving actueel
+
+# Het regelgevingsregister kan zichzelf niet bijwerken. Deze controle zorgt dat
+# het niet stil kan verouderen: hij draait elke maandag en gaat rood zodra een
+# herzieningsdatum verstrijkt of een aangekondigde datum gepasseerd is terwijl
+# de status nog op verwacht of voorstel staat.
+#
+# Rood betekent hier niet dat er code stuk is. Het betekent: iemand moet die
+# regels nakijken bij de bron, de inhoud bijwerken en de peildatum vooruitzetten.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  pull_request:
+    paths:
+      - 'portal-v2/regelgeving.js'
+      - 'tests/delivery-regelgeving-actueel.test.mjs'
+      - '.github/workflows/regelgeving-actueel.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  actueel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Controleer of het regelgevingsregister nog actueel is
+        run: node --test tests/delivery-regelgeving-actueel.test.mjs
+      - name: Toon wat er als eerste verandert
+        if: always()
+        run: |
+          node --input-type=module -e "
+          import { komendeMijlpalen, verlopenHerzieningen, REGELGEVING } from './portal-v2/regelgeving.js';
+          const vandaag = new Date().toISOString().slice(0, 10);
+          const verlopen = verlopenHerzieningen(vandaag);
+          console.log('Regels in het register: ' + REGELGEVING.length);
+          if (verlopen.length) {
+            console.log('::warning::' + verlopen.length + ' regels zijn aan herziening toe: ' + verlopen.map(x => x.id).join(', '));
+          } else {
+            console.log('Geen enkele regel is over zijn herzieningsdatum heen.');
+          }
+          const binnenkort = REGELGEVING
+            .filter(x => x.herzienUiterlijk <= new Date(Date.now() + 45 * 864e5).toISOString().slice(0, 10))
+            .map(x => x.id + ' (uiterlijk ' + x.herzienUiterlijk + ')');
+          if (binnenkort.length) console.log('Binnen zes weken nakijken: ' + binnenkort.join(', '));
+          for (const m of komendeMijlpalen(vandaag, 6)) {
+            console.log(m.datum + '  ' + m.regel + ' — ' + m.wat);
+          }
+          "

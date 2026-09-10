@@ -4,6 +4,7 @@ import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './modules/company-in
 import { hasPageData } from './page-metrics.js';
 import { BREIN_STAPPEN } from './runtime-evidence.js';
 import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
+import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen } from './regelgeving.js';
 
 const arr=value=>Array.isArray(value)?value:[];
 const n=value=>Number.isFinite(Number(value))?Number(value):0;
@@ -102,7 +103,15 @@ const BUILDERS=Object.freeze({
 
   'strategie-naar-maandagochtend':state=>quadrant(arr(at(state,'portal.strategy.findings')).map(item=>({label:item.finding,x:6-({'Nu':5,'3 maanden':4,'6 maanden':3,'12 maanden':2,'Later':1}[item.horizon]||3),y:n(item.value)})),{title:'Bevindingen: waarde tegen horizon',xLabel:'Hoe verder weg',yLabel:'Waarde'}),
 
-  'compliance-governance':state=>ring(n(calc('policy-completeness',state)),{title:'Beleid compleet',caption:'aandeel vastgesteld of geoefend'}),
+  'compliance-governance':state=>{
+    const komend=komendeMijlpalen();
+    const perCategorie={};
+    for(const item of REGELGEVING)perCategorie[item.categorie]=(perCategorie[item.categorie]||0)+1;
+    return [ring(n(calc('policy-completeness',state)),{title:'Beleid compleet',caption:'aandeel vastgesteld of geoefend'}),
+      leakage(Object.entries(perCategorie).map(([label,value])=>({label,value})),{title:`Wat je raakt: ${REGELGEVING.length} regels, ${lopendeVerplichtingen().length} verplichtingen lopen al`}),
+      komend.length?ladder(komend.slice(0,6).map((m,i)=>({naam:m.datum,uitleg:`${m.regel}: ${m.wat}`,huidig:i===0})),{title:'Wat er als eerste verandert'}):''
+    ].filter(Boolean).join('');
+  },
   'compliance-command-center':state=>ring(100-n(calc('compliance-risk',state)),{title:'Compliance readiness',caption:'restrisico afgetrokken'}),
   'csrd-impact':state=>ring(n(calc('esg-readiness',state))/5*100,{title:'ESG readiness',caption:'gemiddeld over de domeinen'}),
   canvassen:state=>ring(n(calc('canvas-completeness',state)),{title:'Canvassen ingevuld',caption:'antwoorden en eigenaren'}),

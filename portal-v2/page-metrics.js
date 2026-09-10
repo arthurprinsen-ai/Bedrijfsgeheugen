@@ -1,5 +1,6 @@
 import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
 import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BRONNEN } from './external-data.js';
+import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen, verlopenHerzieningen } from './regelgeving.js';
 
 const EMPTY='—';
 const num=(value,digits=0)=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(Number(value)||0);
@@ -192,13 +193,13 @@ const PAGES=Object.freeze({
       ['Beleid compleet',pct(calc('policy-completeness',s))],
       ['Governance-volwassenheid',`${num(calc('governance-maturity',s),1)}/5`],
       ['ESG readiness',`${num(calc('esg-readiness',s),1)}/5`],
-      ['Restrisico',pct(calc('compliance-risk',s))]
+      ['Regels die je raken',String(REGELGEVING.length)]
     ],
     extraWorklist:s=>{const r=regelgevingVoor(at(s,'portal.market.industry'));return [
+      ...komendeMijlpalen().slice(0,3).map(m=>[`${m.datum} · ${m.regel}`,String(m.wat)]),
       ['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`],
       ...r.regels.slice(0,3).map(regel=>[String(regel).split(' — ')[0],String(regel).split(' — ')[1]||`via ${r.instantie}`])
     ];},
-    extraWorklist:s=>[['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`]],
     worklist:s=>Object.entries(at(s,'portal.compliance.policies')||{}).filter(([,status])=>status==='ontbreekt').slice(0,3).map(([index])=>[`Beleidsstuk ${Number(index)+1}`,'ontbreekt'])},
 
   'compliance-command-center':{slice:'portal.compliance',
