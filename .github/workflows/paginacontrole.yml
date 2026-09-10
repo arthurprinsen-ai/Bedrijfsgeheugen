@@ -178,7 +178,7 @@ jobs:
         if: steps.seo_scope.outputs.public == 'true'
         run: |
           pip install --quiet playwright
-          playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=none PLAYWRIGHT_CLI=playwright bash tools/ci/install-chromium.sh
 
       - name: Pagina's controleren
         id: controle

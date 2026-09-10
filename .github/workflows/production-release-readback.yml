@@ -84,8 +84,7 @@ jobs:
           NODE
       - name: Install production browser verifier
         run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
       - id: routes
         name: Verify affected production routes
         env:
