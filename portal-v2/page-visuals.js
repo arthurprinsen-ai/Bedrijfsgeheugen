@@ -3,6 +3,7 @@ import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
 import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './modules/company-input.js';
 import { hasPageData } from './page-metrics.js';
 import { BREIN_STAPPEN } from './runtime-evidence.js';
+import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
 
 const arr=value=>Array.isArray(value)?value:[];
 const n=value=>Number.isFinite(Number(value))?Number(value):0;
@@ -54,7 +55,23 @@ const BUILDERS=Object.freeze({
 
   kansenkaart:state=>BUILDERS['ai-scan'](state),
 
-  'branche-markt':state=>benchmarkBars(arr(at(state,'portal.market.benchmarks')).map(row=>({label:row.metric,value:n(row.company),benchmark:n(row.benchmark)})),{title:'Eigen waarde tegen benchmark'}),
+  'branche-markt':state=>{
+    const branche=at(state,'portal.market.industry');
+    const rijen=brancheVergelijking({
+      grossMargin:n(calc('gross-margin',state)), ebitdaMargin:n(calc('ebitda-margin',state)),
+      wageRatio:n(calc('wage-ratio',state)), marketingRatio:n(calc('marketing-ratio',state)),
+      itRatio:n(calc('it-ratio',state)), dso:n(calc('dso',state)),
+      absence:n(at(state,'portal.people.absence')), turnover:n(at(state,'portal.people.turnover')),
+      enps:n(at(state,'portal.people.enps'))
+    },branche);
+    const b=brancheProfiel(branche);
+    return [benchmarkBars(rijen.map(r=>({label:r.maatstaf,value:r.eigen,benchmark:r.norm})),
+        {title:`Jouw cijfers tegen de norm in ${branche||'het gemiddelde NL-bedrijf'} (CBS, Eurostat, sectorbenchmarks)`}),
+      benchmarkBars(arr(at(state,'portal.market.benchmarks')).map(row=>({label:row.metric,value:n(row.company),benchmark:n(row.benchmark)})),
+        {title:'Eigen benchmarks'}),
+      b?ring(Math.min(100,n(b.dig)/5*100),{title:'Digitale intensiteit van de sector',caption:`${b.inst||''} · groei ${n(b.groei)}%`}):''
+    ].filter(Boolean).join('');
+  },
 
   'cijfers-maatstaven':state=>{
     const measurements=arr(at(state,'portal.metrics.measurements'));
@@ -135,12 +152,16 @@ const BUILDERS=Object.freeze({
 
   onderzoek:state=>{
     const items=arr(at(state,'portal.research.hypotheses'));
-    if(!items.length)return '';
+    const extern=onderzoekVoor().filter(x=>/^\d/.test(String(x.cijfer||'')));
+    const externBeeld=benchmarkBars(extern.slice(0,6).map(x=>({label:x.t,value:parseFloat(String(x.cijfer))||0,benchmark:100})),
+      {title:'Wat extern onderzoek meet (McKinsey, MIT, CBS en anderen)'});
+    if(!items.length)return externBeeld;
     const metBewijs=items.filter(item=>item.evidence).length;
     const metBron=items.filter(item=>item.source).length;
     return [ring(items.length?metBewijs/items.length*100:0,{title:'Hypotheses met bewijs',caption:`${metBewijs} van ${items.length}`}),
       benchmarkBars([{label:'Met bewijs',value:metBewijs,benchmark:items.length},
-        {label:'Met bron',value:metBron,benchmark:items.length}],{title:'Onderbouwing van je hypotheses'})].filter(Boolean).join('');
+        {label:'Met bron',value:metBron,benchmark:items.length}],{title:'Onderbouwing van je hypotheses'}),
+      externBeeld].filter(Boolean).join('');
   },
 
 
