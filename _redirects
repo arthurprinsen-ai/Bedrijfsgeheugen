@@ -1,3 +1,5 @@
+# Persoonlijke meetlinks: bedrijfsgeheugen.nl/g/<sleutel> -> Supabase bg-l (registreert de klik per connectie, stuurt door). 10 sept 2026.
+/g/:sleutel  https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-l?s=:sleutel  302!
 /contact  /contact.html  200
 /intern/koppelingskiezer  /intern/koppelingskiezer.html  200
 /intern/koppelingen-klant  /intern/koppelingen-klant.html  200
