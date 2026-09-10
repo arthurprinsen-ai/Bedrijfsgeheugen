@@ -1,6 +1,7 @@
 import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
 import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BRONNEN } from './external-data.js';
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen, verlopenHerzieningen } from './regelgeving.js';
+import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
 
 const EMPTY='—';
 const num=(value,digits=0)=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(Number(value)||0);
@@ -388,12 +389,15 @@ const RUNTIME_PAGES=Object.freeze({
  * zijn eigen onderwerp horen, niet vier keer hetzelfde. Zonder evidence: leeg.
  */
 const RUNTIME_METRICS=Object.freeze({
-  bronnenstatus:(items,s)=>[
-    ['Bronnen',String(items.length)],
-    ['Gezond',String(items.filter(x=>x.healthy).length)],
-    ['Aandacht',String(items.filter(x=>!x.healthy).length)],
+  // Deze pagina toonde alleen de runtime-integraties. Het portaal wordt door
+  // vier soorten data gevoed; als er één ontbreekt is de lus onderbroken, en
+  // dat hoort hier zichtbaar te zijn.
+  bronnenstatus:(items,s,state)=>{const sam=bronnenSamenvatting(state||{});return [
+    ['Databronnen',String(sam.totaal)],
+    ['Voeden het portaal',String(sam.gezond)],
+    ['Onderbroken',String(sam.aandacht)],
     ['Laatste signaal',String(s.updatedAt||EMPTY)]
-  ],
+  ];},
   datahubstatus:(items,s)=>[
     ['Entiteiten',String(items.length)],
     ['Verbindingen',String(s.edges??0)],
@@ -453,9 +457,12 @@ const RUNTIME_METRICS=Object.freeze({
 function runtimeMetrics(pageId,state){
   const s=at(state,RUNTIME_PAGES[pageId])||{};
   const items=arr(s.items);
-  if(!items.length&&!Number(s.loops)&&!Number(s.totaal))return null;
+  // bronnenstatus toont ook zonder runtime-evidence iets: de externe bronnen
+  // en de rekenregels staan er hoe dan ook, en juist het ontbreken van de
+  // andere twee is de informatie die die pagina moet geven.
+  if(pageId!=='bronnenstatus'&&!items.length&&!Number(s.loops)&&!Number(s.totaal))return null;
   const bouwer=RUNTIME_METRICS[pageId];
-  if(bouwer){try{return bouwer(items,s);}catch{return null;}}
+  if(bouwer){try{return bouwer(items,s,state);}catch{return null;}}
   return [
     ['Records',String(items.length)],
     ['Gezond',String(items.filter(item=>item.status==='ok'||item.healthy===true).length)],
@@ -465,13 +472,22 @@ function runtimeMetrics(pageId,state){
 }
 
 /** Werklijst voor de runtime-pagina's: alleen wat aandacht vraagt. */
+function bronnenWorklist(state){
+  return dataBronnen(state||{}).map(item=>[
+    `${item.gezond?'':'Onderbroken · '}${item.naam}`,
+    `${item.aantal} ${item.eenheid} — ${item.detail}`
+  ]);
+}
+
 function runtimeWorklist(pageId,state){
+  if(pageId==='bronnenstatus')return bronnenWorklist(state);
   const s=at(state,RUNTIME_PAGES[pageId])||{};
   return arr(s.items).filter(item=>item.healthy===false).slice(0,3)
     .map(item=>[String(item.naam||'Item'),String(item.status||'aandacht')]);
 }
 
 export function hasPageData(pageId,state={}){
+  if(pageId==='bronnenstatus')return true;
   if(RUNTIME_PAGES[pageId]){const s=at(state,RUNTIME_PAGES[pageId])||{};return arr(s.items).length>0||Number(s.loops)>0||Number(s.totaal)>0;}
   const slice=PAGES[pageId]?.slice;
   return slice?filled(at(state,slice)):false;

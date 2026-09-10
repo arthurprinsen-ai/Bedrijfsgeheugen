@@ -13,7 +13,9 @@ import { pageVisual } from '../page-visuals.js';
  * de schermen, en dat er zonder projectie nog steeds niets wordt getoond.
  */
 
-const RUNTIME_PAGINAS = ['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties',
+// bronnenstatus telt sinds data-sources.js ook de niet-runtime bronnen mee en
+// is daarom geen zuivere runtime-pagina; zie tests/data-sources.test.mjs.
+const RUNTIME_PAGINAS = ['datahubstatus','brain-verwerking','agentstatus','actieve-acties',
   'recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail'];
 
 const alleStappen = Object.fromEntries(BREIN_STAPPEN.map(stap => [stap, true]));
@@ -63,7 +65,7 @@ test('elke Brein- en Powerhouse-pagina krijgt eigen cijfers uit de projectie', (
 });
 
 test('de cijfers komen aantoonbaar uit de projectie en bewegen mee', () => {
-  assert.deepEqual(pageMetrics('bronnenstatus', MET_DATA)[0], ['Bronnen', '2']);
+  assert.equal(pageMetrics('bronnenstatus', MET_DATA)[0][0], 'Databronnen');
   assert.deepEqual(pageMetrics('brain-verwerking', MET_DATA)[1], ['Rond', '1']);
   assert.deepEqual(pageMetrics('outcomes-evidence', MET_DATA)[1], ['Geverifieerd', '1']);
   assert.match(pageMetrics('outcomes-evidence', MET_DATA)[2][1], /12\.000/);
@@ -71,12 +73,18 @@ test('de cijfers komen aantoonbaar uit de projectie en bewegen mee', () => {
   const meerBronnen = { ...PROJECTIE, integrationHealth: { components: [
     { name: 'Supabase', healthy: true }, { name: 'Make', healthy: false }, { name: 'GitHub', healthy: true }] } };
   const anders = { portal: { runtime: mapRuntimeProjection(meerBronnen) } };
-  assert.deepEqual(pageMetrics('bronnenstatus', anders)[0], ['Bronnen', '3']);
+  // bronnenstatus telt alle bronfamilies; de integraties komen daar terug in de
+  // werklijst, waar het aantal gezonde systemen wél meebeweegt.
+  const regel = pageWorklist('bronnenstatus', anders).find(([label]) => /bronsystemen/i.test(label));
+  assert.ok(regel, 'de integraties staan niet in de werklijst');
+  assert.match(regel[1], /3 systemen/, 'het aantal aangesloten systemen beweegt niet mee');
 });
 
 test('wat aandacht vraagt komt in de werklijst', () => {
-  assert.deepEqual(pageWorklist('bronnenstatus', MET_DATA), [['Make', 'aandacht']]);
-  assert.deepEqual(pageWorklist('bronnenstatus', {}), []);
+  const lijst = pageWorklist('bronnenstatus', MET_DATA);
+  assert.ok(lijst.some(([label]) => /bronsystemen/i.test(label)), 'de integraties ontbreken in de werklijst');
+  assert.deepEqual(pageWorklist('agentstatus', MET_DATA).filter(([, status]) => status === 'aandacht').length > 0, true);
+  assert.deepEqual(pageWorklist('agentstatus', {}), []);
 });
 
 test('zonder projectie blijft elke runtime-pagina leeg', () => {

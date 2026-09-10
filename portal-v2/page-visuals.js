@@ -4,6 +4,7 @@ import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './modules/company-in
 import { hasPageData } from './page-metrics.js';
 import { BREIN_STAPPEN } from './runtime-evidence.js';
 import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
+import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen } from './regelgeving.js';
 
 const arr=value=>Array.isArray(value)?value:[];
@@ -175,9 +176,16 @@ const BUILDERS=Object.freeze({
 
 
   /* Brein en Powerhouse: beeld op de projectie van de operating loop. */
-  bronnenstatus:state=>{const items=arr(at(state,'portal.runtime.sources.items'));
-    return [ring(items.length?items.filter(x=>x.healthy).length/items.length*100:0,{title:'Bronnen gezond',caption:`${items.filter(x=>x.healthy).length} van ${items.length}`}),
-      benchmarkBars(items.slice(0,8).map(x=>({label:x.naam,value:x.healthy?1:0,benchmark:1})),{title:'Per bron'})].filter(Boolean).join('');},
+  bronnenstatus:state=>{
+    const bronnen=dataBronnen(state||{});
+    const sam=bronnenSamenvatting(state||{});
+    const perSoort=Object.entries(sam.perSoort).map(([soort,aantal])=>({label:SOORTEN[soort]||soort,value:aantal}));
+    const integraties=arr(at(state,'portal.runtime.sources.items'));
+    return [ring(sam.totaal?sam.gezond/sam.totaal*100:0,{title:'De lus is rond',caption:`${sam.gezond} van de ${sam.totaal} bronnen voeden het portaal`}),
+      leakage(perSoort,{title:'Waar de data vandaan komt'}),
+      benchmarkBars(bronnen.map(b=>({label:b.naam,value:b.gezond?1:0,benchmark:1})),{title:'Per bron: voedt hij het portaal?'}),
+      integraties.length?benchmarkBars(integraties.slice(0,8).map(x=>({label:x.naam,value:x.healthy?1:0,benchmark:1})),{title:'Aangesloten bronsystemen'}):''
+    ].filter(Boolean).join('');},
 
   'brain-verwerking':state=>{const s=at(state,'portal.runtime.brain')||{};const stappen=arr(s.items);
     return [ladder(stappen.map(x=>({naam:x.naam,bereikt:x.healthy,huidig:!x.healthy&&x.lussen>0})),{title:'De dertien stappen van een breinlus'}),
