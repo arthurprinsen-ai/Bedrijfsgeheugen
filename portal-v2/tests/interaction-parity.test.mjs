@@ -1,3 +1,5 @@
+/* Paden zijn relatief aan dit bestand in plaats van aan de werkmap, zodat de
+   suite ook vanuit de repo-root draait. CI draait node --test vanaf de root. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -20,8 +22,8 @@ test('interaction parity manifest makes every known legacy gesture explicit and 
 });
 
 test('roadmap has a native interactive board, not only editable rows', () => {
-  assert.ok(fs.existsSync('modules/roadmap-board.js'));
-  const source = fs.readFileSync('modules/roadmap-board.js','utf8');
+  assert.ok(fs.existsSync(new URL('../modules/roadmap-board.js', import.meta.url)));
+  const source = fs.readFileSync(new URL('../modules/roadmap-board.js', import.meta.url),'utf8');
   assert.match(source, /draggable/);
   assert.match(source, /dragstart/);
   assert.match(source, /drop/);
@@ -48,9 +50,9 @@ test('roadmap move and reorder preserve all card data', async () => {
 });
 
 test('workspace shell delegates roadmap to its specialist interactive workspace', () => {
-  assert.ok(fs.existsSync('modules/roadmap-workspace.js'));
-  const shell=fs.readFileSync('workspace-shell.js','utf8');
-  const workspace=fs.readFileSync('modules/roadmap-workspace.js','utf8');
+  assert.ok(fs.existsSync(new URL('../modules/roadmap-workspace.js', import.meta.url)));
+  const shell=fs.readFileSync(new URL('../workspace-shell.js', import.meta.url),'utf8');
+  const workspace=fs.readFileSync(new URL('../modules/roadmap-workspace.js', import.meta.url),'utf8');
   assert.match(shell,/roadmap-workspace\.js/);
   assert.match(workspace,/mountRoadmapBoard/);
   assert.match(workspace,/data-functional-workspace/);
