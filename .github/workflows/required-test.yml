@@ -89,6 +89,51 @@ jobs:
       # contract while execution is delegated to .github/workflows/lane-website.yml:
       # tests/v18-megamenu-heading-contract.test.mjs
       # tools/site-shell/v18-megamenu-browser-check.mjs
+      # Deze suite draaide nergens: 46 testbestanden werden door geen enkele
+      # workflow genoemd en bewaakten dus niets. tests/delivery-test-coverage-guard.test.mjs
+      # faalt zodra dat opnieuw gebeurt.
+      # Vier van deze tests laden netlify/functions en hebben daarom de twee
+      # runtime-dependencies uit package.json nodig.
+      - name: Install runtime dependencies for the unwired contracts
+        run: npm install --no-audit --no-fund --silent
+      - name: Verify previously unwired test contracts
+        run: >-
+          node --test
+          tests/agents-delivery-contract.test.mjs
+          tests/ai-token-usage.test.mjs
+          tests/ai-usage-store.test.mjs
+          tests/api-gateways.test.mjs
+          tests/delivery-test-coverage-guard.test.mjs
+          tests/customer-portal-auth-race.test.mjs
+          tests/daily-cost-optimizer.test.mjs
+          tests/data-ai-passport.test.mjs
+          tests/eu-ai-act-audit-report.test.mjs
+          tests/eu-ai-act-controls.test.mjs
+          tests/eu-ai-act-passport-ui.test.mjs
+          tests/final-site-navigation-contract.test.mjs
+          tests/internal-auth-scan-boundary.test.mjs
+          tests/klantportaal-cockpit-contract.test.mjs
+          tests/klantportaal-release-gates.test.mjs
+          tests/klantportaal-v2-flow.test.mjs
+          tests/klantportaal-v2-pages.test.mjs
+          tests/money-page-conversion-contract.test.mjs
+          tests/netlify-identity-recovery-build.test.mjs
+          tests/netlify-identity-recovery-flow.test.mjs
+          tests/seo-homepage-process-progress.test.mjs
+          tests/seo-search-console-revenue-sprint.test.mjs
+          tests/single-obligation-owner-learning.test.mjs
+          tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
+          tests/social-learning-compatibility.test.mjs
+          tests/social-learning-context.test.mjs
+          tests/social-learning-e2e.test.mjs
+          tests/social-learning-model.test.mjs
+          tests/social-learning-schedule-contract.test.mjs
+          tests/social-learning-store.test.mjs
+          tests/social-outcome-ingest.test.mjs
+          tests/unified-brain-production-handoff.test.mjs
+          tests/v18-chrome-scoper.test.mjs
+          tests/v18-standalone-compositor-safety.test.mjs
+          tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
         run: node --test tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/portal-v2-release-identity-invariant.test.mjs tests/website-static-syntax-preflight.test.mjs
 
