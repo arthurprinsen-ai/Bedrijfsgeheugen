@@ -94,6 +94,5 @@ const routes={verlies:{title:'Start met kennisborging en continuïteit.',text:'M
 document.querySelectorAll('.route-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.route-btn').forEach(n=>n.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');const r=routes[b.dataset.route];document.getElementById('routeTitle').textContent=r.title;document.getElementById('routeText').textContent=r.text;document.getElementById('routeLink').href=r.href;document.querySelectorAll('.topic').forEach(t=>t.classList.toggle('route-highlight',t.dataset.topic===b.dataset.route));document.getElementById('themas').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}));
 })();
 </script>
-<script src="https://www.bedrijfsgeheugen.nl/assets/stijl.js" defer></script>
 </body>
 </html>
