@@ -2,6 +2,7 @@ import { radar, gantt, curve, quadrant, benchmarkBars, ring, leakage, ladder, du
 import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
 import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './modules/company-input.js';
 import { hasPageData } from './page-metrics.js';
+import { BREIN_STAPPEN } from './runtime-evidence.js';
 
 const arr=value=>Array.isArray(value)?value:[];
 const n=value=>Number.isFinite(Number(value))?Number(value):0;
@@ -141,6 +142,42 @@ const BUILDERS=Object.freeze({
       benchmarkBars([{label:'Met bewijs',value:metBewijs,benchmark:items.length},
         {label:'Met bron',value:metBron,benchmark:items.length}],{title:'Onderbouwing van je hypotheses'})].filter(Boolean).join('');
   },
+
+
+  /* Brein en Powerhouse: beeld op de projectie van de operating loop. */
+  bronnenstatus:state=>{const items=arr(at(state,'portal.runtime.sources.items'));
+    return [ring(items.length?items.filter(x=>x.healthy).length/items.length*100:0,{title:'Bronnen gezond',caption:`${items.filter(x=>x.healthy).length} van ${items.length}`}),
+      benchmarkBars(items.slice(0,8).map(x=>({label:x.naam,value:x.healthy?1:0,benchmark:1})),{title:'Per bron'})].filter(Boolean).join('');},
+
+  'brain-verwerking':state=>{const s=at(state,'portal.runtime.brain')||{};const stappen=arr(s.items);
+    return [ladder(stappen.map(x=>({naam:x.naam,bereikt:x.healthy,huidig:!x.healthy&&x.lussen>0})),{title:'De dertien stappen van een breinlus'}),
+      ring(s.loops?(s.compleet||0)/s.loops*100:0,{title:'Lussen rond',caption:`${s.compleet||0} van ${s.loops||0}`})].filter(Boolean).join('');},
+
+  datahubstatus:state=>{const s=at(state,'portal.runtime.datahub')||{};const nodes=arr(s.items).length;
+    return benchmarkBars([{label:'Entiteiten',value:nodes,benchmark:nodes},{label:'Verbindingen',value:n(s.edges),benchmark:nodes}],{title:'Omvang van de bedrijfsgraaf'});},
+
+  agentstatus:state=>{const items=arr(at(state,'portal.runtime.agents.items'));
+    return curve(items.slice(-24).map((x,i)=>({label:String(i+1),value:x.healthy?1:0})),{title:'Doorloop van agentruns',valueLabel:'ok'});},
+
+  'actieve-acties':state=>quadrant(arr(at(state,'portal.runtime.actions.items')).map((x,i)=>({label:x.naam,x:i+1,y:n(x.waarde)})),{title:'Acties: waarde tegen volgorde',xLabel:'Volgorde',yLabel:'Waarde'}),
+
+  'recovery-obligations':state=>{const s=at(state,'portal.runtime.recovery')||{};const items=arr(s.items);
+    return ring(items.length?0:100,{title:'Verplichtingen afgehandeld',caption:`${items.length} open · ${n(s.openLoops)} open lussen`});},
+
+  'outcomes-evidence':state=>{const items=arr(at(state,'portal.runtime.outcomes.items'));
+    return [ring(items.length?items.filter(x=>x.healthy).length/items.length*100:0,{title:'Geverifieerd',caption:`${items.filter(x=>x.healthy).length} van ${items.length}`}),
+      leakage(items.map(x=>({label:x.naam,value:n(x.waarde)})),{title:'Waar de geverifieerde waarde zit'})].filter(Boolean).join('');},
+
+  'learning-writeback':state=>{const items=arr(at(state,'portal.runtime.learning.items'));
+    return ring(items.length?items.filter(x=>x.healthy).length/items.length*100:0,{title:'Bewezen leringen',caption:`${items.filter(x=>x.healthy).length} van ${items.length}`});},
+
+  'self-heal':state=>{const s=at(state,'portal.runtime.selfHeal')||{};const items=arr(s.items);
+    return [ring(s.totaal?(n(s.compleet)/n(s.totaal))*100:0,{title:'Lussen die zichzelf rondmaken',caption:`${n(s.compleet)} van ${n(s.totaal)}`}),
+      benchmarkBars(items.slice(0,6).map(x=>({label:x.naam,value:BREIN_STAPPEN.length-n(x.ontbreekt),benchmark:BREIN_STAPPEN.length})),{title:'Hoe ver elke lus komt'})].filter(Boolean).join('');},
+
+  audittrail:state=>{const items=arr(at(state,'portal.runtime.audit.items'));
+    const perSoort={};for(const x of items)perSoort[x.naam]=(perSoort[x.naam]||0)+1;
+    return leakage(Object.entries(perSoort).map(([label,value])=>({label,value})),{title:'Vastgelegde records per soort'});},
 
   'strategy-dna':state=>radar(Object.entries(at(state,'portal.strategyDna.layers')||{}).map(([key,value])=>({label:key,value:n(value)})),{title:'Volwassenheid per laag'})
 });

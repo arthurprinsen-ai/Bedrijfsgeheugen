@@ -25,7 +25,11 @@ const PAGES=Object.freeze({
       ['Vermijdbare capaciteit',`${num(calc('fte-lost',s),1)} fte`],
       ['Procesvolwassenheid',calc('cmmi-level',s)?`${calc('cmmi-level',s)}/5 · ${arr(calc('cmmi-ladder',s)).find(x=>x.huidig)?.naam||''}`:EMPTY]
     ],
-    worklist:s=>arr(calc('blocker-ranking',s)).slice(0,3).map(item=>[String(item.name||item.title||'Blokkade'),`impact ${num(item.impact)}`])},
+    worklist:s=>[
+      ['Stand van het bedrijf',String(calc('company-state',s)||EMPTY)],
+      ['Voortgang op de roadmap',pct(calc('progress',s))],
+      ...arr(calc('blocker-ranking',s)).slice(0,2).map(item=>[String(item.name||item.title||'Blokkade'),`impact ${num(item.impact)}`])
+    ]},
 
   profiel:{slice:'portal.profile',
     metrics:s=>{const scores=arr(calc('dimension-maturity',s));return [
@@ -42,6 +46,10 @@ const PAGES=Object.freeze({
       ['Implementatiefase',String(at(s,'portal.dataAi.phase')||EMPTY)],
       ['Veranderbereidheid',`${num(calc('change-readiness',s),1)}/5`],
       ['Groeifase',calc('greiner-phase',s)?.fase||EMPTY]
+    ],
+    worklist:s=>[
+      ['Fase van implementatie',`${num(calc('implementation-phase',s))} van 5`],
+      ['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`]
     ]},
 
   'ai-scan':{slice:'portal.aiScan',
@@ -84,6 +92,10 @@ const PAGES=Object.freeze({
       ['Kosten van uitstel',euro(calc('delay-cost',s))],
       ['Netto resultaat',euro(calc('investment-net-result',s))],
       ['Terugverdientijd',`${num(calc('payback',s),1)} mnd`]
+    ],
+    worklist:s=>[
+      ['Baat per maand doorlooptijd',euro(calc('benefit-per-duration',s))],
+      ['Kosten-batenverloop',`${arr(calc('cost-benefit-curve',s)).length} meetpunten`]
     ]},
 
   'cijfers-maatstaven':{slice:'portal.metrics',
@@ -96,7 +108,9 @@ const PAGES=Object.freeze({
     worklist:s=>[
       ['Loonquote',pct(calc('wage-ratio',s))],
       ['IT-quote',pct(calc('it-ratio',s))],
-      ['Omzet per medewerker',euro(calc('productivity',s))]
+      ['Omzet per medewerker',euro(calc('productivity',s))],
+      ['Klantconcentratie',pct(calc('customer-concentration',s))],
+      ['Trend in metingen',String(calc('measurement-trend',s)??EMPTY)]
     ]},
 
   'waarde-financiering':{slice:'portal.valueFinance',
@@ -112,6 +126,7 @@ const PAGES=Object.freeze({
       ['Schuldendekking (DSCR)',`${num(calc('dscr',s),2)}x`],
       ['Rendement op eigen vermogen (DuPont)',pct(d.roe)],
       ['EBITDA-multiple',`${num(calc('ebitda-multiple',s),1)}x`],
+      ['Rendementsindex (DuPont)',num(calc('dupont',s),2)],
       ['Veiligheidsmarge',pct(calc('safety-margin',s))]
     ];}},
 
@@ -122,6 +137,12 @@ const PAGES=Object.freeze({
       ['eNPS',num(at(s,'portal.people.enps'))],
       ['Vacaturedruk',pct(calc('vacancy-pressure',s))]
     ],
+    extraWorklist:s=>[
+      ['Verzuim t.o.v. norm',num(calc('absence-gap',s),1)],
+      ['Verloop t.o.v. norm',num(calc('turnover-gap',s),1)],
+      ['eNPS t.o.v. norm',num(calc('enps-gap',s),1)],
+      ['Volwassenheid medewerkerstevredenheid',`${num(calc('mto-maturity',s),1)}/5`]
+    ],
     worklist:s=>arr(at(s,'portal.people.roles')).filter(role=>!role.backup).slice(0,3).map(role=>[String(role.name||role.role||'Rol'),'geen back-up vastgelegd'])},
 
   'branche-markt':{slice:'portal.market',
@@ -131,7 +152,10 @@ const PAGES=Object.freeze({
       ['Onder markt',String(deltas.filter(item=>item.delta<0).length)],
       ['Branche',String(at(s,'portal.market.industry')||EMPTY)]
     ];},
-    worklist:s=>arr(calc('industry-benchmark-deltas',s)).filter(item=>item.delta<0).slice(0,3).map(item=>[String(item.metric||'Maatstaf'),`${num(item.delta,1)} t.o.v. benchmark`])},
+    worklist:s=>[
+      ['Groeicontext van de branche',String(calc('industry-growth-context',s)||EMPTY)],
+      ...arr(calc('industry-benchmark-deltas',s)).filter(item=>item.delta<0).slice(0,2).map(item=>[String(item.metric||'Maatstaf'),`${num(item.delta,1)} t.o.v. benchmark`])
+    ]},
 
   onderzoek:{slice:'portal.research',
     metrics:s=>{const items=arr(at(s,'portal.research.hypotheses'));return [
@@ -140,6 +164,7 @@ const PAGES=Object.freeze({
       ['Zonder bron',String(items.filter(item=>!filled(item.source)).length)],
       ['Kosten van niets doen',euro(calc('do-nothing-cost',s))]
     ];},
+    extraWorklist:s=>[['Positie volwassenheid tegen kosten',String(calc('maturity-vs-cost-position',s)||EMPTY)]],
     worklist:s=>arr(at(s,'portal.research.hypotheses')).filter(item=>!filled(item.evidence)).slice(0,3).map(item=>[String(item.hypothesis||'Hypothese'),'bewijs ontbreekt'])},
 
   'compliance-governance':{slice:'portal.compliance',
@@ -149,6 +174,8 @@ const PAGES=Object.freeze({
       ['ESG readiness',`${num(calc('esg-readiness',s),1)}/5`],
       ['Restrisico',pct(calc('compliance-risk',s))]
     ],
+    extraWorklist:s=>[['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`]],
+    extraWorklist:s=>[['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`]],
     worklist:s=>Object.entries(at(s,'portal.compliance.policies')||{}).filter(([,status])=>status==='ontbreekt').slice(0,3).map(([index])=>[`Beleidsstuk ${Number(index)+1}`,'ontbreekt'])},
 
   'compliance-command-center':{slice:'portal.compliance',
@@ -190,7 +217,10 @@ const PAGES=Object.freeze({
       ['Binnen filter',String(arr(calc('priority-filter',s)).length)],
       ['Minimumwaarde',euro(at(s,'portal.strategy.minimumValue'))]
     ],
-    worklist:s=>arr(calc('priority-filter',s)).slice(0,3).map(item=>[String(item.finding||'Bevinding'),`${euro(item.value)} · ${item.horizon||EMPTY}`])},
+    worklist:s=>[
+      ['Zwaartepunt in de horizon',String(calc('model-finding-horizon',s)||EMPTY)],
+      ...arr(calc('priority-filter',s)).slice(0,2).map(item=>[String(item.finding||'Bevinding'),`${euro(item.value)} · ${item.horizon||EMPTY}`])
+    ]},
 
   modellen:{slice:'portal.strategy',
     metrics:s=>[
@@ -215,7 +245,10 @@ const PAGES=Object.freeze({
       ['Capaciteit',`${num(synthesis.capacity,1)} fte`],
       ['Restrisico',pct(synthesis.risk)]
     ];},
-    worklist:s=>arr(calc('recommendation-priority',s)).slice(0,3).map(item=>[String(item.advice||'Advies'),`prioriteit ${num(item.priority)}`])},
+    worklist:s=>[
+      ['Gewicht over de modellen heen',num(calc('cross-model-weight',s),2)],
+      ...arr(calc('recommendation-priority',s)).slice(0,2).map(item=>[String(item.advice||'Advies'),`prioriteit ${num(item.priority)}`])
+    ]},
 
   'due-diligence':{slice:'portal.dueDiligence',
     metrics:s=>[
@@ -249,7 +282,10 @@ const PAGES=Object.freeze({
       ['Opvolging geborgd',pct(calc('follow-up-status',s))],
       ['Open',String(items.filter(item=>item.status==='Open').length)]
     ];},
-    worklist:s=>arr(at(s,'portal.changes.items')).filter(item=>item.status!=='Geborgd').slice(0,3).map(item=>[String(item.change||'Wijziging'),`${item.area||EMPTY} · ${item.status||'Open'}`])},
+    worklist:s=>[
+      ['Volgorde van doorvoeren',String(arr(calc('change-sequencing',s)).length||EMPTY)],
+      ...arr(at(s,'portal.changes.items')).filter(item=>item.status!=='Geborgd').slice(0,2).map(item=>[String(item.change||'Wijziging'),`${item.area||EMPTY} · ${item.status||'Open'}`])
+    ]},
 
   advies:{slice:'portal.advice',
     metrics:s=>{const items=arr(at(s,'portal.advice.items'));return [
@@ -267,7 +303,11 @@ const PAGES=Object.freeze({
       ['Totaal',euro(calc('offer-total',s))],
       ['Akkoord',at(s,'portal.offer.approval.agreed')===true?`door ${at(s,'portal.offer.approval.name')||'klant'}`:'nog niet gegeven']
     ],
-    worklist:s=>arr(at(s,'portal.offer.additionalWork')).slice(0,3).map(item=>[String(item.description||'Meerwerk'),`${euro(item.price)} · ${item.status||'Open'}`])},
+    worklist:s=>[
+      ['Prijs per week',euro(calc('weekly-price',s))],
+      ['Eindprijs',euro(calc('end-price',s))],
+      ...arr(at(s,'portal.offer.additionalWork')).slice(0,1).map(item=>[String(item.description||'Meerwerk'),`${euro(item.price)} · ${item.status||'Open'}`])
+    ]},
 
   roadmap:{slice:'portal.roadmap',
     metrics:s=>{const items=arr(at(s,'portal.roadmap.items'));return [
@@ -276,7 +316,10 @@ const PAGES=Object.freeze({
       ['Totale duur',`${num(calc('duration',s))} mnd`],
       ['Waarde',euro(calc('roadmap-value',s))]
     ];},
-    worklist:s=>arr(at(s,'portal.roadmap.items')).filter(item=>item.done!==true).slice(0,3).map(item=>[String(item.title||'Item'),`${num(item.progress)}% · ${item.owner||'geen eigenaar'}`])},
+    worklist:s=>[
+      ['Positie in de tijdlijn',String(calc('timeline-position',s)||EMPTY)],
+      ...arr(at(s,'portal.roadmap.items')).filter(item=>item.done!==true).slice(0,2).map(item=>[String(item.title||'Item'),`${num(item.progress)}% · ${item.owner||'geen eigenaar'}`])
+    ]},
 
   uitvoeringsladder:{slice:'portal.roadmap',
     metrics:s=>{const items=arr(at(s,'portal.roadmap.items'));return [
@@ -315,19 +358,97 @@ const RUNTIME_PAGES=Object.freeze({
   documenten:'portal.admin.documents', instellingen:'portal.admin.settings', audit:'portal.admin.audit'
 });
 
+/**
+ * Kerncijfers per Brein- en Powerhouse-pagina, afgeleid uit de projectie van de
+ * operating loop (zie runtime-evidence.js). Elke pagina krijgt cijfers die bij
+ * zijn eigen onderwerp horen, niet vier keer hetzelfde. Zonder evidence: leeg.
+ */
+const RUNTIME_METRICS=Object.freeze({
+  bronnenstatus:(items,s)=>[
+    ['Bronnen',String(items.length)],
+    ['Gezond',String(items.filter(x=>x.healthy).length)],
+    ['Aandacht',String(items.filter(x=>!x.healthy).length)],
+    ['Laatste signaal',String(s.updatedAt||EMPTY)]
+  ],
+  datahubstatus:(items,s)=>[
+    ['Entiteiten',String(items.length)],
+    ['Verbindingen',String(s.edges??0)],
+    ['Dichtheid',items.length?`${num((s.edges||0)/items.length,1)}×`:EMPTY],
+    ['Bijgewerkt',String(s.updatedAt||EMPTY)]
+  ],
+  'brain-verwerking':(items,s)=>[
+    ['Lussen',String(s.loops??0)],
+    ['Rond',String(s.compleet??0)],
+    ['Onderweg',String(s.incompleet??0)],
+    ['Stappen op orde',`${items.filter(x=>x.healthy).length}/${items.length}`]
+  ],
+  agentstatus:(items,s)=>[
+    ['Gebeurtenissen',String(items.length)],
+    ['Geblokkeerd',String(items.filter(x=>!x.healthy).length)],
+    ['Doorloop',items.length?pct(items.filter(x=>x.healthy).length/items.length*100):EMPTY],
+    ['Laatste',String(s.updatedAt||EMPTY)]
+  ],
+  'actieve-acties':items=>[
+    ['Open acties',String(items.length)],
+    ['Hoge prioriteit',String(items.filter(x=>/hoog|high|1/i.test(String(x.status))).length)],
+    ['Waarde in acties',euro(items.reduce((sum,x)=>sum+(Number(x.waarde)||0),0))],
+    ['Zonder waarde',String(items.filter(x=>!x.waarde).length)]
+  ],
+  'recovery-obligations':(items,s)=>[
+    ['Openstaande verplichtingen',String(items.length)],
+    ['Open lussen',String(s.openLoops??0)],
+    ['Met datum',String(arr(items).filter(x=>x.laatst).length)],
+    ['Bijgewerkt',String(s.updatedAt||EMPTY)]
+  ],
+  'outcomes-evidence':(items,s)=>[
+    ['Uitkomsten',String(items.length)],
+    ['Geverifieerd',String(items.filter(x=>x.healthy).length)],
+    ['Geverifieerde waarde',euro(items.filter(x=>x.healthy).reduce((sum,x)=>sum+(Number(x.waarde)||0),0))],
+    ['Nog te verifiëren',String(items.filter(x=>!x.healthy).length)]
+  ],
+  'learning-writeback':items=>[
+    ['Leringen',String(items.length)],
+    ['Bewezen',String(items.filter(x=>x.healthy).length)],
+    ['In onderzoek',String(items.filter(x=>!x.healthy).length)],
+    ['Bewezen deel',items.length?pct(items.filter(x=>x.healthy).length/items.length*100):EMPTY]
+  ],
+  'self-heal':(items,s)=>[
+    ['Lussen die vastlopen',String(items.length)],
+    ['Rond',String(s.compleet??0)],
+    ['Totaal',String(s.totaal??0)],
+    ['Grootste gat',items.length?`${Math.max(...items.map(x=>Number(x.ontbreekt)||0))} stappen`:EMPTY]
+  ],
+  audittrail:(items,s)=>[
+    ['Vastgelegde records',String(items.length)],
+    ['Soorten',String(new Set(items.map(x=>x.naam)).size)],
+    ['Laatste record',String(s.updatedAt||EMPTY)],
+    ['Onafgebroken',items.length?'ja':EMPTY]
+  ]
+});
+
 function runtimeMetrics(pageId,state){
-  const items=arr(at(state,`${RUNTIME_PAGES[pageId]}.items`));
-  if(!items.length)return null;
+  const s=at(state,RUNTIME_PAGES[pageId])||{};
+  const items=arr(s.items);
+  if(!items.length&&!Number(s.loops)&&!Number(s.totaal))return null;
+  const bouwer=RUNTIME_METRICS[pageId];
+  if(bouwer){try{return bouwer(items,s);}catch{return null;}}
   return [
     ['Records',String(items.length)],
     ['Gezond',String(items.filter(item=>item.status==='ok'||item.healthy===true).length)],
     ['Aandacht',String(items.filter(item=>item.status&&item.status!=='ok').length)],
-    ['Bijgewerkt',String(at(state,`${RUNTIME_PAGES[pageId]}.updatedAt`)||EMPTY)]
+    ['Bijgewerkt',String(s.updatedAt||EMPTY)]
   ];
 }
 
+/** Werklijst voor de runtime-pagina's: alleen wat aandacht vraagt. */
+function runtimeWorklist(pageId,state){
+  const s=at(state,RUNTIME_PAGES[pageId])||{};
+  return arr(s.items).filter(item=>item.healthy===false).slice(0,3)
+    .map(item=>[String(item.naam||'Item'),String(item.status||'aandacht')]);
+}
+
 export function hasPageData(pageId,state={}){
-  if(RUNTIME_PAGES[pageId])return arr(at(state,`${RUNTIME_PAGES[pageId]}.items`)).length>0;
+  if(RUNTIME_PAGES[pageId]){const s=at(state,RUNTIME_PAGES[pageId])||{};return arr(s.items).length>0||Number(s.loops)>0||Number(s.totaal)>0;}
   const slice=PAGES[pageId]?.slice;
   return slice?filled(at(state,slice)):false;
 }
@@ -349,9 +470,15 @@ export function pageMetrics(pageId,state={}){
  * Werklijst: alleen echte openstaande punten uit de eigen data.
  */
 export function pageWorklist(pageId,state={}){
+  if(RUNTIME_PAGES[pageId])return hasPageData(pageId,state)?runtimeWorklist(pageId,state):[];
   const definition=PAGES[pageId];
-  if(!definition?.worklist||!hasPageData(pageId,state))return [];
-  try{return definition.worklist(state).filter(row=>Array.isArray(row)&&row.length===2);}catch{return [];}
+  if(!definition||!hasPageData(pageId,state))return [];
+  const rijen=[];
+  for(const bron of [definition.worklist,definition.extraWorklist]){
+    if(typeof bron!=='function')continue;
+    try{rijen.push(...bron(state));}catch{/* een kapotte afleiding mag de pagina niet slopen */}
+  }
+  return rijen.filter(row=>Array.isArray(row)&&row.length===2).slice(0,6);
 }
 
 export function emptyStateCopy(pageId){

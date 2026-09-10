@@ -17,7 +17,7 @@ import { readdirSync, readFileSync } from 'node:fs';
  */
 
 const WORKFLOW_DIR = '.github/workflows';
-const TEST_DIR = 'tests';
+const TEST_DIRS = ['tests', 'portal-v2/tests'];
 
 /**
  * Testbestanden die bewust nog niet in CI hangen omdat ze op dit moment rood
@@ -38,10 +38,10 @@ function referencedTestFiles() {
   for (const file of readdirSync(WORKFLOW_DIR)) {
     if (!file.endsWith('.yml') && !file.endsWith('.yaml')) continue;
     const source = readFileSync(`${WORKFLOW_DIR}/${file}`, 'utf8');
-    for (const match of source.matchAll(/tests\/[A-Za-z0-9_.*-]+\.test\.mjs/g)) {
+    for (const match of source.matchAll(/(?:portal-v2\/)?tests\/[A-Za-z0-9_.*-]+\.test\.mjs/g)) {
       const pattern = match[0];
       if (!pattern.includes('*')) { referenced.add(pattern); continue; }
-      const regex = new RegExp(`^${pattern.replace(/[.]/g, '\\.').replace(/\*/g, '[A-Za-z0-9_.-]*')}$`);
+      const regex = new RegExp(`^${pattern.replace(/[.]/g, '\\.').replace(/\//g, '\\/').replace(/\*/g, '[A-Za-z0-9_.-]*')}$`);
       for (const candidate of allTestFiles()) if (regex.test(candidate)) referenced.add(candidate);
     }
   }
@@ -49,7 +49,8 @@ function referencedTestFiles() {
 }
 
 function allTestFiles() {
-  return readdirSync(TEST_DIR).filter(name => name.endsWith('.test.mjs')).map(name => `${TEST_DIR}/${name}`);
+  return TEST_DIRS.flatMap(dir =>
+    readdirSync(dir).filter(name => name.endsWith('.test.mjs')).map(name => `${dir}/${name}`));
 }
 
 test('elk testbestand wordt door minstens één workflow gedraaid', () => {

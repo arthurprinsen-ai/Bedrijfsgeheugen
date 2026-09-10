@@ -1,9 +1,11 @@
+/* Paden zijn relatief aan dit bestand in plaats van aan de werkmap, zodat de
+   suite ook vanuit de repo-root draait. CI draait node --test vanaf de root. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const strategySource=()=>fs.readFileSync('modules/strategy-board.js','utf8');
-const overviewSource=()=>fs.readFileSync('modules/overview-reorder.js','utf8');
+const strategySource=()=>fs.readFileSync(new URL('../modules/strategy-board.js', import.meta.url),'utf8');
+const overviewSource=()=>fs.readFileSync(new URL('../modules/overview-reorder.js', import.meta.url),'utf8');
 
 test('strategy cards can be reordered without losing card data',async()=>{
   const {reorderStrategyCards}=await import('../modules/strategy-board.js');
@@ -57,13 +59,13 @@ test('remaining interaction parity obligations are proven only after native impl
 });
 
 test('mobile parity controls have at least a 44px touch target',()=>{
-  const css=fs.readFileSync('modules/interaction-parity-style.js','utf8');
+  const css=fs.readFileSync(new URL('../modules/interaction-parity-style.js', import.meta.url),'utf8');
   assert.match(css,/\.v2strategycontrols[\s\S]*min-(?:width|height):44px/);
   assert.match(css,/\.v2overviewcontrols[\s\S]*min-(?:width|height):44px/);
 });
 
 test('overview reorder controls reserve their own vertical space instead of covering links and content',()=>{
-  const css=fs.readFileSync('modules/interaction-parity-style.js','utf8');
+  const css=fs.readFileSync(new URL('../modules/interaction-parity-style.js', import.meta.url),'utf8');
   assert.match(css,/\[data-overview-block\]\{[^}]*padding-top:(?:6[0-9]|[7-9][0-9]|[1-9][0-9]{2,})px/);
   assert.match(css,/\.v2overviewcontrols\{[^}]*position:absolute/);
 });

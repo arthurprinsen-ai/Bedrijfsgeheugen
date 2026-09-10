@@ -3,6 +3,7 @@ import { nativePageContent } from './native-pages.js';
 import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
 import { mountChangeWizard } from './modules/change-wizard.js';
+import { loadRuntimeEvidence } from './runtime-evidence.js';
 import { renderCsrdImpact } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
@@ -68,6 +69,18 @@ const portalContext={domainState:null};
 export function configurePortalShell(context={}){
   portalContext.domainState=context.domainState||null;
   return portalContext;
+}
+
+/* De Brein- en Powerhouse-pagina's tonen niets zolang er geen runtime-evidence
+   is. Die evidence komt uit de projectie van de operating loop. Eén keer per
+   sessie ophalen; faalt het, dan blijven die pagina's eerlijk leeg. */
+let runtimeGeladen=false;
+function ensureRuntimeEvidence(){
+  if(runtimeGeladen||!portalContext.domainState)return;
+  runtimeGeladen=true;
+  loadRuntimeEvidence({domainState:portalContext.domainState}).then(runtime=>{
+    if(runtime&&typeof document!=='undefined')document.dispatchEvent(new CustomEvent('bg:runtime-evidence'));
+  });
 }
 
 function portalStateSnapshot(){
@@ -193,6 +206,7 @@ export function openPortalPage(pageId){
     native.prepend(wizard);
     mountChangeWizard(wizard,{domainState:portalContext.domainState,onSaved:()=>openPortalPage('wijzigingen')});
   }
+  ensureRuntimeEvidence();
   mountAskPortal(root.querySelector('.pvbody'),{currentPage:()=>pageId});
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;

@@ -94,6 +94,10 @@ jobs:
       # faalt zodra dat opnieuw gebeurt.
       # Vier van deze tests laden netlify/functions en hebben daarom de twee
       # runtime-dependencies uit package.json nodig.
+      # De 140 tests onder portal-v2/tests draaiden nergens in CI: alleen een
+      # Python-pariteitsscript keek naar dat portaal.
+      - name: Verify Portal V2 suite
+        run: node --test portal-v2/tests/*.test.mjs
       - name: Install runtime dependencies for the unwired contracts
         run: npm install --no-audit --no-fund --silent
       - name: Verify previously unwired test contracts

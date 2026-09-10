@@ -1,3 +1,5 @@
+/* Paden zijn relatief aan dit bestand in plaats van aan de werkmap, zodat de
+   suite ook vanuit de repo-root draait. CI draait node --test vanaf de root. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -6,8 +8,8 @@ test('feature/story drag remains fail-closed until native delivery board exists'
   const { INTERACTION_PARITY_MANIFEST }=await import('../interaction-parity.js');
   const item=INTERACTION_PARITY_MANIFEST.find(entry=>entry.id==='feature-story-drag');
   assert.equal(item?.status,'proven');
-  assert.ok(fs.existsSync('modules/delivery-board.js'));
-  assert.ok(fs.existsSync('modules/delivery-workspace.js'));
+  assert.ok(fs.existsSync(new URL('../modules/delivery-board.js', import.meta.url)));
+  assert.ok(fs.existsSync(new URL('../modules/delivery-workspace.js', import.meta.url)));
 });
 
 test('delivery board moves features between backlog/sprints and stories between features', async()=>{
@@ -27,7 +29,7 @@ test('delivery board moves features between backlog/sprints and stories between 
 });
 
 test('delivery board supports desktop drag and mobile move controls',()=>{
-  const source=fs.readFileSync('modules/delivery-board.js','utf8');
+  const source=fs.readFileSync(new URL('../modules/delivery-board.js', import.meta.url),'utf8');
   assert.match(source,/draggable/);
   assert.match(source,/dragstart/);
   assert.match(source,/drop/);
@@ -37,7 +39,7 @@ test('delivery board supports desktop drag and mobile move controls',()=>{
 });
 
 test('taken-werkstromen delegates to native delivery workspace',()=>{
-  const source=fs.readFileSync('page-shell.js','utf8');
+  const source=fs.readFileSync(new URL('../page-shell.js', import.meta.url),'utf8');
   assert.match(source,/taken-werkstromen/);
   assert.match(source,/mountDeliveryWorkspace/);
 });
