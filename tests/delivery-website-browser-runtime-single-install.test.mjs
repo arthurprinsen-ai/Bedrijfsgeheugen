@@ -37,7 +37,16 @@ test('single browser job retains targeted, visibility, and high-risk broad exact
   assert.match(browser, /name: Verify affected routes on desktop and mobile/);
   assert.match(browser, /name: Verify all public pages are visibly rendered/);
   assert.match(browser, /Verify broad high-risk browser contracts/);
-  assert.match(browser, /deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
+  // De browserjob moet de exacte deploy preview meten, niet productie. Deze
+  // assertie legde daarvoor de zelf samengestelde URL
+  // deploy-preview-<pr>--bedrijfsgeheugen.netlify.app letterlijk vast. Die URL
+  // is vervangen door de URL die Netlify zelf meldt, omdat zelf samenstellen op
+  // 10 september 2026 een 404 opleverde waar niets mis was met de code. De
+  // bedoeling blijft: meten op de preview van deze wijziging.
+  assert.match(browser, /needs\['preview-ready'\]\.outputs\.preview_url/);
+  // BASELINE_URL wijst wél naar productie: de browserjob vergelijkt de preview
+  // met de live baseline. Dat is de bedoeling, geen terugval op productie.
+  assert.match(browser, /BASELINE_URL: https:\/\/www\.bedrijfsgeheugen\.nl/);
   assert.match(browser, /needs\.classify\.outputs\.risk_lane/);
 });
 

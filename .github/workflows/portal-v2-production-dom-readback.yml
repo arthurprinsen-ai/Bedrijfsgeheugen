@@ -21,6 +21,7 @@ concurrency:
 
 permissions:
   contents: read
+  statuses: read
 
 jobs:
   production-dom-readback:
@@ -34,30 +35,43 @@ jobs:
       - name: Install Chromium verifier
         run: |
           PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
+      # Deze stap gokte de preview-URL (deploy-preview-<PR>--...) en pollde die
+      # vijf minuten blind. Op 10 september 2026 ging de check daardoor rood met
+      # een 404 terwijl portal-v2-live-preview op exact dezelfde preview slaagde:
+      # die wacht op het officiële Netlify-statussignaal in plaats van te gokken.
+      # Nu doet deze workflow dat ook, en neemt hij de URL die Netlify zelf
+      # meldt.
       - name: Resolve exact readback target
         env:
           EVENT_NAME: ${{ github.event_name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "$EVENT_NAME" = "pull_request" ]; then
-            echo "PORTAL_READBACK_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
-          else
+          if [ "$EVENT_NAME" != "pull_request" ]; then
             echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
+            exit 0
           fi
-      - name: Wait for exact readback target
-        run: |
-          ready=0
-          for attempt in $(seq 1 30); do
-            if curl -fsS "${PORTAL_READBACK_URL}/portal-v2/?bg_preview_ready=${GITHUB_SHA}-${attempt}" >/dev/null; then
-              ready=1
-              break
+          for poging in $(seq 1 72); do
+            json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status" || echo '{}')
+            state=$(printf '%s' "$json" | jq -r '.statuses[]? | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
+            target=$(printf '%s' "$json" | jq -r '.statuses[]? | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .target_url' | head -n1)
+            if [ "$state" = "success" ] && [ -n "$target" ] && [ "$target" != "null" ]; then
+              echo "Netlify meldt de preview als klaar: $target"
+              echo "PORTAL_READBACK_URL=$target" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "::error::De Netlify-preview voor ${HEAD_SHA} is mislukt (${state}). Dit is een buildfout, geen readbackfout."
+              exit 1
             fi
             sleep 10
           done
-          if [ "$ready" -ne 1 ]; then
-            echo "::error::Portal V2 readback target did not become reachable: ${PORTAL_READBACK_URL}"
-            exit 1
-          fi
+          echo "::error::Netlify heeft binnen twaalf minuten geen preview gemeld voor ${HEAD_SHA} (laatste status: ${state:-onbekend})."
+          exit 1
+      - name: Wait for exact readback target
+        run: |
+          WACHT_LABEL="Portal V2 readback-doel" bash tools/ci/wait-for-url.sh "${PORTAL_READBACK_URL}/portal-v2/"
       - name: Read back Portal V2 DOM, standalone routing and CSRD assets
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
