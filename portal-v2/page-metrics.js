@@ -1,4 +1,5 @@
 import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
+import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BRONNEN } from './external-data.js';
 
 const EMPTY='—';
 const num=(value,digits=0)=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(Number(value)||0);
@@ -6,6 +7,17 @@ const euro=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'
 const pct=value=>`${num(value,0)}%`;
 const arr=value=>Array.isArray(value)?value:[];
 const at=(state,path)=>String(path||'').split('.').filter(Boolean).reduce((value,key)=>value==null?undefined:value[key],state);
+/** Eigen cijfers in de vorm die de branchevergelijking verwacht. */
+function eigenCijfers(state){
+  return {
+    grossMargin:calc('gross-margin',state), ebitdaMargin:calc('ebitda-margin',state),
+    wageRatio:calc('wage-ratio',state), marketingRatio:calc('marketing-ratio',state),
+    itRatio:calc('it-ratio',state), dso:calc('dso',state),
+    absence:at(state,'portal.people.absence'), turnover:at(state,'portal.people.turnover'),
+    enps:at(state,'portal.people.enps')
+  };
+}
+
 const filled=value=>value!==undefined&&value!==null&&value!==''&&!(Array.isArray(value)&&!value.length)&&!(typeof value==='object'&&!Array.isArray(value)&&!Object.keys(value).length);
 
 function calc(id,state){
@@ -111,7 +123,9 @@ const PAGES=Object.freeze({
       ['Omzet per medewerker',euro(calc('productivity',s))],
       ['Klantconcentratie',pct(calc('customer-concentration',s))],
       ['Trend in metingen',String(calc('measurement-trend',s)??EMPTY)]
-    ]},
+    ],
+    extraWorklist:s=>brancheVergelijking(eigenCijfers(s),at(s,'portal.market.industry')).filter(r=>!r.beter).slice(0,3)
+      .map(r=>[`${r.maatstaf} tegen de norm`,`${num(r.eigen,1)}${r.eenheid} tegenover ${num(r.norm,1)}${r.eenheid}`])},
 
   'waarde-financiering':{slice:'portal.valueFinance',
     metrics:s=>[
@@ -146,11 +160,16 @@ const PAGES=Object.freeze({
     worklist:s=>arr(at(s,'portal.people.roles')).filter(role=>!role.backup).slice(0,3).map(role=>[String(role.name||role.role||'Rol'),'geen back-up vastgelegd'])},
 
   'branche-markt':{slice:'portal.market',
-    metrics:s=>{const deltas=arr(calc('industry-benchmark-deltas',s));return [
-      ['Benchmarks',String(deltas.length)],
-      ['Boven markt',String(deltas.filter(item=>item.delta>0).length)],
-      ['Onder markt',String(deltas.filter(item=>item.delta<0).length)],
-      ['Branche',String(at(s,'portal.market.industry')||EMPTY)]
+    metrics:s=>{const branche=at(s,'portal.market.industry');const rijen=brancheVergelijking(eigenCijfers(s),branche);const b=brancheProfiel(branche);return [
+      ['Branche',String(branche||'Gemiddeld NL-bedrijf')],
+      ['Vergeleken maatstaven',String(rijen.length)],
+      ['Boven de norm',String(rijen.filter(r=>r.beter).length)],
+      ['Groei in de sector',b?`${num(b.groei,1)}%`:EMPTY]
+    ];},
+    extraWorklist:s=>{const branche=at(s,'portal.market.industry');const b=brancheProfiel(branche);if(!b)return [];return [
+      ['Toegevoegde waarde per vte in de sector',euro(b.tw)],
+      ['Digitale intensiteit',`${num(b.dig,1)}/5`],
+      ['Brancheorganisatie',String(b.inst||EMPTY)]
     ];},
     worklist:s=>[
       ['Groeicontext van de branche',String(calc('industry-growth-context',s)||EMPTY)],
@@ -162,10 +181,11 @@ const PAGES=Object.freeze({
       ['Hypotheses',String(items.length)],
       ['Met bewijs',String(items.filter(item=>filled(item.evidence)).length)],
       ['Zonder bron',String(items.filter(item=>!filled(item.source)).length)],
-      ['Kosten van niets doen',euro(calc('do-nothing-cost',s))]
+      ['Externe bevindingen',String(onderzoekVoor().length)]
     ];},
     extraWorklist:s=>[['Positie volwassenheid tegen kosten',String(calc('maturity-vs-cost-position',s)||EMPTY)]],
-    worklist:s=>arr(at(s,'portal.research.hypotheses')).filter(item=>!filled(item.evidence)).slice(0,3).map(item=>[String(item.hypothesis||'Hypothese'),'bewijs ontbreekt'])},
+    extraWorklist:()=>onderzoekVoor().slice(0,3).map(item=>[`${item.t} — ${item.cijfer}`,String(item.bron)]),
+    worklist:s=>arr(at(s,'portal.research.hypotheses')).filter(item=>!filled(item.evidence)).slice(0,2).map(item=>[String(item.hypothesis||'Hypothese'),'bewijs ontbreekt'])},
 
   'compliance-governance':{slice:'portal.compliance',
     metrics:s=>[
@@ -174,7 +194,10 @@ const PAGES=Object.freeze({
       ['ESG readiness',`${num(calc('esg-readiness',s),1)}/5`],
       ['Restrisico',pct(calc('compliance-risk',s))]
     ],
-    extraWorklist:s=>[['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`]],
+    extraWorklist:s=>{const r=regelgevingVoor(at(s,'portal.market.industry'));return [
+      ['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`],
+      ...r.regels.slice(0,3).map(regel=>[String(regel).split(' — ')[0],String(regel).split(' — ')[1]||`via ${r.instantie}`])
+    ];},
     extraWorklist:s=>[['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`]],
     worklist:s=>Object.entries(at(s,'portal.compliance.policies')||{}).filter(([,status])=>status==='ontbreekt').slice(0,3).map(([index])=>[`Beleidsstuk ${Number(index)+1}`,'ontbreekt'])},
 
