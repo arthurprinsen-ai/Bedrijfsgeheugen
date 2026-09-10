@@ -154,4 +154,59 @@ export function leakage(segments=[],{title='Waar tijd en geld weglekken'}={}){
   return frame(`0 0 ${width} ${height}`,title,`<text x="0" y="18" font-size="9" fill="currentColor" opacity=".6">totaal ${num(total)}</text>${bars}${legend}`);
 }
 
-export const VISUALS_VERSION='2026-09-09-v1';
+/** Trapvorm voor een laddermodel: CMMI, Greiner-fasen, trusted advisor. */
+export function ladder(steps=[],{title='Waar je staat'}={}){
+  const items=steps.filter(item=>item&&item.naam!=null||item&&item.fase!=null);
+  if(!items.length)return '';
+  const width=560,left=8,gap=10;
+  const bw=(width-left*2-gap*(items.length-1))/items.length;
+  const baseline=176,maxH=118;
+  const bars=items.map((item,index)=>{
+    const h=42+index*(maxH-42)/Math.max(1,items.length-1);
+    const x=left+index*(bw+gap), y=baseline-h;
+    const naam=item.naam||item.fase;
+    const kleur=item.huidig?ACCENT:(item.bereikt?'var(--saas-line,#e7e9f6)':SOFT);
+    const dek=item.huidig?'.95':(item.bereikt?'.9':'.22');
+    return `<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="8" fill="${kleur}" fill-opacity="${dek}"><title>${esc(naam)}: ${esc(item.uitleg||'')}</title></rect>`
+      +`<text x="${(x+bw/2).toFixed(1)}" y="${(baseline+14).toFixed(1)}" font-size="8" text-anchor="middle" fill="currentColor" opacity="${item.huidig?'.95':'.6'}">${esc(String(naam).slice(0,16))}</text>`
+      +(item.huidig?`<text x="${(x+bw/2).toFixed(1)}" y="${(y-6).toFixed(1)}" font-size="9" text-anchor="middle" fill="${ACCENT}" font-weight="700">hier</text>`:'')+`</g>`;
+  }).join('');
+  const huidig=items.find(item=>item.huidig);
+  const onderschrift=huidig?.crisis?`<text x="${left}" y="${baseline+34}" font-size="9" fill="currentColor" opacity=".7">Volgende drempel: ${esc(huidig.crisis)}</text>`:'';
+  return frame(`0 0 ${width} ${baseline+(onderschrift?44:24)}`,title,`${bars}${onderschrift}`);
+}
+
+/** DuPont: waar het rendement vandaan komt, als drie factoren en hun product. */
+export function dupont(breakdown={},{title='DuPont — waar komt het rendement vandaan?'}={}){
+  const factoren=[['Nettomarge',`${num(breakdown.netMargin,1)}%`,clamp(breakdown.netMargin/12*100,0,100)],
+    ['Omloopsnelheid',`${num(breakdown.assetTurnover,2)}×`,clamp(n(breakdown.assetTurnover)*22,0,100)],
+    ['Hefboom',`${num(breakdown.leverage,2)}×`,clamp(n(breakdown.leverage)*22,0,100)]];
+  if(!factoren.some(f=>f[2]>0))return '';
+  const width=460,rowH=40,top=22;
+  const rijen=factoren.map(([label,waarde,breedte],index)=>{
+    const y=top+index*rowH;
+    return `<text x="0" y="${y+11}" font-size="9" fill="currentColor" opacity=".8">${esc(label)}</text>`
+      +`<rect x="118" y="${y+2}" width="${((width-150)*breedte/100).toFixed(1)}" height="12" rx="6" fill="${ACCENT}" fill-opacity=".85"/>`
+      +`<text x="${width-4}" y="${y+12}" font-size="9" text-anchor="end" fill="currentColor">${esc(waarde)}</text>`;
+  }).join('');
+  const roe=`<text x="0" y="${top+factoren.length*rowH+14}" font-size="10" fill="currentColor">Rendement op eigen vermogen: <tspan font-weight="700">${num(breakdown.roe,1)}%</tspan></text>`;
+  return frame(`0 0 ${width} ${top+factoren.length*rowH+28}`,title,`${rijen}${roe}`);
+}
+
+/** Halve meter voor een score met drempels, zoals Altman Z. */
+export function gauge(value,{title='Score',min=0,max=6,bands=[],caption=''}={}){
+  const v=clamp(value,min,max),width=300,cx=150,cy=140,r=104;
+  const hoek=t=>Math.PI*(1-(t-min)/(max-min||1));
+  const punt=(t,radius)=>[cx+Math.cos(hoek(t))*radius,cy-Math.sin(hoek(t))*radius];
+  const boog=(van,tot,kleur)=>{const [x1,y1]=punt(van,r),[x2,y2]=punt(tot,r);
+    return `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="${kleur}" stroke-width="16" stroke-linecap="butt"/>`;};
+  const segmenten=(bands.length?bands:[[min,max,LINE]]).map(([van,tot,kleur])=>boog(van,tot,kleur)).join('');
+  const [nx,ny]=punt(v,r-24);
+  return frame(`0 0 ${width} ${cy+34}`,title,
+    `${segmenten}<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>`
+    +`<circle cx="${cx}" cy="${cy}" r="5" fill="currentColor"/>`
+    +`<text x="${cx}" y="${cy-14}" font-size="22" text-anchor="middle" font-weight="700" fill="currentColor">${num(v,2)}</text>`
+    +(caption?`<text x="${cx}" y="${cy+26}" font-size="8" text-anchor="middle" fill="currentColor" opacity=".64">${esc(caption)}</text>`:''));
+}
+
+export const VISUALS_VERSION='2026-09-10-v2';
