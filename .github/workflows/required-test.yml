@@ -90,7 +90,7 @@ jobs:
       # tests/v18-megamenu-heading-contract.test.mjs
       # tools/site-shell/v18-megamenu-browser-check.mjs
       # Deze suite draaide nergens: 46 testbestanden werden door geen enkele
-      # workflow genoemd en bewaakten dus niets. tests/ci-test-coverage-guard.test.mjs
+      # workflow genoemd en bewaakten dus niets. tests/delivery-test-coverage-guard.test.mjs
       # faalt zodra dat opnieuw gebeurt.
       - name: Verify previously unwired test contracts
         run: >-
@@ -99,7 +99,7 @@ jobs:
           tests/ai-token-usage.test.mjs
           tests/ai-usage-store.test.mjs
           tests/api-gateways.test.mjs
-          tests/ci-test-coverage-guard.test.mjs
+          tests/delivery-test-coverage-guard.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/daily-cost-optimizer.test.mjs
           tests/data-ai-passport.test.mjs
