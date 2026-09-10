@@ -8,6 +8,11 @@ on:
       - index.html
       - assets/openart-hero-iphone-safe-v1.mp4
       - assets/openart-hero-production.json
+      - assets/hero-shanghai-v2.mp4
+      - assets/hero-shanghai-production.json
+      - tools/bouw-v18-chrome.mjs
+      - tools/bouw-v18-chrome-alles.mjs
+      - tools/bouw-v18-production-core.mjs
       - tests/homepage-hero-video.test.mjs
       - .github/workflows/homepage-hero-video-verify.yml
   pull_request:
@@ -17,6 +22,11 @@ on:
       - index.html
       - assets/openart-hero-iphone-safe-v1.mp4
       - assets/openart-hero-production.json
+      - assets/hero-shanghai-v2.mp4
+      - assets/hero-shanghai-production.json
+      - tools/bouw-v18-chrome.mjs
+      - tools/bouw-v18-chrome-alles.mjs
+      - tools/bouw-v18-production-core.mjs
       - tests/homepage-hero-video.test.mjs
       - .github/workflows/homepage-hero-video-verify.yml
 

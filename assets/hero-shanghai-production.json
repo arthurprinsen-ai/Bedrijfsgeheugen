@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "source_url": "https://adhjwmvyoixzjtmiroln.supabase.co/storage/v1/object/public/media/hero/shanghai-v1.mp4",
+  "source_sha256": "25823e4718bc39b47e0ba2b23e6207a0c23399f78a49c48e85282f9837e6a05f",
+  "source_probe": {
+    "width": 1280,
+    "height": 720,
+    "codec": "h264",
+    "has_audio": true,
+    "faststart": false,
+    "bytes": 16424026
+  },
+  "derivative_url": "/assets/hero-shanghai-v2.mp4",
+  "derivative_sha256": "00ff290a66a6d025aa6936025e03cb836111812bc161e964376f2b29c0c5eb50",
+  "derivative_probe": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "has_audio": false,
+    "faststart": true,
+    "bytes": 2939543
+  },
+  "encode": "ffmpeg -an -c:v libx264 -profile:v high -level 4.0 -pix_fmt yuv420p -preset medium -crf 29 -movflags +faststart -vf scale=1280:-2",
+  "ssim_vs_source": 0.966,
+  "physical_iphone_runtime": "NOT_TESTED",
+  "promotion_state": "MEDIA_READY"
+}

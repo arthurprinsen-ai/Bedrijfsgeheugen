@@ -101,6 +101,8 @@ jobs:
           tests/site-shell-knoppen-en-leesbreedte.test.mjs
           tests/site-shell-scoop-commentaar.test.mjs
           tests/site-shell-oude-stylesheets.test.mjs
+          tests/homepage-automation-layout.test.mjs
+          tests/homepage-hero-video.test.mjs
           tests/seo-native-money-presentation.test.mjs
           tests/seo-homepage-platform-expertise-toggle.test.mjs
           tests/standalone-content-page-router-isolation.test.mjs

@@ -30,7 +30,12 @@ const PAD = {
 };
 
 // De herovideo staat in Supabase-opslag, dezelfde als op de homepage.
-export const HERO_URL = 'https://adhjwmvyoixzjtmiroln.supabase.co/storage/v1/object/public/media/hero/shanghai-v1.mp4';
+// Dezelfde Shanghai-skyline als voorheen, maar als lokale afgeleide: 2,9 MB in
+// plaats van 16,4 MB, zonder geluidsspoor en met faststart (moov vóór mdat).
+// Het origineel op Supabase had de index achteraan, waardoor een browser het
+// hele bestand moest ophalen voordat hij kon beginnen. Zie
+// assets/hero-shanghai-production.json voor bron, hash en probe.
+export const HERO_URL = '/assets/hero-shanghai-v2.mp4';
 
 // pagina's die hun eigen werking hebben (scans, rekenmodules): daar blijft de
 // eigen opmaak staan, want die stuurt het tonen en verbergen van stappen

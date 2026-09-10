@@ -30,9 +30,12 @@ test('the real failing 1542px wide screenshot remains a mandatory visual-regress
     '1542px must stay in the browser regression matrix because this exact width exposed the painted-content overlap');
 });
 
-test('homepage protects actual heading and description from the actual cockpit card', () => {
+// De registry-paren voor de cockpitkaart zijn bewust verhuisd: volgens
+// tests/seo-homepage-context-slider-readability.test.mjs bewaakt de algemene
+// visual-regression-gate alleen de hero, en mogen de automation-markers niet
+// meer in de registry staan. De overlapbewaking zit in de fixer (test hierboven).
+test('registry houdt de verouderde automation-paren buiten de homepage', () => {
   const home = registry.pages.find(page => page.route === '/');
   assert.ok(home);
-  assert.ok(home.protectedPairs.some(pair => pair.a === '[data-bg-automation-heading]' && pair.b === '[data-bg-automation-card]' && pair.maxIntersectionAreaPx2 === 0));
-  assert.ok(home.protectedPairs.some(pair => pair.a === '[data-bg-automation-description]' && pair.b === '[data-bg-automation-card]' && pair.maxIntersectionAreaPx2 === 0));
+  assert.ok(!(home.protectedPairs || []).some(pair => /data-bg-automation-/.test(`${pair.a} ${pair.b}`)));
 });

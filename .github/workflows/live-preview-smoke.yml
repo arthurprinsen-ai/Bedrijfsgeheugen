@@ -80,7 +80,7 @@ jobs:
           const cfg = JSON.parse(fs.readFileSync('site/seo-baseline.json', 'utf8')).home;
           const hero = (html.match(/<video\b[^>]*id="heroBackgroundVideo"[\s\S]*?<\/video>/i) || [''])[0];
           if (!hero) throw new Error('historical V18 hero video element missing');
-          const acceptedHero = hero.includes('13761469-uhd_3840_2160_30fps.mp4') || hero.includes('https://adhjwmvyoixzjtmiroln.supabase.co/storage/v1/object/public/media/hero/shanghai-v1.mp4');
+          const acceptedHero = hero.includes('13761469-uhd_3840_2160_30fps.mp4') || hero.includes('https://adhjwmvyoixzjtmiroln.supabase.co/storage/v1/object/public/media/hero/shanghai-v1.mp4') || hero.includes('/assets/hero-shanghai-v2.mp4');
           if (!acceptedHero) throw new Error('accepted canonical hero video source missing');
           if (!html.includes('view-home') || !html.includes('view-product')) throw new Error('historical V18 identity markers missing');
           if (html.includes('__BG_PRODUCTION_VERSION__') || html.includes('bgMobileNav')) throw new Error('later V18.8 overlay leaked into historical restore');
