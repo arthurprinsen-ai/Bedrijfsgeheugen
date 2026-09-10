@@ -25,14 +25,12 @@ const TEST_DIR = 'tests';
  * onzichtbaar. Deze lijst hoort korter te worden, nooit langer.
  */
 const BEKEND_ROOD = Object.freeze({
-  'tests/commercial-intent-pages-v1.test.mjs': 'due-diligence injecteert DOM na hydratatie',
-  'tests/homepage-automation-layout.test.mjs': 'kop en beschrijving van de cockpitkaart wijken af',
-  'tests/money-page-shared-loader.test.mjs': 'exact-online-koppeling.html laadt /assets/stijl.js niet',
-  'tests/platform-promotion-activation-gate.test.mjs': 'onbekend integratiepad faalt niet gesloten',
-  'tests/seo-estate-policy-v3.test.mjs': 'classificatie van een toekomstige informatieve pagina wijkt af',
-  'tests/seo-v18-canonical-header.test.mjs': 'validator vergelijkt niet tegen de canonieke bgkop-navigatie',
-  'tests/social-learning-evaluate.test.mjs': 'effectMetric is undefined bij commerciële tegenspraak',
-  'tests/tabbladen.test.mjs': 'index.html bevat geen panelen met voorvoegsel view-'
+  'tests/commercial-intent-pages-v1.test.mjs': 'due-diligence injecteert na hydratatie alsnog style, hero en decision in de DOM',
+  'tests/homepage-automation-layout.test.mjs': 'het beschermde paar automation-heading/automation-card met maxIntersectionAreaPx2 0 ontbreekt in het visual-regressiecontract',
+  'tests/money-page-shared-loader.test.mjs': 'ECHT GAT, ook op productie: zeven money pages laden /assets/stijl.js niet en missen daardoor zowel de cookiebanner als het money-page conversiecontract',
+  'tests/seo-estate-policy-v3.test.mjs': 'GEDRAGSVERANDERING: classifyCanonical geeft een onbekende commercieel ogende route nu automatisch page_class support in plaats van null; de fail-closed regel geldt niet meer',
+  'tests/social-learning-evaluate.test.mjs': 'bij commerciele tegenspraak schrijft de evaluator helemaal geen learning weg; de test verwacht een niet-PROVEN learning op effectMetric revenue',
+  'tests/tabbladen.test.mjs': 'vereist de productiebuild (apply-tabbladen); groen zodra index.html gebouwd is, hoort dus in de website-lane'
 });
 
 function referencedTestFiles() {
