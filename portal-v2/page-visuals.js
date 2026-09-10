@@ -5,6 +5,7 @@ import { hasPageData } from './page-metrics.js';
 import { BREIN_STAPPEN } from './runtime-evidence.js';
 import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
 import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
+import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen } from './regelgeving.js';
 
 const arr=value=>Array.isArray(value)?value:[];
@@ -114,6 +115,27 @@ const BUILDERS=Object.freeze({
     ].filter(Boolean).join('');
   },
   'compliance-command-center':state=>ring(100-n(calc('compliance-risk',state)),{title:'Compliance readiness',caption:'restrisico afgetrokken'}),
+  'data-ai-passport':state=>{
+    const p=bouwPassport(state);const v=p.samenvatting;
+    const perCategorie={};
+    for(const c of p.controls)perCategorie[c.categorie]=(perCategorie[c.categorie]||0)+1;
+    return [ring(v.bewijsdekkingPct,{title:'Bewijsdekking',caption:`${v.verified} geverifieerd, ${v.deels} gedeeltelijk`}),
+      benchmarkBars(p.controls.map(c=>({label:c.label,value:c.bewijsGeverifieerd,benchmark:Math.max(1,c.bewijsAantal)})),
+        {title:'Bewijs per control'}),
+      leakage(Object.entries(perCategorie).map(([label,value])=>({label,value})),{title:'Controls per gebied'})
+    ].filter(Boolean).join('');
+  },
+
+  'eu-ai-act-audit':state=>{
+    const r=bouwAuditRapport(state);
+    const vandaag=new Date().toISOString().slice(0,10);
+    const komend=r.baseline.mijlpalen.filter(m=>m.datum>=vandaag);
+    return [ring(r.bevindingen.length?0:100,{title:'Bevindingen afgehandeld',caption:`${r.bevindingen.length} open`}),
+      komend.length?ladder(komend.slice(0,6).map((m,i)=>({naam:m.datum,uitleg:`${m.regel}: ${m.wat}`,huidig:i===0})),
+        {title:'Wat er in de AI Act als eerste verandert'}):''
+    ].filter(Boolean).join('');
+  },
+
   'csrd-impact':state=>ring(n(calc('esg-readiness',state))/5*100,{title:'ESG readiness',caption:'gemiddeld over de domeinen'}),
   canvassen:state=>ring(n(calc('canvas-completeness',state)),{title:'Canvassen ingevuld',caption:'antwoorden en eigenaren'}),
   'gegevens-invullen':state=>ring(n(calc('input-completeness',state)),{title:'Hoe scherp is je beeld',caption:'volledigheid van je invoer'}),
