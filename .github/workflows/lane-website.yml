@@ -99,6 +99,7 @@ jobs:
           tests/site-shell-v18-view-integrity.test.mjs
           tests/site-shell-stijlblokken.test.mjs
           tests/site-shell-knoppen-en-leesbreedte.test.mjs
+          tests/site-shell-scoop-commentaar.test.mjs
           tests/seo-native-money-presentation.test.mjs
           tests/seo-homepage-platform-expertise-toggle.test.mjs
           tests/standalone-content-page-router-isolation.test.mjs
