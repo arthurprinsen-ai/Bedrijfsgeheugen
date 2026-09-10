@@ -102,7 +102,7 @@ GEEN_SCHEMA = {'404', 'bedankt', 'zelfscan'}
 # het daar het zoekwoord of een officiele term is.
 VERBODEN_WOORDEN = {
     'implementeren': {'/ai-implementeren', '/expertises', '/ai-adoptie', '/ai-poc'},
-    'implementatie': {'/ai-implementeren', '/frisse-blik'},
+    'implementatie': {'/ai-implementeren', '/frisse-blik', '/power-bi-implementatie', '/expertises'},
     'optimaliseren': set(),
     'optimalisatie': set(),
     'strategisch': {'/ai-voor-bestuurders'},
@@ -202,9 +202,11 @@ def lees_paginas():
             'h2': [norm(x) for x in re.findall(r'<h2[^>]*>(.*?)</h2>', s, re.S)],
             'canon': (re.search(r'<link rel="canonical" href="(.*?)"', s) or [None, ''])[1],
             'og': bool(re.search(r'property="og:title"', s)),
+            # absolute links naar de eigen site tellen ook als interne link
+            # (compliance-status gebruikt bewust absolute URL's)
             'links': set(x.split('#')[0].split('?')[0].rstrip('/') or '/'
-                         for x in re.findall(r'href="(/[^"]*)"', hoofd)),
-            'ankers': re.findall(r'<a [^>]*href="/[^"]*"[^>]*>(.*?)</a>', hoofd, re.S),
+                         for x in re.findall(r'href="(?:https://www\.bedrijfsgeheugen\.nl)?(/[^"]*)"', hoofd)),
+            'ankers': re.findall(r'<a [^>]*href="(?:https://www\.bedrijfsgeheugen\.nl)?/[^"]*"[^>]*>(.*?)</a>', hoofd, re.S),
         }
     return paginas
 
