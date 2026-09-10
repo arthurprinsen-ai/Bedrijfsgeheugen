@@ -155,6 +155,11 @@ jobs:
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
           node tools/prijzen-uit-de-homepage.mjs
+      # tests/tabbladen.test.mjs leest de gebouwde index.html en kan dus alleen
+      # hier draaien, ná de build. In de gedeelde stap stond hij daarom altijd
+      # rood zonder dat er iets mis was.
+      - name: Verify built artifact contracts
+        run: node --test tests/tabbladen.test.mjs
 
   browser:
     needs: [classify, syntax-preflight, preview-ready]

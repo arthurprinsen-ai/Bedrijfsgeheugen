@@ -56,6 +56,13 @@ jobs:
           echo "::error::Timed out waiting for Netlify preview on exact head SHA"
           exit 1
 
+      # De Netlify-status kan groen worden vóórdat alle assets worden geserveerd.
+      # Op #1369 faalde de verificatie hieronder daardoor met curl-exit 22 op een
+      # 404, terwijl elk bestand kort erna gewoon 200 gaf. Wachten op een echte
+      # asset is de enige betrouwbare start.
+      - name: Wait for the preview to actually serve Portal V2
+        run: bash tools/ci/wait-for-url.sh "$PREVIEW_URL/portal-v2/app.js"
+
       - name: Verify exact Netlify V2 assets are served
         run: |
           set -euo pipefail

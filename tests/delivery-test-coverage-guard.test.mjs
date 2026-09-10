@@ -29,8 +29,7 @@ const BEKEND_ROOD = Object.freeze({
   'tests/homepage-automation-layout.test.mjs': 'het beschermde paar automation-heading/automation-card met maxIntersectionAreaPx2 0 ontbreekt in het visual-regressiecontract',
   'tests/money-page-shared-loader.test.mjs': 'GECORRIGEERD 10-09-2026. Niet zeven paginas maar alle zestig: de laatste buildstap (BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs) verwijdert de scripttag naar /assets/stijl.js uit elke pagina, terwijl de bgCookie-markup blijft staan. Gevolg op productie: het bestand wordt wel geserveerd (200) maar door geen enkele pagina geladen, en #bgCookie staat op display:none, dus de cookiebanner verschijnt nergens. Geen tracking-risico: er draait geen enkele analytics op de site. Deze test toetst de bronbestanden, die de scripttag wel bevatten, en bewaakt dus iets wat de build ongedaan maakt. Keuze: de build moet de tag laten staan, of de bannermarkup en het conversiecontract moeten weg als dode code. Reproductie: grep -c assets/stijl.js afas-koppeling.html voor en na die buildstap.',
   'tests/seo-estate-policy-v3.test.mjs': 'GEDRAGSVERANDERING: classifyCanonical geeft een onbekende commercieel ogende route nu automatisch page_class support in plaats van null; de fail-closed regel geldt niet meer',
-  'tests/social-learning-evaluate.test.mjs': 'bij commerciele tegenspraak schrijft de evaluator helemaal geen learning weg; de test verwacht een niet-PROVEN learning op effectMetric revenue',
-  'tests/tabbladen.test.mjs': 'vereist de productiebuild (apply-tabbladen); groen zodra index.html gebouwd is, hoort dus in de website-lane'
+  'tests/social-learning-evaluate.test.mjs': 'bij commerciele tegenspraak schrijft de evaluator helemaal geen learning weg; de test verwacht een niet-PROVEN learning op effectMetric revenue'
 });
 
 function referencedTestFiles() {
