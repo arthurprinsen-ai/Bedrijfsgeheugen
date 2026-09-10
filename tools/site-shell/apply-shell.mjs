@@ -141,6 +141,17 @@ export function extractPageMain(input, pad = '') {
   return null;
 }
 
+/* Alleen deze scripts overleven de canonieke schil. */
+const TOEGESTANE_SCRIPTS = Object.freeze([
+  '/assets/stijl.js',                 // toestemmingslaag
+  'googletagmanager.com/gtag/js'      // analytics, pas actief na toestemming
+]);
+
+/* Consent Mode moet vóór de analytics-tag staan, anders meet Google al vóórdat
+   de bezoeker iets heeft kunnen kiezen. Deze regel zet alles standaard op
+   geweigerd; assets/stijl.js zet hem op granted zodra iemand accepteert. */
+const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'consent\',\'default\',{analytics_storage:\'denied\',ad_storage:\'denied\',ad_user_data:\'denied\',ad_personalization:\'denied\',wait_for_update:500});</script>';
+
 function eigenHoofd(oud) {
   const titel = oud.match(/<title>[\s\S]*?<\/title>/i);
   const desc = oud.match(/<meta name="description" content="[^"]*"\s*\/?>/i);
@@ -150,7 +161,15 @@ function eigenHoofd(oud) {
   const data = oud.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/gi) || [];
   const stijl = oud.match(/<style[\s\S]*?<\/style>/gi) || [];
   const koppel = oud.match(/<link rel="stylesheet"[^>]*>/gi) || [];
-  return { titel: titel && titel[0], desc: desc && desc[0], canon: canon && canon[0], og, tw, data, stijl, koppel };
+  /* De schil bouwt elke pagina opnieuw op en nam tot 10 september 2026 alleen
+     titel, description, canonical, og, twitter, ld+json, style en stylesheet
+     over. Scripts verdwenen dus, inclusief de analytics-tag en de
+     toestemmingslaag: 41 pagina's droegen een GA4-tag die nooit op productie
+     kwam. Onbeperkt scripts overnemen is geen optie — dan sluipt er van alles
+     terug. Daarom een allowlist met precies de twee die er horen te zijn. */
+  const scripts = (oud.match(/<script\b[^>]*src="[^"]*"[^>]*><\/script>/gi) || [])
+    .filter(tag => TOEGESTANE_SCRIPTS.some(bron => tag.includes(bron)));
+  return { titel: titel && titel[0], desc: desc && desc[0], canon: canon && canon[0], og, tw, data, stijl, koppel, scripts };
 }
 
 const tekstUit = html => String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -269,33 +288,6 @@ function paginakop(binnen, pad) {
   return `<section class="paginakop" data-bg-component="hero"><div class="wrap">${kruimel}${bovenkop}${kop}${inleiding}</div></section>\n${rest}`;
 }
 
-// Gegevensblokken (JSON-LD) horen bij de pagina, niet bij de schil. De schil komt uit
-// over-ons.html en nam daarvan het WebPage-schema "Over ons" mee naar vrijwel elke pagina;
-// daarbij stapelden identieke blokken zich op tot elf per pagina (10 sept 2026).
-const LDJSON = /<script type="application\/ld\+json">([\s\S]*?)<\/script>\s*/gi;
-function schemaInhoud(blok) {
-  const m = String(blok).match(/<script[^>]*>([\s\S]*?)<\/script>/i);
-  if (!m) return null;
-  try { return JSON.parse(m[1]); } catch { return null; }
-}
-const zonderSlash = u => String(u || '').replace(/\/+$/, '');
-export function schoneSchemas(blokken, canonUrl) {
-  const gezien = new Set();
-  const uit = [];
-  for (const blok of blokken) {
-    const j = schemaInhoud(blok);
-    const sleutel = j ? JSON.stringify(j) : String(blok).replace(/\s+/g, ' ');
-    if (gezien.has(sleutel)) continue;
-    gezien.add(sleutel);
-    if (j && canonUrl && ['WebPage', 'BlogPosting', 'Article', 'AboutPage'].includes(j['@type'])) {
-      const eigen = typeof j.mainEntityOfPage === 'string' ? j.mainEntityOfPage : (j.mainEntityOfPage && j.mainEntityOfPage['@id']) || j.url;
-      if (eigen && zonderSlash(eigen) !== zonderSlash(canonUrl)) continue;
-    }
-    uit.push(blok);
-  }
-  return uit;
-}
-
 export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   const binnen = extractPageMain(html, pad);
   if (binnen === null) return null;
@@ -303,16 +295,26 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   const kruimel = kruimelErbij(binnen, html, pad);
   const opening = paginakop(kruimel.binnen, pad);
   let uit = shell.voor + `<div class="page active" id="view-inhoud">\n<main data-bg-component="main">${opening}</main>\n</div>\n` + shell.na;
-  uit = uit.replace(LDJSON, '');
   if (kruimel.schema) eigen.data.push(kruimel.schema);
   if (eigen.titel) uit = uit.replace(/<title>[\s\S]*?<\/title>/i, eigen.titel);
   if (eigen.desc) uit = uit.replace(/<meta name="description" content="[^"]*"\s*\/?>/i, eigen.desc);
   if (eigen.canon) uit = /<link rel="canonical"/i.test(uit) ? uit.replace(/<link rel="canonical" href="[^"]*"\s*\/?>/i, eigen.canon) : uit.replace('</head>', `${eigen.canon}\n</head>`);
   if (eigen.og.length) { uit = uit.replace(/<meta property="og:[^"]*" content="[^"]*"\s*\/?>\s*/gi, ''); uit = uit.replace('</head>', eigen.og.join('\n') + '\n</head>'); }
   if (eigen.tw.length) { uit = uit.replace(/<meta name="twitter:[^"]*" content="[^"]*"\s*\/?>\s*/gi, ''); uit = uit.replace('</head>', eigen.tw.join('\n') + '\n</head>'); }
-  const canonUrl = (eigen.canon && (eigen.canon.match(/href="([^"]*)"/) || [])[1]) || null;
-  eigen.data = schoneSchemas(eigen.data, canonUrl);
   if (eigen.data.length) uit = uit.replace('</head>', eigen.data.join('\n') + '\n</head>');
+  if (eigen.scripts && eigen.scripts.length) {
+    /* Een analytics-tag zonder toestemmingslaag is geen halve oplossing maar een
+       fout: dan meet je vóórdat iemand iets heeft kunnen kiezen. Vijf pagina's
+       droegen wel de tag en niet het script. De schil dwingt het paar daarom af
+       in plaats van over te nemen wat er toevallig stond. */
+    const heeftAnalytics = eigen.scripts.some(tag => tag.includes('googletagmanager.com/gtag/js'));
+    const heeftToestemming = eigen.scripts.some(tag => tag.includes('/assets/stijl.js'));
+    const scripts = heeftAnalytics && !heeftToestemming
+      ? ['<script src="/assets/stijl.js" defer></script>', ...eigen.scripts]
+      : eigen.scripts;
+    const consentEerst = uit.includes("gtag('consent','default'") ? '' : CONSENT_DEFAULT + '\n';
+    uit = uit.replace('</head>', consentEerst + scripts.join('\n') + '\n</head>');
+  }
   // Een stijlblok met een id dat de schil al meebrengt, komt maar één keer op
   // de pagina: op de plek van de schil, vóór de eigen opmaak van de pagina.
   // Stond hij er ná de pagina nog een keer, dan won de gedeelde regel het van

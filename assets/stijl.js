@@ -13,7 +13,10 @@
     if(a)a.addEventListener('click',function(){choose('granted');});
     if(d)d.addEventListener('click',function(){choose('denied');});
     var stored=null;try{stored=localStorage.getItem(KEY);}catch(e){}
-    if(stored!=='granted'&&stored!=='denied'){show();}
+    /* Zonder dit werd een bezoeker die eerder had geweigerd bij het volgende
+       bezoek alsnog gemeten: de keuze werd opgeslagen maar nooit toegepast. */
+    if(stored==='granted'||stored==='denied'){applyConsent(stored);}
+    else{show();}
   });
 })();
 
@@ -85,7 +88,10 @@
     var meta=pages[path];if(!meta)return;
     var main=document.querySelector('main');if(!main)return;
     style();
-    if(path==='/due-diligence')hydrateExistingHero(meta,main);else hero(meta,main);
+    /* De canonieke V18-schil genereert de hero inmiddels bij de build. Waar die
+       er al staat verrijken we hem alleen; injecteren zou een tweede hero op de
+       pagina zetten. Dat was precies wat commercial-intent-pages-v1 meldde. */
+    if(main.querySelector('.p-hero'))hydrateExistingHero(meta,main);else hero(meta,main);
     decision(meta,main);event('money_page_view',meta);
   }
   if(document.readyState==='loading'&&!document.querySelector('main')){
