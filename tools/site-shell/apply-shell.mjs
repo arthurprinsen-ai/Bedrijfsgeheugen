@@ -141,6 +141,17 @@ export function extractPageMain(input, pad = '') {
   return null;
 }
 
+/* Alleen deze scripts overleven de canonieke schil. */
+const TOEGESTANE_SCRIPTS = Object.freeze([
+  '/assets/stijl.js',                 // toestemmingslaag
+  'googletagmanager.com/gtag/js'      // analytics, pas actief na toestemming
+]);
+
+/* Consent Mode moet vóór de analytics-tag staan, anders meet Google al vóórdat
+   de bezoeker iets heeft kunnen kiezen. Deze regel zet alles standaard op
+   geweigerd; assets/stijl.js zet hem op granted zodra iemand accepteert. */
+const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'consent\',\'default\',{analytics_storage:\'denied\',ad_storage:\'denied\',ad_user_data:\'denied\',ad_personalization:\'denied\',wait_for_update:500});</script>';
+
 function eigenHoofd(oud) {
   const titel = oud.match(/<title>[\s\S]*?<\/title>/i);
   const desc = oud.match(/<meta name="description" content="[^"]*"\s*\/?>/i);
@@ -150,7 +161,13 @@ function eigenHoofd(oud) {
   const data = oud.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/gi) || [];
   const stijl = oud.match(/<style[\s\S]*?<\/style>/gi) || [];
   const koppel = oud.match(/<link rel="stylesheet"[^>]*>/gi) || [];
-  return { titel: titel && titel[0], desc: desc && desc[0], canon: canon && canon[0], og, tw, data, stijl, koppel };
+  /* De schil bouwt elke pagina opnieuw op en nam scripts niet over. Daardoor
+     stond de GA4-tag in 41 bronpagina's en kwam hij nooit op productie: er werd
+     niets gemeten. Onbeperkt scripts overnemen is geen optie, dus een allowlist
+     met precies de twee die er horen te zijn. */
+  const scripts = (oud.match(/<script\b[^>]*src="[^"]*"[^>]*><\/script>/gi) || [])
+    .filter(tag => TOEGESTANE_SCRIPTS.some(bron => tag.includes(bron)));
+  return { titel: titel && titel[0], desc: desc && desc[0], canon: canon && canon[0], og, tw, data, stijl, koppel, scripts };
 }
 
 const tekstUit = html => String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -316,6 +333,18 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   const canonUrl = (eigen.canon && (eigen.canon.match(/href="([^"]*)"/) || [])[1]) || null;
   eigen.data = schoneSchemas(eigen.data, canonUrl);
   if (eigen.data.length) uit = uit.replace('</head>', eigen.data.join('\n') + '\n</head>');
+  if (eigen.scripts && eigen.scripts.length) {
+    /* Een analytics-tag zonder toestemmingslaag is geen halve oplossing maar een
+       fout: dan meet je vóórdat iemand iets kon kiezen. De schil dwingt het paar
+       daarom af in plaats van over te nemen wat er toevallig stond. */
+    const heeftAnalytics = eigen.scripts.some(tag => tag.includes('googletagmanager.com/gtag/js'));
+    const heeftToestemming = eigen.scripts.some(tag => tag.includes('/assets/stijl.js'));
+    const scripts = heeftAnalytics && !heeftToestemming
+      ? ['<script src="/assets/stijl.js" defer></script>', ...eigen.scripts]
+      : eigen.scripts;
+    const consentEerst = uit.includes("gtag('consent','default'") ? '' : CONSENT_DEFAULT + '\n';
+    uit = uit.replace('</head>', consentEerst + scripts.join('\n') + '\n</head>');
+  }
   // Een stijlblok met een id dat de schil al meebrengt, komt maar één keer op
   // de pagina: op de plek van de schil, vóór de eigen opmaak van de pagina.
   // Stond hij er ná de pagina nog een keer, dan won de gedeelde regel het van

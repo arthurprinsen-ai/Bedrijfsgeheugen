@@ -121,6 +121,8 @@ jobs:
           tests/klantportaal-v2-flow.test.mjs
           tests/klantportaal-v2-pages.test.mjs
           tests/money-page-conversion-contract.test.mjs
+          tests/money-page-shared-loader.test.mjs
+          tests/commercial-intent-pages-v1.test.mjs
           tests/netlify-identity-recovery-build.test.mjs
           tests/netlify-identity-recovery-flow.test.mjs
           tests/seo-homepage-context-slider-contract.test.mjs

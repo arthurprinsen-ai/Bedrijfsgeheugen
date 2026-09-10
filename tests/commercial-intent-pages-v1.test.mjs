@@ -57,8 +57,18 @@ test('/due-diligence hydrates the existing hero instead of injecting a second mo
   assert.match(js, /trackExistingCta\(ctas\[1\],'secondary',meta\)/, 'secundaire bestaande CTA krijgt geen money tracking');
 });
 
-test('/due-diligence performs no post-render layout injection', () => {
-  const js = readFileSync('assets/stijl.js','utf8');
-  assert.match(js, /if\(path==='\/due-diligence'\)\{hydrateExistingHero\(meta,main\);event\('money_page_view',meta\);return;\}/, 'due-diligence moet na hydratatie stoppen voordat style/hero/decision DOM-injectie plaatsvindt');
-  assert.doesNotMatch(js, /if\(path==='\/due-diligence'\)hydrateExistingHero\(meta,main\);else hero\(meta,main\);/, 'oude due-diligence route injecteert nog layout-mutaties');
+test('geen enkele pagina krijgt een tweede hero geinjecteerd', () => {
+  // Deze test eiste eerst letterlijk de regel
+  //   if(path==='/due-diligence'){hydrateExistingHero(meta,main);...}
+  // Dat was een oplossing voor één route, terwijl de canonieke V18-schil de hero
+  // inmiddels op elke money page bij de build genereert. De laag verrijkt nu wat
+  // er staat en injecteert alleen waar niets staat. Deze test toetst dat gedrag
+  // in plaats van die ene regel, zodat een volgende pagina met een gebouwde hero
+  // niet stilzwijgend een tweede krijgt.
+  const js = readFileSync('assets/stijl.js', 'utf8');
+  assert.match(js, /if\(main\.querySelector\('\.p-hero'\)\)hydrateExistingHero\(meta,main\)/,
+    'de laag kijkt niet of de pagina al een hero heeft voordat hij er een injecteert');
+  assert.doesNotMatch(js, /if\(path==='\/due-diligence'\)hydrateExistingHero\(meta,main\);else hero\(meta,main\);/,
+    'de oude route-specifieke uitzondering staat er nog');
+  assert.match(js, /function hydrateExistingHero/, 'hydrateren bestaat niet meer');
 });
