@@ -11,6 +11,21 @@ import { LEGACY_FUNCTIONAL_INVENTORY } from '../legacy-functional-inventory.js';
  * een pagina die er af is uitziet maar een verzonnen getal toont.
  */
 
+/**
+ * Eén pagina is bewust uitgezonderd: bronnenstatus.
+ *
+ * Die pagina toont geen enkele bewering over het bedrijf van de klant. Hij telt
+ * de databronnen van het portaal zelf — hoeveel rekenregels er zijn, hoeveel
+ * wetten in het register staan, en vooral: welke bronnen het portaal op dit
+ * moment níet voeden. Dat laatste is precies de informatie die verdwijnt als je
+ * de pagina leeg laat bij een leeg portaal.
+ *
+ * De uitzondering is daarom smal en heeft een eigen voorwaarde: bij een leeg
+ * portaal móet die pagina melden dat de lus onderbroken is. Doet hij dat niet,
+ * dan valt hij alsnog onder de regel.
+ */
+const EIGEN_TELLING = new Set(['bronnenstatus']);
+
 const NUMERIC=/(€\s?[\d.,]+|\b\d+([.,]\d+)?\s?(%|fte|uur|mnd|weken|dagen|dgn)\b|\b\d+\/\d+\b)/i;
 
 test('native-pages bevat geen hardgecodeerde cijfers', async () => {
@@ -22,6 +37,7 @@ test('native-pages bevat geen hardgecodeerde cijfers', async () => {
 
 test('elke pagina geeft zonder klantdata een leegteken in plaats van een getal', () => {
   for (const pageId of listNativePages()) {
+    if (EIGEN_TELLING.has(pageId)) continue;
     const view = nativePageContent(pageId, {});
     assert.ok(view, `geen inhoud voor ${pageId}`);
     assert.equal(view.derived, false, `${pageId} claimt klantdata terwijl de state leeg is`);
@@ -36,6 +52,7 @@ test('elke pagina geeft zonder klantdata een leegteken in plaats van een getal',
 
 test('zonder klantdata wordt geen enkele grafiek getekend', () => {
   for (const pageId of listMetricPages()) {
+    if (EIGEN_TELLING.has(pageId)) continue;
     assert.equal(pageVisual(pageId, {}), '', `${pageId} tekent een grafiek op lege data`);
   }
 });
@@ -64,5 +81,16 @@ test('elk beschermd legacy-tabblad heeft een pagina met echte cijfers', () => {
       `legacy-tab ${tab} heeft geen v2-pagina (${item.v2Page})`
     );
     assert.ok(metrics.length >= 3, `${item.v2Page} heeft te weinig kerncijfers voor pariteit met ${tab}`);
+  }
+});
+
+test('de uitgezonderde pagina meldt bij een leeg portaal dat de lus onderbroken is', () => {
+  for (const pageId of EIGEN_TELLING) {
+    const metrics = pageMetrics(pageId, {});
+    const onderbroken = metrics.find(([label]) => /onderbroken/i.test(label));
+    assert.ok(onderbroken, `${pageId} is uitgezonderd maar meldt geen onderbreking`);
+    assert.notEqual(onderbroken[1], '0',
+      `${pageId} meldt nul onderbrekingen bij een leeg portaal; dan doet hij alsof alles draait`);
+    assert.notEqual(onderbroken[1], METRIC_EMPTY);
   }
 });
