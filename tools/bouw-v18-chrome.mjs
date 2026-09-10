@@ -73,6 +73,11 @@ export function eigenKnopAchtergrond(css) {
 }
 
 export function scoopCss(css, scope = '.inhoud-body') {
+  // Commentaar eerst weg. Een komma in commentaar ("Wijzig hier, dan verandert
+  // elke pagina mee.") werd anders als selectorscheiding gelezen, waardoor het
+  // :root-blok met de designtokens `.inhoud-body … :root` werd en --geel,
+  // --inkt, --lijn enz. op 50 inhoudspagina's niet bestonden.
+  css = String(css).replace(/\/\*[\s\S]*?\*\//g, '');
   let uit = '';
   let i = 0;
   while (i < css.length) {
