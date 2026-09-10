@@ -44,20 +44,14 @@ jobs:
           else
             echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
           fi
+      # Wachtte eerder dertig pogingen van tien seconden: vijf minuten. Een deploy
+      # preview van deze repo is soms later klaar, waardoor deze check rood ging
+      # met een 404 terwijl er niets mis was. Het gedeelde script hanteert een
+      # venster van twaalf minuten en logt hoeveel tijd het werkelijk kostte.
       - name: Wait for exact readback target
-        run: |
-          ready=0
-          for attempt in $(seq 1 30); do
-            if curl -fsS "${PORTAL_READBACK_URL}/portal-v2/?bg_preview_ready=${GITHUB_SHA}-${attempt}" >/dev/null; then
-              ready=1
-              break
-            fi
-            sleep 10
-          done
-          if [ "$ready" -ne 1 ]; then
-            echo "::error::Portal V2 readback target did not become reachable: ${PORTAL_READBACK_URL}"
-            exit 1
-          fi
+        env:
+          CACHEBUST: bg_preview_ready
+        run: bash tools/ci/wait-for-url.sh "${PORTAL_READBACK_URL}/portal-v2/"
       - name: Read back Portal V2 DOM, standalone routing and CSRD assets
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
