@@ -31,8 +31,7 @@ jobs:
           node-version: '22'
       - name: Install browser
         run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
       - name: Verify live production menu after deploy
         env:
           UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl

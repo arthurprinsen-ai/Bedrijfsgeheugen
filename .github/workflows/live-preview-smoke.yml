@@ -125,8 +125,7 @@ jobs:
       - name: Install Playwright runtime and Chromium
         if: steps.mode.outputs.legacy != 'true'
         run: |
-          npm install --no-save --package-lock=false @playwright/test@1.55.0
-          npx playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
 
       - name: Verify V18.8 browser runtime and inspect navigation
         if: steps.mode.outputs.legacy != 'true'

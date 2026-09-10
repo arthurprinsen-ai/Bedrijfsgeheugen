@@ -33,8 +33,7 @@ jobs:
           node-version: '22'
       - name: Install Chromium verifier
         run: |
-          npm install --no-save --package-lock=false @playwright/test@1.55.0
-          npx playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
       - name: Resolve exact readback target
         env:
           EVENT_NAME: ${{ github.event_name }}

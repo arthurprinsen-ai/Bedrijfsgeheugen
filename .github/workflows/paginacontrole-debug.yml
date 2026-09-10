@@ -51,7 +51,7 @@ jobs:
       - name: Playwright installeren
         run: |
           pip install --quiet playwright
-          playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=none PLAYWRIGHT_CLI=playwright bash tools/ci/install-chromium.sh
       - name: Pagina's controleren
         run: python .github/scripts/paginacontrole.py
       - name: SEO en interne links controleren

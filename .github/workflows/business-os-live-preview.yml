@@ -65,8 +65,7 @@ jobs:
 
       - name: Install Playwright runtime
         run: |
-          npm install --no-save --package-lock=false @playwright/test@1.55.0
-          npx playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
 
       - name: Verify desktop and mobile interactions on live preview
         env:

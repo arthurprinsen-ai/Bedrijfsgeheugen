@@ -164,8 +164,7 @@ jobs:
           node-version: '22'
       - name: Install shared website browser runtime
         run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
       - name: Verify high-risk full website regression contracts
         if: needs.classify.outputs.risk_lane == 'high-risk'
         run: >-

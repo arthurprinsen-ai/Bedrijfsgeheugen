@@ -59,8 +59,7 @@ jobs:
           test "$(curl -sS -o /tmp/growth-health.txt -w '%{http_code}' https://www.bedrijfsgeheugen.nl/api/growth-event || true)" = "405"
       - name: Install production visual readback browser
         run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
+          PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
       - name: Verify every public production page is visibly rendered
         env:
           UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
