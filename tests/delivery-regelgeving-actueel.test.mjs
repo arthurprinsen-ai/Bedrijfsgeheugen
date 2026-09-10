@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { REGELGEVING, STATUS, CATEGORIEEN, verlopenHerzieningen, achterhaaldeStatus,
          komendeMijlpalen, lopendeVerplichtingen } from '../portal-v2/regelgeving.js';
-import { HERKOMST, ONDERZOEK, onderzoekGeverifieerd, onderzoekZonderJaar } from '../portal-v2/external-data.js';
+import { HERKOMST, ONDERZOEK, onderzoekGeverifieerd, onderzoekTeVerifieren,
+         onderzoekVerwijzingen, isHardCijfer } from '../portal-v2/external-data.js';
 
 /**
  * Deze bewaking bestaat om één ding te voorkomen: een register met wetgeving
@@ -133,13 +134,30 @@ test('een geverifieerd onderzoekscijfer draagt zijn jaartal en datum', () => {
   assert.ok(onderzoekGeverifieerd().length >= 2, 'geen enkel onderzoekscijfer is opnieuw nagelopen');
 });
 
-test('het aantal ongedateerde onderzoekscijfers loopt niet op', () => {
-  // Achtentwintig kaarten zijn overgenomen zonder jaartal. Een percentage zonder
-  // jaar is voor een klant niet na te lopen. Dit getal hoort te dalen; loopt het
-  // op, dan is er een ongedateerd cijfer bijgezet en gaat deze test rood.
-  assert.ok(onderzoekZonderJaar().length <= 28,
-    `er staan nu ${onderzoekZonderJaar().length} onderzoekscijfers zonder jaartal in het portaal`);
-  assert.equal(onderzoekZonderJaar().length + onderzoekGeverifieerd().length, ONDERZOEK.length);
+test('het aantal ongedateerde harde cijfers loopt niet op', () => {
+  // Niet elke kaart is een cijfer: achttien verwijzen naar een instantie of een
+  // body of work en hebben geen jaartal nodig. De kaarten die wél een percentage
+  // of bedrag claimen horen gedateerd te zijn. Dit getal hoort te dalen; loopt
+  // het op, dan is er een ongedateerd cijfer bijgezet en gaat deze test rood.
+  assert.ok(onderzoekTeVerifieren().length <= 7,
+    `er staan nu ${onderzoekTeVerifieren().length} ongedateerde harde cijfers in het portaal: ` +
+    onderzoekTeVerifieren().map(item => `${item.cijfer} (${item.bron})`).join(', '));
+  assert.equal(onderzoekGeverifieerd().length + onderzoekTeVerifieren().length + onderzoekVerwijzingen().length,
+    ONDERZOEK.length, 'de indeling in geverifieerd, te verifiëren en verwijzing dekt niet alle kaarten');
+});
+
+test('een verwijzing claimt geen cijfer, en een cijfer is geen verwijzing', () => {
+  for (const item of onderzoekVerwijzingen())
+    assert.equal(isHardCijfer(item), false, `${item.t} staat als verwijzing maar claimt een cijfer`);
+  for (const item of onderzoekGeverifieerd())
+    assert.ok(String(item.bron).match(/\d{4}/), `${item.t} is geverifieerd maar de bron noemt geen jaar`);
+});
+
+test('een voorspelling wordt niet als meting gepresenteerd', () => {
+  const gartner = ONDERZOEK.find(item => /Gartner/.test(item.bron || '') && item.geverifieerd);
+  assert.ok(gartner, 'de geverifieerde Gartner-bevinding ontbreekt');
+  assert.match(gartner.voorbehoud || '', /voorspelling/i,
+    'een voorspelling van Gartner wordt zonder voorbehoud getoond alsof het een gemeten uitkomst is');
 });
 
 test('een omstreden cijfer wordt niet als vaststaand gepresenteerd', () => {

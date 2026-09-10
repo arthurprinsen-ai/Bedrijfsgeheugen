@@ -369,8 +369,11 @@ export const ONDERZOEK = Object.freeze([
   "dim": "operatie",
   "t": "Vier op de tien agent-projecten worden gestopt",
   "cijfer": "40%",
+  "jaar": 2025,
+  "geverifieerd": "2026-09-10",
+  "voorbehoud": "Dit is een voorspelling van Gartner, geen meting: gepubliceerd op 25 juni 2025, op basis van een peiling in januari 2025 onder 3.412 deelnemers, en gericht op eind 2027. Presenteer het niet als een gemeten uitkomst.",
   "bev": "Gartner verwacht dat meer dan 40% van de agentische AI-projecten vóór eind 2027 wordt geannuleerd — door oplopende kosten, onduidelijk rendement en zwakke beheersing.",
-  "bron": "Gartner",
+  "bron": "Gartner, persbericht 25 juni 2025 (voorspelling tot eind 2027)",
   "advies": "Kies iets kleins dat af kan. Een project dat je binnen twee weken afrondt, wordt nooit geannuleerd."
  },
  {
@@ -385,8 +388,10 @@ export const ONDERZOEK = Object.freeze([
   "dim": "mensen",
   "t": "Waarde ontstaat pas bij herontwerp van werk",
   "cijfer": "6%",
+  "jaar": 2025,
+  "geverifieerd": "2026-09-10",
   "bev": "Ongeveer 6% van de organisaties haalt substantiële waarde uit AI. Wat hen onderscheidt is niet meer techniek maar het opnieuw inrichten van werkstromen.",
-  "bron": "McKinsey",
+  "bron": "McKinsey, State of AI (5 november 2025)",
   "advies": "Techniek naast bestaand werk leggen levert niets op. Het werk zelf moet veranderen — en dat vraagt om mensen die meebewegen."
  },
  {
@@ -702,7 +707,7 @@ export const HERKOMST = Object.freeze({
     bronnen: 'McKinsey, MIT, BCG, Gartner, RAND, Forrester en anderen.',
     peildatum: '2026-09-10',
     herzienUiterlijk: '2026-12-15',
-    voorbehoud: 'Van de dertig kaarten zijn er twee opnieuw geverifieerd en gedateerd. De overige dragen de bron die het vorige portaal noemde, zonder jaartal. Een percentage zonder jaartal is voor een klant niet na te lopen; die kaarten horen bij de herziening een jaar te krijgen of te verdwijnen.'
+    voorbehoud: 'Niet elke kaart is een cijfer: een deel verwijst naar een instantie of een body of work en heeft geen jaartal nodig. De kaarten die wél een percentage of bedrag claimen horen gedateerd te zijn, want zonder jaar kan een klant ze niet controleren. Vier zijn opnieuw bij de bron nagelopen; de rest draagt nog de bronvermelding van het vorige portaal.'
   }),
   bronnen: Object.freeze({
     wat: 'Register van vindplaatsen achter de cijfers.',
@@ -712,12 +717,36 @@ export const HERKOMST = Object.freeze({
   })
 });
 
+/**
+ * Niet elke kaart is een cijfer. Een deel verwijst naar een instantie of een
+ * body of work (RVO, DESI, planbureaus, Forrester TEI) en heeft geen jaartal
+ * nodig om na te lopen. Een percentage of bedrag heeft dat wél: zonder jaar kan
+ * een klant het niet controleren.
+ */
+const HARD_CIJFER = /^[€\s±]*\d/;
+const ALLEEN_JAARTAL = /^\s*(19|20)\d{2}\s*$/;
+
+export function isHardCijfer(item) {
+  const waarde = String(item?.cijfer || '');
+  return HARD_CIJFER.test(waarde) && !ALLEEN_JAARTAL.test(waarde);
+}
+
 /** Onderzoekskaarten waarvan het cijfer opnieuw bij de bron is nagelopen. */
 export function onderzoekGeverifieerd() {
   return ONDERZOEK.filter(item => item.geverifieerd);
 }
 
-/** Kaarten zonder jaartal: bruikbaar als richting, niet als bewijs. */
+/** Harde cijfers die nog geen jaartal en verificatie hebben. Deze lijst hoort te dalen. */
+export function onderzoekTeVerifieren() {
+  return ONDERZOEK.filter(item => isHardCijfer(item) && !item.jaar);
+}
+
+/** Kaarten die naar een bron verwijzen in plaats van een cijfer te claimen. */
+export function onderzoekVerwijzingen() {
+  return ONDERZOEK.filter(item => !isHardCijfer(item));
+}
+
+/** Kaarten zonder jaartal, ongeacht soort. */
 export function onderzoekZonderJaar() {
   return ONDERZOEK.filter(item => !item.jaar);
 }
