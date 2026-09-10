@@ -35,7 +35,7 @@ body:has(.held .heldknoppen) .held .bgkruim,body:has(.held .heldknoppen) .held .
    container en knipte overflow:hidden de kaart af. :where() houdt dit op
    specificiteit nul, dus elke eigen min-width van een pagina wint. */
 :where(main[data-bg-component="main"] *:not(img,svg,video,canvas,iframe,input,select,textarea,button)){min-width:0}
-main,.page{background:var(--paper,#fff)}.page>main{padding:0}.bgkruim,.kruimelpad{font-size:13px;padding:18px 0 0}
+main,.page{background:var(--paper,#fff)}.page>main,.page>.page-inhoud{padding:0}.bgkruim,.kruimelpad{font-size:13px;padding:18px 0 0}
 </style>`;
 
 
@@ -302,7 +302,10 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   const eigen = eigenHoofd(html);
   const kruimel = kruimelErbij(binnen, html, pad);
   const opening = paginakop(kruimel.binnen, pad);
-  let uit = shell.voor + `<div class="page active" id="view-inhoud">\n<main data-bg-component="main">${opening}</main>\n</div>\n` + shell.na;
+  // De schil (shell.voor) opent zelf al <main data-bg-component="main">. Een
+  // tweede <main> erbinnen gaf elke pagina twee hoofdlandmarks voor
+  // schermlezers; de inhoud staat daarom in een gewone div.
+  let uit = shell.voor + `<div class="page active" id="view-inhoud">\n<div class="page-inhoud">${opening}</div>\n</div>\n` + shell.na;
   uit = uit.replace(LDJSON, '');
   if (kruimel.schema) eigen.data.push(kruimel.schema);
   if (eigen.titel) uit = uit.replace(/<title>[\s\S]*?<\/title>/i, eigen.titel);

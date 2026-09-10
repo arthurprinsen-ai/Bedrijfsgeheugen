@@ -180,10 +180,43 @@ jobs:
           pip install --quiet playwright
           PLAYWRIGHT_PACKAGE=none PLAYWRIGHT_CLI=playwright bash tools/ci/install-chromium.sh
 
+      # paginacontrole toetst wat de bezoeker krijgt: canonical kop en voet,
+      # kruimelpad, één h1. Die zet de build erop. Op de bronbestanden faalde
+      # daardoor elke pagina (56 van 56, 10 sept 2026). De build draait in een
+      # aparte map, zodat er geen gebouwde HTML in een commit terechtkomt.
+      - uses: actions/setup-node@v4
+        if: steps.seo_scope.outputs.public == 'true'
+        with:
+          node-version: '22'
+
+      - name: Productiebuild in een aparte map
+        if: steps.seo_scope.outputs.public == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/site"
+          rsync -a --exclude .git ./ "$RUNNER_TEMP/site/"
+          cd "$RUNNER_TEMP/site"
+          npm install --no-audit --no-fund
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+          BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+
       - name: Pagina's controleren
         id: controle
         if: steps.seo_scope.outputs.public == 'true'
-        run: python .github/scripts/paginacontrole.py
+        working-directory: ${{ runner.temp }}/site
+        shell: bash
+        run: |
+          status=0
+          python .github/scripts/paginacontrole.py || status=$?
+          cp rapport.md "$GITHUB_WORKSPACE/rapport.md"
+          exit $status
         continue-on-error: true
 
       - name: SEO en interne links controleren

@@ -201,28 +201,35 @@ export function pluisInhoud(oud) {
     .replace(/<[^>]+>/g, '').trim();
 
   const h1m = body.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
-  const h1 = h1m ? h1m[1].replace(/<[^>]+>/g, '').trim() : '';
+  const h1 = h1m ? h1m[1].replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
 
   // intro: de p.intro of de eerste alinea na de h1
   let intro = '';
+  let introEl = null;
   const introm = body.match(/<p class="(?:intro|leid)"[^>]*>([\s\S]*?)<\/p>/);
-  if (introm) intro = introm[1];
+  if (introm) { intro = introm[1]; introEl = introm[0]; }
   else if (h1m) {
     const na = body.slice(body.indexOf(h1m[0]) + h1m[0].length);
     const eerste = na.match(/<p[^>]*>([\s\S]*?)<\/p>/);
-    if (eerste) intro = eerste[1];
+    if (eerste) {
+      intro = eerste[1];
+      // Staat die alinea nog in hetzelfde blok als de h1, dan verhuist hij naar
+      // de hero en gaat hij hier weg. Anders stond dezelfde tekst twee keer op
+      // de pagina (35 pagina's op 10 sept 2026, o.a. /ai-marketing-mkb).
+      if (!/<h[2-6]\b|<section\b/i.test(na.slice(0, eerste.index))) introEl = eerste[0];
+    }
   }
 
   // kicker, h1 en intro uit de inhoud halen: die staan straks in de hero
   if (h1m) body = body.replace(h1m[0], '');
-  if (introm) body = body.replace(introm[0], '');
+  if (introEl) body = body.replace(introEl, '');
   body = body.replace(/<span class="(?:eyebrow|kicker)"[^>]*>[\s\S]*?<\/span>/, '');
 
   // De oude paginakop is nu leeg: kicker, titel en intro staan in de hero. Zo'n
   // leeg omhulsel houdt wel zijn achtergrond en levert een zwarte balk op.
   body = ruimLeegOp(body);
 
-  return { kicker, h1, intro: intro.replace(/<[^>]+>/g, '').trim(), body };
+  return { kicker, h1, intro: intro.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(), body };
 }
 
 export function ruimLeegOp(html) {

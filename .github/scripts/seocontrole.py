@@ -102,7 +102,7 @@ GEEN_SCHEMA = {'404', 'bedankt', 'zelfscan'}
 # het daar het zoekwoord of een officiele term is.
 VERBODEN_WOORDEN = {
     'implementeren': {'/ai-implementeren', '/expertises', '/ai-adoptie', '/ai-poc'},
-    'implementatie': {'/ai-implementeren', '/frisse-blik'},
+    'implementatie': {'/ai-implementeren', '/frisse-blik', '/power-bi-implementatie', '/expertises'},
     'optimaliseren': set(),
     'optimalisatie': set(),
     'strategisch': {'/ai-voor-bestuurders'},
