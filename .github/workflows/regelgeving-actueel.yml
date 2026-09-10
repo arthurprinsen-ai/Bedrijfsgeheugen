@@ -1,4 +1,4 @@
-name: Regelgeving actueel
+name: Regelgeving en externe data actueel
 
 # Het regelgevingsregister kan zichzelf niet bijwerken. Deze controle zorgt dat
 # het niet stil kan verouderen: hij draait elke maandag en gaat rood zodra een
@@ -14,6 +14,7 @@ on:
   pull_request:
     paths:
       - 'portal-v2/regelgeving.js'
+      - 'portal-v2/external-data.js'
       - 'tests/delivery-regelgeving-actueel.test.mjs'
       - '.github/workflows/regelgeving-actueel.yml'
   workflow_dispatch:
@@ -32,6 +33,18 @@ jobs:
           node-version: '22'
       - name: Controleer of het regelgevingsregister nog actueel is
         run: node --test tests/delivery-regelgeving-actueel.test.mjs
+      - name: Toon de houdbaarheid van de externe datasets
+        if: always()
+        run: |
+          node --input-type=module -e "
+          import { HERKOMST, onderzoekZonderJaar, onderzoekGeverifieerd } from './portal-v2/external-data.js';
+          const vandaag = new Date().toISOString().slice(0, 10);
+          for (const [naam, meta] of Object.entries(HERKOMST)) {
+            const status = meta.herzienUiterlijk < vandaag ? '::warning::VERLOPEN ' : '';
+            console.log(status + naam + ': peildatum ' + meta.peildatum + ', herzien uiterlijk ' + meta.herzienUiterlijk);
+          }
+          console.log('Onderzoekscijfers: ' + onderzoekGeverifieerd().length + ' geverifieerd, ' + onderzoekZonderJaar().length + ' zonder jaartal.');
+          "
       - name: Toon wat er als eerste verandert
         if: always()
         run: |

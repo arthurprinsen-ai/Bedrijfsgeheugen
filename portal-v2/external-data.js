@@ -341,7 +341,9 @@ export const ONDERZOEK = Object.freeze([
   "t": "Bijna iedereen gebruikt AI, bijna niemand schaalt op",
   "cijfer": "88% / 23%",
   "bev": "88% van de organisaties gebruikt AI in minstens één functie, maar circa tweederde is nog niet begonnen met opschalen over de organisatie.",
-  "bron": "McKinsey, State of AI",
+  "bron": "McKinsey, State of AI (gepubliceerd 5 november 2025; enquête juni-juli 2025, 1.993 respondenten in 105 landen)",
+  "jaar": 2025,
+  "geverifieerd": "2026-09-10",
   "advies": "Gebruik is geen voorsprong. De voorsprong zit in één werkproces dat er echt anders uitziet."
  },
  {
@@ -349,7 +351,10 @@ export const ONDERZOEK = Object.freeze([
   "t": "Pilots zonder resultaat zijn de regel, niet de uitzondering",
   "cijfer": "95%",
   "bev": "MIT vond dat 95% van de generatieve AI-pilots geen meetbaar effect op het resultaat had. De oorzaak lag zelden bij het model, meestal bij data en integratie.",
-  "bron": "MIT Project NANDA · RAND",
+  "bron": "MIT Project NANDA, The GenAI Divide: State of AI in Business (augustus 2025)",
+  "jaar": 2025,
+  "geverifieerd": "2026-09-10",
+  "voorbehoud": "Dit cijfer is omstreden en rust op één studie, waarin mislukking smal is gedefinieerd als geen snelle omzet- of resultaatimpact. Noem die nuance erbij.",
   "advies": "Begin bij het proces, niet bij de techniek. Als de gegevens niet kloppen, versterkt AI alleen de rommel."
  },
  {
@@ -670,6 +675,52 @@ export const BRONNEN = Object.freeze([
   "url": "https://www.mkb.nl"
  }
 ]);
+
+/**
+ * Herkomst en houdbaarheid van de datasets.
+ *
+ * Het regelgevingsregister had dit al; deze datasets niet, en dat was een gat:
+ * CBS-cijfers, sectorprognoses en onderzoekspercentages verouderen net zo goed.
+ * Wat hier staat is bewust ongemakkelijk expliciet: de branchenormen en de
+ * meeste onderzoekskaarten zijn overgenomen uit klantportaal.html en zijn niet
+ * stuk voor stuk opnieuw bij de bron gecontroleerd. Alleen kaarten met een
+ * `geverifieerd`-datum zijn dat wel.
+ *
+ * tests/delivery-regelgeving-actueel.test.mjs gaat rood zodra een van deze
+ * herzieningsdata verstrijkt.
+ */
+export const HERKOMST = Object.freeze({
+  branches: Object.freeze({
+    wat: 'Normcijfers per sector: verzuim, verloop, eNPS, toegevoegde waarde per vte, digitale intensiteit, groei en financiële kengetallen.',
+    bronnen: 'CBS StatLine, Eurostat digitale-intensiteitsindex, DNB, sectorprognoses van RaboResearch, ING en ABN AMRO. Verloop en eNPS komen uit gangbare HR-benchmarks en zijn geen CBS-cijfer.',
+    peildatum: '2026-09-10',
+    herzienUiterlijk: '2027-03-01',
+    voorbehoud: 'Overgenomen uit klantportaal.html en niet per sector opnieuw bij de bron gecontroleerd. Bij de eerstvolgende herziening: begin bij CBS StatLine en de kwartaalprognoses.'
+  }),
+  onderzoek: Object.freeze({
+    wat: 'Bevindingen uit extern onderzoek over AI-gebruik, opschaling en rendement.',
+    bronnen: 'McKinsey, MIT, BCG, Gartner, RAND, Forrester en anderen.',
+    peildatum: '2026-09-10',
+    herzienUiterlijk: '2026-12-15',
+    voorbehoud: 'Van de dertig kaarten zijn er twee opnieuw geverifieerd en gedateerd. De overige dragen de bron die het vorige portaal noemde, zonder jaartal. Een percentage zonder jaartal is voor een klant niet na te lopen; die kaarten horen bij de herziening een jaar te krijgen of te verdwijnen.'
+  }),
+  bronnen: Object.freeze({
+    wat: 'Register van vindplaatsen achter de cijfers.',
+    peildatum: '2026-09-10',
+    herzienUiterlijk: '2027-03-01',
+    voorbehoud: 'De URL\'s zijn niet automatisch gecontroleerd op bereikbaarheid.'
+  })
+});
+
+/** Onderzoekskaarten waarvan het cijfer opnieuw bij de bron is nagelopen. */
+export function onderzoekGeverifieerd() {
+  return ONDERZOEK.filter(item => item.geverifieerd);
+}
+
+/** Kaarten zonder jaartal: bruikbaar als richting, niet als bewijs. */
+export function onderzoekZonderJaar() {
+  return ONDERZOEK.filter(item => !item.jaar);
+}
 
 const norm = value => String(value ?? '').toLocaleLowerCase('nl').trim();
 
