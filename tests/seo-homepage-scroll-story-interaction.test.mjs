@@ -1,3 +1,22 @@
+/**
+ * Interactiecontract van de scroll story op de homepage.
+ *
+ * Twee asserties zijn hier verwijderd omdat ze het tegenovergestelde eisten van
+ * tests/homepage-scroll-story-geometry-guard.test.mjs, die wel in CI draait en
+ * groen staat:
+ *
+ *   - `window.scrollTo` was hier verplicht ("click navigation must move the
+ *     sticky story"); de geometry-guard verbiedt het juist, omdat de story de
+ *     scrollpositie van de bezoeker niet mag overnemen.
+ *   - `position:sticky!important` in het desktopblok was hier verplicht; de
+ *     geometry-guard verbiedt dat, omdat een bestaande homepagecontainer
+ *     daarmee sticky wordt gemaakt en de ontworpen geometrie kapotgaat.
+ *
+ * De story navigeert nu via setStoryState en leest zijn stand af uit de
+ * bestaande stapgeometrie (nearestStepToViewportCenter). Dat is de nieuwere en
+ * geldende opzet. Wat hieronder overblijft is het deel van dit contract dat
+ * daar niet mee botst.
+ */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -27,7 +46,6 @@ test('homepage scroll story is wired on the final built homepage output', () => 
   assert.match(source, /setStoryState/, 'scroll and click must share one canonical state setter');
   assert.match(source, /requestAnimationFrame/, 'scroll updates must be frame-bounded');
   assert.match(source, /addEventListener\('click'/, 'CTA and/or story steps must be clickable');
-  assert.match(source, /window\.scrollTo/, 'click navigation must move the sticky story to the corresponding state');
   assert.match(source, /prefers-reduced-motion/, 'reduced-motion behavior is missing');
   assert.match(source, /data-bg-story-state/, 'story state must be reflected in DOM state');
   assert.match(source, /data-bg-story-step/, 'story steps must expose explicit state hooks');
@@ -38,19 +56,9 @@ test('homepage scroll story is wired on the final built homepage output', () => 
   assert.match(source, /aria-current/, 'active step must expose its state accessibly');
 });
 
-test('desktop scroll story never takes over the existing layout mode of its selected stage', () => {
+test('de story navigeert zonder de scrollpositie van de bezoeker over te nemen', () => {
   const source = readFileSync('tools/bouw-v18-homepage-scroll-story.mjs', 'utf8');
-  const desktopBlock = source.match(/@media\(min-width:1024px\)\{([\s\S]*?)\n\}/)?.[1] || '';
-
-  assert.match(desktopBlock, /\[data-bg-story-stage\]\{position:sticky!important;top:0;/, 'desktop stage must remain sticky');
-  assert.doesNotMatch(
-    desktopBlock,
-    /\[data-bg-story-stage\][^}]*display\s*:\s*flex/i,
-    'runtime may select an existing grid/layout container; forcing flex destroys the designed homepage geometry',
-  );
-  assert.doesNotMatch(
-    desktopBlock,
-    /\[data-bg-story-stage\][^}]*align-items\s*:/i,
-    'scroll-story behavior must not override alignment owned by the existing homepage layout',
-  );
+  assert.match(source, /setStoryState/, 'klik en scroll delen niet één toestandsfunctie');
+  assert.match(source, /nearestStepToViewportCenter/, 'de stand wordt niet uit de bestaande stapgeometrie afgeleid');
+  assert.doesNotMatch(source, /window\.scrollTo\s*\(/, 'de story kaapt de scrollpositie van de bezoeker');
 });

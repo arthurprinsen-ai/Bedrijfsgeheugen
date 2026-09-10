@@ -119,6 +119,8 @@ jobs:
           tests/money-page-conversion-contract.test.mjs
           tests/netlify-identity-recovery-build.test.mjs
           tests/netlify-identity-recovery-flow.test.mjs
+          tests/seo-homepage-context-slider-contract.test.mjs
+          tests/seo-homepage-scroll-story-interaction.test.mjs
           tests/seo-homepage-process-progress.test.mjs
           tests/seo-search-console-revenue-sprint.test.mjs
           tests/single-obligation-owner-learning.test.mjs
