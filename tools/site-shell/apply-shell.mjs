@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { GLOBAL_COMPONENTS, PUBLIC_PAGE_EXCLUDES } from './contracts.mjs';
 import { ensureBrandShellCss, ensureFooterContact, ensureTrustBar, extractComponent, markPageSlots, replaceComponent } from './components.mjs';
 import { ensureKnowledgeNavigation } from './ensure-knowledge-nav.mjs';
+import { scoopCss } from '../bouw-v18-chrome.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const PAD = {
@@ -26,6 +27,7 @@ const PAGE_SHELL_CSS = `<style id="canonical-page-shell">
 .held .bgkruim{background:transparent!important;color:rgba(255,255,255,.72)!important;padding:0 0 18px!important;margin:0!important;border:0!important;box-shadow:none!important}
 .held .bgkruim a,.held .bgkruim span{background:transparent!important;color:inherit!important}
 .held .bgkruim a{text-decoration:none}
+.paginakop .bgkruim{background:none;position:static;backdrop-filter:none;box-shadow:none;border:0}
 @media(max-width:768px){.paginakop{padding:104px 0 46px}.held .bgkruim{padding-bottom:14px!important}
 body:has(.held .heldknoppen) .held .bgkruim,body:has(.held .heldknoppen) .held .pil,body:has(.held .heldknoppen) .held h1,body:has(.held .heldknoppen) .held .ondertitel,body:has(.held .heldknoppen) .held .payoff,body:has(.held .heldknoppen) .held .intro,body:has(.held .heldknoppen) .held .heldknoppen,body:has(.held .heldknoppen) .held .bovenop{font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important}}
 /* Vangregel voor rasters: een grid- of flexkind krimpt nooit onder zijn inhoud
@@ -56,6 +58,29 @@ export function zonderSchilblokken(stijlen, schilVoor) {
     gezien.add(id);
     return true;
   });
+}
+
+// Oude gedeelde stylesheets van een handgemaakte pagina (/kennis/, /prijzen).
+// kop.css hoort bij de oude lichte kop en heeft naast de schil geen functie.
+// stijl.css zet globaal .wrap{max-width:1120px;padding:0 20px}; als los
+// stylesheet raakte dat ook kop en voet van de schil (container 1120 in plaats
+// van 1220, logo 70 px verschoven, hogere voet). Daarom komt stijl.css hier
+// ingebed en gescoopt op de hoofdinhoud, zoals bij de gegenereerde pagina's.
+// :where() houdt de specificiteit gelijk aan die van stijl.css zelf, zodat de
+// eigen regels van de pagina er net als voorheen overheen gaan.
+export function eigenKoppelingen(koppel, stijlBasis) {
+  const uit = [];
+  let basisGezet = false;
+  for (const link of koppel) {
+    if (/\/assets\/kop\.css/i.test(link)) continue;
+    if (/\/assets\/stijl\.css/i.test(link) && stijlBasis) {
+      if (!basisGezet) uit.push(`<style id="pagina-basis">${scoopCss(stijlBasis, ':where(main[data-bg-component="main"])')}</style>`);
+      basisGezet = true;
+      continue;
+    }
+    uit.push(link);
+  }
+  return uit;
 }
 
 function absolutiseerInterneHref(html) {
@@ -244,7 +269,7 @@ function paginakop(binnen, pad) {
   return `<section class="paginakop" data-bg-component="hero"><div class="wrap">${kruimel}${bovenkop}${kop}${inleiding}</div></section>\n${rest}`;
 }
 
-export function applyCanonicalShell(html, shell, pad) {
+export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   const binnen = extractPageMain(html, pad);
   if (binnen === null) return null;
   const eigen = eigenHoofd(html);
@@ -262,7 +287,7 @@ export function applyCanonicalShell(html, shell, pad) {
   // de pagina: op de plek van de schil, vóór de eigen opmaak van de pagina.
   // Stond hij er ná de pagina nog een keer, dan won de gedeelde regel het van
   // de eigen regel met dezelfde specificiteit (zie zonderSchilblokken).
-  const eigenCss = eigen.koppel.concat(zonderSchilblokken(eigen.stijl, shell.voor)).join('\n');
+  const eigenCss = eigenKoppelingen(eigen.koppel, stijlBasis).concat(zonderSchilblokken(eigen.stijl, shell.voor)).join('\n');
   uit = uit.replace('</head>', `${eigenCss}\n${PAGE_SHELL_CSS}\n</head>`);
   uit = ensureKnowledgeNavigation(routerLaatLinksDoor(knoppenNaarLinks(uit)));
   uit = absolutiseerInterneHref(uit);
@@ -278,6 +303,10 @@ async function publiekePaginas() {
       if (map === 'blog' && item.isDirectory()) uit.push(join('blog', item.name, 'index.html'));
     }
   }
+  // De kennisbank is een eigen, indexeerbare route, maar hoort wel in dezelfde
+  // kop en voet. Zonder deze regel hield /kennis/ de oude lichte kop, een eigen
+  // voet en geen mobiel menu.
+  uit.push('kennis/index.html');
   return uit;
 }
 
@@ -292,12 +321,13 @@ export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL
   const homeProjected = ensureKnowledgeNavigation(absolutiseerInterneHref(projectGlobalComponents(homePrepared, sourceCanonical)));
   await writeFile('index.html', homeProjected, 'utf8');
 
+  const stijlBasis = await readFile('assets/stijl.css', 'utf8').catch(() => null);
   let gelukt = 2, overgeslagen = 0;
   for (const pad of await publiekePaginas()) {
     if (pad === sourcePath) continue;
     let oud; try { oud = await readFile(pad, 'utf8'); } catch { continue; }
     let nieuw;
-    try { nieuw = applyCanonicalShell(oud, shell, pad); } catch (error) { console.warn(`Canonical shell overgeslagen (${pad}): ${error.message}`); overgeslagen++; continue; }
+    try { nieuw = applyCanonicalShell(oud, shell, pad, stijlBasis); } catch (error) { console.warn(`Canonical shell overgeslagen (${pad}): ${error.message}`); overgeslagen++; continue; }
     if (!nieuw) { console.warn(`Canonical shell overgeslagen (${pad}): geen migreerbare hoofdinhoud gevonden`); overgeslagen++; continue; }
     await writeFile(pad, nieuw, 'utf8'); gelukt++;
   }
