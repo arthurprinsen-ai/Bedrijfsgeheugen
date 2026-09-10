@@ -86,7 +86,11 @@ test('exact artifact build owns modern SEO validation while exact-preview runtim
   }
   assert.doesNotMatch(pageSeo, /normaliseer-site-ui\.mjs|seocontrole\.py|paginacontrole\.py|playwright|PAGINA_BASE_URL/);
   assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
-  assert.match(browser, /deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
+  // De browserlane meet op de exacte deploy preview van deze wijziging. Die URL
+  // werd hier letterlijk vastgelegd als deploy-preview-<pr>--bedrijfsgeheugen.
+  // Zelf samenstellen leverde op 10 september 2026 een 404 op waar niets mis was
+  // met de code; de URL komt nu van Netlify zelf, via preview-ready.
+  assert.match(browser, /needs\['preview-ready'\]\.outputs\.preview_url/);
 });
 
 test('production readback is serialized and never cancelled mid-flight', () => {

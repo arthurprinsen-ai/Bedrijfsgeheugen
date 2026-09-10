@@ -109,8 +109,14 @@ jobs:
   preview-ready:
     needs: [classify, syntax-preflight]
     runs-on: ubuntu-latest
+    # De preview-URL komt van Netlify zelf. Zelf een deploy-preview-adres
+    # samenstellen gaat mis zodra Netlify een ander adres uitgeeft; dat leverde
+    # op 10 september 2026 een 404 op waar niets mis was met de code.
+    outputs:
+      preview_url: ${{ steps.wacht.outputs.preview_url }}
     steps:
       - name: Wait for exact deploy preview
+        id: wacht
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ inputs.change_head_sha }}
@@ -125,7 +131,11 @@ jobs:
             if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
             const body=await response.json();
             const status=(body.statuses||[]).find(item=>item.context==='netlify/bedrijfsgeheugen/deploy-preview');
-            if(status?.state==='success'){ console.log(`Exact preview ready for ${process.env.HEAD_SHA}`); process.exit(0); }
+            if(status?.state==='success'&&status.target_url){
+              console.log(`Exact preview ready for ${process.env.HEAD_SHA}: ${status.target_url}`);
+              await import('node:fs').then(fs=>fs.appendFileSync(process.env.GITHUB_OUTPUT,`preview_url=${status.target_url}\n`));
+              process.exit(0);
+            }
             if(['failure','error'].includes(status?.state)) throw new Error(`Netlify preview ${status.state}: ${status.description||''}`);
             await new Promise(resolve=>setTimeout(resolve,10000));
           }
@@ -177,22 +187,22 @@ jobs:
           tests/seo-ui-visual-regression-browser.test.mjs
       - name: Verify affected routes on desktop and mobile
         env:
-          BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          BASE_URL: ${{ needs['preview-ready'].outputs.preview_url }}
           BASELINE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: node tools/site-shell/verify-targeted-website-routes.mjs
       - name: Verify all public pages are visibly rendered
         env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          UI_VR_BASE_URL: ${{ needs['preview-ready'].outputs.preview_url }}
         run: node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify every header menu panel is readable
         env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          UI_VR_BASE_URL: ${{ needs['preview-ready'].outputs.preview_url }}
         run: node tools/site-shell/v18-header-menu-contrast-check.mjs
       - name: Verify broad high-risk browser contracts
         if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
-          UI_VR_BASE_URL: https://deploy-preview-${{ inputs.pr_number }}--bedrijfsgeheugen.netlify.app
+          UI_VR_BASE_URL: ${{ needs['preview-ready'].outputs.preview_url }}
           EXPECTED_COMMIT: ${{ inputs.change_head_sha }}
         run: |
           node tools/site-shell/v18-megamenu-browser-check.mjs

@@ -44,7 +44,16 @@ jobs:
           for i in $(seq 1 36); do
             json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
             state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
-            if [ "$state" = "success" ]; then exit 0; fi
+            target=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .target_url' | head -n1)
+            # De URL komt van Netlify zelf. Zelf een deploy-preview-adres
+            # samenstellen gaat mis zodra Netlify een ander adres uitgeeft, en
+            # dat leverde eerder een 404 op waar niets mis was met de code.
+            if [ "$state" = "success" ] && [ -n "$target" ] && [ "$target" != "null" ]; then
+              echo "PREVIEW_URL=$target" >> "$GITHUB_ENV"
+              echo "preview_url=$target" >> "$GITHUB_OUTPUT"
+              echo "Netlify meldt de preview als klaar: $target"
+              exit 0
+            fi
             if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
               echo "::error::Netlify preview failed for $HEAD_SHA: $state"
               exit 1
@@ -55,8 +64,6 @@ jobs:
           exit 1
 
       - name: Fetch current Netlify preview
-        env:
-          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: curl -fsS --max-time 20 "$PREVIEW_URL/" -o /tmp/index.html
 
       - name: Detect accepted historical V18 restore
@@ -116,8 +123,6 @@ jobs:
 
       - name: Verify local hero video asset
         if: steps.mode.outputs.legacy != 'true'
-        env:
-          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: |
           curl -fsS --max-time 20 --range 0-1023 "$PREVIEW_URL/assets/openart-hero-iphone-safe-v1.mp4" -o /tmp/hero-video.bin
           test -s /tmp/hero-video.bin
@@ -129,14 +134,10 @@ jobs:
 
       - name: Verify V18.8 browser runtime and inspect navigation
         if: steps.mode.outputs.legacy != 'true'
-        env:
-          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: npx playwright test tests/integration/v18-live-runtime.spec.js --workers=1
 
       - name: Capture desktop and mobile preview
         if: steps.mode.outputs.legacy != 'true'
-        env:
-          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
         run: |
           mkdir -p visual-review
           npx playwright screenshot --wait-for-timeout 2000 --full-page --viewport-size="1440,1200" "$PREVIEW_URL/" visual-review/v18-desktop.png
