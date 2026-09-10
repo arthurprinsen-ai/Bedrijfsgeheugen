@@ -94,7 +94,11 @@ const megaMenuContrastContract = `<style id="v18-megamenu-contrast-contract">
 })();
 </script>`;
 
-html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n</body>`);
+// De cyaan productkaart kreeg via --cyan de merkkleur #2742D6, met donkere
+// tekst erop (contrast ±2,9:1). Tekst en knop op die kaart worden wit.
+const productkaartContrast = `<style id="bg-productkaart-contrast">.service-product-card.cyan{color:#fff}.service-product-card.cyan p{color:rgba(255,255,255,.86)}</style>`;
+
+html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${productkaartContrast}\n</body>`);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');

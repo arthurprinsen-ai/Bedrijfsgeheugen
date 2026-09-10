@@ -648,7 +648,10 @@ h1{
     volgende.disabled = nu === panelen.length - 1;
     volgende.textContent = nu === panelen.length - 1 ? 'Klaar' : 'Volgende';
     telling.textContent = (nu + 1) + ' van ' + panelen.length;
-    railKnoppen[nu].scrollIntoView({block:'nearest', inline:'center', behavior: rustig ? 'auto' : 'smooth'});
+    // Alleen de rail horizontaal meeschuiven. scrollIntoView verschoof ook de
+    // pagina zelf: bij het laden (toon(0)) sprong je onder de kop.
+    var kr = railKnoppen[nu].getBoundingClientRect(), rr = rail.getBoundingClientRect();
+    rail.scrollTo({left: rail.scrollLeft + (kr.left - rr.left) - (rail.clientWidth - kr.width) / 2, behavior: rustig ? 'auto' : 'smooth'});
     if (nu === 2) telUp();
     if (nu === 4) reset5();
     if (nu === 5) reset6();
