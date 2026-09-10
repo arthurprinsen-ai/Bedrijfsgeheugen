@@ -82,7 +82,8 @@ export const INTERACTIE_JS = `<script id="v18-interactie-js">
 })();
 </script>`;
 
-const ontsnap = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// een & dat al een entiteit is (&amp; uit de kop) niet nog eens ontsnappen
+const ontsnap = t => String(t).replace(/&(?!(?:[a-z][a-z0-9]*|#\d+|#x[0-9a-f]+);)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const kaal = t => String(t).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
 function slug(tekst) {
