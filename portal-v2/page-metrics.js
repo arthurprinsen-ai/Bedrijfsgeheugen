@@ -23,7 +23,7 @@ const PAGES=Object.freeze({
       ['Gemiddelde volwassenheid',`${num(calc('average-maturity',s),1)}/5`],
       ['Handmatig werk per jaar',euro(calc('manual-work-annual',s))],
       ['Vermijdbare capaciteit',`${num(calc('fte-lost',s),1)} fte`],
-      ['Stand van het bedrijf',String(calc('company-state',s)||EMPTY)]
+      ['Procesvolwassenheid',calc('cmmi-level',s)?`${calc('cmmi-level',s)}/5 · ${arr(calc('cmmi-ladder',s)).find(x=>x.huidig)?.naam||''}`:EMPTY]
     ],
     worklist:s=>arr(calc('blocker-ranking',s)).slice(0,3).map(item=>[String(item.name||item.title||'Blokkade'),`impact ${num(item.impact)}`])},
 
@@ -41,7 +41,7 @@ const PAGES=Object.freeze({
       ['Data & AI volwassenheid',`${num(calc('data-ai-maturity',s),1)}/5`],
       ['Implementatiefase',String(at(s,'portal.dataAi.phase')||EMPTY)],
       ['Veranderbereidheid',`${num(calc('change-readiness',s),1)}/5`],
-      ['Governance readiness',`${num(calc('governance-readiness',s),1)}/5`]
+      ['Groeifase',calc('greiner-phase',s)?.fase||EMPTY]
     ]},
 
   'ai-scan':{slice:'portal.aiScan',
@@ -91,7 +91,7 @@ const PAGES=Object.freeze({
       ['Brutomarge',pct(calc('gross-margin',s))],
       ['EBITDA-marge',pct(calc('ebitda-margin',s))],
       ['DSO',`${num(calc('dso',s))} dgn`],
-      ['Klantconcentratie',pct(calc('customer-concentration',s))]
+      ['Positie bij de klant',arr(calc('trusted-advisor-ladder',s)).find(x=>x.huidig)?.naam||EMPTY]
     ],
     worklist:s=>[
       ['Loonquote',pct(calc('wage-ratio',s))],
@@ -106,11 +106,14 @@ const PAGES=Object.freeze({
       ['Altman Z',num(calc('altman-z',s),2)],
       ['Break-even omzet',euro(calc('break-even',s))]
     ],
-    worklist:s=>[
+    worklist:s=>{const d=calc('dupont-breakdown',s)||{};return [
       ['DCF-waarde',euro(calc('dcf',s))],
       ['Rentedekking',`${num(calc('interest-coverage',s),1)}x`],
+      ['Schuldendekking (DSCR)',`${num(calc('dscr',s),2)}x`],
+      ['Rendement op eigen vermogen (DuPont)',pct(d.roe)],
+      ['EBITDA-multiple',`${num(calc('ebitda-multiple',s),1)}x`],
       ['Veiligheidsmarge',pct(calc('safety-margin',s))]
-    ]},
+    ];}},
 
   mensen:{slice:'portal.people',
     metrics:s=>[

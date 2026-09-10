@@ -16,6 +16,33 @@ function profile(s){return s?.portal?.profile||{}}
 function metrics(s){return s?.portal?.metrics||{}}
 function finance(s){return s?.portal?.valueFinance||{}}
 function aiScan(s){return s?.portal?.aiScan||{}}
+/* Modellen die het oude klantportaal wel tekende maar V2 nog niet kende.
+   Formules een op een geport uit klantportaal.html: tekenCmmiGrafiek (CMMI),
+   de Greiner-banden op personeelsomvang, tekenTrustedAdvisor, en de
+   DuPont-ontleding bij de waardebepaling. */
+const CMMI_NIVEAUS=Object.freeze([
+  ['Initieel','Het werk lukt door inzet van mensen. Uitkomsten wisselen per keer.'],
+  ['Beheerst','Per afdeling afspraken, maar elke afdeling doet het net anders.'],
+  ['Gedefinieerd','Een vastgelegde manier van werken die iedereen volgt.'],
+  ['Gemeten','Je stuurt op cijfers: wat kost een proces en hoe lang duurt het.'],
+  ['Optimaliserend','Verbeteren is routine; afwijkingen worden vanzelf gezien.']
+]);
+const GREINER_FASEN=Object.freeze([
+  [0,10,'Groei door creativiteit','Alles loopt via de oprichter. Iedereen doet alles.','Leiderschapscrisis: de oprichter wordt het knelpunt.'],
+  [10,25,'Groei door sturing','Er komen leidinggevenden, taken worden verdeeld.','Autonomiecrisis: mensen willen zelf beslissen, alles moet langs de top.'],
+  [25,60,'Groei door delegatie','Afdelingen krijgen ruimte en eigen verantwoordelijkheid.','Beheersingscrisis: het overzicht verdwijnt, iedereen doet het net anders.'],
+  [60,150,'Groei door coordinatie','Vaste processen en rapportages over afdelingen heen.','Bureaucratiecrisis: procedures gaan zwaarder wegen dan het werk.'],
+  [150,Infinity,'Groei door samenwerking','Sturen op vertrouwen en gedeelde doelen in plaats van regels.','']
+]);
+const TRUSTED_ADVISOR=Object.freeze([
+  ['Leverancier','Je levert wat er is besteld. Inwisselbaar op prijs.'],
+  ['Vakman','Ze bellen je om je kennis, niet om je prijslijst.'],
+  ['Partner','Je denkt mee over hun proces, niet alleen over jouw product.'],
+  ['Vertrouwd adviseur','Ze bellen je voordat ze een besluit nemen, ook over dingen die je niet verkoopt.']
+]);
+function people(s){return s?.portal?.people||{}}
+function headcount(s){return n(profile(s).headcount)||n(people(s).headcount)||0}
+
 function manualCost(s){const x=profile(s);return n(x.manualHoursPerWeek)*46*n(x.hourlyCost)}
 function maturityScores(s){const x=profile(s);const vals=arr(x.dimensionScores).map(n).filter(v=>v>0);if(vals.length)return vals;return Object.values(x.dimensions||{}).map(n).filter(v=>v>0)}
 function completion(values){const xs=arr(values);return xs.length?xs.filter(v=>v!==undefined&&v!==null&&v!=='').length/xs.length*100:0}
@@ -76,6 +103,15 @@ const C={
  'dscr':s=>ratio(metrics(s).ebitda,Math.max(1,n(finance(s).interest)+Math.max(0,n(finance(s).debt)*.1)),1),
  'break-even':s=>{const gm=clamp(metrics(s).grossMargin,0,100)/100;return gm>0?n(finance(s).fixed)/gm:0},
  'safety-margin':s=>{const rev=n(metrics(s).revenue),be=C['break-even'](s);return rev?((rev-be)/rev)*100:0},
+ 'cmmi-level':s=>{const gem=avg(maturityScores(s));return gem?clamp(Math.round(gem),1,5):0},
+ 'cmmi-ladder':s=>{const eigen=C['cmmi-level'](s);return CMMI_NIVEAUS.map(([naam,uitleg],i)=>({level:i+1,naam,uitleg,bereikt:i+1<eigen,huidig:i+1===eigen}))},
+ 'greiner-phase':s=>{const mw=headcount(s);if(!mw)return null;const f=GREINER_FASEN.find(([lo,hi])=>mw>=lo&&mw<hi)||GREINER_FASEN[GREINER_FASEN.length-1];return {vanaf:f[0],tot:f[1],fase:f[2],uitleg:f[3],crisis:f[4],medewerkers:mw}},
+ 'greiner-ladder':s=>{const mw=headcount(s);return GREINER_FASEN.map(([lo,hi,fase,uitleg,crisis])=>({vanaf:lo,tot:hi,fase,uitleg,crisis,huidig:mw>=lo&&mw<hi}))},
+ 'trusted-advisor-level':s=>{const m=profile(s).dimensions||{};const mt=metrics(s);const grootste=n(mt.largestCustomer);const herhaal=(mt.repeat===''||mt.repeat==null)?null:n(mt.repeat);let pos=1;if(readiness5(m.service)>=3)pos++;if(herhaal!==null&&herhaal>=50)pos++;if(readiness5(m.mensen)>=3&&grootste&&grootste<25)pos++;return clamp(pos,1,4)},
+ 'trusted-advisor-ladder':s=>{const eigen=C['trusted-advisor-level'](s);return TRUSTED_ADVISOR.map(([naam,uitleg],i)=>({level:i+1,naam,uitleg,bereikt:i+1<eigen,huidig:i+1===eigen}))},
+ 'dupont-breakdown':s=>{const m=metrics(s),f=finance(s);const omzet=n(m.revenue),balans=n(f.balance),ev=n(f.equity);const nettomarge=omzet?n(m.ebitda)*.6/omzet:0;const omloop=ratio(omzet,balans);const hefboom=ratio(balans,ev);return {netMargin:nettomarge*100,assetTurnover:omloop,leverage:hefboom,roe:nettomarge*omloop*hefboom*100}},
+ 'ebitda-multiple':s=>n(finance(s).multiple),
+ 'tei-summary':s=>{const baten=C['benefit-at-target-maturity'](s);const kosten=n(s?.portal?.businessCase?.investment);const risico=C['risk-adjusted-benefit'](s);return {kosten,baten,risicogewogen:risico,flexibiliteit:Math.max(0,baten-risico),netto:baten-kosten}},
  'sensitivity':s=>({base:C['equity-value'](s),downside:(n(metrics(s).ebitda)*.85*n(finance(s).multiple)-n(finance(s).debt)+n(finance(s).cash)),upside:(n(metrics(s).ebitda)*1.15*n(finance(s).multiple)-n(finance(s).debt)+n(finance(s).cash))}),
 
  'absence-gap':s=>n(s?.portal?.people?.absence)-4,

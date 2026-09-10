@@ -17,8 +17,7 @@ const GLOBAL_CAPABILITIES = frozen([
 
 export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
   overzicht: capability('overzicht', [],
-    ['CMMI maturity','adoption curve','time leakage','blockers','progress'],
-    ['average-maturity','manual-work-annual','fte-lost','company-state','blocker-ranking','progress','advice-priority'],
+    ['CMMI maturity','adoption curve','time leakage','blockers','progress'], ['average-maturity','manual-work-annual','fte-lost','company-state','blocker-ranking','progress','advice-priority', 'cmmi-level', 'cmmi-ladder'],
     ['open-businesscase','open-profile','open-advice'],
     ['profiel','business','roadmap','advies'],
     { globalCapabilities: GLOBAL_CAPABILITIES, semanticInvariants: frozen(['capacity-not-cash','46-week-annualization']) }),
@@ -30,8 +29,7 @@ export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
   ['dimension-maturity','profile-average','manual-work-impact'], ['edit-dimension','edit-headcount','edit-hour-cost'], ['overzicht','business','dataai']),
 
   dataai: capability('data-ai', [],
-    ['data-and-ai readiness','five implementation phases','change/adoption curve','TEI costs-benefits','CMMI maturity','Greiner growth phases','governance agreements'],
-    ['data-ai-maturity','implementation-phase','change-readiness','cost-benefit-curve','governance-readiness'],
+    ['data-and-ai readiness','five implementation phases','change/adoption curve','TEI costs-benefits','CMMI maturity','Greiner growth phases','governance agreements'], ['data-ai-maturity','implementation-phase','change-readiness','cost-benefit-curve','governance-readiness', 'greiner-phase', 'greiner-ladder'],
     ['inspect-source-state','open-policy','open-businesscase'], ['profiel','beleid','business']),
 
   aiscan: capability('ai-scan', [
@@ -53,20 +51,17 @@ export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
   antwoorden: capability('ingevulde-gegevens', [frozen({legacyFieldId:'antwLijst:*', dynamicGroup:'all-scan-answers'})], ['answer review'], ['answer-completeness'], ['review-answer','edit-via-profile'], ['profiel','invoeren']),
 
   business: capability('businesscase', ids('bDoel','bUitstel','bInvest'),
-    ['cumulative net result','adoption curve'],
-    ['benefit-at-target-maturity','delay-cost','investment-net-result','payback'],
+    ['cumulative net result','adoption curve'], ['benefit-at-target-maturity','delay-cost','investment-net-result','payback', 'tei-summary'],
     ['change-target','change-delay','change-investment'], ['profiel','cijfers','roadmap']),
 
   cijfers: capability('cijfers-maatstaven', ids(
     'cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt',
     'kNps','kTevreden','kHerhaal','kKlacht','mtDatum','mtSoort','mtWaarde','mtNotitie'
-  ), ['KPI benchmark comparison','trusted-advisor ladder','productivity','measurements over time'],
-    ['gross-margin','ebitda-margin','wage-ratio','marketing-ratio','it-ratio','dso','customer-concentration','productivity','measurement-trend'],
+  ), ['KPI benchmark comparison','trusted-advisor ladder','productivity','measurements over time'], ['gross-margin','ebitda-margin','wage-ratio','marketing-ratio','it-ratio','dso','customer-concentration','productivity','measurement-trend', 'trusted-advisor-level', 'trusted-advisor-ladder'],
     ['mtToe','add-measurement','remove-measurement'], ['branche','waarde','mensen','business']),
 
   waarde: capability('waarde-financiering', ids('wSchuld','wCash','wEV','wBalans','wVast','wRente','wMultiple','wWacc'),
-    ['EBITDA multiple','DCF perpetuity','DuPont','Altman Z','interest coverage','DSCR','break-even','sensitivity'],
-    ['enterprise-value','equity-value','dcf','dupont','altman-z','interest-coverage','dscr','break-even','safety-margin','sensitivity'],
+    ['EBITDA multiple','DCF perpetuity','DuPont','Altman Z','interest coverage','DSCR','break-even','sensitivity'], ['enterprise-value','equity-value','dcf','dupont','altman-z','interest-coverage','dscr','break-even','safety-margin','sensitivity', 'dupont-breakdown', 'ebitda-multiple'],
     ['edit-financial-assumptions'], ['cijfers','business','dd']),
 
   mensen: capability('mensen', ids('mVerzuim','mVerloop','mEnps','mMto','mVac'), ['people-vs-industry'],

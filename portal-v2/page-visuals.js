@@ -1,4 +1,4 @@
-import { radar, gantt, curve, quadrant, benchmarkBars, ring, leakage } from './visuals.js';
+import { radar, gantt, curve, quadrant, benchmarkBars, ring, leakage, ladder, dupont, gauge } from './visuals.js';
 import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
 import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './modules/company-input.js';
 import { hasPageData } from './page-metrics.js';
@@ -18,6 +18,7 @@ const BUILDERS=Object.freeze({
       .filter(point=>point.value>0);
     const blockers=arr(calc('blocker-ranking',state)).map(item=>({label:item.name||item.title||'Blokkade',value:n(item.score)||n(item.impact)}));
     return [radar(points,{title:'Volwassenheid per bedrijfsonderdeel'}),
+      ladder(arr(calc('cmmi-ladder',state)),{title:'Procesvolwassenheid (CMMI)'}),
       leakage(blockers,{title:'Waar de meeste capaciteit weglekt'}),
       ring(Math.min(100,metrics.averageMaturity/5*100),{title:'Volwassenheid',caption:'gemiddeld over de onderdelen'})].filter(Boolean).join('');
   },
@@ -34,7 +35,12 @@ const BUILDERS=Object.freeze({
     const investment=n(businessCase.investment);
     const points=Array.from({length:13},(_,month)=>({label:`m${month}`,value:benefit/12*month-investment}));
     const adoption=Array.from({length:13},(_,month)=>({label:`m${month}`,value:Math.round(100/(1+Math.exp(-(month-6)/1.6)))}));
+    const tei=calc('tei-summary',state)||{};
     return [curve(points,{title:'Cumulatief nettoresultaat',valueLabel:'euro'}),
+      benchmarkBars([{label:'Baten',value:n(tei.baten),benchmark:n(tei.kosten)},
+        {label:'Risicogewogen',value:n(tei.risicogewogen),benchmark:n(tei.kosten)},
+        {label:'Flexibiliteit',value:n(tei.flexibiliteit),benchmark:n(tei.kosten)}],
+        {title:'Kosten tegen baten (opzet volgens Total Economic Impact)'}),
       curve(adoption,{title:'Adoptiecurve',valueLabel:'%'})].filter(Boolean).join('');
   },
 
@@ -55,7 +61,8 @@ const BUILDERS=Object.freeze({
       .map(([label,id])=>({label,value:n(calc(id,state)),benchmark:0}))
       .filter(row=>row.value!==0);
     return [benchmarkBars(rows,{title:'Verhoudingen in procenten van de omzet'}),
-      curve(measurements.map(item=>({label:item.date||'',value:n(item.value)})),{title:'Metingen over tijd'})].filter(Boolean).join('');
+      curve(measurements.map(item=>({label:item.date||'',value:n(item.value)})),{title:'Metingen over tijd'}),
+      ladder(arr(calc('trusted-advisor-ladder',state)),{title:'Trusted advisor — waar sta je bij je klant?'})].filter(Boolean).join('');
   },
 
   'waarde-financiering':state=>{
@@ -63,7 +70,11 @@ const BUILDERS=Object.freeze({
     const rows=[{label:'Ongunstig',value:n(sensitivity.downside),benchmark:n(sensitivity.base)},
       {label:'Basis',value:n(sensitivity.base),benchmark:n(sensitivity.base)},
       {label:'Gunstig',value:n(sensitivity.upside),benchmark:n(sensitivity.base)}];
-    return benchmarkBars(rows,{title:'Gevoeligheid van de waarde'});
+    return [benchmarkBars(rows,{title:'Gevoeligheid van de waarde'}),
+      dupont(calc('dupont-breakdown',state)||{}),
+      gauge(n(calc('altman-z',state)),{title:'Altman Z — hoe stevig staat het bedrijf?',min:0,max:6,
+        bands:[[0,1.8,'var(--saas-amber,#f59e0b)'],[1.8,3,'var(--saas-accent-2,#0ea5e9)'],[3,6,'var(--saas-mint,#10b981)']],
+        caption:'onder 1,8 kwetsbaar · boven 3 stevig'})].filter(Boolean).join('');
   },
 
   roadmap:state=>gantt(arr(at(state,'portal.roadmap.items')),{title:'Roadmap over twaalf maanden'}),
@@ -108,7 +119,27 @@ const BUILDERS=Object.freeze({
       {label:'Governance',value:n(at(state,'portal.dataAi.governance'))},
       {label:'Fase',value:current}
     ].filter(point=>point.value>0),{title:'Data en AI readiness'}),
-      ring(current/phases.length*100,{title:'Implementatiefase',caption:phases[current-1]||''})].filter(Boolean).join('');
+      ring(current/phases.length*100,{title:'Implementatiefase',caption:phases[current-1]||''}),
+      ladder(arr(calc('greiner-ladder',state)),{title:'Greiner — groeifasen en hun crisis'})].filter(Boolean).join('');
+  },
+
+  offerte:state=>{
+    const offer=at(state,'portal.offer')||{};
+    const sprints=n(offer.sprints);
+    const meerwerk=arr(offer.additionalWork);
+    return [ring(offer.approval?.agreed===true?100:0,{title:'Akkoord',caption:offer.approval?.agreed===true?`gegeven door ${offer.approval.name||'de klant'}`:'nog niet gegeven'}),
+      sprints?gantt(Array.from({length:sprints},(_,i)=>({title:`Sprint ${i+1}`,start:i*2+1,duration:2,progress:0})),{title:'Doorlooptijd in sprints van twee weken'}):'',
+      meerwerk.length?benchmarkBars(meerwerk.slice(0,6).map(item=>({label:item.description||'Meerwerk',value:n(item.price),benchmark:0})),{title:'Meerwerk'}):''].filter(Boolean).join('');
+  },
+
+  onderzoek:state=>{
+    const items=arr(at(state,'portal.research.hypotheses'));
+    if(!items.length)return '';
+    const metBewijs=items.filter(item=>item.evidence).length;
+    const metBron=items.filter(item=>item.source).length;
+    return [ring(items.length?metBewijs/items.length*100:0,{title:'Hypotheses met bewijs',caption:`${metBewijs} van ${items.length}`}),
+      benchmarkBars([{label:'Met bewijs',value:metBewijs,benchmark:items.length},
+        {label:'Met bron',value:metBron,benchmark:items.length}],{title:'Onderbouwing van je hypotheses'})].filter(Boolean).join('');
   },
 
   'strategy-dna':state=>radar(Object.entries(at(state,'portal.strategyDna.layers')||{}).map(([key,value])=>({label:key,value:n(value)})),{title:'Volwassenheid per laag'})
