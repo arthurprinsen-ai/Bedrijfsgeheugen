@@ -28,8 +28,35 @@ const PAGE_SHELL_CSS = `<style id="canonical-page-shell">
 .held .bgkruim a{text-decoration:none}
 @media(max-width:768px){.paginakop{padding:104px 0 46px}.held .bgkruim{padding-bottom:14px!important}
 body:has(.held .heldknoppen) .held .bgkruim,body:has(.held .heldknoppen) .held .pil,body:has(.held .heldknoppen) .held h1,body:has(.held .heldknoppen) .held .ondertitel,body:has(.held .heldknoppen) .held .payoff,body:has(.held .heldknoppen) .held .intro,body:has(.held .heldknoppen) .held .heldknoppen,body:has(.held .heldknoppen) .held .bovenop{font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important}}
+/* Vangregel voor rasters: een grid- of flexkind krimpt nooit onder zijn inhoud
+   zolang min-width op auto staat. Daardoor werd een 1fr-kolom breder dan de
+   container en knipte overflow:hidden de kaart af. :where() houdt dit op
+   specificiteit nul, dus elke eigen min-width van een pagina wint. */
+:where(main[data-bg-component="main"] *:not(img,svg,video,canvas,iframe,input,select,textarea,button)){min-width:0}
 main,.page{background:var(--paper,#fff)}.page>main{padding:0}.bgkruim,.kruimelpad{font-size:13px;padding:18px 0 0}
 </style>`;
+
+
+// Stijlblokken met een id (<style id="v18-inhoud"> e.d.) die zowel in de schil
+// als in de pagina zelf staan. Tot 10 sept 2026 kwamen ze twee keer op 82 van
+// de 87 pagina's: één keer uit de schil vóór de pagina-opmaak en één keer erna.
+// De tweede kopie won dan van de eigen regels van de pagina met dezelfde
+// specificiteit (pilknoppen van 124x109 px, kaarten in een smalle kolom).
+export function stijlId(blok) {
+  const m = String(blok).match(/^<style\b[^>]*\bid="([^"]+)"/i);
+  return m ? m[1] : null;
+}
+export function zonderSchilblokken(stijlen, schilVoor) {
+  const inSchil = new Set([...String(schilVoor).matchAll(/<style\b[^>]*\bid="([^"]+)"/gi)].map(m => m[1]));
+  const gezien = new Set();
+  return stijlen.filter(blok => {
+    const id = stijlId(blok);
+    if (!id) return true;
+    if (inSchil.has(id) || gezien.has(id)) return false;
+    gezien.add(id);
+    return true;
+  });
+}
 
 function absolutiseerInterneHref(html) {
   return String(html).replace(/href=(['"])\/(?!\/)([^'"]*)\1/gi, (_heel, quote, pad) => `href=${quote}${ORIGIN}/${pad}${quote}`);
@@ -231,7 +258,11 @@ export function applyCanonicalShell(html, shell, pad) {
   if (eigen.og.length) { uit = uit.replace(/<meta property="og:[^"]*" content="[^"]*"\s*\/?>\s*/gi, ''); uit = uit.replace('</head>', eigen.og.join('\n') + '\n</head>'); }
   if (eigen.tw.length) { uit = uit.replace(/<meta name="twitter:[^"]*" content="[^"]*"\s*\/?>\s*/gi, ''); uit = uit.replace('</head>', eigen.tw.join('\n') + '\n</head>'); }
   if (eigen.data.length) uit = uit.replace('</head>', eigen.data.join('\n') + '\n</head>');
-  const eigenCss = eigen.koppel.concat(eigen.stijl).join('\n');
+  // Een stijlblok met een id dat de schil al meebrengt, komt maar één keer op
+  // de pagina: op de plek van de schil, vóór de eigen opmaak van de pagina.
+  // Stond hij er ná de pagina nog een keer, dan won de gedeelde regel het van
+  // de eigen regel met dezelfde specificiteit (zie zonderSchilblokken).
+  const eigenCss = eigen.koppel.concat(zonderSchilblokken(eigen.stijl, shell.voor)).join('\n');
   uit = uit.replace('</head>', `${eigenCss}\n${PAGE_SHELL_CSS}\n</head>`);
   uit = ensureKnowledgeNavigation(routerLaatLinksDoor(knoppenNaarLinks(uit)));
   uit = absolutiseerInterneHref(uit);
