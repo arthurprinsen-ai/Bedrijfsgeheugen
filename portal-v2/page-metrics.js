@@ -2,6 +2,7 @@ import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
 import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BRONNEN } from './external-data.js';
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen, verlopenHerzieningen } from './regelgeving.js';
 import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
+import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
 
 const EMPTY='—';
 const num=(value,digits=0)=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(Number(value)||0);
@@ -362,6 +363,34 @@ const PAGES=Object.freeze({
       ['Zonder eigenaar',String(items.filter(item=>!filled(item.owner)).length)]
     ];},
     worklist:s=>arr(at(s,'portal.tasks.items')).filter(item=>item.status!=='Klaar').slice(0,3).map(item=>[String(item.title||'Taak'),`${item.owner||'geen eigenaar'} · ${item.due||'geen datum'}`])},
+
+  'data-ai-passport':{slice:'portal.dataAiPassport',
+    metrics:s=>{const p=bouwPassport(s);const v=p.samenvatting;return [
+      ['Bewijsdekking',pct(v.bewijsdekkingPct)],
+      ['Geverifieerd',`${v.verified} van ${v.totaal}`],
+      ['Nog te bewijzen',String(v.onbekend)],
+      ['Actie nodig',String(v.actie)]
+    ];},
+    worklist:s=>bouwPassport(s).controls
+      .filter(c=>c.status==='action_required'||c.status==='unknown').slice(0,4)
+      .map(c=>[c.label,`${STATUS_LABEL[c.status]} · ${c.punt||c.uitleg}`.slice(0,90)]),
+    extraWorklist:s=>{const p=bouwPassport(s);return [
+      ['Bewijsstukken',String(p.controls.reduce((n,c)=>n+c.bewijsAantal,0))],
+      ['Waarvan geverifieerd',String(p.controls.reduce((n,c)=>n+c.bewijsGeverifieerd,0))]
+    ];}},
+
+  'eu-ai-act-audit':{slice:'portal.dataAiPassport',
+    metrics:s=>{const r=bouwAuditRapport(s);return [
+      ['AI-systemen in scope',String(r.scope.systemen)],
+      ['Open bevindingen',String(r.bevindingen.length)],
+      ['Transparantiecontrols',String(r.transparantie.length)],
+      ['Bewijsstukken',String(r.bewijsindex.length)]
+    ];},
+    worklist:s=>bouwAuditRapport(s).bevindingen.slice(0,3)
+      .map(b=>[`${b.article||'Bevinding'} · ${b.title||''}`.trim(),`eigenaar ${b.owner||'niet toegewezen'}`]),
+    extraWorklist:s=>bouwAuditRapport(s).baseline.mijlpalen
+      .filter(m=>m.datum>=new Date().toISOString().slice(0,10)).slice(0,3)
+      .map(m=>[`${m.datum} · ${m.regel}`,String(m.wat)])},
 
   'csrd-impact':{slice:'portal.compliance',
     metrics:s=>[
