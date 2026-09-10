@@ -92,6 +92,10 @@ jobs:
       # Deze suite draaide nergens: 46 testbestanden werden door geen enkele
       # workflow genoemd en bewaakten dus niets. tests/delivery-test-coverage-guard.test.mjs
       # faalt zodra dat opnieuw gebeurt.
+      # Vier van deze tests laden netlify/functions en hebben daarom de twee
+      # runtime-dependencies uit package.json nodig.
+      - name: Install runtime dependencies for the unwired contracts
+        run: npm install --no-audit --no-fund --silent
       - name: Verify previously unwired test contracts
         run: >-
           node --test
