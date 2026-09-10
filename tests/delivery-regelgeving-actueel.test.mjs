@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { REGELGEVING, STATUS, CATEGORIEEN, verlopenHerzieningen, achterhaaldeStatus,
          komendeMijlpalen, lopendeVerplichtingen } from '../portal-v2/regelgeving.js';
+import { HERKOMST, ONDERZOEK, onderzoekGeverifieerd, onderzoekZonderJaar } from '../portal-v2/external-data.js';
 
 /**
  * Deze bewaking bestaat om één ding te voorkomen: een register met wetgeving
@@ -95,4 +96,55 @@ test('alle categorieën die een organisatie raken zijn gedekt', () => {
   const gedekt = new Set(REGELGEVING.map(item => item.categorie));
   for (const categorie of ['ai', 'arbeid', 'cyber', 'privacy', 'duurzaam', 'financieel', 'product'])
     assert.ok(gedekt.has(categorie), `geen enkele regel in categorie ${categorie}`);
+});
+
+
+/**
+ * Dezelfde regel geldt voor de externe datasets: branchenormen en
+ * onderzoekscijfers verouderen net zo goed als wetgeving. Ze hadden alleen geen
+ * vervaldatum. Dat is hiermee rechtgezet.
+ */
+
+test('elke externe dataset draagt zijn herkomst en houdbaarheid', () => {
+  for (const [naam, meta] of Object.entries(HERKOMST)) {
+    assert.ok(String(meta.wat || '').trim().length > 20, `${naam} mist een omschrijving`);
+    assert.ok(isDatum(meta.peildatum), `${naam} mist een peildatum`);
+    assert.ok(isDatum(meta.herzienUiterlijk), `${naam} mist een herzieningsdatum`);
+    assert.ok(meta.herzienUiterlijk > meta.peildatum, `${naam}: herzien moet ná de peildatum liggen`);
+    assert.ok(String(meta.voorbehoud || '').trim().length > 20, `${naam} mist een voorbehoud over wat wel en niet is gecontroleerd`);
+  }
+});
+
+test('geen enkele externe dataset is over zijn herzieningsdatum heen', () => {
+  const vandaag = nu();
+  const verlopen = Object.entries(HERKOMST)
+    .filter(([, meta]) => meta.herzienUiterlijk < vandaag)
+    .map(([naam, meta]) => `${naam} (herzien uiterlijk ${meta.herzienUiterlijk})`);
+  assert.deepEqual(verlopen, [],
+    'Loop deze datasets na bij hun bron, werk de cijfers bij en zet de peildatum vooruit.');
+});
+
+test('een geverifieerd onderzoekscijfer draagt zijn jaartal en datum', () => {
+  for (const item of onderzoekGeverifieerd()) {
+    assert.ok(Number.isInteger(item.jaar), `${item.t} is geverifieerd maar heeft geen jaartal`);
+    assert.ok(isDatum(item.geverifieerd), `${item.t} heeft geen verificatiedatum`);
+    assert.match(item.bron, /\d{4}/, `${item.t} noemt geen jaar in de bronvermelding`);
+  }
+  assert.ok(onderzoekGeverifieerd().length >= 2, 'geen enkel onderzoekscijfer is opnieuw nagelopen');
+});
+
+test('het aantal ongedateerde onderzoekscijfers loopt niet op', () => {
+  // Achtentwintig kaarten zijn overgenomen zonder jaartal. Een percentage zonder
+  // jaar is voor een klant niet na te lopen. Dit getal hoort te dalen; loopt het
+  // op, dan is er een ongedateerd cijfer bijgezet en gaat deze test rood.
+  assert.ok(onderzoekZonderJaar().length <= 28,
+    `er staan nu ${onderzoekZonderJaar().length} onderzoekscijfers zonder jaartal in het portaal`);
+  assert.equal(onderzoekZonderJaar().length + onderzoekGeverifieerd().length, ONDERZOEK.length);
+});
+
+test('een omstreden cijfer wordt niet als vaststaand gepresenteerd', () => {
+  const mit = ONDERZOEK.find(item => /MIT/i.test(item.bron || ''));
+  assert.ok(mit, 'de MIT-bevinding ontbreekt');
+  assert.match(mit.voorbehoud || '', /omstreden|één studie/i,
+    'het 95%-cijfer wordt zonder voorbehoud getoond terwijl het op één studie rust');
 });
