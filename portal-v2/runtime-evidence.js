@@ -1,22 +1,15 @@
 /**
  * Runtime-evidence voor de Brein- en Powerhouse-pagina's.
  *
- * Die pagina's toonden tot nu toe een lege staat, omdat er geen bron aan hing.
- * Die bron bestond wel: `/api/brain-operating-loop` geeft per tenant de volledige
- * projectie van de operating loop terug — integratiegezondheid, verifieerbare
- * waarde, levend geheugen, AI-governance, gesloten lussen en de directiecockpit.
- *
- * Dit bestand vertaalt die projectie naar de `portal.runtime.*` slices die
- * page-metrics en page-visuals al verwachten. Het verzint niets: komt er geen
- * projectie terug, of is een deel leeg, dan blijft de pagina leeg. Dat is
- * dezelfde regel als voor alle andere pagina's.
+ * `/api/brain-operating-loop` geeft per tenant de canonieke operating-loopprojectie.
+ * Portal V2 projecteert die waarheid en rekent hier geen alternatieve businesslogica uit.
+ * Ontbreekt runtimebewijs, dan blijft het scherm leeg in plaats van te gokken.
  */
 
 const arr = value => (Array.isArray(value) ? value : []);
 const txt = value => (value == null ? '' : String(value));
-const laatste = items => arr(items).map(x => x?.occurredAt || x?.recordedAt || x?.at).filter(Boolean).sort().pop() || '';
+const laatste = items => arr(items).map(x => x?.occurredAt || x?.recordedAt || x?.observedAt || x?.at).filter(Boolean).sort().pop() || '';
 
-/** De dertien stappen van een hele breinlus, in volgorde. */
 export const BREIN_STAPPEN = Object.freeze([
   'evidence', 'graph', 'intelligence', 'impact', 'decision', 'action',
   'execution', 'verification', 'outcome', 'value', 'learning', 'memory', 'graph_feedback'
@@ -34,10 +27,21 @@ function slice(items, updatedAt, extra = {}) {
   return { items: lijst, updatedAt: updatedAt || laatste(lijst), ...extra };
 }
 
-/**
- * Zet de projectie van de operating loop om in portal.runtime.*.
- * Geeft een leeg object terug wanneer er geen projectie is.
- */
+function emptyPortfolio() {
+  return { NOW: [], NEXT: [], LATER: [], DO_NOT_DO: [] };
+}
+
+function economics(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  return {
+    expectedValue: Number(source.expectedValue) || 0,
+    actualCost: Number(source.actualCost) || 0,
+    realizedValue: Number(source.realizedValue) || 0,
+    realizedProfit: Number(source.realizedProfit) || 0,
+    currency: txt(source.currency || 'EUR')
+  };
+}
+
 export function mapRuntimeProjection(projection) {
   if (!projection || typeof projection !== 'object') return {};
   const records = arr(projection.records);
@@ -59,6 +63,15 @@ export function mapRuntimeProjection(projection) {
       healthy: Boolean(lussen.length && gehaald === lussen.length)
     };
   });
+
+  const portfolio = projection.priorityPortfolio && typeof projection.priorityPortfolio === 'object'
+    ? {
+        NOW: arr(projection.priorityPortfolio.NOW),
+        NEXT: arr(projection.priorityPortfolio.NEXT),
+        LATER: arr(projection.priorityPortfolio.LATER),
+        DO_NOT_DO: arr(projection.priorityPortfolio.DO_NOT_DO)
+      }
+    : emptyPortfolio();
 
   return {
     sources: slice(arr(health.components).map(item => ({
@@ -118,21 +131,24 @@ export function mapRuntimeProjection(projection) {
 
     audit: slice(records.map(record => ({
       naam: txt(record.type || record.subjectId),
-      status: 'ok', healthy: true, laatst: txt(record.occurredAt || record.recordedAt)
+      status: 'ok', healthy: true, laatst: txt(record.occurredAt || record.recordedAt || record.observedAt)
     })), bijgewerkt),
 
     governance: slice(arr(projection.aiGovernance?.systems || projection.aiGovernance).map(item => ({
       naam: txt(item.systemName || item.model),
       status: item.riskLevel === 'HIGH' ? 'aandacht' : 'ok',
       healthy: item.riskLevel !== 'HIGH'
-    })), bijgewerkt)
+    })), bijgewerkt),
+
+    decisions: slice(arr(projection.companyDecisions), bijgewerkt),
+    approvals: slice(arr(projection.approvalQueue), bijgewerkt),
+    economics: economics(projection.decisionEconomics),
+    timeline: slice(arr(projection.auditTimeline), bijgewerkt),
+    portfolio,
+    actors: projection.actors && typeof projection.actors === 'object' ? projection.actors : {}
   };
 }
 
-/**
- * Haalt de projectie op en legt hem in portal.runtime. Faalt zacht: zonder
- * sessie of bij een storing blijven de pagina's leeg in plaats van te gokken.
- */
 export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState } = {}) {
   try {
     const response = await fetchImpl('/api/brain-operating-loop', {
