@@ -12,11 +12,17 @@ test('Ijsselmonde clean route enters Portal V2 but grants no tenant access by it
   assert.match(redirects,/^\/portaal\/ijsselmonde\s+\/portal-v2\/\s+200!$/m);
 });
 
-test('specific Portal V2 customer routes are ordered before generic /portaal redirect',()=>{
+test('clean Portal V2 routes also rewrite relative assets and module imports to portal-v2',()=>{
+  assert.match(redirects,/^\/portaal\/\*\s+\/portal-v2\/:splat\s+200!$/m);
+});
+
+test('specific Portal V2 customer routes and clean-route assets are ordered before generic /portaal redirect',()=>{
   const demo=redirects.indexOf('/portaal/demo  /portal-v2/  200!');
   const customer=redirects.indexOf('/portaal/ijsselmonde  /portal-v2/  200!');
+  const assets=redirects.indexOf('/portaal/*  /portal-v2/:splat  200!');
   const generic=redirects.indexOf('/portaal  /portal-v2/  301!');
-  assert.ok(demo>=0&&customer>=0&&generic>=0);
-  assert.ok(demo<generic);
-  assert.ok(customer<generic);
+  assert.ok(demo>=0&&customer>=0&&assets>=0&&generic>=0);
+  assert.ok(demo<assets);
+  assert.ok(customer<assets);
+  assert.ok(assets<generic);
 });

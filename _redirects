@@ -37,6 +37,9 @@
 # is the sole exception and is detected client-side to load fictional fixture data.
 /portaal/demo  /portal-v2/  200!
 /portaal/ijsselmonde  /portal-v2/  200!
+# The browser keeps the clean /portaal/... URL after the rewrite, so every
+# relative stylesheet, script and ES-module import must resolve back into V2.
+/portaal/*  /portal-v2/:splat  200!
 /portaal  /portal-v2/  301!
 /portaal.html  /portal-v2/  301!
 /portal/*  /portal-v2/  301!
