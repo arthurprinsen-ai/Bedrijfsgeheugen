@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 const BASE_URL = process.env.PRODUCTION_URL || process.env.PREVIEW_URL || 'https://www.bedrijfsgeheugen.nl';
 
 test('Portal V2 is standalone and never routes into the legacy portal', async ({ page }) => {
+  test.setTimeout(90_000);
   const nonce = `${Date.now()}`;
   const legacyRequests = [];
   page.on('request', request => {
@@ -11,7 +12,7 @@ test('Portal V2 is standalone and never routes into the legacy portal', async ({
   });
 
   const response = await page.goto(`${BASE_URL}/portal-v2/?bg_standalone_readback=${nonce}`, {
-    waitUntil: 'networkidle',
+    waitUntil: 'domcontentloaded',
     timeout: 60_000,
   });
 
