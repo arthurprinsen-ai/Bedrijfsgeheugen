@@ -159,3 +159,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Verificatie na deploy:** `curl -I https://www.bedrijfsgeheugen.nl/assets/stijl.js` moet `max-age=3600,must-revalidate` tonen.
 - **Rollback:** verwijder het `/assets/*.js`-blok uit netlify.toml.
 - **Herbruikbare les:** meet cacheheaders op productie in plaats van ze uit `_headers` af te lezen; netlify.toml en `_headers` stapelen, en de toml wint.
+
+## 2026-09-11 — IMPROVEMENT — analytics-sitebreed
+- **Fingerprint:** `website|analytics|ga4|consent|cta-klik`
+- **Probleem:** GA4 met toestemming (#1391/#1395) kwam alleen op pagina's waarvan de bron een GA4-tag had. De homepage, /zelfscan, /frisse-blik, /aanmelden en /prijzen maten niets, dus het effect van de oranje knop (#1386) was niet te toetsen.
+- **Fix:** laatste buildstap `tools/site-shell/analytics-sitebreed.mjs` zet op elke publieke pagina (klantportaal uitgezonderd): Consent Mode standaard geweigerd, `<meta name="bg-ga4">`, `assets/toestemming.js` en de toestemmingsbanner. Idempotent: pagina's die de schil al voorzag krijgen niets dubbel.
+- **Eén bron:** `assets/toestemming.js` wordt bij de build gegenereerd uit het toestemmingsdeel van `assets/stijl.js` (geen tweede kopie). Op pagina's met stijl.js doet dat deel niets, zodat gtag.js nooit twee keer laadt.
+- **Knopmeting:** event `primaire_knop_klik` (knop_tekst, link_url, page_path) op klik op een primaire knop, met exact de selectoren uit `assets/cta-conversie.css`, en alleen na toestemming.
+- **Verificatie lokaal:** build 90/90 pagina's, finalize op 0 normalisaties (bannerlinks absoluut). Browser (390 en 1366 px) op /, /zelfscan, /prijzen: banner zichtbaar, geen Google-analytics vóór toestemming, na accepteren één gtag.js en het klik-event, CLS 0.
+- **Regressietest:** `tests/site-shell-analytics-sitebreed.test.mjs` (7 tests), ingeschreven in `lane-website.yml`.
+- **Rollback:** verwijder `await applySitewideAnalytics()` uit `tools/bouw-release-evidence.mjs`.

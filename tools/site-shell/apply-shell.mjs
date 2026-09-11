@@ -150,7 +150,7 @@ const TOEGESTANE_SCRIPTS = Object.freeze([
 /* Consent Mode moet vóór de analytics-tag staan, anders meet Google al vóórdat
    de bezoeker iets heeft kunnen kiezen. Deze regel zet alles standaard op
    geweigerd; assets/stijl.js zet hem op granted zodra iemand accepteert. */
-const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'consent\',\'default\',{analytics_storage:\'denied\',ad_storage:\'denied\',ad_user_data:\'denied\',ad_personalization:\'denied\',wait_for_update:500});</script>';
+export const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'consent\',\'default\',{analytics_storage:\'denied\',ad_storage:\'denied\',ad_user_data:\'denied\',ad_personalization:\'denied\',wait_for_update:500});</script>';
 
 /* De toestemmingsbanner staat in de bronpagina's buiten <main> en viel bij het
    opbouwen weg (11 sept 2026): niemand kon toestemming geven, dus GA4 kon nooit
@@ -159,7 +159,7 @@ const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];function 
    ingeperkte opmaak. Tekst en opmaak zijn gelijk aan de bron; op telefoons een
    korte tekst zonder titel en knoppen naast elkaar (135 in plaats van 374 px hoog),
    zodat de banner de h1 niet bedekt (standalone-visibility-check, 390x844). */
-const TOESTEMMINGSBANNER = `<style id="bg-toestemmingsbanner">
+export const TOESTEMMINGSBANNER = `<style id="bg-toestemmingsbanner">
 #bgCookie{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:99999;max-width:660px;margin:0 auto;background:#fff;color:#16213e;border:1px solid #e4e4ec;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.20);padding:1.15rem 1.25rem;font:400 .92rem/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:none}
 #bgCookie.bgShow{display:block}
 #bgCookie h4{margin:0 0 .45rem;font-size:1.02rem;font-weight:700}
