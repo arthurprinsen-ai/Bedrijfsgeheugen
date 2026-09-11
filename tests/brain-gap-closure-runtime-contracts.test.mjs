@@ -67,7 +67,7 @@ test('Governance is a canonical type for the production AI registry source', asy
   assert.ok(mappings.sources.supabase.canonical_types.includes('Governance'));
   assert.ok(mappings.sources.agent_runtime.canonical_types.includes('Governance'));
   assert.ok(mappings.sources.ai_model_services.canonical_types.includes('Governance'));
-  const migration=await readFile('supabase/migrations/20260831_brain_ai_governance_projection.sql','utf8');
+  const migration=await readFile('supabase/migrations/20260831164051_brain_ai_governance_projection.sql','utf8');
   assert.match(migration,/brain_sync_ai_governance_record/);
   assert.match(migration,/record_type in \([^)]*'Governance'/s);
   assert.match(migration,/after insert or update on public\.brain_ai_governance_registry/i);
