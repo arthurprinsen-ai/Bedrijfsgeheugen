@@ -1,4 +1,5 @@
 import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
+import { PROFILE_DIMENSIONS } from './modules/company-input.js';
 
 const n=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
 const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,n(v)));
@@ -42,6 +43,37 @@ const TRUSTED_ADVISOR=Object.freeze([
 ]);
 function people(s){return s?.portal?.people||{}}
 function headcount(s){return n(profile(s).headcount)||n(people(s).headcount)||0}
+
+/* Kosten per bedrijfsonderdeel.
+   Dit was de motor onder het advies van het oude klantportaal: per onderdeel
+   uren per week maal de volwassenheidsfactor maal het aantal medewerkers maal
+   46 werkweken maal de uurkosten. Op niveau 1 kost een onderdeel de volle
+   uren; op niveau 5 nog zes procent daarvan. Portal V2 had de onderdelen en de
+   factor wel, maar rekende ze nergens tot geld om - waardoor elk ingevuld
+   volwassenheidsniveau zonder gevolg bleef. */
+const NIVEAUFACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
+const WERKWEKEN=46;
+const TEAMDELER=24;
+
+function dimensieNiveau(s,id){
+  const m=profile(s).maturity||{};
+  const waarde=n(m[id]);
+  return waarde>=1&&waarde<=5?waarde:0;
+}
+
+function dimensieKosten(s){
+  const mw=n(profile(s).headcount), uur=n(profile(s).hourlyCost);
+  if(!mw||!uur)return [];
+  return PROFILE_DIMENSIONS.map(d=>{
+    const niveau=dimensieNiveau(s,d.id);
+    if(!niveau)return null;
+    const kosten=d.weeklyHours*NIVEAUFACTOR[niveau]*(mw/TEAMDELER)*WERKWEKEN*uur;
+    const top=NIVEAUFACTOR[Math.min(5,Math.max(niveau,d.top))];
+    const bijTop=d.weeklyHours*top*(mw/TEAMDELER)*WERKWEKEN*uur;
+    return {id:d.id,label:d.label,niveau,uren:d.weeklyHours,kosten,
+      potentieel:Math.max(0,kosten-bijTop),streefniveau:d.top};
+  }).filter(Boolean).sort((a,b)=>b.kosten-a.kosten);
+}
 
 function manualCost(s){const x=profile(s);return n(x.manualHoursPerWeek)*46*n(x.hourlyCost)}
 function maturityScores(s){const x=profile(s);const vals=arr(x.dimensionScores).map(n).filter(v=>v>0);if(vals.length)return vals;return Object.values(x.dimensions||{}).map(n).filter(v=>v>0)}
@@ -112,6 +144,10 @@ const C={
  'dupont-breakdown':s=>{const m=metrics(s),f=finance(s);const omzet=n(m.revenue),balans=n(f.balance),ev=n(f.equity);const nettomarge=omzet?n(m.ebitda)*.6/omzet:0;const omloop=ratio(omzet,balans);const hefboom=ratio(balans,ev);return {netMargin:nettomarge*100,assetTurnover:omloop,leverage:hefboom,roe:nettomarge*omloop*hefboom*100}},
  'ebitda-multiple':s=>n(finance(s).multiple),
  'tei-summary':s=>{const baten=C['benefit-at-target-maturity'](s);const kosten=n(s?.portal?.businessCase?.investment);const risico=C['risk-adjusted-benefit'](s);return {kosten,baten,risicogewogen:risico,flexibiliteit:Math.max(0,baten-risico),netto:baten-kosten}},
+ 'dimension-costs':s=>dimensieKosten(s),
+ 'dimension-cost-total':s=>dimensieKosten(s).reduce((sum,d)=>sum+d.kosten,0),
+ 'dimension-potential-total':s=>dimensieKosten(s).reduce((sum,d)=>sum+d.potentieel,0),
+ 'biggest-cost-dimension':s=>dimensieKosten(s)[0]||null,
  'sensitivity':s=>({base:C['equity-value'](s),downside:(n(metrics(s).ebitda)*.85*n(finance(s).multiple)-n(finance(s).debt)+n(finance(s).cash)),upside:(n(metrics(s).ebitda)*1.15*n(finance(s).multiple)-n(finance(s).debt)+n(finance(s).cash))}),
 
  'absence-gap':s=>n(s?.portal?.people?.absence)-4,

@@ -17,7 +17,7 @@ const GLOBAL_CAPABILITIES = frozen([
 
 export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
   overzicht: capability('overzicht', [],
-    ['CMMI maturity','adoption curve','time leakage','blockers','progress'], ['average-maturity','manual-work-annual','fte-lost','company-state','blocker-ranking','progress','advice-priority', 'cmmi-level', 'cmmi-ladder'],
+    ['CMMI maturity','adoption curve','time leakage','blockers','progress'], ['average-maturity','manual-work-annual','fte-lost','company-state','blocker-ranking','progress','advice-priority', 'cmmi-level', 'cmmi-ladder', 'dimension-costs', 'dimension-cost-total', 'dimension-potential-total', 'biggest-cost-dimension'],
     ['open-businesscase','open-profile','open-advice'],
     ['profiel','business','roadmap','advies'],
     { globalCapabilities: GLOBAL_CAPABILITIES, semanticInvariants: frozen(['capacity-not-cash','46-week-annualization']) }),

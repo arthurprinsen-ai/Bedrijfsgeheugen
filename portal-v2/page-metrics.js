@@ -3,6 +3,8 @@ import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BR
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen, verlopenHerzieningen } from './regelgeving.js';
 import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
 import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
+import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
+import { doorwerkingOverzicht, rekenwijze, rekenwijzeDekking } from './doorwerking.js';
 import { beoordeelPortefeuille, rangschikRisicos, auditMomentopname, STATUS_LABEL as CONTROL_LABEL } from './compliance-engine.js';
 
 const EMPTY='—';
@@ -85,6 +87,16 @@ const PAGES=Object.freeze({
       ['Jaarlijkse taakkosten',euro(calc('annual-task-cost',s))]
     ],
     worklist:s=>arr(at(s,'portal.aiScan.tasks')).slice(0,3).map(task=>[String(task.task||'Kans'),`data readiness ${num(task.dataReadiness)}/5`])},
+
+  rekenwijze:{slice:'portal.profile',
+    metrics:s=>{const d=rekenwijzeDekking(s);return [
+      ['Berekeningen',String(d.totaal)],
+      ['Na te rekenen met jouw cijfers',String(d.compleet)],
+      ['Nog invoer nodig',String(d.open)],
+      ['Compleet',pct(d.percentage)]
+    ];},
+    worklist:s=>rekenwijze(s).map(r=>[r.titel,
+      r.compleet?`${r.formule} = ${r.uitkomst}`:`${r.formule} — nodig: ${r.nodig.join(', ')}`])},
 
   'gegevens-invullen':{slice:'portal.inputs',
     metrics:s=>[
@@ -232,12 +244,19 @@ const PAGES=Object.freeze({
     ]},
 
   'ai-capabilities':{slice:'portal.aiCapabilities',
-    metrics:s=>[
+    metrics:s=>{const k=arr(calc('dimension-costs',s));
+      if(k.length)return [
+        ['Kosten op huidig niveau',euro(calc('dimension-cost-total',s))],
+        ['Te winnen op streefniveau',euro(calc('dimension-potential-total',s))],
+        ['Duurste onderdeel',String(calc('biggest-cost-dimension',s)?.label||EMPTY)],
+        ['Onderdelen met een niveau',String(k.length)]
+      ];
+      return [
       ['Capability readiness',`${num(calc('ai-capability-readiness',s),1)}/5`],
       ['Resterende afstand',`${num(calc('ai-capability-gap',s),1)}`],
       ['Beoordeeld',String(Object.keys(at(s,'portal.aiCapabilities')||{}).length)],
       ['Technologie readiness',`${num(calc('technology-readiness',s),1)}/5`]
-    ]},
+    ];}},
 
   'strategy-dna':{slice:'portal.strategyDna',
     metrics:s=>[
@@ -290,10 +309,14 @@ const PAGES=Object.freeze({
       ['Capaciteit',`${num(synthesis.capacity,1)} fte`],
       ['Restrisico',pct(synthesis.risk)]
     ];},
-    worklist:s=>[
+    worklist:s=>{const afgeleid=bevindingen(s);
+      if(afgeleid.length)return afgeleid.slice(0,5).map(b=>[
+        `${b.waarde?'€ '+b.waarde.toLocaleString('nl-NL')+' · ':''}${b.titel}`,
+        `${b.bewijs} — ${b.bron}`]);
+      return [
       ['Gewicht over de modellen heen',num(calc('cross-model-weight',s),2)],
       ...arr(calc('recommendation-priority',s)).slice(0,2).map(item=>[String(item.advice||'Advies'),`prioriteit ${num(item.priority)}`])
-    ]},
+    ];}},
 
   'due-diligence':{slice:'portal.dueDiligence',
     metrics:s=>[
@@ -329,17 +352,36 @@ const PAGES=Object.freeze({
     ];},
     worklist:s=>[
       ['Volgorde van doorvoeren',String(arr(calc('change-sequencing',s)).length||EMPTY)],
+      ...doorwerkingOverzicht(s).slice(0,2).map(d=>[
+        `${d.onderdeel} raakt ${d.afdelingen.length} afdelingen`,
+        `${d.stappen} stappen · ${d.kostenPerJaar?euro(d.kostenPerJaar)+' per jaar':'geen bedrag'}`]),
       ...arr(at(s,'portal.changes.items')).filter(item=>item.status!=='Geborgd').slice(0,2).map(item=>[String(item.change||'Wijziging'),`${item.area||EMPTY} · ${item.status||'Open'}`])
     ]},
 
   advies:{slice:'portal.advice',
-    metrics:s=>{const items=arr(at(s,'portal.advice.items'));return [
+    /* Deze pagina las alleen een lijst die iemand met de hand had ingetypt en
+       bleef daarom leeg bij een volledig ingevuld bedrijf. Hij leidt nu af uit
+       wat er al is doorgerekend; zie bevindingen.js. Een eigen ingetypte lijst
+       blijft werken en gaat voor. */
+    metrics:s=>{const afgeleid=bevindingen(s);
+      if(afgeleid.length){const v=bevindingenSamenvatting(s);return [
+        ['Bevindingen',String(v.totaal)],
+        ['Met een bedrag',String(v.metWaarde)],
+        ['Waarde per jaar',euro(v.waardePerJaar)],
+        ['Eerst aanpakken',String(v.eerste?.titel||EMPTY).slice(0,40)],
+        ['Van je onderdelen geraakt',pct(v.dekking)]
+      ];}
+      const items=arr(at(s,'portal.advice.items'));return [
       ['Adviezen',String(items.length)],
       ['Hoge prioriteit',String(items.filter(item=>Number(item.priority)>=4).length)],
       ['Totale waarde',euro(items.reduce((sum,item)=>sum+(Number(item.value)||0),0))],
       ['Met eigenaar',String(items.filter(item=>filled(item.owner)).length)]
     ];},
-    worklist:s=>arr(calc('advice-priority',s)).slice(0,3).map(item=>[String(item.advice||'Advies'),`${euro(item.value)} · ${num(item.duration)} wk`])},
+    worklist:s=>{const afgeleid=bevindingen(s);
+      if(afgeleid.length)return afgeleid.slice(0,5).map(b=>[
+        `${b.waarde?'€ '+b.waarde.toLocaleString('nl-NL')+' · ':''}${b.titel}`,
+        `${b.bewijs} — ${b.bron}`]);
+      return arr(calc('advice-priority',s)).slice(0,3).map(item=>[String(item.advice||'Advies'),`${euro(item.value)} · ${num(item.duration)} wk`]);}},
 
   offerte:{slice:'portal.offer',
     metrics:s=>[
@@ -536,6 +578,12 @@ function runtimeWorklist(pageId,state){
 
 export function hasPageData(pageId,state={}){
   if(pageId==='bronnenstatus')return true;
+  // advies leidt af uit doorgerekende gegevens; dan is de eigen slice leeg maar
+  // is er wel degelijk iets te tonen.
+  if(pageId==='advies'&&bevindingen(state).length)return true;
+  // ai-capabilities toont de kosten per bedrijfsonderdeel zodra er
+  // volwassenheidsniveaus zijn ingevuld, ook zonder capability-scores.
+  if(pageId==='ai-capabilities'&&arr(calc('dimension-costs',state)).length)return true;
   if(RUNTIME_PAGES[pageId]){const s=at(state,RUNTIME_PAGES[pageId])||{};return arr(s.items).length>0||Number(s.loops)>0||Number(s.totaal)>0;}
   const slice=PAGES[pageId]?.slice;
   return slice?filled(at(state,slice)):false;
