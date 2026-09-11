@@ -26,3 +26,14 @@ test('privacyarm: geen cookies, geen ingevulde waarden, GA4 alleen na toestemmin
   assert.match(meting, /function ga\(naam,p\)\{try\{if\(toestemming\(\)&&typeof window\.gtag==='function'\)/, 'GA4-events alleen na toestemming');
   assert.match(meting, /if\(window\.__bgMeting\)return;/, 'één keer per pagina');
 });
+
+test('bezwaar via Do Not Track of Global Privacy Control stopt de meting', () => {
+  assert.match(meting, /navigator\.globalPrivacyControl===true/);
+  assert.match(meting, /navigator\.doNotTrack==='1'/);
+  assert.ok(meting.indexOf('globalPrivacyControl') < meting.indexOf("gebeurtenis:'pagina'"), 'de controle staat vóór de eerste meting');
+});
+
+test('de privacyverklaring beschrijft de eigen meting zoals die werkt', () => {
+  const p = readFileSync('privacy.html', 'utf8');
+  for (const tekst of ['Eigen sitemeting zonder cookies', 'Supabase', '13 maanden', 'Global Privacy Control', 'nooit wat je in een formulier invult']) assert.ok(p.includes(tekst), tekst);
+});
