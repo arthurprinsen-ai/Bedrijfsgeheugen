@@ -8896,10 +8896,11 @@ window.__BG_LOOPT__ = function(K, slug){
           if (t) keuze.push(t.textContent);
         });
         var datum = new Date().toISOString().slice(0, 10);
-        fetch(HOOK, { method:'POST', headers:{'content-type':'application/json'},
+        var viaDb = window.__BG_TEKEN__ ? window.__BG_TEKEN__(slug, { naam:naam, functie:func }) : null;
+        (viaDb || fetch(HOOK, { method:'POST', headers:{'content-type':'application/json'},
           body: JSON.stringify({ soort:'Akkoord offerte', klant:(K.naam||slug), naam:naam,
             functie:func, datum:datum, onderdelen:keuze.join(' · '),
-            mail:(document.getElementById('wie')||{}).textContent||'' }) })
+            mail:(document.getElementById('wie')||{}).textContent||'' }) }))
           .then(function(){
             try { localStorage.setItem('bg_akkoord_' + slug,
               JSON.stringify({naam:naam, functie:func, datum:datum})); } catch(e){}
@@ -8907,9 +8908,9 @@ window.__BG_LOOPT__ = function(K, slug){
             m.textContent = 'Getekend. Je project staat klaar — we verversen even.';
             setTimeout(function(){ location.reload(); }, 1400);
           })
-          .catch(function(){
+          .catch(function(e){
             m.className = 'htkMeld fout';
-            m.textContent = 'Versturen lukte niet. Mail arthur@bedrijfsgeheugen.nl.';
+            m.textContent = (e && e.uitleg) || 'Versturen lukte niet. Mail arthur@bedrijfsgeheugen.nl.';
           });
       });
     }
@@ -10164,8 +10165,79 @@ window.__BG_LOOPT__ = function(K, slug){
 </style>
 <script>
 /* Handtekening onder de offerte, als eigen blok zodat hij niet meevalt met
-   andere modules. Tekenen stuurt het akkoord naar het CRM en zet het vast. */
+   andere modules. Tekenen legt het akkoord vast in de database (zie __BG_TEKEN__). */
 (function(){
+
+  /* BG_TEKEN_START
+     Tekenen gaat naar de database zodra de klant via Supabase is ingelogd
+     (klant-login.html zet dan bg_token). public.offerte_akkoord legt vast wie
+     tekende, wanneer en onder welke naam, en zet een melding klaar in Vandaag.
+     Zonder Supabase-sessie, zoals in de demo, geeft dit null terug en blijft de
+     oude route over de webhook. Besluit 10 september 2026: geen Make voor
+     klantakkoorden. */
+  window.__BG_TEKEN__ = function(klantSlug, gegevens){
+    var BASIS = 'https://adhjwmvyoixzjtmiroln.supabase.co';
+    var SLEUTEL = 'sb_publishable_W5aGMsfbZE4H7GraIR4oMQ_gV-x0xWL';
+    var token = null;
+    try { token = sessionStorage.getItem('bg_token'); } catch (e) {}
+    if (!token || !klantSlug) return null;
+
+    function api(pad, opties, tk){
+      opties = opties || {};
+      opties.headers = { apikey: SLEUTEL, 'Content-Type': 'application/json', Authorization: 'Bearer ' + tk };
+      return fetch(BASIS + pad, opties).then(function(r){
+        return r.text().then(function(tekst){
+          var j = null; try { j = tekst ? JSON.parse(tekst) : null; } catch (e) {}
+          if (r.ok) return j;
+          return Promise.reject({ status: r.status, message: (j && (j.message || j.msg || j.error_description)) || '' });
+        });
+      });
+    }
+    function vernieuw(){
+      var sessie = null;
+      try { sessie = JSON.parse(localStorage.getItem('bg_customer_auth') || 'null'); } catch (e) {}
+      if (!sessie || !sessie.refresh_token) return Promise.reject({ status: 401, message: 'sessie verlopen' });
+      return fetch(BASIS + '/auth/v1/token?grant_type=refresh_token', {
+        method: 'POST',
+        headers: { apikey: SLEUTEL, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: sessie.refresh_token })
+      }).then(function(r){
+        return r.json().then(function(nieuw){
+          if (!r.ok || !nieuw || !nieuw.access_token) return Promise.reject({ status: 401, message: 'sessie verlopen' });
+          try {
+            sessionStorage.setItem('bg_token', nieuw.access_token);
+            localStorage.setItem('bg_customer_auth', JSON.stringify(nieuw));
+          } catch (e) {}
+          return nieuw.access_token;
+        });
+      });
+    }
+    function teken(tk){
+      return api('/rest/v1/organisaties?slug=eq.' + encodeURIComponent(klantSlug) + '&select=id', {}, tk)
+        .then(function(orgs){
+          if (!orgs || !orgs.length) return Promise.reject({ status: 404, message: 'Offerte niet gevonden.' });
+          return api('/rest/v1/offertes?organisatie_id=eq.' + orgs[0].id + '&select=id&order=aangemaakt_op.desc&limit=1', {}, tk);
+        })
+        .then(function(off){
+          if (!off || !off.length) return Promise.reject({ status: 404, message: 'Offerte niet gevonden.' });
+          return api('/rest/v1/rpc/offerte_akkoord', { method: 'POST',
+            body: JSON.stringify({ p_offerte: off[0].id, p_naam: gegevens.naam, p_functie: gegevens.functie || null }) }, tk);
+        });
+    }
+    return teken(token)
+      .catch(function(e){
+        if (e && e.status === 401) return vernieuw().then(teken);
+        return Promise.reject(e);
+      })
+      .catch(function(e){
+        var m = String((e && e.message) || '');
+        var uitleg = /^(Vul je naam in|Deze offerte|Offerte niet gevonden)/.test(m) ? m
+          : (e && e.status === 401) ? 'Je sessie is verlopen. Log opnieuw in via je inloglink en teken dan.'
+          : 'Tekenen lukte niet. Mail arthur@bedrijfsgeheugen.nl.';
+        return Promise.reject({ uitleg: uitleg });
+      });
+  };
+  /* BG_TEKEN_EINDE */
   var HOOK='https://hook.eu1.make.com/783x2glfestd2c8hfqxlrvsrgefknc45';
   function slug(){
     var m=(location.search+location.hash).match(/[?&#]+klant=([^&#]+)/i);
@@ -10225,9 +10297,10 @@ window.__BG_LOOPT__ = function(K, slug){
           keuze.push(t.textContent);
         });
         var datum=new Date().toISOString().slice(0,10);
-        fetch(HOOK,{method:'POST',headers:{'content-type':'application/json'},
+        var viaDb=window.__BG_TEKEN__?window.__BG_TEKEN__(slug(),{naam:naam,functie:func}):null;
+        (viaDb||fetch(HOOK,{method:'POST',headers:{'content-type':'application/json'},
           body:JSON.stringify({soort:'Akkoord offerte',klant:(K.naam||slug()),naam:naam,
-            functie:func,datum:datum,onderdelen:keuze.join(' \u00b7 ')})})
+            functie:func,datum:datum,onderdelen:keuze.join(' \u00b7 ')})}))
           .then(function(){
             try{localStorage.setItem('bg_akkoord_'+slug(),
               JSON.stringify({naam:naam,functie:func,datum:datum}));}catch(e){}
@@ -10235,9 +10308,9 @@ window.__BG_LOOPT__ = function(K, slug){
             m.textContent='Getekend. Je project staat klaar.';
             setTimeout(vul,900);
           })
-          .catch(function(){
+          .catch(function(e){
             m.className='htkMeld fout';
-            m.textContent='Versturen lukte niet. Mail arthur@bedrijfsgeheugen.nl.';
+            m.textContent=(e&&e.uitleg)||'Versturen lukte niet. Mail arthur@bedrijfsgeheugen.nl.';
           });
       });
     }catch(e){ console.error('[bedrijfsgeheugen] handtekening:',e); }
