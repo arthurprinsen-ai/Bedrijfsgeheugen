@@ -99,7 +99,7 @@ jobs:
           tests/site-shell-v18-view-integrity.test.mjs
           tests/site-shell-stijlblokken.test.mjs
           tests/site-shell-schema-integriteit.test.mjs
-          tests/analytics-na-toestemming.test.mjs
+          tests/site-shell-analytics-na-toestemming.test.mjs
           tests/site-shell-cta-conversie.test.mjs
           tests/site-shell-knoppen-en-leesbreedte.test.mjs
           tests/site-shell-scoop-commentaar.test.mjs
