@@ -1408,8 +1408,21 @@ function laad(){
 function bewaar(){ try{ localStorage.setItem(sleutel, JSON.stringify(S)); }catch(e){} }
 
 /* ---------- login ---------- */
+/* Demostand.
+   Met een klant-parameter neemt dit portaal de offerteroute: start() stopt
+   meteen en afschermen() verbergt de kaarten. Dat klopt voor een echte klant,
+   maar het maakte de demo een lege huls. Op de demoslugs draait het portaal
+   volledig, met de voorbeeldgegevens uit __KLANTEN__. Geen echte klantdata:
+   die komt pas na inloggen uit Supabase. */
+window.__BG_DEMO_SLUGS__ = ['demo1','demo'];
+window.__BG_IS_DEMO__ = function(){
+  var m = (location.search + location.hash).match(/[?&#]+klant=([^&#]+)/i);
+  var k = m ? decodeURIComponent(m[1]).toLowerCase() : '';
+  return window.__BG_DEMO_SLUGS__.indexOf(k) >= 0;
+};
+
 function toonPortaal(user){
-  try{ if(localStorage.getItem('bg_portaal_open')==='1') document.body.classList.add('open'); }catch(e){}
+  try{ if(localStorage.getItem('bg_portaal_open')==='1'||window.__BG_IS_DEMO__()) document.body.classList.add('open'); }catch(e){}
   document.getElementById('poort').hidden=true;
   document.getElementById('portaal').hidden=false;
   document.getElementById('wie').textContent=(user&&(user.user_metadata&&user.user_metadata.full_name||user.email))||'';
@@ -5751,7 +5764,10 @@ function tekenAntwoorden(){
 }
 
 /* ---------- toegang tot downloaden en afdrukken ---------- */
-function magBewaren(){ try{ return localStorage.getItem('bg_portaal_open')==='1'; }catch(e){ return false; } }
+function magBewaren(){
+ /* De demo mag geen sporen achterlaten in de browser van een bezoeker. */
+ if(window.__BG_IS_DEMO__()) return false;
+ try{ return localStorage.getItem('bg_portaal_open')==='1'; }catch(e){ return false; } }
 function vraagToegang(daarna){
   if(magBewaren()){ daarna(); return; }
   const laag=document.createElement('div');
@@ -9136,6 +9152,7 @@ window.__BG_LOOPT__ = function(K, slug){
     '</div>';
   }
   function afschermen(){
+    if(window.__BG_IS_DEMO__()) return;   /* demo toont alles */
     var K=(window.__KLANTEN__||{})[slug()];
     if(!K||K.actief) return;
     var ov=document.getElementById('p-overzicht');
@@ -12828,7 +12845,7 @@ window.__BG_LOOPT__ = function(K, slug){
 
  /* ── starten ───────────────────────────────────────────────────────────── */
  function start(){
-  if(heeftKlantParam()) return;                 /* offerteroute: niet aankomen */
+  if(heeftKlantParam() && !window.__BG_IS_DEMO__()) return;   /* offerteroute: niet aankomen; demo draait wel volledig */
   if(typeof S==='undefined'||!S.niveaus){ setTimeout(start,400); return; }
   leesSessie();
   teken2();

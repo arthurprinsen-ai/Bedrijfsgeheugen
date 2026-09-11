@@ -12,7 +12,10 @@
 # Customer portal variants. Order matters: specific routes first.
 # The old demo alias canonicalizes to demo1; demoAI is the only route to the new AI portal.
 /klantportaal  klant=demo  /klantportaal?klant=demo1  301!
-/klantportaal  klant=demo1  /klantportaal-demo.html  200!
+# demo1 toont sinds 11 september 2026 het volledige portaal in demostand: alles
+# open, niets afgeschermd, geen sporen in de browser. De klikbare demo over
+# wijzigingen blijft bereikbaar op /klantportaal-demo.html zelf.
+/klantportaal  klant=demo1  /klantportaal.html  200!
 /klantportaal  klant=ijsselmonde  /klantportaal.html  200!
 # Portal V2 is het enige klantportaal. Sinds 11 september 2026 zit alles uit
 # portal/ en portal-next/ in portal-v2/: het Data & AI Passport, het EU AI
