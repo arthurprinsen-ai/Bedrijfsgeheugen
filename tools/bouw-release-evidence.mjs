@@ -3,6 +3,8 @@ import { isolateStandalonePages } from './standalone-page-router.mjs';
 import { finalizeSiteContracts } from './site-shell/finalize-site-contracts.mjs';
 import { applyConversionCta } from './site-shell/cta-conversie.mjs';
 import { applySitewideAnalytics } from './site-shell/analytics-sitebreed.mjs';
+import { applyMoneyPrerender } from './site-shell/money-prerender.mjs';
+import { applyLettertypeTerugval } from './site-shell/lettertype-terugval.mjs';
 
 // Standalone URLs are real documents. They may inherit the historical homepage
 // one-page router through the canonical shell; that router can remove the active
@@ -17,6 +19,14 @@ await applyConversionCta();
 // GA4 op elke publieke pagina, pas na toestemming, plus de klikmeting op de
 // primaire knop — zie tools/site-shell/analytics-sitebreed.mjs.
 await applySitewideAnalytics();
+
+// Money-page blokken (prijs, doorlooptijd, besliskader) staan vooraf in de HTML
+// in plaats van na het laden te verschijnen — zie money-prerender.mjs.
+await applyMoneyPrerender();
+
+// Terugvallettertype met dezelfde maten als Instrument Sans / Bricolage, zodat
+// de fontwissel de pagina niet laat verspringen — zie lettertype-terugval.mjs.
+await applyLettertypeTerugval();
 
 // Dit is bewust de allerlaatste HTML-contractlaag. Geen enkele writer mag hierna
 // nog Kennis terug naar /blog/ kunnen zetten. Release-evidence wordt pas daarna
