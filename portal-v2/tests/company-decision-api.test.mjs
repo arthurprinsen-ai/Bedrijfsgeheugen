@@ -10,7 +10,7 @@ function request(body, method='POST') {
   });
 }
 
-function fixture({user={id:'u1',email:'arthur@example.test',app_metadata:{tenant_id:'tenant-a'}}, decisionStatus='PROPOSED'}={}) {
+function fixture({user={id:'u1',email:'arthur@example.test',app_metadata:{tenantId:'tenant-a'}}, decisionStatus='PROPOSED'}={}) {
   const appended=[];
   const store={
     async getProjection(tenantId){
