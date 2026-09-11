@@ -1,12 +1,17 @@
 import { writeFile } from 'node:fs/promises';
 import { isolateStandalonePages } from './standalone-page-router.mjs';
 import { finalizeSiteContracts } from './site-shell/finalize-site-contracts.mjs';
+import { applyConversionCta } from './site-shell/cta-conversie.mjs';
 
 // Standalone URLs are real documents. They may inherit the historical homepage
 // one-page router through the canonical shell; that router can remove the active
 // view after a menu navigation and leave a completely white page. Strip only
 // that router at the final build boundary, after every shell/page transformer.
 await isolateStandalonePages();
+
+// Eén primaire knopkleur (oranje) voor de publieke site — zie assets/cta-conversie.css.
+// Na alle schil/paginabouwers, vóór de contractcontrole.
+await applyConversionCta();
 
 // Dit is bewust de allerlaatste HTML-contractlaag. Geen enkele writer mag hierna
 // nog Kennis terug naar /blog/ kunnen zetten. Release-evidence wordt pas daarna
