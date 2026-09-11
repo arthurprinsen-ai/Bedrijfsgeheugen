@@ -1,0 +1,55 @@
+name: Homepage toggle preview smoke
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tools/bouw-v18-homepage-platform-expertise-toggle.mjs'
+      - 'tools/prijzen-uit-de-homepage.mjs'
+      - 'tests/seo-homepage-platform-expertise-live.spec.js'
+      - '.github/workflows/homepage-toggle-preview-smoke.yml'
+      - '.github/workflows/homepage-toggle-production-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  preview-toggle:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Wait for Netlify deploy preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for i in $(seq 1 36); do
+            json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
+            state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
+            if [ "$state" = "success" ]; then exit 0; fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
+              echo "::error::Netlify preview failed for $HEAD_SHA: $state"
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "::error::Timed out waiting for Netlify preview status for $HEAD_SHA"
+          exit 1
+
+      - name: Install Playwright runtime and Chromium
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Click Platform and Expertise on preview
+        env:
+          PREVIEW_URL: https://deploy-preview-${{ github.event.pull_request.number }}--bedrijfsgeheugen.netlify.app
+        run: npx playwright test tests/seo-homepage-platform-expertise-live.spec.js --workers=1

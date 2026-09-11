@@ -1,0 +1,46 @@
+name: Homepage toggle production smoke
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tools/bouw-v18-homepage-platform-expertise-toggle.mjs'
+      - 'tools/prijzen-uit-de-homepage.mjs'
+      - 'tests/seo-homepage-platform-expertise-live.spec.js'
+      - '.github/workflows/homepage-toggle-production-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-toggle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Wait until production contains the toggle runtime
+        run: |
+          for i in $(seq 1 36); do
+            if curl -fsS --max-time 20 "https://www.bedrijfsgeheugen.nl/?production-smoke=${GITHUB_SHA}-${i}" -o /tmp/index.html; then
+              if grep -Fq 'homepage-platform-expertise-toggle-script' /tmp/index.html; then
+                echo "Production toggle runtime found"
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          echo "::error::Production did not expose homepage toggle runtime within 6 minutes"
+          exit 1
+
+      - name: Install Playwright runtime and Chromium
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Click Platform and Expertise on production
+        env:
+          PREVIEW_URL: https://www.bedrijfsgeheugen.nl
+        run: npx playwright test tests/seo-homepage-platform-expertise-live.spec.js --workers=1
