@@ -1,0 +1,4 @@
+select cron.schedule('bg-kansenradar-dagelijks', '0 6 * * *', $c$select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-kansenradar', body := '{}'::jsonb, headers := '{"content-type":"application/json"}'::jsonb, timeout_milliseconds := 150000);$c$);
+select cron.schedule('bg-inhaakpost-genereren', '10 6 * * *', $c$select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-native-content-generate', body := '{}'::jsonb, headers := '{"content-type":"application/json"}'::jsonb, timeout_milliseconds := 150000);$c$);
+select net.http_post(url := 'https://api.notion.com/v1/data_sources/edbae86e-1037-4acf-b2e9-657a82eff11e/query', body := '{"page_size":1}'::jsonb,
+  headers := jsonb_build_object('authorization','Bearer '||public.bg_geheim('Notion'),'notion-version','2025-09-03','content-type','application/json')) as notion_test_id;
