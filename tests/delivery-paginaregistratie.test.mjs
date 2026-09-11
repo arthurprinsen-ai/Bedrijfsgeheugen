@@ -58,3 +58,38 @@ test('de registratie noemt geen pagina die niet meer bestaat', () => {
   assert.deepEqual(spoken, [],
     'deze pagina\'s staan geregistreerd maar bestaan niet meer; haal ze uit de lane-configuratie');
 });
+
+/**
+ * Dezelfde blinde vlek, maar dan voor testbestanden.
+ *
+ * Op 11 september 2026 bleken 57 testbestanden die CI wél draait niet
+ * classificeerbaar in config/brain-delivery-system.json. Gevolg: elke PR die er
+ * één aanraakt loopt vast op de preflight met "unclassified delivery path",
+ * zonder dat er iets mis is met de test of de wijziging. Dat is precies wat er
+ * gebeurde bij tests/customer-portal-routing.test.mjs in #1393.
+ *
+ * Dat getal hoort te dalen. Loopt het op, dan is er een testbestand bijgekomen
+ * dat CI draait maar het leveringssysteem niet kent.
+ */
+const TESTS_ZONDER_LANE = 57;
+
+const workflowTekst = () => readdirSync('.github/workflows')
+  .filter(naam => /\.ya?ml$/.test(naam))
+  .map(naam => readFileSync(`.github/workflows/${naam}`, 'utf8'))
+  .join('\n');
+
+test('het aantal gedraaide tests zonder lane loopt niet op', () => {
+  const workflows = workflowTekst();
+  const zonderLane = readdirSync('tests')
+    .filter(naam => naam.endsWith('.test.mjs'))
+    .map(naam => `tests/${naam}`)
+    .filter(pad => workflows.includes(pad))
+    .filter(pad => {
+      try { createDeliveryPlan({ changedPaths: [pad], headSha: SHA, policy: POLICY }); return false; }
+      catch (fout) { return /unclassified delivery path/.test(fout.message); }
+    });
+  assert.ok(zonderLane.length <= TESTS_ZONDER_LANE,
+    `er zijn nu ${zonderLane.length} testbestanden die CI draait maar die geen lane hebben, was ${TESTS_ZONDER_LANE}. ` +
+    `Nieuw erbij: ${zonderLane.slice(0, 5).join(', ')}. Registreer ze in config/brain-delivery-system.json, ` +
+    'anders loopt elke PR die ze aanraakt vast op de preflight.');
+});
