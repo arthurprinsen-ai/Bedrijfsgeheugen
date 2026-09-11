@@ -11,6 +11,12 @@ alter table public.bg_post_kenmerken
   add column if not exists objective text;
 
 alter table public.social_experiments
+  drop constraint if exists social_experiments_status_check;
+alter table public.social_experiments
+  add constraint social_experiments_status_check
+  check (status = any (array['PLANNED'::text,'ACTIVE'::text,'COMPLETE'::text,'ROLLED_BACK'::text,'INSUFFICIENT_EVIDENCE'::text]));
+
+alter table public.social_experiments
   add column if not exists recipe jsonb not null default '{}'::jsonb,
   add column if not exists source_signals jsonb not null default '[]'::jsonb,
   add column if not exists commercial_hypothesis text,
@@ -85,7 +91,7 @@ select
     'exploration_target',0.20
   ),
   p.calendar_date::timestamptz,
-  'ACTIVE',
+  'PLANNED',
   jsonb_build_object(
     'experiment_family',p.family,
     'mode',p.decision_mode,

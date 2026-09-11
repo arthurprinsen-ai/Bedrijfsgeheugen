@@ -92,4 +92,8 @@ test('daily recommendation loop consumes sales, social, revenue and fresh cross-
   assert.match(code, /source_mix/);
   assert.match(code, /latent_problem_activation/);
   assert.match(code, /commercial_value/);
+  assert.match(code, /social_experiments\?calendar_date=eq\.\$\{date\}/);
+  assert.match(code, /bg_schrijfregels\?on_conflict=regel_id/);
+  assert.match(code, /rci-daily-experiment/);
+  assert.match(code, /experiment_id/);
 });
