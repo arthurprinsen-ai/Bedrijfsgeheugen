@@ -191,3 +191,17 @@ test('deploy-preflight CLI reports the actual Git source topology and governance
   assert.match(linked ? result.stderr : result.stdout, linked ? /STAGE_STANDALONE_EXACT_SHA/ : /DEPLOY_SOURCE_READY/);
   assert.match(governance, /brain-delivery-system\.mjs deploy-preflight --sha/);
 });
+
+test('Revenue Content Intelligence artifacts are narrowly classified as backend delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+  for (const path of ['tests/revenue-content-intelligence.test.mjs','data/revenue-content-experiment-policy.json']) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abcdef1234567890', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend'], `${path} must be backend delivery work`);
+  }
+  assert.throws(
+    () => createDeliveryPlan({ changedPaths:['data/unowned-future-content.json'], headSha:'abcdef1234567890', policy }),
+    /unclassified delivery path/,
+    'classification must remain fail closed for unrelated data files'
+  );
+});
+
