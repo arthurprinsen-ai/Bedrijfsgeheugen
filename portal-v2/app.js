@@ -1,7 +1,7 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
 import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
-import { DESKTOP_NAV_ITEMS } from './navigation-model.js';
+import { DESKTOP_NAV_ITEMS, PORTAL_NAV_ITEMS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
 import { groupedHubPages, hubDefinition } from './hubs.js';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
@@ -9,6 +9,7 @@ import { createPortalDomainState } from './domain-state.js';
 import { mountGlobalActions } from './global-actions-ui.js';
 import { applyCustomerBranding } from './customer-branding.js';
 import { applyOverviewDashboard } from './modules/overview.js';
+import { renderProjectOverview } from './project-overview.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -30,6 +31,7 @@ const MODULES=[
 let selection={source:'documenten',module:'inzicht'};
 let previewMode=true;
 let runtime=null;
+let activeProjectGroup='project-overview';
 
 function el(id){return document.getElementById(id)}
 function selectedSource(){return SOURCES.find(x=>x[0]===selection.source)}
@@ -90,24 +92,71 @@ function drawFlow(flow){
 }
 function render(){const flow=deriveFlowState({source:selection.source,module:selection.module,runtime,preview:previewMode});renderFocus();renderCopy(flow);requestAnimationFrame(()=>drawFlow(flow))}
 
+function openProjectPage(pageId){closeHub();navigatePortal(pageId);}
+function renderProjectContext(groups){
+ const wrap=document.createElement('div');wrap.className='projectcontext';
+ const tabs=document.createElement('div');tabs.className='projecttabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Jouw project');
+ const content=document.createElement('div');content.className='projectgroupcontent';
+ const renderGroup=group=>{
+   activeProjectGroup=group.id;
+   [...tabs.children].forEach(button=>{const selected=button.dataset.projectGroup===group.id;button.setAttribute('aria-selected',String(selected));button.classList.toggle('active',selected)});
+   content.innerHTML='';
+   if(group.id==='project-overview'){
+     let state={};try{state=portalDomainState?.get?.()||{};}catch{}
+     renderProjectOverview(content,state,{openPage:openProjectPage});
+     return;
+   }
+   const section=document.createElement('section');section.className='group projectgroup';section.innerHTML=`<h4>${group.label}</h4>`;
+   for(const page of group.pages){
+     const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=page.target||page.id;
+     b.addEventListener('click',()=>openProjectPage(page.target||page.id));
+     section.appendChild(b);
+   }
+   content.appendChild(section);
+ };
+ for(const group of groups){
+   const tab=document.createElement('button');tab.type='button';tab.dataset.projectGroup=group.id;tab.setAttribute('role','tab');tab.textContent=group.label;
+   tab.addEventListener('click',()=>renderGroup(group));tabs.appendChild(tab);
+ }
+ wrap.append(tabs,content);
+ const selected=groups.find(group=>group.id===activeProjectGroup)||groups[0];if(selected)renderGroup(selected);
+ return wrap;
+}
 function renderHubGroups(hubId='portal'){
  const groups=el('groups');if(!groups)return;
  groups.innerHTML='';
- for(const group of groupedHubPages(hubId)){
+ const data=groupedHubPages(hubId);
+ if(hubId==='project'){groups.appendChild(renderProjectContext(data));return;}
+ for(const group of data){
   const section=document.createElement('section');section.className='group';section.innerHTML=`<h4>${group.label}</h4>`;
   for(const page of group.pages){
-   const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=page.id;
-   b.addEventListener('click',()=>{closeHub();navigatePortal(page.id)});
+   const target=page.target||page.id;
+   const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=target;
+   b.addEventListener('click',()=>{closeHub();navigatePortal(target)});
    section.appendChild(b);
   }
   groups.appendChild(section);
  }
 }
+function mountDesktopProjectNavigation(){
+ const nav=document.querySelector('.sidebar .nav');if(!nav||document.querySelector('.desktop-project-nav'))return;
+ const section=document.createElement('section');section.className='desktop-project-nav';
+ section.innerHTML='<div class="desktop-project-title">Jouw project</div>';
+ for(const group of groupedHubPages('project')){
+   const block=document.createElement('div');block.className='desktop-project-group';
+   const heading=document.createElement('button');heading.type='button';heading.className='desktop-project-heading';heading.textContent=group.label;
+   heading.addEventListener('click',()=>{activeProjectGroup=group.id;navigatePortal('hub:project')});block.appendChild(heading);
+   if(group.id!=='project-overview')for(const page of group.pages){const link=document.createElement('button');link.type='button';link.className='desktop-project-link';link.textContent=page.label;link.addEventListener('click',()=>navigatePortal(page.target||page.id));block.appendChild(link)}
+   section.appendChild(block);
+ }
+ nav.after(section);
+}
 function markNavigationControls(){
  const desktop=[...document.querySelectorAll('.nav button')];
  DESKTOP_NAV_ITEMS.forEach((item,index)=>{if(desktop[index])desktop[index].dataset.navTarget=item.target});
  const mobile=[...document.querySelectorAll('.mobilebar button')];
- ['overview','portal','data-ai','tasks','more'].forEach((id,index)=>{if(mobile[index])mobile[index].dataset.mobileNav=id});
+ const icons={overview:'⌂',project:'▣','data-ai':'✦',tasks:'✓',more:'☰'};
+ PORTAL_NAV_ITEMS.forEach((item,index)=>{if(mobile[index]){mobile[index].dataset.mobileNav=item.id;mobile[index].innerHTML=`${icons[item.id]||'•'}<br>${item.label}`;}});
 }
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
@@ -134,8 +183,8 @@ const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
 configurePortalShell({domainState:portalDomainState});
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
-portalDomainState.subscribe(snap=>applyOverviewDashboard(document,snap.state||{}));
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
+portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();mountDesktopProjectNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
  openPage:openPortalPage,
  openHub,

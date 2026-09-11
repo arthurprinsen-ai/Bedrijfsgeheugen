@@ -3,13 +3,18 @@ import assert from 'node:assert/strict';
 import { HUB_DEFINITIONS, hubPages } from '../portal-v2/hubs.js';
 import { findPage } from '../portal-v2/page-registry.js';
 
-test('four primary mobile hubs expose explicit native page sets', () => {
-  assert.deepEqual(Object.keys(HUB_DEFINITIONS), ['portal','data-ai','tasks','more']);
+test('registered hubs expose explicit native page sets including Project', () => {
+  assert.deepEqual(Object.keys(HUB_DEFINITIONS), ['portal','project','data-ai','tasks','more']);
   for (const hubId of Object.keys(HUB_DEFINITIONS)) {
     const pages=hubPages(hubId);
     assert.ok(pages.length>0, `${hubId} must expose real pages`);
     for(const pageId of pages) assert.ok(findPage(pageId), `${hubId} -> ${pageId}`);
   }
+});
+
+test('Project hub exposes the existing native project capabilities', () => {
+  const pages=hubPages('project');
+  for(const id of ['offerte','waarde-financiering','koppelingen','taken-werkstromen','documenten','wijzigingen','gebruikers']) assert.ok(pages.includes(id), id);
 });
 
 test('Data & AI hub exposes source, connector, AI and Brain capabilities', () => {

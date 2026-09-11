@@ -1,6 +1,6 @@
 export const PORTAL_NAV_ITEMS = Object.freeze([
   Object.freeze({ id:'overview', label:'Overzicht', target:'overzicht' }),
-  Object.freeze({ id:'portal', label:'Portaal', target:'hub:portal' }),
+  Object.freeze({ id:'project', label:'Project', target:'hub:project' }),
   Object.freeze({ id:'data-ai', label:'Data & AI', target:'hub:data-ai' }),
   Object.freeze({ id:'tasks', label:'Taken', target:'hub:tasks' }),
   Object.freeze({ id:'more', label:'Meer', target:'hub:more' })

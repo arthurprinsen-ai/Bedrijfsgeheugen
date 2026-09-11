@@ -134,7 +134,7 @@ test('mobile primary navigation routes all five controls on supported phone widt
 
     const expected=[
       ['overview', null, null],
-      ['portal', 'hub', 'portal'],
+      ['project', 'hub', 'project'],
       ['data-ai', 'hub', 'data-ai'],
       ['tasks', 'hub', 'tasks'],
       ['more', 'hub', 'more']
