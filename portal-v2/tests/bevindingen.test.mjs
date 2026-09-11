@@ -171,3 +171,37 @@ test('de capabilities-pagina toont de kosten per onderdeel', () => {
   assert.match(pageVisual('ai-capabilities', KLANT), /per jaar kost op zijn huidige niveau/);
   assert.equal(pageVisual('ai-capabilities', {}), '');
 });
+
+/* ---- Extern onderzoek gericht op de zwakke onderdelen ---- */
+
+test('extern onderzoek wordt advies voor het onderdeel waar het over gaat', () => {
+  const lijst = bevindingen(KLANT).filter(item => item.id.startsWith('onderzoek-'));
+  assert.ok(lijst.length >= 2, 'geen enkele onderzoekskaart wordt advies');
+  for (const item of lijst) {
+    assert.ok(item.dim, `${item.id} hangt aan geen bedrijfsonderdeel`);
+    assert.match(item.bewijs, /Bij jou staat .+ op niveau \d van \d/,
+      'het externe cijfer wordt niet naast het eigen niveau gezet');
+    assert.match(item.bewijs, /kost .+ euro per jaar/, 'wat dit onderdeel kost ontbreekt');
+    assert.ok(String(item.bron).length > 10, `${item.id} noemt zijn bron niet`);
+  }
+  assert.ok(lijst.some(item => /McKinsey/.test(item.bron)), 'de McKinsey-bevinding komt niet terug');
+});
+
+test('een extern onderzoekscijfer krijgt geen verzonnen bedrag', () => {
+  for (const item of bevindingen(KLANT).filter(x => x.id.startsWith('onderzoek-')))
+    assert.equal(item.waarde, null,
+      'extern onderzoek zegt iets over de markt, niet over wat het bij dit bedrijf oplevert');
+});
+
+test('onderdelen die al op streefniveau staan krijgen geen onderzoeksadvies', () => {
+  const opOrde = { portal: { profile: { headcount: 38, hourlyCost: 52,
+    maturity: { tech: 4, operatie: 4, finance: 4 } } } };
+  assert.deepEqual(bevindingen(opOrde).filter(item => item.id.startsWith('onderzoek-')), [],
+    'een bevinding over een onderdeel dat al op orde is, is geen werk');
+});
+
+test('welke afdelingen het raakt staat erbij', () => {
+  const tech = bevindingen(KLANT).find(item => item.id === 'onderzoek-tech');
+  assert.ok(tech, 'het zwakste onderdeel krijgt geen onderzoeksadvies');
+  assert.match(tech.bewijs, /het raakt /, 'de geraakte afdelingen ontbreken');
+});
