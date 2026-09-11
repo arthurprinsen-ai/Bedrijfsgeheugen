@@ -156,7 +156,9 @@ const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];function 
    opbouwen weg (11 sept 2026): niemand kon toestemming geven, dus GA4 kon nooit
    meten. De schil zet hem daarom zelf op elke pagina met analytics, als laatste
    stap (na knoppenNaarLinks, zodat de knoppen knoppen blijven), met eigen, niet
-   ingeperkte opmaak. Tekst en opmaak zijn gelijk aan de bron. */
+   ingeperkte opmaak. Tekst en opmaak zijn gelijk aan de bron; op telefoons een
+   korte tekst zonder titel en knoppen naast elkaar (135 in plaats van 374 px hoog),
+   zodat de banner de h1 niet bedekt (standalone-visibility-check, 390x844). */
 const TOESTEMMINGSBANNER = `<style id="bg-toestemmingsbanner">
 #bgCookie{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:99999;max-width:660px;margin:0 auto;background:#fff;color:#16213e;border:1px solid #e4e4ec;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.20);padding:1.15rem 1.25rem;font:400 .92rem/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:none}
 #bgCookie.bgShow{display:block}
@@ -168,11 +170,12 @@ const TOESTEMMINGSBANNER = `<style id="bg-toestemmingsbanner">
 #bgCookie .bgAccept{background:var(--blauw,#1a56db);color:#fff}
 #bgCookie .bgDeny{background:#fff;color:var(--blauw,#1a56db)}
 #bgCookie button:focus-visible{outline:3px solid rgba(26,86,219,.4);outline-offset:2px}
-@media(max-width:520px){#bgCookie .bgBtns{flex-direction:column-reverse}}
+#bgCookie .bgKort{display:none}
+@media(max-width:520px){#bgCookie{left:.5rem;right:.5rem;bottom:.5rem;padding:.75rem .85rem;font-size:.84rem;line-height:1.45}#bgCookie h4{display:none}#bgCookie .bgLang{display:none}#bgCookie .bgKort{display:inline}#bgCookie .bgBtns{flex-direction:row;flex-wrap:nowrap;gap:.5rem;margin-top:.6rem}#bgCookie button{min-width:0;flex:1 1 0;padding:.6rem .5rem;font-size:.84rem}}
 </style>
 <div id="bgCookie" role="dialog" aria-label="Cookiemelding" aria-describedby="bgCookieTxt">
   <h4>🍪 Cookies &amp; privacy</h4>
-  <p id="bgCookieTxt">Bedrijfsgeheugen gebruikt noodzakelijke cookies voor een goede werking van de site. Met jouw toestemming gebruiken we ook analytische cookies (Google Analytics) om te meten hoe de site wordt gebruikt en die te verbeteren. Je keuze wordt onthouden en je kunt 'm altijd wijzigen. Meer weten? Zie onze <a href="/privacy">privacyverklaring</a>.</p>
+  <p id="bgCookieTxt"><span class="bgLang">Bedrijfsgeheugen gebruikt noodzakelijke cookies voor een goede werking van de site. Met jouw toestemming gebruiken we ook analytische cookies (Google Analytics) om te meten hoe de site wordt gebruikt en die te verbeteren. Je keuze wordt onthouden en je kunt 'm altijd wijzigen. Meer weten? Zie onze <a href="/privacy">privacyverklaring</a>.</span><span class="bgKort">Met jouw toestemming meten we met Google Analytics hoe de site wordt gebruikt. Zonder toestemming meten we niets. <a href="/privacy">Privacy</a></span></p>
   <div class="bgBtns">
     <button type="button" class="bgDeny" id="bgCookieDeny">Alleen noodzakelijk</button>
     <button type="button" class="bgAccept" id="bgCookieAccept">Accepteren</button>
