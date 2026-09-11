@@ -100,7 +100,7 @@ nav .btn{margin-left:auto;padding:.5rem 1.1rem;font-size:.85rem}
 .wl .row2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
 @media(max-width:560px){.wl .row2{grid-template-columns:1fr}}
 .wl .btn{width:100%;text-align:center;margin-top:1rem}
-.wl .mini{font-size:.75rem;color:var(--grijs);margin-top:.6rem;text-align:center}
+.wl .wl-noot{font-size:.75rem;color:var(--grijs);margin-top:.6rem;text-align:center}
 .form-ok{background:#EEF4F0;border:1px solid #CBDCD1;color:var(--ok);border-radius:10px;padding:1rem 1.2rem;font-weight:600;font-size:.92rem;margin-top:.9rem}
 .form-err{color:var(--risk);font-weight:600;font-size:.88rem;margin-top:.8rem}
 .form-err a{color:var(--risk)}
@@ -246,7 +246,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
         </div>
         <p style="font-size:.85rem;color:var(--grijs);margin:.6rem 0">Je ontvangt alleen bericht over de lancering van Connect — geen nieuwsbrief, geen belletjes. Zie de <a href="/privacy" style="color:#2742D6">privacyverklaring</a>.</p>
 <button class="btn primary" type="submit">Reserveer mijn plek (gratis) →</button>
-        <div class="mini">Geen spam. Alleen de lanceringsmail en 1-2 bouwupdates. Uitschrijven kan altijd.</div>
+        <div class="wl-noot">Geen spam. Alleen de lanceringsmail en 1-2 bouwupdates. Uitschrijven kan altijd.</div>
       </form>
       <div class="form-ok hidden" id="wOk">✓ Je staat op de lijst. Check je inbox — en je hoort van Arthur zodra jouw koppeling live gaat.</div>
       <div class="form-err hidden" id="wErr">Automatisch versturen lukte niet. <a href="#" id="wMailto">Klik hier om je aanmelding per e-mail te versturen</a> — alles staat al klaar.</div>
