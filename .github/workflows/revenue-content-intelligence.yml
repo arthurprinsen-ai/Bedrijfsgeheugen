@@ -1,0 +1,42 @@
+name: Revenue content intelligence
+
+on:
+  pull_request:
+    paths:
+      - 'brain/creative/**'
+      - 'brain/contracts/revenue-content-experiment.schema.json'
+      - 'config/social-learning-engine.json'
+      - 'tests/revenue-content-intelligence.test.mjs'
+      - 'tools/content-growth/seed-revenue-content-experiments.mjs'
+      - 'data/revenue-content-experiment-policy.json'
+      - 'supabase/migrations/20260911113000_revenue_content_intelligence.sql'
+      - '.github/workflows/revenue-content-intelligence.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Revenue content intelligence tests
+        run: node --test tests/revenue-content-intelligence.test.mjs
+      - name: Validate JSON contracts
+        run: |
+          node -e "for (const p of ['brain/creative/learning-dimensions.json','brain/contracts/revenue-content-experiment.schema.json','config/social-learning-engine.json','data/revenue-content-experiment-policy.json']) JSON.parse(require('fs').readFileSync(p,'utf8'));"
+      - name: Materialize adaptive experiment calendar
+        run: |
+          node tools/content-growth/seed-revenue-content-experiments.mjs /tmp/revenue-content-experiment-calendar.json
+          node -e "const x=JSON.parse(require('fs').readFileSync('/tmp/revenue-content-experiment-calendar.json')); if(x.count!==111||x.calendar.at(-1).date!=='2026-12-31') process.exit(1);"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: revenue-content-experiment-calendar
+          path: /tmp/revenue-content-experiment-calendar.json
+          retention-days: 30

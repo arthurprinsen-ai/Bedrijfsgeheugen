@@ -1,5 +1,5 @@
 {
-  "version":"creative-learning-v1",
-  "dimensions":["audience","problem","format","text_type","hook_type","emotion","narrative_arc","narrative_role","character","opening_mechanism","scene","camera","audio","cliffhanger_mechanism","continuity_callback","cta_type","channel","timing","brand_signature","commercial_stage","business_outcome","cost","model_family","prompt_version"],
-  "rule":"Learn contextual mechanisms and components, never blindly copy a complete winning asset or prompt."
+  "version":"creative-learning-v2",
+  "dimensions":["audience","persona","problem","pain_trigger","fomo_trigger","format","text_type","hook_type","emotion","comedy_device","narrative_arc","narrative_role","character","opening_mechanism","scene","camera","audio","cliffhanger_mechanism","continuity_callback","proof_type","cta_type","offer_type","channel","timing","brand_signature","commercial_stage","business_outcome","objective","source_signal","commercial_hypothesis","experiment_id","cost","model_family","prompt_version"],
+  "rule":"Learn contextual mechanisms and components, never blindly copy a complete winning asset or prompt. Commercial outcomes outrank engagement; preserve exploration and source attribution."
 }
