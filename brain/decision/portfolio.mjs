@@ -1,4 +1,6 @@
 import {decide} from './policy.mjs';
+export {rankCompanyPortfolio} from './company-engine.mjs';
+
 export function rankPortfolio(candidates,active=[],maxLarge=3){
   const used=active.filter(x=>x.large_experiment&&['ACTIVE','RECOVERING'].includes(x.status)).length;
   let remaining=Math.max(0,maxLarge-used);
