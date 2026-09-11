@@ -1,6 +1,3 @@
--- Preserve exact own-row RLS semantics while allowing PostgreSQL to initialize
--- auth.uid() once per statement instead of re-evaluating it for every row.
-
 drop policy if exists eigen_stand_lezen on public.portaal_stand;
 create policy eigen_stand_lezen on public.portaal_stand
   for select to authenticated

@@ -25,8 +25,6 @@ create index if not exists brain_delivery_evidence_target_created
 
 alter table public.brain_delivery_evidence enable row level security;
 
--- Runtime evidence is never exposed through anon/authenticated API roles.
--- The server-side service_role is the only SQL API principal allowed to append/read.
 revoke all on table public.brain_delivery_evidence from anon, authenticated;
 grant select, insert on table public.brain_delivery_evidence to service_role;
 
