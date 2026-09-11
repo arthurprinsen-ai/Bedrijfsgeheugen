@@ -68,7 +68,7 @@ test('het portaalslot laat de demoslugs door', () => {
 });
 
 test('de poort gaat in demostand meteen open', () => {
-  assert.match(PORTAAL, /if\(window\.__BG_IS_DEMO__ && window\.__BG_IS_DEMO__\(\)\) toonPortaal\(\{email:'demo'\}\);/,
+  assert.match(PORTAAL, /if\(!\(window\.__BG_IS_DEMO__ && window\.__BG_IS_DEMO__\(\)\)\) return;\s*\n\s*toonPortaal\(\{email:'demo'\}\);/,
     'een demo die eerst om een login vraagt is geen demo');
 });
 
@@ -77,4 +77,24 @@ test('een echte klant komt nog steeds langs het slot', () => {
   // de uitzondering geldt alleen voor de twee demoslugs.
   assert.match(SLOT, /organisaties\?slug=eq\./, 'de organisatie-opzoeking is verdwenen');
   assert.match(SLOT, /'onbekend portaal'/, 'de melding voor een onbekend portaal is weg');
+});
+
+test('de pagina ruimt een verouderd portaalslot zelf op', () => {
+  // portaalslot.js wordt een uur gecachet. Een bezoeker die de demo eerder heeft
+  // geopend draait mogelijk nog de versie die demo1 niet kent en bouwt zijn
+  // inlogscherm alsnog in de poort. Deze pagina is korter gecachet en ruimt dat op.
+  assert.match(PORTAAL, /function ruimSlotOp\(\)/, 'de pagina ruimt een oud slot niet op');
+  assert.match(PORTAAL, /getElementById\('bgSlot'\)/, 'het inlogscherm van het slot wordt niet verwijderd');
+  assert.match(PORTAAL, /setInterval\(function\(\)\{ ruimSlotOp\(\)/,
+    'het slot rendert asynchroon; één keer opruimen is niet genoeg');
+});
+
+test('de inline kopie van het slot kent dezelfde uitzondering', () => {
+  // Het slot staat twee keer: als assets/js/portaalslot.js en inline in deze
+  // pagina. De eerste fix raakte alleen het losse bestand, waardoor de inline
+  // kopie "Dit portaal bestaat niet" bleef tonen. Beide moeten mee.
+  assert.doesNotMatch(PORTAAL, /if \(!s \|\| s === 'demo'\) return;/,
+    'de inline kopie van het slot stopt de demo nog steeds');
+  assert.match(PORTAAL, /if \(!s \|\| \(window\.__BG_IS_DEMO__ && window\.__BG_IS_DEMO__\(\)\)\) return;/,
+    'de inline kopie gebruikt de demo-uitzondering niet');
 });
