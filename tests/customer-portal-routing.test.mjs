@@ -20,7 +20,10 @@ test('Ijsselmonde serves the legacy full customer portal', () => {
 });
 
 test('demoAI serves the current AI portal without changing the public URL', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=demoAI\s+\/portal\/\s+200!$/m);
+  // Portal V2 is sinds 11 september 2026 het enige klantportaal (#1385, #1388,
+  // #1393). Deze route wijst nu naar V2, maar blijft een rewrite: de publieke URL
+  // verandert niet, zodat gedeelde demolinks blijven werken.
+  assert.match(redirects, /^\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+200!$/m);
 });
 
 test('all other customer slugs from scans serve the legacy full portal', () => {
