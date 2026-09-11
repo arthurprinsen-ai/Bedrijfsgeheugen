@@ -6,6 +6,8 @@
    Met toestemming gaan dezelfde gebeurtenissen ook naar GA4. */
 (function(){
   if(window.__bgMeting)return;window.__bgMeting=true;
+  /* Bezwaar zonder cookie: stuurt de browser Do Not Track of Global Privacy Control, dan meten we niets (privacyverklaring). */
+  try{if(navigator.globalPrivacyControl===true||navigator.doNotTrack==='1'||window.doNotTrack==='1'||navigator.msDoNotTrack==='1')return;}catch(e){}
   var DOEL='https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-interactie';
   var gebied=/^\/(klantportaal|portal-v2|portaal|mijn)/.test(location.pathname)?'portaal':'site';
   var sid='';try{sid=sessionStorage.getItem('bg_meting_sessie')||'';if(!sid){sid=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));sessionStorage.setItem('bg_meting_sessie',sid);}}catch(e){sid='';}
