@@ -88,8 +88,20 @@ test('een pagina met analytics krijgt de toestemmingsbanner, precies één keer,
   assert.match(out, /@media\(max-width:520px\)\{[^}]*\}#bgCookie h4\{display:none\}/, 'op telefoons geen titel');
 });
 
-test('een pagina zonder analytics krijgt geen toestemmingsbanner', () => {
-  const zonder = pagina.replace(/<script async src="https:\/\/www\.googletagmanager\.com[^>]*><\/script>/, '');
+test('ook een pagina zonder analytics-tag in de bron wordt gemeten (besluit 11 sept: alles meten)', () => {
+  const zonder = pagina.replace(/<script async src="https:\/\/www\.googletagmanager\.com[^>]*><\/script>/, '').replace(/<script src="\/assets\/stijl\.js" defer><\/script>/, '');
   const out = applyCanonicalShell(zonder, shell, 'blog/test/index.html');
-  assert.doesNotMatch(out, /id="bgCookie"/);
+  assert.match(out, /<meta name="bg-ga4" content="G-912L0PB68G">/, 'meet-ID');
+  assert.match(out, /<script src="\/assets\/stijl\.js" defer><\/script>/, 'toestemmingslaag en eigen meting');
+  assert.equal((out.match(/id="bgCookie"/g) || []).length, 1, 'toestemmingsbanner');
+  assert.doesNotMatch(out, /<script[^>]+googletagmanager\.com\/gtag\/js/, 'nog steeds geen Google-script vooraf');
+});
+
+// Eigen meting in assets/stijl.js
+test('de eigen meting meet kliks, scrolldiepte, formulieren en tijd, zonder formulierwaarden', () => {
+  assert.match(bron, /functions\/v1\/bg-interactie/);
+  for (const g of ["gebeurtenis:'pagina'", "gebeurtenis:'klik'", "gebeurtenis:'scroll'", "gebeurtenis:'formulier_start'", "gebeurtenis:'formulier_verzonden'", "gebeurtenis:'tijd_op_pagina'"]) assert.ok(bron.includes(g), g);
+  assert.match(bron, /drempels=\[25,50,75,90,100\]/);
+  assert.doesNotMatch(bron.slice(bron.indexOf('__bgMeting')), /\.value\s*[,}]|FormData|elements\[/, 'nooit ingevulde waarden uitlezen');
+  assert.doesNotMatch(bron.slice(bron.indexOf('__bgMeting')), /document\.cookie/, 'geen cookies');
 });
