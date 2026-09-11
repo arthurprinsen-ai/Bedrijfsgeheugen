@@ -1,0 +1,10 @@
+{
+  "version":"revenue-content-calendar-v1",
+  "start":"2026-09-12",
+  "end":"2026-12-31",
+  "copyPolicy":"generate_near_publish_from_latest_learning",
+  "experimentFamilies":["standup_recognition","latent_problem_activation","diagnostic_fomo","proof_case","carousel_practical","seo_opportunity","offer_ladder","authority_contrarian"],
+  "sourceSignals":["social_learning","revenue_learning","seo_growth","site_analytics","network_relationships","sales_outcomes","powerhouse_opportunities"],
+  "commercialPriority":["revenue","orders","offers","qualified_leads","meetings","dms","substantive_interactions","clicks","likes"],
+  "explorationTarget":0.2
+}
