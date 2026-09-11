@@ -127,6 +127,7 @@ jobs:
           tests/netlify-identity-recovery-flow.test.mjs
           tests/seo-homepage-context-slider-contract.test.mjs
           tests/delivery-een-portaal.test.mjs
+          tests/klantportaal-demostand.test.mjs
           tests/platform-promotion-activation-gate.test.mjs
           tests/seo-v18-canonical-header.test.mjs
           tests/seo-homepage-scroll-story-interaction.test.mjs

@@ -8,7 +8,10 @@ const frisseBlik = readFileSync(new URL('../frisse-blik.html', import.meta.url),
 const klantportaal = readFileSync(new URL('../klantportaal.html', import.meta.url), 'utf8');
 
 test('demo1 serves the legacy customer portal without changing the public URL', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=demo1\s+\/klantportaal-demo\.html\s+200!$/m);
+  // Sinds 11 september 2026 wijst demo1 naar klantportaal.html in plaats van
+  // naar het losse demobestand: het volledige portaal in demostand, alles open.
+  // Nog steeds een rewrite, dus de publieke URL blijft gelijk.
+  assert.match(redirects, /^\/klantportaal\s+klant=demo1\s+\/klantportaal\.html\s+200!$/m);
 });
 
 test('old demo alias redirects canonically to demo1', () => {
