@@ -10,6 +10,15 @@ async function source() {
   return readFile(edgeUrl, 'utf8');
 }
 
+async function dailySource() {
+  const code = await source();
+  const start = code.indexOf('async function daily(');
+  assert.notEqual(start, -1, 'daily() must exist');
+  const end = code.indexOf('\nDeno.serve', start);
+  assert.notEqual(end, -1, 'daily() boundary must exist');
+  return code.slice(start, end);
+}
+
 async function migration() {
   return readFile(migrationUrl, 'utf8');
 }
@@ -72,7 +81,7 @@ test('no private Chrome device token is committed to repository source', async (
 });
 
 test('daily recommendation loop consumes sales, social, revenue and fresh cross-channel event signals', async () => {
-  const code = await source();
+  const code = await dailySource();
   assert.match(code, /powerhouse_sales_learnings/);
   assert.match(code, /social_learnings/);
   assert.match(code, /revenue_learnings/);
