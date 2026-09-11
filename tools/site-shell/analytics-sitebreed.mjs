@@ -24,6 +24,12 @@ export const GA4_ID = 'G-912L0PB68G';
 export const TOESTEMMING_SRC = 'https://www.bedrijfsgeheugen.nl/assets/toestemming.js?v=1';
 export const TOESTEMMING_MARKER = 'data-bg-toestemming';
 export const KLIK_EVENT = 'primaire_knop_klik';
+/* Eigen, privacyarme meting (11 sept 2026, besluit Arthur: alles meten om te optimaliseren):
+   elke klik op link of knop, scrolldiepte 25/50/75/90/100, formulier gestart/verzonden en
+   actieve tijd, naar Supabase bg_interacties. Geen cookies, geen IP, geen formulierwaarden.
+   Met toestemming gaan dezelfde gebeurtenissen ook naar GA4. Zie assets/meting.js. */
+export const METING_SRC = 'https://www.bedrijfsgeheugen.nl/assets/meting.js?v=1';
+export const METING_MARKER = 'data-bg-meting';
 
 export function knopSelectoren(css) {
   const start = css.indexOf(':root:root :is(');
@@ -66,6 +72,7 @@ export function metAnalytics(input) {
   if (!html.includes("gtag('consent','default'")) kop.push(CONSENT_DEFAULT);
   if (!html.includes('name="bg-ga4"')) kop.push(`<meta name="bg-ga4" content="${GA4_ID}">`);
   if (!html.includes(TOESTEMMING_MARKER)) kop.push(`<script src="${TOESTEMMING_SRC}" defer ${TOESTEMMING_MARKER}></script>`);
+  if (!html.includes(METING_MARKER)) kop.push(`<script src="${METING_SRC}" defer ${METING_MARKER}></script>`);
   if (kop.length) html = html.replace(/<\/head>/i, kop.join('\n') + '\n</head>');
   if (!html.includes('id="bgCookie"')) html = html.replace(/<\/body>(?![\s\S]*<\/body>)/i, BANNER + '\n</body>');
   return html;
