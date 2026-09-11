@@ -1,10 +1,96 @@
 {
-  "version":"revenue-content-calendar-v1",
-  "start":"2026-09-12",
-  "end":"2026-12-31",
-  "copyPolicy":"generate_near_publish_from_latest_learning",
-  "experimentFamilies":["standup_recognition","latent_problem_activation","diagnostic_fomo","proof_case","carousel_practical","seo_opportunity","offer_ladder","authority_contrarian"],
-  "sourceSignals":["social_learning","revenue_learning","seo_growth","site_analytics","network_relationships","sales_outcomes","powerhouse_opportunities"],
-  "commercialPriority":["revenue","orders","offers","qualified_leads","meetings","dms","substantive_interactions","clicks","likes"],
-  "explorationTarget":0.2
+  "version": "revenue-content-calendar-v2",
+  "start": "2026-09-12",
+  "end": "2026-12-31",
+  "copyPolicy": "generate_near_publish_from_latest_learning",
+  "experimentFamilies": [
+    "standup_recognition",
+    "latent_problem_activation",
+    "diagnostic_fomo",
+    "proof_case",
+    "carousel_practical",
+    "seo_opportunity",
+    "offer_ladder",
+    "authority_contrarian",
+    "category_entry_point",
+    "mental_availability",
+    "social_proof",
+    "loss_framing",
+    "friction_reduction",
+    "distinctive_asset"
+  ],
+  "sourceSignals": [
+    "social_learning",
+    "revenue_learning",
+    "seo_growth",
+    "site_analytics",
+    "network_relationships",
+    "sales_outcomes",
+    "powerhouse_opportunities"
+  ],
+  "commercialPriority": [
+    "revenue",
+    "orders",
+    "offers",
+    "qualified_leads",
+    "meetings",
+    "dms",
+    "substantive_interactions",
+    "clicks",
+    "likes"
+  ],
+  "explorationTarget": 0.2,
+  "awarenessStages": [
+    "UNAWARE",
+    "PROBLEM_AWARE",
+    "SOLUTION_AWARE",
+    "PRODUCT_AWARE",
+    "MOST_AWARE"
+  ],
+  "behavioralLevers": [
+    "category_entry_point",
+    "mental_availability",
+    "salience_specificity",
+    "social_proof",
+    "authority",
+    "reciprocity_value_first",
+    "loss_aversion",
+    "contrast",
+    "commitment_consistency",
+    "unity_identity",
+    "friction_reduction",
+    "truthful_scarcity"
+  ],
+  "brandMechanics": [
+    "category_entry_points",
+    "distinctive_brand_assets",
+    "mental_availability",
+    "physical_availability",
+    "consistent_memory_cues"
+  ],
+  "ethicalGuardrails": [
+    "no_fake_scarcity",
+    "no_fake_social_proof",
+    "no_fabricated_authority",
+    "no_deceptive_dark_patterns",
+    "no_manufactured_fear",
+    "privacy_safe_aggregation",
+    "specific_verifiable_claims"
+  ],
+  "learningDimensions": [
+    "awareness_stage",
+    "behavioral_lever",
+    "category_entry_point",
+    "mental_availability_cue",
+    "hook_type",
+    "emotion",
+    "comedy_device",
+    "format",
+    "proof_type",
+    "cta_type",
+    "offer_type",
+    "channel",
+    "topic",
+    "persona"
+  ]
 }

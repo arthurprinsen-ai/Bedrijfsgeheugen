@@ -8,7 +8,11 @@ alter table public.bg_post_kenmerken
   add column if not exists source_signal text,
   add column if not exists commercial_hypothesis text,
   add column if not exists experiment_id text,
-  add column if not exists objective text;
+  add column if not exists objective text,
+  add column if not exists awareness_stage text,
+  add column if not exists behavioral_lever text,
+  add column if not exists category_entry_point text,
+  add column if not exists mental_availability_cue text;
 
 alter table public.social_experiments
   drop constraint if exists social_experiments_status_check;
@@ -33,6 +37,10 @@ create index if not exists bg_post_kenmerken_experiment_idx
 -- Strategic creative policy. These are explicit experiment instructions, not empirical wins.
 insert into public.bg_schrijfregels(regel_id,onderwerp,regel,onderbouwing,bewijs_n,vertrouwen,status,bron)
 values
+  ('rci-awareness-stages','Awareness stages','Stem boodschap en CTA af op UNAWARE, PROBLEM_AWARE, SOLUTION_AWARE, PRODUCT_AWARE of MOST_AWARE. Voor unaware: herkenbare koopsituatie en latente frictie; voor problem-aware: kosten en consequenties; voor solution-aware: route, bewijs en onzekerheidsreductie; voor product-aware: bewijs, fit en lage frictie.','Evidence-based experiment policy; effect wordt per awareness-stage en commercieel resultaat geleerd.',0,0.70,'actief','revenue-content-policy'),
+  ('rci-category-entry-points','Category Entry Points','Koppel content aan concrete situaties waarin een koper aan de categorie zou kunnen denken. Bouw dezelfde relevante koopsituaties herhaaldelijk met herkenbare Bedrijfsgeheugen-cues om mentale beschikbaarheid te vergroten.','Gebaseerd op Category Entry Points en Mental Availability; lokale effectiviteit wordt experimenteel bewezen.',0,0.70,'actief','revenue-content-policy'),
+  ('rci-ethical-persuasion','Ethische overtuiging','Experimenteer met social proof, authority, reciprocity/value-first, loss framing, contrast, commitment, unity en alleen echte schaarste. Eis verifieerbaar bewijs; verbied fake scarcity, fake social proof, fabricated authority, manufactured fear en dark patterns.','Gedragsprincipes zijn hypothesen; revenue-effect en merkvertrouwen worden gemeten.',0,0.90,'actief','revenue-content-policy'),
+  ('rci-distinctive-memory','Merkgeheugen','Gebruik consistente onderscheidende Bedrijfsgeheugen-cues en herhaal ze over kanalen heen. Optimaliseer niet alleen click-through maar ook herkenning, branded search, direct traffic en conversie uit herhaalde blootstelling.','Mental availability en distinctive-asset hypothese; meetbaar via cross-channel outcomes.',0,0.70,'actief','revenue-content-policy'),
   ('rci-personal-standup','Persoonlijk LinkedIn','Gebruik observational business stand-up als standaard experimentele stijl: begin met een herkenbare werksituatie, maak het concrete detail licht absurd of grappig, voeg zelfspot of een menselijke draai toe, benoem daarna de emotionele waarheid en pas dan het zakelijke probleem. Wissel dit af; kopieer nooit een volledige winnaar.','Strategisch experimentcontract Revenue Content Intelligence v1.',0,0.60,'actief','revenue-content-policy'),
   ('rci-emotion','Emotie','Elke persoonlijke post kiest bewust één primaire emotie zoals herkenning, geamuseerde frustratie, opluchting, ambitie of productief ongemak. De emotie moet uit een echte werksituatie komen en niet uit kunstmatig drama.','Strategisch experimentcontract; effect wordt per post teruggeleerd.',0,0.60,'actief','revenue-content-policy'),
   ('rci-comedy','Humor','Experimenteer gecontroleerd met observational contrast, understatement, rule-of-three, self-deprecation, exaggeration en callback. Humor is een mechanisme voor herkenning en gesprek, nooit het einddoel.','Strategisch experimentcontract; comedy_device wordt als postkenmerk gemeten.',0,0.60,'actief','revenue-content-policy'),
@@ -62,7 +70,7 @@ with days as (
 ), planned as (
   select calendar_date,
          day_index,
-         case (day_index % 8)
+         case (day_index % 14)
            when 0 then 'standup_recognition'
            when 1 then 'latent_problem_activation'
            when 2 then 'diagnostic_fomo'
@@ -70,7 +78,13 @@ with days as (
            when 4 then 'carousel_practical'
            when 5 then 'seo_opportunity'
            when 6 then 'offer_ladder'
-           else 'authority_contrarian'
+           when 7 then 'authority_contrarian'
+           when 8 then 'category_entry_point'
+           when 9 then 'mental_availability'
+           when 10 then 'social_proof'
+           when 11 then 'loss_framing'
+           when 12 then 'friction_reduction'
+           else 'distinctive_asset'
          end as family,
          case when day_index % 5 = 0 then 'EXPLORE' else 'EXPLOIT' end as decision_mode
   from days
@@ -88,16 +102,19 @@ select
     'family',p.family,
     'mode',p.decision_mode,
     'copy_policy','generate_near_publish_from_latest_learning',
-    'exploration_target',0.20
+    'exploration_target',0.20,
+    'awareness_stages',jsonb_build_array('UNAWARE','PROBLEM_AWARE','SOLUTION_AWARE','PRODUCT_AWARE','MOST_AWARE'),
+    'behavioral_levers',jsonb_build_array('category_entry_point','mental_availability','salience_specificity','social_proof','authority','reciprocity_value_first','loss_aversion','contrast','commitment_consistency','unity_identity','friction_reduction','truthful_scarcity'),
+    'ethical_guardrails',jsonb_build_array('no_fake_scarcity','no_fake_social_proof','no_fabricated_authority','no_deceptive_dark_patterns','no_manufactured_fear','specific_verifiable_claims')
   ),
   p.calendar_date::timestamptz,
   'PLANNED',
   jsonb_build_object(
     'experiment_family',p.family,
     'mode',p.decision_mode,
-    'personal',jsonb_build_object('text_type','observational_business_standup','objective','commercial_conversation'),
-    'company',jsonb_build_object('formats',jsonb_build_array('carousel','case_proof','diagnostic'),'objective','qualified_demand'),
-    'blog',jsonb_build_object('text_type','search_demand_to_problem_activation','objective','organic_qualified_demand')
+    'personal',jsonb_build_object('text_type','observational_business_standup','objective','commercial_conversation','awarenessStage','UNAWARE','behavioralLever',case when p.family='category_entry_point' then 'category_entry_point' when p.family='mental_availability' then 'mental_availability' when p.family='social_proof' then 'social_proof' when p.family='loss_framing' then 'loss_aversion' when p.family='friction_reduction' then 'friction_reduction' else 'salience_specificity' end,'categoryEntryPoint','adapt_from_latest_signal','persuasionGuardrails',jsonb_build_array('no_fake_scarcity','no_fake_social_proof','no_deceptive_dark_patterns')),
+    'company',jsonb_build_object('formats',jsonb_build_array('carousel','case_proof','diagnostic'),'objective','qualified_demand','awarenessStage','PROBLEM_AWARE','behavioralLever',case when p.family='social_proof' then 'social_proof' when p.family='authority_contrarian' then 'authority' else 'contrast' end,'persuasionGuardrails',jsonb_build_array('no_fake_scarcity','no_fake_social_proof','no_fabricated_authority','no_deceptive_dark_patterns')),
+    'blog',jsonb_build_object('text_type','search_demand_to_problem_activation','objective','organic_qualified_demand','awarenessStage','PROBLEM_AWARE','behavioralLever',case when p.family='seo_opportunity' then 'category_entry_point' else 'friction_reduction' end,'persuasionGuardrails',jsonb_build_array('no_fake_scarcity','no_fake_social_proof','no_deceptive_dark_patterns'))
   ),
   jsonb_build_array('social_learning','revenue_learning','seo_growth','site_analytics','network_relationships','sales_outcomes','powerhouse_opportunities'),
   'Generate measurable qualified conversations, leads, offers, orders or revenue while learning which mechanism works for this topic, audience and channel.',

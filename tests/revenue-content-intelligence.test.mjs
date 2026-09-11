@@ -52,3 +52,27 @@ test('calendar covers every date from 12 September through 31 December without f
   assert.ok(calendar.every(x => x.experimentId && x.personal && x.company));
   assert.ok(calendar.every(x => !('text' in x.personal) && !('text' in x.company)));
 });
+
+
+test('adds ethical awareness-stage and behavioral activation mechanics to recipes', () => {
+  const recipe = buildCreativeRecipe({ channel:'linkedin_personal', opportunity:{ topic:'kennisverlies', buyingSituation:'sleutelmedewerker vertrekt' }, mode:'EXPLORE', seed:'activation' });
+  assert.equal(recipe.awarenessStage, 'UNAWARE');
+  assert.ok(recipe.behavioralLever);
+  assert.equal(recipe.categoryEntryPoint, 'sleutelmedewerker vertrekt');
+  assert.ok(recipe.persuasionGuardrails.includes('no_fake_scarcity'));
+  assert.ok(recipe.persuasionGuardrails.includes('no_fake_social_proof'));
+});
+
+test('opportunity ranking can reward category-entry-point fit, proof and friction reduction', () => {
+  const ranked = rankOpportunities([
+    { id:'generic', intent:.5, evidence:.5, expectedRevenue:1000 },
+    { id:'behavioral', intent:.5, evidence:.5, expectedRevenue:1000, categoryEntryPointFit:1, mentalAvailability:1, proofStrength:1, frictionReduction:1 }
+  ]);
+  assert.equal(ranked[0].id, 'behavioral');
+});
+
+test('calendar rotates behavioral-science experiments and preserves ethical guardrails', () => {
+  const calendar = buildExperimentCalendar({ start:'2026-09-12', end:'2026-09-25' });
+  assert.ok(calendar.some(x => ['category_entry_point','mental_availability','social_proof','loss_framing','friction_reduction','distinctive_asset'].includes(x.experimentFamily)));
+  assert.ok(calendar.every(x => x.personal.awarenessStage && x.company.behavioralLever && x.blog.persuasionGuardrails.includes('no_deceptive_dark_patterns')));
+});
