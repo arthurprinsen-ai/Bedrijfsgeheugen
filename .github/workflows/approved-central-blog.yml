@@ -1,8 +1,6 @@
 name: Approved central blog publisher
 
 on:
-  schedule:
-    - cron: '15 7,10,14,18 * * *'
   workflow_dispatch:
     inputs:
       slug:
