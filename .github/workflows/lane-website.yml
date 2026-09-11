@@ -103,6 +103,7 @@ jobs:
           tests/site-shell-cta-conversie.test.mjs
           tests/site-shell-asset-cache.test.mjs
           tests/site-shell-analytics-sitebreed.test.mjs
+          tests/site-shell-eigen-meting.test.mjs
           tests/site-shell-knoppen-en-leesbreedte.test.mjs
           tests/site-shell-scoop-commentaar.test.mjs
           tests/site-shell-oude-stylesheets.test.mjs
