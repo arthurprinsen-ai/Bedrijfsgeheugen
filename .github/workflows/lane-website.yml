@@ -108,6 +108,7 @@ jobs:
           tests/site-shell-eigen-meting.test.mjs
           tests/site-shell-knoppen-en-leesbreedte.test.mjs
           tests/site-shell-scoop-commentaar.test.mjs
+          tests/v18-mobiel-binnenruimte.test.mjs
           tests/site-shell-oude-stylesheets.test.mjs
           tests/homepage-automation-layout.test.mjs
           tests/homepage-hero-video.test.mjs

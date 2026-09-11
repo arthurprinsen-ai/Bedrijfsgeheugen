@@ -223,7 +223,10 @@ export function bouwModules(body) {
     let blok = body.slice(eerste, eindeBlok);
     blok = blok.replace(/<h3([^>]*)>\s*(\d)\.\s*([\s\S]*?)<\/h3>/g,
       (heel, attrs, nr, tekst) => `</div><div class="bgx-tijdstap" data-nr="${nr}"><h3${attrs}>${tekst}</h3>`);
-    blok = `<div class="bgx-tijdlijn"><span class="bgx-lijn"></span>${blok.replace(/^<\/div>/, '')}</div>`;
+    // Twee keer </div>: één sluit de laatste .bgx-tijdstap, één de tijdlijn.
+    // Met maar één sloot de tijdlijn nooit en schoof de rest van het artikel
+    // erin: de lijn liep door alle tekst en alles daarna werd smaller.
+    blok = `<div class="bgx-tijdlijn"><span class="bgx-lijn"></span>${blok.replace(/^<\/div>/, '')}</div></div>`;
     body = body.slice(0, eerste) + blok + body.slice(eindeBlok);
   }
 
