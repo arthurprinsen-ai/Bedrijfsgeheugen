@@ -29,7 +29,7 @@ export function projectOverviewModel(state={}){
   });
 }
 
-function esc(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));}
+function esc(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function valueOrUnknown(value,{money=false,suffix=''}={}){
   if(value===null||value===undefined||value==='')return '<span class="projectunknown">Nog geen status</span>';
   const shown=money?formatMoney(value):`${value}${suffix}`;
