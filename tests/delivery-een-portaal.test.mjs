@@ -47,8 +47,10 @@ test('de oude sporen worden doorgestuurd in plaats van doodlopend', () => {
 
 test('de demo-klant komt in hetzelfde portaal als iedereen', () => {
   const tekst = regels().join('\n');
-  assert.match(tekst, /^\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+301!$/m,
-    'de demoAI-klant krijgt nog een ander portaal dan de rest');
+  // Bewust een rewrite (200!) en geen redirect: de publieke URL blijft gelijk,
+  // zodat gedeelde demolinks blijven werken. Alleen het portaal erachter is V2.
+  assert.match(tekst, /^\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+200!$/m,
+    'de demoAI-klant krijgt nog een ander portaal dan de rest, of de publieke URL verandert');
 });
 
 test('het oude klantportaal blijft bereikbaar zolang klanten erop staan', () => {

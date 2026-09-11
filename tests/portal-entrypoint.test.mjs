@@ -10,7 +10,7 @@ test('customer portal entrypoints preserve explicit demos and keep real scan cus
  // Sinds 11 september 2026 is Portal V2 het enige klantportaal: alles uit
  // portal/ en portal-next/ zit erin (#1385, #1388). De demoAI-klant kwam als
  // enige in het oude spoor uit en gaat nu naar V2, net als iedereen.
- assert.match(redirects,/^\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+301!$/m);
+ assert.match(redirects,/^\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+200!$/m);
  assert.match(redirects,/^\/klantportaal\s+klant=:klant\s+\/klantportaal\.html\s+200!$/m);
  assert.match(redirects,/^\/klantportaal\s+\/klantportaal-demo\.html\s+200!$/m);
  assert.match(redirects,/^\/portaal\s+\/portal-v2\/\s+301!$/m);
