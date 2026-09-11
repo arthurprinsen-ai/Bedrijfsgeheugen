@@ -1,9 +1,10 @@
 import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js';
-import { brancheVergelijking, brancheProfiel } from './external-data.js';
+import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
 import { komendeMijlpalen } from './regelgeving.js';
 import { beoordeelPortefeuille, rangschikRisicos, STATUS } from './compliance-engine.js';
 import { bouwPassport } from './passport.js';
 import { PROFILE_DIMENSIONS } from './modules/company-input.js';
+import { doorwerking } from './doorwerking.js';
 
 /**
  * Wat moet dit bedrijf aanpakken, en in welke volgorde?
@@ -162,7 +163,40 @@ function duursteOnderdelen(state) {
   }));
 }
 
-const REGELS = [duursteOnderdelen, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
+/**
+ * Extern onderzoek, gericht op de onderdelen waar dit bedrijf zwak staat.
+ *
+ * Elke onderzoekskaart draagt al een bedrijfsonderdeel en een advies — dat veld
+ * werd in V2 nergens gebruikt. Het oude portaal deed dit wel: een bevinding van
+ * McKinsey of MIT werd advies voor het onderdeel waar hij over gaat.
+ *
+ * Alleen onderdelen waar de klant onder zijn streefniveau zit krijgen zo'n
+ * advies. Een bevinding over een onderdeel dat al op orde is, is interessant
+ * maar geen werk. En er komt geen bedrag bij: extern onderzoek zegt iets over de
+ * markt, niet over wat het bij dit bedrijf oplevert. Wel staat erbij wat dit
+ * onderdeel hier per jaar kost en welke afdelingen het raakt.
+ */
+function externOnderzoek(state) {
+  const kosten = arr(calc('dimension-costs', state));
+  if (!kosten.length) return [];
+  const zwak = kosten.filter(d => d.niveau < d.streefniveau).slice(0, 3);
+  const uit = [];
+  for (const d of zwak) {
+    const kaart = onderzoekVoor(d.id).find(item => item.advies);
+    if (!kaart) continue;
+    const raakt = doorwerking(d.id, state);
+    uit.push(bevinding({
+      id: `onderzoek-${d.id}`, soort: 'markt', dim: d.id,
+      titel: kaart.advies,
+      bewijs: `${kaart.t} — ${kaart.cijfer}. Bij jou staat ${d.label.toLowerCase()} op niveau ${d.niveau} van ${d.streefniveau} en kost ${Math.round(d.kosten).toLocaleString('nl-NL')} euro per jaar${raakt?.afdelingen.length ? `; het raakt ${raakt.afdelingen.join(', ')}` : ''}`,
+      waarde: null, moeite: 'middel', duur: 6,
+      bron: kaart.bron, pagina: 'onderzoek'
+    }));
+  }
+  return uit;
+}
+
+const REGELS = [duursteOnderdelen, externOnderzoek, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
 
 /**
  * De volgorde. Waarde per jaar gedeeld door moeite is de basis; een harde datum
