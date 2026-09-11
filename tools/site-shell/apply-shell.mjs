@@ -152,6 +152,33 @@ const TOEGESTANE_SCRIPTS = Object.freeze([
    geweigerd; assets/stijl.js zet hem op granted zodra iemand accepteert. */
 const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'consent\',\'default\',{analytics_storage:\'denied\',ad_storage:\'denied\',ad_user_data:\'denied\',ad_personalization:\'denied\',wait_for_update:500});</script>';
 
+/* De toestemmingsbanner staat in de bronpagina's buiten <main> en viel bij het
+   opbouwen weg (11 sept 2026): niemand kon toestemming geven, dus GA4 kon nooit
+   meten. De schil zet hem daarom zelf op elke pagina met analytics, als laatste
+   stap (na knoppenNaarLinks, zodat de knoppen knoppen blijven), met eigen, niet
+   ingeperkte opmaak. Tekst en opmaak zijn gelijk aan de bron. */
+const TOESTEMMINGSBANNER = `<style id="bg-toestemmingsbanner">
+#bgCookie{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:99999;max-width:660px;margin:0 auto;background:#fff;color:#16213e;border:1px solid #e4e4ec;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.20);padding:1.15rem 1.25rem;font:400 .92rem/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:none}
+#bgCookie.bgShow{display:block}
+#bgCookie h4{margin:0 0 .45rem;font-size:1.02rem;font-weight:700}
+#bgCookie p{margin:0}
+#bgCookie a{color:var(--blauw,#1a56db);text-decoration:underline}
+#bgCookie .bgBtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.95rem}
+#bgCookie button{flex:1 1 auto;min-width:140px;padding:.72rem 1rem;border-radius:9px;border:1.5px solid var(--blauw,#1a56db);font-weight:700;cursor:pointer;font-size:.92rem;font-family:inherit}
+#bgCookie .bgAccept{background:var(--blauw,#1a56db);color:#fff}
+#bgCookie .bgDeny{background:#fff;color:var(--blauw,#1a56db)}
+#bgCookie button:focus-visible{outline:3px solid rgba(26,86,219,.4);outline-offset:2px}
+@media(max-width:520px){#bgCookie .bgBtns{flex-direction:column-reverse}}
+</style>
+<div id="bgCookie" role="dialog" aria-label="Cookiemelding" aria-describedby="bgCookieTxt">
+  <h4>🍪 Cookies &amp; privacy</h4>
+  <p id="bgCookieTxt">Bedrijfsgeheugen gebruikt noodzakelijke cookies voor een goede werking van de site. Met jouw toestemming gebruiken we ook analytische cookies (Google Analytics) om te meten hoe de site wordt gebruikt en die te verbeteren. Je keuze wordt onthouden en je kunt 'm altijd wijzigen. Meer weten? Zie onze <a href="/privacy">privacyverklaring</a>.</p>
+  <div class="bgBtns">
+    <button type="button" class="bgDeny" id="bgCookieDeny">Alleen noodzakelijk</button>
+    <button type="button" class="bgAccept" id="bgCookieAccept">Accepteren</button>
+  </div>
+</div>`;
+
 function eigenHoofd(oud) {
   const titel = oud.match(/<title>[\s\S]*?<\/title>/i);
   const desc = oud.match(/<meta name="description" content="[^"]*"\s*\/?>/i);
@@ -333,6 +360,7 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   const canonUrl = (eigen.canon && (eigen.canon.match(/href="([^"]*)"/) || [])[1]) || null;
   eigen.data = schoneSchemas(eigen.data, canonUrl);
   if (eigen.data.length) uit = uit.replace('</head>', eigen.data.join('\n') + '\n</head>');
+  let metBanner = false;
   if (eigen.scripts && eigen.scripts.length) {
     /* Een analytics-tag zonder toestemmingslaag is geen halve oplossing maar een
        fout: dan meet je vóórdat iemand iets kon kiezen. De schil dwingt het paar
@@ -351,6 +379,7 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
       const id = tag.includes('googletagmanager.com/gtag/js') && (tag.match(/[?&]id=(G-[A-Z0-9]+)/) || [])[1];
       return id ? `<meta name="bg-ga4" content="${id}">` : tag;
     });
+    metBanner = scripts.some(tag => tag.startsWith('<meta name="bg-ga4"'));
     const consentEerst = uit.includes("gtag('consent','default'") ? '' : CONSENT_DEFAULT + '\n';
     uit = uit.replace('</head>', consentEerst + scripts.join('\n') + '\n</head>');
   }
@@ -362,6 +391,7 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   uit = uit.replace('</head>', `${eigenCss}\n${PAGE_SHELL_CSS}\n</head>`);
   uit = ensureKnowledgeNavigation(routerLaatLinksDoor(knoppenNaarLinks(uit)));
   uit = absolutiseerInterneHref(uit);
+  if (metBanner && !uit.includes('id="bgCookie"')) uit = uit.replace('</body>', TOESTEMMINGSBANNER + '\n</body>');
   return markPageSlots(uit);
 }
 
