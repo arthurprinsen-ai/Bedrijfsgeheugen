@@ -17,6 +17,7 @@ import { readFileSync } from 'node:fs';
 
 const PORTAAL = readFileSync('klantportaal.html', 'utf8');
 const REDIRECTS = readFileSync('_redirects', 'utf8');
+const SLOT = readFileSync('assets/js/portaalslot.js', 'utf8');
 
 test('demo1 serveert het volledige portaal, niet het losse demobestand', () => {
   assert.match(REDIRECTS, /^\/klantportaal\s+klant=demo1\s+\/klantportaal\.html\s+200!$/m,
@@ -53,4 +54,27 @@ test('een echte klantslug blijft afgeschermd', () => {
     'een echte klant staat als demoslug geregistreerd');
   const slugs = PORTAAL.match(/__BG_DEMO_SLUGS__ = \[([^\]]*)\]/)[1];
   assert.equal(slugs.split(',').length, 2, 'er zijn demoslugs bijgekomen zonder dat dit contract is bijgewerkt');
+});
+
+test('het portaalslot laat de demoslugs door', () => {
+  // Het slot zocht een organisatie op in Supabase en meldde "Dit portaal bestaat
+  // niet" voor demo1. Alleen 'demo' was uitgezonderd, en die slug stuurt sinds
+  // 11 september 2026 juist door naar demo1.
+  assert.match(SLOT, /function isDemo\(s\)/, 'het slot kent geen demo-uitzondering');
+  assert.match(SLOT, /window\.__BG_DEMO_SLUGS__\) \|\| \['demo1', 'demo'\]/,
+    'het slot heeft een eigen lijst in plaats van die uit klantportaal.html');
+  assert.match(SLOT, /if \(!s \|\| isDemo\(s\)\) return;/, 'het slot stopt de demo nog steeds');
+  assert.doesNotMatch(SLOT, /if \(!s \|\| s === 'demo'\) return;/, 'de oude uitzondering staat er nog');
+});
+
+test('de poort gaat in demostand meteen open', () => {
+  assert.match(PORTAAL, /if\(window\.__BG_IS_DEMO__ && window\.__BG_IS_DEMO__\(\)\) toonPortaal\(\{email:'demo'\}\);/,
+    'een demo die eerst om een login vraagt is geen demo');
+});
+
+test('een echte klant komt nog steeds langs het slot', () => {
+  // ijsselmonde hoort de organisatie-opzoeking en de offerte-RLS te doorlopen;
+  // de uitzondering geldt alleen voor de twee demoslugs.
+  assert.match(SLOT, /organisaties\?slug=eq\./, 'de organisatie-opzoeking is verdwenen');
+  assert.match(SLOT, /'onbekend portaal'/, 'de melding voor een onbekend portaal is weg');
 });

@@ -224,9 +224,20 @@
     });
   }
 
+  /* De demoslugs draaien het portaal volledig en hebben geen offerte in
+     Supabase. Zonder deze uitzondering zoekt het slot een organisatie die er
+     niet is en meldt het "Dit portaal bestaat niet." Tot 11 september 2026 was
+     alleen 'demo' uitgezonderd; sinds die slug doorstuurt naar demo1 moest de
+     lijst mee. Hij komt uit klantportaal.html, met een terugval voor het geval
+     dit script eerder laadt. */
+  function isDemo(s) {
+    var slugs = (typeof window !== 'undefined' && window.__BG_DEMO_SLUGS__) || ['demo1', 'demo'];
+    return slugs.indexOf(String(s || '').toLowerCase()) >= 0;
+  }
+
   function start() {
     var s = slug();
-    if (!s || s === 'demo') return;
+    if (!s || isDemo(s)) return;
 
     var uitMail = uitHash();
     if (uitMail) {
