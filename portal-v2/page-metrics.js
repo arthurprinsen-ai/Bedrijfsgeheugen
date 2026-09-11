@@ -3,6 +3,7 @@ import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BR
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen, verlopenHerzieningen } from './regelgeving.js';
 import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
 import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
+import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
 import { beoordeelPortefeuille, rangschikRisicos, auditMomentopname, STATUS_LABEL as CONTROL_LABEL } from './compliance-engine.js';
 
 const EMPTY='—';
@@ -290,10 +291,14 @@ const PAGES=Object.freeze({
       ['Capaciteit',`${num(synthesis.capacity,1)} fte`],
       ['Restrisico',pct(synthesis.risk)]
     ];},
-    worklist:s=>[
+    worklist:s=>{const afgeleid=bevindingen(s);
+      if(afgeleid.length)return afgeleid.slice(0,5).map(b=>[
+        `${b.waarde?'€ '+b.waarde.toLocaleString('nl-NL')+' · ':''}${b.titel}`,
+        `${b.bewijs} — ${b.bron}`]);
+      return [
       ['Gewicht over de modellen heen',num(calc('cross-model-weight',s),2)],
       ...arr(calc('recommendation-priority',s)).slice(0,2).map(item=>[String(item.advice||'Advies'),`prioriteit ${num(item.priority)}`])
-    ]},
+    ];}},
 
   'due-diligence':{slice:'portal.dueDiligence',
     metrics:s=>[
@@ -333,13 +338,28 @@ const PAGES=Object.freeze({
     ]},
 
   advies:{slice:'portal.advice',
-    metrics:s=>{const items=arr(at(s,'portal.advice.items'));return [
+    /* Deze pagina las alleen een lijst die iemand met de hand had ingetypt en
+       bleef daarom leeg bij een volledig ingevuld bedrijf. Hij leidt nu af uit
+       wat er al is doorgerekend; zie bevindingen.js. Een eigen ingetypte lijst
+       blijft werken en gaat voor. */
+    metrics:s=>{const afgeleid=bevindingen(s);
+      if(afgeleid.length){const v=bevindingenSamenvatting(s);return [
+        ['Bevindingen',String(v.totaal)],
+        ['Met een bedrag',String(v.metWaarde)],
+        ['Waarde per jaar',euro(v.waardePerJaar)],
+        ['Eerst aanpakken',String(v.eerste?.titel||EMPTY).slice(0,40)]
+      ];}
+      const items=arr(at(s,'portal.advice.items'));return [
       ['Adviezen',String(items.length)],
       ['Hoge prioriteit',String(items.filter(item=>Number(item.priority)>=4).length)],
       ['Totale waarde',euro(items.reduce((sum,item)=>sum+(Number(item.value)||0),0))],
       ['Met eigenaar',String(items.filter(item=>filled(item.owner)).length)]
     ];},
-    worklist:s=>arr(calc('advice-priority',s)).slice(0,3).map(item=>[String(item.advice||'Advies'),`${euro(item.value)} · ${num(item.duration)} wk`])},
+    worklist:s=>{const afgeleid=bevindingen(s);
+      if(afgeleid.length)return afgeleid.slice(0,5).map(b=>[
+        `${b.waarde?'€ '+b.waarde.toLocaleString('nl-NL')+' · ':''}${b.titel}`,
+        `${b.bewijs} — ${b.bron}`]);
+      return arr(calc('advice-priority',s)).slice(0,3).map(item=>[String(item.advice||'Advies'),`${euro(item.value)} · ${num(item.duration)} wk`]);}},
 
   offerte:{slice:'portal.offer',
     metrics:s=>[
@@ -536,6 +556,9 @@ function runtimeWorklist(pageId,state){
 
 export function hasPageData(pageId,state={}){
   if(pageId==='bronnenstatus')return true;
+  // advies leidt af uit doorgerekende gegevens; dan is de eigen slice leeg maar
+  // is er wel degelijk iets te tonen.
+  if(pageId==='advies'&&bevindingen(state).length)return true;
   if(RUNTIME_PAGES[pageId]){const s=at(state,RUNTIME_PAGES[pageId])||{};return arr(s.items).length>0||Number(s.loops)>0||Number(s.totaal)>0;}
   const slice=PAGES[pageId]?.slice;
   return slice?filled(at(state,slice)):false;
