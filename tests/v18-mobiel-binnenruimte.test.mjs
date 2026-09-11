@@ -40,3 +40,16 @@ test('de veelgestelde vragen staan onder elkaar, niet als chatbubbel in een smal
   // nam de helft van de breedte en de vraag stond één woord per regel.
   assert.match(INTERACTIE_CSS, /\.vraag:has\(>h3>\.bgx-vraag\)\{display:block\}/);
 });
+
+test('tussenblokken komen in de lopende tekst, niet in een kaart of slotblok', async () => {
+  const { kopPlekkenInDeHoofdstroom } = await import('../tools/bouw-v18-chrome.mjs');
+  const tekst = '<h2>Een</h2><p>a</p><h2>Twee</h2><p>b</p>'
+    + '<section class="p-slot"><div><h2>Slot</h2></div></section><h2>Drie</h2>';
+  const koppen = kopPlekkenInDeHoofdstroom(tekst).map(i => tekst.slice(i, i + 8));
+  assert.deepEqual(koppen, ['<h2>Een<', '<h2>Twee', '<h2>Drie']);
+});
+
+test('een eyebrow in de inhoud is een label, geen lege pil met rand', async () => {
+  const { INHOUD_CSS } = await import('../tools/bouw-v18-chrome.mjs');
+  assert.match(INHOUD_CSS, /\.inhoud-body \.eyebrow,\.inhoud-body \.kicker\{[^}]*border:0;background:none/);
+});
