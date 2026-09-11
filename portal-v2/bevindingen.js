@@ -3,6 +3,7 @@ import { brancheVergelijking, brancheProfiel } from './external-data.js';
 import { komendeMijlpalen } from './regelgeving.js';
 import { beoordeelPortefeuille, rangschikRisicos, STATUS } from './compliance-engine.js';
 import { bouwPassport } from './passport.js';
+import { PROFILE_DIMENSIONS } from './modules/company-input.js';
 
 /**
  * Wat moet dit bedrijf aanpakken, en in welke volgorde?
@@ -36,8 +37,8 @@ const euro = value => (value == null ? null : Math.round(value));
 /** Moeite bepaalt hoe snel iets kan; een harde datum weegt zwaarder dan waarde. */
 const MOEITE = Object.freeze({ klein: 1, middel: 2, groot: 3 });
 
-function bevinding({ id, titel, bewijs, waarde = null, moeite = 'middel', bron, pagina, datum = null, soort }) {
-  return { id, titel, bewijs, waarde: euro(waarde), moeite, bron, pagina, datum, soort };
+function bevinding({ id, titel, bewijs, waarde = null, moeite = 'middel', bron, pagina, datum = null, soort, dim = null, duur = null }) {
+  return { id, titel, bewijs, waarde: euro(waarde), moeite, bron, pagina, datum, soort, dim, duur };
 }
 
 /* ---------- de regels ---------- */
@@ -142,7 +143,26 @@ function businesscase(state) {
   })];
 }
 
-const REGELS = [handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
+/**
+ * Het duurste handwerk per bedrijfsonderdeel. Dit was de motor onder het advies
+ * van het oude portaal: elk ingevuld volwassenheidsniveau levert een bedrag per
+ * jaar op, en het verschil met het streefniveau is wat er te winnen valt.
+ */
+function duursteOnderdelen(state) {
+  const kosten = arr(calc('dimension-costs', state));
+  return kosten.filter(d => d.potentieel > 500).slice(0, 3).map(d => bevinding({
+    id: `onderdeel-${d.id}`, soort: 'kosten', dim: d.id,
+    titel: `Haal het handwerk uit ${d.label.toLowerCase()}`,
+    bewijs: `Op niveau ${d.niveau} kost dit onderdeel ${Math.round(d.kosten).toLocaleString('nl-NL')} euro per jaar; op niveau ${d.streefniveau} is dat ${Math.round(d.kosten - d.potentieel).toLocaleString('nl-NL')} euro`,
+    waarde: d.potentieel,
+    moeite: d.niveau <= 2 ? 'groot' : 'middel',
+    duur: d.niveau <= 2 ? 8 : 4,
+    bron: 'Eigen profiel: volwassenheid, medewerkers en uurkosten',
+    pagina: 'ai-capabilities'
+  }));
+}
+
+const REGELS = [duursteOnderdelen, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
 
 /**
  * De volgorde. Waarde per jaar gedeeld door moeite is de basis; een harde datum
@@ -191,7 +211,10 @@ export function bevindingenSamenvatting(state = {}, peil = new Date().toISOStrin
   const metWaarde = items.filter(item => item.waarde);
   const perSoort = {};
   for (const item of items) perSoort[item.soort] = (perSoort[item.soort] || 0) + 1;
+  const geraakt = new Set(items.map(item => item.dim).filter(Boolean));
   return Object.freeze({
+    dekking: PROFILE_DIMENSIONS.length ? Math.round(geraakt.size / PROFILE_DIMENSIONS.length * 100) : 0,
+    geraakteOnderdelen: geraakt.size,
     totaal: items.length,
     metWaarde: metWaarde.length,
     zonderWaarde: items.length - metWaarde.length,

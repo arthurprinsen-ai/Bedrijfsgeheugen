@@ -233,12 +233,19 @@ const PAGES=Object.freeze({
     ]},
 
   'ai-capabilities':{slice:'portal.aiCapabilities',
-    metrics:s=>[
+    metrics:s=>{const k=arr(calc('dimension-costs',s));
+      if(k.length)return [
+        ['Kosten op huidig niveau',euro(calc('dimension-cost-total',s))],
+        ['Te winnen op streefniveau',euro(calc('dimension-potential-total',s))],
+        ['Duurste onderdeel',String(calc('biggest-cost-dimension',s)?.label||EMPTY)],
+        ['Onderdelen met een niveau',String(k.length)]
+      ];
+      return [
       ['Capability readiness',`${num(calc('ai-capability-readiness',s),1)}/5`],
       ['Resterende afstand',`${num(calc('ai-capability-gap',s),1)}`],
       ['Beoordeeld',String(Object.keys(at(s,'portal.aiCapabilities')||{}).length)],
       ['Technologie readiness',`${num(calc('technology-readiness',s),1)}/5`]
-    ]},
+    ];}},
 
   'strategy-dna':{slice:'portal.strategyDna',
     metrics:s=>[
@@ -347,7 +354,8 @@ const PAGES=Object.freeze({
         ['Bevindingen',String(v.totaal)],
         ['Met een bedrag',String(v.metWaarde)],
         ['Waarde per jaar',euro(v.waardePerJaar)],
-        ['Eerst aanpakken',String(v.eerste?.titel||EMPTY).slice(0,40)]
+        ['Eerst aanpakken',String(v.eerste?.titel||EMPTY).slice(0,40)],
+        ['Van je onderdelen geraakt',pct(v.dekking)]
       ];}
       const items=arr(at(s,'portal.advice.items'));return [
       ['Adviezen',String(items.length)],
@@ -559,6 +567,9 @@ export function hasPageData(pageId,state={}){
   // advies leidt af uit doorgerekende gegevens; dan is de eigen slice leeg maar
   // is er wel degelijk iets te tonen.
   if(pageId==='advies'&&bevindingen(state).length)return true;
+  // ai-capabilities toont de kosten per bedrijfsonderdeel zodra er
+  // volwassenheidsniveaus zijn ingevuld, ook zonder capability-scores.
+  if(pageId==='ai-capabilities'&&arr(calc('dimension-costs',state)).length)return true;
   if(RUNTIME_PAGES[pageId]){const s=at(state,RUNTIME_PAGES[pageId])||{};return arr(s.items).length>0||Number(s.loops)>0||Number(s.totaal)>0;}
   const slice=PAGES[pageId]?.slice;
   return slice?filled(at(state,slice)):false;

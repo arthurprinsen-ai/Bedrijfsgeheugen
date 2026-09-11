@@ -159,7 +159,18 @@ const BUILDERS=Object.freeze({
     {label:'eNPS',value:n(at(state,'portal.people.enps')),benchmark:20}
   ],{title:'Mensen tegen de branchenorm'}),
 
-  'ai-capabilities':state=>radar(Object.entries(at(state,'portal.aiCapabilities')||{}).map(([key,value])=>({label:`Capability ${Number(key)+1}`,value:n(value)})),{title:'AI-capabilities'}),
+  'ai-capabilities':state=>{
+    /* De kosten per bedrijfsonderdeel horen hier: dit is de pagina waar de
+       bevindingen over handwerk naartoe verwijzen. Elk ingevuld
+       volwassenheidsniveau krijgt zo een bedrag per jaar. */
+    const kosten=arr(calc('dimension-costs',state));
+    return [radar(Object.entries(at(state,'portal.aiCapabilities')||{}).map(([key,value])=>({label:`Capability ${Number(key)+1}`,value:n(value)})),{title:'AI-capabilities'}),
+      kosten.length?leakage(kosten.map(d=>({label:d.label,value:n(d.kosten)})),
+        {title:'Wat elk onderdeel per jaar kost op zijn huidige niveau'}):'',
+      kosten.length?benchmarkBars(kosten.map(d=>({label:d.label,value:n(d.kosten)-n(d.potentieel),benchmark:n(d.kosten)})),
+        {title:'Wat het zou kosten op streefniveau'}):''
+    ].filter(Boolean).join('');
+  },
 
   'data-ai':state=>{
     const phases=['Oriëntatie','Fundament','Pilot','Opschalen','Borgen'];

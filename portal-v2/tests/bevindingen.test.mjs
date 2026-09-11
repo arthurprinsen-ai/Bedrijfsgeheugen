@@ -119,3 +119,55 @@ test('een eigen ingetypte advieslijst blijft werken', () => {
   assert.equal(metrics[0][0], 'Adviezen', 'een eigen lijst wordt niet meer getoond');
   assert.equal(metrics[0][1], '1');
 });
+
+/* ---- Kosten per bedrijfsonderdeel: de motor onder het oude advies ---- */
+import { calculateLegacyEquivalent as calc } from '../legacy-parity-engine.js';
+
+test('elk ingevuld volwassenheidsniveau levert een bedrag per jaar op', () => {
+  const kosten = calc('dimension-costs', KLANT);
+  assert.ok(kosten.length >= 5, 'niet elk ingevuld onderdeel krijgt een bedrag');
+  for (const d of kosten) {
+    assert.ok(d.kosten > 0, `${d.id} heeft geen kosten`);
+    assert.ok(d.niveau >= 1 && d.niveau <= 5);
+    assert.ok(d.potentieel >= 0 && d.potentieel <= d.kosten, `${d.id}: te winnen bedrag klopt niet`);
+  }
+  for (let i = 1; i < kosten.length; i += 1)
+    assert.ok(kosten[i].kosten <= kosten[i - 1].kosten, 'de duurste onderdelen staan niet bovenaan');
+});
+
+test('een lager niveau kost meer, en zonder profiel is er geen bedrag', () => {
+  const laag = { portal: { profile: { headcount: 38, hourlyCost: 52, maturity: { operatie: 1 } } } };
+  const hoog = { portal: { profile: { headcount: 38, hourlyCost: 52, maturity: { operatie: 5 } } } };
+  assert.ok(calc('dimension-costs', laag)[0].kosten > calc('dimension-costs', hoog)[0].kosten,
+    'niveau 1 hoort meer te kosten dan niveau 5');
+  assert.deepEqual(calc('dimension-costs', {}), [],
+    'zonder medewerkers en uurkosten mag er geen bedrag worden verzonnen');
+  assert.deepEqual(calc('dimension-costs', { portal: { profile: { headcount: 38 } } }), [],
+    'zonder uurkosten is het bedrag niet te berekenen');
+});
+
+test('de duurste onderdelen komen als bevinding terug, met hun onderdeel erbij', () => {
+  const lijst = bevindingen(KLANT).filter(item => item.dim);
+  assert.ok(lijst.length >= 2, 'geen enkele bevinding is aan een bedrijfsonderdeel gekoppeld');
+  const duurste = lijst.find(item => item.id === 'onderdeel-tech');
+  assert.ok(duurste, 'het duurste onderdeel levert geen bevinding op');
+  assert.ok(duurste.waarde > 0);
+  assert.ok(duurste.duur > 0, 'er staat geen doorlooptijd bij');
+  assert.match(duurste.bewijs, /Op niveau \d+ kost dit onderdeel/);
+});
+
+test('de dekking zegt welk deel van je onderdelen geraakt wordt', () => {
+  const v = bevindingenSamenvatting(KLANT);
+  assert.ok(v.dekking > 0 && v.dekking <= 100, `dekking klopt niet: ${v.dekking}`);
+  assert.equal(v.geraakteOnderdelen, new Set(bevindingen(KLANT).map(b => b.dim).filter(Boolean)).size);
+  assert.equal(bevindingenSamenvatting({}).dekking, 0);
+});
+
+test('de capabilities-pagina toont de kosten per onderdeel', () => {
+  const metrics = pageMetrics('ai-capabilities', KLANT);
+  assert.equal(metrics[0][0], 'Kosten op huidig niveau');
+  assert.notEqual(metrics[0][1], METRIC_EMPTY);
+  assert.equal(metrics[2][0], 'Duurste onderdeel');
+  assert.match(pageVisual('ai-capabilities', KLANT), /per jaar kost op zijn huidige niveau/);
+  assert.equal(pageVisual('ai-capabilities', {}), '');
+});
