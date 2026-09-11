@@ -150,6 +150,9 @@ const TOEGESTANE_SCRIPTS = Object.freeze([
 /* Consent Mode moet vóór de analytics-tag staan, anders meet Google al vóórdat
    de bezoeker iets heeft kunnen kiezen. Deze regel zet alles standaard op
    geweigerd; assets/stijl.js zet hem op granted zodra iemand accepteert. */
+/* GA4-property van bedrijfsgeheugen.nl; wordt een meet-ID, geen script (zie hieronder). */
+export const GA4_ID = 'G-912L0PB68G';
+
 const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'consent\',\'default\',{analytics_storage:\'denied\',ad_storage:\'denied\',ad_user_data:\'denied\',ad_personalization:\'denied\',wait_for_update:500});</script>';
 
 /* De toestemmingsbanner staat in de bronpagina's buiten <main> en viel bij het
@@ -364,6 +367,13 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   eigen.data = schoneSchemas(eigen.data, canonUrl);
   if (eigen.data.length) uit = uit.replace('</head>', eigen.data.join('\n') + '\n</head>');
   let metBanner = false;
+  /* Alles meten (11 sept 2026, besluit Arthur): elke pagina krijgt de toestemmingslaag,
+     het GA4-meet-ID en de toestemmingsbanner, ook als de bron geen analytics-tag had.
+     assets/stijl.js doet daarnaast de eigen, privacyarme meting (bg-interactie). */
+  eigen.scripts = Array.isArray(eigen.scripts) ? eigen.scripts : [];
+  if (!eigen.scripts.some(tag => tag.includes('googletagmanager.com/gtag/js'))) {
+    eigen.scripts.push(`<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script>`);
+  }
   if (eigen.scripts && eigen.scripts.length) {
     /* Een analytics-tag zonder toestemmingslaag is geen halve oplossing maar een
        fout: dan meet je vóórdat iemand iets kon kiezen. De schil dwingt het paar
