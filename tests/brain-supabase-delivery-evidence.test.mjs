@@ -1,21 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-
 import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
 const policy = JSON.parse(await readFile(new URL('../config/brain-delivery-system.json', import.meta.url), 'utf8'));
-
-async function migration() {
-  return readFile(new URL('../supabase/migrations/20260830_brain_delivery_evidence.sql', import.meta.url), 'utf8');
-}
+const migrationPath = 'supabase/migrations/20260830131534_brain_delivery_evidence.sql';
+async function migration() { return readFile(new URL(`../${migrationPath}`, import.meta.url), 'utf8'); }
 
 test('Supabase schema changes are classified into the backend delivery lane', () => {
-  const plan = createDeliveryPlan({
-    changedPaths: ['supabase/migrations/20260830_brain_delivery_evidence.sql'],
-    headSha: 'a'.repeat(40),
-    policy,
-  });
+  const plan = createDeliveryPlan({ changedPaths: [migrationPath], headSha: 'a'.repeat(40), policy });
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
   assert.ok(plan.conflictContracts.includes('supabase-schema'));
 });
