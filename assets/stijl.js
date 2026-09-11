@@ -2,7 +2,11 @@
 
 (function(){
   var KEY='bg_consent';
-  function applyConsent(state){try{if(typeof gtag==='function')gtag('consent','update',{analytics_storage:(state==='granted'?'granted':'denied'),ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});}catch(e){}}
+  /* Basic Consent Mode: gtag.js laadt pas na toestemming, met de config erbij.
+     Het meet-ID staat in <meta name="bg-ga4">, gezet door de canonieke schil. */
+  var geladen=false;
+  function laadAnalytics(){if(geladen)return;var m=document.querySelector('meta[name="bg-ga4"]');var id=m&&m.getAttribute('content');if(!id||!/^G-[A-Z0-9]+$/.test(id))return;geladen=true;window.dataLayer=window.dataLayer||[];if(typeof window.gtag!=='function'){window.gtag=function(){window.dataLayer.push(arguments);};}window.gtag('js',new Date());window.gtag('config',id,{anonymize_ip:true});var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(id);document.head.appendChild(s);}
+  function applyConsent(state){try{if(typeof gtag==='function')gtag('consent','update',{analytics_storage:(state==='granted'?'granted':'denied'),ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});}catch(e){}if(state==='granted')laadAnalytics();}
   function el(){return document.getElementById('bgCookie');}
   function show(){var b=el();if(b)b.classList.add('bgShow');}
   function hide(){var b=el();if(b)b.classList.remove('bgShow');}

@@ -339,9 +339,18 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
        daarom af in plaats van over te nemen wat er toevallig stond. */
     const heeftAnalytics = eigen.scripts.some(tag => tag.includes('googletagmanager.com/gtag/js'));
     const heeftToestemming = eigen.scripts.some(tag => tag.includes('/assets/stijl.js'));
-    const scripts = heeftAnalytics && !heeftToestemming
+    const metToestemming = heeftAnalytics && !heeftToestemming
       ? ['<script src="/assets/stijl.js" defer></script>', ...eigen.scripts]
       : eigen.scripts;
+    /* De analytics-loader wordt geen script maar een meet-ID. assets/stijl.js laadt
+       gtag.js pas na toestemming en doet dan ook de config (basic Consent Mode).
+       Zonder toestemming laadt er niets van Google. Aanleiding (11 sept 2026): de
+       loader stond op elke pagina, zonder gtag('config') — 175 KB en ±0,5 s
+       blokkade voor iedereen, en geen enkele meting. */
+    const scripts = metToestemming.map(tag => {
+      const id = tag.includes('googletagmanager.com/gtag/js') && (tag.match(/[?&]id=(G-[A-Z0-9]+)/) || [])[1];
+      return id ? `<meta name="bg-ga4" content="${id}">` : tag;
+    });
     const consentEerst = uit.includes("gtag('consent','default'") ? '' : CONSENT_DEFAULT + '\n';
     uit = uit.replace('</head>', consentEerst + scripts.join('\n') + '\n</head>');
   }
