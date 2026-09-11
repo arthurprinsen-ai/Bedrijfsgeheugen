@@ -42,7 +42,7 @@ function recordForCommand(context){
   if(command==='START') return {...base,type:'Action',status:'IN_PROGRESS',executed:false};
   if(command==='COMPLETE') return {...base,type:'Action',status:'DONE',executed:true,result:body.result??null};
   if(command==='RECORD_COST') return {...base,type:'Execution',status:'COST_RECORDED',executed:true,costAmount:Math.max(0,amount(body.actualCost))};
-  if(command==='RECORD_OUTCOME') return {...base,type:'Outcome',status:body.verified===true?'VERIFIED':'OBSERVED',executed:true,verified:body.verified===true,result:body.result??null,realizedValue:amount(body.realizedValue)};
+  if(command==='RECORD_OUTCOME') return {...base,type:'Outcome',status:body.verified===true?'VERIFIED':'OBSERVED',executed:true,verified:body.verified===true,result:body.result??null,realizedValue:amount(body.realizedValue),payload:{...base.payload,realisedValue:amount(body.realizedValue),realised:body.verified===true,valueUnit:text(body.currency)||'EUR'}};
   throw new TypeError(`Unsupported company decision command: ${command}`);
 }
 
@@ -78,6 +78,8 @@ export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().t
       const first=await store.append({...record,idempotencyKey},{principal});
       const results=[first];
       if(command==='RECORD_OUTCOME'){
+        const currency=text(body.currency)||'EUR';
+        const realisedValue=amount(body.realizedValue);
         const valueRecord={
           ...baseRecord(context),
           id:eventId(command,decision.id,idempotencyKey,'value'),
@@ -87,8 +89,8 @@ export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().t
           verified:body.verified===true,
           actionId:text(body.actionId)||null,
           result:body.result??null,
-          realizedValue:amount(body.realizedValue),
-          payload:{command,realisedValue:amount(body.realizedValue),result:body.result??null}
+          realizedValue:realisedValue,
+          payload:{command,realised:body.verified===true,realisedValue,valueUnit:currency,result:body.result??null}
         };
         results.push(await store.append({...valueRecord,idempotencyKey:`${idempotencyKey}:value`},{principal}));
       }
