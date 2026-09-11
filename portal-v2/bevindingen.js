@@ -302,7 +302,106 @@ function scanKansen(state) {
   })];
 }
 
-const REGELS = [duursteOnderdelen, externOnderzoek, financieleWeerbaarheid, roadmapStilstand, openBesluiten, scanKansen, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
+/**
+ * Borging: wat is vastgelegd, en is het nog actueel?
+ *
+ * De pagina actueel-houden bleek geen metingenreeks maar een borgingslog: wat
+ * wijzigde, waarom, wanneer, door wie, welk document en wanneer het opnieuw
+ * bekeken moet worden. Dat maakt de bevindingen scherper dan een trendlijn:
+ * een verstreken reviewdatum is een feit, geen interpretatie.
+ *
+ * Dezelfde regel die voor het regelgevingsregister geldt, geldt hier voor de
+ * documenten van de klant: iets wat niemand meer nakijkt, is op een gegeven
+ * moment niet meer waar.
+ */
+function borging(state, peil) {
+  const log = at(state, 'portal.freshness') || {};
+  const regels = arr(log.items).length ? arr(log.items) : (log.what || log.document ? [log] : []);
+  if (!regels.length) return [];
+  const uit = [];
+
+  const verlopen = regels.filter(item => item.reviewDate && String(item.reviewDate) < peil);
+  if (verlopen.length) uit.push(bevinding({
+    id: 'borging-review-verlopen', soort: 'verplichting',
+    titel: 'Vastgelegde afspraken zijn over hun reviewdatum heen',
+    bewijs: `${verlopen.length} vastlegging${verlopen.length === 1 ? '' : 'en'} met een verstreken reviewdatum, de oudste van ${verlopen.map(item => item.reviewDate).sort()[0]}`,
+    waarde: null, moeite: 'klein', duur: 1,
+    datum: verlopen.map(item => item.reviewDate).sort()[0],
+    bron: 'Eigen vastleggingen', pagina: 'actueel-houden'
+  }));
+
+  const zonderEigenaar = regels.filter(item => item.document && !String(item.documentOwner || '').trim());
+  if (zonderEigenaar.length) uit.push(bevinding({
+    id: 'borging-zonder-eigenaar', soort: 'kans',
+    titel: 'Vastgelegde documenten hebben geen eigenaar',
+    bewijs: `${zonderEigenaar.length} document${zonderEigenaar.length === 1 ? '' : 'en'} zonder iemand die het bijhoudt: ${zonderEigenaar.slice(0, 2).map(item => item.document).join(', ')}`,
+    waarde: null, moeite: 'klein', duur: 1,
+    bron: 'Eigen vastleggingen', pagina: 'actueel-houden'
+  }));
+
+  // Vier maanden: streng genoeg om stilstand te zien, ruim genoeg voor een mkb
+  // dat niet elke maand iets verandert.
+  const laatste = regels.map(item => String(item.date || '')).filter(Boolean).sort().pop();
+  const grens = new Date(peil); grens.setMonth(grens.getMonth() - 4);
+  if (laatste && laatste < grens.toISOString().slice(0, 10)) uit.push(bevinding({
+    id: 'borging-stilstand', soort: 'kans',
+    titel: 'Er is al maanden niets meer vastgelegd',
+    bewijs: `De laatste vastlegging is van ${laatste}. Wat niet wordt bijgehouden, raakt stil uit de tijd`,
+    waarde: null, moeite: 'klein', duur: 1,
+    bron: 'Eigen vastleggingen', pagina: 'actueel-houden'
+  }));
+  return uit;
+}
+
+/**
+ * Het gat tussen plan en maandagochtend. Strategische bevindingen die nergens
+ * in taken of roadmap terugkomen, blijven een plan. De minimumwaarde die de
+ * klant zelf heeft ingevuld bepaalt wat groot genoeg is om op te pakken.
+ */
+function strategieZonderWerk(state) {
+  const strategie = at(state, 'portal.strategy') || {};
+  const gevonden = arr(strategie.findings);
+  if (!gevonden.length) return [];
+  const drempel = n(strategie.minimumValue);
+  const relevant = drempel ? gevonden.filter(item => n(item.value) >= drempel) : gevonden;
+  if (!relevant.length) return [];
+
+  const werk = [...arr(at(state, 'portal.tasks.items')), ...arr(at(state, 'portal.roadmap.items'))]
+    .map(item => String(item.title || '').toLocaleLowerCase('nl'));
+  const zonderWerk = relevant.filter(item => {
+    const titel = String(item.title || item.finding || '').toLocaleLowerCase('nl');
+    return titel && !werk.some(w => w.includes(titel.slice(0, 12)) || titel.includes(w.slice(0, 12)));
+  });
+  if (!zonderWerk.length) return [];
+
+  return [bevinding({
+    id: 'strategie-zonder-werk', soort: 'kans', dim: 'sturing',
+    titel: 'Strategische bevindingen komen niet terug in het werk',
+    bewijs: `${zonderWerk.length} van de ${relevant.length} bevinding${relevant.length === 1 ? '' : 'en'}${drempel ? ` boven je drempel van ${Math.round(drempel).toLocaleString('nl-NL')} euro` : ''} staat in geen enkele taak of roadmap-onderdeel: ${zonderWerk.slice(0, 2).map(item => item.title || item.finding).join(', ')}`,
+    waarde: null, moeite: 'klein', duur: 2,
+    bron: 'Eigen strategie', pagina: 'strategie-naar-maandagochtend'
+  })];
+}
+
+/**
+ * Een bestuurlijke conclusie zonder eigenaar, of een conclusie die ouder is dan
+ * de bevindingen eronder. Bewust één stille regel: het is jouw document, op jouw
+ * moment geschreven, en het portaal hoort er niet over te zeuren.
+ */
+function conclusieAchterhaald(state) {
+  const conclusie = at(state, 'portal.finalConclusion') || {};
+  if (!String(conclusie.text || '').trim()) return [];
+  if (String(conclusie.owner || '').trim()) return [];
+  return [bevinding({
+    id: 'conclusie-zonder-eigenaar', soort: 'kans', dim: 'sturing',
+    titel: 'De bestuurlijke conclusie heeft geen eigenaar',
+    bewijs: `Er ligt een conclusie${conclusie.decision ? ` met het besluit "${String(conclusie.decision).slice(0, 60)}"` : ''}, maar niemand staat ervoor`,
+    waarde: null, moeite: 'klein', duur: 1,
+    bron: 'Eigen eindconclusie', pagina: 'eindconclusie'
+  })];
+}
+
+const REGELS = [duursteOnderdelen, externOnderzoek, borging, strategieZonderWerk, conclusieAchterhaald, financieleWeerbaarheid, roadmapStilstand, openBesluiten, scanKansen, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
 
 /**
  * De volgorde. Waarde per jaar gedeeld door moeite is de basis; een harde datum
