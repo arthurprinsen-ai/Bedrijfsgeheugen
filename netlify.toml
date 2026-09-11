@@ -191,6 +191,16 @@
   [headers.values]
     Cache-Control = "public, max-age=3600, must-revalidate"
 
+# Scripts direct onder /assets (stijl.js, compare-slider-runtime) hebben geen
+# versienummer in de URL en vielen alleen onder de algemene /*.js-regel uit
+# _headers: zeven dagen cache zonder hercontrole. Een reparatie in stijl.js
+# (zie ledger prijzen-cls-money-hero) bereikte terugkerende bezoekers daardoor
+# pas na een week. Zelfde vangnet als voor /assets/*.css.
+[[headers]]
+  for = "/assets/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
 [[headers]]
   for = "/intern/powerhouse-kosten/*"
   [headers.values]
