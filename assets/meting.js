@@ -12,9 +12,12 @@
   var gebied=/^\/(klantportaal|portal-v2|portaal|mijn)/.test(location.pathname)?'portaal':'site';
   var sid='';try{sid=sessionStorage.getItem('bg_meting_sessie')||'';if(!sid){sid=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));sessionStorage.setItem('bg_meting_sessie',sid);}}catch(e){sid='';}
   var bron='';try{if(document.referrer){var r=new URL(document.referrer);if(r.hostname!==location.hostname)bron=r.hostname;}}catch(e){}
+  /* Herkomst per sessie (11 sept 2026): utm-bron / -medium / -campagne van de binnenkomst, anders het verwijzende domein.
+     Eén keer per tabblad bepaald en bewaard; nooit persoonsgegevens. */
+  var herkomst='';try{herkomst=sessionStorage.getItem('bg_meting_herkomst')||'';if(!herkomst){var q=new URLSearchParams(location.search);var u=[q.get('utm_source'),q.get('utm_medium'),q.get('utm_campaign')].filter(Boolean).map(function(x){return String(x).toLowerCase().replace(/[^a-z0-9._ -]/g,'').slice(0,40);});herkomst=u.length?u.join(' / '):(bron||'(direct)');sessionStorage.setItem('bg_meting_herkomst',herkomst);}}catch(e){herkomst=bron||'';}
   var wacht=[],totaal=0,MAX=400;
   function toestemming(){try{return localStorage.getItem('bg_consent')==='granted';}catch(e){return false;}}
-  function stuur(){if(!wacht.length)return;var body=JSON.stringify({sessie:sid,gebied:gebied,bron_domein:bron,toestemming:toestemming(),events:wacht.splice(0,50)});try{if(navigator.sendBeacon&&navigator.sendBeacon(DOEL,new Blob([body],{type:'text/plain'})))return;}catch(e){}try{fetch(DOEL,{method:'POST',body:body,keepalive:true,credentials:'omit',headers:{'content-type':'text/plain'}}).catch(function(){});}catch(e){}}
+  function stuur(){if(!wacht.length)return;var body=JSON.stringify({sessie:sid,gebied:gebied,bron_domein:bron,herkomst:herkomst,toestemming:toestemming(),events:wacht.splice(0,50)});try{if(navigator.sendBeacon&&navigator.sendBeacon(DOEL,new Blob([body],{type:'text/plain'})))return;}catch(e){}try{fetch(DOEL,{method:'POST',body:body,keepalive:true,credentials:'omit',headers:{'content-type':'text/plain'}}).catch(function(){});}catch(e){}}
   function meet(e){if(totaal>=MAX)return;totaal++;e.pad=location.pathname;e.gebeurd_op=new Date().toISOString();wacht.push(e);if(wacht.length>=10)stuur();}
   function ga(naam,p){try{if(toestemming()&&typeof window.gtag==='function')window.gtag('event',naam,p);}catch(e){}}
   function tekstVan(el){return String(el.getAttribute('aria-label')||el.innerText||el.value||el.getAttribute('title')||'').replace(/\s+/g,' ').trim().slice(0,120);}
@@ -22,7 +25,10 @@
   meet({gebeurtenis:'pagina'});
   var vorig=location.pathname;function route(){if(location.pathname!==vorig){vorig=location.pathname;gehaald={};meet({gebeurtenis:'pagina'});}}
   addEventListener('popstate',route);addEventListener('hashchange',route);
-  document.addEventListener('click',function(ev){var el=ev.target&&ev.target.closest&&ev.target.closest('a,button,[role="button"],[role="tab"],input[type="submit"],input[type="button"],summary,[data-bg-meet]');if(!el)return;var t=tekstVan(el),o=onderdeelVan(el),d=el.getAttribute('href')||'';meet({gebeurtenis:'klik',element_tekst:t,element_soort:(el.getAttribute('role')||el.tagName).toLowerCase(),element_doel:d,onderdeel:o});ga('klik',{element_tekst:t,onderdeel:o,link_pad:d.split('?')[0].split('#')[0]});setTimeout(route,50);},true);
+  /* Calendly (11 sept 2026): geef de tabbladcode en de pagina mee als utm_content en utm_term, zodat het brein een geboekt
+     gesprek aan de pagina en bron van dit bezoek kan koppelen (bg-calendly-sync). Geen naam of e-mailadres. */
+  function tagCalendly(el){try{if(!el||el.tagName!=='A'||!/(^|\.)calendly\.com$/i.test(new URL(el.href).hostname)||!sid)return;var u=new URL(el.href);u.searchParams.set('utm_source','bedrijfsgeheugen');u.searchParams.set('utm_medium','site');if(herkomst)u.searchParams.set('utm_campaign',herkomst.slice(0,60));u.searchParams.set('utm_content',sid);u.searchParams.set('utm_term',location.pathname.slice(0,120));el.href=u.toString();}catch(e){}}
+  document.addEventListener('click',function(ev){var el=ev.target&&ev.target.closest&&ev.target.closest('a,button,[role="button"],[role="tab"],input[type="submit"],input[type="button"],summary,[data-bg-meet]');if(!el)return;tagCalendly(el);var t=tekstVan(el),o=onderdeelVan(el),d=el.getAttribute('href')||'';meet({gebeurtenis:'klik',element_tekst:t,element_soort:(el.getAttribute('role')||el.tagName).toLowerCase(),element_doel:d,onderdeel:o});ga('klik',{element_tekst:t,onderdeel:o,link_pad:d.split('?')[0].split('#')[0]});setTimeout(route,50);},true);
   var drempels=[25,50,75,90,100],gehaald={},wachtScroll=0;
   function scrol(){wachtScroll=0;var h=Math.max(document.documentElement.scrollHeight-window.innerHeight,1);var pct=Math.min(100,Math.round((window.scrollY||window.pageYOffset||0)/h*100));for(var i=0;i<drempels.length;i++){var d=drempels[i];if(pct>=d&&!gehaald[d]){gehaald[d]=1;meet({gebeurtenis:'scroll',diepte_pct:d});ga('scroll_diepte',{percentage:d});}}}
   addEventListener('scroll',function(){if(!wachtScroll)wachtScroll=setTimeout(scrol,250);},{passive:true});
