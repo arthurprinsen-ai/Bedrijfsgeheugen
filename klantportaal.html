@@ -1439,7 +1439,24 @@ if(window.netlifyIdentity){
    vraagt is geen demo. Er wordt niets opgehaald dat bij een echte klant hoort;
    toonPortaal() laadt alleen de voorbeeldgegevens die al in de pagina staan. */
 document.addEventListener('DOMContentLoaded',function(){
-  if(window.__BG_IS_DEMO__ && window.__BG_IS_DEMO__()) toonPortaal({email:'demo'});
+  if(!(window.__BG_IS_DEMO__ && window.__BG_IS_DEMO__())) return;
+  toonPortaal({email:'demo'});
+  /* portaalslot.js wordt een uur gecachet. Een bezoeker die de demo eerder heeft
+     geopend draait dus mogelijk nog de versie die demo1 niet kent, bouwt zijn
+     inlogscherm in de poort en meldt "Dit portaal bestaat niet". Deze pagina is
+     zelf niet zo lang gecachet, dus ruimt hij dat hier op. Zonder deze
+     opruiming zou de demo voor die bezoekers pas na een uur werken. */
+  function ruimSlotOp(){
+    var slot=document.getElementById('bgSlot');
+    if(slot&&slot.parentNode) slot.parentNode.removeChild(slot);
+    var poort=document.getElementById('poort');
+    var portaal=document.getElementById('portaal');
+    if(poort) poort.hidden=true;
+    if(portaal) portaal.hidden=false;
+  }
+  ruimSlotOp();
+  /* Het slot rendert asynchroon; even blijven kijken in plaats van één keer. */
+  var teller=0, tik=setInterval(function(){ ruimSlotOp(); if(++teller>20) clearInterval(tik); },150);
 });
 
 // knoppen op de poort
@@ -11457,7 +11474,12 @@ window.__BG_LOOPT__ = function(K, slug){
 
   function start() {
     var s = slug();
-    if (!s || s === 'demo') return;
+    /* Zelfde uitzondering als in assets/js/portaalslot.js: de demoslugs hebben
+       geen organisatie in Supabase en draaien het portaal volledig. Deze kopie
+       staat inline in de pagina en werd bij de vorige wijziging over het hoofd
+       gezien; daardoor bleef "Dit portaal bestaat niet" staan terwijl het
+       losse bestand al klopte. */
+    if (!s || (window.__BG_IS_DEMO__ && window.__BG_IS_DEMO__())) return;
 
     var uitMail = uitHash();
     if (uitMail) {
