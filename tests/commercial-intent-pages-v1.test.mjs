@@ -66,9 +66,22 @@ test('geen enkele pagina krijgt een tweede hero geinjecteerd', () => {
   // in plaats van die ene regel, zodat een volgende pagina met een gebouwde hero
   // niet stilzwijgend een tweede krijgt.
   const js = readFileSync('assets/stijl.js', 'utf8');
-  assert.match(js, /if\(main\.querySelector\('\.p-hero'\)\)hydrateExistingHero\(meta,main\)/,
+  assert.match(js, /if\(main\.querySelector\('\.p-hero'\)(\|\|main\.querySelector\(GEBOUWDE_HERO\))?\)hydrateExistingHero\(meta,main\)/,
     'de laag kijkt niet of de pagina al een hero heeft voordat hij er een injecteert');
   assert.doesNotMatch(js, /if\(path==='\/due-diligence'\)hydrateExistingHero\(meta,main\);else hero\(meta,main\);/,
     'de oude route-specifieke uitzondering staat er nog');
   assert.match(js, /function hydrateExistingHero/, 'hydrateren bestaat niet meer');
+});
+
+test('de V18-hero telt als bestaande hero: geen tweede blok, geen layoutverschuiving', () => {
+  // De V18-schil bouwt de hero als .held[data-bg-component="hero"]. Toen
+  // assets/stijl.js met de toestemmingslaag weer in de build kwam (#1379),
+  // herkende de money-page laag die niet en injecteerde hij een tweede blok
+  // onder de ondertitel. Op /prijzen gaf dat CLS 0,18 (telefoon) en 0,14
+  // (tablet), boven de grens van 0,1 in config/ui-visual-regression.json.
+  const js = readFileSync('assets/stijl.js', 'utf8');
+  assert.match(js, /GEBOUWDE_HERO='\.held\[data-bg-component="hero"\]'/, 'de V18-hero wordt niet herkend');
+  assert.match(js, /main\.querySelector\('\.p-hero'\)\|\|main\.querySelector\(GEBOUWDE_HERO\)\)hydrateExistingHero/,
+    'een pagina met een V18-hero krijgt nog steeds een geinjecteerd blok');
+  assert.match(js, /querySelectorAll\('\.p-cta a, \.heldknoppen a'\)/, 'de knoppen in de V18-hero krijgen geen money-tracking');
 });

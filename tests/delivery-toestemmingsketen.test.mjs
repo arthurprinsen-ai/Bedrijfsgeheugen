@@ -38,7 +38,9 @@ test('de money-page laag verrijkt een bestaande hero en injecteert er geen tweed
   // De laag zelf blijft: daar staan de prijzen, het bewijs, de bezwaren en het
   // eigenaarschap per money page in. Wat weg moest was het injecteren van een
   // tweede hero op pagina's waar de canonieke schil er al een heeft gezet.
-  assert.match(CONSENT_JS, /if\(main\.querySelector\('\.p-hero'\)\)hydrateExistingHero\(meta,main\)/,
+  // Bestaande hero = .p-hero of de V18-hero (.held[data-bg-component="hero"]); zie
+  // docs/development-ledger.md, prijzen-cls-money-hero.
+  assert.match(CONSENT_JS, /if\(main\.querySelector\('\.p-hero'\)(\|\|main\.querySelector\(GEBOUWDE_HERO\))?\)hydrateExistingHero\(meta,main\)/,
     'de laag kijkt niet of er al een hero staat voordat hij er een injecteert');
   assert.match(CONSENT_JS, /function hydrateExistingHero/, 'hydrateren bestaat niet meer');
 });

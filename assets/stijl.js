@@ -58,11 +58,16 @@
     a.setAttribute('data-bg-money-bound','1');
     a.addEventListener('click',function(){event(kind==='primary'?'money_page_primary_cta':'money_page_secondary_cta',meta);});
   }
+  /* De V18-schil bouwt de hero als .held[data-bg-component="hero"], niet als
+     .p-hero. Zonder deze herkenning injecteerde de laag op /prijzen een tweede
+     blok (Prijs/Doorlooptijd/Risico) onder de ondertitel, ±0,7 s na het laden:
+     layoutverschuiving 0,18 op telefoon, boven de grens van 0,1. */
+  var GEBOUWDE_HERO='.held[data-bg-component="hero"]';
   function hydrateExistingHero(meta,main){
-    var existing=main.querySelector('.p-hero');if(!existing)return false;
+    var existing=main.querySelector('.p-hero')||main.querySelector(GEBOUWDE_HERO);if(!existing)return false;
     existing.setAttribute('data-bg-money-contract',CONTRACT);
     existing.setAttribute('data-bg-money-intent',meta.intent);
-    var ctas=existing.querySelectorAll('.p-cta a');
+    var ctas=existing.querySelectorAll('.p-cta a, .heldknoppen a');
     trackExistingCta(ctas[0],'primary',meta);
     trackExistingCta(ctas[1],'secondary',meta);
     return true;
@@ -91,7 +96,7 @@
     /* De canonieke V18-schil genereert de hero inmiddels bij de build. Waar die
        er al staat verrijken we hem alleen; injecteren zou een tweede hero op de
        pagina zetten. Dat was precies wat commercial-intent-pages-v1 meldde. */
-    if(main.querySelector('.p-hero'))hydrateExistingHero(meta,main);else hero(meta,main);
+    if(main.querySelector('.p-hero')||main.querySelector(GEBOUWDE_HERO))hydrateExistingHero(meta,main);else hero(meta,main);
     decision(meta,main);event('money_page_view',meta);
   }
   if(document.readyState==='loading'&&!document.querySelector('main')){
