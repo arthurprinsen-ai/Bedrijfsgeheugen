@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration='supabase/migrations/20260831_brain_cost_attribution.sql';
+const migration='supabase/migrations/20260831073355_brain_cost_attribution.sql';
 
 test('P0 cost attribution is append-only, operation-linked and replay-safe',()=>{
   assert.equal(fs.existsSync(migration),true,'missing canonical cost attribution migration');

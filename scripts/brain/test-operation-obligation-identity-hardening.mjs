@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration='supabase/migrations/20260831_brain_operation_obligation_identity_hardening.sql';
+const migration='supabase/migrations/20260831081927_brain_operation_obligation_identity_hardening.sql';
 
 test('operations and obligations protect immutable identity and use CAS transitions',()=>{
   assert.equal(fs.existsSync(migration),true,'hardening migration must exist');

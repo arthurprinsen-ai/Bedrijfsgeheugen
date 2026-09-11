@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260831_brain_operation_registry.sql';
+const migrationPath = 'supabase/migrations/20260831060335_brain_operation_registry.sql';
 
 test('P0 operation registry migration exists and encodes canonical idempotency contract', () => {
   assert.equal(fs.existsSync(migrationPath), true, `${migrationPath} must exist`);

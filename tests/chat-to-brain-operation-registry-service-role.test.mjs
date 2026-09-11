@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260831_brain_operation_registry_service_role_minimal.sql';
+const migrationPath = 'supabase/migrations/20260831063804_brain_operation_registry_service_role_minimal.sql';
 
 test('service_role keeps only the table privileges required by the operation registry', () => {
   assert.equal(fs.existsSync(migrationPath), true, `${migrationPath} must exist`);

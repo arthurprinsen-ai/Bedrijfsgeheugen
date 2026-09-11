@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration='supabase/migrations/20260831_brain_transactional_inbox_outbox.sql';
+const migration='supabase/migrations/20260831084056_brain_transactional_inbox_outbox.sql';
 
 test('transactional inbox/outbox is durable, idempotent and claim/ack bounded',()=>{
   assert.equal(fs.existsSync(migration),true,'inbox/outbox migration must exist');

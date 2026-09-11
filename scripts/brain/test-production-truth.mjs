@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration='supabase/migrations/20260831_brain_production_truth.sql';
+const migration='supabase/migrations/20260831074419_brain_production_truth.sql';
 
 test('P0 Production Truth derives green from fresh observation and never exposes SetGreen',()=>{
   assert.equal(fs.existsSync(migration),true,'Production Truth migration must exist');

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260831_brain_blocker_occurrence_idempotency.sql';
+const migrationPath = 'supabase/migrations/20260831070909_brain_blocker_occurrence_idempotency.sql';
 
 test('blocker occurrence transport replay cannot inflate occurrence_count', () => {
   assert.equal(fs.existsSync(migrationPath), true, `${migrationPath} must exist`);

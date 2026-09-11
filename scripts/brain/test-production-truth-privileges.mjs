@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const hardening=fs.readFileSync('supabase/migrations/20260831_brain_production_truth_hardening.sql','utf8');
+const hardening=fs.readFileSync('supabase/migrations/20260831075125_brain_production_truth_hardening.sql','utf8');
 
 test('Production Truth has no service_role table-write bypass around reconciliation',()=>{
   assert.match(hardening,/alter function public\.brain_reconcile_production_truth\(text,text,text,timestamptz\)[\s\S]*security definer/i,'reconcile must be the privileged mutation boundary');

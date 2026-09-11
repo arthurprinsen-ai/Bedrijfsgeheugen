@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const migration='supabase/migrations/20260831_brain_supporting_control_plane.sql';
+const migration='supabase/migrations/20260831091723_brain_supporting_control_plane.sql';
 test('minimal command API is idempotent, leased and RPC-only',()=>{
   assert.equal(fs.existsSync(migration),true);
   const sql=fs.readFileSync(migration,'utf8');
