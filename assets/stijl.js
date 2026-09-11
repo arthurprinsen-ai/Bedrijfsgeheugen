@@ -101,7 +101,12 @@
        er al staat verrijken we hem alleen; injecteren zou een tweede hero op de
        pagina zetten. Dat was precies wat commercial-intent-pages-v1 meldde. */
     if(main.querySelector('.p-hero')||main.querySelector(GEBOUWDE_HERO))hydrateExistingHero(meta,main);else hero(meta,main);
-    decision(meta,main);event('money_page_view',meta);
+    decision(meta,main);
+    /* Blokken die de build al in de HTML zette (tools/site-shell/money-prerender.mjs)
+       hebben nog geen klikmeting; button() koppelt die alleen aan zelfgemaakte knoppen. */
+    var vooraf=main.querySelectorAll('[data-bg-money-prerender] .bg-money-btn');
+    for(var i=0;i<vooraf.length;i++)trackExistingCta(vooraf[i],vooraf[i].getAttribute('data-bg-cta'),meta);
+    event('money_page_view',meta);
   }
   if(document.readyState==='loading'&&!document.querySelector('main')){
     document.addEventListener('DOMContentLoaded',initMoneyPage,{once:true});

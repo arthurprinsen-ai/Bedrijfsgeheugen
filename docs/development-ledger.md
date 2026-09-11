@@ -169,3 +169,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Verificatie lokaal:** build 90/90 pagina's, finalize op 0 normalisaties (bannerlinks absoluut). Browser (390 en 1366 px) op /, /zelfscan, /prijzen: banner zichtbaar, geen Google-analytics vóór toestemming, na accepteren één gtag.js en het klik-event, CLS 0.
 - **Regressietest:** `tests/site-shell-analytics-sitebreed.test.mjs` (7 tests), ingeschreven in `lane-website.yml`.
 - **Rollback:** verwijder `await applySitewideAnalytics()` uit `tools/bouw-release-evidence.mjs`.
+
+## 2026-09-11 — IMPROVEMENT — cls-lettertype-en-money-blokken
+- **Fingerprint:** `website|cls|font-swap|money-page|prerender`
+- **Probleem:** op telefoons verspringen veel pagina's boven de grens van 0,1 (live gemeten: /ai-scan 0,174, /security 0,153, /business-case-ai 0,134, /monitor 0,133, /expertises 0,126, /ai-governance 0,121, /zelfscan 0,109, /hoe-het-werkt 0,102). Twee oorzaken: (1) de wissel van terugvallettertype naar Instrument Sans/Bricolage (font-display: swap) liet tekst een regel korter worden — met Google Fonts geblokkeerd was de verschuiving weg; (2) stijl.js zette op money-pagina's met een .inhoud-kop-hero ±0,4 s na laden een blok van 432 px in de hero.
+- **Fix 1 — `tools/site-shell/lettertype-terugval.mjs`:** maatgelijke terugval (@font-face met local Arial/Helvetica/Liberation Sans/Arimo en Roboto, size-adjust + ascent/descent-override, berekend uit de fontbestanden). swap blijft (besluit Notion 25: tekst nooit onzichtbaar). Stapels in inline CSS, style-attributen en assets/*.css krijgen de terugvallers.
+- **Fix 2 — `tools/site-shell/money-prerender.mjs`:** draait het money-page deel van assets/stijl.js bij de build in een minimale nagebootste pagina en zet stijlblok, hero-blok en besliskader op dezelfde plek in de HTML (één bron). stijl.js voegt niets dubbel toe en koppelt nu de klikmeting aan vooraf geplaatste knoppen. Alleen pagina's die stijl.js laden; inhoud ongewijzigd.
+- **Verificatie lokaal (build 90/90, finalize 0 normalisaties):** telefoon, oud → nieuw: /ai-scan 0,174 → 0,009; /zelfscan 0,109 → 0,002; /security 0,153 → 0,018; /monitor 0,133 → 0,001; /business-case-ai 0,134 → 0,026; alle 30 gemeten pagina's < 0,03. Geen dubbele money-blokken, knoppen hebben klikmeting.
+- **Bewust niet:** het money-blok op /afas-koppeling e.a. weghalen — dat is de enige prijs+knop bovenaan die pagina's; het staat nu stil in plaats van dat het inschuift.
+- **Regressietests:** `tests/site-shell-lettertype-terugval.test.mjs`, `tests/site-shell-money-prerender.test.mjs`, ingeschreven in `lane-website.yml`.
+- **Rollback:** verwijder `await applyMoneyPrerender()` en/of `await applyLettertypeTerugval()` uit `tools/bouw-release-evidence.mjs`.
