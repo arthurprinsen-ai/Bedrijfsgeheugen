@@ -1,7 +1,7 @@
 export const PORTAL_SECTIONS = Object.freeze({
   overzicht: { label: 'Overzicht', pages: ['overzicht'] },
   inzicht: { label: 'Inzicht', pages: ['profiel','data-ai','ai-scan','kansenkaart','csrd-impact','gegevens-invullen','ingevulde-gegevens','businesscase'] },
-  vergelijken: { label: 'Vergelijken', pages: ['cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','compliance-command-center','ai-capabilities','data-ai-passport','eu-ai-act-audit'] },
+  vergelijken: { label: 'Vergelijken', pages: ['cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','compliance-command-center','ai-capabilities','data-ai-passport','eu-ai-act-audit','rekenwijze'] },
   denken: { label: 'Denken', pages: ['strategy-dna','strategiemodellen','modellen','canvassen','eindconclusie'] },
   overname: { label: 'Overname', pages: ['due-diligence','exit'] },
   doen: { label: 'Doen', pages: ['strategie-naar-maandagochtend','actueel-houden','wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen'] },
@@ -11,7 +11,7 @@ export const PORTAL_SECTIONS = Object.freeze({
 
 const PAGE_META = {
   overzicht:{label:'Overzicht'}, profiel:{label:'Profiel per onderdeel'}, 'data-ai':{label:'Data en AI'}, 'ai-scan':{label:'AI-scan: kansenkaart'}, kansenkaart:{label:'Kansenkaart'}, 'csrd-impact':{label:'CSRD & Impact'}, 'gegevens-invullen':{label:'Je gegevens invullen'}, 'ingevulde-gegevens':{label:'Wat je hebt ingevuld'}, businesscase:{label:'Businesscase'},
-  'cijfers-maatstaven':{label:'Cijfers en maatstaven'}, 'waarde-financiering':{label:'Waarde en financiering'}, mensen:{label:'Mensen'}, 'branche-markt':{label:'Branche en markt'}, onderzoek:{label:'Onderzoek'}, 'compliance-governance':{label:'Compliance, security en governance'}, 'compliance-command-center':{label:'Compliance Command Center'}, 'ai-capabilities':{label:'AI-capabilities'}, 'data-ai-passport':{label:'Data & AI Passport'}, 'eu-ai-act-audit':{label:'EU AI Act auditrapport'},
+  'cijfers-maatstaven':{label:'Cijfers en maatstaven'}, 'waarde-financiering':{label:'Waarde en financiering'}, mensen:{label:'Mensen'}, 'branche-markt':{label:'Branche en markt'}, onderzoek:{label:'Onderzoek'}, 'compliance-governance':{label:'Compliance, security en governance'}, 'compliance-command-center':{label:'Compliance Command Center'}, 'ai-capabilities':{label:'AI-capabilities'}, 'data-ai-passport':{label:'Data & AI Passport'}, 'eu-ai-act-audit':{label:'EU AI Act auditrapport'}, 'rekenwijze':{label:'Hoe dit portaal rekent'},
   'strategy-dna':{label:'Strategy DNA'}, strategiemodellen:{label:'Strategiemodellen'}, modellen:{label:'Alle modellen'}, canvassen:{label:'Canvassen'}, eindconclusie:{label:'De eindconclusie'}, 'due-diligence':{label:'Due diligence'}, exit:{label:'Exit'},
   'strategie-naar-maandagochtend':{label:'Van strategie naar maandagochtend'}, 'actueel-houden':{label:'Actueel houden'}, wijzigingen:{label:'Wijzigingen'}, advies:{label:'Advies'}, offerte:{label:'Offerte'}, roadmap:{label:'Roadmap'}, uitvoeringsladder:{label:'Uitvoeringsladder'}, 'taken-werkstromen':{label:'Taken & werkstromen'},
   koppelingen:{label:'Koppelingen'}, gebruikers:{label:'Gebruikers'}, documenten:{label:'Documenten'}, instellingen:{label:'Instellingen'}, audit:{label:'Audit'},

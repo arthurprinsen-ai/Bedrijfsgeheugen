@@ -7,6 +7,7 @@ import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-d
 import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
 import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
 import { routeOverzicht } from './flow-state.js';
+import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen } from './regelgeving.js';
 
 const arr=value=>Array.isArray(value)?value:[];
@@ -102,20 +103,19 @@ const BUILDERS=Object.freeze({
   roadmap:state=>gantt(arr(at(state,'portal.roadmap.items')),{title:'Roadmap over twaalf maanden'}),
   uitvoeringsladder:state=>gantt(arr(at(state,'portal.roadmap.items')),{title:'Uitvoering over twaalf maanden'}),
 
-  advies:state=>quadrant(arr(at(state,'portal.advice.items')).map(item=>({label:item.advice,x:n(item.duration),y:n(item.value)})),{title:'Advies: waarde tegen doorlooptijd',xLabel:'Doorlooptijd in weken',yLabel:'Waarde'}),
-
-  'strategie-naar-maandagochtend':state=>quadrant(arr(at(state,'portal.strategy.findings')).map(item=>({label:item.finding,x:6-({'Nu':5,'3 maanden':4,'6 maanden':3,'12 maanden':2,'Later':1}[item.horizon]||3),y:n(item.value)})),{title:'Bevindingen: waarde tegen horizon',xLabel:'Hoe verder weg',yLabel:'Waarde'}),
-
-  'compliance-governance':state=>{
-    const komend=komendeMijlpalen();
-    const perCategorie={};
-    for(const item of REGELGEVING)perCategorie[item.categorie]=(perCategorie[item.categorie]||0)+1;
-    return [ring(n(calc('policy-completeness',state)),{title:'Beleid compleet',caption:'aandeel vastgesteld of geoefend'}),
-      leakage(Object.entries(perCategorie).map(([label,value])=>({label,value})),{title:`Wat je raakt: ${REGELGEVING.length} regels, ${lopendeVerplichtingen().length} verplichtingen lopen al`}),
-      komend.length?ladder(komend.slice(0,6).map((m,i)=>({naam:m.datum,uitleg:`${m.regel}: ${m.wat}`,huidig:i===0})),{title:'Wat er als eerste verandert'}):''
+  advies:state=>{
+    const items=bevindingen(state);
+    if(!items.length)return '';
+    const metWaarde=items.filter(b=>b.waarde);
+    const perSoort={};for(const b of items)perSoort[b.soort]=(perSoort[b.soort]||0)+1;
+    return [
+      metWaarde.length?leakage(metWaarde.map(b=>({label:b.titel,value:b.waarde})),
+        {title:`Waar de ${bevindingenSamenvatting(state).waardePerJaar.toLocaleString('nl-NL')} euro per jaar zit`}):'',
+      ladder(items.slice(0,6).map((b,i)=>({naam:b.titel.slice(0,18),uitleg:b.bewijs,huidig:i===0})),
+        {title:'In welke volgorde aanpakken'}),
+      leakage(Object.entries(perSoort).map(([label,value])=>({label,value})),{title:'Waar de bevindingen vandaan komen'})
     ].filter(Boolean).join('');
-  },
-  'compliance-command-center':state=>ring(100-n(calc('compliance-risk',state)),{title:'Compliance readiness',caption:'restrisico afgetrokken'}),
+  },  'compliance-command-center':state=>ring(100-n(calc('compliance-risk',state)),{title:'Compliance readiness',caption:'restrisico afgetrokken'}),
   'data-ai-passport':state=>{
     const p=bouwPassport(state);const v=p.samenvatting;
     const perCategorie={};
@@ -159,7 +159,18 @@ const BUILDERS=Object.freeze({
     {label:'eNPS',value:n(at(state,'portal.people.enps')),benchmark:20}
   ],{title:'Mensen tegen de branchenorm'}),
 
-  'ai-capabilities':state=>radar(Object.entries(at(state,'portal.aiCapabilities')||{}).map(([key,value])=>({label:`Capability ${Number(key)+1}`,value:n(value)})),{title:'AI-capabilities'}),
+  'ai-capabilities':state=>{
+    /* De kosten per bedrijfsonderdeel horen hier: dit is de pagina waar de
+       bevindingen over handwerk naartoe verwijzen. Elk ingevuld
+       volwassenheidsniveau krijgt zo een bedrag per jaar. */
+    const kosten=arr(calc('dimension-costs',state));
+    return [radar(Object.entries(at(state,'portal.aiCapabilities')||{}).map(([key,value])=>({label:`Capability ${Number(key)+1}`,value:n(value)})),{title:'AI-capabilities'}),
+      kosten.length?leakage(kosten.map(d=>({label:d.label,value:n(d.kosten)})),
+        {title:'Wat elk onderdeel per jaar kost op zijn huidige niveau'}):'',
+      kosten.length?benchmarkBars(kosten.map(d=>({label:d.label,value:n(d.kosten)-n(d.potentieel),benchmark:n(d.kosten)})),
+        {title:'Wat het zou kosten op streefniveau'}):''
+    ].filter(Boolean).join('');
+  },
 
   'data-ai':state=>{
     const phases=['Oriëntatie','Fundament','Pilot','Opschalen','Borgen'];
