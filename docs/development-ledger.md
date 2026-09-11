@@ -149,3 +149,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Rollback:** verwijder de aanroep `await applyConversionCta()` in `tools/bouw-release-evidence.mjs`; de knoppen zijn dan weer geel. Last-known-good: main vóór deze PR.
 - **Owner:** website-lane. Bestanden staan onder `tools/site-shell/` en `tests/site-shell-`: nieuwe paden buiten een geregistreerd prefix in `config/brain-delivery-system.json` blokkeren preflight/plan/verify met `unclassified delivery path`.
 - **Herbruikbare les:** kies een knopkleur op contrast met de eigen pagina, niet op een algemene kleurregel. Gebruik de knopkleur alleen voor knoppen, anders verdwijnt het effect.
+
+## 2026-09-11 — IMPROVEMENT — asset-cache-stijl-js
+- **Fingerprint:** `website|cache|netlify-headers|stijl.js`
+- **Correctie op prijzen-cls-money-hero:** daar stond dat `/assets/*` een jaar `immutable` gecachet wordt. Op productie gemeten klopt dat niet: netlify.toml wint van `_headers`. `/assets/*.css` en `/assets/js/*` krijgen `max-age=3600, must-revalidate` uit netlify.toml; `/assets/stijl.js` viel alleen onder `/*.js` uit `_headers`: `max-age=604800` (7 dagen), zonder hercontrole.
+- **Gevolg:** bezoekers die vóór #1387 de oude `stijl.js` cachten, zien de verspringing op /prijzen hooguit 7 dagen (tot uiterlijk 18 sept 2026).
+- **Fix:** `[[headers]] for = "/assets/*.js"` met `max-age=3600, must-revalidate` in netlify.toml, hetzelfde vangnet als voor CSS. Registratie van `_headers` is niet nodig.
+- **Regressietest:** `tests/site-shell-asset-cache.test.mjs` (geen immutable, must-revalidate, max-age ≤ 3600 voor `/assets/*.css`, `/assets/*.js`, `/assets/js/*`), ingeschreven in `lane-website.yml`. Lokaal rood zonder de regel, groen met.
+- **Verificatie na deploy:** `curl -I https://www.bedrijfsgeheugen.nl/assets/stijl.js` moet `max-age=3600,must-revalidate` tonen.
+- **Rollback:** verwijder het `/assets/*.js`-blok uit netlify.toml.
+- **Herbruikbare les:** meet cacheheaders op productie in plaats van ze uit `_headers` af te lezen; netlify.toml en `_headers` stapelen, en de toml wint.
