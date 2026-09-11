@@ -1,9 +1,17 @@
+import { DEMO_PORTAL_STATE, DEMO_USER } from './demo-state.js';
+
 const API_URL='/api/portal-state';
 export const PORTAL_STATE_MODES=Object.freeze(['authenticated','preview','empty','error']);
 
 function snapshot(mode,state=null,error=null,user=null){return Object.freeze({mode,state,error,user,updatedAt:new Date().toISOString()})}
 function identityUser(identity){try{return identity?.currentUser?.()||null}catch{return null}}
 async function authToken(user){try{return await user?.jwt?.()||''}catch{return''}}
+const clone=value=>value==null?value:structuredClone(value);
+
+export function isPortalDemoRoute(pathname=globalThis.window?.location?.pathname||''){
+ const path=String(pathname||'').replace(/\/+$/,'')||'/';
+ return path==='/portaal/demo';
+}
 
 export function ensureIdentityWidget(){
  if(globalThis.window?.netlifyIdentity)return Promise.resolve(globalThis.window.netlifyIdentity);
@@ -20,13 +28,16 @@ export function ensureIdentityWidget(){
  });
 }
 
-export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProvider=()=>globalThis.window?.netlifyIdentity||null}={}){
+export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProvider=()=>globalThis.window?.netlifyIdentity||null,demoMode=isPortalDemoRoute()}={}){
+ const demo=Boolean(demoMode);
+ let demoState=demo?clone(DEMO_PORTAL_STATE):null;
  let current=snapshot('preview');
  const listeners=new Set();
  const publish=next=>{current=next;for(const fn of listeners){try{fn(current)}catch{}}return current};
  const headersFor=async user=>{const token=await authToken(user);return token?{accept:'application/json',authorization:`Bearer ${token}`}:{accept:'application/json'}};
 
  async function load(){
+  if(demo)return publish(snapshot('authenticated',clone(demoState),null,DEMO_USER));
   const identity=identityProvider();const user=identityUser(identity);
   if(!user)return publish(snapshot('preview',null,null,null));
   const headers=await headersFor(user);
@@ -41,6 +52,7 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
  }
 
  async function write(nextState){
+  if(demo){demoState=clone(nextState||{});return publish(snapshot('authenticated',clone(demoState),null,DEMO_USER));}
   const identity=identityProvider();const user=identityUser(identity);
   if(!user)throw new Error('AUTH_REQUIRED');
   const headers=await headersFor(user);
@@ -53,10 +65,11 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
 
  return Object.freeze({
   apiUrl:API_URL,
+  isDemo:()=>demo,
   getSnapshot:()=>current,
   subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)},
   load,write,
-  currentUser:()=>identityUser(identityProvider()),
-  authHeaders:async()=>headersFor(identityUser(identityProvider()))
+  currentUser:()=>demo?DEMO_USER:identityUser(identityProvider()),
+  authHeaders:async()=>demo?{accept:'application/json'}:headersFor(identityUser(identityProvider()))
  });
 }
