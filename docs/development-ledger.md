@@ -126,3 +126,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Production SHA/deploy:** not yet production at time of this entry; candidate must pass normal PR/BG169 promotion gates. Do not bypass them for documentation-only urgency.
 - **Rollback/last-known-good:** main SHA `7ad7a88061422056771a7638ff7d5b7ba6a5d9a1` remains last-known-good until candidate promotion.
 - **Reusable lesson:** durable learning requires the same truth to be discoverable by runtime agents, Notion knowledge and repository code agents. A chat summary alone is not an engineering memory system.
+
+## 2026-09-11 — ERROR + RECOVERY — prijzen-cls-money-hero
+- **Fingerprint:** `website|cls|money-hero|stijl.js|prijzen`
+- **Signaal:** `website / browser` (UI visual regression) rood op `/prijzen phone initial: cls` en `/prijzen tablet initial: cls` — eerst bij #1379, daarna bij #1386. Productie gemeten: CLS 0,178 (390px) en 0,145 (820px); grens 0,1.
+- **Oorzaak:** #1379 bracht `assets/stijl.js` (toestemmingslaag) terug in de build. Hetzelfde bestand bevat de money-page laag, die alleen `.p-hero` als bestaande hero herkent. De V18-schil bouwt de hero als `.held[data-bg-component="hero"]`, dus de laag injecteerde ±0,7 s na laden een `section.bg-money-hero` (463px) onder de ondertitel; payoff en intro schoven uit beeld. Geen lettertype-effect: met Google Fonts geblokkeerd bleef de verschuiving gelijk.
+- **Fix:** `GEBOUWDE_HERO` in `assets/stijl.js`; een bestaande V18-hero wordt gehydrateerd (contract-attribuut + tracking op `.heldknoppen a`) in plaats van aangevuld. Lokaal na de fix: CLS 0,006 (390px) en 0,044 (820px); /prijzen heeft geen tweede blok meer, wel het besliskader onderaan.
+- **Regressietest:** extra test in `tests/commercial-intent-pages-v1.test.mjs` (required-test).
+- **Open:** `/afas-koppeling` heeft geen V18-hero en krijgt het blok nog wel; valt buiten de VR-check. `/assets/*` staat op `immutable` (1 jaar) en `stijl.js` heeft geen versie-query: bezoekers die sinds #1379 de oude versie cachten, houden die. Oplossen via een `_headers`-regel zoals `/assets/kop.css` — vraagt eerst registratie van `_headers` in `config/brain-delivery-system.json`.
+- **Rollback:** revert deze commit; `/prijzen` krijgt dan weer het geinjecteerde blok.
+- **Herbruikbare les:** een script dat terugkomt in de build brengt al zijn oude taken mee. Bij het weer inschakelen van een bestand eerst nagaan wat het nog meer doet dan waarvoor je het terughaalt.
