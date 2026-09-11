@@ -264,3 +264,74 @@ test('een afgeronde roadmap en een getekende offerte leveren geen werk op', () =
   for (const id of ['roadmap-zonder-eigenaar', 'roadmap-stilstand', 'wijzigingen-niet-geborgd', 'offerte-wacht'])
     assert.ok(!ids.includes(id), `${id} slaat aan terwijl er niets openstaat`);
 });
+
+/* ---- Borging, strategie en conclusie ---- */
+
+const BORGING = { portal: {
+  profile: { headcount: 20, hourlyCost: 48, maturity: { sturing: 2 } },
+  freshness: { items: [
+    { what: 'Offerteproces', date: '2026-01-10', document: 'Werkinstructie offertes', documentOwner: '', reviewDate: '2026-06-01' },
+    { what: 'RIE', date: '2026-02-02', document: 'RIE 2026', documentOwner: 'Arthur', reviewDate: '2027-01-01' }
+  ] },
+  strategy: { horizon: '2027', minimumValue: 10000, findings: [
+    { title: 'Serviceportaal bouwen', value: 45000 }, { title: 'Kleine verbetering', value: 2000 } ] },
+  tasks: { items: [{ title: 'Iets anders' }] },
+  finalConclusion: { text: 'We gaan door op automatisering', decision: 'Investeren in ERP', owner: '' }
+} };
+
+const PEIL = '2026-09-11';
+
+test('een verstreken reviewdatum is een feit, geen interpretatie', () => {
+  const item = bevindingen(BORGING, PEIL).find(b => b.id === 'borging-review-verlopen');
+  assert.ok(item, 'een verstreken reviewdatum levert geen bevinding op');
+  assert.equal(item.soort, 'verplichting');
+  assert.equal(item.datum, '2026-06-01', 'de oudste verstreken datum wordt niet genoemd');
+  assert.match(item.bewijs, /1 vastlegging/, 'de nog geldige vastlegging telt ten onrechte mee');
+});
+
+test('een document zonder eigenaar en een log dat stilstaat', () => {
+  const lijst = bevindingen(BORGING, PEIL);
+  assert.match(lijst.find(b => b.id === 'borging-zonder-eigenaar').bewijs, /Werkinstructie offertes/);
+  assert.match(lijst.find(b => b.id === 'borging-stilstand').bewijs, /2026-02-02/);
+
+  // Vier maanden is de grens; recenter dan dat is geen stilstand.
+  const recent = { portal: { ...BORGING.portal, freshness: { items: [
+    { what: 'Iets', date: '2026-08-01', document: 'Doc', documentOwner: 'Arthur', reviewDate: '2027-01-01' }] } } };
+  assert.ok(!bevindingen(recent, PEIL).find(b => b.id === 'borging-stilstand'));
+  assert.ok(!bevindingen(recent, PEIL).find(b => b.id === 'borging-review-verlopen'));
+});
+
+test('de eigen minimumwaarde bepaalt wat groot genoeg is om op te pakken', () => {
+  const item = bevindingen(BORGING, PEIL).find(b => b.id === 'strategie-zonder-werk');
+  assert.ok(item, 'strategische bevindingen zonder werk leveren geen bevinding op');
+  assert.match(item.bewijs, /1 van de 1/, 'de bevinding onder de drempel telt ten onrechte mee');
+  assert.match(item.bewijs, /Serviceportaal bouwen/);
+
+  // Zodra er werk aan hangt, is het gat gedicht.
+  const metWerk = { portal: { ...BORGING.portal,
+    tasks: { items: [{ title: 'Serviceportaal bouwen' }] } } };
+  assert.ok(!bevindingen(metWerk, PEIL).find(b => b.id === 'strategie-zonder-werk'));
+});
+
+test('de conclusie wordt één stille regel, geen gezeur', () => {
+  const zonder = bevindingen(BORGING, PEIL).filter(b => b.pagina === 'eindconclusie');
+  assert.equal(zonder.length, 1, 'de eindconclusie levert meer dan één bevinding op');
+  assert.equal(zonder[0].id, 'conclusie-zonder-eigenaar');
+
+  const metEigenaar = { portal: { ...BORGING.portal,
+    finalConclusion: { ...BORGING.portal.finalConclusion, owner: 'Arthur' } } };
+  assert.deepEqual(bevindingen(metEigenaar, PEIL).filter(b => b.pagina === 'eindconclusie'), [],
+    'een conclusie met eigenaar hoort niets op te leveren');
+});
+
+test('canvassen en due-diligence leveren bewust geen bevindingen op', () => {
+  // Een half ingevuld canvas is een staat, geen werk. Er is geen eerlijke manier
+  // om te zeggen wat het kost, en alles tot bevinding maken maakt de lijst stuk.
+  const canvas = { portal: {
+    profile: { headcount: 20, hourlyCost: 48, maturity: { sturing: 3 } },
+    canvases: { businessModel: { partners: 'ja', activities: '' } },
+    dueDiligence: { notes: 'iets' } } };
+  const paginas = bevindingen(canvas, PEIL).map(b => b.pagina);
+  assert.ok(!paginas.includes('canvassen'));
+  assert.ok(!paginas.includes('due-diligence'));
+});
