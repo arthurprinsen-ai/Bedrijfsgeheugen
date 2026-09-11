@@ -178,7 +178,7 @@ const TOESTEMMINGSBANNER = `<style id="bg-toestemmingsbanner">
 </style>
 <div id="bgCookie" role="dialog" aria-label="Cookiemelding" aria-describedby="bgCookieTxt">
   <h4>🍪 Cookies &amp; privacy</h4>
-  <p id="bgCookieTxt"><span class="bgLang">Bedrijfsgeheugen gebruikt noodzakelijke cookies voor een goede werking van de site. Met jouw toestemming gebruiken we ook analytische cookies (Google Analytics) om te meten hoe de site wordt gebruikt en die te verbeteren. Je keuze wordt onthouden en je kunt 'm altijd wijzigen. Meer weten? Zie onze <a href="/privacy">privacyverklaring</a>.</span><span class="bgKort">Met jouw toestemming meten we met Google Analytics hoe de site wordt gebruikt. Zonder toestemming meten we niets. <a href="/privacy">Privacy</a></span></p>
+  <p id="bgCookieTxt"><span class="bgLang">Bedrijfsgeheugen gebruikt noodzakelijke cookies voor een goede werking van de site. Met jouw toestemming gebruiken we ook analytische cookies (Google Analytics) om te meten hoe de site wordt gebruikt en die te verbeteren. Je keuze wordt onthouden en je kunt 'm altijd wijzigen. Meer weten? Zie onze <a href="https://www.bedrijfsgeheugen.nl/privacy">privacyverklaring</a>.</span><span class="bgKort">Met jouw toestemming meten we met Google Analytics hoe de site wordt gebruikt. Zonder toestemming meten we niets. <a href="https://www.bedrijfsgeheugen.nl/privacy">Privacy</a></span></p>
   <div class="bgBtns">
     <button type="button" class="bgDeny" id="bgCookieDeny">Alleen noodzakelijk</button>
     <button type="button" class="bgAccept" id="bgCookieAccept">Accepteren</button>
