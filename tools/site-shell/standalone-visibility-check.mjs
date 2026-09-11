@@ -7,6 +7,7 @@ if (!baseUrl) throw new Error('UI_VR_BASE_URL/base URL is required');
 const canonicalOrigin = 'https://www.bedrijfsgeheugen.nl';
 const viewports = [
   { name: 'phone', width: 390, height: 844 },
+  { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 },
 ];
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -43,13 +44,23 @@ try {
   for (const viewport of viewports) {
     const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
     const page = await context.newPage();
+    await page.addInitScript(() => {
+      window.__bgCls = 0;
+      try {
+        new PerformanceObserver(list => {
+          for (const entry of list.getEntries()) {
+            if (!entry.hadRecentInput) window.__bgCls += entry.value;
+          }
+        }).observe({ type: 'layout-shift', buffered: true });
+      } catch {}
+    });
     try {
       for (const route of routes) {
         const url = new URL(route, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).href;
         try {
           await openReachable(page, url);
           await page.evaluate(() => document.fonts?.ready);
-          await sleep(120);
+          await sleep(300);
           const state = await page.evaluate(() => {
             const inspect = selector => {
               const el = document.querySelector(selector);
@@ -78,6 +89,7 @@ try {
               h1: inspect('main h1'),
               main: inspect('main'),
               textLength: (document.querySelector('main')?.innerText || '').trim().length,
+              cls: Number(window.__bgCls || 0),
             };
           });
           for (const [name, item] of Object.entries({ header: state.header, main: state.main, h1: state.h1 })) {
@@ -91,6 +103,7 @@ try {
             }
           }
           if (state.textLength < 120) failures.push(`${route} ${viewport.name}: main content is effectively empty (${state.textLength} chars)`);
+          if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100`);
         } catch (error) {
           failures.push(`${route} ${viewport.name}: ${error.message || error}`);
         }
@@ -104,4 +117,4 @@ try {
 }
 
 if (failures.length) throw new Error(`Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`);
-console.log(`Public page visibility green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks`);
+console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks`);
