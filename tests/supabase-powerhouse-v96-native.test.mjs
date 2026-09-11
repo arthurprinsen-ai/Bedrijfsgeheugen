@@ -70,3 +70,17 @@ test('no private Chrome device token is committed to repository source', async (
   assert.equal(code.includes(forbidden), false);
   assert.equal(sql.includes(forbidden), false);
 });
+
+test('daily recommendation loop consumes sales, social, revenue and fresh cross-channel event signals', async () => {
+  const code = await source();
+  assert.match(code, /powerhouse_sales_learnings/);
+  assert.match(code, /social_learnings/);
+  assert.match(code, /revenue_learnings/);
+  assert.match(code, /powerhouse_runtime_events\?event_type=in\.\(/);
+  for (const eventType of ['seo_metric_observed','blog_published','social_metric_observed','connection_activated','linkedin_post_replied','dm_inbound','website_conversion']) {
+    assert.match(code, new RegExp(eventType));
+  }
+  assert.match(code, /source_mix/);
+  assert.match(code, /latent_problem_activation/);
+  assert.match(code, /commercial_value/);
+});
