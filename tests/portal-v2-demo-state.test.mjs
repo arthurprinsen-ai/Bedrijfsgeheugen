@@ -9,7 +9,7 @@ test('demo fixture is fictional and sufficiently filled for the project cockpit'
   const json = JSON.stringify(DEMO_PORTAL_STATE).toLowerCase();
   assert.equal(json.includes('ijsselmonde'), false);
   assert.equal(DEMO_PORTAL_STATE.company.portalBrand.name, 'Noordwind Services B.V. — Demo');
-  assert.equal(DEMO_PORTAL_STATE.portal.project.phase, 'Bouwen');
+  assert.equal(DEMO_PORTAL_STATE.portal.project.phase, 'Bouwen & koppelen');
   assert.equal(DEMO_PORTAL_STATE.portal.offer.status, 'Akkoord');
   assert.equal(DEMO_PORTAL_STATE.portal.project.budget, 24800);
   assert.equal(DEMO_PORTAL_STATE.portal.project.hours, 86);
@@ -37,7 +37,7 @@ test('demo client loads and writes in memory without calling the network', async
   const loaded = await client.load();
   assert.equal(loaded.mode, 'authenticated');
   assert.equal(loaded.user.email, DEMO_USER.email);
-  assert.equal(loaded.state.portal.project.phase, 'Bouwen');
+  assert.equal(loaded.state.portal.project.phase, 'Bouwen & koppelen');
   const next = clone(loaded.state);
   next.portal.project.phase = 'Test & acceptatie';
   const written = await client.write(next);

@@ -1,7 +1,23 @@
 import { DEMO_PORTAL_STATE, DEMO_USER } from './demo-state.js';
+import { createPortalProjectClient, mergeProjectState } from './project-state.js';
 
 const API_URL='/api/portal-state';
 export const PORTAL_STATE_MODES=Object.freeze(['authenticated','preview','empty','error']);
+
+let bootReleased=false;
+function installBootGuard(){
+ if(!globalThis.document||document.getElementById('portalBoot'))return;
+ document.documentElement.classList.add('v2-hydrating');
+ const style=document.createElement('style');style.id='portalBoot';style.textContent='.v2-hydrating .app{visibility:hidden!important}.v2-hydrating body::before{content:"Portaal laden…";position:fixed;inset:0;display:grid;place-items:center;background:#f7f9fc;color:#526076;font:600 15px system-ui;z-index:2147483647}';
+ document.head.appendChild(style);
+}
+function releaseBootGuard(){
+ if(bootReleased||!globalThis.document)return;bootReleased=true;
+ document.documentElement.classList.remove('v2-hydrating');
+ document.getElementById('portalBoot')?.remove();
+}
+installBootGuard();
+setTimeout(releaseBootGuard,5000);
 
 function snapshot(mode,state=null,error=null,user=null){return Object.freeze({mode,state,error,user,updatedAt:new Date().toISOString()})}
 function identityUser(identity){try{return identity?.currentUser?.()||null}catch{return null}}
@@ -11,6 +27,10 @@ const clone=value=>value==null?value:structuredClone(value);
 export function isPortalDemoRoute(pathname=globalThis.window?.location?.pathname||''){
  const path=String(pathname||'').replace(/\/+$/,'')||'/';
  return path==='/portaal/demo';
+}
+export function isPortalCustomerRoute(pathname=globalThis.window?.location?.pathname||''){
+ const path=String(pathname||'').replace(/\/+$/,'')||'/';
+ return /^\/portaal\/[^/]+$/i.test(path)&&!isPortalDemoRoute(path);
 }
 
 export function ensureIdentityWidget(){
@@ -28,12 +48,12 @@ export function ensureIdentityWidget(){
  });
 }
 
-export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProvider=()=>globalThis.window?.netlifyIdentity||null,demoMode=isPortalDemoRoute()}={}){
- const demo=Boolean(demoMode);
+export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProvider=()=>globalThis.window?.netlifyIdentity||null,demoMode=isPortalDemoRoute(),customerMode=isPortalCustomerRoute()}={}){
+ const demo=Boolean(demoMode);const customer=Boolean(customerMode);
  let demoState=demo?clone(DEMO_PORTAL_STATE):null;
  let current=snapshot('preview');
  const listeners=new Set();
- const publish=next=>{current=next;for(const fn of listeners){try{fn(current)}catch{}}return current};
+ const publish=next=>{current=next;for(const fn of listeners){try{fn(current)}catch{}}releaseBootGuard();return current};
  const headersFor=async user=>{const token=await authToken(user);return token?{accept:'application/json',authorization:`Bearer ${token}`}:{accept:'application/json'}};
 
  async function load(){
@@ -44,9 +64,16 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
   if(!headers.authorization)return publish(snapshot('error',null,'AUTH_TOKEN_UNAVAILABLE',user));
   try{
    const response=await fetchImpl(API_URL,{method:'GET',headers,credentials:'same-origin'});
-   if(response.status===404)return publish(snapshot('empty',null,null,user));
-   if(!response.ok)return publish(snapshot('error',null,`PORTAL_STATE_${response.status}`,user));
-   const state=await response.json();
+   let state={};
+   if(response.ok)state=await response.json();
+   else if(response.status!==404)return publish(snapshot('error',null,`PORTAL_STATE_${response.status}`,user));
+   if(customer){
+    const projectClient=createPortalProjectClient({fetchImpl,getToken:()=>authToken(user)});
+    try{const project=await projectClient.load();state=mergeProjectState(state,project);}catch(error){
+      if(!Object.keys(state).length)return publish(snapshot('error',null,error?.message||'PORTAL_PROJECT_UNAVAILABLE',user));
+    }
+   }
+   if(!Object.keys(state).length)return publish(snapshot('empty',null,null,user));
    return publish(snapshot('authenticated',state,null,user));
   }catch(error){return publish(snapshot('error',null,error?.message||'PORTAL_STATE_UNAVAILABLE',user))}
  }
@@ -63,13 +90,5 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
   return load();
  }
 
- return Object.freeze({
-  apiUrl:API_URL,
-  isDemo:()=>demo,
-  getSnapshot:()=>current,
-  subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)},
-  load,write,
-  currentUser:()=>demo?DEMO_USER:identityUser(identityProvider()),
-  authHeaders:async()=>demo?{accept:'application/json'}:headersFor(identityUser(identityProvider()))
- });
+ return Object.freeze({apiUrl:API_URL,isDemo:()=>demo,isCustomer:()=>customer,getSnapshot:()=>current,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)},load,write,currentUser:()=>demo?DEMO_USER:identityUser(identityProvider()),authHeaders:async()=>demo?{accept:'application/json'}:headersFor(identityUser(identityProvider()))});
 }
