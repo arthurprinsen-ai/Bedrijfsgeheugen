@@ -28,7 +28,7 @@ export const KLIK_EVENT = 'primaire_knop_klik';
    elke klik op link of knop, scrolldiepte 25/50/75/90/100, formulier gestart/verzonden en
    actieve tijd, naar Supabase bg_interacties. Geen cookies, geen IP, geen formulierwaarden.
    Met toestemming gaan dezelfde gebeurtenissen ook naar GA4. Zie assets/meting.js. */
-export const METING_SRC = 'https://www.bedrijfsgeheugen.nl/assets/meting.js?v=1';
+export const METING_SRC = 'https://www.bedrijfsgeheugen.nl/assets/meting.js?v=2';
 export const METING_MARKER = 'data-bg-meting';
 
 export function knopSelectoren(css) {
