@@ -21,50 +21,498 @@
     "tests/website-release-risk.test.mjs",
     ".github/workflows/"
   ],
-  "nonExecutableSharedPaths": ["docs/changes/", "docs/learning/"],
-  "ignoredPaths": ["docs/development-ledger-events/", "docs/superpowers/plans/"],
+  "nonExecutableSharedPaths": [
+    "docs/changes/",
+    "docs/learning/"
+  ],
+  "ignoredPaths": [
+    "docs/development-ledger-events/",
+    "docs/superpowers/plans/"
+  ],
   "branchPolicy": {
     "strategy": "conflict-aware-independent-lanes",
     "createFrom": "current-main",
     "rebuildOnMainDrift": false,
-    "syncRequiredWhen": ["merge-conflict", "changed-path-overlap", "declared-contract-overlap", "declared-dependency-conflict"],
+    "syncRequiredWhen": [
+      "merge-conflict",
+      "changed-path-overlap",
+      "declared-contract-overlap",
+      "declared-dependency-conflict"
+    ],
     "nonOverlappingDriftAction": "keep-tested-candidate",
     "preferredWriteMode": "atomic-tree-commit",
     "maxRebuildsForNonOverlappingDrift": 0
   },
   "conflictContracts": [
-    {"id":"delivery-control-plane","paths":["AGENTS.md","config/brain-delivery-system.json","brain/contracts/delivery-v2.schema.json","brain/production/continuous-delivery-v2.mjs","tools/brain-delivery-system.mjs","tools/delivery/",".github/workflows/unified-brain-delivery.yml","docs/superpowers/specs/"]},
-    {"id":"platform-adapter-contract","paths":["config/brain-platform-adapters.json","brain/contracts/platform-adapter-v1.schema.json","tests/brain-platform-adapters.test.mjs"]},
-    {"id":"brain-governance","paths":["config/outcome-obligations.json","docs/brain/component-registry.json"]},
-    {"id":"supabase-schema","paths":["supabase/migrations/","supabase/schema/","supabase/schema.sql"]},
-    {"id":"make-contract","paths":["make/contracts/","automation/contracts/"]},
-    {"id":"make-cost-governance","paths":["config/make-cost-governance-contract.json","tools/make-cost-","tests/make-cost-"]},
-    {"id":"notion-contract","paths":["notion/contracts/"]},
-    {"id":"dataforseo-contract","paths":["dataforseo/contracts/","integrations/dataforseo/contracts/"]},
-    {"id":"netlify-routing","paths":["netlify.toml","netlify/redirects/","_redirects"]},
-    {"id":"customer-portal-identity","paths":["klantportaal.html","klantenportaal-","portal-next/","portal-v2/","tests/klantportaal-","tests/integration/portal-next-","tests/integration/portal-v2-","tools/bouw-powerhouse-auth.mjs","tools/customer-portal-","tools/fix-netlify-identity-","tests/netlify-identity-"]},
-    {"id":"website-shell-contract","paths":["tools/site-shell/","tests/site-shell-","tools/controleer-site-ui.mjs","tools/controleer-technische-seo.mjs","tools/genereer-sitemap.mjs","tools/normaliseer-site-ui.mjs","tools/prijzen-uit-de-homepage.mjs","tools/fix-homepage-automation-layout.mjs","tools/bouw-release-evidence.mjs","tests/final-site-navigation-contract.test.mjs","tests/homepage-automation-layout.test.mjs","tests/commercial-intent-pages-v1.test.mjs",".github/workflows/canonical-brand-shell-contract.yml",".github/workflows/canonical-brand-shell-full-build.yml",".github/workflows/live-preview-smoke.yml"]},
-    {"id":"seo-order-engine","paths":["site/seo-order-map.json","tools/seo-order-engine/","tools/controleer-technische-seo.mjs","tools/prijzen-uit-de-homepage.mjs","tests/seo-order-",".github/workflows/seo-order-engine.yml",".github/workflows/canonical-brand-shell-full-build.yml",".github/workflows/canonical-brand-shell-live-readback.yml"]},
-    {"id":"seo-growth-intelligence","paths":["tools/seo-growth/","tools/seo-order-engine/measurement.mjs","netlify/functions/growth-event.mjs","config/seo-growth-observation.schema.json","config/seo-growth-loop.json","config/seo-search-sources.json","config/seo-optimization-allowlist.json","tests/seo-growth-","tests/seo-order-measurement.test.mjs",".github/workflows/seo-growth-intelligence.yml"]},
-    {"id":"content-growth-intelligence","paths":["tools/content-growth/","tests/content-growth-","data/content-growth-","data/content-publication-ledger.json","data/README-content-growth.md","config/content-growth-policy.json","scripts/publish_approved_blog_v2.py",".github/workflows/daily-blog-publisher.yml",".github/workflows/content-growth-learning.yml",".github/workflows/daily-blog-live-watchdog.yml",".github/workflows/content-growth-ci.yml"]},
-    {"id":"universal-event-contract","paths":["config/universal-event-producers.json","tools/universal-event-","tools/universal-failure-","tools/event-retention-","tests/universal-event-","tests/universal-failure-","tests/event-retention-",".github/workflows/universal-event-retention-contract.yml"]},
-    {"id":"linkedin-revenue-cockpit","paths":["intern/linkedin-revenue/","tests/linkedin-revenue-","netlify/functions/linkedin-revenue-cockpit.mjs","_redirects"]}
+    {
+      "id": "delivery-control-plane",
+      "paths": [
+        "AGENTS.md",
+        "config/brain-delivery-system.json",
+        "brain/contracts/delivery-v2.schema.json",
+        "brain/production/continuous-delivery-v2.mjs",
+        "tools/brain-delivery-system.mjs",
+        "tools/delivery/",
+        ".github/workflows/unified-brain-delivery.yml",
+        "docs/superpowers/specs/"
+      ]
+    },
+    {
+      "id": "platform-adapter-contract",
+      "paths": [
+        "config/brain-platform-adapters.json",
+        "brain/contracts/platform-adapter-v1.schema.json",
+        "tests/brain-platform-adapters.test.mjs"
+      ]
+    },
+    {
+      "id": "brain-governance",
+      "paths": [
+        "config/outcome-obligations.json",
+        "docs/brain/component-registry.json"
+      ]
+    },
+    {
+      "id": "supabase-schema",
+      "paths": [
+        "supabase/migrations/",
+        "supabase/schema/",
+        "supabase/schema.sql"
+      ]
+    },
+    {
+      "id": "make-contract",
+      "paths": [
+        "make/contracts/",
+        "automation/contracts/"
+      ]
+    },
+    {
+      "id": "make-cost-governance",
+      "paths": [
+        "config/make-cost-governance-contract.json",
+        "tools/make-cost-",
+        "tests/make-cost-"
+      ]
+    },
+    {
+      "id": "notion-contract",
+      "paths": [
+        "notion/contracts/"
+      ]
+    },
+    {
+      "id": "dataforseo-contract",
+      "paths": [
+        "dataforseo/contracts/",
+        "integrations/dataforseo/contracts/"
+      ]
+    },
+    {
+      "id": "netlify-routing",
+      "paths": [
+        "netlify.toml",
+        "netlify/redirects/",
+        "_redirects"
+      ]
+    },
+    {
+      "id": "customer-portal-identity",
+      "paths": [
+        "klantportaal.html",
+        "klantenportaal-",
+        "portal-next/",
+        "portal-v2/",
+        "tests/klantportaal-",
+        "tests/integration/portal-next-",
+        "tests/integration/portal-v2-",
+        "tools/bouw-powerhouse-auth.mjs",
+        "tools/customer-portal-",
+        "tools/fix-netlify-identity-",
+        "tests/netlify-identity-"
+      ]
+    },
+    {
+      "id": "website-shell-contract",
+      "paths": [
+        "tools/site-shell/",
+        "tests/site-shell-",
+        "tools/controleer-site-ui.mjs",
+        "tools/controleer-technische-seo.mjs",
+        "tools/genereer-sitemap.mjs",
+        "tools/normaliseer-site-ui.mjs",
+        "tools/prijzen-uit-de-homepage.mjs",
+        "tools/fix-homepage-automation-layout.mjs",
+        "tools/bouw-release-evidence.mjs",
+        "tests/final-site-navigation-contract.test.mjs",
+        "tests/homepage-automation-layout.test.mjs",
+        "tests/commercial-intent-pages-v1.test.mjs",
+        ".github/workflows/canonical-brand-shell-contract.yml",
+        ".github/workflows/canonical-brand-shell-full-build.yml",
+        ".github/workflows/live-preview-smoke.yml"
+      ]
+    },
+    {
+      "id": "seo-order-engine",
+      "paths": [
+        "site/seo-order-map.json",
+        "tools/seo-order-engine/",
+        "tools/controleer-technische-seo.mjs",
+        "tools/prijzen-uit-de-homepage.mjs",
+        "tests/seo-order-",
+        ".github/workflows/seo-order-engine.yml",
+        ".github/workflows/canonical-brand-shell-full-build.yml",
+        ".github/workflows/canonical-brand-shell-live-readback.yml"
+      ]
+    },
+    {
+      "id": "seo-growth-intelligence",
+      "paths": [
+        "tools/seo-growth/",
+        "tools/seo-order-engine/measurement.mjs",
+        "netlify/functions/growth-event.mjs",
+        "config/seo-growth-observation.schema.json",
+        "config/seo-growth-loop.json",
+        "config/seo-search-sources.json",
+        "config/seo-optimization-allowlist.json",
+        "tests/seo-growth-",
+        "tests/seo-order-measurement.test.mjs",
+        ".github/workflows/seo-growth-intelligence.yml"
+      ]
+    },
+    {
+      "id": "content-growth-intelligence",
+      "paths": [
+        "tools/content-growth/",
+        "tests/content-growth-",
+        "data/content-growth-",
+        "data/content-publication-ledger.json",
+        "data/README-content-growth.md",
+        "config/content-growth-policy.json",
+        "scripts/publish_approved_blog_v2.py",
+        ".github/workflows/daily-blog-publisher.yml",
+        ".github/workflows/content-growth-learning.yml",
+        ".github/workflows/daily-blog-live-watchdog.yml",
+        ".github/workflows/content-growth-ci.yml"
+      ]
+    },
+    {
+      "id": "universal-event-contract",
+      "paths": [
+        "config/universal-event-producers.json",
+        "tools/universal-event-",
+        "tools/universal-failure-",
+        "tools/event-retention-",
+        "tests/universal-event-",
+        "tests/universal-failure-",
+        "tests/event-retention-",
+        ".github/workflows/universal-event-retention-contract.yml"
+      ]
+    },
+    {
+      "id": "linkedin-revenue-cockpit",
+      "paths": [
+        "intern/linkedin-revenue/",
+        "tests/linkedin-revenue-",
+        "netlify/functions/linkedin-revenue-cockpit.mjs",
+        "_redirects"
+      ]
+    }
   ],
   "lanes": [
     {
-      "id":"backend","owner":"agent-integration-make",
-      "paths":["brain/","platform/","netlify/functions/","scripts/brain/","scripts/ci/repo-writer-","supabase/","tools/supabase-","tools/outcome-obligation-","tools/main-write-integrity.mjs","tools/delivery-","tools/delivery/","tools/platform-promotion-","tools/universal-event-","tools/universal-failure-","tools/event-retention-","tools/make-cost-","tools/seo-growth/","tools/content-growth/","tests/supabase-","tests/brain-","tests/whole-brain-","tests/agent-fabric","tests/branch-delivery-","tests/direct-main-postwrite-","tests/repo-writer-","tests/repository-protection-","tests/unified-brain-","tests/platform-promotion-","tests/chat-learning-","tests/chat-to-brain-","tests/make-agent-learning-","tests/make-agent-resume-","tests/universal-event-","tests/universal-failure-","tests/event-retention-","tests/make-cost-","tests/seo-growth-","tests/content-growth-","tests/social-learning-","tests/revenue-learning-","tests/social-outcome-ingest.test.mjs","data/content-growth-","data/content-publication-ledger.json","data/README-content-growth.md","scripts/publish_approved_blog_v2.py","config/content-growth-policy.json","config/universal-event-producers.json","config/seo-growth-observation.schema.json","config/seo-growth-loop.json","config/seo-search-sources.json","config/seo-optimization-allowlist.json"],
-      "requiredContracts":["BG166","BG167","BG168","BG169"]
+      "id": "backend",
+      "owner": "agent-integration-make",
+      "paths": [
+        "brain/",
+        "platform/",
+        "netlify/functions/",
+        "scripts/brain/",
+        "scripts/ci/repo-writer-",
+        "supabase/",
+        "tools/supabase-",
+        "tools/outcome-obligation-",
+        "tools/main-write-integrity.mjs",
+        "tools/delivery-",
+        "tools/delivery/",
+        "tools/platform-promotion-",
+        "tools/universal-event-",
+        "tools/universal-failure-",
+        "tools/event-retention-",
+        "tools/make-cost-",
+        "tools/seo-growth/",
+        "tools/content-growth/",
+        "tests/supabase-",
+        "tests/brain-",
+        "tests/whole-brain-",
+        "tests/agent-fabric",
+        "tests/branch-delivery-",
+        "tests/direct-main-postwrite-",
+        "tests/repo-writer-",
+        "tests/repository-protection-",
+        "tests/unified-brain-",
+        "tests/platform-promotion-",
+        "tests/chat-learning-",
+        "tests/chat-to-brain-",
+        "tests/make-agent-learning-",
+        "tests/make-agent-resume-",
+        "tests/universal-event-",
+        "tests/universal-failure-",
+        "tests/event-retention-",
+        "tests/make-cost-",
+        "tests/seo-growth-",
+        "tests/content-growth-",
+        "tests/social-learning-",
+        "tests/revenue-learning-",
+        "tests/social-outcome-ingest.test.mjs",
+        "data/content-growth-",
+        "data/content-publication-ledger.json",
+        "data/README-content-growth.md",
+        "scripts/publish_approved_blog_v2.py",
+        "config/content-growth-policy.json",
+        "config/universal-event-producers.json",
+        "config/seo-growth-observation.schema.json",
+        "config/seo-growth-loop.json",
+        "config/seo-search-sources.json",
+        "config/seo-optimization-allowlist.json",
+        "tests/revenue-content-",
+        "data/revenue-content-"
+      ],
+      "requiredContracts": [
+        "BG166",
+        "BG167",
+        "BG168",
+        "BG169"
+      ]
     },
-    {"id":"portal","owner":"agent-product-opportunity","paths":["portal/","portal-next/","portal-v2/","intern/linkedin-revenue/","_redirects","tests/linkedin-revenue-","tests/portal-","tests/connector-","tests/klantportaal-","tests/customer-portal-","tests/integration/portal-next-","tests/integration/portal-v2-","tests/data-ai-passport","tests/eu-ai-act-","tests/netlify-identity-","klantportaal.html","klantenportaal-","tools/bouw-powerhouse-auth.mjs","tools/customer-portal-","tools/fix-netlify-identity-","netlify/functions/portaalvraag.mjs","netlify/functions/portal-state.mjs"],"requiredContracts":["BG166","BG167","BG168","BG169"]},
-    {"id":"website","owner":"agent-website-ux","paths":["components/","assets/","pages/","site/","blog/","kennis/","index.html","expertises.html","compliance-status.html","ai-automatisering-mkb.html","microsoft-365-koppeling.html","power-bi-implementatie.html","bedrijf-overdraagbaar-maken.html","data-soevereiniteit.html","ai-capability-model.html","ai-in-bi.html","ai-in-data-engineering.html","ai-marketing-mkb.html","brochure.html","cijfers-bedrijfsoverdracht.html","excel-als-crm.html","product.html","wijzigingen.html","wijzigingen-uitgelegd.html","prijzen.html","404.html","afas-koppeling.html","afas-pocket-koppelen.html","afmaakindex.html","ai-act.html","ai-adoptie.html","ai-cijfers-mkb.html","ai-governance.html","ai-implementeren.html","ai-poc.html","ai-scan.html","ai-voor-bestuurders.html","api-koppeling-laten-maken.html","bedrijfsgeheugen.html","bedrijfsprocessen-automatiseren.html","begrippen.html","benchmark.html","business-case-ai.html","connect.html","contact.html","due-diligence.html","exact-online-koppeling.html","frisse-blik.html","hoe-het-werkt.html","index-oud.html","investeerders-ma.html","kennisverlies-vergrijzing-mkb.html","klant-login.html","klantportaal-demo.html","monitor.html","offerte.html","over-ons.html","privacy.html","intern/meetoverzicht/","intern/vandaag/","systemen-koppelen.html","twinfield-koppeling.html","voor-mkb.html","waarom-ai-projecten-mislukken.html","webshop-koppeling.html","workshops.html","zelfscan.html","styles.css","script.js","seo-status.json","sitemap.xml","netlify.toml","data/regelgeving.json","data/content-growth-","data/content-publication-ledger.json","data/README-content-growth.md","tools/bouw-v18-","tools/v18-","tools/site-shell/","tools/seo-order-engine/","tools/seo-growth/","tools/content-growth/","netlify/functions/growth-event.mjs","config/content-growth-policy.json","config/seo-growth-observation.schema.json","config/seo-growth-loop.json","config/seo-search-sources.json","config/seo-optimization-allowlist.json","scripts/publish_approved_blog_v2.py","tools/controleer-site-ui.mjs","tools/controleer-technische-seo.mjs","tools/genereer-sitemap.mjs","tools/normaliseer-site-ui.mjs","tools/prijzen-uit-de-homepage.mjs","tools/fix-homepage-automation-layout.mjs","tools/bouw-release-evidence.mjs",".github/scripts/","tests/final-site-navigation-contract.test.mjs","tests/compliance-status-","tests/seo-","tests/content-growth-","tests/site-shell-","tests/v18-","tests/homepage-automation-layout.test.mjs","tests/live-preview-trigger-scope.test.mjs","tests/targeted-website-route-regression.test.mjs","tests/commercial-intent-pages-v1.test.mjs"],"requiredContracts":["BG166","BG167","BG168","BG169"]},
-    {"id":"automation","owner":"agent-integration-make","paths":["automation/","make/","notion/","tests/delivery-"],"requiredContracts":["BG166","BG167","BG168","BG169"]}
+    {
+      "id": "portal",
+      "owner": "agent-product-opportunity",
+      "paths": [
+        "portal/",
+        "portal-next/",
+        "portal-v2/",
+        "intern/linkedin-revenue/",
+        "_redirects",
+        "tests/linkedin-revenue-",
+        "tests/portal-",
+        "tests/connector-",
+        "tests/klantportaal-",
+        "tests/customer-portal-",
+        "tests/integration/portal-next-",
+        "tests/integration/portal-v2-",
+        "tests/data-ai-passport",
+        "tests/eu-ai-act-",
+        "tests/netlify-identity-",
+        "klantportaal.html",
+        "klantenportaal-",
+        "tools/bouw-powerhouse-auth.mjs",
+        "tools/customer-portal-",
+        "tools/fix-netlify-identity-",
+        "netlify/functions/portaalvraag.mjs",
+        "netlify/functions/portal-state.mjs"
+      ],
+      "requiredContracts": [
+        "BG166",
+        "BG167",
+        "BG168",
+        "BG169"
+      ]
+    },
+    {
+      "id": "website",
+      "owner": "agent-website-ux",
+      "paths": [
+        "components/",
+        "assets/",
+        "pages/",
+        "site/",
+        "blog/",
+        "kennis/",
+        "index.html",
+        "expertises.html",
+        "compliance-status.html",
+        "ai-automatisering-mkb.html",
+        "microsoft-365-koppeling.html",
+        "power-bi-implementatie.html",
+        "bedrijf-overdraagbaar-maken.html",
+        "data-soevereiniteit.html",
+        "ai-capability-model.html",
+        "ai-in-bi.html",
+        "ai-in-data-engineering.html",
+        "ai-marketing-mkb.html",
+        "brochure.html",
+        "cijfers-bedrijfsoverdracht.html",
+        "excel-als-crm.html",
+        "product.html",
+        "wijzigingen.html",
+        "wijzigingen-uitgelegd.html",
+        "prijzen.html",
+        "404.html",
+        "afas-koppeling.html",
+        "afas-pocket-koppelen.html",
+        "afmaakindex.html",
+        "ai-act.html",
+        "ai-adoptie.html",
+        "ai-cijfers-mkb.html",
+        "ai-governance.html",
+        "ai-implementeren.html",
+        "ai-poc.html",
+        "ai-scan.html",
+        "ai-voor-bestuurders.html",
+        "api-koppeling-laten-maken.html",
+        "bedrijfsgeheugen.html",
+        "bedrijfsprocessen-automatiseren.html",
+        "begrippen.html",
+        "benchmark.html",
+        "business-case-ai.html",
+        "connect.html",
+        "contact.html",
+        "due-diligence.html",
+        "exact-online-koppeling.html",
+        "frisse-blik.html",
+        "hoe-het-werkt.html",
+        "index-oud.html",
+        "investeerders-ma.html",
+        "kennisverlies-vergrijzing-mkb.html",
+        "klant-login.html",
+        "klantportaal-demo.html",
+        "monitor.html",
+        "offerte.html",
+        "over-ons.html",
+        "privacy.html",
+        "intern/meetoverzicht/",
+        "intern/vandaag/",
+        "systemen-koppelen.html",
+        "twinfield-koppeling.html",
+        "voor-mkb.html",
+        "waarom-ai-projecten-mislukken.html",
+        "webshop-koppeling.html",
+        "workshops.html",
+        "zelfscan.html",
+        "styles.css",
+        "script.js",
+        "seo-status.json",
+        "sitemap.xml",
+        "netlify.toml",
+        "data/regelgeving.json",
+        "data/content-growth-",
+        "data/content-publication-ledger.json",
+        "data/README-content-growth.md",
+        "tools/bouw-v18-",
+        "tools/v18-",
+        "tools/site-shell/",
+        "tools/seo-order-engine/",
+        "tools/seo-growth/",
+        "tools/content-growth/",
+        "netlify/functions/growth-event.mjs",
+        "config/content-growth-policy.json",
+        "config/seo-growth-observation.schema.json",
+        "config/seo-growth-loop.json",
+        "config/seo-search-sources.json",
+        "config/seo-optimization-allowlist.json",
+        "scripts/publish_approved_blog_v2.py",
+        "tools/controleer-site-ui.mjs",
+        "tools/controleer-technische-seo.mjs",
+        "tools/genereer-sitemap.mjs",
+        "tools/normaliseer-site-ui.mjs",
+        "tools/prijzen-uit-de-homepage.mjs",
+        "tools/fix-homepage-automation-layout.mjs",
+        "tools/bouw-release-evidence.mjs",
+        ".github/scripts/",
+        "tests/final-site-navigation-contract.test.mjs",
+        "tests/compliance-status-",
+        "tests/seo-",
+        "tests/content-growth-",
+        "tests/site-shell-",
+        "tests/v18-",
+        "tests/homepage-automation-layout.test.mjs",
+        "tests/live-preview-trigger-scope.test.mjs",
+        "tests/targeted-website-route-regression.test.mjs",
+        "tests/commercial-intent-pages-v1.test.mjs"
+      ],
+      "requiredContracts": [
+        "BG166",
+        "BG167",
+        "BG168",
+        "BG169"
+      ]
+    },
+    {
+      "id": "automation",
+      "owner": "agent-integration-make",
+      "paths": [
+        "automation/",
+        "make/",
+        "notion/",
+        "tests/delivery-"
+      ],
+      "requiredContracts": [
+        "BG166",
+        "BG167",
+        "BG168",
+        "BG169"
+      ]
+    }
   ],
   "integration": {
-    "owner":"agent-reliability","singleCandidate":false,"independentPromotion":true,"exactShaRequired":true,"productionAuthority":"BG169",
-    "productionAuthorityContract":{"id":"BG169","fallbackPolicy":"primary_then_verified_failover","failoverRequiresSameContract":true,"ackIsExecutionProof":false,"exactShaRequired":true,"sameRepositoryRequired":true,"rollbackRequired":true,"executionProofRequired":true,"transports":[{"id":"make","priority":1,"mode":"primary"},{"id":"github-native","priority":2,"mode":"verified-failover"}]},
-    "outcomeRouter":"BG168","currentStateProjection":"BG167","errorLedger":"BG166"
+    "owner": "agent-reliability",
+    "singleCandidate": false,
+    "independentPromotion": true,
+    "exactShaRequired": true,
+    "productionAuthority": "BG169",
+    "productionAuthorityContract": {
+      "id": "BG169",
+      "fallbackPolicy": "primary_then_verified_failover",
+      "failoverRequiresSameContract": true,
+      "ackIsExecutionProof": false,
+      "exactShaRequired": true,
+      "sameRepositoryRequired": true,
+      "rollbackRequired": true,
+      "executionProofRequired": true,
+      "transports": [
+        {
+          "id": "make",
+          "priority": 1,
+          "mode": "primary"
+        },
+        {
+          "id": "github-native",
+          "priority": 2,
+          "mode": "verified-failover"
+        }
+      ]
+    },
+    "outcomeRouter": "BG168",
+    "currentStateProjection": "BG167",
+    "errorLedger": "BG166"
   },
-  "platformAdapterContract":{"version":"BRAIN-PLATFORM-ADAPTER-v1","registry":"config/brain-platform-adapters.json","schema":"brain/contracts/platform-adapter-v1.schema.json","requiredForExternalProduction":true,"compatibilityMappingRequired":true,"regressionContractRequired":true,"unknownAdapterAction":"fail_closed"},
-  "registration":{"required":true,"autoDiscover":true,"appliesTo":["app","agent","make_scenario","github_workflow","website","portal","backend","service","notion_projection","supabase_adapter","dataforseo_adapter","netlify_platform","external_integration"]}
+  "platformAdapterContract": {
+    "version": "BRAIN-PLATFORM-ADAPTER-v1",
+    "registry": "config/brain-platform-adapters.json",
+    "schema": "brain/contracts/platform-adapter-v1.schema.json",
+    "requiredForExternalProduction": true,
+    "compatibilityMappingRequired": true,
+    "regressionContractRequired": true,
+    "unknownAdapterAction": "fail_closed"
+  },
+  "registration": {
+    "required": true,
+    "autoDiscover": true,
+    "appliesTo": [
+      "app",
+      "agent",
+      "make_scenario",
+      "github_workflow",
+      "website",
+      "portal",
+      "backend",
+      "service",
+      "notion_projection",
+      "supabase_adapter",
+      "dataforseo_adapter",
+      "netlify_platform",
+      "external_integration"
+    ]
+  }
 }

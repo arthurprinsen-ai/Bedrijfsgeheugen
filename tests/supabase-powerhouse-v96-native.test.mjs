@@ -10,6 +10,15 @@ async function source() {
   return readFile(edgeUrl, 'utf8');
 }
 
+async function dailySource() {
+  const code = await source();
+  const start = code.indexOf('async function daily(');
+  assert.notEqual(start, -1, 'daily() must exist');
+  const end = code.indexOf('\nDeno.serve', start);
+  assert.notEqual(end, -1, 'daily() boundary must exist');
+  return code.slice(start, end);
+}
+
 async function migration() {
   return readFile(migrationUrl, 'utf8');
 }
@@ -69,4 +78,22 @@ test('no private Chrome device token is committed to repository source', async (
   const forbidden = '8_0TRzTW1Zimx8BtC3Yrbt7OnrapBL16UaJTWUUidss';
   assert.equal(code.includes(forbidden), false);
   assert.equal(sql.includes(forbidden), false);
+});
+
+test('daily recommendation loop consumes sales, social, revenue and fresh cross-channel event signals', async () => {
+  const code = await dailySource();
+  assert.match(code, /powerhouse_sales_learnings/);
+  assert.match(code, /social_learnings/);
+  assert.match(code, /revenue_learnings/);
+  assert.match(code, /powerhouse_runtime_events\?event_type=in\.\(/);
+  for (const eventType of ['seo_metric_observed','blog_published','social_metric_observed','connection_activated','linkedin_post_replied','dm_inbound','website_conversion']) {
+    assert.match(code, new RegExp(eventType));
+  }
+  assert.match(code, /source_mix/);
+  assert.match(code, /latent_problem_activation/);
+  assert.match(code, /commercial_value/);
+  assert.match(code, /social_experiments\?calendar_date=eq\.\$\{date\}/);
+  assert.match(code, /bg_schrijfregels\?on_conflict=regel_id/);
+  assert.match(code, /rci-daily-experiment/);
+  assert.match(code, /experiment_id/);
 });
