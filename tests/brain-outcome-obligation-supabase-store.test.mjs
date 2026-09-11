@@ -55,7 +55,7 @@ test('remote auth or validation errors fail closed instead of degrading to empty
 });
 
 test('migration is server-only, append-only and independently idempotent for dispatch and evidence', async () => {
-  const sql = await readFile('supabase/migrations/20260830_brain_outcome_obligation_store.sql', 'utf8');
+  const sql = await readFile('supabase/migrations/20260830182111_brain_outcome_obligation_store.sql', 'utf8');
   for (const required of [
     'create table if not exists public.brain_outcome_obligation_dispatch',
     'idempotency_key text primary key',

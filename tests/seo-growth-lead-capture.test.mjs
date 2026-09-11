@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 const files=async()=>Promise.all([
   readFile('netlify/functions/monitor.mjs','utf8'),
   readFile('netlify/functions/_commercial-lead.mjs','utf8'),
-  readFile('supabase/migrations/20260906_commercial_lead_capture.sql','utf8'),
+  readFile('supabase/migrations/20260906115346_commercial_lead_capture.sql','utf8'),
   readFile('supabase/functions/commercial-lead-ingest/index.ts','utf8')
 ]);
 

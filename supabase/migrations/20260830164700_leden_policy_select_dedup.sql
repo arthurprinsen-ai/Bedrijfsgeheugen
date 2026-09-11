@@ -1,6 +1,3 @@
--- Preserve leden authorization semantics while removing overlapping permissive SELECT policies.
--- leden_lezen remains the sole SELECT policy; owner management is split into write-only policies.
-
 drop policy if exists leden_beheren on public.leden;
 
 drop policy if exists leden_toevoegen on public.leden;

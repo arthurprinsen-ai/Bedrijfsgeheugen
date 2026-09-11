@@ -1,7 +1,3 @@
--- Canonical runtime SLO projection derived only from genuine persisted RUM.
--- Production already exposes brain_runtime_slo as a view; preserve that architecture.
--- No synthetic/sample-seeding rows are created by this migration.
-
 create or replace view public.brain_runtime_slo as
 select
   tenant_id,

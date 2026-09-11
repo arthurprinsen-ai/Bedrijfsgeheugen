@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration='supabase/migrations/20260831_brain_mutation_ownership.sql';
+const migration='supabase/migrations/20260831091634_brain_mutation_ownership.sql';
 
 test('mutation ownership enforces one active mutator per scope with governed transfer',()=>{
   assert.equal(fs.existsSync(migration),true,'mutation ownership migration must exist');

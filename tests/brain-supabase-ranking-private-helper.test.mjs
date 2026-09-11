@@ -2,15 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath = 'supabase/migrations/20260830_ranking_private_helper.sql';
-
-async function migrationText() {
-  try {
-    return await readFile(migrationPath, 'utf8');
-  } catch {
-    return '';
-  }
-}
+const migrationPath = 'supabase/migrations/20260830135153_ranking_private_helper.sql';
+async function migrationText() { try { return await readFile(migrationPath, 'utf8'); } catch { return ''; } }
 
 test('ranking privilege elevation is moved out of public API schema', async () => {
   const sql = (await migrationText()).toLowerCase();

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260831_brain_blocker_registry.sql';
+const migrationPath = 'supabase/migrations/20260831070245_brain_blocker_registry.sql';
 
 test('P0 blocker registry persists one active blocker per fingerprint/scope/environment', () => {
   assert.equal(fs.existsSync(migrationPath), true, `${migrationPath} must exist`);

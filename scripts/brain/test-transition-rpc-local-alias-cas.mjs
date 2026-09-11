@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration='supabase/migrations/20260831_brain_transition_rpc_local_alias_cas.sql';
+const migration='supabase/migrations/20260831083107_brain_transition_rpc_local_alias_cas.sql';
 
 test('transition RPCs bind parameters to typed locals before locked-row CAS',()=>{
   assert.equal(fs.existsSync(migration),true,'transition RPC CAS fix migration must exist');

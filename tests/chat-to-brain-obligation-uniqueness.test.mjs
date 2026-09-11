@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260831_brain_obligation_registry.sql';
+const migrationPath = 'supabase/migrations/20260831064543_brain_obligation_registry.sql';
 
 test('P0 obligation registry enforces one canonical logical obligation', () => {
   assert.equal(fs.existsSync(migrationPath), true, `${migrationPath} must exist`);

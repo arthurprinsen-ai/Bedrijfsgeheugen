@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260831_brain_blocker_resolution_idempotency.sql';
+const migrationPath = 'supabase/migrations/20260831071618_brain_blocker_resolution_idempotency.sql';
 
 test('blocker resolution transport replay is idempotent and fail-closed', () => {
   assert.equal(fs.existsSync(migrationPath), true, `${migrationPath} must exist`);

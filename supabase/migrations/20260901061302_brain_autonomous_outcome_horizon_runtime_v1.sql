@@ -95,13 +95,8 @@ $$;
 revoke all on function public.brain_run_due_value_evaluations(timestamptz,integer) from public, anon, authenticated;
 grant execute on function public.brain_run_due_value_evaluations(timestamptz,integer) to service_role;
 
-do $$
-begin
-  if not exists (select 1 from cron.job where jobname='brain-outcome-horizon-hourly-v1') then
-    perform cron.schedule(
-      'brain-outcome-horizon-hourly-v1',
-      '7 * * * *',
-      'select public.brain_run_due_value_evaluations(now(),100);'
-    );
-  end if;
-end $$;
+select cron.schedule(
+  'brain-outcome-horizon-hourly-v1',
+  '7 * * * *',
+  $$select public.brain_run_due_value_evaluations(now(),100);$$
+);
