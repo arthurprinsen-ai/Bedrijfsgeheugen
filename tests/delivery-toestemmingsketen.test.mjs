@@ -74,7 +74,10 @@ test('analytics zonder toestemmingslaag wordt niet toegestaan', () => {
     'de toestemmingslaag wordt niet toegevoegd als hij ontbreekt');
 });
 
-test('de schil voegt niets toe aan een pagina zonder analytics', () => {
-  assert.match(SHELL_JS, /if \(eigen\.scripts && eigen\.scripts\.length\) \{/,
-    'de schil voegt scripts toe ook als de pagina er geen had');
+test('elke pagina krijgt de analytics-loader als meet-ID (besluit 11 sept 2026: alles meten)', () => {
+  // Tot 11 sept gold: een pagina zonder analytics krijgt niets. Arthur besloot dat alle
+  // pagina's gemeten worden; de toestemmingsketen zelf blijft ongewijzigd (zie hierboven).
+  assert.match(SHELL_JS, /export const GA4_ID = 'G-[A-Z0-9]+'/, 'er is geen vast meet-ID');
+  assert.match(SHELL_JS, /if \(!eigen\.scripts\.some\(tag => tag\.includes\('googletagmanager\.com\/gtag\/js'\)\)\)/,
+    'een pagina zonder analytics-tag krijgt er geen');
 });
