@@ -74,3 +74,22 @@ test('een eerdere toestemming laadt direct bij het volgende bezoek', () => {
   assert.equal(b.toegevoegd.length, 1);
   assert.equal(b.config(), true);
 });
+
+// De toestemmingsbanner (11 sept 2026). Hij staat in de bron buiten <main> en viel bij
+// het opbouwen weg: niemand kon toestemming geven, dus GA4 kon nooit meten.
+test('een pagina met analytics krijgt de toestemmingsbanner, precies één keer, met echte knoppen', () => {
+  const out = applyCanonicalShell(pagina, shell, 'blog/test/index.html');
+  assert.equal((out.match(/id="bgCookie"/g) || []).length, 1);
+  assert.match(out, /<button[^>]*id="bgCookieAccept"[^>]*>Accepteren<\/button>/);
+  assert.match(out, /<button[^>]*id="bgCookieDeny"[^>]*>Alleen noodzakelijk<\/button>/);
+  assert.match(out, /<style id="bg-toestemmingsbanner">/, 'eigen, niet-ingeperkte opmaak');
+  assert.match(out, /href="(?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/privacy"/, 'link naar de privacyverklaring');
+  assert.match(out, /<span class="bgKort">[^<]*Zonder toestemming meten we niets\./, 'korte tekst voor telefoons');
+  assert.match(out, /@media\(max-width:520px\)\{[^}]*\}#bgCookie h4\{display:none\}/, 'op telefoons geen titel');
+});
+
+test('een pagina zonder analytics krijgt geen toestemmingsbanner', () => {
+  const zonder = pagina.replace(/<script async src="https:\/\/www\.googletagmanager\.com[^>]*><\/script>/, '');
+  const out = applyCanonicalShell(zonder, shell, 'blog/test/index.html');
+  assert.doesNotMatch(out, /id="bgCookie"/);
+});
