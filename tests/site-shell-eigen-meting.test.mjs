@@ -37,3 +37,11 @@ test('de privacyverklaring beschrijft de eigen meting zoals die werkt', () => {
   const p = readFileSync('privacy.html', 'utf8');
   for (const tekst of ['Eigen sitemeting zonder cookies', 'Supabase', '13 maanden', 'Global Privacy Control', 'nooit wat je in een formulier invult']) assert.ok(p.includes(tekst), tekst);
 });
+
+test('herkomst per sessie en koppeling met Calendly, zonder persoonsgegevens', () => {
+  assert.match(meting, /bg_meting_herkomst/);
+  assert.match(meting, /herkomst:herkomst/, 'herkomst gaat mee naar de ontvanger');
+  assert.match(meting, /calendly\\.com/);
+  assert.match(meting, /utm_content',sid\)/, 'de tabbladcode gaat als utm_content mee');
+  assert.ok(readFileSync('privacy.html', 'utf8').includes('geven we die tabbladcode en de pagina mee aan Calendly'), 'privacyverklaring noemt de Calendly-koppeling');
+});
