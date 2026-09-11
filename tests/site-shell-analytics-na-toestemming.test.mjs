@@ -84,6 +84,8 @@ test('een pagina met analytics krijgt de toestemmingsbanner, precies één keer,
   assert.match(out, /<button[^>]*id="bgCookieDeny"[^>]*>Alleen noodzakelijk<\/button>/);
   assert.match(out, /<style id="bg-toestemmingsbanner">/, 'eigen, niet-ingeperkte opmaak');
   assert.match(out, /href="(?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/privacy"/, 'link naar de privacyverklaring');
+  assert.match(out, /<span class="bgKort">[^<]*Zonder toestemming meten we niets\./, 'korte tekst voor telefoons');
+  assert.match(out, /@media\(max-width:520px\)\{[^}]*\}#bgCookie h4\{display:none\}/, 'op telefoons geen titel');
 });
 
 test('een pagina zonder analytics krijgt geen toestemmingsbanner', () => {
