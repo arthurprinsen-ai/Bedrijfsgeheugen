@@ -14,7 +14,13 @@
 /klantportaal  klant=demo  /klantportaal?klant=demo1  301!
 /klantportaal  klant=demo1  /klantportaal-demo.html  200!
 /klantportaal  klant=ijsselmonde  /klantportaal.html  200!
-/klantportaal  klant=demoAI  /portal/  200!
+# Portal V2 is het enige klantportaal. Sinds 11 september 2026 zit alles uit
+# portal/ en portal-next/ in portal-v2/: het Data & AI Passport, het EU AI
+# Act-auditrapport, de compliance-engine, de Powerhouse-route en het inlezen van
+# oude back-ups. Deze routes wijzen daarom door naar V2 in plaats van naar de
+# oude sporen. De mappen zelf staan er nog; die worden apart opgeruimd, want er
+# hangen nog tientallen tests en verwijzingen aan.
+/klantportaal  klant=demoAI  /portal-v2/  301!
 # All normal customer slugs produced by scans use the legacy full customer portal.
 /klantportaal  klant=:klant  /klantportaal.html  200!
 # Frisse Blik bare handoff stays on the legacy demo experience.
@@ -23,8 +29,10 @@
 /voor-investeerders  /investeerders-ma  301!
 /voor-ma  /investeerders-ma  301!
 /voor-due-diligence  /due-diligence  301!
-/portaal  /portal/  302!
-/portaal.html  /portal/  302!
+/portaal  /portal-v2/  301!
+/portaal.html  /portal-v2/  301!
+/portal/*  /portal-v2/  301!
+/portal-next/*  /portal-v2/  301!
 /ai-act /ai-act.html 200
 /ai-governance /ai-governance.html 200
 /data-soevereiniteit /data-soevereiniteit.html 200
