@@ -1435,6 +1435,13 @@ if(window.netlifyIdentity){
   netlifyIdentity.on('login',u=>{ netlifyIdentity.close(); toonPortaal(u); });
   netlifyIdentity.on('logout',()=>location.reload());
 }
+/* In demostand gaat de poort meteen open: een demo die eerst om een login
+   vraagt is geen demo. Er wordt niets opgehaald dat bij een echte klant hoort;
+   toonPortaal() laadt alleen de voorbeeldgegevens die al in de pagina staan. */
+document.addEventListener('DOMContentLoaded',function(){
+  if(window.__BG_IS_DEMO__ && window.__BG_IS_DEMO__()) toonPortaal({email:'demo'});
+});
+
 // knoppen op de poort
 document.addEventListener('DOMContentLoaded',function(){
   const bl=document.getElementById('btnLogin');
