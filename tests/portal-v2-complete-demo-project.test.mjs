@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DEMO_PORTAL_STATE } from '../portal-v2/demo-state.js';
-import { pagePresentation } from '../portal-v2/page-shell.js';
 
 const portal=DEMO_PORTAL_STATE.portal;
 
@@ -18,11 +17,12 @@ test('demo contains every project data slice used by the V2 project workspace',(
   assert.ok(Array.isArray(portal.integrations?.items) && portal.integrations.items.length>=4);
 });
 
-test('offerte presentation carries the complete nested project offer instead of only four summary metrics',()=>{
-  const view=pagePresentation('offerte',DEMO_PORTAL_STATE);
-  assert.ok(view.projectOffer,'offerte page must expose a projectOffer model');
-  assert.equal(view.projectOffer.number,portal.offer.number);
-  assert.equal(view.projectOffer.components.length,portal.offer.components.length);
-  assert.ok(view.projectOffer.components.some(component=>component.sprints?.length));
-  assert.ok(view.projectOffer.components.some(component=>component.stories?.length));
+test('canonical demo offer carries complete nested project scope, sprints and stories',()=>{
+  assert.ok(portal.offer,'demo must expose the canonical project offer');
+  assert.equal(portal.offer.number,'OFF-2026-041');
+  assert.equal(portal.offer.components.length,5);
+  assert.ok(portal.offer.components.every(component=>component.sprints?.length));
+  assert.ok(portal.offer.components.every(component=>component.stories?.length));
+  assert.equal(portal.delivery.sprints.length,5);
+  assert.equal(portal.delivery.sprints.flatMap(sprint=>sprint.stories).length,14);
 });
