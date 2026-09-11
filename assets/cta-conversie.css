@@ -1,0 +1,33 @@
+/* Conversieknop — één primaire knopkleur voor de hele publieke site.
+ *
+ * Waarom oranje: niet omdat oranje "beter klikt" — dat is geen wetmatigheid.
+ * Een knop wordt aangeklikt als hij opvalt tussen wat eromheen staat
+ * (isolatie-effect / Von Restorff). De site is blauw (hero) met geel als
+ * accent (beeldmerk, markeerstift, "Grip", vinkjes); de gele knop viel daartussen
+ * weg. Oranje #FF4F17 is al huisstijlkleur, komt verder nergens voor en is de
+ * complementaire kleur van het blauw. Inkt-tekst op oranje: 5,5:1 (WCAG AA).
+ *
+ * Besluit en onderbouwing: Notion "Huisstijl — kleuren en beeldmerk" en
+ * docs/development-ledger.md (2026-09-10, cta-conversiekleur).
+ * Terugdraaien: verwijder de aanroep van applyConversionCta() in
+ * tools/bouw-release-evidence.mjs — de knoppen zijn dan weer geel.
+ *
+ * :root:root + :is(...) geeft specificiteit 0,4,0: wint van de oudere
+ * !important-regels in de v18-kern zonder die bevroren kern aan te raken.
+ * Bewust niet: .ask-chip.active (een gekozen filter, geen actieknop) en
+ * .knop.leeg (secundaire, omlijnde knop). */
+:root{--conversie:#FF4F17;--conversie-hover:#FF6A3D;--conversie-tekst:#14171A}
+
+:root:root :is(.cta,.hero-primary,.v18-btn-primary,.knop.geel,.btn.geel,.btn.primary,.hk.geel,.bg-knop,.kaart .knop:not(.leeg),.evidence-calc .primary,.scenario-action>a,.scenario-action>button){
+  background:var(--conversie)!important;
+  background-color:var(--conversie)!important;
+  color:var(--conversie-tekst)!important;
+  border-color:var(--conversie-tekst)!important;
+}
+:root:root :is(.cta,.hero-primary,.v18-btn-primary,.knop.geel,.btn.geel,.btn.primary,.hk.geel,.bg-knop,.kaart .knop:not(.leeg),.evidence-calc .primary,.scenario-action>a,.scenario-action>button):is(:hover,:focus-visible){
+  background:var(--conversie-hover)!important;
+  background-color:var(--conversie-hover)!important;
+}
+:root:root :is(.cta,.hero-primary,.v18-btn-primary,.knop.geel,.btn.geel,.btn.primary,.hk.geel,.bg-knop,.kaart .knop:not(.leeg),.evidence-calc .primary,.scenario-action>a,.scenario-action>button):focus-visible{
+  outline:3px solid var(--conversie-tekst)!important;outline-offset:3px!important;
+}
