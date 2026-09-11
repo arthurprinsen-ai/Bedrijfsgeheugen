@@ -1,3 +1,4 @@
+import { herkenBackup, vertaalOudePortaalBackup, voorbeeldVanImport } from './legacy-import.js';
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
 const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
 const nowIso=()=>new Date().toISOString();
@@ -31,10 +32,16 @@ export async function stagePortalImport(file,{currentState={}}={}){
  let candidate,kind;
  if(Number(payload?.version)===4&&isObject(payload?.state)){candidate=clone(payload.state);kind='canonical-v4'}
  else if(Number(payload?.version)===2&&isObject(payload?.storage)){candidate=migrateV2Storage(payload,currentState);kind='portal-v2-storage-v2'}
+ else if(Number(payload?.versie)===1){
+  /* Back-up van het oude klantportaal. Alleen eenduidige velden worden vertaald;
+     de rest gaat ongewijzigd mee in portal.legacyImport.ruw, zodat er niets
+     stilzwijgend verdwijnt. Zie legacy-import.js. */
+  candidate=vertaalOudePortaalBackup(payload);kind='klantportaal-v1';
+ }
  else throw new Error('UNSUPPORTED_PORTAL_BACKUP');
  const importId=globalThis.crypto?.randomUUID?.()||`import-${Date.now()}-${Math.random().toString(36).slice(2)}`;
  candidate.sourceMeta={...(candidate.sourceMeta||{}),updatedAt:nowIso(),importId,label:'Geïmporteerde Portal V2-back-up'};
- return Object.freeze({kind,importId,fileName:file.name||'portaal-backup.json',candidate,preview:{company:candidate?.company?.name||candidate?.company?.portalBrand?.name||'',actions:Array.isArray(candidate?.actions)?candidate.actions.length:0,roadmap:Array.isArray(candidate?.roadmap)?candidate.roadmap.length:0,memories:Array.isArray(candidate?.memories)?candidate.memories.length:0}});
+ return Object.freeze({kind,importId,fileName:file.name||'portaal-backup.json',candidate,preview:{company:candidate?.company?.name||candidate?.company?.portalBrand?.name||'',actions:Array.isArray(candidate?.actions)?candidate.actions.length:0,roadmap:Array.isArray(candidate?.roadmap)?candidate.roadmap.length:0,memories:Array.isArray(candidate?.memories)?candidate.memories.length:0,vertaald:candidate?.portal?.legacyImport?.vertaald?.length||0,onvertaald:candidate?.portal?.legacyImport?.onvertaald?.length||0}});
 }
 
 export async function applyStagedPortalImport(staged,{stateClient}={}){

@@ -3,6 +3,7 @@ import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BR
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen, verlopenHerzieningen } from './regelgeving.js';
 import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
 import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
+import { beoordeelPortefeuille, rangschikRisicos, auditMomentopname, STATUS_LABEL as CONTROL_LABEL } from './compliance-engine.js';
 
 const EMPTY='—';
 const num=(value,digits=0)=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(Number(value)||0);
@@ -205,7 +206,25 @@ const PAGES=Object.freeze({
     worklist:s=>Object.entries(at(s,'portal.compliance.policies')||{}).filter(([,status])=>status==='ontbreekt').slice(0,3).map(([index])=>[`Beleidsstuk ${Number(index)+1}`,'ontbreekt'])},
 
   'compliance-command-center':{slice:'portal.compliance',
-    metrics:s=>[
+    metrics:s=>{const c=arr(at(s,'portal.compliance.controls'));
+      if(c.length){const p=beoordeelPortefeuille(c);return [
+        ['Controls beoordeeld',`${p.toepasbaar} van ${p.totaal}`],
+        ['Geverifieerd',String(p.geverifieerd)],
+        ['Dekking',p.dekking==null?EMPTY:pct(p.dekking)],
+        ['Raamwerken',String(Object.keys(p.raamwerken).length)]
+      ];}
+      return [
+        ['Beleid compleet',pct(calc('policy-completeness',s))],
+        ['Restrisico',pct(calc('compliance-risk',s))],
+        ['ESG readiness',`${num(calc('esg-readiness',s),1)}/5`],
+        ['Technologie readiness',`${num(calc('technology-readiness',s),1)}/5`]
+      ];},
+    worklist:s=>rangschikRisicos(arr(at(s,'portal.compliance.controls'))).slice(0,4)
+      .map(r=>[`${r.raamwerk||r.framework} · ${r.requirement||r.id}`,
+        `${CONTROL_LABEL[r.status]||r.status} · risico ${r.risicoScore}`]),
+    extraWorklist:s=>{const c=arr(at(s,'portal.compliance.controls'));if(!c.length)return [];
+      const a=auditMomentopname(c);return [['Bewijsstukken in de index',String(a.bewijsindex.length)]];},
+    ongebruikt:s=>[
       ['Beleid compleet',pct(calc('policy-completeness',s))],
       ['Restrisico',pct(calc('compliance-risk',s))],
       ['ESG readiness',`${num(calc('esg-readiness',s),1)}/5`],

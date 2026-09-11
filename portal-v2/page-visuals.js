@@ -6,6 +6,7 @@ import { BREIN_STAPPEN } from './runtime-evidence.js';
 import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
 import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
 import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
+import { routeOverzicht } from './flow-state.js';
 import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen } from './regelgeving.js';
 
 const arr=value=>Array.isArray(value)?value:[];
@@ -217,7 +218,10 @@ const BUILDERS=Object.freeze({
     return benchmarkBars([{label:'Entiteiten',value:nodes,benchmark:nodes},{label:'Verbindingen',value:n(s.edges),benchmark:nodes}],{title:'Omvang van de bedrijfsgraaf'});},
 
   agentstatus:state=>{const items=arr(at(state,'portal.runtime.agents.items'));
-    return curve(items.slice(-24).map((x,i)=>({label:String(i+1),value:x.healthy?1:0})),{title:'Doorloop van agentruns',valueLabel:'ok'});},
+    const route=routeOverzicht(arr(at(state,'portal.runtime.agents.route')));
+    return [route.length?ladder(route,{title:'Route door het Powerhouse, tot waar hij komt'}):'',
+      curve(items.slice(-24).map((x,i)=>({label:String(i+1),value:x.healthy?1:0})),{title:'Doorloop van agentruns',valueLabel:'ok'})
+    ].filter(Boolean).join('');},
 
   'actieve-acties':state=>quadrant(arr(at(state,'portal.runtime.actions.items')).map((x,i)=>({label:x.naam,x:i+1,y:n(x.waarde)})),{title:'Acties: waarde tegen volgorde',xLabel:'Volgorde',yLabel:'Waarde'}),
 
