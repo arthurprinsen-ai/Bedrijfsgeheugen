@@ -1,5 +1,6 @@
 import {decide} from './policy.mjs';
 import {normalizeEvidence,normalizeCandidate} from './contracts.mjs';
+import {calculateCompanyValue} from '../economics/company-value.mjs';
 
 const blockedDecisions=new Set(['PAUSE','WATCH','RESEARCH','ESCALATE_HARD_BOUNDARY']);
 const executableDecision=d=>!blockedDecisions.has(d);
@@ -15,6 +16,14 @@ export function buildDecision(input,context={}){
   const policy=decide(candidate);
   const createdAt=context.now||new Date().toISOString();
   const portfolio_bucket=bucketFor(policy,{hasDependencies:candidate.dependencies.length>0,rank:context.rank||0});
+  const economics=calculateCompanyValue({
+    expectedValue:candidate.expected_value,
+    investment:candidate.cost,
+    actualCost:input.actual_cost,
+    realizedValue:input.realized_value,
+    confidence:candidate.confidence,
+    currency:input.currency||'EUR'
+  });
   return {
     decision_id:`decision:${candidate.tenant_id||'global'}:${candidate.candidate_id}`,
     candidate_id:candidate.candidate_id,
@@ -28,14 +37,20 @@ export function buildDecision(input,context={}){
     blocked_by:policy.blocked_by||null,
     dependency_state:candidate.dependencies.length?'WAITING_FOR_DEPENDENCIES':'READY',
     dependencies:candidate.dependencies,
-    expected_value:candidate.expected_value,
-    investment:candidate.cost,
+    expected_value:economics.expectedValue,
+    investment:economics.investment,
+    net_expected_value:economics.netExpectedValue,
     capacity:candidate.capacity,
     duration:candidate.time,
-    payback_months:candidate.payback_months,
+    payback_months:economics.paybackMonths,
     do_nothing_cost:candidate.do_nothing_cost,
     risk:candidate.risk,
     confidence:candidate.confidence,
+    confidence_adjusted_value:economics.confidenceAdjustedValue,
+    realized_value:economics.realizedValue,
+    realized_profit:economics.realizedProfit,
+    variance:economics.variance,
+    currency:economics.currency,
     evidence_ids:[...candidate.provenance],
     assumptions:Array.isArray(input.assumptions)?input.assumptions:[],
     owner:candidate.owner,
