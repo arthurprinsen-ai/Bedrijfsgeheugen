@@ -3,7 +3,12 @@ const first=(state,paths)=>{
   for(const path of paths){const value=get(state,path);if(value!==undefined&&value!==null&&value!=='')return value;}
   return null;
 };
-const count=(value)=>Array.isArray(value)?value.length:Number.isFinite(Number(value))?Number(value):null;
+const count=value=>{
+  if(value===null||value===undefined||value==='')return null;
+  if(Array.isArray(value))return value.length;
+  const numeric=Number(value);
+  return Number.isFinite(numeric)?numeric:null;
+};
 const formatMoney=value=>Number.isFinite(Number(value))?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(value)):null;
 
 export function projectOverviewModel(state={}){
@@ -24,7 +29,7 @@ export function projectOverviewModel(state={}){
   });
 }
 
-function esc(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function esc(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));}
 function valueOrUnknown(value,{money=false,suffix=''}={}){
   if(value===null||value===undefined||value==='')return '<span class="projectunknown">Nog geen status</span>';
   const shown=money?formatMoney(value):`${value}${suffix}`;
