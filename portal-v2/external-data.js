@@ -770,7 +770,14 @@ export function brancheProfiel(naam) {
 export function brancheVergelijking(metrics = {}, brancheNaam) {
   const b = brancheProfiel(brancheNaam);
   if (!b) return [];
-  const getal = value => (Number.isFinite(Number(value)) ? Number(value) : null);
+  /* Number(null) is 0 en Number.isFinite(0) is waar, dus null en een lege string
+     werden stilzwijgend nul. Daardoor verscheen "brutomarge 0% tegenover 38%"
+     voor een veld dat helemaal niet was ingevuld. */
+  const getal = value => {
+    if (value == null || value === '') return null;
+    const nummer = Number(value);
+    return Number.isFinite(nummer) ? nummer : null;
+  };
   const rijen = [
     ['Brutomarge', getal(metrics.grossMargin), b.norm?.marge, true, '%'],
     ['EBITDA-marge', getal(metrics.ebitdaMargin), b.norm?.ebitda, true, '%'],

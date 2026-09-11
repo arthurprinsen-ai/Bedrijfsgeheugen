@@ -62,12 +62,21 @@ function handmatigWerk(state) {
 function onderDeNorm(state) {
   const branche = at(state, 'portal.market.industry');
   const profiel = brancheProfiel(branche);
+  /* Alleen vergelijken waar de klant iets heeft ingevuld. Een berekening geeft
+     nul terug als de invoer ontbreekt, en dat nul kwam als "brutomarge 0%
+     tegenover 38%" op het scherm - een bewering over een veld dat leeg is. */
+  const ingevuld = (waarde, ...velden) =>
+    velden.every(pad => n(at(state, pad))) ? n(waarde) : null;
   const rijen = brancheVergelijking({
-    grossMargin: n(calc('gross-margin', state)), ebitdaMargin: n(calc('ebitda-margin', state)),
-    wageRatio: n(calc('wage-ratio', state)), marketingRatio: n(calc('marketing-ratio', state)),
-    itRatio: n(calc('it-ratio', state)), dso: n(calc('dso', state)),
-    absence: n(at(state, 'portal.people.absence')), turnover: n(at(state, 'portal.people.turnover')),
-    enps: n(at(state, 'portal.people.enps'))
+    grossMargin: ingevuld(calc('gross-margin', state), 'portal.metrics.grossMargin'),
+    ebitdaMargin: ingevuld(calc('ebitda-margin', state), 'portal.metrics.revenue', 'portal.metrics.ebitda'),
+    wageRatio: ingevuld(calc('wage-ratio', state), 'portal.metrics.revenue', 'portal.metrics.wages'),
+    marketingRatio: ingevuld(calc('marketing-ratio', state), 'portal.metrics.revenue', 'portal.metrics.marketing'),
+    itRatio: ingevuld(calc('it-ratio', state), 'portal.metrics.revenue', 'portal.metrics.it'),
+    dso: ingevuld(calc('dso', state), 'portal.metrics.dso'),
+    absence: ingevuld(at(state, 'portal.people.absence'), 'portal.people.absence'),
+    turnover: ingevuld(at(state, 'portal.people.turnover'), 'portal.people.turnover'),
+    enps: ingevuld(at(state, 'portal.people.enps'), 'portal.people.enps')
   }, branche).filter(rij => !rij.beter);
 
   const omzet = n(at(state, 'portal.metrics.revenue'));
@@ -196,7 +205,104 @@ function externOnderzoek(state) {
   return uit;
 }
 
-const REGELS = [duursteOnderdelen, externOnderzoek, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
+/**
+ * Financiële weerbaarheid. De waarde-en-financieringspagina rekende Altman Z,
+ * schuldendekking en rentedekking al uit, maar die kwamen nergens terug als
+ * werk. Een bedrijf dat op deze drie zakt, heeft een probleem dat voor alle
+ * andere bevindingen uit gaat.
+ */
+function financieleWeerbaarheid(state) {
+  if (!n(at(state, 'portal.valueFinance.balance'))) return [];
+  const uit = [];
+  const z = n(calc('altman-z', state));
+  if (z && z < 3) uit.push(bevinding({
+    id: 'altman-z', soort: 'kosten', dim: 'finance',
+    titel: z < 1.8 ? 'De financiële weerbaarheid is kwetsbaar' : 'De financiële weerbaarheid zit in de grijze zone',
+    bewijs: `Altman Z staat op ${z.toFixed(2)}; onder 1,8 geldt als kwetsbaar en boven 3 als stevig`,
+    waarde: null, moeite: 'groot', duur: 12,
+    bron: 'Eigen balans en resultaat', pagina: 'waarde-financiering'
+  }));
+  const dscr = n(calc('dscr', state));
+  if (dscr && dscr < 1.25) uit.push(bevinding({
+    id: 'dscr', soort: 'kosten', dim: 'finance',
+    titel: 'De schuldendekking is krap',
+    bewijs: `DSCR staat op ${dscr.toFixed(2)}; banken hanteren doorgaans 1,25 als ondergrens`,
+    waarde: null, moeite: 'groot', duur: 12,
+    bron: 'Eigen balans en resultaat', pagina: 'waarde-financiering'
+  }));
+  const rente = n(calc('interest-coverage', state));
+  if (rente && rente < 3) uit.push(bevinding({
+    id: 'rentedekking', soort: 'kosten', dim: 'finance',
+    titel: 'De rentelasten drukken zwaar op het resultaat',
+    bewijs: `De rentedekking is ${rente.toFixed(1)}x; onder 3x wordt het krap bij tegenvallers`,
+    waarde: null, moeite: 'middel', duur: 8,
+    bron: 'Eigen balans en resultaat', pagina: 'waarde-financiering'
+  }));
+  return uit;
+}
+
+/** Roadmap: wat staat er stil of heeft geen eigenaar? */
+function roadmapStilstand(state) {
+  const items = arr(at(state, 'portal.roadmap.items'));
+  if (!items.length) return [];
+  const zonderEigenaar = items.filter(item => !String(item.owner || '').trim() && item.done !== true);
+  const stilstaand = items.filter(item => n(item.progress) === 0 && item.done !== true && String(item.owner || '').trim());
+  const uit = [];
+  if (zonderEigenaar.length) uit.push(bevinding({
+    id: 'roadmap-zonder-eigenaar', soort: 'kans',
+    titel: 'Roadmap-onderdelen hebben geen eigenaar',
+    bewijs: `${zonderEigenaar.length} van de ${items.length} onderdelen heeft niemand die het trekt: ${zonderEigenaar.slice(0, 2).map(item => item.title).join(', ')}`,
+    waarde: null, moeite: 'klein', duur: 1,
+    bron: 'Eigen roadmap', pagina: 'roadmap'
+  }));
+  if (stilstaand.length) uit.push(bevinding({
+    id: 'roadmap-stilstand', soort: 'kans',
+    titel: 'Roadmap-onderdelen staan op nul procent',
+    bewijs: `${stilstaand.length} onderdeel${stilstaand.length === 1 ? '' : 'en'} met een eigenaar maar zonder voortgang`,
+    waarde: null, moeite: 'klein', duur: 2,
+    bron: 'Eigen roadmap', pagina: 'roadmap'
+  }));
+  return uit;
+}
+
+/** Wijzigingen die zijn doorgevoerd maar niet geborgd, en offertes die wachten. */
+function openBesluiten(state) {
+  const uit = [];
+  const wijzigingen = arr(at(state, 'portal.changes.items'));
+  const nietGeborgd = wijzigingen.filter(item => item.status && item.status !== 'Geborgd');
+  if (nietGeborgd.length) uit.push(bevinding({
+    id: 'wijzigingen-niet-geborgd', soort: 'kans',
+    titel: 'Doorgevoerde wijzigingen zijn nog niet geborgd',
+    bewijs: `${nietGeborgd.length} van de ${wijzigingen.length} wijzigingen staat op ${[...new Set(nietGeborgd.map(item => item.status))].join(' of ')}; wat niet is vastgelegd, zakt terug`,
+    waarde: null, moeite: 'klein', duur: 2,
+    bron: 'Eigen wijzigingen', pagina: 'wijzigingen'
+  }));
+  const offerte = at(state, 'portal.offer') || {};
+  if (offerte.package && offerte.approval?.agreed !== true) uit.push(bevinding({
+    id: 'offerte-wacht', soort: 'kans',
+    titel: 'De offerte wacht op akkoord',
+    bewijs: `Pakket ${offerte.package}${n(offerte.sprints) ? ` van ${n(offerte.sprints)} sprints` : ''} ligt klaar, maar er is nog geen akkoord gegeven`,
+    waarde: null, moeite: 'klein', duur: 1,
+    bron: 'Eigen offerte', pagina: 'offerte'
+  }));
+  return uit;
+}
+
+/** Kansen uit de AI-scan die de klant zelf heeft ingevuld. */
+function scanKansen(state) {
+  const taken = arr(at(state, 'portal.aiScan.tasks'));
+  if (!taken.length) return [];
+  const baat = n(calc('risk-adjusted-benefit', state));
+  return [bevinding({
+    id: 'ai-scan-kansen', soort: 'kans',
+    titel: 'Pak de kansen op die je in de AI-scan hebt opgeschreven',
+    bewijs: `${taken.length} tak${taken.length === 1 ? '' : 'en'} in de scan${baat ? `, samen ${Math.round(baat).toLocaleString('nl-NL')} euro risicogewogen baat per jaar` : ', nog zonder doorgerekende baat'}`,
+    waarde: baat || null, moeite: 'middel', duur: 6,
+    bron: 'Eigen AI-scan', pagina: 'ai-scan'
+  })];
+}
+
+const REGELS = [duursteOnderdelen, externOnderzoek, financieleWeerbaarheid, roadmapStilstand, openBesluiten, scanKansen, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
 
 /**
  * De volgorde. Waarde per jaar gedeeld door moeite is de basis; een harde datum

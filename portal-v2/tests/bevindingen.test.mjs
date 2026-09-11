@@ -205,3 +205,62 @@ test('welke afdelingen het raakt staat erbij', () => {
   assert.ok(tech, 'het zwakste onderdeel krijgt geen onderzoeksadvies');
   assert.match(tech.bewijs, /het raakt /, 'de geraakte afdelingen ontbreken');
 });
+
+/* ---- Invoer die eerder geen gevolg had ---- */
+
+const ZWAK = { portal: {
+  profile: { headcount: 20, hourlyCost: 48, maturity: { finance: 2 } },
+  metrics: { revenue: 1800000, ebitda: 72000 },
+  valueFinance: { balance: 1600000, equity: 120000, debt: 900000, cash: 20000, interest: 58000, multiple: 4, fixed: 800000 },
+  roadmap: { items: [{ title: 'ERP', progress: 0, owner: 'Sam' }, { title: 'Werkinstructies', progress: 0, owner: '' }] },
+  changes: { items: [{ change: 'Nieuwe planning', status: 'Open' }] },
+  offer: { package: 'Groei', sprints: 4, approval: { agreed: false } },
+  aiScan: { tasks: [{ name: 'Offertes', hours: 4, freq: 52 }], hourlyRate: 48 }
+} };
+
+test('een leeg veld wordt niet als nul met de norm vergeleken', () => {
+  // Number(null) is 0 en Number.isFinite(0) is waar, waardoor een niet ingevuld
+  // veld verscheen als "brutomarge 0% tegenover 38%": een bewering over iets
+  // wat de klant nooit heeft opgegeven.
+  const markt = bevindingen(ZWAK).filter(item => item.soort === 'markt' && /wijkt ongunstig/.test(item.titel));
+  assert.ok(!markt.some(item => /Brutomarge/.test(item.titel)),
+    'de brutomarge wordt vergeleken terwijl het veld leeg is');
+  assert.ok(!markt.some(item => /eNPS/.test(item.titel)), 'eNPS wordt vergeleken terwijl het veld leeg is');
+  assert.ok(markt.some(item => /EBITDA-marge/.test(item.titel)), 'de wél ingevulde marge ontbreekt');
+});
+
+test('financiële weerbaarheid wordt werk zodra de cijfers eronder zakken', () => {
+  const lijst = bevindingen(ZWAK);
+  for (const id of ['altman-z', 'dscr', 'rentedekking'])
+    assert.ok(lijst.find(item => item.id === id), `${id} levert geen bevinding op`);
+  const altman = lijst.find(item => item.id === 'altman-z');
+  assert.match(altman.bewijs, /Altman Z staat op/);
+  assert.equal(altman.dim, 'finance');
+
+  // Een gezond bedrijf hoort hier niets te zien.
+  const gezond = bevindingen(KLANT);
+  for (const id of ['altman-z', 'dscr', 'rentedekking'])
+    assert.ok(!gezond.find(item => item.id === id), `${id} slaat aan bij een gezond bedrijf`);
+});
+
+test('roadmap, wijzigingen, offerte en AI-scan hebben gevolgen', () => {
+  const lijst = bevindingen(ZWAK);
+  const zonderEigenaar = lijst.find(item => item.id === 'roadmap-zonder-eigenaar');
+  assert.match(zonderEigenaar.bewijs, /1 van de 2 onderdelen/);
+  assert.ok(lijst.find(item => item.id === 'roadmap-stilstand'));
+  assert.match(lijst.find(item => item.id === 'wijzigingen-niet-geborgd').bewijs, /Open/);
+  assert.match(lijst.find(item => item.id === 'offerte-wacht').bewijs, /Pakket Groei/);
+  assert.ok(lijst.find(item => item.id === 'ai-scan-kansen'));
+});
+
+test('een afgeronde roadmap en een getekende offerte leveren geen werk op', () => {
+  const afgerond = { portal: {
+    profile: { headcount: 20, hourlyCost: 48, maturity: { finance: 4 } },
+    roadmap: { items: [{ title: 'ERP', progress: 100, owner: 'Sam', done: true }] },
+    changes: { items: [{ change: 'Nieuwe planning', status: 'Geborgd' }] },
+    offer: { package: 'Groei', approval: { agreed: true, name: 'Sam' } }
+  } };
+  const ids = bevindingen(afgerond).map(item => item.id);
+  for (const id of ['roadmap-zonder-eigenaar', 'roadmap-stilstand', 'wijzigingen-niet-geborgd', 'offerte-wacht'])
+    assert.ok(!ids.includes(id), `${id} slaat aan terwijl er niets openstaat`);
+});
