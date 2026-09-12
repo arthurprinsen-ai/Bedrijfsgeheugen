@@ -1,4 +1,5 @@
 import { PROFILE_DIMENSIONS } from './company-input.js';
+import { generateLegacyExecutionSignals } from './legacy-execution-signals.js';
 
 const FACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
 export const STANDARD_EXECUTION_SHARES=Object.freeze([.10,.25,.35,.20,.10]);
@@ -28,6 +29,7 @@ export function executionSignalDimensions(state={}){
   ...(Array.isArray(execution.signalDimensions)?execution.signalDimensions:[]),
   ...findings.map(item=>item?.dimension??item?.dim).filter(Boolean),
   ...advice.map(item=>item?.dimension??item?.dim).filter(Boolean),
+  ...generateLegacyExecutionSignals(state).map(item=>item.dimension),
  ].map(String);
 }
 

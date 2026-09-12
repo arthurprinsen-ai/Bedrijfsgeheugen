@@ -20,10 +20,12 @@ test('legacy selector removes duplicates and fills remaining slots by descending
   assert.deepEqual(selected,['sturing','tech','finance']);
 });
 
-test('execution signal dimensions are recovered from canonical strategy/advice state',()=>{
+test('explicit canonical strategy/advice signals stay first before automatic legacy model signals',()=>{
   const state={portal:{
     strategy:{execution:{signalDimensions:['finance']},findings:[{dimension:'tech'},{dim:'mensen'},{dimension:'unknown'}]},
     advice:{items:[{dimension:'mensen'},{dim:'operatie'},{advice:'no dimension'}]}
   }};
-  assert.deepEqual(executionSignalDimensions(state),['finance','tech','mensen','unknown','mensen','operatie']);
+  const actual=executionSignalDimensions(state);
+  assert.deepEqual(actual.slice(0,6),['finance','tech','mensen','unknown','mensen','operatie']);
+  assert.ok(actual.length>6);
 });
