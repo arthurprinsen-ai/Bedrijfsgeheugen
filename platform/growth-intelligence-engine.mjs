@@ -77,3 +77,59 @@ export function intelligenceScorecard({predictions=[]}={}){
   const falsePos=positives.filter(p=>Number(p.observed)<=0).length;
   return {evaluated:evaluated.length,mae,accuracy:correct/evaluated.length,falsePositiveRate:positives.length?falsePos/positives.length:0};
 }
+
+const keySlug=value=>String(value||'unknown').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,96)||'unknown';
+
+export function buildRelationshipRecord({fromType,fromKey,toType,toKey,relation,confidence=.5,evidenceRefs=[],observedAt=new Date().toISOString(),reviewAt=null}={}){
+  if(!fromType||!fromKey||!toType||!toKey||!relation)throw new Error('relationship requires source, target and relation');
+  const from={type:String(fromType),key:String(fromKey)},to={type:String(toType),key:String(toKey)};
+  const recordId=`relation:${keySlug(from.type)}:${keySlug(from.key)}:${keySlug(relation)}:${keySlug(to.type)}:${keySlug(to.key)}`;
+  const refs=[...new Set((evidenceRefs||[]).filter(Boolean).map(String))];
+  return {tenant_id:'canonical',record_id:recordId,record_type:'Relation',record_kind:'relation',subject_id:`${from.type}:${keySlug(from.key)}`,status:'VERIFIED',observed_at:observedAt,executed:true,verified:true,result:{state:'RELATION_OBSERVED',relation:String(relation)},evidence_ids:refs,provenance:{runtime:'growth-intelligence-v2'},payload:{from,to,relation:String(relation),confidence:clamp(confidence),review_at:reviewAt},idempotency_key:recordId,source_revision:'growth-intelligence-v2',updated_at:observedAt};
+}
+
+export function companyIntelligenceProfile({company,connection=null,engagementEvents=[],externalSignals=[],now=new Date().toISOString()}={}){
+  if(!company)throw new Error('company required');
+  const name=String(company),needle=name.toLowerCase();
+  const events=(engagementEvents||[]).filter(e=>String(e?.company_name||'').toLowerCase()===needle);
+  const matched=(externalSignals||[]).filter(s=>[s?.titel,s?.samenvatting,s?.onderwerp,s?.domein].filter(Boolean).join(' ').toLowerCase().includes(needle));
+  const text=matched.map(s=>[s.titel,s.samenvatting,s.onderwerp].filter(Boolean).join(' ')).join(' | ');
+  const hiring=/vacatur|werft|hiring|hire|recruit|data engineer|ai engineer/i.test(text)?matched.map(s=>s.titel||s.url).filter(Boolean):[];
+  const technology=/microsoft|fabric|power bi|afas|sap|dynamics|ai|data|cloud/i.test(text)?matched.map(s=>s.titel||s.url).filter(Boolean):[];
+  const refs=[...new Set([...events.map(e=>e.event_key),...matched.map(s=>s.url),connection?.linkedin_url?`connection:${connection.linkedin_url}`:null].filter(Boolean))];
+  return {company:name,observed:{role:connection?.rol||null,connectionPriority:Number(connection?.prioriteit)||0,engagementCount:events.length,externalSignalCount:matched.length},inferred:{hiringSignals:hiring,technologySignals:technology,capabilityGapCandidate:Boolean(hiring.length||technology.length)&&events.length>0},sourceRefs:refs,observedAt:now};
+}
+
+export function whitespaceScore({searchDemand=0,observedSupply=0,evidenceQuality=0,commercialFit=0}={}){
+  const demand=pct(searchDemand),supply=pct(observedSupply),quality=clamp(evidenceQuality),fit=clamp(commercialFit);
+  const score=clamp(demand*.4+(1-supply)*.3+quality*.15+fit*.15);
+  return {score,components:{demand,supply,quality,fit}};
+}
+
+export function calibratePrediction({predictedProbability,observedBinary,baseline=null}={}){
+  if(predictedProbability===null||predictedProbability===undefined||observedBinary===null||observedBinary===undefined)return {status:'INSUFFICIENT_EVIDENCE',brierScore:null,absoluteError:null,classification:null,counterfactualStatus:'INSUFFICIENT_EVIDENCE'};
+  const predicted=clamp(predictedProbability),observed=Number(observedBinary)>0?1:0;
+  const brierScore=(predicted-observed)**2,absoluteError=Math.abs(predicted-observed),positive=predicted>=.5;
+  const classification=positive?(observed?'TRUE_POSITIVE':'FALSE_POSITIVE'):(observed?'FALSE_NEGATIVE':'TRUE_NEGATIVE');
+  const cf=counterfactualAssessment({observed,baseline,confidence:1});
+  return {status:'EVALUATED',predicted,observed,brierScore,absoluteError,classification,counterfactualStatus:cf.status,incrementalEffect:cf.incrementalEffect};
+}
+
+export function decayConfidence({confidence=0,lastValidatedAt=null,now=new Date().toISOString(),halfLifeDays=90}={}){
+  const base=clamp(confidence),half=Math.max(1,Number(halfLifeDays)||90);
+  if(!lastValidatedAt)return {confidence:base,ageDays:null,reviewRequired:true};
+  const ageDays=Math.max(0,(new Date(now).getTime()-new Date(lastValidatedAt).getTime())/86400000);
+  if(!Number.isFinite(ageDays))return {confidence:base,ageDays:null,reviewRequired:true};
+  const effective=clamp(base*Math.pow(.5,ageDays/half));
+  return {confidence:effective,ageDays,reviewRequired:ageDays>=half||effective<.55};
+}
+
+export function attributionSummary({growthOutcomes=[],salesOutcomes=[]}={}){
+  const merged=new Map();
+  const put=(key,row,kind)=>{if(!key)return;const current=merged.get(key)||{revenue:0,order:0,klass:'UNKNOWN'};const evidence=row?.payload||row?.evidence||{};current.revenue=Math.max(current.revenue,Math.max(0,Number(row?.revenue_eur)||0));current.order=Math.max(current.order,Math.max(0,Number(evidence.order_value_eur??evidence.orderValueEur)||0));current.klass=String(evidence.attribution_class||evidence.attributionClass||current.klass||'UNKNOWN').toUpperCase();current.kind=kind;merged.set(key,current);};
+  for(const o of growthOutcomes||[])put(o.attribution_root_key||o.outcome_id,o,'growth');
+  for(const o of salesOutcomes||[])put(o.attribution_root_key||o.dedupe_key||o.outcome_id||o.action_id,o,'sales');
+  const counts={DIRECT:0,ASSISTED:0,INFLUENCED:0,UNKNOWN:0};let realizedRevenueEur=0,orderValueEur=0;
+  for(const x of merged.values()){realizedRevenueEur+=x.revenue;orderValueEur+=x.order;counts[x.klass in counts?x.klass:'UNKNOWN']++;}
+  return {realizedRevenueEur:Math.round(realizedRevenueEur*100)/100,orderValueEur:Math.round(orderValueEur*100)/100,counts,uniqueOutcomes:merged.size};
+}
