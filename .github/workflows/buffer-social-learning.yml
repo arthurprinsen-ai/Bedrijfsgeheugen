@@ -5,6 +5,7 @@ on:
     paths:
       - 'netlify/functions/_buffer-social-collector.mjs'
       - 'netlify/functions/buffer-social-collect.mjs'
+      - 'supabase/migrations/*content_calendar_learning_chain.sql'
       - 'tests/social-learning-buffer-*.test.mjs'
       - '.github/workflows/buffer-social-learning.yml'
   push:
@@ -12,6 +13,7 @@ on:
     paths:
       - 'netlify/functions/_buffer-social-collector.mjs'
       - 'netlify/functions/buffer-social-collect.mjs'
+      - 'supabase/migrations/*content_calendar_learning_chain.sql'
       - 'tests/social-learning-buffer-*.test.mjs'
       - '.github/workflows/buffer-social-learning.yml'
 
@@ -29,4 +31,4 @@ jobs:
       - name: Install runtime dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
       - name: Verify Buffer-first collector contracts
-        run: node --test tests/social-learning-buffer-collector.test.mjs tests/social-learning-buffer-schedule.test.mjs
+        run: node --test tests/social-learning-buffer-collector.test.mjs tests/social-learning-buffer-schedule.test.mjs tests/social-learning-buffer-content-chain.test.mjs
