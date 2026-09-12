@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260912143000_content_calendar_learning_chain.sql','utf8');
-const backfill=fs.readFileSync('supabase/migrations/20260912150500_content_calendar_learning_chain_backfill.sql','utf8');
+const sql=fs.readFileSync('supabase/migrations/20260912150526_content_calendar_learning_chain.sql','utf8');
+const backfill=fs.readFileSync('supabase/migrations/20260912150620_content_calendar_learning_chain_backfill.sql','utf8');
 
 test('published social posts inherit the canonical calendar experiment',()=>{
   assert.match(sql,/create trigger social_posts_content_chain/i);
