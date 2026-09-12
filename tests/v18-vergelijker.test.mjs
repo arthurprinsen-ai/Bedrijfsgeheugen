@@ -100,6 +100,12 @@ test('woordanimatie heeft een zichtbare basistoestand', () => {
   assert.match(BEWEGING_CSS, /\.bgx-woord\{[^}]*opacity:\s*1[^}]*transform:\s*none/s);
 });
 
+test('publieke standalone pagina’s worden aan het einde van de build op de stabiele Platform-renderlaag gezet', async () => {
+  const script = await readFile('tools/bouw-v18-chrome-alles.mjs', 'utf8');
+  assert.match(script, /maakPlatformStabiel/, 'De build moet publieke standalone pagina’s na V18 op een statische Platform-baseline normaliseren.');
+  assert.match(script, /product\.html/, 'De werkende Platform-pagina moet de expliciete rendering-baseline zijn.');
+});
+
 test('V18 interactieve websitecode en regressietests horen bij de website delivery lane', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   for (const path of ['tools/v18-beweging.mjs', 'tests/v18-vergelijker.test.mjs']) {
