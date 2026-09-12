@@ -1,3 +1,5 @@
+-- Replay compatibility: the prior view shape has action_id in ordinal position 10; replacing it cannot insert a column before that.
+drop view if exists public.bg_vandaag;
 create or replace view public.bg_vandaag as
  SELECT round(a.priority) AS prioriteit,
     COALESCE(NULLIF(a.person_name, ''::text), c.naam, '?'::text) AS persoon,
