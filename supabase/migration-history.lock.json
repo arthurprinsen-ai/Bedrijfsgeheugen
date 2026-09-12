@@ -1,0 +1,596 @@
+{
+  "project_ref": "adhjwmvyoixzjtmiroln",
+  "source": "supabase_migration_history",
+  "captured_at": "2026-09-12T19:14:51Z",
+  "applied": [
+    {
+      "version": "20260817130430",
+      "name": "portaal_basisschema_met_rls"
+    },
+    {
+      "version": "20260817130455",
+      "name": "hulpfuncties_uit_publieke_api"
+    },
+    {
+      "version": "20260817130630",
+      "name": "automatische_onboarding_en_logboek"
+    },
+    {
+      "version": "20260817130755",
+      "name": "logboek_niet_loggen_bij_cascade_verwijdering"
+    },
+    {
+      "version": "20260817133951",
+      "name": "bronnen_en_publicaties"
+    },
+    {
+      "version": "20260817135344",
+      "name": "pg_net_en_pg_cron_aan"
+    },
+    {
+      "version": "20260817135549",
+      "name": "feedlezer_en_bronnen_vullen"
+    },
+    {
+      "version": "20260817135628",
+      "name": "lopende_verzoeken_vaste_tabel"
+    },
+    {
+      "version": "20260817135652",
+      "name": "feedlezer_datumfix"
+    },
+    {
+      "version": "20260817135716",
+      "name": "dagelijkse_controle_en_relevantie"
+    },
+    {
+      "version": "20260817135734",
+      "name": "trefwoorden_scherper"
+    },
+    {
+      "version": "20260817140414",
+      "name": "portaalblokken_en_voorstellen"
+    },
+    {
+      "version": "20260817140457",
+      "name": "koppelaar_publicatie_aan_blok"
+    },
+    {
+      "version": "20260817140547",
+      "name": "koppelaar_strenger"
+    },
+    {
+      "version": "20260817141008",
+      "name": "versies_gebruik_en_zichtbare_wijzigingen"
+    },
+    {
+      "version": "20260817141040",
+      "name": "overnemen_en_wijzigingsoverzicht"
+    },
+    {
+      "version": "20260817141228",
+      "name": "publieke_leesview_voor_portaal"
+    },
+    {
+      "version": "20260817141255",
+      "name": "publieke_leesrechten_netjes"
+    },
+    {
+      "version": "20260817141604",
+      "name": "uitgever_url_bij_publicaties"
+    },
+    {
+      "version": "20260817141724",
+      "name": "bronlink_eerlijk_tonen_v2"
+    },
+    {
+      "version": "20260817181859",
+      "name": "bron_via_google_zichtbaar_v2"
+    },
+    {
+      "version": "20260817205541",
+      "name": "bedrijfsgeheugen_scans_en_offertes"
+    },
+    {
+      "version": "20260817205555",
+      "name": "benchmark_weergaven"
+    },
+    {
+      "version": "20260817210401",
+      "name": "herbruikbaar_werk_en_offertesjablonen"
+    },
+    {
+      "version": "20260817210416",
+      "name": "prijsadvies_uit_eerdere_offertes"
+    },
+    {
+      "version": "20260817214649",
+      "name": "slugs_en_uitnodigingen"
+    },
+    {
+      "version": "20260818120159",
+      "name": "voorstel_data_op_sjabloon"
+    },
+    {
+      "version": "20260818135409",
+      "name": "bouwstenen_koppelen_aan_onderdelen"
+    },
+    {
+      "version": "20260818141638",
+      "name": "interne_tabellen_dicht"
+    },
+    {
+      "version": "20260820121815",
+      "name": "portaal_stand_en_ranking"
+    },
+    {
+      "version": "20260820121856",
+      "name": "portaal_stand_verwijderrecht"
+    },
+    {
+      "version": "20260820123502",
+      "name": "signup_geen_rechten_uit_metadata"
+    },
+    {
+      "version": "20260830131346",
+      "name": "brain_delivery_evidence"
+    },
+    {
+      "version": "20260830131534",
+      "name": "brain_delivery_evidence"
+    },
+    {
+      "version": "20260830131607",
+      "name": "brain_delivery_evidence_least_privilege"
+    },
+    {
+      "version": "20260830132843",
+      "name": "safe_security_hardening"
+    },
+    {
+      "version": "20260830133125",
+      "name": "internal_views_server_only"
+    },
+    {
+      "version": "20260830133207",
+      "name": "safe_security_hardening"
+    },
+    {
+      "version": "20260830133558",
+      "name": "restrict_proposal_mutation_rpcs"
+    },
+    {
+      "version": "20260830133911",
+      "name": "benchmark_views_security_invoker"
+    },
+    {
+      "version": "20260830133916",
+      "name": "benchmark_views_security_invoker"
+    },
+    {
+      "version": "20260830134229",
+      "name": "benchmark_rls_safe_projection"
+    },
+    {
+      "version": "20260830134816",
+      "name": "public_intake_least_privilege"
+    },
+    {
+      "version": "20260830135153",
+      "name": "ranking_private_helper"
+    },
+    {
+      "version": "20260830160432",
+      "name": "portaal_stand_least_privilege"
+    },
+    {
+      "version": "20260830161130",
+      "name": "trigger_functions_server_only"
+    },
+    {
+      "version": "20260830161438",
+      "name": "rls_policy_grant_alignment"
+    },
+    {
+      "version": "20260830162126",
+      "name": "zz_view_access_contract"
+    },
+    {
+      "version": "20260830164322",
+      "name": "portaal_stand_rls_initplan"
+    },
+    {
+      "version": "20260830164700",
+      "name": "leden_policy_select_dedup"
+    },
+    {
+      "version": "20260830182111",
+      "name": "brain_outcome_obligation_store"
+    },
+    {
+      "version": "20260830182541",
+      "name": "brain_outcome_obligation_store_least_privilege"
+    },
+    {
+      "version": "20260830183706",
+      "name": "brain_outcome_obligation_store_strict_privileges"
+    },
+    {
+      "version": "20260831060335",
+      "name": "brain_operation_registry"
+    },
+    {
+      "version": "20260831061202",
+      "name": "brain_operation_registry_least_privilege"
+    },
+    {
+      "version": "20260831063804",
+      "name": "brain_operation_registry_service_role_minimal"
+    },
+    {
+      "version": "20260831064543",
+      "name": "brain_obligation_registry"
+    },
+    {
+      "version": "20260831070245",
+      "name": "brain_blocker_registry"
+    },
+    {
+      "version": "20260831070909",
+      "name": "brain_blocker_occurrence_idempotency"
+    },
+    {
+      "version": "20260831071514",
+      "name": "whole_brain_canonical_records"
+    },
+    {
+      "version": "20260831071618",
+      "name": "brain_blocker_resolution_idempotency"
+    },
+    {
+      "version": "20260831072554",
+      "name": "brain_value_evaluations"
+    },
+    {
+      "version": "20260831072705",
+      "name": "brain_ai_governance_registry"
+    },
+    {
+      "version": "20260831073355",
+      "name": "brain_cost_attribution"
+    },
+    {
+      "version": "20260831073525",
+      "name": "brain_decisions_and_runtime_metrics"
+    },
+    {
+      "version": "20260831074419",
+      "name": "brain_production_truth"
+    },
+    {
+      "version": "20260831075125",
+      "name": "brain_production_truth_hardening"
+    },
+    {
+      "version": "20260831081927",
+      "name": "brain_operation_obligation_identity_hardening"
+    },
+    {
+      "version": "20260831083107",
+      "name": "brain_transition_rpc_local_alias_cas"
+    },
+    {
+      "version": "20260831084056",
+      "name": "brain_transactional_inbox_outbox"
+    },
+    {
+      "version": "20260831091634",
+      "name": "brain_mutation_ownership"
+    },
+    {
+      "version": "20260831091723",
+      "name": "brain_supporting_control_plane"
+    },
+    {
+      "version": "20260831101325",
+      "name": "media_bucket_voor_site"
+    },
+    {
+      "version": "20260831102211",
+      "name": "media_bucket_schrijfrechten_beperken"
+    },
+    {
+      "version": "20260831164051",
+      "name": "brain_ai_governance_projection"
+    },
+    {
+      "version": "20260901061302",
+      "name": "brain_autonomous_outcome_horizon_runtime_v1"
+    },
+    {
+      "version": "20260901135635",
+      "name": "runtime_slo_existing_view_matched_samples"
+    },
+    {
+      "version": "20260901142034",
+      "name": "add_powerhouse_event_idempotency_claim"
+    },
+    {
+      "version": "20260901142717",
+      "name": "create_deferred_brain_writebacks"
+    },
+    {
+      "version": "20260902083404",
+      "name": "portal_state_eu_dataplane"
+    },
+    {
+      "version": "20260902083750",
+      "name": "portal_state_eu_gateway_hardening"
+    },
+    {
+      "version": "20260902085127",
+      "name": "extend_ai_governance_passport_evidence"
+    },
+    {
+      "version": "20260903085305",
+      "name": "pw_mo14_beoordelingen_intake"
+    },
+    {
+      "version": "20260906102835",
+      "name": "growth_datahub_closed_loop"
+    },
+    {
+      "version": "20260906103923",
+      "name": "growth_brain_internal_tables_hardening"
+    },
+    {
+      "version": "20260906115346",
+      "name": "commercial_lead_capture"
+    },
+    {
+      "version": "20260908052807",
+      "name": "portal_connector_builder"
+    },
+    {
+      "version": "20260908121527",
+      "name": "powerhouse_knowledge_replay_spool"
+    },
+    {
+      "version": "20260908122134",
+      "name": "powerhouse_knowledge_replay_spool_rls_deny"
+    },
+    {
+      "version": "20260909081703",
+      "name": "powerhouse_social_learning_v1"
+    },
+    {
+      "version": "20260909083128",
+      "name": "powerhouse_social_learning_contract_completion"
+    },
+    {
+      "version": "20260909084902",
+      "name": "powerhouse_v96_supabase_native_runtime"
+    },
+    {
+      "version": "20260909092833",
+      "name": "revenue_learning_layer"
+    },
+    {
+      "version": "20260909094329",
+      "name": "powerhouse_unified_revenue_growth_core"
+    },
+    {
+      "version": "20260909114452",
+      "name": "powerhouse_daily_supabase_native_scheduler"
+    },
+    {
+      "version": "20260909123959",
+      "name": "bg_leerlus_zichtbaar_en_uitkomst_vastleggen"
+    },
+    {
+      "version": "20260909124342",
+      "name": "bg_robotverkeer_filteren_en_uitkomst_via_bestaande_ingest"
+    },
+    {
+      "version": "20260909125040",
+      "name": "bg_terugkoppeling_naar_powerhouse_en_dagoverzicht"
+    },
+    {
+      "version": "20260909125401",
+      "name": "bg_connecties_opslag_selectie_en_dagelijkse_aanvoer"
+    },
+    {
+      "version": "20260909130519",
+      "name": "bg_dagselectie_stabiele_tiebreak"
+    },
+    {
+      "version": "20260909131127",
+      "name": "powerhouse_revenue_command_center"
+    },
+    {
+      "version": "20260909131307",
+      "name": "bg_persoonlijke_links_en_klikregistratie"
+    },
+    {
+      "version": "20260909131734",
+      "name": "bg_contentintelligentie_schrijfregels"
+    },
+    {
+      "version": "20260909181218",
+      "name": "content_learning_campaign_links"
+    },
+    {
+      "version": "20260909181643",
+      "name": "ga4_csv_batches"
+    },
+    {
+      "version": "20260909181648",
+      "name": "notion_post_feature_staging"
+    },
+    {
+      "version": "20260909182523",
+      "name": "native_content_generation_cron"
+    },
+    {
+      "version": "20260909182543",
+      "name": "native_content_generation_cron_verify"
+    },
+    {
+      "version": "20260910083154",
+      "name": "bg_geheim_vault_bron_voor_edge_functions"
+    },
+    {
+      "version": "20260910083401",
+      "name": "bg_zoekprestaties_search_console"
+    },
+    {
+      "version": "20260910085103",
+      "name": "bg_gezondheid_meting"
+    },
+    {
+      "version": "20260910085139",
+      "name": "bg_functie_aanroep_en_gezondheid_v2"
+    },
+    {
+      "version": "20260910101126",
+      "name": "bg_bewijs_centrale_bewijsfunctie"
+    },
+    {
+      "version": "20260910101149",
+      "name": "bg_brein_status_en_zelfbewaking"
+    },
+    {
+      "version": "20260910102443",
+      "name": "bg_vandaag_meetlinks_eigen_domein"
+    },
+    {
+      "version": "20260910104922",
+      "name": "bg_post_prestatie_metric_sleutels_normaliseren"
+    },
+    {
+      "version": "20260910105518",
+      "name": "bg_brein_zelfbewaking_identiteit_fix"
+    },
+    {
+      "version": "20260910111337",
+      "name": "bg_kansen_en_externe_signalen"
+    },
+    {
+      "version": "20260910111520",
+      "name": "bg_kansen_signalen_planning_en_status"
+    },
+    {
+      "version": "20260910112929",
+      "name": "bg_kansenradar_basis"
+    },
+    {
+      "version": "20260910113410",
+      "name": "bg_inhaak_kandidaten_nederland_filter"
+    },
+    {
+      "version": "20260910114043",
+      "name": "bg_kansenradar_planning_status"
+    },
+    {
+      "version": "20260910151320",
+      "name": "bg_bedrijfsnieuws_en_deadlines"
+    },
+    {
+      "version": "20260910151330",
+      "name": "bg_bedrijven_voor_nieuws_op_score"
+    },
+    {
+      "version": "20260910151759",
+      "name": "bg_bedrijfsnieuws_reden_en_dm"
+    },
+    {
+      "version": "20260910152304",
+      "name": "bg_bedrijfsnieuws_planning_en_status"
+    },
+    {
+      "version": "20260911060702",
+      "name": "bg_interacties_eigen_meting"
+    },
+    {
+      "version": "20260911093551",
+      "name": "bg_meetoverzicht_rekenlaag"
+    },
+    {
+      "version": "20260911100916",
+      "name": "bg_salescyclus_herkomst_en_uitkomsten"
+    },
+    {
+      "version": "20260911101009",
+      "name": "bg_calendly_uitkomst_en_planning"
+    },
+    {
+      "version": "20260911101107",
+      "name": "revenue_content_intelligence_20260911_v2"
+    },
+    {
+      "version": "20260911101111",
+      "name": "bg_experimentregister"
+    },
+    {
+      "version": "20260911101227",
+      "name": "bg_experimenten_statussen_en_acties"
+    },
+    {
+      "version": "20260911101303",
+      "name": "bg_salescyclus_rekenlaag"
+    },
+    {
+      "version": "20260911101600",
+      "name": "bg_experimentcyclus_sqlpoort"
+    },
+    {
+      "version": "20260911194500",
+      "name": "offertes_leden_alleen_lezen_en_tekenfunctie"
+    },
+    {
+      "version": "20260911201500",
+      "name": "offerte_akkoord_melding_in_vandaag"
+    },
+    {
+      "version": "20260911213000",
+      "name": "dichte_tabellen_zonder_rls"
+    },
+    {
+      "version": "20260912150526",
+      "name": "content_calendar_learning_chain"
+    },
+    {
+      "version": "20260912150620",
+      "name": "content_calendar_learning_chain_backfill"
+    },
+    {
+      "version": "20260912150715",
+      "name": "normalize_content_calendar_recipe_features"
+    },
+    {
+      "version": "20260912151806",
+      "name": "social_channel_identity_learning"
+    },
+    {
+      "version": "20260912160957",
+      "name": "linkedin_engagement_to_cockpit_v1"
+    },
+    {
+      "version": "20260912164438",
+      "name": "instagram_growth_research_corpus_v1"
+    }
+  ],
+  "forbidden_rewritten_versions": [
+    "20260909090000",
+    "20260909095000",
+    "20260909103000",
+    "20260909112000",
+    "20260909140000",
+    "20260911113000",
+    "20260912143000",
+    "20260912150500",
+    "20260912152000",
+    "20260912154500",
+    "20260912181000"
+  ]
+}
