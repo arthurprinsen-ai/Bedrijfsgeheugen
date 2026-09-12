@@ -6,7 +6,6 @@ async function sha256(value:string){const d=await crypto.subtle.digest('SHA-256'
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const tenantOf=(b:any)=>String(b?.tenantId||'canonical');
 const asNum=(v:any)=>v===null||v===undefined||v===''?null:Number(v);
-const sum=(a:any,b:any)=>(asNum(a)??0)+(asNum(b)??0);
 const normalizeStage=(s:any)=>String(s||'').toLowerCase().replace(/[\s-]+/g,'_');
 
 function commercialByStage(rows:any[]){
@@ -72,9 +71,10 @@ Deno.serve(async(req)=>{
         const snaps=snapsByPost.get(p.post_id)||[];for(const w of [24,48,72]){
           const nearest=snaps.map(s=>({s,age:Number(s.age_hours??((new Date(s.observed_at).getTime()-new Date(p.published_at).getTime())/36e5))})).filter(x=>Number.isFinite(x.age)&&Math.abs(x.age-w)<=6).sort((a,b)=>Math.abs(a.age-w)-Math.abs(b.age-w))[0]?.s;
           if(!nearest)continue;const commercial=commercialByStage(p.source_campaign_id?outcomesByRoot.get(p.source_campaign_id)||[]:[]);
-          candidates.push({kind:'social',contentId:p.post_id,channel:p.platform,canonical:null,attributionRootKey:p.source_campaign_id||null,publishedAt:p.published_at,windowHours:w,
-            componentFingerprint:`social|${p.platform}|${p.content_pillar||''}|${p.funnel_stage||''}|${p.format||''}|${p.hook_type||''}|${p.cta_type||''}`,
-            metrics:{...(nearest.metrics||{}),...commercial},attributes:{contentPillar:p.content_pillar,funnelStage:p.funnel_stage,format:p.format,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type},sourceRefs:[nearest.snapshot_id]});
+          const channel=p.channel_kind||p.platform;
+          candidates.push({kind:'social',contentId:p.post_id,channel,canonical:null,attributionRootKey:p.source_campaign_id||null,publishedAt:p.published_at,windowHours:w,
+            componentFingerprint:`social|${channel}|${p.content_pillar||''}|${p.funnel_stage||''}|${p.format||''}|${p.hook_type||''}|${p.cta_type||''}`,
+            metrics:{...(nearest.metrics||{}),...commercial},attributes:{platform:p.platform,channelId:p.channel_id,channelName:p.channel_name,channelKind:p.channel_kind,contentPillar:p.content_pillar,funnelStage:p.funnel_stage,format:p.format,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type},sourceRefs:[nearest.snapshot_id]});
         }
       }
       const eventByCanonical=new Map<string,any>();for(const e of events||[]){if(e.canonical&&!eventByCanonical.has(e.canonical))eventByCanonical.set(e.canonical,e);}
