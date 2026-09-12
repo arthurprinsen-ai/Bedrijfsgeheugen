@@ -188,3 +188,31 @@ export function normalizeDmPage(page, connectionsById = new Map()) {
   candidate.sendReady = isSendReady(candidate);
   return candidate;
 }
+
+
+export function scoreEngagementSignal(signal = {}) {
+  const weights = { like: 4, save: 8, click: 10, follow: 12, comment: 18, share: 24, repost: 28, dm: 40 };
+  const type = String(signal.type || '').toLowerCase().trim();
+  const count = Math.max(1, Number(signal.count) || 1);
+  const base = weights[type] || 0;
+  const repeatBoost = Math.min(20, Math.max(0, count - 1) * 4);
+  const fit = Math.min(1, Math.max(0, Number(signal.commercialFit) || 0));
+  const fitBoost = Math.round(fit * 10);
+  const connectionBoost = signal.isConnection ? 4 : 0;
+  return Math.min(100, Math.max(0, Math.round(base + repeatBoost + fitBoost + connectionBoost)));
+}
+
+export function recommendEngagementAction(signal = {}) {
+  const type = String(signal.type || '').toLowerCase().trim();
+  const count = Math.max(1, Number(signal.count) || 1);
+  const fit = Math.min(1, Math.max(0, Number(signal.commercialFit) || 0));
+  if (type === 'dm') return 'reply_dm';
+  if (type === 'comment') {
+    if (count >= 2 && Boolean(signal.isConnection) && fit >= 0.7) return 'review_dm';
+    return 'reply_public';
+  }
+  if (type === 'repost' || type === 'share' || type === 'follow') return 'review_profile';
+  if (type === 'like' && count >= 3) return 'review_profile';
+  if ((type === 'save' || type === 'click') && count >= 2) return 'review_profile';
+  return 'observe';
+}
