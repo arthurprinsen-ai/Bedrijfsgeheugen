@@ -36,6 +36,25 @@ test('normalizes a sent Buffer post into a social outcome envelope', () => {
   assert.equal(post.contentHash.length, 64);
 });
 
+test('preserves Buffer channel identity so personal and company LinkedIn do not collapse together', () => {
+  const personal = normalizeBufferPost({
+    id: 'buf-personal', text: 'P', dueAt: '2026-09-12T08:00:00Z', channelId: 'li-personal', metrics: [],
+  }, {
+    tenantId: 'canonical', service: 'linkedin', channelName: 'Arthur Prinsen', channelKind: 'linkedin_personal', observedAt: '2026-09-12T09:00:00Z',
+  });
+  const company = normalizeBufferPost({
+    id: 'buf-company', text: 'C', dueAt: '2026-09-12T08:00:00Z', channelId: 'li-company', metrics: [],
+  }, {
+    tenantId: 'canonical', service: 'linkedin', channelName: 'Bedrijfsgeheugen', channelKind: 'linkedin_company', observedAt: '2026-09-12T09:00:00Z',
+  });
+  assert.equal(personal.channelId, 'li-personal');
+  assert.equal(personal.channelName, 'Arthur Prinsen');
+  assert.equal(personal.channelKind, 'linkedin_personal');
+  assert.equal(company.channelId, 'li-company');
+  assert.equal(company.channelName, 'Bedrijfsgeheugen');
+  assert.equal(company.channelKind, 'linkedin_company');
+});
+
 test('builds paginated sent-post query with metrics', () => {
   const query = buildBufferPostsQuery({ organizationId: 'org-1', channelIds: ['ch-1'], after: 'cursor-1' });
   assert.match(query.query, /posts\s*\(/);
