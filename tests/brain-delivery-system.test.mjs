@@ -205,3 +205,16 @@ test('Revenue Content Intelligence artifacts are narrowly classified as backend 
   );
 });
 
+
+
+test('growth intelligence architecture evidence and tests are classified without weakening fail-closed delivery', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const docsPlan = createDeliveryPlan({ changedPaths:['docs/growth-revenue-os-architecture.md'], headSha:'abc123def4567890', policy });
+  assert.deepEqual(docsPlan.lanes, []);
+  assert.deepEqual(docsPlan.nonExecutableSharedPaths, ['docs/growth-revenue-os-architecture.md']);
+  for (const path of ['tests/growth-intelligence-engine.test.mjs','tests/growth-intelligence-daily.test.mjs']) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
+  }
+  assert.throws(() => createDeliveryPlan({ changedPaths:['docs/unowned-growth-runtime.md'], headSha:'abc123def4567890', policy }), /unclassified delivery path/);
+});

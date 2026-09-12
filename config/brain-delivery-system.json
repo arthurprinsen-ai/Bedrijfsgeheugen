@@ -19,11 +19,13 @@
     "tools/website-release-risk.mjs",
     "tests/development-doc-contract.test.mjs",
     "tests/website-release-risk.test.mjs",
-    ".github/workflows/"
+    ".github/workflows/",
+    "docs/growth-revenue-os-architecture.md"
   ],
   "nonExecutableSharedPaths": [
     "docs/changes/",
-    "docs/learning/"
+    "docs/learning/",
+    "docs/growth-revenue-os-architecture.md"
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
@@ -276,7 +278,8 @@
         "config/seo-search-sources.json",
         "config/seo-optimization-allowlist.json",
         "tests/revenue-content-",
-        "data/revenue-content-"
+        "data/revenue-content-",
+        "tests/growth-intelligence-"
       ],
       "requiredContracts": [
         "BG166",
