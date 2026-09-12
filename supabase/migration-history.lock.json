@@ -592,5 +592,12 @@
     "20260912152000",
     "20260912154500",
     "20260912181000"
-  ]
+  ],
+  "recovery_governance": {
+    "mode": "scope-broad-approved",
+    "reason": "restore 67 missing remote-applied migration versions and remove 11 timestamp-rewritten duplicates",
+    "pr": 1444,
+    "preserve_remote_history": true,
+    "remote_history_repair": false
+  }
 }
