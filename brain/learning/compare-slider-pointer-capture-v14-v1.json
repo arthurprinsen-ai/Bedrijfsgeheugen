@@ -1,0 +1,44 @@
+{
+  "id": "compare-slider-pointer-capture-v14-v1",
+  "date": "2026-09-09",
+  "scope": "website.compare-slider",
+  "status": "canonical",
+  "problem": "Op echte iPhone/Safari bereikten compare-sliders visueel niet betrouwbaar de fysieke linker- en rechterrand, ondanks numerieke 0/100-tests. Native input[type=range]-thumbgeometrie en browser-insets maakten viewport-emulatie onvoldoende bewijs.",
+  "root_cause": "De interactietransportlaag was gekoppeld aan een native range-thumb. De sliderstate kon 0 of 100 rapporteren terwijl de daadwerkelijke vinger/handle-interactie op iOS niet 1-op-1 aan de kaartgeometrie was gekoppeld.",
+  "canonical_fix": {
+    "transport": "Pointer Events met setPointerCapture/releasePointerCapture",
+    "mapping": "x = clamp(event.clientX - slider.getBoundingClientRect().left, 0, rect.width); value = x / rect.width * 100",
+    "single_source_of_truth": [
+      "--bg-compare-split",
+      "--split",
+      "before/after clip-path",
+      "gele divider left",
+      "handle left",
+      "aria-valuenow",
+      "data-bg-compare-endpoint"
+    ],
+    "touch_action": "pan-y",
+    "native_range": "alleen passieve fallback; pointer-events:none en tabindex=-1 zodra pointer-capture-v14 actief is"
+  },
+  "release_invariants": [
+    "mobiel en desktop moeten via echte pointerdrag exact split=0 en split=100 bereiken",
+    "pointer mag buiten de kaart bewegen terwijl capture actief blijft",
+    "divider moet op 0 binnen 1.5px van slider.left staan",
+    "divider moet op 100 binnen 1.5px van slider.right staan",
+    "ARIA min/max/now moet 0/100/endpoint volgen",
+    "geen left:clamp(...) of safe-pane pixelmarge op de revealpositie",
+    "geen native range-thumb als primaire gesture transportlaag"
+  ],
+  "anti_patterns": [
+    "alleen programmatic range.value=0/100 testen",
+    "alleen mobiele viewport-emulatie zonder echte pointerdrag testen",
+    "range-thumb compenseren met 24px/28px/andere magic offsets",
+    "meerdere runtimes tegelijk dezelfde sliderstate laten bezitten",
+    "productie live noemen zonder exacte commit/deploy readback"
+  ],
+  "sources": [
+    "https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture",
+    "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events",
+    "https://bugs.webkit.org/show_bug.cgi?id=146896"
+  ]
+}
