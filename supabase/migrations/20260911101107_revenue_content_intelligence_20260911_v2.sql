@@ -1,3 +1,16 @@
+-- Replay compatibility baseline: this table existed in production before it was captured in migrations.
+create table if not exists public.bg_post_kenmerken (
+  post_key text primary key,
+  hook_type text,
+  format text,
+  narrative_type text,
+  emotion text,
+  cta_type text,
+  topic text,
+  bron text default 'manual'::text,
+  bijgewerkt_op timestamptz not null default now()
+);
+
 alter table public.bg_post_kenmerken
   add column if not exists persona text,
   add column if not exists pain_trigger text,
