@@ -11390,6 +11390,18 @@ window.__BG_LOOPT__ = function(K, slug){
     });
   }
 
+  /* Zet de akkoordvelden van een offerterij om in het blokje dat het portaal
+     toont: naam, functie en datum. Staat er geen akkoord_op, dan is er niet
+     getekend en geeft dit null. */
+  window.__BG_GETEKEND__ = function (rij) {
+    if (!rij || !rij.akkoord_op) return null;
+    return {
+      naam: rij.akkoord_naam || '',
+      functie: rij.akkoord_functie || '',
+      datum: String(rij.akkoord_op).slice(0, 10)
+    };
+  };
+
   /* Haalt de offerte van de organisatie achter deze slug. RLS geeft niets
      terug als de ingelogde gebruiker daar niet bij hoort. */
   function haalOfferte(token, s) {
@@ -11397,11 +11409,14 @@ window.__BG_LOOPT__ = function(K, slug){
     return api('/rest/v1/organisaties?slug=eq.' + encodeURIComponent(s) + '&select=id,naam', { headers: kop })
       .then(function (orgs) {
         if (!orgs.length) return Promise.reject({ message: 'onbekend portaal' });
-        return api('/rest/v1/offertes?organisatie_id=eq.' + orgs[0].id + '&select=inhoud,nummer,status&order=aangemaakt_op.desc&limit=1', { headers: kop })
+        return api('/rest/v1/offertes?organisatie_id=eq.' + orgs[0].id + '&select=inhoud,nummer,status,akkoord_op,akkoord_naam,akkoord_functie&order=aangemaakt_op.desc&limit=1', { headers: kop })
           .then(function (off) {
             if (!off.length) return Promise.reject({ message: 'geen toegang' });
             var k = off[0].inhoud || {};
             k.naam = k.naam || orgs[0].naam;
+            /* De handtekening komt uit de database, niet uit localStorage: anders
+               ziet de klant op een tweede apparaat een offerte die nog open lijkt. */
+            k.getekend = window.__BG_GETEKEND__(off[0]) || k.getekend || null;
             return k;
           });
       });

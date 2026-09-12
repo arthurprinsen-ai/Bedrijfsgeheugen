@@ -105,3 +105,39 @@ test('beide tekenknoppen gebruiken de helper vóór de webhook', () => {
 test('de pagina bevat geen service-role-sleutel', () => {
   assert.doesNotMatch(html, /service_role|sb_secret_/);
 });
+
+/**
+ * Op 11 september bleek de weergave van een getekende offerte alleen uit
+ * localStorage te komen. Wie op zijn telefoon tekende en daarna op de laptop
+ * keek, zag de offerte nog openstaan. De handtekening staat sinds #1431 in
+ * offertes; die hoort dus mee te komen met de offerte zelf.
+ */
+const getekendHelper = html.match(/window\.__BG_GETEKEND__ = function[\s\S]*?\n  \};/);
+
+function leesGetekend(rij) {
+  assert.ok(getekendHelper, 'de helper __BG_GETEKEND__ staat in klantportaal.html');
+  const ctx = { window: {}, String };
+  vm.runInNewContext(getekendHelper[0], ctx);
+  return ctx.window.__BG_GETEKEND__(rij);
+}
+
+test('een getekende offerte komt uit de database als getekend binnen', () => {
+  const uit = leesGetekend({ akkoord_op: '2026-09-12T08:14:33.219+00:00', akkoord_naam: 'Tom Brusselaars', akkoord_functie: 'Directeur' });
+  assert.deepEqual(JSON.parse(JSON.stringify(uit)),
+    { naam: 'Tom Brusselaars', functie: 'Directeur', datum: '2026-09-12' });
+});
+
+test('een offerte zonder handtekening geeft niets', () => {
+  assert.equal(leesGetekend({ akkoord_op: null, akkoord_naam: null }), null);
+  assert.equal(leesGetekend(null), null);
+});
+
+test('beide inlogroutes halen de akkoordvelden op', () => {
+  const login = readFileSync(new URL('../klant-login.html', import.meta.url), 'utf8');
+  for (const [naam, bron] of [['klantportaal.html', html], ['klant-login.html', login]]) {
+    const selects = (bron.match(/offertes\?organisatie_id=eq[\s\S]{0,80}?select=[a-z_,]+/g) || [])
+      .filter(s => s.includes('inhoud'));
+    assert.equal(selects.length, 1, naam + ' leest de offerte-inhoud op precies één plek');
+    assert.match(selects[0], /akkoord_op,akkoord_naam,akkoord_functie/, naam);
+  }
+});

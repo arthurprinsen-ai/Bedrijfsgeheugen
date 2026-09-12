@@ -75,10 +75,17 @@ button:disabled{opacity:.55;cursor:wait}
     return api('/rest/v1/organisaties?slug=eq.'+encodeURIComponent(slug)+'&select=id,naam',{headers:kop})
       .then(function(orgs){
         if(!orgs||!orgs.length) return Promise.reject({message:'onbekend portaal'});
-        return api('/rest/v1/offertes?organisatie_id=eq.'+orgs[0].id+'&select=inhoud,nummer,status&order=aangemaakt_op.desc&limit=1',{headers:kop})
+        return api('/rest/v1/offertes?organisatie_id=eq.'+orgs[0].id+'&select=inhoud,nummer,status,akkoord_op,akkoord_naam,akkoord_functie&order=aangemaakt_op.desc&limit=1',{headers:kop})
           .then(function(off){
             if(!off||!off.length) return Promise.reject({message:'geen toegang'});
-            var k=off[0].inhoud||{}; k.naam=k.naam||orgs[0].naam; return k;
+            var k=off[0].inhoud||{}; k.naam=k.naam||orgs[0].naam;
+            /* De handtekening komt uit de database mee, zodat een getekende
+               offerte ook op een tweede apparaat als getekend binnenkomt. */
+            if(off[0].akkoord_op){
+              k.getekend={naam:off[0].akkoord_naam||'',functie:off[0].akkoord_functie||'',
+                          datum:String(off[0].akkoord_op).slice(0,10)};
+            }
+            return k;
           });
       });
   }
