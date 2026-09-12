@@ -10,9 +10,11 @@ on:
       - 'tests/revenue-learning-*.test.mjs'
       - 'tests/growth-intelligence-*.test.mjs'
       - 'tests/supabase-migration-history-integrity.test.mjs'
+      - 'tests/notion-synced-posts-migration-reproducibility.test.mjs'
       - 'supabase/migration-history.lock.json'
       - 'supabase/migrations/**'
       - 'tests/supabase-migration-history-integrity.test.mjs'
+      - 'tests/notion-synced-posts-migration-reproducibility.test.mjs'
       - 'supabase/migrations/**'
       - 'supabase/migration-history.lock.json'
       - 'platform/growth-intelligence-engine.mjs'
@@ -28,6 +30,7 @@ on:
       - 'tests/revenue-learning-*.test.mjs'
       - 'tests/growth-intelligence-*.test.mjs'
       - 'tests/supabase-migration-history-integrity.test.mjs'
+      - 'tests/notion-synced-posts-migration-reproducibility.test.mjs'
       - 'supabase/migration-history.lock.json'
       - 'supabase/migrations/**'
       - 'platform/growth-intelligence-engine.mjs'
@@ -53,3 +56,4 @@ jobs:
           tests/growth-intelligence-engine.test.mjs
           tests/growth-intelligence-daily.test.mjs
           tests/supabase-migration-history-integrity.test.mjs
+          tests/notion-synced-posts-migration-reproducibility.test.mjs
