@@ -5372,23 +5372,68 @@ function verzamelAdvies(){
   if(gem<b.dig-0.3) A.push({t:'Sluit de achterstand op je branche',dim:'tech',duur:6,waarde:0,
     waarom:'Jouw gemiddelde is '+gem.toFixed(1)+', je branche zit op '+b.dig.toFixed(1)+'.',bron:'Branche'});
 
-  // ---- volgorde volgt de eindconclusie ----
-  // De conclusie wijst drie dingen aan: de smalste schakel, de duurste post,
-  // en het onderdeel dat het vaakst door modellen en canvassen wordt genoemd.
-  // Adviezen die daarop aangrijpen komen bovenaan — zo lopen conclusie en advies gelijk.
-  const smalstA=DIM.slice().sort(function(x,y){return g(x.k)-g(y.k);})[0];
-  const duursteA=DIM.slice().sort(function(x,y){return kosten[y.k]-kosten[x.k];})[0];
-  const telling={}; A.forEach(function(a){ telling[a.dim]=(telling[a.dim]||0)+1; });
-  let vaakst=null, meest=0;
+  // ---- volgorde: eerst onderbouwing, dan geld ----
+  // De conclusie wijst drie dingen aan: de smalste schakel, de duurste post en
+  // het onderdeel dat het vaakst wordt genoemd. Adviezen die daarop aangrijpen
+  // komen bovenaan, zodat conclusie en advies gelijk lopen.
+  // Nieuw: een advies telt alleen mee als de bron waarop het rust is ingevuld.
+  // Een advies dat op niet-ingevulde gegevens rust is een aanname en hoort niet
+  // boven een advies dat wel is doorgerekend.
+  var scanGedaan = !!S.scanStempel;
+  var zelfGezet  = DIM.filter(function(d){ return S.niveaus[d.k]!==2; }).length;
+  var GEVULD = {
+    'Profiel': scanGedaan || zelfGezet >= 7,
+    'Cijfers': !!(+((S.cijfers||{}).cOmzet)),
+    'Mensen' : !!((S.mensen||{}).mVerzuim || (S.mensen||{}).mVerloop),
+    'Beleid' : Object.keys(S.beleid||{}).length > 0,
+    'Branche': !!S.branche && (scanGedaan || zelfGezet >= 7)
+  };
+  var WAARHEEN = {
+    'Profiel': ['de dertien onderdelen op je eigen stand','profiel'],
+    'Cijfers': ['je omzet en cijfers','cijfers'],
+    'Mensen' : ['verzuim en verloop','mensen'],
+    'Beleid' : ['de beleidschecklist','beleid'],
+    'Branche': ['je branche en de dertien onderdelen','branche']
+  };
+  var FINMODEL = /(EBITDA|solvabiliteit|DSCR|DuPont|Altman|break-even|werkkapitaal|multiple)/i;
+  function grondslag(bron){
+    if(GEVULD.hasOwnProperty(bron)) return bron;
+    if(FINMODEL.test(bron)) return 'Cijfers';   // financiele modellen rekenen met je cijfers
+    return 'Profiel';                            // strategiemodellen rekenen met je niveaus
+  }
+
+  var smalstA=DIM.slice().sort(function(x,y){return g(x.k)-g(y.k);})[0];
+  var duursteA=DIM.slice().sort(function(x,y){return kosten[y.k]-kosten[x.k];})[0];
+  var telling={}; A.forEach(function(a){ telling[a.dim]=(telling[a.dim]||0)+1; });
+  var vaakst=null, meest=0;
   Object.keys(telling).forEach(function(k){ if(telling[k]>meest){meest=telling[k];vaakst=k;} });
 
   return A.map(function(a){
-    let score=(a.waarde||6000)/Math.max(a.duur,1);
-    let volgt=[];
+    var gr = grondslag(a.bron);
+    var onderbouwd = !!GEVULD[gr];
+
+    // Geen vaste standaardwaarde meer. Was: (a.waarde||6000)/duur, waardoor een
+    // advies zonder bedrag hoger scoorde dan een doorgerekend advies. Nu krijgt
+    // een advies zonder eigen bedrag 15% van wat zijn onderdeel per jaar kost.
+    var basis = a.waarde > 0 ? a.waarde : (kosten[a.dim]||0) * 0.15;
+    var score = basis / Math.max(a.duur,1);
+
+    var volgt=[];
     if(a.dim===smalstA.k){ score*=2.2; volgt.push('smalste schakel'); }
     if(a.dim===duursteA.k){ score*=1.9; volgt.push('duurste post'); }
     if(a.dim===vaakst && vaakst!==smalstA.k && vaakst!==duursteA.k){ score*=1.4; volgt.push('vaakst aangewezen'); }
-    return Object.assign({},a,{score:score, volgt:volgt.join(' · ')});
+
+    // Niet onderbouwd? Dan altijd onder de adviezen die dat wel zijn.
+    if(!onderbouwd) score = score*0.0001 - 1;
+
+    return Object.assign({},a,{
+      score:score,
+      volgt: onderbouwd ? volgt.join(' \u00b7 ') : '',
+      onderbouwd:onderbouwd,
+      grondslag:gr,
+      scherper: WAARHEEN[gr] ? WAARHEEN[gr][0] : '',
+      scherperGa: WAARHEEN[gr] ? WAARHEEN[gr][1] : 'profiel'
+    });
   }).sort(function(x,y){return y.score-x.score;});
 }
 
@@ -5455,10 +5500,12 @@ function adviesRij(a,i,kort){
    +'<div style="font-size:.86rem;color:var(--grijs);margin-top:.15rem">'+a.waarom+'</div>'
    +'<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.5rem">'
    +(a.volgt?'<span style="font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:#FFF1EC;color:#C0392B;padding:.14rem .45rem;border-radius:3px">volgt uit de conclusie: '+a.volgt+'</span>':'')
+   +(a.onderbouwd===false?'<span style="font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:#FFF8E8;color:#8A6B00;padding:.14rem .45rem;border-radius:3px">nog een aanname</span>':'')
    +'<span style="font-size:.76rem;color:var(--grijs)">Komt uit '+h[0]+'</span>'
    +'<span style="font-size:.76rem;color:var(--grijs)">\u00b7 kost je ongeveer '+a.duur+' maand'+(a.duur>1?'en':'')+'</span>'
    +(a.waarde>1000?'<span style="font-size:.76rem;font-weight:600;color:var(--groen)">\u00b7 levert '+eur(a.waarde)+' per jaar op</span>':'')
    +'</div>'
+   +(a.onderbouwd===false?'<div style="margin-top:.45rem;padding:.4rem .6rem;background:#FFFCF0;border-left:3px solid var(--geel);font-size:.82rem;line-height:1.5">Dit advies rekent nog met standaardwaarden, niet met jouw stand. Wordt scherper zodra je dit invult: '+a.scherper+'. <button class="knop licht" style="padding:.1rem .45rem;font-size:.78rem;margin-left:.2rem" data-ga="'+a.scherperGa+'">Ga erheen</button></div>':'')
    +(kort?'':(function(){ const h=hoeTekst(a);
        return '<details style="margin-top:.55rem"><summary style="cursor:pointer;list-style:none;font-size:.82rem;font-weight:600;color:var(--blauw)">Wat houdt dit in? \u25be</summary>'
         +'<div style="font-size:.86rem;line-height:1.6;margin-top:.45rem">'+h.wat
@@ -5493,15 +5540,25 @@ function tekenAdvies(){
   if(vol){
     const uitData=A.filter(a=>!/^Model/.test(a.bron));
     const uitModel=A.filter(a=>/^Model/.test(a.bron));
-    vol.innerHTML='<div class="sub" style="margin-bottom:.3rem">Uit je cijfers en scores</div>'
-      +uitData.map((a,i)=>adviesRij(a,i,false)).join('')
-      +'<div class="sub" style="margin:1.1rem 0 .3rem">Uit de strategiemodellen</div>'
-      +uitModel.map((a,i)=>adviesRij(a,i,false)).join('')
-      +'<p class="sub" style="margin-top:.8rem">Hoe meer je invult bij Cijfers, Mensen en Beleid, hoe scherper deze lijst wordt. '
-      +A.length+' adviezen op basis van wat er nu staat.</p>';
+    const hardL=A.filter(a=>a.onderbouwd!==false), zachtL=A.filter(a=>a.onderbouwd===false);
+    vol.innerHTML=(hardL.length?'<div class="sub" style="margin-bottom:.3rem">Onderbouwd met wat je hebt ingevuld</div>'+hardL.map((a,i)=>adviesRij(a,i,false)).join(''):'')
+      +(zachtL.length?'<div class="sub" style="margin:1.1rem 0 .3rem">Nog aannames \u2014 deze worden scherper zodra je meer invult</div>'+zachtL.map((a,i)=>adviesRij(a,i,false)).join(''):'')
+      +'<p class="sub" style="margin-top:.8rem">'+hardL.length+' van de '+A.length+' adviezen zijn onderbouwd met wat je zelf hebt ingevuld. Hoe meer je invult, hoe meer er naar boven schuiven.</p>';
   }
   const kort=document.getElementById('adviesTop');
-  if(kort) kort.innerHTML=A.slice(0,3).map((a,i)=>adviesRij(a,i,true)).join('')
+  // Alleen adviezen waarvan de bron is ingevuld. Is er niets onderbouwd, dan
+  // zegt het portaal wat je invult in plaats van drie adviezen te doen die het
+  // zelf een algemeen verhaal noemt.
+  const hard=A.filter(a=>a.onderbouwd!==false);
+  if(kort && !hard.length){
+    const eerste=A[0];
+    kort.innerHTML='<div style="padding:.85rem 1rem;background:#FFFCF0;border-left:4px solid var(--geel);border-radius:0 4px 4px 0;line-height:1.6">'
+     +'<b>Nog geen advies dat we kunnen onderbouwen.</b><br>'
+     +'Alles wat we nu zouden zeggen, geldt voor elk bedrijf. Zet eerst '+(eerste?eerste.scherper:'de dertien onderdelen op je eigen stand')+', dan rekenen we met jouw cijfers.'
+     +'<div style="margin-top:.6rem"><button class="knop" data-ga="'+(eerste?eerste.scherperGa:'profiel')+'">Daar beginnen</button>'
+     +' <button class="knop licht" data-ga="advies">Toon de algemene adviezen toch</button></div></div>';
+  }
+  else if(kort) kort.innerHTML=hard.slice(0,3).map((a,i)=>adviesRij(a,i,true)).join('')
     +'<div style="margin-top:.6rem"><button class="knop licht" data-ga="advies">Bekijk alle adviezen →</button></div>';
   document.querySelectorAll('[data-advies]').forEach(btn=>{
     if(btn.dataset.aan)return; btn.dataset.aan='1';
