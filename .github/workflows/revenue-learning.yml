@@ -8,6 +8,9 @@ on:
       - 'supabase/functions/revenue-learning-store/**'
       - 'supabase/migrations/*revenue_learning*.sql'
       - 'tests/revenue-learning-*.test.mjs'
+      - 'tests/growth-intelligence-*.test.mjs'
+      - 'platform/growth-intelligence-engine.mjs'
+      - 'netlify/functions/growth-intelligence-daily.mjs'
       - '.github/workflows/revenue-learning.yml'
   push:
     branches: [main]
@@ -17,6 +20,9 @@ on:
       - 'supabase/functions/revenue-learning-store/**'
       - 'supabase/migrations/*revenue_learning*.sql'
       - 'tests/revenue-learning-*.test.mjs'
+      - 'tests/growth-intelligence-*.test.mjs'
+      - 'platform/growth-intelligence-engine.mjs'
+      - 'netlify/functions/growth-intelligence-daily.mjs'
       - '.github/workflows/revenue-learning.yml'
 
 permissions:
@@ -32,4 +38,4 @@ jobs:
           node-version: '22'
       - run: npm install --no-package-lock --ignore-scripts
       - name: Verify unified revenue learning contracts
-        run: node --test tests/revenue-learning-*.test.mjs
+        run: node --test tests/revenue-learning-*.test.mjs tests/growth-intelligence-*.test.mjs
