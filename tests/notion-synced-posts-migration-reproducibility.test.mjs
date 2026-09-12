@@ -6,8 +6,8 @@ const migrationsUrl = new URL('../supabase/migrations/', import.meta.url);
 
 test('historical Notion staging migration is safe when notion_synced_posts is absent', async () => {
   const sql = await readFile(new URL('../supabase/migrations/20260909181648_notion_post_feature_staging.sql', import.meta.url), 'utf8');
-  assert.match(sql, /to_regclass\s*\(\s*['"]public\.notion_synced_posts['"]\s*\)/i);
-  assert.match(sql, /if\s+.*notion_synced_posts.*(?:is\s+not\s+null|is\s+null)/is);
+  assert.match(sql, /create\s+table\s+if\s+not\s+exists\s+public\.notion_synced_posts/i);
+  assert.match(sql, /alter\s+table\s+public\.notion_synced_posts/i);
 });
 
 test('a later migration bootstraps notion_synced_posts reproducibly', async () => {
