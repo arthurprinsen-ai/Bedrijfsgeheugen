@@ -55,9 +55,11 @@ export function learningLifecycle({status='CANDIDATE',confidence=0,sampleSize=0,
   return n>0?'TESTING':'CANDIDATE';
 }
 
-export function offerLearning({amount=0,signed=false,weeks=null,components=[]}={}){
+export function offerLearning({amount=0,signed=false,weeks=null,components=[],recognizedRevenueEur=null}={}){
   const value=Math.max(0,Number(amount)||0);
-  return {fingerprint:`offer:${value>10000?'high':'standard'}:${Array.isArray(components)?components.length:0}`,outcome:signed?'won':'open',revenueEur:signed?value:0,amount:value,weeks:Number.isFinite(Number(weeks))?Number(weeks):null};
+  const recognized=recognizedRevenueEur===null||recognizedRevenueEur===undefined?0:Math.max(0,Number(recognizedRevenueEur)||0);
+  return {fingerprint:`offer:${value>10000?'high':'standard'}:${Array.isArray(components)?components.length:0}`,
+    outcome:signed?'accepted':'open',orderValueEur:signed?value:0,revenueEur:recognized,amount:value,weeks:Number.isFinite(Number(weeks))?Number(weeks):null};
 }
 
 export function buildPrediction({id,subject,channel='cross_channel',metric='qualified_leads',expectedLift=0,confidence=.5,horizonHours=24,evidenceRefs=[],falsifier='observed effect <= baseline'}={}){
