@@ -5,6 +5,7 @@ import { applyConversionCta } from './site-shell/cta-conversie.mjs';
 import { applySitewideAnalytics } from './site-shell/analytics-sitebreed.mjs';
 import { applyMoneyPrerender } from './site-shell/money-prerender.mjs';
 import { applyLettertypeTerugval } from './site-shell/lettertype-terugval.mjs';
+import { repairWijzigingenEncoding } from './site-shell/repair-wijzigingen-encoding.mjs';
 
 // Standalone URLs are real documents. They may inherit the historical homepage
 // one-page router through the canonical shell; that router can remove the active
@@ -27,6 +28,11 @@ await applyMoneyPrerender();
 // Terugvallettertype met dezelfde maten als Instrument Sans / Bricolage, zodat
 // de fontwissel de pagina niet laat verspringen — zie lettertype-terugval.mjs.
 await applyLettertypeTerugval();
+
+// Herstel uitsluitend de bekende UTF-8→Windows-1252 mojibake op de wijzigingen-
+// uitlegpagina. Dit draait vóór de finale contractlaag en bewaakt tegelijk dat de
+// 76px railhoogte voor de tablet-CLS-fix behouden blijft.
+await repairWijzigingenEncoding();
 
 // Dit is bewust de allerlaatste HTML-contractlaag. Geen enkele writer mag hierna
 // nog Kennis terug naar /blog/ kunnen zetten. Release-evidence wordt pas daarna
