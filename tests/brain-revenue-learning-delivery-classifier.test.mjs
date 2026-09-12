@@ -15,7 +15,7 @@ test('Revenue Learning runtime, store, migration and regression tests classify a
     'tests/revenue-learning-edge-store.test.mjs',
     'netlify/functions/revenue-learning-evaluate.mjs',
     'supabase/functions/revenue-learning-store/index.ts',
-    'supabase/migrations/20260909112000_revenue_learning_layer.sql'
+    'supabase/migrations/20260909092833_revenue_learning_layer.sql'
   ];
   for(const path of paths){
     const plan=createDeliveryPlan({changedPaths:[path],headSha:'ab12cd34ef567890',policy});

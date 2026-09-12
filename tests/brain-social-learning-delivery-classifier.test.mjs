@@ -12,7 +12,7 @@ test('Powerhouse social learning runtime and regression tests classify as backen
     'netlify/functions/social-learning-evaluate.mjs',
     'netlify/functions/social-learning-context.mjs',
     'supabase/functions/social-learning-store/index.ts',
-    'supabase/migrations/20260909095000_powerhouse_social_learning_v1.sql'
+    'supabase/migrations/20260909081703_powerhouse_social_learning_v1.sql'
   ];
 
   for (const path of backendPaths) {
