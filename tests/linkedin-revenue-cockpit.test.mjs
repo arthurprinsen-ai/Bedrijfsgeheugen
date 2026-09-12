@@ -6,7 +6,7 @@ const pagePath = new URL('../intern/linkedin-revenue/index.html', import.meta.ur
 const scriptPath = new URL('../intern/linkedin-revenue/cockpit.js', import.meta.url);
 const functionPath = new URL('../netlify/functions/linkedin-revenue-cockpit.mjs', import.meta.url);
 const runtimePath = new URL('../supabase/functions/powerhouse-runtime/index.ts', import.meta.url);
-const migrationPath = new URL('../supabase/migrations/20260909140000_powerhouse_revenue_command_center.sql', import.meta.url);
+const migrationPath = new URL('../supabase/migrations/20260909131127_powerhouse_revenue_command_center.sql', import.meta.url);
 
 test('Revenue Command Center is execution-first and bounded to 15 actions', () => {
   const html = fs.readFileSync(pagePath, 'utf8');

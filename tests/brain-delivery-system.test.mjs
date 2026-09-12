@@ -218,3 +218,10 @@ test('growth intelligence architecture evidence and tests are classified without
   }
   assert.throws(() => createDeliveryPlan({ changedPaths:['docs/unowned-growth-runtime.md'], headSha:'abc123def4567890', policy }), /unclassified delivery path/);
 });
+
+test('Notion synced-post migration replay regressions are backend delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const path = 'tests/notion-synced-posts-migration-reproducibility.test.mjs';
+  const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
+});

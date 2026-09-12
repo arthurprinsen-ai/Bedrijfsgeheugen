@@ -279,7 +279,8 @@
         "config/seo-optimization-allowlist.json",
         "tests/revenue-content-",
         "data/revenue-content-",
-        "tests/growth-intelligence-"
+        "tests/growth-intelligence-",
+        "tests/notion-synced-posts-"
       ],
       "requiredContracts": [
         "BG166",

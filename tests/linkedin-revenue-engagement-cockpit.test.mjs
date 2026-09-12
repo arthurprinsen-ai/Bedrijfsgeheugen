@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const runtimePath = new URL('../platform/linkedin-revenue-cockpit.mjs', import.meta.url);
-const migrationPath = new URL('../supabase/migrations/20260912181000_linkedin_engagement_to_cockpit.sql', import.meta.url);
+const migrationPath = new URL('../supabase/migrations/20260912160957_linkedin_engagement_to_cockpit_v1.sql', import.meta.url);
 
 async function loadRuntime() {
   return import(runtimePath.href);
