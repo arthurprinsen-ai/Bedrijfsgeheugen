@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 
-const path=new URL('../supabase/migrations/20260909112000_revenue_learning_layer.sql',import.meta.url);
+const path=new URL('../supabase/migrations/20260909092833_revenue_learning_layer.sql',import.meta.url);
 
 test('schema creates all unified revenue learning tables with RLS',async()=>{
   const sql=await readFile(path,'utf8');
