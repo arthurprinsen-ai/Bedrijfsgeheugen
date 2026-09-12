@@ -38,4 +38,8 @@ jobs:
           node-version: '22'
       - run: npm install --no-package-lock --ignore-scripts
       - name: Verify unified revenue learning contracts
-        run: node --test tests/revenue-learning-*.test.mjs tests/growth-intelligence-*.test.mjs
+        run: >-
+          node --test
+          tests/revenue-learning-*.test.mjs
+          tests/growth-intelligence-engine.test.mjs
+          tests/growth-intelligence-daily.test.mjs
