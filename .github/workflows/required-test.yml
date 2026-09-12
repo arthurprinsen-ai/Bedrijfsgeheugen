@@ -13,7 +13,8 @@ permissions:
 
 concurrency:
   group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
-  cancel-in-progress: true
+  # Required evidence runs must finish; later attempts queue instead of destroying proof.
+  cancel-in-progress: false
 
 jobs:
   preflight:
