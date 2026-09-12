@@ -15,24 +15,52 @@ function tokens(value) {
   return new Set(String(value || '').toLowerCase().replace(/^blog:/, '').split(/[^a-z0-9]+/).filter((x) => x.length >= 3));
 }
 
+function overlapSimilarity(aValue, bValue) {
+  const a = tokens(aValue);
+  const b = tokens(bValue);
+  if (!a.size || !b.size) return 0;
+  let overlap = 0;
+  for (const token of a) if (b.has(token)) overlap += 1;
+  return overlap / Math.max(1, Math.min(a.size, b.size));
+}
+
 function topicSimilarity(candidate, learned) {
-  const a=tokens([candidate.slug,candidate.keyword,candidate.title].filter(Boolean).join(' '));
-  const b=tokens(learned.content_id);
-  if(!a.size||!b.size)return 0;
-  let overlap=0;for(const t of a)if(b.has(t))overlap+=1;
-  return overlap/Math.max(a.size,b.size);
+  return overlapSimilarity([candidate.slug, candidate.keyword, candidate.title].filter(Boolean).join(' '), learned.content_id);
+}
+
+function revenueTransfer(candidate, learning) {
+  const candidateText = [candidate.content_id, candidate.slug, candidate.keyword, candidate.title, candidate.cluster, candidate.paginatype].filter(Boolean).join(' ');
+  let bonus = 0;
+  const ids = [];
+  for (const learned of learning?.revenue_learnings || []) {
+    if (String(learned?.status || '').toUpperCase() !== 'PROVEN') continue;
+    const evidenceText = [learned.fingerprint, learned.claim, learned.componentScope].filter(Boolean).join(' ');
+    const similarity = overlapSimilarity(candidateText, evidenceText);
+    if (similarity <= 0) continue;
+    const confidence = Math.max(0, Math.min(1, Number(learned.confidence || 0)));
+    const effect = Number(learned.effectSize || 0);
+    if (!Number.isFinite(effect) || effect === 0 || confidence === 0) continue;
+    bonus += similarity * confidence * effect;
+    ids.push(String(learned.learningId));
+  }
+  return { bonus, ids: [...new Set(ids)].sort() };
 }
 
 function transferredScore(candidate, learning) {
-  const exact=Number(learning?.candidate_scores?.[candidate.content_id]);
-  if(Number.isFinite(exact))return exact;
-  let best=0;
-  for(const learned of learning?.exploit_candidates||[]){
-    const similarity=topicSimilarity(candidate,learned);
-    if(similarity<=0)continue;
-    best=Math.max(best,similarity*Number(learned.score||0));
+  const exact = Number(learning?.candidate_scores?.[candidate.content_id]);
+  let base;
+  if (Number.isFinite(exact)) base = exact;
+  else {
+    let best = 0;
+    for (const learned of learning?.exploit_candidates || []) {
+      const similarity = topicSimilarity(candidate, learned);
+      if (similarity <= 0) continue;
+      best = Math.max(best, similarity * Number(learned.score || 0));
+    }
+    base = best + Number(candidate.score || 0);
   }
-  return best+Number(candidate.score||0);
+  const revenue = revenueTransfer(candidate, learning);
+  return { score: base + revenue.bonus, revenueLearningIds: revenue.ids };
 }
 
 export function buildLearningContext({ performance, now = new Date(), policy = {} }) {
@@ -79,10 +107,12 @@ export function explorationForDate(date, policy = {}) {
 
 export function rankCandidates({ candidates = [], learning = {}, policy = {}, date }) {
   const explore = explorationForDate(date, policy);
-  return candidates.map((c) => ({ ...c, score: transferredScore(c,learning) }))
-    .sort((a, b) => {
-      if (explore && Boolean(a.exploration) !== Boolean(b.exploration)) return a.exploration ? -1 : 1;
-      if (!explore && Boolean(a.exploration) !== Boolean(b.exploration)) return a.exploration ? 1 : -1;
-      return (b.score || 0) - (a.score || 0) || String(a.content_id).localeCompare(String(b.content_id));
-    });
+  return candidates.map((c) => {
+    const transferred = transferredScore(c, learning);
+    return { ...c, score: transferred.score, applied_revenue_learning_ids: transferred.revenueLearningIds };
+  }).sort((a, b) => {
+    if (explore && Boolean(a.exploration) !== Boolean(b.exploration)) return a.exploration ? -1 : 1;
+    if (!explore && Boolean(a.exploration) !== Boolean(b.exploration)) return a.exploration ? 1 : -1;
+    return (b.score || 0) - (a.score || 0) || String(a.content_id).localeCompare(String(b.content_id));
+  });
 }
