@@ -30,3 +30,5 @@ jobs:
           tests/universal-failure-learning.test.mjs
           tests/make-cost-governor-policy.test.mjs
           tests/make-cost-governance-contract.test.mjs
+          tests/growth-intelligence-engine.test.mjs
+          tests/growth-intelligence-daily.test.mjs
