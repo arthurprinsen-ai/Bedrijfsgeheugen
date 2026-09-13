@@ -1,0 +1,33 @@
+{
+  "contractId": "channel-identity-hard-gate-v2",
+  "rootContract": "growth-revenue-os-1m-2027-v1",
+  "failClosed": true,
+  "channels": {
+    "linkedin_personal": {
+      "channelId": "6a70381699afb44349f0fb35",
+      "service": "linkedin",
+      "type": "profile",
+      "identity": "arthur",
+      "requiresPersonalAnchor": true,
+      "blocksCorporateVoiceWithoutPersonalAnchor": true,
+      "requiresFirstPersonTruthClassification": true
+    },
+    "linkedin_company": {
+      "channelId": "6a70381699afb44349f0fb36",
+      "service": "linkedin",
+      "type": "page",
+      "identity": "bedrijfsgeheugen",
+      "requiresPersonalAnchor": false
+    },
+    "instagram_company": {
+      "channelId": "6a70384d99afb44349f0fba9",
+      "service": "instagram",
+      "type": "business",
+      "identity": "mira",
+      "requiresMiraGate": true
+    }
+  },
+  "requiredLineage": ["contentId", "calendarDate", "predictionId", "sourceDecisionId"],
+  "personalTruthClasses": ["author_observation", "author_opinion", "author_experience"],
+  "experienceRequiresEvidenceRefs": true
+}
