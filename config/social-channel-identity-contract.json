@@ -9,8 +9,9 @@
       "type": "profile",
       "identity": "arthur",
       "requiresPersonalAnchor": true,
-      "blocksCorporateVoiceWithoutPersonalAnchor": true,
-      "requiresFirstPersonTruthClassification": true
+      "blocksCorporateVoice": true,
+      "requiresFirstPersonTruthClassification": true,
+      "requiresCompanyPageInterchangeableFalse": true
     },
     "linkedin_company": {
       "channelId": "6a70381699afb44349f0fb36",
@@ -27,7 +28,17 @@
       "requiresMiraGate": true
     }
   },
-  "requiredLineage": ["contentId", "calendarDate", "predictionId", "sourceDecisionId"],
-  "personalTruthClasses": ["author_observation", "author_opinion", "author_experience"],
-  "experienceRequiresEvidenceRefs": true
+  "requiredLineage": [
+    "contentId",
+    "calendarDate",
+    "predictionId",
+    "sourceDecisionId"
+  ],
+  "personalTruthClasses": [
+    "author_observation",
+    "author_opinion",
+    "author_experience"
+  ],
+  "personalTruthRequiresEvidenceRefs": true,
+  "personalTruthRequiresVerifiedFlag": true
 }

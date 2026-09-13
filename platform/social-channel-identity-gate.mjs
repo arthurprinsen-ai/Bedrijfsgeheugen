@@ -9,7 +9,7 @@ export const CHANNEL_IDENTITY_CONTRACT_ID = contract.contractId;
 export const CHANNELS = Object.freeze(contract.channels);
 
 const PERSONAL_ANCHOR = /\b(ik|mijn|mij|voor mij|ik zie|ik merk|ik vind|ik denk|in mijn|bij mij)\b/i;
-const CORPORATE_VOICE = /\b(wij helpen|wij bieden|wij zorgen|onze klanten|onze aanpak|onze dienstverlening|onze expertise|neem contact op|vrijblijvend gesprek)\b/i;
+const CORPORATE_VOICE = /\b(wij helpen|wij bieden|wij zorgen|onze klanten|onze aanpak|onze dienstverlening|onze expertise|neem contact op|vrijblijvend gesprek|onze oplossing|ons aanbod)\b/i;
 
 function hasValue(value) {
   return typeof value === 'string' && value.trim().length > 0;
@@ -43,14 +43,21 @@ export function authorizeSocialPublication(input = {}) {
     const hasPersonalAnchor = PERSONAL_ANCHOR.test(text);
     const corporateVoice = CORPORATE_VOICE.test(text);
     const truthClass = input.personalTruth?.class;
+    const refs = evidenceRefs(input.personalTruth);
 
     if (!hasPersonalAnchor) reasons.push('PERSONAL_ANCHOR_REQUIRED');
-    if (corporateVoice && !hasPersonalAnchor) reasons.push('CORPORATE_VOICE_ON_PERSONAL');
+    if (corporateVoice) reasons.push('CORPORATE_VOICE_ON_PERSONAL');
     if (!contract.personalTruthClasses.includes(truthClass)) {
       reasons.push('FIRST_PERSON_TRUTH_CLASS_REQUIRED');
     }
-    if (truthClass === 'author_experience' && contract.experienceRequiresEvidenceRefs && evidenceRefs(input.personalTruth).length === 0) {
+    if (contract.personalTruthRequiresEvidenceRefs && refs.length === 0) {
       reasons.push('FIRST_PERSON_EVIDENCE_REQUIRED');
+    }
+    if (contract.personalTruthRequiresVerifiedFlag && input.personalTruth?.verified !== true) {
+      reasons.push('FIRST_PERSON_TRUTH_UNVERIFIED');
+    }
+    if (input.companyPageInterchangeable !== false) {
+      reasons.push('COMPANY_PAGE_INTERCHANGEABLE_NOT_REJECTED');
     }
   }
 
