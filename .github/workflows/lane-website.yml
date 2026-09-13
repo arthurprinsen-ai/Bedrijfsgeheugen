@@ -26,7 +26,6 @@ jobs:
     outputs:
       risk_lane: ${{ steps.risk.outputs.risk_lane }}
       routes: ${{ steps.risk.outputs.routes }}
-      website_relevant: ${{ steps.risk.outputs.website_relevant }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -53,7 +52,6 @@ jobs:
           if(routes.length===0) routes=result.lane==='high-risk'?['/','/ai-act','/benchmark']:['/'];
           await appendFile(process.env.GITHUB_OUTPUT,`risk_lane=${result.lane}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`website_relevant=${result.website_relevant ? 'true' : 'false'}\n`);
           console.log(JSON.stringify({...result,affected_routes:routes},null,2));
           NODE
 
@@ -122,7 +120,6 @@ jobs:
 
   preview-ready:
     needs: [classify, syntax-preflight]
-    if: needs.classify.outputs.website_relevant == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Wait for exact deploy preview
