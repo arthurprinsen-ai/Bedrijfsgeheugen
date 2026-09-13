@@ -14,9 +14,38 @@
   ],
   "normalRootHtml": true,
   "pageLocalAssets": {
-    "assets/pages/ai-act/": ["/ai-act"]
+    "assets/pages/ai-act/": [
+      "/ai-act"
+    ]
   },
-  "fastFixRequiredTestSets": ["baseline", "preview", "targeted-browser", "public-visibility"],
-  "normalRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo"],
-  "highRiskRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo", "shared-contracts", "full-regression"]
+  "fastFixRequiredTestSets": [
+    "baseline",
+    "preview",
+    "targeted-browser",
+    "public-visibility"
+  ],
+  "normalRequiredTestSets": [
+    "baseline",
+    "static",
+    "preview",
+    "targeted-browser",
+    "public-visibility",
+    "page-seo"
+  ],
+  "highRiskRequiredTestSets": [
+    "baseline",
+    "static",
+    "preview",
+    "targeted-browser",
+    "public-visibility",
+    "page-seo",
+    "shared-contracts",
+    "full-regression"
+  ],
+  "nonWebsitePaths": [
+    ".github/workflows/buffer-social-learning.yml",
+    "config/social-channel-identity-contract.json",
+    "platform/social-channel-identity-gate.mjs",
+    "tests/social-learning-buffer-channel-identity-gate.test.mjs"
+  ]
 }

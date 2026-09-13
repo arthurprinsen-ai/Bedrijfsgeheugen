@@ -29,7 +29,14 @@ export function classifyWebsiteRelease({ changedPaths = [], riskConfig = {}, acc
   let lane = 'fast-fix';
   let escalated = false;
 
+  const nonWebsiteRules = riskConfig.nonWebsitePaths || [];
+  const websiteRelevant = paths.some(path => !nonWebsiteRules.some(rule => matchesRule(path, rule)));
+
   for (const path of paths) {
+    if (nonWebsiteRules.some(rule => matchesRule(path, rule))) {
+      reasons.push(`non-website:${path}`);
+      continue;
+    }
     if ((riskConfig.highRiskPaths || []).some(rule => matchesRule(path, rule))) {
       lane = 'high-risk';
       escalated = true;
@@ -77,6 +84,7 @@ export function classifyWebsiteRelease({ changedPaths = [], riskConfig = {}, acc
     affected_routes: Object.freeze(uniqueSorted([...routes])),
     risk_reasons: Object.freeze(uniqueSorted(reasons)),
     required_test_sets: Object.freeze([...(required || [])]),
+    website_relevant: websiteRelevant,
     escalated,
   });
 }

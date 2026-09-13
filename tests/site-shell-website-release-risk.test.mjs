@@ -30,3 +30,33 @@ test('unknown path cannot become fast-fix', () => {
   assert.notEqual(result.lane, 'fast-fix');
   assert.equal(result.escalated, true);
 });
+
+
+test('social channel identity files are explicitly non-website', () => {
+  const result = classifyWebsiteRelease({
+    changedPaths: [
+      '.github/workflows/buffer-social-learning.yml',
+      'config/social-channel-identity-contract.json',
+      'platform/social-channel-identity-gate.mjs',
+      'tests/social-learning-buffer-channel-identity-gate.test.mjs',
+    ],
+    riskConfig,
+    acceptedBaseline,
+  });
+  assert.equal(result.website_relevant, false);
+  assert.equal(result.escalated, false);
+  assert.equal(result.lane, 'fast-fix');
+  assert.deepEqual(result.affected_routes, []);
+  assert.ok(result.risk_reasons.every(reason => reason.startsWith('non-website:')));
+});
+
+test('mixed social and website changes remain website-relevant', () => {
+  const result = classifyWebsiteRelease({
+    changedPaths: ['config/social-channel-identity-contract.json', 'index.html'],
+    riskConfig,
+    acceptedBaseline,
+  });
+  assert.equal(result.website_relevant, true);
+  assert.equal(result.lane, 'normal');
+  assert.ok(result.affected_routes.includes('/'));
+});

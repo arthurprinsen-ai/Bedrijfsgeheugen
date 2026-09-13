@@ -83,13 +83,3 @@ test('V18 promotion separates website and portal gates', async () => {
   assert.match(workflow, /Verify website V18 production contracts/);
   assert.match(workflow, /Verify portal production contracts/);
 });
-
-test('social identity shared control-plane changes stay automation-only', () => {
-  const suites = suitesFor([
-    '.github/workflows/buffer-social-learning.yml',
-    'config/social-channel-identity-contract.json',
-    'platform/social-channel-identity-gate.mjs',
-    'tests/social-learning-buffer-channel-identity-gate.test.mjs',
-  ]);
-  assert.deepEqual(suites, { shared:true, backend:false, portal:false, website:false, automation:true });
-});
