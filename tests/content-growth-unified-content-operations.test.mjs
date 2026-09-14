@@ -4,6 +4,8 @@ import fs from 'node:fs';
 
 const migrationPath = 'supabase/migrations/20260914093000_unified_content_publication_operations.sql';
 const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
+const singleTenantMigrationPath = 'supabase/migrations/20260914125000_single_content_operations_tenant.sql';
+const singleTenantMigration = fs.existsSync(singleTenantMigrationPath) ? fs.readFileSync(singleTenantMigrationPath, 'utf8') : '';
 const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
 const dailyApi = fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts', 'utf8');
 const todayUi = fs.readFileSync('intern/vandaag/index.html', 'utf8');
@@ -55,6 +57,18 @@ test('existing Today cockpit exposes the same publication truth with the existin
   assert.match(todayUi, /Instagram/);
   assert.match(todayUi, /Blog/);
   assert.match(todayUi, /https:\/\/www\.bedrijfsgeheugen\.nl\/intern\/meetoverzicht\//);
+});
+
+test('content operations keeps one canonical execution tenant', () => {
+  assert.match(singleTenantMigration, /delete from public\.content_publication_obligations where tenant_id = 'bedrijfsgeheugen'/i);
+  assert.match(singleTenantMigration, /new\.tenant_id\s*:=\s*'canonical'/i);
+  assert.match(singleTenantMigration, /e\.tenant_id\s*=\s*'canonical'/i);
+  assert.match(singleTenantMigration, /CONTENT_OPERATIONS_ALIAS_DUPLICATION/);
+  assert.match(singleTenantMigration, /p_tenant_id in \('canonical','bedrijfsgeheugen'\)/i);
+  assert.match(operationsApi, /tenant.*'canonical'/);
+  assert.match(dailyApi, /\.eq\('tenant_id',\s*'canonical'\)/);
+  assert.doesNotMatch(operationsApi, /\|\|\s*'bedrijfsgeheugen'/);
+  assert.doesNotMatch(dailyApi, /\.eq\('tenant_id',\s*'bedrijfsgeheugen'\)/);
 });
 
 test('approved blog publisher schedules daily and resolves an exact due slug before render', () => {
