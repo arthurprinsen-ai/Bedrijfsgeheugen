@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 import { deriveRequiredTestSuites } from '../tools/delivery-required-test-suites.mjs';
@@ -52,6 +53,20 @@ test('approved blog writer emits FAQPage schema and two accessible functional fi
   assert.match(writer, /<figure/);
   assert.match(writer, /role="img"/);
   assert.match(writer, /<figcaption>/);
+});
+
+test('approved blog writer strips remote font links while preserving unrelated links', () => {
+  const probe = [
+    "import sys",
+    "sys.path.insert(0, 'scripts')",
+    "import publish_approved_blog_v2 as writer",
+    "sample = '''<head><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\"><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Inter\"><link rel=\"stylesheet\" href=\"/assets/site.css\"></head>'''",
+    "print(writer.normalize_performance(sample))",
+  ].join('\n');
+  const output = execFileSync('python3', ['-c', probe], { encoding:'utf8' });
+  assert.doesNotMatch(output, /fonts\.googleapis\.com/);
+  assert.doesNotMatch(output, /fonts\.gstatic\.com/);
+  assert.match(output, /href=\"\/assets\/site\.css\"/);
 });
 
 test('approved blog workflow references the canonical writer', async () => {

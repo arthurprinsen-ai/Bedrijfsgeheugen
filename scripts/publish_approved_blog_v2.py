@@ -201,6 +201,17 @@ def enrich_article(html_doc, q):
     return html_doc
 
 
+def normalize_performance(html_doc):
+    remote_font_hosts = ('fonts.googleapis.com', 'fonts.gstatic.com')
+
+    def strip_remote_font_link(match):
+        tag = match.group(0)
+        lowered = tag.lower()
+        return '' if any(host in lowered for host in remote_font_hosts) else tag
+
+    return re.sub(r'<link\b[^>]*>', strip_remote_font_link, html_doc, flags=re.I)
+
+
 def instrument_content_id(html_doc, slug):
     content_id = f'blog:{slug}'
     if re.search(r'data-content-id=["\'][^"\']+["\']', html_doc):
@@ -228,6 +239,7 @@ def render(force=''):
     target.parent.mkdir(parents=True, exist_ok=True)
     html_doc = base.article(base.TEMPLATE.read_text(encoding='utf-8'), q)
     html_doc = enrich_article(html_doc, q)
+    html_doc = normalize_performance(html_doc)
     target.write_text(instrument_content_id(html_doc, q['slug']), encoding='utf-8')
     base.updates(q)
     print(json.dumps({'status': 'RENDERED', 'slug': q['slug'], 'content_id': q['source'], 'growth_content_id': f"blog:{q['slug']}", 'command_id': q['cmd'], 'source_hash': q['source_hash'], 'queue_page': q['page'], 'dispatch_attempt': q['attempt'] + 1}, ensure_ascii=False))
