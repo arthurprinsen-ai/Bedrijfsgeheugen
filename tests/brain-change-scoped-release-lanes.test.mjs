@@ -35,6 +35,13 @@ test('approved central blog workflow is automation-only and does not require a w
   assert.deepEqual(suitesFor(['.github/workflows/approved-central-blog.yml']), { shared:true, backend:false, portal:false, website:false, automation:true });
 });
 
+test('scheduled approved-blog workflow parses the writer JSON array instead of treating it as JSONL', async () => {
+  const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
+  assert.match(workflow, /candidates\s*=\s*json\.loads\(path\.read_text\(encoding='utf-8'\)\)/);
+  assert.match(workflow, /for\s+item\s+in\s+candidates:/);
+  assert.doesNotMatch(workflow, /raw\.startswith\('\{'\)/);
+});
+
 test('shared executable control-plane work fans out to all required suites', () => {
   assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
 });
