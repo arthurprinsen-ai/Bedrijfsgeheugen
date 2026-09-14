@@ -1,0 +1,22 @@
+name: Approved Blog Release Contract Tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publish_approved_blog.py'
+      - 'scripts/publish_approved_blog_v2.py'
+      - 'tests/test_approved_blog_release_contract.py'
+      - '.github/workflows/approved-blog-release-contract-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Verify approved blog source and enrichment contract
+        run: python3 -m unittest tests/test_approved_blog_release_contract.py -v
