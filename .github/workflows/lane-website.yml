@@ -43,6 +43,7 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
+          import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { classifyWebsiteRelease } from './tools/site-shell/website-release-risk.mjs';
           const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.CHANGE_HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const riskConfig=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
@@ -204,10 +205,10 @@ jobs:
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
           node tools/prijzen-uit-de-homepage.mjs
-          nohup python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/bg-local-site.log 2>&1 &
+          nohup python3 tools/ci/serve-clean-urls.py --port 4173 --bind 127.0.0.1 >/tmp/bg-local-site.log 2>&1 &
           for attempt in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
-              echo 'Exact local candidate is reachable.'
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/ai-act >/dev/null && curl -fsS http://127.0.0.1:4173/benchmark >/dev/null; then
+              echo 'Exact local candidate clean URLs are reachable.'
               exit 0
             fi
             sleep 1
