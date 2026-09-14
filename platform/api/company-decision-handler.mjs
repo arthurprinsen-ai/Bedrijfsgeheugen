@@ -54,8 +54,26 @@ function isCommercial(decision,body){
   return body?.commercial===true||Number(decision?.expectedValue||0)>0;
 }
 
+function validProbability(value){
+  return value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
+}
+
 function openPrediction(projection,decisionId){
   return (projection?.revenuePredictions||[]).find(item=>item?.decisionId===decisionId&&item?.status==='OPEN')||null;
+}
+
+function predictionRecordFromView(view){
+  if(!view?.prediction?.decision_id) throw new TypeError('originating prediction view is invalid');
+  return {
+    kind:'learning',
+    tenantId:view.tenantId,
+    id:view.id,
+    subjectId:view.subjectId,
+    decisionId:view.decisionId,
+    owner:view.owner,
+    evidenceIds:list(view.evidenceIds),
+    payload:{learningType:'revenue_prediction',prediction:view.prediction},
+  };
 }
 
 export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().toISOString()}={}){
@@ -86,7 +104,7 @@ export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().t
     const commercial=isCommercial(decision,body);
     const predictionView=openPrediction(projection,decisionId);
     if(command==='START'&&commercial&&predictionView) return reply({error:'OPEN_PREDICTION_ALREADY_EXISTS',decisionId},409);
-    if(command==='START'&&commercial&&!Number.isFinite(Number(body.meetingProbability))) return reply({error:'MEETING_PROBABILITY_REQUIRED',decisionId},400);
+    if(command==='START'&&commercial&&!validProbability(body.meetingProbability)) return reply({error:'MEETING_PROBABILITY_REQUIRED',decisionId},400);
     if(command==='RECORD_OUTCOME'&&commercial&&!predictionView) return reply({error:'ORIGINATING_PREDICTION_REQUIRED',decisionId},409);
 
     const timestamp=now();
@@ -124,9 +142,9 @@ export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().t
           payload:{command,realised:body.verified===true,realisedValue,valueUnit:currency,result:body.result??null}
         };
         results.push(await store.append({...valueRecord,idempotencyKey:`${idempotencyKey}:value`},{principal}));
-        if(predictionView?.canonicalRecord){
+        if(predictionView){
           const settlement=settleCanonicalRevenueOutcome({
-            predictionRecord:predictionView.canonicalRecord,
+            predictionRecord:predictionRecordFromView(predictionView),
             outcome:{
               decisionId,
               meeting:body.meeting,
