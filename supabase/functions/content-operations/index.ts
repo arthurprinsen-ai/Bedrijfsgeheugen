@@ -55,8 +55,7 @@ Deno.serve(async (req: Request) => {
     if (to < from) throw new Error('INVALID_DATE_RANGE');
 
     const channel = (u.searchParams.get('channel') || '').trim();
-    const tenant = (u.searchParams.get('tenant') || 'bedrijfsgeheugen').trim();
-    if (tenant !== 'bedrijfsgeheugen') throw new Error('INVALID_TENANT');
+    const tenant = (u.searchParams.get('tenant') || 'canonical').trim();
     const filters = [
       `tenant_id=eq.${encodeURIComponent(tenant)}`,
       `publication_date=gte.${from}`,
