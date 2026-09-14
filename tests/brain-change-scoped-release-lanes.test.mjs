@@ -59,6 +59,11 @@ test('approved blog workflow reruns when canonical writer changes', async () => 
   assert.match(workflow, /scripts\/publish_approved_blog_v2\.py/);
 });
 
+test('canonical approved blog writer is a non-artifact generator change until it emits a blog candidate', async () => {
+  const risk = JSON.parse(await readFile('site/website-release-risk.json', 'utf8'));
+  assert.ok(risk.nonArtifactPaths.includes('scripts/publish_approved_blog_v2.py'));
+});
+
 test('shared executable control-plane work fans out to all required suites', () => {
   assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
 });
