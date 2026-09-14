@@ -1,0 +1,38 @@
+name: Unified Content Operations
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/20260914093000_unified_content_publication_operations.sql'
+      - 'supabase/migrations/20260914094500_content_publication_reconciliation.sql'
+      - 'supabase/functions/content-operations/**'
+      - 'scripts/publish_approved_blog_v2.py'
+      - '.github/workflows/approved-central-blog.yml'
+      - 'tests/unified-content-operations.test.mjs'
+      - '.github/workflows/unified-content-operations.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20260914093000_unified_content_publication_operations.sql'
+      - 'supabase/migrations/20260914094500_content_publication_reconciliation.sql'
+      - 'supabase/functions/content-operations/**'
+      - 'scripts/publish_approved_blog_v2.py'
+      - '.github/workflows/approved-central-blog.yml'
+      - 'tests/unified-content-operations.test.mjs'
+      - '.github/workflows/unified-content-operations.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Unified calendar and publication contract
+        run: node --test tests/unified-content-operations.test.mjs
+      - name: Python publisher syntax
+        run: python3 -m py_compile scripts/publish_approved_blog_v2.py
