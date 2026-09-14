@@ -4,24 +4,28 @@
 alter table public.social_experiments
   add column if not exists target_channels jsonb not null default '[]'::jsonb;
 
--- Canonical active channel set. Keep existing channels and add Instagram without freezing copy.
+-- Canonical active channel set. Keep existing channels, add all active channels and deduplicate before projection.
 update public.social_experiments
 set target_channels = (
-      select jsonb_agg(ch order by ord)
+      select jsonb_agg(channel order by ord)
       from (
-        select distinct ch,
-          case ch
-            when 'linkedin_personal' then 1
-            when 'linkedin_company' then 2
-            when 'instagram' then 3
-            when 'blog' then 4
-            else 50
-          end as ord
-        from jsonb_array_elements_text(coalesce(target_channels, '[]'::jsonb)) as x(ch)
-        union all select 'linkedin_personal', 1
-        union all select 'linkedin_company', 2
-        union all select 'instagram', 3
-        union all select 'blog', 4
+        select channel, min(ord) as ord
+        from (
+          select x.channel,
+            case x.channel
+              when 'linkedin_personal' then 1
+              when 'linkedin_company' then 2
+              when 'instagram' then 3
+              when 'blog' then 4
+              else 50
+            end as ord
+          from jsonb_array_elements_text(coalesce(target_channels, '[]'::jsonb)) as x(channel)
+          union all select 'linkedin_personal', 1
+          union all select 'linkedin_company', 2
+          union all select 'instagram', 3
+          union all select 'blog', 4
+        ) raw_channels
+        group by channel
       ) normalized
     ),
     updated_at = now()
@@ -114,7 +118,10 @@ begin
     end,
     now()
   from public.social_experiments e
-  cross join lateral jsonb_array_elements_text(coalesce(e.target_channels,'[]'::jsonb)) as ch(channel)
+  cross join lateral (
+    select distinct value as channel
+    from jsonb_array_elements_text(coalesce(e.target_channels,'[]'::jsonb)) as c(value)
+  ) ch
   where e.calendar_date between p_from and p_to
     and e.tenant_id in ('canonical','bedrijfsgeheugen')
     and ch.channel in ('linkedin_personal','linkedin_company','instagram','blog')
@@ -205,12 +212,12 @@ begin
       next_action = coalesce(p_next_action, next_action),
       last_error = case when p_status in ('BLOCKED','FAILED') then coalesce(p_error, last_error) else null end,
       recovery_attempts = recovery_attempts + case when p_status in ('BLOCKED','FAILED') then 1 else 0 end,
-      generated_at = case when p_status = 'GENERATED' then coalesce(generated_at,now()) else generated_at end,
-      approved_at = case when p_status = 'APPROVED' then coalesce(approved_at,now()) else approved_at end,
-      dispatched_at = case when p_status = 'DISPATCHED' then coalesce(dispatched_at,now()) else dispatched_at end,
-      published_at = case when p_status = 'PUBLISHED' then coalesce(published_at,now()) else published_at end,
-      live_proven_at = case when p_status = 'LIVE_PROVEN' then coalesce(live_proven_at,now()) else live_proven_at end,
-      measured_at = case when p_status = 'MEASURED' then coalesce(measured_at,now()) else measured_at end,
+      generated_at = case when p_status in ('GENERATED','APPROVED','DISPATCHED','PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED') then coalesce(generated_at,now()) else generated_at end,
+      approved_at = case when p_status in ('APPROVED','DISPATCHED','PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED') then coalesce(approved_at,now()) else approved_at end,
+      dispatched_at = case when p_status in ('DISPATCHED','PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED') then coalesce(dispatched_at,now()) else dispatched_at end,
+      published_at = case when p_status in ('PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED') then coalesce(published_at,now()) else published_at end,
+      live_proven_at = case when p_status in ('LIVE_PROVEN','MEASURED','LEARNED') then coalesce(live_proven_at,now()) else live_proven_at end,
+      measured_at = case when p_status in ('MEASURED','LEARNED') then coalesce(measured_at,now()) else measured_at end,
       learned_at = case when p_status = 'LEARNED' then coalesce(learned_at,now()) else learned_at end,
       updated_at = now()
   where tenant_id = p_tenant_id
