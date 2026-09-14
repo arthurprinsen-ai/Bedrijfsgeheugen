@@ -31,6 +31,17 @@ test('automation-only work blocks only shared and automation required suites', (
   assert.deepEqual(suitesFor(['automation/contracts/customer-sync.json']), { shared:true, backend:false, portal:false, website:false, automation:true });
 });
 
+test('approved central blog workflow is automation-only and does not require a website preview', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/approved-central-blog.yml']), { shared:true, backend:false, portal:false, website:false, automation:true });
+});
+
+test('scheduled approved-blog workflow resolves exactly one due slug through the canonical selector', async () => {
+  const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
+  assert.match(workflow, /--select-due-slug/);
+  assert.match(workflow, /NO_DUE_BLOG/);
+  assert.doesNotMatch(workflow, /jsonl/);
+});
+
 test('shared executable control-plane work fans out to all required suites', () => {
   assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
 });
