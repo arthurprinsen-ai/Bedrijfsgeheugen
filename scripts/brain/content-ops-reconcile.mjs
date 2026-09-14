@@ -23,7 +23,8 @@ const rows = Object.entries(ledger.days || {}).map(([date, item]) => {
     title: slug || contentId || `Blog ${date}`,
     slug: slug || null,
     campaign_key: `rci-${date}`,
-    planned_for: `${date}T00:00:00+02:00`,
+    // Noon UTC is always the same Europe/Amsterdam business date across CET/CEST.
+    planned_for: `${date}T12:00:00Z`,
     generated_at: selectedAt,
     published_at: state === 'live' ? (item?.merged_at || liveAt) : null,
     live_verified_at: state === 'live' ? liveAt : null,
