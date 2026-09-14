@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const migrationPath = 'supabase/migrations/20260914093000_unified_content_publication_operations.sql';
 const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
-const runtime = fs.readFileSync('supabase/functions/powerhouse-runtime/index.ts', 'utf8');
+const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
 const publisher = fs.readFileSync('scripts/publish_approved_blog_v2.py', 'utf8');
 const workflow = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
 
@@ -33,11 +33,12 @@ test('publication state cannot claim live without proof and cannot regress', () 
   assert.match(migration, /STATE_REGRESSION_NOT_ALLOWED/);
 });
 
-test('Powerhouse daily runtime syncs and exposes content operations', () => {
-  assert.match(runtime, /sync_content_publication_obligations/);
-  assert.match(runtime, /content_operations_cockpit/);
-  assert.match(runtime, /contentOperations/);
-  assert.match(runtime, /content-operations/);
+test('Powerhouse content operations endpoint reads the canonical cockpit', () => {
+  assert.match(operationsApi, /content_operations_cockpit/);
+  assert.match(operationsApi, /Europe\/Amsterdam/);
+  assert.match(operationsApi, /blogComing/);
+  assert.match(operationsApi, /is_overdue/);
+  assert.match(operationsApi, /x-powerhouse-token/);
 });
 
 test('approved blog publisher schedules daily and resolves an exact due slug before render', () => {
