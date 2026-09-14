@@ -4,6 +4,7 @@ import {
   buildPredictionLearningRecord,
   settleCanonicalRevenueOutcome,
 } from '../../brain/learning/company-revenue-learning-bridge.mjs';
+import {estimateMeetingProbability} from '../../brain/learning/meeting-probability-model.mjs';
 
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 const text=value=>value==null?'':String(value).trim();
@@ -54,10 +55,6 @@ function isCommercial(decision,body){
   return body?.commercial===true||Number(decision?.expectedValue||0)>0;
 }
 
-function validProbability(value){
-  return value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
-}
-
 function openPrediction(projection,decisionId){
   return (projection?.revenuePredictions||[]).find(item=>item?.decisionId===decisionId&&item?.status==='OPEN')||null;
 }
@@ -74,6 +71,14 @@ function predictionRecordFromView(view){
     evidenceIds:list(view.evidenceIds),
     payload:{learningType:'revenue_prediction',prediction:view.prediction},
   };
+}
+
+function autonomousProbability(decision,projection){
+  return estimateMeetingProbability({
+    opportunityScore:decision?.score,
+    confidence:decision?.confidence,
+    calibrationMetrics:projection?.revenueCalibration?.metrics??null,
+  });
 }
 
 export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().toISOString()}={}){
@@ -104,8 +109,16 @@ export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().t
     const commercial=isCommercial(decision,body);
     const predictionView=openPrediction(projection,decisionId);
     if(command==='START'&&commercial&&predictionView) return reply({error:'OPEN_PREDICTION_ALREADY_EXISTS',decisionId},409);
-    if(command==='START'&&commercial&&!validProbability(body.meetingProbability)) return reply({error:'MEETING_PROBABILITY_REQUIRED',decisionId},400);
     if(command==='RECORD_OUTCOME'&&commercial&&!predictionView) return reply({error:'ORIGINATING_PREDICTION_REQUIRED',decisionId},409);
+
+    let probabilityEstimate=null;
+    if(command==='START'&&commercial){
+      try{
+        probabilityEstimate=autonomousProbability(decision,projection);
+      }catch(error){
+        return reply({error:'PREDICTION_INPUTS_REQUIRED',decisionId,message:error.message},409);
+      }
+    }
 
     const timestamp=now();
     const context={command,body,decision,user,tenantId,now:timestamp};
@@ -115,8 +128,9 @@ export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().t
         const predictionRecord=buildPredictionLearningRecord({
           tenantId,
           decision,
-          meetingProbability:Number(body.meetingProbability),
-          modelVersion:text(body.modelVersion)||'company-decision-v1',
+          meetingProbability:probabilityEstimate.probability,
+          modelVersion:probabilityEstimate.model_version,
+          predictionModel:probabilityEstimate,
           predictedAt:timestamp,
           actor:`user:${user.id}`,
         });
