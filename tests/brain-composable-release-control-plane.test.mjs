@@ -49,12 +49,15 @@ test('static syntax preflight blocks preview, artifact build and browser executi
   assert.match(website, /\n  browser:\n\s+needs:\s*\[classify, syntax-preflight, preview-ready\]/);
 });
 
-test('exact artifact build owns modern SEO validation while exact-preview runtime is owned by the browser lane', () => {
+test('exact artifact build owns modern SEO validation while browser consumes the exact candidate resolved by preview-ready', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
-  const pageSeoStart = website.indexOf('\n  page-seo:');
+  const previewReadyStart = website.indexOf('\n  preview-ready:');
+  const pageSeoStart = website.indexOf('\n  page-seo:', previewReadyStart);
   const browserStart = website.indexOf('\n  browser:', pageSeoStart);
+  assert.notEqual(previewReadyStart, -1);
   assert.notEqual(pageSeoStart, -1);
   assert.notEqual(browserStart, -1);
+  const previewReady = website.slice(previewReadyStart, pageSeoStart);
   const pageSeo = website.slice(pageSeoStart, browserStart);
   const browser = website.slice(browserStart);
 
@@ -85,8 +88,18 @@ test('exact artifact build owns modern SEO validation while exact-preview runtim
     );
   }
   assert.doesNotMatch(pageSeo, /normaliseer-site-ui\.mjs|seocontrole\.py|paginacontrole\.py|playwright|PAGINA_BASE_URL/);
+
+  assert.match(previewReady, /HEAD_SHA:\s*\$\{\{ inputs\.change_head_sha \}\}/);
+  assert.match(previewReady, /netlify\/bedrijfsgeheugen\/deploy-preview/);
+  assert.match(previewReady, /deploy-preview-\$\{process\.env\.PR_NUMBER\}--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(previewReady, /preview_mode=local-exact-candidate/);
+  assert.match(previewReady, /base_url=http:\/\/127\.0\.0\.1:4173/);
+
   assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
-  assert.match(browser, /deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(browser, /BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.match(browser, /UI_VR_BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.match(browser, /needs\.preview-ready\.outputs\.preview_mode == 'local-exact-candidate'/);
+  assert.doesNotMatch(browser, /https:\/\/deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
 });
 
 test('production readback is serialized and never cancelled mid-flight', () => {
