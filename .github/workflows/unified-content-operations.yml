@@ -8,7 +8,7 @@ on:
       - 'supabase/functions/content-operations/**'
       - 'scripts/publish_approved_blog_v2.py'
       - '.github/workflows/approved-central-blog.yml'
-      - 'tests/unified-content-operations.test.mjs'
+      - 'tests/content-growth-unified-content-operations.test.mjs'
       - '.github/workflows/unified-content-operations.yml'
   push:
     branches: [main]
@@ -18,7 +18,7 @@ on:
       - 'supabase/functions/content-operations/**'
       - 'scripts/publish_approved_blog_v2.py'
       - '.github/workflows/approved-central-blog.yml'
-      - 'tests/unified-content-operations.test.mjs'
+      - 'tests/content-growth-unified-content-operations.test.mjs'
       - '.github/workflows/unified-content-operations.yml'
 
 permissions:
@@ -33,6 +33,6 @@ jobs:
         with:
           node-version: '22'
       - name: Unified calendar and publication contract
-        run: node --test tests/unified-content-operations.test.mjs
+        run: node --test tests/content-growth-unified-content-operations.test.mjs
       - name: Python publisher syntax
         run: python3 -m py_compile scripts/publish_approved_blog_v2.py
