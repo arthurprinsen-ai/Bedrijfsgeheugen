@@ -75,3 +75,11 @@ test('website browser verification stays exact-candidate and preserves scoped cl
   assert.match(websiteLane, /UI_VR_BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
   assert.match(websiteLane, /ref:\s*\$\{\{ inputs\.candidate_sha \}\}/);
 });
+
+test('local website verification builds the same final artifact layer as Netlify', () => {
+  assert.match(websiteLane, /COMMIT_REF: \$\{\{ inputs\.candidate_sha \}\}/);
+  const finalBuildCalls = websiteLane.match(/node tools\/bouw-release-evidence\.mjs/g) || [];
+  assert.ok(finalBuildCalls.length >= 2, 'page-seo and browser fallback must both execute the final Netlify build layer');
+  assert.match(websiteLane, /DEPLOY_ID: required-page-seo-local/);
+  assert.match(websiteLane, /DEPLOY_ID: required-browser-local/);
+});
