@@ -4,6 +4,7 @@
     ".github/workflows/approved-central-blog.yml",
     ".github/workflows/lane-website.yml",
     "docs/",
+    "scripts/publish_approved_blog_v2.py",
     "tests/brain-change-scoped-release-lanes.test.mjs",
     "tests/site-shell-website-release-risk.test.mjs",
     "tools/brain-delivery-system.mjs",
