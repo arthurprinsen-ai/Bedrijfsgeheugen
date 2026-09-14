@@ -42,6 +42,28 @@ test('scheduled approved-blog workflow resolves exactly one due slug through the
   assert.doesNotMatch(workflow, /jsonl/);
 });
 
+test('approved blog writer emits FAQPage schema and two accessible functional figures', async () => {
+  const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
+  assert.match(writer, /def faq_items\(/);
+  assert.match(writer, /'@type': 'FAQPage'/);
+  assert.match(writer, /'@type': 'Question'/);
+  assert.match(writer, /'@type': 'Answer'/);
+  assert.match(writer, /def article_figures\(/);
+  assert.match(writer, /<figure/);
+  assert.match(writer, /role="img"/);
+  assert.match(writer, /<figcaption>/);
+});
+
+test('approved blog workflow references the canonical writer', async () => {
+  const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
+  assert.match(workflow, /scripts\/publish_approved_blog_v2\.py/);
+});
+
+test('canonical approved blog writer is a non-artifact generator change until it emits a blog candidate', async () => {
+  const risk = JSON.parse(await readFile('site/website-release-risk.json', 'utf8'));
+  assert.ok(risk.nonArtifactPaths.includes('scripts/publish_approved_blog_v2.py'));
+});
+
 test('shared executable control-plane work fans out to all required suites', () => {
   assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
 });
