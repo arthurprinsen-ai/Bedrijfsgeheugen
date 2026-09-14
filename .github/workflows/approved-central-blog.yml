@@ -86,13 +86,11 @@ jobs:
           selected = ""
           path = pathlib.Path('/tmp/approved-blog-candidates.jsonl')
           if path.exists():
-              for raw in path.read_text(encoding='utf-8').splitlines():
-                  raw = raw.strip()
-                  if not raw.startswith('{'):
-                      continue
-                  try:
-                      item = json.loads(raw)
-                  except json.JSONDecodeError:
+              candidates = json.loads(path.read_text(encoding='utf-8'))
+              if not isinstance(candidates, list):
+                  raise SystemExit('approved-blog candidate contract requires a JSON array')
+              for item in candidates:
+                  if not isinstance(item, dict):
                       continue
                   if item.get('source_content_id') == target:
                       selected = str(item.get('slug') or '').strip()
