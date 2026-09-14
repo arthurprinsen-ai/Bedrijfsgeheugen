@@ -1,0 +1,1 @@
+TDD RED: tests import commercial-outcome-signal-ingest.mjs before that production module exists. Expected failure: ERR_MODULE_NOT_FOUND. Remove this evidence file when the implementation is green.
