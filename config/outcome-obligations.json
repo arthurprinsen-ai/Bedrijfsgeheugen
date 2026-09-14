@@ -1,12 +1,21 @@
 {
-  "version": 2,
+  "version": 3,
   "contract": "whole-brain-outcome-obligations",
+  "architecture": {
+    "activePath": "Powerhouse/Supabase/GitHub/Buffer/Notion",
+    "retiredPaths": [
+      "Make"
+    ],
+    "retiredPathPolicy": "LEGACY_RETIRED_PATH",
+    "rule": "Retired executors may remain only as historical provenance and may never be required for current completion or production truth."
+  },
   "invariants": [
     "NO SILENT FAILURE",
     "NO LOST OBLIGATION",
     "GREEN MEANS OUTCOME VERIFIED",
     "RED MEANS AGENTS KEEP WORKING",
-    "GREEN CANDIDATE MEANS PROMOTE TO PRODUCTION"
+    "GREEN CANDIDATE MEANS PROMOTE TO PRODUCTION",
+    "RETIRED EXECUTORS ARE NEVER ACTIVE DEPENDENCIES"
   ],
   "statuses": [
     "NOT_DUE",
@@ -15,6 +24,7 @@
     "MISSED_OBLIGATION",
     "RECOVERING",
     "COMPLETED",
+    "LEGACY_RETIRED_PATH",
     "BLOCKED_HARD_BOUNDARY"
   ],
   "requiredFields": [
@@ -48,12 +58,13 @@
     {
       "id": "cost-policy-10000-monthly",
       "domain": "cost",
-      "expected": "Every optional Make scenario and Brain agent remains inside the shared 10000-credit monthly envelope.",
+      "expected": "Every active Powerhouse runtime component remains inside the governed shared monthly cost envelope.",
       "dueAt": "continuous_with_daily_recalculation",
       "ownerAgent": "agent-cost",
-      "evidencePolicy": "Current budget envelope, period usage, remaining credits and run decision are present in the canonical cost projection.",
+      "evidencePolicy": "Current budget envelope, period usage, remaining capacity and run decision are present in the canonical Powerhouse cost projection.",
       "idempotencyKey": "cost-policy|calendar-month|budget-version",
-      "recoveryPolicy": "Defer optional work, preserve protected interrupts and re-evaluate after the next verified cost snapshot."
+      "recoveryPolicy": "Defer optional work, preserve protected interrupts and re-evaluate after the next verified cost snapshot.",
+      "legacyProvenance": "Former Make-scenario accounting is LEGACY_RETIRED_PATH and must not participate in current run decisions."
     },
     {
       "id": "token-policy-10000-monthly",
@@ -68,42 +79,46 @@
     {
       "id": "cost-ledger-all-scenarios-daily",
       "domain": "cost",
-      "expected": "Every discovered Make scenario and registered Brain agent is classified and represented in the daily normalized cost ledger.",
+      "expected": "Every discovered active Powerhouse/Supabase/GitHub/Buffer/Notion runtime component is classified and represented once in the daily normalized cost ledger.",
       "dueAt": "daily_after_inventory_refresh",
       "ownerAgent": "agent-cost",
-      "evidencePolicy": "The catalog contains every current inventory key once and unknown optional components are BUDGET_DEFERRED.",
+      "evidencePolicy": "The catalog contains every current active runtime inventory key once and unknown optional components are BUDGET_DEFERRED.",
       "idempotencyKey": "cost-ledger|component-key|snapshot-fingerprint",
-      "recoveryPolicy": "Refresh inventory, deduplicate by component key and quarantine invalid or contradictory metering."
+      "recoveryPolicy": "Refresh the active runtime inventory, deduplicate by component key and quarantine invalid or contradictory metering.",
+      "legacyProvenance": "Historical Make scenarios are LEGACY_RETIRED_PATH and excluded from active inventory."
     },
     {
       "id": "cost-portfolio-decision-daily",
       "domain": "cost",
-      "expected": "Every daily BG159 fleet inventory refresh produces exactly one governed portfolio decision: SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY, with cost/outcome evidence and shared-current-state visibility.",
+      "expected": "Every daily active-runtime inventory refresh produces exactly one governed portfolio decision: SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY, with cost/outcome evidence and Powerhouse shared-current-state visibility.",
       "dueAt": "daily_after_inventory_refresh",
       "ownerAgent": "agent-cost",
-      "evidencePolicy": "The daily decision records SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY with inventory fingerprint, cost/outcome evidence and BG167 visibility for every material change.",
+      "evidencePolicy": "The daily decision records SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY with inventory fingerprint, cost/outcome evidence and current Powerhouse/Supabase shared-memory visibility for every material change.",
       "idempotencyKey": "cost-portfolio|date|inventory-fingerprint",
-      "recoveryPolicy": "Refresh the inventory, reuse known fingerprints, deduplicate the candidate and decision, verify no duplicate external side effect exists, and resume recovery until the portfolio outcome is verified or a valid hard boundary remains."
+      "recoveryPolicy": "Refresh the active inventory, reuse known fingerprints, deduplicate the candidate and decision, verify no duplicate external side effect exists, and resume recovery until the portfolio outcome is verified or a valid hard boundary remains.",
+      "legacyProvenance": "BG159/BG167 scenario-specific routing is LEGACY_RETIRED_PATH."
     },
     {
       "id": "brain-budget-writeback",
       "domain": "data_sync",
-      "expected": "Every material budget decision and verified optimization outcome is routed through BG168 and visible in BG167.",
+      "expected": "Every material budget decision and verified optimization outcome is persisted through the current Powerhouse/Supabase shared-memory writeback path and is readable from current shared context.",
       "dueAt": "after_each_material_cost_decision",
       "ownerAgent": "agent-cost",
-      "evidencePolicy": "brain.v1 event includes trace, correlation, fingerprint, evidence and protected metrics; BG167 confirms visibility.",
+      "evidencePolicy": "The current shared-memory event contains trace, correlation, fingerprint, evidence and protected metrics; a readback from the supported Powerhouse/Supabase context confirms visibility.",
       "idempotencyKey": "brain-cost-event|fingerprint|trace-id",
-      "recoveryPolicy": "Retry routing at most twice per hypothesis, then retain locally verified evidence and resume through the shared-memory recovery path."
+      "recoveryPolicy": "Retry the current supported writeback at most twice per hypothesis, then retain locally verified evidence and resume through the same shared-memory recovery path.",
+      "legacyProvenance": "BG168/BG167 Make-based execution is LEGACY_RETIRED_PATH and must never be invoked."
     },
     {
       "id": "repository-writer-operational-certification",
       "domain": "governance",
-      "expected": "Every repository writer may be marked operationally certified only after its verified outcome is routed through BG168 and is visible in BG167 shared current state.",
+      "expected": "Every repository writer may be marked operationally certified only after its verified outcome is persisted through the current Powerhouse/Supabase shared-memory path and is visible in current shared state.",
       "dueAt": "after_each_writer_operational_canary",
       "ownerAgent": "agent-reliability",
-      "evidencePolicy": "Exact verification SHA, real writer candidate PR, immutable shadow evidence, exact-head and path-policy verification, bounded impact policy and BG167 visibility are required before COMPLETED.",
+      "evidencePolicy": "Exact verification SHA, real writer candidate PR, immutable shadow evidence, exact-head and path-policy verification, bounded impact policy and current shared-memory readback are required before COMPLETED.",
       "idempotencyKey": "writer-certification|writer|verification-sha|shadow-run-id",
-      "recoveryPolicy": "Keep certification AWAITING_OUTCOME, retain immutable evidence, rerun only the missing safe verification step, route through BG168 and do not mark BG167 VERIFIED until all evidence is complete."
+      "recoveryPolicy": "Keep certification AWAITING_OUTCOME, retain immutable evidence, rerun only the missing safe verification step, write back through the current supported path and do not mark VERIFIED until all evidence is complete.",
+      "legacyProvenance": "BG168/BG167 scenario routing is LEGACY_RETIRED_PATH."
     },
     {
       "id": "supabase-performance-evidence-daily",
@@ -128,22 +143,24 @@
     {
       "id": "internal-dashboard-freshness",
       "domain": "monitoring",
-      "expected": "The dashboard uses the newest verified canonical BG159 or strongly consistent projection without exposing raw prompts, CRM payloads or secrets.",
-      "dueAt": "daily_after_bg159_snapshot",
+      "expected": "The dashboard uses the newest verified canonical Powerhouse/Supabase projection without exposing raw prompts, CRM payloads or secrets.",
+      "dueAt": "daily_after_runtime_snapshot",
       "ownerAgent": "agent-data-quality",
-      "evidencePolicy": "Projection exposes source timestamp and fingerprint and selects the newest valid aggregate source.",
+      "evidencePolicy": "Projection exposes source timestamp and fingerprint and selects the newest valid aggregate source from the supported runtime.",
       "idempotencyKey": "dashboard-projection|snapshot-fingerprint",
-      "recoveryPolicy": "Keep the last verified projection, mark freshness visibly and reject malformed or untrusted records."
+      "recoveryPolicy": "Keep the last verified projection, mark freshness visibly and reject malformed or untrusted records.",
+      "legacyProvenance": "BG159 scenario-specific projection is LEGACY_RETIRED_PATH."
     },
     {
       "id": "production-promotion-dashboard",
       "domain": "deploy",
-      "expected": "A green dashboard candidate is promoted only through BG169 and verified on the exact production SHA.",
+      "expected": "A green dashboard candidate is promoted through the canonical protected GitHub/Netlify production-promotion path and verified on the exact production SHA.",
       "dueAt": "after_green_candidate_acceptance",
       "ownerAgent": "Powerhouse Production Promotion Guardian",
-      "evidencePolicy": "Exact candidate SHA, CI, production deploy identity, anonymous-denial smoke and protected regression checks are green.",
+      "evidencePolicy": "Exact candidate SHA, CI, Netlify production deploy identity, anonymous-denial smoke and protected regression checks are green.",
       "idempotencyKey": "dashboard-promotion|candidate-sha",
-      "recoveryPolicy": "Rollback to the last-known-good production tree when an exact-SHA or protected-metric check regresses."
+      "recoveryPolicy": "Rollback to the last-known-good production tree when an exact-SHA or protected-metric check regresses.",
+      "legacyProvenance": "BG169 scenario-specific promotion is LEGACY_RETIRED_PATH."
     }
   ],
   "productionPromotion": {
@@ -160,6 +177,7 @@
     "missedDeadlineStartsRecovery": true,
     "recoveryContinuesUntilOutcomeVerifiedOrHardBoundary": true,
     "duplicateSideEffectsForbidden": true,
+    "retiredExecutorMayBlockCurrentCompletion": false,
     "hardBoundaries": [
       "credentials_or_account_connection",
       "permissions",
