@@ -56,23 +56,6 @@ def snapshot_from_row(row):
     }
 
 
-def list_candidates():
-    candidates=[]
-    for row in get_rows('',100):
-        q=queue_contract(row)
-        candidates.append({
-            'content_id': f"blog:{q['slug']}",
-            'slug': q['slug'],
-            'source_content_id': q['source'],
-            'title': q['title'],
-            'keyword': q['keyword'],
-            'eligible': True,
-            'score': 0,
-            'exploration': False,
-        })
-    print(json.dumps(candidates,ensure_ascii=False))
-
-
 def actual_hash(q):
     payload = '\n'.join([q['source'], q['slug'], q['title'], q['keyword'], q['meta'], q['blogtext']])
     return hashlib.sha256(payload.encode()).hexdigest()
@@ -91,6 +74,39 @@ def queue_contract(row):
     if not 120 <= len(q['meta']) <= 170:
         base.fail('Meta-omschrijving buiten toegestane lengte')
     return q
+
+
+def list_candidates():
+    candidates=[]
+    for row in get_rows('',100):
+        q=queue_contract(row)
+        candidates.append({
+            'content_id': f"blog:{q['slug']}",
+            'slug': q['slug'],
+            'source_content_id': q['source'],
+            'title': q['title'],
+            'keyword': q['keyword'],
+            'eligible': True,
+            'score': 0,
+            'exploration': False,
+        })
+    print(json.dumps(candidates,ensure_ascii=False))
+
+
+def select_due_slug():
+    """Resolve one exact, already-approved due slug for scheduled publication.
+
+    Eligibility and due-date filtering stay centralized in get_rows()/queue_conditions().
+    queue_contract() is deliberately re-run before emitting the slug so schedule mode
+    cannot weaken the exact-slug renderer contract.
+    """
+    rows = get_rows('', 100)
+    if not rows:
+        print('NO_DUE_BLOG')
+        return None
+    q = queue_contract(rows[0])
+    print(q['slug'])
+    return q['slug']
 
 
 def seal_or_validate(row):
@@ -154,6 +170,8 @@ def mark_dispatched(page_id, attempt, run_id=''):
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == '--list-candidates':
         list_candidates(); return
+    if len(sys.argv) > 1 and sys.argv[1] == '--select-due-slug':
+        select_due_slug(); return
     if len(sys.argv) > 1 and sys.argv[1] == '--mark-dispatched':
         if len(sys.argv) < 4:
             base.fail('Gebruik --mark-dispatched <page_id> <attempt> [run_id]')
