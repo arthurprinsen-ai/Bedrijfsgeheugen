@@ -74,6 +74,17 @@ def list_candidates():
     print(json.dumps(candidates,ensure_ascii=False))
 
 
+def select_due_slug():
+    """Resolve one exact, already-approved due slug for scheduled publication."""
+    rows = get_rows('', 100)
+    if not rows:
+        print('NO_DUE_BLOG')
+        return None
+    q = queue_contract(rows[0])
+    print(q['slug'])
+    return q['slug']
+
+
 def actual_hash(q):
     payload = '\n'.join([q['source'], q['slug'], q['title'], q['keyword'], q['meta'], q['blogtext']])
     return hashlib.sha256(payload.encode()).hexdigest()
@@ -239,6 +250,8 @@ def mark_dispatched(page_id, attempt, run_id=''):
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == '--list-candidates':
         list_candidates(); return
+    if len(sys.argv) > 1 and sys.argv[1] == '--select-due-slug':
+        select_due_slug(); return
     if len(sys.argv) > 1 and sys.argv[1] == '--mark-dispatched':
         if len(sys.argv) < 4:
             base.fail('Gebruik --mark-dispatched <page_id> <attempt> [run_id]')

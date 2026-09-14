@@ -12,3 +12,9 @@ test('Required preflight enforces branch hygiene before lane execution', () => {
   assert.match(workflow, /PR_LABELS_JSON:/);
   assert.match(workflow, /if\s*\(!hygiene\.ok\)\s*throw new Error/);
 });
+
+test('Required evidence is latest-head-wins so obsolete candidate proof cannot block the current SHA', () => {
+  assert.match(workflow, /group:\s*required-test-/);
+  assert.match(workflow, /cancel-in-progress:\s*true/);
+  assert.doesNotMatch(workflow, /cancel-in-progress:\s*false/);
+});

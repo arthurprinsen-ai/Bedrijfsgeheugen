@@ -5,6 +5,7 @@ import { classifyWebsiteRelease } from '../tools/site-shell/website-release-risk
 
 const riskConfig = JSON.parse(await readFile('site/website-release-risk.json', 'utf8'));
 const acceptedBaseline = JSON.parse(await readFile('site/accepted-baseline.json', 'utf8'));
+const websiteLane = await readFile('.github/workflows/lane-website.yml', 'utf8');
 
 test('one explicitly owned page-local asset is fast-fix', () => {
   const result = classifyWebsiteRelease({ changedPaths:['assets/pages/ai-act/local-fix.css'], riskConfig, acceptedBaseline });
@@ -61,4 +62,24 @@ test('unknown path cannot become fast-fix', () => {
   assert.notEqual(result.lane, 'fast-fix');
   assert.equal(result.escalated, true);
   assert.equal(result.requires_preview, true);
+});
+
+test('website browser verification stays exact-candidate and preserves scoped clean-URL fallback', () => {
+  assert.match(websiteLane, /requires_preview: \$\{\{ steps\.risk\.outputs\.requires_preview \}\}/);
+  assert.match(websiteLane, /if: needs\.classify\.outputs\.requires_preview == 'true'/);
+  assert.match(websiteLane, /preview_mode/);
+  assert.match(websiteLane, /local-exact-candidate/);
+  assert.match(websiteLane, /python3 tools\/ci\/serve-clean-urls\.py --port 4173 --bind 127\.0\.0\.1/);
+  assert.match(websiteLane, /http:\/\/127\.0\.0\.1:4173/);
+  assert.match(websiteLane, /BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.match(websiteLane, /UI_VR_BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.match(websiteLane, /ref:\s*\$\{\{ inputs\.candidate_sha \}\}/);
+});
+
+test('local website verification builds the same final artifact layer as Netlify', () => {
+  assert.match(websiteLane, /COMMIT_REF: \$\{\{ inputs\.candidate_sha \}\}/);
+  const finalBuildCalls = websiteLane.match(/node tools\/bouw-release-evidence\.mjs/g) || [];
+  assert.ok(finalBuildCalls.length >= 2, 'page-seo and browser fallback must both execute the final Netlify build layer');
+  assert.match(websiteLane, /DEPLOY_ID: required-page-seo-local/);
+  assert.match(websiteLane, /DEPLOY_ID: required-browser-local/);
 });

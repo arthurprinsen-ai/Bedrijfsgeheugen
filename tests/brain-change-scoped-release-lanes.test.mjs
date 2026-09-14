@@ -35,11 +35,11 @@ test('approved central blog workflow is automation-only and does not require a w
   assert.deepEqual(suitesFor(['.github/workflows/approved-central-blog.yml']), { shared:true, backend:false, portal:false, website:false, automation:true });
 });
 
-test('scheduled approved-blog workflow parses the writer JSON array instead of treating it as JSONL', async () => {
+test('scheduled approved-blog workflow resolves exactly one due slug through the canonical selector', async () => {
   const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
-  assert.match(workflow, /candidates\s*=\s*json\.loads\(path\.read_text\(encoding='utf-8'\)\)/);
-  assert.match(workflow, /for\s+item\s+in\s+candidates:/);
-  assert.doesNotMatch(workflow, /raw\.startswith\('\{'\)/);
+  assert.match(workflow, /--select-due-slug/);
+  assert.match(workflow, /NO_DUE_BLOG/);
+  assert.doesNotMatch(workflow, /jsonl/);
 });
 
 test('approved blog writer emits FAQPage schema and two accessible functional figures', async () => {
@@ -54,7 +54,7 @@ test('approved blog writer emits FAQPage schema and two accessible functional fi
   assert.match(writer, /<figcaption>/);
 });
 
-test('approved blog workflow reruns when canonical writer changes', async () => {
+test('approved blog workflow references the canonical writer', async () => {
   const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
   assert.match(workflow, /scripts\/publish_approved_blog_v2\.py/);
 });

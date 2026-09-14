@@ -2,13 +2,8 @@ name: Approved central blog publisher
 
 on:
   schedule:
-    - cron: '30 6 * * *'
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/approved-central-blog.yml'
-      - 'scripts/publish_approved_blog_v2.py'
+    # 07:20 UTC: after native content generation and the Powerhouse daily intelligence run.
+    - cron: '20 7 * * *'
   workflow_dispatch:
     inputs:
       slug:
@@ -49,11 +44,50 @@ jobs:
         id: base
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Seal or render exact approved article
-        id: render
+      - name: Resolve exact approved due slug
+        id: resolve
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          FORCE_SLUG: ${{ github.event.inputs.slug }}
+          REQUESTED_SLUG: ${{ github.event.inputs.slug || '' }}
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          set -euo pipefail
+          if [ "$VERIFICATION_MODE" = "true" ]; then
+            echo "due=true" >> "$GITHUB_OUTPUT"
+            echo "slug=" >> "$GITHUB_OUTPUT"
+            echo "RESOLVED_SLUG=verification-fixture"
+            exit 0
+          fi
+
+          if [ -n "$REQUESTED_SLUG" ]; then
+            RESOLVED_SLUG="$REQUESTED_SLUG"
+          else
+            RESOLVED_SLUG="$(python3 -B scripts/publish_approved_blog_v2.py --select-due-slug)"
+          fi
+
+          if [ "$RESOLVED_SLUG" = "NO_DUE_BLOG" ] || [ -z "$RESOLVED_SLUG" ]; then
+            echo "due=false" >> "$GITHUB_OUTPUT"
+            echo "slug=" >> "$GITHUB_OUTPUT"
+            echo "NO_DUE_BLOG"
+          else
+            echo "due=true" >> "$GITHUB_OUTPUT"
+            echo "slug=$RESOLVED_SLUG" >> "$GITHUB_OUTPUT"
+            echo "RESOLVED_SLUG=$RESOLVED_SLUG"
+          fi
+
+      - name: Fail closed when scheduled daily blog is missing
+        if: github.event_name == 'schedule' && steps.resolve.outputs.due != 'true'
+        run: |
+          echo "::error::NO_DUE_BLOG: daily blog obligation has no eligible approved article"
+          exit 1
+
+      - name: Seal or render exact approved article
+        id: render
+        if: steps.resolve.outputs.due == 'true'
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          FORCE_SLUG: ${{ steps.resolve.outputs.slug }}
           VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
           DELIVERY_MODE: candidate-pr
           PYTHONDONTWRITEBYTECODE: '1'
@@ -78,34 +112,6 @@ jobs:
             echo "queue_page=" >> "$GITHUB_OUTPUT"
             echo "dispatch_attempt=0" >> "$GITHUB_OUTPUT"
           else
-            if [ -z "$FORCE_SLUG" ]; then
-              python3 -B scripts/publish_approved_blog_v2.py --list-candidates > /tmp/approved-blog-candidates.jsonl
-              export TODAY="$(date -u +%F)"
-              FORCE_SLUG="$(python3 - <<'PY'
-          import json, os, pathlib
-          target = f"powerhouse:{os.environ['TODAY']}:blog"
-          selected = ""
-          path = pathlib.Path('/tmp/approved-blog-candidates.jsonl')
-          if path.exists():
-              candidates = json.loads(path.read_text(encoding='utf-8'))
-              if not isinstance(candidates, list):
-                  raise SystemExit('approved-blog candidate contract requires a JSON array')
-              for item in candidates:
-                  if not isinstance(item, dict):
-                      continue
-                  if item.get('source_content_id') == target:
-                      selected = str(item.get('slug') or '').strip()
-                      break
-          print(selected)
-          PY
-              )"
-              if [ -z "$FORCE_SLUG" ]; then
-                echo "NO_ACTION: no approved Powerhouse blog candidate for $TODAY" | tee /tmp/publish-result.txt
-                echo "changed=false" >> "$GITHUB_OUTPUT"
-                exit 0
-              fi
-              echo "Selected exact Powerhouse candidate: $FORCE_SLUG"
-            fi
             python3 -B scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/publish-result.txt
             if grep -Eq '^(NO_ACTION:|SEALED:)' /tmp/publish-result.txt; then
               echo "changed=false" >> "$GITHUB_OUTPUT"
