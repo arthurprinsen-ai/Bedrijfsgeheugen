@@ -4,15 +4,15 @@ on:
   pull_request:
     paths:
       - 'supabase/migrations/*unified_content_operations_status.sql'
-      - 'scripts/content-ops-audit.mjs'
-      - 'tests/content-ops-unified-status.test.mjs'
+      - 'scripts/brain/content-ops-audit.mjs'
+      - 'tests/content-growth-unified-status.test.mjs'
       - '.github/workflows/content-ops-unified-status.yml'
   push:
     branches: [main]
     paths:
       - 'supabase/migrations/*unified_content_operations_status.sql'
-      - 'scripts/content-ops-audit.mjs'
-      - 'tests/content-ops-unified-status.test.mjs'
+      - 'scripts/brain/content-ops-audit.mjs'
+      - 'tests/content-growth-unified-status.test.mjs'
       - '.github/workflows/content-ops-unified-status.yml'
   schedule:
     - cron: '17 8 * * *'
@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify unified content operations contract
-        run: node --test tests/content-ops-unified-status.test.mjs
+        run: node --test tests/content-growth-unified-status.test.mjs
 
   production-audit:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -44,4 +44,4 @@ jobs:
         with:
           node-version: '22'
       - name: Audit planned versus actual publication truth
-        run: node scripts/content-ops-audit.mjs
+        run: node scripts/brain/content-ops-audit.mjs
