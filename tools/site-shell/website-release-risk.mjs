@@ -23,13 +23,29 @@ export function classifyWebsiteRelease({ changedPaths = [], riskConfig = {}, acc
   if (!paths.length) throw new TypeError('changedPaths must contain at least one path');
   if (riskConfig.version !== 'WEBSITE-RELEASE-RISK-v1') throw new TypeError('WEBSITE-RELEASE-RISK-v1 config is required');
 
+  const nonArtifactPaths = paths.filter(path => (riskConfig.nonArtifactPaths || []).some(rule => matchesRule(path, rule)));
+  const artifactPaths = paths.filter(path => !nonArtifactPaths.includes(path));
+  if (!artifactPaths.length) {
+    return Object.freeze({
+      lane: 'control-plane',
+      changed_files: Object.freeze(paths),
+      artifact_changed_files: Object.freeze([]),
+      non_artifact_files: Object.freeze(nonArtifactPaths),
+      affected_routes: Object.freeze([]),
+      risk_reasons: Object.freeze(nonArtifactPaths.map(path => `non-artifact:${path}`)),
+      required_test_sets: Object.freeze([...(riskConfig.controlPlaneRequiredTestSets || ['baseline'])]),
+      escalated: false,
+      requires_preview: false,
+    });
+  }
+
   const routeSet = acceptedRoutes(acceptedBaseline);
-  const reasons = [];
+  const reasons = nonArtifactPaths.map(path => `non-artifact:${path}`);
   const routes = new Set();
   let lane = 'fast-fix';
   let escalated = false;
 
-  for (const path of paths) {
+  for (const path of artifactPaths) {
     if ((riskConfig.highRiskPaths || []).some(rule => matchesRule(path, rule))) {
       lane = 'high-risk';
       escalated = true;
@@ -74,9 +90,12 @@ export function classifyWebsiteRelease({ changedPaths = [], riskConfig = {}, acc
   return Object.freeze({
     lane,
     changed_files: Object.freeze(paths),
+    artifact_changed_files: Object.freeze(artifactPaths),
+    non_artifact_files: Object.freeze(nonArtifactPaths),
     affected_routes: Object.freeze(uniqueSorted([...routes])),
     risk_reasons: Object.freeze(uniqueSorted(reasons)),
     required_test_sets: Object.freeze([...(required || [])]),
     escalated,
+    requires_preview: true,
   });
 }

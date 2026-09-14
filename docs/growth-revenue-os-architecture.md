@@ -89,3 +89,63 @@ Geen destructieve data-acties, secrets/permissiewijzigingen, security-verzwakkin
 De architectuur is pas operationeel als het Brain-record verified/readable is, dit repositorydocument op de bedoelde branch terugleesbaar is, de dagelijkse agent dit contract vooraf leest, echte runs prediction/outcome/calibration evidence produceren en intelligence-scorecards aantonen of de kwaliteit werkelijk verbetert.
 
 Een grotere database is **geen** bewijs dat het systeem slimmer is. Alleen betere voorspellingen, betere calibratie en betere commerciële uitkomsten tellen als verbetering.
+
+## 15. Dagelijks content-executioncontract
+**Contract-ID:** `powerhouse-daily-execution-contract-v1`.
+
+Iedere kalenderdag krijgt exact één expliciete beslissing voor elk van deze zeven kanalen:
+1. `email_newsletter`
+2. `linkedin_personal`
+3. `linkedin_company`
+4. `linkedin_article_personal`
+5. `linkedin_article_company`
+6. `instagram_company`
+7. `blog`
+
+Per kanaal is de beslissing `publish`, `skip` of `hold`. Stilzwijgend niets doen is ongeldig. De beslissing, prioriteit, confidence, onderwerp, rationale, geplande tijd en evidence worden vastgelegd in `powerhouse_channel_decisions`. Gegenereerde content staat in `powerhouse_content_artifacts`. Het bestaande `social_posts` blijft de provider-readback voor sociale publicaties; de approved-central Notion-blogqueue en GitHub candidate-PR-writer blijven de canonieke blogdelivery.
+
+Een dagrun mag uitsluitend `completed` zijn wanneer alle zeven kanalen een expliciete beslissing hebben én iedere `publish`-beslissing aantoonbare delivery-evidence heeft. Anders wordt de run fail-closed `degraded`. Een scheduler-ack, concept, aanbeveling of AI-output is nooit publicatiebewijs.
+
+## 16. Productieketen en verantwoordelijkheden
+De dagelijkse keten is:
+
+`signalen/data → powerhouse-runtime → powerhouse-content-orchestrator → powerhouse_channel_decisions → contentgeneratie → pre-publish gate → providerdelivery → providerreadback → metrics/outcomes → learning/calibratie → volgende run`
+
+### Beslislaag
+`powerhouse-content-orchestrator` is decision-only. Hij bepaalt dagelijks voor alle zeven kanalen `publish|skip|hold` en bewaakt downstream-capability: een kanaal mag niet autonoom op `publish` worden gezet als er geen toegestane executor voor bestaat.
+
+### Sociale delivery
+`powerhouse-social-publisher` verwerkt alleen ondersteunde, content-ready `publish`-beslissingen. Vóór Buffer wordt `bg-pre-publish-review` verplicht uitgevoerd. Geblokkeerde identiteit, ontbrekende meetlink of andere hard-gate-overtreding wordt als `blocked` opgeslagen en niet gepubliceerd. Buffer delivery-ID en due-time worden teruggeschreven als evidence. `bg-buffer-sync` verzorgt providerreadback en metricsynchronisatie.
+
+### Blogdelivery
+`approved-central-blog.yml` en `scripts/publish_approved_blog_v2.py` blijven de bestaande blogauthority. De writer accepteert uitsluitend een exact goedgekeurde slug uit de approved-central queue, draait deterministische checks, maakt een candidate branch/PR en laat BG169/CI/productie-readback beslissen over productie. Er is geen directe push naar `main` vanuit de contentbeslislaag.
+
+### Execution guard
+`powerhouse_daily_execution_guard()` reconcilieert de werkelijke dagstatus. `powerhouse_execution_status(date)` berekent onder meer alle beslissingen, open publish-acties en delivery-completion. De hourly guard degradeert onterechte `completed`-runs en kan alleen promoveren wanneer het contract aantoonbaar compleet is.
+
+## 17. Kanaalidentiteit en publicatiegates
+Het canonieke hard-gatecontract is `channel-identity-hard-gate-v2`, fail-closed.
+
+- LinkedIn persoonlijk Buffer-kanaal: `6a70381699afb44349f0fb35`.
+- LinkedIn bedrijf Buffer-kanaal: `6a70381699afb44349f0fb36`.
+- Instagram `bedrijfsgeheugen.nl`: `6a70384d99afb44349f0fba9`.
+- Persoonlijk Instagram is niet gekoppeld en mag daarom niet autonoom publiceren.
+
+LinkedIn persoonlijk mag zakelijk zijn, maar moet kanaalnative Arthur-copy blijven en mag geen verzonnen first-person ervaring bevatten. LinkedIn bedrijf blijft merk/expertise/marktgedreven. Instagram bedrijfsgeheugen.nl blijft Mira-IP. Een verkeerde kanaalidentiteit is een harde stop, geen waarschuwing.
+
+## 18. Scheduler- en releasecontract
+De productieplanning gebruikt bestaande scheduler- en syncpaden; er wordt geen parallel publicatiesysteem naast gebouwd. Beslissen, publiceren en readback zijn afzonderlijke verantwoordelijkheden zodat een aanbeveling nooit nog als uitvoering kan worden geteld.
+
+De approved-central blogworkflow is een **automation-only delivery lane**. Een wijziging uitsluitend aan `.github/workflows/approved-central-blog.yml` mag daarom automation-tests vereisen, maar geen irrelevante Netlify website-preview. Control-plane workflows zoals `.github/workflows/required-test.yml` blijven daarentegen bewust shared executable en fan-out naar alle relevante release-lanes. Dit onderscheid is afgedwongen met regressietest `approved central blog workflow is automation-only and does not require a website preview`.
+
+## 19. Recovery- en bewijsregels
+Bij iedere dagelijkse run gelden deze invarianten:
+- `suggested` of `content_ready` is geen delivery.
+- `scheduled` telt alleen als provider-ID en due-time terugleesbaar zijn; na het geplande tijdstip is echte providerreadback vereist om publicatie te bewijzen.
+- `published` zonder providerreadback of publieke/live evidence is ongeldig.
+- Een fout creëert een recovery obligation en blijft zichtbaar totdat root cause, regressie, uitvoering en readback aantoonbaar gesloten zijn.
+- Fallbacks mogen bestaande hard gates nooit omzeilen.
+- Make-pauze/limieten zijn containment; ze mogen geen succesvolle Brain-writeback simuleren.
+
+## 20. Operationele waarheid
+De operationele waarheid wordt bepaald door execution evidence, niet door agenttekst. Voor een contentdag moeten daarom minimaal terugleesbaar zijn: zeven kanaalbeslissingen, artefacten voor gekozen `publish`-kanalen, pre-publish gate-uitkomst, provider-/writer-deliveryref, provider/live readback, meetgegevens en opvolgende learning/calibratie. Alleen die gesloten keten rechtvaardigt de status `completed`.

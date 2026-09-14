@@ -1,5 +1,15 @@
 {
   "version": "WEBSITE-RELEASE-RISK-v1",
+  "nonArtifactPaths": [
+    ".github/workflows/approved-central-blog.yml",
+    ".github/workflows/lane-website.yml",
+    "docs/",
+    "tests/brain-change-scoped-release-lanes.test.mjs",
+    "tests/site-shell-website-release-risk.test.mjs",
+    "tools/brain-delivery-system.mjs",
+    "tools/site-shell/website-release-risk.mjs",
+    "site/website-release-risk.json"
+  ],
   "highRiskPaths": [
     ".github/workflows/",
     "netlify.toml",
@@ -18,5 +28,6 @@
   },
   "fastFixRequiredTestSets": ["baseline", "preview", "targeted-browser", "public-visibility"],
   "normalRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo"],
-  "highRiskRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo", "shared-contracts", "full-regression"]
+  "highRiskRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo", "shared-contracts", "full-regression"],
+  "controlPlaneRequiredTestSets": ["baseline", "syntax-preflight"]
 }

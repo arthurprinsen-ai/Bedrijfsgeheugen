@@ -1,6 +1,13 @@
 name: Approved central blog publisher
 
 on:
+  schedule:
+    - cron: '30 6 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/approved-central-blog.yml'
   workflow_dispatch:
     inputs:
       slug:
@@ -70,6 +77,36 @@ jobs:
             echo "queue_page=" >> "$GITHUB_OUTPUT"
             echo "dispatch_attempt=0" >> "$GITHUB_OUTPUT"
           else
+            if [ -z "$FORCE_SLUG" ]; then
+              python3 -B scripts/publish_approved_blog_v2.py --list-candidates > /tmp/approved-blog-candidates.jsonl
+              export TODAY="$(date -u +%F)"
+              FORCE_SLUG="$(python3 - <<'PY'
+          import json, os, pathlib
+          target = f"powerhouse:{os.environ['TODAY']}:blog"
+          selected = ""
+          path = pathlib.Path('/tmp/approved-blog-candidates.jsonl')
+          if path.exists():
+              for raw in path.read_text(encoding='utf-8').splitlines():
+                  raw = raw.strip()
+                  if not raw.startswith('{'):
+                      continue
+                  try:
+                      item = json.loads(raw)
+                  except json.JSONDecodeError:
+                      continue
+                  if item.get('source_content_id') == target:
+                      selected = str(item.get('slug') or '').strip()
+                      break
+          print(selected)
+          PY
+              )"
+              if [ -z "$FORCE_SLUG" ]; then
+                echo "NO_ACTION: no approved Powerhouse blog candidate for $TODAY" | tee /tmp/publish-result.txt
+                echo "changed=false" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              echo "Selected exact Powerhouse candidate: $FORCE_SLUG"
+            fi
             python3 -B scripts/publish_approved_blog_v2.py "$FORCE_SLUG" | tee /tmp/publish-result.txt
             if grep -Eq '^(NO_ACTION:|SEALED:)' /tmp/publish-result.txt; then
               echo "changed=false" >> "$GITHUB_OUTPUT"

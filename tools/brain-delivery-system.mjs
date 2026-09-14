@@ -8,6 +8,10 @@ import { evaluatePromotionActivation } from './platform-promotion-activation-gat
 function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
+const SCOPED_WORKFLOW_LANES = Object.freeze({
+  '.github/workflows/approved-central-blog.yml': 'automation'
+});
+
 export function deriveConflictContracts(paths = [], policy = {}) {
   const changed = unique(paths.map(value => String(value).trim()).filter(Boolean));
   return unique((policy.conflictContracts || []).filter(contract => changed.some(path => matches(path, contract.paths || []))).map(contract => String(contract.id || '').trim()).filter(Boolean)).sort();
@@ -34,13 +38,14 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   if (!/^[a-f0-9]{12,40}$/i.test(sha)) throw new TypeError('valid headSha is required');
   const paths = unique(changedPaths.map(value => String(value).trim()).filter(Boolean)).sort();
   const nonExecutableShared = paths.filter(path => matches(path, policy.nonExecutableSharedPaths || []));
-  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, policy.nonExecutableSharedPaths || []));
+  const scopedWorkflowPaths = paths.filter(path => SCOPED_WORKFLOW_LANES[path]);
+  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, policy.nonExecutableSharedPaths || []) && !SCOPED_WORKFLOW_LANES[path]);
   const ignored = paths.filter(path => matches(path, policy.ignoredPaths));
   const lanes = policy.lanes
-    .filter(lane => sharedExecutable || paths.some(path => !matches(path, policy.nonExecutableSharedPaths || []) && matches(path, lane.paths)))
+    .filter(lane => sharedExecutable || scopedWorkflowPaths.some(path => SCOPED_WORKFLOW_LANES[path] === lane.id) || paths.some(path => !matches(path, policy.nonExecutableSharedPaths || []) && !SCOPED_WORKFLOW_LANES[path] && matches(path, lane.paths)))
     .map(lane => Object.freeze({ id: lane.id, laneId: `${lane.id}|${sha.slice(0, 12)}`, candidateIdentity: sha, testedIdentity: sha, owner: lane.owner, requiredContracts: Object.freeze([...lane.requiredContracts]), independentPromotion: policy.version === 'BRAIN-DELIVERY-v2' && policy.integration?.independentPromotion === true }))
     .sort((left, right) => left.id.localeCompare(right.id));
-  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)));
+  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || SCOPED_WORKFLOW_LANES[path]);
   const unclassified = paths.filter(path => !classified.includes(path));
   if (unclassified.length) throw new Error(`unclassified delivery path: ${unclassified.join(', ')}`);
   const noLanePaths = unique([...ignored, ...nonExecutableShared]);

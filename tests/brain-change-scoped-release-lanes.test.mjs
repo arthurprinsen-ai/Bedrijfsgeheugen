@@ -31,6 +31,10 @@ test('automation-only work blocks only shared and automation required suites', (
   assert.deepEqual(suitesFor(['automation/contracts/customer-sync.json']), { shared:true, backend:false, portal:false, website:false, automation:true });
 });
 
+test('approved central blog workflow is automation-only and does not require a website preview', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/approved-central-blog.yml']), { shared:true, backend:false, portal:false, website:false, automation:true });
+});
+
 test('shared executable control-plane work fans out to all required suites', () => {
   assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
 });
