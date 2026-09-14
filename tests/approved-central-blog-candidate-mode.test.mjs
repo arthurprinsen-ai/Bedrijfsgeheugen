@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const text = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
+const writer = fs.readFileSync('scripts/publish_approved_blog.py', 'utf8');
 
 test('approved central blog is candidate-only under BRAIN delivery v2', () => {
   assert.match(text, /delivery_mode:[\s\S]*?default:\s*candidate-pr[\s\S]*?-\s*candidate-pr/);
@@ -27,4 +28,18 @@ test('candidate handoff does not mark the source queue dispatched before product
 test('candidate publication remains serialized to avoid duplicate writer races', () => {
   assert.match(text, /group:\s*repo-schrijven/);
   assert.match(text, /cancel-in-progress:\s*false/);
+});
+
+test('approved blog writer emits FAQPage schema from approved FAQ rows', () => {
+  assert.match(writer, /def faq_items\(/);
+  assert.match(writer, /'@type':'FAQPage'/);
+  assert.match(writer, /'@type':'Question'/);
+  assert.match(writer, /'@type':'Answer'/);
+});
+
+test('approved blog writer emits at least two functional accessible figures', () => {
+  assert.match(writer, /def article_figures\(/);
+  assert.match(writer, /<figure/);
+  assert.match(writer, /role="img"/);
+  assert.match(writer, /<figcaption>/);
 });
