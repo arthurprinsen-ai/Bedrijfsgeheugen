@@ -46,10 +46,36 @@ try {
     const page = await context.newPage();
     await page.addInitScript(() => {
       window.__bgCls = 0;
+      window.__bgClsSources = [];
+      const label = node => {
+        if (!(node instanceof Element)) return 'unknown';
+        const id = node.id ? `#${node.id}` : '';
+        const cls = typeof node.className === 'string' && node.className.trim()
+          ? `.${node.className.trim().replace(/\s+/g, '.')}`
+          : '';
+        return `${node.tagName.toLowerCase()}${id}${cls}`;
+      };
       try {
         new PerformanceObserver(list => {
           for (const entry of list.getEntries()) {
-            if (!entry.hadRecentInput) window.__bgCls += entry.value;
+            if (entry.hadRecentInput) continue;
+            window.__bgCls += entry.value;
+            const sources = (entry.sources || []).slice(0, 6).map(source => ({
+              node: label(source.node),
+              previousRect: source.previousRect ? {
+                x: Math.round(source.previousRect.x),
+                y: Math.round(source.previousRect.y),
+                width: Math.round(source.previousRect.width),
+                height: Math.round(source.previousRect.height),
+              } : null,
+              currentRect: source.currentRect ? {
+                x: Math.round(source.currentRect.x),
+                y: Math.round(source.currentRect.y),
+                width: Math.round(source.currentRect.width),
+                height: Math.round(source.currentRect.height),
+              } : null,
+            }));
+            window.__bgClsSources.push({ value: Number(entry.value || 0), sources });
           }
         }).observe({ type: 'layout-shift', buffered: true });
       } catch {}
@@ -90,6 +116,7 @@ try {
               main: inspect('main'),
               textLength: (document.querySelector('main')?.innerText || '').trim().length,
               cls: Number(window.__bgCls || 0),
+              clsSources: Array.isArray(window.__bgClsSources) ? window.__bgClsSources : [],
             };
           });
           for (const [name, item] of Object.entries({ header: state.header, main: state.main, h1: state.h1 })) {
@@ -103,7 +130,12 @@ try {
             }
           }
           if (state.textLength < 120) failures.push(`${route} ${viewport.name}: main content is effectively empty (${state.textLength} chars)`);
-          if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100`);
+          if (state.cls > 0.1) {
+            const topShifts = [...state.clsSources]
+              .sort((a, b) => b.value - a.value)
+              .slice(0, 3);
+            failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; sources=${JSON.stringify(topShifts)}`);
+          }
         } catch (error) {
           failures.push(`${route} ${viewport.name}: ${error.message || error}`);
         }
