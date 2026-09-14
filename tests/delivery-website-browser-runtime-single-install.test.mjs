@@ -29,6 +29,14 @@ test('de gedeelde installatie schakelt de flakey Google Chrome apt-bron uit', ()
   assert.match(script, /POGINGEN/, 'er wordt niet opnieuw geprobeerd bij een mislukte installatie');
 });
 
+test('local exact-candidate fallback preserves Netlify-style clean URLs', () => {
+  const cleanUrlServer = readFileSync('tools/ci/serve-clean-urls.py', 'utf8');
+  assert.match(workflow, /python3 tools\/ci\/serve-clean-urls\.py --port 4173 --bind 127\.0\.0\.1/);
+  assert.doesNotMatch(workflow, /python3 -m http\.server 4173/);
+  assert.match(cleanUrlServer, /candidate = translated \+ "\.html"/);
+  assert.match(cleanUrlServer, /os\.path\.isfile\(candidate\)/);
+});
+
 test('single browser job retains targeted, visibility, and high-risk broad exact-candidate contracts', () => {
   const previewReadyStart = workflow.indexOf('\n  preview-ready:');
   const pageSeoStart = workflow.indexOf('\n  page-seo:', previewReadyStart);
