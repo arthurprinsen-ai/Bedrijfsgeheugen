@@ -1,4 +1,5 @@
 import {buildCompanyLedger} from './company-ledger.mjs';
+import {buildRevenueCalibrationContext} from '../learning/company-revenue-learning-bridge.mjs';
 
 const BUCKETS=['NOW','NEXT','LATER','DO_NOT_DO'];
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
@@ -32,6 +33,31 @@ function projectDecision(record){
   };
 }
 
+function projectRevenuePredictions(records){
+  const settledPredictionIds=new Set(records
+    .filter(r=>r.kind==='learning'&&r.payload?.learningType==='revenue_settlement')
+    .map(r=>r.payload?.originatingPredictionId)
+    .filter(Boolean));
+  const predictions=records
+    .filter(r=>r.kind==='learning'&&r.payload?.learningType==='revenue_prediction'&&r.payload?.prediction?.decision_id)
+    .sort((a,b)=>String(b.observedAt).localeCompare(String(a.observedAt)));
+  const latest=new Map();
+  for(const record of predictions){
+    if(!latest.has(record.decisionId)) latest.set(record.decisionId,record);
+  }
+  return [...latest.values()].map(record=>({
+    id:record.id,
+    tenantId:record.tenantId,
+    decisionId:record.decisionId,
+    subjectId:record.subjectId,
+    owner:record.owner,
+    status:settledPredictionIds.has(record.id)?'SETTLED':'OPEN',
+    observedAt:record.observedAt,
+    evidenceIds:[...(record.evidenceIds||[])],
+    prediction:record.payload.prediction,
+  }));
+}
+
 export function buildCompanyDecisionProjection(records,{tenantId}={}){
   const scoped=(Array.isArray(records)?records:[]).filter(r=>!tenantId||r?.tenantId===tenantId);
   const ledger=buildCompanyLedger(scoped,{tenantId});
@@ -41,13 +67,18 @@ export function buildCompanyDecisionProjection(records,{tenantId}={}){
   const approvalQueue=ledger.approvals.filter(item=>['PENDING','REQUESTED'].includes(item.approval?.state)).map(item=>({
     id:item.id,decisionId:item.decisionId,subjectId:item.subjectId,status:item.status,approval:item.approval,actor:item.actor,owner:item.owner,occurredAt:item.occurredAt,evidenceIds:item.evidenceIds
   }));
+  const revenuePredictions=projectRevenuePredictions(scoped);
+  const revenueCalibration=buildRevenueCalibrationContext(scoped);
   return {
     companyDecisions,
     priorityPortfolio,
     decisionEconomics:ledger.economics,
     approvalQueue,
     auditTimeline:ledger.timeline,
-    actors:ledger.actors
+    actors:ledger.actors,
+    revenuePredictions,
+    revenueCalibration,
+    nextDecisionContext:revenueCalibration.next_decision_context
   };
 }
 
