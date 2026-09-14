@@ -45,6 +45,8 @@ jobs:
           ]);
           const readbackControlPlaneOnly=changedPaths.length>0 && changedPaths.every(path => readbackControlPlanePaths.has(path));
           const websiteRequired=readbackControlPlaneOnly ? false : suites.website === true;
+          const netlifyRuntimeRequired=!readbackControlPlaneOnly && changedPaths.some(path => path.startsWith('netlify/functions/'));
+          const deploymentRequired=websiteRequired || netlifyRuntimeRequired;
 
           let routes=[];
           let riskLane='not-applicable';
@@ -59,11 +61,12 @@ jobs:
 
           await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`website_required=${websiteRequired}\n`);
-          console.log(JSON.stringify({changedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,website_required:websiteRequired,risk_lane:riskLane,routes},null,2));
+          await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
+          console.log(JSON.stringify({changedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,website_required:websiteRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
       - id: deploy
         name: Wait for exact live release marker
-        if: steps.scope.outputs.website_required == 'true'
+        if: steps.scope.outputs.deployment_required == 'true'
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
         run: |
@@ -84,9 +87,9 @@ jobs:
           done
           echo "Production never exposed release marker ${EXPECTED_COMMIT}" >&2
           exit 1
-      - name: Record website deployment not applicable
-        if: steps.scope.outputs.website_required != 'true'
-        run: echo 'No website delivery lane is affected; exact website SHA deployment is not applicable.'
+      - name: Record exact deployment not applicable
+        if: steps.scope.outputs.deployment_required != 'true'
+        run: echo 'No Netlify-hosted production delivery is affected; exact SHA deployment is not applicable.'
       - name: Verify live connector readiness contract
         run: |
           set -euo pipefail
@@ -127,8 +130,18 @@ jobs:
           --deployment-required 'true'
           --routes-json '${{ steps.scope.outputs.routes }}'
           --routes-ok '${{ steps.routes.outcome == 'success' }}'
-      - name: Evaluate immutable non-website production truth
-        if: steps.scope.outputs.website_required != 'true'
+      - name: Evaluate immutable Netlify backend production truth
+        if: steps.scope.outputs.deployment_required == 'true' && steps.scope.outputs.website_required != 'true' && steps.deploy.outcome == 'success'
+        run: >-
+          node tools/site-shell/verify-production-release.mjs
+          --merge-sha '${{ github.sha }}'
+          --deployed-sha '${{ steps.deploy.outputs.deployed_sha }}'
+          --deploy-status '${{ steps.deploy.outputs.status }}'
+          --deployment-required 'true'
+          --routes-json '[]'
+          --routes-ok 'true'
+      - name: Evaluate immutable non-deployment production truth
+        if: steps.scope.outputs.deployment_required != 'true'
         run: >-
           node tools/site-shell/verify-production-release.mjs
           --merge-sha '${{ github.sha }}'
