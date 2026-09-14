@@ -74,27 +74,17 @@ revoke all on function public.reconcile_social_post_publication_obligation() fro
 
 drop trigger if exists social_posts_publication_obligation on public.social_posts;
 create trigger social_posts_publication_obligation
-after insert or update of published_at, external_post_id, channel_id, channel_name, channel_kind
+after insert or update
 on public.social_posts
 for each row
 execute function public.reconcile_social_post_publication_obligation();
 
--- Reconcile existing observed posts for the operating horizon without inventing identity.
-do $$
-declare
-  r public.social_posts%rowtype;
-begin
-  for r in
-    select *
-    from public.social_posts
-    where published_at is not null
-      and (published_at at time zone 'Europe/Amsterdam')::date between date '2026-09-14' and date '2026-12-31'
-      and (
-        channel_kind in ('linkedin_personal','linkedin_company','instagram')
-        or lower(coalesce(platform,'')) = 'instagram'
-      )
-  loop
-    perform public.reconcile_social_post_publication_obligation_row(r);
-  end loop;
-end;
-$$;
+-- Re-fire the trigger for already observed, identifiable posts in the operating horizon.
+update public.social_posts
+set updated_at = now()
+where published_at is not null
+  and (published_at at time zone 'Europe/Amsterdam')::date between date '2026-09-14' and date '2026-12-31'
+  and (
+    channel_kind in ('linkedin_personal','linkedin_company','instagram')
+    or lower(coalesce(platform,'')) = 'instagram'
+  );
