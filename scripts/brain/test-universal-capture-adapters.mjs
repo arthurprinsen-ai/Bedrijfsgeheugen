@@ -4,7 +4,6 @@ import {toKnowledgeEvent as chatEvent} from '../../brain/adapters/knowledge-chat
 import {toKnowledgeEvent as agentEvent} from '../../brain/adapters/knowledge-agent.mjs';
 import {toKnowledgeEvent as githubEvent} from '../../brain/adapters/knowledge-github.mjs';
 import {toKnowledgeEvent as netlifyEvent} from '../../brain/adapters/knowledge-netlify.mjs';
-import {toKnowledgeEvent as makeEvent} from '../../brain/adapters/knowledge-make.mjs';
 import {toKnowledgeEvent as notionEvent} from '../../brain/adapters/knowledge-notion.mjs';
 import {toKnowledgeEvent as businessEvent} from '../../brain/adapters/knowledge-business.mjs';
 
@@ -18,11 +17,10 @@ test('github and netlify adapters preserve authoritative ids without copying raw
   assert.equal(JSON.stringify(g).includes('raw_response'),false);
 });
 
-test('all source adapters emit the same knowledge-event schema',()=>{
+test('all active source adapters emit the same knowledge-event schema',()=>{
   const events=[
     chatEvent({session_id:'chat-1',component:'brain:knowledge',intent:'capture chat',outcome:'success'},options),
     agentEvent({agent_id:'agent-1',execution_id:'exec-1',component:'brain:knowledge',intent:'capture agent',outcome:'success'},options),
-    makeEvent({scenario_id:'7136176',execution_id:'run-1',component:'brain:bg168',intent:'route learning',outcome:'success'},options),
     notionEvent({page_id:'page-1',component:'brain:knowledge',intent:'project docs',outcome:'success'},options),
     businessEvent({source_type:'portal',record_id:'record-1',component:'portal:workflow',intent:'capture outcome',outcome:'success'},options)
   ];
