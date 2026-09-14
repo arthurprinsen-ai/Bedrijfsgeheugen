@@ -15,7 +15,7 @@ test('production handoff fails closed when live main protection is not verified'
   assert.match(yaml, /main-protection-promotion-block/);
 
   const protectionGate = yaml.indexOf('Certify live main protection before production handoff');
-  const bg169Handoff = yaml.indexOf('BG169 primary Make transport with GitHub-native failover');
+  const bg169Handoff = yaml.indexOf('BG169 GitHub-native production transport');
   assert.ok(protectionGate >= 0 && bg169Handoff >= 0 && protectionGate < bg169Handoff,
     'live main protection must be verified before BG169 transport');
 });

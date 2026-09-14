@@ -233,7 +233,6 @@ jobs:
           node --input-type=module - <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
           import { certifyMainProtection } from './scripts/brain/main-protection-certification.mjs';
-
           const branch = JSON.parse(await readFile('.artifacts/main-branch-promotion.json', 'utf8'));
           const rulesets = JSON.parse(await readFile('.artifacts/main-rulesets-promotion.json', 'utf8'));
           const required = branch?.protection?.required_status_checks ?? {};
@@ -241,12 +240,7 @@ jobs:
             ...(Array.isArray(required.contexts) ? required.contexts : []),
             ...(Array.isArray(required.checks) ? required.checks.map(item => item?.context) : []),
           ].filter(Boolean);
-          const expectedChecks = [
-            'Brain foundation verify',
-            'Shared Agent Memory Tests',
-            'V18 Production Promotion',
-            'Unified Brain Delivery',
-          ];
+          const expectedChecks = ['Brain foundation verify','Shared Agent Memory Tests','V18 Production Promotion','Unified Brain Delivery'];
           const result = certifyMainProtection({
             branch: branch?.name,
             protected: branch?.protected === true,
@@ -258,13 +252,7 @@ jobs:
             observedSha: branch?.commit?.sha ?? '',
             evidenceRef: `github-actions:${process.env.GITHUB_RUN_ID}:main-protection-promotion-block`,
           });
-          const evidence = {
-            observed_at: new Date().toISOString(),
-            repository: process.env.GITHUB_REPOSITORY,
-            workflow_run_id: process.env.GITHUB_RUN_ID,
-            purpose: 'main-protection-promotion-block',
-            ...result,
-          };
+          const evidence = {observed_at:new Date().toISOString(),repository:process.env.GITHUB_REPOSITORY,workflow_run_id:process.env.GITHUB_RUN_ID,purpose:'main-protection-promotion-block',...result};
           await writeFile('.artifacts/main-protection-promotion-block.json', `${JSON.stringify(evidence, null, 2)}\n`);
           if (!result.mainProtectionReady) {
             console.error(`::error::MAIN_PROTECTION_BLOCKED:${result.blockers.join(',') || 'UNVERIFIED'}`);
@@ -280,11 +268,10 @@ jobs:
           path: .artifacts/main-protection-promotion-block.json
           if-no-files-found: error
           retention-days: 30
-      - name: BG169 primary Make transport with GitHub-native failover
+      - name: BG169 GitHub-native production transport
         if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BG169_HANDOFF_URL: ${{ vars.BG169_HANDOFF_URL }}
           PR_NUMBER: ${{ inputs.pr_number }}
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}
           HEAD_SHA: ${{ needs.plan.outputs.head_sha }}
@@ -296,7 +283,6 @@ jobs:
           set -euo pipefail
           mkdir -p .artifacts
           test -n "$PR_NUMBER" && test -n "$BASE_SHA" && test -n "$HEAD_SHA" && test -n "$CANDIDATE_BRANCH"
-
           pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
           actual_repo="$(jq -r '.head.repo.full_name // ""' <<<"$pr")"
           actual_base_ref="$(jq -r '.base.ref // ""' <<<"$pr")"
@@ -310,77 +296,24 @@ jobs:
           [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::BG169_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
           [ "$actual_state" = "open" ] || { echo "::error::BG169_PR_NOT_OPEN:$actual_state"; exit 1; }
           [ "$actual_draft" = "false" ] || { echo "::error::BG169_DRAFT_BLOCKED"; exit 1; }
-
           git fetch origin main --no-tags
           rollback_identity="$(git rev-parse origin/main)"
-          transport=""
-          make_accepted=false
-          payload="$(jq -cn \
-            --argjson pr_number "$PR_NUMBER" \
-            --arg base_sha "$BASE_SHA" \
-            --arg candidate_sha "$HEAD_SHA" \
-            --arg expected_head_sha "$HEAD_SHA" \
-            --arg tested_head_sha "$HEAD_SHA" \
-            --arg candidate_branch "$CANDIDATE_BRANCH" \
-            --arg lane_id "brain|${HEAD_SHA:0:12}" \
-            --arg trace_id "$TRACE_ID" \
-            --argjson unified_run_id "$UNIFIED_RUN_ID" \
-            '{authority:"BG169",pr_number:$pr_number,base_sha:$base_sha,candidate_sha:$candidate_sha,expected_head_sha:$expected_head_sha,tested_head_sha:$tested_head_sha,candidate_branch:$candidate_branch,lane_id:$lane_id,trace_id:$trace_id,unified_run_id:$unified_run_id}')"
-
-          if [ -n "$BG169_HANDOFF_URL" ]; then
-            set +e
-            curl --silent --show-error --max-time 20 \
-              -H 'Content-Type: application/json' \
-              --data "$payload" \
-              "$BG169_HANDOFF_URL" >/tmp/bg169-handoff-response.json
-            curl_status=$?
-            set -e
-            if [ "$curl_status" -eq 0 ] && jq -e '.accepted == true and .production_authority == "BG169"' /tmp/bg169-handoff-response.json >/dev/null 2>&1; then
-              make_accepted=true
-              for attempt in 1 2 3 4 5 6; do
-                current_pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
-                if [ "$(jq -r '.merged // false' <<<"$current_pr")" = "true" ]; then
-                  git fetch origin main --no-tags
-                  if git merge-base --is-ancestor "$HEAD_SHA" origin/main; then
-                    transport="make"
-                    break
-                  fi
-                fi
-                sleep 5
-              done
-            else
-              echo "::warning::BG169_HANDOFF_NOT_ACCEPTED:primary Make transport unavailable or acknowledgement lacked execution authority evidence"
-            fi
-          else
-            echo "::warning::BG169_HANDOFF_NOT_ACCEPTED:BG169_HANDOFF_URL_MISSING"
-          fi
-
-          if [ -z "$transport" ]; then
-            if [ "$make_accepted" = "true" ]; then
-              echo "::warning::BG169_HANDOFF_NOT_ACCEPTED:Make acknowledgement did not become verified production execution"
-            fi
-            echo "BG169 GitHub-native failover: invoking the same authority contract for exact candidate $HEAD_SHA"
-            pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
-            [ "$(jq -r '.head.repo.full_name // ""' <<<"$pr")" = "$GITHUB_REPOSITORY" ] || { echo "::error::BG169_FAILOVER_REPO_DRIFT"; exit 1; }
-            [ "$(jq -r '.head.sha // ""' <<<"$pr")" = "$HEAD_SHA" ] || { echo "::error::BG169_FAILOVER_HEAD_DRIFT"; exit 1; }
-            merge_response="$(gh api \
-              --method PUT \
-              -H 'Accept: application/vnd.github+json' \
-              "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/merge" \
-              -f commit_title="BG169: promote exact candidate ${HEAD_SHA:0:12}" \
-              -f commit_message="BRAIN-DELIVERY-v2 BG169 GitHub-native failover; trace=${TRACE_ID}; candidate_sha=${HEAD_SHA}; expected_head_sha=${HEAD_SHA}; rollback_identity=${rollback_identity}" \
-              -f sha="$HEAD_SHA" \
-              -f merge_method="merge")"
-            [ "$(jq -r '.merged // false' <<<"$merge_response")" = "true" ] || { echo "::error::BG169_GITHUB_NATIVE_MERGE_REJECTED:$(jq -r '.message // "unknown"' <<<"$merge_response")"; exit 1; }
-            transport="github-native"
-          fi
-
+          echo "BG169 GitHub-native production transport: promoting exact candidate $HEAD_SHA"
+          merge_response="$(gh api \
+            --method PUT \
+            -H 'Accept: application/vnd.github+json' \
+            "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/merge" \
+            -f commit_title="BG169: promote exact candidate ${HEAD_SHA:0:12}" \
+            -f commit_message="BRAIN-DELIVERY-v2 BG169 GitHub-native; trace=${TRACE_ID}; candidate_sha=${HEAD_SHA}; expected_head_sha=${HEAD_SHA}; rollback_identity=${rollback_identity}" \
+            -f sha="$HEAD_SHA" \
+            -f merge_method="merge")"
+          [ "$(jq -r '.merged // false' <<<"$merge_response")" = "true" ] || { echo "::error::BG169_GITHUB_NATIVE_MERGE_REJECTED:$(jq -r '.message // "unknown"' <<<"$merge_response")"; exit 1; }
+          transport="github-native"
           git fetch origin main --no-tags
           production_sha="$(git rev-parse origin/main)"
           git merge-base --is-ancestor "$HEAD_SHA" origin/main || { echo "::error::BG169_PROMOTION_NOT_VERIFIED:$HEAD_SHA"; exit 1; }
           current_pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
           [ "$(jq -r '.merged // false' <<<"$current_pr")" = "true" ] || { echo "::error::BG169_PROMOTION_NOT_VERIFIED:PR_NOT_MERGED"; exit 1; }
-
           jq -n \
             --arg authority "BG169" \
             --arg transport "$transport" \

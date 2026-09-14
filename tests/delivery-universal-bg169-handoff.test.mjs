@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 'utf8');
-const marker = '- name: BG169 primary Make transport with GitHub-native failover';
+const marker = '- name: BG169 GitHub-native production transport';
 const handoff = workflow.split(marker)[1] || '';
 
 test('green executable components reach BG169 only through explicit production dispatch', () => {
-  assert.ok(handoff, 'BG169 multi-transport production handoff step missing');
+  assert.ok(handoff, 'BG169 GitHub-native production handoff step missing');
   const condition = handoff.match(/\n\s*if:\s*([^\n]+)/)?.[1] || '';
   assert.ok(condition.includes("needs.plan.outputs.has_lanes == 'true'"), 'handoff must require executable lanes');
   assert.ok(condition.includes("github.event_name == 'workflow_dispatch'"), 'BG169 must require explicit workflow_dispatch');
@@ -22,16 +22,26 @@ test('verification-only writer dispatch remains explicitly non-promoting', () =>
   assert.match(handoff, /inputs\.verification_only != true/);
 });
 
-test('BG169 resolves immutable explicitly dispatched PR identity and rejects acknowledgement-only success', () => {
+test('BG169 resolves immutable explicitly dispatched PR identity and fails closed on GitHub-native merge rejection', () => {
   assert.match(handoff, /PR_NUMBER:\s*\$\{\{\s*inputs\.pr_number\s*\}\}/);
   assert.match(handoff, /BASE_SHA:\s*\$\{\{\s*needs\.plan\.outputs\.base_sha\s*\}\}/);
   assert.match(handoff, /HEAD_SHA:\s*\$\{\{\s*needs\.plan\.outputs\.head_sha\s*\}\}/);
   assert.match(handoff, /CANDIDATE_BRANCH:\s*\$\{\{\s*inputs\.candidate_branch\s*\}\}/);
-  assert.match(handoff, /BG169_HANDOFF_NOT_ACCEPTED/);
+  assert.match(handoff, /head\.repo\.full_name/);
+  assert.match(handoff, /-f sha="\$HEAD_SHA"/);
+  assert.match(handoff, /BG169_GITHUB_NATIVE_MERGE_REJECTED/);
 });
 
 test('production is green only after exact candidate is verified in main', () => {
   assert.match(handoff, /git merge-base --is-ancestor "\$HEAD_SHA" origin\/main/);
   assert.match(handoff, /BG169_PROMOTION_NOT_VERIFIED/);
   assert.match(handoff, /execution_proof:true,verified:true/);
+  assert.match(handoff, /transport="github-native"/);
+});
+
+test('BG169 production handoff cannot regress to Make transport', () => {
+  assert.doesNotMatch(workflow, /BG169_HANDOFF_URL/);
+  assert.doesNotMatch(workflow, /primary Make transport/i);
+  assert.doesNotMatch(workflow, /transport="make"/);
+  assert.doesNotMatch(workflow, /make_accepted/);
 });
