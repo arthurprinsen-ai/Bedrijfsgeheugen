@@ -172,6 +172,10 @@ jobs:
       - name: Install Netlify build dependencies
         run: npm install
       - name: Build and verify exact Netlify website artifact
+        env:
+          COMMIT_REF: ${{ inputs.candidate_sha }}
+          CONTEXT: deploy-preview
+          DEPLOY_ID: required-page-seo-local
         run: |
           node tools/bouw-powerhouse-auth.mjs
           node tools/bouw-kennisindex.mjs
@@ -180,6 +184,7 @@ jobs:
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
           node tools/prijzen-uit-de-homepage.mjs
+          node tools/bouw-release-evidence.mjs
       - name: Verify built artifact contracts
         run: node --test tests/tabbladen.test.mjs
 
@@ -196,6 +201,10 @@ jobs:
           node-version: '22'
       - name: Build and serve exact local candidate when Netlify preview is unavailable
         if: needs.preview-ready.outputs.preview_mode == 'local-exact-candidate'
+        env:
+          COMMIT_REF: ${{ inputs.candidate_sha }}
+          CONTEXT: deploy-preview
+          DEPLOY_ID: required-browser-local
         run: |
           npm install --no-audit --no-fund --silent
           node tools/bouw-powerhouse-auth.mjs
@@ -205,6 +214,7 @@ jobs:
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
           node tools/prijzen-uit-de-homepage.mjs
+          node tools/bouw-release-evidence.mjs
           nohup python3 tools/ci/serve-clean-urls.py --port 4173 --bind 127.0.0.1 >/tmp/bg-local-site.log 2>&1 &
           for attempt in $(seq 1 20); do
             if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/ai-act >/dev/null && curl -fsS http://127.0.0.1:4173/benchmark >/dev/null; then
