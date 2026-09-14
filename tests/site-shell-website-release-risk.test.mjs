@@ -64,10 +64,14 @@ test('unknown path cannot become fast-fix', () => {
   assert.equal(result.requires_preview, true);
 });
 
-test('website browser verification stays exact-candidate with clean URLs when Netlify deploy previews are unavailable', () => {
+test('website browser verification stays exact-candidate and preserves scoped clean-URL fallback', () => {
+  assert.match(websiteLane, /requires_preview: \$\{\{ steps\.risk\.outputs\.requires_preview \}\}/);
+  assert.match(websiteLane, /if: needs\.classify\.outputs\.requires_preview == 'true'/);
   assert.match(websiteLane, /preview_mode/);
   assert.match(websiteLane, /local-exact-candidate/);
-  assert.match(websiteLane, /tools\/ci\/serve-clean-urls\.py/);
+  assert.match(websiteLane, /python3 tools\/ci\/serve-clean-urls\.py --port 4173 --bind 127\.0\.0\.1/);
   assert.match(websiteLane, /http:\/\/127\.0\.0\.1:4173/);
+  assert.match(websiteLane, /BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.match(websiteLane, /UI_VR_BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
   assert.match(websiteLane, /ref:\s*\$\{\{ inputs\.candidate_sha \}\}/);
 });
