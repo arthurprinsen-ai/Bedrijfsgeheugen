@@ -2,7 +2,7 @@
 
 create table if not exists public.content_operations_registry (
   content_key text primary key,
-  tenant_id uuid,
+  tenant_id text,
   content_type text not null,
   channel text not null,
   title text,
@@ -48,7 +48,7 @@ declare
   v_key text;
   v_status text;
 begin
-  v_key := 'social:' || new.post_id;
+  v_key := 'social:' || new.tenant_id || ':' || new.post_id;
   v_status := case
     when new.published_at is not null then 'published'
     else 'generated'
@@ -76,7 +76,7 @@ begin
     new.published_at,
     v_status,
     'social_posts',
-    jsonb_build_object('post_id', new.post_id),
+    jsonb_build_object('post_id', new.post_id, 'external_post_id', new.external_post_id),
     now()
   )
   on conflict (content_key) do update set
@@ -86,9 +86,10 @@ begin
     generated_at = coalesce(content_operations_registry.generated_at, excluded.generated_at),
     published_at = coalesce(excluded.published_at, content_operations_registry.published_at),
     status = case
+      when content_operations_registry.learning_written_at is not null then 'learned'
       when content_operations_registry.live_verified_at is not null then 'verified'
       when excluded.published_at is not null then 'published'
-      else greatest(content_operations_registry.status, excluded.status)
+      else coalesce(content_operations_registry.status, excluded.status)
     end,
     source_ref = content_operations_registry.source_ref || excluded.source_ref,
     updated_at = now();
