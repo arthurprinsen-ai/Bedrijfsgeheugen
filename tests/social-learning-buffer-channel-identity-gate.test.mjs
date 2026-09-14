@@ -19,3 +19,37 @@ test('sensitive private detail needs exact approval',()=>{const r=run('Ik had th
 test('business exception is narrow and exact-content only',()=>{const text='Ik vertel vandaag over mijn consultancy ervaring.';assert.equal(run(text).authorized,false);const ok=run(text,{businessException:{explicitUserRequest:true,contentId:'personal-1',singleUse:true}});assert.equal(ok.authorized,true);const wrong=run(text,{businessException:{explicitUserRequest:true,contentId:'other',singleUse:true}});assert.equal(wrong.authorized,false)});
 test('missing prediction/content lineage blocks publication',()=>{const r=authorizeSocialPublication({channelKind:'linkedin_personal',channelId:CHANNELS.linkedin_personal.channelId,text:'Ik heb thuis ruzie met mijn printer.',lineage:{contentId:'x'},personalTruth:truth,companyPageInterchangeable:false});assert.equal(r.authorized,false);assert.ok(r.reasons.includes('LINEAGE_INCOMPLETE'))});
 test('Mira cannot route to Arthur personal channel',()=>{const r=authorizeSocialPublication({channelKind:'instagram_company',channelId:CHANNELS.linkedin_personal.channelId,text:'Mira opent haar laptop.',miraGatePassed:true,lineage});assert.equal(r.authorized,false);assert.ok(r.reasons.includes('CHANNEL_IDENTITY_MISMATCH'))});
+
+const instagram=(extra={})=>authorizeSocialPublication({
+ channelKind:'instagram_company',channelId:CHANNELS.instagram_company.channelId,text:'Mira opent haar laptop.',lineage,
+ miraGatePassed:true,assetUrl:'https://cdn.example/final.jpg',...extra
+});
+
+test('Instagram cannot publish with Mira gate alone; final visual evidence is mandatory',()=>{
+ const r=instagram();
+ assert.equal(r.authorized,false);
+ assert.ok(r.reasons.includes('INSTAGRAM_VISUAL_EVIDENCE_REQUIRED'));
+});
+
+test('Instagram blocks a detected placeholder or broken render',()=>{
+ const r=instagram({instagramVisual:{verified:true,evidenceRefs:['vision:final-frame'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:true,identityClass:'mira_daily_life'}});
+ assert.equal(r.authorized,false);
+ assert.ok(r.reasons.includes('INSTAGRAM_PLACEHOLDER_BLOCKED'));
+});
+
+test('Instagram blocks visuals that do not match Mira daily-life identity',()=>{
+ const r=instagram({instagramVisual:{verified:true,evidenceRefs:['vision:final-frame'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,identityClass:'generic_corporate'}});
+ assert.equal(r.authorized,false);
+ assert.ok(r.reasons.includes('INSTAGRAM_MIRA_VISUAL_REQUIRED'));
+});
+
+test('Instagram blocks when inspected asset is not the exact asset sent to Buffer',()=>{
+ const r=instagram({instagramVisual:{verified:true,evidenceRefs:['vision:final-frame'],assetUrl:'https://cdn.example/other.jpg',placeholderDetected:false,identityClass:'mira_daily_life'}});
+ assert.equal(r.authorized,false);
+ assert.ok(r.reasons.includes('INSTAGRAM_FINAL_ASSET_MISMATCH'));
+});
+
+test('Instagram authorizes only the exact verified non-placeholder Mira final asset',()=>{
+ const r=instagram({instagramVisual:{verified:true,evidenceRefs:['vision:final-frame'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,identityClass:'mira_daily_life'}});
+ assert.equal(r.authorized,true);
+});
