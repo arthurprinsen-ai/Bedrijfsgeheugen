@@ -5,6 +5,7 @@ import { classifyWebsiteRelease } from '../tools/site-shell/website-release-risk
 
 const riskConfig = JSON.parse(await readFile('site/website-release-risk.json', 'utf8'));
 const acceptedBaseline = JSON.parse(await readFile('site/accepted-baseline.json', 'utf8'));
+const websiteLane = await readFile('.github/workflows/lane-website.yml', 'utf8');
 
 test('one explicitly owned page-local asset is fast-fix', () => {
   const result = classifyWebsiteRelease({ changedPaths:['assets/pages/ai-act/local-fix.css'], riskConfig, acceptedBaseline });
@@ -29,4 +30,12 @@ test('unknown path cannot become fast-fix', () => {
   const result = classifyWebsiteRelease({ changedPaths:['assets/future/unknown.css'], riskConfig, acceptedBaseline });
   assert.notEqual(result.lane, 'fast-fix');
   assert.equal(result.escalated, true);
+});
+
+test('website browser verification stays exact-candidate even when Netlify deploy previews are unavailable', () => {
+  assert.match(websiteLane, /preview_mode/);
+  assert.match(websiteLane, /local-exact-candidate/);
+  assert.match(websiteLane, /python3 -m http\.server 4173/);
+  assert.match(websiteLane, /http:\/\/127\.0\.0\.1:4173/);
+  assert.match(websiteLane, /ref:\s*\$\{\{ inputs\.candidate_sha \}\}/);
 });
