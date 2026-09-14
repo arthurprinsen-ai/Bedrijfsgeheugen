@@ -5,7 +5,7 @@ import { evaluateProductionReadback } from '../tools/site-shell/verify-productio
 
 const SHA = '9353ecfc8d5a463a89963ae9b671318d3db02d54';
 
-test('backend-only release can complete without a website deployment marker', () => {
+test('backend-only release can complete without a website deployment marker when no Netlify-hosted runtime changed', () => {
   assert.deepEqual(
     evaluateProductionReadback({ mergeSha: SHA, deploymentRequired: false, routesOk: true }),
     { status: 'LIVE_VERIFIED', reason: 'website_deployment_not_applicable' },
@@ -26,6 +26,15 @@ test('production readback derives website applicability from canonical delivery 
   assert.match(workflow, /website_required/);
   assert.match(workflow, /steps\.scope\.outputs\.website_required == 'true'/);
   assert.match(workflow, /deployment-required/);
+});
+
+test('Netlify-hosted backend function changes require exact production deployment without forcing browser scope', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(workflow, /netlify\/functions\//);
+  assert.match(workflow, /deployment_required/);
+  assert.match(workflow, /steps\.scope\.outputs\.deployment_required == 'true'/);
+  assert.match(workflow, /website_required/);
+  assert.match(workflow, /Install production browser verifier[\s\S]*website_required == 'true'/);
 });
 
 test('production readback treats its own control-plane-only maintenance as website deployment not applicable', async () => {
