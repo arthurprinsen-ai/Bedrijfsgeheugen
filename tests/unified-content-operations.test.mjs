@@ -1,0 +1,60 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const migrationPath = 'supabase/migrations/20260914093000_unified_content_publication_operations.sql';
+const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
+const runtime = fs.readFileSync('supabase/functions/powerhouse-runtime/index.ts', 'utf8');
+const publisher = fs.readFileSync('scripts/publish_approved_blog_v2.py', 'utf8');
+const workflow = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
+
+test('calendar projects exactly 109 daily blog obligations through 31 Dec 2026', () => {
+  assert.match(migration, /2026-09-14/);
+  assert.match(migration, /2026-12-31/);
+  assert.match(migration, /v_blog_count\s*<>\s*109/);
+  assert.match(migration, /unique\s*\(tenant_id,\s*publication_date,\s*channel\)/i);
+  assert.match(migration, /'linkedin_personal'/);
+  assert.match(migration, /'linkedin_company'/);
+  assert.match(migration, /'instagram'/);
+  assert.match(migration, /'blog'/);
+});
+
+test('execution ledger is idempotent and has a unified cockpit', () => {
+  assert.match(migration, /create table if not exists public\.content_publication_obligations/i);
+  assert.match(migration, /create or replace function public\.sync_content_publication_obligations/i);
+  assert.match(migration, /on conflict \(tenant_id, publication_date, channel\) do update/i);
+  assert.match(migration, /create or replace view public\.content_operations_cockpit/i);
+});
+
+test('publication state cannot claim live without proof and cannot regress', () => {
+  assert.match(migration, /create or replace function public\.record_content_publication_state/i);
+  assert.match(migration, /LIVE_PROVEN/);
+  assert.match(migration, /LIVE_PROOF_REQUIRED/);
+  assert.match(migration, /STATE_REGRESSION_NOT_ALLOWED/);
+});
+
+test('Powerhouse daily runtime syncs and exposes content operations', () => {
+  assert.match(runtime, /sync_content_publication_obligations/);
+  assert.match(runtime, /content_operations_cockpit/);
+  assert.match(runtime, /contentOperations/);
+  assert.match(runtime, /content-operations/);
+});
+
+test('approved blog publisher schedules daily and resolves an exact due slug before render', () => {
+  assert.match(workflow, /schedule:/);
+  assert.match(workflow, /cron:\s*['"]\d+\s+\d+\s+\*\s+\*\s+\*['"]/);
+  assert.match(workflow, /--select-due-slug/);
+  assert.match(workflow, /RESOLVED_SLUG/);
+  assert.match(publisher, /--select-due-slug/);
+  assert.match(publisher, /def select_due_slug\(/);
+  assert.match(publisher, /queue_contract\(row\)/);
+  assert.match(publisher, /NO_DUE_BLOG/);
+  assert.match(publisher, /learning-driven selection required; render must receive an exact approved slug/);
+});
+
+test('existing blog delivery remains candidate-only and never pushes direct to main', () => {
+  assert.match(workflow, /production_authority=BG169/);
+  assert.match(workflow, /direct_main_push=false/);
+  assert.doesNotMatch(workflow, /git\s+push\s+origin\s+HEAD:main/);
+  assert.doesNotMatch(workflow, /gh\s+pr\s+merge/);
+});
