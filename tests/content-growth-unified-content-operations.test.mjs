@@ -5,6 +5,8 @@ import fs from 'node:fs';
 const migrationPath = 'supabase/migrations/20260914093000_unified_content_publication_operations.sql';
 const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
 const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
+const dailyApi = fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts', 'utf8');
+const todayUi = fs.readFileSync('intern/vandaag/index.html', 'utf8');
 const publisher = fs.readFileSync('scripts/publish_approved_blog_v2.py', 'utf8');
 const workflow = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
 
@@ -19,9 +21,10 @@ test('calendar projects exactly 109 daily blog obligations through 31 Dec 2026',
   assert.match(migration, /'blog'/);
 });
 
-test('execution ledger is idempotent and has a unified cockpit', () => {
+test('execution ledger is idempotent, deduplicated and has a unified cockpit', () => {
   assert.match(migration, /create table if not exists public\.content_publication_obligations/i);
   assert.match(migration, /create or replace function public\.sync_content_publication_obligations/i);
+  assert.match(migration, /select distinct value as channel/i);
   assert.match(migration, /on conflict \(tenant_id, publication_date, channel\) do update/i);
   assert.match(migration, /create or replace view public\.content_operations_cockpit/i);
 });
@@ -39,6 +42,19 @@ test('Powerhouse content operations endpoint reads the canonical cockpit', () =>
   assert.match(operationsApi, /blogComing/);
   assert.match(operationsApi, /is_overdue/);
   assert.match(operationsApi, /x-powerhouse-token/);
+});
+
+test('existing Today cockpit exposes the same publication truth with the existing login', () => {
+  assert.match(dailyApi, /body\?\.actie === 'content'/);
+  assert.match(dailyApi, /content_operations_cockpit/);
+  assert.match(dailyApi, /blog_komt/);
+  assert.match(dailyApi, /x-bg-token/);
+  assert.match(todayUi, /Content & publicatie/);
+  assert.match(todayUi, /api\(\{actie:'content'\}\)/);
+  assert.match(todayUi, /LinkedIn persoonlijk/);
+  assert.match(todayUi, /Instagram/);
+  assert.match(todayUi, /Blog/);
+  assert.match(todayUi, /https:\/\/www\.bedrijfsgeheugen\.nl\/intern\/meetoverzicht\//);
 });
 
 test('approved blog publisher schedules daily and resolves an exact due slug before render', () => {
