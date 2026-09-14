@@ -34,3 +34,14 @@ test('production readback treats its own control-plane-only maintenance as websi
   assert.match(workflow, /brain-production-release-readback-scope\.test\.mjs/);
   assert.match(workflow, /readbackControlPlaneOnly/);
 });
+
+test('public connector readiness is excluded from the authenticated connector wildcard', async () => {
+  const [portalConnectors, readiness] = await Promise.all([
+    readFile('netlify/functions/portal-connectors.mjs', 'utf8'),
+    readFile('netlify/functions/connector-readiness.mjs', 'utf8'),
+  ]);
+  assert.match(portalConnectors, /path:\s*['"]\/api\/connectors\/\*['"]/);
+  assert.match(portalConnectors, /excludedPath:\s*['"]\/api\/connectors\/readiness['"]/);
+  assert.match(readiness, /path:\s*['"]\/api\/connectors\/readiness['"]/);
+  assert.doesNotMatch(portalConnectors, /excludedPath:\s*['"]\/api\/connectors\/\*['"]/);
+});
