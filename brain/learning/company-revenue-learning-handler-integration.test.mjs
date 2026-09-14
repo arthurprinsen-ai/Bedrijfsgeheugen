@@ -34,6 +34,10 @@ test('commercial START writes prediction before action and RECORD_OUTCOME closes
   assert.equal(records[1].payload.learningType,'revenue_prediction');
   assert.equal(records[2].kind,'action');
 
+  const openProjection=await store.getProjection('user:arthur');
+  assert.equal(openProjection.revenuePredictions[0].status,'OPEN');
+  assert.equal(Object.hasOwn(openProjection.revenuePredictions[0],'canonicalRecord'),false);
+
   const outcome=await post(handler,{command:'RECORD_OUTCOME',decisionId:'decision:acme',idempotencyKey:'outcome-1',meeting:true,proposal:true,order:true,verified:true,realizedValue:2900,evidenceIds:['crm:deal-42'],result:'order won'});
   assert.equal(outcome.status,201);
   const settlement=records.find(item=>item.kind==='learning'&&item.payload?.learningType==='revenue_settlement');
@@ -51,6 +55,11 @@ test('commercial START fails closed without probability and outcome fails withou
   const start=await post(handler,{command:'START',decisionId:'decision:acme',idempotencyKey:'start-missing'});
   assert.equal(start.status,400);
   assert.equal((await start.json()).error,'MEETING_PROBABILITY_REQUIRED');
+  assert.equal(records.length,1);
+
+  const nullStart=await post(handler,{command:'START',decisionId:'decision:acme',idempotencyKey:'start-null',meetingProbability:null});
+  assert.equal(nullStart.status,400);
+  assert.equal((await nullStart.json()).error,'MEETING_PROBABILITY_REQUIRED');
   assert.equal(records.length,1);
 
   const outcome=await post(handler,{command:'RECORD_OUTCOME',decisionId:'decision:acme',idempotencyKey:'outcome-missing',meeting:true,verified:true,realizedValue:2900});
