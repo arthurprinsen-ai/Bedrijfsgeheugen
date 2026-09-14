@@ -27,7 +27,14 @@ export function authorizeSocialPublication(input={}){
   if(contract.personalTruthRequiresVerifiedFlag&&input.personalTruth?.verified!==true) reasons.push('FIRST_PERSON_TRUTH_UNVERIFIED');
   if(input.sensitivePrivateDetail===true&&input.explicitSensitiveApproval!==true) reasons.push('SENSITIVE_PRIVATE_DETAIL_BLOCKED');
  }
- if(input.channelKind==='instagram_company'&&channel?.requiresMiraGate&&input.miraGatePassed!==true) reasons.push('MIRA_GATE_REQUIRED');
+ if(input.channelKind==='instagram_company'){
+  if(channel?.requiresMiraGate&&input.miraGatePassed!==true) reasons.push('MIRA_GATE_REQUIRED');
+  const visual=input.instagramVisual;
+  if(visual?.verified!==true||refs(visual).length===0||!has(visual?.assetUrl)) reasons.push('INSTAGRAM_VISUAL_EVIDENCE_REQUIRED');
+  if(visual?.placeholderDetected===true) reasons.push('INSTAGRAM_PLACEHOLDER_BLOCKED');
+  if(visual?.identityClass!=='mira_daily_life') reasons.push('INSTAGRAM_MIRA_VISUAL_REQUIRED');
+  if(has(input.assetUrl)&&has(visual?.assetUrl)&&visual.assetUrl!==input.assetUrl) reasons.push('INSTAGRAM_FINAL_ASSET_MISMATCH');
+ }
  const authorized=reasons.length===0;
  return {authorized,failClosed:contract.failClosed===true,contractId:contract.contractId,expectedChannelId:channel?.channelId||null,authorizationId:authorized?crypto.createHash('sha256').update([contract.contractId,input.channelKind,input.channelId,input.lineage.contentId,input.lineage.predictionId,text].join('|')).digest('hex'):null,reasons};
 }
