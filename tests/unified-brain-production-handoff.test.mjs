@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const workflow = await readFile('.github/workflows/unified-brain-delivery.yml', 'utf8');
-const marker = '- name: BG169 primary Make transport with GitHub-native failover';
+const marker = '- name: BG169 GitHub-native production transport';
 const handoff = workflow.split(marker)[1] || '';
 
 test('green executable components can reach BG169 only through explicit production dispatch', () => {
@@ -28,10 +28,18 @@ test('verification-only writer dispatch remains explicitly non-promoting', () =>
   assert.match(workflow, /startsWith\(inputs\.candidate_branch, 'writer\/'\).*inputs\.verification_only == true/);
 });
 
-test('BG169 carries exact candidate identity across primary and failover transports', () => {
+test('BG169 carries exact candidate identity through GitHub-native production transport', () => {
   for (const field of ['PR_NUMBER','BASE_SHA','HEAD_SHA','CANDIDATE_BRANCH']) assert.ok(handoff.includes(`${field}:`), `${field} missing`);
-  assert.match(handoff, /expected_head_sha/);
   assert.match(handoff, /head\.repo\.full_name/);
-  assert.match(handoff, /BG169 GitHub-native failover/);
+  assert.match(handoff, /-f sha="\$HEAD_SHA"/);
+  assert.match(handoff, /BG169_GITHUB_NATIVE_MERGE_REJECTED/);
   assert.match(handoff, /git merge-base --is-ancestor/);
+  assert.match(handoff, /transport="github-native"/);
+});
+
+test('BG169 production route cannot regress to Make transport', () => {
+  assert.doesNotMatch(workflow, /BG169_HANDOFF_URL/);
+  assert.doesNotMatch(workflow, /primary Make transport/i);
+  assert.doesNotMatch(workflow, /transport="make"/);
+  assert.doesNotMatch(workflow, /make_accepted/);
 });
