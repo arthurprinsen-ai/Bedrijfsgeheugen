@@ -1,0 +1,1 @@
+{"contract":"COMMERCIAL-OUTCOME-SIGNAL-INGEST-v1","auto_settle":{"verified":true,"minimum_confidence":0.9,"requires_exact_open_prediction":true,"requires_evidence":true},"delegates_to":"RECORD_OUTCOME","owns_persistence":false,"supported_types":["meeting_completed","proposal_sent","proposal_accepted","deal_won","order_accepted","payment_received"]}
