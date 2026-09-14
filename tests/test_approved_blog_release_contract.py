@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import pathlib
+import re
 import sys
 import unittest
 
@@ -56,8 +57,8 @@ FAQ: Betekent weinig aanvragen dat SEO niet werkt? || Nee. Verkeer, herkenning e
         self.assertGreaterEqual(out.count('<figure'), 2)
         self.assertGreaterEqual(out.count('role="img"'), 2)
         self.assertGreaterEqual(out.count('<figcaption'), 2)
-        self.assertIn('<title>', out)
-        blocks = __import__('re').findall(r'<script type="application/ld\+json">(.*?)</script>', out, __import__('re').S)
+        self.assertRegex(out, r'<title(?:\s|>)')
+        blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', out, re.S)
         types = set()
         for block in blocks:
             data = json.loads(block)
