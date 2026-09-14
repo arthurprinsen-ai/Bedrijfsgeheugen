@@ -18,7 +18,7 @@ function harness(){
       return {duplicate:false,record};
     },
   };
-  const handler=createCompanyDecisionHandler({getUser:async()=>({id:'arthur'}),store,now:(()=>{const times=['2026-09-14T14:00:00Z','2026-09-16T10:00:00Z'];let i=0;return()=>times[Math.min(i++,times.length-1)];})()});
+  const handler=createCompanyDecisionHandler({getUser:async()=>({id:'arthur'}),store,now:(()=>{const times=['2026-09-14T14:00:00Z','2026-09-16T10:00:00Z','2026-09-18T09:00:00Z'];let i=0;return()=>times[Math.min(i++,times.length-1)];})()});
   return {records,store,handler};
 }
 
@@ -48,6 +48,13 @@ test('commercial START writes prediction before action and RECORD_OUTCOME closes
   assert.equal(projection.revenuePredictions[0].status,'SETTLED');
   assert.equal(projection.revenueCalibration.metrics.sample_size,1);
   assert.equal(projection.nextDecisionContext.revenue_calibration.sample_size,1);
+
+  const restarted=await post(handler,{command:'START',decisionId:'decision:acme',idempotencyKey:'start-2',meetingProbability:.55,evidenceIds:['signal:new-intent']});
+  assert.equal(restarted.status,201);
+  const secondProjection=await store.getProjection('user:arthur');
+  assert.equal(secondProjection.revenuePredictions[0].status,'OPEN');
+  assert.notEqual(secondProjection.revenuePredictions[0].id,settlement.payload.originatingPredictionId);
+  assert.equal(secondProjection.revenueCalibration.metrics.sample_size,1);
 });
 
 test('commercial START fails closed without probability and outcome fails without originating prediction',async()=>{
