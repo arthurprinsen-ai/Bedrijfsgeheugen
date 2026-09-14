@@ -29,11 +29,21 @@ export function authorizeSocialPublication(input={}){
  }
  if(input.channelKind==='instagram_company'){
   if(channel?.requiresMiraGate&&input.miraGatePassed!==true) reasons.push('MIRA_GATE_REQUIRED');
-  const visual=input.instagramVisual;
+  const visual=input.instagramVisual,mediaKind=input.mediaKind||'image';
   if(visual?.verified!==true||refs(visual).length===0||!has(visual?.assetUrl)) reasons.push('INSTAGRAM_VISUAL_EVIDENCE_REQUIRED');
   if(visual?.placeholderDetected===true) reasons.push('INSTAGRAM_PLACEHOLDER_BLOCKED');
   if(visual?.identityClass!=='mira_daily_life') reasons.push('INSTAGRAM_MIRA_VISUAL_REQUIRED');
   if(has(input.assetUrl)&&has(visual?.assetUrl)&&visual.assetUrl!==input.assetUrl) reasons.push('INSTAGRAM_FINAL_ASSET_MISMATCH');
+  if(mediaKind==='video'||mediaKind==='reel'){
+   const required=channel?.mediaPolicy?.requiredVideoFramePositions||['start','middle','end'];
+   const frames=Array.isArray(visual?.frameEvidence)?visual.frameEvidence:[];
+   const complete=required.every(position=>frames.some(frame=>frame?.position===position&&frame?.verified===true&&refs(frame).length>0));
+   if(!complete) reasons.push('INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED');
+   if(frames.some(frame=>frame?.placeholderDetected===true)) reasons.push('INSTAGRAM_VIDEO_PLACEHOLDER_BLOCKED');
+   if(frames.some(frame=>frame?.identityClass!=='mira_daily_life')) reasons.push('INSTAGRAM_MIRA_FRAME_IDENTITY_REQUIRED');
+   if(visual?.formatVerified!==true) reasons.push('INSTAGRAM_MEDIA_FORMAT_UNVERIFIED');
+   if(input.assetMimeType!=='video/mp4') reasons.push('INSTAGRAM_VIDEO_MP4_REQUIRED');
+  }
  }
  const authorized=reasons.length===0;
  return {authorized,failClosed:contract.failClosed===true,contractId:contract.contractId,expectedChannelId:channel?.channelId||null,authorizationId:authorized?crypto.createHash('sha256').update([contract.contractId,input.channelKind,input.channelId,input.lineage.contentId,input.lineage.predictionId,text].join('|')).digest('hex'):null,reasons};

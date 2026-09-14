@@ -28,34 +28,26 @@
       "service": "instagram",
       "type": "business",
       "identity": "mira",
-      "requiresMiraGate": true
+      "requiresMiraGate": true,
+      "mediaPolicy": {
+        "allowedKinds": ["image", "video", "reel"],
+        "requiresExactFinalAsset": true,
+        "requiresMiraIdentity": true,
+        "requiredVideoFramePositions": ["start", "middle", "end"],
+        "requiresVerifiedPublishFormatFor": ["video", "reel"],
+        "requiredVideoMimeType": "video/mp4",
+        "generatorsMayNotBypassGate": ["openart", "veo", "placid"]
+      }
     }
   },
   "personalInstagramAutopublish": "blocked_unconnected",
-  "requiredLineage": [
-    "contentId",
-    "calendarDate",
-    "predictionId",
-    "sourceDecisionId"
-  ],
-  "personalTruthClasses": [
-    "author_observation",
-    "author_opinion",
-    "author_experience"
-  ],
+  "requiredLineage": ["contentId", "calendarDate", "predictionId", "sourceDecisionId"],
+  "personalTruthClasses": ["author_observation", "author_opinion", "author_experience"],
   "personalTruthRequiresEvidenceRefs": true,
   "personalTruthRequiresVerifiedFlag": true,
   "externalSourcesMaySuggestThemesButCannotCreateFirstPersonClaims": true,
   "sensitivePrivateDetailsDefault": "blocked",
   "frustrationEngine": "active",
   "sourceFusion": "all_relevant_lawful_sources",
-  "personalOptimizationPrimary": [
-    "comments",
-    "replies",
-    "shares",
-    "profile_views",
-    "repeat_interaction",
-    "conversation_starts",
-    "relationship_warmth"
-  ]
+  "personalOptimizationPrimary": ["comments", "replies", "shares", "profile_views", "repeat_interaction", "conversation_starts", "relationship_warmth"]
 }
