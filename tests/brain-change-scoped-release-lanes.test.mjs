@@ -54,6 +54,15 @@ test('approved blog writer emits FAQPage schema and two accessible functional fi
   assert.match(writer, /<figcaption>/);
 });
 
+test('approved blog writer strips render-blocking remote font stylesheets from generated articles', async () => {
+  const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
+  assert.match(writer, /def normalize_performance\(/);
+  assert.match(writer, /fonts\.googleapis\.com/);
+  assert.match(writer, /fonts\.gstatic\.com/);
+  assert.match(writer, /rel=\["\\'\]preload\["\\'\]/);
+  assert.match(writer, /html_doc\s*=\s*normalize_performance\(html_doc\)/);
+});
+
 test('approved blog workflow references the canonical writer', async () => {
   const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
   assert.match(workflow, /scripts\/publish_approved_blog_v2\.py/);
