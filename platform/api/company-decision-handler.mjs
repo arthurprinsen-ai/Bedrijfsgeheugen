@@ -1,5 +1,9 @@
 import {resolveIdentityTenant} from '../read-models/portal-server-state.mjs';
 import {principalFromUser} from '../../brain/operating-loop/object-access-policy.mjs';
+import {
+  buildPredictionLearningRecord,
+  settleCanonicalRevenueOutcome,
+} from '../../brain/learning/company-revenue-learning-bridge.mjs';
 
 const reply=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 const text=value=>value==null?'':String(value).trim();
@@ -42,8 +46,16 @@ function recordForCommand(context){
   if(command==='START') return {...base,type:'Action',status:'IN_PROGRESS',executed:false};
   if(command==='COMPLETE') return {...base,type:'Action',status:'DONE',executed:true,result:body.result??null};
   if(command==='RECORD_COST') return {...base,type:'Execution',status:'COST_RECORDED',executed:true,costAmount:Math.max(0,amount(body.actualCost))};
-  if(command==='RECORD_OUTCOME') return {...base,type:'Outcome',status:body.verified===true?'VERIFIED':'OBSERVED',executed:true,verified:body.verified===true,result:body.result??null,realizedValue:amount(body.realizedValue),payload:{...base.payload,realisedValue:amount(body.realizedValue),realised:body.verified===true,valueUnit:text(body.currency)||'EUR'}};
+  if(command==='RECORD_OUTCOME') return {...base,type:'Outcome',status:body.verified===true?'VERIFIED':'OBSERVED',executed:true,verified:body.verified===true,result:body.result??null,realizedValue:amount(body.realizedValue),payload:{...base.payload,meeting:body.meeting===true,proposal:body.proposal===true,order:body.order===true,realisedValue:amount(body.realizedValue),realised:body.verified===true,valueUnit:text(body.currency)||'EUR'}};
   throw new TypeError(`Unsupported company decision command: ${command}`);
+}
+
+function isCommercial(decision,body){
+  return body?.commercial===true||Number(decision?.expectedValue||0)>0;
+}
+
+function openPrediction(projection,decisionId){
+  return (projection?.revenuePredictions||[]).find(item=>item?.decisionId===decisionId&&item?.status==='OPEN')||null;
 }
 
 export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().toISOString()}={}){
@@ -71,12 +83,31 @@ export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().t
       return reply({error:'STALE_DECISION_STATE',expected:text(body.expectedStatus),actual:text(decision.status)},409);
     }
 
+    const commercial=isCommercial(decision,body);
+    const predictionView=openPrediction(projection,decisionId);
+    if(command==='START'&&commercial&&predictionView) return reply({error:'OPEN_PREDICTION_ALREADY_EXISTS',decisionId},409);
+    if(command==='START'&&commercial&&!Number.isFinite(Number(body.meetingProbability))) return reply({error:'MEETING_PROBABILITY_REQUIRED',decisionId},400);
+    if(command==='RECORD_OUTCOME'&&commercial&&!predictionView) return reply({error:'ORIGINATING_PREDICTION_REQUIRED',decisionId},409);
+
     const timestamp=now();
     const context={command,body,decision,user,tenantId,now:timestamp};
     try{
+      const results=[];
+      if(command==='START'&&commercial){
+        const predictionRecord=buildPredictionLearningRecord({
+          tenantId,
+          decision,
+          meetingProbability:Number(body.meetingProbability),
+          modelVersion:text(body.modelVersion)||'company-decision-v1',
+          predictedAt:timestamp,
+          actor:`user:${user.id}`,
+        });
+        results.push(await store.append({...predictionRecord,idempotencyKey:`${idempotencyKey}:prediction`},{principal}));
+      }
+
       const record=recordForCommand(context);
-      const first=await store.append({...record,idempotencyKey},{principal});
-      const results=[first];
+      results.push(await store.append({...record,idempotencyKey},{principal}));
+
       if(command==='RECORD_OUTCOME'){
         const currency=text(body.currency)||'EUR';
         const realisedValue=amount(body.realizedValue);
@@ -93,6 +124,22 @@ export function createCompanyDecisionHandler({getUser,store,now=()=>new Date().t
           payload:{command,realised:body.verified===true,realisedValue,valueUnit:currency,result:body.result??null}
         };
         results.push(await store.append({...valueRecord,idempotencyKey:`${idempotencyKey}:value`},{principal}));
+        if(predictionView?.canonicalRecord){
+          const settlement=settleCanonicalRevenueOutcome({
+            predictionRecord:predictionView.canonicalRecord,
+            outcome:{
+              decisionId,
+              meeting:body.meeting,
+              proposal:body.proposal,
+              order:body.order,
+              revenue:realisedValue,
+              actionExecuted:true,
+              occurredAt:timestamp,
+              evidenceRefs:list(body.evidenceIds),
+            },
+          });
+          results.push(await store.append({...settlement,idempotencyKey:`${idempotencyKey}:settlement`},{principal}));
+        }
       }
       const duplicate=results.every(item=>item?.duplicate===true);
       return reply({ok:true,command,decisionId,duplicate,events:results.map(item=>item?.record||null)},duplicate?200:201);
