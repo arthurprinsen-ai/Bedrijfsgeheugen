@@ -46,13 +46,14 @@ function projectRevenuePredictions(records){
   }
   return [...latest.values()].map(record=>({
     id:record.id,
+    tenantId:record.tenantId,
     decisionId:record.decisionId,
     subjectId:record.subjectId,
+    owner:record.owner,
     status:settlements.has(record.decisionId)?'SETTLED':'OPEN',
     observedAt:record.observedAt,
     evidenceIds:[...(record.evidenceIds||[])],
     prediction:record.payload.prediction,
-    canonicalRecord:record,
   }));
 }
 
