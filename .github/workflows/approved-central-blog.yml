@@ -8,6 +8,7 @@ on:
       - main
     paths:
       - '.github/workflows/approved-central-blog.yml'
+      - 'scripts/publish_approved_blog_v2.py'
   workflow_dispatch:
     inputs:
       slug:
