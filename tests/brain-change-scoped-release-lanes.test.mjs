@@ -42,6 +42,23 @@ test('scheduled approved-blog workflow parses the writer JSON array instead of t
   assert.doesNotMatch(workflow, /raw\.startswith\('\{'\)/);
 });
 
+test('approved blog writer emits FAQPage schema and two accessible functional figures', async () => {
+  const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
+  assert.match(writer, /def faq_items\(/);
+  assert.match(writer, /'@type': 'FAQPage'/);
+  assert.match(writer, /'@type': 'Question'/);
+  assert.match(writer, /'@type': 'Answer'/);
+  assert.match(writer, /def article_figures\(/);
+  assert.match(writer, /<figure/);
+  assert.match(writer, /role="img"/);
+  assert.match(writer, /<figcaption>/);
+});
+
+test('approved blog workflow reruns when canonical writer changes', async () => {
+  const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
+  assert.match(workflow, /scripts\/publish_approved_blog_v2\.py/);
+});
+
 test('shared executable control-plane work fans out to all required suites', () => {
   assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
 });
