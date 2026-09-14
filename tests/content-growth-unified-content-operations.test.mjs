@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260914093000_unified_content_publication_operations.sql';
+const migrationPath = 'supabase/migrations/20260914100133_unified_content_publication_operations.sql';
 const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
-const singleTenantMigrationPath = 'supabase/migrations/20260914125000_single_content_operations_tenant.sql';
+const singleTenantMigrationPath = 'supabase/migrations/20260914105642_single_content_operations_tenant.sql';
 const singleTenantMigration = fs.existsSync(singleTenantMigrationPath) ? fs.readFileSync(singleTenantMigrationPath, 'utf8') : '';
 const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
 const dailyApi = fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts', 'utf8');
