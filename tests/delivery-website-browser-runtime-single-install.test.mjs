@@ -29,16 +29,30 @@ test('de gedeelde installatie schakelt de flakey Google Chrome apt-bron uit', ()
   assert.match(script, /POGINGEN/, 'er wordt niet opnieuw geprobeerd bij een mislukte installatie');
 });
 
-test('single browser job retains targeted, visibility, and high-risk broad exact-preview contracts', () => {
-  const browserStart = workflow.indexOf('\n  browser:');
+test('single browser job retains targeted, visibility, and high-risk broad exact-candidate contracts', () => {
+  const previewReadyStart = workflow.indexOf('\n  preview-ready:');
+  const pageSeoStart = workflow.indexOf('\n  page-seo:', previewReadyStart);
+  const browserStart = workflow.indexOf('\n  browser:', pageSeoStart);
+  assert.notEqual(previewReadyStart, -1);
+  assert.notEqual(pageSeoStart, -1);
   assert.notEqual(browserStart, -1);
+  const previewReady = workflow.slice(previewReadyStart, pageSeoStart);
   const browser = workflow.slice(browserStart);
+
+  assert.match(previewReady, /HEAD_SHA:\s*\$\{\{ inputs\.change_head_sha \}\}/);
+  assert.match(previewReady, /deploy-preview-\$\{process\.env\.PR_NUMBER\}--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(previewReady, /preview_mode=local-exact-candidate/);
+  assert.match(previewReady, /base_url=http:\/\/127\.0\.0\.1:4173/);
+
   assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
   assert.match(browser, /name: Verify affected routes on desktop and mobile/);
   assert.match(browser, /name: Verify all public pages are visibly rendered/);
   assert.match(browser, /Verify broad high-risk browser contracts/);
-  assert.match(browser, /deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(browser, /BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.match(browser, /UI_VR_BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.match(browser, /needs\.preview-ready\.outputs\.preview_mode == 'local-exact-candidate'/);
   assert.match(browser, /needs\.classify\.outputs\.risk_lane/);
+  assert.doesNotMatch(browser, /https:\/\/deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
 });
 
 test('page-seo only builds the exact artifact and never starts legacy duplicate checkers', () => {
