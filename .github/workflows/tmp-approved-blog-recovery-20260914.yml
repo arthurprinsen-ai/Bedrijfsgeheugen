@@ -1,0 +1,55 @@
+name: Temporary approved blog recovery 2026-09-14
+
+on:
+  push:
+    branches:
+      - recovery/blog-2026-09-14-approved-snapshot
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Render exact approved snapshot with canonical renderer
+        run: python3 -B scripts/.tmp_recover_blog_20260914.py | tee /tmp/recovery-result.txt
+      - name: Deterministic contract checks
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, re, subprocess
+          tracked = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
+          untracked = subprocess.check_output(['git','ls-files','--others','--exclude-standard'], text=True).splitlines()
+          changed = sorted(set(tracked + untracked))
+          allowed_exact = {'blog/index.html','blog/rss.xml','sitemap.xml'}
+          article = [p for p in changed if re.fullmatch(r'blog/[a-z0-9-]+/index\.html', p)]
+          unexpected = [p for p in changed if p not in allowed_exact and p not in article]
+          assert len(article) == 1, f'exact één artikelbestand vereist, gevonden={article}; changed={changed}'
+          assert not unexpected, f'onverwachte bestanden gewijzigd: {unexpected}'
+          text = pathlib.Path(article[0]).read_text(encoding='utf-8')
+          assert len(re.findall(r'<h1(?:\s|>)', text)) == 1, 'exact één h1 vereist'
+          m = re.search(r'<link rel="canonical" href="([^"]+)">', text)
+          assert m and m.group(1).endswith('/'), 'geldige canonical vereist'
+          assert '.html' not in m.group(1), 'canonical mag geen .html bevatten'
+          ld = re.search(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
+          assert ld, 'JSON-LD ontbreekt'
+          json.loads(ld.group(1))
+          pathlib.Path('/tmp/validated-approved-blog-files').write_text('\n'.join(changed) + '\n', encoding='utf-8')
+          print('CONTRACT_OK', article[0], m.group(1), changed)
+          PY
+      - name: Commit only normal blog candidate files and self-clean recovery scaffolding
+        run: |
+          set -euo pipefail
+          mapfile -t changed < /tmp/validated-approved-blog-files
+          git config user.name "Bedrijfsgeheugen Publisher Recovery"
+          git config user.email "actions@users.noreply.github.com"
+          for path in "${changed[@]}"; do
+            [ -n "$path" ] && git add -- "$path"
+          done
+          git rm scripts/.tmp_recover_blog_20260914.py .github/workflows/tmp-approved-blog-recovery-20260914.yml
+          git commit -m "blog: publish approved central article"
+          git push origin HEAD:recovery/blog-2026-09-14-approved-snapshot
