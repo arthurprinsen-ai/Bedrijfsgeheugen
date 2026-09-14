@@ -25,6 +25,7 @@ function predictionFromRecord(record){
 export function buildPredictionLearningRecord({tenantId,decision,meetingProbability,modelVersion='company-decision-v1',predictedAt=new Date().toISOString(),actor='agent:brain'}={}){
   if(!tenantId) throw new Error('tenantId is required');
   if(!decision?.id) throw new Error('decision.id is required');
+  if(meetingProbability===null||meetingProbability===undefined||meetingProbability==='') throw new Error('meetingProbability is required');
   const prediction=createDecisionPrediction({
     decisionId:decision.id,
     entityId:decision.subjectId||decision.id,
