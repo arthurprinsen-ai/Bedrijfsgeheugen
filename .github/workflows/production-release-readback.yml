@@ -40,7 +40,7 @@ jobs:
 
           const readbackControlPlanePaths=new Set([
             '.github/workflows/production-release-readback.yml',
-            'tests/production-release-readback-scope.test.mjs',
+            'tests/brain-production-release-readback-scope.test.mjs',
             'tools/site-shell/verify-production-release.mjs',
           ]);
           const readbackControlPlaneOnly=changedPaths.length>0 && changedPaths.every(path => readbackControlPlanePaths.has(path));
