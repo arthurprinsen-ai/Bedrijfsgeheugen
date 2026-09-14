@@ -34,9 +34,10 @@ function projectDecision(record){
 }
 
 function projectRevenuePredictions(records){
-  const settlements=new Set(records
+  const settledPredictionIds=new Set(records
     .filter(r=>r.kind==='learning'&&r.payload?.learningType==='revenue_settlement')
-    .map(r=>r.decisionId));
+    .map(r=>r.payload?.originatingPredictionId)
+    .filter(Boolean));
   const predictions=records
     .filter(r=>r.kind==='learning'&&r.payload?.learningType==='revenue_prediction'&&r.payload?.prediction?.decision_id)
     .sort((a,b)=>String(b.observedAt).localeCompare(String(a.observedAt)));
@@ -50,7 +51,7 @@ function projectRevenuePredictions(records){
     decisionId:record.decisionId,
     subjectId:record.subjectId,
     owner:record.owner,
-    status:settlements.has(record.decisionId)?'SETTLED':'OPEN',
+    status:settledPredictionIds.has(record.id)?'SETTLED':'OPEN',
     observedAt:record.observedAt,
     evidenceIds:[...(record.evidenceIds||[])],
     prediction:record.payload.prediction,
