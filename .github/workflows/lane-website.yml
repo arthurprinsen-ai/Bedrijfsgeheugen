@@ -224,6 +224,7 @@ jobs:
             sleep 1
           done
           cat /tmp/bg-local-site.log || true
+          echo "::error::Exact local website candidate did not become reachable on /, /ai-act and /benchmark within 20 seconds. See /tmp/bg-local-site.log output above."
           exit 1
       - name: Install shared website browser runtime
         run: |
