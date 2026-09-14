@@ -6,4 +6,4 @@ import {createConnectorRuntime,createEnvironmentConnectorProviders} from '../../
 const store=createPortalConnectorsStore();
 const engine=createConnectorRuntime({providers:createEnvironmentConnectorProviders()});
 export default async request=>handlePortalConnectorsRequest({request,user:await getUser(),store,engine});
-export const config={path:'/api/connectors/*'};
+export const config={path:'/api/connectors/*',excludedPath:'/api/connectors/readiness'};
