@@ -1,4 +1,12 @@
 {
   "version": 1,
-  "days": {}
+  "days": {
+    "2026-09-14": {
+      "date": "2026-09-14",
+      "content_id": "blog:zoekverkeer-stijgt-omzet-niet",
+      "slug": "zoekverkeer-stijgt-omzet-niet",
+      "state": "selected",
+      "selected_at": "2026-09-14T10:56:31.607Z"
+    }
+  }
 }
