@@ -55,6 +55,7 @@ function projectRevenuePredictions(records){
     observedAt:record.observedAt,
     evidenceIds:[...(record.evidenceIds||[])],
     prediction:record.payload.prediction,
+    predictionModel:record.payload.predictionModel||null,
   }));
 }
 
