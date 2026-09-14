@@ -1,0 +1,47 @@
+name: Unified content operations status
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/*unified_content_operations_status.sql'
+      - 'scripts/content-ops-audit.mjs'
+      - 'tests/content-ops-unified-status.test.mjs'
+      - '.github/workflows/content-ops-unified-status.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/*unified_content_operations_status.sql'
+      - 'scripts/content-ops-audit.mjs'
+      - 'tests/content-ops-unified-status.test.mjs'
+      - '.github/workflows/content-ops-unified-status.yml'
+  schedule:
+    - cron: '17 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify unified content operations contract
+        run: node --test tests/content-ops-unified-status.test.mjs
+
+  production-audit:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Audit planned versus actual publication truth
+        run: node scripts/content-ops-audit.mjs
