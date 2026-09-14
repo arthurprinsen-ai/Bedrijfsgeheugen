@@ -1,0 +1,33 @@
+name: Production Source Snapshot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/production-source-snapshot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Verify exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Package production source
+        run: |
+          set -euo pipefail
+          git archive --format=zip --output=production-source.zip "$GITHUB_SHA"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-source-${{ github.sha }}
+          path: production-source.zip
+          if-no-files-found: error
+          retention-days: 1
