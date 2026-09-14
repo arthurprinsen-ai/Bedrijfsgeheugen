@@ -22,7 +22,7 @@ function predictionFromRecord(record){
   return prediction;
 }
 
-export function buildPredictionLearningRecord({tenantId,decision,meetingProbability,modelVersion='company-decision-v1',predictedAt=new Date().toISOString(),actor='agent:brain'}={}){
+export function buildPredictionLearningRecord({tenantId,decision,meetingProbability,modelVersion='company-decision-v1',predictionModel=null,predictedAt=new Date().toISOString(),actor='agent:brain'}={}){
   if(!tenantId) throw new Error('tenantId is required');
   if(!decision?.id) throw new Error('decision.id is required');
   if(meetingProbability===null||meetingProbability===undefined||meetingProbability==='') throw new Error('meetingProbability is required');
@@ -50,7 +50,7 @@ export function buildPredictionLearningRecord({tenantId,decision,meetingProbabil
     observedAt:prediction.predicted_at,
     evidenceIds:prediction.evidence_refs,
     expectedValue:prediction.prediction.expected_commercial_value,
-    payload:{learningType:'revenue_prediction',prediction},
+    payload:{learningType:'revenue_prediction',prediction,predictionModel:predictionModel?structuredClone(predictionModel):null},
     source:'revenue-calibration-loop',
   });
 }
