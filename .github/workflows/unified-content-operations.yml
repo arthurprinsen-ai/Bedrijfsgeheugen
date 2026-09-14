@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'supabase/migrations/20260914093000_unified_content_publication_operations.sql'
+      - 'supabase/migrations/20260914094000_content_publication_state_truthful_timestamps.sql'
       - 'supabase/migrations/20260914094500_content_publication_reconciliation.sql'
       - 'supabase/functions/content-operations/**'
       - 'supabase/functions/bg-dagoverzicht/**'
@@ -16,6 +17,7 @@ on:
     branches: [main]
     paths:
       - 'supabase/migrations/20260914093000_unified_content_publication_operations.sql'
+      - 'supabase/migrations/20260914094000_content_publication_state_truthful_timestamps.sql'
       - 'supabase/migrations/20260914094500_content_publication_reconciliation.sql'
       - 'supabase/functions/content-operations/**'
       - 'supabase/functions/bg-dagoverzicht/**'
