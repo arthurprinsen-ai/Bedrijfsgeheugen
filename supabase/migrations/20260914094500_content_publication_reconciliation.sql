@@ -10,7 +10,7 @@ as $$
 declare
   v_date date;
   v_channel text;
-  v_exists boolean;
+  v_status text;
   v_evidence jsonb;
 begin
   if new.published_at is null then
@@ -29,15 +29,25 @@ begin
     return new;
   end if;
 
-  select exists(
-    select 1
-    from public.content_publication_obligations o
-    where o.tenant_id = new.tenant_id
-      and o.publication_date = v_date
-      and o.channel = v_channel
-  ) into v_exists;
+  select o.status into v_status
+  from public.content_publication_obligations o
+  where o.tenant_id = new.tenant_id
+    and o.publication_date = v_date
+    and o.channel = v_channel;
 
-  if not v_exists then
+  if v_status is null then
+    return new;
+  end if;
+
+  -- Repeated Buffer/metrics updates must never regress MEASURED/LEARNED back to LIVE_PROVEN.
+  if public.content_publication_state_rank(v_status) >= public.content_publication_state_rank('LIVE_PROVEN') then
+    update public.content_publication_obligations
+    set external_id = coalesce(nullif(new.external_post_id,''), external_id),
+        published_at = coalesce(published_at, new.published_at),
+        updated_at = now()
+    where tenant_id = new.tenant_id
+      and publication_date = v_date
+      and channel = v_channel;
     return new;
   end if;
 
@@ -65,6 +75,13 @@ begin
     'Meet prestaties en schrijf outcome/learning terug.',
     null
   );
+
+  update public.content_publication_obligations
+  set published_at = coalesce(published_at, new.published_at),
+      updated_at = now()
+  where tenant_id = new.tenant_id
+    and publication_date = v_date
+    and channel = v_channel;
 
   return new;
 end;
