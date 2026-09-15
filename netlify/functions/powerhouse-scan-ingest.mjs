@@ -1,3 +1,4 @@
+const PUBLIC_PROXY_CONTRACT='scan-public-proxy-v2';
 function env(name){return Netlify.env.get(name)||'';}
 function endpoint(slug){const base=env('BG_PORTAL_EU_SUPABASE_URL').replace(/\/$/,'');return base?`${base}/functions/v1/${slug}`:'';}
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -8,11 +9,17 @@ async function postEdge(payload){
   const text=await response.text();
   return new Response(text,{status:response.status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 }
+async function health(){
+  const response=await postEdge({action:'health'});const text=await response.text();
+  let body;try{body=JSON.parse(text)}catch{body={ok:false,error:'INVALID_UPSTREAM_HEALTH'}}
+  return json({...body,proxy_contract:PUBLIC_PROXY_CONTRACT},response.status);
+}
 export default async request=>{
-  if(request.method==='GET') return postEdge({action:'health'});
+  if(request.method==='GET') return health();
   if(request.method!=='POST') return json({error:'METHOD_NOT_ALLOWED'},405);
   const length=Number(request.headers.get('content-length')||0);if(length>131072)return json({error:'PAYLOAD_TOO_LARGE'},413);
   let body;try{body=await request.json()}catch{return json({error:'INVALID_JSON'},400)}
+  if(body?.action==='history'||body?.action==='claim')return json({error:'PRIVILEGED_ACTION_FORBIDDEN'},403);
   if(body?.website) return json({ok:true,ignored:true});
   return postEdge(body);
 };
