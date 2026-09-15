@@ -49,5 +49,5 @@ select now() as measured_at,a.assignment_count,a.treatment_assignments,a.holdout
 from assignment_agg a cross join feedback f cross join downstream d cross join causal c;
 
 alter view public.powerhouse_market_evidence_maturity_v1 set (security_invoker=true);
-revoke all on public.powerhouse_market_evidence_maturity_v1 from anon,authenticated;
+revoke all on public.powerhouse_market_evidence_maturity_v1 from public, anon, authenticated;
 grant select on public.powerhouse_market_evidence_maturity_v1 to service_role;
