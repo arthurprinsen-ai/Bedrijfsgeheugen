@@ -115,6 +115,13 @@ begin
 end;
 $function$;
 
+-- Trigger function is server-side only. The production privilege readback already
+-- matches this contract: anon/authenticated cannot EXECUTE; service_role can.
+revoke execute on function public.powerhouse_project_brain_revenue_learning() from public;
+revoke execute on function public.powerhouse_project_brain_revenue_learning() from anon;
+revoke execute on function public.powerhouse_project_brain_revenue_learning() from authenticated;
+grant execute on function public.powerhouse_project_brain_revenue_learning() to service_role;
+
 -- Trigger is idempotently reconciled to the production definition.
 drop trigger if exists trg_powerhouse_project_brain_revenue_learning on public.brain_records;
 create trigger trg_powerhouse_project_brain_revenue_learning
