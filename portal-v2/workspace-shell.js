@@ -4,7 +4,7 @@ const TABS=Object.freeze([
   Object.freeze({id:'acties',label:'Acties'}),
   Object.freeze({id:'bewijs',label:'Bewijs'})
 ]);
-const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 export function workspaceModel(contract,{title='',description='',saveStatus='idle',state={}}={}){
  if(!contract?.id)throw new TypeError('WORKSPACE_CONTRACT_REQUIRED');
