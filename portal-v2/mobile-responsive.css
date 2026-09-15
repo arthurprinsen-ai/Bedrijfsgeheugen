@@ -1,4 +1,5 @@
 /* Portal V2 mobile contract.
+   Fingerprint: portal-v2-mobile-hydration-responsive-contract-v1.
    Loaded after shell/theme CSS. Critical phone geometry is deliberately
    protected with narrow-scope !important rules because several legacy/V2
    modules still mount or restyle shared controls asynchronously. */
