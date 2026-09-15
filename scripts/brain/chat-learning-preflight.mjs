@@ -8,6 +8,7 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'config/powerhouse-truth-status-contract.json',
   'brain/policies/powerhouse-system-contract-v1.json',
   'brain/policies/live-completion-learning-contract-v1.json',
+  'brain/policies/powerhouse-agent-continuity-v1.json',
   'docs/brain/learning-plane-authority-contract-v1.md',
   'brain/policies/chat-to-brain-completeness-v1.json',
   'brain/learning/chat-continuity-2026-08-31.json',
