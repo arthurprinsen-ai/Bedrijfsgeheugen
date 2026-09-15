@@ -13,7 +13,7 @@ const REQUIRED_ACTIVE_FIELDS = [
 ];
 const NONEMPTY_ARRAY_FIELDS = new Set(['code_paths', 'runtime_surfaces', 'docs', 'test_contract']);
 const REQUIRED_PARITY_FIELDS = [
-  'legacy_key', 'canonical_id', 'status', 'v2_surface', 'authority', 'writeback', 'tests', 'evidence',
+  'legacy_key', 'canonical_id', 'status', 'v2_surface', 'authority', 'writeback', 'tests', 'evidence', 'production_evidence_status',
 ];
 
 const missingScalar = (value) => value == null || value === '';
@@ -22,6 +22,7 @@ const missingField = (field, value) => missingScalar(value) || (NONEMPTY_ARRAY_F
 export function validateComponentRegistry(registry = {}) {
   const components = Array.isArray(registry.components) ? registry.components : [];
   const gaps = [];
+  const obligations = [];
   const seen = new Set();
 
   for (const [index, component] of components.entries()) {
@@ -37,7 +38,7 @@ export function validateComponentRegistry(registry = {}) {
       }
       const recovery = component?.recovery_contract;
       if (recovery?.critical === true && (recovery.status !== 'tested' || missingScalar(recovery.evidence))) {
-        gaps.push(`${label}: critical component requires tested recovery evidence`);
+        obligations.push(`${label}: tested recovery proof is still required`);
       }
     }
     if (component?.lifecycle === 'deprecated' || component?.lifecycle === 'superseded') {
@@ -45,12 +46,13 @@ export function validateComponentRegistry(registry = {}) {
     }
   }
   if (components.length === 0) gaps.push('registry: no components registered');
-  return { ok: gaps.length === 0, gaps, count: components.length };
+  return { ok: gaps.length === 0, gaps, obligations, count: components.length };
 }
 
 export function validatePortalParity(parity = {}) {
   const capabilities = Array.isArray(parity.capabilities) ? parity.capabilities : [];
   const gaps = [];
+  const obligations = [];
   const seen = new Set();
   for (const [index, capability] of capabilities.entries()) {
     const label = capability?.legacy_key || `capability[${index}]`;
@@ -59,13 +61,17 @@ export function validatePortalParity(parity = {}) {
       if (missingScalar(value) || (Array.isArray(value) && value.length === 0)) gaps.push(`${label}: missing ${field}`);
     }
     if (!['verified', 'retired'].includes(capability?.status)) gaps.push(`${label}: parity status must be verified or retired`);
+    if (!['verified', 'pending', 'retired'].includes(capability?.production_evidence_status)) gaps.push(`${label}: invalid production_evidence_status`);
     if (capability?.legacy_key) {
       if (seen.has(capability.legacy_key)) gaps.push(`${label}: duplicate legacy_key`);
       seen.add(capability.legacy_key);
     }
     if (capability?.status === 'retired' && missingScalar(capability?.retirement)) gaps.push(`${label}: retired capability requires retirement evidence`);
+    if (capability?.status === 'verified' && capability?.production_evidence_status === 'pending') {
+      obligations.push(`${label}: production evidence pending`);
+    }
   }
-  return { ok: gaps.length === 0, gaps, count: capabilities.length };
+  return { ok: gaps.length === 0, gaps, obligations, count: capabilities.length };
 }
 
 function globToRegex(glob) {
@@ -91,7 +97,7 @@ function walk(root, relative = '') {
 export function discoverRepositoryDrift({ rootDir, registry }) {
   const roots = Array.isArray(registry.drift_roots) ? registry.drift_roots : [];
   const patterns = (registry.components || []).flatMap((component) => component.code_paths || []).map(globToRegex);
-  const discovered = roots.flatMap((root) => walk(rootDir, root));
+  const discovered = [...new Set(roots.flatMap((root) => walk(rootDir, root)))].sort();
   const unregistered = discovered.filter((file) => !patterns.some((pattern) => pattern.test(file)));
   return { ok: unregistered.length === 0, discovered, unregistered };
 }
@@ -100,11 +106,13 @@ export function buildAssuranceReport({ registry = {}, parity = {}, drift = null 
   const registryResult = validateComponentRegistry(registry);
   const parityResult = validatePortalParity(parity);
   const gaps = [...registryResult.gaps, ...parityResult.gaps];
+  const openObligations = [...registryResult.obligations, ...parityResult.obligations];
   if (drift && !drift.ok) gaps.push(...drift.unregistered.map((file) => `unregistered production surface: ${file}`));
   return {
     fingerprint: FINGERPRINT,
-    status: gaps.length === 0 ? 'LIVE & BEWEZEN' : 'DEELS LIVE',
+    status: gaps.length === 0 && openObligations.length === 0 ? 'LIVE & BEWEZEN' : 'DEELS LIVE',
     gaps,
+    open_obligations: openObligations,
     components: registryResult.count,
     portal_parity: parityResult.count,
     drift: drift ? { discovered: drift.discovered.length, unregistered: drift.unregistered } : null,
