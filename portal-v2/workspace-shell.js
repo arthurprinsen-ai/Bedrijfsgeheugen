@@ -41,7 +41,7 @@ async function mountSpecialistParity(root,contract,model){
  }
  if(contract.renderer==='strategy-models'||contract.id==='strategiemodellen'||contract.id==='modellen'){
   const module=await import('./modules/strategic-models-workspace.js');
-  module.mountStrategicModelsWorkspace?.(root,{domainState,title:model.title});
+  module.mountStrategicModelsWorkspace?.(root,{domainState,pageId:contract.id,title:model.title});
   return true;
  }
  return false;
