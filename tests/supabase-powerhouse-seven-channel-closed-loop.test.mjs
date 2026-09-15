@@ -3,10 +3,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const migrationPath='supabase/migrations/20260915113000_powerhouse_seven_channel_closed_loop_completion.sql';
+const cockpitDedupePath='supabase/migrations/20260915150500_powerhouse_content_cockpit_dedupe_v1.sql';
 const orchestratorPath='supabase/functions/powerhouse-content-orchestrator/index.ts';
 const publisherPath='supabase/functions/powerhouse-social-publisher/index.ts';
 const read=(p)=>fs.existsSync(p)?fs.readFileSync(p,'utf8'):'';
 const migration=read(migrationPath);
+const cockpitDedupe=read(cockpitDedupePath);
 const orchestrator=read(orchestratorPath);
 const publisher=read(publisherPath);
 const lanes=['email_newsletter','linkedin_personal','linkedin_company','linkedin_article_personal','linkedin_article_company','instagram_company','blog'];
@@ -20,10 +22,13 @@ test('publication ledger projects the exact seven canonical Powerhouse lanes',()
  assert.match(migration,/legacy[^\n]*instagram|instagram[^\n]*legacy/i);
 });
 
-test('cockpit is one projection of Brain decisions and publication execution',()=>{
+test('cockpit is one deduplicated projection of Brain decisions and publication execution',()=>{
  assert.match(migration,/create or replace view public\.content_operations_cockpit/i);
  assert.match(migration,/powerhouse_channel_decisions/i);
- for(const field of ['decision','priority','confidence','topic_key','content_key','scheduled_for','delivery_ref','delivery_evidence']) assert.match(migration,new RegExp(field));
+ assert.ok(cockpitDedupe,'cockpit dedupe migration must exist');
+ assert.match(cockpitDedupe,/distinct on \(tenant_id, experiment_id, calendar_date\)/i);
+ assert.match(cockpitDedupe,/powerhouse_channel_decisions/i);
+ for(const field of ['decision','priority','confidence','topic_key','content_key','scheduled_for','delivery_ref','delivery_evidence']) assert.match(cockpitDedupe,new RegExp(field));
 });
 
 test('hard daily social lanes cannot be satisfied by SKIPPED',()=>{
@@ -58,4 +63,5 @@ test('social publisher supports Instagram only with the canonical Mira media gat
  assert.match(publisher,/mediaKind|media_kind/);
  assert.match(publisher,/INSTAGRAM_MEDIA_REQUIRED|INSTAGRAM.*MEDIA.*REQUIRED/);
  assert.match(publisher,/blocked/i);
+ assert.match(publisher,/mira_verified===true|miraVerified===true/);
 });
