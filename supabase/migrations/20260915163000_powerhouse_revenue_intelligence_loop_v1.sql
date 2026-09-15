@@ -210,14 +210,14 @@ from grouped;
 
 create or replace view public.powerhouse_experiment_learning_v2 as
 with action_rollup as (
-  select campaign_key,
-    count(distinct action_id)::int executed_actions,
+  select a.campaign_key,
+    count(distinct a.action_id)::int executed_actions,
     count(distinct o.outcome_id)::int observed_outcomes,
     count(distinct o.outcome_id) filter (where lower(o.outcome_type) ~ '(meeting|appointment|proposal|offerte|won|order|revenue)')::int commercial_outcomes,
     coalesce(sum(o.revenue_eur),0) realized_revenue_eur
-  from public.powerhouse_sales_actions a left join public.powerhouse_sales_outcomes o using(action_id)
-  where campaign_key is not null
-  group by campaign_key
+  from public.powerhouse_sales_actions a left join public.powerhouse_sales_outcomes o on o.action_id=a.action_id
+  where a.campaign_key is not null
+  group by a.campaign_key
 )
 select e.*,coalesce(a.executed_actions,0) executed_actions,coalesce(a.observed_outcomes,0) observed_outcomes,coalesce(a.commercial_outcomes,0) commercial_outcomes,coalesce(a.realized_revenue_eur,0) realized_revenue_eur,
   case when coalesce(a.executed_actions,0) < greatest(coalesce(e.min_steekproef,10),10) then 'insufficient_evidence'
