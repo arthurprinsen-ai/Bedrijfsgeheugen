@@ -19,9 +19,10 @@ test('all canonical first-party and external source classes are registered', () 
     'website-events', 'referral-campaign-attribution', 'buffer-social', 'content-performance',
     'google-analytics-4', 'google-search-console', 'technical-seo-web-performance',
     'external-signals', 'external-research-feeds', 'company-news', 'search-opportunities',
-    'linkedin-relationship-intelligence', 'calendly', 'email-newsletter',
-    'pricing-positioning-learning', 'social-learning', 'revenue-learning',
-    'forecast-calibration', 'growth-outcomes', 'sales-outcomes', 'operational-failures'
+    'linkedin-relationship-intelligence', 'calendly', 'gmail-outbound-replies',
+    'newsletter-campaign-analytics', 'pricing-positioning-learning', 'social-learning',
+    'revenue-learning', 'forecast-calibration', 'growth-outcomes', 'sales-outcomes',
+    'operational-failures'
   ]) assert.ok(byId.has(id), `missing source ${id}`);
 });
 
@@ -46,11 +47,28 @@ test('event-driven commercial outcomes do not become false stale failures', () =
   }
 });
 
-test('unconnected email/newsletter provider is explicit and cannot be reported healthy', () => {
-  const source = byId.get('email-newsletter');
-  assert.equal(source.mode, 'blocked');
-  assert.equal(source.status, 'blocked');
-  assert.match(source.blocker, /no canonical/i);
+test('gmail communication is live while newsletter campaign analytics stay fail-closed', () => {
+  const gmail = byId.get('gmail-outbound-replies');
+  assert.equal(gmail.provider, 'gmail');
+  assert.equal(gmail.provider_layer, 'composio');
+  assert.equal(gmail.mode, 'event-driven');
+  assert.equal(gmail.status, 'live');
+  assert.equal(gmail.required_activity, false);
+  assert.ok(gmail.evidence.includes('sent_message_id'));
+  assert.ok(gmail.evidence.includes('reply_observed'));
+  assert.ok(gmail.downstream.includes('revenue-learning'));
+
+  const newsletter = byId.get('newsletter-campaign-analytics');
+  assert.equal(newsletter.mode, 'blocked');
+  assert.equal(newsletter.status, 'blocked');
+  assert.match(newsletter.blocker, /no dedicated newsletter campaign provider/i);
+});
+
+test('canonical provider ownership is explicit and does not introduce parallel providers', () => {
+  assert.equal(byId.get('buffer-social').provider, 'buffer');
+  assert.equal(byId.get('google-analytics-4').provider_layer, 'composio');
+  assert.equal(byId.get('google-search-console').provider_layer, 'composio');
+  assert.equal(JSON.stringify(cfg).toLowerCase().includes('windsor'), false);
 });
 
 test('external research feeds document the async two-phase schedule', () => {
