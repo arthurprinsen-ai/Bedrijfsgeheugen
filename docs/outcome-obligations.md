@@ -8,7 +8,9 @@ Dit contract geldt voor het volledige Bedrijfsgeheugen en alle huidige en toekom
 - **NO LOST OBLIGATION** — ieder verwacht resultaat blijft als obligation bestaan totdat bewijs van voltooiing bestaat of een expliciete harde grens is bereikt.
 - **GREEN MEANS OUTCOME VERIFIED** — groen betekent aantoonbaar extern of systeemmatig resultaat, niet alleen exit code 0.
 - **RED MEANS AGENTS KEEP WORKING** — een veilig oplosbare rode toestand start of hervat automatisch recovery totdat het resultaat geverifieerd is.
+- **PARTIAL LIVE MEANS KEEP WORKING** — `DEELS LIVE`, open parity, migratiedrift, rode gates of ontbrekende readback/writeback zijn tussenstanden en geen normale stopconditie.
 - **GREEN CANDIDATE MEANS PROMOTE TO PRODUCTION** — een aantoonbaar groene repository-kandidaat creëert automatisch een productie-obligation.
+- **NO STALE BACKLOG** — iedere historische open/blocked/ready obligation en iedere oude PR moet actief worden gereconcilieerd tegen de huidige productie-authority; stale werk mag niet onbeheerd blijven bestaan.
 
 ## Obligation-model
 
@@ -41,9 +43,18 @@ Voorbeeld: als om 08:40 een LinkedIn-post hoort te bestaan, dan is een publisher
 
 `NOT_DUE` betekent dat geen resultaat verschuldigd is. `PENDING` betekent dat de deadline nog niet is bereikt en geen technische poging voltooid is. `AWAITING_OUTCOME` betekent dat de technische stap klaar kan zijn maar outcome-bewijs nog ontbreekt. `MISSED_OBLIGATION` betekent dat de obligation over tijd is zonder bewijs. `RECOVERING` betekent dat een agent de green-until-done-lus uitvoert. `COMPLETED` is alleen toegestaan met geldig outcome-bewijs. `BLOCKED_HARD_BOUNDARY` is alleen toegestaan voor de in het agentcontract genoemde harde grenzen.
 
+Voor backlog-reconciliation wordt daarnaast iedere bestaande record of PR functioneel geclassificeerd als:
+
+- `ACTIVE` — nog steeds relevant en technisch oplosbaar; recovery moet doorgaan;
+- `HARD_BOUNDARY` — nog relevant maar objectief geblokkeerd door authority, permission, safety, destructiviteit, betaalde resource of juridisch/financiële grens;
+- `SUPERSEDED` — de oorspronkelijke route is aantoonbaar vervangen door een nieuwere canonieke route; bewijs van de opvolger is verplicht;
+- `VERIFIED_CLOSED` — het bedoelde outcome is aantoonbaar bereikt en teruggelezen.
+
+Een database-status zoals `OPEN`, `BLOCKED`, `READY` of een open GitHub-PR is dus geen blijvende waarheid op zichzelf. De reconciler moet de actuele classificatie bepalen uit current main, Supabase/runtime, provider- en productie-readback.
+
 ## Recoverycontract
 
-Bij `MISSED_OBLIGATION`:
+Bij `MISSED_OBLIGATION` of `ACTIVE` backlogwerk:
 
 1. dedupe op fingerprint en idempotency-key;
 2. controleer of het outcome mogelijk al extern bestaat;
@@ -60,15 +71,39 @@ Een bekende fout wordt niet opnieuw vanaf nul onderzocht. Maximaal twee identiek
 
 Self-healing mag nooit dubbele publicaties, dubbele mails, dubbele CRM-writes, dubbele facturatie of dubbele deploy-side-effects veroorzaken. Voor iedere side-effect-veroorzakende obligation wordt eerst gecontroleerd of het externe bewijs of de `idempotencyKey` al bestaat.
 
-## Reconciliation
+## Canonieke backlog reconciliation
 
-Naast event-driven verificatie moet er een onafhankelijke reconciler bestaan die periodiek terugkijkt naar wat volgens planning, state en historie had moeten gebeuren. Daardoor worden ook failures gevonden waarbij geen fout-event is ontstaan.
+Naast event-driven verificatie moet er een onafhankelijke reconciler bestaan die periodiek én bij hervatting van relevante chats/agents terugkijkt naar wat volgens planning, state en historie had moeten gebeuren. Daardoor worden ook failures gevonden waarbij geen fout-event is ontstaan en worden historische records niet eeuwig als pseudo-open werk meegedragen.
 
 De generieke vergelijking is:
 
-`expected obligations` − `verified completed obligations` − `valid hard boundaries` = `open recovery work`.
+`expected obligations` − `verified completed obligations` − `valid hard boundaries` − `verified superseded obligations` = `active recovery work`.
+
+Verplichte inputs zijn minimaal:
+
+1. alle niet-afgesloten `brain_obligations` en relevante domein-obligations;
+2. relevante open GitHub PR's en branches;
+3. current `main` en required-check status;
+4. actuele Supabase migration/runtime authority;
+5. provider-/production-readback waar het outcome buiten GitHub ligt;
+6. bestaande learning, error, outcome en supersession-lineage.
+
+Verplichte behandeling per item:
+
+- **ACTIVE:** owner + next executable action vastleggen en recovery uitvoeren; alleen stoppen bij een harde grens.
+- **HARD_BOUNDARY:** exacte blocker-evidence, retry/resume-conditie en één dedupebare obligation behouden; bij iedere volgende relevante run opnieuw toetsen of de grens nog bestaat.
+- **SUPERSEDED:** expliciet vastleggen welke canonical fingerprint/PR/runtime-route het item vervangt, bewijs van die opvolger teruglezen en de oude record/PR sluiten of als superseded markeren; nooit alleen negeren.
+- **VERIFIED_CLOSED:** outcome-evidence, readback, learning/prevention en closure-timestamp bewaren; het item mag niet opnieuw als actief werk verschijnen tenzij nieuw bewijs een regressie toont.
+
+Open PR's volgen dezelfde regel: `merge`, `consolidate`, `superseded-close` of `hard-boundary`; een historische PR mag niet onbeperkt open blijven als latere `main` het doel aantoonbaar heeft overgenomen.
+
+Retired architectuur mag niet via recovery worden gereanimeerd. Als bijvoorbeeld een oude Make-obligation betrekking heeft op functionaliteit die inmiddels canoniek GitHub/Supabase-native is, moet de oude obligation als `SUPERSEDED` worden gesloten met verwijzing naar de actuele route; Make opnieuw activeren is dan een architectuurregressie.
+
+De actuele backlog zelf is runtime-state en hoort niet als statische lijst in dit document. Iedere reconciliatierun schrijft een snapshot/fingerprint met aantallen, actieve items, hard boundaries, superseded closures en evidence naar de bestaande Powerhouse runtime/learning-lineage.
 
 Voor `deploy` vergelijkt de Production Promotion Guardian bovendien periodiek de nieuwste geaccepteerde `main`-SHA met de actuele production `commit_ref`. Na de bounded grace period is een mismatch `MISSED_OBLIGATION` en moet hij zelf de veiligste productieactie uitvoeren en opnieuw verifiëren.
+
+Canonical fingerprint: `powerhouse-obligation-reconciliation-v1`.
 
 ## Harde grenzen
 
@@ -78,4 +113,6 @@ Een veilige groene productiepromotie of rollback naar een bewezen last-known-goo
 
 ## Definition of Done
 
-Een obligation is pas klaar als het bedoelde resultaat bestaat, het vereiste bewijs is opgeslagen, idempotency is bevestigd, regressie/preventie is geborgd waar technisch mogelijk en de gedeelde teamcontext de uitkomst kent. Technische success-status zonder outcome-bewijs voldoet niet. Voor repository-wijzigingen betekent dit expliciet dat de exacte production SHA is geverifieerd; commit- of merge-status alleen is nooit klaar.
+Een individuele obligation is pas klaar als het bedoelde resultaat bestaat óf aantoonbaar door een werkende canonieke opvolger is superseded, het vereiste bewijs is opgeslagen, idempotency is bevestigd, regressie/preventie is geborgd waar technisch mogelijk en de gedeelde teamcontext de uitkomst kent. Technische success-status zonder outcome-bewijs voldoet niet.
+
+De Powerhouse-backlog als geheel is alleen groen wanneer iedere bekende obligation/PR in scope aantoonbaar `VERIFIED_CLOSED`, `SUPERSEDED` met bewezen opvolger, of `HARD_BOUNDARY` met actuele blocker-evidence is; alle `ACTIVE` items blijven herstelwerk. Voor repository-wijzigingen betekent completion bovendien dat de exacte production SHA is geverifieerd; commit- of merge-status alleen is nooit klaar.
