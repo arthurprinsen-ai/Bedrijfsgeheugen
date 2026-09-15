@@ -2,28 +2,33 @@
 
 Contract: `powerhouse-data-intake-learning-spine-v1`
 
-## Verified source state
+## Canonical provider state
 
-- GA4 property `546874601` / `Bedrijfsgeheugen` is connected and returns genuine data through the existing Windsor.ai connection.
-- Fresh readback over the last seven days returned sessions/users/page views for 2026-09-09, 2026-09-11, 2026-09-12 and 2026-09-15.
-- Thirty-day GA4 channel readback distinguishes Direct, Organic Search, Referral and AI Assistant traffic. No Email channel was observed in that readback.
-- The canonical Supabase collector remains fail-closed because the Google service account receives `GA4_403: User does not have sufficient permissions for this property` on property `546874601`.
-- Windsor.ai can target Supabase as a scheduled export destination, but no Supabase destination credential is connected and Windsor marks this destination `create_in_chat=false`. Therefore no unverified parallel export was created.
-- Email/newsletter attribution can be observed through GA4/UTM once tagged traffic exists, but campaign delivery/open/click analytics remain `BLOCKED_HARD_BOUNDARY` until a real campaign provider/account is connected.
+- **Buffer is the canonical social-performance provider** for LinkedIn/Instagram publication and performance readback into the existing social metric / learning chain.
+- **Composio is the canonical external/app provider layer** where the Powerhouse uses connected application data. Windsor.ai is **not** part of the canonical Powerhouse provider architecture and must not be promoted into it from diagnostic readback.
+- **Gmail is connected and active**. Gmail is therefore a live Powerhouse channel for outbound email, replies, sent-message readback and commercial follow-up evidence.
+- Gmail message-level outcomes (sent/replied/thread/message-id and follow-up state) belong in the existing growth/revenue/sales outcome lineage.
+- Newsletter/campaign analytics such as opens, unique clicks and unsubscribes are a separate capability from Gmail message delivery. They remain unavailable unless a campaign/newsletter provider with those metrics is connected.
 
 ## Canonical decision
 
-1. Do not weaken GA4 authentication and do not synthesize analytics.
-2. Keep the direct Google Analytics Data API collector as the canonical Supabase ingest route.
-3. Treat Windsor.ai as verified source/readback fallback, not as a second analytics store.
-4. A future Windsor→Supabase fallback may only write into the existing canonical GA4 ingest contract/tables and must use a user-authorized Supabase destination credential.
-5. Keep GA4 canonical ingest red until `bg_ga4_sync` has a successful production run with stored rows/readback.
-6. Keep email campaign analytics red until a campaign provider is connected and real sends/opens/clicks/outcomes are read back.
+1. Buffer remains the single social publication/performance source; do not introduce Windsor or another parallel social analytics source.
+2. Composio remains the provider/integration route for connected external application data where already used by Powerhouse.
+3. Gmail is classified as `LIVE` for outbound/reply/readback and must feed the existing sales/outcome/revenue-learning lineage.
+4. Do not mark all email as blocked. Only newsletter/campaign-specific analytics remain blocked when no such provider exists.
+5. Windsor.ai diagnostic reads are non-canonical and create no Powerhouse obligation, ingestion path or datastore.
+6. Preserve fail-closed provider health: a connected provider is green only when current readback succeeds and downstream evidence is stored.
+
+## Provider ownership
+
+- Social publishing/performance: `Buffer`.
+- External/app integration layer: `Composio`.
+- Email send/reply/readback: `Gmail`.
+- Newsletter campaign opens/clicks/unsubscribes: `BLOCKED_HARD_BOUNDARY` until a dedicated campaign provider is connected.
 
 ## Hard boundaries
 
-- `ga4-property-permission-546874601`: Google Analytics property permission for the Supabase service account.
-- `email-campaign-provider-connection`: campaign/newsletter provider account connection.
-- `windsor-supabase-destination-credential`: only needed if Windsor is deliberately promoted as a fallback ingestion transport; do not create a parallel store.
+- `newsletter-campaign-analytics-provider`: only applies to campaign-level metrics not supplied by Gmail.
+- Any future provider permission/account failure must be registered independently; it must not cause already connected Buffer, Composio or Gmail capabilities to be marked blocked.
 
-These are persistent open obligations under `whole-brain-outcome-obligations`; credentials/account connections and permissions are explicitly hard boundaries. They must be rechecked by future agents rather than silently treated as healthy.
+This correction is persistent Powerhouse state. Future agents must reuse these provider roles and may not substitute Windsor.ai or another parallel integration route without an explicit canonical architecture change.
