@@ -19,7 +19,8 @@ const ASSURANCE_BACKEND_PATHS = Object.freeze([
   'tests/powerhouse-assurance'
 ]);
 const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
-  'docs/powerhouse/'
+  'docs/powerhouse/',
+  'docs/portal-v2-parity-architecture.md'
 ]);
 
 function scopedLaneForPath(path) {
