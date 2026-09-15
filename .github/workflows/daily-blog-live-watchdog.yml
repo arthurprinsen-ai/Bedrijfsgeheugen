@@ -1,6 +1,10 @@
 name: Native daily blog live watchdog
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/content-publication-ledger.json'
   schedule:
     - cron: '30 17 * * *'
   workflow_dispatch:
