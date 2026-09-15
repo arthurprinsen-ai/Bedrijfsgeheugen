@@ -43,6 +43,8 @@ async function accounts(limit=30){
 async function modelHealth(){return rest('powerhouse_model_health_v1?select=*&order=sample_size.desc')}
 async function attribution(limit=50){return rest(`powerhouse_revenue_attribution_v1?select=*&order=occurred_at.desc&limit=${limit}`)}
 async function experiments(limit=50){return rest(`powerhouse_experiment_learning_v2?select=*&order=calendar_date.desc.nullslast&limit=${limit}`)}
+async function ensureForecastLineage(date:string){return rest('rpc/powerhouse_ensure_commercial_progression_forecasts_v1',{method:'POST',body:JSON.stringify({p_run_date:date})})}
+async function refreshCommandCenterSnapshot(){return rest('rpc/powerhouse_refresh_revenue_intelligence_snapshot_v1',{method:'POST',body:'{}'})}
 async function snapshotStatus(){
   const rows=arr(await rest('powerhouse_revenue_command_center_snapshot_v1?select=refreshed_at&order=refreshed_at.desc&limit=1').catch(()=>[]));
   const refreshedAt=clean(rows[0]?.refreshed_at);const ts=refreshedAt?Date.parse(refreshedAt):NaN;
@@ -59,13 +61,16 @@ async function healthReadback(){
   return{...baseHealth,...snapshot};
 }
 async function dailyIntelligence(runDate?:string){
-  const date=clean(runDate)||new Date().toISOString().slice(0,10);const health=await healthReadback();
+  const date=clean(runDate)||new Date().toISOString().slice(0,10);
+  const forecastBridge=await ensureForecastLineage(date);
+  const snapshotRefresh=await refreshCommandCenterSnapshot();
+  const health=await healthReadback();
   const structural_lineage_gaps=num(health.structural_lineage_gaps,0);const research_queue_count=num(health.research_queue_count,0);const model_health_segments=num(health.model_health_segments,0);const model_watch_segments=num(health.model_watch_segments,0);const snapshot_stale=health.snapshot_stale===true;const state=structural_lineage_gaps>0||snapshot_stale?'degraded':'completed';
   const existing=await rest(`powerhouse_daily_runs?run_date=eq.${date}&select=*&limit=1`).catch(()=>[]);const prior=arr(existing)[0]||{};
-  const evidence={...(prior.evidence||{}),revenue_intelligence_loop:{version:'1.1.0',structural_lineage_gaps,research_queue_count,model_health_segments,model_watch_segments,identity_gaps:num(health.identity_gaps,0),forecast_lineage_gaps:num(health.forecast_lineage_gaps,0),runtime_errors:num(health.runtime_errors,0),snapshot_refreshed_at:health.snapshot_refreshed_at||null,snapshot_age_minutes:health.snapshot_age_minutes,snapshot_stale,verified_at:new Date().toISOString()}};
+  const evidence={...(prior.evidence||{}),revenue_intelligence_loop:{version:'1.2.0',structural_lineage_gaps,research_queue_count,model_health_segments,model_watch_segments,identity_gaps:num(health.identity_gaps,0),forecast_lineage_gaps:num(health.forecast_lineage_gaps,0),runtime_errors:num(health.runtime_errors,0),forecast_bridge:forecastBridge,snapshot_refresh:snapshotRefresh,snapshot_refreshed_at:health.snapshot_refreshed_at||null,snapshot_age_minutes:health.snapshot_age_minutes,snapshot_stale,verified_at:new Date().toISOString()}};
   const row={run_date:date,dedupe_key:prior.dedupe_key||`daily:${date}`,state,action_count:num(prior.action_count,0),recommendation_count:num(prior.recommendation_count,0),evidence,completed_at:state==='completed'?(prior.completed_at||new Date().toISOString()):prior.completed_at||null,updated_at:new Date().toISOString()};
   await rest('powerhouse_daily_runs?on_conflict=run_date',{method:'POST',headers:{prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
-  return{runDate:date,state,structural_lineage_gaps,research_queue_count,model_health_segments,model_watch_segments,snapshot_age_minutes:health.snapshot_age_minutes,snapshot_stale};
+  return{runDate:date,state,structural_lineage_gaps,research_queue_count,model_health_segments,model_watch_segments,forecastBridge,snapshotRefresh,snapshot_age_minutes:health.snapshot_age_minutes,snapshot_stale};
 }
 
 Deno.serve(async(req:Request)=>{try{
@@ -73,7 +78,7 @@ Deno.serve(async(req:Request)=>{try{
   const u=new URL(req.url);const route=u.pathname.split('/').filter(Boolean).pop()||'health';
   const scopes:Record<string,string>={health:'health','command-center':'actions',accounts:'opportunities',research:'learning','model-health':'learning',attribution:'learning',experiments:'learning',daily:'daily'};const scope=scopes[route]||'learning';
   if(!await authorized(req,scope))return json({ok:false,error:'UNAUTHORIZED'},401);
-  if(route==='health'&&req.method==='GET'){const readback=await healthReadback();return json({ok:true,runtime:'powerhouse-revenue-intelligence',version:'1.1.0',canonicalCore:'powerhouse-runtime',parallelBrain:false,snapshotBacked:true,commandCenterV2:true,accountIntelligence:true,researchFailClosed:true,modelMonitoring:true,db:true,readback,at:new Date().toISOString()})}
+  if(route==='health'&&req.method==='GET'){const readback=await healthReadback();return json({ok:true,runtime:'powerhouse-revenue-intelligence',version:'1.2.0',canonicalCore:'powerhouse-runtime',parallelBrain:false,snapshotBacked:true,commandCenterV2:true,accountIntelligence:true,researchFailClosed:true,modelMonitoring:true,forecastBridge:true,db:true,readback,at:new Date().toISOString()})}
   if(route==='command-center'&&req.method==='GET')return json({ok:true,items:await commandCenter(limitOf(u,20))});
   if(route==='accounts'&&req.method==='GET')return json({ok:true,items:await accounts(limitOf(u,30))});
   if(route==='research'&&req.method==='GET')return json({ok:true,items:await research(limitOf(u,30))});
