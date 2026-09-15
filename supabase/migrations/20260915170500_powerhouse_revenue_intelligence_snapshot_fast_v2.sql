@@ -40,18 +40,12 @@ create table public.powerhouse_revenue_command_center_snapshot_v1 (
   refreshed_at timestamptz not null
 );
 
-create index powerhouse_revenue_command_center_snapshot_rank_idx
-  on public.powerhouse_revenue_command_center_snapshot_v1 (revenue_rank);
-create index powerhouse_revenue_command_center_snapshot_opportunity_idx
-  on public.powerhouse_revenue_command_center_snapshot_v1 (opportunity_key);
-create index powerhouse_revenue_command_center_snapshot_person_idx
-  on public.powerhouse_revenue_command_center_snapshot_v1 (person_key);
-create index powerhouse_revenue_command_center_snapshot_company_idx
-  on public.powerhouse_revenue_command_center_snapshot_v1 (company_key);
-create index powerhouse_revenue_command_center_snapshot_research_idx
-  on public.powerhouse_revenue_command_center_snapshot_v1 (research_reason);
-create index powerhouse_revenue_command_center_snapshot_refreshed_idx
-  on public.powerhouse_revenue_command_center_snapshot_v1 (refreshed_at desc);
+create index powerhouse_revenue_command_center_snapshot_rank_idx on public.powerhouse_revenue_command_center_snapshot_v1 (revenue_rank);
+create index powerhouse_revenue_command_center_snapshot_opportunity_idx on public.powerhouse_revenue_command_center_snapshot_v1 (opportunity_key);
+create index powerhouse_revenue_command_center_snapshot_person_idx on public.powerhouse_revenue_command_center_snapshot_v1 (person_key);
+create index powerhouse_revenue_command_center_snapshot_company_idx on public.powerhouse_revenue_command_center_snapshot_v1 (company_key);
+create index powerhouse_revenue_command_center_snapshot_research_idx on public.powerhouse_revenue_command_center_snapshot_v1 (research_reason);
+create index powerhouse_revenue_command_center_snapshot_refreshed_idx on public.powerhouse_revenue_command_center_snapshot_v1 (refreshed_at desc);
 
 alter table public.powerhouse_revenue_command_center_snapshot_v1 enable row level security;
 revoke all on table public.powerhouse_revenue_command_center_snapshot_v1 from public, anon, authenticated;
@@ -73,17 +67,34 @@ begin
   with base as materialized (
     select * from public.powerhouse_commercial_next_best_action_v2
   ),
-  pressure as (
+  pressure_actions as (
     select b.person_key,
       max(a.executed_at) as last_outbound_at,
-      count(a.action_id) filter (where a.executed_at >= now()-interval '7 days')::int as outbound_7d,
-      count(o.outcome_id) filter (where o.occurred_at >= now()-interval '30 days' and lower(o.outcome_type)='no_response')::int as no_response_30d,
-      max(e.occurred_at) filter (where lower(e.event_type) in ('dm_inbound','linkedin_post_replied')) as last_inbound_at
+      count(a.action_id) filter (where a.executed_at >= now()-interval '7 days')::int as outbound_7d
     from (select distinct person_key from base where person_key is not null) b
     left join public.powerhouse_sales_actions a on a.person_key=b.person_key
+    group by b.person_key
+  ),
+  pressure_outcomes as (
+    select b.person_key,
+      count(o.outcome_id) filter (where o.occurred_at >= now()-interval '30 days' and lower(o.outcome_type)='no_response')::int as no_response_30d
+    from (select distinct person_key from base where person_key is not null) b
     left join public.powerhouse_sales_outcomes o on o.person_key=b.person_key
+    group by b.person_key
+  ),
+  pressure_inbound as (
+    select b.person_key,
+      max(e.occurred_at) filter (where lower(e.event_type) in ('dm_inbound','linkedin_post_replied')) as last_inbound_at
+    from (select distinct person_key from base where person_key is not null) b
     left join public.powerhouse_runtime_events e on e.person_key=b.person_key and e.occurred_at>=now()-interval '30 days'
     group by b.person_key
+  ),
+  pressure as (
+    select b.person_key,pa.last_outbound_at,coalesce(pa.outbound_7d,0) outbound_7d,coalesce(po.no_response_30d,0) no_response_30d,pi.last_inbound_at
+    from (select distinct person_key from base where person_key is not null) b
+    left join pressure_actions pa using(person_key)
+    left join pressure_outcomes po using(person_key)
+    left join pressure_inbound pi using(person_key)
   ),
   pressure_scored as (
     select p.*,
