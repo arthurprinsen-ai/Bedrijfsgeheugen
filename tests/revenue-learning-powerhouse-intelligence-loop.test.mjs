@@ -1,14 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const migrationPath = new URL('../supabase/migrations/20260915143908_powerhouse_revenue_intelligence_loop_v1.sql', import.meta.url);
 const healthPerfPath = new URL('../supabase/migrations/20260915144916_powerhouse_revenue_intelligence_health_perf_v2.sql', import.meta.url);
 const snapshotPath = new URL('../supabase/migrations/20260915145138_powerhouse_revenue_intelligence_snapshot_v1.sql', import.meta.url);
 const snapshotFastPath = new URL('../supabase/migrations/20260915145749_powerhouse_revenue_intelligence_snapshot_fast_v2.sql', import.meta.url);
 const intelligencePath = new URL('../supabase/functions/powerhouse-revenue-intelligence/index.ts', import.meta.url);
+const migrationsDir = fileURLToPath(new URL('../supabase/migrations/', import.meta.url));
 
-function read(path) { return fs.readFileSync(path, 'utf8'); }
+function read(p) { return fs.readFileSync(p, 'utf8'); }
+function allMigrations() { return fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql')).map(f => read(path.join(migrationsDir, f))).join('\n'); }
 
 test('migration creates canonical revenue intelligence views', () => {
   const sql = read(migrationPath);
@@ -72,6 +76,16 @@ test('health counts only unresolved latest runtime errors', () => {
   assert.match(sql, /row_number\(\)\s+over\s*\(/i);
   assert.match(sql, /partition\s+by\s+event_type\s*,\s*source\s*,\s*subject_key/i);
   assert.match(sql, /rn\s*=\s*1/i);
+});
+
+test('daily intelligence ensures canonical commercial progression forecasts before health', () => {
+  const sql = allMigrations();
+  const source = read(intelligencePath);
+  assert.match(sql, /powerhouse_ensure_commercial_progression_forecasts_v1/i);
+  assert.match(sql, /predicted_event\s*,?[\s\S]*commercial_progression/i);
+  assert.match(sql, /opportunity_key/i);
+  assert.match(source, /powerhouse_ensure_commercial_progression_forecasts_v1/i);
+  assert.match(source, /\/rest\/v1\/rpc\//i);
 });
 
 test('snapshot migration makes the command-center derivation rebuildable and scheduled', () => {
