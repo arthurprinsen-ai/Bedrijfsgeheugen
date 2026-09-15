@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "contract": "powerhouse-repo-production-migration-lineage-v1",
+  "productionProject": "adhjwmvyoixzjtmiroln",
+  "policy": {
+    "productionLedgerIsAuthority": true,
+    "alreadyAppliedDdlMustNotBeReplayed": true,
+    "githubMustUseExactProductionVersionAndName": true,
+    "semanticTimestampAliasesForbidden": true,
+    "closureRequiresPostMergeProductionAndGithubReadback": true
+  },
+  "observedAt": "2026-09-15T15:00:00Z",
+  "latestObservedProductionMigration": "20260915154107_powerhouse_outcome_readback_health_semantics_v1",
+  "reconciliationStatus": "PENDING_MAIN_READBACK",
+  "reconciled": [
+    {
+      "production": "20260915152705_powerhouse_revenue_intelligence_health_truth_v3.sql",
+      "replacesAlias": "20260915172800_powerhouse_revenue_intelligence_health_truth_v3.sql"
+    },
+    {
+      "production": "20260915153015_powerhouse_commercial_progression_forecast_bridge_v1.sql",
+      "replacesAlias": "20260915173100_powerhouse_commercial_progression_forecast_bridge_v1.sql"
+    },
+    {
+      "production": "20260915153617_powerhouse_forecast_lineage_sequencing_v1.sql",
+      "replacesAlias": "20260915153500_powerhouse_forecast_lineage_sequencing_v1.sql"
+    },
+    {
+      "production": "20260915154107_powerhouse_outcome_readback_health_semantics_v1.sql",
+      "replacesAlias": "20260915154000_powerhouse_outcome_readback_health_semantics_v1.sql"
+    }
+  ],
+  "obligation": {
+    "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
+    "changeId": "repo-production-migration-lineage-reconciliation-v1",
+    "productionStateBeforeClosure": "OPEN",
+    "closureState": "FULFILLED",
+    "closureCondition": "All production entries above exist on GitHub main at their exact production filenames, all aliases are absent, required CI is green, and Supabase plus GitHub are read back after merge."
+  }
+}
