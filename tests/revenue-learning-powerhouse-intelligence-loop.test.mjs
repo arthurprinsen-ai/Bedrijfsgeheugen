@@ -62,6 +62,18 @@ test('health performance fix uses canonical forecast lineage without heavyweight
   assert.match(sql, /powerhouse_opportunities/i);
 });
 
+test('health excludes research enrichment from executable forecast lineage', () => {
+  const sql = read(healthPerfPath);
+  assert.match(sql, /research_enrichment/i);
+});
+
+test('health counts only unresolved latest runtime errors', () => {
+  const sql = read(healthPerfPath);
+  assert.match(sql, /row_number\(\)\s+over\s*\(/i);
+  assert.match(sql, /partition\s+by\s+event_type\s*,\s*source\s*,\s*subject_key/i);
+  assert.match(sql, /rn\s*=\s*1/i);
+});
+
 test('snapshot migration makes the command-center derivation rebuildable and scheduled', () => {
   const sql = read(snapshotPath);
   assert.match(sql, /powerhouse_revenue_command_center_snapshot_v1/i);
