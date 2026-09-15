@@ -32,23 +32,23 @@
 - Consumes: existing health/source freshness, daily guard, publication obligations, Buffer/GA4/outcome/calibration/runtime tables.
 - Produces: `powerhouse_reconcile_terminal_publication_state(date)` and `powerhouse_full_cycle_production_proof(date) -> jsonb`; hourly cron evidence.
 
-- [ ] **Step 1: Add terminal publication reconciliation**
+- [x] **Step 1: Add terminal publication reconciliation**
 
-Reconcile only `publish` channel decisions that have no delivery reference and whose canonical publication obligation is terminal `SKIPPED`, converting the decision to a fail-closed `hold/decided` with reconciliation evidence. Never convert a live/published decision.
+Reconcile only `publish` channel decisions that have no delivery reference and have terminal canonical publication evidence. `LIVE_PROVEN` reconciles the stale channel decision to `published` using the existing obligation `external_id`/`canonical_url`/`content_id` and obligation evidence. Explicit `SKIPPED` reconciles the undelivered decision to fail-closed `hold/decided`. Already delivered/published decisions are never rewritten and no delivery is fabricated.
 
-- [ ] **Step 2: Add fail-closed full-cycle proof**
+- [x] **Step 2: Add fail-closed full-cycle proof**
 
 Evaluate: required source freshness, Buffer sync + social metric readback, GA4/Composio sync + batch rows, Gmail provider attestation freshness, daily execution guard, publication proof, predictive health, canonical outcomes and calibration. Zero outcomes/calibrations are observed state, not fabricated success; overdue calibration is blocking.
 
-- [ ] **Step 3: Persist proof evidence**
+- [x] **Step 3: Persist proof evidence**
 
 Upsert deterministic `powerhouse_runtime_events` event type `full_cycle_production_proof`, write `bg_gezondheid`, and append proof to the existing `powerhouse_daily_runs.evidence` record.
 
-- [ ] **Step 4: Schedule proof**
+- [x] **Step 4: Schedule proof**
 
 Use pg_cron hourly at minute 57 after the existing execution guard; unschedule an older job of the same name first so migration is idempotent.
 
-- [ ] **Step 5: Enforce SQL security**
+- [x] **Step 5: Enforce SQL security**
 
 Revoke function execute from public/anon/authenticated; grant service_role only.
 
@@ -61,19 +61,19 @@ Revoke function execute from public/anon/authenticated; grant service_role only.
 - Consumes: migration source.
 - Produces: CI protection against parallel stores, false green, missing provider evidence, missing security revoke/grant and missing cron.
 
-- [ ] **Step 1: Assert reuse-first contract**
+- [x] **Step 1: Assert reuse-first contract**
 
 Test that the migration references existing canonical tables/functions and does not create a new outcome/analytics/learning table.
 
-- [ ] **Step 2: Assert provider ownership**
+- [x] **Step 2: Assert provider ownership**
 
-Test explicit Buffer, Composio/GA4 and Gmail evidence checks and forbid Windsor/Make.
+Test explicit Buffer, Composio/GA4 and Gmail evidence checks and forbid non-canonical provider substitution / retired automation.
 
-- [ ] **Step 3: Assert fail-closed and writeback**
+- [x] **Step 3: Assert fail-closed and writeback**
 
 Test that overall healthy requires all blocking subproofs; verify runtime event, health and daily-run writeback and deterministic dedupe.
 
-- [ ] **Step 4: Assert security and schedule**
+- [x] **Step 4: Assert security and schedule**
 
 Test revoke/grant and the hourly proof cron contract.
 
@@ -88,7 +88,7 @@ Test revoke/grant and the hourly proof cron contract.
 
 - [ ] **Step 1: Open PR and require all gates green**
 
-Do not bypass `test` or BRAIN/security gates.
+PR #1577 is open. Do not bypass `test` or BRAIN/security gates.
 
 - [ ] **Step 2: Merge exact tested head SHA**
 
