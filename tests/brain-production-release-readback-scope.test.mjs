@@ -76,6 +76,27 @@ test('production readback is a canonical Brain/Powerhouse delivery-control-plane
   assert.equal(contract.connectorReadiness.excludedFromAuthenticatedWildcard, true);
 });
 
+test('production truth governance fails closed across PR, merge, deploy and live readback', async () => {
+  const contract = JSON.parse(await readFile('brain/contracts/production-readback-v1.json', 'utf8'));
+  assert.equal(contract.productionTruth.requiredStatusContext, 'test');
+  assert.equal(contract.productionTruth.requiredStatusMustBe, 'success');
+  assert.equal(contract.productionTruth.redGateMergeAllowed, false);
+  assert.equal(contract.productionTruth.stalePrCanBeCurrentTruth, false);
+  assert.equal(contract.productionTruth.supersededPrCanBeActiveWork, false);
+  assert.equal(contract.productionTruth.netlifyReadyWithoutShaMatchIsLive, false);
+  assert.equal(contract.productionTruth.exactMainToProductionShaMatchRequired, true);
+  assert.equal(contract.productionTruth.liveReadbackRequired, true);
+  assert.deepEqual(contract.productionTruth.requiredLineage, [
+    'source_pr',
+    'head_sha',
+    'delivery_pr',
+    'main_sha',
+    'netlify_deploy_id',
+    'netlify_commit_ref',
+    'live_readback',
+  ]);
+});
+
 test('production readback failures are part of the canonical universal learning loop', async () => {
   const [contract, learning, lesson] = await Promise.all([
     readFile('brain/contracts/production-readback-v1.json', 'utf8').then(JSON.parse),
@@ -96,6 +117,9 @@ test('production readback failures are part of the canonical universal learning 
   assert.equal(lesson.status, 'PROVEN');
   assert.equal(lesson.learning.noParallelMechanism, true);
   assert.equal(lesson.learning.noMakeDependency, true);
+  assert.equal(lesson.learning.productionTruthPolicy, 'PR_GREEN_TO_MAIN_SHA_TO_EXACT_NETLIFY_SHA_TO_LIVE_READBACK');
+  assert.equal(lesson.learning.staleOrSupersededPrPolicy, 'REMOVE_FROM_ACTIVE_QUEUE_PRESERVE_LINEAGE');
+  assert.equal(lesson.learning.redGatePolicy, 'NEVER_BYPASS');
   assert.deepEqual(contract.learning.requiredFields, learning.required_learning_fields);
   assert.ok(learning.required_lifecycle.includes('learning_writeback'));
   assert.ok(learning.required_lifecycle.includes('prevention_reuse'));
