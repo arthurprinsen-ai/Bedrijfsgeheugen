@@ -1,8 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {
   validateComponentRegistry,
   validatePortalParity,
+  discoverRepositoryDrift,
   buildAssuranceReport,
 } from '../scripts/powerhouse-assurance-check.mjs';
 
@@ -28,9 +32,21 @@ const complete = (overrides = {}) => ({
   ...overrides,
 });
 
+const verifiedParity = (overrides = {}) => ({
+  legacy_key: 'overzicht',
+  canonical_id: 'portal-overzicht-v2',
+  status: 'verified',
+  v2_surface: '/portal-v2/',
+  authority: 'Powerhouse',
+  writeback: 'runtime events',
+  tests: ['tests/portal-v2.test.mjs'],
+  evidence: 'production-readback',
+  production_evidence_status: 'verified',
+  ...overrides,
+});
+
 test('active component fails when a required assurance dimension is missing', () => {
-  const component = complete({ security_contract: '' });
-  const result = validateComponentRegistry({ components: [component] });
+  const result = validateComponentRegistry({ components: [complete({ security_contract: '' })] });
   assert.equal(result.ok, false);
   assert.ok(result.gaps.some((gap) => gap.includes('security_contract')));
 });
@@ -48,21 +64,42 @@ test('deprecated or superseded components require retirement evidence', () => {
   assert.ok(result.gaps.some((gap) => gap.includes('retirement')));
 });
 
-test('critical active components require tested recovery proof', () => {
+test('critical recovery without a drill is managed debt, not a hidden green claim', () => {
   const result = validateComponentRegistry({ components: [complete({ recovery_contract: { critical: true, status: 'documented', evidence: 'docs/recovery.md' } })] });
-  assert.equal(result.ok, false);
-  assert.ok(result.gaps.some((gap) => gap.includes('tested recovery')));
+  assert.equal(result.ok, true);
+  assert.equal(result.gaps.length, 0);
+  assert.ok(result.obligations.some((item) => item.includes('tested recovery')));
 });
 
 test('portal parity fails on missing or unknown capability status', () => {
-  const result = validatePortalParity({ capabilities: [
-    { legacy_key: 'overzicht', canonical_id: 'portal-overzicht-v2', status: 'unknown', v2_surface: '/portal-v2/', authority: 'Powerhouse', writeback: 'runtime events', tests: ['tests/portal-v2.test.mjs'], evidence: '' },
-  ]});
+  const result = validatePortalParity({ capabilities: [verifiedParity({ status: 'unknown', evidence: '' })] });
   assert.equal(result.ok, false);
   assert.ok(result.gaps.some((gap) => gap.includes('overzicht')));
 });
 
-test('assurance report cannot be LIVE & BEWEZEN when unmanaged gaps exist', () => {
+test('portal contract parity may be verified while production evidence remains an explicit obligation', () => {
+  const result = validatePortalParity({ capabilities: [verifiedParity({ production_evidence_status: 'pending', evidence: 'code-level parity only' })] });
+  assert.equal(result.ok, true);
+  assert.ok(result.obligations.some((item) => item.includes('production evidence pending')));
+});
+
+test('repository drift identifies an uncovered production surface', () => {
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pwh-assurance-'));
+  fs.mkdirSync(path.join(rootDir, 'netlify/functions'), { recursive: true });
+  fs.writeFileSync(path.join(rootDir, 'netlify/functions/known.js'), 'export default {}');
+  fs.writeFileSync(path.join(rootDir, 'netlify/functions/unregistered.js'), 'export default {}');
+  const drift = discoverRepositoryDrift({
+    rootDir,
+    registry: {
+      drift_roots: ['netlify/functions'],
+      components: [{ code_paths: ['netlify/functions/known.js'] }],
+    },
+  });
+  assert.equal(drift.ok, false);
+  assert.deepEqual(drift.unregistered, ['netlify/functions/unregistered.js']);
+});
+
+test('assurance report cannot be LIVE & BEWEZEN when blocking gaps exist', () => {
   const report = buildAssuranceReport({
     registry: { components: [complete({ observability_contract: '' })] },
     parity: { capabilities: [] },
@@ -72,13 +109,22 @@ test('assurance report cannot be LIVE & BEWEZEN when unmanaged gaps exist', () =
   assert.equal(report.fingerprint, 'powerhouse-assurance-layer-v1');
 });
 
-test('complete registry and verified parity produce a deterministic green contract report', () => {
+test('managed evidence obligations hold overall status at DEELS LIVE without becoming a schema bypass', () => {
+  const report = buildAssuranceReport({
+    registry: { components: [complete({ recovery_contract: { critical: true, status: 'documented', evidence: 'docs/recovery.md' } })] },
+    parity: { capabilities: [verifiedParity({ production_evidence_status: 'pending', evidence: 'code-level parity only' })] },
+  });
+  assert.equal(report.gaps.length, 0);
+  assert.equal(report.status, 'DEELS LIVE');
+  assert.equal(report.open_obligations.length, 2);
+});
+
+test('complete registry and verified production parity produce a deterministic green contract report', () => {
   const report = buildAssuranceReport({
     registry: { components: [complete()] },
-    parity: { capabilities: [
-      { legacy_key: 'overzicht', canonical_id: 'portal-overzicht-v2', status: 'verified', v2_surface: '/portal-v2/', authority: 'Powerhouse', writeback: 'runtime events', tests: ['tests/portal-v2.test.mjs'], evidence: 'production-readback' },
-    ] },
+    parity: { capabilities: [verifiedParity()] },
   });
   assert.equal(report.status, 'LIVE & BEWEZEN');
   assert.deepEqual(report.gaps, []);
+  assert.deepEqual(report.open_obligations, []);
 });
