@@ -2,223 +2,200 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Close the remaining Powerhouse evidence loop so real provider/runtime usage, observed costs, human feedback and commercial outcomes can safely influence realized value, forecast calibration, Next Best Action and Portal V2 without parallel systems or fabricated evidence.
+**Goal:** Close the remaining Powerhouse evidence loop so real provider/runtime usage, observed costs, human feedback and commercial outcomes safely drive realized value, forecast calibration, Next Best Action and Portal V2.
 
-**Architecture:** Extend existing metering/outcome/calibration contracts additively, keep Supabase/Powerhouse as canonical authority, and expose only evidence-backed projections to NBA and Portal V2. Repair the approved-central blog visibility obligation through its existing Notion/GitHub route. Finish with exact-SHA protected release, production readback, runtime learning writeback and Notion documentation.
+**Architecture:** Extend existing metering, outcome and calibration paths additively. Supabase/Powerhouse stays canonical; NBA-v3 stays the decision authority; Portal V2 consumes canonical projections. Repair the existing approved-central blog visibility defect without an alternate source or publication route.
 
-**Tech Stack:** Node.js/ESM, Netlify Functions, PostgreSQL/Supabase, GitHub Actions, Notion API, Portal V2 JavaScript, existing Powerhouse CI/BRAIN governance.
+**Tech Stack:** Node.js/ESM, Netlify Functions, PostgreSQL/Supabase, GitHub Actions, Notion API, Python blog publisher, Portal V2 JavaScript.
 
 **Spec:** `docs/superpowers/specs/2026-09-15-powerhouse-observability-outcome-calibration-closure-design.md`
 
 ## Global Constraints
 
 - `EXISTING-STATE-FIRST / REUSE-FIRST / CANONICAL-INTEGRATION / CLOSED-LOOP`.
-- No Make dependency and no new CRM, outcome ledger, resource ledger, queue, analytics store, learning plane or ranking engine.
-- Stable public/runtime contracts change additively only.
+- No Make dependency.
+- No new CRM, resource ledger, outcome ledger, learning plane, queue, analytics store or ranking engine.
+- Stable runtime contracts change additively only.
 - Unknown cost/resource/environmental/business-value dimensions remain `NULL`/unknown, never synthetic zero.
 - Explicit tenant/action/opportunity/outcome lineage is required for learned business value.
 - Cross-tenant ambiguity fails closed.
-- Existing NBA-v3 remains ranking/decision authority; economics/resource evidence is additive enrichment only.
-- Calibration/NBA influence is neutral until explicit, versioned evidence thresholds are met.
-- No generic token→CO₂/water/kWh factors may be invented.
-- Production status requires exact candidate/main/Netlify/readback identity and canonical writeback.
+- NBA-v3 remains ranking authority; economics/resource evidence is enrichment only.
+- Calibration/NBA influence remains neutral until a versioned observed-evidence threshold is met.
+- No generic token→CO₂/water/kWh factors.
+- `LIVE & BEWEZEN` requires exact candidate/main/Netlify/readback identity plus canonical runtime/learning/documentation writeback.
 
 ---
 
-## File structure and responsibility map
-
-- `netlify/functions/_ai-usage-store.mjs` — canonical AI usage mirror and allowlisted business-context propagation.
-- `netlify/functions/_brain-ai.mjs` — caller-side construction of usage context without changing stable token-metering status semantics.
-- `netlify/functions/_cost-projection-store.mjs` — existing cost dashboard/read model; remove legacy Make assumptions from new evidence logic, do not make it a new authority.
-- `netlify/functions/_revenue-learning-store.mjs` — existing revenue learning persistence path.
-- `netlify/functions/_revenue-learning-model.mjs` — existing observed-outcome/calibration model entry point.
-- `netlify/functions/revenue-learning-context.mjs`, `revenue-learning-evaluate.mjs`, `revenue-learning-project.mjs` — existing scheduled/runtime evaluation route to reuse.
-- `supabase/migrations/<timestamp>_powerhouse_observability_outcome_calibration_closure_v1.sql` — evidence maturity, calibration eligibility and portal/NBA projections; no parallel base ledger.
-- `portal-v2/csrd-impact.js` plus existing Portal V2 read-model/render files discovered during implementation — render canonical evidence maturity/coverage and fail-closed unknowns.
-- `powerhouse/assurance/portal-v2-parity.json` and `scripts/powerhouse-assurance-check.mjs` — parity/evidence contract for the affected Portal V2 capability.
-- `scripts/publish_approved_blog_v2.py` — existing approved-central Notion selection/render logic; repair row visibility/token authority here if root cause is confirmed.
-- `.github/workflows/approved-central-blog.yml` — existing publication orchestration; only modify if workflow identity/credentials need corrected wiring.
-- `tests/backend/*.test.mjs`, `tests/portal-*.test.mjs`, and existing Python/workflow contract tests — TDD coverage in already classified delivery lanes.
-- `docs/superpowers/specs/...` and this plan — design/plan authority only, not runtime truth.
-
----
-
-### Task 1: Baseline and failing attribution tests
+### Task 1: AI usage attribution contract
 
 **Files:**
-- Modify/Test: `tests/backend/ai-usage-store.test.mjs`
-- Modify/Test: existing `_brain-ai` backend test file discovered from current main
-- Read: `netlify/functions/_ai-usage-store.mjs`
-- Read: `netlify/functions/_brain-ai.mjs`
+- Modify: `netlify/functions/_ai-usage-store.mjs`
+- Modify: `netlify/functions/_brain-ai.mjs`
+- Modify/Test: `tests/ai-usage-store.test.mjs`
+- Create/Test: `tests/brain-ai-attribution.test.mjs`
 
 **Interfaces:**
-- Consumes: `createAiUsageStore(...).record(record, context)` and `createCanonicalAiUsageWriter`.
-- Produces: verified context contract `{tenantId, activityType, actionId, opportunityKey, campaignKey, outcomeKey}` while preserving existing `tokenMetering`/`canonicalTokenMetering` semantics.
+- Consumes: `createAiUsageStore(...).record(record, context)`.
+- Produces: allowlisted context `{tenantId, activityType, actionId, opportunityKey, campaignKey, outcomeKey}` mapped to canonical snake_case metadata without changing existing `tokenMetering`/`canonicalTokenMetering` meanings.
 
-- [ ] **Step 1: Write/extend failing tests** asserting only the six allowlisted business keys reach canonical metadata; unknown metadata keys, prompts and response text do not.
-- [ ] **Step 2: Add failing tests** asserting existing success/error token-metering enums are unchanged when canonical mirroring succeeds/fails.
-- [ ] **Step 3: Run the narrow backend tests** with `node --test <exact-test-files>` and verify the new assertions fail for any missing caller context.
-- [ ] **Step 4: Implement the minimal caller propagation** in `_brain-ai.mjs` and, only if required, validation in `_ai-usage-store.mjs`.
-- [ ] **Step 5: Re-run the narrow tests** and then the repository backend lane; require all green.
-- [ ] **Step 6: Commit** `test/feat: close canonical AI usage attribution`.
+- [ ] **Step 1: Add failing test in `tests/ai-usage-store.test.mjs`** asserting canonical metadata contains only `tenant_id`, `activity_type`, `action_id`, `opportunity_key`, `campaign_key`, `outcome_key` plus existing token counters.
+- [ ] **Step 2: Add failing test in `tests/brain-ai-attribution.test.mjs`** asserting website/portal AI calls can pass verified action/opportunity context to `usageStore.record(record, context)` while prompts/answers are absent from metering metadata.
+- [ ] **Step 3: Run** `node --test tests/ai-usage-store.test.mjs tests/brain-ai-attribution.test.mjs` and require RED on the missing caller propagation only.
+- [ ] **Step 4: Implement minimal propagation** in `_brain-ai.mjs`; retain `canonicalAttributionMetadata()` as the only allowlist in `_ai-usage-store.mjs`.
+- [ ] **Step 5: Re-run narrow tests and `node --test tests/*.test.mjs`**; require GREEN.
+- [ ] **Step 6: Commit** `feat: propagate canonical AI business attribution`.
 
-### Task 2: Canonical observed economics/outcome evidence projection
+### Task 2: Evidence maturity and calibration eligibility SQL
 
 **Files:**
-- Create: `supabase/migrations/<timestamp>_powerhouse_observability_outcome_calibration_closure_v1.sql`
-- Create/Modify Test: `tests/backend/powerhouse-observability-outcome-sql-contract.test.mjs`
-- Read only: current definitions of `powerhouse_action_economics`, `powerhouse_sales_actions`, `powerhouse_sales_outcomes`, `powerhouse_action_business_value_v1`, `powerhouse_forecasts`, `powerhouse_forecast_calibration`, NBA-v3/v4.
+- Create: `supabase/migrations/20260915203000_powerhouse_observability_outcome_calibration_closure_v1.sql`
+- Create/Test: `tests/powerhouse-observability-outcome-sql-contract.test.mjs`
 
 **Interfaces:**
-- Consumes: existing canonical action/economics/outcome/forecast stores.
-- Produces: versioned read-only projection(s) for dimension-level evidence maturity and calibration eligibility; existing base stores remain authority.
+- Consumes: `brain_budget_usage`, `powerhouse_resource_impact_v1`, `powerhouse_action_economics`, `powerhouse_sales_actions`, `powerhouse_sales_outcomes`, `powerhouse_action_business_value_v1`, `powerhouse_forecasts`, `powerhouse_forecast_calibration`, `powerhouse_commercial_next_best_action_v3/v4`.
+- Produces: read-only `powerhouse_action_evidence_maturity_v1` and `powerhouse_commercial_next_best_action_v5`; no new base ledger.
 
-- [ ] **Step 1: Write the failing SQL-contract test** for `security_invoker=true`, no `anon/authenticated/public` grant expansion, explicit action/tenant joins, nullable unknown semantics and no heuristic opportunity matching.
-- [ ] **Step 2: Run the test** and confirm RED because the closure migration/projection does not yet exist.
-- [ ] **Step 3: Inspect live schemas** before writing SQL; copy exact column names/types and existing RPCs rather than guessing.
-- [ ] **Step 4: Add the migration** defining evidence maturity per dimension (`resource`, `economics`, `outcome`, `forecast`) and a combined `calibration_eligible` boolean/reason. Preserve `powerhouse_action_business_value_v1`; create a successor projection only if its current contract cannot carry the additional evidence fields additively.
-- [ ] **Step 5: Encode explicit versioned thresholds** in SQL/config, e.g. minimum observed comparable outcomes before an efficiency/calibration contribution can become non-neutral. Threshold values must be named constants/config records, not embedded unexplained literals.
-- [ ] **Step 6: Re-run SQL-contract tests** until GREEN, including deterministic observed-cost + realized-revenue ROI and NULL when either side is absent.
-- [ ] **Step 7: Commit** `feat: add evidence maturity and calibration eligibility projections`.
+- [ ] **Step 1: Write RED SQL-contract test** requiring both views, `security_invoker=true`, no `public/anon/authenticated` grants, exact `action_id` lineage and NULL-preserving unknown semantics.
+- [ ] **Step 2: Run** `node --test tests/powerhouse-observability-outcome-sql-contract.test.mjs`; require RED because the migration is absent.
+- [ ] **Step 3: Inspect production schemas** for exact columns/types before writing SQL.
+- [ ] **Step 4: Create `powerhouse_action_evidence_maturity_v1`** with dimension states `resource_evidence_status`, `economics_evidence_status`, `outcome_evidence_status`, `forecast_evidence_status`, combined `evidence_maturity`, `calibration_eligible`, `calibration_block_reason`.
+- [ ] **Step 5: Set versioned threshold constant** in the view/migration: `minimum_comparable_outcomes = 5`; below five comparable observed outcomes, calibration and cost-efficiency contribution remain neutral. Store/expose this threshold value in the projection.
+- [ ] **Step 6: Create `powerhouse_commercial_next_best_action_v5`** as `v4` plus maturity/eligibility fields. Do not alter v3/v4 recommendation/rank; expose economics/resource contribution only when `calibration_eligible=true`, otherwise neutral/NULL.
+- [ ] **Step 7: Explicit formulas:** `observed_cost_eur = provider_cost_eur + external_cost_eur` only when at least one observed component exists; `net_realized_value_eur = realized_revenue_eur - observed_cost_eur`; `roi_ratio = net_realized_value_eur / observed_cost_eur` only when observed cost > 0 and realized revenue is observed.
+- [ ] **Step 8: Re-run SQL-contract test** and require GREEN.
+- [ ] **Step 9: Commit** `feat: add evidence maturity and calibration eligibility`.
 
-### Task 3: Human feedback and outcome capture through existing lineage
+### Task 3: Human feedback and observed outcomes
 
 **Files:**
 - Modify: `netlify/functions/_revenue-learning-store.mjs`
 - Modify: `netlify/functions/_revenue-learning-model.mjs`
-- Modify if required: `netlify/functions/revenue-learning-context.mjs`
-- Modify if required: `netlify/functions/revenue-learning-evaluate.mjs`
-- Test: corresponding `tests/backend/revenue-learning*.test.mjs`
+- Modify: `netlify/functions/revenue-learning-context.mjs`
+- Modify: `netlify/functions/revenue-learning-evaluate.mjs`
+- Create/Test: `tests/revenue-learning-observed-outcomes.test.mjs`
 
 **Interfaces:**
-- Consumes: canonical action IDs plus observed outcome/human-feedback events.
-- Produces: deduplicated evidence records for `reply`, observation-window `no_reply`, `meeting_booked`, `meeting_held`, `proposal_created/sent`, `won`, `lost`, realized revenue, `skip`, `hold`, `edit`, `override`, `rejection`, `manual_call`.
+- Consumes: canonical `action_id`, provider/human evidence and timestamps.
+- Produces: deduplicated evidence classes `reply`, `no_reply`, `meeting_booked`, `meeting_held`, `proposal_created`, `proposal_sent`, `won`, `lost`, `realized_revenue`, `skip`, `hold`, `edit`, `override`, `rejection`, `manual_call`.
 
-- [ ] **Step 1: Write failing tests** proving human feedback is retained as first-class evidence but is not reinterpreted as a commercial win/loss.
-- [ ] **Step 2: Add failing tests** proving `no_reply` requires an elapsed configured observation window and provider silence alone remains unknown.
-- [ ] **Step 3: Add failing tests** proving realized revenue accepts only explicitly observed amounts and proposal/forecast value cannot flow into realized revenue.
-- [ ] **Step 4: Implement the smallest normalization/validation change** in the existing revenue-learning path; reuse current dedupe/idempotency fields.
-- [ ] **Step 5: Run narrow and full backend tests**; require no change to existing outcome meanings.
-- [ ] **Step 6: Commit** `feat: capture observed human and commercial outcomes`.
+- [ ] **Step 1: Add RED tests** proving `skip/edit/override/rejection/manual_call` are stored as human feedback and never remapped to `won/lost`.
+- [ ] **Step 2: Add RED test** requiring `no_reply` only after an explicit observation deadline; missing provider readback before deadline remains unknown.
+- [ ] **Step 3: Add RED test** requiring realized revenue to come only from an observed revenue field; proposal amount and forecast value cannot populate realized revenue.
+- [ ] **Step 4: Run** `node --test tests/revenue-learning-observed-outcomes.test.mjs`; require RED.
+- [ ] **Step 5: Implement normalization and validation** in existing revenue-learning modules using current idempotency/dedupe keys and explicit `action_id` lineage.
+- [ ] **Step 6: Re-run narrow test plus `node --test tests/*.test.mjs`**; require GREEN.
+- [ ] **Step 7: Commit** `feat: capture observed human and commercial evidence`.
 
-### Task 4: Forecast error and calibration gating
+### Task 4: Forecast error and evidence-gated calibration
 
 **Files:**
-- Modify: SQL migration from Task 2 or add a second focused migration if current-main movement requires isolation.
 - Modify: `netlify/functions/_revenue-learning-model.mjs`
-- Modify/Test: `tests/backend/revenue-learning*.test.mjs`
+- Modify/Test: `tests/revenue-learning-observed-outcomes.test.mjs`
+- Modify: `supabase/migrations/20260915203000_powerhouse_observability_outcome_calibration_closure_v1.sql`
 
 **Interfaces:**
-- Consumes: pre-action forecast identity/version/confidence + post-action comparable outcome.
-- Produces: forecast error only for comparable pairs; evidence threshold status; neutral economics/resource contribution below threshold.
+- Consumes: forecast persisted before execution plus comparable observed outcome.
+- Produces: `forecast_error`, comparison count and calibration eligibility; no backfilled forecasts.
 
-- [ ] **Step 1: Write failing tests**: outcome without prior forecast yields no forecast error and no synthetic backfill.
-- [ ] **Step 2: Write failing tests**: comparable prior forecast + observed outcome yields deterministic error/calibration input.
-- [ ] **Step 3: Write failing tests**: evidence below threshold keeps NBA economics/resource contribution at neutral zero-weight/unknown-evidence state, not negative score.
-- [ ] **Step 4: Implement minimal model/projection logic**, preserving NBA-v3 authority and using v4/successor only for additive evidence fields.
-- [ ] **Step 5: Run backend + SQL contract suites**.
-- [ ] **Step 6: Commit** `feat: gate calibration and NBA economics on observed evidence`.
+- [ ] **Step 1: Add RED test**: outcome without prior forecast returns `forecast_error=null` and `calibration_eligible=false`.
+- [ ] **Step 2: Add RED test**: prior forecast + comparable observed outcome yields deterministic forecast error.
+- [ ] **Step 3: Add RED test**: 1–4 comparable outcomes keep efficiency/calibration neutral; five comparable outcomes make the evidence threshold eligible while leaving environmental unknowns neutral.
+- [ ] **Step 4: Run narrow tests** and require RED.
+- [ ] **Step 5: Implement minimum logic** in model + v5 projection; do not modify the v3 recommendation algorithm.
+- [ ] **Step 6: Run revenue-learning and SQL-contract tests**; require GREEN.
+- [ ] **Step 7: Commit** `feat: gate calibration on comparable observed outcomes`.
 
-### Task 5: Portal V2 canonical evidence consumption
+### Task 5: Portal V2 canonical business-value evidence
 
 **Files:**
 - Modify: `portal-v2/csrd-impact.js`
-- Modify: exact Portal V2 read-model/render file(s) identified from current main for Resource/CSRD/business-value panels.
-- Modify: `powerhouse/assurance/portal-v2-parity.json` only for the affected capability/evidence contract.
-- Test: `tests/portal-resource-footprint.test.mjs`
-- Test: existing Portal V2 parity/assurance test files.
+- Modify: `powerhouse/assurance/portal-v2-parity.json`
+- Modify: `scripts/powerhouse-assurance-check.mjs`
+- Modify/Test: `tests/portal-resource-footprint.test.mjs`
+- Create/Test: `tests/portal-business-value-evidence.test.mjs`
 
 **Interfaces:**
-- Consumes: canonical Portal resource/value projection from Supabase/shared portal service.
-- Produces: tenant-scoped UI model with per-dimension `{value, evidence_class, coverage, freshness, confidence}` and supported realized ROI/value.
+- Consumes: `powerhouse_portal_resource_summary_v2` plus `powerhouse_action_evidence_maturity_v1` through the existing shared portal read model.
+- Produces: dimension-level `{value, evidenceClass, coverage, freshness, confidence}` and realized cost/revenue/net-value/ROI only when supported.
 
-- [ ] **Step 1: Write failing portal tests** proving unknown does not render as `0`, ROI is omitted without observed cost+revenue, and dimension-level evidence classes remain independent.
-- [ ] **Step 2: Write failing parity test** proving Portal V2 uses the canonical projection rather than local recomputation/static sample for this capability.
-- [ ] **Step 3: Implement minimal render/read-model changes**; preserve sample labeling for absent live evidence.
-- [ ] **Step 4: Run portal tests and assurance checker**.
-- [ ] **Step 5: Commit** `feat: render canonical business value evidence in Portal V2`.
+- [ ] **Step 1: Add RED tests** proving unknown cost/impact/revenue never renders as numeric zero.
+- [ ] **Step 2: Add RED tests** proving ROI renders only with observed cost > 0 and observed realized revenue.
+- [ ] **Step 3: Add RED parity assertion** that Portal V2 consumes canonical evidence/value fields and does not locally recompute ROI or environmental impact.
+- [ ] **Step 4: Run** `node --test tests/portal-resource-footprint.test.mjs tests/portal-business-value-evidence.test.mjs`; require RED.
+- [ ] **Step 5: Implement minimal Portal V2 render-model extension** in `csrd-impact.js` and register the evidence contract in the existing assurance inventory/checker.
+- [ ] **Step 6: Run portal tests and** `node scripts/powerhouse-assurance-check.mjs`; require GREEN.
+- [ ] **Step 7: Commit** `feat: expose canonical business value evidence in Portal V2`.
 
-### Task 6: Approved-central blog row-visibility root cause and repair
+### Task 6: Approved-central blog row visibility
 
 **Files:**
-- Modify/Test: `scripts/publish_approved_blog_v2.py`
-- Modify if evidence requires it: `.github/workflows/approved-central-blog.yml`
-- Test: existing approved-blog Python/workflow tests in the classified automation lane
-- Do not create an alternate queue/source/publisher.
+- Modify: `scripts/publish_approved_blog_v2.py`
+- Modify only when reproduction proves workflow wiring is the cause: `.github/workflows/approved-central-blog.yml`
+- Modify/Test: `tests/approved-blog-verifier-contract.test.mjs`
+- Modify/Test: `tests/approved-central-blog-candidate-mode.test.mjs`
+- Create/Test: `tests/approved-central-blog-row-visibility.test.mjs`
 
 **Interfaces:**
-- Consumes: current approved-central Notion data source and `NOTION_TOKEN` integration.
-- Produces: deterministic eligible-row selection or an exact authority/visibility error; candidate-PR path remains unchanged.
+- Consumes: current approved-central Notion data source, the existing six eligibility filters and `NOTION_TOKEN`.
+- Produces: deterministic due-slug selection or explicit visibility/authority failure; candidate-PR delivery unchanged.
 
-- [ ] **Step 1: Reproduce the current row-visibility failure** using the workflow-equivalent token/query contract without publishing content.
-- [ ] **Step 2: Write a regression test** for the confirmed root cause (data-source endpoint/version/integration visibility/filter identity); do not guess the fix before reproduction.
-- [ ] **Step 3: Implement the smallest repair** in `publish_approved_blog_v2.py` or workflow credential/wiring, preserving six eligibility filters, candidate PR delivery and queue pending-until-production-proof semantics.
-- [ ] **Step 4: Run local deterministic blog tests/verification fixture** and require no production article publication during the test.
-- [ ] **Step 5: Commit** `fix: restore approved-central blog row visibility`.
+- [ ] **Step 1: Reproduce with read-only query** using the same API version, datasource ID and filter contract as `publish_approved_blog_v2.py`; do not render/publish.
+- [ ] **Step 2: Record one root cause from observed evidence:** datasource endpoint mismatch, API-version mismatch, integration page access, or filter/property mismatch.
+- [ ] **Step 3: Add RED regression test** in `tests/approved-central-blog-row-visibility.test.mjs` encoding that exact root cause.
+- [ ] **Step 4: Implement the smallest repair** in Python. Edit workflow YAML only if the reproduced root cause is credential/environment wiring; otherwise leave workflow unchanged.
+- [ ] **Step 5: Run** `node --test tests/approved-blog-verifier-contract.test.mjs tests/approved-central-blog-candidate-mode.test.mjs tests/approved-central-blog-row-visibility.test.mjs` plus the Python selector in non-publishing/read-only mode.
+- [ ] **Step 6: Require due-row visibility while preserving candidate-PR, six filters and `pending_until_production_proof` semantics.
+- [ ] **Step 7: Commit** `fix: restore approved-central blog row visibility`.
 
-### Task 7: Supabase apply, security readback and end-to-end transaction fixture
+### Task 7: Production Supabase apply and rollback-safe end-to-end fixture
 
 **Files:**
-- No new permanent test-data files.
-- Uses migration(s) from Tasks 2/4 and existing Supabase RPCs/writers.
+- Apply: `supabase/migrations/20260915203000_powerhouse_observability_outcome_calibration_closure_v1.sql`
 
 **Interfaces:**
-- Consumes: production schema and service-side canonical writers.
-- Produces: catalog/grant readback plus rollback-safe proof of the complete evidence chain.
+- Produces: catalog/security proof plus rollback-safe usage→cost→action→outcome→value→calibration proof.
 
-- [ ] **Step 1: Apply migration(s) atomically** to Supabase production.
-- [ ] **Step 2: Read back** view definitions/options, exact columns, grants, RLS/security-invoker semantics and threshold/config values.
-- [ ] **Step 3: Execute one transaction-scoped fixture** creating/reusing a synthetic canonical action, attributed resource observation, observed economics, prior forecast and observed realized revenue/outcome.
-- [ ] **Step 4: Assert inside the transaction** attribution count, cost, revenue, net realized value, ROI, calibration eligibility/error behavior and NULL environmental impact with zero valid factor.
-- [ ] **Step 5: Roll back/cleanup** and query every touched base table to prove zero fixture residue.
-- [ ] **Step 6: Query real production data separately** and record counts for measured/partial/unknown actions, resource coverage, economics coverage, outcome coverage, calibration-eligible actions and NBA evidence use.
+- [ ] **Step 1: Apply migration atomically** to Supabase production.
+- [ ] **Step 2: Read back** exact view definitions, `security_invoker=true`, columns, threshold value 5, and grants; `public/anon/authenticated` must have no privileges on new projections.
+- [ ] **Step 3: Start one SQL transaction fixture** with a synthetic action ID and explicit tenant; insert/reuse attributed usage, observed economics, pre-action forecast and observed realized-revenue outcome.
+- [ ] **Step 4: Assert in-transaction** attributed usage count=1; deterministic observed cost; deterministic realized revenue/net value/ROI; environmental dimensions NULL with no valid factor; forecast error present only from prior forecast; threshold behavior correct.
+- [ ] **Step 5: Roll back transaction**.
+- [ ] **Step 6: Query all touched base stores** and prove zero fixture rows remain.
+- [ ] **Step 7: Query real production coverage**: action count by evidence maturity; economics-observed count; resource-attributed count; outcome-observed count; forecast-comparable count; calibration-eligible count; NBA-v5 count with active efficiency evidence.
 
-### Task 8: Candidate PR and exact-head CI
+### Task 8: Exact-head PR and CI
 
-**Files:**
-- All files changed in Tasks 1–6 plus spec/plan.
+**Files:** all changes above plus approved spec/plan.
 
-**Interfaces:**
-- Produces: one PR against current protected `main` with explicit Change-Scope and Scope-Budget metadata.
-
-- [ ] **Step 1: Compare branch to current `main`**; if main moved, consolidate only still-valid deltas onto a fresh successor branch and reuse existing branch-drift learning.
-- [ ] **Step 2: Run local/classified tests** and delivery classifier before opening PR.
-- [ ] **Step 3: Open PR** with exact scope metadata and no unrelated files.
-- [ ] **Step 4: Wait for terminal Required `test`, BRAIN, Supabase-security and applicable portal/automation lanes on the exact head SHA.
-- [ ] **Step 5: Diagnose any red/cancelled job with systematic debugging; never bypass branch protection or weaken a gate to make it green.
+- [ ] **Step 1: Read current protected `main`** immediately before PR creation.
+- [ ] **Step 2: Compare branch to main**. If main moved and branch is not cleanly mergeable, create a successor branch from current main and copy only the still-valid changed files; reuse the existing canonical branch-drift learning.
+- [ ] **Step 3: Run** `node --test tests/*.test.mjs` and `node scripts/powerhouse-assurance-check.mjs` on the release branch.
+- [ ] **Step 4: Open one PR** with exact `Change-Scope` paths and `Scope-Budget` equal to the actual changed-file count.
+- [ ] **Step 5: Require terminal green** on Required `test`, BRAIN delivery, Supabase security and all selected portal/automation lanes on the exact PR head.
+- [ ] **Step 6: For any red/cancelled job, invoke systematic-debugging, fix the real cause, create a new head and rerun gates. Never bypass protection or weaken a gate.
 
 ### Task 9: Protected merge and production proof
 
-**Files:** none unless a failing production readback exposes a real defect, in which case return to TDD on a new candidate head.
+- [ ] **Step 1: Re-read PR metadata and current main**; ensure PR is mergeable and the expected head is unchanged.
+- [ ] **Step 2: Merge with `expected_head_sha`** through protected main.
+- [ ] **Step 3: Read back main** and require exact returned merge SHA.
+- [ ] **Step 4: Read Netlify production deploy** and require `ready`, `branch=main`, `commit_ref=<merge SHA>`, zero secret-scan matches.
+- [ ] **Step 5: Require `Production Release Readback` success** on the same merge SHA.
+- [ ] **Step 6: Run/read affected Portal V2 production/browser proof** and verify unknown/ROI evidence semantics in production.
+- [ ] **Step 7: Trigger/read the approved-central blog route only through its existing candidate-PR workflow. Close the old blog visibility obligation only after the expected approved row is visible and the route reaches its normal production-proof state; do not directly push blog content to main.
 
-**Interfaces:**
-- Consumes: exact green candidate head.
-- Produces: exact merge/main/Netlify/readback identity.
+### Task 10: Canonical Powerhouse and Notion writeback
 
-- [ ] **Step 1: Re-read PR head and current main immediately before merge**.
-- [ ] **Step 2: Merge with `expected_head_sha` through protected branch rules.
-- [ ] **Step 3: Verify `main` equals returned merge SHA.
-- [ ] **Step 4: Verify Netlify production deploy is `ready`, branch `main`, and `commit_ref` equals merge SHA; secret scan has zero matches.
-- [ ] **Step 5: Verify Production Release Readback is `success` on the same SHA.
-- [ ] **Step 6: Run affected Portal V2 production/browser readback.
-- [ ] **Step 7: If the blog fix is included, run/observe the approved-central route through candidate-PR/provider proof without bypass and close the prior row-visibility obligation only when exact production evidence exists.
+**Systems:**
+- Supabase `brain_records`.
+- Notion Human Handbook `3dcda36a-ac8a-81ac-aad1-c88751e9e814`.
+- Notion Master Register `3c3da36a-ac8a-81dd-a3fe-c4fc12bba5df`.
+- Notion Canonical System Map `3dcda36a-ac8a-8152-be3d-edbb32b06239`.
 
-### Task 10: Canonical runtime learning and human documentation writeback
-
-**Files/Systems:**
-- Supabase `brain_records` existing allowed record kinds.
-- Notion Human Handbook.
-- Notion Master Build/Borging/Go-Live Register.
-- Notion Canonical System Map.
-
-**Interfaces:**
-- Consumes: exact production evidence from Tasks 7–9.
-- Produces: current VERIFIED state, deduplicated learning/prevention and human-readable architecture/readback.
-
-- [ ] **Step 1: Upsert one current-state verification record** with fingerprint `powerhouse-observability-outcome-calibration-closure-v1`, exact candidate/PR/merge/deploy/readback IDs and hard status.
-- [ ] **Step 2: Write only new learning** not already covered by branch-drift/resource-business-value learnings; include root cause, prevention, evidence and source revision.
-- [ ] **Step 3: Update Human Handbook** with evidence classes, threshold contract, provider coverage, calibration semantics and current measured/partial/unknown production counts.
-- [ ] **Step 4: Update Master Register** with exact release identity, closed/open obligations and current truth state.
-- [ ] **Step 5: Update Canonical System Map** only if provider routes/component relationships/gates/lineage materially changed.
-- [ ] **Step 6: Fetch/read back all three Notion pages and the Supabase verification/learning records.
-- [ ] **Step 7: Final status** must be one of `LIVE & BEWEZEN`, `DEELS LIVE`, `GEBLOKKEERD`, `NIET GEDAAN`; `LIVE & BEWEZEN` is allowed only when all in-scope technical obligations are closed. External provider coverage gaps remain explicit unknown/coverage obligations rather than fabricated success.
+- [ ] **Step 1: Upsert verification record** `powerhouse-observability-outcome-calibration-closure-v1-release-state` with allowed record kind, exact PR/candidate/merge/deploy/readback evidence and source revision.
+- [ ] **Step 2: Write one deduplicated Learning record** only for new root cause/prevention not already present in branch-drift/resource-value learnings.
+- [ ] **Step 3: Update Human Handbook** with evidence classes, threshold=5, formulas, provider coverage and current real measured/partial/unknown counts.
+- [ ] **Step 4: Update Master Register** with exact release identity and remaining external-provider coverage obligations.
+- [ ] **Step 5: Update System Map** with new v5 evidence-gating relation and any confirmed blog provider-route correction.
+- [ ] **Step 6: Fetch/read back all three Notion pages and both Supabase records**.
+- [ ] **Step 7: End with exactly one hard status:** `LIVE & BEWEZEN`, `DEELS LIVE`, `GEBLOKKEERD`, or `NIET GEDAAN`; only use `LIVE & BEWEZEN` when every in-scope technical obligation is closed. External providers without authoritative data stay explicit coverage gaps, not fabricated success.
