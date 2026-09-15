@@ -61,7 +61,7 @@ begin
  returning observation_id into v_id;
  return v_id;
 end $$;
-revoke all on function public.powerhouse_record_evidence_source_observation_v1(text,text,text,timestamptz,jsonb) from public, anon, authenticated;
+revoke execute on function public.powerhouse_record_evidence_source_observation_v1(text,text,text,timestamptz,jsonb) from public, anon, authenticated;
 grant execute on function public.powerhouse_record_evidence_source_observation_v1(text,text,text,timestamptz,jsonb) to service_role;
 
 create or replace function public.powerhouse_evidence_heartbeat_trigger_v1() returns trigger
@@ -87,7 +87,7 @@ begin
  perform public.powerhouse_record_evidence_source_observation_v1(v_source,v_key,v_ext,v_when,v_ev);
  return new;
 end $$;
-revoke all on function public.powerhouse_evidence_heartbeat_trigger_v1() from public, anon, authenticated;
+revoke execute on function public.powerhouse_evidence_heartbeat_trigger_v1() from public, anon, authenticated;
 grant execute on function public.powerhouse_evidence_heartbeat_trigger_v1() to service_role;
 
 drop trigger if exists powerhouse_evidence_heartbeat_action_economics_v1 on public.powerhouse_action_economics;
@@ -109,10 +109,10 @@ begin
  perform intern.bg_uitkomst_eenmalig('calendly',p_event_id,'appointment',0,coalesce(p_sessie,'calendly:'||p_event_id),coalesce(p_extra,'{}'::jsonb),p_extra->>'pagina');
  perform public.powerhouse_record_evidence_source_observation_v1('calendly','calendly:'||p_event_id,p_event_id,now(),jsonb_build_object('session',p_sessie,'extra',coalesce(p_extra,'{}'::jsonb)));
 end $$;
-revoke all on function public.bg_calendly_uitkomst(text,text,jsonb) from public, anon, authenticated;
+revoke execute on function public.bg_calendly_uitkomst(text,text,jsonb) from public, anon, authenticated;
 grant execute on function public.bg_calendly_uitkomst(text,text,jsonb) to service_role;
 
-create or replace view public.powerhouse_evidence_source_coverage_v1 with (security_invoker = true) as
+create or replace view public.powerhouse_evidence_source_coverage_v1 as
 with last_seen as (
  select source_key,max(observed_at) last_observed_at,count(*) observation_count
  from public.powerhouse_evidence_source_observations group by source_key
@@ -125,10 +125,11 @@ select s.source_key,s.source_class,s.required,s.max_age,s.writer_contract,s.owne
  case when s.required and (l.last_observed_at is null or now()-l.last_observed_at>s.max_age) then true else false end blocks_full_cycle_proof,
  s.notes
 from public.powerhouse_evidence_sources s left join last_seen l using(source_key);
+alter view public.powerhouse_evidence_source_coverage_v1 set (security_invoker = true);
 revoke all on table public.powerhouse_evidence_source_coverage_v1 from public, anon, authenticated;
 grant select on table public.powerhouse_evidence_source_coverage_v1 to service_role;
 
-create or replace view public.powerhouse_full_cycle_evidence_v2 with (security_invoker = true) as
+create or replace view public.powerhouse_full_cycle_evidence_v2 as
 with outcomes as (
  select action_id,
   bool_or(outcome_type in ('reply','response')) as has_reply,
@@ -161,10 +162,11 @@ from public.powerhouse_sales_actions a
 left join assignment x on x.action_id=a.action_id
 left join public.powerhouse_action_economics e on e.action_id=a.action_id
 left join outcomes o on o.action_id=a.action_id;
+alter view public.powerhouse_full_cycle_evidence_v2 set (security_invoker = true);
 revoke all on table public.powerhouse_full_cycle_evidence_v2 from public, anon, authenticated;
 grant select on table public.powerhouse_full_cycle_evidence_v2 to service_role;
 
-create or replace view public.powerhouse_experiment_effect_uncertainty_v1 with (security_invoker = true) as
+create or replace view public.powerhouse_experiment_effect_uncertainty_v1 as
 select e.*,
  case when e.matured_treatment>0 and e.matured_holdout>0 then sqrt(greatest(0,e.treatment_outcome_rate*(1-e.treatment_outcome_rate)/e.matured_treatment + e.holdout_outcome_rate*(1-e.holdout_outcome_rate)/e.matured_holdout)) end as outcome_rate_diff_se,
  case when e.matured_treatment>0 and e.matured_holdout>0 then (e.treatment_outcome_rate-e.holdout_outcome_rate)-1.96*sqrt(greatest(0,e.treatment_outcome_rate*(1-e.treatment_outcome_rate)/e.matured_treatment + e.holdout_outcome_rate*(1-e.holdout_outcome_rate)/e.matured_holdout)) end as outcome_rate_diff_ci95_low,
@@ -172,10 +174,11 @@ select e.*,
  case when e.matured_treatment>0 and e.matured_holdout>0 then 1.96*sqrt(greatest(0,e.treatment_outcome_rate*(1-e.treatment_outcome_rate)/e.matured_treatment + e.holdout_outcome_rate*(1-e.holdout_outcome_rate)/e.matured_holdout)) end as observed_mde_approx_95,
  case when e.sample_floor_met and e.matured_treatment>0 and e.matured_holdout>0 and ((e.treatment_outcome_rate-e.holdout_outcome_rate)-1.96*sqrt(greatest(0,e.treatment_outcome_rate*(1-e.treatment_outcome_rate)/e.matured_treatment + e.holdout_outcome_rate*(1-e.holdout_outcome_rate)/e.matured_holdout)))>0 then true else false end as outcome_rate_uplift_statistically_clear_95
 from public.powerhouse_experiment_effect_estimates_v1 e;
+alter view public.powerhouse_experiment_effect_uncertainty_v1 set (security_invoker = true);
 revoke all on table public.powerhouse_experiment_effect_uncertainty_v1 from public, anon, authenticated;
 grant select on table public.powerhouse_experiment_effect_uncertainty_v1 to service_role;
 
-create or replace view public.powerhouse_evidence_operating_health_v2 with (security_invoker = true) as
+create or replace view public.powerhouse_evidence_operating_health_v2 as
 select now() measured_at,
  (select count(*) from public.powerhouse_evidence_source_coverage_v1 where required and coverage_state='missing') required_sources_missing,
  (select count(*) from public.powerhouse_evidence_source_coverage_v1 where required and coverage_state='stale') required_sources_stale,
@@ -186,5 +189,6 @@ select now() measured_at,
  case when exists(select 1 from public.powerhouse_evidence_source_coverage_v1 where required and blocks_full_cycle_proof) then 'source_coverage_incomplete'
       when exists(select 1 from public.powerhouse_full_cycle_evidence_v2 where proof_state in ('missing_assignment','missing_economics','win_without_realized_revenue')) then 'lineage_incomplete'
       else 'healthy_or_collecting' end health_state;
+alter view public.powerhouse_evidence_operating_health_v2 set (security_invoker = true);
 revoke all on table public.powerhouse_evidence_operating_health_v2 from public, anon, authenticated;
 grant select on table public.powerhouse_evidence_operating_health_v2 to service_role;
