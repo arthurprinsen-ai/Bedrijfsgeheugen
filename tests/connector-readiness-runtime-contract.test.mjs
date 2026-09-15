@@ -4,8 +4,8 @@ import {readFile} from 'node:fs/promises';
 
 const source = await readFile(new URL('../netlify/functions/connector-readiness.mjs', import.meta.url), 'utf8');
 
-test('connector readiness uses Netlify runtime env authority', () => {
-  assert.match(source, /Netlify\.env\.get/);
+test('connector readiness uses runtime-safe Netlify env authority', () => {
+  assert.match(source, /globalThis\.Netlify\?\.env\?\.get\?\./);
 });
 
 test('connector readiness does not bootstrap the full connector execution engine', () => {
