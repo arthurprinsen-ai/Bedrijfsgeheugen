@@ -43,6 +43,16 @@ test('scheduled approved-blog workflow resolves exactly one due slug through the
   assert.doesNotMatch(workflow, /jsonl/);
 });
 
+test('approved blog recovery trigger is exact-slug, native, and automation-classified', async () => {
+  const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
+  const trigger = JSON.parse(await readFile('automation/contracts/approved-blog-trigger.json', 'utf8'));
+  assert.match(workflow, /automation\/contracts\/approved-blog-trigger\.json/);
+  assert.match(workflow, /EVENT_NAME/);
+  assert.match(workflow, /invalid approved-blog recovery trigger slug/);
+  assert.match(trigger.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+  assert.equal(suitesFor(['automation/contracts/approved-blog-trigger.json']).automation, true);
+});
+
 test('approved blog writer emits FAQPage schema and two accessible functional figures', async () => {
   const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
   assert.match(writer, /def faq_items\(/);
