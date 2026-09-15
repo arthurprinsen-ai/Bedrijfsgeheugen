@@ -93,8 +93,17 @@ jobs:
       - name: Verify live connector readiness contract
         run: |
           set -euo pipefail
-          curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/api/connectors/readiness?bg_release_readback=${{ github.sha }}" -o live-connector-readiness.json
-          node --input-type=module - <<'NODE'
+          readiness_url="https://www.bedrijfsgeheugen.nl/api/connectors/readiness?bg_release_readback=${{ github.sha }}"
+          for attempt in $(seq 1 8); do
+            nonce="${{ github.sha }}-${attempt}-$(date +%s)"
+            if curl -fsSL \
+              --connect-timeout 10 \
+              --max-time 30 \
+              -H 'Cache-Control: no-cache' \
+              -H 'Pragma: no-cache' \
+              "${readiness_url}&attempt=${nonce}" \
+              -o live-connector-readiness.json; then
+              if node --input-type=module - <<'NODE'
           import {readFile} from 'node:fs/promises';
           const text=await readFile('live-connector-readiness.json','utf8');
           const body=JSON.parse(text);
@@ -109,6 +118,16 @@ jobs:
           }
           console.log(JSON.stringify(body));
           NODE
+              then
+                echo "Connector readiness verified on attempt ${attempt}/8"
+                exit 0
+              fi
+            fi
+            echo "Connector readiness not yet healthy; retry ${attempt}/8"
+            sleep 10
+          done
+          echo "Connector readiness stayed unhealthy after 8 attempts" >&2
+          exit 1
       - name: Install production browser verifier
         if: steps.scope.outputs.website_required == 'true'
         run: PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
