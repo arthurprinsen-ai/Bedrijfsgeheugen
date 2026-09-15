@@ -11,6 +11,8 @@ function matches(path, patterns = []) { return patterns.some(pattern => pattern.
 const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/approved-central-blog.yml': 'automation'
 });
+const BUILTIN_SHARED_PATHS = Object.freeze(['powerhouse/assurance/']);
+function isSharedPath(path, policy = {}) { return matches(path, [...(policy.sharedPaths || []), ...BUILTIN_SHARED_PATHS]); }
 
 export function deriveConflictContracts(paths = [], policy = {}) {
   const changed = unique(paths.map(value => String(value).trim()).filter(Boolean));
@@ -39,13 +41,13 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   const paths = unique(changedPaths.map(value => String(value).trim()).filter(Boolean)).sort();
   const nonExecutableShared = paths.filter(path => matches(path, policy.nonExecutableSharedPaths || []));
   const scopedWorkflowPaths = paths.filter(path => SCOPED_WORKFLOW_LANES[path]);
-  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, policy.nonExecutableSharedPaths || []) && !SCOPED_WORKFLOW_LANES[path]);
+  const sharedExecutable = paths.some(path => isSharedPath(path, policy) && !matches(path, policy.nonExecutableSharedPaths || []) && !SCOPED_WORKFLOW_LANES[path]);
   const ignored = paths.filter(path => matches(path, policy.ignoredPaths));
   const lanes = policy.lanes
     .filter(lane => sharedExecutable || scopedWorkflowPaths.some(path => SCOPED_WORKFLOW_LANES[path] === lane.id) || paths.some(path => !matches(path, policy.nonExecutableSharedPaths || []) && !SCOPED_WORKFLOW_LANES[path] && matches(path, lane.paths)))
     .map(lane => Object.freeze({ id: lane.id, laneId: `${lane.id}|${sha.slice(0, 12)}`, candidateIdentity: sha, testedIdentity: sha, owner: lane.owner, requiredContracts: Object.freeze([...lane.requiredContracts]), independentPromotion: policy.version === 'BRAIN-DELIVERY-v2' && policy.integration?.independentPromotion === true }))
     .sort((left, right) => left.id.localeCompare(right.id));
-  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || SCOPED_WORKFLOW_LANES[path]);
+  const classified = paths.filter(path => isSharedPath(path, policy) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || SCOPED_WORKFLOW_LANES[path]);
   const unclassified = paths.filter(path => !classified.includes(path));
   if (unclassified.length) throw new Error(`unclassified delivery path: ${unclassified.join(', ')}`);
   const noLanePaths = unique([...ignored, ...nonExecutableShared]);
