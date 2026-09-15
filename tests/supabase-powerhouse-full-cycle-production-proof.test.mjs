@@ -38,7 +38,7 @@ test('proof is fail-closed and persists one deterministic verdict', () => {
   has(/execution_healthy/i, 'daily execution must block green');
   has(/predictive_healthy/i, 'predictive health must block green');
   has(/overdue_calibrations/i, 'overdue forecast calibration must be explicit');
-  has(/event_type[^\n]*full_cycle_production_proof/i, 'must write proof runtime event');
+  has(/event_type[\s\S]*?'full_cycle_production_proof'/i, 'must write proof runtime event');
   has(/full-cycle-proof:/i, 'must use deterministic runtime dedupe');
   has(/bg_gezondheid/i, 'must write canonical health readback');
 });
