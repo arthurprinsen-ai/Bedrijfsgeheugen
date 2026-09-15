@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { buildStrategicModels } from '../strategic-models.js';
 import { buildCanvasPresentation, CANVAS_SPECS } from '../canvas-presentation.js';
 
@@ -41,4 +42,14 @@ test('canvas output is derived from the same canonical portal state',()=>{
  assert.ok(bmc.sections.some(x=>String(x.value).includes('48')));
  assert.ok(bmc.sections.some(x=>String(x.value).includes('28')));
  assert.equal(bmc.answer,state.portal.canvases.bmc.answer);
+});
+
+test('specialist parity workspaces preserve the existing functional workspace contract',async()=>{
+ const strategic=await readFile(new URL('../modules/strategic-models-workspace.js',import.meta.url),'utf8');
+ const canvases=await readFile(new URL('../modules/canvas-workspace.js',import.meta.url),'utf8');
+ for(const [name,source] of [['strategic',strategic],['canvases',canvases]]){
+  assert.match(source,/functionalWorkspace|functional-workspace/,`${name} must expose data-functional-workspace`);
+  assert.match(source,/data-workspace-tab/,`${name} must keep workspace tabs`);
+  assert.match(source,/analyse/,`${name} must keep the analyse tab used by parity evidence`);
+ }
 });
