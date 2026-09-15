@@ -6,11 +6,14 @@ const migrationPath = 'supabase/migrations/20260914100133_unified_content_public
 const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
 const singleTenantMigrationPath = 'supabase/migrations/20260914105642_single_content_operations_tenant.sql';
 const singleTenantMigration = fs.existsSync(singleTenantMigrationPath) ? fs.readFileSync(singleTenantMigrationPath, 'utf8') : '';
+const linkedinReconcileMigrationPath = 'supabase/migrations/20260914133500_linkedin_campaign_identity_reconciliation.sql';
+const linkedinReconcileMigration = fs.existsSync(linkedinReconcileMigrationPath) ? fs.readFileSync(linkedinReconcileMigrationPath, 'utf8') : '';
 const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
 const dailyApi = fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts', 'utf8');
 const todayUi = fs.readFileSync('intern/vandaag/index.html', 'utf8');
 const publisher = fs.readFileSync('scripts/publish_approved_blog_v2.py', 'utf8');
 const workflow = fs.readFileSync('.github/workflows/approved-central-blog.yml', 'utf8');
+const operationsWorkflow = fs.readFileSync('.github/workflows/unified-content-operations.yml', 'utf8');
 
 test('calendar projects exactly 109 daily blog obligations through 31 Dec 2026', () => {
   assert.match(migration, /2026-09-14/);
@@ -88,4 +91,15 @@ test('existing blog delivery remains candidate-only and never pushes direct to m
   assert.match(workflow, /direct_main_push=false/);
   assert.doesNotMatch(workflow, /git\s+push\s+origin\s+HEAD:main/);
   assert.doesNotMatch(workflow, /gh\s+pr\s+merge/);
+});
+
+test('LinkedIn publication reconciliation uses deterministic campaign identity without guessing legacy rows', () => {
+  assert.match(linkedinReconcileMigration, /source_campaign_id\s+like\s+'li-personal-%'/i);
+  assert.match(linkedinReconcileMigration, /source_campaign_id\s+like\s+'li-company-%'/i);
+  assert.match(linkedinReconcileMigration, /then\s+'linkedin_personal'/i);
+  assert.match(linkedinReconcileMigration, /then\s+'linkedin_company'/i);
+  assert.match(linkedinReconcileMigration, /legacy LinkedIn row without deterministic identity/i);
+  assert.match(linkedinReconcileMigration, /perform public\.record_content_publication_state/i);
+  assert.match(linkedinReconcileMigration, /source_campaign_id/i);
+  assert.match(operationsWorkflow, /20260914133500_linkedin_campaign_identity_reconciliation\.sql/);
 });
