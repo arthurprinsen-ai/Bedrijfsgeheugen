@@ -24,6 +24,14 @@ test('production connector readiness 503 learning remains machine-readable and f
   assert.equal(incident.evidence.productionReadbackConclusion, 'success');
   assert.equal(incident.recovery.manualGreenAllowed, false);
 
+  assert.equal(incident.liveProofRule.mergeAloneIsLiveEvidence, false);
+  assert.equal(incident.liveProofRule.requireProductionDescendantProof, true);
+  assert.equal(incident.liveProofRule.requirePublicReadback, true);
+  assert.equal(incident.liveProofRule.example.pr, 1464);
+  assert.equal(incident.liveProofRule.example.mergeCommit, '656c5476ca704f0bfca5cfc6e6bc4d82de8f34ab');
+  assert.equal(incident.liveProofRule.example.productionCommit, 'b255587eb8e9c10a5996432e79e1480f741c5f7a');
+  assert.equal(incident.liveProofRule.example.productionContainedMerge, true);
+
   for (const guard of [
     'public_readiness_route_is_exact',
     'connector_wildcard_excludes_readiness',
@@ -31,7 +39,8 @@ test('production connector readiness 503 learning remains machine-readable and f
     'cache_busting_readback',
     'explicit_request_timeout',
     'fail_closed_after_retry_budget',
-    'exact_sha_release_readback'
+    'exact_sha_release_readback',
+    'production_descendant_contains_merge_commit'
   ]) {
     assert.ok(incident.requiredPreflight.includes(guard), `missing prevention guard ${guard}`);
   }
@@ -39,7 +48,8 @@ test('production connector readiness 503 learning remains machine-readable and f
   for (const block of [
     'wildcard_can_capture_readiness',
     'readiness_stays_5xx_after_bounded_retry',
-    'production_sha_not_verified_when_deployment_is_required'
+    'production_sha_not_verified_when_deployment_is_required',
+    'merge_claimed_live_without_production_ancestry_and_readback'
   ]) {
     assert.ok(incident.releaseBlocks.includes(block), `missing release block ${block}`);
   }
@@ -51,7 +61,10 @@ test('production connector readiness 503 learning remains machine-readable and f
     '/api/connectors/*',
     'bounded retry',
     'fail closed',
-    'merge is never completion'
+    'merge is never completion',
+    'production descendant',
+    '#1464',
+    '656c5476ca704f0bfca5cfc6e6bc4d82de8f34ab'
   ]) {
     assert.ok(doc.toLowerCase().includes(token.toLowerCase()), `learning doc missing ${token}`);
   }
