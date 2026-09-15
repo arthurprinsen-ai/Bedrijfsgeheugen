@@ -1,0 +1,97 @@
+/* Portal V2 — zijbalk: verdeling van de aside, scrollende nav, gesloten sublijsten.
+   Laadt ná app.css en saas-theme.css, zodat deze regels winnen.
+   Repareert drie defecten:
+     1. .dvnav-sub{display:grid} overrulede het hidden-attribuut
+     2. de nav kon niet scrollen binnen een flexkolom van 100vh
+     3. de nav werd platgedrukt tot hoogte 0 en de aside onderschepte elke klik
+*/
+
+/* --- 1. hidden wint altijd ------------------------------------------------
+   Eén regel die geldt voor élke sublijst die er later nog bij komt. */
+[hidden] { display: none !important; }
+
+/* --- 2. De aside verdeelt: kop vast, nav groeit, CTA en profiel vast ------
+   overflow:hidden op de aside is de vangrail: niets steekt ooit nog buiten
+   de kolom uit, ook niet als er een blok bij komt. */
+.sidebar {
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sidebar > .brand,
+.sidebar > .scan,
+.sidebar > .profile { flex: 0 0 auto; }
+
+/* --- 3. Alleen de nav groeit, krimpt en scrollt ---------------------------
+   min-height:0 maakt scrollen mogelijk in een flexkolom.
+   min-height van 120px is de vloer: de nav kan nooit meer tot nul worden
+   platgedrukt, en de aside kan dus nooit meer als onzichtbaar klikschild
+   over de pagina liggen. */
+.nav {
+  flex: 1 1 auto;
+  min-height: 120px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+/* .scan had margin-top:auto en duwde de nav weg. De flexverdeling hierboven
+   doet dat werk nu; de auto-marge moet eruit. */
+.scan { margin-top: 0; }
+
+/* --- Lage vensters: de CTA krimpt, de navigatie niet ----------------------
+   Bewuste keuze: navigeren is de functie van de zijbalk, de scan-kaart is de
+   verleiding. Bij weinig hoogte levert de kaart tekst in, geen knop. */
+@media (max-height: 780px) {
+  .scan { padding: 12px; }
+  .scan p { display: none; }
+}
+@media (max-height: 640px) {
+  .scan strong { display: none; }
+  .sidebar { gap: 10px; }
+}
+
+/* --- Vraag- en paginaknoppen --------------------------------------------- */
+.dvnav-q { width: 100%; }
+.dvnav-q .chev {
+  margin-left: auto;
+  color: var(--muted);
+  transition: transform .15s ease;
+}
+.dvnav-q[aria-expanded="true"] { background: #f5f7ff; }
+.dvnav-q[aria-expanded="true"] .chev { transform: rotate(90deg); }
+
+.dvnav-sub {
+  display: grid;
+  gap: 4px;
+  margin: 2px 0 6px 16px;
+  padding-left: 10px;
+  border-left: 1px solid var(--line);
+}
+.dvnav-sub button {
+  height: 38px;
+  font-weight: 600;
+  color: #3a4569;
+}
+.dvnav-sub button[aria-current="page"] {
+  background: #edf3ff;
+  color: #115be8;
+  font-weight: 800;
+}
+
+/* Zichtbare focus voor toetsenbordgebruik; de hover-stijl alleen is te weinig. */
+.nav button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dvnav-q .chev { transition: none; }
+}
