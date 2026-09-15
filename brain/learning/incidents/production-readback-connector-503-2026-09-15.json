@@ -1,0 +1,65 @@
+{
+  "version": "PRODUCTION-READBACK-CONNECTOR-503-v1",
+  "date": "2026-09-15",
+  "fingerprint": "production-readback|connector-readiness|route-overlap-and-transient-503-v1",
+  "guard": "production-readback-connector-resilience-v1",
+  "severity": "high",
+  "observed": {
+    "symptom": "Production Release Readback failed on /api/connectors/readiness with HTTP 503 after otherwise healthy release evidence.",
+    "reproduced": true,
+    "routeOverlapObserved": true,
+    "exactRoute": "/api/connectors/readiness",
+    "wildcardRoute": "/api/connectors/*",
+    "netlifyExclusionRequired": "/api/connectors/readiness",
+    "transient5xxObserved": true
+  },
+  "rootCauses": [
+    "the public readiness endpoint and authenticated connector wildcard occupied overlapping route space without an explicit exclusion",
+    "the production readback treated one transient 5xx as definitive release failure instead of bounded retry evidence",
+    "deployment readiness and application readiness had been conflated; Netlify state=ready alone did not prove the public readiness contract"
+  ],
+  "requiredPreflight": [
+    "public_readiness_route_is_exact",
+    "connector_wildcard_excludes_readiness",
+    "readiness_contract_is_public_and_store_independent",
+    "bounded_retry_for_transient_5xx",
+    "cache_busting_readback",
+    "explicit_request_timeout",
+    "fail_closed_after_retry_budget",
+    "exact_sha_release_readback"
+  ],
+  "releaseBlocks": [
+    "wildcard_can_capture_readiness",
+    "readiness_requires_portal_auth_or_connector_store",
+    "readiness_returns_invalid_contract",
+    "readiness_stays_5xx_after_bounded_retry",
+    "production_sha_not_verified_when_deployment_is_required"
+  ],
+  "fixes": [
+    "exclude /api/connectors/readiness from the /api/connectors/* Netlify route",
+    "retain the dedicated connector-readiness function as the only readiness owner",
+    "retry transient readiness 5xx responses with cache busting and explicit timeouts",
+    "keep the readback fail-closed when retries exhaust or payload validation fails"
+  ],
+  "evidence": {
+    "routeIsolationMerged": "d35f255",
+    "productionRouteExclusionObserved": true,
+    "productionDeploy": "6aa8fe0fa19260000807bbdc",
+    "productionCommit": "4835b590a1a27d308b2cc764442e962ab76009ea",
+    "productionReadbackRun": 34945747361,
+    "productionReadbackConclusion": "success",
+    "resilienceFollowupMerge": "fb68cc0795f1b166a099b17293e758b760c67df7",
+    "resiliencePr": 1504
+  },
+  "recovery": {
+    "policy": "Do not bypass or downgrade connector readiness. Remove route ambiguity, deploy the exact candidate, then rerun bounded production readback.",
+    "rollback": "Keep the last-known-good production deploy until the candidate has exact production evidence. If route isolation regresses connector traffic, revert only the routing change and preserve fail-closed readback.",
+    "manualGreenAllowed": false
+  },
+  "reusableLessons": [
+    "A hosting platform deploy marked ready is transport evidence, not application-readiness evidence.",
+    "Exact public health endpoints must never share ambiguous ownership with authenticated wildcard handlers.",
+    "One transient 5xx should trigger bounded retry; repeated 5xx or an invalid readiness payload remains a hard failure.",
+    "Merge success is not production completion; exact production readback closes the obligation."
+  ]
+}
