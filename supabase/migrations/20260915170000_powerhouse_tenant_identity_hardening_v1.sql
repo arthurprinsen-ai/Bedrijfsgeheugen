@@ -186,7 +186,16 @@ with check (
 create policy scan_toevoegen_authenticated on public.scan_inzendingen
 for insert to authenticated
 with check (
-  (tenant_identity_status = 'verified' and organisatie_id in (select public.mijn_organisaties()))
+  (
+    tenant_identity_status = 'verified'
+    and organisatie_id is not null
+    and exists (
+      select 1
+      from public.leden l
+      where l.gebruiker_id = auth.uid()
+        and l.organisatie_id = scan_inzendingen.organisatie_id
+    )
+  )
   or (tenant_identity_status in ('demo','unverified') and organisatie_id is null)
 );
 
@@ -200,7 +209,16 @@ with check (
 create policy offerte_toevoegen_authenticated on public.offerte_inzendingen
 for insert to authenticated
 with check (
-  (tenant_identity_status = 'verified' and organisatie_id in (select public.mijn_organisaties()))
+  (
+    tenant_identity_status = 'verified'
+    and organisatie_id is not null
+    and exists (
+      select 1
+      from public.leden l
+      where l.gebruiker_id = auth.uid()
+        and l.organisatie_id = offerte_inzendingen.organisatie_id
+    )
+  )
   or (tenant_identity_status in ('demo','unverified') and organisatie_id is null)
 );
 
@@ -214,32 +232,57 @@ create policy eigen_stand_lezen on public.portaal_stand
 for select to authenticated
 using (
   gebruiker_id = auth.uid()
-  and organisatie_id in (select public.mijn_organisaties())
+  and exists (
+    select 1
+    from public.leden l
+    where l.gebruiker_id = auth.uid()
+      and l.organisatie_id = portaal_stand.organisatie_id
+  )
 );
 
 create policy eigen_stand_maken on public.portaal_stand
 for insert to authenticated
 with check (
   gebruiker_id = auth.uid()
-  and organisatie_id in (select public.mijn_organisaties())
+  and exists (
+    select 1
+    from public.leden l
+    where l.gebruiker_id = auth.uid()
+      and l.organisatie_id = portaal_stand.organisatie_id
+  )
 );
 
 create policy eigen_stand_wijzigen on public.portaal_stand
 for update to authenticated
 using (
   gebruiker_id = auth.uid()
-  and organisatie_id in (select public.mijn_organisaties())
+  and exists (
+    select 1
+    from public.leden l
+    where l.gebruiker_id = auth.uid()
+      and l.organisatie_id = portaal_stand.organisatie_id
+  )
 )
 with check (
   gebruiker_id = auth.uid()
-  and organisatie_id in (select public.mijn_organisaties())
+  and exists (
+    select 1
+    from public.leden l
+    where l.gebruiker_id = auth.uid()
+      and l.organisatie_id = portaal_stand.organisatie_id
+  )
 );
 
 create policy eigen_stand_wissen on public.portaal_stand
 for delete to authenticated
 using (
   gebruiker_id = auth.uid()
-  and organisatie_id in (select public.mijn_organisaties())
+  and exists (
+    select 1
+    from public.leden l
+    where l.gebruiker_id = auth.uid()
+      and l.organisatie_id = portaal_stand.organisatie_id
+  )
 );
 
 -- Benchmarks are allowed to learn only from verified tenant data.
