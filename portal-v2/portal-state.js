@@ -24,13 +24,31 @@ function identityUser(identity){try{return identity?.currentUser?.()||null}catch
 async function authToken(user){try{return await user?.jwt?.()||''}catch{return''}}
 const clone=value=>value==null?value:structuredClone(value);
 
-export function isPortalDemoRoute(pathname=globalThis.window?.location?.pathname||''){
+export function isPortalDemoRoute(pathname=globalThis.window?.location?.pathname||'',search=globalThis.window?.location?.search||''){
  const path=String(pathname||'').replace(/\/+$/,'')||'/';
- return path==='/portaal/demo';
+ if(path==='/portaal/demo')return true;
+ if(path!=='/klantportaal')return false;
+ try{return String(new URLSearchParams(String(search||'')).get('klant')||'').toLowerCase()==='demoai'}catch{return false}
 }
 export function isPortalCustomerRoute(pathname=globalThis.window?.location?.pathname||''){
  const path=String(pathname||'').replace(/\/+$/,'')||'/';
  return /^\/portaal\/[^/]+$/i.test(path)&&!isPortalDemoRoute(path);
+}
+
+function installDemoAiDesign(){
+ if(!globalThis.document||!isPortalDemoRoute())return;
+ document.documentElement.classList.add('portal-demo-ai');
+ if(document.getElementById('portalDemoAiTheme'))return;
+ const link=document.createElement('link');
+ link.id='portalDemoAiTheme';link.rel='stylesheet';link.href='./demoai-dashboard.css';
+ document.head.appendChild(link);
+}
+installDemoAiDesign();
+
+function withDemoMarker(state){
+ const next=clone(state||{})||{};
+ next.portal={...(next.portal||{}),klant:'demo'};
+ return next;
 }
 
 export function ensureIdentityWidget(){
@@ -50,14 +68,14 @@ export function ensureIdentityWidget(){
 
 export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProvider=()=>globalThis.window?.netlifyIdentity||null,demoMode=isPortalDemoRoute(),customerMode=isPortalCustomerRoute()}={}){
  const demo=Boolean(demoMode);const customer=Boolean(customerMode);
- let demoState=demo?clone(DEMO_PORTAL_STATE):null;
+ let demoState=demo?withDemoMarker(DEMO_PORTAL_STATE):null;
  let current=snapshot('preview');
  const listeners=new Set();
  const publish=next=>{current=next;for(const fn of listeners){try{fn(current)}catch{}}releaseBootGuard();return current};
  const headersFor=async user=>{const token=await authToken(user);return token?{accept:'application/json',authorization:`Bearer ${token}`}:{accept:'application/json'}};
 
  async function load(){
-  if(demo)return publish(snapshot('authenticated',clone(demoState),null,DEMO_USER));
+  if(demo)return publish(snapshot('authenticated',withDemoMarker(demoState),null,DEMO_USER));
   const identity=identityProvider();const user=identityUser(identity);
   if(!user)return publish(snapshot('preview',null,null,null));
   const headers=await headersFor(user);
@@ -79,7 +97,7 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
  }
 
  async function write(nextState){
-  if(demo){demoState=clone(nextState||{});return publish(snapshot('authenticated',clone(demoState),null,DEMO_USER));}
+  if(demo){demoState=withDemoMarker(nextState||{});return publish(snapshot('authenticated',withDemoMarker(demoState),null,DEMO_USER));}
   const identity=identityProvider();const user=identityUser(identity);
   if(!user)throw new Error('AUTH_REQUIRED');
   const headers=await headersFor(user);
