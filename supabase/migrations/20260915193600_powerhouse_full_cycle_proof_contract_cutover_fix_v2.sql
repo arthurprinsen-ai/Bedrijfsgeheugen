@@ -1,7 +1,7 @@
 -- Preserve legacy executed actions as historical evidence without retrospective experiment assignment.
 -- Contract cutover equals first live evidence-orchestrator deployment.
 
-create or replace view public.powerhouse_full_cycle_evidence_v2 with (security_invoker = true) as
+create or replace view public.powerhouse_full_cycle_evidence_v2 as
 with outcomes as (
  select action_id,
   bool_or(outcome_type in ('reply','response')) as has_reply,
@@ -38,10 +38,11 @@ cross join cfg
 left join assignment x on x.action_id=a.action_id
 left join public.powerhouse_action_economics e on e.action_id=a.action_id
 left join outcomes o on o.action_id=a.action_id;
+alter view public.powerhouse_full_cycle_evidence_v2 set (security_invoker = true);
 revoke all on table public.powerhouse_full_cycle_evidence_v2 from public, anon, authenticated;
 grant select on table public.powerhouse_full_cycle_evidence_v2 to service_role;
 
-create or replace view public.powerhouse_evidence_operating_health_v3 with (security_invoker = true) as
+create or replace view public.powerhouse_evidence_operating_health_v3 as
 select now() measured_at,
  (select count(*) from public.powerhouse_evidence_source_coverage_v1 where required and coverage_state='missing') required_sources_missing,
  (select count(*) from public.powerhouse_evidence_source_coverage_v1 where required and coverage_state='stale') required_sources_stale,
@@ -53,5 +54,6 @@ select now() measured_at,
  case when exists(select 1 from public.powerhouse_evidence_source_coverage_v1 where required and blocks_full_cycle_proof) then 'source_coverage_incomplete'
       when exists(select 1 from public.powerhouse_full_cycle_evidence_v2 where proof_state in ('missing_assignment','missing_economics','win_without_realized_revenue')) then 'lineage_incomplete'
       else 'healthy_or_collecting' end health_state;
+alter view public.powerhouse_evidence_operating_health_v3 set (security_invoker = true);
 revoke all on table public.powerhouse_evidence_operating_health_v3 from public, anon, authenticated;
 grant select on table public.powerhouse_evidence_operating_health_v3 to service_role;
