@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { functionalDefinition, functionalSchema, listFunctionalSuitePages, computeFunctionalAnalysis } from '../modules/functional-suite.js';
+import { functionalDefinition, functionalSchema, listFunctionalSuitePages, computeFunctionalAnalysis, legacyCanvasPresentation } from '../modules/functional-suite.js';
 
 const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
 
@@ -23,12 +23,38 @@ test('repeatable legacy collections remain repeatable and structured',()=>{
  }
 });
 
-test('the exact six legacy canvases are editable in V2',()=>{
- const ids=functionalSchema('canvassen').map(field=>field.id);
+test('the exact six legacy canvases remain editable and are not reduced to owner plus kernvraag',()=>{
+ const fields=functionalSchema('canvassen');
+ const ids=fields.map(field=>field.id);
  for(const key of ['bmc','vpc2','lean','merk','content','sales2']){
   assert.ok(ids.includes(`${key}question`),key);
   assert.ok(ids.includes(`${key}owner`),`${key}:owner`);
+  const detail=fields.find(field=>field.id===`${key}details`);
+  assert.ok(detail,`${key}:details missing`);
+  assert.equal(detail.type,'repeatable');
+  assert.deepEqual(detail.columns.map(column=>column.id),['item','value']);
  }
+});
+
+test('canvas analysis reconstructs the legacy completed canvas content from canonical customer state',()=>{
+ const state={portal:{
+  profile:{headcount:24,hourlyCost:75,maturity:{sturing:3,commercie:2,operatie:2,finance:3,mensen:4,analytics:2,quality:3,governance:2,tech:2,culture:3,service:2,security:3,duurzaam:2}},
+  metrics:{revenue:2400,grossMargin:42,customers:160,largestCustomer:24},
+  market:{industry:'Zakelijke dienstverlening'},
+  canvases:{merk:{answer:'Betrouwbaar en snel',owner:'Directie'}}
+ }};
+ const canvases=legacyCanvasPresentation(state);
+ assert.equal(canvases.length,6);
+ const bmc=canvases.find(canvas=>canvas.key==='bmc');
+ assert.ok(bmc.items.length>=8);
+ assert.match(bmc.items.find(item=>item.label==='Klantsegment').value,/160 klanten/);
+ assert.match(bmc.items.find(item=>item.label==='Inkomsten').value,/2.400/);
+ const merk=canvases.find(canvas=>canvas.key==='merk');
+ assert.equal(merk.answer,'Betrouwbaar en snel');
+ assert.equal(merk.owner,'Directie');
+ assert.ok(merk.items.some(item=>item.label==='Bewijs'));
+ const content=canvases.find(canvas=>canvas.key==='content');
+ assert.ok(content.items.some(item=>item.label==='Doelgroep'&&/Zakelijke dienstverlening/.test(item.value)));
 });
 
 test('business, finance, offer and roadmap analyses react deterministically to state',()=>{
