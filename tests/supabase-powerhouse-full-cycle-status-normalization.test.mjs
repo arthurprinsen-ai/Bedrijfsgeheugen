@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationUrl = new URL('../supabase/migrations/20260915140200_powerhouse_full_cycle_status_normalization_v1.sql', import.meta.url);
-const sql = fs.readFileSync(migrationUrl, 'utf8');
+const normalizationUrl = new URL('../supabase/migrations/20260915140200_powerhouse_full_cycle_status_normalization_v1.sql', import.meta.url);
+const timingGapUrl = new URL('../supabase/migrations/20260915140300_powerhouse_forecast_calibrator_timing_gap_fix_v1.sql', import.meta.url);
+const sql = fs.readFileSync(normalizationUrl, 'utf8');
+const timingSql = fs.readFileSync(timingGapUrl, 'utf8');
 
 test('full-cycle proof normalizes source health and freshness enums', () => {
   assert.match(sql, /lower\(canonical_health_status\) = 'ok'/i);
@@ -17,9 +19,10 @@ test('full-cycle proof accepts canonical imported GA4 evidence without synthetic
 });
 
 test('existing calibrator schedule is hardened without parallel scheduler family', () => {
-  assert.match(sql, /powerhouse-forecast-calibrator-daily/i);
-  assert.match(sql, /'50 \* \* \* \*'/);
-  assert.doesNotMatch(sql, /powerhouse-forecast-calibrator-hourly/i);
+  assert.match(timingSql, /powerhouse-forecast-calibrator-daily/i);
+  assert.match(timingSql, /cron\.alter_job/i);
+  assert.match(timingSql, /'50 \* \* \* \*'/);
+  assert.doesNotMatch(timingSql, /powerhouse-forecast-calibrator-hourly/i);
 });
 
 test('normalization remains fail closed and service-role only', () => {
@@ -32,6 +35,7 @@ test('normalization remains fail closed and service-role only', () => {
 test('production incidents are written to canonical learning lineage', () => {
   assert.match(sql, /production_learning_recorded/i);
   assert.match(sql, /enum\/casing mismatch caused false-red full-cycle proof/i);
-  assert.match(sql, /forecast calibrator timing gap/i);
+  assert.match(timingSql, /forecast calibrator timing gap/i);
   assert.match(sql, /learning:full-cycle-status-normalization-v1/i);
+  assert.match(timingSql, /learning:forecast-calibrator-timing-gap-v1/i);
 });
