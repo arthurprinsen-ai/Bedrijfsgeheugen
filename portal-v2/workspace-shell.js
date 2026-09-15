@@ -4,7 +4,7 @@ const TABS=Object.freeze([
   Object.freeze({id:'acties',label:'Acties'}),
   Object.freeze({id:'bewijs',label:'Bewijs'})
 ]);
-const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 
 export function workspaceModel(contract,{title='',description='',saveStatus='idle',state={}}={}){
  if(!contract?.id)throw new TypeError('WORKSPACE_CONTRACT_REQUIRED');
@@ -36,12 +36,12 @@ async function mountSpecialistParity(root,contract,model){
  const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__||null;
  if(contract.id==='canvassen'){
   const module=await import('./modules/canvas-workspace.js');
-  module.mountCanvasWorkspace?.(root,{domainState});
+  module.mountCanvasWorkspace?.(root,{domainState,pageId:contract.id});
   return true;
  }
  if(contract.renderer==='strategy-models'||contract.id==='strategiemodellen'||contract.id==='modellen'){
   const module=await import('./modules/strategic-models-workspace.js');
-  module.mountStrategicModelsWorkspace?.(root,{domainState,title:model.title});
+  module.mountStrategicModelsWorkspace?.(root,{domainState,pageId:contract.id,title:model.title});
   return true;
  }
  return false;
