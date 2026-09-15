@@ -48,7 +48,7 @@ from assignment_facts cross join feedback f cross join downstream d cross join c
 group by f.edits,f.skips,f.overrides,f.alternative_actions,f.cancels,f.approvals,f.evidenced_interventions,d.replies,d.meetings,d.proposals,d.wins,d.losses,d.realized_revenue_eur,d.observed_outcomes,c.tracked_experiments,c.causal_ready_experiments;
 
 alter view public.powerhouse_market_evidence_maturity_v1 set (security_invoker=true);
-revoke all on public.powerhouse_market_evidence_maturity_v1 from anon,authenticated;
+revoke all on public.powerhouse_market_evidence_maturity_v1 from public, anon, authenticated;
 grant select on public.powerhouse_market_evidence_maturity_v1 to service_role;
 
 create or replace view public.powerhouse_calibration_actionability_v1 as
@@ -70,7 +70,7 @@ select r.experiment_key,r.matured_treatment,r.matured_holdout,r.treatment_outcom
 from calibration_experiments c join public.powerhouse_causal_experiment_readiness_v1 r on r.experiment_key=c.experiment_key left join economics_by_experiment e on e.experiment_key=c.experiment_key;
 
 alter view public.powerhouse_calibration_actionability_v1 set (security_invoker=true);
-revoke all on public.powerhouse_calibration_actionability_v1 from anon,authenticated;
+revoke all on public.powerhouse_calibration_actionability_v1 from public, anon, authenticated;
 grant select on public.powerhouse_calibration_actionability_v1 to service_role;
 
 create or replace function public.powerhouse_guard_self_improvement_learning_v1() returns trigger language plpgsql security definer set search_path=public as $$
