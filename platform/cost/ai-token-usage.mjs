@@ -51,12 +51,32 @@ export function normalizeProviderTokenUsage(input = {}) {
   });
 }
 
+function canonicalFactor(factor = {}) {
+  return {
+    factorId: factor.factorId ?? factor.factor_id,
+    provider: factor.provider ?? factor.source,
+    providerModelId: factor.providerModelId ?? factor.provider_model_id,
+    resourceType: factor.resourceType ?? factor.resource_type ?? 'ai_tokens',
+    unit: factor.unit ?? 'tokens',
+    quantityBasisTokens: factor.quantityBasisTokens ?? factor.quantity_basis,
+    energyKwh: factor.energyKwh ?? factor.energy_kwh,
+    co2eKg: factor.co2eKg ?? factor.co2e_kg,
+    waterLiters: factor.waterLiters ?? factor.water_liters,
+    methodology: factor.methodology,
+    confidence: factor.confidence,
+    validFrom: factor.validFrom ?? factor.valid_from,
+    validTo: factor.validTo ?? factor.valid_to,
+  };
+}
+
 function matchingFootprintFactor(record, factors = []) {
   const instant = new Date(record.at);
   if (!Number.isFinite(instant.getTime())) throw new TypeError('valid timestamp is required');
   const day = instant.toISOString().slice(0, 10);
-  return (Array.isArray(factors) ? factors : []).find(factor =>
-    factor?.provider === record.provider &&
+  return (Array.isArray(factors) ? factors : []).map(canonicalFactor).find(factor =>
+    factor.provider === record.provider &&
+    factor.resourceType === 'ai_tokens' &&
+    factor.unit === 'tokens' &&
     (!factor.providerModelId || factor.providerModelId === record.providerModelId) &&
     (!factor.validFrom || factor.validFrom <= day) &&
     (!factor.validTo || factor.validTo >= day) &&
@@ -71,13 +91,14 @@ export function deriveTokenFootprint(record = {}, factors = []) {
   const factor = matchingFootprintFactor(record, factors);
   if (!factor) return Object.freeze({ requestId, status:'unknown_factor', measurementClass:'estimated', energyKwh:null, co2eKg:null, waterLiters:null, factorId:null, methodology:null, confidence:0 });
   const ratio = totalTokens / Number(factor.quantityBasisTokens);
+  const scaled = value => value == null ? null : Number(value) * ratio;
   return Object.freeze({
     requestId,
     status:'calculated',
     measurementClass:'estimated',
-    energyKwh:Number(factor.energyKwh) * ratio,
-    co2eKg:Number(factor.co2eKg) * ratio,
-    waterLiters:Number(factor.waterLiters) * ratio,
+    energyKwh:scaled(factor.energyKwh),
+    co2eKg:scaled(factor.co2eKg),
+    waterLiters:scaled(factor.waterLiters),
     factorId:requireText(factor.factorId, 'factorId'),
     methodology:requireText(factor.methodology, 'methodology'),
     confidence:Math.max(0, Math.min(1, Number(factor.confidence) || 0)),
@@ -89,14 +110,17 @@ export function aggregateTokenFootprint(records = []) {
   for (const record of Array.isArray(records) ? records : []) if (record?.requestId && !unique.has(record.requestId)) unique.set(record.requestId, record);
   const values = [...unique.values()];
   const calculated = values.filter(row => row.status === 'calculated');
-  const sum = key => calculated.reduce((total, row) => total + (Number(row[key]) || 0), 0);
+  const sumOrNull = key => {
+    const known = calculated.map(row => row[key]).filter(value => value != null && Number.isFinite(Number(value)));
+    return known.length ? known.reduce((total, value) => total + Number(value), 0) : null;
+  };
   return Object.freeze({
     totalRequests:values.length,
     calculatedRequests:calculated.length,
     coverage:values.length ? calculated.length / values.length : 0,
-    energyKwh:sum('energyKwh'),
-    co2eKg:sum('co2eKg'),
-    waterLiters:sum('waterLiters'),
+    energyKwh:sumOrNull('energyKwh'),
+    co2eKg:sumOrNull('co2eKg'),
+    waterLiters:sumOrNull('waterLiters'),
     confidence:calculated.length ? calculated.reduce((total, row) => total + (Number(row.confidence) || 0), 0) / calculated.length : 0,
     factorVersions:Object.freeze([...new Set(calculated.map(row => row.factorId).filter(Boolean))].sort()),
     methodologies:Object.freeze([...new Set(calculated.map(row => row.methodology).filter(Boolean))].sort()),
