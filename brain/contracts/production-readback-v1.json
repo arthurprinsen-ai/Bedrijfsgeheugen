@@ -19,7 +19,9 @@
     "connectTimeoutSeconds": 10,
     "maxRequestSeconds": 30,
     "cacheBust": true,
-    "terminalFailure": true
+    "terminalFailure": true,
+    "publicRoute": "/api/connectors/readiness",
+    "excludedFromAuthenticatedWildcard": true
   },
   "websiteReadback": {
     "exactCommitMarker": true,
@@ -33,9 +35,10 @@
     "eventKind": "ERROR",
     "fingerprint": "production-readback-http-5xx-v1",
     "rootCausePolicy": "evidence-before-hypothesis",
-    "preventionRule": "bounded-retry-then-fail-closed",
+    "preventionRule": "ISOLATE_PUBLIC_READINESS_AND_REQUIRE_EXACT_PRODUCTION_READBACK",
     "regressionTest": "tests/brain-production-release-readback-scope.test.mjs",
     "writeback": "canonical-universal-learning",
+    "knownLesson": "docs/brain/lessons/production-readback-readiness-503-2026-09-15.json",
     "requiredFields": [
       "fingerprint",
       "event_kind",
