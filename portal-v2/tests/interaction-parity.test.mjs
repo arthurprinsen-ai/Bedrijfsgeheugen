@@ -49,11 +49,13 @@ test('roadmap move and reorder preserve all card data', async () => {
   assert.equal(reordered[1].owner,'QA');
 });
 
-test('workspace shell delegates roadmap to its specialist interactive workspace', () => {
+test('canonical workspace shell owns roadmap identity and delegates content without nested remount', () => {
   assert.ok(fs.existsSync(new URL('../modules/roadmap-workspace.js', import.meta.url)));
   const shell=fs.readFileSync(new URL('../workspace-shell.js', import.meta.url),'utf8');
   const workspace=fs.readFileSync(new URL('../modules/roadmap-workspace.js', import.meta.url),'utf8');
+  assert.match(shell,/functionalWorkspace/);
   assert.match(shell,/roadmap-workspace\.js/);
+  assert.match(shell,/mountRoadmapWorkspace\?\.\(content/);
   assert.match(workspace,/mountRoadmapBoard/);
-  assert.match(workspace,/data-functional-workspace/);
+  assert.doesNotMatch(workspace,/mountWorkspace\s*\(/);
 });

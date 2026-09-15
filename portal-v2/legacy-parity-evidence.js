@@ -11,9 +11,9 @@ const format=value=>{
 export function mountLegacyParityEvidence(root,{legacyCapability,domainState}={}){
  if(!root||!legacyCapability)return ()=>{};
  const render=()=>{
-  const shell=root.querySelector('.v2workspace');
-  if(!shell||shell.dataset.activeTab!=='analyse')return;
-  const content=shell.querySelector('[data-workspace-content]');if(!content)return;
+  const shell=root.querySelector('.v2workspace')||root;
+  if(shell.dataset.activeTab!=='analyse')return;
+  const content=shell.querySelector('[data-workspace-content]')||shell;if(!content)return;
   content.querySelector('[data-legacy-algorithm-parity]')?.remove();
   let results={};try{results=calculateCapability(legacyCapability,domainState?.get?.()||{});}catch{return;}
   const section=document.createElement('section');section.className='v2paritycalc';section.dataset.legacyAlgorithmParity='true';
