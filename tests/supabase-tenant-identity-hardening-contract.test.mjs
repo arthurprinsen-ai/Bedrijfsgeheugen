@@ -40,3 +40,8 @@ test('RLS no longer accepts arbitrary anonymous tenant assertions', () => {
     .join('\n');
   assert.doesNotMatch(executableSql, /create\s+policy[\s\S]*?with\s+check\s*\(\s*true\s*\)/i, 'arbitrary inserts must not remain accepted');
 });
+
+test('RLS uses the production membership helper in the intern schema', () => {
+  has(migration, /intern\.mijn_organisaties\s*\(\s*\)/i, 'tenant policies must call the existing production membership helper');
+  assert.doesNotMatch(migration, /public\.mijn_organisaties\s*\(\s*\)/i, 'non-existent public membership helper must never be referenced');
+});
