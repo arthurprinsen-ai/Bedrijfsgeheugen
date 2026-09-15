@@ -19,12 +19,25 @@ test('registry preserves the complete standalone portal surface',()=>{
   }
 });
 
-test('groups retain the Brain & Powerhouse area',()=>{
+/* Deze test eiste een groep met de naam 'brein-powerhouse'. Daarmee lag de
+   zijbalkindeling vast in een test terwijl het om iets anders gaat: de
+   breinpagina's moeten bereikbaar blijven, in welke groep dan ook. */
+const BREINPAGINAS=['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail'];
+
+test('elke breinpagina blijft bereikbaar in de zijbalk',()=>{
+  const bereikbaar=new Set(listPortalGroups().flatMap(g=>g.pages.map(p=>p.id)));
+  for(const id of BREINPAGINAS) assert.ok(bereikbaar.has(id),`breinpagina uit beeld: ${id}`);
+});
+
+test('herindelen van de zijbalk laat geen pagina achter of dubbel staan',()=>{
   const groups=listPortalGroups();
-  const brain=groups.find(g=>g.id==='brein-powerhouse');
-  assert.ok(brain);
-  assert.ok(brain.pages.some(p=>p.id==='outcomes-evidence'));
-  assert.ok(brain.pages.some(p=>p.id==='learning-writeback'));
+  const inGroepen=groups.flatMap(g=>g.pages.map(p=>p.id));
+  assert.equal(new Set(inGroepen).size,inGroepen.length,'een pagina staat in twee groepen');
+  assert.deepEqual([...inGroepen].sort(),[...allPageIds()].sort(),'registry en zijbalk lopen uiteen');
+  for(const group of groups){
+    assert.ok(group.label,`groep ${group.id} heeft geen label`);
+    assert.ok(group.pages.length,`groep ${group.id} is leeg`);
+  }
 });
 
 test('registered pages are V2 metadata only and have no legacy routing contract',()=>{

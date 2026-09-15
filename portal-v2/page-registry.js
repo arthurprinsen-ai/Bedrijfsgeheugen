@@ -1,12 +1,16 @@
+// Zijbalkindeling volgens het vastgestelde Overzicht-design: zes groepen.
+// De items uit het design staan vooraan in hun groep; de overige pagina's
+// staan daaronder in dezelfde groep, zodat geen enkele pagina uit beeld raakt.
+// Wat nergens past staat in 'Overig'. Alle pagina-ids uit de oude acht secties
+// zijn hier opnieuw ondergebracht; er is niets verwijderd.
 export const PORTAL_SECTIONS = Object.freeze({
-  overzicht: { label: 'Overzicht', pages: ['overzicht'] },
-  inzicht: { label: 'Inzicht', pages: ['profiel','data-ai','ai-scan','kansenkaart','csrd-impact','gegevens-invullen','ingevulde-gegevens','businesscase'] },
-  vergelijken: { label: 'Vergelijken', pages: ['cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','compliance-command-center','ai-capabilities','data-ai-passport','eu-ai-act-audit','rekenwijze'] },
-  denken: { label: 'Denken', pages: ['strategy-dna','strategiemodellen','modellen','canvassen','eindconclusie'] },
-  overname: { label: 'Overname', pages: ['due-diligence','exit'] },
-  doen: { label: 'Doen', pages: ['strategie-naar-maandagochtend','actueel-houden','wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen'] },
-  'brein-powerhouse': { label: 'Brein & Powerhouse', pages: ['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail'] },
-  beheer: { label: 'Beheer', pages: ['koppelingen','gebruikers','documenten','instellingen','audit'] }
+  overzicht: { label: 'Overzicht', pages: ['overzicht','actieve-acties','advies'] },
+  besturen: { label: 'Besturen', pages: ['profiel','strategie-naar-maandagochtend','strategiemodellen','canvassen','eindconclusie','roadmap','strategy-dna','modellen','kansenkaart','businesscase','ai-scan'] },
+  realiseren: { label: 'Realiseren', pages: ['taken-werkstromen','documenten','uitvoeringsladder','offerte','gegevens-invullen','ingevulde-gegevens','actueel-houden'] },
+  'data-intelligence': { label: 'Data & intelligence', pages: ['data-ai','cijfers-maatstaven','koppelingen','brain-verwerking','ai-capabilities','data-ai-passport','bronnenstatus','datahubstatus','agentstatus','rekenwijze','onderzoek','branche-markt'] },
+  'continuiteit-risico': { label: 'Continuïteit & risico', pages: ['wijzigingen','compliance-governance','learning-writeback','compliance-command-center','eu-ai-act-audit','csrd-impact','audit','audittrail','recovery-obligations','self-heal','outcomes-evidence','mensen'] },
+  beheren: { label: 'Beheren', pages: ['instellingen','gebruikers'] },
+  overig: { label: 'Overig', pages: ['due-diligence','exit','waarde-financiering'] }
 });
 
 const PAGE_META = {

@@ -186,7 +186,9 @@ export function openPortalPage(pageId){
   const view=pagePresentation(pageId);if(!view)return false;
   const root=ensureShell();
   root.classList.toggle('impact-mode',pageId==='csrd-impact');
-  root.querySelector('#pvKicker').textContent=view.sectionId==='brein-powerhouse'?'Brein & Powerhouse':'Portal V2';
+  // De kicker hoort bij de pagina, niet bij de zijbalkgroep: de indeling van de
+  // zijbalk mag veranderen zonder dat een breinpagina zijn kop kwijtraakt.
+  root.querySelector('#pvKicker').textContent=BRAIN_PAGES.has(pageId)?'Brein & Powerhouse':'Portal V2';
   root.querySelector('#pvTitle').textContent=view.title;
   root.querySelector('#pvDescription').textContent=view.description;
   root.querySelector('#pvStatus').textContent=view.evidenceLabel;
