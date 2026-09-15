@@ -11,6 +11,7 @@ const assurancePaths = [
   'tests/powerhouse-assurance.test.mjs',
   'tests/powerhouse-assurance-delivery-classification.test.mjs',
   'docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md',
+  'docs/portal-v2-parity-architecture.md',
 ];
 
 test('Powerhouse assurance control-plane paths are classified by the canonical delivery policy', () => {
@@ -24,7 +25,10 @@ test('Powerhouse assurance control-plane paths are classified by the canonical d
 
 test('Powerhouse assurance documentation does not require an unrelated public website lane', () => {
   const plan = createDeliveryPlan({
-    changedPaths: ['docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md'],
+    changedPaths: [
+      'docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md',
+      'docs/portal-v2-parity-architecture.md',
+    ],
     headSha: '0123456789abcdef0123456789abcdef01234567',
     policy,
   });
