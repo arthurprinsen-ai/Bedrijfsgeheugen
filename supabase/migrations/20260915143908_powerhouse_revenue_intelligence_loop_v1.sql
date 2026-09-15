@@ -236,3 +236,35 @@ select row_number() over(order by (coalesce(n.expected_commercial_value_eur,0)*c
   case when n.recommended_action in ('linkedin_dm','email','warm_intro_request') and n.forecast_id is null then true else false end as structural_lineage_gap,
   jsonb_build_object('source','powerhouse-revenue-intelligence-loop-v1','forecast_id',n.forecast_id,'asset_ready',n.asset_ready,'pressure_state',n.pressure_state,'research_reason',n.research_reason) as command_evidence
 from public.powerhouse_commercial_next_best_action_v3 n;
+
+alter view public.powerhouse_contact_pressure_v1 set (security_invoker = true);
+revoke all on public.powerhouse_contact_pressure_v1 from public, anon, authenticated;
+grant select on public.powerhouse_contact_pressure_v1 to service_role;
+
+alter view public.powerhouse_account_strategy_v1 set (security_invoker = true);
+revoke all on public.powerhouse_account_strategy_v1 from public, anon, authenticated;
+grant select on public.powerhouse_account_strategy_v1 to service_role;
+
+alter view public.powerhouse_research_queue_v1 set (security_invoker = true);
+revoke all on public.powerhouse_research_queue_v1 from public, anon, authenticated;
+grant select on public.powerhouse_research_queue_v1 to service_role;
+
+alter view public.powerhouse_commercial_next_best_action_v3 set (security_invoker = true);
+revoke all on public.powerhouse_commercial_next_best_action_v3 from public, anon, authenticated;
+grant select on public.powerhouse_commercial_next_best_action_v3 to service_role;
+
+alter view public.powerhouse_revenue_attribution_v1 set (security_invoker = true);
+revoke all on public.powerhouse_revenue_attribution_v1 from public, anon, authenticated;
+grant select on public.powerhouse_revenue_attribution_v1 to service_role;
+
+alter view public.powerhouse_model_health_v1 set (security_invoker = true);
+revoke all on public.powerhouse_model_health_v1 from public, anon, authenticated;
+grant select on public.powerhouse_model_health_v1 to service_role;
+
+alter view public.powerhouse_experiment_learning_v2 set (security_invoker = true);
+revoke all on public.powerhouse_experiment_learning_v2 from public, anon, authenticated;
+grant select on public.powerhouse_experiment_learning_v2 to service_role;
+
+alter view public.powerhouse_revenue_command_center_v2 set (security_invoker = true);
+revoke all on public.powerhouse_revenue_command_center_v2 from public, anon, authenticated;
+grant select on public.powerhouse_revenue_command_center_v2 to service_role;
