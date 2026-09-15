@@ -1,7 +1,7 @@
 -- Preserve legacy executed actions as historical evidence without retrospective experiment assignment.
 -- Contract cutover equals first live evidence-orchestrator deployment.
 
-create or replace view public.powerhouse_full_cycle_evidence_v2 as
+create or replace view public.powerhouse_full_cycle_evidence_v2 with (security_invoker = true) as
 with outcomes as (
  select action_id,
   bool_or(outcome_type in ('reply','response')) as has_reply,
@@ -41,7 +41,7 @@ left join outcomes o on o.action_id=a.action_id;
 revoke all on table public.powerhouse_full_cycle_evidence_v2 from public, anon, authenticated;
 grant select on table public.powerhouse_full_cycle_evidence_v2 to service_role;
 
-create or replace view public.powerhouse_evidence_operating_health_v3 as
+create or replace view public.powerhouse_evidence_operating_health_v3 with (security_invoker = true) as
 select now() measured_at,
  (select count(*) from public.powerhouse_evidence_source_coverage_v1 where required and coverage_state='missing') required_sources_missing,
  (select count(*) from public.powerhouse_evidence_source_coverage_v1 where required and coverage_state='stale') required_sources_stale,
