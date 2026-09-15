@@ -1,0 +1,90 @@
+{
+  "contract_id": "production-incident-learning-v1",
+  "closed_loop": [
+    "detect",
+    "prioritize",
+    "execute",
+    "test",
+    "production",
+    "readback",
+    "outcome",
+    "root_cause",
+    "regression_prevention",
+    "writeback"
+  ],
+  "incidents": [
+    {
+      "id": "2026-09-15-production-readback-and-connector-readiness",
+      "status": "closed_with_enforced_prevention",
+      "detected_at": "2026-09-15",
+      "symptoms": [
+        "Backend-only releases could wait for an irrelevant website deployment SHA.",
+        "The public connector readiness endpoint returned HTTP 503 during production release readback.",
+        "A stale production deploy could be mistaken for a successful release when deployment state was not tied back to the exact release SHA."
+      ],
+      "root_causes": [
+        {
+          "class": "delivery_lane_scope",
+          "cause": "Production readback originally coupled all releases to website deployment state instead of the canonical affected delivery lanes.",
+          "prevention_control": "production-readback-canonical-lane-scope"
+        },
+        {
+          "class": "route_collision",
+          "cause": "The authenticated /api/connectors/* wildcard could overlap the public /api/connectors/readiness route until readiness was explicitly excluded.",
+          "prevention_control": "connector-readiness-route-isolation"
+        },
+        {
+          "class": "transient_readback_signal",
+          "cause": "A single transient 5xx response could create a false-red production release signal.",
+          "prevention_control": "connector-readiness-bounded-retry-fail-closed"
+        },
+        {
+          "class": "source_reference_integrity",
+          "cause": "Repository tests and Brain scripts referenced a canonical migration path that was absent from git even though a corresponding migration existed remotely.",
+          "prevention_control": "canonical-migration-reference-integrity"
+        }
+      ],
+      "invariants": [
+        "Backend-only releases MUST NOT wait for an unrelated website SHA.",
+        "Any Netlify-hosted runtime change MUST require an exact production deployment proof.",
+        "/api/connectors/readiness MUST remain public and MUST be excluded from /api/connectors/*.",
+        "Readiness retries MUST be bounded and MUST still fail closed after the retry budget or on an invalid contract.",
+        "A release MUST NOT be called live from merge or deploy state alone; exact-SHA production readback is authoritative.",
+        "Any canonical migration referenced by tests or Brain scripts MUST exist in the repository."
+      ],
+      "enforcement": [
+        {
+          "control_id": "production-readback-canonical-lane-scope",
+          "implementation": ".github/workflows/production-release-readback.yml",
+          "regression_test": "tests/brain-production-release-readback-scope.test.mjs"
+        },
+        {
+          "control_id": "connector-readiness-route-isolation",
+          "implementation": "netlify/functions/portal-connectors.mjs",
+          "regression_test": "tests/brain-production-release-readback-scope.test.mjs"
+        },
+        {
+          "control_id": "connector-readiness-bounded-retry-fail-closed",
+          "implementation": ".github/workflows/production-release-readback.yml",
+          "regression_test": "tests/brain-production-release-readback-scope.test.mjs"
+        },
+        {
+          "control_id": "canonical-migration-reference-integrity",
+          "implementation": "tests/supabase-migration-reference-integrity.test.mjs",
+          "regression_test": "tests/supabase-migration-reference-integrity.test.mjs"
+        }
+      ],
+      "evidence": {
+        "pull_requests": [1489, 1491, 1492, 1504],
+        "known_merge_commits": [
+          "9353ecfc8d5a463a89963ae9b671318d3db02d54",
+          "c1f12025c4577915b7a02b709ec039b4c08b5f71",
+          "fb68cc0795f1b166a099b17293e758b760c67df7"
+        ],
+        "green_production_readback_run": 34945747361,
+        "verified_netlify_deploy": "6aa8fe0fa19260000807bbdc"
+      },
+      "learning_rule": "Every production failure must end in a machine-enforced invariant and regression test; narrative documentation alone is insufficient."
+    }
+  ]
+}
