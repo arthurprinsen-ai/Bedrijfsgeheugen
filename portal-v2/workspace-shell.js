@@ -33,6 +33,13 @@ async function attachLegacyAlgorithmParity(root,contract){
  }catch(error){console.error('LEGACY_ALGORITHM_PARITY_LOAD_FAILED',error);}
 }
 
+function specialistModulePath(id){
+ if(id==='roadmap')return './modules/roadmap-workspace.js';
+ if(id==='canvassen')return './modules/canvas-workspace.js';
+ if(id==='strategie-naar-maandagochtend')return './modules/strategy-workspace.js';
+ return './modules/functional-suite.js';
+}
+
 export function mountWorkspace(root,contract,context={}){
  if(!root?.replaceChildren)throw new TypeError('WORKSPACE_ROOT_REQUIRED');
  const model=workspaceModel(contract,context);
@@ -48,12 +55,15 @@ export function mountWorkspace(root,contract,context={}){
  shell.dataset.activeTab='invullen';context.render?.(content,model);
  const api=Object.freeze({shell,content,model,setSaveStatus(status){const badge=shell.querySelector('.v2savestatus');if(badge){badge.dataset.saveStatus=status;badge.textContent=saveStatusLabel(status);}}});
  if(contract?.legacyCapability&&!root.dataset.functionalDelegating){
-  const modulePath=contract.id==='roadmap'?'./modules/roadmap-workspace.js':'./modules/functional-suite.js';
+  const modulePath=specialistModulePath(contract.id);
   Promise.all([loadFunctionalStyles(),import(modulePath)]).then(async([,module])=>{
    root.dataset.functionalDelegating='1';
    try{
-    if(contract.id==='roadmap')module.mountRoadmapWorkspace?.(root,{contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
-    else if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
+    const options={contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2};
+    if(contract.id==='roadmap')module.mountRoadmapWorkspace?.(root,options);
+    else if(contract.id==='canvassen')module.mountCanvasWorkspace?.(root,options);
+    else if(contract.id==='strategie-naar-maandagochtend')module.mountStrategyWorkspace?.(root,options);
+    else if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,...options});
     await attachLegacyAlgorithmParity(root,contract);
    } finally{delete root.dataset.functionalDelegating;}
   }).catch(error=>{console.error('FUNCTIONAL_WORKSPACE_LOAD_FAILED',error);});

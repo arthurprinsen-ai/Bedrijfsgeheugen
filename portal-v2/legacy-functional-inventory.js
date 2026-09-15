@@ -85,8 +85,9 @@ export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
     ['ai-capability-readiness','ai-capability-gap'], ['assess-capability','prioritize-capability'], ['dataai','beleid','dna']),
 
   strategie: capability('strategie-naar-maandagochtend', ids('kHorizon','kMin'),
-    ['all-model findings matrix','strategy conclusion','filtered recommendation map'],
-    ['model-finding-value','model-finding-horizon','priority-filter'], ['filter-horizon','filter-minimum-value','add-finding-to-roadmap'], ['canvassen','eindconclusie','roadmap','dna']),
+    ['all-model findings matrix','BCG-matrix','strategy conclusion','filtered recommendation map'],
+    ['model-finding-value','model-finding-horizon','priority-filter','bcg-market-growth-threshold','bcg-relative-position','bcg-quadrant'],
+    ['filter-horizon','filter-minimum-value','add-finding-to-roadmap','bcg-add-question-mark-action-to-roadmap'], ['canvassen','eindconclusie','roadmap','dna','branche','profiel']),
 
   canvassen: capability('canvassen', [frozen({legacyFieldId:'canvasKaarten:*', dynamicGroup:'six-editable-canvases'})],
     ['six legacy canvases','canvas conclusion'], ['canvas-completeness','canvas-consensus'], ['edit-canvas-cell','save-canvas'], ['strategie','eindconclusie']),
@@ -138,4 +139,4 @@ export function assertFunctionalInventoryComplete() {
   return true;
 }
 
-export const LEGACY_FUNCTIONAL_INVENTORY_VERSION = '2026-09-09-v1';
+export const LEGACY_FUNCTIONAL_INVENTORY_VERSION = '2026-09-15-v2';
