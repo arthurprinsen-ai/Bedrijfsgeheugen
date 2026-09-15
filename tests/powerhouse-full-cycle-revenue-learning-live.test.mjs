@@ -1,3 +1,4 @@
+// Protected regression contract for the exact two production migrations in PR #1586.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
