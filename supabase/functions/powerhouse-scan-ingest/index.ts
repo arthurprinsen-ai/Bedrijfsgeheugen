@@ -67,10 +67,20 @@ Deno.serve(async(req:Request)=>{
   let scan:any;try{scan=normalize(body)}catch(e){return json({error:String((e as Error).message||'INVALID_SCAN')},422)}
   if(body?.dry_run===true)return json({ok:true,dry_run:true,contract:'powerhouse-canonical-scan-loop-v1',normalized:{submission_key:scan.submissionKey,score:scan.score,niveau:scan.niveau,dimensions:Object.keys(scan.dimensions).length}});
   const scanRow={submission_key:scan.submissionKey,schema_version:2,soort:'frisse_blik',scan_datum:scan.datum,score:scan.score,branche:scan.branche,omvang:scan.omvang,niveaus:scan.dimensions,taken:[],doel:scan.doel,bron:'website',bron_url:scan.canonical,organisatie_id:null,tenant_identity_status:'unverified',company_key:null,payload:{contract:'powerhouse-canonical-scan-loop-v1',niveau:scan.niveau,dimensions:scan.dimensions,antwoorden:scan.answers,source_version:clean(scan.raw?.stempel,120)||null}};
-  const {data:created,error:insertError}=await client.from('scan_inzendingen').upsert(scanRow,{onConflict:'submission_key',ignoreDuplicates:true}).select('id,submission_key,score,tenant_identity_status,powerhouse_event_id,aangemaakt').maybeSingle();
-  if(insertError)return json({error:'SCAN_STORE_FAILED',detail:insertError.message.slice(0,300)},500);
-  let stored=created;
-  if(!stored){const {data,error}=await client.from('scan_inzendingen').select('id,submission_key,score,tenant_identity_status,powerhouse_event_id,aangemaakt').eq('submission_key',scan.submissionKey).maybeSingle();if(error||!data)return json({error:'SCAN_READBACK_FAILED'},500);stored=data;}
+  const scanSelect='id,submission_key,score,tenant_identity_status,powerhouse_event_id,aangemaakt';
+  let created=false;
+  let {data:stored,error:readError}=await client.from('scan_inzendingen').select(scanSelect).eq('submission_key',scan.submissionKey).maybeSingle();
+  if(readError)return json({error:'SCAN_READBACK_FAILED',detail:readError.message.slice(0,300)},500);
+  if(!stored){
+    const {data:inserted,error:insertError}=await client.from('scan_inzendingen').insert(scanRow).select(scanSelect).maybeSingle();
+    if(insertError && insertError.code!=='23505')return json({error:'SCAN_STORE_FAILED',detail:insertError.message.slice(0,300)},500);
+    if(inserted){stored=inserted;created=true;}
+    if(!stored){
+      const {data:raced,error:raceError}=await client.from('scan_inzendingen').select(scanSelect).eq('submission_key',scan.submissionKey).maybeSingle();
+      if(raceError||!raced)return json({error:'SCAN_RACE_READBACK_FAILED',detail:raceError?.message?.slice(0,300)||null},500);
+      stored=raced;
+    }
+  }
   const dedupe=`scan:${scan.submissionKey}`;
   const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
   const {data:eventCreated,error:eventError}=await client.from('powerhouse_runtime_events').upsert(eventRow,{onConflict:'dedupe_key',ignoreDuplicates:true}).select('event_id,dedupe_key').maybeSingle();
