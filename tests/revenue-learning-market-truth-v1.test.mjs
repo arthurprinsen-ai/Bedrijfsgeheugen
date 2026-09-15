@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath = 'supabase/migrations/20260915184500_powerhouse_market_truth_learning_v1.sql';
+const migrationPath = 'supabase/migrations/20260915165700_powerhouse_market_truth_learning_v1.sql';
 
 const stores = [
   'powerhouse_experiment_assignments',
