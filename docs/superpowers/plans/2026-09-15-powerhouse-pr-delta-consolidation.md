@@ -44,7 +44,7 @@ Hard daily publication lanes are `linkedin_personal`, `linkedin_company` and `in
 
 ### #1506 — revenue calibration persistence
 
-No replay. Production readback is authoritative and demonstrably stronger than the old PR. Its trigger/function remains the canonical revenue prediction → action → outcome → calibration projection and must not be downgraded by this consolidation.
+No replay. Production readback is authoritative and demonstrably stronger than the old PR. Its trigger/function remains the canonical revenue prediction → action → outcome → calibration projection and must not be downgraded by this consolidation. Production migration history contains later revenue-calibration/intelligence migrations, including `powerhouse_revenue_calibration_projection_v1`, and live function readback proves the stronger implementation.
 
 ### #1543 — revenue flywheel
 
