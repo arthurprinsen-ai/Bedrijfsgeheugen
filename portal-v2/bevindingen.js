@@ -103,7 +103,7 @@ function complianceGaten(state) {
   if (!controls.length) return [];
   return rangschikRisicos(controls).slice(0, 4).map(risico => bevinding({
     id: `control-${risico.id}`, soort: 'verplichting',
-    titel: `${risico.requirement || risico.id} is niet aantoonbaar op orde`,
+    titel: `${risico.requirement || risico.id || 'Deze control'} is niet aantoonbaar op orde`,
     bewijs: risico.status === STATUS.EVIDENCE_MISSING
       ? 'De control is ingericht maar het bewijs ontbreekt of is verlopen'
       : 'De control is niet ingericht',
@@ -409,15 +409,60 @@ const REGELS = [duursteOnderdelen, externOnderzoek, borging, strategieZonderWerk
  * zonder waarde én zonder datum staan onderaan — niet omdat ze onbelangrijk
  * zijn, maar omdat er geen grond is om ze hoger te zetten.
  */
-function score(item, peil) {
+/**
+ * Twee getallen hieronder zijn beleid, geen meting: ze zetten een harde datum
+ * en een verplichting om in punten zodat ze met euro's per jaar te vergelijken
+ * zijn. Ze stonden los in de berekening, waardoor de volgorde van het hele
+ * portaal afhing van cijfers die nergens werden uitgelegd. Verander je ze, dan
+ * verandert die volgorde — vandaar hier, met een naam en een reden.
+ */
+const WEGING = Object.freeze({
+  // Een verplichting die binnen een jaar valt weegt zo zwaar als een besparing
+  // van 60.000 euro, en zakt met 100 punten per dag dat hij verder weg ligt.
+  datumBinnenJaar: 60000,
+  datumPerDag: 100,
+  // Een verplichting zonder datum en zonder bedrag is geen keuze, maar zou
+  // zonder deze weging onderaan staan omdat er geen euro's aan hangen.
+  verplichtingZonderDatum: 5000
+});
+
+/**
+ * De plek in de lijst, met de reden erbij. De reden is geen toelichting achteraf
+ * maar dezelfde berekening in woorden: wie de volgorde niet snapt, hoort te
+ * kunnen lezen waarop hij rust.
+ */
+function weging(item, peil) {
   const basis = item.waarde ? item.waarde / MOEITE[item.moeite] : 0;
+  const bedrag = item.waarde ? `${Math.round(item.waarde).toLocaleString('nl-NL')} euro per jaar` : '';
   let bonus = 0;
+  let reden = '';
+
   if (item.datum) {
-    const dagen = (new Date(item.datum) - new Date(peil)) / 864e5;
-    if (dagen <= 365) bonus = 60000 - Math.max(0, dagen) * 100;
+    const dagen = Math.round((new Date(item.datum) - new Date(peil)) / 864e5);
+    if (dagen <= 365) {
+      bonus = WEGING.datumBinnenJaar - Math.max(0, dagen) * WEGING.datumPerDag;
+      reden = dagen <= 0
+        ? 'staat vooraan omdat de datum al verstreken is'
+        : `staat vooraan omdat de datum over ${dagen} dag${dagen === 1 ? '' : 'en'} valt`;
+    }
   }
-  if (!item.waarde && item.soort === 'verplichting' && !item.datum) bonus += 5000;
-  return basis + bonus;
+  if (!item.waarde && item.soort === 'verplichting' && !item.datum) {
+    bonus += WEGING.verplichtingZonderDatum;
+    reden = 'staat hoger omdat het een verplichting is, niet omdat er een bedrag aan hangt';
+  }
+  if (!reden) {
+    reden = basis
+      ? `staat hier op ${bedrag} gedeeld door de moeite om het te doen`
+      : 'staat onderaan: geen bedrag en geen datum, dus geen grond om hoger te staan';
+  } else if (bedrag) {
+    reden += `, met ${bedrag} eronder`;
+  }
+  return { punten: basis + bonus, reden };
+}
+
+/** Alleen de punten; de volgorde zelf gebruikt weging(). */
+function score(item, peil) {
+  return weging(item, peil).punten;
 }
 
 /** Alle bevindingen, op volgorde van wat het oplevert. */
@@ -440,7 +485,10 @@ export function bevindingen(state = {}, peil = new Date().toISOString().slice(0,
     try { return regel(state, peil); } catch { return []; }
   });
   return gevonden
-    .map(item => ({ ...item, score: Math.round(score(item, peil)) }))
+    .map(item => {
+      const { punten, reden } = weging(item, peil);
+      return { ...item, score: Math.round(punten), reden };
+    })
     .sort((a, b) => b.score - a.score || a.titel.localeCompare(b.titel));
 }
 
@@ -463,4 +511,4 @@ export function bevindingenSamenvatting(state = {}, peil = new Date().toISOStrin
   });
 }
 
-export const BEVINDINGEN_VERSION = '2026-09-11-v1';
+export const BEVINDINGEN_VERSION = '2026-09-12-v2';
