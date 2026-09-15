@@ -89,3 +89,9 @@ jobs:
           echo >> "$GITHUB_STEP_SUMMARY"
           echo 'second_response:' >> "$GITHUB_STEP_SUMMARY"
           cat "$second" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Explain production proof failure
+        if: failure()
+        shell: bash
+        run: |
+          echo '::error::Powerhouse Scan Production Proof failed. Inspect the failed proof step above; the production scan contract, authorization boundary, privileged-action guard, or controlled idempotency proof did not meet its required state.'
