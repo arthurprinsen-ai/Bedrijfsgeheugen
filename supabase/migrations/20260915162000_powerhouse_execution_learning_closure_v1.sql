@@ -82,7 +82,7 @@ begin
 
   -- 2. Measure experiments from the latest observed provider metrics per post
   -- plus canonical commercial outcomes. A completed measurement is a decision,
-  -- not automatically a winner claim.
+  -- not automatically a winner claim. Canonical snapshot metric keys are lowercase.
   with latest_metric as (
     select distinct on (s.post_id)
       s.post_id,s.observed_at,s.metrics
@@ -95,12 +95,12 @@ begin
       count(distinct p.post_id) as published_posts,
       count(distinct lm.post_id) as posts_with_metrics,
       coalesce(sum(greatest(
-        coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'Impressions','0'),'[^0-9.]','','g'),'')::numeric,0),
-        coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'Reach','0'),'[^0-9.]','','g'),'')::numeric,0)
+        coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'impressions','0'),'[^0-9.]','','g'),'')::numeric,0),
+        coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'reach','0'),'[^0-9.]','','g'),'')::numeric,0)
       )),0) as sample_volume,
-      coalesce(sum(coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'Reactions','0'),'[^0-9.]','','g'),'')::numeric,0)),0) as reactions,
-      coalesce(sum(coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'Comments','0'),'[^0-9.]','','g'),'')::numeric,0)),0) as comments,
-      coalesce(sum(coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'Shares','0'),'[^0-9.]','','g'),'')::numeric,0)),0) as shares,
+      coalesce(sum(coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'reactions','0'),'[^0-9.]','','g'),'')::numeric,0)),0) as reactions,
+      coalesce(sum(coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'comments','0'),'[^0-9.]','','g'),'')::numeric,0)),0) as comments,
+      coalesce(sum(coalesce(nullif(regexp_replace(coalesce(lm.metrics->>'shares','0'),'[^0-9.]','','g'),'')::numeric,0)),0) as shares,
       max(lm.observed_at) as metrics_observed_at,
       count(distinct o.outcome_id) as commercial_outcomes,
       coalesce(sum(o.revenue_eur),0) as realized_revenue_eur,
@@ -203,8 +203,9 @@ begin
   get diagnostics v_outcomes_closed = row_count;
 
   -- 4. Evidence-backed modeled economics. The pricing prior is built only from
-  -- observed offer history. Forecast probability/confidence supplies a company/
-  -- topic-specific discount. This never overwrites expected_value_eur.
+  -- observed offer history. A matching active forecast is mandatory and supplies
+  -- the company/topic-specific probability/confidence discount. This never
+  -- overwrites expected_value_eur and is never presented as realized revenue.
   select
     coalesce(sum(v.avg_offer_eur*v.offers_observed*v.observed_win_rate)
       / nullif(sum(v.offers_observed),0),0),
@@ -234,13 +235,16 @@ begin
         v_offer_prior_eur
         * least(1,greatest(0,coalesce(o.probability,0)))
         * least(1,greatest(0,coalesce(o.confidence,0)))
-        * greatest(0.25,coalesce(fm.forecast_score,0))
+        * coalesce(fm.forecast_score,0)
         * v_offer_confidence
       ),2) as modeled_value_eur,
       coalesce(fm.forecast_score,0) as forecast_score
     from public.powerhouse_opportunities o
     left join forecast_match fm on fm.opportunity_id=o.opportunity_id
-    where o.status='open' and v_offer_prior_eur>0 and v_offer_sample>0
+    where o.status='open'
+      and v_offer_prior_eur>0
+      and v_offer_sample>0
+      and coalesce(fm.forecast_score,0)>0
   )
   update public.powerhouse_opportunities o
      set expected_revenue_value=greatest(coalesce(o.expected_revenue_value,0),m.modeled_value_eur),
@@ -332,7 +336,7 @@ begin
     'Commercial intelligence compounds only when planned experiments become evidence-backed execution, matured predictions are calibrated, economic priors are explicitly modeled, observed outcomes close obligations, and one scheduler-owned runtime path writes the result safely.',
     v_result,
     jsonb_build_object(
-      'prevention_rule','Never mark experiments active without publication evidence, never claim winners without sample plus measured evidence, never overwrite declared value with modeled value, and serialize the scheduler-owned closed loop to avoid runtime-event deadlocks.',
+      'prevention_rule','Never mark experiments active without publication evidence, never claim winners without sample plus measured evidence, never overwrite declared value with modeled value, require a matching positive forecast for modeled opportunity economics, read canonical lowercase provider metrics, and serialize the scheduler-owned closed loop to avoid runtime-event deadlocks.',
       'reuse',jsonb_build_array('social_experiments','social_posts','social_metric_snapshots','powerhouse_forecasts','powerhouse-forecast-calibrator','powerhouse_offer_pricing_learning_v1','powerhouse_opportunities','powerhouse_sales_outcomes','powerhouse_commercial_closed_loop_v2')
     ),
     case when coalesce((v_closed_loop->>'required_sources_bad')::integer,0)=0 then 0.95 else 0.55 end,
@@ -387,8 +391,9 @@ insert into public.powerhouse_runtime_events(
     'replaces_job','powerhouse-execution-guard-hourly',
     'experiment_activation','published linked post required',
     'forecast_calibration','existing calibrator only when matured',
-    'opportunity_economics','observed pricing prior + forecast/opportunity probability, modeled only',
-    'runtime_serialization','transaction advisory lock'
+    'opportunity_economics','observed pricing prior + matching active forecast + opportunity probability/confidence, modeled only',
+    'runtime_serialization','transaction advisory lock',
+    'metric_contract','canonical lowercase social_metric_snapshots keys'
   ),
   jsonb_build_object('canonical_system','Bedrijfsgeheugen Powerhouse','no_parallel_system',true),
   'decided','verified',1,now()
