@@ -6,67 +6,20 @@
   "canonical_name": "Bedrijfsgeheugen Powerhouse",
   "formal_name": "Bedrijfsgeheugen Growth & Revenue Operating System",
   "scope": "All current and future Bedrijfsgeheugen capabilities, agents, workflows, channels, data, intelligence, content, sales, revenue, analytics, learning and delivery components, across all existing and future chats and agents that materially change or operate Bedrijfsgeheugen.",
-  "principles": [
-    "EXISTING-STATE-FIRST",
-    "REUSE-FIRST",
-    "CANONICAL-INTEGRATION",
-    "CLOSED-LOOP",
-    "NO-PARALLEL-SYSTEM",
-    "MEASURE-BEFORE-CLAIM",
-    "EXPERIMENT-AND-CALIBRATE",
-    "REVENUE-OUTCOME-ORIENTED",
-    "CONTINUOUS-LEARNING"
-  ],
-  "required_preflight": [
-    "Read current canonical state, shared team context, open obligations and relevant prior learnings before designing, changing or executing anything.",
-    "Identify the existing canonical owner, data route, queue, graph, publisher, analytics route, outcome route and learning route for the capability.",
-    "Reuse or extend existing components before creating anything new.",
-    "Create a new component only when the capability demonstrably does not already exist and register it in the existing Powerhouse architecture.",
-    "For material growth, content, sales, outbound, SEO, channel or revenue decisions, use the strongest available internal evidence plus relevant external intelligence before acting."
-  ],
-  "autonomous_operating_loop": [
-    "OBSERVE: collect relevant internal and external evidence, channel performance, relationship context, market signals, content performance, SEO, pipeline and realized revenue outcomes.",
-    "PREDICT: create explicit forecasts or hypotheses with confidence, expected value and evidence lineage where prediction is useful.",
-    "DECIDE: select the next best action or experiment using expected commercial value, strategic fit, channel fit, contact pressure, risk and confidence.",
-    "EXECUTE: perform the supported action through the existing canonical route, including content creation, publication, outreach, follow-up, website/SEO optimization or other approved Powerhouse actions.",
-    "READBACK: verify provider, production or destination truth after execution; never infer success from intent or queue state alone.",
-    "MEASURE: capture delivery, engagement, response, opportunity, conversion, order and realized-revenue outcomes at the appropriate horizon.",
-    "CALIBRATE: compare prediction/hypothesis with observed outcome, score accuracy and value, identify false positives/negatives and update confidence or decision policy.",
-    "LEARN: write successes, failures, holds, non-response, incidents, causal evidence and prevention rules back into the canonical Powerhouse learning layer.",
-    "ADAPT: use the new evidence in the next cycle so topic, message, format, timing, channel, audience, offer, sequence and resource allocation improve continuously."
-  ],
+  "principles": ["EXISTING-STATE-FIRST","REUSE-FIRST","CANONICAL-INTEGRATION","CLOSED-LOOP","NO-PARALLEL-SYSTEM","MEASURE-BEFORE-CLAIM","EXPERIMENT-AND-CALIBRATE","REVENUE-OUTCOME-ORIENTED","CONTINUOUS-LEARNING"],
+  "required_preflight": ["Read current canonical state, shared team context, open obligations and relevant prior learnings before designing, changing or executing anything.","Identify the existing canonical owner, data route, queue, graph, publisher, analytics route, outcome route and learning route for the capability.","Reuse or extend existing components before creating anything new.","Create a new component only when the capability demonstrably does not already exist and register it in the existing Powerhouse architecture.","For material growth, content, sales, outbound, SEO, channel or revenue decisions, use the strongest available internal evidence plus relevant external intelligence before acting."],
+  "autonomous_operating_loop": ["OBSERVE: collect relevant internal and external evidence, channel performance, relationship context, market signals, content performance, SEO, pipeline and realized revenue outcomes.","PREDICT: create explicit forecasts or hypotheses with confidence, expected value and evidence lineage where prediction is useful.","DECIDE: select the next best action or experiment using expected commercial value, strategic fit, channel fit, contact pressure, risk and confidence.","EXECUTE: perform the supported action through the existing canonical route, including content creation, publication, outreach, follow-up, website/SEO optimization or other approved Powerhouse actions.","READBACK: verify provider, production or destination truth after execution; never infer success from intent or queue state alone.","MEASURE: capture delivery, engagement, response, opportunity, conversion, order and realized-revenue outcomes at the appropriate horizon.","CALIBRATE: compare prediction/hypothesis with observed outcome, score accuracy and value, identify false positives/negatives and update confidence or decision policy.","LEARN: write successes, failures, holds, non-response, incidents, causal evidence and prevention rules back into the canonical Powerhouse learning layer.","ADAPT: use the new evidence in the next cycle so topic, message, format, timing, channel, audience, offer, sequence and resource allocation improve continuously."],
   "commercial_objective": "Continuously improve the probability and value of qualified demand, opportunities, orders and realized revenue by using the full Powerhouse intelligence stack. Revenue optimization is an objective, not permission to bypass truth, consent, channel identity, legal, quality, safety, contact-pressure or provider gates.",
   "intelligence_rule": "Use all relevant, permitted and trustworthy intelligence methods already available in the Powerhouse, including analytics, forecasting, calibration, experimentation, relationship and company intelligence, market/competitor/white-space signals, SEO/search evidence, content performance, response behavior and realized commercial outcomes. Prefer measured causal or calibrated evidence over vanity metrics and unsupported intuition.",
   "experiment_rule": "Where uncertainty is material and risk is acceptable, formulate explicit hypotheses and controlled experiments. Record hypothesis, target segment, channel, variant, timing, expected outcome, confidence, guardrails and measurement horizon; then preserve the result and feed it into future decisions.",
   "content_and_channel_rule": "Posts, articles, blogs, email, outbound and other channel actions are not isolated publishing tasks. They are Powerhouse actions that must connect topic/opportunity selection, channel identity, audience/relationship context, prediction or hypothesis where useful, delivery readback, engagement/conversion outcomes and learning/calibration.",
   "revenue_truth_rule": "Do not equate impressions, clicks, replies, leads, pipeline or forecast revenue with realized revenue. Revenue learning may only claim realized revenue from explicit observed commercial outcomes.",
-  "prohibitions": [
-    "Do not create a parallel Brain, CRM, truth store, database, queue, calendar, analytics store, learning system, content brain or sales system when an existing canonical capability can be reused or extended.",
-    "Do not treat a new request as a standalone subsystem by default.",
-    "Do not declare done on implementation evidence alone.",
-    "Do not optimize only for impressions, engagement or activity when commercial outcomes are available.",
-    "Do not fabricate outcomes, attribution, forecasts, evidence or causal conclusions.",
-    "Do not bypass channel identity, permission, truth, quality, safety, legal, contact-pressure, dedupe or provider readback controls in pursuit of revenue."
-  ],
+  "prohibitions": ["Do not create a parallel Brain, CRM, truth store, database, queue, calendar, analytics store, learning system, content brain or sales system when an existing canonical capability can be reused or extended.","Do not treat a new request as a standalone subsystem by default.","Do not declare done on implementation evidence alone.","Do not optimize only for impressions, engagement or activity when commercial outcomes are available.","Do not fabricate outcomes, attribution, forecasts, evidence or causal conclusions.","Do not bypass channel identity, permission, truth, quality, safety, legal, contact-pressure, dedupe or provider readback controls in pursuit of revenue."],
   "integration_rule": "Every relevant change or action must integrate with the existing Powerhouse chain and, where applicable, the Brain, Supabase canonical data, intelligence, relationship graph, content, channels, sales, revenue outcomes and learning/calibration loop.",
-  "definition_of_done": [
-    "VERIFY",
-    "PRODUCTION_OR_PROVIDER_EXECUTION",
-    "READBACK",
-    "OUTCOME_CAPTURE",
-    "LEARNING_WRITEBACK",
-    "NEXT-CYCLE-REUSE"
-  ],
+  "definition_of_done": ["VERIFY","PRODUCTION_OR_PROVIDER_EXECUTION","READBACK","OUTCOME_CAPTURE","LEARNING_WRITEBACK","NEXT-CYCLE-REUSE"],
   "canonical_shorthand": "Voeg dit canoniek toe aan het Powerhouse, reuse-first, volledig geïntegreerd en closed-loop. Laat het meten, experimenteren, uitvoeren, readback doen, outcomes leren en de volgende beslissing verbeteren. Geen parallel onderdeel.",
   "shorthand_semantics": "Read existing state first, reuse canonical components, integrate end-to-end, use available intelligence, define hypotheses where useful, execute through the canonical route, verify production/provider truth, capture commercial outcomes, calibrate predictions, write learning back and reuse that learning in the next cycle.",
   "prevention": "Every existing and future agent/chat that materially changes or operates Bedrijfsgeheugen must treat Bedrijfsgeheugen Powerhouse as the single overkoepelende operating system and must extend and improve that same closed system rather than rebuilding isolated capabilities.",
-  "canonical_runtime_sources": [
-    "brain_failure_registry",
-    "powerhouse_runtime_events",
-    "powerhouse_forecasts",
-    "powerhouse_forecast_calibration",
-    "powerhouse_sales_actions",
-    "powerhouse_sales_outcomes"
-  ],
-  "linked_learning_sources": []
+  "canonical_runtime_sources": ["brain_failure_registry","powerhouse_runtime_events","powerhouse_forecasts","powerhouse_forecast_calibration","powerhouse_sales_actions","powerhouse_sales_outcomes"],
+  "linked_learning_sources": ["brain/policies/powerhouse-revenue-flywheel-v1.json"]
 }
