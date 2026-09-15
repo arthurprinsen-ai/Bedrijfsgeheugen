@@ -12,8 +12,8 @@
   "last_seen": "2026-09-15",
   "reason": "Production Release Readback received HTTP 503 from /api/connectors/readiness and therefore correctly blocked promotion.",
   "rootCause": "The public readiness endpoint was not structurally isolated from the authenticated /api/connectors/* wildcard, creating a route-collision failure mode. In parallel, Netlify production could lag the current releasable main SHA, so merged code alone was insufficient proof of production state.",
-  "failedApproach": "Treating a successful merge, a ready Netlify deploy, or the connector-readiness source code in isolation as proof that production was healthy.",
-  "fix": "Exclude /api/connectors/readiness from the authenticated wildcard; preserve the exact public readiness route; require exact production release identity; use bounded transient-5xx retries and fail closed; complete production readback before declaring live.",
+  "failedApproach": "Treating a successful merge, a ready Netlify deploy, a stale or superseded PR, or source code in isolation as proof that production was healthy and current.",
+  "fix": "Exclude /api/connectors/readiness from the authenticated wildcard; preserve the exact public readiness route; require green protected gates, exact production release identity and complete lineage; remove stale or superseded PRs from the active queue while preserving history; use bounded transient-5xx retries and fail closed; complete production readback before declaring live.",
   "preventionRule": "ISOLATE_PUBLIC_READINESS_AND_REQUIRE_EXACT_PRODUCTION_READBACK",
   "regressionTest": "tests/brain-production-release-readback-scope.test.mjs",
   "evidence": {
@@ -29,10 +29,16 @@
       "evidence-before-hypothesis",
       "merge-is-not-live",
       "ready-is-not-exact-release-identity",
+      "red-required-gates-are-never-bypassed",
+      "stale-or-superseded-prs-are-not-current-truth",
+      "preserve-release-lineage",
       "fail-closed-on-unhealthy-readback",
       "reuse-the-canonical-release-control-plane"
     ],
-    "futureBehavior": "Every matching 5xx production-readback failure must be fingerprinted, persisted as learning evidence, routed through canonical universal learning, checked against this prevention rule, and kept red until exact production readback is green.",
+    "futureBehavior": "Every matching production-release failure must be fingerprinted, persisted as learning evidence, routed through canonical universal learning, checked against this prevention rule, and kept red until protected gates are green, current main and Netlify production share the exact SHA, and live readback is green.",
+    "productionTruthPolicy": "PR_GREEN_TO_MAIN_SHA_TO_EXACT_NETLIFY_SHA_TO_LIVE_READBACK",
+    "staleOrSupersededPrPolicy": "REMOVE_FROM_ACTIVE_QUEUE_PRESERVE_LINEAGE",
+    "redGatePolicy": "NEVER_BYPASS",
     "noParallelMechanism": true,
     "noMakeDependency": true
   }
