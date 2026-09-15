@@ -48,11 +48,12 @@ export function mountWorkspace(root,contract,context={}){
  shell.dataset.activeTab='invullen';context.render?.(content,model);
  const api=Object.freeze({shell,content,model,setSaveStatus(status){const badge=shell.querySelector('.v2savestatus');if(badge){badge.dataset.saveStatus=status;badge.textContent=saveStatusLabel(status);}}});
  if(contract?.legacyCapability&&!root.dataset.functionalDelegating){
-  const modulePath=contract.id==='roadmap'?'./modules/roadmap-workspace.js':'./modules/functional-suite.js';
+  const modulePath=contract.id==='roadmap'?'./modules/roadmap-workspace.js':contract.id==='canvassen'?'./modules/canvas-workspace.js':'./modules/functional-suite.js';
   Promise.all([loadFunctionalStyles(),import(modulePath)]).then(async([,module])=>{
    root.dataset.functionalDelegating='1';
    try{
     if(contract.id==='roadmap')module.mountRoadmapWorkspace?.(root,{contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
+    else if(contract.id==='canvassen')module.mountCanvasWorkspace?.(root,{contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
     else if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
     await attachLegacyAlgorithmParity(root,contract);
    } finally{delete root.dataset.functionalDelegating;}
