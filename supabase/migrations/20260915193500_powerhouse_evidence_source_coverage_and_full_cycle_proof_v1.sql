@@ -109,8 +109,10 @@ begin
  perform intern.bg_uitkomst_eenmalig('calendly',p_event_id,'appointment',0,coalesce(p_sessie,'calendly:'||p_event_id),coalesce(p_extra,'{}'::jsonb),p_extra->>'pagina');
  perform public.powerhouse_record_evidence_source_observation_v1('calendly','calendly:'||p_event_id,p_event_id,now(),jsonb_build_object('session',p_sessie,'extra',coalesce(p_extra,'{}'::jsonb)));
 end $$;
+revoke all on function public.bg_calendly_uitkomst(text,text,jsonb) from public, anon, authenticated;
+grant execute on function public.bg_calendly_uitkomst(text,text,jsonb) to service_role;
 
-create or replace view public.powerhouse_evidence_source_coverage_v1 as
+create or replace view public.powerhouse_evidence_source_coverage_v1 with (security_invoker = true) as
 with last_seen as (
  select source_key,max(observed_at) last_observed_at,count(*) observation_count
  from public.powerhouse_evidence_source_observations group by source_key
@@ -126,7 +128,7 @@ from public.powerhouse_evidence_sources s left join last_seen l using(source_key
 revoke all on table public.powerhouse_evidence_source_coverage_v1 from public, anon, authenticated;
 grant select on table public.powerhouse_evidence_source_coverage_v1 to service_role;
 
-create or replace view public.powerhouse_full_cycle_evidence_v2 as
+create or replace view public.powerhouse_full_cycle_evidence_v2 with (security_invoker = true) as
 with outcomes as (
  select action_id,
   bool_or(outcome_type in ('reply','response')) as has_reply,
@@ -162,7 +164,7 @@ left join outcomes o on o.action_id=a.action_id;
 revoke all on table public.powerhouse_full_cycle_evidence_v2 from public, anon, authenticated;
 grant select on table public.powerhouse_full_cycle_evidence_v2 to service_role;
 
-create or replace view public.powerhouse_experiment_effect_uncertainty_v1 as
+create or replace view public.powerhouse_experiment_effect_uncertainty_v1 with (security_invoker = true) as
 select e.*,
  case when e.matured_treatment>0 and e.matured_holdout>0 then sqrt(greatest(0,e.treatment_outcome_rate*(1-e.treatment_outcome_rate)/e.matured_treatment + e.holdout_outcome_rate*(1-e.holdout_outcome_rate)/e.matured_holdout)) end as outcome_rate_diff_se,
  case when e.matured_treatment>0 and e.matured_holdout>0 then (e.treatment_outcome_rate-e.holdout_outcome_rate)-1.96*sqrt(greatest(0,e.treatment_outcome_rate*(1-e.treatment_outcome_rate)/e.matured_treatment + e.holdout_outcome_rate*(1-e.holdout_outcome_rate)/e.matured_holdout)) end as outcome_rate_diff_ci95_low,
@@ -173,7 +175,7 @@ from public.powerhouse_experiment_effect_estimates_v1 e;
 revoke all on table public.powerhouse_experiment_effect_uncertainty_v1 from public, anon, authenticated;
 grant select on table public.powerhouse_experiment_effect_uncertainty_v1 to service_role;
 
-create or replace view public.powerhouse_evidence_operating_health_v2 as
+create or replace view public.powerhouse_evidence_operating_health_v2 with (security_invoker = true) as
 select now() measured_at,
  (select count(*) from public.powerhouse_evidence_source_coverage_v1 where required and coverage_state='missing') required_sources_missing,
  (select count(*) from public.powerhouse_evidence_source_coverage_v1 where required and coverage_state='stale') required_sources_stale,
