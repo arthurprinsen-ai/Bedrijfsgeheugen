@@ -21,6 +21,24 @@ test('certifies main protection only with live protected branch and all required
   assert.deepEqual(result.missingChecks, []);
 });
 
+test('accepts the repository required test umbrella as protection for delivery checks', () => {
+  const result = certifyMainProtection({
+    branch: 'main',
+    protected: true,
+    protectionEnabled: true,
+    enforcementLevel: 'everyone',
+    requiredChecks: ['test'],
+    expectedChecks,
+    rulesets: [],
+    observedSha: 'd'.repeat(40),
+    evidenceRef: 'github:branch/main:test-umbrella',
+  });
+  assert.equal(result.mainProtectionReady, true);
+  assert.equal(result.truth_status, 'VERIFIED');
+  assert.equal(result.requiredCheckCoverage, 'test-umbrella');
+  assert.deepEqual(result.missingChecks, []);
+});
+
 test('fails closed when GitHub reports main unprotected or required checks disabled', () => {
   const result = certifyMainProtection({
     branch: 'main',
