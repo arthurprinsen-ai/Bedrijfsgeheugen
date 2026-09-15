@@ -49,11 +49,14 @@ test('roadmap move and reorder preserve all card data', async () => {
   assert.equal(reordered[1].owner,'QA');
 });
 
-test('workspace shell delegates roadmap to its specialist interactive workspace', () => {
-  assert.ok(fs.existsSync(new URL('../modules/roadmap-workspace.js', import.meta.url)));
+test('canonical workspace shell owns specialist identity without nested remounts', () => {
   const shell=fs.readFileSync(new URL('../workspace-shell.js', import.meta.url),'utf8');
-  const workspace=fs.readFileSync(new URL('../modules/roadmap-workspace.js', import.meta.url),'utf8');
-  assert.match(shell,/roadmap-workspace\.js/);
-  assert.match(workspace,/mountRoadmapBoard/);
-  assert.match(workspace,/data-functional-workspace/);
+  assert.match(shell,/functionalWorkspace/);
+  for(const name of ['roadmap-workspace.js','canvas-workspace.js','strategic-model-workspace.js']){
+    const workspace=fs.readFileSync(new URL(`../modules/${name}`, import.meta.url),'utf8');
+    assert.doesNotMatch(workspace,/mountWorkspace\s*\(/,`${name} must render inside canonical shell content`);
+  }
+  assert.match(shell,/mountRoadmapWorkspace\?\.\(content/);
+  assert.match(shell,/mountCanvasWorkspace\?\.\(content/);
+  assert.match(shell,/mountStrategicModelWorkspace\?\.\(content/);
 });
