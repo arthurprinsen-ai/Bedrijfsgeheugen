@@ -18,8 +18,9 @@ assert.equal(evidence.impact_policy.max_changed_lines_per_file,50);
 assert.equal(evidence.impact_policy.verified,true);
 assert.ok(typeof evidence.idempotency_key==='string' && evidence.idempotency_key.length>0);
 
-// Historical writer proof still carries BG168/BG167 ids, while current completion
-// truth must use the active Powerhouse/Supabase shared-memory path.
+// Historical writer proof remains immutable. Current operational completion is
+// persisted/read back through Powerhouse/Supabase; BG168/BG167 remain lineage
+// identifiers only and must not become active Make dependencies again.
 assert.equal(evidence.truth_status,'VERIFIED');
 assert.equal(evidence.status,'COMPLETED');
 assert.equal(evidence.projection_verification?.bg168_routed,true);
@@ -32,9 +33,10 @@ assert.equal(evidence.projection_verification?.bg167_execution_id,'3aaf37250fa14
 const obligations=JSON.parse(fs.readFileSync('config/outcome-obligations.json','utf8'));
 const obligation=obligations.registeredObligations.find(x=>x.id==='repository-writer-operational-certification');
 assert.ok(obligation,'repository writer operational certification obligation must be registered');
-assert.match(obligation.expected,/Powerhouse\/Supabase shared-memory/i);
-assert.match(obligation.evidencePolicy,/current shared-memory readback/i);
-assert.match(obligation.legacyProvenance,/BG168\/BG167/);
+assert.match(obligation.expected,/Powerhouse\/Supabase/);
+assert.match(obligation.evidencePolicy,/shared-memory readback/i);
+assert.match(obligation.legacyProvenance,/BG168/);
+assert.match(obligation.legacyProvenance,/BG167/);
 assert.match(obligation.legacyProvenance,/LEGACY_RETIRED_PATH/);
 
 const migration=JSON.parse(fs.readFileSync('config/repository-writer-migration.json','utf8'));
@@ -69,4 +71,4 @@ assert.match(workflow,/brain\/evidence\/writer-canary\/\*\.json/);
 assert.match(workflow,/reconcile-writer-certifications\.mjs --write/);
 assert.doesNotMatch(workflow,/git push origin HEAD:main|git push origin main/);
 
-console.log('PASS writer certification readiness distinguishes writer proof from native GitHub protection truth');
+console.log('PASS writer certification readiness distinguishes current Powerhouse readback from retired BG lineage');
