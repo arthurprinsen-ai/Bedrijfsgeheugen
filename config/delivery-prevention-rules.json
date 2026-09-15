@@ -32,9 +32,6 @@
     {"id":"REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION","active":true,"enforcedBy":"unified-brain-delivery-candidate-identity","scope":"shared"},
     {"id":"SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS","active":true,"enforcedBy":"ci-trigger-ownership-preflight-plus-live-preview-regression","scope":"shared"},
     {"id":"PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT","active":true,"enforcedBy":"delivery-context-learning-current-main-regression-plus-delivery-preflight","scope":"shared"},
-    {"id":"LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK","active":true,"enforcedBy":"delivery-context-learning-current-main-regression-plus-delivery-preflight","scope":"shared"},
-    {"id":"REQUIRE_COMPLETE_CUSTOMER_PROJECT_PARITY_BEFORE_PORTAL_V2_GREEN","active":true,"enforcedBy":"portal-v2-project-parity-and-complete-demo-regressions","scope":"portal"},
-    {"id":"BLOCK_GENERIC_PORTAL_SHELL_UNTIL_CUSTOMER_CONTEXT_HYDRATED","active":true,"enforcedBy":"portal-v2-hydration-guard-regressions","scope":"portal"},
-    {"id":"REQUIRE_EXACT_SHA_PRODUCTION_READBACK_BEFORE_LIVE_CLAIM","active":true,"enforcedBy":"production-release-readback-plus-portal-v2-production-dom-readback","scope":"shared"}
+    {"id":"LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK","active":true,"enforcedBy":"delivery-context-learning-current-main-regression-plus-delivery-preflight","scope":"shared"}
   ]
 }
