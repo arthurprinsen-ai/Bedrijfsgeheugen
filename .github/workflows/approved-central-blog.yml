@@ -4,6 +4,11 @@ on:
   schedule:
     # 07:20 UTC: after native content generation and the Powerhouse daily intelligence run.
     - cron: '20 7 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'automation/contracts/approved-blog-trigger.json'
   workflow_dispatch:
     inputs:
       slug:
@@ -49,6 +54,7 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           REQUESTED_SLUG: ${{ github.event.inputs.slug || '' }}
+          EVENT_NAME: ${{ github.event_name }}
           VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
@@ -60,7 +66,18 @@ jobs:
             exit 0
           fi
 
-          if [ -n "$REQUESTED_SLUG" ]; then
+          if [ "$EVENT_NAME" = "push" ]; then
+            RESOLVED_SLUG="$(python3 - <<'PY'
+          import json, pathlib, re
+          path = pathlib.Path('automation/contracts/approved-blog-trigger.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          slug = str(data.get('slug') or '').strip()
+          if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', slug):
+              raise SystemExit('invalid approved-blog recovery trigger slug')
+          print(slug)
+          PY
+          )"
+          elif [ -n "$REQUESTED_SLUG" ]; then
             RESOLVED_SLUG="$REQUESTED_SLUG"
           else
             RESOLVED_SLUG="$(python3 -B scripts/publish_approved_blog_v2.py --select-due-slug)"
