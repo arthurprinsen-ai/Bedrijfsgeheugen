@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = new URL('../supabase/migrations/20260915163000_powerhouse_revenue_intelligence_loop_v1.sql', import.meta.url);
-const healthPerfPath = new URL('../supabase/migrations/20260915165500_powerhouse_revenue_intelligence_health_perf_v2.sql', import.meta.url);
-const snapshotPath = new URL('../supabase/migrations/20260915170000_powerhouse_revenue_intelligence_snapshot_v1.sql', import.meta.url);
-const snapshotFastPath = new URL('../supabase/migrations/20260915170500_powerhouse_revenue_intelligence_snapshot_fast_v2.sql', import.meta.url);
+const migrationPath = new URL('../supabase/migrations/20260915143908_powerhouse_revenue_intelligence_loop_v1.sql', import.meta.url);
+const healthPerfPath = new URL('../supabase/migrations/20260915144916_powerhouse_revenue_intelligence_health_perf_v2.sql', import.meta.url);
+const snapshotPath = new URL('../supabase/migrations/20260915145138_powerhouse_revenue_intelligence_snapshot_v1.sql', import.meta.url);
+const snapshotFastPath = new URL('../supabase/migrations/20260915145749_powerhouse_revenue_intelligence_snapshot_fast_v2.sql', import.meta.url);
 const intelligencePath = new URL('../supabase/functions/powerhouse-revenue-intelligence/index.ts', import.meta.url);
 
 function read(path) { return fs.readFileSync(path, 'utf8'); }
