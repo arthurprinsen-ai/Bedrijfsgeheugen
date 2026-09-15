@@ -1,0 +1,90 @@
+name: Powerhouse Scan Production Proof
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'netlify/functions/powerhouse-scan-ingest.mjs'
+      - 'netlify/functions/portal-scans.mjs'
+      - 'supabase/functions/powerhouse-scan-ingest/index.ts'
+      - '.github/workflows/powerhouse-scan-production-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: powerhouse-scan-production-proof
+  cancel-in-progress: false
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Wait for exact production proxy contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://www.bedrijfsgeheugen.nl/api/powerhouse-scan-ingest'
+          for attempt in $(seq 1 36); do
+            body="$(curl --silent --show-error --max-time 15 "$url" || true)"
+            if jq -e '.ok == true and .contract == "powerhouse-canonical-scan-loop-v1" and .proxy_contract == "scan-public-proxy-v2"' <<<"$body" >/dev/null 2>&1; then
+              printf '%s\n' "$body" | jq .
+              exit 0
+            fi
+            echo "production proxy not current yet (attempt $attempt/36)"
+            sleep 10
+          done
+          echo 'Exact production proxy contract was not observed.' >&2
+          exit 1
+
+      - name: Prove portal scan API fails closed without identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=/tmp/portal-scan-unauth.json
+          code="$(curl --silent --show-error --max-time 15 -o "$out" -w '%{http_code}' 'https://www.bedrijfsgeheugen.nl/api/portal-scans')"
+          test "$code" = '401'
+          jq -e '.error == "UNAUTHORIZED"' "$out" >/dev/null
+          cat "$out" | jq .
+
+      - name: Prove public proxy cannot invoke privileged actions
+        shell: bash
+        run: |
+          set -euo pipefail
+          for action in history claim; do
+            out="/tmp/public-${action}.json"
+            payload="$(jq -nc --arg action "$action" '{action:$action,tenant_id:"00000000-0000-4000-8000-000000000000",submission_key:"scan-prod-security-proof"}')"
+            code="$(curl --silent --show-error --max-time 15 -o "$out" -w '%{http_code}' -H 'content-type: application/json' --data "$payload" 'https://www.bedrijfsgeheugen.nl/api/powerhouse-scan-ingest')"
+            test "$code" = '403'
+            jq -e '.error == "PRIVILEGED_ACTION_FORBIDDEN"' "$out" >/dev/null
+            cat "$out" | jq .
+          done
+
+      - name: Controlled canonical write and idempotency proof
+        if: contains(github.event.head_commit.message, '[scan-e2e]')
+        shell: bash
+        run: |
+          set -euo pipefail
+          key="scan-prod-smoke-${GITHUB_SHA:0:12}"
+          url='https://www.bedrijfsgeheugen.nl/api/powerhouse-scan-ingest'
+          payload="$(jq -nc --arg key "$key" '{submission_key:$key,canonical:"https://www.bedrijfsgeheugen.nl/frisse-blik",scan:{score:42,niveau:2,dimAvg:{strategie:2.1,data:2.3},doel:"__PRODUCTION_SMOKE__",branche:"production-smoke",omvang:"verification-only"}}')"
+          first=/tmp/scan-first.json
+          second=/tmp/scan-second.json
+          first_code="$(curl --silent --show-error --max-time 20 -o "$first" -w '%{http_code}' -H 'content-type: application/json' --data "$payload" "$url")"
+          case "$first_code" in 200|201) ;; *) echo "unexpected first status $first_code" >&2; cat "$first"; exit 1;; esac
+          jq -e '.ok == true and .stored == true and .tenant_identity_status == "unverified" and (.scan_id|length) > 0 and (.event_id|length) > 0' "$first" >/dev/null
+          second_code="$(curl --silent --show-error --max-time 20 -o "$second" -w '%{http_code}' -H 'content-type: application/json' --data "$payload" "$url")"
+          test "$second_code" = '200'
+          jq -e '.ok == true and .stored == true and .deduped == true' "$second" >/dev/null
+          test "$(jq -r '.scan_id' "$first")" = "$(jq -r '.scan_id' "$second")"
+          test "$(jq -r '.event_id' "$first")" = "$(jq -r '.event_id' "$second")"
+          echo "submission_key=$key" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "scan_id=$(jq -r '.scan_id' "$first")" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "event_id=$(jq -r '.event_id' "$first")" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo 'first_response:' >> "$GITHUB_STEP_SUMMARY"
+          cat "$first" >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo 'second_response:' >> "$GITHUB_STEP_SUMMARY"
+          cat "$second" >> "$GITHUB_STEP_SUMMARY"
