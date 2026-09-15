@@ -85,6 +85,13 @@ begin
 end;
 $function$;
 
+-- SECURITY DEFINER functions are internal automation only. Keep browser roles
+-- fail-closed; cron owner/postgres and service_role remain the only executors.
+revoke execute on function intern.bronnen_controleren() from public, anon, authenticated;
+revoke execute on function intern.bronnen_verwerken_afmaken() from public, anon, authenticated;
+grant execute on function intern.bronnen_controleren() to service_role;
+grant execute on function intern.bronnen_verwerken_afmaken() to service_role;
+
 select cron.alter_job(
   (select jobid from cron.job where jobname='bronnen-dagelijks' limit 1),
   command := 'select intern.bronnen_controleren();',
