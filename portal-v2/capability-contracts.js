@@ -33,29 +33,20 @@ const DEFINITIONS=Object.freeze({
 function contractFor(legacyCapability,item){
  const definition=DEFINITIONS[item.v2Page];
  if(!definition)throw new Error(`CAPABILITY_DEFINITION_MISSING:${legacyCapability}:${item.v2Page}`);
- return Object.freeze({
-  id:item.v2Page,
-  legacyCapability,
-  mode:definition.mode,
-  schemaVersion:1,
-  renderer:definition.renderer,
-  dataSlice:definition.dataSlice,
-  validators:freezeArray(item.fields?.length?['schema','field-rules']:['schema']),
-  calculators:freezeArray(item.calculations),
-  dependencies:freezeArray(item.dependencies),
-  completionRules:freezeArray(['server-confirmed-state','legacy-functional-surface']),
-  browserContract
- });
+ return Object.freeze({id:item.v2Page,legacyCapability,mode:definition.mode,schemaVersion:1,renderer:definition.renderer,dataSlice:definition.dataSlice,validators:freezeArray(item.fields?.length?['schema','field-rules']:['schema']),calculators:freezeArray(item.calculations),dependencies:freezeArray(item.dependencies),completionRules:freezeArray(['server-confirmed-state','legacy-functional-surface']),browserContract});
 }
 
 const LEGACY_CONTRACTS=Object.freeze(Object.entries(LEGACY_FUNCTIONAL_INVENTORY).map(([legacyCapability,item])=>contractFor(legacyCapability,item)));
 const BY_PAGE=new Map(LEGACY_CONTRACTS.map(contract=>[contract.id,contract]));
+const modelAlias=id=>Object.freeze({id,legacyCapability:'strategie-naar-maandagochtend',mode:'workspace',schemaVersion:1,renderer:'strategy-models',dataSlice:'portal.strategy',validators:Object.freeze(['schema']),calculators:Object.freeze(['legacy-strategic-model-set','bcg-position']),dependencies:Object.freeze(['portal.profile','portal.metrics','portal.market']),completionRules:Object.freeze(['server-confirmed-state','legacy-functional-surface']),browserContract});
 
 const SPECIALISTS=Object.freeze({
   koppelingen:Object.freeze({id:'koppelingen',legacyCapability:null,mode:'builder',schemaVersion:1,renderer:'connector-builder',dataSlice:'connectors',validators:Object.freeze(['connector-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['test-evidence-before-activation']),browserContract}),
-  'csrd-impact':Object.freeze({id:'csrd-impact',legacyCapability:null,mode:'cockpit',schemaVersion:1,renderer:'csrd-impact',dataSlice:'impact',validators:Object.freeze(['evidence-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence']),browserContract})
+  'csrd-impact':Object.freeze({id:'csrd-impact',legacyCapability:null,mode:'cockpit',schemaVersion:1,renderer:'csrd-impact',dataSlice:'impact',validators:Object.freeze(['evidence-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence']),browserContract}),
+  strategiemodellen:modelAlias('strategiemodellen'),
+  modellen:modelAlias('modellen')
 });
 
 export function getCapabilityContract(pageId){return BY_PAGE.get(pageId)||SPECIALISTS[pageId]||null}
 export function listFunctionalContracts(){return [...LEGACY_CONTRACTS]}
-export function isProtectedFunctionalPage(pageId){return BY_PAGE.has(pageId)}
+export function isProtectedFunctionalPage(pageId){return BY_PAGE.has(pageId)||Boolean(SPECIALISTS[pageId]?.legacyCapability)}
