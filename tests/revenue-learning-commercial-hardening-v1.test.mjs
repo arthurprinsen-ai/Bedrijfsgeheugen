@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath = 'supabase/migrations/20260915183000_powerhouse_commercial_learning_hardening_v1.sql';
+const migrationPath = 'supabase/migrations/20260915162839_powerhouse_commercial_learning_hardening_v1.sql';
 
 const requiredViews = [
   'powerhouse_counterfactual_candidate_v1',
@@ -14,7 +14,9 @@ const requiredViews = [
   'powerhouse_human_feedback_learning_v1',
   'powerhouse_revenue_truth_v1',
   'powerhouse_decision_explainability_v1',
+  'powerhouse_contact_permission_guard_v1',
   'powerhouse_capacity_guard_v1',
+  'powerhouse_north_star_v1',
 ];
 
 test('commercial learning hardening migration exists with all canonical views', async () => {
@@ -47,8 +49,8 @@ test('human feedback treats skipped or cancelled recommendations as learnable ev
   assert.match(sql, /human_feedback_state/i);
 });
 
-test('existing pricing and freshness capabilities are reused instead of duplicated', async () => {
+test('existing freshness capability is reused and pricing remains the canonical pre-existing pricing view', async () => {
   const sql = await readFile(migrationPath, 'utf8');
-  assert.match(sql, /powerhouse_offer_pricing_learning_v1/i);
   assert.match(sql, /powerhouse_source_freshness_v1/i);
+  assert.doesNotMatch(sql, /create\s+or\s+replace\s+view\s+public\.powerhouse_offer_pricing_learning_v1/i);
 });
