@@ -20,12 +20,14 @@ test('creates fail-closed action evidence maturity and NBA v5 projections', asyn
   assert.match(text, /\b5\b/);
 });
 
-test('evidence maturity is dimension-level and explicit-lineage only', async () => {
+test('evidence maturity is dimension-level, includes human feedback, and uses explicit lineage only', async () => {
   const text = await sql();
   assert.match(text, /resource_evidence_status/i);
   assert.match(text, /economics_evidence_status/i);
   assert.match(text, /outcome_evidence_status/i);
   assert.match(text, /forecast_evidence_status/i);
+  assert.match(text, /human_feedback_observations/i);
+  assert.match(text, /powerhouse_human_feedback_events/i);
   assert.match(text, /calibration_eligible/i);
   assert.match(text, /action_id/i);
   assert.match(text, /opportunity_key/i);
@@ -50,4 +52,15 @@ test('NBA v5 preserves v4 decision output and keeps insufficient evidence neutra
   assert.match(text, /insufficient_comparable_outcomes/i);
   assert.match(text, /cost_resource_efficiency_evidence/i);
   assert.match(text, /else\s+null/i);
+});
+
+test('canonical sales outcome writer never fabricates zero revenue and gates no-response evidence', async () => {
+  const text = await sql();
+  assert.match(text, /create\s+or\s+replace\s+function\s+public\.powerhouse_record_outcome/i);
+  assert.match(text, /p_revenue_eur\s+numeric\s+default\s+null/i);
+  assert.doesNotMatch(text, /coalesce\s*\(\s*p_revenue_eur\s*,\s*0\s*\)/i);
+  assert.match(text, /no_response/i);
+  assert.match(text, /observation_window_closed/i);
+  assert.match(text, /proposal.*revenue.*not allowed|revenue.*proposal.*not allowed/i);
+  assert.match(text, /revoke\s+all\s+on\s+function\s+public\.powerhouse_record_outcome/i);
 });
