@@ -40,3 +40,10 @@ test('RLS no longer accepts arbitrary anonymous tenant assertions', () => {
     .join('\n');
   assert.doesNotMatch(executableSql, /create\s+policy[\s\S]*?with\s+check\s*\(\s*true\s*\)/i, 'arbitrary inserts must not remain accepted');
 });
+
+test('RLS binds verified writes to the production membership table without assuming a missing helper RPC', () => {
+  assert.doesNotMatch(migration, /public\.mijn_organisaties\s*\(/i, 'migration must not depend on non-existent mijn_organisaties()');
+  has(migration, /exists\s*\(\s*select\s+1\s+from\s+public\.leden/i, 'verified RLS must use canonical leden membership directly');
+  has(migration, /l\.gebruiker_id\s*=\s*auth\.uid\(\)/i, 'verified RLS must bind membership to auth.uid()');
+  has(migration, /l\.organisatie_id\s*=\s*(?:scan_inzendingen|offerte_inzendingen|portaal_stand)\.organisatie_id/i, 'verified RLS must bind the row organisation to membership');
+});
