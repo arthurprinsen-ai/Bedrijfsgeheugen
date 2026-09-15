@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 const contract = JSON.parse(await readFile('make/contracts/cost-portfolio-v1.json', 'utf8'));
 const obligations = JSON.parse(await readFile('config/outcome-obligations.json', 'utf8'));
 
-test('Make cost portfolio contract is fail-closed and BRAIN governed', () => {
+test('legacy Make cost portfolio contract remains fail-closed and BRAIN governed', () => {
   assert.equal(contract.version, 'MAKE-COST-PORTFOLIO-v1');
   assert.equal(contract.delivery_contract, 'BRAIN-DELIVERY-v2');
   assert.equal(contract.candidate_limit, 1);
@@ -24,7 +24,7 @@ test('Make cost portfolio contract is fail-closed and BRAIN governed', () => {
   assert.equal(contract.mission_control_policy.shadow_insert_known_failed, true);
 });
 
-test('daily Make portfolio decision remains an outcome obligation until evidenced', () => {
+test('daily active-runtime portfolio decision remains an outcome obligation until evidenced', () => {
   const obligation = obligations.registeredObligations.find(item => item.id === 'cost-portfolio-decision-daily');
   assert.ok(obligation, 'cost-portfolio-decision-daily must be registered');
   assert.equal(obligation.domain, 'cost');
@@ -34,7 +34,9 @@ test('daily Make portfolio decision remains an outcome obligation until evidence
   assert.match(obligation.evidencePolicy, /SAFE_OPTIMIZATION_CANDIDATE/);
   assert.match(obligation.evidencePolicy, /VERIFIED_NO_ACTION/);
   assert.match(obligation.evidencePolicy, /BLOCKED_HARD_BOUNDARY/);
-  assert.match(obligation.evidencePolicy, /BG167/);
+  assert.match(obligation.evidencePolicy, /Powerhouse\/Supabase shared-memory/i);
+  assert.match(obligation.legacyProvenance, /BG159\/BG167/);
+  assert.match(obligation.legacyProvenance, /LEGACY_RETIRED_PATH/);
   assert.match(obligation.recoveryPolicy, /fingerprint/i);
   assert.match(obligation.recoveryPolicy, /duplicate/i);
 });
