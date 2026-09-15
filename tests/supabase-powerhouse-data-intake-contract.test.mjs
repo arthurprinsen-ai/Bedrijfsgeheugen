@@ -11,20 +11,22 @@ test('data intake spine is fail closed and forbids synthetic analytics', () => {
   assert.equal(cfg.rules.production_readback_required, true);
   assert.equal(cfg.rules.synthetic_analytics_forbidden, true);
   assert.equal(cfg.rules.make_dependency_forbidden, true);
+  assert.equal(cfg.rules.blocked_provider_is_not_healthy, true);
 });
 
-test('required first-party and external source classes are registered', () => {
+test('all canonical first-party and external source classes are registered', () => {
   for (const id of [
-    'website-events', 'buffer-social', 'google-analytics-4', 'google-search-console',
-    'external-signals', 'company-news', 'search-opportunities',
-    'linkedin-relationship-intelligence', 'calendly', 'social-learning',
-    'revenue-learning', 'forecast-calibration', 'growth-outcomes', 'sales-outcomes',
-    'operational-failures'
+    'website-events', 'referral-campaign-attribution', 'buffer-social', 'content-performance',
+    'google-analytics-4', 'google-search-console', 'technical-seo-web-performance',
+    'external-signals', 'external-research-feeds', 'company-news', 'search-opportunities',
+    'linkedin-relationship-intelligence', 'calendly', 'email-newsletter',
+    'pricing-positioning-learning', 'social-learning', 'revenue-learning',
+    'forecast-calibration', 'growth-outcomes', 'sales-outcomes', 'operational-failures'
   ]) assert.ok(byId.has(id), `missing source ${id}`);
 });
 
 test('scheduled critical feeds have explicit freshness and downstream lineage', () => {
-  for (const id of ['buffer-social', 'google-analytics-4', 'google-search-console', 'external-signals']) {
+  for (const id of ['buffer-social', 'google-analytics-4', 'google-search-console', 'external-signals', 'external-research-feeds']) {
     const source = byId.get(id);
     assert.equal(source.mode, 'scheduled');
     assert.ok(source.freshness_sla_hours > 0);
@@ -39,8 +41,21 @@ test('provider lag is explicit for delayed Google datasets', () => {
 });
 
 test('event-driven commercial outcomes do not become false stale failures', () => {
-  for (const id of ['growth-outcomes', 'sales-outcomes']) {
-    assert.equal(byId.get(id).mode, 'event-driven');
+  for (const id of ['growth-outcomes', 'sales-outcomes', 'pricing-positioning-learning', 'content-performance']) {
     assert.equal(byId.get(id).required_activity, false);
   }
+});
+
+test('unconnected email/newsletter provider is explicit and cannot be reported healthy', () => {
+  const source = byId.get('email-newsletter');
+  assert.equal(source.mode, 'blocked');
+  assert.equal(source.status, 'blocked');
+  assert.match(source.blocker, /no canonical/i);
+});
+
+test('external research feeds document the async two-phase schedule', () => {
+  const source = byId.get('external-research-feeds');
+  assert.match(source.schedule, /enqueue/);
+  assert.match(source.schedule, /process/);
+  assert.ok(source.providers.length >= 10);
 });
