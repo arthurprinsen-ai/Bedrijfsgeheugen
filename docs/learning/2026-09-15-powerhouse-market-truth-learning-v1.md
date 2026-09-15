@@ -1,7 +1,7 @@
 # Powerhouse Market-Truth Learning v1
 
 Date: 2026-09-15
-Status at authoring: production migrations applied and read back; GitHub PR #1614 pending final green gates and merge.
+Status: LIVE & BEWEZEN. PR #1614 is merged to `main` at `9b78f39a515287230600be8bf20aa0f6995044fc`; production migrations are applied and read back. Reverified on 2026-09-15 after later unrelated `main` changes; current `main` at reverification was `48f94b8bbcf3806d8684f31b8b69c0ba18ccd77a` and the Market-Truth runtime remained healthy within its explicit sparse-evidence boundary.
 
 ## Purpose
 
@@ -57,6 +57,8 @@ Production readback immediately after deployment showed:
 - forecast calibration samples: 1;
 - realized revenue: EUR 0.
 
+A later production reverification at 2026-09-15T19:37:58Z confirmed the same sparse-evidence truth boundary, while the overall daily run for 2026-09-15 was `completed`.
+
 This sparse state is intentional. The truth boundary is: **sparse evidence must collect more observed market truth and must not increase autonomy**.
 
 ## GA4 historical incident resolution
@@ -92,4 +94,4 @@ Existing unrelated Supabase advisory warnings are not reclassified as fixed by t
 
 ## Operational next evidence
 
-The release is functionally live but market evidence is intentionally sparse. Powerhouse must now accumulate real pre-treatment assignments, matured treatment/control observations, real action costs/human effort and real human overrides. Those observed facts may then drive calibrated learning. Until sufficient evidence exists, causal status stays insufficient and autonomy must not increase.
+The release is live and production-proven, but market evidence is intentionally sparse. Powerhouse must now accumulate real pre-treatment assignments, matured treatment/control observations, real action costs/human effort and real human overrides. Those observed facts may then drive calibrated learning. Until sufficient evidence exists, causal status stays insufficient and autonomy must not increase.
