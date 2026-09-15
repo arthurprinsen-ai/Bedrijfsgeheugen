@@ -30,32 +30,16 @@ const DEFINITIONS=Object.freeze({
   roadmap:{mode:'workspace',renderer:'execution',dataSlice:'portal.roadmap'}
 });
 
-function contractFor(legacyCapability,item){
- const definition=DEFINITIONS[item.v2Page];
- if(!definition)throw new Error(`CAPABILITY_DEFINITION_MISSING:${legacyCapability}:${item.v2Page}`);
- return Object.freeze({
-  id:item.v2Page,
-  legacyCapability,
-  mode:definition.mode,
-  schemaVersion:1,
-  renderer:definition.renderer,
-  dataSlice:definition.dataSlice,
-  validators:freezeArray(item.fields?.length?['schema','field-rules']:['schema']),
-  calculators:freezeArray(item.calculations),
-  dependencies:freezeArray(item.dependencies),
-  completionRules:freezeArray(['server-confirmed-state','legacy-functional-surface']),
-  browserContract
- });
-}
-
+function contractFor(legacyCapability,item){const definition=DEFINITIONS[item.v2Page];if(!definition)throw new Error(`CAPABILITY_DEFINITION_MISSING:${legacyCapability}:${item.v2Page}`);return Object.freeze({id:item.v2Page,legacyCapability,mode:definition.mode,schemaVersion:1,renderer:definition.renderer,dataSlice:definition.dataSlice,validators:freezeArray(item.fields?.length?['schema','field-rules']:['schema']),calculators:freezeArray(item.calculations),dependencies:freezeArray(item.dependencies),completionRules:freezeArray(['server-confirmed-state','legacy-functional-surface']),browserContract})}
 const LEGACY_CONTRACTS=Object.freeze(Object.entries(LEGACY_FUNCTIONAL_INVENTORY).map(([legacyCapability,item])=>contractFor(legacyCapability,item)));
 const BY_PAGE=new Map(LEGACY_CONTRACTS.map(contract=>[contract.id,contract]));
-
+const specialist=(id,mode,renderer,dataSlice)=>Object.freeze({id,legacyCapability:null,mode,schemaVersion:1,renderer,dataSlice,validators:Object.freeze(['canonical-state']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence','server-confirmed-state']),browserContract});
 const SPECIALISTS=Object.freeze({
-  koppelingen:Object.freeze({id:'koppelingen',legacyCapability:null,mode:'builder',schemaVersion:1,renderer:'connector-builder',dataSlice:'connectors',validators:Object.freeze(['connector-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['test-evidence-before-activation']),browserContract}),
-  'csrd-impact':Object.freeze({id:'csrd-impact',legacyCapability:null,mode:'cockpit',schemaVersion:1,renderer:'csrd-impact',dataSlice:'impact',validators:Object.freeze(['evidence-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence']),browserContract})
+  koppelingen:specialist('koppelingen','builder','connector-builder','connectors'),
+  'csrd-impact':specialist('csrd-impact','cockpit','csrd-impact','impact'),
+  strategiemodellen:specialist('strategiemodellen','workspace','strategic-models','portal.strategicModels'),
+  modellen:specialist('modellen','workspace','strategic-models','portal.strategicModels')
 });
-
 export function getCapabilityContract(pageId){return BY_PAGE.get(pageId)||SPECIALISTS[pageId]||null}
 export function listFunctionalContracts(){return [...LEGACY_CONTRACTS]}
 export function isProtectedFunctionalPage(pageId){return BY_PAGE.has(pageId)}
