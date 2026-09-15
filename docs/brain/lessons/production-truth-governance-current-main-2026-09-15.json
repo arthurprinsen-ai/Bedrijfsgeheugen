@@ -1,0 +1,25 @@
+{
+  "id": "production-truth-governance-current-main-2026-09-15",
+  "system": "Bedrijfsgeheugen Powerhouse",
+  "status": "OBSERVED_AND_CORRECTED",
+  "event_kind": "PROCESS_LEARNING",
+  "stage": "DELIVERY",
+  "reason": "The original production-truth governance PR completed green checks, but main advanced before merge. Merging the stale-base PR would have violated the new current-truth rule.",
+  "rootCause": "Concurrent main advancement after CI completion made the previously green PR no longer the newest canonical state.",
+  "failedApproach": "Treat a previously green PR as mergeable truth without re-validating it against current main.",
+  "fix": "Close the stale-base PR, replay the exact intended change on current main, rerun protected gates, then merge only the current-base replacement.",
+  "preventionRule": "REBASE_OR_REPLAY_ON_CURRENT_MAIN_AFTER_BASE_ADVANCE",
+  "evidence": {
+    "supersededPr": 1525,
+    "oldBaseSha": "762f0d75c5d10551ee6c03eedb629f97a0934f0d",
+    "advancedMainSha": "6f17c21828be46441a95580f7679e22314e30ed6",
+    "replacementBranch": "fix/production-truth-governance-learning-v2-20260915"
+  },
+  "learning": {
+    "currentMainMustBeRecheckedBeforeMerge": true,
+    "greenChecksDoNotOverrideBaseAdvance": true,
+    "stalePrMustNotBeMerged": true,
+    "preserveLineage": true,
+    "reuseCanonicalPowerhouseLearning": true
+  }
+}
