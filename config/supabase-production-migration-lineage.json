@@ -9,8 +9,8 @@
     "semanticTimestampAliasesForbidden": true,
     "closureRequiresPostMergeProductionAndGithubReadback": true
   },
-  "observedAt": "2026-09-15T15:00:00Z",
-  "latestObservedProductionMigration": "20260915154107_powerhouse_outcome_readback_health_semantics_v1",
+  "observedAt": "2026-09-15T16:10:19Z",
+  "latestObservedProductionMigration": "20260915161019_brain_transition_obligation_atomic_cas_v2",
   "reconciliationStatus": "PENDING_MAIN_READBACK",
   "reconciled": [
     {
@@ -30,11 +30,18 @@
       "replacesAlias": "20260915154000_powerhouse_outcome_readback_health_semantics_v1.sql"
     }
   ],
+  "controlPlaneFix": {
+    "production": "20260915161019_brain_transition_obligation_atomic_cas_v2.sql",
+    "reason": "The canonical obligation transition RPC reproduced a false STATE_VERSION_CONFLICT while closing this lineage obligation. The fix replaces the composite pre-read CAS with one atomic UPDATE keyed by obligation id and expected version.",
+    "tddRegression": "tests/supabase-brain-transition-obligation-atomic-cas-v2.test.mjs",
+    "productionApplied": true,
+    "githubMainReadbackRequired": true
+  },
   "obligation": {
     "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
     "changeId": "repo-production-migration-lineage-reconciliation-v1",
     "productionStateBeforeClosure": "OPEN",
     "closureState": "FULFILLED",
-    "closureCondition": "All production entries above exist on GitHub main at their exact production filenames, all aliases are absent, required CI is green, and Supabase plus GitHub are read back after merge."
+    "closureCondition": "All production entries above, including the control-plane CAS fix, exist on GitHub main at their exact production filenames, all aliases are absent, required CI is green, and Supabase plus GitHub are read back after merge."
   }
 }
