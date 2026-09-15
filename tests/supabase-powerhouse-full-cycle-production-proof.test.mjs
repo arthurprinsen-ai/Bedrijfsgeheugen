@@ -25,8 +25,8 @@ test('proof enforces canonical Buffer, Composio-GA4 and Gmail evidence', () => {
   has(/bg_ga4_sync/i, 'canonical GA4 sync is required');
   has(/bg_ga4_csv_batches/i, 'GA4 stored batch evidence is required');
   has(/gmail-outbound-replies/i, 'Gmail provider attestation is required');
-  assert.doesNotMatch(migration, /windsor/i, 'Windsor must not enter the canonical proof');
-  assert.doesNotMatch(migration, /\bmake\b/i, 'Make must not enter the canonical proof');
+  assert.doesNotMatch(migration, /windsor/i, 'non-canonical analytics providers must not enter the proof');
+  assert.doesNotMatch(migration, /\bmake\b/i, 'retired automation must not enter the proof');
 });
 
 test('proof is fail-closed and persists one deterministic verdict', () => {
@@ -46,8 +46,10 @@ test('proof is fail-closed and persists one deterministic verdict', () => {
 test('terminal publication reconciliation is evidence-bound and never fabricates delivery', () => {
   has(/powerhouse_reconcile_terminal_publication_state/i, 'must add terminal publication reconciliation');
   has(/content_publication_obligations/i, 'must rely on canonical publication obligation');
-  has(/SKIPPED/i, 'only explicit terminal skipped evidence may reconcile an undelivered publish decision');
-  has(/delivery_ref\s+is\s+null/i, 'must not rewrite delivered decisions');
+  has(/LIVE_PROVEN/i, 'live-proven obligation may reconcile a stale publish decision');
+  has(/SKIPPED/i, 'explicit terminal skipped evidence may reconcile an undelivered publish decision');
+  has(/delivery_ref\s+is\s+null/i, 'must not rewrite already delivered decisions');
+  has(/state\s*=\s*'published'/i, 'live-proven publication must reconcile to published');
   has(/decision\s*=\s*'hold'/i, 'terminal skipped publication becomes a hold, not a fake publish');
 });
 
