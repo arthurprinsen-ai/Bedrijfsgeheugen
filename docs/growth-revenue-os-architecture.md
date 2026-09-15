@@ -149,3 +149,22 @@ Bij iedere dagelijkse run gelden deze invarianten:
 
 ## 20. Operationele waarheid
 De operationele waarheid wordt bepaald door execution evidence, niet door agenttekst. Voor een contentdag moeten daarom minimaal terugleesbaar zijn: zeven kanaalbeslissingen, artefacten voor gekozen `publish`-kanalen, pre-publish gate-uitkomst, provider-/writer-deliveryref, provider/live readback, meetgegevens en opvolgende learning/calibratie. Alleen die gesloten keten rechtvaardigt de status `completed`.
+
+## 21. Release-learning en regressiepreventie
+**Contract-ID:** `release-learning-closed-loop-v1`.
+
+Iedere releasefout levert blijvende preventie op in dezelfde canonieke keten. Minimaal gelden de volgende regels:
+- Branch drift tijdens een actieve reparatie wordt nooit opgelost met een geforceerde ref-update. De nieuwste head wordt eerst opnieuw gelezen en geïntegreerd; geen tussentijdse wijziging mag verloren gaan.
+- Conflict-resolutie wordt inhoudelijk gecontroleerd op verdwenen hard gates. Een merge die technisch mergeable is maar een releasecontract verliest, geldt als defect en krijgt een regressietest vóór verdere promotie.
+- Een lokale exact-candidate fallback bewijst alleen bereikbaarheid wanneer clean URLs werken. Hij mag nooit websitekwaliteitsgates vervangen of verlagen.
+- De Required website-lane blijft volledige public-page visibility controleren, inclusief CLS. `CLS > 0.100` op enig gecontroleerd viewport blijft fail-closed en moet exacte route + viewport als evidence rapporteren.
+- Een eerdere blocker die groen wordt, beëindigt de diagnose niet automatisch. Daarna ontstane of zichtbaar geworden fouten worden als nieuwe root-cause-obligation behandeld en niet als reden om checks te omzeilen.
+- Een release mag pas worden gemerged nadat de **laatste** candidate SHA de relevante Required-lanes groen heeft doorlopen. Groen bewijs van een oudere SHA is ongeldig voor completion.
+
+### Incident learning — PR #1452
+Tijdens de integratie van de unified content calendar werden drie aparte failure classes zichtbaar:
+1. branch drift maakte een eerder voorbereide ref-update terecht non-fast-forward;
+2. een conflict-resolutie verloor tijdelijk de `requires_preview`-scheiding in de website-lane;
+3. nadat clean-URL fallback en routechecks groen waren, vond de volledige visibility-gate negen echte CLS-overschrijdingen op phone/tablet (`0.111–0.154`, limiet `0.100`).
+
+De structurele learning is daarom: **fix nooit alleen de eerst zichtbare blocker; behoud alle downstream kwaliteitsgates en laat de volledige keten opnieuw beslissen op de nieuwste SHA.**
