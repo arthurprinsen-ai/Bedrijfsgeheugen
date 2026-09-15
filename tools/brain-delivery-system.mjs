@@ -9,8 +9,27 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
-  '.github/workflows/approved-central-blog.yml': 'automation'
+  '.github/workflows/approved-central-blog.yml': 'automation',
+  '.github/workflows/powerhouse-assurance.yml': 'backend'
 });
+
+const ASSURANCE_BACKEND_PATHS = Object.freeze([
+  'powerhouse/assurance/',
+  'scripts/powerhouse-assurance-check.mjs',
+  'tests/powerhouse-assurance'
+]);
+const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
+  'docs/powerhouse/'
+]);
+
+function scopedLaneForPath(path) {
+  if (SCOPED_WORKFLOW_LANES[path]) return SCOPED_WORKFLOW_LANES[path];
+  if (matches(path, ASSURANCE_BACKEND_PATHS)) return 'backend';
+  return null;
+}
+function isScopedNonExecutable(path) {
+  return matches(path, ASSURANCE_NON_EXECUTABLE_PATHS);
+}
 
 export function deriveConflictContracts(paths = [], policy = {}) {
   const changed = unique(paths.map(value => String(value).trim()).filter(Boolean));
@@ -37,15 +56,15 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   const sha = String(headSha ?? '').trim();
   if (!/^[a-f0-9]{12,40}$/i.test(sha)) throw new TypeError('valid headSha is required');
   const paths = unique(changedPaths.map(value => String(value).trim()).filter(Boolean)).sort();
-  const nonExecutableShared = paths.filter(path => matches(path, policy.nonExecutableSharedPaths || []));
-  const scopedWorkflowPaths = paths.filter(path => SCOPED_WORKFLOW_LANES[path]);
-  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, policy.nonExecutableSharedPaths || []) && !SCOPED_WORKFLOW_LANES[path]);
-  const ignored = paths.filter(path => matches(path, policy.ignoredPaths));
+  const nonExecutableShared = paths.filter(path => matches(path, policy.nonExecutableSharedPaths || []) || isScopedNonExecutable(path));
+  const scopedLanePaths = paths.filter(path => scopedLaneForPath(path));
+  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, policy.nonExecutableSharedPaths || []) && !scopedLaneForPath(path) && !isScopedNonExecutable(path));
+  const ignored = paths.filter(path => matches(path, policy.ignoredPaths) || isScopedNonExecutable(path));
   const lanes = policy.lanes
-    .filter(lane => sharedExecutable || scopedWorkflowPaths.some(path => SCOPED_WORKFLOW_LANES[path] === lane.id) || paths.some(path => !matches(path, policy.nonExecutableSharedPaths || []) && !SCOPED_WORKFLOW_LANES[path] && matches(path, lane.paths)))
+    .filter(lane => sharedExecutable || scopedLanePaths.some(path => scopedLaneForPath(path) === lane.id) || paths.some(path => !matches(path, policy.nonExecutableSharedPaths || []) && !scopedLaneForPath(path) && !isScopedNonExecutable(path) && matches(path, lane.paths)))
     .map(lane => Object.freeze({ id: lane.id, laneId: `${lane.id}|${sha.slice(0, 12)}`, candidateIdentity: sha, testedIdentity: sha, owner: lane.owner, requiredContracts: Object.freeze([...lane.requiredContracts]), independentPromotion: policy.version === 'BRAIN-DELIVERY-v2' && policy.integration?.independentPromotion === true }))
     .sort((left, right) => left.id.localeCompare(right.id));
-  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || SCOPED_WORKFLOW_LANES[path]);
+  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || scopedLaneForPath(path) || isScopedNonExecutable(path));
   const unclassified = paths.filter(path => !classified.includes(path));
   if (unclassified.length) throw new Error(`unclassified delivery path: ${unclassified.join(', ')}`);
   const noLanePaths = unique([...ignored, ...nonExecutableShared]);
