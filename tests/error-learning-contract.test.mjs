@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {
   classifyRelease,
   validateIncidentLearning,
@@ -14,6 +15,9 @@ function test(name, fn) {
     throw error;
   }
 }
+
+const preventionRules = JSON.parse(fs.readFileSync(new URL('../config/delivery-prevention-rules.json', import.meta.url), 'utf8'));
+const failureLessons = JSON.parse(fs.readFileSync(new URL('../docs/brain/delivery-failure-lessons.json', import.meta.url), 'utf8'));
 
 test('deploy ready without production readback is never live', () => {
   assert.equal(
@@ -67,6 +71,22 @@ test('material incident must contain the complete learning loop', () => {
     ok: false,
     missing: ['root_cause', 'regression_test', 'prevention_rule'],
   });
+});
+
+test('canonical Brain keeps exact production identity prevention active', () => {
+  const rule = preventionRules.rules.find(
+    (candidate) => candidate.id === 'REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN',
+  );
+  assert.ok(rule, 'canonical prevention rule is missing');
+  assert.equal(rule.active, true);
+  assert.match(rule.enforcedBy, /production-readback/i);
+
+  const lesson = failureLessons.lessons.find(
+    (candidate) => candidate.preventionRule === 'REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN',
+  );
+  assert.ok(lesson, 'canonical failure lesson is missing');
+  assert.equal(lesson.status, 'PROVEN');
+  assert.match(lesson.fix, /independent production readback/i);
 });
 
 console.log('error-learning-contract: all tests passed');
