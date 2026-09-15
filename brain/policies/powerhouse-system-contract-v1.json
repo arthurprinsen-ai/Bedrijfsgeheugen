@@ -6,17 +6,7 @@
   "canonical_name": "Bedrijfsgeheugen Powerhouse",
   "formal_name": "Bedrijfsgeheugen Growth & Revenue Operating System",
   "scope": "All current and future Bedrijfsgeheugen capabilities, agents, workflows, channels, data, intelligence, content, sales, revenue, analytics, learning and delivery components, across all existing and future chats and agents that materially change or operate Bedrijfsgeheugen.",
-  "principles": [
-    "EXISTING-STATE-FIRST",
-    "REUSE-FIRST",
-    "CANONICAL-INTEGRATION",
-    "CLOSED-LOOP",
-    "NO-PARALLEL-SYSTEM",
-    "MEASURE-BEFORE-CLAIM",
-    "EXPERIMENT-AND-CALIBRATE",
-    "REVENUE-OUTCOME-ORIENTED",
-    "CONTINUOUS-LEARNING"
-  ],
+  "principles": ["EXISTING-STATE-FIRST","REUSE-FIRST","CANONICAL-INTEGRATION","CLOSED-LOOP","NO-PARALLEL-SYSTEM","MEASURE-BEFORE-CLAIM","EXPERIMENT-AND-CALIBRATE","REVENUE-OUTCOME-ORIENTED","CONTINUOUS-LEARNING"],
   "required_preflight": [
     "Read current canonical state, shared team context, open obligations and relevant prior learnings before designing, changing or executing anything.",
     "Identify the existing canonical owner, data route, queue, graph, publisher, analytics route, outcome route and learning route for the capability.",
@@ -49,24 +39,10 @@
     "Do not bypass channel identity, permission, truth, quality, safety, legal, contact-pressure, dedupe or provider readback controls in pursuit of revenue."
   ],
   "integration_rule": "Every relevant change or action must integrate with the existing Powerhouse chain and, where applicable, the Brain, Supabase canonical data, intelligence, relationship graph, content, channels, sales, revenue outcomes and learning/calibration loop.",
-  "definition_of_done": [
-    "VERIFY",
-    "PRODUCTION_OR_PROVIDER_EXECUTION",
-    "READBACK",
-    "OUTCOME_CAPTURE",
-    "LEARNING_WRITEBACK",
-    "NEXT-CYCLE-REUSE"
-  ],
+  "definition_of_done": ["VERIFY","PRODUCTION_OR_PROVIDER_EXECUTION","READBACK","OUTCOME_CAPTURE","LEARNING_WRITEBACK","NEXT-CYCLE-REUSE"],
   "canonical_shorthand": "Voeg dit canoniek toe aan het Powerhouse, reuse-first, volledig geïntegreerd en closed-loop. Laat het meten, experimenteren, uitvoeren, readback doen, outcomes leren en de volgende beslissing verbeteren. Geen parallel onderdeel.",
   "shorthand_semantics": "Read existing state first, reuse canonical components, integrate end-to-end, use available intelligence, define hypotheses where useful, execute through the canonical route, verify production/provider truth, capture commercial outcomes, calibrate predictions, write learning back and reuse that learning in the next cycle.",
   "prevention": "Every existing and future agent/chat that materially changes or operates Bedrijfsgeheugen must treat Bedrijfsgeheugen Powerhouse as the single overkoepelende operating system and must extend and improve that same closed system rather than rebuilding isolated capabilities.",
-  "canonical_runtime_sources": [
-    "brain_failure_registry",
-    "powerhouse_runtime_events",
-    "powerhouse_forecasts",
-    "powerhouse_forecast_calibration",
-    "powerhouse_sales_actions",
-    "powerhouse_sales_outcomes"
-  ],
-  "linked_learning_sources": []
+  "canonical_runtime_sources": ["brain_failure_registry","powerhouse_runtime_events","powerhouse_forecasts","powerhouse_forecast_calibration","powerhouse_sales_actions","powerhouse_sales_outcomes"],
+  "linked_learning_sources": ["brain/policies/powerhouse-revenue-flywheel-v1.json"]
 }
