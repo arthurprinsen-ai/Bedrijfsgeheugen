@@ -2,6 +2,13 @@ const POLICIES = Object.freeze({
   'approved-central-blog': [/^blog\/.+/, /^sitemap\.xml$/],
   'blog-bijwerken': [/^blog\/.+/, /^sitemap\.xml$/],
   'menu-balk-fix': [/^[^/]+\.html$/, /^brain\/evidence\/writer-canary\/menu-balk-fix-\d+-\d+\.json$/],
+  'native-daily-blog': [
+    /^blog\/index\.html$/,
+    /^blog\/[^/]+\/index\.html$/,
+    /^blog\/rss\.xml$/,
+    /^data\/content-publication-ledger\.json$/,
+    /^sitemap\.xml$/,
+  ],
   'paginacontrole': [/^[^/]+\.html$/, /^seo-status\.json$/, /^sitemap\.xml$/, /^netlify\.toml$/],
   'regelgeving-bijwerken': [/^data\/regelgeving\.json$/],
   'seo-controle': [/^sitemap\.xml$/, /^netlify\.toml$/],
