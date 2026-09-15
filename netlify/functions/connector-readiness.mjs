@@ -1,8 +1,8 @@
-import {createConnectorRuntime,createEnvironmentConnectorProviders} from '../../platform/connectors/connector-runtime.mjs';
+import {connectorReadinessFromEnv} from '../../platform/connectors/connector-readiness-state.mjs';
 
 export default async () => {
-  const engine = createConnectorRuntime({providers:createEnvironmentConnectorProviders()});
-  return new Response(JSON.stringify(engine.readiness), {
+  const readiness=connectorReadinessFromEnv(key=>Netlify.env.get(key));
+  return new Response(JSON.stringify(readiness), {
     status: 200,
     headers: {
       'content-type': 'application/json; charset=utf-8',
