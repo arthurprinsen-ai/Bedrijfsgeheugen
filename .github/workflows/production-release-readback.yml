@@ -40,6 +40,7 @@ jobs:
 
           const readbackControlPlanePaths=new Set([
             '.github/workflows/production-release-readback.yml',
+            'brain/contracts/production-readback-v1.json',
             'tests/brain-production-release-readback-scope.test.mjs',
             'tools/site-shell/verify-production-release.mjs',
           ]);
@@ -167,6 +168,40 @@ jobs:
           --deployment-required 'false'
           --routes-json '[]'
           --routes-ok 'true'
+      - name: Capture production readback failure as Brain learning evidence
+        if: failure()
+        env:
+          HEAD_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { createObservedFailure, routeObservedFailureToLearning } from './tools/delivery-learning.mjs';
+          let knownLessons=[];
+          try {
+            const lessonsDoc=JSON.parse(await readFile('docs/brain/delivery-failure-lessons.json','utf8'));
+            knownLessons=Array.isArray(lessonsDoc)?lessonsDoc:(Array.isArray(lessonsDoc.lessons)?lessonsDoc.lessons:[]);
+          } catch {}
+          const reason='Production release readback failed after bounded verification; contract fingerprint production-readback-http-5xx-v1. Inspect exact failed step before root-cause classification.';
+          const observedFailure=createObservedFailure({
+            stage: 'PRODUCTION',
+            reason,
+            component: 'production-readback',
+            headSha: process.env.HEAD_SHA,
+            evidenceRef: `github-run:${process.env.RUN_ID}`,
+          });
+          const route=routeObservedFailureToLearning({observedFailure,knownLessons,existingCandidates:[]});
+          const evidence={
+            contractFingerprint:'production-readback-http-5xx-v1',
+            rootCausePolicy:'evidence-before-hypothesis',
+            preventionRule:'bounded-retry-then-fail-closed',
+            regressionTest:'tests/brain-production-release-readback-scope.test.mjs',
+            observedFailure,
+          };
+          await writeFile('.artifacts/delivery-failure-production-readback.json',`${JSON.stringify(evidence,null,2)}\n`);
+          await writeFile('.artifacts/delivery-learning-route-production-readback.json',`${JSON.stringify(route,null,2)}\n`);
+          NODE
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -176,4 +211,4 @@ jobs:
           retention-days: 30
       - name: Explain production readback failure
         if: failure()
-        run: echo "::error::Production release readback failed for ${{ github.sha }}; inspect the failed step and uploaded readback artifact before retrying or promoting."
+        run: echo "::error::Production release readback failed for ${{ github.sha }}; inspect the failed step and uploaded readback learning artifact before retrying or promoting."
