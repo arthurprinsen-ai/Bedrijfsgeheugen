@@ -27,7 +27,8 @@ test('experiment execution is evidence driven', () => {
 
 test('modeled opportunity economics stay distinct from declared and realized revenue', () => {
   has(migration,/expected_revenue_value/i,'modeled economics must use expected_revenue_value');
-  has(migration,/revenue_potential/i,'forecast revenue potential must be reused');
+  has(migration,/powerhouse_offer_pricing_learning_v1/i,'observed offer/pricing evidence must be reused');
+  has(migration,/powerhouse_forecasts/i,'forecast probability/confidence must be reused');
   assert.doesNotMatch(migration,/set\s+expected_value_eur\s*=/i,'declared expected_value_eur must not be overwritten');
   has(migration,/modeled value is not realized revenue/i,'economic truth boundary is required');
 });
@@ -40,7 +41,8 @@ test('mature forecast calibration reuses the existing calibrator', () => {
 
 test('closure is scheduled and writes canonical learning evidence', () => {
   has(migration,/powerhouse-execution-learning-closure-v1/i,'closure contract marker is required');
-  has(migration,/32 \* \* \* \*/i,'hourly schedule at minute 32 is required');
+  has(migration,/47 \* \* \* \*/i,'closure must replace the existing hourly owner at minute 47');
+  has(migration,/powerhouse-execution-guard-hourly/i,'old direct scheduler must be replaced');
   has(migration,/powerhouse_runtime_events/i,'runtime evidence is required');
   has(migration,/powerhouse_sales_learnings/i,'learning writeback is required');
   has(migration,/REVOKE EXECUTE ON FUNCTION public\.powerhouse_execution_learning_closure_v1/i,'browser execution must be revoked');
@@ -51,5 +53,5 @@ test('Powerhouse policy makes closure canonical', () => {
   has(policy,/"version":"v1\.4"/i,'policy must advance to v1.4');
   has(policy,/"execution_learning_closure"/i,'closure capability must be canonical');
   has(policy,/"powerhouse-execution-learning-closure-v1"/i,'closure contract must be recorded');
-  has(policy,/"32 \* \* \* \*"/i,'policy must record schedule');
+  has(policy,/"47 \* \* \* \*"/i,'policy must record the canonical scheduler slot');
 });
