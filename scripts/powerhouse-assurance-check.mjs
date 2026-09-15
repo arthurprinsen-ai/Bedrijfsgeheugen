@@ -11,11 +11,13 @@ const REQUIRED_ACTIVE_FIELDS = [
   'observability_contract', 'recovery_contract', 'cost_capacity_contract',
   'test_contract', 'evidence_contract', 'learning_contract', 'last_verified_at',
 ];
+const NONEMPTY_ARRAY_FIELDS = new Set(['code_paths', 'runtime_surfaces', 'docs', 'test_contract']);
 const REQUIRED_PARITY_FIELDS = [
   'legacy_key', 'canonical_id', 'status', 'v2_surface', 'authority', 'writeback', 'tests', 'evidence',
 ];
 
-const empty = (value) => value == null || value === '' || (Array.isArray(value) && value.length === 0);
+const missingScalar = (value) => value == null || value === '';
+const missingField = (field, value) => missingScalar(value) || (NONEMPTY_ARRAY_FIELDS.has(field) && Array.isArray(value) && value.length === 0);
 
 export function validateComponentRegistry(registry = {}) {
   const components = Array.isArray(registry.components) ? registry.components : [];
@@ -31,15 +33,15 @@ export function validateComponentRegistry(registry = {}) {
     }
     if (ACTIVE_LIFECYCLES.has(component?.lifecycle)) {
       for (const field of REQUIRED_ACTIVE_FIELDS) {
-        if (empty(component?.[field])) gaps.push(`${label}: missing ${field}`);
+        if (missingField(field, component?.[field])) gaps.push(`${label}: missing ${field}`);
       }
       const recovery = component?.recovery_contract;
-      if (recovery?.critical === true && (recovery.status !== 'tested' || empty(recovery.evidence))) {
+      if (recovery?.critical === true && (recovery.status !== 'tested' || missingScalar(recovery.evidence))) {
         gaps.push(`${label}: critical component requires tested recovery evidence`);
       }
     }
     if (component?.lifecycle === 'deprecated' || component?.lifecycle === 'superseded') {
-      if (empty(component?.retirement)) gaps.push(`${label}: missing retirement/migration evidence`);
+      if (missingScalar(component?.retirement)) gaps.push(`${label}: missing retirement/migration evidence`);
     }
   }
   if (components.length === 0) gaps.push('registry: no components registered');
@@ -53,14 +55,15 @@ export function validatePortalParity(parity = {}) {
   for (const [index, capability] of capabilities.entries()) {
     const label = capability?.legacy_key || `capability[${index}]`;
     for (const field of REQUIRED_PARITY_FIELDS) {
-      if (empty(capability?.[field])) gaps.push(`${label}: missing ${field}`);
+      const value = capability?.[field];
+      if (missingScalar(value) || (Array.isArray(value) && value.length === 0)) gaps.push(`${label}: missing ${field}`);
     }
     if (!['verified', 'retired'].includes(capability?.status)) gaps.push(`${label}: parity status must be verified or retired`);
     if (capability?.legacy_key) {
       if (seen.has(capability.legacy_key)) gaps.push(`${label}: duplicate legacy_key`);
       seen.add(capability.legacy_key);
     }
-    if (capability?.status === 'retired' && empty(capability?.retirement)) gaps.push(`${label}: retired capability requires retirement evidence`);
+    if (capability?.status === 'retired' && missingScalar(capability?.retirement)) gaps.push(`${label}: retired capability requires retirement evidence`);
   }
   return { ok: gaps.length === 0, gaps, count: capabilities.length };
 }
