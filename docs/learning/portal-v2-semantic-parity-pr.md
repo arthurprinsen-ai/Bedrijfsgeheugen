@@ -1,0 +1,1 @@
+Release scope: restore missing executable Canvassen runtime referenced by assurance, restore BCG as a semantic strategic-model workspace, keep all writeback on canonical tenant-scoped Powerhouse domain state, and add fail-closed regression contracts. No parallel database, brain, scoring engine or learning system.
