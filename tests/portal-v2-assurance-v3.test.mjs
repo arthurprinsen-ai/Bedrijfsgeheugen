@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-const manifest=JSON.parse(await readFile(new URL('../powerhouse/assurance/portal-v2-parity.json',import.meta.url),'utf8'));
+const manifest=JSON.parse(await readFile(new URL('../portal-v2/assurance/portal-v2-parity.json',import.meta.url),'utf8'));
 
 test('Portal V2 assurance covers all protected legacy capabilities',()=>{
  assert.equal(manifest.capabilities.length,24);
