@@ -8,8 +8,8 @@ const sql = fs.existsSync(fixUrl) ? fs.readFileSync(fixUrl, 'utf8') : '';
 test('full-cycle health status production regression is fixed by a follow-up migration', () => {
   assert.ok(fs.existsSync(fixUrl), 'missing follow-up migration for bg_gezondheid status constraint');
   assert.match(sql, /create or replace function public\.powerhouse_full_cycle_production_proof/i);
-  assert.match(sql, /case when v_healthy then 'ok' else 'fout' end/i);
-  assert.doesNotMatch(sql, /case when v_healthy then 'OK' else 'FOUT' end/i);
+  assert.match(sql, /case when v_healthy then 'ok' else 'fout' end/);
+  assert.doesNotMatch(sql, /case when v_healthy then 'OK' else 'FOUT' end/);
 });
 
 test('fix preserves fail-closed proof and existing canonical writeback', () => {
