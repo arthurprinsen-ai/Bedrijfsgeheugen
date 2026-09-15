@@ -251,10 +251,10 @@ begin
 end;
 $$;
 
-revoke all on function public.powerhouse_assign_experiment_v1(text,text,text,jsonb,timestamptz,text,text,text) from public, anon, authenticated;
-revoke all on function public.powerhouse_link_experiment_action_v1(uuid,uuid) from public, anon, authenticated;
-revoke all on function public.powerhouse_record_action_economics_v1(text,uuid,numeric,numeric,numeric,jsonb,timestamptz) from public, anon, authenticated;
-revoke all on function public.powerhouse_record_human_feedback_v1(text,text,uuid,text,text,text,text,text,text,jsonb,timestamptz) from public, anon, authenticated;
+revoke execute on function public.powerhouse_assign_experiment_v1(text,text,text,jsonb,timestamptz,text,text,text) from public, anon, authenticated;
+revoke execute on function public.powerhouse_link_experiment_action_v1(uuid,uuid) from public, anon, authenticated;
+revoke execute on function public.powerhouse_record_action_economics_v1(text,uuid,numeric,numeric,numeric,jsonb,timestamptz) from public, anon, authenticated;
+revoke execute on function public.powerhouse_record_human_feedback_v1(text,text,uuid,text,text,text,text,text,text,jsonb,timestamptz) from public, anon, authenticated;
 grant execute on function public.powerhouse_assign_experiment_v1(text,text,text,jsonb,timestamptz,text,text,text) to service_role;
 grant execute on function public.powerhouse_link_experiment_action_v1(uuid,uuid) to service_role;
 grant execute on function public.powerhouse_record_action_economics_v1(text,uuid,numeric,numeric,numeric,jsonb,timestamptz) to service_role;
@@ -432,5 +432,5 @@ begin
 end;
 $$;
 
-revoke all on function public.powerhouse_market_truth_daily_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_market_truth_daily_v1(date) from public, anon, authenticated;
 grant execute on function public.powerhouse_market_truth_daily_v1(date) to service_role;
