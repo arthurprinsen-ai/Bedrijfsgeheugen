@@ -4,7 +4,7 @@
   "fingerprint": "powerhouse|execution|finish-live-verify-learn",
   "status": "ACTIVE",
   "scope": "all current and future material agent/chat/workflow tasks in Bedrijfsgeheugen Powerhouse",
-  "purpose": "Prevent work from stopping at analysis, code, proposal, ready-for-deploy, or an unverified success claim. Require completion through production/live verification and canonical learning writeback whenever technically possible.",
+  "purpose": "Prevent work from stopping at analysis, code, proposal, ready-for-deploy, or an unverified success claim. Require completion through production/live verification, canonical learning writeback and reusable agent handoff whenever technically possible.",
   "invariants": [
     "EXISTING_STATE_FIRST",
     "REUSE_FIRST",
@@ -13,7 +13,8 @@
     "NO_LOST_OBLIGATION",
     "RED_MEANS_KEEP_WORKING",
     "GREEN_MEANS_OUTCOME_VERIFIED",
-    "NO_LIVE_CLAIM_WITHOUT_READBACK"
+    "NO_LIVE_CLAIM_WITHOUT_READBACK",
+    "NO_DONE_WITHOUT_AGENT_CONTINUITY"
   ],
   "required_execution_loop": [
     "read_current_canonical_state_and_shared_context",
@@ -24,8 +25,10 @@
     "deploy_or_publish_to_the_real_target_when_authorized_and_supported",
     "perform_exact_production_or_provider_readback",
     "verify_intended_business_or_operational_outcome",
+    "register_or_update_the_capability_in_existing_powerhouse_architecture_when_applicable",
+    "persist_how_the_capability_works_owner_dependencies_runtime_deploy_readback_rollback_learning_route_and_open_gaps",
     "write_incident_or_change_root_cause_fix_regression_outcome_and_prevention_to_existing_learning_lineage",
-    "refresh_shared_context_so_following_agents_receive_the_new_learning"
+    "refresh_shared_context_so_following_agents_receive_the_new_learning_and_operating_handoff"
   ],
   "terminal_states": [
     "PRODUCTION_GREEN",
@@ -37,7 +40,8 @@
     "live_requires_exact_readback": true,
     "deployed_requires_provider_or_runtime_evidence": true,
     "borged_requires_canonical_persistent_write": true,
-    "learned_requires_learning_lineage_writeback_and_shared_context_refresh": true
+    "learned_requires_learning_lineage_writeback_and_shared_context_refresh": true,
+    "complete_requires_agent_handoff_and_canonical_discoverability": true
   },
   "learning_writeback_minimum": [
     "incident_or_change",
@@ -47,8 +51,11 @@
     "production_or_provider_outcome",
     "prevention_rule",
     "evidence_identity",
+    "capability_handoff_or_current_state_reference",
     "open_obligation_if_any"
   ],
-  "prevention": "No current or future Powerhouse agent may stop at advice, local change, PR-ready, deploy-ready, or an unverified success claim when the next safe execution step is available. Work continues through live outcome verification and canonical learning writeback.",
-  "linked_learning_sources": []
+  "prevention": "No current or future Powerhouse agent may stop at advice, local change, PR-ready, deploy-ready, an unverified success claim, or undocumented implementation knowledge when the next safe execution or handoff step is available. Work continues through live outcome verification, canonical registration, reusable agent handoff and learning writeback.",
+  "linked_learning_sources": [
+    "brain/policies/powerhouse-agent-continuity-v1.json"
+  ]
 }
