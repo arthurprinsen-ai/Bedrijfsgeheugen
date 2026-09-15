@@ -73,7 +73,7 @@ alter view public.powerhouse_calibration_actionability_v1 set (security_invoker=
 revoke all on public.powerhouse_calibration_actionability_v1 from public, anon, authenticated;
 grant select on public.powerhouse_calibration_actionability_v1 to service_role;
 
-create or replace function public.powerhouse_guard_self_improvement_learning_v1() returns trigger language plpgsql security definer set search_path=public as $$
+create or replace function public.powerhouse_guard_self_improvement_learning_v1() returns trigger language plpgsql security definer set search_path = public, pg_catalog as $$
 declare v_actionable boolean;
 begin
   if new.fingerprint='autonomous-growth-revenue-self-improvement-v1' then
