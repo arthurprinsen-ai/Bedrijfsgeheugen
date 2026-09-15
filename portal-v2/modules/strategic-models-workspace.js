@@ -7,12 +7,16 @@ function renderModel(model){
  const quadrants=model.quadrants?`<div class="bcg-grid">${model.quadrants.map(q=>`<article class="${q.active?'active':''}" data-bcg="${esc(q.id)}"><b>${esc(q.title)}</b><p>${esc(q.explanation)}</p></article>`).join('')}</div>`:'';
  return `<details class="strategic-model" open data-model-id="${esc(model.id)}"><summary><span><b>${esc(model.title)}</b><small>${esc(model.framework)}</small></span><span>⌄</span></summary>${model.explanation?`<p class="model-explanation">${esc(model.explanation)}</p>`:''}${metrics}${quadrants}${sections}<footer>Bron: ${esc(model.source)}${model.freshness?` · freshness ${esc(model.freshness)}`:''}${model.confidence!=null?` · confidence ${esc(model.confidence)}`:''}</footer></details>`;
 }
-const TABS=[['invullen','Invullen'],['analyse','Analyse'],['acties','Acties'],['bewijs','Bewijs']];
-export function mountStrategicModelsWorkspace(root,{domainState,pageId='strategie-naar-maandagochtend'}={}){
+export function mountStrategicModelsWorkspace(root,{domainState}={}){
  if(!root||!domainState?.get)return ()=>{};
- root.dataset.functionalWorkspace=pageId;
- const draw=()=>{const models=buildStrategicModels(domainState.get()||{});root.innerHTML=`<section class="pvmodule strategic-models-parity" data-strategic-models="legacy-parity"><header class="pvmodulehead"><div><span>${models.length} modellen uit dezelfde klantstate</span><h3>Strategiemodellen</h3></div></header><div class="v2workspacetabs" role="tablist">${TABS.map(([id,label],i)=>`<button type="button" role="tab" data-workspace-tab="${id}" aria-selected="${i===0?'true':'false'}">${label}</button>`).join('')}</div><p class="wzsub">Geen lege sjablonen: waarden, positie en uitleg worden afgeleid uit dezelfde canonieke Powerhouse-state als de rest van het portaal.</p><div class="strategic-model-list">${models.map(renderModel).join('')}</div></section>`;
-  root.querySelectorAll('[data-workspace-tab]').forEach(button=>button.addEventListener('click',()=>{root.querySelectorAll('[data-workspace-tab]').forEach(tab=>tab.setAttribute('aria-selected',String(tab===button)));root.dataset.activeTab=button.dataset.workspaceTab;}));
+ const draw=()=>{
+  const state=domainState.get()||{};const models=buildStrategicModels(state);const note=String(state.portal?.strategy?.userNote||'');
+  root.innerHTML=`<section class="pvmodule strategic-models-parity" data-strategic-models="legacy-parity"><header class="pvmodulehead"><div><span>${models.length} modellen uit dezelfde klantstate</span><h3>Strategiemodellen</h3></div></header><p class="wzsub">Geen lege sjablonen: waarden, positie en uitleg worden afgeleid uit dezelfde canonieke Powerhouse-state als de rest van het portaal.</p><label class="strategy-own"><span>Jouw strategische hypothese of besluit</span><textarea style="min-height:88px" rows="3" data-strategy-note placeholder="Leg vast wat je uit deze modellen concludeert en wat je wilt toetsen.">${esc(note)}</textarea></label><output class="strategy-save" aria-live="polite"></output><div class="strategic-model-list">${models.map(renderModel).join('')}</div></section>`;
+  root.querySelector('[data-strategy-note]')?.addEventListener('change',async event=>{
+   const current=domainState.get()||{};domainState.set({...current,portal:{...(current.portal||{}),strategy:{...(current.portal?.strategy||{}),userNote:event.target.value}}});
+   const out=root.querySelector('.strategy-save');if(out)out.textContent='Opslaan…';
+   try{await domainState.flush?.();if(out)out.textContent='Opgeslagen in de canonieke Powerhouse-klantstate.';}catch(error){if(out)out.textContent='Opslaan mislukt — niet als serverbevestigd gemarkeerd.';console.error('STRATEGY_WRITEBACK_FAILED',error);}
+  });
  };
- draw();const unsub=domainState.subscribe?.(()=>draw());return ()=>{delete root.dataset.functionalWorkspace;unsub?.();};
+ draw();const unsub=domainState.subscribe?.(()=>draw());return ()=>unsub?.();
 }
