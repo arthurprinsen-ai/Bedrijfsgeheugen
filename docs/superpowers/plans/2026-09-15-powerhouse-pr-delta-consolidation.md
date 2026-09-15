@@ -67,6 +67,10 @@ No completion claim without all applicable proof:
 9. the already-live revenue prediction → action → outcome → calibration closure remains intact after deployment;
 10. consolidation decision and production evidence are written back into canonical Powerhouse learning lineage.
 
+## Scope freeze
+
+The implementation scope is now frozen to the still-valid #1503 execution delta plus the minimum release-lane compatibility changes required to prove it. #1506 and #1543 are evidence/readback-only superseded items and must not add executable migrations to this PR.
+
 ## Failure semantics
 
 Any missing provider/media prerequisite, migration error, test failure, CI failure, deployment failure or production readback mismatch keeps the final status `DEELS LIVE` or `GEBLOKKEERD`. It must not be represented as `LIVE & BEWEZEN`.
