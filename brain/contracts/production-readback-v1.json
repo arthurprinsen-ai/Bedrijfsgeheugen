@@ -26,5 +26,38 @@
     "routes": ["/", "/prijzen", "/over-ons"],
     "maxAttempts": 40,
     "contentAndShellVerification": true
+  },
+  "learning": {
+    "contract": "BRAIN-CLOSED-LOOP-v1",
+    "scope": "estate-wide",
+    "eventKind": "ERROR",
+    "fingerprint": "production-readback-http-5xx-v1",
+    "rootCausePolicy": "evidence-before-hypothesis",
+    "preventionRule": "bounded-retry-then-fail-closed",
+    "regressionTest": "tests/brain-production-release-readback-scope.test.mjs",
+    "writeback": "canonical-universal-learning",
+    "requiredFields": [
+      "fingerprint",
+      "event_kind",
+      "stage",
+      "component_type",
+      "component_id",
+      "owner",
+      "reason",
+      "rootCause",
+      "failedApproach",
+      "fix",
+      "preventionRule",
+      "regressionTest",
+      "evidence",
+      "status",
+      "first_seen",
+      "last_seen",
+      "last_changed",
+      "evidence_hash",
+      "retry_budget",
+      "required_intervention",
+      "next_escalation_at"
+    ]
   }
 }
