@@ -1,0 +1,30 @@
+const n=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+const nl=(v,d=1)=>n(v).toLocaleString('nl-NL',{minimumFractionDigits:d,maximumFractionDigits:d});
+function portal(state){return state?.portal||{}}
+function profile(state){return portal(state).profile||{}}
+function market(state){return portal(state).market||{}}
+function maturityValues(state){const p=profile(state);const source=p.maturity||p.dimensions||{};return Object.values(source).map(Number).filter(v=>Number.isFinite(v)&&v>=1&&v<=5)}
+function companyMaturity(state){const xs=maturityValues(state);return xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:0}
+function branchGrowth(state){const m=market(state);return n(m.growth??m.industryGrowth??m.brancheGrowth,0)}
+function branchDigital(state){const m=market(state);return n(m.digitalMaturity??m.digitalIntensity??m.benchmarkDigitalMaturity,0)}
+
+export const BCG_QUADRANTS=Object.freeze([
+ Object.freeze({id:'ster',label:'Ster',description:'Groeiende markt, sterke positie. Investeren zolang het duurt.'}),
+ Object.freeze({id:'melkkoe',label:'Melkkoe',description:'Trage markt, sterke positie. Hier haal je het geld voor de rest.'}),
+ Object.freeze({id:'vraagteken',label:'Vraagteken',description:'Groeiende markt, achterstand. Kiezen: investeren of loslaten.'}),
+ Object.freeze({id:'hond',label:'Hond',description:'Trage markt, zwakke positie. Alleen houden als het aantoonbaar iets anders mogelijk maakt.'})
+]);
+
+export function buildBcgModel(state={}){
+ const growth=branchGrowth(state),own=companyMaturity(state),baseline=branchDigital(state);
+ const highGrowth=growth>1.5,strong=baseline>0&&own>=baseline;
+ const currentQuadrant=highGrowth?(strong?'ster':'vraagteken'):(strong?'melkkoe':'hond');
+ const note=String(portal(state).strategicModels?.bcg?.note||'');
+ const explanation=`Twee assen: marktgroei en je eigen positie. Je sector groeit met ${nl(growth)}%; jouw niveau is ${nl(own)} tegenover ${nl(baseline)} in de branche.`;
+ const conclusion={ster:'Je positie is sterk in een groeiende markt: gericht blijven investeren en bewijs van rendement vasthouden.',melkkoe:'Je positie is sterk in een tragere markt: rendement oogsten en selectief financieren wat daarna komt.',vraagteken:'De markt groeit, maar je positie blijft achter: kies expliciet waar je investeert om een ster te worden en laat de rest los.',hond:'De markt groeit beperkt en je positie blijft achter: stop met vanzelfsprekend doorinvesteren en bewijs eerst strategische waarde.'}[currentQuadrant];
+ return {id:'bcg',title:'BCG-matrix',source:'Boston Consulting Group',marketGrowth:growth,companyMaturity:own,branchDigitalMaturity:baseline,growthThreshold:1.5,currentQuadrant,quadrants:BCG_QUADRANTS.map(q=>({...q,current:q.id===currentQuadrant})),explanation,conclusion,note,notePath:'portal.strategicModels.bcg.note',prompt:'Wat zijn je diensten, en welk vak past bij elk?'};
+}
+
+export function buildStrategicModels(state={}){
+ return [buildBcgModel(state)];
+}
