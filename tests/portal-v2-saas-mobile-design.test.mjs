@@ -24,16 +24,25 @@ test('Portal V2 exposes a premium SaaS visual system and brain flow contract', a
   assert.match(html, /data-stage="outcomes"/);
 });
 
-test('CSRD mobile layout is card-first and its SaaS overrides load after native CSRD styles', async () => {
+test('CSRD mobile layout is card-first and critical mobile styles load before hydration', async () => {
   const [css, js, html] = await Promise.all([
     read('portal-v2/csrd-mobile-saas.css'),
     read('portal-v2/csrd-impact.js'),
     read('portal-v2/index.html'),
   ]);
 
-  assert.match(html, /DOMContentLoaded/);
-  assert.match(html, /const href='\.\/csrd-mobile-saas\.css'/);
-  assert.match(html, /document\.head\.appendChild\(style\)/);
+  const csrdStyle = '<link rel="stylesheet" href="./csrd-mobile-saas.css">';
+  const mobileStyle = '<link rel="stylesheet" href="./mobile-responsive.css">';
+  const appScript = '<script type="module" src="./app.js"></script>';
+  const csrdStyleIndex = html.indexOf(csrdStyle);
+  const mobileStyleIndex = html.indexOf(mobileStyle);
+  const appScriptIndex = html.indexOf(appScript);
+
+  assert.ok(csrdStyleIndex >= 0, 'CSRD mobile SaaS stylesheet must be statically linked');
+  assert.ok(mobileStyleIndex > csrdStyleIndex, 'global mobile contract must load after CSRD mobile overrides');
+  assert.ok(appScriptIndex > mobileStyleIndex, 'critical mobile styles must be loaded before app hydration starts');
+  assert.doesNotMatch(html, /DOMContentLoaded[\s\S]*csrd-mobile-saas\.css/);
+  assert.doesNotMatch(html, /document\.head\.appendChild\(style\)[\s\S]*csrd-mobile-saas\.css/);
   assert.match(js, /csrd-mobile-summary/);
   assert.match(js, /csrd-mobile-domain/);
   assert.match(css, /\.csrd-mobile-summary/);
