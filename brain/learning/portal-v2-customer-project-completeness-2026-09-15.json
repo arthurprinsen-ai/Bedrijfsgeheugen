@@ -1,0 +1,72 @@
+{
+  "version": "PORTAL-V2-CUSTOMER-COMPLETENESS-LEARNING-v1",
+  "type": "verified_material_learning",
+  "status": "VERIFIED",
+  "fingerprint": "portal-v2|customer-project|incomplete-or-wrong-context-before-green",
+  "incident": {
+    "summary": "Portal V2 kon technisch bereikbaar en deels groen zijn terwijl IJsselmonde-projectinhoud niet volledig was doorgezet, de verkoopdemo niet alle projectwerkruimtes vulde en de generieke shell vóór de juiste klantcontext zichtbaar werd.",
+    "symptoms": [
+      "IJsselmonde opende V2 zonder de volledige bestaande offerte-, sprint- en user-storyinhoud zichtbaar te maken.",
+      "De verkoopdemo bevatte samenvattingsdata maar niet aantoonbaar alle projectwerkruimtes.",
+      "Tijdens opstart verscheen kort generieke of verkeerde portalinhoud voordat klantcontext was gehydrateerd.",
+      "Een merge/deploystatus werd te vroeg als live eindbewijs behandeld voordat exacte productie-readback de kandidaat had bevestigd."
+    ],
+    "root_causes": [
+      "Customer-project parity was nog geen expliciete release-blocking contractlaag over alle projectoppervlakken.",
+      "Demo-completeness werd als voorbeeldinhoud behandeld in plaats van als verkoopklaar productcontract.",
+      "De shell kon renderen voordat de customer/demo state een settled status had.",
+      "Code/deploy acknowledgement en immutable production truth waren semantisch onvoldoende gescheiden in de live-claim."
+    ],
+    "failed_approaches": [
+      "Een schone klant-URL en een werkende shell als bewijs voor inhoudelijke projectcompleetheid gebruiken.",
+      "Aannemen dat bestaande beveiligde klantdata vanzelf op ieder V2-projectoppervlak terechtkomt zonder parity-test.",
+      "Een gedeeltelijk gevulde demo als representatieve klantdemo accepteren.",
+      "Live of klaar melden op basis van merge/deploystatus zonder exact-SHA production route readback."
+    ]
+  },
+  "required_project_surfaces": [
+    "offerte",
+    "onderdelen",
+    "sprints",
+    "user stories",
+    "roadmap",
+    "taken",
+    "documenten",
+    "koppelingen"
+  ],
+  "hydration_contract": {
+    "fail_closed": true,
+    "generic_shell_visible_before_context": false,
+    "settled_customer_context_required_before_unhide": true
+  },
+  "demo_contract": {
+    "fictional_only": true,
+    "all_project_surfaces_populated": true,
+    "real_customer_data_forbidden": true,
+    "same_v2_renderers_as_customer_mode": true
+  },
+  "release_contract": {
+    "require_candidate_tests": true,
+    "require_exact_deploy_sha": true,
+    "require_production_route_readback": true,
+    "allow_live_claim_before_all_three": false
+  },
+  "prevention_rule_ids": [
+    "REQUIRE_COMPLETE_CUSTOMER_PROJECT_PARITY_BEFORE_PORTAL_V2_GREEN",
+    "BLOCK_GENERIC_PORTAL_SHELL_UNTIL_CUSTOMER_CONTEXT_HYDRATED",
+    "REQUIRE_EXACT_SHA_PRODUCTION_READBACK_BEFORE_LIVE_CLAIM"
+  ],
+  "prevention": "Portal V2 customer-project delivery mag pas groen zijn wanneer volledige projectparity, fail-closed hydration, een volledig fictieve demo en exact-SHA productie-readback onafhankelijk zijn bewezen.",
+  "evidence": {
+    "source_pr": 1430,
+    "source_merge_sha": "fb98b20173b343927cb12a4b7318db1963faf54c",
+    "verified_existing_gates": [
+      "native model behoudt actuele IJsselmonde offerte-parity",
+      "offerte rendert quote, onderdelen, sprints en stories native",
+      "roadmap en taken gebruiken dezelfde projectrelaties",
+      "demo contains every project data slice used by the V2 project workspace",
+      "Portal V2 installs a hydration guard before customer/demo state is shown",
+      "the hydration guard is released only through a settled state publication"
+    ]
+  }
+}
