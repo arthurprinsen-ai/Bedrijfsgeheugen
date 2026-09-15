@@ -14,6 +14,17 @@
     "contentReadbackRequired": true,
     "transient5xxPolicy": "bounded-retry-then-fail-closed"
   },
+  "productionTruth": {
+    "requiredStatusContext": "test",
+    "requiredStatusMustBe": "success",
+    "redGateMergeAllowed": false,
+    "stalePrCanBeCurrentTruth": false,
+    "supersededPrCanBeActiveWork": false,
+    "netlifyReadyWithoutShaMatchIsLive": false,
+    "exactMainToProductionShaMatchRequired": true,
+    "liveReadbackRequired": true,
+    "requiredLineage": ["source_pr", "head_sha", "delivery_pr", "main_sha", "netlify_deploy_id", "netlify_commit_ref", "live_readback"]
+  },
   "connectorReadiness": {
     "maxAttempts": 8,
     "connectTimeoutSeconds": 10,
@@ -39,28 +50,6 @@
     "regressionTest": "tests/brain-production-release-readback-scope.test.mjs",
     "writeback": "canonical-universal-learning",
     "knownLesson": "docs/brain/lessons/production-readback-readiness-503-2026-09-15.json",
-    "requiredFields": [
-      "fingerprint",
-      "event_kind",
-      "stage",
-      "component_type",
-      "component_id",
-      "owner",
-      "reason",
-      "rootCause",
-      "failedApproach",
-      "fix",
-      "preventionRule",
-      "regressionTest",
-      "evidence",
-      "status",
-      "first_seen",
-      "last_seen",
-      "last_changed",
-      "evidence_hash",
-      "retry_budget",
-      "required_intervention",
-      "next_escalation_at"
-    ]
+    "requiredFields": ["fingerprint", "event_kind", "stage", "component_type", "component_id", "owner", "reason", "rootCause", "failedApproach", "fix", "preventionRule", "regressionTest", "evidence", "status", "first_seen", "last_seen", "last_changed", "evidence_hash", "retry_budget", "required_intervention", "next_escalation_at"]
   }
 }

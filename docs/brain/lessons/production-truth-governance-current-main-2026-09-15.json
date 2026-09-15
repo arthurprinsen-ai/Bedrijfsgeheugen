@@ -1,0 +1,28 @@
+{
+  "id": "production-truth-governance-current-main-2026-09-15",
+  "system": "Bedrijfsgeheugen Powerhouse",
+  "status": "OBSERVED_AND_CORRECTED",
+  "event_kind": "PROCESS_LEARNING",
+  "stage": "DELIVERY",
+  "reason": "Twice, a production-truth governance PR completed or approached green while main advanced underneath it. Merging either stale-base PR would violate current production truth.",
+  "rootCause": "Concurrent main advancement can invalidate the base identity after CI has started or completed.",
+  "failedApproach": "Treat a previously green or nearly-green PR as current truth without rechecking its base against current main immediately before merge.",
+  "fix": "Close the stale-base PR, replay the intended delta on current main, rerun protected gates, and merge only when the PR base still equals current main at merge time.",
+  "preventionRule": "REPLAY_AND_REVALIDATE_AFTER_BASE_ADVANCE",
+  "evidence": {
+    "supersededPrs": [1525, 1526],
+    "observedMainSequence": [
+      "762f0d75c5d10551ee6c03eedb629f97a0934f0d",
+      "6f17c21828be46441a95580f7679e22314e30ed6",
+      "9116bbf85e3c6169bce3030ee8d66e4bca1ff428"
+    ],
+    "currentReplayBranch": "fix/production-truth-governance-learning-v3-20260915"
+  },
+  "learning": {
+    "currentMainMustBeRecheckedImmediatelyBeforeMerge": true,
+    "greenChecksDoNotOverrideBaseAdvance": true,
+    "stalePrMustNotBeMerged": true,
+    "preserveLineage": true,
+    "reuseCanonicalPowerhouseLearning": true
+  }
+}
