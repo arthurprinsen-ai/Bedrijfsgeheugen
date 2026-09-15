@@ -74,6 +74,24 @@ test('production readback is a canonical Brain/Powerhouse delivery-control-plane
   assert.equal(contract.connectorReadiness.terminalFailure, true);
 });
 
+test('production readback failures are part of the canonical universal learning loop', async () => {
+  const [contract, learning] = await Promise.all([
+    readFile('brain/contracts/production-readback-v1.json', 'utf8').then(JSON.parse),
+    readFile('config/universal-closed-loop-learning.json', 'utf8').then(JSON.parse),
+  ]);
+  assert.equal(contract.learning.contract, learning.version);
+  assert.equal(contract.learning.scope, learning.scope);
+  assert.equal(contract.learning.eventKind, 'ERROR');
+  assert.equal(contract.learning.fingerprint, 'production-readback-http-5xx-v1');
+  assert.equal(contract.learning.rootCausePolicy, 'evidence-before-hypothesis');
+  assert.equal(contract.learning.preventionRule, 'bounded-retry-then-fail-closed');
+  assert.equal(contract.learning.regressionTest, 'tests/brain-production-release-readback-scope.test.mjs');
+  assert.equal(contract.learning.writeback, 'canonical-universal-learning');
+  assert.deepEqual(contract.learning.requiredFields, learning.required_learning_fields);
+  assert.ok(learning.required_lifecycle.includes('learning_writeback'));
+  assert.ok(learning.required_lifecycle.includes('prevention_reuse'));
+});
+
 test('public connector readiness is excluded from the authenticated connector wildcard', async () => {
   const [portalConnectors, readiness] = await Promise.all([
     readFile('netlify/functions/portal-connectors.mjs', 'utf8'),
