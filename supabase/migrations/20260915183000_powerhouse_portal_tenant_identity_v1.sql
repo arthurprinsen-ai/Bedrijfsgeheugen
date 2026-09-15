@@ -179,8 +179,10 @@ begin
 end;
 $$;
 
-revoke all on function public.portal_normalize_intake_identity_v1() from public, anon, authenticated;
-revoke all on function public.portal_normalize_state_identity_v1() from public, anon, authenticated;
+revoke execute on function public.portal_normalize_intake_identity_v1() from public, anon, authenticated;
+revoke execute on function public.portal_normalize_state_identity_v1() from public, anon, authenticated;
+grant execute on function public.portal_normalize_intake_identity_v1() to service_role;
+grant execute on function public.portal_normalize_state_identity_v1() to service_role;
 
 create or replace trigger scan_inzendingen_tenant_identity_v1
 before insert or update of klant_slug, organisatie_id, is_demo on public.scan_inzendingen
