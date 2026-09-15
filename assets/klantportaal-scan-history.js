@@ -1,10 +1,32 @@
 (()=>{
   'use strict';
   const esc=v=>String(v??'');
-  async function claimLocal(){
+  const CANONICAL='https://www.bedrijfsgeheugen.nl/frisse-blik';
+  const PENDING_KEY='bg_scan_server_pending_v1';
+  const RECEIPT_KEY='bg_scan_server_receipt_v1';
+  const makeKey=scan=>`frisse-blik-${String(scan?.stempel||Date.now())}-${crypto?.randomUUID?.()||Math.random().toString(36).slice(2,14)}`;
+  async function ingestLocal(){
     let scan=null;try{scan=JSON.parse(localStorage.getItem('bg_scan_pakket')||'null')}catch{}
-    if(!scan?.submission_key)return;
-    try{await fetch('/api/portal-scans',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({submission_key:scan.submission_key}),credentials:'same-origin'})}catch{}
+    if(!scan||typeof scan!=='object'||!Number.isFinite(Number(scan.score)))return null;
+    if(!scan.submission_key){scan.submission_key=makeKey(scan);try{localStorage.setItem('bg_scan_pakket',JSON.stringify(scan))}catch{}}
+    let receipt=null;try{receipt=JSON.parse(localStorage.getItem(RECEIPT_KEY)||'null')}catch{}
+    if(receipt?.submission_key===scan.submission_key)return scan.submission_key;
+    try{
+      const response=await fetch('/api/powerhouse-scan-ingest',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({submission_key:scan.submission_key,canonical:CANONICAL,scan}),credentials:'same-origin'});
+      if(!response.ok)throw new Error(`HTTP_${response.status}`);
+      const data=await response.json();
+      localStorage.setItem(RECEIPT_KEY,JSON.stringify({submission_key:scan.submission_key,scan_id:data.scan_id||null,event_id:data.event_id||null,stored_at:new Date().toISOString()}));
+      localStorage.removeItem(PENDING_KEY);
+      return scan.submission_key;
+    }catch(error){
+      try{localStorage.setItem(PENDING_KEY,JSON.stringify({submission_key:scan.submission_key,scan,canonical:CANONICAL,last_error:String(error?.message||error),updated_at:new Date().toISOString()}))}catch{}
+      return null;
+    }
+  }
+  async function claimLocal(){
+    const submissionKey=await ingestLocal();
+    if(!submissionKey)return;
+    try{await fetch('/api/portal-scans',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({submission_key:submissionKey}),credentials:'same-origin'})}catch{}
   }
   function target(){return document.querySelector('main,[role="main"],.main,.content,.app')||document.body;}
   function render(scans){
