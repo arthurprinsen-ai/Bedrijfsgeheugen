@@ -1,0 +1,63 @@
+{
+  "id": "production-readback-v1",
+  "owner": "delivery-control-plane",
+  "system": "BRAIN/Powerhouse",
+  "status": "canonical",
+  "sourceOfTruth": ".github/workflows/production-release-readback.yml",
+  "requiredGate": "Required test",
+  "contractTest": "tests/brain-production-release-readback-scope.test.mjs",
+  "principles": {
+    "failClosed": true,
+    "noParallelReleaseMechanism": true,
+    "noMakeDependency": true,
+    "exactReleaseIdentity": true,
+    "contentReadbackRequired": true,
+    "transient5xxPolicy": "bounded-retry-then-fail-closed"
+  },
+  "connectorReadiness": {
+    "maxAttempts": 8,
+    "connectTimeoutSeconds": 10,
+    "maxRequestSeconds": 30,
+    "cacheBust": true,
+    "terminalFailure": true
+  },
+  "websiteReadback": {
+    "exactCommitMarker": true,
+    "routes": ["/", "/prijzen", "/over-ons"],
+    "maxAttempts": 40,
+    "contentAndShellVerification": true
+  },
+  "learning": {
+    "contract": "BRAIN-CLOSED-LOOP-v1",
+    "scope": "estate-wide",
+    "eventKind": "ERROR",
+    "fingerprint": "production-readback-http-5xx-v1",
+    "rootCausePolicy": "evidence-before-hypothesis",
+    "preventionRule": "bounded-retry-then-fail-closed",
+    "regressionTest": "tests/brain-production-release-readback-scope.test.mjs",
+    "writeback": "canonical-universal-learning",
+    "requiredFields": [
+      "fingerprint",
+      "event_kind",
+      "stage",
+      "component_type",
+      "component_id",
+      "owner",
+      "reason",
+      "rootCause",
+      "failedApproach",
+      "fix",
+      "preventionRule",
+      "regressionTest",
+      "evidence",
+      "status",
+      "first_seen",
+      "last_seen",
+      "last_changed",
+      "evidence_hash",
+      "retry_budget",
+      "required_intervention",
+      "next_escalation_at"
+    ]
+  }
+}
