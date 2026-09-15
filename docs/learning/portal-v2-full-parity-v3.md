@@ -30,7 +30,7 @@ De audit van current main toonde twee concrete false-parity gaps:
 De specialistische modelview wordt gebruikt voor `strategie-naar-maandagochtend` én de V2-routes `strategiemodellen`/`modellen`. De bestaande canonical domain-state en server-writeback blijven authority; er is geen parallelle V2-opslag toegevoegd.
 
 ## Assurance
-Machine-readable authority: `powerhouse/assurance/portal-v2-parity.json`.
+Machine-readable authority: `portal-v2/assurance/portal-v2-parity.json`.
 
 Release-invariant: geen `verified` wanneer `production_evidence_status` niet `verified` is. Route presence en inventory presence tellen niet als parity. Productiepromotie blijft fail-closed bij rode Required/BRAIN/Portal V2 checks.
 
