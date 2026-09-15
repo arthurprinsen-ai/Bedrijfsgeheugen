@@ -13,7 +13,7 @@ select
   max(occurred_at) as last_observed_at
 from public.powerhouse_sales_outcomes
 group by coalesce(channel,'unknown'),lower(coalesce(outcome_type,'unknown'));
-
+alter view public.powerhouse_outcome_funnel_v1 set (security_invoker = true);
 revoke all on public.powerhouse_outcome_funnel_v1 from public, anon, authenticated;
 grant select on public.powerhouse_outcome_funnel_v1 to service_role;
 
@@ -34,7 +34,7 @@ select
 from public.scan_inzendingen s
 left join public.offerte_inzendingen q on lower(trim(q.klant_slug))=lower(trim(s.klant_slug))
 group by s.klant_slug,s.soort,s.branche,s.omvang;
-
+alter view public.powerhouse_delivery_sales_learning_v1 set (security_invoker = true);
 revoke all on public.powerhouse_delivery_sales_learning_v1 from public, anon, authenticated;
 grant select on public.powerhouse_delivery_sales_learning_v1 to service_role;
 
@@ -67,7 +67,7 @@ from public.powerhouse_opportunities o
 left join public.powerhouse_company_intelligence_v1 ci on ci.company_key=o.company_key
 left join public.powerhouse_person_intelligence_v1 pi on pi.person_key=o.person_key
 where o.status='open';
-
+alter view public.powerhouse_freshness_contradiction_v1 set (security_invoker = true);
 revoke all on public.powerhouse_freshness_contradiction_v1 from public, anon, authenticated;
 grant select on public.powerhouse_freshness_contradiction_v1 to service_role;
 
@@ -81,6 +81,6 @@ select
   (select count(*) from public.powerhouse_outcome_funnel_v1) as observed_outcome_funnel_segments,
   (select count(*) from public.powerhouse_champion_challenger_v1 where challenger_fingerprint is not null) as active_champion_challenger_pairs
 from public.powerhouse_commercial_maturity_v1 m;
-
+alter view public.powerhouse_commercial_control_room_v1 set (security_invoker = true);
 revoke all on public.powerhouse_commercial_control_room_v1 from public, anon, authenticated;
 grant select on public.powerhouse_commercial_control_room_v1 to service_role;
