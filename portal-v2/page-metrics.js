@@ -312,7 +312,7 @@ const PAGES=Object.freeze({
     worklist:s=>{const afgeleid=bevindingen(s);
       if(afgeleid.length)return afgeleid.slice(0,5).map(b=>[
         `${b.waarde?'€ '+b.waarde.toLocaleString('nl-NL')+' · ':''}${b.titel}`,
-        `${b.bewijs} — ${b.bron}`]);
+        `${b.bewijs} — ${b.bron}${b.reden ? ` · ${b.reden}` : ''}`]);
       return [
       ['Gewicht over de modellen heen',num(calc('cross-model-weight',s),2)],
       ...arr(calc('recommendation-priority',s)).slice(0,2).map(item=>[String(item.advice||'Advies'),`prioriteit ${num(item.priority)}`])
@@ -380,7 +380,7 @@ const PAGES=Object.freeze({
     worklist:s=>{const afgeleid=bevindingen(s);
       if(afgeleid.length)return afgeleid.slice(0,5).map(b=>[
         `${b.waarde?'€ '+b.waarde.toLocaleString('nl-NL')+' · ':''}${b.titel}`,
-        `${b.bewijs} — ${b.bron}`]);
+        `${b.bewijs} — ${b.bron}${b.reden ? ` · ${b.reden}` : ''}`]);
       return arr(calc('advice-priority',s)).slice(0,3).map(item=>[String(item.advice||'Advies'),`${euro(item.value)} · ${num(item.duration)} wk`]);}},
 
   offerte:{slice:'portal.offer',
