@@ -10,12 +10,6 @@ function learning(){
   return JSON.parse(fs.readFileSync(sourcePath,'utf8'));
 }
 
-const REQUIRED_RULES=[
-  'REQUIRE_COMPLETE_CUSTOMER_PROJECT_PARITY_BEFORE_PORTAL_V2_GREEN',
-  'BLOCK_GENERIC_PORTAL_SHELL_UNTIL_CUSTOMER_CONTEXT_HYDRATED',
-  'REQUIRE_EXACT_SHA_PRODUCTION_READBACK_BEFORE_LIVE_CLAIM'
-];
-
 test('customer project incident is linked into the existing canonical chat-learning graph',()=>{
   assert.ok(contract.canonicalSources.includes('config/delivery-prevention-rules.json'));
   assert.ok(prevention.linked_learning_sources?.includes(sourcePath),'canonical prevention source must link the verified incident record');
@@ -35,14 +29,14 @@ test('learning permanently covers complete project parity and startup hydration'
   assert.equal(record.demo_contract.all_project_surfaces_populated,true);
 });
 
-test('known failure class has active prevention rules wired to concrete gates',()=>{
-  const rules=new Map(prevention.rules.map(rule=>[rule.id,rule]));
-  for(const id of REQUIRED_RULES){
-    assert.equal(rules.get(id)?.active,true,`${id} must be active`);
-    assert.ok(rules.get(id)?.enforcedBy,`${id} needs an enforcement gate`);
-  }
+test('known failure class reuses existing enforced gates instead of creating a parallel prevention truth',()=>{
   const record=learning();
-  assert.deepEqual(new Set(record.prevention_rule_ids),new Set(REQUIRED_RULES));
+  const controls=new Map(record.prevention_controls.map(control=>[control.id,control]));
+  assert.equal(controls.get('portal-v2-project-parity-and-complete-demo-regressions')?.type,'regression-gate');
+  assert.equal(controls.get('portal-v2-hydration-guard-regressions')?.type,'regression-gate');
+  const releaseRule=prevention.rules.find(rule=>rule.id==='REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN');
+  assert.equal(releaseRule?.active,true);
+  assert.equal(controls.get('REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN')?.type,'active-prevention-rule');
 });
 
 test('live claim requires candidate tests, exact deploy identity and production route readback',()=>{
