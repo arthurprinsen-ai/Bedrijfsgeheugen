@@ -1,7 +1,7 @@
 import {runConnectorTest,evaluateActivationEvidence,classifyConnectorError} from './connector-engine.mjs';
+import {connectorReadinessFromEnv} from './connector-readiness-state.mjs';
 
 const notConfigured=name=>Object.assign(new Error(`${name} runtime is not configured`),{code:'ADAPTER_NOT_CONFIGURED'});
-const configuredState=configured=>({configured:Boolean(configured),state:configured?'configured':'not-configured'});
 export function createConnectorRuntime({providers={}}={}){
   return Object.freeze({
     readiness:providers.readiness||{sources:{},extractor:{configured:false,state:'not-configured'},targets:{}},
@@ -33,10 +33,6 @@ export function createEnvironmentConnectorProviders({fetchFn=globalThis.fetch,en
   const targets={datahub:{safeTest:async payload=>({ok:true,reference:'datahub-safe-test',payload})}};
   if(env.AFAS_SAFE_TEST_URL)targets.afas={safeTest:async payload=>{const response=await fetchFn(env.AFAS_SAFE_TEST_URL,{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1'},body:JSON.stringify(payload)});return {ok:response.ok,reference:response.headers.get('x-execution-id')||null};}};
   if(env.EXACT_SAFE_TEST_URL)targets.exact={safeTest:async payload=>{const response=await fetchFn(env.EXACT_SAFE_TEST_URL,{method:'POST',headers:{'content-type':'application/json','x-bg-safe-test':'1'},body:JSON.stringify(payload)});return {ok:response.ok,reference:response.headers.get('x-execution-id')||null};}};
-  const readiness={
-    sources:{upload:{configured:true,state:'native-safe-test'},email:{configured:true,state:'native-safe-test'}},
-    extractor:env.DOCUMENT_EXTRACTOR_URL&&env.CONNECTOR_SAFE_TEST_TOKEN?{configured:true,state:'server-safe-test'}:{configured:false,state:'sample-only'},
-    targets:{datahub:{configured:true,state:'native-safe-test'},afas:configuredState(Boolean(env.AFAS_SAFE_TEST_URL)),exact:configuredState(Boolean(env.EXACT_SAFE_TEST_URL))}
-  };
+  const readiness=connectorReadinessFromEnv(key=>env?.[key]);
   return {sources,extractor,targets,lookups:null,readiness};
 }
