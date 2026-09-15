@@ -1,0 +1,1 @@
+Closeout rule: this release cannot be called LIVE & BEWEZEN from branch state. It requires protected merge, exact-SHA production deployment, semantic browser/readback evidence, and canonical Powerhouse + Notion writeback.

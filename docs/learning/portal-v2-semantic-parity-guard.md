@@ -1,0 +1,1 @@
+No-force guard: do not bypass branch protection or merge a stale/non-mergeable candidate. Reconcile against current main and re-run required gates on the exact head.

@@ -53,7 +53,9 @@ const BY_PAGE=new Map(LEGACY_CONTRACTS.map(contract=>[contract.id,contract]));
 
 const SPECIALISTS=Object.freeze({
   koppelingen:Object.freeze({id:'koppelingen',legacyCapability:null,mode:'builder',schemaVersion:1,renderer:'connector-builder',dataSlice:'connectors',validators:Object.freeze(['connector-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['test-evidence-before-activation']),browserContract}),
-  'csrd-impact':Object.freeze({id:'csrd-impact',legacyCapability:null,mode:'cockpit',schemaVersion:1,renderer:'csrd-impact',dataSlice:'impact',validators:Object.freeze(['evidence-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence']),browserContract})
+  'csrd-impact':Object.freeze({id:'csrd-impact',legacyCapability:null,mode:'cockpit',schemaVersion:1,renderer:'csrd-impact',dataSlice:'impact',validators:Object.freeze(['evidence-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence']),browserContract}),
+  strategiemodellen:Object.freeze({id:'strategiemodellen',legacyCapability:null,mode:'workspace',schemaVersion:1,renderer:'strategic-models',dataSlice:'portal.strategicModels',validators:Object.freeze(['canonical-state']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence','server-confirmed-state']),browserContract}),
+  modellen:Object.freeze({id:'modellen',legacyCapability:null,mode:'workspace',schemaVersion:1,renderer:'strategic-models',dataSlice:'portal.strategicModels',validators:Object.freeze(['canonical-state']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence','server-confirmed-state']),browserContract})
 });
 
 export function getCapabilityContract(pageId){return BY_PAGE.get(pageId)||SPECIALISTS[pageId]||null}
