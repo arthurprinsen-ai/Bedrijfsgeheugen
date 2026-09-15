@@ -190,7 +190,7 @@ insert into public.brain_records(
     'parallel_truth_store',false,
     'canonical_loop',jsonb_build_array('prediction','action','outcome','revenue','calibration','next_decision'),
     'persistence',jsonb_build_array('powerhouse_forecasts','powerhouse_sales_actions','powerhouse_sales_outcomes','powerhouse_forecast_calibration'),
-    'regression_guard','tests/powerhouse-revenue-calibration-persistence-contract.test.mjs'
+    'regression_guard','tests/supabase-powerhouse-revenue-calibration-persistence-contract.test.mjs'
   ),
   'powerhouse-no-make-production-v1'
 )
