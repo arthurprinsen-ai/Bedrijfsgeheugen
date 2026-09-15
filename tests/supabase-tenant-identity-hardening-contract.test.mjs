@@ -23,6 +23,15 @@ test('legacy slug is compatibility input, never identity authority', () => {
   has(migration, /klant_slug/i, 'legacy slug may remain only for compatibility/backfill');
 });
 
+test('RLS uses production-backed leden membership directly', () => {
+  assert.doesNotMatch(migration, /public\.mijn_organisaties\s*\(/i, 'migration must not depend on a non-existent production helper');
+  has(
+    migration,
+    /exists\s*\(\s*select\s+1\s+from\s+public\.leden\s+[a-z]+\s+where[\s\S]*gebruiker_id\s*=\s*auth\.uid\(\)[\s\S]*organisatie_id/i,
+    'RLS must verify auth.uid() membership directly against public.leden'
+  );
+});
+
 test('demo and unverified rows cannot contaminate commercial learning or benchmarks', () => {
   has(migration, /tenant_identity_status\s*=\s*'verified'/i, 'benchmark refresh must require verified tenant evidence');
   has(migration, /trg_scan_uitkomst/i, 'scan commercial outcome trigger must be hardened');
