@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const migrationPath = new URL('../supabase/migrations/20260915163000_powerhouse_revenue_intelligence_loop_v1.sql', import.meta.url);
 const healthPerfPath = new URL('../supabase/migrations/20260915165500_powerhouse_revenue_intelligence_health_perf_v2.sql', import.meta.url);
 const snapshotPath = new URL('../supabase/migrations/20260915170000_powerhouse_revenue_intelligence_snapshot_v1.sql', import.meta.url);
+const snapshotFastPath = new URL('../supabase/migrations/20260915170500_powerhouse_revenue_intelligence_snapshot_fast_v2.sql', import.meta.url);
 const intelligencePath = new URL('../supabase/functions/powerhouse-revenue-intelligence/index.ts', import.meta.url);
 
 function read(path) { return fs.readFileSync(path, 'utf8'); }
@@ -61,15 +62,29 @@ test('health performance fix uses canonical forecast lineage without heavyweight
   assert.match(sql, /powerhouse_opportunities/i);
 });
 
-test('snapshot migration makes the expensive command-center derivation rebuildable and scheduled', () => {
+test('snapshot migration makes the command-center derivation rebuildable and scheduled', () => {
   const sql = read(snapshotPath);
   assert.match(sql, /powerhouse_revenue_command_center_snapshot_v1/i);
   assert.match(sql, /powerhouse_refresh_revenue_intelligence_snapshot_v1/i);
-  assert.match(sql, /truncate\s+table/i);
-  assert.match(sql, /powerhouse_revenue_command_center_v2/i);
   assert.match(sql, /cron\.schedule/i);
   assert.match(sql, /refreshed_at/i);
   assert.match(sql, /enable row level security/i);
+});
+
+test('fast snapshot refresh reuses v2 once and never executes the heavyweight v3 command view', () => {
+  const sql = read(snapshotFastPath);
+  assert.match(sql, /powerhouse_commercial_next_best_action_v2/i);
+  assert.match(sql, /powerhouse_sales_actions/i);
+  assert.match(sql, /powerhouse_sales_outcomes/i);
+  assert.match(sql, /powerhouse_forecasts/i);
+  assert.match(sql, /powerhouse_refresh_revenue_intelligence_snapshot_v1/i);
+  assert.doesNotMatch(sql, /from\s+public\.powerhouse_revenue_command_center_v2/i);
+  assert.match(sql, /prediction_reply/i);
+  assert.match(sql, /prediction_meeting/i);
+  assert.match(sql, /prediction_proposal/i);
+  assert.match(sql, /prediction_win/i);
+  assert.match(sql, /research_reason/i);
+  assert.match(sql, /pressure_state/i);
 });
 
 test('revenue intelligence facade exposes snapshot-backed command center, account, research and model health routes', () => {
