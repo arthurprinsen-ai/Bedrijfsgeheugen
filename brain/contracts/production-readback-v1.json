@@ -1,0 +1,30 @@
+{
+  "id": "production-readback-v1",
+  "owner": "delivery-control-plane",
+  "system": "BRAIN/Powerhouse",
+  "status": "canonical",
+  "sourceOfTruth": ".github/workflows/production-release-readback.yml",
+  "requiredGate": "Required test",
+  "contractTest": "tests/brain-production-release-readback-scope.test.mjs",
+  "principles": {
+    "failClosed": true,
+    "noParallelReleaseMechanism": true,
+    "noMakeDependency": true,
+    "exactReleaseIdentity": true,
+    "contentReadbackRequired": true,
+    "transient5xxPolicy": "bounded-retry-then-fail-closed"
+  },
+  "connectorReadiness": {
+    "maxAttempts": 8,
+    "connectTimeoutSeconds": 10,
+    "maxRequestSeconds": 30,
+    "cacheBust": true,
+    "terminalFailure": true
+  },
+  "websiteReadback": {
+    "exactCommitMarker": true,
+    "routes": ["/", "/prijzen", "/over-ons"],
+    "maxAttempts": 40,
+    "contentAndShellVerification": true
+  }
+}
