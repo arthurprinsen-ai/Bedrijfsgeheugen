@@ -8,7 +8,7 @@ Alle oude en nieuwe Frisse Blik-, website- en portaal-scans gebruiken één best
 
 ## Canonieke keten
 
-`frisse-blik website -> /api/powerhouse-scan-ingest -> Supabase Edge powerhouse-scan-ingest -> scan_inzendingen -> powerhouse_runtime_events + growth_events -> portal scan history -> identity verification -> scan_identity_verified -> bestaande Powerhouse intelligence / opportunities / next-best-action / outcomes / learning`.
+`frisse-blik website -> lokale scan-handoff -> klantportaal compatibility bridge -> /api/powerhouse-scan-ingest -> Supabase Edge powerhouse-scan-ingest -> scan_inzendingen -> powerhouse_runtime_events + growth_events -> portal scan history -> identity verification -> scan_identity_verified -> bestaande Powerhouse intelligence / opportunities / next-best-action / outcomes / learning`.
 
 ## Hergebruikte authority
 
@@ -45,9 +45,9 @@ Additief toegevoegd aan `scan_inzendingen`: `submission_key`, `schema_version`, 
 
 `/api/portal-scans` gebruikt dezelfde Netlify Identity als `/api/portal-state` en dezelfde `resolveIdentityTenant` authority. POST claimt een lokale scan voor een bewezen organisatie-UUID; GET leest maximaal 50 scans uit `powerhouse_scan_history_v1`; `assets/klantportaal-scan-history.js` toont oude en nieuwe scans plus score-delta. Zonder login blijft de bestaande lokale portalflow werken en wordt niets server-side geclaimd.
 
-## Website
+## Website en scan-handoff
 
-`assets/frisse-blik-powerhouse.js` observeert alleen een nieuw scanpakket dat tijdens de actuele Frisse Blik-sessie in `bg_scan_pakket` verschijnt. Bestaande localStorage-data wordt niet opnieuw ingestuurd. De bridge gebruikt `fetch(..., keepalive:true)` naar de same-origin Netlify API, bewaart een server receipt en een herstelrecord bij transportfout.
+De bestaande `frisse-blik.html` blijft ongewijzigd als scan-UI en compatibility authority. Na afronding schrijft die het scanpakket naar `bg_scan_pakket` in `localStorage` en verwijst vervolgens door naar `/klantportaal#direct`. De bestaande portal-bridge `assets/klantportaal-scan-history.js` maakt voor een lokaal pakket zonder sleutel eerst een stabiele `submission_key`, schrijft de scan daarna server-side via `/api/powerhouse-scan-ingest`, bewaart een receipt zodat dezelfde scan niet dubbel wordt ingestuurd en voert pas daarna de identity-claim via `/api/portal-scans` uit. Bij transportfout blijft het lokale scanpakket behouden voor herstel; identity blijft fail-closed. Er wordt bewust geen extra `<script>` in `frisse-blik.html` geïnjecteerd.
 
 ## Security
 
@@ -69,11 +69,15 @@ Additief toegevoegd aan `scan_inzendingen`: `submission_key`, `schema_version`, 
 
 ## Verificatiecontract
 
-Productie geldt pas als bewezen wanneer: migration/read-model leesbaar is; Edge Function ACTIVE is; server-health contract/store/count teruggeeft; live website de bridge laadt; `/api/powerhouse-scan-ingest` health groen is; `/api/portal-scans` zonder auth fail-closed reageert; GitHub Required `test` groen is; Netlify productie op de merge-SHA staat; en de Powerhouse current-state/evidence writeback commit/deploy/readback bevat.
+Productie geldt pas als bewezen wanneer: migration/read-model leesbaar is; Edge Function ACTIVE is; server-health contract/store/count teruggeeft; live klantportaal de bridge laadt; `/api/powerhouse-scan-ingest` health groen is; `/api/portal-scans` zonder auth fail-closed reageert; GitHub Required `test` groen is; Netlify productie op de merge-SHA staat; en de Powerhouse current-state/evidence writeback commit/deploy/readback bevat.
+
+## Preventieregel uit deze release
+
+Injecteer geen browserbridge via een globale string-replace op `</body>` in een HTML-bestand dat zelf HTML-documenten als JavaScript-string opbouwt. Een letterlijk `</script>` in zo'n gegenereerde string kan het buitenste inline script voortijdig sluiten. Hergebruik de bestaande navigatie-/handoffgrens en laat de syntax-preflight fail-closed bewijzen dat inline JavaScript parsebaar blijft.
 
 ## Rollback en continuïteit
 
-De browserbridge kan worden verwijderd zonder historische data te verwijderen. De Edge Function kan naar de vorige versie worden teruggezet. Databasewijzigingen zijn additief en legacy-compatible; scanrecords en runtime-events worden niet destructief teruggedraaid. Make is geen onderdeel van de keten.
+De portalbridge kan worden verwijderd zonder historische data te verwijderen. De Edge Function kan naar de vorige versie worden teruggezet. Databasewijzigingen zijn additief en legacy-compatible; scanrecords en runtime-events worden niet destructief teruggedraaid. Make is geen onderdeel van de keten.
 
 ## Lifecycle
 
