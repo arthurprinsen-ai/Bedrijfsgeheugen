@@ -65,3 +65,7 @@ left join experiment_one e
 left join public.powerhouse_channel_decisions d
   on d.run_date=o.publication_date
  and d.channel=o.channel;
+
+alter view public.content_operations_cockpit set (security_invoker = true);
+revoke all on table public.content_operations_cockpit from public, anon, authenticated;
+grant select on table public.content_operations_cockpit to service_role;
