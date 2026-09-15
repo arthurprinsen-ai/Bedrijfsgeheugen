@@ -27,15 +27,19 @@ def check_sql(sql: str, label: str):
             f"POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL_VIEW:{view}" in sql
             or "POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL_VIEW" in sql
         )
-        invoker_pat = re.compile(
+        alter_invoker_pat = re.compile(
             rf"alter\s+view\s+public\.{re.escape(view)}\s+set\s*\(\s*security_invoker\s*=\s*true\s*\)", re.I
+        )
+        inline_invoker_pat = re.compile(
+            rf"create\s+(?:or\s+replace\s+)?view\s+public\.{re.escape(view)}\s+with\s*\(\s*security_invoker\s*=\s*true\s*\)",
+            re.I,
         )
         revoke_pat = re.compile(
             rf"revoke\s+all\s+on\s+(?:table\s+)?public\.{re.escape(view)}\s+from\s+[^;]*(?:public[^;]*anon[^;]*authenticated|public[^;]*authenticated[^;]*anon|anon[^;]*authenticated|authenticated[^;]*anon)",
             re.I | re.S,
         )
         if not intentional:
-            if not invoker_pat.search(sql):
+            if not (alter_invoker_pat.search(sql) or inline_invoker_pat.search(sql)):
                 errors.append(f"{label}: public.{view} is created without security_invoker=true in the same migration")
             if not revoke_pat.search(sql):
                 errors.append(f"{label}: public.{view} is created without revoking browser-role view privileges in the same migration")
@@ -79,6 +83,13 @@ def self_test():
       revoke all on table public.good_view from public, anon, authenticated;
       grant select on table public.good_view to service_role;
     """
+    safe_inline_view = """
+      create or replace view public.good_inline_view
+      with (security_invoker = true)
+      as select 1 as id;
+      revoke all on public.good_inline_view from public, anon, authenticated;
+      grant select on public.good_inline_view to service_role;
+    """
     public_view_exception = """
       -- POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL_VIEW:public_view
       create view public.public_view as select 1 as id;
@@ -104,6 +115,7 @@ def self_test():
     assert any("search_path" in e for e in unsafe_fn_errors)
     assert check_sql(safe_table, "safe_table") == []
     assert check_sql(safe_view, "safe_view") == []
+    assert check_sql(safe_inline_view, "safe_inline_view") == []
     assert check_sql(public_view_exception, "public_view_exception") == []
     assert check_sql(safe_fn, "safe_fn") == []
     assert check_sql(public_exception, "public_exception") == []
