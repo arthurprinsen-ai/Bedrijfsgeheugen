@@ -1,0 +1,65 @@
+{
+  "version": "POWERHOUSE-TRUTH-STATUS-v1",
+  "canonical": true,
+  "scope": "all-current-and-future-agents-chats-workflows",
+  "purpose": "Voorkom dat onbewezen claims als live, klaar, groen, opgelost of geborgd als operationele waarheid worden behandeld.",
+  "executionStatuses": [
+    "LIVE_BEWEZEN",
+    "DEELS_LIVE",
+    "GEBLOKKEERD",
+    "NIET_GEDAAN"
+  ],
+  "verificationStates": [
+    "VERIFIED",
+    "UNVERIFIED_LEGACY"
+  ],
+  "legacyPolicy": {
+    "historicalChatClaimsDefaultTo": "UNVERIFIED_LEGACY",
+    "claims": ["live", "klaar", "groen", "opgelost", "geborgd"],
+    "promotionRequiresCurrentProductionEvidence": true,
+    "chatTextNeverOverridesCanonicalRuntimeEvidence": true
+  },
+  "requiredFields": [
+    "status",
+    "verification_state",
+    "production_ref",
+    "evidence",
+    "gates",
+    "open_gaps",
+    "powerhouse_writeback",
+    "next_action",
+    "updated_at"
+  ],
+  "liveProvenInvariant": {
+    "status": "LIVE_BEWEZEN",
+    "requires": {
+      "verification_state": "VERIFIED",
+      "production_ref_present": true,
+      "evidence_non_empty": true,
+      "all_required_gates_green": true,
+      "open_gaps_empty": true,
+      "powerhouse_writeback_verified": true
+    }
+  },
+  "partialInvariant": {
+    "status": "DEELS_LIVE",
+    "rule": "Gebruik zodra enig vereist productie-, gate-, evidence- of writebackonderdeel nog ontbreekt terwijl een deel aantoonbaar live is."
+  },
+  "blockedInvariant": {
+    "status": "GEBLOKKEERD",
+    "rule": "Gebruik uitsluitend met concrete blocker en next_action; een blocker mag nooit als groen worden samengevat."
+  },
+  "notDoneInvariant": {
+    "status": "NIET_GEDAAN",
+    "rule": "Gebruik wanneer de gevraagde materiële verandering niet aantoonbaar is uitgevoerd."
+  },
+  "writebackPolicy": {
+    "reuseExistingPowerhouseLineage": true,
+    "parallelTruthStoreForbidden": true,
+    "materialOutcomeType": "CONTRACT_CHANGE",
+    "runtimeEventRequired": true,
+    "learningWritebackRequired": true,
+    "sharedContextRefreshRequired": true
+  },
+  "failClosed": true
+}
