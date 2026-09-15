@@ -271,6 +271,10 @@ select
 from public.powerhouse_commercial_next_best_action_v3 n
 left join efficiency e on lower(e.channel) = lower(n.recommended_channel);
 
+alter view public.powerhouse_action_business_value_v1 set (security_invoker = true);
+alter view public.powerhouse_portal_resource_summary_v2 set (security_invoker = true);
+alter view public.powerhouse_commercial_next_best_action_v4 set (security_invoker = true);
+
 revoke all on public.powerhouse_action_business_value_v1 from public, anon, authenticated;
 revoke all on public.powerhouse_portal_resource_summary_v2 from public, anon, authenticated;
 revoke all on public.powerhouse_commercial_next_best_action_v4 from public, anon, authenticated;
