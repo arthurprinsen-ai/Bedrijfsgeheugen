@@ -103,3 +103,26 @@ test('LinkedIn publication reconciliation uses deterministic campaign identity w
   assert.match(linkedinReconcileMigration, /source_campaign_id/i);
   assert.match(operationsWorkflow, /20260914133500_linkedin_campaign_identity_reconciliation\.sql/);
 });
+
+const publicationWatchdogMigrationPath = 'supabase/migrations/20260915101500_content_publication_daily_watchdog.sql';
+const publicationWatchdogMigration = fs.existsSync(publicationWatchdogMigrationPath) ? fs.readFileSync(publicationWatchdogMigrationPath, 'utf8') : '';
+
+test('daily publication invariant has an explicit no-publish terminal state', () => {
+  assert.match(publicationWatchdogMigration, /SKIPPED/);
+  assert.match(publicationWatchdogMigration, /record_content_publication_skip/i);
+  assert.match(publicationWatchdogMigration, /NO_PUBLISH_REASON_REQUIRED/);
+});
+
+test('daily publication watchdog fails silent obligations and treats only proven or explicit skip as success', () => {
+  assert.match(publicationWatchdogMigration, /enforce_content_publication_daily_invariant/i);
+  assert.match(publicationWatchdogMigration, /SILENT_PUBLICATION_FAILURE/);
+  assert.match(publicationWatchdogMigration, /LIVE_PROVEN.*MEASURED.*LEARNED.*SKIPPED/is);
+  assert.match(publicationWatchdogMigration, /status\s*=\s*'FAILED'/i);
+});
+
+test('daily publication watchdog is scheduled natively and idempotently', () => {
+  assert.match(publicationWatchdogMigration, /cron\.unschedule/i);
+  assert.match(publicationWatchdogMigration, /cron\.schedule/i);
+  assert.match(publicationWatchdogMigration, /bg-content-publication-daily-watchdog/);
+  assert.match(publicationWatchdogMigration, /Europe\/Amsterdam/);
+});
