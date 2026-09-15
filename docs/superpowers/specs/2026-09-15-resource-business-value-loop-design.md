@@ -75,5 +75,8 @@ The business-value projection is read-only. Existing forecast/outcome/calibratio
 - Existing `tokenMetering` API status remains unchanged; new context is additive.
 - New views are server-side/security-invoker and do not widen anon/authenticated access.
 
+## Implementation note
+The Supabase security gate accepts both PostgreSQL-valid security-invoker forms: inline `CREATE VIEW ... WITH (security_invoker = true)` and post-create `ALTER VIEW ... SET (security_invoker = true)`. The regression fixture covers both forms, so future migrations are blocked only for genuinely missing invoker protection rather than syntax choice.
+
 ## Success criteria
 A controlled action can be traced through existing canonical authorities from action/resource usage to economics and outcome, producing deterministic business-value/coverage fields. Production evidence must include schema/readback, tests, merge SHA, Netlify production SHA, production-release readback and canonical Powerhouse/Notion writeback.
