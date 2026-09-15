@@ -34,7 +34,9 @@ test('daily Make portfolio decision remains an outcome obligation until evidence
   assert.match(obligation.evidencePolicy, /SAFE_OPTIMIZATION_CANDIDATE/);
   assert.match(obligation.evidencePolicy, /VERIFIED_NO_ACTION/);
   assert.match(obligation.evidencePolicy, /BLOCKED_HARD_BOUNDARY/);
-  assert.match(obligation.evidencePolicy, /BG167/);
+  assert.match(obligation.evidencePolicy, /Powerhouse\/Supabase/);
+  assert.match(obligation.legacyProvenance, /BG167/);
+  assert.match(obligation.legacyProvenance, /LEGACY_RETIRED_PATH/);
   assert.match(obligation.recoveryPolicy, /fingerprint/i);
   assert.match(obligation.recoveryPolicy, /duplicate/i);
 });

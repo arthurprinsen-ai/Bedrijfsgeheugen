@@ -21,7 +21,7 @@ test('Powerhouse LinkedIn sales intelligence closes person company prediction ac
     'relationship_warmth','decision_influence','company_intent_score','buying_window_score','recommended_channel',
     'message_strategy','recommended_asset','recommended_cta','commercial_progression','brier_component','strategy_performance'
   ]) assert.match(sql,new RegExp(capability,'i'),`missing ${capability}`);
-  assert.match(sql,/expected_value_eur\s*>\s*0[\s\S]*linkedin_dm/i,'direct outreach must require positive observed commercial value');
+  assert.match(sql,/coalesce\(b\.expected_value_eur,0\)\s*>\s*0[\s\S]*then\s+'linkedin_dm'/i,'direct outreach must require positive observed commercial value');
   assert.match(sql,/autonomy:'\|\|p_run_date::text\|\|':'\|\|r\.opportunity_key/i,'reuse canonical action dedupe lineage');
   assert.match(sql,/where r\.rn <= 20/i,'daily commercial actions must be bounded to 20');
   assert.match(sql,/security_invoker\s*=\s*true/i);
