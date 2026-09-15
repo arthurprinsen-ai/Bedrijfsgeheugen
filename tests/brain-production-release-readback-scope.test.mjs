@@ -55,12 +55,23 @@ test('connector readiness tolerates bounded transient 5xx responses and still fa
   assert.match(workflow, /exit 1/);
 });
 
-test('production readback is owned by the canonical Brain delivery control plane', async () => {
-  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
-  const controlPlane = policy.conflictContracts.find(contract => contract.id === 'delivery-control-plane');
-  assert.ok(controlPlane, 'delivery-control-plane conflict contract must exist');
-  assert.ok(controlPlane.paths.includes('.github/workflows/production-release-readback.yml'));
-  assert.ok(controlPlane.paths.includes('tests/brain-production-release-readback-scope.test.mjs'));
+test('production readback is a canonical Brain/Powerhouse delivery-control-plane contract', async () => {
+  const contract = JSON.parse(await readFile('brain/contracts/production-readback-v1.json', 'utf8'));
+  assert.equal(contract.id, 'production-readback-v1');
+  assert.equal(contract.owner, 'delivery-control-plane');
+  assert.equal(contract.system, 'BRAIN/Powerhouse');
+  assert.equal(contract.status, 'canonical');
+  assert.equal(contract.sourceOfTruth, '.github/workflows/production-release-readback.yml');
+  assert.equal(contract.requiredGate, 'Required test');
+  assert.equal(contract.contractTest, 'tests/brain-production-release-readback-scope.test.mjs');
+  assert.equal(contract.principles.failClosed, true);
+  assert.equal(contract.principles.noParallelReleaseMechanism, true);
+  assert.equal(contract.principles.noMakeDependency, true);
+  assert.equal(contract.principles.exactReleaseIdentity, true);
+  assert.equal(contract.principles.contentReadbackRequired, true);
+  assert.equal(contract.principles.transient5xxPolicy, 'bounded-retry-then-fail-closed');
+  assert.equal(contract.connectorReadiness.maxAttempts, 8);
+  assert.equal(contract.connectorReadiness.terminalFailure, true);
 });
 
 test('public connector readiness is excluded from the authenticated connector wildcard', async () => {
