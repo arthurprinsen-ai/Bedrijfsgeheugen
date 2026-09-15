@@ -18,6 +18,9 @@ test('demoAI rewrite stays compact after asynchronous Portal V2 actions mount', 
   await page.waitForSelector('.v2utilities', { state: 'attached' });
   await page.waitForTimeout(1800);
 
+  // Always preserve post-hydration visual evidence, including failing runs.
+  await page.screenshot({ path: 'artifacts/portal-v2-mobile-overview-demoai.png', fullPage: true });
+
   await expect(page.locator('.mobilebar')).toBeVisible();
   await expect(page.locator('.v2utilities')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Export', exact: true })).toBeHidden();
@@ -34,18 +37,23 @@ test('demoAI rewrite stays compact after asynchronous Portal V2 actions mount', 
   const topbarHeight = await page.locator('.topbar').evaluate(node => node.getBoundingClientRect().height);
   expect(topbarHeight).toBeLessThan(260);
 
+  const kpiState = await page.locator('.kpis').evaluate(node => {
+    const style = getComputedStyle(node);
+    const rect = node.getBoundingClientRect();
+    return { display:style.display, gridTemplateColumns:style.gridTemplateColumns, visibility:style.visibility, width:rect.width, height:rect.height, x:rect.x, y:rect.y };
+  });
   const cards = await page.locator('.kpis .kpi').evaluateAll(nodes => nodes.slice(0, 2).map(node => {
     const r = node.getBoundingClientRect();
-    return { x:r.x, y:r.y, width:r.width };
+    const s = getComputedStyle(node);
+    return { x:r.x, y:r.y, width:r.width, height:r.height, display:s.display, visibility:s.visibility, position:s.position };
   }));
+  console.log('MOBILE_KPI_STATE', JSON.stringify({ kpiState, cards }));
   expect(cards).toHaveLength(2);
+  expect(cards.every(card => card.width >= 150 && card.height > 0)).toBeTruthy();
   expect(Math.abs(cards[0].y - cards[1].y)).toBeLessThanOrEqual(2);
   expect(cards[1].x).toBeGreaterThan(cards[0].x);
-  expect(cards.every(card => card.width >= 150)).toBeTruthy();
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
   expect(errors).toEqual([]);
-
-  await page.screenshot({ path: 'artifacts/portal-v2-mobile-overview-demoai.png', fullPage: true });
 });
