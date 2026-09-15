@@ -10,6 +10,9 @@ function renderModel(model){
 export function mountStrategicModelsWorkspace(root,{domainState,pageId='strategiemodellen'}={}){
  if(!root||!domainState?.get)return ()=>{};
  root.dataset.functionalWorkspace=pageId;
- const draw=()=>{const models=buildStrategicModels(domainState.get()||{});root.innerHTML=`<section class="pvmodule strategic-models-parity" data-strategic-models="legacy-parity"><header class="pvmodulehead"><div><span>${models.length} modellen uit dezelfde klantstate</span><h3>Strategiemodellen</h3></div></header><div class="v2workspacetabs" role="tablist"><button type="button" role="tab" data-workspace-tab="analyse" aria-selected="true">Analyse</button></div><p class="wzsub">Geen lege sjablonen: waarden, positie en uitleg worden afgeleid uit dezelfde canonieke Powerhouse-state als de rest van het portaal.</p><div class="strategic-model-list">${models.map(renderModel).join('')}</div></section>`;};
+ const draw=()=>{
+  const models=buildStrategicModels(domainState.get()||{});
+  root.innerHTML=`<div class="v2workspace v2workspace-strategy-models" data-active-tab="analyse"><div class="v2workspacetabs" role="tablist"><button type="button" role="tab" data-workspace-tab="analyse" aria-selected="true">Analyse</button></div><div class="v2workspacecontent" data-workspace-content><section class="pvmodule strategic-models-parity" data-strategic-models="legacy-parity"><header class="pvmodulehead"><div><span>${models.length} modellen uit dezelfde klantstate</span><h3>Strategiemodellen</h3></div></header><p class="wzsub">Geen lege sjablonen: waarden, positie en uitleg worden afgeleid uit dezelfde canonieke Powerhouse-state als de rest van het portaal.</p><div class="strategic-model-list">${models.map(renderModel).join('')}</div></section></div></div>`;
+ };
  draw();const unsub=domainState.subscribe?.(()=>draw());return ()=>unsub?.();
 }
