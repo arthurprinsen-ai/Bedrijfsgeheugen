@@ -11,7 +11,7 @@ create or replace function public.brain_transition_obligation(
 returns public.brain_obligations
 language plpgsql
 security definer
-set search_path=public
+set search_path = public, pg_catalog
 as $$
 declare
   v_obligation_id uuid := p_obligation_id;
@@ -50,5 +50,5 @@ begin
 end;
 $$;
 
-revoke all on function public.brain_transition_obligation(uuid,bigint,text,text,jsonb) from public,anon,authenticated,service_role;
+revoke execute on function public.brain_transition_obligation(uuid,bigint,text,text,jsonb) from public, anon, authenticated;
 grant execute on function public.brain_transition_obligation(uuid,bigint,text,text,jsonb) to service_role;
