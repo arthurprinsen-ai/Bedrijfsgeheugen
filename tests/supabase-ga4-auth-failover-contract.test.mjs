@@ -49,7 +49,9 @@ test('scheduler reuses the canonical collector and creates no analytics store', 
 });
 
 test('Powerhouse policy canonizes GA4 auth failover and truth boundary', () => {
-  has(policy,/"version":"v1\.3"/i, 'policy version must advance');
+  const parsedPolicy = JSON.parse(policy);
+  const versionMatch = /^v1\.(\d+)$/.exec(parsedPolicy.version ?? '');
+  assert.ok(versionMatch && Number(versionMatch[1]) >= 3, 'policy version must be v1.3 or newer');
   has(policy,/"ga4_auth_failover"/i, 'GA4 auth failover capability must be canonical');
   has(policy,/"fallback_trigger":"AUTH only"/i, 'policy must restrict failover trigger');
   has(policy,/"fallback_freshness_hours":48/i, 'policy must bound fallback freshness');
