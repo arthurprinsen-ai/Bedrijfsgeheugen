@@ -9,8 +9,8 @@
     "semanticTimestampAliasesForbidden": true,
     "closureRequiresPostMergeProductionAndGithubReadback": true
   },
-  "observedAt": "2026-09-15T15:00:00Z",
-  "latestObservedProductionMigration": "20260915154107_powerhouse_outcome_readback_health_semantics_v1",
+  "observedAt": "2026-09-15T16:13:22Z",
+  "latestObservedProductionMigration": "20260915161322_brain_transition_obligation_atomic_cas_v2_security_contract",
   "reconciliationStatus": "PENDING_MAIN_READBACK",
   "reconciled": [
     {
@@ -30,11 +30,19 @@
       "replacesAlias": "20260915154000_powerhouse_outcome_readback_health_semantics_v1.sql"
     }
   ],
+  "controlPlaneFix": {
+    "production": "20260915161019_brain_transition_obligation_atomic_cas_v2.sql",
+    "securityNormalization": "20260915161322_brain_transition_obligation_atomic_cas_v2_security_contract.sql",
+    "reason": "The canonical obligation transition RPC reproduced a false STATE_VERSION_CONFLICT while closing this lineage obligation. The fix replaces the composite pre-read CAS with one atomic UPDATE keyed by obligation id and expected version; the follow-up pins deterministic search_path and explicit fail-closed EXECUTE grants required by the Powerhouse security contract.",
+    "tddRegression": "tests/supabase-brain-transition-obligation-atomic-cas-v2.test.mjs",
+    "productionApplied": true,
+    "githubMainReadbackRequired": true
+  },
   "obligation": {
     "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
     "changeId": "repo-production-migration-lineage-reconciliation-v1",
     "productionStateBeforeClosure": "OPEN",
     "closureState": "FULFILLED",
-    "closureCondition": "All production entries above exist on GitHub main at their exact production filenames, all aliases are absent, required CI is green, and Supabase plus GitHub are read back after merge."
+    "closureCondition": "All production entries above, including both control-plane CAS migrations, exist on GitHub main at their exact production filenames, all aliases are absent, required CI is green, and Supabase plus GitHub are read back after merge."
   }
 }
