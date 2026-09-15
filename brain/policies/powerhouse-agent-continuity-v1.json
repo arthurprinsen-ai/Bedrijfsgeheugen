@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|v1",
+  "status": "ACTIVE",
+  "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
+  "purpose": "Ensure every material autonomous change becomes a documented, registered and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch.",
+  "invariants": [
+    "CURRENT_STATE_BEFORE_WORK",
+    "REUSE_BEFORE_BUILD",
+    "AUTONOMOUS_BUILD_MUST_JOIN_POWERHOUSE",
+    "NO_UNREGISTERED_MATERIAL_CAPABILITY",
+    "NO_AGENT_STARTS_FROM_SCRATCH",
+    "NO_LIVE_WITHOUT_READBACK",
+    "NO_DONE_WITHOUT_HANDOFF",
+    "LEARNING_MUST_BE_REUSABLE_BY_NEXT_AGENT"
+  ],
+  "mandatory_preflight": [
+    "read canonical Powerhouse system contract",
+    "read current truth status and shared team context",
+    "read open obligations, blockers and relevant learnings",
+    "identify existing owner, component, data route, deploy route, provider route, outcome route and learning route",
+    "reuse the existing component when capability already exists"
+  ],
+  "mandatory_post_change_handoff": {
+    "required": true,
+    "fields": [
+      "capability_or_change_id",
+      "purpose",
+      "canonical_owner",
+      "repository_or_runtime_location",
+      "dependencies",
+      "inputs",
+      "outputs",
+      "data_and_truth_sources",
+      "execution_or_runtime_flow",
+      "deployment_or_publication_route",
+      "required_gates",
+      "production_or_provider_readback",
+      "rollback_or_recovery_route",
+      "learning_and_outcome_lineage",
+      "known_open_gaps",
+      "last_verified_identity",
+      "next_safe_action"
+    ]
+  },
+  "automatic_integration_rule": "Every material capability created or materially changed by an autonomous agent must be attached to the existing Powerhouse architecture, registered in the existing canonical component/current-state machinery when registration is applicable, linked to the existing truth/evidence and learning lineage, and made discoverable through the mandatory shared preflight. It may not remain an isolated script, branch, chat instruction, local file, hidden workflow or undocumented provider action.",
+  "new_capability_rule": "A genuinely new capability is allowed only after existing-state search proves it does not already exist. The new capability must then be registered, documented, gated, deployed where applicable, read back, given rollback/recovery semantics and written into shared learning before the task can be terminal green.",
+  "changed_capability_rule": "A changed existing capability must update its canonical handoff/current-state description whenever owner, location, dependency, runtime flow, data route, deployment route, gate, rollback, provider or learning behavior changed materially.",
+  "continuity_rule": "Every following agent or chat must be able to determine what the capability does, where it lives, how it is operated, how success is proven, where failures are recorded and what remains open without relying on the wording of a previous chat.",
+  "terminal_green_requires": [
+    "production_or_provider_execution_when_applicable",
+    "exact_readback",
+    "canonical_registration_when_applicable",
+    "current_state_or_handoff_updated",
+    "learning_writeback_completed",
+    "shared_preflight_can_discover_the_new_state",
+    "no_critical_unrecorded_gap"
+  ],
+  "failure_behavior": "If any mandatory handoff, registration, evidence or learning step cannot be completed, preserve an explicit canonical open obligation and downgrade status from LIVE_BEWEZEN to DEELS_LIVE or GEBLOKKEERD. Never hide the missing continuity step behind a successful deploy.",
+  "prevention": "Do not let autonomous work end as undocumented implementation knowledge inside one chat or one agent. Persist how it works and the verified operating state in the existing Powerhouse truth, evidence, architecture and learning paths so the next agent continues immediately from canonical state.",
+  "linked_learning_sources": []
+}
