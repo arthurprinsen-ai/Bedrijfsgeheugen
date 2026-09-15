@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const migrationPath = new URL('../supabase/migrations/20260915163000_powerhouse_revenue_intelligence_loop_v1.sql', import.meta.url);
-const runtimePath = new URL('../supabase/functions/powerhouse-runtime/index.ts', import.meta.url);
+const intelligencePath = new URL('../supabase/functions/powerhouse-revenue-intelligence/index.ts', import.meta.url);
 
 function read(path) {
   return fs.readFileSync(path, 'utf8');
@@ -73,18 +73,19 @@ test('experiment learning cannot prove itself from vanity metrics only', () => {
   assert.match(sql, /proven/i);
 });
 
-test('runtime exposes command center, account, research and model health routes', () => {
-  const source = read(runtimePath);
+test('revenue intelligence facade exposes command center, account, research and model health routes', () => {
+  const source = read(intelligencePath);
   assert.match(source, /command-center/);
   assert.match(source, /model-health/);
   assert.match(source, /accounts/);
   assert.match(source, /research/);
   assert.match(source, /powerhouse_revenue_command_center_v2/);
   assert.match(source, /powerhouse_model_health_v1/);
+  assert.match(source, /x-powerhouse-token/);
 });
 
-test('daily runtime reports structural lineage gaps and explicit degraded state', () => {
-  const source = read(runtimePath);
+test('daily intelligence health reports structural lineage gaps and explicit degraded state', () => {
+  const source = read(intelligencePath);
   assert.match(source, /structural_lineage_gaps/);
   assert.match(source, /research_queue_count/);
   assert.match(source, /model_health_segments/);
