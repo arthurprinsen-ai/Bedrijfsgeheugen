@@ -1,6 +1,7 @@
 import { profileOverviewMetrics } from './company-input.js';
 import { mountOverviewReorder } from './overview-reorder.js';
 import { mountAuthenticatedCompanyCockpit } from '../company-cockpit-bootstrap.js';
+import { isDemoCustomer, renderDemoOverview } from './overview-demo.js';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);
@@ -39,6 +40,9 @@ function ensureCompanyCockpit(root){
 export function applyOverviewDashboard(root=document,state={}){
  ensureOverviewReorder(root);
  ensureCompanyCockpit(root);
+ // Demo-klant krijgt het volledige dashboard volgens design; elke andere klant
+ // houdt de bestaande, uit klantdata afgeleide KPI-kaarten.
+ if(isDemoCustomer(state)&&renderDemoOverview(root))return true;
  const model=overviewViewModel(state);
  if(!model||!root?.querySelectorAll)return false;
  const cards=[...root.querySelectorAll('.kpis .kpi')].slice(0,4);
