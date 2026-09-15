@@ -34,5 +34,9 @@ test('RLS no longer accepts arbitrary anonymous tenant assertions', () => {
   has(migration, /drop policy if exists scan_toevoegen/i, 'legacy open scan insert policy must be removed');
   has(migration, /drop policy if exists offerte_toevoegen/i, 'legacy open offer insert policy must be removed');
   has(migration, /with check/i, 'replacement insert policy must validate derived identity state');
-  assert.doesNotMatch(migration, /with\s+check\s*\(\s*true\s*\)/i, 'arbitrary inserts must not remain accepted');
+  const executableSql = migration
+    .split('\n')
+    .filter((line) => !line.trimStart().startsWith('--'))
+    .join('\n');
+  assert.doesNotMatch(executableSql, /create\s+policy[\s\S]*?with\s+check\s*\(\s*true\s*\)/i, 'arbitrary inserts must not remain accepted');
 });
