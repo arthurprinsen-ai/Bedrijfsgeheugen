@@ -1,59 +1,42 @@
 -- Powerhouse Commercial Closed Loop v2
 -- Extends the existing Growth & Revenue OS. No parallel brain, queue, scheduler or learning store.
+-- Source-health truth is owned by powerhouse-data-intake-learning-spine-v1 / bg_gezondheid_meten().
 
 create or replace view public.powerhouse_source_freshness_v1 as
-with source_contract as (
-  select * from (values
-    ('website_analytics'::text, true,  interval '36 hours', 'bg-analytics-sync-composio'::text,
-      (select max(updated_at) from public.growth_page_daily)),
-    ('search_console'::text,   true,  interval '8 days',   'bg-gsc-sync'::text,
-      (select max(datum::timestamptz) from public.bg_zoekprestaties)),
-    ('social_metrics'::text,   true,  interval '36 hours', 'bg-buffer-sync-daily'::text,
-      (select max(observed_at) from public.social_metric_snapshots)),
-    ('social_delivery'::text,  false, interval '8 days',   'bg-buffer-sync-daily'::text,
-      (select max(coalesce(published_at,created_at)) from public.social_posts)),
-    ('linkedin_intelligence'::text,true, interval '36 hours','powerhouse-linkedin-sales-intelligence'::text,
-      (select max(gemeten_op) from public.bg_gezondheid where onderdeel='powerhouse-linkedin-sales-intelligence')),
-    ('external_research'::text,true, interval '36 hours','external-research-feeds'::text,
-      (select max(gemeten_op) from public.bg_gezondheid where onderdeel='external-research-feeds')),
-    ('sales_outcomes'::text,   false, interval '30 days',  null::text,
-      (select max(occurred_at) from public.powerhouse_sales_outcomes))
-  ) as v(source_key, required_for_daily_loop, expected_max_age, health_component, latest_evidence_at)
-), latest_health as (
+with latest as (
   select distinct on (g.onderdeel)
-    g.onderdeel, g.status as provider_health_status, g.detail as provider_health_detail, g.gemeten_op as provider_health_at
+    g.onderdeel,
+    g.gemeten_op,
+    g.status,
+    g.detail,
+    g.gegevens
   from public.bg_gezondheid g
-  join source_contract c on c.health_component=g.onderdeel
-  order by g.onderdeel, g.gemeten_op desc
+  where g.soort='versheid'
+  order by g.onderdeel,g.gemeten_op desc
 )
 select
-  c.source_key,
-  c.required_for_daily_loop,
-  c.latest_evidence_at,
-  c.expected_max_age,
-  case when c.latest_evidence_at is null then null else now()-c.latest_evidence_at end as evidence_age,
-  h.provider_health_status,
-  h.provider_health_detail,
-  h.provider_health_at,
+  l.onderdeel as source_key,
+  coalesce((l.gegevens->>'required_activity')::boolean,false) as required_for_daily_loop,
+  l.gemeten_op as health_checked_at,
+  case when l.gegevens ? 'max_leeftijd' then (l.gegevens->>'max_leeftijd')::interval else null end as expected_max_age,
+  l.status as canonical_health_status,
+  l.detail as canonical_health_detail,
   case
-    when c.latest_evidence_at is null and c.required_for_daily_loop then 'missing'
-    when c.latest_evidence_at is null then 'no_event'
-    when now()-c.latest_evidence_at > c.expected_max_age then 'stale'
-    when coalesce(lower(h.provider_health_status),'') in ('fout','error','failed') then 'fresh_with_warning'
-    when coalesce(lower(h.provider_health_status),'') in ('waarschuwing','warning','degraded') then 'fresh_with_warning'
-    else 'fresh'
+    when l.status='ok' then 'fresh'
+    when l.status='waarschuwing' then 'fresh_with_warning'
+    when lower(coalesce(l.detail,'')) like '%leeg%'
+      or lower(coalesce(l.detail,'')) like '%nog nooit%'
+      or lower(coalesce(l.detail,'')) like '%geen recente%' then 'missing'
+    else 'stale'
   end as freshness_status,
-  jsonb_build_object(
-    'source_key',c.source_key,
-    'required',c.required_for_daily_loop,
-    'latest_evidence_at',c.latest_evidence_at,
-    'expected_max_age_seconds',extract(epoch from c.expected_max_age)::bigint,
-    'provider_health_status',h.provider_health_status,
-    'provider_health_detail',h.provider_health_detail,
-    'provider_health_at',h.provider_health_at
+  coalesce(l.gegevens,'{}'::jsonb) || jsonb_build_object(
+    'source_key',l.onderdeel,
+    'canonical_contract','powerhouse-data-intake-learning-spine-v1',
+    'health_checked_at',l.gemeten_op,
+    'canonical_status',l.status,
+    'canonical_detail',l.detail
   ) as evidence
-from source_contract c
-left join latest_health h on h.onderdeel=c.health_component;
+from latest l;
 
 alter view public.powerhouse_source_freshness_v1 set (security_invoker = true);
 revoke all on table public.powerhouse_source_freshness_v1 from public, anon, authenticated;
@@ -185,6 +168,9 @@ begin
   v_learning := public.powerhouse_commercial_learning_cycle_v1(p_run_date);
   v_actions := public.powerhouse_prepare_safe_actions_v1(p_run_date);
 
+  -- Refresh the ONE canonical source-health spine before consuming it here.
+  perform * from public.bg_gezondheid_meten();
+
   select coalesce(jsonb_agg(to_jsonb(s) order by s.source_key),'[]'::jsonb),
          count(*) filter(where s.required_for_daily_loop and s.freshness_status in ('missing','stale'))::integer,
          count(*) filter(where s.required_for_daily_loop and s.freshness_status='fresh_with_warning')::integer
@@ -214,6 +200,7 @@ begin
 
   v_payload := jsonb_build_object(
     'contract','powerhouse-commercial-closed-loop-v2',
+    'source_health_contract','powerhouse-data-intake-learning-spine-v1',
     'run_date',p_run_date,
     'linkedin_sales_intelligence',v_linkedin,
     'commercial_learning',v_learning,
@@ -239,8 +226,8 @@ begin
     'powerhouse-commercial-closed-loop-v2','closed_loop',v_health_status,
     case
       when v_required_bad>0 then 'Verplichte databron ontbreekt of is stale; closed loop blijft fail-closed.'
-      when v_required_warnings>0 then 'Data is vers maar minstens één verplichte provider/sync meldt een waarschuwing of fout.'
-      else 'Commerciële closed loop uitgevoerd met verse verplichte brondata.'
+      when v_required_warnings>0 then 'Canonieke brondata bevat minstens één waarschuwing; closed loop blijft zichtbaar degraded waar nodig.'
+      else 'Commerciële closed loop uitgevoerd met canoniek groene verplichte brondata.'
     end,
     v_payload
   );
@@ -251,7 +238,10 @@ begin
     'powerhouse-commercial-closed-loop-v2:'||p_run_date::text,
     'commercial_closed_loop','powerhouse-commercial-closed-loop-v2','growth-revenue-os',now(),
     v_payload,
-    jsonb_build_object('root_cause','Commercial capabilities existed independently but were not mandatory from the scheduler-owned daily path.'),
+    jsonb_build_object(
+      'root_cause','Commercial capabilities existed independently but were not mandatory from the scheduler-owned daily path.',
+      'source_health_reuse','powerhouse-data-intake-learning-spine-v1'
+    ),
     'closed','OBSERVED',1
   )
   on conflict(dedupe_key) do update set
@@ -262,16 +252,17 @@ begin
   ) values(
     'powerhouse-commercial-closed-loop-orchestration-v2',
     'growth-revenue-os','system',
-    'Every mandatory commercial capability must be reachable from one scheduler-owned closed-loop orchestrator; direct outbound remains fail-closed without destination, eligibility, contact-pressure, identity, truth and provider proof.',
+    'Every mandatory commercial capability must be reachable from one scheduler-owned closed-loop orchestrator; source health reuses the canonical data-intake spine; direct outbound remains fail-closed without destination, eligibility, contact-pressure, identity, truth and provider proof.',
     jsonb_build_object(
-      'root_cause','Commercial intelligence/learning/freshness components existed but the scheduler authority invoked only the legacy execution guard.',
+      'root_cause','Commercial intelligence/learning/action preparation existed independently from the scheduler authority.',
       'production_contract','powerhouse-commercial-closed-loop-v2',
+      'source_health_contract','powerhouse-data-intake-learning-spine-v1',
       'run_date',p_run_date,
       'source_freshness',v_sources,
       'safe_action_preparation',v_actions
     ),
     jsonb_build_object(
-      'prevention_rule','One scheduler-owned commercial orchestrator must invoke intelligence, learning, safe action preparation, freshness readback and the existing execution guard every run.',
+      'prevention_rule','One scheduler-owned commercial orchestrator invokes intelligence, learning, safe action preparation, canonical freshness readback and the existing execution guard every run.',
       'truth_boundary','Observed realized revenue only; insufficient evidence remains explicit.'
     ),
     1,'proven',greatest(1,v_outcomes),now()
