@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createAiUsageStore, createCanonicalAiUsageWriter } from '../netlify/functions/_ai-usage-store.mjs';
-import { runWebsiteAnswer } from '../netlify/functions/_brain-ai.mjs';
+import { runPortalAnswer, runWebsiteAnswer } from '../netlify/functions/_brain-ai.mjs';
 
 function memoryBlobStore() {
   const values = new Map();
@@ -120,5 +120,48 @@ test('website AI forwards verified business attribution while pinning public ten
     campaignKey:'camp-web-1',
     outcomeKey:'out-web-1',
     prompt:'must-not-flow',
+  });
+});
+
+test('portal AI keeps verified tenant/business lineage while pinning portal activity type', async () => {
+  const calls = [];
+  const usageStore = {
+    async record(record, contextValue) {
+      calls.push({ record, context: contextValue });
+      return { canonicalRecorded:true };
+    },
+  };
+  const fetchImpl = async () => ({
+    ok:true,
+    async json() {
+      return {
+        content:[{ type:'text', text:'Portaalantwoord' }],
+        usage:{ input_tokens:3, output_tokens:2 },
+      };
+    },
+  });
+
+  await runPortalAnswer({
+    vraag:'Welke actie nu?',
+    context:'Klantcontext',
+    apiKey:'test-key',
+    system:'Gebruik klantcontext.',
+    fetchImpl,
+    usageStore,
+    requestId:'CTX-PORTAL-1',
+    usageContext:{
+      tenantId:'tenant-portal-1',
+      activityType:'SHOULD_NOT_OVERRIDE_PORTAL_QA',
+      actionId:'33333333-3333-3333-3333-333333333333',
+      opportunityKey:'opp-portal-1',
+    },
+  });
+
+  assert.equal(calls.length, 1);
+  assert.deepEqual(calls[0].context, {
+    tenantId:'tenant-portal-1',
+    activityType:'portal_qa',
+    actionId:'33333333-3333-3333-3333-333333333333',
+    opportunityKey:'opp-portal-1',
   });
 });
