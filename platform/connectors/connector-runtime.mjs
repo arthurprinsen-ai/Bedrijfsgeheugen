@@ -16,7 +16,7 @@ export function createConnectorRuntime({providers={}}={}){
     classifyError:classifyConnectorError
   });
 }
-export function createEnvironmentConnectorProviders({fetchFn=globalThis.fetch,env=process.env}={}){
+export function createEnvironmentConnectorProviders({fetchFn=globalThis.fetch,env=globalThis.process?.env??{}}={}){
   const upload={read:async input=>{if(!input?.content&&!input?.extractedFields)throw Object.assign(new Error('Safe-test sample is required'),{code:'SAFE_TEST_SAMPLE_REQUIRED'});return {content:input.content||'',hash:input.hash||`sample-${Date.now()}`,sample:input};}};
   const email={read:async input=>{if(!input?.messageId&&!input?.attachments?.length&&!input?.extractedFields)throw Object.assign(new Error('Email safe-test sample is required'),{code:'SAFE_TEST_SAMPLE_REQUIRED'});return {messageId:input.messageId||null,subject:input.subject||'',from:input.from||null,attachments:Array.isArray(input.attachments)?input.attachments:[],hash:input.hash||input.messageId||`email-sample-${Date.now()}`,sample:input};}};
   const sources={upload,email};
