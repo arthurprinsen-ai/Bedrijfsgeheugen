@@ -28,7 +28,7 @@ test('projection is idempotent, evidence preserving and decision/prediction link
 
 test('no-Make production architecture is part of the same Powerhouse guardrail',()=>{
   assert.match(sql,/powerhouse-no-make-production-v1/i);
-  assert.match(sql,/channel-identity-hard-gate-v2/i);
+  assert.match(sql,/channel-identity-hard-gate-v3/i);
   assert.match(sql,/growth-revenue-os-1m-2027-v1/i);
   assert.doesNotMatch(sql,/BG169_HANDOFF_URL|transport="make"|make_accepted/i);
 });
