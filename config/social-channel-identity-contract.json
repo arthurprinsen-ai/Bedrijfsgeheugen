@@ -33,8 +33,16 @@
         "allowedKinds": ["image", "video", "reel"],
         "requiresExactFinalAsset": true,
         "requiresMiraIdentity": true,
+        "requiresVerifiedPublishFormatFor": ["image", "video", "reel"],
+        "requiredImageWidth": 1080,
+        "requiredImageHeight": 1350,
+        "requiredImageMimeType": "image/jpeg",
+        "requiredImageColorSpace": "RGB",
+        "requiresImageWithoutAlpha": true,
+        "requiresCompleteImageDecode": true,
+        "requiresVisualCompleteness": true,
+        "blocksGrayOrEmptyImage": true,
         "requiredVideoFramePositions": ["start", "middle", "end"],
-        "requiresVerifiedPublishFormatFor": ["video", "reel"],
         "requiredVideoMimeType": "video/mp4",
         "generatorsMayNotBypassGate": ["openart", "veo", "placid"]
       }

@@ -14,6 +14,14 @@ const run=(mediaKind,extra={})=>authorizeSocialPublication({
  instagramVisual:{verified:true,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames()},
  ...extra
 });
+const imageVisual=(extra={})=>({
+ verified:true,evidenceRefs:['vision:final-image'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,
+ identityClass:'mira_daily_life',formatVerified:true,width:1080,height:1350,colorSpace:'RGB',hasAlpha:false,
+ decodeComplete:true,visualComplete:true,grayOrEmptyDetected:false,...extra
+});
+const runImage=(visualExtra={},extra={})=>run('image',{
+ assetUrl:'https://cdn.example/final.jpg',assetMimeType:'image/jpeg',instagramVisual:imageVisual(visualExtra),...extra
+});
 
 test('video requires start middle and end frame evidence',()=>{
  const r=run('video',{instagramVisual:{verified:true,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames().slice(0,2)}});
@@ -51,6 +59,48 @@ test('video and reel require MP4 final asset',()=>{
  }
 });
 
+test('image blocks low-resolution final assets such as the 320x400 incident asset',()=>{
+ const r=runImage({width:320,height:400});
+ assert.equal(r.authorized,false);
+ assert.ok(r.reasons.includes('INSTAGRAM_IMAGE_DIMENSIONS_REQUIRED'));
+});
+
+test('image requires RGB JPEG without alpha',()=>{
+ for(const [visualExtra,extra] of [
+  [{}, {assetMimeType:'image/png'}],
+  [{colorSpace:'CMYK'}, {}],
+  [{hasAlpha:true}, {}]
+ ]){
+  const r=runImage(visualExtra,extra);
+  assert.equal(r.authorized,false);
+ }
+ assert.ok(runImage({}, {assetMimeType:'image/png'}).reasons.includes('INSTAGRAM_IMAGE_JPEG_REQUIRED'));
+ assert.ok(runImage({colorSpace:'CMYK'}).reasons.includes('INSTAGRAM_IMAGE_RGB_REQUIRED'));
+ assert.ok(runImage({hasAlpha:true}).reasons.includes('INSTAGRAM_IMAGE_ALPHA_BLOCKED'));
+});
+
+test('image requires a fully decodable and visually complete final asset',()=>{
+ const truncated=runImage({decodeComplete:false});
+ assert.equal(truncated.authorized,false);
+ assert.ok(truncated.reasons.includes('INSTAGRAM_IMAGE_DECODE_INCOMPLETE'));
+ const incomplete=runImage({visualComplete:false});
+ assert.equal(incomplete.authorized,false);
+ assert.ok(incomplete.reasons.includes('INSTAGRAM_IMAGE_VISUAL_INCOMPLETE'));
+ const gray=runImage({grayOrEmptyDetected:true});
+ assert.equal(gray.authorized,false);
+ assert.ok(gray.reasons.includes('INSTAGRAM_IMAGE_GRAY_OR_EMPTY_BLOCKED'));
+});
+
+test('image requires verified publish format and exact final asset readback',()=>{
+ const unverified=runImage({formatVerified:false});
+ assert.equal(unverified.authorized,false);
+ assert.ok(unverified.reasons.includes('INSTAGRAM_MEDIA_FORMAT_UNVERIFIED'));
+ const mismatch=runImage({assetUrl:'https://cdn.example/other.jpg'});
+ assert.equal(mismatch.authorized,false);
+ assert.ok(mismatch.reasons.includes('INSTAGRAM_FINAL_ASSET_MISMATCH'));
+});
+
+test('valid 1080x1350 RGB JPEG final image authorizes',()=>assert.equal(runImage().authorized,true));
 test('reel authorizes exact verified Mira MP4 with complete frame evidence',()=>assert.equal(run('reel').authorized,true));
 
 test('OpenArt Veo and Placid cannot bypass the canonical media gate',()=>{
