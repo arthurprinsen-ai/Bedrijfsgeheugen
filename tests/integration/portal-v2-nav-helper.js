@@ -3,6 +3,10 @@
  *
  * Selecteert op data-page en data-vraag, nooit op zichtbare tekst. Een pagina die
  * hernoemd wordt mag geen test breken; een pagina die verdwijnt wel.
+ *
+ * Heet portal-v2-nav-helper.js en niet helpers/portal-nav.js, omdat elk gewijzigd pad
+ * in config/brain-delivery-system.json geregistreerd moet zijn. Deze naam valt onder
+ * de bestaande prefix tests/integration/portal-v2-.
  */
 
 async function openQuestionFor(page, pageId) {
