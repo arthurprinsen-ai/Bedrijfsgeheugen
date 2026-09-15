@@ -102,6 +102,9 @@ begin
 end;
 $$;
 
+revoke execute on function public.sync_content_publication_obligations(date,date) from public, anon, authenticated;
+grant execute on function public.sync_content_publication_obligations(date,date) to service_role;
+
 create or replace function public.record_content_publication_skip(
   p_tenant_id text,
   p_publication_date date,
@@ -152,6 +155,9 @@ begin
   return v_row;
 end;
 $$;
+
+revoke execute on function public.record_content_publication_skip(text,date,text,text,jsonb) from public, anon, authenticated;
+grant execute on function public.record_content_publication_skip(text,date,text,text,jsonb) to service_role;
 
 -- Preserve the existing view column order and append decision/execution fields.
 create or replace view public.content_operations_cockpit as
@@ -204,6 +210,10 @@ left join public.social_experiments e
 left join public.powerhouse_channel_decisions d
   on d.run_date=o.publication_date and d.channel=o.channel;
 
+alter view public.content_operations_cockpit set (security_invoker = true);
+revoke all on table public.content_operations_cockpit from public, anon, authenticated;
+grant select on table public.content_operations_cockpit to service_role;
+
 create or replace function public.assert_content_publication_daily_invariant(
   p_publication_date date default (timezone('Europe/Amsterdam', now()))::date
 )
@@ -236,6 +246,9 @@ begin
   end if;
 end;
 $$;
+
+revoke execute on function public.assert_content_publication_daily_invariant(date) from public, anon, authenticated;
+grant execute on function public.assert_content_publication_daily_invariant(date) to service_role;
 
 create or replace function public.enforce_content_publication_daily_invariant(
   p_publication_date date default (timezone('Europe/Amsterdam', now()))::date,
@@ -303,6 +316,9 @@ begin
   );
 end;
 $$;
+
+revoke execute on function public.enforce_content_publication_daily_invariant(date,time without time zone,timestamptz) from public, anon, authenticated;
+grant execute on function public.enforce_content_publication_daily_invariant(date,time without time zone,timestamptz) to service_role;
 
 -- Backfill the existing approved operating horizon from the existing experiment calendar.
 select public.sync_content_publication_obligations(
