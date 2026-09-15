@@ -18,6 +18,11 @@ test('full-cycle proof accepts canonical imported GA4 evidence without synthetic
   assert.doesNotMatch(sql, /synthetic/i);
 });
 
+test('full-cycle proof writes bg_gezondheid statuses using the lowercase constraint contract', () => {
+  assert.match(sql, /case when v_healthy then 'ok' else 'fout' end/);
+  assert.doesNotMatch(sql, /case when v_healthy then 'OK' else 'FOUT' end/);
+});
+
 test('existing calibrator schedule is hardened without parallel scheduler family', () => {
   assert.match(timingSql, /powerhouse-forecast-calibrator-daily/i);
   assert.match(timingSql, /cron\.alter_job/i);
