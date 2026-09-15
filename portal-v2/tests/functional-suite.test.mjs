@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { functionalDefinition, functionalSchema, listFunctionalSuitePages, computeFunctionalAnalysis } from '../modules/functional-suite.js';
 import { canvasSchema, buildCanvasAnalysis } from '../modules/canvas-workspace.js';
 import { bcgModel, buildBcgAction } from '../modules/strategy-models.js';
+import { LEGACY_FUNCTIONAL_INVENTORY } from '../legacy-functional-inventory.js';
 
 const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
 
@@ -52,6 +53,13 @@ test('canvas analysis reconstructs completed content from canonical customer sta
  assert.ok(analysis.conclusion.length>20);
 });
 
+test('BCG stays an explicit atomic strategy parity obligation',()=>{
+ const strategy=LEGACY_FUNCTIONAL_INVENTORY.strategie;
+ assert.ok(strategy.models.includes('BCG-matrix'));
+ assert.ok(strategy.calculations.includes('bcg-quadrant'));
+ assert.ok(strategy.actions.includes('bcg-add-question-mark-action-to-roadmap'));
+});
+
 test('legacy BCG model preserves exact growth and relative-position quadrant rules',()=>{
  const star=bcgModel({growth:2.4,companyMaturity:3.4,industryDigitalMaturity:3.1});
  assert.equal(star.quadrant,'Ster');
@@ -60,7 +68,6 @@ test('legacy BCG model preserves exact growth and relative-position quadrant rul
  assert.match(star.explanation,/2\.4%/);
  assert.match(star.explanation,/3\.4/);
  assert.match(star.explanation,/3\.1/);
-
  assert.equal(bcgModel({growth:1.5,companyMaturity:3.1,industryDigitalMaturity:3.1}).quadrant,'Melkkoe');
  assert.equal(bcgModel({growth:1.6,companyMaturity:3.0,industryDigitalMaturity:3.1}).quadrant,'Vraagteken');
  assert.equal(bcgModel({growth:1.5,companyMaturity:3.0,industryDigitalMaturity:3.1}).quadrant,'Hond');
