@@ -12,10 +12,10 @@ test('revenue intelligence exposes authenticated market-truth ingress routes', a
   for (const route of ['experiment-assign','experiment-link','economics','feedback','market-truth-health']) {
     assert.match(src, new RegExp(`['\"]${route}['\"]`));
   }
-  assert.match(src, /experiment-assign['"]\s*:\s*['"]learning['"]/i);
-  assert.match(src, /economics['"]\s*:\s*['"]learning['"]/i);
-  assert.match(src, /feedback['"]\s*:\s*['"]learning['"]/i);
-  assert.match(src, /market-truth-health['"]\s*:\s*['"]learning['"]/i);
+  assert.match(src, /['"]experiment-assign['"]\s*:\s*['"]learning['"]/i);
+  assert.match(src, /['"]?economics['"]?\s*:\s*['"]learning['"]/i);
+  assert.match(src, /['"]?feedback['"]?\s*:\s*['"]learning['"]/i);
+  assert.match(src, /['"]market-truth-health['"]\s*:\s*['"]learning['"]/i);
 });
 
 test('ingress delegates only to canonical market-truth RPCs', async () => {
