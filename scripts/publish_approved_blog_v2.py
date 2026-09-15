@@ -209,7 +209,45 @@ def normalize_performance(html_doc):
         lowered = tag.lower()
         return '' if any(host in lowered for host in remote_font_hosts) else tag
 
-    return re.sub(r'<link\b[^>]*>', strip_remote_font_link, html_doc, flags=re.I)
+    html_doc = re.sub(r'<link\b[^>]*>', strip_remote_font_link, html_doc, flags=re.I)
+
+    html_doc = re.sub(
+        r'<script\s+async\s+src=["\']https://www\.googletagmanager\.com/gtag/js\?id=G-912L0PB68G["\']></script>\s*',
+        '',
+        html_doc,
+        count=1,
+        flags=re.I,
+    )
+    loader = '''<script>
+function bgLoadGoogleAnalytics(){
+  if(document.querySelector('script[data-bg-ga]'))return;
+  var s=document.createElement('script');s.async=true;s.dataset.bgGa='1';
+  s.src='https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G';document.head.appendChild(s);
+}
+</script>'''
+    marker = '<!-- Google tag (gtag.js) -->'
+    if marker in html_doc:
+        html_doc = html_doc.replace(marker, marker + '\n' + loader, 1)
+    html_doc = html_doc.replace(
+        'function gtag(){dataLayer.push(arguments);}',
+        "function gtag(){dataLayer.push(arguments);try{if(arguments[0]==='consent'&&arguments[1]==='update'&&arguments[2]&&arguments[2].analytics_storage==='granted'){bgLoadGoogleAnalytics();}}catch(e){}}",
+        1,
+    )
+    html_doc = html_doc.replace(
+        "try{ if(localStorage.getItem('bg_consent')==='granted'){ gtag('consent','update',{analytics_storage:'granted'}); } }catch(e){}",
+        "try{ if(localStorage.getItem('bg_consent')==='granted'){ bgLoadGoogleAnalytics(); gtag('consent','update',{analytics_storage:'granted'}); } }catch(e){}",
+        1,
+    )
+
+    goat = re.compile(r'<script\s+data-goatcounter=["\']https://bedrijfsgeheugen\.goatcounter\.com/count["\']\s+async\s+src=["\']https://gc\.zgo\.at/count\.js["\']></script>', re.I)
+    deferred_goat = '''<script>
+(function(){
+  function loadGoat(){if(document.querySelector('script[data-bg-goat]'))return;var s=document.createElement('script');s.async=true;s.dataset.bgGoat='1';s.dataset.goatcounter='https://bedrijfsgeheugen.goatcounter.com/count';s.src='https://gc.zgo.at/count.js';document.head.appendChild(s);}
+  window.addEventListener('load',function(){setTimeout(loadGoat,5000);},{once:true});
+})();
+</script>'''
+    html_doc = goat.sub(deferred_goat, html_doc, count=1)
+    return html_doc
 
 
 def instrument_content_id(html_doc, slug):
@@ -255,7 +293,7 @@ def mark_dispatched(page_id, attempt, run_id=''):
     }
     if run_id:
         props['GitHub Run ID'] = {'rich_text': [{'type': 'text', 'text': {'content': str(run_id)}}]}
-    base.req(f'/pages/{page_id}', 'PATCH', {'properties': props})
+    base.req(f"/pages/{page_id}", 'PATCH', {'properties': props})
     print('DISPATCHED_MARKED')
 
 
