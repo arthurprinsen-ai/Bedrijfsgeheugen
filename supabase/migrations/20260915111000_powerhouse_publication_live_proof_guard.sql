@@ -142,7 +142,7 @@ values(
   'The daily execution guard treated canonical channel-delivery state as sufficient without also requiring the content_publication_obligations ledger to contain terminal public/live proof. A scheduler or provider path could therefore look operational while the blog remained DISPATCHED and production/Netlify readback was unavailable.',
   'Add publication-live-proof-before-daily-green-v1 to powerhouse_daily_execution_guard so four canonical publication obligations must be LIVE_PROVEN, MEASURED, LEARNED or explicitly SKIPPED before the run can become completed.',
   'Scheduler/cron success, GitHub green checks, provider acceptance, DISPATCHED and PUBLISHED are never equivalent to delivered/live. Daily green requires canonical publication-obligation readback; missing, stale, ambiguous or unavailable production evidence is fail-closed.',
-  'powerhouse-publication-live-proof-guard.test.mjs|publication-live-proof-before-daily-green-v1',
+  'supabase-powerhouse-publication-live-proof-guard.test.mjs|publication-live-proof-before-daily-green-v1',
   1,
   1,
   now(),
