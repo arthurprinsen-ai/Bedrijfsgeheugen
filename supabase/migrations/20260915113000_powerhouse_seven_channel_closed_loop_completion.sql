@@ -153,6 +153,7 @@ begin
 end;
 $$;
 
+-- Preserve the existing view column order and append decision/execution fields.
 create or replace view public.content_operations_cockpit as
 select
   o.tenant_id,
@@ -175,17 +176,6 @@ select
   o.evidence,
   o.metrics,
   o.next_action,
-  d.decision,
-  d.state as decision_state,
-  d.priority,
-  d.confidence,
-  d.topic_key,
-  d.content_key,
-  d.rationale as decision_rationale,
-  d.scheduled_for,
-  d.delivery_ref,
-  d.delivery_evidence,
-  d.learning_evidence,
   o.generated_at,
   o.approved_at,
   o.dispatched_at,
@@ -196,7 +186,18 @@ select
   (o.publication_date = (timezone('Europe/Amsterdam', now()))::date) as is_due_today,
   (o.publication_date < (timezone('Europe/Amsterdam', now()))::date
     and o.status not in ('LIVE_PROVEN','MEASURED','LEARNED','SKIPPED')) as is_overdue,
-  greatest(o.updated_at, coalesce(d.updated_at,o.updated_at)) as updated_at
+  greatest(o.updated_at, coalesce(d.updated_at,o.updated_at)) as updated_at,
+  d.decision,
+  d.state as decision_state,
+  d.priority,
+  d.confidence,
+  d.topic_key,
+  d.content_key,
+  d.rationale as decision_rationale,
+  d.scheduled_for,
+  d.delivery_ref,
+  d.delivery_evidence,
+  d.learning_evidence
 from public.content_publication_obligations o
 left join public.social_experiments e
   on e.tenant_id=o.tenant_id and e.experiment_id=o.experiment_id and e.calendar_date=o.publication_date
