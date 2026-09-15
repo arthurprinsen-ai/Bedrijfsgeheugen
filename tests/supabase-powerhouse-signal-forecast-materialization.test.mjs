@@ -13,6 +13,8 @@ test('predictive signals feed canonical forecasts and zero-value opportunities s
   assert.match(sql,/expected_value_eur>0 and e\.buying_window>=0\.72/i);
   assert.match(sql,/expected_value_eur>0 and e\.buying_window>=0\.58/i);
   assert.match(sql,/expected_revenue_value>0 or \(o\.probability\*o\.confidence\)>=0\.20/i);
+  assert.match(sql,/\[\[:space:\]\]/i);
+  assert.match(sql,/parser_safe_patch/i);
   assert.match(sql,/predictive-signals-without-forecast-materialization-v1/i);
   assert.match(sql,/brain_failure_registry/i);
   assert.match(sql,/revoke execute on function public\.powerhouse_sync_predictive_signal_forecast\(\) from public, anon, authenticated/i);
