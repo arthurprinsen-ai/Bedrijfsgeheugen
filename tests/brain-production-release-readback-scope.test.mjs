@@ -44,6 +44,25 @@ test('production readback treats its own control-plane-only maintenance as websi
   assert.match(workflow, /readbackControlPlaneOnly/);
 });
 
+test('connector readiness tolerates bounded transient 5xx responses and still fails closed', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(workflow, /for attempt in \$\(seq 1 8\)/);
+  assert.match(workflow, /--connect-timeout 10/);
+  assert.match(workflow, /--max-time 30/);
+  assert.match(workflow, /Cache-Control: no-cache/);
+  assert.match(workflow, /Pragma: no-cache/);
+  assert.match(workflow, /Connector readiness stayed unhealthy after 8 attempts/);
+  assert.match(workflow, /exit 1/);
+});
+
+test('production readback is owned by the canonical Brain delivery control plane', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const controlPlane = policy.conflictContracts.find(contract => contract.id === 'delivery-control-plane');
+  assert.ok(controlPlane, 'delivery-control-plane conflict contract must exist');
+  assert.ok(controlPlane.paths.includes('.github/workflows/production-release-readback.yml'));
+  assert.ok(controlPlane.paths.includes('tests/brain-production-release-readback-scope.test.mjs'));
+});
+
 test('public connector readiness is excluded from the authenticated connector wildcard', async () => {
   const [portalConnectors, readiness] = await Promise.all([
     readFile('netlify/functions/portal-connectors.mjs', 'utf8'),
