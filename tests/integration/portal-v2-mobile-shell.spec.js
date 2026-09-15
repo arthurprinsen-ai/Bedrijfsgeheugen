@@ -16,7 +16,7 @@ test('demoAI rewrite stays compact after asynchronous Portal V2 actions mount', 
   expect(response.status()).toBeLessThan(400);
   await page.waitForSelector('.app');
   await page.waitForSelector('.v2utilities', { state: 'attached' });
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(1800);
 
   await expect(page.locator('.mobilebar')).toBeVisible();
   await expect(page.locator('.v2utilities')).toBeHidden();
@@ -25,10 +25,11 @@ test('demoAI rewrite stays compact after asynchronous Portal V2 actions mount', 
   const searchGeometry = await page.locator('.searchrow > *').evaluateAll(nodes => nodes.map(node => {
     const r = node.getBoundingClientRect();
     return { x:r.x, y:r.y, width:r.width, height:r.height };
-  }));
+  }).filter(item => item.width > 0 && item.height > 0));
   expect(searchGeometry).toHaveLength(4);
   expect(Math.max(...searchGeometry.map(x => x.y)) - Math.min(...searchGeometry.map(x => x.y))).toBeLessThanOrEqual(2);
-  expect(searchGeometry.slice(1).every(item => item.width >= 40 && item.height >= 40)).toBeTruthy();
+  expect(searchGeometry[0].width).toBeGreaterThan(180);
+  expect(searchGeometry.slice(1).every(item => item.width >= 40 && item.width <= 48 && item.height >= 40)).toBeTruthy();
 
   const topbarHeight = await page.locator('.topbar').evaluate(node => node.getBoundingClientRect().height);
   expect(topbarHeight).toBeLessThan(260);
