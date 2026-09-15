@@ -1,4 +1,3 @@
-import { mountWorkspace } from '../workspace-shell.js';
 import { mountRoadmapBoard } from './roadmap-board.js';
 
 function ensureStyles(){
@@ -20,17 +19,22 @@ function evidence(content){
  content.innerHTML='<div class="v2reviewlist"><article><div><small>Interactiemodel</small><b>Roadmapkaarten herschikken</b></div><strong>native V2</strong></article><article><div><small>Sprintplanning</small><b>Kaarten tussen 12 sprints verplaatsen</b></div><strong>desktop + mobiel</strong></article><article><div><small>Opslag</small><b>portal.roadmap.items</b></div><strong>server-confirmed</strong></article></div>';
 }
 
-export function mountRoadmapWorkspace(root,{contract,view,domainState,openPage}={}){
- ensureStyles();let workspace;
- const renderTab=(tab,content)=>{
-  if(tab==='analyse'){analysis(content,domainState);return;}
-  if(tab==='acties'){actions(content,openPage);return;}
-  if(tab==='bewijs'){evidence(content);return;}
-  if(!domainState){content.innerHTML='<section class="v2tabempty"><h4>Beveiligde context laden</h4><p>De roadmap wordt beschikbaar zodra de klantcontext is geladen.</p></section>';return;}
-  mountRoadmapBoard(content,{domainState,onSaveStatus:status=>workspace?.setSaveStatus(status)});
+export function mountRoadmapWorkspace(root,{domainState,openPage,shell,onSaveStatus}={}){
+ ensureStyles();
+ if(!root?.replaceChildren)throw new TypeError('ROADMAP_WORKSPACE_ROOT_REQUIRED');
+ const renderTab=tab=>{
+  if(tab==='analyse'){analysis(root,domainState);return;}
+  if(tab==='acties'){actions(root,openPage);return;}
+  if(tab==='bewijs'){evidence(root);return;}
+  if(!domainState){root.innerHTML='<section class="v2tabempty"><h4>Beveiligde context laden</h4><p>De roadmap wordt beschikbaar zodra de klantcontext is geladen.</p></section>';return;}
+  mountRoadmapBoard(root,{domainState,onSaveStatus});
  };
- workspace=mountWorkspace(root,contract,{title:view?.title||'Roadmap',description:view?.description||'Plan en verplaats werk over sprints.',saveStatus:domainState?.status?.()||'idle',render:content=>renderTab('invullen',content),onTabChange:(tab,content)=>renderTab(tab,content)});
- workspace.shell.dataset.functionalWorkspace='roadmap';
- workspace.shell.setAttribute('data-functional-workspace','roadmap');
- return workspace;
+ const buttons=[...(shell?.querySelectorAll?.('[data-workspace-tab]')||[])];
+ const listeners=buttons.map(button=>{
+  const listener=()=>queueMicrotask(()=>renderTab(button.dataset.workspaceTab));
+  button.addEventListener('click',listener);
+  return [button,listener];
+ });
+ renderTab(shell?.dataset.activeTab||'invullen');
+ return ()=>listeners.forEach(([button,listener])=>button.removeEventListener('click',listener));
 }
