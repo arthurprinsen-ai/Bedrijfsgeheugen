@@ -15,7 +15,7 @@ test('demoAI rewrite stays compact after asynchronous Portal V2 actions mount', 
   expect(response).not.toBeNull();
   expect(response.status()).toBeLessThan(400);
   await page.waitForSelector('.app');
-  await page.waitForSelector('.v2utilities');
+  await page.waitForSelector('.v2utilities', { state: 'attached' });
   await page.waitForTimeout(1200);
 
   await expect(page.locator('.mobilebar')).toBeVisible();
