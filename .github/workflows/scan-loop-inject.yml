@@ -1,0 +1,48 @@
+name: scan-loop-inject
+
+on:
+  push:
+    branches: [bg-scan-loop-v1]
+    paths: ['.github/workflows/scan-loop-inject.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: bg-scan-loop-v1
+      - name: Inject canonical scan bridges without rebuilding legacy pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          changes = {
+            'frisse-blik.html': '<script defer src="https://www.bedrijfsgeheugen.nl/assets/frisse-blik-powerhouse.js"></script>',
+            'klantportaal.html': '<script defer src="https://www.bedrijfsgeheugen.nl/assets/klantportaal-scan-history.js"></script>',
+            'portal/index.html': '<script defer src="https://www.bedrijfsgeheugen.nl/assets/klantportaal-scan-history.js"></script>',
+          }
+          for name, tag in changes.items():
+              p=Path(name)
+              text=p.read_text(encoding='utf-8')
+              if tag in text:
+                  continue
+              if '</body>' not in text:
+                  raise SystemExit(f'{name}: missing </body>')
+              p.write_text(text.replace('</body>', f'{tag}\n</body>', 1), encoding='utf-8')
+          PY
+      - name: Verify injected references
+        run: |
+          grep -F 'https://www.bedrijfsgeheugen.nl/assets/frisse-blik-powerhouse.js' frisse-blik.html
+          grep -F 'https://www.bedrijfsgeheugen.nl/assets/klantportaal-scan-history.js' klantportaal.html
+          grep -F 'https://www.bedrijfsgeheugen.nl/assets/klantportaal-scan-history.js' portal/index.html
+      - name: Commit injection
+        run: |
+          git config user.name 'bedrijfsgeheugen-bot'
+          git config user.email 'bot@bedrijfsgeheugen.nl'
+          git add frisse-blik.html klantportaal.html portal/index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'feat(scan): connect existing website and portals to canonical loop [skip ci]'
+          git push origin HEAD:bg-scan-loop-v1
