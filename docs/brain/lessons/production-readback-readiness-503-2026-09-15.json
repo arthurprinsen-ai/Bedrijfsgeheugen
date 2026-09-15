@@ -1,0 +1,39 @@
+{
+  "id": "production-readback-readiness-503-2026-09-15",
+  "fingerprint": "production-readback-http-5xx-v1",
+  "system": "BRAIN/Powerhouse",
+  "status": "PROVEN",
+  "event_kind": "ERROR",
+  "stage": "PRODUCTION",
+  "component_type": "delivery-control-plane",
+  "component_id": "production-readback",
+  "owner": "delivery-control-plane",
+  "first_seen": "2026-09-15",
+  "last_seen": "2026-09-15",
+  "reason": "Production Release Readback received HTTP 503 from /api/connectors/readiness and therefore correctly blocked promotion.",
+  "rootCause": "The public readiness endpoint was not structurally isolated from the authenticated /api/connectors/* wildcard, creating a route-collision failure mode. In parallel, Netlify production could lag the current releasable main SHA, so merged code alone was insufficient proof of production state.",
+  "failedApproach": "Treating a successful merge, a ready Netlify deploy, or the connector-readiness source code in isolation as proof that production was healthy.",
+  "fix": "Exclude /api/connectors/readiness from the authenticated wildcard; preserve the exact public readiness route; require exact production release identity; use bounded transient-5xx retries and fail closed; complete production readback before declaring live.",
+  "preventionRule": "ISOLATE_PUBLIC_READINESS_AND_REQUIRE_EXACT_PRODUCTION_READBACK",
+  "regressionTest": "tests/brain-production-release-readback-scope.test.mjs",
+  "evidence": {
+    "failedReadbackRun": 34890817466,
+    "successfulReadbackRun": 34952452770,
+    "successfulReadbackAttempt": 2,
+    "canonicalContract": "brain/contracts/production-readback-v1.json",
+    "routeGuard": "netlify/functions/portal-connectors.mjs",
+    "publicEndpoint": "/api/connectors/readiness"
+  },
+  "learning": {
+    "principles": [
+      "evidence-before-hypothesis",
+      "merge-is-not-live",
+      "ready-is-not-exact-release-identity",
+      "fail-closed-on-unhealthy-readback",
+      "reuse-the-canonical-release-control-plane"
+    ],
+    "futureBehavior": "Every matching 5xx production-readback failure must be fingerprinted, persisted as learning evidence, routed through canonical universal learning, checked against this prevention rule, and kept red until exact production readback is green.",
+    "noParallelMechanism": true,
+    "noMakeDependency": true
+  }
+}
