@@ -73,4 +73,13 @@ test('elke bekend rode test bestaat nog en heeft een reden', () => {
   }
 });
 
+test('Powerhouse scan production proof kan niet rood eindigen zonder foutannotatie', () => {
+  const workflow = readFileSync('.github/workflows/powerhouse-scan-production-proof.yml', 'utf8');
+  assert.match(
+    workflow,
+    /::error::/,
+    'powerhouse-scan-production-proof.yml moet bij failure een ::error::-annotatie met oorzaak produceren'
+  );
+});
+
 export { BEKEND_ROOD };
