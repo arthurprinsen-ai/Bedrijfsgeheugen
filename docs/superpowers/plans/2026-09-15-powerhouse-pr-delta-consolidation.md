@@ -50,7 +50,7 @@ No replay. Production readback is authoritative and demonstrably stronger than t
 
 No replay. Current state already contains the newer flywheel policy/migrations.
 
-After consolidated production readback, close #1503 as superseded by #1587 and close #1506/#1543 as superseded by stronger current production/current-main state.
+After consolidated production readback, close #1503 as superseded by #1587. Close #1506 and #1543 as superseded by stronger current production/current state; do not imply their stale branch code was merged.
 
 ## Release gates
 
@@ -69,7 +69,7 @@ No completion claim without all applicable proof:
 
 ## Scope freeze
 
-The implementation scope is now frozen to the still-valid #1503 execution delta plus the minimum release-lane compatibility changes required to prove it. #1506 and #1543 are evidence/readback-only superseded items and must not add executable migrations to this PR.
+The implementation scope is frozen to the still-valid #1503 execution delta plus the minimum release-lane compatibility changes required to prove it. #1506 and #1543 are evidence/readback-only superseded items and must not add executable migrations to this PR.
 
 ## Failure semantics
 
