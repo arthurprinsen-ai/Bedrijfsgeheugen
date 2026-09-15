@@ -60,12 +60,13 @@
   "canonical_shorthand": "Voeg dit canoniek toe aan het Powerhouse, reuse-first, volledig geïntegreerd en closed-loop. Laat het meten, experimenteren, uitvoeren, readback doen, outcomes leren en de volgende beslissing verbeteren. Geen parallel onderdeel.",
   "shorthand_semantics": "Read existing state first, reuse canonical components, integrate end-to-end, use available intelligence, define hypotheses where useful, execute through the canonical route, verify production/provider truth, capture commercial outcomes, calibrate predictions, write learning back and reuse that learning in the next cycle.",
   "prevention": "Every existing and future agent/chat that materially changes or operates Bedrijfsgeheugen must treat Bedrijfsgeheugen Powerhouse as the single overkoepelende operating system and must extend and improve that same closed system rather than rebuilding isolated capabilities.",
-  "linked_learning_sources": [
+  "canonical_runtime_sources": [
     "brain_failure_registry",
     "powerhouse_runtime_events",
     "powerhouse_forecasts",
     "powerhouse_forecast_calibration",
     "powerhouse_sales_actions",
     "powerhouse_sales_outcomes"
-  ]
+  ],
+  "linked_learning_sources": []
 }
