@@ -94,7 +94,7 @@
     "failedApproach": "Een taak afronden met een positieve status zonder exact actuele productie-evidence en expliciete open-gatenreconciliatie.",
     "fix": "Classificeer iedere uitvoeringschat met het vierstatuscontract, behandel historische losse claims als UNVERIFIED_LEGACY en laat production truth plus actuele readback beslissen.",
     "preventionRule": "Geen LIVE_BEWEZEN bij één kritiek rood of onbewezen punt; iedere materiële statuswijziging krijgt production-truth writeback en readback.",
-    "regressionContract": "tests/powerhouse-truth-status-guard.test.mjs",
+    "regressionContract": "tests/brain-powerhouse-truth-status-guard.test.mjs",
     "owner": "agent-reliability",
     "status": "GUARDED"
   }
