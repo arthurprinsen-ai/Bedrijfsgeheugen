@@ -35,5 +35,7 @@
   "canonical_shorthand": "Voeg dit canoniek toe aan het Powerhouse, reuse-first, volledig geïntegreerd en closed-loop. Geen parallel onderdeel.",
   "shorthand_semantics": "Read existing state first, reuse canonical components, integrate end-to-end, verify production outcome, write learning back, and never create a parallel subsystem unless explicitly required by proven capability absence.",
   "prevention": "Every agent/chat must treat Bedrijfsgeheugen Powerhouse as the single overkoepelende operating system and must extend that system rather than rebuilding isolated capabilities.",
-  "linked_learning_sources": []
+  "linked_learning_sources": [
+    "brain/learning/powerhouse-blog-production-incident-2026-09-14.json"
+  ]
 }

@@ -123,3 +123,17 @@ test('public connector readiness is excluded from the authenticated connector wi
   assert.match(readiness, /path:\s*['"]\/api\/connectors\/readiness['"]/);
   assert.doesNotMatch(portalConnectors, /excludedPath:\s*['"]\/api\/connectors\/\*['"]/);
 });
+
+test('writer production reconcile accepts a newer production descendant that still contains the writer merge', async () => {
+  const workflow = await readFile('.github/workflows/writer-production-reconcile.yml', 'utf8');
+  assert.match(workflow, /git merge-base --is-ancestor/);
+  assert.match(workflow, /production commit must contain writer merge/i);
+  assert.match(workflow, /observed_production_sha/);
+});
+
+test('approved-central writer is reconciled after proven production and derives its slug from the merged blog path', async () => {
+  const workflow = await readFile('.github/workflows/writer-production-reconcile.yml', 'utf8');
+  assert.match(workflow, /approved-central-blog/);
+  assert.match(workflow, /blog\/\*\/index\.html/);
+  assert.match(workflow, /action=published/);
+});
