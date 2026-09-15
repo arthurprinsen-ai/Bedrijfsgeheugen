@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationUrl = new URL('../supabase/migrations/20260915154000_powerhouse_outcome_readback_health_semantics_v1.sql', import.meta.url);
+const migrationUrl = new URL('../supabase/migrations/20260915154107_powerhouse_outcome_readback_health_semantics_v1.sql', import.meta.url);
 const migration = fs.existsSync(migrationUrl) ? fs.readFileSync(migrationUrl, 'utf8') : '';
 
 const has=(p,m)=>assert.match(migration,p,m);
