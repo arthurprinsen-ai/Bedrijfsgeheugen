@@ -43,7 +43,7 @@ begin
 end;
 $$;
 
-revoke all on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() from public, anon, authenticated;
+revoke execute on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() from public, anon, authenticated;
 grant execute on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() to service_role;
 
 -- Rebuildable operational projection only. Canonical truth remains the underlying Powerhouse tables/views.
