@@ -24,7 +24,7 @@ test('Make cost portfolio contract is fail-closed and BRAIN governed', () => {
   assert.equal(contract.mission_control_policy.shadow_insert_known_failed, true);
 });
 
-test('daily Make portfolio decision remains an outcome obligation until evidenced', () => {
+test('daily cost portfolio decision remains an outcome obligation until evidenced', () => {
   const obligation = obligations.registeredObligations.find(item => item.id === 'cost-portfolio-decision-daily');
   assert.ok(obligation, 'cost-portfolio-decision-daily must be registered');
   assert.equal(obligation.domain, 'cost');
@@ -34,7 +34,9 @@ test('daily Make portfolio decision remains an outcome obligation until evidence
   assert.match(obligation.evidencePolicy, /SAFE_OPTIMIZATION_CANDIDATE/);
   assert.match(obligation.evidencePolicy, /VERIFIED_NO_ACTION/);
   assert.match(obligation.evidencePolicy, /BLOCKED_HARD_BOUNDARY/);
-  assert.match(obligation.evidencePolicy, /BG167/);
+  assert.match(obligation.evidencePolicy, /Powerhouse\/Supabase shared-memory/i);
+  assert.match(obligation.legacyProvenance, /BG167/);
+  assert.match(obligation.legacyProvenance, /LEGACY_RETIRED_PATH/);
   assert.match(obligation.recoveryPolicy, /fingerprint/i);
   assert.match(obligation.recoveryPolicy, /duplicate/i);
 });
