@@ -5,67 +5,21 @@ const TABS=Object.freeze([
   Object.freeze({id:'bewijs',label:'Bewijs'})
 ]);
 const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-
-export function workspaceModel(contract,{title='',description='',saveStatus='idle',state={}}={}){
- if(!contract?.id)throw new TypeError('WORKSPACE_CONTRACT_REQUIRED');
- return Object.freeze({id:contract.id,legacyCapability:contract.legacyCapability,mode:contract.mode,title:String(title||contract.id),description:String(description||''),saveStatus,tabs:TABS,dataSlice:contract.dataSlice,hasState:Boolean(state&&typeof state==='object')});
-}
-
-export function saveStatusLabel(status='idle'){
- return ({idle:'Gereed',dirty:'Niet opgeslagen',saving:'Opslaan…',saved:'Opgeslagen',error:'Opslaan mislukt'})[status]||'Gereed';
-}
-
-function navigateWithinV2(pageId){
- if(typeof location==='undefined')return;
- const url=new URL(location.href);url.searchParams.delete('hub');url.searchParams.set('page',pageId);location.assign(url.toString());
-}
-function ensureStylesheet(href){
- if(typeof document==='undefined')return Promise.resolve();
- const filename=href.replace('./','');
- const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')===href||link.href.endsWith(`/portal-v2/${filename}`));
- if(existing){if(existing.sheet)return Promise.resolve();return new Promise(resolve=>{existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',resolve,{once:true});});}
- return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.addEventListener('load',resolve,{once:true});link.addEventListener('error',resolve,{once:true});document.head.appendChild(link);});
-}
-function loadFunctionalStyles(){return Promise.all([ensureStylesheet('./functional-suite.css'),ensureStylesheet('./semantic-parity.css')]);}
-async function attachLegacyAlgorithmParity(root,contract){
- if(!contract?.legacyCapability)return;
- try{
-  const module=await import('./legacy-parity-evidence.js');
-  module.mountLegacyParityEvidence?.(root,{legacyCapability:contract.legacyCapability,domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null});
- }catch(error){console.error('LEGACY_ALGORITHM_PARITY_LOAD_FAILED',error);}
-}
-
+export function workspaceModel(contract,{title='',description='',saveStatus='idle',state={}}={}){if(!contract?.id)throw new TypeError('WORKSPACE_CONTRACT_REQUIRED');return Object.freeze({id:contract.id,legacyCapability:contract.legacyCapability,mode:contract.mode,title:String(title||contract.id),description:String(description||''),saveStatus,tabs:TABS,dataSlice:contract.dataSlice,hasState:Boolean(state&&typeof state==='object')})}
+export function saveStatusLabel(status='idle'){return ({idle:'Gereed',dirty:'Niet opgeslagen',saving:'Opslaan…',saved:'Opgeslagen',error:'Opslaan mislukt'})[status]||'Gereed'}
+function navigateWithinV2(pageId){if(typeof location==='undefined')return;const url=new URL(location.href);url.searchParams.delete('hub');url.searchParams.set('page',pageId);location.assign(url.toString())}
+function ensureStylesheet(href){if(typeof document==='undefined')return Promise.resolve();const filename=href.replace('./','');const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')===href||link.href.endsWith(`/portal-v2/${filename}`));if(existing){if(existing.sheet)return Promise.resolve();return new Promise(resolve=>{existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',resolve,{once:true})})}return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.addEventListener('load',resolve,{once:true});link.addEventListener('error',resolve,{once:true});document.head.appendChild(link)})}
+function loadFunctionalStyles(){return Promise.all([ensureStylesheet('./functional-suite.css'),ensureStylesheet('./semantic-parity.css')])}
+async function attachLegacyAlgorithmParity(root,contract){if(!contract?.legacyCapability)return;try{const module=await import('./legacy-parity-evidence.js');module.mountLegacyParityEvidence?.(root,{legacyCapability:contract.legacyCapability,domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null})}catch(error){console.error('LEGACY_ALGORITHM_PARITY_LOAD_FAILED',error)}}
+async function mountSpecialist(content,contract,api){const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__||null;const options={domainState,openPage:navigateWithinV2,shell:api.shell,onSaveStatus:api.setSaveStatus};if(contract.id==='roadmap'){const module=await import('./modules/roadmap-workspace.js');module.mountRoadmapWorkspace?.(content,options);return true}if(contract.id==='canvassen'){const module=await import('./modules/canvas-workspace.js');module.mountCanvasWorkspace?.(content,options);return true}if(['strategiemodellen','modellen'].includes(contract.id)){const module=await import('./modules/strategic-model-workspace.js');module.mountStrategicModelWorkspace?.(content,options);return true}return false}
 export function mountWorkspace(root,contract,context={}){
  if(!root?.replaceChildren)throw new TypeError('WORKSPACE_ROOT_REQUIRED');
- const model=workspaceModel(contract,context);
- const shell=document.createElement('div');shell.className=`v2workspace v2workspace-${model.mode}`;shell.dataset.workspace=model.id;
- shell.innerHTML=`<div class="v2workspacebar"><div><span class="v2workspaceeyebrow">Werkruimte</span><strong>${escapeHtml(model.title)}</strong></div><span class="v2savestatus" data-save-status="${escapeHtml(model.saveStatus)}">${escapeHtml(saveStatusLabel(model.saveStatus))}</span></div><p class="v2workspacedescription">${escapeHtml(model.description)}</p><div class="v2workspacetabs" role="tablist">${model.tabs.map((tab,index)=>`<button type="button" role="tab" data-workspace-tab="${tab.id}" aria-selected="${index===0?'true':'false'}">${tab.label}</button>`).join('')}</div><div class="v2workspacecontent" data-workspace-content></div>`;
- root.replaceChildren(shell);
- const content=shell.querySelector('[data-workspace-content]');
- shell.querySelectorAll('[data-workspace-tab]').forEach(button=>button.addEventListener('click',()=>{
-  shell.querySelectorAll('[data-workspace-tab]').forEach(tab=>tab.setAttribute('aria-selected',String(tab===button)));
-  shell.dataset.activeTab=button.dataset.workspaceTab;
-  context.onTabChange?.(button.dataset.workspaceTab,content,model);
- }));
- shell.dataset.activeTab='invullen';context.render?.(content,model);
- const api=Object.freeze({shell,content,model,setSaveStatus(status){const badge=shell.querySelector('.v2savestatus');if(badge){badge.dataset.saveStatus=status;badge.textContent=saveStatusLabel(status);}}});
- const specialist=contract?.id==='roadmap'?'roadmap':contract?.id==='canvassen'?'canvassen':['strategiemodellen','modellen'].includes(contract?.id)?'strategic':null;
- const shouldDelegate=Boolean(contract&&(contract.legacyCapability||specialist));
- if(shouldDelegate&&!root.dataset.functionalDelegating){
-  const modulePath=specialist==='roadmap'?'./modules/roadmap-workspace.js':specialist==='canvassen'?'./modules/canvas-workspace.js':specialist==='strategic'?'./modules/strategic-model-workspace.js':'./modules/functional-suite.js';
-  Promise.all([loadFunctionalStyles(),import(modulePath)]).then(async([,module])=>{
-   root.dataset.functionalDelegating='1';
-   try{
-    const options={contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2};
-    if(specialist==='roadmap')module.mountRoadmapWorkspace?.(root,options);
-    else if(specialist==='canvassen')module.mountCanvasWorkspace?.(root,options);
-    else if(specialist==='strategic')module.mountStrategicModelWorkspace?.(root,options);
-    else if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,...options});
-    await attachLegacyAlgorithmParity(root,contract);
-   } finally{delete root.dataset.functionalDelegating;}
-  }).catch(error=>{console.error('FUNCTIONAL_WORKSPACE_LOAD_FAILED',error);});
- }
- return api;
+ const model=workspaceModel(contract,context);const shell=document.createElement('div');shell.className=`v2workspace v2workspace-${model.mode}`;shell.dataset.workspace=model.id;
+ const specialist=['roadmap','canvassen','strategiemodellen','modellen'].includes(contract?.id);if(contract?.legacyCapability||specialist)shell.dataset.functionalWorkspace=contract.id;
+ shell.innerHTML=`<div class="v2workspacebar"><div><span class="v2workspaceeyebrow">Werkruimte</span><strong>${escapeHtml(model.title)}</strong></div><span class="v2savestatus" data-save-status="${escapeHtml(model.saveStatus)}">${escapeHtml(saveStatusLabel(model.saveStatus))}</span></div><p class="v2workspacedescription">${escapeHtml(model.description)}</p><div class="v2workspacetabs" role="tablist">${model.tabs.map((tab,index)=>`<button style="min-height:44px" type="button" role="tab" data-workspace-tab="${tab.id}" aria-selected="${index===0?'true':'false'}">${tab.label}</button>`).join('')}</div><div class="v2workspacecontent" data-workspace-content></div>`;
+ root.replaceChildren(shell);const content=shell.querySelector('[data-workspace-content]');shell.querySelectorAll('[data-workspace-tab]').forEach(button=>button.addEventListener('click',()=>{shell.querySelectorAll('[data-workspace-tab]').forEach(tab=>tab.setAttribute('aria-selected',String(tab===button)));shell.dataset.activeTab=button.dataset.workspaceTab;context.onTabChange?.(button.dataset.workspaceTab,content,model)}));shell.dataset.activeTab='invullen';context.render?.(content,model);
+ const api=Object.freeze({shell,content,model,setSaveStatus(status){const badge=shell.querySelector('.v2savestatus');if(badge){badge.dataset.saveStatus=status;badge.textContent=saveStatusLabel(status)}}});
+ const shouldDelegate=Boolean(contract&&(contract.legacyCapability||specialist));if(shouldDelegate&&!root.dataset.functionalDelegating){loadFunctionalStyles().then(async()=>{root.dataset.functionalDelegating='1';try{if(await mountSpecialist(content,contract,api)){await attachLegacyAlgorithmParity(root,contract);return}const module=await import('./modules/functional-suite.js');const options={contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2};if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,...options});await attachLegacyAlgorithmParity(root,contract)}finally{delete root.dataset.functionalDelegating}}).catch(error=>console.error('FUNCTIONAL_WORKSPACE_LOAD_FAILED',error))}
+ return api
 }
-
 export const WORKSPACE_TABS=TABS;
