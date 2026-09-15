@@ -4,7 +4,7 @@ const TABS=Object.freeze([
   Object.freeze({id:'acties',label:'Acties'}),
   Object.freeze({id:'bewijs',label:'Bewijs'})
 ]);
-const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
 
 export function workspaceModel(contract,{title='',description='',saveStatus='idle',state={}}={}){
  if(!contract?.id)throw new TypeError('WORKSPACE_CONTRACT_REQUIRED');
@@ -32,7 +32,7 @@ async function attachLegacyAlgorithmParity(root,contract){
   module.mountLegacyParityEvidence?.(root,{legacyCapability:contract.legacyCapability,domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null});
  }catch(error){console.error('LEGACY_ALGORITHM_PARITY_LOAD_FAILED',error);}
 }
-async function mountSpecialistParity(content,contract,model){
+async function mountSpecialistParity(content,contract,model,shellApi){
  const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__||null;
  if(contract.id==='canvassen'){
   const module=await import('./modules/canvas-workspace.js');
@@ -42,6 +42,11 @@ async function mountSpecialistParity(content,contract,model){
  if(contract.renderer==='strategy-models'||contract.id==='strategiemodellen'||contract.id==='modellen'){
   const module=await import('./modules/strategic-models-workspace.js');
   module.mountStrategicModelsWorkspace?.(content,{domainState,pageId:contract.id,title:model.title});
+  return true;
+ }
+ if(contract.id==='roadmap'){
+  const module=await import('./modules/roadmap-workspace.js');
+  module.mountRoadmapWorkspace?.(content,{domainState,openPage:navigateWithinV2,shell:shellApi.shell,onSaveStatus:shellApi.setSaveStatus});
   return true;
  }
  return false;
@@ -66,14 +71,12 @@ export function mountWorkspace(root,contract,context={}){
   Promise.all([loadFunctionalStyles(),Promise.resolve()]).then(async()=>{
    root.dataset.functionalDelegating='1';
    try{
-    if(await mountSpecialistParity(content,contract,model)){
+    if(await mountSpecialistParity(content,contract,model,api)){
       await attachLegacyAlgorithmParity(root,contract);
       return;
     }
-    const modulePath=contract.id==='roadmap'?'./modules/roadmap-workspace.js':'./modules/functional-suite.js';
-    const module=await import(modulePath);
-    if(contract.id==='roadmap')module.mountRoadmapWorkspace?.(root,{contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
-    else if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
+    const module=await import('./modules/functional-suite.js');
+    if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
     await attachLegacyAlgorithmParity(root,contract);
    } finally{delete root.dataset.functionalDelegating;}
   }).catch(error=>{console.error('FUNCTIONAL_WORKSPACE_LOAD_FAILED',error);});
