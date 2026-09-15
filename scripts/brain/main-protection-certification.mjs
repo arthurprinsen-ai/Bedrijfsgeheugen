@@ -21,7 +21,11 @@ export function certifyMainProtection(input = {}) {
 
   const requiredChecks = uniqueStrings(input.requiredChecks);
   const requiredSet = new Set(requiredChecks);
-  const missingChecks = expectedChecks.filter(check => !requiredSet.has(check));
+  const testUmbrellaRequired = requiredSet.has('test');
+  const missingChecks = testUmbrellaRequired
+    ? []
+    : expectedChecks.filter(check => !requiredSet.has(check));
+  const requiredCheckCoverage = testUmbrellaRequired ? 'test-umbrella' : 'explicit';
   const rulesets = Array.isArray(input.rulesets) ? input.rulesets : [];
   const activeBranchRuleset = rulesets.some(rule =>
     String(rule?.enforcement || '').toLowerCase() === 'active' &&
@@ -52,6 +56,7 @@ export function certifyMainProtection(input = {}) {
     requiredChecks: Object.freeze(requiredChecks),
     expectedChecks: Object.freeze(expectedChecks),
     missingChecks: Object.freeze(missingChecks),
+    requiredCheckCoverage,
     activeBranchRuleset,
     requiredStatusDiagnostic,
     blockers: Object.freeze(blockers),
