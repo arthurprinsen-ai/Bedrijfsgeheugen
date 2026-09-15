@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_SYSTEM_CONTRACT",
+  "version": "POWERHOUSE-SYSTEM-v1",
+  "fingerprint": "powerhouse|canonical-system|reuse-first|closed-loop|v1",
+  "status": "ACTIVE",
+  "canonical_name": "Bedrijfsgeheugen Powerhouse",
+  "formal_name": "Bedrijfsgeheugen Growth & Revenue Operating System",
+  "scope": "All current and future Bedrijfsgeheugen capabilities, agents, workflows, channels, data, intelligence, content, sales, revenue, analytics, learning and delivery components.",
+  "principles": [
+    "EXISTING-STATE-FIRST",
+    "REUSE-FIRST",
+    "CANONICAL-INTEGRATION",
+    "CLOSED-LOOP",
+    "NO-PARALLEL-SYSTEM"
+  ],
+  "required_preflight": [
+    "Read current canonical state, shared team context, open obligations and relevant prior learnings before designing or changing anything.",
+    "Identify the existing canonical owner, data route, queue, graph, publisher, analytics route and learning route for the capability.",
+    "Reuse or extend existing components before creating anything new.",
+    "Create a new component only when the capability demonstrably does not already exist and register it in the existing Powerhouse architecture."
+  ],
+  "prohibitions": [
+    "Do not create a parallel Brain, CRM, truth store, database, queue, calendar, analytics store, learning system, content brain or sales system when an existing canonical capability can be reused or extended.",
+    "Do not treat a new request as a standalone subsystem by default.",
+    "Do not declare done on implementation evidence alone."
+  ],
+  "integration_rule": "Every relevant change must integrate with the existing Powerhouse chain and, where applicable, the Brain, Supabase canonical data, intelligence, relationship graph, content, sales, revenue outcomes and learning/calibration loop.",
+  "definition_of_done": [
+    "VERIFY",
+    "PRODUCTION",
+    "READBACK",
+    "OUTCOME",
+    "LEARNING_WRITEBACK"
+  ],
+  "canonical_shorthand": "Voeg dit canoniek toe aan het Powerhouse, reuse-first, volledig geïntegreerd en closed-loop. Geen parallel onderdeel.",
+  "shorthand_semantics": "Read existing state first, reuse canonical components, integrate end-to-end, verify production outcome, write learning back, and never create a parallel subsystem unless explicitly required by proven capability absence.",
+  "prevention": "Every agent/chat must treat Bedrijfsgeheugen Powerhouse as the single overkoepelende operating system and must extend that system rather than rebuilding isolated capabilities.",
+  "linked_learning_sources": []
+}
