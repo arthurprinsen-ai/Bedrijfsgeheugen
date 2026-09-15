@@ -91,7 +91,12 @@ jobs:
         run: |
           PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
 
-      - name: Verify approved desktop, mobile and legacy algorithm parity on exact head
+      - name: Verify exact demoAI mobile rewrite on Netlify preview
+        run: |
+          set -euo pipefail
+          PREVIEW_URL="$PREVIEW_URL" npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
+
+      - name: Verify approved deterministic browser parity on exact head
         run: |
           set -euo pipefail
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/portal-v2-local.log 2>&1 &
@@ -107,7 +112,7 @@ jobs:
             fi
             sleep 1
           done
-          PREVIEW_URL=http://127.0.0.1:4173 npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-mobile-shell.spec.js tests/integration/portal-v2-functional-parity.spec.js tests/integration/portal-v2-legacy-algorithm-parity.spec.js --workers=1
+          PREVIEW_URL=http://127.0.0.1:4173 npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js tests/integration/portal-v2-legacy-algorithm-parity.spec.js --workers=1
 
       - name: Upload visual evidence
         if: always()
@@ -122,4 +127,4 @@ jobs:
         run: |
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
           echo "Verified Netlify preview assets: $PREVIEW_URL/portal-v2/"
-          echo "Desktop, mobile overview, mobile CSRD, full functional parity and executable legacy algorithm browser checks ran against the exact checked-out head SHA via the local CI fixture."
+          echo "Exact demoAI mobile rewrite plus desktop, mobile CSRD, full functional parity and executable legacy algorithm browser checks passed."
