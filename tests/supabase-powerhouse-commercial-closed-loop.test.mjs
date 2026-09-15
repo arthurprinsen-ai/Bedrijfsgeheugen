@@ -15,9 +15,13 @@ test('commercial closed loop reuses existing intelligence and learning',()=>{
   assert.match(s,/powerhouse_prepare_safe_actions_v1\s*\(/i);
 });
 
-test('source freshness is internal and service-role only',()=>{
+test('source freshness reuses canonical data intake health and is service-role only',()=>{
   const s=sql();
   assert.match(s,/create or replace view public\.powerhouse_source_freshness_v1/i);
+  assert.match(s,/from public\.bg_gezondheid/i);
+  assert.match(s,/soort='versheid'|soort\s*=\s*'versheid'/i);
+  assert.match(s,/bg_gezondheid_meten\s*\(/i);
+  assert.doesNotMatch(s,/source_contract\s+as\s*\(/i);
   assert.match(s,/alter view public\.powerhouse_source_freshness_v1 set \(security_invoker = true\)/i);
   assert.match(s,/revoke all on table public\.powerhouse_source_freshness_v1 from public, anon, authenticated/i);
   assert.match(s,/grant select on table public\.powerhouse_source_freshness_v1 to service_role/i);
