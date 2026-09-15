@@ -10,6 +10,23 @@ await import('./apply-v18-seo.mjs');
 await import('./bouw-losse-paginas.mjs');
 await import('./bouw-inhoudspaginas.mjs');
 
+// The interactive wijzigingen walkthrough used to reveal its first panel only
+// after the page-bottom script called toon(0). On tablet that changed the
+// document height after first paint and produced CLS > 0.100. Reserve the
+// initial panel in the HTML artifact itself; the runtime state synchronizer
+// can then keep toggling .actief without causing an initial layout shift.
+const wijzigingenPath = 'wijzigingen-uitgelegd.html';
+const wijzigingenSource = await readFile(wijzigingenPath, 'utf8');
+const firstPanel = '<section class="paneel" data-titel="Het idee">';
+const activeFirstPanel = '<section class="paneel actief" data-titel="Het idee">';
+const wijzigingenStable = wijzigingenSource.includes(activeFirstPanel)
+  ? wijzigingenSource
+  : wijzigingenSource.replace(firstPanel, activeFirstPanel);
+if (!wijzigingenStable.includes(activeFirstPanel)) {
+  throw new Error('Wijzigingen walkthrough first-paint panel contract could not be applied');
+}
+await writeFile(wijzigingenPath, wijzigingenStable, 'utf8');
+
 // Final homepage interaction boundary: the moving process line and the four
 // process cards share one cumulative state contract. Run this after every
 // historical V18 builder so later page transformers cannot restore the old
