@@ -12,8 +12,6 @@
     if(!raw||raw===initial)return;
     let scan;try{scan=JSON.parse(raw)}catch{return;}
     if(!scan||typeof scan!=='object'||!Number.isFinite(Number(scan.score)))return;
-    let receipt={};try{receipt=JSON.parse(localStorage.getItem(RECEIPT_KEY)||'{}')}catch{}
-    if(receipt?.source_stempel&&scan.stempel&&receipt.source_stempel===scan.stempel){sent=true;return;}
     const submissionKey=scan.submission_key||makeKey();scan.submission_key=submissionKey;
     try{localStorage.setItem(STORAGE_KEY,JSON.stringify(scan))}catch{}
     sent=true;
@@ -21,7 +19,8 @@
       const response=await fetch('/api/powerhouse-scan-ingest',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({submission_key:submissionKey,canonical:'https://www.bedrijfsgeheugen.nl/frisse-blik',scan}),keepalive:true});
       if(!response.ok)throw new Error(`HTTP_${response.status}`);
       const data=await response.json();
-      localStorage.setItem(RECEIPT_KEY,JSON.stringify({submission_key:submissionKey,source_stempel:scan.stempel||null,scan_id:data.scan_id||null,event_id:data.event_id||null,stored_at:new Date().toISOString()}));
+      localStorage.setItem(RECEIPT_KEY,JSON.stringify({submission_key:submissionKey,scan_id:data.scan_id||null,event_id:data.event_id||null,stored_at:new Date().toISOString()}));
+      localStorage.removeItem('bg_scan_server_pending_v1');
     }catch(error){
       sent=false;
       try{localStorage.setItem('bg_scan_server_pending_v1',JSON.stringify({submission_key:submissionKey,scan,canonical:'https://www.bedrijfsgeheugen.nl/frisse-blik',last_error:String(error?.message||error),updated_at:new Date().toISOString()}))}catch{}
