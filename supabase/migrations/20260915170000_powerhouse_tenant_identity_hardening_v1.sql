@@ -108,7 +108,7 @@ begin
 end;
 $$;
 
-revoke all on function public.set_intake_tenant_identity() from public, anon, authenticated;
+revoke execute on function public.set_intake_tenant_identity() from public, anon, authenticated;
 grant execute on function public.set_intake_tenant_identity() to service_role;
 
 drop trigger if exists scan_set_tenant_identity on public.scan_inzendingen;
@@ -163,7 +163,7 @@ begin
 end;
 $$;
 
-revoke all on function public.set_portaal_tenant_identity() from public, anon, authenticated;
+revoke execute on function public.set_portaal_tenant_identity() from public, anon, authenticated;
 grant execute on function public.set_portaal_tenant_identity() to service_role;
 
 drop trigger if exists portaal_set_tenant_identity on public.portaal_stand;
@@ -381,3 +381,63 @@ comment on column public.offerte_inzendingen.organisatie_id is 'Canonical tenant
 comment on column public.portaal_stand.organisatie_id is 'Canonical organisation scope for portal state.';
 comment on column public.scan_inzendingen.tenant_identity_status is 'verified=identity-backed; demo=explicit demo; unverified=accepted intake but excluded from learning.';
 comment on column public.offerte_inzendingen.tenant_identity_status is 'verified=identity-backed; demo=explicit demo; unverified=accepted intake but excluded from learning.';
+
+insert into public.powerhouse_sales_learnings
+  (fingerprint, subject_key, scope, hypothesis, evidence, effect, confidence, status, sample_size, updated_at)
+values (
+  'portal-tenant-identity-normalization-v1',
+  'portal-tenant-identity',
+  'system',
+  'Free-text tenant aliases and permissive intake policies cannot be authoritative customer identity.',
+  jsonb_build_object(
+    'root_cause', 'scan/offerte used klant_slug without canonical organisation lineage; portaal_stand was only user-scoped; legacy intake policy used WITH CHECK true',
+    'authority', 'public.organisaties.id',
+    'historical_demo_rows', 6
+  ),
+  jsonb_build_object(
+    'prevention_rule', 'Only verified organisation-backed rows may enter benchmark or commercial outcome learning; demo and unverified intake remain explicit and fail closed.',
+    'anonymous_lead_capture_preserved', true,
+    'reuse_first', true,
+    'new_store_created', false,
+    'new_scheduler_created', false
+  ),
+  1.0,
+  'proven',
+  14,
+  now()
+)
+on conflict (fingerprint) do update
+set evidence = excluded.evidence,
+    effect = excluded.effect,
+    confidence = excluded.confidence,
+    status = excluded.status,
+    sample_size = excluded.sample_size,
+    updated_at = now();
+
+insert into public.powerhouse_runtime_events
+  (dedupe_key, event_type, source, subject_key, evidence, context, state, data_quality, confidence, updated_at)
+values (
+  'portal-tenant-identity-normalization-v1:activation',
+  'portal_tenant_identity_normalized',
+  'supabase-migration',
+  'portal-tenant-identity',
+  jsonb_build_object(
+    'authority', 'public.organisaties.id',
+    'identity_states', jsonb_build_array('verified','demo','unverified'),
+    'anonymous_lead_capture_preserved', true,
+    'benchmark_fail_closed', true,
+    'outcome_fail_closed', true
+  ),
+  jsonb_build_object('contract', 'portal-tenant-identity-normalization-v1'),
+  'actioned',
+  'verified',
+  1.0,
+  now()
+)
+on conflict (dedupe_key) do update
+set evidence = excluded.evidence,
+    context = excluded.context,
+    state = excluded.state,
+    data_quality = excluded.data_quality,
+    confidence = excluded.confidence,
+    updated_at = now();
