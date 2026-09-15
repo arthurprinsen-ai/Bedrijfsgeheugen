@@ -74,7 +74,7 @@ test('health excludes research enrichment from executable forecast lineage', () 
 test('health counts only unresolved latest runtime errors', () => {
   const sql = read(healthPerfPath);
   assert.match(sql, /row_number\(\)\s+over\s*\(/i);
-  assert.match(sql, /partition\s+by\s+event_type\s*,\s*source\s*,\s*subject_key/i);
+  assert.match(sql, /partition\s+by\s+(?:e\.)?event_type\s*,\s*(?:e\.)?source\s*,\s*(?:e\.)?subject_key/i);
   assert.match(sql, /rn\s*=\s*1/i);
 });
 
@@ -85,7 +85,7 @@ test('daily intelligence ensures canonical commercial progression forecasts befo
   assert.match(sql, /predicted_event\s*,?[\s\S]*commercial_progression/i);
   assert.match(sql, /opportunity_key/i);
   assert.match(source, /powerhouse_ensure_commercial_progression_forecasts_v1/i);
-  assert.match(source, /\/rest\/v1\/rpc\//i);
+  assert.match(source, /rest\(['"]rpc\/powerhouse_ensure_commercial_progression_forecasts_v1/i);
 });
 
 test('snapshot migration makes the command-center derivation rebuildable and scheduled', () => {
