@@ -19,12 +19,13 @@ function navigateWithinV2(pageId){
  if(typeof location==='undefined')return;
  const url=new URL(location.href);url.searchParams.delete('hub');url.searchParams.set('page',pageId);location.assign(url.toString());
 }
-function loadFunctionalStyles(){
+function loadStylesheet(href){
  if(typeof document==='undefined')return Promise.resolve();
- const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')==='./functional-suite.css'||link.href.endsWith('/portal-v2/functional-suite.css'));
+ const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')===href||link.href.endsWith(`/portal-v2/${href.replace('./','')}`));
  if(existing){if(existing.sheet)return Promise.resolve();return new Promise(resolve=>{existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',resolve,{once:true});});}
- return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href='./functional-suite.css';link.addEventListener('load',resolve,{once:true});link.addEventListener('error',resolve,{once:true});document.head.appendChild(link);});
+ return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.addEventListener('load',resolve,{once:true});link.addEventListener('error',resolve,{once:true});document.head.appendChild(link);});
 }
+function loadFunctionalStyles(){return Promise.all([loadStylesheet('./functional-suite.css'),loadStylesheet('./semantic-parity.css')]);}
 async function attachLegacyAlgorithmParity(root,contract){
  if(!contract?.legacyCapability)return;
  try{
