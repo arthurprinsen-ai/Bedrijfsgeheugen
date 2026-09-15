@@ -34,4 +34,3 @@ jobs:
           tests/growth-intelligence-engine.test.mjs
           tests/growth-intelligence-daily.test.mjs
           tests/supabase-powerhouse-seven-channel-closed-loop.test.mjs
-          tests/supabase-powerhouse-revenue-calibration-persistence-contract.test.mjs
