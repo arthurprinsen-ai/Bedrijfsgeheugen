@@ -7,6 +7,7 @@ on:
       - 'netlify/functions/powerhouse-scan-ingest.mjs'
       - 'netlify/functions/portal-scans.mjs'
       - 'supabase/functions/powerhouse-scan-ingest/index.ts'
+      - 'supabase/migrations/*scan*'
       - '.github/workflows/powerhouse-scan-production-proof.yml'
   workflow_dispatch:
 
@@ -63,7 +64,6 @@ jobs:
           done
 
       - name: Controlled canonical write and idempotency proof
-        if: contains(github.event.head_commit.message, '[scan-e2e]')
         shell: bash
         run: |
           set -euo pipefail
