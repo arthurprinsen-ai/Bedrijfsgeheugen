@@ -16,8 +16,9 @@ const REQUIRED_RULES=[
   'REQUIRE_EXACT_SHA_PRODUCTION_READBACK_BEFORE_LIVE_CLAIM'
 ];
 
-test('customer project incident is a canonical chat-learning source',()=>{
-  assert.ok(contract.canonicalSources.includes(sourcePath));
+test('customer project incident is linked into the existing canonical chat-learning graph',()=>{
+  assert.ok(contract.canonicalSources.includes('config/delivery-prevention-rules.json'));
+  assert.ok(prevention.linked_learning_sources?.includes(sourcePath),'canonical prevention source must link the verified incident record');
   const record=learning();
   assert.equal(record.fingerprint,'portal-v2|customer-project|incomplete-or-wrong-context-before-green');
   assert.equal(record.type,'verified_material_learning');
