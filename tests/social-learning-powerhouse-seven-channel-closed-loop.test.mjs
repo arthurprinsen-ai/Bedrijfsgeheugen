@@ -51,13 +51,20 @@ test('orchestrator error path preserves the real root cause',()=>{
  assert.match(orchestrator,/powerhouse-content-orchestrator/);
 });
 
-test('social publisher supports Instagram only with the canonical Mira media gate',()=>{
+test('social publisher supports Instagram only with an explicit verified Mira media gate',()=>{
  assert.ok(publisher,'social publisher source must be version controlled');
  assert.match(publisher,/6a70384d99afb44349f0fba9/);
  assert.match(publisher,/instagram_company/);
- assert.match(publisher,/Mira|mira/);
+ assert.match(publisher,/mira_verified===true|miraVerified===true/);
+ assert.doesNotMatch(publisher,/media_gate==='Mira'/);
  assert.match(publisher,/assetUrl|asset_url/);
  assert.match(publisher,/mediaKind|media_kind/);
  assert.match(publisher,/INSTAGRAM_MEDIA_REQUIRED|INSTAGRAM.*MEDIA.*REQUIRED/);
  assert.match(publisher,/blocked/i);
+});
+
+test('publisher does not rely on an undeclared PostgREST relationship',()=>{
+ assert.doesNotMatch(publisher,/select\(['"][^'"]*powerhouse_content_artifacts\(/);
+ assert.match(publisher,/from\('powerhouse_content_artifacts'\)\.select\('body,generation_evidence,status'\)/);
+ assert.match(publisher,/ARTIFACT_READ|ARTIFACT_MISSING/);
 });
