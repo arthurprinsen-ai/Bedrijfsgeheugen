@@ -46,7 +46,7 @@ begin
 end
 $$;
 
-revoke all on function public.powerhouse_refresh_forecast_calibration_obligations() from public, anon, authenticated;
+revoke execute on function public.powerhouse_refresh_forecast_calibration_obligations() from public, anon, authenticated;
 grant execute on function public.powerhouse_refresh_forecast_calibration_obligations() to service_role;
 
 do $$
