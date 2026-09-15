@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Install runtime dependencies for backend contracts
+        run: npm install --no-audit --no-fund --silent
       - name: Verify backend Brain and runtime contracts
         run: >-
           node --test
