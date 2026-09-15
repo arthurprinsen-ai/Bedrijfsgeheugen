@@ -1,6 +1,6 @@
 create or replace view public.powerhouse_revenue_intelligence_health_v1 as
 with active_actions as (
-  select a.action_id,a.person_key,a.opportunity_key,a.action_type,a.status,a.created_at
+  select a.action_id,a.person_key,a.company_key,a.opportunity_key,a.action_type,a.status,a.created_at
   from public.powerhouse_sales_actions a
   where a.status in ('suggested','prepared','pending')
     and a.created_at >= now()-interval '30 days'
@@ -8,11 +8,15 @@ with active_actions as (
   select
     count(*) filter (
       where nullif(trim(a.person_key),'') is null
-        and a.action_type not in ('internal_research','research')
+        and a.action_type not in ('internal_research','research','research_enrichment')
+        and (
+          nullif(trim(a.opportunity_key),'') is not null
+          or nullif(trim(a.company_key),'') is not null
+        )
     )::int as identity_gaps,
     count(*) filter (
       where a.opportunity_key is not null
-        and a.action_type not in ('internal_research','research')
+        and a.action_type not in ('internal_research','research','research_enrichment')
         and not exists (
           select 1
           from public.powerhouse_forecasts f
@@ -25,10 +29,18 @@ with active_actions as (
         )
     )::int as forecast_lineage_gaps
   from active_actions a
+), ranked_runtime as (
+  select e.event_type,e.source,e.subject_key,e.state,e.updated_at,
+         row_number() over (
+           partition by e.event_type,e.source,e.subject_key
+           order by e.updated_at desc,e.occurred_at desc,e.event_id desc
+         ) as rn
+  from public.powerhouse_runtime_events e
+  where e.updated_at>=now()-interval '24 hours'
 ), errors as (
   select count(*)::int as runtime_errors
-  from public.powerhouse_runtime_events
-  where state='error' and updated_at>=now()-interval '24 hours'
+  from ranked_runtime
+  where rn=1 and state='error'
 ), research as (
   select count(*)::int as research_queue_count
   from public.powerhouse_opportunities o
