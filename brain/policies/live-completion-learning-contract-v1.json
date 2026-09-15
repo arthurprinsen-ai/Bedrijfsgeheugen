@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_EXECUTION_CONTRACT",
+  "version": "POWERHOUSE-LIVE-COMPLETION-LEARNING-v1",
+  "fingerprint": "powerhouse|execution|finish-live-verify-learn",
+  "status": "ACTIVE",
+  "scope": "all current and future material agent/chat/workflow tasks in Bedrijfsgeheugen Powerhouse",
+  "purpose": "Prevent work from stopping at analysis, code, proposal, ready-for-deploy, or an unverified success claim. Require completion through production/live verification and canonical learning writeback whenever technically possible.",
+  "invariants": [
+    "EXISTING_STATE_FIRST",
+    "REUSE_FIRST",
+    "NO_PARALLEL_TRUTH",
+    "NO_SILENT_FAILURE",
+    "NO_LOST_OBLIGATION",
+    "RED_MEANS_KEEP_WORKING",
+    "GREEN_MEANS_OUTCOME_VERIFIED",
+    "NO_LIVE_CLAIM_WITHOUT_READBACK"
+  ],
+  "required_execution_loop": [
+    "read_current_canonical_state_and_shared_context",
+    "reuse_existing_capabilities_and_known_learnings",
+    "implement_minimal_root_cause_change",
+    "run_tests_and_regression_gates",
+    "merge_or_promote_through_existing_canonical_delivery_path",
+    "deploy_or_publish_to_the_real_target_when_authorized_and_supported",
+    "perform_exact_production_or_provider_readback",
+    "verify_intended_business_or_operational_outcome",
+    "write_incident_or_change_root_cause_fix_regression_outcome_and_prevention_to_existing_learning_lineage",
+    "refresh_shared_context_so_following_agents_receive_the_new_learning"
+  ],
+  "terminal_states": [
+    "PRODUCTION_GREEN",
+    "ROLLED_BACK_GREEN",
+    "BLOCKED_HARD_BOUNDARY"
+  ],
+  "blocked_hard_boundary_rule": "When a required write/deploy/provider action is technically unavailable or requires forbidden secrets, permission changes, destructive irreversible data operations, paid resource increases, or legally/financially binding action, complete every safe executable step, preserve an explicit canonical open obligation, and never claim the missing action was executed.",
+  "claim_policy": {
+    "live_requires_exact_readback": true,
+    "deployed_requires_provider_or_runtime_evidence": true,
+    "borged_requires_canonical_persistent_write": true,
+    "learned_requires_learning_lineage_writeback_and_shared_context_refresh": true
+  },
+  "learning_writeback_minimum": [
+    "incident_or_change",
+    "root_cause_or_reason",
+    "implementation",
+    "regression_test_or_gate",
+    "production_or_provider_outcome",
+    "prevention_rule",
+    "evidence_identity",
+    "open_obligation_if_any"
+  ],
+  "prevention": "No current or future Powerhouse agent may stop at advice, local change, PR-ready, deploy-ready, or an unverified success claim when the next safe execution step is available. Work continues through live outcome verification and canonical learning writeback.",
+  "linked_learning_sources": []
+}
