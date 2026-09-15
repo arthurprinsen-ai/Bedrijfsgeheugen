@@ -161,7 +161,7 @@ begin
 end;
 $$;
 
-revoke all on function public.powerhouse_project_brain_revenue_learning() from public, anon, authenticated;
+revoke execute on function public.powerhouse_project_brain_revenue_learning() from public, anon, authenticated;
 grant execute on function public.powerhouse_project_brain_revenue_learning() to service_role;
 
 drop trigger if exists trg_powerhouse_project_brain_revenue_learning on public.brain_records;
