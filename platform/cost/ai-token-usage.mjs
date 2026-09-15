@@ -51,6 +51,58 @@ export function normalizeProviderTokenUsage(input = {}) {
   });
 }
 
+function matchingFootprintFactor(record, factors = []) {
+  const instant = new Date(record.at);
+  if (!Number.isFinite(instant.getTime())) throw new TypeError('valid timestamp is required');
+  const day = instant.toISOString().slice(0, 10);
+  return (Array.isArray(factors) ? factors : []).find(factor =>
+    factor?.provider === record.provider &&
+    (!factor.providerModelId || factor.providerModelId === record.providerModelId) &&
+    (!factor.validFrom || factor.validFrom <= day) &&
+    (!factor.validTo || factor.validTo >= day) &&
+    Number(factor.quantityBasisTokens) > 0
+  ) ?? null;
+}
+
+export function deriveTokenFootprint(record = {}, factors = []) {
+  const requestId = requireText(record.requestId, 'requestId');
+  const totalTokens = Number(record.totalTokens);
+  if (!Number.isSafeInteger(totalTokens) || totalTokens < 0) throw new TypeError('totalTokens must be a non-negative integer');
+  const factor = matchingFootprintFactor(record, factors);
+  if (!factor) return Object.freeze({ requestId, status:'unknown_factor', measurementClass:'estimated', energyKwh:null, co2eKg:null, waterLiters:null, factorId:null, methodology:null, confidence:0 });
+  const ratio = totalTokens / Number(factor.quantityBasisTokens);
+  return Object.freeze({
+    requestId,
+    status:'calculated',
+    measurementClass:'estimated',
+    energyKwh:Number(factor.energyKwh) * ratio,
+    co2eKg:Number(factor.co2eKg) * ratio,
+    waterLiters:Number(factor.waterLiters) * ratio,
+    factorId:requireText(factor.factorId, 'factorId'),
+    methodology:requireText(factor.methodology, 'methodology'),
+    confidence:Math.max(0, Math.min(1, Number(factor.confidence) || 0)),
+  });
+}
+
+export function aggregateTokenFootprint(records = []) {
+  const unique = new Map();
+  for (const record of Array.isArray(records) ? records : []) if (record?.requestId && !unique.has(record.requestId)) unique.set(record.requestId, record);
+  const values = [...unique.values()];
+  const calculated = values.filter(row => row.status === 'calculated');
+  const sum = key => calculated.reduce((total, row) => total + (Number(row[key]) || 0), 0);
+  return Object.freeze({
+    totalRequests:values.length,
+    calculatedRequests:calculated.length,
+    coverage:values.length ? calculated.length / values.length : 0,
+    energyKwh:sum('energyKwh'),
+    co2eKg:sum('co2eKg'),
+    waterLiters:sum('waterLiters'),
+    confidence:calculated.length ? calculated.reduce((total, row) => total + (Number(row.confidence) || 0), 0) / calculated.length : 0,
+    factorVersions:Object.freeze([...new Set(calculated.map(row => row.factorId).filter(Boolean))].sort()),
+    methodologies:Object.freeze([...new Set(calculated.map(row => row.methodology).filter(Boolean))].sort()),
+  });
+}
+
 export function aggregateTokenUsage(records = [], { monthlyLimitTokens = 10_000, now = new Date().toISOString(), timezone = 'Europe/Amsterdam' } = {}) {
   if (!Number.isSafeInteger(Number(monthlyLimitTokens)) || Number(monthlyLimitTokens) <= 0) throw new TypeError('monthly token limit must be a positive integer');
   const current = zonedParts(now, timezone);
