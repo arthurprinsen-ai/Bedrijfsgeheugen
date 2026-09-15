@@ -1,0 +1,40 @@
+{
+  "fingerprint": "portal-v2-full-capability-parity-v3",
+  "architecture": "Powerhouse -> canonical data/intelligence/business logic -> shared portal services -> Portal V2 SaaS presentation",
+  "legacy_baseline": "klantportaal.html",
+  "status_semantics": {
+    "contracted": "inventory and contract exist but executable equivalence is not yet demonstrated",
+    "implemented": "executable implementation and tests exist; production equivalence is not yet proven",
+    "verified": "content, calculations, interaction, canonical binding, writeback and production readback are all proven",
+    "retired": "explicit supersession/retirement evidence exists"
+  },
+  "verified_requires": ["content","calculations","interpretation","charts-and-canvases","inputs-and-interactions","canonical-powerhouse-binding","tenant-lineage","writeback","downstream-effects-where-applicable","production-readback"],
+  "capabilities": [
+    {"legacy_key":"overzicht","v2_page":"overzicht","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"profiel","v2_page":"profiel","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"dataai","v2_page":"data-ai","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"aiscan","v2_page":"ai-scan","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"invoeren","v2_page":"gegevens-invullen","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"antwoorden","v2_page":"ingevulde-gegevens","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"business","v2_page":"businesscase","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"cijfers","v2_page":"cijfers-maatstaven","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"waarde","v2_page":"waarde-financiering","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"mensen","v2_page":"mensen","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"branche","v2_page":"branche-markt","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"onderzoek","v2_page":"onderzoek","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"beleid","v2_page":"compliance-governance","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"aicap","v2_page":"ai-capabilities","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"strategie","v2_page":"strategie-naar-maandagochtend","aliases":["strategiemodellen","modellen"],"status":"implemented","evidence":["portal-v2/strategic-models.js","portal-v2/modules/strategic-models-workspace.js","portal-v2/tests/full-content-parity-v3.test.mjs"],"production_evidence_status":"pending"},
+    {"legacy_key":"canvassen","v2_page":"canvassen","status":"implemented","evidence":["portal-v2/canvas-presentation.js","portal-v2/modules/canvas-workspace.js","portal-v2/tests/full-content-parity-v3.test.mjs"],"production_evidence_status":"pending"},
+    {"legacy_key":"eindconclusie","v2_page":"eindconclusie","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"dd","v2_page":"due-diligence","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"dna","v2_page":"strategy-dna","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"bijhouden","v2_page":"actueel-houden","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"wijzigingen","v2_page":"wijzigingen","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"advies","v2_page":"advies","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"offerte","v2_page":"offerte","status":"implemented","production_evidence_status":"pending"},
+    {"legacy_key":"roadmap","v2_page":"roadmap","status":"implemented","production_evidence_status":"pending"}
+  ],
+  "release_gate": {"allow_verified_without_production": false, "allow_route_presence_as_parity": false, "allow_inventory_only_as_parity": false},
+  "current_release": {"pr": 1656, "production_status": "pending", "open_obligation": "Required/BRAIN green -> protected merge -> exact production SHA -> V2 browser/readback -> update evidence to verified"}
+}
