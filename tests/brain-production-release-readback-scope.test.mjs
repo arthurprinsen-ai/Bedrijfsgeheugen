@@ -92,6 +92,18 @@ test('production readback failures are part of the canonical universal learning 
   assert.ok(learning.required_lifecycle.includes('prevention_reuse'));
 });
 
+test('terminal production readback failures emit canonical Brain learning evidence', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(workflow, /Capture production readback failure as Brain learning evidence/);
+  assert.match(workflow, /createObservedFailure/);
+  assert.match(workflow, /routeObservedFailureToLearning/);
+  assert.match(workflow, /stage:\s*'PRODUCTION'/);
+  assert.match(workflow, /component:\s*'production-readback'/);
+  assert.match(workflow, /production-readback-http-5xx-v1/);
+  assert.match(workflow, /delivery-failure-production-readback\.json/);
+  assert.match(workflow, /delivery-learning-route-production-readback\.json/);
+});
+
 test('public connector readiness is excluded from the authenticated connector wildcard', async () => {
   const [portalConnectors, readiness] = await Promise.all([
     readFile('netlify/functions/portal-connectors.mjs', 'utf8'),
