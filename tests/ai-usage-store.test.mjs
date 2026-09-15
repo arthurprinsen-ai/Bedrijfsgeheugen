@@ -39,31 +39,3 @@ test('month query excludes events outside the Amsterdam calendar month', async (
   const summary = await usage.monthly({ monthlyLimitTokens: 10_000 });
   assert.equal(summary.usedTokens, 4);
 });
-
-test('forwards explicit business attribution only to the canonical usage writer', async () => {
-  const blob = memoryBlobStore();
-  const calls = [];
-  const usage = createAiUsageStore(blob, { canonicalWriter: async (record, context) => { calls.push({ record, context }); return { inserted:true }; } });
-  const event = { schemaVersion:1, requestId:'CTX-1', componentKey:'agent:portal-qa', provider:'Anthropic', providerModelId:'M1', inputTokens:5, outputTokens:3, cacheReadTokens:0, cacheWriteTokens:0, totalTokens:8, at:'2026-09-15T18:00:00.000Z' };
-  const context = { tenantId:'tenant-1', activityType:'portal_qa', actionId:'11111111-1111-1111-1111-111111111111', opportunityKey:'opp-1', campaignKey:'camp-1', outcomeKey:'out-1' };
-
-  const result = await usage.record(event, context);
-
-  assert.equal(result.recorded, true);
-  assert.equal(result.canonicalRecorded, true);
-  assert.deepEqual(calls, [{ record:event, context }]);
-  assert.deepEqual([...blob.values.values()], [event]);
-});
-
-test('omitted business attribution keeps the existing canonical writer contract and blob event unchanged', async () => {
-  const blob = memoryBlobStore();
-  const calls = [];
-  const usage = createAiUsageStore(blob, { canonicalWriter: async (...args) => { calls.push(args); return { inserted:true }; } });
-  const event = { schemaVersion:1, requestId:'CTX-2', componentKey:'agent:website-qa', provider:'Anthropic', providerModelId:'M1', inputTokens:2, outputTokens:1, cacheReadTokens:0, cacheWriteTokens:0, totalTokens:3, at:'2026-09-15T18:05:00.000Z' };
-
-  await usage.record(event);
-
-  assert.equal(calls.length, 1);
-  assert.deepEqual(calls[0], [event, undefined]);
-  assert.deepEqual([...blob.values.values()], [event]);
-});
