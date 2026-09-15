@@ -28,7 +28,7 @@ function instagramMedia(d:any,art:any){
   const m=d?.delivery_evidence?.instagram_media||art?.generation_evidence?.instagram_media||{};
   const assetUrl=clean(m.assetUrl||m.asset_url);
   const mediaKind=clean(m.mediaKind||m.media_kind).toLowerCase();
-  const miraVerified=m.mira_verified===true||m.miraVerified===true||m.character==='Mira'||m.media_gate==='Mira';
+  const miraVerified=m.mira_verified===true||m.miraVerified===true;
   let publicHttps=false;
   try{const u=new URL(assetUrl);publicHttps=u.protocol==='https:'&&!!u.hostname&&!['localhost','127.0.0.1'].includes(u.hostname);}catch{}
   return {assetUrl,mediaKind,miraVerified,publicHttps,raw:m};
@@ -73,12 +73,25 @@ Deno.serve(async(req:Request)=>{
   const audit=await auditPersonalQueue(db,url,bufferToken);
   if(mode==='audit_only')return json({ok:true,runDate,identity_gate_version:GATE,personal_queue_audit:audit});
 
-  const {data:rows,error:rowError}=await db.from('powerhouse_channel_decisions').select('channel,scheduled_for,delivery_evidence,powerhouse_content_artifacts(body,generation_evidence)').eq('run_date',runDate).eq('decision','publish').eq('state','content_ready').in('channel',['linkedin_personal','linkedin_company','instagram_company']).order('priority',{ascending:false});
+  const {data:rows,error:rowError}=await db.from('powerhouse_channel_decisions').select('channel,scheduled_for,delivery_evidence').eq('run_date',runDate).eq('decision','publish').eq('state','content_ready').in('channel',['linkedin_personal','linkedin_company','instagram_company']).order('priority',{ascending:false});
   if(rowError)return json({ok:false,error:'DECISION_READ:'+rowError.message},500);
   const out:any[]=[];
   for(const d of rows||[]){
-    const art=Array.isArray(d.powerhouse_content_artifacts)?d.powerhouse_content_artifacts[0]:d.powerhouse_content_artifacts;
-    if(!art?.body)continue;
+    const {data:art,error:artifactReadError}=await db.from('powerhouse_content_artifacts').select('body,generation_evidence,status').eq('run_date',runDate).eq('channel',d.channel).maybeSingle();
+    if(artifactReadError){
+      const reason='ARTIFACT_READ:'+artifactReadError.message;
+      await db.from('powerhouse_channel_decisions').update({state:'failed',delivery_evidence:{...(d.delivery_evidence||{}),publisher:VERSION,error:reason},updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',d.channel);
+      await obligationState(db,runDate,d.channel,'FAILED',{publisher:VERSION},reason);
+      out.push({channel:d.channel,status:'failed',reason});
+      continue;
+    }
+    if(!art?.body){
+      const reason='ARTIFACT_MISSING';
+      await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:{...(d.delivery_evidence||{}),publisher:VERSION,blocked_reason:reason},updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',d.channel);
+      await obligationState(db,runDate,d.channel,'BLOCKED',{publisher:VERSION},reason);
+      out.push({channel:d.channel,status:'blocked',reason});
+      continue;
+    }
     const hash=await digest(clean(art.body)); const hook=clean(art.generation_evidence?.hook_type)||'Probleem';
 
     if(d.channel==='instagram_company'){
