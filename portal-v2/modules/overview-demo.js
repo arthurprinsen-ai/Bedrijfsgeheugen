@@ -85,7 +85,7 @@ export const DEMO_OVERVIEW = Object.freeze({
   directNaar: [
     ['Mijn acties', 12, 'actieve-acties'], ['Backlog', 44, 'taken-werkstromen'],
     ['Mijn projecten', 7, 'roadmap'], ['Mijn documenten', null, 'documenten'],
-    ['Instellingen', null, 'beheer']
+    ['Instellingen', null, 'instellingen']
   ]
 });
 

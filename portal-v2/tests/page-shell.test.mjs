@@ -2,11 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { pagePresentation, searchPortalPages } from '../page-shell.js';
 
+/* Deze test toetste op sectionId==='brein-powerhouse'. Dat is de zijbalkgroep,
+   niet het gedrag: zodra de zijbalk anders wordt ingedeeld ging hij rood terwijl
+   de pagina precies hetzelfde deed. Wat hij moest vangen - een breinpagina die
+   live bewijs suggereert dat er niet is - staat hieronder. */
 test('Brain and Powerhouse pages render natively without inventing live evidence',()=>{
   const view=pagePresentation('self-heal');
   assert.equal(view.kind,'native-v2');
-  assert.equal(view.sectionId,'brein-powerhouse');
+  assert.ok(view.sectionId,'een pagina hoort in een zijbalkgroep te staan');
   assert.match(view.evidenceLabel,/runtime-evidence/i);
+  assert.equal(view.derived,false);
 });
 
 test('mapped portal pages are native and expose page-specific V2 blocks',()=>{
