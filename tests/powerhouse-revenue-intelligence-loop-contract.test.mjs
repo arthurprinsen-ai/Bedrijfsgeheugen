@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const migrationPath = new URL('../supabase/migrations/20260915163000_powerhouse_revenue_intelligence_loop_v1.sql', import.meta.url);
 const healthPerfPath = new URL('../supabase/migrations/20260915165500_powerhouse_revenue_intelligence_health_perf_v2.sql', import.meta.url);
+const snapshotPath = new URL('../supabase/migrations/20260915170000_powerhouse_revenue_intelligence_snapshot_v1.sql', import.meta.url);
 const intelligencePath = new URL('../supabase/functions/powerhouse-revenue-intelligence/index.ts', import.meta.url);
 
 function read(path) { return fs.readFileSync(path, 'utf8'); }
@@ -60,13 +61,25 @@ test('health performance fix uses canonical forecast lineage without heavyweight
   assert.match(sql, /powerhouse_opportunities/i);
 });
 
-test('revenue intelligence facade exposes command center, account, research and model health routes', () => {
-  const source = read(intelligencePath);
-  assert.match(source, /command-center/); assert.match(source, /model-health/); assert.match(source, /accounts/); assert.match(source, /research/);
-  assert.match(source, /powerhouse_revenue_command_center_v2/); assert.match(source, /powerhouse_model_health_v1/); assert.match(source, /x-powerhouse-token/);
+test('snapshot migration makes the expensive command-center derivation rebuildable and scheduled', () => {
+  const sql = read(snapshotPath);
+  assert.match(sql, /powerhouse_revenue_command_center_snapshot_v1/i);
+  assert.match(sql, /powerhouse_refresh_revenue_intelligence_snapshot_v1/i);
+  assert.match(sql, /truncate\s+table/i);
+  assert.match(sql, /powerhouse_revenue_command_center_v2/i);
+  assert.match(sql, /cron\.schedule/i);
+  assert.match(sql, /refreshed_at/i);
+  assert.match(sql, /enable row level security/i);
 });
 
-test('daily intelligence health reports structural lineage gaps and explicit degraded state', () => {
+test('revenue intelligence facade exposes snapshot-backed command center, account, research and model health routes', () => {
+  const source = read(intelligencePath);
+  assert.match(source, /command-center/); assert.match(source, /model-health/); assert.match(source, /accounts/); assert.match(source, /research/);
+  assert.match(source, /powerhouse_revenue_command_center_snapshot_v1/); assert.match(source, /powerhouse_model_health_v1/); assert.match(source, /x-powerhouse-token/);
+});
+
+test('daily intelligence health reports structural lineage gaps, snapshot freshness and explicit degraded state', () => {
   const source = read(intelligencePath);
   assert.match(source, /structural_lineage_gaps/); assert.match(source, /research_queue_count/); assert.match(source, /model_health_segments/); assert.match(source, /degraded/);
+  assert.match(source, /snapshot_age_minutes/); assert.match(source, /snapshot_stale/);
 });
