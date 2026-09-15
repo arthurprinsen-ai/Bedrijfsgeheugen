@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 CREATE_TABLE = re.compile(r"create\s+table(?:\s+if\s+not\s+exists)?\s+public\.([a-zA-Z0-9_]+)", re.I)
+CREATE_VIEW = re.compile(r"create\s+(?:or\s+replace\s+)?view\s+public\.([a-zA-Z0-9_]+)", re.I)
 CREATE_FUNCTION = re.compile(r"create\s+(?:or\s+replace\s+)?function\s+public\.([a-zA-Z0-9_]+)\s*\(", re.I)
 SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 
@@ -20,6 +21,25 @@ def check_sql(sql: str, label: str):
             errors.append(f"{label}: public.{table} is created without ENABLE ROW LEVEL SECURITY in the same migration")
         if not revoke_pat.search(sql):
             errors.append(f"{label}: public.{table} is created without revoking broad anon/authenticated table privileges in the same migration")
+
+    for view in CREATE_VIEW.findall(sql):
+        intentional = (
+            f"POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL_VIEW:{view}" in sql
+            or "POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL_VIEW" in sql
+        )
+        invoker_pat = re.compile(
+            rf"alter\s+view\s+public\.{re.escape(view)}\s+set\s*\(\s*security_invoker\s*=\s*true\s*\)",
+            re.I,
+        )
+        revoke_pat = re.compile(
+            rf"revoke\s+all\s+on\s+(?:table\s+)?public\.{re.escape(view)}\s+from\s+[^;]*(?:public[^;]*anon[^;]*authenticated|public[^;]*authenticated[^;]*anon|anon[^;]*authenticated|authenticated[^;]*anon)",
+            re.I | re.S,
+        )
+        if not intentional:
+            if not invoker_pat.search(sql):
+                errors.append(f"{label}: public.{view} is created without security_invoker=true in the same migration")
+            if not revoke_pat.search(sql):
+                errors.append(f"{label}: public.{view} is created without revoking browser-role view privileges in the same migration")
 
     if SECURITY_DEFINER.search(sql):
         intentional = "POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL" in sql
@@ -46,12 +66,23 @@ def check_sql(sql: str, label: str):
 
 def self_test():
     unsafe_table = "create table public.bad_table(id bigint);"
+    unsafe_view = "create view public.bad_view as select 1 as id;"
     unsafe_fn = "create function public.bad_fn() returns void language plpgsql security definer as $$ begin null; end $$;"
     safe_table = """
       create table public.good_table(id bigint);
       alter table public.good_table enable row level security;
       revoke all on table public.good_table from anon, authenticated;
       grant all on table public.good_table to service_role;
+    """
+    safe_view = """
+      create view public.good_view as select 1 as id;
+      alter view public.good_view set (security_invoker = true);
+      revoke all on table public.good_view from public, anon, authenticated;
+      grant select on table public.good_view to service_role;
+    """
+    public_view_exception = """
+      -- POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL_VIEW:public_view
+      create view public.public_view as select 1 as id;
     """
     safe_fn = """
       create function public.good_fn() returns void language plpgsql security definer
@@ -66,13 +97,18 @@ def self_test():
     """
 
     assert len(check_sql(unsafe_table, "unsafe_table")) == 2
+    unsafe_view_errors = check_sql(unsafe_view, "unsafe_view")
+    assert any("security_invoker" in e for e in unsafe_view_errors)
+    assert any("view privileges" in e for e in unsafe_view_errors)
     unsafe_fn_errors = check_sql(unsafe_fn, "unsafe_fn")
     assert any("SECURITY DEFINER" in e for e in unsafe_fn_errors)
     assert any("search_path" in e for e in unsafe_fn_errors)
     assert check_sql(safe_table, "safe_table") == []
+    assert check_sql(safe_view, "safe_view") == []
+    assert check_sql(public_view_exception, "public_view_exception") == []
     assert check_sql(safe_fn, "safe_fn") == []
     assert check_sql(public_exception, "public_exception") == []
-    print("Powerhouse Supabase security contract self-test passed: unsafe fixtures blocked, safe fixtures accepted.")
+    print("Powerhouse Supabase security contract self-test passed: unsafe tables/views/functions blocked, safe fixtures accepted.")
 
 
 if "--self-test" in sys.argv:
@@ -103,7 +139,7 @@ if errors:
     print("Powerhouse Supabase security contract FAILED:\n")
     for error in errors:
         print(f"- {error}")
-    print("\nRequired contract: RLS + revoked browser roles for new public tables; deterministic search_path for functions; SECURITY DEFINER must be internal/revoked or explicitly reviewed as PUBLIC_INTENTIONAL.")
+    print("\nRequired contract: RLS + revoked browser roles for new public tables; security_invoker + revoked browser roles for new internal public views; deterministic search_path for functions; SECURITY DEFINER must be internal/revoked or explicitly reviewed as PUBLIC_INTENTIONAL.")
     sys.exit(1)
 
 print(f"Powerhouse Supabase security contract passed for {len(files)} changed migration(s).")
