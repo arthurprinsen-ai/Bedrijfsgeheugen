@@ -67,6 +67,13 @@ begin
   with base as materialized (
     select * from public.powerhouse_commercial_next_best_action_v2
   ),
+  forecast_truth as (
+    select b.forecast_id,
+      count(f.forecast_id)::int as canonical_forecast_evidence
+    from (select distinct forecast_id from base where forecast_id is not null) b
+    left join public.powerhouse_forecasts f on f.forecast_id=b.forecast_id
+    group by b.forecast_id
+  ),
   pressure_actions as (
     select b.person_key,
       max(a.executed_at) as last_outbound_at,
@@ -119,6 +126,7 @@ begin
   ),
   enriched as (
     select b.*,
+      coalesce(ft.canonical_forecast_evidence,0) as canonical_forecast_evidence,
       case
         when ps.cooldown_until>now() then 'cooldown'
         when coalesce(ps.no_response_30d,0)>=2 then 'high'
@@ -132,14 +140,14 @@ begin
       case
         when b.person_evidence=0 then 'identity_or_person_context_missing'
         when b.company_evidence=0 then 'company_context_missing'
-        when b.forecast_evidence=0 then 'forecast_missing'
+        when coalesce(ft.canonical_forecast_evidence,0)=0 then 'forecast_missing'
         when coalesce(b.buying_window_confidence,0)<.55 then 'low_confidence'
         when coalesce(b.evidence_density,0)<.60 then 'evidence_density_low'
         else null end as research_reason,
       array_remove(array[
         case when b.person_evidence=0 then 'person_evidence' end,
         case when b.company_evidence=0 then 'company_evidence' end,
-        case when b.forecast_evidence=0 then 'forecast_evidence' end,
+        case when coalesce(ft.canonical_forecast_evidence,0)=0 then 'forecast_evidence' end,
         case when coalesce(b.buying_window_confidence,0)<.55 then 'prediction_confidence' end
       ],null)::text[] as missing_evidence,
       coalesce(cf.actions,0) as prediction_sample_size,
@@ -148,6 +156,7 @@ begin
       least(1::numeric,greatest(0::numeric,(coalesce(cf.proposals,0)+1)/(coalesce(cf.actions,0)+16))) as empirical_proposal_rate,
       least(1::numeric,greatest(0::numeric,(coalesce(cf.wins,0)+1)/(coalesce(cf.actions,0)+24))) as empirical_win_rate
     from base b
+    left join forecast_truth ft on ft.forecast_id=b.forecast_id
     left join pressure_scored ps on ps.person_key=b.person_key
     left join channel_funnel cf on cf.channel_key=lower(regexp_replace(coalesce(b.recommended_channel,'unknown'),'[^a-zA-Z0-9]+','_','g'))
   ),
@@ -193,6 +202,7 @@ begin
     jsonb_build_object(
       'source','powerhouse-revenue-intelligence-loop-v1',
       'forecast_id',r.forecast_id,
+      'canonical_forecast_evidence',r.canonical_forecast_evidence,
       'asset_ready',r.asset_ready,
       'pressure_state',r.pressure_state,
       'research_reason',r.research_reason,
