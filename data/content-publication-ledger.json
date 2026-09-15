@@ -7,6 +7,17 @@
       "slug": "zoekverkeer-stijgt-omzet-niet",
       "state": "selected",
       "selected_at": "2026-09-14T10:56:31.607Z"
+    },
+    "2026-09-15": {
+      "date": "2026-09-15",
+      "content_id": "blog:ongeprijsd-probleem-bedrijfsvoering",
+      "slug": "ongeprijsd-probleem-bedrijfsvoering",
+      "state": "selected",
+      "selected_at": "2026-09-15T10:23:38.409Z",
+      "selection_mode": "brain_learning",
+      "selection_score": 11,
+      "learning_decision_id": "content:2026-09-15:blog:ongeprijsd-probleem-bedrijfsvoering",
+      "applied_revenue_learning_ids": []
     }
   }
 }
