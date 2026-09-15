@@ -44,12 +44,20 @@ test('canvas output is derived from the same canonical portal state',()=>{
  assert.equal(bmc.answer,state.portal.canvases.bmc.answer);
 });
 
-test('specialist parity workspaces preserve the existing functional workspace contract',async()=>{
+test('canonical workspace shell owns tabs, functional identity and specialist mounting',async()=>{
+ const shell=await readFile(new URL('../workspace-shell.js',import.meta.url),'utf8');
+ assert.match(shell,/functionalWorkspace/);
+ assert.match(shell,/data-workspace-tab/);
+ assert.match(shell,/analyse/);
+ assert.match(shell,/mountSpecialistParity\(content/);
+ assert.match(shell,/min-height:44px/);
+});
+
+test('specialist strategy and canvas views remain editable canonical-state surfaces',async()=>{
  const strategic=await readFile(new URL('../modules/strategic-models-workspace.js',import.meta.url),'utf8');
  const canvases=await readFile(new URL('../modules/canvas-workspace.js',import.meta.url),'utf8');
- for(const [name,source] of [['strategic',strategic],['canvases',canvases]]){
-  assert.match(source,/functionalWorkspace|functional-workspace/,`${name} must expose data-functional-workspace`);
-  assert.match(source,/data-workspace-tab/,`${name} must keep workspace tabs`);
-  assert.match(source,/analyse/,`${name} must keep the analyse tab used by parity evidence`);
- }
+ assert.match(strategic,/data-strategy-note/);
+ assert.match(strategic,/domainState\.flush/);
+ assert.match(canvases,/data-canvas-answer/);
+ assert.match(canvases,/domainState\.flush/);
 });
