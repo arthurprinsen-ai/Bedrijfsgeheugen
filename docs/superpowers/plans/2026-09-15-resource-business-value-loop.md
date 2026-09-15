@@ -80,7 +80,7 @@
 - Produces: merged PR, exact production SHA/deploy/readback, Powerhouse runtime VERIFIED state, Notion documentation.
 
 - [x] Open PR #1632 from `bg-resource-business-value-v1` to `main`.
-- [ ] Verify all required CI/gates on the exact final head. A previous Required retry reused stale PR event metadata; this evidence-only commit intentionally creates a fresh `pull_request/synchronize` event using the corrected `Change-Scope` that includes `scripts/brain/`.
+- [ ] Verify all required CI/gates on the exact final head. The Required preflight showed the remaining issue was metadata-only scope drift: `tools/brain-delivery-system.mjs` is a valid changed file but was absent from the declared `Change-Scope`. The PR metadata is corrected to include that exact file, and this evidence-only commit creates a fresh `pull_request/synchronize` event so Required evaluates the current scope contract rather than stale event metadata.
 - [ ] Merge with expected-head SHA.
 - [ ] Verify `main`, Netlify production deploy and Production Release Readback all reference the same merge SHA.
 - [ ] Upsert/read back a canonical `brain_records` release-state for fingerprint `powerhouse-resource-business-value-v1`.
