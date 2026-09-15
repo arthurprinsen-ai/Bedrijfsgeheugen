@@ -6,6 +6,7 @@ import { classifyWebsiteRelease } from '../tools/site-shell/website-release-risk
 const riskConfig = JSON.parse(await readFile('site/website-release-risk.json', 'utf8'));
 const acceptedBaseline = JSON.parse(await readFile('site/accepted-baseline.json', 'utf8'));
 const websiteLane = await readFile('.github/workflows/lane-website.yml', 'utf8');
+const visibilityCheck = await readFile('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
 
 test('one explicitly owned page-local asset is fast-fix', () => {
   const result = classifyWebsiteRelease({ changedPaths:['assets/pages/ai-act/local-fix.css'], riskConfig, acceptedBaseline });
@@ -82,4 +83,13 @@ test('local website verification builds the same final artifact layer as Netlify
   assert.ok(finalBuildCalls.length >= 2, 'page-seo and browser fallback must both execute the final Netlify build layer');
   assert.match(websiteLane, /DEPLOY_ID: required-page-seo-local/);
   assert.match(websiteLane, /DEPLOY_ID: required-browser-local/);
+});
+
+test('exact-candidate fallback never bypasses full visibility and CLS quality gates', () => {
+  assert.match(websiteLane, /node tools\/site-shell\/standalone-visibility-check\.mjs/);
+  assert.match(websiteLane, /needs\.preview-ready\.outputs\.base_url/);
+  assert.match(visibilityCheck, /if \(state\.cls > 0\.1\)/);
+  assert.match(visibilityCheck, /CLS \$\{state\.cls\.toFixed\(3\)\} exceeds 0\.100/);
+  assert.match(visibilityCheck, /for \(const viewport of viewports\)/);
+  assert.match(visibilityCheck, /for \(const route of routes\)/);
 });
