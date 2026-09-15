@@ -81,6 +81,9 @@ def select_due_slug():
         print('NO_DUE_BLOG')
         return None
     q = queue_contract(rows[0])
+    target = pathlib.Path('blog') / q['slug'] / 'index.html'
+    if target.exists():
+        base.fail(f"STALE_QUEUE_ALREADY_IN_MAIN:{q['slug']}: reconcile queue/publication proof before selecting another due article")
     print(q['slug'])
     return q['slug']
 
@@ -88,6 +91,36 @@ def select_due_slug():
 def actual_hash(q):
     payload = '\n'.join([q['source'], q['slug'], q['title'], q['keyword'], q['meta'], q['blogtext']])
     return hashlib.sha256(payload.encode()).hexdigest()
+
+
+def normalized(value):
+    return re.sub(r'\s+', ' ', value or '').strip().casefold()
+
+
+def source_contract(q):
+    keyword = normalized(q['keyword'])
+    if len(q['title']) > 60:
+        base.fail('Titel langer dan 60 tekens')
+    if keyword not in normalized(q['title']):
+        base.fail('Focus-zoekwoord ontbreekt in titel')
+    if keyword not in normalized(q['meta']):
+        base.fail('Focus-zoekwoord ontbreekt in meta')
+
+    body_without_faq = '\n'.join(
+        line for line in q['blogtext'].splitlines()
+        if not re.match(r'^\s*FAQ:', line, re.I)
+    )
+    prose = re.sub(r'(?m)^#{1,6}\s+', '', body_without_faq)
+    first_100_words = ' '.join(re.findall(r'\S+', prose)[:100])
+    if keyword not in normalized(first_100_words):
+        base.fail('Focus-zoekwoord ontbreekt in eerste 100 woorden')
+
+    h2s = re.findall(r'(?m)^##\s+(.+?)\s*$', q['blogtext'])
+    if not any(keyword in normalized(heading) for heading in h2s):
+        base.fail('Focus-zoekwoord ontbreekt in H2')
+    if not any(re.search(r'(?i)\b(aanpak|methode|werkwijze)\b', heading) for heading in h2s):
+        base.fail('Approved blog mist expliciete aanpak/methode')
+    return q
 
 
 def queue_contract(row):
@@ -102,7 +135,7 @@ def queue_contract(row):
         base.fail('Approved snapshot is incompleet')
     if not 120 <= len(q['meta']) <= 170:
         base.fail('Meta-omschrijving buiten toegestane lengte')
-    return q
+    return source_contract(q)
 
 
 def seal_or_validate(row):

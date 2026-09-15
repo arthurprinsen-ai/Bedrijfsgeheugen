@@ -97,6 +97,29 @@ test('approved blog writer keeps analytics out of the first render until consent
   assert.match(output, /href=\"\/assets\/site\.css\"/);
 });
 
+test('approved blog source contract blocks SEO drift before candidate generation', async () => {
+  const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
+  assert.match(writer, /def source_contract\(/);
+  assert.match(writer, /Focus-zoekwoord ontbreekt in titel/);
+  assert.match(writer, /Focus-zoekwoord ontbreekt in meta/);
+  assert.match(writer, /Focus-zoekwoord ontbreekt in eerste 100 woorden/);
+  assert.match(writer, /Focus-zoekwoord ontbreekt in H2/);
+  assert.match(writer, /Approved blog mist expliciete aanpak\/methode/);
+});
+
+test('approved blog due selector fails closed on a stale queue row already present on main', async () => {
+  const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
+  assert.match(writer, /STALE_QUEUE_ALREADY_IN_MAIN/);
+  assert.match(writer, /blog'\) \/ q\['slug'\] \/ 'index\.html'/);
+});
+
+test('approved blog reruns safely replace only their own deterministic candidate branch', async () => {
+  const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
+  assert.match(workflow, /REMOTE_PARENT_DRIFT/);
+  assert.match(workflow, /--force-with-lease=refs\/heads\/\$CANDIDATE_BRANCH:/);
+  assert.match(workflow, /remote_parent/);
+});
+
 test('approved blog workflow references the canonical writer', async () => {
   const workflow = await readFile('.github/workflows/approved-central-blog.yml', 'utf8');
   assert.match(workflow, /scripts\/publish_approved_blog_v2\.py/);
