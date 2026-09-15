@@ -1,6 +1,7 @@
 import { bevindingen } from '../bevindingen.js';
 import { allPageIds } from '../page-registry.js';
 import { PROFILE_DIMENSIONS } from './company-input.js';
+import { DIRECTIEMODEL, groepIdVoorVraag } from '../directiemodel.js';
 
 /**
  * De zes vragen die een directie stelt.
@@ -18,6 +19,11 @@ import { PROFILE_DIMENSIONS } from './company-input.js';
  * uit bevindingen.js, uit het eigen profiel of uit de eigen roadmap. Is dat er
  * niet, dan blijft de vraag eerlijk onbeantwoord, met de plek erbij waar je hem
  * kunt beantwoorden — een verzonnen antwoord is erger dan geen antwoord.
+ *
+ * De vragen zelf staan niet hier maar in ../directiemodel.js, samen met de
+ * pagina's die eronder hangen. Dat is dezelfde bron als de zijbalk gebruikt:
+ * een groep in de zijbalk beantwoordt dus letterlijk de vraag die hier wordt
+ * beantwoord, en beide kunnen niet uit elkaar lopen.
  *
  * De doelpagina wordt altijd getoetst aan de page-registry. Een bevinding die
  * naar een pagina wijst die niet bestaat, levert hier geen dode knop op maar
@@ -110,14 +116,17 @@ function besluit(_state, items) {
 
 /* ---------- de vragen zelf ---------- */
 
-export const DIRECTIEVRAGEN = Object.freeze([
-  Object.freeze({ id: 'gezond', vraag: 'Hoe gezond zijn we?', mist: 'Nog geen volwassenheid ingevuld voor de bedrijfsonderdelen.', invul: 'gegevens-invullen', antwoord: gezond }),
-  Object.freeze({ id: 'vastlopen', vraag: 'Waar loopt het vast?', mist: 'Nog geen doorgerekend knelpunt: vul uren, kosten en omzet aan.', invul: 'gegevens-invullen', antwoord: vastlopen }),
-  Object.freeze({ id: 'koers', vraag: 'Volgen we onze koers?', mist: 'Nog geen roadmap met eigenaren en voortgang.', invul: 'roadmap', antwoord: koers }),
-  Object.freeze({ id: 'aankomend', vraag: 'Wat komt er op ons af?', mist: 'Nog geen verplichting of ontwikkeling met een datum voor dit bedrijf.', invul: 'compliance-governance', antwoord: aankomend }),
-  Object.freeze({ id: 'zelf', vraag: 'Wat kunnen we zelf?', mist: 'Nog geen kansen afgeleid: doe eerst de scan.', invul: 'ai-scan', antwoord: zelf }),
-  Object.freeze({ id: 'besluit', vraag: 'Wat besluiten we nu?', mist: 'Zonder eigen gegevens geen advies; het portaal verzint er geen.', invul: 'gegevens-invullen', antwoord: besluit })
-]);
+const ANTWOORDGEVERS = Object.freeze({ gezond, vastlopen, koers, aankomend, zelf, besluit });
+
+export const DIRECTIEVRAGEN = Object.freeze(DIRECTIEMODEL.map(vraag => Object.freeze({
+  id: vraag.id,
+  vraag: vraag.vraag,
+  domein: vraag.domein,
+  mist: vraag.mist,
+  invul: vraag.invul,
+  groep: groepIdVoorVraag(vraag.id),
+  antwoord: ANTWOORDGEVERS[vraag.id]
+})));
 
 /** De zes vragen met hun antwoord, in vaste volgorde. */
 export function directieAntwoorden(state = {}, peil = new Date().toISOString().slice(0, 10)) {
@@ -127,6 +136,8 @@ export function directieAntwoorden(state = {}, peil = new Date().toISOString().s
     return Object.freeze({
       id: vraag.id,
       vraag: vraag.vraag,
+      domein: vraag.domein,
+      groep: vraag.groep,
       regel: antwoord ? antwoord.regel : vraag.mist,
       bron: antwoord ? antwoord.bron : null,
       beantwoord: Boolean(antwoord),
@@ -140,7 +151,10 @@ function kaart(antwoord) {
     + `<h3>${esc(antwoord.vraag)}</h3>`
     + `<p class="dv-regel">${esc(antwoord.regel)}</p>`
     + `<p class="dv-bron">${esc(antwoord.bron || 'Nog niet te beantwoorden')}</p>`
+    + '<div class="dv-acties">'
     + `<button type="button" data-pv-page="${esc(antwoord.pagina)}">${antwoord.beantwoord ? 'Bekijk' : 'Vul aan'} <i>→</i></button>`
+    + `<button type="button" class="dv-groep" data-dv-groep="${esc(antwoord.groep)}">Alles bij deze vraag</button>`
+    + '</div>'
     + '</li>';
 }
 
@@ -149,7 +163,7 @@ export function directievragenMarkup(state = {}, peil) {
   const antwoorden = directieAntwoorden(state, peil);
   return '<section class="dv" aria-label="De zes vragen">'
     + '<h2>Waar wil je naar kijken?</h2>'
-    + '<p class="dv-sub">Zes vragen, zes antwoorden uit je eigen gegevens. Elke knop opent het onderdeel waar het antwoord vandaan komt.</p>'
+    + '<p class="dv-sub">Zes vragen, zes antwoorden uit je eigen gegevens. Elke knop opent het onderdeel waar het antwoord vandaan komt; de zijbalk staat in dezelfde zes vragen.</p>'
     + `<ol class="dv-lijst">${antwoorden.map(kaart).join('')}</ol>`
     + '</section>';
 }
@@ -163,7 +177,11 @@ export const DIRECTIEVRAGEN_STIJL = `
 .dv-kaart h3{font-size:13px;margin:0;color:var(--pv-accent,#1d4ed8)}
 .dv-regel{font-size:13px;margin:0;flex:1}
 .dv-bron{font-size:11px;color:var(--pv-muted,#5b6b82);margin:0}
-.dv-kaart button{align-self:flex-start;border:1px solid var(--pv-line,#e3e8f0);background:var(--pv-soft,#f1f4fa);border-radius:8px;padding:6px 10px;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.dv-acties{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.dv-kaart button{border:1px solid var(--pv-line,#e3e8f0);background:var(--pv-soft,#f1f4fa);border-radius:8px;padding:6px 10px;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.dv-kaart .dv-groep{background:transparent;border-color:transparent;color:var(--pv-muted,#5b6b82);padding:6px 4px}
+.dv-kaart .dv-groep:hover{color:var(--pv-accent,#1d4ed8);border-color:transparent;text-decoration:underline}
+@media(max-width:1180px){.dv-kaart .dv-groep{display:none}}
 .dv-kaart button:hover{border-color:var(--pv-accent,#1d4ed8)}
 .dv-leeg .dv-regel{color:var(--pv-muted,#5b6b82)}
 `;

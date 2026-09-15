@@ -1,17 +1,45 @@
-// Zijbalkindeling volgens het vastgestelde Overzicht-design: zes groepen.
-// De items uit het design staan vooraan in hun groep; de overige pagina's
-// staan daaronder in dezelfde groep, zodat geen enkele pagina uit beeld raakt.
-// Wat nergens past staat in 'Overig'. Alle pagina-ids uit de oude acht secties
-// zijn hier opnieuw ondergebracht; er is niets verwijderd.
-export const PORTAL_SECTIONS = Object.freeze({
-  overzicht: { label: 'Overzicht', pages: ['overzicht','actieve-acties','advies'] },
-  besturen: { label: 'Besturen', pages: ['profiel','strategie-naar-maandagochtend','strategiemodellen','canvassen','eindconclusie','roadmap','strategy-dna','modellen','kansenkaart','businesscase','ai-scan'] },
-  realiseren: { label: 'Realiseren', pages: ['taken-werkstromen','documenten','uitvoeringsladder','offerte','gegevens-invullen','ingevulde-gegevens','actueel-houden'] },
-  'data-intelligence': { label: 'Data & intelligence', pages: ['data-ai','cijfers-maatstaven','koppelingen','brain-verwerking','ai-capabilities','data-ai-passport','bronnenstatus','datahubstatus','agentstatus','rekenwijze','onderzoek','branche-markt'] },
-  'continuiteit-risico': { label: 'Continuïteit & risico', pages: ['wijzigingen','compliance-governance','learning-writeback','compliance-command-center','eu-ai-act-audit','csrd-impact','audit','audittrail','recovery-obligations','self-heal','outcomes-evidence','mensen'] },
-  beheren: { label: 'Beheren', pages: ['instellingen','gebruikers'] },
-  overig: { label: 'Overig', pages: ['due-diligence','exit','waarde-financiering'] }
-});
+import { DIRECTIEMODEL, START_GROEP, BEHEER_GROEP, groepIdVoorVraag } from './directiemodel.js';
+
+/**
+ * De zijbalk van Portal V2.
+ *
+ * Tot nu toe stonden hier zes mappen: Besturen, Realiseren, Data & intelligence,
+ * Continu\u00efteit & risico, Beheren. Die indeling vertelde waar een pagina stond.
+ * Vanaf nu is elke groep een vraag die een directie stelt, en zijn de pagina's
+ * eronder de onderbouwing van het antwoord op die vraag.
+ *
+ * De groepen worden opgebouwd uit directiemodel.js. Er staat hier dus geen
+ * tweede lijst met vragen of pagina's: zijbalk en antwoordblok op Overzicht
+ * kunnen niet uit elkaar lopen, want ze lezen dezelfde bron.
+ *
+ * Er is geen pagina verdwenen. Elke pagina-id uit de oude indeling hangt onder
+ * precies \u00e9\u00e9n vraag; wat geen vraag beantwoordt (instellingen, gebruikers, de
+ * rekenwijze) staat onder Beheren.
+ */
+
+const GROEPEN = Object.freeze([
+  START_GROEP,
+  ...DIRECTIEMODEL.map(vraag => Object.freeze({
+    id: groepIdVoorVraag(vraag.id),
+    label: vraag.vraag,
+    domein: vraag.domein,
+    icoon: vraag.icoon,
+    vraagId: vraag.id,
+    paginas: vraag.paginas
+  })),
+  BEHEER_GROEP
+]);
+
+export const PORTAL_SECTIONS = Object.freeze(Object.fromEntries(GROEPEN.map(groep => [
+  groep.id,
+  Object.freeze({
+    label: groep.label,
+    domein: groep.domein,
+    icoon: groep.icoon,
+    vraagId: groep.vraagId ?? null,
+    pages: groep.paginas
+  })
+])));
 
 const PAGE_META = {
   overzicht:{label:'Overzicht'}, profiel:{label:'Profiel per onderdeel'}, 'data-ai':{label:'Data en AI'}, 'ai-scan':{label:'AI-scan: kansenkaart'}, kansenkaart:{label:'Kansenkaart'}, 'csrd-impact':{label:'CSRD & Impact'}, 'gegevens-invullen':{label:'Je gegevens invullen'}, 'ingevulde-gegevens':{label:'Wat je hebt ingevuld'}, businesscase:{label:'Businesscase'},
@@ -23,7 +51,7 @@ const PAGE_META = {
 };
 
 export const PORTAL_PAGE_INDEX = Object.freeze(Object.entries(PORTAL_SECTIONS).reduce((acc,[sectionId,section])=>{
-  for(const id of section.pages) acc[id]={id,sectionId,...(PAGE_META[id]??{label:id})};
+  for(const id of section.pages) acc[id]={id,sectionId,vraagId:section.vraagId,...(PAGE_META[id]??{label:id})};
   return acc;
 },{}));
 
@@ -31,6 +59,9 @@ export function listPortalGroups() {
   return Object.entries(PORTAL_SECTIONS).map(([id, section]) => ({
     id,
     label: section.label,
+    domein: section.domein,
+    icoon: section.icoon,
+    vraagId: section.vraagId,
     pages: section.pages.map(pageId => ({ id:pageId, ...PORTAL_PAGE_INDEX[pageId] }))
   }));
 }
