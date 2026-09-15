@@ -1,0 +1,101 @@
+{
+  "id": "powerhouse-truth-status-contract-v1",
+  "version": 1,
+  "status": "ACTIVE",
+  "scope": [
+    "chat",
+    "agent",
+    "workflow",
+    "scenario",
+    "development_run",
+    "incident",
+    "recovery",
+    "production_verification"
+  ],
+  "purpose": "Maak voor iedere Bedrijfsgeheugen/Powerhouse uitvoeringschat ondubbelzinnig zichtbaar wat werkelijk live, bewezen, gedeeltelijk live, geblokkeerd of niet uitgevoerd is, met de centrale production truth als autoriteit boven losse chattekst.",
+  "authority": {
+    "role": "CANONICAL_POLICY",
+    "semanticAuthority": true,
+    "productionTruthTable": "public.brain_production_truth",
+    "conversationHistoryIsNotCanonicalTruth": true,
+    "canonicalProductionTruthWinsOnConflict": true
+  },
+  "terminalStatuses": {
+    "LIVE_BEWEZEN": {
+      "display": "LIVE & BEWEZEN",
+      "requires": [
+        "exact_production_identity",
+        "current_production_readback",
+        "all_relevant_gates_green",
+        "no_known_critical_gap",
+        "material_learning_written_back"
+      ]
+    },
+    "DEELS_LIVE": {
+      "display": "DEELS LIVE",
+      "requires": ["at_least_one_live_component", "one_or_more_open_or_unproven_items_explicit"]
+    },
+    "GEBLOKKEERD": {
+      "display": "GEBLOKKEERD",
+      "requires": ["blocking_cause_explicit", "blocking_evidence_or_hard_boundary_explicit"]
+    },
+    "NIET_GEDAAN": {
+      "display": "NIET GEDAAN",
+      "requires": ["no_execution_claimed"]
+    },
+    "UNVERIFIED_LEGACY": {
+      "display": "UNVERIFIED LEGACY",
+      "requires": ["historical_claim_without_current_authoritative_reconciliation"]
+    }
+  },
+  "completionOutput": {
+    "requiredFields": [
+      "eindstatus",
+      "productie",
+      "bewijs",
+      "gates",
+      "open_gaten",
+      "powerhouse_writeback"
+    ],
+    "nextActionOnlyWhenOpen": true,
+    "openGapsMustBeExplicit": true,
+    "noOpenGapsValue": "GEEN"
+  },
+  "failClosedRules": [
+    "ONE_CRITICAL_RED_OR_UNPROVEN_ITEM_BLOCKS_LIVE_BEWEZEN",
+    "MERGED_IS_NOT_LIVE_WITHOUT_PRODUCTION_READBACK",
+    "DEPLOY_READY_IS_NOT_DEPLOYED",
+    "CI_GREEN_IS_NOT_EXTERNAL_RUNTIME_PROOF",
+    "CHAT_ASSERTION_IS_NOT_PRODUCTION_EVIDENCE",
+    "LEARNING_NOT_WRITTEN_BACK_BLOCKS_COMPLETION"
+  ],
+  "legacyReconciliation": {
+    "allHistoricalChatStatusClaimsDefaultTo": "UNVERIFIED_LEGACY",
+    "claimsCovered": ["live", "klaar", "groen", "opgelost", "geborgd", "werkt"],
+    "upgradeOnlyWith": [
+      "current_authoritative_readback",
+      "exact_identity_match",
+      "relevant_gate_evidence",
+      "open_gap_reconciliation"
+    ],
+    "historicalMessagesAreImmutable": true,
+    "centralInterpretationOverridesHistoricalWording": true
+  },
+  "crossChatEnforcement": {
+    "allFutureAgentsMustReadThisPolicyBeforeMaterialExecution": true,
+    "allExecutionChatsMustUseTerminalStatusContract": true,
+    "allMaterialStatusChangesMustReconcileToProductionTruth": true,
+    "localMemoryIsProjectionOnly": true
+  },
+  "learning": {
+    "fingerprint": "powerhouse|truth|chat-status-claim-without-production-evidence-v1",
+    "symptom": "Een chat meldt klaar/live/groen terwijl een relevante gate, productie-readback, writeback of open gat nog onbewezen is.",
+    "rootCause": "Conversatie-uitspraak en lokale technische voortgang werden behandeld als production truth.",
+    "failedApproach": "Een taak afronden met een positieve status zonder exact actuele productie-evidence en expliciete open-gatenreconciliatie.",
+    "fix": "Classificeer iedere uitvoeringschat met het vierstatuscontract, behandel historische losse claims als UNVERIFIED_LEGACY en laat production truth plus actuele readback beslissen.",
+    "preventionRule": "Geen LIVE_BEWEZEN bij één kritiek rood of onbewezen punt; iedere materiële statuswijziging krijgt production-truth writeback en readback.",
+    "regressionContract": "tests/powerhouse-truth-status-guard.test.mjs",
+    "owner": "agent-reliability",
+    "status": "GUARDED"
+  }
+}
