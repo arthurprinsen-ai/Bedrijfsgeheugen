@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const edgePath = 'supabase/functions/powerhouse-revenue-intelligence/index.ts';
-const migrationPath = 'supabase/migrations/20260915182000_powerhouse_market_truth_ingress_v1.sql';
+const migrationPath = 'supabase/migrations/20260915181636_powerhouse_market_truth_ingress_v1.sql';
 
 const read = (path) => readFile(path, 'utf8');
 
