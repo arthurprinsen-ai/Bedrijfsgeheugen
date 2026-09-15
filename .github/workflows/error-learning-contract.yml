@@ -3,15 +3,19 @@ name: Error learning contract
 on:
   pull_request:
     paths:
-      - 'scripts/release/error-learning-policy.mjs'
-      - 'tests/error-learning-contract.test.mjs'
+      - 'scripts/brain/error-learning-policy.mjs'
+      - 'tests/brain-error-learning-contract.test.mjs'
+      - 'config/delivery-prevention-rules.json'
+      - 'docs/brain/delivery-failure-lessons.json'
       - 'AGENTS.md'
       - '.github/workflows/error-learning-contract.yml'
   push:
     branches: [main]
     paths:
-      - 'scripts/release/error-learning-policy.mjs'
-      - 'tests/error-learning-contract.test.mjs'
+      - 'scripts/brain/error-learning-policy.mjs'
+      - 'tests/brain-error-learning-contract.test.mjs'
+      - 'config/delivery-prevention-rules.json'
+      - 'docs/brain/delivery-failure-lessons.json'
       - 'AGENTS.md'
       - '.github/workflows/error-learning-contract.yml'
   workflow_dispatch:
@@ -30,4 +34,4 @@ jobs:
         with:
           node-version: '24'
       - name: Verify error-learning contract
-        run: node tests/error-learning-contract.test.mjs
+        run: node tests/brain-error-learning-contract.test.mjs
