@@ -45,7 +45,7 @@
 - [ ] Detect matured uncalibrated forecasts and call existing `powerhouse-forecast-calibrator` via pg_net only when due.
 - [ ] Call existing commercial closed loop after closure mutations.
 - [ ] Write runtime event + sales learning with observed counts and truth boundaries.
-- [ ] Schedule hourly at minute 32 after existing commercial learning.
+- [ ] Reuse the existing hourly owner at minute 47 and replace the direct closed-loop scheduler rather than adding a competing scheduler.
 - [ ] Revoke browser execution and grant service role only.
 
 ### Task 3: Policy integration
