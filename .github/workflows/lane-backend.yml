@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Install runtime dependencies for backend contracts
+        run: npm install --no-audit --no-fund --silent
       - name: Verify backend Brain and runtime contracts
         run: >-
           node --test
@@ -33,3 +35,6 @@ jobs:
           tests/make-cost-governance-contract.test.mjs
           tests/growth-intelligence-engine.test.mjs
           tests/growth-intelligence-daily.test.mjs
+          tests/brain-ai-usage-attribution.test.mjs
+          tests/brain-resource-business-value-contract.test.mjs
+          tests/brain-resource-business-value-service-role-grants.test.mjs
