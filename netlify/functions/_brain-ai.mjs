@@ -44,12 +44,10 @@ async function anthropic({ authorized, apiKey, system, maxTokens, renderUser, pr
 async function attachTokenUsage(result, { requestId, componentKey, usageStore, at = new Date().toISOString() }) {
   const { providerUsage, ...safeResult } = result;
   if (!providerUsage) return Object.freeze({ ...safeResult, tokenUsage:null, tokenMetering:'UNAVAILABLE' });
-  const tokenUsage = normalizeProviderTokenUsage({
-    provider:'Anthropic', providerModelId:MODEL_ID, componentKey, requestId, usage:providerUsage, at,
-  });
+  const tokenUsage = normalizeProviderTokenUsage({ provider:'Anthropic', providerModelId:MODEL_ID, componentKey, requestId, usage:providerUsage, at });
   try {
-    await (usageStore ?? createAiUsageStore()).record(tokenUsage);
-    return Object.freeze({ ...safeResult, tokenUsage, tokenMetering:'RECORDED' });
+    const metering=await (usageStore ?? createAiUsageStore()).record(tokenUsage);
+    return Object.freeze({ ...safeResult, tokenUsage, tokenMetering:metering?.canonicalRecorded===true?'RECORDED_CANONICAL':'RECORDED_BLOB_PENDING_CANONICAL' });
   } catch {
     return Object.freeze({ ...safeResult, tokenUsage, tokenMetering:'UNAVAILABLE' });
   }
