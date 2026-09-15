@@ -13,6 +13,7 @@ export default async request=>{
   if(request.method!=='POST') return json({error:'METHOD_NOT_ALLOWED'},405);
   const length=Number(request.headers.get('content-length')||0);if(length>131072)return json({error:'PAYLOAD_TOO_LARGE'},413);
   let body;try{body=await request.json()}catch{return json({error:'INVALID_JSON'},400)}
+  if(body?.action==='history'||body?.action==='claim')return json({error:'PRIVILEGED_ACTION_FORBIDDEN'},403);
   if(body?.website) return json({ok:true,ignored:true});
   return postEdge(body);
 };
