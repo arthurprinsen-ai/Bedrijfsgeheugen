@@ -51,12 +51,24 @@
     "require_production_route_readback": true,
     "allow_live_claim_before_all_three": false
   },
-  "prevention_rule_ids": [
-    "REQUIRE_COMPLETE_CUSTOMER_PROJECT_PARITY_BEFORE_PORTAL_V2_GREEN",
-    "BLOCK_GENERIC_PORTAL_SHELL_UNTIL_CUSTOMER_CONTEXT_HYDRATED",
-    "REQUIRE_EXACT_SHA_PRODUCTION_READBACK_BEFORE_LIVE_CLAIM"
+  "prevention_controls": [
+    {
+      "id": "portal-v2-project-parity-and-complete-demo-regressions",
+      "type": "regression-gate",
+      "purpose": "Blokkeer Portal V2 groen wanneer bestaande klantprojectdata of verplichte demo-oppervlakken ontbreken."
+    },
+    {
+      "id": "portal-v2-hydration-guard-regressions",
+      "type": "regression-gate",
+      "purpose": "Blokkeer zichtbare generieke of verkeerde portalinhoud totdat customer/demo context settled is."
+    },
+    {
+      "id": "REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN",
+      "type": "active-prevention-rule",
+      "purpose": "Hergebruik de bestaande production-truth regel; maak geen tweede release-authority."
+    }
   ],
-  "prevention": "Portal V2 customer-project delivery mag pas groen zijn wanneer volledige projectparity, fail-closed hydration, een volledig fictieve demo en exact-SHA productie-readback onafhankelijk zijn bewezen.",
+  "prevention": "Portal V2 customer-project delivery mag pas groen zijn wanneer volledige projectparity, fail-closed hydration, een volledig fictieve demo en exact-SHA productie-readback onafhankelijk zijn bewezen. Hergebruik de bestaande prevention registry en release-authority; creëer geen parallelle truthlaag.",
   "evidence": {
     "source_pr": 1430,
     "source_merge_sha": "fb98b20173b343927cb12a4b7318db1963faf54c",
