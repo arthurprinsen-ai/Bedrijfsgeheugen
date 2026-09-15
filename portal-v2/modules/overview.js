@@ -54,6 +54,22 @@ export function bindPageButtons(scope){
 }
 
 /**
+ * De tweede knop op een vraagkaart opent diezelfde vraag in de zijbalk. Zonder
+ * die verbinding zijn het twee losse lijstjes van zes; met die verbinding is het
+ * eenmaal hetzelfde stuurmodel, op twee plekken zichtbaar.
+ */
+export function bindGroepButtons(scope){
+ scope?.querySelectorAll?.('[data-dv-groep]').forEach(btn=>{
+  if(btn.dataset.dvBound==='true')return;
+  btn.dataset.dvBound='true';
+  btn.addEventListener('click',()=>{
+   const doc=btn.ownerDocument||document;
+   doc.dispatchEvent(new CustomEvent('bg:open-vraag',{detail:{groep:btn.dataset.dvGroep}}));
+  });
+ });
+}
+
+/**
  * De zes directievragen staan boven het dashboard: een directie opent het
  * portaal met een vraag, niet met een map. Ze staan er voor elke klant, ook
  * zonder gegevens - dan tonen ze wat er nog mist in plaats van een getal.
@@ -72,6 +88,7 @@ function renderDirectievragen(root,state){
  }
  houder.innerHTML=directievragenMarkup(state);
  bindPageButtons(houder);
+ bindGroepButtons(houder);
  return true;
 }
 

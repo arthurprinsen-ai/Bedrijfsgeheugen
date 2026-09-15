@@ -9,6 +9,8 @@ import { createPortalDomainState } from './domain-state.js';
 import { mountGlobalActions } from './global-actions-ui.js';
 import { applyCustomerBranding } from './customer-branding.js';
 import { applyOverviewDashboard } from './modules/overview.js';
+import { mountDirectieNav } from './modules/directie-nav.js';
+import { directieAntwoorden } from './modules/directievragen.js';
 import { renderProjectOverview } from './project-overview.js';
 
 const SOURCES=[
@@ -152,7 +154,10 @@ function mountDesktopProjectNavigation(){
  nav.after(section);
 }
 function markNavigationControls(){
- const desktop=[...document.querySelectorAll('.nav button')];
+ // De vragenzijbalk zet zijn eigen navigatiedoelen per knop. Dit blok mapt op
+ // volgorde en zou daar de verkeerde doelen op plakken; daarom alleen zolang de
+ // statische zijbalk uit index.html nog staat.
+ const desktop=document.querySelector('.nav[data-directie="true"]')?[]:[...document.querySelectorAll('.nav button')];
  DESKTOP_NAV_ITEMS.forEach((item,index)=>{if(desktop[index])desktop[index].dataset.navTarget=item.target});
  const mobile=[...document.querySelectorAll('.mobilebar button')];
  const icons={overview:'⌂',project:'▣','data-ai':'✦',tasks:'✓',more:'☰'};
@@ -183,7 +188,8 @@ const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
 configurePortalShell({domainState:portalDomainState});
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
-portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
+const directieNav=mountDirectieNav(document,{open:openProjectPage,antwoordenVoor:state=>directieAntwoorden(state||{})});
+portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});directieNav?.refresh(snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
 mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();mountDesktopProjectNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
  openPage:openPortalPage,
