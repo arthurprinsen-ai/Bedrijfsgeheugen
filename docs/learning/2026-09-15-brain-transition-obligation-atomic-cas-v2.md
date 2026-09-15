@@ -22,15 +22,19 @@ Production migration `20260915161019_brain_transition_obligation_atomic_cas_v2` 
 
 `UPDATE public.brain_obligations ... WHERE id = expected_id AND version = expected_version RETURNING *`.
 
-If the atomic update affects no row, the RPC then distinguishes `OBLIGATION_NOT_FOUND` from `STATE_VERSION_CONFLICT`. SECURITY DEFINER and service-role-only execution remain unchanged.
+If the atomic update affects no row, the RPC then distinguishes `OBLIGATION_NOT_FOUND` from `STATE_VERSION_CONFLICT`.
+
+The first protected security run then exposed a contract-normalization gap rather than a behavioral vulnerability: the migration used equivalent but checker-unrecognized syntax (`search_path=public` and `REVOKE ALL`). Production migration `20260915161322_brain_transition_obligation_atomic_cas_v2_security_contract` preserves the atomic CAS while pinning `search_path = public, pg_catalog` and explicit `REVOKE EXECUTE ... FROM public, anon, authenticated`. GitHub carries both exact production versions so the production ledger remains historically complete.
 
 ## Prevention
 
 The regression contract requires:
-- exactly one canonical migration for this fix;
+- exactly one canonical atomic-CAS migration for the behavioral fix;
 - atomic `id + version` CAS;
 - no composite `SELECT * INTO v_current` pre-read;
 - explicit stale-version failure;
-- unchanged service-role-only function ownership.
+- deterministic `search_path = public, pg_catalog`;
+- explicit browser-role EXECUTE revocation;
+- service-role-only execution.
 
-The exact production migration version is also recorded in `config/supabase-production-migration-lineage.json`. The original lineage obligation must remain OPEN until this production migration is present on protected GitHub main, required CI is green, both stores are read back, and the repaired RPC itself successfully transitions the obligation to `FULFILLED`.
+Both exact production migration versions are recorded in `config/supabase-production-migration-lineage.json`. The original lineage obligation remains OPEN until both production migrations are present on protected GitHub main, required CI is green, both stores are read back, and the repaired RPC itself successfully transitions the obligation to `FULFILLED`.
