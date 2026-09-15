@@ -1,0 +1,1 @@
+Hard status before CI/merge: DEELS LIVE. Implementation exists only on branch; production verification and exact-SHA deployment are pending. Do not promote assurance status to verified before protected merge and production readback.

@@ -19,12 +19,14 @@ function navigateWithinV2(pageId){
  if(typeof location==='undefined')return;
  const url=new URL(location.href);url.searchParams.delete('hub');url.searchParams.set('page',pageId);location.assign(url.toString());
 }
-function loadFunctionalStyles(){
+function ensureStylesheet(href){
  if(typeof document==='undefined')return Promise.resolve();
- const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')==='./functional-suite.css'||link.href.endsWith('/portal-v2/functional-suite.css'));
+ const filename=href.replace('./','');
+ const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')===href||link.href.endsWith(`/portal-v2/${filename}`));
  if(existing){if(existing.sheet)return Promise.resolve();return new Promise(resolve=>{existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',resolve,{once:true});});}
- return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href='./functional-suite.css';link.addEventListener('load',resolve,{once:true});link.addEventListener('error',resolve,{once:true});document.head.appendChild(link);});
+ return new Promise(resolve=>{const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.addEventListener('load',resolve,{once:true});link.addEventListener('error',resolve,{once:true});document.head.appendChild(link);});
 }
+function loadFunctionalStyles(){return Promise.all([ensureStylesheet('./functional-suite.css'),ensureStylesheet('./semantic-parity.css')]);}
 async function attachLegacyAlgorithmParity(root,contract){
  if(!contract?.legacyCapability)return;
  try{
@@ -47,13 +49,18 @@ export function mountWorkspace(root,contract,context={}){
  }));
  shell.dataset.activeTab='invullen';context.render?.(content,model);
  const api=Object.freeze({shell,content,model,setSaveStatus(status){const badge=shell.querySelector('.v2savestatus');if(badge){badge.dataset.saveStatus=status;badge.textContent=saveStatusLabel(status);}}});
- if(contract?.legacyCapability&&!root.dataset.functionalDelegating){
-  const modulePath=contract.id==='roadmap'?'./modules/roadmap-workspace.js':'./modules/functional-suite.js';
+ const specialist=contract?.id==='roadmap'?'roadmap':contract?.id==='canvassen'?'canvassen':['strategiemodellen','modellen'].includes(contract?.id)?'strategic':null;
+ const shouldDelegate=Boolean(contract&&(contract.legacyCapability||specialist));
+ if(shouldDelegate&&!root.dataset.functionalDelegating){
+  const modulePath=specialist==='roadmap'?'./modules/roadmap-workspace.js':specialist==='canvassen'?'./modules/canvas-workspace.js':specialist==='strategic'?'./modules/strategic-model-workspace.js':'./modules/functional-suite.js';
   Promise.all([loadFunctionalStyles(),import(modulePath)]).then(async([,module])=>{
    root.dataset.functionalDelegating='1';
    try{
-    if(contract.id==='roadmap')module.mountRoadmapWorkspace?.(root,{contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
-    else if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2});
+    const options={contract,view:{title:model.title,description:model.description},domainState:globalThis.__BG_PORTAL_DOMAIN_STATE__||null,openPage:navigateWithinV2};
+    if(specialist==='roadmap')module.mountRoadmapWorkspace?.(root,options);
+    else if(specialist==='canvassen')module.mountCanvasWorkspace?.(root,options);
+    else if(specialist==='strategic')module.mountStrategicModelWorkspace?.(root,options);
+    else if(module.functionalDefinition?.(contract.id))module.mountFunctionalWorkspace(root,{pageId:contract.id,...options});
     await attachLegacyAlgorithmParity(root,contract);
    } finally{delete root.dataset.functionalDelegating;}
   }).catch(error=>{console.error('FUNCTIONAL_WORKSPACE_LOAD_FAILED',error);});
