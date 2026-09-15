@@ -106,5 +106,10 @@ test('production readback is serialized and never cancelled mid-flight', () => {
   const production = readFileSync('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(production, /group:\s*production-release-readback\s*$/m);
   assert.match(production, /cancel-in-progress:\s*false/);
-  assert.doesNotMatch(required, /concurrency:[\s\S]*production-release-readback/);
+  const concurrencyStart = required.indexOf('\nconcurrency:');
+  const jobsStart = required.indexOf('\njobs:', concurrencyStart);
+  assert.notEqual(concurrencyStart, -1, 'Required test concurrency block must exist');
+  assert.notEqual(jobsStart, -1, 'Required test jobs block must follow concurrency');
+  const requiredConcurrency = required.slice(concurrencyStart, jobsStart);
+  assert.doesNotMatch(requiredConcurrency, /production-release-readback/);
 });
