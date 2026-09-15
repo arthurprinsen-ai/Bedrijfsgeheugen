@@ -1,0 +1,124 @@
+-- Canonical source-control mirror of the production migration
+-- powerhouse_revenue_calibration_projection_v1.
+-- Reuses existing Powerhouse stores; creates no parallel truth.
+
+create or replace function public.powerhouse_project_brain_revenue_learning()
+returns trigger
+language plpgsql
+security definer
+set search_path to 'public'
+as $function$
+declare
+  learning_type text := new.payload->>'learningType';
+  prediction jsonb;
+  settled jsonb;
+  forecast_uuid uuid;
+  action_uuid uuid;
+  outcome_uuid uuid;
+  decision_key text;
+  entity_key text;
+  predicted_at timestamptz;
+  occurred_at timestamptz;
+  meeting_value integer;
+  revenue_value numeric;
+begin
+  if new.record_type <> 'Learning' or new.record_kind <> 'learning' then return new; end if;
+
+  if learning_type = 'revenue_prediction' then
+    prediction := new.payload->'prediction';
+    if coalesce(prediction->>'schema_version','') <> 'powerhouse.decision-prediction.v1' then
+      raise exception 'POWERHOUSE_REVENUE_PREDICTION_SCHEMA_REQUIRED';
+    end if;
+    decision_key := prediction->>'decision_id';
+    entity_key := prediction->>'entity_id';
+    if nullif(decision_key,'') is null or nullif(entity_key,'') is null then
+      raise exception 'POWERHOUSE_REVENUE_PREDICTION_IDENTITY_REQUIRED';
+    end if;
+    predicted_at := coalesce((prediction->>'predicted_at')::timestamptz,new.observed_at);
+
+    insert into public.powerhouse_forecasts(
+      forecast_key,horizon_start,horizon_end,scope,scope_key,topic_key,predicted_event,
+      predicted_problem,predicted_buying_trigger,probability,confidence,expected_lead_days,
+      first_mover_score,strategic_fit,revenue_potential,evidence_signal_ids,evidence,status,
+      prediction_mode,last_scored_at
+    ) values (
+      'brain-revenue:'||new.tenant_id||':'||decision_key,
+      predicted_at::date,(predicted_at + interval '30 days')::date,'company',entity_key,
+      'commercial-meeting','meeting','commercial opportunity requires verified follow-up',
+      prediction->'recommended_action'->>'type',
+      greatest(0,least(1,coalesce((prediction->'prediction'->>'meeting_probability')::numeric,0))),
+      greatest(0,least(1,coalesce((prediction->'prediction'->>'confidence')::numeric,0))),
+      30,
+      greatest(0,least(100,coalesce((prediction->'prediction'->>'opportunity_score')::numeric,0))),
+      greatest(0,least(1,coalesce((prediction->'prediction'->>'confidence')::numeric,0))),
+      greatest(0,coalesce((prediction->'prediction'->>'expected_commercial_value')::numeric,0)),
+      '{}'::uuid[],
+      jsonb_build_object('canonical_brain_record_id',new.record_id,'tenant_id',new.tenant_id,'decision_id',decision_key,'evidence_ids',to_jsonb(new.evidence_ids),'prediction_model',new.payload->'predictionModel','source','revenue-calibration-loop'),
+      'active','anticipatory',predicted_at
+    )
+    on conflict (forecast_key) do update set probability=excluded.probability,confidence=excluded.confidence,revenue_potential=excluded.revenue_potential,evidence=excluded.evidence,last_scored_at=excluded.last_scored_at,updated_at=now()
+    returning forecast_id into forecast_uuid;
+
+    insert into public.powerhouse_sales_actions(
+      dedupe_key,subject_key,company_key,action_type,channel,priority,reason,evidence,
+      message_draft,source_url,status,due_at,topic_key,opportunity_key,expected_value_eur
+    ) values (
+      'brain-revenue-action:'||new.tenant_id||':'||decision_key,
+      entity_key,entity_key,coalesce(nullif(prediction->'recommended_action'->>'type',''),'observe_and_enrich'),
+      'brain',greatest(0,least(100,coalesce((prediction->'prediction'->>'opportunity_score')::numeric,0))),
+      'Canonical Brain pre-action commercial prediction',
+      jsonb_build_object('prediction_record_id',new.record_id,'decision_id',decision_key,'evidence_ids',to_jsonb(new.evidence_ids)),
+      '','brain://revenue-calibration-loop','prepared',predicted_at,'commercial-meeting',decision_key,greatest(0,coalesce((prediction->'prediction'->>'expected_commercial_value')::numeric,0))
+    )
+    on conflict (dedupe_key) do update set priority=excluded.priority,evidence=excluded.evidence,expected_value_eur=excluded.expected_value_eur,updated_at=now()
+    returning action_id into action_uuid;
+
+  elsif learning_type = 'revenue_settlement' then
+    settled := new.payload->'settled';
+    if coalesce(settled->>'schema_version','') <> 'powerhouse.decision-outcome.v1' then
+      raise exception 'POWERHOUSE_REVENUE_SETTLEMENT_SCHEMA_REQUIRED';
+    end if;
+    decision_key := settled->>'decision_id';
+    entity_key := settled->>'entity_id';
+    if nullif(decision_key,'') is null or nullif(entity_key,'') is null then
+      raise exception 'POWERHOUSE_REVENUE_SETTLEMENT_IDENTITY_REQUIRED';
+    end if;
+    occurred_at := coalesce((settled->'outcome'->>'occurred_at')::timestamptz,new.observed_at);
+    meeting_value := case when coalesce((settled->'outcome'->>'meeting')::int,0)=1 then 1 else 0 end;
+    revenue_value := greatest(0,coalesce((settled->'outcome'->>'revenue')::numeric,0));
+
+    select forecast_id into forecast_uuid from public.powerhouse_forecasts where forecast_key='brain-revenue:'||new.tenant_id||':'||decision_key;
+    if forecast_uuid is null then raise exception 'POWERHOUSE_ORIGINATING_FORECAST_REQUIRED:%',decision_key; end if;
+    select action_id into action_uuid from public.powerhouse_sales_actions where dedupe_key='brain-revenue-action:'||new.tenant_id||':'||decision_key;
+
+    insert into public.powerhouse_sales_outcomes(action_id,dedupe_key,outcome_type,subject_key,company_key,revenue_eur,evidence,occurred_at,opportunity_key,channel)
+    values(action_uuid,'brain-revenue-outcome:'||new.tenant_id||':'||decision_key||':'||coalesce(new.payload->>'originatingPredictionId','unknown'),
+      case when coalesce((settled->'outcome'->>'order')::int,0)=1 then 'order' when coalesce((settled->'outcome'->>'proposal')::int,0)=1 then 'proposal' when meeting_value=1 then 'meeting' else 'no_meeting' end,
+      entity_key,entity_key,revenue_value,
+      jsonb_build_object('canonical_brain_record_id',new.record_id,'originatingPredictionId',new.payload->>'originatingPredictionId','decision_id',decision_key,'evidence_ids',to_jsonb(new.evidence_ids),'settled',settled),
+      occurred_at,decision_key,'brain')
+    on conflict (dedupe_key) do update set outcome_type=excluded.outcome_type,revenue_eur=excluded.revenue_eur,evidence=excluded.evidence,occurred_at=excluded.occurred_at
+    returning outcome_id into outcome_uuid;
+
+    update public.powerhouse_sales_actions set status='done',executed_at=coalesce(executed_at,occurred_at),outcome_id=outcome_uuid,updated_at=now() where dedupe_key='brain-revenue-action:'||new.tenant_id||':'||decision_key;
+    update public.powerhouse_forecasts set status='materialized',materialized_at=coalesce(materialized_at,occurred_at),outcome=jsonb_build_object('originatingPredictionId',new.payload->>'originatingPredictionId','settled',settled),updated_at=now() where forecast_id=forecast_uuid;
+
+    if not exists(select 1 from public.powerhouse_forecast_calibration c where c.forecast_id=forecast_uuid and c.evidence->>'canonical_brain_record_id'=new.record_id) then
+      insert into public.powerhouse_forecast_calibration(forecast_id,measured_at,actual_event_occurred,actual_event_at,probability_error,revenue_influence,evidence,outcome_value,brier_component,attribution_confidence,revenue_eur,content_ids)
+      values(forecast_uuid,occurred_at,(meeting_value=1),case when meeting_value=1 then occurred_at else null end,
+        coalesce((settled->'learning'->>'probability_error')::numeric,0),revenue_value,
+        jsonb_build_object('canonical_brain_record_id',new.record_id,'originatingPredictionId',new.payload->>'originatingPredictionId','decision_id',decision_key,'evidence_ids',to_jsonb(new.evidence_ids)),
+        meeting_value,coalesce((settled->'learning'->>'meeting_brier_score')::numeric,0),1,revenue_value,'{}'::text[]);
+    end if;
+  end if;
+  return new;
+end;
+$function$;
+
+-- Trigger is idempotently reconciled to the production definition.
+drop trigger if exists trg_powerhouse_project_brain_revenue_learning on public.brain_records;
+create trigger trg_powerhouse_project_brain_revenue_learning
+after insert on public.brain_records
+for each row
+when ((new.record_type = 'Learning'::text) and (new.record_kind = 'learning'::text))
+execute function public.powerhouse_project_brain_revenue_learning();
