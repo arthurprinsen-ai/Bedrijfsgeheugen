@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { functionalDefinition, functionalSchema, listFunctionalSuitePages, computeFunctionalAnalysis } from '../modules/functional-suite.js';
+import { canvasSchema, buildCanvasAnalysis } from '../modules/canvas-workspace.js';
+import { bcgModel, buildBcgAction } from '../modules/strategy-models.js';
 
 const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
 
@@ -23,12 +25,56 @@ test('repeatable legacy collections remain repeatable and structured',()=>{
  }
 });
 
-test('the exact six legacy canvases are editable in V2',()=>{
- const ids=functionalSchema('canvassen').map(field=>field.id);
- for(const key of ['bmc','vpc2','lean','merk','content','sales2']){
-  assert.ok(ids.includes(`${key}question`),key);
-  assert.ok(ids.includes(`${key}owner`),`${key}:owner`);
+test('the exact six legacy canvases are full structured Powerhouse views, not question plus owner placeholders',()=>{
+ const schema=canvasSchema();
+ assert.deepEqual(schema.map(canvas=>canvas.key),['bmc','vpc2','lean','merk','content','sales2']);
+ for(const canvas of schema){
+  assert.ok(canvas.title);
+  assert.ok(canvas.sections.length>=4,`${canvas.key}:sections`);
+  assert.ok(canvas.sections.every(section=>section.id&&section.label),`${canvas.key}:section-contract`);
  }
+});
+
+test('canvas analysis reconstructs completed content from canonical customer state and keeps client overrides',()=>{
+ const state={portal:{
+  profile:{companyName:'Demo BV',employees:24,goal:'groei',maturity:{sturing:3,commercie:2,operatie:4,finance:3,mensen:3,analytics:2,quality:4,governance:2,tech:3,culture:4,service:4,security:3,duurzaam:2}},
+  metrics:{revenue:1800,customers:120,newCustomers:18,largestCustomer:12,grossMargin:42,nps:37,quoteConversion:31},
+  market:{industry:'Zakelijke dienstverlening',growth:2.4,digitalMaturity:3.1},
+  canvases:{merk:{answer:'Menselijk en praktisch',owner:'Arthur',details:{bewijs:'Klantcases'}}}
+ }};
+ const analysis=buildCanvasAnalysis(state);
+ assert.equal(analysis.merk.answer,'Menselijk en praktisch');
+ assert.equal(analysis.merk.owner,'Arthur');
+ assert.equal(analysis.merk.values.bewijs,'Klantcases');
+ assert.match(analysis.bmc.values.klantsegmenten,/Zakelijke dienstverlening|120/);
+ assert.match(analysis.bmc.values.inkomsten,/1\.800|1800/);
+ assert.match(analysis.content.values.doelgroep,/Zakelijke dienstverlening|120/);
+ assert.ok(analysis.conclusion.length>20);
+});
+
+test('legacy BCG model preserves exact growth and relative-position quadrant rules',()=>{
+ const star=bcgModel({growth:2.4,companyMaturity:3.4,industryDigitalMaturity:3.1});
+ assert.equal(star.quadrant,'Ster');
+ assert.equal(star.marketGrowthThreshold,1.5);
+ assert.equal(star.strongPosition,true);
+ assert.match(star.explanation,/2\.4%/);
+ assert.match(star.explanation,/3\.4/);
+ assert.match(star.explanation,/3\.1/);
+
+ assert.equal(bcgModel({growth:1.5,companyMaturity:3.1,industryDigitalMaturity:3.1}).quadrant,'Melkkoe');
+ assert.equal(bcgModel({growth:1.6,companyMaturity:3.0,industryDigitalMaturity:3.1}).quadrant,'Vraagteken');
+ assert.equal(bcgModel({growth:1.5,companyMaturity:3.0,industryDigitalMaturity:3.1}).quadrant,'Hond');
+});
+
+test('legacy BCG question-mark state creates the same downstream invest-or-drop action',()=>{
+ const action=buildBcgAction({growth:2.4,companyMaturity:2.8,industryDigitalMaturity:3.1});
+ assert.equal(action.title,'Kiezen: investeren in dit onderdeel of het loslaten');
+ assert.equal(action.dimension,'tech');
+ assert.equal(action.durationWeeks,6);
+ assert.equal(action.source,'Model BCG');
+ assert.match(action.why,/2\.8 tegen 3\.1/);
+ assert.match(action.why,/vraagteken/i);
+ assert.equal(buildBcgAction({growth:1.2,companyMaturity:2.8,industryDigitalMaturity:3.1}),null);
 });
 
 test('business, finance, offer and roadmap analyses react deterministically to state',()=>{
