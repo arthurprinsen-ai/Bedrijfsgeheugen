@@ -1,0 +1,166 @@
+{
+  "contract_id": "POWERHOUSE-OPERATING-CANON-v1",
+  "status": "canonical",
+  "supersedes": [],
+  "purpose": "Single source of truth for Bedrijfsgeheugen/Powerhouse operating architecture, content/revenue loop, publication identity, learning and delivery invariants.",
+  "business_goal": {
+    "system": "growth-revenue-os-1m-2027-v1",
+    "primary_outcome": "generate measurable orders and revenue through one closed learning loop",
+    "rule": "Every content, sales, enrichment, website and automation decision must be attributable to a measurable commercial hypothesis and outcome."
+  },
+  "positioning": {
+    "core": "Ik zorg dat bedrijfskennis niet in hoofden blijft zitten | Digitalisering & AI voor het MKB.",
+    "payoff": "Aanpakken zonder aanmodderen.",
+    "promise": "Uit hoofden, in je bedrijf. En dan werkend."
+  },
+  "closed_loop": [
+    "detection",
+    "prioritization",
+    "execution",
+    "tests",
+    "production",
+    "readback",
+    "outcome",
+    "root_cause",
+    "regression",
+    "prevention",
+    "writeback"
+  ],
+  "decision_loop": [
+    "prediction",
+    "action",
+    "outcome",
+    "revenue",
+    "calibration",
+    "next_decision"
+  ],
+  "content_channels": [
+    "email_newsletter",
+    "linkedin_personal",
+    "linkedin_company",
+    "linkedin_articles",
+    "instagram",
+    "website_blog"
+  ],
+  "content_rules": {
+    "calendar_horizon": "2026-12-31",
+    "calendar_semantics": "decision_and_publication_plan_not_blind_daily_posting",
+    "brain_decides": [
+      "channel_subset",
+      "topic_or_opportunity",
+      "angle",
+      "format",
+      "timing",
+      "message",
+      "next_best_action"
+    ],
+    "inputs": [
+      "internal_data",
+      "supabase_data",
+      "performance_data",
+      "linkedin_network_context",
+      "seo_and_dataforseo",
+      "market_and_competitor_evidence",
+      "behavioral_and_intent_signals",
+      "commercial_outcomes"
+    ]
+  },
+  "channel_identity": {
+    "contract_id": "channel-identity-hard-gate-v2",
+    "mode": "fail_closed",
+    "buffer_channels": {
+      "linkedin_personal": "6a70381699afb44349f0fb35",
+      "linkedin_company": "6a70381699afb44349f0fb36",
+      "instagram_bedrijfsgeheugen": "6a70384d99afb44349f0fba9"
+    },
+    "linkedin_personal": "Arthur-human: personal observation, experience, opinion or explicit personal anchor; reject anonymous corporate consultant copy.",
+    "linkedin_company": "Business/brand/expertise/market driven.",
+    "instagram_bedrijfsgeheugen": "Mira daily-life character/IP; asset and identity consistency required.",
+    "personal_instagram": "blocked_until_exact_channel_is_connected"
+  },
+  "enrichment": {
+    "contract": "Universal Enrichment & Signal Engine",
+    "principle": "Apollo verrijkt records. Wij moeten kennis verrijken.",
+    "flow": [
+      "raw_entity",
+      "identity_resolution",
+      "waterfall_enrichment",
+      "multi_source_validation",
+      "freshness",
+      "evidence_lineage",
+      "signals",
+      "knowledge_graph",
+      "icp_problem_fit",
+      "intent",
+      "opportunity_score",
+      "expected_value",
+      "next_best_action",
+      "execution",
+      "outcome",
+      "revenue",
+      "calibration"
+    ]
+  },
+  "revenue_learning": {
+    "contract": "REVENUE-CALIBRATION-LOOP-v1",
+    "bridge": "COMPANY-REVENUE-LEARNING-BRIDGE-v1",
+    "meeting_probability_model": "MEETING-PROBABILITY-v1",
+    "source_of_truth_rule": "No parallel datastore or duplicate learning truth may be introduced.",
+    "existing_supabase_tables": [
+      "powerhouse_forecasts",
+      "powerhouse_sales_actions",
+      "powerhouse_sales_outcomes",
+      "powerhouse_forecast_calibration",
+      "growth_outcomes"
+    ],
+    "outcome_ingest_rule": "External evidence must normalize into the existing canonical outcome/learning path and settle only an exact open originating prediction.",
+    "automatic_outcome_sources": [
+      "calendar_meeting_completed",
+      "proposal_sent_or_accepted",
+      "deal_won_or_order_accepted",
+      "payment_or_invoice_received"
+    ],
+    "automatic_settlement": "high_confidence_explicit_evidence_only",
+    "required_lineage": [
+      "decision_id",
+      "prediction_id",
+      "source",
+      "evidence",
+      "confidence",
+      "dedupe_key",
+      "observed_at"
+    ]
+  },
+  "delivery": {
+    "make": "forbidden_for_production_transport_and_new_architecture",
+    "production_transport": "github_native_only",
+    "production_authority": "BG169",
+    "required_invariants": [
+      "exact_pr_identity",
+      "exact_head_sha",
+      "branch_drift_protection",
+      "main_protection_certification",
+      "production_readback",
+      "rollback_identity",
+      "fail_closed_on_merge_rejection"
+    ]
+  },
+  "proof_of_completion": {
+    "rule": "Never claim done/live/working without executable evidence and readback.",
+    "minimum": [
+      "tests_green",
+      "required_gates_green",
+      "exact_candidate_identity_verified",
+      "production_or_persistence_readback_where_applicable"
+    ]
+  },
+  "anti_patterns": [
+    "parallel_source_of_truth",
+    "make_based_new_flows",
+    "blind_post_every_channel_daily",
+    "channel_identity_guessing",
+    "learning_without_originating_prediction",
+    "claiming_completion_without_readback",
+    "starting_from_scratch_when_canonical_components_exist"
+  ]
+}
