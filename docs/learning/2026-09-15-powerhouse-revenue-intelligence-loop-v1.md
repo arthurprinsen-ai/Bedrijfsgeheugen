@@ -72,6 +72,21 @@ The intelligence backend itself is responding successfully, but the canonical da
 
 The daily writeback also reported 30 research obligations, one sparse model-health segment and a fresh snapshot. These counts are operational state, not fabricated outcomes.
 
+## Security-gate and current production readback
+
+A protected CI run initially rejected the snapshot refresh migration because the repository security checker did not recognize the `SECURITY DEFINER` execution revocation in the candidate it evaluated. The candidate was hardened with an explicit fail-closed execution revocation and the dedicated `Powerhouse Supabase Security Contract` subsequently passed on head `04b37560149989e7c8fe44614586bd5fdbbf0657`.
+
+Independent production SQL readback on 2026-09-15 confirmed that `powerhouse_revenue_command_center_v2`, `powerhouse_commercial_next_best_action_v3`, `powerhouse_revenue_command_center_snapshot_v1` and `powerhouse_refresh_revenue_intelligence_snapshot_v1()` all exist. Both canonical runtime jobs are active: `powerhouse-revenue-intelligence-daily` at `14 6 * * *` and `powerhouse-revenue-intelligence-snapshot-15m` at `*/15 * * * *`. The snapshot contained 80 rows and had refreshed at `2026-09-15 15:17:41.33036+00`.
+
+The same readback kept health truthfully degraded: 70 structural lineage gaps, consisting of 11 identity gaps, 58 forecast-lineage gaps and one runtime error. Investigation showed the identity gaps are generic `inhaak_nieuws`/`inhaak_bedrijfsnieuws` suggestions on a DM channel without a resolved person or company; the execution gate already fails closed. Forecast-gap investigation also showed `research_enrichment` actions are research work and must not be counted as executable commercial lineage. The remaining executable commercial candidates require canonical forecast lineage rather than synthetic success data.
+
+Prevention rules:
+
+- `SECURITY DEFINER` runtime helpers remain service-role-only with explicit browser-role revocation and the security contract must stay green.
+- Research/enrichment actions are not executable commercial actions and must not inflate commercial-lineage health failures.
+- A DM/e-mail/warm-intro candidate without resolved identity and forecast lineage remains research/hold; it must never be promoted to autonomous outbound merely to make health green.
+- Real outcomes and realized revenue are never synthesized to close a proof gap.
+
 ## Learning contract
 
 Every material system change follows:
