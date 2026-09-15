@@ -56,6 +56,8 @@ De bestaande `frisse-blik.html` blijft ongewijzigd als scan-UI en compatibility 
 - `powerhouse_scan_history_v1` is expliciet `security_invoker`, browserrollen zijn gerevoked, alleen `service_role` krijgt SELECT.
 - Alle writes gaan via server/service-role na custom service-token auth.
 - Publieke client kan geen tenant/company authority kiezen.
+- De publieke Netlify-route `/api/powerhouse-scan-ingest` accepteert alleen scan-ingest en health; privileged Edge-acties `history` en `claim` worden vóór de service-token grens fail-closed geweigerd met `403 PRIVILEGED_ACTION_FORBIDDEN`.
+- `/api/portal-scans` blijft de enige browserroute voor history/claim en vereist Netlify Identity plus een door `resolveIdentityTenant` bewezen tenant.
 - PII wordt niet toegevoegd aan scan runtime/growth events.
 - Canonical URL is fail-closed op `https://www.bedrijfsgeheugen.nl/frisse-blik`.
 
@@ -65,20 +67,37 @@ De bestaande `frisse-blik.html` blijft ongewijzigd als scan-UI en compatibility 
 - Security-hardening migration `powerhouse_canonical_scan_loop_v1_security` toegepast.
 - Edge Function `powerhouse-scan-ingest` ACTIVE v2.
 - Vier bestaande historische scanrecords behouden.
-- Implementatie in PR #1622; protected-main Required gate blijft authority voor merge.
+- Implementatie van de canonieke loop gemerged via PR #1622.
+- `scan-public-proxy-v2` voegt een expliciet publiek proxycontract toe en sluit privileged Edge-acties buiten de authenticated portalroute.
+- `.github/workflows/powerhouse-scan-production-proof.yml` is de permanente productie-proof lane voor deze capability en gebruikt geen parallelle datastore of learning authority.
+
+## Productie-proof contract
+
+Iedere relevante main-release van de scanloop moet vanaf een externe GitHub runner de echte productieomgeving bewijzen:
+
+1. `GET https://www.bedrijfsgeheugen.nl/api/powerhouse-scan-ingest` retourneert `ok=true`, contract `powerhouse-canonical-scan-loop-v1` en proxycontract `scan-public-proxy-v2`.
+2. `GET https://www.bedrijfsgeheugen.nl/api/portal-scans` zonder identity retourneert exact `401 UNAUTHORIZED`.
+3. Publieke POST-pogingen met `action=history` en `action=claim` retourneren exact `403 PRIVILEGED_ACTION_FORBIDDEN` en bereiken de privileged Edge-route niet.
+4. Een gecontroleerde scan met sleutel `scan-prod-smoke-<main-sha>` wordt één keer canoniek geschreven; de tweede identieke POST moet `deduped=true` retourneren met exact hetzelfde `scan_id` en `event_id`.
+5. De smoke-scan blijft bewust `tenant_identity_status=unverified`; er wordt geen fictieve organisatie geclaimd.
+6. De workflow summary bewaart `submission_key`, `scan_id`, `event_id` en beide responses als release-evidence.
+
+Een scanrelease is alleen `LIVE & BEWEZEN` wanneer deze production-proof run groen is op de actuele productiecode. Een deploy zonder deze readback is maximaal `DEELS LIVE`.
 
 ## Verificatiecontract
 
-Productie geldt pas als bewezen wanneer: migration/read-model leesbaar is; Edge Function ACTIVE is; server-health contract/store/count teruggeeft; live klantportaal de bridge laadt; `/api/powerhouse-scan-ingest` health groen is; `/api/portal-scans` zonder auth fail-closed reageert; GitHub Required `test` groen is; Netlify productie op de merge-SHA staat; en de Powerhouse current-state/evidence writeback commit/deploy/readback bevat.
+Productie geldt pas als bewezen wanneer: migration/read-model leesbaar is; Edge Function ACTIVE is; server-health contract/store/count teruggeeft; live klantportaal de bridge laadt; `/api/powerhouse-scan-ingest` health groen is; `/api/portal-scans` zonder auth fail-closed reageert; privileged public actions fail-closed zijn; gecontroleerde dubbele ingest dezelfde `scan_id` en `event_id` terugleest; GitHub Required `test` groen is; Netlify productie op de merge-SHA staat; en de Powerhouse current-state/evidence/learning writeback commit/deploy/readback bevat.
 
-## Preventieregel uit deze release
+## Preventieregels uit deze release
 
-Injecteer geen browserbridge via een globale string-replace op `</body>` in een HTML-bestand dat zelf HTML-documenten als JavaScript-string opbouwt. Een letterlijk `</script>` in zo'n gegenereerde string kan het buitenste inline script voortijdig sluiten. Hergebruik de bestaande navigatie-/handoffgrens en laat de syntax-preflight fail-closed bewijzen dat inline JavaScript parsebaar blijft.
+- Injecteer geen browserbridge via een globale string-replace op `</body>` in een HTML-bestand dat zelf HTML-documenten als JavaScript-string opbouwt. Een letterlijk `</script>` in zo'n gegenereerde string kan het buitenste inline script voortijdig sluiten. Hergebruik de bestaande navigatie-/handoffgrens en laat de syntax-preflight fail-closed bewijzen dat inline JavaScript parsebaar blijft.
+- Een serverproxy met een service-token mag nooit generiek alle upstream actions doorgeven. Publieke en privileged actions moeten vóór de secret/service-role grens expliciet worden gescheiden en fail-closed getest.
+- Deploymentmetadata alleen is geen productiebewijs. Kritieke serverless routes moeten vanaf een externe runner functioneel worden uitgelezen; voor idempotente writes moet dezelfde release ook een gecontroleerde dubbele write/readback aantonen.
 
 ## Rollback en continuïteit
 
-De portalbridge kan worden verwijderd zonder historische data te verwijderen. De Edge Function kan naar de vorige versie worden teruggezet. Databasewijzigingen zijn additief en legacy-compatible; scanrecords en runtime-events worden niet destructief teruggedraaid. Make is geen onderdeel van de keten.
+De portalbridge kan worden verwijderd zonder historische data te verwijderen. De Edge Function kan naar de vorige versie worden teruggezet. Databasewijzigingen zijn additief en legacy-compatible; scanrecords en runtime-events worden niet destructief teruggedraaid. De public-proxy hardening kan onafhankelijk worden teruggedraaid, maar alleen als een gelijkwaardige fail-closed trust-boundary aanwezig is. Smoke-records zijn herkenbaar aan `branche=production-smoke`, `doel=__PRODUCTION_SMOKE__` en `submission_key=scan-prod-smoke-*`; ze zijn evidence en worden niet als klantidentity gebruikt. Make is geen onderdeel van de keten.
 
 ## Lifecycle
 
-Status tijdens deze record: `deploying`; pas na alle readbacks wordt dit `active / LIVE & BEWEZEN`. Eigenaar/authority: Bedrijfsgeheugen Powerhouse.
+Authority-status is runtime-afgeleid: `active / LIVE & BEWEZEN` uitsluitend wanneer de actuele main-release door Required, exacte productie-deploy/readback en `Powerhouse Scan Production Proof` groen is bewezen. Bij ontbrekende of rode production-proof is de status automatisch `DEELS LIVE` of `GEBLOKKEERD`; een statische documentregel mag die runtimewaarheid nooit overrulen. Eigenaar/authority: Bedrijfsgeheugen Powerhouse.
