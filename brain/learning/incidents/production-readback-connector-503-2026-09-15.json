@@ -26,20 +26,23 @@
     "cache_busting_readback",
     "explicit_request_timeout",
     "fail_closed_after_retry_budget",
-    "exact_sha_release_readback"
+    "exact_sha_release_readback",
+    "production_descendant_contains_merge_commit"
   ],
   "releaseBlocks": [
     "wildcard_can_capture_readiness",
     "readiness_requires_portal_auth_or_connector_store",
     "readiness_returns_invalid_contract",
     "readiness_stays_5xx_after_bounded_retry",
-    "production_sha_not_verified_when_deployment_is_required"
+    "production_sha_not_verified_when_deployment_is_required",
+    "merge_claimed_live_without_production_ancestry_and_readback"
   ],
   "fixes": [
     "exclude /api/connectors/readiness from the /api/connectors/* Netlify route",
     "retain the dedicated connector-readiness function as the only readiness owner",
     "retry transient readiness 5xx responses with cache busting and explicit timeouts",
-    "keep the readback fail-closed when retries exhaust or payload validation fails"
+    "keep the readback fail-closed when retries exhaust or payload validation fails",
+    "prove that the active production commit is a descendant of the merge commit before claiming that merge live"
   ],
   "evidence": {
     "routeIsolationMerged": "d35f255",
@@ -51,8 +54,21 @@
     "resilienceFollowupMerge": "fb68cc0795f1b166a099b17293e758b760c67df7",
     "resiliencePr": 1504
   },
+  "liveProofRule": {
+    "mergeAloneIsLiveEvidence": false,
+    "requireProductionDescendantProof": true,
+    "requirePublicReadback": true,
+    "example": {
+      "pr": 1464,
+      "mergeCommit": "656c5476ca704f0bfca5cfc6e6bc4d82de8f34ab",
+      "productionCommit": "b255587eb8e9c10a5996432e79e1480f741c5f7a",
+      "productionContainedMerge": true,
+      "productionState": "ready",
+      "productionUrl": "https://www.bedrijfsgeheugen.nl"
+    }
+  },
   "recovery": {
-    "policy": "Do not bypass or downgrade connector readiness. Remove route ambiguity, deploy the exact candidate, then rerun bounded production readback.",
+    "policy": "Do not bypass or downgrade connector readiness. Remove route ambiguity, deploy the exact candidate, then rerun bounded production readback. Never translate merged into live without production ancestry proof and public readback.",
     "rollback": "Keep the last-known-good production deploy until the candidate has exact production evidence. If route isolation regresses connector traffic, revert only the routing change and preserve fail-closed readback.",
     "manualGreenAllowed": false
   },
@@ -60,6 +76,7 @@
     "A hosting platform deploy marked ready is transport evidence, not application-readiness evidence.",
     "Exact public health endpoints must never share ambiguous ownership with authenticated wildcard handlers.",
     "One transient 5xx should trigger bounded retry; repeated 5xx or an invalid readiness payload remains a hard failure.",
-    "Merge success is not production completion; exact production readback closes the obligation."
+    "Merge success is not production completion; exact production readback closes the obligation.",
+    "A merged PR is live only when the active production commit is proven to contain that merge and the public application readback is green."
   ]
 }
