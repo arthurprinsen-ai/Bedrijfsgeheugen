@@ -24,6 +24,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Prove the gate blocks known unsafe patterns
+        run: python3 scripts/check_powerhouse_supabase_security.py --self-test
+
       - name: Resolve comparison base
         id: base
         shell: bash
