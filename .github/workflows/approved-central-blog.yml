@@ -207,9 +207,24 @@ jobs:
         if: steps.render.outputs.changed == 'true'
         env:
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
         run: |
           set -euo pipefail
-          git push origin "HEAD:$CANDIDATE_BRANCH"
+          remote_ref="$(git ls-remote --heads origin "$CANDIDATE_BRANCH" | awk '{print $1}')"
+          if [ -z "$remote_ref" ]; then
+            git push origin "HEAD:$CANDIDATE_BRANCH"
+            exit 0
+          fi
+
+          git fetch --no-tags origin "refs/heads/$CANDIDATE_BRANCH:refs/remotes/origin/$CANDIDATE_BRANCH"
+          remote_parent="$(git rev-parse "refs/remotes/origin/$CANDIDATE_BRANCH^")"
+          if [ "$remote_parent" != "$BASE_SHA" ]; then
+            echo "::error::REMOTE_PARENT_DRIFT:$CANDIDATE_BRANCH:$remote_parent:$BASE_SHA"
+            exit 1
+          fi
+          git push \
+            --force-with-lease=refs/heads/$CANDIDATE_BRANCH:$remote_ref \
+            origin "HEAD:$CANDIDATE_BRANCH"
 
       - name: Candidate PR openen
         id: pr
