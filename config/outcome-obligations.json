@@ -93,7 +93,7 @@
       "expected": "Every daily active-runtime inventory refresh produces exactly one governed portfolio decision: SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY, with cost/outcome evidence and Powerhouse shared-current-state visibility.",
       "dueAt": "daily_after_inventory_refresh",
       "ownerAgent": "agent-cost",
-      "evidencePolicy": "The daily decision records SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY with inventory fingerprint, cost/outcome evidence and current Powerhouse/Supabase shared-memory visibility for every material change.",
+      "evidencePolicy": "The daily decision records SAFE_OPTIMIZATION_CANDIDATE, VERIFIED_NO_ACTION, or BLOCKED_HARD_BOUNDARY with inventory fingerprint, cost/outcome evidence and current Powerhouse/Supabase shared-memory visibility for every material change; BG167 is retained only as the legacy evidence/readback label for compatibility and is never an active executor or Make dependency.",
       "idempotencyKey": "cost-portfolio|date|inventory-fingerprint",
       "recoveryPolicy": "Refresh the active inventory, reuse known fingerprints, deduplicate the candidate and decision, verify no duplicate external side effect exists, and resume recovery until the portfolio outcome is verified or a valid hard boundary remains.",
       "legacyProvenance": "BG159/BG167 scenario-specific routing is LEGACY_RETIRED_PATH."

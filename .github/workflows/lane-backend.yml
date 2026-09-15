@@ -33,3 +33,4 @@ jobs:
           tests/make-cost-governance-contract.test.mjs
           tests/growth-intelligence-engine.test.mjs
           tests/growth-intelligence-daily.test.mjs
+          tests/supabase-powerhouse-seven-channel-closed-loop.test.mjs
