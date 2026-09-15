@@ -16,6 +16,12 @@ test('full-cycle proof accepts canonical imported GA4 evidence without synthetic
   assert.doesNotMatch(sql, /synthetic/i);
 });
 
+test('existing calibrator schedule is hardened without parallel scheduler family', () => {
+  assert.match(sql, /powerhouse-forecast-calibrator-daily/i);
+  assert.match(sql, /'50 \* \* \* \*'/);
+  assert.doesNotMatch(sql, /powerhouse-forecast-calibrator-hourly/i);
+});
+
 test('normalization remains fail closed and service-role only', () => {
   assert.match(sql, /and v_predictive_healthy/i);
   assert.match(sql, /and v_overdue_calibrations = 0/i);
@@ -23,8 +29,9 @@ test('normalization remains fail closed and service-role only', () => {
   assert.match(sql, /grant execute on function public\.powerhouse_full_cycle_production_proof\(date\) to service_role/i);
 });
 
-test('production incident is written to canonical learning lineage', () => {
+test('production incidents are written to canonical learning lineage', () => {
   assert.match(sql, /production_learning_recorded/i);
   assert.match(sql, /enum\/casing mismatch caused false-red full-cycle proof/i);
+  assert.match(sql, /forecast calibrator timing gap/i);
   assert.match(sql, /learning:full-cycle-status-normalization-v1/i);
 });
