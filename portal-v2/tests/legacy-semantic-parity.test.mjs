@@ -1,0 +1,51 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { buildCanvasPresentation, CANVAS_SPECS } from '../canvas-presentation.js';
+import { buildBcgModel } from '../strategic-models.js';
+
+const STATE={portal:{
+  profile:{headcount:24,hourlyCost:75,manualHoursPerWeek:40,maturity:{operatie:2,commercie:3,service:3,finance:4,mensen:3,tech:2,sturing:3,analytics:2,quality:3,culture:3}},
+  metrics:{revenue:1500,largestCustomer:30,grossMargin:42},
+  market:{industry:'ICT',growth:2.4,digitalMaturity:3.2},
+  canvases:{bmc:{answer:'MKB-directies met kennis- en procesrisico',owner:'Directie'},merk:{answer:'Aanpakken zonder aanmodderen'},content:{answer:'Hoe krijgen we kennis uit hoofden?'}}
+}};
+
+test('all six legacy canvases are complete semantic views, not answer/owner shells',()=>{
+  const result=buildCanvasPresentation(STATE);
+  assert.deepEqual(result.canvases.map(c=>c.id),CANVAS_SPECS.map(c=>c.id));
+  assert.equal(result.canvases.length,6);
+  for(const canvas of result.canvases){
+    assert.ok(canvas.sections.length>=4,`${canvas.id} must expose completed legacy sections`);
+    assert.ok(canvas.sections.every(row=>row.label&&String(row.value).trim()),`${canvas.id} sections need label and value`);
+  }
+  const bmc=result.canvases.find(c=>c.id==='bmc');
+  assert.ok(bmc.sections.some(x=>x.label==='Klantsegmenten'&&x.value.includes('MKB-directies')));
+  assert.ok(bmc.sections.some(x=>x.label==='Inkomstenstromen'&&x.value.includes('1.500.000')));
+  const merk=result.canvases.find(c=>c.id==='merk');
+  assert.ok(merk.sections.some(x=>x.label==='Waar je voor staat'&&x.value.includes('Aanpakken')));
+  assert.equal(result.completion.answered,3);
+  assert.ok(result.conclusion.text.includes('3 van de 6'));
+  assert.equal(result.conclusion.source,'canonieke Powerhouse-state + klantinvoer');
+});
+
+test('BCG is a real four-quadrant customer model with values and conclusion',()=>{
+  const model=buildBcgModel(STATE);
+  assert.equal(model.id,'bcg');
+  assert.equal(model.quadrants.length,4);
+  assert.deepEqual(model.quadrants.map(q=>q.id),['ster','melkkoe','vraagteken','hond']);
+  assert.equal(model.marketGrowth,2.4);
+  assert.equal(model.branchDigitalMaturity,3.2);
+  assert.ok(model.companyMaturity>0);
+  assert.equal(model.currentQuadrant,'vraagteken');
+  assert.ok(model.explanation.includes('2,4%'));
+  assert.ok(model.explanation.includes('3,2'));
+  assert.ok(model.conclusion.toLowerCase().includes('invest'));
+  assert.equal(model.notePath,'portal.strategicModels.bcg.note');
+});
+
+test('BCG uses canonical customer note and never invents one',()=>{
+  const withNote=structuredClone(STATE);
+  withNote.portal.strategicModels={bcg:{note:'Dienst A is ster; dienst B is melkkoe'}};
+  assert.equal(buildBcgModel(withNote).note,'Dienst A is ster; dienst B is melkkoe');
+  assert.equal(buildBcgModel(STATE).note,'');
+});
