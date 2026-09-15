@@ -8,6 +8,7 @@ const policyUrl = new URL('../brain/policies/powerhouse-revenue-flywheel-v1.json
 const fn = fs.existsSync(fnUrl) ? fs.readFileSync(fnUrl, 'utf8') : '';
 const migration = fs.existsSync(migrationUrl) ? fs.readFileSync(migrationUrl, 'utf8') : '';
 const policy = fs.existsSync(policyUrl) ? fs.readFileSync(policyUrl, 'utf8') : '';
+const policyDoc = policy ? JSON.parse(policy) : {};
 
 const has = (source, pattern, message) => assert.match(source, pattern, message);
 
@@ -49,7 +50,8 @@ test('scheduler reuses the canonical collector and creates no analytics store', 
 });
 
 test('Powerhouse policy canonizes GA4 auth failover and truth boundary', () => {
-  has(policy,/"version":"v1\.3"/i, 'policy version must advance');
+  const version = /^v(\d+)\.(\d+)$/.exec(policyDoc.version ?? '');
+  assert.ok(version && (Number(version[1]) > 1 || (Number(version[1]) === 1 && Number(version[2]) >= 3)), 'Powerhouse policy must remain at GA4 failover version v1.3 or later');
   has(policy,/"ga4_auth_failover"/i, 'GA4 auth failover capability must be canonical');
   has(policy,/"fallback_trigger":"AUTH only"/i, 'policy must restrict failover trigger');
   has(policy,/"fallback_freshness_hours":48/i, 'policy must bound fallback freshness');
