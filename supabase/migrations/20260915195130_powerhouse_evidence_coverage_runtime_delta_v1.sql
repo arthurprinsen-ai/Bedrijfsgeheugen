@@ -1,4 +1,5 @@
 -- Runtime delta on top of canonical evidence coverage reconciliation.
+-- Canonical repository base: merged PR #1645; this migration contains only the remaining runtime delta.
 -- Adds automatic evidence heartbeats, Calendly provenance, and uncertainty projection.
 
 create or replace function public.powerhouse_evidence_heartbeat_trigger_v1() returns trigger
