@@ -41,12 +41,12 @@ async function anthropic({ authorized, apiKey, system, maxTokens, renderUser, pr
   return { type:'Observation', text, provenance, confidence:0.7, containsRestrictedData:false, containsUnexpectedPII:false, providerUsage:data.usage ?? null };
 }
 
-async function attachTokenUsage(result, { requestId, componentKey, usageStore, at = new Date().toISOString() }) {
+async function attachTokenUsage(result, { requestId, componentKey, usageStore, usageContext, at = new Date().toISOString() }) {
   const { providerUsage, ...safeResult } = result;
   if (!providerUsage) return Object.freeze({ ...safeResult, tokenUsage:null, tokenMetering:'UNAVAILABLE', canonicalTokenMetering:'UNAVAILABLE' });
   const tokenUsage = normalizeProviderTokenUsage({ provider:'Anthropic', providerModelId:MODEL_ID, componentKey, requestId, usage:providerUsage, at });
   try {
-    const metering=await (usageStore ?? createAiUsageStore()).record(tokenUsage);
+    const metering=await (usageStore ?? createAiUsageStore()).record(tokenUsage, usageContext);
     return Object.freeze({
       ...safeResult,
       tokenUsage,
@@ -64,14 +64,14 @@ export async function runWebsiteAnswer({ question, fragments, apiKey, system, fe
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','fragments'], pseudonymizeFields:[] },
     invokeModel:authorized => anthropic({ authorized, apiKey, system, maxTokens:600, fetchImpl, provenance:{ source:'website-index', providerModelId:MODEL_ID }, renderUser:ctx => `FRAGMENTEN VAN DE SITE:\n\n${ctx.fragments}\n\n---\n\nVRAAG VAN DE BEZOEKER:\n${ctx.question}` }),
   });
-  return attachTokenUsage(result, { requestId, componentKey:'agent:website-qa', usageStore });
+  return attachTokenUsage(result, { requestId, componentKey:'agent:website-qa', usageStore, usageContext:{ tenantId:'PUBLIC', activityType:'website_qa' } });
 }
 
-export async function runPortalAnswer({ question, projectContext, apiKey, system, fetchImpl = fetch, usageStore, requestId = crypto.randomUUID() }) {
+export async function runPortalAnswer({ question, projectContext, apiKey, system, fetchImpl = fetch, usageStore, usageContext, requestId = crypto.randomUUID() }) {
   const result = await runGovernedProductionAI({
     request:{ requestId, tenantId:'REQUEST_SCOPED', requesterId:'portal-requester', aiUseCaseId:'AI-PORTAL-QA', purpose:'portal-project-answer', resourceType:'QuestionContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass:'Confidential', context:{ question, projectContext } },
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','projectContext'], pseudonymizeFields:[] },
     invokeModel:authorized => anthropic({ authorized, apiKey, system, maxTokens:500, fetchImpl, provenance:{ source:'request-scoped-project-context', providerModelId:MODEL_ID }, renderUser:ctx => `PROJECTGEGEVENS (JSON):\n\n${ctx.projectContext}\n\n---\n\nVRAAG VAN DE KLANT:\n${ctx.question}` }),
   });
-  return attachTokenUsage(result, { requestId, componentKey:'agent:portal-qa', usageStore });
+  return attachTokenUsage(result, { requestId, componentKey:'agent:portal-qa', usageStore, usageContext:{ activityType:'portal_qa', ...(usageContext ?? {}) } });
 }
