@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { functionalDefinition, functionalSchema, listFunctionalSuitePages, computeFunctionalAnalysis, legacyCanvasPresentation } from '../modules/functional-suite.js';
+import { functionalDefinition, functionalSchema, listFunctionalSuitePages, computeFunctionalAnalysis } from '../modules/functional-suite.js';
+import { canvasSchema, legacyCanvasPresentation } from '../modules/canvas-workspace.js';
 
 const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
 
@@ -24,7 +25,7 @@ test('repeatable legacy collections remain repeatable and structured',()=>{
 });
 
 test('the exact six legacy canvases remain editable and are not reduced to owner plus kernvraag',()=>{
- const fields=functionalSchema('canvassen');
+ const fields=canvasSchema();
  const ids=fields.map(field=>field.id);
  for(const key of ['bmc','vpc2','lean','merk','content','sales2']){
   assert.ok(ids.includes(`${key}question`),key);
