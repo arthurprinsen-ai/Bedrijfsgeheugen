@@ -35,8 +35,10 @@ Database-triggers schrijven source observations voor economics, human feedback, 
 
 Gmail en Calendly hebben bovendien een geactiveerde ChatGPT-taak `Powerhouse Evidence Sync`, ieder uur op minuut 23 Europe/Amsterdam. Deze taak leest alleen nieuwe provider-events, schrijft minimale provider-ID/timestamp/provenance naar de bestaande Powerhouse-ingress en schrijft commerciële outcomes uitsluitend bij deterministische action/opportunity-linkage. Ongekoppelde events blijven ongeattribueerd; er wordt niets geraden.
 
-## Privacy/minimisatie
+## Privacy/minimisatie en security
 Connector health/readback slaat geen mailbody of andere private inhoud op. Voor Gmail is bij de eerste readback alleen providerbereik, queryscope, count en provider-ID vastgelegd. Calendly-readback slaat connectorbereik en eventcount op. Downstream outcome-ingest gebruikt alleen wat nodig is voor lineage/provenance.
+
+Alle nieuwe interne evidence-views draaien met `security_invoker = true`. De evidence-tabellen zijn RLS-enabled en browserrollen `public`, `anon` en `authenticated` hebben geen directe rechten. `bg_calendly_uitkomst` en de overige SECURITY DEFINER evidence-writers hebben expliciete EXECUTE-revocation voor browserrollen en alleen `service_role` als uitvoeringsauthority. Productiemigratie `20260915194225_powerhouse_evidence_source_security_hardening_v1` borgt deze least-privilege state expliciet en is als aparte migration in GitHub gespiegeld.
 
 ## Legacy cutover
 Het evidence-orchestrator contract werd productieactief op 2026-09-15 19:21:18 UTC. Vier al eerder uitgevoerde sales actions zonder prospective assignment blijven als `legacy_pre_contract_unassigned` zichtbaar. Ze blokkeren nieuwe causal proof niet en worden nooit retrospectief in een experiment gestopt.
