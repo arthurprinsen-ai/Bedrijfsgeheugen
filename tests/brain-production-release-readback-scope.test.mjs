@@ -72,21 +72,30 @@ test('production readback is a canonical Brain/Powerhouse delivery-control-plane
   assert.equal(contract.principles.transient5xxPolicy, 'bounded-retry-then-fail-closed');
   assert.equal(contract.connectorReadiness.maxAttempts, 8);
   assert.equal(contract.connectorReadiness.terminalFailure, true);
+  assert.equal(contract.connectorReadiness.publicRoute, '/api/connectors/readiness');
+  assert.equal(contract.connectorReadiness.excludedFromAuthenticatedWildcard, true);
 });
 
 test('production readback failures are part of the canonical universal learning loop', async () => {
-  const [contract, learning] = await Promise.all([
+  const [contract, learning, lesson] = await Promise.all([
     readFile('brain/contracts/production-readback-v1.json', 'utf8').then(JSON.parse),
     readFile('config/universal-closed-loop-learning.json', 'utf8').then(JSON.parse),
+    readFile('docs/brain/lessons/production-readback-readiness-503-2026-09-15.json', 'utf8').then(JSON.parse),
   ]);
   assert.equal(contract.learning.contract, learning.version);
   assert.equal(contract.learning.scope, learning.scope);
   assert.equal(contract.learning.eventKind, 'ERROR');
   assert.equal(contract.learning.fingerprint, 'production-readback-http-5xx-v1');
   assert.equal(contract.learning.rootCausePolicy, 'evidence-before-hypothesis');
-  assert.equal(contract.learning.preventionRule, 'bounded-retry-then-fail-closed');
+  assert.equal(contract.learning.preventionRule, 'ISOLATE_PUBLIC_READINESS_AND_REQUIRE_EXACT_PRODUCTION_READBACK');
   assert.equal(contract.learning.regressionTest, 'tests/brain-production-release-readback-scope.test.mjs');
   assert.equal(contract.learning.writeback, 'canonical-universal-learning');
+  assert.equal(contract.learning.knownLesson, 'docs/brain/lessons/production-readback-readiness-503-2026-09-15.json');
+  assert.equal(lesson.fingerprint, contract.learning.fingerprint);
+  assert.equal(lesson.preventionRule, contract.learning.preventionRule);
+  assert.equal(lesson.status, 'PROVEN');
+  assert.equal(lesson.learning.noParallelMechanism, true);
+  assert.equal(lesson.learning.noMakeDependency, true);
   assert.deepEqual(contract.learning.requiredFields, learning.required_learning_fields);
   assert.ok(learning.required_lifecycle.includes('learning_writeback'));
   assert.ok(learning.required_lifecycle.includes('prevention_reuse'));
