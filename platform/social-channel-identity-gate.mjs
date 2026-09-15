@@ -29,20 +29,29 @@ export function authorizeSocialPublication(input={}){
  }
  if(input.channelKind==='instagram_company'){
   if(channel?.requiresMiraGate&&input.miraGatePassed!==true) reasons.push('MIRA_GATE_REQUIRED');
-  const visual=input.instagramVisual,mediaKind=input.mediaKind||'image';
+  const visual=input.instagramVisual,mediaKind=input.mediaKind||'image',policy=channel?.mediaPolicy||{};
   if(visual?.verified!==true||refs(visual).length===0||!has(visual?.assetUrl)) reasons.push('INSTAGRAM_VISUAL_EVIDENCE_REQUIRED');
   if(visual?.placeholderDetected===true) reasons.push('INSTAGRAM_PLACEHOLDER_BLOCKED');
   if(visual?.identityClass!=='mira_daily_life') reasons.push('INSTAGRAM_MIRA_VISUAL_REQUIRED');
   if(has(input.assetUrl)&&has(visual?.assetUrl)&&visual.assetUrl!==input.assetUrl) reasons.push('INSTAGRAM_FINAL_ASSET_MISMATCH');
+  if((policy.requiresVerifiedPublishFormatFor||[]).includes(mediaKind)&&visual?.formatVerified!==true) reasons.push('INSTAGRAM_MEDIA_FORMAT_UNVERIFIED');
+  if(mediaKind==='image'){
+   if(visual?.width!==policy.requiredImageWidth||visual?.height!==policy.requiredImageHeight) reasons.push('INSTAGRAM_IMAGE_DIMENSIONS_REQUIRED');
+   if(input.assetMimeType!==policy.requiredImageMimeType) reasons.push('INSTAGRAM_IMAGE_JPEG_REQUIRED');
+   if(visual?.colorSpace!==policy.requiredImageColorSpace) reasons.push('INSTAGRAM_IMAGE_RGB_REQUIRED');
+   if(policy.requiresImageWithoutAlpha&&visual?.hasAlpha!==false) reasons.push('INSTAGRAM_IMAGE_ALPHA_BLOCKED');
+   if(policy.requiresCompleteImageDecode&&visual?.decodeComplete!==true) reasons.push('INSTAGRAM_IMAGE_DECODE_INCOMPLETE');
+   if(policy.requiresVisualCompleteness&&visual?.visualComplete!==true) reasons.push('INSTAGRAM_IMAGE_VISUAL_INCOMPLETE');
+   if(policy.blocksGrayOrEmptyImage&&visual?.grayOrEmptyDetected!==false) reasons.push('INSTAGRAM_IMAGE_GRAY_OR_EMPTY_BLOCKED');
+  }
   if(mediaKind==='video'||mediaKind==='reel'){
-   const required=channel?.mediaPolicy?.requiredVideoFramePositions||['start','middle','end'];
+   const required=policy.requiredVideoFramePositions||['start','middle','end'];
    const frames=Array.isArray(visual?.frameEvidence)?visual.frameEvidence:[];
    const complete=required.every(position=>frames.some(frame=>frame?.position===position&&frame?.verified===true&&refs(frame).length>0));
    if(!complete) reasons.push('INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED');
    if(frames.some(frame=>frame?.placeholderDetected===true)) reasons.push('INSTAGRAM_VIDEO_PLACEHOLDER_BLOCKED');
    if(frames.some(frame=>frame?.identityClass!=='mira_daily_life')) reasons.push('INSTAGRAM_MIRA_FRAME_IDENTITY_REQUIRED');
-   if(visual?.formatVerified!==true) reasons.push('INSTAGRAM_MEDIA_FORMAT_UNVERIFIED');
-   if(input.assetMimeType!=='video/mp4') reasons.push('INSTAGRAM_VIDEO_MP4_REQUIRED');
+   if(input.assetMimeType!==policy.requiredVideoMimeType) reasons.push('INSTAGRAM_VIDEO_MP4_REQUIRED');
   }
  }
  const authorized=reasons.length===0;
