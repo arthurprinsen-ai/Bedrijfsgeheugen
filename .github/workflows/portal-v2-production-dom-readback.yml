@@ -6,12 +6,14 @@ on:
     paths:
       - 'portal-v2/**'
       - 'tests/integration/portal-v2-production-*.spec.js'
+      - 'tests/integration/portal-v2-mobile-shell.spec.js'
       - '.github/workflows/portal-v2-production-dom-readback.yml'
   push:
     branches: [main]
     paths:
       - 'portal-v2/**'
       - 'tests/integration/portal-v2-production-*.spec.js'
+      - 'tests/integration/portal-v2-mobile-shell.spec.js'
       - '.github/workflows/portal-v2-production-dom-readback.yml'
   workflow_dispatch:
 
@@ -44,10 +46,6 @@ jobs:
           else
             echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
           fi
-      # Wachtte eerder dertig pogingen van tien seconden: vijf minuten. Een deploy
-      # preview van deze repo is soms later klaar, waardoor deze check rood ging
-      # met een 404 terwijl er niets mis was. Het gedeelde script hanteert een
-      # venster van twaalf minuten en logt hoeveel tijd het werkelijk kostte.
       - name: Wait for exact readback target
         env:
           CACHEBUST: bg_preview_ready
@@ -56,6 +54,10 @@ jobs:
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
         run: npx playwright test tests/integration/portal-v2-production-*.spec.js --workers=1
+      - name: Read back hydrated mobile demoAI shell
+        env:
+          PREVIEW_URL: ${{ env.PORTAL_READBACK_URL }}
+        run: npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -64,5 +66,6 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            artifacts/portal-v2-*.png
           if-no-files-found: ignore
           retention-days: 30
