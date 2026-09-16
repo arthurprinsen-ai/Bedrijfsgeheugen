@@ -21,6 +21,13 @@
       "authority": "supabase/functions/content-operations/index.ts",
       "evidence_contract": "tests/social-learning-buffer-schedule.test.mjs",
       "required": true
+    },
+    {
+      "id": "table:public.powerhouse_security_guard_events",
+      "type": "table",
+      "authority": "supabase/migrations/20260916053253_powerhouse_public_rls_regression_guard.sql",
+      "evidence_contract": "tests/supabase-public-rls-regression-guard.test.mjs",
+      "required": true
     }
   ]
 }
