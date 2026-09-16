@@ -90,3 +90,16 @@ test('only complete live evidence and closed obligations normalize to LIVE_VERIF
   assert.equal(result.next_action, null);
   assert.deepEqual(result.open_obligations, []);
 });
+
+test('a third identical recovery attempt requires a new hypothesis or proven fallback', () => {
+  const result = evaluateCompletion({
+    identity:'change-5',
+    claim:'FAILED',
+    materialObligations:[{ id:'production', status:'OPEN' }],
+    retryHypothesis:'same-fix-v1',
+    attemptCount:2
+  });
+  assert.equal(result.success, false);
+  assert.equal(result.next_action, 'RECOVER');
+  assert.ok(result.required_evidence.includes('newRetryHypothesisOrFallback'));
+});
