@@ -10,6 +10,7 @@ const PARTIAL_PR_CLAIMS = new Set(['COMMITTED','MERGED','PREVIEW_READY','DEPLOYE
 const NON_SUCCESS_WORKFLOW_CONCLUSIONS = new Set(['failure','cancelled','skipped','timed_out','action_required','stale','startup_failure']);
 const MATERIAL_WORKFLOW = /(delivery|promotion|production|readback|required|deploy|release)/i;
 const MODES = new Set(['shadow','active']);
+const BACKFILL_TRIGGER_PREFIX = 'completion-backfill:';
 
 function text(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -80,7 +81,7 @@ function activeDispatches(candidates, registeredObligationIds = null) {
         obligationId,
         identity:candidate.identity,
         coalesceKey:candidate.lineageKey,
-        triggerFingerprint:`completion-backfill:${candidate.idempotencyKey}`,
+        triggerFingerprint:`${BACKFILL_TRIGGER_PREFIX}${candidate.idempotencyKey}`,
         nextAction:candidate.nextAction
       }));
     }
@@ -124,6 +125,7 @@ export function reconcileCompletionBackfill({ pullRequests = [], workflowRuns = 
   }
 
   for (const obligation of Array.isArray(obligations) ? obligations : []) {
+    if (text(obligation?.triggerFingerprint).startsWith(BACKFILL_TRIGGER_PREFIX)) continue;
     const identity = text(obligation?.identity) || text(obligation?.idempotencyKey) || text(obligation?.id);
     if (!identity) continue;
     const decision = completionFor({ ...obligation, identity });
@@ -204,7 +206,7 @@ export async function collectCompletionBackfillSnapshot({
   const workflowRuns = (Array.isArray(runPayload?.workflow_runs) ? runPayload.workflow_runs : [])
     .filter(run => MATERIAL_WORKFLOW.test(String(run.name ?? '')))
     .map(run => Object.freeze({ id:run.id, headSha:run.head_sha, name:run.name, status:run.status, conclusion:run.conclusion }));
-  const obligations = [...workRows, ...recoveryRows].map(row => Object.freeze({ id:row.obligationId, identity:row.idempotencyKey, idempotencyKey:row.idempotencyKey, status:row.state, ownerAgent:row.ownerAgent, recordType:row.type }));
+  const obligations = [...workRows, ...recoveryRows].map(row => Object.freeze({ id:row.obligationId, identity:row.idempotencyKey, idempotencyKey:row.idempotencyKey, status:row.state, ownerAgent:row.ownerAgent, recordType:row.type, triggerFingerprint:row.triggerFingerprint ?? null }));
 
   return Object.freeze({ pullRequests:Object.freeze(pullRequests), workflowRuns:Object.freeze(workflowRuns), obligations:Object.freeze(obligations) });
 }
