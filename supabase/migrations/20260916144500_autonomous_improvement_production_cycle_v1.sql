@@ -93,7 +93,7 @@ begin
 end;
 $function$;
 
-revoke all on function public.powerhouse_autonomous_improvement_cycle_v1(timestamptz) from public, anon, authenticated;
+revoke execute on function public.powerhouse_autonomous_improvement_cycle_v1(timestamptz) from public, anon, authenticated;
 grant execute on function public.powerhouse_autonomous_improvement_cycle_v1(timestamptz) to service_role;
 
 do $schedule$
