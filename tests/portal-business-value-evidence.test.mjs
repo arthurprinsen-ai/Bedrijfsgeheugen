@@ -40,3 +40,15 @@ test('EU portal projection store reads canonical resource/business value through
   assert.equal(calls.some(call=>call.action==='resource_business_value'&&call.tenantId==='tenant-1'),true);
   assert.deepEqual(record.data.resourceBusinessValue,{tenant_id:'tenant-1',observed_cost_eur:null,realized_revenue_eur:null,realized_roi:null});
 });
+
+test('resource/business value evidence never materializes Portal state without a legacy or canonical Portal layer', async () => {
+  const fetchFn=async (_url, init)=>{
+    const body=JSON.parse(init.body);
+    if(body.action==='get') return {ok:true,json:async()=>({payload:null})};
+    if(body.action==='governance') return {ok:true,json:async()=>({governance:[]})};
+    if(body.action==='resource_business_value') return {ok:true,json:async()=>({resourceBusinessValue:{tenant_id:'tenant-evidence-only',observed_cost_eur:12.5,realized_revenue_eur:100,realized_roi:7}})};
+    return {ok:false,status:400,json:async()=>({})};
+  };
+  const store=createSupabasePortalProjectionStore({fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'x'});
+  assert.equal(await store.get('tenant-evidence-only'),null);
+});
