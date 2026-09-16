@@ -76,7 +76,14 @@ function dimensieKosten(s){
 }
 
 function manualCost(s){const x=profile(s);return n(x.manualHoursPerWeek)*46*n(x.hourlyCost)}
-function maturityScores(s){const x=profile(s);const vals=arr(x.dimensionScores).map(n).filter(v=>v>0);if(vals.length)return vals;return Object.values(x.dimensions||{}).map(n).filter(v=>v>0)}
+function maturityScores(s){
+  const x=profile(s);
+  const canonical=Object.values(x.maturity||{}).map(n).filter(v=>v>0);
+  if(canonical.length)return canonical;
+  const legacyScores=arr(x.dimensionScores).map(n).filter(v=>v>0);
+  if(legacyScores.length)return legacyScores;
+  return Object.values(x.dimensions||{}).map(n).filter(v=>v>0);
+}
 function completion(values){const xs=arr(values);return xs.length?xs.filter(v=>v!==undefined&&v!==null&&v!=='').length/xs.length*100:0}
 function roadmapItems(s){return arr(s?.portal?.roadmap?.items)}
 function adviceItems(s){return arr(s?.portal?.advice?.items)}
