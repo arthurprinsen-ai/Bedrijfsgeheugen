@@ -105,7 +105,7 @@ export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
 
   bijhouden: capability('actueel-houden', ids('bsWat','bsWaarom','bsDatum','bsDoor','bsRaakt','dcNaam','dcBij','dcDatum','twThema','twWanneer'),
     ['ownership/freshness table','decision log','document register','change-to-tasks','change log'],
-    ['freshness','expired-items','ownership-completeness'], ['bsToe','dcToe','record-decision','link-document','generate-change-tasks'], ['wijzigingen','roadmap','advies']),
+    ['freshness','expired-items','ownership-completeness'], ['bsToe','dcToe','twKijk','twZet','record-decision','link-document','generate-change-tasks'], ['wijzigingen','roadmap','advies']),
 
   wijzigingen: capability('wijzigingen', [frozen({legacyFieldId:'wijzigingen:*', dynamicGroup:'change-events'})], ['change history','impact by department'],
     ['change-impact','follow-up-status'], ['record-change','inspect-impact','create-follow-up'], ['bijhouden','roadmap','advies']),
