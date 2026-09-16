@@ -1,47 +1,17 @@
-const TERMINAL_OBLIGATION_STATUSES = new Set([
-  'GREEN',
-  'VERIFIED',
-  'COMPLETE',
-  'COMPLETED',
-  'PROVEN',
-  'ROLLED_BACK_GREEN'
-]);
+import { evaluateCompletion } from '../../platform/agents/completion-supervisor.mjs';
 
-export function evaluateCompletionReadiness({
-  localGreen = false,
-  materialObligations = [],
-  hardBoundary = null
-} = {}) {
-  const obligations = Array.isArray(materialObligations) ? materialObligations : [];
-  const openObligations = obligations
-    .filter(obligation => !TERMINAL_OBLIGATION_STATUSES.has(String(obligation?.status || '').toUpperCase()))
-    .map((obligation, index) => obligation?.id || `obligation-${index + 1}`);
-
-  const hardBoundaryProven = hardBoundary?.present === true
-    && hardBoundary?.proven === true
-    && typeof hardBoundary?.evidence === 'string'
-    && hardBoundary.evidence.trim().length > 0;
-
-  if (hardBoundaryProven) {
-    return Object.freeze({
-      canComplete: true,
-      state: 'HARD_BOUNDARY',
-      openObligations: Object.freeze(openObligations),
-      evidence: hardBoundary.evidence
-    });
-  }
-
-  if (localGreen === true && openObligations.length === 0) {
-    return Object.freeze({
-      canComplete: true,
-      state: 'COMPLETE',
-      openObligations: Object.freeze([])
-    });
-  }
-
+export function evaluateCompletionReadiness(input = {}) {
+  const decision = evaluateCompletion(input);
   return Object.freeze({
-    canComplete: false,
-    state: 'CONTINUE',
-    openObligations: Object.freeze(openObligations)
+    canComplete:decision.success === true,
+    canWait:decision.canWait === true,
+    state:decision.normalized_state,
+    nextAction:decision.next_action,
+    openObligations:decision.open_obligations,
+    requiredEvidence:decision.required_evidence,
+    evidence:input.hardBoundary?.evidence ?? null,
+    recoveryPacket:decision.recovery_packet,
+    resumeWhen:decision.resume_when,
+    idempotencyKey:decision.idempotency_key,
   });
 }
