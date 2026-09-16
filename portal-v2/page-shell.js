@@ -4,13 +4,14 @@ import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
 import { mountChangeWizard } from './modules/change-wizard.js';
 import { loadRuntimeEvidence } from './runtime-evidence.js';
-import { renderCsrdImpact } from './csrd-impact.js';
+import { renderCsrdImpact, impactSnapshotFromPortalState } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
 import { getCapabilityContract } from './capability-contracts.js';
 import { mountWorkspace } from './workspace-shell.js';
 import { mountCompanyInput, renderProfileAnalysis } from './modules/company-input.js';
 import { mountDeliveryWorkspace } from './modules/delivery-workspace.js';
+import { mountFunctionalWorkspace, listFunctionalSuitePages } from './modules/functional-suite.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -64,6 +65,7 @@ const COPY = {
 
 const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
+const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const portalContext={domainState:null};
 
 export function configurePortalShell(context={}){
@@ -195,11 +197,16 @@ export function openPortalPage(pageId){
   root.dataset.pageId=pageId;
   const native=root.querySelector('#pvNative');
   const contract=getCapabilityContract(pageId);
-  if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage});
+  if(pageId==='csrd-impact'){
+    const snapshot=impactSnapshotFromPortalState(portalStateSnapshot());
+    renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
+  }
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
+  else if(pageId==='canvassen'&&contract?.legacyCapability)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
+  else if(FUNCTIONAL_SUITE_PAGES.has(pageId)&&contract?.legacyCapability)mountFunctionalWorkspace(native,{pageId,contract,view,domainState:portalContext.domainState,openPage:openPortalPage});
   else if(contract?.legacyCapability){
     mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:'idle',render:content=>renderNative(content,view)});
   } else renderNative(native,view);

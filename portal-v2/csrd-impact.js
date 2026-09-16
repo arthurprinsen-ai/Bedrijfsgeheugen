@@ -20,6 +20,8 @@ export const DEFAULT_IMPACT_SNAPSHOT = Object.freeze({
 
 const nl=(value,digits=1)=>value==null?'onbekend':Number(value).toLocaleString('nl-NL',{maximumFractionDigits:digits});
 const finiteOrNull=value=>value===null||value===undefined||value===''?null:(Number.isFinite(Number(value))?Number(value):null);
+const cleanEvidenceList=value=>[...new Set((Array.isArray(value)?value:[]).map(item=>String(item??'').trim()).filter(Boolean))];
+const validTimestamp=value=>{const raw=String(value??'').trim();return raw&&Number.isFinite(Date.parse(raw))?raw:'';};
 
 export function withBusinessValueEvidence(summary={},base={}){
   const observations=Math.max(0,Number(summary.observations)||0);
@@ -49,8 +51,13 @@ export function withBusinessValueEvidence(summary={},base={}){
 export function withResourceFootprint(footprint={},base=DEFAULT_IMPACT_SNAPSHOT){
   const coverage=Math.max(0,Math.min(1,Number(footprint.coverage)||0));
   const confidence=Math.max(0,Math.min(1,Number(footprint.confidence)||0));
-  if(coverage<=0) return structuredClone(base);
-  const calculatedAt=footprint.calculatedAt||new Date().toISOString();
+  const calculatedAt=validTimestamp(footprint.calculatedAt);
+  const factorVersions=cleanEvidenceList(footprint.factorVersions);
+  const methodologies=cleanEvidenceList(footprint.methodologies);
+  const sources=cleanEvidenceList(footprint.sources);
+  const calculationStatus=String(footprint.calculationStatus||'').trim().toLowerCase();
+  const hasCanonicalEvidence=coverage>0&&confidence>0&&Boolean(calculatedAt)&&factorVersions.length>0&&methodologies.length>0&&sources.length>0&&calculationStatus==='calculated';
+  if(!hasCanonicalEvidence) return structuredClone(base);
   return {
     ...structuredClone(base),
     realtime:[
@@ -59,9 +66,16 @@ export function withResourceFootprint(footprint={},base=DEFAULT_IMPACT_SNAPSHOT)
       ['●',footprint.waterLiters==null?'onbekend':`${nl(footprint.waterLiters,0)} liter`,'waterimpact · factor-gebaseerd'],
       ['⌁',`${Math.round(coverage*100)}%`,'brondekking']
     ],
-    resourceFootprint:{dataBacked:true,coverage,confidence,calculatedAt,factorVersions:[...(footprint.factorVersions||[])],methodologies:[...(footprint.methodologies||[])],measurementClass:footprint.measurementClass||'mixed'},
+    resourceFootprint:{dataBacked:true,coverage,confidence,calculatedAt,factorVersions,methodologies,sources,calculationStatus,measurementClass:footprint.measurementClass||'calculated'},
     internal:{...(base.internal||{}),dataQuality:`${Math.round(coverage*100)}%`,lastValidation:new Date(calculatedAt).toLocaleString('nl-NL'),footprintConfidence:`${Math.round(confidence*100)}%`}
   };
+}
+
+export function impactSnapshotFromPortalState(state={}){
+  const footprint=state?.resourceBusinessValue?.resource_footprint;
+  return footprint&&typeof footprint==='object'
+    ? withResourceFootprint(footprint)
+    : structuredClone(DEFAULT_IMPACT_SNAPSHOT);
 }
 
 export function customerSafeSnapshot(snapshot=DEFAULT_IMPACT_SNAPSHOT){ const {internal,...safe}=snapshot; return structuredClone(safe); }

@@ -36,9 +36,20 @@ test('footprint aggregation is idempotent and exposes coverage', () => {
   assert.equal(summary.energyKwh, 1);
 });
 
-test('CSRD stays explicit example data without coverage and becomes data-backed with coverage', () => {
+test('CSRD stays explicit example data without evidence and becomes data-backed with complete canonical evidence', () => {
   assert.match(csrdImpactMarkup(), /Voorbeelddata · geen live claim/);
-  const snapshot = withResourceFootprint({ energyKwh:12.5, co2eKg:2.4, waterLiters:180, coverage:0.75, confidence:0.8, factorVersions:['factor-v1'], methodologies:['method-v1'], calculatedAt:'2026-09-15T18:00:00Z' });
+  const snapshot = withResourceFootprint({
+    energyKwh:12.5,
+    co2eKg:2.4,
+    waterLiters:180,
+    coverage:0.75,
+    confidence:0.8,
+    factorVersions:['factor-v1'],
+    methodologies:['method-v1'],
+    sources:['powerhouse_resource_impact_v1'],
+    calculationStatus:'calculated',
+    calculatedAt:'2026-09-15T18:00:00Z'
+  });
   const html = csrdImpactMarkup(snapshot);
   assert.match(html, /Data-backed · 75% brondekking/);
   assert.match(html, /12,5 kWh/);
