@@ -8,5 +8,7 @@ test('outcome obligation workflow accepts event-driven resume without changing o
   assert.match(workflow, /outcome-obligation-resume/);
   assert.match(workflow, /github\.event\.client_payload\.obligation_id/);
   assert.match(workflow, /github\.event\.client_payload\.trigger_fingerprint/);
+  assert.match(workflow, /github\.event\.client_payload\.coalesce_key/);
+  assert.match(workflow, /--coalesce-key/);
   assert.match(workflow, /event-trigger/);
 });
