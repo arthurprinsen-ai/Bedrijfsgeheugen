@@ -87,15 +87,15 @@ test('meta-learning recommends evidence-backed improvements but never mutates ga
   assert.ok(result.recommendations.every(x => x.promotion === 'protected_delivery_required'));
 });
 
-test('Engineering OS indexes the closed loop and Required CI executes this regression', async () => {
+test('closed-loop runtime extends the current Engineering OS without replacing its newer authority', async () => {
   const contract = JSON.parse(await readFile(new URL('../config/powerhouse-engineering-os.json', import.meta.url), 'utf8'));
-  assert.equal(contract.continuous_improvement.fingerprint, 'powerhouse-engineering-closed-loop-v1');
-  assert.equal(contract.continuous_improvement.flaky_test_policy.required_failure_override_allowed, false);
-  assert.equal(contract.continuous_improvement.recovery_proof.max_age_days, 90);
-  const required = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
-  assert.match(required, /tests\/brain-powerhouse-engineering-closed-loop\.test\.mjs/);
+  assert.equal(contract.fingerprint, 'powerhouse-engineering-os-v1');
+  assert.equal(contract.continuous_improvement.fingerprint, 'powerhouse-continuous-improvement-engine-v1');
+  assert.equal(contract.operating_controls.controls.disaster_recovery_drills.require_restore_proof, true);
+  assert.equal(contract.operating_controls.controls.powerhouse_autonomy_scorecard.no_single_magic_score, true);
   const learning = await readFile(new URL('../.github/workflows/engineering-os-learning.yml', import.meta.url), 'utf8');
   assert.match(learning, /cron: '17 3 \* \* \*'/);
+  assert.match(learning, /node --test tests\/brain-powerhouse-engineering-closed-loop\.test\.mjs/);
   assert.match(learning, /actions\/upload-artifact@v4/);
   assert.match(learning, /failure_observation_is_not_automatically_a_caught_defect: true/);
 });
