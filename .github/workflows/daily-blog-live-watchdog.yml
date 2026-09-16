@@ -51,8 +51,8 @@ jobs:
           const ledger=require('./data/content-publication-ledger.json');
           const today=process.argv[2];
           const days=ledger.days||{};
-          if (days[today]) { console.log(today); process.exit(0); }
-          const dates=Object.keys(days).filter(d=>d<=today).sort();
+          if (days[today] && days[today].state !== 'live') { console.log(today); process.exit(0); }
+          const dates=Object.keys(days).filter(d=>d<=today && days[d]?.state !== 'live').sort();
           if (!dates.length) process.exit(2);
           console.log(dates.at(-1));
           NODE
