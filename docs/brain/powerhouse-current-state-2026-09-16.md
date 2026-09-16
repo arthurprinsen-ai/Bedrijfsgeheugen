@@ -69,7 +69,8 @@ Reeds gedaan:
 - fresh-main merge lineage gemaakt;
 - #1787-only hard-boundary/shadow/backfill/resume guardrails behouden;
 - Quality Intelligence current-main delta behouden;
-- Make uit de connector-learning authority verwijderd en als retired vastgelegd.
+- Make uit de connector-learning authority verwijderd en als retired vastgelegd;
+- een onbedoeld uit de merge-snapshot verdwenen Autonomous Improvement-fixmigratie is als scope-contaminatie gedetecteerd en wordt vanuit actuele `main` hersteld.
 
 Nog vereist voor closure:
 1. alle exact-head protected CI/gates groen;
@@ -83,15 +84,16 @@ Nog vereist voor closure:
 
 Tot deze acht punten bewezen zijn blijft de status `RECOVERING`.
 
-### OBL-SUPABASE-1784 — final production-ledger source reconciliation
+### OBL-SUPABASE-1798 — final production-ledger source reconciliation
 
 Status: `RECOVERING`.
+Authority: PR #1798, branch `reconcile/final-supabase-production-ledger-v2`.
 
-PR #1784 bevat nog een unieke source-control delta rond de exact in productie waargenomen migration identities:
+De stale #1784-lijn is gesloten als superseded. #1798 is de fresh-main opvolger en bevat uitsluitend de nog unieke source-control delta rond de exact in productie waargenomen migration identities:
 - `20260916123944_powerhouse_autonomy_rpc_replay_hardening`
 - `20260916123957_powerhouse_internal_view_replay_hardening`
 
-Productie-readback op de historische kandidaat bewees de runtime/security-state, maar de PR is gebaseerd op een oudere `main` en mag niet blind worden gemerged. Closure vereist fresh-main reconciliation van alleen de nog unieke delta, exact-head security/replay/Required/BRAIN gates, protected merge en source↔production-ledger readback. Geen DDL wordt opnieuw uitgevoerd wanneer productie de exacte statement-identiteit al bevat.
+Productie-readback op de historische kandidaat bewees de runtime/security-state. #1798 moet daarom alleen source↔production-ledger truth alignen; reeds toegepaste DDL mag niet opnieuw worden uitgevoerd. Closure vereist exact-head security/replay/Required/BRAIN gates, protected merge en readback dat GitHub source-identiteiten, Supabase migration ledger en bestaande privilege/security-state overeenkomen.
 
 ## 6. Niet-materiële/open maintenance
 
