@@ -28,7 +28,7 @@ for (const source of registry.sources || []) {
   }
 }
 
-fs.mkdirSync(new URL('../../artifacts/quality/', import.meta.url), { recursive: true });
+fs.mkdirSync('artifacts/quality', { recursive: true });
 const payload = {
   fingerprint: 'powerhouse-quality-innovation-scout-v1',
   observed_at: now,

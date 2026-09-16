@@ -4,7 +4,7 @@ import {
   validateQualityContract,
   classifyQualityImpact,
   buildQualityState,
-} from '../scripts/powerhouse-quality-intelligence.mjs';
+} from '../scripts/brain/powerhouse-quality-intelligence.mjs';
 
 const completeContract = (overrides = {}) => ({
   fingerprint: 'powerhouse-quality-intelligence-v1',

@@ -6,9 +6,9 @@ on:
     paths:
       - 'powerhouse/assurance/**'
       - 'scripts/powerhouse-assurance-check.mjs'
-      - 'scripts/powerhouse-quality-intelligence.mjs'
+      - 'scripts/brain/powerhouse-quality-intelligence.mjs'
       - 'tests/powerhouse-assurance*.test.mjs'
-      - 'tests/powerhouse-quality-intelligence.test.mjs'
+      - 'tests/brain-quality-intelligence.test.mjs'
       - 'tools/brain-delivery-system.mjs'
       - 'portal-v2/**'
       - '.github/scripts/portal_parity.py'
@@ -35,10 +35,10 @@ jobs:
         with:
           node-version: '22'
       - name: Assurance and Quality Intelligence unit contracts
-        run: node --test tests/powerhouse-assurance.test.mjs tests/powerhouse-assurance-delivery-classification.test.mjs tests/powerhouse-quality-intelligence.test.mjs
+        run: node --test tests/powerhouse-assurance.test.mjs tests/powerhouse-assurance-delivery-classification.test.mjs tests/brain-quality-intelligence.test.mjs
       - name: Powerhouse assurance gate
         run: node scripts/powerhouse-assurance-check.mjs --check
       - name: Quality Intelligence deterministic gate
-        run: node scripts/powerhouse-quality-intelligence.mjs --check
+        run: node scripts/brain/powerhouse-quality-intelligence.mjs --check
       - name: Existing Portal V2 protected baseline
         run: python3 .github/scripts/portal_parity.py

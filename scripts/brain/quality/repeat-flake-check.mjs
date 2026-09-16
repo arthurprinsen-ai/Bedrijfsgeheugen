@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const count = Math.max(2, Number(process.env.QUALITY_FLAKE_REPEATS || 3));
-const target = process.env.QUALITY_FLAKE_TARGET || 'tests/powerhouse-quality-intelligence.test.mjs';
+const target = process.env.QUALITY_FLAKE_TARGET || 'tests/brain-quality-intelligence.test.mjs';
 const outcomes = [];
 for (let index = 0; index < count; index += 1) {
   const run = spawnSync(process.execPath, ['--test', target], { encoding: 'utf8', env: process.env });
