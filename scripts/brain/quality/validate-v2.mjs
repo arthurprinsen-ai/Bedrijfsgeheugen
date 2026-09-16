@@ -6,4 +6,5 @@ if(c.release_decision!=='deterministic_evidence_only') gaps.push('deterministic 
 if(c.ai_policy?.release_authority!==false||c.ai_policy?.may_waive_gate!==false) gaps.push('AI release prohibition');
 for(const [k,v] of Object.entries(c.capabilities||{})) if(v.enabled!==true) gaps.push(`capability:${k}`);
 if(c.evidence_states?.unknown!=='blocking_when_required'||c.evidence_states?.not_registered!=='blocking_when_required') gaps.push('fail-closed evidence');
+for(const required of ['contract_test','validator','coverage','exploration_policy','adversarial_matrix','production_shadow','test_economics','surface_registry']) if(!c.implementation?.[required]) gaps.push(`implementation:${required}`);
 process.stdout.write(JSON.stringify({fingerprint:c.fingerprint,status:gaps.length?'BLOCKED':'READY',gaps},null,2)+'\n'); if(gaps.length) process.exitCode=1;
