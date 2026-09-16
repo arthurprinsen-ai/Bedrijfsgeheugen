@@ -87,11 +87,16 @@ test('control-plane changes expand to protected control-plane profile', () => {
   assert.deepEqual(affected.contracts, ['delivery-control-plane']);
 });
 
-test('unknown material scope fails closed', () => {
+test('unknown material scope fails closed at selection and execution planning', () => {
   const affected = selectAffectedTests({ paths: ['mystery/runtime.bin'], deliveryConfig, policy });
   assert.equal(affected.failClosed, true);
   assert.deepEqual(affected.profiles, ['required']);
   assert.match(affected.reason, /unknown material scope/i);
+  assert.throws(() => buildExecutionPlan({
+    workPackages: [{ id: 'UNKNOWN', paths: ['mystery/runtime.bin'], baseSha: 'base', candidateSha: 'candidate' }],
+    deliveryConfig,
+    policy
+  }), /unknown material scope/i);
 });
 
 test('cache identity is stable across path and profile ordering but changes with candidate identity', () => {
