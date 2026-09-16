@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { reconcileCompletionBackfill } from '../tools/completion-supervisor-backfill.mjs';
+import { reconcileCompletionBackfill } from '../tools/outcome-obligation-completion-supervisor-backfill.mjs';
 
 const liveEvidence = {
   trusted:true,
