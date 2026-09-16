@@ -23,10 +23,20 @@ const BUILDERS=Object.freeze({
     const profile=at(state,'portal.profile')||{};
     const points=PROFILE_DIMENSIONS.map(dimension=>({label:dimension.label||dimension.id,value:n(profile.maturity?.[dimension.id])}))
       .filter(point=>point.value>0);
+    const maturityValues=points.map(point=>point.value);
+    const adoption=Array.from({length:5},(_,index)=>{
+      const level=index+1;
+      return {label:`N${level}`,value:maturityValues.length?Math.round(maturityValues.filter(value=>value>=level).length/maturityValues.length*100):0};
+    });
+    const capacity=arr(calc('dimension-costs',state)).map(item=>({label:item.label||item.id||'Onderdeel',value:n(item.kosten)}));
     const blockers=arr(calc('blocker-ranking',state)).map(item=>({label:item.name||item.title||'Blokkade',value:n(item.score)||n(item.impact)}));
+    const progress=n(calc('progress',state));
     return [radar(points,{title:'Volwassenheid per bedrijfsonderdeel'}),
       ladder(arr(calc('cmmi-ladder',state)),{title:'Procesvolwassenheid (CMMI)'}),
-      leakage(blockers,{title:'Waar de meeste capaciteit weglekt'}),
+      curve(adoption,{title:'Adoptiecurve',valueLabel:'%'}),
+      leakage(capacity,{title:'Waar de meeste capaciteit weglekt'}),
+      leakage(blockers,{title:'Blokkades'}),
+      ring(Math.min(100,Math.max(0,progress)),{title:'Voortgang',caption:'voortgang op de roadmap'}),
       ring(Math.min(100,metrics.averageMaturity/5*100),{title:'Volwassenheid',caption:'gemiddeld over de onderdelen'})].filter(Boolean).join('');
   },
 

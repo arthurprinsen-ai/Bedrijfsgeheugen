@@ -42,7 +42,7 @@ const TRUSTED_ADVISOR=Object.freeze([
   ['Vertrouwd adviseur','Ze bellen je voordat ze een besluit nemen, ook over dingen die je niet verkoopt.']
 ]);
 function people(s){return s?.portal?.people||{}}
-function headcount(s){return n(profile(s).headcount)||n(people(s).headcount)||0}
+function headcount(s){return n(profile(s).headcount)||n(profile(s).employees)||n(people(s).headcount)||0}
 
 /* Kosten per bedrijfsonderdeel.
    Dit was de motor onder het advies van het oude klantportaal: per onderdeel
@@ -62,7 +62,7 @@ function dimensieNiveau(s,id){
 }
 
 function dimensieKosten(s){
-  const mw=n(profile(s).headcount), uur=n(profile(s).hourlyCost);
+  const mw=headcount(s), uur=n(profile(s).hourlyCost);
   if(!mw||!uur)return [];
   return PROFILE_DIMENSIONS.map(d=>{
     const niveau=dimensieNiveau(s,d.id);
@@ -75,8 +75,18 @@ function dimensieKosten(s){
   }).filter(Boolean).sort((a,b)=>b.kosten-a.kosten);
 }
 
+function dimensieJaarUren(s){
+  const mw=headcount(s);
+  if(!mw||!profile(s).maturity||typeof profile(s).maturity!=='object')return 0;
+  return PROFILE_DIMENSIONS.reduce((sum,d)=>sum+d.weeklyHours*NIVEAUFACTOR[dimensieNiveau(s,d.id)]*(mw/TEAMDELER)*WERKWEKEN,0);
+}
 function manualCost(s){const x=profile(s);return n(x.manualHoursPerWeek)*46*n(x.hourlyCost)}
-function maturityScores(s){const x=profile(s);const vals=arr(x.dimensionScores).map(n).filter(v=>v>0);if(vals.length)return vals;return Object.values(x.dimensions||{}).map(n).filter(v=>v>0)}
+function maturityScores(s){
+  const x=profile(s);
+  const vals=arr(x.dimensionScores).map(n).filter(v=>v>0);if(vals.length)return vals;
+  if(x.maturity&&typeof x.maturity==='object')return PROFILE_DIMENSIONS.map(item=>clamp(Math.round(n(x.maturity[item.id],2)),1,5));
+  return Object.values(x.dimensions||{}).map(n).filter(v=>v>0)
+}
 function completion(values){const xs=arr(values);return xs.length?xs.filter(v=>v!==undefined&&v!==null&&v!=='').length/xs.length*100:0}
 function roadmapItems(s){return arr(s?.portal?.roadmap?.items)}
 function adviceItems(s){return arr(s?.portal?.advice?.items)}
@@ -85,13 +95,12 @@ function dueItems(s){return arr(s?.portal?.dueDiligence?.findings)}
 
 const C={
  'average-maturity':s=>avg(maturityScores(s)),
- 'manual-work-annual':s=>manualCost(s),
- 'fte-lost':s=>n(profile(s).manualHoursPerWeek)/(40),
+ 'manual-work-annual':s=>dimensieKosten(s).length?dimensieKosten(s).reduce((sum,d)=>sum+d.kosten,0):manualCost(s),
+ 'fte-lost':s=>{const uren=dimensieJaarUren(s);return uren?uren/1600:n(profile(s).manualHoursPerWeek)/40},
  'company-state':s=>{const m=avg(maturityScores(s));return m>=4?'voorsprong':m>=3?'op koers':m>=2?'kwetsbaar':'urgent'},
  'blocker-ranking':s=>arr(s?.portal?.overview?.blockers).map(x=>({...x,score:n(x.impact)*n(x.urgency,1)})).sort((a,b)=>b.score-a.score),
  'progress':s=>{const xs=roadmapItems(s);return xs.length?avg(xs.map(x=>x.done===true?100:n(x.progress))):0},
  'advice-priority':s=>adviceItems(s).map(x=>({...x,score:n(x.priority)*2+ratio(x.value,Math.max(1,n(x.duration)),1)})).sort((a,b)=>b.score-a.score),
-
  'dimension-maturity':s=>maturityScores(s),
  'profile-average':s=>avg(maturityScores(s)),
  'manual-work-impact':s=>manualCost(s),
