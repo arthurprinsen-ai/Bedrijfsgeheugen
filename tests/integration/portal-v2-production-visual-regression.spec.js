@@ -9,7 +9,7 @@ const VISUAL_ACTUAL_PATH=process.env.VISUAL_ACTUAL_PATH||'';
 
 async function bootCanvassen(page){
   await page.setViewportSize({width:1280,height:1000});
-  const response=await page.goto(`${BASE_URL}/klantportaal?klant=demoAI&bg_visual_regression=stable`,{waitUntil:'domcontentloaded',timeout:45_000});
+  const response=await page.goto(`${BASE_URL}/portaal/demo?bg_visual_regression=stable`,{waitUntil:'domcontentloaded',timeout:45_000});
   expect(response,'visual target response').not.toBeNull();
   expect(response.status(),'visual target status').toBeLessThan(400);
   await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__?.initialized?.()),{timeout:30_000});

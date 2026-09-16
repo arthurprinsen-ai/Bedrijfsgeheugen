@@ -27,3 +27,9 @@ test('production DOM readback contains a fail-closed visual regression stage aft
   assert.match(visualSpec, /1280/);
   assert.match(visualSpec, /canvassen/);
 });
+
+test('visual regression uses the canonical V2 demo route instead of the legacy query alias', async () => {
+  const visualSpec = await readVisualSpec();
+  assert.match(visualSpec, /\/portaal\/demo\?bg_visual_regression=stable/);
+  assert.doesNotMatch(visualSpec, /\/klantportaal\?klant=demoAI/);
+});
