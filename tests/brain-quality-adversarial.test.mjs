@@ -1,0 +1,2 @@
+import test from 'node:test'; import assert from 'node:assert/strict'; import fs from 'node:fs';
+test('adversarial matrix is safe and fail-closed by registration',()=>{const c=JSON.parse(fs.readFileSync('config/powerhouse-quality-adversarial-matrix.json','utf8')); assert.equal(c.production_destructive,false); assert.ok(c.cases.length>=7); for(const x of c.cases){assert.equal(x.required_when_registered,true); assert.notEqual(x.safe_target,'production');}});
