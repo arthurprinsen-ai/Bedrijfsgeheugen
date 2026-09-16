@@ -30,6 +30,9 @@ const CANONICAL = [
   '20260915102851_powerhouse_autonomous_growth_revenue_v1.sql',
   '20260915102925_powerhouse_autonomous_growth_revenue_v1.sql',
   '20260915123725_powerhouse_full_cycle_production_proof_v1.sql',
+  '20260915183418_resource_factor_registry.sql',
+  '20260915183603_resource_impact_projection_v1.sql',
+  '20260915183656_resource_impact_exclude_retired_make.sql',
 ];
 
 const DRIFTED_ALIASES = [
