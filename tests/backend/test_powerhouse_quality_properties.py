@@ -6,7 +6,10 @@ CONTRACT = json.loads(Path('powerhouse/assurance/quality-intelligence.json').rea
 
 
 def normalize_repo_path(value: str) -> str:
-    return value.strip().replace('\\', '/').removeprefix('./')
+    clean = value.strip().replace('\\', '/')
+    while clean.startswith('./'):
+        clean = clean[2:]
+    return clean
 
 
 def impacted(path: str):
