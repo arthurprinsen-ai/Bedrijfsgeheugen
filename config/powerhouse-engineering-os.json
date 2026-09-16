@@ -27,6 +27,14 @@
   },
   "skill_evolution": {"lifecycle":["OBSERVE","CLUSTER","HYPOTHESIZE","BASELINE","CANDIDATE","EVAL","REVIEW","PROMOTE_OR_ROLLBACK","PROD_OUTCOME","WRITEBACK"],"requires":{"baseline":true,"representative_eval":true,"success_metric":true,"compatibility":true,"rollback_or_fallback":true,"post_promotion_outcome":true}},
   "architecture_evolution": {"fitness_dimensions":["correctness","reliability","security","tenant_isolation","performance","maintainability","cognitive_load","reuse","observability","deployability","rollback_safety","testability","data_integrity","lineage","cost_capacity","compatibility","business_impact","lead_time"],"requires":{"compare_to_current":true,"measurable_improvement":true,"migration_compatibility":true,"security_privacy_cost_review":true,"representative_tests_or_benchmarks":true,"rollback_or_recovery":true,"production_readback":true,"system_map_and_decision_lineage_update":true}},
+  "continuous_improvement": {
+    "fingerprint":"powerhouse-continuous-improvement-engine-v1",
+    "lifecycle":["OBSERVE","CLUSTER","CANDIDATE","BASELINE","EVALUATE","DECIDE","SHADOW_OR_CANARY","PROMOTE_OR_REJECT","PROD_OBSERVE","ROLLBACK_OR_CONFIRM","ATTRIBUTE","WRITEBACK","REVALIDATE"],
+    "candidate":{"dedupe_before_persist":true,"conflict_arbitration":true,"stable_identity":true},
+    "promotion":{"security_non_degradation":true,"correctness_non_degradation":true,"unknown_critical_fails_closed":true,"no_single_magic_score":true,"rollback_identity_required":true,"compensated_tradeoff_requires_evidence":true,"business_claim_requires_business_evidence":true},
+    "revalidation":{"require_revalidate_after":true,"states":["CONFIRMED","CANDIDATE_REQUIRED","SUPERSEDED","BLOCKED_HARD_BOUNDARY"]},
+    "attribution":{"causality_not_assumed":true,"baseline_comparison_required":true}
+  },
   "operating_controls": {
     "fingerprint":"powerhouse-autonomy-controls-v1","applies_to":["all_existing_chats","all_future_chats","all_existing_agents","all_future_agents","all_material_workflows"],
     "controls": {
