@@ -152,6 +152,16 @@
       "legacyProvenance": "BG159 scenario-specific projection is LEGACY_RETIRED_PATH."
     },
     {
+      "id": "material-change-live-verification",
+      "domain": "governance",
+      "expected": "Every material Powerhouse change remains active until the exact candidate is protected-delivered, production-read back, capability-visible and canonically learned under one durable obligation.",
+      "dueAt": "after_each_material_production_change",
+      "ownerAgent": "agent-reliability",
+      "evidencePolicy": "Identity-bound CANDIDATE_TESTS, PROTECTED_DELIVERY, PRODUCTION_IDENTITY, FUNCTIONAL_READBACK, OBLIGATIONS_COMPLETE, CAPABILITY_HANDOFF and LEARNING_WRITEBACK evidence must all be append-only and trusted before LIVE_VERIFIED.",
+      "idempotencyKey": "material-change-live-verification|candidate-identity",
+      "recoveryPolicy": "Keep partial outcomes active, retain the same coalesced candidate obligation across retries or days, wait only on a proven external boundary with a complete recovery packet, and resume automatically when new trusted evidence arrives."
+    },
+    {
       "id": "production-promotion-dashboard",
       "domain": "deploy",
       "expected": "A green dashboard candidate is promoted through the canonical protected GitHub/Netlify production-promotion path and verified on the exact production SHA.",
