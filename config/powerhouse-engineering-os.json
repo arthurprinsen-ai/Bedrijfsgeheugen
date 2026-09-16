@@ -44,40 +44,9 @@
     "buffer": "social provider execution/readback evidence; never engineering source authority"
   },
   "quality_dimensions": {
-    "shared": [
-      "correctness",
-      "regression",
-      "contract_compatibility",
-      "security",
-      "performance",
-      "cost_capacity",
-      "observability",
-      "rollback_recovery",
-      "dependency_supply_chain",
-      "documentation",
-      "learning_writeback"
-    ],
-    "frontend": [
-      "visual_regression",
-      "alignment_spacing",
-      "responsive_behavior",
-      "cross_browser_device",
-      "accessibility",
-      "web_performance",
-      "console_network_errors",
-      "content_semantic_drift",
-      "design_system_drift"
-    ],
-    "backend": [
-      "unit_integration_contract",
-      "schema_migration_integrity",
-      "rls_auth_tenant_isolation",
-      "idempotency_concurrency",
-      "data_quality_lineage",
-      "api_latency_efficiency",
-      "failure_recovery",
-      "rate_quota_budget"
-    ]
+    "shared": ["correctness","regression","contract_compatibility","security","performance","cost_capacity","observability","rollback_recovery","dependency_supply_chain","documentation","learning_writeback"],
+    "frontend": ["visual_regression","alignment_spacing","responsive_behavior","cross_browser_device","accessibility","web_performance","console_network_errors","content_semantic_drift","design_system_drift"],
+    "backend": ["unit_integration_contract","schema_migration_integrity","rls_auth_tenant_isolation","idempotency_concurrency","data_quality_lineage","api_latency_efficiency","failure_recovery","rate_quota_budget"]
   },
   "engineering_rules": [
     "Prefer small coherent modules with explicit interfaces and ownership.",
@@ -89,22 +58,11 @@
     "No new brain, registry, queue, calendar, analytics store or learning store when an existing canonical capability can be extended.",
     "Documentation and learning writeback are release outputs, not optional follow-up."
   ],
-  "terminal_statuses": [
-    "LIVE & BEWEZEN",
-    "DEELS LIVE",
-    "GEBLOKKEERD",
-    "NIET GEDAAN"
-  ],
-  "hard_boundaries": [
-    "secrets_credentials_permissions",
-    "security_control_weakening",
-    "destructive_irreversible_data",
-    "paid_resource_increase",
-    "legal_financial_commitment"
-  ],
+  "terminal_statuses": ["LIVE & BEWEZEN","DEELS LIVE","GEBLOKKEERD","NIET GEDAAN"],
+  "hard_boundaries": ["secrets_credentials_permissions","security_control_weakening","destructive_irreversible_data","paid_resource_increase","legal_financial_commitment"],
   "bootstrap": {
-    "command": "node tools/powerhouse-engineering-os.mjs --check",
-    "packet_command": "node tools/powerhouse-engineering-os.mjs --packet",
-    "required_test": "tests/powerhouse-engineering-os-contract.test.mjs"
+    "command": "node scripts/brain/powerhouse-engineering-os.mjs --check",
+    "packet_command": "node scripts/brain/powerhouse-engineering-os.mjs --packet",
+    "required_test": "tests/brain-powerhouse-engineering-os-contract.test.mjs"
   }
 }
