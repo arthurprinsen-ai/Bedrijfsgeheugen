@@ -192,3 +192,20 @@ test('CLI and packet expose shared-learning, autonomy and continuous improvement
   assert.equal(packet.contract.operating_controls.fingerprint, 'powerhouse-autonomy-controls-v1');
   assert.equal(packet.contract.continuous_improvement.fingerprint, 'powerhouse-continuous-improvement-engine-v1');
 });
+
+test('LIVE & BEWEZEN is the only successful terminal status and hard blocks carry a fix handoff', async () => {
+  const c = await loadEngineeringContract();
+  assert.deepEqual(c.status_policy.success_terminal_statuses, ['LIVE & BEWEZEN']);
+  assert.equal(c.status_policy.intermediate_statuses.includes('DEELS LIVE'), true);
+  assert.equal(c.status_policy.keep_working_on_intermediate, true);
+  assert.equal(c.status_policy.blocked_status, 'GEBLOKKEERD');
+  assert.equal(c.status_policy.blocked_requires_recovery_packet, true);
+  assert.equal(c.status_policy.blocked_requires_fix_agent_handoff, true);
+  assert.deepEqual(c.status_policy.recovery_packet_required_fields, [
+    'blocker','root_cause_or_best_evidence','evidence','attempted_repairs','safe_actions_remaining','minimum_human_action','fix_agent_handoff'
+  ]);
+  assert.equal(c.status_policy.fix_agent_handoff.required, true);
+  assert.equal(c.status_policy.fix_agent_handoff.target_status, 'LIVE & BEWEZEN');
+  assert.equal(c.status_policy.fix_agent_handoff.carry_forward_context, true);
+  assert.equal(c.status_policy.auto_resume_when_boundary_clears, true);
+});
