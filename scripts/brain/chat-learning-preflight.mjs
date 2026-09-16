@@ -65,7 +65,7 @@ function serializedPacketBytes(packet) {
 export function compileChatLearningPreflight({
   rootDir = process.cwd(),
   contractPath = DEFAULT_CONTRACT,
-  maxSources = 40,
+  maxSources = 41,
   maxBytes = 256_000
 } = {}) {
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
