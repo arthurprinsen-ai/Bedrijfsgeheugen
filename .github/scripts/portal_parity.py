@@ -4,11 +4,17 @@
 The legacy portal remains the immutable migration baseline. Portal V2 must keep
 both the complete functional inventory and an executable implementation/evidence
 gate; a contract or navigation entry alone is never accepted as proof of parity.
+
+The gate deliberately derives editable-field coverage from the legacy DOM source.
+That prevents a hand-maintained V2 inventory from silently omitting a legacy field
+while still reporting itself as complete.
 """
 from __future__ import annotations
 
 import re
 import sys
+from fnmatch import fnmatchcase
+from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,6 +60,12 @@ SEMANTIC_MARKERS = {
 }
 
 FUNCTIONAL_ARRAY_KEYS = ("fields", "models", "calculations", "actions", "dependencies")
+EDITABLE_TAGS = {"input", "select", "textarea"}
+VOID_TAGS = {
+    "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+    "meta", "param", "source", "track", "wbr",
+}
+CAPABILITY_DECL = re.compile(r"^\s*([a-z][\w-]*)\s*:\s*capability\(", re.MULTILINE)
 
 
 def fail(message: str) -> None:
@@ -61,11 +73,96 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
-def check_v2_functional_inventory() -> None:
-    if not V2_FUNCTIONAL_INVENTORY.exists():
-        fail(f"missing V2 functional inventory: {V2_FUNCTIONAL_INVENTORY.relative_to(ROOT)}")
+class LegacyPanelParser(HTMLParser):
+    """Collect editable element ids by protected legacy panel."""
 
-    source = V2_FUNCTIONAL_INVENTORY.read_text(encoding="utf-8")
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.current_panel: str | None = None
+        self.stack: list[tuple[str, str | None]] = []
+        self.fields: dict[str, set[str]] = {name: set() for name in PANEL_TABS}
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attrs_dict = dict(attrs)
+        if tag not in VOID_TAGS:
+            self.stack.append((tag, self.current_panel))
+
+        element_id = attrs_dict.get("id") or ""
+        if element_id.startswith("p-"):
+            candidate = element_id[2:]
+            if candidate in PANEL_TABS:
+                self.current_panel = candidate
+
+        if tag in EDITABLE_TAGS and self.current_panel and element_id:
+            self.fields[self.current_panel].add(element_id)
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attrs_dict = dict(attrs)
+        element_id = attrs_dict.get("id") or ""
+        if tag in EDITABLE_TAGS and self.current_panel and element_id:
+            self.fields[self.current_panel].add(element_id)
+
+    def handle_endtag(self, tag: str) -> None:
+        for index in range(len(self.stack) - 1, -1, -1):
+            open_tag, previous_panel = self.stack[index]
+            if open_tag == tag:
+                del self.stack[index:]
+                self.current_panel = previous_panel
+                return
+
+
+def derive_legacy_editable_fields(html: str) -> dict[str, set[str]]:
+    parser = LegacyPanelParser()
+    parser.feed(html)
+    parser.close()
+    return parser.fields
+
+
+def capability_segments(source: str) -> dict[str, str]:
+    matches = list(CAPABILITY_DECL.finditer(source))
+    segments: dict[str, str] = {}
+    for index, match in enumerate(matches):
+        capability = match.group(1)
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(source)
+        segments[capability] = source[match.start():end]
+    return segments
+
+
+def inventory_field_patterns(segment: str) -> set[str]:
+    patterns = set(re.findall(r"legacyFieldId\s*:\s*['\"]([^'\"]+)['\"]", segment))
+    for args in re.findall(r"\bids\((.*?)\)", segment, re.DOTALL):
+        patterns.update(re.findall(r"['\"]([^'\"]+)['\"]", args))
+    return patterns
+
+
+def field_matches_contract(field_id: str, patterns: set[str]) -> bool:
+    return any(fnmatchcase(field_id, pattern) for pattern in patterns)
+
+
+def check_source_derived_field_parity(html: str, inventory_source: str) -> int:
+    fields_by_panel = derive_legacy_editable_fields(html)
+    segments = capability_segments(inventory_source)
+    protected_count = 0
+    missing: list[str] = []
+
+    for panel in sorted(PANEL_TABS):
+        fields = sorted(fields_by_panel.get(panel, set()))
+        protected_count += len(fields)
+        patterns = inventory_field_patterns(segments.get(panel, ""))
+        for field_id in fields:
+            if not field_matches_contract(field_id, patterns):
+                missing.append(f"{panel}.{field_id}")
+
+    if missing:
+        fail(
+            "legacy editable fields have no V2 field contract: "
+            + ", ".join(missing)
+            + ". Add an exact or explicit wildcard legacyFieldId contract; do not delete the legacy field to make this green."
+        )
+    return protected_count
+
+
+def check_v2_functional_inventory(source: str) -> None:
     if "LEGACY_FUNCTIONAL_INVENTORY" not in source or "assertFunctionalInventoryComplete" not in source:
         fail("V2 functional inventory export/guard disappeared")
 
@@ -120,8 +217,11 @@ def check_v2_implementation_gate() -> None:
 def main() -> int:
     if not PORTAL.exists():
         fail(f"missing protected portal file: {PORTAL.relative_to(ROOT)}")
+    if not V2_FUNCTIONAL_INVENTORY.exists():
+        fail(f"missing V2 functional inventory: {V2_FUNCTIONAL_INVENTORY.relative_to(ROOT)}")
 
     html = PORTAL.read_text(encoding="utf-8")
+    inventory_source = V2_FUNCTIONAL_INVENTORY.read_text(encoding="utf-8")
 
     tabs = set(re.findall(r'data-p="([^"]+)"', html))
     missing_tabs = sorted(PANEL_TABS - tabs)
@@ -137,12 +237,14 @@ def main() -> int:
         if marker not in html:
             fail(f"protected capability/meaning disappeared: {label} ({marker!r})")
 
-    check_v2_functional_inventory()
+    check_v2_functional_inventory(inventory_source)
+    protected_fields = check_source_derived_field_parity(html, inventory_source)
     check_v2_implementation_gate()
 
     print(
         "PARITY GREEN: "
         f"{len(PANEL_TABS)} protected legacy panels, "
+        f"{protected_fields} source-derived editable legacy fields, "
         f"{len(GLOBAL_MARKERS)} global capabilities, "
         f"{len(OVERVIEW_MARKERS)} overview capabilities, "
         f"{len(SEMANTIC_MARKERS)} semantic invariants, "
