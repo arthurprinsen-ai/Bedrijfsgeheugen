@@ -43,7 +43,7 @@ jobs:
       - name: Generate SPDX SBOM
         run: npm sbom --package-lock-only --sbom-format spdx > sbom.spdx.json
       - name: Build provenance subject
-        run: tar --exclude=.git -czf powerhouse-source.tgz .
+        run: tar --exclude=.git --exclude=powerhouse-source.tgz -czf powerhouse-source.tgz .
       - uses: actions/attest-build-provenance@v2
         with:
           subject-path: powerhouse-source.tgz
