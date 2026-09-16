@@ -9,7 +9,7 @@ test('shadow backfill workflow reads existing authorities and cannot dispatch pr
   assert.match(yaml, /actions:\s*read/);
   assert.match(yaml, /pull-requests:\s*read/);
   assert.match(yaml, /contents:\s*read/);
-  assert.match(yaml, /completion-supervisor-backfill\.mjs --collect/);
+  assert.match(yaml, /outcome-obligation-completion-supervisor-backfill\.mjs --collect/);
   assert.match(yaml, /SUPABASE_SERVICE_ROLE_KEY:\s*\$\{\{\s*secrets\.SUPABASE_SERVICE_ROLE_KEY\s*\}\}/);
   assert.match(yaml, /upload-artifact/);
   assert.doesNotMatch(yaml, /repository_dispatch/);
