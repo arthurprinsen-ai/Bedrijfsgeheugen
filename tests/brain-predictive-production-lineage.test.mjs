@@ -10,6 +10,8 @@ const ENGINE = path.join(ROOT, 'supabase', 'functions', 'powerhouse-predictive-e
 const CALIBRATOR = path.join(ROOT, 'supabase', 'functions', 'powerhouse-forecast-calibrator', 'index.ts');
 
 const CANONICAL = [
+  '20260914074356_powerhouse_channel_decisions_v1.sql',
+  '20260914074533_powerhouse_content_artifacts_v1.sql',
   '20260914081052_predictive_intelligence_first_mover_v1.sql',
   '20260914081911_predictive_first_mover_contract_v1_hardening.sql',
   '20260914082435_predictive_first_mover_obligations_and_guard_v1.sql',
