@@ -41,6 +41,14 @@ test('Engineering OS exposes complete autonomous governance controls', async () 
   assert.equal(controls.controls.powerhouse_autonomy_scorecard.no_single_magic_score, true);
 });
 
+test('All material agents receive autonomy controls through chat-learning preflight', () => {
+  const output = execFileSync(process.execPath, ['scripts/brain/chat-learning-preflight.mjs'], { encoding: 'utf8' });
+  const parsed = JSON.parse(output);
+  assert.equal(parsed.status, 'READY');
+  assert.ok(parsed.fingerprints.includes('powerhouse-autonomy-controls-v1'));
+  assert.ok(parsed.sources.some(source => source.path === 'config/powerhouse-engineering-os.json'));
+});
+
 test('Engineering OS validator fails closed on authority and wiring drift', async () => {
   const result = await validateEngineeringOS();
   assert.deepEqual(result.errors, []);
