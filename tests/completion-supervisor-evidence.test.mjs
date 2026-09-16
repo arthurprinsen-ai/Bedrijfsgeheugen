@@ -19,10 +19,11 @@ test('validated BG169 artifact mints exact protected delivery identities', () =>
   assert.ok(evidence.every(item => item.candidateIdentity === CANDIDATE));
 });
 
-test('exact successful production readback mints readback, handoff and learning evidence', () => {
-  const readback = { merge_sha:PRODUCTION, status:'LIVE_VERIFIED', routes_ok:true };
+test('exact successful production readback mints protected production identity, readback, handoff and learning evidence', () => {
+  const readback = { merge_sha:PRODUCTION, status:'LIVE_VERIFIED', routes_ok:true, deployment_required:false, deploy_status:'not_applicable' };
   const evidence = deriveTrustedCompletionEvidence({ ...base, sourceWorkflow:'Production Release Readback', conclusion:'success', readback, capabilityHandoff:true, learningWriteback:true });
-  assert.deepEqual(evidence.map(item => item.type), ['FUNCTIONAL_READBACK','CAPABILITY_HANDOFF','LEARNING_WRITEBACK']);
+  assert.deepEqual(evidence.map(item => item.type), ['PROTECTED_DELIVERY','PRODUCTION_IDENTITY','FUNCTIONAL_READBACK','CAPABILITY_HANDOFF','LEARNING_WRITEBACK']);
+  assert.ok(evidence.filter(item => ['PROTECTED_DELIVERY','PRODUCTION_IDENTITY'].includes(item.type)).every(item => item.producer === 'PRODUCTION_READBACK' && item.exactProduction === true));
 });
 
 test('failed or mismatched source evidence mints nothing and fails closed', () => {
