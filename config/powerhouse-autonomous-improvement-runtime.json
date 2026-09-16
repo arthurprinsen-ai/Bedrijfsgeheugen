@@ -7,7 +7,7 @@
     "runtime_state": "existing Supabase/Brain evidence and outcome authorities",
     "source_release": "GitHub + BRAIN-DELIVERY-v2",
     "human_projection": "Notion existing Powerhouse pages",
-    "scheduler": "reuse Business OS Intelligence workflow and existing Supabase/Brain scheduled writers"
+    "scheduler": "existing Supabase pg_cron production authority; Business OS Intelligence remains contract/probe authority"
   },
   "lifecycle": ["OBSERVE","FITNESS","CAPABILITY_MAP","BACKLOG_INTAKE","CANDIDATE","PORTFOLIO","REPLAY","EXPERIMENT","CHAOS","DECIDE","PROMOTE_OR_ROLLBACK","SIMPLIFY","VALUE_ATTRIBUTE","WRITEBACK","REVALIDATE"],
   "capabilities": {
@@ -53,15 +53,20 @@
     "business_value_requires_observed_outcome": true
   },
   "scheduler": {
-    "workflow": ".github/workflows/business-os-intelligence.yml",
-    "cadence": "daily",
-    "read_only_without_writer_credentials": true,
-    "max_runtime_minutes": 5,
+    "production_authority": "Supabase pg_cron",
+    "production_job": "powerhouse-autonomous-improvement-cycle-v1",
+    "production_function": "public.powerhouse_autonomous_improvement_cycle_v1(now())",
+    "cadence": "hourly at minute 42",
+    "probe_workflow": ".github/workflows/business-os-intelligence.yml",
+    "probe_read_only": true,
+    "max_probe_runtime_minutes": 5,
     "idempotent_run_identity": true
   },
   "writeback": {
     "new_store": false,
-    "route": "existing Brain/Supabase canonical writer path only",
+    "route": "public.brain_append_record -> existing public.brain_records",
+    "tenant": "canonical",
+    "record_kind": "autonomous_improvement_cycle",
     "dedupe_required": true,
     "trace_required": true,
     "freshness_confidence_required_when_material": true
