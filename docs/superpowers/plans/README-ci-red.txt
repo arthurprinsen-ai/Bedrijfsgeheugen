@@ -1,0 +1,1 @@
+RED phase intentionally adds failing Continuous Improvement Engine contract tests before implementation. This marker can be removed before merge.
