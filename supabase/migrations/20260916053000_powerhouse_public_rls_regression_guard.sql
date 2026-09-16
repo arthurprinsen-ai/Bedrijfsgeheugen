@@ -14,7 +14,6 @@ create table if not exists public.powerhouse_security_guard_events (
 alter table public.powerhouse_security_guard_events enable row level security;
 revoke all on table public.powerhouse_security_guard_events from anon, authenticated;
 
--- POWERHOUSE_SECURITY_EXCEPTION: INTERNAL_REVOKED
 create or replace function public.powerhouse_public_rls_on_create()
 returns event_trigger
 language plpgsql
@@ -42,7 +41,7 @@ begin
 end;
 $function$;
 
-revoke all on function public.powerhouse_public_rls_on_create() from public, anon, authenticated;
+revoke execute on function public.powerhouse_public_rls_on_create() from public, anon, authenticated;
 
 drop event trigger if exists powerhouse_public_rls_default_deny;
 create event trigger powerhouse_public_rls_default_deny
@@ -50,7 +49,6 @@ create event trigger powerhouse_public_rls_default_deny
   when tag in ('CREATE TABLE', 'CREATE TABLE AS')
   execute function public.powerhouse_public_rls_on_create();
 
--- POWERHOUSE_SECURITY_EXCEPTION: INTERNAL_REVOKED
 create or replace function public.powerhouse_public_rls_guard_scan()
 returns integer
 language plpgsql
@@ -83,7 +81,7 @@ begin
 end;
 $function$;
 
-revoke all on function public.powerhouse_public_rls_guard_scan() from public, anon, authenticated;
+revoke execute on function public.powerhouse_public_rls_guard_scan() from public, anon, authenticated;
 
 -- Replace any previous job deterministically before scheduling the reconciler.
 do $do$
