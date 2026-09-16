@@ -51,7 +51,9 @@ test('NBA v5 preserves v4 decision output and keeps insufficient evidence neutra
   assert.match(text, /business_efficiency_evidence_status/i);
   assert.match(text, /insufficient_comparable_outcomes/i);
   assert.match(text, /cost_resource_efficiency_evidence/i);
-  assert.match(text, /else\s+null/i);
+  assert.match(text, /when\s+coalesce\(e\.comparable_outcomes,\s*0\)\s*<\s*c\.minimum_comparable_outcomes\s+then\s+null/i);
+  assert.match(text, /when\s+coalesce\(e\.measured_resource_actions,\s*0\)\s*<\s*c\.minimum_comparable_outcomes\s+then\s+null/i);
+  assert.match(text, /else\s+nba\.cost_efficiency_evidence/i);
 });
 
 test('canonical sales outcome writer never fabricates zero revenue and gates no-response evidence', async () => {
