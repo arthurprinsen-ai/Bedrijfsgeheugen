@@ -12,6 +12,8 @@
     "SMALLEST-SAFE-CHANGE",
     "EXACT-CANDIDATE-IDENTITY",
     "STATE-OF-THE-ART-EVIDENCE-BASED-ADOPTION",
+    "BOUNDED-AUTONOMY",
+    "MEASURED-SELF-IMPROVEMENT",
     "GREEN-MEANS-OUTCOME-VERIFIED",
     "RED-MEANS-KEEP-WORKING"
   ],
@@ -63,6 +65,58 @@
     "currency_signals": ["deprecation","eol","cve","unsupported_api","stale_sdk","superseded_platform_feature","compatibility_drift","material_new_capability"],
     "forbidden": ["blind_latest_version_chasing","benchmark_only_adoption","replacement_without_measurable_benefit","parallel_truth_or_agent_memory","weakened_security_or_gates_for_frontier_candidate","latest_claim_without_current_check_when_currency_matters","unowned_unversioned_no_rollback_experiment"]
   },
+  "operating_controls": {
+    "fingerprint": "powerhouse-autonomy-controls-v1",
+    "applies_to": ["all_existing_chats","all_future_chats","all_existing_agents","all_future_agents","all_material_workflows"],
+    "controls": {
+      "autonomy_budget": {
+        "fail_closed": true,
+        "required_dimensions": ["risk_class","money_or_paid_capacity","tokens_or_compute","external_calls","persistent_writes","outbound_actions","blast_radius","time_or_retry_budget"],
+        "rule": "Every autonomous material action resolves an explicit budget from canonical policy; a missing dimension is not interpreted as unlimited.",
+        "exhaustion_behavior": "stop_or_degrade_to_safe_read_only_and_open_one_deduplicated_obligation",
+        "stricter_existing_limits_win": true
+      },
+      "ai_eval_regression": {
+        "require_baseline_comparison": true,
+        "required_evidence": ["versioned_eval_set","representative_cases","known_failures_and_edge_cases","baseline_result","candidate_result","non_regression_thresholds","latency_when_material","cost_when_material","truth_grounding_safety_failures","fallback"],
+        "promotion_rule": "No model, prompt, retrieval, ranking or agent-policy change becomes production authority without task-relevant regression evidence.",
+        "golden_set_must_include_real_powerhouse_failures": true
+      },
+      "agent_security_control_plane": {
+        "least_privilege": true,
+        "required_dimensions": ["agent_identity","tenant_scope","tool_scope","data_scope","action_scope","credential_authority","approval_boundary","audit_event","revocation_path"],
+        "deny_implicit_permission_inheritance": true,
+        "high_impact_actions_require_explicit_capability": true,
+        "all_material_side_effects_traceable": true
+      },
+      "knowledge_decay": {
+        "require_revalidate_after": true,
+        "required_metadata_when_material": ["observed_at","source_or_provenance","source_published_at_when_known","freshness_class","confidence","revalidate_after","owner_or_revalidation_route"],
+        "stale_behavior": "do_not_treat_stale_claim_as_current_authority_without_revalidation",
+        "classes": ["REALTIME","FAST_CHANGING","PERIODIC","SLOW_MOVING","IMMUTABLE_HISTORICAL"],
+        "superseded_learning_remains_audit_visible": true
+      },
+      "service_level_objectives": {
+        "required_fields": ["sli","target","measurement_window","owner","error_budget","breach_action","evidence_source"],
+        "minimum_domains": ["outcome_obligation_completion","agent_execution_success","recovery_time","stale_knowledge_rate","eval_gated_change_rate","tool_or_provider_error_rate","grounding_failure_rate","cost_or_capacity","critical_runtime_availability_or_latency"],
+        "error_budget_policy": "fail-closed-on-exhaustion",
+        "no_green_status_from_activity_only": true
+      },
+      "disaster_recovery_drills": {
+        "require_restore_proof": true,
+        "required_evidence": ["declared_rpo","declared_rto","last_known_good","restore_or_rebuild_procedure","restored_scope","integrity_checks","external_saas_state_inventory","unreconstructable_state_and_owner","drill_observed_at","next_drill_due"],
+        "source_control_reconstructability_required": true,
+        "backup_presence_alone_is_not_restore_proof": true
+      },
+      "powerhouse_autonomy_scorecard": {
+        "no_single_magic_score": true,
+        "dimensions": ["outcomes_verified_rate","autonomous_recovery_rate","evidence_backed_decision_rate","fresh_learning_rate","eval_gated_change_rate","mean_recovery_time","cost_per_realized_outcome","duplicate_work_rate","prevented_recurrence_rate"],
+        "each_dimension_requires": ["definition","numerator_or_measure","denominator_or_unit","window","source","freshness","owner"],
+        "unknown_is_not_zero": true,
+        "scorecard_is_observability_not_release_authority": true
+      }
+    }
+  },
   "engineering_rules": [
     "Prefer small coherent modules with explicit interfaces and ownership.",
     "Prefer reusable helpers and reusable workflows over copy-paste families.",
@@ -73,6 +127,10 @@
     "No new brain, registry, queue, calendar, analytics store or learning store when an existing canonical capability can be extended.",
     "Use current task-relevant external evidence when technology currency can materially change the answer or implementation.",
     "Adopt frontier technology only through a reversible, measurable experiment with rollback or fallback.",
+    "Every autonomous side effect is bounded by explicit risk/cost/capacity/blast-radius policy.",
+    "Knowledge that can age must carry freshness and revalidation semantics.",
+    "AI/model/prompt/retrieval/agent changes are regression-gated like code changes.",
+    "Recovery is proven by restore/rebuild evidence, not by backup existence alone.",
     "Documentation and learning writeback are release outputs, not optional follow-up."
   ],
   "terminal_statuses": ["LIVE & BEWEZEN","DEELS LIVE","GEBLOKKEERD","NIET GEDAAN"],
