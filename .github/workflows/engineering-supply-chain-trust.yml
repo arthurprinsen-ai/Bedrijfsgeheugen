@@ -58,14 +58,14 @@ jobs:
         run: |
           cd .sbom
           npm sbom --package-lock-only --sbom-format spdx > ../sbom.spdx.json
-      - name: Build provenance subject
-        run: tar --exclude=.git --exclude=.sbom --exclude=powerhouse-source.tgz -czf powerhouse-source.tgz .
+      - name: Build provenance subject outside source tree
+        run: tar --exclude=.git --exclude=.sbom -czf "$RUNNER_TEMP/powerhouse-source.tgz" .
       - uses: actions/attest-build-provenance@v2
         with:
-          subject-path: powerhouse-source.tgz
+          subject-path: ${{ runner.temp }}/powerhouse-source.tgz
       - uses: actions/upload-artifact@v4
         with:
           name: engineering-trust-${{ github.sha }}
           path: |
-            powerhouse-source.tgz
+            ${{ runner.temp }}/powerhouse-source.tgz
             sbom.spdx.json
