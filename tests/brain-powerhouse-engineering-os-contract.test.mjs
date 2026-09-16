@@ -209,3 +209,36 @@ test('LIVE & BEWEZEN is the only successful terminal status and hard blocks carr
   assert.equal(c.status_policy.fix_agent_handoff.carry_forward_context, true);
   assert.equal(c.status_policy.auto_resume_when_boundary_clears, true);
 });
+
+test('Completion Supervisor is an active fail-closed Engineering OS authority extension', async () => {
+  const c = await loadEngineeringContract();
+  const supervisor = c.completion_supervisor;
+  assert.equal(supervisor.fingerprint, 'powerhouse-completion-supervisor-v1');
+  assert.equal(supervisor.status, 'active');
+  assert.deepEqual(supervisor.success_terminal_states, ['LIVE_VERIFIED']);
+  assert.equal(supervisor.waiting_state, 'WAIT_EXTERNAL');
+  assert.equal(supervisor.hard_boundary_can_complete, false);
+  assert.equal(supervisor.local_green_is_completion, false);
+  assert.equal(supervisor.auto_resume_same_work_item, true);
+  assert.equal(supervisor.idempotent_backfill, true);
+  assert.deepEqual(supervisor.canonical_authorities, ['Agent Fabric','Supabase Outcome Obligations','BRAIN-DELIVERY-v2','BG169','BG167','BG168/BG166']);
+  for (const required of [
+    'platform/agents/completion-supervisor.mjs',
+    'tools/outcome-obligation-runtime.mjs',
+    'tools/completion-supervisor-backfill.mjs',
+    '.github/workflows/outcome-obligation-sweep.yml',
+    'tests/completion-supervisor.test.mjs',
+    'tests/completion-supervisor-backfill.test.mjs',
+  ]) assert.ok(supervisor.required_paths.includes(required), required);
+});
+
+test('Required test and shared preflight execute and discover Completion Supervisor', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /tests\/completion-supervisor\.test\.mjs/);
+  assert.match(workflow, /tests\/completion-supervisor-backfill\.test\.mjs/);
+  const packet = JSON.parse(execFileSync(process.execPath, ['scripts/brain/chat-learning-preflight.mjs'], { encoding:'utf8' }));
+  assert.ok(packet.fingerprints.includes('powerhouse-completion-supervisor-v1'));
+  assert.ok(packet.sources.some(source => source.path === 'config/powerhouse-engineering-os.json'));
+  const learning = JSON.parse(await readFile(new URL('../brain/learning/completion-supervisor-v1-2026-09-16.json', import.meta.url), 'utf8'));
+  assert.equal(learning.fingerprint, 'powerhouse-completion-supervisor-v1');
+});
