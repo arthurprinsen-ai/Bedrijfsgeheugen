@@ -38,7 +38,7 @@ jobs:
       - name: Install Chromium verifier
         run: |
           PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
-      - name: Resolve exact readback target
+      - name: Resolve exact readback alias
         env:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -46,28 +46,36 @@ jobs:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
-            echo "PORTAL_READBACK_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
+            echo "PORTAL_ALIAS_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${PR_HEAD_SHA}" >> "$GITHUB_ENV"
             echo "PORTAL_BASE_SHA=${PR_BASE_SHA}" >> "$GITHUB_ENV"
           else
-            echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
+            echo "PORTAL_ALIAS_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${GITHUB_SHA}" >> "$GITHUB_ENV"
           fi
-      - name: Wait for exact deployed SHA
+      - name: Wait for exact deployed SHA and pin immutable deploy
         run: |
           set -euo pipefail
           for attempt in $(seq 1 90); do
-            payload="$(curl --fail --silent --show-error \
-              -H 'Cache-Control: no-cache' \
-              "${PORTAL_READBACK_URL}/deploy-identity.json?sha=${PORTAL_EXPECTED_SHA}&attempt=${attempt}" || true)"
+            payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
+              "${PORTAL_ALIAS_URL}/release.json?sha=${PORTAL_EXPECTED_SHA}&attempt=${attempt}" || true)"
             deployed_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$payload")"
-            if [ "$deployed_sha" = "$PORTAL_EXPECTED_SHA" ]; then
-              echo "Exact deploy ready: $deployed_sha"
-              break
+            deploy_id="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$payload")"
+            if [ "$deployed_sha" = "$PORTAL_EXPECTED_SHA" ] && [ -n "$deploy_id" ]; then
+              immutable="https://${deploy_id}--bedrijfsgeheugen.netlify.app"
+              immutable_payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
+                "${immutable}/release.json?sha=${PORTAL_EXPECTED_SHA}" || true)"
+              immutable_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$immutable_payload")"
+              if [ "$immutable_sha" = "$PORTAL_EXPECTED_SHA" ]; then
+                echo "PORTAL_READBACK_URL=${immutable}" >> "$GITHUB_ENV"
+                echo "NETLIFY_DEPLOY_ID=${deploy_id}" >> "$GITHUB_ENV"
+                echo "Exact immutable deploy ready: ${deploy_id} / ${deployed_sha}"
+                break
+              fi
             fi
-            echo "Waiting for exact deploy ${PORTAL_EXPECTED_SHA}; observed ${deployed_sha:-none} (attempt ${attempt}/90)"
+            echo "Waiting for exact deploy ${PORTAL_EXPECTED_SHA}; observed ${deployed_sha:-none}, deploy ${deploy_id:-none} (attempt ${attempt}/90)"
             if [ "$attempt" -eq 90 ]; then
-              echo "::error::Exact Netlify deploy SHA did not become ready. Expected ${PORTAL_EXPECTED_SHA}, observed ${deployed_sha:-none}."
+              echo "::error::Exact immutable Netlify deploy did not become ready. Expected ${PORTAL_EXPECTED_SHA}, observed ${deployed_sha:-none}."
               exit 1
             fi
             sleep 4
@@ -90,11 +98,19 @@ jobs:
           set -euo pipefail
           for attempt in $(seq 1 45); do
             payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
-              "https://www.bedrijfsgeheugen.nl/deploy-identity.json?sha=${PORTAL_BASE_SHA}&attempt=${attempt}" || true)"
+              "https://www.bedrijfsgeheugen.nl/release.json?sha=${PORTAL_BASE_SHA}&attempt=${attempt}" || true)"
             deployed_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$payload")"
-            if [ "$deployed_sha" = "$PORTAL_BASE_SHA" ]; then
-              echo "Approved base production ready: $deployed_sha"
-              exit 0
+            deploy_id="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$payload")"
+            if [ "$deployed_sha" = "$PORTAL_BASE_SHA" ] && [ -n "$deploy_id" ]; then
+              base_immutable="https://${deploy_id}--bedrijfsgeheugen.netlify.app"
+              base_payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
+                "${base_immutable}/release.json?sha=${PORTAL_BASE_SHA}" || true)"
+              base_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$base_payload")"
+              if [ "$base_sha" = "$PORTAL_BASE_SHA" ]; then
+                echo "PORTAL_BASE_URL=${base_immutable}" >> "$GITHUB_ENV"
+                echo "Approved base immutable deploy ready: ${deploy_id} / ${deployed_sha}"
+                exit 0
+              fi
             fi
             echo "Waiting for PR base ${PORTAL_BASE_SHA}; observed ${deployed_sha:-none} (attempt ${attempt}/45)"
             sleep 4
@@ -104,7 +120,7 @@ jobs:
       - name: Capture approved base visual baseline
         if: github.event_name == 'pull_request'
         env:
-          PRODUCTION_URL: https://www.bedrijfsgeheugen.nl
+          PRODUCTION_URL: ${{ env.PORTAL_BASE_URL }}
           VISUAL_CAPTURE_PATH: artifacts/visual-current-main/portal-v2-canvassen.png
         run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
       - name: Visual regression against approved PR baseline
