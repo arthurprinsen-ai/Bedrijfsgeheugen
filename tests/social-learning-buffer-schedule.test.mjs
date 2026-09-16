@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import bufferCollect, { config, runBufferCollection } from '../netlify/functions/buffer-social-collect.mjs';
 import { localDayWindow, providerReconciliationState } from '../netlify/functions/social-publication-delivery.mjs';
 import { hasProviderCoverage, selectDeliverySource, deliveryDecision } from '../platform/social-delivery-guarantee.mjs';
@@ -87,7 +88,46 @@ test('Instagram requires exact verified Mira daily-life final asset evidence', (
   assert.equal(source.kind,'artifact'); assert.deepEqual(source.media,[{type:'image',url:'https://cdn.example/final.jpg',alt:null}]);
 });
 
-test('existing provider coverage dedupes before any create action', () => {
+test('existing company provider coverage dedupes before any create action', () => {
   const decision=deliveryDecision({channel:'linkedin_company',posts:[{id:'post-1',status:'scheduled'}],idea:{id:'idea-company',content:{text:'company copy'}}});
   assert.equal(decision.action,'NONE'); assert.equal(decision.reason,'PROVIDER_COVERED');
+});
+
+test('personal provider coverage only satisfies delivery when provider text equals the PASS artifact', () => {
+  const covered=deliveryDecision({channel:'linkedin_personal',posts:[{id:'post-1',status:'sent',text:personalArtifact.body}],artifact:personalArtifact});
+  assert.equal(covered.action,'NONE');
+  assert.equal(covered.reason,'PROVIDER_COVERED_VERIFIED');
+  const mismatch=deliveryDecision({channel:'linkedin_personal',posts:[{id:'post-2',status:'sent',text:'Different personal post'}],artifact:personalArtifact});
+  assert.equal(mismatch.action,'BLOCK');
+  assert.equal(mismatch.reason,'PERSONAL_PROVIDER_ARTIFACT_MISMATCH');
+});
+
+test('Instagram provider coverage fails closed unless canonical readback is bound to the guarded artifact', () => {
+  const posts=[{id:'ig-1',status:'sent',text:instagramArtifact.body}];
+  const invalid=structuredClone(instagramArtifact);
+  invalid.delivery_readback={status:'BLOCKED',evidence:{delivery_guard:'social-delivery-guarantee-v1',provider_post_id:'ig-1',identity_gate_result:'FAIL',source_kind:null}};
+  const blocked=deliveryDecision({channel:'instagram',posts,artifact:invalid});
+  assert.equal(blocked.action,'BLOCK');
+  assert.equal(blocked.reason,'INSTAGRAM_PROVIDER_IDENTITY_UNVERIFIED');
+  const verified=structuredClone(instagramArtifact);
+  verified.delivery_readback={status:'LIVE_PROVEN',evidence:{delivery_guard:'social-delivery-guarantee-v1',provider_post_id:'ig-1',source_kind:'artifact'}};
+  const covered=deliveryDecision({channel:'instagram',posts,artifact:verified});
+  assert.equal(covered.action,'NONE');
+  assert.equal(covered.reason,'PROVIDER_COVERED_VERIFIED');
+});
+
+test('identity-sensitive social_posts reconciliation is transport-only and cannot mint LIVE_PROVEN', async () => {
+  const sql = await readFile(new URL('../supabase/migrations/20260916124000_social_delivery_identity_readback_guard_v1.sql', import.meta.url), 'utf8');
+  assert.match(sql, /reconcile_social_post_publication_obligation/i);
+  assert.match(sql, /transport_only/i);
+  assert.match(sql, /identity_guard_required/i);
+  const guardStart = sql.indexOf("if v_channel in ('linkedin_personal','instagram') then");
+  const guardReturn = sql.indexOf('return new;', guardStart);
+  const genericLiveProof = sql.indexOf("'LIVE_PROVEN'", guardReturn);
+  assert.ok(guardStart >= 0, 'identity-sensitive guard must exist');
+  assert.ok(guardReturn > guardStart, 'identity-sensitive guard must terminate before generic reconciliation');
+  assert.ok(genericLiveProof > guardReturn, 'generic LIVE_PROVEN reconciliation may only occur after sensitive channels returned');
+  const guardBlock = sql.slice(guardStart, guardReturn);
+  assert.doesNotMatch(guardBlock, /set\s+status\s*=/i);
+  assert.match(sql, /revoke\s+execute\s+on\s+function\s+public\.reconcile_social_post_publication_obligation\(\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i);
 });

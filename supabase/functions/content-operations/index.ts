@@ -84,7 +84,20 @@ async function deliveryContext(body: any) {
   const channelFilter = 'in.(linkedin_personal,linkedin_company,instagram)';
   const obligations = await rest(`content_publication_obligations?tenant_id=eq.${encodeURIComponent(tenant)}&publication_date=eq.${date}&channel=${channelFilter}&select=*&order=channel.asc`);
   const artifacts = await rest(`powerhouse_content_artifacts?run_date=eq.${date}&channel=${channelFilter}&select=*&order=channel.asc`);
-  return { ok: true, date, tenant, obligations: obligations || [], artifacts: artifacts || [] };
+  const obligationByChannel = new Map((obligations || []).map((item: any) => [item.channel, item]));
+  const enrichedArtifacts = (artifacts || []).map((artifact: any) => {
+    const obligation: any = obligationByChannel.get(artifact.channel) || null;
+    return {
+      ...artifact,
+      delivery_readback: obligation ? {
+        status: obligation.status || null,
+        external_id: obligation.external_id || null,
+        evidence: obligation.evidence || {},
+        updated_at: obligation.updated_at || null,
+      } : null,
+    };
+  });
+  return { ok: true, date, tenant, obligations: obligations || [], artifacts: enrichedArtifacts };
 }
 
 async function recordDeliveryState(body: any) {
