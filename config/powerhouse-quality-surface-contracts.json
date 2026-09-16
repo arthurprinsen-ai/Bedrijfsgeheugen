@@ -14,6 +14,13 @@
       "authority": "netlify/functions/linkedin-revenue-cockpit.mjs",
       "evidence_contract": "contracts/openapi/powerhouse-public-api.yaml",
       "required": true
+    },
+    {
+      "id": "function:content-operations",
+      "type": "function",
+      "authority": "supabase/functions/content-operations/index.ts",
+      "evidence_contract": "tests/social-learning-buffer-schedule.test.mjs",
+      "required": true
     }
   ]
 }
