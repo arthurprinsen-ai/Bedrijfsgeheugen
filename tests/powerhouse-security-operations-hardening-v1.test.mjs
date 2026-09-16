@@ -16,9 +16,9 @@ test('RLS classifier distinguishes intentional deny-all from policy-required', (
   assert.match(migration, /has_table_privilege\('authenticated'/);
 });
 
-test('RLS audit remains fail-closed and service-role only', () => {
+test('RLS audit remains fail-closed, invoker-rights and service-role only', () => {
   assert.match(migration, /security_invoker\s*=\s*true/i);
-  assert.match(migration, /security definer/i);
+  assert.doesNotMatch(migration, /security\s+definer/i);
   assert.match(migration, /set search_path = pg_catalog/i);
   assert.match(migration, /revoke all on public\.powerhouse_public_rls_policy_classification_v1 from public, anon, authenticated/i);
   assert.match(migration, /grant select on public\.powerhouse_public_rls_policy_classification_v1 to service_role/i);
