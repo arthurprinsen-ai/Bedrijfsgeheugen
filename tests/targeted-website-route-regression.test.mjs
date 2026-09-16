@@ -51,6 +51,8 @@ test('website preview selection probes every affected route before trusting Netl
   const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
   assert.match(workflow, /ROUTES_JSON: \$\{\{ needs\.classify\.outputs\.routes \}\}/);
   assert.match(workflow, /const routes=JSON\.parse\(process\.env\.ROUTES_JSON/);
-  assert.match(workflow, /preview route probe failed/i);
+  assert.match(workflow, /routes\.map\(route=>routeReady\(route\)\)/);
+  assert.match(workflow, /readiness\.every\(Boolean\)/);
+  assert.match(workflow, /AbortSignal\.timeout\(/);
   assert.match(workflow, /preview_mode=local-exact-candidate/);
 });
