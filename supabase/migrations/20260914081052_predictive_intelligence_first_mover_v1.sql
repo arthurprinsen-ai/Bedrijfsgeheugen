@@ -78,11 +78,26 @@ create table if not exists public.powerhouse_forecast_calibration (
   evidence jsonb not null default '{}'::jsonb
 );
 
+alter table public.powerhouse_predictive_signals enable row level security;
+alter table public.powerhouse_forecasts enable row level security;
+alter table public.powerhouse_first_mover_claims enable row level security;
+alter table public.powerhouse_forecast_calibration enable row level security;
+
+revoke all on table public.powerhouse_predictive_signals from anon, authenticated;
+revoke all on table public.powerhouse_forecasts from anon, authenticated;
+revoke all on table public.powerhouse_first_mover_claims from anon, authenticated;
+revoke all on table public.powerhouse_forecast_calibration from anon, authenticated;
+grant all on table public.powerhouse_predictive_signals to service_role;
+grant all on table public.powerhouse_forecasts to service_role;
+grant all on table public.powerhouse_first_mover_claims to service_role;
+grant all on table public.powerhouse_forecast_calibration to service_role;
+
 create index if not exists powerhouse_predictive_signals_topic_idx on public.powerhouse_predictive_signals(topic_key,observed_at desc);
 create index if not exists powerhouse_forecasts_rank_idx on public.powerhouse_forecasts(status,first_mover_score desc,probability desc,confidence desc);
 create index if not exists powerhouse_first_mover_claims_forecast_idx on public.powerhouse_first_mover_claims(forecast_id,status);
 
-create or replace view public.powerhouse_first_mover_queue as
+create or replace view public.powerhouse_first_mover_queue
+with (security_invoker=true) as
 select f.forecast_id,f.forecast_key,f.scope,f.scope_key,f.topic_key,f.predicted_event,f.predicted_problem,f.predicted_question,
        f.predicted_search_intent,f.predicted_buying_trigger,f.probability,f.confidence,f.expected_lead_days,
        f.first_mover_score,f.strategic_fit,f.revenue_potential,f.horizon_start,f.horizon_end,
@@ -92,10 +107,14 @@ where f.status='active'
   and f.horizon_end >= current_date
 order by action_score desc, f.first_mover_score desc;
 
+revoke all on table public.powerhouse_first_mover_queue from anon, authenticated;
+grant select on table public.powerhouse_first_mover_queue to service_role;
+
 create or replace function public.powerhouse_forecast_priority(p_forecast_id uuid)
 returns numeric
 language sql
 stable
+set search_path = public, pg_catalog
 as $$
   select round((first_mover_score * confidence * probability * greatest(strategic_fit,0.01))::numeric,2)
   from public.powerhouse_forecasts where forecast_id=p_forecast_id;
