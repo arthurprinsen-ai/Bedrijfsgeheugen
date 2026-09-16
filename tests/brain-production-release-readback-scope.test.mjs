@@ -148,3 +148,11 @@ test('public connector readiness is excluded from the authenticated connector wi
   assert.match(readiness, /path:\s*['"]\/api\/connectors\/readiness['"]/);
   assert.doesNotMatch(portalConnectors, /excludedPath:\s*['"]\/api\/connectors\/\*['"]/);
 });
+
+test('successful production readback must publish immutable lineage evidence and fail when the artifact is absent', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(workflow, /mkdir -p \.artifacts/);
+  assert.match(workflow, /production-release-readback\.json/);
+  assert.match(workflow, /--output \.artifacts\/production-release-readback\.json/);
+  assert.match(workflow, /if-no-files-found:\s*error/);
+});
