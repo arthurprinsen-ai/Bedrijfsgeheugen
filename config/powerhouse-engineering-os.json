@@ -9,7 +9,7 @@
   ],
   "golden_path": ["CONTEXT","SCOPE","PLAN","CHANGE","TEST","PREVIEW","VERIFY","PROMOTE","PROD_READBACK","WRITEBACK","LEARN","IMPROVE"],
   "canonical_authorities": {
-    "agent_contract":"AGENTS.md","development_os":"docs/development-operating-system.md","continuous_improvement_doc":"docs/superpowers/specs/2026-09-16-continuous-improvement-engine-v1-design.md","status_recovery_doc":"docs/development-live-until-proven-status-contract.md","delivery":"config/brain-delivery-system.json","outcomes":"config/outcome-obligations.json","learning_preflight":"config/brain-chat-learning-contract.json","development_ledger":"docs/development-ledger.md","required_ci":".github/workflows/required-test.yml"
+    "agent_contract":"AGENTS.md","development_os":"docs/development-operating-system.md","continuous_improvement_doc":"docs/superpowers/specs/2026-09-16-continuous-improvement-engine-v1-design.md","status_recovery_doc":"docs/development-live-until-proven-status-contract.md","completion_supervisor_spec":"docs/superpowers/specs/2026-09-16-powerhouse-completion-supervisor-v1-design.md","delivery":"config/brain-delivery-system.json","outcomes":"config/outcome-obligations.json","learning_preflight":"config/brain-chat-learning-contract.json","development_ledger":"docs/development-ledger.md","required_ci":".github/workflows/required-test.yml"
   },
   "platform_roles": {
     "github":"source, review, protected merge and exact candidate identity","netlify":"web preview, immutable deploy evidence and production web runtime","supabase":"database/schema/functions/runtime state through source-controlled migrations and configuration","notion":"human-readable knowledge, audit and system-map projection; never deployed identity authority","buffer":"social provider execution/readback evidence; never engineering source authority"
@@ -65,6 +65,20 @@
     "fix_agent_handoff":{"required":true,"target_status":"LIVE & BEWEZEN","carry_forward_context":true,"required_context":["problem_context","current_state","evidence","failed_attempts","known_root_cause","open_obligations","affected_components","hard_boundary_if_any","next_safe_actions"]},
     "auto_resume_when_boundary_clears":true,
     "rule":"Never stop at DEELS LIVE when further safe technical work is possible. Continue through diagnose, fix, test, protected delivery, production readback and writeback. GEBLOKKEERD is valid only at a proven hard boundary and must include an immediately usable recovery packet and fix-agent/chat handoff."
+  },
+  "completion_supervisor": {
+    "fingerprint":"powerhouse-completion-supervisor-v1",
+    "status":"active",
+    "success_terminal_states":["LIVE_VERIFIED"],
+    "waiting_state":"WAIT_EXTERNAL",
+    "hard_boundary_can_complete":false,
+    "local_green_is_completion":false,
+    "auto_resume_same_work_item":true,
+    "idempotent_backfill":true,
+    "learning_source":"brain/learning/completion-supervisor-v1-2026-09-16.json",
+    "canonical_authorities":["Agent Fabric","Supabase Outcome Obligations","BRAIN-DELIVERY-v2","BG169","BG167","BG168/BG166"],
+    "required_evidence":["CANDIDATE_TESTS","PROTECTED_DELIVERY","PRODUCTION_IDENTITY","FUNCTIONAL_READBACK","OBLIGATIONS_COMPLETE","CAPABILITY_HANDOFF","LEARNING_WRITEBACK"],
+    "required_paths":["platform/agents/completion-supervisor.mjs","tools/outcome-obligation-runtime.mjs","tools/completion-supervisor-backfill.mjs",".github/workflows/outcome-obligation-sweep.yml","tests/completion-supervisor.test.mjs","tests/completion-supervisor-backfill.test.mjs"]
   },
   "hard_boundaries":["secrets_credentials_permissions","security_control_weakening","destructive_irreversible_data","paid_resource_increase","legal_financial_commitment"],
   "bootstrap":{"command":"node scripts/brain/powerhouse-engineering-os.mjs --check","packet_command":"node scripts/brain/powerhouse-engineering-os.mjs --packet","required_test":"tests/brain-powerhouse-engineering-os-contract.test.mjs"}

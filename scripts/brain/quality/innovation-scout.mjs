@@ -45,5 +45,23 @@ const payload = {
   unhealthy: results.filter(x => !x.ok).length
 };
 fs.writeFileSync(outPath, `${JSON.stringify(payload, null, 2)}\n`);
-process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+
+// The existing scheduled Quality Intelligence job remains the sole scheduler.
+// These imports create projections only; they do not create a Brain, queue or authority.
+await import('../continuous-improvement/capability-inventory.mjs');
+await import('../continuous-improvement/technology-discovery.mjs');
+
+const inventoryPath = process.env.AIR_CAPABILITY_INVENTORY_OUTPUT || 'artifacts/quality/autonomous-improvement-capability-inventory.json';
+const discoveryPath = process.env.AIR_TECH_DISCOVERY_OUTPUT || 'artifacts/quality/autonomous-improvement-technology-candidates.json';
+const enriched = {
+  ...payload,
+  autonomous_improvement: {
+    inventory: JSON.parse(fs.readFileSync(inventoryPath, 'utf8')),
+    technology_discovery: JSON.parse(fs.readFileSync(discoveryPath, 'utf8')),
+    new_persistent_authority: false,
+    existing_scheduler_reused: true
+  }
+};
+fs.writeFileSync(outPath, `${JSON.stringify(enriched, null, 2)}\n`);
+process.stdout.write(`${JSON.stringify({ fingerprint: enriched.fingerprint, healthy: enriched.healthy, unhealthy: enriched.unhealthy, inventory_capabilities: enriched.autonomous_improvement.inventory.capabilities.length, relevant_technology_candidates: enriched.autonomous_improvement.technology_discovery.candidates.length }, null, 2)}\n`);
 if (results.length === 0) process.exitCode = 1;
