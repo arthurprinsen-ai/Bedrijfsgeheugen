@@ -9,6 +9,14 @@ on:
       - 'platform/api/brain-gateway.mjs'
       - 'platform/api/agent-fabric-gateway.mjs'
       - 'netlify/functions/**'
+      - 'scripts/brain/continuous-improvement/**'
+      - 'config/powerhouse-autonomous-improvement-runtime.json'
+      - 'config/powerhouse-autonomous-backlog.json'
+      - 'supabase/migrations/*autonomous_improvement_production_cycle_v1.sql'
+      - 'tests/brain-autonomous-improvement-runtime.test.mjs'
+      - 'tests/brain-autonomous-improvement-production-cycle.test.mjs'
+      - 'tests/brain-autonomous-backlog-intake.test.mjs'
+      - 'tests/brain-github-backlog-source.test.mjs'
       - 'tests/intelligence-agent-runtime.test.mjs'
       - 'tests/brain-acceptance.test.mjs'
       - 'tests/brain-api-gateway.test.mjs'
@@ -17,10 +25,13 @@ on:
       - 'tests/agent-fabric.test.mjs'
       - 'tests/agent-fabric-gateway.test.mjs'
       - '.github/workflows/business-os-intelligence.yml'
+  schedule:
+    - cron: '17 3 * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   intelligence:
@@ -31,6 +42,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Autonomous Improvement Runtime read-only cycle
+        run: node scripts/brain/continuous-improvement/run-autonomous-improvement.mjs
+      - name: Autonomous Improvement Runtime contracts
+        run: node --test tests/brain-autonomous-improvement-runtime.test.mjs tests/brain-autonomous-improvement-production-cycle.test.mjs tests/brain-autonomous-backlog-intake.test.mjs tests/brain-github-backlog-source.test.mjs
       - name: Shared Agent Fabric contracts
         run: node --test tests/agent-fabric.test.mjs
       - name: Agent Fabric API boundary

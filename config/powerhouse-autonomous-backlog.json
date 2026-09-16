@@ -1,0 +1,153 @@
+{
+  "fingerprint": "powerhouse-autonomous-backlog-v1",
+  "authority": "powerhouse-continuous-improvement-engine-v1",
+  "generated_from": "2026-09-16 canonical Powerhouse open-state review",
+  "active_candidates": [
+    {
+      "id": "1774",
+      "kind": "pull_request",
+      "component": "engineering-os-learning",
+      "problemClass": "closed-loop-runtime",
+      "changeClass": "reconciliation",
+      "scope": "global",
+      "evidenceCluster": ["scorecard", "flaky-test-intelligence", "dependency-graph", "recovery-proof", "scaffolding", "meta-learning"]
+    },
+    {
+      "id": "1773",
+      "kind": "pull_request",
+      "component": "predictive-production-lineage",
+      "problemClass": "source-runtime-parity",
+      "changeClass": "reconciliation",
+      "scope": "production"
+    },
+    {
+      "id": "1772",
+      "kind": "pull_request",
+      "component": "quality-intelligence",
+      "problemClass": "autopilot-maturity",
+      "changeClass": "quality-maturity",
+      "scope": "global"
+    },
+    {
+      "id": "1771",
+      "kind": "pull_request",
+      "component": "website-accessibility",
+      "problemClass": "escaped-production-defect",
+      "changeClass": "defect-closure",
+      "scope": "production"
+    },
+    {
+      "id": "1755",
+      "kind": "pull_request",
+      "component": "quality-intelligence",
+      "problemClass": "mutation-coverage",
+      "changeClass": "test-effectiveness",
+      "scope": "global"
+    },
+    {
+      "id": "1582",
+      "kind": "pull_request",
+      "component": "commercial-closed-loop",
+      "problemClass": "commercial-activation",
+      "changeClass": "reconciliation",
+      "scope": "production"
+    }
+  ],
+  "items": [
+    {
+      "id": "open-loop-bg168-make",
+      "kind": "obligation",
+      "component": "brain-writeback",
+      "problemClass": "runtime-writeback-authority",
+      "changeClass": "authority-reconciliation",
+      "scope": "production",
+      "stale": true,
+      "retiredAuthority": "BG168/Make",
+      "replacementAuthority": "Supabase/Brain canonical writer"
+    },
+    {
+      "id": "1774",
+      "kind": "pull_request",
+      "component": "engineering-os-learning",
+      "problemClass": "closed-loop-runtime",
+      "changeClass": "reconciliation",
+      "scope": "global",
+      "criticalEvidence": { "security": false, "correctness": false },
+      "baselineComparable": true,
+      "nonCriticalEvidenceComplete": false
+    },
+    {
+      "id": "1773",
+      "kind": "pull_request",
+      "component": "predictive-production-lineage",
+      "problemClass": "source-runtime-parity",
+      "changeClass": "reconciliation",
+      "scope": "production",
+      "criticalEvidence": { "security": false, "correctness": false },
+      "baselineComparable": true,
+      "productionPromotion": true,
+      "nonCriticalEvidenceComplete": false
+    },
+    {
+      "id": "1772",
+      "kind": "pull_request",
+      "component": "quality-intelligence",
+      "problemClass": "autopilot-maturity",
+      "changeClass": "quality-maturity",
+      "scope": "global",
+      "criticalEvidence": { "security": false, "correctness": false },
+      "baselineComparable": true,
+      "nonCriticalEvidenceComplete": false
+    },
+    {
+      "id": "1771",
+      "kind": "pull_request",
+      "component": "website-accessibility",
+      "problemClass": "escaped-production-defect",
+      "changeClass": "defect-closure",
+      "scope": "production",
+      "criticalEvidence": { "security": false, "correctness": false },
+      "baselineComparable": true,
+      "productionPromotion": true,
+      "nonCriticalEvidenceComplete": false
+    },
+    {
+      "id": "1755",
+      "kind": "pull_request",
+      "component": "quality-intelligence",
+      "problemClass": "mutation-coverage",
+      "changeClass": "test-effectiveness",
+      "scope": "global",
+      "criticalEvidence": { "security": false, "correctness": false },
+      "baselineComparable": true,
+      "nonCriticalEvidenceComplete": false
+    },
+    {
+      "id": "1582",
+      "kind": "pull_request",
+      "component": "commercial-closed-loop",
+      "problemClass": "commercial-activation",
+      "changeClass": "reconciliation",
+      "scope": "production",
+      "criticalEvidence": { "security": false, "correctness": false },
+      "baselineComparable": false,
+      "businessImpactClaim": true,
+      "businessEvidence": false,
+      "productionPromotion": true,
+      "nonCriticalEvidenceComplete": false
+    },
+    { "id": "1587", "kind": "pull_request", "component": "historical-delta", "problemClass": "unclassified-unique-delta", "changeClass": "historical-reconciliation", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false },
+    { "id": "1589", "kind": "pull_request", "component": "historical-delta", "problemClass": "unclassified-unique-delta", "changeClass": "historical-reconciliation", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false },
+    { "id": "1609", "kind": "pull_request", "component": "historical-delta", "problemClass": "unclassified-unique-delta", "changeClass": "historical-reconciliation", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false },
+    { "id": "1616", "kind": "pull_request", "component": "historical-delta", "problemClass": "unclassified-unique-delta", "changeClass": "historical-reconciliation", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false },
+    { "id": "1650", "kind": "pull_request", "component": "historical-delta", "problemClass": "unclassified-unique-delta", "changeClass": "historical-reconciliation", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false },
+    { "id": "1674", "kind": "pull_request", "component": "historical-delta", "problemClass": "unclassified-unique-delta", "changeClass": "historical-reconciliation", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false },
+    { "id": "1468", "kind": "pull_request", "component": "historical-delta", "problemClass": "unclassified-unique-delta", "changeClass": "historical-reconciliation", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false },
+    { "id": "1358", "kind": "pull_request", "component": "historical-delta", "problemClass": "unclassified-unique-delta", "changeClass": "historical-reconciliation", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false },
+    { "id": "actions-checkout-4-to-7", "kind": "dependency", "component": "actions/checkout", "problemClass": "technology-currency", "changeClass": "major-upgrade", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false, "productionPromotion": true },
+    { "id": "github-codeql-action-3-to-4", "kind": "dependency", "component": "github/codeql-action", "problemClass": "technology-currency", "changeClass": "major-upgrade", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false, "productionPromotion": true },
+    { "id": "actions-github-script-8-to-9", "kind": "dependency", "component": "actions/github-script", "problemClass": "technology-currency", "changeClass": "major-upgrade", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false, "productionPromotion": true },
+    { "id": "supabase-setup-cli-1-to-3", "kind": "dependency", "component": "supabase/setup-cli", "problemClass": "technology-currency", "changeClass": "major-upgrade", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false, "productionPromotion": true },
+    { "id": "actions-setup-python-5-to-7", "kind": "dependency", "component": "actions/setup-python", "problemClass": "technology-currency", "changeClass": "major-upgrade", "criticalEvidence": { "security": false, "correctness": false }, "baselineComparable": false, "productionPromotion": true }
+  ]
+}
