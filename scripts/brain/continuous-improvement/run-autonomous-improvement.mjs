@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAutonomousImprovementPacket, FINGERPRINT } from './autonomous-runtime.mjs';
 import { consumeBacklog } from './backlog-intake.mjs';
+import { resolveRuntimeBacklog } from './github-backlog-source.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..', '..');
@@ -49,14 +50,14 @@ function buildReadOnlyProbe({ sourceSha, backlog }) {
   const packet = buildAutonomousImprovementPacket({
     sourceSha,
     observedAt: new Date().toISOString(),
-    evidence: ['runtime-contract-probe', backlog.fingerprint ?? 'backlog-unknown'],
+    evidence: ['runtime-contract-probe', backlog.fingerprint ?? 'backlog-unknown', backlog.source_state?.mode ?? 'unknown-source-mode'],
     fitness: {
       baseline: { reliability: 99.9, latency_ms: 100, cost_per_outcome: 10 },
       current: { reliability: 99.9, latency_ms: 100, cost_per_outcome: 10 },
       lowerIsBetter: ['latency_ms','cost_per_outcome']
     },
     capabilityGraph: {
-      capabilities: [{ id: 'continuous-improvement', provides: ['improve'], tests: ['brain-autonomous-improvement-runtime.test.mjs','brain-autonomous-backlog-intake.test.mjs'], status: 'active' }],
+      capabilities: [{ id: 'continuous-improvement', provides: ['improve'], tests: ['brain-autonomous-improvement-runtime.test.mjs','brain-autonomous-backlog-intake.test.mjs','brain-github-backlog-source.test.mjs'], status: 'active' }],
       requirements: ['improve']
     },
     experimentPortfolio: {
@@ -69,7 +70,7 @@ function buildReadOnlyProbe({ sourceSha, backlog }) {
     simplification: {},
     valueFeedback: { candidates: [] }
   });
-  return { ...packet, backlog: backlogResult };
+  return { ...packet, backlog: backlogResult, backlog_source: backlog.source_state ?? null };
 }
 
 async function main() {
@@ -80,13 +81,15 @@ async function main() {
     return;
   }
   const sourceSha = process.env.GITHUB_SHA || process.env.SOURCE_SHA || 'local';
-  const backlog = await loadBacklog();
+  const registry = await loadBacklog();
+  const backlog = await resolveRuntimeBacklog(registry);
   const packet = buildReadOnlyProbe({ sourceSha, backlog });
   process.stdout.write(`${JSON.stringify({
     status: 'AUTONOMOUS_IMPROVEMENT_READY',
     validation,
     packet,
     backlog_summary: {
+      source: packet.backlog_source,
       total: packet.backlog.results.length,
       counts: packet.backlog.counts,
       executable: packet.backlog.executable.map(item => item.id),
