@@ -21,10 +21,12 @@ Accelerate Bedrijfsgeheugen Powerhouse engineering without creating a second del
 
 ## Runtime components
 1. `scripts/brain/parallel-engineering-fabric.mjs`: pure orchestration primitives and CLI.
-2. `config/powerhouse-engineering-os.json.parallel_engineering`: canonical policy and guardrails.
+2. `config/powerhouse-parallel-engineering-fabric.json`: canonical additive policy that explicitly extends, but never replaces, `powerhouse-engineering-os-v1` and `BRAIN-DELIVERY-v2`.
 3. `tests/brain-parallel-engineering-fabric.test.mjs`: deterministic scheduling, affected testing, cache and fail-closed regression contract.
-4. Required CI wiring: the new contract test must execute inside `.github/workflows/required-test.yml`.
-5. Human documentation in `docs/development-operating-system.md` linking the new fabric to existing delivery authority.
+4. Required CI wiring: the new contract test executes inside `.github/workflows/required-test.yml`.
+5. Human operating documentation in `docs/changes/2026-09-16-powerhouse-parallel-engineering-fabric-v1.md` and reusable learning in `docs/learning/2026-09-16-parallel-engineering-fabric-v1.md`.
+
+The separate policy file is deliberate: the large Engineering OS contract stays stable and remains authority, while the fabric can evolve as a focused executable extension with its own fingerprint and regression contract. The policy records `creates_parallel_authority=false` and points back to the existing Engineering OS, BRAIN delivery and BG169 authorities.
 
 ## Work-package model
 Input fields: `id`, `component`, `paths`, optional `dependsOn`, `contracts`, `risk`, `baseSha`, `candidateSha`.
@@ -46,10 +48,10 @@ For currently independent ready packages, emit safe combination candidates in de
 Cycles, missing dependency targets, unknown material paths, absent exact identities, or ambiguous ownership produce fail-closed errors. No orchestration error weakens security, schema, tenant, production or rollback gates.
 
 ## Acceptance evidence
-- RED contract test proves missing fabric implementation.
+- RED contract test defines the required module before implementation exists.
 - GREEN unit/contract tests prove deterministic scheduling, conflicts, affected tests, cache stability, speculative combinations and fail-closed behavior.
 - Required workflow executes the new test.
 - Protected PR gates pass on exact head.
 - Protected merge lands on `main`.
 - Post-merge workflow/readback verifies the merged SHA and documented canonical authorities.
-- Learning/development ledger writeback records the change and prevention rule.
+- Learning writeback records the root cause, implementation, evidence semantics and prevention rule.
