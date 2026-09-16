@@ -14,6 +14,7 @@ on:
       - '.github/workflows/powerhouse-quality-intelligence.yml'
       - 'docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md'
       - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-design.md'
+      - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence.md'
   push:
     branches: [main]
   workflow_dispatch:
@@ -32,7 +33,38 @@ env:
   ZAP_VERSION: '2.17.0'
 
 jobs:
+  impact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    outputs:
+      suites: ${{ steps.impact.outputs.suites }}
+      has_frontend: ${{ steps.impact.outputs.has_frontend }}
+      has_backend: ${{ steps.impact.outputs.has_backend }}
+      has_security: ${{ steps.impact.outputs.has_security }}
+      has_quality_contract: ${{ steps.impact.outputs.has_quality_contract }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Resolve changed paths
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" > /tmp/quality-paths.txt
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" > /tmp/quality-paths.txt
+          else
+            : > /tmp/quality-paths.txt
+          fi
+          cat /tmp/quality-paths.txt
+      - name: Classify quality impact
+        id: impact
+        env:
+          QUALITY_CHANGED_PATHS_FILE: /tmp/quality-paths.txt
+        run: node scripts/quality/changed-impact.mjs
+
   quality-contract:
+    needs: impact
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -50,6 +82,8 @@ jobs:
         run: node scripts/quality/repeat-flake-check.mjs
 
   backend-properties:
+    needs: impact
+    if: github.event_name != 'pull_request' || needs.impact.outputs.has_backend == 'true' || needs.impact.outputs.has_quality_contract == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -67,6 +101,8 @@ jobs:
         run: pytest -q tests/backend/test_powerhouse_integration_profile.py
 
   supply-chain-security:
+    needs: impact
+    if: github.event_name != 'pull_request' || needs.impact.outputs.has_security == 'true' || needs.impact.outputs.has_quality_contract == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -95,7 +131,6 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-          cache: 'npm'
       - name: Install accepted browser and accessibility engines
         run: npm install --no-save --no-audit --no-fund playwright@${PLAYWRIGHT_VERSION} @axe-core/playwright@${AXE_PLAYWRIGHT_VERSION}
       - name: Install Chromium Firefox and WebKit
