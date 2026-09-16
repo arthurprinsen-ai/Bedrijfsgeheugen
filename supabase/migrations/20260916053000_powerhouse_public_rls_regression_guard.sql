@@ -41,7 +41,10 @@ begin
 end;
 $function$;
 
+-- Keep both explicit EXECUTE revocation and ALL revocation: the former is the generic
+-- security-contract marker; the latter is the dedicated regression guard's fail-closed proof.
 revoke execute on function public.powerhouse_public_rls_on_create() from public, anon, authenticated;
+revoke all on function public.powerhouse_public_rls_on_create() from public, anon, authenticated;
 
 drop event trigger if exists powerhouse_public_rls_default_deny;
 create event trigger powerhouse_public_rls_default_deny
@@ -82,6 +85,7 @@ end;
 $function$;
 
 revoke execute on function public.powerhouse_public_rls_guard_scan() from public, anon, authenticated;
+revoke all on function public.powerhouse_public_rls_guard_scan() from public, anon, authenticated;
 
 -- Replace any previous job deterministically before scheduling the reconciler.
 do $do$
