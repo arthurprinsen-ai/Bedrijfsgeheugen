@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import {
   buildExecutionPlan,
   selectAffectedTests,
   buildCacheIdentity,
-  buildSpeculativeIntegrations
+  buildSpeculativeIntegrations,
+  loadParallelEngineeringPolicy,
+  validateParallelEngineeringFabric
 } from '../scripts/brain/parallel-engineering-fabric.mjs';
 
 const deliveryConfig = {
@@ -116,4 +119,28 @@ test('speculative integrations include only conflict-free packages from the same
 
 test('exact base and candidate identities are mandatory', () => {
   assert.throws(() => buildExecutionPlan({ workPackages: [{ id: 'A', paths: ['brain/a.mjs'] }], deliveryConfig, policy }), /identity/i);
+});
+
+test('canonical fabric policy reuses existing Powerhouse authorities and fails closed', async () => {
+  const actual = await loadParallelEngineeringPolicy();
+  assert.equal(actual.fingerprint, 'powerhouse-parallel-engineering-fabric-v1');
+  assert.deepEqual(actual.extends, ['powerhouse-engineering-os-v1', 'BRAIN-DELIVERY-v2']);
+  assert.equal(actual.authority.delivery, 'config/brain-delivery-system.json');
+  assert.equal(actual.authority.engineering_os, 'config/powerhouse-engineering-os.json');
+  assert.equal(actual.authority.production_promotion, 'BG169');
+  assert.equal(actual.authority.creates_parallel_authority, false);
+  assert.equal(actual.affected_testing.fail_closed_unknown_material_scope, true);
+  assert.equal(actual.affected_testing.fast_path_never_replaces_release_gates, true);
+  assert.equal(actual.cache.never_skips_production_readback, true);
+  assert.equal(actual.speculative_integration.may_promote, false);
+  assert.equal(actual.completion.success, 'LIVE & BEWEZEN');
+  const validation = await validateParallelEngineeringFabric();
+  assert.deepEqual(validation.errors, []);
+  assert.equal(validation.ok, true);
+});
+
+test('fabric CLI exposes canonical readiness', () => {
+  const parsed = JSON.parse(execFileSync(process.execPath, ['scripts/brain/parallel-engineering-fabric.mjs', '--check'], { encoding: 'utf8' }));
+  assert.equal(parsed.status, 'PARALLEL_ENGINEERING_READY');
+  assert.equal(parsed.fingerprint, 'powerhouse-parallel-engineering-fabric-v1');
 });
