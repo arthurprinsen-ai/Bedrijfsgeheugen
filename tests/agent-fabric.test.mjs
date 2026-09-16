@@ -13,6 +13,17 @@ const agents = [
 
 const registry = () => createAgentRegistry(agents);
 
+const trustedCompletionEvidence = Object.freeze({
+  trusted:true,
+  identityBound:true,
+  candidateIdentity:'candidate-sha-123',
+  productionIdentity:'deploy-456:candidate-sha-123',
+  readbackIdentity:'readback-789:candidate-sha-123',
+  functionalReadback:true,
+  learningWriteback:true,
+  capabilityHandoff:true
+});
+
 function advanceToVerifying(fabric, workId) {
   fabric.transition({ workId, status:'Investigating' });
   fabric.transition({ workId, status:'FixPrepared' });
@@ -70,17 +81,17 @@ test('AgentWork cannot resolve while a material obligation is still open', () =>
     workId:work.id,
     status:'Resolved',
     completionContext:{
-      localGreen:true,
       materialObligations:[
         { id:'tests', status:'GREEN' },
         { id:'production-smoke', status:'OPEN' }
-      ]
+      ],
+      completionEvidence:trustedCompletionEvidence
     }
   }), /completion readiness/i);
   assert.equal(fabric.getWork(work.id).status, 'Verifying');
 });
 
-test('AgentWork resolves only when every material obligation is terminal', () => {
+test('AgentWork resolves only with terminal obligations and trusted identity-bound live evidence', () => {
   const fabric = createAgentFabric({ registry:registry() });
   const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'production-regression-green', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Verified production recovery' });
   advanceToVerifying(fabric, work.id);
@@ -89,31 +100,44 @@ test('AgentWork resolves only when every material obligation is terminal', () =>
     workId:work.id,
     status:'Resolved',
     completionContext:{
-      localGreen:true,
       materialObligations:[
         { id:'tests', status:'GREEN' },
         { id:'production-smoke', status:'VERIFIED' }
-      ]
+      ],
+      completionEvidence:trustedCompletionEvidence
     }
   });
   assert.equal(resolved.status, 'Resolved');
 });
 
-test('AgentWork can stop non-green only at an explicitly proven hard boundary', () => {
+test('AgentWork waits non-green at an explicitly proven hard boundary and stays resumable', () => {
   const fabric = createAgentFabric({ registry:registry() });
-  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'external-hard-boundary', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'External control blocks recovery' });
+  const signal = { tenantId:'TENANT-A', kind:'Failure', problemClass:'external-hard-boundary', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'External control blocks recovery' };
+  const work = fabric.intake(signal);
   advanceToVerifying(fabric, work.id);
 
-  const resolved = fabric.transition({
+  const completionContext = {
+    materialObligations:[{ id:'production-smoke', status:'OPEN' }],
+    hardBoundary:{ present:true, proven:true, evidence:'External provider denied the required control change.' }
+  };
+
+  assert.throws(() => fabric.transition({
     workId:work.id,
     status:'Resolved',
-    completionContext:{
-      localGreen:false,
-      materialObligations:[{ id:'production-smoke', status:'OPEN' }],
-      hardBoundary:{ present:true, proven:true, evidence:'External provider denied the required control change.' }
-    }
+    completionContext
+  }), /completion readiness/i);
+
+  const waiting = fabric.transition({
+    workId:work.id,
+    status:'WaitingApproval',
+    completionContext
   });
-  assert.equal(resolved.status, 'Resolved');
+  assert.equal(waiting.status, 'WaitingApproval');
+  assert.equal(fabric.intake(signal).id, work.id);
+
+  const resumed = fabric.transition({ workId:work.id, status:'Investigating' });
+  assert.equal(resumed.id, work.id);
+  assert.equal(resumed.status, 'Investigating');
 });
 
 test('learning memory rejects outcomes without verification evidence', () => {

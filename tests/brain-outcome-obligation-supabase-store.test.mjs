@@ -33,6 +33,23 @@ test('AgentWork putIfAbsent is idempotent and returns the canonical persisted re
   assert.equal(calls[1].init.method, 'GET');
 });
 
+test('dispatch stores can list canonical persisted records for shadow reconciliation', async () => {
+  const calls = [];
+  const fetchImpl = async (url, init={}) => {
+    calls.push({ url:String(url), init });
+    return jsonResponse(200, [
+      { idempotency_key:'obligation|abc', record_type:'AgentWork', obligation_id:'ob-1', owner_agent:'agent-performance', trace_id:'trace-1', state:'PENDING', record:{ executionWindow:'2026-09-16' } },
+      { idempotency_key:'obligation|def', record_type:'AgentWork', obligation_id:'ob-2', owner_agent:'agent-performance', trace_id:'trace-2', state:'AWAITING_OUTCOME', record:{} }
+    ]);
+  };
+  const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
+  const rows = await stores.workStore.list();
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0].idempotencyKey, 'obligation|abc');
+  assert.match(calls[0].url, /record_type=eq\.AgentWork/);
+  assert.match(calls[0].url, /order=created_at\.asc/);
+});
+
 test('recovery records share the durable dispatch ledger but keep their record type', async () => {
   const fetchImpl = async (url, init={}) => init.method === 'POST'
     ? jsonResponse(201, [])

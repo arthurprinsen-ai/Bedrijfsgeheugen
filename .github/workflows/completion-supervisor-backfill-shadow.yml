@@ -1,0 +1,50 @@
+name: Completion Supervisor Backfill Shadow
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 5 * * *'
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact ref
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Verify Completion Supervisor shadow contracts
+        run: node --test tests/brain-completion-supervisor-backfill.test.mjs tests/brain-completion-supervisor-backfill-workflow.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs
+
+      - name: Collect existing authorities and reconcile without dispatch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          node tools/outcome-obligation-completion-supervisor-backfill.mjs --collect --output .artifacts/completion-supervisor-backfill-report.json
+          node -e "const r=require('./.artifacts/completion-supervisor-backfill-report.json'); if(r.productionMutation!==false||r.mode!=='shadow'||r.dispatches.length!==0) process.exit(1); console.log(JSON.stringify({candidateCount:r.candidateCount, skippedLiveVerified:r.skippedLiveVerified.length}))"
+
+      - name: Upload immutable shadow reconciliation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: completion-supervisor-backfill-shadow-${{ github.run_id }}
+          path: .artifacts/completion-supervisor-backfill-report.json
+          if-no-files-found: error
+          retention-days: 30
