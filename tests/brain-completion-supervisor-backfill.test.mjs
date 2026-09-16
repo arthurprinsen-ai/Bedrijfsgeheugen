@@ -71,16 +71,16 @@ test('active backfill does not invent obligations or resume a hard external boun
         present:true,
         proven:true,
         evidence:'external permission is missing',
-        recoveryPacket:{
+        recovery_packet:{
           blocker:'missing permission',
-          rootCause:'external account permission',
-          evidenceRefs:['evidence:permission-denied'],
-          attemptedFixes:['verified current token scope'],
-          safeRemainingActions:['retry after permission grant'],
-          minimumHumanAction:'grant required permission',
-          fixAgentHandoff:'agent-reliability',
-          boundaryFingerprint:'permission:v1',
-          resumeWhen:'permission becomes available'
+          root_cause:'external account permission',
+          evidence_refs:['evidence:permission-denied'],
+          attempted_repairs:['verified current token scope'],
+          safe_remaining_actions:['retry after permission grant'],
+          minimum_human_action:'grant required permission',
+          fix_agent_handoff:'agent-reliability',
+          boundary_fingerprint:'permission:v1',
+          resume_when:{ signal:'permission_available' }
         }
       }
     }]
