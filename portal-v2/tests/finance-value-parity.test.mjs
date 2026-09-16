@@ -69,7 +69,8 @@ test('branch EBITDA and gross-margin fallbacks apply only when own values are ab
  assert.equal(m.enterpriseValue,480);
 });
 
-test('DCF fails closed instead of dividing by zero when WACC does not exceed growth',()=>{
+test('DCF preserves the protected legacy WACC-minus-2pp growth cap',()=>{
  const m=financeValueMetrics(state,{branchGrowthPct:20});
- assert.equal(m.dcfValue,null);
+ assert.equal(m.growth,0.08);
+ assert.ok(Math.abs(m.dcfValue-5670)<1e-9);
 });
