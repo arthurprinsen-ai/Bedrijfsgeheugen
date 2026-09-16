@@ -150,6 +150,7 @@ jobs:
           --deployment-required 'true'
           --routes-json '${{ steps.scope.outputs.routes }}'
           --routes-ok '${{ steps.routes.outcome == 'success' }}'
+          --output .artifacts/production-release-readback.json
       - name: Evaluate immutable Netlify backend production truth
         if: steps.scope.outputs.deployment_required == 'true' && steps.scope.outputs.website_required != 'true' && steps.deploy.outcome == 'success'
         run: >-
@@ -160,6 +161,7 @@ jobs:
           --deployment-required 'true'
           --routes-json '[]'
           --routes-ok 'true'
+          --output .artifacts/production-release-readback.json
       - name: Evaluate immutable non-deployment production truth
         if: steps.scope.outputs.deployment_required != 'true'
         run: >-
@@ -168,6 +170,7 @@ jobs:
           --deployment-required 'false'
           --routes-json '[]'
           --routes-ok 'true'
+          --output .artifacts/production-release-readback.json
       - name: Capture production readback failure as Brain learning evidence
         if: failure()
         env:
@@ -207,7 +210,8 @@ jobs:
         with:
           name: production-release-readback-${{ github.sha }}
           path: .artifacts/
-          if-no-files-found: ignore
+          include-hidden-files: true
+          if-no-files-found: error
           retention-days: 30
       - name: Explain production readback failure
         if: failure()
