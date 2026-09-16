@@ -27,7 +27,7 @@ An agent must be able to answer before changing anything: what exists, where aut
 ## Machine-readable contract
 `config/powerhouse-engineering-os.json` records the stable engineering invariants, platform authorities, quality dimensions, terminal statuses and mandatory artifacts. It is a contract index, not a second registry: referenced component/delivery details stay in their existing canonical files.
 
-`tools/powerhouse-engineering-os.mjs --check` performs a fail-closed bootstrap validation. It checks that canonical authorities exist, that Development OS is on `BRAIN-DELIVERY-v2`, and that the Engineering OS regression test is wired into Required test. `--packet` emits the bounded engineering contract for agents.
+`scripts/brain/powerhouse-engineering-os.mjs --check` performs a fail-closed bootstrap validation. It checks that canonical authorities exist, that Development OS is on `BRAIN-DELIVERY-v2`, and that the Engineering OS regression test is wired into Required test. `--packet` emits the bounded engineering contract for agents. Both validator and regression test live inside already-registered Brain delivery lanes; the delivery classifier is not broadened for this capability.
 
 ## Quality model
 The engineering quality envelope covers, where relevant to changed scope:
@@ -70,8 +70,8 @@ Only these hard states may conclude relevant work:
 ## Acceptance criteria
 1. Engineering OS contract exists and validates successfully.
 2. Development OS references this contract and uses BRAIN-DELIVERY-v2 only.
-3. Required `test` executes the Engineering OS regression contract.
+3. Required `test` executes `tests/brain-powerhouse-engineering-os-contract.test.mjs`.
 4. The regression contract fails on contract/version/wiring drift.
-5. No existing delivery authority is replaced or duplicated.
+5. No existing delivery authority is replaced, bypassed or duplicated.
 6. PR passes protected Required test before merge.
 7. After merge, exact-main runtime/readback and canonical documentation/learning writeback are required before `LIVE & BEWEZEN`.
