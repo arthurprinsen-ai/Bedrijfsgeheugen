@@ -6,11 +6,8 @@ import { validateQualityAutopilotContract } from '../scripts/brain/powerhouse-qu
 const AUTOPILOT_PATH = 'config/powerhouse-quality-autopilot.json';
 
 async function requiredModule(relativePath) {
-  try {
-    return await import(relativePath);
-  } catch (error) {
-    assert.fail(`required Quality Autopilot module missing: ${relativePath}: ${error.message}`);
-  }
+  try { return await import(relativePath); }
+  catch (error) { assert.fail(`required Quality Autopilot module missing: ${relativePath}: ${error.message}`); }
 }
 
 test('Quality Intelligence v2 registers and validates the Quality Autopilot maturity contract', () => {
@@ -20,17 +17,7 @@ test('Quality Intelligence v2 registers and validates the Quality Autopilot matu
   assert.equal(contract.extends, 'powerhouse-quality-intelligence-v2');
   assert.equal(contract.release_authority, 'powerhouse-quality-intelligence-v1');
   assert.deepEqual(contract.green_states, ['GREEN']);
-  for (const capability of [
-    'deep_sensor_history',
-    'dynamic_surface_discovery',
-    'vulnerability_delta_gate',
-    'test_effectiveness_learning',
-    'business_invariant_shadow',
-    'escaped_defect_prevention_rate',
-    'performance_root_cause_attribution',
-    'safe_game_days',
-    'innovation_self_benchmarking',
-  ]) assert.equal(contract.capabilities.includes(capability), true, `missing ${capability}`);
+  for (const capability of ['deep_sensor_history','dynamic_surface_discovery','vulnerability_delta_gate','test_effectiveness_learning','business_invariant_shadow','escaped_defect_prevention_rate','performance_root_cause_attribution','safe_game_days','innovation_self_benchmarking']) assert.equal(contract.capabilities.includes(capability), true, `missing ${capability}`);
   assert.deepEqual(validateQualityAutopilotContract(contract), { ok: true, gaps: [] });
 });
 
@@ -44,9 +31,7 @@ test('dynamic coverage discovery marks new and unproven surfaces fail-closed', a
     { path: 'openapi.yaml', content: 'paths:\n  /api/score:\n    post:\n      responses: {}' },
   ];
   const discovered = discoverQualitySurfaces({ files });
-  for (const type of ['route', 'rpc', 'function', 'table', 'permission', 'api']) {
-    assert.equal(discovered.some(item => item.type === type), true, `missing discovered ${type}`);
-  }
+  for (const type of ['route','rpc','function','table','permission','api']) assert.equal(discovered.some(item => item.type === type), true, `missing discovered ${type}`);
   const obligations = buildDiscoveryObligations({ discovered, registeredSurfaces: [], evidence: [] });
   assert.equal(obligations.every(item => item.state === 'NOT_REGISTERED'), true);
   const registered = discovered.map(item => ({ id: item.id, required: true }));
@@ -68,10 +53,7 @@ test('sensor history distinguishes installed, useful, flaky and critical tests w
 
 test('new HIGH or CRITICAL vulnerabilities block against the reviewed baseline', async () => {
   const { evaluateVulnerabilityDelta } = await requiredModule('../scripts/brain/quality/vulnerability-delta.mjs');
-  const result = evaluateVulnerabilityDelta({
-    baseline: { review_state: 'REVIEWED_POLICY', accepted_findings: [] },
-    current: [{ id: 'CVE-NEW', severity: 'HIGH', package: 'pkg', path: 'package-lock.json' }],
-  });
+  const result = evaluateVulnerabilityDelta({ baseline: { review_state: 'REVIEWED_POLICY', accepted_findings: [] }, current: [{ id: 'CVE-NEW', severity: 'HIGH', package: 'pkg', path: 'package-lock.json' }] });
   assert.equal(result.status, 'BLOCKED');
   assert.equal(result.newBlocking.length, 1);
 });
@@ -90,6 +72,24 @@ test('production business invariants and escaped-defect prevention are measurabl
   assert.equal(metric.rate, 0.5);
 });
 
+test('escaped defects create regression candidates that only promote after proof', async () => {
+  const { createRegressionCandidate, evaluateRegressionCandidate } = await requiredModule('../scripts/brain/quality/regression-candidate.mjs');
+  const candidate = createRegressionCandidate({ defect: { id: 'd1', fingerprint: 'fp1', surface_id: 'api:/score', evidence: 'prod-incident-1' } });
+  assert.equal(candidate.state, 'CANDIDATE');
+  assert.equal(candidate.learning_authority, 'BRAIN-CLOSED-LOOP-v1');
+  assert.equal(evaluateRegressionCandidate(candidate, { catches_original_defect: false }).state, 'REJECTED');
+  assert.equal(evaluateRegressionCandidate(candidate, { catches_original_defect: true, deterministic: true }).state, 'PROVEN_REGRESSION');
+});
+
+test('portfolio autopilot recommends action but never silently deletes tests', async () => {
+  const { recommendPortfolioAction } = await requiredModule('../scripts/brain/quality/portfolio-autopilot.mjs');
+  assert.equal(recommendPortfolioAction({ id: 'tenant', critical: true, classification: 'LOW_OBSERVED_YIELD' }).action, 'KEEP_PROTECTED');
+  assert.equal(recommendPortfolioAction({ id: 'flaky', classification: 'FLAKY' }).action, 'REPAIR_FLAKE');
+  const low = recommendPortfolioAction({ id: 'old', classification: 'LOW_OBSERVED_YIELD' });
+  assert.equal(low.action, 'REVIEW_VALUE');
+  assert.equal(low.auto_delete, false);
+});
+
 test('performance attribution is exact or UNKNOWN, never invented', async () => {
   const { attributePerformanceRegression } = await requiredModule('../scripts/brain/quality/performance-attribution.mjs');
   const exact = attributePerformanceRegression({ candidateSha: 'abc', route: '/portal', api: '/api/score', functionName: 'score_company', queryFingerprint: 'q1', dependency: 'postgres', baseline: 100, current: 180 });
@@ -101,18 +101,13 @@ test('performance attribution is exact or UNKNOWN, never invented', async () => 
 
 test('Game Days cover safe failure modes and reject destructive production targets', async () => {
   const { planSafeFaultScenario } = await requiredModule('../scripts/brain/quality/game-day.mjs');
-  for (const fault of ['provider_outage', 'timeout', 'stale_data', 'duplicate_event', 'expired_token', 'partial_write']) {
-    assert.equal(planSafeFaultScenario({ fault, environment: 'staging' }).status, 'READY');
-  }
+  for (const fault of ['provider_outage','timeout','stale_data','duplicate_event','expired_token','partial_write']) assert.equal(planSafeFaultScenario({ fault, environment: 'staging' }).status, 'READY');
   assert.equal(planSafeFaultScenario({ fault: 'partial_write', environment: 'production', destructive: true }).status, 'REJECTED');
 });
 
 test('innovation self-benchmarking promotes only proven improvements', async () => {
   const { evaluateInnovationBenchmark } = await requiredModule('../scripts/brain/quality/innovation-benchmark.mjs');
   assert.equal(evaluateInnovationBenchmark({ incumbent: {}, candidate: {} }).decision, 'INSUFFICIENT_EVIDENCE');
-  const result = evaluateInnovationBenchmark({
-    incumbent: { defect_yield: 0.4, false_positive_rate: 0.08, runtime_ms: 1000, cost: 1, reproducibility: 0.95, security_fit: true },
-    candidate: { defect_yield: 0.6, false_positive_rate: 0.05, runtime_ms: 900, cost: 1, reproducibility: 0.97, security_fit: true },
-  });
+  const result = evaluateInnovationBenchmark({ incumbent: { defect_yield: 0.4, false_positive_rate: 0.08, runtime_ms: 1000, cost: 1, reproducibility: 0.95, security_fit: true }, candidate: { defect_yield: 0.6, false_positive_rate: 0.05, runtime_ms: 900, cost: 1, reproducibility: 0.97, security_fit: true } });
   assert.equal(result.decision, 'ADOPT');
 });
