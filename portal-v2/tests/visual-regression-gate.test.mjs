@@ -33,3 +33,10 @@ test('visual regression uses the canonical V2 demo route instead of the legacy q
   assert.match(visualSpec, /\/portaal\/demo\?bg_visual_regression=stable/);
   assert.doesNotMatch(visualSpec, /\/klantportaal\?klant=demoAI/);
 });
+
+test('visual regression waits for the specialist canvas payload instead of screenshotting an empty async workspace shell', async () => {
+  const visualSpec = await readVisualSpec();
+  assert.match(visualSpec, /\.canvas-summary/);
+  assert.match(visualSpec, /\.canvas-card/);
+  assert.match(visualSpec, /toHaveCount\(6/);
+});
