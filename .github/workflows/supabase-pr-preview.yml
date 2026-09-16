@@ -31,6 +31,8 @@ jobs:
       # This job is its deterministic source-side companion. It intentionally does not
       # boot a second Docker Supabase stack on a GitHub runner: that duplicated runtime
       # proof and introduced runner/CLI bootstrap failures unrelated to migration SQL.
+      # Broad production-lineage reconciliations remain independently gated by the
+      # delivery branch-hygiene guard and require explicit scope-broad-approved review.
       - name: Validate Supabase source contract for hosted preview
         shell: bash
         run: |
