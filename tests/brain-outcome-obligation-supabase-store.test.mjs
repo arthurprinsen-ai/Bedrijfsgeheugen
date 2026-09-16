@@ -42,6 +42,29 @@ test('recovery records share the durable dispatch ledger but keep their record t
   assert.equal(persisted.record.type, 'RecoveryWork');
 });
 
+test('dispatch stores list every canonical record for only their own record type', async () => {
+  const calls = [];
+  const rows = {
+    AgentWork:[{ idempotency_key:'obligation|abc', record_type:'AgentWork', obligation_id:'supabase-performance-evidence-daily', owner_agent:'agent-performance', trace_id:'trace-1', state:'PENDING', record:{ requestedOutcome:'measurement' } }],
+    RecoveryWork:[{ idempotency_key:'recovery|obligation|abc', record_type:'RecoveryWork', obligation_id:'supabase-performance-evidence-daily', owner_agent:'agent-performance', trace_id:'trace-2', state:'RECOVERING', record:{} }],
+  };
+  const fetchImpl = async url => {
+    const value = String(url);
+    calls.push(value);
+    if (value.includes('record_type=eq.AgentWork')) return jsonResponse(200, rows.AgentWork);
+    if (value.includes('record_type=eq.RecoveryWork')) return jsonResponse(200, rows.RecoveryWork);
+    return jsonResponse(400, { message:'record type filter required' });
+  };
+  const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
+
+  const workRows = await stores.workStore.list();
+  const recoveryRows = await stores.recoveryStore.list();
+
+  assert.deepEqual(workRows, [{ type:'AgentWork', idempotencyKey:'obligation|abc', obligationId:'supabase-performance-evidence-daily', ownerAgent:'agent-performance', traceId:'trace-1', state:'PENDING', requestedOutcome:'measurement' }]);
+  assert.deepEqual(recoveryRows, [{ type:'RecoveryWork', idempotencyKey:'recovery|obligation|abc', obligationId:'supabase-performance-evidence-daily', ownerAgent:'agent-performance', traceId:'trace-2', state:'RECOVERING' }]);
+  assert.ok(calls.every(value => value.includes('select=*') && value.includes('order=created_at.asc')));
+});
+
 test('evidence store reads only metadata required by the executor', async () => {
   const fetchImpl = async () => jsonResponse(200, [{ evidence_ref:'performance:measurement:1', evidence_type:'FUNCTIONAL_READBACK', independent:true, accepted:true, exact_production:false, metadata:{ source:'supabase-performance', producer:'PRODUCTION_READBACK', taskIdentity:'O1', candidateIdentity:'C1', productionIdentity:'P1' } }]);
   const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
