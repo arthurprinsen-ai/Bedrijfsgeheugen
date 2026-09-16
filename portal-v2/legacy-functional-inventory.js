@@ -40,6 +40,7 @@ export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
   ['asToevoegen','asVoorbeeld','asLeeg','edit-task','prioritize-task'], ['cijfers','dataai','business']),
 
   invoeren: capability('gegevens-invullen', [
+    ...ids('pDeclarabel','pOtif','pFout','pDoorloop','pOrders','pOfferte','pOpleiding','pVerloopKlant'),
     frozen({legacyFieldId:'inCijfers:*', dynamicGroup:'company-financials'}),
     frozen({legacyFieldId:'inFin:*', dynamicGroup:'balance-financing'}),
     frozen({legacyFieldId:'inKlanten:*', dynamicGroup:'customers'}),
@@ -102,7 +103,7 @@ export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
     ['theme-impact','capability-maturity','change-sequencing','layer-maturity'],
     ['dnaVrijOk','ask-relationship-question','search-library','ecToe','add-custom-building-block'], ['profiel','strategie','roadmap']),
 
-  bijhouden: capability('actueel-houden', ids('bsWat','bsWaarom','bsDatum','bsDoor','bsRaakt','dcNaam','dcBij','dcDatum'),
+  bijhouden: capability('actueel-houden', ids('bsWat','bsWaarom','bsDatum','bsDoor','bsRaakt','dcNaam','dcBij','dcDatum','twThema','twWanneer'),
     ['ownership/freshness table','decision log','document register','change-to-tasks','change log'],
     ['freshness','expired-items','ownership-completeness'], ['bsToe','dcToe','record-decision','link-document','generate-change-tasks'], ['wijzigingen','roadmap','advies']),
 
@@ -138,4 +139,4 @@ export function assertFunctionalInventoryComplete() {
   return true;
 }
 
-export const LEGACY_FUNCTIONAL_INVENTORY_VERSION = '2026-09-09-v1';
+export const LEGACY_FUNCTIONAL_INVENTORY_VERSION = '2026-09-16-v2';
