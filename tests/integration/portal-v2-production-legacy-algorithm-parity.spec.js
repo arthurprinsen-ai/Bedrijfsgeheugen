@@ -18,6 +18,7 @@ async function openAnalysis(page,pageId){
  // attachLegacyAlgorithmParity is imported after the final workspace mount.
  // Re-applying the idempotent Analyse selection avoids losing the click in the
  // small interval between final form render and parity-listener attachment.
+ // This also acts as the exact-head release trigger after scope reconciliation.
  await expect.poll(async()=>{
    const tab=page.locator(`${workspaceSelector} [data-workspace-tab="analyse"]`);
    if(!await tab.count())return false;
