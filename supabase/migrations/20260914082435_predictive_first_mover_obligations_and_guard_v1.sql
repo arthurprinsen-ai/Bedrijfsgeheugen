@@ -1,5 +1,8 @@
 create or replace function public.powerhouse_sync_forecast_calibration_obligation()
-returns trigger language plpgsql as $$
+returns trigger
+language plpgsql
+set search_path = public, pg_catalog
+as $$
 begin
   if new.status in ('active','claimed') then
     insert into public.revenue_learning_obligations(tenant_id,obligation_id,type,content_id,window_hours,status,payload,due_at,updated_at)
@@ -21,7 +24,11 @@ where f.status in ('active','claimed')
 on conflict (tenant_id,obligation_id) do nothing;
 
 create or replace function public.powerhouse_predictive_health(p_run_date date default ((now() at time zone 'Europe/Amsterdam')::date))
-returns jsonb language sql stable as $$
+returns jsonb
+language sql
+stable
+set search_path = public, pg_catalog
+as $$
 with h as (
   select gemeten_op,status,detail from public.bg_gezondheid
   where onderdeel='powerhouse-predictive-engine'
@@ -47,7 +54,10 @@ select jsonb_build_object(
 )$$;
 
 create or replace function public.powerhouse_daily_execution_guard(p_run_date date default ((now() at time zone 'Europe/Amsterdam')::date))
-returns jsonb language plpgsql as $$
+returns jsonb
+language plpgsql
+set search_path = public, pg_catalog
+as $$
 declare s jsonb; p jsonb; current_state text; combined jsonb; all_ok boolean;
 begin
   s := public.powerhouse_execution_status(p_run_date);
@@ -70,3 +80,9 @@ begin
   values(now(),'powerhouse-daily-execution-contract','execution-guard',case when all_ok then 'ok' else 'fout' end,case when all_ok then 'dagcyclus inclusief predictive intelligence en calibration obligations is execution-complete' else 'dagcyclus mist delivery, predictive run of heeft overdue calibration; completed blijft fail-closed' end,combined);
   return combined;
 end$$;
+
+revoke all on function public.powerhouse_sync_forecast_calibration_obligation() from anon, authenticated;
+revoke all on function public.powerhouse_predictive_health(date) from anon, authenticated;
+revoke all on function public.powerhouse_daily_execution_guard(date) from anon, authenticated;
+grant execute on function public.powerhouse_predictive_health(date) to service_role;
+grant execute on function public.powerhouse_daily_execution_guard(date) to service_role;
