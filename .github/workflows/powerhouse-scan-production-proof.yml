@@ -64,7 +64,6 @@ jobs:
           done
 
       - name: Controlled canonical write and idempotency proof
-        if: contains(github.event.head_commit.message, '[scan-e2e]')
         shell: bash
         run: |
           set -euo pipefail
