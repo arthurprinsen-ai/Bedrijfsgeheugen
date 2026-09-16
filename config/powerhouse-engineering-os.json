@@ -1,0 +1,68 @@
+{
+  "fingerprint": "powerhouse-engineering-os-v1",
+  "version": 1,
+  "status": "active",
+  "purpose": "One executable engineering contract for all current and future Powerhouse agents and chats, without creating a parallel delivery authority.",
+  "delivery_contract": "BRAIN-DELIVERY-v2",
+  "principles": [
+    "EXISTING-STATE-FIRST",
+    "REUSE-FIRST",
+    "CANONICAL-INTEGRATION",
+    "CLOSED-LOOP",
+    "SMALLEST-SAFE-CHANGE",
+    "EXACT-CANDIDATE-IDENTITY",
+    "GREEN-MEANS-OUTCOME-VERIFIED",
+    "RED-MEANS-KEEP-WORKING"
+  ],
+  "golden_path": [
+    "CONTEXT",
+    "SCOPE",
+    "PLAN",
+    "CHANGE",
+    "TEST",
+    "PREVIEW",
+    "VERIFY",
+    "PROMOTE",
+    "PROD_READBACK",
+    "WRITEBACK",
+    "LEARN"
+  ],
+  "canonical_authorities": {
+    "agent_contract": "AGENTS.md",
+    "development_os": "docs/development-operating-system.md",
+    "delivery": "config/brain-delivery-system.json",
+    "outcomes": "config/outcome-obligations.json",
+    "learning_preflight": "config/brain-chat-learning-contract.json",
+    "development_ledger": "docs/development-ledger.md",
+    "required_ci": ".github/workflows/required-test.yml"
+  },
+  "platform_roles": {
+    "github": "source, review, protected merge and exact candidate identity",
+    "netlify": "web preview, immutable deploy evidence and production web runtime",
+    "supabase": "database/schema/functions/runtime state through source-controlled migrations and configuration",
+    "notion": "human-readable knowledge, audit and system-map projection; never deployed identity authority",
+    "buffer": "social provider execution/readback evidence; never engineering source authority"
+  },
+  "quality_dimensions": {
+    "shared": ["correctness","regression","contract_compatibility","security","performance","cost_capacity","observability","rollback_recovery","dependency_supply_chain","documentation","learning_writeback"],
+    "frontend": ["visual_regression","alignment_spacing","responsive_behavior","cross_browser_device","accessibility","web_performance","console_network_errors","content_semantic_drift","design_system_drift"],
+    "backend": ["unit_integration_contract","schema_migration_integrity","rls_auth_tenant_isolation","idempotency_concurrency","data_quality_lineage","api_latency_efficiency","failure_recovery","rate_quota_budget"]
+  },
+  "engineering_rules": [
+    "Prefer small coherent modules with explicit interfaces and ownership.",
+    "Prefer reusable helpers and reusable workflows over copy-paste families.",
+    "Tests must assert behavior or evidence, not incidental wording or implementation text.",
+    "A test is not a gate until CI demonstrably executes it.",
+    "Production schema and function behavior must remain reconstructable from source control.",
+    "No hidden magic score, threshold, authority or deployment rule may remain undocumented.",
+    "No new brain, registry, queue, calendar, analytics store or learning store when an existing canonical capability can be extended.",
+    "Documentation and learning writeback are release outputs, not optional follow-up."
+  ],
+  "terminal_statuses": ["LIVE & BEWEZEN","DEELS LIVE","GEBLOKKEERD","NIET GEDAAN"],
+  "hard_boundaries": ["secrets_credentials_permissions","security_control_weakening","destructive_irreversible_data","paid_resource_increase","legal_financial_commitment"],
+  "bootstrap": {
+    "command": "node scripts/brain/powerhouse-engineering-os.mjs --check",
+    "packet_command": "node scripts/brain/powerhouse-engineering-os.mjs --packet",
+    "required_test": "tests/brain-powerhouse-engineering-os-contract.test.mjs"
+  }
+}
