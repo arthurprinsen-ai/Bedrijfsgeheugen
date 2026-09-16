@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .artifacts
-          node tools/completion-supervisor-backfill.mjs --collect --output .artifacts/completion-supervisor-backfill-report.json
+          node tools/outcome-obligation-completion-supervisor-backfill.mjs --collect --output .artifacts/completion-supervisor-backfill-report.json
           node -e "const r=require('./.artifacts/completion-supervisor-backfill-report.json'); if(r.productionMutation!==false||r.mode!=='shadow'||r.dispatches.length!==0) process.exit(1); console.log(JSON.stringify({candidateCount:r.candidateCount, skippedLiveVerified:r.skippedLiveVerified.length}))"
 
       - name: Upload immutable shadow reconciliation report
