@@ -7,6 +7,10 @@ const migration = fs.readFileSync(
   'utf8',
 );
 
+const executableSql = migration
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .replace(/--.*$/gm, '');
+
 test('RLS classifier distinguishes intentional deny-all from policy-required', () => {
   assert.match(migration, /INTENTIONAL_DENY_ALL_CLIENTS/);
   assert.match(migration, /POLICY_REQUIRED/);
@@ -18,7 +22,7 @@ test('RLS classifier distinguishes intentional deny-all from policy-required', (
 
 test('RLS audit remains fail-closed, invoker-rights and service-role only', () => {
   assert.match(migration, /security_invoker\s*=\s*true/i);
-  assert.doesNotMatch(migration, /security\s+definer/i);
+  assert.doesNotMatch(executableSql, /security\s+definer/i);
   assert.match(migration, /set search_path = pg_catalog/i);
   assert.match(migration, /revoke all on public\.powerhouse_public_rls_policy_classification_v1 from public, anon, authenticated/i);
   assert.match(migration, /grant select on public\.powerhouse_public_rls_policy_classification_v1 to service_role/i);
@@ -27,6 +31,6 @@ test('RLS audit remains fail-closed, invoker-rights and service-role only', () =
 });
 
 test('hardening migration never mass-creates policies or drops indexes', () => {
-  assert.doesNotMatch(migration, /create\s+policy/i);
-  assert.doesNotMatch(migration, /drop\s+index/i);
+  assert.doesNotMatch(executableSql, /create\s+policy/i);
+  assert.doesNotMatch(executableSql, /drop\s+index/i);
 });
