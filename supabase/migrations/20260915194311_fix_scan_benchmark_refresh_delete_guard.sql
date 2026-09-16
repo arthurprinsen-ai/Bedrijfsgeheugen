@@ -20,3 +20,7 @@ begin
   return null;
 end;
 $function$;
+
+-- Replay hardening: production currently exposes EXECUTE only to postgres.
+-- Make that fail-closed state explicit in the canonical historical replay.
+revoke execute on function benchmark_projection.refresh_scan_benchmarks() from public, anon, authenticated;
