@@ -17,58 +17,58 @@
 - No second persistent QA/learning truth.
 - Expensive deep suites are impact/schedule selected.
 - Existing security/baseline/production gates may only be strengthened.
+- Quality runtime and tests live under existing `scripts/brain/**`, `tests/brain-*` and `config/**` namespaces so existing BRAIN delivery classification remains authoritative.
 
 ---
 
 ### Task 1: Canonical quality contract and deterministic validator
-**Files:** create `powerhouse/assurance/quality-intelligence.json`, `scripts/powerhouse-quality-intelligence.mjs`; test `tests/powerhouse-quality-intelligence.test.mjs`.
+**Files:** create `powerhouse/assurance/quality-intelligence.json`, `scripts/brain/powerhouse-quality-intelligence.mjs`; test `tests/brain-quality-intelligence.test.mjs`.
 **Interfaces:** `validateQualityContract(contract)`, `classifyQualityImpact(paths, contract)`, `buildQualityState(input)`.
-- [ ] Write tests requiring all frontend/backend dimensions, deterministic release authority, learning integration and impact selection.
-- [ ] Prove RED because implementation is absent.
-- [ ] Implement validation, impact mapping and explainable per-dimension state.
-- [ ] Run contract tests and validator to GREEN.
+- [x] Write tests requiring all frontend/backend dimensions, deterministic release authority, learning integration and impact selection.
+- [x] Prove RED because implementation is absent.
+- [x] Implement validation, impact mapping and explainable per-dimension state.
+- [x] Run contract tests and validator to GREEN.
 
 ### Task 2: Frontend deep audit
-**Files:** create `scripts/quality/frontend-deep-audit.mjs`, `powerhouse/assurance/quality-innovation-sources.json`; modify/create Quality Intelligence workflow.
-**Interfaces:** CLI consumes `QUALITY_BASE_URL`, route registry and browser set; emits JSON evidence and failure screenshots.
-- [ ] Add cross-browser Chromium/Firefox/WebKit navigation over configured routes/viewports.
-- [ ] Collect console/page errors, failed/4xx/5xx critical requests, overflow, focus sanity and axe serious/critical violations.
-- [ ] Reuse existing geometry/CLS visual engine rather than duplicate it.
-- [ ] Upload evidence artifacts on deep runs.
+**Files:** create `scripts/brain/quality/frontend-deep-audit.mjs`, `powerhouse/assurance/quality-innovation-sources.json`; modify/create Quality Intelligence workflow.
+- [x] Add cross-browser Chromium/Firefox/WebKit navigation over configured routes/viewports.
+- [x] Collect console/page errors, failed/4xx/5xx critical requests, overflow, focus sanity and axe serious/critical violations.
+- [x] Reuse existing geometry/CLS visual engine rather than duplicate it.
+- [x] Upload evidence artifacts on deep runs.
 
 ### Task 3: Backend quality adapters
-**Files:** create `tests/backend/test_powerhouse_quality_properties.py`, `tests/backend/test_powerhouse_api_contract.py`, `tests/performance/powerhouse-smoke.js`, `scripts/quality/backend-targets.mjs`.
-**Interfaces:** registered API/integration targets only; missing targets are explicit `not_registered` evidence, never fake green execution proof.
-- [ ] Add Hypothesis invariants for quality-contract/path normalization and registered backend contracts.
-- [ ] Add Schemathesis adapter for a registered OpenAPI file/URL.
-- [ ] Add Testcontainers readiness adapter for registered integration profiles.
-- [ ] Add k6 p95/error-rate thresholds for registered/public synthetic targets.
+**Files:** create `tests/brain-quality/test_powerhouse_quality_properties.py`, `tests/brain-quality/test_powerhouse_api_contract.py`, `tests/brain-quality/test_powerhouse_integration_profile.py`, `tests/brain-quality-performance/powerhouse-smoke.js`.
+- [x] Add Hypothesis invariants for quality-contract/path normalization.
+- [x] Add Schemathesis adapter for a registered OpenAPI target.
+- [x] Add Testcontainers adapter for a registered integration profile.
+- [x] Add k6 p95/error-rate thresholds for public synthetic targets.
+- [x] Treat missing registered targets as `NOT_REGISTERED`, never fake-green evidence.
 
 ### Task 4: Security, mutation and flake intelligence
-**Files:** create/update Quality Intelligence workflow plus `stryker.quality.conf.json`, `scripts/quality/repeat-flake-check.mjs`.
-- [ ] Run Trivy filesystem vulnerability/secret/misconfiguration scan.
-- [ ] Run passive ZAP baseline only on scheduled/manual public target.
-- [ ] Add CodeQL workflow without weakening existing permissions or controls.
-- [ ] Mutation-test deterministic quality logic.
-- [ ] Repeat core quality tests and fail on inconsistent outcomes rather than retry-to-green.
+**Files:** Quality Intelligence workflow, `.github/workflows/powerhouse-codeql.yml`, `config/stryker.quality.conf.json`, `scripts/brain/quality/repeat-flake-check.mjs`.
+- [x] Run Trivy filesystem vulnerability/secret/misconfiguration scan.
+- [x] Run passive ZAP baseline only on scheduled/manual public target.
+- [x] Add CodeQL workflow without weakening existing permissions or controls.
+- [x] Mutation-test deterministic quality logic.
+- [x] Repeat core quality tests and fail on inconsistent outcomes rather than retry-to-green.
 
 ### Task 5: Daily innovation scout
-**Files:** create `scripts/quality/innovation-scout.mjs`, quality source registry and scheduled workflow job.
-- [ ] Poll only approved primary-source URLs and record status/etag/last-modified/content fingerprint as an artifact.
-- [ ] Never auto-adopt a version; mark change as `candidate_for_experiment`.
-- [ ] Document adoption gates: applicability, security/cost, benchmark, false positives, detection delta, speed delta, rollback.
+**Files:** `scripts/brain/quality/innovation-scout.mjs`, quality source registry and scheduled workflow job.
+- [x] Poll only approved primary-source URLs and record status/etag/last-modified/content fingerprint as an artifact.
+- [x] Never auto-adopt a version; mark change as `candidate_for_experiment`.
+- [x] Document adoption gates: applicability, security/cost, benchmark, false positives, detection delta, speed delta and explicit adoption.
 
 ### Task 6: Assurance and release integration
 **Files:** modify `powerhouse/assurance/component-registry.json`, `.github/workflows/powerhouse-assurance.yml`, `.github/workflows/lane-backend.yml`; create `docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md`.
-- [ ] Register Quality Intelligence as an active Assurance component.
-- [ ] Make core contract validation part of existing Assurance/backend release lanes.
-- [ ] Keep deep browser/security/performance suites parallel and scheduled/impact-selected.
-- [ ] Document evidence, operation, learning/writeback and hard boundaries.
+- [x] Register Quality Intelligence as an active Assurance component.
+- [x] Make core contract validation part of existing Assurance/backend release lanes.
+- [x] Keep deep browser/security/performance suites parallel and scheduled/impact-selected.
+- [x] Document evidence, operation, learning/writeback and hard boundaries.
 
 ### Task 7: Verification and protected delivery
-- [ ] Run chat-learning preflight on PR.
-- [ ] Verify contract/unit/deep applicable jobs on exact head SHA.
-- [ ] Verify Required test is green.
-- [ ] Review diff and CI evidence.
+- [x] Run chat-learning preflight on PR.
+- [ ] Verify contract/unit/deep applicable jobs on exact final head SHA.
+- [ ] Verify Required test is green on the final head SHA.
+- [ ] Review final diff and CI evidence.
 - [ ] Protected merge only after exact-head evidence is green.
 - [ ] Read back current main and relevant production/scheduled configuration; do not call runtime capabilities proven where a registered external target is absent.
