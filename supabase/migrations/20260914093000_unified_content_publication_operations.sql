@@ -54,6 +54,10 @@ create table if not exists public.content_publication_obligations (
   constraint content_publication_obligations_status_check check (status in ('PLANNED','GENERATED','APPROVED','DISPATCHED','PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED','BLOCKED','FAILED'))
 );
 
+alter table public.content_publication_obligations enable row level security;
+revoke all on table public.content_publication_obligations from public, anon, authenticated;
+grant all on table public.content_publication_obligations to service_role;
+
 create index if not exists content_publication_obligations_due_idx
   on public.content_publication_obligations (tenant_id, publication_date, channel, status);
 
@@ -151,7 +155,8 @@ begin
 end;
 $$;
 
-revoke all on function public.sync_content_publication_obligations(date,date) from public;
+revoke execute on function public.sync_content_publication_obligations(date,date) from public, anon, authenticated;
+grant execute on function public.sync_content_publication_obligations(date,date) to service_role;
 
 create or replace function public.record_content_publication_state(
   p_tenant_id text,
@@ -241,9 +246,12 @@ begin
 end;
 $$;
 
-revoke all on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) from public;
+revoke execute on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) from public, anon, authenticated;
+grant execute on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) to service_role;
 
-create or replace view public.content_operations_cockpit as
+create or replace view public.content_operations_cockpit
+with (security_invoker = true)
+as
 select
   o.*,
   (o.publication_date = (timezone('Europe/Amsterdam', now()))::date) as is_due_today,
@@ -257,8 +265,16 @@ select
   end as operational_state
 from public.content_publication_obligations o;
 
-create or replace view public.v_content_publication_operations as
+revoke all on table public.content_operations_cockpit from public, anon, authenticated;
+grant select on table public.content_operations_cockpit to service_role;
+
+create or replace view public.v_content_publication_operations
+with (security_invoker = true)
+as
 select * from public.content_operations_cockpit;
+
+revoke all on table public.v_content_publication_operations from public, anon, authenticated;
+grant select on table public.v_content_publication_operations to service_role;
 
 select public.sync_content_publication_obligations(date '2026-09-14', date '2026-12-31');
 
