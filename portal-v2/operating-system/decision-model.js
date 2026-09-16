@@ -4,7 +4,7 @@ const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value))
 export function recordDecision(decision={}, {now=new Date().toISOString()}={}){
  if(!decision.action_id)throw new Error('DECISION_ACTION_REQUIRED');
  if(!DECISIONS.includes(decision.decision))throw new Error('DECISION_KIND_INVALID');
- if(!decision.actor)throw new Error('DECISION_ACTOR_REQUIRED');
+ if(!decision.actor||decision.actor==='authenticated-user')throw new Error('DECISION_ACTOR_REQUIRED');
  return freeze({id:decision.id||`decision:${decision.action_id}:${now}`,action_id:decision.action_id,decision:decision.decision,actor:decision.actor,timestamp:now,reason:decision.reason||'',delegate_to:decision.delegate_to||null,evidence_snapshot:structuredClone(decision.evidence_snapshot||{}),follow_up_obligation:structuredClone(decision.follow_up_obligation||null)});
 }
 
