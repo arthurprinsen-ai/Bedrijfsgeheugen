@@ -12,6 +12,7 @@ on:
       - 'contracts/openapi/**'
       - 'config/powerhouse-quality-surface-contracts.json'
       - 'scripts/brain/quality/surface-discovery*.mjs'
+      - 'tests/powerhouse-quality-surface-discovery.test.mjs'
       - '.github/workflows/powerhouse-quality-surface-gate.yml'
 
 permissions:
@@ -30,6 +31,8 @@ jobs:
           node-version: '22'
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Surface discovery regression contract
+        run: node --test tests/powerhouse-quality-surface-discovery.test.mjs
       - name: Capture exact PR changed files
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
