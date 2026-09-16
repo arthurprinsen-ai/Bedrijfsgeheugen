@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { findPortalPage, PORTAL_SECTIONS } from '../../portal-next/portal-content-map.js';
-import { CSRD_TABS, DEFAULT_IMPACT_SNAPSHOT, customerSafeSnapshot, csrdImpactMarkup } from '../csrd-impact.js';
+import { CSRD_TABS, DEFAULT_IMPACT_SNAPSHOT, customerSafeSnapshot, csrdImpactMarkup, withResourceFootprint } from '../csrd-impact.js';
 
 test('CSRD impact is a first-class portal page in Inzicht', () => {
   const page = findPortalPage('csrd-impact');
@@ -46,4 +46,47 @@ test('customer markup never renders internal evidence metadata', () => {
   assert.doesNotMatch(html,/Datakwaliteit/);
   assert.doesNotMatch(html,/open evidence-items/);
   assert.match(html,/Interne weergave/);
+});
+
+test('resource footprint fails closed when coverage has no canonical factor lineage', () => {
+  const snapshot = withResourceFootprint({coverage:0.8,confidence:0.9,energyKwh:12.4,co2eKg:2.1,waterLiters:183});
+  assert.equal(snapshot.resourceFootprint, undefined);
+  assert.match(csrdImpactMarkup(snapshot), /Voorbeelddata · geen live claim/);
+});
+
+test('resource footprint never fabricates freshness when calculation timestamp is absent', () => {
+  const snapshot = withResourceFootprint({
+    coverage:1,
+    confidence:0.9,
+    factorVersions:['openai-gpt-5.6-2026-09'],
+    methodologies:['provider-model-resource-factor'],
+    sources:['provider-model-evidence'],
+    calculationStatus:'calculated',
+    energyKwh:12.4,
+    co2eKg:2.1,
+    waterLiters:183
+  });
+  assert.equal(snapshot.resourceFootprint, undefined);
+});
+
+test('resource footprint becomes data-backed only with complete canonical lineage and freshness', () => {
+  const snapshot = withResourceFootprint({
+    coverage:1,
+    confidence:0.9,
+    calculatedAt:'2026-09-16T08:30:00.000Z',
+    factorVersions:['factor:provider-model-v1'],
+    methodologies:['provider-model-resource-factor'],
+    sources:['powerhouse_resource_impact_v1'],
+    calculationStatus:'calculated',
+    measurementClass:'calculated',
+    energyKwh:12.4,
+    co2eKg:2.1,
+    waterLiters:183
+  });
+  assert.equal(snapshot.resourceFootprint?.dataBacked, true);
+  assert.equal(snapshot.resourceFootprint?.calculatedAt, '2026-09-16T08:30:00.000Z');
+  assert.deepEqual(snapshot.resourceFootprint?.factorVersions, ['factor:provider-model-v1']);
+  assert.deepEqual(snapshot.resourceFootprint?.methodologies, ['provider-model-resource-factor']);
+  assert.deepEqual(snapshot.resourceFootprint?.sources, ['powerhouse_resource_impact_v1']);
+  assert.match(csrdImpactMarkup(snapshot), /Data-backed · 100% brondekking/);
 });
