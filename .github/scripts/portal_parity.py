@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Fail closed when protected customer-portal baseline capabilities disappear.
+"""Fail closed when protected customer-portal parity coverage disappears.
 
-The legacy checks remain the immutable migration baseline. A second guard verifies
-that Portal V2 has a machine-readable functional inventory for all 24 protected
-legacy capabilities. This is not a replacement for browser/runtime parity tests.
+The legacy portal remains the immutable migration baseline. Portal V2 must keep
+both the complete functional inventory and an executable implementation/evidence
+gate; a contract or navigation entry alone is never accepted as proof of parity.
 """
 from __future__ import annotations
 
@@ -14,6 +14,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PORTAL = ROOT / "klantportaal.html"
 V2_FUNCTIONAL_INVENTORY = ROOT / "portal-v2" / "legacy-functional-inventory.js"
+V2_PARITY_GATE = ROOT / "portal-v2" / "parity-gate.js"
+V2_PARITY_TEST = ROOT / "portal-v2" / "tests" / "parity-gate.test.mjs"
 
 PANEL_TABS = {
     "overzicht", "profiel", "dataai", "aiscan", "invoeren", "antwoorden",
@@ -90,6 +92,31 @@ def check_v2_functional_inventory() -> None:
             fail(f"V2 functional inventory lost protected meaning/capability: {marker}")
 
 
+def check_v2_implementation_gate() -> None:
+    if not V2_PARITY_GATE.exists():
+        fail("missing executable V2 implementation parity gate")
+    if not V2_PARITY_TEST.exists():
+        fail("missing fail-closed V2 parity-gate tests")
+    source = V2_PARITY_GATE.read_text(encoding="utf-8")
+    test_source = V2_PARITY_TEST.read_text(encoding="utf-8")
+    for marker in (
+        "LEGACY_FUNCTIONAL_INVENTORY",
+        "listFunctionalContracts",
+        "capabilityImplementationCoverage",
+        "evaluatePortalParity",
+        "production-evidence",
+        "persistence",
+        "calculationsOwner",
+        "actionsOwner",
+        "dependenciesOwner",
+    ):
+        if marker not in source:
+            fail(f"V2 implementation parity gate lost protected marker: {marker}")
+    for marker in ("all protected legacy capabilities", "fails closed", "all 24 capabilities verified"):
+        if marker not in test_source:
+            fail(f"V2 implementation parity test lost protected assertion: {marker}")
+
+
 def main() -> int:
     if not PORTAL.exists():
         fail(f"missing protected portal file: {PORTAL.relative_to(ROOT)}")
@@ -111,14 +138,15 @@ def main() -> int:
             fail(f"protected capability/meaning disappeared: {label} ({marker!r})")
 
     check_v2_functional_inventory()
+    check_v2_implementation_gate()
 
     print(
         "PARITY GREEN: "
         f"{len(PANEL_TABS)} protected legacy panels, "
         f"{len(GLOBAL_MARKERS)} global capabilities, "
         f"{len(OVERVIEW_MARKERS)} overview capabilities, "
-        f"{len(SEMANTIC_MARKERS)} semantic invariants and "
-        f"{len(PANEL_TABS)} V2 functional inventory records present."
+        f"{len(SEMANTIC_MARKERS)} semantic invariants, "
+        f"{len(PANEL_TABS)} V2 functional inventory records and executable implementation/evidence gate present."
     )
     return 0
 
