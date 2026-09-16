@@ -4,6 +4,16 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '41 5 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/completion-supervisor-backfill-shadow.yml'
+      - 'tools/outcome-obligation-completion-supervisor-backfill.mjs'
+      - 'tools/outcome-obligation-runtime.mjs'
+      - 'platform/agents/completion-supervisor.mjs'
+      - 'brain/policy/completion-readiness.mjs'
+      - 'config/outcome-obligations.json'
 
 permissions:
   contents: read
