@@ -27,3 +27,10 @@ test('production DOM readback contains a fail-closed visual regression stage aft
   assert.match(visualSpec, /1280/);
   assert.match(visualSpec, /canvassen/);
 });
+
+test('visual capture waits for the delegated six-canvas specialist instead of transient native content', async () => {
+  const visualSpec = await readVisualSpec();
+  assert.match(visualSpec, /\.canvas-summary/);
+  assert.match(visualSpec, /\.canvas-card/);
+  assert.match(visualSpec, /toHaveCount\(6/);
+});
