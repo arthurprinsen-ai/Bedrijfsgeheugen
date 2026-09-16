@@ -61,7 +61,7 @@ async function buffer(payload) {
 
 async function getProviderPosts(dateString) {
   const { start, end } = localDayWindow(dateString);
-  const query = `query DailyPosts($start: DateTime!, $end: DateTime!) { posts(first: 100, input: { organizationId: "${ORGANIZATION_ID}", filter: { status: [scheduled, sending, sent, error], channelIds: [${Object.values(CHANNELS).map((x) => `"${x}"`).join(',')}], dueAt: { gte: $start, lt: $end } }, sort: [{ field: dueAt, direction: asc }] }) { edges { node { id status text dueAt sentAt channelId } } } }`;
+  const query = `query DailyPosts($start: DateTime!, $end: DateTime!) { posts(first: 100, input: { organizationId: "${ORGANIZATION_ID}", filter: { status: [scheduled, sending, sent, error], channelIds: [${Object.values(CHANNELS).map((x) => `"${x}"`).join(',')}], dueAt: { start: $start, end: $end } }, sort: [{ field: dueAt, direction: asc }] }) { edges { node { id status text dueAt sentAt channelId } } } }`;
   const data = await buffer({ query, variables:{ start, end } });
   return (data?.posts?.edges || []).map((x) => x?.node).filter(Boolean);
 }
