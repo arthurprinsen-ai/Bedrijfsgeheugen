@@ -6,14 +6,15 @@ on:
       - feat/autonomous-improvement-runtime-completion-v1-20260916
     paths:
       - 'scripts/brain/continuous-improvement/**'
-      - 'tests/autonomous-improvement-runtime-completion.test.mjs'
+      - 'tests/brain-autonomous-improvement-runtime-completion.test.mjs'
       - 'supabase/migrations/*autonomous_improvement*'
       - '.github/workflows/autonomous-improvement-completion-gate.yml'
   pull_request:
     paths:
       - 'scripts/brain/continuous-improvement/**'
-      - 'tests/autonomous-improvement-runtime-completion.test.mjs'
+      - 'tests/brain-autonomous-improvement-runtime-completion.test.mjs'
       - 'supabase/migrations/*autonomous_improvement*'
+      - '.github/workflows/autonomous-improvement-completion-gate.yml'
   workflow_dispatch:
 
 permissions:
@@ -28,12 +29,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
       - name: Run completion lifecycle tests
-        run: node tests/autonomous-improvement-runtime-completion.test.mjs
+        run: node tests/brain-autonomous-improvement-runtime-completion.test.mjs
       - name: Guard against parallel authorities and Make
         shell: bash
         run: |
