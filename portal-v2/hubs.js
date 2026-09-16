@@ -4,10 +4,11 @@ const PORTAL_CORE = Object.freeze([
   'overzicht','profiel','data-ai','ai-scan','kansenkaart','csrd-impact','gegevens-invullen','ingevulde-gegevens','businesscase',
   'cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','compliance-command-center','ai-capabilities',
   'strategy-dna','strategiemodellen','modellen','canvassen','eindconclusie','due-diligence','exit','strategie-naar-maandagochtend','actueel-houden',
-  'wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen'
+  'wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen',
+  'os:impact-engine','os:scenario-simulator','os:next-best-actions','os:monitoring-learning','os:evidence-health','os:capability-graph'
 ]);
-const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','bronnenstatus','datahubstatus','brain-verwerking','agentstatus']);
-const TASKS = Object.freeze(['taken-werkstromen','actieve-acties','roadmap','recovery-obligations','outcomes-evidence','wijzigingen','advies']);
+const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','os:evidence-health','os:capability-graph']);
+const TASKS = Object.freeze(['taken-werkstromen','actieve-acties','roadmap','recovery-obligations','outcomes-evidence','wijzigingen','advies','os:next-best-actions','os:monitoring-learning','os:scenario-simulator']);
 const MORE = Object.freeze(['gebruikers','documenten','instellingen','audit','audittrail','compliance-governance','compliance-command-center','learning-writeback','self-heal']);
 
 const entry=(id,label,target=id)=>Object.freeze({id,label,target});
@@ -38,7 +39,7 @@ export const HUB_DEFINITIONS = Object.freeze({
   portal:Object.freeze({ label:'Portaal', description:'Alle functionele Portal V2-onderdelen in één native navigatie.', pages:PORTAL_CORE }),
   project:Object.freeze({ label:'Jouw project', description:'Van offerte en bouwen tot koppelen, uitvoeren, documenteren, samenwerken en factureren.', pages:projectTargets }),
   'data-ai':Object.freeze({ label:'Data & AI', description:'Data, koppelingen, AI-kansen, capabilities en de aantoonbare Brain/Datahub-status.', pages:DATA_AI }),
-  tasks:Object.freeze({ label:'Taken', description:'Uitvoering, roadmap, actieve acties, recovery obligations en outcomes/evidence.', pages:TASKS }),
+  tasks:Object.freeze({ label:'Taken', description:'Uitvoering, roadmap, actieve acties, recovery obligations, scenarios, monitoring en outcomes/evidence.', pages:TASKS }),
   more:Object.freeze({ label:'Meer', description:'Beheer, documenten, gebruikers, compliance, audit en systeemfuncties.', pages:MORE })
 });
 
