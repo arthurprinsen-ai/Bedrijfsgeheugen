@@ -18,6 +18,8 @@ export function discoverQualitySurfaces({ files = [] } = {}) {
     for (const match of content.matchAll(/\.rpc\(\s*['"]([^'"]+)['"]/g)) add(matches, 'rpc', match[1], source);
     const fn = source.match(/^supabase\/functions\/([^/]+)\//);
     if (fn) add(matches, 'function', fn[1], source);
+    const netlify = source.match(/^netlify\/functions\/([^/]+)\.(?:mjs|js|ts)$/);
+    if (netlify && !netlify[1].startsWith('_')) add(matches, 'netlify_function', netlify[1], source);
     for (const match of content.matchAll(/create\s+table(?:\s+if\s+not\s+exists)?\s+([a-zA-Z0-9_."]+)/gi)) add(matches, 'table', match[1].replaceAll('"', ''), source);
     for (const match of content.matchAll(/create\s+policy\s+([a-zA-Z0-9_"]+)/gi)) add(matches, 'permission', match[1].replaceAll('"', ''), source);
     if (/openapi|swagger/i.test(source) || /(^|\n)paths\s*:/m.test(content)) {
