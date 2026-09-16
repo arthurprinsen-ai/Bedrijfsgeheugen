@@ -8,8 +8,8 @@ const migration = await readFile(
 );
 
 test('autonomous improvement current_state uses canonical CurrentState record type', () => {
-  assert.match(migration, /'CurrentState','current_state'/);
-  assert.match(migration, /'improvement','current_state'/);
+  assert.match(migration, /''CurrentState'',''current_state''/);
+  assert.match(migration, /''improvement'',''current_state''/);
   assert.match(migration, /refusing unsafe rewrite/);
   assert.doesNotMatch(migration, /drop constraint|alter table\s+public\.brain_records/i);
 });
