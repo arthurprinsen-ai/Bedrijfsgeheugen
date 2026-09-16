@@ -20,6 +20,48 @@ function advanceToVerifying(fabric, workId) {
   return fabric.transition({ workId, status:'Verifying' });
 }
 
+function liveCompletionContext(obligationId, candidateIdentity, productionIdentity) {
+  return {
+    obligationId,
+    workId:'ignored-by-fabric',
+    candidateIdentity,
+    productionIdentity,
+    materialObligations:[{ id:obligationId, status:'COMPLETED' }],
+    evidence:[
+      { type:'CANDIDATE_TESTS', producer:'BRAIN_DELIVERY', accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity },
+      ...['PROTECTED_DELIVERY:BG169','PRODUCTION_IDENTITY:BG169','FUNCTIONAL_READBACK:PRODUCTION_READBACK','OBLIGATIONS_COMPLETE:OUTCOME_OBLIGATION_RUNTIME','CAPABILITY_HANDOFF:BG167','LEARNING_WRITEBACK:BG168_BG166'].map(value => {
+        const [type, producer] = value.split(':');
+        return { type, producer, accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity, productionIdentity };
+      }),
+    ],
+  };
+}
+
+function hardBoundaryContext() {
+  return {
+    obligationId:'completion-hard-boundary',
+    workId:'ignored-by-fabric',
+    candidateIdentity:'candidate-boundary',
+    materialObligations:[{ id:'production-smoke', status:'OPEN' }],
+    hardBoundary:{
+      present:true,
+      proven:true,
+      evidence:'provider:403',
+      recovery_packet:{
+        blocker:'External control blocks recovery',
+        root_cause:'Provider denied the required control change',
+        evidence_refs:['provider:403'],
+        attempted_repairs:['read current provider state'],
+        safe_remaining_actions:['retain last-known-good'],
+        minimum_human_action:'enable the existing provider control',
+        fix_agent_handoff:'resume completion-hard-boundary after provider readback',
+        boundary_fingerprint:'provider|control|403',
+        resume_when:{ type:'evidence', ref:'provider-control:available' },
+      },
+    },
+  };
+}
+
 test('registry selects a deterministic primary owner and cross-domain support agents', () => {
   const routed = registry().route({ domains:['Website','SEO','UX'], capabilities:['analyze'] });
   assert.equal(routed.primaryAgentId, 'agent-seo');
@@ -88,32 +130,40 @@ test('AgentWork resolves only when every material obligation is terminal', () =>
   const resolved = fabric.transition({
     workId:work.id,
     status:'Resolved',
-    completionContext:{
-      localGreen:true,
-      materialObligations:[
-        { id:'tests', status:'GREEN' },
-        { id:'production-smoke', status:'VERIFIED' }
-      ]
-    }
+    completionContext:liveCompletionContext('completion-green', 'candidate-green', 'production-green'),
   });
   assert.equal(resolved.status, 'Resolved');
 });
 
-test('AgentWork can stop non-green only at an explicitly proven hard boundary', () => {
+test('AgentWork waits at an explicitly proven hard boundary and never resolves', () => {
   const fabric = createAgentFabric({ registry:registry() });
-  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'external-hard-boundary', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'External control blocks recovery' });
+  const signal = { tenantId:'TENANT-A', kind:'Failure', problemClass:'external-hard-boundary', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'External control blocks recovery' };
+  const work = fabric.intake(signal);
   advanceToVerifying(fabric, work.id);
 
-  const resolved = fabric.transition({
+  assert.throws(() => fabric.transition({
     workId:work.id,
     status:'Resolved',
-    completionContext:{
-      localGreen:false,
-      materialObligations:[{ id:'production-smoke', status:'OPEN' }],
-      hardBoundary:{ present:true, proven:true, evidence:'External provider denied the required control change.' }
-    }
-  });
-  assert.equal(resolved.status, 'Resolved');
+    completionContext:hardBoundaryContext(),
+  }), /completion readiness/i);
+
+  const waiting = fabric.transition({ workId:work.id, status:'WaitingApproval', completionContext:hardBoundaryContext() });
+  assert.equal(waiting.status, 'WaitingApproval');
+  assert.equal(fabric.intake(signal).id, work.id);
+
+  const resumed = fabric.resume({ workId:work.id, evidence:['provider-control:available'] });
+  assert.equal(resumed.id, work.id);
+  assert.equal(resumed.status, 'Investigating');
+  assert.deepEqual(resumed.evidence, ['provider-control:available']);
+});
+
+test('AgentWork rejects WaitingApproval when the recovery packet is incomplete', () => {
+  const fabric = createAgentFabric({ registry:registry() });
+  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'incomplete-boundary', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Incomplete boundary' });
+  advanceToVerifying(fabric, work.id);
+  const context = hardBoundaryContext();
+  delete context.hardBoundary.recovery_packet.minimum_human_action;
+  assert.throws(() => fabric.transition({ workId:work.id, status:'WaitingApproval', completionContext:context }), /waiting readiness/i);
 });
 
 test('learning memory rejects outcomes without verification evidence', () => {
