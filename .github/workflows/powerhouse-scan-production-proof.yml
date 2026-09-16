@@ -37,7 +37,7 @@ jobs:
             echo "production proxy not current yet (attempt $attempt/36)"
             sleep 10
           done
-          echo 'Exact production proxy contract was not observed.' >&2
+          echo '::error::Powerhouse scan production proof: exact production proxy contract was not observed at /api/powerhouse-scan-ingest after 36 attempts.'
           exit 1
 
       - name: Prove portal scan API fails closed without identity
@@ -74,7 +74,7 @@ jobs:
           first=/tmp/scan-first.json
           second=/tmp/scan-second.json
           first_code="$(curl --silent --show-error --max-time 20 -o "$first" -w '%{http_code}' -H 'content-type: application/json' --data "$payload" "$url")"
-          case "$first_code" in 200|201) ;; *) echo "unexpected first status $first_code" >&2; cat "$first"; exit 1;; esac
+          case "$first_code" in 200|201) ;; *) echo "::error::Powerhouse scan production proof: unexpected first canonical write status $first_code"; cat "$first"; exit 1;; esac
           jq -e '.ok == true and .stored == true and .tenant_identity_status == "unverified" and (.scan_id|length) > 0 and (.event_id|length) > 0' "$first" >/dev/null
           second_code="$(curl --silent --show-error --max-time 20 -o "$second" -w '%{http_code}' -H 'content-type: application/json' --data "$payload" "$url")"
           test "$second_code" = '200'

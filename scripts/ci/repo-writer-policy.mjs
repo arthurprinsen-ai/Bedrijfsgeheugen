@@ -9,6 +9,7 @@ const POLICIES = Object.freeze({
     /^data\/content-publication-ledger\.json$/,
     /^sitemap\.xml$/,
   ],
+  'native-daily-blog-proof': [/^data\/content-publication-ledger\.json$/],
   'paginacontrole': [/^[^/]+\.html$/, /^seo-status\.json$/, /^sitemap\.xml$/, /^netlify\.toml$/],
   'regelgeving-bijwerken': [/^data\/regelgeving\.json$/],
   'seo-controle': [/^sitemap\.xml$/, /^netlify\.toml$/],
