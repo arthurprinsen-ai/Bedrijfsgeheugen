@@ -1,0 +1,110 @@
+name: Engineering OS learning
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/brain/powerhouse-engineering-closed-loop.mjs'
+      - 'tests/brain-powerhouse-engineering-closed-loop.test.mjs'
+      - '.github/workflows/engineering-os-learning.yml'
+      - 'config/powerhouse-engineering-os.json'
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: engineering-os-learning-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  learn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify closed-loop regression
+        run: node --test tests/brain-powerhouse-engineering-closed-loop.test.mjs
+      - name: Verify closed-loop engine
+        run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
+      - name: Collect recent workflow evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          mkdir -p .engineering-os-evidence
+          node --input-type=module - <<'NODE'
+          import { writeFile } from 'node:fs/promises';
+          const headers = { Authorization: `Bearer ${process.env.GH_TOKEN}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+          const response = await fetch(`https://api.github.com/repos/${process.env.REPOSITORY}/actions/runs?per_page=100`, { headers });
+          if (!response.ok) throw new Error(`GitHub Actions evidence fetch failed: ${response.status}`);
+          const payload = await response.json();
+          const completed = (payload.workflow_runs ?? []).filter(run => run.status === 'completed');
+          const gates = completed.map(run => ({
+            id: run.name,
+            runs: 1,
+            caught_defects: 0,
+            false_failures: 0,
+            failure_observations: run.conclusion === 'failure' ? 1 : 0,
+            duration_ms: run.run_started_at && run.updated_at ? Math.max(0, Date.parse(run.updated_at) - Date.parse(run.run_started_at)) : null,
+          }));
+          const test_observations = completed.map(run => ({
+            test_id: run.name,
+            source_revision: run.head_sha,
+            outcome: run.conclusion === 'success' ? 'pass' : run.conclusion === 'failure' ? 'fail' : 'skip',
+          })).filter(item => item.outcome !== 'skip');
+          const evidence = {
+            observed_at: new Date().toISOString(),
+            source: 'github_actions_recent_runs',
+            changes: [],
+            gates,
+            test_observations,
+            escaped_defects: [],
+            semantics: {
+              failure_observation_is_not_automatically_a_caught_defect: true,
+              deployment_metrics_require_explicit_deployment_evidence: true
+            }
+          };
+          await writeFile('.engineering-os-evidence/input.json', JSON.stringify(evidence, null, 2));
+          NODE
+      - name: Build scorecard
+        run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --scorecard .engineering-os-evidence/input.json > .engineering-os-evidence/scorecard.json
+      - name: Detect flaky checks
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { detectFlakyTests } from './scripts/brain/powerhouse-engineering-closed-loop.mjs';
+          const input = JSON.parse(await readFile('.engineering-os-evidence/input.json','utf8'));
+          await writeFile('.engineering-os-evidence/flakes.json', JSON.stringify(detectFlakyTests(input.test_observations), null, 2));
+          NODE
+      - name: Evaluate meta-learning
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { evaluateEngineeringMetaLearning, detectFlakyTests } from './scripts/brain/powerhouse-engineering-closed-loop.mjs';
+          const input = JSON.parse(await readFile('.engineering-os-evidence/input.json','utf8'));
+          const aggregated = new Map();
+          for (const gate of input.gates) {
+            const current = aggregated.get(gate.id) ?? { id: gate.id, runs: 0, caught_defects: 0, false_failures: 0, durations: [] };
+            current.runs += 1;
+            current.caught_defects += gate.caught_defects ?? 0;
+            if (Number.isFinite(gate.duration_ms)) current.durations.push(gate.duration_ms);
+            aggregated.set(gate.id, current);
+          }
+          const gates = [...aggregated.values()].map(gate => ({ ...gate, median_duration_ms: gate.durations.length ? gate.durations.sort((a,b)=>a-b)[Math.floor(gate.durations.length/2)] : null }));
+          const flakes = detectFlakyTests(input.test_observations);
+          const result = evaluateEngineeringMetaLearning({ gates, escaped_defects: input.escaped_defects, flake_rate: flakes.flake_rate });
+          await writeFile('.engineering-os-evidence/meta-learning.json', JSON.stringify(result, null, 2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: engineering-os-learning-${{ github.run_id }}
+          path: .engineering-os-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
