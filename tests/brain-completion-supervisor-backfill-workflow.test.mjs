@@ -7,6 +7,7 @@ test('active backfill workflow reads existing authorities and only resumes canon
   assert.match(yaml, /workflow_dispatch:/);
   assert.match(yaml, /schedule:/);
   assert.match(yaml, /push:\s*[\s\S]*branches:\s*[\s\S]*- main/);
+  assert.match(yaml, /paths:\s*[\s\S]*completion-supervisor-backfill-shadow\.yml/);
   assert.match(yaml, /paths:\s*[\s\S]*outcome-obligation-completion-supervisor-backfill\.mjs/);
   assert.match(yaml, /- 'tests\/brain-completion-supervisor-backfill\.test\.mjs'/);
   assert.match(yaml, /- 'tests\/brain-completion-supervisor-backfill-workflow\.test\.mjs'/);
