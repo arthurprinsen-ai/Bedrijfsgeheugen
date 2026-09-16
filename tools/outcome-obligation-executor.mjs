@@ -74,8 +74,10 @@ function validOwner(obligation, agent) {
 
 function ownerRecovery(identity, ownerAgent) {
   return freeze({
-    type:'OwnerRecovery',
+    type:'RecoveryWork',
+    recoveryKind:'OWNER_RECOVERY',
     requestedOwnerAgent:ownerAgent,
+    ownerAgent,
     obligationId:identity.obligationId,
     idempotencyKey:`owner-recovery|${identity.idempotencyKey}`,
     policy:'reassign_or_reenable_owner',
