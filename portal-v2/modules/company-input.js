@@ -77,12 +77,16 @@ function renderForm(root,state,schema){
 
 export function mountCompanyInput(root,{pageId='profiel',domainState,onSaveStatus}={}){
  if(!root?.querySelectorAll)throw new TypeError('COMPANY_INPUT_ROOT_REQUIRED');
+ if(pageId==='gegevens-invullen'||pageId==='ingevulde-gegevens'){
+  root.innerHTML='<section class="v2tabempty"><h4>Volledige bedrijfsgegevens laden</h4><p>De canonieke Powerhouse-velden worden samengebracht.</p></section>';
+  let active=true;
+  import('./full-company-input.js').then(({mountFullCompanyInput})=>{
+   if(active)mountFullCompanyInput(root,{domainState,reviewOnly:pageId==='ingevulde-gegevens',onSaveStatus});
+  }).catch(()=>{if(active)root.innerHTML='<section class="v2tabempty"><h4>Gegevens konden niet worden geladen</h4><p>Er is geen alternatieve of lokale fallback gebruikt.</p></section>';});
+  return Object.freeze({schema:[],destroy:()=>{active=false;},refresh:()=>{}});
+ }
  const schema=companyInputSchema(pageId);
  const state=domainState?.get?.()||{};
- if(pageId==='ingevulde-gegevens'){
-  renderReview(root,state,schema);
-  return Object.freeze({schema,refresh:()=>renderReview(root,domainState?.get?.()||{},schema)});
- }
  renderForm(root,state,schema);
  const unbind=bindFields(root,schema,{onChange:(field,value)=>{
   domainState?.set?.(field.path,value);
