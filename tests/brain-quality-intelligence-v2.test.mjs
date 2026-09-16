@@ -1,50 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-
 const CONTRACT='powerhouse/assurance/quality-intelligence-v2.json';
-
-test('Quality Intelligence v2 contract extends v1 fail closed', () => {
-  assert.equal(fs.existsSync(CONTRACT), true, 'v2 contract must exist');
-  const c=JSON.parse(fs.readFileSync(CONTRACT,'utf8'));
-  assert.equal(c.fingerprint,'powerhouse-quality-intelligence-v2');
-  assert.equal(c.extends,'powerhouse-quality-intelligence-v1');
-  assert.equal(c.release_decision,'deterministic_evidence_only');
-  assert.deepEqual(c.evidence_states.green,['proven']);
-  assert.equal(c.evidence_states.unknown,'blocking_when_required');
-  assert.equal(c.evidence_states.not_registered,'blocking_when_required');
-  for (const capability of ['coverage_intelligence','autonomous_exploration','semantic_visual_intelligence','stateful_fuzz_chaos','production_shadow','performance_root_cause','security_adversarial_matrix','build_provenance_sbom','test_the_tests','quality_economics']) assert.equal(c.capabilities[capability].enabled,true, capability);
-  assert.equal(c.ai_policy.release_authority,false);
-  assert.equal(c.ai_policy.may_waive_gate,false);
-});
-
-test('critical tests cannot be demoted by economics', async () => {
-  const { recommendLane }=await import('../scripts/brain/quality/test-economics.mjs');
-  assert.equal(recommendLane({critical:true,risk:'critical',runtime_ms:900000,defect_yield:0}).lane,'required');
-  assert.equal(recommendLane({critical:false,risk:'low',runtime_ms:900000,defect_yield:0.01}).lane,'scheduled');
-  assert.notEqual(recommendLane({critical:false,risk:'unknown',runtime_ms:1,defect_yield:null}).lane,'skip');
-});
-
-test('coverage gaps and unregistered surfaces never become green', async () => {
-  const { buildCoverageReport }=await import('../scripts/brain/quality/coverage-intelligence.mjs');
-  const r=buildCoverageReport({surfaces:[{id:'a',required:true},{id:'b',required:true},{id:'c',required:false}],evidence:[{surface_id:'a',status:'proven'}]});
-  assert.deepEqual(r.covered.map(x=>x.id),['a']);
-  assert.deepEqual(r.gaps.map(x=>x.id),['b']);
-  assert.deepEqual(r.unknown.map(x=>x.id),['c']);
-  assert.equal(r.status,'BLOCKED');
-});
-
-test('exploration policy rejects destructive actions and keeps AI advisory', async () => {
-  const { evaluateExplorationAction, normalizeFinding }=await import('../scripts/brain/quality/exploration-policy.mjs');
-  assert.equal(evaluateExplorationAction({method:'DELETE',target:'production'}).allowed,false);
-  assert.equal(evaluateExplorationAction({method:'GET',target:'preview'}).allowed,true);
-  assert.equal(normalizeFinding({source:'ai',kind:'alignment'}).release_evidence,false);
-});
-
-test('production shadow creates escaped defect obligation on required drift', async () => {
-  const { evaluateShadowObservation }=await import('../scripts/brain/quality/production-shadow.mjs');
-  const r=evaluateShadowObservation({id:'api-contract',required:true,expected:'ok',observed:'drift',evidence:'synthetic-1'});
-  assert.equal(r.status,'DRIFT');
-  assert.equal(r.obligation.kind,'escaped_defect');
-  assert.equal(r.obligation.learning_authority,'BRAIN-CLOSED-LOOP-v1');
-});
+test('Quality Intelligence v2 contract extends v1 fail closed',()=>{const c=JSON.parse(fs.readFileSync(CONTRACT,'utf8'));assert.equal(c.fingerprint,'powerhouse-quality-intelligence-v2');assert.equal(c.extends,'powerhouse-quality-intelligence-v1');assert.equal(c.release_decision,'deterministic_evidence_only');assert.deepEqual(c.evidence_states.green,['proven']);assert.equal(c.evidence_states.unknown,'blocking_when_required');assert.equal(c.evidence_states.not_registered,'blocking_when_required');for(const capability of ['coverage_intelligence','autonomous_exploration','semantic_visual_intelligence','stateful_fuzz_chaos','production_shadow','performance_root_cause','security_adversarial_matrix','build_provenance_sbom','test_the_tests','quality_economics'])assert.equal(c.capabilities[capability].enabled,true,capability);assert.equal(c.ai_policy.release_authority,false);assert.equal(c.ai_policy.may_waive_gate,false);});
+test('critical tests cannot be demoted by economics',async()=>{const{recommendLane}=await import('../scripts/brain/quality/test-economics.mjs');assert.equal(recommendLane({critical:true,risk:'critical',runtime_ms:900000,defect_yield:0}).lane,'required');assert.equal(recommendLane({critical:false,risk:'low',runtime_ms:900000,defect_yield:0.01}).lane,'scheduled');assert.notEqual(recommendLane({critical:false,risk:'unknown',runtime_ms:1,defect_yield:null}).lane,'skip');});
+test('coverage gaps and unregistered surfaces never become green',async()=>{const{buildCoverageReport}=await import('../scripts/brain/quality/coverage-intelligence.mjs');const r=buildCoverageReport({surfaces:[{id:'a',required:true},{id:'b',required:true},{id:'c',required:false}],evidence:[{surface_id:'a',status:'proven'}]});assert.deepEqual(r.covered.map(x=>x.id),['a']);assert.deepEqual(r.gaps.map(x=>x.id),['b']);assert.deepEqual(r.unknown.map(x=>x.id),['c']);assert.equal(r.status,'BLOCKED');});
+test('exploration policy rejects destructive actions and keeps AI advisory',async()=>{const{evaluateExplorationAction,normalizeFinding}=await import('../scripts/brain/quality/exploration-policy.mjs');assert.equal(evaluateExplorationAction({method:'DELETE',target:'production'}).allowed,false);assert.equal(evaluateExplorationAction({method:'GET',target:'preview'}).allowed,true);assert.equal(normalizeFinding({source:'ai',kind:'alignment'}).release_evidence,false);});
+test('production shadow creates escaped defect obligation on required drift',async()=>{const{evaluateShadowObservation}=await import('../scripts/brain/quality/production-shadow.mjs');const r=evaluateShadowObservation({id:'api-contract',required:true,expected:'ok',observed:'drift',evidence:'synthetic-1'});assert.equal(r.status,'DRIFT');assert.equal(r.obligation.kind,'escaped_defect');assert.equal(r.obligation.learning_authority,'BRAIN-CLOSED-LOOP-v1');});
