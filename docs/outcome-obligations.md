@@ -43,6 +43,8 @@ Voorbeeld: als om 08:40 een LinkedIn-post hoort te bestaan, dan is een publisher
 
 `NOT_DUE` betekent dat geen resultaat verschuldigd is. `PENDING` betekent dat de deadline nog niet is bereikt en geen technische poging voltooid is. `AWAITING_OUTCOME` betekent dat de technische stap klaar kan zijn maar outcome-bewijs nog ontbreekt. `MISSED_OBLIGATION` betekent dat de obligation over tijd is zonder bewijs. `RECOVERING` betekent dat een agent de green-until-done-lus uitvoert. `COMPLETED` is alleen toegestaan met geldig outcome-bewijs. `BLOCKED_HARD_BOUNDARY` is alleen toegestaan voor de in het agentcontract genoemde harde grenzen.
 
+Completion Supervisor v1 normaliseert deze state naar één besturingsactie. Alleen zeven identity-bound evidenceklassen samen leveren `LIVE_VERIFIED`: kandidaat-tests, protected delivery, production identity, functionele readback, complete obligations, actuele capability-handoff en learning/prevention-writeback. Een harde grens levert `WAIT_EXTERNAL` en `canComplete:false`; dezelfde obligation en hetzelfde AgentWork hervatten automatisch wanneer de vastgelegde `resume_when`-conditie aantoonbaar waar wordt.
+
 Voor backlog-reconciliation wordt daarnaast iedere bestaande record of PR functioneel geclassificeerd als:
 
 - `ACTIVE` — nog steeds relevant en technisch oplosbaar; recovery moet doorgaan;
