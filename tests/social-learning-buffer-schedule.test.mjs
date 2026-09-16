@@ -27,15 +27,29 @@ test('scheduled handler returns 503 when credential is absent instead of false g
 });
 
 const personalArtifact = {
-  channel: 'linkedin_personal',
-  artifact_type: 'linkedin_post',
-  body: 'Vanochtend keek ik in Buffer. Leeg.',
-  status: 'content_ready',
+  channel: 'linkedin_personal', artifact_type: 'linkedin_post',
+  body: 'Vanochtend keek ik in Buffer. Leeg.', status: 'content_ready',
   generation_evidence: {
-    identity_gate_result: 'PASS',
-    concrete_personal_anchor: true,
-    corporate_style: false,
-    personal_truth_verified: true,
+    identity_gate_result: 'PASS', concrete_personal_anchor: true,
+    corporate_style: false, personal_truth_verified: true,
+  },
+};
+
+const instagramArtifact = {
+  channel: 'instagram', artifact_type: 'instagram_post', body: 'Mira zoekt de laatste versie.', status: 'content_ready',
+  generation_evidence: {
+    instagram_publish_gate_input: {
+      channelKind: 'instagram_company', channelId: '6a70384d99afb44349f0fba9',
+      text: 'Mira zoekt de laatste versie.', miraGatePassed: true, mediaKind: 'image',
+      assetUrl: 'https://cdn.example/final.jpg', assetMimeType: 'image/jpeg',
+      lineage: { contentId: 'mira-1', calendarDate: '2026-09-16', predictionId: 'pred-1', sourceDecisionId: 'decision-1' },
+      instagramVisual: {
+        verified: true, evidenceRefs: ['vision:final'], assetUrl: 'https://cdn.example/final.jpg',
+        placeholderDetected: false, identityClass: 'mira_daily_life', formatVerified: true,
+        width: 1080, height: 1350, colorSpace: 'RGB', hasAlpha: false,
+        decodeComplete: true, visualComplete: true, grayOrEmptyDetected: false,
+      },
+    },
   },
 };
 
@@ -44,27 +58,16 @@ test('a Buffer Idea never counts as provider delivery coverage', () => {
 });
 
 test('scheduled, sending or sent provider records count as delivery coverage', () => {
-  for (const status of ['scheduled', 'sending', 'sent']) {
-    assert.equal(hasProviderCoverage({ posts: [{ status }] }), true);
-  }
+  for (const status of ['scheduled', 'sending', 'sent']) assert.equal(hasProviderCoverage({ posts: [{ status }] }), true);
   assert.equal(hasProviderCoverage({ posts: [{ status: 'draft' }] }), false);
 });
 
 test('personal LinkedIn never publishes from a Buffer Idea', () => {
-  const source = selectDeliverySource({
-    channel: 'linkedin_personal',
-    artifact: null,
-    idea: { id: 'idea-personal', content: { text: 'generic personal seed' } },
-  });
-  assert.equal(source, null);
+  assert.equal(selectDeliverySource({ channel: 'linkedin_personal', artifact: null, idea: { id: 'idea-personal', content: { text: 'generic seed' } } }), null);
 });
 
 test('personal LinkedIn uses exact canonical PASS artifact body', () => {
-  const source = selectDeliverySource({
-    channel: 'linkedin_personal',
-    artifact: personalArtifact,
-    idea: { id: 'idea-personal', content: { text: 'different text' } },
-  });
+  const source = selectDeliverySource({ channel: 'linkedin_personal', artifact: personalArtifact, idea: { id: 'idea-personal', content: { text: 'different text' } } });
   assert.equal(source.kind, 'artifact');
   assert.equal(source.text, personalArtifact.body);
   assert.equal(source.ideaId, null);
@@ -76,23 +79,23 @@ test('personal LinkedIn fails closed when personal truth evidence is incomplete'
   assert.equal(selectDeliverySource({ channel: 'linkedin_personal', artifact }), null);
 });
 
-test('Instagram fails closed without a verified final media asset', () => {
-  const decision = deliveryDecision({
-    channel: 'instagram',
-    posts: [],
-    artifact: { body: 'caption', generation_evidence: { media_gate_result: 'PASS' } },
-    idea: { id: 'idea-instagram', content: { text: 'caption', media: [] } },
-  });
+test('Instagram never publishes from an Idea even when the Idea has media', () => {
+  const decision = deliveryDecision({ channel: 'instagram', posts: [], artifact: null, idea: { id: 'idea-instagram', content: { text: 'caption', media: [{ type: 'image', url: 'https://cdn.example/generic.jpg' }] } } });
   assert.equal(decision.action, 'BLOCK');
-  assert.equal(decision.reason, 'FINAL_MEDIA_REQUIRED');
+  assert.equal(decision.reason, 'INSTAGRAM_MIRA_ARTIFACT_REQUIRED');
+});
+
+test('Instagram requires exact verified Mira daily-life final asset evidence', () => {
+  const bad = structuredClone(instagramArtifact);
+  bad.generation_evidence.instagram_publish_gate_input.instagramVisual.identityClass = 'generic_person';
+  assert.equal(selectDeliverySource({ channel: 'instagram', artifact: bad }), null);
+  const source = selectDeliverySource({ channel: 'instagram', artifact: instagramArtifact });
+  assert.equal(source.kind, 'artifact');
+  assert.deepEqual(source.media, [{ type: 'image', url: 'https://cdn.example/final.jpg', alt: null }]);
 });
 
 test('existing provider coverage dedupes before any create action', () => {
-  const decision = deliveryDecision({
-    channel: 'linkedin_company',
-    posts: [{ id: 'post-1', status: 'scheduled' }],
-    idea: { id: 'idea-company', content: { text: 'company copy' } },
-  });
+  const decision = deliveryDecision({ channel: 'linkedin_company', posts: [{ id: 'post-1', status: 'scheduled' }], idea: { id: 'idea-company', content: { text: 'company copy' } } });
   assert.equal(decision.action, 'NONE');
   assert.equal(decision.reason, 'PROVIDER_COVERED');
 });
