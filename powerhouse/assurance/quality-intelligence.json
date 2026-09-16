@@ -1,0 +1,79 @@
+{
+  "fingerprint": "powerhouse-quality-intelligence-v1",
+  "lifecycle": "active",
+  "authority": "Powerhouse Assurance + BRAIN-DELIVERY-v2",
+  "release_decision": "deterministic_evidence_only",
+  "authorities": {
+    "delivery": "BRAIN-DELIVERY-v2",
+    "assurance": "powerhouse-assurance-layer-v1",
+    "learning": "BRAIN-CLOSED-LOOP-v1",
+    "production": "BG169",
+    "frontend_baseline": "site/accepted-baseline.json + site/navigation-baseline.json + config/ui-visual-regression.json"
+  },
+  "ai_policy": {
+    "may": ["discover", "generate_tests", "classify", "root_cause", "bounded_heal"],
+    "may_not": ["waive_gate", "approve_without_evidence", "auto_adopt_unvalidated_innovation"]
+  },
+  "dimensions": {
+    "frontend": ["functional", "visual", "geometry", "responsive", "cross_browser", "accessibility", "runtime", "network", "performance", "content_baseline"],
+    "backend": ["functional", "property", "api_contract", "integration", "performance", "security", "supply_chain", "misconfiguration", "resilience", "data_integrity"]
+  },
+  "frontend": {
+    "existing_visual_engine": "tools/site-shell/ui-visual-regression/browser-check.mjs",
+    "visual_registry": "config/ui-visual-regression.json",
+    "browsers": ["chromium", "firefox", "webkit"],
+    "runtime_failures": ["console_error", "page_error", "request_failed", "critical_http_4xx_5xx", "horizontal_overflow", "focus_trap"],
+    "accessibility": {"engine": "axe-core", "blocking_impacts": ["serious", "critical"]},
+    "performance": {"cls_max": 0.1, "navigation_p95_ms": 3500, "resource_failures_max": 0}
+  },
+  "backend": {
+    "property_testing": "Hypothesis",
+    "api_contract_testing": "Schemathesis when registered OpenAPI target exists",
+    "integration_testing": "Testcontainers when registered integration profile exists",
+    "performance_testing": "k6 thresholds",
+    "unregistered_target_status": "not_registered_obligation_not_green"
+  },
+  "security": {
+    "sast": "CodeQL",
+    "filesystem_supply_chain_misconfiguration": "Trivy",
+    "dast": "OWASP ZAP passive baseline",
+    "existing_security_gates_remain_required": true
+  },
+  "impact_rules": [
+    {"prefix": "portal-v2/", "suites": ["frontend", "portal", "accessibility", "security"]},
+    {"prefix": "intern/linkedin-revenue/", "suites": ["frontend", "cockpit", "accessibility", "security"]},
+    {"prefix": "tools/site-shell/", "suites": ["frontend", "visual", "accessibility"]},
+    {"prefix": "site/", "suites": ["frontend", "visual", "content_baseline"]},
+    {"prefix": "assets/", "suites": ["frontend", "visual", "performance"]},
+    {"prefix": "netlify/functions/", "suites": ["backend", "api_contract", "security", "performance"]},
+    {"prefix": "supabase/", "suites": ["backend", "security", "data_integrity"]},
+    {"prefix": "brain/", "suites": ["backend", "property", "resilience"]},
+    {"prefix": "scripts/brain/", "suites": ["backend", "property", "resilience"]},
+    {"prefix": "powerhouse/assurance/", "suites": ["quality_contract", "backend"]},
+    {"prefix": ".github/workflows/", "suites": ["quality_contract", "security", "supply_chain"]}
+  ],
+  "flake": {
+    "retry_to_green_forbidden": true,
+    "repeat_probe_count": 3,
+    "max_identical_retries_without_new_evidence": 2
+  },
+  "mutation": {"enabled": true, "deep_path": "scheduled_or_manual", "target": "scripts/powerhouse-quality-intelligence.mjs"},
+  "learning": {
+    "preflight": "node scripts/brain/chat-learning-preflight.mjs",
+    "contract": "config/universal-closed-loop-learning.json",
+    "escaped_defect_requires": ["fingerprint", "rootCause", "regressionTest", "preventionRule", "evidence", "learning_writeback", "shared_context_refresh"],
+    "parallel_memory_forbidden": true
+  },
+  "innovation": {
+    "source_registry": "powerhouse/assurance/quality-innovation-sources.json",
+    "cadence": "daily",
+    "auto_adopt": false,
+    "adoption_stages": ["discover", "dedupe", "applicability", "security_cost_review", "isolated_benchmark", "false_positive_check", "detection_delta", "speed_delta", "experiment_result", "explicit_adoption"]
+  },
+  "evidence": {
+    "candidate_sha_required": true,
+    "per_dimension_evidence_required": true,
+    "opaque_global_ai_score_forbidden": true,
+    "green_requires_all_mandatory_dimensions": true
+  }
+}
