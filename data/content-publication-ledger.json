@@ -12,7 +12,7 @@
       "date": "2026-09-15",
       "content_id": "blog:ongeprijsd-probleem-bedrijfsvoering",
       "slug": "ongeprijsd-probleem-bedrijfsvoering",
-      "state": "selected",
+      "state": "live",
       "selected_at": "2026-09-15T10:23:38.409Z",
       "selection_mode": "brain_learning",
       "selection_score": 11,
@@ -20,7 +20,17 @@
       "applied_revenue_learning_ids": [],
       "merged_at": "2026-09-15T20:51:34.000Z",
       "proof_recovery_requested_on": "2026-09-16",
-      "proof_recovery_reason": "watchdog-current-main-recovery"
+      "proof_recovery_reason": "watchdog-current-main-recovery",
+      "live_at": "2026-09-16T05:48:19.314Z",
+      "live_url": "https://www.bedrijfsgeheugen.nl/blog/ongeprijsd-probleem-bedrijfsvoering/",
+      "live_proof": {
+        "ok": true,
+        "status": 200,
+        "url": "https://www.bedrijfsgeheugen.nl/blog/ongeprijsd-probleem-bedrijfsvoering/",
+        "content_id": "blog:ongeprijsd-probleem-bedrijfsvoering",
+        "slug": "ongeprijsd-probleem-bedrijfsvoering",
+        "canonical": "https://www.bedrijfsgeheugen.nl/blog/ongeprijsd-probleem-bedrijfsvoering/"
+      }
     }
   }
 }
