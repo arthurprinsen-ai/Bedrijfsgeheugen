@@ -11,7 +11,7 @@
   },
   "observedAt": "2026-09-16T12:40:00Z",
   "latestObservedProductionMigration": "20260916123957_powerhouse_internal_view_replay_hardening",
-  "reconciliationStatus": "LIVE_VERIFIED",
+  "reconciliationStatus": "PENDING_MAIN_READBACK",
   "reconciled": [
     {
       "production": "20260915152705_powerhouse_revenue_intelligence_health_truth_v3.sql",
@@ -41,7 +41,7 @@
   "obligation": {
     "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
     "changeId": "repo-production-migration-lineage-reconciliation-v1",
-    "productionStateBeforeClosure": "LIVE_VERIFIED",
+    "productionStateBeforeClosure": "OPEN",
     "closureState": "FULFILLED",
     "closureCondition": "All production entries above exist on GitHub main at their exact production filenames, all aliases are absent, required CI is green, and Supabase plus GitHub are read back after merge."
   }
