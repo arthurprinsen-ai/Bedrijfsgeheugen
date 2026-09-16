@@ -1,5 +1,6 @@
 const num=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
 const present=value=>value!==undefined&&value!==null&&value!=='';
+const stable=value=>Number.isFinite(value)?Math.round(value*1e12)/1e12:value;
 
 export function financeValueMetrics(state={},context={}){
   const metrics=state?.portal?.metrics||{};
@@ -36,7 +37,7 @@ export function financeValueMetrics(state={},context={}){
   const netMargin=revenue?ebitdaUsed*.6/revenue:0;
   const assetTurnover=balance?revenue/balance:0;
   const leverage=balance&&equity?balance/equity:0;
-  const roePct=netMargin*assetTurnover*leverage*100;
+  const roePct=stable(netMargin*assetTurnover*leverage*100);
 
   const fixedCosts=present(finance.fixed)&&num(finance.fixed)>0?num(finance.fixed):(wages?wages*1.25:revenue*.35);
   const breakEvenRevenue=grossMargin>0?fixedCosts/grossMargin:null;
