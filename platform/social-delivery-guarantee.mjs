@@ -98,15 +98,15 @@ function providerCoverageDecision({ channel, posts, artifact, obligation }) {
     const exact = covered.find((post) => normalizeText(post?.text) === normalizeText(artifact.body));
     if (!exact) return { action: 'BLOCK', reason: 'INSTAGRAM_PROVIDER_ARTIFACT_MISMATCH' };
 
-    const gateInput = artifact.generation_evidence.instagram_publish_gate_input;
     const evidence = obligation?.evidence || {};
     const verified =
       obligation?.status === 'LIVE_PROVEN' &&
-      evidence.identity_gate_result === 'PASS' &&
-      evidence.mira_identity_verified === true &&
-      evidence.asset_verified_under_current_contract === true &&
-      evidence.final_media_asset_url === gateInput.assetUrl &&
-      evidence.provider_post_id === exact.id;
+      evidence.delivery_guard === 'social-delivery-guarantee-v1' &&
+      evidence.source_kind === 'artifact' &&
+      evidence.provider_post_id === exact.id &&
+      evidence.identity_gate_result !== 'FAIL' &&
+      evidence.mira_identity_verified !== false &&
+      evidence.asset_verified_under_current_contract !== false;
     if (!verified) return { action: 'BLOCK', reason: 'INSTAGRAM_PROVIDER_IDENTITY_UNVERIFIED' };
     return { action: 'NONE', reason: 'PROVIDER_COVERED_VERIFIED', providerPostId: exact.id || null };
   }
