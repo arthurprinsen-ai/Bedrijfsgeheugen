@@ -1,0 +1,37 @@
+name: Powerhouse Security Operations Closure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'brain/production/security-operations-closure-v1.json'
+      - 'docs/changes/powerhouse-security-operations-hardening-v1.md'
+      - 'tests/brain-security-operations-closure-v1.test.mjs'
+      - '.github/workflows/powerhouse-security-operations-closure.yml'
+  pull_request:
+    paths:
+      - 'brain/production/security-operations-closure-v1.json'
+      - 'docs/changes/powerhouse-security-operations-hardening-v1.md'
+      - 'tests/brain-security-operations-closure-v1.test.mjs'
+      - '.github/workflows/powerhouse-security-operations-closure.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: powerhouse-security-operations-closure-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  closure-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify fail-closed security and operations closure contract
+        run: node --test tests/brain-security-operations-closure-v1.test.mjs
