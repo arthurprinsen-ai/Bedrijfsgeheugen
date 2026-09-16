@@ -10,7 +10,7 @@ const state={portal:{
     {metric:'Verloop',company:18,benchmark:14,source:'HR benchmark'},
     {metric:'eNPS',company:-10,benchmark:22,source:'HR benchmark'},
     {metric:'Toegevoegde waarde per FTE',company:100000,benchmark:118000,source:'CBS'}
-  },
+  ]},
   research:{hypotheses:[{hypothesis:'X',evidence:'Y',source:'Interview',confidence:4,reviewDate:'2026-09-01'}]}
 }};
 
