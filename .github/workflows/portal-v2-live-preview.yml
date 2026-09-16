@@ -61,48 +61,62 @@ jobs:
         run: bash tools/ci/wait-for-url.sh "$PREVIEW_URL/portal-v2/app.js"
 
       - name: Verify exact Netlify V2 assets are served
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          fetch_asset() {
-            local path="$1" output="$2"
-            if ! curl -fsS --max-time 30 "$PREVIEW_URL$path" -o "$output"; then
-              echo "::error::Preview asset unavailable: $path"
-              return 1
+
+          fetch_asset_with_markers() {
+            local path="$1" output="$2" label="$3"
+            shift 3
+            local attempt tmp marker ok
+            tmp="${output}.tmp"
+            for attempt in $(seq 1 18); do
+              ok=1
+              if curl -fsS --max-time 30 -H 'Cache-Control: no-cache' "$PREVIEW_URL$path?sha=$HEAD_SHA&attempt=$attempt" -o "$tmp"; then
+                for marker in "$@"; do
+                  if ! grep -q -- "$marker" "$tmp"; then
+                    ok=0
+                    break
+                  fi
+                done
+                if [ "$ok" = "1" ]; then
+                  mv "$tmp" "$output"
+                  return 0
+                fi
+              else
+                ok=0
+              fi
+              sleep 5
+            done
+
+            echo "::error::Preview asset contract did not converge for $label ($path) on exact head $HEAD_SHA"
+            if [ -f "$tmp" ]; then
+              for marker in "$@"; do
+                grep -q -- "$marker" "$tmp" || echo "::error::Missing marker '$marker' in served $label"
+              done
+            else
+              echo "::error::Preview asset unavailable after retries: $path"
             fi
-          }
-          require_marker() {
-            local file="$1" marker="$2" label="$3"
-            if ! grep -q -- "$marker" "$file"; then
-              echo "::error::Preview asset contract missing marker '$marker' in $label"
-              return 1
-            fi
+            return 1
           }
 
-          fetch_asset /portal-v2/ /tmp/portal-v2.html
-          fetch_asset /portal-v2/app.css /tmp/portal-v2.css
-          fetch_asset /portal-v2/saas-theme.css /tmp/portal-v2-saas.css
-          fetch_asset /portal-v2/csrd-mobile-saas.css /tmp/portal-v2-csrd-saas.css
-          fetch_asset /portal-v2/mobile-responsive.css /tmp/portal-v2-mobile.css
-          fetch_asset /portal-v2/functional-suite.css /tmp/portal-v2-functional.css
-          fetch_asset /portal-v2/app.js /tmp/portal-v2.js
-          fetch_asset /portal-v2/legacy-parity-engine.js /tmp/portal-v2-parity-engine.js
+          fetch_asset_with_markers /portal-v2/ /tmp/portal-v2.html portal-v2/index.html \
+            'Welkom terug, Arthur' 'Het brein van je bedrijf' 'AI Management Summary' 'Powerhouse' 'Alle portalpagina’s' 'mobile-responsive.css'
+          fetch_asset_with_markers /portal-v2/app.css /tmp/portal-v2.css portal-v2/app.css 'portal'
+          fetch_asset_with_markers /portal-v2/saas-theme.css /tmp/portal-v2-saas.css portal-v2/saas-theme.css '--saas-accent:' 'brainflow'
+          fetch_asset_with_markers /portal-v2/csrd-mobile-saas.css /tmp/portal-v2-csrd-saas.css portal-v2/csrd-mobile-saas.css 'csrd-mobile-summary' 'csrd-mobile-domain'
+          fetch_asset_with_markers /portal-v2/mobile-responsive.css /tmp/portal-v2-mobile.css portal-v2/mobile-responsive.css 'v2utilities'
+          fetch_asset_with_markers /portal-v2/functional-suite.css /tmp/portal-v2-functional.css portal-v2/functional-suite.css 'v2repeatrow'
+          fetch_asset_with_markers /portal-v2/app.js /tmp/portal-v2.js portal-v2/app.js 'Powerhouse'
+          fetch_asset_with_markers /portal-v2/legacy-parity-engine.js /tmp/portal-v2-parity-engine.js portal-v2/legacy-parity-engine.js 'calculateLegacyEquivalent'
+          fetch_asset_with_markers /portal-v2/strategic-models.js /tmp/portal-v2-strategic-models.js portal-v2/strategic-models.js 'bcg-vraagteken-investeren-of-loslaten' 'Trage markt, achterstand. Niet groeien maar opruimen.'
+          fetch_asset_with_markers /portal-v2/modules/strategic-model-workspace.js /tmp/portal-v2-strategic-workspace.js portal-v2/modules/strategic-model-workspace.js 'data-bcg-roadmap' 'portal.roadmap.items'
 
           node --check /tmp/portal-v2.js || { echo "::error::Served portal-v2/app.js is not valid JavaScript"; exit 1; }
           node --check /tmp/portal-v2-parity-engine.js || { echo "::error::Served portal-v2/legacy-parity-engine.js is not valid JavaScript"; exit 1; }
-
-          require_marker /tmp/portal-v2.html 'Welkom terug, Arthur' portal-v2/index.html
-          require_marker /tmp/portal-v2.html 'Het brein van je bedrijf' portal-v2/index.html
-          require_marker /tmp/portal-v2.html 'AI Management Summary' portal-v2/index.html
-          require_marker /tmp/portal-v2.html 'Powerhouse' portal-v2/index.html
-          require_marker /tmp/portal-v2.html 'Alle portalpagina’s' portal-v2/index.html
-          require_marker /tmp/portal-v2.html 'mobile-responsive.css' portal-v2/index.html
-          require_marker /tmp/portal-v2-saas.css '--saas-accent:' portal-v2/saas-theme.css
-          require_marker /tmp/portal-v2-saas.css 'brainflow' portal-v2/saas-theme.css
-          require_marker /tmp/portal-v2-mobile.css 'v2utilities' portal-v2/mobile-responsive.css
-          require_marker /tmp/portal-v2-csrd-saas.css 'csrd-mobile-summary' portal-v2/csrd-mobile-saas.css
-          require_marker /tmp/portal-v2-csrd-saas.css 'csrd-mobile-domain' portal-v2/csrd-mobile-saas.css
-          require_marker /tmp/portal-v2-functional.css 'v2repeatrow' portal-v2/functional-suite.css
-          require_marker /tmp/portal-v2-parity-engine.js 'calculateLegacyEquivalent' portal-v2/legacy-parity-engine.js
+          node --check /tmp/portal-v2-strategic-models.js || { echo "::error::Served portal-v2/strategic-models.js is not valid JavaScript"; exit 1; }
+          node --check /tmp/portal-v2-strategic-workspace.js || { echo "::error::Served strategic-model-workspace.js is not valid JavaScript"; exit 1; }
 
       - name: Install Playwright runtime
         run: |
@@ -144,4 +158,4 @@ jobs:
         run: |
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
           echo "Verified Netlify preview assets: $PREVIEW_URL/portal-v2/"
-          echo "Exact demoAI mobile rewrite plus desktop, mobile CSRD, full functional parity and executable legacy algorithm browser checks passed."
+          echo "Exact demoAI mobile rewrite plus BCG served-asset parity, desktop/mobile CSRD, full functional parity and executable legacy algorithm browser checks passed."
