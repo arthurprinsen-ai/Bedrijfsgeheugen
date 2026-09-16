@@ -39,8 +39,9 @@ jobs:
           const gates = completed.map(run => ({
             id: run.name,
             runs: 1,
-            caught_defects: run.conclusion === 'failure' ? 1 : 0,
+            caught_defects: 0,
             false_failures: 0,
+            failure_observations: run.conclusion === 'failure' ? 1 : 0,
             duration_ms: run.run_started_at && run.updated_at ? Math.max(0, Date.parse(run.updated_at) - Date.parse(run.run_started_at)) : null,
           }));
           const test_observations = completed.map(run => ({
@@ -55,6 +56,10 @@ jobs:
             gates,
             test_observations,
             escaped_defects: [],
+            semantics: {
+              failure_observation_is_not_automatically_a_caught_defect: true,
+              deployment_metrics_require_explicit_deployment_evidence: true
+            }
           };
           await writeFile('.engineering-os-evidence/input.json', JSON.stringify(evidence, null, 2));
           NODE
