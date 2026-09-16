@@ -21,22 +21,57 @@ concurrency:
 jobs:
   preview-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
-      - uses: supabase/setup-cli@v1
         with:
-          version: latest
-      - name: Prove isolated clean replay from zero
+          fetch-depth: 0
+
+      # Runtime replay authority is the Supabase Git Preview Branch attached to the PR.
+      # This job is its deterministic source-side companion. It intentionally does not
+      # boot a second Docker Supabase stack on a GitHub runner: that duplicated runtime
+      # proof and introduced runner/CLI bootstrap failures unrelated to migration SQL.
+      - name: Validate Supabase source contract for hosted preview
+        shell: bash
         run: |
           set -euo pipefail
-          supabase --version
           test -f supabase/config.toml
           test -d supabase/migrations
           echo "PR=${{ github.event.pull_request.number }} SHA=${{ github.event.pull_request.head.sha }}"
-          supabase start
-          trap 'supabase stop --no-backup || true' EXIT
-          supabase db reset --local
-          supabase migration list --local
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import tomllib
+
+          root = Path('supabase')
+          config = tomllib.loads((root / 'config.toml').read_text(encoding='utf-8'))
+          assert str(config.get('project_id', '')).strip(), 'supabase/config.toml project_id is required'
+
+          for name, function in sorted((config.get('functions') or {}).items()):
+              assert isinstance(function, dict), f'functions.{name} must be a table'
+              entrypoint = function.get('entrypoint')
+              if entrypoint:
+                  target = root / str(entrypoint).removeprefix('./')
+                  assert target.is_file(), f'functions.{name}.entrypoint does not exist: {target}'
+
+          versions = {}
+          malformed = []
+          for path in sorted((root / 'migrations').glob('*.sql')):
+              match = re.match(r'^(\d{14})_(.+)\.sql$', path.name)
+              if not match:
+                  malformed.append(path.name)
+                  continue
+              versions.setdefault(match.group(1), []).append(path.name)
+
+          duplicates = {version: names for version, names in versions.items() if len(names) > 1}
+          assert not malformed, f'malformed migration filenames: {malformed}'
+          assert not duplicates, f'duplicate migration versions: {duplicates}'
+          print(f'Validated config plus {len(versions)} uniquely-versioned migration files.')
+          PY
+
+          python scripts/brain/check_powerhouse_supabase_security.py --self-test
+          python scripts/brain/check_powerhouse_supabase_security.py origin/main "${{ github.event.pull_request.head.sha }}"
+
       - name: Contract evidence
         run: node --test tests/candidate-environment.test.mjs
