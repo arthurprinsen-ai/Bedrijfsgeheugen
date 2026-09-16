@@ -18,8 +18,9 @@ test('workflow_run source identity is stable and path-based', async () => {
   assert.match(workflow, /SOURCE_WORKFLOW_PATH:\s*\$\{\{ github\.event\.workflow_run\.path \}\}/);
   assert.match(workflow, /\.github\/workflows\/unified-brain-delivery\.yml/);
   assert.match(workflow, /\.github\/workflows\/production-release-readback\.yml/);
-  assert.match(workflow, /COMPLETION_SOURCE_WORKFLOW=Unified Brain Delivery/);
-  assert.match(workflow, /COMPLETION_SOURCE_WORKFLOW=Production Release Readback/);
+  assert.match(workflow, /canonical_source="Unified Brain Delivery"/);
+  assert.match(workflow, /canonical_source="Production Release Readback"/);
+  assert.match(workflow, /COMPLETION_SOURCE_WORKFLOW=\$canonical_source/);
 });
 
 test('non-applicable workflow_run exits before durable obligation evaluation and backfill', async () => {
