@@ -1,0 +1,1 @@
+alter table public.powerhouse_resource_factors add column if not exists source text; alter table public.powerhouse_resource_factors add column if not exists provider_model_id text; alter table public.powerhouse_resource_factors add column if not exists source_reference text; alter table public.powerhouse_resource_factors add column if not exists geography text;

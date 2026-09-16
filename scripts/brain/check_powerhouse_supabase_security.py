@@ -32,6 +32,7 @@ HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
     "supabase/migrations/20260915102925_powerhouse_autonomous_growth_revenue_v1.sql": "75c8d7cd567d2be8e55b676865414f280345c184",
     "supabase/migrations/20260915123725_powerhouse_full_cycle_production_proof_v1.sql": "ea3d8b5a0ddb48da4fba6a3b27d1d44010cbef53",
     "supabase/migrations/20260915183418_resource_factor_registry.sql": "bec13320a565c7a56e4babd97c550690e11aa9ed",
+    "supabase/migrations/20260915183554_resource_factor_provenance_fields.sql": "4780a3870a999e8498d2c17715108af6816fc431",
     "supabase/migrations/20260915183603_resource_impact_projection_v1.sql": "18a5cf26946868e5fb02772bc9577b4e135ff722",
     "supabase/migrations/20260915183656_resource_impact_exclude_retired_make.sql": "04bd67a741dd555eb41f1c9993455f22cbe70de2",
 }
