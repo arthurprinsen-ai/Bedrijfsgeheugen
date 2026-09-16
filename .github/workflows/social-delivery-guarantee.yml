@@ -30,3 +30,5 @@ jobs:
           node-version: '22'
       - name: Social delivery guarantee contract
         run: node --test tests/social-delivery-guarantee.test.mjs
+      - name: Netlify delivery function syntax
+        run: node --check netlify/functions/social-publication-delivery.mjs
