@@ -8,14 +8,17 @@ const legacySpecPath='tests/integration/portal-v2-legacy-algorithm-parity.spec.j
 
 async function text(path){return readFile(path,'utf8');}
 
-test('Portal V2 live preview binds checkout and Netlify preview to the exact PR head SHA',async()=>{
+test('Portal V2 live preview binds checkout and immutable Netlify deploy to the exact PR head SHA',async()=>{
   const workflow=await text(workflowPath);
   assert.match(workflow,/ref:\s*\$\{\{ github\.event\.pull_request\.head\.sha \}\}/);
   assert.match(workflow,/HEAD_SHA:\s*\$\{\{ github\.event\.pull_request\.head\.sha \}\}/);
   assert.match(workflow,/actual=\$\(git rev-parse HEAD\)/);
   assert.match(workflow,/test "\$actual" = "\$HEAD_SHA"/);
   assert.match(workflow,/commits\/\$\{HEAD_SHA\}\/status/);
-  assert.match(workflow,/Timed out waiting for Netlify preview on exact head SHA/);
+  assert.match(workflow,/release\.json/);
+  assert.match(workflow,/deploy_id/);
+  assert.match(workflow,/--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(workflow,/Timed out waiting for immutable Netlify preview on exact head SHA/);
 });
 
 test('Portal V2 browser boot uses canonical runtime readiness instead of visible copy',async()=>{
