@@ -1,9 +1,19 @@
-name: Completion Supervisor Backfill Shadow
+name: Completion Supervisor Backfill Resume
 
 on:
   workflow_dispatch:
   schedule:
     - cron: '41 5 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/completion-supervisor-backfill-shadow.yml'
+      - 'tools/outcome-obligation-completion-supervisor-backfill.mjs'
+      - 'tools/outcome-obligation-runtime.mjs'
+      - 'platform/agents/completion-supervisor.mjs'
+      - 'brain/policy/completion-readiness.mjs'
+      - 'config/outcome-obligations.json'
 
 permissions:
   contents: read
@@ -27,10 +37,10 @@ jobs:
         with:
           node-version: 22
 
-      - name: Verify Completion Supervisor shadow contracts
-        run: node --test tests/brain-completion-supervisor-backfill.test.mjs tests/brain-completion-supervisor-backfill-workflow.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs
+      - name: Verify Completion Supervisor active backfill contracts
+        run: node --test tests/brain-completion-supervisor-backfill.test.mjs tests/brain-completion-supervisor-backfill-workflow.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-runtime.test.mjs
 
-      - name: Collect existing authorities and reconcile without dispatch
+      - name: Collect existing authorities and resume canonical obligations idempotently
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -38,13 +48,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .artifacts
-          node tools/outcome-obligation-completion-supervisor-backfill.mjs --collect --output .artifacts/completion-supervisor-backfill-report.json
-          node -e "const r=require('./.artifacts/completion-supervisor-backfill-report.json'); if(r.productionMutation!==false||r.mode!=='shadow'||r.dispatches.length!==0) process.exit(1); console.log(JSON.stringify({candidateCount:r.candidateCount, skippedLiveVerified:r.skippedLiveVerified.length}))"
+          node tools/outcome-obligation-completion-supervisor-backfill.mjs --collect --mode active --output .artifacts/completion-supervisor-backfill-report.json
+          node -e "const r=require('./.artifacts/completion-supervisor-backfill-report.json'); if(r.productionMutation!==false||r.mode!=='active'||r.durableResumeEnabled!==true) process.exit(1); const bad=(r.dispatches||[]).filter(d=>!(r.resumeResults||[]).some(x=>x.dispatch?.obligationId===d.obligationId&&x.dispatch?.coalesceKey===d.coalesceKey)); if(bad.length) process.exit(1); console.log(JSON.stringify({candidateCount:r.candidateCount, dispatchCount:r.dispatches.length, resumed:r.resumeResults.length, skippedLiveVerified:r.skippedLiveVerified.length}))"
 
-      - name: Upload immutable shadow reconciliation report
+      - name: Upload immutable reconciliation and resume evidence
         uses: actions/upload-artifact@v4
         with:
-          name: completion-supervisor-backfill-shadow-${{ github.run_id }}
-          path: .artifacts/completion-supervisor-backfill-report.json
+          name: completion-supervisor-backfill-resume-${{ github.run_id }}
+          path: |
+            .artifacts/completion-supervisor-backfill-report.json
+            .artifacts/completion-supervisor-resume-*.json
           if-no-files-found: error
           retention-days: 30
