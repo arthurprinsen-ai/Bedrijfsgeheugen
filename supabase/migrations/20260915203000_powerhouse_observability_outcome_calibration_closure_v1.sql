@@ -82,7 +82,7 @@ begin
 end;
 $function$;
 
-revoke all on function public.powerhouse_record_outcome(uuid,text,text,jsonb,numeric) from public, anon, authenticated;
+revoke execute on function public.powerhouse_record_outcome(uuid,text,text,jsonb,numeric) from public, anon, authenticated;
 grant execute on function public.powerhouse_record_outcome(uuid,text,text,jsonb,numeric) to service_role;
 
 create or replace view public.powerhouse_action_evidence_maturity_v1
