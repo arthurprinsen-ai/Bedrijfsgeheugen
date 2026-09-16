@@ -1,7 +1,7 @@
 import { mountWorkspace } from '../workspace-shell.js';
 import { buildBcgModel, upsertBcgRoadmapAction } from '../strategic-models.js';
 
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 function markup(m,editable=false){
  return `<section class="strategic-model bcg-model" data-model="bcg">
