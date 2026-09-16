@@ -7,12 +7,14 @@ on:
     paths:
       - 'scripts/brain/continuous-improvement/**'
       - 'tests/brain-autonomous-improvement-runtime-completion.test.mjs'
+      - 'tests/brain-autonomous-improvement-recovery-proof.test.mjs'
       - 'supabase/migrations/*autonomous_improvement*'
       - '.github/workflows/autonomous-improvement-completion-gate.yml'
   pull_request:
     paths:
       - 'scripts/brain/continuous-improvement/**'
       - 'tests/brain-autonomous-improvement-runtime-completion.test.mjs'
+      - 'tests/brain-autonomous-improvement-recovery-proof.test.mjs'
       - 'supabase/migrations/*autonomous_improvement*'
       - '.github/workflows/autonomous-improvement-completion-gate.yml'
   workflow_dispatch:
@@ -33,8 +35,11 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Run completion lifecycle tests
-        run: node tests/brain-autonomous-improvement-runtime-completion.test.mjs
+      - name: Run completion lifecycle and recovery-proof tests
+        run: >-
+          node --test
+          tests/brain-autonomous-improvement-runtime-completion.test.mjs
+          tests/brain-autonomous-improvement-recovery-proof.test.mjs
       - name: Guard against parallel authorities and Make
         shell: bash
         run: |
