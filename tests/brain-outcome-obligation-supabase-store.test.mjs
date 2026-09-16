@@ -43,10 +43,32 @@ test('recovery records share the durable dispatch ledger but keep their record t
 });
 
 test('evidence store reads only metadata required by the executor', async () => {
-  const fetchImpl = async () => jsonResponse(200, [{ evidence_ref:'performance:measurement:1', evidence_type:'outcome', independent:true, accepted:true, exact_production:false, metadata:{ source:'supabase-performance' } }]);
+  const fetchImpl = async () => jsonResponse(200, [{ evidence_ref:'performance:measurement:1', evidence_type:'FUNCTIONAL_READBACK', independent:true, accepted:true, exact_production:false, metadata:{ source:'supabase-performance', producer:'PRODUCTION_READBACK', taskIdentity:'O1', candidateIdentity:'C1', productionIdentity:'P1' } }]);
   const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
   const rows = await stores.evidenceStore.list('obligation|abc');
-  assert.deepEqual(rows, [{ ref:'performance:measurement:1', type:'outcome', independent:true, accepted:true, exactProduction:false, metadata:{ source:'supabase-performance' } }]);
+  assert.deepEqual(rows, [{ ref:'performance:measurement:1', type:'FUNCTIONAL_READBACK', producer:'PRODUCTION_READBACK', taskIdentity:'O1', candidateIdentity:'C1', productionIdentity:'P1', independent:true, accepted:true, exactProduction:false, metadata:{ source:'supabase-performance', producer:'PRODUCTION_READBACK', taskIdentity:'O1', candidateIdentity:'C1', productionIdentity:'P1' } }]);
+});
+
+test('evidence putIfAbsent writes one canonical row and coalesces an exact replay', async () => {
+  const calls = [];
+  let persisted = null;
+  const fetchImpl = async (url, init={}) => {
+    calls.push({ url:String(url), init });
+    if (init.method === 'POST') {
+      persisted = JSON.parse(init.body);
+      return jsonResponse(201, []);
+    }
+    return jsonResponse(200, persisted ? [persisted] : []);
+  };
+  const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
+  const record = { idempotencyKey:'obligation|abc', ref:'progress:deels-live:sha-1', type:'PROGRESS_CLAIM', producer:'COMPLETION_SUPERVISOR', taskIdentity:'O1', candidateIdentity:'C1', independent:false, accepted:false, metadata:{ claim:'DEELS LIVE' } };
+  const first = await stores.evidenceStore.putIfAbsent(record);
+  const second = await stores.evidenceStore.putIfAbsent(record);
+  assert.equal(first.created, true);
+  assert.equal(second.created, false);
+  assert.equal(calls.filter(call => call.init.method === 'POST').length, 1);
+  assert.equal(persisted.evidence_ref, record.ref);
+  assert.equal(persisted.metadata.producer, 'COMPLETION_SUPERVISOR');
 });
 
 test('remote auth or validation errors fail closed instead of degrading to empty state', async () => {
