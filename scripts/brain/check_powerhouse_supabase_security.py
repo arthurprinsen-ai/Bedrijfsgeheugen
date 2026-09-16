@@ -13,6 +13,8 @@ SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 # only while their Git blob is byte-for-byte the reviewed production statement.
 # Any edit changes the blob SHA and immediately restores normal fail-closed checking.
 HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
+    "supabase/migrations/20260914074356_powerhouse_channel_decisions_v1.sql": "007e553a7942f23b522fdc467f233b204a1df5d1",
+    "supabase/migrations/20260914074533_powerhouse_content_artifacts_v1.sql": "c095809ae53dae8add2ff53d5ee1f989a867d547",
     "supabase/migrations/20260914081052_predictive_intelligence_first_mover_v1.sql": "ab6713e1057da039a7f1725a7bc05116a46299c7",
     "supabase/migrations/20260914081911_predictive_first_mover_contract_v1_hardening.sql": "1324acc5f67238980ef5f31dad91df7aaeefdf94",
     "supabase/migrations/20260914082435_predictive_first_mover_obligations_and_guard_v1.sql": "a18a4ee8fa018d5dd06621a7ea3fd9a52a54fa2a",
