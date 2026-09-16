@@ -19,6 +19,32 @@ export const DEFAULT_IMPACT_SNAPSHOT = Object.freeze({
 });
 
 const nl=(value,digits=1)=>value==null?'onbekend':Number(value).toLocaleString('nl-NL',{maximumFractionDigits:digits});
+const finiteOrNull=value=>value===null||value===undefined||value===''?null:(Number.isFinite(Number(value))?Number(value):null);
+
+export function withBusinessValueEvidence(summary={},base={}){
+  const observations=Math.max(0,Number(summary.observations)||0);
+  const observedCostEur=finiteOrNull(summary.observed_cost_eur);
+  const realizedRevenueEur=finiteOrNull(summary.realized_revenue_eur);
+  const realizedRoi=finiteOrNull(summary.realized_roi);
+  const actionAttributionCoverage=finiteOrNull(summary.action_attribution_coverage);
+  const environmentalFactorCoverage=finiteOrNull(summary.environmental_factor_coverage);
+  const latestObservedAt=summary.latest_observed_at||null;
+  const evidenceClass=observations>0&&(observedCostEur!==null||realizedRevenueEur!==null||realizedRoi!==null)?'measured':'unknown';
+  return {
+    ...structuredClone(base),
+    businessValue:{
+      observedCostEur,
+      realizedRevenueEur,
+      realizedRoi,
+      observations,
+      actionAttributionCoverage,
+      environmentalFactorCoverage,
+      latestObservedAt,
+      evidenceClass,
+      source:'powerhouse_portal_resource_summary_v2'
+    }
+  };
+}
 
 export function withResourceFootprint(footprint={},base=DEFAULT_IMPACT_SNAPSHOT){
   const coverage=Math.max(0,Math.min(1,Number(footprint.coverage)||0));
