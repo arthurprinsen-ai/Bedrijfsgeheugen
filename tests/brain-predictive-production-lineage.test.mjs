@@ -16,6 +16,7 @@ const CANONICAL = [
   '20260914074413_powerhouse_completion_gate_v1.sql',
   '20260914074434_powerhouse_execution_guard_cron_v1.sql',
   '20260914074504_powerhouse_completion_gate_compatible_v2.sql',
+  '20260914100133_unified_content_publication_operations.sql',
   '20260914081052_predictive_intelligence_first_mover_v1.sql',
   '20260914081911_predictive_first_mover_contract_v1_hardening.sql',
   '20260914082435_predictive_first_mover_obligations_and_guard_v1.sql',
@@ -34,15 +35,18 @@ const CANONICAL = [
   '20260915183554_resource_factor_provenance_fields.sql',
   '20260915183603_resource_impact_projection_v1.sql',
   '20260915183656_resource_impact_exclude_retired_make.sql',
+  '20260916091505_powerhouse_structure_hygiene_v2.sql',
 ];
 
 const DRIFTED_ALIASES = [
+  '20260914093000_unified_content_publication_operations.sql',
   '20260915122500_harden_security_definer_views_and_internal_rpcs.sql',
   '20260915122500_powerhouse_full_cycle_production_proof_v1.sql',
   '20260915123000_pin_function_search_paths.sql',
   '20260915123000_powerhouse_autonomous_growth_revenue_v1.sql',
   '20260915123000_powerhouse_revenue_flywheel_views_v1.sql',
   '20260915111000_powerhouse_publication_live_proof_guard.sql',
+  '20260916091500_powerhouse_structure_hygiene_v2.sql',
 ];
 
 test('exact production migration identities are source controlled', () => {

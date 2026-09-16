@@ -24,6 +24,7 @@ HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
     "supabase/migrations/20260914082435_predictive_first_mover_obligations_and_guard_v1.sql": "a18a4ee8fa018d5dd06621a7ea3fd9a52a54fa2a",
     "supabase/migrations/20260914084525_powerhouse_execution_status_due_time_guard_v1.sql": "562031c94b72de23e05c1098dfe5b50c2cd9711a",
     "supabase/migrations/20260914084630_powerhouse_social_delivery_reconciliation_v1.sql": "71b9b92fb598338b75061ba61f861fbbe9a4cc23",
+    "supabase/migrations/20260914100133_unified_content_publication_operations.sql": "8f3551c066bedecf2558b789a539828dd3f77d79",
     "supabase/migrations/20260915091805_powerhouse_publication_live_proof_guard.sql": "a093fed12ea8bdbb0ca8ce947b005b4d0cb5b63d",
     "supabase/migrations/20260915094213_linkedin_personal_identity_hard_gate_v3.sql": "4d301683afb61dcf65de24aa86919519594a1d46",
     "supabase/migrations/20260915101047_harden_security_definer_views_and_internal_rpcs.sql": "37eb1ec0cc26667c77763b7226b251fe4351b2cb",
@@ -35,6 +36,7 @@ HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
     "supabase/migrations/20260915183554_resource_factor_provenance_fields.sql": "4780a3870a999e8498d2c17715108af6816fc431",
     "supabase/migrations/20260915183603_resource_impact_projection_v1.sql": "18a5cf26946868e5fb02772bc9577b4e135ff722",
     "supabase/migrations/20260915183656_resource_impact_exclude_retired_make.sql": "04bd67a741dd555eb41f1c9993455f22cbe70de2",
+    "supabase/migrations/20260916091505_powerhouse_structure_hygiene_v2.sql": "ca3990e16fb7d500af1564d38f06ff52717e8621",
 }
 
 

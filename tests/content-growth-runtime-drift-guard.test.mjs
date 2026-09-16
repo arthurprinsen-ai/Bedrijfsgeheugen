@@ -21,7 +21,7 @@ test('canonical content operations endpoint remains in repo contract', () => {
 });
 
 test('unified content migration keeps hard complete-calendar invariant', () => {
-  const migration = read('supabase/migrations/20260914093000_unified_content_publication_operations.sql');
+  const migration = read('supabase/migrations/20260914100133_unified_content_publication_operations.sql');
   assert.match(migration, /BLOG_CALENDAR_INCOMPLETE/);
   assert.match(migration, /v_blog_count <> 109/);
   assert.match(migration, /unique \(tenant_id, publication_date, channel\)/i);
