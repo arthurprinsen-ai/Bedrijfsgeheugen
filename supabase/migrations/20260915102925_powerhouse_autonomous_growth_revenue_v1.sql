@@ -23,7 +23,6 @@ declare
   v_calibrations int := 0;
   v_result jsonb;
 begin
-  -- Keep the existing prediction -> calibration obligation chain current.
   perform public.powerhouse_sync_forecast_calibration_obligation();
 
   select count(*) into v_mature_revenue_learnings
@@ -51,9 +50,6 @@ begin
   from public.powerhouse_forecast_calibration
   where measured_at >= v_now - interval '90 days';
 
-  -- 1 next_best_action + 2 buying_window + 3 latent_problem + 4 offer_problem_match
-  -- 9 counterfactual + 10 commercial_world_model + 11 revenue_attribution.
-  -- Every score is written into the existing opportunity JSON lineage.
   with scored as (
     select
       o.opportunity_id,
@@ -182,8 +178,6 @@ begin
 
   get diagnostics v_candidates = row_count;
 
-  -- Materialize only bounded suggestions. Existing destination/contact-pressure/truth gates
-  -- remain authoritative before any provider-side outbound execution.
   with ranked as (
     select o.*,
       row_number() over(order by o.expected_revenue_value desc, o.confidence desc, o.updated_at desc) as rn
@@ -224,14 +218,10 @@ begin
         reason=excluded.reason,
         evidence=excluded.evidence,
         expected_value_eur=excluded.expected_value_eur,
-        updated_at=v_now
-  ;
+        updated_at=v_now;
 
   get diagnostics v_actions = row_count;
 
-  -- 5 content_outcome_model + 6 memeability + 7 creative_evolution
-  -- 8 causal_learning + 12 research_strategy. Predictions are persisted before publication
-  -- so later observed outcomes can calibrate them instead of learning from vanity metrics alone.
   with forecast_candidates as (
     select f.*,
       least(1,greatest(0,
@@ -319,8 +309,6 @@ begin
 
   get diagnostics v_recommendations = row_count;
 
-  -- 13 self_improvement: one durable learning fingerprint, continuously refreshed from
-  -- observed outcomes, calibrations and causal-learning maturity rather than a second store.
   insert into public.powerhouse_sales_learnings(
     fingerprint,subject_key,scope,hypothesis,evidence,effect,confidence,status,
     content_key,topic_key,channel,sample_size,expires_at
@@ -441,7 +429,6 @@ exception when others then
 end
 $$;
 
--- Permanently wire autonomy into the already-canonical daily execution guard.
 create or replace function public.powerhouse_daily_execution_guard(
   p_run_date date default (now() at time zone 'Europe/Amsterdam')::date
 )

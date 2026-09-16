@@ -1,17 +1,23 @@
 -- Harden internal Powerhouse views after production advisor readback proved browser-role exposure.
 -- These views are internal control-plane/queue/flywheel projections and must be service-role only.
 
-alter view public.powerhouse_revenue_flywheel_v1 set (security_invoker = true);
-revoke all on table public.powerhouse_revenue_flywheel_v1 from public, anon, authenticated;
-grant select on table public.powerhouse_revenue_flywheel_v1 to service_role;
-
-alter view public.powerhouse_outcome_sweep_queue_v1 set (security_invoker = true);
-revoke all on table public.powerhouse_outcome_sweep_queue_v1 from public, anon, authenticated;
-grant select on table public.powerhouse_outcome_sweep_queue_v1 to service_role;
-
-alter view public.powerhouse_experiment_decision_queue_v1 set (security_invoker = true);
-revoke all on table public.powerhouse_experiment_decision_queue_v1 from public, anon, authenticated;
-grant select on table public.powerhouse_experiment_decision_queue_v1 to service_role;
+do $$
+declare
+  v_name text;
+begin
+  foreach v_name in array array[
+    'powerhouse_revenue_flywheel_v1',
+    'powerhouse_outcome_sweep_queue_v1',
+    'powerhouse_experiment_decision_queue_v1'
+  ] loop
+    if to_regclass(format('public.%I',v_name)) is not null then
+      execute format('alter view public.%I set (security_invoker = true)',v_name);
+      execute format('revoke all on table public.%I from public, anon, authenticated',v_name);
+      execute format('grant select on table public.%I to service_role',v_name);
+    end if;
+  end loop;
+end
+$$;
 
 do $$
 declare
@@ -22,6 +28,9 @@ begin
     'powerhouse_outcome_sweep_queue_v1',
     'powerhouse_experiment_decision_queue_v1'
   ] loop
+    if to_regclass(format('public.%I',v_name)) is null then
+      continue;
+    end if;
     if has_table_privilege('anon',format('public.%I',v_name),'SELECT') then
       raise exception 'anon still has SELECT on %', v_name;
     end if;

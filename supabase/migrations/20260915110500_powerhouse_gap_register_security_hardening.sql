@@ -1,27 +1,35 @@
 -- Harden the later-created autonomous gap register after production advisor readback.
 -- This internal control-plane view must be security-invoker and service-role only.
 
-alter view public.powerhouse_gap_register_v1 set (security_invoker = true);
-revoke all on table public.powerhouse_gap_register_v1 from public, anon, authenticated;
-grant select on table public.powerhouse_gap_register_v1 to service_role;
+do $$
+begin
+  if to_regclass('public.powerhouse_gap_register_v1') is not null then
+    execute 'alter view public.powerhouse_gap_register_v1 set (security_invoker = true)';
+    execute 'revoke all on table public.powerhouse_gap_register_v1 from public, anon, authenticated';
+    execute 'grant select on table public.powerhouse_gap_register_v1 to service_role';
+  end if;
+end
+$$;
 
 do $$
 begin
-  if has_table_privilege('anon','public.powerhouse_gap_register_v1','SELECT') then
-    raise exception 'anon still has SELECT on powerhouse_gap_register_v1';
-  end if;
-  if has_table_privilege('authenticated','public.powerhouse_gap_register_v1','SELECT') then
-    raise exception 'authenticated still has SELECT on powerhouse_gap_register_v1';
-  end if;
-  if not has_table_privilege('service_role','public.powerhouse_gap_register_v1','SELECT') then
-    raise exception 'service_role lost SELECT on powerhouse_gap_register_v1';
-  end if;
-  if not exists (
-    select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace
-    where n.nspname='public' and c.relname='powerhouse_gap_register_v1'
-      and coalesce(c.reloptions,'{}'::text[]) @> array['security_invoker=true']
-  ) then
-    raise exception 'security_invoker not enabled on powerhouse_gap_register_v1';
+  if to_regclass('public.powerhouse_gap_register_v1') is not null then
+    if has_table_privilege('anon','public.powerhouse_gap_register_v1','SELECT') then
+      raise exception 'anon still has SELECT on powerhouse_gap_register_v1';
+    end if;
+    if has_table_privilege('authenticated','public.powerhouse_gap_register_v1','SELECT') then
+      raise exception 'authenticated still has SELECT on powerhouse_gap_register_v1';
+    end if;
+    if not has_table_privilege('service_role','public.powerhouse_gap_register_v1','SELECT') then
+      raise exception 'service_role lost SELECT on powerhouse_gap_register_v1';
+    end if;
+    if not exists (
+      select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace
+      where n.nspname='public' and c.relname='powerhouse_gap_register_v1'
+        and coalesce(c.reloptions,'{}'::text[]) @> array['security_invoker=true']
+    ) then
+      raise exception 'security_invoker not enabled on powerhouse_gap_register_v1';
+    end if;
   end if;
 end
 $$;

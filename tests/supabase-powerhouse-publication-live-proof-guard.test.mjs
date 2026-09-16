@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
-const migration = 'supabase/migrations/20260915111000_powerhouse_publication_live_proof_guard.sql';
+const migration = 'supabase/migrations/20260915091805_powerhouse_publication_live_proof_guard.sql';
 
 test('daily completion requires canonical publication obligations to be terminal/live-proven', () => {
   assert.equal(existsSync(migration), true, 'publication live-proof guard migration must exist');

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
-const migration = 'supabase/migrations/20260915123000_powerhouse_autonomous_growth_revenue_v1.sql';
+const migration = 'supabase/migrations/20260915102925_powerhouse_autonomous_growth_revenue_v1.sql';
 
 test('Powerhouse autonomous growth revenue cycle reuses canonical lineage and gates daily green', () => {
   assert.equal(existsSync(migration), true, 'autonomous growth/revenue migration must exist');

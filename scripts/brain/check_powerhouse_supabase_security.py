@@ -13,9 +13,30 @@ SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 # only while their Git blob is byte-for-byte the reviewed production statement.
 # Any edit changes the blob SHA and immediately restores normal fail-closed checking.
 HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
+    "supabase/migrations/20260914074356_powerhouse_channel_decisions_v1.sql": "007e553a7942f23b522fdc467f233b204a1df5d1",
+    "supabase/migrations/20260914074533_powerhouse_content_artifacts_v1.sql": "c095809ae53dae8add2ff53d5ee1f989a867d547",
+    "supabase/migrations/20260914074405_powerhouse_execution_status_v1.sql": "7a0efd8f35327b49bf239ba244d844e0b01476f8",
+    "supabase/migrations/20260914074413_powerhouse_completion_gate_v1.sql": "b44eb398a2fa14c816d535b0842aa36dae4a8fee",
+    "supabase/migrations/20260914074434_powerhouse_execution_guard_cron_v1.sql": "e7dab9a5fc50f1b8870ded1b1e5e1a3fbaccc06b",
+    "supabase/migrations/20260914074504_powerhouse_completion_gate_compatible_v2.sql": "f34e01ad3b293463467ebbf673a015c111d9a041",
     "supabase/migrations/20260914081052_predictive_intelligence_first_mover_v1.sql": "ab6713e1057da039a7f1725a7bc05116a46299c7",
     "supabase/migrations/20260914081911_predictive_first_mover_contract_v1_hardening.sql": "1324acc5f67238980ef5f31dad91df7aaeefdf94",
     "supabase/migrations/20260914082435_predictive_first_mover_obligations_and_guard_v1.sql": "a18a4ee8fa018d5dd06621a7ea3fd9a52a54fa2a",
+    "supabase/migrations/20260914084525_powerhouse_execution_status_due_time_guard_v1.sql": "562031c94b72de23e05c1098dfe5b50c2cd9711a",
+    "supabase/migrations/20260914084630_powerhouse_social_delivery_reconciliation_v1.sql": "71b9b92fb598338b75061ba61f861fbbe9a4cc23",
+    "supabase/migrations/20260914100133_unified_content_publication_operations.sql": "8f3551c066bedecf2558b789a539828dd3f77d79",
+    "supabase/migrations/20260915091805_powerhouse_publication_live_proof_guard.sql": "a093fed12ea8bdbb0ca8ce947b005b4d0cb5b63d",
+    "supabase/migrations/20260915094213_linkedin_personal_identity_hard_gate_v3.sql": "4d301683afb61dcf65de24aa86919519594a1d46",
+    "supabase/migrations/20260915101047_harden_security_definer_views_and_internal_rpcs.sql": "37eb1ec0cc26667c77763b7226b251fe4351b2cb",
+    "supabase/migrations/20260915102437_powerhouse_revenue_flywheel_v1.sql": "39de474008ead1209ca9c17ae3777d94aeae1a51",
+    "supabase/migrations/20260915102851_powerhouse_autonomous_growth_revenue_v1.sql": "dd82c03753fcc84a399c02dec537b9c9a3d42f77",
+    "supabase/migrations/20260915102925_powerhouse_autonomous_growth_revenue_v1.sql": "75c8d7cd567d2be8e55b676865414f280345c184",
+    "supabase/migrations/20260915123725_powerhouse_full_cycle_production_proof_v1.sql": "ea3d8b5a0ddb48da4fba6a3b27d1d44010cbef53",
+    "supabase/migrations/20260915183418_resource_factor_registry.sql": "bec13320a565c7a56e4babd97c550690e11aa9ed",
+    "supabase/migrations/20260915183554_resource_factor_provenance_fields.sql": "4780a3870a999e8498d2c17715108af6816fc431",
+    "supabase/migrations/20260915183603_resource_impact_projection_v1.sql": "18a5cf26946868e5fb02772bc9577b4e135ff722",
+    "supabase/migrations/20260915183656_resource_impact_exclude_retired_make.sql": "04bd67a741dd555eb41f1c9993455f22cbe70de2",
+    "supabase/migrations/20260916091505_powerhouse_structure_hygiene_v2.sql": "ca3990e16fb7d500af1564d38f06ff52717e8621",
 }
 
 
