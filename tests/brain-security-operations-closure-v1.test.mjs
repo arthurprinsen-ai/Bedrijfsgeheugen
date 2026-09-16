@@ -9,6 +9,7 @@ const deliveryPolicyPath = new URL('../config/brain-delivery-system.json', impor
 
 const requiredOpen = new Set([
   'supabase_owner_management_mfa',
+  'netlify_owner_team_management_mfa',
   'isolated_restore_dr_exercise',
   'credential_rotation_end_to_end',
   'cross_platform_iam_review',
