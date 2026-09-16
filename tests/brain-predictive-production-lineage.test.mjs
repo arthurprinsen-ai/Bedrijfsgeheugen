@@ -12,10 +12,17 @@ const CALIBRATOR = path.join(ROOT, 'supabase', 'functions', 'powerhouse-forecast
 const CANONICAL = [
   '20260914074356_powerhouse_channel_decisions_v1.sql',
   '20260914074533_powerhouse_content_artifacts_v1.sql',
+  '20260914074405_powerhouse_execution_status_v1.sql',
+  '20260914074413_powerhouse_completion_gate_v1.sql',
+  '20260914074504_powerhouse_completion_gate_compatible_v2.sql',
   '20260914081052_predictive_intelligence_first_mover_v1.sql',
   '20260914081911_predictive_first_mover_contract_v1_hardening.sql',
   '20260914082435_predictive_first_mover_obligations_and_guard_v1.sql',
   '20260914082625_predictive_first_mover_daily_schedule_v1.sql',
+  '20260914084525_powerhouse_execution_status_due_time_guard_v1.sql',
+  '20260914084630_powerhouse_social_delivery_reconciliation_v1.sql',
+  '20260915091805_powerhouse_publication_live_proof_guard.sql',
+  '20260915094213_linkedin_personal_identity_hard_gate_v3.sql',
   '20260915101047_harden_security_definer_views_and_internal_rpcs.sql',
   '20260915101246_pin_function_search_paths.sql',
   '20260915102437_powerhouse_revenue_flywheel_v1.sql',
@@ -30,6 +37,7 @@ const DRIFTED_ALIASES = [
   '20260915123000_pin_function_search_paths.sql',
   '20260915123000_powerhouse_autonomous_growth_revenue_v1.sql',
   '20260915123000_powerhouse_revenue_flywheel_views_v1.sql',
+  '20260915111000_powerhouse_publication_live_proof_guard.sql',
 ];
 
 test('exact production migration identities are source controlled', () => {
@@ -46,6 +54,13 @@ test('production migrations have unique versions and no drifted replay aliases',
   const versions = files.map(name => name.split('_', 1)[0]);
   assert.equal(new Set(versions).size, versions.length, 'Supabase migration versions must be unique');
   for (const name of DRIFTED_ALIASES) assert.equal(files.includes(name), false, name);
+});
+
+test('search-path hardening tolerates only absent non-ledger baseline helpers', () => {
+  const sql = fs.readFileSync(path.join(MIGRATIONS, '20260915101246_pin_function_search_paths.sql'), 'utf8');
+  assert.match(sql, /to_regprocedure\('public\.bg_brein_regels_check\(text,text,text\)'\)/i);
+  assert.match(sql, /to_regprocedure\('public\.bg_actualiseer_connecties_via_lessen\(\)'\)/i);
+  assert.match(sql, /alter function public\.powerhouse_execution_status\(date\)/i);
 });
 
 test('live predictive sources are fail closed and are not publishers', () => {

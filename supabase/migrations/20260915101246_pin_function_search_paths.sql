@@ -1,6 +1,14 @@
 begin;
-alter function public.bg_brein_regels_check(text,text,text) set search_path = public, pg_catalog;
-alter function public.bg_actualiseer_connecties_via_lessen() set search_path = public, pg_catalog;
+do $$
+begin
+  if to_regprocedure('public.bg_brein_regels_check(text,text,text)') is not null then
+    execute 'alter function public.bg_brein_regels_check(text,text,text) set search_path = public, pg_catalog';
+  end if;
+  if to_regprocedure('public.bg_actualiseer_connecties_via_lessen()') is not null then
+    execute 'alter function public.bg_actualiseer_connecties_via_lessen() set search_path = public, pg_catalog';
+  end if;
+end
+$$;
 alter function public.powerhouse_execution_status(date) set search_path = public, pg_catalog;
 alter function public.powerhouse_enforce_completion() set search_path = public, pg_catalog;
 alter function public.powerhouse_daily_execution_guard(date) set search_path = public, pg_catalog;
