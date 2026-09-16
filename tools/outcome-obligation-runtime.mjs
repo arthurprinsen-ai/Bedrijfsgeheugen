@@ -3,6 +3,7 @@ import { pathToFileURL } from 'node:url';
 import { createDefaultAgentRegistry } from '../platform/agents/agent-team.mjs';
 import { evaluateOutcomeObligation, computeExecutionIdentity } from './outcome-obligation-executor.mjs';
 import { createSupabaseOutcomeObligationStores } from './outcome-obligation-supabase-store.mjs';
+import { evaluateCompletion } from '../platform/agents/completion-supervisor.mjs';
 
 function requireStore(store, name, methods) {
   if (!store || typeof store !== 'object') throw new TypeError(`${name} is required`);
@@ -30,20 +31,38 @@ function defaultDue(obligation, trigger) {
 export function createOutcomeObligationRuntime({ registry, workStore, evidenceStore, recoveryStore, clock = () => new Date() }) {
   if (!registry || typeof registry.get !== 'function') throw new TypeError('registry.get is required');
   requireStore(workStore, 'workStore', ['get', 'putIfAbsent']);
-  requireStore(evidenceStore, 'evidenceStore', ['list']);
+  requireStore(evidenceStore, 'evidenceStore', ['list', 'putIfAbsent']);
   requireStore(recoveryStore, 'recoveryStore', ['get', 'putIfAbsent']);
   if (typeof clock !== 'function') throw new TypeError('clock must be a function');
 
-  async function evaluateOne({ obligation, trigger, productionProofRequired = false, coalesceKey = null, due = undefined, evidenceDeadline = null, hardBoundary = null }) {
+  async function evaluateOne({ obligation, trigger, productionProofRequired = false, coalesceKey = null, due = undefined, evidenceDeadline = null, hardBoundary = null, completionContext = {} }) {
     const now = clock();
     const agent = registry.get(obligation.ownerAgent);
     const identity = computeExecutionIdentity({ obligation, now, trigger, coalesceKey });
     let priorWork = await workStore.get(identity.idempotencyKey);
     let priorRecovery = await recoveryStore.get(`recovery|${identity.idempotencyKey}`);
-    const evidence = await evidenceStore.list(identity.idempotencyKey);
+    let evidence = await evidenceStore.list(identity.idempotencyKey);
     const isDue = due ?? defaultDue(obligation, trigger);
 
-    let decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
+    if (typeof completionContext?.claim === 'string' && completionContext.claim.trim()) {
+      const claim = completionContext.claim.trim().toUpperCase();
+      await evidenceStore.putIfAbsent({
+        idempotencyKey:identity.idempotencyKey,
+        ref:`progress:${claim}:${identity.triggerFingerprint}:${completionContext.candidateIdentity ?? 'unbound'}`,
+        type:'PROGRESS_CLAIM',
+        producer:'COMPLETION_SUPERVISOR',
+        taskIdentity:obligation.id,
+        candidateIdentity:completionContext.candidateIdentity ?? null,
+        productionIdentity:completionContext.productionIdentity ?? null,
+        independent:false,
+        accepted:false,
+        metadata:{ claim, triggerFingerprint:identity.triggerFingerprint },
+      });
+      evidence = await evidenceStore.list(identity.idempotencyKey);
+    }
+
+    const legacyHardBoundary = typeof hardBoundary === 'string' ? hardBoundary : hardBoundary?.present === true ? hardBoundary.evidence : null;
+    let decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary:legacyHardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
 
     if (decision.dispatch) {
       const persisted = await workStore.putIfAbsent({
@@ -54,20 +73,74 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
         executionWindow:decision.executionWindow,
       });
       priorWork = persisted.record;
-      decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
+      decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary:legacyHardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
     }
 
     if (decision.recovery) {
       const persisted = await recoveryStore.putIfAbsent({ ...decision.recovery, traceId:decision.traceId, state:'RECOVERING' });
       priorRecovery = persisted.record;
-      decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
+      decision = evaluateOutcomeObligation({ obligation, now, trigger, agent, due:isDue, priorWork, priorRecovery, evidence, hardBoundary:legacyHardBoundary, evidenceDeadline, productionProofRequired, coalesceKey });
     }
 
-    return Object.freeze({ ...decision });
+    const materialObligations = completionContext.materialObligations ?? [];
+    let supervision = evaluateCompletion({
+      obligationId:obligation.id,
+      workId:identity.idempotencyKey,
+      claim:completionContext.claim ?? decision.status,
+      candidateIdentity:completionContext.candidateIdentity ?? '',
+      productionIdentity:completionContext.productionIdentity ?? '',
+      materialObligations,
+      evidence,
+      hardBoundary:hardBoundary && typeof hardBoundary === 'object' ? hardBoundary : null,
+      retry:completionContext.retry ?? null,
+    });
+    if (supervision.success !== true
+      && supervision.required_evidence.length === 1
+      && supervision.required_evidence[0] === 'OBLIGATIONS_COMPLETE') {
+      await evidenceStore.putIfAbsent({
+        idempotencyKey:identity.idempotencyKey,
+        ref:`obligations-complete:${completionContext.candidateIdentity}:${completionContext.productionIdentity}`,
+        type:'OBLIGATIONS_COMPLETE',
+        producer:'OUTCOME_OBLIGATION_RUNTIME',
+        taskIdentity:obligation.id,
+        candidateIdentity:completionContext.candidateIdentity ?? null,
+        productionIdentity:completionContext.productionIdentity ?? null,
+        independent:true,
+        accepted:true,
+        exactProduction:true,
+        metadata:{ materialObligations },
+      });
+      evidence = await evidenceStore.list(identity.idempotencyKey);
+      supervision = evaluateCompletion({
+        obligationId:obligation.id,
+        workId:identity.idempotencyKey,
+        claim:completionContext.claim ?? decision.status,
+        candidateIdentity:completionContext.candidateIdentity ?? '',
+        productionIdentity:completionContext.productionIdentity ?? '',
+        materialObligations,
+        evidence,
+        hardBoundary:hardBoundary && typeof hardBoundary === 'object' ? hardBoundary : null,
+        retry:completionContext.retry ?? null,
+      });
+    }
+    await evidenceStore.putIfAbsent({
+      idempotencyKey:identity.idempotencyKey,
+      ref:`supervisor:${supervision.idempotency_key}`,
+      type:'SUPERVISOR_DECISION',
+      producer:'COMPLETION_SUPERVISOR',
+      taskIdentity:obligation.id,
+      candidateIdentity:completionContext.candidateIdentity ?? null,
+      productionIdentity:completionContext.productionIdentity ?? null,
+      independent:false,
+      accepted:false,
+      metadata:{ normalizedState:supervision.normalized_state, nextAction:supervision.next_action, requiredEvidence:supervision.required_evidence },
+    });
+
+    return Object.freeze({ ...decision, supervision });
   }
 
   return Object.freeze({
-    async evaluateSweep({ trigger = { type:'scheduled-sweep', fingerprint:'scheduled' }, obligationIds = null, productionProofRequired = false, coalesceKey = null, due = undefined, evidenceDeadline = null, hardBoundary = null } = {}) {
+    async evaluateSweep({ trigger = { type:'scheduled-sweep', fingerprint:'scheduled' }, obligationIds = null, productionProofRequired = false, coalesceKey = null, due = undefined, evidenceDeadline = null, hardBoundary = null, completionContext = {} } = {}) {
       const obligations = await loadCanonicalObligations();
       const selected = obligationIds == null
         ? obligations
@@ -77,20 +150,24 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
             return found;
           });
       const results = [];
-      for (const obligation of selected) results.push(await evaluateOne({ obligation, trigger, productionProofRequired, coalesceKey, due, evidenceDeadline, hardBoundary }));
+      for (const obligation of selected) results.push(await evaluateOne({ obligation, trigger, productionProofRequired, coalesceKey, due, evidenceDeadline, hardBoundary, completionContext }));
       return Object.freeze(results);
     },
   });
 }
 
 function parseCliArgs(argv) {
-  const args = { command:argv[0] ?? 'sweep', obligationIds:null, triggerType:null, fingerprint:null, now:null, output:'.artifacts/outcome-obligation-decisions.json' };
+  const args = { command:argv[0] ?? 'sweep', obligationIds:null, triggerType:null, fingerprint:null, coalesceKey:null, now:null, claim:null, candidateIdentity:null, productionIdentity:null, output:'.artifacts/outcome-obligation-decisions.json' };
   for (let i = 1; i < argv.length; i += 1) {
     const value = argv[i + 1];
     if (argv[i] === '--obligation' && value) { args.obligationIds = [value]; i += 1; }
     else if (argv[i] === '--trigger-type' && value) { args.triggerType = value; i += 1; }
     else if (argv[i] === '--fingerprint' && value) { args.fingerprint = value; i += 1; }
+    else if (argv[i] === '--coalesce-key' && value) { args.coalesceKey = value; i += 1; }
     else if (argv[i] === '--now' && value) { args.now = value; i += 1; }
+    else if (argv[i] === '--claim' && value) { args.claim = value; i += 1; }
+    else if (argv[i] === '--candidate-identity' && value) { args.candidateIdentity = value; i += 1; }
+    else if (argv[i] === '--production-identity' && value) { args.productionIdentity = value; i += 1; }
     else if (argv[i] === '--output' && value) { args.output = value; i += 1; }
     else throw new TypeError(`unknown or incomplete CLI argument: ${argv[i]}`);
   }
@@ -100,7 +177,7 @@ function parseCliArgs(argv) {
 function failClosedStores() {
   return {
     workStore:{ async get(){ return null; }, async putIfAbsent(){ throw new Error('durable_work_store_not_configured'); } },
-    evidenceStore:{ async list(){ return []; } },
+    evidenceStore:{ async list(){ return []; }, async putIfAbsent(){ throw new Error('durable_evidence_store_not_configured'); } },
     recoveryStore:{ async get(){ return null; }, async putIfAbsent(){ throw new Error('durable_recovery_store_not_configured'); } },
   };
 }
@@ -137,7 +214,9 @@ export async function runOutcomeObligationCli(argv = process.argv.slice(2), { en
   const decisions = await runtime.evaluateSweep({
     trigger,
     obligationIds:args.obligationIds,
+    coalesceKey:args.coalesceKey,
     hardBoundary:stores.hardBoundary,
+    completionContext:{ claim:args.claim, candidateIdentity:args.candidateIdentity, productionIdentity:args.productionIdentity },
   });
   const artifact = Object.freeze({
     schemaVersion:1,
