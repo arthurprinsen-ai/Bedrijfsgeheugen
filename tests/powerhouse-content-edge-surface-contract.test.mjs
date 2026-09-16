@@ -21,6 +21,14 @@ test('quality registry owns both restored content Edge Function surfaces', () =>
   }
 });
 
+test('quality registry owns the bg_geheim RPC dependency discovered from the restored functions', () => {
+  const surface = byId.get('rpc:bg_geheim');
+  assert.ok(surface, 'rpc:bg_geheim must be registered');
+  assert.equal(surface.authority, 'supabase/functions/powerhouse-social-publisher/index.ts');
+  assert.equal(surface.evidence_contract, 'tests/powerhouse-content-edge-surface-contract.test.mjs');
+  assert.equal(surface.required, true);
+});
+
 test('orchestrator retains exact seven-channel and personal fail-closed contracts', () => {
   assert.match(orchestrator, /const CHANNELS=\['email_newsletter','linkedin_personal','linkedin_company','linkedin_article_personal','linkedin_article_company','instagram_company','blog'\]/);
   assert.match(orchestrator, /const EXECUTABLE=new Set\(\['linkedin_personal','linkedin_company','blog'\]\)/);
