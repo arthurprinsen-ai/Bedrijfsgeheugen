@@ -54,6 +54,10 @@ create table if not exists public.content_publication_obligations (
   constraint content_publication_obligations_status_check check (status in ('PLANNED','GENERATED','APPROVED','DISPATCHED','PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED','BLOCKED','FAILED'))
 );
 
+alter table public.content_publication_obligations enable row level security;
+revoke all on table public.content_publication_obligations from public, anon, authenticated;
+grant all on table public.content_publication_obligations to service_role;
+
 create index if not exists content_publication_obligations_due_idx
   on public.content_publication_obligations (tenant_id, publication_date, channel, status);
 
@@ -109,7 +113,7 @@ begin
     updated_at
   )
   select
-    coalesce(nullif(e.tenant_id,''), 'canonical'),
+    'canonical',
     e.calendar_date,
     e.calendar_date,
     (e.calendar_date::timestamp + interval '23 hours 59 minutes') at time zone 'Europe/Amsterdam',
@@ -131,7 +135,7 @@ begin
     from jsonb_array_elements_text(coalesce(e.target_channels,'[]'::jsonb)) as c(value)
   ) ch
   where e.calendar_date between p_from and p_to
-    and coalesce(nullif(e.tenant_id,''), 'canonical') in ('canonical','bedrijfsgeheugen')
+    and e.tenant_id = 'canonical'
     and ch.channel in ('linkedin_personal','linkedin_company','instagram','blog')
   on conflict (tenant_id, publication_date, channel) do update
     set experiment_id = excluded.experiment_id,
@@ -151,7 +155,8 @@ begin
 end;
 $$;
 
-revoke all on function public.sync_content_publication_obligations(date,date) from public;
+revoke execute on function public.sync_content_publication_obligations(date,date) from public, anon, authenticated;
+grant execute on function public.sync_content_publication_obligations(date,date) to service_role;
 
 create or replace function public.record_content_publication_state(
   p_tenant_id text,
@@ -241,9 +246,12 @@ begin
 end;
 $$;
 
-revoke all on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) from public;
+revoke execute on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) from public, anon, authenticated;
+grant execute on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) to service_role;
 
-create or replace view public.content_operations_cockpit as
+create or replace view public.content_operations_cockpit
+with (security_invoker = true)
+as
 select
   o.*,
   (o.publication_date = (timezone('Europe/Amsterdam', now()))::date) as is_due_today,
@@ -257,8 +265,16 @@ select
   end as operational_state
 from public.content_publication_obligations o;
 
-create or replace view public.v_content_publication_operations as
+revoke all on table public.content_operations_cockpit from public, anon, authenticated;
+grant select on table public.content_operations_cockpit to service_role;
+
+create or replace view public.v_content_publication_operations
+with (security_invoker = true)
+as
 select * from public.content_operations_cockpit;
+
+revoke all on table public.v_content_publication_operations from public, anon, authenticated;
+grant select on table public.v_content_publication_operations to service_role;
 
 select public.sync_content_publication_obligations(date '2026-09-14', date '2026-12-31');
 
@@ -268,7 +284,7 @@ declare
 begin
   select count(*) into v_blog_count
   from public.content_publication_obligations
-  where tenant_id in ('canonical','bedrijfsgeheugen')
+  where tenant_id = 'canonical'
     and channel = 'blog'
     and publication_date between date '2026-09-14' and date '2026-12-31';
 
