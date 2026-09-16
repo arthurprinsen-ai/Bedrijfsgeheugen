@@ -2,14 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath = new URL('../supabase/migrations/20260916144500_autonomous_improvement_production_cycle_v1.sql', import.meta.url);
+const migrationPath = new URL('../supabase/migrations/20260916151600_fix_autonomous_improvement_record_kind_v1.sql', import.meta.url);
 const sql = await readFile(migrationPath, 'utf8');
 
-test('production cycle reuses canonical Brain authority and existing scheduler', () => {
+test('production cycle reuses canonical Brain authority without creating parallel storage', () => {
   assert.match(sql, /powerhouse_autonomous_improvement_cycle_v1/);
   assert.match(sql, /public\.brain_append_record/);
   assert.match(sql, /tenant_id='canonical'|\s*'canonical',/);
-  assert.match(sql, /cron\.schedule\('powerhouse-autonomous-improvement-cycle-v1','42 \* \* \* \*'/);
   assert.doesNotMatch(sql, /create\s+table/i);
 });
 
@@ -45,5 +44,6 @@ test('hourly record identity is deterministic, idempotent, and uses an allowed B
   assert.match(sql, /'idempotent',true/);
   assert.match(sql, /record_kind='current_state'/);
   assert.match(sql, /'improvement','current_state'/);
+  assert.match(sql, /'cycle_kind','autonomous_improvement_cycle'/);
   assert.doesNotMatch(sql, /'improvement','autonomous_improvement_cycle'/);
 });
