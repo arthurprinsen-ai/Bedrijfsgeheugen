@@ -19,6 +19,71 @@ async function exists(relativePath) {
   }
 }
 
+function requireBoolean(value, label, errors) {
+  if (value !== true) errors.push(`${label} must be true`);
+}
+
+function requireNonEmptyArray(value, label, errors) {
+  if (!Array.isArray(value) || value.length === 0) errors.push(`${label} must be a non-empty array`);
+}
+
+function validateOperatingControls(contract, errors) {
+  const operating = contract.operating_controls;
+  if (!operating || operating.fingerprint !== 'powerhouse-autonomy-controls-v1') {
+    errors.push('autonomy controls fingerprint drift');
+    return null;
+  }
+
+  const controls = operating.controls ?? {};
+  const requiredControls = [
+    'autonomy_budget',
+    'ai_eval_regression',
+    'agent_security_control_plane',
+    'knowledge_decay',
+    'service_level_objectives',
+    'disaster_recovery_drills',
+    'powerhouse_autonomy_scorecard'
+  ];
+  for (const name of requiredControls) {
+    if (!controls[name]) errors.push(`missing autonomy control: ${name}`);
+  }
+
+  if (controls.autonomy_budget) {
+    requireBoolean(controls.autonomy_budget.fail_closed, 'autonomy_budget.fail_closed', errors);
+    requireNonEmptyArray(controls.autonomy_budget.required_dimensions, 'autonomy_budget.required_dimensions', errors);
+  }
+  if (controls.ai_eval_regression) {
+    requireBoolean(controls.ai_eval_regression.require_baseline_comparison, 'ai_eval_regression.require_baseline_comparison', errors);
+    requireNonEmptyArray(controls.ai_eval_regression.required_evidence, 'ai_eval_regression.required_evidence', errors);
+  }
+  if (controls.agent_security_control_plane) {
+    requireBoolean(controls.agent_security_control_plane.least_privilege, 'agent_security_control_plane.least_privilege', errors);
+    requireBoolean(controls.agent_security_control_plane.all_material_side_effects_traceable, 'agent_security_control_plane.all_material_side_effects_traceable', errors);
+    requireNonEmptyArray(controls.agent_security_control_plane.required_dimensions, 'agent_security_control_plane.required_dimensions', errors);
+  }
+  if (controls.knowledge_decay) {
+    requireBoolean(controls.knowledge_decay.require_revalidate_after, 'knowledge_decay.require_revalidate_after', errors);
+    requireNonEmptyArray(controls.knowledge_decay.required_metadata_when_material, 'knowledge_decay.required_metadata_when_material', errors);
+  }
+  if (controls.service_level_objectives) {
+    if (controls.service_level_objectives.error_budget_policy !== 'fail-closed-on-exhaustion') errors.push('service_level_objectives.error_budget_policy drift');
+    requireNonEmptyArray(controls.service_level_objectives.required_fields, 'service_level_objectives.required_fields', errors);
+    requireNonEmptyArray(controls.service_level_objectives.minimum_domains, 'service_level_objectives.minimum_domains', errors);
+  }
+  if (controls.disaster_recovery_drills) {
+    requireBoolean(controls.disaster_recovery_drills.require_restore_proof, 'disaster_recovery_drills.require_restore_proof', errors);
+    requireBoolean(controls.disaster_recovery_drills.backup_presence_alone_is_not_restore_proof, 'disaster_recovery_drills.backup_presence_alone_is_not_restore_proof', errors);
+    requireNonEmptyArray(controls.disaster_recovery_drills.required_evidence, 'disaster_recovery_drills.required_evidence', errors);
+  }
+  if (controls.powerhouse_autonomy_scorecard) {
+    requireBoolean(controls.powerhouse_autonomy_scorecard.no_single_magic_score, 'powerhouse_autonomy_scorecard.no_single_magic_score', errors);
+    requireBoolean(controls.powerhouse_autonomy_scorecard.unknown_is_not_zero, 'powerhouse_autonomy_scorecard.unknown_is_not_zero', errors);
+    requireNonEmptyArray(controls.powerhouse_autonomy_scorecard.dimensions, 'powerhouse_autonomy_scorecard.dimensions', errors);
+  }
+
+  return operating.fingerprint;
+}
+
 export async function validateEngineeringOS() {
   const contract = await loadEngineeringContract();
   const errors = [];
@@ -40,6 +105,9 @@ export async function validateEngineeringOS() {
   if (!developmentOS.includes('BRAIN-DELIVERY-v2')) errors.push('development OS does not declare BRAIN-DELIVERY-v2');
   if (developmentOS.includes('BRAIN-DELIVERY-v1')) errors.push('stale BRAIN-DELIVERY-v1 remains in development OS');
   if (!developmentOS.includes('powerhouse-engineering-os-v1')) errors.push('development OS does not reference Engineering OS fingerprint');
+  if (!developmentOS.includes('powerhouse-autonomy-controls-v1')) errors.push('development OS does not reference autonomy controls fingerprint');
+
+  const controlFingerprint = validateOperatingControls(contract, errors);
 
   const requiredCI = await readFile(path.join(repoRoot, contract.canonical_authorities.required_ci), 'utf8');
   if (!requiredCI.includes(contract.bootstrap.required_test)) errors.push('Engineering OS regression test is not wired into Required test');
@@ -47,6 +115,7 @@ export async function validateEngineeringOS() {
   return {
     ok: errors.length === 0,
     fingerprint: contract.fingerprint,
+    control_fingerprint: controlFingerprint,
     delivery_contract: contract.delivery_contract,
     golden_path: contract.golden_path,
     errors
