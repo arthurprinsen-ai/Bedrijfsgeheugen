@@ -24,22 +24,27 @@ export function createSupabasePortalProjectionStore({
     const data=await gateway({action:'governance',tenantId:String(tenantId)});
     return Array.isArray(data.governance)?data.governance:[];
   }
+  async function getResourceBusinessValue(tenantId){
+    const data=await gateway({action:'resource_business_value',tenantId:String(tenantId)});
+    return data.resourceBusinessValue||null;
+  }
   async function putLayer(tenantId,layer,next){
     const payload={...next,origin:layer};
     const data=await gateway({action:'put',tenantId:String(tenantId),layer,payload});
     return {stored:Boolean(data.stored),stale:Boolean(data.stale),record:data.record||payload};
   }
   return Object.freeze({
-    getLayer,getGovernance,
+    getLayer,getGovernance,getResourceBusinessValue,
     async get(tenantId){
-      const [legacy,canonical,aiGovernance]=await Promise.all([
+      const [legacy,canonical,aiGovernance,resourceBusinessValue]=await Promise.all([
         getLayer(tenantId,PORTAL_LAYERS.LEGACY),
         getLayer(tenantId,PORTAL_LAYERS.CANONICAL),
-        getGovernance(tenantId)
+        getGovernance(tenantId),
+        getResourceBusinessValue(tenantId)
       ]);
       if(!legacy&&!canonical)return null;
-      const data={...composePortalProjectionLayers({legacy,canonical}),aiGovernance};
-      const sourceUpdatedAt=data.sourceMeta?.updatedAt||canonical?.sourceUpdatedAt||legacy?.sourceUpdatedAt||'';
+      const data={...composePortalProjectionLayers({legacy,canonical}),aiGovernance,resourceBusinessValue};
+      const sourceUpdatedAt=data.sourceMeta?.updatedAt||canonical?.sourceUpdatedAt||legacy?.sourceUpdatedAt||resourceBusinessValue?.latest_observed_at||'';
       return {schemaVersion:2,tenantId,origin:canonical?'composed':'legacy-migration',sourceUpdatedAt,updatedAt:sourceUpdatedAt,data};
     },
     put:(tenantId,next)=>putLayer(tenantId,PORTAL_LAYERS.LEGACY,next),

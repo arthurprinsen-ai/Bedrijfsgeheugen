@@ -34,7 +34,7 @@ jobs:
           actual=$(git rev-parse HEAD)
           test "$actual" = "$HEAD_SHA" || { echo "::error::Checked-out SHA $actual does not match PR head $HEAD_SHA"; exit 1; }
 
-      - name: Wait for exact Netlify preview SHA
+      - name: Wait for exact Netlify preview SHA and pin immutable deploy
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -44,9 +44,21 @@ jobs:
             json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
             state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
             target=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .target_url' | head -n1)
-            if [ "$state" = "success" ]; then
-              echo "PREVIEW_URL=$target" >> "$GITHUB_ENV"
-              exit 0
+            if [ "$state" = "success" ] && [ -n "$target" ] && [ "$target" != "null" ]; then
+              release=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$target/release.json?sha=$HEAD_SHA&attempt=$i" || true)
+              deployed_sha=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$release")
+              deploy_id=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$release")
+              if [ "$deployed_sha" = "$HEAD_SHA" ] && [ -n "$deploy_id" ]; then
+                immutable="https://${deploy_id}--bedrijfsgeheugen.netlify.app"
+                immutable_release=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$immutable/release.json?sha=$HEAD_SHA" || true)
+                immutable_sha=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$immutable_release")
+                if [ "$immutable_sha" = "$HEAD_SHA" ]; then
+                  echo "PREVIEW_URL=$immutable" >> "$GITHUB_ENV"
+                  echo "NETLIFY_DEPLOY_ID=$deploy_id" >> "$GITHUB_ENV"
+                  echo "Pinned exact deploy $deploy_id for $HEAD_SHA"
+                  exit 0
+                fi
+              fi
             fi
             if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
               echo "::error::Netlify preview failed for $HEAD_SHA: $state"
@@ -54,10 +66,10 @@ jobs:
             fi
             sleep 10
           done
-          echo "::error::Timed out waiting for Netlify preview on exact head SHA"
+          echo "::error::Timed out waiting for immutable Netlify preview on exact head SHA"
           exit 1
 
-      - name: Wait for the preview to actually serve Portal V2
+      - name: Wait for the immutable preview to actually serve Portal V2
         run: bash tools/ci/wait-for-url.sh "$PREVIEW_URL/portal-v2/app.js"
 
       - name: Verify exact Netlify V2 assets are served
@@ -91,7 +103,7 @@ jobs:
         run: |
           PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
 
-      - name: Verify exact demoAI mobile rewrite on Netlify preview
+      - name: Verify exact demoAI mobile rewrite on immutable Netlify preview
         run: |
           set -euo pipefail
           PREVIEW_URL="$PREVIEW_URL" npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
@@ -126,5 +138,6 @@ jobs:
       - name: Report exact preview evidence
         run: |
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
+          echo "Verified immutable Netlify deploy: $NETLIFY_DEPLOY_ID"
           echo "Verified Netlify preview assets: $PREVIEW_URL/portal-v2/"
           echo "Exact demoAI mobile rewrite plus desktop, mobile CSRD, full functional parity and executable legacy algorithm browser checks passed."

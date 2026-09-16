@@ -16,8 +16,19 @@ async function bootCanvassen(page){
   await page.evaluate(async()=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage('canvassen');});
   const workspace=page.locator('[data-functional-workspace="canvassen"]');
   await expect(workspace).toBeVisible({timeout:10_000});
+  // mountWorkspace exposes the shell synchronously, then imports/mounts the
+  // specialist Canvassen renderer asynchronously. Screenshot only after that
+  // renderer is complete, otherwise baseline and candidate can capture two
+  // different lifecycle phases of the same UI.
+  await expect(workspace.locator('.canvas-summary')).toBeVisible({timeout:10_000});
+  await expect(workspace.locator('[data-canvas]')).toHaveCount(6,{timeout:10_000});
   await page.evaluate(()=>document.fonts?.ready);
-  await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}input,textarea{caret-color:transparent!important}'});
+  // The workspace itself is intentionally translucent in the product. A
+  // locator screenshot would therefore include live overview widgets behind
+  // it, which update independently of Canvassen and caused false pixel diffs.
+  // Give only the screenshot target an opaque deterministic backing surface;
+  // the actual Canvassen DOM, layout and pixel threshold stay unchanged.
+  await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}input,textarea{caret-color:transparent!important}[data-functional-workspace="canvassen"]{background:rgb(255 255 255)!important}'});
   return workspace;
 }
 
