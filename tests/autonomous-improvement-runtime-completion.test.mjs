@@ -6,7 +6,7 @@ import {
   classifyAutonomyBoundary,
   buildValueLineage,
   buildMetaLearningPolicy
-} from '../scripts/brain/continuous-improvement/autonomous-runtime.mjs';
+} from '../scripts/brain/continuous-improvement/completion-runtime.mjs';
 
 const candidate = {
   id: 'runtime-p95-regression',
