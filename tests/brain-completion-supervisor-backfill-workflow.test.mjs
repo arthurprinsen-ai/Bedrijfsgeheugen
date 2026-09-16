@@ -6,6 +6,8 @@ test('active backfill workflow reads existing authorities and only resumes canon
   const yaml = await readFile('.github/workflows/completion-supervisor-backfill-shadow.yml', 'utf8');
   assert.match(yaml, /workflow_dispatch:/);
   assert.match(yaml, /schedule:/);
+  assert.match(yaml, /push:\s*[\s\S]*branches:\s*[\s\S]*- main/);
+  assert.match(yaml, /paths:\s*[\s\S]*outcome-obligation-completion-supervisor-backfill\.mjs/);
   assert.match(yaml, /actions:\s*read/);
   assert.match(yaml, /pull-requests:\s*read/);
   assert.match(yaml, /contents:\s*read/);
