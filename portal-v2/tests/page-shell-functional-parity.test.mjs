@@ -21,7 +21,7 @@ test('canvassen dispatches through its proven canvas workspace',()=>{
 test('generic protected-capability fallback cannot preempt functional-suite or canvas routing',()=>{
   const functionalIndex=source.indexOf('FUNCTIONAL_SUITE_PAGES.has(pageId)');
   const canvasIndex=source.indexOf("pageId==='canvassen'");
-  const genericIndex=source.indexOf('contract?.legacyCapability');
+  const genericIndex=source.indexOf('else if(contract?.legacyCapability){');
   assert.ok(functionalIndex>0,'functional-suite dispatch missing');
   assert.ok(canvasIndex>0,'canvas dispatch missing');
   assert.ok(genericIndex>functionalIndex,'generic fallback must occur after functional dispatch');
