@@ -26,6 +26,7 @@ export function discoverQualitySurfaces({ files = [] } = {}) {
       for (const match of content.matchAll(/^\s{0,8}(\/[^:\s]+)\s*:/gm)) add(matches, 'api', match[1], source);
       for (const match of content.matchAll(/["'](\/[^"']+)["']\s*:/g)) add(matches, 'api', match[1], source);
     }
+    for (const match of content.matchAll(/quality-critical-journey\s*:\s*([a-zA-Z0-9._-]+)/gi)) add(matches, 'critical_journey', match[1], source);
   }
   return unique(matches);
 }
