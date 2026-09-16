@@ -5,8 +5,12 @@ export function normalizeText(value = '') {
   return String(value).replace(/\r\n/g, '\n').replace(/[\t ]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+function coveredPosts(posts = []) {
+  return posts.filter((post) => COVERED.has(String(post?.status || '').toLowerCase()));
+}
+
 export function hasProviderCoverage({ posts = [] } = {}) {
-  return posts.some((post) => COVERED.has(String(post?.status || '').toLowerCase()));
+  return coveredPosts(posts).length > 0;
 }
 
 function artifactUsable(artifact) {
@@ -78,8 +82,42 @@ export function selectDeliverySource({ channel, artifact = null, idea = null } =
   return { kind: 'idea', text: idea.content.text, ideaId: idea?.id || null, media: [], artifact: null };
 }
 
-export function deliveryDecision({ channel, posts = [], artifact = null, idea = null } = {}) {
-  if (hasProviderCoverage({ posts })) return { action: 'NONE', reason: 'PROVIDER_COVERED' };
+function providerCoverageDecision({ channel, posts, artifact, obligation }) {
+  const covered = coveredPosts(posts);
+  if (!covered.length) return null;
+
+  if (channel === 'linkedin_personal') {
+    if (!validPersonalArtifact(artifact)) return { action: 'BLOCK', reason: 'PERSONAL_TRUTH_ARTIFACT_REQUIRED' };
+    const exact = covered.find((post) => normalizeText(post?.text) === normalizeText(artifact.body));
+    if (!exact) return { action: 'BLOCK', reason: 'PERSONAL_PROVIDER_ARTIFACT_MISMATCH' };
+    return { action: 'NONE', reason: 'PROVIDER_COVERED_VERIFIED', providerPostId: exact.id || null };
+  }
+
+  if (channel === 'instagram') {
+    if (!validInstagramArtifact(artifact)) return { action: 'BLOCK', reason: 'INSTAGRAM_MIRA_ARTIFACT_REQUIRED' };
+    const exact = covered.find((post) => normalizeText(post?.text) === normalizeText(artifact.body));
+    if (!exact) return { action: 'BLOCK', reason: 'INSTAGRAM_PROVIDER_ARTIFACT_MISMATCH' };
+
+    const gateInput = artifact.generation_evidence.instagram_publish_gate_input;
+    const evidence = obligation?.evidence || {};
+    const verified =
+      obligation?.status === 'LIVE_PROVEN' &&
+      evidence.identity_gate_result === 'PASS' &&
+      evidence.mira_identity_verified === true &&
+      evidence.asset_verified_under_current_contract === true &&
+      evidence.final_media_asset_url === gateInput.assetUrl &&
+      evidence.provider_post_id === exact.id;
+    if (!verified) return { action: 'BLOCK', reason: 'INSTAGRAM_PROVIDER_IDENTITY_UNVERIFIED' };
+    return { action: 'NONE', reason: 'PROVIDER_COVERED_VERIFIED', providerPostId: exact.id || null };
+  }
+
+  return { action: 'NONE', reason: 'PROVIDER_COVERED' };
+}
+
+export function deliveryDecision({ channel, posts = [], artifact = null, idea = null, obligation = null } = {}) {
+  const coverage = providerCoverageDecision({ channel, posts, artifact, obligation });
+  if (coverage) return coverage;
+
   const source = selectDeliverySource({ channel, artifact, idea });
   if (!source) {
     const reason = channel === 'linkedin_personal'
