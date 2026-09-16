@@ -9,6 +9,7 @@ const MIGRATIONS = path.join(ROOT, 'supabase', 'migrations');
 const ENGINE = path.join(ROOT, 'supabase', 'functions', 'powerhouse-predictive-engine', 'index.ts');
 const CALIBRATOR = path.join(ROOT, 'supabase', 'functions', 'powerhouse-forecast-calibrator', 'index.ts');
 const CONFIG = path.join(ROOT, 'supabase', 'config.toml');
+const LINEAGE = path.join(ROOT, 'config', 'supabase-production-migration-lineage.json');
 
 const CANONICAL = [
   '20260914074356_powerhouse_channel_decisions_v1.sql',
@@ -37,6 +38,8 @@ const CANONICAL = [
   '20260915183603_resource_impact_projection_v1.sql',
   '20260915183656_resource_impact_exclude_retired_make.sql',
   '20260916091505_powerhouse_structure_hygiene_v2.sql',
+  '20260916123944_powerhouse_autonomy_rpc_replay_hardening.sql',
+  '20260916123957_powerhouse_internal_view_replay_hardening.sql',
 ];
 
 const DRIFTED_ALIASES = [
@@ -48,6 +51,8 @@ const DRIFTED_ALIASES = [
   '20260915123000_powerhouse_revenue_flywheel_views_v1.sql',
   '20260915111000_powerhouse_publication_live_proof_guard.sql',
   '20260916091500_powerhouse_structure_hygiene_v2.sql',
+  '20260916110500_powerhouse_autonomy_rpc_replay_hardening.sql',
+  '20260916111500_powerhouse_internal_view_replay_hardening.sql',
 ];
 
 test('exact production migration identities are source controlled', () => {
@@ -64,6 +69,23 @@ test('production migrations have unique versions and no drifted replay aliases',
   const versions = files.map(name => name.split('_', 1)[0]);
   assert.equal(new Set(versions).size, versions.length, 'Supabase migration versions must be unique');
   for (const name of DRIFTED_ALIASES) assert.equal(files.includes(name), false, name);
+});
+
+test('production lineage remains fail closed until protected-main readback', () => {
+  const lineage = JSON.parse(fs.readFileSync(LINEAGE, 'utf8'));
+  assert.equal(lineage.reconciliationStatus, 'PENDING_MAIN_READBACK');
+  assert.equal(lineage.obligation.productionStateBeforeClosure, 'OPEN');
+  assert.equal(lineage.latestObservedProductionMigration, '20260916123957_powerhouse_internal_view_replay_hardening');
+  assert.deepEqual(lineage.reconciled.slice(-2), [
+    {
+      production: '20260916123944_powerhouse_autonomy_rpc_replay_hardening.sql',
+      replacesAlias: '20260916110500_powerhouse_autonomy_rpc_replay_hardening.sql',
+    },
+    {
+      production: '20260916123957_powerhouse_internal_view_replay_hardening.sql',
+      replacesAlias: '20260916111500_powerhouse_internal_view_replay_hardening.sql',
+    },
+  ]);
 });
 
 test('search-path hardening tolerates only absent non-ledger baseline helpers', () => {
