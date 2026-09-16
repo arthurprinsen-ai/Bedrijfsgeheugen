@@ -63,6 +63,43 @@
     "currency_signals": ["deprecation","eol","cve","unsupported_api","stale_sdk","superseded_platform_feature","compatibility_drift","material_new_capability"],
     "forbidden": ["blind_latest_version_chasing","benchmark_only_adoption","replacement_without_measurable_benefit","parallel_truth_or_agent_memory","weakened_security_or_gates_for_frontier_candidate","latest_claim_without_current_check_when_currency_matters","unowned_unversioned_no_rollback_experiment"]
   },
+  "continuous_improvement": {
+    "fingerprint": "powerhouse-engineering-closed-loop-v1",
+    "purpose": "Measure and improve Idea/Fix to LIVE & BEWEZEN without weakening quality or creating a parallel authority.",
+    "engine": "scripts/brain/powerhouse-engineering-closed-loop.mjs",
+    "regression_test": "tests/brain-powerhouse-engineering-closed-loop.test.mjs",
+    "scheduled_evidence_workflow": ".github/workflows/engineering-os-learning.yml",
+    "scorecard": {
+      "dora_metrics": ["change_lead_time_ms","deployment_frequency_per_day","failed_deployment_recovery_time_ms","change_fail_rate","deployment_rework_rate"],
+      "powerhouse_metrics": ["idea_to_live_bewezen_ms","test_flake_rate","escaped_defect_rate","gate_latency_ms","evidence_completeness"],
+      "truth_rule": "unknown_is_not_zero"
+    },
+    "flaky_test_policy": {
+      "definition": "pass_fail_oscillation_on_same_source_revision",
+      "required_failure_override_allowed": false,
+      "rerun_until_green_allowed": false
+    },
+    "dependency_graph": {
+      "edge_semantics": "dependent_to_dependency",
+      "blast_radius": "reverse_transitive_dependents",
+      "applies_to": ["code","tests","workflows","runtime","provider","knowledge_projection"]
+    },
+    "recovery_proof": {
+      "max_age_days": 90,
+      "required_domains": ["code_rollback","netlify_rollback","database_restore","migration_recovery","provider_fallback"],
+      "fresh_successful_bounded_rehearsal_required": true
+    },
+    "golden_path_generators": {
+      "supported_kinds": ["frontend","backend","migration","agent","integration"],
+      "required_hooks": ["contract","test","observability","documentation","rollback","readback"],
+      "registered_lane_only": true
+    },
+    "meta_learning": {
+      "direct_gate_mutation_allowed": false,
+      "promotion": "protected_delivery_required",
+      "signals": ["gate_effectiveness","false_failures","escaped_defects","flake_rate","gate_latency","evidence_completeness"]
+    }
+  },
   "engineering_rules": [
     "Prefer small coherent modules with explicit interfaces and ownership.",
     "Prefer reusable helpers and reusable workflows over copy-paste families.",
@@ -73,6 +110,10 @@
     "No new brain, registry, queue, calendar, analytics store or learning store when an existing canonical capability can be extended.",
     "Use current task-relevant external evidence when technology currency can materially change the answer or implementation.",
     "Adopt frontier technology only through a reversible, measurable experiment with rollback or fallback.",
+    "Measure engineering speed and instability with explicit evidence completeness; unknown values are never synthetic zero.",
+    "Flaky-test diagnostics never override a required failure and rerun-until-green is prohibited.",
+    "Recovery is proven only by fresh successful bounded rehearsal evidence, not documentation alone.",
+    "Meta-learning recommendations can only change Engineering OS through the normal protected delivery path.",
     "Documentation and learning writeback are release outputs, not optional follow-up."
   ],
   "terminal_statuses": ["LIVE & BEWEZEN","DEELS LIVE","GEBLOKKEERD","NIET GEDAAN"],
