@@ -14,6 +14,7 @@ on:
       - 'config/powerhouse-autonomous-backlog.json'
       - 'tests/brain-autonomous-improvement-runtime.test.mjs'
       - 'tests/brain-autonomous-backlog-intake.test.mjs'
+      - 'tests/brain-github-backlog-source.test.mjs'
       - 'tests/intelligence-agent-runtime.test.mjs'
       - 'tests/brain-acceptance.test.mjs'
       - 'tests/brain-api-gateway.test.mjs'
@@ -28,6 +29,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   intelligence:
@@ -41,7 +43,7 @@ jobs:
       - name: Autonomous Improvement Runtime read-only cycle
         run: node scripts/brain/continuous-improvement/run-autonomous-improvement.mjs
       - name: Autonomous Improvement Runtime contracts
-        run: node --test tests/brain-autonomous-improvement-runtime.test.mjs tests/brain-autonomous-backlog-intake.test.mjs
+        run: node --test tests/brain-autonomous-improvement-runtime.test.mjs tests/brain-autonomous-backlog-intake.test.mjs tests/brain-github-backlog-source.test.mjs
       - name: Shared Agent Fabric contracts
         run: node --test tests/agent-fabric.test.mjs
       - name: Agent Fabric API boundary
