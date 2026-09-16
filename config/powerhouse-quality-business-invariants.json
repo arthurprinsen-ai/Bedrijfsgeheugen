@@ -1,0 +1,7 @@
+{
+  "fingerprint": "powerhouse-quality-business-invariants-v1",
+  "required_chain": ["action", "provider", "readback", "outcome", "learning"],
+  "cross_cutting": ["tenant_integrity", "idempotency", "exact_destination_identity", "no_partial_success_green"],
+  "failure_state": "RED",
+  "unknown_state": "UNKNOWN"
+}

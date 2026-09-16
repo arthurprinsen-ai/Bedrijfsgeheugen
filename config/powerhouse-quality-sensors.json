@@ -1,0 +1,13 @@
+{
+  "fingerprint": "powerhouse-quality-deep-sensors-v1",
+  "installed_is_proven": false,
+  "history_authority": "github-actions-evidence-artifacts-plus-BRAIN-CLOSED-LOOP-v1",
+  "sensors": [
+    {"id":"cross_browser_semantic_visual","lane":"deep-frontend","cadence":"daily","proof_state":"NOT_PROVEN_UNTIL_RUN"},
+    {"id":"mutation","lane":"mutation","cadence":"daily","proof_state":"NOT_PROVEN_UNTIL_RUN"},
+    {"id":"fuzz_chaos","lane":"adversarial-contracts","cadence":"daily","proof_state":"NOT_PROVEN_UNTIL_RUN"},
+    {"id":"trivy","lane":"supply-chain-security","cadence":"pull_request_and_daily","proof_state":"NOT_PROVEN_UNTIL_RUN"},
+    {"id":"zap","lane":"passive-dast","cadence":"daily","proof_state":"NOT_PROVEN_UNTIL_RUN"},
+    {"id":"k6","lane":"performance","cadence":"daily","proof_state":"NOT_PROVEN_UNTIL_RUN"}
+  ]
+}

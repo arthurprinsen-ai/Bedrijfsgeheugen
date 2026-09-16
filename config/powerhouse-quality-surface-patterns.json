@@ -1,0 +1,6 @@
+{
+  "fingerprint": "powerhouse-quality-surface-patterns-v1",
+  "surface_types": ["route", "api", "rpc", "function", "table", "permission", "critical_journey"],
+  "new_surface_state": "NOT_REGISTERED",
+  "registered_without_green_evidence_state": "UNTESTED"
+}
