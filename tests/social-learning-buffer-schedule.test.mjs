@@ -117,7 +117,7 @@ test('Instagram provider coverage fails closed unless canonical readback is boun
 });
 
 test('identity-sensitive social_posts reconciliation is transport-only and cannot mint LIVE_PROVEN', async () => {
-  const sql = await readFile(new URL('../supabase/migrations/20260916124000_social_delivery_identity_readback_guard_v1.sql', import.meta.url), 'utf8');
+  const sql = await readFile(new URL('../supabase/migrations/20260916130010_social_delivery_identity_readback_guard_v1.sql', import.meta.url), 'utf8');
   assert.match(sql, /reconcile_social_post_publication_obligation/i);
   assert.match(sql, /transport_only/i);
   assert.match(sql, /identity_guard_required/i);
