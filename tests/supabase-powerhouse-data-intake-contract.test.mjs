@@ -77,3 +77,9 @@ test('external research feeds document the async two-phase schedule', () => {
   assert.match(source.schedule, /process/);
   assert.ok(source.providers.length >= 10);
 });
+
+test('data-intake replay only alters the optional analytics cron when it exists', () => {
+  const sql = fs.readFileSync(new URL('../supabase/migrations/20260915131500_powerhouse_data_intake_health_v1.sql', import.meta.url), 'utf8');
+  assert.match(sql, /if exists\s*\(select 1 from cron\.job where jobname='bg-analytics-sync-daily'\)/i);
+  assert.match(sql, /cron\.alter_job/i);
+});
