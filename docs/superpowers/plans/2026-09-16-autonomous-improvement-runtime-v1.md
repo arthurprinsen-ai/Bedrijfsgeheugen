@@ -1,71 +1,45 @@
-# Autonomous Improvement Runtime v1 Implementation Plan
+# Autonomous Improvement Runtime v1 — Delivery Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+Fingerprint: `powerhouse-autonomous-improvement-runtime-v1`
+Spec: `docs/superpowers/specs/2026-09-16-autonomous-improvement-runtime-v1-design.md`
 
-**Goal:** Turn the existing Continuous Improvement Engine into a periodic, deterministic, evidence-driven runtime that implements scheduler/orchestration, architecture fitness, capability graph projection, champion/challenger experiments, causal learning, replay, chaos testing, simplification and business-value feedback without new persistent authorities.
+## Goal
+Turn the existing Continuous Improvement Engine into a periodic, deterministic, evidence-driven production loop without introducing any parallel persistent authority.
 
-**Architecture:** Extend the existing `scripts/brain/continuous-improvement/` module with focused pure-function units plus one runtime composer. Reuse `Business OS Intelligence` as the scheduled GitHub execution surface, keep persistence routed through existing Brain/Supabase writers, and extend the Engineering OS contract/tests so the feature is fail-closed and release-gated.
+## Canonical architecture
+- GitHub: source, review, protected release and read-only contract probe.
+- Supabase/Brain: runtime/evidence/outcome/learning authority.
+- Supabase `pg_cron`: existing production scheduler authority.
+- `public.brain_append_record` -> existing `public.brain_records`: canonical improvement writeback.
+- Notion: human-readable projection only.
+- Parent candidate/evaluation contract: `powerhouse-continuous-improvement-engine-v1`.
 
-**Tech Stack:** Node.js ESM, node:test/assert, GitHub Actions, existing Powerhouse Engineering OS/Quality Intelligence/Brain/Supabase authorities.
+## Delivery status
+- [x] Pure runtime helpers for fitness, capability projection, champion/challenger, causal evidence, replay, safe chaos, simplification and business-value priority.
+- [x] Deterministic hourly run identity and fail-closed validation.
+- [x] Backlog intake using existing Continuous Improvement classification authority.
+- [x] GitHub `Business OS Intelligence` read-only probe and focused contract tests.
+- [x] Required CI integration without weakening existing V18/release controls.
+- [x] Canonical production adapter `public.powerhouse_autonomous_improvement_cycle_v1` added as a source-controlled Supabase migration.
+- [x] Production adapter reads existing failure, blocker, runtime, cost, verified-value and revenue signals; no new table/store.
+- [x] Production writeback routes through existing `public.brain_append_record` for tenant `canonical`.
+- [x] Existing Supabase security contract hardened with explicit EXECUTE revocation from `public`, `anon`, `authenticated`; service-role only.
+- [x] Production contract test proves no `CREATE TABLE`, deterministic identity, safe non-destructive behavior and canonical scheduler/writeback reuse.
+- [ ] Final exact-head protected CI terminal green.
+- [ ] Protected merge to `main` with exact-main readback.
+- [ ] Apply the source-controlled migration through the canonical Supabase migration path.
+- [ ] Prove active `pg_cron` job `powerhouse-autonomous-improvement-cycle-v1` at `42 * * * *`.
+- [ ] Invoke one live production cycle and read back the corresponding canonical `brain_records` packet.
+- [ ] Invoke the same hourly cycle a second time and prove idempotency (one deterministic record identity).
+- [ ] Update the existing human-readable Powerhouse documentation/learning lineage with production evidence.
+- [ ] Close/supersede stale PR #1775 only after replacement #1783 is proven live.
 
-**Spec:** `docs/superpowers/specs/2026-09-16-autonomous-improvement-runtime-v1-design.md`
-
-## Global Constraints
-- No new brain, queue, scheduler authority, analytics truth, learning store, capability registry, experiment database or architecture registry.
+## Hard gates
+- Security, correctness and tenant isolation cannot regress.
 - Unknown critical evidence fails closed.
-- Security/correctness/tenant isolation are non-degradation gates.
-- No single magic score decides release.
-- Causality is not assumed.
-- Destructive simplification remains protected by existing hard-boundary and delivery controls.
-- Business value must come from observed outcome evidence; unknown remains unknown.
-- Exact candidate/run identity, idempotency and rollback/fallback are mandatory for side effects.
-
----
-
-### Task 1: RED runtime contract tests
-**Files:** Modify `tests/brain-powerhouse-engineering-os-contract.test.mjs`.
-**Produces:** executable assertions for the new runtime fingerprint and all nine capabilities.
-- [ ] Add imports for the runtime helpers.
-- [ ] Add failing tests for deterministic run identity, >30% fitness regression, overlap/gap projection, champion/challenger minimum observations and guardrails, causal default false, replay deltas, safe chaos classification, non-destructive simplification, and business-value priority.
-- [ ] Run `node --test tests/brain-powerhouse-engineering-os-contract.test.mjs` and confirm RED before implementation.
-
-### Task 2: Implement pure runtime helpers
-**Files:** Create `scripts/brain/continuous-improvement/autonomous-runtime.mjs`.
-**Produces:** `buildRunId`, `measureArchitectureFitness`, `buildCapabilityGraph`, `decideExperimentPortfolio`, `assessCausalEvidence`, `replayPolicy`, `runFailureInjection`, `findSimplificationCandidates`, `prioritizeByBusinessValue`, `buildAutonomousImprovementPacket`.
-- [ ] Implement stable canonical JSON/run hashing.
-- [ ] Implement dimension-level baseline/current/delta/percent/trend with `unknown` preservation and material regression flagging.
-- [ ] Build a projection graph from supplied capabilities/agents/components/tools/tests; identify overlaps and missing requirements without persistence.
-- [ ] Decide champion/challenger only when declared primary metric, minimum observations and guardrails are satisfied.
-- [ ] Return causal confidence metadata but only `causalClaim=true` when explicit identification requirements are met.
-- [ ] Replay historical events through supplied baseline/candidate decision functions and return decision deltas, not invented outcome deltas.
-- [ ] Execute isolated synthetic failure cases and classify expected recovery/hold behavior.
-- [ ] Detect duplicate/dead/unused candidates; return proposal objects only.
-- [ ] Rank improvement candidates by observed business value, freshness and confidence while preserving `unknown`.
-- [ ] Compose one deterministic runtime packet.
-- [ ] Run the focused test file until GREEN.
-
-### Task 3: Register runtime in Engineering OS
-**Files:** Modify `config/powerhouse-engineering-os.json`, `scripts/brain/powerhouse-engineering-os.mjs`, and the Engineering OS contract test.
-- [ ] Add `autonomous_improvement_runtime` with fingerprint, lifecycle, capability flags and scheduler integration rule.
-- [ ] Extend fail-closed validator and CLI/check packet output.
-- [ ] Prove drift fails validation.
-
-### Task 4: Reuse Business OS Intelligence scheduler
-**Files:** Modify `.github/workflows/business-os-intelligence.yml`.
-- [ ] Add a bounded daily schedule and a runtime contract step; do not introduce a new workflow family.
-- [ ] Keep permissions read-only for pure evaluation.
-- [ ] Ensure writeback is not attempted without existing canonical writer credentials/route.
-- [ ] Add the workflow to relevant path triggers.
-
-### Task 5: Required CI coverage and documentation
-**Files:** Modify `.github/workflows/required-test.yml`, `docs/development-operating-system.md` only if needed by existing contract wording.
-- [ ] Ensure Required CI executes the autonomous runtime tests through the canonical Engineering OS test lane.
-- [ ] Verify documentation states the runtime is evidence/projector logic above existing authorities, not a new truth store.
-- [ ] Run all targeted tests plus `node scripts/brain/powerhouse-engineering-os.mjs --check`.
-
-### Task 6: Protected delivery/readback
-- [ ] Open PR from `feat/autonomous-improvement-runtime-v1` to `main`.
-- [ ] Wait for exact-head Required and BRAIN/delivery checks.
-- [ ] Merge with expected-head protection only when terminal green.
-- [ ] Verify new main contains the merge SHA and the runtime files/contract.
-- [ ] Record final status as LIVE & BEWEZEN only if protected merge and exact-main readback are both proven; otherwise return a concrete recovery packet.
+- No aggregate magic score may decide promotion.
+- Causality is never inferred from correlation alone.
+- Destructive simplification is disabled.
+- Production writeback must use observed evidence and existing canonical authority.
+- No merge before exact-head protected checks are terminal green.
+- No `LIVE & BEWEZEN` claim before exact-main plus production writeback/readback/idempotency evidence.
