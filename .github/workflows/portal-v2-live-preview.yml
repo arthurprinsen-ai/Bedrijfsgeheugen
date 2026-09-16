@@ -63,29 +63,46 @@ jobs:
       - name: Verify exact Netlify V2 assets are served
         run: |
           set -euo pipefail
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/" -o /tmp/portal-v2.html
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.css" -o /tmp/portal-v2.css
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/saas-theme.css" -o /tmp/portal-v2-saas.css
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/csrd-mobile-saas.css" -o /tmp/portal-v2-csrd-saas.css
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/mobile-responsive.css" -o /tmp/portal-v2-mobile.css
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/functional-suite.css" -o /tmp/portal-v2-functional.css
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.js" -o /tmp/portal-v2.js
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/legacy-parity-engine.js" -o /tmp/portal-v2-parity-engine.js
-          node --check /tmp/portal-v2.js
-          node --check /tmp/portal-v2-parity-engine.js
-          grep -q 'Welkom terug, Arthur' /tmp/portal-v2.html
-          grep -q 'Het brein van je bedrijf' /tmp/portal-v2.html
-          grep -q 'AI Management Summary' /tmp/portal-v2.html
-          grep -q 'Powerhouse' /tmp/portal-v2.html
-          grep -q 'Alle portalpagina’s' /tmp/portal-v2.html
-          grep -q 'mobile-responsive.css' /tmp/portal-v2.html
-          grep -q -- '--saas-accent:' /tmp/portal-v2-saas.css
-          grep -q 'brainflow' /tmp/portal-v2-saas.css
-          grep -q 'v2utilities' /tmp/portal-v2-mobile.css
-          grep -q 'csrd-mobile-summary' /tmp/portal-v2-csrd-saas.css
-          grep -q 'csrd-mobile-domain' /tmp/portal-v2-csrd-saas.css
-          grep -q 'v2repeatrow' /tmp/portal-v2-functional.css
-          grep -q 'calculateLegacyEquivalent' /tmp/portal-v2-parity-engine.js
+          fetch_asset() {
+            local path="$1" output="$2"
+            if ! curl -fsS --max-time 30 "$PREVIEW_URL$path" -o "$output"; then
+              echo "::error::Preview asset unavailable: $path"
+              return 1
+            fi
+          }
+          require_marker() {
+            local file="$1" marker="$2" label="$3"
+            if ! grep -q -- "$marker" "$file"; then
+              echo "::error::Preview asset contract missing marker '$marker' in $label"
+              return 1
+            fi
+          }
+
+          fetch_asset /portal-v2/ /tmp/portal-v2.html
+          fetch_asset /portal-v2/app.css /tmp/portal-v2.css
+          fetch_asset /portal-v2/saas-theme.css /tmp/portal-v2-saas.css
+          fetch_asset /portal-v2/csrd-mobile-saas.css /tmp/portal-v2-csrd-saas.css
+          fetch_asset /portal-v2/mobile-responsive.css /tmp/portal-v2-mobile.css
+          fetch_asset /portal-v2/functional-suite.css /tmp/portal-v2-functional.css
+          fetch_asset /portal-v2/app.js /tmp/portal-v2.js
+          fetch_asset /portal-v2/legacy-parity-engine.js /tmp/portal-v2-parity-engine.js
+
+          node --check /tmp/portal-v2.js || { echo "::error::Served portal-v2/app.js is not valid JavaScript"; exit 1; }
+          node --check /tmp/portal-v2-parity-engine.js || { echo "::error::Served portal-v2/legacy-parity-engine.js is not valid JavaScript"; exit 1; }
+
+          require_marker /tmp/portal-v2.html 'Welkom terug, Arthur' portal-v2/index.html
+          require_marker /tmp/portal-v2.html 'Het brein van je bedrijf' portal-v2/index.html
+          require_marker /tmp/portal-v2.html 'AI Management Summary' portal-v2/index.html
+          require_marker /tmp/portal-v2.html 'Powerhouse' portal-v2/index.html
+          require_marker /tmp/portal-v2.html 'Alle portalpagina’s' portal-v2/index.html
+          require_marker /tmp/portal-v2.html 'mobile-responsive.css' portal-v2/index.html
+          require_marker /tmp/portal-v2-saas.css '--saas-accent:' portal-v2/saas-theme.css
+          require_marker /tmp/portal-v2-saas.css 'brainflow' portal-v2/saas-theme.css
+          require_marker /tmp/portal-v2-mobile.css 'v2utilities' portal-v2/mobile-responsive.css
+          require_marker /tmp/portal-v2-csrd-saas.css 'csrd-mobile-summary' portal-v2/csrd-mobile-saas.css
+          require_marker /tmp/portal-v2-csrd-saas.css 'csrd-mobile-domain' portal-v2/csrd-mobile-saas.css
+          require_marker /tmp/portal-v2-functional.css 'v2repeatrow' portal-v2/functional-suite.css
+          require_marker /tmp/portal-v2-parity-engine.js 'calculateLegacyEquivalent' portal-v2/legacy-parity-engine.js
 
       - name: Install Playwright runtime
         run: |
