@@ -11,18 +11,20 @@ import {
   buildRevalidationDecision,
   buildAttribution
 } from '../scripts/brain/continuous-improvement/index.mjs';
+import {
+  computeEngineeringScorecard,
+  detectFlakyTests,
+  buildDependencyGraph,
+  computeBlastRadius,
+  evaluateRecoveryProof,
+  createGoldenPathScaffold,
+  evaluateEngineeringMetaLearning,
+} from '../scripts/brain/powerhouse-engineering-closed-loop.mjs';
 
 const baseCandidate = {
-  component: 'brain',
-  problemClass: 'latency',
-  evidenceCluster: ['evt-b', 'evt-a'],
-  changeClass: 'local_fix',
-  scope: 'global',
-  baselineComparable: true,
-  criticalEvidence: { security: true, correctness: true },
-  deltas: { security: 0, correctness: 0, cost: 0, latency: -5 },
-  rollback: { candidateIdentity: 'candidate-a', lastKnownGoodIdentity: 'main-a' },
-  productionPromotion: true
+  component: 'brain', problemClass: 'latency', evidenceCluster: ['evt-b', 'evt-a'], changeClass: 'local_fix', scope: 'global', baselineComparable: true,
+  criticalEvidence: { security: true, correctness: true }, deltas: { security: 0, correctness: 0, cost: 0, latency: -5 },
+  rollback: { candidateIdentity: 'candidate-a', lastKnownGoodIdentity: 'main-a' }, productionPromotion: true
 };
 
 test('Engineering OS exposes canonical complete improvement path', async () => {
@@ -44,34 +46,20 @@ test('shared learning, skill evolution and architecture evolution remain protect
 });
 
 test('continuous improvement contract is executable and fail-closed', async () => {
-  const c = await loadEngineeringContract();
-  const ci = c.continuous_improvement;
+  const c = await loadEngineeringContract(); const ci = c.continuous_improvement;
   assert.equal(ci.fingerprint, 'powerhouse-continuous-improvement-engine-v1');
   assert.deepEqual(ci.lifecycle, ['OBSERVE','CLUSTER','CANDIDATE','BASELINE','EVALUATE','DECIDE','SHADOW_OR_CANARY','PROMOTE_OR_REJECT','PROD_OBSERVE','ROLLBACK_OR_CONFIRM','ATTRIBUTE','WRITEBACK','REVALIDATE']);
-  assert.equal(ci.candidate.dedupe_before_persist, true);
-  assert.equal(ci.candidate.conflict_arbitration, true);
-  assert.equal(ci.candidate.stable_identity, true);
-  assert.equal(ci.promotion.security_non_degradation, true);
-  assert.equal(ci.promotion.correctness_non_degradation, true);
-  assert.equal(ci.promotion.unknown_critical_fails_closed, true);
-  assert.equal(ci.promotion.no_single_magic_score, true);
-  assert.equal(ci.promotion.rollback_identity_required, true);
-  assert.equal(ci.promotion.compensated_tradeoff_requires_evidence, true);
-  assert.equal(ci.promotion.business_claim_requires_business_evidence, true);
-  assert.equal(ci.revalidation.require_revalidate_after, true);
-  assert.deepEqual(ci.revalidation.states, ['CONFIRMED','CANDIDATE_REQUIRED','SUPERSEDED','BLOCKED_HARD_BOUNDARY']);
-  assert.equal(ci.attribution.causality_not_assumed, true);
-  assert.equal(ci.attribution.baseline_comparison_required, true);
+  assert.equal(ci.candidate.dedupe_before_persist, true); assert.equal(ci.candidate.conflict_arbitration, true); assert.equal(ci.candidate.stable_identity, true);
+  assert.equal(ci.promotion.security_non_degradation, true); assert.equal(ci.promotion.correctness_non_degradation, true); assert.equal(ci.promotion.unknown_critical_fails_closed, true);
+  assert.equal(ci.promotion.no_single_magic_score, true); assert.equal(ci.promotion.rollback_identity_required, true); assert.equal(ci.promotion.compensated_tradeoff_requires_evidence, true); assert.equal(ci.promotion.business_claim_requires_business_evidence, true);
+  assert.equal(ci.revalidation.require_revalidate_after, true); assert.deepEqual(ci.revalidation.states, ['CONFIRMED','CANDIDATE_REQUIRED','SUPERSEDED','BLOCKED_HARD_BOUNDARY']);
+  assert.equal(ci.attribution.causality_not_assumed, true); assert.equal(ci.attribution.baseline_comparison_required, true);
 });
 
 test('candidate fingerprints are stable and exact duplicates coalesce', () => {
-  const a = fingerprintCandidate(baseCandidate);
-  const bCandidate = { ...baseCandidate, evidenceCluster: ['evt-a', 'evt-b', 'evt-a'] };
-  assert.equal(a, fingerprintCandidate(bCandidate));
-  assert.match(a, /^[a-f0-9]{64}$/);
-  const result = coalesceCandidates([baseCandidate, bCandidate]);
-  assert.equal(result.candidates.length, 1);
-  assert.equal(result.coalesced, 1);
+  const a = fingerprintCandidate(baseCandidate); const bCandidate = { ...baseCandidate, evidenceCluster: ['evt-a', 'evt-b', 'evt-a'] };
+  assert.equal(a, fingerprintCandidate(bCandidate)); assert.match(a, /^[a-f0-9]{64}$/);
+  const result = coalesceCandidates([baseCandidate, bCandidate]); assert.equal(result.candidates.length, 1); assert.equal(result.coalesced, 1);
 });
 
 test('candidate conflicts compare, supersede or isolate deterministically', () => {
@@ -90,22 +78,16 @@ test('continuous improvement promotion fails closed on critical and rollback evi
 });
 
 test('cost or latency regression requires explicit compensated benefit evidence', () => {
-  const rejected = evaluateCandidate({ ...baseCandidate, deltas: { ...baseCandidate.deltas, cost: 20, latency: 10 } });
-  assert.equal(rejected.decision, 'REJECT');
-  const allowed = evaluateCandidate({ ...baseCandidate, deltas: { ...baseCandidate.deltas, cost: 20 }, compensatedBenefitEvidence: true, nonCriticalEvidenceComplete: true });
-  assert.equal(allowed.decision, 'ALLOW');
+  assert.equal(evaluateCandidate({ ...baseCandidate, deltas: { ...baseCandidate.deltas, cost: 20, latency: 10 } }).decision, 'REJECT');
+  assert.equal(evaluateCandidate({ ...baseCandidate, deltas: { ...baseCandidate.deltas, cost: 20 }, compensatedBenefitEvidence: true, nonCriticalEvidenceComplete: true }).decision, 'ALLOW');
 });
 
 test('bounded incomplete non-critical evidence can only enter an experiment', () => {
-  const experiment = evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: false, boundedExperiment: { exposure: 'shadow', observationWindow: '1h', rollbackTrigger: 'slo_breach' } });
-  assert.equal(experiment.decision, 'EXPERIMENT');
-  const rejected = evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: false });
-  assert.equal(rejected.decision, 'REJECT');
+  assert.equal(evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: false, boundedExperiment: { exposure: 'shadow', observationWindow: '1h', rollbackTrigger: 'slo_breach' } }).decision, 'EXPERIMENT');
+  assert.equal(evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: false }).decision, 'REJECT');
 });
 
-test('complete comparable candidate with gates satisfied is allowed', () => {
-  assert.equal(evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: true }).decision, 'ALLOW');
-});
+test('complete comparable candidate with gates satisfied is allowed', () => { assert.equal(evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: true }).decision, 'ALLOW'); });
 
 test('revalidation distinguishes hard boundary, supersession, stale change and confirmation', () => {
   const now = new Date('2026-09-16T12:00:00Z');
@@ -117,64 +99,42 @@ test('revalidation distinguishes hard boundary, supersession, stale change and c
 
 test('attribution computes deltas without inventing causality', () => {
   const observed = buildAttribution({ baseline: { incidents: 10, latency: 100 }, current: { incidents: 6, latency: 80 } });
-  assert.deepEqual(observed.deltas, { incidents: -4, latency: -20 });
-  assert.equal(observed.causalClaim, false);
-  assert.match(observed.limitation, /causal/i);
-  const causal = buildAttribution({ baseline: { conversion: 0.1 }, current: { conversion: 0.12 }, experimentalDesign: { causalIdentification: true } });
-  assert.equal(causal.causalClaim, true);
+  assert.deepEqual(observed.deltas, { incidents: -4, latency: -20 }); assert.equal(observed.causalClaim, false); assert.match(observed.limitation, /causal/i);
+  assert.equal(buildAttribution({ baseline: { conversion: 0.1 }, current: { conversion: 0.12 }, experimentalDesign: { causalIdentification: true } }).causalClaim, true);
 });
 
 test('bounded autonomy exposes all seven controls', async () => {
-  const c = await loadEngineeringContract();
-  const o = c.operating_controls;
+  const c = await loadEngineeringContract(); const o = c.operating_controls;
   assert.equal(o.fingerprint, 'powerhouse-autonomy-controls-v1');
   assert.deepEqual(Object.keys(o.controls).sort(), ['agent_security_control_plane','ai_eval_regression','autonomy_budget','disaster_recovery_drills','knowledge_decay','powerhouse_autonomy_scorecard','service_level_objectives']);
-  assert.equal(o.controls.autonomy_budget.fail_closed, true);
-  assert.equal(o.controls.ai_eval_regression.require_baseline_comparison, true);
-  assert.equal(o.controls.agent_security_control_plane.least_privilege, true);
-  assert.equal(o.controls.knowledge_decay.require_revalidate_after, true);
-  assert.equal(o.controls.service_level_objectives.error_budget_policy, 'fail-closed-on-exhaustion');
-  assert.equal(o.controls.disaster_recovery_drills.require_restore_proof, true);
-  assert.equal(o.controls.powerhouse_autonomy_scorecard.no_single_magic_score, true);
-  assert.equal(o.controls.powerhouse_autonomy_scorecard.unknown_is_not_zero, true);
+  assert.equal(o.controls.autonomy_budget.fail_closed, true); assert.equal(o.controls.ai_eval_regression.require_baseline_comparison, true); assert.equal(o.controls.agent_security_control_plane.least_privilege, true);
+  assert.equal(o.controls.knowledge_decay.require_revalidate_after, true); assert.equal(o.controls.service_level_objectives.error_budget_policy, 'fail-closed-on-exhaustion'); assert.equal(o.controls.disaster_recovery_drills.require_restore_proof, true);
+  assert.equal(o.controls.powerhouse_autonomy_scorecard.no_single_magic_score, true); assert.equal(o.controls.powerhouse_autonomy_scorecard.unknown_is_not_zero, true);
 });
 
 test('all material agents receive autonomy controls through chat-learning preflight', () => {
   const parsed = JSON.parse(execFileSync(process.execPath, ['scripts/brain/chat-learning-preflight.mjs'], { encoding: 'utf8' }));
-  assert.equal(parsed.status, 'READY');
-  assert.ok(parsed.fingerprints.includes('powerhouse-autonomy-controls-v1'));
-  assert.ok(parsed.sources.some(source => source.path === 'config/powerhouse-engineering-os.json'));
+  assert.equal(parsed.status, 'READY'); assert.ok(parsed.fingerprints.includes('powerhouse-autonomy-controls-v1')); assert.ok(parsed.sources.some(source => source.path === 'config/powerhouse-engineering-os.json'));
 });
 
 test('Engineering OS validator fails closed on evolution, autonomy and improvement drift', async () => {
-  const r = await validateEngineeringOS();
-  assert.deepEqual(r.errors, []);
-  assert.equal(r.ok, true);
-  assert.equal(r.shared_learning_fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
-  assert.equal(r.control_fingerprint, 'powerhouse-autonomy-controls-v1');
-  assert.equal(r.continuous_improvement_fingerprint, 'powerhouse-continuous-improvement-engine-v1');
+  const r = await validateEngineeringOS(); assert.deepEqual(r.errors, []); assert.equal(r.ok, true);
+  assert.equal(r.shared_learning_fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1'); assert.equal(r.control_fingerprint, 'powerhouse-autonomy-controls-v1'); assert.equal(r.continuous_improvement_fingerprint, 'powerhouse-continuous-improvement-engine-v1');
 });
 
 test('existing Brain learning authority stays canonical', async () => {
   const learning = JSON.parse(await readFile(new URL('../config/brain-chat-learning-contract.json', import.meta.url), 'utf8'));
-  assert.equal(learning.policy.reuseKnownFixBeforeExperimenting, true);
-  assert.equal(learning.policy.writeNewMaterialLearningBack, true);
-  assert.equal(learning.policy.refreshSharedContextAfterNewLearning, true);
+  assert.equal(learning.policy.reuseKnownFixBeforeExperimenting, true); assert.equal(learning.policy.writeNewMaterialLearningBack, true); assert.equal(learning.policy.refreshSharedContextAfterNewLearning, true);
 });
 
 test('continuous improvement documentation reuses the classified approved spec authority', async () => {
   const content = await readFile(new URL('../docs/superpowers/specs/2026-09-16-continuous-improvement-engine-v1-design.md', import.meta.url), 'utf8');
-  assert.match(content, /powerhouse-continuous-improvement-engine-v1/);
-  assert.match(content, /OBSERVE -> CLUSTER -> CANDIDATE/);
-  assert.match(content, /No single aggregate score decides promotion/);
+  assert.match(content, /powerhouse-continuous-improvement-engine-v1/); assert.match(content, /OBSERVE -> CLUSTER -> CANDIDATE/); assert.match(content, /No single aggregate score decides promotion/);
 });
 
 test('Development OS keeps current shared-learning documentation and delivery authority', async () => {
   const content = await readFile(new URL('../docs/development-operating-system.md', import.meta.url), 'utf8');
-  assert.match(content, /BRAIN-DELIVERY-v2/);
-  assert.doesNotMatch(content, /BRAIN-DELIVERY-v1/);
-  assert.match(content, /powerhouse-shared-learning-architecture-evolution-v1/);
-  assert.match(content, /LEARN -> IMPROVE/);
+  assert.match(content, /BRAIN-DELIVERY-v2/); assert.doesNotMatch(content, /BRAIN-DELIVERY-v1/); assert.match(content, /powerhouse-shared-learning-architecture-evolution-v1/); assert.match(content, /LEARN -> IMPROVE/);
 });
 
 test('Required test executes the canonical Engineering OS regression contract', async () => {
@@ -184,28 +144,57 @@ test('Required test executes the canonical Engineering OS regression contract', 
 
 test('CLI and packet expose shared-learning, autonomy and continuous improvement controls', () => {
   const checked = JSON.parse(execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--check'], { encoding: 'utf8' }));
-  assert.equal(checked.status, 'ENGINEERING_OS_READY');
-  assert.equal(checked.control_fingerprint, 'powerhouse-autonomy-controls-v1');
-  assert.equal(checked.continuous_improvement_fingerprint, 'powerhouse-continuous-improvement-engine-v1');
+  assert.equal(checked.status, 'ENGINEERING_OS_READY'); assert.equal(checked.control_fingerprint, 'powerhouse-autonomy-controls-v1'); assert.equal(checked.continuous_improvement_fingerprint, 'powerhouse-continuous-improvement-engine-v1');
   const packet = JSON.parse(execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--packet'], { encoding: 'utf8' }));
-  assert.equal(packet.contract.shared_learning.fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
-  assert.equal(packet.contract.operating_controls.fingerprint, 'powerhouse-autonomy-controls-v1');
-  assert.equal(packet.contract.continuous_improvement.fingerprint, 'powerhouse-continuous-improvement-engine-v1');
+  assert.equal(packet.contract.shared_learning.fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1'); assert.equal(packet.contract.operating_controls.fingerprint, 'powerhouse-autonomy-controls-v1'); assert.equal(packet.contract.continuous_improvement.fingerprint, 'powerhouse-continuous-improvement-engine-v1');
 });
 
 test('LIVE & BEWEZEN is the only successful terminal status and hard blocks carry a fix handoff', async () => {
   const c = await loadEngineeringContract();
-  assert.deepEqual(c.status_policy.success_terminal_statuses, ['LIVE & BEWEZEN']);
-  assert.equal(c.status_policy.intermediate_statuses.includes('DEELS LIVE'), true);
-  assert.equal(c.status_policy.keep_working_on_intermediate, true);
-  assert.equal(c.status_policy.blocked_status, 'GEBLOKKEERD');
-  assert.equal(c.status_policy.blocked_requires_recovery_packet, true);
-  assert.equal(c.status_policy.blocked_requires_fix_agent_handoff, true);
-  assert.deepEqual(c.status_policy.recovery_packet_required_fields, [
-    'blocker','root_cause_or_best_evidence','evidence','attempted_repairs','safe_actions_remaining','minimum_human_action','fix_agent_handoff'
-  ]);
-  assert.equal(c.status_policy.fix_agent_handoff.required, true);
-  assert.equal(c.status_policy.fix_agent_handoff.target_status, 'LIVE & BEWEZEN');
-  assert.equal(c.status_policy.fix_agent_handoff.carry_forward_context, true);
-  assert.equal(c.status_policy.auto_resume_when_boundary_clears, true);
+  assert.deepEqual(c.status_policy.success_terminal_statuses, ['LIVE & BEWEZEN']); assert.equal(c.status_policy.intermediate_statuses.includes('DEELS LIVE'), true); assert.equal(c.status_policy.keep_working_on_intermediate, true);
+  assert.equal(c.status_policy.blocked_status, 'GEBLOKKEERD'); assert.equal(c.status_policy.blocked_requires_recovery_packet, true); assert.equal(c.status_policy.blocked_requires_fix_agent_handoff, true);
+  assert.deepEqual(c.status_policy.recovery_packet_required_fields, ['blocker','root_cause_or_best_evidence','evidence','attempted_repairs','safe_actions_remaining','minimum_human_action','fix_agent_handoff']);
+  assert.equal(c.status_policy.fix_agent_handoff.required, true); assert.equal(c.status_policy.fix_agent_handoff.target_status, 'LIVE & BEWEZEN'); assert.equal(c.status_policy.fix_agent_handoff.carry_forward_context, true); assert.equal(c.status_policy.auto_resume_when_boundary_clears, true);
+});
+
+test('closed-loop helper stays subordinate to the canonical continuous-improvement authority', async () => {
+  const helper = JSON.parse(await readFile(new URL('../config/powerhouse-engineering-closed-loop.json', import.meta.url), 'utf8'));
+  assert.equal(helper.fingerprint, 'powerhouse-engineering-closed-loop-v1');
+  assert.equal(helper.authority, 'powerhouse-continuous-improvement-engine-v1');
+  assert.equal(helper.parallel_authority_created, false);
+  assert.equal(helper.guardrails.direct_gate_mutation_allowed, false);
+  assert.equal(helper.guardrails.required_failure_override_allowed, false);
+});
+
+test('closed-loop scorecard keeps missing evidence unknown and measures idea-to-live lead time', () => {
+  const result = computeEngineeringScorecard({ changes:[{id:'c1',idea_at:'2026-09-16T08:00:00Z',committed_at:'2026-09-16T08:10:00Z',deployed_at:'2026-09-16T08:30:00Z',live_proven_at:'2026-09-16T08:40:00Z',failed:false}] });
+  assert.equal(result.metrics.idea_to_live_bewezen_ms.value, 40 * 60 * 1000); assert.equal(result.metrics.change_lead_time_ms.value, 20 * 60 * 1000);
+  assert.equal(result.metrics.failed_deployment_recovery_time_ms.status, 'unknown'); assert.equal(result.truth_rule, 'unknown_is_not_zero'); assert.ok(result.evidence_completeness > 0 && result.evidence_completeness < 1);
+});
+
+test('closed-loop flake intelligence only flags oscillation on the same revision', () => {
+  const result = detectFlakyTests([{test_id:'a',source_revision:'sha1',outcome:'pass'},{test_id:'a',source_revision:'sha1',outcome:'fail'},{test_id:'b',source_revision:'sha1',outcome:'fail'},{test_id:'b',source_revision:'sha2',outcome:'pass'}]);
+  assert.deepEqual(result.flaky.map(x => x.test_id), ['a']); assert.equal(result.can_override_required_failure, false);
+});
+
+test('closed-loop dependency graph computes deterministic reverse blast radius', () => {
+  const graph = buildDependencyGraph({nodes:['code:a','test:a','workflow:req','runtime:web'],edges:[['test:a','code:a'],['workflow:req','test:a'],['runtime:web','code:a']]});
+  assert.deepEqual(computeBlastRadius(graph,['code:a']), ['code:a','runtime:web','test:a','workflow:req']);
+});
+
+test('closed-loop recovery proof fails closed for stale or missing domains', () => {
+  const result = evaluateRecoveryProof({now:'2026-09-16T10:00:00Z',max_age_days:90,required_domains:['code_rollback','netlify_rollback','database_restore','migration_recovery','provider_fallback'],evidence:[{domain:'code_rollback',rehearsed_at:'2026-09-15T10:00:00Z',success:true},{domain:'netlify_rollback',rehearsed_at:'2026-09-15T10:00:00Z',success:true},{domain:'database_restore',rehearsed_at:'2026-05-01T10:00:00Z',success:true}]});
+  assert.equal(result.recovery_proven, false); assert.deepEqual(result.blocking_domains.sort(), ['database_restore','migration_recovery','provider_fallback']);
+});
+
+test('closed-loop golden path scaffolds registered lanes without creating authority', () => {
+  for (const kind of ['frontend','backend','migration','agent','integration']) {
+    const result = createGoldenPathScaffold(kind,'demo-capability');
+    assert.equal(result.kind,kind); assert.ok(result.files.length >= 2); assert.ok(result.hooks.includes('test')); assert.ok(result.hooks.includes('observability')); assert.ok(result.hooks.includes('documentation')); assert.equal(result.parallel_authority_created,false); assert.equal(result.delivery,'BRAIN-DELIVERY-v2');
+  }
+});
+
+test('closed-loop meta-learning recommends changes but cannot mutate gates directly', () => {
+  const result = evaluateEngineeringMetaLearning({gates:[{id:'visual',runs:100,caught_defects:8,false_failures:0},{id:'legacy',runs:100,caught_defects:0,false_failures:14}],escaped_defects:[{fingerprint:'layout-x',should_have_been_caught_by:'visual'}]});
+  assert.equal(result.direct_mutation_allowed,false); assert.ok(result.recommendations.length > 0); assert.ok(result.recommendations.every(x => x.promotion === 'protected_delivery_required'));
 });
