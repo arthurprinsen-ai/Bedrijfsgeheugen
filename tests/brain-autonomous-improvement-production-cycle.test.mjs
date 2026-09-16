@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath = new URL('../supabase/migrations/20260916144500_autonomous_improvement_production_cycle_v1.sql', import.meta.url);
-const hotfixPath = new URL('../supabase/migrations/20260916151600_fix_autonomous_improvement_record_kind_v1.sql', import.meta.url);
+const migrationPath = new URL('../supabase/migrations/20260916131217_autonomous_improvement_production_cycle_v1.sql', import.meta.url);
+const hotfixPath = new URL('../supabase/migrations/20260916133208_fix_autonomous_improvement_record_kind_v1.sql', import.meta.url);
 const sql = await readFile(migrationPath, 'utf8');
 const hotfix = await readFile(hotfixPath, 'utf8');
 
