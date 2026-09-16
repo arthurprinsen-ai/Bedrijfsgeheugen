@@ -35,6 +35,13 @@
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
       "evidence_contract": "tests/powerhouse-content-edge-surface-contract.test.mjs",
       "required": true
+    },
+    {
+      "id": "rpc:bg_geheim",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/powerhouse-content-edge-surface-contract.test.mjs",
+      "required": true
     }
   ]
 }
