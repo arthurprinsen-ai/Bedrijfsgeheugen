@@ -26,14 +26,14 @@
       "id": "function:powerhouse-content-orchestrator",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-orchestrator/index.ts",
-      "evidence_contract": "tests/supabase-powerhouse-seven-channel-closed-loop.test.mjs",
+      "evidence_contract": "tests/powerhouse-content-edge-surface-contract.test.mjs",
       "required": true
     },
     {
       "id": "function:powerhouse-social-publisher",
       "type": "function",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/social-learning-buffer-schedule.test.mjs",
+      "evidence_contract": "tests/powerhouse-content-edge-surface-contract.test.mjs",
       "required": true
     }
   ]
