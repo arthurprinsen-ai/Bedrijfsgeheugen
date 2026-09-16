@@ -82,6 +82,34 @@ Treat deprecation, EOL, CVEs, unsupported APIs, stale SDKs, superseded platform 
 
 No adoption may introduce a second canonical analytics truth, model store, customer graph, learning system, shadow database, queue, registry or agent memory. EXISTING-STATE-FIRST / REUSE-FIRST / CANONICAL-INTEGRATION / CLOSED-LOOP remain mandatory.
 
+## Bounded Autonomy & Self-Improvement Controls
+Canonical fingerprint: `powerhouse-autonomy-controls-v1`.
+
+The Powerhouse may become more autonomous only when autonomy is explicit, measurable, revocable and economically bounded. These controls are part of the existing Engineering OS, not a second control plane.
+
+### Autonomy budget
+Every material autonomous side effect resolves an explicit budget before execution. The budget covers at least risk class, paid capacity/money, tokens or compute, external calls, persistent writes, outbound actions, blast radius and retry/time budget. A missing budget dimension means **unknown**, never unlimited. Existing stricter channel, security, legal or cost limits always win. Budget exhaustion must degrade to a safe state or stop with one deduplicated obligation; it may not silently spend or write beyond authority.
+
+### AI/model/prompt/retrieval/agent regression
+AI changes are regression-gated like code. Material changes require a versioned representative eval set containing real Powerhouse successes, known failures and edge cases; candidate-versus-baseline results; explicit non-regression thresholds; latency/cost where material; truth/grounding/safety failure checks; and a fallback. A newer model or prompt never becomes production authority solely because it is newer or benchmarks well elsewhere.
+
+### Agent security control plane
+Every material agent run has explicit identity, tenant scope, tool scope, data scope, action scope, credential authority, approval boundary, audit event and revocation path. Least privilege is mandatory. Permissions are not inherited implicitly across agents or tenants. High-impact side effects require an explicit capability and every material side effect must remain traceable to agent, input evidence, authority and outcome.
+
+### Knowledge decay and truth expiry
+Knowledge that can age carries `observed_at`, source/provenance, source publication date when known, freshness class, confidence, `revalidate_after`, and an owner or revalidation route. Freshness classes are `REALTIME`, `FAST_CHANGING`, `PERIODIC`, `SLOW_MOVING` and `IMMUTABLE_HISTORICAL`. Stale claims remain audit-visible but may not be treated as current authority until revalidated. Superseded learning is never silently deleted from audit history.
+
+### Service-level objectives and error budgets
+Important Powerhouse capabilities have a measurable SLI, target, measurement window, owner, error budget, breach action and evidence source. Minimum coverage includes outcome-obligation completion, agent execution success, recovery time, stale-knowledge rate, eval-gated-change rate, provider/tool error rate, grounding failure rate, cost/capacity and critical runtime availability/latency where applicable. Activity alone never makes an SLO green. When an error budget is exhausted, risky autonomous expansion fails closed until reliability is restored or explicitly re-authorized.
+
+### Disaster-recovery drills
+A backup is not recovery proof. Material authorities declare RPO/RTO, last-known-good, restore/rebuild procedure, restored scope, integrity checks, external SaaS state inventory, unreconstructable state plus owner, last drill observation and next drill due. Source-controlled components must be reconstructable from GitHub plus migrations/configuration and canonical data. Recovery drills must prove the restore path without destructive production experimentation.
+
+### Powerhouse Autonomy Scorecard
+The scorecard is a multidimensional observability view, never a single magic score and never release authority. It tracks at least outcome-verified rate, autonomous-recovery rate, evidence-backed-decision rate, fresh-learning rate, eval-gated-change rate, mean recovery time, cost per realized outcome, duplicate-work rate and prevented-recurrence rate. Every dimension has an explicit definition, measure/numerator, denominator or unit, time window, source, freshness and owner. Unknown values remain unknown; they are never coerced to zero to make the system look healthier.
+
+These controls are enforced structurally by `config/powerhouse-engineering-os.json`, `scripts/brain/powerhouse-engineering-os.mjs` and `tests/brain-powerhouse-engineering-os-contract.test.mjs`, and inherit the same protected BRAIN-DELIVERY-v2 promotion, production-readback and learning/writeback rules as every other Powerhouse change.
+
 ## Non-terminal status and resumed-work rule
 This contract applies to **all new, existing, reopened and resumed Powerhouse chats, agents and work sessions**.
 
