@@ -82,7 +82,7 @@ export function selectDeliverySource({ channel, artifact = null, idea = null } =
   return { kind: 'idea', text: idea.content.text, ideaId: idea?.id || null, media: [], artifact: null };
 }
 
-function providerCoverageDecision({ channel, posts, artifact, obligation }) {
+function providerCoverageDecision({ channel, posts, artifact }) {
   const covered = coveredPosts(posts);
   if (!covered.length) return null;
 
@@ -98,9 +98,10 @@ function providerCoverageDecision({ channel, posts, artifact, obligation }) {
     const exact = covered.find((post) => normalizeText(post?.text) === normalizeText(artifact.body));
     if (!exact) return { action: 'BLOCK', reason: 'INSTAGRAM_PROVIDER_ARTIFACT_MISMATCH' };
 
-    const evidence = obligation?.evidence || {};
+    const readback = artifact?.delivery_readback || {};
+    const evidence = readback?.evidence || {};
     const verified =
-      obligation?.status === 'LIVE_PROVEN' &&
+      readback?.status === 'LIVE_PROVEN' &&
       evidence.delivery_guard === 'social-delivery-guarantee-v1' &&
       evidence.source_kind === 'artifact' &&
       evidence.provider_post_id === exact.id &&
@@ -114,8 +115,8 @@ function providerCoverageDecision({ channel, posts, artifact, obligation }) {
   return { action: 'NONE', reason: 'PROVIDER_COVERED' };
 }
 
-export function deliveryDecision({ channel, posts = [], artifact = null, idea = null, obligation = null } = {}) {
-  const coverage = providerCoverageDecision({ channel, posts, artifact, obligation });
+export function deliveryDecision({ channel, posts = [], artifact = null, idea = null } = {}) {
+  const coverage = providerCoverageDecision({ channel, posts, artifact });
   if (coverage) return coverage;
 
   const source = selectDeliverySource({ channel, artifact, idea });
