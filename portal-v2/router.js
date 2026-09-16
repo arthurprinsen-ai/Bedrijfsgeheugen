@@ -34,6 +34,12 @@ function renderTarget(target){
     handlers.showOverview?.();
     return true;
   }
+  if(target.startsWith('os:')){
+    handlers.closeHub?.();
+    handlers.showOverview?.();
+    if(typeof document!=='undefined')document.dispatchEvent(new CustomEvent('bg:open-os-page',{detail:{pageId:target.slice(3)}}));
+    return true;
+  }
   if(target.startsWith('hub:')){
     handlers.openHub?.(target.slice(4));
     return true;
