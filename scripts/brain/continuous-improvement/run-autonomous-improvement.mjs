@@ -34,10 +34,18 @@ export async function validateAutonomousImprovementRuntime() {
   if (contract.backlog_intake?.classification_authority !== 'powerhouse-continuous-improvement-engine-v1') errors.push('backlog classifier authority drift');
   if (contract.backlog_intake?.destructive_execution_allowed !== false) errors.push('backlog destructive execution must remain disabled');
   if (contract.backlog_intake?.unknown_identity_fails_closed !== true) errors.push('unknown backlog identity must fail closed');
-  if (contract.scheduler?.workflow !== '.github/workflows/business-os-intelligence.yml') errors.push('scheduler integration drift');
-  if (contract.scheduler?.cadence !== 'daily') errors.push('scheduler cadence drift');
-  if (contract.scheduler?.read_only_without_writer_credentials !== true) errors.push('scheduler must remain read-only without writer credentials');
+
+  if (contract.scheduler?.production_authority !== 'Supabase pg_cron') errors.push('production scheduler authority drift');
+  if (contract.scheduler?.production_job !== 'powerhouse-autonomous-improvement-cycle-v1') errors.push('production scheduler job drift');
+  if (contract.scheduler?.production_function !== 'public.powerhouse_autonomous_improvement_cycle_v1(now())') errors.push('production scheduler function drift');
+  if (contract.scheduler?.cadence !== 'hourly at minute 42') errors.push('production scheduler cadence drift');
+  if (contract.scheduler?.probe_workflow !== '.github/workflows/business-os-intelligence.yml') errors.push('probe workflow integration drift');
+  if (contract.scheduler?.probe_read_only !== true) errors.push('GitHub probe must remain read-only');
+  if (contract.scheduler?.idempotent_run_identity !== true) errors.push('production scheduler must retain idempotent identity');
+
   if (contract.writeback?.new_store !== false) errors.push('runtime may not create a new writeback store');
+  if (contract.writeback?.route !== 'public.brain_append_record -> existing public.brain_records') errors.push('canonical writeback route drift');
+  if (contract.writeback?.tenant !== 'canonical') errors.push('canonical writeback tenant drift');
   return { ok: errors.length === 0, fingerprint: contract.fingerprint, errors };
 }
 
@@ -95,7 +103,12 @@ async function main() {
       executable: packet.backlog.executable.map(item => item.id),
       held: packet.backlog.held.map(item => item.id)
     },
-    writeback: 'not attempted by read-only scheduler probe'
+    production: {
+      scheduler_authority: 'Supabase pg_cron',
+      job: 'powerhouse-autonomous-improvement-cycle-v1',
+      writeback: 'public.brain_append_record -> existing public.brain_records'
+    },
+    writeback: 'not attempted by GitHub read-only probe'
   }, null, 2)}\n`);
 }
 
