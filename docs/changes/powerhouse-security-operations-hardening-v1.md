@@ -36,6 +36,15 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 - Post-change Supabase security-advisor readback no longer reports the prior Leaked Password Protection Disabled warning.
 - Project Auth already has TOTP enrollment and verification enabled and refresh-token rotation enabled.
 
+### Privileged RPC exposure — CLOSED & PROVEN
+
+- A fresh Supabase security-advisor scan found `public.powerhouse_reconcile_daily_sales_action_set_v1(date)` was `SECURITY DEFINER` and executable by both `anon` and `authenticated`.
+- The function remains `SECURITY DEFINER` because it performs governed service-side reconciliation over protected Powerhouse tables; only its execution boundary changed.
+- Migration `20260916195000_daily_sales_reconciler_security.sql` revokes EXECUTE from `PUBLIC`, `anon` and `authenticated` and grants EXECUTE explicitly to `service_role`.
+- Production catalog readback after migration: `anon_execute=false`, `authenticated_execute=false`, `service_role_execute=true`; ACL is limited to `postgres` and `service_role`.
+- Post-change Supabase security-advisor readback no longer reports either the anonymous or authenticated SECURITY DEFINER execution warning.
+- Regression test `tests/supabase-daily-sales-reconciler-security.test.mjs` prevents accidental re-exposure in repository migrations.
+
 ### Index housekeeping
 
 - PostgreSQL statistics reset timestamp observed: 2026-07-24 08:28:18 UTC.
@@ -85,10 +94,12 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 6. no mass `CREATE POLICY` behavior;
 7. no `DROP INDEX` behavior.
 
+`tests/supabase-daily-sales-reconciler-security.test.mjs` additionally requires the privileged daily sales reconciler RPC to revoke execution from `PUBLIC`, `anon` and `authenticated` while preserving explicit `service_role` execution.
+
 ## Completion semantics
 
 The RLS classification capability may be called `LIVE & BEWEZEN` only when its migration is merged, applied in production, and production readback returns `policy_required=0` and `rls_disabled=0`.
 
-Leaked-password protection is already **CLOSED & PROVEN** by provider config readback, service-health readback and advisor readback. Backup availability is proven, but restore capability is not yet proven.
+Leaked-password protection and the daily-sales privileged RPC boundary are **CLOSED & PROVEN** by production configuration/catalog readback plus Supabase security-advisor readback. Backup availability is proven, but restore capability is not yet proven.
 
 The **whole Powerhouse security/operations layer must not be called fully complete** while the Supabase Owner management account lacks MFA, a tested isolated DR restore, complete credential-rotation proof and full cross-platform IAM review remain unverified. Percentage-based Auth connection allocation is a scale-readiness gate rather than a current production defect; index cleanup remains evidence-first and non-destructive until sustained usage/query-plan evidence supports removal.
