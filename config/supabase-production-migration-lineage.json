@@ -9,9 +9,9 @@
     "semanticTimestampAliasesForbidden": true,
     "closureRequiresPostMergeProductionAndGithubReadback": true
   },
-  "observedAt": "2026-09-15T15:00:00Z",
-  "latestObservedProductionMigration": "20260915154107_powerhouse_outcome_readback_health_semantics_v1",
-  "reconciliationStatus": "PENDING_MAIN_READBACK",
+  "observedAt": "2026-09-16T12:40:00Z",
+  "latestObservedProductionMigration": "20260916123957_powerhouse_internal_view_replay_hardening",
+  "reconciliationStatus": "LIVE_VERIFIED",
   "reconciled": [
     {
       "production": "20260915152705_powerhouse_revenue_intelligence_health_truth_v3.sql",
@@ -28,12 +28,20 @@
     {
       "production": "20260915154107_powerhouse_outcome_readback_health_semantics_v1.sql",
       "replacesAlias": "20260915154000_powerhouse_outcome_readback_health_semantics_v1.sql"
+    },
+    {
+      "production": "20260916123944_powerhouse_autonomy_rpc_replay_hardening.sql",
+      "replacesAlias": "20260916110500_powerhouse_autonomy_rpc_replay_hardening.sql"
+    },
+    {
+      "production": "20260916123957_powerhouse_internal_view_replay_hardening.sql",
+      "replacesAlias": "20260916111500_powerhouse_internal_view_replay_hardening.sql"
     }
   ],
   "obligation": {
     "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
     "changeId": "repo-production-migration-lineage-reconciliation-v1",
-    "productionStateBeforeClosure": "OPEN",
+    "productionStateBeforeClosure": "LIVE_VERIFIED",
     "closureState": "FULFILLED",
     "closureCondition": "All production entries above exist on GitHub main at their exact production filenames, all aliases are absent, required CI is green, and Supabase plus GitHub are read back after merge."
   }
