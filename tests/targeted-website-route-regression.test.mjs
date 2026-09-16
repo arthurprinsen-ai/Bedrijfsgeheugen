@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { newPageErrors, summarizeRouteResult, productionPageErrors } from '../tools/site-shell/verify-targeted-website-routes.mjs';
 
 test('existing baseline page errors do not become a release regression', () => {
@@ -44,4 +45,12 @@ test('production readback still fails closed on hard route invariants', () => {
     visibleText: 'visible', html: '<main>visible</main>', pageErrors: [],
     failedAssets: [], httpOk: true, identityOk: false,
   }).ok, false);
+});
+
+test('website preview selection probes every affected route before trusting Netlify', async () => {
+  const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
+  assert.match(workflow, /ROUTES_JSON: \$\{\{ needs\.classify\.outputs\.routes \}\}/);
+  assert.match(workflow, /const routes=JSON\.parse\(process\.env\.ROUTES_JSON/);
+  assert.match(workflow, /preview route probe failed/i);
+  assert.match(workflow, /preview_mode=local-exact-candidate/);
 });
