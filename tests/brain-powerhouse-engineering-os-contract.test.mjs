@@ -3,6 +3,27 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { loadEngineeringContract, validateEngineeringOS } from '../scripts/brain/powerhouse-engineering-os.mjs';
+import {
+  fingerprintCandidate,
+  coalesceCandidates,
+  arbitrateConflict,
+  evaluateCandidate,
+  buildRevalidationDecision,
+  buildAttribution
+} from '../scripts/brain/continuous-improvement/index.mjs';
+
+const baseCandidate = {
+  component: 'brain',
+  problemClass: 'latency',
+  evidenceCluster: ['evt-b', 'evt-a'],
+  changeClass: 'local_fix',
+  scope: 'global',
+  baselineComparable: true,
+  criticalEvidence: { security: true, correctness: true },
+  deltas: { security: 0, correctness: 0, cost: 0, latency: -5 },
+  rollback: { candidateIdentity: 'candidate-a', lastKnownGoodIdentity: 'main-a' },
+  productionPromotion: true
+};
 
 test('Engineering OS exposes canonical complete improvement path', async () => {
   const contract = await loadEngineeringContract();
@@ -43,6 +64,66 @@ test('continuous improvement contract is executable and fail-closed', async () =
   assert.equal(ci.attribution.baseline_comparison_required, true);
 });
 
+test('candidate fingerprints are stable and exact duplicates coalesce', () => {
+  const a = fingerprintCandidate(baseCandidate);
+  const bCandidate = { ...baseCandidate, evidenceCluster: ['evt-a', 'evt-b', 'evt-a'] };
+  assert.equal(a, fingerprintCandidate(bCandidate));
+  assert.match(a, /^[a-f0-9]{64}$/);
+  const result = coalesceCandidates([baseCandidate, bCandidate]);
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.coalesced, 1);
+});
+
+test('candidate conflicts compare, supersede or isolate deterministically', () => {
+  assert.equal(arbitrateConflict(baseCandidate, { ...baseCandidate, changeClass: 'architecture_change' }), 'COMPARE');
+  const firstFingerprint = fingerprintCandidate(baseCandidate);
+  assert.equal(arbitrateConflict(baseCandidate, { ...baseCandidate, changeClass: 'architecture_change', supersedesFingerprint: firstFingerprint }), 'SUPERSEDE');
+  assert.equal(arbitrateConflict(baseCandidate, { ...baseCandidate, component: 'portal', problemClass: 'conversion' }), 'ISOLATE');
+});
+
+test('continuous improvement promotion fails closed on critical and rollback evidence', () => {
+  assert.equal(evaluateCandidate({ ...baseCandidate, criticalEvidence: { security: false, correctness: true } }).decision, 'REJECT');
+  assert.equal(evaluateCandidate({ ...baseCandidate, deltas: { ...baseCandidate.deltas, security: -1 } }).decision, 'REJECT');
+  assert.equal(evaluateCandidate({ ...baseCandidate, deltas: { ...baseCandidate.deltas, correctness: -1 } }).decision, 'REJECT');
+  assert.equal(evaluateCandidate({ ...baseCandidate, rollback: null }).decision, 'REJECT');
+  assert.equal(evaluateCandidate({ ...baseCandidate, businessImpactClaim: true, businessEvidence: false }).decision, 'REJECT');
+});
+
+test('cost or latency regression requires explicit compensated benefit evidence', () => {
+  const rejected = evaluateCandidate({ ...baseCandidate, deltas: { ...baseCandidate.deltas, cost: 20, latency: 10 } });
+  assert.equal(rejected.decision, 'REJECT');
+  const allowed = evaluateCandidate({ ...baseCandidate, deltas: { ...baseCandidate.deltas, cost: 20 }, compensatedBenefitEvidence: true, nonCriticalEvidenceComplete: true });
+  assert.equal(allowed.decision, 'ALLOW');
+});
+
+test('bounded incomplete non-critical evidence can only enter an experiment', () => {
+  const experiment = evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: false, boundedExperiment: { exposure: 'shadow', observationWindow: '1h', rollbackTrigger: 'slo_breach' } });
+  assert.equal(experiment.decision, 'EXPERIMENT');
+  const rejected = evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: false });
+  assert.equal(rejected.decision, 'REJECT');
+});
+
+test('complete comparable candidate with gates satisfied is allowed', () => {
+  assert.equal(evaluateCandidate({ ...baseCandidate, nonCriticalEvidenceComplete: true }).decision, 'ALLOW');
+});
+
+test('revalidation distinguishes hard boundary, supersession, stale change and confirmation', () => {
+  const now = new Date('2026-09-16T12:00:00Z');
+  assert.equal(buildRevalidationDecision({ hardBoundary: true, now }).state, 'BLOCKED_HARD_BOUNDARY');
+  assert.equal(buildRevalidationDecision({ supersedingVerifiedIdentity: 'v2', now }).state, 'SUPERSEDED');
+  assert.equal(buildRevalidationDecision({ revalidateAfter: '2026-09-15T00:00:00Z', evidenceChanged: true, now }).state, 'CANDIDATE_REQUIRED');
+  assert.equal(buildRevalidationDecision({ revalidateAfter: '2026-09-17T00:00:00Z', evidenceChanged: false, now }).state, 'CONFIRMED');
+});
+
+test('attribution computes deltas without inventing causality', () => {
+  const observed = buildAttribution({ baseline: { incidents: 10, latency: 100 }, current: { incidents: 6, latency: 80 } });
+  assert.deepEqual(observed.deltas, { incidents: -4, latency: -20 });
+  assert.equal(observed.causalClaim, false);
+  assert.match(observed.limitation, /causal/i);
+  const causal = buildAttribution({ baseline: { conversion: 0.1 }, current: { conversion: 0.12 }, experimentalDesign: { causalIdentification: true } });
+  assert.equal(causal.causalClaim, true);
+});
+
 test('bounded autonomy exposes all seven controls', async () => {
   const c = await loadEngineeringContract();
   const o = c.operating_controls;
@@ -65,7 +146,7 @@ test('all material agents receive autonomy controls through chat-learning prefli
   assert.ok(parsed.sources.some(source => source.path === 'config/powerhouse-engineering-os.json'));
 });
 
-test('Engineering OS validator fails closed on evolution and autonomy drift', async () => {
+test('Engineering OS validator fails closed on evolution, autonomy and improvement drift', async () => {
   const r = await validateEngineeringOS();
   assert.deepEqual(r.errors, []);
   assert.equal(r.ok, true);
@@ -81,6 +162,13 @@ test('existing Brain learning authority stays canonical', async () => {
   assert.equal(learning.policy.refreshSharedContextAfterNewLearning, true);
 });
 
+test('continuous improvement documentation is an existing-authority projection', async () => {
+  const content = await readFile(new URL('../docs/continuous-improvement-engine-v1.md', import.meta.url), 'utf8');
+  assert.match(content, /powerhouse-continuous-improvement-engine-v1/);
+  assert.match(content, /OBSERVE -> CLUSTER -> CANDIDATE/);
+  assert.match(content, /No single aggregate score decides promotion/);
+});
+
 test('Development OS keeps current shared-learning documentation and delivery authority', async () => {
   const content = await readFile(new URL('../docs/development-operating-system.md', import.meta.url), 'utf8');
   assert.match(content, /BRAIN-DELIVERY-v2/);
@@ -89,10 +177,9 @@ test('Development OS keeps current shared-learning documentation and delivery au
   assert.match(content, /LEARN -> IMPROVE/);
 });
 
-test('Required test executes Engineering OS and Continuous Improvement regression contracts', async () => {
+test('Required test executes the canonical Engineering OS regression contract', async () => {
   const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
   assert.match(workflow, /tests\/brain-powerhouse-engineering-os-contract\.test\.mjs/);
-  assert.match(workflow, /tests\/brain-continuous-improvement-engine\.test\.mjs/);
 });
 
 test('CLI and packet expose shared-learning, autonomy and continuous improvement controls', () => {
