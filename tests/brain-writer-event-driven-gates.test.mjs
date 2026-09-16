@@ -17,9 +17,24 @@ test('central writer gate orchestrator validates immutable PR identity and fans 
   mustContain(text, /shared-memory:/);
   mustContain(text, /brain-foundation:/);
   mustContain(text, /v18-and-writer-operational:/);
+  mustContain(text, /required-test:/);
   mustContain(text, /dispatch-unified:/);
   mustContain(text, /needs:\s*\[validate, shared-memory, brain-foundation, v18-and-writer-operational\]/);
+  mustContain(text, /needs:\s*\[validate, shared-memory, brain-foundation, v18-and-writer-operational, required-test\]/);
   mustContain(text, /unified-brain-delivery\.yml/);
+});
+
+test('central writer gate bridges bot candidates through the canonical Required test before production transport', () => {
+  const text = fs.readFileSync('.github/workflows/repo-writer-gate-dispatch.yml', 'utf8');
+  mustContain(text, /checks:\s*read/);
+  mustContain(text, /gh workflow run required-test\.yml/);
+  mustContain(text, /--ref "\$CANDIDATE_BRANCH"/);
+  mustContain(text, /REQUIRED_TEST_RUN_NOT_FOUND/);
+  mustContain(text, /REQUIRED_TEST_HEAD_SHA_DRIFT/);
+  mustContain(text, /gh run watch "\$run_id" --exit-status/);
+  mustContain(text, /commits\/\$HEAD_SHA\/check-runs/);
+  mustContain(text, /\.name == "test" and \.conclusion == "success"/);
+  mustContain(text, /REQUIRED_TEST_CHECK_MISSING_OR_RED/);
 });
 
 test('central writer gates use authoritative commands rather than nonexistent npm aliases', () => {
