@@ -36,6 +36,15 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 - Post-change Supabase security-advisor readback no longer reports the prior Leaked Password Protection Disabled warning.
 - Project Auth already has TOTP enrollment and verification enabled and refresh-token rotation enabled.
 
+### Privileged RPC exposure — CLOSED & PROVEN
+
+- A fresh Supabase security-advisor scan found `public.powerhouse_reconcile_daily_sales_action_set_v1(date)` was `SECURITY DEFINER` and executable by both `anon` and `authenticated`.
+- The function remains `SECURITY DEFINER` because it performs governed service-side reconciliation over protected Powerhouse tables; only its execution boundary changed.
+- Migration `20260916195000_daily_sales_reconciler_security.sql` revokes EXECUTE from `PUBLIC`, `anon` and `authenticated` and grants EXECUTE explicitly to `service_role`.
+- Production catalog readback after migration: `anon_execute=false`, `authenticated_execute=false`, `service_role_execute=true`; ACL is limited to `postgres` and `service_role`.
+- Post-change Supabase security-advisor readback no longer reports either the anonymous or authenticated SECURITY DEFINER execution warning.
+- Regression test `tests/supabase-daily-sales-reconciler-security.test.mjs` prevents accidental re-exposure in repository migrations.
+
 ### Index housekeeping
 
 - PostgreSQL statistics reset timestamp observed: 2026-07-24 08:28:18 UTC.
@@ -62,8 +71,11 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 
 - Database-role review confirms `anon` and `authenticated` cannot login and do not bypass RLS; `service_role` bypasses RLS as expected; observed elevated roles are Supabase-managed/admin roles.
 - Supabase organization membership was enumerated: the organization currently has a single Owner account, minimizing standing human membership.
-- **Open IAM obligation:** that sole Supabase organization Owner currently reports MFA disabled at the organization-account level. Project-user TOTP capability does not close this separate management-plane gap; the owner account must enroll MFA and a subsequent organization-member readback must show MFA enabled.
-- Full cross-platform IAM still requires equivalent evidence for GitHub, Netlify, Notion, Buffer and other provider/human access planes.
+- **Open Supabase IAM obligation:** that sole Supabase organization Owner currently reports MFA disabled at the organization-account level. Project-user TOTP capability does not close this separate management-plane gap; the owner account must enroll MFA and a subsequent organization-member readback must show MFA enabled.
+- Netlify readback shows `Team PrinsenCo` has one member and the current user is Owner, but the user has `mfa_enabled=false` and the team has `enforce_mfa=not_enforced`. This is a second concrete management-plane IAM obligation; both personal MFA and team enforcement require provider-side enablement followed by readback.
+- Notion workspace readback shows one human workspace user and eight bots/integrations. The current Notion connector exposes workspace identity and membership but not MFA state, so Notion MFA remains `UNVERIFIED` rather than implicitly green.
+- GitHub branch protection for `main` is active and requires the `test` status check. Full human/account MFA and cross-provider access review still requires provider-level evidence not exposed by the current GitHub connector.
+- Buffer and other provider/human access planes still require equivalent IAM evidence before cross-platform IAM can be called complete.
 
 ### Backup / restore / disaster recovery
 
@@ -85,10 +97,12 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 6. no mass `CREATE POLICY` behavior;
 7. no `DROP INDEX` behavior.
 
+`tests/supabase-daily-sales-reconciler-security.test.mjs` additionally requires the privileged daily sales reconciler RPC to revoke execution from `PUBLIC`, `anon` and `authenticated` while preserving explicit `service_role` execution.
+
 ## Completion semantics
 
 The RLS classification capability may be called `LIVE & BEWEZEN` only when its migration is merged, applied in production, and production readback returns `policy_required=0` and `rls_disabled=0`.
 
-Leaked-password protection is already **CLOSED & PROVEN** by provider config readback, service-health readback and advisor readback. Backup availability is proven, but restore capability is not yet proven.
+Leaked-password protection and the daily-sales privileged RPC boundary are **CLOSED & PROVEN** by production configuration/catalog readback plus Supabase security-advisor readback. Backup availability is proven, but restore capability is not yet proven.
 
-The **whole Powerhouse security/operations layer must not be called fully complete** while the Supabase Owner management account lacks MFA, a tested isolated DR restore, complete credential-rotation proof and full cross-platform IAM review remain unverified. Percentage-based Auth connection allocation is a scale-readiness gate rather than a current production defect; index cleanup remains evidence-first and non-destructive until sustained usage/query-plan evidence supports removal.
+The **whole Powerhouse security/operations layer must not be called fully complete** while Supabase Owner MFA, Netlify user/team MFA, a tested isolated DR restore, complete credential-rotation proof and remaining cross-platform IAM evidence are unverified. Percentage-based Auth connection allocation is a scale-readiness gate rather than a current production defect; index cleanup remains evidence-first and non-destructive until sustained usage/query-plan evidence supports removal.
