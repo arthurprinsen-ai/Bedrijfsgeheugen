@@ -6,7 +6,7 @@ This is the canonical execution flow for Bedrijfsgeheugen changes across develop
 ## Mandatory sequence
 1. Read `AGENTS.md`, this file, `docs/development-ledger.md`, `docs/self-healing-agents.md`, `docs/outcome-obligations.md`, the shared-agent-memory design and current Powerhouse Team Memory.
 2. Run `node scripts/brain/chat-learning-preflight.mjs` and require `status: READY`.
-3. Run `node tools/powerhouse-engineering-os.mjs --check` and require `ENGINEERING_OS_READY`.
+3. Run `node scripts/brain/powerhouse-engineering-os.mjs --check` and require `ENGINEERING_OS_READY`.
 4. Dedupe by fingerprint and reuse known fixes before exploring new hypotheses.
 5. Materialize every expected result as an outcome obligation with owner, deadline, evidence policy, idempotency key and recovery policy.
 6. Protect last-known-good production.
