@@ -62,6 +62,7 @@ jobs:
           tests/brain-quality-intelligence.test.mjs
           tests/brain-quality-intelligence-v2.test.mjs
           tests/brain-quality-autopilot.test.mjs
+          tests/brain-quality-autopilot-closed-loop.test.mjs
           tests/brain-quality-exploration.test.mjs
           tests/brain-quality-adversarial.test.mjs
           tests/brain-quality-production-shadow.test.mjs
