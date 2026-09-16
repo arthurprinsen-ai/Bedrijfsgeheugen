@@ -11,6 +11,7 @@ on:
       - 'netlify/functions/**'
       - 'scripts/brain/continuous-improvement/**'
       - 'config/powerhouse-autonomous-improvement-runtime.json'
+      - 'config/powerhouse-autonomous-backlog.json'
       - 'tests/brain-autonomous-improvement-runtime.test.mjs'
       - 'tests/brain-autonomous-backlog-intake.test.mjs'
       - 'tests/intelligence-agent-runtime.test.mjs'
