@@ -28,6 +28,8 @@ env:
   AXE_PLAYWRIGHT_VERSION: '4.13.0'
   STRYKER_VERSION: '10.0.0'
   TRIVY_VERSION: '0.74.0'
+  K6_VERSION: '2.2.0'
+  ZAP_VERSION: '2.17.0'
 
 jobs:
   quality-contract:
@@ -49,26 +51,27 @@ jobs:
 
   backend-properties:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-          cache: 'pip'
-      - name: Install property and API test engines
-        run: python -m pip install --disable-pip-version-check pytest hypothesis schemathesis testcontainers
+      - name: Install property API and real-service test engines
+        run: python -m pip install --disable-pip-version-check pytest hypothesis schemathesis testcontainers 'psycopg[binary]'
       - name: Property-based backend invariants
         run: pytest -q tests/backend/test_powerhouse_quality_properties.py
       - name: Registered API contract harness
         run: pytest -q tests/backend/test_powerhouse_api_contract.py
+      - name: Registered real-service integration harness
+        run: pytest -q tests/backend/test_powerhouse_integration_profile.py
 
   supply-chain-security:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
-      - name: Trivy vulnerability, secret and misconfiguration sensor
+      - name: Trivy vulnerability secret and misconfiguration sensor
         run: |
           docker run --rm -v "$PWD:/workspace" -w /workspace aquasec/trivy:${TRIVY_VERSION} fs \
             --scanners vuln,secret,misconfig \
@@ -93,7 +96,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-      - name: Install current accepted browser and accessibility engines
+      - name: Install accepted browser and accessibility engines
         run: npm install --no-save --no-audit --no-fund playwright@${PLAYWRIGHT_VERSION} @axe-core/playwright@${AXE_PLAYWRIGHT_VERSION}
       - name: Install Chromium Firefox and WebKit
         run: npx playwright install --with-deps chromium firefox webkit
@@ -115,7 +118,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Public synthetic k6 SLO probe
-        run: docker run --rm -v "$PWD:/work" -w /work -e QUALITY_BASE_URL=https://www.bedrijfsgeheugen.nl grafana/k6:latest run tests/performance/powerhouse-smoke.js
+        run: docker run --rm -v "$PWD:/work" -w /work -e QUALITY_BASE_URL=https://www.bedrijfsgeheugen.nl grafana/k6:${K6_VERSION} run tests/performance/powerhouse-smoke.js
 
   mutation:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -147,7 +150,7 @@ jobs:
         run: |
           mkdir -p artifacts/quality/zap
           chmod 777 artifacts/quality/zap
-          docker run --rm -v "$PWD/artifacts/quality/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:stable \
+          docker run --rm -v "$PWD/artifacts/quality/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:${ZAP_VERSION} \
             zap-baseline.py -t https://www.bedrijfsgeheugen.nl -J report.json -r report.html -I
       - uses: actions/upload-artifact@v4
         if: always()
