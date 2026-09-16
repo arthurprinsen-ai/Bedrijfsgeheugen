@@ -46,7 +46,7 @@ const personalArtifact = {
 const instagramArtifact = {
   channel:'instagram', artifact_type:'instagram_post', body:'Mira zoekt de laatste versie.', status:'content_ready',
   generation_evidence:{ instagram_publish_gate_input:{
-    channelKind:'instagram_company', channelId:'6a70384d99afb44349f0fb35', text:'Mira zoekt de laatste versie.', miraGatePassed:true, mediaKind:'image',
+    channelKind:'instagram_company', channelId:'6a70384d99afb44349f0fba9', text:'Mira zoekt de laatste versie.', miraGatePassed:true, mediaKind:'image',
     assetUrl:'https://cdn.example/final.jpg', assetMimeType:'image/jpeg',
     lineage:{ contentId:'mira-1', calendarDate:'2026-09-16', predictionId:'pred-1', sourceDecisionId:'decision-1' },
     instagramVisual:{ verified:true, evidenceRefs:['vision:final'], assetUrl:'https://cdn.example/final.jpg', placeholderDetected:false, identityClass:'mira_daily_life', formatVerified:true, width:1080, height:1350, colorSpace:'RGB', hasAlpha:false, decodeComplete:true, visualComplete:true, grayOrEmptyDetected:false },
