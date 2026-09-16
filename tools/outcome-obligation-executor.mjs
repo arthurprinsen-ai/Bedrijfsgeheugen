@@ -79,7 +79,7 @@ function ownerRecovery(identity, ownerAgent) {
     requestedOwnerAgent:ownerAgent,
     ownerAgent,
     obligationId:identity.obligationId,
-    idempotencyKey:`owner-recovery|${identity.idempotencyKey}`,
+    idempotencyKey:`recovery|${identity.idempotencyKey}`,
     policy:'reassign_or_reenable_owner',
   });
 }
