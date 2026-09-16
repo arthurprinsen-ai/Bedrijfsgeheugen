@@ -1,0 +1,1 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {evaluateShadowObservation} from '../scripts/brain/quality/production-shadow.mjs';test('shadow evidence never becomes release authority',()=>{const r=evaluateShadowObservation({id:'x',expected:'ok',observed:'ok',evidence:'read-1'});assert.equal(r.status,'MATCH');assert.equal(r.release_authority,false);});
