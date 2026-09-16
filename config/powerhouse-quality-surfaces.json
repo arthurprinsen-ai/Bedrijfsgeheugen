@@ -1,0 +1,10 @@
+{
+  "fingerprint": "powerhouse-quality-surface-inventory-v1",
+  "surfaces": [
+    {"id":"public-website","authority":"public-website-surface-v1","required":true},
+    {"id":"portal-v2","authority":"portal-v2-canonical-surface-v1","required":true},
+    {"id":"netlify-functions","authority":"netlify-function-fleet-v1","required":true},
+    {"id":"supabase-edge-functions","authority":"supabase-edge-function-fleet-v1","required":true},
+    {"id":"github-workflows","authority":"github-workflow-fleet-v1","required":true}
+  ]
+}
