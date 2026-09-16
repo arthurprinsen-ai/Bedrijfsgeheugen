@@ -42,3 +42,13 @@ test('BCG action merges into the existing canonical root roadmap and deduplicate
   assert.equal(twice.roadmap.filter(x=>x.id===action.id).length,1);
   assert.equal(twice.portal?.roadmap,undefined);
 });
+
+test('a changed BCG quadrant replaces the previous derived BCG roadmap action instead of leaving stale advice',()=>{
+  const question=buildBcgRoadmapAction(buildBcgModel(state({growth:3,baseline:4,maturity:2})));
+  const star=buildBcgRoadmapAction(buildBcgModel(state({growth:3,baseline:1,maturity:4})));
+  const initial={...state({growth:3,baseline:1,maturity:4}),roadmap:[{id:'existing',title:'Bestaand'},question]};
+  const next=mergeBcgRoadmapAction(initial,star);
+  assert.deepEqual(next.roadmap.map(x=>x.id),['existing',star.id]);
+  assert.equal(next.roadmap.filter(x=>x.source==='bcg').length,1);
+  assert.equal(next.roadmap[1].quadrant,'ster');
+});
