@@ -10,6 +10,18 @@
   "fix": "Een pure Completion Supervisor vereist zeven vertrouwde identity-bound evidenceklassen voor LIVE_VERIFIED, houdt WAIT_EXTERNAL actief en resumable, schrijft partial/backfill-besluiten idempotent in dezelfde Supabase obligation-lineage, neemt de onveranderlijke BRAIN-DELIVERY-v2/BG169/readback-artifacts vanuit vertrouwde main-workflowcode op en behoudt dezelfde candidate-obligation over meerdere dagen.",
   "preventionRule": "Geen AgentWork mag Resolved of uit de actieve fingerprint-index verdwijnen zonder LIVE_VERIFIED; hard boundaries blijven WAIT_EXTERNAL met volledig recovery packet en hervatten hetzelfde work-item zodra resume_when waar is.",
   "evidenceRule": "Alleen exact gekoppelde candidate-, protected-delivery-, production-identity-, functionele-readback-, obligation-, capability-handoff- en learning-writeback-evidence van de geregistreerde producers kan succes bewijzen; lokale claims en workflow acknowledgements zijn progress events.",
+  "releaseMetadataFailure": {
+    "symptom": "De eerste fresh-main Required preflight stopte met SCOPE_CONTAMINATED terwijl de functionele kandidaat al eerder groen was.",
+    "rootCause": "Change-Scope was als menselijke omschrijving geschreven. delivery-branch-hygiene-guard.mjs interpreteert Change-Scope uitsluitend als een komma-gescheiden exact pad/prefix-contract.",
+    "additionalFinding": "De historische merge-parent had bovendien de actuele main-migratie 20260916151600_fix_autonomous_improvement_record_kind_v1.sql uit de kandidaat-tree verwijderd; branch hygiene maakte deze onbedoelde scope-drift zichtbaar.",
+    "repair": "De main-migratie is byte-identiek vanuit protected main hersteld en PR #1797 bevat nu een machineleesbare expliciete Change-Scope whitelist met Scope-Budget 40.",
+    "prevention": "Release metadata is uitvoerbaar contract: Change-Scope mag niet uit prose bestaan. Bij fresh-main reconciliation moet changed-path evidence worden gecontroleerd op zowel onverwachte toevoegingen als onverwachte deletions voordat een kandidaat merge-eligible wordt.",
+    "evidence": [
+      "Required run 35105467523 / preflight job 104825938998",
+      "tools/delivery-branch-hygiene-guard.mjs parseScopeMetadata/evaluateBranchHygiene",
+      "protected-main blob 9f76040f6607ac6e77201ed242522107ca35809c"
+    ]
+  },
   "candidateEvidence": {
     "redGreenTests": [
       "tests/completion-supervisor.test.mjs",
@@ -19,10 +31,10 @@
       "tests/completion-supervisor-backfill.test.mjs"
     ],
     "focusedResult": "659 relevant Brain/backend/security tests passed, 0 failed after current-main synchronization",
-    "deliveryClassificationResult": "63 delivery, learning and Engineering OS tests passed, 0 failed",
-    "trustedArtifactIngestionResult": "51 focused completion/runtime/workflow tests passed, 0 failed; workflow YAML parsed successfully",
-    "supabaseSecurityResult": "self-test passed; no changed migrations and diff contract passed",
-    "engineeringOsValidator": "ENGINEERING_OS_READY",
+    "deliveryClassificationResult": "63 delivery, learning and Engineering OS tests passed, 0 failed on the historical candidate; fresh-main exact-head rerun required after metadata repair",
+    "trustedArtifactIngestionResult": "51 focused completion/runtime/workflow tests passed, 0 failed; workflow YAML parsed successfully on the historical candidate",
+    "supabaseSecurityResult": "historical self-test passed; fresh-main exact-head security evidence required",
+    "engineeringOsValidator": "ENGINEERING_OS_READY on historical candidate; exact-head rerun required",
     "productionEvidence": null
   },
   "openObligations": [
