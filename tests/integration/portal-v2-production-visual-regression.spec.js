@@ -23,14 +23,12 @@ async function bootCanvassen(page){
   await expect(workspace.locator('.canvas-summary')).toBeVisible({timeout:10_000});
   await expect(workspace.locator('[data-canvas]')).toHaveCount(6,{timeout:10_000});
   await page.evaluate(()=>document.fonts?.ready);
-  // The workspace itself is intentionally translucent in the product. A
-  // locator screenshot must isolate the Canvas surface from live overview
-  // widgets behind it. Canvas content can overflow the shell's own box, so
-  // grow that box to its complete scrollHeight before adding the opaque
-  // screenshot-only backing surface. Product layout and pixel tolerance stay
-  // unchanged; only the visual oracle is isolated from unrelated live UI.
-  await workspace.evaluate(node=>{const height=node.scrollHeight;node.style.height=`${height}px`;node.style.minHeight=`${height}px`;});
-  await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}input,textarea{caret-color:transparent!important}[data-functional-workspace="canvassen"]{background:rgb(255 255 255)!important}'});
+  // portalView is appended outside .app. Hide the live overview application
+  // while capturing the specialist workspace so visual overflow can never
+  // include unrelated, independently changing dashboard cards behind the
+  // modal. Keep the Portal V2 DOM/layout itself untouched and keep the strict
+  // pixel threshold unchanged.
+  await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}input,textarea{caret-color:transparent!important}.app{visibility:hidden!important}body{background:rgb(255 255 255)!important}[data-functional-workspace="canvassen"]{background:rgb(255 255 255)!important}'});
   return workspace;
 }
 

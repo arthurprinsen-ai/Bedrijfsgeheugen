@@ -39,6 +39,6 @@ test('visual regression waits for and isolates the specialist canvas payload bef
   assert.match(visualSpec, /\.canvas-summary/);
   assert.match(visualSpec, /\[data-canvas\]/);
   assert.match(visualSpec, /toHaveCount\(6/);
-  assert.match(visualSpec, /scrollHeight/);
+  assert.match(visualSpec, /\.app\{visibility:hidden!important\}/);
   assert.match(visualSpec, /background:rgb\(255 255 255\)!important/);
 });
