@@ -70,8 +70,10 @@ test('material work keeps one coalesced identity across business dates', () => {
 test('unknown or disabled owner agent fails closed', () => {
   for (const badAgent of [null, { id:'agent-other', enabled:true }, { id:'agent-performance', enabled:false }]) {
     const result = evaluateOutcomeObligation({ ...scheduled(), due:true, agent:badAgent });
-    assert.equal(result.status, 'BLOCKED_HARD_BOUNDARY');
-    assert.equal(result.hardBoundary, 'unknown_or_disabled_owner_agent');
+    assert.equal(result.status, 'RECOVERING');
+    assert.equal(result.hardBoundary, null);
+    assert.equal(result.recovery?.type, 'RecoveryWork');
+    assert.equal(result.recovery?.policy, 'reassign_or_reenable_owner');
   }
 });
 
