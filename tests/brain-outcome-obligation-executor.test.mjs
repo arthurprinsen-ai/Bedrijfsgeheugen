@@ -60,16 +60,18 @@ test('scheduled and equivalent event triggers coalesce when a coalesce key is su
   assert.equal(scheduledId.idempotencyKey, eventId.idempotencyKey);
 });
 
-test('unknown or disabled owner agent becomes deterministic canonical recovery work', () => {
+test('material work keeps one coalesced identity across business dates', () => {
+  const before = computeExecutionIdentity({ ...scheduled('2026-08-30T22:00:00Z'), coalesceKey:'candidate:abc123' });
+  const after = computeExecutionIdentity({ ...scheduled('2026-09-02T08:00:00Z'), coalesceKey:'candidate:abc123' });
+  assert.equal(before.idempotencyKey, after.idempotencyKey);
+  assert.notEqual(before.executionWindow, after.executionWindow);
+});
+
+test('unknown or disabled owner agent fails closed', () => {
   for (const badAgent of [null, { id:'agent-other', enabled:true }, { id:'agent-performance', enabled:false }]) {
     const result = evaluateOutcomeObligation({ ...scheduled(), due:true, agent:badAgent });
-    assert.equal(result.status, 'RECOVERING');
-    assert.equal(result.hardBoundary, null);
-    assert.equal(result.recovery?.type, 'RecoveryWork');
-    assert.equal(result.recovery?.recoveryKind, 'OWNER_RECOVERY');
-    assert.equal(result.recovery?.requestedOwnerAgent, 'agent-performance');
-    assert.equal(result.recovery?.policy, 'reassign_or_reenable_owner');
-    assert.equal(result.recovery?.idempotencyKey, `recovery|${result.idempotencyKey}`);
+    assert.equal(result.status, 'BLOCKED_HARD_BOUNDARY');
+    assert.equal(result.hardBoundary, 'unknown_or_disabled_owner_agent');
   }
 });
 

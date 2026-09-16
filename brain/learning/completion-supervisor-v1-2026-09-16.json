@@ -1,0 +1,35 @@
+{
+  "type": "FailureClass",
+  "version": "POWERHOUSE-COMPLETION-SUPERVISOR-v1",
+  "fingerprint": "powerhouse-completion-supervisor-v1",
+  "observedAt": "2026-09-16T14:00:00+02:00",
+  "status": "CANDIDATE_IMPLEMENTED_NOT_PRODUCTION_VERIFIED",
+  "symptom": "Materieel AgentWork kon lokaal groen of bij een bewezen hard boundary als Resolved eindigen terwijl productie-readback, writeback of andere outcome obligations nog open waren.",
+  "rootCause": "Completion-readiness vermengde lokale voortgang, wachttoestand en succesvolle completion; duurzame evidence had geen centrale identity-bound normalisatie, vertrouwde artifact-ingestie of eventgedreven next-action evaluatie onder één change-identiteit over meerdere kalenderdagen.",
+  "failedApproach": "localGreen plus terminale deelobligations als completion behandelen, of een hard boundary als succesvolle terminale uitkomst accepteren.",
+  "fix": "Een pure Completion Supervisor vereist zeven vertrouwde identity-bound evidenceklassen voor LIVE_VERIFIED, houdt WAIT_EXTERNAL actief en resumable, schrijft partial/backfill-besluiten idempotent in dezelfde Supabase obligation-lineage, neemt de onveranderlijke BRAIN-DELIVERY-v2/BG169/readback-artifacts vanuit vertrouwde main-workflowcode op en behoudt dezelfde candidate-obligation over meerdere dagen.",
+  "preventionRule": "Geen AgentWork mag Resolved of uit de actieve fingerprint-index verdwijnen zonder LIVE_VERIFIED; hard boundaries blijven WAIT_EXTERNAL met volledig recovery packet en hervatten hetzelfde work-item zodra resume_when waar is.",
+  "evidenceRule": "Alleen exact gekoppelde candidate-, protected-delivery-, production-identity-, functionele-readback-, obligation-, capability-handoff- en learning-writeback-evidence van de geregistreerde producers kan succes bewijzen; lokale claims en workflow acknowledgements zijn progress events.",
+  "candidateEvidence": {
+    "redGreenTests": [
+      "tests/completion-supervisor.test.mjs",
+      "tests/agent-fabric.test.mjs",
+      "tests/brain-outcome-obligation-runtime.test.mjs",
+      "tests/completion-supervisor-evidence.test.mjs",
+      "tests/completion-supervisor-backfill.test.mjs"
+    ],
+    "focusedResult": "659 relevant Brain/backend/security tests passed, 0 failed after current-main synchronization",
+    "deliveryClassificationResult": "63 delivery, learning and Engineering OS tests passed, 0 failed",
+    "trustedArtifactIngestionResult": "51 focused completion/runtime/workflow tests passed, 0 failed; workflow YAML parsed successfully",
+    "supabaseSecurityResult": "self-test passed; no changed migrations and diff contract passed",
+    "engineeringOsValidator": "ENGINEERING_OS_READY",
+    "productionEvidence": null
+  },
+  "openObligations": [
+    "exact candidate head gates",
+    "protected merge",
+    "production workflow activation/readback",
+    "one real partial-obligation canary to LIVE_VERIFIED",
+    "BG168/BG166/BG167 and human documentation readback"
+  ]
+}
