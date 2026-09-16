@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { evaluateSuccessorCreation, evaluatePullRequestSuccessorGuard } from '../scripts/brain/moving-main-successor-guard.mjs';
 
 test('main movement without overlap forbids creating a successor', () => {
@@ -57,4 +58,11 @@ test('PR successor is allowed only with sync, overlap and unsynchronizable evide
     state:'SUCCESSOR_ALLOWED',
     action:'CREATE_SUCCESSOR'
   });
+});
+
+test('Required concurrency is candidate-SHA scoped so stale queued runs cannot block the current head', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
+  const groupLine = workflow.split(/\r?\n/).find((line) => line.trim().startsWith('group: required-test-')) ?? '';
+  assert.match(groupLine, /github\.event\.pull_request\.head\.sha/);
+  assert.match(groupLine, /github\.event\.merge_group\.head_sha/);
 });
