@@ -107,6 +107,7 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
   const packages = workPackages.map(raw => {
     const paths = stableUnique(raw.paths ?? []);
     const affected = selectAffectedTests({ paths, deliveryConfig, policy });
+    if (affected.failClosed) throw new Error(`Fail-closed work package ${raw.id}: ${affected.reason}`);
     return {
       ...raw,
       paths,
@@ -114,8 +115,8 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
       lanes: affected.lanes,
       contracts: affected.contracts,
       testProfiles: affected.profiles,
-      failClosed: affected.failClosed,
-      failClosedReason: affected.reason,
+      failClosed: false,
+      failClosedReason: null,
       cacheIdentity: buildCacheIdentity({
         baseSha: raw.baseSha,
         candidateSha: raw.candidateSha,
