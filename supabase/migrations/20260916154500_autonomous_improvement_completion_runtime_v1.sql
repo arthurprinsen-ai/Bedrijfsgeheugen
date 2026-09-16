@@ -321,7 +321,8 @@ update cron.job
 set command='select public.powerhouse_autonomous_improvement_cron_v1();'
 where jobname='powerhouse-autonomous-improvement-cycle-v1';
 
-create or replace view public.powerhouse_autonomous_improvement_control_v1 as
+create or replace view public.powerhouse_autonomous_improvement_control_v1
+with (security_invoker = true) as
 select
   o.id as obligation_id,
   o.state,
@@ -340,7 +341,7 @@ from public.brain_obligations o
 where o.obligation_type='AUTONOMOUS_IMPROVEMENT'
   and o.capability_id='powerhouse-autonomous-improvement-runtime-v1';
 
-revoke all on public.powerhouse_autonomous_improvement_control_v1 from anon, authenticated;
+revoke all on public.powerhouse_autonomous_improvement_control_v1 from public, anon, authenticated;
 grant select on public.powerhouse_autonomous_improvement_control_v1 to service_role;
 
 comment on view public.powerhouse_autonomous_improvement_control_v1 is
