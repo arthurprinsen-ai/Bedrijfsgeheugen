@@ -57,7 +57,6 @@ grant select on public.powerhouse_public_rls_policy_classification_v1 to service
 create or replace function public.powerhouse_public_rls_policy_audit_v1()
 returns jsonb
 language sql
-security definer
 set search_path = pg_catalog
 as $function$
   select jsonb_build_object(
@@ -71,7 +70,7 @@ as $function$
 $function$;
 
 comment on function public.powerhouse_public_rls_policy_audit_v1() is
-'Fail-closed Powerhouse RLS policy-intent audit. A nonzero policy_required or rls_disabled count is a security obligation; this function never auto-creates policies.';
+'Invoker-rights, fail-closed Powerhouse RLS policy-intent audit. A nonzero policy_required or rls_disabled count is a security obligation; this function never auto-creates policies.';
 
 revoke all on function public.powerhouse_public_rls_policy_audit_v1() from public, anon, authenticated;
 grant execute on function public.powerhouse_public_rls_policy_audit_v1() to service_role;
