@@ -38,7 +38,7 @@ test('legacy trigger semantics are preserved for core models',()=>{
  assert.equal(byId.ocai.signal,'culture-gap');
  assert.equal(byId['sales-funnel'].signal,'conversion-gap');
  assert.equal(byId.aarrr.signal,'acquisition-measurement-gap');
- assert.equal(byId.pareto-receivables.signal,'receivables-focus');
+ assert.equal(byId['pareto-receivables'].signal,'receivables-focus');
 });
 
 test('every strategic model can produce a deterministic canonical roadmap action and dedupe it',()=>{
