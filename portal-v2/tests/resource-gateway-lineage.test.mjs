@@ -24,6 +24,12 @@ test('resource business value exposes footprint lineage without inventing aggreg
   assert.match(source, /uniqueConfidences\.length===1/);
 });
 
+test('resource footprint freshness comes from the latest calculated resource lineage observation', () => {
+  assert.match(source, /lineageRows\.map\(\(row:any\)=>row\.occurred_at\)/);
+  assert.match(source, /Date\.parse/);
+  assert.doesNotMatch(source, /const calculatedAt=String\(summary\?\.latest_observed_at/);
+});
+
 test('resource footprint stays absent when summary or unambiguous calculated lineage is missing', () => {
   assert.match(source, /const resourceFootprint=.*summary.*lineageRows/s);
   assert.match(source, /resource_footprint:resourceFootprint/);
