@@ -1,0 +1,1 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';const c=JSON.parse(fs.readFileSync('powerhouse/assurance/quality-intelligence-v2-component.json','utf8'));test('v2 component points to spec plan and human runbook',()=>{for(const p of c.docs)assert.equal(fs.existsSync(p),true,p);});
