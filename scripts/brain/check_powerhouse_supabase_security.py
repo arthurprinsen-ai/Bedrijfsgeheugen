@@ -17,6 +17,7 @@ HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
     "supabase/migrations/20260914074533_powerhouse_content_artifacts_v1.sql": "c095809ae53dae8add2ff53d5ee1f989a867d547",
     "supabase/migrations/20260914074405_powerhouse_execution_status_v1.sql": "7a0efd8f35327b49bf239ba244d844e0b01476f8",
     "supabase/migrations/20260914074413_powerhouse_completion_gate_v1.sql": "b44eb398a2fa14c816d535b0842aa36dae4a8fee",
+    "supabase/migrations/20260914074434_powerhouse_execution_guard_cron_v1.sql": "e7dab9a5fc50f1b8870ded1b1e5e1a3fbaccc06b",
     "supabase/migrations/20260914074504_powerhouse_completion_gate_compatible_v2.sql": "f34e01ad3b293463467ebbf673a015c111d9a041",
     "supabase/migrations/20260914081052_predictive_intelligence_first_mover_v1.sql": "ab6713e1057da039a7f1725a7bc05116a46299c7",
     "supabase/migrations/20260914081911_predictive_first_mover_contract_v1_hardening.sql": "1324acc5f67238980ef5f31dad91df7aaeefdf94",

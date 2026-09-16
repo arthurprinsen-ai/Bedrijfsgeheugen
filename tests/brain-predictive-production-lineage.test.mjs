@@ -14,6 +14,7 @@ const CANONICAL = [
   '20260914074533_powerhouse_content_artifacts_v1.sql',
   '20260914074405_powerhouse_execution_status_v1.sql',
   '20260914074413_powerhouse_completion_gate_v1.sql',
+  '20260914074434_powerhouse_execution_guard_cron_v1.sql',
   '20260914074504_powerhouse_completion_gate_compatible_v2.sql',
   '20260914081052_predictive_intelligence_first_mover_v1.sql',
   '20260914081911_predictive_first_mover_contract_v1_hardening.sql',
