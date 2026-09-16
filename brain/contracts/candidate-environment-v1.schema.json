@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"candidate-environment-v1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["change_id","pr","git_sha","netlify_deploy_id","supabase_branch_id","schema_revision","artifact_digest","evidence"],
+  "properties":{
+    "change_id":{"type":"string","minLength":1},
+    "pr":{"type":"integer","minimum":1},
+    "git_sha":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "netlify_deploy_id":{"type":"string","minLength":1},
+    "supabase_branch_id":{"type":"string","minLength":1},
+    "schema_revision":{"type":"string","minLength":1},
+    "artifact_digest":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},
+    "evidence":{"type":"object","required":["frontend_sha","backend_sha","database_schema_revision"],"properties":{"frontend_sha":{"type":"string"},"backend_sha":{"type":"string"},"database_schema_revision":{"type":"string"}}}
+  }
+}

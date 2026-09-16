@@ -1,0 +1,35 @@
+{
+  "version": "ENGINEERING-TRUST-v1",
+  "parentContract": "BRAIN-DELIVERY-v2",
+  "mode": "fail_closed_for_new_regressions",
+  "requiredGates": [
+    "artifact_attestation",
+    "sbom",
+    "dependency_review",
+    "codeql",
+    "dependency_lifecycle",
+    "ownership"
+  ],
+  "provenance": {
+    "exactShaRequired": true,
+    "artifactDigestRequired": true,
+    "attestationRequiredForPromotableArtifacts": true,
+    "sbomFormat": "spdx-json"
+  },
+  "dependencyPolicy": {
+    "automatedUpdates": true,
+    "vulnerabilityGate": "high_or_critical_new_findings_block",
+    "licensePolicy": "deny_explicitly_disallowed",
+    "eolPolicy": "baseline_then_ratchet"
+  },
+  "ownership": {
+    "codeownersRequired": true,
+    "componentRegistryIsAuthority": true
+  },
+  "learning": {
+    "errorLedger": "BG166",
+    "currentStateProjection": "BG167",
+    "outcomeRouter": "BG168",
+    "productionAuthority": "BG169"
+  }
+}

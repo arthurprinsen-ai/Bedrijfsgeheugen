@@ -9,7 +9,7 @@
   ],
   "golden_path": ["CONTEXT","SCOPE","PLAN","CHANGE","TEST","PREVIEW","VERIFY","PROMOTE","PROD_READBACK","WRITEBACK","LEARN","IMPROVE"],
   "canonical_authorities": {
-    "agent_contract":"AGENTS.md","development_os":"docs/development-operating-system.md","delivery":"config/brain-delivery-system.json","outcomes":"config/outcome-obligations.json","learning_preflight":"config/brain-chat-learning-contract.json","development_ledger":"docs/development-ledger.md","required_ci":".github/workflows/required-test.yml"
+    "agent_contract":"AGENTS.md","development_os":"docs/development-operating-system.md","continuous_improvement_doc":"docs/superpowers/specs/2026-09-16-continuous-improvement-engine-v1-design.md","status_recovery_doc":"docs/development-live-until-proven-status-contract.md","delivery":"config/brain-delivery-system.json","outcomes":"config/outcome-obligations.json","learning_preflight":"config/brain-chat-learning-contract.json","development_ledger":"docs/development-ledger.md","required_ci":".github/workflows/required-test.yml"
   },
   "platform_roles": {
     "github":"source, review, protected merge and exact candidate identity","netlify":"web preview, immutable deploy evidence and production web runtime","supabase":"database/schema/functions/runtime state through source-controlled migrations and configuration","notion":"human-readable knowledge, audit and system-map projection; never deployed identity authority","buffer":"social provider execution/readback evidence; never engineering source authority"
@@ -27,6 +27,14 @@
   },
   "skill_evolution": {"lifecycle":["OBSERVE","CLUSTER","HYPOTHESIZE","BASELINE","CANDIDATE","EVAL","REVIEW","PROMOTE_OR_ROLLBACK","PROD_OUTCOME","WRITEBACK"],"requires":{"baseline":true,"representative_eval":true,"success_metric":true,"compatibility":true,"rollback_or_fallback":true,"post_promotion_outcome":true}},
   "architecture_evolution": {"fitness_dimensions":["correctness","reliability","security","tenant_isolation","performance","maintainability","cognitive_load","reuse","observability","deployability","rollback_safety","testability","data_integrity","lineage","cost_capacity","compatibility","business_impact","lead_time"],"requires":{"compare_to_current":true,"measurable_improvement":true,"migration_compatibility":true,"security_privacy_cost_review":true,"representative_tests_or_benchmarks":true,"rollback_or_recovery":true,"production_readback":true,"system_map_and_decision_lineage_update":true}},
+  "continuous_improvement": {
+    "fingerprint":"powerhouse-continuous-improvement-engine-v1",
+    "lifecycle":["OBSERVE","CLUSTER","CANDIDATE","BASELINE","EVALUATE","DECIDE","SHADOW_OR_CANARY","PROMOTE_OR_REJECT","PROD_OBSERVE","ROLLBACK_OR_CONFIRM","ATTRIBUTE","WRITEBACK","REVALIDATE"],
+    "candidate":{"dedupe_before_persist":true,"conflict_arbitration":true,"stable_identity":true},
+    "promotion":{"security_non_degradation":true,"correctness_non_degradation":true,"unknown_critical_fails_closed":true,"no_single_magic_score":true,"rollback_identity_required":true,"compensated_tradeoff_requires_evidence":true,"business_claim_requires_business_evidence":true},
+    "revalidation":{"require_revalidate_after":true,"states":["CONFIRMED","CANDIDATE_REQUIRED","SUPERSEDED","BLOCKED_HARD_BOUNDARY"]},
+    "attribution":{"causality_not_assumed":true,"baseline_comparison_required":true}
+  },
   "operating_controls": {
     "fingerprint":"powerhouse-autonomy-controls-v1","applies_to":["all_existing_chats","all_future_chats","all_existing_agents","all_future_agents","all_material_workflows"],
     "controls": {
@@ -40,9 +48,24 @@
     }
   },
   "engineering_rules": [
-    "Prefer small coherent modules with explicit interfaces and ownership.","Prefer reusable helpers and reusable workflows over copy-paste families.","Tests must assert behavior or evidence, not incidental wording or implementation text.","A test is not a gate until CI demonstrably executes it.","Production schema and function behavior must remain reconstructable from source control.","No hidden magic score, threshold, authority or deployment rule may remain undocumented.","No new brain, registry, queue, calendar, analytics store or learning store when an existing canonical capability can be extended.","Use current task-relevant external evidence when technology currency can materially change the answer or implementation.","Adopt frontier technology only through a reversible, measurable experiment with rollback or fallback.","Every new verified reusable learning must be deduplicated before persistent write and then refresh current shared context.","Skill and architecture candidates must beat or materially improve the current baseline before promotion and must retain rollback or fallback.","Every autonomous side effect is bounded by explicit risk/cost/capacity/blast-radius policy.","Knowledge that can age must carry freshness and revalidation semantics.","AI/model/prompt/retrieval/agent changes are regression-gated like code changes.","Recovery is proven by restore/rebuild evidence, not by backup existence alone.","Documentation and learning writeback are release outputs, not optional follow-up."
+    "Prefer small coherent modules with explicit interfaces and ownership.","Prefer reusable helpers and reusable workflows over copy-paste families.","Tests must assert behavior or evidence, not incidental wording or implementation text.","A test is not a gate until CI demonstrably executes it.","Production schema and function behavior must remain reconstructable from source control.","No hidden magic score, threshold, authority or deployment rule may remain undocumented.","No new brain, registry, queue, calendar, analytics store or learning store when an existing canonical capability can be extended.","Use current task-relevant external evidence when technology currency can materially change the answer or implementation.","Adopt frontier technology only through a reversible, measurable experiment with rollback or fallback.","Every new verified reusable learning must be deduplicated before persistent write and then refresh current shared context.","Skill and architecture candidates must beat or materially improve the current baseline before promotion and must retain rollback or fallback.","Every autonomous side effect is bounded by explicit risk/cost/capacity/blast-radius policy.","Knowledge that can age must carry freshness and revalidation semantics.","AI/model/prompt/retrieval/agent changes are regression-gated like code changes.","Recovery is proven by restore/rebuild evidence, not by backup existence alone.","Documentation and learning writeback are release outputs, not optional follow-up.","DEELS LIVE is an intermediate signal: keep working until LIVE & BEWEZEN or a proven hard boundary with a complete recovery handoff."
   ],
   "terminal_statuses":["LIVE & BEWEZEN","DEELS LIVE","GEBLOKKEERD","NIET GEDAAN"],
+  "status_policy": {
+    "fingerprint":"powerhouse-live-until-proven-v1",
+    "applies_to":["all_existing_chats","all_future_chats","all_existing_agents","all_future_agents","all_material_workflows"],
+    "success_terminal_statuses":["LIVE & BEWEZEN"],
+    "intermediate_statuses":["DEELS LIVE","NIET GEDAAN"],
+    "keep_working_on_intermediate":true,
+    "blocked_status":"GEBLOKKEERD",
+    "blocked_requires_hard_boundary":true,
+    "blocked_requires_recovery_packet":true,
+    "blocked_requires_fix_agent_handoff":true,
+    "recovery_packet_required_fields":["blocker","root_cause_or_best_evidence","evidence","attempted_repairs","safe_actions_remaining","minimum_human_action","fix_agent_handoff"],
+    "fix_agent_handoff":{"required":true,"target_status":"LIVE & BEWEZEN","carry_forward_context":true,"required_context":["problem_context","current_state","evidence","failed_attempts","known_root_cause","open_obligations","affected_components","hard_boundary_if_any","next_safe_actions"]},
+    "auto_resume_when_boundary_clears":true,
+    "rule":"Never stop at DEELS LIVE when further safe technical work is possible. Continue through diagnose, fix, test, protected delivery, production readback and writeback. GEBLOKKEERD is valid only at a proven hard boundary and must include an immediately usable recovery packet and fix-agent/chat handoff."
+  },
   "hard_boundaries":["secrets_credentials_permissions","security_control_weakening","destructive_irreversible_data","paid_resource_increase","legal_financial_commitment"],
   "bootstrap":{"command":"node scripts/brain/powerhouse-engineering-os.mjs --check","packet_command":"node scripts/brain/powerhouse-engineering-os.mjs --packet","required_test":"tests/brain-powerhouse-engineering-os-contract.test.mjs"}
 }

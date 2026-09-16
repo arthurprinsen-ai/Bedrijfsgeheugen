@@ -7,8 +7,10 @@ on:
       - 'powerhouse/assurance/**'
       - 'scripts/powerhouse-assurance-check.mjs'
       - 'scripts/brain/powerhouse-quality-intelligence.mjs'
+      - 'scripts/brain/quality/**'
       - 'tests/powerhouse-assurance*.test.mjs'
-      - 'tests/brain-quality-intelligence.test.mjs'
+      - 'tests/brain-quality-intelligence*.test.mjs'
+      - 'tests/brain-quality-*.test.mjs'
       - 'tools/brain-delivery-system.mjs'
       - 'portal-v2/**'
       - '.github/scripts/portal_parity.py'
@@ -16,8 +18,9 @@ on:
       - 'docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md'
       - 'docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md'
       - 'docs/superpowers/specs/2026-09-15-powerhouse-assurance-layer-design.md'
-      - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-design.md'
+      - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence*.md'
       - 'docs/superpowers/plans/2026-09-15-powerhouse-assurance-layer.md'
+      - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence*.md'
   push:
     branches: [main]
   workflow_dispatch:
@@ -35,7 +38,16 @@ jobs:
         with:
           node-version: '22'
       - name: Assurance and Quality Intelligence unit contracts
-        run: node --test tests/powerhouse-assurance.test.mjs tests/powerhouse-assurance-delivery-classification.test.mjs tests/brain-quality-intelligence.test.mjs
+        run: >-
+          node --test
+          tests/powerhouse-assurance.test.mjs
+          tests/powerhouse-assurance-delivery-classification.test.mjs
+          tests/brain-quality-intelligence.test.mjs
+          tests/brain-quality-intelligence-v2.test.mjs
+          tests/brain-quality-exploration.test.mjs
+          tests/brain-quality-adversarial.test.mjs
+          tests/brain-quality-production-shadow.test.mjs
+          tests/brain-quality-economics.test.mjs
       - name: Powerhouse assurance gate
         run: node scripts/powerhouse-assurance-check.mjs --check
       - name: Quality Intelligence deterministic gate

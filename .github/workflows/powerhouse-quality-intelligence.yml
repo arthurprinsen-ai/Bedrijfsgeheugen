@@ -7,13 +7,16 @@ on:
       - 'powerhouse/assurance/**'
       - 'scripts/brain/powerhouse-quality-intelligence.mjs'
       - 'scripts/brain/quality/**'
-      - 'tests/brain-quality-intelligence.test.mjs'
+      - 'tests/brain-quality-intelligence*.test.mjs'
+      - 'tests/brain-quality-*.test.mjs'
       - 'tests/brain-quality/**'
       - 'tests/brain-quality-performance/**'
+      - 'config/powerhouse-quality-*.json'
       - 'config/stryker.quality.conf.json'
       - '.github/workflows/powerhouse-quality-intelligence.yml'
       - 'docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md'
-      - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-design.md'
+      - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence*.md'
+      - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence*.md'
   push:
     branches: [main]
   workflow_dispatch:
@@ -22,6 +25,8 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
 
 env:
   PLAYWRIGHT_VERSION: '1.63.0'
@@ -30,6 +35,7 @@ env:
   TRIVY_VERSION: '0.74.0'
   K6_VERSION: '2.2.0'
   ZAP_VERSION: '2.17.0'
+  SYFT_VERSION: '1.33.0'
 
 jobs:
   quality-contract:
@@ -42,8 +48,15 @@ jobs:
           node-version: '22'
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
-      - name: Deterministic Quality Intelligence contract
-        run: node --test tests/brain-quality-intelligence.test.mjs
+      - name: Deterministic Quality Intelligence v1 and v2 contracts
+        run: >-
+          node --test
+          tests/brain-quality-intelligence.test.mjs
+          tests/brain-quality-intelligence-v2.test.mjs
+          tests/brain-quality-exploration.test.mjs
+          tests/brain-quality-adversarial.test.mjs
+          tests/brain-quality-production-shadow.test.mjs
+          tests/brain-quality-economics.test.mjs
       - name: Canonical quality contract validator
         run: node scripts/brain/powerhouse-quality-intelligence.mjs --check
       - name: Flake probe cannot retry-to-green
@@ -95,11 +108,13 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify bounded exploration policy before browser work
+        run: node --test tests/brain-quality-exploration.test.mjs
       - name: Install accepted browser and accessibility engines
         run: npm install --no-save --no-audit --no-fund playwright@${PLAYWRIGHT_VERSION} @axe-core/playwright@${AXE_PLAYWRIGHT_VERSION}
       - name: Install Chromium Firefox and WebKit
         run: npx playwright install --with-deps chromium firefox webkit
-      - name: Cross-browser runtime accessibility and responsive audit
+      - name: Cross-browser runtime accessibility responsive and semantic audit
         env:
           QUALITY_BASE_URL: https://www.bedrijfsgeheugen.nl
         run: node scripts/brain/quality/frontend-deep-audit.mjs
@@ -109,6 +124,18 @@ jobs:
           name: quality-frontend-${{ github.sha }}
           path: artifacts/quality/frontend
           retention-days: 14
+
+  adversarial-contracts:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Safe stateful fuzz chaos and security target matrix
+        run: node --test tests/brain-quality-adversarial.test.mjs tests/brain-quality-production-shadow.test.mjs
 
   performance:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -157,6 +184,37 @@ jobs:
           name: quality-zap-${{ github.sha }}
           path: artifacts/quality/zap
           retention-days: 14
+
+  sbom-provenance:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build exact-SHA Quality Intelligence subject artifact
+        run: |
+          mkdir -p artifacts/quality/provenance
+          tar -czf artifacts/quality/provenance/quality-intelligence-${GITHUB_SHA}.tar.gz \
+            powerhouse/assurance/quality-intelligence.json \
+            powerhouse/assurance/quality-intelligence-v2.json \
+            scripts/brain/powerhouse-quality-intelligence.mjs \
+            scripts/brain/quality \
+            config/powerhouse-quality-surfaces.json \
+            config/powerhouse-quality-adversarial-matrix.json
+      - name: Generate CycloneDX SBOM
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work anchore/syft:v${SYFT_VERSION} \
+            dir:. -o cyclonedx-json=artifacts/quality/provenance/quality-intelligence-${GITHUB_SHA}.cdx.json
+      - name: Attest exact-SHA SBOM
+        uses: actions/attest-sbom@v2
+        with:
+          subject-path: artifacts/quality/provenance/quality-intelligence-${{ github.sha }}.tar.gz
+          sbom-path: artifacts/quality/provenance/quality-intelligence-${{ github.sha }}.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quality-provenance-${{ github.sha }}
+          path: artifacts/quality/provenance
+          retention-days: 30
 
   innovation-scout:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'

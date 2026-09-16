@@ -12,13 +12,24 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/approved-central-blog.yml': 'automation',
   '.github/workflows/powerhouse-assurance.yml': 'backend'
 });
-const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze(['docs/superpowers/changes/']);
+const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
+  'docs/superpowers/changes/',
+  'docs/engineering-intelligence-trust-'
+]);
 function effectiveNonExecutableSharedPaths(policy = {}) { return unique([...(policy.nonExecutableSharedPaths || []), ...BUILT_IN_NON_EXECUTABLE_SHARED_PATHS]); }
 
 const ASSURANCE_BACKEND_PATHS = Object.freeze([
   'powerhouse/assurance/',
   'scripts/powerhouse-assurance-check.mjs',
   'tests/powerhouse-assurance'
+]);
+const ENGINEERING_TRUST_BACKEND_PATHS = Object.freeze([
+  '.github/CODEOWNERS',
+  '.github/dependabot.yml',
+  'tests/candidate-environment.test.mjs',
+  'tests/engineering-intelligence',
+  'tests/engineering-supply-chain',
+  'tests/engineering-trust'
 ]);
 const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
   'docs/powerhouse/',
@@ -28,6 +39,7 @@ const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
 function scopedLaneForPath(path) {
   if (SCOPED_WORKFLOW_LANES[path]) return SCOPED_WORKFLOW_LANES[path];
   if (matches(path, ASSURANCE_BACKEND_PATHS)) return 'backend';
+  if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';
   return null;
 }
 function isScopedNonExecutable(path) {

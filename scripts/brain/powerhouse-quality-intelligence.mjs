@@ -3,10 +3,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const FINGERPRINT = 'powerhouse-quality-intelligence-v1';
+export const V2_FINGERPRINT = 'powerhouse-quality-intelligence-v2';
 const FRONTEND_REQUIRED = ['functional','visual','geometry','responsive','cross_browser','accessibility','runtime','network','performance','content_baseline'];
 const BACKEND_REQUIRED = ['functional','property','api_contract','integration','performance','security','supply_chain','misconfiguration','resilience','data_integrity'];
 const LEARNING_REQUIRED = ['fingerprint','rootCause','regressionTest','preventionRule','evidence','learning_writeback','shared_context_refresh'];
 const ADOPTION_REQUIRED = ['discover','dedupe','applicability','security_cost_review','isolated_benchmark','false_positive_check','detection_delta','speed_delta','experiment_result','explicit_adoption'];
+const V2_CAPABILITIES = ['coverage_intelligence','autonomous_exploratory_testing','semantic_visual_intelligence','stateful_fuzz_chaos_testing','production_shadow_verification','performance_root_cause_intelligence','security_adversarial_matrix','build_provenance_sbom','test_the_tests_intelligence','quality_economics'];
 
 const missing = (values = [], required = []) => required.filter(value => !values.includes(value));
 
@@ -34,6 +36,22 @@ export function validateQualityContract(contract = {}) {
   return Object.freeze({ ok: gaps.length === 0, gaps });
 }
 
+export function validateQualityV2Contract(contract = {}) {
+  const gaps = [];
+  if (contract.fingerprint !== V2_FINGERPRINT) gaps.push(`fingerprint must be ${V2_FINGERPRINT}`);
+  if (contract.extends !== FINGERPRINT) gaps.push(`v2 must extend ${FINGERPRINT}`);
+  if (contract.release_authority !== FINGERPRINT) gaps.push('v1 must remain release authority');
+  const capabilityMissing = missing(contract.capabilities, V2_CAPABILITIES);
+  if (capabilityMissing.length) gaps.push(`v2 capabilities missing: ${capabilityMissing.join(', ')}`);
+  for (const required of ['GREEN','RED','UNKNOWN','NOT_REGISTERED']) {
+    if (!contract.evidence_states?.includes(required)) gaps.push(`evidence state missing: ${required}`);
+  }
+  if (!Array.isArray(contract.green_states) || contract.green_states.length !== 1 || contract.green_states[0] !== 'GREEN') gaps.push('GREEN must be the only green evidence state');
+  if (contract.ai_policy?.may_waive_gate !== false) gaps.push('AI may not waive gates');
+  if (contract.deep_sensors?.release_authority !== false) gaps.push('deep sensors may not become release authority');
+  return Object.freeze({ ok: gaps.length === 0, gaps });
+}
+
 export function classifyQualityImpact(paths = [], contract = {}) {
   const suites = new Set();
   for (const rawPath of paths) {
@@ -46,29 +64,27 @@ export function classifyQualityImpact(paths = [], contract = {}) {
 }
 
 export function buildQualityState({ candidateSha = null, dimensions = [] } = {}) {
-  const normalized = dimensions.map(item => ({
-    id: String(item.id), mandatory: item.mandatory !== false, status: String(item.status || 'unknown'), evidence: item.evidence ?? null,
-  }));
+  const normalized = dimensions.map(item => ({ id: String(item.id), mandatory: item.mandatory !== false, status: String(item.status || 'unknown'), evidence: item.evidence ?? null }));
   const blocking = normalized.filter(item => item.mandatory && item.status !== 'green').map(item => item.id);
-  return Object.freeze({
-    fingerprint: FINGERPRINT,
-    candidate_sha: candidateSha,
-    status: blocking.length ? 'BLOCKED' : 'GREEN',
-    blocking_dimensions: blocking,
-    dimensions: normalized,
-  });
+  return Object.freeze({ fingerprint: FINGERPRINT, candidate_sha: candidateSha, status: blocking.length ? 'BLOCKED' : 'GREEN', blocking_dimensions: blocking, dimensions: normalized });
 }
 
 export function loadQualityContract(filename = 'powerhouse/assurance/quality-intelligence.json') {
   return JSON.parse(fs.readFileSync(filename, 'utf8'));
 }
 
+export function loadQualityV2Contract(filename = 'powerhouse/assurance/quality-intelligence-v2.json') {
+  return JSON.parse(fs.readFileSync(filename, 'utf8'));
+}
+
 function main() {
-  const contract = loadQualityContract();
-  const result = validateQualityContract(contract);
-  const output = { fingerprint: FINGERPRINT, status: result.ok ? 'READY' : 'BLOCKED', gaps: result.gaps };
+  const v1 = validateQualityContract(loadQualityContract());
+  const v2Path = 'powerhouse/assurance/quality-intelligence-v2.json';
+  const v2 = fs.existsSync(v2Path) ? validateQualityV2Contract(loadQualityV2Contract(v2Path)) : { ok: true, gaps: [] };
+  const gaps = [...v1.gaps, ...v2.gaps];
+  const output = { fingerprint: FINGERPRINT, extensions: fs.existsSync(v2Path) ? [V2_FINGERPRINT] : [], status: gaps.length ? 'BLOCKED' : 'READY', gaps };
   process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
-  if (process.argv.includes('--check') && !result.ok) process.exitCode = 1;
+  if (process.argv.includes('--check') && gaps.length) process.exitCode = 1;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
