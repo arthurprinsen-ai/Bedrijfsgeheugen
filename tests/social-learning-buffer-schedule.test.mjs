@@ -102,19 +102,17 @@ test('personal provider coverage only satisfies delivery when provider text equa
   assert.equal(mismatch.reason,'PERSONAL_PROVIDER_ARTIFACT_MISMATCH');
 });
 
-test('Instagram provider coverage fails closed unless readback is bound to a guarded artifact', () => {
+test('Instagram provider coverage fails closed unless canonical readback is bound to the guarded artifact', () => {
   const posts=[{id:'ig-1',status:'sent',text:instagramArtifact.body}];
-  const invalid=deliveryDecision({
-    channel:'instagram', posts, artifact:instagramArtifact,
-    obligation:{status:'BLOCKED',evidence:{delivery_guard:'social-delivery-guarantee-v1',provider_post_id:'ig-1',identity_gate_result:'FAIL',source_kind:null}},
-  });
-  assert.equal(invalid.action,'BLOCK');
-  assert.equal(invalid.reason,'INSTAGRAM_PROVIDER_IDENTITY_UNVERIFIED');
+  const invalid=structuredClone(instagramArtifact);
+  invalid.delivery_readback={status:'BLOCKED',evidence:{delivery_guard:'social-delivery-guarantee-v1',provider_post_id:'ig-1',identity_gate_result:'FAIL',source_kind:null}};
+  const blocked=deliveryDecision({channel:'instagram',posts,artifact:invalid});
+  assert.equal(blocked.action,'BLOCK');
+  assert.equal(blocked.reason,'INSTAGRAM_PROVIDER_IDENTITY_UNVERIFIED');
 
-  const verified=deliveryDecision({
-    channel:'instagram', posts, artifact:instagramArtifact,
-    obligation:{status:'LIVE_PROVEN',evidence:{delivery_guard:'social-delivery-guarantee-v1',provider_post_id:'ig-1',source_kind:'artifact'}},
-  });
-  assert.equal(verified.action,'NONE');
-  assert.equal(verified.reason,'PROVIDER_COVERED_VERIFIED');
+  const verified=structuredClone(instagramArtifact);
+  verified.delivery_readback={status:'LIVE_PROVEN',evidence:{delivery_guard:'social-delivery-guarantee-v1',provider_post_id:'ig-1',source_kind:'artifact'}};
+  const covered=deliveryDecision({channel:'instagram',posts,artifact:verified});
+  assert.equal(covered.action,'NONE');
+  assert.equal(covered.reason,'PROVIDER_COVERED_VERIFIED');
 });
