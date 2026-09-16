@@ -35,6 +35,25 @@ function validateContinuousImprovement(contract, errors) {
   requireBoolean(improvement.attribution?.baseline_comparison_required, 'continuous_improvement.attribution.baseline_comparison_required', errors);
   return improvement.fingerprint;
 }
+function validateStatusPolicy(contract, errors) {
+  const policy = contract.status_policy;
+  if (!policy || policy.fingerprint !== 'powerhouse-live-until-proven-v1') { errors.push('status policy fingerprint drift'); return null; }
+  if (JSON.stringify(policy.success_terminal_statuses) !== JSON.stringify(['LIVE & BEWEZEN'])) errors.push('LIVE & BEWEZEN must be the only successful terminal status');
+  if (!policy.intermediate_statuses?.includes('DEELS LIVE')) errors.push('DEELS LIVE must remain explicitly intermediate');
+  requireBoolean(policy.keep_working_on_intermediate, 'status_policy.keep_working_on_intermediate', errors);
+  if (policy.blocked_status !== 'GEBLOKKEERD') errors.push('status_policy.blocked_status drift');
+  requireBoolean(policy.blocked_requires_hard_boundary, 'status_policy.blocked_requires_hard_boundary', errors);
+  requireBoolean(policy.blocked_requires_recovery_packet, 'status_policy.blocked_requires_recovery_packet', errors);
+  requireBoolean(policy.blocked_requires_fix_agent_handoff, 'status_policy.blocked_requires_fix_agent_handoff', errors);
+  const requiredFields = ['blocker','root_cause_or_best_evidence','evidence','attempted_repairs','safe_actions_remaining','minimum_human_action','fix_agent_handoff'];
+  if (JSON.stringify(policy.recovery_packet_required_fields) !== JSON.stringify(requiredFields)) errors.push('status_policy recovery packet fields drift');
+  requireBoolean(policy.fix_agent_handoff?.required, 'status_policy.fix_agent_handoff.required', errors);
+  if (policy.fix_agent_handoff?.target_status !== 'LIVE & BEWEZEN') errors.push('status_policy fix-agent target drift');
+  requireBoolean(policy.fix_agent_handoff?.carry_forward_context, 'status_policy.fix_agent_handoff.carry_forward_context', errors);
+  requireNonEmptyArray(policy.fix_agent_handoff?.required_context, 'status_policy.fix_agent_handoff.required_context', errors);
+  requireBoolean(policy.auto_resume_when_boundary_clears, 'status_policy.auto_resume_when_boundary_clears', errors);
+  return policy.fingerprint;
+}
 export async function validateEngineeringOS() {
   const contract = await loadEngineeringContract();
   const errors = [];
@@ -56,6 +75,7 @@ export async function validateEngineeringOS() {
   for (const key of ['compare_to_current','measurable_improvement','migration_compatibility','security_privacy_cost_review','representative_tests_or_benchmarks','rollback_or_recovery','production_readback','system_map_and_decision_lineage_update']) if (contract.architecture_evolution?.requires?.[key] !== true) errors.push(`architecture ${key} drift`);
   const controlFingerprint = validateOperatingControls(contract, errors);
   const continuousImprovementFingerprint = validateContinuousImprovement(contract, errors);
+  const statusPolicyFingerprint = validateStatusPolicy(contract, errors);
   const developmentOS = await readFile(path.join(repoRoot, contract.canonical_authorities.development_os), 'utf8');
   if (!developmentOS.includes('BRAIN-DELIVERY-v2')) errors.push('development OS does not declare BRAIN-DELIVERY-v2');
   if (developmentOS.includes('BRAIN-DELIVERY-v1')) errors.push('stale BRAIN-DELIVERY-v1 remains in development OS');
@@ -64,9 +84,13 @@ export async function validateEngineeringOS() {
   const continuousDoc = await readFile(path.join(repoRoot, contract.canonical_authorities.continuous_improvement_doc), 'utf8');
   if (!continuousDoc.includes('powerhouse-continuous-improvement-engine-v1')) errors.push('continuous improvement documentation fingerprint drift');
   if (!continuousDoc.includes('OBSERVE -> CLUSTER -> CANDIDATE')) errors.push('continuous improvement documentation lifecycle drift');
+  const statusDoc = await readFile(path.join(repoRoot, contract.canonical_authorities.status_recovery_doc), 'utf8');
+  if (!statusDoc.includes('powerhouse-live-until-proven-v1')) errors.push('status recovery documentation fingerprint drift');
+  if (!statusDoc.includes('LIVE & BEWEZEN')) errors.push('status recovery documentation missing target status');
+  if (!statusDoc.includes('fix-agent/chat')) errors.push('status recovery documentation missing fix-agent/chat handoff');
   const requiredCI = await readFile(path.join(repoRoot, contract.canonical_authorities.required_ci), 'utf8');
   if (!requiredCI.includes(contract.bootstrap.required_test)) errors.push('Engineering OS regression test is not wired into Required test');
-  return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, continuous_improvement_fingerprint: continuousImprovementFingerprint, golden_path: contract.golden_path, errors };
+  return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, continuous_improvement_fingerprint: continuousImprovementFingerprint, status_policy_fingerprint: statusPolicyFingerprint, golden_path: contract.golden_path, errors };
 }
 async function main() {
   const mode = process.argv[2] ?? '--check';
