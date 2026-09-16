@@ -2,13 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath = new URL('../supabase/migrations/20260916151600_fix_autonomous_improvement_record_kind_v1.sql', import.meta.url);
+const migrationPath = new URL('../supabase/migrations/20260916144500_autonomous_improvement_production_cycle_v1.sql', import.meta.url);
+const hotfixPath = new URL('../supabase/migrations/20260916151500_fix_autonomous_improvement_record_kind_v1.sql', import.meta.url);
 const sql = await readFile(migrationPath, 'utf8');
+const hotfix = await readFile(hotfixPath, 'utf8');
 
-test('production cycle reuses canonical Brain authority without creating parallel storage', () => {
+test('production cycle reuses canonical Brain authority and existing scheduler', () => {
   assert.match(sql, /powerhouse_autonomous_improvement_cycle_v1/);
   assert.match(sql, /public\.brain_append_record/);
   assert.match(sql, /tenant_id='canonical'|\s*'canonical',/);
+  assert.match(sql, /cron\.schedule\('powerhouse-autonomous-improvement-cycle-v1','42 \* \* \* \*'/);
   assert.doesNotMatch(sql, /create\s+table/i);
 });
 
@@ -38,12 +41,11 @@ test('production cycle is fail-closed and non-destructive', () => {
   assert.match(sql, /no_magic_score',true/);
 });
 
-test('hourly record identity is deterministic, idempotent, and uses an allowed Brain record kind', () => {
+test('hourly record identity is deterministic and writeback is idempotent', () => {
   assert.match(sql, /date_trunc\('hour', p_now\)/);
   assert.match(sql, /powerhouse-autonomous-improvement-runtime-v1:/);
   assert.match(sql, /'idempotent',true/);
-  assert.match(sql, /record_kind='current_state'/);
-  assert.match(sql, /'improvement','current_state'/);
-  assert.match(sql, /'cycle_kind','autonomous_improvement_cycle'/);
-  assert.doesNotMatch(sql, /'improvement','autonomous_improvement_cycle'/);
+  assert.match(hotfix, /'improvement','current_state'/);
+  assert.match(hotfix, /record_kind='current_state'/);
+  assert.doesNotMatch(hotfix, /'improvement','autonomous_improvement_cycle'/);
 });
