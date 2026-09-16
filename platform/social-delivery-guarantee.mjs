@@ -30,57 +30,64 @@ function validPersonalArtifact(artifact) {
   );
 }
 
-function normalizeIdeaMedia(idea) {
-  return (idea?.content?.media || [])
-    .filter((item) => item?.url && ['image', 'video'].includes(String(item?.type || '').toLowerCase()))
-    .map((item) => ({ type: String(item.type).toLowerCase(), url: item.url, alt: item.alt || null }));
+function validInstagramArtifact(artifact) {
+  const evidence = artifact?.generation_evidence || {};
+  const gateInput = evidence.instagram_publish_gate_input;
+  return Boolean(
+    artifactUsable(artifact) &&
+    artifact.channel === 'instagram' &&
+    gateInput &&
+    typeof gateInput === 'object' &&
+    gateInput.miraGatePassed === true &&
+    gateInput.instagramVisual?.verified === true &&
+    gateInput.instagramVisual?.identityClass === 'mira_daily_life' &&
+    gateInput.instagramVisual?.placeholderDetected !== true &&
+    gateInput.instagramVisual?.assetUrl &&
+    gateInput.assetUrl &&
+    gateInput.instagramVisual.assetUrl === gateInput.assetUrl,
+  );
 }
 
-function artifactMedia(artifact) {
-  const evidence = artifact?.generation_evidence || {};
-  const url = evidence.final_media_url || evidence.media_url || evidence.asset_url || evidence.creative_url || null;
-  const gatePassed = evidence.media_gate_result === 'PASS' || evidence.asset_verified === true;
-  if (!url || !gatePassed) return [];
-  const mediaType = String(evidence.media_type || 'image').toLowerCase() === 'video' ? 'video' : 'image';
-  return [{ type: mediaType, url, alt: evidence.media_alt || null }];
+function instagramMediaFromArtifact(artifact) {
+  const gateInput = artifact?.generation_evidence?.instagram_publish_gate_input || {};
+  const kind = String(gateInput.mediaKind || 'image').toLowerCase();
+  return [{
+    type: kind === 'video' || kind === 'reel' ? 'video' : 'image',
+    url: gateInput.assetUrl,
+    alt: gateInput.instagramVisual?.altText || null,
+  }];
 }
 
 export function selectDeliverySource({ channel, artifact = null, idea = null } = {}) {
   if (channel === 'linkedin_personal') {
     if (!validPersonalArtifact(artifact)) return null;
-    return { kind: 'artifact', text: artifact.body, ideaId: null, media: [] };
+    return { kind: 'artifact', text: artifact.body, ideaId: null, media: [], artifact };
+  }
+
+  if (channel === 'instagram') {
+    if (!validInstagramArtifact(artifact)) return null;
+    return { kind: 'artifact', text: artifact.body, ideaId: null, media: instagramMediaFromArtifact(artifact), artifact };
   }
 
   if (artifactUsable(artifact)) {
-    return {
-      kind: 'artifact',
-      text: artifact.body,
-      ideaId: null,
-      media: artifactMedia(artifact),
-    };
+    return { kind: 'artifact', text: artifact.body, ideaId: null, media: [], artifact };
   }
 
   const ideaText = normalizeText(idea?.content?.text || '');
   if (!ideaText) return null;
-  return {
-    kind: 'idea',
-    text: idea.content.text,
-    ideaId: idea?.id || null,
-    media: normalizeIdeaMedia(idea),
-  };
+  return { kind: 'idea', text: idea.content.text, ideaId: idea?.id || null, media: [], artifact: null };
 }
 
 export function deliveryDecision({ channel, posts = [], artifact = null, idea = null } = {}) {
   if (hasProviderCoverage({ posts })) return { action: 'NONE', reason: 'PROVIDER_COVERED' };
   const source = selectDeliverySource({ channel, artifact, idea });
   if (!source) {
-    return {
-      action: 'BLOCK',
-      reason: channel === 'linkedin_personal' ? 'PERSONAL_TRUTH_ARTIFACT_REQUIRED' : 'CONTENT_REQUIRED',
-    };
-  }
-  if (channel === 'instagram' && !source.media.length) {
-    return { action: 'BLOCK', reason: 'FINAL_MEDIA_REQUIRED' };
+    const reason = channel === 'linkedin_personal'
+      ? 'PERSONAL_TRUTH_ARTIFACT_REQUIRED'
+      : channel === 'instagram'
+        ? 'INSTAGRAM_MIRA_ARTIFACT_REQUIRED'
+        : 'CONTENT_REQUIRED';
+    return { action: 'BLOCK', reason };
   }
   return { action: 'CREATE', reason: 'DELIVERY_REQUIRED', source };
 }
