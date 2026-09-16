@@ -42,3 +42,35 @@ test('main Supabase migration pushes wake the performance obligation with an exa
     'supabase-performance-evidence-daily',
   ]) assert.ok(yaml.includes(required), `${required} must be present`);
 });
+
+test('delivery readback learning and boundary-clear events wake the same supervisor workflow', async () => {
+  const yaml = await readFile(workflowPath, 'utf8');
+  for (const required of [
+    'workflow_run:',
+    'Unified Brain Delivery',
+    'Production Release Readback',
+    'Shared Agent Memory Tests',
+    'repository_dispatch:',
+    'completion-boundary-clear',
+    'completion-material-writeback',
+    'github.event.workflow_run.head_sha',
+    'github.event.workflow_run.conclusion',
+    'completion-supervisor-backfill.mjs',
+    '--apply',
+    '.artifacts/completion-supervisor-backfill.json',
+    'actions: read',
+    'completion-supervisor-evidence.mjs',
+    '--coalesce-key',
+    'material-change-live-verification',
+    'bg169-production-evidence',
+    'production-release-readback-',
+    "jq -r '.candidate_sha // empty'",
+  ]) assert.ok(yaml.includes(required), `${required} must be present`);
+});
+
+test('workflow executes completion supervisor regressions before durable evaluation', async () => {
+  const yaml = await readFile(workflowPath, 'utf8');
+  assert.ok(yaml.includes('tests/completion-supervisor.test.mjs'));
+  assert.ok(yaml.includes('tests/completion-supervisor-backfill.test.mjs'));
+  assert.ok(yaml.indexOf('tests/completion-supervisor.test.mjs') < yaml.indexOf('node tools/outcome-obligation-runtime.mjs'));
+});

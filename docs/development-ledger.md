@@ -4,6 +4,18 @@ This ledger is append-only operational memory for material engineering outcomes.
 
 Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` and `CONTRACT_CHANGE`.
 
+## 2026-09-16 14:00 CEST — CONTRACT_CHANGE — Completion Supervisor v1 candidate
+- **Fingerprint:** `powerhouse-completion-supervisor-v1`
+- **Signal:** local green and proven hard-boundary state could end AgentWork as `Resolved` while exact production/readback/writeback obligations remained open.
+- **Root cause:** completion, waiting and partial progress shared one readiness result; trusted evidence was not centrally identity-bound, protected artifacts were not ingested into the durable lineage, calendar-day execution windows could split one material change, and no event-driven evaluator/backfill translated durable state into the next safe action.
+- **Known failed approach:** treat `localGreen`, merge/deploy acknowledgement or a hard boundary as successful completion and remove the fingerprint from active work.
+- **Candidate fix:** pure fail-closed Completion Supervisor policy; `LIVE_VERIFIED` only after seven trusted evidence classes; `WAIT_EXTERNAL` remains active; same-item resume; one coalesced candidate identity across calendar days; append-only Supabase evidence; trusted BRAIN-DELIVERY-v2/BG169/production-readback artifact ingest from main workflow code; event-driven sweep; bounded idempotent partial backfill.
+- **Owner:** Architecture/Integrator + Reliability + Knowledge/Governance.
+- **Regression gates:** `tests/completion-supervisor.test.mjs`, `tests/completion-supervisor-evidence.test.mjs`, `tests/agent-fabric.test.mjs`, `tests/delivery-preflight-completion.test.mjs`, `tests/brain-outcome-obligation-runtime.test.mjs`, `tests/brain-outcome-obligation-supabase-store.test.mjs`, `tests/completion-supervisor-backfill.test.mjs` and Required test membership.
+- **Verification:** RED was observed before implementation for the missing pure policy, legacy hard-boundary completion, absent durable evidence writes, absent protected-artifact ingest, cross-day identity drift and absent backfill/workflow triggers. Fresh synchronized-candidate verification: 659 relevant Brain/backend/security tests passed with 0 failures; 63 delivery/learning/Engineering OS tests passed with 0 failures; Supabase security self-test and unchanged-migration diff contract passed; workflow YAML parsed successfully; Engineering OS returned `ENGINEERING_OS_READY`. Exact-head CI and production evidence remain open until protected promotion.
+- **Rollback/last-known-good:** disable Completion Supervisor dispatch/backfill while retaining immutable obligations/evidence; existing Agent Fabric, BRAIN-DELIVERY-v2 and BG169 remain the release authorities.
+- **Reusable lesson:** waiting is not success, and local activity is not outcome proof. Completion evidence must be independently produced, exact-identity-bound and consumed by the same durable obligation lineage.
+
 ## 2026-08-31 00:02 CEST — CONTRACT_CHANGE — manual connector writes require candidate branch
 - **Fingerprint:** `repository|manual-connector-write|default-main-bypass`
 - **Signal:** a handmatige GitHub connector-write zonder expliciete `branch` kan naar de default branch schrijven. In deze chat zijn daardoor geheugen-/testwijzigingen rechtstreeks op `main` beland terwijl de bestaande regel `NEVER_TDD_DIRECTLY_ON_MAIN` al gold.

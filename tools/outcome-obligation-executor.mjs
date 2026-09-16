@@ -48,7 +48,9 @@ export function computeExecutionIdentity({ obligation, now, trigger, coalesceKey
     : normalizedTrigger.type === 'scheduled-sweep'
       ? `scheduled:${executionWindow}`
       : `event:${normalizedTrigger.fingerprint}`;
-  const canonical = `${obligationId}|${executionWindow}|${effectiveTriggerIdentity}`;
+  const canonical = coalesceKey
+    ? `${obligationId}|${effectiveTriggerIdentity}`
+    : `${obligationId}|${executionWindow}|${effectiveTriggerIdentity}`;
   const idempotencyKey = `obligation|${stableDigest(canonical)}|${canonical}`;
   return freeze({
     obligationId,
@@ -72,18 +74,6 @@ function validOwner(obligation, agent) {
   return Boolean(agent && agent.id === obligation.ownerAgent && agent.enabled !== false);
 }
 
-function ownerRecovery(identity, ownerAgent) {
-  return freeze({
-    type:'RecoveryWork',
-    recoveryKind:'OWNER_RECOVERY',
-    requestedOwnerAgent:ownerAgent,
-    ownerAgent,
-    obligationId:identity.obligationId,
-    idempotencyKey:`recovery|${identity.idempotencyKey}`,
-    policy:'reassign_or_reenable_owner',
-  });
-}
-
 export function evaluateOutcomeObligation({ obligation, now, trigger, agent, due = true, priorWork = null, priorRecovery = null, evidence = [], hardBoundary = null, evidenceDeadline = null, productionProofRequired = false, coalesceKey = null, timeZone = 'Europe/Amsterdam' }) {
   const identity = computeExecutionIdentity({ obligation, now, trigger, coalesceKey, timeZone });
   const ownerAgent = requireText(obligation.ownerAgent, 'obligation.ownerAgent');
@@ -102,7 +92,7 @@ export function evaluateOutcomeObligation({ obligation, now, trigger, agent, due
     hardBoundary:null,
   };
 
-  if (!validOwner(obligation, agent)) return freeze({ ...base, status:'RECOVERING', recovery:ownerRecovery(identity, ownerAgent) });
+  if (!validOwner(obligation, agent)) return freeze({ ...base, status:'BLOCKED_HARD_BOUNDARY', hardBoundary:'unknown_or_disabled_owner_agent' });
   if (due !== true) return freeze({ ...base, status:'NOT_DUE' });
   if (hardBoundary) return freeze({ ...base, status:'BLOCKED_HARD_BOUNDARY', hardBoundary:String(hardBoundary) });
 
