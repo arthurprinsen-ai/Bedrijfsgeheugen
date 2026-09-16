@@ -1,0 +1,16 @@
+{
+  "fingerprint": "powerhouse-quality-adversarial-matrix-v1",
+  "release_authority": false,
+  "cases": [
+    {"id":"retry","target_class":"test","safety":"non_destructive","missing_target_state":"NOT_REGISTERED"},
+    {"id":"idempotency","target_class":"container","safety":"non_destructive","missing_target_state":"NOT_REGISTERED"},
+    {"id":"ordering","target_class":"test","safety":"non_destructive","missing_target_state":"NOT_REGISTERED"},
+    {"id":"malformed_identity","target_class":"preview","safety":"non_destructive","missing_target_state":"NOT_REGISTERED"},
+    {"id":"tenant_boundary","target_class":"registered_runtime","safety":"read_only","missing_target_state":"NOT_REGISTERED"},
+    {"id":"rate_limit","target_class":"preview","safety":"bounded","missing_target_state":"NOT_REGISTERED"},
+    {"id":"provider_failure","target_class":"container","safety":"simulated","missing_target_state":"NOT_REGISTERED"},
+    {"id":"replay","target_class":"test","safety":"non_destructive","missing_target_state":"NOT_REGISTERED"},
+    {"id":"unexpected_fields","target_class":"test","safety":"non_destructive","missing_target_state":"NOT_REGISTERED"},
+    {"id":"token_expiry","target_class":"preview","safety":"non_destructive","missing_target_state":"NOT_REGISTERED"}
+  ]
+}
