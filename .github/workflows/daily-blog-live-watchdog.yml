@@ -32,6 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: main
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -44,7 +45,19 @@ jobs:
         run: |
           set -euo pipefail
           date="${REQUESTED_DATE:-}"
-          if [ -z "$date" ]; then date="$(node --input-type=module -e "import {businessDate} from './tools/content-growth/daily-blog.mjs'; console.log(businessDate(new Date(),'Europe/Amsterdam'))")"; fi
+          if [ -z "$date" ]; then
+            today="$(node --input-type=module -e "import {businessDate} from './tools/content-growth/daily-blog.mjs'; console.log(businessDate(new Date(),'Europe/Amsterdam'))")"
+            date="$(node - "$today" <<'NODE'
+          const ledger=require('./data/content-publication-ledger.json');
+          const today=process.argv[2];
+          const days=ledger.days||{};
+          if (days[today] && days[today].state !== 'live') { console.log(today); process.exit(0); }
+          const dates=Object.keys(days).filter(d=>d<=today && days[d]?.state !== 'live').sort();
+          if (!dates.length) process.exit(2);
+          console.log(dates.at(-1));
+          NODE
+            )"
+          fi
           json="$(node -e "const x=require('./data/content-publication-ledger.json'); const r=x.days?.[process.argv[1]]; if(!r) process.exit(2); console.log(JSON.stringify(r))" "$date")"
           slug="$(node -e "console.log(JSON.parse(process.argv[1]).slug)" "$json")"
           content_id="$(node -e "console.log(JSON.parse(process.argv[1]).content_id)" "$json")"
@@ -99,10 +112,9 @@ jobs:
       - name: Commit proof candidate only
         id: commit
         if: steps.record.outputs.state != 'live' && steps.proof.outputs.ok == 'true'
-        env:
-          BASE_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+          export BASE_SHA="$(git rev-parse origin/main)"
           git config user.name "Bedrijfsgeheugen Daily Proof"
           git config user.email "actions@users.noreply.github.com"
           git add data/content-publication-ledger.json
