@@ -22,6 +22,27 @@ test('shared learning, skill evolution and architecture evolution remain protect
   for (const key of ['compare_to_current','measurable_improvement','migration_compatibility','security_privacy_cost_review','representative_tests_or_benchmarks','rollback_or_recovery','production_readback','system_map_and_decision_lineage_update']) assert.equal(c.architecture_evolution.requires[key], true);
 });
 
+test('continuous improvement contract is executable and fail-closed', async () => {
+  const c = await loadEngineeringContract();
+  const ci = c.continuous_improvement;
+  assert.equal(ci.fingerprint, 'powerhouse-continuous-improvement-engine-v1');
+  assert.deepEqual(ci.lifecycle, ['OBSERVE','CLUSTER','CANDIDATE','BASELINE','EVALUATE','DECIDE','SHADOW_OR_CANARY','PROMOTE_OR_REJECT','PROD_OBSERVE','ROLLBACK_OR_CONFIRM','ATTRIBUTE','WRITEBACK','REVALIDATE']);
+  assert.equal(ci.candidate.dedupe_before_persist, true);
+  assert.equal(ci.candidate.conflict_arbitration, true);
+  assert.equal(ci.candidate.stable_identity, true);
+  assert.equal(ci.promotion.security_non_degradation, true);
+  assert.equal(ci.promotion.correctness_non_degradation, true);
+  assert.equal(ci.promotion.unknown_critical_fails_closed, true);
+  assert.equal(ci.promotion.no_single_magic_score, true);
+  assert.equal(ci.promotion.rollback_identity_required, true);
+  assert.equal(ci.promotion.compensated_tradeoff_requires_evidence, true);
+  assert.equal(ci.promotion.business_claim_requires_business_evidence, true);
+  assert.equal(ci.revalidation.require_revalidate_after, true);
+  assert.deepEqual(ci.revalidation.states, ['CONFIRMED','CANDIDATE_REQUIRED','SUPERSEDED','BLOCKED_HARD_BOUNDARY']);
+  assert.equal(ci.attribution.causality_not_assumed, true);
+  assert.equal(ci.attribution.baseline_comparison_required, true);
+});
+
 test('bounded autonomy exposes all seven controls', async () => {
   const c = await loadEngineeringContract();
   const o = c.operating_controls;
@@ -50,6 +71,7 @@ test('Engineering OS validator fails closed on evolution and autonomy drift', as
   assert.equal(r.ok, true);
   assert.equal(r.shared_learning_fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
   assert.equal(r.control_fingerprint, 'powerhouse-autonomy-controls-v1');
+  assert.equal(r.continuous_improvement_fingerprint, 'powerhouse-continuous-improvement-engine-v1');
 });
 
 test('existing Brain learning authority stays canonical', async () => {
@@ -67,16 +89,19 @@ test('Development OS keeps current shared-learning documentation and delivery au
   assert.match(content, /LEARN -> IMPROVE/);
 });
 
-test('Required test executes this regression contract', async () => {
+test('Required test executes Engineering OS and Continuous Improvement regression contracts', async () => {
   const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
   assert.match(workflow, /tests\/brain-powerhouse-engineering-os-contract\.test\.mjs/);
+  assert.match(workflow, /tests\/brain-continuous-improvement-engine\.test\.mjs/);
 });
 
-test('CLI and packet expose both shared-learning and autonomy controls', () => {
+test('CLI and packet expose shared-learning, autonomy and continuous improvement controls', () => {
   const checked = JSON.parse(execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--check'], { encoding: 'utf8' }));
   assert.equal(checked.status, 'ENGINEERING_OS_READY');
   assert.equal(checked.control_fingerprint, 'powerhouse-autonomy-controls-v1');
+  assert.equal(checked.continuous_improvement_fingerprint, 'powerhouse-continuous-improvement-engine-v1');
   const packet = JSON.parse(execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--packet'], { encoding: 'utf8' }));
   assert.equal(packet.contract.shared_learning.fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
   assert.equal(packet.contract.operating_controls.fingerprint, 'powerhouse-autonomy-controls-v1');
+  assert.equal(packet.contract.continuous_improvement.fingerprint, 'powerhouse-continuous-improvement-engine-v1');
 });
