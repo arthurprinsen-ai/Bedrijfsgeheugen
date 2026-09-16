@@ -1,0 +1,1 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';const c=JSON.parse(fs.readFileSync('powerhouse/assurance/quality-intelligence-v2.json','utf8'));test('deep sensors are capability states, never implicit proven evidence',()=>{for(const v of Object.values(c.deep_sensors)){assert.notEqual(v,'proven');assert.notEqual(v,'green');}});
