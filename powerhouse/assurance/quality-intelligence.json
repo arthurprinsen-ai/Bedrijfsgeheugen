@@ -57,7 +57,7 @@
     "repeat_probe_count": 3,
     "max_identical_retries_without_new_evidence": 2
   },
-  "mutation": {"enabled": true, "deep_path": "scheduled_or_manual", "target": "scripts/powerhouse-quality-intelligence.mjs"},
+  "mutation": {"enabled": true, "deep_path": "scheduled_or_manual", "target": "scripts/brain/powerhouse-quality-intelligence.mjs"},
   "learning": {
     "preflight": "node scripts/brain/chat-learning-preflight.mjs",
     "contract": "config/universal-closed-loop-learning.json",
