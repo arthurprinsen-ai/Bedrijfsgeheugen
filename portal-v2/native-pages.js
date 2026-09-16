@@ -6,7 +6,7 @@ import { pageMetrics, pageWorklist, hasPageData, emptyStateCopy } from './page-m
  * Alle getallen komen uit page-metrics.js en dus uit de klantstate.
  */
 export const PAGE_NAVIGATION = Object.freeze({
-  overzicht:["Open prioriteiten",[["Bekijk management summary","brain-verwerking"],["Open roadmap","roadmap"],["Bekijk impact","csrd-impact"]]],
+  overzicht:["Open businesscase",[["Open businesscase","businesscase"],["Open profiel","profiel"],["Open advies","advies"]]],
   profiel:["Werk profiel bij",[["Vul ontbrekende gegevens aan","gegevens-invullen"],["Open eindconclusie","eindconclusie"],["Bekijk wijzigingen","wijzigingen"]]],
   "data-ai":["Prioriteer datakans",[["Open koppelingen","koppelingen"],["Bekijk AI-scan","ai-scan"],["Open bronnenstatus","bronnenstatus"]]],
   "ai-scan":["Start kansanalyse",[["Open kansenkaart","kansenkaart"],["Maak businesscase","businesscase"],["Zet actie uit","actieve-acties"]]],
