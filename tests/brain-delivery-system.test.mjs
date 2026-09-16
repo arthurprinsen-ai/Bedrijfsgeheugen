@@ -76,6 +76,13 @@ test('Agent Fabric regression tests are backend delivery work', async () => {
   }
 });
 
+test('predictive production lineage regression remains backend delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const path = 'tests/brain-predictive-production-lineage.test.mjs';
+  const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
+});
+
 test('non-overlapping main drift never causes a branch rebuild', () => {
   assert.deepEqual(evaluateBranchDrift({ featurePaths:['portal/render-offer.mjs','tests/portal-native-legacy-batch-11.test.mjs'], mainDriftPaths:['blog/index.html','assets/css/powerhouse-kosten.css'], featureContracts:[], mainDriftContracts:[], mergeable:true }), { action:'KEEP_TESTED_FEATURE', reason:'non-overlapping-main-drift', overlap:[], contractOverlap:[] });
 });
