@@ -32,9 +32,10 @@ Geen stap mag de opvolgende bewijsstap overslaan.
 - **Supabase / connector store** — duurzame definitie-, execution- en recovery-evidence.
 - **Powerhouse** — uitvoerende en herstelende laag. Signaleert, prioriteert, voert uit, test, herstelt en bewaakt.
 - **BG211** — operationeel event-/zenuwpad waar beschikbaar.
-- **BG168** — canonical outcome & learning router.
-- **BG166** — canonical error & learning ledger.
+- **BG168** — canonical outcome & learning router binnen de huidige Powerhouse/Supabase-route.
+- **BG166** — canonical error & learning ledger binnen dezelfde duurzame Powerhouse-lineage.
 - **Notion** — menselijke besluit- en werkdocumentatie; geen runtime-status of klantsecrets.
+- **Make** — `LEGACY_RETIRED_PATH`; geen runtime-, learning-, replay- of delivery-authority en mag voor deze keten niet worden uitgevoerd.
 
 ## 4. Statuscontract
 
@@ -127,25 +128,19 @@ Learning payload bevat minimaal:
 - `owner`
 - `status`
 
-Learning wordt via canonical route BG168 → BG166 geschreven. Zonder execution evidence mag Brain-writeback niet als voltooid gelden.
+Learning wordt via de huidige canonical Powerhouse-route naar BG168/BG166 geschreven met Supabase/Brain als duurzame authority. Zonder execution evidence mag Brain-writeback niet als voltooid gelden.
 
-## 11. Canonical open Brain replay obligation
+## 11. Canonical learning/writeback obligation
 
-Make-status op 8 september 2026:
-- BG168 scenario `7136176` — status `paused`, `isActive=true`, on-demand.
-- BG166 scenario `7135971` — status `paused`, `isActive=true`, on-demand.
+De historische Make-scenario-identiteiten `BG168 7136176` en `BG166 7135971` zijn alleen historische lineage. Hun vroegere paused/on-demand status is geen actuele uitvoeringsroute en mag geen toekomstige replay blokkeren of starten.
 
-Daarom is de learning voor deze release nog niet aantoonbaar in BG166 geschreven.
-
-Open obligation:
-- fingerprint: `connector-ai-wizard-powerhouse-closed-loop-v1`
-- owner: `Powerhouse Learning / Brain writeback`
-- route: `BG168 7136176 → BG166 7135971`
-- replay: exact één keer zodra Make weer uitvoerbaar is
-- dedupe: verplicht; geen dubbele ledger-entry
-- completion evidence: succesvolle BG168 execution + aantoonbare BG166 ledger-write
-
-Tot dat moment zijn dit document en de gekoppelde Notion-besluitpagina de duurzame continuity-bronnen, maar niet een vervanging voor canonical Brain-writeback.
+Actuele regels:
+- Make is `LEGACY_RETIRED_PATH` en wordt niet gebruikt.
+- Nieuwe of nog open learning/writeback gebruikt de bestaande Powerhouse/Supabase outcome-obligation- en Brain-writeback-authorities.
+- De bestaande fingerprint `connector-ai-wizard-powerhouse-closed-loop-v1` blijft de dedupe-identiteit voor deze learning; er mag geen parallelle ledger-entry of tweede learning-store ontstaan.
+- Een oude obligation die nog naar Make verwijst wordt in-place gereconcilieerd naar de huidige canonical writer; hij wordt niet als nieuwe obligation gekloond.
+- Completion vereist aantoonbare duurzame writeback/readback in dezelfde lineage. Een historisch Make-scenario, document of intentie is geen completion evidence.
+- `LIVE_VERIFIED` mag alleen wanneer de actuele Completion Supervisor alle verplichte identity-bound evidence accepteert en geen materiële obligation meer openstaat.
 
 ## 12. Releasecontract
 
@@ -203,4 +198,4 @@ Een koppeling of wijziging is alleen klaar wanneer:
 - productie exact de bedoelde SHA draait;
 - live readback groen is;
 - failures een recoverypad hebben;
-- structurele learnings zijn vastgelegd of als expliciete replay-obligation openstaan.
+- structurele learnings zijn vastgelegd of als expliciete actuele Powerhouse/Supabase obligation openstaan.
