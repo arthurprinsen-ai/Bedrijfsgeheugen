@@ -7,4 +7,6 @@ if(c.ai_policy?.release_authority!==false||c.ai_policy?.may_waive_gate!==false) 
 for(const [k,v] of Object.entries(c.capabilities||{})) if(v.enabled!==true) gaps.push(`capability:${k}`);
 if(c.evidence_states?.unknown!=='blocking_when_required'||c.evidence_states?.not_registered!=='blocking_when_required') gaps.push('fail-closed evidence');
 for(const required of ['contract_test','validator','coverage','exploration_policy','adversarial_matrix','production_shadow','test_economics','surface_registry']) if(!c.implementation?.[required]) gaps.push(`implementation:${required}`);
+for(const p of Object.values(c.implementation||{})) if(!fs.existsSync(p)) gaps.push(`missing:${p}`);
+if(c.ci_contract?.integration_status!=='candidate_until_existing_workflows_execute_exact_head') gaps.push('CI evidence must remain candidate before exact-head run');
 process.stdout.write(JSON.stringify({fingerprint:c.fingerprint,status:gaps.length?'BLOCKED':'READY',gaps},null,2)+'\n'); if(gaps.length) process.exitCode=1;
