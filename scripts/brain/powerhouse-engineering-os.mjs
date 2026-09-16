@@ -22,6 +22,19 @@ function validateOperatingControls(contract, errors) {
   if (controls.powerhouse_autonomy_scorecard) { requireBoolean(controls.powerhouse_autonomy_scorecard.no_single_magic_score, 'powerhouse_autonomy_scorecard.no_single_magic_score', errors); requireBoolean(controls.powerhouse_autonomy_scorecard.unknown_is_not_zero, 'powerhouse_autonomy_scorecard.unknown_is_not_zero', errors); }
   return operating.fingerprint;
 }
+function validateContinuousImprovement(contract, errors) {
+  const improvement = contract.continuous_improvement;
+  if (!improvement || improvement.fingerprint !== 'powerhouse-continuous-improvement-engine-v1') { errors.push('continuous improvement fingerprint drift'); return null; }
+  const expectedLifecycle = ['OBSERVE','CLUSTER','CANDIDATE','BASELINE','EVALUATE','DECIDE','SHADOW_OR_CANARY','PROMOTE_OR_REJECT','PROD_OBSERVE','ROLLBACK_OR_CONFIRM','ATTRIBUTE','WRITEBACK','REVALIDATE'];
+  if (JSON.stringify(improvement.lifecycle) !== JSON.stringify(expectedLifecycle)) errors.push('continuous improvement lifecycle drift');
+  for (const key of ['dedupe_before_persist','conflict_arbitration','stable_identity']) requireBoolean(improvement.candidate?.[key], `continuous_improvement.candidate.${key}`, errors);
+  for (const key of ['security_non_degradation','correctness_non_degradation','unknown_critical_fails_closed','no_single_magic_score','rollback_identity_required','compensated_tradeoff_requires_evidence','business_claim_requires_business_evidence']) requireBoolean(improvement.promotion?.[key], `continuous_improvement.promotion.${key}`, errors);
+  requireBoolean(improvement.revalidation?.require_revalidate_after, 'continuous_improvement.revalidation.require_revalidate_after', errors);
+  if (JSON.stringify(improvement.revalidation?.states) !== JSON.stringify(['CONFIRMED','CANDIDATE_REQUIRED','SUPERSEDED','BLOCKED_HARD_BOUNDARY'])) errors.push('continuous improvement revalidation states drift');
+  requireBoolean(improvement.attribution?.causality_not_assumed, 'continuous_improvement.attribution.causality_not_assumed', errors);
+  requireBoolean(improvement.attribution?.baseline_comparison_required, 'continuous_improvement.attribution.baseline_comparison_required', errors);
+  return improvement.fingerprint;
+}
 export async function validateEngineeringOS() {
   const contract = await loadEngineeringContract();
   const errors = [];
@@ -42,14 +55,18 @@ export async function validateEngineeringOS() {
   for (const key of ['baseline','representative_eval','success_metric','compatibility','rollback_or_fallback','post_promotion_outcome']) if (contract.skill_evolution?.requires?.[key] !== true) errors.push(`skill ${key} gate drift`);
   for (const key of ['compare_to_current','measurable_improvement','migration_compatibility','security_privacy_cost_review','representative_tests_or_benchmarks','rollback_or_recovery','production_readback','system_map_and_decision_lineage_update']) if (contract.architecture_evolution?.requires?.[key] !== true) errors.push(`architecture ${key} drift`);
   const controlFingerprint = validateOperatingControls(contract, errors);
+  const continuousImprovementFingerprint = validateContinuousImprovement(contract, errors);
   const developmentOS = await readFile(path.join(repoRoot, contract.canonical_authorities.development_os), 'utf8');
   if (!developmentOS.includes('BRAIN-DELIVERY-v2')) errors.push('development OS does not declare BRAIN-DELIVERY-v2');
   if (developmentOS.includes('BRAIN-DELIVERY-v1')) errors.push('stale BRAIN-DELIVERY-v1 remains in development OS');
   if (!developmentOS.includes('powerhouse-engineering-os-v1')) errors.push('development OS does not reference Engineering OS fingerprint');
   if (!developmentOS.includes('powerhouse-shared-learning-architecture-evolution-v1')) errors.push('development OS does not reference shared learning/evolution fingerprint');
+  const continuousDoc = await readFile(path.join(repoRoot, contract.canonical_authorities.continuous_improvement_doc), 'utf8');
+  if (!continuousDoc.includes('powerhouse-continuous-improvement-engine-v1')) errors.push('continuous improvement documentation fingerprint drift');
+  if (!continuousDoc.includes('OBSERVE -> CLUSTER -> CANDIDATE')) errors.push('continuous improvement documentation lifecycle drift');
   const requiredCI = await readFile(path.join(repoRoot, contract.canonical_authorities.required_ci), 'utf8');
   if (!requiredCI.includes(contract.bootstrap.required_test)) errors.push('Engineering OS regression test is not wired into Required test');
-  return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, golden_path: contract.golden_path, errors };
+  return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, continuous_improvement_fingerprint: continuousImprovementFingerprint, golden_path: contract.golden_path, errors };
 }
 async function main() {
   const mode = process.argv[2] ?? '--check';
