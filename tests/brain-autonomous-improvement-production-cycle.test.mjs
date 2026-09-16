@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const migrationPath = new URL('../supabase/migrations/20260916144500_autonomous_improvement_production_cycle_v1.sql', import.meta.url);
+const hotfixPath = new URL('../supabase/migrations/20260916151600_fix_autonomous_improvement_record_kind_v1.sql', import.meta.url);
 const sql = await readFile(migrationPath, 'utf8');
+const hotfix = await readFile(hotfixPath, 'utf8');
 
 test('production cycle reuses canonical Brain authority and existing scheduler', () => {
   assert.match(sql, /powerhouse_autonomous_improvement_cycle_v1/);
@@ -43,5 +45,7 @@ test('hourly record identity is deterministic and writeback is idempotent', () =
   assert.match(sql, /date_trunc\('hour', p_now\)/);
   assert.match(sql, /powerhouse-autonomous-improvement-runtime-v1:/);
   assert.match(sql, /'idempotent',true/);
-  assert.match(sql, /record_kind='autonomous_improvement_cycle'/);
+  assert.match(hotfix, /'improvement','current_state'/);
+  assert.match(hotfix, /record_kind='current_state'/);
+  assert.doesNotMatch(hotfix, /'improvement','autonomous_improvement_cycle'/);
 });
