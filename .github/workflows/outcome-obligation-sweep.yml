@@ -71,32 +71,41 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
           SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
+          SOURCE_WORKFLOW_PATH: ${{ github.event.workflow_run.path }}
           SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts/source
           candidate_identity="$SOURCE_HEAD_SHA"
           production_identity=""
-          if [ "$SOURCE_WORKFLOW" = "Unified Brain Delivery" ]; then
-            gh run download "$SOURCE_RUN_ID" -n bg169-production-evidence -D .artifacts/source >/dev/null 2>&1 || true
-            if [ -f .artifacts/source/bg169-production-evidence.json ]; then
-              candidate_identity="$(jq -r '.candidate_sha // empty' .artifacts/source/bg169-production-evidence.json)"
-              production_identity="$(jq -r '.production_sha // empty' .artifacts/source/bg169-production-evidence.json)"
-              test -n "$candidate_identity" && test -n "$production_identity"
-            fi
-          elif [ "$SOURCE_WORKFLOW" = "Production Release Readback" ]; then
-            production_identity="$SOURCE_HEAD_SHA"
-            git fetch origin "$SOURCE_HEAD_SHA" --no-tags
-            message="$(git show -s --format=%B "$SOURCE_HEAD_SHA")"
-            candidate_identity="$(sed -nE 's/.*candidate_sha=([0-9a-f]{40}).*/\1/p' <<<"$message" | head -n1)"
-            test -n "$candidate_identity" || { echo "::error::COMPLETION_CANDIDATE_IDENTITY_MISSING:$SOURCE_HEAD_SHA"; exit 1; }
-            gh run download "$SOURCE_RUN_ID" -n "production-release-readback-${SOURCE_HEAD_SHA}" -D .artifacts/source
-            test -f .artifacts/source/production-release-readback.json
-          else
-            echo "COMPLETION_EVIDENCE_APPLICABLE=false" >> "$GITHUB_ENV"
-            exit 0
-          fi
+          source_path="${SOURCE_WORKFLOW_PATH%@*}"
+          case "$source_path" in
+            .github/workflows/unified-brain-delivery.yml)
+              canonical_source="Unified Brain Delivery"
+              gh run download "$SOURCE_RUN_ID" -n bg169-production-evidence -D .artifacts/source >/dev/null 2>&1 || true
+              if [ -f .artifacts/source/bg169-production-evidence.json ]; then
+                candidate_identity="$(jq -r '.candidate_sha // empty' .artifacts/source/bg169-production-evidence.json)"
+                production_identity="$(jq -r '.production_sha // empty' .artifacts/source/bg169-production-evidence.json)"
+                test -n "$candidate_identity" && test -n "$production_identity"
+              fi
+              ;;
+            .github/workflows/production-release-readback.yml)
+              canonical_source="Production Release Readback"
+              production_identity="$SOURCE_HEAD_SHA"
+              git fetch origin "$SOURCE_HEAD_SHA" --no-tags
+              message="$(git show -s --format=%B "$SOURCE_HEAD_SHA")"
+              candidate_identity="$(sed -nE 's/.*candidate_sha=([0-9a-f]{40}).*/\1/p' <<<"$message" | head -n1)"
+              test -n "$candidate_identity" || { echo "::error::COMPLETION_CANDIDATE_IDENTITY_MISSING:$SOURCE_HEAD_SHA"; exit 1; }
+              gh run download "$SOURCE_RUN_ID" -n "production-release-readback-${SOURCE_HEAD_SHA}" -D .artifacts/source
+              test -f .artifacts/source/production-release-readback.json
+              ;;
+            *)
+              echo "COMPLETION_EVIDENCE_APPLICABLE=false" >> "$GITHUB_ENV"
+              exit 0
+              ;;
+          esac
           echo "COMPLETION_EVIDENCE_APPLICABLE=true" >> "$GITHUB_ENV"
+          echo "COMPLETION_SOURCE_WORKFLOW=$canonical_source" >> "$GITHUB_ENV"
           echo "COMPLETION_OBLIGATION_ID=material-change-live-verification" >> "$GITHUB_ENV"
           echo "COMPLETION_CANDIDATE_IDENTITY=$candidate_identity" >> "$GITHUB_ENV"
           echo "COMPLETION_PRODUCTION_IDENTITY=$production_identity" >> "$GITHUB_ENV"
@@ -114,14 +123,15 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${COMPLETION_EVIDENCE_APPLICABLE:-false}" != "true" ]; then exit 0; fi
+          canonical_source="${COMPLETION_SOURCE_WORKFLOW:-$SOURCE_WORKFLOW}"
           args=(
-            --workflow "$SOURCE_WORKFLOW"
+            --workflow "$canonical_source"
             --conclusion "$SOURCE_CONCLUSION"
             --run-id "$SOURCE_RUN_ID"
             --obligation "$COMPLETION_OBLIGATION_ID"
             --candidate "$COMPLETION_CANDIDATE_IDENTITY"
             --coalesce-key "$COMPLETION_COALESCE_KEY"
-            --fingerprint "workflow-run:${SOURCE_WORKFLOW}:${SOURCE_RUN_ID}"
+            --fingerprint "workflow-run:${canonical_source}:${SOURCE_RUN_ID}"
           )
           if [ -n "${COMPLETION_PRODUCTION_IDENTITY:-}" ]; then args+=(--production "$COMPLETION_PRODUCTION_IDENTITY"); fi
           if [ -f .artifacts/source/bg169-production-evidence.json ]; then args+=(--bg169 .artifacts/source/bg169-production-evidence.json); fi
@@ -150,9 +160,14 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_run" ] && [ "${COMPLETION_EVIDENCE_APPLICABLE:-false}" != "true" ]; then
+            echo "Non-applicable workflow_run; durable obligation evaluation skipped."
+            exit 0
+          fi
           mkdir -p .artifacts
           args=(sweep --trigger-type "${TRIGGER_TYPE:-scheduled-sweep}" --output .artifacts/outcome-obligation-decisions.json)
           if [ "${GITHUB_EVENT_NAME}" = "workflow_run" ]; then
+            WORKFLOW_NAME="${COMPLETION_SOURCE_WORKFLOW:-$WORKFLOW_NAME}"
             TRIGGER_TYPE=event-trigger
             TRIGGER_FINGERPRINT="workflow-run:${WORKFLOW_NAME}:${WORKFLOW_HEAD_SHA}:${WORKFLOW_CONCLUSION}"
             CLAIM="${WORKFLOW_CONCLUSION}"
@@ -196,12 +211,20 @@ jobs:
           node tools/outcome-obligation-runtime.mjs "${args[@]}"
 
       - name: Reconcile partial decisions into the same obligation lineage
+        shell: bash
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: node tools/completion-supervisor-backfill.mjs --input .artifacts/outcome-obligation-decisions.json --output .artifacts/completion-supervisor-backfill.json --apply
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_run" ] && [ "${COMPLETION_EVIDENCE_APPLICABLE:-false}" != "true" ]; then
+            echo "Non-applicable workflow_run; durable obligation backfill skipped."
+            exit 0
+          fi
+          node tools/completion-supervisor-backfill.mjs --input .artifacts/outcome-obligation-decisions.json --output .artifacts/completion-supervisor-backfill.json --apply
 
       - name: Upload immutable decision artifact
+        if: github.event_name != 'workflow_run' || env.COMPLETION_EVIDENCE_APPLICABLE == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: outcome-obligation-decisions-${{ github.run_id }}
