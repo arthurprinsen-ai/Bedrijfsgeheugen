@@ -5,15 +5,15 @@ on:
     branches:
       - main
     paths:
-      - 'ops/security-operations/closure-v1.json'
+      - 'brain/production/security-operations-closure-v1.json'
       - 'docs/changes/powerhouse-security-operations-hardening-v1.md'
-      - 'tests/powerhouse-security-operations-closure-v1.test.mjs'
+      - 'tests/brain-security-operations-closure-v1.test.mjs'
       - '.github/workflows/powerhouse-security-operations-closure.yml'
   pull_request:
     paths:
-      - 'ops/security-operations/closure-v1.json'
+      - 'brain/production/security-operations-closure-v1.json'
       - 'docs/changes/powerhouse-security-operations-hardening-v1.md'
-      - 'tests/powerhouse-security-operations-closure-v1.test.mjs'
+      - 'tests/brain-security-operations-closure-v1.test.mjs'
       - '.github/workflows/powerhouse-security-operations-closure.yml'
   workflow_dispatch:
 
@@ -34,4 +34,4 @@ jobs:
         with:
           node-version: '22'
       - name: Verify fail-closed security and operations closure contract
-        run: node --test tests/powerhouse-security-operations-closure-v1.test.mjs
+        run: node --test tests/brain-security-operations-closure-v1.test.mjs
