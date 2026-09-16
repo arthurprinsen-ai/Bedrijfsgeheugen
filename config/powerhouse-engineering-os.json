@@ -9,6 +9,8 @@
     "REUSE-FIRST",
     "CANONICAL-INTEGRATION",
     "CLOSED-LOOP",
+    "SHARED-LEARNING",
+    "TEAM-OF-AGENTS",
     "SMALLEST-SAFE-CHANGE",
     "EXACT-CANDIDATE-IDENTITY",
     "STATE-OF-THE-ART-EVIDENCE-BASED-ADOPTION",
@@ -26,7 +28,8 @@
     "PROMOTE",
     "PROD_READBACK",
     "WRITEBACK",
-    "LEARN"
+    "LEARN",
+    "IMPROVE"
   ],
   "canonical_authorities": {
     "agent_contract": "AGENTS.md",
@@ -63,6 +66,48 @@
     "currency_signals": ["deprecation","eol","cve","unsupported_api","stale_sdk","superseded_platform_feature","compatibility_drift","material_new_capability"],
     "forbidden": ["blind_latest_version_chasing","benchmark_only_adoption","replacement_without_measurable_benefit","parallel_truth_or_agent_memory","weakened_security_or_gates_for_frontier_candidate","latest_claim_without_current_check_when_currency_matters","unowned_unversioned_no_rollback_experiment"]
   },
+  "shared_learning": {
+    "fingerprint": "powerhouse-shared-learning-architecture-evolution-v1",
+    "applies_to": ["all_existing_chats","all_future_chats","all_existing_agents","all_future_agents","all_material_workflows"],
+    "preflight": {
+      "read_current_architecture": true,
+      "read_latest_verified_state": true,
+      "read_open_obligations": true,
+      "read_current_shared_context": true,
+      "read_known_failed_approaches": true,
+      "read_explicit_required_evidence": true
+    },
+    "outcome_classes": ["SUCCESS","IMPROVEMENT","RECOVERY","ERROR","NO_ACTION","BLOCKED_HARD_BOUNDARY","EXPERIMENT_RESULT"],
+    "dedupe_before_write": true,
+    "separate_audit_from_current_projection": true,
+    "refresh_after_new_verified_learning": true,
+    "explicit_evidence_not_replaceable_by_shared_context": true,
+    "reuse_known_fix_before_experiment": true
+  },
+  "skill_evolution": {
+    "lifecycle": ["OBSERVE","CLUSTER","HYPOTHESIZE","BASELINE","CANDIDATE","EVAL","REVIEW","PROMOTE_OR_ROLLBACK","PROD_OUTCOME","WRITEBACK"],
+    "requires": {
+      "baseline": true,
+      "representative_eval": true,
+      "success_metric": true,
+      "compatibility": true,
+      "rollback_or_fallback": true,
+      "post_promotion_outcome": true
+    }
+  },
+  "architecture_evolution": {
+    "fitness_dimensions": ["correctness","reliability","security","tenant_isolation","performance","maintainability","cognitive_load","reuse","observability","deployability","rollback_safety","testability","data_integrity","lineage","cost_capacity","compatibility","business_impact","lead_time"],
+    "requires": {
+      "compare_to_current": true,
+      "measurable_improvement": true,
+      "migration_compatibility": true,
+      "security_privacy_cost_review": true,
+      "representative_tests_or_benchmarks": true,
+      "rollback_or_recovery": true,
+      "production_readback": true,
+      "system_map_and_decision_lineage_update": true
+    }
+  },
   "engineering_rules": [
     "Prefer small coherent modules with explicit interfaces and ownership.",
     "Prefer reusable helpers and reusable workflows over copy-paste families.",
@@ -73,6 +118,8 @@
     "No new brain, registry, queue, calendar, analytics store or learning store when an existing canonical capability can be extended.",
     "Use current task-relevant external evidence when technology currency can materially change the answer or implementation.",
     "Adopt frontier technology only through a reversible, measurable experiment with rollback or fallback.",
+    "Every new verified reusable learning must be deduplicated before persistent write and then refresh current shared context.",
+    "Skill and architecture candidates must beat or materially improve the current baseline before promotion and must retain rollback or fallback.",
     "Documentation and learning writeback are release outputs, not optional follow-up."
   ],
   "terminal_statuses": ["LIVE & BEWEZEN","DEELS LIVE","GEBLOKKEERD","NIET GEDAAN"],
