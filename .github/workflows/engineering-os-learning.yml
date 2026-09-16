@@ -1,6 +1,13 @@
 name: Engineering OS learning
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/brain/powerhouse-engineering-closed-loop.mjs'
+      - 'tests/brain-powerhouse-engineering-closed-loop.test.mjs'
+      - '.github/workflows/engineering-os-learning.yml'
+      - 'config/powerhouse-engineering-os.json'
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:
@@ -10,7 +17,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: engineering-os-learning
+  group: engineering-os-learning-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,6 +28,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify closed-loop regression
+        run: node --test tests/brain-powerhouse-engineering-closed-loop.test.mjs
       - name: Verify closed-loop engine
         run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
       - name: Collect recent workflow evidence
