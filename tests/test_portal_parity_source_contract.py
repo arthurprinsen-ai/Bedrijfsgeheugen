@@ -56,6 +56,31 @@ class SourceDerivedPortalParityTests(unittest.TestCase):
             portal_parity.check_source_derived_field_parity(html, inventory)
         self.assertIn("profiel.forgottenLegacyField", stderr.getvalue())
 
+    def test_derives_button_actions_inside_protected_panels(self):
+        html = """
+        <section id="p-roadmap">
+          <button id="nToe">Toevoegen</button>
+          <button id="nVoorstel">Voorstel</button>
+        </section>
+        """
+        actions = portal_parity.derive_legacy_action_ids(html)
+        self.assertEqual(actions["roadmap"], {"nToe", "nVoorstel"})
+
+    def test_fails_closed_when_legacy_button_has_no_v2_action_contract(self):
+        html = """
+        <section id="p-roadmap">
+          <button id="nToe">Toevoegen</button>
+          <button id="forgottenAction">Vergeten</button>
+        </section>
+        """
+        inventory = """
+        roadmap: capability('roadmap', ids('nTitel'), [], [], ['nToe'], []),
+        """
+        stderr = StringIO()
+        with redirect_stderr(stderr), self.assertRaises(SystemExit):
+            portal_parity.check_source_derived_action_parity(html, inventory)
+        self.assertIn("roadmap.forgottenAction", stderr.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
