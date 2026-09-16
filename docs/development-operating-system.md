@@ -40,6 +40,48 @@ Engineering rules:
 
 Canonical engineering fingerprint: `powerhouse-engineering-os-v1`.
 
+## State-of-the-Art Adoption Contract
+Canonical fingerprint: `powerhouse-state-of-the-art-adoption-v1`.
+
+This contract applies to **all existing and future chats, agents, workflows and material Powerhouse changes**. The objective is to stay structurally ahead by continuously evaluating and adopting the best currently available techniques without trading away production safety, evidence, maintainability, cost discipline or canonical architecture.
+
+`Newest` never means blindly choosing the highest version number or most recent release. It means the newest proven, or sufficiently evidenced, task-relevant option that materially improves capability, quality, security, performance, maintainability, reliability, user experience, business impact or total cost.
+
+Mandatory scope includes at least:
+- software engineering practices, runtimes, libraries, frameworks and testing;
+- frontend architecture, current browser capabilities, accessibility, interaction patterns, motion and visual design;
+- backend architecture, APIs, eventing, edge/serverless and integrations;
+- GitHub, CI/CD, supply-chain security, dependency governance and developer tooling;
+- Supabase/Postgres schema design, RLS, indexes, functions, realtime, storage, observability and migrations;
+- Netlify build/runtime/deploy capabilities, caching and production readback;
+- Notion knowledge architecture, documentation, agent instructions and continuity;
+- data engineering, semantics, lineage, quality, provenance, freshness and external data;
+- AI models, multimodal/tool capabilities, agents, retrieval, evals, structured outputs and guardrails;
+- forecasting, ranking, optimization, experimentation, causal/effect measurement and other intelligence algorithms;
+- relevant current research, standards, security advisories, provider/platform changes and technology signals.
+
+For every material task where technology currency can affect the result:
+1. read canonical current state, shared context, open obligations and prior learning first;
+2. reuse current Powerhouse capabilities and identify the existing authority;
+3. check current external evidence from appropriate primary or authoritative sources;
+4. compare relevant candidates on quality, capability, compatibility, security, performance, maintainability, reliability, cost and business impact;
+5. classify candidates as `PRODUCTION_READY`, `CONTROLLED_FRONTIER_EXPERIMENT`, `WATCH` or `REJECT`;
+6. implement only the smallest canonical change justified by evidence;
+7. run task-appropriate tests/evals/security/performance/regression gates;
+8. promote only through the existing protected delivery authority;
+9. verify exact production identity/readback where production is affected;
+10. write decision lineage, versions/provenance, outcome and reusable learning back to the existing Powerhouse memory.
+
+Frontier or experimental technology requires an explicit hypothesis, baseline, representative evaluation, measurable success metric, isolation such as a feature flag/sandbox/preview lane where applicable, proportional security/privacy/cost review, and a rollback or fallback to last-known-good. It may never silently replace an existing production authority or weaken gates to pass.
+
+When external evidence materially influences a decision, record where meaningful: source/provenance, observation or publication date, freshness, confidence and the decision influenced. Prefer official documentation/release notes, standards, primary research, security advisories, provider status/roadmaps and reputable task-relevant benchmarks.
+
+AI/model/algorithm changes additionally record provider/model/algorithm version, evaluation suite, baseline comparison, latency/cost where material, safety/truth/grounding failure modes, fallback behavior, calibration/threshold policy where relevant and production outcome. A newer model is not automatically a better model for every task.
+
+Treat deprecation, EOL, CVEs, unsupported APIs, stale SDKs, superseded platform features, compatibility drift and material new capabilities as engineering signals. The target is minimum avoidable technical aging, not maximum version churn.
+
+No adoption may introduce a second canonical analytics truth, model store, customer graph, learning system, shadow database, queue, registry or agent memory. EXISTING-STATE-FIRST / REUSE-FIRST / CANONICAL-INTEGRATION / CLOSED-LOOP remain mandatory.
+
 ## Non-terminal status and resumed-work rule
 This contract applies to **all new, existing, reopened and resumed Powerhouse chats, agents and work sessions**.
 
