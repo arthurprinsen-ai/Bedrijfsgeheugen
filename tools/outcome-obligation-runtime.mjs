@@ -84,12 +84,13 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
 }
 
 function parseCliArgs(argv) {
-  const args = { command:argv[0] ?? 'sweep', obligationIds:null, triggerType:null, fingerprint:null, now:null, output:'.artifacts/outcome-obligation-decisions.json' };
+  const args = { command:argv[0] ?? 'sweep', obligationIds:null, triggerType:null, fingerprint:null, coalesceKey:null, now:null, output:'.artifacts/outcome-obligation-decisions.json' };
   for (let i = 1; i < argv.length; i += 1) {
     const value = argv[i + 1];
     if (argv[i] === '--obligation' && value) { args.obligationIds = [value]; i += 1; }
     else if (argv[i] === '--trigger-type' && value) { args.triggerType = value; i += 1; }
     else if (argv[i] === '--fingerprint' && value) { args.fingerprint = value; i += 1; }
+    else if (argv[i] === '--coalesce-key' && value) { args.coalesceKey = value; i += 1; }
     else if (argv[i] === '--now' && value) { args.now = value; i += 1; }
     else if (argv[i] === '--output' && value) { args.output = value; i += 1; }
     else throw new TypeError(`unknown or incomplete CLI argument: ${argv[i]}`);
@@ -137,6 +138,7 @@ export async function runOutcomeObligationCli(argv = process.argv.slice(2), { en
   const decisions = await runtime.evaluateSweep({
     trigger,
     obligationIds:args.obligationIds,
+    coalesceKey:args.coalesceKey,
     hardBoundary:stores.hardBoundary,
   });
   const artifact = Object.freeze({

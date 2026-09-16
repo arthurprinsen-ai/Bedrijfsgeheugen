@@ -16,6 +16,13 @@ on:
         description: Stable fingerprint for event replay/idempotency
         required: false
         type: string
+      coalesce_key:
+        description: Stable execution lineage key for resume/idempotency
+        required: false
+        type: string
+  repository_dispatch:
+    types:
+      - outcome-obligation-resume
   schedule:
     - cron: '23 4 * * *'
   push:
@@ -45,14 +52,15 @@ jobs:
           node-version: 22
 
       - name: Run focused obligation contract tests
-        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs
+        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs tests/brain-outcome-obligation-resume-trigger.test.mjs
 
       - name: Evaluate obligations without production mutation
         shell: bash
         env:
-          OBLIGATION_ID: ${{ github.event_name == 'push' && 'supabase-performance-evidence-daily' || inputs.obligation_id }}
-          TRIGGER_TYPE: ${{ github.event_name == 'push' && 'event-trigger' || inputs.trigger_type }}
-          TRIGGER_FINGERPRINT: ${{ github.event_name == 'push' && format('supabase-migration:{0}', github.sha) || inputs.trigger_fingerprint }}
+          OBLIGATION_ID: ${{ github.event_name == 'push' && 'supabase-performance-evidence-daily' || github.event_name == 'repository_dispatch' && github.event.client_payload.obligation_id || inputs.obligation_id }}
+          TRIGGER_TYPE: ${{ github.event_name == 'push' && 'event-trigger' || github.event_name == 'repository_dispatch' && 'event-trigger' || inputs.trigger_type }}
+          TRIGGER_FINGERPRINT: ${{ github.event_name == 'push' && format('supabase-migration:{0}', github.sha) || github.event_name == 'repository_dispatch' && github.event.client_payload.trigger_fingerprint || inputs.trigger_fingerprint }}
+          COALESCE_KEY: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.coalesce_key || inputs.coalesce_key }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
@@ -64,6 +72,9 @@ jobs:
           fi
           if [ -n "${TRIGGER_FINGERPRINT:-}" ]; then
             args+=(--fingerprint "$TRIGGER_FINGERPRINT")
+          fi
+          if [ -n "${COALESCE_KEY:-}" ]; then
+            args+=(--coalesce-key "$COALESCE_KEY")
           fi
           node tools/outcome-obligation-runtime.mjs "${args[@]}"
 
