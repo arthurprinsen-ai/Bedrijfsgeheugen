@@ -8,7 +8,7 @@
 
 **Tech Stack:** Node.js 22 stdlib, GitHub Actions, existing Powerhouse JSON contracts, Supabase/Notion writeback after protected merge.
 
-**Spec:** `docs/powerhouse-engineering-closed-loop-v1.md`
+**Spec:** `docs/brain/powerhouse-engineering-closed-loop-v1.md`
 
 ## Global Constraints
 
@@ -33,9 +33,9 @@
 - Consumes: existing Engineering OS fingerprint and Required test.
 - Produces: executable contract expectations for all six capabilities.
 
-- [ ] Write tests that import `computeEngineeringScorecard`, `detectFlakyTests`, `buildDependencyGraph`, `computeBlastRadius`, `evaluateRecoveryProof`, `createGoldenPathScaffold`, and `evaluateEngineeringMetaLearning` from `scripts/brain/powerhouse-engineering-closed-loop.mjs`.
-- [ ] Wire the test file into Required test before implementation and verify the PR fails because the module is absent.
-- [ ] Add the contract section to the existing Engineering OS config without creating a new authority.
+- [x] Write tests that import `computeEngineeringScorecard`, `detectFlakyTests`, `buildDependencyGraph`, `computeBlastRadius`, `evaluateRecoveryProof`, `createGoldenPathScaffold`, and `evaluateEngineeringMetaLearning` from `scripts/brain/powerhouse-engineering-closed-loop.mjs`.
+- [x] Wire the test file into Required test before implementation and verify RED before production implementation.
+- [x] Add the contract section to the existing Engineering OS config without creating a new authority.
 
 ### Task 2: Pure closed-loop engine
 
@@ -46,13 +46,13 @@
 - Consumes: arrays/objects of evidence supplied by CI/runtime exporters.
 - Produces: deterministic JSON with measured/partial/unknown states.
 
-- [ ] Implement DORA + Powerhouse scorecard with evidence completeness.
-- [ ] Implement flake classification on same-source-revision oscillation.
-- [ ] Implement dependency graph validation and reverse blast-radius traversal.
-- [ ] Implement 90-day recovery evidence validation.
-- [ ] Implement deterministic scaffold manifests for five supported kinds.
-- [ ] Implement conservative meta-learning recommendations with no direct mutation.
-- [ ] Add CLI modes `--scorecard`, `--flakes`, `--graph`, `--recovery`, `--scaffold`, `--learn`, and `--self-test`; JSON input comes from a file or stdin.
+- [x] Implement DORA + Powerhouse scorecard with evidence completeness.
+- [x] Implement flake classification on same-source-revision oscillation.
+- [x] Implement dependency graph validation and reverse blast-radius traversal.
+- [x] Implement 90-day recovery evidence validation.
+- [x] Implement deterministic scaffold manifests for five supported kinds.
+- [x] Implement conservative meta-learning recommendations with no direct mutation.
+- [x] Add CLI modes `--scorecard`, `--flakes`, `--graph`, `--recovery`, `--scaffold`, `--learn`, and `--self-test`; JSON input comes from a file or stdin.
 
 ### Task 3: Scheduled evidence workflow
 
@@ -63,27 +63,27 @@
 - Consumes: GitHub workflow/check metadata and repository contract.
 - Produces: versioned JSON evidence artifact; no production mutation.
 
-- [ ] Run daily and on workflow dispatch.
-- [ ] Collect recent GitHub Actions runs using the repository token with read-only permissions.
-- [ ] Produce scorecard/meta-learning JSON through the Brain module.
-- [ ] Upload the evidence as an Actions artifact.
-- [ ] Fail if the Engineering OS self-test fails; do not fail because a metric is unknown.
+- [x] Run daily and on workflow dispatch.
+- [x] Collect recent GitHub Actions runs using the repository token with read-only permissions.
+- [x] Produce scorecard/meta-learning JSON through the Brain module.
+- [x] Upload the evidence as an Actions artifact.
+- [x] Fail if the Engineering OS self-test fails; do not fail because a metric is unknown.
 
 ### Task 4: Recovery and generator documentation
 
 **Files:**
-- Modify: `docs/development-operating-system.md`
+- Use: `docs/brain/powerhouse-engineering-closed-loop-v1.md`
 
 **Interfaces:**
 - Consumes: closed-loop contract.
-- Produces: human instructions matching executable CLI behavior.
+- Produces: human instructions matching executable behavior.
 
-- [ ] Document metric semantics and unknown-data rule.
-- [ ] Document flake diagnostics and prohibition on rerun-until-green.
-- [ ] Document dependency/blast-radius usage.
-- [ ] Document recovery proof and 90-day freshness.
-- [ ] Document generator commands and supported kinds.
-- [ ] Document meta-learning promotion boundary.
+- [x] Document metric semantics and unknown-data rule.
+- [x] Document flake diagnostics and prohibition on rerun-until-green.
+- [x] Document dependency/blast-radius behavior.
+- [x] Document recovery proof and 90-day freshness.
+- [x] Document generator supported kinds and hooks.
+- [x] Document meta-learning promotion boundary.
 
 ### Task 5: Exact-head verification, merge and canonical writeback
 
