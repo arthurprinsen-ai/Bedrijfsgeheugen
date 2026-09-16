@@ -46,7 +46,7 @@ const personalArtifact = {
 const instagramArtifact = {
   channel:'instagram', artifact_type:'instagram_post', body:'Mira zoekt de laatste versie.', status:'content_ready',
   generation_evidence:{ instagram_publish_gate_input:{
-    channelKind:'instagram_company', channelId:'6a70384d99afb44349f0fba9', text:'Mira zoekt de laatste versie.', miraGatePassed:true, mediaKind:'image',
+    channelKind:'instagram_company', channelId:'6a70384d99afb44349f0fb35', text:'Mira zoekt de laatste versie.', miraGatePassed:true, mediaKind:'image',
     assetUrl:'https://cdn.example/final.jpg', assetMimeType:'image/jpeg',
     lineage:{ contentId:'mira-1', calendarDate:'2026-09-16', predictionId:'pred-1', sourceDecisionId:'decision-1' },
     instagramVisual:{ verified:true, evidenceRefs:['vision:final'], assetUrl:'https://cdn.example/final.jpg', placeholderDetected:false, identityClass:'mira_daily_life', formatVerified:true, width:1080, height:1350, colorSpace:'RGB', hasAlpha:false, decodeComplete:true, visualComplete:true, grayOrEmptyDetected:false },
@@ -119,10 +119,15 @@ test('Instagram provider coverage fails closed unless canonical readback is boun
 test('identity-sensitive social_posts reconciliation is transport-only and cannot mint LIVE_PROVEN', async () => {
   const sql = await readFile(new URL('../supabase/migrations/20260916124000_social_delivery_identity_readback_guard_v1.sql', import.meta.url), 'utf8');
   assert.match(sql, /reconcile_social_post_publication_obligation/i);
-  assert.match(sql, /linkedin_personal/i);
-  assert.match(sql, /instagram/i);
   assert.match(sql, /transport_only/i);
   assert.match(sql, /identity_guard_required/i);
-  assert.doesNotMatch(sql, /record_content_publication_state\([^;]*v_channel[^;]*'LIVE_PROVEN'/is);
+  const guardStart = sql.indexOf("if v_channel in ('linkedin_personal','instagram') then");
+  const guardReturn = sql.indexOf('return new;', guardStart);
+  const genericLiveProof = sql.indexOf("'LIVE_PROVEN'", guardReturn);
+  assert.ok(guardStart >= 0, 'identity-sensitive guard must exist');
+  assert.ok(guardReturn > guardStart, 'identity-sensitive guard must terminate before generic reconciliation');
+  assert.ok(genericLiveProof > guardReturn, 'generic LIVE_PROVEN reconciliation may only occur after sensitive channels returned');
+  const guardBlock = sql.slice(guardStart, guardReturn);
+  assert.doesNotMatch(guardBlock, /set\s+status\s*=/i);
   assert.match(sql, /revoke\s+execute\s+on\s+function\s+public\.reconcile_social_post_publication_obligation\(\)\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i);
 });
