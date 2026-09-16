@@ -44,6 +44,6 @@ jobs:
           tests/brain-quality-adversarial.test.mjs
           tests/brain-quality-production-shadow.test.mjs
           tests/brain-quality-economics.test.mjs
-          tests/powerhouse-content-edge-surface-contract.test.mjs
+          tests/supabase-powerhouse-content-edge-surface-contract.test.mjs
       - name: Verify deterministic Quality Intelligence contract
         run: node scripts/brain/powerhouse-quality-intelligence.mjs --check
