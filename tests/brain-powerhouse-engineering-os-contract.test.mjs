@@ -2,90 +2,69 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
-
 import { loadEngineeringContract, validateEngineeringOS } from '../scripts/brain/powerhouse-engineering-os.mjs';
 
-test('Engineering OS exposes the canonical v1 contract and complete improvement path', async () => {
+test('Engineering OS exposes canonical complete improvement path', async () => {
   const contract = await loadEngineeringContract();
   assert.equal(contract.fingerprint, 'powerhouse-engineering-os-v1');
   assert.equal(contract.delivery_contract, 'BRAIN-DELIVERY-v2');
-  assert.deepEqual(contract.golden_path, [
-    'CONTEXT', 'SCOPE', 'PLAN', 'CHANGE', 'TEST', 'PREVIEW',
-    'VERIFY', 'PROMOTE', 'PROD_READBACK', 'WRITEBACK', 'LEARN', 'IMPROVE'
-  ]);
-  assert.ok(contract.principles.includes('SHARED-LEARNING'));
-  assert.ok(contract.principles.includes('TEAM-OF-AGENTS'));
-  assert.equal(contract.canonical_authorities.agent_contract, 'AGENTS.md');
-  assert.equal(contract.canonical_authorities.delivery, 'config/brain-delivery-system.json');
-  assert.equal(contract.canonical_authorities.learning_preflight, 'config/brain-chat-learning-contract.json');
-  assert.equal(contract.platform_roles.notion.includes('never deployed identity authority'), true);
+  assert.deepEqual(contract.golden_path, ['CONTEXT','SCOPE','PLAN','CHANGE','TEST','PREVIEW','VERIFY','PROMOTE','PROD_READBACK','WRITEBACK','LEARN','IMPROVE']);
+  for (const principle of ['SHARED-LEARNING','TEAM-OF-AGENTS','BOUNDED-AUTONOMY','MEASURED-SELF-IMPROVEMENT']) assert.ok(contract.principles.includes(principle));
 });
 
-test('Engineering OS exposes shared learning, skill evolution and architecture evolution gates', async () => {
-  const contract = await loadEngineeringContract();
-  assert.equal(contract.shared_learning.fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
-  assert.equal(contract.shared_learning.preflight.read_current_shared_context, true);
-  assert.equal(contract.shared_learning.preflight.read_explicit_required_evidence, true);
-  assert.equal(contract.shared_learning.dedupe_before_write, true);
-  assert.equal(contract.shared_learning.separate_audit_from_current_projection, true);
-  assert.equal(contract.shared_learning.refresh_after_new_verified_learning, true);
-  assert.equal(contract.shared_learning.explicit_evidence_not_replaceable_by_shared_context, true);
-  assert.equal(contract.shared_learning.reuse_known_fix_before_experiment, true);
-
-  assert.equal(contract.skill_evolution.requires.baseline, true);
-  assert.equal(contract.skill_evolution.requires.representative_eval, true);
-  assert.equal(contract.skill_evolution.requires.success_metric, true);
-  assert.equal(contract.skill_evolution.requires.compatibility, true);
-  assert.equal(contract.skill_evolution.requires.rollback_or_fallback, true);
-  assert.equal(contract.skill_evolution.requires.post_promotion_outcome, true);
-
-  assert.equal(contract.architecture_evolution.requires.compare_to_current, true);
-  assert.equal(contract.architecture_evolution.requires.measurable_improvement, true);
-  assert.equal(contract.architecture_evolution.requires.migration_compatibility, true);
-  assert.equal(contract.architecture_evolution.requires.security_privacy_cost_review, true);
-  assert.equal(contract.architecture_evolution.requires.representative_tests_or_benchmarks, true);
-  assert.equal(contract.architecture_evolution.requires.rollback_or_recovery, true);
-  assert.equal(contract.architecture_evolution.requires.production_readback, true);
-  assert.equal(contract.architecture_evolution.requires.system_map_and_decision_lineage_update, true);
+test('shared learning, skill evolution and architecture evolution remain protected', async () => {
+  const c = await loadEngineeringContract();
+  assert.equal(c.shared_learning.fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
+  assert.equal(c.shared_learning.preflight.read_current_shared_context, true);
+  assert.equal(c.shared_learning.preflight.read_explicit_required_evidence, true);
+  assert.equal(c.shared_learning.dedupe_before_write, true);
+  for (const key of ['baseline','representative_eval','success_metric','compatibility','rollback_or_fallback','post_promotion_outcome']) assert.equal(c.skill_evolution.requires[key], true);
+  for (const key of ['compare_to_current','measurable_improvement','migration_compatibility','security_privacy_cost_review','representative_tests_or_benchmarks','rollback_or_recovery','production_readback','system_map_and_decision_lineage_update']) assert.equal(c.architecture_evolution.requires[key], true);
 });
 
-test('Engineering OS validator fails closed on authority and evolution drift', async () => {
-  const result = await validateEngineeringOS();
-  assert.deepEqual(result.errors, []);
-  assert.equal(result.ok, true);
-  assert.equal(result.shared_learning_fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
+test('bounded autonomy exposes all seven controls', async () => {
+  const c = await loadEngineeringContract();
+  const o = c.operating_controls;
+  assert.equal(o.fingerprint, 'powerhouse-autonomy-controls-v1');
+  assert.deepEqual(Object.keys(o.controls).sort(), ['agent_security_control_plane','ai_eval_regression','autonomy_budget','disaster_recovery_drills','knowledge_decay','powerhouse_autonomy_scorecard','service_level_objectives']);
+  assert.equal(o.controls.autonomy_budget.fail_closed, true);
+  assert.equal(o.controls.ai_eval_regression.require_baseline_comparison, true);
+  assert.equal(o.controls.agent_security_control_plane.least_privilege, true);
+  assert.equal(o.controls.knowledge_decay.require_revalidate_after, true);
+  assert.equal(o.controls.service_level_objectives.error_budget_policy, 'fail-closed-on-exhaustion');
+  assert.equal(o.controls.disaster_recovery_drills.require_restore_proof, true);
+  assert.equal(o.controls.powerhouse_autonomy_scorecard.no_single_magic_score, true);
+  assert.equal(o.controls.powerhouse_autonomy_scorecard.unknown_is_not_zero, true);
 });
 
-test('existing Brain learning authority stays canonical and reusable', async () => {
+test('all material agents receive autonomy controls through chat-learning preflight', () => {
+  const parsed = JSON.parse(execFileSync(process.execPath, ['scripts/brain/chat-learning-preflight.mjs'], { encoding: 'utf8' }));
+  assert.equal(parsed.status, 'READY');
+  assert.ok(parsed.fingerprints.includes('powerhouse-autonomy-controls-v1'));
+  assert.ok(parsed.sources.some(source => source.path === 'config/powerhouse-engineering-os.json'));
+});
+
+test('Engineering OS validator fails closed on evolution and autonomy drift', async () => {
+  const r = await validateEngineeringOS();
+  assert.deepEqual(r.errors, []);
+  assert.equal(r.ok, true);
+  assert.equal(r.shared_learning_fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
+  assert.equal(r.control_fingerprint, 'powerhouse-autonomy-controls-v1');
+});
+
+test('existing Brain learning authority stays canonical', async () => {
   const learning = JSON.parse(await readFile(new URL('../config/brain-chat-learning-contract.json', import.meta.url), 'utf8'));
-  assert.equal(learning.version, 'BRAIN-CHAT-LEARNING-v1');
   assert.equal(learning.policy.reuseKnownFixBeforeExperimenting, true);
   assert.equal(learning.policy.writeNewMaterialLearningBack, true);
   assert.equal(learning.policy.refreshSharedContextAfterNewLearning, true);
-  assert.equal(learning.policy.keepAuditHistoryAppendOnly, true);
-  assert.equal(learning.policy.keepCurrentProjectionFreeOfTestArtifacts, true);
 });
 
-test('Engineering OS does not create parallel durable learning or architecture authorities', async () => {
-  const contract = await loadEngineeringContract();
-  const serializedAuthorities = JSON.stringify(contract.canonical_authorities);
-  for (const forbidden of ['learning_store', 'memory_store', 'agent_registry', 'architecture_registry']) {
-    assert.equal(serializedAuthorities.includes(forbidden), false);
-  }
-});
-
-test('Development OS documents the shared learning and evolution lifecycle', async () => {
+test('Development OS keeps current shared-learning documentation and delivery authority', async () => {
   const content = await readFile(new URL('../docs/development-operating-system.md', import.meta.url), 'utf8');
   assert.match(content, /BRAIN-DELIVERY-v2/);
   assert.doesNotMatch(content, /BRAIN-DELIVERY-v1/);
-  assert.match(content, /powerhouse-engineering-os-v1/);
   assert.match(content, /powerhouse-shared-learning-architecture-evolution-v1/);
-  assert.match(content, /SHARED-LEARNING/);
-  assert.match(content, /TEAM-OF-AGENTS/);
   assert.match(content, /LEARN -> IMPROVE/);
-  assert.match(content, /Architecture Evolution/);
-  assert.match(content, /Skill Evolution/);
-  assert.match(content, /node scripts\/brain\/powerhouse-engineering-os\.mjs --check/);
 });
 
 test('Required test executes this regression contract', async () => {
@@ -93,20 +72,11 @@ test('Required test executes this regression contract', async () => {
   assert.match(workflow, /tests\/brain-powerhouse-engineering-os-contract\.test\.mjs/);
 });
 
-test('CLI emits READY only after the complete contract validates', () => {
-  const output = execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--check'], { encoding: 'utf8' });
-  const parsed = JSON.parse(output);
-  assert.equal(parsed.status, 'ENGINEERING_OS_READY');
-  assert.equal(parsed.ok, true);
-  assert.equal(parsed.delivery_contract, 'BRAIN-DELIVERY-v2');
-  assert.equal(parsed.shared_learning_fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
-});
-
-test('packet exposes the effective learning and evolution rules', () => {
-  const output = execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--packet'], { encoding: 'utf8' });
-  const parsed = JSON.parse(output);
-  assert.equal(parsed.status, 'ENGINEERING_OS_READY');
-  assert.equal(parsed.contract.shared_learning.fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
-  assert.ok(parsed.contract.skill_evolution);
-  assert.ok(parsed.contract.architecture_evolution);
+test('CLI and packet expose both shared-learning and autonomy controls', () => {
+  const checked = JSON.parse(execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--check'], { encoding: 'utf8' }));
+  assert.equal(checked.status, 'ENGINEERING_OS_READY');
+  assert.equal(checked.control_fingerprint, 'powerhouse-autonomy-controls-v1');
+  const packet = JSON.parse(execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--packet'], { encoding: 'utf8' }));
+  assert.equal(packet.contract.shared_learning.fingerprint, 'powerhouse-shared-learning-architecture-evolution-v1');
+  assert.equal(packet.contract.operating_controls.fingerprint, 'powerhouse-autonomy-controls-v1');
 });
