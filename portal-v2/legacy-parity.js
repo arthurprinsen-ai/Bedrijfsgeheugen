@@ -9,6 +9,15 @@ export const LEGACY_CAPABILITY_MAP = Object.freeze({
   offerte:'offerte', roadmap:'roadmap'
 });
 
+/*
+ * Compatibility manifest only. It deliberately contains identifiers, never
+ * customer-facing values. Business truth is projected from canonical
+ * Powerhouse state by modules/overview.js.
+ */
+export const OVERVIEW_CAPABILITIES = Object.freeze([
+  'maturity','manual-work-annual','fte','company-state','cmmi','adoption-curve','leakage','blockers','progress','advice'
+].map(id=>Object.freeze([id])));
+
 export const GLOBAL_CAPABILITIES = Object.freeze([
   'identity-login-logout','export','import','print-permission','feedback','customer-branding','mobile-navigation'
 ]);
