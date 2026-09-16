@@ -87,7 +87,34 @@ test('Instagram requires exact verified Mira daily-life final asset evidence', (
   assert.equal(source.kind,'artifact'); assert.deepEqual(source.media,[{type:'image',url:'https://cdn.example/final.jpg',alt:null}]);
 });
 
-test('existing provider coverage dedupes before any create action', () => {
+test('existing company provider coverage dedupes before any create action', () => {
   const decision=deliveryDecision({channel:'linkedin_company',posts:[{id:'post-1',status:'scheduled'}],idea:{id:'idea-company',content:{text:'company copy'}}});
   assert.equal(decision.action,'NONE'); assert.equal(decision.reason,'PROVIDER_COVERED');
+});
+
+test('personal provider coverage only satisfies delivery when provider text equals the PASS artifact', () => {
+  const covered=deliveryDecision({channel:'linkedin_personal',posts:[{id:'post-1',status:'sent',text:personalArtifact.body}],artifact:personalArtifact});
+  assert.equal(covered.action,'NONE');
+  assert.equal(covered.reason,'PROVIDER_COVERED_VERIFIED');
+
+  const mismatch=deliveryDecision({channel:'linkedin_personal',posts:[{id:'post-2',status:'sent',text:'Different personal post'}],artifact:personalArtifact});
+  assert.equal(mismatch.action,'BLOCK');
+  assert.equal(mismatch.reason,'PERSONAL_PROVIDER_ARTIFACT_MISMATCH');
+});
+
+test('Instagram provider coverage fails closed unless canonical evidence proves the exact Mira gate', () => {
+  const posts=[{id:'ig-1',status:'sent',text:instagramArtifact.body}];
+  const invalid=deliveryDecision({
+    channel:'instagram', posts, artifact:instagramArtifact,
+    obligation:{status:'BLOCKED',evidence:{identity_gate_result:'FAIL',mira_identity_verified:false,asset_verified_under_current_contract:false}},
+  });
+  assert.equal(invalid.action,'BLOCK');
+  assert.equal(invalid.reason,'INSTAGRAM_PROVIDER_IDENTITY_UNVERIFIED');
+
+  const verified=deliveryDecision({
+    channel:'instagram', posts, artifact:instagramArtifact,
+    obligation:{status:'LIVE_PROVEN',evidence:{identity_gate_result:'PASS',mira_identity_verified:true,asset_verified_under_current_contract:true,final_media_asset_url:'https://cdn.example/final.jpg'}},
+  });
+  assert.equal(verified.action,'NONE');
+  assert.equal(verified.reason,'PROVIDER_COVERED_VERIFIED');
 });
