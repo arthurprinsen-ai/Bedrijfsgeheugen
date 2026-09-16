@@ -1,0 +1,52 @@
+name: Autonomous Improvement Completion Gate
+
+on:
+  push:
+    branches:
+      - feat/autonomous-improvement-runtime-completion-v1-20260916
+    paths:
+      - 'scripts/brain/continuous-improvement/**'
+      - 'tests/brain-autonomous-improvement-runtime-completion.test.mjs'
+      - 'tests/brain-autonomous-improvement-recovery-proof.test.mjs'
+      - 'supabase/migrations/*autonomous_improvement*'
+      - '.github/workflows/autonomous-improvement-completion-gate.yml'
+  pull_request:
+    paths:
+      - 'scripts/brain/continuous-improvement/**'
+      - 'tests/brain-autonomous-improvement-runtime-completion.test.mjs'
+      - 'tests/brain-autonomous-improvement-recovery-proof.test.mjs'
+      - 'supabase/migrations/*autonomous_improvement*'
+      - '.github/workflows/autonomous-improvement-completion-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: autonomous-improvement-completion-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  completion-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Run completion lifecycle and recovery-proof tests
+        run: >-
+          node --test
+          tests/brain-autonomous-improvement-runtime-completion.test.mjs
+          tests/brain-autonomous-improvement-recovery-proof.test.mjs
+      - name: Guard against parallel authorities and Make
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -RniE 'new_persistent_authority[[:space:]]*[:=][[:space:]]*true|make\.com|hook\.eu[0-9]+\.make\.com' \
+            scripts/brain/continuous-improvement \
+            supabase/migrations/*autonomous_improvement* || {
+              echo 'Parallel authority or retired Make dependency detected.' >&2
+              exit 1
+            }
