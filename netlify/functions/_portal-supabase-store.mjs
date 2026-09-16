@@ -42,7 +42,7 @@ export function createSupabasePortalProjectionStore({
         getGovernance(tenantId),
         getResourceBusinessValue(tenantId)
       ]);
-      if(!legacy&&!canonical&&!resourceBusinessValue)return null;
+      if(!legacy&&!canonical)return null;
       const data={...composePortalProjectionLayers({legacy,canonical}),aiGovernance,resourceBusinessValue};
       const sourceUpdatedAt=data.sourceMeta?.updatedAt||canonical?.sourceUpdatedAt||legacy?.sourceUpdatedAt||resourceBusinessValue?.latest_observed_at||'';
       return {schemaVersion:2,tenantId,origin:canonical?'composed':'legacy-migration',sourceUpdatedAt,updatedAt:sourceUpdatedAt,data};
