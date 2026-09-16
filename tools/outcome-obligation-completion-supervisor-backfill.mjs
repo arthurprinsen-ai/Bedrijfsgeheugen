@@ -19,6 +19,29 @@ function stableKey(identity) {
   return createHash('sha256').update(String(identity)).digest('hex').slice(0, 20);
 }
 
+function normalizeRecoveryPacket(packet) {
+  if (!packet || typeof packet !== 'object') return null;
+  return Object.freeze({
+    blocker:packet.blocker,
+    root_cause:packet.root_cause ?? packet.rootCause,
+    evidence_refs:packet.evidence_refs ?? packet.evidenceRefs,
+    attempted_repairs:packet.attempted_repairs ?? packet.attemptedRepairs ?? packet.attemptedFixes,
+    safe_remaining_actions:packet.safe_remaining_actions ?? packet.safeRemainingActions,
+    minimum_human_action:packet.minimum_human_action ?? packet.minimumHumanAction,
+    fix_agent_handoff:packet.fix_agent_handoff ?? packet.fixAgentHandoff,
+    boundary_fingerprint:packet.boundary_fingerprint ?? packet.boundaryFingerprint,
+    resume_when:packet.resume_when ?? packet.resumeWhen,
+  });
+}
+
+function normalizeHardBoundary(boundary) {
+  if (!boundary || typeof boundary !== 'object') return null;
+  return Object.freeze({
+    ...boundary,
+    recovery_packet:normalizeRecoveryPacket(boundary.recovery_packet ?? boundary.recoveryPacket),
+  });
+}
+
 function completionFor(record) {
   return evaluateCompletion({
     obligationId:record.obligationId ?? record.id ?? `backfill:${record.identity}`,
@@ -28,7 +51,7 @@ function completionFor(record) {
     productionIdentity:record.productionIdentity ?? null,
     materialObligations:Array.isArray(record.materialObligations) ? record.materialObligations : [],
     evidence:Array.isArray(record.evidence) ? record.evidence : [],
-    hardBoundary:record.hardBoundary ?? null,
+    hardBoundary:normalizeHardBoundary(record.hardBoundary),
     retry:{
       hypothesis:record.retryHypothesis ?? null,
       attemptCount:Number.isInteger(record.attemptCount) ? record.attemptCount : 0,
