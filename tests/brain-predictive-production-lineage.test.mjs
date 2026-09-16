@@ -36,7 +36,21 @@ const CANONICAL = [
   '20260915183554_resource_factor_provenance_fields.sql',
   '20260915183603_resource_impact_projection_v1.sql',
   '20260915183656_resource_impact_exclude_retired_make.sql',
+  '20260916053253_powerhouse_public_rls_regression_guard.sql',
+  '20260916053300_harden_bg_klik_vastleggen_execute.sql',
+  '20260916053500_powerhouse_public_rls_regression_guard.sql',
+  '20260916071237_powerhouse_observability_outcome_calibration_closure_v1.sql',
+  '20260916071512_powerhouse_observability_views_service_role_select_only.sql',
+  '20260916090824_powerhouse_structure_hygiene_v1.sql',
   '20260916091505_powerhouse_structure_hygiene_v2.sql',
+  '20260916092402_powerhouse_structure_hygiene_v3_server_only_grants.sql',
+  '20260916092613_powerhouse_structure_hygiene_v4_drop_unused_growth_attribution_index.sql',
+  '20260916123944_powerhouse_autonomy_rpc_replay_hardening.sql',
+  '20260916123957_powerhouse_internal_view_replay_hardening.sql',
+  '20260916130010_social_delivery_identity_readback_guard_v1.sql',
+  '20260916131217_autonomous_improvement_production_cycle_v1.sql',
+  '20260916132201_autonomous_improvement_brain_taxonomy_fix_v1.sql',
+  '20260916133208_fix_autonomous_improvement_record_kind_v1.sql',
 ];
 
 const DRIFTED_ALIASES = [
@@ -48,6 +62,19 @@ const DRIFTED_ALIASES = [
   '20260915123000_powerhouse_revenue_flywheel_views_v1.sql',
   '20260915111000_powerhouse_publication_live_proof_guard.sql',
   '20260916091500_powerhouse_structure_hygiene_v2.sql',
+  '20260915203000_powerhouse_observability_outcome_calibration_closure_v1.sql',
+  '20260916053000_powerhouse_public_rls_regression_guard.sql',
+  '20260916053500_harden_bg_klik_vastleggen_execute.sql',
+  '20260916071400_powerhouse_observability_views_service_role_select_only.sql',
+  '20260916091000_powerhouse_structure_hygiene_v1.sql',
+  '20260916092330_powerhouse_structure_hygiene_v3_server_only_grants.sql',
+  '20260916092740_powerhouse_structure_hygiene_v4_drop_unused_growth_attribution_index.sql',
+  '20260916110500_powerhouse_autonomy_rpc_replay_hardening.sql',
+  '20260916111500_powerhouse_internal_view_replay_hardening.sql',
+  '20260916124000_social_delivery_identity_readback_guard_v1.sql',
+  '20260916144500_autonomous_improvement_production_cycle_v1.sql',
+  '20260916151600_fix_autonomous_improvement_record_kind_v1.sql',
+  '20260916152000_autonomous_improvement_brain_taxonomy_fix_v1.sql',
 ];
 
 test('exact production migration identities are source controlled', () => {
