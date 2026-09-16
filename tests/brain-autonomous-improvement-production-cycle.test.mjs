@@ -39,9 +39,11 @@ test('production cycle is fail-closed and non-destructive', () => {
   assert.match(sql, /no_magic_score',true/);
 });
 
-test('hourly record identity is deterministic and writeback is idempotent', () => {
+test('hourly record identity is deterministic, idempotent, and uses an allowed Brain record kind', () => {
   assert.match(sql, /date_trunc\('hour', p_now\)/);
   assert.match(sql, /powerhouse-autonomous-improvement-runtime-v1:/);
   assert.match(sql, /'idempotent',true/);
-  assert.match(sql, /record_kind='autonomous_improvement_cycle'/);
+  assert.match(sql, /record_kind='current_state'/);
+  assert.match(sql, /'improvement','current_state'/);
+  assert.doesNotMatch(sql, /'improvement','autonomous_improvement_cycle'/);
 });
