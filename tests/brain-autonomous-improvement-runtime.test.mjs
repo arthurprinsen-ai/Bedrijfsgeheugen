@@ -116,3 +116,12 @@ test('read-only probe is executable while production scheduling stays in Supabas
   assert.equal(output.production.job, 'powerhouse-autonomous-improvement-cycle-v1');
   assert.equal(output.writeback, 'not attempted by GitHub read-only probe');
 });
+
+test('production adapter uses only canonical Brain record taxonomy', async () => {
+  const migration = await readFile(new URL('../supabase/migrations/20260916152000_autonomous_improvement_brain_taxonomy_fix_v1.sql', import.meta.url), 'utf8');
+  assert.match(migration, /'CurrentState','current_state'/);
+  assert.match(migration, /record_type='CurrentState'/);
+  assert.match(migration, /record_kind='current_state'/);
+  assert.match(migration, /owner_id='powerhouse-autonomous-improvement-runtime-v1'/);
+  assert.doesNotMatch(migration, /'improvement','autonomous_improvement_cycle'/);
+});
