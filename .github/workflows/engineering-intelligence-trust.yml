@@ -16,8 +16,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
       - name: Engineering Trust contract
         run: node --test tests/engineering-trust-contract.test.mjs tests/engineering-supply-chain-workflows.test.mjs
       - name: Candidate identity
