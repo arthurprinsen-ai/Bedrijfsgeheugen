@@ -57,6 +57,22 @@ test('active backfill creates idempotent resumes only for existing canonical obl
   }]);
 });
 
+test('active backfill does not recursively resume rows created by completion backfill itself', () => {
+  const report = reconcileCompletionBackfill({
+    mode:'active',
+    registeredObligationIds:['ob-1'],
+    obligations:[
+      { id:'ob-1', identity:'original-work', status:'PENDING', triggerFingerprint:'workflow-run:Unified Brain Delivery:123' },
+      { id:'ob-1', identity:'resume-work', status:'PENDING', triggerFingerprint:'completion-backfill:completion-supervisor|abc' }
+    ]
+  });
+
+  assert.equal(report.dispatches.length, 1);
+  assert.equal(report.dispatches[0].identity, 'original-work');
+  assert.ok(report.candidates.some(item => item.identity === 'original-work'));
+  assert.ok(!report.candidates.some(item => item.identity === 'resume-work'));
+});
+
 test('active backfill does not invent obligations or resume a hard external boundary', () => {
   const report = reconcileCompletionBackfill({
     mode:'active',
