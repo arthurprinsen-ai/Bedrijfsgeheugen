@@ -25,7 +25,7 @@ No quality job may silently replace any of these.
 `Powerhouse Quality Intelligence` runs fast deterministic checks on affected quality-control changes:
 
 1. mandatory BRAIN chat-learning preflight;
-2. Quality Intelligence contract tests;
+2. Quality Intelligence v1 and v2 contract tests;
 3. machine-readable contract validation;
 4. repeated core-test flake probe;
 5. Hypothesis property invariants;
@@ -34,6 +34,24 @@ No quality job may silently replace any of these.
 8. Trivy repository vulnerability/secret/misconfiguration observation.
 
 The existing website release lane remains responsible for its accepted baseline, Chromium visual geometry, CLS, overflow, page semantics, route and SEO protections. Quality Intelligence deliberately reuses those controls rather than creating a second screenshot baseline.
+
+## Quality Intelligence v2 extension
+
+`powerhouse-quality-intelligence-v2` is an extension contract, not a new release authority. v1 remains the deterministic release authority. The v2 contract adds ten capabilities: coverage intelligence, bounded autonomous exploration, semantic visual intelligence, stateful/fuzz/chaos testing, production shadow verification, performance root-cause intelligence, the security adversarial matrix, build provenance/SBOM, test-the-tests intelligence and quality economics.
+
+Evidence states are explicit: `GREEN`, `RED`, `UNKNOWN`, `NOT_REGISTERED`. Only `GREEN` is green. `UNKNOWN` and `NOT_REGISTERED` always remain obligations when a required surface depends on them. AI-generated or exploratory findings are `candidate_finding` records and have no release authority until deterministic reproduction/adoption exists.
+
+Coverage Intelligence compares `config/powerhouse-quality-surfaces.json` with registered evidence and emits covered surfaces, gaps, unknown states and canonical obligations. It never substitutes a coverage percentage for evidence.
+
+Bounded exploration uses `scripts/brain/quality/exploration-policy.mjs`. Destructive actions such as delete, publish, deploy, merge, purchase and outbound send are forbidden. Exploration is step-budgeted; candidate findings remain advisory. The existing Playwright deep frontend sensor is reused for scheduled/manual browser exploration and semantic/geometry evidence rather than introducing a second browser authority.
+
+The adversarial matrix in `config/powerhouse-quality-adversarial-matrix.json` registers safe cases for retry, idempotency, ordering, malformed/expired identity, tenant boundaries, replay, unexpected fields, rate limits and provider failure. Missing registered targets resolve to `NOT_REGISTERED`; production-destructive chaos is forbidden.
+
+Production shadow normalization in `scripts/brain/quality/production-shadow.mjs` converts contract/SLO drift into `RED` escaped-defect obligations that reuse `BRAIN-CLOSED-LOOP-v1` and BG169. Missing observations remain `UNKNOWN`.
+
+Quality economics in `scripts/brain/quality/test-economics.mjs` can recommend PR, parallel or nightly placement using risk, runtime and observed yield. It cannot waive a gate. Security, data-integrity and tenant-isolation tests remain fail-closed regardless of cost; unknown yield is not interpreted as zero risk.
+
+The scheduled/manual provenance lane creates an exact-SHA subject artifact, generates a CycloneDX SBOM and uses GitHub artifact attestation. This is additive supply-chain evidence for the eligible Quality Intelligence artifact and does not convert unsupported/unavailable provenance elsewhere into green.
 
 ## Deep frontend quality
 
@@ -73,7 +91,7 @@ Stryker mutation testing runs on the scheduled/manual deep path against the dete
 The quality layer is intentionally two-speed:
 
 - **PR path:** fast deterministic contract/property/security sensors and the pre-existing affected release lanes.
-- **Deep path:** cross-browser matrix, mutation, passive DAST, k6 and innovation scouting on schedule/manual runs.
+- **Deep path:** cross-browser matrix, adversarial matrix, mutation, passive DAST, k6, exact-SHA SBOM/provenance and innovation scouting on schedule/manual runs.
 
 `classifyQualityImpact()` maps changed paths to relevant suites. Expensive tests are selected from declared impact, not by blindly running the entire estate for every small change. Existing independent delivery lanes remain parallel where contracts do not overlap.
 
@@ -101,12 +119,13 @@ A new release, fashionable technique or AI-generated suggestion is never automat
 
 ## Versions at introduction
 
-Pinned workflow versions: Playwright `1.63.0`, `@axe-core/playwright` `4.13.0`, Stryker `10.0.0`, Trivy `0.74.0`, k6 `2.2.0` and ZAP `2.17.0`. CodeQL uses `github/codeql-action@v4`. Newer candidates still pass the adoption gates above.
+Pinned workflow versions: Playwright `1.63.0`, `@axe-core/playwright` `4.13.0`, Stryker `10.0.0`, Trivy `0.74.0`, k6 `2.2.0`, ZAP `2.17.0` and Syft `1.33.0`. CodeQL uses `github/codeql-action@v4`. Newer candidates still pass the adoption gates above.
 
 ## Status semantics
 
 - `GREEN` for the Quality Intelligence core means all mandatory deterministic dimensions supplied to that quality-state evaluation are green.
 - `NOT_REGISTERED` means a capability exists but no authoritative target has been registered. It is not green evidence.
+- `UNKNOWN` means evidence is missing or insufficient. It is not green evidence.
 - Scheduled sensors are not retroactively evidence for a different candidate SHA.
 - A CI success does not by itself prove provider/runtime production outcomes.
 - `LIVE & BEWEZEN` remains governed by the wider Powerhouse truth/status and Assurance contracts.
@@ -117,14 +136,21 @@ Quality automation may not create/rotate secrets, weaken authentication/RLS/bran
 
 ## Operational files
 
-- Contract: `powerhouse/assurance/quality-intelligence.json`
+- v1 contract: `powerhouse/assurance/quality-intelligence.json`
+- v2 extension contract: `powerhouse/assurance/quality-intelligence-v2.json`
+- Surface inventory: `config/powerhouse-quality-surfaces.json`
+- Adversarial matrix: `config/powerhouse-quality-adversarial-matrix.json`
 - Innovation sources: `powerhouse/assurance/quality-innovation-sources.json`
 - Core: `scripts/brain/powerhouse-quality-intelligence.mjs`
+- Coverage Intelligence: `scripts/brain/quality/coverage-intelligence.mjs`
+- Exploration policy: `scripts/brain/quality/exploration-policy.mjs`
+- Production shadow: `scripts/brain/quality/production-shadow.mjs`
+- Quality economics: `scripts/brain/quality/test-economics.mjs`
 - Impact selection: `scripts/brain/quality/changed-impact.mjs`
 - Frontend deep audit: `scripts/brain/quality/frontend-deep-audit.mjs`
 - Flake probe: `scripts/brain/quality/repeat-flake-check.mjs`
 - Innovation scout: `scripts/brain/quality/innovation-scout.mjs`
-- Core tests: `tests/brain-quality-intelligence.test.mjs`
+- Core tests: `tests/brain-quality-intelligence.test.mjs` and `tests/brain-quality-*.test.mjs`
 - Backend properties/API/integration: `tests/brain-quality/`
 - Performance: `tests/brain-quality-performance/powerhouse-smoke.js`
 - Mutation config: `config/stryker.quality.conf.json`
