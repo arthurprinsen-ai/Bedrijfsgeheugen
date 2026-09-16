@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import {
   FINGERPRINT,
   V2_FINGERPRINT,
+  AUTOPILOT_FINGERPRINT,
   validateQualityContract,
   validateQualityV2Contract,
   classifyQualityImpact,
@@ -52,6 +53,7 @@ const onlyGap = (result, expected) => {
 test('canonical fingerprints are immutable public contract constants', () => {
   assert.equal(FINGERPRINT, 'powerhouse-quality-intelligence-v1');
   assert.equal(V2_FINGERPRINT, 'powerhouse-quality-intelligence-v2');
+  assert.equal(AUTOPILOT_FINGERPRINT, 'powerhouse-quality-autopilot-v2');
 });
 
 test('complete v1 contract is exactly green', () => {
@@ -196,11 +198,11 @@ test('canonical loaders read the registered v1 and v2 contracts', () => {
   assert.equal(loadQualityV2Contract().fingerprint, V2_FINGERPRINT);
 });
 
-test('CLI validator reports both fingerprints and READY on canonical files', () => {
+test('CLI validator reports all registered extensions and READY on canonical files', () => {
   const raw = execFileSync(process.execPath, ['scripts/brain/powerhouse-quality-intelligence.mjs','--check'], { encoding: 'utf8' });
   const output = JSON.parse(raw);
   assert.equal(output.fingerprint, FINGERPRINT);
-  assert.deepEqual(output.extensions, [V2_FINGERPRINT]);
+  assert.deepEqual(output.extensions, [V2_FINGERPRINT, AUTOPILOT_FINGERPRINT]);
   assert.equal(output.status, 'READY');
   assert.deepEqual(output.gaps, []);
 });
