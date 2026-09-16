@@ -21,6 +21,27 @@
       "authority": "supabase/functions/content-operations/index.ts",
       "evidence_contract": "tests/social-learning-buffer-schedule.test.mjs",
       "required": true
+    },
+    {
+      "id": "function:powerhouse-content-orchestrator",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-content-orchestrator/index.ts",
+      "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:powerhouse-social-publisher",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:bg_geheim",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+      "required": true
     }
   ]
 }
