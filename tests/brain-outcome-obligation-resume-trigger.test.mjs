@@ -51,3 +51,14 @@ test('applicable workflow_run persistence and runtime use canonical workflow ide
   assert.match(workflow, /workflow-run:\$\{canonical_source\}:\$\{SOURCE_RUN_ID\}/);
   assert.match(workflow, /WORKFLOW_NAME="\$\{COMPLETION_SOURCE_WORKFLOW:-\$WORKFLOW_NAME\}"/);
 });
+
+test('production readback resolves candidate from the protected merge parent and verifies artifact lineage', async () => {
+  const workflow = await readFile('.github/workflows/outcome-obligation-sweep.yml', 'utf8');
+  const productionCase = workflow.match(/\.github\/workflows\/production-release-readback\.yml\)[\s\S]*?;;/);
+  assert.ok(productionCase, 'production readback source case must remain present');
+  assert.match(productionCase[0], /gh run download[\s\S]*production-release-readback-/);
+  assert.match(productionCase[0], /artifact_production_identity="\$\(jq -r '\.merge_sha \/\/ empty'/);
+  assert.match(productionCase[0], /test "\$artifact_production_identity" = "\$SOURCE_HEAD_SHA"/);
+  assert.match(productionCase[0], /git rev-parse "\$\{SOURCE_HEAD_SHA\}\^2"/);
+  assert.doesNotMatch(productionCase[0], /candidate_sha=.*git show|sed -nE/);
+});
