@@ -73,4 +73,14 @@ test('elke bekend rode test bestaat nog en heeft een reden', () => {
   }
 });
 
+test('Powerhouse scan production proof voert controlled write + idempotency altijd uit', () => {
+  const workflow = readFileSync('.github/workflows/powerhouse-scan-production-proof.yml', 'utf8');
+  assert.match(workflow, /Controlled canonical write and idempotency proof/);
+  assert.doesNotMatch(
+    workflow,
+    /contains\(github\.event\.head_commit\.message,\s*'\[scan-e2e\]'\)/,
+    'controlled canonical write/idempotency proof mag niet afhankelijk zijn van een optionele commitmarker'
+  );
+});
+
 export { BEKEND_ROOD };
