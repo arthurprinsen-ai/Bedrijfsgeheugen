@@ -105,5 +105,6 @@ jobs:
         with:
           name: engineering-os-learning-${{ github.run_id }}
           path: .engineering-os-evidence/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
