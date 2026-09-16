@@ -1,0 +1,19 @@
+{
+  "fingerprint": "powerhouse-quality-innovation-sources-v1",
+  "policy": "primary_sources_only; discovery_is_not_adoption",
+  "sources": [
+    {"id":"playwright-releases","url":"https://github.com/microsoft/playwright/releases","domain":"frontend-browser"},
+    {"id":"playwright-docs","url":"https://playwright.dev/docs/intro","domain":"frontend-browser"},
+    {"id":"axe-core-releases","url":"https://github.com/dequelabs/axe-core/releases","domain":"accessibility"},
+    {"id":"web-vitals","url":"https://web.dev/articles/vitals","domain":"frontend-performance"},
+    {"id":"owasp-top10","url":"https://owasp.org/www-project-top-ten/","domain":"security"},
+    {"id":"owasp-zap","url":"https://www.zaproxy.org/docs/","domain":"security-dast"},
+    {"id":"codeql-docs","url":"https://codeql.github.com/docs/","domain":"security-sast"},
+    {"id":"trivy-docs","url":"https://trivy.dev/latest/docs/","domain":"supply-chain-security"},
+    {"id":"hypothesis-docs","url":"https://hypothesis.readthedocs.io/","domain":"property-testing"},
+    {"id":"schemathesis-docs","url":"https://schemathesis.readthedocs.io/","domain":"api-testing"},
+    {"id":"testcontainers-docs","url":"https://testcontainers.com/","domain":"integration-testing"},
+    {"id":"k6-docs","url":"https://grafana.com/docs/k6/latest/","domain":"performance"},
+    {"id":"stryker-docs","url":"https://stryker-mutator.io/docs/","domain":"mutation-testing"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker-js/master/packages/core/schema/stryker-schema.json",
+  "mutate": ["scripts/brain/powerhouse-quality-intelligence.mjs"],
+  "testRunner": "command",
+  "commandRunner": {"command": "node --test tests/brain-quality-intelligence.test.mjs"},
+  "reporters": ["clear-text", "json"],
+  "jsonReporter": {"fileName": "artifacts/quality/mutation.json"},
+  "thresholds": {"high": 85, "low": 70, "break": 60},
+  "coverageAnalysis": "off"
+}

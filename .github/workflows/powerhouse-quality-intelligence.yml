@@ -1,0 +1,177 @@
+name: Powerhouse Quality Intelligence
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'powerhouse/assurance/**'
+      - 'scripts/brain/powerhouse-quality-intelligence.mjs'
+      - 'scripts/brain/quality/**'
+      - 'tests/brain-quality-intelligence.test.mjs'
+      - 'tests/brain-quality/**'
+      - 'tests/brain-quality-performance/**'
+      - 'config/stryker.quality.conf.json'
+      - '.github/workflows/powerhouse-quality-intelligence.yml'
+      - 'docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md'
+      - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-design.md'
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '23 3 * * *'
+
+permissions:
+  contents: read
+
+env:
+  PLAYWRIGHT_VERSION: '1.63.0'
+  AXE_PLAYWRIGHT_VERSION: '4.13.0'
+  STRYKER_VERSION: '10.0.0'
+  TRIVY_VERSION: '0.74.0'
+  K6_VERSION: '2.2.0'
+  ZAP_VERSION: '2.17.0'
+
+jobs:
+  quality-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Mandatory chat-learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Deterministic Quality Intelligence contract
+        run: node --test tests/brain-quality-intelligence.test.mjs
+      - name: Canonical quality contract validator
+        run: node scripts/brain/powerhouse-quality-intelligence.mjs --check
+      - name: Flake probe cannot retry-to-green
+        run: node scripts/brain/quality/repeat-flake-check.mjs
+
+  backend-properties:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install property API and real-service test engines
+        run: python -m pip install --disable-pip-version-check pytest hypothesis schemathesis testcontainers 'psycopg[binary]'
+      - name: Property-based backend invariants
+        run: pytest -q tests/brain-quality/test_powerhouse_quality_properties.py
+      - name: Registered API contract harness
+        run: pytest -q tests/brain-quality/test_powerhouse_api_contract.py
+      - name: Registered real-service integration harness
+        run: pytest -q tests/brain-quality/test_powerhouse_integration_profile.py
+
+  supply-chain-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - name: Trivy vulnerability secret and misconfiguration sensor
+        run: |
+          docker run --rm -v "$PWD:/workspace" -w /workspace aquasec/trivy:${TRIVY_VERSION} fs \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --format json \
+            --output artifacts-trivy.json \
+            --exit-code 0 .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-trivy-${{ github.sha }}
+          path: artifacts-trivy.json
+          retention-days: 14
+
+  deep-frontend:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install accepted browser and accessibility engines
+        run: npm install --no-save --no-audit --no-fund playwright@${PLAYWRIGHT_VERSION} @axe-core/playwright@${AXE_PLAYWRIGHT_VERSION}
+      - name: Install Chromium Firefox and WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Cross-browser runtime accessibility and responsive audit
+        env:
+          QUALITY_BASE_URL: https://www.bedrijfsgeheugen.nl
+        run: node scripts/brain/quality/frontend-deep-audit.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-frontend-${{ github.sha }}
+          path: artifacts/quality/frontend
+          retention-days: 14
+
+  performance:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Public synthetic k6 SLO probe
+        run: docker run --rm -v "$PWD:/work" -w /work -e QUALITY_BASE_URL=https://www.bedrijfsgeheugen.nl grafana/k6:${K6_VERSION} run tests/brain-quality-performance/powerhouse-smoke.js
+
+  mutation:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Mutation sensitivity of deterministic quality core
+        run: |
+          mkdir -p artifacts/quality
+          npx --yes @stryker-mutator/core@${STRYKER_VERSION} run config/stryker.quality.conf.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-mutation-${{ github.sha }}
+          path: artifacts/quality
+          retention-days: 14
+
+  passive-dast:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Passive OWASP ZAP baseline
+        run: |
+          mkdir -p artifacts/quality/zap
+          chmod 777 artifacts/quality/zap
+          docker run --rm -v "$PWD/artifacts/quality/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:${ZAP_VERSION} \
+            zap-baseline.py -t https://www.bedrijfsgeheugen.nl -J report.json -r report.html -I
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-zap-${{ github.sha }}
+          path: artifacts/quality/zap
+          retention-days: 14
+
+  innovation-scout:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Observe approved primary quality sources
+        run: node scripts/brain/quality/innovation-scout.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-innovation-scout-${{ github.sha }}
+          path: artifacts/quality/innovation-scout.json
+          retention-days: 30

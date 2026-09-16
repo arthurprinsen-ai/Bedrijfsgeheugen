@@ -38,3 +38,6 @@ jobs:
           tests/brain-ai-usage-attribution.test.mjs
           tests/brain-resource-business-value-contract.test.mjs
           tests/brain-resource-business-value-service-role-grants.test.mjs
+          tests/brain-quality-intelligence.test.mjs
+      - name: Verify deterministic Quality Intelligence contract
+        run: node scripts/brain/powerhouse-quality-intelligence.mjs --check
