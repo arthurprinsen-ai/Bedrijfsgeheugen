@@ -80,10 +80,21 @@ export function createSupabaseOutcomeObligationStores({
     return normalizeDispatchRow(Array.isArray(rows) ? rows[0] : null);
   }
 
+  async function listDispatch(recordType) {
+    const type = requireText(recordType, 'recordType');
+    const endpoint = `${dispatchEndpoint}?record_type=eq.${encodeURIComponent(type)}&select=*&order=created_at.asc`;
+    const rows = await request(endpoint, { method:'GET', headers:headers() });
+    if (!Array.isArray(rows)) throw new Error('Supabase outcome obligation store failed: dispatch response must be an array');
+    return Object.freeze(rows.map(normalizeDispatchRow));
+  }
+
   function createDispatchStore(recordType) {
     return Object.freeze({
       async get(idempotencyKey) {
         return getDispatch(idempotencyKey, recordType);
+      },
+      async list() {
+        return listDispatch(recordType);
       },
       async putIfAbsent(record) {
         if (!record || record.type !== recordType) throw new TypeError(`record.type must be ${recordType}`);
