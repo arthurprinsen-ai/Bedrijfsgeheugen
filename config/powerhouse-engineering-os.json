@@ -11,6 +11,7 @@
     "CLOSED-LOOP",
     "SMALLEST-SAFE-CHANGE",
     "EXACT-CANDIDATE-IDENTITY",
+    "STATE-OF-THE-ART-EVIDENCE-BASED-ADOPTION",
     "GREEN-MEANS-OUTCOME-VERIFIED",
     "RED-MEANS-KEEP-WORKING"
   ],
@@ -48,6 +49,20 @@
     "frontend": ["visual_regression","alignment_spacing","responsive_behavior","cross_browser_device","accessibility","web_performance","console_network_errors","content_semantic_drift","design_system_drift"],
     "backend": ["unit_integration_contract","schema_migration_integrity","rls_auth_tenant_isolation","idempotency_concurrency","data_quality_lineage","api_latency_efficiency","failure_recovery","rate_quota_budget"]
   },
+  "state_of_art_adoption": {
+    "fingerprint": "powerhouse-state-of-the-art-adoption-v1",
+    "applies_to": ["all_existing_chats","all_future_chats","all_existing_agents","all_future_agents","all_material_workflows"],
+    "rule": "Use current external evidence and the best available task-relevant technique; newest is not automatically best and adoption must be evidence-based.",
+    "domains": ["software_engineering","frontend","interaction_design","accessibility","backend","github_cicd","supabase_postgres","notion","netlify","data_engineering","external_data","ai_models_agents_retrieval_evals","algorithms_forecasting_optimization","security","observability","performance","finops"],
+    "candidate_classes": ["PRODUCTION_READY","CONTROLLED_FRONTIER_EXPERIMENT","WATCH","REJECT"],
+    "comparison_dimensions": ["quality","capability","compatibility","security","performance","maintainability","reliability","cost","business_impact"],
+    "external_evidence": ["official_documentation","official_release_notes","standards","primary_research","security_advisories","provider_status_or_roadmap","reputable_task_relevant_benchmarks"],
+    "record_when_material": ["source_provenance","observed_or_published_at","freshness","confidence","decision_influenced"],
+    "frontier_gate": ["hypothesis","baseline","success_metric","representative_evaluation","isolation_where_applicable","security_privacy_cost_review","rollback_or_fallback","production_promotion_after_evidence"],
+    "ai_model_governance": ["provider","exact_model_or_version","eval_suite","baseline_comparison","latency_where_material","cost_where_material","truth_safety_failure_modes","fallback","calibration_or_threshold_policy_where_relevant","production_outcome"],
+    "currency_signals": ["deprecation","eol","cve","unsupported_api","stale_sdk","superseded_platform_feature","compatibility_drift","material_new_capability"],
+    "forbidden": ["blind_latest_version_chasing","benchmark_only_adoption","replacement_without_measurable_benefit","parallel_truth_or_agent_memory","weakened_security_or_gates_for_frontier_candidate","latest_claim_without_current_check_when_currency_matters","unowned_unversioned_no_rollback_experiment"]
+  },
   "engineering_rules": [
     "Prefer small coherent modules with explicit interfaces and ownership.",
     "Prefer reusable helpers and reusable workflows over copy-paste families.",
@@ -56,6 +71,8 @@
     "Production schema and function behavior must remain reconstructable from source control.",
     "No hidden magic score, threshold, authority or deployment rule may remain undocumented.",
     "No new brain, registry, queue, calendar, analytics store or learning store when an existing canonical capability can be extended.",
+    "Use current task-relevant external evidence when technology currency can materially change the answer or implementation.",
+    "Adopt frontier technology only through a reversible, measurable experiment with rollback or fallback.",
     "Documentation and learning writeback are release outputs, not optional follow-up."
   ],
   "terminal_statuses": ["LIVE & BEWEZEN","DEELS LIVE","GEBLOKKEERD","NIET GEDAAN"],
