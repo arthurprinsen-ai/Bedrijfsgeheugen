@@ -422,6 +422,23 @@ nav .nb{transition:height .2s}
   }
 })();
 </script>
+
+<style id="quality-a11y-fix-v1">
+/* Evidence-backed WCAG AA contrast/focus closure from Quality Intelligence v2. */
+.v18-section-head .eyebrow,.evidence-calc .eyebrow,.platform-section .eyebrow,.story-copy>.eyebrow,.big-cta-inner .eyebrow{color:#14171A!important}
+.proof-label,.leak-head span,.savings-kicker,.savings-note,.pulse-label,.pulse-card small,#motionStageLabel,.signal-source small,#scenarioKicker,.flow-item span,.story-head span,.story-row small,.story-row em,.compare-note,.review-card small,.topic-link p{color:#4C5961!important}
+.motion-story-copy>.eyebrow{color:#14171A!important;background:#FFE86B!important;padding:.12rem .35rem;border-radius:4px}
+div[data-motion-step]>.bg-change-step-content>b{color:#FFE86B!important}
+div[data-motion-step]>.bg-change-step-content>div>span{color:#E6E9EC!important}
+article[data-bg-process-step]>b{color:#2742D6!important}
+article[data-bg-process-step]>p{color:#4C5961!important}
+.toast2{color:#fff!important}
+.bgx-stempel{color:#C4CBD2!important}
+</style>
+<script id="quality-a11y-focus-fix-v1">
+(()=>{const apply=()=>{const el=document.getElementById('reviewCarousel');if(!el)return false;if(!el.hasAttribute('tabindex'))el.tabIndex=0;if(!el.hasAttribute('aria-label'))el.setAttribute('aria-label','Klantcases');return true};if(!apply()){const start=()=>{if(apply())return;const mo=new MutationObserver(()=>{if(apply())mo.disconnect()});mo.observe(document.documentElement,{childList:true,subtree:true})};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start()}})();
+</script>
+
 </head>
 <body>
 <div class="bgtop"><div class="bgtop-in">
