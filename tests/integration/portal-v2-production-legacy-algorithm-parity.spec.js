@@ -6,11 +6,25 @@ async function openAnalysis(page,pageId){
  const response=await page.goto(`${BASE_URL}/portal-v2/?page=${encodeURIComponent(pageId)}&bg_algorithm_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
  expect(response,`${pageId} response`).not.toBeNull();
  expect(response.status(),`${pageId} status`).toBeLessThan(400);
- const workspace=page.locator(`[data-functional-workspace="${pageId}"]`);
+ const workspaceSelector=`[data-functional-workspace="${pageId}"]`;
+ const workspace=page.locator(workspaceSelector);
  await expect(workspace,`${pageId} workspace`).toBeVisible({timeout:15_000});
- await workspace.locator('[data-workspace-tab="analyse"]').click();
- const parity=workspace.locator('[data-legacy-algorithm-parity]');
- await expect(parity,`${pageId} executable parity evidence`).toBeVisible({timeout:10_000});
+ // The first generic workspace shell is synchronous; functional-suite and
+ // specialist workspaces replace/fill it asynchronously. Wait for a marker
+ // that only exists on the final mounted implementation before interacting.
+ const readySelector=pageId==='roadmap'?'[data-roadmap-board]':'[data-field-id]';
+ await expect(workspace.locator(readySelector).first(),`${pageId} final workspace`).toBeVisible({timeout:15_000});
+ const parity=page.locator(`${workspaceSelector} [data-legacy-algorithm-parity]`);
+ // attachLegacyAlgorithmParity is imported after the final workspace mount.
+ // Re-applying the idempotent Analyse selection avoids losing the click in the
+ // small interval between final form render and parity-listener attachment.
+ await expect.poll(async()=>{
+   const tab=page.locator(`${workspaceSelector} [data-workspace-tab="analyse"]`);
+   if(!await tab.count())return false;
+   await tab.click();
+   return parity.isVisible().catch(()=>false);
+ },{timeout:15_000,intervals:[100,200,400,800]}).toBe(true);
+ await expect(parity,`${pageId} executable parity evidence`).toBeVisible();
  return parity;
 }
 
