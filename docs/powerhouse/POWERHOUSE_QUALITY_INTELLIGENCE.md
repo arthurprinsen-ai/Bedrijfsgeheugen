@@ -37,19 +37,7 @@ The existing website release lane remains responsible for its accepted baseline,
 
 ## Deep frontend quality
 
-The scheduled/manual frontend audit uses Playwright across Chromium, Firefox and WebKit and the viewport registry already used by the visual system. It detects:
-
-- browser-specific breakage;
-- navigation failures;
-- JavaScript page errors;
-- console errors;
-- failed requests;
-- same-origin HTTP 4xx/5xx responses;
-- unexpected horizontal overflow;
-- basic keyboard-focus failure;
-- serious and critical axe accessibility violations;
-- excessive navigation time;
-- screenshots and JSON evidence for failures.
+The scheduled/manual frontend audit uses Playwright across Chromium, Firefox and WebKit and the viewport registry already used by the visual system. It detects browser-specific breakage, navigation failures, JavaScript/console errors, failed requests, same-origin HTTP errors, horizontal overflow, keyboard-focus failure, serious/critical axe violations and bounded navigation-time regressions. Failure screenshots and JSON evidence are retained as workflow artifacts.
 
 This is additive to the existing pixel/geometry/CLS guard. A future component framework may add Vitest Browser Mode or Storybook component tests when the repository actually has reusable framework components; they are not introduced merely to satisfy a tooling list.
 
@@ -62,24 +50,17 @@ The backend dimensions are machine-readable in `powerhouse/assurance/quality-int
 Current adapters:
 
 - **Property testing:** Hypothesis runs repository invariants now.
-- **API adversarial testing:** Schemathesis capability is installed. It only executes against a specifically registered OpenAPI target. With no target, the test reports `NOT_REGISTERED`; that is an obligation, not production proof.
-- **Real-service integration:** Testcontainers capability is installed. A registered `QUALITY_INTEGRATION_PROFILE=postgres` starts a real PostgreSQL container and executes `SELECT 1`. With no integration profile, this remains `NOT_REGISTERED` rather than simulated green evidence.
+- **API adversarial testing:** Schemathesis executes only against a registered `QUALITY_OPENAPI_SPEC`. Without a target, the capability reports `NOT_REGISTERED`; that is an obligation, not production proof.
+- **Real-service integration:** Testcontainers executes a real PostgreSQL container when `QUALITY_INTEGRATION_PROFILE=postgres` is registered. Without a profile, it remains `NOT_REGISTERED` rather than simulated green evidence.
 - **Performance/SLO:** scheduled/manual k6 executes public synthetic route checks with explicit error-rate and p95/p99 thresholds.
 
 Additional API and integration profiles must be explicit, bounded and tenant-safe. They may not infer credentials or mutate production data.
 
 ## Security quality
 
-Security is independent of functional correctness.
+Security is independent of functional correctness. CodeQL analyzes JavaScript/TypeScript, Trivy observes vulnerabilities/secrets/misconfiguration, and ZAP runs a passive baseline against the public website only on scheduled/manual deep runs. Existing Supabase RLS, tenant and platform security gates remain mandatory. AI cannot waive a security gate.
 
-- CodeQL analyzes JavaScript/TypeScript with `security-extended` queries.
-- Trivy observes repository vulnerabilities, secrets and misconfiguration and preserves JSON evidence.
-- ZAP runs a passive baseline against the public website only on scheduled/manual deep runs.
-- Existing Supabase RLS, tenant and platform security gates remain mandatory.
-
-A green application test never cancels a security finding. AI cannot waive a security gate.
-
-Trivy is initially an evidence sensor (`--exit-code 0`) rather than a new blanket blocking gate because an unbaselined repository-wide scan can contain historical findings unrelated to the candidate. Promotion to a blocking delta gate requires a reviewed baseline and proof that the gate has an acceptable false-positive rate. This prevents both security theatre and accidental normalization of legacy findings.
+Trivy is initially an evidence sensor (`--exit-code 0`) rather than a new blanket blocking gate because an unbaselined repository-wide scan can contain historical findings unrelated to the candidate. Promotion to a blocking delta gate requires a reviewed baseline and acceptable false-positive evidence.
 
 ## Mutation and flake intelligence
 
@@ -98,20 +79,11 @@ The quality layer is intentionally two-speed:
 
 ## Explainable release evidence
 
-There is no global opaque AI quality score. Each dimension records:
-
-- dimension ID;
-- mandatory/non-mandatory state;
-- green/red/unknown state;
-- exact candidate SHA;
-- evidence/artifact reference;
-- test/tool/version provenance.
-
-`buildQualityState()` is fail-closed: any mandatory non-green dimension blocks its quality state.
+There is no opaque global AI quality score. Each dimension records dimension ID, mandatory state, green/red/unknown state, exact candidate SHA, evidence/artifact reference and tool/version provenance. `buildQualityState()` is fail-closed: any mandatory non-green dimension blocks its quality state.
 
 ## Escaped defects and learning
 
-A defect found in CI, preview or production is not merely fixed. It follows the existing BRAIN-CLOSED-LOOP path:
+A defect found in CI, preview or production follows the existing BRAIN-CLOSED-LOOP path:
 
 `detect -> evidence -> normalize -> fingerprint -> known-error match -> owner -> root cause -> regression test -> bounded fix -> retest -> outcome verification -> BG168/BG166 writeback -> BG167 refresh -> prevention reuse`.
 
@@ -119,11 +91,9 @@ At minimum an escaped defect needs `fingerprint`, `rootCause`, `regressionTest`,
 
 ## Daily innovation scout
 
-`powerhouse/assurance/quality-innovation-sources.json` contains approved primary sources for Playwright, axe-core, Web Vitals, OWASP/ZAP, CodeQL, Trivy, Hypothesis, Schemathesis, Testcontainers, k6 and Stryker.
+`powerhouse/assurance/quality-innovation-sources.json` contains approved primary sources for Playwright, axe-core, Web Vitals, OWASP/ZAP, CodeQL, Trivy, Hypothesis, Schemathesis, Testcontainers, k6 and Stryker. The daily scout records HTTP state, ETag/Last-Modified where available and a SHA-256 content fingerprint. A changed source becomes only `candidate_for_experiment`.
 
-The daily scout records HTTP state, ETag/Last-Modified where available and a SHA-256 content fingerprint. A changed source becomes only `candidate_for_experiment`.
-
-Adoption is deliberately gated:
+Adoption remains gated:
 
 `discover -> dedupe -> applicability -> security/cost review -> isolated benchmark -> false-positive check -> defect-detection delta -> speed delta -> experiment result -> explicit adoption`.
 
@@ -131,31 +101,7 @@ A new release, fashionable technique or AI-generated suggestion is never automat
 
 ## Versions at introduction
 
-The initial pinned tool versions are recorded in the workflow rather than inferred at runtime: Playwright `1.63.0`, `@axe-core/playwright` `4.13.0`, Stryker `10.0.0`, Trivy `0.74.0`, k6 `2.2.0` and ZAP `2.17.0`. CodeQL uses the current GitHub-documented `github/codeql-action@v4` major. The innovation scout may identify newer candidates, but changes still require the adoption gates above.
-
-## Adding a new quality target
-
-For an API:
-
-1. register a stable OpenAPI specification location;
-2. set `QUALITY_OPENAPI_SPEC` only in a controlled CI/runtime context;
-3. run Schemathesis and preserve evidence;
-4. promote the target to mandatory only after the target is deterministic and safe.
-
-For a real-service integration:
-
-1. register the integration profile and image/version;
-2. keep credentials synthetic/local;
-3. use Testcontainers rather than a mocked remote service where practical;
-4. add domain assertions beyond mere container startup;
-5. preserve execution evidence.
-
-For a frontend surface:
-
-1. reuse the existing route/visual registries where possible;
-2. add the route to the appropriate accepted baseline and interactions;
-3. declare relevant viewports/guards;
-4. add a deep-browser route only when it represents a meaningful user journey.
+Pinned workflow versions: Playwright `1.63.0`, `@axe-core/playwright` `4.13.0`, Stryker `10.0.0`, Trivy `0.74.0`, k6 `2.2.0` and ZAP `2.17.0`. CodeQL uses `github/codeql-action@v4`. Newer candidates still pass the adoption gates above.
 
 ## Status semantics
 
@@ -167,29 +113,25 @@ For a frontend surface:
 
 ## Hard boundaries
 
-Quality automation may not:
-
-- create or rotate secrets/credentials;
-- weaken authentication, RLS, branch protection or other security controls;
-- run destructive production recovery/security tests merely to gain coverage;
-- auto-purchase scanners/resources;
-- infer production success from a skipped/unregistered test;
-- auto-adopt an Internet-discovered tool/version without evidence.
+Quality automation may not create/rotate secrets, weaken authentication/RLS/branch protection, run destructive production tests merely for coverage, auto-purchase resources, infer success from skipped/unregistered tests, or auto-adopt Internet-discovered tooling without evidence.
 
 ## Operational files
 
 - Contract: `powerhouse/assurance/quality-intelligence.json`
 - Innovation sources: `powerhouse/assurance/quality-innovation-sources.json`
-- Core: `scripts/powerhouse-quality-intelligence.mjs`
-- Frontend deep audit: `scripts/quality/frontend-deep-audit.mjs`
-- Flake probe: `scripts/quality/repeat-flake-check.mjs`
-- Innovation scout: `scripts/quality/innovation-scout.mjs`
-- Core tests: `tests/powerhouse-quality-intelligence.test.mjs`
-- Backend properties/API/integration: `tests/backend/`
-- Performance: `tests/performance/powerhouse-smoke.js`
-- Mutation config: `stryker.quality.conf.json`
+- Core: `scripts/brain/powerhouse-quality-intelligence.mjs`
+- Impact selection: `scripts/brain/quality/changed-impact.mjs`
+- Frontend deep audit: `scripts/brain/quality/frontend-deep-audit.mjs`
+- Flake probe: `scripts/brain/quality/repeat-flake-check.mjs`
+- Innovation scout: `scripts/brain/quality/innovation-scout.mjs`
+- Core tests: `tests/brain-quality-intelligence.test.mjs`
+- Backend properties/API/integration: `tests/brain-quality/`
+- Performance: `tests/brain-quality-performance/powerhouse-smoke.js`
+- Mutation config: `config/stryker.quality.conf.json`
 - Main quality workflow: `.github/workflows/powerhouse-quality-intelligence.yml`
 - SAST workflow: `.github/workflows/powerhouse-codeql.yml`
+
+These paths deliberately sit inside existing BRAIN/backend/config namespaces so BRAIN-DELIVERY-v2 classifies them through the existing canonical lanes rather than requiring a parallel delivery authority.
 
 ## Change closure
 
