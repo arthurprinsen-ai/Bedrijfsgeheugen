@@ -16,6 +16,16 @@
       ]
     },
     {
+      "id": "netlify_owner_team_management_mfa",
+      "status": "OPEN",
+      "owner_plane": "Netlify user and team management",
+      "evidence_required": [
+        "current Owner readback shows personal MFA enabled",
+        "team readback shows MFA enforcement enabled for Team PrinsenCo",
+        "evidence is dated and contains no credential material"
+      ]
+    },
+    {
       "id": "isolated_restore_dr_exercise",
       "status": "OPEN",
       "owner_plane": "Supabase backup and disaster recovery",
@@ -59,6 +69,11 @@
       "id": "leaked_password_protection",
       "status": "CLOSED_PROVEN",
       "evidence_reference": "docs/changes/powerhouse-security-operations-hardening-v1.md#password-auth--closed--proven"
+    },
+    {
+      "id": "privileged_daily_sales_rpc_boundary",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "docs/changes/powerhouse-security-operations-hardening-v1.md#privileged-rpc-exposure--closed--proven"
     },
     {
       "id": "backup_availability",
