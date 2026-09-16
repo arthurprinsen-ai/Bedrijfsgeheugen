@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse-autonomous-improvement-runtime-v1",
+  "extends": "powerhouse-continuous-improvement-engine-v1",
+  "status": "active",
+  "authority_model": {
+    "new_persistent_authority": false,
+    "runtime_state": "existing Supabase/Brain evidence and outcome authorities",
+    "source_release": "GitHub + BRAIN-DELIVERY-v2",
+    "human_projection": "Notion existing Powerhouse pages",
+    "scheduler": "reuse Business OS Intelligence workflow and existing Supabase/Brain scheduled writers"
+  },
+  "lifecycle": ["OBSERVE","FITNESS","CAPABILITY_MAP","CANDIDATE","PORTFOLIO","REPLAY","EXPERIMENT","CHAOS","DECIDE","PROMOTE_OR_ROLLBACK","SIMPLIFY","VALUE_ATTRIBUTE","WRITEBACK","REVALIDATE"],
+  "capabilities": {
+    "periodic_orchestration": true,
+    "architecture_fitness": true,
+    "capability_graph_projection": true,
+    "champion_challenger": true,
+    "causal_learning": true,
+    "digital_twin_replay": true,
+    "failure_injection": true,
+    "automatic_simplification": true,
+    "business_value_feedback": true
+  },
+  "gates": {
+    "security_non_degradation": true,
+    "correctness_non_degradation": true,
+    "tenant_isolation_non_degradation": true,
+    "unknown_critical_fails_closed": true,
+    "causality_not_assumed": true,
+    "no_single_magic_score": true,
+    "rollback_required_before_promotion": true,
+    "destructive_simplification_auto_delete": false,
+    "business_value_requires_observed_outcome": true
+  },
+  "scheduler": {
+    "workflow": ".github/workflows/business-os-intelligence.yml",
+    "cadence": "daily",
+    "read_only_without_writer_credentials": true,
+    "max_runtime_minutes": 5,
+    "idempotent_run_identity": true
+  },
+  "writeback": {
+    "new_store": false,
+    "route": "existing Brain/Supabase canonical writer path only",
+    "dedupe_required": true,
+    "trace_required": true,
+    "freshness_confidence_required_when_material": true
+  }
+}
