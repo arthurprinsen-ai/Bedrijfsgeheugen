@@ -137,7 +137,10 @@ begin
 end;
 $$;
 
-revoke all on function public.powerhouse_project_brain_revenue_learning() from public,anon,authenticated;
+-- Source normalization for the current security contract. For PostgreSQL functions,
+-- ALL currently resolves to EXECUTE; production readback proves browser EXECUTE=false
+-- and service_role EXECUTE=true. This source mirror keeps the same effective privilege.
+revoke execute on function public.powerhouse_project_brain_revenue_learning() from public,anon,authenticated;
 grant execute on function public.powerhouse_project_brain_revenue_learning() to service_role;
 drop trigger if exists trg_powerhouse_project_brain_revenue_learning on public.brain_records;
 create trigger trg_powerhouse_project_brain_revenue_learning
