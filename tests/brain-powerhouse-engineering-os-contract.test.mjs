@@ -162,8 +162,8 @@ test('existing Brain learning authority stays canonical', async () => {
   assert.equal(learning.policy.refreshSharedContextAfterNewLearning, true);
 });
 
-test('continuous improvement documentation is an existing-authority projection', async () => {
-  const content = await readFile(new URL('../docs/continuous-improvement-engine-v1.md', import.meta.url), 'utf8');
+test('continuous improvement documentation reuses the classified approved spec authority', async () => {
+  const content = await readFile(new URL('../docs/superpowers/specs/2026-09-16-continuous-improvement-engine-v1-design.md', import.meta.url), 'utf8');
   assert.match(content, /powerhouse-continuous-improvement-engine-v1/);
   assert.match(content, /OBSERVE -> CLUSTER -> CANDIDATE/);
   assert.match(content, /No single aggregate score decides promotion/);
