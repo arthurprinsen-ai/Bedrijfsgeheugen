@@ -1,0 +1,126 @@
+{
+  "version": "POWERHOUSE-STATE-OF-THE-ART-v1",
+  "fingerprint": "powerhouse-state-of-the-art-adoption-v1",
+  "status": "ACTIVE",
+  "effectiveDate": "2026-09-16",
+  "appliesTo": [
+    "all_existing_chats",
+    "all_future_chats",
+    "all_existing_agents",
+    "all_future_agents",
+    "all_workflows",
+    "all_material_engineering_changes"
+  ],
+  "principles": {
+    "existingStateFirst": true,
+    "reuseFirst": true,
+    "canonicalIntegration": true,
+    "closedLoop": true,
+    "currentExternalEvidenceWhenMaterial": true,
+    "taskSpecificEvidenceBasedAdoption": true,
+    "noBlindLatestVersionAdoption": true,
+    "noParallelAuthority": true
+  },
+  "domains": [
+    "software_engineering",
+    "frontend",
+    "interaction_design",
+    "accessibility",
+    "backend",
+    "github",
+    "cicd",
+    "supabase",
+    "postgres",
+    "notion",
+    "netlify",
+    "data_engineering",
+    "external_data",
+    "ai_models",
+    "agents",
+    "retrieval",
+    "evals",
+    "algorithms",
+    "forecasting",
+    "optimization",
+    "experimentation",
+    "security",
+    "observability",
+    "performance",
+    "finops"
+  ],
+  "candidateClasses": [
+    "PRODUCTION_READY",
+    "CONTROLLED_FRONTIER_EXPERIMENT",
+    "WATCH",
+    "REJECT"
+  ],
+  "requiredComparisonDimensions": [
+    "quality",
+    "capability",
+    "compatibility",
+    "security",
+    "performance",
+    "maintainability",
+    "reliability",
+    "cost",
+    "business_impact"
+  ],
+  "externalEvidence": {
+    "preferredSources": [
+      "official_documentation",
+      "official_release_notes",
+      "standards",
+      "primary_research",
+      "security_advisories",
+      "provider_status_or_roadmap",
+      "reputable_task_relevant_benchmarks"
+    ],
+    "recordProvenance": true,
+    "recordObservedOrPublishedAt": true,
+    "recordFreshness": true,
+    "recordConfidence": true
+  },
+  "frontierExperimentGate": {
+    "hypothesisRequired": true,
+    "baselineRequired": true,
+    "successMetricRequired": true,
+    "representativeEvaluationRequired": true,
+    "isolationRequiredWhereApplicable": true,
+    "rollbackOrFallbackRequired": true,
+    "securityPrivacyCostReviewRequired": true,
+    "productionPromotionRequiresEvidence": true
+  },
+  "aiModelGovernance": {
+    "recordProvider": true,
+    "recordExactModelOrVersion": true,
+    "recordEvalSuite": true,
+    "compareAgainstBaseline": true,
+    "recordLatencyWhereMaterial": true,
+    "recordCostWhereMaterial": true,
+    "recordTruthAndSafetyFailureModes": true,
+    "fallbackRequired": true,
+    "recordCalibrationOrThresholdPolicyWhereRelevant": true,
+    "recordProductionOutcome": true
+  },
+  "currencySignals": [
+    "deprecation",
+    "eol",
+    "cve",
+    "unsupported_api",
+    "stale_sdk",
+    "superseded_platform_feature",
+    "compatibility_drift",
+    "material_new_capability"
+  ],
+  "definitionOfDone": {
+    "comparisonEvidenceRecorded": true,
+    "selectionVersionedAndReproducible": true,
+    "testsEvalsAndGatesGreen": true,
+    "productionIdentityReadbackWhenAffected": true,
+    "rollbackOrFallbackValid": true,
+    "canonicalDocumentationUpdated": true,
+    "decisionLineageUpdated": true,
+    "learningWritebackCompleted": true,
+    "parallelAuthorityAbsent": true
+  }
+}
