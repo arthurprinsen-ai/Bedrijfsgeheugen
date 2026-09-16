@@ -13,9 +13,9 @@ test('protected functional-suite pages dispatch through mountFunctionalWorkspace
   assert.match(source,/FUNCTIONAL_SUITE_PAGES\.has\(pageId\)[\s\S]{0,400}mountFunctionalWorkspace\(native,/);
 });
 
-test('canvassen dispatches through its proven canvas workspace',()=>{
-  assert.match(source,/import\s*\{[^}]*mountCanvasWorkspace[^}]*\}\s*from\s*['"]\.\/modules\/canvas-workspace\.js['"]/s);
-  assert.match(source,/pageId===['"]canvassen['"][\s\S]{0,300}mountCanvasWorkspace\(native,/);
+test('canvassen keeps the canonical workspace shell and delegates to the specialist from workspace-shell',()=>{
+  assert.doesNotMatch(source,/import\s*\{[^}]*mountCanvasWorkspace[^}]*\}\s*from\s*['"]\.\/modules\/canvas-workspace\.js['"]/s);
+  assert.match(source,/pageId===['"]canvassen['"][\s\S]{0,350}mountWorkspace\(native,contract,/);
 });
 
 test('generic protected-capability fallback cannot preempt functional-suite or canvas routing',()=>{
