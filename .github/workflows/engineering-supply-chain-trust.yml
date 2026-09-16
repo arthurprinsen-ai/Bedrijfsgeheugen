@@ -16,9 +16,16 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/dependency-review-action@v4
+      - id: github_dependency_review
+        continue-on-error: true
+        uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
+      - name: Fail-closed local dependency audit fallback
+        if: steps.github_dependency_review.outcome != 'success'
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm audit --package-lock-only --audit-level=high
 
   provenance:
     runs-on: ubuntu-latest
@@ -31,10 +38,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install dependencies for SBOM generation
-        run: npm install --ignore-scripts --no-audit --no-fund --package-lock=false
+      - name: Resolve immutable SBOM input without installing runtime files
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Generate SPDX SBOM
-        run: npm sbom --sbom-format spdx > sbom.spdx.json
+        run: npm sbom --package-lock-only --sbom-format spdx > sbom.spdx.json
       - name: Build provenance subject
         run: tar --exclude=.git -czf powerhouse-source.tgz .
       - uses: actions/attest-build-provenance@v2
