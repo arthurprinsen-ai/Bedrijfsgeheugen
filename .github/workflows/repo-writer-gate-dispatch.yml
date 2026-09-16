@@ -29,6 +29,7 @@ permissions:
   contents: read
   pull-requests: read
   actions: write
+  checks: read
 
 concurrency:
   group: repo-writer-gates-${{ inputs.pr_number }}-${{ inputs.head_sha }}
@@ -112,8 +113,55 @@ jobs:
       - name: Writer operational regressions
         run: node --test tests/repo-writer-operational-harness.test.mjs tests/repo-writer-shadow.test.mjs
 
-  dispatch-unified:
+  required-test:
     needs: [validate, shared-memory, brain-foundation, v18-and-writer-operational]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch and prove canonical Required test on exact writer head
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+        run: |
+          set -euo pipefail
+          gh workflow run required-test.yml --repo "$GITHUB_REPOSITORY" --ref "$CANDIDATE_BRANCH"
+
+          run_id=''
+          for attempt in $(seq 1 30); do
+            run_id="$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow required-test.yml \
+              --branch "$CANDIDATE_BRANCH" \
+              --event workflow_dispatch \
+              --limit 20 \
+              --json databaseId,headSha \
+              --jq ".[] | select(.headSha == \"$HEAD_SHA\") | .databaseId" \
+              | head -n 1)"
+            [ -n "$run_id" ] && break
+            sleep 2
+          done
+          [ -n "$run_id" ] || { echo "::error::REQUIRED_TEST_RUN_NOT_FOUND:$HEAD_SHA:$CANDIDATE_BRANCH"; exit 1; }
+
+          actual_head="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --json headSha --jq '.headSha')"
+          [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::REQUIRED_TEST_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
+          gh run watch "$run_id" --repo "$GITHUB_REPOSITORY" --exit-status
+
+          for attempt in $(seq 1 12); do
+            if gh api \
+              -H 'Accept: application/vnd.github+json' \
+              "repos/${GITHUB_REPOSITORY}/commits/$HEAD_SHA/check-runs" \
+              --jq '.check_runs | any(.name == "test" and .conclusion == "success")' \
+              | grep -qx true; then
+              echo "REQUIRED_TEST_GREEN:$run_id:$HEAD_SHA"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::REQUIRED_TEST_CHECK_MISSING_OR_RED:$HEAD_SHA:$run_id"
+          exit 1
+
+  dispatch-unified:
+    needs: [validate, shared-memory, brain-foundation, v18-and-writer-operational, required-test]
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch exact candidate to Unified Brain Delivery
