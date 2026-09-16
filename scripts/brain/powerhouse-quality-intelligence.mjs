@@ -4,11 +4,13 @@ import { fileURLToPath } from 'node:url';
 
 export const FINGERPRINT = 'powerhouse-quality-intelligence-v1';
 export const V2_FINGERPRINT = 'powerhouse-quality-intelligence-v2';
+export const AUTOPILOT_FINGERPRINT = 'powerhouse-quality-autopilot-v2';
 const FRONTEND_REQUIRED = ['functional','visual','geometry','responsive','cross_browser','accessibility','runtime','network','performance','content_baseline'];
 const BACKEND_REQUIRED = ['functional','property','api_contract','integration','performance','security','supply_chain','misconfiguration','resilience','data_integrity'];
 const LEARNING_REQUIRED = ['fingerprint','rootCause','regressionTest','preventionRule','evidence','learning_writeback','shared_context_refresh'];
 const ADOPTION_REQUIRED = ['discover','dedupe','applicability','security_cost_review','isolated_benchmark','false_positive_check','detection_delta','speed_delta','experiment_result','explicit_adoption'];
 const V2_CAPABILITIES = ['coverage_intelligence','autonomous_exploratory_testing','semantic_visual_intelligence','stateful_fuzz_chaos_testing','production_shadow_verification','performance_root_cause_intelligence','security_adversarial_matrix','build_provenance_sbom','test_the_tests_intelligence','quality_economics'];
+const AUTOPILOT_CAPABILITIES = ['deep_sensor_history','dynamic_surface_discovery','vulnerability_delta_gate','test_effectiveness_learning','business_invariant_shadow','escaped_defect_prevention_rate','performance_root_cause_attribution','safe_game_days','innovation_self_benchmarking'];
 
 const missing = (values = [], required = []) => required.filter(value => !values.includes(value));
 
@@ -52,6 +54,27 @@ export function validateQualityV2Contract(contract = {}) {
   return Object.freeze({ ok: gaps.length === 0, gaps });
 }
 
+export function validateQualityAutopilotContract(contract = {}) {
+  const gaps = [];
+  if (contract.fingerprint !== AUTOPILOT_FINGERPRINT) gaps.push(`fingerprint must be ${AUTOPILOT_FINGERPRINT}`);
+  if (contract.extends !== V2_FINGERPRINT) gaps.push(`autopilot must extend ${V2_FINGERPRINT}`);
+  if (contract.release_authority !== FINGERPRINT) gaps.push('v1 must remain release authority');
+  const capabilityMissing = missing(contract.capabilities, AUTOPILOT_CAPABILITIES);
+  if (capabilityMissing.length) gaps.push(`autopilot capabilities missing: ${capabilityMissing.join(', ')}`);
+  if (!Array.isArray(contract.green_states) || contract.green_states.length !== 1 || contract.green_states[0] !== 'GREEN') gaps.push('GREEN must remain the only green state');
+  for (const required of ['RED','UNKNOWN','NOT_REGISTERED','UNTESTED']) {
+    if (!contract.non_green_states?.includes(required)) gaps.push(`non-green state missing: ${required}`);
+  }
+  if (contract.deep_sensor_history?.installed_is_proven !== false || contract.deep_sensor_history?.history_required !== true) gaps.push('installed sensors must not count as proven without history');
+  if (contract.learning?.authority !== 'BRAIN-CLOSED-LOOP-v1' || contract.learning?.parallel_store_forbidden !== true) gaps.push('autopilot learning must reuse BRAIN-CLOSED-LOOP-v1 without a parallel store');
+  if (contract.learning?.critical_test_auto_removal !== false) gaps.push('critical tests may not be auto-removed');
+  if (contract.game_days?.production_destructive_forbidden !== true) gaps.push('destructive production game days must be forbidden');
+  if (contract.innovation?.auto_promote_without_benchmark !== false) gaps.push('innovation may not auto-promote without benchmark evidence');
+  if (contract.registration_obligations?.openapi_api_contract !== 'fail_closed_until_registered') gaps.push('OpenAPI/API contract registration must fail closed');
+  if (contract.registration_obligations?.postgres_testcontainers_profile !== 'fail_closed_until_registered') gaps.push('PostgreSQL/Testcontainers registration must fail closed');
+  return Object.freeze({ ok: gaps.length === 0, gaps });
+}
+
 export function classifyQualityImpact(paths = [], contract = {}) {
   const suites = new Set();
   for (const rawPath of paths) {
@@ -77,12 +100,21 @@ export function loadQualityV2Contract(filename = 'powerhouse/assurance/quality-i
   return JSON.parse(fs.readFileSync(filename, 'utf8'));
 }
 
+export function loadQualityAutopilotContract(filename = 'config/powerhouse-quality-autopilot.json') {
+  return JSON.parse(fs.readFileSync(filename, 'utf8'));
+}
+
 function main() {
   const v1 = validateQualityContract(loadQualityContract());
   const v2Path = 'powerhouse/assurance/quality-intelligence-v2.json';
+  const autopilotPath = 'config/powerhouse-quality-autopilot.json';
   const v2 = fs.existsSync(v2Path) ? validateQualityV2Contract(loadQualityV2Contract(v2Path)) : { ok: true, gaps: [] };
-  const gaps = [...v1.gaps, ...v2.gaps];
-  const output = { fingerprint: FINGERPRINT, extensions: fs.existsSync(v2Path) ? [V2_FINGERPRINT] : [], status: gaps.length ? 'BLOCKED' : 'READY', gaps };
+  const autopilot = fs.existsSync(autopilotPath) ? validateQualityAutopilotContract(loadQualityAutopilotContract(autopilotPath)) : { ok: true, gaps: [] };
+  const gaps = [...v1.gaps, ...v2.gaps, ...autopilot.gaps];
+  const extensions = [];
+  if (fs.existsSync(v2Path)) extensions.push(V2_FINGERPRINT);
+  if (fs.existsSync(autopilotPath)) extensions.push(AUTOPILOT_FINGERPRINT);
+  const output = { fingerprint: FINGERPRINT, extensions, status: gaps.length ? 'BLOCKED' : 'READY', gaps };
   process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
   if (process.argv.includes('--check') && gaps.length) process.exitCode = 1;
 }
