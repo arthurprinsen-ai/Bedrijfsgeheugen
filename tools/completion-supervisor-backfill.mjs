@@ -2,10 +2,12 @@ import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { evaluateCompletion } from '../platform/agents/completion-supervisor.mjs';
+import { createSupabaseOutcomeObligationStores } from './outcome-obligation-supabase-store.mjs';
 
 const PARTIAL_OBLIGATION_STATUSES = new Set(['PENDING','AWAITING_OUTCOME','MISSED_OBLIGATION','RECOVERING','BLOCKED_HARD_BOUNDARY']);
 const PARTIAL_PR_CLAIMS = new Set(['COMMITTED','MERGED','PREVIEW_READY','DEPLOYED_UNVERIFIED','NOT_CLAIMED','DEELS LIVE','NIET GEDAAN','FAILED','RED']);
 const NON_SUCCESS_WORKFLOW_CONCLUSIONS = new Set(['failure','cancelled','skipped','timed_out','action_required','stale','startup_failure']);
+const MATERIAL_WORKFLOW = /(delivery|promotion|production|readback|required|deploy|release)/i;
 
 function text(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -28,13 +30,7 @@ function completionFor(record) {
 }
 
 function sourceRecord(sourceKind, sourceId, identity, record, reason) {
-  return Object.freeze({
-    sourceKind,
-    sourceId:String(sourceId),
-    identity,
-    reason,
-    record:Object.freeze({ ...record })
-  });
+  return Object.freeze({ sourceKind, sourceId:String(sourceId), identity, reason, record:Object.freeze({ ...record }) });
 }
 
 function candidateFromGroup(identity, sources) {
@@ -60,11 +56,10 @@ function candidateFromGroup(identity, sources) {
 export function reconcileCompletionBackfill({ pullRequests = [], workflowRuns = [], obligations = [] } = {}) {
   const grouped = new Map();
   const skippedLiveVerified = [];
-
-  function add(source) {
+  const add = source => {
     if (!grouped.has(source.identity)) grouped.set(source.identity, []);
     grouped.get(source.identity).push(source);
-  }
+  };
 
   for (const pr of Array.isArray(pullRequests) ? pullRequests : []) {
     const identity = text(pr?.headSha) || text(pr?.identity);
@@ -75,9 +70,7 @@ export function reconcileCompletionBackfill({ pullRequests = [], workflowRuns = 
       continue;
     }
     const claim = text(pr.claim).toUpperCase();
-    if (pr.state === 'open' || PARTIAL_PR_CLAIMS.has(claim)) {
-      add(sourceRecord('pull_request', pr.number ?? identity, identity, pr, pr.state === 'open' ? 'open_pull_request' : `partial_claim:${claim}`));
-    }
+    if (pr.state === 'open' || PARTIAL_PR_CLAIMS.has(claim)) add(sourceRecord('pull_request', pr.number ?? identity, identity, pr, pr.state === 'open' ? 'open_pull_request' : `partial_claim:${claim}`));
   }
 
   for (const run of Array.isArray(workflowRuns) ? workflowRuns : []) {
@@ -89,11 +82,8 @@ export function reconcileCompletionBackfill({ pullRequests = [], workflowRuns = 
       continue;
     }
     const conclusion = text(run.conclusion).toLowerCase();
-    if (NON_SUCCESS_WORKFLOW_CONCLUSIONS.has(conclusion)) {
-      add(sourceRecord('workflow_run', run.id ?? identity, identity, run, `workflow_${conclusion}`));
-    } else if (conclusion === 'success') {
-      add(sourceRecord('workflow_run', run.id ?? identity, identity, run, 'workflow_success_without_full_completion_evidence'));
-    }
+    if (NON_SUCCESS_WORKFLOW_CONCLUSIONS.has(conclusion)) add(sourceRecord('workflow_run', run.id ?? identity, identity, run, `workflow_${conclusion}`));
+    else if (conclusion === 'success') add(sourceRecord('workflow_run', run.id ?? identity, identity, run, 'workflow_success_without_full_completion_evidence'));
   }
 
   for (const obligation of Array.isArray(obligations) ? obligations : []) {
@@ -105,41 +95,64 @@ export function reconcileCompletionBackfill({ pullRequests = [], workflowRuns = 
       continue;
     }
     const status = text(obligation.status).toUpperCase();
-    if (PARTIAL_OBLIGATION_STATUSES.has(status) || status !== 'COMPLETED') {
-      add(sourceRecord('obligation', obligation.id ?? identity, identity, obligation, `obligation_${status || 'UNKNOWN'}`));
-    } else {
-      add(sourceRecord('obligation', obligation.id ?? identity, identity, obligation, 'completed_without_live_verified_evidence'));
-    }
+    if (PARTIAL_OBLIGATION_STATUSES.has(status) || status !== 'COMPLETED') add(sourceRecord('obligation', obligation.id ?? identity, identity, obligation, `obligation_${status || 'UNKNOWN'}`));
+    else add(sourceRecord('obligation', obligation.id ?? identity, identity, obligation, 'completed_without_live_verified_evidence'));
   }
 
-  const candidates = [...grouped.entries()]
-    .map(([identity, sources]) => candidateFromGroup(identity, sources))
-    .sort((a, b) => a.identity.localeCompare(b.identity));
+  const candidates = [...grouped.entries()].map(([identity, sources]) => candidateFromGroup(identity, sources)).sort((a, b) => a.identity.localeCompare(b.identity));
+  const uniqueSkipped = [...new Map(skippedLiveVerified.map(item => [`${item.identity}|${item.sourceKind}|${item.sourceId}`, item])).values()].sort((a, b) => a.identity.localeCompare(b.identity));
+  return Object.freeze({ schemaVersion:1, mode:'shadow', productionMutation:false, generatedFrom:'existing-authorities', candidateCount:candidates.length, candidates:Object.freeze(candidates), skippedLiveVerified:Object.freeze(uniqueSkipped), dispatches:Object.freeze([]) });
+}
 
-  const uniqueSkipped = [...new Map(skippedLiveVerified.map(item => [`${item.identity}|${item.sourceKind}|${item.sourceId}`, item])).values()]
-    .sort((a, b) => a.identity.localeCompare(b.identity));
-
-  return Object.freeze({
-    schemaVersion:1,
-    mode:'shadow',
-    productionMutation:false,
-    generatedFrom:'existing-authorities',
-    candidateCount:candidates.length,
-    candidates:Object.freeze(candidates),
-    skippedLiveVerified:Object.freeze(uniqueSkipped),
-    dispatches:Object.freeze([])
+async function githubJson(endpoint, { token, fetchImpl }) {
+  const response = await fetchImpl(`https://api.github.com${endpoint}`, {
+    headers:{ accept:'application/vnd.github+json', authorization:`Bearer ${token}`, 'x-github-api-version':'2022-11-28' }
   });
+  if (!response.ok) throw new Error(`GitHub backfill authority read failed: ${response.status}`);
+  return response.json();
+}
+
+export async function collectCompletionBackfillSnapshot({
+  repository = process.env.GITHUB_REPOSITORY,
+  githubToken = process.env.GITHUB_TOKEN,
+  supabaseUrl = process.env.SUPABASE_URL,
+  supabaseToken = process.env.SUPABASE_SERVICE_ROLE_KEY,
+  fetchImpl = globalThis.fetch
+} = {}) {
+  const repo = text(repository);
+  const token = text(githubToken);
+  if (!repo || !/^[^/]+\/[^/]+$/.test(repo)) throw new TypeError('GITHUB_REPOSITORY must be owner/repo');
+  if (!token) throw new TypeError('GITHUB_TOKEN is required for backfill authority read');
+  if (!text(supabaseUrl) || !text(supabaseToken)) throw new TypeError('Supabase server-only credentials are required for backfill authority read');
+  if (typeof fetchImpl !== 'function') throw new TypeError('fetchImpl must be a function');
+
+  const [prs, runPayload] = await Promise.all([
+    githubJson(`/repos/${repo}/pulls?state=open&per_page=100`, { token, fetchImpl }),
+    githubJson(`/repos/${repo}/actions/runs?per_page=100`, { token, fetchImpl })
+  ]);
+  const stores = createSupabaseOutcomeObligationStores({ url:supabaseUrl, token:supabaseToken, fetchImpl });
+  const [workRows, recoveryRows] = await Promise.all([stores.workStore.list(), stores.recoveryStore.list()]);
+
+  const pullRequests = (Array.isArray(prs) ? prs : []).map(pr => Object.freeze({ number:pr.number, headSha:pr.head?.sha, state:pr.state, claim:'NOT_CLAIMED', title:pr.title ?? null }));
+  const workflowRuns = (Array.isArray(runPayload?.workflow_runs) ? runPayload.workflow_runs : [])
+    .filter(run => MATERIAL_WORKFLOW.test(String(run.name ?? '')))
+    .map(run => Object.freeze({ id:run.id, headSha:run.head_sha, name:run.name, status:run.status, conclusion:run.conclusion }));
+  const obligations = [...workRows, ...recoveryRows].map(row => Object.freeze({ id:row.obligationId, identity:row.idempotencyKey, idempotencyKey:row.idempotencyKey, status:row.state, ownerAgent:row.ownerAgent, recordType:row.type }));
+
+  return Object.freeze({ pullRequests:Object.freeze(pullRequests), workflowRuns:Object.freeze(workflowRuns), obligations:Object.freeze(obligations) });
 }
 
 async function main(argv = process.argv.slice(2)) {
   let input = '.artifacts/completion-supervisor-backfill-input.json';
   let output = '.artifacts/completion-supervisor-backfill-report.json';
+  let collect = false;
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--input' && argv[i + 1]) { input = argv[++i]; continue; }
     if (argv[i] === '--output' && argv[i + 1]) { output = argv[++i]; continue; }
+    if (argv[i] === '--collect') { collect = true; continue; }
     throw new TypeError(`unknown or incomplete CLI argument: ${argv[i]}`);
   }
-  const snapshot = JSON.parse(await readFile(input, 'utf8'));
+  const snapshot = collect ? await collectCompletionBackfillSnapshot() : JSON.parse(await readFile(input, 'utf8'));
   const report = reconcileCompletionBackfill(snapshot);
   await mkdir(output.split('/').slice(0, -1).join('/') || '.', { recursive:true });
   await writeFile(output, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
