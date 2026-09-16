@@ -1,0 +1,12 @@
+{
+  "version":"ENGINEERING-INTELLIGENCE-v1",
+  "parentContract":"BRAIN-DELIVERY-v2",
+  "candidateEnvironment":{"schema":"brain/contracts/candidate-environment-v1.schema.json","failClosed":true},
+  "supabasePreview":{"requiredForPaths":["supabase/","portal/","portal-next/","portal-v2/","netlify/functions/"],"isolatedPerPr":true,"productionCredentialsForbidden":true,"order":["config","migrations","seeds","edge_functions","contracts","rls_auth"]},
+  "testSelection":{"mode":"dependency_graph_plus_safety_kernel","unknownPathFallback":"full_lane","fullSuiteCadence":"daily"},
+  "flakyTests":{"silentRetryForbidden":true,"quarantineRequiresOwner":true,"writeback":["BG166","BG168"]},
+  "performance":{"mode":"baseline_then_ratchet","newRegressionAction":"fail_closed","dimensions":["js_css_bytes","lcp","inp","cls","api_p95","api_p99","db_query_p95","edge_cold_start","query_count","memory_mb","tokens","euro_cost"]},
+  "rollback":{"proofRequired":true,"drills":["netlify_restore","migration_recovery","edge_function_rollback","config_rollback","restore_test"]},
+  "workGraph":{"leases":true,"conflicts":["path_overlap","contract_overlap","dependency_conflict","authority_conflict"],"staleLeaseRecovery":true},
+  "scorecard":{"source":"existing_brain_events_and_ci_evidence","metrics":["deployment_frequency","lead_time","change_failure_rate","recovery_time","queue_time","test_time","flaky_rate","security_debt","dependency_freshness","preview_coverage","rollback_readiness","documentation_drift","open_release_obligations"]}
+}

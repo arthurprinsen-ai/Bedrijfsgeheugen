@@ -1,0 +1,14 @@
+# Canonical Engineering OS ownership
+* @arthurprinsen-ai
+
+# Delivery, security and governance
+/.github/ @arthurprinsen-ai
+/config/ @arthurprinsen-ai
+/brain/ @arthurprinsen-ai
+/tools/delivery/ @arthurprinsen-ai
+/tools/ci/ @arthurprinsen-ai
+/supabase/ @arthurprinsen-ai
+/netlify/ @arthurprinsen-ai
+/portal/ @arthurprinsen-ai
+/portal-next/ @arthurprinsen-ai
+/portal-v2/ @arthurprinsen-ai
