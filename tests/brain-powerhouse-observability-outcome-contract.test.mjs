@@ -61,6 +61,6 @@ test('canonical sales outcome writer never fabricates zero revenue and gates no-
   assert.doesNotMatch(text, /coalesce\s*\(\s*p_revenue_eur\s*,\s*0\s*\)/i);
   assert.match(text, /no_response/i);
   assert.match(text, /observation_window_closed/i);
-  assert.match(text, /proposal.*revenue.*not allowed|revenue.*proposal.*not allowed/i);
+  assert.match(text, /revenue\s+not\s+allowed\s+for\s+proposal\s+or\s+non-realized\s+outcome/i);
   assert.match(text, /revoke\s+execute\s+on\s+function\s+public\.powerhouse_record_outcome/i);
 });
