@@ -60,14 +60,16 @@ test('scheduled and equivalent event triggers coalesce when a coalesce key is su
   assert.equal(scheduledId.idempotencyKey, eventId.idempotencyKey);
 });
 
-test('unknown or disabled owner agent becomes deterministic internal recovery work', () => {
+test('unknown or disabled owner agent becomes deterministic canonical recovery work', () => {
   for (const badAgent of [null, { id:'agent-other', enabled:true }, { id:'agent-performance', enabled:false }]) {
     const result = evaluateOutcomeObligation({ ...scheduled(), due:true, agent:badAgent });
     assert.equal(result.status, 'RECOVERING');
     assert.equal(result.hardBoundary, null);
-    assert.equal(result.recovery?.type, 'OwnerRecovery');
+    assert.equal(result.recovery?.type, 'RecoveryWork');
+    assert.equal(result.recovery?.recoveryKind, 'OWNER_RECOVERY');
     assert.equal(result.recovery?.requestedOwnerAgent, 'agent-performance');
     assert.equal(result.recovery?.policy, 'reassign_or_reenable_owner');
+    assert.equal(result.recovery?.idempotencyKey, `recovery|${result.idempotencyKey}`);
   }
 });
 
