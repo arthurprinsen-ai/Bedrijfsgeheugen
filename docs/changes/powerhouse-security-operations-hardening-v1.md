@@ -34,6 +34,7 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 - The provider-side Supabase Auth setting was changed minimally to `password_hibp_enabled=true` without changing other Auth configuration.
 - Post-change provider readback: `password_hibp_enabled=true`; Auth, DB and pooler remained healthy.
 - Post-change Supabase security-advisor readback no longer reports the prior Leaked Password Protection Disabled warning.
+- Project Auth already has TOTP enrollment and verification enabled and refresh-token rotation enabled.
 
 ### Index housekeeping
 
@@ -55,18 +56,22 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 - Oldest observed creation: 2026-09-09; newest: 2026-09-10.
 - 2 entries show an update materially after creation.
 - This is inventory/age evidence only. It is **not** proof that every provider credential has completed an end-to-end rotation and consumer readback.
-- Secret values were not read or copied during this hardening run.
+- Secret values are not to be copied into Powerhouse documentation, logs or learning records.
 
 ### IAM
 
 - Database-role review confirms `anon` and `authenticated` cannot login and do not bypass RLS; `service_role` bypasses RLS as expected; observed elevated roles are Supabase-managed/admin roles.
-- This does not prove a complete Supabase dashboard/team, GitHub, Netlify, Notion, Buffer, provider, or human-access IAM review. Those planes require separate identity/permission evidence.
+- Supabase organization membership was enumerated: the organization currently has a single Owner account, minimizing standing human membership.
+- **Open IAM obligation:** that sole Supabase organization Owner currently reports MFA disabled at the organization-account level. Project-user TOTP capability does not close this separate management-plane gap; the owner account must enroll MFA and a subsequent organization-member readback must show MFA enabled.
+- Full cross-platform IAM still requires equivalent evidence for GitHub, Netlify, Notion, Buffer and other provider/human access planes.
 
 ### Backup / restore / disaster recovery
 
-- No destructive or isolated restore was performed during this hardening run.
-- Native backup availability or plan entitlement is not equivalent to a tested restore.
-- A DR gate remains open until a dated restore exercise proves backup availability, restore into an isolated target, application/data validation, measured RTO/RPO, and cleanup/rollback evidence.
+- Backup availability is now proven: eight consecutive physical backups dated 2026-09-09 through 2026-09-16 are reported `COMPLETED`; WAL-G backups are enabled.
+- PITR is currently disabled.
+- The available PITR restore API overwrites the current project and therefore was deliberately not used as a DR test.
+- No destructive or isolated restore was performed during this hardening run. Backup existence is not equivalent to restore proof.
+- The remaining DR gate requires a dated **isolated** restore exercise with application/data validation, measured RTO/RPO and cleanup/rollback evidence. Production must not be overwritten merely to satisfy a test.
 
 ## Regression contract
 
@@ -84,6 +89,6 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 
 The RLS classification capability may be called `LIVE & BEWEZEN` only when its migration is merged, applied in production, and production readback returns `policy_required=0` and `rls_disabled=0`.
 
-Leaked-password protection is already **CLOSED & PROVEN** by provider config readback, service-health readback and advisor readback.
+Leaked-password protection is already **CLOSED & PROVEN** by provider config readback, service-health readback and advisor readback. Backup availability is proven, but restore capability is not yet proven.
 
-The **whole Powerhouse security/operations layer must not be called fully complete** while a tested DR restore, complete credential-rotation proof and full cross-platform IAM review remain unverified. Percentage-based Auth connection allocation is a scale-readiness gate rather than a current production defect; index cleanup remains evidence-first and non-destructive until sustained usage/query-plan evidence supports removal.
+The **whole Powerhouse security/operations layer must not be called fully complete** while the Supabase Owner management account lacks MFA, a tested isolated DR restore, complete credential-rotation proof and full cross-platform IAM review remain unverified. Percentage-based Auth connection allocation is a scale-readiness gate rather than a current production defect; index cleanup remains evidence-first and non-destructive until sustained usage/query-plan evidence supports removal.
