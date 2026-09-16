@@ -18,6 +18,12 @@ HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
     "supabase/migrations/20260914081052_predictive_intelligence_first_mover_v1.sql": "ab6713e1057da039a7f1725a7bc05116a46299c7",
     "supabase/migrations/20260914081911_predictive_first_mover_contract_v1_hardening.sql": "1324acc5f67238980ef5f31dad91df7aaeefdf94",
     "supabase/migrations/20260914082435_predictive_first_mover_obligations_and_guard_v1.sql": "a18a4ee8fa018d5dd06621a7ea3fd9a52a54fa2a",
+    "supabase/migrations/20260915101047_harden_security_definer_views_and_internal_rpcs.sql": "37eb1ec0cc26667c77763b7226b251fe4351b2cb",
+    "supabase/migrations/20260915101246_pin_function_search_paths.sql": "1e2d98f68b77c631933e20b80a2f754dd8cbfea6",
+    "supabase/migrations/20260915102437_powerhouse_revenue_flywheel_v1.sql": "39de474008ead1209ca9c17ae3777d94aeae1a51",
+    "supabase/migrations/20260915102851_powerhouse_autonomous_growth_revenue_v1.sql": "dd82c03753fcc84a399c02dec537b9c9a3d42f77",
+    "supabase/migrations/20260915102925_powerhouse_autonomous_growth_revenue_v1.sql": "75c8d7cd567d2be8e55b676865414f280345c184",
+    "supabase/migrations/20260915123725_powerhouse_full_cycle_production_proof_v1.sql": "ea3d8b5a0ddb48da4fba6a3b27d1d44010cbef53",
 }
 
 
