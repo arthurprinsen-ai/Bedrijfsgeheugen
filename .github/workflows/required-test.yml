@@ -12,8 +12,8 @@ permissions:
   statuses: read
 
 concurrency:
-  group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}
-  # Evidence is SHA-specific: once the PR head moves, the older run is obsolete and must not block the current candidate.
+  group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}-${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
+  # Evidence is SHA-specific: a stale queued run must never block the current candidate.
   cancel-in-progress: true
 
 jobs:
