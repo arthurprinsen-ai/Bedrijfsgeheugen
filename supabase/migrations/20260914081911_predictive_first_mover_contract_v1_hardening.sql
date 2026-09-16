@@ -23,7 +23,8 @@ create index if not exists idx_powerhouse_forecasts_active_score on public.power
 create index if not exists idx_powerhouse_forecasts_due on public.powerhouse_forecasts(status, expected_by, horizon_end);
 create index if not exists idx_powerhouse_calibration_forecast_measured on public.powerhouse_forecast_calibration(forecast_id, measured_at desc);
 
-create or replace view public.powerhouse_first_mover_queue as
+create or replace view public.powerhouse_first_mover_queue
+with (security_invoker=true) as
 select
   f.forecast_id,
   f.forecast_key,
@@ -64,6 +65,9 @@ where f.status='active'
   and f.confidence >= 0.50
 order by action_score desc, f.first_mover_score desc;
 
+revoke all on table public.powerhouse_first_mover_queue from anon, authenticated;
+grant select on table public.powerhouse_first_mover_queue to service_role;
+
 create or replace function public.powerhouse_recompute_first_mover_score(
   p_probability numeric,
   p_confidence numeric,
@@ -74,7 +78,9 @@ create or replace function public.powerhouse_recompute_first_mover_score(
   p_market_saturation numeric,
   p_expected_lead_days integer
 ) returns numeric
-language sql immutable as $$
+language sql immutable
+set search_path = public, pg_catalog
+as $$
   select round(least(100::numeric,
     100 * greatest(least(coalesce(p_probability,0),1),0)
         * greatest(least(coalesce(p_confidence,0),1),0)
@@ -88,6 +94,9 @@ language sql immutable as $$
 $$;
 
 create or replace function public.powerhouse_forecast_brier(p_probability numeric,p_outcome integer)
-returns numeric language sql immutable as $$
+returns numeric
+language sql immutable
+set search_path = public, pg_catalog
+as $$
   select round(power(greatest(least(coalesce(p_probability,0),1),0) - case when p_outcome=1 then 1 else 0 end,2),4)
 $$;
