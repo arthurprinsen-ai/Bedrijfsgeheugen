@@ -11,6 +11,8 @@ import { getCapabilityContract } from './capability-contracts.js';
 import { mountWorkspace } from './workspace-shell.js';
 import { mountCompanyInput, renderProfileAnalysis } from './modules/company-input.js';
 import { mountDeliveryWorkspace } from './modules/delivery-workspace.js';
+import { mountFunctionalWorkspace, listFunctionalSuitePages } from './modules/functional-suite.js';
+import { mountCanvasWorkspace } from './modules/canvas-workspace.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -64,6 +66,7 @@ const COPY = {
 
 const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
+const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const portalContext={domainState:null};
 
 export function configurePortalShell(context={}){
@@ -200,6 +203,8 @@ export function openPortalPage(pageId){
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
+  else if(pageId==='canvassen'&&contract?.legacyCapability)mountCanvasWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage});
+  else if(FUNCTIONAL_SUITE_PAGES.has(pageId)&&contract?.legacyCapability)mountFunctionalWorkspace(native,{pageId,contract,view,domainState:portalContext.domainState,openPage:openPortalPage});
   else if(contract?.legacyCapability){
     mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:'idle',render:content=>renderNative(content,view)});
   } else renderNative(native,view);
