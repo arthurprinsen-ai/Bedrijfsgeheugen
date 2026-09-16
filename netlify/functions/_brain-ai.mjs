@@ -58,13 +58,13 @@ async function attachTokenUsage(result, { requestId, componentKey, usageStore, u
   }
 }
 
-export async function runWebsiteAnswer({ question, fragments, apiKey, system, fetchImpl = fetch, usageStore, requestId = crypto.randomUUID() }) {
+export async function runWebsiteAnswer({ question, fragments, apiKey, system, fetchImpl = fetch, usageStore, usageContext, requestId = crypto.randomUUID() }) {
   const result = await runGovernedProductionAI({
     request:{ requestId, tenantId:'PUBLIC', requesterId:'public-visitor', aiUseCaseId:'AI-WEBSITE-QA', purpose:'website-answer', resourceType:'QuestionContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass:'Public', context:{ question, fragments } },
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','fragments'], pseudonymizeFields:[] },
     invokeModel:authorized => anthropic({ authorized, apiKey, system, maxTokens:600, fetchImpl, provenance:{ source:'website-index', providerModelId:MODEL_ID }, renderUser:ctx => `FRAGMENTEN VAN DE SITE:\n\n${ctx.fragments}\n\n---\n\nVRAAG VAN DE BEZOEKER:\n${ctx.question}` }),
   });
-  return attachTokenUsage(result, { requestId, componentKey:'agent:website-qa', usageStore, usageContext:{ tenantId:'PUBLIC', activityType:'website_qa' } });
+  return attachTokenUsage(result, { requestId, componentKey:'agent:website-qa', usageStore, usageContext:{ ...(usageContext ?? {}), tenantId:'PUBLIC', activityType:'website_qa' } });
 }
 
 export async function runPortalAnswer({ question, projectContext, apiKey, system, fetchImpl = fetch, usageStore, usageContext, requestId = crypto.randomUUID() }) {
@@ -73,5 +73,5 @@ export async function runPortalAnswer({ question, projectContext, apiKey, system
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','projectContext'], pseudonymizeFields:[] },
     invokeModel:authorized => anthropic({ authorized, apiKey, system, maxTokens:500, fetchImpl, provenance:{ source:'request-scoped-project-context', providerModelId:MODEL_ID }, renderUser:ctx => `PROJECTGEGEVENS (JSON):\n\n${ctx.projectContext}\n\n---\n\nVRAAG VAN DE KLANT:\n${ctx.question}` }),
   });
-  return attachTokenUsage(result, { requestId, componentKey:'agent:portal-qa', usageStore, usageContext:{ activityType:'portal_qa', ...(usageContext ?? {}) } });
+  return attachTokenUsage(result, { requestId, componentKey:'agent:portal-qa', usageStore, usageContext:{ ...(usageContext ?? {}), activityType:'portal_qa' } });
 }
