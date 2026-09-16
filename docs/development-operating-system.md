@@ -20,11 +20,12 @@ This is the canonical execution flow for Bedrijfsgeheugen changes across develop
 14. Reconcile expected obligations against verified outcomes. Technical success, an empty result set or `zero candidates` is not green when an outcome is expected.
 15. If production regresses, rollback immediately to last-known-good and continue repair on the safe route.
 16. Write ERROR/RECOVERY/IMPROVEMENT/MISSED_OBLIGATION/AUTO_REPAIR/PRODUCTION_PROMOTION/PRODUCTION_ROLLBACK to the repo ledger and shared learning.
+17. Evaluate whether the verified outcome implies a reusable skill, guardrail, test, workflow or architecture improvement; promote only through the evidence gates below.
 
 ## Powerhouse Engineering OS golden path
 Every material engineering change follows one shared sequence:
 
-`CONTEXT -> SCOPE -> PLAN -> CHANGE -> TEST -> PREVIEW -> VERIFY -> PROMOTE -> PROD_READBACK -> WRITEBACK -> LEARN`
+`CONTEXT -> SCOPE -> PLAN -> CHANGE -> TEST -> PREVIEW -> VERIFY -> PROMOTE -> PROD_READBACK -> WRITEBACK -> LEARN -> IMPROVE`
 
 The machine-readable index is `config/powerhouse-engineering-os.json`; it does not replace component, delivery, outcome or learning authorities. It exists so every current/new agent or reopened chat can discover the same rules immediately and fail closed when those authorities drift.
 
@@ -39,6 +40,43 @@ Engineering rules:
 - documentation, production evidence and learning writeback are part of delivery, not cleanup later.
 
 Canonical engineering fingerprint: `powerhouse-engineering-os-v1`.
+
+## Shared Learning & Team-of-Agents Contract
+Canonical fingerprint: `powerhouse-shared-learning-architecture-evolution-v1`.
+
+`SHARED-LEARNING` and `TEAM-OF-AGENTS` apply to all existing and future agents, chats and material workflows. Every agent works on the same canonical Powerhouse state and learning layer; local caches or conversation context are projections only and may never become a second durable truth.
+
+Mandatory preflight before material work:
+- read the current canonical architecture and Engineering OS;
+- read Latest Verified State and open obligations relevant to scope;
+- read bounded current shared team context and known failed approaches;
+- resolve explicit task evidence separately from supportive team context;
+- reuse an already verified fix/capability before exploring a new hypothesis;
+- check current technology/provider/dependency evidence when currency materially affects the task.
+
+Material outcomes must preserve enough lineage to reuse the learning: problem/symptom, root cause or strongest supported explanation, failed approach, chosen change, exact candidate identity, tests/gates, production readback, outcome, prevention rule, freshness/provenance/confidence and any remaining obligation.
+
+Learning is deduplicated by fingerprint **before** persistent write and before context refresh. Append-only audit history and current operational projection remain separate: canaries, fixtures, false positives and healthy no-op outcomes do not pollute current team context. A genuinely new verified reusable learning refreshes the existing shared context immediately. Shared context never satisfies a missing explicit evidence requirement.
+
+No second agent memory, learning database, architecture registry, queue, CRM, analytics truth or brain may be introduced when the existing Powerhouse authority can be extended.
+
+## Skill Evolution
+Skills include reusable agent instructions, prompts, diagnostic procedures, workflows, testing strategies, tooling patterns and operating procedures. Skills are versioned/evaluated capabilities, not ungoverned self-modifying prompts.
+
+Promotion lifecycle:
+
+`OBSERVE -> CLUSTER -> HYPOTHESIZE -> BASELINE -> CANDIDATE -> EVAL -> REVIEW -> PROMOTE_OR_ROLLBACK -> PROD_OUTCOME -> WRITEBACK`
+
+A candidate skill improvement requires a current baseline, measurable success metric, representative evaluation set, compatibility with canonical contracts, relevant cost/latency/security/privacy review, rollback/fallback and post-promotion production observation. One anecdotal failure may trigger immediate containment for severity, but durable skill promotion still requires evidence. Failed candidates roll back and become reusable learning.
+
+## Architecture Evolution
+Architecture is an actively managed Powerhouse capability. It is continuously evaluated on correctness/reliability, security/tenant isolation, performance, maintainability/cognitive load, reuse/duplication, observability, deployability/rollback safety, testability, data integrity/lineage, cost/capacity, compatibility/migration burden, business impact and lead time.
+
+Architecture candidates may be triggered by repeated incidents/workarounds, measurable bottlenecks, deprecation/EOL/CVEs, provider capability changes, repeated agent confusion about authority/boundaries, duplicate implementations/drift, materially better proven external techniques, or new business requirements that cannot be cleanly satisfied inside current boundaries.
+
+Promotion requires comparison with the current architecture, measurable expected improvement, migration/compatibility analysis, security/privacy/cost review, representative tests or benchmarks, bounded rollout where appropriate, rollback/recovery, exact release identity, production readback and updated System Map/decision lineage/human documentation. A newer architecture is never promoted merely because it is newer; if a simpler local repair solves the problem, architecture remains unchanged.
+
+The `LEARN -> IMPROVE` stage therefore means: inspect verified learning for a reusable improvement candidate, evaluate it against the current baseline and only then change a skill/guardrail/architecture through the same protected delivery path.
 
 ## State-of-the-Art Adoption Contract
 Canonical fingerprint: `powerhouse-state-of-the-art-adoption-v1`.
