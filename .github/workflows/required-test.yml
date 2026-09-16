@@ -90,17 +90,6 @@ jobs:
         run: python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
       - name: Enforce Supabase migration security contract
         run: python3 scripts/brain/check_powerhouse_supabase_security.py "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
-      # Website contract ownership remains visible here for the stable Required test
-      # contract while execution is delegated to .github/workflows/lane-website.yml:
-      # tests/v18-megamenu-heading-contract.test.mjs
-      # tools/site-shell/v18-megamenu-browser-check.mjs
-      # Deze suite draaide nergens: 46 testbestanden werden door geen enkele
-      # workflow genoemd en bewaakten dus niets. tests/delivery-test-coverage-guard.test.mjs
-      # faalt zodra dat opnieuw gebeurt.
-      # Vier van deze tests laden netlify/functions en hebben daarom de twee
-      # runtime-dependencies uit package.json nodig.
-      # De 140 tests onder portal-v2/tests draaiden nergens in CI: alleen een
-      # Python-pariteitsscript keek naar dat portaal.
       - name: Verify Portal V2 suite
         run: node --test portal-v2/tests/*.test.mjs
       - name: Install runtime dependencies for the unwired contracts
@@ -154,7 +143,7 @@ jobs:
           tests/v18-standalone-compositor-safety.test.mjs
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
-        run: node --test tests/brain-powerhouse-engineering-os-contract.test.mjs tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/portal-v2-release-identity-invariant.test.mjs tests/website-static-syntax-preflight.test.mjs
+        run: node --test tests/brain-powerhouse-engineering-os-contract.test.mjs tests/brain-autonomous-improvement-runtime.test.mjs tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/portal-v2-release-identity-invariant.test.mjs tests/website-static-syntax-preflight.test.mjs
 
   backend:
     needs: preflight
