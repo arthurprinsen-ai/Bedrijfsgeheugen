@@ -42,6 +42,24 @@ test('recovery records share the durable dispatch ledger but keep their record t
   assert.equal(persisted.record.type, 'RecoveryWork');
 });
 
+test('dispatch stores list only their canonical record type for backfill collection', async () => {
+  const calls = [];
+  const fetchImpl = async (url, init={}) => {
+    calls.push({ url:String(url), init });
+    const recordType = String(url).includes('record_type=eq.RecoveryWork') ? 'RecoveryWork' : 'AgentWork';
+    return jsonResponse(200, [{ idempotency_key:`${recordType.toLowerCase()}|1`, record_type:recordType, obligation_id:'material-change-production-verification', owner_agent:'agent-reliability', trace_id:'trace-list', state:recordType === 'RecoveryWork' ? 'RECOVERING' : 'PENDING', record:{ triggerFingerprint:'list-test' } }]);
+  };
+  const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
+  const workRows = await stores.workStore.list();
+  const recoveryRows = await stores.recoveryStore.list();
+  assert.deepEqual(workRows.map(row => row.type), ['AgentWork']);
+  assert.deepEqual(recoveryRows.map(row => row.type), ['RecoveryWork']);
+  assert.ok(calls.every(call => call.init.method === 'GET'));
+  assert.match(calls[0].url, /record_type=eq\.AgentWork/);
+  assert.match(calls[1].url, /record_type=eq\.RecoveryWork/);
+  assert.match(calls[0].url, /order=created_at\.asc/);
+});
+
 test('evidence store reads only metadata required by the executor', async () => {
   const fetchImpl = async () => jsonResponse(200, [{ evidence_ref:'performance:measurement:1', evidence_type:'FUNCTIONAL_READBACK', independent:true, accepted:true, exact_production:false, metadata:{ source:'supabase-performance', producer:'PRODUCTION_READBACK', taskIdentity:'O1', candidateIdentity:'C1', productionIdentity:'P1' } }]);
   const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
