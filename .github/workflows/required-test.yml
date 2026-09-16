@@ -154,7 +154,7 @@ jobs:
           tests/v18-standalone-compositor-safety.test.mjs
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
-        run: node --test tests/brain-powerhouse-engineering-os-contract.test.mjs tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/portal-v2-release-identity-invariant.test.mjs tests/website-static-syntax-preflight.test.mjs
+        run: node --test tests/brain-powerhouse-engineering-os-contract.test.mjs tests/brain-autonomous-improvement-runtime.test.mjs tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/portal-v2-release-identity-invariant.test.mjs tests/website-static-syntax-preflight.test.mjs
 
   backend:
     needs: preflight
