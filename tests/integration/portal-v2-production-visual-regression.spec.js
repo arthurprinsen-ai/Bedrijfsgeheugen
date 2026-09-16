@@ -16,6 +16,8 @@ async function bootCanvassen(page){
   await page.evaluate(async()=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage('canvassen');});
   const workspace=page.locator('[data-functional-workspace="canvassen"]');
   await expect(workspace).toBeVisible({timeout:10_000});
+  await expect(workspace.locator('.canvas-summary')).toBeVisible({timeout:15_000});
+  await expect(workspace.locator('.canvas-card')).toHaveCount(6,{timeout:15_000});
   await page.evaluate(()=>document.fonts?.ready);
   await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}input,textarea{caret-color:transparent!important}'});
   return workspace;
