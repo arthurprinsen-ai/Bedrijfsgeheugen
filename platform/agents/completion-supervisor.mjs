@@ -44,12 +44,13 @@ function hasCompleteRecoveryPacket(packet) {
   });
 }
 
-function stableIdempotencyKey(identity, action, openObligations, boundaryFingerprint) {
+function stableIdempotencyKey(identity, action, openObligations, boundaryFingerprint, retryHypothesis = null) {
   const source = JSON.stringify({
     identity:String(identity || 'unknown'),
     action:action || null,
     openObligations:[...(openObligations || [])].sort(),
-    boundaryFingerprint:boundaryFingerprint || null
+    boundaryFingerprint:boundaryFingerprint || null,
+    retryHypothesis:retryHypothesis || null
   });
   return createHash('sha256').update(source).digest('hex');
 }
@@ -70,7 +71,9 @@ export function evaluateCompletion({
   claim,
   materialObligations = [],
   completionEvidence = null,
-  hardBoundary = null
+  hardBoundary = null,
+  retryHypothesis = null,
+  attemptCount = 0
 } = {}) {
   const readiness = evaluateCompletionReadiness({
     materialObligations,
@@ -113,7 +116,7 @@ export function evaluateCompletion({
       open_obligations:Object.freeze([...readiness.openObligations]),
       required_evidence:Object.freeze(['completeRecoveryPacket']),
       recovery_packet:recoveryPacket,
-      idempotency_key:stableIdempotencyKey(identity, 'RECOVER', readiness.openObligations, recoveryPacket?.boundaryFingerprint),
+      idempotency_key:stableIdempotencyKey(identity, 'RECOVER', readiness.openObligations, recoveryPacket?.boundaryFingerprint, retryHypothesis),
       resume_when:recoveryPacket?.resumeWhen ?? null
     });
   }
@@ -124,15 +127,21 @@ export function evaluateCompletion({
     openObligations:readiness.openObligations,
     completionEvidence
   });
+  const retryExhausted = nextAction === 'RECOVER'
+    && nonEmptyString(retryHypothesis)
+    && Number.isInteger(attemptCount)
+    && attemptCount >= 2;
+  const requiredEvidence = new Set(readiness.requiredEvidence);
+  if (retryExhausted) requiredEvidence.add('newRetryHypothesisOrFallback');
 
   return Object.freeze({
     success:false,
     normalized_state:PARTIAL_CLAIMS.has(normalizedClaim) ? normalizedClaim : 'RECOVERING',
     next_action:nextAction,
     open_obligations:Object.freeze([...readiness.openObligations]),
-    required_evidence:Object.freeze([...readiness.requiredEvidence]),
+    required_evidence:Object.freeze([...requiredEvidence]),
     recovery_packet:null,
-    idempotency_key:stableIdempotencyKey(identity, nextAction, readiness.openObligations, null),
+    idempotency_key:stableIdempotencyKey(identity, nextAction, readiness.openObligations, null, retryHypothesis),
     resume_when:null
   });
 }
