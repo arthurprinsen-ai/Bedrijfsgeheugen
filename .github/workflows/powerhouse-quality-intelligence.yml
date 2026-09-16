@@ -1,0 +1,33 @@
+name: Powerhouse Quality Intelligence
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'powerhouse/assurance/**'
+      - 'scripts/powerhouse-quality-intelligence.mjs'
+      - 'scripts/quality/**'
+      - 'tests/powerhouse-quality-intelligence.test.mjs'
+      - '.github/workflows/powerhouse-quality-intelligence.yml'
+      - 'docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md'
+      - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-design.md'
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '23 3 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  quality-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Deterministic Quality Intelligence contract
+        run: node --test tests/powerhouse-quality-intelligence.test.mjs
