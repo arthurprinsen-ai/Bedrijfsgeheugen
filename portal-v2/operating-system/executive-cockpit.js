@@ -13,17 +13,30 @@ export function executiveCockpitMarkup(model){
  return `<section class="os-executive" data-os-status="live"><div class="os-head"><div><small>Powerhouse · ${esc(model.role)}</small><h2>Executive Cockpit</h2></div><span>${model.evidence_health.healthy}/${model.evidence_health.total} bronnen gezond</span></div><div class="os-metrics"><article><small>Bedrijfsgezondheid</small><b>${pct(model.health_score)}</b></article><article><small>Strategievoortgang</small><b>${pct(model.strategy_progress)}</b></article><article><small>Open risico's</small><b>${model.risks.length}</b></article><article><small>Topacties</small><b>${model.next_best_actions.length}</b></article></div><div class="os-grid">${list('Wat veranderde?',model.changes)}${list('Toprisico’s',model.risks)}${list('Kansen',model.opportunities)}${list('Next Best Actions',model.next_best_actions)}${list('Vooruitblik',model.forecasts)}${list('Gerealiseerde outcomes',model.outcomes)}</div><section class="os-health"><h3>Data & bewijs</h3><p>${model.evidence_health.stale} verouderd · ${model.evidence_health.low_confidence} lage confidence · ${model.evidence_health.unavailable} onvolledig</p></section><nav class="os-module-tabs" aria-label="Powerhouse modules">${tabs}</nav><div class="os-module-detail" aria-live="polite"></div></section>`;
 }
 
+function openModule(host,pageId,domainState){
+ if(!OPERATING_SYSTEM_PAGES.includes(pageId))return false;
+ const detail=host?.querySelector?.('.os-module-detail');if(!detail)return false;
+ host.querySelectorAll('[data-os-page]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.osPage===pageId)));
+ mountOperatingSystemPage(detail,{pageId,domainState});
+ detail.scrollIntoView?.({block:'nearest'});
+ return true;
+}
+
 export function mountExecutiveCockpit(root,state,{tenantId=state?.tenant_id||state?.powerhouse?.tenant_id,role=state?.portal?.role||'directie',now=Date.now()}={}){
  const main=root?.querySelector?.('.main');if(!main||!tenantId)return false;
- ensureOperatingSystemStyles(root.ownerDocument||document);
+ const doc=root.ownerDocument||document;ensureOperatingSystemStyles(doc);
  const model=buildExecutiveProjection(state,{tenantId,role,now});
  let host=main.querySelector('.os-executive-host');
- if(!host){host=(root.ownerDocument||document).createElement('div');host.className='os-executive-host';main.insertBefore(host,main.firstChild);}
+ if(!host){host=doc.createElement('div');host.className='os-executive-host';main.insertBefore(host,main.firstChild);}
  host.innerHTML=executiveCockpitMarkup(model);
- const detail=host.querySelector('.os-module-detail'),domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__;
- host.querySelectorAll('[data-os-page]').forEach(btn=>btn.addEventListener('click',()=>{
-  host.querySelectorAll('[data-os-page]').forEach(x=>x.setAttribute('aria-pressed',String(x===btn)));
-  mountOperatingSystemPage(detail,{pageId:btn.dataset.osPage,domainState});
- }));
+ const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__;
+ host.querySelectorAll('[data-os-page]').forEach(btn=>btn.addEventListener('click',()=>openModule(host,btn.dataset.osPage,domainState)));
+ if(!doc.__bgOsRouteBound){
+  doc.__bgOsRouteBound=true;
+  doc.addEventListener('bg:open-os-page',event=>{
+   const currentHost=doc.querySelector('.os-executive-host');
+   openModule(currentHost,event.detail?.pageId,globalThis.__BG_PORTAL_DOMAIN_STATE__);
+  });
+ }
  return true;
 }
