@@ -12,11 +12,17 @@ on:
       - 'tests/brain-quality/**'
       - 'tests/brain-quality-performance/**'
       - 'config/powerhouse-quality-*.json'
+      - 'config/powerhouse-vulnerability-baseline.json'
       - 'config/stryker.quality.conf.json'
+      - 'contracts/openapi/**'
+      - 'site/**'
+      - 'portal-v2/**'
+      - 'netlify/functions/**'
+      - 'supabase/**'
       - '.github/workflows/powerhouse-quality-intelligence.yml'
       - 'docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md'
       - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence*.md'
-      - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence*.md'
+      - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-*.md'
   push:
     branches: [main]
   workflow_dispatch:
@@ -36,6 +42,8 @@ env:
   K6_VERSION: '2.2.0'
   ZAP_VERSION: '2.17.0'
   SYFT_VERSION: '1.33.0'
+  QUALITY_OPENAPI_SPEC: 'contracts/openapi/powerhouse-public-api.yaml'
+  QUALITY_INTEGRATION_PROFILE: 'postgres'
 
 jobs:
   quality-contract:
@@ -65,7 +73,7 @@ jobs:
 
   backend-properties:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
@@ -77,7 +85,7 @@ jobs:
         run: pytest -q tests/brain-quality/test_powerhouse_quality_properties.py
       - name: Registered API contract harness
         run: pytest -q tests/brain-quality/test_powerhouse_api_contract.py
-      - name: Registered real-service integration harness
+      - name: Registered PostgreSQL Testcontainers integration harness
         run: pytest -q tests/brain-quality/test_powerhouse_integration_profile.py
 
   supply-chain-security:
@@ -85,20 +93,38 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
       - name: Trivy vulnerability secret and misconfiguration sensor
+        id: trivy
         run: |
+          mkdir -p artifacts/quality/security
           docker run --rm -v "$PWD:/workspace" -w /workspace aquasec/trivy:${TRIVY_VERSION} fs \
             --scanners vuln,secret,misconfig \
             --severity HIGH,CRITICAL \
             --format json \
             --output artifacts-trivy.json \
             --exit-code 0 .
+      - name: Blocking new-vulnerability delta gate
+        id: vulnerability_delta
+        run: >-
+          node scripts/brain/quality/vulnerability-delta.mjs
+          --trivy artifacts-trivy.json
+          --baseline config/powerhouse-vulnerability-baseline.json
+          --output artifacts/quality/security/vulnerability-delta.json
+          --check
+      - name: Record Trivy/delta evidence
+        if: always()
+        run: node scripts/brain/quality/sensor-evidence.mjs trivy '${{ steps.vulnerability_delta.outcome }}' artifacts/quality/security/sensor-evidence.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: quality-trivy-${{ github.sha }}
-          path: artifacts-trivy.json
-          retention-days: 14
+          name: quality-security-${{ github.sha }}
+          path: |
+            artifacts-trivy.json
+            artifacts/quality/security
+          retention-days: 90
 
   deep-frontend:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -116,15 +142,19 @@ jobs:
       - name: Install Chromium Firefox and WebKit
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Cross-browser runtime accessibility responsive and semantic audit
+        id: deep_frontend
         env:
           QUALITY_BASE_URL: https://www.bedrijfsgeheugen.nl
         run: node scripts/brain/quality/frontend-deep-audit.mjs
+      - name: Record deep frontend evidence
+        if: always()
+        run: node scripts/brain/quality/sensor-evidence.mjs cross_browser_semantic_visual '${{ steps.deep_frontend.outcome }}' artifacts/quality/frontend/sensor-evidence.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: quality-frontend-${{ github.sha }}
           path: artifacts/quality/frontend
-          retention-days: 14
+          retention-days: 90
 
   adversarial-contracts:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -136,7 +166,35 @@ jobs:
         with:
           node-version: '22'
       - name: Safe stateful fuzz chaos and security target matrix
+        id: fuzz_chaos
         run: node --test tests/brain-quality-adversarial.test.mjs tests/brain-quality-production-shadow.test.mjs
+      - name: Record fuzz chaos evidence
+        if: always()
+        run: node scripts/brain/quality/sensor-evidence.mjs fuzz_chaos '${{ steps.fuzz_chaos.outcome }}' artifacts/quality/adversarial/sensor-evidence.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-adversarial-${{ github.sha }}
+          path: artifacts/quality/adversarial
+          retention-days: 90
+
+  game-days:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Execute safe fault-detection and recovery simulations
+        run: node scripts/brain/quality/game-day.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-game-days-${{ github.sha }}
+          path: artifacts/quality/game-days
+          retention-days: 90
 
   performance:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -144,8 +202,21 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
       - name: Public synthetic k6 SLO probe
+        id: k6
         run: docker run --rm -v "$PWD:/work" -w /work -e QUALITY_BASE_URL=https://www.bedrijfsgeheugen.nl grafana/k6:${K6_VERSION} run tests/brain-quality-performance/powerhouse-smoke.js
+      - name: Record k6 evidence
+        if: always()
+        run: node scripts/brain/quality/sensor-evidence.mjs k6 '${{ steps.k6.outcome }}' artifacts/quality/performance/sensor-evidence.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-performance-${{ github.sha }}
+          path: artifacts/quality/performance
+          retention-days: 90
 
   mutation:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -157,15 +228,19 @@ jobs:
         with:
           node-version: '22'
       - name: Mutation sensitivity of deterministic quality core
+        id: mutation
         run: |
           mkdir -p artifacts/quality
           npx --yes @stryker-mutator/core@${STRYKER_VERSION} run config/stryker.quality.conf.json
+      - name: Record mutation evidence
+        if: always()
+        run: node scripts/brain/quality/sensor-evidence.mjs mutation '${{ steps.mutation.outcome }}' artifacts/quality/mutation/sensor-evidence.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: quality-mutation-${{ github.sha }}
           path: artifacts/quality
-          retention-days: 14
+          retention-days: 90
 
   passive-dast:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -173,18 +248,25 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
       - name: Passive OWASP ZAP baseline
+        id: zap
         run: |
           mkdir -p artifacts/quality/zap
           chmod 777 artifacts/quality/zap
           docker run --rm -v "$PWD/artifacts/quality/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:${ZAP_VERSION} \
             zap-baseline.py -t https://www.bedrijfsgeheugen.nl -J report.json -r report.html -I
+      - name: Record ZAP evidence
+        if: always()
+        run: node scripts/brain/quality/sensor-evidence.mjs zap '${{ steps.zap.outcome }}' artifacts/quality/zap/sensor-evidence.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: quality-zap-${{ github.sha }}
           path: artifacts/quality/zap
-          retention-days: 14
+          retention-days: 90
 
   sbom-provenance:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -198,6 +280,7 @@ jobs:
           tar -czf artifacts/quality/provenance/quality-intelligence-${GITHUB_SHA}.tar.gz \
             powerhouse/assurance/quality-intelligence.json \
             powerhouse/assurance/quality-intelligence-v2.json \
+            config/powerhouse-quality-autopilot.json \
             scripts/brain/powerhouse-quality-intelligence.mjs \
             scripts/brain/quality \
             config/powerhouse-quality-surfaces.json \
@@ -215,7 +298,7 @@ jobs:
         with:
           name: quality-provenance-${{ github.sha }}
           path: artifacts/quality/provenance
-          retention-days: 30
+          retention-days: 90
 
   innovation-scout:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -233,4 +316,4 @@ jobs:
         with:
           name: quality-innovation-scout-${{ github.sha }}
           path: artifacts/quality/innovation-scout.json
-          retention-days: 30
+          retention-days: 90
