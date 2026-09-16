@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildBcgModel, buildBcgRoadmapAction } from '../strategic-models.js';
+import { buildBcgModel, buildBcgRoadmapAction, mergeBcgRoadmapAction } from '../strategic-models.js';
 
 function state({growth=0,baseline=0,maturity=2}={}){
   return {portal:{
@@ -30,4 +30,15 @@ test('Vraagteken produces a deterministic tenant-scoped roadmap action payload',
   assert.match(action.title,/invest/i);
   assert.equal(action.done,false);
   assert.equal(action.progress,0);
+});
+
+test('BCG action merges into the existing canonical root roadmap and deduplicates by id',()=>{
+  const model=buildBcgModel(state({growth:3,baseline:4,maturity:2}));
+  const action=buildBcgRoadmapAction(model);
+  const initial={...state({growth:3,baseline:4,maturity:2}),roadmap:[{id:'existing',title:'Bestaand'}]};
+  const once=mergeBcgRoadmapAction(initial,action);
+  const twice=mergeBcgRoadmapAction(once,action);
+  assert.deepEqual(once.roadmap.map(x=>x.id),['existing',action.id]);
+  assert.equal(twice.roadmap.filter(x=>x.id===action.id).length,1);
+  assert.equal(twice.portal?.roadmap,undefined);
 });
