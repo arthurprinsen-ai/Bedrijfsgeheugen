@@ -31,8 +31,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+      - name: Install dependencies for SBOM generation
+        run: npm install --ignore-scripts --no-audit --no-fund --package-lock=false
       - name: Generate SPDX SBOM
         run: npm sbom --sbom-format spdx > sbom.spdx.json
       - name: Build provenance subject
