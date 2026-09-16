@@ -4,10 +4,14 @@
 alter function public.powerhouse_daily_execution_guard(date)
   set search_path = public, pg_catalog;
 
-revoke execute on function public.powerhouse_autonomous_growth_revenue_cycle(date)
-  from public, anon, authenticated;
-grant execute on function public.powerhouse_autonomous_growth_revenue_cycle(date)
-  to service_role;
+do $$
+begin
+  if to_regprocedure('public.powerhouse_autonomous_growth_revenue_cycle(date)') is not null then
+    execute 'revoke execute on function public.powerhouse_autonomous_growth_revenue_cycle(date) from public, anon, authenticated';
+    execute 'grant execute on function public.powerhouse_autonomous_growth_revenue_cycle(date) to service_role';
+  end if;
+end
+$$;
 
 insert into public.brain_failure_registry(
   fingerprint,maturity,root_cause,proven_fix,prevention_rule,regression_ref,
