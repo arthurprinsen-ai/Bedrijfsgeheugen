@@ -55,7 +55,7 @@ Deno.serve(async(req:Request)=>{
     const methodologies=cleanUnique(lineageRows.map((row:any)=>row.methodology));
     const sources=cleanUnique(lineageRows.map((row:any)=>row.source));
     const uniqueConfidences=[...new Set(lineageRows.map((row:any)=>Number(row.confidence)).filter((value:number)=>Number.isFinite(value)&&value>0&&value<=1))];
-    const calculatedAt=String(summary?.latest_observed_at||'').trim();
+    const calculatedAt=lineageRows.map((row:any)=>row.occurred_at).map((value:any)=>String(value??'').trim()).filter((value:string)=>value&&Number.isFinite(Date.parse(value))).sort((a:string,b:string)=>Date.parse(b)-Date.parse(a))[0]||'';
     const resourceFootprint=summary&&lineageRows.length>0&&factorVersions.length>0&&methodologies.length>0&&sources.length>0&&uniqueConfidences.length===1&&calculatedAt?{
       coverage:Number(summary.environmental_factor_coverage)||0,
       confidence:uniqueConfidences[0],
