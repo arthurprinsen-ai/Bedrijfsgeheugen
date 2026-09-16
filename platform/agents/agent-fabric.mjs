@@ -57,6 +57,7 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
   const workById = new Map();
   const activeByFingerprint = new Map();
   const metadata = new Map();
+  const waitingResume = new Map();
   let sequence = 0;
 
   function emit(type, work, info, extra = {}) {
@@ -128,12 +129,19 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     const allowed = TRANSITIONS[current.status] ?? new Set();
     if (!allowed.has(status)) throw new Error(`invalid AgentWork transition: ${current.status} -> ${status}`);
 
+    const readinessContext = completionContext ? { ...completionContext, workId } : {};
     if (!TERMINAL.has(current.status) && TERMINAL.has(status)) {
-      const readiness = evaluateCompletionReadiness(completionContext ?? {});
+      const readiness = evaluateCompletionReadiness(readinessContext);
       if (!readiness.canComplete) {
         const open = readiness.openObligations.length ? readiness.openObligations.join(', ') : 'completion-context-not-proven';
         throw new Error(`AgentWork completion readiness blocked: ${open}`);
       }
+    }
+
+    if (current.status === 'Verifying' && status === 'WaitingApproval') {
+      const readiness = evaluateCompletionReadiness(readinessContext);
+      if (!readiness.canWait) throw new Error(`AgentWork waiting readiness blocked: ${readiness.requiredEvidence.join(', ') || 'hard-boundary-not-proven'}`);
+      waitingResume.set(workId, readiness.resumeWhen);
     }
 
     const next = createAgentWork({ ...current, ...patch, status });
@@ -142,6 +150,17 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     emit('AGENT_WORK_TRANSITIONED', next, info, { fromStatus:current.status, toStatus:status });
     if (TERMINAL.has(status) && info) activeByFingerprint.delete(info.fingerprint);
     return next;
+  }
+
+  function resume({ workId, evidence = [] } = {}) {
+    const current = workById.get(workId);
+    if (!current) throw new Error('AgentWork not found');
+    if (current.status !== 'WaitingApproval') throw new Error('AgentWork is not waiting');
+    const condition = waitingResume.get(workId);
+    const refs = new Set((Array.isArray(evidence) ? evidence : []).map(value => String(value).trim()).filter(Boolean));
+    if (!condition || condition.type !== 'evidence' || !refs.has(condition.ref)) throw new Error('AgentWork resume condition not satisfied');
+    waitingResume.delete(workId);
+    return transition({ workId, status:'Investigating', evidence:[...refs] });
   }
 
   function suggestLearning({ workId, requesterAgentId } = {}) {
@@ -181,5 +200,5 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
   function listWork({ tenantId } = {}) { return Object.freeze([...workById.values()].filter(work => !tenantId || work.tenantId === tenantId)); }
   function getMetadata(id) { return metadata.get(id) ?? null; }
 
-  return Object.freeze({ intake, intakeOpportunity, transition, getWork, listWork, getMetadata, suggestLearning, recordLearning });
+  return Object.freeze({ intake, intakeOpportunity, transition, resume, getWork, listWork, getMetadata, suggestLearning, recordLearning });
 }
