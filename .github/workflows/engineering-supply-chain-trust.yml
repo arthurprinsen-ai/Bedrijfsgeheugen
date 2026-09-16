@@ -39,11 +39,27 @@ jobs:
         with:
           node-version: 22
       - name: Resolve immutable SBOM input without installing runtime files
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+        run: |
+          node --input-type=module - <<'NODE'
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          const root = JSON.parse(await readFile('package.json', 'utf8'));
+          const manifest = {
+            name: 'bedrijfsgeheugen',
+            version: '0.0.0',
+            private: true,
+            dependencies: root.dependencies || {},
+            optionalDependencies: root.optionalDependencies || {}
+          };
+          await mkdir('.sbom', { recursive: true });
+          await writeFile('.sbom/package.json', `${JSON.stringify(manifest, null, 2)}\n`);
+          NODE
+          npm install --prefix .sbom --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Generate SPDX SBOM
-        run: npm sbom --package-lock-only --sbom-format spdx > sbom.spdx.json
+        run: |
+          cd .sbom
+          npm sbom --package-lock-only --sbom-format spdx > ../sbom.spdx.json
       - name: Build provenance subject
-        run: tar --exclude=.git --exclude=powerhouse-source.tgz -czf powerhouse-source.tgz .
+        run: tar --exclude=.git --exclude=.sbom --exclude=powerhouse-source.tgz -czf powerhouse-source.tgz .
       - uses: actions/attest-build-provenance@v2
         with:
           subject-path: powerhouse-source.tgz
