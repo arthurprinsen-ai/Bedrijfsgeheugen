@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
+  'config/powerhouse-engineering-os.json',
   'config/powerhouse-truth-status-contract.json',
   'brain/policies/powerhouse-system-contract-v1.json',
   'brain/policies/live-completion-learning-contract-v1.json',
