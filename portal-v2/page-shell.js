@@ -4,7 +4,7 @@ import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
 import { mountChangeWizard } from './modules/change-wizard.js';
 import { loadRuntimeEvidence } from './runtime-evidence.js';
-import { renderCsrdImpact } from './csrd-impact.js';
+import { renderCsrdImpact, impactSnapshotFromPortalState } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
 import { getCapabilityContract } from './capability-contracts.js';
@@ -197,7 +197,10 @@ export function openPortalPage(pageId){
   root.dataset.pageId=pageId;
   const native=root.querySelector('#pvNative');
   const contract=getCapabilityContract(pageId);
-  if(pageId==='csrd-impact') renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage});
+  if(pageId==='csrd-impact'){
+    const snapshot=impactSnapshotFromPortalState(portalStateSnapshot());
+    renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
+  }
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
