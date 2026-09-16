@@ -109,7 +109,7 @@ begin
     updated_at
   )
   select
-    coalesce(nullif(e.tenant_id,''), 'canonical'),
+    'canonical',
     e.calendar_date,
     e.calendar_date,
     (e.calendar_date::timestamp + interval '23 hours 59 minutes') at time zone 'Europe/Amsterdam',
@@ -131,7 +131,7 @@ begin
     from jsonb_array_elements_text(coalesce(e.target_channels,'[]'::jsonb)) as c(value)
   ) ch
   where e.calendar_date between p_from and p_to
-    and coalesce(nullif(e.tenant_id,''), 'canonical') in ('canonical','bedrijfsgeheugen')
+    and e.tenant_id = 'canonical'
     and ch.channel in ('linkedin_personal','linkedin_company','instagram','blog')
   on conflict (tenant_id, publication_date, channel) do update
     set experiment_id = excluded.experiment_id,
@@ -268,7 +268,7 @@ declare
 begin
   select count(*) into v_blog_count
   from public.content_publication_obligations
-  where tenant_id in ('canonical','bedrijfsgeheugen')
+  where tenant_id = 'canonical'
     and channel = 'blog'
     and publication_date between date '2026-09-14' and date '2026-12-31';
 
