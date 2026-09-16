@@ -48,7 +48,9 @@ export function computeExecutionIdentity({ obligation, now, trigger, coalesceKey
     : normalizedTrigger.type === 'scheduled-sweep'
       ? `scheduled:${executionWindow}`
       : `event:${normalizedTrigger.fingerprint}`;
-  const canonical = `${obligationId}|${executionWindow}|${effectiveTriggerIdentity}`;
+  const canonical = coalesceKey
+    ? `${obligationId}|${effectiveTriggerIdentity}`
+    : `${obligationId}|${executionWindow}|${effectiveTriggerIdentity}`;
   const idempotencyKey = `obligation|${stableDigest(canonical)}|${canonical}`;
   return freeze({
     obligationId,
