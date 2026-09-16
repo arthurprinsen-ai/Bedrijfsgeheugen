@@ -40,12 +40,34 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             echo "PORTAL_READBACK_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
+            echo "PORTAL_EXPECTED_SHA=${PR_HEAD_SHA}" >> "$GITHUB_ENV"
           else
             echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
+            echo "PORTAL_EXPECTED_SHA=${GITHUB_SHA}" >> "$GITHUB_ENV"
           fi
+      - name: Wait for exact deployed SHA
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 90); do
+            payload="$(curl --fail --silent --show-error \
+              -H 'Cache-Control: no-cache' \
+              "${PORTAL_READBACK_URL}/deploy-identity.json?sha=${PORTAL_EXPECTED_SHA}&attempt=${attempt}" || true)"
+            deployed_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$payload")"
+            if [ "$deployed_sha" = "$PORTAL_EXPECTED_SHA" ]; then
+              echo "Exact deploy ready: $deployed_sha"
+              break
+            fi
+            echo "Waiting for exact deploy ${PORTAL_EXPECTED_SHA}; observed ${deployed_sha:-none} (attempt ${attempt}/90)"
+            if [ "$attempt" -eq 90 ]; then
+              echo "::error::Exact Netlify deploy SHA did not become ready. Expected ${PORTAL_EXPECTED_SHA}, observed ${deployed_sha:-none}."
+              exit 1
+            fi
+            sleep 4
+          done
       - name: Wait for exact readback target
         env:
           CACHEBUST: bg_preview_ready
