@@ -60,6 +60,13 @@ test('scheduled and equivalent event triggers coalesce when a coalesce key is su
   assert.equal(scheduledId.idempotencyKey, eventId.idempotencyKey);
 });
 
+test('material work keeps one coalesced identity across business dates', () => {
+  const before = computeExecutionIdentity({ ...scheduled('2026-08-30T22:00:00Z'), coalesceKey:'candidate:abc123' });
+  const after = computeExecutionIdentity({ ...scheduled('2026-09-02T08:00:00Z'), coalesceKey:'candidate:abc123' });
+  assert.equal(before.idempotencyKey, after.idempotencyKey);
+  assert.notEqual(before.executionWindow, after.executionWindow);
+});
+
 test('unknown or disabled owner agent fails closed', () => {
   for (const badAgent of [null, { id:'agent-other', enabled:true }, { id:'agent-performance', enabled:false }]) {
     const result = evaluateOutcomeObligation({ ...scheduled(), due:true, agent:badAgent });
