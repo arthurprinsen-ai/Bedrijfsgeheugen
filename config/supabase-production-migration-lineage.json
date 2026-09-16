@@ -39,10 +39,16 @@
     }
   ],
   "candidateEvidence": {
-    "failedRun": "github-actions:35105654421",
-    "rootCause": "Drifted timestamp aliases remained in the candidate tree while exact production-ledger filenames were added, creating duplicate semantic migrations; closure was also marked LIVE_VERIFIED before protected-main readback.",
-    "repair": "Remove both aliases from the candidate tree, retain only exact observed production filenames, and keep reconciliationStatus PENDING_MAIN_READBACK with productionStateBeforeClosure OPEN until protected merge plus GitHub and production readback.",
-    "prevention": "Production-ledger reconciliation must prove semantic migration uniqueness and fail-closed closure state in exact-head BRAIN and Required gates before merge."
+    "failedRuns": [
+      "github-actions:35105654421",
+      "github-actions:35107239710"
+    ],
+    "rootCauses": [
+      "Drifted timestamp aliases remained in the candidate tree while exact production-ledger filenames were added, creating duplicate semantic migrations; closure was also marked LIVE_VERIFIED before protected-main readback.",
+      "A stale predictive-lineage regression test still asserted LIVE_VERIFIED before protected-main readback, contradicting the canonical fail-closed closure contract."
+    ],
+    "repair": "Remove both aliases from the candidate tree, retain only exact observed production filenames, keep reconciliationStatus PENDING_MAIN_READBACK with productionStateBeforeClosure OPEN until protected merge plus GitHub and production readback, and align all regression contracts with that fail-closed state.",
+    "prevention": "Production-ledger reconciliation must prove semantic migration uniqueness and consistent fail-closed closure semantics across all exact-head Required and BRAIN suites before merge; no test may encode successful terminal state before protected-main and production readback evidence exists."
   },
   "obligation": {
     "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
