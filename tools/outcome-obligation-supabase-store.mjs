@@ -9,7 +9,7 @@ function normalizeBaseUrl(url) {
 
 function metadataFromRecord(record) {
   const metadata = {};
-  for (const key of ['requestedOutcome', 'triggerFingerprint', 'executionWindow', 'policy']) {
+  for (const key of ['requestedOutcome', 'triggerFingerprint', 'executionWindow', 'policy', 'recoveryKind', 'requestedOwnerAgent']) {
     if (record[key] !== undefined && record[key] !== null) metadata[key] = record[key];
   }
   return metadata;
