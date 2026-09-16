@@ -62,5 +62,6 @@ jobs:
           path: |
             .artifacts/completion-supervisor-backfill-report.json
             .artifacts/completion-supervisor-resume-*.json
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
