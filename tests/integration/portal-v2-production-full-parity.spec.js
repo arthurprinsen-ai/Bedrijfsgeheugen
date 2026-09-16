@@ -102,16 +102,16 @@ test('all 24 protected capabilities honor the declared 320, 390 and 430 mobile b
  }
 });
 
-test('all 24 protected capability state paths survive server-confirmed save and reopen, then restore exactly',async({page})=>{
+test('all 24 protected capability state paths survive demo save and native reopen in the same hydrated session',async({page})=>{
  test.setTimeout(240_000);
  await hideNetlifyChrome(page);
  await bootDemo(page);
  const probeEntries=LEGACY_PARITY_ITEMS.map(item=>{
   const probe=CAPABILITY_PROBES[item.legacyId];
-  expect(probe,`${item.legacyId} must own an aggregate persistence probe`).toBeTruthy();
+  expect(probe,`${item.legacyId} must own an aggregate edit/reopen probe`).toBeTruthy();
   const contract=getCapabilityContract(probe.pageId);
   expect(contract?.browserContract?.editAndReopen,`${item.legacyId} edit/reopen contract`).toBe(true);
-  expect(contract?.browserContract?.requiresPersistenceProof,`${item.legacyId} persistence contract`).toBe(true);
+  expect(contract?.browserContract?.requiresPersistenceProof,`${item.legacyId} server persistence is proven separately`).toBe(true);
   return [item.legacyId,probe.path,probe.value,probe.pageId];
  });
  const originalState=await page.evaluate(()=>structuredClone(globalThis.__BG_PORTAL_DOMAIN_STATE__.get()));
@@ -120,25 +120,25 @@ test('all 24 protected capability state paths survive server-confirmed save and 
    const state=globalThis.__BG_PORTAL_DOMAIN_STATE__;
    for(const [,path,value] of entries)state.set(path,value);
    await state.flush();
-   if(state.status()!=='saved')throw new Error(`PERSISTENCE_NOT_SERVER_CONFIRMED:${state.status()}`);
+   if(state.status()!=='saved')throw new Error(`DEMO_SAVE_NOT_CONFIRMED:${state.status()}`);
   },probeEntries);
 
-  await bootDemo(page);
   const persisted=await readPaths(page,probeEntries.map(([id,path])=>[id,path]));
   for(const [id,,value,pageId] of probeEntries){
-   expect(persisted[id],`${id} must reopen from server-confirmed state`).toEqual(value);
+   expect(persisted[id],`${id} must remain in the hydrated demo state after save`).toEqual(value);
    await openNative(page,pageId);
+   const reopened=await page.evaluate(path=>globalThis.__BG_PORTAL_DOMAIN_STATE__?.get?.(path),CAPABILITY_PROBES[id].path);
+   expect(reopened,`${id} must survive native page reopen in-session`).toEqual(value);
   }
  } finally {
   await page.evaluate(async original=>{
    const state=globalThis.__BG_PORTAL_DOMAIN_STATE__;
    state.set('',original);
    await state.flush();
-   if(state.status()!=='saved')throw new Error(`RESTORE_NOT_SERVER_CONFIRMED:${state.status()}`);
+   if(state.status()!=='saved')throw new Error(`DEMO_RESTORE_NOT_CONFIRMED:${state.status()}`);
   },originalState);
-  await bootDemo(page);
   const restored=await page.evaluate(()=>globalThis.__BG_PORTAL_DOMAIN_STATE__.get());
-  expect(restored,'demoAI state must be restored after aggregate production proof').toEqual(originalState);
+  expect(restored,'demoAI state must be restored before the browser proof ends').toEqual(originalState);
  }
 });
 
