@@ -23,11 +23,13 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read
+  pull-requests: read
 
 jobs:
   production-dom-readback:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -41,10 +43,12 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             echo "PORTAL_READBACK_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${PR_HEAD_SHA}" >> "$GITHUB_ENV"
+            echo "PORTAL_BASE_SHA=${PR_BASE_SHA}" >> "$GITHUB_ENV"
           else
             echo "PORTAL_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${GITHUB_SHA}" >> "$GITHUB_ENV"
@@ -80,6 +84,76 @@ jobs:
         env:
           PREVIEW_URL: ${{ env.PORTAL_READBACK_URL }}
         run: npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
+      - name: Wait for approved base production SHA
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 45); do
+            payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
+              "https://www.bedrijfsgeheugen.nl/deploy-identity.json?sha=${PORTAL_BASE_SHA}&attempt=${attempt}" || true)"
+            deployed_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$payload")"
+            if [ "$deployed_sha" = "$PORTAL_BASE_SHA" ]; then
+              echo "Approved base production ready: $deployed_sha"
+              exit 0
+            fi
+            echo "Waiting for PR base ${PORTAL_BASE_SHA}; observed ${deployed_sha:-none} (attempt ${attempt}/45)"
+            sleep 4
+          done
+          echo "::error::Production no longer exposes the PR base SHA ${PORTAL_BASE_SHA}; refresh the branch against current protected main before accepting a visual baseline."
+          exit 1
+      - name: Capture approved base visual baseline
+        if: github.event_name == 'pull_request'
+        env:
+          PRODUCTION_URL: https://www.bedrijfsgeheugen.nl
+          VISUAL_CAPTURE_PATH: artifacts/visual-current-main/portal-v2-canvassen.png
+        run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
+      - name: Visual regression against approved PR baseline
+        if: github.event_name == 'pull_request'
+        env:
+          PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
+          VISUAL_BASELINE: artifacts/visual-current-main/portal-v2-canvassen.png
+          VISUAL_ACTUAL_PATH: artifacts/visual-baseline-pr/portal-v2-canvassen.png
+        run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
+      - name: Upload approved PR visual baseline
+        if: github.event_name == 'pull_request' && success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baseline-pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          path: artifacts/visual-baseline-pr/portal-v2-canvassen.png
+          if-no-files-found: error
+          retention-days: 30
+      - name: Resolve approved visual baseline
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls")"
+          pr_number="$(jq -r '[.[] | select(.merged_at != null)] | first | .number // empty' <<<"$pr_json")"
+          pr_head_sha="$(jq -r '[.[] | select(.merged_at != null)] | first | .head.sha // empty' <<<"$pr_json")"
+          if [ -z "$pr_number" ] || [ -z "$pr_head_sha" ]; then
+            echo "::error::No merged PR provenance found for production SHA ${GITHUB_SHA}; visual release gate fails closed."
+            exit 1
+          fi
+          runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/portal-v2-production-dom-readback.yml/runs?event=pull_request&head_sha=${pr_head_sha}&per_page=50")"
+          run_id="$(jq -r '[.workflow_runs[] | select(.conclusion == "success")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+          if [ -z "$run_id" ]; then
+            echo "::error::No successful Portal V2 PR readback exists for approved head ${pr_head_sha}."
+            exit 1
+          fi
+          mkdir -p artifacts/visual-baseline-pr
+          gh run download "$run_id" \
+            -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" \
+            -D artifacts/visual-baseline-pr
+          test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
+          echo "Approved visual baseline resolved from PR #${pr_number}, head ${pr_head_sha}, run ${run_id}."
+      - name: Visual regression against approved PR baseline
+        if: github.event_name == 'push'
+        env:
+          PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
+          VISUAL_BASELINE: artifacts/visual-baseline-pr/portal-v2-canvassen.png
+          VISUAL_ACTUAL_PATH: artifacts/visual-production/portal-v2-canvassen.png
+        run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -89,5 +163,7 @@ jobs:
             playwright-report/
             test-results/
             artifacts/portal-v2-*.png
+            artifacts/visual-current-main/*.png
+            artifacts/visual-production/*.png
           if-no-files-found: ignore
           retention-days: 30
