@@ -19,15 +19,12 @@ test('v18 rebuild guard does not invent, duplicate or silently replace publicati
   assert.throws(() => ensurePublicationMarker(alreadyMarked, 'blog:ander'), /conflicting publication marker/);
 });
 
-test('production and deploy-preview builds run the publication marker guard after V18 chrome', () => {
-  const netlify = fs.readFileSync('netlify.toml', 'utf8');
-  const commands = [...netlify.matchAll(/command = "([^"]+)"/g)].map(match => match[1]);
-  assert.equal(commands.length >= 2, true);
-  for (const command of commands.slice(0, 2)) {
-    const chrome = command.indexOf('node tools/bouw-v18-chrome-alles.mjs');
-    const guard = command.indexOf('node tools/content-growth/publication-marker-build-guard.mjs');
-    assert.notEqual(chrome, -1);
-    assert.notEqual(guard, -1);
-    assert.equal(guard > chrome, true);
-  }
+test('pricing shell pipeline restores canonical publication markers after all HTML normalizers', () => {
+  const pipeline = fs.readFileSync('tools/prijzen-uit-de-homepage.mjs', 'utf8');
+  assert.match(pipeline, /import \{ applyLedgerPublicationMarkers \} from '\.\/content-growth\/publication-marker-build-guard\.mjs';/);
+  const validate = pipeline.indexOf('await validateSeoOrderEngine();');
+  const guard = pipeline.indexOf('await applyLedgerPublicationMarkers();');
+  assert.notEqual(validate, -1);
+  assert.notEqual(guard, -1);
+  assert.equal(guard > validate, true);
 });
