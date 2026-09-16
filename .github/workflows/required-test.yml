@@ -197,7 +197,7 @@ jobs:
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
       SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
-      SELECT_WEBSITE: ${{ needs.website.result }}
+      SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
       BACKEND: ${{ needs.backend.result }}
       PORTAL: ${{ needs.portal.result }}
       AUTOMATION: ${{ needs.automation.result }}
