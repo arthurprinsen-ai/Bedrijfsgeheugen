@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
 const contractPath = new URL('../ops/security-operations/closure-v1.json', import.meta.url);
 const workflowPath = new URL('../.github/workflows/powerhouse-security-operations-closure.yml', import.meta.url);
+const deliveryPolicyPath = new URL('../config/brain-delivery-system.json', import.meta.url);
 
 const requiredOpen = new Set([
   'supabase_owner_management_mfa',
@@ -33,4 +35,21 @@ test('CI gate runs the closure test read-only', () => {
   assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/i);
   assert.match(workflow, /node --test tests\/powerhouse-security-operations-closure-v1\.test\.mjs/);
   assert.doesNotMatch(workflow, /contents:\s*write/i);
+});
+
+test('security closure artifacts are classified in the existing backend delivery lane', () => {
+  const policy = JSON.parse(fs.readFileSync(deliveryPolicyPath, 'utf8'));
+  const changedPaths = [
+    'ops/security-operations/closure-v1.json',
+    'tests/powerhouse-security-operations-closure-v1.test.mjs',
+  ];
+
+  const plan = createDeliveryPlan({
+    changedPaths,
+    headSha: '0123456789abcdef0123456789abcdef01234567',
+    policy,
+  });
+
+  assert.deepEqual(plan.changedPaths, [...changedPaths].sort());
+  assert.deepEqual(plan.lanes.map((lane) => lane.id), ['backend']);
 });
