@@ -6,6 +6,7 @@ import { applySitewideAnalytics } from './site-shell/analytics-sitebreed.mjs';
 import { applyMoneyPrerender } from './site-shell/money-prerender.mjs';
 import { applyLettertypeTerugval } from './site-shell/lettertype-terugval.mjs';
 import { repairWijzigingenEncoding } from './site-shell/repair-wijzigingen-encoding.mjs';
+import { ensureBlogContentIds } from './site-shell/ensure-blog-content-id.mjs';
 
 // Standalone URLs are real documents. They may inherit the historical homepage
 // one-page router through the canonical shell; that router can remove the active
@@ -34,11 +35,20 @@ await applyLettertypeTerugval();
 // 76px railhoogte voor de tablet-CLS-fix behouden blijft.
 await repairWijzigingenEncoding();
 
-// Dit is bewust de allerlaatste HTML-contractlaag. Geen enkele writer mag hierna
-// nog Kennis terug naar /blog/ kunnen zetten. Release-evidence wordt pas daarna
-// geschreven, zodat de evidence exact bij de gevalideerde deploy-output hoort.
+// Dit is bewust de allerlaatste algemene HTML-contractlaag. Geen enkele writer
+// mag hierna Kennis terug naar /blog/ kunnen zetten.
 await finalizeSiteContracts();
 
+// De V18 chrome-builder maakt blogpagina's opnieuw op en nam historische
+// <body>-attributen niet mee. Daardoor kon GitHub de juiste content identity
+// bevatten terwijl het uiteindelijke Netlify-artefact die verloor. Borg de
+// semantische publicatie-identiteit daarom op de finale build-output zelf.
+// Deze stap is deterministisch (blog:<slug>) en verifieert fail-closed.
+const blogIdentity = await ensureBlogContentIds();
+console.log(`BLOG_CONTENT_ID_CONTRACT ${blogIdentity.checked} checked, ${blogIdentity.changed} normalized`);
+
+// Release-evidence wordt pas na alle HTML-contracten geschreven, zodat de
+// evidence exact bij de gevalideerde deploy-output hoort.
 const commitRef = String(process.env.COMMIT_REF || process.env.HEAD || '').trim();
 if (!/^[a-f0-9]{40}$/i.test(commitRef)) {
   throw new Error('Netlify COMMIT_REF/HEAD is required for exact production evidence');
