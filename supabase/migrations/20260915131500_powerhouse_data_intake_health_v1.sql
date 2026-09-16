@@ -1,10 +1,16 @@
 -- Canonical Powerhouse Data Intake & Learning Spine v1.
 -- Production migration applied 2026-09-15. Reuses bg_gezondheid and powerhouse_runtime_events.
 
-select cron.alter_job(
-  (select jobid from cron.job where jobname='bg-analytics-sync-daily' limit 1),
-  active := true
-);
+do $$
+begin
+  if exists (select 1 from cron.job where jobname='bg-analytics-sync-daily') then
+    perform cron.alter_job(
+      (select jobid from cron.job where jobname='bg-analytics-sync-daily' limit 1),
+      active := true
+    );
+  end if;
+end
+$$;
 
 create or replace function public.bg_gezondheid_meten()
 returns table(onderdeel text, soort text, status text, detail text)
