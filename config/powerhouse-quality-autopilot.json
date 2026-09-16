@@ -1,0 +1,61 @@
+{
+  "fingerprint": "powerhouse-quality-autopilot-v2",
+  "lifecycle": "active_maturity_extension",
+  "extends": "powerhouse-quality-intelligence-v2",
+  "release_authority": "powerhouse-quality-intelligence-v1",
+  "green_states": ["GREEN"],
+  "non_green_states": ["RED", "UNKNOWN", "NOT_REGISTERED", "UNTESTED"],
+  "capabilities": [
+    "deep_sensor_history",
+    "dynamic_surface_discovery",
+    "vulnerability_delta_gate",
+    "test_effectiveness_learning",
+    "business_invariant_shadow",
+    "escaped_defect_prevention_rate",
+    "performance_root_cause_attribution",
+    "safe_game_days",
+    "innovation_self_benchmarking"
+  ],
+  "registration_obligations": {
+    "openapi_api_contract": "fail_closed_until_registered",
+    "postgres_testcontainers_profile": "fail_closed_until_registered"
+  },
+  "deep_sensor_history": {
+    "registry": "config/powerhouse-quality-sensors.json",
+    "installed_is_proven": false,
+    "history_required": true
+  },
+  "coverage": {
+    "discovery_module": "scripts/brain/quality/surface-discovery.mjs",
+    "new_surface_state": "NOT_REGISTERED",
+    "registered_without_evidence_state": "UNTESTED"
+  },
+  "security": {
+    "baseline": "config/powerhouse-vulnerability-baseline.json",
+    "delta_gate": "scripts/brain/quality/vulnerability-delta.mjs",
+    "block_new_at_or_above": ["HIGH", "CRITICAL"],
+    "scanner_failure_state": "UNKNOWN"
+  },
+  "learning": {
+    "authority": "BRAIN-CLOSED-LOOP-v1",
+    "parallel_store_forbidden": true,
+    "critical_test_auto_removal": false,
+    "escaped_defect_requires_regression_candidate": true
+  },
+  "production_shadow": {
+    "invariants": "config/powerhouse-quality-business-invariants.json",
+    "escaped_defect_metric": "escaped_defect_prevention_rate"
+  },
+  "performance": {
+    "attribution_module": "scripts/brain/quality/performance-attribution.mjs",
+    "unknown_attribution_state": "UNKNOWN"
+  },
+  "game_days": {
+    "registry": "config/powerhouse-quality-game-days.json",
+    "production_destructive_forbidden": true
+  },
+  "innovation": {
+    "benchmark_module": "scripts/brain/quality/innovation-benchmark.mjs",
+    "auto_promote_without_benchmark": false
+  }
+}

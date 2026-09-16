@@ -21,3 +21,22 @@ export function normalizeShadowObservation(input = {}) {
     } : null,
   });
 }
+
+export function evaluateBusinessInvariants(input = {}) {
+  const violations = [];
+  const chain = ['action', 'provider', 'readback', 'outcome', 'learning'];
+  for (const stage of chain) if (!input[stage]) violations.push(`chain:${stage}`);
+  if (!input.tenant_id || !input.readback_tenant_id) violations.push('tenant_integrity_unknown');
+  else if (input.tenant_id !== input.readback_tenant_id) violations.push('tenant_integrity');
+  if (!input.idempotency_key) violations.push('idempotency_unknown');
+  if (Number(input.duplicate_count ?? 1) > 1) violations.push('idempotency');
+  if (input.destination_ok === false || input.identity_ok === false) violations.push('exact_destination_identity');
+  if (input.partial_write === true) violations.push('no_partial_success_green');
+  return Object.freeze({
+    status: violations.length ? 'RED' : 'GREEN',
+    violations,
+    invariant_chain: chain,
+    learning_authority: 'BRAIN-CLOSED-LOOP-v1',
+    production_authority: 'BG169',
+  });
+}

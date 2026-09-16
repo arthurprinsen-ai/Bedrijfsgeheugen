@@ -1,0 +1,19 @@
+{
+  "fingerprint": "powerhouse-quality-surface-contracts-v1",
+  "surfaces": [
+    {
+      "id": "api:/intern/api/linkedin-revenue",
+      "type": "api",
+      "authority": "contracts/openapi/powerhouse-public-api.yaml",
+      "evidence_contract": "tests/brain-quality/test_powerhouse_api_contract.py",
+      "required": true
+    },
+    {
+      "id": "netlify_function:linkedin-revenue-cockpit",
+      "type": "netlify_function",
+      "authority": "netlify/functions/linkedin-revenue-cockpit.mjs",
+      "evidence_contract": "contracts/openapi/powerhouse-public-api.yaml",
+      "required": true
+    }
+  ]
+}

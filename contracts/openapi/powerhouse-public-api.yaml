@@ -1,0 +1,105 @@
+openapi: 3.1.0
+info:
+  title: Bedrijfsgeheugen Powerhouse HTTP API
+  version: 1.0.0
+  description: >-
+    Canonical contract for explicitly routed Powerhouse HTTP surfaces. Internal helper
+    modules are intentionally excluded until a real externally callable route exists.
+servers:
+  - url: https://www.bedrijfsgeheugen.nl
+paths:
+  /intern/api/linkedin-revenue:
+    get:
+      operationId: getLinkedInRevenueCommandCenter
+      summary: Read the canonical revenue command-center snapshot.
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: Canonical snapshot.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schemaVersion, generatedAt, status, summary, views]
+                properties:
+                  schemaVersion:
+                    type: string
+                    const: powerhouse-revenue-command-center-v1
+                  generatedAt:
+                    type: string
+                    format: date-time
+                  status:
+                    type: string
+                    enum: [READY, PARTIAL]
+                  summary:
+                    type: object
+                  views:
+                    type: object
+        '401':
+          description: Missing or invalid internal Basic authentication.
+        '503':
+          description: Powerhouse Core unavailable or command center degraded.
+    post:
+      operationId: mutateLinkedInRevenueCommandCenter
+      summary: Refresh the command center or record an action outcome.
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [command]
+                  properties:
+                    command:
+                      type: string
+                      const: refresh
+                    runDate:
+                      type: string
+                  additionalProperties: false
+                - type: object
+                  required: [actionId, outcomeType]
+                  properties:
+                    actionId:
+                      type: string
+                      minLength: 1
+                    outcomeType:
+                      type: string
+                      enum:
+                        - executed
+                        - reply_received
+                        - no_response
+                        - meeting_booked
+                        - offer_created
+                        - offer_accepted
+                        - offer_rejected
+                        - order_won
+                        - order_lost
+                        - revenue_observed
+                        - not_relevant
+                        - defer
+                    revenueEur:
+                      type: number
+                      minimum: 0
+                    evidence:
+                      type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Refresh or outcome accepted.
+        '400':
+          description: Invalid action/outcome request.
+        '401':
+          description: Missing or invalid internal Basic authentication.
+        '405':
+          description: HTTP method not supported.
+        '503':
+          description: Powerhouse Core unavailable or command center degraded.
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

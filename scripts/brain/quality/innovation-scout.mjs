@@ -21,19 +21,25 @@ for (const source of registry.sources || []) {
       last_modified: response.headers.get('last-modified'),
       content_sha256: crypto.createHash('sha256').update(text).digest('hex'),
       bytes: Buffer.byteLength(text),
-      adoption_state: 'candidate_for_experiment'
+      adoption_state: 'candidate_for_experiment',
+      benchmark_required: true,
+      benchmark_authority: 'scripts/brain/quality/innovation-benchmark.mjs',
+      promotion_without_benchmark: false,
+      required_dimensions: ['defect_yield', 'false_positive_rate', 'runtime_ms', 'cost', 'reproducibility', 'security_fit']
     });
   } catch (error) {
-    results.push({ id: source.id, domain: source.domain, url: source.url, ok: false, error: error.message, adoption_state: 'unavailable' });
+    results.push({ id: source.id, domain: source.domain, url: source.url, ok: false, error: error.message, adoption_state: 'unavailable', benchmark_required: true, promotion_without_benchmark: false });
   }
 }
 
 fs.mkdirSync('artifacts/quality', { recursive: true });
 const payload = {
-  fingerprint: 'powerhouse-quality-innovation-scout-v1',
+  fingerprint: 'powerhouse-quality-innovation-scout-v2',
   observed_at: now,
   policy: registry.policy,
   auto_adopt: false,
+  benchmark_authority: 'scripts/brain/quality/innovation-benchmark.mjs',
+  promotion_rule: 'candidate must beat incumbent on explicit benchmark evidence without security regression',
   sources: results,
   healthy: results.filter(x => x.ok).length,
   unhealthy: results.filter(x => !x.ok).length

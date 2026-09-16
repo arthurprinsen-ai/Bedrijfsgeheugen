@@ -1,0 +1,6 @@
+{
+  "fingerprint": "powerhouse-quality-game-days-v1",
+  "production_destructive_forbidden": true,
+  "default_environment": "staging",
+  "faults": ["provider_outage", "timeout", "stale_data", "duplicate_event", "expired_token", "partial_write"]
+}

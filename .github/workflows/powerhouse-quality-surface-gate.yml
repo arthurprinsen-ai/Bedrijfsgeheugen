@@ -1,0 +1,52 @@
+name: Powerhouse Quality Intelligence Surface Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'portal-v2/**'
+      - 'public/**'
+      - 'netlify/functions/**'
+      - 'supabase/**'
+      - 'contracts/openapi/**'
+      - 'config/powerhouse-quality-surface-contracts.json'
+      - 'scripts/brain/quality/surface-discovery*.mjs'
+      - '.github/workflows/powerhouse-quality-surface-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  discover-unregistered-surfaces:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Mandatory chat-learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Capture exact PR changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p artifacts/quality/coverage
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > artifacts/quality/coverage/changed-files.txt
+      - name: Discover new surfaces and fail closed on NOT_REGISTERED
+        run: >-
+          node scripts/brain/quality/surface-discovery-check.mjs
+          --files artifacts/quality/coverage/changed-files.txt
+          --registry config/powerhouse-quality-surface-contracts.json
+          --output artifacts/quality/coverage/discovery.json
+          --check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-surface-discovery-${{ github.sha }}
+          path: artifacts/quality/coverage
+          retention-days: 90
