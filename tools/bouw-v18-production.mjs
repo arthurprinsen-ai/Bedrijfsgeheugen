@@ -47,4 +47,14 @@ await writeFile('index.html', shellWithKnowledge, 'utf8');
 console.log(applyCustomerPortalAuth());
 console.log(verifyCustomerLoginContract());
 await runDocumentExtractorProductionCanary();
+
+// Netlify exposes COMMIT_REF for both deploy previews and production builds.
+// Publish that authority into the deployed artifact so browser/readback jobs
+// can prove they are testing the exact release instead of an older reachable
+// deployment during promotion races. GITHUB_SHA is a safe CI fallback; local
+// builds remain explicitly non-production by reporting "local".
+const deployCommitRef = String(process.env.COMMIT_REF || process.env.GITHUB_SHA || 'local').trim();
+await writeFile('deploy-identity.json', `${JSON.stringify({ commit_ref: deployCommitRef }, null, 2)}\n`, 'utf8');
+console.log(`Deploy identity written for ${deployCommitRef}`);
+
 console.log('Accepted historical V18 content build complete; canonical brand shell is projected in the final page-policy stage');
