@@ -19,6 +19,9 @@ test('active backfill workflow reads existing authorities and only resumes canon
   assert.match(yaml, /SUPABASE_SERVICE_ROLE_KEY:\s*\$\{\{\s*secrets\.SUPABASE_SERVICE_ROLE_KEY\s*\}\}/);
   assert.match(yaml, /durableResumeEnabled/);
   assert.match(yaml, /upload-artifact/);
+  assert.match(yaml, /\.artifacts\/completion-supervisor-backfill-report\.json/);
+  assert.match(yaml, /\.artifacts\/completion-supervisor-resume-\*\.json/);
+  assert.match(yaml, /include-hidden-files:\s*true/);
   assert.doesNotMatch(yaml, /repository_dispatch/);
   assert.doesNotMatch(yaml, /workflow_dispatches|pulls\/.*merge|deploy/i);
 });
