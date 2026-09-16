@@ -29,13 +29,19 @@ function normalizeDispatchRow(row) {
 }
 
 function normalizeEvidenceRow(row) {
+  if (!row) return null;
+  const metadata = row.metadata && typeof row.metadata === 'object' ? Object.freeze({ ...row.metadata }) : Object.freeze({});
   return Object.freeze({
     ref:row.evidence_ref,
     type:row.evidence_type,
+    producer:metadata.producer ?? null,
+    taskIdentity:metadata.taskIdentity ?? null,
+    candidateIdentity:metadata.candidateIdentity ?? null,
+    productionIdentity:metadata.productionIdentity ?? null,
     independent:row.independent === true,
     accepted:row.accepted === true,
     exactProduction:row.exact_production === true,
-    metadata:row.metadata && typeof row.metadata === 'object' ? Object.freeze({ ...row.metadata }) : Object.freeze({}),
+    metadata,
   });
 }
 
@@ -113,12 +119,52 @@ export function createSupabaseOutcomeObligationStores({
   }
 
   const evidenceStore = Object.freeze({
+    async get(idempotencyKey, evidenceRef) {
+      const key = requireText(idempotencyKey, 'idempotencyKey');
+      const ref = requireText(evidenceRef, 'evidenceRef');
+      const endpoint = `${evidenceEndpoint}?idempotency_key=eq.${encodeURIComponent(key)}&evidence_ref=eq.${encodeURIComponent(ref)}&select=evidence_ref,evidence_type,independent,accepted,exact_production,metadata`;
+      const rows = await request(endpoint, { method:'GET', headers:headers() });
+      return normalizeEvidenceRow(Array.isArray(rows) ? rows[0] : null);
+    },
     async list(idempotencyKey) {
       const key = requireText(idempotencyKey, 'idempotencyKey');
       const endpoint = `${evidenceEndpoint}?idempotency_key=eq.${encodeURIComponent(key)}&select=evidence_ref,evidence_type,independent,accepted,exact_production,metadata&order=created_at.asc`;
       const rows = await request(endpoint, { method:'GET', headers:headers() });
       if (!Array.isArray(rows)) throw new Error('Supabase outcome obligation store failed: evidence response must be an array');
       return Object.freeze(rows.map(normalizeEvidenceRow));
+    },
+    async putIfAbsent(record) {
+      if (!record || typeof record !== 'object') throw new TypeError('evidence record is required');
+      const idempotencyKey = requireText(record.idempotencyKey, 'record.idempotencyKey');
+      const ref = requireText(record.ref, 'record.ref');
+      const existing = await this.get(idempotencyKey, ref);
+      if (existing) return Object.freeze({ created:false, record:existing });
+      const metadata = {
+        ...(record.metadata && typeof record.metadata === 'object' ? record.metadata : {}),
+        producer:record.producer ?? null,
+        taskIdentity:record.taskIdentity ?? null,
+        candidateIdentity:record.candidateIdentity ?? null,
+        productionIdentity:record.productionIdentity ?? null,
+      };
+      await request(evidenceEndpoint, {
+        method:'POST',
+        headers:headers({
+          'content-type':'application/json',
+          Prefer:'resolution=ignore-duplicates,return=minimal',
+        }),
+        body:JSON.stringify({
+          idempotency_key:idempotencyKey,
+          evidence_ref:ref,
+          evidence_type:requireText(record.type, 'record.type'),
+          independent:record.independent === true,
+          accepted:record.accepted === true,
+          exact_production:record.exactProduction === true,
+          metadata,
+        }),
+      });
+      const persisted = await this.get(idempotencyKey, ref);
+      if (!persisted) throw new Error('Supabase outcome obligation store failed: persisted evidence record not found');
+      return Object.freeze({ created:true, record:persisted });
     },
   });
 
