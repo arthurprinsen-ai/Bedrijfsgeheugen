@@ -1,0 +1,22 @@
+{
+  "fingerprint": "powerhouse-engineering-closed-loop-v1",
+  "status": "active_helper",
+  "authority": "powerhouse-continuous-improvement-engine-v1",
+  "delivery_contract": "BRAIN-DELIVERY-v2",
+  "module": "scripts/brain/powerhouse-engineering-closed-loop.mjs",
+  "parallel_authority_created": false,
+  "capabilities": [
+    "engineering_scorecard_unknown_is_not_zero",
+    "same_revision_flake_detection",
+    "dependency_blast_radius",
+    "recovery_rehearsal_proof",
+    "golden_path_scaffolding",
+    "protected_meta_learning_recommendations"
+  ],
+  "guardrails": {
+    "direct_gate_mutation_allowed": false,
+    "required_failure_override_allowed": false,
+    "scaffold_write_requires_explicit_write_flag": true,
+    "promotion_requires_existing_protected_delivery": true
+  }
+}
