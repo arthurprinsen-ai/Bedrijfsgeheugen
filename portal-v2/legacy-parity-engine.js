@@ -56,9 +56,9 @@ const WERKWEKEN=46;
 const TEAMDELER=24;
 
 function dimensieNiveau(s,id){
-  const m=profile(s).maturity;
-  if(!m||typeof m!=='object')return 0;
-  return clamp(Math.round(n(m[id],2)),1,5);
+  const m=profile(s).maturity||{};
+  const waarde=n(m[id]);
+  return waarde>=1&&waarde<=5?waarde:0;
 }
 
 function dimensieKosten(s){
@@ -83,8 +83,8 @@ function dimensieJaarUren(s){
 function manualCost(s){const x=profile(s);return n(x.manualHoursPerWeek)*46*n(x.hourlyCost)}
 function maturityScores(s){
   const x=profile(s);
-  if(x.maturity&&typeof x.maturity==='object')return PROFILE_DIMENSIONS.map(item=>clamp(Math.round(n(x.maturity[item.id],2)),1,5));
   const vals=arr(x.dimensionScores).map(n).filter(v=>v>0);if(vals.length)return vals;
+  if(x.maturity&&typeof x.maturity==='object')return PROFILE_DIMENSIONS.map(item=>clamp(Math.round(n(x.maturity[item.id],2)),1,5));
   return Object.values(x.dimensions||{}).map(n).filter(v=>v>0)
 }
 function completion(values){const xs=arr(values);return xs.length?xs.filter(v=>v!==undefined&&v!==null&&v!=='').length/xs.length*100:0}
