@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import bufferCollect, { config, runBufferCollection } from '../netlify/functions/buffer-social-collect.mjs';
-import { localDayWindow, providerReconciliationState } from '../netlify/functions/social-publication-delivery.mjs';
+import { localDayWindow, providerReconciliationState, deliveryEvidenceForSource } from '../netlify/functions/social-publication-delivery.mjs';
 import { hasProviderCoverage, selectDeliverySource, deliveryDecision } from '../platform/social-delivery-guarantee.mjs';
 
 test('Buffer collector is scheduled natively and not through Make', () => {
@@ -113,8 +113,21 @@ test('Instagram provider coverage fails closed unless canonical evidence proves 
 
   const verified=deliveryDecision({
     channel:'instagram', posts, artifact:instagramArtifact,
-    obligation:{status:'LIVE_PROVEN',evidence:{identity_gate_result:'PASS',mira_identity_verified:true,asset_verified_under_current_contract:true,final_media_asset_url:'https://cdn.example/final.jpg'}},
+    obligation:{status:'LIVE_PROVEN',evidence:{identity_gate_result:'PASS',mira_identity_verified:true,asset_verified_under_current_contract:true,final_media_asset_url:'https://cdn.example/final.jpg',provider_post_id:'ig-1'}},
   });
   assert.equal(verified.action,'NONE');
   assert.equal(verified.reason,'PROVIDER_COVERED_VERIFIED');
+});
+
+test('successful guarded delivery writes identity evidence bound to the canonical artifact', () => {
+  const personal=deliveryEvidenceForSource({kind:'artifact',text:personalArtifact.body,artifact:personalArtifact});
+  assert.equal(personal.identity_gate_result,'PASS');
+  assert.equal(personal.personal_truth_verified,true);
+  assert.equal(personal.provider_text_matches_artifact,true);
+
+  const instagram=deliveryEvidenceForSource({kind:'artifact',text:instagramArtifact.body,artifact:instagramArtifact});
+  assert.equal(instagram.identity_gate_result,'PASS');
+  assert.equal(instagram.mira_identity_verified,true);
+  assert.equal(instagram.asset_verified_under_current_contract,true);
+  assert.equal(instagram.final_media_asset_url,'https://cdn.example/final.jpg');
 });
