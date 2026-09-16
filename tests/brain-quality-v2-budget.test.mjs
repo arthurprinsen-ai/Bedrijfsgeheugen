@@ -1,0 +1,1 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {evaluateExplorationAction} from '../scripts/brain/quality/exploration-policy.mjs';test('default exploration budget is bounded',()=>assert.deepEqual(evaluateExplorationAction({}).budget,{max_pages:50,max_actions:250,max_minutes:15}));
