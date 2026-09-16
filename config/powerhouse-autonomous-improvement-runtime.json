@@ -9,17 +9,37 @@
     "human_projection": "Notion existing Powerhouse pages",
     "scheduler": "reuse Business OS Intelligence workflow and existing Supabase/Brain scheduled writers"
   },
-  "lifecycle": ["OBSERVE","FITNESS","CAPABILITY_MAP","CANDIDATE","PORTFOLIO","REPLAY","EXPERIMENT","CHAOS","DECIDE","PROMOTE_OR_ROLLBACK","SIMPLIFY","VALUE_ATTRIBUTE","WRITEBACK","REVALIDATE"],
+  "lifecycle": ["OBSERVE","FITNESS","CAPABILITY_MAP","BACKLOG_INTAKE","CANDIDATE","PORTFOLIO","REPLAY","EXPERIMENT","CHAOS","DECIDE","PROMOTE_OR_ROLLBACK","SIMPLIFY","VALUE_ATTRIBUTE","WRITEBACK","REVALIDATE"],
   "capabilities": {
     "periodic_orchestration": true,
     "architecture_fitness": true,
     "capability_graph_projection": true,
+    "backlog_intake": true,
+    "stale_obligation_reconciliation": true,
+    "dependency_currency_intake": true,
+    "historical_delta_classification": true,
     "champion_challenger": true,
     "causal_learning": true,
     "digital_twin_replay": true,
     "failure_injection": true,
     "automatic_simplification": true,
     "business_value_feedback": true
+  },
+  "backlog_intake": {
+    "classification_authority": "powerhouse-continuous-improvement-engine-v1",
+    "allowed_classifications": ["SUPERSEDED","COALESCE","COMPARE","ISOLATE","CANDIDATE_REQUIRED"],
+    "sources": {
+      "github_open_pull_requests": true,
+      "open_loop_obligations": "existing Brain/Supabase authority",
+      "dependency_updates": "GitHub Dependabot pull requests"
+    },
+    "retired_authorities": {
+      "Make": "Supabase/Brain canonical writer",
+      "BG168/Make": "Supabase/Brain canonical writer"
+    },
+    "destructive_execution_allowed": false,
+    "unknown_identity_fails_closed": true,
+    "major_dependency_requires_compatibility_security_correctness_evidence": true
   },
   "gates": {
     "security_non_degradation": true,
