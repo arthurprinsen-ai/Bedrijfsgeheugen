@@ -71,6 +71,13 @@ export function withResourceFootprint(footprint={},base=DEFAULT_IMPACT_SNAPSHOT)
   };
 }
 
+export function impactSnapshotFromPortalState(state={}){
+  const footprint=state?.resourceBusinessValue?.resource_footprint;
+  return footprint&&typeof footprint==='object'
+    ? withResourceFootprint(footprint)
+    : structuredClone(DEFAULT_IMPACT_SNAPSHOT);
+}
+
 export function customerSafeSnapshot(snapshot=DEFAULT_IMPACT_SNAPSHOT){ const {internal,...safe}=snapshot; return structuredClone(safe); }
 function meter(value,label,sub='van 100'){return `<div class="csrd-meter" style="--score:${Number(value)}"><div class="csrd-meter-ring"><strong>${value}</strong><span>${sub}</span></div><p>${label}</p></div>`;}
 function metricCard([id,m]){return `<article class="csrd-float metric-${id}" data-domain="${id}"><span class="csrd-metric-icon ${m.tone}">${m.icon}</span><div><small>${m.label}</small><strong>${m.value}</strong><span>${m.sub}</span></div></article>`;}
