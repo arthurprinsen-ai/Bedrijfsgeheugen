@@ -81,7 +81,8 @@ for (const file of files.filter(file => file.endsWith('.yml') || file.endsWith('
 }
 
 for (const file of files.filter(file => file.startsWith('supabase/migrations/') && file.endsWith('.sql')).slice(-250)) {
-  capabilities.push({ id: `migration:${path.basename(file)}`, provides: ['supabase-schema'], usage_count: 1, last_observed_at: new Date().toISOString(), source: file });
+  const migrationName = path.basename(file, '.sql');
+  capabilities.push({ id: `migration:${migrationName}`, provides: [`migration:${migrationName}`], usage_count: 1, last_observed_at: new Date().toISOString(), source: file });
 }
 
 const inventory = buildCapabilityInventory({ capabilities, requirements: REQUIREMENTS, now: new Date().toISOString(), staleAfterDays: 36500 });
