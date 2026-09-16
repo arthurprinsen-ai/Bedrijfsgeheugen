@@ -47,6 +47,6 @@ jobs:
           ! grep -RniE 'new_persistent_authority[[:space:]]*[:=][[:space:]]*true|make\.com|hook\.eu[0-9]+\.make\.com' \
             scripts/brain/continuous-improvement \
             supabase/migrations/*autonomous_improvement* || {
-              echo 'Parallel authority or retired Make dependency detected.' >&2
+              echo '::error::Parallel authority or retired Make dependency detected.'
               exit 1
             }
