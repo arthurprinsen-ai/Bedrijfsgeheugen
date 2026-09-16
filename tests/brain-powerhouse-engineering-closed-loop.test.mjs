@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import {
   computeEngineeringScorecard,
   detectFlakyTests,
@@ -84,4 +85,17 @@ test('meta-learning recommends evidence-backed improvements but never mutates ga
   assert.equal(result.direct_mutation_allowed, false);
   assert.ok(result.recommendations.length > 0);
   assert.ok(result.recommendations.every(x => x.promotion === 'protected_delivery_required'));
+});
+
+test('Engineering OS indexes the closed loop and Required CI executes this regression', async () => {
+  const contract = JSON.parse(await readFile(new URL('../config/powerhouse-engineering-os.json', import.meta.url), 'utf8'));
+  assert.equal(contract.continuous_improvement.fingerprint, 'powerhouse-engineering-closed-loop-v1');
+  assert.equal(contract.continuous_improvement.flaky_test_policy.required_failure_override_allowed, false);
+  assert.equal(contract.continuous_improvement.recovery_proof.max_age_days, 90);
+  const required = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
+  assert.match(required, /tests\/brain-powerhouse-engineering-closed-loop\.test\.mjs/);
+  const learning = await readFile(new URL('../.github/workflows/engineering-os-learning.yml', import.meta.url), 'utf8');
+  assert.match(learning, /cron: '17 3 \* \* \*'/);
+  assert.match(learning, /actions\/upload-artifact@v4/);
+  assert.match(learning, /failure_observation_is_not_automatically_a_caught_defect: true/);
 });
