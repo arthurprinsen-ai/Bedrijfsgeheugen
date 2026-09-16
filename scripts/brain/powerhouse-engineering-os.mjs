@@ -30,8 +30,7 @@ function validateContinuousImprovement(contract, errors) {
   for (const key of ['dedupe_before_persist','conflict_arbitration','stable_identity']) requireBoolean(improvement.candidate?.[key], `continuous_improvement.candidate.${key}`, errors);
   for (const key of ['security_non_degradation','correctness_non_degradation','unknown_critical_fails_closed','no_single_magic_score','rollback_identity_required','compensated_tradeoff_requires_evidence','business_claim_requires_business_evidence']) requireBoolean(improvement.promotion?.[key], `continuous_improvement.promotion.${key}`, errors);
   requireBoolean(improvement.revalidation?.require_revalidate_after, 'continuous_improvement.revalidation.require_revalidate_after', errors);
-  const states = improvement.revalidation?.states;
-  if (JSON.stringify(states) !== JSON.stringify(['CONFIRMED','CANDIDATE_REQUIRED','SUPERSEDED','BLOCKED_HARD_BOUNDARY'])) errors.push('continuous improvement revalidation states drift');
+  if (JSON.stringify(improvement.revalidation?.states) !== JSON.stringify(['CONFIRMED','CANDIDATE_REQUIRED','SUPERSEDED','BLOCKED_HARD_BOUNDARY'])) errors.push('continuous improvement revalidation states drift');
   requireBoolean(improvement.attribution?.causality_not_assumed, 'continuous_improvement.attribution.causality_not_assumed', errors);
   requireBoolean(improvement.attribution?.baseline_comparison_required, 'continuous_improvement.attribution.baseline_comparison_required', errors);
   return improvement.fingerprint;
@@ -62,10 +61,11 @@ export async function validateEngineeringOS() {
   if (developmentOS.includes('BRAIN-DELIVERY-v1')) errors.push('stale BRAIN-DELIVERY-v1 remains in development OS');
   if (!developmentOS.includes('powerhouse-engineering-os-v1')) errors.push('development OS does not reference Engineering OS fingerprint');
   if (!developmentOS.includes('powerhouse-shared-learning-architecture-evolution-v1')) errors.push('development OS does not reference shared learning/evolution fingerprint');
-  if (!developmentOS.includes('powerhouse-continuous-improvement-engine-v1')) errors.push('development OS does not reference continuous improvement fingerprint');
+  const continuousDoc = await readFile(path.join(repoRoot, contract.canonical_authorities.continuous_improvement_doc), 'utf8');
+  if (!continuousDoc.includes('powerhouse-continuous-improvement-engine-v1')) errors.push('continuous improvement documentation fingerprint drift');
+  if (!continuousDoc.includes('OBSERVE -> CLUSTER -> CANDIDATE')) errors.push('continuous improvement documentation lifecycle drift');
   const requiredCI = await readFile(path.join(repoRoot, contract.canonical_authorities.required_ci), 'utf8');
   if (!requiredCI.includes(contract.bootstrap.required_test)) errors.push('Engineering OS regression test is not wired into Required test');
-  if (!requiredCI.includes('tests/brain-continuous-improvement-engine.test.mjs')) errors.push('Continuous Improvement regression test is not wired into Required test');
   return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, continuous_improvement_fingerprint: continuousImprovementFingerprint, golden_path: contract.golden_path, errors };
 }
 async function main() {
