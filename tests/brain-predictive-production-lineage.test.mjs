@@ -8,6 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MIGRATIONS = path.join(ROOT, 'supabase', 'migrations');
 const ENGINE = path.join(ROOT, 'supabase', 'functions', 'powerhouse-predictive-engine', 'index.ts');
 const CALIBRATOR = path.join(ROOT, 'supabase', 'functions', 'powerhouse-forecast-calibrator', 'index.ts');
+const CONFIG = path.join(ROOT, 'supabase', 'config.toml');
 
 const CANONICAL = [
   '20260914074356_powerhouse_channel_decisions_v1.sql',
@@ -85,4 +86,12 @@ test('live predictive sources are fail closed and are not publishers', () => {
   assert.match(engine, /evidence_keys/);
   assert.match(calibrator, /revenue_learning_obligations/);
   assert.match(calibrator, /uncertain/);
+});
+
+test('hosted previews deploy both predictive functions with custom-token authentication', () => {
+  const config = fs.readFileSync(CONFIG, 'utf8');
+  for (const name of ['powerhouse-predictive-engine', 'powerhouse-forecast-calibrator']) {
+    assert.match(config, new RegExp(`\\[functions\\.${name}\\][\\s\\S]*?enabled\\s*=\\s*true`, 'i'));
+    assert.match(config, new RegExp(`\\[functions\\.${name}\\][\\s\\S]*?verify_jwt\\s*=\\s*false`, 'i'));
+  }
 });

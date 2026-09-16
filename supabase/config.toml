@@ -1,0 +1,11 @@
+project_id = "bedrijfsgeheugen"
+
+[functions.powerhouse-predictive-engine]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-predictive-engine/index.ts"
+
+[functions.powerhouse-forecast-calibrator]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-forecast-calibrator/index.ts"
