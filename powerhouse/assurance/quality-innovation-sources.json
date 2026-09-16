@@ -1,6 +1,6 @@
 {
-  "fingerprint": "powerhouse-quality-innovation-sources-v1",
-  "policy": "primary_sources_only; discovery_is_not_adoption",
+  "fingerprint": "powerhouse-quality-innovation-sources-v2",
+  "policy": "primary_sources_only; discovery_is_not_adoption; active_inventory_relevance_required",
   "sources": [
     {"id":"playwright-releases","url":"https://github.com/microsoft/playwright/releases","domain":"frontend-browser"},
     {"id":"playwright-docs","url":"https://playwright.dev/docs/intro","domain":"frontend-browser"},
@@ -14,6 +14,12 @@
     {"id":"schemathesis-docs","url":"https://schemathesis.readthedocs.io/","domain":"api-testing"},
     {"id":"testcontainers-docs","url":"https://testcontainers.com/","domain":"integration-testing"},
     {"id":"k6-docs","url":"https://grafana.com/docs/k6/latest/","domain":"performance"},
-    {"id":"stryker-docs","url":"https://stryker-mutator.io/docs/","domain":"mutation-testing"}
+    {"id":"stryker-docs","url":"https://stryker-mutator.io/docs/","domain":"mutation-testing"},
+    {"id":"openai-api-changelog","url":"https://developers.openai.com/api/docs/changelog","domain":"ai-models"},
+    {"id":"supabase-changelog","url":"https://supabase.com/changelog","domain":"supabase"},
+    {"id":"postgresql-release-notes","url":"https://www.postgresql.org/docs/release/","domain":"postgresql"},
+    {"id":"github-changelog","url":"https://github.blog/changelog/","domain":"github-actions"},
+    {"id":"netlify-changelog","url":"https://www.netlify.com/changelog/","domain":"netlify"},
+    {"id":"nodejs-releases","url":"https://nodejs.org/en/blog/release","domain":"node-runtime"}
   ]
 }
