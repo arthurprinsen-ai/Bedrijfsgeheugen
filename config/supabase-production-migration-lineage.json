@@ -38,6 +38,12 @@
       "replacesAlias": "20260916111500_powerhouse_internal_view_replay_hardening.sql"
     }
   ],
+  "candidateEvidence": {
+    "failedRun": "github-actions:35105654421",
+    "rootCause": "Drifted timestamp aliases remained in the candidate tree while exact production-ledger filenames were added, creating duplicate semantic migrations; closure was also marked LIVE_VERIFIED before protected-main readback.",
+    "repair": "Remove both aliases from the candidate tree, retain only exact observed production filenames, and keep reconciliationStatus PENDING_MAIN_READBACK with productionStateBeforeClosure OPEN until protected merge plus GitHub and production readback.",
+    "prevention": "Production-ledger reconciliation must prove semantic migration uniqueness and fail-closed closure state in exact-head BRAIN and Required gates before merge."
+  },
   "obligation": {
     "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
     "changeId": "repo-production-migration-lineage-reconciliation-v1",
