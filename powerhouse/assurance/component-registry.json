@@ -28,7 +28,7 @@
       "lifecycle": "active",
       "authority": "Powerhouse Assurance + BRAIN-DELIVERY-v2 + deterministic GitHub Actions evidence",
       "owner": "Powerhouse quality governance",
-      "code_paths": ["powerhouse/assurance/quality-intelligence.json", "powerhouse/assurance/quality-innovation-sources.json", "scripts/powerhouse-quality-intelligence.mjs", "scripts/quality/**", "tests/powerhouse-quality-intelligence.test.mjs", "tests/backend/**", "tests/performance/**", ".github/workflows/powerhouse-quality-intelligence.yml", ".github/workflows/powerhouse-codeql.yml"],
+      "code_paths": ["powerhouse/assurance/quality-intelligence.json", "powerhouse/assurance/quality-innovation-sources.json", "scripts/brain/powerhouse-quality-intelligence.mjs", "scripts/brain/quality/**", "tests/brain-quality-intelligence.test.mjs", "tests/brain-quality/**", "tests/brain-quality-performance/**", "config/stryker.quality.conf.json", ".github/workflows/powerhouse-quality-intelligence.yml", ".github/workflows/powerhouse-codeql.yml"],
       "runtime_surfaces": ["GitHub Actions", "https://www.bedrijfsgeheugen.nl/", "registered Portal/cockpit/API/integration targets only"],
       "docs": ["docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md", "docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-design.md", "docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence.md"],
       "dependencies": ["Powerhouse Assurance", "BRAIN-DELIVERY-v2", "BRAIN-CLOSED-LOOP-v1", "existing accepted website/visual baselines", "Playwright", "axe-core", "Hypothesis", "Schemathesis", "Testcontainers", "k6", "CodeQL", "Trivy", "OWASP ZAP", "Stryker"],
@@ -37,7 +37,7 @@
       "observability_contract": "Per-dimension GitHub Actions evidence with exact candidate SHA, artifacts and deterministic status; scheduled deep sensors preserve their own evidence.",
       "recovery_contract": {"critical": false, "status": "tested_core", "evidence": "Core quality contract is regression-tested and revertable; external deep targets remain independently evidenced and must not be inferred from core green."},
       "cost_capacity_contract": "Impact-select expensive PR jobs; deep browser/performance/mutation/DAST jobs are scheduled/manual; no automatic paid-resource increase.",
-      "test_contract": ["tests/powerhouse-quality-intelligence.test.mjs", "tests/backend/test_powerhouse_quality_properties.py", "tests/backend/test_powerhouse_api_contract.py", "tests/backend/test_powerhouse_integration_profile.py", "tests/performance/powerhouse-smoke.js"],
+      "test_contract": ["tests/brain-quality-intelligence.test.mjs", "tests/brain-quality/test_powerhouse_quality_properties.py", "tests/brain-quality/test_powerhouse_api_contract.py", "tests/brain-quality/test_powerhouse_integration_profile.py", "tests/brain-quality-performance/powerhouse-smoke.js"],
       "evidence_contract": "Core green requires deterministic contract evidence on exact candidate SHA. Scheduled sensors and registered external targets require their own same-target evidence and may never be inferred from a skipped/unregistered test.",
       "learning_contract": "Escaped defects reuse BRAIN-CLOSED-LOOP-v1 and BG168/BG166/BG167; no parallel QA learning store. Internet discoveries are candidates for controlled experiments, never automatic adoption.",
       "last_verified_at": "2026-09-16T09:45:00Z"
