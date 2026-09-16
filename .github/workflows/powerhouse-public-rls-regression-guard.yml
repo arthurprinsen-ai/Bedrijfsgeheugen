@@ -1,0 +1,29 @@
+name: Powerhouse public RLS regression guard
+
+on:
+  pull_request:
+    paths:
+      - 'tests/powerhouse-public-rls-regression-guard.test.mjs'
+      - 'supabase/migrations/*powerhouse_public_rls_regression_guard.sql'
+      - '.github/workflows/powerhouse-public-rls-regression-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tests/powerhouse-public-rls-regression-guard.test.mjs'
+      - 'supabase/migrations/*powerhouse_public_rls_regression_guard.sql'
+      - '.github/workflows/powerhouse-public-rls-regression-guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify fail-closed public RLS contract
+        run: node --test tests/powerhouse-public-rls-regression-guard.test.mjs
