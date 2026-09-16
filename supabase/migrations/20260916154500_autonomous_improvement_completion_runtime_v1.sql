@@ -316,10 +316,15 @@ $function$;
 revoke execute on function public.powerhouse_autonomous_improvement_cron_v1() from public, anon, authenticated;
 grant execute on function public.powerhouse_autonomous_improvement_cron_v1() to service_role;
 
--- Reuse the existing :42 scheduler. Only its command is upgraded to the canonical wrapper.
-update cron.job
-set command='select public.powerhouse_autonomous_improvement_cron_v1();'
-where jobname='powerhouse-autonomous-improvement-cycle-v1';
+-- Reuse the existing :42 scheduler through the same supported pg_cron API pattern used by v1.
+do $schedule$
+begin
+  if exists (select 1 from cron.job where jobname='powerhouse-autonomous-improvement-cycle-v1') then
+    perform cron.unschedule('powerhouse-autonomous-improvement-cycle-v1');
+  end if;
+  perform cron.schedule('powerhouse-autonomous-improvement-cycle-v1','42 * * * *','select public.powerhouse_autonomous_improvement_cron_v1();');
+end;
+$schedule$;
 
 create or replace view public.powerhouse_autonomous_improvement_control_v1
 with (security_invoker = true) as
