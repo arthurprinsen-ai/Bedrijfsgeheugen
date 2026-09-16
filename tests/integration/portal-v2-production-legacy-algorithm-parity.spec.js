@@ -10,15 +10,15 @@ async function openAnalysis(page,pageId){
  const workspace=page.locator(workspaceSelector);
  await expect(workspace,`${pageId} workspace`).toBeVisible({timeout:15_000});
  // The first generic workspace shell is synchronous; functional-suite and
- // specialist workspaces replace/fill it asynchronously. Wait for a marker
- // that only exists on the final mounted implementation before interacting.
- const readySelector=pageId==='roadmap'?'[data-roadmap-board]':'[data-field-id]';
+ // specialist workspaces replace/fill it asynchronously. Generic functional
+ // pages all expose their final tenant-scoped save actions only after the
+ // delegated form renderer has mounted; Roadmap has its own board marker.
+ const readySelector=pageId==='roadmap'?'[data-roadmap-board]':'.v2formactions';
  await expect(workspace.locator(readySelector).first(),`${pageId} final workspace`).toBeVisible({timeout:15_000});
  const parity=page.locator(`${workspaceSelector} [data-legacy-algorithm-parity]`);
  // attachLegacyAlgorithmParity is imported after the final workspace mount.
  // Re-applying the idempotent Analyse selection avoids losing the click in the
  // small interval between final form render and parity-listener attachment.
- // This also acts as the exact-head release trigger after scope reconciliation.
  await expect.poll(async()=>{
    const tab=page.locator(`${workspaceSelector} [data-workspace-tab="analyse"]`);
    if(!await tab.count())return false;
