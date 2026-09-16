@@ -10,7 +10,9 @@ function matches(path, patterns = []) { return patterns.some(pattern => pattern.
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/approved-central-blog.yml': 'automation',
-  '.github/workflows/powerhouse-assurance.yml': 'backend'
+  '.github/workflows/powerhouse-assurance.yml': 'backend',
+  '.github/workflows/powerhouse-quality-intelligence.yml': 'backend',
+  '.github/workflows/powerhouse-quality-surface-gate.yml': 'backend'
 });
 const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
   'docs/superpowers/changes/',
@@ -31,6 +33,15 @@ const ENGINEERING_TRUST_BACKEND_PATHS = Object.freeze([
   'tests/engineering-supply-chain',
   'tests/engineering-trust'
 ]);
+const QUALITY_BACKEND_PATHS = Object.freeze([
+  'config/powerhouse-quality-',
+  'config/powerhouse-vulnerability-baseline.json',
+  'config/stryker.quality.conf.json',
+  'contracts/openapi/',
+  'scripts/brain/powerhouse-quality-intelligence.mjs',
+  'scripts/brain/quality/',
+  'tests/brain-quality'
+]);
 const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
   'docs/powerhouse/',
   'docs/portal-v2-parity-architecture.md'
@@ -40,6 +51,7 @@ function scopedLaneForPath(path) {
   if (SCOPED_WORKFLOW_LANES[path]) return SCOPED_WORKFLOW_LANES[path];
   if (matches(path, ASSURANCE_BACKEND_PATHS)) return 'backend';
   if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';
+  if (matches(path, QUALITY_BACKEND_PATHS)) return 'backend';
   return null;
 }
 function isScopedNonExecutable(path) {
