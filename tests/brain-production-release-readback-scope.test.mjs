@@ -28,6 +28,14 @@ test('production readback derives website applicability from canonical delivery 
   assert.match(workflow, /deployment-required/);
 });
 
+test('Portal V2 runtime changes require exact Netlify deployment readback even when generic website lane classification misses them', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(workflow, /portalV2RuntimeRequired/);
+  assert.match(workflow, /path\.startsWith\('portal-v2\/'\)/);
+  assert.match(workflow, /!path\.startsWith\('portal-v2\/tests\/'\)/);
+  assert.match(workflow, /deploymentRequired=websiteRequired \|\| netlifyRuntimeRequired \|\| portalV2RuntimeRequired/);
+});
+
 test('Netlify-hosted backend function changes require exact production deployment without forcing browser scope', async () => {
   const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(workflow, /netlify\/functions\//);
