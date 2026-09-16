@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import {
   buildImprovementObligation,
   advanceImprovementLifecycle,
@@ -144,5 +145,12 @@ const control = buildExecutiveImprovementProjection({
 assert.equal(control.new_persistent_authority, false);
 assert.equal(control.obligations[0].drilldown.change_sha, 'abc123');
 assert.equal(control.scheduler.scheduler_proven, true);
+
+const completionGateWorkflow = await readFile('.github/workflows/autonomous-improvement-completion-gate.yml', 'utf8');
+assert.match(
+  completionGateWorkflow,
+  /::error::Parallel authority or retired Make dependency detected\./,
+  'a failing autonomous-improvement completion gate must emit an actionable GitHub error annotation'
+);
 
 console.log('autonomous improvement completion tests passed');

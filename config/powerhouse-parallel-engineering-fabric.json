@@ -1,0 +1,67 @@
+{
+  "fingerprint": "powerhouse-parallel-engineering-fabric-v1",
+  "version": 1,
+  "status": "active",
+  "extends": ["powerhouse-engineering-os-v1", "BRAIN-DELIVERY-v2"],
+  "authority": {
+    "delivery": "config/brain-delivery-system.json",
+    "engineering_os": "config/powerhouse-engineering-os.json",
+    "production_promotion": "BG169",
+    "creates_parallel_authority": false
+  },
+  "scheduling": {
+    "deterministic": true,
+    "sort": "lexical-work-package-id",
+    "require_exact_base_identity": true,
+    "require_exact_candidate_identity": true,
+    "parallel_only_without": [
+      "changed-path-overlap",
+      "conflict-contract-overlap",
+      "declared-dependency-edge"
+    ],
+    "missing_dependency": "fail-closed",
+    "dependency_cycle": "fail-closed"
+  },
+  "affected_testing": {
+    "fail_closed_unknown_material_scope": true,
+    "fast_path_never_replaces_release_gates": true,
+    "test_profiles": {
+      "docs": ["docs-contract"],
+      "backend": ["backend-contract", "backend-unit"],
+      "portal": ["portal-contract", "portal-browser"],
+      "website": ["website-unit", "website-visual"],
+      "automation": ["automation-contract", "automation-integration"],
+      "control_plane": ["delivery-contract", "engineering-os", "security"],
+      "full": ["required"]
+    }
+  },
+  "cache": {
+    "algorithm": "sha256",
+    "inputs": [
+      "baseSha",
+      "candidateSha",
+      "changedPaths",
+      "affectedContracts",
+      "selectedTests",
+      "policyVersion"
+    ],
+    "advisory_only": true,
+    "never_skips_production_readback": true
+  },
+  "speculative_integration": {
+    "enabled": true,
+    "same_ready_wave_only": true,
+    "conflict_free_only": true,
+    "planning_evidence_only": true,
+    "may_promote": false
+  },
+  "completion": {
+    "success": "LIVE & BEWEZEN",
+    "requires": [
+      "protected-exact-candidate-gates",
+      "protected-merge",
+      "production-readback",
+      "learning-writeback"
+    ]
+  }
+}
