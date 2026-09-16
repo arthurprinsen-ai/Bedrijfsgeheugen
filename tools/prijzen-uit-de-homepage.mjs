@@ -8,6 +8,7 @@ import { validateSeoOrderEngine } from './seo-order-engine/validate.mjs';
 import { applyHomepageAutomationLayout } from './fix-homepage-automation-layout.mjs';
 import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage-context-slider.mjs';
 import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './site-shell/ensure-knowledge-nav.mjs';
+import { applyLedgerPublicationMarkers } from './content-growth/publication-marker-build-guard.mjs';
 
 const DOEL = 'https://www.bedrijfsgeheugen.nl/prijzen';
 const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
@@ -139,6 +140,10 @@ export async function voerPricingShellPipelineUit(stage = 'all') {
     await controleerSiteUi();
     await controleerTechnischeSeo();
     await validateSeoOrderEngine();
+    // V18 rebuilds blog pages from the shared shell and therefore cannot be the
+    // authority for publication identity. Restore only identities that already
+    // exist in the canonical publication ledger, after every HTML normalizer.
+    await applyLedgerPublicationMarkers();
   }
 }
 
