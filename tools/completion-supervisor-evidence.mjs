@@ -44,7 +44,11 @@ export function deriveTrustedCompletionEvidence(input = {}) {
     if (!productionIdentity) throw new Error('production identity is required for production readback');
     if (!input.readback || input.readback.status !== 'LIVE_VERIFIED' || input.readback.routes_ok !== true) throw new Error('production readback is not LIVE_VERIFIED');
     if (sha(input.readback.merge_sha, 'readback.merge_sha') !== productionIdentity) throw new Error('production identity mismatch');
-    evidence.push(record({ type:'FUNCTIONAL_READBACK', producer:'PRODUCTION_READBACK', ref:`${runRef}:functional-readback`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }));
+    evidence.push(
+      record({ type:'PROTECTED_DELIVERY', producer:'PRODUCTION_READBACK', ref:`${runRef}:protected-delivery`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }),
+      record({ type:'PRODUCTION_IDENTITY', producer:'PRODUCTION_READBACK', ref:`${runRef}:production-identity`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }),
+      record({ type:'FUNCTIONAL_READBACK', producer:'PRODUCTION_READBACK', ref:`${runRef}:functional-readback`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }),
+    );
     if (input.capabilityHandoff === true) evidence.push(record({ type:'CAPABILITY_HANDOFF', producer:'BG167', ref:`${runRef}:capability-handoff`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }));
     if (input.learningWriteback === true) evidence.push(record({ type:'LEARNING_WRITEBACK', producer:'BG168_BG166', ref:`${runRef}:learning-writeback`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }));
   }
