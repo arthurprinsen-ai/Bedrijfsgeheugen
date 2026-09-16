@@ -2,22 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { reconcileCompletionBackfill } from '../tools/outcome-obligation-completion-supervisor-backfill.mjs';
 
-const liveEvidence = {
-  trusted:true,
-  identityBound:true,
-  candidateIdentity:'sha-live',
-  productionIdentity:'deploy:sha-live',
-  readbackIdentity:'readback:sha-live',
-  functionalReadback:true,
-  learningWriteback:true,
-  capabilityHandoff:true
-};
+const productionIdentity = 'deploy:sha-live';
+const liveEvidence = [
+  { type:'CANDIDATE_TESTS', producer:'BRAIN_DELIVERY' },
+  { type:'PROTECTED_DELIVERY', producer:'BG169', productionIdentity },
+  { type:'PRODUCTION_IDENTITY', producer:'BG169', productionIdentity },
+  { type:'FUNCTIONAL_READBACK', producer:'PRODUCTION_READBACK', productionIdentity },
+  { type:'OBLIGATIONS_COMPLETE', producer:'OUTCOME_OBLIGATION_RUNTIME', productionIdentity },
+  { type:'CAPABILITY_HANDOFF', producer:'BG167', productionIdentity },
+  { type:'LEARNING_WRITEBACK', producer:'BG168_BG166', productionIdentity },
+].map(item => ({ ...item, accepted:true, independent:true, taskIdentity:'ob-2', candidateIdentity:'sha-live' }));
 
 test('shadow backfill reopens partial PR and failed workflow candidates without dispatching', () => {
   const report = reconcileCompletionBackfill({
     pullRequests:[
       { number:10, headSha:'sha-partial', state:'open', claim:'MERGED' },
-      { number:11, headSha:'sha-live', state:'closed', claim:'DEPLOYED_UNVERIFIED', completionEvidence:liveEvidence, materialObligations:[{id:'prod',status:'VERIFIED'}] }
+      { number:11, headSha:'sha-live', state:'closed', claim:'DEPLOYED_UNVERIFIED', productionIdentity, evidence:liveEvidence, materialObligations:[{id:'prod',status:'VERIFIED'}] }
     ],
     workflowRuns:[
       { id:20, headSha:'sha-partial', name:'BRAIN delivery', conclusion:'failure' },
@@ -25,7 +25,7 @@ test('shadow backfill reopens partial PR and failed workflow candidates without 
     ],
     obligations:[
       { id:'ob-1', identity:'sha-partial', status:'AWAITING_OUTCOME', materialObligations:[{id:'prod',status:'OPEN'}] },
-      { id:'ob-2', identity:'sha-live', status:'COMPLETED', materialObligations:[{id:'prod',status:'VERIFIED'}], completionEvidence:liveEvidence }
+      { id:'ob-2', obligationId:'ob-2', identity:'sha-live', candidateIdentity:'sha-live', productionIdentity, status:'COMPLETED', materialObligations:[{id:'prod',status:'VERIFIED'}], evidence:liveEvidence }
     ]
   });
 

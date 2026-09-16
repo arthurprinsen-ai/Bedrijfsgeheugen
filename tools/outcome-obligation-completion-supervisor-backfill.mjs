@@ -19,13 +19,19 @@ function stableKey(identity) {
 
 function completionFor(record) {
   return evaluateCompletion({
-    identity:record.identity,
+    obligationId:record.obligationId ?? record.id ?? `backfill:${record.identity}`,
+    workId:record.workId ?? `backfill:${record.identity}`,
     claim:record.claim ?? record.status ?? null,
+    candidateIdentity:record.candidateIdentity ?? record.identity,
+    productionIdentity:record.productionIdentity ?? null,
     materialObligations:Array.isArray(record.materialObligations) ? record.materialObligations : [],
-    completionEvidence:record.completionEvidence ?? null,
+    evidence:Array.isArray(record.evidence) ? record.evidence : [],
     hardBoundary:record.hardBoundary ?? null,
-    retryHypothesis:record.retryHypothesis ?? null,
-    attemptCount:Number.isInteger(record.attemptCount) ? record.attemptCount : 0
+    retry:{
+      hypothesis:record.retryHypothesis ?? null,
+      attemptCount:Number.isInteger(record.attemptCount) ? record.attemptCount : 0,
+      newEvidence:record.newEvidence === true,
+    },
   });
 }
 

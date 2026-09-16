@@ -31,12 +31,25 @@ test('a proven hard boundary never resolves AgentWork and keeps the same item re
   advanceToVerifying(fabric, work.id);
 
   const completionContext = {
+    obligationId:'completion-hard-boundary',
+    candidateIdentity:'candidate-hard-boundary',
     localGreen:false,
     materialObligations:[{ id:'production-smoke', status:'OPEN' }],
     hardBoundary:{
       present:true,
       proven:true,
-      evidence:'External provider denied the required control change.'
+      evidence:'External provider denied the required control change.',
+      recovery_packet:{
+        blocker:'External control blocks recovery',
+        root_cause:'External provider denied the required control change',
+        evidence_refs:['provider:denied'],
+        attempted_repairs:['retry supported provider route'],
+        safe_remaining_actions:['preserve last-known-good production'],
+        minimum_human_action:'grant the existing provider permission',
+        fix_agent_handoff:'resume the same completion-hard-boundary work item',
+        boundary_fingerprint:'provider|control|denied',
+        resume_when:{ type:'provider_permission', state:'granted' },
+      },
     }
   };
 

@@ -16,6 +16,10 @@ on:
         description: Stable fingerprint for event replay/idempotency
         required: false
         type: string
+      coalesce_key:
+        description: Stable lineage key shared by scheduled and event-driven resumes
+        required: false
+        type: string
   schedule:
     - cron: '23 4 * * *'
   workflow_run:
@@ -26,6 +30,7 @@ on:
     types: [completed]
   repository_dispatch:
     types:
+      - outcome-obligation-resume
       - completion-boundary-clear
       - completion-material-writeback
   push:
@@ -57,7 +62,7 @@ jobs:
           node-version: 22
 
       - name: Run focused obligation contract tests
-        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/completion-supervisor.test.mjs tests/completion-supervisor-evidence.test.mjs tests/completion-supervisor-backfill.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs
+        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/brain-outcome-obligation-resume-trigger.test.mjs tests/completion-supervisor.test.mjs tests/completion-supervisor-evidence.test.mjs tests/completion-supervisor-backfill.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs
 
       - name: Resolve immutable completion lineage and trusted source artifacts
         if: github.event_name == 'workflow_run'
@@ -131,11 +136,14 @@ jobs:
           OBLIGATION_ID: ${{ github.event_name == 'push' && 'supabase-performance-evidence-daily' || inputs.obligation_id }}
           TRIGGER_TYPE: ${{ github.event_name == 'push' && 'event-trigger' || inputs.trigger_type }}
           TRIGGER_FINGERPRINT: ${{ github.event_name == 'push' && format('supabase-migration:{0}', github.sha) || inputs.trigger_fingerprint }}
+          COALESCE_KEY: ${{ inputs.coalesce_key }}
           WORKFLOW_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           WORKFLOW_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
           DISPATCH_ACTION: ${{ github.event.action }}
           DISPATCH_OBLIGATION_ID: ${{ github.event.client_payload.obligation_id }}
+          DISPATCH_TRIGGER_FINGERPRINT: ${{ github.event.client_payload.trigger_fingerprint }}
+          DISPATCH_COALESCE_KEY: ${{ github.event.client_payload.coalesce_key }}
           DISPATCH_CANDIDATE_IDENTITY: ${{ github.event.client_payload.candidate_identity }}
           DISPATCH_PRODUCTION_IDENTITY: ${{ github.event.client_payload.production_identity }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -159,7 +167,8 @@ jobs:
             args=(sweep --trigger-type "$TRIGGER_TYPE" --output .artifacts/outcome-obligation-decisions.json)
           elif [ "${GITHUB_EVENT_NAME}" = "repository_dispatch" ]; then
             TRIGGER_TYPE=event-trigger
-            TRIGGER_FINGERPRINT="repository-dispatch:${DISPATCH_ACTION}:${DISPATCH_CANDIDATE_IDENTITY:-unbound}"
+            TRIGGER_FINGERPRINT="${DISPATCH_TRIGGER_FINGERPRINT:-repository-dispatch:${DISPATCH_ACTION}:${DISPATCH_CANDIDATE_IDENTITY:-unbound}}"
+            COALESCE_KEY="${DISPATCH_COALESCE_KEY:-candidate:${DISPATCH_CANDIDATE_IDENTITY:-unbound}}"
             OBLIGATION_ID="${DISPATCH_OBLIGATION_ID:-}"
             CLAIM="${DISPATCH_ACTION}"
             CANDIDATE_IDENTITY="${DISPATCH_CANDIDATE_IDENTITY:-}"
