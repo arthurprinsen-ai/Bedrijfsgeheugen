@@ -34,7 +34,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Generate SPDX SBOM
-        run: npx --yes @cyclonedx/cyclonedx-npm --output-format JSON --output-file sbom.spdx.json
+        run: npm sbom --sbom-format spdx > sbom.spdx.json
       - name: Build provenance subject
         run: tar --exclude=.git -czf powerhouse-source.tgz .
       - uses: actions/attest-build-provenance@v2
