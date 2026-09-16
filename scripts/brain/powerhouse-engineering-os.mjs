@@ -54,6 +54,22 @@ function validateStatusPolicy(contract, errors) {
   requireBoolean(policy.auto_resume_when_boundary_clears, 'status_policy.auto_resume_when_boundary_clears', errors);
   return policy.fingerprint;
 }
+async function validateCompletionSupervisor(contract, errors) {
+  const supervisor = contract.completion_supervisor;
+  if (!supervisor || supervisor.fingerprint !== 'powerhouse-completion-supervisor-v1') { errors.push('completion supervisor fingerprint drift'); return null; }
+  if (supervisor.status !== 'active') errors.push('completion supervisor must be active');
+  if (JSON.stringify(supervisor.success_terminal_states) !== JSON.stringify(['LIVE_VERIFIED'])) errors.push('completion supervisor success state drift');
+  if (supervisor.waiting_state !== 'WAIT_EXTERNAL') errors.push('completion supervisor waiting state drift');
+  if (supervisor.hard_boundary_can_complete !== false) errors.push('hard boundary may not complete work');
+  if (supervisor.local_green_is_completion !== false) errors.push('local green may not complete work');
+  requireBoolean(supervisor.auto_resume_same_work_item, 'completion_supervisor.auto_resume_same_work_item', errors);
+  requireBoolean(supervisor.idempotent_backfill, 'completion_supervisor.idempotent_backfill', errors);
+  if (!(await exists(supervisor.learning_source))) errors.push(`missing completion supervisor learning source: ${supervisor.learning_source}`);
+  const requiredEvidence = ['CANDIDATE_TESTS','PROTECTED_DELIVERY','PRODUCTION_IDENTITY','FUNCTIONAL_READBACK','OBLIGATIONS_COMPLETE','CAPABILITY_HANDOFF','LEARNING_WRITEBACK'];
+  if (JSON.stringify(supervisor.required_evidence) !== JSON.stringify(requiredEvidence)) errors.push('completion supervisor evidence contract drift');
+  for (const relativePath of supervisor.required_paths ?? []) if (!(await exists(relativePath))) errors.push(`missing completion supervisor path: ${relativePath}`);
+  return supervisor.fingerprint;
+}
 export async function validateEngineeringOS() {
   const contract = await loadEngineeringContract();
   const errors = [];
@@ -76,6 +92,7 @@ export async function validateEngineeringOS() {
   const controlFingerprint = validateOperatingControls(contract, errors);
   const continuousImprovementFingerprint = validateContinuousImprovement(contract, errors);
   const statusPolicyFingerprint = validateStatusPolicy(contract, errors);
+  const completionSupervisorFingerprint = await validateCompletionSupervisor(contract, errors);
   const developmentOS = await readFile(path.join(repoRoot, contract.canonical_authorities.development_os), 'utf8');
   if (!developmentOS.includes('BRAIN-DELIVERY-v2')) errors.push('development OS does not declare BRAIN-DELIVERY-v2');
   if (developmentOS.includes('BRAIN-DELIVERY-v1')) errors.push('stale BRAIN-DELIVERY-v1 remains in development OS');
@@ -90,7 +107,8 @@ export async function validateEngineeringOS() {
   if (!statusDoc.includes('fix-agent/chat')) errors.push('status recovery documentation missing fix-agent/chat handoff');
   const requiredCI = await readFile(path.join(repoRoot, contract.canonical_authorities.required_ci), 'utf8');
   if (!requiredCI.includes(contract.bootstrap.required_test)) errors.push('Engineering OS regression test is not wired into Required test');
-  return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, continuous_improvement_fingerprint: continuousImprovementFingerprint, status_policy_fingerprint: statusPolicyFingerprint, golden_path: contract.golden_path, errors };
+  for (const testPath of ['tests/completion-supervisor.test.mjs','tests/completion-supervisor-backfill.test.mjs']) if (!requiredCI.includes(testPath)) errors.push(`Completion Supervisor regression is not wired into Required test: ${testPath}`);
+  return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, continuous_improvement_fingerprint: continuousImprovementFingerprint, status_policy_fingerprint: statusPolicyFingerprint, completion_supervisor_fingerprint: completionSupervisorFingerprint, golden_path: contract.golden_path, errors };
 }
 async function main() {
   const mode = process.argv[2] ?? '--check';

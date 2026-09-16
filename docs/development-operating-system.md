@@ -136,6 +136,16 @@ Mandatory rules:
 
 Canonical fingerprint: `powerhouse-live-proven-no-partial-stop-v1`.
 
+## Completion Supervisor
+
+Canonical fingerprint: `powerhouse-completion-supervisor-v1`.
+
+The Completion Supervisor is the deterministic control adapter above the existing Agent Fabric, Supabase Outcome Obligations, BRAIN-DELIVERY-v2, BG169 and shared learning authorities. It does not own a second queue, evidence store or production route.
+
+`LIVE_VERIFIED` is the only successful machine-terminal state. A local green test, commit, merge, preview, deploy acknowledgement or agent claim remains progress. Success requires trusted evidence for candidate tests, protected delivery, exact production identity, functional production/provider readback, completed material obligations, current capability handoff and learning/prevention writeback, all bound to the same task and candidate lineage.
+
+A proven external hard boundary yields `WAIT_EXTERNAL`, never completion. The same AgentWork remains in the active fingerprint index with a complete recovery packet and `resume_when`; boundary-clear evidence resumes that work item instead of creating a duplicate. The existing obligation sweep reacts to delivery/readback/learning/boundary events and performs bounded scheduled reconciliation. Historical partial claims are backfilled idempotently into their existing Supabase obligation evidence lineage.
+
 ## Parallel delivery sequence
 `BRAIN-DELIVERY-v2` is the mandatory release envelope for repository development. Delivery is **independent delivery, shared intelligence**: changed scope is classified into declared lanes; non-conflicting lanes may develop and verify independently; synchronization is required only for actual changed-path, merge, contract or declared dependency conflict. Exact tested candidate identity is mandatory for promotion. BG169 remains production-promotion authority, BG168 material-outcome routing and BG167 refreshed current-state visibility.
 

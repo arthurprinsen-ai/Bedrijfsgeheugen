@@ -17,14 +17,22 @@ on:
         required: false
         type: string
       coalesce_key:
-        description: Stable execution lineage key for resume/idempotency
+        description: Stable lineage key shared by scheduled and event-driven resumes
         required: false
         type: string
+  schedule:
+    - cron: '23 4 * * *'
+  workflow_run:
+    workflows:
+      - Unified Brain Delivery
+      - Production Release Readback
+      - Shared Agent Memory Tests
+    types: [completed]
   repository_dispatch:
     types:
       - outcome-obligation-resume
-  schedule:
-    - cron: '23 4 * * *'
+      - completion-boundary-clear
+      - completion-material-writeback
   push:
     branches:
       - main
@@ -33,6 +41,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 env:
   NODE_VERSION: '22'
@@ -45,6 +54,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -52,21 +62,119 @@ jobs:
           node-version: 22
 
       - name: Run focused obligation contract tests
-        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs tests/brain-outcome-obligation-resume-trigger.test.mjs
+        run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/brain-outcome-obligation-resume-trigger.test.mjs tests/completion-supervisor.test.mjs tests/completion-supervisor-evidence.test.mjs tests/completion-supervisor-backfill.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs
+
+      - name: Resolve immutable completion lineage and trusted source artifacts
+        if: github.event_name == 'workflow_run'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
+          SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts/source
+          candidate_identity="$SOURCE_HEAD_SHA"
+          production_identity=""
+          if [ "$SOURCE_WORKFLOW" = "Unified Brain Delivery" ]; then
+            gh run download "$SOURCE_RUN_ID" -n bg169-production-evidence -D .artifacts/source >/dev/null 2>&1 || true
+            if [ -f .artifacts/source/bg169-production-evidence.json ]; then
+              candidate_identity="$(jq -r '.candidate_sha // empty' .artifacts/source/bg169-production-evidence.json)"
+              production_identity="$(jq -r '.production_sha // empty' .artifacts/source/bg169-production-evidence.json)"
+              test -n "$candidate_identity" && test -n "$production_identity"
+            fi
+          elif [ "$SOURCE_WORKFLOW" = "Production Release Readback" ]; then
+            production_identity="$SOURCE_HEAD_SHA"
+            git fetch origin "$SOURCE_HEAD_SHA" --no-tags
+            message="$(git show -s --format=%B "$SOURCE_HEAD_SHA")"
+            candidate_identity="$(sed -nE 's/.*candidate_sha=([0-9a-f]{40}).*/\1/p' <<<"$message" | head -n1)"
+            test -n "$candidate_identity" || { echo "::error::COMPLETION_CANDIDATE_IDENTITY_MISSING:$SOURCE_HEAD_SHA"; exit 1; }
+            gh run download "$SOURCE_RUN_ID" -n "production-release-readback-${SOURCE_HEAD_SHA}" -D .artifacts/source
+            test -f .artifacts/source/production-release-readback.json
+          else
+            echo "COMPLETION_EVIDENCE_APPLICABLE=false" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          echo "COMPLETION_EVIDENCE_APPLICABLE=true" >> "$GITHUB_ENV"
+          echo "COMPLETION_OBLIGATION_ID=material-change-live-verification" >> "$GITHUB_ENV"
+          echo "COMPLETION_CANDIDATE_IDENTITY=$candidate_identity" >> "$GITHUB_ENV"
+          echo "COMPLETION_PRODUCTION_IDENTITY=$production_identity" >> "$GITHUB_ENV"
+          echo "COMPLETION_COALESCE_KEY=candidate:$candidate_identity" >> "$GITHUB_ENV"
+
+      - name: Persist trusted completion evidence in the existing obligation lineage
+        if: github.event_name == 'workflow_run'
+        shell: bash
+        env:
+          SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
+          SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ "${COMPLETION_EVIDENCE_APPLICABLE:-false}" != "true" ]; then exit 0; fi
+          args=(
+            --workflow "$SOURCE_WORKFLOW"
+            --conclusion "$SOURCE_CONCLUSION"
+            --run-id "$SOURCE_RUN_ID"
+            --obligation "$COMPLETION_OBLIGATION_ID"
+            --candidate "$COMPLETION_CANDIDATE_IDENTITY"
+            --coalesce-key "$COMPLETION_COALESCE_KEY"
+            --fingerprint "workflow-run:${SOURCE_WORKFLOW}:${SOURCE_RUN_ID}"
+          )
+          if [ -n "${COMPLETION_PRODUCTION_IDENTITY:-}" ]; then args+=(--production "$COMPLETION_PRODUCTION_IDENTITY"); fi
+          if [ -f .artifacts/source/bg169-production-evidence.json ]; then args+=(--bg169 .artifacts/source/bg169-production-evidence.json); fi
+          if [ -f .artifacts/source/production-release-readback.json ]; then
+            args+=(--readback .artifacts/source/production-release-readback.json --capability-handoff --learning-writeback)
+          fi
+          node tools/completion-supervisor-evidence.mjs "${args[@]}"
 
       - name: Evaluate obligations without production mutation
         shell: bash
         env:
-          OBLIGATION_ID: ${{ github.event_name == 'push' && 'supabase-performance-evidence-daily' || github.event_name == 'repository_dispatch' && github.event.client_payload.obligation_id || inputs.obligation_id }}
-          TRIGGER_TYPE: ${{ github.event_name == 'push' && 'event-trigger' || github.event_name == 'repository_dispatch' && 'event-trigger' || inputs.trigger_type }}
-          TRIGGER_FINGERPRINT: ${{ github.event_name == 'push' && format('supabase-migration:{0}', github.sha) || github.event_name == 'repository_dispatch' && github.event.client_payload.trigger_fingerprint || inputs.trigger_fingerprint }}
-          COALESCE_KEY: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.coalesce_key || inputs.coalesce_key }}
+          OBLIGATION_ID: ${{ github.event_name == 'push' && 'supabase-performance-evidence-daily' || inputs.obligation_id }}
+          TRIGGER_TYPE: ${{ github.event_name == 'push' && 'event-trigger' || inputs.trigger_type }}
+          TRIGGER_FINGERPRINT: ${{ github.event_name == 'push' && format('supabase-migration:{0}', github.sha) || inputs.trigger_fingerprint }}
+          COALESCE_KEY: ${{ inputs.coalesce_key }}
+          WORKFLOW_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WORKFLOW_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          DISPATCH_ACTION: ${{ github.event.action }}
+          DISPATCH_OBLIGATION_ID: ${{ github.event.client_payload.obligation_id }}
+          DISPATCH_TRIGGER_FINGERPRINT: ${{ github.event.client_payload.trigger_fingerprint }}
+          DISPATCH_COALESCE_KEY: ${{ github.event.client_payload.coalesce_key }}
+          DISPATCH_CANDIDATE_IDENTITY: ${{ github.event.client_payload.candidate_identity }}
+          DISPATCH_PRODUCTION_IDENTITY: ${{ github.event.client_payload.production_identity }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts
           args=(sweep --trigger-type "${TRIGGER_TYPE:-scheduled-sweep}" --output .artifacts/outcome-obligation-decisions.json)
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_run" ]; then
+            TRIGGER_TYPE=event-trigger
+            TRIGGER_FINGERPRINT="workflow-run:${WORKFLOW_NAME}:${WORKFLOW_HEAD_SHA}:${WORKFLOW_CONCLUSION}"
+            CLAIM="${WORKFLOW_CONCLUSION}"
+            CANDIDATE_IDENTITY="${WORKFLOW_HEAD_SHA}"
+            OBLIGATION_ID="${COMPLETION_OBLIGATION_ID:-material-change-live-verification}"
+            COALESCE_KEY="${COMPLETION_COALESCE_KEY:-candidate:${WORKFLOW_HEAD_SHA}}"
+            if [ -n "${COMPLETION_CANDIDATE_IDENTITY:-}" ]; then CANDIDATE_IDENTITY="$COMPLETION_CANDIDATE_IDENTITY"; fi
+            if [ -n "${COMPLETION_PRODUCTION_IDENTITY:-}" ]; then PRODUCTION_IDENTITY="$COMPLETION_PRODUCTION_IDENTITY"; fi
+            if [ "${WORKFLOW_NAME}" = "Production Release Readback" ]; then
+              CLAIM=DEPLOYED_UNVERIFIED
+            fi
+            args=(sweep --trigger-type "$TRIGGER_TYPE" --output .artifacts/outcome-obligation-decisions.json)
+          elif [ "${GITHUB_EVENT_NAME}" = "repository_dispatch" ]; then
+            TRIGGER_TYPE=event-trigger
+            TRIGGER_FINGERPRINT="${DISPATCH_TRIGGER_FINGERPRINT:-repository-dispatch:${DISPATCH_ACTION}:${DISPATCH_CANDIDATE_IDENTITY:-unbound}}"
+            COALESCE_KEY="${DISPATCH_COALESCE_KEY:-candidate:${DISPATCH_CANDIDATE_IDENTITY:-unbound}}"
+            OBLIGATION_ID="${DISPATCH_OBLIGATION_ID:-}"
+            CLAIM="${DISPATCH_ACTION}"
+            CANDIDATE_IDENTITY="${DISPATCH_CANDIDATE_IDENTITY:-}"
+            PRODUCTION_IDENTITY="${DISPATCH_PRODUCTION_IDENTITY:-}"
+            args=(sweep --trigger-type "$TRIGGER_TYPE" --output .artifacts/outcome-obligation-decisions.json)
+          fi
           if [ -n "${OBLIGATION_ID:-}" ]; then
             args+=(--obligation "$OBLIGATION_ID")
           fi
@@ -76,12 +184,29 @@ jobs:
           if [ -n "${COALESCE_KEY:-}" ]; then
             args+=(--coalesce-key "$COALESCE_KEY")
           fi
+          if [ -n "${CLAIM:-}" ]; then
+            args+=(--claim "$CLAIM")
+          fi
+          if [ -n "${CANDIDATE_IDENTITY:-}" ]; then
+            args+=(--candidate-identity "$CANDIDATE_IDENTITY")
+          fi
+          if [ -n "${PRODUCTION_IDENTITY:-}" ]; then
+            args+=(--production-identity "$PRODUCTION_IDENTITY")
+          fi
           node tools/outcome-obligation-runtime.mjs "${args[@]}"
+
+      - name: Reconcile partial decisions into the same obligation lineage
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node tools/completion-supervisor-backfill.mjs --input .artifacts/outcome-obligation-decisions.json --output .artifacts/completion-supervisor-backfill.json --apply
 
       - name: Upload immutable decision artifact
         uses: actions/upload-artifact@v4
         with:
           name: outcome-obligation-decisions-${{ github.run_id }}
-          path: .artifacts/outcome-obligation-decisions.json
+          path: |
+            .artifacts/outcome-obligation-decisions.json
+            .artifacts/completion-supervisor-backfill.json
           if-no-files-found: error
           retention-days: 30
