@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { copyFile, mkdir } from 'node:fs/promises';
+import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
@@ -37,10 +37,7 @@ test('Canvassen visual regression is deterministic and fail-closed against an ap
   const actual=await workspace.screenshot({animations:'disabled',caret:'hide'});
   if(VISUAL_ACTUAL_PATH){
     await mkdir(dirname(VISUAL_ACTUAL_PATH),{recursive:true});
-    await copyFile(testInfo.outputPath('approved-actual.png'),VISUAL_ACTUAL_PATH).catch(async()=>{
-      const {writeFile}=await import('node:fs/promises');
-      await writeFile(VISUAL_ACTUAL_PATH,actual);
-    });
+    await writeFile(VISUAL_ACTUAL_PATH,actual);
   }
   expect(actual).toMatchSnapshot('portal-v2-canvassen.png',{maxDiffPixelRatio:0.001,threshold:0.2});
 });
