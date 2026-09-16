@@ -3,6 +3,7 @@ const unique = items => [...new Map(items.map(item => [item.id, item])).values()
 function add(matches, type, name, source) {
   const normalized = String(name || '').trim().replace(/[;,{].*$/, '');
   if (!normalized) return;
+  if (type === 'table' && normalized.split('.').at(-1)?.startsWith('__')) return;
   matches.push({ id: `${type}:${normalized}`, type, name: normalized, provenance: [source] });
 }
 
@@ -20,7 +21,7 @@ export function discoverQualitySurfaces({ files = [] } = {}) {
     if (fn) add(matches, 'function', fn[1], source);
     const netlify = source.match(/^netlify\/functions\/([^/]+)\.(?:mjs|js|ts)$/);
     if (netlify && !netlify[1].startsWith('_')) add(matches, 'netlify_function', netlify[1], source);
-    for (const match of content.matchAll(/create\s+table(?:\s+if\s+not\s+exists)?\s+([a-zA-Z0-9_."]+)/gi)) add(matches, 'table', match[1].replaceAll('"', ''), source);
+    for (const match of content.matchAll(/^\s*create\s+table(?:\s+if\s+not\s+exists)?\s+([a-zA-Z0-9_."]+)/gim)) add(matches, 'table', match[1].replaceAll('"', ''), source);
     for (const match of content.matchAll(/create\s+policy\s+([a-zA-Z0-9_"]+)/gi)) add(matches, 'permission', match[1].replaceAll('"', ''), source);
     if (/openapi|swagger/i.test(source) || /(^|\n)paths\s*:/m.test(content)) {
       for (const match of content.matchAll(/^\s{0,8}(\/[^:\s]+)\s*:/gm)) add(matches, 'api', match[1], source);
