@@ -18,7 +18,9 @@
       "selection_score": 11,
       "learning_decision_id": "content:2026-09-15:blog:ongeprijsd-probleem-bedrijfsvoering",
       "applied_revenue_learning_ids": [],
-      "merged_at": "2026-09-15T20:51:34.000Z"
+      "merged_at": "2026-09-15T20:51:34.000Z",
+      "proof_recovery_requested_on": "2026-09-16",
+      "proof_recovery_reason": "watchdog-current-main-recovery"
     }
   }
 }
