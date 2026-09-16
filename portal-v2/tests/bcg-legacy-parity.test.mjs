@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildBcgModel } from '../strategic-models.js';
+import * as strategicModels from '../strategic-models.js';
+
+const { buildBcgModel } = strategicModels;
 
 const LEGACY_DESCRIPTIONS = {
   ster: 'Groeiende markt, sterke positie. Investeren zolang het duurt.',
@@ -51,4 +53,15 @@ test('Vraagteken exposes a deterministic action for the canonical roadmap, not a
     source: 'bcg',
     sourceQuadrant: 'vraagteken'
   });
+});
+
+test('BCG roadmap upsert is idempotent in the existing canonical roadmap collection', () => {
+  assert.equal(typeof strategicModels.upsertBcgRoadmapAction, 'function', 'upsertBcgRoadmapAction must exist');
+  const model = buildBcgModel(state({ growth: 2.4, own: 2.5, baseline: 3.2 }));
+  const existing = [{ id: 'existing', title: 'Bestaand item', sprint: 2 }];
+  const once = strategicModels.upsertBcgRoadmapAction(existing, model);
+  const twice = strategicModels.upsertBcgRoadmapAction(once, model);
+  assert.equal(once.length, 2);
+  assert.equal(twice.length, 2);
+  assert.deepEqual(twice.find(item => item.id === model.roadmapAction.id), model.roadmapAction);
 });
