@@ -5,7 +5,7 @@ const identity=(x,i)=>String(x?.id??x?.key??x?.label??x?.title??x?.name??JSON.st
 function mergeArray(legacy,canonical){const map=new Map();arr(legacy).forEach((x,i)=>map.set(identity(x,i),x));arr(canonical).forEach((x,i)=>{const k=identity(x,i);map.set(k,typeof x==='object'&&typeof map.get(k)==='object'?{...map.get(k),...x}:x)});return [...map.values()]}
 function mergeGraph(a,b){const left=obj(a),right=obj(b);return{...left,...right,nodes:mergeArray(left.nodes,right.nodes),edges:[...new Map([...arr(left.edges),...arr(right.edges)].map(x=>[JSON.stringify(x),x])).values()]}}
 function mergeAdmin(a,b){const left=obj(a),right=obj(b);const out={...left,...right};for(const k of new Set([...Object.keys(left),...Object.keys(right)]))if(typeof left[k]==='object'&&typeof right[k]==='object'&&!Array.isArray(left[k])&&!Array.isArray(right[k]))out[k]={...left[k],...right[k]};return out}
-const ARRAY_KEYS=new Set(['healthCards','roadmap','recommendedActions','monthlyImpact','activities','quickLinks','signals','decisions','actions','valueItems','memories','agents','audit']);
+const ARRAY_KEYS=new Set(['healthCards','roadmap','recommendedActions','monthlyImpact','activities','quickLinks','signals','decisions','actions','valueItems','memories','agents','audit','businessInputs']);
 export function composePortalProjectionLayers({legacy=null,canonical=null}={}){
  const l=obj(legacy?.data||legacy),c=obj(canonical?.data||canonical);const out={...l};
  for(const [key,value] of Object.entries(c)){
@@ -26,6 +26,8 @@ export function projectCanonicalObject(layerState={},canonicalObject){
  if(!canonicalObject?.id||!canonicalObject?.tenantId||!canonicalObject?.type)throw new TypeError('canonical object id, tenantId and type are required');
  const d=obj(canonicalObject.data),next={...obj(layerState)};const id=canonicalObject.id;const updatedAt=canonicalObject.updatedAt||canonicalObject.createdAt||new Date().toISOString();
  switch(canonicalObject.type){
+  case 'BusinessInput':
+   next.businessInputs=upsert(next.businessInputs,{id,inputType:d.inputType||'Unknown',modelId:d.modelId||id,instanceId:d.instanceId||'primary',schemaVersion:Number(d.schemaVersion)||1,answers:obj(d.answers),metadata:obj(d.metadata),sourcePortal:d.sourcePortal||'',submittedBy:d.submittedBy||canonicalObject.ownerId||'',submittedAt:d.submittedAt||updatedAt,truthClass:canonicalObject.truthClass,provenance:canonicalObject.provenance,updatedAt});break;
   case 'ExternalSignal':case 'Signal':case 'Risk':
    next.signals=upsert(next.signals,{id,category:d.category||canonicalObject.type,title:d.title||d.text||id,source:canonicalObject.provenance?.sourceRef||canonicalObject.provenance?.sourceType||'Brain',status:d.status||canonicalObject.lifecycle||'Active',confidence:Number(d.confidence)||null,impact:d.impact||priorityFromRisk(canonicalObject.risk),affected:arr(d.affected),summary:d.summary||d.text||'',updatedAt});break;
   case 'Recommendation':
