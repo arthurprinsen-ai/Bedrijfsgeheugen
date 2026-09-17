@@ -2,6 +2,17 @@ name: Powerhouse Delivery Hygiene
 
 on:
   workflow_call:
+    inputs:
+      pr_number:
+        description: Optional exact PR number for non-PR callers
+        required: false
+        type: string
+        default: ''
+      head_sha:
+        description: Optional exact candidate head SHA for non-PR callers
+        required: false
+        type: string
+        default: ''
     outputs:
       state:
         description: Canonical delivery-hygiene state
@@ -33,7 +44,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -42,9 +53,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
+          EXPECTED_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts
@@ -77,9 +87,16 @@ jobs:
           const pr = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
           const open = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
           const headSha = sh('git','rev-parse','HEAD');
+          if (process.env.EXPECTED_HEAD_SHA && headSha !== process.env.EXPECTED_HEAD_SHA) {
+            throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
+          }
+          if (pr.head?.sha !== headSha) {
+            throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
+          }
           const currentMainSha = sh('git','rev-parse','origin/main');
           const immutableBaseSha = sh('git','merge-base','origin/main','HEAD');
-          const changedPaths = sh('git','diff','--name-only',`${immutableBaseSha}...${headSha}`).split(/\r?\n/).filter(Boolean);
+          const changedRaw = sh('git','diff','--name-only',`${immutableBaseSha}...${headSha}`);
+          const changedPaths = changedRaw ? changedRaw.split(/\r?\n/).filter(Boolean) : [];
           const currentContracts = contractsFor(changedPaths, brainPolicy);
 
           const normalized = [];
@@ -105,7 +122,7 @@ jobs:
           const candidate = classifyCandidate({
             number: prNumber,
             state: pr.state,
-            body: process.env.PR_BODY || pr.body || '',
+            body: pr.body || '',
             baseSha: immutableBaseSha,
             headSha,
             conflictContracts: currentContracts,
