@@ -32,6 +32,19 @@ test('security/operations closure contract is fail-closed while required evidenc
   assert.ok([...requiredClosed].every((id) => closed.has(id)));
 });
 
+test('Buffer credential exposure and deployed consumer remain explicit open rotation evidence', () => {
+  const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
+  const rotation = contract.obligations.find((item) => item.id === 'credential_rotation_end_to_end');
+  assert.ok(rotation, 'credential rotation obligation must exist');
+  assert.equal(rotation.status, 'OPEN');
+  assert.match(rotation.latest_readback, /BUFFER_API_KEY/);
+  assert.match(rotation.latest_readback, /Netlify/i);
+  assert.match(rotation.latest_readback, /is_secret=false/);
+  assert.match(rotation.latest_readback, /buffer-social-collect/);
+  assert.match(rotation.latest_readback, /15 \*\/6 \* \* \*/);
+  assert.ok(rotation.evidence_required.some((item) => /provider secret/i.test(item)));
+});
+
 test('closure contract never stores credential values', () => {
   const raw = fs.readFileSync(contractPath, 'utf8');
   assert.doesNotMatch(raw, /"(?:secret|token|password|api_key)_value"\s*:/i);
