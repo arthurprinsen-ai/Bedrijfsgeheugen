@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse-resource-intelligence-v1",
+  "lifecycle": "active",
+  "canonical_resource_authority": "public.powerhouse_resource_impact_v1",
+  "canonical_business_value_authority": "public.powerhouse_business_value_v1",
+  "production_authority": "BG169",
+  "shared_context_read": "BG167",
+  "material_outcome_writeback": ["BG168", "BG166"],
+  "unknown_data_policy": "null_not_zero",
+  "provenance_required": true,
+  "physical_telemetry": {
+    "energy": {"unit": "Wh", "nullable": true, "requires_method": true, "requires_provenance": true, "requires_confidence": true},
+    "water": {"unit": "ml", "nullable": true, "requires_method": true, "requires_provenance": true, "requires_confidence": true},
+    "co2e": {"unit": "gCO2e", "legacy_value_field": "estimated_co2e_g", "requires_method_for_trusted_reporting": true, "requires_provenance": true, "requires_confidence": true}
+  },
+  "confidence": {
+    "minimum_for_automatic_prioritization": 0.8,
+    "below_threshold_action": "retain_as_candidate_or_review_required"
+  },
+  "compliance": {
+    "mode": "evidence_only",
+    "allowed_statuses": ["evidence_present", "evidence_missing", "not_applicable", "review_required"],
+    "forbid_blanket_legal_compliance_claim": true
+  },
+  "autonomy": {
+    "safe_reversible_only": true,
+    "requires_baseline": true,
+    "requires_expected_impact": true,
+    "requires_rollback_plan": true,
+    "requires_measured_outcome": true,
+    "allow_security_weakening": false,
+    "allow_paid_resource_creation": false,
+    "allow_destructive_irreversible_changes": false,
+    "allow_secrets_or_permission_changes": false,
+    "allow_legal_or_financial_binding_actions": false
+  },
+  "daily_learning": {
+    "enabled": true,
+    "discover": true,
+    "dedupe": true,
+    "prioritize_by_business_value_and_resource_efficiency": true,
+    "measure_outcome": true,
+    "rollback_regressions": true,
+    "write_learning_back": true
+  },
+  "agent_decision_contract": {
+    "read_before_applicable_decision": ["resource_impact", "business_value", "provenance", "confidence", "open_optimization_candidates"],
+    "write_after_material_outcome": ["measured_resource_impact", "business_value", "outcome_evidence", "learning_fingerprint"],
+    "never_infer_unknown_physical_telemetry_as_zero": true,
+    "never_bypass_existing_release_security_integrity_or_truth_gates": true
+  }
+}
