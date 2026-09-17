@@ -38,11 +38,20 @@ test('similar titles and paths never create automatic cleanup lineage', () => {
 });
 
 test('legacy unclassified candidates remain review-required and do not consume new WIP budget', () => {
-  const legacy = { number: 8, state: 'open', title: 'Old PR', body: '', baseSha: SHA, headSha: 'b'.repeat(40) };
+  const legacy = { number: 8, state: 'open', title: 'Old PR', body: '', baseSha: SHA, headSha: 'b'.repeat(40), uniqueCommits: true };
   const plan = planRepositoryCleanup({ candidates: [legacy, pr(1, 'BG-1')], policy, mode: 'dry-run' });
   assert.deepEqual(plan.legacyUnclassified, [8]);
   assert.equal(plan.wipCount, 1);
   assert.equal(plan.reviewRequired.some(row => row.prNumber === 8), true);
+});
+
+test('legacy candidate whose head is fully contained in main is deterministically safe to close', () => {
+  const legacy = { number: 8, state: 'open', title: 'Old PR', body: '', baseSha: SHA, headSha: 'b'.repeat(40), uniqueCommits: false };
+  const plan = planRepositoryCleanup({ candidates: [legacy], policy, mode: 'apply-safe' });
+  assert.equal(plan.actions.length, 1);
+  assert.equal(plan.actions[0].type, 'CLOSE_PR');
+  assert.equal(plan.actions[0].reason, 'ALREADY_CONTAINED_IN_MAIN');
+  assert.equal(plan.actions[0].perform, true);
 });
 
 test('fulfilled obligation with unique commits is never auto-closed', () => {
@@ -54,6 +63,6 @@ test('fulfilled obligation with unique commits is never auto-closed', () => {
 test('fulfilled obligation with proven no unique commits is safe to close', () => {
   const plan = planRepositoryCleanup({ candidates: [pr(1, 'BG-1', { uniqueCommits: false })], policy, mode: 'apply-safe', fulfilledObligationIds: ['BG-1'] });
   assert.equal(plan.actions[0].type, 'CLOSE_PR');
-  assert.equal(plan.actions[0].reason, 'FULFILLED_NO_UNIQUE_COMMITS');
+  assert.equal(plan.actions[0].reason, 'ALREADY_CONTAINED_IN_MAIN');
   assert.equal(plan.actions[0].perform, true);
 });
