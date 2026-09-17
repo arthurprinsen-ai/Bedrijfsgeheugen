@@ -19,6 +19,7 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/learning/chat-runtime-truth-preflight-2026-08-31.json',
   'brain/learning/homepage-video-release-preflight-2026-09-08.json'
 ];
+const DEFAULT_MAX_SOURCES = 64;
 
 function normalizeSourcePath(rootDir, sourcePath) {
   if (typeof sourcePath !== 'string' || !sourcePath.trim()) throw new Error('invalid learning source path');
@@ -53,7 +54,7 @@ function serializedPacketBytes(packet) {
   return bytes;
 }
 
-export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = 42, maxBytes = 256_000 } = {}) {
+export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000 } = {}) {
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
   if (!Number.isInteger(maxBytes) || maxBytes < 1) throw new Error('maxBytes must be a positive integer');
   const contractLocation = normalizeSourcePath(rootDir, contractPath);
