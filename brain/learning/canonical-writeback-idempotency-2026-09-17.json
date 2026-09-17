@@ -1,0 +1,45 @@
+{
+  "learning_id": "canonical-writeback-idempotency-2026-09-17",
+  "date": "2026-09-17",
+  "status": "CANONICAL_LEARNING",
+  "scope": "Bedrijfsgeheugen Powerhouse / learning writeback / chat-agent continuity / deduplication",
+  "primary_fingerprint": "canonical-writeback-idempotency-v1",
+  "source_learning": "powerhouse-canonical-truth-closure-recovery-2026-09-17",
+  "trigger": "A repeated user request to borg/log/documenteer the same already-canonicalized recovery learning after PR #1922 had merged and Completion Supervisor evidence had already been updated.",
+  "problem": "Without an explicit idempotency rule, repeated writeback requests can create duplicate learning records, duplicate documentation, conflicting fingerprints, unnecessary CI/deploy cost, and divergent truth about whether a learning is already canonical.",
+  "decision": "Treat repeated writeback as reconcile/append against the existing canonical record, not as permission to create a second copy. First prove whether the learning/fingerprint already exists on protected main and in the canonical runtime memory. Only create a new record when there is genuinely new semantic learning; otherwise append fresh evidence to the existing lineage or perform no-op readback confirmation.",
+  "required_preflight": [
+    "search canonical brain/learning for the incident fingerprint and learning_id",
+    "search docs/learning and known-error contracts for the same semantic rule",
+    "read protected main identity before mutation",
+    "read canonical runtime obligation/evidence when the learning is tied to an existing obligation",
+    "compare requested writeback with already-recorded semantics before creating files or obligations"
+  ],
+  "permanent_prevention_rules": [
+    "CANONICAL_WRITEBACK_IS_IDEMPOTENT",
+    "REPEATED_BORG_REQUEST_REUSES_EXISTING_LEARNING_LINEAGE",
+    "NO_DUPLICATE_LEARNING_RECORD_FOR_SAME_SEMANTIC_FINGERPRINT",
+    "APPEND_NEW_EVIDENCE_INSTEAD_OF_RECREATING_CANONICAL_TRUTH",
+    "NO_NEW_OBLIGATION_WHEN_EXISTING_CANONICAL_OWNER_ALREADY_COVERS_THE_ROOT_CAUSE",
+    "READBACK_BEFORE_WRITEBACK",
+    "NOOP_IS_VALID_WHEN_CANONICAL_STATE_ALREADY_MATCHES_REQUEST"
+  ],
+  "reusable_decision_sequence": [
+    "resolve the semantic fingerprint from the user's request",
+    "search existing canonical learning and runtime evidence",
+    "if identical semantics already exist and no new evidence exists, do not mutate; return readback proof",
+    "if identical semantics exist but new evidence exists, append/reconcile into the existing lineage",
+    "if a genuinely new lesson exists, create one new canonical learning linked to the source learning and owner",
+    "run the normal protected exact-head gates for repository mutations",
+    "after merge, read back protected main and update the existing runtime authority rather than creating a parallel store"
+  ],
+  "evidence": {
+    "existing_learning_file": "brain/learning/powerhouse-canonical-truth-closure-recovery-2026-09-17.json",
+    "existing_human_record": "docs/learning/2026-09-17-powerhouse-canonical-truth-closure-recovery-v1.md",
+    "existing_learning_pr": 1922,
+    "existing_learning_merge_sha": "b7dca799e3630de6dada6eb3a5183bedbfb93123",
+    "existing_completion_supervisor_version": 7,
+    "existing_completion_supervisor_state": "BLOCKED",
+    "parallel_learning_store_created": false
+  }
+}
