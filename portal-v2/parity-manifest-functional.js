@@ -18,7 +18,7 @@ export const GLOBAL_FUNCTIONAL_PARITY=Object.freeze([
  Object.freeze({id:'print',implementation:'portal-actions.js',proof:'portal-v2/tests/global-capabilities.test.mjs',browserProof:'tests/integration/portal-v2-live.spec.js',status:'proven'}),
  Object.freeze({id:'feedback',implementation:'portal-actions.js + platform/api/portal-feedback-handler.mjs',proof:'portal-v2/tests/feedback.test.mjs',browserProof:'tests/integration/portal-v2-live.spec.js',status:'proven'}),
  Object.freeze({id:'customer-branding',implementation:'customer-branding.js',proof:'portal-v2/tests/global-capabilities.test.mjs',browserProof:'tests/integration/portal-v2-live.spec.js',status:'proven'}),
- Object.freeze({id:'mobile-navigation',implementation:'navigation-model.js + router.js',proof:'portal-v2/tests/navigation.test.mjs',browserProof:'tests/integration/portal-v2-live.spec.js',status:'proven'})
+ Object.freeze({id:'mobile-navigation',implementation:'navigation-model.js',proof:'portal-v2/tests/navigation.test.mjs',browserProof:'tests/integration/portal-v2-live.spec.js',status:'proven'})
 ]);
 
 const BY_PAGE=new Map(FUNCTIONAL_PARITY_MANIFEST.map(item=>[item.pageId,item]));

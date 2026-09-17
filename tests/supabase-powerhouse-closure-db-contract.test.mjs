@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const base=await readFile(new URL('../supabase/migrations/20260916220000_powerhouse_closure_a_f.sql',import.meta.url),'utf8');
+const strict=await readFile(new URL('../supabase/migrations/20260916220100_powerhouse_closure_strict_cycle.sql',import.meta.url),'utf8');
+test('B: cycle identity is tenant scoped and cross-tenant links cannot resolve',()=>{assert.match(base,/primary key \(tenant_id, cycle_id\)/i);assert.match(base,/foreign key \(tenant_id, cycle_id\)[\s\S]*references public\.powerhouse_decision_cycles\(tenant_id, cycle_id\)/i);});
+test('B: cycle must traverse each canonical stage without skipping',()=>{assert.match(strict,/v_rank <> v_previous_rank \+ 1/i);assert.match(strict,/first cycle event must be signal sequence 1/i);});
+test('C: realized value is a distinct evidence-backed truth class',()=>{assert.match(base,/truth_class text not null default 'realized'/i);assert.match(base,/check \(truth_class = 'realized'\)/i);assert.match(base,/evidence_ref text not null/i);});
+test('C: legacy realized candidates are not assigned a tenant or cycle implicitly',()=>{const candidateView=base.match(/create or replace view public\.powerhouse_unlinked_realized_value_candidates_v1[\s\S]*?where coalesce\(o\.revenue_eur,0\) > 0;/i)?.[0]||'';assert.ok(candidateView);assert.doesNotMatch(candidateView,/tenant_id|cycle_id/i);});
+test('E: Make is explicitly forbidden as an active canonical writer in the database',()=>{assert.match(base,/powerhouse_legacy_learning_no_make_writer_ck/i);assert.match(base,/canonical_writer !~\*.*make/i);});
+test('security: global proposal governance is server-only',()=>{assert.match(base,/drop policy if exists voorstellen_lezen on public\.cijfervoorstellen/i);assert.match(base,/drop policy if exists voorstellen_beoordelen on public\.cijfervoorstellen/i);assert.match(base,/revoke all on table public\.cijfervoorstellen from anon, authenticated/i);assert.match(base,/grant select,insert,update,delete on table public\.cijfervoorstellen to service_role/i);});
