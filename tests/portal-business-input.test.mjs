@@ -5,6 +5,7 @@ import { projectCanonicalObject } from '../platform/read-models/portal-projectio
 import { createPortalBusinessInputHandler } from '../platform/api/portal-business-input-handler.mjs';
 import { readLegacyPortalBusinessInputs } from '../portal-next/portal-business-input-store.js';
 import { repairBusinessInputsFromAuthority } from '../supabase/functions/portal-state-eu/business-input-read-repair.js';
+import { createPortalDomainState } from '../portal-v2/domain-state.js';
 
 test('portal business input is stored as SourceTruth with model lineage and raw answers', () => {
   const object=createPortalBusinessInput({tenantId:'tenant-1',userId:'user-1',inputType:'AIActAssessment',modelId:'eu-ai-act',instanceId:'primary',schemaVersion:3,answers:{usesAI:true,humanOversight:false},sourcePortal:'portal-next',submittedAt:'2026-09-17T15:40:00.000Z'});
@@ -59,4 +60,10 @@ test('canonical read-repair reconstructs a missing BusinessInput projection from
 test('legacy portal browser states become migratable BusinessInputs without lead/auth keys', () => {
   const values=new Map([['bg_portaal_acme',JSON.stringify({beleid:{aibeleid:2},niveaus:{strategie:4}})],['bg_portaal_open','1'],['bg_portaal_lead',JSON.stringify({mail:'x@example.test'})]]);const storage={length:values.size,key:index=>[...values.keys()][index],getItem:key=>values.get(key)??null};const inputs=readLegacyPortalBusinessInputs(storage);
   assert.equal(inputs.length,1);assert.equal(inputs[0].modelId,'bg_portaal_acme');assert.equal(inputs[0].inputType,'LegacyPortalState');assert.deepEqual(inputs[0].answers.beleid,{aibeleid:2});
+});
+
+test('portal domain state exposes one authenticated BusinessInput write seam instead of per-form stores', async () => {
+  const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'})};
+  const domain=createPortalDomainState(stateClient);
+  assert.equal(typeof domain.saveBusinessInput,'function');
 });
