@@ -1,0 +1,57 @@
+{
+  "fingerprint": "powerhouse-autonomous-completion-authority-v1",
+  "observed_at": "2026-09-17",
+  "outcome_class": "IMPROVEMENT",
+  "scope": [
+    "all_existing_chats",
+    "all_future_chats",
+    "all_existing_agents",
+    "all_future_agents",
+    "all_material_workflows"
+  ],
+  "problem": "Established Powerhouse autonomy, status and writeback rules could still be presented back to the user for repeated approval, and a conversational DEELS LIVE description could become a stop point even when safe technical work remained.",
+  "root_cause": "The existing Engineering OS encoded autonomy, LIVE-until-proven and mandatory writeback, but did not yet contain one explicit machine-readable interaction-authority contract that prohibited repeated approval requests for already-established authority.",
+  "failed_approach": "Treat missing downstream rollout, documentation or proof as a reason to report DEELS LIVE or ask the user again whether the already-approved Powerhouse rule should be implemented.",
+  "fix": [
+    "Add interaction_authority to config/powerhouse-engineering-os.json.",
+    "Treat established Powerhouse rules and approved design choices as continuing authority without reapproval.",
+    "Keep DEELS LIVE and NIET GEDAAN as internal intermediate states only while safe technical work remains.",
+    "Require human-readable documentation plus machine-readable learning/writeback before completion.",
+    "Interrupt only for a genuinely novel unresolved choice or a proven hard boundary."
+  ],
+  "delivery_incident": {
+    "symptom": "The first regression test path was rejected by the fail-closed delivery classifier as an unclassified delivery path.",
+    "root_cause": "The initial filename tests/powerhouse-autonomous-completion-authority.test.mjs did not match an existing executable delivery lane.",
+    "repair": "Move the governance regression into the existing tests/brain-* backend lane instead of widening the classifier.",
+    "prevention": "When a new governance/control-plane regression semantically belongs to an existing registered lane, place it in that lane. Never weaken a fail-closed classifier to make one change pass."
+  },
+  "prevention": [
+    "All agents read and reuse established authority before execution.",
+    "No repeated approval prompt for a rule or decision already present in canonical authority.",
+    "A red gate is diagnosis input; solve the root cause without bypassing or lowering the gate.",
+    "A material task cannot claim completion without evidence, canonical writeback, documentation and reusable learning.",
+    "New governance tests must be wired into protected Required CI and into the correct existing delivery lane."
+  ],
+  "evidence_sources": [
+    "config/powerhouse-engineering-os.json#interaction_authority",
+    "docs/development-autonomous-completion-authority.md",
+    "tests/brain-powerhouse-autonomous-completion-authority.test.mjs",
+    ".github/workflows/required-test.yml",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/1882",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/35198226087"
+  ],
+  "verified_evidence": {
+    "tested_head_sha": "5b2dd7fe4c0f675839678a88a0c1fc7f18f4c171",
+    "required_ci_run_id": 35198226087,
+    "required_ci_conclusion": "success",
+    "protected_merge_sha": "9b56b83c27c8b8591068d4b3e8f4de09bca7db4c",
+    "main_readback": [
+      "config/powerhouse-engineering-os.json contains interaction_authority fingerprint powerhouse-autonomous-completion-authority-v1",
+      "docs/development-autonomous-completion-authority.md is present on main",
+      "brain/learning/autonomous-completion-authority-v1-2026-09-17.json is present on main"
+    ],
+    "notion_constitution_page_id": "3c7da36a-ac8a-819a-b70a-d98dbd94ee1e"
+  },
+  "verification_policy": "Verified only after protected Required CI, protected merge to main, main readback and canonical knowledge writeback.",
+  "status": "VERIFIED"
+}

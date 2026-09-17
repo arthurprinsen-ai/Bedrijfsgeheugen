@@ -23,6 +23,20 @@
       "required": true
     },
     {
+      "id": "function:bg-pre-publish-review",
+      "type": "function",
+      "authority": "supabase/functions/bg-pre-publish-review/index.ts",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:powerhouse-content-loop",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-content-loop/index.ts",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-content-orchestrator",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-orchestrator/index.ts",
@@ -41,6 +55,83 @@
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
       "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:bg_brein_regels_check",
+      "type": "rpc",
+      "authority": "supabase/functions/bg-pre-publish-review/index.ts",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:record_content_publication_state",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_reconcile_content_outcomes_v1",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-content-loop/index.ts",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_cycle_events",
+      "type": "table",
+      "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
+      "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_decision_cycles",
+      "type": "table",
+      "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
+      "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_legacy_learning_migrations",
+      "type": "table",
+      "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
+      "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_obligation_reconciliations",
+      "type": "table",
+      "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
+      "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_quality_events",
+      "type": "table",
+      "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
+      "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_realized_values",
+      "type": "table",
+      "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
+      "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_compliance_evidence_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
+      "evidence_contract": "tests/powerhouse-resource-intelligence-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_optimization_candidate_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
+      "evidence_contract": "tests/powerhouse-resource-intelligence-contract.test.mjs",
       "required": true
     }
   ]

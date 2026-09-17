@@ -1,0 +1,79 @@
+{
+  "fingerprint": "powerhouse-security-operations-closure-v1",
+  "authority_reference": "docs/changes/powerhouse-security-operations-hardening-v1.md",
+  "as_of": "2026-09-17",
+  "timezone": "Europe/Amsterdam",
+  "overall_status": "BLOCKED",
+  "completion_rule": "overall_status may become LIVE_PROVEN only when every obligation is CLOSED_PROVEN with provider/runtime readback evidence; repository merge or CI success alone is insufficient",
+  "obligations": [
+    {
+      "id": "isolated_restore_dr_exercise",
+      "status": "OPEN",
+      "owner_plane": "Supabase backup and disaster recovery",
+      "latest_readback": "2026-09-17: backup availability remains proven, but no safe isolated restore target is available through the current connector without creating a separate paid project/branch or using a production-overwriting restore path. No destructive restore was attempted.",
+      "evidence_required": [
+        "dated isolated restore succeeds without overwriting production",
+        "restored application and representative data are validated",
+        "measured RTO and RPO are recorded",
+        "cleanup or rollback evidence is recorded"
+      ]
+    },
+    {
+      "id": "credential_rotation_end_to_end",
+      "status": "OPEN",
+      "owner_plane": "Cross-provider secrets and credentials",
+      "latest_readback": "2026-09-17: no new provider-side rotation/revocation evidence was exposed by the connected management planes. Vault age/update metadata remains inventory evidence only and is not promoted to rotation proof.",
+      "evidence_required": [
+        "each in-scope credential has provider-side rotation evidence",
+        "each dependent consumer has successful post-rotation readback",
+        "superseded credentials are revoked or proven unusable",
+        "no secret values are stored in repository documentation, logs, or learning records"
+      ]
+    },
+    {
+      "id": "cross_platform_iam_review",
+      "status": "OPEN",
+      "owner_plane": "GitHub, Netlify, Notion, Buffer, Supabase and other active provider access planes",
+      "latest_readback": "2026-09-17: GitHub repository identity arthurprinsen-ai has current admin permission on arthurprinsen-ai/Bedrijfsgeheugen and main remains protected with required test status. Netlify personal MFA is provider-readback proven enabled and Team PrinsenCo returns enforce_mfa=enforced. Supabase sole-Owner personal MFA and organization-wide Require MFA enforcement were enabled in provider UI and saved by the standing Owner; the management connector still does not expose organization-member MFA state. Notion still contains one human plus eight bots/integrations, including legacy Make while Make is retired in the Powerhouse architecture; the connected Notion management surface can inventory users/bots but exposes no workspace-connection disconnect action. A current plugin-directory search returned no Buffer management/IAM connector, so Buffer account IAM remains unverified. Least-privilege cleanup therefore remains open for stale/inaccessible provider identities and evidence that cannot yet be executed or read back through the connected management planes.",
+      "evidence_required": [
+        "standing human and service identities are inventoried",
+        "roles and permissions are reviewed for least privilege",
+        "MFA or equivalent strong authentication is evidenced where supported",
+        "stale or unnecessary access is removed and provider readback confirms the resulting state"
+      ]
+    }
+  ],
+  "already_proven": [
+    {
+      "id": "public_rls_policy_intent_classification",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "docs/changes/powerhouse-security-operations-hardening-v1.md#rls"
+    },
+    {
+      "id": "leaked_password_protection",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "docs/changes/powerhouse-security-operations-hardening-v1.md#password-auth--closed--proven"
+    },
+    {
+      "id": "privileged_daily_sales_rpc_boundary",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "docs/changes/powerhouse-security-operations-hardening-v1.md#privileged-rpc-exposure--closed--proven"
+    },
+    {
+      "id": "backup_availability",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "docs/changes/powerhouse-security-operations-hardening-v1.md#backup--restore--disaster-recovery",
+      "note": "backup availability proof does not close the isolated restore obligation"
+    },
+    {
+      "id": "netlify_owner_team_management_mfa",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "2026-09-17 provider readback: current Owner mfa_enabled=true; Team PrinsenCo enforce_mfa=enforced; members_count=1"
+    },
+    {
+      "id": "supabase_owner_management_mfa",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "2026-09-17 provider UI evidence: sole standing Owner enrolled account MFA and enabled organization-wide Require MFA; owner confirmed save; organization qnfouxnedomulppeuhoz remains the canonical organization"
+    }
+  ]
+}

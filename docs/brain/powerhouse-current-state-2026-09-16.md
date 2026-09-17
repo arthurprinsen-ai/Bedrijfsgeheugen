@@ -121,3 +121,15 @@ Het totale Powerhouse mag pas als `LIVE_VERIFIED` worden gerapporteerd wanneer:
 - documentatie geen retired authority als actieve route presenteert.
 
 Tot die tijd moet iedere agent/chat de concrete open obligation tonen in plaats van `klaar`, `resolved` of `LIVE_VERIFIED` te claimen.
+
+## 9. Revenue Content Intelligence learning lineage
+
+Revenue Content Intelligence participates in the same Powerhouse learning authority as all other material capabilities. The closed loop is not complete when code or content is generated; it is complete only after production readback and learning writeback.
+
+Canonical machine references:
+- `public.brain_failure_registry`: `rci-production-schema-drift-v1`, `rci-experiment-status-constraint-drift-v1`, `rci-edge-function-config-drift-v1`, `rci-supabase-preview-bootstrap-drift-v1`;
+- `public.brain_records`: `learning:rci-release-failures-v1` (`Learning`, `VERIFIED`);
+- `public.bg_schrijfregels`: `canonical-release-proof-and-learning-v1`, `canonical-revenue-content-closed-loop-v1`, `canonical-agent-preflight-revenue-content-v1`.
+
+Operational consequence: every agent/chat touching content, growth, SEO, social, website, CRM, sales, analytics, opportunities or publishing reads these rules and applicable fingerprints before execution and writes verified outcomes/root causes/prevention back afterwards. Documentation is a human projection; Supabase/production evidence remains runtime authority.
+

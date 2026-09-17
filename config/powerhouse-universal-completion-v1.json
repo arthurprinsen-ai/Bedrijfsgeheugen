@@ -1,0 +1,76 @@
+{
+  "type": "POWERHOUSE_UNIVERSAL_COMPLETION_POLICY",
+  "version": "POWERHOUSE-UNIVERSAL-COMPLETION-v1",
+  "status": "ACTIVE",
+  "default_enabled": true,
+  "fail_closed": true,
+  "scope": "all current and future material Bedrijfsgeheugen Powerhouse chats, agents, workflows, scenarios, incidents, recoveries, development runs and production verifications",
+  "purpose": "Make complete canonical closure mandatory. No material run may claim a terminal state until every required accountability category is explicitly COMPLETE with evidence or NOT_APPLICABLE with reason, canonical writeback is performed, open obligations are terminal, and exact production readback is present where LIVE & BEWEZEN is claimed.",
+  "entrypoint": "scripts/brain/powerhouse-universal-completion-gate.mjs",
+  "manifest_version": "POWERHOUSE-UNIVERSAL-COMPLETION-MANIFEST-v1",
+  "required_categories": [
+    "goal_context",
+    "actions",
+    "changed_components",
+    "decisions",
+    "errors_incidents",
+    "root_cause",
+    "fixes",
+    "tests_gates",
+    "production_readback",
+    "outcome_value",
+    "open_obligations",
+    "regression_prevention",
+    "documentation",
+    "learning_writeback",
+    "architecture_adr_system_map",
+    "ownership_successor",
+    "security_privacy_secrets",
+    "cost_performance",
+    "runtime_identity",
+    "interruption_recovery",
+    "evidence_lineage"
+  ],
+  "category_rule": "Every required category must exist. COMPLETE requires evidence with source and observedAt. NOT_APPLICABLE requires an explicit reason. Omission is failure.",
+  "terminal_rule": {
+    "LIVE & BEWEZEN": [
+      "all required categories accounted for",
+      "zero non-terminal open obligations",
+      "canonical writeback references present",
+      "exact candidate production readback present",
+      "material learning persisted when any material trigger exists"
+    ],
+    "BLOCKED_HARD_BOUNDARY": [
+      "all required categories accounted for",
+      "hard boundary reason present",
+      "current evidence present",
+      "concrete recovery path present"
+    ]
+  },
+  "material_learning_triggers": [
+    "changed_components",
+    "decisions",
+    "errors_incidents",
+    "root_cause",
+    "fixes",
+    "regression_prevention",
+    "architecture_adr_system_map",
+    "cost_performance"
+  ],
+  "invariants": [
+    "NO_TERMINAL_STATUS_WITHOUT_UNIVERSAL_MANIFEST",
+    "NO_SILENT_OMISSION",
+    "NO_CHAT_ONLY_MATERIAL_LEARNING",
+    "NO_DOCS_ONLY_COMPLETION",
+    "NO_GREEN_CI_AS_SUBSTITUTE_FOR_PRODUCTION_READBACK",
+    "NO_PRODUCTION_GREEN_AS_SUBSTITUTE_FOR_CANONICAL_WRITEBACK",
+    "NO_OPEN_OBLIGATION_UNDER_LIVE_AND_PROVEN",
+    "NO_STALE_OR_CROSS_CANDIDATE_EVIDENCE",
+    "NO_PARALLEL_TRUTH_STORE",
+    "CANONICAL_BRAIN_WINS"
+  ],
+  "mandatory_preflight_integration": "scripts/brain/chat-learning-preflight.mjs",
+  "mandatory_postflight_validator": "scripts/brain/powerhouse-universal-completion-gate.mjs",
+  "regression_test": "tests/brain-universal-completion-gate.test.mjs",
+  "learning_source": "brain/learning/universal-completion-gap-2026-09-17.json"
+}

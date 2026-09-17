@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "UNIVERSAL-COMPLETION-GAP-2026-09-17-v1",
+  "fingerprint": "powerhouse|completion|partial-writeback-despite-policy|universal-manifest-required-v1",
+  "status": "LIVE_AND_PROVEN",
+  "symptom": "Materiële Powerhouse-wijzigingen konden inhoudelijk live en grotendeels geborgd zijn terwijl een deel van documentatie, learning, evidence, root cause, obligations of andere accountability-categorieën pas later alsnog expliciet werd vastgelegd.",
+  "rootCause": "De bestaande policies maakten preflight, postflight en learning-writeback verplicht, maar completion werd niet door één actuele exhaustive manifest-validator geblokkeerd wanneer één categorie stil ontbrak. Deelgates en historische checkpoints bewezen subsets, niet volledige run-completeness.",
+  "failedApproach": "Vertrouw op meerdere losse policies, CI-gates en menselijke/agentmatige discipline om alle writeback-categorieën impliciet compleet te houden.",
+  "fix": "Introduceer POWERHOUSE-UNIVERSAL-COMPLETION-v1: iedere materiële chat/agent/run moet vóór terminalisatie alle verplichte categorieën expliciet als COMPLETE met evidence of NOT_APPLICABLE met reden opnemen. LIVE & BEWEZEN vereist daarnaast zero open obligations, canonical writeback en exact-candidate production readback.",
+  "preventionRule": "Geen enkele materiële Powerhouse chat, agent, workflow, incident, recovery of development run mag een terminale status claimen zonder succesvolle fail-closed universal completion validation. Omission is failure, niet een impliciete N/A.",
+  "regressionContract": [
+    "tests/brain-universal-completion-gate.test.mjs",
+    "tests/brain-universal-completion-integration.test.mjs"
+  ],
+  "evidence": [
+    "2026-09-17: fast-execution runtime was LIVE & BEWEZEN terwijl aanvullende human-readable documentation pas in een vervolgstap expliciet werd gesynchroniseerd.",
+    "Existing chat-to-brain-completeness-v1 required postflight/writeback but had no exhaustive per-run category manifest.",
+    "PR #1896 merged to protected main as 647f9a5828a22fd7f55d7416ab6cd559f599b518.",
+    "Main readback: config/powerhouse-universal-completion-v1.json is ACTIVE, default_enabled=true and fail_closed=true.",
+    "Main readback: scripts/brain/powerhouse-universal-completion-gate.mjs requires all 21 completion categories and blocks omissions.",
+    "Main readback: scripts/brain/chat-learning-preflight.mjs makes universal completion a mandatory supplemental source and validates the postflight entrypoint.",
+    "Exact-head gates green before merge included Shared Agent Memory Tests, Chat learning preflight PR, V18 Production Promotion, Brain foundation verify, Learning Contract Delivery Classifier Tests, Component Foundation TDD and related release/security gates."
+  ],
+  "owner": "agent-reliability",
+  "canonicalComponents": [
+    "config/powerhouse-universal-completion-v1.json",
+    "scripts/brain/powerhouse-universal-completion-gate.mjs",
+    "brain/policies/chat-to-brain-completeness-v1.json",
+    "scripts/brain/chat-learning-preflight.mjs",
+    "docs/brain/powerhouse-universal-completion.md",
+    ".github/workflows/shared-agent-memory-tests.yml"
+  ],
+  "productionEvidence": {
+    "candidateHeadSha": "dd70e01382be8731a31ea11d9fe410f147870232",
+    "mergeCommitSha": "647f9a5828a22fd7f55d7416ab6cd559f599b518",
+    "policyReadback": "ACTIVE/default_enabled/fail_closed on main",
+    "validatorReadback": "21 mandatory categories, omission fails closed",
+    "preflightReadback": "mandatory universalCompletion metadata plus entrypoint existence check",
+    "sharedMemoryRegressionGate": "green"
+  },
+  "open_obligation": null
+}

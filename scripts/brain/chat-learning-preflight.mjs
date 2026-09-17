@@ -4,12 +4,19 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
+const FAST_EXECUTION_POLICY_SOURCE = 'config/powerhouse-fast-execution-v1.json';
+const UNIVERSAL_COMPLETION_POLICY_SOURCE = 'config/powerhouse-universal-completion-v1.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'config/powerhouse-engineering-os.json',
   'config/powerhouse-truth-status-contract.json',
+  'config/powerhouse-execution-resilience-v1.json',
+  FAST_EXECUTION_POLICY_SOURCE,
+  UNIVERSAL_COMPLETION_POLICY_SOURCE,
   'brain/policies/powerhouse-system-contract-v1.json',
   'brain/policies/live-completion-learning-contract-v1.json',
   'brain/policies/powerhouse-agent-continuity-v1.json',
+  'brain/policies/powerhouse-universal-agent-learning-writeback-v1.json',
+  'brain/contracts/resource-intelligence-v1.json',
   'docs/brain/learning-plane-authority-contract-v1.md',
   'brain/policies/chat-to-brain-completeness-v1.json',
   'brain/learning/chat-continuity-2026-08-31.json',
@@ -18,6 +25,7 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/learning/chat-runtime-truth-preflight-2026-08-31.json',
   'brain/learning/homepage-video-release-preflight-2026-09-08.json'
 ];
+const DEFAULT_MAX_SOURCES = 64;
 
 function normalizeSourcePath(rootDir, sourcePath) {
   if (typeof sourcePath !== 'string' || !sourcePath.trim()) throw new Error('invalid learning source path');
@@ -52,7 +60,44 @@ function serializedPacketBytes(packet) {
   return bytes;
 }
 
-export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = 41, maxBytes = 256_000 } = {}) {
+function validateFastExecutionPolicy(policy) {
+  if (!policy || policy.type !== 'POWERHOUSE_FAST_EXECUTION_POLICY') throw new Error('fast-execution policy missing or wrong type');
+  if (policy.version !== 'POWERHOUSE-FAST-EXECUTION-v1') throw new Error(`unsupported fast-execution policy version: ${policy.version ?? 'missing'}`);
+  if (policy.status !== 'ACTIVE') throw new Error('fast-execution policy is not ACTIVE');
+  if (policy.default_enabled !== true) throw new Error('fast-execution policy is not default enabled');
+  if (typeof policy.scope !== 'string' || !/chats/i.test(policy.scope) || !/agents/i.test(policy.scope)) throw new Error('fast-execution policy scope does not cover chats and agents');
+  if (typeof policy.entrypoint !== 'string' || !policy.entrypoint) throw new Error('fast-execution policy entrypoint is missing');
+  return Object.freeze({
+    version: policy.version,
+    status: policy.status,
+    defaultEnabled: policy.default_enabled,
+    executionClassDefault: 'STANDARD',
+    policySource: FAST_EXECUTION_POLICY_SOURCE,
+    entrypoint: policy.entrypoint,
+    failClosed: true
+  });
+}
+
+function validateUniversalCompletionPolicy(policy) {
+  if (!policy || policy.type !== 'POWERHOUSE_UNIVERSAL_COMPLETION_POLICY') throw new Error('universal-completion policy missing or wrong type');
+  if (policy.version !== 'POWERHOUSE-UNIVERSAL-COMPLETION-v1') throw new Error(`unsupported universal-completion policy version: ${policy.version ?? 'missing'}`);
+  if (policy.status !== 'ACTIVE' || policy.default_enabled !== true || policy.fail_closed !== true) throw new Error('universal-completion policy must be ACTIVE, default enabled and fail-closed');
+  if (typeof policy.scope !== 'string' || !/chats/i.test(policy.scope) || !/agents/i.test(policy.scope)) throw new Error('universal-completion scope does not cover chats and agents');
+  if (!Array.isArray(policy.required_categories) || policy.required_categories.length < 20) throw new Error('universal-completion required categories are incomplete');
+  if (typeof policy.entrypoint !== 'string' || !policy.entrypoint) throw new Error('universal-completion entrypoint is missing');
+  return Object.freeze({
+    version: policy.version,
+    status: policy.status,
+    defaultEnabled: policy.default_enabled,
+    failClosed: policy.fail_closed,
+    manifestVersion: policy.manifest_version,
+    requiredCategories: [...policy.required_categories],
+    policySource: UNIVERSAL_COMPLETION_POLICY_SOURCE,
+    entrypoint: policy.entrypoint
+  });
+}
+
+export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000 } = {}) {
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
   if (!Number.isInteger(maxBytes) || maxBytes < 1) throw new Error('maxBytes must be a positive integer');
   const contractLocation = normalizeSourcePath(rootDir, contractPath);
@@ -67,6 +112,8 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   const visited = new Set();
   const sources = [];
   const signals = { fingerprints: [], preventions: [], blockers: [], resumeContracts: [] };
+  let fastExecutionPolicy = null;
+  let universalCompletionPolicy = null;
   let sourceBytes = Buffer.byteLength(contractRaw, 'utf8');
   while (queue.length) {
     const requested = queue.shift();
@@ -80,6 +127,8 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     let parsed = null;
     if (normalized.endsWith('.json')) {
       try { parsed = JSON.parse(raw); } catch (error) { throw new Error(`invalid JSON learning source ${normalized}: ${error.message}`); }
+      if (normalized === FAST_EXECUTION_POLICY_SOURCE) fastExecutionPolicy = parsed;
+      if (normalized === UNIVERSAL_COMPLETION_POLICY_SOURCE) universalCompletionPolicy = parsed;
       collectSignals(parsed, signals);
       if (Array.isArray(parsed.linked_learning_sources)) {
         for (const linked of parsed.linked_learning_sources) {
@@ -91,7 +140,28 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     sources.push({ path: normalized, format: normalized.endsWith('.json') ? 'json' : 'text', bytes, sha256: crypto.createHash('sha256').update(raw).digest('hex'), type: parsed?.type ?? null, version: parsed?.version ?? null, fingerprint: parsed?.fingerprint ?? null });
     visited.add(normalized);
   }
-  const packet = { version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1', status: 'READY', contract: contractPath, sourceBytes, sources, fingerprints: stableUnique(signals.fingerprints).sort(), preventions: stableUnique(signals.preventions).sort(), blockers: stableUnique(signals.blockers).sort(), resume_contracts: stableUnique(signals.resumeContracts) };
+
+  const fastExecution = validateFastExecutionPolicy(fastExecutionPolicy);
+  const fastEntrypoint = normalizeSourcePath(rootDir, fastExecution.entrypoint);
+  if (!fs.existsSync(fastEntrypoint.absolute)) throw new Error(`missing fast-execution entrypoint: ${fastExecution.entrypoint}`);
+
+  const universalCompletion = validateUniversalCompletionPolicy(universalCompletionPolicy);
+  const completionEntrypoint = normalizeSourcePath(rootDir, universalCompletion.entrypoint);
+  if (!fs.existsSync(completionEntrypoint.absolute)) throw new Error(`missing universal-completion entrypoint: ${universalCompletion.entrypoint}`);
+
+  const packet = {
+    version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1',
+    status: 'READY',
+    contract: contractPath,
+    sourceBytes,
+    fastExecution,
+    universalCompletion,
+    sources,
+    fingerprints: stableUnique(signals.fingerprints).sort(),
+    preventions: stableUnique(signals.preventions).sort(),
+    blockers: stableUnique(signals.blockers).sort(),
+    resume_contracts: stableUnique(signals.resumeContracts)
+  };
   const totalBytes = serializedPacketBytes(packet);
   if (totalBytes > maxBytes) throw new Error(`maxBytes exceeded: ${totalBytes} > ${maxBytes}`);
   return { ...packet, totalBytes };
