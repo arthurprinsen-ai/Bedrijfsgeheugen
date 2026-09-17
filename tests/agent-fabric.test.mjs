@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createAgentRegistry } from '../platform/agents/agent-registry.mjs';
 import { createAgentFabric } from '../platform/agents/agent-fabric.mjs';
 import { createLearningMemory } from '../platform/agents/learning-memory.mjs';
+import { bindPowerhouseSession } from '../scripts/brain/powerhouse-session-gateway.mjs';
 
 const agents = [
   { id:'agent-ux', domains:['Website','UX'], capabilities:['analyze','design'] },
@@ -12,6 +13,20 @@ const agents = [
 ];
 
 const registry = () => createAgentRegistry(agents);
+
+function sessionReceipt(runId, candidateId) {
+  return bindPowerhouseSession({
+    sessionId:'agent-fabric-test', runId, candidateId,
+    observedAt:'2026-09-17T11:45:00+02:00',
+    preflightPacket:{
+      status:'READY',
+      fastExecution:{ version:'POWERHOUSE-FAST-EXECUTION-v1' },
+      universalCompletion:{ version:'POWERHOUSE-UNIVERSAL-COMPLETION-v1' },
+      sessionBinding:{ version:'POWERHOUSE-SESSION-BINDING-v1' },
+      sources:[], fingerprints:[], preventions:[], blockers:[], resume_contracts:[]
+    }
+  });
+}
 
 function advanceToVerifying(fabric, workId) {
   fabric.transition({ workId, status:'Investigating' });
@@ -26,6 +41,7 @@ function liveCompletionContext(obligationId, candidateIdentity, productionIdenti
     workId:'ignored-by-fabric',
     candidateIdentity,
     productionIdentity,
+    sessionReceipt:sessionReceipt(obligationId, candidateIdentity),
     materialObligations:[{ id:obligationId, status:'COMPLETED' }],
     evidence:[
       { type:'CANDIDATE_TESTS', producer:'BRAIN_DELIVERY', accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity },
@@ -42,6 +58,7 @@ function hardBoundaryContext() {
     obligationId:'completion-hard-boundary',
     workId:'ignored-by-fabric',
     candidateIdentity:'candidate-boundary',
+    sessionReceipt:sessionReceipt('completion-hard-boundary', 'candidate-boundary'),
     materialObligations:[{ id:'production-smoke', status:'OPEN' }],
     hardBoundary:{
       present:true,
@@ -120,6 +137,15 @@ test('AgentWork cannot resolve while a material obligation is still open', () =>
     }
   }), /completion readiness/i);
   assert.equal(fabric.getWork(work.id).status, 'Verifying');
+});
+
+test('AgentWork cannot resolve without verified session binding even when other evidence is complete', () => {
+  const fabric = createAgentFabric({ registry:registry() });
+  const work = fabric.intake({ tenantId:'TENANT-A', kind:'Failure', problemClass:'unbound-production', priority:'P1', domains:['Website'], capabilities:['analyze'], affectedObjectIds:['portal'], problem:'Unbound completion attempt' });
+  advanceToVerifying(fabric, work.id);
+  const context = liveCompletionContext('completion-unbound', 'candidate-unbound', 'production-unbound');
+  delete context.sessionReceipt;
+  assert.throws(() => fabric.transition({ workId:work.id, status:'Resolved', completionContext:context }), /completion readiness/i);
 });
 
 test('AgentWork resolves only when every material obligation is terminal', () => {
