@@ -12,8 +12,8 @@ test('menu writer creates a candidate proof even when no menu content changes', 
 });
 
 test('menu writer still hands exact PR identity to shadow verification', () => {
-  assert.match(workflow, /PR_NUMBER=\"\$\{\{ steps\.create_pr\.outputs\.pull-request-number \}\}\"/);
-  assert.match(workflow, /PR_HEAD_SHA=\"\$\{\{ steps\.create_pr\.outputs\.pull-request-head-sha \}\}\"/);
+  assert.match(workflow, /PR_NUMBER:\s*\$\{\{ steps\.candidate_pr\.outputs\.pr_number \}\}/);
+  assert.match(workflow, /HEAD_SHA:\s*\$\{\{ steps\.candidate_pr\.outputs\.head_sha \}\}/);
   assert.match(workflow, /repo-writer-candidate-shadow\.yml/);
   assert.match(workflow, /candidate_pr=\$\{\{ steps\.candidate_pr\.outputs\.pr_number \}\}/);
   assert.match(workflow, /candidate_head_sha=\$\{\{ steps\.candidate_pr\.outputs\.head_sha \}\}/);
