@@ -15,7 +15,23 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 
 async function digest(value: string) { const data = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)); return [...new Uint8Array(data)].map((b) => b.toString(16).padStart(2, '0')).join(''); }
-async function bufferRequest(token: string, query: string, variables?: Record<string,unknown>) { const response = await fetch('https://api.buffer.com', { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(variables ? { query, variables } : { query }) }); const body = await response.json().catch(() => ({})); if (!response.ok) throw new Error(`BUFFER_HTTP_${response.status}`); return body; }
+class BufferHttpError extends Error {
+  status: number;
+  retryAfter: string | null;
+  constructor(status: number, retryAfter: string | null) {
+    super(`BUFFER_HTTP_${status}`);
+    this.name = 'BufferHttpError';
+    this.status = status;
+    this.retryAfter = retryAfter;
+  }
+}
+async function bufferRequest(token: string, query: string, variables?: Record<string,unknown>) {
+  const response = await fetch('https://api.buffer.com', { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(variables ? { query, variables } : { query }) });
+  const body = await response.json().catch(() => ({}));
+  const retryAfter = clean(response.headers.get('retry-after')) || clean(response.headers.get('ratelimit-reset')) || clean(response.headers.get('x-ratelimit-reset')) || null;
+  if (!response.ok) throw new BufferHttpError(response.status, retryAfter);
+  return body;
+}
 async function getPost(token: string, id: string) { if (!clean(id)) return null; const body = await bufferRequest(token, `query { post(input:{id:"${esc(id)}"}) { id text status dueAt channelId } }`); if (body?.errors?.length) { const message = clean(body.errors[0]?.message).toLowerCase(); if (message.includes('not found') || message.includes('could not find') || message.includes('unknown post')) return null; throw new Error(`BUFFER_GQL:${clean(body.errors[0]?.message)}`); } return body?.data?.post || null; }
 async function createPost(token: string, input: Record<string,unknown>) { const body = await bufferRequest(token, 'mutation($input:CreatePostInput!){createPost(input:$input){__typename ... on PostActionSuccess{post{id text status dueAt channelId}} ... on MutationError{message}}}', { input }); if (body?.errors?.length) throw new Error(`BUFFER_GQL:${clean(body.errors[0]?.message)}`); const action = body?.data?.createPost || {}; return { post: action.post || null, error: action.message || null }; }
 async function deletePost(token: string, id: string) { const body = await bufferRequest(token, `mutation { deletePost(input:{id:"${esc(id)}"}) { __typename ... on DeletePostSuccess { id } ... on VoidMutationError { message } } }`); const result = body?.data?.deletePost || {}; return { ok: result.__typename === 'DeletePostSuccess' && result.id === id, id: result.id || null, error: result.message || body?.errors?.[0]?.message || null }; }
@@ -72,6 +88,7 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
 function instagramInput(art: any, due: Date, future: boolean) { const proof = art?.generation_evidence?.instagram_media_proof || {}; const mediaType = clean(proof.media_type || proof.buffer_media_type).toLowerCase(); const mediaUrl = clean(proof.media_url); if (!(proof.exact_final_media_proven === true && clean(proof.final_media_sha256) && mediaUrl)) throw new Error('EXACT_FINAL_MEDIA_PROOF_REQUIRED'); const assetKind = ['reel','video'].includes(mediaType) ? 'video' : 'image'; return { text: clean(art.body), channelId: INSTAGRAM, schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}), metadata: { instagram: { type: mediaType || 'post', shouldShareToFeed: true } }, assets: [{ [assetKind]: { url: mediaUrl } }] }; }
 
 Deno.serve(async (req) => {
+  try {
   if (req.method !== 'POST') return json({ ok: false, error: 'POST_ONLY' }, 405);
   const url = Deno.env.get('SUPABASE_URL') || '';
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -147,4 +164,10 @@ Deno.serve(async (req) => {
     results.push({ channel: row.channel, status: providerStatus, post_id: readback.id, provider_truth_verified: true });
   }
   return json({ ok: true, runDate, provider_reconciliation, results, provider_truth_verified: true });
+  } catch (error) {
+    if (error instanceof BufferHttpError && error.status === 429) {
+      return json({ ok: false, error: 'BUFFER_RATE_LIMITED', retryable: true, retry_after: error.retryAfter }, 429);
+    }
+    throw error;
+  }
 });
