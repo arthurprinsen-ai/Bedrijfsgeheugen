@@ -100,6 +100,13 @@ test('PR governance fan-out is admitted once through Required before duplicate c
   assert.match(automation, /development-doc-contract\.test\.mjs/);
 });
 
+test('delivery admission avoids N+1 file reads for ordinary open PRs', () => {
+  const hygiene = workflow('powerhouse-delivery-hygiene.yml');
+  assert.match(hygiene, /metadata\.candidateType === 'promotion'/);
+  assert.match(hygiene, /pulls\/\$\{item\.number\}\/files\?per_page=100/);
+  assert.doesNotMatch(hygiene, /if \(validateDeliveryMetadata\(metadata, policy\)\.ok\) \{\s*const files = await gh/);
+});
+
 test('CodeQL keeps Python and Powerhouse JavaScript coverage without analyzing JavaScript twice on each PR', () => {
   const generic = workflow('codeql.yml');
   const powerhouse = workflow('powerhouse-codeql.yml');
