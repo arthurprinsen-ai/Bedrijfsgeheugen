@@ -150,6 +150,7 @@ jobs:
           tests/social-learning-schedule-contract.test.mjs
           tests/social-learning-store.test.mjs
           tests/social-outcome-ingest.test.mjs
+          tests/supabase-production-schema-replay-parity-v1.test.mjs
           tests/unified-brain-production-handoff.test.mjs
           tests/v18-chrome-scoper.test.mjs
           tests/v18-standalone-compositor-safety.test.mjs
