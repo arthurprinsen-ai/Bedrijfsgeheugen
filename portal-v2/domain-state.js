@@ -1,5 +1,5 @@
 import { upgradeLegacyPortalState, hasLegacyPortalData } from './legacy-state-migration.js';
-import { savePortalBusinessInput } from '../portal-next/portal-business-input-store.js';
+import { readLegacyPortalBusinessInputs, savePortalBusinessInput } from '../portal-next/portal-business-input-store.js';
 
 const clone=value=>value==null?value:structuredClone(value);
 const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
@@ -96,11 +96,11 @@ function asAnswers(value){
  return {value:clone(value)};
 }
 
-export function createPortalDomainState(stateClient,{businessInputSaver=savePortalBusinessInput}={}){
+export function createPortalDomainState(stateClient,{businessInputSaver=savePortalBusinessInput,legacyStorage=globalThis.localStorage}={}){
  if(!stateClient?.load||!stateClient?.write)throw new TypeError('PORTAL_STATE_CLIENT_REQUIRED');
  if(typeof businessInputSaver!=='function')throw new TypeError('PORTAL_BUSINESS_INPUT_SAVER_REQUIRED');
  const domain=createDomainState({load:async()=>{const snap=await stateClient.load();return snap?.state||{};},save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}});
- const pendingBusinessInputs=new Map();let businessRevision=0;let activePortalFlush=null;
+ const pendingBusinessInputs=new Map();let businessRevision=0;let activePortalFlush=null;let activeInit=null;
  async function saveBusinessInput(input){
   const headers=typeof stateClient.authHeaders==='function'?await stateClient.authHeaders():{};
   const authorization=String(headers?.authorization||'').trim();
@@ -110,6 +110,13 @@ export function createPortalDomainState(stateClient,{businessInputSaver=savePort
   }
   return businessInputSaver(input,{authorization});
  }
+ async function performInit(){
+  const result=await domain.init();
+  if(stateClient.isDemo?.())return result;
+  for(const input of readLegacyPortalBusinessInputs(legacyStorage))await saveBusinessInput(input);
+  return result;
+ }
+ function init(){if(activeInit)return activeInit;activeInit=performInit().finally(()=>{activeInit=null});return activeInit;}
  function track(path){
   const binding=businessInputBinding(path);
   if(!binding)return;
@@ -128,7 +135,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=savePort
   return stateResult;
  }
  function flush(){if(activePortalFlush)return activePortalFlush;activePortalFlush=performPortalFlush().finally(()=>{activePortalFlush=null});return activePortalFlush;}
- const portalDomain=Object.freeze({...domain,set,patch,flush,saveBusinessInput});
+ const portalDomain=Object.freeze({...domain,init,set,patch,flush,saveBusinessInput});
  if(typeof globalThis!=='undefined')globalThis.__BG_PORTAL_DOMAIN_STATE__=portalDomain;
  return portalDomain;
 }
