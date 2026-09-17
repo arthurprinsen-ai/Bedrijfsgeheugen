@@ -58,9 +58,7 @@ select
   evidence
 from claims;
 
-revoke all on public.powerhouse_material_claims_v1 from public;
-revoke all on public.powerhouse_material_claims_v1 from anon;
-revoke all on public.powerhouse_material_claims_v1 from authenticated;
+revoke all on public.powerhouse_material_claims_v1 from public, anon, authenticated;
 grant select on public.powerhouse_material_claims_v1 to service_role;
 
 comment on view public.powerhouse_material_claims_v1 is
