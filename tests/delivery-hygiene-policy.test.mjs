@@ -66,12 +66,13 @@ test('blocks cross-obligation supersession', () => {
 });
 
 test('applies recoverable capacity waiting to executable WIP but excludes docs and dependency candidates', () => {
-  const openCandidates = [1, 2, 3, 4, 5].map(number => candidate({ number, obligationId: `BG-${number}` }));
-  const waiting = evaluateAdmission({ candidate: candidate({ number: 6, obligationId: 'BG-6' }), openCandidates, policy, currentMainSha: SHA_A });
+  const conflictContracts = ['delivery-control-plane'];
+  const openCandidates = [1, 2, 3, 4, 5].map(number => candidate({ number, obligationId: `BG-${number}`, conflictContracts }));
+  const waiting = evaluateAdmission({ candidate: candidate({ number: 6, obligationId: 'BG-6', conflictContracts }), openCandidates, policy, currentMainSha: SHA_A });
   assert.equal(waiting.ok, false);
   assert.equal(waiting.state, 'WAITING_CAPACITY');
   assert.equal(waiting.reason, 'FINISH_EXISTING_WORK_FIRST');
-  const docs = evaluateAdmission({ candidate: candidate({ number: 7, obligationId: 'DOC-1', lane: 'docs', type: 'docs' }), openCandidates, policy, currentMainSha: SHA_A });
+  const docs = evaluateAdmission({ candidate: candidate({ number: 7, obligationId: 'DOC-1', lane: 'docs', type: 'docs', conflictContracts }), openCandidates, policy, currentMainSha: SHA_A });
   assert.equal(docs.state, 'ADMITTED');
 });
 
