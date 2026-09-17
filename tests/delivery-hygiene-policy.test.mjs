@@ -75,9 +75,14 @@ test('applies recoverable capacity waiting to executable WIP but excludes docs a
   assert.equal(docs.state, 'ADMITTED');
 });
 
-test('blocks a declared base that does not match the immutable PR base', () => {
-  const result = evaluateAdmission({ candidate: candidate({ number: 1, obligationId: 'BG-1', baseSha: SHA_A, declaredBaseSha: SHA_C }), openCandidates: [], policy, currentMainSha: SHA_C });
-  assert.equal(result.state, 'BLOCKED_STALE_IDENTITY');
+test('uses the git-derived immutable base as authority and reports stale mutable PR base metadata', () => {
+  const result = evaluateAdmission({ candidate: candidate({ number: 1, obligationId: 'BG-1', baseSha: SHA_A, declaredBaseSha: SHA_C }), openCandidates: [], policy, currentMainSha: SHA_A });
+  assert.equal(result.ok, true);
+  assert.equal(result.state, 'ADMITTED');
+  assert.deepEqual(result.metadataBaseDrift, {
+    declaredBaseSha: SHA_C,
+    authoritativeBaseSha: SHA_A,
+  });
 });
 
 test('does not force rebuild merely because unrelated main moved', () => {
