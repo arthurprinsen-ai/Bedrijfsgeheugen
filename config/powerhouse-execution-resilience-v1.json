@@ -146,5 +146,5 @@
     "brain/learning/execution-resilience-2026-09-17.json"
   ],
   "runtime_helper": "brain/guards/execution-resilience.mjs",
-  "regression_test": "tests/execution-resilience.test.mjs"
+  "regression_test": "tests/execution-resilience-guard.test.mjs"
 }
