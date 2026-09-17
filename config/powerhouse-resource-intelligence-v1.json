@@ -1,26 +1,41 @@
 {
   "fingerprint": "powerhouse-resource-intelligence-v1",
   "lifecycle": "active",
+  "canonical_usage_authority": "public.brain_budget_usage",
   "canonical_resource_authority": "public.powerhouse_resource_impact_v1",
-  "canonical_business_value_authority": "public.powerhouse_business_value_v1",
+  "canonical_business_value_authority": "public.powerhouse_action_business_value_v1",
+  "canonical_resource_intelligence_authority": "public.powerhouse_resource_intelligence_daily_v1",
+  "canonical_business_value_intelligence_authority": "public.powerhouse_business_value_intelligence_v1",
+  "canonical_compliance_evidence_authority": "public.powerhouse_compliance_evidence_v1",
+  "canonical_optimization_authority": "public.powerhouse_optimization_candidate_v1",
   "production_authority": "BG169",
   "shared_context_read": "BG167",
   "material_outcome_writeback": ["BG168", "BG166"],
   "unknown_data_policy": "null_not_zero",
   "provenance_required": true,
   "physical_telemetry": {
-    "energy": {"unit": "Wh", "nullable": true, "requires_method": true, "requires_provenance": true, "requires_confidence": true},
-    "water": {"unit": "ml", "nullable": true, "requires_method": true, "requires_provenance": true, "requires_confidence": true},
-    "co2e": {"unit": "gCO2e", "legacy_value_field": "estimated_co2e_g", "requires_method_for_trusted_reporting": true, "requires_provenance": true, "requires_confidence": true}
+    "energy": {"canonical_projection_unit": "kWh", "nullable": true, "requires_method": true, "requires_provenance": true, "requires_confidence": true},
+    "water": {"canonical_projection_unit": "liters", "nullable": true, "requires_method": true, "requires_provenance": true, "requires_confidence": true},
+    "co2e": {"canonical_projection_unit": "kgCO2e", "nullable": true, "requires_method_for_trusted_reporting": true, "requires_provenance": true, "requires_confidence": true}
   },
-  "confidence": {
-    "minimum_for_automatic_prioritization": 0.8,
-    "below_threshold_action": "retain_as_candidate_or_review_required"
+  "provider_telemetry": {
+    "openai_and_ai_providers": {"canonical_path": "resource-usage-eu", "measured": ["input_tokens", "output_tokens", "cache_tokens", "requests", "provider_model_id"], "cost_rule": "provider_invoice_or_verified_pricing_factor_only", "physical_rule": "provider_reported_or_versioned_resource_factor_only"},
+    "netlify": {"measured": ["deploy_id", "deploy_state", "deploy_duration", "function_inventory", "region"], "billing": "unknown_until_provider_billing_or_invoice_source", "never_infer_runtime_compute_from_bundle_size": true},
+    "supabase": {"measured": ["canonical_usage_rows", "database_resource_events", "edge_function_lineage"], "billing": "unknown_until_provider_billing_or_invoice_source"},
+    "github": {"measured": ["workflow_run", "job_outcome", "duration_when_available", "commit_sha"], "billing": "unknown_until_provider_billing_or_invoice_source"},
+    "notion": {"measured": ["powerhouse_cost_snapshot", "source_updated_at"], "billing": "only_when_snapshot_or_invoice_contains_measured_cost"},
+    "make": {"measured": ["operations", "credits", "data_transfer_when_reported"], "billing": "only_when_snapshot_or invoice supplies actual cost"},
+    "other_connectors": {"rule": "discover provider-supported usage_cost_energy_carbon_water_security_and_compliance telemetry at connection time; ingest only evidence-backed fields"}
   },
   "compliance": {
     "mode": "evidence_only",
     "allowed_statuses": ["evidence_present", "evidence_missing", "not_applicable", "review_required"],
-    "forbid_blanket_legal_compliance_claim": true
+    "forbid_blanket_legal_compliance_claim": true,
+    "frameworks": {
+      "EU_AI_ACT": {"source": "EUR-Lex Regulation EU 2024/1689 consolidated 2026-07-27", "reviewed_on": "2026-09-17"},
+      "NIS2_CBW": {"source": "Nederlandse Cyberbeveiligingswet in force 2026-08-15", "reviewed_on": "2026-09-17"},
+      "CSRD_ESRS": {"source": "European Commission revised ESRS adopted 2026-07-03", "reviewed_on": "2026-09-17"}
+    }
   },
   "autonomy": {
     "safe_reversible_only": true,
@@ -44,9 +59,10 @@
     "write_learning_back": true
   },
   "agent_decision_contract": {
-    "read_before_applicable_decision": ["resource_impact", "business_value", "provenance", "confidence", "open_optimization_candidates"],
+    "read_before_applicable_decision": ["resource_impact", "business_value", "provenance", "confidence", "compliance_evidence", "open_optimization_candidates"],
     "write_after_material_outcome": ["measured_resource_impact", "business_value", "outcome_evidence", "learning_fingerprint"],
     "never_infer_unknown_physical_telemetry_as_zero": true,
+    "never_infer_provider_cost_without_measured_or_verified_pricing_evidence": true,
     "never_bypass_existing_release_security_integrity_or_truth_gates": true
   }
 }

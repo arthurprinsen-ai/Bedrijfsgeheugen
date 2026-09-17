@@ -25,7 +25,7 @@ test('fallback snapshot never presents sample metrics as proven live or audit-re
   const html = csrdImpactMarkup(DEFAULT_IMPACT_SNAPSHOT);
   assert.doesNotMatch(html,/● Live data|audit-ready/);
   assert.match(html,/\(voorbeeld\)/);
-  assert.match(html,/readiness-overzicht/);
+  assert.match(html,/evidence-overzicht/);
 });
 
 test('customer markup does not leak internal evidence fields', () => {

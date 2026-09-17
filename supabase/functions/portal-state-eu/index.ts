@@ -49,6 +49,33 @@ Deno.serve(async(req:Request)=>{
       .eq('calculation_status','calculated')
       .limit(5000);
     if(lineageError)return json({error:'RESOURCE_LINEAGE_READ_FAILED'},500);
+    const {data:resourceDaily,error:resourceError}=await client
+      .from('powerhouse_resource_intelligence_daily_v1')
+      .select('day,tenant_id,provider,resource_type,unit,usage_events,resource_amount,factor_observations,factor_coverage,energy_kwh,co2e_kg,water_liters,min_factor_confidence,provenance_complete')
+      .eq('tenant_id',tenantId)
+      .order('day',{ascending:false})
+      .limit(365);
+    if(resourceError)return json({error:'RESOURCE_INTELLIGENCE_READ_FAILED'},500);
+    const {data:businessValue,error:businessError}=await client
+      .from('powerhouse_business_value_intelligence_v1')
+      .select('action_id,action_type,channel,status,expected_value_eur,resource_observations,calculated_impact_observations,energy_kwh,co2e_kg,water_liters,tenant_ids,provider_cost_eur,external_cost_eur,human_minutes,observed_cost_eur,realized_revenue_eur,realized_net_value_eur,realized_roi,environmental_factor_coverage,business_value_status')
+      .contains('tenant_ids',[tenantId])
+      .limit(500);
+    if(businessError)return json({error:'BUSINESS_VALUE_INTELLIGENCE_READ_FAILED'},500);
+    const {data:compliance,error:complianceError}=await client
+      .from('powerhouse_compliance_evidence_v1')
+      .select('control_key,requirement_key,evidence_status,evidence_refs,confidence,review_required,observed_at')
+      .eq('tenant_id',tenantId)
+      .order('observed_at',{ascending:false})
+      .limit(500);
+    if(complianceError)return json({error:'COMPLIANCE_EVIDENCE_READ_FAILED'},500);
+    const {data:recommendations,error:recommendationError}=await client
+      .from('powerhouse_resource_optimization_queue_v1')
+      .select('candidate_id,opportunity_type,expected_impact,confidence,safety_class,proposed_action,status,created_at')
+      .eq('tenant_id',tenantId)
+      .limit(100);
+    if(recommendationError)return json({error:'RESOURCE_RECOMMENDATIONS_READ_FAILED'},500);
+
     const rows=Array.isArray(evidence)?evidence:[];
     const lineageRows=Array.isArray(lineage)?lineage:[];
     const factorVersions=cleanUnique(lineageRows.map((row:any)=>row.factor_id));
@@ -69,16 +96,31 @@ Deno.serve(async(req:Request)=>{
       co2eKg:summary.co2e_kg,
       waterLiters:summary.water_liters
     }:null;
-    return json({resourceBusinessValue:summary?{
-      ...summary,
+    const complianceRows=(Array.isArray(compliance)?compliance:[]).map((row:any)=>({
+      control_key:row.control_key,requirement_key:row.requirement_key,evidence_status:row.evidence_status,
+      confidence:row.confidence,review_required:row.review_required,observed_at:row.observed_at,
+      evidence_count:Array.isArray(row.evidence_refs)?row.evidence_refs.length:0
+    }));
+    const intelligence={
+      resource_daily:Array.isArray(resourceDaily)?resourceDaily:[],
+      business_value:Array.isArray(businessValue)?businessValue:[],
+      compliance_evidence:complianceRows,
+      recommendations:Array.isArray(recommendations)?recommendations:[],
+      freshness:{resource_latest_at:summary?.latest_observed_at||null,generated_at:new Date().toISOString()},
+      truth_policy:'measured_or_evidence_backed_else_unknown'
+    };
+    const base=summary||{tenant_id:tenantId,observations:0,calculated_impact_observations:0,attributed_action_observations:0,environmental_factor_coverage:null,action_attribution_coverage:null,energy_kwh:null,co2e_kg:null,water_liters:null,observed_cost_eur:null,realized_revenue_eur:null,realized_roi:null,latest_observed_at:null};
+    return json({resourceBusinessValue:{
+      ...base,
       action_evidence_rows:rows.length,
       measured_actions:rows.filter((row:any)=>row.evidence_maturity==='measured').length,
       partial_actions:rows.filter((row:any)=>row.evidence_maturity==='partial').length,
       calibration_eligible_actions:rows.filter((row:any)=>row.calibration_eligible===true).length,
       human_feedback_observations:rows.reduce((total:number,row:any)=>total+Number(row.human_feedback_observations||0),0),
       evidence_source:'powerhouse_action_evidence_maturity_v1',
-      resource_footprint:resourceFootprint
-    }:null});
+      resource_footprint:resourceFootprint,
+      resource_intelligence:intelligence
+    }});
   }
 
   const layer=String(body?.layer||'').trim();

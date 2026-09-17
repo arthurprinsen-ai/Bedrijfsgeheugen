@@ -7,19 +7,10 @@ import { BREIN_STAPPEN } from './runtime-evidence.js';
 /**
  * Alle databronnen van het portaal op één plek.
  *
- * Het portaal wordt door vier soorten data gevoed, en die zaten in vier losse
- * modules zonder gedeeld beeld:
- *
- *   eigen      wat de klant zelf invult;
- *   runtime    de operating loop van het brein, met dertien stappen per lus;
- *   model      de rekenregels die van invoer een uitkomst maken;
- *   extern     branchenormen, onderzoek, het bronnenregister en de wetgeving.
- *
- * Dit bestand zet ze naast elkaar met dezelfde vragen: wat voedt het, hoeveel
- * zit erin, wanneer is het voor het laatst nagekeken, en is dat nog geldig.
- * Daarmee is in één oogopslag te zien waar de lus onderbroken is — een lege
- * runtime, een verlopen branchedataset of een wet die herzien moet worden zijn
- * alle drie een gat in hetzelfde geheel.
+ * Het portaal wordt door vier soorten data gevoed: eigen klantdata, runtime,
+ * modellen en externe bronnen. Resource Intelligence hoort bewust bij runtime:
+ * het is geen los ESG-dashboard maar gemeten/verifieerbare telemetry uit dezelfde
+ * tenant-scoped Powerhouse-state.
  */
 
 const arr = value => (Array.isArray(value) ? value : []);
@@ -38,12 +29,25 @@ export const SOORTEN = Object.freeze({
 export function dataBronnen(state = {}, peil = vandaag()) {
   const portal = at(state, 'portal') || {};
   const runtime = portal.runtime || {};
+  const explicitResourceBusinessValue = portal.resourceBusinessValue || state.resourceBusinessValue || null;
+  const resourceBusinessValue = explicitResourceBusinessValue || {};
+  const intelligence = resourceBusinessValue.resource_intelligence || {};
+  const resourceRows = arr(intelligence.resource_daily);
+  const businessRows = arr(intelligence.business_value);
+  const complianceRows = arr(intelligence.compliance_evidence);
+  const recommendations = arr(intelligence.recommendations);
+  const measuredResourceRows = resourceRows.filter(row => Number(row.factor_coverage) > 0);
+  const resourceCoverage = resourceRows.length
+    ? measuredResourceRows.reduce((sum,row)=>sum+Number(row.factor_coverage||0),0)/resourceRows.length
+    : 0;
+  const resourceContextActive = Boolean(explicitResourceBusinessValue);
+  const resourceHealthy = !resourceContextActive || resourceRows.length > 0 || businessRows.length > 0;
   const dekking = parityCoverage();
   const verlopenWet = verlopenHerzieningen(peil).length;
   const achterhaald = achterhaaldeStatus(peil).length;
 
   const ingevuld = Object.keys(portal).filter(sleutel =>
-    !['runtime', 'admin', 'connectors'].includes(sleutel) &&
+    !['runtime', 'admin', 'connectors', 'resourceBusinessValue'].includes(sleutel) &&
     portal[sleutel] && Object.keys(portal[sleutel]).length).length;
 
   const lussen = arr(runtime.brain?.items);
@@ -70,6 +74,15 @@ export function dataBronnen(state = {}, peil = vandaag()) {
         ? `${arr(runtime.sources?.items).filter(item => item.healthy).length} gezond, ${arr(runtime.sources?.items).filter(item => !item.healthy).length} vragen aandacht`
         : 'Geen integratiegezondheid opgehaald',
       { bijgewerkt: runtime.sources?.updatedAt || '' }),
+
+    bron('resource-intelligence', 'runtime', 'Resource Intelligence',
+      resourceRows.length + businessRows.length, 'meetgroepen', resourceHealthy,
+      resourceRows.length || businessRows.length
+        ? `${resourceRows.length} resourcegroepen, ${businessRows.length} value-acties, ${Math.round(resourceCoverage*100)}% gemiddelde factor-brondekking, ${complianceRows.length} compliance-evidence-items, ${recommendations.length} open aanbevelingen`
+        : resourceContextActive
+          ? 'Live tenantcontext actief, maar nog geen echte resource-/kostentelemetry; onbekend blijft onbekend in plaats van nul'
+          : 'Resource Intelligence is nog niet geactiveerd voor deze state; bestaande portal-runtime blijft daardoor niet kunstmatig rood',
+      { bijgewerkt: intelligence.freshness?.generated_at || '', brondekking: resourceCoverage, truthPolicy: intelligence.truth_policy || 'measured_or_evidence_backed_else_unknown', actief: resourceContextActive }),
 
     bron('rekenregels', 'model', 'Rekenregels in het pariteitscontract',
       dekking.total, 'berekeningen', dekking.missing.length === 0,
@@ -126,4 +139,4 @@ export function bronnenTeHerzien(peil = vandaag()) {
     .map(item => ({ naam: item.naam, herzienUiterlijk: item.herzienUiterlijk }));
 }
 
-export const DATA_SOURCES_VERSION = '2026-09-10-v1';
+export const DATA_SOURCES_VERSION = '2026-09-17-resource-intelligence-v3';
