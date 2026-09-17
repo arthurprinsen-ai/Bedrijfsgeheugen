@@ -36,13 +36,16 @@ test('executable protocol validator proves integration without creating new auth
 test('Required test executes the v2 acceptance contract', async () => {
   const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
   assert.match(workflow, /tests\/brain-fast-development-protocol-v2\.test\.mjs/);
+  assert.match(workflow, /powerhouse-fast-development-protocol-v2\.mjs --check/);
 });
 
-test('Development OS documents the incremental fast path and heavy promotion boundary', async () => {
-  const doc = await readFile(new URL('../docs/development-operating-system.md', import.meta.url), 'utf8');
-  assert.match(doc, /powerhouse-fast-development-protocol-v2/);
+test('approved human design documents the incremental fast path and heavy promotion boundary', async () => {
+  const doc = await readFile(new URL('../docs/superpowers/specs/2026-09-17-powerhouse-fast-development-protocol-v2-design.md', import.meta.url), 'utf8');
+  assert.match(doc, /Execution Packet v2/);
   assert.match(doc, /EXECUTION_PACKET_V2/);
   assert.match(doc, /FULL_RELEASE_GATES/);
   assert.match(doc, /EXACT_SHA_PROD_READBACK/);
-  assert.match(doc, /delta writeback/i);
+  assert.match(doc, /Delta writeback/i);
+  assert.match(doc, /BRAIN-DELIVERY-v2/);
+  assert.match(doc, /BG169/);
 });
