@@ -3,7 +3,7 @@
   "date": "2026-09-17",
   "obligation_id": "powerhouse-one-loop-v1",
   "problem": "Material work could stop at commits, open PRs, queued CI, stopped chats, timeouts or lost workers while multiple agents created parallel delivery state. GitHub Actions additionally accumulated stale PR-head runs because top-level workflows either had no concurrency guard or keyed concurrency on the candidate SHA itself.",
-  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries. For GitHub Actions, SHA-scoped concurrency made every new head a new concurrency group, so cancel-in-progress could not supersede older heads; other fan-out workflows had no PR single-flight guard at all. A second observed failure mode was operational misclassification: an implementation candidate in WAITING_CAPACITY/FINISH_EXISTING_WORK_FIRST can look like a runner or CI blockage while admission is intentionally yielding to a live recovery candidate.",
+  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries. For GitHub Actions, SHA-scoped concurrency made every new head a new concurrency group, so cancel-in-progress could not supersede older heads; other fan-out workflows had no PR single-flight guard at all. A second observed failure mode was operational misclassification: an implementation candidate in WAITING_CAPACITY/FINISH_EXISTING_WORK_FIRST can look like a runner or CI blockage while admission is intentionally yielding to a live recovery candidate. During recovery, a source refactor also exposed a stale test oracle: the approved-blog wrapper delegated implementation to publish_approved_blog_v2_core.py while change-scoped release tests still asserted implementation symbols in the thin wrapper.",
   "prevention": [
     "one obligation, one active executable candidate",
     "incomplete delivery/runtime states are recoverable, never terminal",
@@ -15,8 +15,11 @@
     "freeze the current candidate while checks are queued, pending or in-progress; mutate only after terminal defect evidence",
     "before repairing CI, classify the blocker as admission, deterministic test failure, transient runner/platform failure, stale/superseded run or external dependency",
     "if finish-before-start is caused by a live recovery candidate, finish or deterministically supersede that recovery first; never bypass the admission rule to make the implementation candidate run",
-    "after any recovery merge or main movement, reread current main, candidate head and current workflow state before acting so stale failures never become repair authority",
+    "after any recovery merge or main movement, reread current main, candidate head, PR metadata and current workflow state before acting so stale failures never become repair authority",
     "for a real failing job, isolate the first concrete assertion/contract break from the current exact-head run and repair only that cause on the same canonical lineage",
+    "after a source refactor moves implementation behind a thin wrapper, tests must assert implementation contracts at the canonical implementation boundary and wrapper contracts only at the wrapper boundary",
+    "PR_HEAD_SHA_DRIFT is a valid fail-closed signal: if the live PR head moves while a run is evaluating an older SHA, discard that run as promotion authority and restart reasoning from the new exact head",
+    "declared delivery metadata must be reconciled after legitimate main/head lineage movement rather than weakening exact-head or identity checks",
     "normalize GitHub delivery telemetry into deterministic learning evidence",
     "promote repeated learnings into regression tests, gates or guardrails"
   ],
@@ -27,7 +30,10 @@
     "github-actions-sha-scoped-concurrency-amplification-v1",
     "github-actions-pre-run-capacity-wait-v1",
     "recovery-first-admission-misread-as-ci-blockage-v1",
-    "stale-run-repair-authority-v1"
+    "stale-run-repair-authority-v1",
+    "approved-blog-core-boundary-stale-test-oracle-v1",
+    "pr-head-sha-drift-fail-closed-v1",
+    "delivery-metadata-lineage-drift-after-main-movement-v1"
   ],
   "evidence": [
     {
@@ -53,16 +59,44 @@
       "finding": "PR #1968 was intentionally held because recovery PR #1970 was the live recovery candidate. The correct action was to trace and finish the recovery candidate rather than weaken admission or blindly rerun implementation CI."
     },
     {
+      "type": "recovery_root_cause",
+      "recovery_pr": 1970,
+      "initial_head": "a4bf8eedfe7243805aeb44894644a3180c0bfad9",
+      "repaired_exact_head": "c94c2226412681fa0a6a21532b4ef3c9237002ca",
+      "finding": "Required test and BRAIN delivery shared the same stale test-oracle failure: tests searched implementation symbols such as faq_items and source_contract in the thin publish_approved_blog_v2.py wrapper after those implementations had moved to scripts/brain/publish_approved_blog_v2_core.py. The repair updated the oracle at the implementation boundary without broad product changes."
+    },
+    {
+      "type": "recovery_gate_readback",
+      "recovery_pr": 1970,
+      "candidate_head": "c94c2226412681fa0a6a21532b4ef3c9237002ca",
+      "finding": "Required test and BRAIN delivery reached terminal SUCCESS on the same exact head before protected merge; older failed runs were ignored as stale evidence."
+    },
+    {
       "type": "recovery_completion_readback",
       "recovery_pr": 1970,
       "merged": true,
       "merge_commit_sha": "b573a31d0547979bf9c708e4f56da0fa27502688",
-      "finding": "the recovery candidate completed and merged, proving the finish-before-start blocker was recoverable work, not a terminal CI/runner blockage"
+      "finding": "the recovery candidate completed through protected merge with expected-head identity and main readback, proving the finish-before-start blocker was recoverable work, not a terminal CI/runner blockage"
+    },
+    {
+      "type": "post_recovery_re_admission",
+      "implementation_pr": 1968,
+      "observed_exact_head": "2a5a74bf4b31030223cc0f2e7fb532edda25b605",
+      "finding": "after #1970 completion, #1968 was automatically admitted again by the existing hygiene/admission gate and preflight started; no admission bypass was used"
+    },
+    {
+      "type": "stale_run_fail_closed_evidence",
+      "finding": "when the live #1968 head moved during an older Required attempt, the control plane emitted PR_HEAD_SHA_DRIFT and rejected the stale run as authority. This behavior is correct and must be preserved."
     },
     {
       "type": "post_recovery_main_readback",
       "main_sha": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
-      "finding": "main advanced through follow-up learning PR #1975; PR #1968 was reread afterward and remains open, mergeable, and rebased logically on the current main lineage rather than on stale failure evidence"
+      "finding": "main advanced through follow-up learning work; PR #1968 was reread afterward and remained open/mergeable on the current lineage. Subsequent candidate heads must always supersede the concrete SHAs recorded here for promotion decisions."
+    },
+    {
+      "type": "documentation_contract",
+      "path": "docs/learning/2026-09-17-github-actions-runnerqueue-one-loop-v1.md",
+      "finding": "human-readable incident, root-cause, recovery and prevention record linked to the same powerhouse-one-loop-v1 obligation; it complements rather than duplicates this machine-readable learning"
     }
   ]
 }
