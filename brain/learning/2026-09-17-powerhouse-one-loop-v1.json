@@ -2,18 +2,42 @@
   "fingerprint": "stranded-delivery-or-interrupted-execution-v1",
   "date": "2026-09-17",
   "obligation_id": "powerhouse-one-loop-v1",
-  "problem": "Material work could stop at commits, open PRs, queued CI, stopped chats, timeouts or lost workers while multiple agents created parallel delivery state.",
-  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries.",
+  "problem": "Material work could stop at commits, open PRs, queued CI, stopped chats, timeouts or lost workers while multiple agents created parallel delivery state. GitHub Actions additionally accumulated stale PR-head runs because top-level workflows either had no concurrency guard or keyed concurrency on the candidate SHA itself.",
+  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries. For GitHub Actions, SHA-scoped concurrency made every new head a new concurrency group, so cancel-in-progress could not supersede older heads; other fan-out workflows had no PR single-flight guard at all.",
   "prevention": [
     "one obligation, one active executable candidate",
     "incomplete delivery/runtime states are recoverable, never terminal",
     "durable heartbeat/lease/checkpoint plus idempotent readback before retry",
     "finish existing admitted work before lower-priority starts under capacity pressure",
+    "queued or in-progress GitHub Actions are WAIT states and must never trigger retry/no-op/retrigger commits",
+    "all top-level PR fan-out workflows use PR-scoped single-flight concurrency with cancel-in-progress=true",
+    "candidate SHA remains an exact-head verification input inside delivery gates, never the PR concurrency identity",
+    "freeze the current candidate while checks are queued, pending or in-progress; mutate only after terminal defect evidence",
     "normalize GitHub delivery telemetry into deterministic learning evidence",
     "promote repeated learnings into regression tests, gates or guardrails"
   ],
   "canonical_loop": "intent -> preflight -> admission -> execute -> verify -> protected merge -> deploy -> production readback -> outcome -> learning -> prevention -> fulfilled",
   "status": "IMPLEMENTING",
   "candidate_pr": 1968,
-  "evidence": []
+  "failure_fingerprints": [
+    "github-actions-sha-scoped-concurrency-amplification-v1",
+    "github-actions-pre-run-capacity-wait-v1"
+  ],
+  "evidence": [
+    {
+      "type": "github_queue_readback",
+      "observed_queued_runs": 233,
+      "finding": "central Required/Unified jobs were queued before first runner step, proving pre-run capacity rather than a product-test failure"
+    },
+    {
+      "type": "github_supersession_readback",
+      "candidate_head": "b95f32cb880cdd0504e15d7b0f9f58fbc0e0886e",
+      "finding": "after PR-single-flight was added to the fan-out workflows, newer head creation caused Brain foundation, Shared Agent Memory, BG168, Learning Classifier, CodeQL, Powerhouse CodeQL, Engineering Intelligence and Engineering Supply Chain runs for the stale head to finish as cancelled"
+    },
+    {
+      "type": "regression_contract",
+      "path": "tests/delivery-github-actions-single-flight.test.mjs",
+      "finding": "requires all ten known PR fan-out workflows to key concurrency on pull-request identity, cancel stale work, and preserve exact-head verification in Required/Unified"
+    }
+  ]
 }
