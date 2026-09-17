@@ -1,0 +1,83 @@
+{
+  "fingerprint": "delivery-failure|capacity|shared|github-actions-queued-not-platform-outage",
+  "title": "GitHub Actions queued jobs: distinguish runner scheduling pressure from proven platform outage",
+  "version": "v1",
+  "observed_at": "2026-09-17T09:04:00+02:00",
+  "scope": "Bedrijfsgeheugen Powerhouse delivery and protected-gate execution",
+  "status": "PROVEN_LEARNING",
+  "incident": {
+    "pull_request": 1797,
+    "candidate_head_sha": "d8351464c535ef2c8243261ba1a434ddce860213",
+    "workflow_runs": [35109194027, 35109194549],
+    "observations": [
+      "Many workflows on the same exact candidate head completed successfully.",
+      "Required test subjobs preflight, automation, backend and portal completed successfully while website later acquired a runner and progressed.",
+      "Unified Brain Delivery candidate-identity completed successfully while plan remained queued on runs-on ubuntu-latest.",
+      "No self-hosted runner dependency was involved in the queued plan job.",
+      "The evidence therefore did not prove a GitHub-wide Actions outage; the observed state was compatible with transient GitHub-hosted runner scheduling or repository/account concurrency pressure."
+    ]
+  },
+  "root_cause_classification": {
+    "confirmed": "The delivery was waiting for GitHub-hosted runner allocation/scheduling for at least one protected job.",
+    "not_confirmed": "A GitHub-wide external capacity incident or outage.",
+    "likely_contributors": [
+      "A high number of workflows were triggered for the same candidate SHA.",
+      "Multiple jobs allocate ubuntu-latest runners independently.",
+      "Repository/account concurrency pressure can create transient queues even while other jobs continue to progress."
+    ]
+  },
+  "status_semantics": {
+    "wrong_default": "GEBLOKKEERD op externe GitHub Actions runner-capaciteit",
+    "required_default_when_queue_is_still_progressing": "DEELS LIVE — EXTERNE EXECUTIE WACHT",
+    "hard_blocked_only_when": [
+      "runner progress is absent beyond the configured bounded observation window",
+      "the exact required gate cannot obtain execution capacity",
+      "the queue condition is independently evidenced as a hard external boundary",
+      "safe recovery paths have been exhausted without bypassing protection"
+    ]
+  },
+  "preventionRule": "CLASSIFY_GITHUB_QUEUE_BEFORE_EXTERNAL_CAPACITY_BLOCK",
+  "prevention": {
+    "decision_order": [
+      "Read exact-head workflow and job states.",
+      "Separate queued, in_progress, completed-success, failed and cancelled jobs.",
+      "Confirm runner class such as ubuntu-latest versus self-hosted labels.",
+      "Check whether sibling jobs on the same exact SHA are still acquiring runners and progressing.",
+      "Check repository/workflow concurrency configuration and duplicate-trigger pressure.",
+      "Check GitHub platform status as corroborating evidence, not as sole proof.",
+      "Do not label the incident a platform-wide outage or external-capacity hard block without independent evidence.",
+      "Do not create retrigger commits while the queue is demonstrably draining; that increases queue pressure and invalidates exact-head continuity.",
+      "Preserve branch protection and required checks; never bypass them to escape a queue."
+    ],
+    "recovery": [
+      "Allow the existing exact-head run to continue while measurable progress exists.",
+      "Prefer deduplication and concurrency controls over repeated retriggers.",
+      "Only rerun a failed/cancelled job when evidence shows retry is appropriate; do not rerun merely because it is queued.",
+      "After all protected gates finish, continue normal exact-SHA merge, production readback and learning writeback."
+    ]
+  },
+  "engineering_improvement_targets": [
+    "Deduplicate overlapping PR verification paths.",
+    "Use concurrency groups that cancel genuinely superseded work without cancelling the current exact-head authority.",
+    "Run only changed delivery lanes where contract coverage permits it.",
+    "Measure queue wait, execution duration, runner allocations and duplicate work as CI efficiency signals.",
+    "Escalate sustained queue delay separately from test failure so product defects and platform scheduling are never conflated."
+  ],
+  "evidence": {
+    "github_run_urls": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/35109194027",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/35109194549"
+    ],
+    "workflow_path": ".github/workflows/unified-brain-delivery.yml",
+    "runner": "ubuntu-latest",
+    "candidate_commit_message": "chore: retrigger exact-head gates after concurrency fix"
+  },
+  "reuse_contract": {
+    "applies_to": [
+      "all existing and future Powerhouse agents",
+      "protected GitHub Actions gates",
+      "delivery, merge and production-promotion investigations"
+    ],
+    "required_behavior": "Before declaring GEBLOKKEERD due to GitHub runner capacity, agents must classify the queue using this evidence hierarchy and preserve the current exact-head protected flow whenever it is still progressing."
+  }
+}
