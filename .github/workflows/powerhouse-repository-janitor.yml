@@ -44,24 +44,41 @@ jobs:
           if [ "$EVENT_NAME" = schedule ]; then mode=dry-run; fi
           gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs.json
           MODE="$mode" node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
           import { readFile, writeFile } from 'node:fs/promises';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
           import { planRepositoryCleanup } from './tools/delivery/repository-janitor.mjs';
           const policy=JSON.parse(await readFile('config/powerhouse-delivery-hygiene-v1.json','utf8'));
           const raw=JSON.parse(await readFile('.artifacts/open-prs.json','utf8'));
-          const candidates=raw.map(pr=>({
-            number:pr.number,
-            state:pr.state,
-            title:pr.title,
-            body:pr.body||'',
-            baseSha:parseDeliveryMetadata(pr.body||'').baseSha || pr.base?.sha || '',
-            headSha:pr.head?.sha||'',
-          }));
+          const ghJson=path=>JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8'}));
+          const candidates=[];
+          for (const pr of raw) {
+            let uniqueCommits=true;
+            let compareEvidence={status:'UNPROVEN'};
+            try {
+              const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/main...${pr.head.sha}`);
+              uniqueCommits=Number(compare.ahead_by || 0) > 0;
+              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0)};
+            } catch (error) {
+              compareEvidence={status:'UNPROVEN',error:String(error?.message||error)};
+            }
+            candidates.push({
+              number:pr.number,
+              state:pr.state,
+              title:pr.title,
+              body:pr.body||'',
+              baseSha:parseDeliveryMetadata(pr.body||'').baseSha || pr.base?.sha || '',
+              headSha:pr.head?.sha||'',
+              uniqueCommits,
+              compareEvidence,
+            });
+          }
           const plan=planRepositoryCleanup({candidates,policy,mode:process.env.MODE||'dry-run'});
           const evidence={
             observed_at:new Date().toISOString(),
             repository:process.env.GITHUB_REPOSITORY,
             open_pr_count:candidates.length,
+            candidates:candidates.map(({number,headSha,uniqueCommits,compareEvidence})=>({number,headSha,uniqueCommits,compareEvidence})),
             ...plan,
           };
           await writeFile('.artifacts/powerhouse-repository-janitor.json',`${JSON.stringify(evidence,null,2)}\n`);
@@ -79,6 +96,13 @@ jobs:
             successor="$(jq -r '.successorNumber // empty' <<<"$action")"
             current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
             [ "$(jq -r '.state' <<<"$current")" = open ] || continue
+            current_head="$(jq -r '.head.sha' <<<"$current")"
+            planned_head="$(jq -r --argjson pr "$pr" '.candidates[] | select(.number == $pr) | .headSha' .artifacts/powerhouse-repository-janitor.json)"
+            [ "$current_head" = "$planned_head" ] || { echo "::error::JANITOR_HEAD_DRIFT:#${pr}:${planned_head}:${current_head}"; exit 78; }
+            if [ "$reason" = ALREADY_CONTAINED_IN_MAIN ]; then
+              ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${current_head}" --jq '.ahead_by')"
+              [ "$ahead" = 0 ] || { echo "::error::JANITOR_MAIN_CONTAINMENT_DRIFT:#${pr}:ahead_by=${ahead}"; exit 78; }
+            fi
             if [ -n "$successor" ]; then
               successor_state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${successor}")"
               [ "$(jq -r '.state' <<<"$successor_state")" = open ] || { echo "::error::Successor #${successor} is no longer open"; exit 78; }
