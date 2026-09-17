@@ -1,0 +1,34 @@
+{
+  "type": "powerhouse_learning",
+  "version": "1.0",
+  "fingerprint": "netlify-connector-readiness-route-isolation-v1",
+  "status": "VERIFIED",
+  "recorded_at": "2026-09-17",
+  "context": "Production Release Readback returned reproducible HTTP 503 for /api/connectors/readiness while Netlify exposed both the exact public readiness route and the protected /api/connectors/* wildcard.",
+  "symptom": "Production readiness check failed with HTTP 503 on repeated readback attempts.",
+  "root_cause_class": "routing configuration collision risk between an exact public health endpoint and an authenticated wildcard surface",
+  "causal_caveat": "The overlapping routes were directly observable and the explicit isolation plus fresh deployment removed the reproducible 503. No historical per-invocation runtime log proved wildcard shadowing was the only possible cause, so do not overstate exclusivity.",
+  "fix": {
+    "pattern": "Explicitly exclude /api/connectors/readiness from the protected /api/connectors/* wildcard while preserving the dedicated connector-readiness exact route.",
+    "security": "All other connector routes remain protected; readiness and auth checks were not weakened."
+  },
+  "production_evidence": {
+    "netlify_deploy_id": "6aa8fe0fa19260000807bbdc",
+    "netlify_state": "ready",
+    "git_sha": "4835b590a1a27d308b2cc764442e962ab76009ea",
+    "route_readback": "portal-connectors wildcard contains an explicit exclusion for /api/connectors/readiness and connector-readiness owns the exact route",
+    "production_release_readback_run": 34945747361,
+    "production_release_readback_conclusion": "success"
+  },
+  "prevention": [
+    "EXACT_PUBLIC_HEALTH_ROUTE_MUST_NOT_SHARE_AUTH_WILDCARD",
+    "ROUTE_COLLISION_REQUIRES_EXPLICIT_EXCLUSION",
+    "MERGE_OR_PROVIDER_READY_IS_NOT_LIVE",
+    "EXACT_DEPLOY_SHA_PLUS_PUBLIC_READBACK_REQUIRED",
+    "DO_NOT_WEAKEN_READINESS_OR_AUTH_TO_GET_GREEN",
+    "READBACK_AFTER_DEPLOY_TRANSPORT_STALL"
+  ],
+  "reuse_rule": "For Netlify exact-route plus wildcard combinations, inspect deployed route metadata and make public health/readiness exclusions explicit before claiming production readiness.",
+  "open_obligations": [],
+  "final_status": "LIVE & BEWEZEN"
+}
