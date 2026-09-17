@@ -55,14 +55,16 @@ test('approved blog recovery trigger is exact-slug, native, and automation-class
 
 test('approved blog writer emits FAQPage schema and two accessible functional figures', async () => {
   const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
-  assert.match(writer, /def faq_items\(/);
-  assert.match(writer, /'@type': 'FAQPage'/);
-  assert.match(writer, /'@type': 'Question'/);
-  assert.match(writer, /'@type': 'Answer'/);
-  assert.match(writer, /def article_figures\(/);
-  assert.match(writer, /<figure/);
-  assert.match(writer, /role="img"/);
-  assert.match(writer, /<figcaption>/);
+  const core = await readFile('scripts/brain/publish_approved_blog_v2_core.py', 'utf8');
+  assert.match(writer, /from brain\.publish_approved_blog_v2_core import \*/);
+  assert.match(core, /def faq_items\(/);
+  assert.match(core, /'@type': 'FAQPage'/);
+  assert.match(core, /'@type': 'Question'/);
+  assert.match(core, /'@type': 'Answer'/);
+  assert.match(core, /def article_figures\(/);
+  assert.match(core, /<figure/);
+  assert.match(core, /role="img"/);
+  assert.match(core, /<figcaption>/);
 });
 
 test('approved blog writer strips remote font links while preserving unrelated links', () => {
@@ -99,17 +101,21 @@ test('approved blog writer keeps analytics out of the first render until consent
 
 test('approved blog source contract blocks SEO drift before candidate generation', async () => {
   const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
-  assert.match(writer, /def source_contract\(/);
-  assert.match(writer, /Focus-zoekwoord ontbreekt in titel/);
-  assert.match(writer, /Focus-zoekwoord ontbreekt in meta/);
-  assert.match(writer, /Focus-zoekwoord ontbreekt in eerste 100 woorden/);
-  assert.match(writer, /Focus-zoekwoord ontbreekt in H2/);
-  assert.match(writer, /Approved blog mist expliciete aanpak\/methode/);
+  const core = await readFile('scripts/brain/publish_approved_blog_v2_core.py', 'utf8');
+  assert.match(writer, /from brain\.publish_approved_blog_v2_core import \*/);
+  assert.match(core, /def source_contract\(/);
+  assert.match(core, /Focus-zoekwoord ontbreekt in titel/);
+  assert.match(core, /Focus-zoekwoord ontbreekt in meta/);
+  assert.match(core, /Focus-zoekwoord ontbreekt in eerste 100 woorden/);
+  assert.match(core, /Focus-zoekwoord ontbreekt in H2/);
+  assert.match(core, /Approved blog mist expliciete aanpak\/methode/);
 });
 
-test('approved blog due selector fails closed on a stale queue row already present on main', async () => {
+test('approved blog due selector skips stale queue rows already present on main', async () => {
   const writer = await readFile('scripts/publish_approved_blog_v2.py', 'utf8');
   assert.match(writer, /STALE_QUEUE_ALREADY_IN_MAIN/);
+  assert.match(writer, /skipped by scheduler/);
+  assert.match(writer, /continue/);
   assert.match(writer, /blog'\) \/ q\['slug'\] \/ 'index\.html'/);
 });
 
