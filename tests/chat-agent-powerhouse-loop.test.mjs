@@ -13,6 +13,7 @@ test('continuity contract makes chats and agents intrinsic nodes in one canonica
   const policy = readPolicy();
   const contract = policy.loop_node_contract;
 
+  assert.equal(policy.status, 'ACTIVE');
   assert.equal(contract.required, true);
   assert.deepEqual(contract.actor_kinds, ['chat', 'agent']);
   assert.equal(contract.role, 'INTRINSIC_EXECUTION_NODE');
