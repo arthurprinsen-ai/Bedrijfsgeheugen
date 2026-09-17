@@ -14,6 +14,7 @@ import {
 const contract = JSON.parse(fs.readFileSync('config/powerhouse-execution-resilience-v1.json', 'utf8'));
 const continuity = JSON.parse(fs.readFileSync('brain/policies/powerhouse-agent-continuity-v1.json', 'utf8'));
 const preflightSource = fs.readFileSync('scripts/brain/chat-learning-preflight.mjs', 'utf8');
+const migrationSource = fs.readFileSync('supabase/migrations/20260917083000_powerhouse_execution_resilience_v1.sql', 'utf8');
 
 test('canonical resilience contract is active and mandatory for every material agent preflight', () => {
   assert.equal(contract.status, 'ACTIVE');
@@ -30,6 +31,16 @@ test('canonical agent continuity contract requires resumable interrupted executi
   assert.ok(continuity.invariants.includes('INTERRUPTION_IS_NOT_COMPLETION'));
   assert.ok(continuity.invariants.includes('READBACK_BEFORE_MUTATING_REPLAY'));
   assert.ok(continuity.terminal_green_requires.includes('no_unreconciled_interrupted_non_terminal_run'));
+});
+
+test('durable runtime reuses canonical Brain operations and reconciliation instead of a parallel execution store', () => {
+  assert.ok(migrationSource.includes('returns public.brain_operations'));
+  assert.ok(migrationSource.includes('public.brain_schedule_reconciliation'));
+  assert.ok(migrationSource.includes("status = 'RESULT_UNKNOWN'"));
+  assert.ok(migrationSource.includes("'state', 'RECOVERY_REQUIRED'"));
+  assert.ok(migrationSource.includes("'readback_before_replay', true"));
+  assert.ok(migrationSource.includes("'execution-resilience:' || p_operation_id::text || ':v' || v_operation.version::text"));
+  assert.doesNotMatch(migrationSource, /create\s+table\s+.*execution/i);
 });
 
 test('classifies visible ChatGPT interruption modes as recoverable classes', () => {
