@@ -42,6 +42,7 @@ on:
 permissions:
   contents: read
   actions: read
+  pull-requests: read
 
 env:
   NODE_VERSION: '22'
@@ -97,7 +98,20 @@ jobs:
               artifact_production_identity="$(jq -r '.merge_sha // empty' .artifacts/source/production-release-readback.json)"
               test "$artifact_production_identity" = "$SOURCE_HEAD_SHA" || { echo "::error::COMPLETION_PRODUCTION_IDENTITY_MISMATCH:$SOURCE_HEAD_SHA:$artifact_production_identity"; exit 1; }
               production_identity="$artifact_production_identity"
-              candidate_identity="$(git rev-parse "${SOURCE_HEAD_SHA}^2")"
+
+              associated_prs="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${SOURCE_HEAD_SHA}/pulls")"
+              candidate_count="$(jq --arg sha "$SOURCE_HEAD_SHA" '[.[] | select(.merged_at != null and .merge_commit_sha == $sha) | .head.sha] | unique | length' <<<"$associated_prs")"
+              if [ "$candidate_count" -eq 1 ]; then
+                candidate_identity="$(jq -r --arg sha "$SOURCE_HEAD_SHA" '[.[] | select(.merged_at != null and .merge_commit_sha == $sha) | .head.sha] | unique | .[0]' <<<"$associated_prs")"
+              else
+                parent_count="$(git rev-list --parents -n 1 "$SOURCE_HEAD_SHA" | awk '{print NF-1}')"
+                if [ "$parent_count" -ge 2 ]; then
+                  candidate_identity="$(git rev-parse "${SOURCE_HEAD_SHA}^2")"
+                else
+                  echo "::error::COMPLETION_CANDIDATE_IDENTITY_UNRESOLVED:$SOURCE_HEAD_SHA:associated_pr_count=$candidate_count:parent_count=$parent_count"
+                  exit 1
+                fi
+              fi
               [[ "$candidate_identity" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::COMPLETION_CANDIDATE_IDENTITY_MISSING:$SOURCE_HEAD_SHA"; exit 1; }
               ;;
             *)
