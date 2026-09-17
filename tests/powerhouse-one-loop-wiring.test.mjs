@@ -4,20 +4,27 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
-test('delivery hygiene runs One Loop validation before expensive execution', () => {
+test('delivery hygiene executes One Loop through the canonical admission module', () => {
   const workflow = read('.github/workflows/powerhouse-delivery-hygiene.yml');
-  assert.match(workflow, /powerhouse-one-loop-v1|one-loop\.mjs/i);
+  const module = read('tools/delivery/delivery-hygiene.mjs');
+  assert.match(workflow, /delivery-hygiene\.mjs/);
+  assert.match(module, /one-loop\.mjs/);
+  assert.match(module, /evaluateFinishingPressure/);
 });
 
-test('Unified Brain Delivery rechecks One Loop before handoff or promotion', () => {
+test('Unified Brain Delivery uses the same hygiene authority before execution and pre-handoff', () => {
   const workflow = read('.github/workflows/unified-brain-delivery.yml');
-  assert.match(workflow, /one-loop\.mjs|POWERHOUSE-ONE-LOOP-v1/i);
-  assert.match(workflow, /handoff|promotion|promot/i);
+  assert.match(workflow, /admission:/);
+  assert.match(workflow, /pre-handoff-admission:/);
+  assert.match(workflow, /powerhouse-delivery-hygiene\.yml/);
+  assert.match(workflow, /handoff:/);
 });
 
-test('protected Required test executes One Loop contract tests while keeping test aggregator authority', () => {
-  const workflow = read('.github/workflows/required-test.yml');
-  assert.match(workflow, /powerhouse-one-loop-contract\.test\.mjs/);
-  assert.match(workflow, /powerhouse-github-learning\.test\.mjs/);
-  assert.match(workflow, /test:/);
+test('protected Required test routes automation through the lane that executes One Loop contracts', () => {
+  const required = read('.github/workflows/required-test.yml');
+  const lane = read('.github/workflows/lane-automation.yml');
+  assert.match(required, /uses: \.\/\.github\/workflows\/lane-automation\.yml/);
+  assert.match(required, /test:/);
+  assert.match(lane, /powerhouse-one-loop-\*\.test\.mjs/);
+  assert.match(lane, /powerhouse-github-learning\.test\.mjs/);
 });
