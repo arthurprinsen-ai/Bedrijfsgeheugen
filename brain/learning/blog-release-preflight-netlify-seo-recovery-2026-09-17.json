@@ -1,0 +1,58 @@
+{
+  "learning_id": "blog-release-preflight-netlify-seo-recovery-2026-09-17",
+  "date": "2026-09-17",
+  "status": "LEARNED_WITH_FOLLOWUP_LINEAGE",
+  "scope": "approved blog delivery / website release lane / SEO preflight / repository write safety",
+  "fingerprint": "delivery-recovery|website|approved-blog|netlify-fallback-seo-preflight-v1",
+  "source_lineage": {
+    "release_lane_pr": 1950,
+    "release_lane_merge_sha": "869b8e4a49180563a81e84cfbfe9db7b90d3f1dc",
+    "approved_snapshot": "powerhouse:2026-09-17:blog:2f916b134c57",
+    "approved_source_hash": "aff445fc5c0bf96d7954dda5af5ec6c660ffcbec93a6a7b510ddc18112f38dcc",
+    "approved_candidate_sha": "3ea75fb4c02a8069fd0f139ed760ce4aa4989528",
+    "recovery_merge_tree_sha": "662f20f3c3a7f480085145aa1b7be477f363b5b6",
+    "recovery_pr": 1953,
+    "recovery_head_sha": "1e3d860efbfd89a9f9096d1ebaf5bb52b1be6ef9",
+    "followup_canonical_reconciliation_pr": 1970,
+    "followup_learning_pr": 1978
+  },
+  "signals": [
+    "Netlify exact-preview status failure/error terminated release validation instead of allowing the existing exact local-candidate fallback.",
+    "The approved article meta description was 139 characters while the Blog Technical SEO Gate requires 140-160.",
+    "The SEO-order blog-v2 contract required evidence/source semantics while the article's existing practical-method section was not machine-marked as evidence.",
+    "A whole-file contents-API reconstruction introduced an unrelated analytics-loader typo before it was detected and repaired."
+  ],
+  "impact": "An already-approved blog candidate could not progress cleanly through protected delivery. Repeated CI/recovery attempts also risked unnecessary Netlify/CI cost and whole-file rewrites risked unrelated semantic drift.",
+  "root_causes": [
+    "The website release lane incorrectly classified an external preview-provider failure as terminal even though an exact local candidate verification path already existed.",
+    "Approval/queueing did not execute the same final technical SEO and seo-order blog-v2 contracts that protected delivery later enforced.",
+    "The evidence contract was satisfied semantically by an existing practical-method section but lacked an explicit machine-readable evidence marker.",
+    "Manual whole-file replacement through the contents API was used for a narrow metadata change, increasing the mutation surface and enabling unrelated drift."
+  ],
+  "fixes": [
+    "PR #1950 changed Netlify preview failure/error handling to break external polling and continue through the existing local-exact-candidate fallback; downstream gates remain mandatory.",
+    "The article description was minimally changed from 139 to 145 characters in meta, Open Graph and JSON-LD metadata without rewriting visible article copy.",
+    "The existing practical-method heading was marked with data-bg-evidence=praktijkmethode rather than adding unsupported new claims or weakening the SEO-order gate.",
+    "The accidental analytics-loader typo introduced during whole-file reconstruction was repaired before protected promotion.",
+    "The obsolete duplicate recovery PR was closed and the canonical candidate lineage was reused to reduce duplicate CI/Netlify work."
+  ],
+  "evidence": {
+    "netlify_fallback_regression": "tests/brain-composable-release-control-plane.test.mjs proved RED before the release-lane fix and GREEN before PR #1950 merged.",
+    "release_lane_merge": "PR #1950 merged to protected main as 869b8e4a49180563a81e84cfbfe9db7b90d3f1dc.",
+    "technical_seo_fix": "Corrected description length is 145 characters; Blog Technical SEO Gate reached success on the corrected candidate.",
+    "seo_order_fix": "Canonical brand shell full build reached success after the existing practical-method section received the evidence marker.",
+    "recovery_boundary": "PR #1953 still had a separate page/SEO lane to resolve in that lineage; this learning record does not reinterpret an intermediate green gate as full publication proof.",
+    "later_closure": "The later canonical approved-blog reconciliation lineage is documented separately by PR #1970 and the protected-main learning closure merged by PR #1978."
+  },
+  "prevention_rules": [
+    "APPROVED_BLOG_PREFLIGHT_MUST_MATCH_PROTECTED_DELIVERY_CONTRACTS: before approval/queueing, run the same final Blog Technical SEO Gate and seo-order blog-v2 evidence contract against the final generated candidate.",
+    "EXTERNAL_PREVIEW_FAILURE_USES_EXACT_LOCAL_FALLBACK_NOT_GATE_BYPASS: provider failure/error may switch evidence source to the exact local candidate, but must never skip browser/content/release gates.",
+    "NARROW_MUTATION_OVER_FULL_FILE_REWRITE: prefer blob-preserving patches or canonical publisher transforms; if a full contents-API rewrite is unavoidable, semantic diff/readback must block unrelated changes.",
+    "ONE_CANONICAL_RECOVERY_CANDIDATE: dedupe/supersede stale recovery PRs and do not create parallel publication lineages.",
+    "DIAGNOSE_GATE_CLASS_INDEPENDENTLY: a red gate is evidence of a failed contract, not automatically a product defect; isolate provider, test-oracle, content-contract and publication-state failures before changing code/content."
+  ],
+  "cost_and_integrity": "Reuse the canonical candidate, avoid duplicate production deploys and unnecessary Netlify/CI work, never weaken security/integrity/release gates, and never regenerate approved publication content merely to make a gate green.",
+  "owner": "Website/Release + Publishing + QA/Regression + Knowledge/Governance",
+  "reusable_lesson": "Approval must prove the contracts that protected delivery will actually enforce. External preview failure should degrade to exact local evidence, not abort or bypass validation. Make the smallest semantic change that satisfies a truthful contract, and treat whole-file repository rewrites as high-risk mutations requiring exact diff/readback.",
+  "relationship_to_later_learning": "This fingerprint captures the earlier release-lane and SEO-preflight failure class. It complements, and does not duplicate or replace, approved-blog-core-boundary-test-oracle-recovery-2026-09-17, which covers the later wrapper/core test-oracle recovery."
+}
