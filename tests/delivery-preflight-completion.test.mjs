@@ -2,6 +2,23 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as preflight from '../tools/delivery-preflight.mjs';
+import { bindPowerhouseSession } from '../scripts/brain/powerhouse-session-gateway.mjs';
+
+function sessionReceipt(runId = 'completion-1', candidateId = 'candidate-1') {
+  return bindPowerhouseSession({
+    sessionId:'delivery-preflight-test',
+    runId,
+    observedAt:'2026-09-17T11:50:00+02:00',
+    candidateId,
+    preflightPacket:{
+      status:'READY',
+      fastExecution:{ version:'POWERHOUSE-FAST-EXECUTION-v1' },
+      universalCompletion:{ version:'POWERHOUSE-UNIVERSAL-COMPLETION-v1' },
+      sessionBinding:{ version:'POWERHOUSE-SESSION-BINDING-v1' },
+      sources:[], fingerprints:[], preventions:[], blockers:[], resume_contracts:[]
+    }
+  });
+}
 
 test('delivery preflight blocks completion while material obligations remain open', () => {
   assert.equal(typeof preflight.evaluateCompletionReadiness, 'function');
@@ -24,6 +41,7 @@ test('delivery preflight allows completion only for identity-bound LIVE_VERIFIED
     workId:'work-1',
     candidateIdentity:'candidate-1',
     productionIdentity:'production-1',
+    sessionReceipt:sessionReceipt(),
     materialObligations:[{ id:'completion-1', status:'COMPLETED' }],
     evidence:[
       { type:'CANDIDATE_TESTS', producer:'BRAIN_DELIVERY', accepted:true, independent:true, taskIdentity:'completion-1', candidateIdentity:'candidate-1' },
@@ -48,6 +66,7 @@ test('delivery preflight allows completion only for identity-bound LIVE_VERIFIED
     obligationId:'completion-1',
     workId:'work-1',
     candidateIdentity:'candidate-1',
+    sessionReceipt:sessionReceipt(),
     materialObligations: [{ id: 'production', status: 'OPEN' }],
     hardBoundary: {
       present:true,
