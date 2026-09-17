@@ -37,6 +37,13 @@
       "required": true
     },
     {
+      "id": "function:portal-state-eu",
+      "type": "function",
+      "authority": "supabase/functions/portal-state-eu/index.ts",
+      "evidence_contract": "tests/brain-resource-compliance-portal-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:bg_geheim",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
@@ -97,6 +104,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
       "evidence_contract": "tests/powerhouse-resource-intelligence-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_compliance_control_catalog_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260917111500_powerhouse_resource_compliance_tenant_portal_v1.sql",
+      "evidence_contract": "tests/brain-resource-compliance-portal-v1.test.mjs",
       "required": true
     }
   ]
