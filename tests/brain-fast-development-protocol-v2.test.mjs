@@ -15,6 +15,10 @@ test('Fast Development Protocol v2 preserves canonical authorities and flow', as
   assert.equal(policy.testing.full_release_gates_at_promotion_boundary, true);
   assert.equal(policy.testing.fast_path_never_replaces_release_gates, true);
   assert.equal(policy.execution.parallel_by_default, true);
+  assert.equal(policy.evidence_cache.persistent_semantics, true);
+  assert.equal(policy.evidence_cache.persistence_authority, 'brain_outcome_obligation_evidence');
+  assert.equal(policy.evidence_cache.persistence_adapter, 'PersistentEvidenceCache');
+  assert.equal(policy.evidence_cache.append_only_invalidation, true);
   assert.equal(policy.evidence_cache.non_cacheable.includes('EXACT_SHA_PROD_READBACK'), true);
   assert.equal(policy.writeback.mode, 'DELTA_ONLY');
   assert.equal(policy.authority.production_promotion, 'BG169');
