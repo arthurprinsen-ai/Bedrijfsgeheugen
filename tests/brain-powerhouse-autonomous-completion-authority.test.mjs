@@ -47,6 +47,10 @@ test('autonomous completion incident and prevention are reusable machine-readabl
   const learning = await loadJson('brain/learning/autonomous-completion-authority-v1-2026-09-17.json');
   assert.equal(learning.fingerprint, 'powerhouse-autonomous-completion-authority-v1');
   assert.equal(learning.outcome_class, 'IMPROVEMENT');
+  assert.equal(learning.status, 'VERIFIED');
+  assert.equal(learning.verified_evidence.required_ci_run_id, 35198226087);
+  assert.equal(learning.verified_evidence.protected_merge_sha, '9b56b83c27c8b8591068d4b3e8f4de09bca7db4c');
+  assert.equal(learning.verified_evidence.tested_head_sha, '5b2dd7fe4c0f675839678a88a0c1fc7f18f4c171');
   assert.match(learning.root_cause, /interaction-authority/i);
   assert.match(learning.delivery_incident.repair, /tests\/brain-\*/i);
   assert.match(learning.delivery_incident.prevention, /Never weaken a fail-closed classifier/i);

@@ -37,8 +37,21 @@
     "docs/development-autonomous-completion-authority.md",
     "tests/brain-powerhouse-autonomous-completion-authority.test.mjs",
     ".github/workflows/required-test.yml",
-    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/1882"
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/1882",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/35198226087"
   ],
-  "verification_policy": "Candidate learning becomes terminally verified only after protected Required CI, protected merge to main, main readback and canonical knowledge writeback.",
-  "status": "CANDIDATE_VERIFICATION"
+  "verified_evidence": {
+    "tested_head_sha": "5b2dd7fe4c0f675839678a88a0c1fc7f18f4c171",
+    "required_ci_run_id": 35198226087,
+    "required_ci_conclusion": "success",
+    "protected_merge_sha": "9b56b83c27c8b8591068d4b3e8f4de09bca7db4c",
+    "main_readback": [
+      "config/powerhouse-engineering-os.json contains interaction_authority fingerprint powerhouse-autonomous-completion-authority-v1",
+      "docs/development-autonomous-completion-authority.md is present on main",
+      "brain/learning/autonomous-completion-authority-v1-2026-09-17.json is present on main"
+    ],
+    "notion_constitution_page_id": "3c7da36a-ac8a-819a-b70a-d98dbd94ee1e"
+  },
+  "verification_policy": "Verified only after protected Required CI, protected merge to main, main readback and canonical knowledge writeback.",
+  "status": "VERIFIED"
 }
