@@ -10,15 +10,17 @@ async function source() {
 
 test('Unified Brain rechecks canonical admission before lanes and before handoff', async () => {
   const yaml = await source();
-  const first = yaml.indexOf('admission-preflight:');
+  const first = yaml.indexOf('\n  admission:');
+  const plan = yaml.indexOf('\n  plan:');
   const lanes = yaml.indexOf('\n  lanes:');
-  const second = yaml.indexOf('admission-handoff:');
+  const second = yaml.indexOf('\n  pre-handoff-admission:');
   const handoff = yaml.indexOf('\n  handoff:');
-  assert.ok(first >= 0, 'missing admission-preflight job');
-  assert.ok(second >= 0, 'missing admission-handoff job');
-  assert.ok(first < lanes, 'admission-preflight must run before lanes');
-  assert.ok(second < handoff, 'admission-handoff must run before handoff');
+  assert.ok(first >= 0, 'missing initial admission job');
+  assert.ok(second >= 0, 'missing pre-handoff admission job');
+  assert.ok(first < plan && plan < lanes, 'initial admission must gate planning before lanes');
+  assert.ok(second > lanes && second < handoff, 'second admission must run after lanes and before handoff');
   assert.match(yaml, /uses:\s+\.\/\.github\/workflows\/powerhouse-delivery-hygiene\.yml/);
-  assert.match(yaml, /needs:[^\n]*admission-preflight|needs:\s*\[[^\]]*admission-preflight/);
-  assert.match(yaml, /needs:[^\n]*admission-handoff|needs:\s*\[[^\]]*admission-handoff/);
+  assert.match(yaml, /plan:\s*\n\s+needs:\s+\[candidate-identity, admission\]/m);
+  assert.match(yaml, /handoff:\s*\n\s+needs:\s+\[plan, lanes, pre-handoff-admission\]/m);
+  assert.match(yaml, /needs\.pre-handoff-admission\.outputs\.admitted == 'true'/);
 });
