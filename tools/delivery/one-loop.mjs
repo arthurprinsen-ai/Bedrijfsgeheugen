@@ -125,6 +125,8 @@ export function evaluateGitHubQueueRecovery(snapshot = {}, now = Date.now()) {
 }
 
 export function evaluateFinishingPressure(snapshot = {}) {
+  const maxExecutable = Number(snapshot.maxExecutable ?? 0);
+  const admittedExecutable = Number(snapshot.admittedExecutable ?? 0);
   const finishing = Number(snapshot.finishing ?? 0);
   const lane = snapshot.candidate?.lane;
   const type = snapshot.candidate?.type;
@@ -134,7 +136,11 @@ export function evaluateFinishingPressure(snapshot = {}) {
     return { decision: 'ADMIT_PRIORITY_RECOVERY', reason: 'SECURITY_INCIDENT_RECOVERY_PRIORITY' };
   }
 
-  if (finishing > 0) {
+  const saturated = Number.isFinite(maxExecutable)
+    && maxExecutable > 0
+    && Number.isFinite(admittedExecutable)
+    && admittedExecutable >= maxExecutable;
+  if (saturated || finishing > 0) {
     return { decision: 'WAITING_CAPACITY', reason: 'FINISH_EXISTING_WORK_FIRST' };
   }
 
