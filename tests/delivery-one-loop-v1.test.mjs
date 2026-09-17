@@ -11,13 +11,14 @@ const policy = JSON.parse(readFileSync(new URL('../config/powerhouse-delivery-hy
 const workflowBudget = JSON.parse(readFileSync(new URL('../config/powerhouse-pr-workflow-budget-v1.json', import.meta.url), 'utf8'));
 const workflow = (name) => readFileSync(new URL(`../.github/workflows/${name}`, import.meta.url), 'utf8');
 
-function candidate(number, obligationId, candidateType, lane = 'automation') {
+function candidate(number, obligationId, candidateType, lane = 'automation', conflictContracts = []) {
   return classifyCandidate({
     number,
     state: 'open',
     body: `Obligation-ID: ${obligationId}\nDelivery-Lane: ${lane}\nCandidate-Type: ${candidateType}\nBase-SHA: ${baseSha}\nSupersedes: none`,
     baseSha,
     headSha: String(number).padStart(40, 'b').slice(0, 40),
+    conflictContracts,
   }, policy);
 }
 
@@ -40,12 +41,7 @@ test('GitHub Actions queue is never a terminal external blocker and never causes
   assert.equal(blocked.valid, false);
   assert.equal(blocked.recoveryRequired, true);
 
-  const queued = evaluateGitHubQueueRecovery({
-    status: 'queued',
-    headSha: 'sha-a',
-    currentHeadSha: 'sha-a',
-    runAttempt: 1,
-  });
+  const queued = evaluateGitHubQueueRecovery({ status: 'queued', headSha: 'sha-a', currentHeadSha: 'sha-a', runAttempt: 1 });
   assert.deepEqual(queued, {
     state: 'WAITING_CAPACITY',
     action: 'WAIT',
@@ -53,24 +49,14 @@ test('GitHub Actions queue is never a terminal external blocker and never causes
     reason: 'GITHUB_ACTIONS_QUEUE_NON_TERMINAL',
   });
 
-  const failed = evaluateGitHubQueueRecovery({
-    status: 'completed',
-    conclusion: 'failure',
-    headSha: 'sha-a',
-    currentHeadSha: 'sha-a',
-    runAttempt: 1,
-  });
+  const failed = evaluateGitHubQueueRecovery({ status: 'completed', conclusion: 'failure', headSha: 'sha-a', currentHeadSha: 'sha-a', runAttempt: 1 });
   assert.equal(failed.action, 'RECOVER');
   assert.equal(failed.retry, true);
 });
 
 test('stale GitHub queue reconciles before any retry', () => {
   const now = Date.parse('2026-09-17T20:00:00Z');
-  const queued = evaluateGitHubQueueRecovery({
-    status: 'queued',
-    queuedAt: '2026-09-17T19:55:00Z',
-    staleAfterMs: 120000,
-  }, now);
+  const queued = evaluateGitHubQueueRecovery({ status: 'queued', queuedAt: '2026-09-17T19:55:00Z', staleAfterMs: 120000 }, now);
   assert.deepEqual(queued, {
     state: 'RECONCILING',
     action: 'RECOVER',
@@ -117,7 +103,7 @@ test('CodeQL keeps Python and Powerhouse JavaScript coverage without analyzing J
   assert.match(powerhouse, /queries:\s*security-extended/);
 });
 
-test('delivery lane preserves finish-before-start and single-candidate recovery', () => {
+test('delivery lane keeps recovery priority and recovery diagnostics', () => {
   assert.equal(evaluateFinishingPressure({ maxExecutable: 5, admittedExecutable: 5, finishing: 2, candidate: { type: 'implementation', lane: 'portal' } }).decision, 'WAITING_CAPACITY');
   assert.equal(reconcileExecution({ state: 'WORKER_LOST', activeCandidates: ['a','b'], candidateSha: 'a' }).action, 'REVIEW_REQUIRED');
   assert.equal(policy.wip.finishBeforeStart, true);
@@ -125,24 +111,37 @@ test('delivery lane preserves finish-before-start and single-candidate recovery'
 });
 
 test('parallel development is not capped by integration WIP', () => {
-  const subject = candidate(99, 'parallel-new', 'implementation', 'backend');
-  const open = Array.from({ length: 12 }, (_, index) => candidate(index + 1, `parallel-${index + 1}`, 'implementation', 'backend'));
+  const subject = candidate(99, 'parallel-new', 'implementation', 'backend', ['backend-runtime']);
+  const open = Array.from({ length: 12 }, (_, index) => candidate(index + 1, `parallel-${index + 1}`, 'implementation', 'backend', [`domain-${index + 1}`]));
   const result = evaluateAdmission({ candidate: subject, openCandidates: open, policy, currentMainSha: baseSha });
   assert.equal(result.ok, true);
   assert.equal(result.state, 'ADMITTED');
 });
 
-test('canonical delivery hygiene holds new implementation while promotion or recovery is finishing', () => {
-  const implementation = candidate(20, 'new-feature', 'implementation');
-  const promotion = candidate(10, 'release-existing', 'promotion');
-  const blocked = evaluateAdmission({ candidate: implementation, openCandidates: [promotion], policy, currentMainSha: baseSha });
-  assert.equal(blocked.ok, false);
-  assert.equal(blocked.state, 'WAITING_CAPACITY');
-  assert.deepEqual(blocked.blockers, [10]);
+test('unrelated development remains admitted while recovery work is finishing', () => {
+  const implementation = candidate(20, 'new-feature', 'implementation', 'backend', ['backend-runtime']);
+  const recoveryA = candidate(10, 'recovery-a', 'recovery', 'automation', ['social-publisher']);
+  const recoveryB = candidate(11, 'recovery-b', 'recovery', 'portal', ['portal-state']);
+  const result = evaluateAdmission({ candidate: implementation, openCandidates: [recoveryA, recoveryB], policy, currentMainSha: baseSha });
+  assert.equal(result.ok, true);
+  assert.equal(result.state, 'ADMITTED');
+});
 
-  const recovery = candidate(30, 'incident-fix', 'recovery', 'incident');
-  const priority = evaluateAdmission({ candidate: recovery, openCandidates: [promotion], policy, currentMainSha: baseSha });
-  assert.equal(priority.ok, true);
+test('overlapping promotions remain serialized by conflict domain', () => {
+  const first = candidate(10, 'release-a', 'promotion', 'automation', ['delivery-control-plane']);
+  const second = candidate(20, 'release-b', 'promotion', 'automation', ['delivery-control-plane']);
+  const blocked = evaluateAdmission({ candidate: second, openCandidates: [first], policy, currentMainSha: baseSha });
+  assert.equal(blocked.ok, false);
+  assert.equal(blocked.state, 'BLOCKED_PROMOTION_SERIALIZATION');
+  assert.deepEqual(blocked.blockers, [10]);
+});
+
+test('priority recovery remains admitted while integration work exists', () => {
+  const promotion = candidate(10, 'release-existing', 'promotion', 'automation', ['delivery-control-plane']);
+  const recovery = candidate(30, 'incident-fix', 'recovery', 'incident', ['delivery-control-plane']);
+  const result = evaluateAdmission({ candidate: recovery, openCandidates: [promotion], policy, currentMainSha: baseSha });
+  assert.equal(result.ok, true);
+  assert.equal(result.priorityRecovery, true);
 });
 
 test('workflow budget codifies one orchestrator and uncapped development', () => {
