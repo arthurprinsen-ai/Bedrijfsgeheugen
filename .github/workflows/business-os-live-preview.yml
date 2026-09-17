@@ -5,9 +5,14 @@ on:
     branches: [main]
     paths:
       - 'portal-next/**'
-      - 'tests/integration/portal-next-live.spec.js'
+      - 'portal-v2/business-input-store.js'
+      - '_redirects'
       - '.github/workflows/business-os-live-preview.yml'
   workflow_dispatch:
+
+concurrency:
+  group: business-os-live-preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -17,26 +22,35 @@ jobs:
   preview:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v5
 
-      - name: Wait for exact Netlify preview SHA
+      - name: Wait for exact Netlify preview SHA and pin immutable deploy
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
+          set -euo pipefail
           for i in $(seq 1 48); do
-            json=$(curl -fsS \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
+            json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
             state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
             target=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .target_url' | head -n1)
-            if [ "$state" = "success" ]; then
-              echo "PREVIEW_URL=$target" >> "$GITHUB_ENV"
-              echo "Exact preview is ready: $target"
-              exit 0
+            if [ "$state" = "success" ] && [ -n "$target" ] && [ "$target" != "null" ]; then
+              release=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$target/release.json?sha=$HEAD_SHA&attempt=$i" || true)
+              deployed_sha=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$release")
+              deploy_id=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$release")
+              if [ "$deployed_sha" = "$HEAD_SHA" ] && [ -n "$deploy_id" ]; then
+                immutable="https://${deploy_id}--bedrijfsgeheugen.netlify.app"
+                immutable_release=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$immutable/release.json?sha=$HEAD_SHA" || true)
+                immutable_sha=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$immutable_release")
+                if [ "$immutable_sha" = "$HEAD_SHA" ]; then
+                  echo "PREVIEW_URL=$immutable" >> "$GITHUB_ENV"
+                  echo "NETLIFY_DEPLOY_ID=$deploy_id" >> "$GITHUB_ENV"
+                  echo "Pinned exact deploy $deploy_id for $HEAD_SHA"
+                  exit 0
+                fi
+              fi
             fi
             if [ "$state" = "failure" ] || [ "$state" = "error" ]; then
               echo "::error::Netlify preview failed for $HEAD_SHA: $state"
@@ -44,36 +58,29 @@ jobs:
             fi
             sleep 10
           done
-          echo "::error::Timed out waiting for Netlify preview on exact head SHA"
+          echo "::error::Timed out waiting for immutable Netlify preview on exact head SHA"
           exit 1
 
-      - name: Verify new portal preview is actually served
+      - name: Verify retired portal-next redirect and canonical V2 assets
         run: |
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/" -o /tmp/portal-next.html
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.css" -o /tmp/portal-next.css
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/workspaces.css" -o /tmp/workspaces.css
-          curl -fsS --max-time 30 "$PREVIEW_URL/portal-next/portal-next.js" -o /tmp/portal-next.js
-          node --check /tmp/portal-next.js
-          grep -q 'AI Management Summary' /tmp/portal-next.html
-          grep -q 'Preview · voorbeelddata · geen actieve bedrijfswaarheid' /tmp/portal-next.html
-          grep -q 'Trust & Governance' /tmp/portal-next.html
-          grep -q 'prefers-reduced-motion:reduce' /tmp/portal-next.css
-          grep -q 'focus-visible' /tmp/workspaces.css
-          grep -q 'AI Register' /tmp/portal-next.js
-          grep -q 'Agent Team' /tmp/portal-next.js
-          grep -q 'preview voert geen echte AI-call uit' /tmp/portal-next.js
-
-      - name: Install Playwright runtime
-        run: |
-          PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
-
-      - name: Verify desktop and mobile interactions on live preview
-        env:
-          PREVIEW_URL: ${{ env.PREVIEW_URL }}
-        run: npx playwright test tests/integration/portal-next-live.spec.js --workers=1
+          set -euo pipefail
+          headers=$(mktemp)
+          curl -sS --max-time 30 -D "$headers" -o /tmp/portal-next-body "$PREVIEW_URL/portal-next/"
+          status=$(awk 'NR==1 {print $2}' "$headers")
+          location=$(awk 'BEGIN{IGNORECASE=1} /^location:/ {gsub(/\r/,""); print $2}' "$headers" | tail -n1)
+          test "$status" = "301"
+          test "$location" = "/portal-v2/"
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/" -o /tmp/portal-v2.html
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/app.js" -o /tmp/portal-v2.js
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/business-input-store.js" -o /tmp/business-input-store.js
+          node --check /tmp/portal-v2.js
+          node --check /tmp/business-input-store.js
+          grep -q 'AI Management Summary' /tmp/portal-v2.html
+          grep -q 'savePortalBusinessInput' /tmp/business-input-store.js
+          grep -q 'readLegacyPortalBusinessInputs' /tmp/business-input-store.js
 
       - name: Report exact preview evidence
         run: |
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
-          echo "Verified preview: $PREVIEW_URL"
-          echo "Portal-next desktop/mobile interactions are green. Legacy klantportaal has its own portal contract and is not coupled to unrelated writer/SEO lanes."
+          echo "Verified immutable deploy: $NETLIFY_DEPLOY_ID"
+          echo "Verified contract: /portal-next/* redirects to canonical /portal-v2/; duplicate legacy Playwright execution is intentionally removed."

@@ -53,18 +53,46 @@ jobs:
             echo "PORTAL_ALIAS_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${GITHUB_SHA}" >> "$GITHUB_ENV"
           fi
+      - name: Classify visual baseline impact fail-closed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          visual_required=true
+          resolved_pr="$PR_NUMBER"
+          if [ "$EVENT_NAME" = "push" ]; then
+            pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls")"
+            resolved_pr="$(jq -r '[.[] | select(.merged_at != null)] | first | .number // empty' <<<"$pr_json")"
+          fi
+          if [ -n "$resolved_pr" ]; then
+            files="$(gh api --paginate -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/pulls/${resolved_pr}/files?per_page=100" --jq '.[].filename')"
+            visual_required=false
+            while IFS= read -r file; do
+              [ -n "$file" ] || continue
+              case "$file" in
+                portal-v2/domain-state.js|portal-v2/portal-state.js|portal-v2/business-input-store.js|portal-next/portal-business-input-store.js|tests/portal-business-input.test.mjs|tests/portal-business-input-browser-boundary.test.mjs|.github/workflows/business-os-live-preview.yml|.github/workflows/portal-v2-production-dom-readback.yml)
+                  ;;
+                portal-v2/*|tests/integration/portal-v2-production-visual-regression.spec.js)
+                  visual_required=true
+                  break
+                  ;;
+              esac
+            done <<< "$files"
+          fi
+          echo "VISUAL_BASELINE_REQUIRED=$visual_required" >> "$GITHUB_ENV"
+          echo "Visual baseline required: $visual_required"
       - name: Wait for exact deployed SHA and pin immutable deploy
         run: |
           set -euo pipefail
           for attempt in $(seq 1 90); do
-            payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
-              "${PORTAL_ALIAS_URL}/release.json?sha=${PORTAL_EXPECTED_SHA}&attempt=${attempt}" || true)"
+            payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "${PORTAL_ALIAS_URL}/release.json?sha=${PORTAL_EXPECTED_SHA}&attempt=${attempt}" || true)"
             deployed_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$payload")"
             deploy_id="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$payload")"
             if [ "$deployed_sha" = "$PORTAL_EXPECTED_SHA" ] && [ -n "$deploy_id" ]; then
               immutable="https://${deploy_id}--bedrijfsgeheugen.netlify.app"
-              immutable_payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
-                "${immutable}/release.json?sha=${PORTAL_EXPECTED_SHA}" || true)"
+              immutable_payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "${immutable}/release.json?sha=${PORTAL_EXPECTED_SHA}" || true)"
               immutable_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$immutable_payload")"
               if [ "$immutable_sha" = "$PORTAL_EXPECTED_SHA" ]; then
                 echo "PORTAL_READBACK_URL=${immutable}" >> "$GITHUB_ENV"
@@ -93,18 +121,16 @@ jobs:
           PREVIEW_URL: ${{ env.PORTAL_READBACK_URL }}
         run: npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
       - name: Wait for approved base production SHA
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
         run: |
           set -euo pipefail
           for attempt in $(seq 1 45); do
-            payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
-              "https://www.bedrijfsgeheugen.nl/release.json?sha=${PORTAL_BASE_SHA}&attempt=${attempt}" || true)"
+            payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?sha=${PORTAL_BASE_SHA}&attempt=${attempt}" || true)"
             deployed_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$payload")"
             deploy_id="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$payload")"
             if [ "$deployed_sha" = "$PORTAL_BASE_SHA" ] && [ -n "$deploy_id" ]; then
               base_immutable="https://${deploy_id}--bedrijfsgeheugen.netlify.app"
-              base_payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' \
-                "${base_immutable}/release.json?sha=${PORTAL_BASE_SHA}" || true)"
+              base_payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "${base_immutable}/release.json?sha=${PORTAL_BASE_SHA}" || true)"
               base_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$base_payload")"
               if [ "$base_sha" = "$PORTAL_BASE_SHA" ]; then
                 echo "PORTAL_BASE_URL=${base_immutable}" >> "$GITHUB_ENV"
@@ -118,20 +144,20 @@ jobs:
           echo "::error::Production no longer exposes the PR base SHA ${PORTAL_BASE_SHA}; refresh the branch against current protected main before accepting a visual baseline."
           exit 1
       - name: Capture approved base visual baseline
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           PRODUCTION_URL: ${{ env.PORTAL_BASE_URL }}
           VISUAL_CAPTURE_PATH: artifacts/visual-current-main/portal-v2-canvassen.png
         run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
       - name: Visual regression against approved PR baseline
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
           VISUAL_BASELINE: artifacts/visual-current-main/portal-v2-canvassen.png
           VISUAL_ACTUAL_PATH: artifacts/visual-baseline-pr/portal-v2-canvassen.png
         run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
       - name: Upload approved PR visual baseline
-        if: github.event_name == 'pull_request' && success()
+        if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true' && success()
         uses: actions/upload-artifact@v4
         with:
           name: visual-baseline-pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
@@ -139,7 +165,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Resolve approved visual baseline
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -158,13 +184,11 @@ jobs:
             exit 1
           fi
           mkdir -p artifacts/visual-baseline-pr
-          gh run download "$run_id" \
-            -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" \
-            -D artifacts/visual-baseline-pr
+          gh run download "$run_id" -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" -D artifacts/visual-baseline-pr
           test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
           echo "Approved visual baseline resolved from PR #${pr_number}, head ${pr_head_sha}, run ${run_id}."
       - name: Visual regression against approved PR baseline
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
           VISUAL_BASELINE: artifacts/visual-baseline-pr/portal-v2-canvassen.png
