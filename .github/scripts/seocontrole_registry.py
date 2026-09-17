@@ -4,7 +4,8 @@
 Authority:
 - site/seo-order-map.json + site/seo-order-expansion.json own keyword intent;
 - bg-keyword-cluster is the production projection of that registry;
-- only indexable, self-canonical URLs are independent SEO surfaces.
+- only indexable, self-canonical URLs are independent SEO surfaces;
+- supporting routes may project the keyword cluster of their exact registry owner.
 """
 from __future__ import annotations
 
@@ -49,15 +50,26 @@ def load_registry() -> dict[str, dict]:
     return {route_of_absolute(e.get('route', '')): e for e in entries if route_of_absolute(e.get('route', ''))}
 
 
+def supporting_owner_map(registry: dict[str, dict]) -> dict[str, str]:
+    """Return exact supporting-route -> owner route relationships from registry."""
+    owners = {}
+    for owner_route, entry in registry.items():
+        for value in entry.get('supporting_routes', []):
+            route = route_of_absolute(value)
+            if route and route != owner_route:
+                owners.setdefault(route, owner_route)
+    return owners
+
+
 def _meta(source: str, name: str) -> str:
     patterns = [
         r'<meta\b[^>]*name=["\']%s["\'][^>]*content=["\']([^"\']*)["\'][^>]*>' % re.escape(name),
         r'<meta\b[^>]*content=["\']([^"\']*)["\'][^>]*name=["\']%s["\'][^>]*>' % re.escape(name),
     ]
     for pattern in patterns:
-        m = re.search(pattern, source, re.I)
-        if m:
-            return html.unescape(m.group(1))
+        match = re.search(pattern, source, re.I)
+        if match:
+            return html.unescape(match.group(1))
     return ''
 
 
@@ -67,9 +79,9 @@ def _canonical(source: str) -> str:
         r'<link\b[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'][^"\']*canonical[^"\']*["\']',
     ]
     for pattern in patterns:
-        m = re.search(pattern, source, re.I)
-        if m:
-            return html.unescape(m.group(1))
+        match = re.search(pattern, source, re.I)
+        if match:
+            return html.unescape(match.group(1))
     return ''
 
 
@@ -130,6 +142,17 @@ def orphan_severity(route: str, registry: dict[str, dict]) -> str:
     return 'hoog' if entry and entry.get('role') in {'pillar', 'money'} else 'midden'
 
 
+def keyword_owner_finding(route: str, page: dict, primary_owner: dict[str, str]):
+    """Fail closed on duplicate primary keywords except an exact supporting-owner relation."""
+    projected = norm(page.get('keyword', ''))
+    owner = primary_owner.get(projected)
+    if not owner or owner == route:
+        return None
+    if page.get('intent_role') == 'supporting' and page.get('intent_owner') == owner:
+        return None
+    return 'keyword-cluster "%s" is owned door %s' % (page.get('keyword', ''), owner)
+
+
 def main() -> int:
     registry = load_registry()
     pages = lees_paginas()
@@ -150,11 +173,15 @@ def main() -> int:
         elif projected != keyword:
             findings.append(('hoog', route, 'bg-keyword-cluster "%s" wijkt af van registry "%s"' % (page['keyword'], entry.get('primary_keyword', ''))))
 
+    support_owners = supporting_owner_map(registry)
     for route, page in pages.items():
-        projected = norm(page.get('keyword', ''))
-        owner = primary_owner.get(projected)
-        if owner and owner != route:
-            findings.append(('hoog', route, 'keyword-cluster "%s" is owned door %s' % (page['keyword'], owner)))
+        owner = support_owners.get(route)
+        if owner:
+            page['intent_role'] = 'supporting'
+            page['intent_owner'] = owner
+        finding = keyword_owner_finding(route, page, primary_owner)
+        if finding:
+            findings.append(('hoog', route, finding))
 
     for route, entry in registry.items():
         page = pages.get(route)
