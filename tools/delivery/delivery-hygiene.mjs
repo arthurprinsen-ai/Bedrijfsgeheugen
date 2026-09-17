@@ -17,6 +17,29 @@ function normalizeSupersedes(value) {
   return Number(raw);
 }
 
+function pathMatches(path, pattern) {
+  const cleanPath = normalize(path).replace(/^\.\//, '');
+  const cleanPattern = normalize(pattern).replace(/^\.\//, '');
+  if (!cleanPath || !cleanPattern) return false;
+  if (cleanPattern.endsWith('/')) return cleanPath.startsWith(cleanPattern);
+  if (cleanPattern.endsWith('/**')) return cleanPath.startsWith(cleanPattern.slice(0, -3));
+  if (cleanPattern.endsWith('-')) return cleanPath.startsWith(cleanPattern);
+  return cleanPath === cleanPattern || cleanPath.startsWith(`${cleanPattern}/`);
+}
+
+export function deriveHygieneConflictContracts(changedPaths = [], brainPolicy = {}, hygienePolicy = {}) {
+  const paths = [...new Set(changedPaths.map(value => normalize(value).replace(/^\.\//, '')).filter(Boolean))];
+  const contracts = new Set(
+    (brainPolicy.conflictContracts || [])
+      .filter(contract => (contract.paths || []).some(pattern => paths.some(path => pathMatches(path, pattern))))
+      .map(contract => contract.id)
+  );
+  if ((hygienePolicy.deliveryControlPlanePaths || []).some(pattern => paths.some(path => pathMatches(path, pattern)))) {
+    contracts.add('delivery-control-plane');
+  }
+  return [...contracts].filter(Boolean).sort();
+}
+
 export function parseDeliveryMetadata(body = '') {
   return Object.freeze({
     obligationId: readField(body, 'Obligation-ID'),
