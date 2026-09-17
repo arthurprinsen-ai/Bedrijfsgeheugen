@@ -1,3 +1,5 @@
+import { evaluateFinishingPressure } from './one-loop.mjs';
+
 const SHA40 = /^[0-9a-f]{40}$/i;
 
 function normalize(value) {
@@ -187,12 +189,36 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
       && isOpenExecutable(other, policy)
     );
     const maxExecutable = Number(policy?.wip?.maxExecutable ?? 0);
-    if (Number.isInteger(maxExecutable) && maxExecutable > 0 && activeExecutable.length >= maxExecutable) {
+    const pressure = evaluateFinishingPressure({
+      maxExecutable,
+      admittedExecutable: activeExecutable.length,
+      finishing: activeExecutable.length,
+      candidate: {
+        lane: candidate.metadata.deliveryLane,
+        type: candidate.metadata.candidateType,
+      },
+    });
+    if (pressure.decision === 'WAITING_CAPACITY') {
       return Object.freeze({
         ok: false,
-        state: 'BLOCKED_WIP_LIMIT',
+        state: 'WAITING_CAPACITY',
+        reason: pressure.reason,
         wipCount: activeExecutable.length,
         maxExecutable,
+      });
+    }
+    if (pressure.decision === 'ADMIT_PRIORITY_RECOVERY') {
+      return Object.freeze({
+        ok: true,
+        state: 'ADMITTED',
+        priorityRecovery: true,
+        reason: pressure.reason,
+        obligationId: candidate.metadata.obligationId,
+        candidateNumber: Number(candidate.number),
+        candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
+        immutableBaseSha: normalize(candidate.baseSha).toLowerCase(),
+        observedMainSha: normalize(currentMainSha).toLowerCase(),
+        predecessorNumber: predecessor ? Number(predecessor.number) : null,
       });
     }
   }
