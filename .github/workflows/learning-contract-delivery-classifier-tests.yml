@@ -7,10 +7,18 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'tests/brain-learning-contract-delivery-classification.test.mjs'
+      - 'tools/brain-delivery-system.mjs'
+      - 'tools/delivery-*.mjs'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: learning-contract-classifier-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
