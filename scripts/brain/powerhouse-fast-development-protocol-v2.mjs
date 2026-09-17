@@ -43,7 +43,7 @@ export async function validateFastDevelopmentProtocolV2() {
   if (policy.authority?.shared_context !== 'BG167') errors.push('shared context authority drift');
   if (policy.authority?.writeback !== 'BG168/BG166') errors.push('writeback authority drift');
   if (policy.authority?.success !== 'LIVE & BEWEZEN') errors.push('success status drift');
-  if (delivery.fingerprint !== 'BRAIN-DELIVERY-v2') errors.push('BRAIN-DELIVERY-v2 authority drift');
+  if (delivery.version !== 'BRAIN-DELIVERY-v2') errors.push('BRAIN-DELIVERY-v2 authority drift');
   if (fabric.protocol_extension !== 'powerhouse-fast-development-protocol-v2') errors.push('parallel fabric extension drift');
   if (fabric.authority?.production_promotion !== 'BG169') errors.push('fabric promotion authority drift');
   if (fabric.cache?.never_skips_production_readback !== true) errors.push('fabric cache could skip production readback');
