@@ -42,6 +42,7 @@ on:
 permissions:
   contents: read
   actions: read
+  pull-requests: read
 
 env:
   NODE_VERSION: '22'
@@ -91,14 +92,19 @@ jobs:
               ;;
             .github/workflows/production-release-readback.yml)
               canonical_source="Production Release Readback"
-              git fetch origin "$SOURCE_HEAD_SHA" --no-tags
               gh run download "$SOURCE_RUN_ID" -n "production-release-readback-${SOURCE_HEAD_SHA}" -D .artifacts/source
               test -f .artifacts/source/production-release-readback.json
               artifact_production_identity="$(jq -r '.merge_sha // empty' .artifacts/source/production-release-readback.json)"
               test "$artifact_production_identity" = "$SOURCE_HEAD_SHA" || { echo "::error::COMPLETION_PRODUCTION_IDENTITY_MISMATCH:$SOURCE_HEAD_SHA:$artifact_production_identity"; exit 1; }
               production_identity="$artifact_production_identity"
-              candidate_identity="$(git rev-parse "${SOURCE_HEAD_SHA}^2")"
-              [[ "$candidate_identity" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::COMPLETION_CANDIDATE_IDENTITY_MISSING:$SOURCE_HEAD_SHA"; exit 1; }
+              associated_prs="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${SOURCE_HEAD_SHA}/pulls")"
+              association_count="$(jq -r --arg merge_sha "$SOURCE_HEAD_SHA" '[.[] | select(.merged_at != null and .merge_commit_sha == $merge_sha and .base.ref == "main")] | length' <<<"$associated_prs")"
+              if [ "$association_count" != "1" ]; then
+                echo "::error title=COMPLETION_CANDIDATE_ASSOCIATION_AMBIGUOUS::Expected exactly one merged PR associated with production ${SOURCE_HEAD_SHA}; found ${association_count}"
+                exit 1
+              fi
+              candidate_identity="$(jq -r --arg merge_sha "$SOURCE_HEAD_SHA" '[.[] | select(.merged_at != null and .merge_commit_sha == $merge_sha and .base.ref == "main")][0].head.sha // empty' <<<"$associated_prs")"
+              [[ "$candidate_identity" =~ ^[0-9a-f]{40}$ ]] || { echo "::error title=COMPLETION_CANDIDATE_IDENTITY_MISSING::Could not resolve candidate commit from associated merged PR for ${SOURCE_HEAD_SHA}"; exit 1; }
               ;;
             *)
               echo "COMPLETION_EVIDENCE_APPLICABLE=false" >> "$GITHUB_ENV"
