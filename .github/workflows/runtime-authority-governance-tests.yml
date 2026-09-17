@@ -9,7 +9,7 @@ on:
       - 'config/make-agent-resume-learning-guard.json'
       - 'brain/operating-loop/runtime-authority-governance.mjs'
       - 'brain/operating-loop/adapter-conformance.mjs'
-      - 'tests/runtime-authority-governance.test.mjs'
+      - 'tests/brain-runtime-authority-governance.test.mjs'
       - 'tests/brain-adapter-conformance.test.mjs'
       - '.github/workflows/runtime-authority-governance-tests.yml'
   workflow_dispatch:
@@ -30,4 +30,4 @@ jobs:
         with:
           node-version: '22'
       - name: Enforce runtime authority and retired adapter invariants
-        run: node --test tests/runtime-authority-governance.test.mjs tests/brain-adapter-conformance.test.mjs
+        run: node --test tests/brain-runtime-authority-governance.test.mjs tests/brain-adapter-conformance.test.mjs
