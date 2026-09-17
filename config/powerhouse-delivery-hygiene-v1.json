@@ -1,7 +1,8 @@
 {
   "version": "POWERHOUSE-DELIVERY-HYGIENE-v1",
   "wip": {
-    "maxExecutable": 5
+    "maxExecutable": 5,
+    "finishBeforeStart": true
   },
   "priorityLanes": ["security", "incident"],
   "nonProductLanes": ["dependency", "docs"],
@@ -9,6 +10,8 @@
   "allowedCandidateTypes": ["implementation", "recovery", "security", "dependency", "docs", "promotion"],
   "deliveryControlPlanePaths": [
     "config/powerhouse-delivery-hygiene-v1.json",
+    "config/powerhouse-one-loop-v1.json",
+    "config/powerhouse-one-loop-v1.schema.json",
     "tools/delivery/",
     "tools/delivery-branch-hygiene-guard.mjs",
     ".github/workflows/powerhouse-delivery-hygiene.yml",
@@ -16,6 +19,8 @@
     ".github/workflows/required-test.yml",
     ".github/workflows/unified-brain-delivery.yml",
     "tests/delivery-hygiene-",
-    "docs/superpowers/specs/2026-09-17-powerhouse-delivery-hygiene-v1-design.md"
+    "tests/delivery-one-loop-",
+    "docs/superpowers/specs/2026-09-17-powerhouse-delivery-hygiene-v1-design.md",
+    "docs/superpowers/specs/2026-09-17-powerhouse-one-loop-v1-design.md"
   ]
 }

@@ -65,17 +65,25 @@ test('blocks cross-obligation supersession', () => {
   assert.equal(result.state, 'BLOCKED_LINEAGE_AMBIGUOUS');
 });
 
-test('enforces executable WIP but excludes docs and dependency candidates', () => {
-  const openCandidates = [1, 2, 3, 4, 5].map(number => candidate({ number, obligationId: `BG-${number}` }));
-  const blocked = evaluateAdmission({ candidate: candidate({ number: 6, obligationId: 'BG-6' }), openCandidates, policy, currentMainSha: SHA_A });
-  assert.equal(blocked.state, 'BLOCKED_WIP_LIMIT');
-  const docs = evaluateAdmission({ candidate: candidate({ number: 7, obligationId: 'DOC-1', lane: 'docs', type: 'docs' }), openCandidates, policy, currentMainSha: SHA_A });
+test('applies recoverable capacity waiting to executable WIP but excludes docs and dependency candidates', () => {
+  const conflictContracts = ['delivery-control-plane'];
+  const openCandidates = [1, 2, 3, 4, 5].map(number => candidate({ number, obligationId: `BG-${number}`, conflictContracts }));
+  const waiting = evaluateAdmission({ candidate: candidate({ number: 6, obligationId: 'BG-6', conflictContracts }), openCandidates, policy, currentMainSha: SHA_A });
+  assert.equal(waiting.ok, false);
+  assert.equal(waiting.state, 'WAITING_CAPACITY');
+  assert.equal(waiting.reason, 'FINISH_EXISTING_WORK_FIRST');
+  const docs = evaluateAdmission({ candidate: candidate({ number: 7, obligationId: 'DOC-1', lane: 'docs', type: 'docs', conflictContracts }), openCandidates, policy, currentMainSha: SHA_A });
   assert.equal(docs.state, 'ADMITTED');
 });
 
-test('blocks a declared base that does not match the immutable PR base', () => {
-  const result = evaluateAdmission({ candidate: candidate({ number: 1, obligationId: 'BG-1', baseSha: SHA_A, declaredBaseSha: SHA_C }), openCandidates: [], policy, currentMainSha: SHA_C });
-  assert.equal(result.state, 'BLOCKED_STALE_IDENTITY');
+test('uses the git-derived immutable base as authority and reports stale mutable PR base metadata', () => {
+  const result = evaluateAdmission({ candidate: candidate({ number: 1, obligationId: 'BG-1', baseSha: SHA_A, declaredBaseSha: SHA_C }), openCandidates: [], policy, currentMainSha: SHA_A });
+  assert.equal(result.ok, true);
+  assert.equal(result.state, 'ADMITTED');
+  assert.deepEqual(result.metadataBaseDrift, {
+    declaredBaseSha: SHA_C,
+    authoritativeBaseSha: SHA_A,
+  });
 });
 
 test('does not force rebuild merely because unrelated main moved', () => {

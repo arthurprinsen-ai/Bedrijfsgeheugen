@@ -19,11 +19,11 @@ test('pull request keeps immutable change head but tests the current merge candi
   assert.equal(context.headSha, sha('c'));
 });
 
-test('Required classifies branch diff but executes code against merge candidate', () => {
+test('Required classifies branch diff from versioned base authority but executes code against merge candidate', () => {
   const workflow = readFileSync('.github/workflows/required-test.yml', 'utf8');
   assert.match(workflow, /change_head_sha=\$\{context\.changeHeadSha\}/);
   assert.match(workflow, /candidate_sha=\$\{context\.candidateSha\}/);
-  assert.match(workflow, /context\.baseSha}\.\.\.\$\{context\.changeHeadSha}/);
+  assert.match(workflow, /comparisonBaseSha}\.\.\.\$\{context\.changeHeadSha}/);
   assert.match(workflow, /head_sha:\s*\$\{\{ needs\.preflight\.outputs\.candidate_sha \}\}/);
   assert.match(workflow, /change_head_sha:\s*\$\{\{ needs\.preflight\.outputs\.change_head_sha \}\}/);
   assert.match(workflow, /candidate_sha:\s*\$\{\{ needs\.preflight\.outputs\.candidate_sha \}\}/);

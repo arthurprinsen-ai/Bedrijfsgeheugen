@@ -1,3 +1,5 @@
+import { evaluateFinishingPressure } from './one-loop.mjs';
+
 const SHA40 = /^[0-9a-f]{40}$/i;
 
 function normalize(value) {
@@ -23,7 +25,7 @@ function pathMatches(path, pattern) {
   if (!cleanPath || !cleanPattern) return false;
   if (cleanPattern.endsWith('/')) return cleanPath.startsWith(cleanPattern);
   if (cleanPattern.endsWith('/**')) return cleanPath.startsWith(cleanPattern.slice(0, -3));
-  if (cleanPattern.endsWith('-')) return cleanPath.startsWith(cleanPattern);
+  if (cleanPattern.endsWith('-')) return cleanPath.startsWith(cleanPattern.slice(0, -1));
   return cleanPath === cleanPattern || cleanPath.startsWith(`${cleanPattern}/`);
 }
 
@@ -101,6 +103,11 @@ function isOpenExecutable(candidate, policy) {
   return !isNonProduct(candidate, policy);
 }
 
+function isFinishingCandidate(candidate) {
+  const type = candidate?.metadata?.candidateType;
+  return type === 'promotion' || type === 'recovery';
+}
+
 function overlap(left = [], right = []) {
   const rightSet = new Set(right);
   return left.some(item => rightSet.has(item));
@@ -130,16 +137,19 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
     return Object.freeze({ ok: false, state: 'BLOCKED_METADATA_INVALID', reasons: validation.errors });
   }
 
-  if (normalize(candidate.baseSha).toLowerCase() !== normalize(candidate.metadata.baseSha).toLowerCase()) {
+  const authoritativeBaseSha = normalize(candidate.baseSha).toLowerCase();
+  if (!SHA40.test(authoritativeBaseSha) || !SHA40.test(normalize(candidate.headSha).toLowerCase())) {
     return Object.freeze({
       ok: false,
       state: 'BLOCKED_STALE_IDENTITY',
-      reasons: ['DECLARED_BASE_SHA_MISMATCH'],
-      actualBaseSha: normalize(candidate.baseSha).toLowerCase(),
-      declaredBaseSha: normalize(candidate.metadata.baseSha).toLowerCase(),
-      observedMainSha: normalize(currentMainSha).toLowerCase(),
+      reasons: ['MISSING_IMMUTABLE_CANDIDATE_IDENTITY'],
     });
   }
+
+  const declaredBaseSha = normalize(candidate.metadata.baseSha).toLowerCase();
+  const metadataBaseDrift = declaredBaseSha !== authoritativeBaseSha
+    ? Object.freeze({ declaredBaseSha, authoritativeBaseSha })
+    : null;
 
   const supersedingCandidate = candidates.find(other => evaluateSupersession({ successor: other, predecessor: candidate }).safe);
   if (supersedingCandidate) {
@@ -186,13 +196,52 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
       && Number(other.number) !== predecessorNumber
       && isOpenExecutable(other, policy)
     );
+    // Development remains parallel by default. Integration pressure is scoped to
+    // candidates that share an explicit conflict contract with this candidate;
+    // unrelated work must never consume this candidate's integration WIP budget.
+    const integrationPressure = activeExecutable.filter(other =>
+      overlap(candidate.conflictContracts ?? [], other.conflictContracts ?? [])
+    );
     const maxExecutable = Number(policy?.wip?.maxExecutable ?? 0);
-    if (Number.isInteger(maxExecutable) && maxExecutable > 0 && activeExecutable.length >= maxExecutable) {
+    const finishingCandidates = integrationPressure.filter(isFinishingCandidate);
+    const pressure = evaluateFinishingPressure({
+      maxExecutable,
+      admittedExecutable: integrationPressure.length,
+      finishing: finishingCandidates.length,
+      candidate: {
+        lane: candidate.metadata.deliveryLane,
+        type: candidate.metadata.candidateType,
+      },
+    });
+
+    if (pressure.decision === 'WAITING_CAPACITY') {
       return Object.freeze({
         ok: false,
-        state: 'BLOCKED_WIP_LIMIT',
-        wipCount: activeExecutable.length,
-        maxExecutable,
+        state: 'WAITING_CAPACITY',
+        reason: pressure.reason,
+        obligationId: candidate.metadata.obligationId,
+        candidateNumber: Number(candidate.number),
+        candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
+        immutableBaseSha: authoritativeBaseSha,
+        observedMainSha: normalize(currentMainSha).toLowerCase(),
+        predecessorNumber,
+        metadataBaseDrift,
+      });
+    }
+
+    if (pressure.decision === 'ADMIT_PRIORITY_RECOVERY') {
+      return Object.freeze({
+        ok: true,
+        state: 'ADMITTED',
+        priorityRecovery: true,
+        reason: pressure.reason,
+        obligationId: candidate.metadata.obligationId,
+        candidateNumber: Number(candidate.number),
+        candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
+        immutableBaseSha: authoritativeBaseSha,
+        observedMainSha: normalize(currentMainSha).toLowerCase(),
+        predecessorNumber,
+        metadataBaseDrift,
       });
     }
   }
@@ -203,8 +252,9 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
     obligationId: candidate.metadata.obligationId,
     candidateNumber: Number(candidate.number),
     candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
-    immutableBaseSha: normalize(candidate.baseSha).toLowerCase(),
+    immutableBaseSha: authoritativeBaseSha,
     observedMainSha: normalize(currentMainSha).toLowerCase(),
     predecessorNumber: predecessor ? Number(predecessor.number) : null,
+    metadataBaseDrift,
   });
 }

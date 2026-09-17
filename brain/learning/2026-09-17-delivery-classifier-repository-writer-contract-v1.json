@@ -1,0 +1,49 @@
+{
+  "fingerprint": "delivery-classifier-repository-writer-contract-gap-v1",
+  "date": "2026-09-17",
+  "obligation_id": "powerhouse-one-loop-v1",
+  "pull_request": 1968,
+  "status": "IMPLEMENTING",
+  "scope": "canonical delivery lane classification and versioned scope authority for repository-writer governance tests",
+  "symptom": "Required preflight first failed closed because three repository-writer governance test paths were absent from the delivery lane classifier. After that classifier gap was fixed and this canonical learning artifact was written, preflight correctly failed closed again because the active versioned deliveryCandidate.expectedPaths authority had not yet admitted the new learning artifact, even though the PR body Change-Scope already covered brain/learning/**.",
+  "root_causes": [
+    "The repository-writer contract tests were added or retained as governance verification, but config/brain-delivery-system.json had not yet declared their canonical owner lane. Change-Scope metadata was already correct; the missing authority was the delivery classifier itself.",
+    "The One Loop preflight uses config/powerhouse-one-loop-v1.json deliveryCandidate.expectedPaths as versioned branch-hygiene authority when versioned-manifest metadata is active. Adding a required canonical learning artifact without co-updating that authority produced SCOPE_CONTAMINATED even though the PR body used brain/learning/**."
+  ],
+  "unclassified_paths": [
+    "tests/menu-balk-writer-noop-proof.test.mjs",
+    "tests/repository-writer-permission-boundary.test.mjs",
+    "tests/repository-writer-slow-canary-sla.test.mjs"
+  ],
+  "canonical_lane": "automation",
+  "fixes": [
+    "Add only the three known repository-writer governance test paths to the automation delivery lane; preserve fail-closed behavior for unrelated future tests.",
+    "Add the exact canonical learning path brain/learning/2026-09-17-delivery-classifier-repository-writer-contract-v1.json to config/powerhouse-one-loop-v1.json deliveryCandidate.expectedPaths; keep maxFiles=64 and do not broaden versioned scope authority."
+  ],
+  "regression_test": "tests/delivery-repository-writer-classification.test.mjs",
+  "prevention": [
+    "CLASSIFIER_COCHANGE_REQUIRED: every new material governance or contract test must receive canonical lane classification in the same change that introduces or activates it.",
+    "FAIL_CLOSED_UNCLASSIFIED_PATHS: an unknown delivery path remains an error; never add a broad tests/** escape solely to make CI green.",
+    "BOUNDED_CLASSIFICATION: prefer exact paths or an already-established bounded family over catch-all patterns.",
+    "CHANGE_SCOPE_IS_NOT_LANE_AUTHORITY: a path being declared in PR Change-Scope does not replace delivery-lane classification; both contracts must be satisfied independently.",
+    "VERSIONED_SCOPE_COCHANGE_REQUIRED: when a recovery or learning step adds a canonical artifact while versioned-manifest authority is active, add that exact artifact to deliveryCandidate.expectedPaths in the same canonical candidate before relying on fresh protected checks.",
+    "AUTHORITY_PRECEDENCE_MUST_BE_EXPLICIT: diagnose branch-hygiene against the authority actually selected by resolveDeliveryMetadataAuthority; PR body scope and versioned manifest scope must not be treated as interchangeable.",
+    "EXACT_HEAD_ONLY: classifier and scope recovery evidence is valid only on the exact current PR head; superseded runs remain historical diagnosis evidence."
+  ],
+  "evidence": {
+    "classifier_diagnosed_head": "37b6166c890442a87121d3f93a776c119b6ba6f1",
+    "classifier_required_run_id": 35271247630,
+    "classifier_preflight_job_id": 105371043759,
+    "classifier_first_deterministic_error": "unclassified delivery path: tests/menu-balk-writer-noop-proof.test.mjs, tests/repository-writer-permission-boundary.test.mjs, tests/repository-writer-slow-canary-sla.test.mjs",
+    "tdd_regression_commit": "5d4864fdd20b103d0231e6a5bd110fcd80e5fd57",
+    "classifier_readback": "config/brain-delivery-system.json assigns the three named paths to automation while the regression test requires an unrelated future writer test to remain unclassified.",
+    "versioned_scope_diagnosed_head": "f68944dab87490fe0cfcafd7bfcc91d7d0c2e7d8",
+    "versioned_scope_required_run_id": 35271542252,
+    "versioned_scope_preflight_job_id": 105372092648,
+    "versioned_scope_failure_state": "SCOPE_CONTAMINATED",
+    "versioned_scope_unexpected_path": "brain/learning/2026-09-17-delivery-classifier-repository-writer-contract-v1.json",
+    "versioned_scope_fix_commit": "6dfb61d5f7010eeb1200d53cd460ff6e5faf4faa",
+    "versioned_scope_fix": "config/powerhouse-one-loop-v1.json now admits the exact learning artifact and retains maxFiles=64."
+  },
+  "terminal_acceptance": "Update status only after Required and BRAIN delivery are terminal green on one exact head, protected merge succeeds with expected-head identity, current main contains the candidate ancestry, and main/runtime readback is green."
+}

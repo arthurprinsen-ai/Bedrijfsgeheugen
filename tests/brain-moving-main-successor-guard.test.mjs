@@ -60,9 +60,11 @@ test('PR successor is allowed only with sync, overlap and unsynchronizable evide
   });
 });
 
-test('Required concurrency is candidate-SHA scoped so stale queued runs cannot block the current head', async () => {
+test('Required concurrency is PR-scoped single-flight while exact candidate SHA stays inside the gates', async () => {
   const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
   const groupLine = workflow.split(/\r?\n/).find((line) => line.trim().startsWith('group: required-test-')) ?? '';
-  assert.match(groupLine, /github\.event\.pull_request\.head\.sha/);
-  assert.match(groupLine, /github\.event\.merge_group\.head_sha/);
+  assert.match(groupLine, /github\.event\.pull_request\.number/);
+  assert.doesNotMatch(groupLine, /github\.event\.pull_request\.head\.sha/);
+  assert.match(workflow, /PR_HEAD_SHA|candidate_sha|change_head_sha/);
+  assert.match(workflow, /cancel-in-progress:\s*true/);
 });

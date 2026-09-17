@@ -9,12 +9,16 @@ const engineeringIntelligence = readFileSync('.github/workflows/engineering-inte
 const supplyChain = readFileSync('.github/workflows/engineering-supply-chain-trust.yml', 'utf8');
 const learningClassifier = readFileSync('.github/workflows/learning-contract-delivery-classifier-tests.yml', 'utf8');
 
-test('Required preflight enforces branch hygiene before lane execution', () => {
+test('Required preflight enforces exact-head versioned branch hygiene before lane execution', () => {
   assert.match(workflow, /delivery-branch-hygiene-guard\.mjs/);
-  assert.match(workflow, /parseScopeMetadata/);
+  assert.match(workflow, /delivery-metadata-authority\.mjs/);
+  assert.match(workflow, /resolveDeliveryMetadataAuthority/);
+  assert.match(workflow, /powerhouse-one-loop-v1\.json/);
+  assert.match(workflow, /github\.event\.pull_request\.head\.sha \|\| github\.sha/);
   assert.match(workflow, /evaluateBranchHygiene/);
   assert.match(workflow, /PR_BODY:/);
   assert.match(workflow, /PR_LABELS_JSON:/);
+  assert.match(workflow, /VERSIONED_BASE_SHA_MISMATCH/);
   assert.match(workflow, /if\s*\(!hygiene\.ok\)\s*throw new Error/);
 });
 
@@ -25,13 +29,15 @@ test('Required evidence is latest-head-wins so obsolete candidate proof cannot b
   assert.doesNotMatch(workflow, /cancel-in-progress:\s*false/);
 });
 
-test('non-required PR runner fanout stays path-scoped and latest-head-wins', () => {
+test('governance PR fanout is consolidated behind Required while narrow supply-chain security remains PR-scoped', () => {
+  assert.doesNotMatch(engineeringIntelligence, /^\s*pull_request\s*:/m);
+  assert.doesNotMatch(learningClassifier, /^\s*pull_request\s*:/m);
+  assert.match(supplyChain, /pull_request:[\s\S]*?paths:/);
   for (const [name, yml] of [
     ['engineering intelligence', engineeringIntelligence],
     ['supply chain', supplyChain],
     ['learning classifier', learningClassifier],
   ]) {
-    assert.match(yml, /pull_request:[\s\S]*?paths:/, `${name} must be path-scoped for pull requests`);
     assert.match(yml, /concurrency:[\s\S]*?cancel-in-progress:\s*true/, `${name} must cancel stale runs`);
   }
   assert.match(supplyChain, /dependency-review:[\s\S]*?if:\s*github\.event_name == 'pull_request'/);

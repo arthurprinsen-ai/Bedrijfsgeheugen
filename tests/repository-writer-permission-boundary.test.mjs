@@ -6,17 +6,17 @@ const state = JSON.parse(fs.readFileSync('config/repository-writer-migration.jso
 const lessons = JSON.parse(fs.readFileSync('docs/brain/delivery-failure-lessons.json', 'utf8'));
 const rules = JSON.parse(fs.readFileSync('config/delivery-prevention-rules.json', 'utf8'));
 
-test('fresh GitHub Actions PR-creation denial invalidates stale approved-central operational proof', () => {
+test('current GitHub Actions PR-creation boundary is derived from the latest verified evidence', () => {
   const writer = state.writers.find((item) => item.name === 'approved-central-blog');
   assert.ok(writer);
-  assert.equal(state.prCreationBoundary?.status, 'BLOCKED_HARD_BOUNDARY');
+  assert.equal(state.prCreationBoundary?.status, 'RESOLVED_VERIFIED');
   assert.equal(state.prCreationBoundary?.provider, 'github-actions');
-  assert.equal(state.prCreationBoundary?.reason, 'actions_pr_creation_policy_disabled');
-  assert.equal(writer.operationalCandidateVerified, false);
-  assert.equal(writer.candidateMode, 'blocked_permission');
+  assert.equal(state.prCreationBoundary?.reason, 'actions_pr_creation_enabled_and_writer_self_pr_shadow_verified');
+  assert.equal(writer.operationalCandidateVerified, true);
+  assert.equal(writer.candidateMode, 'operational_verified');
 });
 
-test('known Actions PR-creation policy failure is a proven reusable prevention lesson', () => {
+test('historical Actions PR-creation denial remains a proven reusable prevention lesson', () => {
   const lesson = lessons.lessons.find((item) => item.preventionRule === 'BLOCK_WRITER_CANARY_WHEN_ACTIONS_PR_CREATION_DISABLED');
   assert.ok(lesson);
   assert.equal(lesson.status, 'PROVEN');

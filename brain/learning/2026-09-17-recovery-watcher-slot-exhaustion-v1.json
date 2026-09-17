@@ -1,0 +1,54 @@
+{
+  "fingerprint": "recovery-watcher-slot-exhaustion-v1",
+  "date": "2026-09-17",
+  "extends": [
+    "powerhouse-one-loop-v1",
+    "stranded-delivery-or-interrupted-execution-v1"
+  ],
+  "incident": "A new technical recovery watcher could not be created because the active scheduled-task capacity was exhausted.",
+  "root_cause": "Generic technical recovery ownership had fragmented per incident, allowing multiple watchers for equivalent recoverable states instead of reusing one canonical recovery owner and the Powerhouse obligation registry.",
+  "decision": {
+    "generic_recovery_owner": "Powerhouse Recovery Supervisor",
+    "max_generic_recovery_watchers": 1,
+    "reuse_existing_owner_before_new_slot": true,
+    "reserve_user_task_slot_when_technically_possible": 1,
+    "new_incident_strategy": "reuse-supervisor-and-canonical-obligation",
+    "duplicate_watcher_strategy": "consolidate-and-disable-when-safe"
+  },
+  "applies_to": [
+    "github-actions-queue",
+    "ci-stall",
+    "timeout",
+    "chat-stop",
+    "model-stop",
+    "worker-loss",
+    "lease-expiry",
+    "provider-retry",
+    "recoverable-delivery-interruption"
+  ],
+  "invariants": [
+    "one active owner per material obligation",
+    "queued pending and in-progress states are non-terminal and do not justify duplicate retries",
+    "do not create a second generic recovery automation when the canonical supervisor exists",
+    "specialist recurring business automations remain separate only when they own a materially distinct business function",
+    "exact-head protected merge runtime readback and learning writeback remain required before FULFILLED",
+    "never weaken security integrity truth privacy branch release or evidence gates to reclaim automation capacity"
+  ],
+  "evidence": [
+    {
+      "type": "automation_capacity_error",
+      "finding": "creation of an additional One Loop completion watcher was rejected at the active-task limit"
+    },
+    {
+      "type": "ownership_reconciliation",
+      "finding": "the existing One Loop recovery watcher was updated in place and became the canonical Powerhouse Recovery Supervisor"
+    },
+    {
+      "type": "capacity_prevention_contract",
+      "finding": "the supervisor now forbids creation of additional generic recovery watchers and requires reuse of canonical Powerhouse obligations"
+    }
+  ],
+  "documentation": "docs/learning/2026-09-17-powerhouse-recovery-supervisor-capacity-v1.md",
+  "status": "ACTIVE_PREVENTION",
+  "closure_condition": "Promote to PROVEN after powerhouse-one-loop-v1 is protected-merged, main/runtime readback is verified, and canonical learning closure confirms the single-supervisor invariant."
+}

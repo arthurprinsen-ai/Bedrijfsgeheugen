@@ -13,20 +13,27 @@ test('supply-chain workflow creates SBOM and GitHub artifact attestation', () =>
   assert.match(yml, /dependency-review-action@/);
 });
 
+test('supply-chain PR work is dependency-scoped while provenance remains main-only', () => {
+  const yml = read('.github/workflows/engineering-supply-chain-trust.yml');
+  assert.match(yml, /pull_request:\s*\n\s+paths:\s*\n\s+- 'package\.json'\s*\n\s+- 'package-lock\.json'/);
+  assert.match(yml, /provenance:\s*\n\s+if: github\.event_name == 'push'/);
+  assert.match(yml, /push:\s*\n\s+branches: \[main\]/);
+});
+
 test('CodeQL workflow is present with security-events permission', () => {
   const yml = read('.github/workflows/codeql.yml');
   assert.match(yml, /security-events:\s*write/);
   assert.match(yml, /github\/codeql-action\/analyze@/);
 });
 
-test('GitHub runner fanout stays bounded and stale non-required runs are cancelled', () => {
-  const workflows = [
-    ['engineering intelligence', read('.github/workflows/engineering-intelligence-trust.yml')],
-    ['supply chain', read('.github/workflows/engineering-supply-chain-trust.yml')],
-    ['learning classifier', read('.github/workflows/learning-contract-delivery-classifier-tests.yml')],
-  ];
-  for (const [name, yml] of workflows) {
-    assert.match(yml, /pull_request:[\s\S]*?paths:/, `${name} must be path-scoped for pull requests`);
+test('duplicate governance PR fanout is routed through Required while supply-chain security stays narrow', () => {
+  const intelligence = read('.github/workflows/engineering-intelligence-trust.yml');
+  const supply = read('.github/workflows/engineering-supply-chain-trust.yml');
+  const classifier = read('.github/workflows/learning-contract-delivery-classifier-tests.yml');
+  assert.doesNotMatch(intelligence, /^\s*pull_request\s*:/m);
+  assert.doesNotMatch(classifier, /^\s*pull_request\s*:/m);
+  assert.match(supply, /pull_request:[\s\S]*?paths:/);
+  for (const [name, yml] of [['engineering intelligence', intelligence], ['supply chain', supply], ['learning classifier', classifier]]) {
     assert.match(yml, /concurrency:[\s\S]*?cancel-in-progress:\s*true/, `${name} must cancel stale runs`);
   }
 });

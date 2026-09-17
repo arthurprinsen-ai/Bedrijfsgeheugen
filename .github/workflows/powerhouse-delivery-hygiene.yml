@@ -137,7 +137,8 @@ jobs:
             for (const item of open) {
               const metadata = parseDeliveryMetadata(item.body || '');
               let conflictContracts = [];
-              if (validateDeliveryMetadata(metadata, policy).ok) {
+              const needsConflictFiles = Number(item.number) !== prNumber && metadata.candidateType === 'promotion';
+              if (validateDeliveryMetadata(metadata, policy).ok && needsConflictFiles) {
                 const files = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${item.number}/files?per_page=100`);
                 conflictContracts = deriveHygieneConflictContracts(files.map(file => file.filename), brainPolicy, policy);
               }
