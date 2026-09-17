@@ -34,8 +34,21 @@ export function buildStablePolicyPrefix() {
   });
 }
 
+function stringifyToolOutput(value) {
+  if (typeof value === 'string') return value;
+  if (value === undefined) return 'undefined';
+  try {
+    const serialized = JSON.stringify(value);
+    return serialized === undefined ? String(value) : serialized;
+  } catch (error) {
+    return `[Unserializable tool output: ${error.message}]`;
+  }
+}
+
 export function compactToolOutput(value, { maxChars = 12_000, maxLines = 300 } = {}) {
-  const text = typeof value === 'string' ? value : JSON.stringify(value);
+  if (!Number.isInteger(maxChars) || maxChars < 1) throw new Error('maxChars must be a positive integer');
+  if (!Number.isInteger(maxLines) || maxLines < 1) throw new Error('maxLines must be a positive integer');
+  const text = stringifyToolOutput(value);
   const lines = text.split('\n');
   let compacted = lines.slice(0, maxLines).join('\n');
   let truncated = lines.length > maxLines;
@@ -53,6 +66,7 @@ export class EvidenceCache {
   }
   put(key, value, { ttlMs = 60_000, source = null, candidateId = null } = {}) {
     if (!key) throw new Error('evidence key is required');
+    if (!Number.isFinite(ttlMs) || ttlMs <= 0) throw new Error('ttlMs must be positive');
     const observedAt = this.now();
     this.items.set(key, { value, observedAt, expiresAt: observedAt + ttlMs, source, candidateId });
     return value;
@@ -60,8 +74,14 @@ export class EvidenceCache {
   get(key, { candidateId = null } = {}) {
     const item = this.items.get(key);
     if (!item || item.expiresAt < this.now()) return null;
-    if (candidateId && item.candidateId && candidateId !== item.candidateId) return null;
+    if (candidateId && item.candidateId !== candidateId) return null;
     return item.value;
+  }
+  invalidate(key) {
+    return this.items.delete(key);
+  }
+  clear() {
+    this.items.clear();
   }
   metadata(key) {
     const item = this.items.get(key);
@@ -77,11 +97,12 @@ export async function runParallelStateRetrieval(adapters = {}) {
 
 function boundedClone(value, maxChars) {
   if (value == null) return value;
-  const compacted = compactToolOutput(value, { maxChars, maxLines: 160 });
+  const compacted = compactToolOutput(value, { maxChars: Math.max(1, maxChars), maxLines: 160 });
   try { return JSON.parse(compacted); } catch { return compacted; }
 }
 
 export function buildMinimalContextPack({ task, executionClass, hotState = {}, delta = [], evidence = [], maxChars = 24_000 } = {}) {
+  if (!Number.isInteger(maxChars) || maxChars < 512) throw new Error('maxChars must be an integer >= 512');
   const base = {
     version: FAST_EXECUTION_VERSION,
     task: String(task ?? ''),
@@ -91,27 +112,31 @@ export function buildMinimalContextPack({ task, executionClass, hotState = {}, d
     delta: boundedClone(delta, Math.floor(maxChars * 0.24)),
     evidence: boundedClone(evidence, Math.floor(maxChars * 0.24))
   };
-  let serialized = JSON.stringify(base);
+  const serialized = JSON.stringify(base);
   if (serialized.length <= maxChars) return base;
+
   const digest = crypto.createHash('sha256').update(serialized).digest('hex');
   const fallback = {
     version: base.version,
-    task: base.task.slice(0, 1000),
+    task: base.task.slice(0, Math.max(0, Math.min(1000, Math.floor(maxChars * 0.18)))),
     executionClass: base.executionClass,
-    policy: base.policy,
     contextDigest: digest,
-    hotState: boundedClone(hotState, Math.floor(maxChars * 0.2)),
-    delta: boundedClone(delta, Math.floor(maxChars * 0.12)),
-    evidence: boundedClone(evidence, Math.floor(maxChars * 0.12)),
+    hotState: boundedClone(hotState, Math.max(1, Math.floor(maxChars * 0.16))),
+    delta: boundedClone(delta, Math.max(1, Math.floor(maxChars * 0.1))),
+    evidence: boundedClone(evidence, Math.max(1, Math.floor(maxChars * 0.1))),
     bounded: true
   };
-  serialized = JSON.stringify(fallback);
-  if (serialized.length > maxChars) {
-    fallback.hotState = '[BOUNDED]';
-    fallback.delta = '[BOUNDED]';
-    fallback.evidence = '[BOUNDED]';
-  }
-  return fallback;
+  if (JSON.stringify(fallback).length <= maxChars) return fallback;
+
+  const minimal = {
+    version: base.version,
+    executionClass: base.executionClass,
+    contextDigest: digest,
+    bounded: true,
+    context: '[BOUNDED: retrieve canonical state by digest on demand]'
+  };
+  if (JSON.stringify(minimal).length > maxChars) throw new Error('maxChars is too small for the mandatory context envelope');
+  return minimal;
 }
 
 const SLI_MAP = {
