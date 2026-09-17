@@ -18,3 +18,5 @@ jobs:
           node-version: '22'
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Verify Fast Development Protocol v2 chat-start contract
+        run: node --test tests/brain-chat-learning-fast-development-v2.test.mjs
