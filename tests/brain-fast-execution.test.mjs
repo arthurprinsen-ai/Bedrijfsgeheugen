@@ -4,7 +4,9 @@ import { classifyTask, buildStablePolicyPrefix, compactToolOutput, EvidenceCache
 
 test('classifies work into FAST, STANDARD and DEEP without deep-by-default', () => {
   assert.equal(classifyTask({ task: 'status readback van huidige deploy' }), 'FAST');
+  assert.equal(classifyTask({ task: 'check deploy status en huidige sha' }), 'FAST');
   assert.equal(classifyTask({ task: 'fix bug en deploy feature' }), 'STANDARD');
+  assert.equal(classifyTask({ task: 'update deploy configuratie en test opnieuw' }), 'STANDARD');
   assert.equal(classifyTask({ task: 'security architectuur database migration incident root cause' }), 'DEEP');
   assert.equal(classifyTask({ task: '', risk: 'high' }), 'DEEP');
 });
