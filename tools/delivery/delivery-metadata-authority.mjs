@@ -51,6 +51,9 @@ export function resolveDeliveryMetadataAuthority({ prBody = '', manifest = null 
   const fallback = parsePrScope(prBody);
   if (!manifest) return Object.freeze({ source: 'pr-body', ...fallback });
   const versioned = normalizeManifest(manifest);
+  if (fallback.delivery.obligationId !== versioned.delivery.obligationId) {
+    return Object.freeze({ source: 'pr-body', ...fallback });
+  }
   return Object.freeze({
     source: 'versioned-manifest',
     ...versioned,
