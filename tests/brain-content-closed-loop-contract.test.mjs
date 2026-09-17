@@ -71,6 +71,15 @@ test('single content supervisor drains generation, dispatches, readbacks and rec
   assert.match(loop, /loop_state/);
 });
 
+test('supervisor audits provider truth before orchestrator can replan existing delivery state', () => {
+  const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
+  const audit = loop.indexOf("'powerhouse-social-publisher', { runDate, mode: 'audit_only' }");
+  const orchestrate = loop.indexOf("'powerhouse-content-orchestrator', { runDate }");
+  assert.ok(audit >= 0, 'pre-orchestration provider audit must exist');
+  assert.ok(orchestrate >= 0, 'orchestrator invocation must exist');
+  assert.ok(audit < orchestrate, 'provider audit must happen before orchestration');
+});
+
 test('public APIs keep provider and backend diagnostics internal', () => {
   const operations = read('supabase/functions/content-operations/index.ts');
   const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
