@@ -1,0 +1,34 @@
+{
+  "learning_id": "one-loop-pr-event-metadata-recovery-2026-09-17",
+  "date": "2026-09-17",
+  "status": "RECOVERY_IN_PROGRESS",
+  "scope": "Powerhouse One Loop / GitHub PR metadata / protected delivery",
+  "fingerprint": "github-pr-event-context-stale-after-body-edit-v1",
+  "pull_request": 1968,
+  "obligation_id": "powerhouse-one-loop-v1",
+  "canonical_branch": "feat/powerhouse-one-loop-v1",
+  "symptom": "Required and BRAIN delivery evaluated stale pull_request event payload after the live PR body had been corrected, causing protected delivery to remain red even though the repository head and live PR metadata were valid.",
+  "root_causes": [
+    "The first recovery merge changed the effective PR base from b573a31d0547979bf9c708e4f56da0fa27502688 to 5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9 while the original workflow event still carried the old declared Base-SHA.",
+    "scripts/publish_approved_blog_v2.py was a legitimate changed path but was omitted from the declared Change-Scope, producing SCOPE_CONTAMINATED during Required preflight.",
+    "Editing the PR body does not create a fresh run for workflows that use the default pull_request activity types, and rerunning an existing workflow attempt reuses the original event payload."
+  ],
+  "fix": "Updated the existing PR metadata in place with the exact current Base-SHA and the missing approved-blog publisher path, then created this canonical learning writeback on the same branch so GitHub emits a normal synchronize event whose payload contains the corrected metadata. No parallel branch, PR, queue or product-lineage was created.",
+  "prevention": [
+    "When protected CI consumes github.event.pull_request.body, treat the event payload as immutable per workflow run and never assume a later live PR edit changes an existing attempt.",
+    "After an effective base change, update Base-SHA before requesting fresh protected checks.",
+    "Before expensive CI, compare changed paths with declared Change-Scope and report the first unexpected path exactly.",
+    "Use a legitimate same-lineage writeback/synchronize event rather than close-reopen or empty commits when a fresh PR event context is required."
+  ],
+  "evidence": {
+    "reconciled_head_before_writeback": "94958ba187b09d69e6a9081821951473d39c67d8",
+    "current_base_sha": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
+    "failed_required_run_id": 35266534507,
+    "failed_required_job_id": 105355182810,
+    "failed_required_state": "SCOPE_CONTAMINATED",
+    "unexpected_path": "scripts/publish_approved_blog_v2.py",
+    "stale_brain_run_id": 35266534452,
+    "stale_declared_base_sha": "b573a31d0547979bf9c708e4f56da0fa27502688"
+  },
+  "terminal_acceptance": "Remain RECOVERY_IN_PROGRESS until the new exact head has fresh Required and BRAIN delivery checks terminal green, is protected-merged with exact-head identity, and main/readback confirms the One Loop control-plane on protected main."
+}
