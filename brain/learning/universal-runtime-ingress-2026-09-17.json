@@ -1,0 +1,22 @@
+{
+  "type": "POWERHOUSE_RUNTIME_LEARNING",
+  "version": "POWERHOUSE-RUNTIME-LEARNING-v1",
+  "fingerprint": "powerhouse|runtime-ingress|policy-without-preflight-proof",
+  "date": "2026-09-17",
+  "problem": "Powerhouse policies required shared context, chat-learning preflight, control-plane binding and universal completion, but a canonical operation binding alone did not prove that the current material run actually executed the latest preflight before mutation.",
+  "impact": "Chats and agents could appear governed at repository/control-plane level while users observed little behavioral difference, because policy presence and runtime consumption were not the same evidence class.",
+  "rootCause": "Preflight and completion were independently mandatory contracts without one identity-bound runtime receipt connecting preflight, mutation admission and postflight completion.",
+  "failedApproach": "Treating broad policy scope, PR-time preflight CI or database operation binding as sufficient proof that every live material execution had consumed current Powerhouse learning.",
+  "fix": "Use one Powerhouse universal runtime ingress receipt created from the canonical READY chat-learning preflight, bind it to run/actor/candidate identity, require it before Agent Fabric material commands, and require exact run/candidate continuity again at universal completion.",
+  "prevention": "A material Powerhouse-managed execution without a valid ADMITTED ingress receipt is not execution-ready evidence. A terminal completion with another run/candidate receipt is invalid. Read-only queries may remain outside the mutation admission path.",
+  "evidence": [
+    "tests/brain-universal-completion-ingress.test.mjs",
+    "tests/agent-fabric-gateway.test.mjs",
+    "scripts/brain/powerhouse-universal-runtime-ingress.mjs",
+    "config/powerhouse-universal-ingress-v1.json",
+    "platform/api/agent-fabric-gateway.mjs",
+    "PR #1958"
+  ],
+  "boundary": "Repository code cannot alter the native ChatGPT product runtime. The enforceable invariant is that any material Powerhouse mutation invoked from such a chat must cross the managed ingress/control-plane before mutation.",
+  "reuse_rule": "Future agent/chat runtime work must distinguish policy presence, preflight execution proof, mutation admission proof and terminal completion proof; never infer one from another."
+}

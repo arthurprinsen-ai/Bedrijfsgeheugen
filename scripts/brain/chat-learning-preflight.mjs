@@ -6,12 +6,14 @@ import { fileURLToPath } from 'node:url';
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const FAST_EXECUTION_POLICY_SOURCE = 'config/powerhouse-fast-execution-v1.json';
 const UNIVERSAL_COMPLETION_POLICY_SOURCE = 'config/powerhouse-universal-completion-v1.json';
+const UNIVERSAL_INGRESS_POLICY_SOURCE = 'config/powerhouse-universal-ingress-v1.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'config/powerhouse-engineering-os.json',
   'config/powerhouse-truth-status-contract.json',
   'config/powerhouse-execution-resilience-v1.json',
   FAST_EXECUTION_POLICY_SOURCE,
   UNIVERSAL_COMPLETION_POLICY_SOURCE,
+  UNIVERSAL_INGRESS_POLICY_SOURCE,
   'brain/policies/powerhouse-system-contract-v1.json',
   'brain/policies/live-completion-learning-contract-v1.json',
   'brain/policies/powerhouse-agent-continuity-v1.json',
@@ -97,6 +99,27 @@ function validateUniversalCompletionPolicy(policy) {
   });
 }
 
+function validateUniversalIngressPolicy(policy) {
+  if (!policy || policy.type !== 'POWERHOUSE_UNIVERSAL_INGRESS_POLICY') throw new Error('universal-ingress policy missing or wrong type');
+  if (policy.version !== 'POWERHOUSE-UNIVERSAL-INGRESS-v1') throw new Error(`unsupported universal-ingress policy version: ${policy.version ?? 'missing'}`);
+  if (policy.status !== 'ACTIVE' || policy.default_enabled !== true || policy.fail_closed !== true) throw new Error('universal-ingress policy must be ACTIVE, default enabled and fail-closed');
+  if (typeof policy.scope !== 'string' || !/chats/i.test(policy.scope) || !/agents/i.test(policy.scope)) throw new Error('universal-ingress scope does not cover chats and agents');
+  const requiredActorKinds = ['chat','agent','workflow','scheduled','portal','cockpit','edge_function','runtime'];
+  if (!Array.isArray(policy.actor_kinds) || requiredActorKinds.some(kind => !policy.actor_kinds.includes(kind))) throw new Error('universal-ingress actor kinds are incomplete');
+  if (typeof policy.runtime_entrypoint !== 'string' || !policy.runtime_entrypoint) throw new Error('universal-ingress runtime entrypoint is missing');
+  if (typeof policy.completion_entrypoint !== 'string' || !policy.completion_entrypoint) throw new Error('universal-ingress completion entrypoint is missing');
+  return Object.freeze({
+    version: policy.version,
+    status: policy.status,
+    defaultEnabled: policy.default_enabled,
+    failClosed: policy.fail_closed,
+    actorKinds: [...policy.actor_kinds],
+    policySource: UNIVERSAL_INGRESS_POLICY_SOURCE,
+    runtimeEntrypoint: policy.runtime_entrypoint,
+    completionEntrypoint: policy.completion_entrypoint
+  });
+}
+
 export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000 } = {}) {
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
   if (!Number.isInteger(maxBytes) || maxBytes < 1) throw new Error('maxBytes must be a positive integer');
@@ -114,6 +137,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   const signals = { fingerprints: [], preventions: [], blockers: [], resumeContracts: [] };
   let fastExecutionPolicy = null;
   let universalCompletionPolicy = null;
+  let universalIngressPolicy = null;
   let sourceBytes = Buffer.byteLength(contractRaw, 'utf8');
   while (queue.length) {
     const requested = queue.shift();
@@ -129,6 +153,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
       try { parsed = JSON.parse(raw); } catch (error) { throw new Error(`invalid JSON learning source ${normalized}: ${error.message}`); }
       if (normalized === FAST_EXECUTION_POLICY_SOURCE) fastExecutionPolicy = parsed;
       if (normalized === UNIVERSAL_COMPLETION_POLICY_SOURCE) universalCompletionPolicy = parsed;
+      if (normalized === UNIVERSAL_INGRESS_POLICY_SOURCE) universalIngressPolicy = parsed;
       collectSignals(parsed, signals);
       if (Array.isArray(parsed.linked_learning_sources)) {
         for (const linked of parsed.linked_learning_sources) {
@@ -149,6 +174,12 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   const completionEntrypoint = normalizeSourcePath(rootDir, universalCompletion.entrypoint);
   if (!fs.existsSync(completionEntrypoint.absolute)) throw new Error(`missing universal-completion entrypoint: ${universalCompletion.entrypoint}`);
 
+  const universalIngress = validateUniversalIngressPolicy(universalIngressPolicy);
+  const ingressEntrypoint = normalizeSourcePath(rootDir, universalIngress.runtimeEntrypoint);
+  if (!fs.existsSync(ingressEntrypoint.absolute)) throw new Error(`missing universal-ingress entrypoint: ${universalIngress.runtimeEntrypoint}`);
+  const ingressCompletionEntrypoint = normalizeSourcePath(rootDir, universalIngress.completionEntrypoint);
+  if (!fs.existsSync(ingressCompletionEntrypoint.absolute)) throw new Error(`missing universal-ingress completion entrypoint: ${universalIngress.completionEntrypoint}`);
+
   const packet = {
     version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1',
     status: 'READY',
@@ -156,6 +187,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     sourceBytes,
     fastExecution,
     universalCompletion,
+    universalIngress,
     sources,
     fingerprints: stableUnique(signals.fingerprints).sort(),
     preventions: stableUnique(signals.preventions).sort(),
