@@ -25,10 +25,27 @@ test('authority and global hard-boundary policy cannot be overridden',()=>{
  assert.equal(evaluatePlatformPromotion({platform:'dataforseo',registry:wrongBoundary}).reason,'global_hard_boundary_policy_required');
 });
 
-test('Make promotion requires available capacity and execution proof',()=>{
- assert.equal(evaluatePlatformPromotion({platform:'make',registry,capacity:'paused',executionProof:true}).reason,'platform_capacity_unavailable');
- assert.equal(evaluatePlatformPromotion({platform:'make',registry,capacity:'available',executionProof:false}).reason,'execution_proof_missing');
- assert.equal(evaluatePlatformPromotion({platform:'make',registry,capacity:'available',executionProof:true}).ok,true);
+test('retired Make promotion is blocked before capacity or execution proof can restore authority',()=>{
+ for(const evidence of [
+  {capacity:'paused',executionProof:true},
+  {capacity:'available',executionProof:false},
+  {capacity:'available',executionProof:true}
+ ]){
+  const r=evaluatePlatformPromotion({platform:'make',registry,...evidence});
+  assert.equal(r.ok,false);
+  assert.equal(r.decision,'BLOCK_HARD_BOUNDARY');
+  assert.equal(r.reason,'direct_promotion_disabled');
+ }
+});
+
+test('capacity and execution proof remain required for an explicitly active gated adapter',()=>{
+ const active=structuredClone(registry);
+ const make=active.platforms.find(x=>x.platform==='make');
+ make.direct_promotion=true;
+ make.authority='BG169';
+ assert.equal(evaluatePlatformPromotion({platform:'make',registry:active,capacity:'paused',executionProof:true}).reason,'platform_capacity_unavailable');
+ assert.equal(evaluatePlatformPromotion({platform:'make',registry:active,capacity:'available',executionProof:false}).reason,'execution_proof_missing');
+ assert.equal(evaluatePlatformPromotion({platform:'make',registry:active,capacity:'available',executionProof:true}).ok,true);
 });
 
 test('delivery controller consumes platform policy before declaring promotion ready',()=>{
