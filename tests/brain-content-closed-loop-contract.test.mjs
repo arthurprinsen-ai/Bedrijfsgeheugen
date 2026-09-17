@@ -51,6 +51,12 @@ test('orchestrator exposes unsupported channel obligations as machine-readable h
   assert.match(orchestrator, /executor_capabilities/);
 });
 
+test('orchestrator preserves content_ready until executor consumes artifact', () => {
+  const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
+  assert.match(orchestrator, /COVERED_STATES\s*=\s*new Set\(\[[^\]]*'content_ready'/);
+  assert.match(orchestrator, /if \(shouldPreserveExisting\(previous\)\) continue;/);
+});
+
 test('database has one canonical reconciliation loop and guards invoke it before recovery', () => {
   const migration = read('supabase/migrations/20260917235901_content_closed_loop_reconciliation.sql');
   assert.match(migration, /powerhouse_reconcile_content_outcomes_v1/);
