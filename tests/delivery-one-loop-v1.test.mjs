@@ -93,11 +93,11 @@ test('PR governance fan-out is admitted once through Required before duplicate c
   const required = workflow('required-test.yml');
   const automation = workflow('lane-automation.yml');
   assert.match(required, /powerhouse-delivery-hygiene\.yml/);
-  assert.match(required, /brain-learning-contract-delivery-classification\.test\.mjs/);
-  assert.match(required, /engineering-trust-contract\.test\.mjs/);
-  assert.match(required, /make-agent-learning-promotion-contract\.test\.mjs/);
   assert.match(automation, /scripts\/brain\/test-all\.mjs/);
   assert.match(automation, /development-doc-contract\.test\.mjs/);
+  assert.match(automation, /brain-learning-contract-delivery-classification\.test\.mjs/);
+  assert.match(automation, /engineering-trust-contract\.test\.mjs/);
+  assert.match(automation, /make-agent-learning-promotion-contract\.test\.mjs/);
 });
 
 test('delivery admission avoids N+1 file reads for ordinary open PRs', () => {
