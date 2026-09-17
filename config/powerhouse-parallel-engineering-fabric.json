@@ -1,7 +1,8 @@
 {
   "fingerprint": "powerhouse-parallel-engineering-fabric-v1",
-  "version": 1,
+  "version": 2,
   "status": "active",
+  "protocol_extension": "powerhouse-fast-development-protocol-v2",
   "extends": ["powerhouse-engineering-os-v1", "BRAIN-DELIVERY-v2"],
   "authority": {
     "delivery": "config/brain-delivery-system.json",
@@ -14,13 +15,10 @@
     "sort": "lexical-work-package-id",
     "require_exact_base_identity": true,
     "require_exact_candidate_identity": true,
-    "parallel_only_without": [
-      "changed-path-overlap",
-      "conflict-contract-overlap",
-      "declared-dependency-edge"
-    ],
+    "parallel_only_without": ["changed-path-overlap", "conflict-contract-overlap", "declared-dependency-edge", "mutable-resource-overlap"],
     "missing_dependency": "fail-closed",
-    "dependency_cycle": "fail-closed"
+    "dependency_cycle": "fail-closed",
+    "mutable_resource_collision": "serialize"
   },
   "affected_testing": {
     "fail_closed_unknown_material_scope": true,
@@ -37,16 +35,11 @@
   },
   "cache": {
     "algorithm": "sha256",
-    "inputs": [
-      "baseSha",
-      "candidateSha",
-      "changedPaths",
-      "affectedContracts",
-      "selectedTests",
-      "policyVersion"
-    ],
+    "inputs": ["baseSha", "candidateSha", "changedPaths", "affectedContracts", "selectedTests", "policyVersion", "environment", "configDigest", "schemaDigest", "dependencyDigest", "gateVersion", "contractDigest"],
     "advisory_only": true,
-    "never_skips_production_readback": true
+    "invalidation_driven": true,
+    "never_skips_production_readback": true,
+    "non_cacheable": ["production-readback", "security-freshness", "provider-outcome", "final-media-proof"]
   },
   "speculative_integration": {
     "enabled": true,
@@ -57,11 +50,6 @@
   },
   "completion": {
     "success": "LIVE & BEWEZEN",
-    "requires": [
-      "protected-exact-candidate-gates",
-      "protected-merge",
-      "production-readback",
-      "learning-writeback"
-    ]
+    "requires": ["protected-exact-candidate-gates", "protected-merge", "production-readback", "learning-writeback"]
   }
 }
