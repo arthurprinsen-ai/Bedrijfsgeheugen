@@ -3,6 +3,19 @@ name: Canonical brand shell contract
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'components/**'
+      - 'assets/**'
+      - 'pages/**'
+      - 'site/**'
+      - 'blog/**'
+      - 'kennis/**'
+      - '*.html'
+      - 'styles.css'
+      - 'script.js'
+      - 'tools/site-shell/**'
+      - 'tests/site-shell-*.test.mjs'
+      - '.github/workflows/canonical-brand-shell-test.yml'
 
 jobs:
   test:
