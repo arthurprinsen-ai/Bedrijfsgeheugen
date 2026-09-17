@@ -31,22 +31,35 @@ test('quality registry owns the bg_geheim RPC dependency discovered from the res
   assert.equal(surface.required, true);
 });
 
-test('orchestrator retains exact seven-channel and personal fail-closed contracts', () => {
-  assert.match(orchestrator, /const CHANNELS=\['email_newsletter','linkedin_personal','linkedin_company','linkedin_article_personal','linkedin_article_company','instagram_company','blog'\]/);
-  assert.match(orchestrator, /const EXECUTABLE=new Set\(\['linkedin_personal','linkedin_company','blog'\]\)/);
+test('orchestrator retains exact seven-channel, capability truth and personal fail-closed contracts', () => {
+  assert.match(orchestrator, /const\s+CHANNELS\s*=\s*\[\s*'email_newsletter'\s*,\s*'linkedin_personal'\s*,\s*'linkedin_company'\s*,\s*'linkedin_article_personal'\s*,\s*'linkedin_article_company'\s*,\s*'instagram_company'\s*,\s*'blog'\s*\]/);
+  for (const channel of ['linkedin_personal', 'linkedin_company', 'blog', 'instagram_company']) {
+    assert.match(orchestrator, new RegExp(`${channel}:\\s*\\{\\s*executable:\\s*true`), `${channel} must remain explicitly executable`);
+  }
+  for (const channel of ['email_newsletter', 'linkedin_article_personal', 'linkedin_article_company']) {
+    assert.match(orchestrator, new RegExp(`${channel}:\\s*\\{\\s*executable:\\s*false`), `${channel} must remain fail-closed without an authorized executor`);
+  }
   assert.match(orchestrator, /arthur-personal-linkedin-identity-v4/);
   assert.match(orchestrator, /channel-identity-hard-gate-v3/);
-  assert.match(orchestrator, /PERSONAL_IDENTITY_SOURCE_MISSING_HOLD/);
+  assert.match(orchestrator, /personal_truth_verified\s*===\s*true/);
+  assert.match(orchestrator, /PERSONAL_TRUTH_SOURCE_UNVERIFIED/);
+  assert.match(orchestrator, /EXACT_FINAL_MEDIA_PROOF_REQUIRED/);
   assert.match(orchestrator, /x-powerhouse-token/);
 });
 
-test('social publisher retains identity gate, exact provider readback and containment', () => {
+test('social publisher retains identity gate, provider reconciliation, exact readback and containment', () => {
   assert.match(publisher, /channel-identity-hard-gate-v3/);
   assert.match(publisher, /arthur-personal-linkedin-identity-v4/);
-  assert.match(publisher, /personal_queue_audit/);
-  assert.match(publisher, /provider_immediate_readback/);
-  assert.match(publisher, /blocked_readback_mismatch/);
-  assert.match(publisher, /deletePost\(token,p\.id\)/);
+  assert.match(publisher, /reconcileExistingProviderTruth/);
+  assert.match(publisher, /PROVIDER_RECORD_MISSING/);
+  assert.match(publisher, /stale_delivery_ref:\s*true/);
+  assert.match(publisher, /FAIL_CLOSED_NO_REPLACEMENT_WITHOUT_PERSONAL_TRUTH/);
+  assert.match(publisher, /personal_truth_verified\s*!==\s*true/);
+  assert.match(publisher, /EXACT_FINAL_MEDIA_PROOF_REQUIRED/);
+  assert.match(publisher, /const readback = await getPost\(bufferToken, created\.post\.id\)/);
+  assert.match(publisher, /PROVIDER_READBACK_MISMATCH/);
+  assert.match(publisher, /deletePost\(bufferToken, created\.post\.id\)/);
+  assert.match(publisher, /provider_truth_verified:\s*true/);
   assert.match(publisher, /x-powerhouse-token/);
 });
 
