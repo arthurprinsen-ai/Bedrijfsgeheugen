@@ -114,3 +114,26 @@ test('demo flush remains non-durable while authenticated missing-token flush fai
   real.set('portal.profile.employees',12);
   await assert.rejects(()=>real.flush(),/PORTAL_BUSINESS_INPUT_AUTH_REQUIRED/);
 });
+
+test('authenticated portal init migrates legacy bg_portaal state into the same BusinessInput authority', async () => {
+  const values=new Map([['bg_portaal_acme',JSON.stringify({beleid:{aibeleid:2},niveaus:{strategie:4}})],['bg_portaal_open','1'],['bg_portaal_lead',JSON.stringify({mail:'x@example.test'})]]);
+  const storage={length:values.size,key:index=>[...values.keys()][index],getItem:key=>values.get(key)??null};
+  const writes=[];
+  const stateClient={load:async()=>({state:{portal:{profile:{employees:8}}}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
+  const domain=createPortalDomainState(stateClient,{legacyStorage:storage,businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});
+  await domain.init();
+  assert.equal(writes.length,1);
+  assert.equal(writes[0].inputType,'LegacyPortalState');
+  assert.equal(writes[0].modelId,'bg_portaal_acme');
+  assert.deepEqual(writes[0].answers.beleid,{aibeleid:2});
+});
+
+test('demo portal init never migrates legacy browser state into durable authority', async () => {
+  const values=new Map([['bg_portaal_demo',JSON.stringify({niveaus:{strategie:3}})]]);
+  const storage={length:values.size,key:index=>[...values.keys()][index],getItem:key=>values.get(key)??null};
+  const writes=[];
+  const stateClient={load:async()=>({state:{portal:{klant:'demo'}}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({}),isDemo:()=>true};
+  const domain=createPortalDomainState(stateClient,{legacyStorage:storage,businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});
+  await domain.init();
+  assert.equal(writes.length,0);
+});
