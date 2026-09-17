@@ -24,5 +24,5 @@ jobs:
         run: node --test tests/portal-*.test.mjs tests/connector-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
       - name: Verify source-derived portal parity guard
         run: |
-          python -m unittest tests/test_portal_parity_source_contract.py -v
+          python -m unittest tests/portal-parity-source-contract.py -v
           python .github/scripts/portal_parity.py
