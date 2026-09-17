@@ -55,7 +55,7 @@
       "id": "cross_platform_iam_review",
       "status": "OPEN",
       "owner_plane": "GitHub, Netlify, Notion, Buffer, Supabase and other active provider access planes",
-      "latest_readback": "2026-09-17: GitHub main remains protected with required test status; Netlify has one human Owner with personal/team MFA gaps; Notion contains one human plus eight bots/integrations, including a legacy Make integration even though Make is retired in the Powerhouse architecture. Notion MFA is not exposed by the connector and Buffer/provider IAM is still not fully enumerable, so least-privilege cleanup cannot yet be called complete.",
+      "latest_readback": "2026-09-17: GitHub repository identity arthurprinsen-ai has current admin permission on arthurprinsen-ai/Bedrijfsgeheugen and main remains protected with required test status. Netlify has one human Owner with personal MFA disabled and team MFA not enforced. Notion contains one human plus eight bots/integrations, including legacy Make while Make is retired in the Powerhouse architecture; the connected Notion management surface can inventory users/bots but exposes no workspace-connection disconnect action. A current plugin-directory search returned no Buffer management/IAM connector, so Buffer account IAM remains unverified. Supabase organization metadata is readable but organization-member MFA administration is not exposed. Least-privilege cleanup therefore remains open only where provider-admin evidence or removal cannot yet be executed/read back through the connected management planes.",
       "evidence_required": [
         "standing human and service identities are inventoried",
         "roles and permissions are reviewed for least privilege",
