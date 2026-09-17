@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse-fast-development-protocol-v2",
+  "version": 2,
+  "status": "active",
+  "extends": ["powerhouse-engineering-os-v1", "BRAIN-DELIVERY-v2", "powerhouse-parallel-engineering-fabric-v1"],
+  "creates_parallel_authority": false,
+  "canonical_flow": ["INTENT", "EXECUTION_PACKET_V2", "NO_OP_DEDUP", "IMPACT_GRAPH", "EXECUTION_DAG", "TARGETED_TESTS", "CANDIDATE", "FULL_RELEASE_GATES", "EXACT_SHA_PROD_READBACK", "DELTA_WRITEBACK"],
+  "execution_classes": ["FAST", "STANDARD", "CRITICAL", "WAITING_EXTERNAL"],
+  "preflight": {
+    "execution_packet": "v2",
+    "delta_context": true,
+    "lazy_history": true,
+    "no_op_before_reasoning": true,
+    "missing_or_contradictory_identity": "FULL_CANONICAL_PREFLIGHT"
+  },
+  "testing": {
+    "impact_based_during_development": true,
+    "unknown_material_scope": "FULL_REQUIRED_PROFILE",
+    "full_release_gates_at_promotion_boundary": true,
+    "fast_path_never_replaces_release_gates": true
+  },
+  "execution": {
+    "parallel_by_default": true,
+    "coordinator_owns_truth_and_definition_of_done": true,
+    "serialize_on": ["dependency", "changed-path-overlap", "contract-overlap", "mutable-resource-overlap", "critical-gate-sequencing"]
+  },
+  "evidence_cache": {
+    "persistent_semantics": true,
+    "identity_fields": ["candidate_sha", "environment", "config_digest", "schema_digest", "dependency_digest", "gate_or_test_version", "relevant_contract_digest"],
+    "ttl_or_invalidation_required": true,
+    "non_cacheable": ["EXACT_SHA_PROD_READBACK", "SECURITY_FRESHNESS", "CURRENT_PROVIDER_OUTCOME", "EXACT_FINAL_MEDIA_PROOF"]
+  },
+  "writeback": {
+    "mode": "DELTA_ONLY",
+    "fields": ["changed", "evidence", "outcome", "learning", "obligation_delta", "timing", "cache_usage", "open_obligations"]
+  },
+  "telemetry": {
+    "fields": ["context_load_ms", "classification_ms", "reasoning_ms", "tool_ms", "targeted_test_ms", "full_gate_ms", "deploy_ms", "proof_ms", "writeback_ms", "total_lead_time_ms", "context_bytes_or_tokens", "cache_hits", "cache_misses", "avoided_gate_time_ms", "duplicate_work_avoided", "parallelism_utilization"],
+    "is_release_authority": false
+  },
+  "authority": {
+    "engineering_os": "config/powerhouse-engineering-os.json",
+    "delivery": "config/brain-delivery-system.json",
+    "production_promotion": "BG169",
+    "shared_context": "BG167",
+    "writeback": "BG168/BG166",
+    "success": "LIVE & BEWEZEN"
+  }
+}
