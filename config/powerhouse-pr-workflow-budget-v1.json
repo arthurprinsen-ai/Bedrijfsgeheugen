@@ -16,7 +16,8 @@
     ],
     "narrow-security-check": [
       ".github/workflows/codeql.yml",
-      ".github/workflows/powerhouse-codeql.yml"
+      ".github/workflows/powerhouse-codeql.yml",
+      ".github/workflows/engineering-supply-chain-trust.yml"
     ],
     "canonical-delivery": [
       ".github/workflows/unified-brain-delivery.yml"
@@ -29,6 +30,8 @@
     "exact-head-remains-gate-evidence",
     "queued-is-recoverable-not-terminal",
     "stale-queue-reconciles-before-retry",
+    "dependency-review-only-on-dependency-change",
+    "provenance-on-main",
     "security-integrity-truth-release-evidence-gates-never-weakened"
   ],
   "queue": {
