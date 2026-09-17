@@ -42,3 +42,22 @@ Canonical implementation candidate: PR #1968. Final exact-head, protected-merge 
 ### Checkpoint prevention rule
 
 `SUPERSEDED_FAILURE_IS_HISTORY_NOT_REPAIR_AUTHORITY`: when the live candidate head changes, any failure from the previous head may be retained as lineage evidence but cannot justify code mutation, rerun policy, merge authority or release evidence for the new head. Re-read admission/workflow state on the new head and wait through valid queued/in-progress states until a current deterministic failure or terminal success exists.
+
+## Consolidated-contract recovery checkpoint — 2026-09-17
+
+The live candidate subsequently advanced to exact head `ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded`. PR readback records that the prior exact-head automation lane eventually reached terminal test failures after runner capacity recovered, and that root-cause inspection identified stale contract assertions against already verified consolidated architecture rather than a need to restore obsolete fan-out behavior.
+
+Verified architecture used for the repair:
+
+- shared-memory PR verification belongs to the consolidated Required/automation lane;
+- menu-writer PR identity is derived from canonical action outputs;
+- the GitHub Actions PR-creation hard boundary is `RESOLVED_VERIFIED`;
+- writer operational-verification SLA is enforced by the consolidated dispatch job.
+
+The assertions were reconciled on the same One Loop candidate lineage; release/security gates were not weakened and no parallel verification system was introduced.
+
+At readback for `ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded`, `Required test`, CodeQL/Powerhouse CodeQL and Engineering Supply Chain Trust were still non-terminal (`in_progress`), while BRAIN delivery was `pending`; Fresh Device Autonomy Canary and Unified Content Operations were green. These states remain execution evidence only and do not constitute completion.
+
+### Additional prevention rule
+
+`STALE_ASSERTION_MUST_FOLLOW_VERIFIED_ARCHITECTURE`: when workflow consolidation or a verified architecture change intentionally moves a contract boundary, a failing assertion that still encodes the superseded boundary must be repaired at the test/oracle layer after verifying the new architecture. Never reintroduce redundant fan-out, weaken a gate, or classify the stale assertion as a product regression merely to make CI green.
