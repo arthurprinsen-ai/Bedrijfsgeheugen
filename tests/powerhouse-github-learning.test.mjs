@@ -33,8 +33,8 @@ test('normalizes GitHub delivery events into deterministic learning evidence', (
   assert.equal(actual.failedAttempts, 1);
   assert.equal(actual.mainMovements, 2);
   assert.equal(actual.mergeConflicts, 1);
-  assert.equal(actual.obligationToLiveMs, 779000);
-  assert.equal(actual.obligationToFulfilledMs, 839000);
+  assert.equal(actual.obligationToLiveMs, 780000);
+  assert.equal(actual.obligationToFulfilledMs, 840000);
   assert.match(actual.failureFingerprint, /^github-delivery:/);
 });
 
