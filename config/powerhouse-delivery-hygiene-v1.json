@@ -1,0 +1,10 @@
+{
+  "version": "POWERHOUSE-DELIVERY-HYGIENE-v1",
+  "wip": {
+    "maxExecutable": 5
+  },
+  "priorityLanes": ["security", "incident"],
+  "nonProductLanes": ["dependency", "docs"],
+  "allowedLanes": ["backend", "portal", "website", "automation", "security", "incident", "dependency", "docs"],
+  "allowedCandidateTypes": ["implementation", "recovery", "security", "dependency", "docs", "promotion"]
+}
