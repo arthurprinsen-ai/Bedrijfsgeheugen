@@ -21,11 +21,34 @@ Production ledger is authority. The following repository aliases are replaced wi
 
 No production schema operation is part of this reconciliation. These migrations are already present in production.
 
+## Recurrence and escalation — 17 September 2026
+
+The same failure class recurred during Powerhouse Closure A-F reconciliation. PR `#1796` correctly identified production-ledger drift, but the branch accumulated unrelated/stale quality-surface changes while protected main kept moving. It was therefore not a valid final reconciliation candidate and was closed without merge.
+
+The canonical repair was successor PR `#1859`, created from current protected main and scoped only to the still-valid three migration-identity deltas. It reused the existing SQL blobs under the exact production identities and removed only the local aliases:
+
+- `20260916195037_powerhouse_closure_a_f`
+- `20260916195048_powerhouse_closure_strict_cycle`
+- `20260916195056_powerhouse_closure_legacy_learning_seed`
+
+PR `#1859` merged as `6fe90c543fbaf9d75ef1e117a0fda02927b2d3c0`. Git readback and live Supabase migration-history readback reported the same exact identities; the old `220000/220100/220200` aliases were absent. PR `#1796` is historical evidence only and must remain superseded.
+
+This adds a second-order learning: migration-lineage repair is not only about exact filenames. The repair branch itself must remain identity-clean and scope-clean. A stale branch that contains unrelated fixes is not made safe by green local tests or by the correctness of one subset of its changes.
+
 ## Prevention
 
 `config/supabase-production-migration-lineage.json` records the canonical production evidence boundary and `tests/supabase-production-migration-lineage-contract.test.mjs` fails when a reconciled production filename is missing, an alias reappears, or a semantic migration is duplicated.
 
 For future production-first migrations, exact Supabase `version + name` must be read back and committed to GitHub before the corresponding writeback obligation can be closed. A GitHub merge alone is not completion.
+
+Additional permanent rules after the 17 September recurrence:
+
+1. **PRODUCTION_LEDGER_IDENTITY_IS_IMMUTABLE_AUTHORITY** — never semantically renumber or replay already-applied migrations merely to align Git history.
+2. **STALE_RECONCILIATION_BRANCHES_ARE_NOT_MERGE_CANDIDATES** — if protected main moves or a repair branch accumulates unrelated scope, classify the branch as historical/superseded rather than forcing it through.
+3. **FRESH_MAIN_MINIMAL_DELTA_ONLY** — create a successor from current protected main and transplant only the still-valid, evidence-backed delta.
+4. **NO_UNRELATED_GATE_FIXES_IN_LINEAGE_REPAIR** — quality-surface, CI, test-harness or other independent repairs belong in their own authority unless they are strictly required for the migration-lineage capability itself.
+5. **EXACT_IDENTITY_READBACK_BEFORE_CLOSURE** — closure requires Git main and live Supabase migration history to agree on exact production versions/names, with stale aliases absent.
+6. **SUPERSESSION_IS_EXPLICIT_LINEAGE** — the obsolete PR remains referenced as historical evidence, but the successor PR and merge SHA become canonical authority.
 
 ## Closure gate
 
@@ -37,3 +60,5 @@ The existing Supabase obligation `powerhouse-repo-production-migration-lineage-v
 4. Supabase production migration history is read back again and still contains those exact versions/names;
 5. the obligation evidence is updated with exact merge/readback proof and state `FULFILLED`;
 6. that `FULFILLED` state is independently read back from production.
+
+For the 17 September Closure A-F recurrence, those source/readback conditions were satisfied by PR `#1859` and merge `6fe90c543fbaf9d75ef1e117a0fda02927b2d3c0`; no production DDL replay was required.
