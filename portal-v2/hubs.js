@@ -3,7 +3,7 @@ import { allPageIds, listPortalGroups, findPage } from './page-registry.js';
 const PORTAL_CORE = Object.freeze([
   'overzicht','profiel','data-ai','ai-scan','kansenkaart','csrd-impact','gegevens-invullen','ingevulde-gegevens','businesscase',
   'cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','compliance-command-center','ai-capabilities',
-  'strategy-dna','strategiemodellen','modellen','canvassen','eindconclusie','due-diligence','exit','strategie-naar-maandagochtend','actueel-houden',
+  'strategy-dna','strategiemodellen','modellen','model-bcg','canvassen','eindconclusie','due-diligence','exit','strategie-naar-maandagochtend','actueel-houden',
   'wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen',
   'os:impact-engine','os:scenario-simulator','os:next-best-actions','os:monitoring-learning','os:evidence-health','os:capability-graph'
 ]);
