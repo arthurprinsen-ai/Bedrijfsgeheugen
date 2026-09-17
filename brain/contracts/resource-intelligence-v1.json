@@ -1,0 +1,48 @@
+{
+  "$id": "BRAIN-RESOURCE-INTELLIGENCE-v1",
+  "fingerprint": "powerhouse-resource-intelligence-v1",
+  "scope": "all_current_and_future_agents_chats_workflows_and_apps_when_resource_or_business_value_is_material",
+  "authority": {
+    "resource": "public.powerhouse_resource_impact_v1",
+    "business_value": "public.powerhouse_business_value_v1",
+    "delivery": "BRAIN-DELIVERY-v2",
+    "production": "BG169",
+    "shared_context": "BG167",
+    "writeback": ["BG168", "BG166"]
+  },
+  "before_decision": [
+    "read_current_shared_context",
+    "read_applicable_resource_impact",
+    "read_applicable_business_value",
+    "read_provenance_and_confidence",
+    "read_open_optimization_candidates",
+    "dedupe_against_existing_learning"
+  ],
+  "decision_rules": [
+    "unknown_energy_or_water_is_NULL_not_zero",
+    "no_physical_metric_is_trusted_without_provenance_and_confidence",
+    "prefer_measured_business_value_and_resource_efficiency_over_activity_volume",
+    "never_trade_security_integrity_truth_or_required_release_gates_for_efficiency",
+    "autonomous_execution_requires_safe_reversible_scope_baseline_success_metric_and_rollback"
+  ],
+  "after_outcome": [
+    "measure_resource_impact",
+    "measure_business_value",
+    "record_outcome_evidence",
+    "record_rollback_or_keep_decision",
+    "write_learning_fingerprint",
+    "refresh_shared_context"
+  ],
+  "daily_cycle": {
+    "enabled": true,
+    "steps": ["observe", "dedupe", "prioritize", "experiment_safely", "measure", "keep_or_rollback", "learn", "write_back"],
+    "terminal_rule": "no_silent_failure_no_lost_obligation"
+  },
+  "hard_boundaries": [
+    "secrets_credentials_or_permission_changes",
+    "security_control_weakening",
+    "destructive_or_irreversible_data_mutation",
+    "paid_resource_increase",
+    "legal_or_financial_binding_action"
+  ]
+}

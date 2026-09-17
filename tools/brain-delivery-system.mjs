@@ -16,7 +16,8 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
 });
 const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
   'docs/superpowers/changes/',
-  'docs/engineering-intelligence-trust-'
+  'docs/engineering-intelligence-trust-',
+  'docs/plans/'
 ]);
 function effectiveNonExecutableSharedPaths(policy = {}) { return unique([...(policy.nonExecutableSharedPaths || []), ...BUILT_IN_NON_EXECUTABLE_SHARED_PATHS]); }
 
@@ -40,7 +41,8 @@ const QUALITY_BACKEND_PATHS = Object.freeze([
   'contracts/openapi/',
   'scripts/brain/powerhouse-quality-intelligence.mjs',
   'scripts/brain/quality/',
-  'tests/brain-quality'
+  'tests/brain-quality',
+  'tests/powerhouse-resource-intelligence'
 ]);
 const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
   'docs/powerhouse/',

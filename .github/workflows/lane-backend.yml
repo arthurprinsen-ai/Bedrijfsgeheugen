@@ -39,6 +39,7 @@ jobs:
           tests/brain-ai-usage-attribution.test.mjs
           tests/brain-resource-business-value-contract.test.mjs
           tests/brain-resource-business-value-service-role-grants.test.mjs
+          tests/powerhouse-resource-intelligence-contract.test.mjs
           tests/brain-quality-intelligence.test.mjs
           tests/brain-quality-intelligence-v2.test.mjs
           tests/brain-quality-exploration.test.mjs

@@ -1,0 +1,39 @@
+name: Powerhouse Resource Intelligence
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: powerhouse-resource-intelligence-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Deterministic resource intelligence audit
+        run: node scripts/brain/resource-intelligence-audit.mjs --check
+      - name: Resource intelligence contract
+        run: node --test tests/powerhouse-resource-intelligence-contract.test.mjs
+      - name: Existing business-value resource contract
+        run: node --test tests/brain-resource-business-value-contract.test.mjs tests/brain-resource-business-value-service-role-grants.test.mjs
+
+  authority-boundary:
+    runs-on: ubuntu-latest
+    needs: audit
+    steps:
+      - name: Preserve existing production authority
+        run: |
+          echo 'Daily learning discovers, deduplicates and prioritizes candidates only.'
+          echo 'Any production change remains subject to BRAIN-DELIVERY-v2 and BG169.'
+          echo 'No secrets/permission mutation, security weakening, destructive data mutation, paid resource creation, or legal/financial binding action is authorized here.'
