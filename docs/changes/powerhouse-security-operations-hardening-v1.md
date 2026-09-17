@@ -65,22 +65,21 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 - Oldest observed creation: 2026-09-09; newest: 2026-09-10.
 - 2 entries show an update materially after creation.
 - This is inventory/age evidence only. It is **not** proof that every provider credential has completed an end-to-end rotation and consumer readback.
-- 2026-09-17 Netlify provider readback shows `BUFFER_API_KEY` exists on the production `bedrijfsgeheugen` project with `is_secret=false`. Its value is deliberately not copied into documentation or learning records.
-- Production deploy `6aabbbf065106b00086245ca` at commit `012784b904cddbdec26d9f93fecb2eff26324a2f` contains `buffer-social-collect`, scheduled natively at `15 */6 * * *`, and repository runtime code consumes `process.env.BUFFER_API_KEY` as a Bearer credential for `api.buffer.com`.
-- A classification-only management write was attempted, but provider readback still returned `is_secret=false`. The defect is therefore not marked fixed.
-- Closure requires controlled provider-side replacement, storage with provider secret protections, successful post-rotation Buffer consumer readback, and revocation/proof of unusability of the superseded credential.
 - Secret values are not to be copied into Powerhouse documentation, logs or learning records.
+- Fresh Netlify provider readback on 2026-09-17 confirms `BUFFER_API_KEY` is configured for the Bedrijfsgeheugen project but still reports `is_secret=false`; in the same project, credentials correctly configured as secrets are provider-masked and report `is_secret=true`.
+- Repository/runtime evidence links `BUFFER_API_KEY` to the deployed `buffer-social-collect` consumer, where it is used as a Bearer credential for Buffer API calls.
+- A prior classification-only management write did not persist secret classification. This is therefore a real unresolved credential-protection defect, not a documentation discrepancy.
+- Safe closure is **not** to overwrite the credential blindly. It requires provider-side replacement/rotation, secret classification, post-rotation consumer proof, and revocation or proof of unusability of the superseded credential.
 
 ### IAM
 
 - Database-role review confirms `anon` and `authenticated` cannot login and do not bypass RLS; `service_role` bypasses RLS as expected; observed elevated roles are Supabase-managed/admin roles.
 - Supabase organization membership was enumerated: the organization currently has a single Owner account, minimizing standing human membership.
-- **Supabase management MFA — CLOSED & PROVEN:** on 2026-09-17 the sole standing Owner enrolled account MFA and enabled organization-wide Require MFA in provider UI. The connector does not expose organization-member MFA readback, so the stored evidence remains the provider-UI confirmation rather than an invented connector proof.
-- **Netlify management MFA — CLOSED & PROVEN:** fresh provider readback on 2026-09-17 returns current Owner `mfa_enabled=true`; Team PrinsenCo has one standing member and `enforce_mfa=enforced`.
-- Notion workspace readback shows one human workspace user and eight bots/integrations, including legacy `Make` even though Make is retired in the Powerhouse architecture. The current Notion connector exposes workspace identity and membership but no workspace-connection disconnect action or MFA state, so cleanup/readback remains open rather than implicitly green.
-- GitHub branch protection for `main` is active and requires the `test` status check; the connected repository identity has admin permission.
-- A fresh plugin-directory search on 2026-09-17 returned no Buffer management/IAM connector. Buffer account IAM therefore remains unverified through the connected management planes.
-- Cross-platform IAM remains open until standing identities are fully inventoried, least privilege is reviewed, strong authentication is evidenced where supported, and stale/unnecessary access is removed with provider readback.
+- Supabase sole-Owner personal MFA and organization-wide Require MFA enforcement were enabled in the provider UI and saved by the standing Owner; the management connector still does not expose organization-member MFA state for independent readback.
+- Netlify provider readback now proves the current Owner has `mfa_enabled=true`, Team PrinsenCo has one standing member and `enforce_mfa=enforced`.
+- Notion workspace readback shows one human workspace user and eight bots/integrations. Legacy `Make` remains present while Make is retired in the Powerhouse architecture; the current connector exposes inventory but no integration-disconnect operation.
+- GitHub repository identity `arthurprinsen-ai` has current admin permission on `arthurprinsen-ai/Bedrijfsgeheugen`; main remains protected with the required test status check.
+- A fresh plugin-directory search on 2026-09-17 returned no Buffer management/IAM connector. Buffer account IAM therefore remains `UNVERIFIED`, not implicitly green.
 
 ### Backup / restore / disaster recovery
 
@@ -104,12 +103,12 @@ The classifier and audit are readback-only. They never auto-create RLS policies 
 
 `tests/supabase-daily-sales-reconciler-security.test.mjs` additionally requires the privileged daily sales reconciler RPC to revoke execution from `PUBLIC`, `anon` and `authenticated` while preserving explicit `service_role` execution.
 
-`tests/brain-security-operations-closure-v1.test.mjs` keeps the whole security/operations layer fail-closed and now also requires the known Buffer credential exposure, deployed consumer and provider-secret requirement to remain explicit until it is actually remediated.
+`tests/brain-security-operations-closure-v1.test.mjs` additionally keeps `credential_rotation_end_to_end` fail-closed while the Buffer credential remains unprotected/unrotated and asserts that the canonical contract records the provider exposure, deployed consumer, secret-classification requirement, post-rotation readback requirement and superseded-credential revocation requirement without storing credential values.
 
 ## Completion semantics
 
 The RLS classification capability may be called `LIVE & BEWEZEN` only when its migration is merged, applied in production, and production readback returns `policy_required=0` and `rls_disabled=0`.
 
-Leaked-password protection, the daily-sales privileged RPC boundary, Netlify Owner/team MFA and Supabase management MFA are **CLOSED & PROVEN** by their recorded provider/runtime evidence. Backup availability is proven, but restore capability is not yet proven.
+Leaked-password protection, the daily-sales privileged RPC boundary, Netlify owner/team MFA and the recorded Supabase management MFA action are **CLOSED & PROVEN** under the current closure contract. Backup availability is proven, but restore capability is not yet proven.
 
-The **whole Powerhouse security/operations layer must not be called fully complete** while the isolated DR restore, complete credential-rotation proof and cross-platform IAM review/cleanup remain open. Percentage-based Auth connection allocation is a scale-readiness gate rather than a current production defect; index cleanup remains evidence-first and non-destructive until sustained usage/query-plan evidence supports removal.
+The **whole Powerhouse security/operations layer must not be called fully complete** while the tested isolated DR restore, complete credential-rotation proof and remaining cross-platform IAM evidence/cleanup are unverified. Percentage-based Auth connection allocation is a scale-readiness gate rather than a current production defect; index cleanup remains evidence-first and non-destructive until sustained usage/query-plan evidence supports removal.
