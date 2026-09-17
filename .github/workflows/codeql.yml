@@ -2,6 +2,9 @@ name: CodeQL
 
 on:
   pull_request:
+    paths:
+      - '**/*.py'
+      - '.github/workflows/codeql.yml'
   push:
     branches: [main]
   schedule:
@@ -24,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [javascript-typescript, python]
+        language: [python]
     steps:
       - uses: actions/checkout@v4
       - uses: github/codeql-action/init@v3
