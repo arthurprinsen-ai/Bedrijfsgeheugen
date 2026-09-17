@@ -37,7 +37,7 @@ begin
 end;
 $function$;
 
-revoke execute on function public.powerhouse_offers_source_heartbeat_v1() from public, anon, authenticated;
+revoke all on function public.powerhouse_offers_source_heartbeat_v1() from public, anon, authenticated;
 grant execute on function public.powerhouse_offers_source_heartbeat_v1() to service_role;
 
 select cron.unschedule(jobid) from cron.job where jobname='powerhouse-offers-source-heartbeat-hourly-v1';

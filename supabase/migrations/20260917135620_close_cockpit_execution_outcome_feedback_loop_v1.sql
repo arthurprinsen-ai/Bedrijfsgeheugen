@@ -42,6 +42,3 @@ begin
   return v_outcome;
 end;
 $function$;
-
-revoke execute on function public.powerhouse_record_outcome(uuid,text,text,jsonb,numeric) from public, anon, authenticated;
-grant execute on function public.powerhouse_record_outcome(uuid,text,text,jsonb,numeric) to service_role;

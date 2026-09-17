@@ -123,8 +123,5 @@ begin
 end;
 $function$;
 
-revoke execute on function public.powerhouse_record_outcome(uuid,text,text,jsonb,numeric) from public, anon, authenticated;
-grant execute on function public.powerhouse_record_outcome(uuid,text,text,jsonb,numeric) to service_role;
-
 comment on function public.powerhouse_record_outcome(uuid,text,text,jsonb,numeric) is
 'Canonical cockpit execution/outcome writeback. Runtime zero revenue remains stored as 0 but is not treated as realized revenue for validation. revenue_observed/order_won accept positive realized revenue. Human cockpit outcomes persist first-class feedback; defer/no-response remain waiting.';

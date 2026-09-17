@@ -92,7 +92,4 @@ begin
 end;
 $function$;
 
-revoke execute on function public.powerhouse_full_cycle_production_proof(date) from public, anon, authenticated;
-grant execute on function public.powerhouse_full_cycle_production_proof(date) to service_role;
-
 comment on function public.powerhouse_full_cycle_production_proof(date) is 'Canonical full-cycle proof. Gmail freshness is read only from powerhouse_evidence_source_coverage_v1/source_key=gmail; legacy gmail-outbound-replies runtime-event key is retired.';
