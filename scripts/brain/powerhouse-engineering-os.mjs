@@ -4,7 +4,9 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..');
 const contractPath = path.join(repoRoot, 'config', 'powerhouse-engineering-os.json');
+const fastProtocolPath = path.join(repoRoot, 'config', 'powerhouse-fast-development-protocol-v2.json');
 export async function loadEngineeringContract() { return JSON.parse(await readFile(contractPath, 'utf8')); }
+export async function loadFastDevelopmentProtocol() { return JSON.parse(await readFile(fastProtocolPath, 'utf8')); }
 async function exists(relativePath) { try { await access(path.join(repoRoot, relativePath)); return true; } catch { return false; } }
 function requireBoolean(value, label, errors) { if (value !== true) errors.push(`${label} must be true`); }
 function requireNonEmptyArray(value, label, errors) { if (!Array.isArray(value) || value.length === 0) errors.push(`${label} must be a non-empty array`); }
@@ -71,10 +73,15 @@ async function validateCompletionSupervisor(contract, errors) {
   return supervisor.fingerprint;
 }
 export async function validateEngineeringOS() {
-  const contract = await loadEngineeringContract();
+  const [contract, fastProtocol] = await Promise.all([loadEngineeringContract(), loadFastDevelopmentProtocol()]);
   const errors = [];
   if (contract.fingerprint !== 'powerhouse-engineering-os-v1') errors.push('fingerprint drift');
   if (contract.delivery_contract !== 'BRAIN-DELIVERY-v2') errors.push('delivery contract drift');
+  if (fastProtocol.fingerprint !== 'powerhouse-fast-development-protocol-v2') errors.push('fast development protocol fingerprint drift');
+  if (fastProtocol.authority?.engineering_os !== 'config/powerhouse-engineering-os.json') errors.push('fast development protocol Engineering OS authority drift');
+  if (fastProtocol.authority?.delivery !== 'config/brain-delivery-system.json') errors.push('fast development protocol delivery authority drift');
+  if (fastProtocol.authority?.production_promotion !== 'BG169') errors.push('fast development protocol production authority drift');
+  if (fastProtocol.creates_parallel_authority !== false) errors.push('fast development protocol may not create parallel authority');
   for (const principle of ['SHARED-LEARNING','TEAM-OF-AGENTS','BOUNDED-AUTONOMY','MEASURED-SELF-IMPROVEMENT']) if (!contract.principles?.includes(principle)) errors.push(`missing principle ${principle}`);
   const expectedGoldenPath = ['CONTEXT','SCOPE','PLAN','CHANGE','TEST','PREVIEW','VERIFY','PROMOTE','PROD_READBACK','WRITEBACK','LEARN','IMPROVE'];
   if (JSON.stringify(contract.golden_path) !== JSON.stringify(expectedGoldenPath)) errors.push('golden path drift');
@@ -108,11 +115,18 @@ export async function validateEngineeringOS() {
   const requiredCI = await readFile(path.join(repoRoot, contract.canonical_authorities.required_ci), 'utf8');
   if (!requiredCI.includes(contract.bootstrap.required_test)) errors.push('Engineering OS regression test is not wired into Required test');
   for (const testPath of ['tests/completion-supervisor.test.mjs','tests/completion-supervisor-backfill.test.mjs']) if (!requiredCI.includes(testPath)) errors.push(`Completion Supervisor regression is not wired into Required test: ${testPath}`);
-  return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, continuous_improvement_fingerprint: continuousImprovementFingerprint, status_policy_fingerprint: statusPolicyFingerprint, completion_supervisor_fingerprint: completionSupervisorFingerprint, golden_path: contract.golden_path, errors };
+  if (!requiredCI.includes('tests/brain-fast-development-protocol-v2.test.mjs')) errors.push('Fast Development Protocol v2 acceptance test is not wired into Required test');
+  return { ok: errors.length === 0, fingerprint: contract.fingerprint, delivery_contract: contract.delivery_contract, fast_development_protocol_fingerprint: fastProtocol.fingerprint, shared_learning_fingerprint: contract.shared_learning?.fingerprint ?? null, control_fingerprint: controlFingerprint, continuous_improvement_fingerprint: continuousImprovementFingerprint, status_policy_fingerprint: statusPolicyFingerprint, completion_supervisor_fingerprint: completionSupervisorFingerprint, golden_path: contract.golden_path, errors };
 }
 async function main() {
   const mode = process.argv[2] ?? '--check';
-  if (mode === '--packet') { const contract = await loadEngineeringContract(); const validation = await validateEngineeringOS(); if (!validation.ok) { console.error(JSON.stringify({ status: 'ENGINEERING_OS_BLOCKED', ...validation }, null, 2)); process.exitCode = 1; return; } console.log(JSON.stringify({ status: 'ENGINEERING_OS_READY', contract }, null, 2)); return; }
+  if (mode === '--packet') {
+    const [contract, fastDevelopmentProtocol] = await Promise.all([loadEngineeringContract(), loadFastDevelopmentProtocol()]);
+    const validation = await validateEngineeringOS();
+    if (!validation.ok) { console.error(JSON.stringify({ status: 'ENGINEERING_OS_BLOCKED', ...validation }, null, 2)); process.exitCode = 1; return; }
+    console.log(JSON.stringify({ status: 'ENGINEERING_OS_READY', contract, fast_development_protocol: fastDevelopmentProtocol }, null, 2));
+    return;
+  }
   if (mode !== '--check') { console.error('Usage: node scripts/brain/powerhouse-engineering-os.mjs [--check|--packet]'); process.exitCode = 2; return; }
   const validation = await validateEngineeringOS(); console.log(JSON.stringify({ status: validation.ok ? 'ENGINEERING_OS_READY' : 'ENGINEERING_OS_BLOCKED', ...validation }, null, 2)); if (!validation.ok) process.exitCode = 1;
 }
