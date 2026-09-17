@@ -1,0 +1,58 @@
+{
+  "version": "POWERHOUSE-LEARNING-v1",
+  "date": "2026-09-17",
+  "fingerprint": "moving-main-plus-pre-run-ci-queue-v1",
+  "domain": "delivery",
+  "stage": "PR_VERIFICATION",
+  "component": "shared",
+  "status": "PROVEN_RECOVERY_PATTERN",
+  "context": {
+    "issue": 1510,
+    "pull_request": 1907,
+    "stale_candidate_sha": "b9b197e6b6d654370369f6ef3caf71a35e76e8d7",
+    "first_observed_base_sha": "012784b904cddbdec26d9f93fecb2eff26324a2f",
+    "reapplied_base_sha": "052327065e9f4ac88efdd909cc5c12582295862c",
+    "reapplied_candidate_sha": "7844a83eaee8185f69bb81402921f657019d8b3a",
+    "later_main_sha_observed_during_learning_writeback": "eeadabbb7dbef337953dd6abbfb0445bfe673296"
+  },
+  "symptoms": [
+    "Required, BRAIN, CodeQL, trust/security and V18 workflows were created but remained queued before runner execution.",
+    "Repository-wide Actions showed hundreds of queued runs while a smaller number of unrelated workflows were in progress.",
+    "Protected main advanced while the candidate was still awaiting exact-head execution evidence."
+  ],
+  "rootCause": {
+    "primary": "External GitHub Actions dispatch/capacity prevented runner assignment; queued-before-run supplied no PASS or FAIL evidence.",
+    "secondary": "Moving main invalidated the previously assumed current-main lineage before final protected merge eligibility could be proven."
+  },
+  "recovery": [
+    "Treat queued-before-run as an external execution blocker, never as code success or code failure.",
+    "Do not bypass required status checks and do not merge on stale exact-head evidence.",
+    "When current-main lineage changes under the moving-main guard, rebuild/reapply only the already validated intended diff on current protected main.",
+    "Recreate exact-head CI evidence for the new candidate and re-read protected main immediately before merge.",
+    "After merge, require exact production release.json commit_ref, context=production and concrete Netlify deploy_id before closing the obligation."
+  ],
+  "preventionRules": [
+    "REFRESH_BASE_BEFORE_FINAL_GATE",
+    "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE",
+    "REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN",
+    "REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE",
+    "REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN"
+  ],
+  "evidence": {
+    "pr_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/1907",
+    "issue_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/1510",
+    "required_run_id": 35211285731,
+    "brain_run_id": 35211285493,
+    "codeql_run_id": 35211285425,
+    "trust_run_id": 35211285423,
+    "v18_run_id": 35211285448,
+    "repository_queued_runs_observed": 315,
+    "repository_in_progress_runs_observed": 14
+  },
+  "openObligation": {
+    "state": "BLOCKED_EXTERNAL_CI_EXECUTION",
+    "terminal": false,
+    "resume": "terminal exact-head gates -> immediate current-main recheck -> protected merge with expected head -> production exact-SHA/context/deploy-ID readback -> close #1510 only after proof"
+  },
+  "reuseGuidance": "Future agents must search this fingerprint before diagnosing a queued release candidate. Reuse the existing moving-main and platform-capacity guards; do not invent a parallel queue, bypass required gates, or reinterpret queued state as green."
+}
