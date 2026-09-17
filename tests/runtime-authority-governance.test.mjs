@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {evaluateRuntimeAuthority} from '../brain/operating-loop/runtime-authority-governance.mjs';
 
 const registryPath='config/powerhouse-runtime-authority.json';
 const registry=JSON.parse(await readFile(registryPath,'utf8'));
@@ -47,4 +48,31 @@ test('runtime drift and interrupted-run recovery are mandatory controls',()=>{
   assert.equal(registry.controls.runtime_drift_detector,'ENABLED');
   assert.equal(registry.controls.interrupted_run_recovery,'EXISTING_BRAIN_OBLIGATION_RUNTIME');
   assert.equal(registry.controls.writeback_route,'public.brain_append_record');
+});
+
+test('runtime evaluator fails closed on duplicate ownership',()=>{
+  const broken=structuredClone(registry);
+  broken.components.push({
+    id:'rogue-duplicate-owner',runtime:'github',classification:'ACTIVE',authority:'ACTIVE',production_execution_allowed:true,
+    obligations:[registry.material_obligations[0]]
+  });
+  const result=evaluateRuntimeAuthority(broken);
+  assert.equal(result.ready,false);
+  assert.ok(result.violations.some(x=>x.code==='DUPLICATE_MATERIAL_OWNER'));
+});
+
+test('runtime evaluator fails closed when retired Make is reactivated',()=>{
+  const broken=structuredClone(registry);
+  const make=broken.components.find(x=>x.runtime==='make');
+  make.authority='ACTIVE';
+  make.production_execution_allowed=true;
+  const result=evaluateRuntimeAuthority(broken);
+  assert.equal(result.ready,false);
+  assert.ok(result.violations.some(x=>x.code==='RETIRED_EXECUTOR_ACTIVE'));
+});
+
+test('canonical registry evaluates READY',()=>{
+  const result=evaluateRuntimeAuthority(registry);
+  assert.equal(result.ready,true);
+  assert.deepEqual(result.violations,[]);
 });
