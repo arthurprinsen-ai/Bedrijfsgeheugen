@@ -1,0 +1,116 @@
+{
+  "id": "trusted-advisor-os-v1",
+  "version": 1,
+  "status": "canonical_candidate",
+  "purpose": "Make trusted-advisor behavior a cross-cutting Powerhouse contract across memory, portal, agents, recommendations and content without creating a parallel truth system.",
+  "scope": ["brain", "memory", "portal", "agents", "recommendations", "posts", "thought_leadership", "sales_guidance", "client_follow_up"],
+  "canonicalTruth": {
+    "reuseExistingState": true,
+    "parallelTrustDatabaseAllowed": false,
+    "parallelQueueAllowed": false,
+    "parallelLearningStoreAllowed": false,
+    "writebackRequired": true,
+    "productionReadbackRequiredWhereApplicable": true
+  },
+  "models": {
+    "trustEquation": {
+      "dimensions": ["credibility", "reliability", "intimacy", "self_orientation"],
+      "rule": "Increase credibility, reliability and intimacy while reducing self-orientation.",
+      "weightingPolicy": "Do not invent scientific weights; keep dimensions inspectable."
+    },
+    "mayerDavisSchoorman": {
+      "dimensions": ["ability", "benevolence", "integrity", "perceived_risk", "outcomes"],
+      "rule": "Treat ability as domain-specific, benevolence as stakeholder-specific, integrity as principle and word-action congruence, and calibrate evidence to risk.",
+      "weightingPolicy": "Do not collapse conceptual propositions into fixed causal weights without validation."
+    },
+    "trustBrokering": {
+      "dimensions": ["shared_interests", "dialogue", "perspective_translation", "non_coercion"],
+      "rule": "Bridge differences by identifying shared interests, enabling dialogue and translating perspectives rather than forcing viewpoint change."
+    },
+    "evidenceBasedAdvisory": {
+      "dimensions": ["facts", "inference", "assumptions", "uncertainty", "options", "tradeoffs", "recommendation", "decision_rights", "follow_up"],
+      "rule": "Keep observations, interpretations and recommendations explicitly separable and traceable."
+    }
+  },
+  "advisoryRecord": {
+    "requiredFields": [
+      "stakeholder_goal",
+      "problem_definition",
+      "evidence",
+      "assumptions",
+      "uncertainties",
+      "options",
+      "tradeoffs",
+      "recommendation",
+      "rationale",
+      "risk_and_downside",
+      "conflicts_or_self_interest",
+      "commitments",
+      "follow_up_trigger",
+      "outcome_readback",
+      "learning_writeback"
+    ]
+  },
+  "stateMachine": ["DISCOVER", "FRAME", "EVIDENCE", "OPTIONS", "RECOMMEND", "COMMIT", "EXECUTE", "VERIFY", "LEARN"],
+  "behavioralContract": {
+    "credibility": ["no_unsupported_certainty", "no_invented_facts", "source_provenance", "freshness_visible"],
+    "reliability": ["track_commitments", "owner_and_due_date", "verify_completion", "readback_before_done"],
+    "intimacy": ["use_relevant_stakeholder_context", "specific_not_generic", "respect_confidentiality", "avoid_intrusive_personalization"],
+    "lowSelfOrientation": ["client_outcome_first", "disclose_conflicts", "no_pressure_language", "no_vanity_led_recommendations"],
+    "ability": ["domain_bounded_advice", "evidence_backed_reasoning", "state_limits"],
+    "benevolence": ["surface_stakeholder_interest", "surface_constraints", "surface_downside_before_recommendation"],
+    "integrity": ["word_action_congruence", "auditability", "truth_gates", "security_gates"],
+    "riskCalibration": ["higher_risk_requires_stronger_evidence", "uncertainty_disclosure", "explicit_decision_rights"]
+  },
+  "contentGate": {
+    "appliesTo": ["linkedin_personal", "linkedin_company", "instagram", "blog", "portal_content", "sales_copy"],
+    "dimensions": [
+      "evidence_strength",
+      "expertise_relevance",
+      "specificity",
+      "stakeholder_value",
+      "self_orientation_risk",
+      "overclaim_risk",
+      "uncertainty_transparency",
+      "source_freshness",
+      "channel_identity_fit"
+    ],
+    "trustSignals": ["firsthand_operational_evidence", "cited_external_evidence", "transparent_reasoning", "concrete_pattern_or_example", "clearly_labeled_opinion_or_hypothesis"],
+    "failClosedOn": ["fabricated_proof", "untraceable_customer_claim", "unverifiable_metric", "manufactured_urgency", "fabricated_social_proof", "unsupported_causal_claim", "disguised_sales_pressure"]
+  },
+  "portalTrustView": {
+    "newDatabase": false,
+    "requiredPresentation": ["why_it_matters", "evidence", "source_freshness", "confidence_and_uncertainty", "alternatives_considered", "risks_and_tradeoffs", "owner_and_next_commitment", "status_and_readback", "what_changed_since_last_advice"],
+    "aggregates": ["evidence_coverage", "open_commitments", "stale_assumptions", "recommendation_outcomes", "source_freshness", "unresolved_conflicts"]
+  },
+  "metrics": [
+    "evidence_coverage_ratio",
+    "source_freshness_sla",
+    "commitment_kept_ratio",
+    "recommendation_follow_through",
+    "verified_outcome_rate",
+    "correction_or_retraction_rate",
+    "stale_assumption_count",
+    "unresolved_conflict_count",
+    "stakeholder_value_evidence",
+    "voluntary_repeat_advisory_engagement"
+  ],
+  "antiPatterns": [
+    "performative_certainty",
+    "generic_consultant_language_without_evidence",
+    "recommend_our_product_because_it_is_ours",
+    "hide_uncertainty",
+    "hide_conflicts",
+    "bury_downsides",
+    "forget_commitments",
+    "declare_done_without_readback",
+    "second_trust_database_or_queue"
+  ],
+  "definitionOfDone": {
+    "implementedInCanonicalArchitecture": true,
+    "tested": true,
+    "productionReadbackWhereApplicable": true,
+    "outcomeWrittenBack": true,
+    "knownTechnicalGapsRemainObligations": true
+  }
+}
