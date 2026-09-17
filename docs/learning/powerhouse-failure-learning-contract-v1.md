@@ -101,3 +101,23 @@ Learning priority is based on downstream commercial impact, not engineering nove
 ## Non-negotiable completion rule
 
 A run may not be marked completed when a selected publish/action obligation lacks supported execution evidence. The system remains degraded/blocked until the obligation is delivered, intentionally held/skipped by the canonical decision, or converted into one explicit resumable obligation with evidence.
+
+## Revenue Content Intelligence release learnings — canonical addendum 2026-09-17
+
+This addendum binds the verified Revenue Content Intelligence rollout failures to the estate-wide failure-learning contract. The machine authority remains `public.brain_failure_registry`; this section is the human-readable projection and must not diverge from it.
+
+### Proven fingerprints
+
+1. `rci-production-schema-drift-v1` — branch/repository assumptions differed from the live Supabase schema. Prevention: inspect every touched production table/constraint before migration, fail closed on mismatch, and read back the resulting schema after application.
+2. `rci-experiment-status-constraint-drift-v1` — the planned experiment lifecycle introduced `PLANNED` before the live constraint accepted it. Prevention: lifecycle-state changes require live constraint inspection plus post-migration acceptance readback.
+3. `rci-edge-function-config-drift-v1` — Edge Function source deployment changed runtime auth configuration (`verify_jwt`) and would have broken the scheduler route. Prevention: read current function config before deployment, preserve config intentionally, read it back after deployment, then execute the real scheduler/smoke route.
+4. `rci-supabase-preview-bootstrap-drift-v1` — a fresh preview failed because an older migration referenced `public.scan_inzendingen` before it existed in an empty bootstrap while production already had it. Prevention: never waive an unexplained red preview; distinguish feature regression from historical bootstrap/ledger drift, repair the canonical migration lineage, and retain the evidence.
+
+### Reusable release preflight and postflight
+
+Before a material Powerhouse/content/growth/social/SEO/revenue change, agents must read applicable failure fingerprints, live schema/constraints, current runtime configuration, canonical component ownership and current-state obligations. After the change they must obtain candidate-test evidence, protected delivery evidence, production identity, functional production readback, obligation closure, capability handoff and learning writeback.
+
+`production proof is part of implementation, not a postscript.`
+
+Canonical machine learning record: `learning:rci-release-failures-v1`. Canonical operational rule: `canonical-release-proof-and-learning-v1`. Repeated occurrences update the existing fingerprint; they do not create parallel lessons unless the root cause is materially different.
+
