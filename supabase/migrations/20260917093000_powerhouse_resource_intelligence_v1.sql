@@ -151,6 +151,7 @@ set search_path = public
 as $$
 declare
   inserted_count integer := 0;
+  second_count integer := 0;
 begin
   insert into public.powerhouse_optimization_candidate_v1 (
     source_key, component_id, owner_agent, opportunity_type, baseline, expected_impact,
@@ -205,7 +206,8 @@ begin
     and (energy_wh is null or water_ml is null or estimated_co2e_g is null)
   on conflict (source_key) do nothing;
 
-  get diagnostics inserted_count = inserted_count + row_count;
+  get diagnostics second_count = row_count;
+  inserted_count := inserted_count + second_count;
   return inserted_count;
 end;
 $$;
@@ -213,8 +215,6 @@ $$;
 revoke all on function public.powerhouse_generate_resource_optimization_candidates_v1() from public, anon, authenticated;
 grant execute on function public.powerhouse_generate_resource_optimization_candidates_v1() to service_role;
 
--- Use the existing pg_cron control plane when present. The scheduled job only creates
--- deduplicated evidence-backed candidates; it does not bypass BG169 or mutate production behavior.
 do $$
 begin
   if to_regnamespace('cron') is not null then
