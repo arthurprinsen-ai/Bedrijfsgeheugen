@@ -72,15 +72,10 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
-          import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission } from './tools/delivery/delivery-hygiene.mjs';
+          import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts } from './tools/delivery/delivery-hygiene.mjs';
 
           const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8'}).trim();
           const gh = path => JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8'}));
-          const matches = (path, pattern) => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(`${pattern}/`);
-          const contractsFor = (paths, brainPolicy) => (brainPolicy.conflictContracts || [])
-            .filter(contract => (contract.paths || []).some(pattern => paths.some(path => matches(path, pattern))))
-            .map(contract => contract.id);
-
           const policy = JSON.parse(await readFile('config/powerhouse-delivery-hygiene-v1.json','utf8'));
           const brainPolicy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const prNumber = Number(process.env.PR_NUMBER);
@@ -97,16 +92,16 @@ jobs:
           const immutableBaseSha = sh('git','merge-base','origin/main','HEAD');
           const changedRaw = sh('git','diff','--name-only',`${immutableBaseSha}...${headSha}`);
           const changedPaths = changedRaw ? changedRaw.split(/\r?\n/).filter(Boolean) : [];
-          const currentContracts = contractsFor(changedPaths, brainPolicy);
+          const currentContracts = deriveHygieneConflictContracts(changedPaths, brainPolicy, policy);
 
           const normalized = [];
           for (const item of open) {
             const metadata = parseDeliveryMetadata(item.body || '');
             let conflictContracts = [];
-            if (metadata.candidateType === 'promotion') {
+            if (validateDeliveryMetadata(metadata, policy).ok) {
               try {
                 const files = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${item.number}/files?per_page=100`);
-                conflictContracts = contractsFor(files.map(file => file.filename), brainPolicy);
+                conflictContracts = deriveHygieneConflictContracts(files.map(file => file.filename), brainPolicy, policy);
               } catch {}
             }
             normalized.push(classifyCandidate({
