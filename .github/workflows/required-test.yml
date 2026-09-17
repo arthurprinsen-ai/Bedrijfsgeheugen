@@ -12,8 +12,6 @@ permissions:
   statuses: read
   pull-requests: read
 
-auto_cancel: true
-
 concurrency:
   group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}-${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
   # Evidence is SHA-specific: a stale queued run must never block the current candidate.
