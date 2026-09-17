@@ -8,6 +8,7 @@ on:
       - 'tests/integration/portal-v2-live.spec.js'
       - 'tests/integration/portal-v2-mobile-shell.spec.js'
       - 'tests/integration/portal-v2-functional-parity.spec.js'
+      - 'tests/integration/portal-v2-bcg-parity.spec.js'
       - 'tests/integration/portal-v2-legacy-algorithm-parity.spec.js'
       - '.github/workflows/portal-v2-live-preview.yml'
   workflow_dispatch:
@@ -124,7 +125,7 @@ jobs:
             fi
             sleep 1
           done
-          PREVIEW_URL=http://127.0.0.1:4173 npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js tests/integration/portal-v2-legacy-algorithm-parity.spec.js --workers=1
+          PREVIEW_URL=http://127.0.0.1:4173 npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js tests/integration/portal-v2-bcg-parity.spec.js tests/integration/portal-v2-legacy-algorithm-parity.spec.js --workers=1
 
       - name: Upload visual evidence
         if: always()
@@ -140,4 +141,4 @@ jobs:
           echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
           echo "Verified immutable Netlify deploy: $NETLIFY_DEPLOY_ID"
           echo "Verified Netlify preview assets: $PREVIEW_URL/portal-v2/"
-          echo "Exact demoAI mobile rewrite plus desktop, mobile CSRD, full functional parity and executable legacy algorithm browser checks passed."
+          echo "Exact demoAI mobile rewrite plus desktop, mobile CSRD, full functional parity, BCG parity and executable legacy algorithm browser checks passed."

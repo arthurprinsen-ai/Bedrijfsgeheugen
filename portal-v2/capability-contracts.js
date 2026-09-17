@@ -55,9 +55,10 @@ const SPECIALISTS=Object.freeze({
   koppelingen:Object.freeze({id:'koppelingen',legacyCapability:null,mode:'builder',schemaVersion:1,renderer:'connector-builder',dataSlice:'connectors',validators:Object.freeze(['connector-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['test-evidence-before-activation']),browserContract}),
   'csrd-impact':Object.freeze({id:'csrd-impact',legacyCapability:null,mode:'cockpit',schemaVersion:1,renderer:'csrd-impact',dataSlice:'impact',validators:Object.freeze(['evidence-readiness']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence']),browserContract}),
   strategiemodellen:Object.freeze({id:'strategiemodellen',legacyCapability:null,mode:'workspace',schemaVersion:1,renderer:'strategic-models',dataSlice:'portal.strategicModels',validators:Object.freeze(['canonical-state']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence','server-confirmed-state']),browserContract}),
-  modellen:Object.freeze({id:'modellen',legacyCapability:null,mode:'workspace',schemaVersion:1,renderer:'strategic-models',dataSlice:'portal.strategicModels',validators:Object.freeze(['canonical-state']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence','server-confirmed-state']),browserContract})
+  modellen:Object.freeze({id:'modellen',legacyCapability:null,mode:'workspace',schemaVersion:1,renderer:'strategic-models',dataSlice:'portal.strategicModels',validators:Object.freeze(['canonical-state']),calculators:Object.freeze([]),dependencies:Object.freeze([]),completionRules:Object.freeze(['runtime-evidence','server-confirmed-state']),browserContract}),
+  'model-bcg':Object.freeze({id:'model-bcg',legacyCapability:'bcg',mode:'workspace',schemaVersion:1,renderer:'bcg',dataSlice:'portal.portfolio',validators:Object.freeze(['canonical-state','evidence-required','numeric-inputs']),calculators:Object.freeze(['bcg-quadrant-classification']),dependencies:Object.freeze(['modellen','businesscase','roadmap']),completionRules:Object.freeze(['runtime-evidence','legacy-functional-surface','server-confirmed-state']),browserContract})
 });
 
 export function getCapabilityContract(pageId){return BY_PAGE.get(pageId)||SPECIALISTS[pageId]||null}
-export function listFunctionalContracts(){return [...LEGACY_CONTRACTS]}
-export function isProtectedFunctionalPage(pageId){return BY_PAGE.has(pageId)}
+export function listFunctionalContracts(){return [...LEGACY_CONTRACTS,SPECIALISTS['model-bcg']]}
+export function isProtectedFunctionalPage(pageId){return BY_PAGE.has(pageId)||pageId==='model-bcg'}

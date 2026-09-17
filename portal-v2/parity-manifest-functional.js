@@ -2,13 +2,29 @@ import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
 import { getCapabilityContract } from './capability-contracts.js';
 
 const COMPANY_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
-const SPECIALISTS=new Map([['overzicht','modules/overview.js'],['strategy-dna','strategy-dna.js']]);
+const SPECIALISTS=new Map([['overzicht','modules/overview.js'],['strategy-dna','strategy-dna.js'],['model-bcg','models/bcg.js + native-pages.js']]);
 function implementationFor(pageId){if(COMPANY_PAGES.has(pageId))return 'modules/company-input.js';return SPECIALISTS.get(pageId)||'modules/functional-suite.js';}
 
-export const FUNCTIONAL_PARITY_MANIFEST=Object.freeze(Object.entries(LEGACY_FUNCTIONAL_INVENTORY).map(([legacyCapability,item])=>{
+const INVENTORY_PARITY=Object.entries(LEGACY_FUNCTIONAL_INVENTORY).map(([legacyCapability,item])=>{
  const contract=getCapabilityContract(item.v2Page);
  return Object.freeze({legacyCapability,pageId:item.v2Page,dataSlice:contract?.dataSlice||'',implementation:implementationFor(item.v2Page),browserProof:item.v2Page==='overzicht'?'tests/integration/portal-v2-live.spec.js':'tests/integration/portal-v2-functional-parity.spec.js',stateProof:item.v2Page==='overzicht'?'portal-v2/tests/company-input.test.mjs':item.v2Page==='strategy-dna'?'portal-v2/tests/legacy-parity.test.mjs':'portal-v2/tests/server-portal-persistence.test.mjs',legacyFields:Object.freeze([...(item.fields||[]).map(field=>field.legacyFieldId)]),models:Object.freeze([...(item.models||[])]),calculations:Object.freeze([...(item.calculations||[])]),actions:Object.freeze([...(item.actions||[])]),status:'proven'});
-}));
+});
+
+const BCG_PARITY=Object.freeze({
+ legacyCapability:'bcg',
+ pageId:'model-bcg',
+ dataSlice:getCapabilityContract('model-bcg')?.dataSlice||'',
+ implementation:implementationFor('model-bcg'),
+ browserProof:'tests/integration/portal-v2-bcg-parity.spec.js',
+ stateProof:'tests/portal-v2-bcg.test.mjs',
+ legacyFields:Object.freeze([]),
+ models:Object.freeze(['BCG matrix / portfolio analysis']),
+ calculations:Object.freeze(['bcg-quadrant-classification']),
+ actions:Object.freeze(['review-portfolio','open-businesscase','open-roadmap']),
+ status:'runtime-required'
+});
+
+export const FUNCTIONAL_PARITY_MANIFEST=Object.freeze([...INVENTORY_PARITY,BCG_PARITY]);
 
 export const GLOBAL_FUNCTIONAL_PARITY=Object.freeze([
  Object.freeze({id:'auth',implementation:'portal-state.js',proof:'portal-v2/tests/global-capabilities.test.mjs',browserProof:'tests/integration/portal-v2-live.spec.js',status:'proven'}),

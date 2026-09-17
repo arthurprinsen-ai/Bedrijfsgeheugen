@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "contract": "legacy-make-learning-supersession",
+  "activeArchitecture": "Powerhouse/Supabase",
+  "retiredExecutor": "Make",
+  "policy": "Historical Make references are provenance only; no current completion path may invoke Make.",
+  "mappings": [
+    {
+      "issue": 1120,
+      "fingerprint": "BG168/BG166/issue-1120",
+      "legacyRoute": "Make/BG168 material outcome writeback",
+      "canonicalWriter": "Powerhouse/Supabase material outcome writeback",
+      "supersededBy": "brain_obligations + canonical Powerhouse shared-memory writeback",
+      "evidencePreserved": true,
+      "status": "superseded"
+    },
+    {
+      "issue": 1153,
+      "fingerprint": "BG168/BG166/issue-1153",
+      "legacyRoute": "Make/BG168 learning writeback",
+      "canonicalWriter": "Powerhouse/Supabase learning writeback",
+      "supersededBy": "canonical Powerhouse learning/outcome lineage",
+      "evidencePreserved": true,
+      "status": "superseded"
+    },
+    {
+      "issue": 813,
+      "fingerprint": "BG168/BG166/issue-813",
+      "legacyRoute": "Make/BG166 shared context projection",
+      "canonicalWriter": "Powerhouse/Supabase shared current state",
+      "supersededBy": "canonical Supabase shared-state projection",
+      "evidencePreserved": true,
+      "status": "superseded"
+    },
+    {
+      "issue": 741,
+      "fingerprint": "BG168/BG166/issue-741",
+      "legacyRoute": "Make/BG168/BG166 feedback loop",
+      "canonicalWriter": "Powerhouse/Supabase closed-loop writeback",
+      "supersededBy": "canonical outcome + learning + obligation lineage",
+      "evidencePreserved": true,
+      "status": "superseded"
+    }
+  ]
+}
