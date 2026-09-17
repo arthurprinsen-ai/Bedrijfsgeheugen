@@ -2,13 +2,22 @@
   "type": "POWERHOUSE_LEARNING",
   "version": "FAST-EXECUTION-LEARNING-2026-09-17-v1",
   "fingerprint": "powerhouse|latency|bounded-hot-state|fresh-evidence|parallel-readonly|2026-09-17",
-  "status": "CANDIDATE_VERIFIED",
+  "status": "LIVE_AND_PROVEN",
   "context": "Powerhouse continuity already requires current-state-first, delta-only, interruption recovery and safe parallel verification. The remaining gap was a reusable execution envelope that operationalizes these rules with task classes, bounded context, freshness-aware evidence reuse, candidate identity, parallel read-only retrieval and latency instrumentation.",
-  "root_cause": "Latency controls existed as policy concepts but were not exposed through a canonical reusable runtime primitive and mandatory shared preflight metadata.",
-  "decision": "Add POWERHOUSE-FAST-EXECUTION-v1 as an optimization projection on the existing canonical Brain, never as a second memory, queue, orchestrator or truth store.",
+  "root_cause": "Latency controls existed as policy concepts but were not exposed through a canonical reusable runtime primitive and mandatory shared preflight metadata. During delivery, the first classifier implementation also treated the noun 'deploy' inside a read-only status/readback request as a mutating action, producing STANDARD instead of FAST.",
+  "decision": "Add POWERHOUSE-FAST-EXECUTION-v1 as an optimization projection on the existing canonical Brain, never as a second memory, queue, orchestrator or truth store. Read-only intent wins over ambiguous operation nouns unless an actual mutation verb is present.",
   "implementation": ["scripts/brain/powerhouse-fast-execution.mjs","config/powerhouse-fast-execution-v1.json","tests/brain-fast-execution.test.mjs","tests/brain-fast-execution-integration.test.mjs","docs/brain/powerhouse-fast-execution.md","scripts/brain/chat-learning-preflight.mjs"],
-  "prevention": "All material agents and chats obtain the default fast-execution policy through the existing mandatory chat-learning preflight. Performance work may bound, cache, reuse and parallelize canonical reads, but may not bypass required direct observation, candidate identity, security, truth, release, interruption recovery, production readback or learning gates.",
-  "success_evidence": ["FAST/STANDARD/DEEP classification is deterministic","context and tool output are bounded","expired, unbound or candidate-mismatched release evidence is rejected","independent state adapters execute concurrently","latency trace exposes context/reasoning/tool/test/deploy/readback/total SLI fields","mandatory preflight fail-closes unless fast-execution policy is ACTIVE and default-enabled","mandatory preflight exposes fastExecution metadata to every material agent/chat entrypoint"],
+  "production_evidence": {
+    "pr": 1891,
+    "candidate_head_sha": "a8bccc4c538b10a9ca7d841ef5c62960571c97ac",
+    "merge_commit_sha": "4a996594dd908e1641bc60c41bd13ee030c59f4c",
+    "main_policy_readback": "config/powerhouse-fast-execution-v1.json is ACTIVE and default_enabled=true on main",
+    "main_preflight_readback": "scripts/brain/chat-learning-preflight.mjs includes the fast policy as mandatory supplemental source, fail-closes unless ACTIVE/default-enabled, verifies the runtime entrypoint exists, and exposes fastExecution metadata",
+    "gates_green": ["Chat learning preflight PR","Shared Agent Memory Tests","Learning Contract Delivery Classifier Tests","V18 Production Promotion","Brain foundation verify","Engineering Intelligence and Trust","Engineering Supply Chain Trust","Component Foundation TDD","Canonical brand shell contract","Canonical brand shell full build","Canonical brand shell live readback","BG168 Materiality Promotion Tests","CodeQL","Powerhouse CodeQL","Unified BRAIN delivery including backend/portal/website/automation lanes"],
+    "classifier_regression": "BRAIN backend failure on the first candidate proved the ambiguous deploy classification bug; exact-head candidate a8bccc4c538b10a9ca7d841ef5c62960571c97ac passed BRAIN backend after the intent-aware fix."
+  },
+  "prevention": "All material agents and chats obtain the default fast-execution policy through the existing mandatory chat-learning preflight. Performance work may bound, cache, reuse and parallelize canonical reads, but may not bypass required direct observation, candidate identity, security, truth, release, interruption recovery, production readback or learning gates. Classification regressions must test both read-only inspection of a deploy and actual mutating deploy/update intent.",
+  "success_evidence": ["FAST/STANDARD/DEEP classification is deterministic","read-only deploy/status checks classify FAST while mutating deploy/update tasks remain STANDARD","context and tool output are bounded","expired, unbound or candidate-mismatched release evidence is rejected","independent state adapters execute concurrently","latency trace exposes context/reasoning/tool/test/deploy/readback/total SLI fields","mandatory preflight fail-closes unless fast-execution policy is ACTIVE and default-enabled","mandatory preflight exposes fastExecution metadata to every material agent/chat entrypoint","protected main contains the active policy and mandatory preflight integration"],
   "open_obligation": null,
   "linked_learning_sources": []
 }
