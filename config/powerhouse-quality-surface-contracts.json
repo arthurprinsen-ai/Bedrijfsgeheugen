@@ -84,6 +84,20 @@
       "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
       "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
       "required": true
+    },
+    {
+      "id": "table:public.powerhouse_compliance_evidence_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
+      "evidence_contract": "tests/powerhouse-resource-intelligence-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_optimization_candidate_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
+      "evidence_contract": "tests/powerhouse-resource-intelligence-contract.test.mjs",
+      "required": true
     }
   ]
 }
