@@ -77,6 +77,25 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
   return { fingerprint: policy?.fingerprint ?? null, waves, packages };
 }
 
+export async function executePlanWaves(plan, workers = {}) {
+  if (!plan || !Array.isArray(plan.waves)) throw new TypeError('execution plan with waves is required');
+  const results = {};
+  const waveResults = [];
+  for (const wave of plan.waves) {
+    const executions = wave.map(async pkg => {
+      const specialist = pkg.specialist ?? pkg.owner ?? pkg.lanes?.[0] ?? null;
+      const worker = specialist ? workers[specialist] : null;
+      if (typeof worker !== 'function') throw new Error(`Missing specialist worker for ${pkg.id}: ${specialist ?? 'unassigned'}`);
+      const value = await worker(pkg, Object.freeze({ priorResults: { ...results }, promotionAuthority: false }));
+      return [pkg.id, value];
+    });
+    const completed = await Promise.all(executions);
+    for (const [id, value] of completed) results[id] = value;
+    waveResults.push(Object.freeze(Object.fromEntries(completed)));
+  }
+  return Object.freeze({ results:Object.freeze({ ...results }), waves:Object.freeze(waveResults), promotionAuthority:false });
+}
+
 export function buildSpeculativeIntegrations(plan) {
   const result = [];
   for (const wave of plan.waves ?? []) for (let i = 0; i < wave.length; i += 1) for (let j = i + 1; j < wave.length; j += 1) if (!packageConflict(wave[i], wave[j])) result.push({ packageIds: [wave[i].id, wave[j].id], promotionAuthority: false });
