@@ -113,6 +113,7 @@ jobs:
           tests/ai-usage-store.test.mjs
           tests/api-gateways.test.mjs
           tests/brain-production-release-readback-scope.test.mjs
+          tests/brain-production-promotion-observability.test.mjs
           tests/delivery-test-coverage-guard.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/daily-cost-optimizer.test.mjs
