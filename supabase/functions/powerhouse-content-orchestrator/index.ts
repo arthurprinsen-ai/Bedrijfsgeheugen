@@ -5,7 +5,7 @@ const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
 const PERSONAL_GATE = 'channel-identity-hard-gate-v3';
 const PERSONAL_CHANNEL = '6a70381699afb44349f0fb35';
 const VERSION = 'v10-closed-loop';
-const COVERED_STATES = new Set(['scheduled','published','measured','learned','skipped']);
+const COVERED_STATES = new Set(['content_ready','scheduled','published','measured','learned','skipped']);
 const executor_capabilities: Record<string, { executable: boolean; executor: string | null; reason?: string }> = {
   linkedin_personal: { executable: true, executor: 'powerhouse-social-publisher' },
   linkedin_company: { executable: true, executor: 'powerhouse-social-publisher' },
