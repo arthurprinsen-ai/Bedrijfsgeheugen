@@ -1,36 +1,5 @@
 begin;
 
-alter table public.powerhouse_resource_impact_v1
-  add column if not exists energy_wh numeric(20,6),
-  add column if not exists energy_method text,
-  add column if not exists energy_provenance jsonb,
-  add column if not exists energy_confidence numeric(5,4),
-  add column if not exists water_ml numeric(20,6),
-  add column if not exists water_method text,
-  add column if not exists water_provenance jsonb,
-  add column if not exists water_confidence numeric(5,4),
-  add column if not exists co2e_method text,
-  add column if not exists co2e_provenance jsonb,
-  add column if not exists co2e_confidence numeric(5,4);
-
-alter table public.powerhouse_resource_impact_v1
-  drop constraint if exists powerhouse_resource_impact_v1_energy_nonnegative,
-  add constraint powerhouse_resource_impact_v1_energy_nonnegative check (energy_wh is null or energy_wh >= 0),
-  drop constraint if exists powerhouse_resource_impact_v1_water_nonnegative,
-  add constraint powerhouse_resource_impact_v1_water_nonnegative check (water_ml is null or water_ml >= 0),
-  drop constraint if exists powerhouse_resource_impact_v1_energy_confidence_range,
-  add constraint powerhouse_resource_impact_v1_energy_confidence_range check (energy_confidence is null or (energy_confidence >= 0 and energy_confidence <= 1)),
-  drop constraint if exists powerhouse_resource_impact_v1_water_confidence_range,
-  add constraint powerhouse_resource_impact_v1_water_confidence_range check (water_confidence is null or (water_confidence >= 0 and water_confidence <= 1)),
-  drop constraint if exists powerhouse_resource_impact_v1_co2e_confidence_range,
-  add constraint powerhouse_resource_impact_v1_co2e_confidence_range check (co2e_confidence is null or (co2e_confidence >= 0 and co2e_confidence <= 1));
-
-comment on column public.powerhouse_resource_impact_v1.energy_wh is 'Nullable physical telemetry. NULL means unknown; never coerce unknown to zero.';
-comment on column public.powerhouse_resource_impact_v1.water_ml is 'Nullable physical telemetry. NULL means unknown; never coerce unknown to zero.';
-comment on column public.powerhouse_resource_impact_v1.energy_provenance is 'Machine-readable source/method evidence for energy telemetry.';
-comment on column public.powerhouse_resource_impact_v1.water_provenance is 'Machine-readable source/method evidence for water telemetry.';
-comment on column public.powerhouse_resource_impact_v1.co2e_provenance is 'Machine-readable source/method evidence for CO2e telemetry; legacy zero values are not proof of measured zero.';
-
 create table if not exists public.powerhouse_compliance_evidence_v1 (
   evidence_id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -87,47 +56,58 @@ grant select, insert, update on public.powerhouse_optimization_candidate_v1 to s
 create or replace view public.powerhouse_resource_intelligence_daily_v1
 with (security_invoker = true)
 as
-with resource_daily as (
-  select
-    date_trunc('day', created_at) as day,
-    coalesce(provider, 'unknown') as provider,
-    coalesce(model_id, 'unknown') as model_id,
-    count(*)::bigint as invocations,
-    sum(coalesce(input_tokens, 0) + coalesce(output_tokens, 0))::bigint as tokens,
-    sum(cloud_cost_eur) as cloud_cost_eur,
-    sum(case when co2e_method is not null and co2e_confidence is not null then estimated_co2e_g else null end) as estimated_co2e_g,
-    sum(energy_wh) as energy_wh,
-    sum(water_ml) as water_ml,
-    min(energy_confidence) filter (where energy_wh is not null) as min_energy_confidence,
-    min(water_confidence) filter (where water_ml is not null) as min_water_confidence,
-    min(co2e_confidence) filter (where co2e_method is not null) as min_co2e_confidence,
-    bool_and(energy_wh is null or (energy_method is not null and energy_provenance is not null and energy_confidence is not null)) as energy_provenance_complete,
-    bool_and(water_ml is null or (water_method is not null and water_provenance is not null and water_confidence is not null)) as water_provenance_complete
-  from public.powerhouse_resource_impact_v1
-  group by 1, 2, 3
-),
-value_daily as (
-  select
-    date_trunc('day', created_at) as day,
-    coalesce(provider, 'unknown') as provider,
-    coalesce(model_id, 'unknown') as model_id,
-    sum(outcome_value_eur) as outcome_value_eur,
-    avg(value_score_0_100) as avg_value_score_0_100,
-    avg(risk_score_0_100) as avg_risk_score_0_100
-  from public.powerhouse_business_value_v1
-  group by 1, 2, 3
-)
 select
-  r.*,
-  v.outcome_value_eur,
-  v.avg_value_score_0_100,
-  v.avg_risk_score_0_100,
-  case when r.cloud_cost_eur > 0 and v.outcome_value_eur is not null then v.outcome_value_eur / r.cloud_cost_eur else null end as value_per_cost_eur
-from resource_daily r
-left join value_daily v using (day, provider, model_id);
+  date_trunc('day', occurred_at) as day,
+  tenant_id,
+  source as provider,
+  resource_type,
+  unit,
+  count(*)::bigint as usage_events,
+  sum(amount) as resource_amount,
+  count(factor_id)::bigint as factor_observations,
+  case when count(*) > 0 then count(factor_id)::numeric / count(*)::numeric else null end as factor_coverage,
+  sum(energy_kwh) filter (where energy_kwh is not null) as energy_kwh,
+  sum(co2e_kg) filter (where co2e_kg is not null) as co2e_kg,
+  sum(water_liters) filter (where water_liters is not null) as water_liters,
+  min(confidence) filter (where factor_id is not null) as min_factor_confidence,
+  bool_and(factor_id is null or (methodology is not null and confidence is not null)) as provenance_complete
+from public.powerhouse_resource_impact_v1
+group by 1,2,3,4,5;
 
 revoke all on public.powerhouse_resource_intelligence_daily_v1 from public, anon, authenticated;
 grant select on public.powerhouse_resource_intelligence_daily_v1 to service_role;
+
+create or replace view public.powerhouse_business_value_intelligence_v1
+with (security_invoker = true)
+as
+select
+  action_id,
+  dedupe_key,
+  opportunity_key,
+  subject_key,
+  action_type,
+  channel,
+  status,
+  expected_value_eur,
+  resource_observations,
+  calculated_impact_observations,
+  energy_kwh,
+  co2e_kg,
+  water_liters,
+  tenant_ids,
+  provider_cost_eur,
+  external_cost_eur,
+  human_minutes,
+  observed_cost_eur,
+  realized_revenue_eur,
+  realized_net_value_eur,
+  realized_roi,
+  environmental_factor_coverage,
+  business_value_status
+from public.powerhouse_action_business_value_v1;
+
+revoke all on public.powerhouse_business_value_intelligence_v1 from public, anon, authenticated;
+grant select on public.powerhouse_business_value_intelligence_v1 to service_role;
 
 create or replace view public.powerhouse_resource_optimization_queue_v1
 with (security_invoker = true)
@@ -159,24 +139,31 @@ begin
     learning_fingerprint, notes
   )
   select
-    'resource-efficiency:' || to_char(day, 'YYYY-MM-DD') || ':' || provider || ':' || model_id,
+    'resource-efficiency:action:' || action_id::text,
     'powerhouse-resource-intelligence-v1',
     'agent-product-opportunity',
     'resource_efficiency',
-    jsonb_build_object('day', day, 'provider', provider, 'model_id', model_id, 'invocations', invocations, 'tokens', tokens, 'cloud_cost_eur', cloud_cost_eur, 'outcome_value_eur', outcome_value_eur, 'value_per_cost_eur', value_per_cost_eur),
-    jsonb_build_object('metric', 'cloud_cost_eur_per_measured_business_value', 'direction', 'decrease_without_quality_or_value_regression'),
-    case when outcome_value_eur is null then 0.60 else 0.85 end,
-    case when outcome_value_eur is null then 'review_required' else 'safe_reversible' end,
+    jsonb_build_object(
+      'action_id', action_id,
+      'observed_cost_eur', observed_cost_eur,
+      'realized_revenue_eur', realized_revenue_eur,
+      'realized_net_value_eur', realized_net_value_eur,
+      'realized_roi', realized_roi,
+      'environmental_factor_coverage', environmental_factor_coverage,
+      'business_value_status', business_value_status
+    ),
+    jsonb_build_object('metric', 'cost_and_resource_per_measured_business_value', 'direction', 'decrease_without_quality_value_security_or_compliance_regression'),
+    case when realized_revenue_eur is null then 0.60 else 0.85 end,
+    case when realized_revenue_eur is null then 'review_required' else 'safe_reversible' end,
     jsonb_build_object('action', 'run_bounded_routing_caching_batching_or_prompt_efficiency_experiment', 'requires_baseline', true, 'requires_exact_candidate_evidence', true),
     jsonb_build_object('action', 'restore_last_known_good_configuration_or_candidate_sha', 'required', true),
     'candidate',
     'BG169',
     'resource-efficiency-daily-v1',
     'Generated from measured canonical resource/business-value evidence; expected impact expresses direction only, not an invented savings claim.'
-  from public.powerhouse_resource_intelligence_daily_v1
-  where day >= date_trunc('day', now()) - interval '7 days'
-    and cloud_cost_eur > 0
-    and (value_per_cost_eur is null or value_per_cost_eur < 1)
+  from public.powerhouse_business_value_intelligence_v1
+  where observed_cost_eur > 0
+    and (realized_roi is null or realized_roi < 1 or realized_net_value_eur < 0)
   on conflict (source_key) do nothing;
 
   get diagnostics inserted_count = row_count;
@@ -187,23 +174,35 @@ begin
     learning_fingerprint, notes
   )
   select
-    'physical-telemetry-coverage:' || to_char(day, 'YYYY-MM-DD') || ':' || provider || ':' || model_id,
+    'physical-telemetry-coverage:' || to_char(day, 'YYYY-MM-DD') || ':' || tenant_id || ':' || provider || ':' || resource_type || ':' || unit,
     'powerhouse-resource-intelligence-v1',
     'agent-integration-make',
     'physical_telemetry_coverage',
-    jsonb_build_object('day', day, 'provider', provider, 'model_id', model_id, 'energy_wh', energy_wh, 'water_ml', water_ml, 'estimated_co2e_g', estimated_co2e_g),
+    jsonb_build_object(
+      'day', day,
+      'tenant_id', tenant_id,
+      'provider', provider,
+      'resource_type', resource_type,
+      'unit', unit,
+      'factor_coverage', factor_coverage,
+      'energy_kwh', energy_kwh,
+      'co2e_kg', co2e_kg,
+      'water_liters', water_liters,
+      'min_factor_confidence', min_factor_confidence,
+      'provenance_complete', provenance_complete
+    ),
     jsonb_build_object('metric', 'physical_telemetry_provenance_coverage', 'direction', 'increase'),
     0.95,
     'review_required',
     jsonb_build_object('action', 'identify_provider_supported_measurement_or_evidence_source_before_reporting_or_automation'),
-    jsonb_build_object('action', 'remove_unproven_adapter_or_estimator_and_restore_NULL_unknown_semantics', 'required', true),
+    jsonb_build_object('action', 'remove_unproven_adapter_or_factor_and_restore_NULL_unknown_semantics', 'required', true),
     'candidate',
     'BG169',
     'physical-telemetry-provenance-v1',
     'Missing physical telemetry is intentionally NULL and becomes an evidence obligation, never synthetic zero.'
   from public.powerhouse_resource_intelligence_daily_v1
   where day >= date_trunc('day', now()) - interval '1 day'
-    and (energy_wh is null or water_ml is null or estimated_co2e_g is null)
+    and (factor_coverage < 1 or energy_kwh is null or co2e_kg is null or water_liters is null or provenance_complete is not true)
   on conflict (source_key) do nothing;
 
   get diagnostics second_count = row_count;
@@ -218,13 +217,11 @@ grant execute on function public.powerhouse_generate_resource_optimization_candi
 do $$
 begin
   if to_regnamespace('cron') is not null then
-    execute $schedule$
-      select cron.schedule(
-        'powerhouse-resource-intelligence-daily-v1',
-        '29 5 * * *',
-        'select public.powerhouse_generate_resource_optimization_candidates_v1();'
-      )
-    $schedule$;
+    perform cron.schedule(
+      'powerhouse-resource-intelligence-daily-v1',
+      '29 5 * * *',
+      'select public.powerhouse_generate_resource_optimization_candidates_v1();'
+    );
   end if;
 end
 $$;
