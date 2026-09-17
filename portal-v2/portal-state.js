@@ -1,8 +1,10 @@
 import { DEMO_PORTAL_STATE, DEMO_USER } from './demo-state.js';
 import { createPortalProjectClient, mergeProjectState } from './project-state.js';
+import { savePortalBusinessInput } from '../portal-next/portal-business-input-store.js';
 
 const API_URL='/api/portal-state';
 export const PORTAL_STATE_MODES=Object.freeze(['authenticated','preview','empty','error']);
+const DERIVED_READ_MODEL_KEYS=Object.freeze(['businessInputs','signals','recommendedActions','memories','audit','sourceMeta','dataAiRuntime','aiGovernance','resourceBusinessValue']);
 
 let bootReleased=false;
 function installBootGuard(){
@@ -23,6 +25,20 @@ function snapshot(mode,state=null,error=null,user=null){return Object.freeze({mo
 function identityUser(identity){try{return identity?.currentUser?.()||null}catch{return null}}
 async function authToken(user){try{return await user?.jwt?.()||''}catch{return''}}
 const clone=value=>value==null?value:structuredClone(value);
+
+export function buildPortalBusinessInput(nextState={}){
+ const answers=clone(nextState||{})||{};
+ for(const key of DERIVED_READ_MODEL_KEYS)delete answers[key];
+ return Object.freeze({
+  inputType:'PortalDomainStateSnapshot',
+  modelId:'portal-v2-domain-state',
+  instanceId:'primary',
+  schemaVersion:1,
+  answers,
+  sourcePortal:'portal-v2',
+  metadata:{scope:'portal-domain-state',writeOrder:'canonical-authority-before-portal-projection'}
+ });
+}
 
 export function isPortalDemoRoute(pathname=globalThis.window?.location?.pathname||'',search=globalThis.window?.location?.search||''){
  const path=String(pathname||'').replace(/\/+$/,'')||'/';
@@ -102,6 +118,7 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
   if(!user)throw new Error('AUTH_REQUIRED');
   const headers=await headersFor(user);
   if(!headers.authorization)throw new Error('AUTH_TOKEN_UNAVAILABLE');
+  await savePortalBusinessInput(buildPortalBusinessInput(nextState),{fetchFn:fetchImpl,authorization:headers.authorization});
   const response=await fetchImpl(API_URL,{method:'POST',headers:{...headers,'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(nextState||{})});
   const body=await response.json().catch(()=>({}));
   if(!response.ok||body?.stored===false)throw new Error(body?.error||`PORTAL_STATE_WRITE_${response.status}`);
