@@ -1,7 +1,7 @@
 # Squash-merge completion identity recovery v1
 
 Date: 2026-09-17
-Status: IMPLEMENTING
+Status: LIVE & BEWEZEN
 Canonical obligation: `powerhouse-one-loop-v1`
 Recovery successor: PR #1984
 Predecessor delivery: PR #1968
@@ -43,6 +43,17 @@ The merged-branch cleanup EXIT trap keeps writing its durable artifact and prese
 
 Permanent prevention rules: completion identity must come from immutable delivery evidence, not an assumed Git shape; and every operational workflow with a terminal non-zero path must expose a concrete operator-visible failure reason in the same run while preserving durable evidence.
 
-## Closure criteria
+## Closure evidence
 
-This learning is not terminal merely because recovery code is committed. Closure requires PR #1984 exact-head Required and BRAIN terminal green, protected merge with expected-head identity, current-main/readback proof, successful Production Release Readback, successful Outcome Obligation Sweep persisting trusted candidate and production identities, green Config-Wacht/cleanup verification, and canonical obligation/learning writeback to `FULFILLED` / `LIVE & BEWEZEN`. Until all proofs exist, status remains `IMPLEMENTING`.
+The recovery is terminally proven on 2026-09-17:
+
+- PR #1984 exact candidate head `97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04` completed Required run `35274102801`, BRAIN delivery run `35274102768`, and CodeQL run `35274102310` successfully.
+- PR #1984 was protected-merged to current main as `4fda9309eefa259b2a7f492ca929b8d472055d5e` at 2026-09-17T21:06:36Z; the commit is verified and directly descends from the prior production main SHA.
+- Production Release Readback run `35274800041` completed successfully for `4fda9309eefa259b2a7f492ca929b8d472055d5e`, including exact live release marker/deploy identity, connector readiness, affected production routes, and immutable website production truth.
+- Outcome Obligation Sweep run `35274818942` completed successfully and resolved immutable completion lineage, trusted source artifacts, and persisted trusted completion evidence in the existing obligation lineage without the former squash-parent failure.
+- Powerhouse Merged Branch Cleanup run `35274800189` completed successfully, deleted the exact merged same-repository branch, and uploaded durable cleanup evidence.
+- No parallel executable recovery candidate remains authoritative.
+
+## Closure
+
+All closure criteria are now proven. Canonical terminal state for this learning is `LIVE & BEWEZEN`; the corresponding obligation is fulfilled by the protected merge plus exact-main runtime/readback and same-lineage completion evidence above. Any future regression must reopen a new recoverable execution state from this proven checkpoint rather than downgrade or fork this historical terminal evidence.
