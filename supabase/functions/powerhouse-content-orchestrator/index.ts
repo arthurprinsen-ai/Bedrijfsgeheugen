@@ -5,7 +5,7 @@ const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
 const PERSONAL_GATE = 'channel-identity-hard-gate-v3';
 const PERSONAL_CHANNEL = '6a70381699afb44349f0fb35';
 const VERSION = 'v10-closed-loop';
-const COVERED_STATES = new Set(['scheduled','published','measured','learned','skipped']);
+const COVERED_STATES = new Set(['content_ready','scheduled','published','measured','learned','skipped']);
 const executor_capabilities: Record<string, { executable: boolean; executor: string | null; reason?: string }> = {
   linkedin_personal: { executable: true, executor: 'powerhouse-social-publisher' },
   linkedin_company: { executable: true, executor: 'powerhouse-social-publisher' },
@@ -28,20 +28,17 @@ async function digest(value: string) {
 async function callAI(key: string, model: string, system: string, user: unknown, tool: any, maxTokens = 3200) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role:'user', content:JSON.stringify(user) }], tools:[tool], tool_choice:{ type:'tool', name:tool.name } }),
+    headers: { 'x-api-key': key, 'anthropic-version':'2023-06-01','content-type':'application/json' },
+    body: JSON.stringify({ model, max_tokens:maxTokens, system, messages:[{role:'user',content:JSON.stringify(user)}], tools:[tool], tool_choice:{type:'tool',name:tool.name} }),
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    console.error('ORCHESTRATOR_AI_PROVIDER_ERROR', response.status);
-    throw new Error('AI_PROVIDER_REQUEST_FAILED');
-  }
-  const result = (body.content || []).find((x: any) => x.type === 'tool_use' && x.name === tool.name);
+  if (!response.ok) { console.error('ORCHESTRATOR_AI_PROVIDER_ERROR', response.status); throw new Error('AI_PROVIDER_REQUEST_FAILED'); }
+  const result = (body.content || []).find((x:any) => x.type==='tool_use' && x.name===tool.name);
   if (!result?.input) throw new Error('AI_TOOL_OUTPUT_MISSING');
   return result.input;
 }
 
-function validPersonalSource(row: any) {
+function validPersonalSource(row:any) {
   const e = row?.evidence || {};
   const lineage = Array.isArray(e.source_lineage) ? e.source_lineage.length > 0 : !!e.source_lineage;
   return row?.target_channel === 'linkedin_personal' && e.identity_contract === PERSONAL_CONTRACT && e.identity_gate_version === PERSONAL_GATE
@@ -50,7 +47,7 @@ function validPersonalSource(row: any) {
     && e.corporate_voice === false && e.company_page_interchangeable === false && e.forced_business_moral === false
     && (e.sensitive_private_detail !== true || e.sensitive_private_approval === true);
 }
-function recommendationScore(row: any, channel: string) {
+function recommendationScore(row:any, channel:string) {
   const topic = clean(row?.topic_key).toLowerCase();
   const target = clean(row?.target_channel).toLowerCase();
   let score = num(row?.priority) + num(row?.evidence?.commercial_value) / 10;
@@ -59,16 +56,16 @@ function recommendationScore(row: any, channel: string) {
   if (channel === 'instagram_company' && (target === 'instagram' || topic.includes('instagram'))) score += 120;
   return score;
 }
-function pickRecommendation(recs: any[], channel: string) {
-  return [...(recs || [])].filter((r) => ['suggested',''].includes(clean(r?.status))).sort((a,b) => recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
+function pickRecommendation(recs:any[], channel:string) {
+  return [...(recs || [])].filter((r)=>['suggested',''].includes(clean(r?.status))).sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
 }
-function hardBoundary(channel: string, reason?: string) {
+function hardBoundary(channel:string, reason?:string) {
   const capabilityReason = reason || executor_capabilities[channel]?.reason || 'NO_AUTHORIZED_EXECUTOR';
   return { channel, decision:'hold', state:'blocked', priority:0, confidence:1, topic_key:'', rationale:`BLOCKED_HARD_BOUNDARY: ${capabilityReason}`,
     scheduled_hour_local:9, content_brief:'', capability_state:'BLOCKED_HARD_BOUNDARY', capability_reason:capabilityReason,
     decision_source:'capability-truth', fallback_recommendation_id:null };
 }
-function plannedDecision(channel: string, recs: any[], personalSource: any, instagramProof: any) {
+function plannedDecision(channel:string, recs:any[], personalSource:any, instagramProof:any) {
   if (!executor_capabilities[channel]?.executable) return hardBoundary(channel);
   if (channel === 'linkedin_personal') {
     if (!personalSource) return hardBoundary(channel,'PERSONAL_TRUTH_SOURCE_UNVERIFIED');
@@ -85,7 +82,7 @@ function plannedDecision(channel: string, recs: any[], personalSource: any, inst
     rationale:`Evidence-bound decision via recommendation ${rec.recommendation_id}.`,scheduled_hour_local:channel==='blog'?12:channel==='instagram_company'?18:13,
     content_brief:clean(rec.reason),capability_state:'READY',capability_reason:null,decision_source:'deterministic-recommendation-policy',fallback_recommendation_id:rec.recommendation_id };
 }
-function shouldPreserveExisting(row: any) {
+function shouldPreserveExisting(row:any) {
   if (!row) return false;
   return COVERED_STATES.has(clean(row.state)) || (row.delivery_evidence?.provider_truth_verified === true && !!clean(row.delivery_ref));
 }
@@ -97,7 +94,7 @@ Deno.serve(async (req) => {
   const db = createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
   const expected = clean((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data);
   if (!expected || req.headers.get('x-powerhouse-token') !== expected) return json({ok:false,error:'UNAUTHORIZED'},401);
-  let request: any = {}; try { request = await req.json(); } catch {}
+  let request:any = {}; try { request = await req.json(); } catch {}
   const runDate = clean(request.runDate) || localDate();
   let stage = 'load-context';
   try {
@@ -131,9 +128,9 @@ Deno.serve(async (req) => {
 
     stage = 'reconcile-decisions';
     for (const channel of CHANNELS) {
-      const previous: any = existingByChannel.get(channel);
+      const previous:any = existingByChannel.get(channel);
       if (shouldPreserveExisting(previous)) continue;
-      const decision: any = plannedDecision(channel,recs,personalSource,instagramProof);
+      const decision:any = plannedDecision(channel,recs,personalSource,instagramProof);
       const stale = previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
       const hour = String(decision.scheduled_hour_local).padStart(2,'0');
       const evidence = { ...(stale?{}:(previous?.delivery_evidence||{})), content_brief:decision.content_brief,decision_engine:VERSION,decision_source:decision.decision_source,
