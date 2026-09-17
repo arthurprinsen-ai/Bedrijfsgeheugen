@@ -1,3 +1,8 @@
+-- Replay compatibility: later branch state may already expose a wider flywheel view.
+-- PostgreSQL cannot remove/reorder columns through CREATE OR REPLACE VIEW, so recreate
+-- the historical shape explicitly. This migration is already recorded in production;
+-- the DROP is for fresh replay only.
+drop view if exists public.powerhouse_revenue_flywheel_v1;
 create or replace view public.powerhouse_revenue_flywheel_v1 as
 with opp as (
   select
@@ -40,6 +45,9 @@ select now() as measured_at, opp.*, actions.*, outcomes.*, forecasts.*, calibrat
   case when forecasts.forecast_count>calibration.calibration_count then true else false end as calibration_gap,
   case when experiments.experiments_awaiting_decision>0 then true else false end as experiment_decision_gap
 from opp,actions,outcomes,forecasts,calibration,experiments;
+alter view public.powerhouse_revenue_flywheel_v1 set (security_invoker = true);
+revoke all on table public.powerhouse_revenue_flywheel_v1 from public, anon, authenticated;
+grant all on table public.powerhouse_revenue_flywheel_v1 to service_role;
 
 create or replace view public.powerhouse_action_value_rank_v1 as
 select
@@ -53,6 +61,9 @@ select
 from public.powerhouse_sales_actions a
 left join public.powerhouse_opportunities o on o.opportunity_key=a.opportunity_key
 where a.status in ('pending','queued','ready');
+alter view public.powerhouse_action_value_rank_v1 set (security_invoker = true);
+revoke all on table public.powerhouse_action_value_rank_v1 from public, anon, authenticated;
+grant all on table public.powerhouse_action_value_rank_v1 to service_role;
 
 create or replace view public.powerhouse_outcome_sweep_queue_v1 as
 select
@@ -70,11 +81,17 @@ select
 from public.powerhouse_sales_actions a
 where a.executed_at is not null
   and (a.outcome_id is null or not exists (select 1 from public.powerhouse_sales_outcomes so where so.action_id=a.action_id and so.occurred_at >= now()-interval '35 days'));
+alter view public.powerhouse_outcome_sweep_queue_v1 set (security_invoker = true);
+revoke all on table public.powerhouse_outcome_sweep_queue_v1 from public, anon, authenticated;
+grant all on table public.powerhouse_outcome_sweep_queue_v1 to service_role;
 
 create or replace view public.powerhouse_experiment_decision_queue_v1 as
 select experiment_id,hypothesis,commercial_hypothesis,primary_metric,comparison_scope,recipe,target_channels,started_at,ended_at,status,variant,controle,meetpunt,min_steekproef,looptijd_dagen,basislijn,resultaat,advies,besluit
 from public.social_experiments
 where status in ('active','running','planned') or (ended_at is not null and besluit is null);
+alter view public.powerhouse_experiment_decision_queue_v1 set (security_invoker = true);
+revoke all on table public.powerhouse_experiment_decision_queue_v1 from public, anon, authenticated;
+grant all on table public.powerhouse_experiment_decision_queue_v1 to service_role;
 
 create or replace function public.powerhouse_record_flywheel_health_v1()
 returns uuid
