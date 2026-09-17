@@ -459,7 +459,10 @@
         "notion/",
         "tests/delivery-",
         "tests/powerhouse-one-loop-",
-        "tests/powerhouse-github-learning.test.mjs"
+        "tests/powerhouse-github-learning.test.mjs",
+        "tests/menu-balk-writer-noop-proof.test.mjs",
+        "tests/repository-writer-permission-boundary.test.mjs",
+        "tests/repository-writer-slow-canary-sla.test.mjs"
       ],
       "requiredContracts": [
         "BG166",
