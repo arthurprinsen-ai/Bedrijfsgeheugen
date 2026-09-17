@@ -67,27 +67,36 @@ async function recordObligation(db: any, runDate: string, channel: string, statu
   if (rpcError) throw new Error(`OBLIGATION_WRITE:${rpcError.message}`);
 }
 async function reconcileExistingProviderTruth(db: any, token: string, runDate: string) {
-  const { data: rows, error } = await db.from('powerhouse_channel_decisions')
-    .select('channel,decision,state,delivery_ref,delivery_evidence')
-    .eq('run_date', runDate)
-    .in('channel', ['linkedin_personal','linkedin_company','instagram_company'])
-    .not('delivery_ref', 'is', null);
+  const [{ data: rows, error }, { data: obligations, error: obligationError }] = await Promise.all([
+    db.from('powerhouse_channel_decisions')
+      .select('channel,decision,state,delivery_ref,delivery_evidence')
+      .eq('run_date', runDate)
+      .in('channel', ['linkedin_personal','linkedin_company','instagram_company']),
+    db.from('content_publication_obligations')
+      .select('channel,external_id,evidence,status')
+      .eq('tenant_id', 'canonical')
+      .eq('publication_date', runDate)
+      .in('channel', ['linkedin_personal','linkedin_company','instagram']),
+  ]);
   if (error) throw new Error(`DECISION_RECONCILE_READ:${error.message}`);
+  if (obligationError) throw new Error(`OBLIGATION_RECONCILE_READ:${obligationError.message}`);
+  const obligationByChannel = new Map((obligations || []).map((item: any) => [item.channel, item]));
   const results: any[] = [];
   for (const row of rows || []) {
-    const ref = clean(row.delivery_ref);
+    const ref = clean(row.delivery_ref) || clean(obligationByChannel.get(obligationChannels[row.channel])?.external_id);
     if (!ref) continue;
+    const lineageRecovered = !clean(row.delivery_ref) && !!ref;
     const provider = await getPost(token, ref);
     if (!provider) {
       const evidence = {
         ...(row.delivery_evidence || {}), provider: 'buffer', provider_truth_verified: false,
         provider_truth_checked_at: new Date().toISOString(), error: 'PROVIDER_RECORD_MISSING',
-        stale_delivery_ref: true, stale_delivery_ref_value: ref,
+        stale_delivery_ref: true, stale_delivery_ref_value: ref, lineage_recovered_from_obligation: lineageRecovered,
         recovery_policy: row.channel === 'linkedin_personal' ? 'FAIL_CLOSED_NO_REPLACEMENT_WITHOUT_PERSONAL_TRUTH' : 'REENTER_CANONICAL_LOOP_IDEMPOTENTLY',
       };
-      await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
+      await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_ref: ref, delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
       await recordObligation(db, runDate, row.channel, 'BLOCKED', ref, evidence, 'Provider record ontbreekt. Re-enter de canonieke loop na truth/idempotency preflight; nooit blind dupliceren.', 'PROVIDER_RECORD_MISSING');
-      results.push({ channel: row.channel, post_id: ref, state: 'blocked', reason: 'PROVIDER_RECORD_MISSING' });
+      results.push({ channel: row.channel, post_id: ref, state: 'blocked', reason: 'PROVIDER_RECORD_MISSING', lineage_recovered_from_obligation: lineageRecovered });
       continue;
     }
     const status = clean(provider.status).toLowerCase();
@@ -96,11 +105,12 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
       ...(row.delivery_evidence || {}), provider: 'buffer', provider_truth_verified: providerTruth,
       provider_truth_checked_at: new Date().toISOString(), provider_status: status,
       provider_post_id: provider.id, provider_due_at: provider.dueAt || null, stale_delivery_ref: false,
+      lineage_recovered_from_obligation: lineageRecovered,
     };
     const nextState = status === 'sent' ? 'published' : ['scheduled','sending'].includes(status) ? 'scheduled' : row.state;
-    await db.from('powerhouse_channel_decisions').update({ state: nextState, delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
+    await db.from('powerhouse_channel_decisions').update({ state: nextState, delivery_ref: ref, delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
     await recordObligation(db, runDate, row.channel, status === 'sent' ? 'PUBLISHED' : 'DISPATCHED', ref, evidence, status === 'sent' ? 'Collect metrics and promote to LIVE_PROVEN only with public/provider outcome proof.' : 'Await provider send and reconcile again.', null);
-    results.push({ channel: row.channel, post_id: ref, state: nextState, provider_status: status, provider_truth_verified: providerTruth });
+    results.push({ channel: row.channel, post_id: ref, state: nextState, provider_status: status, provider_truth_verified: providerTruth, lineage_recovered_from_obligation: lineageRecovered });
   }
   return results;
 }
