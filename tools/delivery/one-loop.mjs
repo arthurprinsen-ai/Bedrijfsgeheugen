@@ -34,6 +34,14 @@ export function classifyTerminalState(state, evidence = {}) {
   }
 
   if (state === 'BLOCKED_EXTERNAL') {
+    if (evidence.blockerClass === 'GITHUB_ACTIONS_QUEUE') {
+      return {
+        terminal: false,
+        valid: false,
+        recoveryRequired: true,
+        reason: 'GITHUB_ACTIONS_QUEUE_NON_TERMINAL',
+      };
+    }
     const valid = evidence.externalBlockerVerified === true
       && typeof evidence.recoveryPath === 'string'
       && evidence.recoveryPath.trim().length > 0;
@@ -70,6 +78,33 @@ export function evaluateExecutionLease(run, now = Date.now()) {
   const leaseExpiresAt = Date.parse(run?.leaseExpiresAt ?? '');
   if (Number.isFinite(leaseExpiresAt) && leaseExpiresAt <= now) return 'RECOVER';
   return 'HEALTHY';
+}
+
+export function evaluateGitHubQueueRecovery(snapshot = {}) {
+  if (snapshot.status === 'queued' || snapshot.status === 'in_progress') {
+    return {
+      state: snapshot.status === 'queued' ? 'WAITING_CAPACITY' : 'EXECUTING',
+      action: 'WAIT',
+      retry: false,
+      reason: snapshot.status === 'queued' ? 'GITHUB_ACTIONS_QUEUE_NON_TERMINAL' : 'GITHUB_ACTIONS_RUN_NON_TERMINAL',
+    };
+  }
+
+  if (snapshot.status === 'completed' && snapshot.conclusion === 'failure') {
+    return {
+      state: 'RETRYABLE_FAILURE',
+      action: 'RECOVER',
+      retry: true,
+      reason: 'GITHUB_ACTIONS_TERMINAL_FAILURE',
+    };
+  }
+
+  return {
+    state: 'RECONCILING',
+    action: 'CONTINUE',
+    retry: false,
+    reason: 'GITHUB_ACTIONS_READBACK_REQUIRED',
+  };
 }
 
 export function evaluateFinishingPressure(snapshot = {}) {
