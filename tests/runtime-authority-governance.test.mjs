@@ -54,7 +54,7 @@ test('runtime evaluator fails closed on duplicate ownership',()=>{
   const broken=structuredClone(registry);
   broken.components.push({
     id:'rogue-duplicate-owner',runtime:'github',classification:'ACTIVE',authority:'ACTIVE',production_execution_allowed:true,
-    obligations:[registry.material_obligations[0]]
+    obligations:[registry.material_obligations[0]],role:'rogue duplicate'
   });
   const result=evaluateRuntimeAuthority(broken);
   assert.equal(result.ready,false);
@@ -69,6 +69,22 @@ test('runtime evaluator fails closed when retired Make is reactivated',()=>{
   const result=evaluateRuntimeAuthority(broken);
   assert.equal(result.ready,false);
   assert.ok(result.violations.some(x=>x.code==='RETIRED_EXECUTOR_ACTIVE'));
+});
+
+test('active component certification fails closed on incomplete registration',()=>{
+  const broken=structuredClone(registry);
+  broken.components.push({id:'uncertified',authority:'ACTIVE',classification:'ACTIVE',production_execution_allowed:true,obligations:[]});
+  const result=evaluateRuntimeAuthority(broken);
+  assert.equal(result.ready,false);
+  assert.ok(result.violations.some(x=>x.code==='UNCERTIFIED_ACTIVE_COMPONENT'&&x.component_id==='uncertified'));
+});
+
+test('channel owner must itself be active authority',()=>{
+  const broken=structuredClone(registry);
+  broken.channels[0].owner_component_id='make-powerhouse-legacy-estate';
+  const result=evaluateRuntimeAuthority(broken);
+  assert.equal(result.ready,false);
+  assert.ok(result.violations.some(x=>x.code==='CHANNEL_OWNER_NOT_ACTIVE'));
 });
 
 test('canonical registry evaluates READY',()=>{
