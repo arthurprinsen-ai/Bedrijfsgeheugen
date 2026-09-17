@@ -19,6 +19,7 @@
     "for a real failing job, isolate the first concrete assertion/contract break from the current exact-head run and repair only that cause on the same canonical lineage",
     "after a source refactor moves implementation behind a thin wrapper, tests must assert implementation contracts at the canonical implementation boundary and wrapper contracts only at the wrapper boundary",
     "PR_HEAD_SHA_DRIFT is a valid fail-closed signal: if the live PR head moves while a run is evaluating an older SHA, discard that run as promotion authority and restart reasoning from the new exact head",
+    "SUPERSEDED_FAILURE_IS_HISTORY_NOT_REPAIR_AUTHORITY: after a live candidate head change, retain earlier failures only as lineage evidence; they cannot authorize code mutation, rerun policy, merge or release evidence for the new head",
     "declared delivery metadata must be reconciled after legitimate main/head lineage movement rather than weakening exact-head or identity checks",
     "normalize GitHub delivery telemetry into deterministic learning evidence",
     "promote repeated learnings into regression tests, gates or guardrails"
@@ -33,7 +34,8 @@
     "stale-run-repair-authority-v1",
     "approved-blog-core-boundary-stale-test-oracle-v1",
     "pr-head-sha-drift-fail-closed-v1",
-    "delivery-metadata-lineage-drift-after-main-movement-v1"
+    "delivery-metadata-lineage-drift-after-main-movement-v1",
+    "superseded-failure-history-not-repair-authority-v1"
   ],
   "evidence": [
     {
@@ -97,6 +99,22 @@
       "type": "documentation_contract",
       "path": "docs/learning/2026-09-17-github-actions-runnerqueue-one-loop-v1.md",
       "finding": "human-readable incident, root-cause, recovery and prevention record linked to the same powerhouse-one-loop-v1 obligation; it complements rather than duplicates this machine-readable learning"
+    },
+    {
+      "type": "superseded_shared_agent_memory_failure_checkpoint",
+      "candidate_head": "12ce90394d40e6ae64cf6efb0be54d0e4ca9bd49",
+      "required_job_id": 105362635664,
+      "observed_step": "Verify consolidated Shared Agent Memory contracts",
+      "authority": "HISTORICAL_SUPERSEDED",
+      "finding": "the observed deterministic failure belonged to an older head. Once PR #1968 moved, this result ceased to be valid repair or promotion authority; no root cause is inferred from the stale result."
+    },
+    {
+      "type": "exact_head_admission_checkpoint",
+      "candidate_head": "7991126e846e59f94ef21ff322dc8c5743c5600d",
+      "required_run_id": 35270822607,
+      "admission_job_id": 105369402433,
+      "preflight_job_id": 105369489405,
+      "finding": "canonical admission completed successfully on the exact head. Preflight was observed queued at readback and therefore remained a valid non-terminal WAIT state; no blind retry, no-op commit, bypass or terminal blocker classification was justified."
     }
   ]
 }
