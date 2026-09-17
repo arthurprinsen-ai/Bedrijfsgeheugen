@@ -1,0 +1,26 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "FAST-EXECUTION-LEARNING-2026-09-17-v1",
+  "fingerprint": "powerhouse|latency|full-preflight-reload|bounded-hot-state|2026-09-17",
+  "status": "VERIFIED_DESIGN",
+  "context": "The canonical chat-learning preflight is mandatory and already bounded in output, but each invocation can still re-read and parse its canonical source set. Powerhouse continuity already requires current-state-first, delta-only and safe parallel verification. The missing layer is a reusable execution envelope that operationalizes those rules with task classes, bounded context, freshness-aware evidence reuse, parallel read-only retrieval and latency instrumentation.",
+  "root_cause": "Latency controls existed as policy concepts but were not exposed as a canonical reusable runtime primitive with explicit context, evidence, parallelism and latency contracts.",
+  "decision": "Add POWERHOUSE-FAST-EXECUTION-v1 as a projection/optimization layer on top of the existing canonical Brain, never as a second memory or execution truth.",
+  "implementation": [
+    "scripts/brain/powerhouse-fast-execution.mjs",
+    "config/powerhouse-fast-execution-v1.json",
+    "tests/powerhouse-fast-execution.test.mjs",
+    "docs/brain/powerhouse-fast-execution.md"
+  ],
+  "prevention": "All material agents/chats must obtain fast-execution policy through the existing mandatory chat-learning preflight. Performance work may bound, cache, reuse and parallelize canonical reads, but may not bypass required direct observation, candidate identity, security, truth, release, production readback or learning gates.",
+  "success_evidence": [
+    "FAST/STANDARD/DEEP classification is deterministic",
+    "context and tool output are bounded",
+    "expired or candidate-mismatched evidence is rejected",
+    "independent state adapters can execute concurrently",
+    "latency trace exposes context/reasoning/tool/test/deploy/readback/total SLI fields",
+    "mandatory preflight advertises and loads the fast-execution policy"
+  ],
+  "open_obligation": "Reconcile central preflight integration with concurrent execution-resilience changes before protected merge.",
+  "linked_learning_sources": []
+}
