@@ -46,5 +46,8 @@ SELECT p.post_id, p.platform, p.published_at,
   COALESCE(m.profielbezoek,0) AS profielbezoek,
   round(100.0 * (COALESCE(m.likes,0) + COALESCE(m.reacties,0) + COALESCE(m.gedeeld,0)) / NULLIF(COALESCE(m.impressies,0),0), 2) AS interactie_pct
 FROM social_posts p LEFT JOIN m ON m.post_id = p.post_id;
+alter view public.bg_post_prestatie set (security_invoker = true);
+revoke all on table public.bg_post_prestatie from public, anon, authenticated;
+grant select on table public.bg_post_prestatie to service_role;
 comment on view public.bg_post_prestatie is 'Prestatie per post voor bg_content_lessen. Leest metric-sleutels in beide schrijfwijzen (Buffer: Impressions/Reach/Reactions/Comments/Shares, intern: impressions/reach/likes/comments/shares). Hersteld 10 sept 2026: daarvoor telde de helft van de posts als nul bereik.';
 select count(*) as posts, count(*) filter (where impressies>0) as met_bereik from public.bg_post_prestatie;
