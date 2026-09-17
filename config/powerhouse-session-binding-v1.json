@@ -1,0 +1,70 @@
+{
+  "type": "POWERHOUSE_SESSION_BINDING_POLICY",
+  "version": "POWERHOUSE-SESSION-BINDING-v1",
+  "status": "ACTIVE",
+  "default_enabled": true,
+  "fail_closed": true,
+  "scope": "all current and future material Bedrijfsgeheugen Powerhouse chats, agents, workflows, scenarios, incidents, recoveries, development runs and production verifications",
+  "purpose": "Bind every material Powerhouse run to verified canonical state and authority before material execution, so memory/context alone can never be mistaken for active governance.",
+  "entrypoint": "scripts/brain/powerhouse-session-gateway.mjs",
+  "receipt_version": "POWERHOUSE-PREFLIGHT-RECEIPT-v1",
+  "invariants": [
+    "NO_MATERIAL_POWERHOUSE_EXECUTION_WITHOUT_VERIFIED_SESSION_BINDING",
+    "NO_CONTEXT_ONLY_GOVERNANCE",
+    "NO_USER_APPROVAL_REQUEST_WHEN_EXISTING_AUTHORITY_COVERS_DECISION",
+    "NO_RESTART_FROM_SCRATCH_WHEN_CANONICAL_STATE_EXISTS",
+    "NO_TERMINAL_STATUS_WITHOUT_MATCHING_SESSION_RECEIPT",
+    "NO_STALE_RECEIPT_AFTER_CANONICAL_STATE_CHANGE",
+    "NO_PARALLEL_AUTHORITY_STORE",
+    "CANONICAL_BRAIN_WINS"
+  ],
+  "binding_requires": [
+    "sessionId",
+    "runId",
+    "observedAt",
+    "canonicalStateDigest",
+    "preflightPacketDigest",
+    "policyVersions",
+    "authoritySnapshot",
+    "openObligationSnapshot",
+    "executionClass"
+  ],
+  "authority": {
+    "default": "AUTONOMOUS_WITHIN_EXISTING_AUTHORITY",
+    "must_ask_user_only_for": [
+      "new secrets or credentials",
+      "new or expanded permissions",
+      "weakening security controls",
+      "destructive or irreversible data mutation",
+      "new or increased paid external resources",
+      "legally or financially binding action",
+      "genuinely new product or architecture choice not derivable from canonical authority or safe defaults"
+    ],
+    "must_not_ask_again_for": [
+      "already approved architecture",
+      "already approved Powerhouse operating rules",
+      "already approved LIVE & BEWEZEN delivery",
+      "already approved canonical writeback and documentation",
+      "safe implementation details derivable from existing standards",
+      "continuation of an already authorized material run"
+    ]
+  },
+  "approval_request_rule": "Before asking the user for approval, the runtime must resolve whether the decision is already covered by canonical authority. If covered, asking is blocked and the agent must continue autonomously. If a hard human-authority boundary exists, the runtime returns ASK_USER with the exact boundary reason.",
+  "refresh_receipt_when": [
+    "canonical state digest changes",
+    "material policy version changes",
+    "open obligation set changes materially",
+    "run resumes after interruption",
+    "candidate identity changes",
+    "hard boundary is resolved or introduced"
+  ],
+  "unbound_state": "POWERHOUSE_UNBOUND",
+  "bound_state": "POWERHOUSE_BOUND",
+  "mandatory_preflight_integration": "scripts/brain/chat-learning-preflight.mjs",
+  "mandatory_completion_integration": "scripts/brain/powerhouse-universal-completion-gate.mjs",
+  "regression_tests": [
+    "tests/brain-session-binding.test.mjs",
+    "tests/brain-session-binding-integration.test.mjs"
+  ],
+  "learning_source": "brain/learning/session-binding-gap-2026-09-17.json"
+}
