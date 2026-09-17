@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "POWERHOUSE-ONE-LOOP-v1 policy",
+  "type": "object",
+  "required": ["version", "terminalStates", "recoverableStates", "lifecycle", "completionEvidence", "recovery", "optimization", "githubLearningSignals"],
+  "properties": {
+    "version": { "const": "POWERHOUSE-ONE-LOOP-v1" },
+    "terminalStates": { "type": "array", "contains": { "const": "FULFILLED" } },
+    "recoverableStates": { "type": "array", "contains": { "const": "CHAT_STOPPED" } },
+    "lifecycle": { "type": "array", "contains": { "const": "LIVE_PROVEN" } },
+    "completionEvidence": { "type": "array", "contains": { "const": "runtimeReadbackVerified" } },
+    "recovery": { "type": "object" },
+    "optimization": { "type": "object" },
+    "githubLearningSignals": { "type": "array" }
+  },
+  "additionalProperties": true
+}
