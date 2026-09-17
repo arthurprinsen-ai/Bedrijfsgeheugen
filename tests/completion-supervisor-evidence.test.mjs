@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { deriveTrustedCompletionEvidence } from '../tools/completion-supervisor-evidence.mjs';
 
 const CANDIDATE = 'a'.repeat(40);
@@ -29,4 +30,13 @@ test('exact successful production readback mints protected production identity, 
 test('failed or mismatched source evidence mints nothing and fails closed', () => {
   assert.deepEqual(deriveTrustedCompletionEvidence({ ...base, sourceWorkflow:'Unified Brain Delivery', conclusion:'failure' }), []);
   assert.throws(() => deriveTrustedCompletionEvidence({ ...base, sourceWorkflow:'Production Release Readback', conclusion:'success', readback:{ merge_sha:CANDIDATE, status:'LIVE_VERIFIED', routes_ok:true } }), /production identity mismatch/);
+});
+
+test('production readback resolves squash candidate from immutable merged PR metadata instead of merge parent two', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/outcome-obligation-sweep.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /commits\/\$SOURCE_HEAD_SHA\/pulls/);
+  assert.match(workflow, /merge_commit_sha/);
+  assert.match(workflow, /\.head\.sha/);
+  assert.match(workflow, /length == 1/);
+  assert.doesNotMatch(workflow, /rev-parse \"\$\{SOURCE_HEAD_SHA\}\^2\"/);
 });
