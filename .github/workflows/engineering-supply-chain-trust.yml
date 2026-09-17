@@ -2,11 +2,20 @@ name: Engineering Supply Chain Trust
 
 on:
   pull_request:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'npm-shrinkwrap.json'
   push:
     branches: [main]
 
 permissions:
   contents: read
+
+concurrency:
+  group: engineering-supply-chain-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   dependency-review:
@@ -28,6 +37,7 @@ jobs:
           npm audit --package-lock-only --audit-level=high
 
   provenance:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
