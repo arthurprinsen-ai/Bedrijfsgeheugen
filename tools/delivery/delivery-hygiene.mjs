@@ -204,16 +204,10 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
         type: candidate.metadata.candidateType,
       },
     });
-    if (pressure.decision === 'WAITING_CAPACITY') {
-      return Object.freeze({
-        ok: false,
-        state: 'WAITING_CAPACITY',
-        reason: pressure.reason,
-        blockers: finishingCandidates.map(item => Number(item.number)).sort((a, b) => a - b),
-        wipCount: activeExecutable.length,
-        maxExecutable,
-      });
-    }
+
+    // Recovery/security work keeps explicit priority, but ordinary development is
+    // never globally blocked just because unrelated work is finishing. Actual
+    // integration serialization is enforced above by conflict-domain overlap.
     if (pressure.decision === 'ADMIT_PRIORITY_RECOVERY') {
       return Object.freeze({
         ok: true,
