@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "contract": "portal-v2-full-legacy-parity",
+  "authority": "portal-v2/page-registry.js + explicit legacy sub-capabilities",
+  "productionBaseUrl": "https://www.bedrijfsgeheugen.nl/portaal/demo",
+  "pageInventory": {
+    "mode": "derive-from-page-registry",
+    "source": "portal-v2/page-registry.js",
+    "rule": "Every page id in the accepted legacy-derived registry must resolve natively in V2 and pass the browser contract.",
+    "browserContract": [
+      "route query retains page id",
+      "page label is visible",
+      "no uncaught page error",
+      "no legacy portal redirect"
+    ]
+  },
+  "states": ["native", "superseded", "retired"],
+  "capabilities": [
+    {
+      "id": "legacy-analysis-bcg",
+      "legacy": {"capability": "BCG matrix / portfolio analysis"},
+      "status": "native",
+      "target": {
+        "pageId": "model-bcg",
+        "route": "https://www.bedrijfsgeheugen.nl/portaal/demo?page=model-bcg"
+      },
+      "evidence": {
+        "source": "legacy parity obligation: BCG",
+        "browser": {
+          "assertions": [
+            {"kind": "url", "contains": "page=model-bcg"},
+            {"kind": "text", "value": "BCG-matrix"},
+            {"kind": "text", "value": "Sterren"},
+            {"kind": "text", "value": "Cash cows"},
+            {"kind": "text", "value": "Vraagtekens"},
+            {"kind": "text", "value": "Dogs"}
+          ]
+        }
+      }
+    }
+  ]
+}

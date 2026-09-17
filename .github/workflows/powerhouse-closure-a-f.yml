@@ -1,0 +1,45 @@
+name: Powerhouse Closure A-F
+
+on:
+  push:
+    branches:
+      - powerhouse-closure-a-f
+  pull_request:
+    paths:
+      - 'config/portal-v2-parity.json'
+      - 'config/legacy-learning-migration.json'
+      - 'portal-v2/models/bcg.js'
+      - 'portal-v2/page-registry.js'
+      - 'portal-v2/native-pages.js'
+      - 'portal-v2/hubs.js'
+      - 'portal-v2/parity-certificate.js'
+      - 'scripts/brain/powerhouse-closure-a-f.mjs'
+      - 'scripts/brain/quality/powerhouse-closure-intelligence.mjs'
+      - 'tests/brain-powerhouse-closure-a-f.test.mjs'
+      - 'tests/supabase-powerhouse-closure-db-contract.test.mjs'
+      - 'tests/portal-v2-bcg.test.mjs'
+      - 'tests/portal-v2-parity-integration.test.mjs'
+      - 'tests/brain-quality-powerhouse-closure-intelligence.test.mjs'
+      - 'supabase/migrations/**powerhouse_closure**'
+      - '.github/workflows/powerhouse-closure-a-f.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  closure-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify A-F contracts
+        run: >-
+          node --test
+          tests/brain-powerhouse-closure-a-f.test.mjs
+          tests/supabase-powerhouse-closure-db-contract.test.mjs
+          tests/portal-v2-bcg.test.mjs
+          tests/portal-v2-parity-integration.test.mjs
+          tests/brain-quality-powerhouse-closure-intelligence.test.mjs
