@@ -4,16 +4,13 @@ on:
   push:
     branches:
       - 'automation/classify-learning-contract-tests-v2-20260830'
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: learning-contract-classifier-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  group: learning-contract-classifier-${{ github.event_name }}-${{ github.run_id }}
   cancel-in-progress: true
 
 jobs:
