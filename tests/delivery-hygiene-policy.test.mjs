@@ -14,14 +14,14 @@ const policy = {
   allowedCandidateTypes: ['implementation', 'recovery', 'security', 'dependency', 'docs', 'promotion'],
 };
 
-function candidate({ number, obligationId, lane = 'backend', type = 'implementation', baseSha = SHA_A, headSha = SHA_B, supersedes = null, conflictContracts = [], executable = true } = {}) {
+function candidate({ number, obligationId, lane = 'backend', type = 'implementation', baseSha = SHA_A, declaredBaseSha = baseSha, headSha = SHA_B, supersedes = null, conflictContracts = [], executable = true } = {}) {
   return {
     number,
     executable,
     baseSha,
     headSha,
     conflictContracts,
-    metadata: { obligationId, deliveryLane: lane, candidateType: type, baseSha, supersedes },
+    metadata: { obligationId, deliveryLane: lane, candidateType: type, baseSha: declaredBaseSha, supersedes },
   };
 }
 
@@ -73,9 +73,14 @@ test('enforces executable WIP but excludes docs and dependency candidates', () =
   assert.equal(docs.state, 'ADMITTED');
 });
 
-test('blocks stale declared base for a new candidate', () => {
-  const result = evaluateAdmission({ candidate: candidate({ number: 1, obligationId: 'BG-1', baseSha: SHA_C }), openCandidates: [], policy, currentMainSha: SHA_A });
+test('blocks a declared base that does not match the immutable PR base', () => {
+  const result = evaluateAdmission({ candidate: candidate({ number: 1, obligationId: 'BG-1', baseSha: SHA_A, declaredBaseSha: SHA_C }), openCandidates: [], policy, currentMainSha: SHA_C });
   assert.equal(result.state, 'BLOCKED_STALE_IDENTITY');
+});
+
+test('does not force rebuild merely because unrelated main moved', () => {
+  const result = evaluateAdmission({ candidate: candidate({ number: 1, obligationId: 'BG-1', baseSha: SHA_A }), openCandidates: [], policy, currentMainSha: SHA_C });
+  assert.equal(result.state, 'ADMITTED');
 });
 
 test('serializes overlapping promotion contracts but keeps independent scopes parallel', () => {
