@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 export const FAST_EXECUTION_VERSION = 'POWERHOUSE-FAST-EXECUTION-v1';
 
 const FAST_HINTS = /\b(status|readback|lookup|check|controle|inspect|health|current|huidig|samenvat|summary)\b/i;
+const MUTATION_HINTS = /\b(fix|repair|repareer|update|wijzig|change|publish|publiceer|implementeer|implement|create|maak|delete|verwijder|migrate|migreer|rollback|promote|merge)\b/i;
 const STANDARD_HINTS = /\b(fix|bug|feature|deploy|update|wijzig|change|publish|publiceer|test)\b/i;
 const DEEP_HINTS = /\b(security|architect|migration|incident|root cause|schema|permissions?|destructive|rollback|data loss|auth|iam|rbac)\b/i;
 
@@ -10,8 +11,13 @@ export function classifyTask({ task = '', risk = 'normal', explicitClass = null 
   if (['FAST', 'STANDARD', 'DEEP'].includes(explicitClass)) return explicitClass;
   const text = String(task);
   if (risk === 'high' || DEEP_HINTS.test(text)) return 'DEEP';
+
+  // Read-only intent wins over nouns that can also describe a mutating operation.
+  // Example: "status readback van huidige deploy" inspects a deploy; it does not deploy.
+  if (FAST_HINTS.test(text) && !MUTATION_HINTS.test(text)) return 'FAST';
+
   if (STANDARD_HINTS.test(text)) return 'STANDARD';
-  if (FAST_HINTS.test(text) || text.trim().length <= 80) return 'FAST';
+  if (text.trim().length <= 80) return 'FAST';
   return 'STANDARD';
 }
 
