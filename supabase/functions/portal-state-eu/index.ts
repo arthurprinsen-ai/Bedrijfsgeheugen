@@ -5,6 +5,8 @@ const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function sha256(value:string){const bytes=new TextEncoder().encode(value);const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const cleanUnique=(values:any[])=>[...new Set(values.map(value=>String(value??'').trim()).filter(Boolean))];
+const finite=(value:any)=>{const number=Number(value);return Number.isFinite(number)?number:null};
+const sumFinite=(rows:any[],key:string)=>rows.reduce((total,row)=>{const value=finite(row?.[key]);return total+(value??0)},0);
 
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
@@ -79,6 +81,50 @@ Deno.serve(async(req:Request)=>{
       evidence_source:'powerhouse_action_evidence_maturity_v1',
       resource_footprint:resourceFootprint
     }:null});
+  }
+
+  if(action==='resource_intelligence'){
+    const [resourceResult,businessResult,catalogResult,evidenceResult,candidateResult]=await Promise.all([
+      client.from('powerhouse_resource_tenant_summary_v1').select('*').eq('tenant_id',tenantId).maybeSingle(),
+      client.from('powerhouse_business_value_intelligence_v1').select('action_id,observed_cost_eur,realized_revenue_eur,realized_net_value_eur,realized_roi,environmental_factor_coverage,business_value_status').contains('tenant_ids',[tenantId]).limit(2000),
+      client.from('powerhouse_compliance_control_catalog_v1').select('control_key,framework,category,title,description,applicability_status,legal_reference,effective_from,source_url,source_published_at,source_checked_at').eq('active',true).order('framework').order('control_key'),
+      client.from('powerhouse_compliance_evidence_v1').select('control_key,requirement_key,evidence_status,evidence_refs,provenance,confidence,review_required,observed_at').eq('tenant_id',tenantId).limit(2000),
+      client.from('powerhouse_optimization_candidate_v1').select('candidate_id,opportunity_type,baseline,expected_impact,confidence,safety_class,proposed_action,status,production_authority,created_at').eq('tenant_id',tenantId).in('status',['candidate','approved_by_policy','executing','measuring']).order('confidence',{ascending:false}).limit(100)
+    ]);
+    if(resourceResult.error)return json({error:'RESOURCE_INTELLIGENCE_READ_FAILED'},500);
+    if(businessResult.error)return json({error:'BUSINESS_VALUE_INTELLIGENCE_READ_FAILED'},500);
+    if(catalogResult.error)return json({error:'COMPLIANCE_CATALOG_READ_FAILED'},500);
+    if(evidenceResult.error)return json({error:'COMPLIANCE_EVIDENCE_READ_FAILED'},500);
+    if(candidateResult.error)return json({error:'OPTIMIZATION_CANDIDATE_READ_FAILED'},500);
+    const business=Array.isArray(businessResult.data)?businessResult.data:[];
+    const catalog=Array.isArray(catalogResult.data)?catalogResult.data:[];
+    const evidence=Array.isArray(evidenceResult.data)?evidenceResult.data:[];
+    const candidates=Array.isArray(candidateResult.data)?candidateResult.data:[];
+    const evidenceByControl=new Map(evidence.map((row:any)=>[String(row.control_key),row]));
+    const frameworks=['EU_AI_ACT','NIS2','CSRD_ESRS'].map(framework=>{
+      const controls=catalog.filter((row:any)=>row.framework===framework);
+      const matched=controls.map((control:any)=>({control,evidence:evidenceByControl.get(String(control.control_key))||null}));
+      const evidencePresent=matched.filter((row:any)=>row.evidence?.evidence_status==='evidence_present').length;
+      const reviewRequired=matched.filter((row:any)=>row.evidence?.evidence_status==='review_required'||row.evidence?.review_required===true).length;
+      const evidenceMissing=matched.filter((row:any)=>row.evidence?.evidence_status==='evidence_missing').length;
+      const notApplicable=matched.filter((row:any)=>row.evidence?.evidence_status==='not_applicable').length;
+      const evaluated=matched.filter((row:any)=>row.evidence).length;
+      const denominator=Math.max(0,controls.length-notApplicable);
+      const evidenceCoveragePct=denominator?Math.round((evidencePresent/denominator)*1000)/10:null;
+      const status=controls.length===0?'catalog_unavailable':evaluated===0?'assessment_not_started':evidenceMissing>0||reviewRequired>0?'evidence_gaps':'evidence_ready';
+      return {framework,controls:controls.length,evaluated,evidencePresent,evidenceMissing,reviewRequired,notApplicable,unevaluated:Math.max(0,controls.length-evaluated),evidenceCoveragePct,status,applicability:'assessment_required',disclaimer:'Bewijsdekking en readiness; geen juridische conformiteitsverklaring.',items:matched};
+    });
+    const observedCostRows=business.filter((row:any)=>finite(row.observed_cost_eur)!==null);
+    const revenueRows=business.filter((row:any)=>finite(row.realized_revenue_eur)!==null);
+    const roiRows=business.filter((row:any)=>finite(row.realized_roi)!==null);
+    return json({resourceIntelligence:{
+      tenantId,
+      resource:resourceResult.data||null,
+      business:{actions:business.length,actionsWithObservedCost:observedCostRows.length,actionsWithRealizedRevenue:revenueRows.length,actionsWithRealizedRoi:roiRows.length,observedCostEur:sumFinite(observedCostRows,'observed_cost_eur'),realizedRevenueEur:sumFinite(revenueRows,'realized_revenue_eur'),realizedNetValueEur:sumFinite(business,'realized_net_value_eur')},
+      compliance:{frameworks,catalogCheckedAt:catalog.map((row:any)=>row.source_checked_at).filter(Boolean).sort().at(-1)||null},
+      optimization:{openCandidates:candidates.length,safeReversible:candidates.filter((row:any)=>row.safety_class==='safe_reversible').length,reviewRequired:candidates.filter((row:any)=>row.safety_class==='review_required').length,candidates},
+      truth:{unknownPhysicalMetricsRemainNull:true,legalComplianceClaim:false,productionAuthority:'BG169'}
+    }});
   }
 
   const layer=String(body?.layer||'').trim();
