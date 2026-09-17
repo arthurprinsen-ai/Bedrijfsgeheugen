@@ -3,8 +3,8 @@
   "date": "2026-09-17",
   "obligation_id": "powerhouse-one-loop-v1",
   "pull_request": 1968,
-  "status": "FULFILLED",
-  "delivery_status": "LIVE & BEWEZEN",
+  "status": "RECOVERING",
+  "delivery_status": "RECOVERY IN UITVOERING",
   "scope": "canonical delivery lane classification and versioned scope authority for repository-writer governance tests",
   "symptom": "Required preflight first failed closed because three repository-writer governance test paths were absent from the delivery lane classifier. After that classifier gap was fixed and this canonical learning artifact was written, preflight correctly failed closed again because the active versioned deliveryCandidate.expectedPaths authority had not yet admitted the new learning artifact, even though the PR body Change-Scope already covered brain/learning/**.",
   "root_causes": [

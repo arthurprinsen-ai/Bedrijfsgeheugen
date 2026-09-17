@@ -26,8 +26,8 @@
     "promote repeated learnings into regression tests, gates or guardrails"
   ],
   "canonical_loop": "intent -> preflight -> admission -> execute -> verify -> protected merge -> deploy -> production readback -> outcome -> learning -> prevention -> fulfilled",
-  "status": "FULFILLED",
-  "delivery_status": "LIVE & BEWEZEN",
+  "status": "RECOVERING",
+  "delivery_status": "RECOVERY IN UITVOERING",
   "candidate_pr": 1968,
   "final_exact_head": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
   "protected_merge_commit": "6ae18de754cb33044108d85ba704c965a5287b88",
