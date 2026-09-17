@@ -7,6 +7,7 @@ const contractPath = new URL('../brain/production/security-operations-closure-v1
 const workflowPath = new URL('../.github/workflows/powerhouse-security-operations-closure.yml', import.meta.url);
 const deliveryPolicyPath = new URL('../config/brain-delivery-system.json', import.meta.url);
 const socialMetricReplayPath = new URL('../supabase/migrations/20260910104922_bg_post_prestatie_metric_sleutels_normaliseren.sql', import.meta.url);
+const notionReplayPath = new URL('../supabase/migrations/20260909181648_notion_post_feature_staging.sql', import.meta.url);
 
 const requiredOpen = new Set([
   'isolated_restore_dr_exercise',
@@ -67,6 +68,18 @@ test('social metric snapshot replay baseline exists before the dependent perform
   assert.match(sql, /enable row level security/i);
   assert.match(sql, /revoke all on table public\.social_metric_snapshots from anon, authenticated/i);
   assert.match(sql, /grant all on table public\.social_metric_snapshots to service_role/i);
+});
+
+test('notion synced posts replay baseline is secure before later ALTER statements', () => {
+  const sql = fs.readFileSync(notionReplayPath, 'utf8');
+  const tableAt = sql.search(/create table if not exists public\.notion_synced_posts/i);
+  const alterAt = sql.search(/alter table public\.notion_synced_posts\s+add column/i);
+  assert.ok(tableAt >= 0, 'fresh replay must create notion_synced_posts before altering it');
+  assert.ok(alterAt > tableAt, 'notion_synced_posts baseline must precede later ALTER statements');
+  assert.match(sql, /post_id text primary key/i);
+  assert.match(sql, /alter table public\.notion_synced_posts enable row level security/i);
+  assert.match(sql, /revoke all on table public\.notion_synced_posts from public, anon, authenticated/i);
+  assert.match(sql, /grant all on table public\.notion_synced_posts to service_role/i);
 });
 
 test('CI gate runs the closure test read-only', () => {
