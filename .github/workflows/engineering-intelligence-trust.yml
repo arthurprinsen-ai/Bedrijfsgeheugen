@@ -1,6 +1,13 @@
 name: Engineering Intelligence and Trust
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/engineering-intelligence-trust.yml'
+      - 'tests/engineering-trust-contract.test.mjs'
+      - 'tests/engineering-supply-chain-workflows.test.mjs'
+      - 'tests/candidate-environment.test.mjs'
+      - 'tests/engineering-intelligence.test.mjs'
   push:
     branches: [main]
 
@@ -8,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: engineering-intelligence-trust-${{ github.event_name }}-${{ github.run_id }}
+  group: engineering-intelligence-trust-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
