@@ -30,7 +30,8 @@ test('publisher recovers provider lineage from obligation external_id when decis
   assert.match(publisher, /content_publication_obligations/);
   assert.match(publisher, /external_id/);
   assert.match(publisher, /obligationByChannel/);
-  assert.match(publisher, /clean\(row\.delivery_ref\)\s*\|\|\s*clean\(obligationByChannel\.get\(obligationChannels\[row\.channel\]\)\?\.external_id\)/);
+  assert.match(publisher, /const\s+obligation[^=]*=\s*obligationByChannel\.get\(obligationChannels\[row\.channel\]\)/);
+  assert.match(publisher, /clean\(row\.delivery_ref\)\s*\|\|\s*clean\(obligation\?\.external_id\)/);
   assert.match(publisher, /delivery_ref:\s*ref/);
 });
 
