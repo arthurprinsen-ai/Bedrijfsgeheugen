@@ -76,7 +76,10 @@ test('public APIs keep provider and backend diagnostics internal', () => {
   const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
   const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   assert.doesNotMatch(operations, /error:\s*String\(\(e as Error\)\?\.message/);
-  assert.doesNotMatch(loop, /error:\s*message,\s*execution/);
+  assert.doesNotMatch(loop, /return\s+json\(\{[^}]*error:\s*message[^}]*\}/s);
+  assert.doesNotMatch(loop, /return\s+json\(\{[^}]*execution[^}]*\}/s);
+  assert.match(loop, /return json\(\{ ok: false, loop_state: 'RED', runDate, error: 'CONTENT_LOOP_INTERNAL_ERROR' \}, 500\)/);
+  assert.match(loop, /result:\s*\{ loop_state: 'RED', error: message, execution,/);
   assert.doesNotMatch(orchestrator, /return json\(\{ok:false,error:message/);
   assert.match(orchestrator, /ORCHESTRATOR_INTERNAL_ERROR/);
 });
