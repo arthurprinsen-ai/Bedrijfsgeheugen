@@ -152,7 +152,7 @@ jobs:
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
         run: >-
-          node --test
+          node --test --test-concurrency=1
           tests/brain-fast-development-protocol-v2.test.mjs
           tests/brain-fast-execution.test.mjs
           tests/brain-powerhouse-engineering-os-contract.test.mjs
