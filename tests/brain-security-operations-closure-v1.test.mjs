@@ -32,22 +32,27 @@ test('security/operations closure contract is fail-closed while required evidenc
   assert.ok([...requiredClosed].every((id) => closed.has(id)));
 });
 
-test('Buffer credential exposure and deployed consumer remain explicit open rotation evidence', () => {
+test('Buffer credential exposure is explicitly recorded and remains fail-closed', () => {
   const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
   const rotation = contract.obligations.find((item) => item.id === 'credential_rotation_end_to_end');
-  assert.ok(rotation, 'credential rotation obligation must exist');
+  assert.ok(rotation, 'credential_rotation_end_to_end obligation must exist');
   assert.equal(rotation.status, 'OPEN');
   assert.match(rotation.latest_readback, /BUFFER_API_KEY/);
-  assert.match(rotation.latest_readback, /Netlify/i);
   assert.match(rotation.latest_readback, /is_secret=false/);
   assert.match(rotation.latest_readback, /buffer-social-collect/);
-  assert.match(rotation.latest_readback, /15 \*\/6 \* \* \*/);
-  assert.ok(rotation.evidence_required.some((item) => /provider secret/i.test(item)));
+  assert.match(rotation.latest_readback, /Bearer credential/);
+  assert.match(rotation.latest_readback, /classification-only management write did not persist/i);
+  assert.match(rotation.latest_readback, /replacement\/rotation/i);
+  assert.match(rotation.latest_readback, /revocation|unusability/i);
+  assert.ok(rotation.evidence_required.some((item) => /secret protections/i.test(item)));
+  assert.ok(rotation.evidence_required.some((item) => /post-rotation|consumer/i.test(item)));
+  assert.ok(rotation.evidence_required.some((item) => /superseded credentials/i.test(item)));
 });
 
 test('closure contract never stores credential values', () => {
   const raw = fs.readFileSync(contractPath, 'utf8');
   assert.doesNotMatch(raw, /"(?:secret|token|password|api_key)_value"\s*:/i);
+  assert.doesNotMatch(raw, /Bearer\s+[A-Za-z0-9._~+\/-]{20,}/);
 });
 
 test('CI gate runs the closure test read-only', () => {
