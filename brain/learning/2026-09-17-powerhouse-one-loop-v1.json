@@ -20,6 +20,7 @@
     "after a source refactor moves implementation behind a thin wrapper, tests must assert implementation contracts at the canonical implementation boundary and wrapper contracts only at the wrapper boundary",
     "PR_HEAD_SHA_DRIFT is a valid fail-closed signal: if the live PR head moves while a run is evaluating an older SHA, discard that run as promotion authority and restart reasoning from the new exact head",
     "SUPERSEDED_FAILURE_IS_HISTORY_NOT_REPAIR_AUTHORITY: after a live candidate head change, retain earlier failures only as lineage evidence; they cannot authorize code mutation, rerun policy, merge or release evidence for the new head",
+    "STALE_ASSERTION_MUST_FOLLOW_VERIFIED_ARCHITECTURE: after verified workflow consolidation or boundary movement, repair stale test/oracle assertions to the canonical architecture; never reintroduce redundant fan-out, weaken gates or misclassify the stale assertion as a product regression merely to make CI green",
     "declared delivery metadata must be reconciled after legitimate main/head lineage movement rather than weakening exact-head or identity checks",
     "normalize GitHub delivery telemetry into deterministic learning evidence",
     "promote repeated learnings into regression tests, gates or guardrails"
@@ -35,7 +36,8 @@
     "approved-blog-core-boundary-stale-test-oracle-v1",
     "pr-head-sha-drift-fail-closed-v1",
     "delivery-metadata-lineage-drift-after-main-movement-v1",
-    "superseded-failure-history-not-repair-authority-v1"
+    "superseded-failure-history-not-repair-authority-v1",
+    "consolidated-lane-stale-contract-oracle-v1"
   ],
   "evidence": [
     {
@@ -115,6 +117,19 @@
       "admission_job_id": 105369402433,
       "preflight_job_id": 105369489405,
       "finding": "canonical admission completed successfully on the exact head. Preflight was observed queued at readback and therefore remained a valid non-terminal WAIT state; no blind retry, no-op commit, bypass or terminal blocker classification was justified."
+    },
+    {
+      "type": "consolidated_contract_recovery_checkpoint",
+      "candidate_head": "ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded",
+      "finding": "PR recovery readback records that prior terminal automation failures were stale contract assertions against verified consolidated architecture: shared-memory verification belongs to Required/automation, menu-writer identity uses canonical action outputs, the GitHub Actions PR-creation hard boundary is RESOLVED_VERIFIED, and writer operational SLA is enforced by the consolidated dispatch job. Assertions were repaired on the same lineage without weakening gates."
+    },
+    {
+      "type": "exact_head_nonterminal_gate_readback",
+      "candidate_head": "ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded",
+      "required_run_id": 35271112297,
+      "brain_run_id": 35271112433,
+      "observed_state": "EXECUTING",
+      "finding": "Required, CodeQL/Powerhouse CodeQL and Engineering Supply Chain Trust were in progress while BRAIN delivery was pending; Fresh Device Autonomy Canary and Unified Content Operations were successful. This is execution evidence only and not completion authority."
     }
   ]
 }
