@@ -33,6 +33,13 @@ test('tool output is bounded before it enters model context', () => {
   assert.match(compacted, /TRUNCATED/);
 });
 
+test('tool output handles undefined and non-serializable values safely', () => {
+  assert.equal(compactToolOutput(undefined), 'undefined');
+  const cyclic = {};
+  cyclic.self = cyclic;
+  assert.match(compactToolOutput(cyclic), /\[Unserializable tool output:/);
+});
+
 test('fresh evidence is reused and expired evidence is rejected', () => {
   let now = 1_000;
   const cache = new EvidenceCache({ now: () => now });
@@ -47,6 +54,9 @@ test('candidate-bound evidence is never reused for a different or missing candid
   cache.put('release', { green: true }, { ttlMs: 1_000, candidateId: 'sha-a' });
   assert.deepEqual(cache.get('release', { candidateId: 'sha-a' }), { green: true });
   assert.equal(cache.get('release', { candidateId: 'sha-b' }), null);
+
+  cache.put('unbound-release', { green: true }, { ttlMs: 1_000 });
+  assert.equal(cache.get('unbound-release', { candidateId: 'sha-a' }), null);
 });
 
 test('state retrieval starts adapters concurrently', async () => {
@@ -78,6 +88,18 @@ test('minimal context packet is bounded and task scoped', () => {
   assert.equal(packet.executionClass, 'FAST');
   assert.equal(packet.task, 'check deploy');
   assert.ok(JSON.stringify(packet).length <= 2500);
+});
+
+test('minimal context packet remains bounded under an unusually small budget', () => {
+  const packet = buildMinimalContextPack({
+    task: 'x'.repeat(5000),
+    hotState: { huge: 'y'.repeat(5000) },
+    delta: [{ huge: 'z'.repeat(5000) }],
+    evidence: [{ huge: 'e'.repeat(5000) }],
+    maxChars: 900
+  });
+  assert.ok(JSON.stringify(packet).length <= 900);
+  assert.equal(packet.bounded, true);
 });
 
 test('latency trace emits all required SLI fields', () => {
