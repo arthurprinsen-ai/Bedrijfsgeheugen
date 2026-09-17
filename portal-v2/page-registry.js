@@ -9,7 +9,7 @@ export const PORTAL_SECTIONS = Object.freeze({
   realiseren: { label: 'Realiseren', pages: ['taken-werkstromen','documenten','uitvoeringsladder','offerte','gegevens-invullen','ingevulde-gegevens','actueel-houden'] },
   'data-intelligence': { label: 'Data & intelligence', pages: ['data-ai','cijfers-maatstaven','koppelingen','brain-verwerking','ai-capabilities','data-ai-passport','bronnenstatus','datahubstatus','agentstatus','rekenwijze','onderzoek','branche-markt','os:evidence-health','os:capability-graph'] },
   'continuiteit-risico': { label: 'Continuïteit & risico', pages: ['wijzigingen','compliance-governance','learning-writeback','compliance-command-center','eu-ai-act-audit','csrd-impact','audit','audittrail','recovery-obligations','self-heal','outcomes-evidence','mensen','os:monitoring-learning'] },
-  beheren: { label: 'Beheren', pages: ['instellingen','gebruikers'] },
+  beheren: { label: 'Beheren', pages: ['instellingen','gebruikers','billing','frisse-blik'] },
   overig: { label: 'Overig', pages: ['due-diligence','exit','waarde-financiering'] }
 });
 
@@ -18,7 +18,7 @@ const PAGE_META = {
   'cijfers-maatstaven':{label:'Cijfers en maatstaven'}, 'waarde-financiering':{label:'Waarde en financiering'}, mensen:{label:'Mensen'}, 'branche-markt':{label:'Branche en markt'}, onderzoek:{label:'Onderzoek'}, 'compliance-governance':{label:'Compliance, security en governance'}, 'compliance-command-center':{label:'Compliance Command Center'}, 'ai-capabilities':{label:'AI-capabilities'}, 'data-ai-passport':{label:'Data & AI Passport'}, 'eu-ai-act-audit':{label:'EU AI Act auditrapport'}, 'rekenwijze':{label:'Hoe dit portaal rekent'},
   'strategy-dna':{label:'Strategy DNA'}, strategiemodellen:{label:'Strategiemodellen'}, modellen:{label:'Alle modellen'}, 'model-bcg':{label:'BCG-matrix'}, canvassen:{label:'Canvassen'}, eindconclusie:{label:'De eindconclusie'}, 'due-diligence':{label:'Due diligence'}, exit:{label:'Exit'},
   'strategie-naar-maandagochtend':{label:'Van strategie naar maandagochtend'}, 'actueel-houden':{label:'Actueel houden'}, wijzigingen:{label:'Wijzigingen'}, advies:{label:'Advies'}, offerte:{label:'Offerte'}, roadmap:{label:'Roadmap'}, uitvoeringsladder:{label:'Uitvoeringsladder'}, 'taken-werkstromen':{label:'Taken & werkstromen'},
-  koppelingen:{label:'Koppelingen'}, gebruikers:{label:'Gebruikers'}, documenten:{label:'Documenten'}, instellingen:{label:'Instellingen'}, audit:{label:'Audit'},
+  koppelingen:{label:'Koppelingen'}, gebruikers:{label:'Gebruikers'}, documenten:{label:'Documenten'}, instellingen:{label:'Instellingen'}, billing:{label:'Facturen & abonnement'}, 'frisse-blik':{label:'Frisse Blik Scan'}, audit:{label:'Audit'},
   bronnenstatus:{label:'Bronnenstatus'}, datahubstatus:{label:'Datahubstatus'}, 'brain-verwerking':{label:'Brain-verwerking'}, agentstatus:{label:'Agentstatus'}, 'actieve-acties':{label:'Actieve acties'}, 'recovery-obligations':{label:'Open recovery obligations'}, 'outcomes-evidence':{label:'Outcomes & evidence'}, 'learning-writeback':{label:'Learning/writeback'}, 'self-heal':{label:'Self-heal / recovery'}, audittrail:{label:'Audittrail'},
   'os:impact-engine':{label:'€ Impact Engine'}, 'os:scenario-simulator':{label:'Scenario Simulator'}, 'os:next-best-actions':{label:'Next Best Actions & besluiten'}, 'os:monitoring-learning':{label:'Monitoring & Learning'}, 'os:evidence-health':{label:'Data & Evidence Health'}, 'os:capability-graph':{label:'Capability Graph'}
 };

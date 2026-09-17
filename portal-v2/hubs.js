@@ -9,7 +9,7 @@ const PORTAL_CORE = Object.freeze([
 ]);
 const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','os:evidence-health','os:capability-graph']);
 const TASKS = Object.freeze(['taken-werkstromen','actieve-acties','roadmap','recovery-obligations','outcomes-evidence','wijzigingen','advies','os:next-best-actions','os:monitoring-learning','os:scenario-simulator']);
-const MORE = Object.freeze(['gebruikers','documenten','instellingen','audit','audittrail','compliance-governance','compliance-command-center','learning-writeback','self-heal']);
+const MORE = Object.freeze(['gebruikers','documenten','instellingen','billing','frisse-blik','audit','audittrail','compliance-governance','compliance-command-center','learning-writeback','self-heal']);
 
 const entry=(id,label,target=id)=>Object.freeze({id,label,target});
 export const PROJECT_GROUPS = Object.freeze([
@@ -40,7 +40,7 @@ export const HUB_DEFINITIONS = Object.freeze({
   project:Object.freeze({ label:'Jouw project', description:'Van offerte en bouwen tot koppelen, uitvoeren, documenteren, samenwerken en factureren.', pages:projectTargets }),
   'data-ai':Object.freeze({ label:'Data & AI', description:'Data, koppelingen, AI-kansen, capabilities en de aantoonbare Brain/Datahub-status.', pages:DATA_AI }),
   tasks:Object.freeze({ label:'Taken', description:'Uitvoering, roadmap, actieve acties, recovery obligations, scenarios, monitoring en outcomes/evidence.', pages:TASKS }),
-  more:Object.freeze({ label:'Meer', description:'Beheer, documenten, gebruikers, compliance, audit en systeemfuncties.', pages:MORE })
+  more:Object.freeze({ label:'Meer', description:'Beheer, documenten, gebruikers, abonnement, Frisse Blik, compliance, audit en systeemfuncties.', pages:MORE })
 });
 
 export function hubPages(hubId){ return [...(HUB_DEFINITIONS[hubId]?.pages || [])]; }

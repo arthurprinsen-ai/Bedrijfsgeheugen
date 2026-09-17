@@ -7,7 +7,13 @@ on:
       - '.github/scripts/portal_parity.py'
       - 'portal-v2/legacy-functional-inventory.js'
       - 'portal-v2/parity-manifest.js'
+      - 'portal-v2/parity-gate.js'
+      - 'portal-v2/modular-legacy-capability-map.js'
+      - 'portal-v2/page-registry.js'
       - 'portal-v2/tests/legacy-functional-inventory.test.mjs'
+      - 'portal-v2/tests/parity-gate.test.mjs'
+      - 'tests/portal-parity-source-contract.py'
+      - 'tests/portal-modular-legacy-capability-parity.test.mjs'
       - '.github/workflows/portal-parity.yml'
       - 'docs/parity/portal-parity-ledger.md'
   push:
@@ -17,7 +23,13 @@ on:
       - '.github/scripts/portal_parity.py'
       - 'portal-v2/legacy-functional-inventory.js'
       - 'portal-v2/parity-manifest.js'
+      - 'portal-v2/parity-gate.js'
+      - 'portal-v2/modular-legacy-capability-map.js'
+      - 'portal-v2/page-registry.js'
       - 'portal-v2/tests/legacy-functional-inventory.test.mjs'
+      - 'portal-v2/tests/parity-gate.test.mjs'
+      - 'tests/portal-parity-source-contract.py'
+      - 'tests/portal-modular-legacy-capability-parity.test.mjs'
       - '.github/workflows/portal-parity.yml'
       - 'docs/parity/portal-parity-ledger.md'
   workflow_dispatch:
@@ -34,5 +46,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source-derived parity guard self-tests
+        run: python -m unittest tests/portal-parity-source-contract.py -v
       - name: Verify protected legacy and V2 functional baseline
         run: python .github/scripts/portal_parity.py
+      - name: Verify modular legacy capability destinations
+        run: node --test tests/portal-modular-legacy-capability-parity.test.mjs

@@ -53,8 +53,9 @@ export const PAGE_NAVIGATION = Object.freeze({
   gebruikers:["Beheer gebruiker",[["Open audit","audit"],["Open instellingen","instellingen"],["Bekijk wijzigingen","wijzigingen"]]],
   documenten:["Voeg document toe",[["Open actueel houden","actueel-houden"],["Open kennisprofiel","profiel"],["Open audit","audit"]]],
   instellingen:["Beheer instellingen",[["Open gebruikers","gebruikers"],["Open compliance","compliance-governance"],["Open audit","audit"]]],
+  billing:["Bekijk abonnementscontext",[["Open instellingen","instellingen"],["Open gebruikers","gebruikers"],["Open audit","audit"]]],
+  "frisse-blik":["Open scancontext",[["Vul bedrijfsgegevens aan","gegevens-invullen"],["Open profiel","profiel"],["Bekijk eindconclusie","eindconclusie"]]],
   audit:["Exporteer auditoverzicht",[["Open compliance","compliance-governance"],["Open audittrail","audittrail"],["Open documenten","documenten"]]]
-
 });
 
 function currentState(state){
@@ -78,6 +79,26 @@ function bcgContent(model,primaryAction,actions){
   return {primaryAction,blocks,derived:bcg.derived,bcg};
 }
 
+function specialistContent(pageId,model,navigation){
+  const [primaryAction,actions]=navigation;
+  if(pageId==='billing'){
+    const billing=model?.portal?.admin?.billing ?? model?.admin?.billing ?? null;
+    const hasBilling=Boolean(billing&&typeof billing==='object'&&(billing.plan||billing.status));
+    const metrics=[['Abonnement',String(billing?.plan||'—')],['Status',String(billing?.status||'—')]];
+    const blocks=[{type:'metrics',title:'Stand van zaken',items:metrics,derived:hasBilling}];
+    if(!hasBilling)blocks.push({type:'empty',title:'Nog geen abonnementsbron gekoppeld',copy:'De bestaande abonnementsstatus is nog niet gekoppeld. Er wordt geen pakket of betaalstatus verondersteld.'});
+    blocks.push({type:'actions',title:'Volgende acties',items:actions});
+    return {primaryAction,blocks,derived:hasBilling};
+  }
+  if(pageId==='frisse-blik'){
+    return {primaryAction,blocks:[
+      {type:'empty',title:'Frisse Blik Scan',copy:'Deze bestemming blijft expliciet behouden. Gebruik de bestaande bedrijfsgegevens en profielstappen om de scancontext aan te vullen; er wordt geen parallelle scanstate aangemaakt.'},
+      {type:'actions',title:'Volgende acties',items:actions}
+    ],derived:false};
+  }
+  return null;
+}
+
 /**
  * Bouwt de blokken voor een pagina op basis van echte klantdata.
  * Zonder data komt er een expliciet leeg blok, nooit een voorbeeldgetal.
@@ -88,6 +109,8 @@ export function nativePageContent(pageId,state){
   const [primaryAction,actions]=navigation;
   const model=currentState(state);
   if(pageId==='model-bcg')return bcgContent(model,primaryAction,actions);
+  const specialist=specialistContent(pageId,model,navigation);
+  if(specialist)return specialist;
   const metrics=pageMetrics(pageId,model);
   const worklist=pageWorklist(pageId,model);
   const populated=hasPageData(pageId,model);
