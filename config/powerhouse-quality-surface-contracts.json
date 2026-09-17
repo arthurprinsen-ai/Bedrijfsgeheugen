@@ -58,6 +58,13 @@
       "required": true
     },
     {
+      "id": "rpc:bg_brein_regels_check",
+      "type": "rpc",
+      "authority": "supabase/functions/bg-pre-publish-review/index.ts",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:record_content_publication_state",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
