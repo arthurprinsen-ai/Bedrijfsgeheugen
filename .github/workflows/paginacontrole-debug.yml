@@ -13,7 +13,7 @@ on:
       - '.github/canoniek/**'
       - '.github/scripts/paginacontrole.py'
       - '.github/scripts/seocontrole.py'
-      - '.github/scripts/seocontrole_v2.py'
+      - '.github/scripts/seocontrole_registry.py'
       - '.github/scripts/test_seocontrole_contract.py'
       - '.github/workflows/paginacontrole-debug.yml'
   workflow_dispatch:
@@ -59,7 +59,7 @@ jobs:
       - name: Pagina's controleren
         run: python .github/scripts/paginacontrole.py
       - name: SEO en interne links controleren
-        run: python .github/scripts/seocontrole_v2.py
+        run: python .github/scripts/seocontrole_registry.py
       - name: Diagnoserapport bewaren
         if: always()
         uses: actions/upload-artifact@v4
