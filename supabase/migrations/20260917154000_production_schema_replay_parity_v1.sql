@@ -204,7 +204,7 @@ begin
 end
 $function$;
 
-revoke all on function intern.bg_meetcijfers(integer) from public, anon, authenticated, service_role;
+revoke execute on function intern.bg_meetcijfers(integer) from public, anon, authenticated, service_role;
 
 create or replace function private.offerte_akkoord(p_offerte uuid, p_naam text, p_functie text default null::text)
 returns table(offerte uuid, stand text, getekend_op timestamp with time zone)
@@ -295,7 +295,7 @@ begin
 end;
 $function$;
 
-revoke all on function private.offerte_akkoord(uuid,text,text) from public, anon;
+revoke execute on function private.offerte_akkoord(uuid,text,text) from public, anon, authenticated;
 grant execute on function private.offerte_akkoord(uuid,text,text) to authenticated, service_role;
 
 create or replace function public.offerte_akkoord(p_offerte uuid, p_naam text, p_functie text default null::text)
@@ -306,7 +306,7 @@ as $function$
   select * from private.offerte_akkoord(p_offerte, p_naam, p_functie);
 $function$;
 
-revoke all on function public.offerte_akkoord(uuid,text,text) from public, anon;
+revoke execute on function public.offerte_akkoord(uuid,text,text) from public, anon;
 grant execute on function public.offerte_akkoord(uuid,text,text) to authenticated, service_role;
 
 -- Fresh replay still carried an obsolete overload that production no longer has.
