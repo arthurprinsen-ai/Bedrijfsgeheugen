@@ -8,11 +8,14 @@ const workflowPath = new URL('../.github/workflows/powerhouse-security-operation
 const deliveryPolicyPath = new URL('../config/brain-delivery-system.json', import.meta.url);
 
 const requiredOpen = new Set([
-  'supabase_owner_management_mfa',
-  'netlify_owner_team_management_mfa',
   'isolated_restore_dr_exercise',
   'credential_rotation_end_to_end',
   'cross_platform_iam_review',
+]);
+
+const requiredClosed = new Set([
+  'supabase_owner_management_mfa',
+  'netlify_owner_team_management_mfa',
 ]);
 
 test('security/operations closure contract is fail-closed while required evidence is open', () => {
@@ -24,6 +27,9 @@ test('security/operations closure contract is fail-closed while required evidenc
   assert.deepEqual(new Set(open.map((item) => item.id)), requiredOpen);
   assert.equal(contract.overall_status, 'BLOCKED');
   assert.ok(open.every((item) => Array.isArray(item.evidence_required) && item.evidence_required.length > 0));
+
+  const closed = new Set(contract.already_proven.filter((item) => item.status === 'CLOSED_PROVEN').map((item) => item.id));
+  assert.ok([...requiredClosed].every((id) => closed.has(id)));
 });
 
 test('closure contract never stores credential values', () => {

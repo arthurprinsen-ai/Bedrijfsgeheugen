@@ -7,27 +7,6 @@
   "completion_rule": "overall_status may become LIVE_PROVEN only when every obligation is CLOSED_PROVEN with provider/runtime readback evidence; repository merge or CI success alone is insufficient",
   "obligations": [
     {
-      "id": "supabase_owner_management_mfa",
-      "status": "OPEN",
-      "owner_plane": "Supabase organization management",
-      "latest_readback": "2026-09-17: organization qnfouxnedomulppeuhoz remains accessible on Pro; the available management connector exposes organization metadata but no organization-member MFA read/write operation. Existing provider evidence therefore remains the authority that the sole standing Owner has management-plane MFA disabled until a new provider readback proves otherwise.",
-      "evidence_required": [
-        "organization-member readback shows MFA enabled for every standing human Owner",
-        "evidence is dated and identifies the provider/account role without storing credential material"
-      ]
-    },
-    {
-      "id": "netlify_owner_team_management_mfa",
-      "status": "OPEN",
-      "owner_plane": "Netlify user and team management",
-      "latest_readback": "2026-09-17: current Netlify Owner reports mfa_enabled=false; Team PrinsenCo has one member and enforce_mfa=not_enforced. The available Netlify connector exposes these values read-only and has no user/team MFA write operation.",
-      "evidence_required": [
-        "current Owner readback shows personal MFA enabled",
-        "team readback shows MFA enforcement enabled for Team PrinsenCo",
-        "evidence is dated and contains no credential material"
-      ]
-    },
-    {
       "id": "isolated_restore_dr_exercise",
       "status": "OPEN",
       "owner_plane": "Supabase backup and disaster recovery",
@@ -55,7 +34,7 @@
       "id": "cross_platform_iam_review",
       "status": "OPEN",
       "owner_plane": "GitHub, Netlify, Notion, Buffer, Supabase and other active provider access planes",
-      "latest_readback": "2026-09-17: GitHub repository identity arthurprinsen-ai has current admin permission on arthurprinsen-ai/Bedrijfsgeheugen and main remains protected with required test status. Netlify has one human Owner with personal MFA disabled and team MFA not enforced. Notion contains one human plus eight bots/integrations, including legacy Make while Make is retired in the Powerhouse architecture; the connected Notion management surface can inventory users/bots but exposes no workspace-connection disconnect action. A current plugin-directory search returned no Buffer management/IAM connector, so Buffer account IAM remains unverified. Supabase organization metadata is readable but organization-member MFA administration is not exposed. Least-privilege cleanup therefore remains open only where provider-admin evidence or removal cannot yet be executed/read back through the connected management planes.",
+      "latest_readback": "2026-09-17: GitHub repository identity arthurprinsen-ai has current admin permission on arthurprinsen-ai/Bedrijfsgeheugen and main remains protected with required test status. Netlify personal MFA is provider-readback proven enabled and Team PrinsenCo returns enforce_mfa=enforced. Supabase sole-Owner personal MFA and organization-wide Require MFA enforcement were enabled in provider UI and saved by the standing Owner; the management connector still does not expose organization-member MFA state. Notion still contains one human plus eight bots/integrations, including legacy Make while Make is retired in the Powerhouse architecture; the connected Notion management surface can inventory users/bots but exposes no workspace-connection disconnect action. A current plugin-directory search returned no Buffer management/IAM connector, so Buffer account IAM remains unverified. Least-privilege cleanup therefore remains open for stale/inaccessible provider identities and evidence that cannot yet be executed or read back through the connected management planes.",
       "evidence_required": [
         "standing human and service identities are inventoried",
         "roles and permissions are reviewed for least privilege",
@@ -85,6 +64,16 @@
       "status": "CLOSED_PROVEN",
       "evidence_reference": "docs/changes/powerhouse-security-operations-hardening-v1.md#backup--restore--disaster-recovery",
       "note": "backup availability proof does not close the isolated restore obligation"
+    },
+    {
+      "id": "netlify_owner_team_management_mfa",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "2026-09-17 provider readback: current Owner mfa_enabled=true; Team PrinsenCo enforce_mfa=enforced; members_count=1"
+    },
+    {
+      "id": "supabase_owner_management_mfa",
+      "status": "CLOSED_PROVEN",
+      "evidence_reference": "2026-09-17 provider UI evidence: sole standing Owner enrolled account MFA and enabled organization-wide Require MFA; owner confirmed save; organization qnfouxnedomulppeuhoz remains the canonical organization"
     }
   ]
 }
