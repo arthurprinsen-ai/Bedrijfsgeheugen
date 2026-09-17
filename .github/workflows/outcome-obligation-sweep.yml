@@ -42,6 +42,7 @@ on:
 permissions:
   contents: read
   actions: read
+  pull-requests: read
 
 env:
   NODE_VERSION: '22'
@@ -97,7 +98,11 @@ jobs:
               artifact_production_identity="$(jq -r '.merge_sha // empty' .artifacts/source/production-release-readback.json)"
               test "$artifact_production_identity" = "$SOURCE_HEAD_SHA" || { echo "::error::COMPLETION_PRODUCTION_IDENTITY_MISMATCH:$SOURCE_HEAD_SHA:$artifact_production_identity"; exit 1; }
               production_identity="$artifact_production_identity"
-              candidate_identity="$(git rev-parse "${SOURCE_HEAD_SHA}^2")"
+              candidate_identity="$(git rev-parse "${SOURCE_HEAD_SHA}^2" 2>/dev/null || true)"
+              if [[ ! "$candidate_identity" =~ ^[0-9a-f]{40}$ ]]; then
+                associated_prs="$(gh api -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/commits/${SOURCE_HEAD_SHA}/pulls")"
+                candidate_identity="$(jq -r --arg merge "$SOURCE_HEAD_SHA" '[.[] | select(.merged_at != null and .merge_commit_sha == $merge)] | if length == 1 then .[0].head.sha else empty end' <<< "$associated_prs")"
+              fi
               [[ "$candidate_identity" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::COMPLETION_CANDIDATE_IDENTITY_MISSING:$SOURCE_HEAD_SHA"; exit 1; }
               ;;
             *)
