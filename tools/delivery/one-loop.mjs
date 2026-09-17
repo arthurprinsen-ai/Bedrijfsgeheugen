@@ -84,8 +84,12 @@ export function evaluateFinishingPressure(snapshot = {}) {
     return { decision: 'ADMIT_PRIORITY_RECOVERY', reason: 'SECURITY_INCIDENT_RECOVERY_PRIORITY' };
   }
 
-  if (finishing > 0 && maxExecutable > 0 && admittedExecutable >= maxExecutable) {
+  if (finishing > 0) {
     return { decision: 'WAITING_CAPACITY', reason: 'FINISH_EXISTING_WORK_FIRST' };
+  }
+
+  if (maxExecutable > 0 && admittedExecutable >= maxExecutable) {
+    return { decision: 'WAITING_CAPACITY', reason: 'EXECUTABLE_CAPACITY_EXHAUSTED' };
   }
 
   return { decision: 'ADMIT', reason: 'CAPACITY_AVAILABLE' };
