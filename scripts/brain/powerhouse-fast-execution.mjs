@@ -8,6 +8,9 @@ const STANDARD_HINTS = /\b(fix|bug|feature|deploy|update|wijzig|change|test|refa
 const CRITICAL_HINTS = /\b(security|architect|migration|schema|permissions?|destructive|data loss|auth|iam|rbac|identity|publishing|control[- ]plane|secret|credential)\b/i;
 const ALLOWED_CLASSES = new Set(['FAST', 'STANDARD', 'CRITICAL', 'WAITING_EXTERNAL']);
 const NON_CACHEABLE_EVIDENCE = new Set(['production-readback', 'security-freshness', 'provider-outcome', 'final-media-proof']);
+const PERSISTENT_CACHE_PRODUCER = 'POWERHOUSE_FAST_DEVELOPMENT_V2';
+const PERSISTENT_CACHE_ENTRY = 'FAST_PROOF_CACHE_ENTRY';
+const PERSISTENT_CACHE_INVALIDATION = 'FAST_PROOF_CACHE_INVALIDATION';
 
 function digest(value) {
   return crypto.createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
@@ -45,6 +48,7 @@ export function buildStablePolicyPrefix() {
     impactBasedTesting: true,
     parallelExecutionDag: true,
     evidenceReuseWithFreshness: true,
+    persistentEvidenceAuthority: 'brain_outcome_obligation_evidence',
     fullReleaseGatesAtPromotionBoundary: true,
     productionReadbackCacheable: false,
     terminalState: 'LIVE & BEWEZEN'
@@ -161,6 +165,87 @@ export class EvidenceCache {
   invalidateByDependency(token) { let count = 0; for (const [key, item] of this.items) if (item.invalidation.includes(token)) { this.items.delete(key); count += 1; } return count; }
   clear() { this.items.clear(); }
   metadata(key) { const item = this.items.get(key); return item ? { observedAt: item.observedAt, expiresAt: item.expiresAt, source: item.source, candidateId: item.candidateId, identity: item.identity, evidenceType: item.evidenceType, invalidation: item.invalidation } : null; }
+}
+
+function requireEvidenceStore(evidenceStore) {
+  if (!evidenceStore || typeof evidenceStore.list !== 'function' || typeof evidenceStore.putIfAbsent !== 'function') throw new TypeError('evidenceStore with list/putIfAbsent is required');
+  return evidenceStore;
+}
+
+function persistentBucket(key) {
+  return `fast-proof-cache|${digest(String(key))}`;
+}
+
+function recordMetadata(record) {
+  return record?.metadata && typeof record.metadata === 'object' ? record.metadata : {};
+}
+
+export class PersistentEvidenceCache {
+  constructor({ evidenceStore, now = () => Date.now() } = {}) {
+    this.evidenceStore = requireEvidenceStore(evidenceStore);
+    this.now = now;
+  }
+
+  async put(key, value, { ttlMs = 60_000, source = null, identity, evidenceType = 'generic', invalidation = [] } = {}) {
+    if (!key) throw new Error('evidence key is required');
+    if (NON_CACHEABLE_EVIDENCE.has(evidenceType)) return null;
+    if (!identity) throw new Error('persistent evidence requires exact identity');
+    if (!Number.isFinite(ttlMs) || ttlMs <= 0) throw new Error('ttlMs must be positive');
+    const observedAt = this.now();
+    const metadata = { cacheKey:String(key), value, identity, evidenceType, observedAt, expiresAt:observedAt + ttlMs, source, invalidation:stableUnique(invalidation) };
+    const idempotencyKey = persistentBucket(key);
+    const ref = `fast-proof:${digest({ idempotencyKey, identity, evidenceType, observedAt, value })}`;
+    await this.evidenceStore.putIfAbsent({
+      idempotencyKey,
+      ref,
+      type:PERSISTENT_CACHE_ENTRY,
+      producer:PERSISTENT_CACHE_PRODUCER,
+      taskIdentity:'powerhouse-fast-development-protocol-v2',
+      candidateIdentity:identity,
+      productionIdentity:null,
+      independent:true,
+      accepted:true,
+      exactProduction:false,
+      metadata,
+    });
+    return value;
+  }
+
+  async get(key, { identity, evidenceType = 'generic' } = {}) {
+    if (!key || !identity || NON_CACHEABLE_EVIDENCE.has(evidenceType)) return null;
+    const records = await this.evidenceStore.list(persistentBucket(key));
+    const invalidatedAt = records
+      .filter(record => record.type === PERSISTENT_CACHE_INVALIDATION && recordMetadata(record).cacheKey === String(key))
+      .reduce((latest, record) => Math.max(latest, Number(recordMetadata(record).observedAt ?? 0)), 0);
+    const matches = records
+      .filter(record => record.type === PERSISTENT_CACHE_ENTRY)
+      .map(record => ({ record, metadata:recordMetadata(record) }))
+      .filter(({ metadata }) => metadata.cacheKey === String(key) && metadata.identity === identity && metadata.evidenceType === evidenceType)
+      .filter(({ metadata }) => Number(metadata.expiresAt ?? 0) >= this.now() && Number(metadata.observedAt ?? 0) > invalidatedAt)
+      .sort((a, b) => Number(b.metadata.observedAt ?? 0) - Number(a.metadata.observedAt ?? 0));
+    return matches.length ? matches[0].metadata.value : null;
+  }
+
+  async invalidate(key, { reason = 'explicit-invalidation' } = {}) {
+    if (!key) throw new Error('evidence key is required');
+    const observedAt = this.now();
+    const idempotencyKey = persistentBucket(key);
+    const metadata = { cacheKey:String(key), observedAt, reason };
+    await this.evidenceStore.putIfAbsent({
+      idempotencyKey,
+      ref:`fast-proof-invalidation:${digest({ idempotencyKey, observedAt, reason })}`,
+      type:PERSISTENT_CACHE_INVALIDATION,
+      producer:PERSISTENT_CACHE_PRODUCER,
+      taskIdentity:'powerhouse-fast-development-protocol-v2',
+      candidateIdentity:null,
+      productionIdentity:null,
+      independent:true,
+      accepted:true,
+      exactProduction:false,
+      metadata,
+    });
+    return true;
+  }
 }
 
 export async function runParallelStateRetrieval(adapters = {}) {
