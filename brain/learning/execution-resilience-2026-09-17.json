@@ -1,10 +1,10 @@
 {
   "type": "LEARNING_RECORD",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "fingerprint": "chat-agent-interruption-resumable-execution-v1",
   "date": "2026-09-17",
   "status": "ACTIVE_PREVENTION",
-  "context": "User-observed ChatGPT execution interruptions during Powerhouse work, including network loss, interrupted streaming, failed reasoning and unexpected stop of reasoning.",
+  "context": "User-observed ChatGPT execution interruptions during Powerhouse work, including network loss, interrupted streaming, failed reasoning and unexpected stop of reasoning, followed by production verification of durable recovery runtime.",
   "observed_signals": [
     "De netwerkverbinding is verbroken",
     "Streaming onderbroken",
@@ -17,18 +17,25 @@
     "false_completion",
     "duplicate_mutating_side_effects_after_manual_retry",
     "open_obligation_loss",
-    "repeated_blind_retry_cost"
+    "repeated_blind_retry_cost",
+    "merged_but_not_deployed_drift",
+    "runtime_function_without_scheduler_wiring"
   ],
   "root_cause_class": "EPHEMERAL_EXECUTION_CHANNEL_USED_AS_IF_IT_WERE_DURABLE_PROCESS_STATE",
-  "failed_pattern": "Treating a chat/model/stream lifetime as the lifetime and source of truth of the underlying task.",
-  "fix": "Move task continuity to canonical durable Powerhouse state with checkpoints, obligations, heartbeat/watchdog detection, side-effect readback, idempotency/dedupe guards, bounded retries and explicit recovery state.",
-  "prevention": "Every material chat and agent must ingest powerhouse-execution-resilience-v1 via the existing chat-learning preflight; an interrupted non-terminal run becomes RECOVERY_REQUIRED and may resume only after canonical state and side-effect reconciliation.",
-  "regression_test": "tests/execution-resilience-guard.test.mjs",
+  "failed_pattern": "Treating a chat/model/stream lifetime, a merged PR, or function existence alone as proof that the underlying durable recovery process is live.",
+  "fix": "Move task continuity to canonical durable Powerhouse state with checkpoints, obligations, heartbeat/watchdog detection, side-effect readback, idempotency/dedupe guards, bounded retries, explicit recovery state, source-controlled scheduler wiring and production readback.",
+  "prevention": "Every material chat and agent must ingest powerhouse-execution-resilience-v1 via the existing chat-learning preflight; an interrupted non-terminal run becomes RECOVERY_REQUIRED and may resume only after canonical state and side-effect reconciliation. A merged migration is never production evidence; functions, grants, scheduler and natural runtime must be read back independently.",
+  "regression_test": "tests/brain-execution-resilience-guard.test.mjs",
   "runtime_guard": "brain/guards/execution-resilience.mjs",
   "canonical_contract": "config/powerhouse-execution-resilience-v1.json",
   "documentation": "docs/brain/execution-resilience.md",
+  "runtime_migrations": [
+    "supabase/migrations/20260917083000_powerhouse_execution_resilience_v1.sql",
+    "supabase/migrations/20260917090000_powerhouse_execution_resilience_watchdog_schedule_v1.sql"
+  ],
   "resume_contract": [
     "read canonical current state",
+    "read the current operation version immediately before compare-and-set mutation",
     "load last verified checkpoint",
     "reconcile open obligations",
     "read back side effects",
@@ -40,9 +47,18 @@
   "evidence": {
     "local_regression_run": "6/6 PASS after expanding interruption classifier to recognize Dutch network wording",
     "important_test_learning": "The first regression run failed because the classifier only recognized English network terms. The test correctly exposed a localization gap; network/netwerk/verbinding matching was then added and the suite passed.",
-    "ci_coverage_learning": "Shared Agent Memory CI correctly failed when the new resilience test was not selected by any workflow. The test was moved into the existing *guard*.test.mjs regression family so future changes are automatically executed by governed CI instead of relying on a one-off workflow edit."
+    "ci_coverage_learning": "Shared Agent Memory CI correctly failed when the resilience test was not selected. The canonical regression path is tests/brain-execution-resilience-guard.test.mjs under the existing guard family; documentation was corrected to that exact path.",
+    "deployment_drift_learning": "PR 1887 was merged, but production initially did not contain the three resilience functions. Merge state and production state are separate truths and require explicit readback.",
+    "runtime_wiring_learning": "After the functions were deployed, no scheduler invoked the watchdog. A source-controlled pg_cron migration now schedules powerhouse-execution-resilience-watchdog-v1 every minute.",
+    "production_selftest_operation_id": "fe02a49c-f57c-48cf-ad75-6dc313f99096",
+    "production_selftest_reconciliation_job_id": "0b2ae9b0-e315-4a95-8de3-dbbfe8f86790",
+    "production_selftest_result": "Checkpoint heartbeat was durably stored; simulated stale detection moved the operation to RESULT_UNKNOWN/RECOVERY_REQUIRED and created a canonical PENDING EXECUTION_RESILIENCE_RECOVERY reconciliation job with readback_before_replay=true.",
+    "cas_learning": "A heartbeat attempt using an assumed literal version returned STATE_VERSION_CONFLICT while a subsequent call using the version read directly from brain_operations succeeded. Root cause of the first mismatch was not proven; prevention is to read the current version immediately before CAS mutation and treat conflicts as drift/concurrency evidence rather than blindly retrying.",
+    "safety_boundary": "The generic watchdog enqueues recovery but does not replay domain side effects. Domain-specific recovery must read back outcome/side effects and satisfy idempotency or dedupe proof before mutation."
   },
   "linked_learning_sources": [
-    "docs/brain/execution-resilience.md"
+    "docs/brain/execution-resilience.md",
+    "config/powerhouse-execution-resilience-v1.json",
+    "brain/policies/powerhouse-agent-continuity-v1.json"
   ]
 }
