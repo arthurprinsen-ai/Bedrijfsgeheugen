@@ -13,6 +13,13 @@ test('supply-chain workflow creates SBOM and GitHub artifact attestation', () =>
   assert.match(yml, /dependency-review-action@/);
 });
 
+test('supply-chain PR work is dependency-scoped while provenance remains main-only', () => {
+  const yml = read('.github/workflows/engineering-supply-chain-trust.yml');
+  assert.match(yml, /pull_request:\s*\n\s+paths:\s*\n\s+- 'package\.json'\s*\n\s+- 'package-lock\.json'/);
+  assert.match(yml, /provenance:\s*\n\s+if: github\.event_name == 'push'/);
+  assert.match(yml, /push:\s*\n\s+branches: \[main\]/);
+});
+
 test('CodeQL workflow is present with security-events permission', () => {
   const yml = read('.github/workflows/codeql.yml');
   assert.match(yml, /security-events:\s*write/);
