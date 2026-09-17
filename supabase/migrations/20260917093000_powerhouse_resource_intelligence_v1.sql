@@ -76,6 +76,9 @@ create table if not exists public.powerhouse_optimization_candidate_v1 (
   notes text
 );
 
+create index if not exists powerhouse_optimization_candidate_v1_status_idx
+  on public.powerhouse_optimization_candidate_v1 (status, safety_class, confidence desc, created_at);
+
 alter table public.powerhouse_optimization_candidate_v1 enable row level security;
 alter table public.powerhouse_optimization_candidate_v1 force row level security;
 revoke all on public.powerhouse_optimization_candidate_v1 from public, anon, authenticated;
@@ -139,5 +142,91 @@ order by
 
 revoke all on public.powerhouse_resource_optimization_queue_v1 from public, anon, authenticated;
 grant select on public.powerhouse_resource_optimization_queue_v1 to service_role;
+
+create or replace function public.powerhouse_generate_resource_optimization_candidates_v1()
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  inserted_count integer := 0;
+begin
+  insert into public.powerhouse_optimization_candidate_v1 (
+    source_key, component_id, owner_agent, opportunity_type, baseline, expected_impact,
+    confidence, safety_class, proposed_action, rollback_plan, status, production_authority,
+    learning_fingerprint, notes
+  )
+  select
+    'resource-efficiency:' || to_char(day, 'YYYY-MM-DD') || ':' || provider || ':' || model_id,
+    'powerhouse-resource-intelligence-v1',
+    'agent-product-opportunity',
+    'resource_efficiency',
+    jsonb_build_object('day', day, 'provider', provider, 'model_id', model_id, 'invocations', invocations, 'tokens', tokens, 'cloud_cost_eur', cloud_cost_eur, 'outcome_value_eur', outcome_value_eur, 'value_per_cost_eur', value_per_cost_eur),
+    jsonb_build_object('metric', 'cloud_cost_eur_per_measured_business_value', 'direction', 'decrease_without_quality_or_value_regression'),
+    case when outcome_value_eur is null then 0.60 else 0.85 end,
+    case when outcome_value_eur is null then 'review_required' else 'safe_reversible' end,
+    jsonb_build_object('action', 'run_bounded_routing_caching_batching_or_prompt_efficiency_experiment', 'requires_baseline', true, 'requires_exact_candidate_evidence', true),
+    jsonb_build_object('action', 'restore_last_known_good_configuration_or_candidate_sha', 'required', true),
+    'candidate',
+    'BG169',
+    'resource-efficiency-daily-v1',
+    'Generated from measured canonical resource/business-value evidence; expected impact expresses direction only, not an invented savings claim.'
+  from public.powerhouse_resource_intelligence_daily_v1
+  where day >= date_trunc('day', now()) - interval '7 days'
+    and cloud_cost_eur > 0
+    and (value_per_cost_eur is null or value_per_cost_eur < 1)
+  on conflict (source_key) do nothing;
+
+  get diagnostics inserted_count = row_count;
+
+  insert into public.powerhouse_optimization_candidate_v1 (
+    source_key, component_id, owner_agent, opportunity_type, baseline, expected_impact,
+    confidence, safety_class, proposed_action, rollback_plan, status, production_authority,
+    learning_fingerprint, notes
+  )
+  select
+    'physical-telemetry-coverage:' || to_char(day, 'YYYY-MM-DD') || ':' || provider || ':' || model_id,
+    'powerhouse-resource-intelligence-v1',
+    'agent-integration-make',
+    'physical_telemetry_coverage',
+    jsonb_build_object('day', day, 'provider', provider, 'model_id', model_id, 'energy_wh', energy_wh, 'water_ml', water_ml, 'estimated_co2e_g', estimated_co2e_g),
+    jsonb_build_object('metric', 'physical_telemetry_provenance_coverage', 'direction', 'increase'),
+    0.95,
+    'review_required',
+    jsonb_build_object('action', 'identify_provider_supported_measurement_or_evidence_source_before_reporting_or_automation'),
+    jsonb_build_object('action', 'remove_unproven_adapter_or_estimator_and_restore_NULL_unknown_semantics', 'required', true),
+    'candidate',
+    'BG169',
+    'physical-telemetry-provenance-v1',
+    'Missing physical telemetry is intentionally NULL and becomes an evidence obligation, never synthetic zero.'
+  from public.powerhouse_resource_intelligence_daily_v1
+  where day >= date_trunc('day', now()) - interval '1 day'
+    and (energy_wh is null or water_ml is null or estimated_co2e_g is null)
+  on conflict (source_key) do nothing;
+
+  get diagnostics inserted_count = inserted_count + row_count;
+  return inserted_count;
+end;
+$$;
+
+revoke all on function public.powerhouse_generate_resource_optimization_candidates_v1() from public, anon, authenticated;
+grant execute on function public.powerhouse_generate_resource_optimization_candidates_v1() to service_role;
+
+-- Use the existing pg_cron control plane when present. The scheduled job only creates
+-- deduplicated evidence-backed candidates; it does not bypass BG169 or mutate production behavior.
+do $$
+begin
+  if to_regnamespace('cron') is not null then
+    execute $schedule$
+      select cron.schedule(
+        'powerhouse-resource-intelligence-daily-v1',
+        '29 5 * * *',
+        'select public.powerhouse_generate_resource_optimization_candidates_v1();'
+      )
+    $schedule$;
+  end if;
+end
+$$;
 
 commit;
