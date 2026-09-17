@@ -8,6 +8,7 @@ const INSTAGRAM_CHANNEL = '6a70384d99afb44349f0fba9';
 const MAX_RULE_AGE_MS = 96 * 60 * 60 * 1000;
 
 const clean = (value: unknown) => String(value ?? '').trim();
+const evidenceRefs = (value: any) => Array.isArray(value?.evidence_refs) ? value.evidence_refs.filter((ref: unknown) => clean(ref).length > 0) : [];
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
   status,
   headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
@@ -51,13 +52,36 @@ function personalViolations(text: string, body: any, finalHash: string) {
   if (businessSignal(text)) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
   return out;
 }
+function instagramProofViolations(body: any) {
+  const out: Array<{ code: string; message: string }> = [];
+  const exactChannel = clean(body.channel_id || body.buffer_channel_id);
+  const mediaType = clean(body.media_type).toLowerCase();
+  const finalAsset = clean(body.final_asset_url || body.asset_url);
+  const visual = body.instagram_visual && typeof body.instagram_visual === 'object' ? body.instagram_visual : null;
+  if (exactChannel !== INSTAGRAM_CHANNEL) out.push({ code: 'INSTAGRAM_CHANNEL_ID_MISMATCH', message: 'Exact Instagram Buffer-profiel is verplicht.' });
+  if (!clean(body.final_media_sha256)) out.push({ code: 'FINAL_MEDIA_DIGEST_REQUIRED', message: 'Exact finale-media digest ontbreekt.' });
+  if (body.exact_final_media_proven !== true) out.push({ code: 'EXACT_FINAL_MEDIA_UNPROVEN', message: 'Exact finale bytes/frames zijn niet bewezen.' });
+  if (!finalAsset) out.push({ code: 'INSTAGRAM_FINAL_ASSET_REQUIRED', message: 'Exact final asset URL ontbreekt.' });
+  if (!visual || visual.verified !== true || evidenceRefs(visual).length === 0 || !clean(visual.asset_url)) out.push({ code: 'INSTAGRAM_VISUAL_EVIDENCE_REQUIRED', message: 'Geverifieerde visual evidence met evidence_refs en exact asset ontbreekt.' });
+  if (visual?.identity_class !== 'mira_daily_life') out.push({ code: 'INSTAGRAM_MIRA_VISUAL_REQUIRED', message: 'Finale media is niet als Mira daily-life geverifieerd.' });
+  if (visual?.placeholder_detected === true) out.push({ code: 'INSTAGRAM_PLACEHOLDER_BLOCKED', message: 'Placeholder/broken render is geblokkeerd.' });
+  if (finalAsset && clean(visual?.asset_url) && clean(visual.asset_url) !== finalAsset) out.push({ code: 'INSTAGRAM_FINAL_ASSET_MISMATCH', message: 'Geïnspecteerde media is niet exact de finale publicatie-asset.' });
+  if (visual?.format_verified !== true) out.push({ code: 'INSTAGRAM_MEDIA_FORMAT_UNVERIFIED', message: 'Publish-format is niet geverifieerd.' });
+  if (mediaType === 'reel' || mediaType === 'video') {
+    const frames = Array.isArray(visual?.frame_evidence) ? visual.frame_evidence : [];
+    const complete = ['start','middle','end'].every((position) => frames.some((frame: any) => frame?.position === position && frame?.verified === true && evidenceRefs(frame).length > 0));
+    if (!complete) out.push({ code: 'INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED', message: 'Start-, midden- en eindframe moeten elk geverifieerd bewijs hebben.' });
+    if (frames.some((frame: any) => frame?.identity_class !== 'mira_daily_life')) out.push({ code: 'INSTAGRAM_MIRA_FRAME_IDENTITY_REQUIRED', message: 'Elk bewezen videoframe moet Mira daily-life tonen.' });
+    if (frames.some((frame: any) => frame?.placeholder_detected === true)) out.push({ code: 'INSTAGRAM_VIDEO_PLACEHOLDER_BLOCKED', message: 'Video bevat placeholder/broken frame.' });
+  }
+  return out;
+}
 function otherIdentityViolations(channel: string, text: string, body: any) {
   const out: Array<{ code: string; message: string }> = [];
   if (channel === 'linkedin_company' && /\bik (heb|had|was|ben|ging|kwam|zat|voelde|dacht)\b/i.test(text) && !/\bArthur\b/i.test(text)) out.push({ code: 'COMPANY_CHANNEL_PERSONAL_DIARY_VOICE', message: 'Bedrijfspagina mag niet ongemarkeerd als Arthurs dagboekstem publiceren.' });
   if (channel === 'instagram_company') {
     if (body.mira_gate_passed !== true) out.push({ code: 'MIRA_GATE_NOT_PROVEN', message: 'Mira hard gate ontbreekt.' });
-    if (!clean(body.final_media_sha256)) out.push({ code: 'FINAL_MEDIA_DIGEST_REQUIRED', message: 'Exact finale-media digest ontbreekt.' });
-    if (body.exact_final_media_proven !== true) out.push({ code: 'EXACT_FINAL_MEDIA_UNPROVEN', message: 'Exact finale bytes/frames zijn niet bewezen.' });
+    out.push(...instagramProofViolations(body));
     const mediaType = clean(body.media_type).toLowerCase();
     const source = clean(body.media_source).toLowerCase();
     if ((mediaType === 'reel' || mediaType === 'video') && source !== 'openart') out.push({ code: 'INSTAGRAM_VIDEO_SOURCE_INVALID', message: 'Mira video/reel moet OpenArt zijn.' });
