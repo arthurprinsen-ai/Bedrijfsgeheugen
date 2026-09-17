@@ -52,8 +52,13 @@ select
   subject_id,
   state,
   classification,
-  classification not in ('PROVEN_FIXED', 'SYNTHETIC_TEST_STATE', 'SUPERSEDED', 'RETIRED_DEPENDENCY')
-    and state not in ('FULFILLED', 'CANCELLED', 'RESOLVED') as material,
+  case
+    when classification in ('CURRENT_DEFECT', 'CURRENT_EXTERNAL_BOUNDARY', 'EVIDENCE_MISSING') then
+      state not in ('FULFILLED', 'CANCELLED', 'RESOLVED')
+    else
+      classification not in ('PROVEN_FIXED', 'SYNTHETIC_TEST_STATE', 'SUPERSEDED', 'RETIRED_DEPENDENCY')
+      and state not in ('FULFILLED', 'CANCELLED', 'RESOLVED')
+  end as material,
   source_updated_at,
   evidence
 from claims;
