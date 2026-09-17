@@ -1,5 +1,5 @@
 {
-  "contract":"BRAIN-UNIVERSAL-SERVICES-v1",
+  "contract":"BRAIN-UNIVERSAL-SERVICES-v2",
   "operating_loop":["detect","verify","match","impact","prioritise","recommend","act","measure","learn"],
   "services":{
     "business_graph":{"record_types":["Entity","Relation","Evidence","Signal","Opportunity","Decision","Action","Outcome","Learning"],"projection":"canonical_graph"},
@@ -17,6 +17,14 @@
   "value_evaluation_days":[30,90,180],
   "provenance_required":["source","source_id","observed_at","freshness","evidence_ids"],
   "ingestion":{"preserve_raw_source":true,"compatibility_mapping":"versioned","unknown_source":"fail_closed","dedupe":"idempotency_key","external_tenant_source":"credential_only"},
-  "advice":{"requires":["evidence","impact","priority","recommendation","owner"],"must_link_to_business_graph":true},
+  "advice":{
+    "contract":"config/trusted-advisor-os.json",
+    "requires":["stakeholder_goal","problem_definition","evidence","assumptions","uncertainties","options","tradeoffs","recommendation","rationale","risk_and_downside","conflicts_or_self_interest","commitments","follow_up_trigger","outcome_readback","learning_writeback"],
+    "must_link_to_business_graph":true,
+    "state_machine":["DISCOVER","FRAME","EVIDENCE","OPTIONS","RECOMMEND","COMMIT","EXECUTE","VERIFY","LEARN"],
+    "higher_risk_requires_stronger_evidence":true,
+    "done_requires_verified_outcome":true,
+    "unknown_or_unproven_claim_policy":"fail_closed"
+  },
   "future_sources":{"inherit_contract":true,"auto_register":true,"production_without_adapter":false}
 }
