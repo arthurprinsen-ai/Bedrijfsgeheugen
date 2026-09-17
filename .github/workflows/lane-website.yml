@@ -168,11 +168,14 @@ jobs:
               }
               console.log(`Netlify status is green but targeted routes are not all ready yet for ${process.env.HEAD_SHA}; retrying before exact-local fallback.`);
             }
-            if(['failure','error'].includes(status?.state)) throw new Error(`Netlify preview ${status.state}: ${status.description||''}`);
+            if(['failure','error'].includes(status?.state)){
+              console.log(`Netlify preview ${status.state}: ${status.description||''}; switching to exact local candidate fallback.`);
+              break;
+            }
             await new Promise(resolve=>setTimeout(resolve,3000));
           }
           await appendFile(process.env.GITHUB_OUTPUT,'preview_mode=local-exact-candidate\nbase_url=http://127.0.0.1:4173\n');
-          console.log(`Netlify preview was absent or not route-ready for ${process.env.HEAD_SHA}; browser verification will use the exact checked-out candidate locally.`);
+          console.log(`Netlify preview was absent, failed, or was not route-ready for ${process.env.HEAD_SHA}; browser verification will use the exact checked-out candidate locally.`);
           NODE
 
   page-seo:
