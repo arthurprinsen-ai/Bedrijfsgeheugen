@@ -70,7 +70,7 @@ test('applies recoverable capacity waiting to executable WIP but excludes docs a
   const waiting = evaluateAdmission({ candidate: candidate({ number: 6, obligationId: 'BG-6' }), openCandidates, policy, currentMainSha: SHA_A });
   assert.equal(waiting.ok, false);
   assert.equal(waiting.state, 'WAITING_CAPACITY');
-  assert.equal(waiting.reason, 'EXECUTABLE_WIP_FULL');
+  assert.equal(waiting.reason, 'FINISH_EXISTING_WORK_FIRST');
   const docs = evaluateAdmission({ candidate: candidate({ number: 7, obligationId: 'DOC-1', lane: 'docs', type: 'docs' }), openCandidates, policy, currentMainSha: SHA_A });
   assert.equal(docs.state, 'ADMITTED');
 });
