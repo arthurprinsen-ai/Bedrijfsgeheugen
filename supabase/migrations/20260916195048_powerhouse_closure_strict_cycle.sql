@@ -24,14 +24,10 @@ begin
   limit 1;
 
   if found then
-    if new.sequence_no <> v_previous.sequence_no + 1 then
-      raise exception 'cycle sequence must be contiguous';
-    end if;
+    if new.sequence_no <> v_previous.sequence_no + 1 then raise exception 'cycle sequence must be contiguous'; end if;
     v_rank := public.powerhouse_cycle_stage_rank_v1(new.stage);
     v_previous_rank := public.powerhouse_cycle_stage_rank_v1(v_previous.stage);
-    if v_rank is null or v_rank <> v_previous_rank + 1 then
-      raise exception 'cycle stage must advance exactly one canonical stage';
-    end if;
+    if v_rank is null or v_rank <> v_previous_rank + 1 then raise exception 'cycle stage must advance exactly one canonical stage'; end if;
   elsif new.sequence_no <> 1 or new.stage <> 'signal' then
     raise exception 'first cycle event must be signal sequence 1';
   end if;

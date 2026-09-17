@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-const base=await readFile(new URL('../supabase/migrations/20260916220000_powerhouse_closure_a_f.sql',import.meta.url),'utf8');
-const strict=await readFile(new URL('../supabase/migrations/20260916220100_powerhouse_closure_strict_cycle.sql',import.meta.url),'utf8');
+const base=await readFile(new URL('../supabase/migrations/20260916195037_powerhouse_closure_a_f.sql',import.meta.url),'utf8');
+const strict=await readFile(new URL('../supabase/migrations/20260916195048_powerhouse_closure_strict_cycle.sql',import.meta.url),'utf8');
 test('B: cycle identity is tenant scoped and cross-tenant links cannot resolve',()=>{assert.match(base,/primary key \(tenant_id, cycle_id\)/i);assert.match(base,/foreign key \(tenant_id, cycle_id\)[\s\S]*references public\.powerhouse_decision_cycles\(tenant_id, cycle_id\)/i);});
 test('B: cycle must traverse each canonical stage without skipping',()=>{assert.match(strict,/v_rank <> v_previous_rank \+ 1/i);assert.match(strict,/first cycle event must be signal sequence 1/i);});
 test('C: realized value is a distinct evidence-backed truth class',()=>{assert.match(base,/truth_class text not null default 'realized'/i);assert.match(base,/check \(truth_class = 'realized'\)/i);assert.match(base,/evidence_ref text not null/i);});
