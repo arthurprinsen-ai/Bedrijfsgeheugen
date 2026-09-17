@@ -1,0 +1,139 @@
+{
+  "type": "POWERHOUSE_EXECUTION_RESILIENCE_CONTRACT",
+  "version": "1.0.0",
+  "fingerprint": "powerhouse-execution-resilience-v1",
+  "status": "ACTIVE",
+  "scope": [
+    "all_current_and_future_chats",
+    "all_current_and_future_agents",
+    "all_followup_chats",
+    "all_material_workflows",
+    "all_tool_and_model_execution_streams"
+  ],
+  "purpose": "Prevent temporary client, network, streaming, session, tool, worker or model interruptions from becoming lost work, duplicate side effects, false completion or silent abandonment.",
+  "invariants": [
+    "AN_INTERRUPTED_RUN_IS_NEVER_COMPLETE_BY_ITSELF",
+    "NO_SILENT_FAILURE",
+    "NO_LOST_OBLIGATION",
+    "RESUME_FROM_LAST_VERIFIED_CHECKPOINT",
+    "READBACK_BEFORE_REPLAY",
+    "NO_BLIND_MUTATION_RETRY",
+    "IDEMPOTENT_OR_DEDUPED_SIDE_EFFECTS",
+    "BOUNDED_RETRY_WITH_NEW_EVIDENCE",
+    "TERMINAL_STATUS_REQUIRES_VERIFIED_OUTCOME_OR_HARD_BOUNDARY",
+    "RECOVERY_WRITES_BACK_LEARNING"
+  ],
+  "interruption_classes": [
+    "NETWORK_DISCONNECT",
+    "STREAM_INTERRUPTED",
+    "REASONING_ABORTED",
+    "TOOL_ABORTED",
+    "WORKER_LOST",
+    "TIMEOUT",
+    "SESSION_INTERRUPTED",
+    "UNKNOWN_INTERRUPTION"
+  ],
+  "known_user_visible_signals": [
+    "De netwerkverbinding is verbroken",
+    "Streaming onderbroken",
+    "Redeneren mislukt",
+    "Gestopt met nadenken"
+  ],
+  "run_states": [
+    "PENDING",
+    "RUNNING",
+    "RECOVERY_REQUIRED",
+    "EFFECT_APPLIED",
+    "VERIFIED",
+    "COMPLETED",
+    "BLOCKED_HARD_BOUNDARY"
+  ],
+  "terminal_states": [
+    "COMPLETED",
+    "BLOCKED_HARD_BOUNDARY"
+  ],
+  "durability": {
+    "persistent_run_id_required": true,
+    "correlation_id_required_where_available": true,
+    "last_verified_checkpoint_required_for_multistep_work": true,
+    "open_obligations_must_survive_worker_or_chat_loss": true,
+    "checkpoint_fields": [
+      "run_id",
+      "task_or_obligation_id",
+      "owner_agent",
+      "state",
+      "last_verified_checkpoint",
+      "last_heartbeat_at",
+      "attempt",
+      "identical_retry_count",
+      "idempotency_key",
+      "side_effect_state",
+      "last_verified_side_effect",
+      "interruption_class",
+      "evidence_refs",
+      "updated_at"
+    ]
+  },
+  "watchdog": {
+    "required_for_long_running_or_async_work": true,
+    "heartbeat_timeout_ms_default": 120000,
+    "stale_non_terminal_run_action": "RECOVERY_REQUIRED",
+    "missing_heartbeat_non_terminal_run_action": "RECOVERY_REQUIRED"
+  },
+  "retry_policy": {
+    "strategy": "BOUNDED_EXPONENTIAL_BACKOFF_WITH_JITTER",
+    "base_delay_ms": 1000,
+    "max_delay_ms": 60000,
+    "jitter_ratio": 0.2,
+    "max_attempts": 5,
+    "max_identical_retries_without_new_evidence": 2,
+    "after_identical_retry_limit": "CHANGE_HYPOTHESIS_OR_PROVEN_FALLBACK",
+    "circuit_breaker_required_for_repeated_external_failure": true
+  },
+  "side_effect_policy": {
+    "readback_before_replay": true,
+    "idempotency_key_required_for_mutating_replay": true,
+    "dedupe_proof_may_substitute_for_idempotency_key": true,
+    "verified_side_effect_action": "SKIP_EFFECT",
+    "applied_but_unverified_action": "READBACK_REQUIRED",
+    "unguarded_mutation_action": "BLOCK_MUTATION"
+  },
+  "recovery_sequence": [
+    "READ_CANONICAL_CURRENT_STATE",
+    "LOAD_LAST_VERIFIED_CHECKPOINT",
+    "RECONCILE_OPEN_OBLIGATIONS",
+    "READBACK_ALREADY_EXECUTED_SIDE_EFFECTS",
+    "CLASSIFY_INTERRUPTION",
+    "APPLY_IDEMPOTENCY_OR_DEDUPE_GUARD",
+    "RESUME_ONLY_REMAINING_STEPS",
+    "VERIFY_OUTCOME",
+    "WRITEBACK_INCIDENT_RECOVERY_AND_PREVENTION",
+    "REFRESH_SHARED_TEAM_CONTEXT"
+  ],
+  "incident_writeback_required_fields": [
+    "run_id",
+    "correlation_id_if_available",
+    "interruption_class",
+    "last_verified_checkpoint",
+    "last_heartbeat_at",
+    "already_executed_side_effects",
+    "open_obligations",
+    "retry_or_recovery_actions",
+    "readback_evidence",
+    "outcome",
+    "root_cause_if_known",
+    "prevention_or_regression_rule"
+  ],
+  "hard_boundaries": [
+    "missing_secrets_credentials_or_permissions",
+    "security_control_weakening",
+    "destructive_or_irreversible_data_change",
+    "paid_external_resource_increase",
+    "legally_or_financially_binding_action"
+  ],
+  "linked_learning_sources": [
+    "docs/execution-resilience.md"
+  ],
+  "runtime_helper": "brain/guards/execution-resilience.mjs",
+  "regression_test": "tests/execution-resilience.test.mjs"
+}
