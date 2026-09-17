@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_UNIVERSAL_INGRESS_POLICY",
+  "version": "POWERHOUSE-UNIVERSAL-INGRESS-v1",
+  "fingerprint": "powerhouse|universal-ingress|preflight-receipt|identity-continuity|v1",
+  "status": "ACTIVE",
+  "default_enabled": true,
+  "fail_closed": true,
+  "scope": "all current and future material Powerhouse-managed chats, agents, workflows, scheduled runners, portal, cockpit, edge functions and runtimes",
+  "actor_kinds": [
+    "chat",
+    "agent",
+    "workflow",
+    "scheduled",
+    "portal",
+    "cockpit",
+    "edge_function",
+    "runtime"
+  ],
+  "preflight_entrypoint": "scripts/brain/chat-learning-preflight.mjs",
+  "runtime_entrypoint": "scripts/brain/powerhouse-universal-runtime-ingress.mjs",
+  "completion_entrypoint": "scripts/brain/powerhouse-universal-completion-gate.mjs",
+  "invariants": [
+    "NO_MATERIAL_EXECUTION_WITHOUT_READY_PREFLIGHT",
+    "EXACT_RUN_IDENTITY_CONTINUITY",
+    "EXACT_CANDIDATE_IDENTITY_CONTINUITY",
+    "INGRESS_RECEIPT_IS_EVIDENCE_NOT_TRUTH",
+    "NO_SECOND_MEMORY_OR_EXECUTION_PLANE",
+    "TERMINAL_STATUS_REQUIRES_POSTFLIGHT"
+  ],
+  "native_chat_boundary": "Repository code cannot rewrite the native ChatGPT product runtime. Any material Powerhouse execution invoked from a native chat must enter the managed Powerhouse ingress/control-plane before mutation.",
+  "linked_learning_sources": [
+    "brain/policies/powerhouse-agent-continuity-v1.json"
+  ]
+}
